@@ -201,19 +201,33 @@ function ShapeRows({ shape, rows }: { shape: FlowExperienceShape; rows: FlowExpe
   );
 }
 
-export function FlowArtifactDataPreview({ projection }: { projection: FlowExperienceProjection }) {
+export function FlowArtifactDataPreview({
+  projection,
+  selectedShape: controlledSelectedShape,
+  onSelectedShapeChange,
+}: {
+  projection: FlowExperienceProjection;
+  selectedShape?: FlowExperienceShape;
+  onSelectedShapeChange?: (shape: FlowExperienceShape) => void;
+}) {
   const recommendation = buildArtifactRecommendationVM(projection);
   const availableShapes = recommendation.visible.map((candidate) => candidate.shape);
   const initialShape = recommendation.primary?.shape ?? projection.primaryShape;
-  const [selectedShape, setSelectedShape] = useState<FlowExperienceShape>(initialShape);
+  const [internalSelectedShape, setInternalSelectedShape] = useState<FlowExperienceShape>(initialShape);
+  const selectedShape = controlledSelectedShape && availableShapes.includes(controlledSelectedShape)
+    ? controlledSelectedShape
+    : internalSelectedShape;
 
   useEffect(() => {
-    setSelectedShape(initialShape);
+    setInternalSelectedShape(initialShape);
   }, [initialShape, projection.flowId]);
 
   useEffect(() => {
-    if (!availableShapes.includes(selectedShape)) setSelectedShape(initialShape);
-  }, [availableShapes, initialShape, selectedShape]);
+    if (!availableShapes.includes(selectedShape)) {
+      setInternalSelectedShape(initialShape);
+      onSelectedShapeChange?.(initialShape);
+    }
+  }, [availableShapes, initialShape, onSelectedShapeChange, selectedShape]);
 
   const selected = projection.shapes[selectedShape];
   const selectedRecommendation = recommendation.visible.find((candidate) => candidate.shape === selectedShape);
@@ -251,6 +265,8 @@ export function FlowArtifactDataPreview({ projection }: { projection: FlowExperi
                   key={shape}
                   type="button"
                   aria-pressed={selectedCandidate}
+                  data-testid="flow-artifact-shape-choice"
+                  data-artifact-shape={shape}
                   data-recommendation-role={candidateRecommendation?.role}
                   data-recommendation-count={candidateRecommendation?.count}
                   className={`min-h-[var(--flowme-control-height)] rounded-[var(--flowme-radius-control)] border px-2.5 text-xs font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${
@@ -258,7 +274,10 @@ export function FlowArtifactDataPreview({ projection }: { projection: FlowExperi
                       ? 'border-[var(--flowme-action)] bg-[var(--flowme-action-soft)] text-[var(--flowme-action-strong)]'
                       : 'border-[var(--flowme-border)] bg-white text-[var(--flowme-text-secondary)] hover:border-[var(--flowme-action)]'
                   }`}
-                  onClick={() => setSelectedShape(shape)}
+                  onClick={() => {
+                    setInternalSelectedShape(shape);
+                    onSelectedShapeChange?.(shape);
+                  }}
                 >
                   {candidate.label} {candidateRecommendation?.countLabel ?? candidate.count}
                 </button>

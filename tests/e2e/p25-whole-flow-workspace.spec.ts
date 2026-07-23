@@ -2,6 +2,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { expect, test } from '@playwright/test';
+import {
+  closeOpenMyFlowItemDetail,
+  getOpenMyFlowItemDetail,
+  openMyFlowLibraryFlow,
+} from './helpers/my-flow-library';
 
 const evidenceRoot = process.env.FLOWME_P25_05A_EVIDENCE_DIR ?? process.env.FLOWME_P25_WHOLE_FLOW_EVIDENCE_DIR;
 
@@ -52,12 +57,24 @@ test.describe('P25 whole Flow workspace', () => {
     await expect(page.getByTestId('my-flow-view-flow')).toHaveText('Flow 목록');
     await expect(page.getByTestId('my-flow-view-completed')).toHaveText('완료');
 
-    const savedFlow = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-moving-d30"]');
+    const savedFlow = await openMyFlowLibraryFlow(
+      page,
+      'source-backed-moving-d30',
+      'execute',
+    );
+    await expect(savedFlow).toHaveAttribute(
+      'data-p31-marker',
+      'P31-03-DEDICATED-MOBILE-WORKSPACE',
+    );
+    await expect(
+      savedFlow
+        .getByTestId('my-flow-workspace-execute')
+        .getByTestId('my-flow-execution-row-shell'),
+    ).toHaveCount(1);
+    await savedFlow.getByTestId('my-flow-workspace-tab-plan').click();
     const mobileOutline = savedFlow.getByTestId('my-flow-whole-flow-outline');
     await expect(mobileOutline).toHaveAttribute('data-outline-mode', 'workspace');
     await expect(mobileOutline.getByTestId('my-flow-execution-row-shell')).toHaveCount(5);
-    await expect(savedFlow.getByTestId('my-flow-next-action')).toHaveCount(1);
-    await expect(savedFlow).toHaveAttribute('data-p30-marker', 'P30-MY-FLOW-COMMAND-HIERARCHY');
     const firstExecutionRow = mobileOutline.getByTestId('my-flow-execution-row-shell').first();
     const [completionBox, titleBox, metaBox] = await Promise.all([
       firstExecutionRow.getByTestId('my-flow-task-complete-label').boundingBox(),
@@ -70,8 +87,8 @@ test.describe('P25 whole Flow workspace', () => {
     await expect(firstExecutionRow.getByTestId('my-flow-inline-note-open')).toHaveCount(0);
     await expect(firstExecutionRow.getByTestId('my-flow-row-open-label')).toHaveText('열기');
     await firstExecutionRow.getByRole('button', { name: /열기/ }).click();
-    await expect(firstExecutionRow.getByTestId('my-flow-detail-execution-note')).toBeVisible();
-    await firstExecutionRow.getByTestId('my-flow-item-detail').getByRole('button', { name: '닫기' }).click();
+    await expect(getOpenMyFlowItemDetail(page)).toBeVisible();
+    await closeOpenMyFlowItemDetail(page);
     await captureEvidence(page, '02-returning-whole-flow-mobile.png');
 
     await mobileOutline.getByTestId('my-flow-task-complete-control').first().check();

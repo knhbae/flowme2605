@@ -2,6 +2,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { expect, test, type Locator, type Page } from '@playwright/test';
+import {
+  openMyFlowLibraryFlow,
+  openPersonalDraftListExport,
+} from './helpers/my-flow-library';
 
 const evidenceDir = process.env.FLOWME_P26_05_EVIDENCE_DIR;
 
@@ -111,16 +115,8 @@ test('legacy personal draft values migrate to one stable identity across My Flow
   });
 
   await page.getByTestId('my-flow-post-save-view-flow').click();
-  const flowShell = page
-    .locator(
-      `[data-testid="my-flow-overview-card"][data-flow-slug="${legacy.flowSlug}"]:visible, ` +
-      `[data-testid="my-flow-mobile-structure-row"][data-flow-slug="${legacy.flowSlug}"]:visible`,
-    )
-    .first();
-  await expect(flowShell).toBeVisible();
-  const open = flowShell.getByTestId('my-flow-mobile-structure-open');
-  if (await open.isVisible().catch(() => false)) await open.click();
-  const item = page
+  let flowShell = await openMyFlowLibraryFlow(page, legacy.flowSlug, 'plan');
+  const item = flowShell
     .locator(`[data-item-id="${legacy.itemId}"]:visible`)
     .filter({ hasText: '여권 유효기간 다시 확인하기' })
     .first();
@@ -133,9 +129,16 @@ test('legacy personal draft values migrate to one stable identity across My Flow
   await expect(complete).not.toBeChecked();
   await capture(page, flowShell, '01-migrated-personal-draft-mobile.png');
 
-  await flowShell.getByRole('button', { name: '여행 준비 identity 확인 가져가기' }).click();
-  const exportPanel = page.getByTestId('my-flow-export-panel');
-  await exportPanel.getByRole('button', { name: /메모로 복사 2개/ }).click();
+  flowShell = await openMyFlowLibraryFlow(page, legacy.flowSlug, 'record');
+  const exportSurface = await openPersonalDraftListExport(flowShell);
+  const memoAction = exportSurface.getByTestId('personal-draft-copy-memo');
+  if (!(await memoAction.isVisible().catch(() => false))) {
+    await exportSurface
+      .getByTestId('my-flow-export-more-formats')
+      .locator(':scope > summary')
+      .click();
+  }
+  await memoAction.click();
   const memo = await page.evaluate(() => navigator.clipboard.readText());
   expect(memo).toContain('여권 유효기간 다시 확인하기');
   expect(memo).toContain('만료일과 영문 이름을 확인');

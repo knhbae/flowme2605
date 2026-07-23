@@ -2,7 +2,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { expect, test, type Page } from '@playwright/test';
-import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
+import {
+  getOpenMyFlowItemDetail,
+  openMyFlowLibraryFlow,
+} from './helpers/my-flow-library';
 
 const evidenceRoot = process.env.FLOWME_P26_09_EVIDENCE_DIR;
 
@@ -125,8 +128,9 @@ test.describe('P26-09 adaptive whole Flow reading', () => {
 
     const firstRow = outline.getByTestId('my-flow-execution-row-shell').first();
     await firstRow.getByRole('button', { name: /열기/ }).click();
-    await expect(firstRow.getByTestId('my-flow-detail-execution-note')).toBeVisible();
-    await expect(firstRow.getByTestId('my-flow-detail-execution-note').getByTestId('my-flow-inline-note-open')).toBeVisible();
+    const detail = getOpenMyFlowItemDetail(page);
+    await expect(detail.getByTestId('my-flow-detail-execution-note')).toBeVisible();
+    await expect(detail.getByTestId('my-flow-detail-execution-note').getByTestId('my-flow-inline-note-open')).toBeVisible();
 
     await capture(page, '03b-mobile-twenty-four-item-expanded-detail.png');
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);

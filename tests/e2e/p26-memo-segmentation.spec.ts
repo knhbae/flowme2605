@@ -2,6 +2,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { expect, test, type Locator, type Page } from '@playwright/test';
+import {
+  openMyFlowLibraryFlow,
+  openPersonalDraftListExport,
+} from './helpers/my-flow-library';
 
 const evidenceDir = process.env.FLOWME_P26_04_EVIDENCE_DIR;
 
@@ -120,16 +124,25 @@ test('memo intake preserves source fragments through review, save, reload, and w
   expect(stored?.itemDetails?.every((detail) => detail.source_fragment_ids?.length === 1)).toBe(true);
   expect(stored?.itemDetails?.every((detail) => detail.source_fragment_text?.includes('항공권 확인'))).toBe(true);
   expect(stored?.flow?.raw_text).not.toMatch(/범위 정하기|첫 행동|자동 생성/u);
+  const savedSlug = stored?.flow?.slug;
+  expect(savedSlug).toBeTruthy();
 
   await page.reload();
   await expect(page.getByTestId('my-flow-post-save-panel')).toHaveAttribute('data-receipt-total-count', '4');
   await page.getByTestId('my-flow-post-save-view-flow').click();
   await page.setViewportSize({ width: 390, height: 844 });
-  await expect(page.getByRole('heading', { name: '제주 출발 준비' })).toBeVisible();
-  await page.getByRole('button', { name: '제주 출발 준비 가져가기' }).click();
-  const exportPanel = page.getByTestId('my-flow-export-panel');
+  const savedFlow = await openMyFlowLibraryFlow(page, savedSlug!, 'record');
+  await expect(savedFlow).toContainText('제주 출발 준비');
+  const exportSurface = await openPersonalDraftListExport(savedFlow);
+  const exportPanel = exportSurface.getByTestId('my-flow-export-panel');
   await expect(exportPanel).toHaveAttribute('data-export-included-count', '4');
-  const memoExport = exportPanel.getByRole('button', { name: '메모로 복사 4개' });
+  const memoExport = exportPanel.getByTestId('personal-draft-copy-memo');
+  if (!(await memoExport.isVisible().catch(() => false))) {
+    await exportPanel
+      .getByTestId('my-flow-export-more-formats')
+      .locator(':scope > summary')
+      .click();
+  }
   await expect(memoExport).toHaveAttribute('data-export-count', '4');
   await memoExport.click();
   const exportedMemo = await page.evaluate(() => navigator.clipboard.readText());

@@ -35,6 +35,18 @@ Do not use this for:
 
 ## Decisions
 
+### 2026-07-23 - P31 separates mobile surface roles and uses guarded local Flow lifecycle
+
+**Decision:** Keep the 4-tab IA and existing source, personal overlay, execution run, recurrence occurrence, and export identities. Home owns concrete usage examples and returning continuation; Flow finding owns search, catalog, source inspection, and detail entry. Discovery cards show real source and representative work, never invented popularity or review counts. Mobile My Flow opens a compact library row into one dedicated workspace with `실행 / 전체 계획 / 기록`. Calendar Item detail opens in a bottom sheet and undated placement remains a separate mode. Flow lifecycle uses `보관 / 복구 / 이 기기에서 영구 삭제`; permanent delete is available only from archived state, removes personal local data, and preserves a source-backed public Flow for rediscovery.
+
+**Reason:** P30 remained correct at the ownership layer but mobile surfaces repeated roles, expanded too many controls inline, and exposed different archive/restore capabilities by viewport. The P31 comparison and 24-cell rerun showed that coordinated composition changes could reach explanation-free `21/24` without reopening persistence or identity contracts.
+
+**Applies to:** Home, `/flows`, discovery cards, wedding and workout save-before, mobile and wide My Flow, Calendar agenda and undated placement, personal saved-copy titles, archive/restore, local permanent delete, keyboard focus return, and P31 evidence.
+
+**Reopen when:** Observed users repeatedly fail to distinguish Home from Flow finding, cannot recover archived Flows, mistake local delete for source deletion, or cannot use the dedicated My Flow workspace. A real popularity/review system may add social proof only after aggregation and moderation contracts exist.
+
+**Related docs:** [P31 spec](./specs/2026-07-23-p31-mobile-journey-reconstruction/README.md), [P31 evidence](./content-audit/2026-07-23-p31-mobile-journey-reconstruction-evidence/README.md)
+
 ### 2026-07-22 - P29 uses a coordinated surface reset with a gated moving vertical proof
 
 **Decision:** Preserve the P28 source, personal overlay, execution run, recurrence occurrence, projection/export identity, public `/f` shell, and 4-tab IA. Recompose save-before, saved receipt, routine setup, My Flow, Calendar, and result/export around one shared Flow anatomy and one primary action per frame. Start with P29-01A, which extracts the save-before frame from the large `AppClient.tsx` composition without a visual change. Then apply P29-01B only to `/f/moving-d30-basic` to prove one actual artifact result, one outline disclosure, contextual adjustment, a distinct saved receipt, and correct mobile focus order. Do not begin the public/source-backed rollout until this vertical proof and rollback evidence pass.

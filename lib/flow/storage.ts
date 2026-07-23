@@ -26,6 +26,12 @@ import {
 } from './execution-notes';
 import { removePersonalStructuralOverlaysForFlow } from './personal-structural-overlay';
 import {
+  loadPersonalFlowLifecycle,
+  restorePersonalFlow,
+  savePersonalFlowLifecycle,
+} from './personal-flow-lifecycle';
+import { FLOW_PROJECTION_IDENTITY_MIGRATION_STORAGE_KEY_PREFIX } from './projection-identity';
+import {
   getFlowScopedMyFlowPersonalExecutionState,
   hasMyFlowPersonalExecutionState,
   normalizeMyFlowPersonalExecutionState,
@@ -64,6 +70,16 @@ const FLOW_COMPLETION_DETECTED_AT_KEY_PREFIX = 'flow:completion-detected-at:';
 export type StoredAnchor = {
   mode: string;
   anchor: string;
+};
+
+export type PermanentSavedFlowDeletionResult = {
+  flowSlug: string;
+  personalDraft: boolean;
+  lifecycleReferenceRemoved: boolean;
+  personalDraftBundleRemoved: boolean;
+  removedSavedMapIds: string[];
+  updatedSavedMapIds: string[];
+  publicSourcePreserved: boolean;
 };
 
 export type SavedFlowArtifactMode = 'calendar' | 'checklist' | 'sheet';
@@ -838,6 +854,7 @@ export function clearFlowLocalProgress(slug: string): void {
     `${MY_FLOW_EXECUTION_NOTES_KEY_PREFIX}${slug}`,
     `${FLOW_RUN_REGISTRY_KEY_PREFIX}${slug}`,
     `${FLOW_COMPLETION_DETECTED_AT_KEY_PREFIX}${slug}`,
+    `${FLOW_PROJECTION_IDENTITY_MIGRATION_STORAGE_KEY_PREFIX}${encodeURIComponent(slug)}`,
   ].forEach((key) => localStorage.removeItem(key));
   const stepItemChecks = getMyFlowStepItemChecks();
   const nextStepItemChecks = Object.fromEntries(
@@ -847,6 +864,162 @@ export function clearFlowLocalProgress(slug: string): void {
   replaceFlowScopedMyFlowPersonalExecutionState(slug);
   removePersonalStructuralOverlaysForFlow(localStorage, slug);
   localStorage.setItem('flow:meta:last-visit', new Date().toISOString());
+}
+
+function omitFlowKey<T>(
+  value: Record<string, T> | undefined,
+  flowSlug: string,
+): Record<string, T> | undefined {
+  if (!value || typeof value !== 'object') return value;
+  const next = { ...value };
+  delete next[flowSlug];
+  return Object.keys(next).length > 0 ? next : undefined;
+}
+
+function removeSavedMapFlowReference(
+  snapshot: SavedFlowMapSnapshot,
+  flowSlug: string,
+): SavedFlowMapSnapshot | undefined {
+  if (!snapshot.flowSlugs.includes(flowSlug)) return snapshot;
+  const flowSlugs = snapshot.flowSlugs.filter((slug) => slug !== flowSlug);
+  if (flowSlugs.length === 0) return undefined;
+  const personalCopy = snapshot.personalCopy
+    ? {
+        ...snapshot.personalCopy,
+        includedStepIdsByFlow: omitFlowKey(snapshot.personalCopy.includedStepIdsByFlow, flowSlug) ?? {},
+        excludedStepIdsByFlow: omitFlowKey(snapshot.personalCopy.excludedStepIdsByFlow, flowSlug) ?? {},
+        stepOverridesByFlow: omitFlowKey(snapshot.personalCopy.stepOverridesByFlow, flowSlug) ?? {},
+      }
+    : undefined;
+  return {
+    ...snapshot,
+    flowSlugs,
+    stepCountsByFlow: omitFlowKey(snapshot.stepCountsByFlow, flowSlug),
+    riskLevelsByFlow: omitFlowKey(snapshot.riskLevelsByFlow, flowSlug),
+    sourceCheckedAtByFlow: omitFlowKey(snapshot.sourceCheckedAtByFlow, flowSlug),
+    ...(personalCopy ? { personalCopy } : {}),
+  };
+}
+
+function removeSavedMapPersistenceFlowReference(
+  value: SourceBackedFlowMapPersistenceRecord,
+  flowSlug: string,
+): SourceBackedFlowMapPersistenceRecord {
+  const personalCopy = value.personalCopy
+    ? {
+        ...value.personalCopy,
+        includedStepIdsByFlow: omitFlowKey(value.personalCopy.includedStepIdsByFlow, flowSlug) ?? {},
+        excludedStepIdsByFlow: omitFlowKey(value.personalCopy.excludedStepIdsByFlow, flowSlug) ?? {},
+        stepOverridesByFlow: omitFlowKey(value.personalCopy.stepOverridesByFlow, flowSlug) ?? {},
+      }
+    : undefined;
+  return {
+    ...value,
+    childFlows: value.childFlows.filter((child) => child.slug !== flowSlug),
+    updateAssessment: {
+      ...value.updateAssessment,
+      affectedFlows: value.updateAssessment.affectedFlows.filter((slug) => slug !== flowSlug),
+    },
+    ...(personalCopy ? { personalCopy } : {}),
+  };
+}
+
+/**
+ * Permanently removes a saved personal copy from this browser while preserving
+ * published/source-backed definitions. A personal draft additionally removes
+ * its locally-created bundle because that bundle has no public source owner.
+ */
+export function permanentlyDeleteSavedFlow(
+  flowSlug: string,
+  options: { personalDraft: boolean; deletedAt?: string },
+): PermanentSavedFlowDeletionResult | undefined {
+  if (!canUseStorage()) return undefined;
+  const slug = flowSlug.trim();
+  if (!slug) return undefined;
+
+  const archivedBefore = loadPersonalFlowLifecycle(localStorage).record;
+  const lifecycleReferenceRemoved = archivedBefore.archivedFlowSlugs.includes(slug);
+  savePersonalFlowLifecycle(
+    localStorage,
+    restorePersonalFlow(
+      archivedBefore,
+      slug,
+      options.deletedAt ?? new Date().toISOString(),
+    ),
+  );
+
+  const removedSavedMapIds: string[] = [];
+  const updatedSavedMapIds: string[] = [];
+  const snapshotKeys = Array.from({ length: localStorage.length }, (_, index) => localStorage.key(index))
+    .filter((key): key is string => Boolean(key?.startsWith(SAVED_FLOW_MAP_KEY_PREFIX)));
+  snapshotKeys.forEach((key) => {
+    try {
+      const snapshot = JSON.parse(localStorage.getItem(key) || 'null') as SavedFlowMapSnapshot | null;
+      if (!snapshot?.flowSlugs?.includes(slug)) return;
+      const nextSnapshot = removeSavedMapFlowReference(snapshot, slug);
+      const persistenceKey = getSourceBackedFlowMapPersistenceStorageKey(snapshot.mapId);
+      if (!nextSnapshot) {
+        localStorage.removeItem(key);
+        localStorage.removeItem(persistenceKey);
+        removedSavedMapIds.push(snapshot.mapId);
+        return;
+      }
+      localStorage.setItem(key, JSON.stringify(nextSnapshot));
+      const persistenceRaw = localStorage.getItem(persistenceKey);
+      if (persistenceRaw) {
+        try {
+          const persistence = JSON.parse(persistenceRaw) as SourceBackedFlowMapPersistenceRecord;
+          localStorage.setItem(
+            persistenceKey,
+            JSON.stringify(removeSavedMapPersistenceFlowReference(persistence, slug)),
+          );
+        } catch {
+          // A malformed map record must not prevent deletion of the valid copy.
+        }
+      }
+      updatedSavedMapIds.push(snapshot.mapId);
+    } catch {
+      // Ignore unrelated malformed map snapshots and continue deleting the copy.
+    }
+  });
+
+  let personalDraftBundleRemoved = false;
+  if (options.personalDraft) {
+    try {
+      const storedBundles = JSON.parse(localStorage.getItem(BUNDLES_KEY) || '[]') as FlowBundle[];
+      const nextBundles = storedBundles.filter((bundle) => bundle.flow.slug !== slug);
+      personalDraftBundleRemoved = nextBundles.length !== storedBundles.length;
+      localStorage.setItem(BUNDLES_KEY, JSON.stringify(nextBundles));
+    } catch {
+      // clearFlowLocalProgress still removes the saved relation. A malformed
+      // bundle registry remains recoverable through the normal seed fallback.
+    }
+  }
+
+  const selectedCalendarFlowsKey = 'flow:calendar:selected-flows:v1';
+  try {
+    const selectedFlowSlugs = JSON.parse(
+      localStorage.getItem(selectedCalendarFlowsKey) || '[]',
+    ) as unknown;
+    if (Array.isArray(selectedFlowSlugs)) {
+      const next = selectedFlowSlugs.filter((value) => value !== slug);
+      if (next.length > 0) localStorage.setItem(selectedCalendarFlowsKey, JSON.stringify(next));
+      else localStorage.removeItem(selectedCalendarFlowsKey);
+    }
+  } catch {
+    localStorage.removeItem(selectedCalendarFlowsKey);
+  }
+
+  clearFlowLocalProgress(slug);
+  return {
+    flowSlug: slug,
+    personalDraft: options.personalDraft,
+    lifecycleReferenceRemoved,
+    personalDraftBundleRemoved,
+    removedSavedMapIds,
+    updatedSavedMapIds,
+    publicSourcePreserved: !options.personalDraft,
+  };
 }
 
 export function getReactionLogs(slug: string): Record<string, ReactionLog> {

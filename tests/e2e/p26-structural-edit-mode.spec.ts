@@ -1,6 +1,9 @@
 import fs from 'node:fs';
 import { expect, test, type Locator, type Page } from '@playwright/test';
-import { getPersonalDraftEffectiveItems } from './helpers/my-flow-library';
+import {
+  getPersonalDraftEffectiveItems,
+  openPersonalDraftListExport,
+} from './helpers/my-flow-library';
 
 async function openFlowView(page: Page) {
   const postSave = page.getByTestId('my-flow-post-save-panel');
@@ -12,7 +15,7 @@ async function openFlowView(page: Page) {
 
 function getDraftFlow(page: Page) {
   return page.locator(
-    '[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]:visible, [data-testid="my-flow-overview-card"][data-flow-slug^="url-draft-"]:visible',
+    '[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]:visible, [data-testid="my-flow-mobile-workspace"][data-flow-slug^="url-draft-"]:visible, [data-testid="my-flow-overview-card"][data-flow-slug^="url-draft-"]:visible',
   ).first();
 }
 
@@ -21,6 +24,8 @@ async function openDraftFlow(flow: Locator) {
   if (await open.isVisible().catch(() => false)) {
     if ((await open.getAttribute('aria-expanded')) !== 'true') await open.click();
   }
+  const plan = flow.getByTestId('my-flow-workspace-tab-plan');
+  if (await plan.isVisible().catch(() => false)) await plan.click();
 }
 
 async function setStructureMode(flow: Locator, open: boolean) {
@@ -150,12 +155,12 @@ test('personal draft structure mode separates execution from add, reorder, remov
   );
 
   await setStructureMode(flow, false);
-  await flow.getByTestId('personal-draft-list-export-toggle').click();
-  const exportPanel = flow.getByTestId('my-flow-export-panel');
+  const exportPanel = await openPersonalDraftListExport(flow);
   await exportPanel.getByTestId('personal-draft-copy-checklist').click();
   const checklist = await page.evaluate(() => navigator.clipboard.readText());
   const addedIndex = checklist.indexOf('충전기 위치 확인');
   expect(addedIndex).toBeGreaterThanOrEqual(0);
+  await flow.getByTestId('my-flow-workspace-tab-plan').click();
   const effectiveItems = getPersonalDraftEffectiveItems(flow);
   const itemOrder = await effectiveItems.evaluateAll(
     (nodes) => nodes.map((node) => node.getAttribute('data-item-id')),

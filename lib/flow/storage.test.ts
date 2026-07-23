@@ -116,6 +116,7 @@ import {
   normalizeMyFlowCompletionFeedback,
   normalizeSavedFlowMapSnapshot,
   normalizeSavedFlowRecord,
+  permanentlyDeleteSavedFlow,
   recordFlowCompletionState,
   saveFlowRecord,
   saveMyFlowCompletionFeedback,
@@ -214,10 +215,10 @@ test('effective My Flow dates use one priority across source, personal copy, and
       draftDateOverride: '2026-07-09',
     }),
     {
-      date: '2026-07-09',
+      date: '2026-07-08',
       originalDate: '2026-07-06',
       overrideKey,
-      source: 'draft',
+      source: 'execution_override',
     },
   );
 
@@ -276,6 +277,7 @@ test('explicit personal date removal wins over source and personal-copy dates wi
     itemId,
     sourceDate: '2026-07-06',
     personalCopyDateOverride: '2026-07-07',
+    draftDateOverride: '2026-07-09',
     dateOverrides: { [overrideKey]: MY_FLOW_DATE_REMOVED_OVERRIDE },
   });
 
@@ -3875,6 +3877,226 @@ test('clear flow local progress removes saved and per-flow state keys', () => {
     });
     assert.equal(localStorage.getItem(removedStructuralKey), null);
     assert.ok(localStorage.getItem(retainedStructuralKey));
+  } finally {
+    Object.defineProperty(globalThis, 'window', {
+      configurable: true,
+      value: previousWindow,
+    });
+    Object.defineProperty(globalThis, 'localStorage', {
+      configurable: true,
+      value: previousLocalStorage,
+    });
+  }
+});
+
+test('permanent source-backed Flow deletion removes the personal copy but preserves the published bundle', () => {
+  const store = new Map<string, string>();
+  const localStorage = {
+    get length() {
+      return store.size;
+    },
+    key: (index: number) => Array.from(store.keys())[index] ?? null,
+    getItem: (key: string) => store.get(key) ?? null,
+    setItem: (key: string, value: string) => store.set(key, value),
+    removeItem: (key: string) => store.delete(key),
+  };
+  const previousWindow = globalThis.window;
+  const previousLocalStorage = globalThis.localStorage;
+  Object.defineProperty(globalThis, 'window', {
+    configurable: true,
+    value: { localStorage },
+  });
+  Object.defineProperty(globalThis, 'localStorage', {
+    configurable: true,
+    value: localStorage,
+  });
+
+  try {
+    const flowSlug = 'moving-d30-basic';
+    const sourceBundle = JSON.parse(JSON.stringify(
+      seedBundles.find((bundle) => bundle.flow.slug === flowSlug) ?? seedBundles[0],
+    )) as FlowBundle;
+    sourceBundle.flow.slug = flowSlug;
+    sourceBundle.flow.status = 'published';
+    localStorage.setItem('flow_builder_mvp_bundles_v11', JSON.stringify([sourceBundle]));
+    localStorage.setItem(`flow:saved:${flowSlug}`, JSON.stringify({
+      slug: flowSlug,
+      savedAt: '2026-07-23T01:00:00.000Z',
+      selectedArtifactMode: 'calendar',
+      dateIntent: 'custom',
+    }));
+    localStorage.setItem('flow:my-flow:lifecycle:v1', JSON.stringify({
+      schemaVersion: 1,
+      archivedFlowSlugs: [flowSlug],
+      updatedAt: '2026-07-23T01:00:00.000Z',
+    }));
+    localStorage.setItem('flow:my-flow:hidden-flows', JSON.stringify([flowSlug]));
+    localStorage.setItem('flow:calendar:selected-flows:v1', JSON.stringify([flowSlug, 'other-flow']));
+    localStorage.setItem('flow:map:saved:moving-d30', JSON.stringify({
+      mapId: 'moving-d30',
+      title: '이사 준비',
+      version: 'v1',
+      savedAt: '2026-07-23T01:00:00.000Z',
+      flowSlugs: [flowSlug],
+    }));
+    localStorage.setItem('flow:map:persistence:moving-d30', JSON.stringify({
+      schemaVersion: 1,
+      recordType: 'saved_source_backed_flow_map',
+      bridgeStorageKey: 'flow:map:saved:moving-d30',
+      map: {
+        id: 'moving-d30',
+        title: '이사 준비',
+        userLabel: '이사 준비',
+        version: 'v1',
+        updatedAt: '2026-07-23T01:00:00.000Z',
+        updatePolicy: 'review_before_apply',
+        sourceTitle: '원문',
+        sourceUrl: 'https://example.com/moving',
+      },
+      saved: {
+        savedAt: '2026-07-23T01:00:00.000Z',
+        sourceSurface: 'public_save',
+      },
+      readiness: {
+        content: 'ready_for_my_flow',
+        update: 'up_to_date',
+        reasons: [],
+      },
+      childFlows: [{ slug: flowSlug }],
+      updateAssessment: {
+        status: 'up_to_date',
+        userAction: 'none',
+        canApplyAutomatically: true,
+        savedVersion: 'v1',
+        affectedFlows: [flowSlug],
+        reasons: [],
+      },
+    }));
+
+    const result = permanentlyDeleteSavedFlow(flowSlug, {
+      personalDraft: false,
+      deletedAt: '2026-07-23T02:00:00.000Z',
+    });
+
+    assert.ok(result);
+    assert.equal(result.publicSourcePreserved, true);
+    assert.equal(result.lifecycleReferenceRemoved, true);
+    assert.deepEqual(result.removedSavedMapIds, ['moving-d30']);
+    assert.equal(localStorage.getItem(`flow:saved:${flowSlug}`), null);
+    assert.equal(localStorage.getItem('flow:map:saved:moving-d30'), null);
+    assert.equal(localStorage.getItem('flow:map:persistence:moving-d30'), null);
+    assert.deepEqual(
+      JSON.parse(localStorage.getItem('flow:my-flow:lifecycle:v1') || '{}').archivedFlowSlugs,
+      [],
+    );
+    assert.deepEqual(
+      JSON.parse(localStorage.getItem('flow:calendar:selected-flows:v1') || '[]'),
+      ['other-flow'],
+    );
+    assert.equal(
+      (JSON.parse(localStorage.getItem('flow_builder_mvp_bundles_v11') || '[]') as FlowBundle[])
+        .some((bundle) => bundle.flow.slug === flowSlug),
+      true,
+    );
+  } finally {
+    Object.defineProperty(globalThis, 'window', {
+      configurable: true,
+      value: previousWindow,
+    });
+    Object.defineProperty(globalThis, 'localStorage', {
+      configurable: true,
+      value: previousLocalStorage,
+    });
+  }
+});
+
+test('permanent personal draft deletion removes the local draft definition and its lifecycle state', () => {
+  const store = new Map<string, string>();
+  const localStorage = {
+    get length() {
+      return store.size;
+    },
+    key: (index: number) => Array.from(store.keys())[index] ?? null,
+    getItem: (key: string) => store.get(key) ?? null,
+    setItem: (key: string, value: string) => store.set(key, value),
+    removeItem: (key: string) => store.delete(key),
+  };
+  const previousWindow = globalThis.window;
+  const previousLocalStorage = globalThis.localStorage;
+  Object.defineProperty(globalThis, 'window', {
+    configurable: true,
+    value: { localStorage },
+  });
+  Object.defineProperty(globalThis, 'localStorage', {
+    configurable: true,
+    value: localStorage,
+  });
+
+  try {
+    const flowSlug = 'url-draft-personal-delete';
+    const retainedBundle = JSON.parse(JSON.stringify(seedBundles[0])) as FlowBundle;
+    const draftBundle = JSON.parse(JSON.stringify(seedBundles[0])) as FlowBundle;
+    draftBundle.flow.slug = flowSlug;
+    draftBundle.flow.id = flowSlug;
+    draftBundle.flow.status = 'draft';
+    localStorage.setItem(
+      'flow_builder_mvp_bundles_v11',
+      JSON.stringify([retainedBundle, draftBundle]),
+    );
+    localStorage.setItem(`flow:saved:${flowSlug}`, JSON.stringify({
+      slug: flowSlug,
+      savedAt: '2026-07-23T01:00:00.000Z',
+      selectedArtifactMode: 'checklist',
+      dateIntent: 'undated',
+    }));
+    localStorage.setItem('flow:my-flow:lifecycle:v1', JSON.stringify({
+      schemaVersion: 1,
+      archivedFlowSlugs: [flowSlug],
+      updatedAt: '2026-07-23T01:00:00.000Z',
+    }));
+    savePersonalStructuralOverlay(localStorage, createEmptyPersonalStructuralOverlay({
+      savedCopyId: flowSlug,
+      flowId: flowSlug,
+      updatedAt: '2026-07-23T01:00:00.000Z',
+    }));
+    localStorage.setItem(
+      `flow:projection-identity-migration:${encodeURIComponent(flowSlug)}`,
+      JSON.stringify({ schemaVersion: 1, migratedAt: '2026-07-23T01:00:00.000Z' }),
+    );
+
+    const result = permanentlyDeleteSavedFlow(flowSlug, {
+      personalDraft: true,
+      deletedAt: '2026-07-23T02:00:00.000Z',
+    });
+
+    assert.ok(result);
+    assert.equal(result.publicSourcePreserved, false);
+    assert.equal(result.personalDraftBundleRemoved, true);
+    assert.equal(localStorage.getItem(`flow:saved:${flowSlug}`), null);
+    assert.equal(
+      (JSON.parse(localStorage.getItem('flow_builder_mvp_bundles_v11') || '[]') as FlowBundle[])
+        .some((bundle) => bundle.flow.slug === flowSlug),
+      false,
+    );
+    assert.equal(
+      (JSON.parse(localStorage.getItem('flow_builder_mvp_bundles_v11') || '[]') as FlowBundle[])
+        .some((bundle) => bundle.flow.slug === retainedBundle.flow.slug),
+      true,
+    );
+    assert.deepEqual(
+      JSON.parse(localStorage.getItem('flow:my-flow:lifecycle:v1') || '{}').archivedFlowSlugs,
+      [],
+    );
+    assert.equal(
+      localStorage.getItem(getPersonalStructuralOverlayStorageKey(flowSlug)),
+      null,
+    );
+    assert.equal(
+      localStorage.getItem(
+        `flow:projection-identity-migration:${encodeURIComponent(flowSlug)}`,
+      ),
+      null,
+    );
   } finally {
     Object.defineProperty(globalThis, 'window', {
       configurable: true,

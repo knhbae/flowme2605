@@ -2,7 +2,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { expect, test, type Page } from '@playwright/test';
-import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
+import {
+  getOpenMyFlowItemDetail,
+  openMyFlowLibraryFlow,
+} from './helpers/my-flow-library';
 
 const evidenceRoot = process.env.FLOWME_P29_EVIDENCE_DIR;
 
@@ -253,7 +256,10 @@ test.describe('P29-04 My Flow action-first library', () => {
     await firstOpen.focus();
     await page.keyboard.press('Enter');
     await expect(page.getByTestId('my-flow-mobile-library-back')).toBeVisible();
-    await expect(page.getByTestId('my-flow-overview-card')).toHaveAttribute('data-p29-marker', 'P29-MY-FLOW-ACTION-FIRST');
+    await expect(page.getByTestId('my-flow-mobile-workspace')).toHaveAttribute(
+      'data-p31-marker',
+      'P31-03-DEDICATED-MOBILE-WORKSPACE',
+    );
     await capture(page, 'p29-04-my-flow-detail-390.png');
     await expectNoHorizontalOverflow(page);
   });
@@ -417,7 +423,8 @@ test.describe('P29-06 artifact recommendation and export scope', () => {
     await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/my?demo=source-backed&view=flows');
-    const flow = await openMyFlowLibraryFlow(page, 'source-backed-moving-d30');
+    let flow = await openMyFlowLibraryFlow(page, 'source-backed-moving-d30', 'record');
+    await flow.getByTestId('my-flow-workspace-advanced-actions').locator('summary').click();
 
     const exportSurface = flow.getByTestId('my-flow-export-surface');
     await exportSurface.getByTestId('my-flow-export-entry').click();
@@ -432,9 +439,10 @@ test.describe('P29-06 artifact recommendation and export scope', () => {
     await expect(panel.getByTestId('flow-export-result-receipt')).toContainText('선택 항목');
     await expect(panel.getByTestId('flow-export-result-identity')).toContainText('이사');
 
+    flow = await openMyFlowLibraryFlow(page, 'source-backed-moving-d30', 'plan');
     const firstRow = flow.getByTestId('my-flow-execution-row-shell').first();
     await firstRow.getByRole('button', { name: /열기/ }).click();
-    const itemExport = firstRow.getByTestId('my-flow-detail-portable-export');
+    const itemExport = getOpenMyFlowItemDetail(page).getByTestId('my-flow-detail-portable-export');
     if (await itemExport.locator('summary').count()) await itemExport.locator('summary').click();
     await expect(itemExport.getByTestId('my-flow-detail-copy-portable-text')).toContainText('현재 항목');
     await itemExport.getByTestId('my-flow-detail-copy-portable-text').click();
@@ -504,7 +512,10 @@ test.describe('P29-07 shared visual and accessibility contract', () => {
     await expect(libraryRow.locator('[data-flow-identity-slot="title"]')).toHaveCount(1);
     await expect(libraryRow.locator('[data-flow-identity-slot="next-action"]')).toHaveCount(1);
     await libraryRow.getByTestId('my-flow-mobile-structure-open').click();
-    await expect(page.getByTestId('my-flow-overview-card')).toHaveAttribute('data-flow-anatomy', 'flow-detail');
+    await expect(page.getByTestId('my-flow-mobile-workspace')).toHaveAttribute(
+      'data-flow-anatomy',
+      'flow-detail',
+    );
 
     await page.goto('/calendar?demo=ux20');
     await expect(page.getByTestId('my-flow-calendar-workspace')).toHaveAttribute('data-flow-anatomy', 'calendar-workspace');

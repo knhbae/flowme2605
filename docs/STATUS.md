@@ -1,9 +1,9 @@
 # Project Status
 
-**Last Updated:** 2026-07-22 (P30 released)
-**Status:** v0.1.0 RELEASED / P30 PRODUCTION GREEN
+**Last Updated:** 2026-07-23 (P31 implementation gate)
+**Status:** v0.1.0 RELEASED / P30 PRODUCTION GREEN / P31 IMPLEMENTATION COMPLETE, RELEASE VERIFICATION ACTIVE
 **Current Version:** v0.1.0  
-**Primary Focus:** Review the released [P30 final package](./content-audit/2026-07-22-flowme-p30-final-review-package/README.md) and decide whether the next gate is owner/independent design review or a bounded P31 slice. P29 source/personal/run/occurrence/export contracts remain frozen. Observed-user sessions remain `0`; automated and production smoke evidence is not a usability claim.
+**Primary Focus:** Finish the release verification and publish path for the implemented [P31 mobile journey reconstruction](./specs/2026-07-23-p31-mobile-journey-reconstruction/README.md). P31 closes effective-date precedence, separates Home and Flow finding, adds content-shaped save-before flows, creates a dedicated mobile My Flow workspace, moves Calendar detail to a sheet, and makes archive/restore/permanent-delete behavior consistent. P30 source/personal/run/occurrence/export contracts remain frozen. Observed-user sessions remain `0`; automated, simulation, screenshot, and production smoke evidence are not usability claims.
 
 ## Current Control Panel
 
@@ -11,13 +11,15 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P30 production closeout complete; owner/independent review determines the next bounded product slice |
-| User action now | Review the P30 final package and production, then classify remaining UX as keep, revise, or defer |
-| AI action now | Preserve P30 production and prepare P31 only from current evidence; do not infer observed usability |
-| Blocked by evidence | Observed usability, account persistence choice, creator/update pilot, real AI backend, and external integrations |
-| Completed implementation | P30-00~08: PR #148, merge `b3c8500`, CI green, production smoke `13/13`, screenshots `17 + 13` |
+| Active product gate | P31 implementation is complete; full verification, publish, and canonical production smoke remain |
+| User action now | No external recruitment yet; review the P31 evidence package after production publish |
+| AI action now | Run docs/unit/build/full E2E/security checks, publish the bounded P31 changes, and record canonical smoke |
+| Blocked by evidence | Observed usability, real social proof/review data, account persistence choice, creator/update pilot, real AI backend, and external integrations |
+| Completed implementation | P31-01~05 app work and local 390/1024 evidence; P30-00~08 remains the current production baseline until P31 publish |
 
 ## Recent Direction Notes
+
+- 2026-07-23 P31 implementation: the owner explicitly approved completing P31 after the comparison/replan gate. Effective-date precedence now favors execution override over draft/personal/source values; Home and Find have separate roles; discovery cards expose real source and representative work without fake social proof; wedding and workout save-before flows use result-first content-shaped controls; mobile My Flow uses a compact library and dedicated workspace; Calendar Item detail uses a bottom sheet; and `보관 / 복구 / 이 기기에서 영구 삭제` now has mobile/wide parity and a tested delete boundary. The current 24-cell automated/heuristic rerun is supported `21`, partial `3`, blocked `0`, explanation-free `21/24`, average depth `4.79`, with screenshots `18`; observed users remain `0`. Final docs/unit/build/full E2E/security/publish smoke is the active gate. See [P31 implementation evidence](./content-audit/2026-07-23-p31-mobile-journey-reconstruction-evidence/README.md).
 
 - 2026-07-22 P30 production release: mobile export fixed-layer intersections are `0`; `/my` and `/calendar` focus order is header -> workspace -> persistent tabs; long-Flow adjustment is contextual; My Flow keeps one visible primary; Calendar has deterministic undated, 50+ scope, and compact identity evidence; routine settings are summary-first. Dead public composition code was removed while the live `/flow-maps` legacy consumer remains explicit. Local verification is unit `584 / 584`, P30 Playwright `12 / 12`, affected P28/P29 `20 / 20`, full Playwright `304 / 304`, build `18 / 18`. [PR #148](https://github.com/knhbae/flowme2605/pull/148) merged as `b3c8500`; deployment `5557201045` is live at <https://flowme2605.vercel.app>; canonical smoke is `13 / 13` with HTTP/navigation/assertion/overflow/unnamed-focusable/console-page-error failures `0`. Observed-user sessions remain `0`. See the [P30 final package](./content-audit/2026-07-22-flowme-p30-final-review-package/README.md).
 

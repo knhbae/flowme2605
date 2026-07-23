@@ -1,0 +1,189 @@
+{
+  "schemaVersion": 1,
+  "program": "P31 Mobile Journey Reconstruction",
+  "runDate": "2026-07-23",
+  "baselineSha": "91ff789637ad9d46f8d646f1f21bd18baa3bfb15",
+  "environment": {
+    "kind": "current_local_production_build",
+    "viewports": [
+      "390x844",
+      "1024x768"
+    ],
+    "observedUserCount": 0
+  },
+  "markers": {
+    "P31-HOME-FIND-ROLE-SEPARATION": true,
+    "P31-EFFECTIVE-DATE-PRECEDENCE": true,
+    "P31-03-DEDICATED-MOBILE-WORKSPACE": true,
+    "P31-03-FLOW-LIFECYCLE-GRAMMAR": true,
+    "P31-03-ARCHIVE-RESTORE-PARITY": true,
+    "P31-03-MOBILE-ARCHIVED-DIRECT-RESTORE": true,
+    "P31-04-CALENDAR-ITEM-SHEET": true,
+    "P31-05-PERMANENT-DELETE-CONTRACT": true
+  },
+  "metrics": {
+    "journeyCellCount": 24,
+    "journeySupportedCellCount": 21,
+    "journeyPartialCellCount": 3,
+    "journeyBlockedCellCount": 0,
+    "journeyExplanationFreeCellCount": 21,
+    "journeyExplanationDependentCellCount": 3,
+    "journeyTotalInteractionDepth": 115,
+    "journeyAverageInteractionDepth": 4.79,
+    "screenshotCount": 18,
+    "mobileHorizontalOverflowCount": 0,
+    "wideHorizontalOverflowCount": 0,
+    "fixedLayerOverlapCount": 0,
+    "consoleErrorCount": 0,
+    "pageErrorCount": 0,
+    "fakeSocialProofCount": 0,
+    "sourceMutationCount": 0,
+    "stableIdentityRegressionCount": 0,
+    "mobileArchivedDirectRestoreCount": 1,
+    "ghostArchivedRowAfterDeleteCount": 0
+  },
+  "routes": [
+    {
+      "route": "/",
+      "viewport": "390x844",
+      "state": "first_visit",
+      "evidenceKind": [
+        "current_command",
+        "current_package_screenshot"
+      ],
+      "screenshots": [
+        "screenshots/p31-home-first-390.png"
+      ],
+      "result": "home_usage_examples_visible_find_catalog_not_duplicated"
+    },
+    {
+      "route": "/flows",
+      "viewport": "390x844",
+      "state": "catalog",
+      "evidenceKind": [
+        "current_command",
+        "current_package_screenshot"
+      ],
+      "screenshots": [
+        "screenshots/p31-find-catalog-390.png"
+      ],
+      "result": "source_link_representative_items_more_action"
+    },
+    {
+      "route": "/f/curated-wedding-naver-timeline",
+      "viewport": "390x844",
+      "state": "save_before",
+      "evidenceKind": [
+        "current_command",
+        "current_package_screenshot"
+      ],
+      "screenshots": [
+        "screenshots/p31-wedding-save-before-390.png"
+      ],
+      "result": "single_artifact_choice_then_preview"
+    },
+    {
+      "route": "/f/curated-allblanc-morning-workout",
+      "viewport": "390x844",
+      "state": "routine_summary_and_settings",
+      "evidenceKind": [
+        "current_command",
+        "current_package_screenshot"
+      ],
+      "screenshots": [
+        "screenshots/p31-workout-summary-390.png",
+        "screenshots/p31-workout-settings-390.png"
+      ],
+      "result": "summary_first_progressive_schedule"
+    },
+    {
+      "route": "/my",
+      "viewport": "390x844",
+      "state": "library_and_workspace",
+      "evidenceKind": [
+        "current_command",
+        "current_package_screenshot"
+      ],
+      "screenshots": [
+        "screenshots/p31-my-flow-library-390.png",
+        "screenshots/p31-my-flow-workspace-demo-390.png"
+      ],
+      "result": "compact_library_dedicated_workspace"
+    },
+    {
+      "route": "/my",
+      "viewport": "390x844",
+      "state": "archived_and_permanent_delete",
+      "evidenceKind": [
+        "current_command",
+        "current_package_screenshot"
+      ],
+      "screenshots": [
+        "screenshots/p31-archived-restore-390.png",
+        "screenshots/p31-permanent-delete-390.png"
+      ],
+      "result": "direct_restore_and_guarded_delete"
+    },
+    {
+      "route": "/calendar",
+      "viewport": "390x844",
+      "state": "agenda_item_sheet_and_undated_tray",
+      "evidenceKind": [
+        "current_command",
+        "current_package_screenshot"
+      ],
+      "screenshots": [
+        "screenshots/p31-calendar-default-390.png",
+        "screenshots/p31-calendar-sheet-demo-390.png",
+        "screenshots/p31-calendar-undated-tray-390.png"
+      ],
+      "result": "calendar_detail_and_placement_modes_separated"
+    },
+    {
+      "route": "/my",
+      "viewport": "1024x768",
+      "state": "wide_library_workspace",
+      "evidenceKind": [
+        "current_command",
+        "current_package_screenshot"
+      ],
+      "screenshots": [
+        "screenshots/p31-my-flow-1024.png"
+      ],
+      "result": "rail_canvas_roles_preserved"
+    },
+    {
+      "route": "/calendar",
+      "viewport": "1024x768",
+      "state": "wide_calendar",
+      "evidenceKind": [
+        "current_command",
+        "current_package_screenshot"
+      ],
+      "screenshots": [
+        "screenshots/p31-calendar-1024.png"
+      ],
+      "result": "wide_inspector_behavior_preserved"
+    }
+  ],
+  "verification": {
+    "status": "local_release_gate_green_publish_pending",
+    "npmCi": "passed",
+    "unitPassed": 586,
+    "unitFailed": 0,
+    "p31TargetedE2ePassed": 5,
+    "p31TargetedE2eFailed": 0,
+    "fullE2ePassed": 310,
+    "fullE2eFailed": 0,
+    "fullE2eWorkers": 2,
+    "docsRequiredFileCount": 14,
+    "docsLocalLinkCount": 2938,
+    "buildRouteCount": 18,
+    "nextVersion": "15.5.21",
+    "securityCriticalCount": 0,
+    "securityHighCount": 0,
+    "securityModerateCount": 2,
+    "securityModerateException": "Next internal PostCSS advisory; audit force fix requires incompatible Next 9.3.3 downgrade.",
+    "automationIsObservedUserValidation": false
+  }
+}

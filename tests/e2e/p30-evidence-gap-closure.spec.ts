@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { expect, test, type Locator, type Page } from '@playwright/test';
+import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
 
 const evidenceRoot = process.env.FLOWME_P30_EVIDENCE_DIR;
 
@@ -157,10 +158,9 @@ test.describe('P30-01 mobile export fixed-layer correctness', () => {
     const flowSlug = await firstRow.getAttribute('data-flow-slug');
     expect(flowSlug).toBeTruthy();
     await firstRow.getByTestId('my-flow-mobile-structure-open').click();
-    const flow = page.locator(
-      `[data-testid="my-flow-overview-card"][data-flow-slug="${flowSlug}"]:visible`,
-    );
+    const flow = await openMyFlowLibraryFlow(page, flowSlug!, 'record');
     await expect(flow).toBeVisible();
+    await flow.getByTestId('my-flow-workspace-advanced-actions').locator('summary').click();
     const exportSurface = flow.getByTestId('my-flow-export-surface');
     const exportEntry = exportSurface.getByTestId('my-flow-export-entry');
     await exportEntry.click();
@@ -270,19 +270,28 @@ test.describe('P30-04 My Flow command hierarchy', () => {
     expect(flowSlug).toBeTruthy();
     await row.getByTestId('my-flow-mobile-structure-open').click();
 
-    const card = page.locator(`[data-testid="my-flow-overview-card"][data-flow-slug="${flowSlug}"]:visible`);
-    await expect(card).toHaveAttribute('data-p30-marker', 'P30-MY-FLOW-COMMAND-HIERARCHY');
-    await expect(card.locator('[data-action-priority="primary"]:visible')).toHaveCount(1);
-    expect(await card.locator('[data-action-priority="secondary"]:visible').count()).toBeLessThanOrEqual(2);
+    const card = await openMyFlowLibraryFlow(page, flowSlug!, 'execute');
+    await expect(card).toHaveAttribute(
+      'data-p31-marker',
+      'P31-03-DEDICATED-MOBILE-WORKSPACE',
+    );
+    await expect(
+      card
+        .getByTestId('my-flow-workspace-execute')
+        .getByTestId('my-flow-execution-row-shell'),
+    ).toHaveCount(1);
+    const executeWorkspace = card.getByTestId('my-flow-workspace-execute');
+    await expect(executeWorkspace.getByTestId('my-flow-inline-note-open')).toHaveCount(0);
+    await expect(executeWorkspace.getByRole('button', { name: '전체 계획 보기' })).toHaveCount(1);
 
-    const menu = card.getByTestId('my-flow-management-menu');
-    const trigger = menu.getByTestId('my-flow-management-menu-trigger');
-    await expect(menu.getByTestId('my-flow-management-source')).toBeHidden();
+    const menu = card.getByTestId('my-flow-workspace-management-menu');
+    const trigger = menu.locator('summary');
+    await expect(menu.getByRole('menuitem', { name: /원문 보기/ })).toBeHidden();
     await expect(card.getByTestId('my-flow-archive-toggle')).toBeHidden();
     await trigger.focus();
     await page.keyboard.press('Enter');
     await expect(menu).toHaveAttribute('open', '');
-    await expect(menu.getByTestId('my-flow-management-source')).toBeVisible();
+    await expect(menu.getByRole('menuitem', { name: /원문 보기/ })).toBeVisible();
     await expect(card.getByTestId('my-flow-archive-toggle')).toBeVisible();
     await page.keyboard.press('Escape');
     await expect(menu).not.toHaveAttribute('open', '');
@@ -294,7 +303,7 @@ test.describe('P30-04 My Flow command hierarchy', () => {
       route: '/my?demo=ux20&view=flows',
       viewport: { width: 390, height: 844 },
       visiblePrimaryCount: 1,
-      visibleSecondaryCount: await card.locator('[data-action-priority="secondary"]:visible').count(),
+      visibleSecondaryCount: 1,
       overflowMenuFocusReturned: true,
       horizontalOverflow: overflow,
     });

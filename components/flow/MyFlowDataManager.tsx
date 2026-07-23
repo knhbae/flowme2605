@@ -9,6 +9,7 @@ import {
   restoreFlowMeLocalBackup,
   serializeFlowMeLocalBackup,
   type FlowMeLocalBackup,
+  type FlowMeStorageLike,
 } from '@/lib/flow/local-data-backup';
 
 const RESTORED_SESSION_KEY = 'flowme:local-backup:restored';
@@ -23,6 +24,14 @@ function downloadBackupFile(backup: FlowMeLocalBackup): void {
   anchor.click();
   anchor.remove();
   URL.revokeObjectURL(url);
+}
+
+export function downloadCurrentFlowMeLocalBackup(
+  storage: FlowMeStorageLike,
+): FlowMeLocalBackup {
+  const backup = buildFlowMeLocalBackup(storage);
+  downloadBackupFile(backup);
+  return backup;
 }
 
 function getBackupErrorMessage(error: unknown): string {
@@ -83,8 +92,7 @@ export function MyFlowDataManager() {
   }
 
   function downloadBackup(): void {
-    const backup = buildFlowMeLocalBackup(window.localStorage);
-    downloadBackupFile(backup);
+    downloadCurrentFlowMeLocalBackup(window.localStorage);
     setFeedback('백업 파일을 만들었습니다.');
   }
 

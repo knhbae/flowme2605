@@ -267,6 +267,7 @@ export function FlowEditorShell({
 export function FlowBottomSheet({
   testId,
   headingId,
+  marker,
   eyebrow,
   title,
   onClose,
@@ -275,6 +276,7 @@ export function FlowBottomSheet({
 }: {
   testId: string;
   headingId: string;
+  marker?: string;
   eyebrow?: string;
   title: string;
   onClose: () => void;
@@ -283,14 +285,27 @@ export function FlowBottomSheet({
 }) {
   const dialogRef = useRef<HTMLElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const onCloseRef = useRef(onClose);
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
 
   useEffect(() => {
     const returnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     const frame = window.requestAnimationFrame(() => closeButtonRef.current?.focus({ preventScroll: true }));
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      event.preventDefault();
+      event.stopPropagation();
+      onCloseRef.current();
+    };
+    document.addEventListener('keydown', closeOnEscape, true);
     return () => {
       window.cancelAnimationFrame(frame);
+      document.removeEventListener('keydown', closeOnEscape, true);
       document.body.style.overflow = previousOverflow;
       returnFocus?.focus({ preventScroll: true });
     };
@@ -333,6 +348,7 @@ export function FlowBottomSheet({
         aria-modal="true"
         aria-labelledby={headingId}
         data-testid={testId}
+        data-p31-marker={marker}
         data-flow-ui="bottom-sheet"
         data-layer-priority="dialog"
         className={`${FLOW_UI_SHEET_CLASS} ${className}`}
@@ -347,6 +363,7 @@ export function FlowBottomSheet({
           <button
             ref={closeButtonRef}
             type="button"
+            data-testid={`${testId}-close`}
             className={`${FLOW_UI_SECONDARY_ACTION_CLASS} shrink-0`}
             onClick={onClose}
           >
