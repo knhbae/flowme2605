@@ -1,0 +1,2725 @@
+{
+  "generatedAt": "2026-07-22T15:00:00+09:00",
+  "rows": [
+    {
+      "candidateId": "INT-C05",
+      "title": "어린이집 보육료 지원 신청",
+      "evidenceLane": "official_high_intent",
+      "computedTotal": 90,
+      "qualified": true,
+      "hardGates": {
+        "source": "pass",
+        "rights": "pass_personal_link_based_public_separate",
+        "locale": "pass",
+        "safety": "pass_with_declared_boundary",
+        "oneJob": "pass",
+        "naturalArtifact": "pass"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 18,
+          "max": 20,
+          "comment": "대상 보호자에게 지원 시작월과 서비스 전환을 놓치지 않아야 하는 공식 신청 수요가 있다.",
+          "evidenceRefs": [
+            "INT-C05-E1"
+          ]
+        },
+        "interaction": {
+          "points": 17,
+          "max": 20,
+          "comment": "댓글 수치 대신 신청 누락·서비스 변경 시 지원 공백이라는 공식 고의도 신호를 사용한다.",
+          "evidenceRefs": [
+            "INT-C05-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 14,
+          "max": 15,
+          "comment": "신청 조건 확인, 온라인·주민센터 신청, 결과와 지원 시작월 확인 행이 확보됐다.",
+          "evidenceRefs": [
+            "INT-C05-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 17,
+          "max": 20,
+          "comment": "공식 신청 경로와 결과 확인으로 되돌리는 trust anchor가 있다.",
+          "evidenceRefs": [
+            "INT-C05-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 20,
+          "max": 20,
+          "comment": "신청 전후 상태와 지원 시작월을 Todo로 유지해 링크만 저장하는 것보다 낫다.",
+          "evidenceRefs": [
+            "INT-C05-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 4,
+          "max": 5,
+          "comment": "가족 행정의 조건형 짧은 Todo를 대표한다.",
+          "evidenceRefs": [
+            "INT-C05-E6"
+          ]
+        }
+      },
+      "selection": "selected_calibration",
+      "selectionReason": "80점 이상·hard gate 통과 후 source/user moment 구성을 중복 없이 대표",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "INT-O02",
+      "title": "자동차검사 D-14",
+      "evidenceLane": "official_high_intent",
+      "computedTotal": 98,
+      "qualified": true,
+      "hardGates": {
+        "source": "pass",
+        "rights": "pass_personal_link_based_public_separate",
+        "locale": "pass",
+        "safety": "pass_with_declared_boundary",
+        "oneJob": "pass",
+        "naturalArtifact": "pass"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 20,
+          "max": 20,
+          "comment": "정기검사는 법정 반복 의무이며 미수검 과태료가 최대 60만원으로 안내된다.",
+          "evidenceRefs": [
+            "INT-O02-E1"
+          ]
+        },
+        "interaction": {
+          "points": 20,
+          "max": 20,
+          "comment": "댓글 대신 검사기간·재검사 10일·과태료라는 반복 손실 신호를 사용한다.",
+          "evidenceRefs": [
+            "INT-O02-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 15,
+          "max": 15,
+          "comment": "검사대상, 공식 기간 확인, 검사소·예약, 검사결과·재검사 행을 확보했다.",
+          "evidenceRefs": [
+            "INT-O02-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 19,
+          "max": 20,
+          "comment": "사이버검사소 예약과 검사기간 안내 서비스로 직접 연결된다.",
+          "evidenceRefs": [
+            "INT-O02-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 20,
+          "max": 20,
+          "comment": "차량별 확인일·방문일·결과 상태를 유지하며 확정일만 Calendar로 보낸다.",
+          "evidenceRefs": [
+            "INT-O02-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 4,
+          "max": 5,
+          "comment": "주기적 법정 관리의 기준 사례다.",
+          "evidenceRefs": [
+            "INT-O02-E6"
+          ]
+        }
+      },
+      "selection": "selected_calibration",
+      "selectionReason": "80점 이상·hard gate 통과 후 source/user moment 구성을 중복 없이 대표",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "INT-C06",
+      "title": "평일 5일 저녁 식단",
+      "evidenceLane": "creator_community",
+      "computedTotal": 87,
+      "qualified": true,
+      "hardGates": {
+        "source": "pass",
+        "rights": "pass_personal_link_based_public_separate",
+        "locale": "pass",
+        "safety": "pass_with_declared_boundary",
+        "oneJob": "pass",
+        "naturalArtifact": "pass"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 15,
+          "max": 20,
+          "comment": "현재 페이지에서 조회 9,412가 직접 보인다.",
+          "evidenceRefs": [
+            "INT-C06-E1"
+          ]
+        },
+        "interaction": {
+          "points": 16,
+          "max": 20,
+          "comment": "스크랩 607·좋아요 118·댓글 13이 직접 보인다.",
+          "evidenceRefs": [
+            "INT-C06-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 15,
+          "max": 15,
+          "comment": "월~금 메뉴와 각 재료·조리 단계가 원문에 완전하게 있다.",
+          "evidenceRefs": [
+            "INT-C06-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 18,
+          "max": 20,
+          "comment": "제작자 원문과 주간 식단표 시리즈로 되돌리는 source-link·fork 경로가 있다.",
+          "evidenceRefs": [
+            "INT-C06-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 19,
+          "max": 20,
+          "comment": "선택 메뉴, 장보기, 요일별 실행 상태를 한 주 동안 유지한다.",
+          "evidenceRefs": [
+            "INT-C06-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 4,
+          "max": 5,
+          "comment": "제작자형 주간 Calendar와 실제 메뉴 행을 대표한다.",
+          "evidenceRefs": [
+            "INT-C06-E6"
+          ]
+        }
+      },
+      "selection": "selected_calibration",
+      "selectionReason": "80점 이상·hard gate 통과 후 source/user moment 구성을 중복 없이 대표",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "INT-C14",
+      "title": "옷장 정리 1일",
+      "evidenceLane": "creator_community",
+      "computedTotal": 87,
+      "qualified": true,
+      "hardGates": {
+        "source": "pass",
+        "rights": "pass_personal_link_based_public_separate",
+        "locale": "pass",
+        "safety": "pass_with_declared_boundary",
+        "oneJob": "pass",
+        "naturalArtifact": "pass"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 16,
+          "max": 20,
+          "comment": "현재 페이지에서 조회 29,854가 직접 보인다.",
+          "evidenceRefs": [
+            "INT-C14-E1"
+          ]
+        },
+        "interaction": {
+          "points": 16,
+          "max": 20,
+          "comment": "스크랩 746·좋아요 152·댓글 28이 직접 보인다.",
+          "evidenceRefs": [
+            "INT-C14-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 15,
+          "max": 15,
+          "comment": "비움 기준, 분류 준비, 남김·유예·처분, 복귀, 처리 행이 확보됐다.",
+          "evidenceRefs": [
+            "INT-C14-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 18,
+          "max": 20,
+          "comment": "제작자 원문·SNS로 돌아가고 사용자 공간별로 개인 실행본을 만들 수 있다.",
+          "evidenceRefs": [
+            "INT-C14-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 18,
+          "max": 20,
+          "comment": "남김·유예·처분 결정과 후속 처리 상태를 한 세션 뒤에도 남긴다.",
+          "evidenceRefs": [
+            "INT-C14-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 4,
+          "max": 5,
+          "comment": "날짜 없는 한 세션 결정 Checklist를 대표한다.",
+          "evidenceRefs": [
+            "INT-C14-E6"
+          ]
+        }
+      },
+      "selection": "selected_calibration",
+      "selectionReason": "80점 이상·hard gate 통과 후 source/user moment 구성을 중복 없이 대표",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "INT-KOCW",
+      "title": "코드 없이 따라하는 빅데이터 분석",
+      "evidenceLane": "official_high_intent",
+      "computedTotal": 86,
+      "qualified": true,
+      "hardGates": {
+        "source": "pass",
+        "rights": "pass_personal_link_based_public_separate",
+        "locale": "pass",
+        "safety": "pass_with_declared_boundary",
+        "oneJob": "pass",
+        "naturalArtifact": "pass"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 17,
+          "max": 20,
+          "comment": "KOCW 페이지에 조회 30,854가 표시된다.",
+          "evidenceRefs": [
+            "INT-KOCW-E1"
+          ]
+        },
+        "interaction": {
+          "points": 14,
+          "max": 20,
+          "comment": "강의담기·수강신청·차시 URL이라는 실제 학습 재방문 경로가 있다.",
+          "evidenceRefs": [
+            "INT-KOCW-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 15,
+          "max": 15,
+          "comment": "차시 제목·설명·링크와 형성평가 행이 공개돼 있다.",
+          "evidenceRefs": [
+            "INT-KOCW-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 17,
+          "max": 20,
+          "comment": "각 차시 원강의 유입과 수강확인 경로가 보존된다.",
+          "evidenceRefs": [
+            "INT-KOCW-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 19,
+          "max": 20,
+          "comment": "현재 차시, 완료, 막힌 점을 Sheet에 남겨 다시 시작할 수 있다.",
+          "evidenceRefs": [
+            "INT-KOCW-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 4,
+          "max": 5,
+          "comment": "한국어 공개강의의 차시 진도표를 대표한다.",
+          "evidenceRefs": [
+            "INT-KOCW-E6"
+          ]
+        }
+      },
+      "selection": "selected_calibration",
+      "selectionReason": "80점 이상·hard gate 통과 후 source/user moment 구성을 중복 없이 대표",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "INT-KCA",
+      "title": "식물성 음료 품질비교",
+      "evidenceLane": "official_high_intent",
+      "computedTotal": 83,
+      "qualified": true,
+      "hardGates": {
+        "source": "pass",
+        "rights": "pass_personal_link_based_public_separate",
+        "locale": "pass",
+        "safety": "pass_with_declared_boundary",
+        "oneJob": "pass",
+        "naturalArtifact": "pass"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 15,
+          "max": 20,
+          "comment": "보도자료 조회 약 3천, 관련 카드뉴스 조회가 별도로 확인된다.",
+          "evidenceRefs": [
+            "INT-KCA-E1"
+          ]
+        },
+        "interaction": {
+          "points": 14,
+          "max": 20,
+          "comment": "11개 제품을 시험하고 가격 최대 2.6배 차이·표시 개선 필요를 공개한 선택 고의도 신호다.",
+          "evidenceRefs": [
+            "INT-KCA-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 15,
+          "max": 15,
+          "comment": "원재료 유형, 영양, 당류·나트륨, 표시, 안전, 가격 비교 행이 있다.",
+          "evidenceRefs": [
+            "INT-KCA-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 17,
+          "max": 20,
+          "comment": "공공누리 제1유형과 소비자24 원자료로 연결되는 trust path가 있다.",
+          "evidenceRefs": [
+            "INT-KCA-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 18,
+          "max": 20,
+          "comment": "내 우선 기준과 후보별 유지·보류·제외 이유를 비교 Sheet에 남긴다.",
+          "evidenceRefs": [
+            "INT-KCA-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 4,
+          "max": 5,
+          "comment": "공식 제품 비교·결정 상태를 대표한다.",
+          "evidenceRefs": [
+            "INT-KCA-E6"
+          ]
+        }
+      },
+      "selection": "selected_calibration",
+      "selectionReason": "80점 이상·hard gate 통과 후 source/user moment 구성을 중복 없이 대표",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "INT-OSSU",
+      "title": "OSSU Computer Science 시작 구간",
+      "evidenceLane": "operator_template",
+      "computedTotal": 98,
+      "qualified": true,
+      "hardGates": {
+        "source": "pass",
+        "rights": "pass_personal_link_based_public_separate",
+        "locale": "pass",
+        "safety": "pass_with_declared_boundary",
+        "oneJob": "pass",
+        "naturalArtifact": "pass"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 20,
+          "max": 20,
+          "comment": "GitHub 약 207K stars·25.7K forks가 내부 관찰 기록에 있다.",
+          "evidenceRefs": [
+            "INT-OSSU-E1"
+          ]
+        },
+        "interaction": {
+          "points": 19,
+          "max": 20,
+          "comment": "stars·forks·issues와 curriculum 기여 이력이 실제 재사용 신호다.",
+          "evidenceRefs": [
+            "INT-OSSU-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 15,
+          "max": 15,
+          "comment": "과정명, 기간, 주당 시간, 선수조건이 있는 시작 구간 6행을 확보했다.",
+          "evidenceRefs": [
+            "INT-OSSU-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 20,
+          "max": 20,
+          "comment": "오픈 라이선스·원 repo·issue·fork의 수정 루프가 있다.",
+          "evidenceRefs": [
+            "INT-OSSU-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 20,
+          "max": 20,
+          "comment": "선수조건과 장기 과정 상태를 개인 Sheet에서 관리하고 원 repo로 돌아간다.",
+          "evidenceRefs": [
+            "INT-OSSU-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 4,
+          "max": 5,
+          "comment": "단일 강의가 아닌 장기 curriculum lifecycle을 검증한다.",
+          "evidenceRefs": [
+            "INT-OSSU-E6"
+          ]
+        }
+      },
+      "selection": "selected_calibration",
+      "selectionReason": "80점 이상·hard gate 통과 후 source/user moment 구성을 중복 없이 대표",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "INT-WIKIVOYAGE",
+      "title": "Wikivoyage 휴대 수하물·입국서류 준비",
+      "evidenceLane": "creator_community",
+      "computedTotal": 81,
+      "qualified": true,
+      "hardGates": {
+        "source": "pass",
+        "rights": "pass_personal_link_based_public_separate",
+        "locale": "pass",
+        "safety": "pass_with_declared_boundary",
+        "oneJob": "pass",
+        "naturalArtifact": "pass"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 13,
+          "max": 20,
+          "comment": "2025-07~2026-06 사용자 페이지뷰 6,447이 내부 관찰 기록에 있다.",
+          "evidenceRefs": [
+            "INT-WIKIVOYAGE-E1"
+          ]
+        },
+        "interaction": {
+          "points": 12,
+          "max": 20,
+          "comment": "편집·토론·버전 이력과 여행별 반복 복사 경로가 있다.",
+          "evidenceRefs": [
+            "INT-WIKIVOYAGE-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 15,
+          "max": 15,
+          "comment": "휴대 수하물 필수품과 입국 문서 7개 bounded 행을 선택했다.",
+          "evidenceRefs": [
+            "INT-WIKIVOYAGE-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 16,
+          "max": 20,
+          "comment": "CC BY-SA attribution과 원문 개선 루프가 있다.",
+          "evidenceRefs": [
+            "INT-WIKIVOYAGE-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 20,
+          "max": 20,
+          "comment": "여행별 담당·준비·보류 상태를 남기고 목적지 규칙은 공식 출처로 재확인한다.",
+          "evidenceRefs": [
+            "INT-WIKIVOYAGE-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 5,
+          "max": 5,
+          "comment": "여행 준비의 조건형 Checklist를 보강한다.",
+          "evidenceRefs": [
+            "INT-WIKIVOYAGE-E6"
+          ]
+        }
+      },
+      "selection": "selected_calibration",
+      "selectionReason": "80점 이상·hard gate 통과 후 source/user moment 구성을 중복 없이 대표",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "NEW-WEB1",
+      "title": "생활코딩 WEB1",
+      "evidenceLane": "creator_community",
+      "computedTotal": 100,
+      "qualified": true,
+      "hardGates": {
+        "source": "pass",
+        "rights": "pass_personal_link_based_public_separate",
+        "locale": "pass",
+        "safety": "pass_with_declared_boundary",
+        "oneJob": "pass",
+        "naturalArtifact": "pass"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 20,
+          "max": 20,
+          "comment": "공동공부 9,199명이 페이지에 표시된다.",
+          "evidenceRefs": [
+            "NEW-WEB1-E1"
+          ]
+        },
+        "interaction": {
+          "points": 20,
+          "max": 20,
+          "comment": "4일·20일·1개월 전에도 start/restart 댓글이 이어지고 질문·답변이 보인다.",
+          "evidenceRefs": [
+            "NEW-WEB1-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 15,
+          "max": 15,
+          "comment": "프로젝트 동기부터 웹서버·부록까지 26개 토픽, 30개 영상·약 4시간이 공개돼 있다.",
+          "evidenceRefs": [
+            "NEW-WEB1-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 20,
+          "max": 20,
+          "comment": "공공재 저작권 정책, 후원·책·원강의 링크와 공동공부 루프가 있다.",
+          "evidenceRefs": [
+            "NEW-WEB1-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 20,
+          "max": 20,
+          "comment": "26행 완료·현재 위치·메모를 유지하고 선택 시에만 학습일을 붙인다.",
+          "evidenceRefs": [
+            "NEW-WEB1-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 5,
+          "max": 5,
+          "comment": "한국 제작자 공개교육의 강한 진도 사례다.",
+          "evidenceRefs": [
+            "NEW-WEB1-E6"
+          ]
+        }
+      },
+      "selection": "selected_final_holdout",
+      "selectionReason": "80점 이상·hard gate 통과 후 source/user moment 구성을 중복 없이 대표",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "NEW-OHOUSE-DEFECT",
+      "title": "리모델링 공정별 하자 점검",
+      "evidenceLane": "creator_community",
+      "computedTotal": 98,
+      "qualified": true,
+      "hardGates": {
+        "source": "pass",
+        "rights": "pass_personal_link_based_public_separate",
+        "locale": "pass",
+        "safety": "pass_with_declared_boundary",
+        "oneJob": "pass",
+        "naturalArtifact": "pass"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 19,
+          "max": 20,
+          "comment": "조회 111,575가 현재 페이지에 표시된다.",
+          "evidenceRefs": [
+            "NEW-OHOUSE-DEFECT-E1"
+          ]
+        },
+        "interaction": {
+          "points": 19,
+          "max": 20,
+          "comment": "스크랩 4,249·좋아요 1,019·댓글 30이 표시된다.",
+          "evidenceRefs": [
+            "NEW-OHOUSE-DEFECT-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 15,
+          "max": 15,
+          "comment": "설비·새시·목공·중문·타일·욕실·필름·페인트·바닥·도배·주방·조명 12행과 사진→보수→재촬영 규칙이 있다.",
+          "evidenceRefs": [
+            "NEW-OHOUSE-DEFECT-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 20,
+          "max": 20,
+          "comment": "다운로드 양식, 인테리어 업체 찾기, 원문으로 이어지는 명확한 serving path가 있다.",
+          "evidenceRefs": [
+            "NEW-OHOUSE-DEFECT-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 20,
+          "max": 20,
+          "comment": "공정·공간별 발견, 사진, 보수 요청, 재점검 상태를 현장 인계용 Sheet에 남긴다.",
+          "evidenceRefs": [
+            "NEW-OHOUSE-DEFECT-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 5,
+          "max": 5,
+          "comment": "실제 제작자 template과 상태·증거 필드를 검증한다.",
+          "evidenceRefs": [
+            "NEW-OHOUSE-DEFECT-E6"
+          ]
+        }
+      },
+      "selection": "selected_final_holdout",
+      "selectionReason": "80점 이상·hard gate 통과 후 source/user moment 구성을 중복 없이 대표",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "NEW-KOSAF-WORK",
+      "title": "2026년 2학기 국가근로장학금 신청",
+      "evidenceLane": "official_high_intent",
+      "computedTotal": 98,
+      "qualified": true,
+      "hardGates": {
+        "source": "pass",
+        "rights": "pass_personal_link_based_public_separate",
+        "locale": "pass",
+        "safety": "pass_with_declared_boundary",
+        "oneJob": "pass",
+        "naturalArtifact": "pass"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 19,
+          "max": 20,
+          "comment": "공식 장학 신청과 2학기 사업기간이 현재 페이지에 공개돼 있다.",
+          "evidenceRefs": [
+            "NEW-KOSAF-WORK-E1"
+          ]
+        },
+        "interaction": {
+          "points": 20,
+          "max": 20,
+          "comment": "신청창을 놓치면 해당 통합신청이 불가능하고 학교별 운영 확인이 필요한 고의도 신호다.",
+          "evidenceRefs": [
+            "NEW-KOSAF-WORK-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 15,
+          "max": 15,
+          "comment": "8/12~9/9 신청, 9/16 서류·가구원 동의, 신청 1~3일 뒤 제출대상 확인 행이 있다.",
+          "evidenceRefs": [
+            "NEW-KOSAF-WORK-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 19,
+          "max": 20,
+          "comment": "공식 신청·서류현황·출근부 서비스로 직접 연결된다.",
+          "evidenceRefs": [
+            "NEW-KOSAF-WORK-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 20,
+          "max": 20,
+          "comment": "두 날짜창과 조건형 후속 확인을 Calendar+Checklist로 유지하되 민감서류는 저장하지 않는다.",
+          "evidenceRefs": [
+            "NEW-KOSAF-WORK-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 5,
+          "max": 5,
+          "comment": "향후 날짜창이 살아 있는 학자금 행정 lifecycle을 보강한다.",
+          "evidenceRefs": [
+            "NEW-KOSAF-WORK-E6"
+          ]
+        }
+      },
+      "selection": "selected_final_holdout",
+      "selectionReason": "80점 이상·hard gate 통과 후 source/user moment 구성을 중복 없이 대표",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "NEW-INCHEON-PET",
+      "title": "반려동물 가족 재난 대응 준비",
+      "evidenceLane": "official_high_intent",
+      "computedTotal": 97,
+      "qualified": true,
+      "hardGates": {
+        "source": "pass",
+        "rights": "pass_personal_link_based_public_separate",
+        "locale": "pass",
+        "safety": "pass_with_declared_boundary",
+        "oneJob": "pass",
+        "naturalArtifact": "pass"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 18,
+          "max": 20,
+          "comment": "직접 연 페이지의 조회 26,763과 재난·안전 목적이 확인된다.",
+          "evidenceRefs": [
+            "NEW-INCHEON-PET-E1"
+          ]
+        },
+        "interaction": {
+          "points": 20,
+          "max": 20,
+          "comment": "보호자와 동물 모두의 대피 지연 위험이라는 공식 손실·준비 고의도 신호다.",
+          "evidenceRefs": [
+            "NEW-INCHEON-PET-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 15,
+          "max": 15,
+          "comment": "대피 계획, 이동장·재난키트, 연락처, 실제 대피 훈련 행을 PDF에서 확보했다.",
+          "evidenceRefs": [
+            "NEW-INCHEON-PET-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 19,
+          "max": 20,
+          "comment": "공공누리 출처표시 자유이용과 공식 재난안전 source path가 있다.",
+          "evidenceRefs": [
+            "NEW-INCHEON-PET-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 20,
+          "max": 20,
+          "comment": "준비물 보유·보충, 대피경로·연락처, 훈련 완료 상태를 유지한다.",
+          "evidenceRefs": [
+            "NEW-INCHEON-PET-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 5,
+          "max": 5,
+          "comment": "반려동물·재난·인계가 만나는 새 user moment다.",
+          "evidenceRefs": [
+            "NEW-INCHEON-PET-E6"
+          ]
+        }
+      },
+      "selection": "selected_final_holdout",
+      "selectionReason": "80점 이상·hard gate 통과 후 source/user moment 구성을 중복 없이 대표",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "INT-OHOUSE-STORAGE",
+      "title": "수납 팁 5",
+      "evidenceLane": "creator_community",
+      "computedTotal": 85,
+      "qualified": false,
+      "hardGates": {
+        "source": "pass",
+        "rights": "pass_personal_link_based_public_separate",
+        "locale": "pass",
+        "safety": "pass_with_declared_boundary",
+        "oneJob": "fail_multiple_independent_jobs",
+        "naturalArtifact": "pass"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 20,
+          "max": 20,
+          "comment": "조회 683,506이 기록됐다.",
+          "evidenceRefs": [
+            "INT-OHOUSE-STORAGE-E1"
+          ]
+        },
+        "interaction": {
+          "points": 20,
+          "max": 20,
+          "comment": "스크랩 53,116·좋아요 12,983·댓글 398이 기록됐다.",
+          "evidenceRefs": [
+            "INT-OHOUSE-STORAGE-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 10,
+          "max": 15,
+          "comment": "실제 5개 행은 있으나 서로 독립적인 mini Flow다.",
+          "evidenceRefs": [
+            "INT-OHOUSE-STORAGE-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 18,
+          "max": 20,
+          "comment": "강한 source-link·저장·제작자 유입 가설이 있다.",
+          "evidenceRefs": [
+            "INT-OHOUSE-STORAGE-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 14,
+          "max": 20,
+          "comment": "하나를 고르면 child Checklist가 되지만 전체를 납작하게 만들면 가치가 훼손된다.",
+          "evidenceRefs": [
+            "INT-OHOUSE-STORAGE-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 3,
+          "max": 5,
+          "comment": "home mini-flow split gate를 시험한다.",
+          "evidenceRefs": [
+            "INT-OHOUSE-STORAGE-E6"
+          ]
+        }
+      },
+      "selection": "rejected",
+      "selectionReason": "하나의 원문에 독립 사용자 일이 5개라 positive one-job gate 실패",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "INT-OHOUSE-CONTRACT",
+      "title": "리모델링 계약서 체크리스트 10",
+      "evidenceLane": "creator_community",
+      "computedTotal": 95,
+      "qualified": false,
+      "hardGates": {
+        "source": "pass",
+        "rights": "pass_personal_link_based_public_separate",
+        "locale": "pass",
+        "safety": "fail_legal_review_not_completed",
+        "oneJob": "pass",
+        "naturalArtifact": "pass"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 20,
+          "max": 20,
+          "comment": "조회 253,412가 기록됐다.",
+          "evidenceRefs": [
+            "INT-OHOUSE-CONTRACT-E1"
+          ]
+        },
+        "interaction": {
+          "points": 20,
+          "max": 20,
+          "comment": "스크랩 8,028·좋아요 2,426·댓글 124가 기록됐다.",
+          "evidenceRefs": [
+            "INT-OHOUSE-CONTRACT-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 15,
+          "max": 15,
+          "comment": "계약서 확인 10행이 실제 존재한다.",
+          "evidenceRefs": [
+            "INT-OHOUSE-CONTRACT-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 18,
+          "max": 20,
+          "comment": "원문 유입과 업체 상담 path가 있다.",
+          "evidenceRefs": [
+            "INT-OHOUSE-CONTRACT-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 19,
+          "max": 20,
+          "comment": "계약서 위치·질문·보류 상태를 Sheet에 남길 수 있다.",
+          "evidenceRefs": [
+            "INT-OHOUSE-CONTRACT-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 3,
+          "max": 5,
+          "comment": "법률·최신성 review gate를 시험한다.",
+          "evidenceRefs": [
+            "INT-OHOUSE-CONTRACT-E6"
+          ]
+        }
+      },
+      "selection": "rejected",
+      "selectionReason": "법률·최신 표준계약 재검토 전 positive 불가",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "INT-MAILY-GATED",
+      "title": "자동화 시스템 뉴스레터",
+      "evidenceLane": "creator_community",
+      "computedTotal": 36,
+      "qualified": false,
+      "hardGates": {
+        "source": "fail_source_import_required",
+        "rights": "pass_personal_link_based_public_separate",
+        "locale": "pass",
+        "safety": "pass_with_declared_boundary",
+        "oneJob": "pass",
+        "naturalArtifact": "fail_no_rows"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 12,
+          "max": 20,
+          "comment": "페이지에 2.25K views가 기록됐다.",
+          "evidenceRefs": [
+            "INT-MAILY-GATED-E1"
+          ]
+        },
+        "interaction": {
+          "points": 8,
+          "max": 20,
+          "comment": "구독 유도는 보이지만 실제 행 반응은 구독 구간 뒤다.",
+          "evidenceRefs": [
+            "INT-MAILY-GATED-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 0,
+          "max": 15,
+          "comment": "실행행 전체가 subscriber gate 뒤라 source row가 불완전하다.",
+          "evidenceRefs": [
+            "INT-MAILY-GATED-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 14,
+          "max": 20,
+          "comment": "newsletter 구독 경로는 있다.",
+          "evidenceRefs": [
+            "INT-MAILY-GATED-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 0,
+          "max": 20,
+          "comment": "실제 행 없이는 상태를 만들 수 없다.",
+          "evidenceRefs": [
+            "INT-MAILY-GATED-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 2,
+          "max": 5,
+          "comment": "로그인·구독 경계 통제다.",
+          "evidenceRefs": [
+            "INT-MAILY-GATED-E6"
+          ]
+        }
+      },
+      "selection": "rejected",
+      "selectionReason": "source_import_required",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "INT-MAILY-CLEAN",
+      "title": "여러분의 청소 생활, 안녕한가요?",
+      "evidenceLane": "creator_community",
+      "computedTotal": 41,
+      "qualified": false,
+      "hardGates": {
+        "source": "fail_unbounded_advice",
+        "rights": "pass_personal_link_based_public_separate",
+        "locale": "pass",
+        "safety": "pass_with_declared_boundary",
+        "oneJob": "fail_no_single_job",
+        "naturalArtifact": "fail"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 12,
+          "max": 20,
+          "comment": "3.7K views가 기록됐다.",
+          "evidenceRefs": [
+            "INT-MAILY-CLEAN-E1"
+          ]
+        },
+        "interaction": {
+          "points": 6,
+          "max": 20,
+          "comment": "개별 실행행 반응과 반복 수요가 확인되지 않았다.",
+          "evidenceRefs": [
+            "INT-MAILY-CLEAN-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 4,
+          "max": 15,
+          "comment": "조언과 경험이 섞여 한 bounded job을 만들기 어렵다.",
+          "evidenceRefs": [
+            "INT-MAILY-CLEAN-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 12,
+          "max": 20,
+          "comment": "newsletter 구독 경로는 있다.",
+          "evidenceRefs": [
+            "INT-MAILY-CLEAN-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 5,
+          "max": 20,
+          "comment": "요약 메모 이상 가치가 불명확하다.",
+          "evidenceRefs": [
+            "INT-MAILY-CLEAN-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 2,
+          "max": 5,
+          "comment": "장문 조언 stop control이다.",
+          "evidenceRefs": [
+            "INT-MAILY-CLEAN-E6"
+          ]
+        }
+      },
+      "selection": "rejected",
+      "selectionReason": "실행행 없는 장문 조언",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "INT-KMOOC-USED",
+      "title": "K-MOOC Introduction to Data Analysis",
+      "evidenceLane": "official_high_intent",
+      "computedTotal": 75,
+      "qualified": false,
+      "hardGates": {
+        "source": "fail_week_rows_not_imported",
+        "rights": "pass_personal_link_based_public_separate",
+        "locale": "pass",
+        "safety": "pass_with_declared_boundary",
+        "oneJob": "pass",
+        "naturalArtifact": "pass"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 17,
+          "max": 20,
+          "comment": "14주·40시간·만족도 4.5가 기록됐다.",
+          "evidenceRefs": [
+            "INT-KMOOC-USED-E1"
+          ]
+        },
+        "interaction": {
+          "points": 14,
+          "max": 20,
+          "comment": "학습 참여 경로는 있으나 이 URL은 기존 설계 사례다.",
+          "evidenceRefs": [
+            "INT-KMOOC-USED-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 8,
+          "max": 15,
+          "comment": "주차표가 이미지라 별도 source import가 필요하다.",
+          "evidenceRefs": [
+            "INT-KMOOC-USED-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 17,
+          "max": 20,
+          "comment": "공식 강좌 유입 가치가 있다.",
+          "evidenceRefs": [
+            "INT-KMOOC-USED-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 19,
+          "max": 20,
+          "comment": "진도 Sheet 가치는 강하지만 신규 benchmark positive에서 제외된다.",
+          "evidenceRefs": [
+            "INT-KMOOC-USED-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 0,
+          "max": 5,
+          "comment": "기존 기준 사례라 새 일반화 증거가 아니다.",
+          "evidenceRefs": [
+            "INT-KMOOC-USED-E6"
+          ]
+        }
+      },
+      "selection": "rejected",
+      "selectionReason": "기존 8개 설계 사례이자 source row import 미완료",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "INT-MOVING-USED",
+      "title": "2026 이사 체크리스트",
+      "evidenceLane": "official_high_intent",
+      "computedTotal": 91,
+      "qualified": true,
+      "hardGates": {
+        "source": "pass",
+        "rights": "pass_personal_link_based_public_separate",
+        "locale": "pass",
+        "safety": "pass_with_declared_boundary",
+        "oneJob": "pass",
+        "naturalArtifact": "pass"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 20,
+          "max": 20,
+          "comment": "이사 전·중·후 공식 준비행이 있다.",
+          "evidenceRefs": [
+            "INT-MOVING-USED-E1"
+          ]
+        },
+        "interaction": {
+          "points": 18,
+          "max": 20,
+          "comment": "이사일 기준 손실 회피가 강하지만 기존 핵심 사례다.",
+          "evidenceRefs": [
+            "INT-MOVING-USED-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 15,
+          "max": 15,
+          "comment": "완전한 before/during/after 행이 있다.",
+          "evidenceRefs": [
+            "INT-MOVING-USED-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 18,
+          "max": 20,
+          "comment": "공식 생활법령 유입 가치가 있다.",
+          "evidenceRefs": [
+            "INT-MOVING-USED-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 20,
+          "max": 20,
+          "comment": "이사일 기준 역산 Calendar가 명확하다.",
+          "evidenceRefs": [
+            "INT-MOVING-USED-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 0,
+          "max": 5,
+          "comment": "이미 기준 사례로 충분히 검증됐다.",
+          "evidenceRefs": [
+            "INT-MOVING-USED-E6"
+          ]
+        }
+      },
+      "selection": "qualified_not_selected",
+      "selectionReason": "기존 8개 설계 사례 positive 제외",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "INT-FIT100",
+      "title": "국민체력100 측정 절차",
+      "evidenceLane": "official_high_intent",
+      "computedTotal": 74,
+      "qualified": false,
+      "hardGates": {
+        "source": "pass",
+        "rights": "pass_personal_link_based_public_separate",
+        "locale": "pass",
+        "safety": "pass_with_declared_boundary",
+        "oneJob": "pass",
+        "naturalArtifact": "pass"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 14,
+          "max": 20,
+          "comment": "공식 측정·상담·운동관리 서비스다.",
+          "evidenceRefs": [
+            "INT-FIT100-E1"
+          ]
+        },
+        "interaction": {
+          "points": 8,
+          "max": 20,
+          "comment": "사용량 수치는 보이지 않아 not_visible로 기록한다.",
+          "evidenceRefs": [
+            "INT-FIT100-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 15,
+          "max": 15,
+          "comment": "현재 9단계와 예약 방법 3개가 있다.",
+          "evidenceRefs": [
+            "INT-FIT100-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 17,
+          "max": 20,
+          "comment": "예약·측정·상담 서비스로 연결된다.",
+          "evidenceRefs": [
+            "INT-FIT100-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 16,
+          "max": 20,
+          "comment": "예약·방문·결과 상태는 남지만 범용 사용 가치는 추가 확인이 필요하다.",
+          "evidenceRefs": [
+            "INT-FIT100-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 4,
+          "max": 5,
+          "comment": "건강 서비스 절차를 보강한다.",
+          "evidenceRefs": [
+            "INT-FIT100-E6"
+          ]
+        }
+      },
+      "selection": "rejected",
+      "selectionReason": "80점 미달: visible interaction과 반복 가치 근거 부족",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "INT-VISITKOREA",
+      "title": "공주 부모님 동행 당일 코스",
+      "evidenceLane": "official_high_intent",
+      "computedTotal": 72,
+      "qualified": false,
+      "hardGates": {
+        "source": "pass",
+        "rights": "fail_no_derivatives_publication_boundary",
+        "locale": "pass",
+        "safety": "pass_with_declared_boundary",
+        "oneJob": "pass",
+        "naturalArtifact": "pass"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 12,
+          "max": 20,
+          "comment": "공식 여행 의도 콘텐츠지만 개별 조회 수치는 보이지 않는다.",
+          "evidenceRefs": [
+            "INT-VISITKOREA-E1"
+          ]
+        },
+        "interaction": {
+          "points": 9,
+          "max": 20,
+          "comment": "4개 목적지와 예약·지역 유입 경로는 있으나 반응 수치는 not_visible이다.",
+          "evidenceRefs": [
+            "INT-VISITKOREA-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 15,
+          "max": 15,
+          "comment": "4개 ordered stop과 이동 정보가 있다.",
+          "evidenceRefs": [
+            "INT-VISITKOREA-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 15,
+          "max": 20,
+          "comment": "지역 관광·원문·예약 링크 가치가 있다.",
+          "evidenceRefs": [
+            "INT-VISITKOREA-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 17,
+          "max": 20,
+          "comment": "선택일·출발지·담당을 붙이면 일정이 되지만 변경금지 권리가 있다.",
+          "evidenceRefs": [
+            "INT-VISITKOREA-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 4,
+          "max": 5,
+          "comment": "부모 동행 여행 moment를 보강한다.",
+          "evidenceRefs": [
+            "INT-VISITKOREA-E6"
+          ]
+        }
+      },
+      "selection": "rejected",
+      "selectionReason": "80점 미달 및 공개 파생 권리 제한",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "INT-TOSS-SERIES",
+      "title": "토스피드 생활재무 시리즈",
+      "evidenceLane": "creator_community",
+      "computedTotal": 29,
+      "qualified": false,
+      "hardGates": {
+        "source": "fail_collection",
+        "rights": "pass_personal_link_based_public_separate",
+        "locale": "pass",
+        "safety": "pass_with_declared_boundary",
+        "oneJob": "fail",
+        "naturalArtifact": "fail"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 8,
+          "max": 20,
+          "comment": "플랫폼 누적 5천만 조회 신호만 있고 개별 후보 수요는 없다.",
+          "evidenceRefs": [
+            "INT-TOSS-SERIES-E1"
+          ]
+        },
+        "interaction": {
+          "points": 4,
+          "max": 20,
+          "comment": "개별 글의 반응을 컬렉션에 전가할 수 없다.",
+          "evidenceRefs": [
+            "INT-TOSS-SERIES-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 0,
+          "max": 15,
+          "comment": "candidate-specific source row가 없다.",
+          "evidenceRefs": [
+            "INT-TOSS-SERIES-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 15,
+          "max": 20,
+          "comment": "provider partnership 가설은 있으나 특정 원문이 필요하다.",
+          "evidenceRefs": [
+            "INT-TOSS-SERIES-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 0,
+          "max": 20,
+          "comment": "하나의 job과 artifact를 만들 수 없다.",
+          "evidenceRefs": [
+            "INT-TOSS-SERIES-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 2,
+          "max": 5,
+          "comment": "provider와 content unit 경계를 시험한다.",
+          "evidenceRefs": [
+            "INT-TOSS-SERIES-E6"
+          ]
+        }
+      },
+      "selection": "rejected",
+      "selectionReason": "개별 원문 없는 컬렉션",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "INT-10000-PROVIDER",
+      "title": "만개의레시피 공급 제공자",
+      "evidenceLane": "operator_template",
+      "computedTotal": 37,
+      "qualified": false,
+      "hardGates": {
+        "source": "fail_provider_only",
+        "rights": "pass_personal_link_based_public_separate",
+        "locale": "pass",
+        "safety": "pass_with_declared_boundary",
+        "oneJob": "fail",
+        "naturalArtifact": "fail"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 10,
+          "max": 20,
+          "comment": "180K recipes·월 4.62M 방문자 등 provider 규모 신호가 있다.",
+          "evidenceRefs": [
+            "INT-10000-PROVIDER-E1"
+          ]
+        },
+        "interaction": {
+          "points": 5,
+          "max": 20,
+          "comment": "특정 recipe의 반응이 아니므로 positive evidence로 쓰지 않는다.",
+          "evidenceRefs": [
+            "INT-10000-PROVIDER-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 0,
+          "max": 15,
+          "comment": "특정 사용자 job의 recipe row가 없다.",
+          "evidenceRefs": [
+            "INT-10000-PROVIDER-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 20,
+          "max": 20,
+          "comment": "구조화 API·제휴 가치는 크다.",
+          "evidenceRefs": [
+            "INT-10000-PROVIDER-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 0,
+          "max": 20,
+          "comment": "provider 계약 후보이지 Flow 원문은 아니다.",
+          "evidenceRefs": [
+            "INT-10000-PROVIDER-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 2,
+          "max": 5,
+          "comment": "provider discovery lane이다.",
+          "evidenceRefs": [
+            "INT-10000-PROVIDER-E6"
+          ]
+        }
+      },
+      "selection": "rejected",
+      "selectionReason": "provider profile은 Flow 원문이 아님",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "INT-WTABLE",
+      "title": "우리의식탁 구조화 레시피",
+      "evidenceLane": "creator_community",
+      "computedTotal": 53,
+      "qualified": false,
+      "hardGates": {
+        "source": "fail_partial_rows",
+        "rights": "pass_personal_link_based_public_separate",
+        "locale": "pass",
+        "safety": "pass_with_declared_boundary",
+        "oneJob": "pass",
+        "naturalArtifact": "pass"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 10,
+          "max": 20,
+          "comment": "재료·시간·단계 구조는 보인다.",
+          "evidenceRefs": [
+            "INT-WTABLE-E1"
+          ]
+        },
+        "interaction": {
+          "points": 7,
+          "max": 20,
+          "comment": "개별 반응 수치는 확인하지 못했다.",
+          "evidenceRefs": [
+            "INT-WTABLE-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 8,
+          "max": 15,
+          "comment": "첫 7단계만 확인돼 전체 recipe completeness가 불명확하다.",
+          "evidenceRefs": [
+            "INT-WTABLE-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 16,
+          "max": 20,
+          "comment": "앱·레시피·커머스 유입이 있다.",
+          "evidenceRefs": [
+            "INT-WTABLE-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 10,
+          "max": 20,
+          "comment": "한 세션 체크는 가능하지만 단일 recipe value가 약하다.",
+          "evidenceRefs": [
+            "INT-WTABLE-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 2,
+          "max": 5,
+          "comment": "구조화 recipe source를 시험한다.",
+          "evidenceRefs": [
+            "INT-WTABLE-E6"
+          ]
+        }
+      },
+      "selection": "rejected",
+      "selectionReason": "원문 불완전 + 단일 recipe value delta 약함",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "INT-NASA",
+      "title": "NASA Build a Crane Activity",
+      "evidenceLane": "official_high_intent",
+      "computedTotal": 69,
+      "qualified": false,
+      "hardGates": {
+        "source": "pass",
+        "rights": "pass_personal_link_based_public_separate",
+        "locale": "pass",
+        "safety": "pass_with_declared_boundary",
+        "oneJob": "pass",
+        "naturalArtifact": "pass"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 12,
+          "max": 20,
+          "comment": "5~12학년·45~90분 공식 활동으로 대상이 명시된다.",
+          "evidenceRefs": [
+            "INT-NASA-E1"
+          ]
+        },
+        "interaction": {
+          "points": 8,
+          "max": 20,
+          "comment": "개별 반응 수치는 not_visible이다.",
+          "evidenceRefs": [
+            "INT-NASA-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 15,
+          "max": 15,
+          "comment": "재료·안전·제작 단계가 완전하다.",
+          "evidenceRefs": [
+            "INT-NASA-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 15,
+          "max": 20,
+          "comment": "공식 STEM 원문과 교육 생태계 유입이 있다.",
+          "evidenceRefs": [
+            "INT-NASA-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 14,
+          "max": 20,
+          "comment": "준비·제작 상태는 남지만 한 세션 원문 대비 차이가 제한적이다.",
+          "evidenceRefs": [
+            "INT-NASA-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 5,
+          "max": 5,
+          "comment": "한 세션 STEM 프로젝트를 보강한다.",
+          "evidenceRefs": [
+            "INT-NASA-E6"
+          ]
+        }
+      },
+      "selection": "rejected",
+      "selectionReason": "80점 미달: 반응·재방문 value delta 약함",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "INT-NOTION",
+      "title": "Notion Basic Content Calendar",
+      "evidenceLane": "operator_template",
+      "computedTotal": 70,
+      "qualified": false,
+      "hardGates": {
+        "source": "fail_source_import_required",
+        "rights": "pass_personal_link_based_public_separate",
+        "locale": "pass",
+        "safety": "pass_with_declared_boundary",
+        "oneJob": "pass",
+        "naturalArtifact": "pass"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 18,
+          "max": 20,
+          "comment": "4.8/5·100+ ratings가 보인다.",
+          "evidenceRefs": [
+            "INT-NOTION-E1"
+          ]
+        },
+        "interaction": {
+          "points": 17,
+          "max": 20,
+          "comment": "평점은 강하지만 실제 사용 행은 복제·인증 뒤에 있다.",
+          "evidenceRefs": [
+            "INT-NOTION-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 0,
+          "max": 15,
+          "comment": "public preview로 actual database rows를 확보하지 못했다.",
+          "evidenceRefs": [
+            "INT-NOTION-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 20,
+          "max": 20,
+          "comment": "template creator marketplace와 복제 경로가 있다.",
+          "evidenceRefs": [
+            "INT-NOTION-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 12,
+          "max": 20,
+          "comment": "실제 사용자 복제본을 가져오면 Sheet/Calendar가 가능하다.",
+          "evidenceRefs": [
+            "INT-NOTION-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 3,
+          "max": 5,
+          "comment": "OAuth source import boundary다.",
+          "evidenceRefs": [
+            "INT-NOTION-E6"
+          ]
+        }
+      },
+      "selection": "rejected",
+      "selectionReason": "source_import_required",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "INT-GUMROAD",
+      "title": "Gumroad Content Planner Template",
+      "evidenceLane": "operator_template",
+      "computedTotal": 70,
+      "qualified": false,
+      "hardGates": {
+        "source": "fail_paid_file_required",
+        "rights": "fail_entitlement_required",
+        "locale": "pass",
+        "safety": "pass_with_declared_boundary",
+        "oneJob": "pass",
+        "naturalArtifact": "pass"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 18,
+          "max": 20,
+          "comment": "821 sales가 공개 listing에 보인다.",
+          "evidenceRefs": [
+            "INT-GUMROAD-E1"
+          ]
+        },
+        "interaction": {
+          "points": 16,
+          "max": 20,
+          "comment": "판매는 수요 신호지만 파일 행은 구매 뒤에 있다.",
+          "evidenceRefs": [
+            "INT-GUMROAD-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 0,
+          "max": 15,
+          "comment": "licensed file 또는 creator supply 없이는 actual rows가 없다.",
+          "evidenceRefs": [
+            "INT-GUMROAD-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 20,
+          "max": 20,
+          "comment": "직접 판매·creator 공급·source-link 가치가 강하다.",
+          "evidenceRefs": [
+            "INT-GUMROAD-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 12,
+          "max": 20,
+          "comment": "행을 확보하면 Sheet export가 유용하지만 현재는 만들 수 없다.",
+          "evidenceRefs": [
+            "INT-GUMROAD-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 4,
+          "max": 5,
+          "comment": "paid source boundary다.",
+          "evidenceRefs": [
+            "INT-GUMROAD-E6"
+          ]
+        }
+      },
+      "selection": "rejected",
+      "selectionReason": "유료 파일 권한·행 미확보",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "INT-ROADMAP",
+      "title": "roadmap.sh collection",
+      "evidenceLane": "operator_template",
+      "computedTotal": 71,
+      "qualified": false,
+      "hardGates": {
+        "source": "fail_collection",
+        "rights": "fail_redistribution_restricted",
+        "locale": "pass",
+        "safety": "pass_with_declared_boundary",
+        "oneJob": "fail",
+        "naturalArtifact": "pass"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 20,
+          "max": 20,
+          "comment": "약 360K GitHub stars가 기록됐다.",
+          "evidenceRefs": [
+            "INT-ROADMAP-E1"
+          ]
+        },
+        "interaction": {
+          "points": 20,
+          "max": 20,
+          "comment": "강한 커뮤니티 신호가 있으나 하나의 roadmap을 선택하지 않았다.",
+          "evidenceRefs": [
+            "INT-ROADMAP-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 5,
+          "max": 15,
+          "comment": "사이트 전체는 여러 job과 계속 변하는 collection이다.",
+          "evidenceRefs": [
+            "INT-ROADMAP-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 18,
+          "max": 20,
+          "comment": "원 서비스 진도·커뮤니티 가치가 이미 크다.",
+          "evidenceRefs": [
+            "INT-ROADMAP-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 6,
+          "max": 20,
+          "comment": "FlowMe 복제보다 특정 roadmap 선택이 먼저다.",
+          "evidenceRefs": [
+            "INT-ROADMAP-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 2,
+          "max": 5,
+          "comment": "대형 collection stop gate다.",
+          "evidenceRefs": [
+            "INT-ROADMAP-E6"
+          ]
+        }
+      },
+      "selection": "rejected",
+      "selectionReason": "컬렉션·권리·one-job gate 실패",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "INT-TPT",
+      "title": "Science Fair Project Planner",
+      "evidenceLane": "operator_template",
+      "computedTotal": 79,
+      "qualified": false,
+      "hardGates": {
+        "source": "fail_paid_file_required",
+        "rights": "fail_entitlement_required",
+        "locale": "pass",
+        "safety": "pass_with_declared_boundary",
+        "oneJob": "pass",
+        "naturalArtifact": "pass"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 19,
+          "max": 20,
+          "comment": "4.75/5·389 reviews·약 4,000 followers가 보인다.",
+          "evidenceRefs": [
+            "INT-TPT-E1"
+          ]
+        },
+        "interaction": {
+          "points": 19,
+          "max": 20,
+          "comment": "리뷰는 강하지만 actual planner row는 구매 뒤다.",
+          "evidenceRefs": [
+            "INT-TPT-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 0,
+          "max": 15,
+          "comment": "licensed PDF 또는 creator supply가 필요하다.",
+          "evidenceRefs": [
+            "INT-TPT-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 20,
+          "max": 20,
+          "comment": "제작자 판매·교사 재사용 경로가 명확하다.",
+          "evidenceRefs": [
+            "INT-TPT-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 16,
+          "max": 20,
+          "comment": "행 확보 후 진도·마감·전시 상태가 강하다.",
+          "evidenceRefs": [
+            "INT-TPT-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 5,
+          "max": 5,
+          "comment": "교육 제작자 template lane을 보강한다.",
+          "evidenceRefs": [
+            "INT-TPT-E6"
+          ]
+        }
+      },
+      "selection": "rejected",
+      "selectionReason": "licensed file/source import 필요",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "INT-NETMUMS",
+      "title": "Netmums 6-month-old guide",
+      "evidenceLane": "creator_community",
+      "computedTotal": 44,
+      "qualified": false,
+      "hardGates": {
+        "source": "pass",
+        "rights": "pass_personal_link_based_public_separate",
+        "locale": "fail_ko_applicability",
+        "safety": "fail_health_review",
+        "oneJob": "pass",
+        "naturalArtifact": "fail"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 10,
+          "max": 20,
+          "comment": "월령별 안내 수요가 있으나 개별 수치는 not_visible이다.",
+          "evidenceRefs": [
+            "INT-NETMUMS-E1"
+          ]
+        },
+        "interaction": {
+          "points": 6,
+          "max": 20,
+          "comment": "영국 편집 가이드의 반응을 한국 적용성 증거로 쓸 수 없다.",
+          "evidenceRefs": [
+            "INT-NETMUMS-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 8,
+          "max": 15,
+          "comment": "발달·식사·수면 조언 구간은 있으나 한국 실행행으로 승격할 수 없다.",
+          "evidenceRefs": [
+            "INT-NETMUMS-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 12,
+          "max": 20,
+          "comment": "원문·커머스 경로가 있다.",
+          "evidenceRefs": [
+            "INT-NETMUMS-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 4,
+          "max": 20,
+          "comment": "질문 메모 외에는 민감한 실행화가 부적절하다.",
+          "evidenceRefs": [
+            "INT-NETMUMS-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 4,
+          "max": 5,
+          "comment": "locale-sensitive health stop control이다.",
+          "evidenceRefs": [
+            "INT-NETMUMS-E6"
+          ]
+        }
+      },
+      "selection": "rejected",
+      "selectionReason": "한국 지역성·건강 검토 실패",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "INT-SOOMGO",
+      "title": "숨고 전문가 공급망",
+      "evidenceLane": "operator_template",
+      "computedTotal": 37,
+      "qualified": false,
+      "hardGates": {
+        "source": "fail_provider_only",
+        "rights": "pass_personal_link_based_public_separate",
+        "locale": "pass",
+        "safety": "pass_with_declared_boundary",
+        "oneJob": "fail",
+        "naturalArtifact": "fail"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 12,
+          "max": 20,
+          "comment": "1,000 services·2M experts·14M customers라는 provider 규모 신호가 있다.",
+          "evidenceRefs": [
+            "INT-SOOMGO-E1"
+          ]
+        },
+        "interaction": {
+          "points": 5,
+          "max": 20,
+          "comment": "특정 전문가 콘텐츠의 반응이 아니다.",
+          "evidenceRefs": [
+            "INT-SOOMGO-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 0,
+          "max": 15,
+          "comment": "실제 전문가 source row가 없다.",
+          "evidenceRefs": [
+            "INT-SOOMGO-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 18,
+          "max": 20,
+          "comment": "향후 provider partnership 가치는 있다.",
+          "evidenceRefs": [
+            "INT-SOOMGO-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 0,
+          "max": 20,
+          "comment": "현재 URL은 Flow가 아니라 공급망 소개다.",
+          "evidenceRefs": [
+            "INT-SOOMGO-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 2,
+          "max": 5,
+          "comment": "provider-only stop control이다.",
+          "evidenceRefs": [
+            "INT-SOOMGO-E6"
+          ]
+        }
+      },
+      "selection": "rejected",
+      "selectionReason": "홍보·공급망 URL, 실제 행 없음",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "NEW-OHOUSE-CONTRACTOR",
+      "title": "인테리어 업체 선택 5기준",
+      "evidenceLane": "creator_community",
+      "computedTotal": 96,
+      "qualified": true,
+      "hardGates": {
+        "source": "pass",
+        "rights": "pass_personal_link_based_public_separate",
+        "locale": "pass",
+        "safety": "pass_with_declared_boundary",
+        "oneJob": "pass",
+        "naturalArtifact": "pass"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 19,
+          "max": 20,
+          "comment": "조회 140,723이 보인다.",
+          "evidenceRefs": [
+            "NEW-OHOUSE-CONTRACTOR-E1"
+          ]
+        },
+        "interaction": {
+          "points": 19,
+          "max": 20,
+          "comment": "스크랩 3,493·좋아요 950·댓글 37이 보인다.",
+          "evidenceRefs": [
+            "NEW-OHOUSE-CONTRACTOR-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 15,
+          "max": 15,
+          "comment": "피해야 할 업체 5유형과 좋은 상담 기준이 실제 행이다.",
+          "evidenceRefs": [
+            "NEW-OHOUSE-CONTRACTOR-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 19,
+          "max": 20,
+          "comment": "업체 찾기·상담·원문 source path가 있다.",
+          "evidenceRefs": [
+            "NEW-OHOUSE-CONTRACTOR-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 20,
+          "max": 20,
+          "comment": "업체별 증거·견적·보증·Hold 이유를 비교 Sheet에 남긴다.",
+          "evidenceRefs": [
+            "NEW-OHOUSE-CONTRACTOR-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 4,
+          "max": 5,
+          "comment": "고비용 의사결정 상태를 보강한다.",
+          "evidenceRefs": [
+            "NEW-OHOUSE-CONTRACTOR-E6"
+          ]
+        }
+      },
+      "selection": "qualified_not_selected",
+      "selectionReason": "93점 통과했으나 KCA 비교 Sheet와 final 구성 중복을 줄이기 위해 미선정",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "NEW-OHOUSE-ORGANIZE",
+      "title": "정리정돈 7단계",
+      "evidenceLane": "creator_community",
+      "computedTotal": 94,
+      "qualified": true,
+      "hardGates": {
+        "source": "pass",
+        "rights": "pass_personal_link_based_public_separate",
+        "locale": "pass",
+        "safety": "pass_with_declared_boundary",
+        "oneJob": "pass",
+        "naturalArtifact": "pass"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 20,
+          "max": 20,
+          "comment": "조회 274,778이 보인다.",
+          "evidenceRefs": [
+            "NEW-OHOUSE-ORGANIZE-E1"
+          ]
+        },
+        "interaction": {
+          "points": 18,
+          "max": 20,
+          "comment": "스크랩 2,485·좋아요 962·댓글 24가 보인다.",
+          "evidenceRefs": [
+            "NEW-OHOUSE-ORGANIZE-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 15,
+          "max": 15,
+          "comment": "공간 선택부터 제자리 수납까지 7단계가 완전하다.",
+          "evidenceRefs": [
+            "NEW-OHOUSE-ORGANIZE-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 18,
+          "max": 20,
+          "comment": "공간별 fork와 원문 유입이 가능하다.",
+          "evidenceRefs": [
+            "NEW-OHOUSE-ORGANIZE-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 19,
+          "max": 20,
+          "comment": "대상 공간 하나로 실행·분류 상태를 남긴다.",
+          "evidenceRefs": [
+            "NEW-OHOUSE-ORGANIZE-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 4,
+          "max": 5,
+          "comment": "반복 가능한 공간 정리 moment다.",
+          "evidenceRefs": [
+            "NEW-OHOUSE-ORGANIZE-E6"
+          ]
+        }
+      },
+      "selection": "qualified_not_selected",
+      "selectionReason": "94점 통과했으나 INT-C14와 동일 artifact/user moment 조합 중복",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "NEW-OHOUSE-SIDEDISH",
+      "title": "주간 밑반찬 10종",
+      "evidenceLane": "creator_community",
+      "computedTotal": 90,
+      "qualified": true,
+      "hardGates": {
+        "source": "pass",
+        "rights": "pass_personal_link_based_public_separate",
+        "locale": "pass",
+        "safety": "pass_with_declared_boundary",
+        "oneJob": "pass",
+        "naturalArtifact": "pass"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 17,
+          "max": 20,
+          "comment": "조회 40,500이 보인다.",
+          "evidenceRefs": [
+            "NEW-OHOUSE-SIDEDISH-E1"
+          ]
+        },
+        "interaction": {
+          "points": 17,
+          "max": 20,
+          "comment": "스크랩 1,315·좋아요 411·댓글 25가 보인다.",
+          "evidenceRefs": [
+            "NEW-OHOUSE-SIDEDISH-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 15,
+          "max": 15,
+          "comment": "요일별 2개씩 10개 반찬과 재료·3~4단계가 있다.",
+          "evidenceRefs": [
+            "NEW-OHOUSE-SIDEDISH-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 18,
+          "max": 20,
+          "comment": "제작자 식단 시리즈와 원문 유입이 있다.",
+          "evidenceRefs": [
+            "NEW-OHOUSE-SIDEDISH-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 19,
+          "max": 20,
+          "comment": "선택 반찬의 장보기·배치조리·주간 상태를 남긴다.",
+          "evidenceRefs": [
+            "NEW-OHOUSE-SIDEDISH-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 4,
+          "max": 5,
+          "comment": "batch cooking user moment다.",
+          "evidenceRefs": [
+            "NEW-OHOUSE-SIDEDISH-E6"
+          ]
+        }
+      },
+      "selection": "qualified_not_selected",
+      "selectionReason": "90점 통과했으나 INT-C06과 주간 식단 artifact/user moment 중복",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "NEW-NFA-FIRE",
+      "title": "주택용 소방시설 설치·수명 관리",
+      "evidenceLane": "official_high_intent",
+      "computedTotal": 95,
+      "qualified": true,
+      "hardGates": {
+        "source": "pass",
+        "rights": "pass_personal_link_based_public_separate",
+        "locale": "pass",
+        "safety": "pass_with_declared_boundary",
+        "oneJob": "pass",
+        "naturalArtifact": "pass"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 18,
+          "max": 20,
+          "comment": "주택 화재 안전을 위한 공식 의무·손실 신호가 있다.",
+          "evidenceRefs": [
+            "NEW-NFA-FIRE-E1"
+          ]
+        },
+        "interaction": {
+          "points": 19,
+          "max": 20,
+          "comment": "방·층별 설치와 약 10년 수명이라는 공식 반복 확인 신호가 있다.",
+          "evidenceRefs": [
+            "NEW-NFA-FIRE-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 15,
+          "max": 15,
+          "comment": "방마다 감지기, 세대·층별 소화기, 설치 4단계, 명시 수명 행이 있다.",
+          "evidenceRefs": [
+            "NEW-NFA-FIRE-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 18,
+          "max": 20,
+          "comment": "공식 안전 정보와 지역 소방 서비스로 연결된다.",
+          "evidenceRefs": [
+            "NEW-NFA-FIRE-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 20,
+          "max": 20,
+          "comment": "방·층별 설치 상태와 명시 수명 교체일을 관리한다.",
+          "evidenceRefs": [
+            "NEW-NFA-FIRE-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 5,
+          "max": 5,
+          "comment": "주거 안전·설비 Sheet를 보강한다.",
+          "evidenceRefs": [
+            "NEW-NFA-FIRE-E6"
+          ]
+        }
+      },
+      "selection": "qualified_not_selected",
+      "selectionReason": "95점 통과했으나 safety 전문 검토 용량과 12개 상한 때문에 미선정",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "NEW-OHOUSE-FRIDGE",
+      "title": "냉장고 파먹기 주간식단",
+      "evidenceLane": "creator_community",
+      "computedTotal": 75,
+      "qualified": false,
+      "hardGates": {
+        "source": "pass",
+        "rights": "pass_personal_link_based_public_separate",
+        "locale": "pass",
+        "safety": "pass_with_declared_boundary",
+        "oneJob": "pass",
+        "naturalArtifact": "fail_needs_inventory_overlay_design"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 13,
+          "max": 20,
+          "comment": "조회 11,383이 보인다.",
+          "evidenceRefs": [
+            "NEW-OHOUSE-FRIDGE-E1"
+          ]
+        },
+        "interaction": {
+          "points": 13,
+          "max": 20,
+          "comment": "스크랩 412·좋아요 109·댓글 12가 보인다.",
+          "evidenceRefs": [
+            "NEW-OHOUSE-FRIDGE-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 15,
+          "max": 15,
+          "comment": "월~금 식단과 상세 recipe 행이 있다.",
+          "evidenceRefs": [
+            "NEW-OHOUSE-FRIDGE-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 16,
+          "max": 20,
+          "comment": "제작자 원문·식단 fork 경로가 있다.",
+          "evidenceRefs": [
+            "NEW-OHOUSE-FRIDGE-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 15,
+          "max": 20,
+          "comment": "실제 재고와 불일치해 메뉴 확인 없이는 그대로 실행할 수 없다.",
+          "evidenceRefs": [
+            "NEW-OHOUSE-FRIDGE-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 3,
+          "max": 5,
+          "comment": "inventory overlay가 필요한 meal plan이다.",
+          "evidenceRefs": [
+            "NEW-OHOUSE-FRIDGE-E6"
+          ]
+        }
+      },
+      "selection": "rejected",
+      "selectionReason": "75점 및 사용자 재고 overlay 미정",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "NEW-MOEL-LEAVE",
+      "title": "육아휴직급여 월별 신청",
+      "evidenceLane": "official_high_intent",
+      "computedTotal": 89,
+      "qualified": false,
+      "hardGates": {
+        "source": "pass",
+        "rights": "pass_personal_link_based_public_separate",
+        "locale": "pass",
+        "safety": "pass_with_declared_boundary",
+        "oneJob": "fail_qna_split_required",
+        "naturalArtifact": "pass"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 19,
+          "max": 20,
+          "comment": "공식 급여 신청과 월별 기한이라는 강한 수요가 있다.",
+          "evidenceRefs": [
+            "NEW-MOEL-LEAVE-E1"
+          ]
+        },
+        "interaction": {
+          "points": 19,
+          "max": 20,
+          "comment": "매월 다음 달 말일까지·일괄신청 가능이라는 반복 손실 신호가 있다.",
+          "evidenceRefs": [
+            "NEW-MOEL-LEAVE-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 11,
+          "max": 15,
+          "comment": "최초 제출과 반복 제출이 구분되지만 여러 Q&A가 섞여 있다.",
+          "evidenceRefs": [
+            "NEW-MOEL-LEAVE-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 17,
+          "max": 20,
+          "comment": "고용24·상담 경로로 연결된다.",
+          "evidenceRefs": [
+            "NEW-MOEL-LEAVE-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 19,
+          "max": 20,
+          "comment": "월별 Calendar 가치는 강하나 한 job 분리가 필요하다.",
+          "evidenceRefs": [
+            "NEW-MOEL-LEAVE-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 4,
+          "max": 5,
+          "comment": "반복 행정 lifecycle을 보강한다.",
+          "evidenceRefs": [
+            "NEW-MOEL-LEAVE-E6"
+          ]
+        }
+      },
+      "selection": "rejected",
+      "selectionReason": "Q&A에서 월별 신청 job 분리 규칙 미완료",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "NEW-PROGRAMMERS",
+      "title": "코딩테스트 고득점 Kit",
+      "evidenceLane": "creator_community",
+      "computedTotal": 76,
+      "qualified": false,
+      "hardGates": {
+        "source": "pass",
+        "rights": "pass_personal_link_based_public_separate",
+        "locale": "pass",
+        "safety": "pass_with_declared_boundary",
+        "oneJob": "pass",
+        "naturalArtifact": "fail_value_delta_not_proven"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 16,
+          "max": 20,
+          "comment": "분야별 문제 수와 학습 수요가 명확하다.",
+          "evidenceRefs": [
+            "NEW-PROGRAMMERS-E1"
+          ]
+        },
+        "interaction": {
+          "points": 14,
+          "max": 20,
+          "comment": "원 서비스 자체에 진행률과 풀이 기록이 이미 있다.",
+          "evidenceRefs": [
+            "NEW-PROGRAMMERS-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 15,
+          "max": 15,
+          "comment": "해시 5·스택/큐 6·힙 3 등 bounded category rows가 있다.",
+          "evidenceRefs": [
+            "NEW-PROGRAMMERS-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 17,
+          "max": 20,
+          "comment": "문제 풀이·채용·학습 서비스 유입이 있다.",
+          "evidenceRefs": [
+            "NEW-PROGRAMMERS-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 10,
+          "max": 20,
+          "comment": "외부 일정·메모 export 외에는 원 서비스보다 나은 점이 불명확하다.",
+          "evidenceRefs": [
+            "NEW-PROGRAMMERS-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 4,
+          "max": 5,
+          "comment": "기존 진행 플랫폼과의 역할 경계를 시험한다.",
+          "evidenceRefs": [
+            "NEW-PROGRAMMERS-E6"
+          ]
+        }
+      },
+      "selection": "rejected",
+      "selectionReason": "76점: 원 서비스 대비 value delta 부족",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "NEW-BRUNCH-PM",
+      "title": "PM 프로젝트 프로세스 7단계",
+      "evidenceLane": "creator_community",
+      "computedTotal": 83,
+      "qualified": true,
+      "hardGates": {
+        "source": "pass",
+        "rights": "pass_personal_link_based_public_separate",
+        "locale": "pass",
+        "safety": "pass_with_declared_boundary",
+        "oneJob": "pass",
+        "naturalArtifact": "pass"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 13,
+          "max": 20,
+          "comment": "구독자 905가 보인다.",
+          "evidenceRefs": [
+            "NEW-BRUNCH-PM-E1"
+          ]
+        },
+        "interaction": {
+          "points": 12,
+          "max": 20,
+          "comment": "라이킷 24와 Google Sheet 연결이 보인다.",
+          "evidenceRefs": [
+            "NEW-BRUNCH-PM-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 15,
+          "max": 15,
+          "comment": "문제 발견→정의→기획→검토→개발→배포 준비→대응 7단계가 있다.",
+          "evidenceRefs": [
+            "NEW-BRUNCH-PM-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 19,
+          "max": 20,
+          "comment": "제작자 Sheet·원문·업데이트 loop가 있다.",
+          "evidenceRefs": [
+            "NEW-BRUNCH-PM-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 19,
+          "max": 20,
+          "comment": "담당·검토·인계·export를 제공하면 원문보다 운영 가치가 커진다.",
+          "evidenceRefs": [
+            "NEW-BRUNCH-PM-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 5,
+          "max": 5,
+          "comment": "work handoff lifecycle을 보강한다.",
+          "evidenceRefs": [
+            "NEW-BRUNCH-PM-E6"
+          ]
+        }
+      },
+      "selection": "qualified_not_selected",
+      "selectionReason": "83점 통과했으나 rights와 팀 협업 gold 검토 용량 때문에 미선정",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "NEW-BOKJIRO-SAVINGS",
+      "title": "2026 청년내일저축계좌",
+      "evidenceLane": "official_high_intent",
+      "computedTotal": 77,
+      "qualified": false,
+      "hardGates": {
+        "source": "fail_expired_window",
+        "rights": "pass_personal_link_based_public_separate",
+        "locale": "pass",
+        "safety": "pass_with_declared_boundary",
+        "oneJob": "pass",
+        "naturalArtifact": "pass"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 18,
+          "max": 20,
+          "comment": "신청·보완창과 지원 수요가 강하다.",
+          "evidenceRefs": [
+            "NEW-BOKJIRO-SAVINGS-E1"
+          ]
+        },
+        "interaction": {
+          "points": 18,
+          "max": 20,
+          "comment": "미비 시 제외라는 손실 신호가 있다.",
+          "evidenceRefs": [
+            "NEW-BOKJIRO-SAVINGS-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 15,
+          "max": 15,
+          "comment": "자격·신청·보완 행은 있으나 현재 신청기간이 종료됐다.",
+          "evidenceRefs": [
+            "NEW-BOKJIRO-SAVINGS-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 17,
+          "max": 20,
+          "comment": "다음 모집 때 공식 신청 유입 가치가 있다.",
+          "evidenceRefs": [
+            "NEW-BOKJIRO-SAVINGS-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 5,
+          "max": 20,
+          "comment": "현재는 과거 일정 Flow를 만들면 안 된다.",
+          "evidenceRefs": [
+            "NEW-BOKJIRO-SAVINGS-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 4,
+          "max": 5,
+          "comment": "freshness stop gate다.",
+          "evidenceRefs": [
+            "NEW-BOKJIRO-SAVINGS-E6"
+          ]
+        }
+      },
+      "selection": "rejected",
+      "selectionReason": "현재 창 종료: freshness hold",
+      "quotaOverride": false
+    },
+    {
+      "candidateId": "NEW-NTS-TAX",
+      "title": "종합소득세 신고 개요",
+      "evidenceLane": "official_high_intent",
+      "computedTotal": 78,
+      "qualified": false,
+      "hardGates": {
+        "source": "fail_expired_window",
+        "rights": "pass_personal_link_based_public_separate",
+        "locale": "pass",
+        "safety": "fail_tax_review",
+        "oneJob": "fail_complex_eligibility",
+        "naturalArtifact": "pass"
+      },
+      "scores": {
+        "visibleDemand": {
+          "points": 19,
+          "max": 20,
+          "comment": "법정 신고 기한과 과세 대상이라는 강한 수요가 있다.",
+          "evidenceRefs": [
+            "NEW-NTS-TAX-E1"
+          ]
+        },
+        "interaction": {
+          "points": 19,
+          "max": 20,
+          "comment": "기한 손실 신호는 강하지만 개인 대상·연장 분기가 복잡하다.",
+          "evidenceRefs": [
+            "NEW-NTS-TAX-E2"
+          ]
+        },
+        "sourceRowFeasibility": {
+          "points": 10,
+          "max": 15,
+          "comment": "일반 기한과 예외가 있으나 현재 일반 창이 지났다.",
+          "evidenceRefs": [
+            "NEW-NTS-TAX-E3"
+          ]
+        },
+        "creatorBusinessValue": {
+          "points": 18,
+          "max": 20,
+          "comment": "홈택스 신고 경로가 있다.",
+          "evidenceRefs": [
+            "NEW-NTS-TAX-E4"
+          ]
+        },
+        "flowValueDelta": {
+          "points": 8,
+          "max": 20,
+          "comment": "별도 세무 lifecycle과 자격 판정 없이 일정화하면 위험하다.",
+          "evidenceRefs": [
+            "NEW-NTS-TAX-E5"
+          ]
+        },
+        "portfolioExpansion": {
+          "points": 4,
+          "max": 5,
+          "comment": "세무 민감 stop gate다.",
+          "evidenceRefs": [
+            "NEW-NTS-TAX-E6"
+          ]
+        }
+      },
+      "selection": "rejected",
+      "selectionReason": "현재 기한 종료 + 세무 분기 review 필요",
+      "quotaOverride": false
+    }
+  ]
+}

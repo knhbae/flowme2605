@@ -1,0 +1,3771 @@
+{
+  "documentType": "flowme_backend_dto_collection",
+  "schemaVersion": "flowme-taxonomy-v1.1",
+  "date": "2026-07-20",
+  "claimBoundary": "These DTOs demonstrate a backend contract and source-fidelity gates. They do not constitute public-content approval, legal clearance, live crawling or observed-user validation.",
+  "dtos": [
+    {
+      "dtoId": "dto-date-preparation-easylaw-moving",
+      "scenario": "날짜 역산",
+      "source": {
+        "sourceId": "source-ds05",
+        "title": "이사 준비 체크리스트",
+        "originalUrl": "https://www.easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=3&cciNo=1&cnpClsNo=1&csmSeq=666&popMenu=ov",
+        "snapshot": {
+          "snapshotId": "snapshot-source-ds05",
+          "fetchedAt": "2026-07-20T00:00:00.000Z",
+          "finalUrl": "https://www.easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=3&cciNo=1&cnpClsNo=1&csmSeq=666&popMenu=ov",
+          "contentHash": "sha256:d81bc3ec58b7f3d9db49a9652fabb987b87aafd116085bdd6af3459110b0cfde",
+          "extractionVersion": "taxonomy-v1.1-evidence-fixture-v1"
+        }
+      },
+      "flow": {
+        "flowId": "flow-dto-date-preparation-easylaw-moving",
+        "title": "이사 준비 체크리스트",
+        "stepIds": [
+          "step-ds05-timeline"
+        ],
+        "anchorDefinitions": [
+          {
+            "fieldId": "anchor-date",
+            "kind": "event_date",
+            "label": "기준일",
+            "required": true
+          }
+        ]
+      },
+      "taxonomy": {
+        "classificationStatus": "confirmed",
+        "primaryLifeArea": "home_living",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "이사",
+          "D-day"
+        ],
+        "sourceShape": "date_offsets",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "date_preparation",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "calendar",
+        "secondaryArtifacts": [
+          "checklist"
+        ]
+      },
+      "audienceAndApplicability": {
+        "roles": [
+          "individual"
+        ],
+        "ageBands": [
+          "not_specified"
+        ],
+        "skillLevel": "not_applicable",
+        "contentLocale": "ko-KR",
+        "applicableLocales": [
+          "ko-KR"
+        ],
+        "applicability": "local_direct",
+        "prerequisites": [],
+        "accountOrEntitlement": "none",
+        "collaborationContext": "solo",
+        "userNeedSignals": [
+          "remember_when",
+          "avoid_omission",
+          "handoff_or_share"
+        ],
+        "frictionSignals": [
+          "missed_deadline",
+          "collaboration_gap"
+        ]
+      },
+      "access": {
+        "providerType": "government_public",
+        "platformRoles": [
+          "discover",
+          "host"
+        ],
+        "discoveryAccess": "public",
+        "rowAccess": "full",
+        "acquisitionMethods": [
+          "html_fetch"
+        ],
+        "sourceFormat": {
+          "category": "checklist",
+          "mediaType": "text/html",
+          "detail": {
+            "sourceRows": 6
+          }
+        }
+      },
+      "rights": {
+        "basis": "link_only_assumption",
+        "allowedUse": [
+          "link_metadata",
+          "internal_review"
+        ],
+        "territoryScope": "unknown",
+        "territories": [],
+        "reviewStatus": "restricted",
+        "personalTransformAllowed": false,
+        "publicReleaseAllowed": false,
+        "rationale": "Public access and reuse rights are evaluated separately; current evidence supports an internal link-backed draft only."
+      },
+      "review": {
+        "sourceRowStatus": "complete",
+        "conversionReadiness": "ready_second_wave",
+        "freshnessReview": "current",
+        "localeReview": "applicable",
+        "safetyReview": "not_required",
+        "privacyReview": "not_required",
+        "rightsReview": "restricted",
+        "promotionState": "research_only",
+        "blockers": [
+          "rights_unknown"
+        ],
+        "portfolioRole": "official_trust_anchor",
+        "editorialAction": "rights_review",
+        "backendStorable": true
+      },
+      "sourceRows": [
+        {
+          "sourceRowId": "DS05-R01",
+          "sourceId": "source-ds05",
+          "snapshotId": "snapshot-source-ds05",
+          "rowType": "date",
+          "title": "2주 전",
+          "order": 0,
+          "locator": "이사 2주 전"
+        },
+        {
+          "sourceRowId": "DS05-R02",
+          "sourceId": "source-ds05",
+          "snapshotId": "snapshot-source-ds05",
+          "rowType": "date",
+          "title": "1주 전",
+          "order": 1,
+          "locator": "이사 1주 전"
+        },
+        {
+          "sourceRowId": "DS05-R03",
+          "sourceId": "source-ds05",
+          "snapshotId": "snapshot-source-ds05",
+          "rowType": "date",
+          "title": "2~4일 전",
+          "order": 2,
+          "locator": "이사 2~4일 전"
+        },
+        {
+          "sourceRowId": "DS05-R04",
+          "sourceId": "source-ds05",
+          "snapshotId": "snapshot-source-ds05",
+          "rowType": "date",
+          "title": "전날",
+          "order": 3,
+          "locator": "이사 전날"
+        },
+        {
+          "sourceRowId": "DS05-R05",
+          "sourceId": "source-ds05",
+          "snapshotId": "snapshot-source-ds05",
+          "rowType": "date",
+          "title": "당일",
+          "order": 4,
+          "locator": "이사 당일"
+        },
+        {
+          "sourceRowId": "DS05-R06",
+          "sourceId": "source-ds05",
+          "snapshotId": "snapshot-source-ds05",
+          "rowType": "date",
+          "title": "이사 후",
+          "order": 5,
+          "locator": "이사 후"
+        }
+      ],
+      "sourceReferences": [
+        {
+          "sourceRefId": "source-ref-item-ds05-1",
+          "entityType": "item",
+          "entityId": "item-ds05-1",
+          "sourceRowIds": [
+            "DS05-R01"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "direct"
+        },
+        {
+          "sourceRefId": "source-ref-item-ds05-2",
+          "entityType": "item",
+          "entityId": "item-ds05-2",
+          "sourceRowIds": [
+            "DS05-R02"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "direct"
+        },
+        {
+          "sourceRefId": "source-ref-item-ds05-3",
+          "entityType": "item",
+          "entityId": "item-ds05-3",
+          "sourceRowIds": [
+            "DS05-R03"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "direct"
+        },
+        {
+          "sourceRefId": "source-ref-item-ds05-4",
+          "entityType": "item",
+          "entityId": "item-ds05-4",
+          "sourceRowIds": [
+            "DS05-R04"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "direct"
+        },
+        {
+          "sourceRefId": "source-ref-item-ds05-5",
+          "entityType": "item",
+          "entityId": "item-ds05-5",
+          "sourceRowIds": [
+            "DS05-R05"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "direct"
+        },
+        {
+          "sourceRefId": "source-ref-item-ds05-6",
+          "entityType": "item",
+          "entityId": "item-ds05-6",
+          "sourceRowIds": [
+            "DS05-R06"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "direct"
+        }
+      ],
+      "omittedRows": [],
+      "steps": [
+        {
+          "stepId": "step-ds05-timeline",
+          "title": "이사 기준일 전후",
+          "order": 0,
+          "itemIds": [
+            "item-ds05-1",
+            "item-ds05-2",
+            "item-ds05-3",
+            "item-ds05-4",
+            "item-ds05-5",
+            "item-ds05-6"
+          ],
+          "flowId": "flow-dto-date-preparation-easylaw-moving",
+          "sourceRefIds": [
+            "source-ref-item-ds05-1",
+            "source-ref-item-ds05-2",
+            "source-ref-item-ds05-3",
+            "source-ref-item-ds05-4",
+            "source-ref-item-ds05-5",
+            "source-ref-item-ds05-6"
+          ]
+        }
+      ],
+      "items": [
+        {
+          "itemId": "item-ds05-1",
+          "stepId": "step-ds05-timeline",
+          "title": "2주 전",
+          "intent": "act",
+          "order": 0,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "2주 전 원문 묶음의 실행 여부를 확인했다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "schedule": {
+            "mode": "anchor_offset",
+            "anchorFieldId": "anchor-date",
+            "dayOffset": -14,
+            "allDay": true
+          },
+          "sourceRefIds": [
+            "source-ref-item-ds05-1"
+          ]
+        },
+        {
+          "itemId": "item-ds05-2",
+          "stepId": "step-ds05-timeline",
+          "title": "1주 전",
+          "intent": "act",
+          "order": 1,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "1주 전 원문 묶음의 실행 여부를 확인했다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "schedule": {
+            "mode": "anchor_offset",
+            "anchorFieldId": "anchor-date",
+            "dayOffset": -7,
+            "allDay": true
+          },
+          "sourceRefIds": [
+            "source-ref-item-ds05-2"
+          ]
+        },
+        {
+          "itemId": "item-ds05-3",
+          "stepId": "step-ds05-timeline",
+          "title": "2~4일 전",
+          "intent": "act",
+          "order": 2,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "2~4일 전 원문 묶음의 실행 여부를 확인했다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "schedule": {
+            "mode": "date_window",
+            "basis": "anchor_offset",
+            "anchorFieldId": "anchor-date",
+            "startDayOffset": -4,
+            "endDayOffset": -2,
+            "reminderDayOffset": -4
+          },
+          "sourceRefIds": [
+            "source-ref-item-ds05-3"
+          ]
+        },
+        {
+          "itemId": "item-ds05-4",
+          "stepId": "step-ds05-timeline",
+          "title": "전날",
+          "intent": "act",
+          "order": 3,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "전날 원문 묶음의 실행 여부를 확인했다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "schedule": {
+            "mode": "anchor_offset",
+            "anchorFieldId": "anchor-date",
+            "dayOffset": -1,
+            "allDay": true
+          },
+          "sourceRefIds": [
+            "source-ref-item-ds05-4"
+          ]
+        },
+        {
+          "itemId": "item-ds05-5",
+          "stepId": "step-ds05-timeline",
+          "title": "당일",
+          "intent": "act",
+          "order": 4,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "당일 원문 묶음의 실행 여부를 확인했다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "schedule": {
+            "mode": "anchor_offset",
+            "anchorFieldId": "anchor-date",
+            "dayOffset": 0,
+            "allDay": true
+          },
+          "sourceRefIds": [
+            "source-ref-item-ds05-5"
+          ]
+        },
+        {
+          "itemId": "item-ds05-6",
+          "stepId": "step-ds05-timeline",
+          "title": "이사 후",
+          "intent": "act",
+          "order": 5,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "이사 후 원문 묶음의 실행 여부를 확인했다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "sourceRefIds": [
+            "source-ref-item-ds05-6"
+          ]
+        }
+      ],
+      "fields": [],
+      "memos": [],
+      "projectionPreview": {
+        "calendar": {
+          "availability": "primary",
+          "unit": "scheduled Item/occurrence",
+          "example": "ICS에는 schedule이 있는 Item만 들어가고, 날짜가 없는 Item은 제외한다.",
+          "loss": "No primary semantic loss."
+        },
+        "checklist": {
+          "availability": "secondary",
+          "unit": "Item grouped by Step",
+          "example": "Step 제목 아래 Item의 완료·결정 상태를 순서대로 표시한다.",
+          "loss": "Secondary view may omit fields owned by the primary artifact."
+        },
+        "todo": {
+          "availability": "not_applicable",
+          "unit": "Item grouped by Step",
+          "example": "다음 실행 Item과 출처 링크를 task/note로 옮긴다.",
+          "loss": "Projection would invent unsupported structure."
+        },
+        "sheet": {
+          "availability": "not_applicable",
+          "unit": "Item row + stable fields",
+          "example": "Item 한 개를 한 행으로 두고 상태·날짜·메모·출처 열을 유지한다.",
+          "loss": "Projection would invent unsupported structure."
+        },
+        "memo": {
+          "availability": "fallback",
+          "unit": "Flow/Step document",
+          "example": "사용자 결정, 출처 URL, 주의·보류 조건과 투영 손실을 Markdown으로 남긴다.",
+          "loss": "Completion and schedule state become prose."
+        }
+      }
+    },
+    {
+      "dtoId": "dto-ordered-procedure-nasa-crane",
+      "scenario": "순서형 절차",
+      "source": {
+        "sourceId": "source-ds12",
+        "title": "Build, Launch, Recover: Build a Crane Activity",
+        "originalUrl": "https://www.nasa.gov/stem-content/build-launch-recover-build-crane-activity/",
+        "snapshot": {
+          "snapshotId": "snapshot-source-ds12",
+          "fetchedAt": "2026-07-20T00:00:00.000Z",
+          "finalUrl": "https://www.nasa.gov/stem-content/build-launch-recover-build-crane-activity/",
+          "contentHash": "sha256:705aa530f82b9c7fc7d1b3ed1127cd1d5be5e1073910815eb9ee55722774ded5",
+          "extractionVersion": "taxonomy-v1.1-evidence-fixture-v1"
+        }
+      },
+      "flow": {
+        "flowId": "flow-dto-ordered-procedure-nasa-crane",
+        "title": "Build, Launch, Recover: Build a Crane Activity",
+        "stepIds": [
+          "step-ds12-prepare",
+          "step-ds12-build",
+          "step-ds12-review"
+        ],
+        "anchorDefinitions": []
+      },
+      "taxonomy": {
+        "classificationStatus": "confirmed",
+        "primaryLifeArea": "hobby_pet",
+        "secondaryLifeAreas": [
+          "study_reading"
+        ],
+        "topicTags": [
+          "STEM",
+          "크레인 만들기"
+        ],
+        "sourceShape": "procedure_rows",
+        "secondarySourceShapes": [
+          "checklist_rows"
+        ],
+        "primaryExecutionPattern": "ordered_procedure",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": [
+          "memo"
+        ]
+      },
+      "audienceAndApplicability": {
+        "roles": [
+          "learner"
+        ],
+        "ageBands": [
+          "teen"
+        ],
+        "skillLevel": "beginner",
+        "contentLocale": "en",
+        "applicableLocales": [
+          "ko-KR"
+        ],
+        "applicability": "local_adaptation_required",
+        "prerequisites": [],
+        "accountOrEntitlement": "none",
+        "collaborationContext": "team_roles",
+        "userNeedSignals": [
+          "follow_sequence",
+          "avoid_omission"
+        ],
+        "frictionSignals": [
+          "unclear_next_action"
+        ]
+      },
+      "access": {
+        "providerType": "government_public",
+        "platformRoles": [
+          "discover",
+          "host"
+        ],
+        "discoveryAccess": "public",
+        "rowAccess": "full",
+        "acquisitionMethods": [
+          "html_fetch"
+        ],
+        "sourceFormat": {
+          "category": "document",
+          "mediaType": "application/pdf",
+          "detail": {
+            "sourceRows": 8
+          }
+        }
+      },
+      "rights": {
+        "basis": "official_reuse_policy",
+        "allowedUse": [
+          "link_metadata",
+          "internal_review"
+        ],
+        "territoryScope": "unknown",
+        "territories": [],
+        "reviewStatus": "pending",
+        "personalTransformAllowed": false,
+        "publicReleaseAllowed": false,
+        "rationale": "Official educational source; translation, attribution and derivative-use terms still require review."
+      },
+      "review": {
+        "sourceRowStatus": "complete",
+        "conversionReadiness": "ready_second_wave",
+        "freshnessReview": "current",
+        "localeReview": "adaptation_required",
+        "safetyReview": "not_required",
+        "privacyReview": "not_required",
+        "rightsReview": "pending",
+        "promotionState": "research_only",
+        "blockers": [
+          "rights_unknown",
+          "locale_review_required"
+        ],
+        "portfolioRole": "breadth_candidate",
+        "editorialAction": "localize",
+        "backendStorable": true
+      },
+      "sourceRows": [
+        {
+          "sourceRowId": "DS12-R01",
+          "sourceId": "source-ds12",
+          "snapshotId": "snapshot-source-ds12",
+          "rowType": "check",
+          "title": "재료 준비",
+          "order": 0,
+          "locator": "Materials List"
+        },
+        {
+          "sourceRowId": "DS12-R02",
+          "sourceId": "source-ds12",
+          "snapshotId": "snapshot-source-ds12",
+          "rowType": "reference",
+          "title": "가위 안전",
+          "order": 1,
+          "locator": "Safety"
+        },
+        {
+          "sourceRowId": "DS12-R03",
+          "sourceId": "source-ds12",
+          "snapshotId": "snapshot-source-ds12",
+          "rowType": "check",
+          "title": "팀·컵 준비",
+          "order": 2,
+          "locator": "Preparation"
+        },
+        {
+          "sourceRowId": "DS12-R04",
+          "sourceId": "source-ds12",
+          "snapshotId": "snapshot-source-ds12",
+          "rowType": "procedure",
+          "title": "크레인 설계·제작",
+          "order": 3,
+          "locator": "Procedure 1-2"
+        },
+        {
+          "sourceRowId": "DS12-R05",
+          "sourceId": "source-ds12",
+          "snapshotId": "snapshot-source-ds12",
+          "rowType": "procedure",
+          "title": "감개 설계·제작",
+          "order": 4,
+          "locator": "Procedure 3-4"
+        },
+        {
+          "sourceRowId": "DS12-R06",
+          "sourceId": "source-ds12",
+          "snapshotId": "snapshot-source-ds12",
+          "rowType": "procedure",
+          "title": "끈·후크 연결과 시험",
+          "order": 5,
+          "locator": "Procedure 5-6"
+        },
+        {
+          "sourceRowId": "DS12-R07",
+          "sourceId": "source-ds12",
+          "snapshotId": "snapshot-source-ds12",
+          "rowType": "procedure",
+          "title": "컵 쌓기",
+          "order": 6,
+          "locator": "Procedure 7-11"
+        },
+        {
+          "sourceRowId": "DS12-R08",
+          "sourceId": "source-ds12",
+          "snapshotId": "snapshot-source-ds12",
+          "rowType": "table_row",
+          "title": "도전 질문",
+          "order": 7,
+          "locator": "Challenge Questions"
+        }
+      ],
+      "sourceReferences": [
+        {
+          "sourceRefId": "source-ref-item-ds12-prepare",
+          "entityType": "item",
+          "entityId": "item-ds12-prepare",
+          "sourceRowIds": [
+            "DS12-R01",
+            "DS12-R02",
+            "DS12-R03"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "direct"
+        },
+        {
+          "sourceRefId": "source-ref-item-ds12-crane",
+          "entityType": "item",
+          "entityId": "item-ds12-crane",
+          "sourceRowIds": [
+            "DS12-R04",
+            "DS12-R05"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "direct"
+        },
+        {
+          "sourceRefId": "source-ref-item-ds12-test",
+          "entityType": "item",
+          "entityId": "item-ds12-test",
+          "sourceRowIds": [
+            "DS12-R06",
+            "DS12-R07"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "direct"
+        },
+        {
+          "sourceRefId": "source-ref-item-ds12-reflect",
+          "entityType": "item",
+          "entityId": "item-ds12-reflect",
+          "sourceRowIds": [
+            "DS12-R08"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "direct"
+        }
+      ],
+      "omittedRows": [],
+      "steps": [
+        {
+          "stepId": "step-ds12-prepare",
+          "title": "준비",
+          "order": 0,
+          "itemIds": [
+            "item-ds12-prepare"
+          ],
+          "flowId": "flow-dto-ordered-procedure-nasa-crane",
+          "sourceRefIds": [
+            "source-ref-item-ds12-prepare"
+          ]
+        },
+        {
+          "stepId": "step-ds12-build",
+          "title": "설계·제작·시험",
+          "order": 1,
+          "itemIds": [
+            "item-ds12-crane",
+            "item-ds12-test"
+          ],
+          "flowId": "flow-dto-ordered-procedure-nasa-crane",
+          "sourceRefIds": [
+            "source-ref-item-ds12-crane",
+            "source-ref-item-ds12-test"
+          ]
+        },
+        {
+          "stepId": "step-ds12-review",
+          "title": "성찰",
+          "order": 2,
+          "itemIds": [
+            "item-ds12-reflect"
+          ],
+          "flowId": "flow-dto-ordered-procedure-nasa-crane",
+          "sourceRefIds": [
+            "source-ref-item-ds12-reflect"
+          ]
+        }
+      ],
+      "items": [
+        {
+          "itemId": "item-ds12-prepare",
+          "stepId": "step-ds12-prepare",
+          "title": "재료·팀·가위 안전 준비하기",
+          "intent": "inspect",
+          "order": 0,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "재료·팀·가위 안전 준비하기를 원문 범위 안에서 완료했다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "sourceRefIds": [
+            "source-ref-item-ds12-prepare"
+          ]
+        },
+        {
+          "itemId": "item-ds12-crane",
+          "stepId": "step-ds12-build",
+          "title": "크레인과 감개 설계·제작하기",
+          "intent": "act",
+          "order": 0,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "크레인과 감개 설계·제작하기를 원문 범위 안에서 완료했다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "sourceRefIds": [
+            "source-ref-item-ds12-crane"
+          ]
+        },
+        {
+          "itemId": "item-ds12-test",
+          "stepId": "step-ds12-build",
+          "title": "끈·후크를 연결하고 컵 쌓기 시험하기",
+          "intent": "act",
+          "order": 1,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "끈·후크를 연결하고 컵 쌓기 시험하기를 원문 범위 안에서 완료했다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "sourceRefIds": [
+            "source-ref-item-ds12-test"
+          ]
+        },
+        {
+          "itemId": "item-ds12-reflect",
+          "stepId": "step-ds12-review",
+          "title": "설계 어려움과 개선점을 기록하기",
+          "intent": "record",
+          "order": 0,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "도전 질문에 대한 개선 메모를 남겼다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "sourceRefIds": [
+            "source-ref-item-ds12-reflect"
+          ]
+        }
+      ],
+      "fields": [],
+      "memos": [],
+      "projectionPreview": {
+        "calendar": {
+          "availability": "not_applicable",
+          "unit": "scheduled Item/occurrence",
+          "example": "ICS에는 schedule이 있는 Item만 들어가고, 날짜가 없는 Item은 제외한다.",
+          "loss": "Projection would invent unsupported structure."
+        },
+        "checklist": {
+          "availability": "primary",
+          "unit": "Item grouped by Step",
+          "example": "Step 제목 아래 Item의 완료·결정 상태를 순서대로 표시한다.",
+          "loss": "No primary semantic loss."
+        },
+        "todo": {
+          "availability": "not_applicable",
+          "unit": "Item grouped by Step",
+          "example": "다음 실행 Item과 출처 링크를 task/note로 옮긴다.",
+          "loss": "Projection would invent unsupported structure."
+        },
+        "sheet": {
+          "availability": "not_applicable",
+          "unit": "Item row + stable fields",
+          "example": "Item 한 개를 한 행으로 두고 상태·날짜·메모·출처 열을 유지한다.",
+          "loss": "Projection would invent unsupported structure."
+        },
+        "memo": {
+          "availability": "secondary",
+          "unit": "Flow/Step document",
+          "example": "사용자 결정, 출처 URL, 주의·보류 조건과 투영 손실을 Markdown으로 남긴다.",
+          "loss": "Completion and schedule state become prose."
+        }
+      }
+    },
+    {
+      "dtoId": "dto-repeating-routine-heat-safety",
+      "scenario": "반복 루틴",
+      "source": {
+        "sourceId": "source-ds01",
+        "title": "2026년 농업인 온열질환 예방가이드 및 체크리스트",
+        "originalUrl": "https://www.nongsaro.go.kr/portal/ps/psz/psza/contentSub.ps?bbsId=10&cntntsNo=51&menuId=PS02485&nttSeCode=&pageIndex=1&pageSize=10&searchText=&searchType=title",
+        "snapshot": {
+          "snapshotId": "snapshot-source-ds01",
+          "fetchedAt": "2026-07-20T00:00:00.000Z",
+          "finalUrl": "https://www.nongsaro.go.kr/portal/ps/psz/psza/contentSub.ps?bbsId=10&cntntsNo=51&menuId=PS02485&nttSeCode=&pageIndex=1&pageSize=10&searchText=&searchType=title",
+          "contentHash": "sha256:e6edbe5fd401d28a471ed61e9f1e748a2c8b726d76df940feee09abc5503891d",
+          "extractionVersion": "taxonomy-v1.1-evidence-fixture-v1"
+        }
+      },
+      "flow": {
+        "flowId": "flow-dto-repeating-routine-heat-safety",
+        "title": "2026년 농업인 온열질환 예방가이드 및 체크리스트",
+        "stepIds": [
+          "step-ds01-before",
+          "step-ds01-during",
+          "step-ds01-after"
+        ],
+        "anchorDefinitions": []
+      },
+      "taxonomy": {
+        "classificationStatus": "confirmed",
+        "primaryLifeArea": "work_career",
+        "secondaryLifeAreas": [
+          "health_fitness"
+        ],
+        "topicTags": [
+          "농작업",
+          "온열질환"
+        ],
+        "sourceShape": "checklist_rows",
+        "secondarySourceShapes": [
+          "recurrence_rule"
+        ],
+        "primaryExecutionPattern": "repeating_routine",
+        "secondaryExecutionPatterns": [
+          "ordered_procedure"
+        ],
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": [
+          "todo"
+        ]
+      },
+      "audienceAndApplicability": {
+        "roles": [
+          "professional",
+          "team_member"
+        ],
+        "ageBands": [
+          "not_specified"
+        ],
+        "skillLevel": "not_applicable",
+        "contentLocale": "ko-KR",
+        "applicableLocales": [
+          "ko-KR"
+        ],
+        "applicability": "local_direct",
+        "prerequisites": [],
+        "accountOrEntitlement": "none",
+        "collaborationContext": "team_roles",
+        "userNeedSignals": [
+          "repeat_consistently",
+          "handoff_or_share"
+        ],
+        "frictionSignals": [
+          "collaboration_gap",
+          "missed_deadline"
+        ]
+      },
+      "access": {
+        "providerType": "public_institution",
+        "platformRoles": [
+          "discover",
+          "host"
+        ],
+        "discoveryAccess": "public",
+        "rowAccess": "full",
+        "acquisitionMethods": [
+          "html_fetch"
+        ],
+        "sourceFormat": {
+          "category": "document",
+          "mediaType": "application/pdf",
+          "detail": {
+            "sourceRows": 10
+          }
+        }
+      },
+      "rights": {
+        "basis": "link_only_assumption",
+        "allowedUse": [
+          "link_metadata",
+          "internal_review"
+        ],
+        "territoryScope": "unknown",
+        "territories": [],
+        "reviewStatus": "restricted",
+        "personalTransformAllowed": false,
+        "publicReleaseAllowed": false,
+        "rationale": "Public access and reuse rights are evaluated separately; current evidence supports an internal link-backed draft only."
+      },
+      "review": {
+        "sourceRowStatus": "complete",
+        "conversionReadiness": "ready_second_wave",
+        "freshnessReview": "current",
+        "localeReview": "applicable",
+        "safetyReview": "pending",
+        "privacyReview": "not_required",
+        "rightsReview": "restricted",
+        "promotionState": "research_only",
+        "blockers": [
+          "rights_unknown",
+          "safety_review_required"
+        ],
+        "portfolioRole": "official_trust_anchor",
+        "editorialAction": "safety_review",
+        "backendStorable": true
+      },
+      "sourceRows": [
+        {
+          "sourceRowId": "DS01-R01",
+          "sourceId": "source-ds01",
+          "snapshotId": "snapshot-source-ds01",
+          "rowType": "reference",
+          "title": "폭염 단계 기준 확인",
+          "order": 0,
+          "locator": "폭염특보 및 체감온도 기준"
+        },
+        {
+          "sourceRowId": "DS01-R02",
+          "sourceId": "source-ds01",
+          "snapshotId": "snapshot-source-ds01",
+          "rowType": "check",
+          "title": "작업 전 체감온도 확인",
+          "order": 1,
+          "locator": "농작업 전"
+        },
+        {
+          "sourceRowId": "DS01-R03",
+          "sourceId": "source-ds01",
+          "snapshotId": "snapshot-source-ds01",
+          "rowType": "check",
+          "title": "작업 시간 조정",
+          "order": 2,
+          "locator": "농작업 전"
+        },
+        {
+          "sourceRowId": "DS01-R04",
+          "sourceId": "source-ds01",
+          "snapshotId": "snapshot-source-ds01",
+          "rowType": "check",
+          "title": "물·그늘·보호구 준비",
+          "order": 3,
+          "locator": "농작업 전"
+        },
+        {
+          "sourceRowId": "DS01-R05",
+          "sourceId": "source-ds01",
+          "snapshotId": "snapshot-source-ds01",
+          "rowType": "check",
+          "title": "20분마다 수분 섭취",
+          "order": 4,
+          "locator": "농작업 중"
+        },
+        {
+          "sourceRowId": "DS01-R06",
+          "sourceId": "source-ds01",
+          "snapshotId": "snapshot-source-ds01",
+          "rowType": "check",
+          "title": "휴식 및 위험 단계 작업중지",
+          "order": 5,
+          "locator": "농작업 중"
+        },
+        {
+          "sourceRowId": "DS01-R07",
+          "sourceId": "source-ds01",
+          "snapshotId": "snapshot-source-ds01",
+          "rowType": "check",
+          "title": "온열질환 증상 확인",
+          "order": 6,
+          "locator": "농작업 중"
+        },
+        {
+          "sourceRowId": "DS01-R08",
+          "sourceId": "source-ds01",
+          "snapshotId": "snapshot-source-ds01",
+          "rowType": "reference",
+          "title": "의식이 없으면 즉시 119",
+          "order": 7,
+          "locator": "응급조치"
+        },
+        {
+          "sourceRowId": "DS01-R09",
+          "sourceId": "source-ds01",
+          "snapshotId": "snapshot-source-ds01",
+          "rowType": "check",
+          "title": "작업 후 회복",
+          "order": 8,
+          "locator": "농작업 후"
+        },
+        {
+          "sourceRowId": "DS01-R10",
+          "sourceId": "source-ds01",
+          "snapshotId": "snapshot-source-ds01",
+          "rowType": "check",
+          "title": "사업주 의무 확인",
+          "order": 9,
+          "locator": "사업주 체크리스트"
+        }
+      ],
+      "sourceReferences": [
+        {
+          "sourceRefId": "source-ref-item-ds01-before",
+          "entityType": "item",
+          "entityId": "item-ds01-before",
+          "sourceRowIds": [
+            "DS01-R01",
+            "DS01-R02",
+            "DS01-R03",
+            "DS01-R04"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "direct"
+        },
+        {
+          "sourceRefId": "source-ref-item-ds01-during",
+          "entityType": "item",
+          "entityId": "item-ds01-during",
+          "sourceRowIds": [
+            "DS01-R05",
+            "DS01-R06",
+            "DS01-R07"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "direct"
+        },
+        {
+          "sourceRefId": "source-ref-item-ds01-emergency",
+          "entityType": "item",
+          "entityId": "item-ds01-emergency",
+          "sourceRowIds": [
+            "DS01-R08",
+            "DS01-R09",
+            "DS01-R10"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "direct"
+        }
+      ],
+      "omittedRows": [],
+      "steps": [
+        {
+          "stepId": "step-ds01-before",
+          "title": "작업 전",
+          "order": 0,
+          "itemIds": [
+            "item-ds01-before"
+          ],
+          "flowId": "flow-dto-repeating-routine-heat-safety",
+          "sourceRefIds": [
+            "source-ref-item-ds01-before"
+          ]
+        },
+        {
+          "stepId": "step-ds01-during",
+          "title": "작업 중",
+          "order": 1,
+          "itemIds": [
+            "item-ds01-during"
+          ],
+          "flowId": "flow-dto-repeating-routine-heat-safety",
+          "sourceRefIds": [
+            "source-ref-item-ds01-during"
+          ]
+        },
+        {
+          "stepId": "step-ds01-after",
+          "title": "응급·작업 후",
+          "order": 2,
+          "itemIds": [
+            "item-ds01-emergency"
+          ],
+          "flowId": "flow-dto-repeating-routine-heat-safety",
+          "sourceRefIds": [
+            "source-ref-item-ds01-emergency"
+          ]
+        }
+      ],
+      "items": [
+        {
+          "itemId": "item-ds01-before",
+          "stepId": "step-ds01-before",
+          "title": "작업 전 체감온도·시간·물·그늘 확인하기",
+          "intent": "inspect",
+          "order": 0,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "작업 전 체감온도·시간·물·그늘 확인하기를 원문 범위 안에서 완료했다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "sourceRefIds": [
+            "source-ref-item-ds01-before"
+          ]
+        },
+        {
+          "itemId": "item-ds01-during",
+          "stepId": "step-ds01-during",
+          "title": "작업 중 20분마다 수분·휴식·동료 상태 확인하기",
+          "intent": "act",
+          "order": 0,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "작업 시간 동안 20분 간격 조치를 지켰거나 위험 단계에서 작업을 중지했다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "sourceRefIds": [
+            "source-ref-item-ds01-during"
+          ]
+        },
+        {
+          "itemId": "item-ds01-emergency",
+          "stepId": "step-ds01-after",
+          "title": "응급 기준과 작업 후 회복 확인하기",
+          "intent": "inspect",
+          "order": 0,
+          "completion": {
+            "mode": "decision",
+            "options": [
+              {
+                "value": "confirmed",
+                "label": "확인"
+              },
+              {
+                "value": "needs_followup",
+                "label": "추가 확인"
+              },
+              {
+                "value": "hold",
+                "label": "보류",
+                "terminal": true
+              }
+            ],
+            "doneWhen": "응급 신고·중지·회복 중 필요한 상태를 선택하고 인계했다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "sourceRefIds": [
+            "source-ref-item-ds01-emergency"
+          ]
+        }
+      ],
+      "fields": [],
+      "memos": [],
+      "projectionPreview": {
+        "calendar": {
+          "availability": "not_applicable",
+          "unit": "scheduled Item/occurrence",
+          "example": "ICS에는 schedule이 있는 Item만 들어가고, 날짜가 없는 Item은 제외한다.",
+          "loss": "Projection would invent unsupported structure."
+        },
+        "checklist": {
+          "availability": "primary",
+          "unit": "Item grouped by Step",
+          "example": "Step 제목 아래 Item의 완료·결정 상태를 순서대로 표시한다.",
+          "loss": "No primary semantic loss."
+        },
+        "todo": {
+          "availability": "secondary",
+          "unit": "Item grouped by Step",
+          "example": "다음 실행 Item과 출처 링크를 task/note로 옮긴다.",
+          "loss": "Secondary view may omit fields owned by the primary artifact."
+        },
+        "sheet": {
+          "availability": "not_applicable",
+          "unit": "Item row + stable fields",
+          "example": "Item 한 개를 한 행으로 두고 상태·날짜·메모·출처 열을 유지한다.",
+          "loss": "Projection would invent unsupported structure."
+        },
+        "memo": {
+          "availability": "fallback",
+          "unit": "Flow/Step document",
+          "example": "사용자 결정, 출처 URL, 주의·보류 조건과 투영 손실을 Markdown으로 남긴다.",
+          "loss": "Completion and schedule state become prose."
+        }
+      }
+    },
+    {
+      "dtoId": "dto-progress-tracking-ossu",
+      "scenario": "표·진도",
+      "source": {
+        "sourceId": "source-ds10",
+        "title": "OSSU Computer Science Curriculum",
+        "originalUrl": "https://github.com/ossu/computer-science",
+        "snapshot": {
+          "snapshotId": "snapshot-source-ds10",
+          "fetchedAt": "2026-07-20T00:00:00.000Z",
+          "finalUrl": "https://github.com/ossu/computer-science",
+          "contentHash": "sha256:81730525e776774e980605337fdb516ee808a5f665b3384eb9c96276caac40f0",
+          "extractionVersion": "taxonomy-v1.1-evidence-fixture-v1"
+        }
+      },
+      "flow": {
+        "flowId": "flow-dto-progress-tracking-ossu",
+        "title": "OSSU Computer Science Curriculum",
+        "stepIds": [
+          "step-ds10-core"
+        ],
+        "anchorDefinitions": []
+      },
+      "taxonomy": {
+        "classificationStatus": "confirmed",
+        "primaryLifeArea": "study_reading",
+        "secondaryLifeAreas": [
+          "work_career"
+        ],
+        "topicTags": [
+          "컴퓨터과학",
+          "커리큘럼"
+        ],
+        "sourceShape": "lesson_rows",
+        "secondarySourceShapes": [
+          "table_rows"
+        ],
+        "primaryExecutionPattern": "progress_tracking",
+        "secondaryExecutionPatterns": [
+          "resource_queue"
+        ],
+        "primaryArtifact": "sheet",
+        "secondaryArtifacts": [
+          "todo"
+        ]
+      },
+      "audienceAndApplicability": {
+        "roles": [
+          "learner"
+        ],
+        "ageBands": [
+          "not_specified"
+        ],
+        "skillLevel": "mixed",
+        "contentLocale": "en",
+        "applicableLocales": [
+          "ko-KR"
+        ],
+        "applicability": "local_adaptation_required",
+        "prerequisites": [
+          "고등학교 대수 수준 또는 각 과정의 명시된 선수조건"
+        ],
+        "accountOrEntitlement": "none",
+        "collaborationContext": "solo",
+        "userNeedSignals": [
+          "track_progress",
+          "queue_resources"
+        ],
+        "frictionSignals": [
+          "lost_progress"
+        ]
+      },
+      "access": {
+        "providerType": "open_knowledge",
+        "platformRoles": [
+          "discover",
+          "host"
+        ],
+        "discoveryAccess": "public",
+        "rowAccess": "full",
+        "acquisitionMethods": [
+          "html_fetch"
+        ],
+        "sourceFormat": {
+          "category": "course",
+          "mediaType": "text/markdown",
+          "detail": {
+            "sourceRows": 6
+          }
+        }
+      },
+      "rights": {
+        "basis": "open_license",
+        "allowedUse": [
+          "link_metadata",
+          "personal_transform",
+          "internal_review"
+        ],
+        "territoryScope": "global",
+        "territories": [
+          "GLOBAL"
+        ],
+        "reviewStatus": "approved",
+        "personalTransformAllowed": true,
+        "publicReleaseAllowed": false,
+        "rationale": "Open curriculum rows may be used for a private progress copy; public Flow promotion still needs attribution/editorial review."
+      },
+      "review": {
+        "sourceRowStatus": "complete",
+        "conversionReadiness": "ready_second_wave",
+        "freshnessReview": "current",
+        "localeReview": "adaptation_required",
+        "safetyReview": "not_required",
+        "privacyReview": "not_required",
+        "rightsReview": "approved",
+        "promotionState": "research_only",
+        "blockers": [
+          "locale_review_required"
+        ],
+        "portfolioRole": "breadth_candidate",
+        "editorialAction": "localize",
+        "backendStorable": true
+      },
+      "sourceRows": [
+        {
+          "sourceRowId": "DS10-R01",
+          "sourceId": "source-ds10",
+          "snapshotId": "snapshot-source-ds10",
+          "rowType": "resource",
+          "title": "Introduction to Computer Science and Programming using Python",
+          "order": 0,
+          "locator": "Intro CS table"
+        },
+        {
+          "sourceRowId": "DS10-R02",
+          "sourceId": "source-ds10",
+          "snapshotId": "snapshot-source-ds10",
+          "rowType": "resource",
+          "title": "Systematic Program Design",
+          "order": 1,
+          "locator": "Core programming table"
+        },
+        {
+          "sourceRowId": "DS10-R03",
+          "sourceId": "source-ds10",
+          "snapshotId": "snapshot-source-ds10",
+          "rowType": "resource",
+          "title": "Class-based Program Design",
+          "order": 2,
+          "locator": "Core programming table"
+        },
+        {
+          "sourceRowId": "DS10-R04",
+          "sourceId": "source-ds10",
+          "snapshotId": "snapshot-source-ds10",
+          "rowType": "resource",
+          "title": "Programming Languages",
+          "order": 3,
+          "locator": "Core programming table"
+        },
+        {
+          "sourceRowId": "DS10-R05",
+          "sourceId": "source-ds10",
+          "snapshotId": "snapshot-source-ds10",
+          "rowType": "resource",
+          "title": "Object-Oriented Design",
+          "order": 4,
+          "locator": "Core programming table"
+        },
+        {
+          "sourceRowId": "DS10-R06",
+          "sourceId": "source-ds10",
+          "snapshotId": "snapshot-source-ds10",
+          "rowType": "resource",
+          "title": "Software Architecture",
+          "order": 5,
+          "locator": "Core programming table"
+        }
+      ],
+      "sourceReferences": [
+        {
+          "sourceRefId": "source-ref-item-ds10-1",
+          "entityType": "item",
+          "entityId": "item-ds10-1",
+          "sourceRowIds": [
+            "DS10-R01"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "direct"
+        },
+        {
+          "sourceRefId": "source-ref-item-ds10-2",
+          "entityType": "item",
+          "entityId": "item-ds10-2",
+          "sourceRowIds": [
+            "DS10-R02"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "direct"
+        },
+        {
+          "sourceRefId": "source-ref-item-ds10-3",
+          "entityType": "item",
+          "entityId": "item-ds10-3",
+          "sourceRowIds": [
+            "DS10-R03"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "direct"
+        },
+        {
+          "sourceRefId": "source-ref-item-ds10-4",
+          "entityType": "item",
+          "entityId": "item-ds10-4",
+          "sourceRowIds": [
+            "DS10-R04"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "direct"
+        },
+        {
+          "sourceRefId": "source-ref-item-ds10-5",
+          "entityType": "item",
+          "entityId": "item-ds10-5",
+          "sourceRowIds": [
+            "DS10-R05"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "direct"
+        },
+        {
+          "sourceRefId": "source-ref-item-ds10-6",
+          "entityType": "item",
+          "entityId": "item-ds10-6",
+          "sourceRowIds": [
+            "DS10-R06"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "direct"
+        }
+      ],
+      "omittedRows": [],
+      "steps": [
+        {
+          "stepId": "step-ds10-core",
+          "title": "Core CS 과정",
+          "order": 0,
+          "itemIds": [
+            "item-ds10-1",
+            "item-ds10-2",
+            "item-ds10-3",
+            "item-ds10-4",
+            "item-ds10-5",
+            "item-ds10-6"
+          ],
+          "flowId": "flow-dto-progress-tracking-ossu",
+          "sourceRefIds": [
+            "source-ref-item-ds10-1",
+            "source-ref-item-ds10-2",
+            "source-ref-item-ds10-3",
+            "source-ref-item-ds10-4",
+            "source-ref-item-ds10-5",
+            "source-ref-item-ds10-6"
+          ]
+        }
+      ],
+      "items": [
+        {
+          "itemId": "item-ds10-1",
+          "stepId": "step-ds10-core",
+          "title": "Introduction to Computer Science and Programming using Python",
+          "intent": "use_resource",
+          "order": 0,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "Introduction to Computer Science and Programming using Python 과정의 현재 상태와 다음 과정을 기록했다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "sourceRefIds": [
+            "source-ref-item-ds10-1"
+          ]
+        },
+        {
+          "itemId": "item-ds10-2",
+          "stepId": "step-ds10-core",
+          "title": "Systematic Program Design",
+          "intent": "use_resource",
+          "order": 1,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "Systematic Program Design 과정의 현재 상태와 다음 과정을 기록했다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "sourceRefIds": [
+            "source-ref-item-ds10-2"
+          ]
+        },
+        {
+          "itemId": "item-ds10-3",
+          "stepId": "step-ds10-core",
+          "title": "Class-based Program Design",
+          "intent": "use_resource",
+          "order": 2,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "Class-based Program Design 과정의 현재 상태와 다음 과정을 기록했다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "sourceRefIds": [
+            "source-ref-item-ds10-3"
+          ]
+        },
+        {
+          "itemId": "item-ds10-4",
+          "stepId": "step-ds10-core",
+          "title": "Programming Languages",
+          "intent": "use_resource",
+          "order": 3,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "Programming Languages 과정의 현재 상태와 다음 과정을 기록했다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "sourceRefIds": [
+            "source-ref-item-ds10-4"
+          ]
+        },
+        {
+          "itemId": "item-ds10-5",
+          "stepId": "step-ds10-core",
+          "title": "Object-Oriented Design",
+          "intent": "use_resource",
+          "order": 4,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "Object-Oriented Design 과정의 현재 상태와 다음 과정을 기록했다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "sourceRefIds": [
+            "source-ref-item-ds10-5"
+          ]
+        },
+        {
+          "itemId": "item-ds10-6",
+          "stepId": "step-ds10-core",
+          "title": "Software Architecture",
+          "intent": "use_resource",
+          "order": 5,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "Software Architecture 과정의 현재 상태와 다음 과정을 기록했다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "sourceRefIds": [
+            "source-ref-item-ds10-6"
+          ]
+        }
+      ],
+      "fields": [],
+      "memos": [],
+      "projectionPreview": {
+        "calendar": {
+          "availability": "not_applicable",
+          "unit": "scheduled Item/occurrence",
+          "example": "ICS에는 schedule이 있는 Item만 들어가고, 날짜가 없는 Item은 제외한다.",
+          "loss": "Projection would invent unsupported structure."
+        },
+        "checklist": {
+          "availability": "not_applicable",
+          "unit": "Item grouped by Step",
+          "example": "Step 제목 아래 Item의 완료·결정 상태를 순서대로 표시한다.",
+          "loss": "Projection would invent unsupported structure."
+        },
+        "todo": {
+          "availability": "secondary",
+          "unit": "Item grouped by Step",
+          "example": "다음 실행 Item과 출처 링크를 task/note로 옮긴다.",
+          "loss": "Secondary view may omit fields owned by the primary artifact."
+        },
+        "sheet": {
+          "availability": "primary",
+          "unit": "Item row + stable fields",
+          "example": "Item 한 개를 한 행으로 두고 상태·날짜·메모·출처 열을 유지한다.",
+          "loss": "No primary semantic loss."
+        },
+        "memo": {
+          "availability": "fallback",
+          "unit": "Flow/Step document",
+          "example": "사용자 결정, 출처 URL, 주의·보류 조건과 투영 손실을 Markdown으로 남긴다.",
+          "loss": "Completion and schedule state become prose."
+        }
+      }
+    },
+    {
+      "dtoId": "dto-resource-queue-librivox",
+      "scenario": "자료 큐",
+      "source": {
+        "sourceId": "source-librivox-anne-v5",
+        "title": "Anne of Green Gables, Version 5",
+        "originalUrl": "https://librivox.org/anne-of-green-gables-version-5-by-lucy-maud-montgomery/",
+        "snapshot": {
+          "snapshotId": "snapshot-source-librivox-anne-v5",
+          "fetchedAt": "2026-07-20T00:00:00.000Z",
+          "finalUrl": "https://librivox.org/anne-of-green-gables-version-5-by-lucy-maud-montgomery/",
+          "contentHash": "sha256:5df59f427529d46ae4f793ad034672715900f18c171da3c296fe06bf0061c9fc",
+          "extractionVersion": "taxonomy-v1.1-evidence-fixture-v1"
+        }
+      },
+      "flow": {
+        "flowId": "flow-dto-resource-queue-librivox",
+        "title": "Anne of Green Gables, Version 5",
+        "stepIds": [
+          "step-lv-queue"
+        ],
+        "anchorDefinitions": []
+      },
+      "taxonomy": {
+        "classificationStatus": "confirmed",
+        "primaryLifeArea": "study_reading",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "오디오북",
+          "영어 듣기"
+        ],
+        "sourceShape": "resource_collection",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "resource_queue",
+        "secondaryExecutionPatterns": [
+          "progress_tracking"
+        ],
+        "primaryArtifact": "sheet",
+        "secondaryArtifacts": [
+          "todo"
+        ]
+      },
+      "audienceAndApplicability": {
+        "roles": [
+          "learner"
+        ],
+        "ageBands": [
+          "not_specified"
+        ],
+        "skillLevel": "mixed",
+        "contentLocale": "en",
+        "applicableLocales": [
+          "ko-KR"
+        ],
+        "applicability": "local_adaptation_required",
+        "prerequisites": [],
+        "accountOrEntitlement": "none",
+        "collaborationContext": "solo",
+        "userNeedSignals": [
+          "queue_resources",
+          "track_progress"
+        ],
+        "frictionSignals": [
+          "lost_progress",
+          "source_revisit_cost"
+        ]
+      },
+      "access": {
+        "providerType": "open_knowledge",
+        "platformRoles": [
+          "discover",
+          "host"
+        ],
+        "discoveryAccess": "public",
+        "rowAccess": "full",
+        "acquisitionMethods": [
+          "rss_fetch"
+        ],
+        "sourceFormat": {
+          "category": "audio",
+          "mediaType": "application/rss+xml",
+          "detail": {
+            "totalChapterRowsObserved": 38,
+            "representativeRowsIncluded": 3
+          }
+        }
+      },
+      "rights": {
+        "basis": "public_domain",
+        "allowedUse": [
+          "link_metadata",
+          "internal_review"
+        ],
+        "territoryScope": "named",
+        "territories": [
+          "US"
+        ],
+        "reviewStatus": "pending",
+        "personalTransformAllowed": false,
+        "publicReleaseAllowed": false,
+        "rationale": "The source marks recordings public domain in the USA and asks non-U.S. users to verify local copyright status."
+      },
+      "review": {
+        "sourceRowStatus": "partial",
+        "conversionReadiness": "ready_second_wave",
+        "freshnessReview": "current",
+        "localeReview": "adaptation_required",
+        "safetyReview": "not_required",
+        "privacyReview": "not_required",
+        "rightsReview": "pending",
+        "promotionState": "research_only",
+        "blockers": [
+          "source_incomplete",
+          "rights_unknown",
+          "locale_review_required"
+        ],
+        "portfolioRole": "breadth_candidate",
+        "editorialAction": "rights_review",
+        "backendStorable": true
+      },
+      "sourceRows": [
+        {
+          "sourceRowId": "lv-row-01",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-source-librivox-anne-v5",
+          "rowType": "resource",
+          "title": "Mrs. Rachel Lynde Is Surprised",
+          "order": 0,
+          "locator": "chapter 01; 00:14:35"
+        },
+        {
+          "sourceRowId": "lv-row-02",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-source-librivox-anne-v5",
+          "rowType": "resource",
+          "title": "Matthew Cuthbert Is Surprised",
+          "order": 1,
+          "locator": "chapter 02; 00:26:09"
+        },
+        {
+          "sourceRowId": "lv-row-03",
+          "sourceId": "source-librivox-anne-v5",
+          "snapshotId": "snapshot-source-librivox-anne-v5",
+          "rowType": "resource",
+          "title": "Marilla Cuthbert Is Surprised",
+          "order": 2,
+          "locator": "chapter 03; 00:12:47"
+        }
+      ],
+      "sourceReferences": [
+        {
+          "sourceRefId": "source-ref-item-lv-1",
+          "entityType": "item",
+          "entityId": "item-lv-1",
+          "sourceRowIds": [
+            "lv-row-01"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "direct"
+        },
+        {
+          "sourceRefId": "source-ref-item-lv-2",
+          "entityType": "item",
+          "entityId": "item-lv-2",
+          "sourceRowIds": [
+            "lv-row-02"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "direct"
+        },
+        {
+          "sourceRefId": "source-ref-item-lv-3",
+          "entityType": "item",
+          "entityId": "item-lv-3",
+          "sourceRowIds": [
+            "lv-row-03"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "direct"
+        }
+      ],
+      "omittedRows": [],
+      "steps": [
+        {
+          "stepId": "step-lv-queue",
+          "title": "오디오 장 큐",
+          "order": 0,
+          "itemIds": [
+            "item-lv-1",
+            "item-lv-2",
+            "item-lv-3"
+          ],
+          "flowId": "flow-dto-resource-queue-librivox",
+          "sourceRefIds": [
+            "source-ref-item-lv-1",
+            "source-ref-item-lv-2",
+            "source-ref-item-lv-3"
+          ]
+        }
+      ],
+      "items": [
+        {
+          "itemId": "item-lv-1",
+          "stepId": "step-lv-queue",
+          "title": "1장 듣기 — Mrs. Rachel Lynde Is Surprised",
+          "intent": "use_resource",
+          "order": 0,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "해당 장을 듣고 다음 장 위치를 저장했다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "sourceRefIds": [
+            "source-ref-item-lv-1"
+          ]
+        },
+        {
+          "itemId": "item-lv-2",
+          "stepId": "step-lv-queue",
+          "title": "2장 듣기 — Matthew Cuthbert Is Surprised",
+          "intent": "use_resource",
+          "order": 1,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "해당 장을 듣고 다음 장 위치를 저장했다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "sourceRefIds": [
+            "source-ref-item-lv-2"
+          ]
+        },
+        {
+          "itemId": "item-lv-3",
+          "stepId": "step-lv-queue",
+          "title": "3장 듣기 — Marilla Cuthbert Is Surprised",
+          "intent": "use_resource",
+          "order": 2,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "해당 장을 듣고 다음 장 위치를 저장했다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "sourceRefIds": [
+            "source-ref-item-lv-3"
+          ]
+        }
+      ],
+      "fields": [],
+      "memos": [],
+      "projectionPreview": {
+        "calendar": {
+          "availability": "not_applicable",
+          "unit": "scheduled Item/occurrence",
+          "example": "ICS에는 schedule이 있는 Item만 들어가고, 날짜가 없는 Item은 제외한다.",
+          "loss": "Projection would invent unsupported structure."
+        },
+        "checklist": {
+          "availability": "not_applicable",
+          "unit": "Item grouped by Step",
+          "example": "Step 제목 아래 Item의 완료·결정 상태를 순서대로 표시한다.",
+          "loss": "Projection would invent unsupported structure."
+        },
+        "todo": {
+          "availability": "secondary",
+          "unit": "Item grouped by Step",
+          "example": "다음 실행 Item과 출처 링크를 task/note로 옮긴다.",
+          "loss": "Secondary view may omit fields owned by the primary artifact."
+        },
+        "sheet": {
+          "availability": "primary",
+          "unit": "Item row + stable fields",
+          "example": "Item 한 개를 한 행으로 두고 상태·날짜·메모·출처 열을 유지한다.",
+          "loss": "No primary semantic loss."
+        },
+        "memo": {
+          "availability": "fallback",
+          "unit": "Flow/Step document",
+          "example": "사용자 결정, 출처 URL, 주의·보류 조건과 투영 손실을 Markdown으로 남긴다.",
+          "loss": "Completion and schedule state become prose."
+        }
+      }
+    },
+    {
+      "dtoId": "dto-compare-decide-remodel-contract",
+      "scenario": "비교·결정",
+      "source": {
+        "sourceId": "source-ds02",
+        "title": "리모델링 계약서 체크리스트 10",
+        "originalUrl": "https://ohou.se/advices/1972",
+        "snapshot": {
+          "snapshotId": "snapshot-source-ds02",
+          "fetchedAt": "2026-07-20T00:00:00.000Z",
+          "finalUrl": "https://ohou.se/advices/1972",
+          "contentHash": "sha256:27f599ca6db9676997f1eab1c554be8c515db5d4733492349dc86f30dc858f97",
+          "extractionVersion": "taxonomy-v1.1-evidence-fixture-v1"
+        }
+      },
+      "flow": {
+        "flowId": "flow-dto-compare-decide-remodel-contract",
+        "title": "리모델링 계약서 체크리스트 10",
+        "stepIds": [
+          "step-ds02-criteria"
+        ],
+        "anchorDefinitions": []
+      },
+      "taxonomy": {
+        "classificationStatus": "confirmed",
+        "primaryLifeArea": "money_admin_purchase",
+        "secondaryLifeAreas": [
+          "home_living"
+        ],
+        "topicTags": [
+          "리모델링",
+          "계약"
+        ],
+        "sourceShape": "decision_criteria",
+        "secondarySourceShapes": [
+          "table_rows"
+        ],
+        "primaryExecutionPattern": "compare_decide",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "sheet",
+        "secondaryArtifacts": [
+          "checklist",
+          "memo"
+        ]
+      },
+      "audienceAndApplicability": {
+        "roles": [
+          "buyer"
+        ],
+        "ageBands": [
+          "not_specified"
+        ],
+        "skillLevel": "not_applicable",
+        "contentLocale": "ko-KR",
+        "applicableLocales": [
+          "ko-KR"
+        ],
+        "applicability": "local_direct",
+        "prerequisites": [],
+        "accountOrEntitlement": "none",
+        "collaborationContext": "solo",
+        "userNeedSignals": [
+          "choose_between_options",
+          "avoid_omission"
+        ],
+        "frictionSignals": [
+          "unclear_next_action"
+        ]
+      },
+      "access": {
+        "providerType": "community_platform",
+        "platformRoles": [
+          "discover",
+          "host"
+        ],
+        "discoveryAccess": "public",
+        "rowAccess": "full",
+        "acquisitionMethods": [
+          "html_fetch"
+        ],
+        "sourceFormat": {
+          "category": "checklist",
+          "mediaType": "text/html",
+          "detail": {
+            "sourceRows": 10
+          }
+        }
+      },
+      "rights": {
+        "basis": "unknown",
+        "allowedUse": [
+          "link_metadata",
+          "internal_review"
+        ],
+        "territoryScope": "unknown",
+        "territories": [],
+        "reviewStatus": "pending",
+        "personalTransformAllowed": false,
+        "publicReleaseAllowed": false,
+        "rationale": "Creator/platform permission is required before source rows are distributed as public derived content."
+      },
+      "review": {
+        "sourceRowStatus": "complete",
+        "conversionReadiness": "hold",
+        "freshnessReview": "current",
+        "localeReview": "applicable",
+        "safetyReview": "not_required",
+        "privacyReview": "not_required",
+        "rightsReview": "pending",
+        "promotionState": "research_only",
+        "blockers": [
+          "rights_permission_required"
+        ],
+        "portfolioRole": "breadth_candidate",
+        "editorialAction": "request_permission",
+        "backendStorable": true
+      },
+      "sourceRows": [
+        {
+          "sourceRowId": "DS02-R01",
+          "sourceId": "source-ds02",
+          "snapshotId": "snapshot-source-ds02",
+          "rowType": "table_row",
+          "title": "업체 정보",
+          "order": 0,
+          "locator": "체크리스트 1"
+        },
+        {
+          "sourceRowId": "DS02-R02",
+          "sourceId": "source-ds02",
+          "snapshotId": "snapshot-source-ds02",
+          "rowType": "table_row",
+          "title": "공사 시작일과 종료일",
+          "order": 1,
+          "locator": "체크리스트 2"
+        },
+        {
+          "sourceRowId": "DS02-R03",
+          "sourceId": "source-ds02",
+          "snapshotId": "snapshot-source-ds02",
+          "rowType": "table_row",
+          "title": "지연배상",
+          "order": 2,
+          "locator": "체크리스트 3"
+        },
+        {
+          "sourceRowId": "DS02-R04",
+          "sourceId": "source-ds02",
+          "snapshotId": "snapshot-source-ds02",
+          "rowType": "table_row",
+          "title": "대금 지급 방법과 날짜",
+          "order": 3,
+          "locator": "체크리스트 4"
+        },
+        {
+          "sourceRowId": "DS02-R05",
+          "sourceId": "source-ds02",
+          "snapshotId": "snapshot-source-ds02",
+          "rowType": "table_row",
+          "title": "최종 금액과 추가 비용",
+          "order": 4,
+          "locator": "체크리스트 5"
+        },
+        {
+          "sourceRowId": "DS02-R06",
+          "sourceId": "source-ds02",
+          "snapshotId": "snapshot-source-ds02",
+          "rowType": "table_row",
+          "title": "세금계산서 발행 기한",
+          "order": 5,
+          "locator": "체크리스트 6"
+        },
+        {
+          "sourceRowId": "DS02-R07",
+          "sourceId": "source-ds02",
+          "snapshotId": "snapshot-source-ds02",
+          "rowType": "table_row",
+          "title": "자재내역서",
+          "order": 6,
+          "locator": "체크리스트 7"
+        },
+        {
+          "sourceRowId": "DS02-R08",
+          "sourceId": "source-ds02",
+          "snapshotId": "snapshot-source-ds02",
+          "rowType": "table_row",
+          "title": "변경 권한",
+          "order": 7,
+          "locator": "체크리스트 8"
+        },
+        {
+          "sourceRowId": "DS02-R09",
+          "sourceId": "source-ds02",
+          "snapshotId": "snapshot-source-ds02",
+          "rowType": "table_row",
+          "title": "A/S 기간",
+          "order": 8,
+          "locator": "체크리스트 9"
+        },
+        {
+          "sourceRowId": "DS02-R10",
+          "sourceId": "source-ds02",
+          "snapshotId": "snapshot-source-ds02",
+          "rowType": "table_row",
+          "title": "계약 해지와 위약금",
+          "order": 9,
+          "locator": "체크리스트 10"
+        }
+      ],
+      "sourceReferences": [
+        {
+          "sourceRefId": "source-ref-item-ds02-1",
+          "entityType": "item",
+          "entityId": "item-ds02-1",
+          "sourceRowIds": [
+            "DS02-R01"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "direct"
+        },
+        {
+          "sourceRefId": "source-ref-item-ds02-2",
+          "entityType": "item",
+          "entityId": "item-ds02-2",
+          "sourceRowIds": [
+            "DS02-R02"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "direct"
+        },
+        {
+          "sourceRefId": "source-ref-item-ds02-3",
+          "entityType": "item",
+          "entityId": "item-ds02-3",
+          "sourceRowIds": [
+            "DS02-R03"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "direct"
+        },
+        {
+          "sourceRefId": "source-ref-item-ds02-4",
+          "entityType": "item",
+          "entityId": "item-ds02-4",
+          "sourceRowIds": [
+            "DS02-R04"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "direct"
+        },
+        {
+          "sourceRefId": "source-ref-item-ds02-5",
+          "entityType": "item",
+          "entityId": "item-ds02-5",
+          "sourceRowIds": [
+            "DS02-R05"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "direct"
+        },
+        {
+          "sourceRefId": "source-ref-item-ds02-6",
+          "entityType": "item",
+          "entityId": "item-ds02-6",
+          "sourceRowIds": [
+            "DS02-R06"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "direct"
+        },
+        {
+          "sourceRefId": "source-ref-item-ds02-7",
+          "entityType": "item",
+          "entityId": "item-ds02-7",
+          "sourceRowIds": [
+            "DS02-R07"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "direct"
+        },
+        {
+          "sourceRefId": "source-ref-item-ds02-8",
+          "entityType": "item",
+          "entityId": "item-ds02-8",
+          "sourceRowIds": [
+            "DS02-R08"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "direct"
+        },
+        {
+          "sourceRefId": "source-ref-item-ds02-9",
+          "entityType": "item",
+          "entityId": "item-ds02-9",
+          "sourceRowIds": [
+            "DS02-R09"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "direct"
+        },
+        {
+          "sourceRefId": "source-ref-item-ds02-10",
+          "entityType": "item",
+          "entityId": "item-ds02-10",
+          "sourceRowIds": [
+            "DS02-R10"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "direct"
+        }
+      ],
+      "omittedRows": [],
+      "steps": [
+        {
+          "stepId": "step-ds02-criteria",
+          "title": "계약 조건 판정",
+          "order": 0,
+          "itemIds": [
+            "item-ds02-1",
+            "item-ds02-2",
+            "item-ds02-3",
+            "item-ds02-4",
+            "item-ds02-5",
+            "item-ds02-6",
+            "item-ds02-7",
+            "item-ds02-8",
+            "item-ds02-9",
+            "item-ds02-10"
+          ],
+          "flowId": "flow-dto-compare-decide-remodel-contract",
+          "sourceRefIds": [
+            "source-ref-item-ds02-1",
+            "source-ref-item-ds02-2",
+            "source-ref-item-ds02-3",
+            "source-ref-item-ds02-4",
+            "source-ref-item-ds02-5",
+            "source-ref-item-ds02-6",
+            "source-ref-item-ds02-7",
+            "source-ref-item-ds02-8",
+            "source-ref-item-ds02-9",
+            "source-ref-item-ds02-10"
+          ]
+        }
+      ],
+      "items": [
+        {
+          "itemId": "item-ds02-1",
+          "stepId": "step-ds02-criteria",
+          "title": "업체 정보 조건 판정하기",
+          "intent": "decide",
+          "order": 0,
+          "completion": {
+            "mode": "decision",
+            "options": [
+              {
+                "value": "confirmed",
+                "label": "확인"
+              },
+              {
+                "value": "needs_followup",
+                "label": "추가 확인"
+              },
+              {
+                "value": "hold",
+                "label": "보류",
+                "terminal": true
+              }
+            ],
+            "doneWhen": "업체 정보을 진행·수정요청·보류 중 하나로 판정했다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "sourceRefIds": [
+            "source-ref-item-ds02-1"
+          ]
+        },
+        {
+          "itemId": "item-ds02-2",
+          "stepId": "step-ds02-criteria",
+          "title": "공사 시작일과 종료일 조건 판정하기",
+          "intent": "decide",
+          "order": 1,
+          "completion": {
+            "mode": "decision",
+            "options": [
+              {
+                "value": "confirmed",
+                "label": "확인"
+              },
+              {
+                "value": "needs_followup",
+                "label": "추가 확인"
+              },
+              {
+                "value": "hold",
+                "label": "보류",
+                "terminal": true
+              }
+            ],
+            "doneWhen": "공사 시작일과 종료일을 진행·수정요청·보류 중 하나로 판정했다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "sourceRefIds": [
+            "source-ref-item-ds02-2"
+          ]
+        },
+        {
+          "itemId": "item-ds02-3",
+          "stepId": "step-ds02-criteria",
+          "title": "지연배상 조건 판정하기",
+          "intent": "decide",
+          "order": 2,
+          "completion": {
+            "mode": "decision",
+            "options": [
+              {
+                "value": "confirmed",
+                "label": "확인"
+              },
+              {
+                "value": "needs_followup",
+                "label": "추가 확인"
+              },
+              {
+                "value": "hold",
+                "label": "보류",
+                "terminal": true
+              }
+            ],
+            "doneWhen": "지연배상을 진행·수정요청·보류 중 하나로 판정했다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "sourceRefIds": [
+            "source-ref-item-ds02-3"
+          ]
+        },
+        {
+          "itemId": "item-ds02-4",
+          "stepId": "step-ds02-criteria",
+          "title": "대금 지급 방법과 날짜 조건 판정하기",
+          "intent": "decide",
+          "order": 3,
+          "completion": {
+            "mode": "decision",
+            "options": [
+              {
+                "value": "confirmed",
+                "label": "확인"
+              },
+              {
+                "value": "needs_followup",
+                "label": "추가 확인"
+              },
+              {
+                "value": "hold",
+                "label": "보류",
+                "terminal": true
+              }
+            ],
+            "doneWhen": "대금 지급 방법과 날짜을 진행·수정요청·보류 중 하나로 판정했다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "sourceRefIds": [
+            "source-ref-item-ds02-4"
+          ]
+        },
+        {
+          "itemId": "item-ds02-5",
+          "stepId": "step-ds02-criteria",
+          "title": "최종 금액과 추가 비용 조건 판정하기",
+          "intent": "decide",
+          "order": 4,
+          "completion": {
+            "mode": "decision",
+            "options": [
+              {
+                "value": "confirmed",
+                "label": "확인"
+              },
+              {
+                "value": "needs_followup",
+                "label": "추가 확인"
+              },
+              {
+                "value": "hold",
+                "label": "보류",
+                "terminal": true
+              }
+            ],
+            "doneWhen": "최종 금액과 추가 비용을 진행·수정요청·보류 중 하나로 판정했다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "sourceRefIds": [
+            "source-ref-item-ds02-5"
+          ]
+        },
+        {
+          "itemId": "item-ds02-6",
+          "stepId": "step-ds02-criteria",
+          "title": "세금계산서 발행 기한 조건 판정하기",
+          "intent": "decide",
+          "order": 5,
+          "completion": {
+            "mode": "decision",
+            "options": [
+              {
+                "value": "confirmed",
+                "label": "확인"
+              },
+              {
+                "value": "needs_followup",
+                "label": "추가 확인"
+              },
+              {
+                "value": "hold",
+                "label": "보류",
+                "terminal": true
+              }
+            ],
+            "doneWhen": "세금계산서 발행 기한을 진행·수정요청·보류 중 하나로 판정했다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "sourceRefIds": [
+            "source-ref-item-ds02-6"
+          ]
+        },
+        {
+          "itemId": "item-ds02-7",
+          "stepId": "step-ds02-criteria",
+          "title": "자재내역서 조건 판정하기",
+          "intent": "decide",
+          "order": 6,
+          "completion": {
+            "mode": "decision",
+            "options": [
+              {
+                "value": "confirmed",
+                "label": "확인"
+              },
+              {
+                "value": "needs_followup",
+                "label": "추가 확인"
+              },
+              {
+                "value": "hold",
+                "label": "보류",
+                "terminal": true
+              }
+            ],
+            "doneWhen": "자재내역서을 진행·수정요청·보류 중 하나로 판정했다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "sourceRefIds": [
+            "source-ref-item-ds02-7"
+          ]
+        },
+        {
+          "itemId": "item-ds02-8",
+          "stepId": "step-ds02-criteria",
+          "title": "변경 권한 조건 판정하기",
+          "intent": "decide",
+          "order": 7,
+          "completion": {
+            "mode": "decision",
+            "options": [
+              {
+                "value": "confirmed",
+                "label": "확인"
+              },
+              {
+                "value": "needs_followup",
+                "label": "추가 확인"
+              },
+              {
+                "value": "hold",
+                "label": "보류",
+                "terminal": true
+              }
+            ],
+            "doneWhen": "변경 권한을 진행·수정요청·보류 중 하나로 판정했다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "sourceRefIds": [
+            "source-ref-item-ds02-8"
+          ]
+        },
+        {
+          "itemId": "item-ds02-9",
+          "stepId": "step-ds02-criteria",
+          "title": "A/S 기간 조건 판정하기",
+          "intent": "decide",
+          "order": 8,
+          "completion": {
+            "mode": "decision",
+            "options": [
+              {
+                "value": "confirmed",
+                "label": "확인"
+              },
+              {
+                "value": "needs_followup",
+                "label": "추가 확인"
+              },
+              {
+                "value": "hold",
+                "label": "보류",
+                "terminal": true
+              }
+            ],
+            "doneWhen": "A/S 기간을 진행·수정요청·보류 중 하나로 판정했다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "sourceRefIds": [
+            "source-ref-item-ds02-9"
+          ]
+        },
+        {
+          "itemId": "item-ds02-10",
+          "stepId": "step-ds02-criteria",
+          "title": "계약 해지와 위약금 조건 판정하기",
+          "intent": "decide",
+          "order": 9,
+          "completion": {
+            "mode": "decision",
+            "options": [
+              {
+                "value": "confirmed",
+                "label": "확인"
+              },
+              {
+                "value": "needs_followup",
+                "label": "추가 확인"
+              },
+              {
+                "value": "hold",
+                "label": "보류",
+                "terminal": true
+              }
+            ],
+            "doneWhen": "계약 해지와 위약금을 진행·수정요청·보류 중 하나로 판정했다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "sourceRefIds": [
+            "source-ref-item-ds02-10"
+          ]
+        }
+      ],
+      "fields": [],
+      "memos": [],
+      "projectionPreview": {
+        "calendar": {
+          "availability": "not_applicable",
+          "unit": "scheduled Item/occurrence",
+          "example": "ICS에는 schedule이 있는 Item만 들어가고, 날짜가 없는 Item은 제외한다.",
+          "loss": "Projection would invent unsupported structure."
+        },
+        "checklist": {
+          "availability": "secondary",
+          "unit": "Item grouped by Step",
+          "example": "Step 제목 아래 Item의 완료·결정 상태를 순서대로 표시한다.",
+          "loss": "Secondary view may omit fields owned by the primary artifact."
+        },
+        "todo": {
+          "availability": "not_applicable",
+          "unit": "Item grouped by Step",
+          "example": "다음 실행 Item과 출처 링크를 task/note로 옮긴다.",
+          "loss": "Projection would invent unsupported structure."
+        },
+        "sheet": {
+          "availability": "primary",
+          "unit": "Item row + stable fields",
+          "example": "Item 한 개를 한 행으로 두고 상태·날짜·메모·출처 열을 유지한다.",
+          "loss": "No primary semantic loss."
+        },
+        "memo": {
+          "availability": "secondary",
+          "unit": "Flow/Step document",
+          "example": "사용자 결정, 출처 URL, 주의·보류 조건과 투영 손실을 Markdown으로 남긴다.",
+          "loss": "Completion and schedule state become prose."
+        }
+      }
+    },
+    {
+      "dtoId": "dto-phase-lifecycle-developer-portfolio",
+      "scenario": "단계형 프로젝트",
+      "source": {
+        "sourceId": "source-velog-portfolio",
+        "title": "효율적으로 IT 개발자로 취업 준비하기 — 포트폴리오 편",
+        "originalUrl": "https://velog.io/@vonvoyage27/%ED%9A%A8%EC%9C%A8%EC%A0%81%EC%9C%BC%EB%A1%9C-IT-%EA%B0%9C%EB%B0%9C%EC%9E%90%EB%A1%9C-%EC%B7%A8%EC%97%85-%EC%A4%80%EB%B9%84%ED%95%98%EA%B8%B0-%ED%8F%AC%ED%8A%B8%ED%8F%B4%EB%A6%AC%EC%98%A4-%ED%8E%B8",
+        "snapshot": {
+          "snapshotId": "snapshot-source-velog-portfolio",
+          "fetchedAt": "2026-07-20T00:00:00.000Z",
+          "finalUrl": "https://velog.io/@vonvoyage27/%ED%9A%A8%EC%9C%A8%EC%A0%81%EC%9C%BC%EB%A1%9C-IT-%EA%B0%9C%EB%B0%9C%EC%9E%90%EB%A1%9C-%EC%B7%A8%EC%97%85-%EC%A4%80%EB%B9%84%ED%95%98%EA%B8%B0-%ED%8F%AC%ED%8A%B8%ED%8F%B4%EB%A6%AC%EC%98%A4-%ED%8E%B8",
+          "contentHash": "sha256:3fda763493b317d01658eaec7a9352a7b75721e443a4ac08c294b435f926d29f",
+          "extractionVersion": "taxonomy-v1.1-evidence-fixture-v1"
+        }
+      },
+      "flow": {
+        "flowId": "flow-dto-phase-lifecycle-developer-portfolio",
+        "title": "효율적으로 IT 개발자로 취업 준비하기 — 포트폴리오 편",
+        "stepIds": [
+          "portfolio-step-1",
+          "portfolio-step-2",
+          "portfolio-step-3"
+        ],
+        "anchorDefinitions": []
+      },
+      "taxonomy": {
+        "classificationStatus": "provisional",
+        "primaryLifeArea": "work_career",
+        "secondaryLifeAreas": [
+          "study_reading"
+        ],
+        "topicTags": [
+          "개발",
+          "포트폴리오"
+        ],
+        "sourceShape": "procedure_rows",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "phase_lifecycle",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "sheet",
+        "secondaryArtifacts": [
+          "todo"
+        ]
+      },
+      "audienceAndApplicability": {
+        "roles": [
+          "professional",
+          "learner"
+        ],
+        "ageBands": [
+          "not_specified"
+        ],
+        "skillLevel": "not_applicable",
+        "contentLocale": "ko-KR",
+        "applicableLocales": [
+          "ko-KR"
+        ],
+        "applicability": "local_direct",
+        "prerequisites": [],
+        "accountOrEntitlement": "none",
+        "collaborationContext": "solo",
+        "userNeedSignals": [
+          "track_progress",
+          "remember_when"
+        ],
+        "frictionSignals": [
+          "lost_progress",
+          "missed_deadline"
+        ]
+      },
+      "access": {
+        "providerType": "creator",
+        "platformRoles": [
+          "discover",
+          "host"
+        ],
+        "discoveryAccess": "public",
+        "rowAccess": "partial",
+        "acquisitionMethods": [
+          "html_fetch"
+        ],
+        "sourceFormat": {
+          "category": "article",
+          "mediaType": "text/html",
+          "detail": {
+            "provenance": "legacy runtime rows require source-row refresh"
+          }
+        }
+      },
+      "rights": {
+        "basis": "unknown",
+        "allowedUse": [
+          "link_metadata",
+          "internal_review"
+        ],
+        "territoryScope": "unknown",
+        "territories": [],
+        "reviewStatus": "pending",
+        "personalTransformAllowed": false,
+        "publicReleaseAllowed": false,
+        "rationale": "Current app Items are source-linked but first-class source-row and permission evidence must be refreshed."
+      },
+      "review": {
+        "sourceRowStatus": "partial",
+        "conversionReadiness": "ready_second_wave",
+        "freshnessReview": "current",
+        "localeReview": "applicable",
+        "safetyReview": "not_required",
+        "privacyReview": "not_required",
+        "rightsReview": "pending",
+        "promotionState": "research_only",
+        "blockers": [
+          "source_incomplete",
+          "rights_permission_required"
+        ],
+        "portfolioRole": "breadth_candidate",
+        "editorialAction": "revise",
+        "backendStorable": true
+      },
+      "sourceRows": [
+        {
+          "sourceRowId": "portfolio-row-1",
+          "sourceId": "source-velog-portfolio",
+          "snapshotId": "snapshot-source-velog-portfolio",
+          "rowType": "procedure",
+          "title": "만들 프로젝트 아이템과 기술 스택 정하기",
+          "order": 0,
+          "locator": "legacy runtime item 1"
+        },
+        {
+          "sourceRowId": "portfolio-row-2",
+          "sourceId": "source-velog-portfolio",
+          "snapshotId": "snapshot-source-velog-portfolio",
+          "rowType": "procedure",
+          "title": "핵심 기능과 3~5개 화면 범위 정하기",
+          "order": 1,
+          "locator": "legacy runtime item 2"
+        },
+        {
+          "sourceRowId": "portfolio-row-3",
+          "sourceId": "source-velog-portfolio",
+          "snapshotId": "snapshot-source-velog-portfolio",
+          "rowType": "procedure",
+          "title": "페이지 기획과 DB·API 설계 문서 만들기",
+          "order": 2,
+          "locator": "legacy runtime item 3"
+        },
+        {
+          "sourceRowId": "portfolio-row-4",
+          "sourceId": "source-velog-portfolio",
+          "snapshotId": "snapshot-source-velog-portfolio",
+          "rowType": "procedure",
+          "title": "개발 일정을 나누고 핵심 기능 구현 시작하기",
+          "order": 3,
+          "locator": "legacy runtime item 4"
+        },
+        {
+          "sourceRowId": "portfolio-row-5",
+          "sourceId": "source-velog-portfolio",
+          "snapshotId": "snapshot-source-velog-portfolio",
+          "rowType": "procedure",
+          "title": "서비스 배포하고 도메인·실행 방법 정리하기",
+          "order": 4,
+          "locator": "legacy runtime item 5"
+        },
+        {
+          "sourceRowId": "portfolio-row-6",
+          "sourceId": "source-velog-portfolio",
+          "snapshotId": "snapshot-source-velog-portfolio",
+          "rowType": "procedure",
+          "title": "프로젝트 설명·역할·성과·데모를 한 페이지로 정리하기",
+          "order": 5,
+          "locator": "legacy runtime item 6"
+        }
+      ],
+      "sourceReferences": [
+        {
+          "sourceRefId": "source-ref-portfolio-item-1",
+          "entityType": "item",
+          "entityId": "portfolio-item-1",
+          "sourceRowIds": [
+            "portfolio-row-1"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "inferred_draft"
+        },
+        {
+          "sourceRefId": "source-ref-portfolio-item-2",
+          "entityType": "item",
+          "entityId": "portfolio-item-2",
+          "sourceRowIds": [
+            "portfolio-row-2"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "inferred_draft"
+        },
+        {
+          "sourceRefId": "source-ref-portfolio-item-3",
+          "entityType": "item",
+          "entityId": "portfolio-item-3",
+          "sourceRowIds": [
+            "portfolio-row-3"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "inferred_draft"
+        },
+        {
+          "sourceRefId": "source-ref-portfolio-item-4",
+          "entityType": "item",
+          "entityId": "portfolio-item-4",
+          "sourceRowIds": [
+            "portfolio-row-4"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "inferred_draft"
+        },
+        {
+          "sourceRefId": "source-ref-portfolio-item-5",
+          "entityType": "item",
+          "entityId": "portfolio-item-5",
+          "sourceRowIds": [
+            "portfolio-row-5"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "inferred_draft"
+        },
+        {
+          "sourceRefId": "source-ref-portfolio-item-6",
+          "entityType": "item",
+          "entityId": "portfolio-item-6",
+          "sourceRowIds": [
+            "portfolio-row-6"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "inferred_draft"
+        }
+      ],
+      "omittedRows": [],
+      "steps": [
+        {
+          "stepId": "portfolio-step-1",
+          "title": "기획",
+          "order": 0,
+          "itemIds": [
+            "portfolio-item-1",
+            "portfolio-item-2"
+          ],
+          "flowId": "flow-dto-phase-lifecycle-developer-portfolio",
+          "sourceRefIds": [
+            "source-ref-portfolio-item-1",
+            "source-ref-portfolio-item-2"
+          ]
+        },
+        {
+          "stepId": "portfolio-step-2",
+          "title": "설계·구현",
+          "order": 1,
+          "itemIds": [
+            "portfolio-item-3",
+            "portfolio-item-4"
+          ],
+          "flowId": "flow-dto-phase-lifecycle-developer-portfolio",
+          "sourceRefIds": [
+            "source-ref-portfolio-item-3",
+            "source-ref-portfolio-item-4"
+          ]
+        },
+        {
+          "stepId": "portfolio-step-3",
+          "title": "배포·정리",
+          "order": 2,
+          "itemIds": [
+            "portfolio-item-5",
+            "portfolio-item-6"
+          ],
+          "flowId": "flow-dto-phase-lifecycle-developer-portfolio",
+          "sourceRefIds": [
+            "source-ref-portfolio-item-5",
+            "source-ref-portfolio-item-6"
+          ]
+        }
+      ],
+      "items": [
+        {
+          "itemId": "portfolio-item-1",
+          "stepId": "portfolio-step-1",
+          "title": "만들 프로젝트 아이템과 기술 스택 정하기",
+          "intent": "act",
+          "order": 0,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "만들 프로젝트 아이템과 기술 스택 정하기 결과물을 남기고 다음 단계로 넘겼다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "sourceRefIds": [
+            "source-ref-portfolio-item-1"
+          ]
+        },
+        {
+          "itemId": "portfolio-item-2",
+          "stepId": "portfolio-step-1",
+          "title": "핵심 기능과 3~5개 화면 범위 정하기",
+          "intent": "act",
+          "order": 1,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "핵심 기능과 3~5개 화면 범위 정하기 결과물을 남기고 다음 단계로 넘겼다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "sourceRefIds": [
+            "source-ref-portfolio-item-2"
+          ]
+        },
+        {
+          "itemId": "portfolio-item-3",
+          "stepId": "portfolio-step-2",
+          "title": "페이지 기획과 DB·API 설계 문서 만들기",
+          "intent": "act",
+          "order": 0,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "페이지 기획과 DB·API 설계 문서 만들기 결과물을 남기고 다음 단계로 넘겼다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "sourceRefIds": [
+            "source-ref-portfolio-item-3"
+          ]
+        },
+        {
+          "itemId": "portfolio-item-4",
+          "stepId": "portfolio-step-2",
+          "title": "개발 일정을 나누고 핵심 기능 구현 시작하기",
+          "intent": "act",
+          "order": 1,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "개발 일정을 나누고 핵심 기능 구현 시작하기 결과물을 남기고 다음 단계로 넘겼다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "sourceRefIds": [
+            "source-ref-portfolio-item-4"
+          ]
+        },
+        {
+          "itemId": "portfolio-item-5",
+          "stepId": "portfolio-step-3",
+          "title": "서비스 배포하고 도메인·실행 방법 정리하기",
+          "intent": "act",
+          "order": 0,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "서비스 배포하고 도메인·실행 방법 정리하기 결과물을 남기고 다음 단계로 넘겼다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "sourceRefIds": [
+            "source-ref-portfolio-item-5"
+          ]
+        },
+        {
+          "itemId": "portfolio-item-6",
+          "stepId": "portfolio-step-3",
+          "title": "프로젝트 설명·역할·성과·데모를 한 페이지로 정리하기",
+          "intent": "act",
+          "order": 1,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "프로젝트 설명·역할·성과·데모를 한 페이지로 정리하기 결과물을 남기고 다음 단계로 넘겼다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "sourceRefIds": [
+            "source-ref-portfolio-item-6"
+          ]
+        }
+      ],
+      "fields": [],
+      "memos": [],
+      "projectionPreview": {
+        "calendar": {
+          "availability": "not_applicable",
+          "unit": "scheduled Item/occurrence",
+          "example": "ICS에는 schedule이 있는 Item만 들어가고, 날짜가 없는 Item은 제외한다.",
+          "loss": "Projection would invent unsupported structure."
+        },
+        "checklist": {
+          "availability": "not_applicable",
+          "unit": "Item grouped by Step",
+          "example": "Step 제목 아래 Item의 완료·결정 상태를 순서대로 표시한다.",
+          "loss": "Projection would invent unsupported structure."
+        },
+        "todo": {
+          "availability": "secondary",
+          "unit": "Item grouped by Step",
+          "example": "다음 실행 Item과 출처 링크를 task/note로 옮긴다.",
+          "loss": "Secondary view may omit fields owned by the primary artifact."
+        },
+        "sheet": {
+          "availability": "primary",
+          "unit": "Item row + stable fields",
+          "example": "Item 한 개를 한 행으로 두고 상태·날짜·메모·출처 열을 유지한다.",
+          "loss": "No primary semantic loss."
+        },
+        "memo": {
+          "availability": "fallback",
+          "unit": "Flow/Step document",
+          "example": "사용자 결정, 출처 URL, 주의·보류 조건과 투영 손실을 Markdown으로 남긴다.",
+          "loss": "Completion and schedule state become prose."
+        }
+      }
+    },
+    {
+      "dtoId": "dto-official-date-window-vehicle-inspection",
+      "scenario": "공식 날짜창",
+      "source": {
+        "sourceId": "source-ts-inspection",
+        "title": "한국교통안전공단 정기검사 대상·기준·유효기간 안내",
+        "originalUrl": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+        "snapshot": {
+          "snapshotId": "snapshot-source-ts-inspection",
+          "fetchedAt": "2026-07-20T00:00:00.000Z",
+          "finalUrl": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+          "contentHash": "sha256:9cbdf7aa5e984b9dbe1d7498e20d8a8876e2d14a9ad522cb6e39e1a0ca814b49",
+          "extractionVersion": "taxonomy-v1.1-evidence-fixture-v1"
+        }
+      },
+      "flow": {
+        "flowId": "flow-dto-official-date-window-vehicle-inspection",
+        "title": "한국교통안전공단 정기검사 대상·기준·유효기간 안내",
+        "stepIds": [
+          "vehicle-window-step"
+        ],
+        "anchorDefinitions": []
+      },
+      "taxonomy": {
+        "classificationStatus": "confirmed",
+        "primaryLifeArea": "money_admin_purchase",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "자동차검사",
+          "공식 기간"
+        ],
+        "sourceShape": "date_window",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "date_preparation",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "calendar",
+        "secondaryArtifacts": [
+          "checklist",
+          "memo"
+        ]
+      },
+      "audienceAndApplicability": {
+        "roles": [
+          "individual"
+        ],
+        "ageBands": [
+          "not_specified"
+        ],
+        "skillLevel": "not_applicable",
+        "contentLocale": "ko-KR",
+        "applicableLocales": [
+          "ko-KR"
+        ],
+        "applicability": "local_direct",
+        "prerequisites": [],
+        "accountOrEntitlement": "none",
+        "collaborationContext": "solo",
+        "userNeedSignals": [
+          "remember_when",
+          "preserve_source_context"
+        ],
+        "frictionSignals": [
+          "missed_deadline",
+          "source_revisit_cost"
+        ]
+      },
+      "access": {
+        "providerType": "public_institution",
+        "platformRoles": [
+          "discover",
+          "host"
+        ],
+        "discoveryAccess": "public",
+        "rowAccess": "full",
+        "acquisitionMethods": [
+          "html_fetch"
+        ],
+        "sourceFormat": {
+          "category": "article",
+          "mediaType": "text/html",
+          "detail": {
+            "schedulePolicy": "source fields only; no invented offset"
+          }
+        }
+      },
+      "rights": {
+        "basis": "link_only_assumption",
+        "allowedUse": [
+          "link_metadata",
+          "internal_review"
+        ],
+        "territoryScope": "unknown",
+        "territories": [],
+        "reviewStatus": "restricted",
+        "personalTransformAllowed": false,
+        "publicReleaseAllowed": false,
+        "rationale": "Public access and reuse rights are evaluated separately; current evidence supports an internal link-backed draft only."
+      },
+      "review": {
+        "sourceRowStatus": "complete",
+        "conversionReadiness": "ready_second_wave",
+        "freshnessReview": "current",
+        "localeReview": "applicable",
+        "safetyReview": "not_required",
+        "privacyReview": "not_required",
+        "rightsReview": "restricted",
+        "promotionState": "research_only",
+        "blockers": [
+          "rights_unknown"
+        ],
+        "portfolioRole": "official_trust_anchor",
+        "editorialAction": "rights_review",
+        "backendStorable": true
+      },
+      "sourceRows": [
+        {
+          "sourceRowId": "vehicle-window-row",
+          "sourceId": "source-ts-inspection",
+          "snapshotId": "snapshot-source-ts-inspection",
+          "rowType": "date",
+          "title": "자동차검사 유효기간 안에 검사받기",
+          "order": 0,
+          "locator": "정기검사 대상·기준·유효기간"
+        }
+      ],
+      "sourceReferences": [
+        {
+          "sourceRefId": "source-ref-vehicle-window-item",
+          "entityType": "item",
+          "entityId": "vehicle-window-item",
+          "sourceRowIds": [
+            "vehicle-window-row"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "direct"
+        }
+      ],
+      "omittedRows": [],
+      "steps": [
+        {
+          "stepId": "vehicle-window-step",
+          "title": "공식 검사 기간",
+          "order": 0,
+          "itemIds": [
+            "vehicle-window-item"
+          ],
+          "flowId": "flow-dto-official-date-window-vehicle-inspection",
+          "sourceRefIds": [
+            "source-ref-vehicle-window-item"
+          ]
+        }
+      ],
+      "items": [
+        {
+          "itemId": "vehicle-window-item",
+          "stepId": "vehicle-window-step",
+          "title": "공식 검사 가능 기간 확인하고 방문일 정하기",
+          "intent": "inspect",
+          "order": 0,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "공식 조회에서 검사 가능 기간과 방문일을 확인했다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "schedule": {
+            "mode": "date_window",
+            "basis": "absolute",
+            "startDate": "$source.inspectionWindowStart",
+            "endDate": "$source.inspectionWindowEnd"
+          },
+          "sourceRefIds": [
+            "source-ref-vehicle-window-item"
+          ]
+        }
+      ],
+      "fields": [],
+      "memos": [],
+      "projectionPreview": {
+        "calendar": {
+          "availability": "primary",
+          "unit": "scheduled Item/occurrence",
+          "example": "ICS에는 schedule이 있는 Item만 들어가고, 날짜가 없는 Item은 제외한다.",
+          "loss": "No primary semantic loss."
+        },
+        "checklist": {
+          "availability": "secondary",
+          "unit": "Item grouped by Step",
+          "example": "Step 제목 아래 Item의 완료·결정 상태를 순서대로 표시한다.",
+          "loss": "Secondary view may omit fields owned by the primary artifact."
+        },
+        "todo": {
+          "availability": "not_applicable",
+          "unit": "Item grouped by Step",
+          "example": "다음 실행 Item과 출처 링크를 task/note로 옮긴다.",
+          "loss": "Projection would invent unsupported structure."
+        },
+        "sheet": {
+          "availability": "not_applicable",
+          "unit": "Item row + stable fields",
+          "example": "Item 한 개를 한 행으로 두고 상태·날짜·메모·출처 열을 유지한다.",
+          "loss": "Projection would invent unsupported structure."
+        },
+        "memo": {
+          "availability": "secondary",
+          "unit": "Flow/Step document",
+          "example": "사용자 결정, 출처 URL, 주의·보류 조건과 투영 손실을 Markdown으로 남긴다.",
+          "loss": "Completion and schedule state become prose."
+        }
+      }
+    },
+    {
+      "dtoId": "dto-rights-restricted-visitkorea-route",
+      "scenario": "권리 제한 콘텐츠",
+      "source": {
+        "sourceId": "source-ds08",
+        "title": "공주 부모님과 당일치기 힐링 여행코스",
+        "originalUrl": "https://korean.visitkorea.or.kr/detail/rem_detail.do?cotid=c46eff3a-4213-42df-8640-5369238dc50c",
+        "snapshot": {
+          "snapshotId": "snapshot-source-ds08",
+          "fetchedAt": "2026-07-20T00:00:00.000Z",
+          "finalUrl": "https://korean.visitkorea.or.kr/detail/rem_detail.do?cotid=c46eff3a-4213-42df-8640-5369238dc50c",
+          "contentHash": "sha256:5c539a026c2673458eb671eea7314e48f063dae4f104267fa82a7666a212ee88",
+          "extractionVersion": "taxonomy-v1.1-evidence-fixture-v1"
+        }
+      },
+      "flow": {
+        "flowId": "flow-dto-rights-restricted-visitkorea-route",
+        "title": "공주 부모님과 당일치기 힐링 여행코스",
+        "stepIds": [
+          "step-ds08-route"
+        ],
+        "anchorDefinitions": []
+      },
+      "taxonomy": {
+        "classificationStatus": "confirmed",
+        "primaryLifeArea": "travel_outings",
+        "secondaryLifeAreas": [
+          "family_parenting"
+        ],
+        "topicTags": [
+          "공주",
+          "당일치기"
+        ],
+        "sourceShape": "procedure_rows",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "ordered_procedure",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": [
+          "memo"
+        ]
+      },
+      "audienceAndApplicability": {
+        "roles": [
+          "traveler",
+          "caregiver"
+        ],
+        "ageBands": [
+          "not_specified"
+        ],
+        "skillLevel": "not_applicable",
+        "contentLocale": "ko-KR",
+        "applicableLocales": [
+          "ko-KR"
+        ],
+        "applicability": "local_direct",
+        "prerequisites": [],
+        "accountOrEntitlement": "none",
+        "collaborationContext": "shared_household",
+        "userNeedSignals": [
+          "follow_sequence",
+          "handoff_or_share"
+        ],
+        "frictionSignals": [
+          "collaboration_gap"
+        ]
+      },
+      "access": {
+        "providerType": "government_public",
+        "platformRoles": [
+          "discover",
+          "host"
+        ],
+        "discoveryAccess": "public",
+        "rowAccess": "full",
+        "acquisitionMethods": [
+          "html_fetch"
+        ],
+        "sourceFormat": {
+          "category": "article",
+          "mediaType": "text/html",
+          "detail": {
+            "sourceRows": 4
+          }
+        }
+      },
+      "rights": {
+        "basis": "official_reuse_policy",
+        "allowedUse": [
+          "link_metadata",
+          "internal_review"
+        ],
+        "territoryScope": "named",
+        "territories": [
+          "KR"
+        ],
+        "reviewStatus": "restricted",
+        "personalTransformAllowed": false,
+        "publicReleaseAllowed": false,
+        "rationale": "The source package records attribution/noncommercial/no-derivatives conditions; public transformed rows require separate permission."
+      },
+      "review": {
+        "sourceRowStatus": "complete",
+        "conversionReadiness": "hold",
+        "freshnessReview": "current",
+        "localeReview": "applicable",
+        "safetyReview": "not_required",
+        "privacyReview": "not_required",
+        "rightsReview": "restricted",
+        "promotionState": "research_only",
+        "blockers": [
+          "rights_unknown",
+          "freshness_pending"
+        ],
+        "portfolioRole": "breadth_candidate",
+        "editorialAction": "request_permission",
+        "backendStorable": true
+      },
+      "sourceRows": [
+        {
+          "sourceRowId": "DS08-R01",
+          "sourceId": "source-ds08",
+          "snapshotId": "snapshot-source-ds08",
+          "rowType": "resource",
+          "title": "공주한옥마을",
+          "order": 0,
+          "locator": "코스 1"
+        },
+        {
+          "sourceRowId": "DS08-R02",
+          "sourceId": "source-ds08",
+          "snapshotId": "snapshot-source-ds08",
+          "rowType": "resource",
+          "title": "무령왕릉과 왕릉원",
+          "order": 1,
+          "locator": "코스 2"
+        },
+        {
+          "sourceRowId": "DS08-R03",
+          "sourceId": "source-ds08",
+          "snapshotId": "snapshot-source-ds08",
+          "rowType": "resource",
+          "title": "루치아의 뜰",
+          "order": 2,
+          "locator": "코스 3"
+        },
+        {
+          "sourceRowId": "DS08-R04",
+          "sourceId": "source-ds08",
+          "snapshotId": "snapshot-source-ds08",
+          "rowType": "resource",
+          "title": "공산성",
+          "order": 3,
+          "locator": "코스 4"
+        }
+      ],
+      "sourceReferences": [
+        {
+          "sourceRefId": "source-ref-item-ds08-1",
+          "entityType": "item",
+          "entityId": "item-ds08-1",
+          "sourceRowIds": [
+            "DS08-R01"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "direct"
+        },
+        {
+          "sourceRefId": "source-ref-item-ds08-2",
+          "entityType": "item",
+          "entityId": "item-ds08-2",
+          "sourceRowIds": [
+            "DS08-R02"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "direct"
+        },
+        {
+          "sourceRefId": "source-ref-item-ds08-3",
+          "entityType": "item",
+          "entityId": "item-ds08-3",
+          "sourceRowIds": [
+            "DS08-R03"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "direct"
+        },
+        {
+          "sourceRefId": "source-ref-item-ds08-4",
+          "entityType": "item",
+          "entityId": "item-ds08-4",
+          "sourceRowIds": [
+            "DS08-R04"
+          ],
+          "relation": "derived_from",
+          "supportLevel": "direct"
+        }
+      ],
+      "omittedRows": [],
+      "steps": [
+        {
+          "stepId": "step-ds08-route",
+          "title": "공주 원문 코스",
+          "order": 0,
+          "itemIds": [
+            "item-ds08-1",
+            "item-ds08-2",
+            "item-ds08-3",
+            "item-ds08-4"
+          ],
+          "flowId": "flow-dto-rights-restricted-visitkorea-route",
+          "sourceRefIds": [
+            "source-ref-item-ds08-1",
+            "source-ref-item-ds08-2",
+            "source-ref-item-ds08-3",
+            "source-ref-item-ds08-4"
+          ]
+        }
+      ],
+      "items": [
+        {
+          "itemId": "item-ds08-1",
+          "stepId": "step-ds08-route",
+          "title": "1. 공주한옥마을 방문",
+          "intent": "act",
+          "order": 0,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "1. 공주한옥마을 방문를 원문 범위 안에서 완료했다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "sourceRefIds": [
+            "source-ref-item-ds08-1"
+          ]
+        },
+        {
+          "itemId": "item-ds08-2",
+          "stepId": "step-ds08-route",
+          "title": "2. 무령왕릉과 왕릉원 방문",
+          "intent": "act",
+          "order": 1,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "2. 무령왕릉과 왕릉원 방문를 원문 범위 안에서 완료했다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "sourceRefIds": [
+            "source-ref-item-ds08-2"
+          ]
+        },
+        {
+          "itemId": "item-ds08-3",
+          "stepId": "step-ds08-route",
+          "title": "3. 루치아의 뜰 방문",
+          "intent": "act",
+          "order": 2,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "3. 루치아의 뜰 방문를 원문 범위 안에서 완료했다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "sourceRefIds": [
+            "source-ref-item-ds08-3"
+          ]
+        },
+        {
+          "itemId": "item-ds08-4",
+          "stepId": "step-ds08-route",
+          "title": "4. 공산성 방문",
+          "intent": "act",
+          "order": 3,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "4. 공산성 방문를 원문 범위 안에서 완료했다."
+          },
+          "fieldIds": [],
+          "memoIds": [],
+          "cautionMemoIds": [],
+          "sourceRefIds": [
+            "source-ref-item-ds08-4"
+          ]
+        }
+      ],
+      "fields": [],
+      "memos": [],
+      "projectionPreview": {
+        "calendar": {
+          "availability": "blocked",
+          "unit": "scheduled Item/occurrence",
+          "example": "ICS에는 schedule이 있는 Item만 들어가고, 날짜가 없는 Item은 제외한다.",
+          "loss": "Secondary view may omit fields owned by the primary artifact."
+        },
+        "checklist": {
+          "availability": "blocked",
+          "unit": "Item grouped by Step",
+          "example": "Step 제목 아래 Item의 완료·결정 상태를 순서대로 표시한다.",
+          "loss": "No primary semantic loss."
+        },
+        "todo": {
+          "availability": "blocked",
+          "unit": "Item grouped by Step",
+          "example": "다음 실행 Item과 출처 링크를 task/note로 옮긴다.",
+          "loss": "Secondary view may omit fields owned by the primary artifact."
+        },
+        "sheet": {
+          "availability": "blocked",
+          "unit": "Item row + stable fields",
+          "example": "Item 한 개를 한 행으로 두고 상태·날짜·메모·출처 열을 유지한다.",
+          "loss": "Secondary view may omit fields owned by the primary artifact."
+        },
+        "memo": {
+          "availability": "blocked",
+          "unit": "Flow/Step document",
+          "example": "사용자 결정, 출처 URL, 주의·보류 조건과 투영 손실을 Markdown으로 남긴다.",
+          "loss": "Completion and schedule state become prose."
+        }
+      }
+    },
+    {
+      "dtoId": "dto-source-import-required-todoist-podcast",
+      "scenario": "source_import_required",
+      "source": {
+        "sourceId": "source-todoist-podcast",
+        "title": "Podcast Workflow template",
+        "originalUrl": "https://www.todoist.com/templates/podcast-workflow",
+        "snapshot": {
+          "snapshotId": "snapshot-source-todoist-podcast",
+          "fetchedAt": "2026-07-20T00:00:00.000Z",
+          "finalUrl": "https://www.todoist.com/templates/podcast-workflow",
+          "contentHash": "sha256:b888f4b4d003d2048c1c92e269ea569375f393ea1b9b324d971dfce244a65739",
+          "extractionVersion": "taxonomy-v1.1-evidence-fixture-v1"
+        }
+      },
+      "flow": {
+        "flowId": "flow-dto-source-import-required-todoist-podcast",
+        "title": "Podcast Workflow template",
+        "stepIds": [],
+        "anchorDefinitions": []
+      },
+      "taxonomy": {
+        "classificationStatus": "provisional",
+        "primaryLifeArea": "work_career",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "팟캐스트",
+          "제작"
+        ],
+        "sourceShape": null,
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "phase_lifecycle",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": [
+          "todo"
+        ]
+      },
+      "audienceAndApplicability": {
+        "roles": [
+          "creator_operator",
+          "team_member"
+        ],
+        "ageBands": [
+          "not_specified"
+        ],
+        "skillLevel": "not_applicable",
+        "contentLocale": "en",
+        "applicableLocales": [
+          "ko-KR"
+        ],
+        "applicability": "local_adaptation_required",
+        "prerequisites": [],
+        "accountOrEntitlement": "free_account",
+        "collaborationContext": "team_roles",
+        "userNeedSignals": [
+          "track_progress",
+          "handoff_or_share"
+        ],
+        "frictionSignals": [
+          "lost_progress",
+          "collaboration_gap"
+        ]
+      },
+      "access": {
+        "providerType": "brand_official",
+        "platformRoles": [
+          "discover",
+          "host",
+          "execute",
+          "entitlement"
+        ],
+        "discoveryAccess": "public",
+        "rowAccess": "partial",
+        "acquisitionMethods": [
+          "oauth_api"
+        ],
+        "sourceFormat": {
+          "category": "template",
+          "mediaType": "text/html",
+          "detail": {
+            "publicPhaseNames": 4,
+            "fullTasks": "available only after user-authorized copy"
+          }
+        }
+      },
+      "rights": {
+        "basis": "provider_terms",
+        "allowedUse": [
+          "link_metadata",
+          "internal_review"
+        ],
+        "territoryScope": "unknown",
+        "territories": [],
+        "reviewStatus": "pending",
+        "personalTransformAllowed": false,
+        "publicReleaseAllowed": false,
+        "rationale": "User authorization can provide a private copy, but public template rows and reuse rights are not inferred."
+      },
+      "review": {
+        "sourceRowStatus": "partial",
+        "conversionReadiness": "source_import_required",
+        "freshnessReview": "current",
+        "localeReview": "adaptation_required",
+        "safetyReview": "not_required",
+        "privacyReview": "pending",
+        "rightsReview": "pending",
+        "promotionState": "research_only",
+        "blockers": [
+          "source_import_required",
+          "rights_unknown",
+          "locale_review_required",
+          "privacy_review_required",
+          "account_or_entitlement_required"
+        ],
+        "portfolioRole": "breadth_candidate",
+        "editorialAction": "import_source",
+        "backendStorable": true
+      },
+      "sourceRows": [
+        {
+          "sourceRowId": "todoist-phase-1",
+          "sourceId": "source-todoist-podcast",
+          "snapshotId": "snapshot-source-todoist-podcast",
+          "rowType": "reference",
+          "title": "Pre-production",
+          "order": 0,
+          "locator": "public template description"
+        },
+        {
+          "sourceRowId": "todoist-phase-2",
+          "sourceId": "source-todoist-podcast",
+          "snapshotId": "snapshot-source-todoist-podcast",
+          "rowType": "reference",
+          "title": "Production",
+          "order": 1,
+          "locator": "public template description"
+        },
+        {
+          "sourceRowId": "todoist-phase-3",
+          "sourceId": "source-todoist-podcast",
+          "snapshotId": "snapshot-source-todoist-podcast",
+          "rowType": "reference",
+          "title": "Post-production",
+          "order": 2,
+          "locator": "public template description"
+        },
+        {
+          "sourceRowId": "todoist-phase-4",
+          "sourceId": "source-todoist-podcast",
+          "snapshotId": "snapshot-source-todoist-podcast",
+          "rowType": "reference",
+          "title": "Distribution",
+          "order": 3,
+          "locator": "public template description"
+        }
+      ],
+      "sourceReferences": [],
+      "omittedRows": [],
+      "steps": [],
+      "items": [],
+      "fields": [],
+      "memos": [],
+      "projectionPreview": {
+        "calendar": {
+          "availability": "blocked",
+          "unit": "scheduled Item/occurrence",
+          "example": "ICS에는 schedule이 있는 Item만 들어가고, 날짜가 없는 Item은 제외한다.",
+          "loss": "Secondary view may omit fields owned by the primary artifact."
+        },
+        "checklist": {
+          "availability": "blocked",
+          "unit": "Item grouped by Step",
+          "example": "Step 제목 아래 Item의 완료·결정 상태를 순서대로 표시한다.",
+          "loss": "No primary semantic loss."
+        },
+        "todo": {
+          "availability": "blocked",
+          "unit": "Item grouped by Step",
+          "example": "다음 실행 Item과 출처 링크를 task/note로 옮긴다.",
+          "loss": "Secondary view may omit fields owned by the primary artifact."
+        },
+        "sheet": {
+          "availability": "blocked",
+          "unit": "Item row + stable fields",
+          "example": "Item 한 개를 한 행으로 두고 상태·날짜·메모·출처 열을 유지한다.",
+          "loss": "Secondary view may omit fields owned by the primary artifact."
+        },
+        "memo": {
+          "availability": "blocked",
+          "unit": "Flow/Step document",
+          "example": "사용자 결정, 출처 URL, 주의·보류 조건과 투영 손실을 Markdown으로 남긴다.",
+          "loss": "Completion and schedule state become prose."
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flowme.local/schemas/url-to-flow-review-results-v2.json",
+  "title": "FlowMe URL-to-Flow output-quality review results v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["documentType", "schemaVersion", "date", "caseSetVersion", "goldContractVersion", "claimBoundary", "rounds"],
+  "properties": {
+    "documentType": { "const": "flowme_output_quality_review_results" },
+    "schemaVersion": { "const": "flowme-output-quality-review-results-v2" },
+    "date": { "type": "string" },
+    "caseSetVersion": { "$ref": "#/$defs/nonEmptyString" },
+    "goldContractVersion": { "$ref": "#/$defs/nonEmptyString" },
+    "claimBoundary": { "$ref": "#/$defs/nonEmptyString" },
+    "rounds": { "type": "array", "minItems": 2, "maxItems": 4, "items": { "$ref": "#/$defs/round" } }
+  },
+  "$defs": {
+    "nonEmptyString": { "type": "string", "minLength": 1 },
+    "stringArray": { "type": "array", "items": { "$ref": "#/$defs/nonEmptyString" }, "uniqueItems": true },
+    "lifeArea": { "enum": ["home_living", "family_parenting", "study_reading", "money_admin_purchase", "health_fitness", "travel_outings", "meals_grocery", "work_career", "hobby_pet"] },
+    "sourceShape": { "enum": ["single_action", "checklist_rows", "date_offsets", "date_window", "recurrence_rule", "procedure_rows", "table_rows", "lesson_rows", "resource_collection", "decision_criteria", "narrative_guidance", "template_fields"] },
+    "executionPattern": { "enum": ["date_preparation", "ordered_procedure", "repeating_routine", "progress_tracking", "resource_queue", "compare_decide", "phase_lifecycle"] },
+    "artifact": { "enum": ["calendar", "checklist", "todo", "sheet", "memo"] },
+    "classification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["primaryLifeArea", "sourceShape", "primaryExecutionPattern", "primaryArtifact"],
+      "properties": {
+        "primaryLifeArea": { "oneOf": [{ "$ref": "#/$defs/lifeArea" }, { "type": "null" }] },
+        "sourceShape": { "oneOf": [{ "$ref": "#/$defs/sourceShape" }, { "type": "null" }] },
+        "primaryExecutionPattern": { "oneOf": [{ "$ref": "#/$defs/executionPattern" }, { "type": "null" }] },
+        "primaryArtifact": { "oneOf": [{ "$ref": "#/$defs/artifact" }, { "type": "null" }] }
+      }
+    },
+    "disposition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["generationState", "outcome", "conversionReadiness", "executableAllowed", "publicExportAllowed"],
+      "properties": {
+        "generationState": { "enum": ["completed", "failed"] },
+        "outcome": { "enum": ["proposal", "no_proposal", "rejected"] },
+        "conversionReadiness": { "enum": ["ready_for_internal_canary", "ready_second_wave", "source_import_required", "hold"] },
+        "executableAllowed": { "type": "boolean" },
+        "publicExportAllowed": { "type": "boolean" }
+      }
+    },
+    "gateDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["discoveryAccess", "rowAccess", "sourceRowStatus", "rightsBasis", "allowedUse", "freshnessReview", "localeReview", "safetyReview", "privacyReview", "rightsReview", "promotionState", "blockers"],
+      "properties": {
+        "discoveryAccess": { "enum": ["public", "account_required", "paywalled", "robots_limited", "unavailable", "unknown"] },
+        "rowAccess": { "enum": ["full", "partial", "metadata_only", "unavailable", "unknown"] },
+        "sourceRowStatus": { "enum": ["complete", "partial", "metadata_only", "missing"] },
+        "rightsBasis": { "enum": ["public_domain", "open_license", "official_reuse_policy", "provider_terms", "creator_permission", "user_owned", "link_only_assumption", "unknown", "blocked"] },
+        "allowedUse": { "type": "array", "uniqueItems": true, "items": { "enum": ["link_metadata", "personal_transform", "internal_review", "public_derived", "public_republish"] } },
+        "freshnessReview": { "enum": ["not_required", "pending", "current", "stale", "unknown"] },
+        "localeReview": { "enum": ["not_required", "pending", "applicable", "adaptation_required", "not_applicable"] },
+        "safetyReview": { "enum": ["not_required", "pending", "passed_with_boundary", "restricted", "blocked"] },
+        "privacyReview": { "enum": ["not_required", "pending", "passed", "sensitive_private_only", "blocked"] },
+        "rightsReview": { "enum": ["not_required", "pending", "approved", "restricted", "blocked"] },
+        "promotionState": { "enum": ["research_only", "internal_review", "internal_canary", "public_candidate", "published", "retired"] },
+        "blockers": { "type": "array", "uniqueItems": true, "items": { "enum": ["source_unavailable", "source_incomplete", "source_import_required", "rights_unknown", "rights_permission_required", "rights_blocked", "freshness_pending", "stale_source", "locale_review_required", "safety_review_required", "privacy_review_required", "account_or_entitlement_required", "user_input_required", "source_conflict", "unsupported_shape", "editorial_review_required"] } }
+      }
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reviewId", "caseId", "reviewerLane", "independent", "evidenceKind", "classification", "disposition", "gateDecision", "sourceRoleAccountingPass", "unsupportedInferenceCount", "essentialProjectionRetentionRate", "checkableItems", "nonCheckableItems", "blockingDisagreement", "disagreementReasons", "notes"],
+      "properties": {
+        "reviewId": { "$ref": "#/$defs/nonEmptyString" },
+        "caseId": { "$ref": "#/$defs/nonEmptyString" },
+        "reviewerLane": { "enum": ["rules_first", "low_cost_independent", "high_capability_independent"] },
+        "independent": { "type": "boolean" },
+        "evidenceKind": { "enum": ["deterministic_qa", "independent_agent_review"] },
+        "classification": { "$ref": "#/$defs/classification" },
+        "disposition": { "$ref": "#/$defs/disposition" },
+        "gateDecision": { "$ref": "#/$defs/gateDecision" },
+        "sourceRoleAccountingPass": { "type": "boolean" },
+        "unsupportedInferenceCount": { "type": "integer", "minimum": 0 },
+        "essentialProjectionRetentionRate": { "type": "number", "minimum": 0 },
+        "checkableItems": { "type": "integer", "minimum": 0 },
+        "nonCheckableItems": { "type": "integer", "minimum": 0 },
+        "blockingDisagreement": { "type": "boolean" },
+        "disagreementReasons": { "$ref": "#/$defs/stringArray" },
+        "notes": { "type": "string" }
+      }
+    },
+    "essentialFieldChecks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["expected", "retained"],
+      "properties": {
+        "expected": { "type": "integer", "minimum": 0 },
+        "retained": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "correctionTimeEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "startedAt", "endedAt", "elapsedSeconds", "reviewerId", "measurementMethod"],
+      "properties": {
+        "kind": { "enum": ["measured_independent_agent_review", "estimate_only", "not_available"] },
+        "startedAt": { "type": ["string", "null"], "format": "date-time" },
+        "endedAt": { "type": ["string", "null"], "format": "date-time" },
+        "elapsedSeconds": { "type": ["number", "null"], "minimum": 0 },
+        "reviewerId": { "oneOf": [{ "$ref": "#/$defs/nonEmptyString" }, { "type": "null" }] },
+        "measurementMethod": { "oneOf": [{ "$ref": "#/$defs/nonEmptyString" }, { "type": "null" }] }
+      }
+    },
+    "adjudication": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["caseId", "finalClassification", "finalDisposition", "finalGateDecision", "checkableItems", "nonCheckableItems", "unsupportedInferenceCount", "essentialFieldChecks", "itemsGenerated", "itemsKept", "editLevel", "correctionMinutes", "correctionTimeEvidence", "controlRegression", "blockingDisagreement", "unresolvedDisagreements", "notes"],
+      "properties": {
+        "caseId": { "$ref": "#/$defs/nonEmptyString" },
+        "finalClassification": { "$ref": "#/$defs/classification" },
+        "finalDisposition": { "$ref": "#/$defs/disposition" },
+        "finalGateDecision": { "$ref": "#/$defs/gateDecision" },
+        "checkableItems": { "type": "integer", "minimum": 0 },
+        "nonCheckableItems": { "type": "integer", "minimum": 0 },
+        "unsupportedInferenceCount": { "type": "integer", "minimum": 0 },
+        "essentialFieldChecks": { "$ref": "#/$defs/essentialFieldChecks" },
+        "itemsGenerated": { "type": "integer", "minimum": 0 },
+        "itemsKept": { "type": "integer", "minimum": 0 },
+        "editLevel": { "enum": ["none", "minor", "major", "full_regeneration", "not_reviewed"] },
+        "correctionMinutes": { "type": ["number", "null"], "minimum": 0 },
+        "correctionTimeEvidence": { "$ref": "#/$defs/correctionTimeEvidence" },
+        "controlRegression": { "type": "boolean" },
+        "blockingDisagreement": { "type": "boolean" },
+        "unresolvedDisagreements": { "$ref": "#/$defs/stringArray" },
+        "notes": { "type": "string" }
+      }
+    },
+    "round": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["roundId", "reviewerLanes", "reviews", "adjudications"],
+      "properties": {
+        "roundId": { "type": "string", "pattern": "^round-[1-4]$" },
+        "reviewerLanes": { "type": "array", "minItems": 3, "maxItems": 3, "uniqueItems": true, "items": { "enum": ["rules_first", "low_cost_independent", "high_capability_independent"] } },
+        "reviews": { "type": "array", "items": { "$ref": "#/$defs/review" } },
+        "adjudications": { "type": "array", "items": { "$ref": "#/$defs/adjudication" } }
+      }
+    }
+  }
+}

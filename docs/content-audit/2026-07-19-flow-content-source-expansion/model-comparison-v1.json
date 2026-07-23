@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "flow-content-model-comparison-v1",
+  "observedAt": "2026-07-19",
+  "protocol": "./model-eval-protocol-v1.md",
+  "input": {
+    "samePacket": true,
+    "caseIds": ["DS01", "DS02", "DS03", "DS05", "DS10", "DS11"],
+    "canonicalAnswerHidden": true
+  },
+  "executionEvidence": {
+    "parallelBatchWallTimeSeconds": 283,
+    "individualLatency": "not_exposed_in_session",
+    "inputTokens": "not_exposed_in_session",
+    "apiCurrencyCost": "not_exposed_in_session",
+    "retryCount": 0,
+    "costBoundary": "두 모델은 Codex 세션 등급 대리값이며 공개 API 가격 SKU가 아니다. estimatedOutputTokens는 minified JSON 문자 수를 4로 나눈 참고치로 청구 토큰이 아니다."
+  },
+  "tiers": [
+    {
+      "tier": "lower_cost_proxy",
+      "model": "gpt-5.6-terra",
+      "output": "./model-output-terra-v1.json",
+      "score": 557,
+      "maxScore": 600,
+      "scorePercent": 92.8,
+      "sourceRowAccountingPercent": 100,
+      "inventedFacts": 0,
+      "inventedDates": 0,
+      "exactDecisionCount": 2,
+      "safeOverlockCount": 4,
+      "repairFields": 12,
+      "repairMinutesEstimate": 18,
+      "outputCharacters": 6153,
+      "estimatedOutputTokens": 1539,
+      "strength": "불완전 Maily 원문을 채우지 않았고 모든 SourceRow를 반영했다.",
+      "mainGap": "OSSU 완료 기준이 학습 완료가 아니라 메타데이터 확인에 머물렀고 MIT·CC BY-SA 경고가 빠졌다."
+    },
+    {
+      "tier": "premium_proxy",
+      "model": "gpt-5.6-sol",
+      "output": "./model-output-sol-v1.json",
+      "score": 576,
+      "maxScore": 600,
+      "scorePercent": 96.0,
+      "sourceRowAccountingPercent": 100,
+      "inventedFacts": 0,
+      "inventedDates": 0,
+      "exactDecisionCount": 3,
+      "safeOverlockCount": 3,
+      "repairFields": 3,
+      "repairMinutesEstimate": 4.5,
+      "outputCharacters": 6847,
+      "estimatedOutputTokens": 1712,
+      "strength": "Maily 보류, 이사 anchor, OSSU·Wikivoyage의 라이선스 경고와 실행 완료 기준을 함께 보존했다.",
+      "mainGap": "안전·공개 라이선스 사례도 내부 사용 가능 상태보다 한 단계 보수적으로 review_locked 처리했다."
+    }
+  ],
+  "decision": {
+    "routing": "저위험·완결·결정론 검증 통과 후보는 lower_cost_proxy로 초안 생성하고, 권리·안전·법률·지역성·불완전 원문과 validator 실패는 premium_proxy 또는 사람 검토로 승격한다.",
+    "why": "점수 차이는 3.2점이지만 사람 수정 추정은 18분 대 4.5분으로 13.5분 차이다. 실제 API 가격이 없으므로 금액 절감으로 환산하지 않는다.",
+    "nonDecision": "이번 6개만으로 특정 상용 API 모델을 선정하거나 실제 비용 우위를 확정하지 않는다."
+  },
+  "manualReview": "./model-review-manual-v1.json",
+  "scorer": "./score-model-outputs.mjs",
+  "validationBoundary": "블라인드 계약 채점이며 실제 사용자·제공자 검증과 실 API 과금 벤치마크가 아니다."
+}

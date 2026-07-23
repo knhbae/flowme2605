@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "1.0",
+  "reviewDate": "2026-07-23",
+  "report": "docs/content-audit/2026-07-22-flow-content-value-qualified-benchmark-v1-ko.html",
+  "reviewMethod": "user_manual_confirmation",
+  "confirmation": "normal",
+  "confirmedChecks": {
+    "firstPageRepresentativeCasesNoOverlapOrClipping": true,
+    "goFilterWorks": true,
+    "boundaryFilterWorks": true,
+    "highCapabilityFilterWorks": true,
+    "narrowViewportHasNoBodyHorizontalClipping": true
+  },
+  "staticViewportContracts": {
+    "desktop": "1440x900",
+    "mobile": "390x844",
+    "verifiedBy": "report_structure_validator"
+  },
+  "automationBoundary": {
+    "agentDomOrScreenshotAccess": "blocked_by_file_url_browser_policy",
+    "agentMeasuredExactViewportRender": false,
+    "alternateBrowserWorkaroundUsed": false
+  },
+  "interpretationBoundary": "This confirms report rendering and filter interaction only. It is not observed product usability, save-intent, retention, or conversion validation."
+}

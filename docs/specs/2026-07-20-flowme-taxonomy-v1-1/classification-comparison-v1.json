@@ -1,0 +1,1801 @@
+{
+  "documentType": "flowme_classification_comparison",
+  "schemaVersion": "flowme-taxonomy-v1.1",
+  "date": "2026-07-20",
+  "purpose": "Measure reproducibility of taxonomy decisions before and after general tie-breaker refinement.",
+  "validationBoundary": "Automated agreement and reviewer-consistency QA only; not observed-user validation.",
+  "method": {
+    "frozenCaseCount": 20,
+    "frozenCases": [
+      "p0-C01",
+      "p0-C06",
+      "p0-C14",
+      "p0-C16",
+      "p0-O04",
+      "p0-R03",
+      "expansion-KR-KMOOC-01",
+      "expansion-KR-FIT100-01",
+      "expansion-GLOBAL-OSSU-01",
+      "expansion-GLOBAL-LIBRIVOX-01",
+      "expansion-GLOBAL-TODOIST-01",
+      "expansion-KR-KCA-01",
+      "expansion-KR-NONGSARO-01",
+      "deep-DS02",
+      "deep-DS04",
+      "deep-DS05",
+      "deep-DS07",
+      "deep-DS08",
+      "deep-DS10",
+      "deep-DS11"
+    ],
+    "classifiers": [
+      {
+        "id": "deterministic_rules",
+        "kind": "rule_based",
+        "independence": "Executed from the checked-in mapping logic."
+      },
+      {
+        "id": "independent_reviewer_alpha",
+        "kind": "independent_agent",
+        "independence": "Classified without seeing the other reviewer output."
+      },
+      {
+        "id": "independent_reviewer_beta",
+        "kind": "independent_agent",
+        "independence": "Classified without seeing the other reviewer output."
+      }
+    ],
+    "controls": [
+      "The same 20-case packet and eight axes were frozen for both rounds.",
+      "Reviewers received clarified global rules in Round 2, not case-specific answer keys.",
+      "Final canonical decisions are adjudications and are not counted as a fourth classifier."
+    ],
+    "validationBoundary": "This is automated and reviewer-consistency QA, not observed-user validation."
+  },
+  "rounds": [
+    {
+      "round": 1,
+      "ruleVersion": "draft-before-tie-breakers",
+      "change": "Initial independent pass using the same frozen evidence packet and no cross-reviewer result sharing.",
+      "methodOutputs": {
+        "deterministicRules": [
+          {
+            "caseId": "p0-C01",
+            "primaryLifeArea": "travel_outings",
+            "sourceShape": null,
+            "primaryExecutionPattern": "date_preparation",
+            "primaryArtifact": "calendar",
+            "sourceRowStatus": "missing",
+            "discoveryAccess": "unknown",
+            "rightsReview": "pending",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "p0-C06",
+            "primaryLifeArea": "travel_outings",
+            "sourceShape": null,
+            "primaryExecutionPattern": "date_preparation",
+            "primaryArtifact": "calendar",
+            "sourceRowStatus": "missing",
+            "discoveryAccess": "unknown",
+            "rightsReview": "pending",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "p0-C14",
+            "primaryLifeArea": "home_living",
+            "sourceShape": null,
+            "primaryExecutionPattern": "ordered_procedure",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "missing",
+            "discoveryAccess": "unknown",
+            "rightsReview": "pending",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "p0-C16",
+            "primaryLifeArea": "work_career",
+            "sourceShape": null,
+            "primaryExecutionPattern": "phase_lifecycle",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "missing",
+            "discoveryAccess": "unknown",
+            "rightsReview": "pending",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "p0-O04",
+            "primaryLifeArea": "money_admin_purchase",
+            "sourceShape": "decision_criteria",
+            "primaryExecutionPattern": "compare_decide",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "metadata_only",
+            "discoveryAccess": "unknown",
+            "rightsReview": "pending",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "p0-R03",
+            "primaryLifeArea": "work_career",
+            "sourceShape": "procedure_rows",
+            "primaryExecutionPattern": "phase_lifecycle",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "metadata_only",
+            "discoveryAccess": "unknown",
+            "rightsReview": "pending",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "expansion-KR-KMOOC-01",
+            "primaryLifeArea": "study_reading",
+            "sourceShape": "lesson_rows",
+            "primaryExecutionPattern": "phase_lifecycle",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "metadata_only",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "expansion-KR-FIT100-01",
+            "primaryLifeArea": "health_fitness",
+            "sourceShape": "procedure_rows",
+            "primaryExecutionPattern": "ordered_procedure",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "expansion-GLOBAL-OSSU-01",
+            "primaryLifeArea": "study_reading",
+            "sourceShape": "lesson_rows",
+            "primaryExecutionPattern": "resource_queue",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "approved",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "expansion-GLOBAL-LIBRIVOX-01",
+            "primaryLifeArea": "study_reading",
+            "sourceShape": "resource_collection",
+            "primaryExecutionPattern": "resource_queue",
+            "primaryArtifact": "todo",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "pending",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "expansion-GLOBAL-TODOIST-01",
+            "primaryLifeArea": "work_career",
+            "sourceShape": "template_fields",
+            "primaryExecutionPattern": "phase_lifecycle",
+            "primaryArtifact": "todo",
+            "sourceRowStatus": "partial",
+            "discoveryAccess": "account_required",
+            "rightsReview": "restricted",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "expansion-KR-KCA-01",
+            "primaryLifeArea": "money_admin_purchase",
+            "sourceShape": "table_rows",
+            "primaryExecutionPattern": "compare_decide",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "approved",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "expansion-KR-NONGSARO-01",
+            "primaryLifeArea": "work_career",
+            "sourceShape": "checklist_rows",
+            "primaryExecutionPattern": "repeating_routine",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "deep-DS02",
+            "primaryLifeArea": "money_admin_purchase",
+            "sourceShape": "decision_criteria",
+            "primaryExecutionPattern": "compare_decide",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "pending",
+            "conversionReadiness": "hold"
+          },
+          {
+            "caseId": "deep-DS04",
+            "primaryLifeArea": "study_reading",
+            "sourceShape": "lesson_rows",
+            "primaryExecutionPattern": "phase_lifecycle",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "partial",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "deep-DS05",
+            "primaryLifeArea": "home_living",
+            "sourceShape": "date_offsets",
+            "primaryExecutionPattern": "date_preparation",
+            "primaryArtifact": "calendar",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "deep-DS07",
+            "primaryLifeArea": "health_fitness",
+            "sourceShape": "procedure_rows",
+            "primaryExecutionPattern": "ordered_procedure",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "deep-DS08",
+            "primaryLifeArea": "travel_outings",
+            "sourceShape": "procedure_rows",
+            "primaryExecutionPattern": "ordered_procedure",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "pending",
+            "conversionReadiness": "hold"
+          },
+          {
+            "caseId": "deep-DS10",
+            "primaryLifeArea": "study_reading",
+            "sourceShape": "lesson_rows",
+            "primaryExecutionPattern": "resource_queue",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "pending",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "deep-DS11",
+            "primaryLifeArea": "travel_outings",
+            "sourceShape": "checklist_rows",
+            "primaryExecutionPattern": "progress_tracking",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "pending",
+            "conversionReadiness": "ready_second_wave"
+          }
+        ],
+        "independentReviewerAlpha": [
+          {
+            "caseId": "p0-C01",
+            "primaryLifeArea": "travel_outings",
+            "sourceShape": null,
+            "primaryExecutionPattern": "date_preparation",
+            "primaryArtifact": "calendar",
+            "sourceRowStatus": "missing",
+            "discoveryAccess": "unknown",
+            "rightsReview": "pending",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "p0-C06",
+            "primaryLifeArea": "travel_outings",
+            "sourceShape": null,
+            "primaryExecutionPattern": "date_preparation",
+            "primaryArtifact": "calendar",
+            "sourceRowStatus": "missing",
+            "discoveryAccess": "unknown",
+            "rightsReview": "pending",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "p0-C14",
+            "primaryLifeArea": "home_living",
+            "sourceShape": null,
+            "primaryExecutionPattern": "ordered_procedure",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "missing",
+            "discoveryAccess": "unknown",
+            "rightsReview": "pending",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "p0-C16",
+            "primaryLifeArea": "work_career",
+            "sourceShape": null,
+            "primaryExecutionPattern": "phase_lifecycle",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "missing",
+            "discoveryAccess": "unknown",
+            "rightsReview": "pending",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "p0-O04",
+            "primaryLifeArea": "money_admin_purchase",
+            "sourceShape": "decision_criteria",
+            "primaryExecutionPattern": "compare_decide",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "partial",
+            "discoveryAccess": "unknown",
+            "rightsReview": "pending",
+            "conversionReadiness": "hold"
+          },
+          {
+            "caseId": "p0-R03",
+            "primaryLifeArea": "work_career",
+            "sourceShape": "procedure_rows",
+            "primaryExecutionPattern": "phase_lifecycle",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "unknown",
+            "rightsReview": "pending",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "expansion-KR-KMOOC-01",
+            "primaryLifeArea": "study_reading",
+            "sourceShape": null,
+            "primaryExecutionPattern": "phase_lifecycle",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "metadata_only",
+            "discoveryAccess": "public",
+            "rightsReview": "pending",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "expansion-KR-FIT100-01",
+            "primaryLifeArea": "health_fitness",
+            "sourceShape": "procedure_rows",
+            "primaryExecutionPattern": "ordered_procedure",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "pending",
+            "conversionReadiness": "ready_for_internal_canary"
+          },
+          {
+            "caseId": "expansion-GLOBAL-OSSU-01",
+            "primaryLifeArea": "study_reading",
+            "sourceShape": "lesson_rows",
+            "primaryExecutionPattern": "progress_tracking",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "approved",
+            "conversionReadiness": "ready_for_internal_canary"
+          },
+          {
+            "caseId": "expansion-GLOBAL-LIBRIVOX-01",
+            "primaryLifeArea": "study_reading",
+            "sourceShape": "resource_collection",
+            "primaryExecutionPattern": "resource_queue",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "pending",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "expansion-GLOBAL-TODOIST-01",
+            "primaryLifeArea": "work_career",
+            "sourceShape": "procedure_rows",
+            "primaryExecutionPattern": "phase_lifecycle",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "partial",
+            "discoveryAccess": "public",
+            "rightsReview": "pending",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "expansion-KR-KCA-01",
+            "primaryLifeArea": "money_admin_purchase",
+            "sourceShape": "table_rows",
+            "primaryExecutionPattern": "compare_decide",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "approved",
+            "conversionReadiness": "ready_for_internal_canary"
+          },
+          {
+            "caseId": "expansion-KR-NONGSARO-01",
+            "primaryLifeArea": "work_career",
+            "sourceShape": "checklist_rows",
+            "primaryExecutionPattern": "repeating_routine",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "pending",
+            "conversionReadiness": "ready_for_internal_canary"
+          },
+          {
+            "caseId": "deep-DS02",
+            "primaryLifeArea": "money_admin_purchase",
+            "sourceShape": "decision_criteria",
+            "primaryExecutionPattern": "compare_decide",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "pending",
+            "conversionReadiness": "hold"
+          },
+          {
+            "caseId": "deep-DS04",
+            "primaryLifeArea": "study_reading",
+            "sourceShape": "date_window",
+            "primaryExecutionPattern": "phase_lifecycle",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "partial",
+            "discoveryAccess": "public",
+            "rightsReview": "pending",
+            "conversionReadiness": "ready_for_internal_canary"
+          },
+          {
+            "caseId": "deep-DS05",
+            "primaryLifeArea": "home_living",
+            "sourceShape": "date_offsets",
+            "primaryExecutionPattern": "date_preparation",
+            "primaryArtifact": "calendar",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "pending",
+            "conversionReadiness": "ready_for_internal_canary"
+          },
+          {
+            "caseId": "deep-DS07",
+            "primaryLifeArea": "health_fitness",
+            "sourceShape": "procedure_rows",
+            "primaryExecutionPattern": "ordered_procedure",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "pending",
+            "conversionReadiness": "ready_for_internal_canary"
+          },
+          {
+            "caseId": "deep-DS08",
+            "primaryLifeArea": "travel_outings",
+            "sourceShape": "procedure_rows",
+            "primaryExecutionPattern": "ordered_procedure",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "hold"
+          },
+          {
+            "caseId": "deep-DS10",
+            "primaryLifeArea": "study_reading",
+            "sourceShape": "lesson_rows",
+            "primaryExecutionPattern": "progress_tracking",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "approved",
+            "conversionReadiness": "ready_for_internal_canary"
+          },
+          {
+            "caseId": "deep-DS11",
+            "primaryLifeArea": "travel_outings",
+            "sourceShape": "checklist_rows",
+            "primaryExecutionPattern": "progress_tracking",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "approved",
+            "conversionReadiness": "ready_for_internal_canary"
+          }
+        ],
+        "independentReviewerBeta": [
+          {
+            "caseId": "p0-C01",
+            "primaryLifeArea": "travel_outings",
+            "sourceShape": null,
+            "primaryExecutionPattern": "date_preparation",
+            "primaryArtifact": "calendar",
+            "sourceRowStatus": "missing",
+            "discoveryAccess": "unknown",
+            "rightsReview": "pending",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "p0-C06",
+            "primaryLifeArea": "travel_outings",
+            "sourceShape": null,
+            "primaryExecutionPattern": "date_preparation",
+            "primaryArtifact": "calendar",
+            "sourceRowStatus": "missing",
+            "discoveryAccess": "unknown",
+            "rightsReview": "pending",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "p0-C14",
+            "primaryLifeArea": "home_living",
+            "sourceShape": null,
+            "primaryExecutionPattern": "ordered_procedure",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "missing",
+            "discoveryAccess": "unknown",
+            "rightsReview": "pending",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "p0-C16",
+            "primaryLifeArea": "work_career",
+            "sourceShape": null,
+            "primaryExecutionPattern": "phase_lifecycle",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "missing",
+            "discoveryAccess": "unknown",
+            "rightsReview": "pending",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "p0-O04",
+            "primaryLifeArea": "money_admin_purchase",
+            "sourceShape": null,
+            "primaryExecutionPattern": "compare_decide",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "missing",
+            "discoveryAccess": "unknown",
+            "rightsReview": "pending",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "p0-R03",
+            "primaryLifeArea": "work_career",
+            "sourceShape": null,
+            "primaryExecutionPattern": "phase_lifecycle",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "metadata_only",
+            "discoveryAccess": "unknown",
+            "rightsReview": "pending",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "expansion-KR-KMOOC-01",
+            "primaryLifeArea": "study_reading",
+            "sourceShape": null,
+            "primaryExecutionPattern": "phase_lifecycle",
+            "primaryArtifact": "calendar",
+            "sourceRowStatus": "metadata_only",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "expansion-KR-FIT100-01",
+            "primaryLifeArea": "health_fitness",
+            "sourceShape": "procedure_rows",
+            "primaryExecutionPattern": "phase_lifecycle",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "expansion-GLOBAL-OSSU-01",
+            "primaryLifeArea": "study_reading",
+            "sourceShape": "lesson_rows",
+            "primaryExecutionPattern": "progress_tracking",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "approved",
+            "conversionReadiness": "ready_for_internal_canary"
+          },
+          {
+            "caseId": "expansion-GLOBAL-LIBRIVOX-01",
+            "primaryLifeArea": "study_reading",
+            "sourceShape": "resource_collection",
+            "primaryExecutionPattern": "resource_queue",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "pending",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "expansion-GLOBAL-TODOIST-01",
+            "primaryLifeArea": "work_career",
+            "sourceShape": null,
+            "primaryExecutionPattern": "phase_lifecycle",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "partial",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "expansion-KR-KCA-01",
+            "primaryLifeArea": "money_admin_purchase",
+            "sourceShape": "table_rows",
+            "primaryExecutionPattern": "compare_decide",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "approved",
+            "conversionReadiness": "ready_for_internal_canary"
+          },
+          {
+            "caseId": "expansion-KR-NONGSARO-01",
+            "primaryLifeArea": "work_career",
+            "sourceShape": "checklist_rows",
+            "primaryExecutionPattern": "repeating_routine",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "deep-DS02",
+            "primaryLifeArea": "money_admin_purchase",
+            "sourceShape": "decision_criteria",
+            "primaryExecutionPattern": "compare_decide",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "pending",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "deep-DS04",
+            "primaryLifeArea": "study_reading",
+            "sourceShape": "date_window",
+            "primaryExecutionPattern": "phase_lifecycle",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "partial",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "deep-DS05",
+            "primaryLifeArea": "home_living",
+            "sourceShape": "date_offsets",
+            "primaryExecutionPattern": "date_preparation",
+            "primaryArtifact": "calendar",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "ready_for_internal_canary"
+          },
+          {
+            "caseId": "deep-DS07",
+            "primaryLifeArea": "health_fitness",
+            "sourceShape": "procedure_rows",
+            "primaryExecutionPattern": "phase_lifecycle",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "deep-DS08",
+            "primaryLifeArea": "travel_outings",
+            "sourceShape": "resource_collection",
+            "primaryExecutionPattern": "resource_queue",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "deep-DS10",
+            "primaryLifeArea": "study_reading",
+            "sourceShape": "lesson_rows",
+            "primaryExecutionPattern": "progress_tracking",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "approved",
+            "conversionReadiness": "ready_for_internal_canary"
+          },
+          {
+            "caseId": "deep-DS11",
+            "primaryLifeArea": "travel_outings",
+            "sourceShape": "checklist_rows",
+            "primaryExecutionPattern": "progress_tracking",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "approved",
+            "conversionReadiness": "ready_second_wave"
+          }
+        ]
+      },
+      "metrics": {
+        "definition": "Pairwise agreement = matching decisions across the three classifier pairs divided by 60 pair-comparisons per axis.",
+        "coreAxes": {
+          "lifeArea": 100,
+          "sourceShape": 78.3,
+          "executionPattern": 83.3,
+          "primaryArtifact": 90
+        },
+        "gateAxes": {
+          "sourceRowStatus": 91.7,
+          "discoveryAccess": 96.7,
+          "rightsReview": 66.7,
+          "conversionReadiness": 53.3
+        },
+        "exactMatch": 45,
+        "coreExactCaseCount": 9,
+        "coreExactCasePercent": 45,
+        "allEightAxesExactCaseCount": 4,
+        "allEightAxesExactCasePercent": 20
+      }
+    },
+    {
+      "round": 2,
+      "ruleVersion": "taxonomy-v1.1-adjudicated",
+      "change": "Reclassified independently after adding global evidence-bounded source-shape, execution, artifact, access, rights and readiness tie-breakers.",
+      "methodOutputs": {
+        "deterministicRules": [
+          {
+            "caseId": "p0-C01",
+            "primaryLifeArea": "travel_outings",
+            "sourceShape": null,
+            "primaryExecutionPattern": "date_preparation",
+            "primaryArtifact": "calendar",
+            "sourceRowStatus": "missing",
+            "discoveryAccess": "unknown",
+            "rightsReview": "pending",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "p0-C06",
+            "primaryLifeArea": "travel_outings",
+            "sourceShape": null,
+            "primaryExecutionPattern": "date_preparation",
+            "primaryArtifact": "calendar",
+            "sourceRowStatus": "missing",
+            "discoveryAccess": "unknown",
+            "rightsReview": "pending",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "p0-C14",
+            "primaryLifeArea": "home_living",
+            "sourceShape": null,
+            "primaryExecutionPattern": "ordered_procedure",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "missing",
+            "discoveryAccess": "unknown",
+            "rightsReview": "pending",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "p0-C16",
+            "primaryLifeArea": "work_career",
+            "sourceShape": null,
+            "primaryExecutionPattern": "phase_lifecycle",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "missing",
+            "discoveryAccess": "unknown",
+            "rightsReview": "pending",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "p0-O04",
+            "primaryLifeArea": "money_admin_purchase",
+            "sourceShape": null,
+            "primaryExecutionPattern": "compare_decide",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "missing",
+            "discoveryAccess": "unknown",
+            "rightsReview": "pending",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "p0-R03",
+            "primaryLifeArea": "work_career",
+            "sourceShape": null,
+            "primaryExecutionPattern": "phase_lifecycle",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "missing",
+            "discoveryAccess": "unknown",
+            "rightsReview": "pending",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "expansion-KR-KMOOC-01",
+            "primaryLifeArea": "study_reading",
+            "sourceShape": null,
+            "primaryExecutionPattern": "progress_tracking",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "metadata_only",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "expansion-KR-FIT100-01",
+            "primaryLifeArea": "health_fitness",
+            "sourceShape": "procedure_rows",
+            "primaryExecutionPattern": "ordered_procedure",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "expansion-GLOBAL-OSSU-01",
+            "primaryLifeArea": "study_reading",
+            "sourceShape": "lesson_rows",
+            "primaryExecutionPattern": "progress_tracking",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "approved",
+            "conversionReadiness": "ready_for_internal_canary"
+          },
+          {
+            "caseId": "expansion-GLOBAL-LIBRIVOX-01",
+            "primaryLifeArea": "study_reading",
+            "sourceShape": "resource_collection",
+            "primaryExecutionPattern": "resource_queue",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "pending",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "expansion-GLOBAL-TODOIST-01",
+            "primaryLifeArea": "work_career",
+            "sourceShape": "procedure_rows",
+            "primaryExecutionPattern": "phase_lifecycle",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "partial",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "expansion-KR-KCA-01",
+            "primaryLifeArea": "money_admin_purchase",
+            "sourceShape": "table_rows",
+            "primaryExecutionPattern": "compare_decide",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "approved",
+            "conversionReadiness": "ready_for_internal_canary"
+          },
+          {
+            "caseId": "expansion-KR-NONGSARO-01",
+            "primaryLifeArea": "work_career",
+            "sourceShape": "checklist_rows",
+            "primaryExecutionPattern": "repeating_routine",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "deep-DS02",
+            "primaryLifeArea": "money_admin_purchase",
+            "sourceShape": "decision_criteria",
+            "primaryExecutionPattern": "compare_decide",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "pending",
+            "conversionReadiness": "hold"
+          },
+          {
+            "caseId": "deep-DS04",
+            "primaryLifeArea": "study_reading",
+            "sourceShape": "date_window",
+            "primaryExecutionPattern": "progress_tracking",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "partial",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "deep-DS05",
+            "primaryLifeArea": "home_living",
+            "sourceShape": "date_offsets",
+            "primaryExecutionPattern": "date_preparation",
+            "primaryArtifact": "calendar",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "ready_for_internal_canary"
+          },
+          {
+            "caseId": "deep-DS07",
+            "primaryLifeArea": "health_fitness",
+            "sourceShape": "procedure_rows",
+            "primaryExecutionPattern": "ordered_procedure",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "deep-DS08",
+            "primaryLifeArea": "travel_outings",
+            "sourceShape": "procedure_rows",
+            "primaryExecutionPattern": "ordered_procedure",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "hold"
+          },
+          {
+            "caseId": "deep-DS10",
+            "primaryLifeArea": "study_reading",
+            "sourceShape": "lesson_rows",
+            "primaryExecutionPattern": "progress_tracking",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "approved",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "deep-DS11",
+            "primaryLifeArea": "travel_outings",
+            "sourceShape": "checklist_rows",
+            "primaryExecutionPattern": "progress_tracking",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "approved",
+            "conversionReadiness": "ready_second_wave"
+          }
+        ],
+        "independentReviewerAlpha": [
+          {
+            "caseId": "p0-C01",
+            "primaryLifeArea": "travel_outings",
+            "sourceShape": null,
+            "primaryExecutionPattern": "date_preparation",
+            "primaryArtifact": "calendar",
+            "sourceRowStatus": "missing",
+            "discoveryAccess": "unknown",
+            "rightsReview": "pending",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "p0-C06",
+            "primaryLifeArea": "travel_outings",
+            "sourceShape": null,
+            "primaryExecutionPattern": "date_preparation",
+            "primaryArtifact": "calendar",
+            "sourceRowStatus": "missing",
+            "discoveryAccess": "unknown",
+            "rightsReview": "pending",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "p0-C14",
+            "primaryLifeArea": "home_living",
+            "sourceShape": null,
+            "primaryExecutionPattern": "ordered_procedure",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "missing",
+            "discoveryAccess": "unknown",
+            "rightsReview": "pending",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "p0-C16",
+            "primaryLifeArea": "work_career",
+            "sourceShape": null,
+            "primaryExecutionPattern": "phase_lifecycle",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "missing",
+            "discoveryAccess": "unknown",
+            "rightsReview": "pending",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "p0-O04",
+            "primaryLifeArea": "money_admin_purchase",
+            "sourceShape": null,
+            "primaryExecutionPattern": "compare_decide",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "missing",
+            "discoveryAccess": "unknown",
+            "rightsReview": "pending",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "p0-R03",
+            "primaryLifeArea": "work_career",
+            "sourceShape": null,
+            "primaryExecutionPattern": "phase_lifecycle",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "missing",
+            "discoveryAccess": "unknown",
+            "rightsReview": "pending",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "expansion-KR-KMOOC-01",
+            "primaryLifeArea": "study_reading",
+            "sourceShape": null,
+            "primaryExecutionPattern": "progress_tracking",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "metadata_only",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "expansion-KR-FIT100-01",
+            "primaryLifeArea": "health_fitness",
+            "sourceShape": "procedure_rows",
+            "primaryExecutionPattern": "ordered_procedure",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "expansion-GLOBAL-OSSU-01",
+            "primaryLifeArea": "study_reading",
+            "sourceShape": "lesson_rows",
+            "primaryExecutionPattern": "progress_tracking",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "approved",
+            "conversionReadiness": "ready_for_internal_canary"
+          },
+          {
+            "caseId": "expansion-GLOBAL-LIBRIVOX-01",
+            "primaryLifeArea": "study_reading",
+            "sourceShape": "resource_collection",
+            "primaryExecutionPattern": "resource_queue",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "approved",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "expansion-GLOBAL-TODOIST-01",
+            "primaryLifeArea": "work_career",
+            "sourceShape": "procedure_rows",
+            "primaryExecutionPattern": "phase_lifecycle",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "partial",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "expansion-KR-KCA-01",
+            "primaryLifeArea": "money_admin_purchase",
+            "sourceShape": "table_rows",
+            "primaryExecutionPattern": "compare_decide",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "approved",
+            "conversionReadiness": "ready_for_internal_canary"
+          },
+          {
+            "caseId": "expansion-KR-NONGSARO-01",
+            "primaryLifeArea": "work_career",
+            "sourceShape": "checklist_rows",
+            "primaryExecutionPattern": "repeating_routine",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "deep-DS02",
+            "primaryLifeArea": "money_admin_purchase",
+            "sourceShape": "decision_criteria",
+            "primaryExecutionPattern": "compare_decide",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "pending",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "deep-DS04",
+            "primaryLifeArea": "study_reading",
+            "sourceShape": "date_window",
+            "primaryExecutionPattern": "progress_tracking",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "partial",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "deep-DS05",
+            "primaryLifeArea": "home_living",
+            "sourceShape": "date_offsets",
+            "primaryExecutionPattern": "date_preparation",
+            "primaryArtifact": "calendar",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "ready_for_internal_canary"
+          },
+          {
+            "caseId": "deep-DS07",
+            "primaryLifeArea": "health_fitness",
+            "sourceShape": "procedure_rows",
+            "primaryExecutionPattern": "ordered_procedure",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "deep-DS08",
+            "primaryLifeArea": "travel_outings",
+            "sourceShape": "procedure_rows",
+            "primaryExecutionPattern": "ordered_procedure",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "deep-DS10",
+            "primaryLifeArea": "study_reading",
+            "sourceShape": "lesson_rows",
+            "primaryExecutionPattern": "progress_tracking",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "approved",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "deep-DS11",
+            "primaryLifeArea": "travel_outings",
+            "sourceShape": "checklist_rows",
+            "primaryExecutionPattern": "progress_tracking",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "approved",
+            "conversionReadiness": "ready_second_wave"
+          }
+        ],
+        "independentReviewerBeta": [
+          {
+            "caseId": "p0-C01",
+            "primaryLifeArea": "travel_outings",
+            "sourceShape": null,
+            "primaryExecutionPattern": "date_preparation",
+            "primaryArtifact": "calendar",
+            "sourceRowStatus": "missing",
+            "discoveryAccess": "unknown",
+            "rightsReview": "pending",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "p0-C06",
+            "primaryLifeArea": "travel_outings",
+            "sourceShape": null,
+            "primaryExecutionPattern": "date_preparation",
+            "primaryArtifact": "calendar",
+            "sourceRowStatus": "missing",
+            "discoveryAccess": "unknown",
+            "rightsReview": "pending",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "p0-C14",
+            "primaryLifeArea": "home_living",
+            "sourceShape": null,
+            "primaryExecutionPattern": "ordered_procedure",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "missing",
+            "discoveryAccess": "unknown",
+            "rightsReview": "pending",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "p0-C16",
+            "primaryLifeArea": "work_career",
+            "sourceShape": null,
+            "primaryExecutionPattern": "phase_lifecycle",
+            "primaryArtifact": "todo",
+            "sourceRowStatus": "missing",
+            "discoveryAccess": "unknown",
+            "rightsReview": "pending",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "p0-O04",
+            "primaryLifeArea": "money_admin_purchase",
+            "sourceShape": null,
+            "primaryExecutionPattern": "compare_decide",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "missing",
+            "discoveryAccess": "unknown",
+            "rightsReview": "pending",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "p0-R03",
+            "primaryLifeArea": "work_career",
+            "sourceShape": null,
+            "primaryExecutionPattern": "phase_lifecycle",
+            "primaryArtifact": "todo",
+            "sourceRowStatus": "missing",
+            "discoveryAccess": "unknown",
+            "rightsReview": "pending",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "expansion-KR-KMOOC-01",
+            "primaryLifeArea": "study_reading",
+            "sourceShape": null,
+            "primaryExecutionPattern": "progress_tracking",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "metadata_only",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "expansion-KR-FIT100-01",
+            "primaryLifeArea": "health_fitness",
+            "sourceShape": "procedure_rows",
+            "primaryExecutionPattern": "ordered_procedure",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "expansion-GLOBAL-OSSU-01",
+            "primaryLifeArea": "study_reading",
+            "sourceShape": "lesson_rows",
+            "primaryExecutionPattern": "progress_tracking",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "approved",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "expansion-GLOBAL-LIBRIVOX-01",
+            "primaryLifeArea": "study_reading",
+            "sourceShape": "lesson_rows",
+            "primaryExecutionPattern": "progress_tracking",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "pending",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "expansion-GLOBAL-TODOIST-01",
+            "primaryLifeArea": "work_career",
+            "sourceShape": "procedure_rows",
+            "primaryExecutionPattern": "phase_lifecycle",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "partial",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "expansion-KR-KCA-01",
+            "primaryLifeArea": "money_admin_purchase",
+            "sourceShape": "table_rows",
+            "primaryExecutionPattern": "compare_decide",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "approved",
+            "conversionReadiness": "ready_for_internal_canary"
+          },
+          {
+            "caseId": "expansion-KR-NONGSARO-01",
+            "primaryLifeArea": "work_career",
+            "sourceShape": "checklist_rows",
+            "primaryExecutionPattern": "repeating_routine",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "deep-DS02",
+            "primaryLifeArea": "money_admin_purchase",
+            "sourceShape": "decision_criteria",
+            "primaryExecutionPattern": "compare_decide",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "pending",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "deep-DS04",
+            "primaryLifeArea": "study_reading",
+            "sourceShape": null,
+            "primaryExecutionPattern": "progress_tracking",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "metadata_only",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "source_import_required"
+          },
+          {
+            "caseId": "deep-DS05",
+            "primaryLifeArea": "home_living",
+            "sourceShape": "date_offsets",
+            "primaryExecutionPattern": "date_preparation",
+            "primaryArtifact": "calendar",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "ready_for_internal_canary"
+          },
+          {
+            "caseId": "deep-DS07",
+            "primaryLifeArea": "health_fitness",
+            "sourceShape": "procedure_rows",
+            "primaryExecutionPattern": "ordered_procedure",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "deep-DS08",
+            "primaryLifeArea": "travel_outings",
+            "sourceShape": "procedure_rows",
+            "primaryExecutionPattern": "ordered_procedure",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "restricted",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "deep-DS10",
+            "primaryLifeArea": "study_reading",
+            "sourceShape": "lesson_rows",
+            "primaryExecutionPattern": "progress_tracking",
+            "primaryArtifact": "sheet",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "approved",
+            "conversionReadiness": "ready_second_wave"
+          },
+          {
+            "caseId": "deep-DS11",
+            "primaryLifeArea": "travel_outings",
+            "sourceShape": "checklist_rows",
+            "primaryExecutionPattern": "progress_tracking",
+            "primaryArtifact": "checklist",
+            "sourceRowStatus": "complete",
+            "discoveryAccess": "public",
+            "rightsReview": "approved",
+            "conversionReadiness": "ready_second_wave"
+          }
+        ]
+      },
+      "metrics": {
+        "definition": "Pairwise agreement = matching decisions across the three classifier pairs divided by 60 pair-comparisons per axis.",
+        "coreAxes": {
+          "lifeArea": 100,
+          "sourceShape": 93.3,
+          "executionPattern": 96.7,
+          "primaryArtifact": 93.3
+        },
+        "gateAxes": {
+          "sourceRowStatus": 96.7,
+          "discoveryAccess": 100,
+          "rightsReview": 96.7,
+          "conversionReadiness": 90
+        },
+        "exactMatch": 80,
+        "coreExactCaseCount": 16,
+        "coreExactCasePercent": 80,
+        "allEightAxesExactCaseCount": 13,
+        "allEightAxesExactCasePercent": 65
+      }
+    }
+  ],
+  "finalMetrics": {
+    "definition": "Pairwise agreement = matching decisions across the three classifier pairs divided by 60 pair-comparisons per axis.",
+    "coreAxes": {
+      "lifeArea": 100,
+      "sourceShape": 93.3,
+      "executionPattern": 96.7,
+      "primaryArtifact": 93.3
+    },
+    "gateAxes": {
+      "sourceRowStatus": 96.7,
+      "discoveryAccess": 100,
+      "rightsReview": 96.7,
+      "conversionReadiness": 90
+    },
+    "exactMatch": 80,
+    "coreExactCaseCount": 16,
+    "coreExactCasePercent": 80,
+    "allEightAxesExactCaseCount": 13,
+    "allEightAxesExactCasePercent": 65
+  },
+  "improvementPercentagePoints": {
+    "lifeArea": 0,
+    "sourceShape": 15,
+    "executionPattern": 13.4,
+    "primaryArtifact": 3.3
+  },
+  "finalThreshold": {
+    "requiredCoreAxisAgreementPercent": 85,
+    "passed": true
+  },
+  "cases": [
+    {
+      "caseId": "p0-C01",
+      "title": "아이와 주말 박물관",
+      "finalDecision": {
+        "primaryLifeArea": "travel_outings",
+        "sourceShape": null,
+        "primaryExecutionPattern": "date_preparation",
+        "primaryArtifact": "calendar",
+        "sourceRowStatus": "missing",
+        "discoveryAccess": "unknown",
+        "rightsReview": "pending",
+        "conversionReadiness": "source_import_required"
+      },
+      "disagreementCause": "The three methods converged after global tie-breakers were clarified; remaining review flags are evidence gates, not taxonomy disagreements.",
+      "finalRule": "Apply the decision order: immediate user outcome, evidenced source rows, execution state transition, dominant durable artifact, then independent access/rights/review gates."
+    },
+    {
+      "caseId": "p0-C06",
+      "title": "가족 캠핑 1박",
+      "finalDecision": {
+        "primaryLifeArea": "travel_outings",
+        "sourceShape": null,
+        "primaryExecutionPattern": "date_preparation",
+        "primaryArtifact": "calendar",
+        "sourceRowStatus": "missing",
+        "discoveryAccess": "unknown",
+        "rightsReview": "pending",
+        "conversionReadiness": "source_import_required"
+      },
+      "disagreementCause": "The three methods converged after global tie-breakers were clarified; remaining review flags are evidence gates, not taxonomy disagreements.",
+      "finalRule": "Apply the decision order: immediate user outcome, evidenced source rows, execution state transition, dominant durable artifact, then independent access/rights/review gates."
+    },
+    {
+      "caseId": "p0-C14",
+      "title": "주말 벽 한 면 칠하기",
+      "finalDecision": {
+        "primaryLifeArea": "home_living",
+        "sourceShape": null,
+        "primaryExecutionPattern": "ordered_procedure",
+        "primaryArtifact": "checklist",
+        "sourceRowStatus": "missing",
+        "discoveryAccess": "unknown",
+        "rightsReview": "pending",
+        "conversionReadiness": "source_import_required"
+      },
+      "disagreementCause": "The three methods converged after global tie-breakers were clarified; remaining review flags are evidence gates, not taxonomy disagreements.",
+      "finalRule": "Apply the decision order: immediate user outcome, evidenced source rows, execution state transition, dominant durable artifact, then independent access/rights/review gates."
+    },
+    {
+      "caseId": "p0-C16",
+      "title": "영상 시리즈 4주",
+      "finalDecision": {
+        "primaryLifeArea": "work_career",
+        "sourceShape": null,
+        "primaryExecutionPattern": "phase_lifecycle",
+        "primaryArtifact": "sheet",
+        "sourceRowStatus": "missing",
+        "discoveryAccess": "unknown",
+        "rightsReview": "pending",
+        "conversionReadiness": "source_import_required"
+      },
+      "disagreementCause": "Phase work can look like a task list or a tracking table; one reviewer optimized for the next action while two optimized for phase status and handoff.",
+      "finalRule": "For heterogeneous phase work, use sheet when owner/status/evidence across phases is the durable result; use todo only when a flat next-action list is the dominant result. Keep this P0 assignment provisional until SourceRows arrive."
+    },
+    {
+      "caseId": "p0-O04",
+      "title": "전세계약 전 공식 서류 확인",
+      "finalDecision": {
+        "primaryLifeArea": "money_admin_purchase",
+        "sourceShape": null,
+        "primaryExecutionPattern": "compare_decide",
+        "primaryArtifact": "sheet",
+        "sourceRowStatus": "missing",
+        "discoveryAccess": "unknown",
+        "rightsReview": "pending",
+        "conversionReadiness": "source_import_required"
+      },
+      "disagreementCause": "The three methods converged after global tie-breakers were clarified; remaining review flags are evidence gates, not taxonomy disagreements.",
+      "finalRule": "Apply the decision order: immediate user outcome, evidenced source rows, execution state transition, dominant durable artifact, then independent access/rights/review gates."
+    },
+    {
+      "caseId": "p0-R03",
+      "title": "개발 포트폴리오 4주",
+      "finalDecision": {
+        "primaryLifeArea": "work_career",
+        "sourceShape": null,
+        "primaryExecutionPattern": "phase_lifecycle",
+        "primaryArtifact": "sheet",
+        "sourceRowStatus": "missing",
+        "discoveryAccess": "unknown",
+        "rightsReview": "pending",
+        "conversionReadiness": "source_import_required"
+      },
+      "disagreementCause": "A portfolio project mixes executable tasks with phase evidence; the primary artifact depends on whether progress state or the immediate next action is dominant.",
+      "finalRule": "For a portfolio lifecycle, phase progress and evidence make sheet primary and todo secondary; missing SourceRows prevent a confirmed assignment."
+    },
+    {
+      "caseId": "expansion-KR-KMOOC-01",
+      "title": "Introduction to Data Analysis",
+      "finalDecision": {
+        "primaryLifeArea": "study_reading",
+        "sourceShape": null,
+        "primaryExecutionPattern": "progress_tracking",
+        "primaryArtifact": "sheet",
+        "sourceRowStatus": "metadata_only",
+        "discoveryAccess": "public",
+        "rightsReview": "restricted",
+        "conversionReadiness": "source_import_required"
+      },
+      "disagreementCause": "The three methods converged after global tie-breakers were clarified; remaining review flags are evidence gates, not taxonomy disagreements.",
+      "finalRule": "Apply the decision order: immediate user outcome, evidenced source rows, execution state transition, dominant durable artifact, then independent access/rights/review gates."
+    },
+    {
+      "caseId": "expansion-KR-FIT100-01",
+      "title": "국민체력100 측정·상담·운동관리 절차",
+      "finalDecision": {
+        "primaryLifeArea": "health_fitness",
+        "sourceShape": "procedure_rows",
+        "primaryExecutionPattern": "ordered_procedure",
+        "primaryArtifact": "checklist",
+        "sourceRowStatus": "complete",
+        "discoveryAccess": "public",
+        "rightsReview": "restricted",
+        "conversionReadiness": "ready_second_wave"
+      },
+      "disagreementCause": "The three methods converged after global tie-breakers were clarified; remaining review flags are evidence gates, not taxonomy disagreements.",
+      "finalRule": "Apply the decision order: immediate user outcome, evidenced source rows, execution state transition, dominant durable artifact, then independent access/rights/review gates."
+    },
+    {
+      "caseId": "expansion-GLOBAL-OSSU-01",
+      "title": "OSSU Computer Science Curriculum",
+      "finalDecision": {
+        "primaryLifeArea": "study_reading",
+        "sourceShape": "lesson_rows",
+        "primaryExecutionPattern": "progress_tracking",
+        "primaryArtifact": "sheet",
+        "sourceRowStatus": "complete",
+        "discoveryAccess": "public",
+        "rightsReview": "approved",
+        "conversionReadiness": "ready_for_internal_canary"
+      },
+      "disagreementCause": "The core taxonomy agreed; readiness differed only on whether localization and freshness checks block internal canary.",
+      "finalRule": "Internal canary and public clearance are independent. Verified rows and license permit internal canary, while freshness and locale checks remain separate review fields."
+    },
+    {
+      "caseId": "expansion-GLOBAL-LIBRIVOX-01",
+      "title": "Anne of Green Gables, Version 5",
+      "finalDecision": {
+        "primaryLifeArea": "study_reading",
+        "sourceShape": "resource_collection",
+        "primaryExecutionPattern": "resource_queue",
+        "primaryArtifact": "sheet",
+        "sourceRowStatus": "complete",
+        "discoveryAccess": "public",
+        "rightsReview": "pending",
+        "conversionReadiness": "ready_second_wave"
+      },
+      "disagreementCause": "Ordered audio chapters resemble lessons, but the source has no curriculum, assessment or course completion criterion; territory also prevents treating US public-domain status as global approval.",
+      "finalRule": "Use resource_collection/resource_queue when entries are independently consumable resources without instructional gates. Use lesson_rows/progress_tracking only for a fixed curriculum. Territory uncertainty keeps rights pending."
+    },
+    {
+      "caseId": "expansion-GLOBAL-TODOIST-01",
+      "title": "Podcast Workflow template",
+      "finalDecision": {
+        "primaryLifeArea": "work_career",
+        "sourceShape": "procedure_rows",
+        "primaryExecutionPattern": "phase_lifecycle",
+        "primaryArtifact": "checklist",
+        "sourceRowStatus": "partial",
+        "discoveryAccess": "public",
+        "rightsReview": "restricted",
+        "conversionReadiness": "source_import_required"
+      },
+      "disagreementCause": "The three methods converged after global tie-breakers were clarified; remaining review flags are evidence gates, not taxonomy disagreements.",
+      "finalRule": "Apply the decision order: immediate user outcome, evidenced source rows, execution state transition, dominant durable artifact, then independent access/rights/review gates."
+    },
+    {
+      "caseId": "expansion-KR-KCA-01",
+      "title": "식물성 음료 품질비교 결과",
+      "finalDecision": {
+        "primaryLifeArea": "money_admin_purchase",
+        "sourceShape": "table_rows",
+        "primaryExecutionPattern": "compare_decide",
+        "primaryArtifact": "sheet",
+        "sourceRowStatus": "complete",
+        "discoveryAccess": "public",
+        "rightsReview": "approved",
+        "conversionReadiness": "ready_for_internal_canary"
+      },
+      "disagreementCause": "The three methods converged after global tie-breakers were clarified; remaining review flags are evidence gates, not taxonomy disagreements.",
+      "finalRule": "Apply the decision order: immediate user outcome, evidenced source rows, execution state transition, dominant durable artifact, then independent access/rights/review gates."
+    },
+    {
+      "caseId": "expansion-KR-NONGSARO-01",
+      "title": "2026년 농업인 온열질환 예방가이드 및 체크리스트",
+      "finalDecision": {
+        "primaryLifeArea": "work_career",
+        "sourceShape": "checklist_rows",
+        "primaryExecutionPattern": "repeating_routine",
+        "primaryArtifact": "checklist",
+        "sourceRowStatus": "complete",
+        "discoveryAccess": "public",
+        "rightsReview": "restricted",
+        "conversionReadiness": "ready_second_wave"
+      },
+      "disagreementCause": "The three methods converged after global tie-breakers were clarified; remaining review flags are evidence gates, not taxonomy disagreements.",
+      "finalRule": "Apply the decision order: immediate user outcome, evidenced source rows, execution state transition, dominant durable artifact, then independent access/rights/review gates."
+    },
+    {
+      "caseId": "deep-DS02",
+      "title": "리모델링 계약서 체크리스트 10",
+      "finalDecision": {
+        "primaryLifeArea": "money_admin_purchase",
+        "sourceShape": "decision_criteria",
+        "primaryExecutionPattern": "compare_decide",
+        "primaryArtifact": "sheet",
+        "sourceRowStatus": "complete",
+        "discoveryAccess": "public",
+        "rightsReview": "pending",
+        "conversionReadiness": "hold"
+      },
+      "disagreementCause": "The core taxonomy agreed; readiness differed between keeping the legal-risk candidate on hold and allowing a review-locked second-wave draft.",
+      "finalRule": "Legal/financial risk and pending permission can keep an otherwise complete internal draft on hold; personal and public permissions remain false until review."
+    },
+    {
+      "caseId": "deep-DS04",
+      "title": "Introduction to Data Analysis",
+      "finalDecision": {
+        "primaryLifeArea": "study_reading",
+        "sourceShape": "date_window",
+        "primaryExecutionPattern": "progress_tracking",
+        "primaryArtifact": "sheet",
+        "sourceRowStatus": "partial",
+        "discoveryAccess": "public",
+        "rightsReview": "restricted",
+        "conversionReadiness": "source_import_required"
+      },
+      "disagreementCause": "The public metadata contains real operating date windows but not lesson rows; reviewers differed on whether metadata can itself be a source shape.",
+      "finalRule": "A date window is a valid source shape when the published dates are themselves the rows needed for the intended Flow; absent lesson rows still make the package partial and source_import_required for a full course Flow."
+    },
+    {
+      "caseId": "deep-DS05",
+      "title": "이사 준비 체크리스트",
+      "finalDecision": {
+        "primaryLifeArea": "home_living",
+        "sourceShape": "date_offsets",
+        "primaryExecutionPattern": "date_preparation",
+        "primaryArtifact": "calendar",
+        "sourceRowStatus": "complete",
+        "discoveryAccess": "public",
+        "rightsReview": "restricted",
+        "conversionReadiness": "ready_for_internal_canary"
+      },
+      "disagreementCause": "The three methods converged after global tie-breakers were clarified; remaining review flags are evidence gates, not taxonomy disagreements.",
+      "finalRule": "Apply the decision order: immediate user outcome, evidenced source rows, execution state transition, dominant durable artifact, then independent access/rights/review gates."
+    },
+    {
+      "caseId": "deep-DS07",
+      "title": "국민체력인증 이용안내",
+      "finalDecision": {
+        "primaryLifeArea": "health_fitness",
+        "sourceShape": "procedure_rows",
+        "primaryExecutionPattern": "ordered_procedure",
+        "primaryArtifact": "checklist",
+        "sourceRowStatus": "complete",
+        "discoveryAccess": "public",
+        "rightsReview": "restricted",
+        "conversionReadiness": "ready_second_wave"
+      },
+      "disagreementCause": "The three methods converged after global tie-breakers were clarified; remaining review flags are evidence gates, not taxonomy disagreements.",
+      "finalRule": "Apply the decision order: immediate user outcome, evidenced source rows, execution state transition, dominant durable artifact, then independent access/rights/review gates."
+    },
+    {
+      "caseId": "deep-DS08",
+      "title": "공주 부모님과 당일치기 힐링 여행코스",
+      "finalDecision": {
+        "primaryLifeArea": "travel_outings",
+        "sourceShape": "procedure_rows",
+        "primaryExecutionPattern": "ordered_procedure",
+        "primaryArtifact": "checklist",
+        "sourceRowStatus": "complete",
+        "discoveryAccess": "public",
+        "rightsReview": "restricted",
+        "conversionReadiness": "hold"
+      },
+      "disagreementCause": "The core taxonomy agreed; readiness differed between rights-sensitive hold and review-locked second wave.",
+      "finalRule": "A fixed source-defined route is ordered_procedure, but unresolved rights/territory can independently keep promotion on hold."
+    },
+    {
+      "caseId": "deep-DS10",
+      "title": "OSSU Computer Science Curriculum",
+      "finalDecision": {
+        "primaryLifeArea": "study_reading",
+        "sourceShape": "lesson_rows",
+        "primaryExecutionPattern": "progress_tracking",
+        "primaryArtifact": "sheet",
+        "sourceRowStatus": "complete",
+        "discoveryAccess": "public",
+        "rightsReview": "approved",
+        "conversionReadiness": "ready_second_wave"
+      },
+      "disagreementCause": "The three methods converged after global tie-breakers were clarified; remaining review flags are evidence gates, not taxonomy disagreements.",
+      "finalRule": "Apply the decision order: immediate user outcome, evidenced source rows, execution state transition, dominant durable artifact, then independent access/rights/review gates."
+    },
+    {
+      "caseId": "deep-DS11",
+      "title": "Packing list",
+      "finalDecision": {
+        "primaryLifeArea": "travel_outings",
+        "sourceShape": "checklist_rows",
+        "primaryExecutionPattern": "progress_tracking",
+        "primaryArtifact": "checklist",
+        "sourceRowStatus": "complete",
+        "discoveryAccess": "public",
+        "rightsReview": "approved",
+        "conversionReadiness": "ready_second_wave"
+      },
+      "disagreementCause": "The three methods converged after global tie-breakers were clarified; remaining review flags are evidence gates, not taxonomy disagreements.",
+      "finalRule": "Apply the decision order: immediate user outcome, evidenced source rows, execution state transition, dominant durable artifact, then independent access/rights/review gates."
+    }
+  ],
+  "remainingDisagreementPolicy": [
+    "Do not add slug-specific exceptions to improve the score.",
+    "Keep evidence-bounded nulls and provisional classifications when SourceRows are missing.",
+    "When core axes are stable but gates differ, preserve independent review fields rather than forcing one readiness label.",
+    "Escalate artifact ties only when the dominant durable user result cannot be established from the source and user job."
+  ]
+}

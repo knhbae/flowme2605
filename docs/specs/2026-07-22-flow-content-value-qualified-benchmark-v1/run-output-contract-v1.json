@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "flow-content-blind-run-output-v1",
+  "requiredCaseFields": [
+    "caseId",
+    "role",
+    "phase",
+    "flowPossible",
+    "reason",
+    "sourceShape",
+    "userJob",
+    "sourceRowsUsed",
+    "items",
+    "minimumInputs",
+    "autoFilledValues",
+    "valuesToConfirm",
+    "primaryProjection",
+    "secondaryProjections",
+    "forbiddenProjections",
+    "omittedSourceRows",
+    "uncertainty",
+    "gates",
+    "publicReleaseAllowed",
+    "privateConversionAllowed",
+    "status",
+    "projections",
+    "runTelemetry"
+  ],
+  "itemRequiredFields": [
+    "itemId",
+    "type",
+    "title",
+    "detail",
+    "completion",
+    "schedule",
+    "location",
+    "fields",
+    "conditions",
+    "sourceRefs"
+  ],
+  "allowedStatuses": [
+    "ready",
+    "needs_confirmation",
+    "source_import_required",
+    "hold",
+    "blocked"
+  ],
+  "allowedProjections": [
+    "calendar",
+    "checklist",
+    "todo",
+    "sheet",
+    "memo"
+  ],
+  "rules": [
+    "모든 Item은 하나 이상의 제공된 SourceRow id를 sourceRefs에 가진다.",
+    "원문 또는 사용자 입력으로 확정되지 않은 날짜·반복은 생성하지 않는다.",
+    "gate 실패 시 items와 실행 projection을 비운다.",
+    "actual token 또는 비용을 측정하지 않았으면 null로 둔다.",
+    "admission score, gold artifact, split, 다른 role 결과는 볼 수 없다."
+  ]
+}

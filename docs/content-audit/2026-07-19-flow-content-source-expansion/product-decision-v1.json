@@ -1,0 +1,134 @@
+{
+  "schemaVersion": "flow-content-source-expansion-product-decision-v1",
+  "decidedAt": "2026-07-19",
+  "overallDecision": "shift",
+  "decisionSentence": "URL을 바로 LLM에 넣어 공개 Flow를 만드는 백엔드가 아니라, 접근·완결성·권리·위험을 먼저 판정하고 SourceRow 원장을 만든 뒤 LLM은 검토 가능한 제안만 만드는 백엔드로 전환한다.",
+  "evidence": {
+    "candidateLedger": "../2026-07-19-flow-content-source-expansion-seed.json",
+    "deepSet": "./deep-set-v1.json",
+    "modelComparison": "./model-comparison-v1.json",
+    "candidateCount": 36,
+    "deepCaseCount": 12,
+    "deepResultMix": {"readyInternal": 8, "reviewLocked": 2, "sourceImportRequired": 2},
+    "modelFinding": "두 모델 모두 SourceRow accounting 100%·발명 사실/날짜 0건이었으나 premium proxy의 수정 추정은 4.5분, lower-cost proxy는 18분이었다."
+  },
+  "p0PortfolioV2": {
+    "decisionCount": 24,
+    "activeProposalCount": 23,
+    "keepCount": 18,
+    "replaceCount": 5,
+    "parkCount": 1,
+    "principle": "P0는 수량보다 학습 구조다. 근거 없는 제작자 가설을 실제 원문 패킷으로 교체하되, 사용자·제공자 검증 전 공개 준비 상태로 승격하지 않는다.",
+    "rows": [
+      {"id": "C01", "titleKo": "아이와 주말 박물관", "decision": "keep", "reason": "육아·장소 공식정보·가족 협업을 함께 시험하는 대표 날짜형"},
+      {"id": "C02", "titleKo": "비 오는 날 대체 나들이", "decision": "replace", "replacement": "DS02", "replacementTitleKo": "리모델링 계약 전 10항목 확인", "reason": "가족·여행 편향을 줄이고 반응이 큰 money/compare·권리·법률 잠금 사례를 넣음", "acceptanceGate": "오늘의집 변환 허가와 최신 공식 계약 출처 검토"},
+      {"id": "C03", "titleKo": "공룡 발자국 미술 놀이", "decision": "keep", "reason": "제작자 순서형·가족 실행의 낮은 위험 대조군"},
+      {"id": "C04", "titleKo": "그림책 질문 한 가지", "decision": "keep", "reason": "짧은 반복과 비공개 메모의 최소 Flow 대조군"},
+      {"id": "C05", "titleKo": "가족 생일 집에서 준비", "decision": "keep", "reason": "날짜·구매·역할 인계가 결합된 대표 협업형"},
+      {"id": "C06", "titleKo": "가족 캠핑 1박", "decision": "park", "reason": "육아·여행·날짜 편향과 준비물 안전·제공 범위 변수가 겹침", "reopenGate": "C01·C09 사용자 반응에서 캠핑 고유 job이 확인되고 허가 원문이 확보될 때"},
+      {"id": "C07", "titleKo": "아이와 피크닉 도시락", "decision": "keep", "reason": "음식 안전 경계가 있는 제작자 순서형"},
+      {"id": "C08", "titleKo": "학교 행사 가족 역할", "decision": "replace", "replacement": "DS04", "replacementTitleKo": "K-MOOC 데이터 분석 과정 끝내기", "reason": "가족 날짜형 중복을 줄이고 study/phase 생애주기와 sparse-source 원칙을 검증", "acceptanceGate": "주차별 이미지 OCR 없이 공개 메타데이터만 사용"},
+      {"id": "C09", "titleKo": "가족여행 D-7", "decision": "keep", "reason": "여행 기준일과 가족 역할의 대표 creator Flow"},
+      {"id": "C10", "titleKo": "가족여행 짐 준비표", "decision": "keep", "reason": "source table과 역할 분담을 함께 시험"},
+      {"id": "C11", "titleKo": "테마파크 방문 선택", "decision": "replace", "replacement": "DS08", "replacementTitleKo": "공주 부모님 동행 당일 코스", "reason": "가설 비교 메모보다 실제 국내 4개 waypoint 원문으로 날짜·동선 구조를 검증", "acceptanceGate": "공공누리 변경금지 조건에 대한 변환 허가 전 공개 금지"},
+      {"id": "C12", "titleKo": "제작자 지역 체험 큐", "decision": "replace", "replacement": "DS10", "replacementTitleKo": "OSSU Intro CS + Core Programming 시작 구간", "reason": "가져오지 않은 creator collection 대신 공개 라이선스·실제 행이 있는 resource queue 대조군 사용", "acceptanceGate": "MIT 출처 표시와 시작 시점 최신 과정표 재확인"},
+      {"id": "C13", "titleKo": "제작자 레시피 한 끼", "decision": "keep", "reason": "제작자 허가형 레시피 가설은 유지하되 Wtable 불완전 추출은 대체 근거로 쓰지 않음"},
+      {"id": "C14", "titleKo": "주말 벽 한 면 칠하기", "decision": "keep", "reason": "성인 취미·안전 순서형의 제작자 후보"},
+      {"id": "C15", "titleKo": "5km 달리기 4주", "decision": "keep", "reason": "건강 반복형을 유지하되 처방 생성 금지와 공식 경계 보강"},
+      {"id": "C16", "titleKo": "영상 시리즈 4주", "decision": "keep", "reason": "제작자 work/phase와 전체 재생목록 import 게이트 검증"},
+      {"id": "O01", "titleKo": "여권 재발급 준비", "decision": "keep", "reason": "공식 절차와 최신성의 핵심 trust anchor"},
+      {"id": "O02", "titleKo": "자동차검사 D-14", "decision": "keep", "reason": "공식 기준일 준비의 핵심 trust anchor"},
+      {"id": "O03", "titleKo": "초등학교 입학 공식 준비", "decision": "keep", "reason": "지역·가정 인계가 필요한 공식 날짜형"},
+      {"id": "O04", "titleKo": "전세계약 전 공식 서류 확인", "decision": "keep", "reason": "재무·법률 민감 잠금의 핵심 대조군", "acceptanceGate": "review_locked 유지"},
+      {"id": "R01", "titleKo": "이사 D-30", "decision": "replace", "replacement": "DS05", "replacementTitleKo": "이사일 기준 공식 준비 체크리스트", "reason": "저장소 기준 사례를 2026-06-15 공식 원문과 6개 상대 기간으로 교체", "acceptanceGate": "사용자 movingDate 전 실제 날짜 생성 금지"},
+      {"id": "R02", "titleKo": "냉장고 파먹기 7일", "decision": "keep", "reason": "생활 source-table과 개인 재고 데이터의 경계를 시험"},
+      {"id": "R03", "titleKo": "개발 포트폴리오 4주", "decision": "keep", "reason": "현재 work/phase 기준 사례"},
+      {"id": "R04", "titleKo": "여행 짐 준비표", "decision": "keep", "reason": "Wikivoyage open-source 대조군과 비교할 현재 체크리스트 기준"}
+    ]
+  },
+  "representativeValidationSet": {
+    "count": 5,
+    "selection": [
+      {"caseId": "DS05", "titleKo": "이사일 기준 공식 준비", "audience": "기존 캘린더·Todo 사용자", "question": "이사일 하나를 넣은 뒤 체크리스트와 캘린더 중 무엇을 실제 도구로 가져가려는가?"},
+      {"caseId": "DS04", "titleKo": "K-MOOC 과정 끝내기", "audience": "온라인 강의 학습자", "question": "가짜 14주 세부계획 없이 수강 창·진도·80% 조건만 있어도 계속 쓸 가치가 있는가?"},
+      {"caseId": "DS01", "titleKo": "폭염 농작업 안전 점검", "audience": "현장 사용자·안전 담당자", "question": "중지·119 기준이 충분히 눈에 띄고 팀 인계가 가능한가?"},
+      {"caseId": "DS02", "titleKo": "리모델링 계약 확인표", "audience": "주거 소비자·원문 제공자", "question": "원문 10행을 어느 수준까지 시트로 바꾸는 것을 제공자가 허용하고 사용자가 신뢰하는가?"},
+      {"caseId": "DS08", "titleKo": "공주 부모님 동행 당일 코스", "audience": "국내 여행 사용자·권리 담당자", "question": "날짜·시각을 임의로 채우지 않은 4개 waypoint 초안이 실행에 충분한가?"}
+    ],
+    "sharedQuestions": [
+      "첫 10초 안에 원문이 무엇으로 바뀌는지 이해하는가?",
+      "최소 개인 입력은 무엇이며 그보다 더 묻는 순간 이탈하는가?",
+      "Calendar·Todo·Sheet·Memo 중 실제로 내보낼 목적지는 무엇인가?",
+      "출처·권리·최신성 경고가 신뢰를 높이는가, 방해가 되는가?",
+      "완료·보류·건너뜀 후 다시 My Flow로 돌아올 이유가 있는가?"
+    ],
+    "status": "selected_not_user_validated"
+  },
+  "backend": {
+    "decision": "shift",
+    "from": "URL -> LLM summary -> auto-published Flow",
+    "to": "URL normalize -> platform/access adapter -> snapshot/completeness -> rights/freshness/locale/risk gate -> structure gate -> SourceRow ledger -> LLM proposal -> deterministic validator -> human review -> projection/export",
+    "goNow": [
+      "allowlisted public_html과 official_api의 읽기 전용 preflight",
+      "원문 snapshot·locator·checkedAt·content hash 저장 계약",
+      "SourceRow 추출과 누락 accounting",
+      "1~7 Item 제안과 JSON schema 검증",
+      "내부 preview에서 source link·warning·disposition 노출",
+      "사용자 anchor가 있을 때만 ICS 날짜 생성",
+      "Markdown checklist·CSV/Sheet·Memo projection"
+    ],
+    "hold": [
+      "아무 URL이나 받아 자동 공개하는 기능",
+      "로그인·paywall·lazy-load 불완전 원문 우회 수집",
+      "permission_required·no-derivatives·paid/private 원문의 공개 변환",
+      "의료·법률·재무·안전 결론과 운동처방 자동 생성",
+      "원문 완결성 검사 전 레시피·재생목록·장기 커리큘럼 완결 Flow 생성",
+      "사용자·제공자 검증 전 public_ready 승격"
+    ],
+    "accessModePolicy": [
+      {"mode": "official_api", "priority": 1, "action": "API 약관·속도·라이선스를 저장하고 allowlist에서 추출"},
+      {"mode": "public_html", "priority": 2, "action": "robots·약관·완결성·권리 gate 후 link-backed 내부 초안"},
+      {"mode": "rss", "priority": 3, "action": "피드가 완전한 행을 제공할 때만 queue/episode 원장으로 사용"},
+      {"mode": "user_authorized", "priority": 4, "action": "사용자 권한·비공개·보존 기간 계약이 준비된 후 개인 변환"},
+      {"mode": "creator_file", "priority": 5, "action": "제작자 승인·버전·배포 범위를 명시한 파일 import"},
+      {"mode": "blocked_or_bypass_required", "priority": 99, "action": "reject_blocked"}
+    ],
+    "rightsModePolicy": [
+      {"mode": "open_license", "action": "라이선스 종류·출처표시·동일조건을 projection에 강제"},
+      {"mode": "link_only", "action": "원문 링크와 사실 행을 보존한 내부 초안; 공개 파생물은 별도 검토"},
+      {"mode": "permission_required", "action": "review_locked 또는 provider lead; 허가 증거 전 공개 금지"},
+      {"mode": "paid_private", "action": "user_authorized private conversion만 검토; 재배포 금지"},
+      {"mode": "blocked", "action": "reject_blocked"}
+    ],
+    "structureGate": [
+      {"state": "single_flow", "meaning": "하나의 job과 자연 artifact가 확인됨"},
+      {"state": "split_required", "meaning": "한 원문에 독립 job이 여러 개 있어 사용자가 하나를 고르거나 child Flow로 분리해야 함"},
+      {"state": "source_import_required", "meaning": "잠금·lazy loading·이미지·재생목록 때문에 행이 불완전함"},
+      {"state": "permission_required", "meaning": "원문 행은 있으나 공개 변환 권리가 없음"},
+      {"state": "hold_freshness", "meaning": "오래된 정책·운영정보·지역 조건을 최신 공식 출처와 대조하지 못함"},
+      {"state": "reject_blocked", "meaning": "접근 우회·금지 권리·허용되지 않은 전문 판단이 필요함"}
+    ],
+    "modelRouting": {
+      "lowerCost": "low-risk + complete source + deterministic validator pass에서 초안 생성",
+      "premiumOrHuman": "권리·안전·법률·재무·지역성·불완전 원문, 또는 validator 실패",
+      "hardRule": "어느 모델도 gate를 덮어쓰거나 공개 상태를 결정하지 못함"
+    },
+    "minimumBackendRecords": [
+      "SourceSnapshot",
+      "SourceRow",
+      "ConversionGate",
+      "FlowProposal",
+      "ValidationResult",
+      "ReviewDecision",
+      "ProjectionArtifact",
+      "ModelRunEvidence"
+    ]
+  },
+  "nextFourWeeks": [
+    {"week": 1, "outcome": "대표 5개 before/after preview와 최소 입력 폼", "noBackendDependency": true},
+    {"week": 2, "outcome": "기존 도구 사용자 5명 내외의 과업 관찰과 export 선택 기록", "measurementNotCompleted": true},
+    {"week": 3, "outcome": "오늘의집·여행 등 제공자 관점 권리·표현 범위 인터뷰", "externalContactRequiresSeparateAuthorization": true},
+    {"week": 4, "outcome": "실패 패턴을 반영한 access adapter·gate·validator 백엔드 명세 v1", "implementationOutOfCurrentScope": true}
+  ],
+  "validationBoundary": "이 결정은 원문 감사·모델 대리 비교·자동 검증의 결론이다. 실제 사용자 가치, 제공자 허가, 공개 발행 가능성, 실 API 원가를 아직 검증하지 않았다."
+}

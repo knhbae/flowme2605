@@ -1,0 +1,738 @@
+{
+  "packetRole": "blind_generation_input",
+  "hiddenFields": [
+    "class",
+    "split",
+    "admissionScore",
+    "goldArtifact",
+    "goldUserJob",
+    "minimumInputs",
+    "otherRoleOutputs"
+  ],
+  "cases": [
+    {
+      "caseId": "VQ-01",
+      "candidateId": "INT-C05",
+      "source": {
+        "canonicalUrl": "https://www.bokjiro.go.kr/ssis-tbu/twataa/wlfareInfo/moveTWAT52011M.do?wlfareInfoId=WLF00003250&wlfareInfoReldBztpCd=01",
+        "title": "어린이집 보육료 지원 신청",
+        "provider": "복지로",
+        "providerType": "official",
+        "locale": "ko-KR",
+        "sourceFormat": "official_service_guide",
+        "accessStatus": "opened_complete",
+        "observedAt": "2026-07-22"
+      },
+      "sourceShapeObserved": "official_procedure_rows",
+      "sourceRows": [
+        {
+          "id": "VQ01-R01",
+          "order": 1,
+          "title": "입소일과 현재 보육서비스 확인",
+          "detail": "보육료 전환 조건과 현재 이용 서비스를 확인한다.",
+          "kind": "condition",
+          "locator": "지원대상·서비스 변경"
+        },
+        {
+          "id": "VQ01-R02",
+          "order": 2,
+          "title": "복지로 또는 주민센터에서 신청",
+          "detail": "공식 온라인 또는 방문 신청 경로를 이용한다.",
+          "kind": "action",
+          "locator": "신청방법"
+        },
+        {
+          "id": "VQ01-R03",
+          "order": 3,
+          "title": "신청 결과 확인",
+          "detail": "공식 처리 결과를 확인한다.",
+          "kind": "state",
+          "locator": "처리결과"
+        },
+        {
+          "id": "VQ01-R04",
+          "order": 4,
+          "title": "지원 시작월 확인",
+          "detail": "결과에서 보육료 지원 시작월을 확인한다.",
+          "kind": "state",
+          "locator": "지원시점"
+        }
+      ],
+      "rights": {
+        "personalConversion": "allowed_link_based",
+        "publicCatalog": "review_required"
+      },
+      "gatesObserved": {
+        "source": "pass",
+        "rights": "pass_private_public_review",
+        "locale": "pass",
+        "safety": "pass_benefit_not_determined",
+        "privacy": "pass_no_sensitive_documents"
+      }
+    },
+    {
+      "caseId": "VQ-02",
+      "candidateId": "INT-O02",
+      "source": {
+        "canonicalUrl": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+        "title": "자동차검사 D-14",
+        "provider": "TS한국교통안전공단",
+        "providerType": "official",
+        "locale": "ko-KR",
+        "sourceFormat": "official_periodic_service",
+        "accessStatus": "opened_complete",
+        "observedAt": "2026-07-22"
+      },
+      "sourceShapeObserved": "official_periodic_service",
+      "sourceRows": [
+        {
+          "id": "VQ02-R01",
+          "order": 1,
+          "title": "정기검사 대상 확인",
+          "detail": "등록되어 운행 중인 자동차는 일정 기간마다 정기검사를 받는다.",
+          "kind": "condition",
+          "locator": "정기검사 정의·대상"
+        },
+        {
+          "id": "VQ02-R02",
+          "order": 2,
+          "title": "검사기간 공식 조회",
+          "detail": "차량별 검사 가능 기간은 공식 시스템에서 확인한다.",
+          "kind": "action",
+          "locator": "사이버검사소·기간 안내"
+        },
+        {
+          "id": "VQ02-R03",
+          "order": 3,
+          "title": "검사소와 방문일 결정",
+          "detail": "공식 검사소와 예약 가능일을 확인한다.",
+          "kind": "action",
+          "locator": "검사소·예약"
+        },
+        {
+          "id": "VQ02-R04",
+          "order": 4,
+          "title": "검사 결과 기록",
+          "detail": "검사 결과와 부적합 여부를 확인한다.",
+          "kind": "state",
+          "locator": "검사결과"
+        },
+        {
+          "id": "VQ02-R05",
+          "order": 5,
+          "title": "필요하면 재검사",
+          "detail": "부적합 시 원문에 명시된 재검사기간을 확인한다.",
+          "kind": "conditional",
+          "locator": "재검사기간"
+        }
+      ],
+      "rights": {
+        "personalConversion": "allowed_link_based",
+        "publicCatalog": "review_required"
+      },
+      "gatesObserved": {
+        "source": "pass",
+        "rights": "pass_official_link",
+        "locale": "pass",
+        "safety": "pass_no_vehicle_diagnosis",
+        "privacy": "pass_vehicle_identifier_not_stored"
+      }
+    },
+    {
+      "caseId": "VQ-03",
+      "candidateId": "INT-C06",
+      "source": {
+        "canonicalUrl": "https://ohou.se/advices/8220",
+        "title": "평일 5일 저녁 식단",
+        "provider": "오늘의집 · 요리요정이팀장",
+        "providerType": "creator_community",
+        "locale": "ko-KR",
+        "sourceFormat": "weekday_meal_plan_article",
+        "accessStatus": "opened_complete",
+        "observedAt": "2026-07-22"
+      },
+      "sourceShapeObserved": "weekday_meal_rows",
+      "sourceRows": [
+        {
+          "id": "VQ03-R01",
+          "order": 1,
+          "title": "월요일 양배추참치덮밥·단무지무침",
+          "detail": "월요일 메뉴와 원문 재료·조리법.",
+          "kind": "meal",
+          "locator": "월요일 식단"
+        },
+        {
+          "id": "VQ03-R02",
+          "order": 2,
+          "title": "화요일 버섯샐러드",
+          "detail": "화요일 메뉴와 원문 재료·조리법.",
+          "kind": "meal",
+          "locator": "화요일 식단"
+        },
+        {
+          "id": "VQ03-R03",
+          "order": 3,
+          "title": "수요일 토마토 야채수프",
+          "detail": "수요일 메뉴와 원문 재료·조리법.",
+          "kind": "meal",
+          "locator": "수요일 식단"
+        },
+        {
+          "id": "VQ03-R04",
+          "order": 4,
+          "title": "목요일 굴무솥밥·무된장국",
+          "detail": "목요일 메뉴와 원문 재료·조리법.",
+          "kind": "meal",
+          "locator": "목요일 식단"
+        },
+        {
+          "id": "VQ03-R05",
+          "order": 5,
+          "title": "금요일 연어 포케",
+          "detail": "금요일 메뉴와 원문 재료·조리법.",
+          "kind": "meal",
+          "locator": "금요일 식단"
+        }
+      ],
+      "rights": {
+        "personalConversion": "allowed_link_based",
+        "publicCatalog": "review_required"
+      },
+      "gatesObserved": {
+        "source": "pass",
+        "rights": "pass_private_link_only",
+        "locale": "pass",
+        "safety": "pass_food_caution",
+        "privacy": "pass"
+      }
+    },
+    {
+      "caseId": "VQ-04",
+      "candidateId": "INT-C14",
+      "source": {
+        "canonicalUrl": "https://ohou.se/advices/7406",
+        "title": "옷장 정리 1일",
+        "provider": "오늘의집 · 량쯔",
+        "providerType": "creator_community",
+        "locale": "ko-KR",
+        "sourceFormat": "creator_procedure_article",
+        "accessStatus": "opened_complete",
+        "observedAt": "2026-07-22"
+      },
+      "sourceShapeObserved": "ordered_procedure",
+      "sourceRows": [
+        {
+          "id": "VQ04-R01",
+          "order": 1,
+          "title": "비움 기준과 유예 기준 정하기",
+          "detail": "원문 기준을 참고하되 내 상황에 맞는 기준을 정한다.",
+          "kind": "decision",
+          "locator": "비움의 기준"
+        },
+        {
+          "id": "VQ04-R02",
+          "order": 2,
+          "title": "분류용 박스·봉투 준비",
+          "detail": "유예·중고거래·기부·폐기 등으로 미리 나눈다.",
+          "kind": "action",
+          "locator": "비움 전 준비물"
+        },
+        {
+          "id": "VQ04-R03",
+          "order": 3,
+          "title": "옷을 남김·유예·처분으로 분류",
+          "detail": "옷을 꺼내 정한 기준으로 분류한다.",
+          "kind": "action",
+          "locator": "옷장 정리"
+        },
+        {
+          "id": "VQ04-R04",
+          "order": 4,
+          "title": "남길 옷 되돌려 수납",
+          "detail": "사람·계절·종류에 맞춰 정한 위치로 돌려놓는다.",
+          "kind": "action",
+          "locator": "수납"
+        },
+        {
+          "id": "VQ04-R05",
+          "order": 5,
+          "title": "비울 옷 처리 방법 선택",
+          "detail": "중고거래·나눔·기부·방문수거·폐의류함 중 원문 선택지를 사용한다.",
+          "kind": "decision",
+          "locator": "옷 잘 비우는 방법"
+        },
+        {
+          "id": "VQ04-R06",
+          "order": 6,
+          "title": "유예·처분 후속 상태 남기기",
+          "detail": "바로 끝나지 않은 옷의 유예 또는 처리 상태를 남긴다.",
+          "kind": "state",
+          "locator": "유예기간·처분"
+        }
+      ],
+      "rights": {
+        "personalConversion": "allowed_link_based",
+        "publicCatalog": "review_required"
+      },
+      "gatesObserved": {
+        "source": "pass",
+        "rights": "pass_private_link_only",
+        "locale": "pass",
+        "safety": "pass",
+        "privacy": "pass"
+      }
+    },
+    {
+      "caseId": "VQ-05",
+      "candidateId": "INT-KOCW",
+      "source": {
+        "canonicalUrl": "https://kocw.net/home/search/kemView.do?kemId=1422415",
+        "title": "코드 없이 따라하는 빅데이터 분석",
+        "provider": "KOCW · 서울사이버대학교",
+        "providerType": "public_education",
+        "locale": "ko-KR",
+        "sourceFormat": "lesson_table",
+        "accessStatus": "opened_complete",
+        "observedAt": "2026-07-22"
+      },
+      "sourceShapeObserved": "lesson_rows",
+      "sourceRows": [
+        {
+          "id": "VQ05-R01",
+          "order": 1,
+          "title": "오리엔테이션",
+          "detail": "강의 이용과 전체 학습 안내.",
+          "kind": "lesson",
+          "locator": "차시별 강의"
+        },
+        {
+          "id": "VQ05-R02",
+          "order": 2,
+          "title": "학습개요",
+          "detail": "학습목표와 학습내용.",
+          "kind": "lesson",
+          "locator": "차시별 강의"
+        },
+        {
+          "id": "VQ05-R03",
+          "order": 3,
+          "title": "데이터 트렌드",
+          "detail": "데이터 분석의 필요성과 시각화.",
+          "kind": "lesson",
+          "locator": "차시별 강의"
+        },
+        {
+          "id": "VQ05-R04",
+          "order": 4,
+          "title": "측정값",
+          "detail": "함수를 사용한 측정값 생성.",
+          "kind": "lesson",
+          "locator": "차시별 강의"
+        },
+        {
+          "id": "VQ05-R05",
+          "order": 5,
+          "title": "지역별 테이블 만들기",
+          "detail": "테이블 연결과 대시보드 구성.",
+          "kind": "lesson",
+          "locator": "차시별 강의"
+        },
+        {
+          "id": "VQ05-R06",
+          "order": 6,
+          "title": "드릴다운",
+          "detail": "계층구조 만들기.",
+          "kind": "lesson",
+          "locator": "차시별 강의"
+        },
+        {
+          "id": "VQ05-R07",
+          "order": 7,
+          "title": "툴팁 사용하기",
+          "detail": "마우스 툴팁 기능 적용.",
+          "kind": "lesson",
+          "locator": "차시별 강의"
+        },
+        {
+          "id": "VQ05-R08",
+          "order": 8,
+          "title": "간단한 시각화 툴 다루기",
+          "detail": "다양한 시각화 도구 사용.",
+          "kind": "lesson",
+          "locator": "차시별 강의"
+        },
+        {
+          "id": "VQ05-R09",
+          "order": 9,
+          "title": "시각적 개체 활용",
+          "detail": "슬라이서를 통한 시각적 개체 활용.",
+          "kind": "lesson",
+          "locator": "차시별 강의"
+        },
+        {
+          "id": "VQ05-R10",
+          "order": 10,
+          "title": "형성평가와 학습 정리",
+          "detail": "공개 형성평가와 학습 정리.",
+          "kind": "assessment",
+          "locator": "차시별 강의"
+        }
+      ],
+      "rights": {
+        "personalConversion": "allowed_link_based",
+        "publicCatalog": "link_and_metadata_only"
+      },
+      "gatesObserved": {
+        "source": "pass",
+        "rights": "pass_links_metadata_only",
+        "locale": "pass",
+        "safety": "pass",
+        "privacy": "pass"
+      }
+    },
+    {
+      "caseId": "VQ-06",
+      "candidateId": "INT-KCA",
+      "source": {
+        "canonicalUrl": "https://www.kca.go.kr/home/sub.do?menukey=4002&mode=view&no=1003995520",
+        "title": "식물성 음료 품질비교",
+        "provider": "한국소비자원",
+        "providerType": "official",
+        "locale": "ko-KR",
+        "sourceFormat": "official_comparison_table",
+        "accessStatus": "opened_complete",
+        "observedAt": "2026-07-22"
+      },
+      "sourceShapeObserved": "comparison_rows",
+      "sourceRows": [
+        {
+          "id": "VQ06-R01",
+          "order": 1,
+          "title": "원재료 유형 비교",
+          "detail": "검은콩·오트·오트/아몬드 혼합·아몬드 유형.",
+          "kind": "criterion",
+          "locator": "원재료별 비교"
+        },
+        {
+          "id": "VQ06-R02",
+          "order": 2,
+          "title": "열량·탄수화물·단백질·지방 비교",
+          "detail": "1팩 기준 영양성분 범위.",
+          "kind": "criterion",
+          "locator": "영양성분"
+        },
+        {
+          "id": "VQ06-R03",
+          "order": 3,
+          "title": "당류·나트륨 확인",
+          "detail": "1일 기준치 대비 함량.",
+          "kind": "criterion",
+          "locator": "당류·나트륨"
+        },
+        {
+          "id": "VQ06-R04",
+          "order": 4,
+          "title": "표시사항 확인",
+          "detail": "칼슘·비타민류 표시 개선 필요 제품 확인.",
+          "kind": "criterion",
+          "locator": "표시사항"
+        },
+        {
+          "id": "VQ06-R05",
+          "order": 5,
+          "title": "안전성 시험 결과 확인",
+          "detail": "중금속·미생물·보존료와 빨대 안전성 시험.",
+          "kind": "criterion",
+          "locator": "안전성"
+        },
+        {
+          "id": "VQ06-R06",
+          "order": 6,
+          "title": "가격 비교",
+          "detail": "유형별 1팩 가격과 최대 2.6배 차이.",
+          "kind": "criterion",
+          "locator": "가격"
+        }
+      ],
+      "rights": {
+        "personalConversion": "allowed",
+        "publicCatalog": "allowed_with_attribution"
+      },
+      "gatesObserved": {
+        "source": "pass",
+        "rights": "pass_kogl_attribution",
+        "locale": "pass",
+        "safety": "pass_no_health_recommendation",
+        "privacy": "pass"
+      }
+    },
+    {
+      "caseId": "VQ-07",
+      "candidateId": "INT-OSSU",
+      "source": {
+        "canonicalUrl": "https://github.com/ossu/computer-science",
+        "title": "OSSU Computer Science 시작 구간",
+        "provider": "OSSU community",
+        "providerType": "open_community",
+        "locale": "en",
+        "sourceFormat": "markdown_curriculum_table",
+        "accessStatus": "opened_complete",
+        "observedAt": "2026-07-22"
+      },
+      "sourceShapeObserved": "curriculum_table",
+      "sourceRows": [
+        {
+          "id": "VQ07-R01",
+          "order": 1,
+          "title": "Introduction to Computer Science and Programming using Python",
+          "detail": "14주·주 6~10시간·high school algebra.",
+          "kind": "course",
+          "locator": "Intro CS table"
+        },
+        {
+          "id": "VQ07-R02",
+          "order": 2,
+          "title": "Systematic Program Design",
+          "detail": "13주·주 8~10시간·선수조건 없음.",
+          "kind": "course",
+          "locator": "Core programming table"
+        },
+        {
+          "id": "VQ07-R03",
+          "order": 3,
+          "title": "Class-based Program Design",
+          "detail": "13주·주 5~10시간·Systematic Program Design 선행.",
+          "kind": "course",
+          "locator": "Core programming table"
+        },
+        {
+          "id": "VQ07-R04",
+          "order": 4,
+          "title": "Programming Languages",
+          "detail": "11주·주 4~8시간·Systematic Program Design 선행.",
+          "kind": "course",
+          "locator": "Core programming table"
+        },
+        {
+          "id": "VQ07-R05",
+          "order": 5,
+          "title": "Object-Oriented Design",
+          "detail": "13주·주 5~10시간·Class-based Program Design 선행.",
+          "kind": "course",
+          "locator": "Core programming table"
+        },
+        {
+          "id": "VQ07-R06",
+          "order": 6,
+          "title": "Software Architecture",
+          "detail": "4주·주 2~5시간·Object-Oriented Design 선행.",
+          "kind": "course",
+          "locator": "Core programming table"
+        }
+      ],
+      "rights": {
+        "personalConversion": "allowed",
+        "publicCatalog": "allowed_with_attribution"
+      },
+      "gatesObserved": {
+        "source": "pass",
+        "rights": "pass_open_license_attribution",
+        "locale": "pass_non_sensitive",
+        "safety": "pass",
+        "privacy": "pass"
+      }
+    },
+    {
+      "caseId": "VQ-08",
+      "candidateId": "INT-WIKIVOYAGE",
+      "source": {
+        "canonicalUrl": "https://en.wikivoyage.org/wiki/Packing_list",
+        "title": "Wikivoyage 휴대 수하물·입국서류 준비",
+        "provider": "Wikivoyage community",
+        "providerType": "open_community",
+        "locale": "en",
+        "sourceFormat": "structured_packing_guide",
+        "accessStatus": "opened_complete",
+        "observedAt": "2026-07-22"
+      },
+      "sourceShapeObserved": "packing_rows",
+      "sourceRows": [
+        {
+          "id": "VQ08-R01",
+          "order": 1,
+          "title": "신원 확인 수단",
+          "detail": "휴대 수하물 identification 구간.",
+          "kind": "packing",
+          "locator": "Carry-on essentials"
+        },
+        {
+          "id": "VQ08-R02",
+          "order": 2,
+          "title": "결제 수단",
+          "detail": "구매·지불 수단.",
+          "kind": "packing",
+          "locator": "Carry-on essentials"
+        },
+        {
+          "id": "VQ08-R03",
+          "order": 3,
+          "title": "의약품과 보조기기",
+          "detail": "개인 의약품·의료 보조기기.",
+          "kind": "packing",
+          "locator": "Carry-on essentials"
+        },
+        {
+          "id": "VQ08-R04",
+          "order": 4,
+          "title": "전자기기",
+          "detail": "여행에 필요한 전자기기.",
+          "kind": "packing",
+          "locator": "Carry-on essentials"
+        },
+        {
+          "id": "VQ08-R05",
+          "order": 5,
+          "title": "도착 직후 의류",
+          "detail": "도착 환경에 맞는 첫 의류.",
+          "kind": "packing",
+          "locator": "Carry-on essentials"
+        },
+        {
+          "id": "VQ08-R06",
+          "order": 6,
+          "title": "티켓과 여정표",
+          "detail": "예약·이동 확인 문서.",
+          "kind": "document",
+          "locator": "Documents"
+        },
+        {
+          "id": "VQ08-R07",
+          "order": 7,
+          "title": "여권·비자 등 입국 서류",
+          "detail": "목적지 요구에 맞는 공식 서류.",
+          "kind": "document",
+          "locator": "Documents"
+        }
+      ],
+      "rights": {
+        "personalConversion": "allowed",
+        "publicCatalog": "allowed_with_cc_by_sa_attribution"
+      },
+      "gatesObserved": {
+        "source": "pass",
+        "rights": "pass_cc_by_sa",
+        "locale": "pass_with_destination_recheck",
+        "safety": "pass_medication_caution",
+        "privacy": "pass_no_document_numbers"
+      }
+    },
+    {
+      "caseId": "BQ-01",
+      "candidateId": "INT-MAILY-GATED",
+      "source": {
+        "canonicalUrl": "https://maily.so/notioninside/posts/92zew6vnzep",
+        "title": "자동화 시스템 뉴스레터",
+        "provider": "Maily",
+        "providerType": "creator_newsletter",
+        "locale": "ko-KR",
+        "sourceFormat": "subscriber_gated_article",
+        "accessStatus": "partial_subscriber_gate",
+        "observedAt": "2026-07-22"
+      },
+      "sourceShapeObserved": "subscriber_gate",
+      "sourceRows": [],
+      "rights": {
+        "personalConversion": "allowed_link_based",
+        "publicCatalog": "review_required"
+      },
+      "gatesObserved": {
+        "source": "fail_rows_not_acquired",
+        "rights": "review_required",
+        "locale": "unknown",
+        "safety": "unknown",
+        "privacy": "pass"
+      }
+    },
+    {
+      "caseId": "BQ-02",
+      "candidateId": "INT-MAILY-CLEAN",
+      "source": {
+        "canonicalUrl": "https://maily.so/honjokking/posts/p1do13plzx6",
+        "title": "여러분의 청소 생활, 안녕한가요?",
+        "provider": "Maily",
+        "providerType": "creator_newsletter",
+        "locale": "ko-KR",
+        "sourceFormat": "long_form_advice",
+        "accessStatus": "opened_complete",
+        "observedAt": "2026-07-22"
+      },
+      "sourceShapeObserved": "unbounded_advice",
+      "sourceRows": [],
+      "rights": {
+        "personalConversion": "allowed_link_based",
+        "publicCatalog": "review_required"
+      },
+      "gatesObserved": {
+        "source": "fail_unbounded",
+        "rights": "review_required",
+        "locale": "pass",
+        "safety": "unknown",
+        "privacy": "pass"
+      }
+    },
+    {
+      "caseId": "BQ-03",
+      "candidateId": "INT-TOSS-SERIES",
+      "source": {
+        "canonicalUrl": "https://toss.im/tossfeed/series",
+        "title": "토스피드 생활재무 시리즈",
+        "provider": "토스피드",
+        "providerType": "provider_collection",
+        "locale": "ko-KR",
+        "sourceFormat": "changing_series_collection",
+        "accessStatus": "collection_only",
+        "observedAt": "2026-07-22"
+      },
+      "sourceShapeObserved": "changing_collection",
+      "sourceRows": [],
+      "rights": {
+        "personalConversion": "allowed_link_based",
+        "publicCatalog": "review_required"
+      },
+      "gatesObserved": {
+        "source": "fail_specific_source_missing",
+        "rights": "review_required",
+        "locale": "pass",
+        "safety": "fail_financial_scope",
+        "privacy": "pass"
+      }
+    },
+    {
+      "caseId": "BQ-04",
+      "candidateId": "INT-SOOMGO",
+      "source": {
+        "canonicalUrl": "https://help.soomgo.com/hc/ko/articles/44174824912793",
+        "title": "숨고 전문가 공급망",
+        "provider": "숨고",
+        "providerType": "provider_network",
+        "locale": "ko-KR",
+        "sourceFormat": "provider_promo",
+        "accessStatus": "provider_only",
+        "observedAt": "2026-07-22"
+      },
+      "sourceShapeObserved": "provider_promo",
+      "sourceRows": [],
+      "rights": {
+        "personalConversion": "allowed_link_based",
+        "publicCatalog": "review_required"
+      },
+      "gatesObserved": {
+        "source": "fail_provider_only",
+        "rights": "review_required",
+        "locale": "pass",
+        "safety": "unknown",
+        "privacy": "pass"
+      }
+    }
+  ]
+}

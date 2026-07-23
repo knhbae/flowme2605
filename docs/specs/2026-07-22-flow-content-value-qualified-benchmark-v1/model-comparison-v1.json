@@ -1,0 +1,232 @@
+{
+  "generatedAt": "2026-07-22T15:00:00+09:00",
+  "actualProviderPricingUsed": false,
+  "tokenAndCostBoundary": "에이전트 역할 비교이며 실제 provider token·비용을 측정하지 못한 값은 null이다.",
+  "byRole": {
+    "rules": {
+      "sourceCount": 18,
+      "flowEligibilityAccuracy": 1,
+      "boundaryRecall": 1,
+      "sourceRowMeaningPreservation": 1,
+      "itemProvenanceRate": 1,
+      "inventedActionCount": 0,
+      "inventedScheduleCount": 0,
+      "inventedRecurrenceCount": 0,
+      "inventedCompletionCount": 0,
+      "sourceValueReaskCount": 0,
+      "primaryArtifactAccuracy": 1,
+      "unnecessaryProjectionCount": 1,
+      "undatedIcsCount": 0,
+      "gateOmissionCount": 0,
+      "itemDeleteOrMajorEditRatio": 0,
+      "directlyUsableRate": 1
+    },
+    "low-cost": {
+      "sourceCount": 18,
+      "flowEligibilityAccuracy": 1,
+      "boundaryRecall": 1,
+      "sourceRowMeaningPreservation": 1,
+      "itemProvenanceRate": 1,
+      "inventedActionCount": 0,
+      "inventedScheduleCount": 0,
+      "inventedRecurrenceCount": 0,
+      "inventedCompletionCount": 0,
+      "sourceValueReaskCount": 0,
+      "primaryArtifactAccuracy": 0.6666666666666666,
+      "unnecessaryProjectionCount": 6,
+      "undatedIcsCount": 0,
+      "gateOmissionCount": 0,
+      "itemDeleteOrMajorEditRatio": 0,
+      "directlyUsableRate": 0.6666666666666666
+    },
+    "high-capability": {
+      "sourceCount": 18,
+      "flowEligibilityAccuracy": 1,
+      "boundaryRecall": 1,
+      "sourceRowMeaningPreservation": 1,
+      "itemProvenanceRate": 1,
+      "inventedActionCount": 0,
+      "inventedScheduleCount": 0,
+      "inventedRecurrenceCount": 0,
+      "inventedCompletionCount": 0,
+      "sourceValueReaskCount": 0,
+      "primaryArtifactAccuracy": 0.8888888888888888,
+      "unnecessaryProjectionCount": 2,
+      "undatedIcsCount": 0,
+      "gateOmissionCount": 0,
+      "itemDeleteOrMajorEditRatio": 0.004273504273504274,
+      "directlyUsableRate": 0.8888888888888888
+    }
+  },
+  "byRoleFinal": {
+    "rules": {
+      "sourceCount": 6,
+      "flowEligibilityAccuracy": 1,
+      "boundaryRecall": 1,
+      "sourceRowMeaningPreservation": 1,
+      "itemProvenanceRate": 1,
+      "inventedActionCount": 0,
+      "inventedScheduleCount": 0,
+      "inventedRecurrenceCount": 0,
+      "inventedCompletionCount": 0,
+      "sourceValueReaskCount": 0,
+      "primaryArtifactAccuracy": 1,
+      "unnecessaryProjectionCount": 0,
+      "undatedIcsCount": 0,
+      "gateOmissionCount": 0,
+      "itemDeleteOrMajorEditRatio": 0,
+      "directlyUsableRate": 1
+    },
+    "low-cost": {
+      "sourceCount": 6,
+      "flowEligibilityAccuracy": 1,
+      "boundaryRecall": 1,
+      "sourceRowMeaningPreservation": 1,
+      "itemProvenanceRate": 1,
+      "inventedActionCount": 0,
+      "inventedScheduleCount": 0,
+      "inventedRecurrenceCount": 0,
+      "inventedCompletionCount": 0,
+      "sourceValueReaskCount": 0,
+      "primaryArtifactAccuracy": 0.8333333333333334,
+      "unnecessaryProjectionCount": 1,
+      "undatedIcsCount": 0,
+      "gateOmissionCount": 0,
+      "itemDeleteOrMajorEditRatio": 0,
+      "directlyUsableRate": 0.8333333333333334
+    },
+    "high-capability": {
+      "sourceCount": 6,
+      "flowEligibilityAccuracy": 1,
+      "boundaryRecall": 1,
+      "sourceRowMeaningPreservation": 1,
+      "itemProvenanceRate": 1,
+      "inventedActionCount": 0,
+      "inventedScheduleCount": 0,
+      "inventedRecurrenceCount": 0,
+      "inventedCompletionCount": 0,
+      "sourceValueReaskCount": 0,
+      "primaryArtifactAccuracy": 1,
+      "unnecessaryProjectionCount": 1,
+      "undatedIcsCount": 0,
+      "gateOmissionCount": 0,
+      "itemDeleteOrMajorEditRatio": 0.012820512820512822,
+      "directlyUsableRate": 1
+    }
+  },
+  "pairedSourceResults": [
+    {
+      "caseId": "VQ-01",
+      "lowScore": 3,
+      "highScore": 3,
+      "result": "tie"
+    },
+    {
+      "caseId": "VQ-02",
+      "lowScore": 3,
+      "highScore": 5,
+      "result": "high_win"
+    },
+    {
+      "caseId": "VQ-03",
+      "lowScore": 3,
+      "highScore": 3,
+      "result": "tie"
+    },
+    {
+      "caseId": "VQ-04",
+      "lowScore": 5,
+      "highScore": 5,
+      "result": "tie"
+    },
+    {
+      "caseId": "VQ-05",
+      "lowScore": 3,
+      "highScore": 5,
+      "result": "high_win"
+    },
+    {
+      "caseId": "VQ-06",
+      "lowScore": 5,
+      "highScore": 5,
+      "result": "tie"
+    },
+    {
+      "caseId": "VQ-07",
+      "lowScore": 3,
+      "highScore": 5,
+      "result": "high_win"
+    },
+    {
+      "caseId": "VQ-08",
+      "lowScore": 5,
+      "highScore": 5,
+      "result": "tie"
+    },
+    {
+      "caseId": "VQ-09",
+      "lowScore": 3,
+      "highScore": 5,
+      "result": "high_win"
+    },
+    {
+      "caseId": "VQ-10",
+      "lowScore": 5,
+      "highScore": 5,
+      "result": "tie"
+    },
+    {
+      "caseId": "VQ-11",
+      "lowScore": 5,
+      "highScore": 5,
+      "result": "tie"
+    },
+    {
+      "caseId": "VQ-12",
+      "lowScore": 5,
+      "highScore": 5,
+      "result": "tie"
+    },
+    {
+      "caseId": "BQ-01",
+      "lowScore": 5,
+      "highScore": 5,
+      "result": "tie"
+    },
+    {
+      "caseId": "BQ-02",
+      "lowScore": 5,
+      "highScore": 5,
+      "result": "tie"
+    },
+    {
+      "caseId": "BQ-03",
+      "lowScore": 5,
+      "highScore": 5,
+      "result": "tie"
+    },
+    {
+      "caseId": "BQ-04",
+      "lowScore": 5,
+      "highScore": 5,
+      "result": "tie"
+    },
+    {
+      "caseId": "BQ-05",
+      "lowScore": 5,
+      "highScore": 5,
+      "result": "tie"
+    },
+    {
+      "caseId": "BQ-06",
+      "lowScore": 5,
+      "highScore": 5,
+      "result": "tie"
+    }
+  ],
+  "winTieLoss": {
+    "highWin": 4,
+    "tie": 14,
+    "lowWin": 0
+  }
+}

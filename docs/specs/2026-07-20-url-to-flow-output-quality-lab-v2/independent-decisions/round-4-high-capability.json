@@ -1,0 +1,645 @@
+{
+  "documentType": "flowme-independent-decision-set",
+  "decisionSetVersion": "independent-decision-v2.1",
+  "roundId": "round-4",
+  "profile": "high_capability_agent",
+  "caseSetVersion": "output-quality-v2-cases-2026-07-20.1",
+  "blind": true,
+  "modelEvidence": {
+    "modelFamily": "gpt-5.6-sol",
+    "actualApiCostMeasured": false
+  },
+  "decisions": [
+    {
+      "caseId": "OQ-C01-MOVING",
+      "feasibility": {
+        "sourceCompleteness": "complete",
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_second_wave",
+        "errorCode": null,
+        "blockers": [],
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "reason": "여섯 상대일 구간이 모두 있어 이사일 앵커를 받으면 날짜 배치 초안을 만들 수 있다."
+      },
+      "classification": {
+        "primaryLifeArea": "home_living",
+        "secondaryLifeAreas": ["money_admin_purchase"],
+        "sourceShape": "date_offsets",
+        "secondarySourceShapes": ["checklist_rows"],
+        "primaryExecutionPattern": "date_preparation",
+        "secondaryExecutionPatterns": ["ordered_procedure"],
+        "primaryArtifact": "calendar",
+        "secondaryArtifacts": ["checklist", "todo"],
+        "access": {"discoveryAccess": "public", "rowAccess": "full", "providerType": "public_institution", "sourceFormat": "article"},
+        "rights": {"basis": "link_only_assumption", "allowedUse": ["link_metadata", "internal_review"], "reviewStatus": "restricted"},
+        "review": {"sourceRowStatus": "complete", "freshnessReview": "current", "localeReview": "applicable", "safetyReview": "not_required", "privacyReview": "not_required", "rightsReview": "restricted", "promotionState": "internal_review", "blockers": []}
+      },
+      "roles": [
+        {"sourceRowId": "DS05-R01", "role": "item", "reason": "2주 전 묶음은 해당 상대일에 완료할 준비 행동이다."},
+        {"sourceRowId": "DS05-R02", "role": "item", "reason": "1주 전 묶음은 해당 상대일에 완료할 준비 행동이다."},
+        {"sourceRowId": "DS05-R03", "role": "item", "reason": "2~4일 전 묶음은 해당 날짜창에 완료할 준비 행동이다."},
+        {"sourceRowId": "DS05-R04", "role": "item", "reason": "전날 묶음은 관찰 가능한 완료 상태가 있다."},
+        {"sourceRowId": "DS05-R05", "role": "item", "reason": "당일 묶음은 이사일에 확인할 실행 단위다."},
+        {"sourceRowId": "DS05-R06", "role": "item", "reason": "이사 후 묶음은 후속 완료 상태가 있다."}
+      ],
+      "canonicalPlan": {
+        "flow": {"title": "이사일 기준 준비", "userJob": "이사일을 기준으로 해야 할 일을 날짜에 배치한다."},
+        "steps": [
+          {"title": "이사 전", "sourceRowIds": ["DS05-R01", "DS05-R02", "DS05-R03", "DS05-R04"]},
+          {"title": "이사 당일", "sourceRowIds": ["DS05-R05"]},
+          {"title": "이사 후", "sourceRowIds": ["DS05-R06"]}
+        ],
+        "items": [
+          {"title": "2주 전 준비", "intent": "act", "doneWhen": "2주 전 항목을 확인하고 필요한 예약·정리를 마쳤다.", "sourceRowIds": ["DS05-R01"]},
+          {"title": "1주 전 준비", "intent": "act", "doneWhen": "1주 전 항목의 예약·이전을 마쳤다.", "sourceRowIds": ["DS05-R02"]},
+          {"title": "2~4일 전 준비", "intent": "inspect", "doneWhen": "2~4일 전 점검과 배치를 마쳤다.", "sourceRowIds": ["DS05-R03"]},
+          {"title": "전날 준비", "intent": "act", "doneWhen": "전날 포장과 설비 정리를 마쳤다.", "sourceRowIds": ["DS05-R04"]},
+          {"title": "이사 당일 확인", "intent": "inspect", "doneWhen": "짐·청소·정산·공과금을 확인했다.", "sourceRowIds": ["DS05-R05"]},
+          {"title": "이사 후 정리", "intent": "act", "doneWhen": "정리·연결·전학·확정일자 항목을 확인했다.", "sourceRowIds": ["DS05-R06"]}
+        ],
+        "fields": [{"label": "이사일", "valueType": "date", "userEditable": true, "required": true, "sourceRowIds": []}],
+        "memos": [], "references": [], "conditionalResponses": [],
+        "userInputPath": ["이사일을 입력하면 여섯 상대일 구간의 실제 날짜를 계산한다."]
+      },
+      "projections": {
+        "calendar": {"availability": "primary", "payload": {"kind": "relative_date_calendar", "anchorField": "이사일", "sourceRowIds": ["DS05-R01", "DS05-R02", "DS05-R03", "DS05-R04", "DS05-R05", "DS05-R06"]}, "essentialFieldsRetained": ["offset", "action", "sourceUrl"], "lossManifest": []},
+        "checklist": {"availability": "secondary", "payload": {"kind": "grouped_checklist", "groups": ["2주 전", "1주 전", "2~4일 전", "전날", "당일", "이사 후"]}, "essentialFieldsRetained": ["action"], "lossManifest": [{"field": "computedDate", "reason": "체크리스트만으로는 실제 배치 날짜를 유지하지 못한다.", "severity": "essential"}]},
+        "todo": {"availability": "secondary", "payload": {"kind": "dated_todo", "sourceRowIds": ["DS05-R01", "DS05-R02", "DS05-R03", "DS05-R04", "DS05-R05", "DS05-R06"]}, "essentialFieldsRetained": ["action", "offset"], "lossManifest": [{"field": "calendarPosition", "reason": "할 일 목록은 날짜창의 시각적 배치를 약화한다.", "severity": "nonessential"}]},
+        "sheet": {"availability": "fallback", "payload": {"kind": "rows", "columns": ["상대일", "행동", "상태"]}, "essentialFieldsRetained": ["offset", "action"], "lossManifest": [{"field": "calendarPosition", "reason": "표는 날짜 배치보다 계산 결과를 간접적으로 보여준다.", "severity": "essential"}]},
+        "memo": {"availability": "fallback", "payload": {"kind": "readable_summary", "sections": ["이사 전", "당일", "이사 후"]}, "essentialFieldsRetained": ["sourceUrl"], "lossManifest": [{"field": "perRowCompletion", "reason": "메모는 각 구간의 실행 상태를 유지하지 못한다.", "severity": "essential"}]}
+      }
+    },
+    {
+      "caseId": "OQ-C02-KMOOC-FULL",
+      "feasibility": {"sourceCompleteness": "complete", "generationState": "completed", "outcome": "proposal", "conversionReadiness": "ready_second_wave", "errorCode": null, "blockers": [], "executableAllowed": true, "publicExportAllowed": false, "reason": "과정 메타데이터와 14개 주차 행이 모두 있어 주차별 진도표를 만들 수 있다."},
+      "classification": {
+        "primaryLifeArea": "study_reading", "secondaryLifeAreas": [], "sourceShape": "lesson_rows", "secondarySourceShapes": ["date_window"], "primaryExecutionPattern": "progress_tracking", "secondaryExecutionPatterns": [], "primaryArtifact": "sheet", "secondaryArtifacts": ["checklist", "todo", "calendar"],
+        "access": {"discoveryAccess": "public", "rowAccess": "full", "providerType": "education_provider", "sourceFormat": "course"},
+        "rights": {"basis": "link_only_assumption", "allowedUse": ["link_metadata", "internal_review"], "reviewStatus": "restricted"},
+        "review": {"sourceRowStatus": "complete", "freshnessReview": "current", "localeReview": "applicable", "safetyReview": "not_required", "privacyReview": "not_required", "rightsReview": "restricted", "promotionState": "internal_review", "blockers": []}
+      },
+      "roles": [
+        {"sourceRowId": "KMOOC-M01", "role": "field", "reason": "운영 시작·종료일은 과정 상태를 제한하는 안정 필드다."},
+        {"sourceRowId": "KMOOC-M02", "role": "reference", "reason": "과정 분량은 주차 실행을 해석하는 과정 정보다."},
+        {"sourceRowId": "KMOOC-M03", "role": "reference", "reason": "난이도와 수료증 여부는 완료할 행동이 아닌 과정 설명이다."},
+        {"sourceRowId": "KMOOC-M04", "role": "reference", "reason": "참여 80%는 수료 판단에 조회하는 규칙이다."},
+        {"sourceRowId": "KMOOC-M05", "role": "field", "reason": "성적 입력 시작·종료일은 과정의 후속 날짜 필드다."},
+        {"sourceRowId": "KMOOC-W01", "role": "item", "reason": "1주차는 독립 진도 상태를 갖는 학습 단위다."},
+        {"sourceRowId": "KMOOC-W02", "role": "item", "reason": "2주차는 독립 진도 상태를 갖는 학습 단위다."},
+        {"sourceRowId": "KMOOC-W03", "role": "item", "reason": "3주차는 독립 진도 상태를 갖는 학습 단위다."},
+        {"sourceRowId": "KMOOC-W04", "role": "item", "reason": "4주차는 독립 진도 상태를 갖는 학습 단위다."},
+        {"sourceRowId": "KMOOC-W05", "role": "item", "reason": "5주차는 독립 진도 상태를 갖는 학습 단위다."},
+        {"sourceRowId": "KMOOC-W06", "role": "item", "reason": "6주차는 독립 진도 상태를 갖는 학습 단위다."},
+        {"sourceRowId": "KMOOC-W07", "role": "item", "reason": "7주차는 독립 진도 상태를 갖는 학습 단위다."},
+        {"sourceRowId": "KMOOC-W08", "role": "item", "reason": "8주차는 독립 진도 상태를 갖는 학습 단위다."},
+        {"sourceRowId": "KMOOC-W09", "role": "item", "reason": "9주차는 독립 진도 상태를 갖는 학습 단위다."},
+        {"sourceRowId": "KMOOC-W10", "role": "item", "reason": "10주차는 독립 진도 상태를 갖는 학습 단위다."},
+        {"sourceRowId": "KMOOC-W11", "role": "item", "reason": "11주차는 독립 진도 상태를 갖는 학습 단위다."},
+        {"sourceRowId": "KMOOC-W12", "role": "item", "reason": "12주차는 독립 진도 상태를 갖는 학습 단위다."},
+        {"sourceRowId": "KMOOC-W13", "role": "item", "reason": "13주차는 독립 진도 상태를 갖는 학습 단위다."},
+        {"sourceRowId": "KMOOC-W14", "role": "item", "reason": "14주차는 독립 진도 상태를 갖는 학습 단위다."}
+      ],
+      "canonicalPlan": {
+        "flow": {"title": "Introduction to Data Analysis 14주 진도", "userJob": "14개 주차를 펼쳐 놓고 수강·활동 진도를 기록한다."},
+        "steps": [{"title": "14주 과정", "sourceRowIds": ["KMOOC-W01", "KMOOC-W02", "KMOOC-W03", "KMOOC-W04", "KMOOC-W05", "KMOOC-W06", "KMOOC-W07", "KMOOC-W08", "KMOOC-W09", "KMOOC-W10", "KMOOC-W11", "KMOOC-W12", "KMOOC-W13", "KMOOC-W14"]}],
+        "items": [
+          {"title": "1주차 · 데이터 리터러시", "activity": "퀴즈", "sourceRowIds": ["KMOOC-W01"]}, {"title": "2주차 · 생성형 AI 활용 데이터 분석", "activity": "과제", "sourceRowIds": ["KMOOC-W02"]},
+          {"title": "3주차 · 데이터 분석", "activity": "토론", "sourceRowIds": ["KMOOC-W03"]}, {"title": "4주차 · 데이터 수집", "activity": "퀴즈", "sourceRowIds": ["KMOOC-W04"]},
+          {"title": "5주차 · 파일 다루기", "activity": "퀴즈", "sourceRowIds": ["KMOOC-W05"]}, {"title": "6주차 · 탐색적 데이터 분석", "activity": "토론", "sourceRowIds": ["KMOOC-W06"]},
+          {"title": "7주차 · 수치 데이터 분석을 위한 NumPy", "activity": "과제", "sourceRowIds": ["KMOOC-W07"]}, {"title": "8주차 · Pandas 활용 데이터 분석", "activity": "퀴즈", "sourceRowIds": ["KMOOC-W08"]},
+          {"title": "9주차 · 데이터 시각화", "activity": "토론", "sourceRowIds": ["KMOOC-W09"]}, {"title": "10주차 · 통계분석", "activity": "토론", "sourceRowIds": ["KMOOC-W10"]},
+          {"title": "11주차 · 데이터 기반 문제 해결 전략", "activity": "토론", "sourceRowIds": ["KMOOC-W11"]}, {"title": "12주차 · 텍스트 데이터 분석", "activity": "토론", "sourceRowIds": ["KMOOC-W12"]},
+          {"title": "13주차 · 감성 분석", "activity": "토론", "sourceRowIds": ["KMOOC-W13"]}, {"title": "14주차 · 데이터 분석 보고서 작성법", "activity": "없음", "sourceRowIds": ["KMOOC-W14"]}
+        ],
+        "fields": [
+          {"label": "운영 기간", "valueType": "date_window", "value": ["2026-07-01", "2026-08-31"], "sourceRowIds": ["KMOOC-M01"]},
+          {"label": "성적 입력 기간", "valueType": "date_window", "value": ["2026-09-01", "2026-09-04"], "sourceRowIds": ["KMOOC-M05"]},
+          {"label": "주차 상태", "valueType": "enum", "value": ["not_started", "in_progress", "done"], "userEditable": true, "sourceRowIds": []}
+        ],
+        "memos": [],
+        "references": [
+          {"title": "과정 분량", "detail": "14주, 총 40시간, VOD 26시간 15분", "sourceRowIds": ["KMOOC-M02"]},
+          {"title": "난이도와 수료증", "detail": "초급 수준이며 수료증 제공", "sourceRowIds": ["KMOOC-M03"]},
+          {"title": "수료 조건", "detail": "참여 80% 조건", "sourceRowIds": ["KMOOC-M04"]}
+        ],
+        "conditionalResponses": [], "userInputPath": []
+      },
+      "projections": {
+        "calendar": {"availability": "secondary", "payload": {"kind": "course_window", "start": "2026-07-01", "end": "2026-08-31", "scoreWindow": ["2026-09-01", "2026-09-04"]}, "essentialFieldsRetained": ["courseWindow"], "lossManifest": [{"field": "perWeekProgress", "reason": "달력은 14개 주차의 지속 상태를 충분히 유지하지 못한다.", "severity": "essential"}]},
+        "checklist": {"availability": "secondary", "payload": {"kind": "week_checklist", "rowCount": 14}, "essentialFieldsRetained": ["week", "topic", "completion"], "lossManifest": [{"field": "inProgressState", "reason": "체크리스트는 진행 중 상태와 활동 열을 단순화한다.", "severity": "nonessential"}]},
+        "todo": {"availability": "secondary", "payload": {"kind": "week_todo", "rowCount": 14}, "essentialFieldsRetained": ["week", "topic"], "lossManifest": [{"field": "courseTablePosition", "reason": "Todo 큐는 과정 전체의 행 위치와 비교를 약화한다.", "severity": "nonessential"}]},
+        "sheet": {"availability": "primary", "payload": {"kind": "progress_sheet", "columns": ["주차", "주제", "활동", "상태"], "rowSourceIds": ["KMOOC-W01", "KMOOC-W02", "KMOOC-W03", "KMOOC-W04", "KMOOC-W05", "KMOOC-W06", "KMOOC-W07", "KMOOC-W08", "KMOOC-W09", "KMOOC-W10", "KMOOC-W11", "KMOOC-W12", "KMOOC-W13", "KMOOC-W14"]}, "essentialFieldsRetained": ["week", "topic", "activity", "status"], "lossManifest": []},
+        "memo": {"availability": "fallback", "payload": {"kind": "course_summary", "references": ["과정 분량", "난이도와 수료증", "수료 조건"]}, "essentialFieldsRetained": ["courseMetadata"], "lossManifest": [{"field": "perWeekProgress", "reason": "요약 메모는 주차별 상태를 유지하지 못한다.", "severity": "essential"}]}
+      }
+    },
+    {
+      "caseId": "OQ-C03-LIBRIVOX",
+      "feasibility": {"sourceCompleteness": "complete", "generationState": "completed", "outcome": "proposal", "conversionReadiness": "ready_second_wave", "errorCode": null, "blockers": [], "executableAllowed": true, "publicExportAllowed": true, "reason": "38개 장 제목과 재생시간이 모두 있고 공개 도메인 권리도 확인되어 청취 큐를 만들 수 있다."},
+      "classification": {
+        "primaryLifeArea": "study_reading", "secondaryLifeAreas": ["hobby_pet"], "sourceShape": "resource_collection", "secondarySourceShapes": [], "primaryExecutionPattern": "resource_queue", "secondaryExecutionPatterns": ["progress_tracking"], "primaryArtifact": "sheet", "secondaryArtifacts": ["checklist", "todo"],
+        "access": {"discoveryAccess": "public", "rowAccess": "full", "providerType": "open_knowledge", "sourceFormat": "audio"},
+        "rights": {"basis": "public_domain", "allowedUse": ["link_metadata", "personal_transform", "internal_review", "public_derived"], "reviewStatus": "approved"},
+        "review": {"sourceRowStatus": "complete", "freshnessReview": "current", "localeReview": "applicable", "safetyReview": "not_required", "privacyReview": "not_required", "rightsReview": "approved", "promotionState": "internal_canary", "blockers": []}
+      },
+      "roles": [
+        {"sourceRowId": "LIBRIVOX-C01", "role": "item", "reason": "독립 재생 가능한 장으로 완료와 위치를 기록할 수 있다."}, {"sourceRowId": "LIBRIVOX-C02", "role": "item", "reason": "독립 재생 가능한 장으로 완료와 위치를 기록할 수 있다."},
+        {"sourceRowId": "LIBRIVOX-C03", "role": "item", "reason": "독립 재생 가능한 장으로 완료와 위치를 기록할 수 있다."}, {"sourceRowId": "LIBRIVOX-C04", "role": "item", "reason": "독립 재생 가능한 장으로 완료와 위치를 기록할 수 있다."},
+        {"sourceRowId": "LIBRIVOX-C05", "role": "item", "reason": "독립 재생 가능한 장으로 완료와 위치를 기록할 수 있다."}, {"sourceRowId": "LIBRIVOX-C06", "role": "item", "reason": "독립 재생 가능한 장으로 완료와 위치를 기록할 수 있다."},
+        {"sourceRowId": "LIBRIVOX-C07", "role": "item", "reason": "독립 재생 가능한 장으로 완료와 위치를 기록할 수 있다."}, {"sourceRowId": "LIBRIVOX-C08", "role": "item", "reason": "독립 재생 가능한 장으로 완료와 위치를 기록할 수 있다."},
+        {"sourceRowId": "LIBRIVOX-C09", "role": "item", "reason": "독립 재생 가능한 장으로 완료와 위치를 기록할 수 있다."}, {"sourceRowId": "LIBRIVOX-C10", "role": "item", "reason": "독립 재생 가능한 장으로 완료와 위치를 기록할 수 있다."},
+        {"sourceRowId": "LIBRIVOX-C11", "role": "item", "reason": "독립 재생 가능한 장으로 완료와 위치를 기록할 수 있다."}, {"sourceRowId": "LIBRIVOX-C12", "role": "item", "reason": "독립 재생 가능한 장으로 완료와 위치를 기록할 수 있다."},
+        {"sourceRowId": "LIBRIVOX-C13", "role": "item", "reason": "독립 재생 가능한 장으로 완료와 위치를 기록할 수 있다."}, {"sourceRowId": "LIBRIVOX-C14", "role": "item", "reason": "독립 재생 가능한 장으로 완료와 위치를 기록할 수 있다."},
+        {"sourceRowId": "LIBRIVOX-C15", "role": "item", "reason": "독립 재생 가능한 장으로 완료와 위치를 기록할 수 있다."}, {"sourceRowId": "LIBRIVOX-C16", "role": "item", "reason": "독립 재생 가능한 장으로 완료와 위치를 기록할 수 있다."},
+        {"sourceRowId": "LIBRIVOX-C17", "role": "item", "reason": "독립 재생 가능한 장으로 완료와 위치를 기록할 수 있다."}, {"sourceRowId": "LIBRIVOX-C18", "role": "item", "reason": "독립 재생 가능한 장으로 완료와 위치를 기록할 수 있다."},
+        {"sourceRowId": "LIBRIVOX-C19", "role": "item", "reason": "독립 재생 가능한 장으로 완료와 위치를 기록할 수 있다."}, {"sourceRowId": "LIBRIVOX-C20", "role": "item", "reason": "독립 재생 가능한 장으로 완료와 위치를 기록할 수 있다."},
+        {"sourceRowId": "LIBRIVOX-C21", "role": "item", "reason": "독립 재생 가능한 장으로 완료와 위치를 기록할 수 있다."}, {"sourceRowId": "LIBRIVOX-C22", "role": "item", "reason": "독립 재생 가능한 장으로 완료와 위치를 기록할 수 있다."},
+        {"sourceRowId": "LIBRIVOX-C23", "role": "item", "reason": "독립 재생 가능한 장으로 완료와 위치를 기록할 수 있다."}, {"sourceRowId": "LIBRIVOX-C24", "role": "item", "reason": "독립 재생 가능한 장으로 완료와 위치를 기록할 수 있다."},
+        {"sourceRowId": "LIBRIVOX-C25", "role": "item", "reason": "독립 재생 가능한 장으로 완료와 위치를 기록할 수 있다."}, {"sourceRowId": "LIBRIVOX-C26", "role": "item", "reason": "독립 재생 가능한 장으로 완료와 위치를 기록할 수 있다."},
+        {"sourceRowId": "LIBRIVOX-C27", "role": "item", "reason": "독립 재생 가능한 장으로 완료와 위치를 기록할 수 있다."}, {"sourceRowId": "LIBRIVOX-C28", "role": "item", "reason": "독립 재생 가능한 장으로 완료와 위치를 기록할 수 있다."},
+        {"sourceRowId": "LIBRIVOX-C29", "role": "item", "reason": "독립 재생 가능한 장으로 완료와 위치를 기록할 수 있다."}, {"sourceRowId": "LIBRIVOX-C30", "role": "item", "reason": "독립 재생 가능한 장으로 완료와 위치를 기록할 수 있다."},
+        {"sourceRowId": "LIBRIVOX-C31", "role": "item", "reason": "독립 재생 가능한 장으로 완료와 위치를 기록할 수 있다."}, {"sourceRowId": "LIBRIVOX-C32", "role": "item", "reason": "독립 재생 가능한 장으로 완료와 위치를 기록할 수 있다."},
+        {"sourceRowId": "LIBRIVOX-C33", "role": "item", "reason": "독립 재생 가능한 장으로 완료와 위치를 기록할 수 있다."}, {"sourceRowId": "LIBRIVOX-C34", "role": "item", "reason": "독립 재생 가능한 장으로 완료와 위치를 기록할 수 있다."},
+        {"sourceRowId": "LIBRIVOX-C35", "role": "item", "reason": "독립 재생 가능한 장으로 완료와 위치를 기록할 수 있다."}, {"sourceRowId": "LIBRIVOX-C36", "role": "item", "reason": "독립 재생 가능한 장으로 완료와 위치를 기록할 수 있다."},
+        {"sourceRowId": "LIBRIVOX-C37", "role": "item", "reason": "독립 재생 가능한 장으로 완료와 위치를 기록할 수 있다."}, {"sourceRowId": "LIBRIVOX-C38", "role": "item", "reason": "독립 재생 가능한 장으로 완료와 위치를 기록할 수 있다."}
+      ],
+      "canonicalPlan": {
+        "flow": {"title": "Anne of Green Gables 38장 청취", "userJob": "38개 장을 순서대로 듣고 마지막 위치와 완료 상태를 관리한다."},
+        "steps": [{"title": "청취 큐", "sourceRowIds": ["LIBRIVOX-C01", "LIBRIVOX-C02", "LIBRIVOX-C03", "LIBRIVOX-C04", "LIBRIVOX-C05", "LIBRIVOX-C06", "LIBRIVOX-C07", "LIBRIVOX-C08", "LIBRIVOX-C09", "LIBRIVOX-C10", "LIBRIVOX-C11", "LIBRIVOX-C12", "LIBRIVOX-C13", "LIBRIVOX-C14", "LIBRIVOX-C15", "LIBRIVOX-C16", "LIBRIVOX-C17", "LIBRIVOX-C18", "LIBRIVOX-C19", "LIBRIVOX-C20", "LIBRIVOX-C21", "LIBRIVOX-C22", "LIBRIVOX-C23", "LIBRIVOX-C24", "LIBRIVOX-C25", "LIBRIVOX-C26", "LIBRIVOX-C27", "LIBRIVOX-C28", "LIBRIVOX-C29", "LIBRIVOX-C30", "LIBRIVOX-C31", "LIBRIVOX-C32", "LIBRIVOX-C33", "LIBRIVOX-C34", "LIBRIVOX-C35", "LIBRIVOX-C36", "LIBRIVOX-C37", "LIBRIVOX-C38"]}],
+        "items": [
+          {"title": "1. Mrs. Rachel Lynde Is Surprised", "duration": "00:14:35", "sourceRowIds": ["LIBRIVOX-C01"]}, {"title": "2. Matthew Cuthbert Is Surprised", "duration": "00:26:09", "sourceRowIds": ["LIBRIVOX-C02"]},
+          {"title": "3. Marilla Cuthbert Is Surprised", "duration": "00:12:47", "sourceRowIds": ["LIBRIVOX-C03"]}, {"title": "4. Morning at Green Gables", "duration": "00:12:03", "sourceRowIds": ["LIBRIVOX-C04"]},
+          {"title": "5. Anne's History", "duration": "00:11:23", "sourceRowIds": ["LIBRIVOX-C05"]}, {"title": "6. Marilla Makes Up Her Mind", "duration": "00:10:18", "sourceRowIds": ["LIBRIVOX-C06"]},
+          {"title": "7. Anne Says Her Prayers", "duration": "00:06:54", "sourceRowIds": ["LIBRIVOX-C07"]}, {"title": "8. Anne's Bringing-Up Is Begun", "duration": "00:23:23", "sourceRowIds": ["LIBRIVOX-C08"]},
+          {"title": "9. Mrs. Rachel Lynde Is Properly Horrified", "duration": "00:13:01", "sourceRowIds": ["LIBRIVOX-C09"]}, {"title": "10. Anne's Apology", "duration": "00:19:34", "sourceRowIds": ["LIBRIVOX-C10"]},
+          {"title": "11. Anne's Impressions of Sunday School", "duration": "00:09:16", "sourceRowIds": ["LIBRIVOX-C11"]}, {"title": "12. A Solemn Vow and Promise", "duration": "00:11:08", "sourceRowIds": ["LIBRIVOX-C12"]},
+          {"title": "13. The Delights of Anticipation", "duration": "00:08:57", "sourceRowIds": ["LIBRIVOX-C13"]}, {"title": "14. Anne's Confession", "duration": "00:16:07", "sourceRowIds": ["LIBRIVOX-C14"]},
+          {"title": "15. A Tempest in the School Teapot", "duration": "00:26:34", "sourceRowIds": ["LIBRIVOX-C15"]}, {"title": "16. Diana Is Invited to Tea with Tragic Results", "duration": "00:21:11", "sourceRowIds": ["LIBRIVOX-C16"]},
+          {"title": "17. A New Interest in Life", "duration": "00:10:39", "sourceRowIds": ["LIBRIVOX-C17"]}, {"title": "18. Anne to the Rescue", "duration": "00:16:59", "sourceRowIds": ["LIBRIVOX-C18"]},
+          {"title": "19. A Concert a Catastrophe and a Confession", "duration": "00:19:47", "sourceRowIds": ["LIBRIVOX-C19"]}, {"title": "20. A Good Imagination Gone Wrong", "duration": "00:11:50", "sourceRowIds": ["LIBRIVOX-C20"]},
+          {"title": "21. A New Departure in Flavorings", "duration": "00:18:14", "sourceRowIds": ["LIBRIVOX-C21"]}, {"title": "22. Anne Is Invited Out to Tea", "duration": "00:07:55", "sourceRowIds": ["LIBRIVOX-C22"]},
+          {"title": "23. Anne Comes to Grief in an Affair of Honor", "duration": "00:11:46", "sourceRowIds": ["LIBRIVOX-C23"]}, {"title": "24. Miss Stacy and Her Pupils Get Up a Concert", "duration": "00:10:34", "sourceRowIds": ["LIBRIVOX-C24"]},
+          {"title": "25. Matthew Insists on Puffed Sleeves", "duration": "00:23:29", "sourceRowIds": ["LIBRIVOX-C25"]}, {"title": "26. The Story Club Is Formed", "duration": "00:18:47", "sourceRowIds": ["LIBRIVOX-C26"]},
+          {"title": "27. Vanity and Vexation of Spirit", "duration": "00:17:46", "sourceRowIds": ["LIBRIVOX-C27"]}, {"title": "28. An Unfortunate Lily Maid", "duration": "00:15:19", "sourceRowIds": ["LIBRIVOX-C28"]},
+          {"title": "29. An Epoch in Anne's Life", "duration": "00:15:38", "sourceRowIds": ["LIBRIVOX-C29"]}, {"title": "30. The Queens Class Is Organized", "duration": "00:21:04", "sourceRowIds": ["LIBRIVOX-C30"]},
+          {"title": "31. Where the Brook and River Meet", "duration": "00:11:24", "sourceRowIds": ["LIBRIVOX-C31"]}, {"title": "32. The Pass List Is Out", "duration": "00:16:08", "sourceRowIds": ["LIBRIVOX-C32"]},
+          {"title": "33. The Hotel Concert", "duration": "00:18:13", "sourceRowIds": ["LIBRIVOX-C33"]}, {"title": "34. A Queen's Girl", "duration": "00:13:36", "sourceRowIds": ["LIBRIVOX-C34"]},
+          {"title": "35. The Winter at Queen's", "duration": "00:10:14", "sourceRowIds": ["LIBRIVOX-C35"]}, {"title": "36. The Glory and the Dream", "duration": "00:11:29", "sourceRowIds": ["LIBRIVOX-C36"]},
+          {"title": "37. The Reaper Whose Name Is Death", "duration": "00:12:23", "sourceRowIds": ["LIBRIVOX-C37"]}, {"title": "38. The Bend in the Road", "duration": "00:15:02", "sourceRowIds": ["LIBRIVOX-C38"]}
+        ],
+        "fields": [{"label": "청취 상태", "valueType": "enum", "value": ["not_started", "in_progress", "done"], "userEditable": true, "sourceRowIds": []}, {"label": "마지막 위치", "valueType": "text", "userEditable": true, "sourceRowIds": []}],
+        "memos": [], "references": [], "conditionalResponses": [], "userInputPath": []
+      },
+      "projections": {
+        "calendar": {"availability": "not_applicable", "essentialFieldsRetained": [], "lossManifest": []},
+        "checklist": {"availability": "secondary", "payload": {"kind": "chapter_checklist", "rowCount": 38}, "essentialFieldsRetained": ["chapter", "completion"], "lossManifest": [{"field": "lastPosition", "reason": "완료 체크만으로는 장 내부 마지막 위치를 유지하지 못한다.", "severity": "essential"}]},
+        "todo": {"availability": "secondary", "payload": {"kind": "resource_queue", "rowCount": 38}, "essentialFieldsRetained": ["chapter", "queueOrder"], "lossManifest": [{"field": "crossSessionProgress", "reason": "Todo는 장별 진행 중 위치를 단순화한다.", "severity": "nonessential"}]},
+        "sheet": {"availability": "primary", "payload": {"kind": "resource_progress_sheet", "columns": ["장", "제목", "재생시간", "상태", "마지막 위치"], "rowCount": 38}, "essentialFieldsRetained": ["chapter", "duration", "status", "lastPosition"], "lossManifest": []},
+        "memo": {"availability": "fallback", "payload": {"kind": "queue_summary", "rowCount": 38}, "essentialFieldsRetained": ["sourceUrl"], "lossManifest": [{"field": "perChapterState", "reason": "메모는 38개 장의 개별 진행 상태를 유지하지 못한다.", "severity": "essential"}]}
+      }
+    },
+    {
+      "caseId": "OQ-C04-PASSPORT",
+      "feasibility": {"sourceCompleteness": "complete", "generationState": "completed", "outcome": "proposal", "conversionReadiness": "ready_second_wave", "errorCode": null, "blockers": [], "executableAllowed": true, "publicExportAllowed": false, "reason": "18세 이상 범위의 신청 경로·구비서류·수수료·유의사항이 모두 있어 내부 Todo 초안을 만들 수 있다."},
+      "classification": {
+        "primaryLifeArea": "money_admin_purchase", "secondaryLifeAreas": [], "sourceShape": "checklist_rows", "secondarySourceShapes": ["decision_criteria"], "primaryExecutionPattern": "ordered_procedure", "secondaryExecutionPatterns": [], "primaryArtifact": "todo", "secondaryArtifacts": ["checklist", "memo"],
+        "access": {"discoveryAccess": "public", "rowAccess": "full", "providerType": "government_public", "sourceFormat": "article"},
+        "rights": {"basis": "link_only_assumption", "allowedUse": ["link_metadata", "internal_review"], "reviewStatus": "restricted"},
+        "review": {"sourceRowStatus": "complete", "freshnessReview": "current", "localeReview": "applicable", "safetyReview": "not_required", "privacyReview": "not_required", "rightsReview": "restricted", "promotionState": "internal_review", "blockers": []}
+      },
+      "roles": [
+        {"sourceRowId": "PASSPORT-R01", "role": "item", "reason": "방문 또는 온라인 경로를 의도적으로 선택하고 결정 상태를 남길 수 있다."},
+        {"sourceRowId": "PASSPORT-R02", "role": "item", "reason": "신청서 준비는 확인 가능한 구비서류 행동이다."},
+        {"sourceRowId": "PASSPORT-R03", "role": "item", "reason": "사진 준비는 확인 가능한 구비서류 행동이다."},
+        {"sourceRowId": "PASSPORT-R04", "role": "item", "reason": "신분증 준비는 확인 가능한 구비서류 행동이다."},
+        {"sourceRowId": "PASSPORT-R05", "role": "conditional_response", "reason": "유효기간이 남은 기존 여권이 있을 때만 활성화되는 준비 행동이다."},
+        {"sourceRowId": "PASSPORT-R06", "role": "memo", "reason": "여권 종류별 수수료는 선택 맥락과 함께 보존할 상세 정보다."},
+        {"sourceRowId": "PASSPORT-R07", "role": "reference", "reason": "대리신청 제한은 완료할 일이 아니라 공식 유의 규칙이다."}
+      ],
+      "canonicalPlan": {
+        "flow": {"title": "성인 여권 만료 재발급 준비", "userJob": "성인 본인이 여권 만료 재발급에 필요한 준비를 마치고 신청한다."},
+        "steps": [{"title": "신청 경로", "sourceRowIds": ["PASSPORT-R01"]}, {"title": "구비서류", "sourceRowIds": ["PASSPORT-R02", "PASSPORT-R03", "PASSPORT-R04", "PASSPORT-R05"]}],
+        "items": [
+          {"title": "신청 경로 선택", "intent": "decide", "doneWhen": "방문 또는 온라인 신청 경로를 선택했다.", "sourceRowIds": ["PASSPORT-R01"]},
+          {"title": "여권발급신청서 준비", "intent": "act", "doneWhen": "신청서를 준비했다.", "sourceRowIds": ["PASSPORT-R02"]},
+          {"title": "6개월 이내 여권 사진 1매 준비", "intent": "act", "doneWhen": "요건에 맞는 사진 1매를 준비했다.", "sourceRowIds": ["PASSPORT-R03"]},
+          {"title": "유효한 신분증 준비", "intent": "act", "doneWhen": "유효기간 이내 신분증을 준비했다.", "sourceRowIds": ["PASSPORT-R04"]}
+        ],
+        "fields": [{"label": "신청 경로", "valueType": "enum", "value": ["방문", "온라인"], "userEditable": true, "sourceRowIds": ["PASSPORT-R01"]}],
+        "memos": [{"title": "여권 종류와 수수료", "detail": "복수여권 10년 58면 52,000원·26면 49,000원, 단수여권 1년 이내 17,000원", "sourceRowIds": ["PASSPORT-R06"]}],
+        "references": [{"title": "대리신청 제한", "detail": "본인 직접 신청이 원칙이며 대리신청은 예외적인 경우에 한함", "sourceRowIds": ["PASSPORT-R07"]}],
+        "conditionalResponses": [{"trigger": "유효기간이 남은 기존 여권이 있다", "response": "기존 여권을 준비한다.", "sourceRowIds": ["PASSPORT-R05"]}], "userInputPath": []
+      },
+      "projections": {
+        "calendar": {"availability": "not_applicable", "essentialFieldsRetained": [], "lossManifest": []},
+        "checklist": {"availability": "secondary", "payload": {"kind": "document_checklist", "entries": ["여권발급신청서", "여권 사진 1매", "신분증", "해당 시 기존 여권"]}, "essentialFieldsRetained": ["document", "condition"], "lossManifest": [{"field": "routeDecision", "reason": "서류 체크리스트는 신청 경로 결정 상태를 부차적으로만 보존한다.", "severity": "nonessential"}]},
+        "todo": {"availability": "primary", "payload": {"kind": "application_todo", "tasks": ["신청 경로 선택", "여권발급신청서 준비", "여권 사진 1매 준비", "신분증 준비", "해당 시 기존 여권 준비"]}, "essentialFieldsRetained": ["route", "documents", "condition", "sourceUrl"], "lossManifest": []},
+        "sheet": {"availability": "not_applicable", "essentialFieldsRetained": [], "lossManifest": []},
+        "memo": {"availability": "secondary", "payload": {"kind": "application_context", "sections": ["여권 종류와 수수료", "대리신청 제한"]}, "essentialFieldsRetained": ["fee", "caution"], "lossManifest": [{"field": "perTaskCompletion", "reason": "메모는 서류별 완료 상태를 유지하지 못한다.", "severity": "essential"}]}
+      }
+    },
+    {
+      "caseId": "OQ-C05-WASHER",
+      "feasibility": {"sourceCompleteness": "complete", "generationState": "completed", "outcome": "proposal", "conversionReadiness": "ready_for_internal_canary", "errorCode": null, "blockers": ["locale_review_required"], "executableAllowed": true, "publicExportAllowed": false, "reason": "실행 조건과 세 단계는 완전하며, 한국어 사용자용 적합성 검토를 거치는 internal canary 초안을 만들 수 있다."},
+      "classification": {
+        "primaryLifeArea": "home_living", "secondaryLifeAreas": [], "sourceShape": "recurrence_rule", "secondarySourceShapes": ["procedure_rows"], "primaryExecutionPattern": "repeating_routine", "secondaryExecutionPatterns": ["ordered_procedure"], "primaryArtifact": "todo", "secondaryArtifacts": ["checklist", "memo"],
+        "access": {"discoveryAccess": "public", "rowAccess": "full", "providerType": "brand_official", "sourceFormat": "article"},
+        "rights": {"basis": "link_only_assumption", "allowedUse": ["link_metadata", "internal_review"], "reviewStatus": "restricted"},
+        "review": {"sourceRowStatus": "complete", "freshnessReview": "current", "localeReview": "adaptation_required", "safetyReview": "not_required", "privacyReview": "not_required", "rightsReview": "restricted", "promotionState": "internal_review", "blockers": ["locale_review_required"]}
+      },
+      "roles": [
+        {"sourceRowId": "WASHER-R01", "role": "conditional_response", "reason": "40회 세탁 또는 기기 알림이라는 명시적 트리거에서만 청소 task가 활성화된다."},
+        {"sourceRowId": "WASHER-R02", "role": "item", "reason": "드럼을 비우는 것은 세척 전 확인 가능한 행동이다."},
+        {"sourceRowId": "WASHER-R03", "role": "reference", "reason": "세제·표백제 금지는 제품 관리 경고이며 일반 체크박스로 만들지 않는다."},
+        {"sourceRowId": "WASHER-R04", "role": "item", "reason": "전원 켜기는 순서가 있는 실행 단계다."},
+        {"sourceRowId": "WASHER-R05", "role": "item", "reason": "코스 선택은 순서가 있는 실행 단계다."},
+        {"sourceRowId": "WASHER-R06", "role": "item", "reason": "세척 시작은 관찰 가능한 완료 단계다."},
+        {"sourceRowId": "WASHER-R07", "role": "reference", "reason": "모델별 차이는 설명서를 조회하게 하는 범위 경계다."}
+      ],
+      "canonicalPlan": {
+        "flow": {"title": "Eco Drum Clean 실행", "userJob": "40회 세탁 또는 기기 알림 때 안전한 세탁조 청소 task를 실행한다."},
+        "steps": [{"title": "실행 전", "sourceRowIds": ["WASHER-R02", "WASHER-R03", "WASHER-R07"]}, {"title": "세척 실행", "sourceRowIds": ["WASHER-R04", "WASHER-R05", "WASHER-R06"]}],
+        "items": [
+          {"title": "드럼 비우기", "intent": "inspect", "doneWhen": "드럼에 세탁물이 없다.", "sourceRowIds": ["WASHER-R02"]},
+          {"title": "전원 켜기", "intent": "act", "doneWhen": "세탁기 전원을 켰다.", "sourceRowIds": ["WASHER-R04"]},
+          {"title": "Eco Drum Clean 선택", "intent": "act", "doneWhen": "해당 코스를 선택했다.", "sourceRowIds": ["WASHER-R05"]},
+          {"title": "세척 시작", "intent": "act", "doneWhen": "Start/Pause 버튼으로 세척을 시작했다.", "sourceRowIds": ["WASHER-R06"]}
+        ],
+        "fields": [], "memos": [],
+        "references": [{"title": "세제·표백제 금지", "detail": "세제나 표백제를 사용하지 않는다.", "sourceRowIds": ["WASHER-R03"]}, {"title": "모델 확인", "detail": "정확한 코스는 모델별 사용자 설명서를 확인한다.", "sourceRowIds": ["WASHER-R07"]}],
+        "conditionalResponses": [{"trigger": "40회 세탁이 지났거나 기기가 더 이른 청소 알림을 표시한다", "response": "Eco Drum Clean task를 시작한다.", "sourceRowIds": ["WASHER-R01"]}], "userInputPath": []
+      },
+      "projections": {
+        "calendar": {"availability": "not_applicable", "essentialFieldsRetained": [], "lossManifest": []},
+        "checklist": {"availability": "secondary", "payload": {"kind": "maintenance_checklist", "entries": ["드럼 비우기", "전원 켜기", "Eco Drum Clean 선택", "세척 시작"]}, "essentialFieldsRetained": ["orderedSteps", "warnings"], "lossManifest": [{"field": "triggerState", "reason": "체크리스트는 40회 또는 기기 알림 트리거 상태를 별도로 보존해야 한다.", "severity": "essential"}]},
+        "todo": {"availability": "primary", "payload": {"kind": "triggered_maintenance_todo", "trigger": "40회 세탁 또는 기기 알림", "steps": ["드럼 비우기", "전원 켜기", "Eco Drum Clean 선택", "세척 시작"], "localeBoundary": "internal_canary_only"}, "essentialFieldsRetained": ["trigger", "orderedSteps", "warnings", "modelBoundary"], "lossManifest": []},
+        "sheet": {"availability": "not_applicable", "essentialFieldsRetained": [], "lossManifest": []},
+        "memo": {"availability": "secondary", "payload": {"kind": "maintenance_boundary_memo", "sections": ["실행 시점", "세제·표백제 금지", "모델 확인"]}, "essentialFieldsRetained": ["trigger", "warnings", "modelBoundary"], "lossManifest": [{"field": "perStepCompletion", "reason": "메모는 세 단계와 드럼 비우기의 완료 상태를 유지하지 못한다.", "severity": "essential"}]}
+      }
+    },
+    {
+      "caseId": "OQ-C06-NASA",
+      "feasibility": {"sourceCompleteness": "complete", "generationState": "completed", "outcome": "proposal", "conversionReadiness": "ready_for_internal_canary", "errorCode": null, "blockers": ["locale_review_required"], "executableAllowed": true, "publicExportAllowed": false, "reason": "재료·안전·제작·시험 행은 완전하며, 한국어 사용자용 적합성 검토를 거치는 단발 활동 internal canary 초안을 만들 수 있다."},
+      "classification": {
+        "primaryLifeArea": "hobby_pet", "secondaryLifeAreas": ["study_reading"], "sourceShape": "procedure_rows", "secondarySourceShapes": ["checklist_rows"], "primaryExecutionPattern": "ordered_procedure", "secondaryExecutionPatterns": [], "primaryArtifact": "checklist", "secondaryArtifacts": ["todo", "memo"],
+        "access": {"discoveryAccess": "public", "rowAccess": "full", "providerType": "government_public", "sourceFormat": "article"}, "rights": {"basis": "link_only_assumption", "allowedUse": ["link_metadata", "internal_review"], "reviewStatus": "restricted"},
+        "review": {"sourceRowStatus": "complete", "freshnessReview": "current", "localeReview": "adaptation_required", "safetyReview": "passed_with_boundary", "privacyReview": "not_required", "rightsReview": "restricted", "promotionState": "internal_review", "blockers": ["locale_review_required"]}
+      },
+      "roles": [
+        {"sourceRowId": "DS12-R01", "role": "item", "reason": "재료 준비는 활동 시작 전에 확인 가능한 행동이다."}, {"sourceRowId": "DS12-R02", "role": "reference", "reason": "가위 안전은 단계 전체에 적용되는 경고다."},
+        {"sourceRowId": "DS12-R03", "role": "item", "reason": "팀과 컵 준비는 완료 가능한 준비 행동이다."}, {"sourceRowId": "DS12-R04", "role": "item", "reason": "크레인 설계·제작은 산출물이 있는 단계다."},
+        {"sourceRowId": "DS12-R05", "role": "item", "reason": "감개 설계·제작은 별도 산출물이 있는 단계다."}, {"sourceRowId": "DS12-R06", "role": "item", "reason": "연결과 시험은 관찰 가능한 실행 단계다."},
+        {"sourceRowId": "DS12-R07", "role": "item", "reason": "컵 쌓기는 결과가 있는 도전 단계다."}, {"sourceRowId": "DS12-R08", "role": "item", "reason": "도전 질문 기록은 완료 가능한 성찰 행동이다."}
+      ],
+      "canonicalPlan": {
+        "flow": {"title": "크레인 팀 활동", "userJob": "팀 활동에서 재료·가위 안전·제작·시험 순서를 빠뜨리지 않는다."},
+        "steps": [{"title": "준비", "sourceRowIds": ["DS12-R01", "DS12-R02", "DS12-R03"]}, {"title": "설계·제작", "sourceRowIds": ["DS12-R04", "DS12-R05"]}, {"title": "시험·도전", "sourceRowIds": ["DS12-R06", "DS12-R07", "DS12-R08"]}],
+        "items": [
+          {"title": "재료 준비", "sourceRowIds": ["DS12-R01"]}, {"title": "팀·컵 준비", "sourceRowIds": ["DS12-R03"]}, {"title": "크레인 설계·제작", "sourceRowIds": ["DS12-R04"]},
+          {"title": "감개 설계·제작", "sourceRowIds": ["DS12-R05"]}, {"title": "끈·후크 연결과 시험", "sourceRowIds": ["DS12-R06"]}, {"title": "컵 쌓기", "sourceRowIds": ["DS12-R07"]}, {"title": "도전 질문 기록", "sourceRowIds": ["DS12-R08"]}
+        ],
+        "fields": [{"label": "단계 상태", "valueType": "enum", "value": ["not_started", "in_progress", "done"], "userEditable": true, "sourceRowIds": []}], "memos": [],
+        "references": [{"title": "가위 안전", "detail": "자르는 물체를 지지하고 날카로운 도구를 들고 이동하지 않는다.", "sourceRowIds": ["DS12-R02"]}], "conditionalResponses": [], "userInputPath": []
+      },
+      "projections": {
+        "calendar": {"availability": "not_applicable", "essentialFieldsRetained": [], "lossManifest": []},
+        "checklist": {"availability": "primary", "payload": {"kind": "single_activity_checklist", "groups": ["준비", "설계·제작", "시험·도전"], "rowCount": 7, "localeBoundary": "internal_canary_only"}, "essentialFieldsRetained": ["orderedSteps", "materialPreparation", "safetyBoundary", "reflection"], "lossManifest": []},
+        "todo": {"availability": "secondary", "payload": {"kind": "ordered_activity_todo", "rowCount": 7}, "essentialFieldsRetained": ["orderedSteps"], "lossManifest": [{"field": "singleActivityContext", "reason": "Todo 큐는 한 번의 팀 활동이라는 고정 단위를 약화한다.", "severity": "nonessential"}]},
+        "sheet": {"availability": "fallback", "payload": {"kind": "activity_rows", "columns": ["순서", "활동", "상태"]}, "essentialFieldsRetained": ["order", "status"], "lossManifest": [{"field": "boundedCompletion", "reason": "단발 활동에 지속적 행 추적 표는 과도하다.", "severity": "nonessential"}]},
+        "memo": {"availability": "fallback", "payload": {"kind": "activity_summary", "sections": ["재료", "안전", "절차", "도전 질문"]}, "essentialFieldsRetained": ["safetyBoundary"], "lossManifest": [{"field": "perStepCompletion", "reason": "메모는 단계별 완료 상태를 유지하지 못한다.", "severity": "essential"}]}
+      }
+    },
+    {
+      "caseId": "OQ-C07-FIT100",
+      "feasibility": {"sourceCompleteness": "complete", "generationState": "completed", "outcome": "proposal", "conversionReadiness": "ready_second_wave", "errorCode": null, "blockers": [], "executableAllowed": true, "publicExportAllowed": false, "reason": "공식 이용 절차 STEP 01~09가 모두 있어 서비스 여정을 빠짐없이 구성할 수 있다."},
+      "classification": {
+        "primaryLifeArea": "health_fitness", "secondaryLifeAreas": [], "sourceShape": "procedure_rows", "secondarySourceShapes": [], "primaryExecutionPattern": "phase_lifecycle", "secondaryExecutionPatterns": ["ordered_procedure"], "primaryArtifact": "checklist", "secondaryArtifacts": ["todo", "memo"],
+        "access": {"discoveryAccess": "public", "rowAccess": "full", "providerType": "public_institution", "sourceFormat": "article"}, "rights": {"basis": "link_only_assumption", "allowedUse": ["link_metadata", "internal_review"], "reviewStatus": "restricted"},
+        "review": {"sourceRowStatus": "complete", "freshnessReview": "current", "localeReview": "applicable", "safetyReview": "passed_with_boundary", "privacyReview": "not_required", "rightsReview": "restricted", "promotionState": "internal_review", "blockers": []}
+      },
+      "roles": [
+        {"sourceRowId": "DS07-R01", "role": "item", "reason": "회원가입은 결과 확인을 위한 완료 가능한 첫 단계다."}, {"sourceRowId": "DS07-R02", "role": "item", "reason": "공식 문진 완료는 다음 단계의 경계가 된다."},
+        {"sourceRowId": "DS07-R03", "role": "item", "reason": "측정 신청은 경로 선택을 포함한 완료 가능한 단계다."}, {"sourceRowId": "DS07-R04", "role": "item", "reason": "센터 방문은 관찰 가능한 단계다."},
+        {"sourceRowId": "DS07-R05", "role": "item", "reason": "체력측정은 공식 절차의 실행 단계다."}, {"sourceRowId": "DS07-R06", "role": "item", "reason": "체력평가는 공식 결과 단계다."},
+        {"sourceRowId": "DS07-R07", "role": "item", "reason": "인증서 발급은 보존할 결과가 있다."}, {"sourceRowId": "DS07-R08", "role": "item", "reason": "운동처방 수령은 기관 제공 결과 단계다."},
+        {"sourceRowId": "DS07-R09", "role": "item", "reason": "공식 결과에 따른 체력관리는 후속 완료 단계다."}
+      ],
+      "canonicalPlan": {
+        "flow": {"title": "국민체력인증 이용", "userJob": "체력측정 신청부터 공식 결과·처방 연결까지 순서대로 진행한다."},
+        "steps": [{"title": "신청·판별", "sourceRowIds": ["DS07-R01", "DS07-R02", "DS07-R03"]}, {"title": "방문·측정", "sourceRowIds": ["DS07-R04", "DS07-R05", "DS07-R06"]}, {"title": "결과·관리", "sourceRowIds": ["DS07-R07", "DS07-R08", "DS07-R09"]}],
+        "items": [
+          {"title": "온라인 회원가입", "sourceRowIds": ["DS07-R01"]}, {"title": "문진검사", "sourceRowIds": ["DS07-R02"]}, {"title": "체력측정 신청", "sourceRowIds": ["DS07-R03"]},
+          {"title": "체력인증센터 방문", "sourceRowIds": ["DS07-R04"]}, {"title": "체력측정", "sourceRowIds": ["DS07-R05"]}, {"title": "체력평가", "sourceRowIds": ["DS07-R06"]},
+          {"title": "인증서 발급", "sourceRowIds": ["DS07-R07"]}, {"title": "공식 운동처방 수령", "sourceRowIds": ["DS07-R08"]}, {"title": "공식 결과 기반 체력관리", "sourceRowIds": ["DS07-R09"]}
+        ],
+        "fields": [], "memos": [], "references": [{"title": "건강 경계", "detail": "문진 판별과 운동처방은 기관이 제공한 공식 결과만 따른다.", "sourceRowIds": ["DS07-R02", "DS07-R08"]}], "conditionalResponses": [], "userInputPath": []
+      },
+      "projections": {
+        "calendar": {"availability": "not_applicable", "essentialFieldsRetained": [], "lossManifest": []},
+        "checklist": {"availability": "primary", "payload": {"kind": "service_journey_checklist", "steps": ["STEP 01", "STEP 02", "STEP 03", "STEP 04", "STEP 05", "STEP 06", "STEP 07", "STEP 08", "STEP 09"]}, "essentialFieldsRetained": ["order", "completion", "officialBoundary"], "lossManifest": []},
+        "todo": {"availability": "secondary", "payload": {"kind": "ordered_todo", "rowCount": 9}, "essentialFieldsRetained": ["order", "action"], "lossManifest": [{"field": "journeyGrouping", "reason": "Todo는 서비스 단계의 연속성을 약화한다.", "severity": "nonessential"}]},
+        "sheet": {"availability": "fallback", "payload": {"kind": "status_rows", "rowCount": 9}, "essentialFieldsRetained": ["step", "status"], "lossManifest": [{"field": "fixedJourney", "reason": "표는 한 번의 고정 서비스 여정에 과도하다.", "severity": "nonessential"}]},
+        "memo": {"availability": "secondary", "payload": {"kind": "official_result_context", "sections": ["문진 경계", "인증서", "공식 운동처방"]}, "essentialFieldsRetained": ["officialBoundary"], "lossManifest": [{"field": "perStepCompletion", "reason": "메모는 9단계 완료를 관리하지 못한다.", "severity": "essential"}]}
+      }
+    },
+    {
+      "caseId": "OQ-C08-AC-DECISION",
+      "feasibility": {"sourceCompleteness": "complete", "generationState": "completed", "outcome": "proposal", "conversionReadiness": "ready_second_wave", "errorCode": null, "blockers": [], "executableAllowed": true, "publicExportAllowed": false, "reason": "두 서비스 범위, 상대 시간·비용, 비용 확인과 신청 경로가 있어 한 번의 선택 메모를 만들 수 있다."},
+      "classification": {
+        "primaryLifeArea": "home_living", "secondaryLifeAreas": ["money_admin_purchase"], "sourceShape": "decision_criteria", "secondarySourceShapes": [], "primaryExecutionPattern": "compare_decide", "secondaryExecutionPatterns": [], "primaryArtifact": "memo", "secondaryArtifacts": ["checklist"],
+        "access": {"discoveryAccess": "public", "rowAccess": "full", "providerType": "brand_official", "sourceFormat": "video"}, "rights": {"basis": "link_only_assumption", "allowedUse": ["link_metadata", "internal_review"], "reviewStatus": "restricted"},
+        "review": {"sourceRowStatus": "complete", "freshnessReview": "current", "localeReview": "applicable", "safetyReview": "not_required", "privacyReview": "not_required", "rightsReview": "restricted", "promotionState": "internal_review", "blockers": []}
+      },
+      "roles": [
+        {"sourceRowId": "AC-R01", "role": "reference", "reason": "전문세척 범위는 선택에 조회하는 공식 옵션 설명이다."}, {"sourceRowId": "AC-R02", "role": "reference", "reason": "일반세척 범위는 선택에 조회하는 공식 옵션 설명이다."},
+        {"sourceRowId": "AC-R03", "role": "memo", "reason": "시간·비용의 상대 차이는 선택 이유와 함께 남겨야 할 맥락이다."}, {"sourceRowId": "AC-R04", "role": "memo", "reason": "미확정 비용과 문의 시점을 선택 맥락과 함께 보존한다."},
+        {"sourceRowId": "AC-R05", "role": "reference", "reason": "선택 뒤 조회할 공식 신청 경로다."}
+      ],
+      "canonicalPlan": {
+        "flow": {"title": "시스템 에어컨 세척 선택", "userJob": "필요한 세척 범위를 비교해 전문세척 또는 일반세척을 선택한다."},
+        "steps": [{"title": "범위 비교와 선택", "sourceRowIds": ["AC-R01", "AC-R02", "AC-R03", "AC-R04", "AC-R05"]}],
+        "items": [{"title": "세척 서비스 선택", "intent": "decide", "doneWhen": "전문세척 또는 일반세척을 선택하고 이유를 기록했다.", "sourceRowIds": ["AC-R01", "AC-R02", "AC-R03"]}],
+        "fields": [{"label": "선택한 서비스", "valueType": "enum", "value": ["전문세척", "일반세척"], "userEditable": true, "sourceRowIds": ["AC-R01", "AC-R02"]}],
+        "memos": [{"title": "시간·비용 차이", "detail": "전문세척은 일반세척보다 시간과 비용이 더 든다.", "sourceRowIds": ["AC-R03"]}, {"title": "비용 확인", "detail": "평수별 비용은 신청 때 안내받는다.", "sourceRowIds": ["AC-R04"]}],
+        "references": [{"title": "전문세척 범위", "sourceRowIds": ["AC-R01"]}, {"title": "일반세척 범위", "sourceRowIds": ["AC-R02"]}, {"title": "신청 경로", "detail": "전문세척 1588-4190, 일반세척 1588-3366 또는 홈페이지 출장서비스", "sourceRowIds": ["AC-R05"]}],
+        "conditionalResponses": [], "userInputPath": ["선택 이유와 문의로 확인한 실제 비용을 기록한다."]
+      },
+      "projections": {
+        "calendar": {"availability": "not_applicable", "essentialFieldsRetained": [], "lossManifest": []},
+        "checklist": {"availability": "secondary", "payload": {"kind": "decision_checklist", "entries": ["범위 비교", "시간·비용 확인", "서비스 선택"]}, "essentialFieldsRetained": ["decision"], "lossManifest": [{"field": "rationale", "reason": "체크리스트는 선택 이유와 미확정 비용 맥락을 축약한다.", "severity": "essential"}]},
+        "todo": {"availability": "not_applicable", "essentialFieldsRetained": [], "lossManifest": []},
+        "sheet": {"availability": "fallback", "payload": {"kind": "two_option_table", "columns": ["서비스", "범위", "상대 시간·비용"]}, "essentialFieldsRetained": ["options", "criteria"], "lossManifest": [{"field": "contactContext", "reason": "작은 2안 비교에 표는 문의 맥락을 분리한다.", "severity": "nonessential"}]},
+        "memo": {"availability": "primary", "payload": {"kind": "decision_memo", "sections": ["전문세척", "일반세척", "시간·비용", "비용 확인", "신청 경로", "내 선택과 이유"]}, "essentialFieldsRetained": ["options", "rationale", "unknownCost", "contactContext"], "lossManifest": []}
+      }
+    },
+    {
+      "caseId": "OQ-B01-HEAT",
+      "feasibility": {"sourceCompleteness": "complete", "generationState": "completed", "outcome": "proposal", "conversionReadiness": "hold", "errorCode": null, "blockers": ["safety_review_required", "editorial_review_required"], "executableAllowed": true, "publicExportAllowed": false, "reason": "10개 안전 행은 완전해 내부 초안을 만들 수 있지만 체감온도·작업중지·119 조건의 변환은 사람의 안전 편집 검토가 필요하다."},
+      "classification": {
+        "primaryLifeArea": "work_career", "secondaryLifeAreas": ["health_fitness"], "sourceShape": "narrative_guidance", "secondarySourceShapes": [], "primaryExecutionPattern": "phase_lifecycle", "secondaryExecutionPatterns": ["repeating_routine"], "primaryArtifact": "memo", "secondaryArtifacts": ["checklist"],
+        "access": {"discoveryAccess": "public", "rowAccess": "full", "providerType": "government_public", "sourceFormat": "article"}, "rights": {"basis": "link_only_assumption", "allowedUse": ["link_metadata", "internal_review"], "reviewStatus": "restricted"},
+        "review": {"sourceRowStatus": "complete", "freshnessReview": "current", "localeReview": "applicable", "safetyReview": "restricted", "privacyReview": "not_required", "rightsReview": "restricted", "promotionState": "research_only", "blockers": ["safety_review_required", "editorial_review_required"]}
+      },
+      "roles": [
+        {"sourceRowId": "DS01-R01", "role": "reference", "reason": "체감온도 단계 수치는 조회할 안전 기준이며 일반 체크박스가 아니다."},
+        {"sourceRowId": "DS01-R02", "role": "item", "reason": "작업 시작 전 체감온도 확인은 정상적으로 수행할 준비 행동이다."},
+        {"sourceRowId": "DS01-R03", "role": "item", "reason": "작업 시간 조정 또는 중지 계획 공유는 작업 전 완료 가능한 계획 행동이다."},
+        {"sourceRowId": "DS01-R04", "role": "item", "reason": "물·그늘·보호구 준비는 작업 전 완료 가능한 행동이다."},
+        {"sourceRowId": "DS01-R05", "role": "conditional_response", "reason": "작업 중 20분 간격이라는 반복 트리거에서 활성화된다."},
+        {"sourceRowId": "DS01-R06", "role": "conditional_response", "reason": "휴식과 작업중지는 작업 중 또는 위험 단계 조건에 따라 활성화된다."},
+        {"sourceRowId": "DS01-R07", "role": "conditional_response", "reason": "작업 중 동료 증상 확인은 농작업 상태에서 활성화되는 대응이다."},
+        {"sourceRowId": "DS01-R08", "role": "conditional_response", "reason": "의식 없음이라는 명시적 응급 트리거에서만 119 대응이 활성화된다."},
+        {"sourceRowId": "DS01-R09", "role": "item", "reason": "작업 후 회복은 정상 작업 종료 뒤 완료 가능한 행동이다."},
+        {"sourceRowId": "DS01-R10", "role": "reference", "reason": "사업주 의무는 작업자가 조회할 역할·책임 경계다."}
+      ],
+      "canonicalPlan": {
+        "flow": {"title": "폭염 농작업 안전 가이드", "userJob": "폭염 농작업 때 사전 준비와 중지·응급 조건을 놓치지 않는다."},
+        "steps": [{"title": "작업 전", "sourceRowIds": ["DS01-R01", "DS01-R02", "DS01-R03", "DS01-R04"]}, {"title": "작업 중 조건 대응", "sourceRowIds": ["DS01-R05", "DS01-R06", "DS01-R07"]}, {"title": "응급", "sourceRowIds": ["DS01-R08"]}, {"title": "작업 후", "sourceRowIds": ["DS01-R09", "DS01-R10"]}],
+        "items": [{"title": "작업 전 체감온도 확인", "sourceRowIds": ["DS01-R02"]}, {"title": "작업 시간 조정 계획 공유", "sourceRowIds": ["DS01-R03"]}, {"title": "물·그늘·보호구 준비", "sourceRowIds": ["DS01-R04"]}, {"title": "작업 후 회복", "sourceRowIds": ["DS01-R09"]}],
+        "fields": [], "memos": [],
+        "references": [{"title": "폭염 단계 기준", "detail": "관심 33°C, 주의 35°C, 경고 38°C, 위험 39°C 및 열대야 25°C", "sourceRowIds": ["DS01-R01"]}, {"title": "사업주 의무", "sourceRowIds": ["DS01-R10"]}],
+        "conditionalResponses": [
+          {"trigger": "작업 중 20분이 지남", "response": "물을 마신다.", "sourceRowIds": ["DS01-R05"]}, {"trigger": "작업 중 휴식이 필요하거나 위험 단계임", "response": "그늘에서 쉬고 위험 단계에서는 작업을 중지한다.", "sourceRowIds": ["DS01-R06"]},
+          {"trigger": "농작업 중", "response": "동료의 온열질환 이상 증상을 함께 확인한다.", "sourceRowIds": ["DS01-R07"]}, {"trigger": "사람의 의식이 없음", "response": "즉시 119에 신고한다.", "sourceRowIds": ["DS01-R08"]}
+        ], "userInputPath": []
+      },
+      "projections": {
+        "calendar": {"availability": "blocked", "essentialFieldsRetained": [], "lossManifest": [{"field": "all", "reason": "safety_and_editorial_review_required", "severity": "blocking"}]},
+        "checklist": {"availability": "blocked", "essentialFieldsRetained": [], "lossManifest": [{"field": "all", "reason": "safety_and_editorial_review_required", "severity": "blocking"}]},
+        "todo": {"availability": "blocked", "essentialFieldsRetained": [], "lossManifest": [{"field": "all", "reason": "safety_and_editorial_review_required", "severity": "blocking"}]},
+        "sheet": {"availability": "blocked", "essentialFieldsRetained": [], "lossManifest": [{"field": "all", "reason": "safety_and_editorial_review_required", "severity": "blocking"}]},
+        "memo": {"availability": "blocked", "essentialFieldsRetained": [], "lossManifest": [{"field": "all", "reason": "safety_and_editorial_review_required", "severity": "blocking"}]}
+      }
+    },
+    {
+      "caseId": "OQ-B02-KMOOC-META",
+      "feasibility": {"sourceCompleteness": "partial", "generationState": "completed", "outcome": "no_proposal", "conversionReadiness": "source_import_required", "errorCode": "source_import_required", "blockers": ["source_incomplete", "source_import_required"], "executableAllowed": false, "publicExportAllowed": false, "reason": "과정 메타데이터는 있으나 사용자가 관리해야 할 14개 주차 제목과 활동 행이 없다."},
+      "classification": {
+        "primaryLifeArea": "study_reading", "secondaryLifeAreas": [], "sourceShape": null, "secondarySourceShapes": [], "primaryExecutionPattern": "progress_tracking", "secondaryExecutionPatterns": [], "primaryArtifact": "sheet", "secondaryArtifacts": [],
+        "access": {"discoveryAccess": "public", "rowAccess": "partial", "providerType": "education_provider", "sourceFormat": "course"}, "rights": {"basis": "link_only_assumption", "allowedUse": ["link_metadata", "internal_review"], "reviewStatus": "restricted"},
+        "review": {"sourceRowStatus": "partial", "freshnessReview": "current", "localeReview": "applicable", "safetyReview": "not_required", "privacyReview": "not_required", "rightsReview": "restricted", "promotionState": "research_only", "blockers": ["source_incomplete", "source_import_required"]}
+      },
+      "roles": [
+        {"sourceRowId": "KMOOC-M01", "role": "field", "reason": "운영 기간은 확보된 안정 필드지만 주차 행을 대신할 수 없다."}, {"sourceRowId": "KMOOC-M02", "role": "reference", "reason": "14주와 총 분량은 과정 설명이지 14개 실행 행이 아니다."},
+        {"sourceRowId": "KMOOC-M03", "role": "reference", "reason": "난이도와 수료증은 과정 설명이다."}, {"sourceRowId": "KMOOC-M04", "role": "reference", "reason": "참여 80%는 조회 규칙이다."},
+        {"sourceRowId": "KMOOC-M05", "role": "field", "reason": "성적 입력 기간은 확보된 안정 필드다."}, {"sourceRowId": "KMOOC-A-MISSING", "role": "omission", "reason": "강의계획 이미지의 14개 주차 행이 명시적으로 미확보다."}
+      ],
+      "canonicalPlan": null,
+      "projections": {
+        "calendar": {"availability": "blocked", "essentialFieldsRetained": [], "lossManifest": [{"field": "all", "reason": "source_import_required", "severity": "blocking"}]},
+        "checklist": {"availability": "blocked", "essentialFieldsRetained": [], "lossManifest": [{"field": "all", "reason": "source_import_required", "severity": "blocking"}]},
+        "todo": {"availability": "blocked", "essentialFieldsRetained": [], "lossManifest": [{"field": "all", "reason": "source_import_required", "severity": "blocking"}]},
+        "sheet": {"availability": "blocked", "essentialFieldsRetained": [], "lossManifest": [{"field": "all", "reason": "source_import_required", "severity": "blocking"}]},
+        "memo": {"availability": "blocked", "essentialFieldsRetained": [], "lossManifest": [{"field": "all", "reason": "source_import_required", "severity": "blocking"}]}
+      }
+    },
+    {
+      "caseId": "OQ-B03-REMODEL",
+      "feasibility": {"sourceCompleteness": "complete", "generationState": "completed", "outcome": "proposal", "conversionReadiness": "hold", "errorCode": null, "blockers": ["rights_permission_required", "editorial_review_required"], "executableAllowed": true, "publicExportAllowed": false, "reason": "계약 확인 10행은 완전해 내부 초안은 가능하지만 권리가 미확정이고 법률성 계약 기준의 편집 검토가 필요하다."},
+      "classification": {
+        "primaryLifeArea": "money_admin_purchase", "secondaryLifeAreas": ["home_living"], "sourceShape": "decision_criteria", "secondarySourceShapes": [], "primaryExecutionPattern": "compare_decide", "secondaryExecutionPatterns": [], "primaryArtifact": "sheet", "secondaryArtifacts": ["memo", "checklist"],
+        "access": {"discoveryAccess": "public", "rowAccess": "full", "providerType": "editorial_media", "sourceFormat": "article"}, "rights": {"basis": "unknown", "allowedUse": ["link_metadata", "internal_review"], "reviewStatus": "pending"},
+        "review": {"sourceRowStatus": "complete", "freshnessReview": "current", "localeReview": "applicable", "safetyReview": "not_required", "privacyReview": "not_required", "rightsReview": "pending", "promotionState": "research_only", "blockers": ["rights_permission_required", "editorial_review_required"]}
+      },
+      "roles": [
+        {"sourceRowId": "DS02-R01", "role": "item", "reason": "업체 정보가 계약서에 있는지 확인하고 보완 여부를 기록할 수 있다."}, {"sourceRowId": "DS02-R02", "role": "item", "reason": "공사 시작·종료일을 확인하고 기록할 수 있다."},
+        {"sourceRowId": "DS02-R03", "role": "item", "reason": "지연배상 조건의 존재와 보완 필요를 확인할 수 있다."}, {"sourceRowId": "DS02-R04", "role": "item", "reason": "대금 지급 방법·날짜를 확인할 수 있다."},
+        {"sourceRowId": "DS02-R05", "role": "item", "reason": "최종 금액·추가 비용 조건을 확인할 수 있다."}, {"sourceRowId": "DS02-R06", "role": "item", "reason": "세금계산서 발행 기한을 확인할 수 있다."},
+        {"sourceRowId": "DS02-R07", "role": "item", "reason": "자재내역서 유무와 내용을 확인할 수 있다."}, {"sourceRowId": "DS02-R08", "role": "item", "reason": "변경 권한 주체와 방식을 확인할 수 있다."},
+        {"sourceRowId": "DS02-R09", "role": "item", "reason": "A/S 기간을 확인할 수 있다."}, {"sourceRowId": "DS02-R10", "role": "item", "reason": "계약 해지·위약금 조건을 확인할 수 있다."}
+      ],
+      "canonicalPlan": {
+        "flow": {"title": "리모델링 계약 10개 기준 검토", "userJob": "리모델링 계약 전에 10개 계약 기준을 비교하고 보완 요청을 정한다."},
+        "steps": [{"title": "계약 기준 검토", "sourceRowIds": ["DS02-R01", "DS02-R02", "DS02-R03", "DS02-R04", "DS02-R05", "DS02-R06", "DS02-R07", "DS02-R08", "DS02-R09", "DS02-R10"]}],
+        "items": [
+          {"title": "업체 정보 확인", "sourceRowIds": ["DS02-R01"]}, {"title": "공사 시작일과 종료일 확인", "sourceRowIds": ["DS02-R02"]}, {"title": "지연배상 확인", "sourceRowIds": ["DS02-R03"]},
+          {"title": "대금 지급 방법과 날짜 확인", "sourceRowIds": ["DS02-R04"]}, {"title": "최종 금액과 추가 비용 확인", "sourceRowIds": ["DS02-R05"]}, {"title": "세금계산서 발행 기한 확인", "sourceRowIds": ["DS02-R06"]},
+          {"title": "자재내역서 확인", "sourceRowIds": ["DS02-R07"]}, {"title": "변경 권한 확인", "sourceRowIds": ["DS02-R08"]}, {"title": "A/S 기간 확인", "sourceRowIds": ["DS02-R09"]}, {"title": "계약 해지와 위약금 확인", "sourceRowIds": ["DS02-R10"]}
+        ],
+        "fields": [{"label": "확인 상태", "valueType": "enum", "value": ["확인", "미확인", "보완 요청"], "userEditable": true, "sourceRowIds": []}, {"label": "보완 요청", "valueType": "text", "userEditable": true, "sourceRowIds": []}],
+        "memos": [{"title": "법률 경계", "detail": "원문 기준을 계약 검토 보조로만 사용하고 법률 자문으로 표현하지 않는다.", "sourceRowIds": []}], "references": [], "conditionalResponses": [], "userInputPath": ["각 기준의 계약서 기재 내용과 보완 요청을 기록한다."]
+      },
+      "projections": {
+        "calendar": {"availability": "blocked", "essentialFieldsRetained": [], "lossManifest": [{"field": "all", "reason": "rights_and_editorial_review_required", "severity": "blocking"}]},
+        "checklist": {"availability": "blocked", "essentialFieldsRetained": [], "lossManifest": [{"field": "all", "reason": "rights_and_editorial_review_required", "severity": "blocking"}]},
+        "todo": {"availability": "blocked", "essentialFieldsRetained": [], "lossManifest": [{"field": "all", "reason": "rights_and_editorial_review_required", "severity": "blocking"}]},
+        "sheet": {"availability": "blocked", "essentialFieldsRetained": [], "lossManifest": [{"field": "all", "reason": "rights_and_editorial_review_required", "severity": "blocking"}]},
+        "memo": {"availability": "blocked", "essentialFieldsRetained": [], "lossManifest": [{"field": "all", "reason": "rights_and_editorial_review_required", "severity": "blocking"}]}
+      }
+    },
+    {
+      "caseId": "OQ-B04-TODOIST",
+      "feasibility": {"sourceCompleteness": "metadata_only", "generationState": "completed", "outcome": "no_proposal", "conversionReadiness": "source_import_required", "errorCode": "source_import_required", "blockers": ["source_import_required", "account_or_entitlement_required"], "executableAllowed": false, "publicExportAllowed": false, "reason": "네 phase 이름은 보이지만 실제 task 행은 템플릿 복사 또는 권한 뒤에 있어 실행 초안을 만들 수 없다."},
+      "classification": {
+        "primaryLifeArea": "work_career", "secondaryLifeAreas": [], "sourceShape": null, "secondarySourceShapes": [], "primaryExecutionPattern": "phase_lifecycle", "secondaryExecutionPatterns": [], "primaryArtifact": "todo", "secondaryArtifacts": [],
+        "access": {"discoveryAccess": "public", "rowAccess": "metadata_only", "providerType": "brand_official", "sourceFormat": "template"}, "rights": {"basis": "provider_terms", "allowedUse": ["link_metadata", "internal_review"], "reviewStatus": "pending"},
+        "review": {"sourceRowStatus": "metadata_only", "freshnessReview": "current", "localeReview": "applicable", "safetyReview": "not_required", "privacyReview": "not_required", "rightsReview": "pending", "promotionState": "research_only", "blockers": ["source_import_required", "account_or_entitlement_required"]}
+      },
+      "roles": [
+        {"sourceRowId": "TODOIST-R01", "role": "reference", "reason": "Pre-production은 확인된 상위 phase 이름일 뿐 task가 아니다."}, {"sourceRowId": "TODOIST-R02", "role": "reference", "reason": "Production은 확인된 상위 phase 이름일 뿐 task가 아니다."},
+        {"sourceRowId": "TODOIST-R03", "role": "reference", "reason": "Post-production은 확인된 상위 phase 이름일 뿐 task가 아니다."}, {"sourceRowId": "TODOIST-R04", "role": "reference", "reason": "Distribution은 확인된 상위 phase 이름일 뿐 task가 아니다."},
+        {"sourceRowId": "TODOIST-R05", "role": "omission", "reason": "phase별 실제 task·담당자·마감 행이 권한 경계 뒤에 있다."}
+      ],
+      "canonicalPlan": null,
+      "projections": {
+        "calendar": {"availability": "blocked", "essentialFieldsRetained": [], "lossManifest": [{"field": "all", "reason": "source_import_required", "severity": "blocking"}]},
+        "checklist": {"availability": "blocked", "essentialFieldsRetained": [], "lossManifest": [{"field": "all", "reason": "source_import_required", "severity": "blocking"}]},
+        "todo": {"availability": "blocked", "essentialFieldsRetained": [], "lossManifest": [{"field": "all", "reason": "source_import_required", "severity": "blocking"}]},
+        "sheet": {"availability": "blocked", "essentialFieldsRetained": [], "lossManifest": [{"field": "all", "reason": "source_import_required", "severity": "blocking"}]},
+        "memo": {"availability": "blocked", "essentialFieldsRetained": [], "lossManifest": [{"field": "all", "reason": "source_import_required", "severity": "blocking"}]}
+      }
+    },
+    {
+      "caseId": "OQ-P01-OSSU",
+      "feasibility": {"sourceCompleteness": "complete", "generationState": "completed", "outcome": "proposal", "conversionReadiness": "ready_for_internal_canary", "errorCode": null, "blockers": ["locale_review_required"], "executableAllowed": true, "publicExportAllowed": false, "reason": "여섯 과정과 선수조건·기간·주당 시간은 완전하며, 영어 커리큘럼을 한국어 사용자용으로 적용하기 전 internal canary locale 검토가 필요하다."},
+      "classification": {
+        "primaryLifeArea": "study_reading", "secondaryLifeAreas": ["work_career"], "sourceShape": "lesson_rows", "secondarySourceShapes": [], "primaryExecutionPattern": "progress_tracking", "secondaryExecutionPatterns": [], "primaryArtifact": "sheet", "secondaryArtifacts": ["checklist", "todo"],
+        "access": {"discoveryAccess": "public", "rowAccess": "full", "providerType": "open_knowledge", "sourceFormat": "table"}, "rights": {"basis": "open_license", "allowedUse": ["link_metadata", "personal_transform", "internal_review", "public_derived"], "reviewStatus": "approved"},
+        "review": {"sourceRowStatus": "complete", "freshnessReview": "current", "localeReview": "adaptation_required", "safetyReview": "not_required", "privacyReview": "not_required", "rightsReview": "approved", "promotionState": "internal_review", "blockers": ["locale_review_required"]}
+      },
+      "roles": [
+        {"sourceRowId": "DS10-R01", "role": "item", "reason": "독립 과정으로 진도와 완료 상태를 기록할 수 있다."}, {"sourceRowId": "DS10-R02", "role": "item", "reason": "독립 과정으로 진도와 완료 상태를 기록할 수 있다."},
+        {"sourceRowId": "DS10-R03", "role": "item", "reason": "선수조건 뒤에 진행할 독립 과정이다."}, {"sourceRowId": "DS10-R04", "role": "item", "reason": "선수조건 뒤에 진행할 독립 과정이다."},
+        {"sourceRowId": "DS10-R05", "role": "item", "reason": "선수조건 뒤에 진행할 독립 과정이다."}, {"sourceRowId": "DS10-R06", "role": "item", "reason": "선수조건 뒤에 진행할 독립 과정이다."}
+      ],
+      "canonicalPlan": {
+        "flow": {"title": "OSSU 시작 구간 6과정", "userJob": "선수조건을 지키며 OSSU 시작 구간 6개 과정의 진도를 관리한다."},
+        "steps": [{"title": "Intro CS와 Core Programming", "sourceRowIds": ["DS10-R01", "DS10-R02", "DS10-R03", "DS10-R04", "DS10-R05", "DS10-R06"]}],
+        "items": [
+          {"title": "Introduction to Computer Science and Programming using Python", "duration": "14주 · 주 6~10시간", "prerequisite": "high school algebra", "sourceRowIds": ["DS10-R01"]},
+          {"title": "Systematic Program Design", "duration": "13주 · 주 8~10시간", "prerequisite": "없음", "sourceRowIds": ["DS10-R02"]},
+          {"title": "Class-based Program Design", "duration": "13주 · 주 5~10시간", "prerequisite": "Systematic Program Design와 High School Math", "sourceRowIds": ["DS10-R03"]},
+          {"title": "Programming Languages", "duration": "11주 · 주 4~8시간", "prerequisite": "Systematic Program Design", "sourceRowIds": ["DS10-R04"]},
+          {"title": "Object-Oriented Design", "duration": "13주 · 주 5~10시간", "prerequisite": "Class-based Program Design", "sourceRowIds": ["DS10-R05"]},
+          {"title": "Software Architecture", "duration": "4주 · 주 2~5시간", "prerequisite": "Object Oriented Design", "sourceRowIds": ["DS10-R06"]}
+        ],
+        "fields": [{"label": "과정 상태", "valueType": "enum", "value": ["not_started", "in_progress", "done"], "userEditable": true, "sourceRowIds": []}], "memos": [], "references": [], "conditionalResponses": [], "userInputPath": []
+      },
+      "projections": {
+        "calendar": {"availability": "not_applicable", "essentialFieldsRetained": [], "lossManifest": []},
+        "checklist": {"availability": "secondary", "payload": {"kind": "course_checklist", "rowCount": 6}, "essentialFieldsRetained": ["course", "completion"], "lossManifest": [{"field": "inProgressState", "reason": "체크리스트는 진행 중 상태를 단순화한다.", "severity": "nonessential"}]},
+        "todo": {"availability": "secondary", "payload": {"kind": "prerequisite_queue", "rowCount": 6}, "essentialFieldsRetained": ["course", "prerequisite"], "lossManifest": [{"field": "crossCourseComparison", "reason": "Todo는 기간·주당 시간의 행 비교를 약화한다.", "severity": "nonessential"}]},
+        "sheet": {"availability": "primary", "payload": {"kind": "curriculum_progress_sheet", "columns": ["과정", "기간", "주당 시간", "선수조건", "상태"], "rowCount": 6}, "essentialFieldsRetained": ["course", "duration", "weeklyHours", "prerequisite", "status"], "lossManifest": []},
+        "memo": {"availability": "fallback", "payload": {"kind": "curriculum_summary", "rowCount": 6}, "essentialFieldsRetained": ["sourceUrl"], "lossManifest": [{"field": "perCourseState", "reason": "메모는 과정별 진도 상태를 유지하지 못한다.", "severity": "essential"}]}
+      }
+    },
+    {
+      "caseId": "OQ-P02-PACKING",
+      "feasibility": {"sourceCompleteness": "complete", "generationState": "completed", "outcome": "proposal", "conversionReadiness": "ready_for_internal_canary", "errorCode": null, "blockers": ["locale_review_required"], "executableAllowed": true, "publicExportAllowed": false, "reason": "휴대 수하물·서류 7행은 완전하며, 한국어 사용자용 현지 적합성 검토를 거치는 internal canary 체크리스트를 만들 수 있다."},
+      "classification": {
+        "primaryLifeArea": "travel_outings", "secondaryLifeAreas": ["money_admin_purchase", "health_fitness"], "sourceShape": "checklist_rows", "secondarySourceShapes": [], "primaryExecutionPattern": "ordered_procedure", "secondaryExecutionPatterns": [], "primaryArtifact": "checklist", "secondaryArtifacts": ["todo", "memo"],
+        "access": {"discoveryAccess": "public", "rowAccess": "full", "providerType": "open_knowledge", "sourceFormat": "article"}, "rights": {"basis": "open_license", "allowedUse": ["link_metadata", "personal_transform", "internal_review", "public_derived"], "reviewStatus": "approved"},
+        "review": {"sourceRowStatus": "complete", "freshnessReview": "current", "localeReview": "adaptation_required", "safetyReview": "not_required", "privacyReview": "not_required", "rightsReview": "approved", "promotionState": "internal_review", "blockers": ["locale_review_required"]}
+      },
+      "roles": [
+        {"sourceRowId": "DS11-R01", "role": "item", "reason": "신원 확인 수단은 포장 여부를 확인할 수 있다."}, {"sourceRowId": "DS11-R02", "role": "item", "reason": "결제 수단은 포장 여부를 확인할 수 있다."},
+        {"sourceRowId": "DS11-R03", "role": "item", "reason": "개인 의약품·보조기기는 포장 여부를 확인할 수 있다."}, {"sourceRowId": "DS11-R04", "role": "item", "reason": "전자기기는 포장 여부를 확인할 수 있다."},
+        {"sourceRowId": "DS11-R05", "role": "item", "reason": "도착 직후 의류는 포장 여부를 확인할 수 있다."}, {"sourceRowId": "DS11-R06", "role": "item", "reason": "티켓·여정표는 소지 여부를 확인할 수 있다."},
+        {"sourceRowId": "DS11-R07", "role": "item", "reason": "여권·비자 등 입국 서류는 목적지 요구에 따라 소지 여부를 확인할 수 있다."}
+      ],
+      "canonicalPlan": {
+        "flow": {"title": "휴대 수하물·입국 서류", "userJob": "휴대 수하물 필수품과 입국 서류를 빠뜨리지 않는다."},
+        "steps": [{"title": "휴대 수하물", "sourceRowIds": ["DS11-R01", "DS11-R02", "DS11-R03", "DS11-R04", "DS11-R05"]}, {"title": "서류", "sourceRowIds": ["DS11-R06", "DS11-R07"]}],
+        "items": [{"title": "신원 확인 수단", "sourceRowIds": ["DS11-R01"]}, {"title": "결제 수단", "sourceRowIds": ["DS11-R02"]}, {"title": "의약품과 보조기기", "sourceRowIds": ["DS11-R03"]}, {"title": "전자기기", "sourceRowIds": ["DS11-R04"]}, {"title": "도착 직후 의류", "sourceRowIds": ["DS11-R05"]}, {"title": "티켓과 여정표", "sourceRowIds": ["DS11-R06"]}, {"title": "여권·비자 등 입국 서류", "sourceRowIds": ["DS11-R07"]}],
+        "fields": [], "memos": [], "references": [{"title": "의약품·입국 서류 경계", "detail": "개인 상황과 목적지의 공식 요구를 사용자가 확인한다.", "sourceRowIds": ["DS11-R03", "DS11-R07"]}], "conditionalResponses": [], "userInputPath": ["목적지와 개인 상황에 맞게 각 항목을 구체화한다."]
+      },
+      "projections": {
+        "calendar": {"availability": "not_applicable", "essentialFieldsRetained": [], "lossManifest": []},
+        "checklist": {"availability": "primary", "payload": {"kind": "travel_packing_checklist", "groups": ["휴대 수하물", "입국 서류"], "rowCount": 7, "localeBoundary": "internal_canary_only"}, "essentialFieldsRetained": ["packingItems", "documentItems", "officialRequirementBoundary"], "lossManifest": []},
+        "todo": {"availability": "secondary", "payload": {"kind": "packing_todo", "rowCount": 7}, "essentialFieldsRetained": ["item", "completion"], "lossManifest": [{"field": "boundedPackingUnit", "reason": "Todo는 한 번의 고정 포장 묶음을 느슨한 큐로 바꾼다.", "severity": "nonessential"}]},
+        "sheet": {"availability": "not_applicable", "essentialFieldsRetained": [], "lossManifest": []},
+        "memo": {"availability": "fallback", "payload": {"kind": "packing_summary", "sections": ["휴대 수하물", "입국 서류", "목적지 공식 요구"]}, "essentialFieldsRetained": ["officialRequirementBoundary"], "lossManifest": [{"field": "perItemCompletion", "reason": "메모는 7개 항목의 개별 완료 상태를 유지하지 못한다.", "severity": "essential"}]}
+      }
+    },
+    {
+      "caseId": "OQ-P03-VEHICLE",
+      "feasibility": {"sourceCompleteness": "complete", "generationState": "completed", "outcome": "proposal", "conversionReadiness": "ready_second_wave", "errorCode": null, "blockers": [], "executableAllowed": true, "publicExportAllowed": false, "reason": "공식 조회에서 입력할 차량별 검사 시작·종료일을 보존하는 날짜창 템플릿이 완전하며 실제 날짜를 추정하지 않는다."},
+      "classification": {
+        "primaryLifeArea": "money_admin_purchase", "secondaryLifeAreas": [], "sourceShape": "date_window", "secondarySourceShapes": [], "primaryExecutionPattern": "date_preparation", "secondaryExecutionPatterns": [], "primaryArtifact": "calendar", "secondaryArtifacts": ["todo", "memo"],
+        "access": {"discoveryAccess": "public", "rowAccess": "full", "providerType": "public_institution", "sourceFormat": "article"}, "rights": {"basis": "link_only_assumption", "allowedUse": ["link_metadata", "internal_review"], "reviewStatus": "restricted"},
+        "review": {"sourceRowStatus": "complete", "freshnessReview": "current", "localeReview": "applicable", "safetyReview": "not_required", "privacyReview": "not_required", "rightsReview": "restricted", "promotionState": "internal_review", "blockers": []}
+      },
+      "roles": [{"sourceRowId": "VEHICLE-R01", "role": "field", "reason": "차량별 공식 검사 가능 시작·종료일은 사용자가 공식 조회 뒤 입력해야 하는 필수 날짜창 값이다."}],
+      "canonicalPlan": {
+        "flow": {"title": "자동차검사 날짜창", "userJob": "공식 조회한 검사 가능 기간 안에 방문일을 정한다."},
+        "steps": [{"title": "공식 날짜창 입력과 방문일 선택", "sourceRowIds": ["VEHICLE-R01"]}],
+        "items": [{"title": "검사 방문일 정하기", "intent": "decide", "doneWhen": "공식 검사 가능 기간 안의 방문일을 선택했다.", "sourceRowIds": []}],
+        "fields": [{"label": "검사 가능 시작일", "valueType": "date", "userEditable": true, "required": true, "sourceRowIds": ["VEHICLE-R01"]}, {"label": "검사 가능 종료일", "valueType": "date", "userEditable": true, "required": true, "sourceRowIds": ["VEHICLE-R01"]}, {"label": "선택한 방문일", "valueType": "date", "userEditable": true, "required": true, "sourceRowIds": []}],
+        "memos": [], "references": [{"title": "공식 조회 경계", "detail": "차량별 실제 날짜를 추정하지 않고 공식 조회 결과를 입력한다.", "sourceRowIds": ["VEHICLE-R01"]}], "conditionalResponses": [], "userInputPath": ["공식 조회에서 검사 가능 시작일과 종료일을 입력한다.", "그 기간 안에서 방문일을 선택한다."]
+      },
+      "projections": {
+        "calendar": {"availability": "primary", "payload": {"kind": "user_supplied_date_window", "requiredFields": ["검사 가능 시작일", "검사 가능 종료일", "선택한 방문일"]}, "essentialFieldsRetained": ["windowStart", "windowEnd", "visitDate", "officialLookupBoundary"], "lossManifest": []},
+        "checklist": {"availability": "not_applicable", "essentialFieldsRetained": [], "lossManifest": []},
+        "todo": {"availability": "secondary", "payload": {"kind": "inspection_todo", "tasks": ["공식 날짜창 조회·입력", "기간 안 방문일 선택"]}, "essentialFieldsRetained": ["officialLookupBoundary", "visitDate"], "lossManifest": [{"field": "dateWindow", "reason": "Todo는 허용 기간의 시각적 범위를 약화한다.", "severity": "essential"}]},
+        "sheet": {"availability": "not_applicable", "essentialFieldsRetained": [], "lossManifest": []},
+        "memo": {"availability": "secondary", "payload": {"kind": "date_window_note", "fields": ["시작일", "종료일", "방문일"]}, "essentialFieldsRetained": ["officialLookupBoundary"], "lossManifest": [{"field": "calendarPlacement", "reason": "메모는 선택한 방문일을 일정 상태로 유지하지 못한다.", "severity": "essential"}]}
+      }
+    },
+    {
+      "caseId": "OQ-P04-PORTFOLIO",
+      "feasibility": {"sourceCompleteness": "complete", "generationState": "completed", "outcome": "proposal", "conversionReadiness": "hold", "errorCode": null, "blockers": ["rights_permission_required"], "executableAllowed": true, "publicExportAllowed": false, "reason": "기획부터 배포·정리까지 7개 행은 완전해 내부 프로젝트 진도표를 만들 수 있지만 파생 내보내기 권리는 미확정이다."},
+      "classification": {
+        "primaryLifeArea": "work_career", "secondaryLifeAreas": ["study_reading"], "sourceShape": "procedure_rows", "secondarySourceShapes": [], "primaryExecutionPattern": "phase_lifecycle", "secondaryExecutionPatterns": ["ordered_procedure"], "primaryArtifact": "sheet", "secondaryArtifacts": ["todo", "checklist"],
+        "access": {"discoveryAccess": "public", "rowAccess": "full", "providerType": "creator", "sourceFormat": "article"}, "rights": {"basis": "unknown", "allowedUse": ["link_metadata", "internal_review"], "reviewStatus": "pending"},
+        "review": {"sourceRowStatus": "complete", "freshnessReview": "current", "localeReview": "applicable", "safetyReview": "not_required", "privacyReview": "not_required", "rightsReview": "pending", "promotionState": "research_only", "blockers": ["rights_permission_required"]}
+      },
+      "roles": [
+        {"sourceRowId": "PORTFOLIO-R01", "role": "item", "reason": "팀·아이템·기술 선정은 결정 결과가 있는 프로젝트 단계다."}, {"sourceRowId": "PORTFOLIO-R02", "role": "item", "reason": "기능·페이지 기획은 산출물이 있는 프로젝트 단계다."},
+        {"sourceRowId": "PORTFOLIO-R03", "role": "item", "reason": "DB·API 설계 문서는 보존할 단계 산출물이다."}, {"sourceRowId": "PORTFOLIO-R04", "role": "item", "reason": "일정·협업 규칙 설정은 완료 가능한 계획 단계다."},
+        {"sourceRowId": "PORTFOLIO-R05", "role": "item", "reason": "개발·코드리뷰는 진행 상태를 관리할 단계다."}, {"sourceRowId": "PORTFOLIO-R06", "role": "item", "reason": "배포·도메인은 결과가 있는 릴리스 단계다."},
+        {"sourceRowId": "PORTFOLIO-R07", "role": "item", "reason": "설명·데모 정리는 최종 산출물이 있는 단계다."}
+      ],
+      "canonicalPlan": {
+        "flow": {"title": "개발 포트폴리오 프로젝트", "userJob": "개발 포트폴리오 프로젝트를 기획부터 배포·정리까지 단계별로 진행한다."},
+        "steps": [{"title": "기획", "sourceRowIds": ["PORTFOLIO-R01", "PORTFOLIO-R02", "PORTFOLIO-R03", "PORTFOLIO-R04"]}, {"title": "개발", "sourceRowIds": ["PORTFOLIO-R05"]}, {"title": "배포·완성", "sourceRowIds": ["PORTFOLIO-R06", "PORTFOLIO-R07"]}],
+        "items": [{"title": "팀과 아이템·기술 선정", "sourceRowIds": ["PORTFOLIO-R01"]}, {"title": "기능·페이지 기획", "sourceRowIds": ["PORTFOLIO-R02"]}, {"title": "DB·API 설계", "sourceRowIds": ["PORTFOLIO-R03"]}, {"title": "일정·협업 규칙 설정", "sourceRowIds": ["PORTFOLIO-R04"]}, {"title": "개발", "sourceRowIds": ["PORTFOLIO-R05"]}, {"title": "배포·도메인", "sourceRowIds": ["PORTFOLIO-R06"]}, {"title": "포트폴리오 완성", "sourceRowIds": ["PORTFOLIO-R07"]}],
+        "fields": [{"label": "단계 상태", "valueType": "enum", "value": ["not_started", "in_progress", "done"], "userEditable": true, "sourceRowIds": []}, {"label": "산출물 링크", "valueType": "url", "userEditable": true, "sourceRowIds": []}],
+        "memos": [{"title": "기간 경계", "detail": "제목의 4주는 개별 날짜나 자동 일정을 만들 근거가 아니므로 날짜를 생성하지 않는다.", "sourceRowIds": []}], "references": [], "conditionalResponses": [], "userInputPath": ["각 단계 상태와 산출물 링크를 기록한다."]
+      },
+      "projections": {
+        "calendar": {"availability": "blocked", "essentialFieldsRetained": [], "lossManifest": [{"field": "all", "reason": "rights_permission_required", "severity": "blocking"}]},
+        "checklist": {"availability": "blocked", "essentialFieldsRetained": [], "lossManifest": [{"field": "all", "reason": "rights_permission_required", "severity": "blocking"}]},
+        "todo": {"availability": "blocked", "essentialFieldsRetained": [], "lossManifest": [{"field": "all", "reason": "rights_permission_required", "severity": "blocking"}]},
+        "sheet": {"availability": "blocked", "essentialFieldsRetained": [], "lossManifest": [{"field": "all", "reason": "rights_permission_required", "severity": "blocking"}]},
+        "memo": {"availability": "blocked", "essentialFieldsRetained": [], "lossManifest": [{"field": "all", "reason": "rights_permission_required", "severity": "blocking"}]}
+      }
+    },
+    {
+      "caseId": "OQ-N01-FOODCRAFT",
+      "feasibility": {"sourceCompleteness": "metadata_only", "generationState": "completed", "outcome": "rejected", "conversionReadiness": "hold", "errorCode": "unsupported_shape", "blockers": ["source_incomplete", "unsupported_shape"], "executableAllowed": false, "publicExportAllowed": false, "reason": "확보된 한 행은 경쟁 제품의 자동 장보기 기능 설명이며 실제 식단·재료·날짜 실행 행이 아니다."},
+      "classification": {
+        "primaryLifeArea": "meals_grocery", "secondaryLifeAreas": [], "sourceShape": null, "secondarySourceShapes": [], "primaryExecutionPattern": null, "secondaryExecutionPatterns": [], "primaryArtifact": null, "secondaryArtifacts": [],
+        "access": {"discoveryAccess": "public", "rowAccess": "metadata_only", "providerType": "brand_official", "sourceFormat": "article"}, "rights": {"basis": "link_only_assumption", "allowedUse": ["link_metadata", "internal_review"], "reviewStatus": "restricted"},
+        "review": {"sourceRowStatus": "metadata_only", "freshnessReview": "current", "localeReview": "applicable", "safetyReview": "not_required", "privacyReview": "not_required", "rightsReview": "restricted", "promotionState": "research_only", "blockers": ["source_incomplete", "unsupported_shape"]}
+      },
+      "roles": [{"sourceRowId": "FOODCRAFT-R01", "role": "reference", "reason": "자동 장보기 목록은 제품 기능을 설명하는 마케팅 문구이지 사용자의 식단 행이 아니다."}],
+      "canonicalPlan": null,
+      "projections": {
+        "calendar": {"availability": "blocked", "essentialFieldsRetained": [], "lossManifest": [{"field": "all", "reason": "unsupported_shape", "severity": "blocking"}]},
+        "checklist": {"availability": "blocked", "essentialFieldsRetained": [], "lossManifest": [{"field": "all", "reason": "unsupported_shape", "severity": "blocking"}]},
+        "todo": {"availability": "blocked", "essentialFieldsRetained": [], "lossManifest": [{"field": "all", "reason": "unsupported_shape", "severity": "blocking"}]},
+        "sheet": {"availability": "blocked", "essentialFieldsRetained": [], "lossManifest": [{"field": "all", "reason": "unsupported_shape", "severity": "blocking"}]},
+        "memo": {"availability": "blocked", "essentialFieldsRetained": [], "lossManifest": [{"field": "all", "reason": "unsupported_shape", "severity": "blocking"}]}
+      }
+    },
+    {
+      "caseId": "OQ-N02-LOGIN-WALL",
+      "feasibility": {"sourceCompleteness": "missing", "generationState": "failed", "outcome": "no_proposal", "conversionReadiness": "source_import_required", "errorCode": "source_unavailable", "blockers": ["source_import_required", "account_or_entitlement_required", "source_unavailable"], "executableAllowed": false, "publicExportAllowed": false, "reason": "제목과 로그인 벽만 확인되었고 usable SourceRow가 0개라 어떤 실행 행도 만들 수 없다."},
+      "classification": {
+        "primaryLifeArea": "home_living", "secondaryLifeAreas": [], "sourceShape": null, "secondarySourceShapes": [], "primaryExecutionPattern": null, "secondaryExecutionPatterns": [], "primaryArtifact": null, "secondaryArtifacts": [],
+        "access": {"discoveryAccess": "paywalled", "rowAccess": "unavailable", "providerType": "aggregator", "sourceFormat": "article"}, "rights": {"basis": "unknown", "allowedUse": ["link_metadata", "internal_review"], "reviewStatus": "pending"},
+        "review": {"sourceRowStatus": "missing", "freshnessReview": "unknown", "localeReview": "pending", "safetyReview": "not_required", "privacyReview": "not_required", "rightsReview": "pending", "promotionState": "research_only", "blockers": ["source_import_required", "account_or_entitlement_required", "source_unavailable"]}
+      },
+      "roles": [],
+      "canonicalPlan": null,
+      "projections": {
+        "calendar": {"availability": "blocked", "essentialFieldsRetained": [], "lossManifest": [{"field": "all", "reason": "source_unavailable", "severity": "blocking"}]},
+        "checklist": {"availability": "blocked", "essentialFieldsRetained": [], "lossManifest": [{"field": "all", "reason": "source_unavailable", "severity": "blocking"}]},
+        "todo": {"availability": "blocked", "essentialFieldsRetained": [], "lossManifest": [{"field": "all", "reason": "source_unavailable", "severity": "blocking"}]},
+        "sheet": {"availability": "blocked", "essentialFieldsRetained": [], "lossManifest": [{"field": "all", "reason": "source_unavailable", "severity": "blocking"}]},
+        "memo": {"availability": "blocked", "essentialFieldsRetained": [], "lossManifest": [{"field": "all", "reason": "source_unavailable", "severity": "blocking"}]}
+      }
+    }
+  ]
+}

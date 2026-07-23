@@ -1,0 +1,667 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flowme.local/schemas/flowme-taxonomy-v1.1.schema.json",
+  "title": "FlowMe Taxonomy v1.1 document and backend DTO contract",
+  "oneOf": [
+    { "$ref": "#/$defs/taxonomyCatalog" },
+    { "$ref": "#/$defs/reclassificationDocument" },
+    { "$ref": "#/$defs/legacyMappingDocument" },
+    { "$ref": "#/$defs/backendDtoCollection" },
+    { "$ref": "#/$defs/comparisonDocument" }
+  ],
+  "$defs": {
+    "lifeArea": {
+      "enum": [
+        "home_living",
+        "family_parenting",
+        "study_reading",
+        "money_admin_purchase",
+        "health_fitness",
+        "travel_outings",
+        "meals_grocery",
+        "work_career",
+        "hobby_pet"
+      ]
+    },
+    "sourceShape": {
+      "enum": [
+        "single_action",
+        "checklist_rows",
+        "date_offsets",
+        "date_window",
+        "recurrence_rule",
+        "procedure_rows",
+        "table_rows",
+        "lesson_rows",
+        "resource_collection",
+        "decision_criteria",
+        "narrative_guidance",
+        "template_fields"
+      ]
+    },
+    "executionPattern": {
+      "enum": [
+        "date_preparation",
+        "ordered_procedure",
+        "repeating_routine",
+        "progress_tracking",
+        "resource_queue",
+        "compare_decide",
+        "phase_lifecycle"
+      ]
+    },
+    "artifact": { "enum": ["calendar", "checklist", "todo", "sheet", "memo"] },
+    "providerType": {
+      "enum": [
+        "government_public",
+        "public_institution",
+        "brand_official",
+        "creator",
+        "editorial_media",
+        "community_platform",
+        "marketplace",
+        "education_provider",
+        "open_knowledge",
+        "aggregator",
+        "user_owned"
+      ]
+    },
+    "platformRole": {
+      "enum": ["discover", "host", "distribute", "execute", "export_destination", "entitlement", "community_signal"]
+    },
+    "discoveryAccess": { "enum": ["public", "account_required", "paywalled", "robots_limited", "unavailable", "unknown"] },
+    "rowAccess": { "enum": ["full", "partial", "metadata_only", "unavailable", "unknown"] },
+    "acquisitionMethod": {
+      "enum": [
+        "html_fetch",
+        "pdf_fetch",
+        "rss_fetch",
+        "public_api",
+        "oauth_api",
+        "file_upload",
+        "manual_copy",
+        "transcript_import",
+        "table_import",
+        "creator_delivery"
+      ]
+    },
+    "sourceFormatCategory": {
+      "enum": ["article", "checklist", "table", "document", "video", "audio", "course", "collection", "template", "api_feed", "interactive_page"]
+    },
+    "rightsBasis": {
+      "enum": ["public_domain", "open_license", "official_reuse_policy", "provider_terms", "creator_permission", "user_owned", "link_only_assumption", "unknown", "blocked"]
+    },
+    "allowedUse": { "enum": ["link_metadata", "personal_transform", "internal_review", "public_derived", "public_republish"] },
+    "rightsReviewStatus": { "enum": ["not_required", "pending", "approved", "restricted", "blocked"] },
+    "sourceRowStatus": { "enum": ["complete", "partial", "metadata_only", "missing"] },
+    "conversionReadiness": { "enum": ["ready_for_internal_canary", "ready_second_wave", "source_import_required", "hold"] },
+    "freshnessReview": { "enum": ["not_required", "pending", "current", "stale", "unknown"] },
+    "localeReview": { "enum": ["not_required", "pending", "applicable", "adaptation_required", "not_applicable"] },
+    "safetyReview": { "enum": ["not_required", "pending", "passed_with_boundary", "restricted", "blocked"] },
+    "privacyReview": { "enum": ["not_required", "pending", "passed", "sensitive_private_only", "blocked"] },
+    "promotionState": { "enum": ["research_only", "internal_review", "internal_canary", "public_candidate", "published", "retired"] },
+    "blocker": {
+      "enum": [
+        "source_unavailable",
+        "source_incomplete",
+        "source_import_required",
+        "rights_unknown",
+        "rights_permission_required",
+        "rights_blocked",
+        "freshness_pending",
+        "stale_source",
+        "locale_review_required",
+        "safety_review_required",
+        "privacy_review_required",
+        "account_or_entitlement_required",
+        "user_input_required",
+        "source_conflict",
+        "unsupported_shape",
+        "editorial_review_required"
+      ]
+    },
+    "portfolioRole": {
+      "enum": ["representative_start", "repeat_reuse", "creator_variant", "official_trust_anchor", "breadth_candidate", "backup", "reference_keep", "provider_lead"]
+    },
+    "editorialAction": {
+      "enum": ["keep", "revise", "import_source", "request_permission", "localize", "safety_review", "rights_review", "replace_source", "park", "reject"]
+    },
+    "uniqueLifeAreas": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/lifeArea" },
+      "uniqueItems": true,
+      "maxItems": 2
+    },
+    "uniqueSourceShapes": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/sourceShape" },
+      "uniqueItems": true,
+      "maxItems": 2
+    },
+    "uniqueExecutionPatterns": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/executionPattern" },
+      "uniqueItems": true,
+      "maxItems": 2
+    },
+    "uniqueArtifacts": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/artifact" },
+      "uniqueItems": true,
+      "maxItems": 4
+    },
+    "taxonomyAssignment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "primaryLifeArea",
+        "secondaryLifeAreas",
+        "topicTags",
+        "sourceShape",
+        "secondarySourceShapes",
+        "primaryExecutionPattern",
+        "secondaryExecutionPatterns",
+        "primaryArtifact",
+        "secondaryArtifacts"
+      ],
+      "properties": {
+        "primaryLifeArea": { "$ref": "#/$defs/lifeArea" },
+        "secondaryLifeAreas": { "$ref": "#/$defs/uniqueLifeAreas" },
+        "topicTags": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1, "maxLength": 40 },
+          "uniqueItems": true,
+          "maxItems": 12
+        },
+        "sourceShape": { "$ref": "#/$defs/sourceShape" },
+        "secondarySourceShapes": { "$ref": "#/$defs/uniqueSourceShapes" },
+        "primaryExecutionPattern": { "$ref": "#/$defs/executionPattern" },
+        "secondaryExecutionPatterns": { "$ref": "#/$defs/uniqueExecutionPatterns" },
+        "primaryArtifact": { "$ref": "#/$defs/artifact" },
+        "secondaryArtifacts": { "$ref": "#/$defs/uniqueArtifacts" }
+      }
+    },
+    "partialTaxonomyAssignment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "classificationStatus",
+        "primaryLifeArea",
+        "secondaryLifeAreas",
+        "topicTags",
+        "sourceShape",
+        "secondarySourceShapes",
+        "primaryExecutionPattern",
+        "secondaryExecutionPatterns",
+        "primaryArtifact",
+        "secondaryArtifacts"
+      ],
+      "properties": {
+        "classificationStatus": { "enum": ["confirmed", "provisional", "blocked_missing_source"] },
+        "primaryLifeArea": { "$ref": "#/$defs/lifeArea" },
+        "secondaryLifeAreas": { "$ref": "#/$defs/uniqueLifeAreas" },
+        "topicTags": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+        "sourceShape": { "oneOf": [{ "$ref": "#/$defs/sourceShape" }, { "type": "null" }] },
+        "secondarySourceShapes": { "$ref": "#/$defs/uniqueSourceShapes" },
+        "primaryExecutionPattern": { "oneOf": [{ "$ref": "#/$defs/executionPattern" }, { "type": "null" }] },
+        "secondaryExecutionPatterns": { "$ref": "#/$defs/uniqueExecutionPatterns" },
+        "primaryArtifact": { "oneOf": [{ "$ref": "#/$defs/artifact" }, { "type": "null" }] },
+        "secondaryArtifacts": { "$ref": "#/$defs/uniqueArtifacts" }
+      }
+    },
+    "sourceAccess": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["providerType", "platformRoles", "discoveryAccess", "rowAccess", "acquisitionMethods", "sourceFormat"],
+      "properties": {
+        "providerType": { "$ref": "#/$defs/providerType" },
+        "platformRoles": { "type": "array", "items": { "$ref": "#/$defs/platformRole" }, "uniqueItems": true, "minItems": 1 },
+        "discoveryAccess": { "$ref": "#/$defs/discoveryAccess" },
+        "rowAccess": { "$ref": "#/$defs/rowAccess" },
+        "acquisitionMethods": { "type": "array", "items": { "$ref": "#/$defs/acquisitionMethod" }, "uniqueItems": true },
+        "sourceFormat": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["category", "mediaType", "detail"],
+          "properties": {
+            "category": { "$ref": "#/$defs/sourceFormatCategory" },
+            "mediaType": { "type": ["string", "null"] },
+            "detail": { "type": "object", "additionalProperties": { "type": ["string", "number", "boolean", "null"] } }
+          }
+        }
+      }
+    },
+    "rights": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["basis", "allowedUse", "territoryScope", "territories", "reviewStatus", "personalTransformAllowed", "publicReleaseAllowed", "rationale"],
+      "properties": {
+        "basis": { "$ref": "#/$defs/rightsBasis" },
+        "allowedUse": { "type": "array", "items": { "$ref": "#/$defs/allowedUse" }, "uniqueItems": true },
+        "territoryScope": { "enum": ["global", "named", "unknown"] },
+        "territories": { "type": "array", "items": { "type": "string", "pattern": "^[A-Z]{2}$|^GLOBAL$" }, "uniqueItems": true },
+        "reviewStatus": { "$ref": "#/$defs/rightsReviewStatus" },
+        "personalTransformAllowed": { "type": "boolean" },
+        "publicReleaseAllowed": { "type": "boolean" },
+        "rationale": { "type": "string", "minLength": 1 }
+      }
+    },
+    "reviewState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceRowStatus",
+        "conversionReadiness",
+        "freshnessReview",
+        "localeReview",
+        "safetyReview",
+        "privacyReview",
+        "rightsReview",
+        "promotionState",
+        "blockers",
+        "portfolioRole",
+        "editorialAction",
+        "backendStorable"
+      ],
+      "properties": {
+        "sourceRowStatus": { "$ref": "#/$defs/sourceRowStatus" },
+        "conversionReadiness": { "$ref": "#/$defs/conversionReadiness" },
+        "freshnessReview": { "$ref": "#/$defs/freshnessReview" },
+        "localeReview": { "$ref": "#/$defs/localeReview" },
+        "safetyReview": { "$ref": "#/$defs/safetyReview" },
+        "privacyReview": { "$ref": "#/$defs/privacyReview" },
+        "rightsReview": { "$ref": "#/$defs/rightsReviewStatus" },
+        "promotionState": { "$ref": "#/$defs/promotionState" },
+        "blockers": { "type": "array", "items": { "$ref": "#/$defs/blocker" }, "uniqueItems": true },
+        "portfolioRole": { "$ref": "#/$defs/portfolioRole" },
+        "editorialAction": { "$ref": "#/$defs/editorialAction" },
+        "backendStorable": { "type": "boolean" }
+      }
+    },
+    "audienceAndApplicability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["roles", "ageBands", "skillLevel", "contentLocale", "applicableLocales", "applicability", "prerequisites", "accountOrEntitlement", "collaborationContext", "userNeedSignals", "frictionSignals"],
+      "properties": {
+        "roles": { "type": "array", "items": { "enum": ["individual", "parent_guardian", "learner", "professional", "creator_operator", "caregiver", "team_member", "buyer", "traveler"] }, "uniqueItems": true, "minItems": 1 },
+        "ageBands": { "type": "array", "items": { "enum": ["child", "teen", "adult", "older_adult", "all_ages", "not_specified"] }, "uniqueItems": true },
+        "skillLevel": { "enum": ["beginner", "intermediate", "advanced", "mixed", "not_applicable"] },
+        "contentLocale": { "type": "string", "pattern": "^[a-z]{2,3}(-[A-Z]{2})?$" },
+        "applicableLocales": { "type": "array", "items": { "type": "string", "pattern": "^[a-z]{2,3}(-[A-Z]{2})?$" }, "uniqueItems": true },
+        "applicability": { "enum": ["local_direct", "local_adaptation_required", "global_general", "unknown"] },
+        "prerequisites": { "type": "array", "items": { "type": "string" } },
+        "accountOrEntitlement": { "enum": ["none", "free_account", "paid_subscription", "owned_product", "official_eligibility", "source_file_required", "unknown"] },
+        "collaborationContext": { "enum": ["solo", "shared_household", "caregiver_dependent", "team_roles", "provider_client", "unknown"] },
+        "userNeedSignals": { "type": "array", "items": { "enum": ["remember_when", "avoid_omission", "follow_sequence", "repeat_consistently", "track_progress", "choose_between_options", "queue_resources", "handoff_or_share", "preserve_source_context"] }, "uniqueItems": true },
+        "frictionSignals": { "type": "array", "items": { "enum": ["tab_switching", "copy_reformatting", "missed_deadline", "lost_progress", "unclear_next_action", "collaboration_gap", "source_revisit_cost"] }, "uniqueItems": true }
+      }
+    },
+    "sourceRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceRowId", "sourceId", "snapshotId", "rowType", "title", "order"],
+      "properties": {
+        "sourceRowId": { "type": "string", "minLength": 1 },
+        "sourceId": { "type": "string", "minLength": 1 },
+        "snapshotId": { "type": "string", "minLength": 1 },
+        "rowType": { "enum": ["date", "offset", "check", "table_row", "procedure", "resource", "reference"] },
+        "title": { "type": "string", "minLength": 1 },
+        "order": { "type": "integer", "minimum": 0 },
+        "locator": { "type": ["string", "null"] }
+      }
+    },
+    "sourceReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceRefId", "entityType", "entityId", "sourceRowIds", "relation", "supportLevel"],
+      "properties": {
+        "sourceRefId": { "type": "string", "minLength": 1 },
+        "entityType": { "enum": ["flow", "step", "item", "field", "memo"] },
+        "entityId": { "type": "string", "minLength": 1 },
+        "sourceRowIds": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true, "minItems": 1 },
+        "relation": { "enum": ["derived_from", "supports", "caution", "boundary"] },
+        "supportLevel": { "enum": ["direct", "creator_interpretation", "user_request", "inferred_draft"] },
+        "note": { "type": "string" }
+      }
+    },
+    "omittedRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceRowId", "reason"],
+      "properties": {
+        "sourceRowId": { "type": "string", "minLength": 1 },
+        "reason": { "type": "string", "minLength": 1 }
+      }
+    },
+    "schedule": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "start", "allDay"],
+          "properties": {
+            "mode": { "const": "absolute" },
+            "start": { "type": "string", "minLength": 1 },
+            "end": { "type": "string" },
+            "allDay": { "type": "boolean" },
+            "timezone": { "type": "string" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "anchorFieldId", "dayOffset", "allDay"],
+          "properties": {
+            "mode": { "const": "anchor_offset" },
+            "anchorFieldId": { "type": "string", "minLength": 1 },
+            "dayOffset": { "type": "integer" },
+            "time": { "type": "string" },
+            "durationMinutes": { "type": "integer", "minimum": 1 },
+            "allDay": { "type": "boolean" },
+            "timezone": { "type": "string" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "basis", "startDate", "endDate"],
+          "properties": {
+            "mode": { "const": "date_window" },
+            "basis": { "const": "absolute" },
+            "startDate": { "type": "string", "minLength": 1 },
+            "endDate": { "type": "string", "minLength": 1 },
+            "reminderDate": { "type": "string" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "basis", "anchorFieldId", "startDayOffset", "endDayOffset", "reminderDayOffset"],
+          "properties": {
+            "mode": { "const": "date_window" },
+            "basis": { "const": "anchor_offset" },
+            "anchorFieldId": { "type": "string", "minLength": 1 },
+            "startDayOffset": { "type": "integer" },
+            "endDayOffset": { "type": "integer" },
+            "reminderDayOffset": { "type": "integer" }
+          }
+        }
+      ]
+    },
+    "completion": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "doneWhen"],
+          "properties": { "mode": { "const": "check" }, "doneWhen": { "type": "string", "minLength": 1 } }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "options"],
+          "properties": {
+            "mode": { "const": "decision" },
+            "options": {
+              "type": "array",
+              "minItems": 2,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["value", "label"],
+                "properties": { "value": { "type": "string" }, "label": { "type": "string" }, "terminal": { "type": "boolean" } }
+              }
+            },
+            "doneWhen": { "type": "string" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "recordFieldIds", "doneWhen"],
+          "properties": {
+            "mode": { "const": "record" },
+            "recordFieldIds": { "type": "array", "items": { "type": "string" }, "uniqueItems": true, "minItems": 1 },
+            "doneWhen": { "type": "string", "minLength": 1 }
+          }
+        }
+      ]
+    },
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["itemId", "stepId", "title", "intent", "order", "completion", "fieldIds", "memoIds", "cautionMemoIds", "sourceRefIds"],
+      "properties": {
+        "itemId": { "type": "string", "minLength": 1 },
+        "stepId": { "type": "string", "minLength": 1 },
+        "title": { "type": "string", "minLength": 1 },
+        "intent": { "enum": ["act", "inspect", "decide", "record", "use_resource"] },
+        "order": { "type": "integer", "minimum": 0 },
+        "schedule": { "$ref": "#/$defs/schedule" },
+        "completion": { "$ref": "#/$defs/completion" },
+        "fieldIds": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "memoIds": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "cautionMemoIds": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "sourceRefIds": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true, "minItems": 1 }
+      }
+    },
+    "projectionPreview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["calendar", "checklist", "todo", "sheet", "memo"],
+      "properties": {
+        "calendar": { "$ref": "#/$defs/projectionTarget" },
+        "checklist": { "$ref": "#/$defs/projectionTarget" },
+        "todo": { "$ref": "#/$defs/projectionTarget" },
+        "sheet": { "$ref": "#/$defs/projectionTarget" },
+        "memo": { "$ref": "#/$defs/projectionTarget" }
+      }
+    },
+    "projectionTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["availability", "unit", "example", "loss"],
+      "properties": {
+        "availability": { "enum": ["primary", "secondary", "fallback", "not_applicable", "blocked"] },
+        "unit": { "type": "string" },
+        "example": { "type": "string" },
+        "loss": { "type": "string" }
+      }
+    },
+    "backendDto": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dtoId", "scenario", "source", "flow", "taxonomy", "audienceAndApplicability", "access", "rights", "review", "sourceRows", "sourceReferences", "omittedRows", "steps", "items", "fields", "memos", "projectionPreview"],
+      "properties": {
+        "dtoId": { "type": "string", "minLength": 1 },
+        "scenario": { "type": "string", "minLength": 1 },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["sourceId", "title", "originalUrl", "snapshot"],
+          "properties": {
+            "sourceId": { "type": "string", "minLength": 1 },
+            "title": { "type": "string", "minLength": 1 },
+            "originalUrl": { "type": ["string", "null"], "format": "uri" },
+            "snapshot": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["snapshotId", "fetchedAt", "finalUrl", "contentHash", "extractionVersion"],
+              "properties": {
+                "snapshotId": { "type": "string", "minLength": 1 },
+                "fetchedAt": { "type": "string", "format": "date-time" },
+                "finalUrl": { "type": ["string", "null"], "format": "uri" },
+                "contentHash": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+                "extractionVersion": { "type": "string", "minLength": 1 }
+              }
+            }
+          }
+        },
+        "flow": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["flowId", "title", "stepIds", "anchorDefinitions"],
+          "properties": {
+            "flowId": { "type": "string", "minLength": 1 },
+            "title": { "type": "string", "minLength": 1 },
+            "stepIds": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+            "anchorDefinitions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["fieldId", "kind", "label", "required"],
+                "properties": {
+                  "fieldId": { "type": "string" },
+                  "kind": { "enum": ["start_date", "end_date", "event_date", "birth_date", "age_month"] },
+                  "label": { "type": "string" },
+                  "hint": { "type": "string" },
+                  "required": { "type": "boolean" }
+                }
+              }
+            }
+          }
+        },
+        "taxonomy": { "$ref": "#/$defs/partialTaxonomyAssignment" },
+        "audienceAndApplicability": { "$ref": "#/$defs/audienceAndApplicability" },
+        "access": { "$ref": "#/$defs/sourceAccess" },
+        "rights": { "$ref": "#/$defs/rights" },
+        "review": { "$ref": "#/$defs/reviewState" },
+        "sourceRows": { "type": "array", "items": { "$ref": "#/$defs/sourceRow" } },
+        "sourceReferences": { "type": "array", "items": { "$ref": "#/$defs/sourceReference" } },
+        "omittedRows": { "type": "array", "items": { "$ref": "#/$defs/omittedRow" } },
+        "steps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["stepId", "flowId", "title", "order", "itemIds", "sourceRefIds"],
+            "properties": {
+              "stepId": { "type": "string" },
+              "flowId": { "type": "string" },
+              "title": { "type": "string" },
+              "order": { "type": "integer", "minimum": 0 },
+              "itemIds": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+              "sourceRefIds": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
+            }
+          }
+        },
+        "items": { "type": "array", "items": { "$ref": "#/$defs/item" } },
+        "fields": { "type": "array", "items": { "type": "object" } },
+        "memos": { "type": "array", "items": { "type": "object" } },
+        "projectionPreview": { "$ref": "#/$defs/projectionPreview" }
+      }
+    },
+    "taxonomyCatalog": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["documentType", "schemaVersion", "date", "status", "scope", "claimBoundary", "preservedCanonicalDecisions", "classificationOrder", "hierarchy", "enums", "fieldSemantics", "valueRules", "operationalEnumRules", "ambiguousCaseRules", "adjudicationRules", "crossFieldRules", "legacyOnlyValues"],
+      "properties": {
+        "documentType": { "const": "flowme_taxonomy_catalog" },
+        "schemaVersion": { "const": "flowme-taxonomy-v1.1" },
+        "date": { "type": "string" },
+        "status": { "type": "string" },
+        "scope": { "type": "string" },
+        "claimBoundary": { "type": "string" },
+        "preservedCanonicalDecisions": { "type": "array", "items": { "type": "string" } },
+        "classificationOrder": { "type": "array", "items": { "type": "string" } },
+        "hierarchy": { "type": "object" },
+        "enums": { "type": "object" },
+        "fieldSemantics": { "type": "object" },
+        "valueRules": { "type": "object" },
+        "operationalEnumRules": { "type": "object" },
+        "ambiguousCaseRules": { "type": "array", "items": { "type": "object" } },
+        "adjudicationRules": { "type": "object" },
+        "crossFieldRules": { "type": "array", "items": { "type": "string" } },
+        "legacyOnlyValues": { "type": "object" }
+      }
+    },
+    "reclassificationDocument": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["documentType", "schemaVersion", "date", "scope", "summary", "records"],
+      "properties": {
+        "documentType": { "const": "flowme_taxonomy_reclassification" },
+        "schemaVersion": { "const": "flowme-taxonomy-v1.1" },
+        "date": { "type": "string" },
+        "scope": { "type": "object" },
+        "summary": { "type": "object" },
+        "records": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["recordId", "dataset", "title", "sourceUrl", "evidenceLabel", "legacy", "v11", "audienceAndApplicability", "changeReason", "ambiguousCandidates", "tieBreaker", "lossOrHoldReason", "backendStorable", "personalTransformAllowed", "publicReleaseAllowed", "access", "rights", "review"],
+            "properties": {
+              "recordId": { "type": "string" },
+              "dataset": { "enum": ["p0_portfolio", "source_expansion", "deep_set", "runtime_seed"] },
+              "title": { "type": "string" },
+              "sourceUrl": { "type": ["string", "null"] },
+              "evidenceLabel": { "enum": ["verified_fact", "current_implementation", "strategy_proposal", "unverified_hypothesis"] },
+              "legacy": { "type": "object" },
+              "v11": { "$ref": "#/$defs/partialTaxonomyAssignment" },
+              "audienceAndApplicability": { "$ref": "#/$defs/audienceAndApplicability" },
+              "changeReason": { "type": "string" },
+              "ambiguousCandidates": { "type": "object" },
+              "tieBreaker": { "type": "string" },
+              "lossOrHoldReason": { "type": ["string", "null"] },
+              "backendStorable": { "type": "boolean" },
+              "personalTransformAllowed": { "type": "boolean" },
+              "publicReleaseAllowed": { "type": "boolean" },
+              "access": { "$ref": "#/$defs/sourceAccess" },
+              "rights": { "$ref": "#/$defs/rights" },
+              "review": { "$ref": "#/$defs/reviewState" }
+            }
+          }
+        }
+      }
+    },
+    "legacyMappingDocument": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["documentType", "schemaVersion", "date", "runtimeScope", "inventory", "mappings", "decisionStates", "metrics", "implementationBoundary"],
+      "properties": {
+        "documentType": { "const": "flowme_legacy_mapping" },
+        "schemaVersion": { "const": "flowme-taxonomy-v1.1" },
+        "date": { "type": "string" },
+        "runtimeScope": { "type": "string" },
+        "inventory": { "type": "object" },
+        "mappings": { "type": "object" },
+        "decisionStates": { "type": "object" },
+        "metrics": { "type": "object" },
+        "implementationBoundary": { "type": "string" }
+      }
+    },
+    "backendDtoCollection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["documentType", "schemaVersion", "date", "claimBoundary", "dtos"],
+      "properties": {
+        "documentType": { "const": "flowme_backend_dto_collection" },
+        "schemaVersion": { "const": "flowme-taxonomy-v1.1" },
+        "date": { "type": "string" },
+        "claimBoundary": { "type": "string" },
+        "dtos": { "type": "array", "items": { "$ref": "#/$defs/backendDto" }, "minItems": 10, "maxItems": 10 }
+      }
+    },
+    "comparisonDocument": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["documentType", "schemaVersion", "date", "method", "rounds", "finalMetrics", "cases", "validationBoundary"],
+      "properties": {
+        "documentType": { "const": "flowme_classification_comparison" },
+        "schemaVersion": { "const": "flowme-taxonomy-v1.1" },
+        "date": { "type": "string" },
+        "purpose": { "type": "string" },
+        "validationBoundary": { "type": "string" },
+        "method": { "type": "object" },
+        "rounds": { "type": "array", "minItems": 2, "maxItems": 3, "items": { "type": "object" } },
+        "finalMetrics": { "type": "object" },
+        "improvementPercentagePoints": { "type": "object" },
+        "finalThreshold": { "type": "object" },
+        "cases": { "type": "array", "minItems": 20, "maxItems": 20, "items": { "type": "object" } },
+        "remainingDisagreementPolicy": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

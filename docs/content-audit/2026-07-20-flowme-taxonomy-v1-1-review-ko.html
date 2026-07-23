@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe Taxonomy v1.1 — URL-to-Flow canonical contract</title>
+  <style>
+    :root {
+      --ink: #09223f;
+      --ink-2: #173b59;
+      --muted: #62717e;
+      --paper: #fbfaf6;
+      --panel: #ffffff;
+      --line: #d8e0df;
+      --mint: #18a98f;
+      --mint-dark: #087d6d;
+      --mint-soft: #e8f6f2;
+      --blue: #2469b2;
+      --blue-soft: #eaf2fb;
+      --coral: #f35e4b;
+      --coral-soft: #fff0ec;
+      --amber: #ba7312;
+      --amber-soft: #fff4db;
+      --nav: #061f3b;
+      --shadow: 0 14px 36px rgba(9, 34, 63, .08);
+      --rail: 190px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-snap-type: y mandatory; background: var(--paper); }
+    body { margin: 0; color: var(--ink); background: var(--paper); font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif; letter-spacing: -.015em; }
+    a { color: var(--blue); }
+    button { font: inherit; }
+    .rail { position: fixed; inset: 0 auto 0 0; width: var(--rail); z-index: 20; padding: 28px 22px; display: flex; flex-direction: column; color: #fff; background: linear-gradient(180deg, #041b35, #072746 74%, #061c33); }
+    .brand { display: flex; align-items: center; gap: 10px; font-size: 27px; font-weight: 760; letter-spacing: -.04em; }
+    .mark { width: 30px; height: 30px; position: relative; flex: 0 0 auto; }
+    .mark i { position: absolute; display: block; width: 10px; height: 10px; border-radius: 50%; background: #2bd0b3; }
+    .mark i:nth-child(1) { left: 10px; top: 0; } .mark i:nth-child(2) { left: 0; top: 10px; } .mark i:nth-child(3) { left: 20px; top: 10px; } .mark i:nth-child(4) { left: 10px; top: 20px; }
+    .rail-kicker { margin: 8px 0 0 40px; color: #36d8bb; font-size: 12px; }
+    .rail-rule { height: 1px; margin: 34px 0 28px; background: rgba(255,255,255,.25); }
+    .rail-title { font-size: 13px; line-height: 1.65; color: #dceaf5; }
+    .rail-title strong { color: #fff; font-size: 15px; }
+    .rail-spacer { flex: 1; }
+    .slide-count { display: flex; align-items: baseline; gap: 6px; margin-bottom: 22px; }
+    .slide-count strong { color: #2bd0b3; font-size: 64px; line-height: .9; letter-spacing: -.07em; }
+    .slide-count span { font-size: 22px; color: #8aa1b6; }
+    .contract-badge { border: 1px solid #2bd0b3; border-radius: 10px; padding: 10px 8px; color: #42dbc1; text-align: center; font-size: 12px; line-height: 1.45; }
+    .rail-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 16px; }
+    .rail-nav button { height: 34px; border: 1px solid rgba(255,255,255,.2); border-radius: 8px; color: #fff; background: rgba(255,255,255,.06); cursor: pointer; }
+    .rail-nav button:hover { background: rgba(255,255,255,.15); }
+    main { margin-left: var(--rail); }
+    .slide { min-height: 100vh; scroll-snap-align: start; position: relative; display: grid; align-items: center; padding: 34px 42px 48px; border-bottom: 1px solid #dfe5e4; background-image: linear-gradient(rgba(9,34,63,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(9,34,63,.025) 1px, transparent 1px); background-size: 40px 40px; }
+    .slide:nth-child(even) { background-color: #f7f8f5; }
+    .slide-inner { width: min(100%, 1280px); margin: 0 auto; }
+    .eyebrow { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; color: var(--mint-dark); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; }
+    .eyebrow::before { content: ""; width: 28px; height: 3px; border-radius: 4px; background: var(--mint); }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 10px; font-size: clamp(34px, 3.35vw, 53px); line-height: 1.08; letter-spacing: -.055em; }
+    h2 { margin-bottom: 8px; font-size: clamp(29px, 2.6vw, 42px); line-height: 1.12; letter-spacing: -.045em; }
+    h3 { margin-bottom: 8px; font-size: 17px; line-height: 1.25; }
+    .lead { max-width: 920px; margin-bottom: 20px; color: var(--muted); font-size: 16px; line-height: 1.65; }
+    .accent { color: var(--mint-dark); }
+    .coral { color: var(--coral); }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: -.03em; }
+    .card { border: 1px solid var(--line); border-radius: 15px; padding: 17px; background: rgba(255,255,255,.94); box-shadow: 0 6px 18px rgba(9,34,63,.035); }
+    .card.soft { background: var(--mint-soft); border-color: #c8e7df; }
+    .card.warn { background: var(--coral-soft); border-color: #ffc8bd; }
+    .card.amber { background: var(--amber-soft); border-color: #f0d291; }
+    .card.blue { background: var(--blue-soft); border-color: #c8dced; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    .flow-card { min-height: 305px; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+    .flow-card::after { content: "→"; position: absolute; right: -12px; top: 46%; z-index: 3; color: #a9b4bb; font-size: 30px; font-weight: 300; }
+    .flow-card:last-child::after { display: none; }
+    .step-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .step-no { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 10px; color: #fff; background: var(--ink); font-size: 21px; font-weight: 850; }
+    .warn .step-no { background: var(--coral); }
+    .soft .step-no { background: var(--mint-dark); }
+    .step-head strong { display: block; font-size: 17px; }
+    .step-head small { display: block; color: var(--muted); font-size: 11px; }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 6px; }
+    .pill { display: inline-flex; align-items: center; min-height: 25px; padding: 4px 9px; border-radius: 999px; color: var(--ink-2); background: #edf1f2; font-size: 11px; font-weight: 700; }
+    .pill.mint { color: #006f60; background: #dff4ed; }
+    .pill.coral { color: #a2392d; background: #ffe3de; }
+    .pill.blue { color: #16538f; background: #e0edf9; }
+    .pill.amber { color: #80500e; background: #ffefc6; }
+    .kv { display: grid; grid-template-columns: 88px 1fr; gap: 7px 10px; align-items: start; font-size: 12px; line-height: 1.45; }
+    .kv dt { color: var(--muted); } .kv dd { margin: 0; font-weight: 720; overflow-wrap: anywhere; }
+    .mini-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 7px; color: var(--ink-2); font-size: 12px; line-height: 1.45; }
+    .mini-list li { position: relative; padding-left: 16px; }
+    .mini-list li::before { content: ""; position: absolute; left: 0; top: .52em; width: 6px; height: 6px; border-radius: 50%; background: var(--mint); }
+    .warn .mini-list li::before { background: var(--coral); }
+    .decision-box { margin-top: auto; padding: 10px 11px; border: 1px solid #c7dfd9; border-radius: 10px; color: var(--mint-dark); background: #f6fcfa; font-size: 11px; line-height: 1.45; font-weight: 750; }
+    .warn .decision-box { color: #a43c30; background: #fff9f7; border-color: #ffc0b5; }
+    .calendar { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; margin: 8px 0 12px; }
+    .day { min-height: 43px; padding: 6px 4px; border: 1px solid #dbe2e4; border-radius: 8px; color: var(--muted); background: #fff; font-size: 9px; text-align: center; }
+    .day strong { display: block; margin-bottom: 2px; color: var(--ink); font-size: 11px; }
+    .day.on { border-color: #72cfbd; color: var(--mint-dark); background: var(--mint-soft); }
+    .checkline { display: flex; gap: 7px; align-items: flex-start; margin: 6px 0; color: var(--ink-2); font-size: 11px; }
+    .checkline i { display: grid; place-items: center; flex: 0 0 15px; height: 15px; border: 1px solid #9cadb7; border-radius: 3px; font-style: normal; color: white; }
+    .checkline.done i { border-color: var(--mint); background: var(--mint); }
+    .evidence-strip { display: grid; grid-template-columns: repeat(5, 1fr); gap: 9px; margin-top: 14px; padding: 12px; border: 1px solid var(--line); border-radius: 14px; background: rgba(255,255,255,.9); }
+    .evidence-node { position: relative; min-height: 68px; padding: 10px 11px; border: 1px solid #dce4e5; border-radius: 10px; background: #fff; }
+    .evidence-node::after { content: "→"; position: absolute; right: -10px; top: 24px; z-index: 2; color: var(--blue); font-weight: 800; }
+    .evidence-node:last-child::after { display: none; }
+    .evidence-node strong { display: block; margin-bottom: 4px; font-size: 12px; }
+    .evidence-node span { color: var(--muted); font-size: 10px; line-height: 1.35; }
+    .source-line { margin-top: 9px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--muted); font-size: 10px; }
+    .source-line a { text-decoration-thickness: 1px; text-underline-offset: 2px; }
+    .compare { display: grid; grid-template-columns: 1fr 44px 1fr; gap: 10px; align-items: stretch; }
+    .compare-arrow { display: grid; place-items: center; color: var(--mint-dark); font-size: 30px; }
+    .big-rule { min-height: 122px; border-left: 4px solid var(--mint); }
+    .rule-title { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; margin-bottom: 9px; }
+    .rule-title small { color: var(--muted); }
+    .callout { display: flex; align-items: flex-start; gap: 11px; padding: 12px 14px; border-radius: 12px; color: #7f362d; background: var(--coral-soft); border: 1px solid #ffc6bc; font-size: 12px; line-height: 1.5; }
+    .callout strong { color: #a73529; }
+    .icon { display: grid; place-items: center; width: 28px; height: 28px; flex: 0 0 auto; border-radius: 8px; color: #fff; background: var(--coral); font-weight: 900; }
+    .metric { padding: 18px; }
+    .metric strong { display: block; margin-bottom: 4px; color: var(--mint-dark); font-size: 36px; letter-spacing: -.06em; }
+    .metric span { color: var(--muted); font-size: 12px; }
+    .bar { height: 9px; margin-top: 12px; overflow: hidden; border-radius: 999px; background: #e7ecec; }
+    .bar i { display: block; height: 100%; border-radius: inherit; background: var(--mint); }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th, td { padding: 9px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: .05em; }
+    td strong { color: var(--ink); }
+    .matrix td:not(:first-child), .matrix th:not(:first-child) { text-align: center; }
+    .pass { color: var(--mint-dark); font-weight: 850; }
+    .hold { color: var(--coral); font-weight: 850; }
+    .status-track { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .status { padding: 12px; border-radius: 10px; text-align: center; color: var(--muted); background: #eef2f2; font-size: 11px; }
+    .status.on { color: #fff; background: var(--mint-dark); }
+    .status.stop { color: #fff; background: var(--coral); }
+    .architecture { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .layer { min-height: 130px; padding: 14px; border-radius: 13px; border: 1px solid var(--line); background: #fff; }
+    .layer b { display: grid; place-items: center; width: 28px; height: 28px; margin-bottom: 9px; border-radius: 8px; color: #fff; background: var(--ink); }
+    .layer:nth-child(2n) b { background: var(--mint-dark); }
+    .layer strong { display: block; margin-bottom: 6px; font-size: 13px; }
+    .layer p { margin-bottom: 0; color: var(--muted); font-size: 10.5px; line-height: 1.5; }
+    .legend { display: flex; gap: 12px; flex-wrap: wrap; color: var(--muted); font-size: 10px; }
+    .legend span::before { content: ""; display: inline-block; width: 8px; height: 8px; margin-right: 5px; border-radius: 50%; background: var(--mint); }
+    .legend span:nth-child(2)::before { background: var(--amber); } .legend span:nth-child(3)::before { background: var(--coral); }
+    .donut-row { display: grid; grid-template-columns: 210px 1fr; gap: 24px; align-items: center; }
+    .donut { width: 190px; aspect-ratio: 1; border-radius: 50%; display: grid; place-items: center; background: conic-gradient(var(--mint) 0 32.1%, var(--blue) 32.1% 61.9%, var(--amber) 61.9% 76.2%, var(--coral) 76.2% 100%); }
+    .donut::after { content: "84\A records"; white-space: pre; display: grid; place-items: center; width: 112px; aspect-ratio: 1; border-radius: 50%; color: var(--ink); background: var(--paper); text-align: center; font-weight: 850; font-size: 21px; line-height: 1.1; }
+    .number-list { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .number-list .card strong { display: block; font-size: 29px; letter-spacing: -.05em; }
+    .number-list .card span { color: var(--muted); font-size: 11px; }
+    .dto-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 9px; }
+    .dto { min-height: 112px; padding: 12px; border-radius: 11px; border: 1px solid var(--line); background: #fff; }
+    .dto b { display: block; margin-bottom: 5px; color: var(--mint-dark); font-size: 11px; }
+    .dto strong { display: block; margin-bottom: 6px; font-size: 12px; line-height: 1.3; }
+    .dto span { color: var(--muted); font-size: 9.5px; line-height: 1.4; }
+    .pipeline { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+    .pipe { position: relative; min-height: 115px; padding: 13px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+    .pipe::after { content: "→"; position: absolute; right: -9px; top: 43px; color: var(--mint-dark); font-weight: 900; }
+    .pipe:last-child::after { display: none; }
+    .pipe b { display: block; margin-bottom: 9px; color: var(--mint-dark); font-size: 20px; }
+    .pipe strong { display: block; font-size: 12px; }
+    .pipe span { display: block; margin-top: 5px; color: var(--muted); font-size: 9.5px; line-height: 1.4; }
+    .footnote { margin-top: 12px; color: var(--muted); font-size: 9.5px; line-height: 1.5; }
+    .slide-index { position: absolute; right: 22px; bottom: 16px; color: #92a0a9; font-size: 10px; letter-spacing: .05em; }
+    .overview { position: fixed; inset: 0; z-index: 50; display: none; padding: 28px; color: #fff; background: rgba(4,22,42,.96); overflow: auto; }
+    .overview.open { display: block; }
+    .overview-head { display: flex; align-items: center; justify-content: space-between; max-width: 1160px; margin: 0 auto 20px; }
+    .overview-head button { border: 1px solid rgba(255,255,255,.3); border-radius: 8px; padding: 8px 12px; color: #fff; background: transparent; cursor: pointer; }
+    .overview-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; max-width: 1160px; margin: auto; }
+    .overview-grid a { min-height: 110px; padding: 14px; border: 1px solid rgba(255,255,255,.18); border-radius: 12px; color: #fff; background: rgba(255,255,255,.06); text-decoration: none; }
+    .overview-grid a:hover { border-color: #2bd0b3; }
+    .overview-grid b { display: block; color: #2bd0b3; margin-bottom: 8px; }
+    .overview-grid span { font-size: 12px; line-height: 1.45; }
+    @media (max-width: 1050px) {
+      :root { --rail: 158px; }
+      .rail { padding: 22px 16px; }
+      .brand { font-size: 22px; }
+      .slide { padding-inline: 28px; }
+      .grid-4, .architecture { grid-template-columns: repeat(2, 1fr); }
+      .flow-card::after { display: none; }
+      .dto-grid { grid-template-columns: repeat(3, 1fr); }
+      .pipeline { grid-template-columns: repeat(3, 1fr); }
+      .pipe::after { display: none; }
+    }
+    @media (max-width: 760px) {
+      html { scroll-snap-type: none; }
+      .rail { inset: 0 0 auto 0; width: auto; height: 58px; padding: 10px 14px; flex-direction: row; align-items: center; gap: 10px; }
+      .brand { font-size: 20px; } .rail-kicker, .rail-rule, .rail-title, .rail-spacer, .contract-badge { display: none; }
+      .slide-count { margin: 0 0 0 auto; align-items: center; }
+      .slide-count strong { font-size: 22px; } .slide-count span { font-size: 12px; }
+      .rail-nav { display: flex; margin: 0; } .rail-nav button { width: 30px; height: 30px; }
+      main { margin-left: 0; }
+      .slide { min-height: auto; padding: 88px 17px 44px; display: block; }
+      .grid-2, .grid-3, .grid-4, .architecture, .number-list, .dto-grid, .pipeline, .evidence-strip { grid-template-columns: 1fr; }
+      .flow-card { min-height: auto; }
+      .compare { grid-template-columns: 1fr; }
+      .compare-arrow { transform: rotate(90deg); }
+      .donut-row { grid-template-columns: 1fr; }
+      .donut { margin: auto; }
+      .overview-grid { grid-template-columns: 1fr; }
+      .kv { grid-template-columns: 76px 1fr; }
+      table { font-size: 10px; }
+      th, td { padding: 7px 5px; }
+    }
+    @media print {
+      .rail, .overview { display: none !important; }
+      main { margin: 0; }
+      .slide { min-height: 0; height: 190mm; break-after: page; padding: 12mm; background: #fff; }
+      .slide-inner { max-width: none; }
+      .card { box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <aside class="rail" aria-label="슬라이드 내비게이션">
+    <div>
+      <div class="brand"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>FlowMe</div>
+      <div class="rail-kicker">Taxonomy v1.1</div>
+    </div>
+    <div class="rail-rule"></div>
+    <div class="rail-title"><strong>URL-to-Flow</strong><br>Canonical Data Contract<br>2026.07.20</div>
+    <div class="rail-spacer"></div>
+    <div class="slide-count"><strong id="currentSlide">01</strong><span>/16</span></div>
+    <div class="contract-badge">CANONICAL<br>CONTRACT</div>
+    <div class="rail-nav">
+      <button type="button" id="prev" aria-label="이전 슬라이드">←</button>
+      <button type="button" id="next" aria-label="다음 슬라이드">→</button>
+      <button type="button" id="openOverview" aria-label="전체 슬라이드 보기">▦</button>
+      <button type="button" onclick="window.print()" aria-label="인쇄">⎙</button>
+    </div>
+  </aside>
+
+  <main>
+    <section class="slide" id="slide-1" data-title="이사 URL이 Flow가 되기까지">
+      <div class="slide-inner">
+        <div class="eyebrow">예시로 먼저 보는 Taxonomy v1.1</div>
+        <h1>‘이사 체크리스트’ URL이 <span class="accent">실행 가능한 Flow</span>가 되기까지</h1>
+        <p class="lead">공식 원문의 6개 상대기간을 보존하고, 감춰져 있던 <span class="mono">hybrid</span>를 Calendar 1순위 + Checklist 2순위로 풀었다.</p>
+        <div class="grid-4">
+          <article class="card flow-card">
+            <div class="step-head"><span class="step-no">1</span><div><strong>기존 분류</strong><small>좋은 의도, 불명확한 결과</small></div></div>
+            <div class="pill-row"><span class="pill">home_living</span><span class="pill coral">hybrid</span></div>
+            <dl class="kv"><dt>구조</dt><dd>timeline</dd><dt>목적지</dt><dd>calendar + internal check?</dd><dt>문제</dt><dd>주 결과물이 무엇인지 저장할 수 없음</dd></dl>
+            <div class="decision-box">ICS·체크리스트·메모 중 무엇이 canonical인지 downstream마다 다시 추측</div>
+          </article>
+          <article class="card warn flow-card">
+            <div class="step-head"><span class="step-no">2</span><div><strong>원문 증거</strong><small>행의 해부학부터 확인</small></div></div>
+            <ul class="mini-list"><li>이사 2주 전</li><li>이사 1주 전</li><li>이사 2~4일 전</li><li>전날 · 당일 · 이후</li></ul>
+            <div class="pill-row" style="margin-top:12px"><span class="pill coral">6 SourceRows</span><span class="pill">date offsets</span></div>
+            <div class="decision-box">제목이 아니라 실제 원문 행이 <span class="mono">sourceShape=date_offsets</span>를 결정</div>
+          </article>
+          <article class="card soft flow-card">
+            <div class="step-head"><span class="step-no">3</span><div><strong>v1.1 판정</strong><small>의미·구조·실행·결과 분리</small></div></div>
+            <dl class="kv"><dt>life area</dt><dd>home_living</dd><dt>source shape</dt><dd>date_offsets</dd><dt>execution</dt><dd>date_preparation</dd><dt>primary</dt><dd>calendar</dd><dt>secondary</dt><dd>checklist</dd></dl>
+            <div class="decision-box">기준일을 잃으면 실행이 깨지므로 Calendar가 1순위</div>
+          </article>
+          <article class="card flow-card">
+            <div class="step-head"><span class="step-no">4</span><div><strong>실제 결과</strong><small>같은 Item의 두 projection</small></div></div>
+            <div class="calendar"><div class="day on"><strong>D-14</strong>업체·계약</div><div class="day on"><strong>D-7</strong>예약·이전</div><div class="day on"><strong>D-4~2</strong>배치 점검</div><div class="day on"><strong>D-1</strong>마무리</div><div class="day on"><strong>D</strong>정산</div><div class="day"><strong>이사 후</strong>날짜 미정</div></div>
+            <div class="checkline done"><i>✓</i><span>엘리베이터 예약 확인</span></div><div class="checkline"><i></i><span>주소·공과금 이전</span></div><div class="checkline"><i></i><span>확정일자·전학 확인</span></div>
+            <div class="decision-box">Calendar는 ‘언제’, Checklist는 ‘빠짐없이’를 보존. 원문이 날짜를 주지 않은 ‘이사 후’는 미정 tray에 둠</div>
+          </article>
+        </div>
+        <div class="evidence-strip" aria-label="canonical 데이터 증거 흐름">
+          <div class="evidence-node"><strong>SourceSnapshot</strong><span>URL · snapshotId · hash</span></div>
+          <div class="evidence-node"><strong>SourceRow × 6</strong><span>원문 상대기간과 locator</span></div>
+          <div class="evidence-node"><strong>SourceReference</strong><span>행 ↔ Item 근거 연결</span></div>
+          <div class="evidence-node"><strong>Item × 6</strong><span>anchor_offset schedule</span></div>
+          <div class="evidence-node"><strong>Projection</strong><span>Calendar + Checklist</span></div>
+        </div>
+        <div class="source-line">실제 예시: <a href="https://www.easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=3&amp;cciNo=1&amp;cnpClsNo=1&amp;csmSeq=666&amp;popMenu=ov">찾기쉬운 생활법령 — 이사 준비 체크리스트</a> · 이 보고서는 구조 검증이며 공개 이용 허가 판정이 아니다.</div>
+      </div><span class="slide-index">01 · EXAMPLE FIRST</span>
+    </section>
+
+    <section class="slide" id="slide-2" data-title="가족여행 분류 경계">
+      <div class="slide-inner">
+        <div class="eyebrow">사례 02 · 가족여행</div>
+        <h2>‘누구와’보다 <span class="accent">‘무엇을 끝내는가’</span>가 primary life area를 정한다</h2>
+        <p class="lead">아이와 박물관을 가는 Flow의 즉시 결과는 방문 실행이다. 가족 조건은 사라지지 않고 secondary와 audience에 남는다.</p>
+        <div class="compare">
+          <article class="card warn big-rule"><div class="rule-title"><h3>기존</h3><small>P0-C01</small></div><div class="pill-row"><span class="pill coral">family_parenting</span><span class="pill coral">hybrid</span></div><p class="footnote">동반자 맥락과 실행 목적, 결과물이 한 필드에 함께 들어갔다.</p></article>
+          <div class="compare-arrow">→</div>
+          <article class="card soft big-rule"><div class="rule-title"><h3>v1.1</h3><small>outcome-first</small></div><div class="pill-row"><span class="pill mint">travel_outings</span><span class="pill">secondary: family_parenting</span><span class="pill blue">audience: caregiver</span></div><p class="footnote">방문을 완료하면 travel. 가족 조건이 검색·준비를 실질적으로 바꾸므로 secondary로 유지.</p></article>
+        </div>
+        <div class="grid-3" style="margin-top:14px">
+          <article class="card"><h3>선택 조건</h3><ul class="mini-list"><li>여행·방문·외출 실행이 terminal outcome</li><li>동반자 조건은 준비물·동선에 영향</li></ul></article>
+          <article class="card"><h3>배제 조건</h3><ul class="mini-list"><li>가족 관계·돌봄 자체가 목표라면 family</li><li>모든 가족 언급을 life area로 올리지 않음</li></ul></article>
+          <article class="card amber"><h3>중요한 보류</h3><ul class="mini-list"><li>P0는 포트폴리오 제안이지 원문 행이 아님</li><li><b>sourceShape=null · source_import_required</b></li></ul></article>
+        </div>
+        <div class="callout" style="margin-top:14px"><span class="icon">!</span><div><strong>출처 없는 예시 행을 만들지 않는다.</strong><br>P0-C01은 Calendar 후보까지는 제안하지만, SourceRows가 들어오기 전에는 D-7 예약이나 준비물 Item을 생성하지 않는다.</div></div>
+      </div><span class="slide-index">02 · LIFE AREA TIE-BREAKER</span>
+    </section>
+
+    <section class="slide" id="slide-3" data-title="개발 강의 분류 경계">
+      <div class="slide-inner">
+        <div class="eyebrow">사례 03 · 개발 강의</div>
+        <h2>같은 ‘개발’도 <span class="accent">학습 완료</span>와 <span class="coral">업무 산출물</span>은 다르다</h2>
+        <p class="lead">주제어는 topicTags에 두고, 즉시 결과가 강의 진도인지 프로젝트 결과물인지로 life area를 가른다.</p>
+        <div class="grid-2">
+          <article class="card soft">
+            <div class="pill-row"><span class="pill mint">study_reading</span><span class="pill">lesson_rows</span><span class="pill">progress_tracking</span><span class="pill blue">sheet</span></div>
+            <h3 style="margin-top:14px">OSSU Computer Science Curriculum</h3>
+            <dl class="kv"><dt>끝나는 상태</dt><dd>과정별 미시작/진행/완료와 다음 과정</dd><dt>행 증거</dt><dd>과정명·선수조건·기간·상태 열</dd><dt>투영</dt><dd>Sheet 1순위, Todo 2순위</dd></dl>
+            <div class="decision-box">고정 커리큘럼 + 안정된 진도 상태 → study / progress</div>
+          </article>
+          <article class="card warn">
+            <div class="pill-row"><span class="pill coral">work_career</span><span class="pill">procedure_rows</span><span class="pill">phase_lifecycle</span><span class="pill blue">sheet</span></div>
+            <h3 style="margin-top:14px">개발 포트폴리오 만들기</h3>
+            <dl class="kv"><dt>끝나는 상태</dt><dd>기획·설계·구현·배포·정리 산출물</dd><dt>행 증거</dt><dd>현재 runtime 6 Item, 원문 refresh 필요</dd><dt>투영</dt><dd>Sheet 1순위, Todo 2순위</dd></dl>
+            <div class="decision-box">결과물 게이트가 이어지는 전문 프로젝트 → work / lifecycle</div>
+          </article>
+        </div>
+        <div class="grid-3" style="margin-top:14px">
+          <div class="card"><h3>동률 해소 1</h3><p class="footnote">강의를 ‘듣는다’가 완료라면 study. 강의로 실제 서비스/포트폴리오를 납품하면 work.</p></div>
+          <div class="card"><h3>동률 해소 2</h3><p class="footnote">개발, Python, 취업 같은 단어는 topicTags. life area enum을 늘리지 않는다.</p></div>
+          <div class="card"><h3>증거 상태</h3><p class="footnote">OSSU는 confirmed. 포트폴리오 seed는 source row refresh가 필요해 provisional.</p></div>
+        </div>
+      </div><span class="slide-index">03 · TOPIC ≠ OUTCOME</span>
+    </section>
+
+    <section class="slide" id="slide-4" data-title="영상·강좌 실행 패턴">
+      <div class="slide-inner">
+        <div class="eyebrow">사례 04 · 강좌와 자료</div>
+        <h2>영상이라는 형식은 같아도 <span class="accent">상태 전이</span>는 세 가지다</h2>
+        <p class="lead">source format은 video/audio/course일 수 있지만 execution pattern은 사용자가 무엇을 갱신하는지로 결정한다.</p>
+        <div class="grid-3">
+          <article class="card"><div class="pill-row"><span class="pill">resource_collection</span><span class="pill mint">resource_queue</span></div><h3 style="margin-top:14px">LibriVox 오디오북</h3><ul class="mini-list"><li>원문 페이지의 38장 중 DTO에는 검증한 대표 3행</li><li>평가·선수조건·수료 게이트 없음</li><li>Sheet에 길이·상태, Todo에 다음 장</li></ul><div class="decision-box">유연한 소비 순서 → queue · source packet은 partial</div></article>
+          <article class="card soft"><div class="pill-row"><span class="pill">lesson_rows</span><span class="pill mint">progress_tracking</span></div><h3 style="margin-top:14px">OSSU 커리큘럼</h3><ul class="mini-list"><li>고정 과정과 선수조건</li><li>현재 위치와 완료 상태가 핵심</li><li>진도표가 없으면 재개 불가</li></ul><div class="decision-box">고정 curriculum state → progress</div></article>
+          <article class="card warn"><div class="pill-row"><span class="pill">shape: null</span><span class="pill coral">phase_lifecycle</span></div><h3 style="margin-top:14px">Todoist Podcast Workflow</h3><ul class="mini-list"><li>공개 페이지에는 4개 phase 이름</li><li>실제 task rows는 OAuth copy 뒤</li><li>Pre → Production → Post → Distribution</li></ul><div class="decision-box">패턴은 provisional, Item은 0 → source import</div></article>
+        </div>
+        <table class="matrix" style="margin-top:14px"><thead><tr><th>판정 질문</th><th>Queue</th><th>Progress</th><th>Lifecycle</th></tr></thead><tbody><tr><td>행을 바꿔도 순서가 성립?</td><td>대체로 예</td><td>아니오/선수조건</td><td>단계 의존</td></tr><tr><td>보존 상태</td><td>다음 자료</td><td>진도·점수·완료</td><td>단계 산출물·승인</td></tr><tr><td>대표 primary</td><td>Sheet/Todo</td><td>Sheet</td><td>Sheet/Todo</td></tr></tbody></table>
+      </div><span class="slide-index">04 · FORMAT ≠ EXECUTION</span>
+    </section>
+
+    <section class="slide" id="slide-5" data-title="계약 전 확인">
+      <div class="slide-inner">
+        <div class="eyebrow">사례 05 · 계약 전 확인</div>
+        <h2>행을 순서대로 읽는다고 <span class="accent">ordered procedure</span>는 아니다</h2>
+        <p class="lead">리모델링 계약서 10개 항목은 ‘다음 단계로 이동’이 아니라 각 조건을 진행·수정요청·보류로 판정하는 작업이다.</p>
+        <div class="grid-2">
+          <article class="card warn"><h3>혼동하기 쉬운 판정</h3><div class="pill-row"><span class="pill coral">ordered_procedure?</span><span class="pill">checklist?</span></div><ul class="mini-list" style="margin-top:14px"><li>업체 정보 → 기간 → 지급 → 자재 순서로 읽음</li><li>그러나 앞 항목 완료가 다음 항목을 가능하게 하지 않음</li><li>체크만 하면 보류 이유와 비교 기준이 사라짐</li></ul></article>
+          <article class="card soft"><h3>v1.1 최종 판정</h3><div class="pill-row"><span class="pill mint">decision_criteria</span><span class="pill mint">compare_decide</span><span class="pill blue">sheet</span></div><ul class="mini-list" style="margin-top:14px"><li>각 행에 진행 / 수정요청 / 보류 decision completion</li><li>자재·금액·A/S 같은 stable columns 보존</li><li>Checklist와 Memo는 보조 projection</li></ul></article>
+        </div>
+        <div class="grid-4" style="margin-top:14px"><div class="card"><h3>공사 기간</h3><span class="pill mint">확인</span></div><div class="card"><h3>지연배상</h3><span class="pill amber">추가 확인</span></div><div class="card"><h3>추가 비용</h3><span class="pill coral">보류</span></div><div class="card"><h3>A/S 기간</h3><span class="pill mint">확인</span></div></div>
+        <div class="callout" style="margin-top:14px"><span class="icon">R</span><div><strong>구조가 완결돼도 공개 가능하다는 뜻은 아니다.</strong><br>이 예시는 SourceRows는 complete지만 creator/platform permission과 법률·금전 검토가 남아 <span class="mono">conversionReadiness=hold</span>, publicReleaseAllowed=false다.</div></div>
+      </div><span class="slide-index">05 · PROCEDURE VS DECISION</span>
+    </section>
+
+    <section class="slide" id="slide-6" data-title="반복 그림책 경계">
+      <div class="slide-inner">
+        <div class="eyebrow">사례 06 · 반복 그림책</div>
+        <h2>같은 책을 다시 읽는가, <span class="accent">책 목록을 소진하는가</span></h2>
+        <p class="lead">‘독서 루틴’이라는 제목만으로는 repeating routine과 resource queue를 구분할 수 없다. 반복 단위와 완료 상태를 본다.</p>
+        <div class="compare">
+          <article class="card soft big-rule"><div class="rule-title"><h3>Repeating routine</h3><small>세션 반복</small></div><ul class="mini-list"><li>매일 같은 ‘잠자리 읽기’ 세션을 반복</li><li>책은 바뀌어도 루틴의 완료가 핵심</li><li>Primary: Checklist</li></ul><div class="decision-box">반복 session을 완료하고 다음 cadence로 돌아감</div></article>
+          <div class="compare-arrow">↔</div>
+          <article class="card blue big-rule"><div class="rule-title"><h3>Resource queue</h3><small>목록 소진</small></div><ul class="mini-list"><li>10권 목록에서 다음 책을 선택</li><li>각 책의 읽음/보류/다시읽기 상태 보존</li><li>Primary: Sheet 또는 Todo</li></ul><div class="decision-box">개별 resource의 위치와 상태가 핵심</div></article>
+        </div>
+        <div class="grid-3" style="margin-top:14px">
+          <div class="card"><h3>선택 질문</h3><p class="footnote">“내일 다시 하는 것은 세션인가, 다음 자료인가?”</p></div>
+          <div class="card"><h3>잘못된 예</h3><p class="footnote">runtime <span class="mono">structure_type=routine</span>만 보고 자동 확정.</p></div>
+          <div class="card amber"><h3>Legacy adapter</h3><p class="footnote">52 routine 중 explicit recurrence 51은 pattern 후보. 그림책 경계 1건은 사람 검토.</p></div>
+        </div>
+      </div><span class="slide-index">06 · ROUTINE VS QUEUE</span>
+    </section>
+
+    <section class="slide" id="slide-7" data-title="Hybrid 제거 규칙">
+      <div class="slide-inner">
+        <div class="eyebrow">사례 07 · 일정 + 체크</div>
+        <h2><span class="mono coral">hybrid</span>는 결과를 설명하지 않는다. <span class="accent">손실이 큰 쪽</span>을 primary로 고른다</h2>
+        <p class="lead">모든 Flow가 여러 projection을 가질 수 있다. 하지만 canonical primary는 하나여야 backend와 외부 서비스가 같은 결론을 낸다.</p>
+        <table class="matrix"><thead><tr><th>이사 준비에서 제거했을 때</th><th>Calendar 제거</th><th>Checklist 제거</th><th>판정</th></tr></thead><tbody><tr><td><strong>D-14 · D-7 · D-1 기준일</strong></td><td class="hold">실행 시점 상실</td><td>날짜별 설명에 일부 보존</td><td class="pass">Calendar primary</td></tr><tr><td><strong>엘리베이터·주소·공과금 세부항목</strong></td><td>설명/메모로 보존 가능</td><td class="hold">누락 방지 약화</td><td>Checklist secondary</td></tr><tr><td><strong>전체 맥락</strong></td><td colspan="2">Memo fallback은 가능하나 상태·일정 손실</td><td>Memo fallback</td></tr></tbody></table>
+        <div class="grid-3" style="margin-top:15px">
+          <article class="card soft"><h3>새 canonical</h3><div class="pill-row"><span class="pill mint">primaryArtifact=calendar</span><span class="pill">secondary=[checklist]</span></div></article>
+          <article class="card warn"><h3>Legacy input</h3><div class="pill-row"><span class="pill coral">primary_destination=hybrid</span></div><p class="footnote">adapter가 주 결과물을 재판정할 때만 읽는다.</p></article>
+          <article class="card"><h3>Validator</h3><div class="pill-row"><span class="pill mint">new hybrid count = 0</span></div><p class="footnote">primary와 secondary 중복도 거부한다.</p></article>
+        </div>
+        <div class="callout" style="margin-top:14px"><span class="icon">1</span><div><strong>규칙:</strong> “없어지면 사용자가 완료하거나 재개할 수 없는 durable artifact”를 primary로 선택한다. 나머지는 loss-aware secondary projection이다.</div></div>
+      </div><span class="slide-index">07 · ONE PRIMARY, MANY PROJECTIONS</span>
+    </section>
+
+    <section class="slide" id="slide-8" data-title="접근·권리·완결성 분리">
+      <div class="slide-inner">
+        <div class="eyebrow">사례 08 · 공개 페이지와 로그인 원문</div>
+        <h2>“보인다”는 말 하나로 <span class="accent">접근·확보·권리</span>를 묶지 않는다</h2>
+        <p class="lead">Todoist 공개 랜딩, OAuth 뒤 실제 tasks, provider terms, 개인정보 검토를 동시에 독립 기록한다.</p>
+        <div class="grid-4">
+          <article class="card"><h3>Discovery</h3><strong class="pass">public</strong><p class="footnote">비로그인 상태에서 template 설명과 4개 phase 확인.</p></article>
+          <article class="card amber"><h3>Row access</h3><strong style="color:var(--amber)">partial</strong><p class="footnote">전체 task rows는 user-authorized copy/OAuth 필요.</p></article>
+          <article class="card warn"><h3>Rights</h3><strong class="hold">pending</strong><p class="footnote">개인 copy 가능성 ≠ public derived content 허가.</p></article>
+          <article class="card warn"><h3>Privacy</h3><strong class="hold">pending</strong><p class="footnote">사용자 task를 가져오는 순간 private-data gate 작동.</p></article>
+        </div>
+        <div class="status-track" style="margin-top:14px"><div class="status on">공개 발견</div><div class="status">OAuth 원문 확보</div><div class="status">개인용 변환</div><div class="status stop">공개 배포</div></div>
+        <div class="grid-2" style="margin-top:14px">
+          <article class="card"><h3>동시에 기록되는 blockers</h3><div class="pill-row"><span class="pill coral">source_import_required</span><span class="pill coral">rights_unknown</span><span class="pill coral">locale_review_required</span><span class="pill coral">privacy_review_required</span><span class="pill coral">account_or_entitlement_required</span></div></article>
+          <article class="card soft"><h3>Backend output</h3><dl class="kv"><dt>taxonomy</dt><dd>provisional · sourceShape=null</dd><dt>SourceRows</dt><dd>phase metadata 4</dd><dt>Items</dt><dd>0</dd><dt>readiness</dt><dd>source_import_required</dd></dl></article>
+        </div>
+      </div><span class="slide-index">08 · ACCESS ≠ RIGHTS</span>
+    </section>
+
+    <section class="slide" id="slide-9" data-title="Taxonomy v1.1 구조">
+      <div class="slide-inner">
+        <div class="eyebrow">계약 구조 · A—H</div>
+        <h2>한 개의 category가 하던 일을 <span class="accent">8개 독립 층</span>으로 분리했다</h2>
+        <p class="lead">분류 정확도뿐 아니라 crawler, rights, review, projection이 서로 덮어쓰지 않게 하는 운영 계약이다.</p>
+        <div class="architecture">
+          <article class="layer"><b>A</b><strong>콘텐츠 의미</strong><p>primaryLifeArea · secondaryLifeAreas · topicTags</p></article>
+          <article class="layer"><b>B</b><strong>원문 구조</strong><p>sourceShape · 실제로 확보한 SourceRows의 해부학</p></article>
+          <article class="layer"><b>C</b><strong>사용자 실행</strong><p>primaryExecutionPattern · secondary patterns</p></article>
+          <article class="layer"><b>D</b><strong>결과물</strong><p>primaryArtifact 1개 · secondaryArtifacts · no hybrid</p></article>
+          <article class="layer"><b>E</b><strong>적용 조건</strong><p>audience · locale · prerequisites · entitlement · collaboration</p></article>
+          <article class="layer"><b>F</b><strong>출처 접근</strong><p>provider · platform roles · discovery/row access · acquisition · format</p></article>
+          <article class="layer"><b>G</b><strong>권리</strong><p>basis · allowed use · territory · review · private/public flags</p></article>
+          <article class="layer"><b>H</b><strong>검토·제작</strong><p>source/freshness/locale/safety/privacy/promotion · cumulative blockers</p></article>
+        </div>
+        <div class="callout" style="margin-top:14px"><span class="icon">≠</span><div><strong>저장 가능 ≠ 개인 변환 가능 ≠ 공개 가능.</strong><br>backendStorable, personalTransformAllowed, publicReleaseAllowed를 각각 기록한다.</div></div>
+      </div><span class="slide-index">09 · EIGHT INDEPENDENT LAYERS</span>
+    </section>
+
+    <section class="slide" id="slide-10" data-title="통제 enum과 자유문 방지">
+      <div class="slide-inner">
+        <div class="eyebrow">운영 규칙 · Controlled vocabulary</div>
+        <h2>36개 후보에서 생긴 <span class="coral">35개 providerType</span>을 그대로 늘리지 않는다</h2>
+        <p class="lead">상위 enum은 작고 안정적으로, 구체 조직·MIME·플랫폼 특성은 metadata에 둔다.</p>
+        <div class="grid-2">
+          <article class="card warn"><h3>기존 expansion seed</h3><div class="number-list" style="grid-template-columns:1fr 1fr"><div><strong class="coral" style="font-size:46px">35</strong><span>providerType values / 36 records</span></div><div><strong class="coral" style="font-size:46px">34</strong><span>sourceFormat values / 36 records</span></div></div><p class="footnote">예: official_consumer_testing_agency, public_open_course_aggregator, video_course_playlist_with_lesson_table…</p></article>
+          <article class="card soft"><h3>v1.1 canonical</h3><div class="number-list" style="grid-template-columns:1fr 1fr"><div><strong class="accent" style="font-size:46px">11</strong><span>controlled provider types</span></div><div><strong class="accent" style="font-size:46px">11</strong><span>controlled format categories</span></div></div><p class="footnote">specific organization → source metadata · MIME → mediaType · detailed shape → sourceFormat.detail</p></article>
+        </div>
+        <table style="margin-top:14px"><thead><tr><th>원래 자유문</th><th>통제 enum</th><th>세부 metadata</th></tr></thead><tbody><tr><td>official_consumer_testing_agency</td><td><strong>public_institution</strong></td><td>organization=한국소비자원</td></tr><tr><td>video_course_playlist_with_lesson_table</td><td><strong>course</strong></td><td>mediaType=video · sourceShape=lesson_rows</td></tr><tr><td>official_pdf_and_html_checklist</td><td><strong>document</strong></td><td>mediaType=application/pdf · companionHtml=true</td></tr></tbody></table>
+        <div class="legend" style="margin-top:12px"><span>모든 enum 그룹에 정의·선택·배제·혼동·tie-break·예시</span><span>상세는 metadata</span><span>새 enum 자유문 유입은 validator 거부</span></div>
+      </div><span class="slide-index">10 · CONTROLLED ENUMS</span>
+    </section>
+
+    <section class="slide" id="slide-11" data-title="84건 재분류 결과">
+      <div class="slide-inner">
+        <div class="eyebrow">실제 재분류 · 84 records</div>
+        <h2>정의만 만든 것이 아니라 <span class="accent">기존·신규·deep·runtime</span>을 모두 다시 판정했다</h2>
+        <div class="donut-row">
+          <div class="donut" aria-label="총 84건"></div>
+          <div>
+            <div class="number-list"><article class="card"><strong style="color:var(--mint-dark)">24</strong><span>P0 portfolio</span></article><article class="card"><strong style="color:var(--blue)">36</strong><span>expansion</span></article><article class="card"><strong style="color:var(--amber)">12</strong><span>deep set</span></article><article class="card"><strong style="color:var(--coral)">12</strong><span>runtime seed</span></article></div>
+            <div class="grid-3" style="margin-top:10px"><article class="card soft"><strong style="font-size:28px">27</strong><span>confirmed</span></article><article class="card amber"><strong style="font-size:28px">25</strong><span>provisional</span></article><article class="card warn"><strong style="font-size:28px">32</strong><span>blocked missing source</span></article></div>
+          </div>
+        </div>
+        <div class="grid-4" style="margin-top:15px"><article class="card"><h3>Backend 저장</h3><strong class="pass" style="font-size:28px">84 / 84</strong><p class="footnote">보류와 blocker도 상태로 저장 가능</p></article><article class="card"><h3>개인 변환</h3><strong style="font-size:28px;color:var(--amber)">6 / 84</strong><p class="footnote">현재 증거 기준 fail-closed</p></article><article class="card"><h3>공개 배포</h3><strong class="hold" style="font-size:28px">0 / 84</strong><p class="footnote">법적 결론이 아니라 현 증거 부족</p></article><article class="card"><h3>신규 hybrid</h3><strong class="pass" style="font-size:28px">0</strong><p class="footnote">legacy 26건은 adapter에서 재판정</p></article></div>
+        <p class="footnote">각 레코드는 기존 분류, v1.1 분류, 변경 이유, 후보값, tie-breaker, 보류/손실, backend 저장 여부, 개인 변환 여부, 공개 여부를 모두 포함한다. 포트폴리오 ledger와 DTO fixture는 증거 패킷이 달라 readiness가 다를 수 있으며, 이 장의 수치는 reclassification ledger 기준이다.</p>
+      </div><span class="slide-index">11 · RECLASSIFIED PORTFOLIO</span>
+    </section>
+
+    <section class="slide" id="slide-12" data-title="독립 분류 일치율">
+      <div class="slide-inner">
+        <div class="eyebrow">독립 실험 · 3 methods × 20 frozen cases × 2 rounds</div>
+        <h2>규칙을 보강하자 핵심 4축이 <span class="accent">모두 85% 이상</span>으로 수렴했다</h2>
+        <p class="lead">규칙 기반, 독립 reviewer alpha, 독립 reviewer beta가 서로 결과를 보지 않고 분류했다. 지표는 3쌍 pairwise agreement다.</p>
+        <div class="grid-4">
+          <article class="card metric"><strong>100%</strong><span>lifeArea</span><div class="bar"><i style="width:100%"></i></div></article>
+          <article class="card metric"><strong>93.3%</strong><span>sourceShape · R1 78.3%</span><div class="bar"><i style="width:93.3%"></i></div></article>
+          <article class="card metric"><strong>96.7%</strong><span>executionPattern · R1 83.3%</span><div class="bar"><i style="width:96.7%"></i></div></article>
+          <article class="card metric"><strong>93.3%</strong><span>primaryArtifact · R1 90%</span><div class="bar"><i style="width:93.3%"></i></div></article>
+        </div>
+        <table class="matrix" style="margin-top:14px"><thead><tr><th>Round</th><th>Core exact case</th><th>8축 exact</th><th>Rights gate</th><th>Readiness gate</th></tr></thead><tbody><tr><td>1 · 초기 규칙</td><td>45% · 9/20</td><td>20% · 4/20</td><td>66.7%</td><td>53.3%</td></tr><tr><td><strong>2 · global tie-breakers</strong></td><td class="pass">80% · 16/20</td><td class="pass">65% · 13/20</td><td class="pass">96.7%</td><td class="pass">90%</td></tr></tbody></table>
+        <div class="callout" style="margin-top:14px"><span class="icon">QA</span><div><strong>이 수치는 실제 사용자 검증이 아니다.</strong><br>자동·reviewer consistency QA이며, 이해 가능성·실행성·선호도는 별도 observed-user validation이 필요하다.</div></div>
+      </div><span class="slide-index">12 · AGREEMENT, NOT USER VALIDATION</span>
+    </section>
+
+    <section class="slide" id="slide-13" data-title="남은 불일치와 규칙">
+      <div class="slide-inner">
+        <div class="eyebrow">남은 불일치 · 예외가 아닌 경계</div>
+        <h2>80% exact match의 나머지 4건도 <span class="accent">원인과 최종 규칙</span>을 남겼다</h2>
+        <div class="grid-2">
+          <article class="card"><div class="rule-title"><h3>P0 영상 시리즈 · 포트폴리오</h3><small>Sheet vs Todo</small></div><p class="footnote">phase owner/status/evidence가 durable result면 Sheet, 평평한 next-action list가 결과면 Todo. 원문 미확보 P0는 provisional.</p></article>
+          <article class="card"><div class="rule-title"><h3>LibriVox 오디오북</h3><small>lesson/progress vs collection/queue</small></div><p class="footnote">평가·선수조건·수료 기준 없는 독립 장은 resource collection/queue. fixed curriculum만 lesson/progress.</p></article>
+          <article class="card"><div class="rule-title"><h3>K-MOOC 날짜 metadata</h3><small>shape null vs date_window</small></div><p class="footnote">운영 날짜 자체가 목표 Flow의 행이면 date_window가 가능. 전체 강좌 Flow라면 lesson rows 부재로 source import.</p></article>
+          <article class="card"><div class="rule-title"><h3>Internal readiness</h3><small>canary vs second wave vs hold</small></div><p class="footnote">rights/public gate와 internal conversion은 분리. source-complete여도 안전·현지화·territory가 남으면 second wave/hold.</p></article>
+        </div>
+        <div class="grid-3" style="margin-top:14px"><div class="card soft"><h3>추가한 것</h3><p class="footnote">dataset-bounded source evidence · procedure/lifecycle · course/queue · route/queue · rights/readiness tie-breakers</p></div><div class="card warn"><h3>추가하지 않은 것</h3><p class="footnote">slug별 정답표, 사례명 예외, 점수만 올리기 위한 임의 규칙</p></div><div class="card"><h3>재검토 trigger</h3><p class="footnote">SourceRows 도착 · intended artifact 확인 · rights/territory evidence 변경</p></div></div>
+      </div><span class="slide-index">13 · GENERAL RULES, NO SLUG EXCEPTIONS</span>
+    </section>
+
+    <section class="slide" id="slide-14" data-title="Legacy runtime 매핑">
+      <div class="slide-inner">
+        <div class="eyebrow">호환 adapter · 앱 변경 없음</div>
+        <h2>153개 bundle은 버리지 않되, <span class="accent">자동 확정 범위는 보수적으로</span> 잡았다</h2>
+        <p class="lead">현재 runtime에는 153 bundles · 847 Items · category label 90종이 있다. label과 delivery surface는 후보를 만들 수 있지만 canonical truth는 아니다.</p>
+        <table class="matrix"><thead><tr><th>Legacy axis</th><th>자동</th><th>제안만</th><th>사람 검토</th></tr></thead><tbody><tr><td><strong>category → life area/topicTags</strong></td><td>0</td><td>143</td><td>10</td></tr><tr><td><strong>structure_type → execution</strong></td><td class="pass">51</td><td>37</td><td>65</td></tr><tr><td><strong>primary_destination → artifact</strong></td><td class="pass">35</td><td>67</td><td>51</td></tr><tr><td><strong>세 축 완전 canonical 확정</strong></td><td class="hold">0</td><td>강한 제안 17</td><td>최종 확인 153</td></tr><tr><td><strong>full v1.1 backend-ready</strong></td><td class="hold">0</td><td>—</td><td>153</td></tr></tbody></table>
+        <div class="grid-3" style="margin-top:14px">
+          <article class="card"><h3>자동 가능한 신호</h3><p class="footnote">source/user schedule가 있는 calendar · source/user cadence가 있는 routine</p></article>
+          <article class="card amber"><h3>제안만 가능한 신호</h3><p class="footnote">exact category alias · internal_check surface · sheet/memo destination</p></article>
+          <article class="card warn"><h3>항상 재판정</h3><p class="footnote">hybrid 25 · missing destination 24 · checklist structure 62 · raw Item type</p></article>
+        </div>
+        <div class="callout" style="margin-top:14px"><span class="icon">0</span><div><strong>full backend-ready가 0인 이유:</strong> 현재 runtime에 first-class SourceSnapshot/SourceRow, access, rights, parallel review가 없기 때문이다. 앱 데이터가 나빠서가 아니라 adapter가 source import를 건너뛸 수 없어서다.</div></div>
+      </div><span class="slide-index">14 · CONSERVATIVE LEGACY ADAPTER</span>
+    </section>
+
+    <section class="slide" id="slide-15" data-title="10개 Backend DTO">
+      <div class="slide-inner">
+        <div class="eyebrow">Backend contract · 10 real scenarios</div>
+        <h2>URL-to-Flow가 출력할 모양을 <span class="accent">10개 실제 DTO</span>로 고정했다</h2>
+        <div class="dto-grid">
+          <article class="dto"><b>01 날짜 역산</b><strong>생활법령 이사</strong><span>date_offsets → Calendar</span></article>
+          <article class="dto"><b>02 순서형 절차</b><strong>NASA Crane</strong><span>procedure_rows → Checklist</span></article>
+          <article class="dto"><b>03 반복 루틴</b><strong>농사로 온열질환</strong><span>checklist_rows → Checklist</span></article>
+          <article class="dto"><b>04 표·진도</b><strong>OSSU</strong><span>lesson_rows → Sheet</span></article>
+          <article class="dto"><b>05 자료 큐</b><strong>LibriVox</strong><span>resource collection → Sheet</span></article>
+          <article class="dto"><b>06 비교·결정</b><strong>리모델링 계약</strong><span>decision criteria → Sheet</span></article>
+          <article class="dto"><b>07 단계 프로젝트</b><strong>개발 포트폴리오</strong><span>phase lifecycle → Sheet</span></article>
+          <article class="dto"><b>08 공식 날짜창</b><strong>자동차검사</strong><span>date window → Calendar</span></article>
+          <article class="dto"><b>09 권리 제한</b><strong>VisitKorea 코스</strong><span>Checklist · projection blocked</span></article>
+          <article class="dto" style="border-color:#f2a99e;background:var(--coral-soft)"><b style="color:var(--coral)">10 Source import</b><strong>Todoist Podcast</strong><span>phase metadata 4 · Item 0</span></article>
+        </div>
+        <div class="grid-3" style="margin-top:14px"><article class="card metric"><strong>58</strong><span>SourceRows + snapshot hashes</span></article><article class="card metric"><strong>43</strong><span>canonical Items + SourceReferences</span></article><article class="card metric"><strong>5×10</strong><span>Calendar · Checklist · Todo · Sheet · Memo loss previews</span></article></div>
+        <div class="evidence-strip" style="grid-template-columns:repeat(6,1fr)"><div class="evidence-node"><strong>Source</strong><span>identity + snapshot</span></div><div class="evidence-node"><strong>Rows</strong><span>canonical row types</span></div><div class="evidence-node"><strong>Refs</strong><span>support level</span></div><div class="evidence-node"><strong>Items</strong><span>intent/schedule/done</span></div><div class="evidence-node"><strong>Flow</strong><span>Step membership</span></div><div class="evidence-node"><strong>Projection</strong><span>loss manifest</span></div></div>
+      </div><span class="slide-index">15 · REPRESENTATIVE DTOs</span>
+    </section>
+
+    <section class="slide" id="slide-16" data-title="다음 Backend 목표">
+      <div class="slide-inner">
+        <div class="eyebrow">Decision · 다음 목표</div>
+        <h2>이제 taxonomy를 더 늘리기보다 <span class="accent">provider-neutral preview pipeline</span>을 만든다</h2>
+        <p class="lead">이번 목표는 계약과 fixture까지다. 다음 목표는 실제 URL crawler나 DB를 먼저 붙이는 것이 아니라, 동일 DTO를 반복 생성·검증하는 backend dry-run compiler다.</p>
+        <div class="pipeline">
+          <article class="pipe"><b>1</b><strong>Request</strong><span>URL + optional user job / locale / anchor</span></article>
+          <article class="pipe"><b>2</b><strong>Acquire adapter</strong><span>fixture · upload · OAuth를 같은 SourceSnapshot으로</span></article>
+          <article class="pipe"><b>3</b><strong>Row extraction</strong><span>SourceRows + completeness + omitted rows</span></article>
+          <article class="pipe"><b>4</b><strong>Classify</strong><span>Taxonomy v1.1 + confidence + blockers</span></article>
+          <article class="pipe"><b>5</b><strong>Draft Gate</strong><span>source snapshot / AI proposal / user overlay 분리</span></article>
+          <article class="pipe"><b>6</b><strong>Project</strong><span>5 targets + loss manifest · no publish by default</span></article>
+        </div>
+        <div class="grid-3" style="margin-top:15px">
+          <article class="card soft"><h3>다음 산출물</h3><ul class="mini-list"><li>POST /preview request/response contract</li><li>provider adapter interface + local fixtures</li><li>validation/failure E2E</li></ul></article>
+          <article class="card"><h3>완료 gate</h3><ul class="mini-list"><li>10 DTO 재현</li><li>source_import_required 무추정</li><li>cost/privacy/rights trace</li></ul></article>
+          <article class="card warn"><h3>이번에 하지 않은 것</h3><ul class="mini-list"><li>app runtime · DB</li><li>LLM API · live crawler</li><li>commit · push · deploy</li></ul></article>
+        </div>
+        <div class="callout" style="margin-top:14px"><span class="icon">✓</span><div><strong>Taxonomy v1.1은 backend가 그대로 출력할 수 있는 계약 상태다.</strong><br>다음 구현은 이 계약을 바꾸는 작업이 아니라, source evidence를 채워 validator를 통과시키는 작업이어야 한다.</div></div>
+      </div><span class="slide-index">16 · NEXT: PREVIEW COMPILER</span>
+    </section>
+  </main>
+
+  <div class="overview" id="overview" role="dialog" aria-modal="true" aria-label="전체 슬라이드">
+    <div class="overview-head"><h2 style="margin:0">16-slide overview</h2><button type="button" id="closeOverview">닫기</button></div>
+    <div class="overview-grid" id="overviewGrid"></div>
+  </div>
+
+  <script>
+    (() => {
+      const slides = [...document.querySelectorAll('.slide')];
+      const counter = document.getElementById('currentSlide');
+      const overview = document.getElementById('overview');
+      const overviewGrid = document.getElementById('overviewGrid');
+      let current = 0;
+      const pad = value => String(value).padStart(2, '0');
+      const go = index => {
+        current = Math.max(0, Math.min(slides.length - 1, index));
+        slides[current].scrollIntoView({ behavior: 'smooth', block: 'start' });
+        history.replaceState(null, '', `#slide-${current + 1}`);
+      };
+      slides.forEach((slide, index) => {
+        const link = document.createElement('a');
+        link.href = `#slide-${index + 1}`;
+        link.innerHTML = `<b>${pad(index + 1)}</b><span>${slide.dataset.title}</span>`;
+        link.addEventListener('click', () => { overview.classList.remove('open'); });
+        overviewGrid.appendChild(link);
+      });
+      const observer = new IntersectionObserver(entries => {
+        const visible = entries.filter(entry => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (!visible) return;
+        current = slides.indexOf(visible.target);
+        counter.textContent = pad(current + 1);
+      }, { threshold: [.45, .7] });
+      slides.forEach(slide => observer.observe(slide));
+      document.getElementById('prev').addEventListener('click', () => go(current - 1));
+      document.getElementById('next').addEventListener('click', () => go(current + 1));
+      document.getElementById('openOverview').addEventListener('click', () => overview.classList.add('open'));
+      document.getElementById('closeOverview').addEventListener('click', () => overview.classList.remove('open'));
+      document.addEventListener('keydown', event => {
+        if (event.key === 'Escape') overview.classList.remove('open');
+        if (overview.classList.contains('open')) return;
+        if (['ArrowRight', 'ArrowDown', 'PageDown', ' '].includes(event.key)) { event.preventDefault(); go(current + 1); }
+        if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(event.key)) { event.preventDefault(); go(current - 1); }
+        if (event.key === 'Home') { event.preventDefault(); go(0); }
+        if (event.key === 'End') { event.preventDefault(); go(slides.length - 1); }
+      });
+      const hashIndex = Number((location.hash.match(/slide-(\d+)/) || [])[1]) - 1;
+      if (Number.isInteger(hashIndex) && hashIndex >= 0) current = hashIndex;
+    })();
+  </script>
+</body>
+</html>

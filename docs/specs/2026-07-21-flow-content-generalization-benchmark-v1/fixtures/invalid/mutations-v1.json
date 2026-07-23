@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "flow-content-generalization-negative-mutations-v1",
+  "mutations": [
+    {
+      "mutationId": "partial-with-items",
+      "scope": "run",
+      "expectedCode": "source_incomplete_payload",
+      "description": "A partial source is mutated to retain canonical Items."
+    },
+    {
+      "mutationId": "duplicate-row-assignment",
+      "scope": "run",
+      "expectedCode": "source_row_assignment_count",
+      "description": "One acquired SourceRow is assigned twice."
+    },
+    {
+      "mutationId": "missing-item-provenance",
+      "scope": "run",
+      "expectedCode": "item_provenance",
+      "description": "A canonical Item loses its SourceRow reference."
+    },
+    {
+      "mutationId": "primary-secondary-duplicate",
+      "scope": "run",
+      "expectedCode": "artifact_duplicate",
+      "description": "The primary artifact is repeated as secondary."
+    },
+    {
+      "mutationId": "hybrid-primary",
+      "scope": "run",
+      "expectedCode": "hybrid_primary_artifact",
+      "description": "The legacy hybrid label is used as a primary artifact."
+    },
+    {
+      "mutationId": "blocked-projection-payload",
+      "scope": "run",
+      "expectedCode": "blocked_projection_payload",
+      "description": "A blocked projection carries a usable payload."
+    },
+    {
+      "mutationId": "unscheduled-ics",
+      "scope": "run",
+      "expectedCode": "unscheduled_ics",
+      "description": "An ICS event is emitted without a scheduled Item."
+    },
+    {
+      "mutationId": "user-input-over-budget",
+      "scope": "run",
+      "expectedCode": "user_input_budget",
+      "description": "Three user-owned values are required before first preview."
+    },
+    {
+      "mutationId": "source-value-reentry",
+      "scope": "run",
+      "expectedCode": "source_value_reentry",
+      "description": "A source-derived semantic value is requested from the user."
+    },
+    {
+      "mutationId": "missing-privacy-gate",
+      "scope": "run",
+      "expectedCode": "json_schema",
+      "description": "One independent gate is removed."
+    },
+    {
+      "mutationId": "portfolio-case-count",
+      "scope": "manifest",
+      "expectedCode": "case_count",
+      "description": "The sealed portfolio contains only 17 cases."
+    },
+    {
+      "mutationId": "portfolio-split-count",
+      "scope": "manifest",
+      "expectedCode": "split_count",
+      "description": "The portfolio split drifts from 12 calibration plus 6 final holdout."
+    },
+    {
+      "mutationId": "split-seal-drift",
+      "scope": "manifest",
+      "expectedCode": "split_seal_hash",
+      "description": "A case assignment changes after the split was sealed."
+    },
+    {
+      "mutationId": "holdout-rules-drift",
+      "scope": "benchmark",
+      "expectedCode": "holdout_rules_hash",
+      "description": "A final-holdout run uses a rules hash other than the frozen revised-rules hash."
+    }
+  ]
+}

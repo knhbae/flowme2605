@@ -1,0 +1,2660 @@
+{
+  "documentType": "flowme-independent-decision-set",
+  "decisionSetVersion": "independent-decision-v2.1",
+  "roundId": "round-3",
+  "profile": "high_capability_agent",
+  "caseSetVersion": "output-quality-v2-cases-2026-07-20.1",
+  "blind": true,
+  "modelEvidence": {
+    "modelFamily": "gpt-5.6-sol",
+    "actualApiCostMeasured": false
+  },
+  "decisions": [
+    {
+      "caseId": "OQ-C01-MOVING",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_second_wave",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": [],
+        "reason": "Complete offset rows support an internal ready-second-wave proposal; restricted rights still prevent public export."
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "home_living",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "이사",
+          "상대일",
+          "준비"
+        ],
+        "sourceShape": "date_offsets",
+        "secondarySourceShapes": [
+          "checklist_rows"
+        ],
+        "primaryExecutionPattern": "date_preparation",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "calendar",
+        "secondaryArtifacts": [
+          "checklist"
+        ],
+        "access": {
+          "providerType": "public_institution",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_second_wave",
+          "freshnessReview": "current",
+          "localeReview": "applicable",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "internal_review",
+          "blockers": []
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "DS05-R01",
+          "role": "item",
+          "targetIds": [
+            "item:move-2w"
+          ],
+          "reason": "상대 구간의 준비를 완료할 수 있다."
+        },
+        {
+          "sourceRowId": "DS05-R02",
+          "role": "item",
+          "targetIds": [
+            "item:move-1w"
+          ],
+          "reason": "상대 구간의 준비를 완료할 수 있다."
+        },
+        {
+          "sourceRowId": "DS05-R03",
+          "role": "item",
+          "targetIds": [
+            "item:move-2d4d"
+          ],
+          "reason": "상대 구간의 준비를 완료할 수 있다."
+        },
+        {
+          "sourceRowId": "DS05-R04",
+          "role": "item",
+          "targetIds": [
+            "item:move-day-before"
+          ],
+          "reason": "상대 구간의 준비를 완료할 수 있다."
+        },
+        {
+          "sourceRowId": "DS05-R05",
+          "role": "item",
+          "targetIds": [
+            "item:move-day"
+          ],
+          "reason": "당일 확인을 완료할 수 있다."
+        },
+        {
+          "sourceRowId": "DS05-R06",
+          "role": "item",
+          "targetIds": [
+            "item:move-after"
+          ],
+          "reason": "이사 후 정리를 완료할 수 있다."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 6,
+        "fieldCount": 1,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "이사일 anchor field 1개와 상대일 구간 Items 6개를 가진 날짜 준비 Flow."
+      },
+      "projectionAvailabilities": {
+        "calendar": false,
+        "checklist": false,
+        "todo": false,
+        "sheet": false,
+        "memo": false
+      },
+      "rationale": "anchor를 잃으면 실행 날짜를 만들 수 없으므로 Calendar가 primary이고 Checklist는 완료 subset이다.",
+      "confidence": 0.98
+    },
+    {
+      "caseId": "OQ-C02-KMOOC-FULL",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_second_wave",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": [],
+        "reason": "All fourteen lesson rows are present, so an internal progress proposal is ready while public export remains uncleared."
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "study_reading",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "데이터분석",
+          "온라인강좌",
+          "14주"
+        ],
+        "sourceShape": "lesson_rows",
+        "secondarySourceShapes": [
+          "date_window"
+        ],
+        "primaryExecutionPattern": "progress_tracking",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "sheet",
+        "secondaryArtifacts": [
+          "todo",
+          "checklist"
+        ],
+        "access": {
+          "providerType": "education_provider",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "course"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_second_wave",
+          "freshnessReview": "current",
+          "localeReview": "applicable",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "internal_review",
+          "blockers": []
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "KMOOC-M01",
+          "role": "field",
+          "targetIds": [
+            "field:course-window"
+          ],
+          "reason": "진도 실행에 필요한 운영 기간 값이다."
+        },
+        {
+          "sourceRowId": "KMOOC-M02",
+          "role": "reference",
+          "targetIds": [
+            "reference:course-load"
+          ],
+          "reason": "과정 분량 설명이다."
+        },
+        {
+          "sourceRowId": "KMOOC-M03",
+          "role": "reference",
+          "targetIds": [
+            "reference:course-level"
+          ],
+          "reason": "난이도와 수료증 설명이다."
+        },
+        {
+          "sourceRowId": "KMOOC-M04",
+          "role": "reference",
+          "targetIds": [
+            "reference:completion-rule"
+          ],
+          "reason": "완료 판정 때 참조할 수료 규칙이다."
+        },
+        {
+          "sourceRowId": "KMOOC-M05",
+          "role": "field",
+          "targetIds": [
+            "field:grade-window"
+          ],
+          "reason": "성적 입력에 필요한 날짜창 값이다."
+        },
+        {
+          "sourceRowId": "KMOOC-W01",
+          "role": "item",
+          "targetIds": [
+            "item:week-01"
+          ],
+          "reason": "주차 활동과 상태를 기록할 학습 단위다."
+        },
+        {
+          "sourceRowId": "KMOOC-W02",
+          "role": "item",
+          "targetIds": [
+            "item:week-02"
+          ],
+          "reason": "주차 활동과 상태를 기록할 학습 단위다."
+        },
+        {
+          "sourceRowId": "KMOOC-W03",
+          "role": "item",
+          "targetIds": [
+            "item:week-03"
+          ],
+          "reason": "주차 활동과 상태를 기록할 학습 단위다."
+        },
+        {
+          "sourceRowId": "KMOOC-W04",
+          "role": "item",
+          "targetIds": [
+            "item:week-04"
+          ],
+          "reason": "주차 활동과 상태를 기록할 학습 단위다."
+        },
+        {
+          "sourceRowId": "KMOOC-W05",
+          "role": "item",
+          "targetIds": [
+            "item:week-05"
+          ],
+          "reason": "주차 활동과 상태를 기록할 학습 단위다."
+        },
+        {
+          "sourceRowId": "KMOOC-W06",
+          "role": "item",
+          "targetIds": [
+            "item:week-06"
+          ],
+          "reason": "주차 활동과 상태를 기록할 학습 단위다."
+        },
+        {
+          "sourceRowId": "KMOOC-W07",
+          "role": "item",
+          "targetIds": [
+            "item:week-07"
+          ],
+          "reason": "주차 활동과 상태를 기록할 학습 단위다."
+        },
+        {
+          "sourceRowId": "KMOOC-W08",
+          "role": "item",
+          "targetIds": [
+            "item:week-08"
+          ],
+          "reason": "주차 활동과 상태를 기록할 학습 단위다."
+        },
+        {
+          "sourceRowId": "KMOOC-W09",
+          "role": "item",
+          "targetIds": [
+            "item:week-09"
+          ],
+          "reason": "주차 활동과 상태를 기록할 학습 단위다."
+        },
+        {
+          "sourceRowId": "KMOOC-W10",
+          "role": "item",
+          "targetIds": [
+            "item:week-10"
+          ],
+          "reason": "주차 활동과 상태를 기록할 학습 단위다."
+        },
+        {
+          "sourceRowId": "KMOOC-W11",
+          "role": "item",
+          "targetIds": [
+            "item:week-11"
+          ],
+          "reason": "주차 활동과 상태를 기록할 학습 단위다."
+        },
+        {
+          "sourceRowId": "KMOOC-W12",
+          "role": "item",
+          "targetIds": [
+            "item:week-12"
+          ],
+          "reason": "주차 활동과 상태를 기록할 학습 단위다."
+        },
+        {
+          "sourceRowId": "KMOOC-W13",
+          "role": "item",
+          "targetIds": [
+            "item:week-13"
+          ],
+          "reason": "주차 활동과 상태를 기록할 학습 단위다."
+        },
+        {
+          "sourceRowId": "KMOOC-W14",
+          "role": "item",
+          "targetIds": [
+            "item:week-14"
+          ],
+          "reason": "주차 활동과 상태를 기록할 학습 단위다."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 14,
+        "fieldCount": 2,
+        "memoCount": 0,
+        "referenceCount": 3,
+        "conditionalResponseCount": 0,
+        "summary": "14개 lesson Items의 진행 상태와 2개 기간 Fields, 3개 과정 References를 보존하는 Sheet Flow."
+      },
+      "projectionAvailabilities": {
+        "calendar": false,
+        "checklist": false,
+        "todo": false,
+        "sheet": false,
+        "memo": false
+      },
+      "rationale": "course units는 표시 형식과 무관하게 lesson_rows이며, 주차별 상태를 이어서 보려면 Sheet가 필요하다.",
+      "confidence": 0.99
+    },
+    {
+      "caseId": "OQ-C03-LIBRIVOX",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_second_wave",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": [],
+        "reason": "All media rows, approved rights, original-language use, and clear safety and privacy gates support an internal canary."
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "study_reading",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "오디오북",
+          "chapter",
+          "듣기진도"
+        ],
+        "sourceShape": "resource_collection",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "resource_queue",
+        "secondaryExecutionPatterns": [
+          "progress_tracking"
+        ],
+        "primaryArtifact": "sheet",
+        "secondaryArtifacts": [
+          "todo",
+          "checklist",
+          "memo"
+        ],
+        "access": {
+          "providerType": "open_knowledge",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "audio"
+        },
+        "rights": {
+          "basis": "public_domain",
+          "allowedUse": [
+            "link_metadata",
+            "personal_transform",
+            "internal_review",
+            "public_derived"
+          ],
+          "reviewStatus": "approved"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_second_wave",
+          "freshnessReview": "current",
+          "localeReview": "applicable",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "approved",
+          "promotionState": "internal_canary",
+          "blockers": []
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "LIBRIVOX-C01",
+          "role": "item",
+          "targetIds": [
+            "item:chapter-01"
+          ],
+          "reason": "독립적으로 듣고 완료할 media row다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C02",
+          "role": "item",
+          "targetIds": [
+            "item:chapter-02"
+          ],
+          "reason": "독립적으로 듣고 완료할 media row다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C03",
+          "role": "item",
+          "targetIds": [
+            "item:chapter-03"
+          ],
+          "reason": "독립적으로 듣고 완료할 media row다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C04",
+          "role": "item",
+          "targetIds": [
+            "item:chapter-04"
+          ],
+          "reason": "독립적으로 듣고 완료할 media row다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C05",
+          "role": "item",
+          "targetIds": [
+            "item:chapter-05"
+          ],
+          "reason": "독립적으로 듣고 완료할 media row다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C06",
+          "role": "item",
+          "targetIds": [
+            "item:chapter-06"
+          ],
+          "reason": "독립적으로 듣고 완료할 media row다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C07",
+          "role": "item",
+          "targetIds": [
+            "item:chapter-07"
+          ],
+          "reason": "독립적으로 듣고 완료할 media row다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C08",
+          "role": "item",
+          "targetIds": [
+            "item:chapter-08"
+          ],
+          "reason": "독립적으로 듣고 완료할 media row다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C09",
+          "role": "item",
+          "targetIds": [
+            "item:chapter-09"
+          ],
+          "reason": "독립적으로 듣고 완료할 media row다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C10",
+          "role": "item",
+          "targetIds": [
+            "item:chapter-10"
+          ],
+          "reason": "독립적으로 듣고 완료할 media row다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C11",
+          "role": "item",
+          "targetIds": [
+            "item:chapter-11"
+          ],
+          "reason": "독립적으로 듣고 완료할 media row다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C12",
+          "role": "item",
+          "targetIds": [
+            "item:chapter-12"
+          ],
+          "reason": "독립적으로 듣고 완료할 media row다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C13",
+          "role": "item",
+          "targetIds": [
+            "item:chapter-13"
+          ],
+          "reason": "독립적으로 듣고 완료할 media row다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C14",
+          "role": "item",
+          "targetIds": [
+            "item:chapter-14"
+          ],
+          "reason": "독립적으로 듣고 완료할 media row다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C15",
+          "role": "item",
+          "targetIds": [
+            "item:chapter-15"
+          ],
+          "reason": "독립적으로 듣고 완료할 media row다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C16",
+          "role": "item",
+          "targetIds": [
+            "item:chapter-16"
+          ],
+          "reason": "독립적으로 듣고 완료할 media row다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C17",
+          "role": "item",
+          "targetIds": [
+            "item:chapter-17"
+          ],
+          "reason": "독립적으로 듣고 완료할 media row다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C18",
+          "role": "item",
+          "targetIds": [
+            "item:chapter-18"
+          ],
+          "reason": "독립적으로 듣고 완료할 media row다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C19",
+          "role": "item",
+          "targetIds": [
+            "item:chapter-19"
+          ],
+          "reason": "독립적으로 듣고 완료할 media row다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C20",
+          "role": "item",
+          "targetIds": [
+            "item:chapter-20"
+          ],
+          "reason": "독립적으로 듣고 완료할 media row다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C21",
+          "role": "item",
+          "targetIds": [
+            "item:chapter-21"
+          ],
+          "reason": "독립적으로 듣고 완료할 media row다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C22",
+          "role": "item",
+          "targetIds": [
+            "item:chapter-22"
+          ],
+          "reason": "독립적으로 듣고 완료할 media row다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C23",
+          "role": "item",
+          "targetIds": [
+            "item:chapter-23"
+          ],
+          "reason": "독립적으로 듣고 완료할 media row다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C24",
+          "role": "item",
+          "targetIds": [
+            "item:chapter-24"
+          ],
+          "reason": "독립적으로 듣고 완료할 media row다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C25",
+          "role": "item",
+          "targetIds": [
+            "item:chapter-25"
+          ],
+          "reason": "독립적으로 듣고 완료할 media row다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C26",
+          "role": "item",
+          "targetIds": [
+            "item:chapter-26"
+          ],
+          "reason": "독립적으로 듣고 완료할 media row다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C27",
+          "role": "item",
+          "targetIds": [
+            "item:chapter-27"
+          ],
+          "reason": "독립적으로 듣고 완료할 media row다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C28",
+          "role": "item",
+          "targetIds": [
+            "item:chapter-28"
+          ],
+          "reason": "독립적으로 듣고 완료할 media row다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C29",
+          "role": "item",
+          "targetIds": [
+            "item:chapter-29"
+          ],
+          "reason": "독립적으로 듣고 완료할 media row다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C30",
+          "role": "item",
+          "targetIds": [
+            "item:chapter-30"
+          ],
+          "reason": "독립적으로 듣고 완료할 media row다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C31",
+          "role": "item",
+          "targetIds": [
+            "item:chapter-31"
+          ],
+          "reason": "독립적으로 듣고 완료할 media row다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C32",
+          "role": "item",
+          "targetIds": [
+            "item:chapter-32"
+          ],
+          "reason": "독립적으로 듣고 완료할 media row다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C33",
+          "role": "item",
+          "targetIds": [
+            "item:chapter-33"
+          ],
+          "reason": "독립적으로 듣고 완료할 media row다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C34",
+          "role": "item",
+          "targetIds": [
+            "item:chapter-34"
+          ],
+          "reason": "독립적으로 듣고 완료할 media row다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C35",
+          "role": "item",
+          "targetIds": [
+            "item:chapter-35"
+          ],
+          "reason": "독립적으로 듣고 완료할 media row다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C36",
+          "role": "item",
+          "targetIds": [
+            "item:chapter-36"
+          ],
+          "reason": "독립적으로 듣고 완료할 media row다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C37",
+          "role": "item",
+          "targetIds": [
+            "item:chapter-37"
+          ],
+          "reason": "독립적으로 듣고 완료할 media row다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C38",
+          "role": "item",
+          "targetIds": [
+            "item:chapter-38"
+          ],
+          "reason": "독립적으로 듣고 완료할 media row다."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 38,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "재생시간과 완료 상태를 보존하는 고정 chapter queue Items 38개."
+      },
+      "projectionAvailabilities": {
+        "calendar": false,
+        "checklist": true,
+        "todo": true,
+        "sheet": true,
+        "memo": true
+      },
+      "rationale": "독립 media chapters는 resource_queue이고 여러 session의 위치·상태를 남기는 Sheet가 retained result다.",
+      "confidence": 0.99
+    },
+    {
+      "caseId": "OQ-C04-PASSPORT",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_second_wave",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": [],
+        "reason": "The adult renewal packet is complete and does not itself require sensitive data storage, so an internal proposal is ready."
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "money_admin_purchase",
+        "secondaryLifeAreas": [
+          "travel_outings"
+        ],
+        "topicTags": [
+          "여권",
+          "재발급",
+          "구비서류"
+        ],
+        "sourceShape": "checklist_rows",
+        "secondarySourceShapes": [
+          "procedure_rows",
+          "decision_criteria"
+        ],
+        "primaryExecutionPattern": "ordered_procedure",
+        "secondaryExecutionPatterns": [
+          "compare_decide"
+        ],
+        "primaryArtifact": "todo",
+        "secondaryArtifacts": [
+          "checklist",
+          "memo"
+        ],
+        "access": {
+          "providerType": "government_public",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_second_wave",
+          "freshnessReview": "current",
+          "localeReview": "applicable",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "internal_review",
+          "blockers": []
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "PASSPORT-R01",
+          "role": "item",
+          "targetIds": [
+            "item:route"
+          ],
+          "reason": "사용자가 신청 경로를 결정할 수 있다."
+        },
+        {
+          "sourceRowId": "PASSPORT-R02",
+          "role": "item",
+          "targetIds": [
+            "item:application"
+          ],
+          "reason": "작성·준비를 완료할 서류다."
+        },
+        {
+          "sourceRowId": "PASSPORT-R03",
+          "role": "item",
+          "targetIds": [
+            "item:photo"
+          ],
+          "reason": "준비 완료를 확인할 서류다."
+        },
+        {
+          "sourceRowId": "PASSPORT-R04",
+          "role": "item",
+          "targetIds": [
+            "item:id"
+          ],
+          "reason": "준비 완료를 확인할 서류다."
+        },
+        {
+          "sourceRowId": "PASSPORT-R05",
+          "role": "conditional_response",
+          "targetIds": [
+            "item:old-passport"
+          ],
+          "reason": "유효기간이 남은 경우에만 활성화되는 준비다."
+        },
+        {
+          "sourceRowId": "PASSPORT-R06",
+          "role": "reference",
+          "targetIds": [
+            "reference:fees"
+          ],
+          "reason": "종류 선택 때 참조할 비용 표다."
+        },
+        {
+          "sourceRowId": "PASSPORT-R07",
+          "role": "reference",
+          "targetIds": [
+            "reference:proxy-rule"
+          ],
+          "reason": "직접 신청 원칙을 보존하는 규칙이다."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 5,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 2,
+        "conditionalResponseCount": 1,
+        "summary": "경로 선택과 4개 준비 actions를 queue하고 기존 여권 조건과 비용·대리신청 규칙을 보존한다."
+      },
+      "projectionAvailabilities": {
+        "calendar": false,
+        "checklist": false,
+        "todo": false,
+        "sheet": false,
+        "memo": false
+      },
+      "rationale": "경로 선택·준비·신청이 독립 next actions이므로 Todo가 primary이고 문서 set은 Checklist secondary다.",
+      "confidence": 0.97
+    },
+    {
+      "caseId": "OQ-C05-WASHER",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_for_internal_canary",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": [
+          "locale_review_required"
+        ],
+        "reason": "The device-care procedure is complete, but this non-Korean instructional source requires locale adaptation."
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "home_living",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "세탁기",
+          "세탁조청소",
+          "기기알림"
+        ],
+        "sourceShape": "recurrence_rule",
+        "secondarySourceShapes": [
+          "procedure_rows",
+          "narrative_guidance"
+        ],
+        "primaryExecutionPattern": "repeating_routine",
+        "secondaryExecutionPatterns": [
+          "ordered_procedure"
+        ],
+        "primaryArtifact": "todo",
+        "secondaryArtifacts": [
+          "checklist",
+          "memo"
+        ],
+        "access": {
+          "providerType": "brand_official",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_for_internal_canary",
+          "freshnessReview": "current",
+          "localeReview": "adaptation_required",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "internal_review",
+          "blockers": [
+            "locale_review_required"
+          ]
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "WASHER-R01",
+          "role": "conditional_response",
+          "targetIds": [
+            "item:clean-cycle"
+          ],
+          "reason": "40회 또는 기기 알림 때만 청소 action이 활성화된다."
+        },
+        {
+          "sourceRowId": "WASHER-R02",
+          "role": "item",
+          "targetIds": [
+            "item:empty-drum"
+          ],
+          "reason": "사용자가 드럼이 빈 상태를 만들고 확인한다."
+        },
+        {
+          "sourceRowId": "WASHER-R03",
+          "role": "reference",
+          "targetIds": [
+            "reference:no-chemicals"
+          ],
+          "reason": "세제·표백제 금지 경고다."
+        },
+        {
+          "sourceRowId": "WASHER-R04",
+          "role": "item",
+          "targetIds": [
+            "item:power"
+          ],
+          "reason": "절차의 완료 가능한 action이다."
+        },
+        {
+          "sourceRowId": "WASHER-R05",
+          "role": "item",
+          "targetIds": [
+            "item:select-cycle"
+          ],
+          "reason": "절차의 완료 가능한 action이다."
+        },
+        {
+          "sourceRowId": "WASHER-R06",
+          "role": "item",
+          "targetIds": [
+            "item:start-cycle"
+          ],
+          "reason": "절차의 완료 가능한 action이다."
+        },
+        {
+          "sourceRowId": "WASHER-R07",
+          "role": "reference",
+          "targetIds": [
+            "reference:model-boundary"
+          ],
+          "reason": "모델별 차이를 확인하게 하는 범위 경계다."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 5,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 2,
+        "conditionalResponseCount": 1,
+        "summary": "비날짜 trigger가 같은 청소 Todo를 다시 열고, 안전 확인과 3단계 절차를 실행한다."
+      },
+      "projectionAvailabilities": {
+        "calendar": false,
+        "checklist": false,
+        "todo": false,
+        "sheet": false,
+        "memo": false
+      },
+      "rationale": "사용 횟수와 device alert는 날짜가 아니므로 Todo가 primary이며 Calendar 날짜를 만들지 않는다.",
+      "confidence": 0.99
+    },
+    {
+      "caseId": "OQ-C06-NASA",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_for_internal_canary",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": [
+          "locale_review_required"
+        ],
+        "reason": "The activity is complete, but its non-Korean instructional and person-safety directions require locale adaptation."
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "hobby_pet",
+        "secondaryLifeAreas": [
+          "study_reading"
+        ],
+        "topicTags": [
+          "STEM",
+          "크레인",
+          "팀제작"
+        ],
+        "sourceShape": "procedure_rows",
+        "secondarySourceShapes": [
+          "checklist_rows",
+          "narrative_guidance"
+        ],
+        "primaryExecutionPattern": "ordered_procedure",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": [
+          "memo"
+        ],
+        "access": {
+          "providerType": "government_public",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_for_internal_canary",
+          "freshnessReview": "current",
+          "localeReview": "adaptation_required",
+          "safetyReview": "passed_with_boundary",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "internal_review",
+          "blockers": [
+            "locale_review_required"
+          ]
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "DS12-R01",
+          "role": "item",
+          "targetIds": [
+            "item:materials"
+          ],
+          "reason": "재료 준비 완료를 확인할 수 있다."
+        },
+        {
+          "sourceRowId": "DS12-R02",
+          "role": "reference",
+          "targetIds": [
+            "reference:scissor-safety"
+          ],
+          "reason": "완료 항목이 아닌 가위 안전 경고다."
+        },
+        {
+          "sourceRowId": "DS12-R03",
+          "role": "item",
+          "targetIds": [
+            "item:team-cups"
+          ],
+          "reason": "팀과 컵 준비 action이다."
+        },
+        {
+          "sourceRowId": "DS12-R04",
+          "role": "item",
+          "targetIds": [
+            "item:crane"
+          ],
+          "reason": "설계·제작 결과를 확인할 수 있다."
+        },
+        {
+          "sourceRowId": "DS12-R05",
+          "role": "item",
+          "targetIds": [
+            "item:reel"
+          ],
+          "reason": "설계·제작 결과를 확인할 수 있다."
+        },
+        {
+          "sourceRowId": "DS12-R06",
+          "role": "item",
+          "targetIds": [
+            "item:test"
+          ],
+          "reason": "연결과 시험 완료를 확인할 수 있다."
+        },
+        {
+          "sourceRowId": "DS12-R07",
+          "role": "item",
+          "targetIds": [
+            "item:stack"
+          ],
+          "reason": "컵 쌓기 결과를 확인할 수 있다."
+        },
+        {
+          "sourceRowId": "DS12-R08",
+          "role": "item",
+          "targetIds": [
+            "item:reflection"
+          ],
+          "reason": "도전 질문에 대한 기록을 완료할 수 있다."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 7,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 1,
+        "conditionalResponseCount": 0,
+        "summary": "재료 준비, 제작, 시험, 쌓기, 성찰을 잇는 7 Items와 가위 안전 Reference."
+      },
+      "projectionAvailabilities": {
+        "calendar": false,
+        "checklist": false,
+        "todo": false,
+        "sheet": false,
+        "memo": false
+      },
+      "rationale": "publisher가 교육기관이어도 관리 대상은 recreational making이며, distinct phase outputs보다 고정 제작 순서가 중심이다.",
+      "confidence": 0.95
+    },
+    {
+      "caseId": "OQ-C07-FIT100",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_second_wave",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": [],
+        "reason": "The official health-service route is complete and preserved without adding diagnosis or treatment guidance."
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "health_fitness",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "체력측정",
+          "인증",
+          "운동처방"
+        ],
+        "sourceShape": "procedure_rows",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "phase_lifecycle",
+        "secondaryExecutionPatterns": [
+          "ordered_procedure"
+        ],
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": [
+          "sheet",
+          "memo"
+        ],
+        "access": {
+          "providerType": "public_institution",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_second_wave",
+          "freshnessReview": "current",
+          "localeReview": "applicable",
+          "safetyReview": "passed_with_boundary",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "internal_review",
+          "blockers": []
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "DS07-R01",
+          "role": "item",
+          "targetIds": [
+            "item:signup"
+          ],
+          "reason": "서비스 단계를 완료할 수 있다."
+        },
+        {
+          "sourceRowId": "DS07-R02",
+          "role": "item",
+          "targetIds": [
+            "item:questionnaire"
+          ],
+          "reason": "측정 가능 여부 판별 단계를 완료할 수 있다."
+        },
+        {
+          "sourceRowId": "DS07-R03",
+          "role": "item",
+          "targetIds": [
+            "item:reservation"
+          ],
+          "reason": "신청 단계를 완료할 수 있다."
+        },
+        {
+          "sourceRowId": "DS07-R04",
+          "role": "item",
+          "targetIds": [
+            "item:visit"
+          ],
+          "reason": "방문 단계를 완료할 수 있다."
+        },
+        {
+          "sourceRowId": "DS07-R05",
+          "role": "item",
+          "targetIds": [
+            "item:measure"
+          ],
+          "reason": "측정 단계를 완료할 수 있다."
+        },
+        {
+          "sourceRowId": "DS07-R06",
+          "role": "item",
+          "targetIds": [
+            "item:evaluate"
+          ],
+          "reason": "평가 산출물을 확인할 수 있다."
+        },
+        {
+          "sourceRowId": "DS07-R07",
+          "role": "item",
+          "targetIds": [
+            "item:certificate"
+          ],
+          "reason": "인증서 발급을 확인할 수 있다."
+        },
+        {
+          "sourceRowId": "DS07-R08",
+          "role": "item",
+          "targetIds": [
+            "item:prescription"
+          ],
+          "reason": "공식 처방 연결을 확인할 수 있다."
+        },
+        {
+          "sourceRowId": "DS07-R09",
+          "role": "item",
+          "targetIds": [
+            "item:manage"
+          ],
+          "reason": "결과 기반 관리 action이다."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 9,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "서로 다른 서비스 상태를 거치는 9 Items의 fixed journey."
+      },
+      "projectionAvailabilities": {
+        "calendar": false,
+        "checklist": false,
+        "todo": false,
+        "sheet": false,
+        "memo": false
+      },
+      "rationale": "가입·판별·방문·측정·결과·처방은 distinct outputs를 가진 lifecycle이지만 별도 phase data가 없어 Checklist가 retained result다.",
+      "confidence": 0.98
+    },
+    {
+      "caseId": "OQ-C08-AC-DECISION",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_second_wave",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": [],
+        "reason": "The compact comparison criteria are complete and support an internal-review proposal."
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "home_living",
+        "secondaryLifeAreas": [
+          "money_admin_purchase"
+        ],
+        "topicTags": [
+          "에어컨",
+          "세척서비스",
+          "비교선택"
+        ],
+        "sourceShape": "decision_criteria",
+        "secondarySourceShapes": [
+          "table_rows"
+        ],
+        "primaryExecutionPattern": "compare_decide",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "memo",
+        "secondaryArtifacts": [
+          "sheet",
+          "todo"
+        ],
+        "access": {
+          "providerType": "brand_official",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "video"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_second_wave",
+          "freshnessReview": "current",
+          "localeReview": "applicable",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "internal_review",
+          "blockers": []
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "AC-R01",
+          "role": "field",
+          "targetIds": [
+            "field:professional-scope"
+          ],
+          "reason": "선택에 필요한 전문세척 범위 값이다."
+        },
+        {
+          "sourceRowId": "AC-R02",
+          "role": "field",
+          "targetIds": [
+            "field:general-scope"
+          ],
+          "reason": "선택에 필요한 일반세척 범위 값이다."
+        },
+        {
+          "sourceRowId": "AC-R03",
+          "role": "field",
+          "targetIds": [
+            "field:relative-cost-time"
+          ],
+          "reason": "두 옵션 비교에 필요한 상대 값이다."
+        },
+        {
+          "sourceRowId": "AC-R04",
+          "role": "field",
+          "targetIds": [
+            "field:quoted-cost"
+          ],
+          "reason": "결정 전에 문의로 채울 비용 값이다."
+        },
+        {
+          "sourceRowId": "AC-R05",
+          "role": "reference",
+          "targetIds": [
+            "reference:contacts"
+          ],
+          "reason": "선택 후 사용할 연락 경로다."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 1,
+        "fieldCount": 4,
+        "memoCount": 1,
+        "referenceCount": 1,
+        "conditionalResponseCount": 0,
+        "summary": "4개 criteria fields로 한 옵션을 결정하고 이유·unknown cost와 연락 문맥을 Memo에 보존한다."
+      },
+      "projectionAvailabilities": {
+        "calendar": false,
+        "checklist": false,
+        "todo": false,
+        "sheet": false,
+        "memo": false
+      },
+      "rationale": "관리 대상은 household appliance이며, 한 compact choice의 unknowns·rationale·contact를 잃지 않는 Memo가 primary다.",
+      "confidence": 0.98
+    },
+    {
+      "caseId": "OQ-B01-HEAT",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "hold",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": [
+          "safety_review_required",
+          "editorial_review_required"
+        ],
+        "reason": "Emergency and stop-work thresholds require human safety and editorial review, so the proposal remains on hold."
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "work_career",
+        "secondaryLifeAreas": [
+          "health_fitness"
+        ],
+        "topicTags": [
+          "농작업",
+          "폭염",
+          "응급대응"
+        ],
+        "sourceShape": "narrative_guidance",
+        "secondarySourceShapes": [
+          "procedure_rows",
+          "recurrence_rule"
+        ],
+        "primaryExecutionPattern": "phase_lifecycle",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "memo",
+        "secondaryArtifacts": [
+          "checklist"
+        ],
+        "access": {
+          "providerType": "government_public",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "hold",
+          "freshnessReview": "current",
+          "localeReview": "applicable",
+          "safetyReview": "restricted",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "research_only",
+          "blockers": [
+            "safety_review_required",
+            "editorial_review_required"
+          ]
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "DS01-R01",
+          "role": "reference",
+          "targetIds": [
+            "reference:heat-thresholds"
+          ],
+          "reason": "완료하지 않고 판단에 참조할 온도 threshold다."
+        },
+        {
+          "sourceRowId": "DS01-R02",
+          "role": "item",
+          "targetIds": [
+            "item:check-heat"
+          ],
+          "reason": "작업 전에 완료할 확인 action이다."
+        },
+        {
+          "sourceRowId": "DS01-R03",
+          "role": "item",
+          "targetIds": [
+            "item:adjust-plan"
+          ],
+          "reason": "작업 전에 완료할 계획 action이다."
+        },
+        {
+          "sourceRowId": "DS01-R04",
+          "role": "item",
+          "targetIds": [
+            "item:prepare-safety"
+          ],
+          "reason": "작업 전에 완료할 준비 action이다."
+        },
+        {
+          "sourceRowId": "DS01-R05",
+          "role": "item",
+          "targetIds": [
+            "item:hydrate"
+          ],
+          "reason": "작업 중 반복해 수행할 정상 action이다."
+        },
+        {
+          "sourceRowId": "DS01-R06",
+          "role": "conditional_response",
+          "targetIds": [
+            "item:stop-work"
+          ],
+          "reason": "위험 단계에서만 작업중지가 활성화된다."
+        },
+        {
+          "sourceRowId": "DS01-R07",
+          "role": "item",
+          "targetIds": [
+            "item:inspect-symptoms"
+          ],
+          "reason": "동료 상태를 의도적으로 확인한다."
+        },
+        {
+          "sourceRowId": "DS01-R08",
+          "role": "conditional_response",
+          "targetIds": [
+            "item:call-119"
+          ],
+          "reason": "의식이 없는 trigger에서만 119 대응이 활성화된다."
+        },
+        {
+          "sourceRowId": "DS01-R09",
+          "role": "item",
+          "targetIds": [
+            "item:recover"
+          ],
+          "reason": "작업 후 회복 action을 완료할 수 있다."
+        },
+        {
+          "sourceRowId": "DS01-R10",
+          "role": "reference",
+          "targetIds": [
+            "reference:employer-duty"
+          ],
+          "reason": "사업주 의무를 설명하는 규칙이다."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 8,
+        "fieldCount": 0,
+        "memoCount": 1,
+        "referenceCount": 2,
+        "conditionalResponseCount": 2,
+        "summary": "전·중·위험·응급·회복 states를 잇는 6 ordinary/2 conditional Items와 threshold References."
+      },
+      "projectionAvailabilities": {
+        "calendar": false,
+        "checklist": false,
+        "todo": false,
+        "sheet": false,
+        "memo": false
+      },
+      "rationale": "관리 대상은 occupational safety이고, states마다 activation rule이 달라 phase_lifecycle이다. threshold와 응급 문맥 때문에 Memo가 primary다.",
+      "confidence": 0.99
+    },
+    {
+      "caseId": "OQ-B02-KMOOC-META",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "no_proposal",
+        "conversionReadiness": "source_import_required",
+        "errorCode": "SOURCE_INCOMPLETE",
+        "executableAllowed": false,
+        "publicExportAllowed": false,
+        "blockers": [
+          "source_incomplete",
+          "source_import_required"
+        ],
+        "reason": "Processing completed, but the fourteen executable week rows are missing and must be imported."
+      },
+      "classification": {
+        "classificationStatus": "partial",
+        "primaryLifeArea": "study_reading",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "데이터분석",
+          "온라인강좌",
+          "14주"
+        ],
+        "sourceShape": null,
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "progress_tracking",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "sheet",
+        "secondaryArtifacts": [],
+        "access": {
+          "providerType": "education_provider",
+          "discoveryAccess": "public",
+          "rowAccess": "partial",
+          "sourceFormat": "course"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "partial",
+          "conversionReadiness": "source_import_required",
+          "freshnessReview": "current",
+          "localeReview": "applicable",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "research_only",
+          "blockers": [
+            "source_incomplete",
+            "source_import_required"
+          ]
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "KMOOC-M01",
+          "role": "field",
+          "targetIds": [],
+          "reason": "의도한 진도 Flow에 필요한 운영 기간 값이지만 draft는 생성하지 않는다."
+        },
+        {
+          "sourceRowId": "KMOOC-M02",
+          "role": "reference",
+          "targetIds": [],
+          "reason": "과정 분량 메타데이터다."
+        },
+        {
+          "sourceRowId": "KMOOC-M03",
+          "role": "reference",
+          "targetIds": [],
+          "reason": "난이도와 수료증 메타데이터다."
+        },
+        {
+          "sourceRowId": "KMOOC-M04",
+          "role": "reference",
+          "targetIds": [],
+          "reason": "수료 조건 규칙이다."
+        },
+        {
+          "sourceRowId": "KMOOC-M05",
+          "role": "field",
+          "targetIds": [],
+          "reason": "의도한 진도 Flow에 필요한 성적 기간 값이지만 draft는 생성하지 않는다."
+        },
+        {
+          "sourceRowId": "KMOOC-A-MISSING",
+          "role": "omission",
+          "targetIds": [],
+          "reason": "14개 주차 실행행이 미확보임을 보존한다."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 0,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "실행 주차 rows를 import하기 전에는 canonical draft가 없다."
+      },
+      "projectionAvailabilities": {
+        "calendar": false,
+        "checklist": false,
+        "todo": false,
+        "sheet": false,
+        "memo": false
+      },
+      "rationale": "course progress는 metadata가 명시해 pattern과 intended Sheet는 분류할 수 있지만 sourceShape와 canonical entities는 확정할 수 없다.",
+      "confidence": 1
+    },
+    {
+      "caseId": "OQ-B03-REMODEL",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "hold",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": [
+          "rights_permission_required",
+          "editorial_review_required"
+        ],
+        "reason": "The contract criteria are complete, but pending rights and legal interpretation review keep the proposal on hold."
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "money_admin_purchase",
+        "secondaryLifeAreas": [
+          "home_living"
+        ],
+        "topicTags": [
+          "리모델링",
+          "계약",
+          "보완요청"
+        ],
+        "sourceShape": "decision_criteria",
+        "secondarySourceShapes": [
+          "table_rows"
+        ],
+        "primaryExecutionPattern": "compare_decide",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "sheet",
+        "secondaryArtifacts": [
+          "memo"
+        ],
+        "access": {
+          "providerType": "editorial_media",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "unknown",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "pending"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "hold",
+          "freshnessReview": "current",
+          "localeReview": "applicable",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "pending",
+          "promotionState": "research_only",
+          "blockers": [
+            "rights_permission_required",
+            "editorial_review_required"
+          ]
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "DS02-R01",
+          "role": "item",
+          "targetIds": [
+            "item:criterion-01"
+          ],
+          "reason": "계약서에서 기준 충족 여부를 확인·기록한다."
+        },
+        {
+          "sourceRowId": "DS02-R02",
+          "role": "item",
+          "targetIds": [
+            "item:criterion-02"
+          ],
+          "reason": "계약서에서 기준 충족 여부를 확인·기록한다."
+        },
+        {
+          "sourceRowId": "DS02-R03",
+          "role": "item",
+          "targetIds": [
+            "item:criterion-03"
+          ],
+          "reason": "계약서에서 기준 충족 여부를 확인·기록한다."
+        },
+        {
+          "sourceRowId": "DS02-R04",
+          "role": "item",
+          "targetIds": [
+            "item:criterion-04"
+          ],
+          "reason": "계약서에서 기준 충족 여부를 확인·기록한다."
+        },
+        {
+          "sourceRowId": "DS02-R05",
+          "role": "item",
+          "targetIds": [
+            "item:criterion-05"
+          ],
+          "reason": "계약서에서 기준 충족 여부를 확인·기록한다."
+        },
+        {
+          "sourceRowId": "DS02-R06",
+          "role": "item",
+          "targetIds": [
+            "item:criterion-06"
+          ],
+          "reason": "계약서에서 기준 충족 여부를 확인·기록한다."
+        },
+        {
+          "sourceRowId": "DS02-R07",
+          "role": "item",
+          "targetIds": [
+            "item:criterion-07"
+          ],
+          "reason": "계약서에서 기준 충족 여부를 확인·기록한다."
+        },
+        {
+          "sourceRowId": "DS02-R08",
+          "role": "item",
+          "targetIds": [
+            "item:criterion-08"
+          ],
+          "reason": "계약서에서 기준 충족 여부를 확인·기록한다."
+        },
+        {
+          "sourceRowId": "DS02-R09",
+          "role": "item",
+          "targetIds": [
+            "item:criterion-09"
+          ],
+          "reason": "계약서에서 기준 충족 여부를 확인·기록한다."
+        },
+        {
+          "sourceRowId": "DS02-R10",
+          "role": "item",
+          "targetIds": [
+            "item:criterion-10"
+          ],
+          "reason": "계약서에서 기준 충족 여부를 확인·기록한다."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 10,
+        "fieldCount": 0,
+        "memoCount": 1,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "10개 criteria의 상태·보완 요청과 최종 proceed/hold 판단 근거를 보존한다."
+      },
+      "projectionAvailabilities": {
+        "calendar": false,
+        "checklist": false,
+        "todo": false,
+        "sheet": false,
+        "memo": false
+      },
+      "rationale": "많은 criteria cells의 확인 상태와 보완 요청을 세션 간 유지해야 하므로 Sheet가 primary다.",
+      "confidence": 0.98
+    },
+    {
+      "caseId": "OQ-B04-TODOIST",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "no_proposal",
+        "conversionReadiness": "source_import_required",
+        "errorCode": "SOURCE_METADATA_ONLY",
+        "executableAllowed": false,
+        "publicExportAllowed": false,
+        "blockers": [
+          "source_import_required",
+          "account_or_entitlement_required"
+        ],
+        "reason": "Visible phase headings point to protected task rows, which require entitlement-backed source import."
+      },
+      "classification": {
+        "classificationStatus": "partial",
+        "primaryLifeArea": "work_career",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "팟캐스트",
+          "제작단계"
+        ],
+        "sourceShape": null,
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "phase_lifecycle",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "todo",
+        "secondaryArtifacts": [],
+        "access": {
+          "providerType": "brand_official",
+          "discoveryAccess": "public",
+          "rowAccess": "metadata_only",
+          "sourceFormat": "template"
+        },
+        "rights": {
+          "basis": "provider_terms",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "pending"
+        },
+        "review": {
+          "sourceRowStatus": "metadata_only",
+          "conversionReadiness": "source_import_required",
+          "freshnessReview": "current",
+          "localeReview": "applicable",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "pending",
+          "promotionState": "research_only",
+          "blockers": [
+            "source_import_required",
+            "account_or_entitlement_required"
+          ]
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "TODOIST-R01",
+          "role": "reference",
+          "targetIds": [],
+          "reason": "실행행이 아닌 상위 phase heading이다."
+        },
+        {
+          "sourceRowId": "TODOIST-R02",
+          "role": "reference",
+          "targetIds": [],
+          "reason": "실행행이 아닌 상위 phase heading이다."
+        },
+        {
+          "sourceRowId": "TODOIST-R03",
+          "role": "reference",
+          "targetIds": [],
+          "reason": "실행행이 아닌 상위 phase heading이다."
+        },
+        {
+          "sourceRowId": "TODOIST-R04",
+          "role": "reference",
+          "targetIds": [],
+          "reason": "실행행이 아닌 상위 phase heading이다."
+        },
+        {
+          "sourceRowId": "TODOIST-R05",
+          "role": "omission",
+          "targetIds": [],
+          "reason": "실제 task·담당자·마감 행의 누락 경계다."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 0,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "권한 있는 task rows를 import하기 전에는 canonical draft가 없다."
+      },
+      "projectionAvailabilities": {
+        "calendar": false,
+        "checklist": false,
+        "todo": false,
+        "sheet": false,
+        "memo": false
+      },
+      "rationale": "The named phases support lifecycle classification, but the product promises task execution, so the intended artifact is Todo; headings do not prove Sheet fields.",
+      "confidence": 1
+    },
+    {
+      "caseId": "OQ-P01-OSSU",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_for_internal_canary",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": [
+          "locale_review_required"
+        ],
+        "reason": "The curriculum rows are complete, but a Korean-facing use of this non-Korean curriculum requires locale adaptation."
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "study_reading",
+        "secondaryLifeAreas": [
+          "work_career"
+        ],
+        "topicTags": [
+          "컴퓨터과학",
+          "커리큘럼",
+          "선수조건"
+        ],
+        "sourceShape": "lesson_rows",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "progress_tracking",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "sheet",
+        "secondaryArtifacts": [
+          "todo",
+          "checklist"
+        ],
+        "access": {
+          "providerType": "open_knowledge",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "table"
+        },
+        "rights": {
+          "basis": "open_license",
+          "allowedUse": [
+            "link_metadata",
+            "personal_transform",
+            "internal_review",
+            "public_derived"
+          ],
+          "reviewStatus": "approved"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_for_internal_canary",
+          "freshnessReview": "current",
+          "localeReview": "adaptation_required",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "approved",
+          "promotionState": "internal_review",
+          "blockers": [
+            "locale_review_required"
+          ]
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "DS10-R01",
+          "role": "item",
+          "targetIds": [
+            "item:course-01"
+          ],
+          "reason": "학습 진행 상태를 보존할 curriculum course다."
+        },
+        {
+          "sourceRowId": "DS10-R02",
+          "role": "item",
+          "targetIds": [
+            "item:course-02"
+          ],
+          "reason": "학습 진행 상태를 보존할 curriculum course다."
+        },
+        {
+          "sourceRowId": "DS10-R03",
+          "role": "item",
+          "targetIds": [
+            "item:course-03"
+          ],
+          "reason": "학습 진행 상태를 보존할 curriculum course다."
+        },
+        {
+          "sourceRowId": "DS10-R04",
+          "role": "item",
+          "targetIds": [
+            "item:course-04"
+          ],
+          "reason": "학습 진행 상태를 보존할 curriculum course다."
+        },
+        {
+          "sourceRowId": "DS10-R05",
+          "role": "item",
+          "targetIds": [
+            "item:course-05"
+          ],
+          "reason": "학습 진행 상태를 보존할 curriculum course다."
+        },
+        {
+          "sourceRowId": "DS10-R06",
+          "role": "item",
+          "targetIds": [
+            "item:course-06"
+          ],
+          "reason": "학습 진행 상태를 보존할 curriculum course다."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 6,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "기간·주당시간·선수조건과 상태를 가진 curriculum course Items 6개."
+      },
+      "projectionAvailabilities": {
+        "calendar": false,
+        "checklist": false,
+        "todo": false,
+        "sheet": false,
+        "memo": false
+      },
+      "rationale": "course identities는 table layout이어도 lesson_rows이고 선수조건·상태를 이어 보려면 Sheet가 필요하다.",
+      "confidence": 0.99
+    },
+    {
+      "caseId": "OQ-P02-PACKING",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_for_internal_canary",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": [
+          "locale_review_required"
+        ],
+        "reason": "The packing rows are complete, but Korean-facing and destination-specific applicability requires locale review."
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "travel_outings",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "휴대수하물",
+          "입국서류",
+          "패킹"
+        ],
+        "sourceShape": "checklist_rows",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "ordered_procedure",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": [
+          "todo",
+          "memo"
+        ],
+        "access": {
+          "providerType": "open_knowledge",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "open_license",
+          "allowedUse": [
+            "link_metadata",
+            "personal_transform",
+            "internal_review",
+            "public_derived"
+          ],
+          "reviewStatus": "approved"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_for_internal_canary",
+          "freshnessReview": "current",
+          "localeReview": "adaptation_required",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "approved",
+          "promotionState": "internal_review",
+          "blockers": [
+            "locale_review_required"
+          ]
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "DS11-R01",
+          "role": "item",
+          "targetIds": [
+            "item:id-method"
+          ],
+          "reason": "준비 여부를 확인할 packing check다."
+        },
+        {
+          "sourceRowId": "DS11-R02",
+          "role": "item",
+          "targetIds": [
+            "item:payment"
+          ],
+          "reason": "준비 여부를 확인할 packing check다."
+        },
+        {
+          "sourceRowId": "DS11-R03",
+          "role": "item",
+          "targetIds": [
+            "item:medicine"
+          ],
+          "reason": "준비 여부를 확인할 packing check다."
+        },
+        {
+          "sourceRowId": "DS11-R04",
+          "role": "item",
+          "targetIds": [
+            "item:electronics"
+          ],
+          "reason": "준비 여부를 확인할 packing check다."
+        },
+        {
+          "sourceRowId": "DS11-R05",
+          "role": "item",
+          "targetIds": [
+            "item:arrival-clothes"
+          ],
+          "reason": "준비 여부를 확인할 packing check다."
+        },
+        {
+          "sourceRowId": "DS11-R06",
+          "role": "item",
+          "targetIds": [
+            "item:itinerary"
+          ],
+          "reason": "준비 여부를 확인할 document check다."
+        },
+        {
+          "sourceRowId": "DS11-R07",
+          "role": "item",
+          "targetIds": [
+            "item:entry-docs"
+          ],
+          "reason": "목적지 요구와 맞춰 확인할 document check다."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 7,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "휴대 필수품과 입국 서류를 빠뜨리지 않도록 확인하는 7 Items."
+      },
+      "projectionAvailabilities": {
+        "calendar": false,
+        "checklist": false,
+        "todo": false,
+        "sheet": false,
+        "memo": false
+      },
+      "rationale": "bounded omission-prevention set이므로 Checklist가 primary이며 목적지별 실제 요구는 source 밖에서 채우지 않는다.",
+      "confidence": 0.98
+    },
+    {
+      "caseId": "OQ-P03-VEHICLE",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_second_wave",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": [],
+        "reason": "The source-backed date-window template is complete; vehicle-specific dates remain canonical user fields, not review blockers."
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "money_admin_purchase",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "자동차검사",
+          "유효기간",
+          "방문일"
+        ],
+        "sourceShape": "date_window",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "date_preparation",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "calendar",
+        "secondaryArtifacts": [
+          "todo"
+        ],
+        "access": {
+          "providerType": "public_institution",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_second_wave",
+          "freshnessReview": "current",
+          "localeReview": "applicable",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "internal_review",
+          "blockers": []
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "VEHICLE-R01",
+          "role": "item",
+          "targetIds": [
+            "item:lookup-window"
+          ],
+          "reason": "공식 조회로 날짜창을 기록하고 그 안의 방문일을 결정한다."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 1,
+        "fieldCount": 2,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "공식 조회의 시작일·종료일 Fields를 받은 뒤 window 안 방문일을 정하는 Item 1개."
+      },
+      "projectionAvailabilities": {
+        "calendar": false,
+        "checklist": false,
+        "todo": false,
+        "sheet": false,
+        "memo": false
+      },
+      "rationale": "사용자별 날짜를 발명하지 않되 실제 window는 필수 retained state이므로 Calendar가 primary다.",
+      "confidence": 0.98
+    },
+    {
+      "caseId": "OQ-P04-PORTFOLIO",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "hold",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": [
+          "rights_permission_required"
+        ],
+        "reason": "The project rows are complete, but pending creator rights require permission before release."
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "work_career",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "개발포트폴리오",
+          "팀프로젝트",
+          "배포"
+        ],
+        "sourceShape": "procedure_rows",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "phase_lifecycle",
+        "secondaryExecutionPatterns": [
+          "ordered_procedure"
+        ],
+        "primaryArtifact": "sheet",
+        "secondaryArtifacts": [
+          "todo",
+          "checklist",
+          "memo"
+        ],
+        "access": {
+          "providerType": "creator",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "unknown",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "pending"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "hold",
+          "freshnessReview": "current",
+          "localeReview": "applicable",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "pending",
+          "promotionState": "research_only",
+          "blockers": [
+            "rights_permission_required"
+          ]
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "PORTFOLIO-R01",
+          "role": "item",
+          "targetIds": [
+            "item:phase-01"
+          ],
+          "reason": "팀·범위·기술 산출물을 완료하는 phase action이다."
+        },
+        {
+          "sourceRowId": "PORTFOLIO-R02",
+          "role": "item",
+          "targetIds": [
+            "item:phase-02"
+          ],
+          "reason": "기능·페이지 기획 산출물을 완료한다."
+        },
+        {
+          "sourceRowId": "PORTFOLIO-R03",
+          "role": "item",
+          "targetIds": [
+            "item:phase-03"
+          ],
+          "reason": "DB·API 설계 문서를 완료한다."
+        },
+        {
+          "sourceRowId": "PORTFOLIO-R04",
+          "role": "item",
+          "targetIds": [
+            "item:phase-04"
+          ],
+          "reason": "일정·협업 규칙 산출물을 완료한다."
+        },
+        {
+          "sourceRowId": "PORTFOLIO-R05",
+          "role": "item",
+          "targetIds": [
+            "item:phase-05"
+          ],
+          "reason": "개발과 코드리뷰 phase를 완료한다."
+        },
+        {
+          "sourceRowId": "PORTFOLIO-R06",
+          "role": "item",
+          "targetIds": [
+            "item:phase-06"
+          ],
+          "reason": "배포·도메인 산출물을 완료한다."
+        },
+        {
+          "sourceRowId": "PORTFOLIO-R07",
+          "role": "item",
+          "targetIds": [
+            "item:phase-07"
+          ],
+          "reason": "설명·데모를 갖춘 포트폴리오 결과를 완료한다."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 7,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "기획부터 배포·정리까지 distinct outputs와 상태를 가진 project phase Items 7개."
+      },
+      "projectionAvailabilities": {
+        "calendar": false,
+        "checklist": false,
+        "todo": false,
+        "sheet": false,
+        "memo": false
+      },
+      "rationale": "다중 session에서 phase outputs와 상태가 살아 있어야 하므로 phase_lifecycle과 Sheet가 우선한다.",
+      "confidence": 0.98
+    },
+    {
+      "caseId": "OQ-N01-FOODCRAFT",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "rejected",
+        "conversionReadiness": "hold",
+        "errorCode": "NON_EXECUTABLE_LANDING",
+        "executableAllowed": false,
+        "publicExportAllowed": false,
+        "blockers": [
+          "source_incomplete",
+          "unsupported_shape"
+        ],
+        "reason": "The acquired row is marketing metadata with no executable meal, ingredient, or date rows."
+      },
+      "classification": {
+        "classificationStatus": "not_classified",
+        "primaryLifeArea": "meals_grocery",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "장보기목록",
+          "제품기능"
+        ],
+        "sourceShape": null,
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": null,
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": null,
+        "secondaryArtifacts": [],
+        "access": {
+          "providerType": "brand_official",
+          "discoveryAccess": "public",
+          "rowAccess": "metadata_only",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "metadata_only",
+          "conversionReadiness": "hold",
+          "freshnessReview": "current",
+          "localeReview": "applicable",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "research_only",
+          "blockers": [
+            "source_incomplete",
+            "unsupported_shape"
+          ]
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "FOODCRAFT-R01",
+          "role": "reference",
+          "targetIds": [],
+          "reason": "사용자가 완료할 행이 아닌 제품 기능 설명이다."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 0,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "비실행 marketing landing에는 canonical draft가 없다."
+      },
+      "projectionAvailabilities": {
+        "calendar": false,
+        "checklist": false,
+        "todo": false,
+        "sheet": false,
+        "memo": false
+      },
+      "rationale": "domain은 meals/grocery로 분류할 수 있지만 metadata로 실행 구조를 만들지 않고 전역 rejection precedence를 적용한다.",
+      "confidence": 1
+    },
+    {
+      "caseId": "OQ-N02-LOGIN-WALL",
+      "feasibility": {
+        "generationState": "failed",
+        "outcome": "no_proposal",
+        "conversionReadiness": "source_import_required",
+        "errorCode": "SOURCE_UNAVAILABLE",
+        "executableAllowed": false,
+        "publicExportAllowed": false,
+        "blockers": [
+          "source_unavailable",
+          "source_import_required",
+          "account_or_entitlement_required"
+        ],
+        "reason": "Acquisition failed because the paywalled body yielded zero usable SourceRows."
+      },
+      "classification": {
+        "classificationStatus": "not_classified",
+        "primaryLifeArea": "home_living",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "이사"
+        ],
+        "sourceShape": null,
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": null,
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": null,
+        "secondaryArtifacts": [],
+        "access": {
+          "providerType": "aggregator",
+          "discoveryAccess": "paywalled",
+          "rowAccess": "unavailable",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "unknown",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "pending"
+        },
+        "review": {
+          "sourceRowStatus": "missing",
+          "conversionReadiness": "source_import_required",
+          "freshnessReview": "unknown",
+          "localeReview": "pending",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "pending",
+          "promotionState": "research_only",
+          "blockers": [
+            "source_unavailable",
+            "source_import_required",
+            "account_or_entitlement_required"
+          ]
+        }
+      },
+      "roles": [],
+      "canonicalPlan": {
+        "itemCount": 0,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "usable SourceRow를 획득하기 전에는 canonical draft가 없다."
+      },
+      "projectionAvailabilities": {
+        "calendar": false,
+        "checklist": false,
+        "todo": false,
+        "sheet": false,
+        "memo": false
+      },
+      "rationale": "명시된 domain만 home/living으로 남기고 title이나 user job에서 행·pattern·artifact를 만들지 않는다.",
+      "confidence": 1
+    }
+  ]
+}

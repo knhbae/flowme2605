@@ -1,0 +1,2142 @@
+{
+  "schemaVersion": "flow-content-generalization-runs-v1",
+  "phase": "final_holdout",
+  "revisionRound": 1,
+  "measurementNote": "Frozen revised decision-table interpretation by the rules session agent. No provider API was used; token counts and elapsed time were not exposed and are null. No retries or human case interventions occurred. The agent identity is execution provenance, not provider billing evidence.",
+  "runs": [
+    {
+      "schemaVersion": "flow-content-generalization-run-v1",
+      "caseId": "GB-13",
+      "benchmarkTrace": {
+        "split": "final_holdout",
+        "rulesHash": "dbc4770bfd028024ec31cfb888e4e77831af5bc0632a00309fec3b20c63ed3be",
+        "promptHash": "11c474338b8ba6504d3d62e785b14f0e87f5adfa392725a9b1e80952e9b7c84e",
+        "sealedSplitHash": "adae1b8aab5c80fda56f238721194bb789f54449532a79b04956dd3231c784fc"
+      },
+      "processor": {
+        "role": "rules",
+        "modelOrAgent": "frozen decision-table interpreter agent",
+        "actualProviderApiUsed": false,
+        "measuredInputTokens": null,
+        "measuredOutputTokens": null,
+        "elapsedMs": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0
+      },
+      "sourceAssessment": {
+        "completeness": "complete",
+        "acquiredRowIds": [
+          "RID-01",
+          "RID-02",
+          "RID-03",
+          "RID-04",
+          "RID-05",
+          "RID-06"
+        ],
+        "missingBoundary": [],
+        "sourceValueSemanticKeys": [
+          "application_channels",
+          "processing_duration",
+          "applicant_rules",
+          "receiving_office",
+          "required_materials",
+          "fee_options"
+        ]
+      },
+      "feasibility": {
+        "flowPossible": true,
+        "executableAllowed": true,
+        "state": "ready",
+        "reason": "신청 경로를 고르고 준비물을 챙겨 접수하는 한 번의 bounded 절차이므로 Checklist가 자연스럽다.",
+        "blockers": [
+          "freshness_review_required",
+          "privacy_review_required"
+        ]
+      },
+      "classification": {
+        "primaryLifeArea": "money_admin_purchase",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "주민등록증",
+          "재발급",
+          "행정신청"
+        ],
+        "sourceShape": "procedure_rows",
+        "primaryExecutionPattern": "ordered_procedure",
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": [
+          "memo"
+        ]
+      },
+      "sourceRowAssignments": [
+        {
+          "sourceRowId": "RID-01",
+          "role": "item",
+          "reason": "사용자가 완료 상태를 남길 수 있는 원문 기반 실행 행이다."
+        },
+        {
+          "sourceRowId": "RID-02",
+          "role": "reference",
+          "reason": "자격, 경계, 경고, 조건 또는 참고 정보로 보존할 행이다."
+        },
+        {
+          "sourceRowId": "RID-03",
+          "role": "reference",
+          "reason": "자격, 경계, 경고, 조건 또는 참고 정보로 보존할 행이다."
+        },
+        {
+          "sourceRowId": "RID-04",
+          "role": "reference",
+          "reason": "자격, 경계, 경고, 조건 또는 참고 정보로 보존할 행이다."
+        },
+        {
+          "sourceRowId": "RID-05",
+          "role": "item",
+          "reason": "사용자가 완료 상태를 남길 수 있는 원문 기반 실행 행이다."
+        },
+        {
+          "sourceRowId": "RID-06",
+          "role": "field",
+          "reason": "실행을 계산하거나 선택 결과를 유지하는 원문 기반 값이다."
+        }
+      ],
+      "canonical": {
+        "title": "주민등록증 재발급 신청 준비",
+        "items": [
+          {
+            "itemId": "gb13-channel",
+            "intent": "decision",
+            "title": "인터넷 또는 방문 신청 경로 정하기",
+            "detail": "원문이 허용하는 인터넷 신청과 방문 신청 중 사용할 경로를 정한다.",
+            "completion": {
+              "mode": "decision",
+              "doneWhen": "이번 신청에 사용할 경로를 하나 정했다."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "RID-01"
+            ]
+          },
+          {
+            "itemId": "gb13-materials",
+            "intent": "action",
+            "title": "사진과 기존 주민등록증 준비하기",
+            "detail": "6개월 이내 촬영한 3.5×4.5cm 사진과 기존 주민등록증을 준비하고, 해당되는 경우 추가 증빙 필요 여부를 확인한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "사진과 기존 주민등록증을 준비했고 해당되는 추가 증빙 여부를 확인했다."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "RID-05"
+            ]
+          },
+          {
+            "itemId": "gb13-submit",
+            "intent": "action",
+            "title": "선택한 경로로 재발급 신청 접수하기",
+            "detail": "인터넷으로 신청하거나 읍·면·동 기관에 방문해 접수한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "재발급 신청을 접수했다."
+            },
+            "schedule": null,
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "RID-01",
+              "RID-04"
+            ]
+          }
+        ],
+        "fields": [
+          {
+            "fieldId": "fee-options",
+            "label": "수수료 범위",
+            "value": "신청 방식 등에 따라 5천원 또는 1만원",
+            "sourceRefs": [
+              "RID-06"
+            ]
+          }
+        ],
+        "memos": [
+          {
+            "memoId": "gb13-boundaries",
+            "text": "신청자 자격·대리 신청 규칙, 14일 처리 기간, 방식별 수수료는 신청 직전 원문에서 확인한다.",
+            "sourceRefs": [
+              "RID-02",
+              "RID-03",
+              "RID-06"
+            ]
+          }
+        ],
+        "references": [
+          {
+            "referenceId": "gb13-processing",
+            "text": "처리 기간은 14일이다.",
+            "sourceRefs": [
+              "RID-02"
+            ]
+          },
+          {
+            "referenceId": "gb13-applicant",
+            "text": "신청자 자격과 대리 신청 가능 여부에 관한 규칙이 있다.",
+            "sourceRefs": [
+              "RID-03"
+            ]
+          },
+          {
+            "referenceId": "gb13-office",
+            "text": "읍·면·동 기관에서 접수하고 처리한다.",
+            "sourceRefs": [
+              "RID-04"
+            ]
+          }
+        ],
+        "conditionalResponses": []
+      },
+      "minimumInputs": [],
+      "projections": {
+        "calendar": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "checklist": {
+          "availability": "primary",
+          "payload": {
+            "itemIds": [
+              "gb13-channel",
+              "gb13-materials",
+              "gb13-submit"
+            ]
+          },
+          "losses": []
+        },
+        "todo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "sheet": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "memo": {
+          "availability": "secondary",
+          "payload": {
+            "referenceIds": [
+              "gb13-processing",
+              "gb13-applicant",
+              "gb13-office"
+            ],
+            "fieldIds": [
+              "fee-options"
+            ]
+          },
+          "losses": []
+        },
+        "ics": {
+          "eventCount": 0,
+          "actionVisible": false
+        }
+      },
+      "gates": {
+        "access": "open",
+        "rights": "unknown",
+        "freshness": "review_required",
+        "locale": "applicable",
+        "safety": "not_required",
+        "privacy": "review_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": true
+      },
+      "selfReview": {
+        "uncertainties": [
+          "자격·대리 신청 세부와 상황별 추가 증빙은 확보 행에 열거되어 있지 않아 원문 재확인이 필요하다."
+        ],
+        "omissions": [],
+        "potentialInventions": [],
+        "sourceValueReentryCount": 0,
+        "unscheduledIcsViolationCount": 0
+      }
+    },
+    {
+      "schemaVersion": "flow-content-generalization-run-v1",
+      "caseId": "GB-14",
+      "benchmarkTrace": {
+        "split": "final_holdout",
+        "rulesHash": "dbc4770bfd028024ec31cfb888e4e77831af5bc0632a00309fec3b20c63ed3be",
+        "promptHash": "11c474338b8ba6504d3d62e785b14f0e87f5adfa392725a9b1e80952e9b7c84e",
+        "sealedSplitHash": "adae1b8aab5c80fda56f238721194bb789f54449532a79b04956dd3231c784fc"
+      },
+      "processor": {
+        "role": "rules",
+        "modelOrAgent": "frozen decision-table interpreter agent",
+        "actualProviderApiUsed": false,
+        "measuredInputTokens": null,
+        "measuredOutputTokens": null,
+        "elapsedMs": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0
+      },
+      "sourceAssessment": {
+        "completeness": "complete",
+        "acquiredRowIds": [
+          "INF-01",
+          "INF-02",
+          "INF-03",
+          "INF-04",
+          "INF-05",
+          "INF-06",
+          "INF-07",
+          "INF-08",
+          "INF-09",
+          "INF-10",
+          "INF-11",
+          "INF-12",
+          "INF-13"
+        ],
+        "missingBoundary": [],
+        "sourceValueSemanticKeys": [
+          "screening_window_14_35_days",
+          "screening_window_4_6_months",
+          "screening_window_9_12_months",
+          "screening_window_18_24_months",
+          "oral_window_18_29_months",
+          "screening_window_30_36_months",
+          "oral_window_30_41_months",
+          "screening_window_42_48_months",
+          "oral_window_42_53_months",
+          "screening_window_54_60_months",
+          "oral_window_54_65_months",
+          "screening_window_66_71_months",
+          "missed_window_warning"
+        ]
+      },
+      "feasibility": {
+        "flowPossible": true,
+        "executableAllowed": true,
+        "state": "needs_confirmation",
+        "reason": "12개 검진 창은 아이 출생일 하나로 계산되므로 Calendar가 primary이며, anchor 확정 전에는 확인 대기 상태다.",
+        "blockers": [
+          "child_birth_date_required",
+          "freshness_review_required",
+          "medical_safety_review_required",
+          "privacy_review_required"
+        ]
+      },
+      "classification": {
+        "primaryLifeArea": "family_parenting",
+        "secondaryLifeAreas": [
+          "health_wellness"
+        ],
+        "topicTags": [
+          "영유아검진",
+          "구강검진",
+          "검진기간"
+        ],
+        "sourceShape": "date_offsets",
+        "primaryExecutionPattern": "date_preparation",
+        "primaryArtifact": "calendar",
+        "secondaryArtifacts": [
+          "sheet"
+        ]
+      },
+      "sourceRowAssignments": [
+        {
+          "sourceRowId": "INF-01",
+          "role": "item",
+          "reason": "사용자가 완료 상태를 남길 수 있는 원문 기반 실행 행이다."
+        },
+        {
+          "sourceRowId": "INF-02",
+          "role": "item",
+          "reason": "사용자가 완료 상태를 남길 수 있는 원문 기반 실행 행이다."
+        },
+        {
+          "sourceRowId": "INF-03",
+          "role": "item",
+          "reason": "사용자가 완료 상태를 남길 수 있는 원문 기반 실행 행이다."
+        },
+        {
+          "sourceRowId": "INF-04",
+          "role": "item",
+          "reason": "사용자가 완료 상태를 남길 수 있는 원문 기반 실행 행이다."
+        },
+        {
+          "sourceRowId": "INF-05",
+          "role": "item",
+          "reason": "사용자가 완료 상태를 남길 수 있는 원문 기반 실행 행이다."
+        },
+        {
+          "sourceRowId": "INF-06",
+          "role": "item",
+          "reason": "사용자가 완료 상태를 남길 수 있는 원문 기반 실행 행이다."
+        },
+        {
+          "sourceRowId": "INF-07",
+          "role": "item",
+          "reason": "사용자가 완료 상태를 남길 수 있는 원문 기반 실행 행이다."
+        },
+        {
+          "sourceRowId": "INF-08",
+          "role": "item",
+          "reason": "사용자가 완료 상태를 남길 수 있는 원문 기반 실행 행이다."
+        },
+        {
+          "sourceRowId": "INF-09",
+          "role": "item",
+          "reason": "사용자가 완료 상태를 남길 수 있는 원문 기반 실행 행이다."
+        },
+        {
+          "sourceRowId": "INF-10",
+          "role": "item",
+          "reason": "사용자가 완료 상태를 남길 수 있는 원문 기반 실행 행이다."
+        },
+        {
+          "sourceRowId": "INF-11",
+          "role": "item",
+          "reason": "사용자가 완료 상태를 남길 수 있는 원문 기반 실행 행이다."
+        },
+        {
+          "sourceRowId": "INF-12",
+          "role": "item",
+          "reason": "사용자가 완료 상태를 남길 수 있는 원문 기반 실행 행이다."
+        },
+        {
+          "sourceRowId": "INF-13",
+          "role": "reference",
+          "reason": "자격, 경계, 경고, 조건 또는 참고 정보로 보존할 행이다."
+        }
+      ],
+      "canonical": {
+        "title": "영유아 건강·구강검진 기간",
+        "items": [
+          {
+            "itemId": "gb14-health-1",
+            "intent": "action",
+            "title": "1차 건강검진",
+            "detail": "출생일을 기준으로 P14D부터 P35D까지의 원문 검진 창을 사용한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "1차 건강검진을 완료로 기록했다."
+            },
+            "schedule": {
+              "kind": "anchor_offset_window",
+              "anchorInputId": "child-birth-date",
+              "startOffset": "P14D",
+              "endOffset": "P35D",
+              "sourceRefs": [
+                "INF-01"
+              ]
+            },
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "INF-01"
+            ]
+          },
+          {
+            "itemId": "gb14-health-2",
+            "intent": "action",
+            "title": "4~6개월 건강검진",
+            "detail": "출생일을 기준으로 P4M부터 P6M까지의 원문 검진 창을 사용한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "4~6개월 건강검진을 완료로 기록했다."
+            },
+            "schedule": {
+              "kind": "anchor_offset_window",
+              "anchorInputId": "child-birth-date",
+              "startOffset": "P4M",
+              "endOffset": "P6M",
+              "sourceRefs": [
+                "INF-02"
+              ]
+            },
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "INF-02"
+            ]
+          },
+          {
+            "itemId": "gb14-health-3",
+            "intent": "action",
+            "title": "9~12개월 건강검진",
+            "detail": "출생일을 기준으로 P9M부터 P12M까지의 원문 검진 창을 사용한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "9~12개월 건강검진을 완료로 기록했다."
+            },
+            "schedule": {
+              "kind": "anchor_offset_window",
+              "anchorInputId": "child-birth-date",
+              "startOffset": "P9M",
+              "endOffset": "P12M",
+              "sourceRefs": [
+                "INF-03"
+              ]
+            },
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "INF-03"
+            ]
+          },
+          {
+            "itemId": "gb14-health-4",
+            "intent": "action",
+            "title": "18~24개월 건강검진",
+            "detail": "출생일을 기준으로 P18M부터 P24M까지의 원문 검진 창을 사용한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "18~24개월 건강검진을 완료로 기록했다."
+            },
+            "schedule": {
+              "kind": "anchor_offset_window",
+              "anchorInputId": "child-birth-date",
+              "startOffset": "P18M",
+              "endOffset": "P24M",
+              "sourceRefs": [
+                "INF-04"
+              ]
+            },
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "INF-04"
+            ]
+          },
+          {
+            "itemId": "gb14-oral-1",
+            "intent": "action",
+            "title": "18~29개월 구강검진",
+            "detail": "출생일을 기준으로 P18M부터 P29M까지의 원문 검진 창을 사용한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "18~29개월 구강검진을 완료로 기록했다."
+            },
+            "schedule": {
+              "kind": "anchor_offset_window",
+              "anchorInputId": "child-birth-date",
+              "startOffset": "P18M",
+              "endOffset": "P29M",
+              "sourceRefs": [
+                "INF-05"
+              ]
+            },
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "INF-05"
+            ]
+          },
+          {
+            "itemId": "gb14-health-5",
+            "intent": "action",
+            "title": "30~36개월 건강검진",
+            "detail": "출생일을 기준으로 P30M부터 P36M까지의 원문 검진 창을 사용한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "30~36개월 건강검진을 완료로 기록했다."
+            },
+            "schedule": {
+              "kind": "anchor_offset_window",
+              "anchorInputId": "child-birth-date",
+              "startOffset": "P30M",
+              "endOffset": "P36M",
+              "sourceRefs": [
+                "INF-06"
+              ]
+            },
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "INF-06"
+            ]
+          },
+          {
+            "itemId": "gb14-oral-2",
+            "intent": "action",
+            "title": "30~41개월 구강검진",
+            "detail": "출생일을 기준으로 P30M부터 P41M까지의 원문 검진 창을 사용한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "30~41개월 구강검진을 완료로 기록했다."
+            },
+            "schedule": {
+              "kind": "anchor_offset_window",
+              "anchorInputId": "child-birth-date",
+              "startOffset": "P30M",
+              "endOffset": "P41M",
+              "sourceRefs": [
+                "INF-07"
+              ]
+            },
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "INF-07"
+            ]
+          },
+          {
+            "itemId": "gb14-health-6",
+            "intent": "action",
+            "title": "42~48개월 건강검진",
+            "detail": "출생일을 기준으로 P42M부터 P48M까지의 원문 검진 창을 사용한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "42~48개월 건강검진을 완료로 기록했다."
+            },
+            "schedule": {
+              "kind": "anchor_offset_window",
+              "anchorInputId": "child-birth-date",
+              "startOffset": "P42M",
+              "endOffset": "P48M",
+              "sourceRefs": [
+                "INF-08"
+              ]
+            },
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "INF-08"
+            ]
+          },
+          {
+            "itemId": "gb14-oral-3",
+            "intent": "action",
+            "title": "42~53개월 구강검진",
+            "detail": "출생일을 기준으로 P42M부터 P53M까지의 원문 검진 창을 사용한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "42~53개월 구강검진을 완료로 기록했다."
+            },
+            "schedule": {
+              "kind": "anchor_offset_window",
+              "anchorInputId": "child-birth-date",
+              "startOffset": "P42M",
+              "endOffset": "P53M",
+              "sourceRefs": [
+                "INF-09"
+              ]
+            },
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "INF-09"
+            ]
+          },
+          {
+            "itemId": "gb14-health-7",
+            "intent": "action",
+            "title": "54~60개월 건강검진",
+            "detail": "출생일을 기준으로 P54M부터 P60M까지의 원문 검진 창을 사용한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "54~60개월 건강검진을 완료로 기록했다."
+            },
+            "schedule": {
+              "kind": "anchor_offset_window",
+              "anchorInputId": "child-birth-date",
+              "startOffset": "P54M",
+              "endOffset": "P60M",
+              "sourceRefs": [
+                "INF-10"
+              ]
+            },
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "INF-10"
+            ]
+          },
+          {
+            "itemId": "gb14-oral-4",
+            "intent": "action",
+            "title": "54~65개월 구강검진",
+            "detail": "출생일을 기준으로 P54M부터 P65M까지의 원문 검진 창을 사용한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "54~65개월 구강검진을 완료로 기록했다."
+            },
+            "schedule": {
+              "kind": "anchor_offset_window",
+              "anchorInputId": "child-birth-date",
+              "startOffset": "P54M",
+              "endOffset": "P65M",
+              "sourceRefs": [
+                "INF-11"
+              ]
+            },
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "INF-11"
+            ]
+          },
+          {
+            "itemId": "gb14-health-8",
+            "intent": "action",
+            "title": "66~71개월 건강검진",
+            "detail": "출생일을 기준으로 P66M부터 P71M까지의 원문 검진 창을 사용한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "66~71개월 건강검진을 완료로 기록했다."
+            },
+            "schedule": {
+              "kind": "anchor_offset_window",
+              "anchorInputId": "child-birth-date",
+              "startOffset": "P66M",
+              "endOffset": "P71M",
+              "sourceRefs": [
+                "INF-12"
+              ]
+            },
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "INF-12"
+            ]
+          }
+        ],
+        "fields": [
+          {
+            "fieldId": "child-birth-date",
+            "purpose": "user_schedule_anchor",
+            "sourceRefs": [
+              "INF-01",
+              "INF-12"
+            ]
+          }
+        ],
+        "memos": [],
+        "references": [
+          {
+            "referenceId": "gb14-missed-window",
+            "text": "검진 기간을 놓치면 지난 차수 검진을 나중에 받을 수 없다.",
+            "sourceRefs": [
+              "INF-13"
+            ]
+          }
+        ],
+        "conditionalResponses": []
+      },
+      "minimumInputs": [
+        {
+          "inputId": "child-birth-date",
+          "owner": "user",
+          "semanticKey": "child_birth_date",
+          "requiredBeforeFirstPreview": true,
+          "reason": "각 검진 기간을 실제 날짜로 계산하기 위한 사용자 소유 anchor다.",
+          "consumerRefs": [
+            "canonical:schedules",
+            "projection:calendar"
+          ]
+        }
+      ],
+      "projections": {
+        "calendar": {
+          "availability": "primary",
+          "payload": {
+            "status": "awaiting_user_anchor",
+            "anchorInputId": "child-birth-date",
+            "eventTemplateItemIds": [
+              "gb14-health-1",
+              "gb14-health-2",
+              "gb14-health-3",
+              "gb14-health-4",
+              "gb14-oral-1",
+              "gb14-health-5",
+              "gb14-oral-2",
+              "gb14-health-6",
+              "gb14-oral-3",
+              "gb14-health-7",
+              "gb14-oral-4",
+              "gb14-health-8"
+            ]
+          },
+          "losses": []
+        },
+        "checklist": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "todo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "sheet": {
+          "availability": "secondary",
+          "payload": {
+            "itemIds": [
+              "gb14-health-1",
+              "gb14-health-2",
+              "gb14-health-3",
+              "gb14-health-4",
+              "gb14-oral-1",
+              "gb14-health-5",
+              "gb14-oral-2",
+              "gb14-health-6",
+              "gb14-oral-3",
+              "gb14-health-7",
+              "gb14-oral-4",
+              "gb14-health-8"
+            ],
+            "columns": [
+              "검진",
+              "기간 시작",
+              "기간 종료",
+              "완료 상태"
+            ]
+          },
+          "losses": []
+        },
+        "memo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "ics": {
+          "eventCount": 0,
+          "actionVisible": false
+        }
+      },
+      "gates": {
+        "access": "open",
+        "rights": "unknown",
+        "freshness": "review_required",
+        "locale": "applicable",
+        "safety": "review_required",
+        "privacy": "review_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": true
+      },
+      "selfReview": {
+        "uncertainties": [
+          "검진 제도 일정 변경 가능성과 개별 아동 적용 여부는 공단 또는 의료 전문가 확인이 필요하다."
+        ],
+        "omissions": [],
+        "potentialInventions": [],
+        "sourceValueReentryCount": 0,
+        "unscheduledIcsViolationCount": 0
+      }
+    },
+    {
+      "schemaVersion": "flow-content-generalization-run-v1",
+      "caseId": "GB-15",
+      "benchmarkTrace": {
+        "split": "final_holdout",
+        "rulesHash": "dbc4770bfd028024ec31cfb888e4e77831af5bc0632a00309fec3b20c63ed3be",
+        "promptHash": "11c474338b8ba6504d3d62e785b14f0e87f5adfa392725a9b1e80952e9b7c84e",
+        "sealedSplitHash": "adae1b8aab5c80fda56f238721194bb789f54449532a79b04956dd3231c784fc"
+      },
+      "processor": {
+        "role": "rules",
+        "modelOrAgent": "frozen decision-table interpreter agent",
+        "actualProviderApiUsed": false,
+        "measuredInputTokens": null,
+        "measuredOutputTokens": null,
+        "elapsedMs": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0
+      },
+      "sourceAssessment": {
+        "completeness": "partial",
+        "acquiredRowIds": [
+          "NHI-01",
+          "NHI-02",
+          "NHI-03",
+          "NHI-04",
+          "NHI-05",
+          "NHI-06",
+          "NHI-07",
+          "NHI-08",
+          "NHI-09",
+          "NHI-10",
+          "NHI-11",
+          "NHI-12",
+          "NHI-13"
+        ],
+        "missingBoundary": [
+          "주제별 날짜, 시작 시각, 강의실은 문서에 없다."
+        ],
+        "sourceValueSemanticKeys": [
+          "course_date_range",
+          "audience_capacity_fee",
+          "topic_duration_rows"
+        ]
+      },
+      "feasibility": {
+        "flowPossible": false,
+        "executableAllowed": false,
+        "state": "source_import_required",
+        "reason": "과정 날짜 범위와 주제별 시간만 있고 주제별 날짜·시작 시각·강의실이 없어 실행 가능한 시간표를 만들 수 없다.",
+        "blockers": [
+          "detailed_timetable_missing",
+          "source_import_required"
+        ]
+      },
+      "classification": {
+        "primaryLifeArea": "work_career",
+        "secondaryLifeAreas": [
+          "study_reading"
+        ],
+        "topicTags": [
+          "공공교육",
+          "국제정세",
+          "집합교육"
+        ],
+        "sourceShape": null,
+        "primaryExecutionPattern": null,
+        "primaryArtifact": null,
+        "secondaryArtifacts": []
+      },
+      "sourceRowAssignments": [
+        {
+          "sourceRowId": "NHI-01",
+          "role": "reference",
+          "reason": "자격, 경계, 경고, 조건 또는 참고 정보로 보존할 행이다."
+        },
+        {
+          "sourceRowId": "NHI-02",
+          "role": "reference",
+          "reason": "자격, 경계, 경고, 조건 또는 참고 정보로 보존할 행이다."
+        },
+        {
+          "sourceRowId": "NHI-03",
+          "role": "reference",
+          "reason": "자격, 경계, 경고, 조건 또는 참고 정보로 보존할 행이다."
+        },
+        {
+          "sourceRowId": "NHI-04",
+          "role": "reference",
+          "reason": "자격, 경계, 경고, 조건 또는 참고 정보로 보존할 행이다."
+        },
+        {
+          "sourceRowId": "NHI-05",
+          "role": "reference",
+          "reason": "자격, 경계, 경고, 조건 또는 참고 정보로 보존할 행이다."
+        },
+        {
+          "sourceRowId": "NHI-06",
+          "role": "reference",
+          "reason": "자격, 경계, 경고, 조건 또는 참고 정보로 보존할 행이다."
+        },
+        {
+          "sourceRowId": "NHI-07",
+          "role": "reference",
+          "reason": "자격, 경계, 경고, 조건 또는 참고 정보로 보존할 행이다."
+        },
+        {
+          "sourceRowId": "NHI-08",
+          "role": "reference",
+          "reason": "자격, 경계, 경고, 조건 또는 참고 정보로 보존할 행이다."
+        },
+        {
+          "sourceRowId": "NHI-09",
+          "role": "reference",
+          "reason": "자격, 경계, 경고, 조건 또는 참고 정보로 보존할 행이다."
+        },
+        {
+          "sourceRowId": "NHI-10",
+          "role": "reference",
+          "reason": "자격, 경계, 경고, 조건 또는 참고 정보로 보존할 행이다."
+        },
+        {
+          "sourceRowId": "NHI-11",
+          "role": "reference",
+          "reason": "자격, 경계, 경고, 조건 또는 참고 정보로 보존할 행이다."
+        },
+        {
+          "sourceRowId": "NHI-12",
+          "role": "reference",
+          "reason": "자격, 경계, 경고, 조건 또는 참고 정보로 보존할 행이다."
+        },
+        {
+          "sourceRowId": "NHI-13",
+          "role": "reference",
+          "reason": "자격, 경계, 경고, 조건 또는 참고 정보로 보존할 행이다."
+        }
+      ],
+      "canonical": {
+        "title": null,
+        "items": [],
+        "fields": [],
+        "memos": [],
+        "references": [],
+        "conditionalResponses": []
+      },
+      "minimumInputs": [
+        {
+          "inputId": "detailed-timetable-source",
+          "owner": "creator",
+          "semanticKey": "source_import_file",
+          "requiredBeforeFirstPreview": true,
+          "reason": "주제별 날짜·시작 시각·강의실을 확보하는 creator acquisition 입력이다.",
+          "consumerRefs": [
+            "sourceAssessment",
+            "canonical"
+          ]
+        }
+      ],
+      "projections": {
+        "calendar": {
+          "availability": "blocked",
+          "payload": null,
+          "losses": [
+            {
+              "code": "conversion_stopped"
+            }
+          ]
+        },
+        "checklist": {
+          "availability": "blocked",
+          "payload": null,
+          "losses": [
+            {
+              "code": "conversion_stopped"
+            }
+          ]
+        },
+        "todo": {
+          "availability": "blocked",
+          "payload": null,
+          "losses": [
+            {
+              "code": "conversion_stopped"
+            }
+          ]
+        },
+        "sheet": {
+          "availability": "blocked",
+          "payload": null,
+          "losses": [
+            {
+              "code": "conversion_stopped"
+            }
+          ]
+        },
+        "memo": {
+          "availability": "blocked",
+          "payload": null,
+          "losses": [
+            {
+              "code": "conversion_stopped"
+            }
+          ]
+        },
+        "ics": {
+          "eventCount": 0,
+          "actionVisible": false
+        }
+      },
+      "gates": {
+        "access": "open",
+        "rights": "unknown",
+        "freshness": "passed",
+        "locale": "applicable",
+        "safety": "not_required",
+        "privacy": "not_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": false
+      },
+      "selfReview": {
+        "uncertainties": [
+          "주제별 배치와 실제 회차 순서는 확보한 문서만으로 확정할 수 없다."
+        ],
+        "omissions": [
+          "주제별 날짜, 시작 시각, 강의실은 문서에 없다."
+        ],
+        "potentialInventions": [],
+        "sourceValueReentryCount": 0,
+        "unscheduledIcsViolationCount": 0
+      }
+    },
+    {
+      "schemaVersion": "flow-content-generalization-run-v1",
+      "caseId": "GB-16",
+      "benchmarkTrace": {
+        "split": "final_holdout",
+        "rulesHash": "dbc4770bfd028024ec31cfb888e4e77831af5bc0632a00309fec3b20c63ed3be",
+        "promptHash": "11c474338b8ba6504d3d62e785b14f0e87f5adfa392725a9b1e80952e9b7c84e",
+        "sealedSplitHash": "adae1b8aab5c80fda56f238721194bb789f54449532a79b04956dd3231c784fc"
+      },
+      "processor": {
+        "role": "rules",
+        "modelOrAgent": "frozen decision-table interpreter agent",
+        "actualProviderApiUsed": false,
+        "measuredInputTokens": null,
+        "measuredOutputTokens": null,
+        "elapsedMs": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0
+      },
+      "sourceAssessment": {
+        "completeness": "complete",
+        "acquiredRowIds": [
+          "TPL-01",
+          "TPL-02",
+          "TPL-03",
+          "TPL-04",
+          "TPL-05",
+          "TPL-06",
+          "TPL-07",
+          "TPL-08"
+        ],
+        "missingBoundary": [
+          "Week와 Day는 상대 템플릿 값이며 실제 게시 날짜는 없다."
+        ],
+        "sourceValueSemanticKeys": [
+          "template_week_day_platform_content_rows",
+          "template_columns"
+        ]
+      },
+      "feasibility": {
+        "flowPossible": true,
+        "executableAllowed": true,
+        "state": "ready",
+        "reason": "8개 계획 행의 플랫폼·콘텐츠·상태를 다음 세션까지 보존해야 하므로 Sheet가 primary다.",
+        "blockers": [
+          "locale_review_required",
+          "privacy_review_required"
+        ]
+      },
+      "classification": {
+        "primaryLifeArea": "work_career",
+        "secondaryLifeAreas": [
+          "creative_hobby"
+        ],
+        "topicTags": [
+          "소셜미디어",
+          "콘텐츠플랜",
+          "게시상태"
+        ],
+        "sourceShape": "table_rows",
+        "primaryExecutionPattern": "progress_tracking",
+        "primaryArtifact": "sheet",
+        "secondaryArtifacts": [
+          "calendar"
+        ]
+      },
+      "sourceRowAssignments": [
+        {
+          "sourceRowId": "TPL-01",
+          "role": "item",
+          "reason": "사용자가 완료 상태를 남길 수 있는 원문 기반 실행 행이다."
+        },
+        {
+          "sourceRowId": "TPL-02",
+          "role": "item",
+          "reason": "사용자가 완료 상태를 남길 수 있는 원문 기반 실행 행이다."
+        },
+        {
+          "sourceRowId": "TPL-03",
+          "role": "item",
+          "reason": "사용자가 완료 상태를 남길 수 있는 원문 기반 실행 행이다."
+        },
+        {
+          "sourceRowId": "TPL-04",
+          "role": "item",
+          "reason": "사용자가 완료 상태를 남길 수 있는 원문 기반 실행 행이다."
+        },
+        {
+          "sourceRowId": "TPL-05",
+          "role": "item",
+          "reason": "사용자가 완료 상태를 남길 수 있는 원문 기반 실행 행이다."
+        },
+        {
+          "sourceRowId": "TPL-06",
+          "role": "item",
+          "reason": "사용자가 완료 상태를 남길 수 있는 원문 기반 실행 행이다."
+        },
+        {
+          "sourceRowId": "TPL-07",
+          "role": "item",
+          "reason": "사용자가 완료 상태를 남길 수 있는 원문 기반 실행 행이다."
+        },
+        {
+          "sourceRowId": "TPL-08",
+          "role": "item",
+          "reason": "사용자가 완료 상태를 남길 수 있는 원문 기반 실행 행이다."
+        }
+      ],
+      "canonical": {
+        "title": "2주 소셜 미디어 콘텐츠 플랜",
+        "items": [
+          {
+            "itemId": "gb16-row-1",
+            "intent": "action",
+            "title": "1주 월요일 Instagram 작업 공간 게시물",
+            "detail": "Instagram 이미지로 작업 공간과 주간 시작을 공유한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "해당 게시물을 게시 완료로 기록했다."
+            },
+            "schedule": {
+              "kind": "relative_week_day",
+              "anchorInputId": "plan-start-date",
+              "week": 1,
+              "day": "monday",
+              "sourceRefs": [
+                "TPL-01"
+              ]
+            },
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "TPL-01"
+            ]
+          },
+          {
+            "itemId": "gb16-row-2",
+            "intent": "action",
+            "title": "1주 수요일 Instagram/TikTok FAQ 게시물",
+            "detail": "Instagram/TikTok 교육형 FAQ 콘텐츠다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "해당 게시물을 게시 완료로 기록했다."
+            },
+            "schedule": {
+              "kind": "relative_week_day",
+              "anchorInputId": "plan-start-date",
+              "week": 1,
+              "day": "wednesday",
+              "sourceRefs": [
+                "TPL-02"
+              ]
+            },
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "TPL-02"
+            ]
+          },
+          {
+            "itemId": "gb16-row-3",
+            "intent": "action",
+            "title": "1주 금요일 LinkedIn 업계 인사이트 게시물",
+            "detail": "LinkedIn 업계 인사이트 콘텐츠다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "해당 게시물을 게시 완료로 기록했다."
+            },
+            "schedule": {
+              "kind": "relative_week_day",
+              "anchorInputId": "plan-start-date",
+              "week": 1,
+              "day": "friday",
+              "sourceRefs": [
+                "TPL-03"
+              ]
+            },
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "TPL-03"
+            ]
+          },
+          {
+            "itemId": "gb16-row-4",
+            "intent": "action",
+            "title": "1주 토요일 Instagram Stories 질문 게시물",
+            "detail": "Instagram Stories 커뮤니티 질문 콘텐츠다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "해당 게시물을 게시 완료로 기록했다."
+            },
+            "schedule": {
+              "kind": "relative_week_day",
+              "anchorInputId": "plan-start-date",
+              "week": 1,
+              "day": "saturday",
+              "sourceRefs": [
+                "TPL-04"
+              ]
+            },
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "TPL-04"
+            ]
+          },
+          {
+            "itemId": "gb16-row-5",
+            "intent": "action",
+            "title": "2주 화요일 Instagram Reel 고객 사례 게시물",
+            "detail": "Instagram Reel 고객 사례 콘텐츠다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "해당 게시물을 게시 완료로 기록했다."
+            },
+            "schedule": {
+              "kind": "relative_week_day",
+              "anchorInputId": "plan-start-date",
+              "week": 2,
+              "day": "tuesday",
+              "sourceRefs": [
+                "TPL-05"
+              ]
+            },
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "TPL-05"
+            ]
+          },
+          {
+            "itemId": "gb16-row-6",
+            "intent": "action",
+            "title": "2주 수요일 LinkedIn/X 교육 게시물",
+            "detail": "LinkedIn/X 교육형 콘텐츠다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "해당 게시물을 게시 완료로 기록했다."
+            },
+            "schedule": {
+              "kind": "relative_week_day",
+              "anchorInputId": "plan-start-date",
+              "week": 2,
+              "day": "wednesday",
+              "sourceRefs": [
+                "TPL-06"
+              ]
+            },
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "TPL-06"
+            ]
+          },
+          {
+            "itemId": "gb16-row-7",
+            "intent": "action",
+            "title": "2주 목요일 YouTube Shorts 비하인드 게시물",
+            "detail": "YouTube Shorts 비하인드 콘텐츠다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "해당 게시물을 게시 완료로 기록했다."
+            },
+            "schedule": {
+              "kind": "relative_week_day",
+              "anchorInputId": "plan-start-date",
+              "week": 2,
+              "day": "thursday",
+              "sourceRefs": [
+                "TPL-07"
+              ]
+            },
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "TPL-07"
+            ]
+          },
+          {
+            "itemId": "gb16-row-8",
+            "intent": "action",
+            "title": "2주 금요일 모든 플랫폼 제품·서비스 게시물",
+            "detail": "모든 플랫폼에 제품 또는 서비스 콘텐츠를 게시한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "해당 게시물을 게시 완료로 기록했다."
+            },
+            "schedule": {
+              "kind": "relative_week_day",
+              "anchorInputId": "plan-start-date",
+              "week": 2,
+              "day": "friday",
+              "sourceRefs": [
+                "TPL-08"
+              ]
+            },
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "TPL-08"
+            ]
+          }
+        ],
+        "fields": [
+          {
+            "fieldId": "row-status",
+            "purpose": "progress_state",
+            "allowedValues": [
+              "planned",
+              "in_progress",
+              "published"
+            ],
+            "sourceRefs": [
+              "TPL-01",
+              "TPL-08"
+            ]
+          }
+        ],
+        "memos": [],
+        "references": [],
+        "conditionalResponses": []
+      },
+      "minimumInputs": [
+        {
+          "inputId": "plan-start-date",
+          "owner": "user",
+          "semanticKey": "content_plan_start_date",
+          "requiredBeforeFirstPreview": false,
+          "reason": "상대 Week·Day를 실제 날짜로 내보낼 때만 필요한 선택 anchor다.",
+          "consumerRefs": [
+            "canonical:schedules",
+            "projection:calendar"
+          ]
+        }
+      ],
+      "projections": {
+        "calendar": {
+          "availability": "secondary",
+          "payload": {
+            "status": "awaiting_optional_user_anchor",
+            "anchorInputId": "plan-start-date",
+            "eventTemplateItemIds": [
+              "gb16-row-1",
+              "gb16-row-2",
+              "gb16-row-3",
+              "gb16-row-4",
+              "gb16-row-5",
+              "gb16-row-6",
+              "gb16-row-7",
+              "gb16-row-8"
+            ]
+          },
+          "losses": []
+        },
+        "checklist": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "todo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "sheet": {
+          "availability": "primary",
+          "payload": {
+            "itemIds": [
+              "gb16-row-1",
+              "gb16-row-2",
+              "gb16-row-3",
+              "gb16-row-4",
+              "gb16-row-5",
+              "gb16-row-6",
+              "gb16-row-7",
+              "gb16-row-8"
+            ],
+            "columns": [
+              "Week",
+              "Day",
+              "Platform(s)",
+              "Content Type",
+              "Theme",
+              "Post Description",
+              "Tactics",
+              "Status"
+            ]
+          },
+          "losses": []
+        },
+        "memo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "ics": {
+          "eventCount": 0,
+          "actionVisible": false
+        }
+      },
+      "gates": {
+        "access": "open",
+        "rights": "unknown",
+        "freshness": "passed",
+        "locale": "review_required",
+        "safety": "not_required",
+        "privacy": "review_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": true
+      },
+      "selfReview": {
+        "uncertainties": [
+          "Week와 Day는 상대 템플릿 값이므로 시작일 없이 실제 게시 날짜나 ICS를 만들 수 없다."
+        ],
+        "omissions": [
+          "Week와 Day는 상대 템플릿 값이며 실제 게시 날짜는 없다."
+        ],
+        "potentialInventions": [],
+        "sourceValueReentryCount": 0,
+        "unscheduledIcsViolationCount": 0
+      }
+    },
+    {
+      "schemaVersion": "flow-content-generalization-run-v1",
+      "caseId": "GB-17",
+      "benchmarkTrace": {
+        "split": "final_holdout",
+        "rulesHash": "dbc4770bfd028024ec31cfb888e4e77831af5bc0632a00309fec3b20c63ed3be",
+        "promptHash": "11c474338b8ba6504d3d62e785b14f0e87f5adfa392725a9b1e80952e9b7c84e",
+        "sealedSplitHash": "adae1b8aab5c80fda56f238721194bb789f54449532a79b04956dd3231c784fc"
+      },
+      "processor": {
+        "role": "rules",
+        "modelOrAgent": "frozen decision-table interpreter agent",
+        "actualProviderApiUsed": false,
+        "measuredInputTokens": null,
+        "measuredOutputTokens": null,
+        "elapsedMs": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0
+      },
+      "sourceAssessment": {
+        "completeness": "complete",
+        "acquiredRowIds": [
+          "UKV-01",
+          "UKV-02",
+          "UKV-03",
+          "UKV-04",
+          "UKV-05",
+          "UKV-06",
+          "UKV-07",
+          "UKV-08",
+          "UKV-09"
+        ],
+        "missingBoundary": [
+          "임상 위험군과 선택 접종의 세부 적용은 이 행 집합만으로 확정할 수 없다."
+        ],
+        "sourceValueSemanticKeys": [
+          "routine_age_8_weeks",
+          "routine_age_12_weeks",
+          "routine_age_16_weeks",
+          "routine_age_1_year",
+          "routine_age_18_months_branch",
+          "routine_age_3y4m_branch",
+          "routine_age_12_13_years",
+          "routine_age_14_years",
+          "clinical_risk_boundary"
+        ]
+      },
+      "feasibility": {
+        "flowPossible": true,
+        "executableAllowed": true,
+        "state": "needs_confirmation",
+        "reason": "정기 접종 연령은 아이 출생일로 계산되므로 Calendar가 primary이며, 영국 일정 적용 여부와 출생일 확인이 필요하다.",
+        "blockers": [
+          "child_birth_date_required",
+          "uk_routine_applicability_required",
+          "medical_safety_review_required",
+          "privacy_review_required"
+        ]
+      },
+      "classification": {
+        "primaryLifeArea": "family_parenting",
+        "secondaryLifeAreas": [
+          "health_wellness"
+        ],
+        "topicTags": [
+          "영국예방접종",
+          "정기접종",
+          "연령일정"
+        ],
+        "sourceShape": "date_offsets",
+        "primaryExecutionPattern": "date_preparation",
+        "primaryArtifact": "calendar",
+        "secondaryArtifacts": [
+          "sheet"
+        ]
+      },
+      "sourceRowAssignments": [
+        {
+          "sourceRowId": "UKV-01",
+          "role": "item",
+          "reason": "사용자가 완료 상태를 남길 수 있는 원문 기반 실행 행이다."
+        },
+        {
+          "sourceRowId": "UKV-02",
+          "role": "item",
+          "reason": "사용자가 완료 상태를 남길 수 있는 원문 기반 실행 행이다."
+        },
+        {
+          "sourceRowId": "UKV-03",
+          "role": "item",
+          "reason": "사용자가 완료 상태를 남길 수 있는 원문 기반 실행 행이다."
+        },
+        {
+          "sourceRowId": "UKV-04",
+          "role": "item",
+          "reason": "사용자가 완료 상태를 남길 수 있는 원문 기반 실행 행이다."
+        },
+        {
+          "sourceRowId": "UKV-05",
+          "role": "item",
+          "reason": "사용자가 완료 상태를 남길 수 있는 원문 기반 실행 행이다."
+        },
+        {
+          "sourceRowId": "UKV-06",
+          "role": "item",
+          "reason": "사용자가 완료 상태를 남길 수 있는 원문 기반 실행 행이다."
+        },
+        {
+          "sourceRowId": "UKV-07",
+          "role": "item",
+          "reason": "사용자가 완료 상태를 남길 수 있는 원문 기반 실행 행이다."
+        },
+        {
+          "sourceRowId": "UKV-08",
+          "role": "item",
+          "reason": "사용자가 완료 상태를 남길 수 있는 원문 기반 실행 행이다."
+        },
+        {
+          "sourceRowId": "UKV-09",
+          "role": "reference",
+          "reason": "자격, 경계, 경고, 조건 또는 참고 정보로 보존할 행이다."
+        }
+      ],
+      "canonical": {
+        "title": "영국 정기 예방접종 연령 일정",
+        "items": [
+          {
+            "itemId": "gb17-8w",
+            "intent": "action",
+            "title": "생후 8주 정기 예방접종",
+            "detail": "출생일을 기준으로 원문에 표시된 영국 정기 예방접종 연령에 맞춰 확인한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "생후 8주 정기 예방접종을 완료로 기록했다."
+            },
+            "schedule": {
+              "kind": "anchor_offset",
+              "offset": "P8W",
+              "anchorInputId": "child-birth-date",
+              "sourceRefs": [
+                "UKV-01"
+              ]
+            },
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "UKV-01"
+            ]
+          },
+          {
+            "itemId": "gb17-12w",
+            "intent": "action",
+            "title": "생후 12주 정기 예방접종",
+            "detail": "출생일을 기준으로 원문에 표시된 영국 정기 예방접종 연령에 맞춰 확인한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "생후 12주 정기 예방접종을 완료로 기록했다."
+            },
+            "schedule": {
+              "kind": "anchor_offset",
+              "offset": "P12W",
+              "anchorInputId": "child-birth-date",
+              "sourceRefs": [
+                "UKV-02"
+              ]
+            },
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "UKV-02"
+            ]
+          },
+          {
+            "itemId": "gb17-16w",
+            "intent": "action",
+            "title": "생후 16주 정기 예방접종",
+            "detail": "출생일을 기준으로 원문에 표시된 영국 정기 예방접종 연령에 맞춰 확인한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "생후 16주 정기 예방접종을 완료로 기록했다."
+            },
+            "schedule": {
+              "kind": "anchor_offset",
+              "offset": "P16W",
+              "anchorInputId": "child-birth-date",
+              "sourceRefs": [
+                "UKV-03"
+              ]
+            },
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "UKV-03"
+            ]
+          },
+          {
+            "itemId": "gb17-1y",
+            "intent": "action",
+            "title": "만 1세 정기 예방접종",
+            "detail": "출생일을 기준으로 원문에 표시된 영국 정기 예방접종 연령에 맞춰 확인한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "만 1세 정기 예방접종을 완료로 기록했다."
+            },
+            "schedule": {
+              "kind": "anchor_offset",
+              "offset": "P1Y",
+              "anchorInputId": "child-birth-date",
+              "sourceRefs": [
+                "UKV-04"
+              ]
+            },
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "UKV-04"
+            ]
+          },
+          {
+            "itemId": "gb17-18m",
+            "intent": "action",
+            "title": "생후 18개월 분기 대상 확인",
+            "detail": "출생일을 기준으로 원문에 표시된 영국 정기 예방접종 연령에 맞춰 확인한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "생후 18개월 분기 대상 확인을 완료로 기록했다."
+            },
+            "schedule": {
+              "kind": "anchor_offset",
+              "offset": "P18M",
+              "conditionalApplicability": true,
+              "anchorInputId": "child-birth-date",
+              "sourceRefs": [
+                "UKV-05"
+              ]
+            },
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "UKV-05"
+            ]
+          },
+          {
+            "itemId": "gb17-3y4m",
+            "intent": "action",
+            "title": "만 3세 4개월 분기 대상 확인",
+            "detail": "출생일을 기준으로 원문에 표시된 영국 정기 예방접종 연령에 맞춰 확인한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "만 3세 4개월 분기 대상 확인을 완료로 기록했다."
+            },
+            "schedule": {
+              "kind": "anchor_offset",
+              "offset": "P3Y4M",
+              "conditionalApplicability": true,
+              "anchorInputId": "child-birth-date",
+              "sourceRefs": [
+                "UKV-06"
+              ]
+            },
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "UKV-06"
+            ]
+          },
+          {
+            "itemId": "gb17-12-13y",
+            "intent": "action",
+            "title": "만 12~13세 HPV 접종",
+            "detail": "출생일을 기준으로 원문에 표시된 영국 정기 예방접종 연령에 맞춰 확인한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "만 12~13세 HPV 접종을 완료로 기록했다."
+            },
+            "schedule": {
+              "kind": "anchor_offset_window",
+              "startOffset": "P12Y",
+              "endOffset": "P13Y",
+              "anchorInputId": "child-birth-date",
+              "sourceRefs": [
+                "UKV-07"
+              ]
+            },
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "UKV-07"
+            ]
+          },
+          {
+            "itemId": "gb17-14y",
+            "intent": "action",
+            "title": "만 14세 Td/IPV·MenACWY 접종",
+            "detail": "출생일을 기준으로 원문에 표시된 영국 정기 예방접종 연령에 맞춰 확인한다.",
+            "completion": {
+              "mode": "check",
+              "doneWhen": "만 14세 Td/IPV·MenACWY 접종을 완료로 기록했다."
+            },
+            "schedule": {
+              "kind": "anchor_offset",
+              "offset": "P14Y",
+              "anchorInputId": "child-birth-date",
+              "sourceRefs": [
+                "UKV-08"
+              ]
+            },
+            "location": null,
+            "fields": [],
+            "conditions": [],
+            "sourceRefs": [
+              "UKV-08"
+            ]
+          }
+        ],
+        "fields": [
+          {
+            "fieldId": "child-birth-date",
+            "purpose": "user_schedule_anchor",
+            "sourceRefs": [
+              "UKV-01",
+              "UKV-08"
+            ]
+          },
+          {
+            "fieldId": "uk-routine-applicability",
+            "purpose": "user_applicability_confirmation",
+            "sourceRefs": [
+              "UKV-09"
+            ]
+          }
+        ],
+        "memos": [],
+        "references": [
+          {
+            "referenceId": "gb17-clinical-boundary",
+            "text": "임상 위험군과 선택 접종은 별도 표와 임상 판단이 필요하다.",
+            "sourceRefs": [
+              "UKV-09"
+            ]
+          }
+        ],
+        "conditionalResponses": []
+      },
+      "minimumInputs": [
+        {
+          "inputId": "child-birth-date",
+          "owner": "user",
+          "semanticKey": "child_birth_date",
+          "requiredBeforeFirstPreview": true,
+          "reason": "연령 항목을 실제 날짜로 계산하기 위한 사용자 소유 anchor다.",
+          "consumerRefs": [
+            "canonical:schedules",
+            "projection:calendar"
+          ]
+        },
+        {
+          "inputId": "uk-routine-applicability",
+          "owner": "user",
+          "semanticKey": "uk_routine_schedule_applicability",
+          "requiredBeforeFirstPreview": true,
+          "reason": "영국 정기 일정이 적용되는 사용자인지와 별도 임상 위험군 판단 필요 여부를 확인한다.",
+          "consumerRefs": [
+            "canonical:fields",
+            "gates:locale",
+            "gates:safety"
+          ]
+        }
+      ],
+      "projections": {
+        "calendar": {
+          "availability": "primary",
+          "payload": {
+            "status": "awaiting_user_confirmation",
+            "anchorInputId": "child-birth-date",
+            "applicabilityInputId": "uk-routine-applicability",
+            "eventTemplateItemIds": [
+              "gb17-8w",
+              "gb17-12w",
+              "gb17-16w",
+              "gb17-1y",
+              "gb17-18m",
+              "gb17-3y4m",
+              "gb17-12-13y",
+              "gb17-14y"
+            ]
+          },
+          "losses": []
+        },
+        "checklist": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "todo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "sheet": {
+          "availability": "secondary",
+          "payload": {
+            "itemIds": [
+              "gb17-8w",
+              "gb17-12w",
+              "gb17-16w",
+              "gb17-1y",
+              "gb17-18m",
+              "gb17-3y4m",
+              "gb17-12-13y",
+              "gb17-14y"
+            ],
+            "columns": [
+              "연령",
+              "계산 날짜",
+              "적용 분기",
+              "완료 상태"
+            ]
+          },
+          "losses": []
+        },
+        "memo": {
+          "availability": "not_applicable",
+          "payload": null,
+          "losses": []
+        },
+        "ics": {
+          "eventCount": 0,
+          "actionVisible": false
+        }
+      },
+      "gates": {
+        "access": "open",
+        "rights": "open",
+        "freshness": "passed",
+        "locale": "review_required",
+        "safety": "review_required",
+        "privacy": "review_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": true
+      },
+      "selfReview": {
+        "uncertainties": [
+          "임상 위험군·선택 접종 세부와 출생일 분기별 실제 항목은 별도 표 또는 임상 판단이 필요하다."
+        ],
+        "omissions": [
+          "임상 위험군과 선택 접종의 세부 적용은 이 행 집합만으로 확정할 수 없다."
+        ],
+        "potentialInventions": [],
+        "sourceValueReentryCount": 0,
+        "unscheduledIcsViolationCount": 0
+      }
+    },
+    {
+      "schemaVersion": "flow-content-generalization-run-v1",
+      "caseId": "GB-18",
+      "benchmarkTrace": {
+        "split": "final_holdout",
+        "rulesHash": "dbc4770bfd028024ec31cfb888e4e77831af5bc0632a00309fec3b20c63ed3be",
+        "promptHash": "11c474338b8ba6504d3d62e785b14f0e87f5adfa392725a9b1e80952e9b7c84e",
+        "sealedSplitHash": "adae1b8aab5c80fda56f238721194bb789f54449532a79b04956dd3231c784fc"
+      },
+      "processor": {
+        "role": "rules",
+        "modelOrAgent": "frozen decision-table interpreter agent",
+        "actualProviderApiUsed": false,
+        "measuredInputTokens": null,
+        "measuredOutputTokens": null,
+        "elapsedMs": null,
+        "retryCount": 0,
+        "humanInterventionCount": 0
+      },
+      "sourceAssessment": {
+        "completeness": "partial",
+        "acquiredRowIds": [
+          "BUF-01",
+          "BUF-02",
+          "BUF-03",
+          "BUF-04",
+          "BUF-05"
+        ],
+        "missingBoundary": [
+          "계속 갱신되는 컬렉션으로 한 가지 사용자 일과 고정된 완전 행 집합이 정해져 있지 않다."
+        ],
+        "sourceValueSemanticKeys": [
+          "template_idea_collection"
+        ]
+      },
+      "feasibility": {
+        "flowPossible": false,
+        "executableAllowed": false,
+        "state": "hold",
+        "reason": "계속 바뀌는 템플릿 컬렉션이고 하나의 사용자 일과 완전한 고정 행 집합이 정해지지 않아 변환을 보류한다.",
+        "blockers": [
+          "no_single_bounded_user_job",
+          "open_ended_collection",
+          "source_boundary_incomplete"
+        ]
+      },
+      "classification": {
+        "primaryLifeArea": "work_career",
+        "secondaryLifeAreas": [
+          "creative_hobby"
+        ],
+        "topicTags": [
+          "소셜미디어",
+          "게시물아이디어",
+          "템플릿컬렉션"
+        ],
+        "sourceShape": null,
+        "primaryExecutionPattern": null,
+        "primaryArtifact": null,
+        "secondaryArtifacts": []
+      },
+      "sourceRowAssignments": [
+        {
+          "sourceRowId": "BUF-01",
+          "role": "reference",
+          "reason": "자격, 경계, 경고, 조건 또는 참고 정보로 보존할 행이다."
+        },
+        {
+          "sourceRowId": "BUF-02",
+          "role": "reference",
+          "reason": "자격, 경계, 경고, 조건 또는 참고 정보로 보존할 행이다."
+        },
+        {
+          "sourceRowId": "BUF-03",
+          "role": "reference",
+          "reason": "자격, 경계, 경고, 조건 또는 참고 정보로 보존할 행이다."
+        },
+        {
+          "sourceRowId": "BUF-04",
+          "role": "reference",
+          "reason": "자격, 경계, 경고, 조건 또는 참고 정보로 보존할 행이다."
+        },
+        {
+          "sourceRowId": "BUF-05",
+          "role": "reference",
+          "reason": "자격, 경계, 경고, 조건 또는 참고 정보로 보존할 행이다."
+        }
+      ],
+      "canonical": {
+        "title": null,
+        "items": [],
+        "fields": [],
+        "memos": [],
+        "references": [],
+        "conditionalResponses": []
+      },
+      "minimumInputs": [],
+      "projections": {
+        "calendar": {
+          "availability": "blocked",
+          "payload": null,
+          "losses": [
+            {
+              "code": "conversion_stopped"
+            }
+          ]
+        },
+        "checklist": {
+          "availability": "blocked",
+          "payload": null,
+          "losses": [
+            {
+              "code": "conversion_stopped"
+            }
+          ]
+        },
+        "todo": {
+          "availability": "blocked",
+          "payload": null,
+          "losses": [
+            {
+              "code": "conversion_stopped"
+            }
+          ]
+        },
+        "sheet": {
+          "availability": "blocked",
+          "payload": null,
+          "losses": [
+            {
+              "code": "conversion_stopped"
+            }
+          ]
+        },
+        "memo": {
+          "availability": "blocked",
+          "payload": null,
+          "losses": [
+            {
+              "code": "conversion_stopped"
+            }
+          ]
+        },
+        "ics": {
+          "eventCount": 0,
+          "actionVisible": false
+        }
+      },
+      "gates": {
+        "access": "open",
+        "rights": "unknown",
+        "freshness": "review_required",
+        "locale": "review_required",
+        "safety": "not_required",
+        "privacy": "review_required",
+        "publicExportAllowed": false,
+        "personalPreviewAllowed": false
+      },
+      "selfReview": {
+        "uncertainties": [
+          "확인한 다섯 아이디어만으로 컬렉션의 완전한 경계와 사용자가 실행할 한 가지 일을 확정할 수 없다."
+        ],
+        "omissions": [
+          "계속 갱신되는 컬렉션으로 한 가지 사용자 일과 고정된 완전 행 집합이 정해져 있지 않다."
+        ],
+        "potentialInventions": [],
+        "sourceValueReentryCount": 0,
+        "unscheduledIcsViolationCount": 0
+      }
+    }
+  ]
+}

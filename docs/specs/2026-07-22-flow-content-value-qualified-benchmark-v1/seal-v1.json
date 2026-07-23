@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "value-qualified-benchmark-seal-v1",
+  "frozenAt": "2026-07-22T15:00:00+09:00",
+  "rubricHash": "aa8684298cf0d38f1c6c38ca48e0289633a824b4f39ff91bd4ed2541b52ab16e",
+  "hardGateContractHash": "6a080675b2253c9694afe631cb080053b9b9afd4aaa52e13c2d7ec217d14e17c",
+  "candidatePoolHash": "baefd7fe6bbfd4cf4076822fb61604c09d1a2ff7ee45d27a8d6424c850235550",
+  "sourceEvidencePacketHash": "8f72cb7fd745128c1dc1ef40e3021b262578e199c87c7a87fffdd50476e0d451",
+  "splitHash": "2b040d173038af3c2557b836a37a2e68d7f5c1962ebeac947bf78ca6b063fe38",
+  "blindCalibrationPacketHash": "2420a211329bbe9673f5372381b85b3102bc814a5a08424e4bfdef6e33e8ed66",
+  "blindFinalHoldoutPacketHash": "f700f4bd9f5b8a95b744d21dfb3bb085edaf6fee4f3abfba6d05d2aa70d320e0",
+  "baselineRulesHash": "29985bc4295b8c6fe7a013d7c8297969444e58a56b55db9238d4eb398ae65974",
+  "baselinePromptHash": "6207fe03c42d35d52e4e57a64c0e999fe4a0bae54b1bcc4b506c6409696093a8",
+  "revisedRulesHash": "58716c1ed1f78770ac612b208ba3bfa04a53a727fe94926b5fafe05594fe9b34",
+  "finalHoldoutOpenedAt": "2026-07-22T18:30:00+09:00",
+  "postHoldoutMutationCount": 0,
+  "note": "final holdout 개봉 뒤 source, gold, split, rule을 바꾸면 새 benchmark version이 필요하다.",
+  "goldSourceContractHash": "583f57b5aa2c5a722a4468b8fd31d9c794d9a75c333ff88597dc50ca4c418498",
+  "unscoredAttemptCount": 1,
+  "scoredHoldoutAttempt": 2,
+  "preScoredHoldoutCorrections": [
+    "PRE-SCORED-HOLDOUT-C01"
+  ],
+  "finalHoldoutPositiveIds": [
+    "VQ-09",
+    "VQ-10",
+    "VQ-11",
+    "VQ-12"
+  ],
+  "correctionLogPath": "holdout-integrity-correction-log-v1.json",
+  "unscoredAttemptArchivePaths": [
+    "runs/attempt-1-unscored/gold-source-contract-v1.json",
+    "runs/attempt-1-unscored/rules-final-holdout-v1.json",
+    "runs/attempt-1-unscored/low-cost-final-holdout-v1.json",
+    "runs/attempt-1-unscored/high-capability-final-holdout-v1.json",
+    "runs/attempt-1-unscored/final-holdout-results-v1.json",
+    "runs/attempt-1-unscored/value-and-conversion-metrics-v1.json"
+  ],
+  "goldContractHash": "583f57b5aa2c5a722a4468b8fd31d9c794d9a75c333ff88597dc50ca4c418498",
+  "correctionLogHash": "deac43d9d4a66c3355dfcbdc214ebca9ecf6e58fe0adda5109fc356669136ba5",
+  "outputNormalizationLogPath": "output-normalization-log-v1.json",
+  "outputNormalizationLogHash": "4b30127631458dbc5065f8f43399a12afe25b20473b82e87406a8b866d584eb5",
+  "outputNormalizationCount": 1,
+  "evaluatorCorrectionLogPath": "evaluator-integrity-correction-log-v1.json",
+  "evaluatorCorrectionLogHash": "df93a9bd7f79236a8c0149b6a7654ca9cd59dfb3a3e6404137c06cb3b30d837c",
+  "evaluatorCorrectionCount": 1
+}

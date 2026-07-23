@@ -1,0 +1,900 @@
+{
+  "documentType": "flow_content_generalization_model_comparison_v1",
+  "schemaVersion": "flow-content-generalization-evaluation-v1",
+  "evaluatedAt": "2026-07-21T03:58:41.843Z",
+  "validationBoundary": "Internal automated checks plus explicit internal adjudication; not observed-user validation.",
+  "comparisonScope": "final_holdout",
+  "roleSummaries": {
+    "rules": {
+      "label": "final_holdout:rules",
+      "runCount": 6,
+      "positiveRunCount": 4,
+      "boundaryRunCount": 2,
+      "flowPossibilityAgreement": {
+        "matches": 4,
+        "total": 6,
+        "rate": 0.666667
+      },
+      "finalStateAgreement": {
+        "matches": 2,
+        "total": 6,
+        "rate": 0.333333
+      },
+      "sourceCompletenessAgreement": {
+        "matches": 4,
+        "total": 6,
+        "rate": 0.666667
+      },
+      "boundaryRecall": {
+        "correctStops": 1,
+        "total": 2,
+        "rate": 0.5
+      },
+      "sourceRowExtractionRecall": {
+        "acquired": 54,
+        "gold": 54,
+        "rate": 1
+      },
+      "sourceRowAccounting": {
+        "accounted": 54,
+        "gold": 54,
+        "rate": 1
+      },
+      "sourceRowMeaningPreservation": {
+        "weightedPreserved": 37,
+        "requiredRows": 54,
+        "rate": 0.685185
+      },
+      "itemProvenance": {
+        "fulfilled": 23,
+        "generated": 31,
+        "rate": 0.741935
+      },
+      "inventions": {
+        "total": 26,
+        "coreActionDateRepeat": 16,
+        "byType": {
+          "action": 8,
+          "date": 8,
+          "repeat": 0,
+          "completion": 8,
+          "condition": 1,
+          "location": 0,
+          "field": 1,
+          "other": 0
+        },
+        "runsWhereAdjudicationFoundInventionBeyondEmptySelfReview": 2
+      },
+      "sourceValueReentry": {
+        "count": 0
+      },
+      "minimumInputAgreement": {
+        "exactMatches": 3,
+        "total": 6,
+        "rate": 0.5
+      },
+      "firstPreviewInputBudget": {
+        "positiveRunsOverTwo": 0,
+        "positiveRuns": 4
+      },
+      "primaryArtifactAgreement": {
+        "positiveMatches": 2,
+        "positiveTotal": 4,
+        "positiveRate": 0.5,
+        "allCaseMatches": 3,
+        "allCaseTotal": 6,
+        "allCaseRate": 0.5
+      },
+      "unnecessaryProjections": {
+        "count": 3
+      },
+      "unscheduledIcs": {
+        "count": 0
+      },
+      "gates": {
+        "omissionCount": 0,
+        "disagreementCount": 9,
+        "issueCount": 9
+      },
+      "reviewedItemChanges": {
+        "generatedItems": 31,
+        "deletedItems": 8,
+        "majorEditedItems": 0,
+        "deleteRate": 0.258065,
+        "majorEditRate": 0,
+        "combinedRate": 0.258065
+      },
+      "directlyUsablePositiveResults": {
+        "count": 0,
+        "total": 4,
+        "rate": 0
+      },
+      "measurements": {
+        "elapsedMs": {
+          "measuredRunCount": 0,
+          "unmeasuredRunCount": 6,
+          "coverageRate": 0,
+          "total": null,
+          "averageOverMeasuredRuns": null,
+          "minimum": null,
+          "maximum": null
+        },
+        "inputTokens": {
+          "measuredRunCount": 0,
+          "unmeasuredRunCount": 6,
+          "coverageRate": 0,
+          "total": null,
+          "averageOverMeasuredRuns": null,
+          "minimum": null,
+          "maximum": null
+        },
+        "outputTokens": {
+          "measuredRunCount": 0,
+          "unmeasuredRunCount": 6,
+          "coverageRate": 0,
+          "total": null,
+          "averageOverMeasuredRuns": null,
+          "minimum": null,
+          "maximum": null
+        },
+        "totalTokens": {
+          "measuredRunCount": 0,
+          "unmeasuredRunCount": 6,
+          "coverageRate": 0,
+          "total": null,
+          "averageOverMeasuredRuns": null,
+          "minimum": null,
+          "maximum": null
+        },
+        "actualCost": {
+          "measuredRunCount": 0,
+          "unmeasuredRunCount": 6,
+          "coverageRate": 0,
+          "byCurrency": []
+        },
+        "retryCount": {
+          "total": 0,
+          "average": 0
+        },
+        "humanInterventionCount": {
+          "total": 0,
+          "average": 0
+        }
+      },
+      "targets": {
+        "results": [
+          {
+            "id": "flow_possibility_at_least_85",
+            "description": "Flow possibility agrees with gold in at least 85% of runs.",
+            "actual": 0.666667,
+            "threshold": ">= 0.85",
+            "pass": false
+          },
+          {
+            "id": "boundary_recall_100",
+            "description": "Every boundary run stops without canonical Items or usable projections.",
+            "actual": 0.5,
+            "threshold": "= 1",
+            "pass": false
+          },
+          {
+            "id": "source_meaning_at_least_90",
+            "description": "Meaning-required SourceRows retain at least 90% weighted meaning.",
+            "actual": 0.685185,
+            "threshold": ">= 0.90",
+            "pass": false
+          },
+          {
+            "id": "primary_artifact_at_least_85",
+            "description": "Positive runs choose the gold primary artifact in at least 85% of runs.",
+            "actual": 0.5,
+            "threshold": ">= 0.85",
+            "pass": false
+          },
+          {
+            "id": "core_invention_zero",
+            "description": "Adjudicated action, date, and repeat inventions are zero.",
+            "actual": 16,
+            "threshold": "= 0",
+            "pass": false
+          },
+          {
+            "id": "all_invention_zero",
+            "description": "All adjudicated invention labels are zero.",
+            "actual": 26,
+            "threshold": "= 0",
+            "pass": false
+          },
+          {
+            "id": "source_value_reentry_zero",
+            "description": "Source-derived values are never requested as user input.",
+            "actual": 0,
+            "threshold": "= 0",
+            "pass": true
+          },
+          {
+            "id": "unscheduled_ics_zero",
+            "description": "No ICS event exists without a scheduled canonical Item.",
+            "actual": 0,
+            "threshold": "= 0",
+            "pass": true
+          },
+          {
+            "id": "gate_issue_zero",
+            "description": "No source, rights, locale, safety, privacy, or publication gate is omitted or disagrees with gold.",
+            "actual": 9,
+            "threshold": "= 0",
+            "pass": false
+          },
+          {
+            "id": "first_preview_input_budget",
+            "description": "Positive runs require no more than two user values before first preview.",
+            "actual": 0,
+            "threshold": "= 0 violations",
+            "pass": true
+          },
+          {
+            "id": "reviewed_item_delete_or_major_edit_at_most_20",
+            "description": "Deleted plus major-edited Items are at most 20% of generated Items.",
+            "actual": 0.258065,
+            "threshold": "<= 0.20",
+            "pass": false
+          }
+        ],
+        "passed": 3,
+        "total": 11,
+        "allPass": false
+      }
+    },
+    "low_cost": {
+      "label": "final_holdout:low_cost",
+      "runCount": 6,
+      "positiveRunCount": 4,
+      "boundaryRunCount": 2,
+      "flowPossibilityAgreement": {
+        "matches": 5,
+        "total": 6,
+        "rate": 0.833333
+      },
+      "finalStateAgreement": {
+        "matches": 5,
+        "total": 6,
+        "rate": 0.833333
+      },
+      "sourceCompletenessAgreement": {
+        "matches": 3,
+        "total": 6,
+        "rate": 0.5
+      },
+      "boundaryRecall": {
+        "correctStops": 2,
+        "total": 2,
+        "rate": 1
+      },
+      "sourceRowExtractionRecall": {
+        "acquired": 54,
+        "gold": 54,
+        "rate": 1
+      },
+      "sourceRowAccounting": {
+        "accounted": 54,
+        "gold": 54,
+        "rate": 1
+      },
+      "sourceRowMeaningPreservation": {
+        "weightedPreserved": 39.5,
+        "requiredRows": 54,
+        "rate": 0.731481
+      },
+      "itemProvenance": {
+        "fulfilled": 0,
+        "generated": 21,
+        "rate": 0
+      },
+      "inventions": {
+        "total": 21,
+        "coreActionDateRepeat": 0,
+        "byType": {
+          "action": 0,
+          "date": 0,
+          "repeat": 0,
+          "completion": 21,
+          "condition": 0,
+          "location": 0,
+          "field": 0,
+          "other": 0
+        },
+        "runsWhereAdjudicationFoundInventionBeyondEmptySelfReview": 3
+      },
+      "sourceValueReentry": {
+        "count": 0
+      },
+      "minimumInputAgreement": {
+        "exactMatches": 3,
+        "total": 6,
+        "rate": 0.5
+      },
+      "firstPreviewInputBudget": {
+        "positiveRunsOverTwo": 0,
+        "positiveRuns": 4
+      },
+      "primaryArtifactAgreement": {
+        "positiveMatches": 1,
+        "positiveTotal": 4,
+        "positiveRate": 0.25,
+        "allCaseMatches": 3,
+        "allCaseTotal": 6,
+        "allCaseRate": 0.5
+      },
+      "unnecessaryProjections": {
+        "count": 1
+      },
+      "unscheduledIcs": {
+        "count": 0
+      },
+      "gates": {
+        "omissionCount": 0,
+        "disagreementCount": 10,
+        "issueCount": 10
+      },
+      "reviewedItemChanges": {
+        "generatedItems": 21,
+        "deletedItems": 0,
+        "majorEditedItems": 21,
+        "deleteRate": 0,
+        "majorEditRate": 1,
+        "combinedRate": 1
+      },
+      "directlyUsablePositiveResults": {
+        "count": 0,
+        "total": 4,
+        "rate": 0
+      },
+      "measurements": {
+        "elapsedMs": {
+          "measuredRunCount": 0,
+          "unmeasuredRunCount": 6,
+          "coverageRate": 0,
+          "total": null,
+          "averageOverMeasuredRuns": null,
+          "minimum": null,
+          "maximum": null
+        },
+        "inputTokens": {
+          "measuredRunCount": 0,
+          "unmeasuredRunCount": 6,
+          "coverageRate": 0,
+          "total": null,
+          "averageOverMeasuredRuns": null,
+          "minimum": null,
+          "maximum": null
+        },
+        "outputTokens": {
+          "measuredRunCount": 0,
+          "unmeasuredRunCount": 6,
+          "coverageRate": 0,
+          "total": null,
+          "averageOverMeasuredRuns": null,
+          "minimum": null,
+          "maximum": null
+        },
+        "totalTokens": {
+          "measuredRunCount": 0,
+          "unmeasuredRunCount": 6,
+          "coverageRate": 0,
+          "total": null,
+          "averageOverMeasuredRuns": null,
+          "minimum": null,
+          "maximum": null
+        },
+        "actualCost": {
+          "measuredRunCount": 0,
+          "unmeasuredRunCount": 6,
+          "coverageRate": 0,
+          "byCurrency": []
+        },
+        "retryCount": {
+          "total": 0,
+          "average": 0
+        },
+        "humanInterventionCount": {
+          "total": 0,
+          "average": 0
+        }
+      },
+      "targets": {
+        "results": [
+          {
+            "id": "flow_possibility_at_least_85",
+            "description": "Flow possibility agrees with gold in at least 85% of runs.",
+            "actual": 0.833333,
+            "threshold": ">= 0.85",
+            "pass": false
+          },
+          {
+            "id": "boundary_recall_100",
+            "description": "Every boundary run stops without canonical Items or usable projections.",
+            "actual": 1,
+            "threshold": "= 1",
+            "pass": true
+          },
+          {
+            "id": "source_meaning_at_least_90",
+            "description": "Meaning-required SourceRows retain at least 90% weighted meaning.",
+            "actual": 0.731481,
+            "threshold": ">= 0.90",
+            "pass": false
+          },
+          {
+            "id": "primary_artifact_at_least_85",
+            "description": "Positive runs choose the gold primary artifact in at least 85% of runs.",
+            "actual": 0.25,
+            "threshold": ">= 0.85",
+            "pass": false
+          },
+          {
+            "id": "core_invention_zero",
+            "description": "Adjudicated action, date, and repeat inventions are zero.",
+            "actual": 0,
+            "threshold": "= 0",
+            "pass": true
+          },
+          {
+            "id": "all_invention_zero",
+            "description": "All adjudicated invention labels are zero.",
+            "actual": 21,
+            "threshold": "= 0",
+            "pass": false
+          },
+          {
+            "id": "source_value_reentry_zero",
+            "description": "Source-derived values are never requested as user input.",
+            "actual": 0,
+            "threshold": "= 0",
+            "pass": true
+          },
+          {
+            "id": "unscheduled_ics_zero",
+            "description": "No ICS event exists without a scheduled canonical Item.",
+            "actual": 0,
+            "threshold": "= 0",
+            "pass": true
+          },
+          {
+            "id": "gate_issue_zero",
+            "description": "No source, rights, locale, safety, privacy, or publication gate is omitted or disagrees with gold.",
+            "actual": 10,
+            "threshold": "= 0",
+            "pass": false
+          },
+          {
+            "id": "first_preview_input_budget",
+            "description": "Positive runs require no more than two user values before first preview.",
+            "actual": 0,
+            "threshold": "= 0 violations",
+            "pass": true
+          },
+          {
+            "id": "reviewed_item_delete_or_major_edit_at_most_20",
+            "description": "Deleted plus major-edited Items are at most 20% of generated Items.",
+            "actual": 1,
+            "threshold": "<= 0.20",
+            "pass": false
+          }
+        ],
+        "passed": 5,
+        "total": 11,
+        "allPass": false
+      }
+    },
+    "high_capability": {
+      "label": "final_holdout:high_capability",
+      "runCount": 6,
+      "positiveRunCount": 4,
+      "boundaryRunCount": 2,
+      "flowPossibilityAgreement": {
+        "matches": 6,
+        "total": 6,
+        "rate": 1
+      },
+      "finalStateAgreement": {
+        "matches": 3,
+        "total": 6,
+        "rate": 0.5
+      },
+      "sourceCompletenessAgreement": {
+        "matches": 5,
+        "total": 6,
+        "rate": 0.833333
+      },
+      "boundaryRecall": {
+        "correctStops": 2,
+        "total": 2,
+        "rate": 1
+      },
+      "sourceRowExtractionRecall": {
+        "acquired": 54,
+        "gold": 54,
+        "rate": 1
+      },
+      "sourceRowAccounting": {
+        "accounted": 54,
+        "gold": 54,
+        "rate": 1
+      },
+      "sourceRowMeaningPreservation": {
+        "weightedPreserved": 53.5,
+        "requiredRows": 54,
+        "rate": 0.990741
+      },
+      "itemProvenance": {
+        "fulfilled": 23,
+        "generated": 24,
+        "rate": 0.958333
+      },
+      "inventions": {
+        "total": 2,
+        "coreActionDateRepeat": 1,
+        "byType": {
+          "action": 1,
+          "date": 0,
+          "repeat": 0,
+          "completion": 1,
+          "condition": 0,
+          "location": 0,
+          "field": 0,
+          "other": 0
+        },
+        "runsWhereAdjudicationFoundInventionBeyondEmptySelfReview": 1
+      },
+      "sourceValueReentry": {
+        "count": 0
+      },
+      "minimumInputAgreement": {
+        "exactMatches": 4,
+        "total": 6,
+        "rate": 0.666667
+      },
+      "firstPreviewInputBudget": {
+        "positiveRunsOverTwo": 0,
+        "positiveRuns": 4
+      },
+      "primaryArtifactAgreement": {
+        "positiveMatches": 2,
+        "positiveTotal": 4,
+        "positiveRate": 0.5,
+        "allCaseMatches": 4,
+        "allCaseTotal": 6,
+        "allCaseRate": 0.666667
+      },
+      "unnecessaryProjections": {
+        "count": 4
+      },
+      "unscheduledIcs": {
+        "count": 0
+      },
+      "gates": {
+        "omissionCount": 0,
+        "disagreementCount": 3,
+        "issueCount": 3
+      },
+      "reviewedItemChanges": {
+        "generatedItems": 24,
+        "deletedItems": 1,
+        "majorEditedItems": 0,
+        "deleteRate": 0.041667,
+        "majorEditRate": 0,
+        "combinedRate": 0.041667
+      },
+      "directlyUsablePositiveResults": {
+        "count": 1,
+        "total": 4,
+        "rate": 0.25
+      },
+      "measurements": {
+        "elapsedMs": {
+          "measuredRunCount": 0,
+          "unmeasuredRunCount": 6,
+          "coverageRate": 0,
+          "total": null,
+          "averageOverMeasuredRuns": null,
+          "minimum": null,
+          "maximum": null
+        },
+        "inputTokens": {
+          "measuredRunCount": 0,
+          "unmeasuredRunCount": 6,
+          "coverageRate": 0,
+          "total": null,
+          "averageOverMeasuredRuns": null,
+          "minimum": null,
+          "maximum": null
+        },
+        "outputTokens": {
+          "measuredRunCount": 0,
+          "unmeasuredRunCount": 6,
+          "coverageRate": 0,
+          "total": null,
+          "averageOverMeasuredRuns": null,
+          "minimum": null,
+          "maximum": null
+        },
+        "totalTokens": {
+          "measuredRunCount": 0,
+          "unmeasuredRunCount": 6,
+          "coverageRate": 0,
+          "total": null,
+          "averageOverMeasuredRuns": null,
+          "minimum": null,
+          "maximum": null
+        },
+        "actualCost": {
+          "measuredRunCount": 0,
+          "unmeasuredRunCount": 6,
+          "coverageRate": 0,
+          "byCurrency": []
+        },
+        "retryCount": {
+          "total": 0,
+          "average": 0
+        },
+        "humanInterventionCount": {
+          "total": 0,
+          "average": 0
+        }
+      },
+      "targets": {
+        "results": [
+          {
+            "id": "flow_possibility_at_least_85",
+            "description": "Flow possibility agrees with gold in at least 85% of runs.",
+            "actual": 1,
+            "threshold": ">= 0.85",
+            "pass": true
+          },
+          {
+            "id": "boundary_recall_100",
+            "description": "Every boundary run stops without canonical Items or usable projections.",
+            "actual": 1,
+            "threshold": "= 1",
+            "pass": true
+          },
+          {
+            "id": "source_meaning_at_least_90",
+            "description": "Meaning-required SourceRows retain at least 90% weighted meaning.",
+            "actual": 0.990741,
+            "threshold": ">= 0.90",
+            "pass": true
+          },
+          {
+            "id": "primary_artifact_at_least_85",
+            "description": "Positive runs choose the gold primary artifact in at least 85% of runs.",
+            "actual": 0.5,
+            "threshold": ">= 0.85",
+            "pass": false
+          },
+          {
+            "id": "core_invention_zero",
+            "description": "Adjudicated action, date, and repeat inventions are zero.",
+            "actual": 1,
+            "threshold": "= 0",
+            "pass": false
+          },
+          {
+            "id": "all_invention_zero",
+            "description": "All adjudicated invention labels are zero.",
+            "actual": 2,
+            "threshold": "= 0",
+            "pass": false
+          },
+          {
+            "id": "source_value_reentry_zero",
+            "description": "Source-derived values are never requested as user input.",
+            "actual": 0,
+            "threshold": "= 0",
+            "pass": true
+          },
+          {
+            "id": "unscheduled_ics_zero",
+            "description": "No ICS event exists without a scheduled canonical Item.",
+            "actual": 0,
+            "threshold": "= 0",
+            "pass": true
+          },
+          {
+            "id": "gate_issue_zero",
+            "description": "No source, rights, locale, safety, privacy, or publication gate is omitted or disagrees with gold.",
+            "actual": 3,
+            "threshold": "= 0",
+            "pass": false
+          },
+          {
+            "id": "first_preview_input_budget",
+            "description": "Positive runs require no more than two user values before first preview.",
+            "actual": 0,
+            "threshold": "= 0 violations",
+            "pass": true
+          },
+          {
+            "id": "reviewed_item_delete_or_major_edit_at_most_20",
+            "description": "Deleted plus major-edited Items are at most 20% of generated Items.",
+            "actual": 0.041667,
+            "threshold": "<= 0.20",
+            "pass": true
+          }
+        ],
+        "passed": 7,
+        "total": 11,
+        "allPass": false
+      }
+    }
+  },
+  "pairwise": [
+    {
+      "leftRole": "rules",
+      "rightRole": "low_cost",
+      "quality": {
+        "flowPossibilityAgreement": {
+          "left": 0.666667,
+          "right": 0.833333,
+          "deltaRightMinusLeft": 0.166666
+        },
+        "boundaryRecall": {
+          "left": 0.5,
+          "right": 1,
+          "deltaRightMinusLeft": 0.5
+        },
+        "sourceRowMeaningPreservation": {
+          "left": 0.685185,
+          "right": 0.731481,
+          "deltaRightMinusLeft": 0.046296
+        },
+        "itemProvenance": {
+          "left": 0.741935,
+          "right": 0,
+          "deltaRightMinusLeft": -0.741935
+        },
+        "primaryArtifactAgreement": {
+          "left": 0.5,
+          "right": 0.25,
+          "deltaRightMinusLeft": -0.25
+        },
+        "directlyUsablePositiveResults": {
+          "left": 0,
+          "right": 0,
+          "deltaRightMinusLeft": 0
+        },
+        "reviewedItemChangeRate": {
+          "left": 0.258065,
+          "right": 1,
+          "deltaRightMinusLeft": 0.741935
+        }
+      },
+      "elapsedMs": {
+        "left": null,
+        "right": null,
+        "deltaRightMinusLeft": null
+      },
+      "totalTokens": {
+        "left": null,
+        "right": null,
+        "deltaRightMinusLeft": null
+      },
+      "actualCost": {
+        "comparableByCurrency": [],
+        "note": "No actual provider cost was measured; no cost estimate was manufactured."
+      }
+    },
+    {
+      "leftRole": "low_cost",
+      "rightRole": "high_capability",
+      "quality": {
+        "flowPossibilityAgreement": {
+          "left": 0.833333,
+          "right": 1,
+          "deltaRightMinusLeft": 0.166667
+        },
+        "boundaryRecall": {
+          "left": 1,
+          "right": 1,
+          "deltaRightMinusLeft": 0
+        },
+        "sourceRowMeaningPreservation": {
+          "left": 0.731481,
+          "right": 0.990741,
+          "deltaRightMinusLeft": 0.25926
+        },
+        "itemProvenance": {
+          "left": 0,
+          "right": 0.958333,
+          "deltaRightMinusLeft": 0.958333
+        },
+        "primaryArtifactAgreement": {
+          "left": 0.25,
+          "right": 0.5,
+          "deltaRightMinusLeft": 0.25
+        },
+        "directlyUsablePositiveResults": {
+          "left": 0,
+          "right": 0.25,
+          "deltaRightMinusLeft": 0.25
+        },
+        "reviewedItemChangeRate": {
+          "left": 1,
+          "right": 0.041667,
+          "deltaRightMinusLeft": -0.958333
+        }
+      },
+      "elapsedMs": {
+        "left": null,
+        "right": null,
+        "deltaRightMinusLeft": null
+      },
+      "totalTokens": {
+        "left": null,
+        "right": null,
+        "deltaRightMinusLeft": null
+      },
+      "actualCost": {
+        "comparableByCurrency": [],
+        "note": "No actual provider cost was measured; no cost estimate was manufactured."
+      }
+    },
+    {
+      "leftRole": "rules",
+      "rightRole": "high_capability",
+      "quality": {
+        "flowPossibilityAgreement": {
+          "left": 0.666667,
+          "right": 1,
+          "deltaRightMinusLeft": 0.333333
+        },
+        "boundaryRecall": {
+          "left": 0.5,
+          "right": 1,
+          "deltaRightMinusLeft": 0.5
+        },
+        "sourceRowMeaningPreservation": {
+          "left": 0.685185,
+          "right": 0.990741,
+          "deltaRightMinusLeft": 0.305556
+        },
+        "itemProvenance": {
+          "left": 0.741935,
+          "right": 0.958333,
+          "deltaRightMinusLeft": 0.216398
+        },
+        "primaryArtifactAgreement": {
+          "left": 0.5,
+          "right": 0.5,
+          "deltaRightMinusLeft": 0
+        },
+        "directlyUsablePositiveResults": {
+          "left": 0,
+          "right": 0.25,
+          "deltaRightMinusLeft": 0.25
+        },
+        "reviewedItemChangeRate": {
+          "left": 0.258065,
+          "right": 0.041667,
+          "deltaRightMinusLeft": -0.216398
+        }
+      },
+      "elapsedMs": {
+        "left": null,
+        "right": null,
+        "deltaRightMinusLeft": null
+      },
+      "totalTokens": {
+        "left": null,
+        "right": null,
+        "deltaRightMinusLeft": null
+      },
+      "actualCost": {
+        "comparableByCurrency": [],
+        "note": "No actual provider cost was measured; no cost estimate was manufactured."
+      }
+    }
+  ],
+  "costBoundary": "Actual cost is null unless the adjudication ledger contains an evidenced provider charge or a verified-price calculation over measured tokens."
+}

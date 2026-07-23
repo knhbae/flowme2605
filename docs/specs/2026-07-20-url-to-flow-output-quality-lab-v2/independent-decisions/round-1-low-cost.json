@@ -1,0 +1,2508 @@
+{
+  "documentType": "flowme-independent-decision-set",
+  "decisionSetVersion": "independent-decision-v2.1",
+  "roundId": "round-1",
+  "profile": "low_cost_agent",
+  "caseSetVersion": "output-quality-v2-cases-2026-07-20.1",
+  "blind": true,
+  "modelEvidence": {
+    "modelFamily": "gpt-5.6-terra",
+    "actualApiCostMeasured": false
+  },
+  "decisions": [
+    {
+      "caseId": "OQ-C01-MOVING",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_for_internal_canary",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": []
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "home_living",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "article"
+        ],
+        "sourceShape": "procedure_rows",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "ordered_procedure",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": [
+          "memo"
+        ],
+        "access": {
+          "providerType": "public_institution",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_for_internal_canary",
+          "freshnessReview": "current",
+          "localeReview": "not_required",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "research_only",
+          "blockers": []
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "DS05-R01",
+          "role": "item",
+          "targetIds": [
+            "item-DS05-R01"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "DS05-R02",
+          "role": "item",
+          "targetIds": [
+            "item-DS05-R02"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "DS05-R03",
+          "role": "item",
+          "targetIds": [
+            "item-DS05-R03"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "DS05-R04",
+          "role": "item",
+          "targetIds": [
+            "item-DS05-R04"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "DS05-R05",
+          "role": "item",
+          "targetIds": [
+            "item-DS05-R05"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "DS05-R06",
+          "role": "item",
+          "targetIds": [
+            "item-DS05-R06"
+          ],
+          "reason": "Blind packet row."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 6,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "Independent source-backed decision."
+      },
+      "projectionAvailabilities": {
+        "calendar": "unavailable",
+        "checklist": "available",
+        "todo": "unavailable",
+        "sheet": "unavailable",
+        "memo": "available"
+      },
+      "rationale": "Independent blind-packet classification.",
+      "confidence": "medium"
+    },
+    {
+      "caseId": "OQ-C02-KMOOC-FULL",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_for_internal_canary",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": []
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "home_living",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "course"
+        ],
+        "sourceShape": "procedure_rows",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "ordered_procedure",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": [
+          "memo"
+        ],
+        "access": {
+          "providerType": "education_provider",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "course"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_for_internal_canary",
+          "freshnessReview": "current",
+          "localeReview": "not_required",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "research_only",
+          "blockers": []
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "KMOOC-M01",
+          "role": "item",
+          "targetIds": [
+            "item-KMOOC-M01"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "KMOOC-M02",
+          "role": "item",
+          "targetIds": [
+            "item-KMOOC-M02"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "KMOOC-M03",
+          "role": "item",
+          "targetIds": [
+            "item-KMOOC-M03"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "KMOOC-M04",
+          "role": "item",
+          "targetIds": [
+            "item-KMOOC-M04"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "KMOOC-M05",
+          "role": "item",
+          "targetIds": [
+            "item-KMOOC-M05"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "KMOOC-W01",
+          "role": "item",
+          "targetIds": [
+            "item-KMOOC-W01"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "KMOOC-W02",
+          "role": "item",
+          "targetIds": [
+            "item-KMOOC-W02"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "KMOOC-W03",
+          "role": "item",
+          "targetIds": [
+            "item-KMOOC-W03"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "KMOOC-W04",
+          "role": "item",
+          "targetIds": [
+            "item-KMOOC-W04"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "KMOOC-W05",
+          "role": "item",
+          "targetIds": [
+            "item-KMOOC-W05"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "KMOOC-W06",
+          "role": "item",
+          "targetIds": [
+            "item-KMOOC-W06"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "KMOOC-W07",
+          "role": "item",
+          "targetIds": [
+            "item-KMOOC-W07"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "KMOOC-W08",
+          "role": "item",
+          "targetIds": [
+            "item-KMOOC-W08"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "KMOOC-W09",
+          "role": "item",
+          "targetIds": [
+            "item-KMOOC-W09"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "KMOOC-W10",
+          "role": "item",
+          "targetIds": [
+            "item-KMOOC-W10"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "KMOOC-W11",
+          "role": "item",
+          "targetIds": [
+            "item-KMOOC-W11"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "KMOOC-W12",
+          "role": "item",
+          "targetIds": [
+            "item-KMOOC-W12"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "KMOOC-W13",
+          "role": "item",
+          "targetIds": [
+            "item-KMOOC-W13"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "KMOOC-W14",
+          "role": "item",
+          "targetIds": [
+            "item-KMOOC-W14"
+          ],
+          "reason": "Blind packet row."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 19,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "Independent source-backed decision."
+      },
+      "projectionAvailabilities": {
+        "calendar": "unavailable",
+        "checklist": "available",
+        "todo": "unavailable",
+        "sheet": "unavailable",
+        "memo": "available"
+      },
+      "rationale": "Independent blind-packet classification.",
+      "confidence": "medium"
+    },
+    {
+      "caseId": "OQ-C03-LIBRIVOX",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_for_internal_canary",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": []
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "home_living",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "audio"
+        ],
+        "sourceShape": "procedure_rows",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "ordered_procedure",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": [
+          "memo"
+        ],
+        "access": {
+          "providerType": "open_knowledge",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "audio"
+        },
+        "rights": {
+          "basis": "public_domain",
+          "allowedUse": [
+            "link_metadata",
+            "personal_transform",
+            "internal_review",
+            "public_derived"
+          ],
+          "reviewStatus": "approved"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_for_internal_canary",
+          "freshnessReview": "current",
+          "localeReview": "not_required",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "approved",
+          "promotionState": "research_only",
+          "blockers": []
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "LIBRIVOX-C01",
+          "role": "item",
+          "targetIds": [],
+          "reason": "첫 장은 순차 청취와 완료 기록의 독립 단위다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C02",
+          "role": "item",
+          "targetIds": [],
+          "reason": "둘째 장은 순차 청취와 완료 기록의 독립 단위다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C03",
+          "role": "item",
+          "targetIds": [],
+          "reason": "셋째 장은 순차 청취와 완료 기록의 독립 단위다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C04",
+          "role": "item",
+          "targetIds": [],
+          "reason": "넷째 장은 순차 청취와 완료 기록의 독립 단위다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C05",
+          "role": "item",
+          "targetIds": [],
+          "reason": "다섯째 장은 순차 청취와 완료 기록의 독립 단위다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C06",
+          "role": "item",
+          "targetIds": [],
+          "reason": "여섯째 장은 순차 청취와 완료 기록의 독립 단위다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C07",
+          "role": "item",
+          "targetIds": [],
+          "reason": "일곱째 장은 순차 청취와 완료 기록의 독립 단위다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C08",
+          "role": "item",
+          "targetIds": [],
+          "reason": "여덟째 장은 순차 청취와 완료 기록의 독립 단위다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C09",
+          "role": "item",
+          "targetIds": [],
+          "reason": "아홉째 장은 순차 청취와 완료 기록의 독립 단위다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C10",
+          "role": "item",
+          "targetIds": [],
+          "reason": "열째 장은 순차 청취와 완료 기록의 독립 단위다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C11",
+          "role": "item",
+          "targetIds": [],
+          "reason": "열한째 장은 순차 청취와 완료 기록의 독립 단위다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C12",
+          "role": "item",
+          "targetIds": [],
+          "reason": "열두째 장은 순차 청취와 완료 기록의 독립 단위다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C13",
+          "role": "item",
+          "targetIds": [],
+          "reason": "열셋째 장은 순차 청취와 완료 기록의 독립 단위다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C14",
+          "role": "item",
+          "targetIds": [],
+          "reason": "열넷째 장은 순차 청취와 완료 기록의 독립 단위다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C15",
+          "role": "item",
+          "targetIds": [],
+          "reason": "열다섯째 장은 순차 청취와 완료 기록의 독립 단위다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C16",
+          "role": "item",
+          "targetIds": [],
+          "reason": "열여섯째 장은 순차 청취와 완료 기록의 독립 단위다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C17",
+          "role": "item",
+          "targetIds": [],
+          "reason": "열일곱째 장은 순차 청취와 완료 기록의 독립 단위다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C18",
+          "role": "item",
+          "targetIds": [],
+          "reason": "열여덟째 장은 순차 청취와 완료 기록의 독립 단위다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C19",
+          "role": "item",
+          "targetIds": [],
+          "reason": "열아홉째 장은 순차 청취와 완료 기록의 독립 단위다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C20",
+          "role": "item",
+          "targetIds": [],
+          "reason": "스무째 장은 순차 청취와 완료 기록의 독립 단위다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C21",
+          "role": "item",
+          "targetIds": [],
+          "reason": "스물한째 장은 순차 청취와 완료 기록의 독립 단위다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C22",
+          "role": "item",
+          "targetIds": [],
+          "reason": "스물두째 장은 순차 청취와 완료 기록의 독립 단위다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C23",
+          "role": "item",
+          "targetIds": [],
+          "reason": "스물셋째 장은 순차 청취와 완료 기록의 독립 단위다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C24",
+          "role": "item",
+          "targetIds": [],
+          "reason": "스물넷째 장은 순차 청취와 완료 기록의 독립 단위다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C25",
+          "role": "item",
+          "targetIds": [],
+          "reason": "스물다섯째 장은 순차 청취와 완료 기록의 독립 단위다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C26",
+          "role": "item",
+          "targetIds": [],
+          "reason": "스물여섯째 장은 순차 청취와 완료 기록의 독립 단위다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C27",
+          "role": "item",
+          "targetIds": [],
+          "reason": "스물일곱째 장은 순차 청취와 완료 기록의 독립 단위다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C28",
+          "role": "item",
+          "targetIds": [],
+          "reason": "스물여덟째 장은 순차 청취와 완료 기록의 독립 단위다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C29",
+          "role": "item",
+          "targetIds": [],
+          "reason": "스물아홉째 장은 순차 청취와 완료 기록의 독립 단위다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C30",
+          "role": "item",
+          "targetIds": [],
+          "reason": "서른째 장은 순차 청취와 완료 기록의 독립 단위다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C31",
+          "role": "item",
+          "targetIds": [],
+          "reason": "서른한째 장은 순차 청취와 완료 기록의 독립 단위다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C32",
+          "role": "item",
+          "targetIds": [],
+          "reason": "서른두째 장은 순차 청취와 완료 기록의 독립 단위다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C33",
+          "role": "item",
+          "targetIds": [],
+          "reason": "서른셋째 장은 순차 청취와 완료 기록의 독립 단위다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C34",
+          "role": "item",
+          "targetIds": [],
+          "reason": "서른넷째 장은 순차 청취와 완료 기록의 독립 단위다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C35",
+          "role": "item",
+          "targetIds": [],
+          "reason": "서른다섯째 장은 순차 청취와 완료 기록의 독립 단위다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C36",
+          "role": "item",
+          "targetIds": [],
+          "reason": "서른여섯째 장은 순차 청취와 완료 기록의 독립 단위다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C37",
+          "role": "item",
+          "targetIds": [],
+          "reason": "서른일곱째 장은 순차 청취와 완료 기록의 독립 단위다."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C38",
+          "role": "item",
+          "targetIds": [],
+          "reason": "서른여덟째 장은 순차 청취와 완료 기록의 독립 단위다."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 16,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "Independent source-backed decision."
+      },
+      "projectionAvailabilities": {
+        "calendar": "unavailable",
+        "checklist": "available",
+        "todo": "unavailable",
+        "sheet": "unavailable",
+        "memo": "available"
+      },
+      "rationale": "Independent blind-packet classification.",
+      "confidence": "medium"
+    },
+    {
+      "caseId": "OQ-C04-PASSPORT",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_second_wave",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": [
+          "rights_permission_required",
+          "safety_review_required"
+        ]
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "money_admin_purchase",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "article",
+          "government_public"
+        ],
+        "sourceShape": "procedure_rows",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "ordered_procedure",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": [
+          "memo"
+        ],
+        "access": {
+          "providerType": "government_public",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_second_wave",
+          "freshnessReview": "current",
+          "localeReview": "not_required",
+          "safetyReview": "passed_with_boundary",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "research_only",
+          "blockers": [
+            "rights_permission_required",
+            "safety_review_required"
+          ]
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "PASSPORT-R01",
+          "role": "item",
+          "targetIds": [
+            "item-PASSPORT-R01"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "PASSPORT-R02",
+          "role": "item",
+          "targetIds": [
+            "item-PASSPORT-R02"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "PASSPORT-R03",
+          "role": "item",
+          "targetIds": [
+            "item-PASSPORT-R03"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "PASSPORT-R04",
+          "role": "item",
+          "targetIds": [
+            "item-PASSPORT-R04"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "PASSPORT-R05",
+          "role": "item",
+          "targetIds": [
+            "item-PASSPORT-R05"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "PASSPORT-R06",
+          "role": "conditional_response",
+          "targetIds": [
+            "conditional_response-PASSPORT-R06"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "PASSPORT-R07",
+          "role": "reference",
+          "targetIds": [
+            "reference-PASSPORT-R07"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 5,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 1,
+        "conditionalResponseCount": 1,
+        "summary": "Bounded source-backed canonical plan."
+      },
+      "projectionAvailabilities": {
+        "calendar": "unavailable",
+        "checklist": "available",
+        "todo": "unavailable",
+        "sheet": "unavailable",
+        "memo": "available"
+      },
+      "rationale": "Independent conversion from acquired source rows.",
+      "confidence": "high"
+    },
+    {
+      "caseId": "OQ-C05-WASHER",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_for_internal_canary",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": [
+          "rights_permission_required"
+        ]
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "home_living",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "article",
+          "brand_official"
+        ],
+        "sourceShape": "recurrence_rule",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "repeating_routine",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "calendar",
+        "secondaryArtifacts": [
+          "checklist",
+          "memo"
+        ],
+        "access": {
+          "providerType": "brand_official",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_for_internal_canary",
+          "freshnessReview": "current",
+          "localeReview": "not_required",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "internal_review",
+          "blockers": [
+            "rights_permission_required"
+          ]
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "WASHER-R01",
+          "role": "conditional_response",
+          "targetIds": [
+            "conditional_response-WASHER-R01"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "WASHER-R02",
+          "role": "reference",
+          "targetIds": [
+            "reference-WASHER-R02"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "WASHER-R03",
+          "role": "reference",
+          "targetIds": [
+            "reference-WASHER-R03"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "WASHER-R04",
+          "role": "item",
+          "targetIds": [
+            "item-WASHER-R04"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "WASHER-R05",
+          "role": "item",
+          "targetIds": [
+            "item-WASHER-R05"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "WASHER-R06",
+          "role": "item",
+          "targetIds": [
+            "item-WASHER-R06"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "WASHER-R07",
+          "role": "reference",
+          "targetIds": [
+            "reference-WASHER-R07"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 3,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 3,
+        "conditionalResponseCount": 1,
+        "summary": "Bounded source-backed canonical plan."
+      },
+      "projectionAvailabilities": {
+        "calendar": "available",
+        "checklist": "available",
+        "todo": "unavailable",
+        "sheet": "unavailable",
+        "memo": "available"
+      },
+      "rationale": "Independent conversion from acquired source rows.",
+      "confidence": "high"
+    },
+    {
+      "caseId": "OQ-C06-NASA",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_second_wave",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": [
+          "rights_permission_required",
+          "safety_review_required"
+        ]
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "hobby_pet",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "article",
+          "government_public"
+        ],
+        "sourceShape": "procedure_rows",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "ordered_procedure",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": [
+          "memo"
+        ],
+        "access": {
+          "providerType": "government_public",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_second_wave",
+          "freshnessReview": "current",
+          "localeReview": "not_required",
+          "safetyReview": "passed_with_boundary",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "research_only",
+          "blockers": [
+            "rights_permission_required",
+            "safety_review_required"
+          ]
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "DS12-R01",
+          "role": "reference",
+          "targetIds": [
+            "reference-DS12-R01"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "DS12-R02",
+          "role": "reference",
+          "targetIds": [
+            "reference-DS12-R02"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "DS12-R03",
+          "role": "item",
+          "targetIds": [
+            "item-DS12-R03"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "DS12-R04",
+          "role": "item",
+          "targetIds": [
+            "item-DS12-R04"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "DS12-R05",
+          "role": "item",
+          "targetIds": [
+            "item-DS12-R05"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "DS12-R06",
+          "role": "item",
+          "targetIds": [
+            "item-DS12-R06"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "DS12-R07",
+          "role": "item",
+          "targetIds": [
+            "item-DS12-R07"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "DS12-R08",
+          "role": "reference",
+          "targetIds": [
+            "reference-DS12-R08"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 5,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 3,
+        "conditionalResponseCount": 0,
+        "summary": "Bounded source-backed canonical plan."
+      },
+      "projectionAvailabilities": {
+        "calendar": "unavailable",
+        "checklist": "available",
+        "todo": "unavailable",
+        "sheet": "unavailable",
+        "memo": "available"
+      },
+      "rationale": "Independent conversion from acquired source rows.",
+      "confidence": "high"
+    },
+    {
+      "caseId": "OQ-C07-FIT100",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_second_wave",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": [
+          "rights_permission_required",
+          "safety_review_required",
+          "privacy_review_required"
+        ]
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "health_fitness",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "article",
+          "public_institution"
+        ],
+        "sourceShape": "procedure_rows",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "ordered_procedure",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": [
+          "memo"
+        ],
+        "access": {
+          "providerType": "public_institution",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_second_wave",
+          "freshnessReview": "current",
+          "localeReview": "not_required",
+          "safetyReview": "passed_with_boundary",
+          "privacyReview": "sensitive_private_only",
+          "rightsReview": "restricted",
+          "promotionState": "research_only",
+          "blockers": [
+            "rights_permission_required",
+            "safety_review_required",
+            "privacy_review_required"
+          ]
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "DS07-R01",
+          "role": "item",
+          "targetIds": [
+            "item-DS07-R01"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "DS07-R02",
+          "role": "item",
+          "targetIds": [
+            "item-DS07-R02"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "DS07-R03",
+          "role": "item",
+          "targetIds": [
+            "item-DS07-R03"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "DS07-R04",
+          "role": "item",
+          "targetIds": [
+            "item-DS07-R04"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "DS07-R05",
+          "role": "item",
+          "targetIds": [
+            "item-DS07-R05"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "DS07-R06",
+          "role": "item",
+          "targetIds": [
+            "item-DS07-R06"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "DS07-R07",
+          "role": "item",
+          "targetIds": [
+            "item-DS07-R07"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "DS07-R08",
+          "role": "item",
+          "targetIds": [
+            "item-DS07-R08"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "DS07-R09",
+          "role": "item",
+          "targetIds": [
+            "item-DS07-R09"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 9,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "Bounded source-backed canonical plan."
+      },
+      "projectionAvailabilities": {
+        "calendar": "unavailable",
+        "checklist": "available",
+        "todo": "unavailable",
+        "sheet": "unavailable",
+        "memo": "available"
+      },
+      "rationale": "Independent conversion from acquired source rows.",
+      "confidence": "high"
+    },
+    {
+      "caseId": "OQ-C08-AC-DECISION",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_for_internal_canary",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": [
+          "rights_permission_required"
+        ]
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "home_living",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "video",
+          "brand_official"
+        ],
+        "sourceShape": "decision_criteria",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "compare_decide",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "todo",
+        "secondaryArtifacts": [
+          "memo"
+        ],
+        "access": {
+          "providerType": "brand_official",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "video"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_for_internal_canary",
+          "freshnessReview": "current",
+          "localeReview": "not_required",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "internal_review",
+          "blockers": [
+            "rights_permission_required"
+          ]
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "AC-R01",
+          "role": "conditional_response",
+          "targetIds": [
+            "conditional_response-AC-R01"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "AC-R02",
+          "role": "conditional_response",
+          "targetIds": [
+            "conditional_response-AC-R02"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "AC-R03",
+          "role": "conditional_response",
+          "targetIds": [
+            "conditional_response-AC-R03"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "AC-R04",
+          "role": "reference",
+          "targetIds": [
+            "reference-AC-R04"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "AC-R05",
+          "role": "reference",
+          "targetIds": [
+            "reference-AC-R05"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 0,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 2,
+        "conditionalResponseCount": 3,
+        "summary": "Bounded source-backed canonical plan."
+      },
+      "projectionAvailabilities": {
+        "calendar": "unavailable",
+        "checklist": "unavailable",
+        "todo": "available",
+        "sheet": "unavailable",
+        "memo": "available"
+      },
+      "rationale": "Independent conversion from acquired source rows.",
+      "confidence": "high"
+    },
+    {
+      "caseId": "OQ-B01-HEAT",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_second_wave",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": [
+          "rights_permission_required",
+          "safety_review_required"
+        ]
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "health_fitness",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "article",
+          "government_public"
+        ],
+        "sourceShape": "procedure_rows",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "ordered_procedure",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": [
+          "memo"
+        ],
+        "access": {
+          "providerType": "government_public",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_second_wave",
+          "freshnessReview": "current",
+          "localeReview": "not_required",
+          "safetyReview": "passed_with_boundary",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "research_only",
+          "blockers": [
+            "rights_permission_required",
+            "safety_review_required"
+          ]
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "DS01-R01",
+          "role": "conditional_response",
+          "targetIds": [
+            "conditional_response-DS01-R01"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "DS01-R02",
+          "role": "item",
+          "targetIds": [
+            "item-DS01-R02"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "DS01-R03",
+          "role": "item",
+          "targetIds": [
+            "item-DS01-R03"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "DS01-R04",
+          "role": "item",
+          "targetIds": [
+            "item-DS01-R04"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "DS01-R05",
+          "role": "item",
+          "targetIds": [
+            "item-DS01-R05"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "DS01-R06",
+          "role": "item",
+          "targetIds": [
+            "item-DS01-R06"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "DS01-R07",
+          "role": "item",
+          "targetIds": [
+            "item-DS01-R07"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "DS01-R08",
+          "role": "conditional_response",
+          "targetIds": [
+            "conditional_response-DS01-R08"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "DS01-R09",
+          "role": "item",
+          "targetIds": [
+            "item-DS01-R09"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "DS01-R10",
+          "role": "reference",
+          "targetIds": [
+            "reference-DS01-R10"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 7,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 1,
+        "conditionalResponseCount": 2,
+        "summary": "Bounded source-backed canonical plan."
+      },
+      "projectionAvailabilities": {
+        "calendar": "unavailable",
+        "checklist": "available",
+        "todo": "unavailable",
+        "sheet": "unavailable",
+        "memo": "available"
+      },
+      "rationale": "Independent conversion from acquired source rows.",
+      "confidence": "high"
+    },
+    {
+      "caseId": "OQ-B02-KMOOC-META",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "no_proposal",
+        "conversionReadiness": "source_import_required",
+        "errorCode": "source_import_required",
+        "executableAllowed": false,
+        "publicExportAllowed": false,
+        "blockers": [
+          "source_incomplete",
+          "source_import_required",
+          "rights_permission_required"
+        ]
+      },
+      "classification": {
+        "classificationStatus": "insufficient_source_rows",
+        "primaryLifeArea": "study_reading",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "course",
+          "education_provider"
+        ],
+        "sourceShape": null,
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": null,
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": null,
+        "secondaryArtifacts": [],
+        "access": {
+          "providerType": "education_provider",
+          "discoveryAccess": "public",
+          "rowAccess": "partial",
+          "sourceFormat": "course"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "partial",
+          "conversionReadiness": "source_import_required",
+          "freshnessReview": "current",
+          "localeReview": "not_required",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "research_only",
+          "blockers": [
+            "source_incomplete",
+            "source_import_required",
+            "rights_permission_required"
+          ]
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "KMOOC-M01",
+          "role": "field",
+          "targetIds": [
+            "field-KMOOC-M01"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "KMOOC-M02",
+          "role": "reference",
+          "targetIds": [
+            "reference-KMOOC-M02"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "KMOOC-M03",
+          "role": "reference",
+          "targetIds": [
+            "reference-KMOOC-M03"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "KMOOC-M04",
+          "role": "reference",
+          "targetIds": [
+            "reference-KMOOC-M04"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "KMOOC-M05",
+          "role": "field",
+          "targetIds": [
+            "field-KMOOC-M05"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "KMOOC-A-MISSING",
+          "role": "item",
+          "targetIds": [
+            "item-KMOOC-A-MISSING"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 1,
+        "fieldCount": 2,
+        "memoCount": 0,
+        "referenceCount": 3,
+        "conditionalResponseCount": 0,
+        "summary": "No plan until missing execution rows are imported."
+      },
+      "projectionAvailabilities": {
+        "calendar": "unavailable",
+        "checklist": "unavailable",
+        "todo": "unavailable",
+        "sheet": "unavailable",
+        "memo": "available"
+      },
+      "rationale": "Packet lacks required execution rows.",
+      "confidence": "high"
+    },
+    {
+      "caseId": "OQ-B03-REMODEL",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_second_wave",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": [
+          "rights_unknown"
+        ]
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "home_living",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "article",
+          "editorial_media"
+        ],
+        "sourceShape": "procedure_rows",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "compare_decide",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": [
+          "memo"
+        ],
+        "access": {
+          "providerType": "editorial_media",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "unknown",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "pending"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_second_wave",
+          "freshnessReview": "current",
+          "localeReview": "not_required",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "pending",
+          "promotionState": "research_only",
+          "blockers": [
+            "rights_unknown"
+          ]
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "DS02-R01",
+          "role": "conditional_response",
+          "targetIds": [
+            "conditional_response-DS02-R01"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "DS02-R02",
+          "role": "conditional_response",
+          "targetIds": [
+            "conditional_response-DS02-R02"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "DS02-R03",
+          "role": "conditional_response",
+          "targetIds": [
+            "conditional_response-DS02-R03"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "DS02-R04",
+          "role": "conditional_response",
+          "targetIds": [
+            "conditional_response-DS02-R04"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "DS02-R05",
+          "role": "conditional_response",
+          "targetIds": [
+            "conditional_response-DS02-R05"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "DS02-R06",
+          "role": "conditional_response",
+          "targetIds": [
+            "conditional_response-DS02-R06"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "DS02-R07",
+          "role": "conditional_response",
+          "targetIds": [
+            "conditional_response-DS02-R07"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "DS02-R08",
+          "role": "conditional_response",
+          "targetIds": [
+            "conditional_response-DS02-R08"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "DS02-R09",
+          "role": "conditional_response",
+          "targetIds": [
+            "conditional_response-DS02-R09"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        },
+        {
+          "sourceRowId": "DS02-R10",
+          "role": "conditional_response",
+          "targetIds": [
+            "conditional_response-DS02-R10"
+          ],
+          "reason": "Blind-packet SourceRow accounting."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 0,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 10,
+        "summary": "Bounded source-backed canonical plan."
+      },
+      "projectionAvailabilities": {
+        "calendar": "unavailable",
+        "checklist": "available",
+        "todo": "unavailable",
+        "sheet": "unavailable",
+        "memo": "available"
+      },
+      "rationale": "Independent conversion from acquired source rows.",
+      "confidence": "high"
+    },
+    {
+      "caseId": "OQ-B04-TODOIST",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "no_proposal",
+        "conversionReadiness": "source_import_required",
+        "errorCode": "source_import_required",
+        "executableAllowed": false,
+        "publicExportAllowed": false,
+        "blockers": []
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "home_living",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "template"
+        ],
+        "sourceShape": "procedure_rows",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "ordered_procedure",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": [
+          "memo"
+        ],
+        "access": {
+          "providerType": "brand_official",
+          "discoveryAccess": "public",
+          "rowAccess": "metadata_only",
+          "sourceFormat": "template"
+        },
+        "rights": {
+          "basis": "provider_terms",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "pending"
+        },
+        "review": {
+          "sourceRowStatus": "metadata_only",
+          "conversionReadiness": "source_import_required",
+          "freshnessReview": "current",
+          "localeReview": "not_required",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "pending",
+          "promotionState": "research_only",
+          "blockers": []
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "TODOIST-R01",
+          "role": "item",
+          "targetIds": [
+            "item-TODOIST-R01"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "TODOIST-R02",
+          "role": "item",
+          "targetIds": [
+            "item-TODOIST-R02"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "TODOIST-R03",
+          "role": "item",
+          "targetIds": [
+            "item-TODOIST-R03"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "TODOIST-R04",
+          "role": "item",
+          "targetIds": [
+            "item-TODOIST-R04"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "TODOIST-R05",
+          "role": "item",
+          "targetIds": [
+            "item-TODOIST-R05"
+          ],
+          "reason": "Blind packet row."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 5,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "Independent source-backed decision."
+      },
+      "projectionAvailabilities": {
+        "calendar": "unavailable",
+        "checklist": "available",
+        "todo": "unavailable",
+        "sheet": "unavailable",
+        "memo": "available"
+      },
+      "rationale": "Independent blind-packet classification.",
+      "confidence": "medium"
+    },
+    {
+      "caseId": "OQ-P01-OSSU",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_for_internal_canary",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": []
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "home_living",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "table"
+        ],
+        "sourceShape": "procedure_rows",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "ordered_procedure",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": [
+          "memo"
+        ],
+        "access": {
+          "providerType": "open_knowledge",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "table"
+        },
+        "rights": {
+          "basis": "open_license",
+          "allowedUse": [
+            "link_metadata",
+            "personal_transform",
+            "internal_review",
+            "public_derived"
+          ],
+          "reviewStatus": "approved"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_for_internal_canary",
+          "freshnessReview": "current",
+          "localeReview": "not_required",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "approved",
+          "promotionState": "research_only",
+          "blockers": []
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "DS10-R01",
+          "role": "item",
+          "targetIds": [
+            "item-DS10-R01"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "DS10-R02",
+          "role": "item",
+          "targetIds": [
+            "item-DS10-R02"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "DS10-R03",
+          "role": "item",
+          "targetIds": [
+            "item-DS10-R03"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "DS10-R04",
+          "role": "item",
+          "targetIds": [
+            "item-DS10-R04"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "DS10-R05",
+          "role": "item",
+          "targetIds": [
+            "item-DS10-R05"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "DS10-R06",
+          "role": "item",
+          "targetIds": [
+            "item-DS10-R06"
+          ],
+          "reason": "Blind packet row."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 6,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "Independent source-backed decision."
+      },
+      "projectionAvailabilities": {
+        "calendar": "unavailable",
+        "checklist": "available",
+        "todo": "unavailable",
+        "sheet": "unavailable",
+        "memo": "available"
+      },
+      "rationale": "Independent blind-packet classification.",
+      "confidence": "medium"
+    },
+    {
+      "caseId": "OQ-P02-PACKING",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_for_internal_canary",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": []
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "home_living",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "article"
+        ],
+        "sourceShape": "procedure_rows",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "ordered_procedure",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": [
+          "memo"
+        ],
+        "access": {
+          "providerType": "open_knowledge",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "open_license",
+          "allowedUse": [
+            "link_metadata",
+            "personal_transform",
+            "internal_review",
+            "public_derived"
+          ],
+          "reviewStatus": "approved"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_for_internal_canary",
+          "freshnessReview": "current",
+          "localeReview": "not_required",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "approved",
+          "promotionState": "research_only",
+          "blockers": []
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "DS11-R01",
+          "role": "item",
+          "targetIds": [
+            "item-DS11-R01"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "DS11-R02",
+          "role": "item",
+          "targetIds": [
+            "item-DS11-R02"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "DS11-R03",
+          "role": "item",
+          "targetIds": [
+            "item-DS11-R03"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "DS11-R04",
+          "role": "item",
+          "targetIds": [
+            "item-DS11-R04"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "DS11-R05",
+          "role": "item",
+          "targetIds": [
+            "item-DS11-R05"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "DS11-R06",
+          "role": "item",
+          "targetIds": [
+            "item-DS11-R06"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "DS11-R07",
+          "role": "item",
+          "targetIds": [
+            "item-DS11-R07"
+          ],
+          "reason": "Blind packet row."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 7,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "Independent source-backed decision."
+      },
+      "projectionAvailabilities": {
+        "calendar": "unavailable",
+        "checklist": "available",
+        "todo": "unavailable",
+        "sheet": "unavailable",
+        "memo": "available"
+      },
+      "rationale": "Independent blind-packet classification.",
+      "confidence": "medium"
+    },
+    {
+      "caseId": "OQ-P03-VEHICLE",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_for_internal_canary",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": []
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "home_living",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "article"
+        ],
+        "sourceShape": "procedure_rows",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "ordered_procedure",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": [
+          "memo"
+        ],
+        "access": {
+          "providerType": "public_institution",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_for_internal_canary",
+          "freshnessReview": "current",
+          "localeReview": "not_required",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "research_only",
+          "blockers": []
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "VEHICLE-R01",
+          "role": "item",
+          "targetIds": [
+            "item-VEHICLE-R01"
+          ],
+          "reason": "Blind packet row."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 1,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "Independent source-backed decision."
+      },
+      "projectionAvailabilities": {
+        "calendar": "unavailable",
+        "checklist": "available",
+        "todo": "unavailable",
+        "sheet": "unavailable",
+        "memo": "available"
+      },
+      "rationale": "Independent blind-packet classification.",
+      "confidence": "medium"
+    },
+    {
+      "caseId": "OQ-P04-PORTFOLIO",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_for_internal_canary",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": []
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "home_living",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "article"
+        ],
+        "sourceShape": "procedure_rows",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "ordered_procedure",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": [
+          "memo"
+        ],
+        "access": {
+          "providerType": "creator",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "unknown",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "pending"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_for_internal_canary",
+          "freshnessReview": "current",
+          "localeReview": "not_required",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "pending",
+          "promotionState": "research_only",
+          "blockers": []
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "PORTFOLIO-R01",
+          "role": "item",
+          "targetIds": [
+            "item-PORTFOLIO-R01"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "PORTFOLIO-R02",
+          "role": "item",
+          "targetIds": [
+            "item-PORTFOLIO-R02"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "PORTFOLIO-R03",
+          "role": "item",
+          "targetIds": [
+            "item-PORTFOLIO-R03"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "PORTFOLIO-R04",
+          "role": "item",
+          "targetIds": [
+            "item-PORTFOLIO-R04"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "PORTFOLIO-R05",
+          "role": "item",
+          "targetIds": [
+            "item-PORTFOLIO-R05"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "PORTFOLIO-R06",
+          "role": "item",
+          "targetIds": [
+            "item-PORTFOLIO-R06"
+          ],
+          "reason": "Blind packet row."
+        },
+        {
+          "sourceRowId": "PORTFOLIO-R07",
+          "role": "item",
+          "targetIds": [
+            "item-PORTFOLIO-R07"
+          ],
+          "reason": "Blind packet row."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 7,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "Independent source-backed decision."
+      },
+      "projectionAvailabilities": {
+        "calendar": "unavailable",
+        "checklist": "available",
+        "todo": "unavailable",
+        "sheet": "unavailable",
+        "memo": "available"
+      },
+      "rationale": "Independent blind-packet classification.",
+      "confidence": "medium"
+    },
+    {
+      "caseId": "OQ-N01-FOODCRAFT",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "no_proposal",
+        "conversionReadiness": "source_import_required",
+        "errorCode": "source_import_required",
+        "executableAllowed": false,
+        "publicExportAllowed": false,
+        "blockers": []
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "home_living",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "article"
+        ],
+        "sourceShape": "procedure_rows",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "ordered_procedure",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": [
+          "memo"
+        ],
+        "access": {
+          "providerType": "brand_official",
+          "discoveryAccess": "public",
+          "rowAccess": "metadata_only",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "metadata_only",
+          "conversionReadiness": "source_import_required",
+          "freshnessReview": "current",
+          "localeReview": "not_required",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "research_only",
+          "blockers": []
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "FOODCRAFT-R01",
+          "role": "item",
+          "targetIds": [
+            "item-FOODCRAFT-R01"
+          ],
+          "reason": "Blind packet row."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 1,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "Independent source-backed decision."
+      },
+      "projectionAvailabilities": {
+        "calendar": "unavailable",
+        "checklist": "available",
+        "todo": "unavailable",
+        "sheet": "unavailable",
+        "memo": "available"
+      },
+      "rationale": "Independent blind-packet classification.",
+      "confidence": "medium"
+    },
+    {
+      "caseId": "OQ-N02-LOGIN-WALL",
+      "feasibility": {
+        "generationState": "failed",
+        "outcome": "no_proposal",
+        "conversionReadiness": "hold",
+        "errorCode": "source_import_required",
+        "executableAllowed": false,
+        "publicExportAllowed": false,
+        "blockers": []
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "home_living",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "article"
+        ],
+        "sourceShape": "procedure_rows",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "ordered_procedure",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": [
+          "memo"
+        ],
+        "access": {
+          "providerType": "aggregator",
+          "discoveryAccess": "paywalled",
+          "rowAccess": "unavailable",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "unknown",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "pending"
+        },
+        "review": {
+          "sourceRowStatus": "missing",
+          "conversionReadiness": "hold",
+          "freshnessReview": "current",
+          "localeReview": "not_required",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "pending",
+          "promotionState": "research_only",
+          "blockers": []
+        }
+      },
+      "roles": [],
+      "canonicalPlan": {
+        "itemCount": 0,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "Independent source-backed decision."
+      },
+      "projectionAvailabilities": {
+        "calendar": "unavailable",
+        "checklist": "available",
+        "todo": "unavailable",
+        "sheet": "unavailable",
+        "memo": "available"
+      },
+      "rationale": "Independent blind-packet classification.",
+      "confidence": "medium"
+    }
+  ]
+}

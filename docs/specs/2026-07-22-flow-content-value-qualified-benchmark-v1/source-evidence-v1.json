@@ -1,0 +1,2006 @@
+{
+  "generatedAt": "2026-07-22T15:00:00+09:00",
+  "evidenceCount": 240,
+  "evidence": [
+    {
+      "candidateId": "INT-C05",
+      "id": "INT-C05-E1",
+      "type": "demand",
+      "claim": "대상 보호자에게 지원 시작월과 서비스 전환을 놓치지 않아야 하는 공식 신청 수요가 있다.",
+      "url": "https://www.bokjiro.go.kr/ssis-tbu/twataa/wlfareInfo/moveTWAT52011M.do?wlfareInfoId=WLF00003250&wlfareInfoReldBztpCd=01",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-C05",
+      "id": "INT-C05-E2",
+      "type": "interaction",
+      "claim": "댓글 수치 대신 신청 누락·서비스 변경 시 지원 공백이라는 공식 고의도 신호를 사용한다.",
+      "url": "https://www.bokjiro.go.kr/ssis-tbu/twataa/wlfareInfo/moveTWAT52011M.do?wlfareInfoId=WLF00003250&wlfareInfoReldBztpCd=01",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-C05",
+      "id": "INT-C05-E3",
+      "type": "source_rows",
+      "claim": "신청 조건 확인, 온라인·주민센터 신청, 결과와 지원 시작월 확인 행이 확보됐다.",
+      "url": "https://www.bokjiro.go.kr/ssis-tbu/twataa/wlfareInfo/moveTWAT52011M.do?wlfareInfoId=WLF00003250&wlfareInfoReldBztpCd=01",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-C05",
+      "id": "INT-C05-E4",
+      "type": "creator_business",
+      "claim": "공식 신청 경로와 결과 확인으로 되돌리는 trust anchor가 있다.",
+      "url": "https://www.bokjiro.go.kr/ssis-tbu/twataa/wlfareInfo/moveTWAT52011M.do?wlfareInfoId=WLF00003250&wlfareInfoReldBztpCd=01",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-C05",
+      "id": "INT-C05-E5",
+      "type": "value_delta",
+      "claim": "신청 전후 상태와 지원 시작월을 Todo로 유지해 링크만 저장하는 것보다 낫다.",
+      "url": "https://www.bokjiro.go.kr/ssis-tbu/twataa/wlfareInfo/moveTWAT52011M.do?wlfareInfoId=WLF00003250&wlfareInfoReldBztpCd=01",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-C05",
+      "id": "INT-C05-E6",
+      "type": "portfolio",
+      "claim": "가족 행정의 조건형 짧은 Todo를 대표한다.",
+      "url": "https://www.bokjiro.go.kr/ssis-tbu/twataa/wlfareInfo/moveTWAT52011M.do?wlfareInfoId=WLF00003250&wlfareInfoReldBztpCd=01",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-O02",
+      "id": "INT-O02-E1",
+      "type": "demand",
+      "claim": "정기검사는 법정 반복 의무이며 미수검 과태료가 최대 60만원으로 안내된다.",
+      "url": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-O02",
+      "id": "INT-O02-E2",
+      "type": "interaction",
+      "claim": "댓글 대신 검사기간·재검사 10일·과태료라는 반복 손실 신호를 사용한다.",
+      "url": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-O02",
+      "id": "INT-O02-E3",
+      "type": "source_rows",
+      "claim": "검사대상, 공식 기간 확인, 검사소·예약, 검사결과·재검사 행을 확보했다.",
+      "url": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-O02",
+      "id": "INT-O02-E4",
+      "type": "creator_business",
+      "claim": "사이버검사소 예약과 검사기간 안내 서비스로 직접 연결된다.",
+      "url": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-O02",
+      "id": "INT-O02-E5",
+      "type": "value_delta",
+      "claim": "차량별 확인일·방문일·결과 상태를 유지하며 확정일만 Calendar로 보낸다.",
+      "url": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-O02",
+      "id": "INT-O02-E6",
+      "type": "portfolio",
+      "claim": "주기적 법정 관리의 기준 사례다.",
+      "url": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-C06",
+      "id": "INT-C06-E1",
+      "type": "demand",
+      "claim": "현재 페이지에서 조회 9,412가 직접 보인다.",
+      "url": "https://ohou.se/advices/8220",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-C06",
+      "id": "INT-C06-E2",
+      "type": "interaction",
+      "claim": "스크랩 607·좋아요 118·댓글 13이 직접 보인다.",
+      "url": "https://ohou.se/advices/8220",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-C06",
+      "id": "INT-C06-E3",
+      "type": "source_rows",
+      "claim": "월~금 메뉴와 각 재료·조리 단계가 원문에 완전하게 있다.",
+      "url": "https://ohou.se/advices/8220",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-C06",
+      "id": "INT-C06-E4",
+      "type": "creator_business",
+      "claim": "제작자 원문과 주간 식단표 시리즈로 되돌리는 source-link·fork 경로가 있다.",
+      "url": "https://ohou.se/advices/8220",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-C06",
+      "id": "INT-C06-E5",
+      "type": "value_delta",
+      "claim": "선택 메뉴, 장보기, 요일별 실행 상태를 한 주 동안 유지한다.",
+      "url": "https://ohou.se/advices/8220",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-C06",
+      "id": "INT-C06-E6",
+      "type": "portfolio",
+      "claim": "제작자형 주간 Calendar와 실제 메뉴 행을 대표한다.",
+      "url": "https://ohou.se/advices/8220",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-C14",
+      "id": "INT-C14-E1",
+      "type": "demand",
+      "claim": "현재 페이지에서 조회 29,854가 직접 보인다.",
+      "url": "https://ohou.se/advices/7406",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-C14",
+      "id": "INT-C14-E2",
+      "type": "interaction",
+      "claim": "스크랩 746·좋아요 152·댓글 28이 직접 보인다.",
+      "url": "https://ohou.se/advices/7406",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-C14",
+      "id": "INT-C14-E3",
+      "type": "source_rows",
+      "claim": "비움 기준, 분류 준비, 남김·유예·처분, 복귀, 처리 행이 확보됐다.",
+      "url": "https://ohou.se/advices/7406",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-C14",
+      "id": "INT-C14-E4",
+      "type": "creator_business",
+      "claim": "제작자 원문·SNS로 돌아가고 사용자 공간별로 개인 실행본을 만들 수 있다.",
+      "url": "https://ohou.se/advices/7406",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-C14",
+      "id": "INT-C14-E5",
+      "type": "value_delta",
+      "claim": "남김·유예·처분 결정과 후속 처리 상태를 한 세션 뒤에도 남긴다.",
+      "url": "https://ohou.se/advices/7406",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-C14",
+      "id": "INT-C14-E6",
+      "type": "portfolio",
+      "claim": "날짜 없는 한 세션 결정 Checklist를 대표한다.",
+      "url": "https://ohou.se/advices/7406",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-KOCW",
+      "id": "INT-KOCW-E1",
+      "type": "demand",
+      "claim": "KOCW 페이지에 조회 30,854가 표시된다.",
+      "url": "https://kocw.net/home/search/kemView.do?kemId=1422415",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-KOCW",
+      "id": "INT-KOCW-E2",
+      "type": "interaction",
+      "claim": "강의담기·수강신청·차시 URL이라는 실제 학습 재방문 경로가 있다.",
+      "url": "https://kocw.net/home/search/kemView.do?kemId=1422415",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-KOCW",
+      "id": "INT-KOCW-E3",
+      "type": "source_rows",
+      "claim": "차시 제목·설명·링크와 형성평가 행이 공개돼 있다.",
+      "url": "https://kocw.net/home/search/kemView.do?kemId=1422415",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-KOCW",
+      "id": "INT-KOCW-E4",
+      "type": "creator_business",
+      "claim": "각 차시 원강의 유입과 수강확인 경로가 보존된다.",
+      "url": "https://kocw.net/home/search/kemView.do?kemId=1422415",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-KOCW",
+      "id": "INT-KOCW-E5",
+      "type": "value_delta",
+      "claim": "현재 차시, 완료, 막힌 점을 Sheet에 남겨 다시 시작할 수 있다.",
+      "url": "https://kocw.net/home/search/kemView.do?kemId=1422415",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-KOCW",
+      "id": "INT-KOCW-E6",
+      "type": "portfolio",
+      "claim": "한국어 공개강의의 차시 진도표를 대표한다.",
+      "url": "https://kocw.net/home/search/kemView.do?kemId=1422415",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-KCA",
+      "id": "INT-KCA-E1",
+      "type": "demand",
+      "claim": "보도자료 조회 약 3천, 관련 카드뉴스 조회가 별도로 확인된다.",
+      "url": "https://www.kca.go.kr/home/sub.do?menukey=4002&mode=view&no=1003995520",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-KCA",
+      "id": "INT-KCA-E2",
+      "type": "interaction",
+      "claim": "11개 제품을 시험하고 가격 최대 2.6배 차이·표시 개선 필요를 공개한 선택 고의도 신호다.",
+      "url": "https://www.kca.go.kr/home/sub.do?menukey=4002&mode=view&no=1003995520",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-KCA",
+      "id": "INT-KCA-E3",
+      "type": "source_rows",
+      "claim": "원재료 유형, 영양, 당류·나트륨, 표시, 안전, 가격 비교 행이 있다.",
+      "url": "https://www.kca.go.kr/home/sub.do?menukey=4002&mode=view&no=1003995520",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-KCA",
+      "id": "INT-KCA-E4",
+      "type": "creator_business",
+      "claim": "공공누리 제1유형과 소비자24 원자료로 연결되는 trust path가 있다.",
+      "url": "https://www.kca.go.kr/home/sub.do?menukey=4002&mode=view&no=1003995520",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-KCA",
+      "id": "INT-KCA-E5",
+      "type": "value_delta",
+      "claim": "내 우선 기준과 후보별 유지·보류·제외 이유를 비교 Sheet에 남긴다.",
+      "url": "https://www.kca.go.kr/home/sub.do?menukey=4002&mode=view&no=1003995520",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-KCA",
+      "id": "INT-KCA-E6",
+      "type": "portfolio",
+      "claim": "공식 제품 비교·결정 상태를 대표한다.",
+      "url": "https://www.kca.go.kr/home/sub.do?menukey=4002&mode=view&no=1003995520",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-OSSU",
+      "id": "INT-OSSU-E1",
+      "type": "demand",
+      "claim": "GitHub 약 207K stars·25.7K forks가 내부 관찰 기록에 있다.",
+      "url": "https://github.com/ossu/computer-science",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-OSSU",
+      "id": "INT-OSSU-E2",
+      "type": "interaction",
+      "claim": "stars·forks·issues와 curriculum 기여 이력이 실제 재사용 신호다.",
+      "url": "https://github.com/ossu/computer-science",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-OSSU",
+      "id": "INT-OSSU-E3",
+      "type": "source_rows",
+      "claim": "과정명, 기간, 주당 시간, 선수조건이 있는 시작 구간 6행을 확보했다.",
+      "url": "https://github.com/ossu/computer-science",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-OSSU",
+      "id": "INT-OSSU-E4",
+      "type": "creator_business",
+      "claim": "오픈 라이선스·원 repo·issue·fork의 수정 루프가 있다.",
+      "url": "https://github.com/ossu/computer-science",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-OSSU",
+      "id": "INT-OSSU-E5",
+      "type": "value_delta",
+      "claim": "선수조건과 장기 과정 상태를 개인 Sheet에서 관리하고 원 repo로 돌아간다.",
+      "url": "https://github.com/ossu/computer-science",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-OSSU",
+      "id": "INT-OSSU-E6",
+      "type": "portfolio",
+      "claim": "단일 강의가 아닌 장기 curriculum lifecycle을 검증한다.",
+      "url": "https://github.com/ossu/computer-science",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-WIKIVOYAGE",
+      "id": "INT-WIKIVOYAGE-E1",
+      "type": "demand",
+      "claim": "2025-07~2026-06 사용자 페이지뷰 6,447이 내부 관찰 기록에 있다.",
+      "url": "https://en.wikivoyage.org/wiki/Packing_list",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-WIKIVOYAGE",
+      "id": "INT-WIKIVOYAGE-E2",
+      "type": "interaction",
+      "claim": "편집·토론·버전 이력과 여행별 반복 복사 경로가 있다.",
+      "url": "https://en.wikivoyage.org/wiki/Packing_list",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-WIKIVOYAGE",
+      "id": "INT-WIKIVOYAGE-E3",
+      "type": "source_rows",
+      "claim": "휴대 수하물 필수품과 입국 문서 7개 bounded 행을 선택했다.",
+      "url": "https://en.wikivoyage.org/wiki/Packing_list",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-WIKIVOYAGE",
+      "id": "INT-WIKIVOYAGE-E4",
+      "type": "creator_business",
+      "claim": "CC BY-SA attribution과 원문 개선 루프가 있다.",
+      "url": "https://en.wikivoyage.org/wiki/Packing_list",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-WIKIVOYAGE",
+      "id": "INT-WIKIVOYAGE-E5",
+      "type": "value_delta",
+      "claim": "여행별 담당·준비·보류 상태를 남기고 목적지 규칙은 공식 출처로 재확인한다.",
+      "url": "https://en.wikivoyage.org/wiki/Packing_list",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-WIKIVOYAGE",
+      "id": "INT-WIKIVOYAGE-E6",
+      "type": "portfolio",
+      "claim": "여행 준비의 조건형 Checklist를 보강한다.",
+      "url": "https://en.wikivoyage.org/wiki/Packing_list",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "NEW-WEB1",
+      "id": "NEW-WEB1-E1",
+      "type": "demand",
+      "claim": "공동공부 9,199명이 페이지에 표시된다.",
+      "url": "https://opentutorials.org/course/3084",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-WEB1",
+      "id": "NEW-WEB1-E2",
+      "type": "interaction",
+      "claim": "4일·20일·1개월 전에도 start/restart 댓글이 이어지고 질문·답변이 보인다.",
+      "url": "https://opentutorials.org/course/3084",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-WEB1",
+      "id": "NEW-WEB1-E3",
+      "type": "source_rows",
+      "claim": "프로젝트 동기부터 웹서버·부록까지 26개 토픽, 30개 영상·약 4시간이 공개돼 있다.",
+      "url": "https://opentutorials.org/course/3084",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-WEB1",
+      "id": "NEW-WEB1-E4",
+      "type": "creator_business",
+      "claim": "공공재 저작권 정책, 후원·책·원강의 링크와 공동공부 루프가 있다.",
+      "url": "https://opentutorials.org/course/3084",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-WEB1",
+      "id": "NEW-WEB1-E5",
+      "type": "value_delta",
+      "claim": "26행 완료·현재 위치·메모를 유지하고 선택 시에만 학습일을 붙인다.",
+      "url": "https://opentutorials.org/course/3084",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "NEW-WEB1",
+      "id": "NEW-WEB1-E6",
+      "type": "portfolio",
+      "claim": "한국 제작자 공개교육의 강한 진도 사례다.",
+      "url": "https://opentutorials.org/course/3084",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "NEW-OHOUSE-DEFECT",
+      "id": "NEW-OHOUSE-DEFECT-E1",
+      "type": "demand",
+      "claim": "조회 111,575가 현재 페이지에 표시된다.",
+      "url": "https://ohou.se/advices/2327",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-OHOUSE-DEFECT",
+      "id": "NEW-OHOUSE-DEFECT-E2",
+      "type": "interaction",
+      "claim": "스크랩 4,249·좋아요 1,019·댓글 30이 표시된다.",
+      "url": "https://ohou.se/advices/2327",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-OHOUSE-DEFECT",
+      "id": "NEW-OHOUSE-DEFECT-E3",
+      "type": "source_rows",
+      "claim": "설비·새시·목공·중문·타일·욕실·필름·페인트·바닥·도배·주방·조명 12행과 사진→보수→재촬영 규칙이 있다.",
+      "url": "https://ohou.se/advices/2327",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-OHOUSE-DEFECT",
+      "id": "NEW-OHOUSE-DEFECT-E4",
+      "type": "creator_business",
+      "claim": "다운로드 양식, 인테리어 업체 찾기, 원문으로 이어지는 명확한 serving path가 있다.",
+      "url": "https://ohou.se/advices/2327",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-OHOUSE-DEFECT",
+      "id": "NEW-OHOUSE-DEFECT-E5",
+      "type": "value_delta",
+      "claim": "공정·공간별 발견, 사진, 보수 요청, 재점검 상태를 현장 인계용 Sheet에 남긴다.",
+      "url": "https://ohou.se/advices/2327",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "NEW-OHOUSE-DEFECT",
+      "id": "NEW-OHOUSE-DEFECT-E6",
+      "type": "portfolio",
+      "claim": "실제 제작자 template과 상태·증거 필드를 검증한다.",
+      "url": "https://ohou.se/advices/2327",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "NEW-KOSAF-WORK",
+      "id": "NEW-KOSAF-WORK-E1",
+      "type": "demand",
+      "claim": "공식 장학 신청과 2학기 사업기간이 현재 페이지에 공개돼 있다.",
+      "url": "https://www.kosaf.go.kr/ko/scholar.do?pg=scholarship05_04_01&ttab1=3",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-KOSAF-WORK",
+      "id": "NEW-KOSAF-WORK-E2",
+      "type": "interaction",
+      "claim": "신청창을 놓치면 해당 통합신청이 불가능하고 학교별 운영 확인이 필요한 고의도 신호다.",
+      "url": "https://www.kosaf.go.kr/ko/scholar.do?pg=scholarship05_04_01&ttab1=3",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-KOSAF-WORK",
+      "id": "NEW-KOSAF-WORK-E3",
+      "type": "source_rows",
+      "claim": "8/12~9/9 신청, 9/16 서류·가구원 동의, 신청 1~3일 뒤 제출대상 확인 행이 있다.",
+      "url": "https://www.kosaf.go.kr/ko/scholar.do?pg=scholarship05_04_01&ttab1=3",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-KOSAF-WORK",
+      "id": "NEW-KOSAF-WORK-E4",
+      "type": "creator_business",
+      "claim": "공식 신청·서류현황·출근부 서비스로 직접 연결된다.",
+      "url": "https://www.kosaf.go.kr/ko/scholar.do?pg=scholarship05_04_01&ttab1=3",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-KOSAF-WORK",
+      "id": "NEW-KOSAF-WORK-E5",
+      "type": "value_delta",
+      "claim": "두 날짜창과 조건형 후속 확인을 Calendar+Checklist로 유지하되 민감서류는 저장하지 않는다.",
+      "url": "https://www.kosaf.go.kr/ko/scholar.do?pg=scholarship05_04_01&ttab1=3",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "NEW-KOSAF-WORK",
+      "id": "NEW-KOSAF-WORK-E6",
+      "type": "portfolio",
+      "claim": "향후 날짜창이 살아 있는 학자금 행정 lifecycle을 보강한다.",
+      "url": "https://www.kosaf.go.kr/ko/scholar.do?pg=scholarship05_04_01&ttab1=3",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "NEW-INCHEON-PET",
+      "id": "NEW-INCHEON-PET-E1",
+      "type": "demand",
+      "claim": "직접 연 페이지의 조회 26,763과 재난·안전 목적이 확인된다.",
+      "url": "https://www.incheon.go.kr/IC010101/view?cntPerPage=&curPage=311&nttNo=2041827&srchKey=srchSj&srchSiteRealmCode=&srchWord=",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-INCHEON-PET",
+      "id": "NEW-INCHEON-PET-E2",
+      "type": "interaction",
+      "claim": "보호자와 동물 모두의 대피 지연 위험이라는 공식 손실·준비 고의도 신호다.",
+      "url": "https://www.incheon.go.kr/IC010101/view?cntPerPage=&curPage=311&nttNo=2041827&srchKey=srchSj&srchSiteRealmCode=&srchWord=",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-INCHEON-PET",
+      "id": "NEW-INCHEON-PET-E3",
+      "type": "source_rows",
+      "claim": "대피 계획, 이동장·재난키트, 연락처, 실제 대피 훈련 행을 PDF에서 확보했다.",
+      "url": "https://www.incheon.go.kr/IC010101/view?cntPerPage=&curPage=311&nttNo=2041827&srchKey=srchSj&srchSiteRealmCode=&srchWord=",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-INCHEON-PET",
+      "id": "NEW-INCHEON-PET-E4",
+      "type": "creator_business",
+      "claim": "공공누리 출처표시 자유이용과 공식 재난안전 source path가 있다.",
+      "url": "https://www.incheon.go.kr/IC010101/view?cntPerPage=&curPage=311&nttNo=2041827&srchKey=srchSj&srchSiteRealmCode=&srchWord=",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-INCHEON-PET",
+      "id": "NEW-INCHEON-PET-E5",
+      "type": "value_delta",
+      "claim": "준비물 보유·보충, 대피경로·연락처, 훈련 완료 상태를 유지한다.",
+      "url": "https://www.incheon.go.kr/IC010101/view?cntPerPage=&curPage=311&nttNo=2041827&srchKey=srchSj&srchSiteRealmCode=&srchWord=",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "NEW-INCHEON-PET",
+      "id": "NEW-INCHEON-PET-E6",
+      "type": "portfolio",
+      "claim": "반려동물·재난·인계가 만나는 새 user moment다.",
+      "url": "https://www.incheon.go.kr/IC010101/view?cntPerPage=&curPage=311&nttNo=2041827&srchKey=srchSj&srchSiteRealmCode=&srchWord=",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-OHOUSE-STORAGE",
+      "id": "INT-OHOUSE-STORAGE-E1",
+      "type": "demand",
+      "claim": "조회 683,506이 기록됐다.",
+      "url": "https://ohou.se/advices/9345",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-OHOUSE-STORAGE",
+      "id": "INT-OHOUSE-STORAGE-E2",
+      "type": "interaction",
+      "claim": "스크랩 53,116·좋아요 12,983·댓글 398이 기록됐다.",
+      "url": "https://ohou.se/advices/9345",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-OHOUSE-STORAGE",
+      "id": "INT-OHOUSE-STORAGE-E3",
+      "type": "source_rows",
+      "claim": "실제 5개 행은 있으나 서로 독립적인 mini Flow다.",
+      "url": "https://ohou.se/advices/9345",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-OHOUSE-STORAGE",
+      "id": "INT-OHOUSE-STORAGE-E4",
+      "type": "creator_business",
+      "claim": "강한 source-link·저장·제작자 유입 가설이 있다.",
+      "url": "https://ohou.se/advices/9345",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-OHOUSE-STORAGE",
+      "id": "INT-OHOUSE-STORAGE-E5",
+      "type": "value_delta",
+      "claim": "하나를 고르면 child Checklist가 되지만 전체를 납작하게 만들면 가치가 훼손된다.",
+      "url": "https://ohou.se/advices/9345",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-OHOUSE-STORAGE",
+      "id": "INT-OHOUSE-STORAGE-E6",
+      "type": "portfolio",
+      "claim": "home mini-flow split gate를 시험한다.",
+      "url": "https://ohou.se/advices/9345",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-OHOUSE-CONTRACT",
+      "id": "INT-OHOUSE-CONTRACT-E1",
+      "type": "demand",
+      "claim": "조회 253,412가 기록됐다.",
+      "url": "https://ohou.se/advices/1972",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-OHOUSE-CONTRACT",
+      "id": "INT-OHOUSE-CONTRACT-E2",
+      "type": "interaction",
+      "claim": "스크랩 8,028·좋아요 2,426·댓글 124가 기록됐다.",
+      "url": "https://ohou.se/advices/1972",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-OHOUSE-CONTRACT",
+      "id": "INT-OHOUSE-CONTRACT-E3",
+      "type": "source_rows",
+      "claim": "계약서 확인 10행이 실제 존재한다.",
+      "url": "https://ohou.se/advices/1972",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-OHOUSE-CONTRACT",
+      "id": "INT-OHOUSE-CONTRACT-E4",
+      "type": "creator_business",
+      "claim": "원문 유입과 업체 상담 path가 있다.",
+      "url": "https://ohou.se/advices/1972",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-OHOUSE-CONTRACT",
+      "id": "INT-OHOUSE-CONTRACT-E5",
+      "type": "value_delta",
+      "claim": "계약서 위치·질문·보류 상태를 Sheet에 남길 수 있다.",
+      "url": "https://ohou.se/advices/1972",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-OHOUSE-CONTRACT",
+      "id": "INT-OHOUSE-CONTRACT-E6",
+      "type": "portfolio",
+      "claim": "법률·최신성 review gate를 시험한다.",
+      "url": "https://ohou.se/advices/1972",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-MAILY-GATED",
+      "id": "INT-MAILY-GATED-E1",
+      "type": "demand",
+      "claim": "페이지에 2.25K views가 기록됐다.",
+      "url": "https://maily.so/notioninside/posts/92zew6vnzep",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-MAILY-GATED",
+      "id": "INT-MAILY-GATED-E2",
+      "type": "interaction",
+      "claim": "구독 유도는 보이지만 실제 행 반응은 구독 구간 뒤다.",
+      "url": "https://maily.so/notioninside/posts/92zew6vnzep",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-MAILY-GATED",
+      "id": "INT-MAILY-GATED-E3",
+      "type": "source_rows",
+      "claim": "실행행 전체가 subscriber gate 뒤라 source row가 불완전하다.",
+      "url": "https://maily.so/notioninside/posts/92zew6vnzep",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-MAILY-GATED",
+      "id": "INT-MAILY-GATED-E4",
+      "type": "creator_business",
+      "claim": "newsletter 구독 경로는 있다.",
+      "url": "https://maily.so/notioninside/posts/92zew6vnzep",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-MAILY-GATED",
+      "id": "INT-MAILY-GATED-E5",
+      "type": "value_delta",
+      "claim": "실제 행 없이는 상태를 만들 수 없다.",
+      "url": "https://maily.so/notioninside/posts/92zew6vnzep",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-MAILY-GATED",
+      "id": "INT-MAILY-GATED-E6",
+      "type": "portfolio",
+      "claim": "로그인·구독 경계 통제다.",
+      "url": "https://maily.so/notioninside/posts/92zew6vnzep",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-MAILY-CLEAN",
+      "id": "INT-MAILY-CLEAN-E1",
+      "type": "demand",
+      "claim": "3.7K views가 기록됐다.",
+      "url": "https://maily.so/honjokking/posts/p1do13plzx6",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-MAILY-CLEAN",
+      "id": "INT-MAILY-CLEAN-E2",
+      "type": "interaction",
+      "claim": "개별 실행행 반응과 반복 수요가 확인되지 않았다.",
+      "url": "https://maily.so/honjokking/posts/p1do13plzx6",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-MAILY-CLEAN",
+      "id": "INT-MAILY-CLEAN-E3",
+      "type": "source_rows",
+      "claim": "조언과 경험이 섞여 한 bounded job을 만들기 어렵다.",
+      "url": "https://maily.so/honjokking/posts/p1do13plzx6",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-MAILY-CLEAN",
+      "id": "INT-MAILY-CLEAN-E4",
+      "type": "creator_business",
+      "claim": "newsletter 구독 경로는 있다.",
+      "url": "https://maily.so/honjokking/posts/p1do13plzx6",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-MAILY-CLEAN",
+      "id": "INT-MAILY-CLEAN-E5",
+      "type": "value_delta",
+      "claim": "요약 메모 이상 가치가 불명확하다.",
+      "url": "https://maily.so/honjokking/posts/p1do13plzx6",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-MAILY-CLEAN",
+      "id": "INT-MAILY-CLEAN-E6",
+      "type": "portfolio",
+      "claim": "장문 조언 stop control이다.",
+      "url": "https://maily.so/honjokking/posts/p1do13plzx6",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-KMOOC-USED",
+      "id": "INT-KMOOC-USED-E1",
+      "type": "demand",
+      "claim": "14주·40시간·만족도 4.5가 기록됐다.",
+      "url": "https://www.kmooc.kr/view/course/detail/20097",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-KMOOC-USED",
+      "id": "INT-KMOOC-USED-E2",
+      "type": "interaction",
+      "claim": "학습 참여 경로는 있으나 이 URL은 기존 설계 사례다.",
+      "url": "https://www.kmooc.kr/view/course/detail/20097",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-KMOOC-USED",
+      "id": "INT-KMOOC-USED-E3",
+      "type": "source_rows",
+      "claim": "주차표가 이미지라 별도 source import가 필요하다.",
+      "url": "https://www.kmooc.kr/view/course/detail/20097",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-KMOOC-USED",
+      "id": "INT-KMOOC-USED-E4",
+      "type": "creator_business",
+      "claim": "공식 강좌 유입 가치가 있다.",
+      "url": "https://www.kmooc.kr/view/course/detail/20097",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-KMOOC-USED",
+      "id": "INT-KMOOC-USED-E5",
+      "type": "value_delta",
+      "claim": "진도 Sheet 가치는 강하지만 신규 benchmark positive에서 제외된다.",
+      "url": "https://www.kmooc.kr/view/course/detail/20097",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-KMOOC-USED",
+      "id": "INT-KMOOC-USED-E6",
+      "type": "portfolio",
+      "claim": "기존 기준 사례라 새 일반화 증거가 아니다.",
+      "url": "https://www.kmooc.kr/view/course/detail/20097",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-MOVING-USED",
+      "id": "INT-MOVING-USED-E1",
+      "type": "demand",
+      "claim": "이사 전·중·후 공식 준비행이 있다.",
+      "url": "https://www.easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=3&cciNo=1&cnpClsNo=1&csmSeq=666&popMenu=ov",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-MOVING-USED",
+      "id": "INT-MOVING-USED-E2",
+      "type": "interaction",
+      "claim": "이사일 기준 손실 회피가 강하지만 기존 핵심 사례다.",
+      "url": "https://www.easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=3&cciNo=1&cnpClsNo=1&csmSeq=666&popMenu=ov",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-MOVING-USED",
+      "id": "INT-MOVING-USED-E3",
+      "type": "source_rows",
+      "claim": "완전한 before/during/after 행이 있다.",
+      "url": "https://www.easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=3&cciNo=1&cnpClsNo=1&csmSeq=666&popMenu=ov",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-MOVING-USED",
+      "id": "INT-MOVING-USED-E4",
+      "type": "creator_business",
+      "claim": "공식 생활법령 유입 가치가 있다.",
+      "url": "https://www.easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=3&cciNo=1&cnpClsNo=1&csmSeq=666&popMenu=ov",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-MOVING-USED",
+      "id": "INT-MOVING-USED-E5",
+      "type": "value_delta",
+      "claim": "이사일 기준 역산 Calendar가 명확하다.",
+      "url": "https://www.easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=3&cciNo=1&cnpClsNo=1&csmSeq=666&popMenu=ov",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-MOVING-USED",
+      "id": "INT-MOVING-USED-E6",
+      "type": "portfolio",
+      "claim": "이미 기준 사례로 충분히 검증됐다.",
+      "url": "https://www.easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=3&cciNo=1&cnpClsNo=1&csmSeq=666&popMenu=ov",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-FIT100",
+      "id": "INT-FIT100-E1",
+      "type": "demand",
+      "claim": "공식 측정·상담·운동관리 서비스다.",
+      "url": "https://nfa.kspo.or.kr/reserve/selectMeasureUseGuide.kspo",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-FIT100",
+      "id": "INT-FIT100-E2",
+      "type": "interaction",
+      "claim": "사용량 수치는 보이지 않아 not_visible로 기록한다.",
+      "url": "https://nfa.kspo.or.kr/reserve/selectMeasureUseGuide.kspo",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-FIT100",
+      "id": "INT-FIT100-E3",
+      "type": "source_rows",
+      "claim": "현재 9단계와 예약 방법 3개가 있다.",
+      "url": "https://nfa.kspo.or.kr/reserve/selectMeasureUseGuide.kspo",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-FIT100",
+      "id": "INT-FIT100-E4",
+      "type": "creator_business",
+      "claim": "예약·측정·상담 서비스로 연결된다.",
+      "url": "https://nfa.kspo.or.kr/reserve/selectMeasureUseGuide.kspo",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-FIT100",
+      "id": "INT-FIT100-E5",
+      "type": "value_delta",
+      "claim": "예약·방문·결과 상태는 남지만 범용 사용 가치는 추가 확인이 필요하다.",
+      "url": "https://nfa.kspo.or.kr/reserve/selectMeasureUseGuide.kspo",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-FIT100",
+      "id": "INT-FIT100-E6",
+      "type": "portfolio",
+      "claim": "건강 서비스 절차를 보강한다.",
+      "url": "https://nfa.kspo.or.kr/reserve/selectMeasureUseGuide.kspo",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-VISITKOREA",
+      "id": "INT-VISITKOREA-E1",
+      "type": "demand",
+      "claim": "공식 여행 의도 콘텐츠지만 개별 조회 수치는 보이지 않는다.",
+      "url": "https://korean.visitkorea.or.kr/detail/rem_detail.do?cotid=c46eff3a-4213-42df-8640-5369238dc50c",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-VISITKOREA",
+      "id": "INT-VISITKOREA-E2",
+      "type": "interaction",
+      "claim": "4개 목적지와 예약·지역 유입 경로는 있으나 반응 수치는 not_visible이다.",
+      "url": "https://korean.visitkorea.or.kr/detail/rem_detail.do?cotid=c46eff3a-4213-42df-8640-5369238dc50c",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-VISITKOREA",
+      "id": "INT-VISITKOREA-E3",
+      "type": "source_rows",
+      "claim": "4개 ordered stop과 이동 정보가 있다.",
+      "url": "https://korean.visitkorea.or.kr/detail/rem_detail.do?cotid=c46eff3a-4213-42df-8640-5369238dc50c",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-VISITKOREA",
+      "id": "INT-VISITKOREA-E4",
+      "type": "creator_business",
+      "claim": "지역 관광·원문·예약 링크 가치가 있다.",
+      "url": "https://korean.visitkorea.or.kr/detail/rem_detail.do?cotid=c46eff3a-4213-42df-8640-5369238dc50c",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-VISITKOREA",
+      "id": "INT-VISITKOREA-E5",
+      "type": "value_delta",
+      "claim": "선택일·출발지·담당을 붙이면 일정이 되지만 변경금지 권리가 있다.",
+      "url": "https://korean.visitkorea.or.kr/detail/rem_detail.do?cotid=c46eff3a-4213-42df-8640-5369238dc50c",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-VISITKOREA",
+      "id": "INT-VISITKOREA-E6",
+      "type": "portfolio",
+      "claim": "부모 동행 여행 moment를 보강한다.",
+      "url": "https://korean.visitkorea.or.kr/detail/rem_detail.do?cotid=c46eff3a-4213-42df-8640-5369238dc50c",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-TOSS-SERIES",
+      "id": "INT-TOSS-SERIES-E1",
+      "type": "demand",
+      "claim": "플랫폼 누적 5천만 조회 신호만 있고 개별 후보 수요는 없다.",
+      "url": "https://toss.im/tossfeed/series",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-TOSS-SERIES",
+      "id": "INT-TOSS-SERIES-E2",
+      "type": "interaction",
+      "claim": "개별 글의 반응을 컬렉션에 전가할 수 없다.",
+      "url": "https://toss.im/tossfeed/series",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-TOSS-SERIES",
+      "id": "INT-TOSS-SERIES-E3",
+      "type": "source_rows",
+      "claim": "candidate-specific source row가 없다.",
+      "url": "https://toss.im/tossfeed/series",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-TOSS-SERIES",
+      "id": "INT-TOSS-SERIES-E4",
+      "type": "creator_business",
+      "claim": "provider partnership 가설은 있으나 특정 원문이 필요하다.",
+      "url": "https://toss.im/tossfeed/series",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-TOSS-SERIES",
+      "id": "INT-TOSS-SERIES-E5",
+      "type": "value_delta",
+      "claim": "하나의 job과 artifact를 만들 수 없다.",
+      "url": "https://toss.im/tossfeed/series",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-TOSS-SERIES",
+      "id": "INT-TOSS-SERIES-E6",
+      "type": "portfolio",
+      "claim": "provider와 content unit 경계를 시험한다.",
+      "url": "https://toss.im/tossfeed/series",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-10000-PROVIDER",
+      "id": "INT-10000-PROVIDER-E1",
+      "type": "demand",
+      "claim": "180K recipes·월 4.62M 방문자 등 provider 규모 신호가 있다.",
+      "url": "https://www.10000recipe.com/company/intro.html",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-10000-PROVIDER",
+      "id": "INT-10000-PROVIDER-E2",
+      "type": "interaction",
+      "claim": "특정 recipe의 반응이 아니므로 positive evidence로 쓰지 않는다.",
+      "url": "https://www.10000recipe.com/company/intro.html",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-10000-PROVIDER",
+      "id": "INT-10000-PROVIDER-E3",
+      "type": "source_rows",
+      "claim": "특정 사용자 job의 recipe row가 없다.",
+      "url": "https://www.10000recipe.com/company/intro.html",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-10000-PROVIDER",
+      "id": "INT-10000-PROVIDER-E4",
+      "type": "creator_business",
+      "claim": "구조화 API·제휴 가치는 크다.",
+      "url": "https://www.10000recipe.com/company/intro.html",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-10000-PROVIDER",
+      "id": "INT-10000-PROVIDER-E5",
+      "type": "value_delta",
+      "claim": "provider 계약 후보이지 Flow 원문은 아니다.",
+      "url": "https://www.10000recipe.com/company/intro.html",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-10000-PROVIDER",
+      "id": "INT-10000-PROVIDER-E6",
+      "type": "portfolio",
+      "claim": "provider discovery lane이다.",
+      "url": "https://www.10000recipe.com/company/intro.html",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-WTABLE",
+      "id": "INT-WTABLE-E1",
+      "type": "demand",
+      "claim": "재료·시간·단계 구조는 보인다.",
+      "url": "https://wtable.co.kr/recipes/YVHyCaPf13UspJnCxQyBDroh",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-WTABLE",
+      "id": "INT-WTABLE-E2",
+      "type": "interaction",
+      "claim": "개별 반응 수치는 확인하지 못했다.",
+      "url": "https://wtable.co.kr/recipes/YVHyCaPf13UspJnCxQyBDroh",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-WTABLE",
+      "id": "INT-WTABLE-E3",
+      "type": "source_rows",
+      "claim": "첫 7단계만 확인돼 전체 recipe completeness가 불명확하다.",
+      "url": "https://wtable.co.kr/recipes/YVHyCaPf13UspJnCxQyBDroh",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-WTABLE",
+      "id": "INT-WTABLE-E4",
+      "type": "creator_business",
+      "claim": "앱·레시피·커머스 유입이 있다.",
+      "url": "https://wtable.co.kr/recipes/YVHyCaPf13UspJnCxQyBDroh",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-WTABLE",
+      "id": "INT-WTABLE-E5",
+      "type": "value_delta",
+      "claim": "한 세션 체크는 가능하지만 단일 recipe value가 약하다.",
+      "url": "https://wtable.co.kr/recipes/YVHyCaPf13UspJnCxQyBDroh",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-WTABLE",
+      "id": "INT-WTABLE-E6",
+      "type": "portfolio",
+      "claim": "구조화 recipe source를 시험한다.",
+      "url": "https://wtable.co.kr/recipes/YVHyCaPf13UspJnCxQyBDroh",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-NASA",
+      "id": "INT-NASA-E1",
+      "type": "demand",
+      "claim": "5~12학년·45~90분 공식 활동으로 대상이 명시된다.",
+      "url": "https://www.nasa.gov/stem-content/build-launch-recover-build-crane-activity/",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-NASA",
+      "id": "INT-NASA-E2",
+      "type": "interaction",
+      "claim": "개별 반응 수치는 not_visible이다.",
+      "url": "https://www.nasa.gov/stem-content/build-launch-recover-build-crane-activity/",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-NASA",
+      "id": "INT-NASA-E3",
+      "type": "source_rows",
+      "claim": "재료·안전·제작 단계가 완전하다.",
+      "url": "https://www.nasa.gov/stem-content/build-launch-recover-build-crane-activity/",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-NASA",
+      "id": "INT-NASA-E4",
+      "type": "creator_business",
+      "claim": "공식 STEM 원문과 교육 생태계 유입이 있다.",
+      "url": "https://www.nasa.gov/stem-content/build-launch-recover-build-crane-activity/",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-NASA",
+      "id": "INT-NASA-E5",
+      "type": "value_delta",
+      "claim": "준비·제작 상태는 남지만 한 세션 원문 대비 차이가 제한적이다.",
+      "url": "https://www.nasa.gov/stem-content/build-launch-recover-build-crane-activity/",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-NASA",
+      "id": "INT-NASA-E6",
+      "type": "portfolio",
+      "claim": "한 세션 STEM 프로젝트를 보강한다.",
+      "url": "https://www.nasa.gov/stem-content/build-launch-recover-build-crane-activity/",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-NOTION",
+      "id": "INT-NOTION-E1",
+      "type": "demand",
+      "claim": "4.8/5·100+ ratings가 보인다.",
+      "url": "https://www.notion.com/templates/content-calendar",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-NOTION",
+      "id": "INT-NOTION-E2",
+      "type": "interaction",
+      "claim": "평점은 강하지만 실제 사용 행은 복제·인증 뒤에 있다.",
+      "url": "https://www.notion.com/templates/content-calendar",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-NOTION",
+      "id": "INT-NOTION-E3",
+      "type": "source_rows",
+      "claim": "public preview로 actual database rows를 확보하지 못했다.",
+      "url": "https://www.notion.com/templates/content-calendar",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-NOTION",
+      "id": "INT-NOTION-E4",
+      "type": "creator_business",
+      "claim": "template creator marketplace와 복제 경로가 있다.",
+      "url": "https://www.notion.com/templates/content-calendar",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-NOTION",
+      "id": "INT-NOTION-E5",
+      "type": "value_delta",
+      "claim": "실제 사용자 복제본을 가져오면 Sheet/Calendar가 가능하다.",
+      "url": "https://www.notion.com/templates/content-calendar",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-NOTION",
+      "id": "INT-NOTION-E6",
+      "type": "portfolio",
+      "claim": "OAuth source import boundary다.",
+      "url": "https://www.notion.com/templates/content-calendar",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-GUMROAD",
+      "id": "INT-GUMROAD-E1",
+      "type": "demand",
+      "claim": "821 sales가 공개 listing에 보인다.",
+      "url": "https://theorganizednotebook.gumroad.com/l/content-planner-template",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-GUMROAD",
+      "id": "INT-GUMROAD-E2",
+      "type": "interaction",
+      "claim": "판매는 수요 신호지만 파일 행은 구매 뒤에 있다.",
+      "url": "https://theorganizednotebook.gumroad.com/l/content-planner-template",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-GUMROAD",
+      "id": "INT-GUMROAD-E3",
+      "type": "source_rows",
+      "claim": "licensed file 또는 creator supply 없이는 actual rows가 없다.",
+      "url": "https://theorganizednotebook.gumroad.com/l/content-planner-template",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-GUMROAD",
+      "id": "INT-GUMROAD-E4",
+      "type": "creator_business",
+      "claim": "직접 판매·creator 공급·source-link 가치가 강하다.",
+      "url": "https://theorganizednotebook.gumroad.com/l/content-planner-template",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-GUMROAD",
+      "id": "INT-GUMROAD-E5",
+      "type": "value_delta",
+      "claim": "행을 확보하면 Sheet export가 유용하지만 현재는 만들 수 없다.",
+      "url": "https://theorganizednotebook.gumroad.com/l/content-planner-template",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-GUMROAD",
+      "id": "INT-GUMROAD-E6",
+      "type": "portfolio",
+      "claim": "paid source boundary다.",
+      "url": "https://theorganizednotebook.gumroad.com/l/content-planner-template",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-ROADMAP",
+      "id": "INT-ROADMAP-E1",
+      "type": "demand",
+      "claim": "약 360K GitHub stars가 기록됐다.",
+      "url": "https://roadmap.sh/",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-ROADMAP",
+      "id": "INT-ROADMAP-E2",
+      "type": "interaction",
+      "claim": "강한 커뮤니티 신호가 있으나 하나의 roadmap을 선택하지 않았다.",
+      "url": "https://roadmap.sh/",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-ROADMAP",
+      "id": "INT-ROADMAP-E3",
+      "type": "source_rows",
+      "claim": "사이트 전체는 여러 job과 계속 변하는 collection이다.",
+      "url": "https://roadmap.sh/",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-ROADMAP",
+      "id": "INT-ROADMAP-E4",
+      "type": "creator_business",
+      "claim": "원 서비스 진도·커뮤니티 가치가 이미 크다.",
+      "url": "https://roadmap.sh/",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-ROADMAP",
+      "id": "INT-ROADMAP-E5",
+      "type": "value_delta",
+      "claim": "FlowMe 복제보다 특정 roadmap 선택이 먼저다.",
+      "url": "https://roadmap.sh/",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-ROADMAP",
+      "id": "INT-ROADMAP-E6",
+      "type": "portfolio",
+      "claim": "대형 collection stop gate다.",
+      "url": "https://roadmap.sh/",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-TPT",
+      "id": "INT-TPT-E1",
+      "type": "demand",
+      "claim": "4.75/5·389 reviews·약 4,000 followers가 보인다.",
+      "url": "https://www.teacherspayteachers.com/Product/Science-Fair-Project-Planner-260479",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-TPT",
+      "id": "INT-TPT-E2",
+      "type": "interaction",
+      "claim": "리뷰는 강하지만 actual planner row는 구매 뒤다.",
+      "url": "https://www.teacherspayteachers.com/Product/Science-Fair-Project-Planner-260479",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-TPT",
+      "id": "INT-TPT-E3",
+      "type": "source_rows",
+      "claim": "licensed PDF 또는 creator supply가 필요하다.",
+      "url": "https://www.teacherspayteachers.com/Product/Science-Fair-Project-Planner-260479",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-TPT",
+      "id": "INT-TPT-E4",
+      "type": "creator_business",
+      "claim": "제작자 판매·교사 재사용 경로가 명확하다.",
+      "url": "https://www.teacherspayteachers.com/Product/Science-Fair-Project-Planner-260479",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-TPT",
+      "id": "INT-TPT-E5",
+      "type": "value_delta",
+      "claim": "행 확보 후 진도·마감·전시 상태가 강하다.",
+      "url": "https://www.teacherspayteachers.com/Product/Science-Fair-Project-Planner-260479",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-TPT",
+      "id": "INT-TPT-E6",
+      "type": "portfolio",
+      "claim": "교육 제작자 template lane을 보강한다.",
+      "url": "https://www.teacherspayteachers.com/Product/Science-Fair-Project-Planner-260479",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-NETMUMS",
+      "id": "INT-NETMUMS-E1",
+      "type": "demand",
+      "claim": "월령별 안내 수요가 있으나 개별 수치는 not_visible이다.",
+      "url": "https://www.netmums.com/baby/6-month-old-baby",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-NETMUMS",
+      "id": "INT-NETMUMS-E2",
+      "type": "interaction",
+      "claim": "영국 편집 가이드의 반응을 한국 적용성 증거로 쓸 수 없다.",
+      "url": "https://www.netmums.com/baby/6-month-old-baby",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-NETMUMS",
+      "id": "INT-NETMUMS-E3",
+      "type": "source_rows",
+      "claim": "발달·식사·수면 조언 구간은 있으나 한국 실행행으로 승격할 수 없다.",
+      "url": "https://www.netmums.com/baby/6-month-old-baby",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-NETMUMS",
+      "id": "INT-NETMUMS-E4",
+      "type": "creator_business",
+      "claim": "원문·커머스 경로가 있다.",
+      "url": "https://www.netmums.com/baby/6-month-old-baby",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-NETMUMS",
+      "id": "INT-NETMUMS-E5",
+      "type": "value_delta",
+      "claim": "질문 메모 외에는 민감한 실행화가 부적절하다.",
+      "url": "https://www.netmums.com/baby/6-month-old-baby",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-NETMUMS",
+      "id": "INT-NETMUMS-E6",
+      "type": "portfolio",
+      "claim": "locale-sensitive health stop control이다.",
+      "url": "https://www.netmums.com/baby/6-month-old-baby",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-SOOMGO",
+      "id": "INT-SOOMGO-E1",
+      "type": "demand",
+      "claim": "1,000 services·2M experts·14M customers라는 provider 규모 신호가 있다.",
+      "url": "https://help.soomgo.com/hc/ko/articles/44174824912793",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-SOOMGO",
+      "id": "INT-SOOMGO-E2",
+      "type": "interaction",
+      "claim": "특정 전문가 콘텐츠의 반응이 아니다.",
+      "url": "https://help.soomgo.com/hc/ko/articles/44174824912793",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-SOOMGO",
+      "id": "INT-SOOMGO-E3",
+      "type": "source_rows",
+      "claim": "실제 전문가 source row가 없다.",
+      "url": "https://help.soomgo.com/hc/ko/articles/44174824912793",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-SOOMGO",
+      "id": "INT-SOOMGO-E4",
+      "type": "creator_business",
+      "claim": "향후 provider partnership 가치는 있다.",
+      "url": "https://help.soomgo.com/hc/ko/articles/44174824912793",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "INT-SOOMGO",
+      "id": "INT-SOOMGO-E5",
+      "type": "value_delta",
+      "claim": "현재 URL은 Flow가 아니라 공급망 소개다.",
+      "url": "https://help.soomgo.com/hc/ko/articles/44174824912793",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "INT-SOOMGO",
+      "id": "INT-SOOMGO-E6",
+      "type": "portfolio",
+      "claim": "provider-only stop control이다.",
+      "url": "https://help.soomgo.com/hc/ko/articles/44174824912793",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "NEW-OHOUSE-CONTRACTOR",
+      "id": "NEW-OHOUSE-CONTRACTOR-E1",
+      "type": "demand",
+      "claim": "조회 140,723이 보인다.",
+      "url": "https://ohou.se/advices/2151",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-OHOUSE-CONTRACTOR",
+      "id": "NEW-OHOUSE-CONTRACTOR-E2",
+      "type": "interaction",
+      "claim": "스크랩 3,493·좋아요 950·댓글 37이 보인다.",
+      "url": "https://ohou.se/advices/2151",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-OHOUSE-CONTRACTOR",
+      "id": "NEW-OHOUSE-CONTRACTOR-E3",
+      "type": "source_rows",
+      "claim": "피해야 할 업체 5유형과 좋은 상담 기준이 실제 행이다.",
+      "url": "https://ohou.se/advices/2151",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-OHOUSE-CONTRACTOR",
+      "id": "NEW-OHOUSE-CONTRACTOR-E4",
+      "type": "creator_business",
+      "claim": "업체 찾기·상담·원문 source path가 있다.",
+      "url": "https://ohou.se/advices/2151",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-OHOUSE-CONTRACTOR",
+      "id": "NEW-OHOUSE-CONTRACTOR-E5",
+      "type": "value_delta",
+      "claim": "업체별 증거·견적·보증·Hold 이유를 비교 Sheet에 남긴다.",
+      "url": "https://ohou.se/advices/2151",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "NEW-OHOUSE-CONTRACTOR",
+      "id": "NEW-OHOUSE-CONTRACTOR-E6",
+      "type": "portfolio",
+      "claim": "고비용 의사결정 상태를 보강한다.",
+      "url": "https://ohou.se/advices/2151",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "NEW-OHOUSE-ORGANIZE",
+      "id": "NEW-OHOUSE-ORGANIZE-E1",
+      "type": "demand",
+      "claim": "조회 274,778이 보인다.",
+      "url": "https://ohou.se/advices/28",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-OHOUSE-ORGANIZE",
+      "id": "NEW-OHOUSE-ORGANIZE-E2",
+      "type": "interaction",
+      "claim": "스크랩 2,485·좋아요 962·댓글 24가 보인다.",
+      "url": "https://ohou.se/advices/28",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-OHOUSE-ORGANIZE",
+      "id": "NEW-OHOUSE-ORGANIZE-E3",
+      "type": "source_rows",
+      "claim": "공간 선택부터 제자리 수납까지 7단계가 완전하다.",
+      "url": "https://ohou.se/advices/28",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-OHOUSE-ORGANIZE",
+      "id": "NEW-OHOUSE-ORGANIZE-E4",
+      "type": "creator_business",
+      "claim": "공간별 fork와 원문 유입이 가능하다.",
+      "url": "https://ohou.se/advices/28",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-OHOUSE-ORGANIZE",
+      "id": "NEW-OHOUSE-ORGANIZE-E5",
+      "type": "value_delta",
+      "claim": "대상 공간 하나로 실행·분류 상태를 남긴다.",
+      "url": "https://ohou.se/advices/28",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "NEW-OHOUSE-ORGANIZE",
+      "id": "NEW-OHOUSE-ORGANIZE-E6",
+      "type": "portfolio",
+      "claim": "반복 가능한 공간 정리 moment다.",
+      "url": "https://ohou.se/advices/28",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "NEW-OHOUSE-SIDEDISH",
+      "id": "NEW-OHOUSE-SIDEDISH-E1",
+      "type": "demand",
+      "claim": "조회 40,500이 보인다.",
+      "url": "https://ohou.se/advices/8563",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-OHOUSE-SIDEDISH",
+      "id": "NEW-OHOUSE-SIDEDISH-E2",
+      "type": "interaction",
+      "claim": "스크랩 1,315·좋아요 411·댓글 25가 보인다.",
+      "url": "https://ohou.se/advices/8563",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-OHOUSE-SIDEDISH",
+      "id": "NEW-OHOUSE-SIDEDISH-E3",
+      "type": "source_rows",
+      "claim": "요일별 2개씩 10개 반찬과 재료·3~4단계가 있다.",
+      "url": "https://ohou.se/advices/8563",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-OHOUSE-SIDEDISH",
+      "id": "NEW-OHOUSE-SIDEDISH-E4",
+      "type": "creator_business",
+      "claim": "제작자 식단 시리즈와 원문 유입이 있다.",
+      "url": "https://ohou.se/advices/8563",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-OHOUSE-SIDEDISH",
+      "id": "NEW-OHOUSE-SIDEDISH-E5",
+      "type": "value_delta",
+      "claim": "선택 반찬의 장보기·배치조리·주간 상태를 남긴다.",
+      "url": "https://ohou.se/advices/8563",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "NEW-OHOUSE-SIDEDISH",
+      "id": "NEW-OHOUSE-SIDEDISH-E6",
+      "type": "portfolio",
+      "claim": "batch cooking user moment다.",
+      "url": "https://ohou.se/advices/8563",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "NEW-NFA-FIRE",
+      "id": "NEW-NFA-FIRE-E1",
+      "type": "demand",
+      "claim": "주택 화재 안전을 위한 공식 의무·손실 신호가 있다.",
+      "url": "https://nfa.go.kr/nfa/safetyinfo/residentialfire/residentialfire/",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-NFA-FIRE",
+      "id": "NEW-NFA-FIRE-E2",
+      "type": "interaction",
+      "claim": "방·층별 설치와 약 10년 수명이라는 공식 반복 확인 신호가 있다.",
+      "url": "https://nfa.go.kr/nfa/safetyinfo/residentialfire/residentialfire/",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-NFA-FIRE",
+      "id": "NEW-NFA-FIRE-E3",
+      "type": "source_rows",
+      "claim": "방마다 감지기, 세대·층별 소화기, 설치 4단계, 명시 수명 행이 있다.",
+      "url": "https://nfa.go.kr/nfa/safetyinfo/residentialfire/residentialfire/",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-NFA-FIRE",
+      "id": "NEW-NFA-FIRE-E4",
+      "type": "creator_business",
+      "claim": "공식 안전 정보와 지역 소방 서비스로 연결된다.",
+      "url": "https://nfa.go.kr/nfa/safetyinfo/residentialfire/residentialfire/",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-NFA-FIRE",
+      "id": "NEW-NFA-FIRE-E5",
+      "type": "value_delta",
+      "claim": "방·층별 설치 상태와 명시 수명 교체일을 관리한다.",
+      "url": "https://nfa.go.kr/nfa/safetyinfo/residentialfire/residentialfire/",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "NEW-NFA-FIRE",
+      "id": "NEW-NFA-FIRE-E6",
+      "type": "portfolio",
+      "claim": "주거 안전·설비 Sheet를 보강한다.",
+      "url": "https://nfa.go.kr/nfa/safetyinfo/residentialfire/residentialfire/",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "NEW-OHOUSE-FRIDGE",
+      "id": "NEW-OHOUSE-FRIDGE-E1",
+      "type": "demand",
+      "claim": "조회 11,383이 보인다.",
+      "url": "https://ohou.se/advices/8086",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-OHOUSE-FRIDGE",
+      "id": "NEW-OHOUSE-FRIDGE-E2",
+      "type": "interaction",
+      "claim": "스크랩 412·좋아요 109·댓글 12가 보인다.",
+      "url": "https://ohou.se/advices/8086",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-OHOUSE-FRIDGE",
+      "id": "NEW-OHOUSE-FRIDGE-E3",
+      "type": "source_rows",
+      "claim": "월~금 식단과 상세 recipe 행이 있다.",
+      "url": "https://ohou.se/advices/8086",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-OHOUSE-FRIDGE",
+      "id": "NEW-OHOUSE-FRIDGE-E4",
+      "type": "creator_business",
+      "claim": "제작자 원문·식단 fork 경로가 있다.",
+      "url": "https://ohou.se/advices/8086",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-OHOUSE-FRIDGE",
+      "id": "NEW-OHOUSE-FRIDGE-E5",
+      "type": "value_delta",
+      "claim": "실제 재고와 불일치해 메뉴 확인 없이는 그대로 실행할 수 없다.",
+      "url": "https://ohou.se/advices/8086",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "NEW-OHOUSE-FRIDGE",
+      "id": "NEW-OHOUSE-FRIDGE-E6",
+      "type": "portfolio",
+      "claim": "inventory overlay가 필요한 meal plan이다.",
+      "url": "https://ohou.se/advices/8086",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "NEW-MOEL-LEAVE",
+      "id": "NEW-MOEL-LEAVE-E1",
+      "type": "demand",
+      "claim": "공식 급여 신청과 월별 기한이라는 강한 수요가 있다.",
+      "url": "https://1350.moel.go.kr/rtmview.do?id=1000296162",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-MOEL-LEAVE",
+      "id": "NEW-MOEL-LEAVE-E2",
+      "type": "interaction",
+      "claim": "매월 다음 달 말일까지·일괄신청 가능이라는 반복 손실 신호가 있다.",
+      "url": "https://1350.moel.go.kr/rtmview.do?id=1000296162",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-MOEL-LEAVE",
+      "id": "NEW-MOEL-LEAVE-E3",
+      "type": "source_rows",
+      "claim": "최초 제출과 반복 제출이 구분되지만 여러 Q&A가 섞여 있다.",
+      "url": "https://1350.moel.go.kr/rtmview.do?id=1000296162",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-MOEL-LEAVE",
+      "id": "NEW-MOEL-LEAVE-E4",
+      "type": "creator_business",
+      "claim": "고용24·상담 경로로 연결된다.",
+      "url": "https://1350.moel.go.kr/rtmview.do?id=1000296162",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-MOEL-LEAVE",
+      "id": "NEW-MOEL-LEAVE-E5",
+      "type": "value_delta",
+      "claim": "월별 Calendar 가치는 강하나 한 job 분리가 필요하다.",
+      "url": "https://1350.moel.go.kr/rtmview.do?id=1000296162",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "NEW-MOEL-LEAVE",
+      "id": "NEW-MOEL-LEAVE-E6",
+      "type": "portfolio",
+      "claim": "반복 행정 lifecycle을 보강한다.",
+      "url": "https://1350.moel.go.kr/rtmview.do?id=1000296162",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "NEW-PROGRAMMERS",
+      "id": "NEW-PROGRAMMERS-E1",
+      "type": "demand",
+      "claim": "분야별 문제 수와 학습 수요가 명확하다.",
+      "url": "https://school.programmers.co.kr/learn/challenges?tab=algorithm_practice_kit",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-PROGRAMMERS",
+      "id": "NEW-PROGRAMMERS-E2",
+      "type": "interaction",
+      "claim": "원 서비스 자체에 진행률과 풀이 기록이 이미 있다.",
+      "url": "https://school.programmers.co.kr/learn/challenges?tab=algorithm_practice_kit",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-PROGRAMMERS",
+      "id": "NEW-PROGRAMMERS-E3",
+      "type": "source_rows",
+      "claim": "해시 5·스택/큐 6·힙 3 등 bounded category rows가 있다.",
+      "url": "https://school.programmers.co.kr/learn/challenges?tab=algorithm_practice_kit",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-PROGRAMMERS",
+      "id": "NEW-PROGRAMMERS-E4",
+      "type": "creator_business",
+      "claim": "문제 풀이·채용·학습 서비스 유입이 있다.",
+      "url": "https://school.programmers.co.kr/learn/challenges?tab=algorithm_practice_kit",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-PROGRAMMERS",
+      "id": "NEW-PROGRAMMERS-E5",
+      "type": "value_delta",
+      "claim": "외부 일정·메모 export 외에는 원 서비스보다 나은 점이 불명확하다.",
+      "url": "https://school.programmers.co.kr/learn/challenges?tab=algorithm_practice_kit",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "NEW-PROGRAMMERS",
+      "id": "NEW-PROGRAMMERS-E6",
+      "type": "portfolio",
+      "claim": "기존 진행 플랫폼과의 역할 경계를 시험한다.",
+      "url": "https://school.programmers.co.kr/learn/challenges?tab=algorithm_practice_kit",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "NEW-BRUNCH-PM",
+      "id": "NEW-BRUNCH-PM-E1",
+      "type": "demand",
+      "claim": "구독자 905가 보인다.",
+      "url": "https://brunch.co.kr/%40%403lvL/96",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-BRUNCH-PM",
+      "id": "NEW-BRUNCH-PM-E2",
+      "type": "interaction",
+      "claim": "라이킷 24와 Google Sheet 연결이 보인다.",
+      "url": "https://brunch.co.kr/%40%403lvL/96",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-BRUNCH-PM",
+      "id": "NEW-BRUNCH-PM-E3",
+      "type": "source_rows",
+      "claim": "문제 발견→정의→기획→검토→개발→배포 준비→대응 7단계가 있다.",
+      "url": "https://brunch.co.kr/%40%403lvL/96",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-BRUNCH-PM",
+      "id": "NEW-BRUNCH-PM-E4",
+      "type": "creator_business",
+      "claim": "제작자 Sheet·원문·업데이트 loop가 있다.",
+      "url": "https://brunch.co.kr/%40%403lvL/96",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-BRUNCH-PM",
+      "id": "NEW-BRUNCH-PM-E5",
+      "type": "value_delta",
+      "claim": "담당·검토·인계·export를 제공하면 원문보다 운영 가치가 커진다.",
+      "url": "https://brunch.co.kr/%40%403lvL/96",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "NEW-BRUNCH-PM",
+      "id": "NEW-BRUNCH-PM-E6",
+      "type": "portfolio",
+      "claim": "work handoff lifecycle을 보강한다.",
+      "url": "https://brunch.co.kr/%40%403lvL/96",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "NEW-BOKJIRO-SAVINGS",
+      "id": "NEW-BOKJIRO-SAVINGS-E1",
+      "type": "demand",
+      "claim": "신청·보완창과 지원 수요가 강하다.",
+      "url": "https://m.bokjiro.go.kr/ssis-tem/cms/mob/customer/notice/1309680_1155.html",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-BOKJIRO-SAVINGS",
+      "id": "NEW-BOKJIRO-SAVINGS-E2",
+      "type": "interaction",
+      "claim": "미비 시 제외라는 손실 신호가 있다.",
+      "url": "https://m.bokjiro.go.kr/ssis-tem/cms/mob/customer/notice/1309680_1155.html",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-BOKJIRO-SAVINGS",
+      "id": "NEW-BOKJIRO-SAVINGS-E3",
+      "type": "source_rows",
+      "claim": "자격·신청·보완 행은 있으나 현재 신청기간이 종료됐다.",
+      "url": "https://m.bokjiro.go.kr/ssis-tem/cms/mob/customer/notice/1309680_1155.html",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-BOKJIRO-SAVINGS",
+      "id": "NEW-BOKJIRO-SAVINGS-E4",
+      "type": "creator_business",
+      "claim": "다음 모집 때 공식 신청 유입 가치가 있다.",
+      "url": "https://m.bokjiro.go.kr/ssis-tem/cms/mob/customer/notice/1309680_1155.html",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-BOKJIRO-SAVINGS",
+      "id": "NEW-BOKJIRO-SAVINGS-E5",
+      "type": "value_delta",
+      "claim": "현재는 과거 일정 Flow를 만들면 안 된다.",
+      "url": "https://m.bokjiro.go.kr/ssis-tem/cms/mob/customer/notice/1309680_1155.html",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "NEW-BOKJIRO-SAVINGS",
+      "id": "NEW-BOKJIRO-SAVINGS-E6",
+      "type": "portfolio",
+      "claim": "freshness stop gate다.",
+      "url": "https://m.bokjiro.go.kr/ssis-tem/cms/mob/customer/notice/1309680_1155.html",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "NEW-NTS-TAX",
+      "id": "NEW-NTS-TAX-E1",
+      "type": "demand",
+      "claim": "법정 신고 기한과 과세 대상이라는 강한 수요가 있다.",
+      "url": "https://b.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7664&mi=2224",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-NTS-TAX",
+      "id": "NEW-NTS-TAX-E2",
+      "type": "interaction",
+      "claim": "기한 손실 신호는 강하지만 개인 대상·연장 분기가 복잡하다.",
+      "url": "https://b.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7664&mi=2224",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-NTS-TAX",
+      "id": "NEW-NTS-TAX-E3",
+      "type": "source_rows",
+      "claim": "일반 기한과 예외가 있으나 현재 일반 창이 지났다.",
+      "url": "https://b.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7664&mi=2224",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-NTS-TAX",
+      "id": "NEW-NTS-TAX-E4",
+      "type": "creator_business",
+      "claim": "홈택스 신고 경로가 있다.",
+      "url": "https://b.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7664&mi=2224",
+      "observedAt": "2026-07-22"
+    },
+    {
+      "candidateId": "NEW-NTS-TAX",
+      "id": "NEW-NTS-TAX-E5",
+      "type": "value_delta",
+      "claim": "별도 세무 lifecycle과 자격 판정 없이 일정화하면 위험하다.",
+      "url": "https://b.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7664&mi=2224",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    },
+    {
+      "candidateId": "NEW-NTS-TAX",
+      "id": "NEW-NTS-TAX-E6",
+      "type": "portfolio",
+      "claim": "세무 민감 stop gate다.",
+      "url": "https://b.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7664&mi=2224",
+      "observedAt": "2026-07-22",
+      "evidenceClass": "internal_expert_judgment"
+    }
+  ]
+}

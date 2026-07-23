@@ -1,0 +1,2595 @@
+{
+  "documentType": "flowme-independent-decision-set",
+  "decisionSetVersion": "independent-decision-v2.1",
+  "roundId": "round-4",
+  "profile": "low_cost_agent",
+  "caseSetVersion": "output-quality-v2-cases-2026-07-20.1",
+  "blind": true,
+  "modelEvidence": {
+    "modelFamily": "gpt-5.6-terra",
+    "actualApiCostMeasured": false
+  },
+  "decisions": [
+    {
+      "caseId": "OQ-C01-MOVING",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_second_wave",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": []
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "home_living",
+        "secondaryLifeAreas": [
+          "money_admin_purchase"
+        ],
+        "topicTags": [
+          "moving",
+          "anchor_date"
+        ],
+        "sourceShape": "date_offsets",
+        "secondarySourceShapes": [
+          "checklist_rows"
+        ],
+        "primaryExecutionPattern": "date_preparation",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "calendar",
+        "secondaryArtifacts": [
+          "checklist",
+          "memo"
+        ],
+        "access": {
+          "providerType": "public_institution",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_second_wave",
+          "freshnessReview": "current",
+          "localeReview": "applicable",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "internal_review",
+          "blockers": []
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "DS05-R01",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS05-R01"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS05-R02",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS05-R02"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS05-R03",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS05-R03"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS05-R04",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS05-R04"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS05-R05",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS05-R05"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS05-R06",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS05-R06"
+          ],
+          "reason": "v2.3 semantic role: item."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 6,
+        "fieldCount": 1,
+        "memoCount": 1,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "??? Field? 6? ??? Item?? ?? Calendar ??? ???? ?? ??? Checklist/Memo? ????."
+      },
+      "projectionAvailabilities": {
+        "calendar": "blocked",
+        "checklist": "blocked",
+        "todo": "blocked",
+        "sheet": "blocked",
+        "memo": "blocked"
+      },
+      "rationale": "6? ??? ?? ????. restricted rights? ?? ??? ????? ??? ???? source?readiness? ????? ????.",
+      "confidence": 0.96
+    },
+    {
+      "caseId": "OQ-C02-KMOOC-FULL",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_second_wave",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": []
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "study_reading",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "course",
+          "weekly_progress"
+        ],
+        "sourceShape": "lesson_rows",
+        "secondarySourceShapes": [
+          "date_window"
+        ],
+        "primaryExecutionPattern": "progress_tracking",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "sheet",
+        "secondaryArtifacts": [
+          "calendar",
+          "todo"
+        ],
+        "access": {
+          "providerType": "education_provider",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "course"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_second_wave",
+          "freshnessReview": "current",
+          "localeReview": "applicable",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "internal_review",
+          "blockers": []
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "KMOOC-M01",
+          "role": "field",
+          "targetIds": [
+            "FIELD-KMOOC-M01"
+          ],
+          "reason": "v2.3 semantic role: field."
+        },
+        {
+          "sourceRowId": "KMOOC-M02",
+          "role": "reference",
+          "targetIds": [
+            "REFERENCE-KMOOC-M02"
+          ],
+          "reason": "v2.3 semantic role: reference."
+        },
+        {
+          "sourceRowId": "KMOOC-M03",
+          "role": "reference",
+          "targetIds": [
+            "REFERENCE-KMOOC-M03"
+          ],
+          "reason": "v2.3 semantic role: reference."
+        },
+        {
+          "sourceRowId": "KMOOC-M04",
+          "role": "reference",
+          "targetIds": [
+            "REFERENCE-KMOOC-M04"
+          ],
+          "reason": "v2.3 semantic role: reference."
+        },
+        {
+          "sourceRowId": "KMOOC-M05",
+          "role": "reference",
+          "targetIds": [
+            "REFERENCE-KMOOC-M05"
+          ],
+          "reason": "v2.3 semantic role: reference."
+        },
+        {
+          "sourceRowId": "KMOOC-W01",
+          "role": "item",
+          "targetIds": [
+            "ITEM-KMOOC-W01"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "KMOOC-W02",
+          "role": "item",
+          "targetIds": [
+            "ITEM-KMOOC-W02"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "KMOOC-W03",
+          "role": "item",
+          "targetIds": [
+            "ITEM-KMOOC-W03"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "KMOOC-W04",
+          "role": "item",
+          "targetIds": [
+            "ITEM-KMOOC-W04"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "KMOOC-W05",
+          "role": "item",
+          "targetIds": [
+            "ITEM-KMOOC-W05"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "KMOOC-W06",
+          "role": "item",
+          "targetIds": [
+            "ITEM-KMOOC-W06"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "KMOOC-W07",
+          "role": "item",
+          "targetIds": [
+            "ITEM-KMOOC-W07"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "KMOOC-W08",
+          "role": "item",
+          "targetIds": [
+            "ITEM-KMOOC-W08"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "KMOOC-W09",
+          "role": "item",
+          "targetIds": [
+            "ITEM-KMOOC-W09"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "KMOOC-W10",
+          "role": "item",
+          "targetIds": [
+            "ITEM-KMOOC-W10"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "KMOOC-W11",
+          "role": "item",
+          "targetIds": [
+            "ITEM-KMOOC-W11"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "KMOOC-W12",
+          "role": "item",
+          "targetIds": [
+            "ITEM-KMOOC-W12"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "KMOOC-W13",
+          "role": "item",
+          "targetIds": [
+            "ITEM-KMOOC-W13"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "KMOOC-W14",
+          "role": "item",
+          "targetIds": [
+            "ITEM-KMOOC-W14"
+          ],
+          "reason": "v2.3 semantic role: item."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 14,
+        "fieldCount": 1,
+        "memoCount": 0,
+        "referenceCount": 4,
+        "conditionalResponseCount": 0,
+        "summary": "14? ?? Item? ???? Field ? ?? Reference? ?? ?? Sheet? ???."
+      },
+      "projectionAvailabilities": {
+        "calendar": "blocked",
+        "checklist": "blocked",
+        "todo": "blocked",
+        "sheet": "blocked",
+        "memo": "blocked"
+      },
+      "rationale": "?? 14? ?? ?? ?? lesson progress? ??? ? ??. restricted rights? ?? proposal? ?? ???.",
+      "confidence": 0.97
+    },
+    {
+      "caseId": "OQ-C03-LIBRIVOX",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_second_wave",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": []
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "study_reading",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "audiobook",
+          "chapter_queue"
+        ],
+        "sourceShape": "resource_collection",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "resource_queue",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "sheet",
+        "secondaryArtifacts": [
+          "todo",
+          "memo"
+        ],
+        "access": {
+          "providerType": "open_knowledge",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "audio"
+        },
+        "rights": {
+          "basis": "public_domain",
+          "allowedUse": [
+            "link_metadata",
+            "personal_transform",
+            "internal_review",
+            "public_derived"
+          ],
+          "reviewStatus": "approved"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_second_wave",
+          "freshnessReview": "current",
+          "localeReview": "applicable",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "approved",
+          "promotionState": "internal_canary",
+          "blockers": []
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "LIBRIVOX-C01",
+          "role": "item",
+          "targetIds": [
+            "ITEM-LIBRIVOX-C01"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C02",
+          "role": "item",
+          "targetIds": [
+            "ITEM-LIBRIVOX-C02"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C03",
+          "role": "item",
+          "targetIds": [
+            "ITEM-LIBRIVOX-C03"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C04",
+          "role": "item",
+          "targetIds": [
+            "ITEM-LIBRIVOX-C04"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C05",
+          "role": "item",
+          "targetIds": [
+            "ITEM-LIBRIVOX-C05"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C06",
+          "role": "item",
+          "targetIds": [
+            "ITEM-LIBRIVOX-C06"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C07",
+          "role": "item",
+          "targetIds": [
+            "ITEM-LIBRIVOX-C07"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C08",
+          "role": "item",
+          "targetIds": [
+            "ITEM-LIBRIVOX-C08"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C09",
+          "role": "item",
+          "targetIds": [
+            "ITEM-LIBRIVOX-C09"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C10",
+          "role": "item",
+          "targetIds": [
+            "ITEM-LIBRIVOX-C10"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C11",
+          "role": "item",
+          "targetIds": [
+            "ITEM-LIBRIVOX-C11"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C12",
+          "role": "item",
+          "targetIds": [
+            "ITEM-LIBRIVOX-C12"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C13",
+          "role": "item",
+          "targetIds": [
+            "ITEM-LIBRIVOX-C13"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C14",
+          "role": "item",
+          "targetIds": [
+            "ITEM-LIBRIVOX-C14"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C15",
+          "role": "item",
+          "targetIds": [
+            "ITEM-LIBRIVOX-C15"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C16",
+          "role": "item",
+          "targetIds": [
+            "ITEM-LIBRIVOX-C16"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C17",
+          "role": "item",
+          "targetIds": [
+            "ITEM-LIBRIVOX-C17"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C18",
+          "role": "item",
+          "targetIds": [
+            "ITEM-LIBRIVOX-C18"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C19",
+          "role": "item",
+          "targetIds": [
+            "ITEM-LIBRIVOX-C19"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C20",
+          "role": "item",
+          "targetIds": [
+            "ITEM-LIBRIVOX-C20"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C21",
+          "role": "item",
+          "targetIds": [
+            "ITEM-LIBRIVOX-C21"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C22",
+          "role": "item",
+          "targetIds": [
+            "ITEM-LIBRIVOX-C22"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C23",
+          "role": "item",
+          "targetIds": [
+            "ITEM-LIBRIVOX-C23"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C24",
+          "role": "item",
+          "targetIds": [
+            "ITEM-LIBRIVOX-C24"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C25",
+          "role": "item",
+          "targetIds": [
+            "ITEM-LIBRIVOX-C25"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C26",
+          "role": "item",
+          "targetIds": [
+            "ITEM-LIBRIVOX-C26"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C27",
+          "role": "item",
+          "targetIds": [
+            "ITEM-LIBRIVOX-C27"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C28",
+          "role": "item",
+          "targetIds": [
+            "ITEM-LIBRIVOX-C28"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C29",
+          "role": "item",
+          "targetIds": [
+            "ITEM-LIBRIVOX-C29"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C30",
+          "role": "item",
+          "targetIds": [
+            "ITEM-LIBRIVOX-C30"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C31",
+          "role": "item",
+          "targetIds": [
+            "ITEM-LIBRIVOX-C31"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C32",
+          "role": "item",
+          "targetIds": [
+            "ITEM-LIBRIVOX-C32"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C33",
+          "role": "item",
+          "targetIds": [
+            "ITEM-LIBRIVOX-C33"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C34",
+          "role": "item",
+          "targetIds": [
+            "ITEM-LIBRIVOX-C34"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C35",
+          "role": "item",
+          "targetIds": [
+            "ITEM-LIBRIVOX-C35"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C36",
+          "role": "item",
+          "targetIds": [
+            "ITEM-LIBRIVOX-C36"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C37",
+          "role": "item",
+          "targetIds": [
+            "ITEM-LIBRIVOX-C37"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "LIBRIVOX-C38",
+          "role": "item",
+          "targetIds": [
+            "ITEM-LIBRIVOX-C38"
+          ],
+          "reason": "v2.3 semantic role: item."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 38,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "38? chapter Item? ?? ??? ?? ??? Sheet? ????."
+      },
+      "projectionAvailabilities": {
+        "calendar": "blocked",
+        "checklist": "blocked",
+        "todo": "blocked",
+        "sheet": "blocked",
+        "memo": "blocked"
+      },
+      "rationale": "?? ??? chapter? ?? ?? media queue? ????. approved rights? clear gates? ?? canary? ????.",
+      "confidence": 0.99
+    },
+    {
+      "caseId": "OQ-C04-PASSPORT",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_second_wave",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": []
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "money_admin_purchase",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "passport",
+          "renewal_application"
+        ],
+        "sourceShape": "checklist_rows",
+        "secondarySourceShapes": [
+          "decision_criteria"
+        ],
+        "primaryExecutionPattern": "ordered_procedure",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "todo",
+        "secondaryArtifacts": [
+          "checklist",
+          "memo"
+        ],
+        "access": {
+          "providerType": "government_public",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_second_wave",
+          "freshnessReview": "current",
+          "localeReview": "applicable",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "internal_review",
+          "blockers": []
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "PASSPORT-R01",
+          "role": "item",
+          "targetIds": [
+            "ITEM-PASSPORT-R01"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "PASSPORT-R02",
+          "role": "item",
+          "targetIds": [
+            "ITEM-PASSPORT-R02"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "PASSPORT-R03",
+          "role": "item",
+          "targetIds": [
+            "ITEM-PASSPORT-R03"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "PASSPORT-R04",
+          "role": "item",
+          "targetIds": [
+            "ITEM-PASSPORT-R04"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "PASSPORT-R05",
+          "role": "conditional_response",
+          "targetIds": [
+            "ITEM-PASSPORT-R05"
+          ],
+          "reason": "v2.3 semantic role: conditional_response."
+        },
+        {
+          "sourceRowId": "PASSPORT-R06",
+          "role": "reference",
+          "targetIds": [
+            "REFERENCE-PASSPORT-R06"
+          ],
+          "reason": "v2.3 semantic role: reference."
+        },
+        {
+          "sourceRowId": "PASSPORT-R07",
+          "role": "reference",
+          "targetIds": [
+            "REFERENCE-PASSPORT-R07"
+          ],
+          "reason": "v2.3 semantic role: reference."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 4,
+        "fieldCount": 2,
+        "memoCount": 0,
+        "referenceCount": 2,
+        "conditionalResponseCount": 1,
+        "summary": "?? ??? ?? ??? Todo? ?? ????? ?? Field, ??? ?? ??, ?????? ?? Reference? ????."
+      },
+      "projectionAvailabilities": {
+        "calendar": "blocked",
+        "checklist": "blocked",
+        "todo": "blocked",
+        "sheet": "blocked",
+        "memo": "blocked"
+      },
+      "rationale": "?? ????? ???? ??? ??? ????. ????? ???? ??? ???? ??? restricted rights? ??? ????.",
+      "confidence": 0.95
+    },
+    {
+      "caseId": "OQ-C05-WASHER",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_for_internal_canary",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": [
+          "locale_review_required"
+        ]
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "home_living",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "washer",
+          "device_maintenance"
+        ],
+        "sourceShape": "recurrence_rule",
+        "secondarySourceShapes": [
+          "procedure_rows"
+        ],
+        "primaryExecutionPattern": "repeating_routine",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "todo",
+        "secondaryArtifacts": [
+          "checklist",
+          "memo"
+        ],
+        "access": {
+          "providerType": "brand_official",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_for_internal_canary",
+          "freshnessReview": "current",
+          "localeReview": "adaptation_required",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "internal_review",
+          "blockers": [
+            "locale_review_required"
+          ]
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "WASHER-R01",
+          "role": "conditional_response",
+          "targetIds": [
+            "ITEM-WASHER-R01"
+          ],
+          "reason": "v2.3 semantic role: conditional_response."
+        },
+        {
+          "sourceRowId": "WASHER-R02",
+          "role": "item",
+          "targetIds": [
+            "ITEM-WASHER-R02"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "WASHER-R03",
+          "role": "reference",
+          "targetIds": [
+            "REFERENCE-WASHER-R03"
+          ],
+          "reason": "v2.3 semantic role: reference."
+        },
+        {
+          "sourceRowId": "WASHER-R04",
+          "role": "item",
+          "targetIds": [
+            "ITEM-WASHER-R04"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "WASHER-R05",
+          "role": "item",
+          "targetIds": [
+            "ITEM-WASHER-R05"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "WASHER-R06",
+          "role": "item",
+          "targetIds": [
+            "ITEM-WASHER-R06"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "WASHER-R07",
+          "role": "reference",
+          "targetIds": [
+            "REFERENCE-WASHER-R07"
+          ],
+          "reason": "v2.3 semantic role: reference."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 4,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 2,
+        "conditionalResponseCount": 1,
+        "summary": "40?????? ??? 4? ????? Item?? ? ??? ?? Todo? ?????."
+      },
+      "projectionAvailabilities": {
+        "calendar": "blocked",
+        "checklist": "blocked",
+        "todo": "blocked",
+        "sheet": "blocked",
+        "memo": "blocked"
+      },
+      "rationale": "??? trigger? ?? ??? ???. ?? ??? ?? ?? ??? safety review? ??? ?? ?? ??? locale canary? ????.",
+      "confidence": 0.97
+    },
+    {
+      "caseId": "OQ-C06-NASA",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_for_internal_canary",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": [
+          "locale_review_required"
+        ]
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "hobby_pet",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "maker_activity",
+          "crane"
+        ],
+        "sourceShape": "procedure_rows",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "ordered_procedure",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": [
+          "memo"
+        ],
+        "access": {
+          "providerType": "government_public",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_for_internal_canary",
+          "freshnessReview": "current",
+          "localeReview": "adaptation_required",
+          "safetyReview": "passed_with_boundary",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "internal_review",
+          "blockers": [
+            "locale_review_required"
+          ]
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "DS12-R01",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS12-R01"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS12-R02",
+          "role": "reference",
+          "targetIds": [
+            "REFERENCE-DS12-R02"
+          ],
+          "reason": "v2.3 semantic role: reference."
+        },
+        {
+          "sourceRowId": "DS12-R03",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS12-R03"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS12-R04",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS12-R04"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS12-R05",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS12-R05"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS12-R06",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS12-R06"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS12-R07",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS12-R07"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS12-R08",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS12-R08"
+          ],
+          "reason": "v2.3 semantic role: item."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 7,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 1,
+        "conditionalResponseCount": 0,
+        "summary": "?? ???? ???????? ???? 7? Item? ? ?? Checklist? ?? ?? ??? Reference? ????."
+      },
+      "projectionAvailabilities": {
+        "calendar": "blocked",
+        "checklist": "blocked",
+        "todo": "blocked",
+        "sheet": "blocked",
+        "memo": "blocked"
+      },
+      "rationale": "? ? ???? bounded build/test ????? ordered procedure? Checklist?. ?? ?? ??? ???? ???? ??? locale canary? ????.",
+      "confidence": 0.95
+    },
+    {
+      "caseId": "OQ-C07-FIT100",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_second_wave",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": []
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "health_fitness",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "fitness_assessment",
+          "service_route"
+        ],
+        "sourceShape": "procedure_rows",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "phase_lifecycle",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": [
+          "todo",
+          "memo"
+        ],
+        "access": {
+          "providerType": "public_institution",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_second_wave",
+          "freshnessReview": "current",
+          "localeReview": "applicable",
+          "safetyReview": "passed_with_boundary",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "internal_review",
+          "blockers": []
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "DS07-R01",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS07-R01"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS07-R02",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS07-R02"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS07-R03",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS07-R03"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS07-R04",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS07-R04"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS07-R05",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS07-R05"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS07-R06",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS07-R06"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS07-R07",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS07-R07"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS07-R08",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS07-R08"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS07-R09",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS07-R09"
+          ],
+          "reason": "v2.3 semantic role: item."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 9,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "?????? ?????? 9? ?? ?? Item? ? ?? ??? ?? Checklist? ????."
+      },
+      "projectionAvailabilities": {
+        "calendar": "blocked",
+        "checklist": "blocked",
+        "todo": "blocked",
+        "sheet": "blocked",
+        "memo": "blocked"
+      },
+      "rationale": "??? ??? ?? ?? ??? ???? ?? ???? ??? ??? ??. ?? ?? ??? ???? restricted rights? ?? proposal? ????.",
+      "confidence": 0.95
+    },
+    {
+      "caseId": "OQ-C08-AC-DECISION",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_second_wave",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": []
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "home_living",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "air_conditioner",
+          "service_choice"
+        ],
+        "sourceShape": "decision_criteria",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "compare_decide",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "memo",
+        "secondaryArtifacts": [
+          "todo"
+        ],
+        "access": {
+          "providerType": "brand_official",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "video"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_second_wave",
+          "freshnessReview": "current",
+          "localeReview": "applicable",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "internal_review",
+          "blockers": []
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "AC-R01",
+          "role": "reference",
+          "targetIds": [
+            "REFERENCE-AC-R01"
+          ],
+          "reason": "v2.3 semantic role: reference."
+        },
+        {
+          "sourceRowId": "AC-R02",
+          "role": "reference",
+          "targetIds": [
+            "REFERENCE-AC-R02"
+          ],
+          "reason": "v2.3 semantic role: reference."
+        },
+        {
+          "sourceRowId": "AC-R03",
+          "role": "reference",
+          "targetIds": [
+            "REFERENCE-AC-R03"
+          ],
+          "reason": "v2.3 semantic role: reference."
+        },
+        {
+          "sourceRowId": "AC-R04",
+          "role": "field",
+          "targetIds": [
+            "FIELD-AC-R04"
+          ],
+          "reason": "v2.3 semantic role: field."
+        },
+        {
+          "sourceRowId": "AC-R05",
+          "role": "reference",
+          "targetIds": [
+            "REFERENCE-AC-R05"
+          ],
+          "reason": "v2.3 semantic role: reference."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 1,
+        "fieldCount": 2,
+        "memoCount": 1,
+        "referenceCount": 4,
+        "conditionalResponseCount": 0,
+        "summary": "??? ????? ?????? Reference? ?? Field? ?? Item ? ?? Memo? ???."
+      },
+      "projectionAvailabilities": {
+        "calendar": "blocked",
+        "checklist": "blocked",
+        "todo": "blocked",
+        "sheet": "blocked",
+        "memo": "blocked"
+      },
+      "rationale": "? ?? ?? ??? ?? compact decision?? ??, ??? ??? ?? ??? ?? ??? ??.",
+      "confidence": 0.96
+    },
+    {
+      "caseId": "OQ-B01-HEAT",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "hold",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": [
+          "safety_review_required",
+          "editorial_review_required"
+        ]
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "work_career",
+        "secondaryLifeAreas": [
+          "health_fitness"
+        ],
+        "topicTags": [
+          "occupational_heat",
+          "emergency_boundary"
+        ],
+        "sourceShape": "narrative_guidance",
+        "secondarySourceShapes": [
+          "procedure_rows"
+        ],
+        "primaryExecutionPattern": "phase_lifecycle",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "memo",
+        "secondaryArtifacts": [
+          "checklist"
+        ],
+        "access": {
+          "providerType": "government_public",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "hold",
+          "freshnessReview": "current",
+          "localeReview": "applicable",
+          "safetyReview": "restricted",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "research_only",
+          "blockers": [
+            "safety_review_required",
+            "editorial_review_required"
+          ]
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "DS01-R01",
+          "role": "reference",
+          "targetIds": [
+            "REFERENCE-DS01-R01"
+          ],
+          "reason": "v2.3 semantic role: reference."
+        },
+        {
+          "sourceRowId": "DS01-R02",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS01-R02"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS01-R03",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS01-R03"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS01-R04",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS01-R04"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS01-R05",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS01-R05"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS01-R06",
+          "role": "conditional_response",
+          "targetIds": [
+            "ITEM-DS01-R06"
+          ],
+          "reason": "v2.3 semantic role: conditional_response."
+        },
+        {
+          "sourceRowId": "DS01-R07",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS01-R07"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS01-R08",
+          "role": "conditional_response",
+          "targetIds": [
+            "ITEM-DS01-R08"
+          ],
+          "reason": "v2.3 semantic role: conditional_response."
+        },
+        {
+          "sourceRowId": "DS01-R09",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS01-R09"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS01-R10",
+          "role": "reference",
+          "targetIds": [
+            "REFERENCE-DS01-R10"
+          ],
+          "reason": "v2.3 semantic role: reference."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 6,
+        "fieldCount": 0,
+        "memoCount": 1,
+        "referenceCount": 2,
+        "conditionalResponseCount": 2,
+        "summary": "?? ???????? Item? ???? ???119 ??? ??? ???? ???? Memo/Reference? ????."
+      },
+      "projectionAvailabilities": {
+        "calendar": "blocked",
+        "checklist": "blocked",
+        "todo": "blocked",
+        "sheet": "blocked",
+        "memo": "blocked"
+      },
+      "rationale": "?? ???????????? ??? ???? safety lifecycle?. ????? ???? ?? ?? ?? ?? ? ?? projection? ????.",
+      "confidence": 0.99
+    },
+    {
+      "caseId": "OQ-B02-KMOOC-META",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "no_proposal",
+        "conversionReadiness": "source_import_required",
+        "errorCode": "SOURCE_ROWS_INCOMPLETE",
+        "executableAllowed": false,
+        "publicExportAllowed": false,
+        "blockers": [
+          "source_incomplete",
+          "source_import_required"
+        ]
+      },
+      "classification": {
+        "classificationStatus": "partially_classified",
+        "primaryLifeArea": "study_reading",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "course",
+          "missing_lessons"
+        ],
+        "sourceShape": null,
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "progress_tracking",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "sheet",
+        "secondaryArtifacts": [],
+        "access": {
+          "providerType": "education_provider",
+          "discoveryAccess": "public",
+          "rowAccess": "partial",
+          "sourceFormat": "course"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "partial",
+          "conversionReadiness": "source_import_required",
+          "freshnessReview": "current",
+          "localeReview": "applicable",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "research_only",
+          "blockers": [
+            "source_incomplete",
+            "source_import_required"
+          ]
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "KMOOC-M01",
+          "role": "field",
+          "targetIds": [
+            "FIELD-KMOOC-M01"
+          ],
+          "reason": "v2.3 semantic role: field."
+        },
+        {
+          "sourceRowId": "KMOOC-M02",
+          "role": "reference",
+          "targetIds": [
+            "REFERENCE-KMOOC-M02"
+          ],
+          "reason": "v2.3 semantic role: reference."
+        },
+        {
+          "sourceRowId": "KMOOC-M03",
+          "role": "reference",
+          "targetIds": [
+            "REFERENCE-KMOOC-M03"
+          ],
+          "reason": "v2.3 semantic role: reference."
+        },
+        {
+          "sourceRowId": "KMOOC-M04",
+          "role": "reference",
+          "targetIds": [
+            "REFERENCE-KMOOC-M04"
+          ],
+          "reason": "v2.3 semantic role: reference."
+        },
+        {
+          "sourceRowId": "KMOOC-M05",
+          "role": "reference",
+          "targetIds": [
+            "REFERENCE-KMOOC-M05"
+          ],
+          "reason": "v2.3 semantic role: reference."
+        },
+        {
+          "sourceRowId": "KMOOC-A-MISSING",
+          "role": "omission",
+          "targetIds": [],
+          "reason": "v2.3 semantic role: omission."
+        }
+      ],
+      "canonicalPlan": null,
+      "projectionAvailabilities": {
+        "calendar": "blocked",
+        "checklist": "blocked",
+        "todo": "blocked",
+        "sheet": "blocked",
+        "memo": "blocked"
+      },
+      "rationale": "?? ?????? 14? progress ??? ????? ?? ?? ?? ?? ?? ?? sourceShape? canonical draft? ?? ? ??.",
+      "confidence": 0.98
+    },
+    {
+      "caseId": "OQ-B03-REMODEL",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "hold",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": [
+          "rights_permission_required",
+          "editorial_review_required"
+        ]
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "money_admin_purchase",
+        "secondaryLifeAreas": [
+          "home_living"
+        ],
+        "topicTags": [
+          "remodeling_contract",
+          "criteria_review"
+        ],
+        "sourceShape": "decision_criteria",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "compare_decide",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "sheet",
+        "secondaryArtifacts": [
+          "memo"
+        ],
+        "access": {
+          "providerType": "editorial_media",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "unknown",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "pending"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "hold",
+          "freshnessReview": "current",
+          "localeReview": "applicable",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "pending",
+          "promotionState": "research_only",
+          "blockers": [
+            "rights_permission_required",
+            "editorial_review_required"
+          ]
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "DS02-R01",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS02-R01"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS02-R02",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS02-R02"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS02-R03",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS02-R03"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS02-R04",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS02-R04"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS02-R05",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS02-R05"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS02-R06",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS02-R06"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS02-R07",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS02-R07"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS02-R08",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS02-R08"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS02-R09",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS02-R09"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS02-R10",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS02-R10"
+          ],
+          "reason": "v2.3 semantic role: item."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 10,
+        "fieldCount": 0,
+        "memoCount": 1,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "10? ?? ??? inspect/decide Item?? ?? ?? ??? ?? ?? ??? Sheet/Memo? ????."
+      },
+      "projectionAvailabilities": {
+        "calendar": "blocked",
+        "checklist": "blocked",
+        "todo": "blocked",
+        "sheet": "blocked",
+        "memo": "blocked"
+      },
+      "rationale": "?? ?? ??? ?? ?? ??? ????. ??? pending?? ??? ?? ????? permission? editorial review? ?? ????.",
+      "confidence": 0.97
+    },
+    {
+      "caseId": "OQ-B04-TODOIST",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "no_proposal",
+        "conversionReadiness": "source_import_required",
+        "errorCode": "TEMPLATE_TASK_ROWS_PROTECTED",
+        "executableAllowed": false,
+        "publicExportAllowed": false,
+        "blockers": [
+          "source_import_required",
+          "account_or_entitlement_required"
+        ]
+      },
+      "classification": {
+        "classificationStatus": "partially_classified",
+        "primaryLifeArea": "work_career",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "podcast_production",
+          "protected_template"
+        ],
+        "sourceShape": null,
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "phase_lifecycle",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "todo",
+        "secondaryArtifacts": [],
+        "access": {
+          "providerType": "brand_official",
+          "discoveryAccess": "public",
+          "rowAccess": "metadata_only",
+          "sourceFormat": "template"
+        },
+        "rights": {
+          "basis": "provider_terms",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "pending"
+        },
+        "review": {
+          "sourceRowStatus": "metadata_only",
+          "conversionReadiness": "source_import_required",
+          "freshnessReview": "current",
+          "localeReview": "applicable",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "pending",
+          "promotionState": "research_only",
+          "blockers": [
+            "source_import_required",
+            "account_or_entitlement_required"
+          ]
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "TODOIST-R01",
+          "role": "reference",
+          "targetIds": [
+            "REFERENCE-TODOIST-R01"
+          ],
+          "reason": "v2.3 semantic role: reference."
+        },
+        {
+          "sourceRowId": "TODOIST-R02",
+          "role": "reference",
+          "targetIds": [
+            "REFERENCE-TODOIST-R02"
+          ],
+          "reason": "v2.3 semantic role: reference."
+        },
+        {
+          "sourceRowId": "TODOIST-R03",
+          "role": "reference",
+          "targetIds": [
+            "REFERENCE-TODOIST-R03"
+          ],
+          "reason": "v2.3 semantic role: reference."
+        },
+        {
+          "sourceRowId": "TODOIST-R04",
+          "role": "reference",
+          "targetIds": [
+            "REFERENCE-TODOIST-R04"
+          ],
+          "reason": "v2.3 semantic role: reference."
+        },
+        {
+          "sourceRowId": "TODOIST-R05",
+          "role": "omission",
+          "targetIds": [],
+          "reason": "v2.3 semantic role: omission."
+        }
+      ],
+      "canonicalPlan": null,
+      "projectionAvailabilities": {
+        "calendar": "blocked",
+        "checklist": "blocked",
+        "todo": "blocked",
+        "sheet": "blocked",
+        "memo": "blocked"
+      },
+      "rationale": "??? phase? ?? lifecycle? task-execution Todo ??? ????? ?? task ?? ???? ?? canonical draft? ??? ? ??.",
+      "confidence": 0.97
+    },
+    {
+      "caseId": "OQ-P01-OSSU",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_for_internal_canary",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": [
+          "locale_review_required"
+        ]
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "study_reading",
+        "secondaryLifeAreas": [
+          "work_career"
+        ],
+        "topicTags": [
+          "computer_science",
+          "curriculum"
+        ],
+        "sourceShape": "lesson_rows",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "progress_tracking",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "sheet",
+        "secondaryArtifacts": [
+          "todo"
+        ],
+        "access": {
+          "providerType": "open_knowledge",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "table"
+        },
+        "rights": {
+          "basis": "open_license",
+          "allowedUse": [
+            "link_metadata",
+            "personal_transform",
+            "internal_review",
+            "public_derived"
+          ],
+          "reviewStatus": "approved"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_for_internal_canary",
+          "freshnessReview": "current",
+          "localeReview": "adaptation_required",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "approved",
+          "promotionState": "internal_review",
+          "blockers": [
+            "locale_review_required"
+          ]
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "DS10-R01",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS10-R01"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS10-R02",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS10-R02"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS10-R03",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS10-R03"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS10-R04",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS10-R04"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS10-R05",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS10-R05"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS10-R06",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS10-R06"
+          ],
+          "reason": "v2.3 semantic role: item."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 6,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "????? ?? 6? curriculum course Item? ??? ?? ??? Sheet? ????."
+      },
+      "projectionAvailabilities": {
+        "calendar": "blocked",
+        "checklist": "blocked",
+        "todo": "blocked",
+        "sheet": "blocked",
+        "memo": "blocked"
+      },
+      "rationale": "resource ?? ????? ?? ???? ?? curriculum ???. ???? curriculum? ??? Flow ??? locale canary? ???.",
+      "confidence": 0.98
+    },
+    {
+      "caseId": "OQ-P02-PACKING",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_for_internal_canary",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": [
+          "locale_review_required"
+        ]
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "travel_outings",
+        "secondaryLifeAreas": [
+          "money_admin_purchase"
+        ],
+        "topicTags": [
+          "carry_on",
+          "travel_documents"
+        ],
+        "sourceShape": "checklist_rows",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "ordered_procedure",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "checklist",
+        "secondaryArtifacts": [
+          "memo"
+        ],
+        "access": {
+          "providerType": "open_knowledge",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "open_license",
+          "allowedUse": [
+            "link_metadata",
+            "personal_transform",
+            "internal_review",
+            "public_derived"
+          ],
+          "reviewStatus": "approved"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_for_internal_canary",
+          "freshnessReview": "current",
+          "localeReview": "adaptation_required",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "approved",
+          "promotionState": "internal_review",
+          "blockers": [
+            "locale_review_required"
+          ]
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "DS11-R01",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS11-R01"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS11-R02",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS11-R02"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS11-R03",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS11-R03"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS11-R04",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS11-R04"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS11-R05",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS11-R05"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS11-R06",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS11-R06"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "DS11-R07",
+          "role": "item",
+          "targetIds": [
+            "ITEM-DS11-R07"
+          ],
+          "reason": "v2.3 semantic role: item."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 7,
+        "fieldCount": 0,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "7? ?? ?????? ?? ?? ? ?? ?? Checklist Item?? ????."
+      },
+      "projectionAvailabilities": {
+        "calendar": "blocked",
+        "checklist": "blocked",
+        "todo": "blocked",
+        "sheet": "blocked",
+        "memo": "blocked"
+      },
+      "rationale": "???? ?? ?? ?? ? ? ??? ???? list??? ordered procedure?. ???? packing??? guidance? locale canary? ????.",
+      "confidence": 0.96
+    },
+    {
+      "caseId": "OQ-P03-VEHICLE",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "ready_second_wave",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": []
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "money_admin_purchase",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "vehicle_inspection",
+          "official_window"
+        ],
+        "sourceShape": "date_window",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "date_preparation",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "calendar",
+        "secondaryArtifacts": [
+          "todo",
+          "memo"
+        ],
+        "access": {
+          "providerType": "public_institution",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "ready_second_wave",
+          "freshnessReview": "current",
+          "localeReview": "applicable",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "internal_review",
+          "blockers": []
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "VEHICLE-R01",
+          "role": "item",
+          "targetIds": [
+            "ITEM-VEHICLE-R01"
+          ],
+          "reason": "v2.3 semantic role: item."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 1,
+        "fieldCount": 3,
+        "memoCount": 0,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "?? ?? Item? ??? ?????????? ??? Field? Calendar ?? ??? ???."
+      },
+      "projectionAvailabilities": {
+        "calendar": "blocked",
+        "checklist": "blocked",
+        "todo": "blocked",
+        "sheet": "blocked",
+        "memo": "blocked"
+      },
+      "rationale": "?? ??? ?? window? ???? ? ?? ???? ???? ??? sparse Flow?. ??? ??? Field?? blocker? ???.",
+      "confidence": 0.96
+    },
+    {
+      "caseId": "OQ-P04-PORTFOLIO",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "proposal",
+        "conversionReadiness": "hold",
+        "errorCode": null,
+        "executableAllowed": true,
+        "publicExportAllowed": false,
+        "blockers": [
+          "rights_permission_required"
+        ]
+      },
+      "classification": {
+        "classificationStatus": "classified",
+        "primaryLifeArea": "work_career",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "developer_portfolio",
+          "project_delivery"
+        ],
+        "sourceShape": "procedure_rows",
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": "phase_lifecycle",
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": "sheet",
+        "secondaryArtifacts": [
+          "todo",
+          "memo"
+        ],
+        "access": {
+          "providerType": "creator",
+          "discoveryAccess": "public",
+          "rowAccess": "full",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "unknown",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "pending"
+        },
+        "review": {
+          "sourceRowStatus": "complete",
+          "conversionReadiness": "hold",
+          "freshnessReview": "current",
+          "localeReview": "applicable",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "pending",
+          "promotionState": "research_only",
+          "blockers": [
+            "rights_permission_required"
+          ]
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "PORTFOLIO-R01",
+          "role": "item",
+          "targetIds": [
+            "ITEM-PORTFOLIO-R01"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "PORTFOLIO-R02",
+          "role": "item",
+          "targetIds": [
+            "ITEM-PORTFOLIO-R02"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "PORTFOLIO-R03",
+          "role": "item",
+          "targetIds": [
+            "ITEM-PORTFOLIO-R03"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "PORTFOLIO-R04",
+          "role": "item",
+          "targetIds": [
+            "ITEM-PORTFOLIO-R04"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "PORTFOLIO-R05",
+          "role": "item",
+          "targetIds": [
+            "ITEM-PORTFOLIO-R05"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "PORTFOLIO-R06",
+          "role": "item",
+          "targetIds": [
+            "ITEM-PORTFOLIO-R06"
+          ],
+          "reason": "v2.3 semantic role: item."
+        },
+        {
+          "sourceRowId": "PORTFOLIO-R07",
+          "role": "item",
+          "targetIds": [
+            "ITEM-PORTFOLIO-R07"
+          ],
+          "reason": "v2.3 semantic role: item."
+        }
+      ],
+      "canonicalPlan": {
+        "itemCount": 7,
+        "fieldCount": 0,
+        "memoCount": 1,
+        "referenceCount": 0,
+        "conditionalResponseCount": 0,
+        "summary": "????????????????? 7? Item? ?? ??? ???? Sheet? ????."
+      },
+      "projectionAvailabilities": {
+        "calendar": "blocked",
+        "checklist": "blocked",
+        "todo": "blocked",
+        "sheet": "blocked",
+        "memo": "blocked"
+      },
+      "rationale": "? ?? ???? ?? ??? ?? multi-session lifecycle?. creator rights? pending??? permission ? ??? ? ??.",
+      "confidence": 0.97
+    },
+    {
+      "caseId": "OQ-N01-FOODCRAFT",
+      "feasibility": {
+        "generationState": "completed",
+        "outcome": "rejected",
+        "conversionReadiness": "hold",
+        "errorCode": "NO_EXECUTABLE_SHAPE",
+        "executableAllowed": false,
+        "publicExportAllowed": false,
+        "blockers": [
+          "source_incomplete",
+          "unsupported_shape"
+        ]
+      },
+      "classification": {
+        "classificationStatus": "partially_classified",
+        "primaryLifeArea": "meals_grocery",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "meal_planning",
+          "marketing_metadata"
+        ],
+        "sourceShape": null,
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": null,
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": null,
+        "secondaryArtifacts": [],
+        "access": {
+          "providerType": "brand_official",
+          "discoveryAccess": "public",
+          "rowAccess": "metadata_only",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "link_only_assumption",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "restricted"
+        },
+        "review": {
+          "sourceRowStatus": "metadata_only",
+          "conversionReadiness": "hold",
+          "freshnessReview": "current",
+          "localeReview": "applicable",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "restricted",
+          "promotionState": "research_only",
+          "blockers": [
+            "source_incomplete",
+            "unsupported_shape"
+          ]
+        }
+      },
+      "roles": [
+        {
+          "sourceRowId": "FOODCRAFT-R01",
+          "role": "reference",
+          "targetIds": [
+            "REFERENCE-FOODCRAFT-R01"
+          ],
+          "reason": "v2.3 semantic role: reference."
+        }
+      ],
+      "canonicalPlan": null,
+      "projectionAvailabilities": {
+        "calendar": "blocked",
+        "checklist": "blocked",
+        "todo": "blocked",
+        "sheet": "blocked",
+        "memo": "blocked"
+      },
+      "rationale": "?? ?? marketing metadata??? ???????? ?? ?? ??. source import proposal? ??? executable shape ??? reject??.",
+      "confidence": 0.99
+    },
+    {
+      "caseId": "OQ-N02-LOGIN-WALL",
+      "feasibility": {
+        "generationState": "failed",
+        "outcome": "no_proposal",
+        "conversionReadiness": "source_import_required",
+        "errorCode": "SOURCE_ROWS_UNAVAILABLE",
+        "executableAllowed": false,
+        "publicExportAllowed": false,
+        "blockers": [
+          "source_import_required",
+          "account_or_entitlement_required",
+          "source_unavailable"
+        ]
+      },
+      "classification": {
+        "classificationStatus": "partially_classified",
+        "primaryLifeArea": "home_living",
+        "secondaryLifeAreas": [],
+        "topicTags": [
+          "moving",
+          "protected_body"
+        ],
+        "sourceShape": null,
+        "secondarySourceShapes": [],
+        "primaryExecutionPattern": null,
+        "secondaryExecutionPatterns": [],
+        "primaryArtifact": null,
+        "secondaryArtifacts": [],
+        "access": {
+          "providerType": "aggregator",
+          "discoveryAccess": "paywalled",
+          "rowAccess": "unavailable",
+          "sourceFormat": "article"
+        },
+        "rights": {
+          "basis": "unknown",
+          "allowedUse": [
+            "link_metadata",
+            "internal_review"
+          ],
+          "reviewStatus": "pending"
+        },
+        "review": {
+          "sourceRowStatus": "missing",
+          "conversionReadiness": "source_import_required",
+          "freshnessReview": "unknown",
+          "localeReview": "pending",
+          "safetyReview": "not_required",
+          "privacyReview": "not_required",
+          "rightsReview": "pending",
+          "promotionState": "research_only",
+          "blockers": [
+            "source_import_required",
+            "account_or_entitlement_required",
+            "source_unavailable"
+          ]
+        }
+      },
+      "roles": [],
+      "canonicalPlan": null,
+      "projectionAvailabilities": {
+        "calendar": "blocked",
+        "checklist": "blocked",
+        "todo": "blocked",
+        "sheet": "blocked",
+        "memo": "blocked"
+      },
+      "rationale": "??? ? ? ???? SourceRow? ??? ???? ???. ?? ?? import ? execution axis? canonical draft? ?? ? ??.",
+      "confidence": 0.99
+    }
+  ]
+}

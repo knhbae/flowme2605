@@ -1,0 +1,386 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flowme.local/schemas/input-composer-scenarios-v1.schema.json",
+  "title": "FlowMe Input Composer Lab v1 scenarios",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["documentType", "labVersion", "generatedAt", "claimBoundary", "upstream", "metrics", "cases"],
+  "properties": {
+    "documentType": { "const": "flowme_input_composer_scenarios" },
+    "labVersion": { "const": "1.0.0" },
+    "generatedAt": { "type": "string", "minLength": 10 },
+    "claimBoundary": { "type": "string", "minLength": 20 },
+    "upstream": { "$ref": "#/$defs/upstream" },
+    "metrics": { "$ref": "#/$defs/metrics" },
+    "cases": {
+      "type": "array",
+      "minItems": 8,
+      "maxItems": 8,
+      "items": { "$ref": "#/$defs/case" }
+    }
+  },
+  "$defs": {
+    "upstream": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["runRef", "runId", "caseSetVersion", "goldContractVersion", "networkCalled", "providerApiCalled"],
+      "properties": {
+        "runRef": { "type": "string", "minLength": 1 },
+        "runId": { "type": "string", "minLength": 1 },
+        "caseSetVersion": { "type": "string", "minLength": 1 },
+        "goldContractVersion": { "type": "string", "minLength": 1 },
+        "networkCalled": { "const": false },
+        "providerApiCalled": { "const": false }
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["caseCount", "generalCaseCount", "boundaryCaseCount", "routeCoverage", "generalRequiredPayloadMax", "unnecessaryInputCount", "sourceValueReentryCount", "meaningRetentionRate", "unscheduledIcsViolationCount", "inventedActionCount", "creatorUserPathCollisionCount", "blockedFakeArtifactCount", "internalVisibleTokenLeakCount", "observedUserValidationCompleted"],
+      "properties": {
+        "caseCount": { "const": 8 },
+        "generalCaseCount": { "const": 6 },
+        "boundaryCaseCount": { "const": 2 },
+        "routeCoverage": { "const": 4 },
+        "generalRequiredPayloadMax": { "type": "integer", "minimum": 0, "maximum": 2 },
+        "unnecessaryInputCount": { "const": 0 },
+        "sourceValueReentryCount": { "const": 0 },
+        "meaningRetentionRate": { "const": 1 },
+        "unscheduledIcsViolationCount": { "const": 0 },
+        "inventedActionCount": { "const": 0 },
+        "creatorUserPathCollisionCount": { "const": 0 },
+        "blockedFakeArtifactCount": { "const": 0 },
+        "internalVisibleTokenLeakCount": { "const": 0 },
+        "observedUserValidationCompleted": { "const": false }
+      }
+    },
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["caseId", "sourceCaseId", "lane", "title", "shortTitle", "userJob", "inputRoute", "firstPreviewKind", "defaultArtifact", "source", "inputJourney", "canonical", "projections", "sourceRiskBoundary", "qa"],
+      "properties": {
+        "caseId": { "type": "string", "pattern": "^IC-[A-Z0-9-]+$" },
+        "sourceCaseId": { "type": "string", "pattern": "^OQ-[A-Z0-9-]+$" },
+        "lane": { "enum": ["general", "boundary"] },
+        "title": { "type": "string", "minLength": 1 },
+        "shortTitle": { "type": "string", "minLength": 1 },
+        "userJob": { "type": "string", "minLength": 1 },
+        "inputRoute": { "enum": ["quick_line", "multiline_paste", "url_confirm", "table_curriculum_import"] },
+        "firstPreviewKind": { "enum": ["artifact", "boundary"] },
+        "defaultArtifact": { "type": ["string", "null"], "enum": ["calendar", "checklist", "todo", "sheet", "memo", null] },
+        "source": { "$ref": "#/$defs/source" },
+        "inputJourney": { "$ref": "#/$defs/inputJourney" },
+        "canonical": { "$ref": "#/$defs/canonical" },
+        "projections": { "$ref": "#/$defs/projections" },
+        "sourceRiskBoundary": { "$ref": "#/$defs/sourceRiskBoundary" },
+        "qa": { "$ref": "#/$defs/caseQa" }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "url", "claimedScope", "completeness", "sourceRowCount", "missingRows", "fingerprint"],
+      "properties": {
+        "title": { "type": "string", "minLength": 1 },
+        "url": { "type": "string", "minLength": 1 },
+        "claimedScope": { "type": "string", "minLength": 1 },
+        "completeness": { "type": "string", "minLength": 1 },
+        "sourceRowCount": { "type": "integer", "minimum": 0 },
+        "missingRows": { "type": "array", "items": { "$ref": "#/$defs/missingRow" } },
+        "fingerprint": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+      }
+    },
+    "missingRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "reason"],
+      "properties": {
+        "label": { "type": "string" },
+        "reason": { "type": "string" }
+      }
+    },
+    "inputJourney": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["inputs", "requiredPayloadCount", "interactionStepsToFirstPreview", "flow", "automaticValues", "confirmationValues", "editableValues", "progressiveDisclosure", "sourceValueReentryCount", "unnecessaryInputCount"],
+      "properties": {
+        "inputs": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/input" } },
+        "requiredPayloadCount": { "type": "integer", "minimum": 0, "maximum": 2 },
+        "interactionStepsToFirstPreview": { "type": "integer", "minimum": 1, "maximum": 6 },
+        "flow": { "type": "array", "minItems": 2, "items": { "type": "string", "minLength": 1 } },
+        "automaticValues": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "confirmationValues": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "editableValues": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "progressiveDisclosure": { "type": "array", "items": { "$ref": "#/$defs/disclosure" } },
+        "sourceValueReentryCount": { "const": 0 },
+        "unnecessaryInputCount": { "const": 0 }
+      }
+    },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["inputId", "actor", "ownershipLayer", "label", "control", "semanticKey", "purpose", "origin", "editable", "requiredBeforeFirstPreview", "visibleStage", "visibleWhen", "writePath", "sourceRefs", "consumerRefs", "help", "exampleValue"],
+      "properties": {
+        "inputId": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+        "actor": { "enum": ["creator", "user"] },
+        "ownershipLayer": { "enum": ["creator_draft", "user_overlay", "run_state"] },
+        "label": { "type": "string", "minLength": 1 },
+        "control": { "enum": ["url", "date", "table", "select", "text", "multiline", "choice", "location", "single_line", "boolean", "file"] },
+        "semanticKey": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+        "purpose": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+        "origin": { "const": "user_supplied" },
+        "editable": { "const": true },
+        "requiredBeforeFirstPreview": { "type": "boolean" },
+        "visibleStage": { "type": "string", "minLength": 1 },
+        "visibleWhen": { "type": ["string", "null"] },
+        "writePath": { "type": "string", "pattern": "^/(creatorDraft|userOverlay|runState)/" },
+        "sourceRefs": { "type": "array", "maxItems": 0 },
+        "consumerRefs": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "help": { "type": ["string", "null"] },
+        "exampleValue": { "type": ["string", "number", "boolean", "null"] }
+      }
+    },
+    "disclosure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["disclosureId", "visibleStage", "inputIds", "condition", "reason"],
+      "properties": {
+        "disclosureId": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+        "visibleStage": { "type": "string", "minLength": 1 },
+        "inputIds": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "condition": { "type": ["string", "null"] },
+        "reason": { "type": "string", "minLength": 1 }
+      }
+    },
+    "canonical": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["flowId", "title", "outcome", "executableAllowed", "items", "flowFields", "flowMemos", "references", "responseCards", "upstreamEntityIds", "retainedEntityIds", "upstreamFingerprint"],
+      "properties": {
+        "flowId": { "type": ["string", "null"] },
+        "title": { "type": ["string", "null"] },
+        "outcome": { "type": "string", "minLength": 1 },
+        "executableAllowed": { "type": "boolean" },
+        "items": { "type": "array", "items": { "$ref": "#/$defs/item" } },
+        "flowFields": { "type": "array", "items": { "$ref": "#/$defs/field" } },
+        "flowMemos": { "type": "array", "items": { "$ref": "#/$defs/memo" } },
+        "references": { "type": "array", "items": { "$ref": "#/$defs/reference" } },
+        "responseCards": { "type": "array", "items": { "$ref": "#/$defs/response" } },
+        "upstreamEntityIds": { "type": "array", "items": { "type": "string" } },
+        "retainedEntityIds": { "type": "array", "items": { "type": "string" } },
+        "upstreamFingerprint": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+      }
+    },
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["itemId", "stepId", "intent", "title", "detail", "completion", "schedule", "location", "fields", "conditions", "sourceRefs", "provenance"],
+      "properties": {
+        "itemId": { "type": "string", "minLength": 1 },
+        "stepId": { "type": "string", "minLength": 1 },
+        "intent": { "enum": ["action", "decision", "record", "consume"] },
+        "title": { "type": "string", "minLength": 1 },
+        "detail": { "$ref": "#/$defs/detail" },
+        "completion": { "$ref": "#/$defs/completion" },
+        "schedule": { "anyOf": [{ "type": "null" }, { "$ref": "#/$defs/schedule" }] },
+        "location": { "type": "null" },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/field" } },
+        "conditions": { "type": "array", "items": { "$ref": "#/$defs/condition" } },
+        "sourceRefs": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/sourceRef" } },
+        "provenance": { "$ref": "#/$defs/provenance" }
+      }
+    },
+    "detail": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["summary", "memoRefs", "referenceRefs"],
+      "properties": {
+        "summary": { "type": "string", "minLength": 1 },
+        "memoRefs": { "type": "array", "items": { "type": "string" } },
+        "referenceRefs": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "completion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "doneWhen"],
+      "properties": {
+        "mode": { "enum": ["check", "decision", "record"] },
+        "doneWhen": { "type": "string", "minLength": 1 }
+      }
+    },
+    "schedule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "label", "anchorInputId", "exampleResolvedDate", "sourceRefs"],
+      "properties": {
+        "mode": { "enum": ["anchor_offset", "source_schedule"] },
+        "label": { "type": "string", "minLength": 1 },
+        "anchorInputId": { "type": ["string", "null"] },
+        "exampleResolvedDate": { "type": ["string", "null"] },
+        "sourceRefs": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/sourceRef" } }
+      }
+    },
+    "condition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["conditionId", "kind", "trigger", "response", "severity", "sourceRefs"],
+      "properties": {
+        "conditionId": { "type": "string" },
+        "kind": { "const": "activation_trigger" },
+        "trigger": { "type": "string" },
+        "response": { "type": "string" },
+        "severity": { "const": "normal" },
+        "sourceRefs": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/sourceRef" } }
+      }
+    },
+    "field": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fieldId", "label", "value", "valueType", "origin", "userEditable", "sourceRefs"],
+      "properties": {
+        "fieldId": { "type": "string" },
+        "label": { "type": "string" },
+        "value": {},
+        "valueType": { "type": "string" },
+        "origin": { "enum": ["source", "user_overlay"] },
+        "userEditable": { "type": "boolean" },
+        "sourceRefs": { "type": "array", "items": { "$ref": "#/$defs/sourceRef" } }
+      }
+    },
+    "memo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["memoId", "kind", "text", "sourceRefs"],
+      "properties": {
+        "memoId": { "type": "string" },
+        "kind": { "type": "string" },
+        "text": { "type": "string" },
+        "sourceRefs": { "type": "array", "items": { "$ref": "#/$defs/sourceRef" } }
+      }
+    },
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["referenceId", "label", "url", "sourceRefs"],
+      "properties": {
+        "referenceId": { "type": "string" },
+        "label": { "type": "string" },
+        "url": { "type": "string" },
+        "sourceRefs": { "type": "array", "items": { "$ref": "#/$defs/sourceRef" } }
+      }
+    },
+    "response": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["responseId", "trigger", "response", "severity", "evidenceQuote", "sourceRefs"],
+      "properties": {
+        "responseId": { "type": "string" },
+        "trigger": { "type": "string" },
+        "response": { "type": "string" },
+        "severity": { "enum": ["info", "stop", "emergency"] },
+        "evidenceQuote": { "type": ["string", "null"] },
+        "sourceRefs": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/sourceRef" } }
+      }
+    },
+    "sourceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceRowId"],
+      "properties": { "sourceRowId": { "type": "string", "minLength": 1 } }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["origin", "sourceUrl", "userRequestInputId"],
+      "properties": {
+        "origin": { "const": "source" },
+        "sourceUrl": { "type": "string", "minLength": 1 },
+        "userRequestInputId": { "type": "null" }
+      }
+    },
+    "projections": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["calendar", "checklist", "todo", "sheet", "memo", "ics"],
+      "properties": {
+        "calendar": { "$ref": "#/$defs/projection" },
+        "checklist": { "$ref": "#/$defs/projection" },
+        "todo": { "$ref": "#/$defs/projection" },
+        "sheet": { "$ref": "#/$defs/projection" },
+        "memo": { "$ref": "#/$defs/projection" },
+        "ics": { "$ref": "#/$defs/icsProjection" }
+      }
+    },
+    "projection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["availability", "essentialExpected", "essentialRetained", "lossManifest", "preview"],
+      "properties": {
+        "availability": { "enum": ["primary", "secondary", "fallback", "not_applicable", "blocked"] },
+        "essentialExpected": { "type": "array", "items": { "type": "string" } },
+        "essentialRetained": { "type": "array", "items": { "type": "string" } },
+        "lossManifest": { "type": "array", "items": { "$ref": "#/$defs/loss" } },
+        "preview": { "type": ["object", "null"] }
+      }
+    },
+    "icsProjection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["availability", "eventCount", "actionVisible", "essentialExpected", "essentialRetained", "lossManifest", "preview"],
+      "properties": {
+        "availability": { "enum": ["not_available", "available_after_input"] },
+        "eventCount": { "type": "integer", "minimum": 0 },
+        "actionVisible": { "type": "boolean" },
+        "essentialExpected": { "type": "array", "items": { "type": "string" } },
+        "essentialRetained": { "type": "array", "items": { "type": "string" } },
+        "lossManifest": { "type": "array", "items": { "$ref": "#/$defs/loss" } },
+        "preview": { "type": ["object", "null"] }
+      }
+    },
+    "loss": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["field", "reason", "severity"],
+      "properties": {
+        "field": { "type": "string" },
+        "reason": { "type": "string" },
+        "severity": { "type": "string" }
+      }
+    },
+    "sourceRiskBoundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceCompleteness", "sourceMissing", "rightsState", "safetyState", "localeState", "reviewState", "publicExportAllowed", "personalUsePreviewAllowed", "blockers", "userFacingNote"],
+      "properties": {
+        "sourceCompleteness": { "type": "string" },
+        "sourceMissing": { "type": "array", "items": { "type": "string" } },
+        "rightsState": { "type": "string" },
+        "safetyState": { "type": "string" },
+        "localeState": { "type": "string" },
+        "reviewState": { "type": "string" },
+        "publicExportAllowed": { "type": "boolean" },
+        "personalUsePreviewAllowed": { "type": "boolean" },
+        "blockers": { "type": "array", "items": { "type": "string" } },
+        "userFacingNote": { "type": "string", "minLength": 1 }
+      }
+    },
+    "caseQa": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canonicalRetentionRate", "projectionRetentionRate", "boundaryRetentionRate", "meaningRetentionRate", "sourceValueReentryCount", "unnecessaryInputCount", "inventedActionCount", "unscheduledIcsViolationCount", "creatorUserPathCollisionCount", "fakeArtifactWhileBlockedCount"],
+      "properties": {
+        "canonicalRetentionRate": { "const": 1 },
+        "projectionRetentionRate": { "const": 1 },
+        "boundaryRetentionRate": { "const": 1 },
+        "meaningRetentionRate": { "const": 1 },
+        "sourceValueReentryCount": { "const": 0 },
+        "unnecessaryInputCount": { "const": 0 },
+        "inventedActionCount": { "const": 0 },
+        "unscheduledIcsViolationCount": { "const": 0 },
+        "creatorUserPathCollisionCount": { "const": 0 },
+        "fakeArtifactWhileBlockedCount": { "const": 0 }
+      }
+    }
+  }
+}
