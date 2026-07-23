@@ -2,7 +2,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { expect, test, type Locator, type Page } from '@playwright/test';
-import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
+import {
+  getOpenMyFlowItemDetail,
+  openMyFlowLibraryFlow,
+} from './helpers/my-flow-library';
 import { openPublicDetailWorkspaceForDeepInspection } from './helpers/open-public-detail-workspace';
 
 test.beforeEach(async ({ page }) => {
@@ -101,7 +104,8 @@ test('public whole Flow export predicts dates, output count, and result receipt'
   await tray.getByTestId('my-flow-calendar-unscheduled-apply').click();
 
   await page.goto('/my?view=flows');
-  const vehicleFlow = await openMyFlowLibraryFlow(page, 'vehicle-inspection-prep');
+  const vehicleFlow = await openMyFlowLibraryFlow(page, 'vehicle-inspection-prep', 'record');
+  await vehicleFlow.getByTestId('my-flow-workspace-advanced-actions').locator('summary').click();
   const vehicleExport = vehicleFlow.getByTestId('my-flow-export-surface');
   await vehicleExport.getByTestId('my-flow-export-entry').click();
   const scheduledCalendar = vehicleExport.getByTestId('my-flow-export-calendar');
@@ -128,7 +132,8 @@ test('whole, selected, and current item exports share scope language and actual 
   await page.goto('/my?demo=source-backed');
   await page.getByTestId('my-flow-view-flow').click();
 
-  const flow = await openMyFlowLibraryFlow(page, 'source-backed-moving-d30');
+  let flow = await openMyFlowLibraryFlow(page, 'source-backed-moving-d30', 'record');
+  await flow.getByTestId('my-flow-workspace-advanced-actions').locator('summary').click();
   const exportSurface = flow.getByTestId('my-flow-export-surface');
   await exportSurface.getByTestId('my-flow-export-entry').click();
   const panel = exportSurface.getByTestId('my-flow-export-panel');
@@ -148,9 +153,10 @@ test('whole, selected, and current item exports share scope language and actual 
   expect((copiedMemo.match(/^\d+\. /gmu) ?? []).length).toBe(2);
   await capture(page, panel, '02-selected-items-mobile.png');
 
+  flow = await openMyFlowLibraryFlow(page, 'source-backed-moving-d30', 'plan');
   const firstRow = flow.getByTestId('my-flow-execution-row-shell').first();
   await firstRow.getByRole('button', { name: /열기/ }).click();
-  const detail = firstRow.getByTestId('my-flow-item-detail');
+  const detail = getOpenMyFlowItemDetail(page);
   const currentExport = detail.getByTestId('my-flow-detail-portable-export');
   if (await currentExport.locator('summary').count()) await currentExport.locator('summary').click();
   await currentExport.getByTestId('my-flow-detail-copy-portable-text').click();
@@ -160,12 +166,15 @@ test('whole, selected, and current item exports share scope language and actual 
   await expect(currentReceipt).toContainText('현재 항목');
 
   await page.setViewportSize({ width: 1024, height: 768 });
-  const wideFlow = page.locator(
-    '[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-moving-d30"]',
-  );
+  const library = page.getByTestId('my-flow-library-workspace');
+  await expect(library).toBeVisible();
+  const wideFlow = library
+    .getByTestId('my-flow-library-detail')
+    .getByTestId('my-flow-overview-card');
   await expect(wideFlow).toBeVisible();
-  const widePanel = wideFlow.getByTestId('my-flow-export-panel');
-  if (!(await widePanel.count())) await wideFlow.getByTestId('my-flow-export-entry').click();
+  if (!(await wideFlow.getByTestId('my-flow-export-panel').isVisible().catch(() => false))) {
+    await wideFlow.getByTestId('my-flow-export-entry').click();
+  }
   await expect(wideFlow.getByTestId('my-flow-export-panel')).toBeVisible();
   await capture(page, wideFlow.getByTestId('my-flow-export-panel'), '04-whole-flow-wide.png');
   expect(

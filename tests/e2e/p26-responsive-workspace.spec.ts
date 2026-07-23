@@ -2,7 +2,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { expect, test, type Locator, type Page } from '@playwright/test';
-import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
+import {
+  getOpenMyFlowItemDetail,
+  openMyFlowLibraryFlow,
+} from './helpers/my-flow-library';
 
 const evidenceRoot = process.env.FLOWME_P26_18_EVIDENCE_DIR;
 
@@ -110,7 +113,7 @@ test('mobile drill-in keeps modal focus and fixed feedback above the navigation'
   const flow = await openMyFlowLibraryFlow(page, 'moving-d30-basic');
   const firstRow = flow.getByTestId('my-flow-execution-row-shell').first();
   await firstRow.getByRole('button', { name: /열기/ }).click();
-  const detail = firstRow.getByTestId('my-flow-item-detail');
+  const detail = getOpenMyFlowItemDetail(page);
   const readSummary = detail.getByTestId('my-flow-detail-read-summary');
   if ((await readSummary.getAttribute('open')) === null) await readSummary.locator('summary').click();
   await readSummary.getByTestId('my-flow-detail-edit-toggle').click();
@@ -181,7 +184,8 @@ test('export reports disabled and pending states without changing scope', async 
     });
   });
   await page.goto('/my?view=flows');
-  const flow = await openMyFlowLibraryFlow(page, 'moving-d30-basic');
+  const flow = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'record');
+  await flow.getByTestId('my-flow-workspace-advanced-actions').locator('summary').click();
   const exportSurface = flow.getByTestId('my-flow-export-surface');
   await exportSurface.getByTestId('my-flow-export-entry').click();
   const panel = exportSurface.getByTestId('my-flow-export-panel');

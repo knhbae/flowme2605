@@ -39,25 +39,25 @@ async function capture(page: Page, filename: string) {
 async function assertDiscoveryCard(card: Locator) {
   await expect(card).toBeVisible();
   await expect(card.getByRole('heading')).toBeVisible();
-  await expect(card.getByText('원문', { exact: true })).toBeVisible();
+  await expect(card.getByRole('link', { name: /^원문 · / })).toBeVisible();
   const previewItemCount = await card.getByRole('list', { name: '대표 할 일' }).getByRole('listitem').count();
   expect(previewItemCount).toBeGreaterThanOrEqual(1);
-  expect(previewItemCount).toBeLessThanOrEqual(3);
-  await expect(card.getByTestId('flow-card-support-meta')).toContainText(/^할 일 \d+개$/);
-  await expect(card.getByTestId('flow-card-primary-action')).toHaveText('Flow 열기');
+  expect(previewItemCount).toBeLessThanOrEqual(2);
+  await expect(card.getByTestId('flow-card-support-meta')).toContainText(/^할 일 \d+개 · /);
+  await expect(card.getByTestId('flow-card-primary-action')).toHaveText('더보기');
+  await expect(card.getByTestId('flow-card-source-link')).toHaveCount(1);
   await expect(card).not.toContainText(/명 검증|인기순|별점|이사일만 넣으면/u);
 }
 
-test('home and catalog share one evidence-first Flow card pattern', async ({ page }) => {
+test('home usage examples and catalog cards have distinct roles', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
 
-  await expect(page.getByRole('heading', { name: '무엇을 준비하고 있나요?' })).toBeVisible();
-  await expect(page.getByText('링크나 메모를 넣거나, 준비된 Flow를 바로 열어보세요.')).toBeVisible();
-  const homeCards = page.locator('[data-home-recommendation-card="true"]');
-  await expect(homeCards).toHaveCount(2);
-  await assertDiscoveryCard(homeCards.first());
-  await assertDiscoveryCard(homeCards.nth(1));
+  await expect(page.getByRole('heading', { name: '필요한 Flow를 시작하세요' })).toBeVisible();
+  await expect(page.getByText('저장한 Flow를 이어가거나, URL과 메모에서 새 실행 계획을 찾습니다.')).toBeVisible();
+  await expect(page.locator('[data-home-recommendation-card="true"]')).toHaveCount(0);
+  await expect(page.getByTestId('home-usage-example')).toHaveCount(3);
+  await expect(page.locator('[data-p31-marker="P31-HOME-FIND-ROLE-SEPARATION"]')).toHaveCount(1);
   await capture(page, '01-home-unified-flow-card-mobile.png');
 
   await page.goto('/flows');

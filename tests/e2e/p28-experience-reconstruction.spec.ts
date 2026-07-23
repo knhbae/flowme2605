@@ -134,7 +134,7 @@ test.describe('P28 shared save-before experience', () => {
     await editor.getByTestId('public-routine-schedule-editor-duration').selectOption('45');
     await editor.getByTestId('public-routine-schedule-editor-end-mode').selectOption('count');
     await editor.getByTestId('public-routine-schedule-editor-occurrence-count').fill('8');
-    await page.getByTestId('public-flow-mobile-save-cta').getByRole('button', { name: '이 날짜로 시작' }).click();
+    await page.getByTestId('public-flow-save-primary-mobile').click();
 
     const saved = await page.evaluate(() => JSON.parse(
       window.localStorage.getItem('flow:saved:curated-allblanc-morning-workout') || 'null',
@@ -172,8 +172,8 @@ test.describe('P28 shared save-before experience', () => {
     const firstMobileTitle = (await firstMobileButton.innerText()).split('\n')[0];
     await firstMobileButton.click();
     await expect(page.getByTestId('my-flow-mobile-library-back')).toBeVisible();
-    await expect(page.getByTestId('my-flow-overview-card')).toHaveCount(1);
-    await expect(page.getByTestId('my-flow-overview-card')).toContainText(firstMobileTitle);
+    await expect(page.getByTestId('my-flow-mobile-workspace')).toHaveCount(1);
+    await expect(page.getByTestId('my-flow-mobile-workspace')).toContainText(firstMobileTitle);
     await capture(page, '05-mobile-my-flow-drill-in.png');
     await page.getByTestId('my-flow-mobile-library-back').click();
     await expect(page.getByTestId('my-flow-mobile-flow-hub')).toBeVisible();

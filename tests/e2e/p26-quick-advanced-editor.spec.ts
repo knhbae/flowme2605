@@ -2,6 +2,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { expect, test, type Locator, type Page } from '@playwright/test';
+import {
+  getOpenMyFlowItemDetail,
+  openMyFlowLibraryFlow,
+} from './helpers/my-flow-library';
 
 const evidenceRoot = process.env.FLOWME_P26_10_EVIDENCE_DIR;
 
@@ -59,18 +63,25 @@ async function enterEditMode(detail: Locator) {
 }
 
 async function openMobileFirstRow(page: Page) {
-  const flow = page.locator(
-    ':is([data-testid="my-flow-overview-card"], [data-testid="my-flow-mobile-structure-row"])',
-  ).first();
-  await expect(flow).toBeVisible();
-  const flowOpen = flow.getByTestId('my-flow-mobile-structure-open');
-  if ((await flowOpen.count()) > 0 && (await flowOpen.getAttribute('aria-expanded')) !== 'true') await flowOpen.click();
+  let flow = page.locator('[data-testid="my-flow-mobile-workspace"]:visible').first();
+  if (await flow.isVisible().catch(() => false)) {
+    await flow.getByTestId('my-flow-workspace-tab-plan').click();
+  } else {
+    const compactRow = page.getByTestId('my-flow-mobile-structure-row').first();
+    await expect(compactRow).toBeVisible();
+    const flowSlug = await compactRow.getAttribute('data-flow-slug');
+    expect(flowSlug).toBeTruthy();
+    flow = await openMyFlowLibraryFlow(page, flowSlug!, 'plan');
+  }
   const outline = flow.getByTestId('my-flow-whole-flow-outline');
   const firstRow = outline.getByTestId('my-flow-execution-row-shell').first();
   await expect(firstRow).toBeVisible();
   const openButton = firstRow.locator('button').first();
-  await openButton.click();
-  const detail = firstRow.getByTestId('my-flow-inline-detail').getByTestId('my-flow-item-detail');
+  let detail = getOpenMyFlowItemDetail(page);
+  if (!(await detail.isVisible().catch(() => false))) {
+    await openButton.click();
+    detail = getOpenMyFlowItemDetail(page);
+  }
   await expect(detail).toBeVisible();
   return { flow, firstRow, openButton, detail };
 }
@@ -194,7 +205,7 @@ test.describe('P26-10 quick and advanced editor separation', () => {
     await expect(event).toBeVisible();
     await event.click();
 
-    const detail = page.getByTestId('my-flow-calendar-selected-day').getByTestId('my-flow-item-detail');
+    const detail = getOpenMyFlowItemDetail(page);
     await enterEditMode(detail);
     const editor = page.getByRole('dialog', { name: '할 일 수정' });
     await expect(editor).toHaveAttribute('data-editor-layout', 'mobile-full-screen');

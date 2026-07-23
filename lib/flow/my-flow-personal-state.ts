@@ -92,11 +92,11 @@ export function resolveMyFlowEffectiveDate(options: {
     source: Exclude<MyFlowEffectiveDateSource, 'none'>;
     date?: string;
   }> = [
-    { source: 'draft', date: options.draftDateOverride },
     {
       source: 'execution_override',
       date: options.dateOverrides?.[overrideKey],
     },
+    { source: 'draft', date: options.draftDateOverride },
     { source: 'personal_copy', date: options.personalCopyDateOverride },
     { source: 'source', date: options.sourceDate },
   ];

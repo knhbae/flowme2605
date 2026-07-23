@@ -145,7 +145,7 @@ test.describe('P27 reversible lifecycle foundation', () => {
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
     await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
-    await page.getByTestId('public-flow-mobile-save-cta').getByRole('button', { name: '이 날짜로 시작' }).click();
+    await page.getByTestId('public-flow-save-primary-mobile').click();
     await expect.poll(() => page.evaluate(() => Boolean(
       window.localStorage.getItem('flow:saved:curated-allblanc-morning-workout'),
     ))).toBe(true);
@@ -155,7 +155,9 @@ test.describe('P27 reversible lifecycle foundation', () => {
     let flowCard = await openMyFlowLibraryFlow(page, 'curated-allblanc-morning-workout');
     let outline = flowCard.getByTestId('my-flow-whole-flow-outline');
     await outline.getByTestId('my-flow-execution-row-shell').first().getByRole('button', { name: /열기/ }).click();
-    let detail = flowCard.getByTestId('my-flow-inline-detail').getByTestId('my-flow-item-detail');
+    let detail = page
+      .getByTestId('my-flow-item-detail-sheet')
+      .getByTestId('my-flow-item-detail');
     await enterMyFlowDetailEditMode(detail);
 
     const subcheckEditor = detail.getByTestId('my-flow-subcheck-editor');
@@ -168,14 +170,16 @@ test.describe('P27 reversible lifecycle foundation', () => {
     await resourceEditor.locator('summary').click();
     await expect(resourceEditor.getByTestId('my-flow-resource-label-input')).toHaveCount(2);
     await resourceEditor.getByTestId('my-flow-resource-label-input').first().fill('오늘 운동 영상');
-    await resourceEditor.getByRole('button', { name: /자료 목록에서 빼기/ }).nth(1).click();
+    await resourceEditor.getByRole('button', { name: /자료 숨기기/ }).nth(1).click();
     await expect(resourceEditor.getByTestId('my-flow-resource-label-input')).toHaveCount(1);
 
     await detail.getByTestId('my-flow-detail-save-changes').click();
     await expect(detail).toHaveCount(0);
 
     await outline.getByTestId('my-flow-execution-row-shell').first().getByRole('button', { name: /열기/ }).click();
-    detail = flowCard.getByTestId('my-flow-inline-detail').getByTestId('my-flow-item-detail');
+    detail = page
+      .getByTestId('my-flow-item-detail-sheet')
+      .getByTestId('my-flow-item-detail');
     await expect(detail.getByTestId('my-flow-item-checklist')).toContainText('운동 전 통증 확인');
     await expect(detail.getByTestId('my-flow-item-resource-link')).toHaveCount(1);
     await expect(detail.getByTestId('my-flow-item-resource-link')).toContainText('오늘 운동 영상');
@@ -184,13 +188,17 @@ test.describe('P27 reversible lifecycle foundation', () => {
     await expect(subcheck).toBeChecked();
     await subcheck.uncheck();
     await expect(subcheck).not.toBeChecked();
-    await detail.getByRole('button', { name: '닫기', exact: true }).click();
+    await page
+      .getByTestId('my-flow-item-detail-sheet-close')
+      .click();
 
     await page.reload();
     flowCard = await openMyFlowLibraryFlow(page, 'curated-allblanc-morning-workout');
     outline = flowCard.getByTestId('my-flow-whole-flow-outline');
     await outline.getByTestId('my-flow-execution-row-shell').first().getByRole('button', { name: /열기/ }).click();
-    detail = flowCard.getByTestId('my-flow-inline-detail').getByTestId('my-flow-item-detail');
+    detail = page
+      .getByTestId('my-flow-item-detail-sheet')
+      .getByTestId('my-flow-item-detail');
     await expect(detail.getByTestId('my-flow-item-checklist')).toContainText('운동 전 통증 확인');
     await expect(detail.getByTestId('my-flow-item-resource-link')).toHaveCount(1);
     await expectNoHorizontalOverflow(page);
@@ -257,9 +265,10 @@ test.describe('P27 reversible lifecycle foundation', () => {
     await openSavedPublicFlow(page, receipt);
     await expect(page).toHaveURL('/my?savedFlow=moving-d30-basic');
     await page.getByTestId('my-flow-post-save-view-flow').click();
-    const flowCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="moving-d30-basic"]');
+    const flowCard = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'plan');
     await expect(flowCard).toBeVisible();
-    await flowCard.getByRole('button', { name: '전체 펼치기' }).click();
+    const expandAll = flowCard.getByRole('button', { name: '전체 펼치기' });
+    if (await expandAll.isVisible().catch(() => false)) await expandAll.click();
     const outlineRows = flowCard.getByTestId('my-flow-whole-flow-outline').getByTestId('my-flow-execution-row-shell');
     await expect(outlineRows).toHaveCount(23);
     await expect(outlineRows.nth(0)).toContainText('필요 없는 물건 정리하기');

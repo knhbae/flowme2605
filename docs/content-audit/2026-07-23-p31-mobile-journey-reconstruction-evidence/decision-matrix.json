@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "program": "P31 Mobile Journey Reconstruction",
+  "decisions": [
+    {
+      "id": "P31-01",
+      "topic": "effective_date_precedence",
+      "decision": "keep",
+      "reason": "My Flow, Calendar and ICS now consume the same effective date, including explicit date removal.",
+      "schemaMigration": false
+    },
+    {
+      "id": "P31-02A",
+      "topic": "home_find_roles",
+      "decision": "keep",
+      "reason": "Home owns usage examples and continuation; Find owns search, catalog and source inspection.",
+      "reopenWhen": "Observed users cannot distinguish the first task or success state."
+    },
+    {
+      "id": "P31-02B",
+      "topic": "discovery_social_proof",
+      "decision": "defer",
+      "reason": "No production telemetry or review contract exists. Fake user or review counts are prohibited.",
+      "reopenWhen": "A real aggregation and moderation contract exists."
+    },
+    {
+      "id": "P31-02C",
+      "topic": "content_shape_save_before",
+      "decision": "keep",
+      "reason": "Wedding artifact choice and workout summary-first settings use one shared result-first skeleton without flattening content differences."
+    },
+    {
+      "id": "P31-03A",
+      "topic": "mobile_my_flow_workspace",
+      "decision": "keep",
+      "reason": "Compact library rows open one dedicated workspace with execute, whole plan and record roles."
+    },
+    {
+      "id": "P31-03B",
+      "topic": "flow_lifecycle_grammar",
+      "decision": "keep",
+      "reason": "Archive, restore and permanent delete are distinct and have mobile/wide capability parity."
+    },
+    {
+      "id": "P31-04",
+      "topic": "calendar_detail_and_placement",
+      "decision": "keep",
+      "reason": "Item detail uses a sheet while undated placement remains a separate mode."
+    },
+    {
+      "id": "P31-05",
+      "topic": "permanent_delete",
+      "decision": "keep",
+      "reason": "Delete is available only from archived state, removes personal local data, preserves public source and supports source rediscovery."
+    },
+    {
+      "id": "P31-REOPEN-IA",
+      "topic": "four_tab_information_architecture",
+      "decision": "do_not_reopen",
+      "reason": "The Home/Find role split passed the current automated and heuristic gate without changing the 4-tab IA.",
+      "reopenWhen": "Observed users repeatedly fail the Home/Find distinction."
+    },
+    {
+      "id": "P31-REOPEN-DATA",
+      "topic": "source_personal_run_occurrence_export_contract",
+      "decision": "do_not_reopen",
+      "reason": "P31 required consumer precedence and composition changes, not a persistence or identity rewrite."
+    },
+    {
+      "id": "P31-OBSERVED-USER",
+      "topic": "observed_user_validation",
+      "decision": "defer",
+      "reason": "Observed-user recruitment was explicitly outside this gate.",
+      "observedUserCount": 0
+    }
+  ]
+}

@@ -33,6 +33,18 @@ function formatSourceDuration(days?: number): string {
   return days % 7 === 0 ? `원문 기준 ${days / 7}주` : `원문 기준 ${days}일`;
 }
 
+function getPreviewPolicy(
+  definition: SavedFlowRoutineDefinition,
+  sourceDurationDays?: number,
+): string {
+  if (definition.end.mode === 'source' && sourceDurationDays) {
+    return `전체 일정 · ${formatSourceDuration(sourceDurationDays)}`;
+  }
+  if (definition.end.mode === 'until') return '전체 일정 · 선택한 종료일까지';
+  if (definition.end.mode === 'count') return `전체 일정 · ${definition.end.count}회까지`;
+  return '다음 4주 미리보기 · 반복은 계속';
+}
+
 export function RoutineScheduleEditor({
   value,
   onChange,
@@ -214,7 +226,7 @@ export function RoutineScheduleEditor({
         </div>
 
         <p data-testid={`${testId}-preview-policy`} className="text-xs font-medium text-[var(--flowme-text-secondary)]">
-          미리보기 범위 · 앞으로 4주
+          {getPreviewPolicy(definition, sourceDurationDays)}
         </p>
       </section>
     </fieldset>

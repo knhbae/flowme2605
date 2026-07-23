@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe P31 Mobile Journey Reconstruction</title>
+  <style>
+    :root {
+      --bg: #f5f6f4;
+      --surface: #ffffff;
+      --text: #191c1a;
+      --muted: #606760;
+      --line: #d8ddd7;
+      --action: #2457d6;
+      --action-soft: #edf2ff;
+      --good: #17633b;
+      --good-soft: #e9f6ee;
+      --warn: #7a4b00;
+      --warn-soft: #fff2d8;
+      --danger: #9a2f2f;
+      --danger-soft: #fff0ee;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, "Noto Sans KR", sans-serif;
+      line-height: 1.55;
+      letter-spacing: 0;
+    }
+    a { color: var(--action); }
+    header {
+      border-bottom: 1px solid var(--line);
+      background: var(--surface);
+    }
+    .wrap {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+    .hero {
+      padding: 42px 0 34px;
+    }
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--action);
+      font-size: 13px;
+      font-weight: 700;
+    }
+    h1 {
+      max-width: 820px;
+      margin: 0;
+      font-size: 52px;
+      line-height: 1.12;
+    }
+    .lead {
+      max-width: 780px;
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-size: 17px;
+    }
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: var(--surface);
+    }
+    .summary div {
+      min-width: 0;
+      padding: 18px;
+      border-right: 1px solid var(--line);
+    }
+    .summary div:last-child { border-right: 0; }
+    .summary strong { display: block; font-size: 22px; }
+    .summary span { color: var(--muted); font-size: 13px; }
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      overflow-x: auto;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,.96);
+    }
+    nav .wrap {
+      display: flex;
+      gap: 6px;
+      padding: 10px 0;
+    }
+    nav a {
+      flex: none;
+      min-height: 40px;
+      padding: 9px 12px;
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    nav a:hover, nav a:focus-visible {
+      background: var(--action-soft);
+      outline: 2px solid transparent;
+    }
+    main { padding: 34px 0 72px; }
+    section {
+      scroll-margin-top: 74px;
+      padding: 30px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    h2 { margin: 0 0 14px; font-size: 26px; }
+    h3 { margin: 0 0 8px; font-size: 18px; }
+    p { margin: 8px 0; }
+    .band {
+      padding: 18px;
+      border-left: 4px solid var(--action);
+      background: var(--surface);
+    }
+    .band.warn { border-left-color: #d68b18; background: var(--warn-soft); }
+    .band.danger { border-left-color: var(--danger); background: var(--danger-soft); }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .item {
+      min-width: 0;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--surface);
+    }
+    .item p { color: var(--muted); }
+    .status {
+      display: inline-flex;
+      padding: 3px 7px;
+      border-radius: 4px;
+      background: var(--action-soft);
+      color: var(--action);
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .status.blocking { background: var(--danger-soft); color: var(--danger); }
+    .status.gate { background: var(--warn-soft); color: var(--warn); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--surface);
+      font-size: 14px;
+    }
+    th, td {
+      padding: 12px;
+      border: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #eef0ed; }
+    code {
+      overflow-wrap: anywhere;
+      padding: 1px 4px;
+      border-radius: 3px;
+      background: #eef0ed;
+      font-family: Consolas, monospace;
+      font-size: .92em;
+    }
+    .links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+    }
+    .links a {
+      min-height: 40px;
+      padding: 9px 12px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--surface);
+      font-weight: 700;
+      text-decoration: none;
+    }
+    @media (max-width: 720px) {
+      h1 { font-size: 32px; }
+      .wrap { width: min(100% - 24px, 1120px); }
+      .hero { padding: 28px 0 24px; }
+      .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .summary div:nth-child(2) { border-right: 0; }
+      .summary div:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+      .grid { grid-template-columns: 1fr; }
+      table { display: block; overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap hero">
+      <p class="eyebrow">FLOWME · P31 PLANNING GATE</p>
+      <h1>모바일 여정을 화면별 기능 목록이 아니라 한 번에 이해되는 행동 흐름으로 다시 묶습니다.</h1>
+      <p class="lead">P30의 데이터 계약은 유지합니다. 먼저 홈/찾기, 결혼/운동 상세, My Flow, Calendar의 대안을 비교하고 승인한 뒤 correctness와 surface를 단계적으로 구현합니다.</p>
+    </div>
+  </header>
+
+  <div class="summary">
+    <div><strong>13/24</strong><span>현재 설명 없이 이해 가능한 journey cell</span></div>
+    <div><strong>20/24+</strong><span>P31 목표</span></div>
+    <div><strong>1</strong><span>먼저 고칠 date correctness Blocking</span></div>
+    <div><strong>0</strong><span>실제 관찰 사용자</span></div>
+  </div>
+
+  <nav aria-label="P31 문서 목차">
+    <div class="wrap">
+      <a href="#verdict">판정</a>
+      <a href="#journey">권장 여정</a>
+      <a href="#program">실행 순서</a>
+      <a href="#gates">변경 게이트</a>
+      <a href="#metrics">완료 기준</a>
+      <a href="#docs">문서</a>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <section id="verdict">
+      <h2>판정</h2>
+      <div class="band">
+        <strong>Architecture: bounded revision</strong>
+        <p>4탭, public shell, source/personal/run/occurrence/export identity는 유지합니다.</p>
+      </div>
+      <div class="band warn">
+        <strong>Interaction: coordinated simplification required</strong>
+        <p>Home/Find, save-before, My Flow, Calendar를 각각 따로 다듬지 않고 공통 질문·동사·detail layer로 정리합니다.</p>
+      </div>
+      <div class="band danger">
+        <strong>Release Blocking</strong>
+        <p>public adjustment와 My Flow의 날짜 우선순위가 Calendar/ICS에서 엇갈리는 문제를 넓은 UI rollout 전에 수정합니다.</p>
+      </div>
+    </section>
+
+    <section id="journey">
+      <h2>권장 모바일 여정</h2>
+      <div class="grid">
+        <article class="item">
+          <span class="status">HOME</span>
+          <h3>카탈로그가 아니라 이어서 하기와 실제 사용 예시</h3>
+          <p>처음에는 source에서 결과로 이어지는 예시, 재방문에는 오늘·최근 Flow·날짜 없는 일을 보여 줍니다.</p>
+        </article>
+        <article class="item">
+          <span class="status">FIND</span>
+          <h3>검색과 발견 전담</h3>
+          <p>source 링크, 한 줄 결과, 실제 범위, 대표 Item 1~2개, 더보기만 남깁니다.</p>
+        </article>
+        <article class="item">
+          <span class="status">SAVE-BEFORE</span>
+          <h3>결과 → 필요한 값 → 미리보기 → 저장</h3>
+          <p>결혼과 운동도 같은 뼈대를 쓰되 primary artifact와 필요한 입력은 콘텐츠에 맞춰 바뀝니다.</p>
+        </article>
+        <article class="item">
+          <span class="status">MY FLOW</span>
+          <h3>목록과 실행 workspace 분리</h3>
+          <p>Flow를 목록 안에서 길게 펼치지 않고 dedicated workspace로 열어 한 Flow에 집중합니다.</p>
+        </article>
+        <article class="item">
+          <span class="status">CALENDAR</span>
+          <h3>Item detail은 sheet</h3>
+          <p>month/agenda 맥락을 유지한 채 bottom sheet로 실행·일정·메모를 다룹니다.</p>
+        </article>
+        <article class="item">
+          <span class="status">LIFECYCLE</span>
+          <h3>보관·복구·영구 삭제 분리</h3>
+          <p>모바일/와이드 같은 경로, 보관 row 직접 복구, 보관된 Flow danger zone에서만 영구 삭제를 제공합니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="program">
+      <h2>실행 순서</h2>
+      <table>
+        <thead><tr><th>Slice</th><th>목적</th><th>Gate</th></tr></thead>
+        <tbody>
+          <tr><td>P31-00A/B/C</td><td>current evidence, reference, 3안 prototype, 24-cell simulation, owner decision</td><td>앱 코드 변경 없음</td></tr>
+          <tr><td>P31-01</td><td>effective date precedence와 Calendar/ICS parity</td><td><span class="status blocking">Blocking</span></td></tr>
+          <tr><td>P31-02</td><td>Home/Find, card, public entry, wedding/workout save-before</td><td>P31-00 승인 + P31-01</td></tr>
+          <tr><td>P31-03</td><td>My Flow dedicated workspace, 공통 동사, archive/restore</td><td>P31-00 승인 + P31-01</td></tr>
+          <tr><td>P31-04</td><td>Calendar Item sheet, placement mode, keyboard/month identity</td><td>P31-01</td></tr>
+          <tr><td>P31-05</td><td>permanent delete, export disclosure, accessibility, 24-cell final gate</td><td>P31-01~04</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="gates">
+      <h2>계획 변경과 구조 재개봉</h2>
+      <p>아래 조건이면 예정된 작은 수정으로 밀어붙이지 않고 구조 설계를 다시 엽니다.</p>
+      <div class="grid">
+        <article class="item"><h3>Home/Find 실패</h3><p>대표 과업과 성공 상태가 구분되지 않으면 4탭 IA 대안을 별도 승인합니다.</p></article>
+        <article class="item"><h3>공통 상세 실패</h3><p>결혼/운동 예외가 공통 frame보다 많으면 composition architecture를 추출합니다.</p></article>
+        <article class="item"><h3>My Flow 실패</h3><p>default controls를 절반 이하로 줄일 수 없으면 <code>AppClient.tsx</code>에서 workspace component를 분리합니다.</p></article>
+        <article class="item"><h3>삭제 계약 실패</h3><p>ghost personal state가 남으면 UI 노출을 중지하고 storage contract부터 다시 고정합니다.</p></article>
+      </div>
+    </section>
+
+    <section id="metrics">
+      <h2>완료 기준</h2>
+      <table>
+        <thead><tr><th>지표</th><th>현재</th><th>목표</th></tr></thead>
+        <tbody>
+          <tr><td>설명 없이 이해 가능한 journey cell</td><td>13/24</td><td>20/24 이상</td></tr>
+          <tr><td>설명 필요 cell</td><td>11/24</td><td>4/24 이하</td></tr>
+          <tr><td>일반 next action</td><td>평균 depth 7.96</td><td>2 taps, 전체 평균 5 이하</td></tr>
+          <tr><td>save keyboard path</td><td>약 16 stops</td><td>8 이하</td></tr>
+          <tr><td>opened My Flow controls</td><td>74~90</td><td>default 50% 이상 감소</td></tr>
+          <tr><td>overflow/overlap/unnamed</td><td>0</td><td>0 유지</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="docs">
+      <h2>정본 문서</h2>
+      <div class="links">
+        <a href="./README.md">README</a>
+        <a href="./spec.md">Spec</a>
+        <a href="./plan.md">Plan</a>
+        <a href="./tasks.md">Tasks</a>
+        <a href="./qa.md">QA</a>
+        <a href="./reference-patterns.md">References</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "count": 18,
+  "captureDate": "2026-07-23",
+  "environment": "current_local_production_build",
+  "screenshots": [
+    {"file": "screenshots/p31-home-first-390.png", "viewport": "390x844", "surface": "home_first"},
+    {"file": "screenshots/p31-find-catalog-390.png", "viewport": "390x844", "surface": "find_catalog"},
+    {"file": "screenshots/p31-wedding-save-before-390.png", "viewport": "390x844", "surface": "wedding_save_before"},
+    {"file": "screenshots/p31-workout-summary-390.png", "viewport": "390x844", "surface": "workout_summary"},
+    {"file": "screenshots/p31-workout-settings-390.png", "viewport": "390x844", "surface": "workout_settings"},
+    {"file": "screenshots/p31-my-flow-library-390.png", "viewport": "390x844", "surface": "my_flow_library"},
+    {"file": "screenshots/p31-my-flow-workspace-390.png", "viewport": "390x844", "surface": "my_flow_workspace"},
+    {"file": "screenshots/p31-my-flow-workspace-demo-390.png", "viewport": "390x844", "surface": "my_flow_workspace_demo"},
+    {"file": "screenshots/p31-calendar-default-390.png", "viewport": "390x844", "surface": "calendar_default"},
+    {"file": "screenshots/p31-calendar-item-sheet-390.png", "viewport": "390x844", "surface": "calendar_item_sheet"},
+    {"file": "screenshots/p31-calendar-sheet-demo-390.png", "viewport": "390x844", "surface": "calendar_sheet_demo"},
+    {"file": "screenshots/p31-calendar-undated-tray-390.png", "viewport": "390x844", "surface": "calendar_undated_tray"},
+    {"file": "screenshots/p31-archived-restore-390.png", "viewport": "390x844", "surface": "archived_restore"},
+    {"file": "screenshots/p31-permanent-delete-390.png", "viewport": "390x844", "surface": "permanent_delete"},
+    {"file": "screenshots/p31-home-1024.png", "viewport": "1024x768", "surface": "home_wide"},
+    {"file": "screenshots/p31-find-1024.png", "viewport": "1024x768", "surface": "find_wide"},
+    {"file": "screenshots/p31-my-flow-1024.png", "viewport": "1024x768", "surface": "my_flow_wide"},
+    {"file": "screenshots/p31-calendar-1024.png", "viewport": "1024x768", "surface": "calendar_wide"}
+  ],
+  "notes": [
+    "Automated screenshot evidence is not observed-user validation.",
+    "Full-page captures can repeat fixed navigation in the stitched image; overlap verdicts use viewport and DOM geometry checks."
+  ]
+}
