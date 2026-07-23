@@ -104,6 +104,7 @@
     "p32TargetedE2e": {"passed": 4, "failed": 0},
     "fullE2e": {"passed": 314, "failed": 0},
     "build": "passed",
+    "securityAudit": {"critical": 0, "high": 0, "moderate": 0, "low": 0},
     "docsCheck": "passed",
     "gitDiffCheck": "passed"
   },

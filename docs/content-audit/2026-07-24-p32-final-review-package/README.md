@@ -34,6 +34,7 @@ P32는 My Flow의 global IA를 바꾸지 않고, 한 Flow를 열었을 때 선�
 | P32 targeted E2E | `4 / 4` |
 | full Playwright | `314 / 314` |
 | unit | `587 / 587` |
+| security audit | vulnerabilities `0` |
 | horizontal overflow | `0` |
 | fixed/sticky overlap | `0` |
 | unnamed focusable | `0` |

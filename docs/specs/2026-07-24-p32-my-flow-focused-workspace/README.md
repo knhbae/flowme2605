@@ -30,6 +30,7 @@ P31의 목록·검색·저장·완료·보관 계약은 유지하면서, 선택�
 - unit: `587 / 587`
 - full Playwright: `314 / 314`
 - production build: pass
+- security audit: vulnerabilities `0`
 - 390/1024/1440 overflow, fixed overlap, unnamed focusable, console/page error: `0`
 - observed-user count: `0`
 
@@ -92,7 +93,7 @@ P32-01 근거·route·B안 정합성 게이트
 -> P32-07 continuity·accessibility·24-cell 최종 gate
 ```
 
-Dependency security 문제는 `P32-OPS`로 분리한다. 제품 UX slice와 섞거나 `npm audit fix --force`로 처리하지 않는다.
+P32-OPS는 Next 15.5.21의 하위 PostCSS를 이미 사용하는 8.5.16으로 통일해 닫았다. `npm audit fix --force`나 Next downgrade는 적용하지 않았다.
 
 ## 확정된 결정
 

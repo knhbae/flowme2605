@@ -36,9 +36,9 @@ Detailed scope: [P32 My Flow Focused Workspace](./specs/2026-07-24-p32-my-flow-f
 | P32-05 | Consolidate export and lifecycle command placement without semantic change | Complete |
 | P32-06 | Roll the approved shell across six content shapes without route-specific identity forks | Complete |
 | P32-07 | Re-run continuity, scale, accessibility, and full regression | Local verification complete; publish evidence pending |
-| P32-OPS | Resolve PostCSS advisories without a forced downgrade | Separate dependency lane |
+| P32-OPS | Resolve PostCSS advisories without a forced downgrade | Complete; PostCSS 8.5.16 override, audit 0 |
 
-P32 keeps the 4-tab IA, public `/f` shell, source/personal/run/occurrence/export identities, and current localStorage schema. The selected B1 structure keeps the cross-Flow `지금` projection and hides global local-tabs only during Flow drill-in. Local evidence is unit `587 / 587`, full Playwright `314 / 314`, build pass, and 10 screenshots at 390/1024/1440. Observed-user sessions remain `0`.
+P32 keeps the 4-tab IA, public `/f` shell, source/personal/run/occurrence/export identities, and current localStorage schema. The selected B1 structure keeps the cross-Flow `지금` projection and hides global local-tabs only during Flow drill-in. Local evidence is unit `587 / 587`, full Playwright `314 / 314`, build pass, security vulnerabilities `0`, and 10 screenshots at 390/1024/1440. Observed-user sessions remain `0`.
 
 ## P31 Mobile Journey Reconstruction
 

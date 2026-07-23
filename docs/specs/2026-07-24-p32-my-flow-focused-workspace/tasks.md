@@ -122,11 +122,11 @@
 
 - [x] PostCSS advisory chain 별도 확인
 - [x] force fix와 breaking Next downgrade를 적용하지 않음
-- [ ] compatible dependency patch 검토
-- [ ] security lane 단독 unit/build/full E2E
-- [ ] critical/high 0
+- [x] Next 하위 PostCSS를 project PostCSS 8.5.16으로 통일
+- [x] 고정 설치, unit, build, full E2E 재실행
+- [x] critical/high/moderate/low 0
 
-P32-OPS는 UX change set과 분리한다.
+P32-OPS는 별도 두 번째 커밋으로 관리한다.
 
 ## 보류
 

@@ -123,6 +123,7 @@ shape별 body와 projection은 유지하며 route별 identity fork를 만들지 
 - P32 targeted Playwright: `4 / 4`
 - full Playwright: `314 / 314`
 - production build: pass
+- security audit: vulnerabilities `0`
 - screenshots: `10`
 - browser errors: `0`
 
@@ -139,8 +140,9 @@ shape별 body와 projection은 유지하며 route별 identity fork를 만들지 
 
 1. `AppClient.tsx`가 여전히 크다. 이번 slice는 안전한 composition 변경을 우선했으며 별도 component extraction/no-visual-diff gate는 남아 있다.
 2. mixed date/check/resource는 public 사용자 route가 없어 fixture-only다.
-3. PostCSS advisory chain은 P32-OPS 별도 dependency lane이다. 강제 downgrade를 적용하지 않았다.
-4. focused workspace의 실제 이해도와 반복 사용성은 관찰 사용자가 없어 검증되지 않았다.
+3. focused workspace의 실제 이해도와 반복 사용성은 관찰 사용자가 없어 검증되지 않았다.
+
+P32-OPS는 CI gate에서 발견된 Next 하위 PostCSS 8.4.31을 프로젝트의 PostCSS 8.5.16으로 통일해 닫았다. Next 버전 downgrade는 없고, 고정 설치·audit·unit·build·full E2E를 다시 통과했다.
 
 ## 9. Rollback
 
