@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-07-24T00:15:45+09:00",
+  "production": "https://flowme2605.vercel.app",
+  "evidenceKind": "current_production_interaction",
+  "purpose": "handoff_preparation_sanity_only",
+  "observedUserCount": 0,
+  "browserSession": {
+    "consoleWarningErrorCount": 0,
+    "pageErrorCount": 0
+  },
+  "states": [
+    {
+      "id": "public_moving_save_before_390",
+      "url": "https://flowme2605.vercel.app/f/moving-d30-basic",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "horizontalOverflowPx": 0,
+      "unnamedVisibleFocusableCount": 0,
+      "screenshot": "screenshots/current-public-moving-390.png",
+      "markers": {
+        "title": "이사 D-30 준비",
+        "primaryArtifact": "캘린더",
+        "itemCount": 24,
+        "sourceLinkVisible": true,
+        "adjustEntryVisible": true
+      }
+    },
+    {
+      "id": "my_flow_saved_receipt_390",
+      "url": "https://flowme2605.vercel.app/my?savedMap=moving-d30",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "horizontalOverflowPx": 0,
+      "unnamedVisibleFocusableCount": 0,
+      "screenshot": "screenshots/current-my-flow-saved-receipt-390.png",
+      "markers": {
+        "receiptVisible": true,
+        "nextActionVisible": true,
+        "wholeFlowVisible": true,
+        "exportEntryVisible": true
+      }
+    },
+    {
+      "id": "my_flow_workspace_390",
+      "url": "https://flowme2605.vercel.app/my?savedMap=moving-d30&view=flows",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "horizontalOverflowPx": 0,
+      "unnamedVisibleFocusableCount": 0,
+      "screenshot": "screenshots/current-my-flow-workspace-390.png",
+      "markers": {
+        "topLevelTabs": [
+          "지금",
+          "Flow 목록",
+          "완료"
+        ],
+        "workspaceTabs": [
+          "실행",
+          "전체 계획",
+          "기록"
+        ],
+        "completionCheckboxVisible": true,
+        "openActionVisible": true
+      }
+    },
+    {
+      "id": "my_flow_workspace_1024",
+      "url": "https://flowme2605.vercel.app/my?savedMap=moving-d30&view=flows",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "horizontalOverflowPx": 0,
+      "unnamedVisibleFocusableCount": 0,
+      "screenshot": "screenshots/current-my-flow-workspace-1024.png",
+      "markers": {
+        "libraryRailVisible": true,
+        "planCanvasVisible": true,
+        "inspectorVisible": true,
+        "fixtureFlowCount": 3
+      }
+    },
+    {
+      "id": "calendar_saved_receipt_390",
+      "url": "https://flowme2605.vercel.app/calendar?savedMap=moving-d30",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "horizontalOverflowPx": 0,
+      "unnamedVisibleFocusableCount": 0,
+      "screenshot": "screenshots/current-calendar-390.png",
+      "markers": {
+        "receiptVisible": true,
+        "nextActionVisible": true,
+        "wholeFlowVisible": true,
+        "calendarNextDestinationVisible": true
+      }
+    },
+    {
+      "id": "calendar_multi_flow_390",
+      "url": "https://flowme2605.vercel.app/calendar",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "horizontalOverflowPx": 0,
+      "unnamedVisibleFocusableCount": 0,
+      "screenshot": "screenshots/current-calendar-normal-390.png",
+      "markers": {
+        "scopeFlowCount": 3,
+        "selectedDayAgendaVisible": true,
+        "routineOccurrenceVisible": true,
+        "completionCheckboxVisible": true
+      }
+    }
+  ],
+  "limitations": [
+    "This is not the 24-cell independent review.",
+    "Fixture and query-driven state is not observed-user validation.",
+    "The tab session is not a substitute for repeated browser and persistence testing."
+  ]
+}
