@@ -53,9 +53,8 @@ test.describe('P25 whole Flow workspace', () => {
     await captureEvidence(page, '01-post-save-whole-flow-mobile.png');
 
     await postSave.getByTestId('my-flow-post-save-view-flow').click();
-    await expect(page.getByTestId('my-flow-view-today')).toHaveText('지금');
-    await expect(page.getByTestId('my-flow-view-flow')).toHaveText('Flow 목록');
-    await expect(page.getByTestId('my-flow-view-completed')).toHaveText('완료');
+    await expect(page.locator('main')).toHaveAttribute('data-p32-workspace-state', 'focused');
+    await expect(page.getByRole('tablist', { name: 'My Flow 보기' })).toHaveCount(0);
 
     const savedFlow = await openMyFlowLibraryFlow(
       page,
@@ -128,7 +127,8 @@ test.describe('P25 whole Flow workspace', () => {
     await expect(responsiveWorkspace).toHaveAttribute('data-workspace-layout', 'wide-outline-detail');
     await expect(workspaceOutline).toHaveAttribute('data-outline-mode', 'workspace');
     await expect(workspaceOutline.getByTestId('my-flow-execution-row-shell')).toHaveCount(5);
-    await expect(page.getByTestId('my-flow-view-completed')).toBeVisible();
+    await expect(page.getByRole('tablist', { name: 'My Flow 보기' })).toHaveCount(0);
+    await expect(page.getByTestId('my-flow-library-back')).toBeVisible();
     const selectedFlowBox = await selectedFlow.boundingBox();
     expect(selectedFlowBox).not.toBeNull();
     expect(selectedFlowBox!.width).toBeGreaterThan(620);

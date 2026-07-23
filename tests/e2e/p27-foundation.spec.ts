@@ -7,6 +7,12 @@ async function expectNoHorizontalOverflow(page: import('@playwright/test').Page)
 }
 
 async function enterMyFlowDetailEditMode(detail: import('@playwright/test').Locator) {
+  const quickEdit = detail.getByTestId('my-flow-quick-item-edit');
+  if (await quickEdit.isVisible().catch(() => false)) {
+    await quickEdit.click();
+    await expect(detail).toHaveAttribute('data-detail-mode', 'edit');
+    return;
+  }
   const readSummary = detail.getByTestId('my-flow-detail-read-summary');
   if ((await readSummary.getAttribute('open')) === null) await readSummary.locator('summary').click();
   await readSummary.getByTestId('my-flow-detail-edit-toggle').click();
@@ -109,11 +115,7 @@ test.describe('P27 reversible lifecycle foundation', () => {
     const removeFirstItem = async () => {
       await outline.getByTestId('my-flow-execution-row-shell').first().getByRole('button', { name: /열기/ }).click();
       const detail = flowCard.getByTestId('my-flow-workspace-detail-pane').getByTestId('my-flow-item-detail');
-      const readSummary = detail.getByTestId('my-flow-detail-read-summary');
-      if ((await readSummary.getAttribute('open')) === null) {
-        await readSummary.locator('summary').click();
-      }
-      await readSummary.getByTestId('my-flow-detail-edit-toggle').click();
+      await enterMyFlowDetailEditMode(detail);
       await expect(detail).toHaveAttribute('data-surface-context', 'flow');
       await expect(detail).toHaveAttribute('data-can-remove-from-flow', 'true');
       await expect(detail.getByTestId('my-flow-remove-item')).toBeVisible();

@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-07-24",
+  "method": "automated_fixture_and_browser_review",
+  "observedUserCount": 0,
+  "summary": {
+    "supported": 10,
+    "partial": 1,
+    "blocked": 1
+  },
+  "journeys": [
+    {
+      "persona": "anchor_timeline",
+      "shape": "moving-d30-basic",
+      "viewport": "390x844",
+      "status": "supported",
+      "checks": ["open", "quick_edit", "anchor_change", "personal_date_preserved", "personal_memo_preserved", "export"]
+    },
+    {
+      "persona": "anchor_timeline",
+      "shape": "moving-d30-basic",
+      "viewport": "1024x768",
+      "status": "supported",
+      "checks": ["open", "whole_plan", "inspector", "library_return"]
+    },
+    {
+      "persona": "undated_checklist",
+      "shape": "travel-packing-list",
+      "viewport": "390x844",
+      "status": "supported",
+      "checks": ["shared_shell", "whole_plan", "completion_contract"]
+    },
+    {
+      "persona": "undated_checklist",
+      "shape": "travel-packing-list",
+      "viewport": "1024x768",
+      "status": "supported",
+      "checks": ["shared_shell", "plan_canvas", "inspector"]
+    },
+    {
+      "persona": "routine",
+      "shape": "washer-tub-clean-monthly",
+      "viewport": "390x844",
+      "status": "supported",
+      "checks": ["shared_shell", "next_action", "series_occurrence_contract"]
+    },
+    {
+      "persona": "routine",
+      "shape": "washer-tub-clean-monthly",
+      "viewport": "1024x768",
+      "status": "supported",
+      "checks": ["shared_shell", "whole_plan", "inspector"]
+    },
+    {
+      "persona": "artifact_choice",
+      "shape": "wedding-d180-basic",
+      "viewport": "390x844",
+      "status": "supported",
+      "checks": ["shared_shell", "artifact_contract", "export_scope"]
+    },
+    {
+      "persona": "artifact_choice",
+      "shape": "wedding-d180-basic",
+      "viewport": "1024x768",
+      "status": "supported",
+      "checks": ["shared_shell", "plan_canvas", "export_contract"]
+    },
+    {
+      "persona": "personal_draft_representative",
+      "shape": "weekly-meal-plan",
+      "viewport": "390x844",
+      "status": "supported",
+      "checks": ["shared_shell", "quick_edit", "structure_contract"]
+    },
+    {
+      "persona": "personal_draft_representative",
+      "shape": "weekly-meal-plan",
+      "viewport": "1024x768",
+      "status": "supported",
+      "checks": ["shared_shell", "plan_canvas", "inspector"]
+    },
+    {
+      "persona": "mixed_shape",
+      "shape": "overseas-travel-d14",
+      "viewport": "fixture",
+      "status": "partial",
+      "checks": ["date_role", "check_role", "resource_role"],
+      "limitation": "fixture-only; no public user route"
+    },
+    {
+      "persona": "mixed_shape_public_user",
+      "shape": "real-mofa-overseas-travel-prep",
+      "viewport": "public_route",
+      "status": "blocked",
+      "checks": [],
+      "limitation": "route intentionally closed"
+    }
+  ]
+}

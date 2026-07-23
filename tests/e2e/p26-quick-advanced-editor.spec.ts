@@ -49,10 +49,15 @@ async function saveMovingPersonalCopy(page: Page) {
   await page.getByRole('button', { name: '그대로 시작' }).click();
   await expect(page).toHaveURL('/my?savedMap=moving-d30');
   await page.getByTestId('my-flow-post-save-panel').getByTestId('my-flow-post-save-view-flow').click();
-  await page.getByTestId('my-flow-view-flow').click();
 }
 
 async function enterEditMode(detail: Locator) {
+  const quickEdit = detail.getByTestId('my-flow-quick-item-edit');
+  if (await quickEdit.isVisible().catch(() => false)) {
+    await quickEdit.click();
+    await expect(detail).toHaveAttribute('data-detail-mode', 'edit');
+    return;
+  }
   const readSummary = detail.getByTestId('my-flow-detail-read-summary');
   await expect(readSummary).toBeVisible();
   if ((await readSummary.getAttribute('open')) === null) {

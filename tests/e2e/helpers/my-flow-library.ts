@@ -55,9 +55,16 @@ export async function closeOpenMyFlowItemDetail(page: Page): Promise<void> {
 }
 
 export async function openPersonalDraftListExport(flow: Locator): Promise<Locator> {
+  let panel = flow.getByTestId('personal-draft-list-export');
+  if (await panel.isVisible().catch(() => false)) {
+    if (!(await panel.getByTestId('my-flow-export-panel').isVisible().catch(() => false))) {
+      await panel.getByTestId('personal-draft-list-export-toggle').click();
+    }
+    return panel;
+  }
+
   const recordTab = flow.getByTestId('my-flow-workspace-tab-record');
   if (await recordTab.isVisible().catch(() => false)) await recordTab.click();
-
   const advanced = flow.getByTestId('my-flow-workspace-advanced-actions');
   if (
     await advanced.isVisible().catch(() => false) &&
@@ -66,7 +73,7 @@ export async function openPersonalDraftListExport(flow: Locator): Promise<Locato
     await advanced.locator(':scope > summary').click();
   }
 
-  const panel = flow.getByTestId('personal-draft-list-export');
+  panel = flow.getByTestId('personal-draft-list-export');
   await expect(panel).toBeVisible();
   if (!(await panel.getByTestId('my-flow-export-panel').isVisible().catch(() => false))) {
     await panel.getByTestId('personal-draft-list-export-toggle').click();

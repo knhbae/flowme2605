@@ -40,9 +40,13 @@ Only **Active Gate** is the current execution backlog. Unchecked boxes inside ga
 
 ### Active Gate
 
-- [2026-07-23 P31 Mobile Journey Reconstruction](./2026-07-23-p31-mobile-journey-reconstruction/README.md) - P31-01~05 implementation and the 24-cell local gate are complete. Full verification, publish, and canonical production smoke remain. P30 source/personal/run/occurrence/export contracts stay frozen; no schema migration was introduced.
+- P32 implementation is locally complete and awaiting publish verification. No P33 product feature is active until P32 production smoke and independent review are recorded.
 
 ### Completed Or Closed
+
+- [2026-07-24 P32 My Flow Focused Workspace](./2026-07-24-p32-my-flow-focused-workspace/README.md) - B1 focused workspace is implemented with direct quick edit, direct anchor adjustment, consolidated export/lifecycle commands, a six-shape shared shell, no persistence migration, full Playwright `314 / 314`, and observed-user sessions `0`; publish verification remains the closeout action.
+
+- [2026-07-23 P31 Mobile Journey Reconstruction](./2026-07-23-p31-mobile-journey-reconstruction/README.md) - released through PR #150 and merge `0227cd2`; current production smoke is green, while independent Claude/Codex review promoted the selected-Flow command hierarchy into P32 without reopening the global IA or persistence model.
 
 - [2026-07-22 P30 Evidence Gap Closure](./2026-07-22-p30-evidence-gap-closure/README.md) - released through PR #148 and merge `b3c8500`; current production smoke is green, while owner and independent mobile review promoted coordinated interaction simplification and one date-precedence Blocking into P31.
 

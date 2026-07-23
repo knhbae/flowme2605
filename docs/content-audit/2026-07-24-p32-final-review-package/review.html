@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe P32 Final Review</title>
+  <style>
+    :root { color-scheme:light; --ink:#15201b; --muted:#627069; --line:#d9dfdb; --green:#17613b; --bg:#f5f7f5; --white:#fff; --amber:#8a5a00; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,Pretendard,"Segoe UI",sans-serif; color:var(--ink); background:var(--bg); line-height:1.55; letter-spacing:0; }
+    header { background:#12231a; color:#fff; padding:44px 24px 36px; }
+    header > div, main { width:min(1120px,calc(100% - 32px)); margin:auto; }
+    h1 { margin:0 0 10px; font-size:clamp(28px,5vw,48px); }
+    h2 { margin:0 0 18px; font-size:24px; }
+    h3 { margin:0 0 8px; font-size:17px; }
+    p { margin:0 0 12px; }
+    .lede { color:#d9e4de; max-width:760px; font-size:18px; }
+    .status { display:inline-block; margin-top:18px; padding:6px 10px; border:1px solid #6f8f7d; border-radius:4px; font-weight:700; }
+    main { padding:32px 0 64px; }
+    section { margin-bottom:40px; }
+    .grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+    .panel { background:var(--white); border:1px solid var(--line); border-radius:8px; padding:18px; }
+    .metric { font-size:28px; font-weight:750; color:var(--green); }
+    .label { color:var(--muted); font-size:13px; }
+    table { width:100%; border-collapse:collapse; background:var(--white); }
+    th,td { padding:12px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top; }
+    th { font-size:13px; color:var(--muted); }
+    .flow { display:grid; grid-template-columns:220px 1fr; gap:18px; }
+    .flow strong { color:var(--green); }
+    .shots { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+    figure { margin:0; background:var(--white); border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+    img { display:block; width:100%; height:auto; }
+    figcaption { padding:10px 12px; color:var(--muted); font-size:13px; }
+    .risk { border-left:4px solid var(--amber); }
+    code { background:#edf1ee; padding:2px 5px; border-radius:3px; }
+    a { color:#155e3a; }
+    @media (max-width:760px) {
+      header { padding:30px 0; }
+      .grid,.shots { grid-template-columns:1fr; }
+      .flow { grid-template-columns:1fr; gap:6px; }
+      table { display:block; overflow-x:auto; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>FlowMe P32 Final Review</h1>
+      <p class="lede">여러 Flow를 보는 library와 한 Flow를 실행하는 object workspace를 분리했다. 데이터 계약은 유지하고, 명령의 위치와 읽기 순서를 정리한 bounded structural reopen이다.</p>
+      <span class="status">local verification green · publish pending · observed users 0</span>
+    </div>
+  </header>
+  <main>
+    <section>
+      <h2>전체 판정</h2>
+      <div class="grid">
+        <div class="panel"><div class="metric">B1</div><div class="label">cross-Flow queue를 유지하는 focused workspace</div></div>
+        <div class="panel"><div class="metric">314 / 314</div><div class="label">full Playwright</div></div>
+        <div class="panel"><div class="metric">0</div><div class="label">overflow · overlap · unnamed focusable · browser error</div></div>
+      </div>
+    </section>
+    <section>
+      <h2>화면 문법</h2>
+      <div class="flow">
+        <strong>Library</strong>
+        <p><code>지금</code>, <code>Flow 목록</code>, <code>완료</code>, 검색, 여러 Flow 비교</p>
+        <strong>Focused Flow</strong>
+        <p>Flow object header, <code>다음 행동</code>, <code>전체 계획</code>, <code>기록</code>, 기준일·가져가기·관리</p>
+        <strong>Item detail</strong>
+        <p>완료와 분리된 제목·날짜·개인 메모 quick edit</p>
+      </div>
+    </section>
+    <section>
+      <h2>Interaction 결과</h2>
+      <table>
+        <thead><tr><th>목적</th><th>P31</th><th>P32</th><th>판정</th></tr></thead>
+        <tbody>
+          <tr><td>특정 Flow 열기</td><td>2</td><td>2 이하</td><td>유지</td></tr>
+          <tr><td>Item 제목·날짜·메모 수정</td><td>6</td><td>3 이하</td><td>개선</td></tr>
+          <tr><td>whole export preflight</td><td>6</td><td>3 이하</td><td>개선</td></tr>
+          <tr><td>보관</td><td>6</td><td>3 이하</td><td>개선</td></tr>
+          <tr><td>reload 후 복구</td><td>6</td><td>4 이하</td><td>개선</td></tr>
+        </tbody>
+      </table>
+    </section>
+    <section>
+      <h2>대표 화면</h2>
+      <div class="shots">
+        <figure><img src="screenshots/p32-02-focused-moving-default-viewport-390.png" alt="모바일 이사 Flow focused workspace"><figcaption>390 · 이사 Flow · 다음 행동 우선</figcaption></figure>
+        <figure><img src="screenshots/p32-06-routine-shared-workspace-viewport-390.png" alt="모바일 반복 Flow focused workspace"><figcaption>390 · routine도 같은 object shell</figcaption></figure>
+        <figure><img src="screenshots/p32-06-six-shape-shared-workspace-viewport-1024.png" alt="1024 너비 focused workspace"><figcaption>1024 · rail / canvas / inspector</figcaption></figure>
+        <figure><img src="screenshots/p32-07-focused-workspace-viewport-1440.png" alt="1440 너비 focused workspace"><figcaption>1440 · wide focused workspace</figcaption></figure>
+      </div>
+    </section>
+    <section>
+      <h2>유지한 계약</h2>
+      <div class="grid">
+        <div class="panel"><h3>Identity</h3><p>source, personal overlay, execution run, occurrence, export stable identity</p></div>
+        <div class="panel"><h3>Surface</h3><p>4탭 IA, public <code>/f</code>, Calendar, portable export</p></div>
+        <div class="panel"><h3>Persistence</h3><p>기존 localStorage key와 schema, migration 없음</p></div>
+      </div>
+    </section>
+    <section>
+      <h2>남은 위험</h2>
+      <div class="panel risk">
+        <p><strong>실제 사용자 검증은 아직 0명이다.</strong> 자동화와 screenshot은 correctness와 화면 상태를 증명하지만, 이해도와 반복 사용성을 증명하지 않는다.</p>
+        <p><code>AppClient.tsx</code>의 크기와 fixture-only mixed shape는 후속 관리 항목이다. PostCSS advisory는 8.5.16 override와 전체 회귀로 닫았다.</p>
+      </div>
+    </section>
+    <section>
+      <h2>상세 자료</h2>
+      <p><a href="audit.md">audit.md</a> · <a href="route-evidence.json">route-evidence.json</a> · <a href="journey-results.json">journey-results.json</a> · <a href="prompt-ko.md">독립 검토 프롬프트</a></p>
+    </section>
+  </main>
+</body>
+</html>

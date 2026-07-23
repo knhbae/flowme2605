@@ -362,23 +362,28 @@ function getExplicitSourceBackedDateAnchorLabel(source?: SourceBackedFlowMapDate
 export function getSourceBackedFlowMapDateAnchorCopy(source?: SourceBackedFlowMapDateAnchorSource): SourceBackedFlowMapDateAnchorCopy {
   const explicitLabel = getExplicitSourceBackedDateAnchorLabel(source);
   const text = sourceBackedDateAnchorText(source);
-  const label =
-    explicitLabel ??
-    (/이사/u.test(text)
-      ? '이사일'
-      : /출국|여행/u.test(text)
-        ? '출국일'
-        : /결혼|예식/u.test(text)
-          ? '예식일'
-          : /시험|고사|수능|자격|검정/u.test(text)
-            ? '시험일'
-            : /마감|제출|신청|접수/u.test(text)
-              ? '마감일'
-              : /학습|공부|수학|진도|단원|교육/u.test(text)
-                ? '학습 시작일'
-                : /운동|러닝|챌린지|루틴|반복/u.test(text)
-                  ? '시작일'
-                  : '기준일');
+  return buildDateAnchorCopy(explicitLabel ?? inferDateAnchorLabel(text));
+}
+
+function inferDateAnchorLabel(text: string): string {
+  return /이사/u.test(text)
+    ? '이사일'
+    : /출국|여행/u.test(text)
+      ? '출국일'
+      : /결혼|예식/u.test(text)
+        ? '예식일'
+        : /시험|고사|수능|자격|검정/u.test(text)
+          ? '시험일'
+          : /마감|제출|신청|접수/u.test(text)
+            ? '마감일'
+            : /학습|공부|수학|진도|단원|교육/u.test(text)
+              ? '학습 시작일'
+              : /운동|러닝|챌린지|루틴|반복/u.test(text)
+                ? '시작일'
+                : '기준일';
+}
+
+function buildDateAnchorCopy(label: string): SourceBackedFlowMapDateAnchorCopy {
   const help = `${label}을 바꾸면 전체 일정 기준이 다시 맞춰집니다. 따로 바꾼 할 일 날짜는 그대로 유지됩니다.`;
   return {
     label,
@@ -387,6 +392,20 @@ export function getSourceBackedFlowMapDateAnchorCopy(source?: SourceBackedFlowMa
     itemOverrideLabel: '이 할 일 날짜',
     distinction: `${label}은 전체 일정 기준이고, 이 할 일 날짜는 해당 할 일만 바꿉니다.`,
   };
+}
+
+export function getFlowBundleDateAnchorCopy(bundle: FlowBundle): SourceBackedFlowMapDateAnchorCopy {
+  const text = [
+    bundle.flow.title,
+    bundle.flow.description,
+    bundle.flow.category,
+    bundle.flow.source_title,
+    ...bundle.sections.map((section) => section.title),
+    ...bundle.items.slice(0, 8).map((item) => item.title),
+  ]
+    .filter(Boolean)
+    .join(' ');
+  return buildDateAnchorCopy(inferDateAnchorLabel(text));
 }
 
 export const SOURCE_BACKED_MANUAL_REGISTRATION_CHECKLIST = [

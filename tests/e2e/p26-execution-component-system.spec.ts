@@ -90,9 +90,14 @@ test('wide whole Flow and editor reuse open rows and a stable editor shell', asy
 
   const pane = flow.getByTestId('my-flow-workspace-detail-pane');
   const detail = pane.getByTestId('my-flow-item-detail');
-  const readSummary = detail.getByTestId('my-flow-detail-read-summary');
-  if ((await readSummary.getAttribute('open')) === null) await readSummary.locator('summary').click();
-  await readSummary.getByTestId('my-flow-detail-edit-toggle').click();
+  const quickEdit = detail.getByTestId('my-flow-quick-item-edit');
+  if (await quickEdit.isVisible().catch(() => false)) {
+    await quickEdit.click();
+  } else {
+    const readSummary = detail.getByTestId('my-flow-detail-read-summary');
+    if ((await readSummary.getAttribute('open')) === null) await readSummary.locator('summary').click();
+    await readSummary.getByTestId('my-flow-detail-edit-toggle').click();
+  }
 
   const editor = pane.getByRole('dialog', { name: '할 일 수정' });
   await expect(editor).toHaveAttribute('data-flow-ui', 'editor-shell');

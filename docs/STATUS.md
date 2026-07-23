@@ -1,9 +1,9 @@
 # Project Status
 
-**Last Updated:** 2026-07-23 (P31 production release)
-**Status:** v0.1.0 RELEASED / P31 PRODUCTION GREEN
+**Last Updated:** 2026-07-24 (P32 implementation closeout)
+**Status:** v0.1.0 RELEASED / P31 PRODUCTION GREEN / P32 LOCAL VERIFICATION GREEN
 **Current Version:** v0.1.0  
-**Primary Focus:** Treat the released [P31 mobile journey reconstruction](./specs/2026-07-23-p31-mobile-journey-reconstruction/README.md) as the current production baseline and independently review the three remaining discovery hypotheses before opening another broad UI program. P31 closes effective-date precedence, separates Home and Flow finding, adds content-shaped save-before flows, creates a dedicated mobile My Flow workspace, moves Calendar detail to a sheet, and makes archive/restore/permanent-delete behavior consistent. P30 source/personal/run/occurrence/export contracts remain frozen. Observed-user sessions remain `0`; automated, simulation, screenshot, and production smoke evidence are not usability claims.
+**Primary Focus:** Publish and production-smoke the implemented [P32 My Flow Focused Workspace](./specs/2026-07-24-p32-my-flow-focused-workspace/README.md). P32 selected B1, keeps the cross-Flow library views, and shows one selected Flow in a focused object workspace with direct quick edit, anchor adjustment, export, and lifecycle commands. The 4-tab IA, public `/f`, stable data identities, and localStorage schema remain unchanged. Full Playwright is `314 / 314`; observed-user sessions remain `0`.
 
 ## Current Control Panel
 
@@ -11,13 +11,17 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P31 is released and production-green; the next gate is bounded independent review of the three remaining discovery hypotheses |
-| User action now | Review the live P31 baseline and decide whether to run a small observed-user study or authorize another bounded slice |
-| AI action now | Reproduce a concrete production gap before proposing P32; preserve the P31 data and interaction contracts |
+| Active product gate | P32 publish, canonical production smoke, and independent post-release review |
+| User action now | Review the focused My Flow workspace after production deploy; this is not yet observed-user validation |
+| AI action now | Complete scoped commit/PR/merge/deploy and record canonical production evidence |
 | Blocked by evidence | Observed usability, real social proof/review data, account persistence choice, creator/update pilot, real AI backend, and external integrations |
-| Completed implementation | P31-01~05, 24-cell simulation, full regression gate, PR merge, production deployment, and `12 / 12` canonical smoke |
+| Completed implementation | P32-01~07 and P32-OPS, unit `587 / 587`, full Playwright `314 / 314`, build pass, security audit 0, 10 final screenshots; publish pending |
 
 ## Recent Direction Notes
+
+- 2026-07-24 P32 local implementation: B1 `library_to_focused_workspace_with_cross_flow_queue` is implemented. Global My Flow local tabs remain in library state and disappear while one Flow is open; mobile uses `다음 행동 / 전체 계획 / 기록`, while wide keeps rail/canvas/inspector with an explicit `전체 보기` return. Item title/date/memo quick edit is directly reachable, saved moving Flows expose a contextual anchor command, and whole export/lifecycle actions live in the selected Flow command area. Six representative content shapes share one shell. No persistence migration or stable identity rewrite was introduced. Full Playwright is `314 / 314`, security audit is `0`, final screenshots cover 390/1024/1440, layout/browser error counts are `0`, and observed-user sessions remain `0`. See [P32 final review package](./content-audit/2026-07-24-p32-final-review-package/README.md).
+
+- 2026-07-24 P32 planning gate: Claude Design and Codex independently selected `library -> focused workspace` and the verdict `my_flow_structural_reopen`. The current Codex browser measurement confirms Flow open depth `2` at 1/5/20/60 Flows, but Item edit, whole export, and archive/reload/restore each require `6` interactions. Claude's proposal is retained as a design alternative rather than current truth because it used an older source/screenshot basis and estimated Flow-open and duplicate-completion metrics differently. P32 therefore starts with a no-app-code evidence/route/prototype gate, recommends keeping the cross-Flow `지금` projection unless current evidence supports removing it, then stages focused workspace, quick edit, anchor adjustment, export/lifecycle, six-shape rollout, and a final continuity gate. No schema migration or app change is part of this planning update. See [P32 My Flow Focused Workspace](./specs/2026-07-24-p32-my-flow-focused-workspace/README.md).
 
 - 2026-07-23 P31 production release: effective-date precedence now favors execution override over draft/personal/source values; Home and Find have separate roles; discovery cards expose real source and representative work without fake social proof; wedding and workout save-before flows use result-first content-shaped controls; mobile My Flow uses a compact library and dedicated workspace; Calendar Item detail uses a bottom sheet; and `보관 / 복구 / 이 기기에서 영구 삭제` has mobile/wide parity and a tested delete boundary. The 24-cell automated/heuristic rerun is supported `21`, partial `3`, blocked `0`, explanation-free `21/24`, average depth `4.79`; local screenshots are `18`. Unit is `586 / 586`, P31 Playwright `5 / 5`, full Playwright `310 / 310`, build `18 / 18`, and critical/high security advisories are `0`. [PR #150](https://github.com/knhbae/flowme2605/pull/150) merged as `0227cd2`; GitHub CI passed and the canonical production smoke is `12 / 12` with overflow and browser-error counts `0` at <https://flowme2605.vercel.app>. Observed users remain `0`. See [P31 implementation evidence](./content-audit/2026-07-23-p31-mobile-journey-reconstruction-evidence/README.md).
 

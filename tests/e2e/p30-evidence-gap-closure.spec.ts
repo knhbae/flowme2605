@@ -160,7 +160,6 @@ test.describe('P30-01 mobile export fixed-layer correctness', () => {
     await firstRow.getByTestId('my-flow-mobile-structure-open').click();
     const flow = await openMyFlowLibraryFlow(page, flowSlug!, 'record');
     await expect(flow).toBeVisible();
-    await flow.getByTestId('my-flow-workspace-advanced-actions').locator('summary').click();
     const exportSurface = flow.getByTestId('my-flow-export-surface');
     const exportEntry = exportSurface.getByTestId('my-flow-export-entry');
     await exportEntry.click();
