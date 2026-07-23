@@ -1,0 +1,217 @@
+{
+  "schemaVersion": 1,
+  "runDate": "2026-07-23",
+  "productionUrl": "https://flowme2605.vercel.app",
+  "implementationCommit": "06841a274151edef39da3838f39388f42dc7126f",
+  "mergeCommit": "0227cd2fa7a93ea9ff7d9776b76b0cc33401279b",
+  "pullRequest": "https://github.com/knhbae/flowme2605/pull/150",
+  "githubCiRun": "https://github.com/knhbae/flowme2605/actions/runs/30006649714",
+  "observedUserCount": 0,
+  "scenarioCount": 12,
+  "passedCount": 12,
+  "failedCount": 0,
+  "horizontalOverflowFailureCount": 0,
+  "browserErrorCount": 0,
+  "automationIsObservedUserValidation": false,
+  "scenarios": [
+    {
+      "id": "01-home-390",
+      "path": "/",
+      "viewport": "390x844",
+      "startedAt": "2026-07-23T12:38:16.806Z",
+      "httpStatus": 200,
+      "assertion": {
+        "roleMarker": true
+      },
+      "horizontalOverflowPx": 0,
+      "browserErrorCount": 0,
+      "browserErrors": [],
+      "failure": null,
+      "passed": true,
+      "evidenceKind": "current_production_interaction"
+    },
+    {
+      "id": "02-find-390",
+      "path": "/flows",
+      "viewport": "390x844",
+      "startedAt": "2026-07-23T12:38:18.723Z",
+      "httpStatus": 200,
+      "assertion": {
+        "catalog": true,
+        "cards": true
+      },
+      "horizontalOverflowPx": 0,
+      "browserErrorCount": 0,
+      "browserErrors": [],
+      "failure": null,
+      "passed": true,
+      "evidenceKind": "current_production_interaction"
+    },
+    {
+      "id": "03-moving-390",
+      "path": "/f/moving-d30-basic",
+      "viewport": "390x844",
+      "startedAt": "2026-07-23T12:38:20.384Z",
+      "httpStatus": 200,
+      "assertion": {
+        "preview": true,
+        "primary": true
+      },
+      "horizontalOverflowPx": 0,
+      "browserErrorCount": 0,
+      "browserErrors": [],
+      "failure": null,
+      "passed": true,
+      "evidenceKind": "current_production_interaction"
+    },
+    {
+      "id": "04-wedding-390",
+      "path": "/f/curated-wedding-naver-timeline",
+      "viewport": "390x844",
+      "startedAt": "2026-07-23T12:38:22.926Z",
+      "httpStatus": 200,
+      "assertion": {
+        "preview": true,
+        "shapeChoices": true
+      },
+      "horizontalOverflowPx": 0,
+      "browserErrorCount": 0,
+      "browserErrors": [],
+      "failure": null,
+      "passed": true,
+      "evidenceKind": "current_production_interaction"
+    },
+    {
+      "id": "05-workout-390",
+      "path": "/f/curated-allblanc-morning-workout",
+      "viewport": "390x844",
+      "startedAt": "2026-07-23T12:38:24.996Z",
+      "httpStatus": 200,
+      "assertion": {
+        "summary": true,
+        "nextOccurrences": true
+      },
+      "horizontalOverflowPx": 0,
+      "browserErrorCount": 0,
+      "browserErrors": [],
+      "failure": null,
+      "passed": true,
+      "evidenceKind": "current_production_interaction"
+    },
+    {
+      "id": "06-my-flow-hub-390",
+      "path": "/my?demo=ux12",
+      "viewport": "390x844",
+      "startedAt": "2026-07-23T12:38:27.116Z",
+      "httpStatus": 200,
+      "assertion": {
+        "hub": true
+      },
+      "horizontalOverflowPx": 0,
+      "browserErrorCount": 0,
+      "browserErrors": [],
+      "failure": null,
+      "passed": true,
+      "evidenceKind": "current_production_interaction"
+    },
+    {
+      "id": "07-my-flow-workspace-390",
+      "path": "/my?demo=ux12",
+      "viewport": "390x844",
+      "startedAt": "2026-07-23T12:38:29.252Z",
+      "httpStatus": 200,
+      "assertion": {
+        "workspace": true
+      },
+      "horizontalOverflowPx": 0,
+      "browserErrorCount": 0,
+      "browserErrors": [],
+      "failure": null,
+      "passed": true,
+      "evidenceKind": "current_production_interaction"
+    },
+    {
+      "id": "08-calendar-sheet-390",
+      "path": "/calendar?demo=ux12",
+      "viewport": "390x844",
+      "startedAt": "2026-07-23T12:38:31.222Z",
+      "httpStatus": 200,
+      "assertion": {
+        "sheet": true
+      },
+      "horizontalOverflowPx": 0,
+      "browserErrorCount": 0,
+      "browserErrors": [],
+      "failure": null,
+      "passed": true,
+      "evidenceKind": "current_production_interaction"
+    },
+    {
+      "id": "09-public-preview-390",
+      "path": "/f/vehicle-inspection-prep",
+      "viewport": "390x844",
+      "startedAt": "2026-07-23T12:38:33.400Z",
+      "httpStatus": 200,
+      "assertion": {
+        "preview": true,
+        "previewRows": true,
+        "savePrimary": true
+      },
+      "horizontalOverflowPx": 0,
+      "browserErrorCount": 0,
+      "browserErrors": [],
+      "failure": null,
+      "passed": true,
+      "evidenceKind": "current_production_interaction"
+    },
+    {
+      "id": "10-home-1024",
+      "path": "/",
+      "viewport": "1024x768",
+      "startedAt": "2026-07-23T12:38:35.185Z",
+      "httpStatus": 200,
+      "assertion": {
+        "roleMarker": true
+      },
+      "horizontalOverflowPx": 0,
+      "browserErrorCount": 0,
+      "browserErrors": [],
+      "failure": null,
+      "passed": true,
+      "evidenceKind": "current_production_interaction"
+    },
+    {
+      "id": "11-my-flow-1024",
+      "path": "/my?demo=ux20",
+      "viewport": "1024x768",
+      "startedAt": "2026-07-23T12:38:36.876Z",
+      "httpStatus": 200,
+      "assertion": {
+        "workspace": true,
+        "layout": true
+      },
+      "horizontalOverflowPx": 0,
+      "browserErrorCount": 0,
+      "browserErrors": [],
+      "failure": null,
+      "passed": true,
+      "evidenceKind": "current_production_interaction"
+    },
+    {
+      "id": "12-calendar-1024",
+      "path": "/calendar?demo=ux12",
+      "viewport": "1024x768",
+      "startedAt": "2026-07-23T12:38:38.949Z",
+      "httpStatus": 200,
+      "assertion": {
+        "calendar": true
+      },
+      "horizontalOverflowPx": 0,
+      "browserErrorCount": 0,
+      "browserErrors": [],
+      "failure": null,
+      "passed": true,
+      "evidenceKind": "current_production_interaction"
+    }
+  ]
+}

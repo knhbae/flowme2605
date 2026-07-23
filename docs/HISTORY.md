@@ -2,6 +2,13 @@
 
 No tagged releases yet.
 
+## 2026-07-23 - P31 Mobile Journey Reconstruction
+
+- Released effective-date precedence parity, distinct Home and Find roles, source-linked discovery cards, content-shaped wedding and workout save-before controls, a dedicated mobile My Flow workspace, Calendar Item bottom sheets, and mobile/wide archive, restore, and guarded permanent-delete parity.
+- Merged [PR #150](https://github.com/knhbae/flowme2605/pull/150) as `0227cd2fa7a93ea9ff7d9776b76b0cc33401279b`; GitHub CI and Vercel production succeeded at <https://flowme2605.vercel.app>.
+- Verified unit `586 / 586`, P31 Playwright `5 / 5`, full Playwright `310 / 310`, production build `18 / 18`, critical/high advisories `0`, and canonical production smoke `12 / 12` with overflow and browser-error counts `0`.
+- Published the [P31 evidence package](./content-audit/2026-07-23-p31-mobile-journey-reconstruction-evidence/README.md) with `18` local and `12` production screenshots. The 24-cell automated/heuristic simulation is supported `21`, partial `3`, blocked `0`; no semantic version tag was created and observed-user sessions remain `0`.
+
 ## 2026-07-22 - P30 Evidence Gap Closure
 
 - Released collision-free mobile export states, main-before-tabs keyboard order, contextual long-Flow adjustment, next-action-first My Flow commands, Calendar 50+ scope and compact identity evidence, and summary-first routine settings.

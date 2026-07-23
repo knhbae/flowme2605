@@ -5,6 +5,7 @@
   "baselineSha": "91ff789637ad9d46f8d646f1f21bd18baa3bfb15",
   "environment": {
     "kind": "current_local_production_build",
+    "productionUrl": "https://flowme2605.vercel.app",
     "viewports": [
       "390x844",
       "1024x768"
@@ -31,6 +32,12 @@
     "journeyTotalInteractionDepth": 115,
     "journeyAverageInteractionDepth": 4.79,
     "screenshotCount": 18,
+    "productionScreenshotCount": 12,
+    "productionSmokeScenarioCount": 12,
+    "productionSmokePassedCount": 12,
+    "productionSmokeFailedCount": 0,
+    "productionHorizontalOverflowCount": 0,
+    "productionBrowserErrorCount": 0,
     "mobileHorizontalOverflowCount": 0,
     "wideHorizontalOverflowCount": 0,
     "fixedLayerOverlapCount": 0,
@@ -167,7 +174,12 @@
     }
   ],
   "verification": {
-    "status": "local_release_gate_green_publish_pending",
+    "status": "production_green",
+    "implementationCommit": "06841a274151edef39da3838f39388f42dc7126f",
+    "pullRequest": "https://github.com/knhbae/flowme2605/pull/150",
+    "mergeCommit": "0227cd2fa7a93ea9ff7d9776b76b0cc33401279b",
+    "githubCiRun": "https://github.com/knhbae/flowme2605/actions/runs/30006649714",
+    "productionUrl": "https://flowme2605.vercel.app",
     "npmCi": "passed",
     "unitPassed": 586,
     "unitFailed": 0,
@@ -177,13 +189,16 @@
     "fullE2eFailed": 0,
     "fullE2eWorkers": 2,
     "docsRequiredFileCount": 14,
-    "docsLocalLinkCount": 2938,
+    "docsLocalLinkCount": 2943,
     "buildRouteCount": 18,
     "nextVersion": "15.5.21",
     "securityCriticalCount": 0,
     "securityHighCount": 0,
     "securityModerateCount": 2,
     "securityModerateException": "Next internal PostCSS advisory; audit force fix requires incompatible Next 9.3.3 downgrade.",
+    "canonicalProductionSmokePassed": 12,
+    "canonicalProductionSmokeFailed": 0,
+    "canonicalProductionSmokeEvidence": "production-smoke/results.json",
     "automationIsObservedUserValidation": false
   }
 }
