@@ -1,0 +1,150 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-07-24T09:02:13+09:00",
+  "production": "https://flowme2605.vercel.app",
+  "originMainSha": "e491d99ca61ecae4fd0dd009f785e737b6a59516",
+  "productionReleaseSha": "30281a7a8ea9bea1194b4104b5a49b6211c07e3b",
+  "verdict": "cross_entry_canonical_flow_reopen",
+  "observedUserCount": 0,
+  "appCodeChanged": false,
+  "markers": {
+    "homeUsageExampleCount": 3,
+    "hydratedFindCatalogCount": 9,
+    "findLegacyFlowMapCount": 5,
+    "findArtifactFirstPublicFlowCount": 4,
+    "sameMovingSourceUserFacingRouteCount": 4,
+    "sameMovingSourceDistinctItemCounts": [
+      5,
+      24
+    ],
+    "sameMovingSourceSavedMyFlowObjectCount": 2,
+    "homeVehicleFindSearchResultCount": 0,
+    "movingArtifactChoiceChangesProjection": false,
+    "vehicleArtifactChoiceChangesProjection": false,
+    "weddingArtifactChoiceChangesProjection": true,
+    "workoutCustomDateCalendarOccurrenceCountInFirstWeek": 3,
+    "workoutUndatedRawRecurrenceRuleVisible": true,
+    "catalogHorizontalOverflowCount": 0,
+    "catalogConsoleErrorCount": 0,
+    "catalogPageErrorCount": 0,
+    "stableIdentityContractChanged": false,
+    "dataMigrationPerformed": false
+  },
+  "canonicalConflict": {
+    "source": "AJD 이사 체크리스트",
+    "routes": [
+      {
+        "entry": "home",
+        "route": "/f/moving-d30-basic",
+        "title": "이사 D-30 준비",
+        "itemCount": 24,
+        "architecture": "p29-artifact-first",
+        "receipt": "distinct"
+      },
+      {
+        "entry": "find",
+        "route": "/flow-maps/moving-d30",
+        "title": "원룸 이사 D-30 일정",
+        "itemCount": 5,
+        "architecture": "hybrid",
+        "receipt": "none"
+      },
+      {
+        "entry": "url_lookup",
+        "route": "/f/curated-ajd-moving-d30",
+        "itemCount": 5,
+        "architecture": "p29-artifact-first",
+        "receipt": "distinct"
+      },
+      {
+        "entry": "public_alias",
+        "route": "/f/source-backed-moving-d30",
+        "itemCount": 5,
+        "architecture": "p29-artifact-first",
+        "receipt": "distinct"
+      }
+    ]
+  },
+  "findCatalog": [
+    {
+      "title": "원룸 이사 D-30",
+      "route": "/flow-maps/moving-d30",
+      "architecture": "hybrid",
+      "itemCount": 5,
+      "receipt": false
+    },
+    {
+      "title": "중1 수학 목차 진도",
+      "route": "/flow-maps/middle-school-math-1",
+      "architecture": "hybrid",
+      "itemCount": 8,
+      "receipt": false
+    },
+    {
+      "title": "오픽 모의고사 2주/1달 계획표",
+      "route": "/flow-maps/curated-opic-mock-course",
+      "architecture": "hybrid",
+      "itemCount": 19,
+      "receipt": false
+    },
+    {
+      "title": "월 4권 독서 기록 루틴",
+      "route": "/flow-maps/curated-reading-routine-log",
+      "architecture": "hybrid",
+      "itemCount": 8,
+      "receipt": false
+    },
+    {
+      "title": "신차 구매 7단계 체크리스트",
+      "route": "/flow-maps/curated-new-car-purchase-guide",
+      "architecture": "hybrid",
+      "itemCount": 7,
+      "receipt": false
+    },
+    {
+      "title": "결혼 준비 1년 참고 타임라인",
+      "route": "/f/curated-wedding-naver-timeline",
+      "architecture": "p29-artifact-first",
+      "itemCount": 6,
+      "receipt": true
+    },
+    {
+      "title": "결혼 준비 핵심 4가지 시작표",
+      "route": "/f/curated-wedding-gongysd-atoz",
+      "architecture": "p29-artifact-first",
+      "itemCount": 4,
+      "receipt": true
+    },
+    {
+      "title": "Allblanc 아침 5분 홈트",
+      "route": "/f/curated-allblanc-morning-workout",
+      "architecture": "p29-artifact-first",
+      "itemCount": 1,
+      "receipt": true
+    },
+    {
+      "title": "Allblanc 노점프 유산소",
+      "route": "/f/curated-allblanc-no-jump-cardio",
+      "architecture": "p29-artifact-first",
+      "itemCount": 1,
+      "receipt": true
+    }
+  ],
+  "screenshots": [
+    "screenshots/01-home-390.png",
+    "screenshots/02-flow-find-390.png",
+    "screenshots/03-home-moving-public-390.png",
+    "screenshots/04-find-moving-map-390.png",
+    "screenshots/05-my-flow-duplicate-moving-390.png",
+    "screenshots/06-home-vehicle-target-390.png",
+    "screenshots/07-wedding-artifact-choice-390.png",
+    "screenshots/08-workout-undated-my-flow-390.png"
+  ],
+  "evidenceKinds": [
+    "current_production_interaction",
+    "current_production_screenshot",
+    "current_source",
+    "current_decision",
+    "current_test_gap"
+  ]
+}

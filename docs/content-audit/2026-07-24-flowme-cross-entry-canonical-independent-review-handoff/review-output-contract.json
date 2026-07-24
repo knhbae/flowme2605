@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "reviewerRoles": [
+    "claude_design",
+    "codex_independent"
+  ],
+  "overallVerdicts": [
+    "audit_not_reproduced",
+    "bounded_cross_entry_alignment",
+    "canonical_flow_contract_reopen",
+    "broader_discovery_experience_reopen"
+  ],
+  "findingVerdicts": [
+    "confirmed",
+    "reframed",
+    "rejected",
+    "inaccessible"
+  ],
+  "journeyStatuses": [
+    "supported",
+    "hidden",
+    "partial",
+    "missing",
+    "blocked"
+  ],
+  "personas": [
+    "P1_home_first_moving",
+    "P2_find_first_moving",
+    "P3_url_first_moving_source",
+    "P4_existing_duplicate_returner",
+    "P5_vehicle_checklist_expectation",
+    "P6_recurring_workout",
+    "P7_wedding_positive_control",
+    "P8_keyboard_responsive"
+  ],
+  "sessionsPerPersona": 3,
+  "requiredJourneyCellCount": 24,
+  "requiredCrossEntrySurfaces": [
+    "home",
+    "find_catalog",
+    "url_lookup",
+    "direct_public_share",
+    "flow_map",
+    "save_receipt",
+    "my_flow",
+    "calendar",
+    "export"
+  ],
+  "crossEntryInvariantFields": [
+    "sourceUrl",
+    "canonicalFlowId",
+    "route",
+    "displayTitle",
+    "itemCount",
+    "primaryArtifact",
+    "secondaryArtifacts",
+    "adjustCapabilities",
+    "saveObjectId",
+    "storageKeys",
+    "receiptBehavior",
+    "postSaveDestination",
+    "myFlowObjectCount",
+    "calendarProjectionCount",
+    "exportProjectionCount"
+  ],
+  "journeyCellRequiredFields": [
+    "personaId",
+    "sessionId",
+    "userGoal",
+    "route",
+    "viewport",
+    "startingState",
+    "steps",
+    "interactionDepth",
+    "expectedMentalModel",
+    "actualFeedback",
+    "nextAction",
+    "flowIdentityObserved",
+    "itemCountObserved",
+    "artifactObserved",
+    "saveObjectObserved",
+    "reloadPersistence",
+    "projectionParity",
+    "recovery",
+    "status",
+    "severity",
+    "evidenceKinds",
+    "observedUserQuestion"
+  ],
+  "requiredDecisionAlternatives": [
+    "A",
+    "B",
+    "C"
+  ],
+  "p33CandidateRequiredFields": [
+    "id",
+    "problem",
+    "evidence",
+    "dependency",
+    "scope",
+    "nonGoals",
+    "dataImpact",
+    "migration",
+    "rollback",
+    "acceptanceScreenshots",
+    "testMarkers"
+  ],
+  "evidenceKinds": [
+    "current_production_interaction",
+    "current_browser_automation",
+    "current_command",
+    "current_source",
+    "current_package_screenshot",
+    "prior_release_evidence",
+    "prior_design_artifact",
+    "reference_pattern",
+    "heuristic_simulation",
+    "fixture_only",
+    "inaccessible",
+    "observed_user"
+  ],
+  "automationIsObservedUserEvidence": false,
+  "appCodeChangeAllowed": false
+}

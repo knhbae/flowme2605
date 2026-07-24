@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>FlowMe 홈·찾기·저장 경로 정합성 감사</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f6f3;
+      --surface: #ffffff;
+      --text: #171915;
+      --muted: #64685f;
+      --line: #dfe2da;
+      --critical: #a9362b;
+      --critical-soft: #fff1ef;
+      --warning: #8a5a00;
+      --warning-soft: #fff6df;
+      --ok: #176d5d;
+      --ok-soft: #eaf7f2;
+      --action: #3451db;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Pretendard, "Noto Sans KR", system-ui, sans-serif;
+      line-height: 1.6;
+    }
+    main { max-width: 1180px; margin: 0 auto; padding: 32px 20px 72px; }
+    header { padding: 24px 0 28px; border-bottom: 1px solid var(--line); }
+    h1 { margin: 6px 0 10px; font-size: clamp(28px, 4vw, 48px); line-height: 1.2; }
+    h2 { margin: 0 0 14px; font-size: 24px; }
+    h3 { margin: 0 0 8px; font-size: 18px; }
+    p { margin: 0; }
+    a { color: var(--action); }
+    .eyebrow { color: var(--critical); font-size: 13px; font-weight: 800; }
+    .lead { max-width: 780px; color: var(--muted); font-size: 17px; }
+    .meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .meta span {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      padding: 5px 9px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    section { padding: 34px 0; border-bottom: 1px solid var(--line); }
+    .verdict {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: 20px;
+    }
+    .metric { border-left: 4px solid var(--critical); background: var(--surface); padding: 16px; }
+    .metric strong { display: block; font-size: 28px; }
+    .metric span { color: var(--muted); font-size: 13px; }
+    .finding-grid { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .finding { border: 1px solid var(--line); background: var(--surface); padding: 18px; }
+    .finding.high { border-top: 4px solid var(--critical); }
+    .finding.medium { border-top: 4px solid var(--warning); }
+    .finding p { color: var(--muted); font-size: 14px; }
+    .shot-grid { display: grid; gap: 18px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    figure { margin: 0; min-width: 0; }
+    figure img {
+      display: block;
+      width: 100%;
+      max-height: 760px;
+      object-fit: contain;
+      object-position: top;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+    figcaption { margin-top: 8px; color: var(--muted); font-size: 13px; }
+    table { width: 100%; border-collapse: collapse; background: var(--surface); }
+    th, td { border-bottom: 1px solid var(--line); padding: 11px 12px; text-align: left; vertical-align: top; }
+    th { background: #eef0eb; font-size: 13px; }
+    td { font-size: 14px; }
+    .status { font-weight: 800; white-space: nowrap; }
+    .missing { color: var(--critical); }
+    .partial { color: var(--warning); }
+    .supported { color: var(--ok); }
+    ol { margin: 12px 0 0; padding-left: 22px; }
+    li + li { margin-top: 7px; }
+    .note { margin-top: 18px; padding: 14px 16px; background: var(--warning-soft); color: #5f430d; }
+    .links { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 18px; }
+    @media (max-width: 760px) {
+      main { padding: 22px 14px 56px; }
+      .verdict, .finding-grid, .shot-grid { grid-template-columns: 1fr; }
+      table { display: block; overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="eyebrow">CURRENT PRODUCTION INTERACTION · 2026-07-24</p>
+      <h1>홈과 Flow 찾기가 아직 같은 Flow를 열지 않는다</h1>
+      <p class="lead">
+        최신 production을 모바일 390px에서 직접 조작했다. P32 My Flow workspace는 작동하지만,
+        그 앞 단계에서 같은 원문이 서로 다른 title, 항목 수, 저장 객체로 갈라진다.
+      </p>
+      <div class="meta">
+        <span>판정 cross_entry_canonical_flow_reopen</span>
+        <span>앱 코드 변경 없음</span>
+        <span>실제 관찰 사용자 0</span>
+      </div>
+    </header>
+
+    <section>
+      <h2>핵심 판정</h2>
+      <div class="verdict">
+        <div class="metric"><strong>4</strong><span>같은 AJD 원문의 사용자 route</span></div>
+        <div class="metric"><strong>24 / 5</strong><span>entry에 따라 달라지는 전체 항목 수</span></div>
+        <div class="metric"><strong>2</strong><span>두 entry 저장 후 My Flow 중복 객체</span></div>
+      </div>
+      <p class="note">
+        현재 결정은 Flow Map을 내부 bundle로 두고 모든 표면에서 하나의 사용자 Flow object를 사용하도록 정한다.
+        production은 이 계약을 아직 충족하지 않는다.
+      </p>
+    </section>
+
+    <section>
+      <h2>가장 큰 미완료 항목</h2>
+      <div class="finding-grid">
+        <article class="finding high">
+          <h3>같은 원문 identity 분기</h3>
+          <p>Home, Find, URL lookup이 서로 다른 slug와 24개/5개 버전을 연다.</p>
+        </article>
+        <article class="finding high">
+          <h3>저장 후 중복 Flow</h3>
+          <p>두 entry를 모두 저장하면 완료·날짜·메모가 연결되지 않는 별도 객체 두 개가 남는다.</p>
+        </article>
+        <article class="finding high">
+          <h3>작동하지 않는 결과 형태 버튼</h3>
+          <p>moving과 vehicle의 체크리스트 버튼은 눌러도 selected projection이 바뀌지 않는다.</p>
+        </article>
+        <article class="finding high">
+          <h3>한 catalog 안의 두 세대 UI</h3>
+          <p>9개 중 5개는 legacy Flow Map, 4개는 current public artifact-first frame이다.</p>
+        </article>
+        <article class="finding medium">
+          <h3>Home 차량 promise 불일치</h3>
+          <p>필요할 때 쓰는 차량 체크리스트라고 소개하지만 실제 기본 결과는 검사일 기준 D-14 Calendar다.</p>
+        </article>
+        <article class="finding medium">
+          <h3>반복 표시 adapter 누락</h3>
+          <p>Calendar occurrence는 생성되지만 날짜 없는 My Flow에서는 RRULE 원문이 사용자에게 노출된다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>같은 이사 원문의 두 화면</h2>
+      <div class="shot-grid">
+        <figure>
+          <img src="screenshots/03-home-moving-public-390.png" alt="홈에서 연 이사 Flow 24개 public 화면">
+          <figcaption>Home -> `/f/moving-d30-basic`: 24개, share shell, distinct receipt.</figcaption>
+        </figure>
+        <figure>
+          <img src="screenshots/04-find-moving-map-390.png" alt="Flow 찾기에서 연 이사 Flow 5개 Flow Map 화면">
+          <figcaption>Find -> `/flow-maps/moving-d30`: 5개, 4탭 app shell, legacy save handoff.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section>
+      <h2>실제 사용자 결과</h2>
+      <div class="shot-grid">
+        <figure>
+          <img src="screenshots/05-my-flow-duplicate-moving-390.png" alt="같은 이사 원문이 My Flow에 두 개로 저장된 화면">
+          <figcaption>동일 원문 entry 두 개를 저장한 결과: 24개와 5개 Flow가 동시에 남는다.</figcaption>
+        </figure>
+        <figure>
+          <img src="screenshots/08-workout-undated-my-flow-390.png" alt="My Flow에서 반복 규칙 원문이 노출된 운동 Flow">
+          <figcaption>날짜 없이 저장한 운동 Flow: `FREQ=WEEKLY;BYDAY=MO,WE,FR` 노출.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section>
+      <h2>최근 피드백 상태</h2>
+      <table>
+        <thead>
+          <tr><th>항목</th><th>판정</th><th>현재 상태</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>홈과 Find 역할 구분</td><td class="status partial">partial</td><td>화면 역할은 나뉘었지만 콘텐츠 identity가 다름</td></tr>
+          <tr><td>같은 card의 같은 저장 결과</td><td class="status missing">missing</td><td>moving 24/5 및 중복 저장</td></tr>
+          <tr><td>결혼 참고표 별도 entry</td><td class="status supported">supported</td><td>timeline과 4-item sheet가 분리됨</td></tr>
+          <tr><td>public 전체 결과 먼저 보기</td><td class="status supported">supported</td><td>`/f`는 실제 artifact preview를 먼저 표시</td></tr>
+          <tr><td>Flow 찾기 조정</td><td class="status partial">partial</td><td>legacy 5개 route는 이름과 포함 여부 중심</td></tr>
+          <tr><td>결과 형태 실제 선택</td><td class="status partial">partial</td><td>wedding/workout은 작동, moving/vehicle은 작동하지 않음</td></tr>
+          <tr><td>운동 recurrence와 Calendar</td><td class="status partial">partial</td><td>회차 생성은 작동, My Flow 문구 projection 불일치</td></tr>
+          <tr><td>My Flow focused workspace</td><td class="status supported">supported</td><td>한 객체를 연 뒤 구조는 개선됨</td></tr>
+          <tr><td>upstream 중복 객체 방지</td><td class="status missing">missing</td><td>P32 downstream workspace로 해결할 수 없음</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>권장 다음 순서</h2>
+      <ol>
+        <li>source, Flow Map, public slug, saved slug의 canonical alias graph를 만든다.</li>
+        <li>moving 24개/5개 중 사용자 정본을 확정하고 한 vertical slice로 통일한다.</li>
+        <li>legacy catalog 5개를 canonical public Flow handoff로 전환한다.</li>
+        <li>모든 visible artifact choice의 실제 projection 전환을 보장한다.</li>
+        <li>기존 local data를 잃지 않는 reconciliation 후 cross-entry E2E를 추가한다.</li>
+      </ol>
+      <div class="links">
+        <a href="README.md">요약</a>
+        <a href="audit.md">상세 audit</a>
+        <a href="route-evidence.json">구조화 evidence</a>
+        <a href="next-program.md">P33 제안</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

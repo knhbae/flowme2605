@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-07-24",
+  "repository": "https://github.com/knhbae/flowme2605",
+  "reviewBranch": "cross-entry-review-handoff-20260724",
+  "production": "https://flowme2605.vercel.app",
+  "originMainSha": "e491d99ca61ecae4fd0dd009f785e737b6a59516",
+  "productionAppReleaseSha": "30281a7a8ea9bea1194b4104b5a49b6211c07e3b",
+  "observedUserCount": 0,
+  "appCodeChangedByHandoff": false,
+  "auditPackage": "docs/content-audit/2026-07-24-flowme-cross-entry-canonical-consistency-audit",
+  "handoffPackage": "docs/content-audit/2026-07-24-flowme-cross-entry-canonical-independent-review-handoff",
+  "primaryFiles": [
+    "docs/content-audit/2026-07-24-flowme-cross-entry-canonical-consistency-audit/review.html",
+    "docs/content-audit/2026-07-24-flowme-cross-entry-canonical-consistency-audit/README.md",
+    "docs/content-audit/2026-07-24-flowme-cross-entry-canonical-consistency-audit/audit.md",
+    "docs/content-audit/2026-07-24-flowme-cross-entry-canonical-consistency-audit/route-evidence.json",
+    "docs/content-audit/2026-07-24-flowme-cross-entry-canonical-consistency-audit/next-program.md",
+    "docs/content-audit/2026-07-24-p32-final-review-package/README.md",
+    "docs/STATUS.md",
+    "docs/ROADMAP.md",
+    "docs/DECISIONS.md"
+  ],
+  "sourceFiles": [
+    "app/flows/page.tsx",
+    "components/flow/AppClient.tsx",
+    "components/flow/FlowArtifactDataPreview.tsx",
+    "components/flow/FlowSaveBeforeFrame.tsx",
+    "components/flow/SourceBackedFlowMapSaveButton.tsx",
+    "lib/flow/storage.ts",
+    "lib/flow/url-first-lookup.ts",
+    "lib/flow/source-backed-my-flow.ts",
+    "tests/e2e/flow-mvp.spec.ts",
+    "tests/e2e/p26-discovery-save-before.spec.ts",
+    "tests/e2e/p30-evidence-gap-closure.spec.ts",
+    "tests/e2e/p32-focused-workspace.spec.ts"
+  ],
+  "auditHypotheses": [
+    "same_source_multiple_user_facing_flow_identity",
+    "home_find_url_lookup_item_count_mismatch",
+    "duplicate_saved_my_flow_object",
+    "legacy_and_artifact_first_catalog_mixed",
+    "visible_artifact_choice_without_state_change",
+    "home_vehicle_promise_target_mismatch",
+    "workout_recurrence_display_projection_gap"
+  ],
+  "automationIsObservedUserEvidence": false
+}
