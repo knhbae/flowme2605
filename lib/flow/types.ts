@@ -149,6 +149,7 @@ export type FlowItemState = {
   skipped?: boolean;
   note?: string;
   personalOrder?: number;
+  personalExcluded?: boolean;
 };
 
 export type FlowComparisonCandidate = {

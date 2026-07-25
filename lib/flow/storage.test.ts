@@ -3706,7 +3706,7 @@ test('flow run registry preserves a completed legacy run before starting a clean
     });
     assert.deepEqual(getChecks(flowSlug), {});
     assert.deepEqual(getItemStates(flowSlug), {
-      'moving-utility-transfer': { skipped: true, note: 'excluded_on_start' },
+      'moving-utility-transfer': { personalExcluded: true },
     });
     assert.equal(getMyFlowCompletionFeedback(flowSlug), undefined);
     assert.deepEqual(getMyFlowExecutionNotes(flowSlug), []);

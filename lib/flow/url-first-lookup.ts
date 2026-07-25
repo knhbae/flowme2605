@@ -578,7 +578,7 @@ function getUrlFirstMapStepSelection(
     const skippedStates = Object.fromEntries(
       flow.steps
         .filter((step) => !selectedStepIds.has(step.id))
-        .map((step) => [step.id, { skipped: true, note: 'excluded_on_start' } satisfies FlowItemState]),
+        .map((step) => [step.id, { personalExcluded: true } satisfies FlowItemState]),
     );
     if (Object.keys(skippedStates).length > 0) itemStatesByFlowSlug[flow.slug] = skippedStates;
   });

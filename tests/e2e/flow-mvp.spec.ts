@@ -1036,8 +1036,8 @@ test('flow finding URL lookup starts a lightweight customized personal copy', as
   expect(savedState.snapshot.stepCountsByFlow['source-backed-middle-school-math-1']).toBe(1);
   expect(savedState.persistence.map.title).toBe('시험 전 소인수분해만');
   expect(savedState.persistence.childFlows[0].steps.map((step: { stepId: string }) => step.stepId)).toEqual(['math-prime-factorization']);
-  expect(savedState.itemStates['math-integers-rationals'].skipped).toBe(true);
-  expect(savedState.itemStates['math-integers-rationals'].note).toBe('excluded_on_start');
+  expect(savedState.itemStates['math-integers-rationals'].personalExcluded).toBe(true);
+  expect(savedState.itemStates['math-integers-rationals'].note).toBeUndefined();
   expect(savedState.itemStates['math-prime-factorization']).toBeUndefined();
   expect(savedState.savedRecord.anchor).toBe('2026-07-15');
   expect(savedState.savedRecord.selectedArtifactMode).toBe('checklist');
@@ -1067,8 +1067,8 @@ test('flow finding URL lookup starts a lightweight customized personal copy', as
   expect(updatedState.snapshot.personalCopy.source).toBe('url_first_custom_start');
   expect(updatedState.persistence.map.title).toBe('시험 전 소인수분해만');
   expect(updatedState.persistence.childFlows[0].steps.map((step: { stepId: string }) => step.stepId)).toEqual(['math-prime-factorization']);
-  expect(updatedState.itemStates['math-integers-rationals'].skipped).toBe(true);
-  expect(updatedState.itemStates['math-integers-rationals'].note).toBe('excluded_on_start');
+  expect(updatedState.itemStates['math-integers-rationals'].personalExcluded).toBe(true);
+  expect(updatedState.itemStates['math-integers-rationals'].note).toBeUndefined();
 
   await page.reload();
   await openPostSaveWorkspaceIfPresent(page);
@@ -1160,8 +1160,8 @@ test('my flow personal copy settings can readjust saved title date and included 
   expect(savedState.snapshot.personalCopy.excludedStepIdsByFlow['source-backed-middle-school-math-1']).toContain('math-prime-factorization');
   expect(savedState.persistence.map.title).toBe('1학기 앞부분 복습');
   expect(savedState.persistence.childFlows[0].steps.map((step: { stepId: string }) => step.stepId)).toEqual(['math-integers-rationals']);
-  expect(savedState.itemStates['math-prime-factorization'].skipped).toBe(true);
-  expect(savedState.itemStates['math-prime-factorization'].note).toBe('excluded_on_start');
+  expect(savedState.itemStates['math-prime-factorization'].personalExcluded).toBe(true);
+  expect(savedState.itemStates['math-prime-factorization'].note).toBeUndefined();
   expect(savedState.itemStates['math-integers-rationals']).toBeUndefined();
   expect(savedState.savedRecord.anchor).toBe('2026-08-01');
 
@@ -1193,7 +1193,7 @@ test('my flow personal copy settings can readjust saved title date and included 
   expect(updatedState.snapshot.personalCopy.includedStepIdsByFlow['source-backed-middle-school-math-1']).toEqual(['math-integers-rationals']);
   expect(updatedState.persistence.childFlows[0].steps.map((step: { stepId: string }) => step.stepId)).toEqual(['math-integers-rationals']);
   expect(updatedState.persistence.map.version).toBe('2026-01-01.old');
-  expect(updatedState.itemStates['math-prime-factorization'].skipped).toBe(true);
+  expect(updatedState.itemStates['math-prime-factorization'].personalExcluded).toBe(true);
   expect(updatedState.itemStates['math-integers-rationals']).toBeUndefined();
   await expectNoHorizontalOverflow(page);
 });

@@ -1,6 +1,7 @@
 import { getArtifactPlan, type ArtifactSurfaceKind, type PrimaryArtifactSurface } from './artifact-plan';
 import { addDays, formatLocalDate } from './date';
 import { splitExecutionDetailContent } from './execution-detail-content';
+import { isFlowItemPersonallyExcluded } from './flow-item-state';
 import type { FlowBundle, FlowItem, FlowItemRole, FlowItemState } from './types';
 
 export type FlowExperienceShape = 'flow_execution' | 'calendar' | 'checklist' | 'sheet' | 'memo';
@@ -172,8 +173,7 @@ export function buildFlowExperienceProjection(
       const override = itemOverrides[item.id];
       const date = resolveItemDate(item, options.anchor, override);
       const role = inferLegacyRole(item, bundle);
-      const excludedByLegacyState = itemStates[item.id]?.skipped && itemStates[item.id]?.note === 'excluded_on_start';
-      const included = !explicitlyExcluded.has(item.id) && !excludedByLegacyState;
+      const included = !explicitlyExcluded.has(item.id) && !isFlowItemPersonallyExcluded(itemStates[item.id]);
       const resources = splitExecutionDetailContent(detail).resources.map((resource) => ({ ...resource }));
       const scheduleState = date ? (item.repeat_rule ? 'recurring' : 'dated') : 'unscheduled';
 

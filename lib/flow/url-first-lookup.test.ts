@@ -410,12 +410,12 @@ test('customized start package stores a personal title and excludes unchecked st
     ['math-prime-factorization'],
   );
   assert.equal(
-    started.itemStatesByFlowSlug?.['source-backed-middle-school-math-1']?.['math-integers-rationals']?.skipped,
+    started.itemStatesByFlowSlug?.['source-backed-middle-school-math-1']?.['math-integers-rationals']?.personalExcluded,
     true,
   );
   assert.equal(
     started.itemStatesByFlowSlug?.['source-backed-middle-school-math-1']?.['math-integers-rationals']?.note,
-    'excluded_on_start',
+    undefined,
   );
   assert.equal(started.savedMapSnapshot?.personalCopy?.source, 'url_first_custom_start');
   assert.deepEqual(started.savedMapSnapshot?.personalCopy?.includedStepIdsByFlow, {

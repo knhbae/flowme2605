@@ -114,6 +114,12 @@ import {
   type MyFlowExecutionNoteKind,
 } from '@/lib/flow/execution-notes';
 import { toContentDisplayTitle, toUserFacingMapTitle, toUserFacingSourceTitle } from '@/lib/flow/display-title';
+import {
+  getFlowItemUserNote,
+  isFlowItemOmittedFromActiveProjection,
+  isFlowItemPersonallyExcluded,
+  setFlowItemPersonalExclusion,
+} from '@/lib/flow/flow-item-state';
 import { buildFlowRunHistoryListExportArtifacts, getFlowRunItemStatusLabel } from '@/lib/flow/flow-run-history';
 import {
   buildMyFlowStepChecklistText,
@@ -8851,11 +8857,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       const nextItemStates = { ...previousItemStates };
       rows.forEach((row) => {
         const itemId = baseStateId(row.id);
-        nextItemStates[itemId] = {
-          ...nextItemStates[itemId],
-          skipped: true,
-          note: 'excluded_on_start',
-        };
+        const nextState = setFlowItemPersonalExclusion(nextItemStates[itemId], true);
+        if (nextState) nextItemStates[itemId] = nextState;
       });
       persistMyFlowCanonicalIncludedItemStates(
         flow,
@@ -9273,11 +9276,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         row.flow,
         {
           ...currentItemStates,
-          [itemId]: {
-            ...currentItemStates[itemId],
-            skipped: true,
-            note: 'excluded_on_start',
-          },
+          [itemId]: setFlowItemPersonalExclusion(currentItemStates[itemId], true) ?? {},
         },
         `${getMyFlowRowDisplayTitle(row)}을 Flow에서 뺐어요.`,
       );
@@ -9302,12 +9301,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     if (!flow.savedMap) {
       const currentItemStates = getItemStates(flow.progress.slug);
       const currentState = currentItemStates[itemId];
-      if (currentState?.note !== 'excluded_on_start') return;
+      if (!isFlowItemPersonallyExcluded(currentState)) return;
       const nextItemStates = { ...currentItemStates };
-      const cleanedState = { ...currentState };
-      delete cleanedState.skipped;
-      delete cleanedState.note;
-      if (Object.keys(cleanedState).length > 0) nextItemStates[itemId] = cleanedState;
+      const restoredState = setFlowItemPersonalExclusion(currentState, false);
+      if (restoredState) nextItemStates[itemId] = restoredState;
       else delete nextItemStates[itemId];
       saveItemStates(flow.progress.slug, nextItemStates);
       refreshSavedFlowState();
@@ -9834,22 +9831,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const includedStepIdSet = new Set(includedStepIds);
     const nextItemStates = { ...getItemStates(flow.progress.slug) };
     allStepIds.forEach((stepId) => {
-      if (includedStepIdSet.has(stepId)) {
-        const state = nextItemStates[stepId];
-        if (state?.note === 'excluded_on_start') {
-          const cleanedState: FlowItemState = { ...state };
-          delete cleanedState.skipped;
-          delete cleanedState.note;
-          if (Object.keys(cleanedState).length > 0) nextItemStates[stepId] = cleanedState;
-          else delete nextItemStates[stepId];
-        }
-        return;
-      }
-      nextItemStates[stepId] = {
-        ...nextItemStates[stepId],
-        skipped: true,
-        note: 'excluded_on_start',
-      };
+      const nextState = setFlowItemPersonalExclusion(
+        nextItemStates[stepId],
+        !includedStepIdSet.has(stepId),
+      );
+      if (nextState) nextItemStates[stepId] = nextState;
+      else delete nextItemStates[stepId];
     });
     saveItemStates(flow.progress.slug, nextItemStates);
     setMyFlowSelectedDate(nextAnchor || myFlowSelectedDate);
@@ -9898,22 +9885,12 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const includedStepIdSet = new Set(includedStepIds);
     const nextItemStates = { ...getItemStates(flow.progress.slug) };
     allStepIds.forEach((stepId) => {
-      if (includedStepIdSet.has(stepId)) {
-        const state = nextItemStates[stepId];
-        if (state?.note === 'excluded_on_start') {
-          const cleanedState: FlowItemState = { ...state };
-          delete cleanedState.skipped;
-          delete cleanedState.note;
-          if (Object.keys(cleanedState).length > 0) nextItemStates[stepId] = cleanedState;
-          else delete nextItemStates[stepId];
-        }
-        return;
-      }
-      nextItemStates[stepId] = {
-        ...nextItemStates[stepId],
-        skipped: true,
-        note: 'excluded_on_start',
-      };
+      const nextState = setFlowItemPersonalExclusion(
+        nextItemStates[stepId],
+        !includedStepIdSet.has(stepId),
+      );
+      if (nextState) nextItemStates[stepId] = nextState;
+      else delete nextItemStates[stepId];
     });
     saveItemStates(flow.progress.slug, nextItemStates);
 
@@ -19102,17 +19079,30 @@ export function PublicFlow({ slug }: { slug: string }) {
     setReactionLogs((value) => ({ ...value, [slotId]: { ...value[slotId], ...patch } }));
   };
   const updateItemNote = (id: string, note: string) => {
-    setItemStates((value) => ({
-      ...value,
-      [id]: {
-        ...value[id],
-        note,
-      },
-    }));
+    setItemStates((value) => {
+      const current = value[id];
+      const normalized = isFlowItemPersonallyExcluded(current)
+        ? setFlowItemPersonalExclusion(current, true)
+        : current;
+      return {
+        ...value,
+        [id]: {
+          ...normalized,
+          note,
+        },
+      };
+    });
   };
   const toggleItemSkipped = (id: string) => {
     setItemStates((value) => {
       const current = value[id] ?? {};
+      if (isFlowItemPersonallyExcluded(current)) {
+        const restored = setFlowItemPersonalExclusion(current, false);
+        const next = { ...value };
+        if (restored) next[id] = restored;
+        else delete next[id];
+        return next;
+      }
       return {
         ...value,
         [id]: {
@@ -19165,21 +19155,10 @@ export function PublicFlow({ slug }: { slug: string }) {
     publicAdjustmentOrder.forEach((itemId, index) => {
       const adjustment = publicAdjustmentItems[itemId] ?? { included: true };
       const currentState = nextItemStates[itemId] ?? {};
-      if (adjustment.included) {
-        if (currentState.note === 'excluded_on_start') {
-          const { skipped: _skipped, note: _note, ...remaining } = currentState;
-          nextItemStates[itemId] = { ...remaining, personalOrder: index };
-        } else {
-          nextItemStates[itemId] = { ...currentState, personalOrder: index };
-        }
-      } else {
-        nextItemStates[itemId] = {
-          ...currentState,
-          skipped: true,
-          note: 'excluded_on_start',
-          personalOrder: index,
-        };
-      }
+      nextItemStates[itemId] = {
+        ...(setFlowItemPersonalExclusion(currentState, !adjustment.included) ?? {}),
+        personalOrder: index,
+      };
 
       const draftKey = getPersonalDraftProjectionValueKey(bundle.flow.slug, itemId);
       const currentDraft = nextDrafts[draftKey] ?? {};
@@ -20670,12 +20649,11 @@ function baseStateId(id: string): string {
 }
 
 function isItemStateSkipped(itemStates: Record<string, FlowItemState>, id: string): boolean {
-  return Boolean(itemStates[baseStateId(id)]?.skipped);
+  return isFlowItemOmittedFromActiveProjection(itemStates[baseStateId(id)]);
 }
 
 function isUrlFirstStartExcludedItemState(itemStates: Record<string, FlowItemState>, id: string): boolean {
-  const state = itemStates[baseStateId(id)];
-  return Boolean(state?.skipped && state.note === 'excluded_on_start');
+  return isFlowItemPersonallyExcluded(itemStates[baseStateId(id)]);
 }
 
 function getPublicViews(bundle: FlowBundle, hasScheduleAnchor = false): { id: PublicView; label: string }[] {
@@ -21391,7 +21369,7 @@ function FlowItemCard({
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [memoOpen, setMemoOpen] = useState(false);
   const detail = getItemDetail(bundle, item.id);
-  const skipped = Boolean(state?.skipped);
+  const skipped = isFlowItemOmittedFromActiveProjection(state);
   const date = item.day_offset !== undefined && anchor ? itemDate(anchor, item) : '';
   const timing = item.day_offset !== undefined ? timingLabel(item.day_offset, item.duration_days) : '';
   const repeat = item.repeat_rule && !timing
@@ -21465,7 +21443,7 @@ function FlowItemCard({
               aria-label={`${item.title} 메모`}
               className="min-h-20 w-full resize-y rounded-md border border-gray-300 bg-white px-3 py-2 text-sm leading-5 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
               placeholder="예) 우리는 포장이사로 결정됨, 견적은 다음 주 비교"
-              value={state?.note ?? ''}
+              value={getFlowItemUserNote(state) ?? ''}
               onChange={(event) => onNoteChange(item.id, event.target.value)}
             />
           </label>
@@ -21576,7 +21554,7 @@ function getNextEntries(
   const entries = getScheduleEntries(bundle, anchor).filter((entry) => !isItemStateSkipped(itemStates, entry.id) && !isBaseEntryChecked(bundle, entry.id, anchor, checks));
   if (!entries.length && (bundle.flow.structure_type === 'checklist' || bundle.flow.structure_type === 'routine' || bundle.flow.structure_type === 'timeline')) {
     return bundle.items
-      .filter((item) => !checks[item.id] && !itemStates[item.id]?.skipped)
+      .filter((item) => !checks[item.id] && !isFlowItemOmittedFromActiveProjection(itemStates[item.id]))
       .slice(0, 3)
       .map((item) => ({
         id: item.id,
@@ -21704,7 +21682,15 @@ function FlowOverview({
 }) {
   const executableIds = getExecutableCheckIds(bundle, anchor).filter((id) => !isItemStateSkipped(itemStates, id));
   const done = executableIds.filter((id) => checks[id]).length;
-  const total = executableIds.length || (bundle.flow.content_type === 'meal_plan' ? bundle.mealSlots?.length ?? 0 : bundle.items.filter((item) => !itemStates[item.id]?.skipped).length);
+  const total = executableIds.length || (
+    bundle.flow.content_type === 'meal_plan'
+      ? (bundle.mealSlots ?? []).filter(
+          (item) => !isFlowItemOmittedFromActiveProjection(itemStates[item.id]),
+        ).length
+      : bundle.items.filter(
+          (item) => !isFlowItemOmittedFromActiveProjection(itemStates[item.id]),
+        ).length
+  );
   const showNext = done > 0 && done < total;
   const nextEntries = showNext ? getNextEntries(bundle, anchor, checks, itemStates) : [];
   const summaryItems = getExecutionSummary(bundle, anchor, checks, nextEntries, itemStates);

@@ -212,6 +212,16 @@ test.describe('P27 reversible lifecycle foundation', () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/f/moving-d30-basic');
     await page.evaluate(() => window.localStorage.clear());
+    await page.evaluate(() => {
+      window.localStorage.setItem(
+        'flow_builder_mvp_item_state_moving-d30-basic',
+        JSON.stringify({
+          'flow-moving-item-1': {
+            note: '하자 사진과 관리실 연락 메모',
+          },
+        }),
+      );
+    });
     await page.reload();
     await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
     await page.getByTestId('public-flow-adjust-entry-mobile').click();
@@ -257,7 +267,8 @@ test.describe('P27 reversible lifecycle foundation', () => {
       drafts: JSON.parse(window.localStorage.getItem('flow:my-flow:item-drafts') || '{}'),
       saved: JSON.parse(window.localStorage.getItem('flow:saved:moving-d30-basic') || '{}'),
     }));
-    expect(persisted.itemStates['flow-moving-item-1']).toMatchObject({ skipped: true, note: 'excluded_on_start' });
+    expect(persisted.itemStates['flow-moving-item-1']).toMatchObject({ personalExcluded: true });
+    expect(persisted.itemStates['flow-moving-item-1'].note).toBe('하자 사진과 관리실 연락 메모');
     expect(persisted.itemStates['flow-moving-item-0'].personalOrder).toBe(2);
     expect(persisted.drafts['moving-d30-basic::flow-moving-item-0::draft-overlay']).toMatchObject({
       title: '내 이사 방식 확정',
@@ -278,6 +289,25 @@ test.describe('P27 reversible lifecycle foundation', () => {
     await expect(outlineRows.nth(0)).toContainText('필요 없는 물건 정리하기');
     await expect(outlineRows.nth(1)).toContainText('내 이사 방식 확정');
     await expect(outlineRows.nth(1)).toContainText('8월 1일');
+
+    const excludedSteps = flowCard.getByTestId('my-flow-excluded-steps');
+    await excludedSteps.locator('summary').click();
+    const excludedRow = excludedSteps.getByTestId('my-flow-excluded-step-row').filter({
+      hasText: '이사할 집 하자 점검하기',
+    });
+    await excludedRow.getByTestId('my-flow-restore-excluded-item').click();
+    const restored = await page.evaluate(() => JSON.parse(
+      window.localStorage.getItem('flow_builder_mvp_item_state_moving-d30-basic') || '{}',
+    )['flow-moving-item-1']);
+    expect(restored.note).toBe('하자 사진과 관리실 연락 메모');
+    expect(restored.personalExcluded).toBeUndefined();
+
+    await page.reload();
+    const restoredAfterReload = await page.evaluate(() => JSON.parse(
+      window.localStorage.getItem('flow_builder_mvp_item_state_moving-d30-basic') || '{}',
+    )['flow-moving-item-1']);
+    expect(restoredAfterReload.note).toBe('하자 사진과 관리실 연락 메모');
+    expect(restoredAfterReload.personalExcluded).toBeUndefined();
     await expectNoHorizontalOverflow(page);
   });
 

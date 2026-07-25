@@ -129,7 +129,7 @@ export function P22ObservationSetup() {
     saveItemStates(FLOW_SLUG, Object.fromEntries(
       fixture.snapshot.personalCopy?.excludedStepIdsByFlow[FLOW_SLUG].map((stepId) => [
         stepId,
-        { skipped: true, note: 'excluded_on_start' },
+        { personalExcluded: true },
       ]) ?? [],
     ));
     ensureLegacyActiveFlowRun(FLOW_SLUG, {

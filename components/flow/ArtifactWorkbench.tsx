@@ -20,6 +20,7 @@ import { resolveRoutineHorizon } from '@/lib/flow/routine-horizon';
 import { formatRoutineRepeatRuleLabel } from '@/lib/flow/routine-schedule-presentation';
 import type { SavedRoutineOccurrenceRow } from '@/lib/flow/saved-routine-occurrence';
 import { FLOW_EXPORT_LABELS } from '@/lib/flow/export-labels';
+import { isFlowItemOmittedFromActiveProjection } from '@/lib/flow/flow-item-state';
 import type {
   FlowExportDestination,
   FlowExportResultReceipt,
@@ -175,7 +176,9 @@ export function ArtifactWorkbench({
   onExportOpenChange,
 }: ArtifactWorkbenchProps) {
   const plan = getArtifactPlan(bundle);
-  const total = getExecutableItems(bundle).filter((item) => !itemStates[item.id]?.skipped).length;
+  const total = getExecutableItems(bundle).filter(
+    (item) => !isFlowItemOmittedFromActiveProjection(itemStates[item.id]),
+  ).length;
   const isJeonsePrecheck = bundle.flow.slug === 'jeonse-contract-precheck-docs';
 
   if (presentationMode === 'export-only') {
