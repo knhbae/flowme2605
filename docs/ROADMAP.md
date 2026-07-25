@@ -4,7 +4,7 @@
 **Current Version:** v0.1.0 (released product PoC)<br>
 **Current Validation Stage:** internal alpha / P32 production green / P33 Draft PR green / P34 local green<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** review P33, then review P34 on its dependent Draft PR and preview without merging or production deployment
+**Next Milestone:** review P33 #156, then review P34 #157 on its SSO-protected preview without merging or production deployment
 
 Human-facing control surface: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
 
@@ -37,9 +37,9 @@ Detailed scope: [P34 Execution CRUD UX](./specs/2026-07-25-p34-execution-crud-ux
 | P34-05 | Add one roving Tab stop and standard date-grid keyboard navigation | Complete locally |
 | P34-06 | Keep routine summary-first and name series versus occurrence scope | Complete locally |
 | P34-07 | Name whole/selected/current export scope and actual count before format | Complete locally |
-| P34-08 | Re-run 8 personas x 3 heuristic sessions, responsive evidence, and full regression | Complete locally; dependent preview pending |
+| P34-08 | Re-run 8 personas x 3 heuristic sessions, responsive evidence, and full regression | Draft PR #157; protected preview ready |
 
-P34 reuses P33 lifecycle, storage, projection, recurrence, and export handlers. It does not migrate localStorage, auto-merge the canonical 24-Item and legacy 5-Item moving copies, delete published source, change the 4-tab IA, add cloud trash, or claim automated evidence as observed-user validation. Current local evidence is pretest `73 / 73`, unit `588 / 588`, dedicated P34 Playwright `6 / 6`, affected regressions `58 / 58`, full Playwright `326 / 326`, build `18 / 18`, screenshots `18`, and observed-user sessions `0`. See the [P34 final review package](./content-audit/2026-07-25-p34-final-review-package/README.md).
+P34 reuses P33 lifecycle, storage, projection, recurrence, and export handlers. It does not migrate localStorage, auto-merge the canonical 24-Item and legacy 5-Item moving copies, delete published source, change the 4-tab IA, add cloud trash, or claim automated evidence as observed-user validation. Draft PR [#157](https://github.com/knhbae/flowme2605/pull/157) targets the P33 branch, and its [Vercel preview](https://flowme2605-hks37ahd0-flowme.vercel.app) is READY but SSO-protected. Evidence is pretest `73 / 73`, unit `588 / 588`, dedicated P34 Playwright `6 / 6`, affected regressions `58 / 58`, full Playwright `326 / 326`, build `18 / 18`, dependency audit `0`, screenshots `18`, and observed-user sessions `0`. See the [P34 final review package](./content-audit/2026-07-25-p34-final-review-package/README.md).
 
 ## P33 Cross-entry Canonical Alignment
 
@@ -273,13 +273,13 @@ Detailed scope: [Save, Personalize, Execute Journey Reset](./specs/2026-07-18-sa
 
 ## Operating Queue
 
-There is no active external-user gate. P32 remains canonical production while P33 is an unmerged Draft PR and P34 is a dependent local branch awaiting preview publication. External user observation stays outside the queue until the owner explicitly reopens it.
+There is no active external-user gate. P32 remains canonical production while P33 is an unmerged Draft PR and P34 is a dependent Draft PR with an SSO-protected preview. External user observation stays outside the queue until the owner explicitly reopens it.
 
 | Lane | Owner | Work | Next checkpoint | Done when |
 | --- | --- | --- | --- | --- |
-| Active | AI + Owner | P33 Draft PR review and P34 dependent preview publication | Review P33 #156, then inspect P34 without merging either branch | Both review boundaries and exact preview SHAs are recorded |
+| Active | AI + Owner | P33 and P34 dependent Draft PR review | Review P33 #156, then P34 #157 and its protected preview without merging either branch | Both review decisions and exact preview SHAs are recorded |
 | Next | AI + independent reviewer | P34 independent UX/code review | Re-run lifecycle, editing, Calendar keyboard, recurrence, and export scope on the dependent preview | Reproducible gaps or a keep decision exist before any merge |
-| Completed | AI | P34-00~08 local implementation | Preserve P33 identities, storage, 24/5 no-auto-merge, and rollback boundary | Pretest `73 / 73`, unit `588 / 588`, full E2E `326 / 326`, build `18 / 18`, screenshots `18` |
+| Completed | AI | P34-00~08 implementation and dependent preview publication | Preserve P33 identities, storage, 24/5 no-auto-merge, and rollback boundary | Draft PR #157, preview READY, audit `0`, pretest `73 / 73`, unit `588 / 588`, full E2E `326 / 326`, build `18 / 18`, screenshots `18` |
 | Completed | AI | P33-01~07 implementation and stabilization | Preserve additive metadata, explicit duplicate choice, and stable identities | Draft PR #156, pretest `64 / 64`, unit `588 / 588`, full E2E `320 / 320` twice, build `18 / 18` |
 | Completed | AI | P32-01~07 implementation and release | Preserve B1 and stable identities | PR #154, merge `30281a7`, CI green, production smoke `7 / 7` |
 | Completed | AI | P32-OPS dependency remediation | Keep PostCSS compatible without forced downgrade | security audit 0 with unit/build/full E2E |

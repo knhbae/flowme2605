@@ -60,4 +60,4 @@
 - [x] 390, 1024, and 1440 screenshots.
 - [x] overflow, fixed overlap, console/page error, focus, and names.
 - [x] docs, unit, build, targeted and full E2E.
-- [ ] evidence package, status, commit, push, Draft PR, and preview.
+- [x] evidence package, status, commit, push, Draft PR, and preview.

@@ -13,7 +13,8 @@
     "p33Sha": "8c54992ce5628ab2a3884a530a83d2c8226223dc",
     "p33PullRequest": 156,
     "p33MergedToMain": false,
-    "p34Branch": "codex/p34-execution-crud"
+    "p34Branch": "codex/p34-execution-crud",
+    "p34PullRequest": 157
   },
   "markers": {
     "P34-01-ACTIVE-FLOW-MANAGE-390": true,
@@ -179,13 +180,22 @@
       "passed": true,
       "requiredFileCount": 14,
       "localLinkCount": 3150
+    },
+    "securityAudit": {
+      "passed": true,
+      "vulnerabilityCount": 0,
+      "postcssVersion": "8.5.23",
+      "braceExpansionVersion": "5.0.8"
     }
   },
   "publish": {
-    "commit": null,
-    "push": false,
-    "pullRequest": null,
-    "previewUrl": null,
+    "implementationCommit": "108d7d9e2c6e647e4c8352655472e5001d461794",
+    "push": true,
+    "pullRequest": "https://github.com/knhbae/flowme2605/pull/157",
+    "pullRequestDraft": true,
+    "pullRequestBase": "codex/p33-integrated-program-plan",
+    "previewUrl": "https://flowme2605-hks37ahd0-flowme.vercel.app",
+    "previewStatus": "ready_sso_protected",
     "mergeToMain": false,
     "productionDeploy": false
   }

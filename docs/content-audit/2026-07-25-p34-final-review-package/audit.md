@@ -118,6 +118,10 @@ render. The test now verifies persistence through the stable
 
 ## Recommendation
 
-`publish_ready_for_dependent_preview` after the final full-suite pass,
-`git diff --check`, scoped commit, branch push, Draft PR, and Vercel preview
-verification. Do not merge to `main` or deploy production in this gate.
+`dependent_preview_ready_sso_protected`. Implementation commit `108d7d9` is
+pushed to Draft PR `#157` against the P33 branch. The Vercel preview is READY
+at `https://flowme2605-hks37ahd0-flowme.vercel.app`, but anonymous access
+redirects to Vercel SSO. The first CI attempt exposed new PostCSS and
+brace-expansion advisories; bounded patched versions produce audit `0`, unit
+`588 / 588`, and build `18 / 18`. Do not merge to `main` or deploy production
+in this gate.

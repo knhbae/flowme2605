@@ -2,16 +2,19 @@
 
 ## Verdict
 
-`implementation_complete_ready_for_dependent_preview`
+`dependent_preview_ready_sso_protected`
 
 P34 completes the bounded CRUD and execution-command revision on top of the
 P33 Draft PR baseline. It changes interaction composition and labels, not the
 source, personal overlay, execution run, recurrence occurrence, or export
 identity contracts.
 
-P34 is a dependent branch. P33 remains Draft PR
-[#156](https://github.com/knhbae/flowme2605/pull/156), so neither P34 nor its
-canonical 24-Item moving baseline is released to production yet.
+P34 is dependent Draft PR
+[#157](https://github.com/knhbae/flowme2605/pull/157), based on P33 Draft PR
+[#156](https://github.com/knhbae/flowme2605/pull/156). Its
+[Vercel preview](https://flowme2605-hks37ahd0-flowme.vercel.app) is READY but
+redirects anonymous access to Vercel SSO. Neither P34 nor its canonical
+24-Item moving baseline is released to production.
 
 ## What Changed
 
@@ -65,6 +68,7 @@ Current command evidence:
 - P33/public/source-density regression: `50 / 50`
 - Production build: `18 / 18` routes
 - Documentation check: `14` required files and `3,150` local links
+- Dependency audit: `0` vulnerabilities
 
 The first full Playwright pass exposed five obsolete assertions and one
 responsive test race. The assertions were reconciled to the approved command
@@ -86,12 +90,19 @@ Screenshots and heuristic simulations are not actual user observation.
 
 ## Publish Boundary
 
-The final publish sequence is:
+- Implementation commit: `108d7d9e2c6e647e4c8352655472e5001d461794`
+- Branch: `codex/p34-execution-crud`
+- Draft PR: [#157](https://github.com/knhbae/flowme2605/pull/157)
+- Base branch: `codex/p33-integrated-program-plan`
+- Preview: <https://flowme2605-hks37ahd0-flowme.vercel.app>
+- Preview state: READY, anonymous access redirects to Vercel SSO
+- Merge to `main`: false
+- Production deploy: false
 
-1. finish deterministic verification and `git diff --check`;
-2. commit and push the P34 dependent branch;
-3. open a Draft PR against the P33 branch;
-4. verify the Vercel preview status and URL;
-5. request independent Claude Design and Codex review;
-6. do not merge to `main` or deploy production until P33 and P34 are separately
-   approved.
+The first GitHub CI run encountered newly published high-severity advisories
+before app verification. P34 updates only the affected transitive tooling
+boundary to `postcss 8.5.23` and `brace-expansion 5.0.8`; `npm audit` is now
+zero, unit and build remain green, and no app data contract changes. Independent
+Claude Design and Codex review should use the Draft PR, evidence package, and
+protected preview. P33 and P34 require separate approval before any merge or
+production deployment.
