@@ -21,6 +21,10 @@ import { SavedFlowReceiptFrame } from './SavedFlowReceiptFrame';
 import { FlowExecutionNotePanel } from './FlowExecutionNotePanel';
 import { FlowExportPanel, type FlowExportPanelItem } from './FlowExportPanel';
 import { FlowExportReceipt } from './FlowExportReceipt';
+import {
+  FlowManagementMenu,
+  type FlowManagementMenuAction,
+} from './FlowManagementMenu';
 import { PostSaveDecisionHub } from './PostSaveDecisionHub';
 import { RoutineScheduleEditor, type RoutineScheduleEditorValue } from './RoutineScheduleEditor';
 import { RoutineScheduleSummary } from './RoutineScheduleSummary';
@@ -44,6 +48,17 @@ import {
   FLOW_UI_SURFACE_CLASS,
 } from './flow-ui';
 import { FLOW_EXECUTION_ACTIONS } from '@/lib/flow/execution-ui-contract';
+import {
+  FLOW_COMMAND_LABELS,
+  buildFlowManagementCommandModel,
+  getExportScopeActionLabel,
+  getOccurrenceCommandLabels,
+  getStructuralItemCommandLabels,
+} from '@/lib/flow/flow-command-grammar';
+import {
+  getCalendarGridNavigationDate,
+  type CalendarGridNavigationKey,
+} from '@/lib/flow/calendar-keyboard-navigation';
 import { downloadCurrentFlowMeLocalBackup, MyFlowDataManager } from './MyFlowDataManager';
 import { PlatformMobileTabs, PlatformNav } from './PlatformNav';
 import { addDays, formatDate, formatKoreanShortDate, formatLocalDate, getRangeEnd } from '@/lib/flow/date';
@@ -1655,6 +1670,7 @@ function DraftItemAcceptanceList({
   dateLabel: (item: DraftItemReviewRow, index: number) => string;
 }) {
   const selectedCount = items.filter((item) => item.included).length;
+  const [structureEditOpen, setStructureEditOpen] = useState(false);
   const [splitItemId, setSplitItemId] = useState('');
   const [splitText, setSplitText] = useState('');
   const [reviewFeedback, setReviewFeedback] = useState('');
@@ -1723,10 +1739,32 @@ function DraftItemAcceptanceList({
   };
 
   return (
-    <div data-testid={listTestId} className="grid gap-2 rounded-lg bg-[#F7FBF4] p-2.5 md:col-span-2">
+    <div
+      data-testid={listTestId}
+      data-p34-marker="P34-04-DRAFT-PREVIEW"
+      className="grid gap-2 rounded-lg bg-[#F7FBF4] p-2.5 md:col-span-2"
+    >
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-xs font-semibold text-[#176D5D]">저장할 할 일</p>
-        <span className="text-[11px] font-semibold text-[#8A857B]">{selectedCount}/{items.length}개 선택</span>
+        <div className="flex min-w-0 items-center gap-2">
+          <p className="text-xs font-semibold text-[#176D5D]">저장할 할 일</p>
+          <span className="text-[11px] font-semibold text-[#8A857B]">{selectedCount}/{items.length}개 선택</span>
+        </div>
+        {items.length > 0 ? (
+          <button
+            type="button"
+            data-testid="draft-structure-edit-toggle"
+            className={FLOW_UI_COMPACT_ACTION_CLASS}
+            aria-expanded={structureEditOpen}
+            onClick={() => {
+              setStructureEditOpen((open) => !open);
+              setSplitItemId('');
+              setSplitText('');
+              setReviewFeedback('');
+            }}
+          >
+            {structureEditOpen ? '구조 편집 닫기' : '구조 편집'}
+          </button>
+        ) : null}
       </div>
       {items.length > 0 ? (
         <ol className="grid gap-2">
@@ -1779,7 +1817,11 @@ function DraftItemAcceptanceList({
                   <p className="mt-0.5 break-keep text-[11px] font-semibold leading-5 text-[#6E6B64]">
                     {item.included ? dateLabel(item, index) : '저장하지 않음'}
                   </p>
-                  <div className="mt-1 flex flex-wrap items-center gap-1">
+                  {structureEditOpen ? (
+                    <div
+                      className="mt-1 flex flex-wrap items-center gap-1"
+                      data-testid="draft-structure-edit-controls"
+                    >
                     <button
                       type="button"
                       className={FLOW_UI_ICON_ACTION_CLASS}
@@ -1818,8 +1860,9 @@ function DraftItemAcceptanceList({
                         합치기
                       </button>
                     ) : null}
-                  </div>
-                  {splitItemId === item.id ? (
+                    </div>
+                  ) : null}
+                  {structureEditOpen && splitItemId === item.id ? (
                     <div className="mt-2 grid gap-1.5 rounded-md border border-[#DDE6D8] bg-[#FAFAF8] p-2" data-testid="draft-item-split-editor">
                       <label className="grid gap-1 text-[11px] font-semibold text-[#514D46]">
                         한 줄에 할 일 하나
@@ -5406,7 +5449,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     ['open', '진행 중'],
     ['routine', '루틴'],
     ['done', '완료'],
-    ...(myFlowArchivedFlowSlugs.length > 0 ? [['archived', '보관됨'] as const] : []),
+    ['archived', '보관됨'],
   ] as const;
   const closeMyFlowTransientDetail = () => {
     setMyFlowActiveRowKey('');
@@ -5897,7 +5940,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const hasPostSavePanel = Boolean(postSaveQueryKey && postSaveFlows.length > 0 && (!isMyFlowScenarioDemo || postSaveQueryKey));
   const showPostSavePanel = hasPostSavePanel && !myFlowPostSaveWorkspaceOpen;
   const showArchivedInventory =
-    savedView === 'flow' && flowListFilter === 'archived' && myFlowArchivedFlowSlugs.length > 0;
+    savedView === 'flow' && flowListFilter === 'archived';
   const showMyFlowWorkspace = (workspaceSavedFlows.length > 0 || showArchivedInventory) && !showPostSavePanel;
   const shouldCollapseFlowInventory =
     savedFlows.length >= 6 &&
@@ -10304,7 +10347,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 occurrenceDateLabel: isRoutineExecution ? displayDate : undefined,
                 compact: options.compact,
                 disabled: occurrenceCompletionDisabled,
-                disabledReason: '다시 진행한 뒤 완료로 표시할 수 있어요',
+                disabledReason: '이번 회차를 다시 진행한 뒤 완료로 표시할 수 있어요',
                 onToggle: () => toggleSavedFlowItem(row.flow, row.id, row),
               })}
             </div>
@@ -10413,7 +10456,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               occurrenceDateLabel: isRoutineExecution ? displayDate : undefined,
               compact: options.compact,
               disabled: occurrenceCompletionDisabled,
-              disabledReason: '다시 진행한 뒤 완료로 표시할 수 있어요',
+              disabledReason: '이번 회차를 다시 진행한 뒤 완료로 표시할 수 있어요',
               onToggle: () => toggleSavedFlowItem(row.flow, row.id, row),
             })}
           </div>
@@ -10841,7 +10884,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       <button
         type="button"
         data-testid="my-flow-calendar-date-button"
+        data-p34-marker="P34-04-CALENDAR-ROVING-DATE"
+        tabIndex={selected ? 0 : -1}
         aria-pressed={selected}
+        aria-label={`${formatMyFlowDisplayDate(dateStr, { includeWeekday: true })} 선택`}
         className={`rounded px-0.5 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-blue-200 ${selected ? 'bg-blue-700 text-white shadow-sm' : 'text-slate-700 hover:bg-blue-50 hover:text-blue-700'}`}
         onPointerDown={() => {
           myFlowDraggingRoutineKeyRef.current = '';
@@ -10862,6 +10908,32 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           setMyFlowExpandedMemoKey('');
           setMyFlowEditingDetailKey('');
           setMyFlowDetailOpen(false);
+        }}
+        onKeyDown={(event) => {
+          const nextDate = getCalendarGridNavigationDate(
+            dateStr,
+            event.key as CalendarGridNavigationKey,
+          );
+          if (!nextDate) return;
+          event.preventDefault();
+          event.stopPropagation();
+          setMyFlowSelectedDate(nextDate);
+          setMyFlowVisibleMonth(getMyFlowMonthStart(nextDate));
+          setMyFlowActiveRowKey('');
+          setMyFlowRoutineOverflowDate('');
+          setMyFlowScheduleOverflowDate('');
+          setMyFlowExpandedRoutineKey('');
+          setMyFlowExpandedAdvancedKey('');
+          setMyFlowExpandedMemoKey('');
+          setMyFlowEditingDetailKey('');
+          setMyFlowDetailOpen(false);
+          window.requestAnimationFrame(() => {
+            document
+              .querySelector<HTMLElement>(
+                `.fc-daygrid-day[data-date="${nextDate}"] [data-testid="my-flow-calendar-date-button"]`,
+              )
+              ?.focus({ preventScroll: true });
+          });
         }}
       >
         {info.dayNumberText}
@@ -11990,6 +12062,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         data-detail-mode={isDetailEditing ? 'edit' : 'execute'}
         data-editor-advanced-expanded={isDetailEditing ? String(isEditorAdvancedExpanded) : undefined}
         data-editor-layout={isDetailEditing ? (isMyFlowMobileViewport ? 'mobile-full-screen' : 'wide-detail-pane') : undefined}
+        data-p34-marker="P34-04-ITEM-EDITOR"
         data-default-primary-action-count={isDetailEditing ? undefined : '2'}
         role={isDetailEditing ? 'dialog' : undefined}
         aria-modal={isDetailEditing && isMyFlowMobileViewport ? true : undefined}
@@ -12019,14 +12092,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             className="mb-2 text-xs font-semibold text-blue-700"
           >
             {row.structuralOccurrenceExecutionState === 'done'
-              ? '이번 일정 완료'
+              ? '이번 회차 완료'
               : row.structuralOccurrenceExecutionState === 'reopened'
-                ? '이번 일정 다시 진행'
+                ? '이번 회차 다시 진행'
                 : row.structuralOccurrenceExecutionState === 'skipped'
-                  ? '이번 일정 건너뜀'
+                  ? '이번 회차 건너뜀'
                   : row.structuralOccurrenceExecutionState === 'held'
-                    ? '이번 일정 보류'
-                : '이번 일정'}
+                    ? '이번 회차 보류'
+                : '이번 회차'}
           </p>
         ) : null}
         <div className={isInlineMobileMode ? 'grid gap-3' : 'flex flex-wrap items-start justify-between gap-3'}>
@@ -12088,7 +12161,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               occurrenceDateLabel: isRoutineRow && row.date ? formatMyFlowDisplayDate(row.date) : undefined,
               detail: true,
               disabled: occurrenceExecutionPaused,
-              disabledReason: '다시 진행한 뒤 완료로 표시할 수 있어요',
+              disabledReason: '이번 회차를 다시 진행한 뒤 완료로 표시할 수 있어요',
               onToggle: () => toggleSavedFlowItem(row.flow, row.id, row),
             }) : null}
             {!isDetailEditing && isRecurringSeriesDefinition ? (
@@ -12131,11 +12204,15 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 data-testid={isPersonalDraftStructuralEditEligible(row.flow.bundle)
                   ? 'personal-draft-delete-item'
                   : 'my-flow-remove-item'}
-                aria-label={`${editorDraft.title} ${isPersonalDraftStructuralEditEligible(row.flow.bundle) ? '항목 삭제' : 'Flow에서 제외'}`}
+                aria-label={`${editorDraft.title} ${getStructuralItemCommandLabels(
+                  isPersonalDraftStructuralEditEligible(row.flow.bundle) ? 'personal' : 'source',
+                ).remove}`}
                 className={FLOW_UI_DANGER_ACTION_CLASS}
                 onClick={() => removeMyFlowItemFromSavedFlow(row)}
               >
-                {isPersonalDraftStructuralEditEligible(row.flow.bundle) ? '항목 삭제' : 'Flow에서 제외'}
+                {getStructuralItemCommandLabels(
+                  isPersonalDraftStructuralEditEligible(row.flow.bundle) ? 'personal' : 'source',
+                ).remove}
               </button>
             ) : null}
           </div>
@@ -12159,43 +12236,43 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           >
             <p className="text-xs font-semibold leading-5 text-slate-600">
               {occurrenceExecutionState === 'skipped'
-                ? '이번 일정은 건너뛰었어요. 다음 일정은 그대로예요.'
+                ? '이번 회차는 건너뛰었어요. 다음 회차는 그대로예요.'
                 : occurrenceExecutionState === 'held'
-                  ? '이번 일정을 잠시 보류했어요. 날짜와 다음 일정은 그대로예요.'
-                  : '이번 일정만 상태를 바꿉니다. 반복 규칙과 다음 일정은 그대로예요.'}
+                  ? '이번 회차를 보류했어요. 날짜와 다음 회차는 그대로예요.'
+                  : '이번 회차만 상태를 바꿉니다. 반복 규칙과 다음 회차는 그대로예요.'}
             </p>
             <div className="flex flex-wrap gap-2">
               {occurrenceExecutionPaused ? (
                 <button
                   type="button"
                   data-testid="personal-draft-occurrence-resume"
-                  aria-label={`${editorDraft.title} 이번 일정 다시 진행`}
+                  aria-label={`${editorDraft.title} ${getOccurrenceCommandLabels().resume}`}
                   className="min-h-9 rounded-md border border-blue-200 bg-white px-3 py-2 text-xs font-semibold text-blue-700 hover:border-blue-300"
                   onClick={() => setPersonalDraftOccurrenceExecutionState(row.flow, row, 'reopened')}
                 >
-                  다시 진행
+                  {getOccurrenceCommandLabels().resume}
                 </button>
               ) : null}
               {occurrenceExecutionState !== 'skipped' ? (
                 <button
                   type="button"
                   data-testid="personal-draft-occurrence-skip"
-                  aria-label={`${editorDraft.title} 이번 일정만 건너뛰기`}
+                  aria-label={`${editorDraft.title} ${getOccurrenceCommandLabels().skip}`}
                   className="min-h-9 rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:border-slate-300"
                   onClick={() => setPersonalDraftOccurrenceExecutionState(row.flow, row, 'skipped')}
                 >
-                  이번만 건너뛰기
+                  {getOccurrenceCommandLabels().skip}
                 </button>
               ) : null}
               {occurrenceExecutionState !== 'held' ? (
                 <button
                   type="button"
                   data-testid="personal-draft-occurrence-hold"
-                  aria-label={`${editorDraft.title} 이번 일정 잠시 보류`}
+                  aria-label={`${editorDraft.title} ${getOccurrenceCommandLabels().hold}`}
                   className="min-h-9 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-800 hover:border-amber-300"
                   onClick={() => setPersonalDraftOccurrenceExecutionState(row.flow, row, 'held')}
                 >
-                  잠시 보류
+                  {getOccurrenceCommandLabels().hold}
                 </button>
               ) : null}
             </div>
@@ -12345,7 +12422,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         {!showOccurrenceFields || !showEditableDetailFields ? null : isRoutineRow ? (
           <section data-testid="my-flow-routine-occurrence-section" className="mt-3 rounded-md bg-white px-3 py-3">
             <div className="flex items-center justify-between gap-3 text-xs font-semibold text-slate-600">
-              <p className="text-slate-900">이번 일정</p>
+              <p className="text-slate-900">이번 회차</p>
               <span className="rounded-md bg-slate-50 px-2 py-1 text-slate-500">날짜 · 시간 · 장소</span>
             </div>
             {occurrenceFields}
@@ -12702,7 +12779,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             className={isDetailEditing ? 'hidden' : 'mt-3 rounded-md bg-white px-3 py-3'}
           >
             <summary className="cursor-pointer text-xs font-semibold text-slate-700">
-              현재 항목 가져가기 · {currentItemExportCount}개
+              {getExportScopeActionLabel('item', currentItemExportCount)}
             </summary>
             {primaryLink ? (
               <a
@@ -13347,7 +13424,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                   closeMyFlowBatchAdjustment();
                 }}
               >
-                가져가기
+                {getExportScopeActionLabel('selected', batchSelectedKeySet.size)}
               </button>
               {batchCanRemove ? (
                 <button
@@ -13357,7 +13434,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                 className="min-h-11 rounded-md border border-rose-200 bg-white px-2 py-2 text-xs font-semibold text-rose-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-danger-focus)] disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
                 onClick={() => removeMyFlowBatchItems(flow)}
               >
-                  {isPersonalDraftStructuralEditEligible(flow.bundle) ? '항목 삭제' : 'Flow에서 제외'}
+                  {getStructuralItemCommandLabels(
+                    isPersonalDraftStructuralEditEligible(flow.bundle) ? 'personal' : 'source',
+                  ).remove}
                 </button>
               ) : null}
                 </div>
@@ -13608,7 +13687,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     return (
       <details data-testid="my-flow-excluded-steps" className="mt-3 rounded-md bg-slate-50 px-3 py-2 text-sm">
         <summary className="cursor-pointer text-xs font-semibold text-slate-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-200">
-          목록에서 뺀 할 일 · {flow.excludedRows.length}개
+          Flow에서 제외한 할 일 · {flow.excludedRows.length}개
         </summary>
         <ul className="mt-2 grid gap-2 border-t border-slate-200 pt-2 text-xs font-semibold text-slate-600">
           {flow.excludedRows.map((row) => (
@@ -13621,11 +13700,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               <button
                 type="button"
                 data-testid="my-flow-restore-excluded-item"
-                aria-label={`${toUserFacingSourceTitle(row.title)} Flow에 복구`}
+                aria-label={`${toUserFacingSourceTitle(row.title)} ${getStructuralItemCommandLabels('source').restore}`}
                 className="min-h-8 shrink-0 rounded-md border border-blue-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-blue-700"
                 onClick={() => restoreMyFlowExcludedItem(flow, row)}
               >
-                복구
+                {getStructuralItemCommandLabels('source').restore}
               </button>
             </li>
           ))}
@@ -14547,7 +14626,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             role="status"
             className="mb-3 flex flex-col gap-2 rounded-md bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-800 sm:flex-row sm:items-center sm:justify-between"
           >
-            <span>{undo.title} 항목을 목록에서 뺐어요.</span>
+            <span>{undo.title} 항목을 삭제했어요.</span>
             <button
               type="button"
               data-testid="personal-draft-delete-undo-action"
@@ -14567,7 +14646,7 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               data-testid="personal-draft-persistent-recovery-entry"
               className="cursor-pointer text-sm font-semibold text-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-200"
             >
-              목록에서 뺀 할 일 · {removedItems.length}개
+              삭제한 항목 · {removedItems.length}개
             </summary>
             <ul data-testid="personal-draft-persistent-recovery-list" className="mt-2 grid gap-2 border-t border-slate-200 pt-2">
               {removedItems.map((item) => {
@@ -14588,11 +14667,11 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                       type="button"
                       data-testid="personal-draft-restore-item"
                       data-item-id={item.itemId}
-                      aria-label={`${title} 목록에 복구`}
+                      aria-label={`${title} ${getStructuralItemCommandLabels('personal').restore}`}
                       className="min-h-8 shrink-0 rounded-md border border-blue-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-blue-700 hover:border-blue-300"
                       onClick={() => restoreMyFlowPersonalDraftItem(flow, item.itemId)}
                     >
-                      복구
+                      {getStructuralItemCommandLabels('personal').restore}
                     </button>
                   </li>
                 );
@@ -14968,6 +15047,77 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const last = formatMyFlowDisplayDate(dates[dates.length - 1]);
     return first === last ? first : `${first} - ${last}`;
   };
+  const getMyFlowManagementActions = (flow: MySavedFlow): FlowManagementMenuAction[] => {
+    const archived = archivedFlowSlugSet.has(flow.progress.slug);
+    const settingsEditable = canEditMyFlowSavedFlowSettings(flow);
+    const directAnchorEditable = canEditMyFlowDirectSavedMapAnchor(flow);
+    const executionComplete =
+      flow.rows.length > 0 && flow.rows.every((row) => isMyFlowRowChecked(flow, row));
+    const sourceHref = getMyFlowSourceHref(flow);
+    const sourceExternal = sourceHref.startsWith('https://');
+    const model = buildFlowManagementCommandModel({
+      archived,
+      canAdjust: true,
+      canReuse: executionComplete,
+      hasSource: Boolean(sourceHref),
+      canBackup: true,
+    });
+
+    return model.map((command): FlowManagementMenuAction => {
+      if (command.id === 'adjust') {
+        return {
+          ...command,
+          testId: 'my-flow-management-adjust',
+          onSelect: () => {
+            setSelectedSavedFlowSlug(flow.progress.slug);
+            setMyFlowWorkspaceSection('plan');
+            if (settingsEditable) openMyFlowPersonalCopySettings(flow);
+            else if (directAnchorEditable) openMyFlowDirectAnchorSettings(flow);
+            else openMyFlowBatchAdjustment(flow);
+          },
+        };
+      }
+      if (command.id === 'reuse') {
+        return {
+          ...command,
+          testId: 'my-flow-management-reuse',
+          onSelect: () => {
+            setMyFlowWorkspaceSection('record');
+            openMyFlowReuse(flow);
+          },
+        };
+      }
+      if (command.id === 'source') {
+        return {
+          ...command,
+          testId: 'my-flow-management-source',
+          href: sourceHref,
+          external: sourceExternal,
+        };
+      }
+      if (command.id === 'archive' || command.id === 'restore') {
+        const action = command.id === 'archive' ? 'archive' : 'restore';
+        return {
+          ...command,
+          testId: 'my-flow-archive-toggle',
+          onSelect: () => updateMyFlowArchiveState(flow, action),
+        };
+      }
+      if (command.id === 'backup') {
+        return {
+          ...command,
+          testId: 'my-flow-management-backup',
+          onSelect: () => downloadCurrentFlowMeLocalBackup(window.localStorage),
+        };
+      }
+      return {
+        ...command,
+        testId: 'my-flow-permanent-delete-open',
+        returnFocusOnSelect: false,
+        onSelect: () => openMyFlowPermanentDeleteDialog(flow),
+      };
+    });
+  };
   const renderMyFlowMobileLibraryRow = (flow: MySavedFlow) => {
     const flowTitle = getMyFlowPortableExportFlowTitle(flow);
     const archived = archivedFlowSlugSet.has(flow.progress.slug);
@@ -15004,37 +15154,14 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             >
               복구
             </button>
-            <details
-              data-testid="my-flow-archived-management-menu"
-              className="relative"
-              onKeyDown={(event) => {
-                if (event.key !== 'Escape' || !event.currentTarget.open) return;
-                event.preventDefault();
-                event.currentTarget.open = false;
-                event.currentTarget.querySelector<HTMLElement>('summary')?.focus();
-              }}
-            >
-              <summary
-                aria-label={`${flowTitle} 보관 Flow 관리`}
-                className="inline-flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-md text-lg font-semibold text-slate-500 hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] [&::-webkit-details-marker]:hidden"
-              >
-                <span aria-hidden="true">⋯</span>
-              </summary>
-              <div
-                role="menu"
-                className="absolute right-0 top-full z-40 mt-1 min-w-56 rounded-md border border-slate-200 bg-white p-1.5 shadow-[0_14px_36px_rgba(15,23,42,0.16)]"
-              >
-                <button
-                  type="button"
-                  role="menuitem"
-                  data-testid="my-flow-permanent-delete-open"
-                  className="inline-flex min-h-10 w-full items-center rounded-md px-3 py-2 text-left text-sm font-semibold text-rose-700 hover:bg-rose-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-danger-focus)]"
-                  onClick={() => openMyFlowPermanentDeleteDialog(flow)}
-                >
-                  이 기기에서 영구 삭제
-                </button>
-              </div>
-            </details>
+            <FlowManagementMenu
+              flowTitle={flowTitle}
+              actions={getMyFlowManagementActions(flow)}
+              testId="my-flow-archived-management-menu"
+              triggerTestId="my-flow-archived-management-trigger"
+              marker="P34-01-ARCHIVED-RESTORE-390"
+              triggerClassName="h-10 min-h-10 px-2 text-xs"
+            />
           </span>
         </article>
       );
@@ -15094,15 +15221,25 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
             <span className="block truncate text-sm font-semibold text-[var(--flowme-text)]">{flowTitle}</span>
             <span className="mt-1 block truncate text-[11px] font-semibold text-[var(--flowme-text-secondary)]">보관됨</span>
           </span>
-          <button
-            type="button"
-            data-testid="my-flow-archived-direct-restore"
-            aria-label={`${flowTitle} 복구`}
-            className="min-h-10 rounded-md border border-blue-200 bg-white px-3 py-2 text-xs font-semibold text-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
-            onClick={() => updateMyFlowArchiveState(flow, 'restore')}
-          >
-            복구
-          </button>
+          <span className="flex items-center gap-1">
+            <button
+              type="button"
+              data-testid="my-flow-archived-direct-restore"
+              aria-label={`${flowTitle} 복구`}
+              className="min-h-10 rounded-md border border-blue-200 bg-white px-3 py-2 text-xs font-semibold text-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+              onClick={() => updateMyFlowArchiveState(flow, 'restore')}
+            >
+              복구
+            </button>
+            <FlowManagementMenu
+              flowTitle={flowTitle}
+              actions={getMyFlowManagementActions(flow)}
+              testId="my-flow-archived-management-menu"
+              triggerTestId="my-flow-archived-management-trigger"
+              marker="P34-01-LIFECYCLE-1024"
+              triggerClassName="min-h-10 px-2 text-xs"
+            />
+          </span>
         </div>
       );
     }
@@ -15151,15 +15288,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const anchorDisplay = getMyFlowAnchorDisplay(flow.bundle, flow.anchor, myFlowDemoMode);
     const nextActionLabel = getMyFlowOpenActionLabel(flow.bundle);
     const typeCounts = flow.bundle.flow.tags?.includes('progress-flow') ? [] : getMyFlowTypeCounts(flow.rows);
-    const sourceHref = getMyFlowSourceHref(flow);
-    const sourceLabel = getMyFlowSourceLinkLabel(flow);
     const contentReadiness = getMyFlowContentReadiness(flow);
     const executionReady = contentReadiness.kind === 'ready';
     const retiredPersonalCopy = contentReadiness.kind === 'retired';
-    const sourceLinkExternal = sourceHref.startsWith('https://');
     const showContentReadinessBadge = !isMyFlowScenarioDemo && contentReadiness.kind !== 'ready';
-    const archivedInInventory = archivedFlowSlugSet.has(flow.progress.slug);
-    const showArchiveToggle = true;
     const showWholeFlowOutline = Boolean(options.forceWholeFlowOutline) || selectedSavedFlowSlug === flow.progress.slug || visibleSavedFlows.length === 1;
     const batchActive = Boolean(myFlowBatchAdjustment?.flowSlug === flow.progress.slug);
     const activeOverviewRow =
@@ -15375,68 +15507,16 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         {executionReady && !batchActive ? renderMyFlowReuseNotice(flow) : null}
         {executionReady && !batchActive ? renderMyFlowExcludedSteps(flow) : null}
         {!batchActive ? (
-          <details
-            data-testid="my-flow-management-menu"
-            className="relative mt-4 w-fit"
-            onKeyDown={(event) => {
-              if (event.key !== 'Escape' || !event.currentTarget.open) return;
-              event.preventDefault();
-              event.stopPropagation();
-              event.currentTarget.open = false;
-              event.currentTarget.querySelector<HTMLElement>('summary')?.focus();
-            }}
-            onBlur={(event) => {
-              if (!event.currentTarget.contains(event.relatedTarget as Node | null)) event.currentTarget.open = false;
-            }}
-          >
-            <summary
-              data-testid="my-flow-management-menu-trigger"
-              data-action-role="overflow"
-              aria-haspopup="menu"
-              aria-label={`${flowTitle} 관리 메뉴`}
-              className="inline-flex min-h-10 cursor-pointer list-none items-center justify-center rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-600 hover:border-blue-300 hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] [&::-webkit-details-marker]:hidden"
-            >
-              더보기
-            </summary>
-            <div
-              role="menu"
-              className="absolute bottom-full left-0 z-30 mb-2 grid min-w-48 gap-1 rounded-md border border-slate-200 bg-white p-1.5 shadow-[0_14px_36px_rgba(15,23,42,0.14)]"
-            >
-              <Link
-                role="menuitem"
-                data-testid="my-flow-management-source"
-                className="inline-flex min-h-10 w-full items-center rounded-md px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
-                href={sourceHref}
-                target={sourceLinkExternal ? '_blank' : undefined}
-                rel={sourceLinkExternal ? 'noreferrer' : undefined}
-              >
-                {flow.savedMap ? '원문 보기' : sourceLabel}
-              </Link>
-              {showArchiveToggle ? (
-                <button
-                  type="button"
-                  role="menuitem"
-                  data-testid="my-flow-archive-toggle"
-                  aria-label={`${flowTitle} ${archivedInInventory ? '복구' : '보관'}`}
-                  className="inline-flex min-h-10 items-center rounded-md px-3 py-2 text-left text-sm font-semibold text-slate-700 hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
-                  onClick={() => updateMyFlowArchiveState(flow, archivedInInventory ? 'restore' : 'archive')}
-                >
-                  {archivedInInventory ? '복구' : '보관'}
-                </button>
-              ) : null}
-              {archivedInInventory ? (
-                <button
-                  type="button"
-                  role="menuitem"
-                  data-testid="my-flow-permanent-delete-open"
-                  className="inline-flex min-h-10 items-center rounded-md px-3 py-2 text-left text-sm font-semibold text-rose-700 hover:bg-rose-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-danger-focus)]"
-                  onClick={() => openMyFlowPermanentDeleteDialog(flow)}
-                >
-                  이 기기에서 영구 삭제
-                </button>
-              ) : null}
-            </div>
-          </details>
+          <div className="mt-4 w-fit">
+            <FlowManagementMenu
+              flowTitle={flowTitle}
+              actions={getMyFlowManagementActions(flow)}
+              testId="my-flow-management-menu"
+              triggerTestId="my-flow-management-menu-trigger"
+              marker="P34-01-LIFECYCLE-1024"
+              align="left"
+            />
+          </div>
         ) : null}
       </section>
     );
@@ -15450,8 +15530,6 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
     const directAnchorEditable = canEditMyFlowDirectSavedMapAnchor(flow);
     const settingsDateAnchorCopy = settingsEditable ? getMyFlowSettingsDateAnchorCopy(flow) : null;
     const directAnchorCopy = directAnchorEditable ? getMyFlowDirectSavedMapAnchorCopy(flow) : null;
-    const sourceHref = getMyFlowSourceHref(flow);
-    const sourceExternal = sourceHref.startsWith('https://');
     const progressSummary = getMyFlowFlowProgressLabel(flow);
     const completedCount = flow.rows.filter((row) => isMyFlowRowChecked(flow, row)).length;
     const tabs: Array<[MyFlowWorkspaceSection, string]> = [
@@ -15495,44 +15573,13 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
               <h2 className="truncate text-sm font-semibold text-[var(--flowme-text)]">{flowTitle}</h2>
               <p data-testid="my-flow-workspace-progress-summary" className="mt-0.5 text-[11px] font-semibold text-[var(--flowme-text-secondary)]">{progressSummary}</p>
             </div>
-            <details
-              data-testid="my-flow-workspace-management-menu"
-              className="relative"
-              onKeyDown={(event) => {
-                if (event.key !== 'Escape' || !event.currentTarget.open) return;
-                event.preventDefault();
-                event.currentTarget.open = false;
-                event.currentTarget.querySelector<HTMLElement>('summary')?.focus();
-              }}
-            >
-              <summary
-                aria-label={`${flowTitle} 관리 메뉴`}
-                className="inline-flex h-11 w-11 cursor-pointer list-none items-center justify-center rounded-md text-xl font-semibold text-slate-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] [&::-webkit-details-marker]:hidden"
-              >
-                <span aria-hidden="true">⋯</span>
-              </summary>
-              <div role="menu" className="absolute right-0 top-full z-40 mt-1 grid min-w-52 gap-1 rounded-md border border-slate-200 bg-white p-1.5 shadow-[0_14px_36px_rgba(15,23,42,0.16)]">
-                <Link
-                  role="menuitem"
-                  className="inline-flex min-h-10 items-center rounded-md px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
-                  href={sourceHref}
-                  target={sourceExternal ? '_blank' : undefined}
-                  rel={sourceExternal ? 'noreferrer' : undefined}
-                >
-                  원문 보기
-                </Link>
-                <button
-                  type="button"
-                  role="menuitem"
-                  data-testid="my-flow-archive-toggle"
-                  aria-label={`${flowTitle} 보관`}
-                  className="inline-flex min-h-10 items-center rounded-md px-3 py-2 text-left text-sm font-semibold text-slate-700 hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
-                  onClick={() => updateMyFlowArchiveState(flow, 'archive')}
-                >
-                  보관
-                </button>
-              </div>
-            </details>
+            <FlowManagementMenu
+              flowTitle={flowTitle}
+              actions={getMyFlowManagementActions(flow)}
+              testId="my-flow-workspace-management-menu"
+              marker="P34-01-ACTIVE-FLOW-MANAGE-390"
+              triggerClassName="h-11 w-auto min-w-11 px-2 text-xs"
+            />
           </div>
           <nav
             className="mt-2 grid grid-cols-3 rounded-md bg-slate-100 p-1"
@@ -16812,9 +16859,18 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
                     flowListVisibleFlows.map((flow) => renderSavedFlowOverviewCard(flow))
                   ) : null}
                   {showFlowInventory && flowListVisibleFlows.length === 0 ? (
-                    <section className="rounded-lg border border-dashed border-slate-300 bg-white p-5 text-sm text-slate-600">
-                      <h3 className="text-lg font-semibold text-slate-950">조건에 맞는 Flow가 없습니다</h3>
-                      <p className="mt-2">검색어 또는 상태 필터를 바꾸면 다시 볼 수 있습니다.</p>
+                    <section
+                      data-testid={showArchivedInventory ? 'my-flow-archive-empty-state' : undefined}
+                      className="rounded-lg border border-dashed border-slate-300 bg-white p-5 text-sm text-slate-600"
+                    >
+                      <h3 className="text-lg font-semibold text-slate-950">
+                        {showArchivedInventory ? '보관한 Flow가 없습니다' : '조건에 맞는 Flow가 없습니다'}
+                      </h3>
+                      <p className="mt-2">
+                        {showArchivedInventory
+                          ? 'Flow 관리에서 보관한 Flow를 여기서 복구하거나 영구 삭제할 수 있습니다.'
+                          : '검색어 또는 상태 필터를 바꾸면 다시 볼 수 있습니다.'}
+                      </p>
                     </section>
                   ) : null}
                     </>
@@ -17589,6 +17645,8 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
           headingId="my-flow-permanent-delete-title"
           eyebrow="복구할 수 없는 작업"
           title={`${myFlowPermanentDeleteDialog.flowTitle} 영구 삭제`}
+          initialFocusSelector="[data-testid='my-flow-permanent-delete-cancel']"
+          returnFocusSelector={`[data-flow-slug="${myFlowPermanentDeleteDialog.flowSlug}"] [data-testid="my-flow-archived-management-trigger"]`}
           className="md:left-1/2 md:max-w-lg md:-translate-x-1/2"
           onClose={() => setMyFlowPermanentDeleteDialog(null)}
         >
@@ -19362,7 +19420,7 @@ export function PublicFlow({ slug }: { slug: string }) {
           className={FLOW_UI_SECONDARY_ACTION_CLASS}
           onClick={publicAdjustmentOpen ? closePublicAdjustment : copyToEditableDraft}
         >
-          {publicAdjustmentOpen ? '조정 닫기' : '내게 맞게 조정'}
+          {publicAdjustmentOpen ? 'Flow 조정 닫기' : FLOW_COMMAND_LABELS.adjustFlow}
         </button>
         <button
           type="button"
@@ -19391,7 +19449,7 @@ export function PublicFlow({ slug }: { slug: string }) {
             type="button"
             onClick={copyToEditableDraft}
           >
-            조정
+            {FLOW_COMMAND_LABELS.adjustFlow}
           </button>
           <button
             data-testid="public-flow-save-primary-mobile"
@@ -19435,19 +19493,24 @@ export function PublicFlow({ slug }: { slug: string }) {
         data-testid="public-flow-personal-adjustment"
         data-adjustment-mode={publicAdjustmentMode}
         data-p30-marker="P30-LONG-FLOW-CONTEXTUAL-ADJUST"
+        data-p34-marker="P34-03-INCLUDE-TITLE-DATE-RECEIPT-PARITY"
         tabIndex={-1}
         aria-labelledby="public-flow-personal-adjustment-title"
         className="border-b border-[var(--flowme-border-strong)] py-5 outline-none sm:py-7"
       >
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <p className="text-xs font-semibold text-[var(--flowme-action)]">내 Flow로 조정</p>
+            <p className="text-xs font-semibold text-[var(--flowme-action)]">{FLOW_COMMAND_LABELS.adjustFlow}</p>
             <h2 id="public-flow-personal-adjustment-title" className="mt-1 text-xl font-bold text-[var(--flowme-text)]">
               저장할 항목 정리
             </h2>
           </div>
-          <span className="text-xs font-semibold text-[var(--flowme-text-secondary)]">
-            {includedCount}/{rows.length}개 저장
+          <span
+            data-testid="public-flow-adjustment-summary"
+            className="text-right text-xs font-semibold leading-5 text-[var(--flowme-text-secondary)]"
+          >
+            {publicFlowTitleDraft.trim() || publicEffectiveDisplayTitle}<br />
+            {includedCount}/{rows.length}개 · 날짜 {datedCount}개
           </span>
         </div>
 

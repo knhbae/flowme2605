@@ -108,7 +108,7 @@ test('public save-before shows the whole Flow before one start decision', async 
   await expect(page.getByTestId('public-flow-save-primary-mobile')).toHaveText(
     '캘린더 10개로 시작',
   );
-  await expect(page.getByTestId('public-flow-adjust-entry-mobile')).toHaveAccessibleName('조정');
+  await expect(page.getByTestId('public-flow-adjust-entry-mobile')).toHaveAccessibleName('Flow 조정');
   await expect(hero).not.toContainText(/이사일 1개를 기준으로|원문 체크리스트의 실행 단서/u);
   await capture(page, '03-public-save-before-mobile.png');
 });
@@ -126,7 +126,7 @@ test('source-backed map and public Flow use the same artifact-first decision gra
   await expect(page.getByTestId('public-flow-save-primary-mobile')).toHaveAccessibleName(
     '캘린더 24개로 시작',
   );
-  await expect(page.getByTestId('public-flow-adjust-entry-mobile')).toHaveAccessibleName('조정');
+  await expect(page.getByTestId('public-flow-adjust-entry-mobile')).toHaveAccessibleName('Flow 조정');
   await capture(page, '04-source-backed-save-before-mobile.png');
 
   await page.goto('/flow-maps/curated-wedding-checklist-family');

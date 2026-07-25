@@ -1,0 +1,217 @@
+{
+  "schemaVersion": "flowme-p34-automated-persona-journey-v1",
+  "reviewDate": "2026-07-25",
+  "observedUserCount": 0,
+  "method": "automated_browser_and_heuristic_simulation",
+  "summary": {
+    "supported": 21,
+    "partial": 3,
+    "hidden": 0,
+    "missing": 0,
+    "blocked": 0
+  },
+  "cells": [
+    {
+      "personaId": "P1",
+      "persona": "이사 기준일 역산 사용자",
+      "sessionId": "A",
+      "goal": "24개 전체 결과 확인, 이사일 조정, 저장",
+      "status": "partial",
+      "evidence": "P33 canonical and P34 adjustment E2E pass",
+      "residualRisk": "P33 and P34 are not production-released"
+    },
+    {
+      "personaId": "P1",
+      "persona": "이사 기준일 역산 사용자",
+      "sessionId": "B",
+      "goal": "Item 수정, 완료/재개, Calendar 확인",
+      "status": "supported",
+      "evidence": "quick editor, projection, completion regression"
+    },
+    {
+      "personaId": "P1",
+      "persona": "이사 기준일 역산 사용자",
+      "sessionId": "C",
+      "goal": "보관, 복구, 삭제, export, 새 실행",
+      "status": "supported",
+      "evidence": "P34 lifecycle plus reuse/export regression"
+    },
+    {
+      "personaId": "P2",
+      "persona": "날짜 없는 차량 점검 사용자",
+      "sessionId": "A",
+      "goal": "날짜 없이 Checklist 저장",
+      "status": "supported",
+      "evidence": "public date-intent and receipt regression"
+    },
+    {
+      "personaId": "P2",
+      "persona": "날짜 없는 차량 점검 사용자",
+      "sessionId": "B",
+      "goal": "Calendar 배치, undo, 완료, 재개",
+      "status": "supported",
+      "evidence": "undated placement and Calendar keyboard regression"
+    },
+    {
+      "personaId": "P2",
+      "persona": "날짜 없는 차량 점검 사용자",
+      "sessionId": "C",
+      "goal": "날짜 제거와 whole/selected/current export",
+      "status": "supported",
+      "evidence": "batch date removal and unified export regression"
+    },
+    {
+      "personaId": "P3",
+      "persona": "반복 홈트 사용자",
+      "sessionId": "A",
+      "goal": "요일, 시간, 종료 조건 확인과 저장",
+      "status": "supported",
+      "evidence": "summary-first recurrence setup regression"
+    },
+    {
+      "personaId": "P3",
+      "persona": "반복 홈트 사용자",
+      "sessionId": "B",
+      "goal": "회차 완료/재개와 series 수정 구분",
+      "status": "supported",
+      "evidence": "occurrence execution and identity E2E"
+    },
+    {
+      "personaId": "P3",
+      "persona": "반복 홈트 사용자",
+      "sessionId": "C",
+      "goal": "반복 종료, archive/restore, Calendar/ICS, 새 run",
+      "status": "partial",
+      "evidence": "separate lifecycle, recurrence, ICS, reuse regressions",
+      "residualRisk": "combined multi-week routine journey is not one integrated observed session"
+    },
+    {
+      "personaId": "P4",
+      "persona": "장기 학습·진도 사용자",
+      "sessionId": "A",
+      "goal": "날짜 없는 진도 Flow 저장",
+      "status": "supported",
+      "evidence": "source-backed progress Flow regression"
+    },
+    {
+      "personaId": "P4",
+      "persona": "장기 학습·진도 사용자",
+      "sessionId": "B",
+      "goal": "완료/재개, 메모, 순서, 선택 날짜 관리",
+      "status": "partial",
+      "evidence": "completion, memo, and date are supported",
+      "residualRisk": "source-backed structural reorder remains unavailable by design"
+    },
+    {
+      "personaId": "P4",
+      "persona": "장기 학습·진도 사용자",
+      "sessionId": "C",
+      "goal": "회고와 새 run, 과거 진도 보존",
+      "status": "supported",
+      "evidence": "completion reflection and run-history regression"
+    },
+    {
+      "personaId": "P5",
+      "persona": "URL 또는 메모 개인 draft 사용자",
+      "sessionId": "A",
+      "goal": "메모를 5개 Item으로 나누고 저장",
+      "status": "supported",
+      "evidence": "preview-first memo segmentation E2E"
+    },
+    {
+      "personaId": "P5",
+      "persona": "URL 또는 메모 개인 draft 사용자",
+      "sessionId": "B",
+      "goal": "add/delete/restore/reorder와 값 수정",
+      "status": "supported",
+      "evidence": "structural edit and quick editor regression"
+    },
+    {
+      "personaId": "P5",
+      "persona": "URL 또는 메모 개인 draft 사용자",
+      "sessionId": "C",
+      "goal": "reload, lifecycle, export, ownership 경계",
+      "status": "supported",
+      "evidence": "memo reload, permanent delete, list export regression"
+    },
+    {
+      "personaId": "P6",
+      "persona": "여러 Flow를 관리하는 재방문 사용자",
+      "sessionId": "A",
+      "goal": "27개 중 검색하고 Flow 열기",
+      "status": "supported",
+      "evidence": "adaptive library and focused workspace regression"
+    },
+    {
+      "personaId": "P6",
+      "persona": "여러 Flow를 관리하는 재방문 사용자",
+      "sessionId": "B",
+      "goal": "다음 행동, 계획, 기록, 수정, 완료/재개",
+      "status": "supported",
+      "evidence": "focused workspace and command grammar regression"
+    },
+    {
+      "personaId": "P6",
+      "persona": "여러 Flow를 관리하는 재방문 사용자",
+      "sessionId": "C",
+      "goal": "보관된 Flow 검색, 복구, 영구 삭제, reload",
+      "status": "supported",
+      "evidence": "P34 archived lifecycle E2E"
+    },
+    {
+      "personaId": "P7",
+      "persona": "Calendar·Todo·Sheet export 중심 사용자",
+      "sessionId": "A",
+      "goal": "primary/secondary artifact와 count 예측",
+      "status": "supported",
+      "evidence": "artifact-first and recommendation regression"
+    },
+    {
+      "personaId": "P7",
+      "persona": "Calendar·Todo·Sheet export 중심 사용자",
+      "sessionId": "B",
+      "goal": "whole/selected/current scope와 output 비교",
+      "status": "supported",
+      "evidence": "unified export scope E2E"
+    },
+    {
+      "personaId": "P7",
+      "persona": "Calendar·Todo·Sheet export 중심 사용자",
+      "sessionId": "C",
+      "goal": "destination parity와 재생성",
+      "status": "supported",
+      "evidence": "Calendar, ICS, checklist, sheet, memo projection regression"
+    },
+    {
+      "personaId": "P8",
+      "persona": "키보드·저시력 보조 사용자",
+      "sessionId": "A",
+      "goal": "public save-before keyboard 조정과 저장",
+      "status": "supported",
+      "evidence": "P29/P34 named control and focus-order regression"
+    },
+    {
+      "personaId": "P8",
+      "persona": "키보드·저시력 보조 사용자",
+      "sessionId": "B",
+      "goal": "My Flow와 Calendar keyboard-only 조작",
+      "status": "supported",
+      "evidence": "focus trap, quick editor, roving Calendar grid regression"
+    },
+    {
+      "personaId": "P8",
+      "persona": "키보드·저시력 보조 사용자",
+      "sessionId": "C",
+      "goal": "archive/restore/delete/undo/export keyboard-only",
+      "status": "supported",
+      "evidence": "P34 lifecycle focus and export focus-return regression"
+    }
+  ],
+  "humanObservationQuestions": [
+    "사용자가 Flow 관리에서 보관과 영구 삭제의 차이를 설명 없이 예측하는가?",
+    "구조 편집을 접어 둔 상태에서 초안의 주요 조정 경로를 찾는가?",
+    "반복 사용자에게 이번 회차와 반복 일정 조정의 범위가 자연스럽게 읽히는가?",
+    "전체, 선택한, 현재 항목 가져가기의 차이를 실행 전에 이해하는가?",
+    "Calendar 날짜 키보드 이동이 screen reader 공지와 함께 충분한가?"
+  ]
+}

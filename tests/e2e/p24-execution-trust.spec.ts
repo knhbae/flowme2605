@@ -547,7 +547,7 @@ test.describe('P24 execution trust regressions', () => {
 
     const flow = await openMyFlowLibraryFlow(page, 'source-backed-moving-d30', 'record');
     const exportSurface = flow.getByTestId('my-flow-export-surface');
-    await expect(exportSurface.getByTestId('my-flow-export-entry')).toHaveText('가져가기');
+    await expect(exportSurface.getByTestId('my-flow-export-entry')).toContainText(/전체 \d+개 가져가기/);
     await exportSurface.getByTestId('my-flow-export-entry').click();
     await expect(exportSurface.getByTestId('my-flow-export-scope-flow')).toHaveAttribute('aria-pressed', 'true');
     await expect(exportSurface.getByTestId('my-flow-export-scope-flow')).toHaveText('Flow 전체 · 5개');
@@ -587,7 +587,7 @@ test.describe('P24 execution trust regressions', () => {
     await firstExecutionRow.getByRole('button', { name: /열기/ }).click();
     const detail = getOpenMyFlowItemDetail(page);
     await expect(detail.getByTestId('my-flow-detail-portable-export').locator('summary')).toHaveText(
-      '현재 항목 가져가기 · 1개',
+      '현재 항목 1개 가져가기',
     );
     await expect(detail.getByTestId('my-flow-detail-portable-export')).toHaveAttribute('data-export-scope', 'item');
     await expect(detail.getByTestId('my-flow-detail-portable-export')).toHaveAttribute('data-export-included-count', '1');

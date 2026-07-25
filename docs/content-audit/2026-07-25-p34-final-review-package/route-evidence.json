@@ -1,0 +1,192 @@
+{
+  "schemaVersion": "flowme-p34-final-route-evidence-v1",
+  "reviewDate": "2026-07-25",
+  "evidenceKind": [
+    "current_source",
+    "current_command",
+    "current_browser_interaction",
+    "current_package_screenshot",
+    "heuristic_simulation"
+  ],
+  "observedUserCount": 0,
+  "baseline": {
+    "p33Sha": "8c54992ce5628ab2a3884a530a83d2c8226223dc",
+    "p33PullRequest": 156,
+    "p33MergedToMain": false,
+    "p34Branch": "codex/p34-execution-crud"
+  },
+  "markers": {
+    "P34-01-ACTIVE-FLOW-MANAGE-390": true,
+    "P34-01-ARCHIVED-RESTORE-390": true,
+    "P34-01-LIFECYCLE-1024": true,
+    "P34-01-ARCHIVE-UNDO": true,
+    "P34-01-RESTORE-RELOAD": true,
+    "P34-01-PERMANENT-DELETE-BACKUP": true,
+    "P34-02-SHARED-COMMAND-GRAMMAR": true,
+    "P34-03-INCLUDE-TITLE-DATE-RECEIPT-PARITY": true,
+    "P34-04-DRAFT-PREVIEW": true,
+    "P34-04-ITEM-EDITOR": true,
+    "P34-05-CALENDAR-ROVING-DATE": true,
+    "P34-06-ROUTINE-SUMMARY": true,
+    "P34-07-SCOPE-FIRST-EXPORT": true
+  },
+  "routes": [
+    {
+      "route": "/my?view=flows",
+      "viewport": "390x844",
+      "fixture": "saved vehicle-inspection-prep",
+      "results": {
+        "flowManagementAccessibleName": "Flow 관리",
+        "activeCommandCount": 3,
+        "activeCommandOrder": [
+          "Flow 조정",
+          "원문 보기",
+          "보관"
+        ],
+        "archiveUndoVisible": true,
+        "archivedDirectRestoreVisible": true,
+        "permanentDeleteArchivedOnly": true,
+        "personalBackupVisible": true,
+        "deleteDialogInitialFocus": "취소",
+        "escapeReturnsToVisibleTrigger": true
+      }
+    },
+    {
+      "route": "/my?view=flows",
+      "viewport": "1024x768, 1440x900",
+      "fixture": "saved vehicle-inspection-prep",
+      "results": {
+        "sharedManagementAnatomy": true,
+        "horizontalOverflowCount": 0,
+        "unnamedInteractiveCount": 0,
+        "consolePageErrorCount": 0
+      }
+    },
+    {
+      "route": "/f/moving-d30-basic",
+      "viewport": "390x844",
+      "fixture": "anchor 2030-08-15",
+      "results": {
+        "artifactVisibleDuringAdjustment": true,
+        "effectiveItemCount": 24,
+        "includedItemCount": 24,
+        "datedItemCount": 24,
+        "rowEditCountInScheduleMode": 1,
+        "saveIdentityChanged": false
+      }
+    },
+    {
+      "route": "/flows",
+      "viewport": "390x844",
+      "fixture": "five-action travel memo",
+      "results": {
+        "draftItemCount": 5,
+        "initialStructuralControlCount": 0,
+        "initialInteractiveControlCountMax": 20,
+        "structuralControlsAfterModeOpen": 5,
+        "reloadAndWholeExportPreserved": true
+      }
+    },
+    {
+      "route": "/calendar?demo=ux20",
+      "viewport": "390x844",
+      "results": {
+        "dateButtonCount": 42,
+        "dateTabStopCount": 1,
+        "arrowNavigation": true,
+        "homeEndNavigation": true,
+        "pageNavigation": true,
+        "horizontalOverflowCount": 0
+      }
+    },
+    {
+      "route": "/f/curated-allblanc-morning-workout",
+      "viewport": "390x844",
+      "results": {
+        "routineSummaryVisible": true,
+        "initialAdvancedEditorCount": 0,
+        "seriesEditLabel": "반복 일정 조정",
+        "occurrenceScopedLabels": true,
+        "seriesIdentityChangedByOccurrenceActionCount": 0
+      }
+    },
+    {
+      "route": "/my?view=flows",
+      "viewport": "390x844",
+      "fixture": "saved vehicle-inspection-prep",
+      "results": {
+        "flowExportEntryPattern": "전체 N개 가져가기",
+        "selectedExportEntryPattern": "선택한 N개 가져가기",
+        "itemExportEntryPattern": "현재 항목 N개 가져가기",
+        "scopeControlVisible": true,
+        "recommendationPreviewVisible": true,
+        "previewOutputCountMismatchCount": 0
+      }
+    }
+  ],
+  "quality": {
+    "viewports": [
+      "390x844",
+      "1024x768",
+      "1440x900"
+    ],
+    "horizontalOverflowCount": 0,
+    "unnamedInteractiveCount": 0,
+    "consolePageErrorCount": 0,
+    "fixedLayerOverlapCount": 0,
+    "focusReturnFailureCount": 0
+  },
+  "verification": {
+    "pretest": {
+      "passed": 73,
+      "failed": 0
+    },
+    "unit": {
+      "passed": 588,
+      "failed": 0
+    },
+    "p34E2E": {
+      "passed": 6,
+      "failed": 0
+    },
+    "targetedCrudProjectionE2E": {
+      "passed": 8,
+      "failed": 0
+    },
+    "p33PublicSourceRegressionE2E": {
+      "passed": 50,
+      "failed": 0
+    },
+    "firstFullE2E": {
+      "passed": 320,
+      "failed": 6,
+      "classification": {
+        "obsoleteAssertions": 5,
+        "responsiveTestRace": 1,
+        "productDataLoss": 0
+      }
+    },
+    "finalFullE2E": {
+      "status": "passed",
+      "passed": 326,
+      "failed": 0
+    },
+    "build": {
+      "passed": true,
+      "staticPageCount": 18
+    },
+    "docsCheck": {
+      "passed": true,
+      "requiredFileCount": 14,
+      "localLinkCount": 3150
+    }
+  },
+  "publish": {
+    "commit": null,
+    "push": false,
+    "pullRequest": null,
+    "previewUrl": null,
+    "mergeToMain": false,
+    "productionDeploy": false
+  }
+}

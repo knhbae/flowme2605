@@ -17,6 +17,7 @@ import { FlowItemMultiSelect } from './FlowItemMultiSelect';
 import { FlowExportReceipt } from './FlowExportReceipt';
 import { FlowExportPlan } from './FlowExecutionPrimitives';
 import { FLOW_EXECUTION_ACTIONS } from '@/lib/flow/execution-ui-contract';
+import { getExportScopeActionLabel } from '@/lib/flow/flow-command-grammar';
 import {
   FLOW_UI_ICON_ACTION_CLASS,
   FLOW_UI_SECONDARY_ACTION_CLASS,
@@ -105,6 +106,7 @@ export function FlowExportPanel({
     (item) => !item.excluded && !item.tombstoned && item.listEligible !== false,
   );
   const selectedCount = selectedPlan.includedCount;
+  const entryLabel = getExportScopeActionLabel('flow', flowPlan.includedCount);
   const scopeLabel = scope === 'flow' ? 'Flow 전체' : '직접 선택';
   const includedKeySet = new Set(plan.items.map((item) => item.key));
   const includedPanelItems = items.filter((item) => includedKeySet.has(item.key));
@@ -247,11 +249,11 @@ export function FlowExportPanel({
           data-testid={legacyPersonalDraft ? 'personal-draft-list-export-toggle' : 'my-flow-export-entry'}
           data-action-priority="secondary"
           aria-expanded={open}
-          aria-label={`${flowTitle} 가져가기`}
+          aria-label={`${flowTitle} ${entryLabel}`}
           className={FLOW_UI_SECONDARY_ACTION_CLASS}
           onClick={() => onOpenChange(!open)}
         >
-          {FLOW_EXECUTION_ACTIONS.exportFlow.label}
+          {entryLabel}
         </button>
       ) : null}
 
@@ -263,6 +265,7 @@ export function FlowExportPanel({
           data-export-layout="compact-preflight"
           data-default-expanded-secondary-count="0"
           data-flow-anatomy="export-preflight"
+          data-p34-marker="P34-07-SCOPE-FIRST-EXPORT"
           className={showEntry ? 'mt-3 border-t border-[var(--flowme-border)] pt-3' : ''}
         >
           <div className="flex items-center justify-between gap-3">
