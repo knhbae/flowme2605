@@ -45,9 +45,11 @@ async function saveMovingPersonalCopy(page: Page) {
   await page.goto('/flow-maps/moving-d30');
   await page.evaluate(() => window.localStorage.clear());
   await page.reload();
+  await expect(page).toHaveURL('/f/moving-d30-basic');
   await page.getByLabel('이사일').fill('2026-08-15');
-  await page.getByRole('button', { name: '그대로 시작' }).click();
-  await expect(page).toHaveURL('/my?savedMap=moving-d30');
+  await page.getByTestId('public-flow-save-primary-mobile').click();
+  await page.getByTestId('public-flow-saved-receipt-primary').click();
+  await expect(page).toHaveURL('/my?savedFlow=moving-d30-basic');
   await page.getByTestId('my-flow-post-save-panel').getByTestId('my-flow-post-save-view-flow').click();
 }
 

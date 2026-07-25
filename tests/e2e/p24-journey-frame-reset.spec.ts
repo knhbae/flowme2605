@@ -28,35 +28,55 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
 
-    await expect(page.getByTestId('flow-map-artifact-preview-row')).toHaveCount(5);
-    await expect(page.getByTestId('flow-map-hero')).toContainText('저장될 전체 Flow');
-    await expect(page.getByTestId('flow-map-hero')).toContainText('할 일 5개');
-    await expect(page.getByTestId('flow-map-hero')).toContainText('원문 · 이사 준비 체크리스트');
+    await expect(page).toHaveURL('/f/moving-d30-basic');
+    await page.getByTestId('public-flow-artifact-preview-expand').click();
+    await expect(page.getByTestId('public-flow-artifact-preview-row')).toHaveCount(24);
+    await expect(page.getByTestId('public-flow-hero')).toContainText('이사 D-30 준비');
+    await expect(page.getByTestId('public-flow-hero')).toContainText('할 일 24개');
     await expect(page.locator('body')).not.toContainText('이사일 1개를 넣으면 원문 체크리스트');
-    await expect(page.getByTestId('flow-map-execution-outline')).not.toHaveAttribute('open', '');
-    await expect(page.getByTestId('flow-map-save-all-mobile')).toHaveAccessibleName('그대로 시작');
+    await expect(page.getByTestId('public-flow-reference-details')).not.toHaveAttribute('open', '');
+    await expect(page.getByTestId('public-flow-save-primary-mobile')).toHaveAccessibleName(
+      '캘린더 24개로 시작',
+    );
     await captureEvidence(page, '01-moving-artifact-first-mobile.png');
 
-    await page.getByTestId('flow-map-anchor-input').fill('2030-08-15');
-    await expect(page.getByTestId('flow-map-save-all-mobile')).toHaveAccessibleName('그대로 시작');
-    await page.getByTestId('flow-map-adjust-save-mobile').click();
-    const adjustPanel = page.getByTestId('flow-map-adjust-panel');
+    await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
+    await page.getByTestId('public-flow-adjust-entry-mobile').click();
+    const adjustPanel = page.getByTestId('public-flow-personal-adjustment');
     await expect(adjustPanel).toBeVisible();
     await captureEvidence(page, '02-moving-light-adjustment-mobile.png');
-    await adjustPanel.getByTestId('flow-map-custom-title').fill('내 이사 준비');
-    await adjustPanel.locator('input[type="checkbox"]').nth(1).uncheck();
-    await page.getByTestId('flow-map-save-all-mobile').click();
+    await adjustPanel.getByTestId('public-flow-adjustment-flow-title').fill('내 이사 준비');
+    await adjustPanel.getByTestId('public-flow-adjustment-item-disclosure').locator('summary').click();
+    const adjustmentRows = adjustPanel.getByTestId('public-flow-adjustment-row');
+    await expect(adjustmentRows).toHaveCount(24);
+    const excludedRow = adjustmentRows.nth(1);
+    const excludedItemId = await excludedRow.getAttribute('data-item-id');
+    await excludedRow.getByRole('checkbox').uncheck();
+    await adjustPanel.getByTestId('public-flow-adjustment-save').click();
 
-    await expect(page).toHaveURL('/my?savedMap=moving-d30');
+    const receipt = page.getByTestId('public-flow-saved-receipt');
+    await expect(receipt).toContainText('내 이사 준비');
+    await expect(receipt).toContainText('23');
+    await openSavedPublicFlow(page, receipt);
+    await expect(page).toHaveURL('/my?savedFlow=moving-d30-basic');
     const postSave = page.getByTestId('my-flow-post-save-panel');
     await expect(postSave).toContainText('내 이사 준비');
-    await expect(postSave.getByTestId('my-flow-post-save-step')).toHaveCount(4);
-    await expect(postSave).not.toContainText('입주청소와 대형폐기물 일정 확인');
+    await expect(postSave).toHaveAttribute('data-receipt-total-count', '23');
     await expect(page.getByTestId('my-flow-workspace')).toHaveCount(0);
     await captureEvidence(page, '03-moving-post-save-whole-flow-mobile.png');
 
-    const snapshot = await page.evaluate(() => JSON.parse(window.localStorage.getItem('flow:map:saved:moving-d30') ?? 'null'));
-    expect(snapshot.personalCopy.excludedStepIdsByFlow['source-backed-moving-d30']).toEqual(['moving-cleaning-waste']);
+    const stored = await page.evaluate(() => ({
+      saved: JSON.parse(window.localStorage.getItem('flow:saved:moving-d30-basic') ?? 'null'),
+      itemStates: JSON.parse(
+        window.localStorage.getItem('flow_builder_mvp_item_state_moving-d30-basic') ?? '{}',
+      ),
+    }));
+    expect(stored.saved.personalTitle).toBe('내 이사 준비');
+    expect(excludedItemId).toBeTruthy();
+    expect(stored.itemStates[excludedItemId as string]).toMatchObject({
+      skipped: true,
+      note: 'excluded_on_start',
+    });
 
     await postSave.getByTestId('my-flow-post-save-view-flow').click();
     await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
@@ -69,21 +89,28 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     await page.goto('/flow-maps/moving-d30');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
-    await page.getByTestId('flow-map-anchor-input').fill('2030-08-15');
-    await page.getByTestId('flow-map-adjust-save-mobile').click();
+    await expect(page).toHaveURL('/f/moving-d30-basic');
+    await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
+    await page.getByTestId('public-flow-adjust-entry-mobile').click();
 
-    const checkboxes = page.getByTestId('flow-map-adjust-panel').locator('input[type="checkbox"]');
+    const adjustPanel = page.getByTestId('public-flow-personal-adjustment');
+    await adjustPanel.getByTestId('public-flow-adjustment-item-disclosure').locator('summary').click();
+    const checkboxes = adjustPanel.locator('input[type="checkbox"]');
     const checkboxCount = await checkboxes.count();
+    expect(checkboxCount).toBe(24);
     for (let index = 0; index < checkboxCount; index += 1) {
       await checkboxes.nth(index).uncheck();
     }
 
-    const saveButton = page.getByTestId('flow-map-save-all-mobile');
+    const saveButton = adjustPanel.getByTestId('public-flow-adjustment-save');
     await expect(saveButton).toBeDisabled();
-    await expect(saveButton).toHaveAccessibleName('선택한 0개로 시작');
-    await page.getByTestId('flow-map-adjust-save-mobile').click();
-    await expect(saveButton).toBeDisabled();
-    await expect(saveButton).toHaveAccessibleName('그대로 시작');
+    await expect(saveButton).toHaveText('0개 항목으로 내 Flow에 저장');
+    await adjustPanel.getByRole('button', { name: '취소' }).click();
+    await page.getByTestId('public-flow-adjust-entry-mobile').click();
+    await expect(page.getByTestId('public-flow-adjustment-save')).toBeEnabled();
+    await expect(page.getByTestId('public-flow-adjustment-save')).toHaveText(
+      '24개 항목으로 내 Flow에 저장',
+    );
   });
 
   test('public save preview stays compact and opens the saved whole Flow', async ({ page }) => {
@@ -97,13 +124,15 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     await expect(page.getByTestId('flow-artifact-data-preview').getByRole('checkbox')).toHaveCount(0);
     await expect(page.getByTestId('public-flow-description')).toHaveCount(0);
     await expect(page.getByTestId('public-flow-adjust-entry-mobile')).toBeVisible();
-    await expect(page.getByTestId('public-flow-mobile-save-cta').getByRole('button', { name: '날짜 없이 시작' })).toHaveText('날짜 없이 시작');
+    await expect(page.getByTestId('public-flow-save-primary-mobile')).toHaveText(
+      '캘린더 10개로 시작',
+    );
     await expect(page.getByTestId('public-flow-reference-details')).not.toHaveAttribute('open', '');
     await captureEvidence(page, '05-vehicle-public-compact-mobile.png');
 
     const receipt = await savePublicFlow(
       page,
-      page.getByTestId('public-flow-mobile-save-cta').getByRole('button', { name: '날짜 없이 시작' }),
+      page.getByTestId('public-flow-save-primary-mobile'),
     );
     await expect(receipt.getByTestId('public-flow-saved-receipt-primary')).toHaveAttribute(
       'href',
@@ -113,7 +142,10 @@ test.describe('P24 save-personalize-execute journey frame', () => {
 
     await expect(page).toHaveURL('/my?savedFlow=vehicle-inspection-prep');
     await expect(page.getByTestId('my-flow-post-save-panel')).toContainText('자동차검사 D-14 준비');
-    await expect(page.getByTestId('my-flow-post-save-step')).toHaveCount(10);
+    await expect(page.getByTestId('my-flow-post-save-panel')).toHaveAttribute(
+      'data-receipt-total-count',
+      '10',
+    );
     await expect(page.getByTestId('my-flow-workspace')).toHaveCount(0);
     await captureEvidence(page, '06-vehicle-post-save-whole-flow-mobile.png');
   });
@@ -123,7 +155,11 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     await page.goto('/f/vehicle-inspection-prep');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
-    await page.getByTestId('public-flow-mobile-save-cta').getByRole('button', { name: '날짜 없이 시작' }).click();
+    await page
+      .getByTestId('flow-artifact-data-preview')
+      .locator('[data-testid="flow-artifact-shape-choice"][data-artifact-shape="checklist"]')
+      .click();
+    await page.getByTestId('public-flow-save-primary-mobile').click();
 
     await page.goto('/flow-maps/middle-school-math-1');
     await page.getByTestId('flow-map-save-all-mobile').click();
@@ -189,12 +225,14 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     await page.goto('/flow-maps/moving-d30');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
-    await page.getByTestId('flow-map-anchor-input').fill('2030-08-15');
-    await page.getByTestId('flow-map-save-all').click();
+    await expect(page).toHaveURL('/f/moving-d30-basic');
+    await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
+    await page.getByTestId('public-flow-save-primary').click();
+    await page.getByTestId('public-flow-saved-receipt-primary').click();
     await page.getByTestId('my-flow-post-save-view-flow').click();
 
     await page.goto('/f/vehicle-inspection-prep');
-    await page.getByTestId('public-flow-save-actions').getByRole('button', { name: '날짜 없이 시작' }).click();
+    await page.getByTestId('public-flow-save-primary').click();
     await page.goto('/my');
     await page.getByTestId('my-flow-view-flow').click();
 

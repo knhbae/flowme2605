@@ -30,14 +30,16 @@ async function saveMovingFlow(page: import('@playwright/test').Page) {
   await page.goto('/flow-maps/moving-d30');
   await page.evaluate(() => window.localStorage.clear());
   await page.reload();
-  await page.getByTestId('flow-map-anchor-input').fill('2030-08-15');
-  const wideSave = page.getByTestId('flow-map-save-all');
+  await expect(page).toHaveURL('/f/moving-d30-basic');
+  await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
+  const wideSave = page.getByTestId('public-flow-save-primary');
   if (await wideSave.isVisible()) {
     await wideSave.click();
   } else {
-    await page.getByTestId('flow-map-save-all-mobile').click();
+    await page.getByTestId('public-flow-save-primary-mobile').click();
   }
-  await expect(page).toHaveURL('/my?savedMap=moving-d30');
+  await page.getByTestId('public-flow-saved-receipt-primary').click();
+  await expect(page).toHaveURL('/my?savedFlow=moving-d30-basic');
 }
 
 test.describe('P25 whole Flow workspace', () => {
@@ -48,7 +50,8 @@ test.describe('P25 whole Flow workspace', () => {
 
     const postSave = page.getByTestId('my-flow-post-save-panel');
     await expect(postSave).toContainText('저장된 전체 Flow');
-    await expect(postSave.getByTestId('my-flow-post-save-step')).toHaveCount(5);
+    await expect(postSave).toHaveAttribute('data-receipt-total-count', '24');
+    await expect(postSave.getByTestId('my-flow-post-save-step')).toHaveCount(4);
     await expect(postSave.getByTestId('my-flow-whole-flow-outline')).toHaveAttribute('data-outline-mode', 'post-save');
     await captureEvidence(page, '01-post-save-whole-flow-mobile.png');
 
@@ -58,31 +61,29 @@ test.describe('P25 whole Flow workspace', () => {
 
     const savedFlow = await openMyFlowLibraryFlow(
       page,
-      'source-backed-moving-d30',
+      'moving-d30-basic',
       'execute',
     );
     await expect(savedFlow).toHaveAttribute(
       'data-p31-marker',
       'P31-03-DEDICATED-MOBILE-WORKSPACE',
     );
-    await expect(
-      savedFlow
-        .getByTestId('my-flow-workspace-execute')
-        .getByTestId('my-flow-execution-row-shell'),
-    ).toHaveCount(1);
+    await expect(savedFlow.getByTestId('my-flow-workspace-execute')).toBeVisible();
     await savedFlow.getByTestId('my-flow-workspace-tab-plan').click();
     const mobileOutline = savedFlow.getByTestId('my-flow-whole-flow-outline');
     await expect(mobileOutline).toHaveAttribute('data-outline-mode', 'workspace');
-    await expect(mobileOutline.getByTestId('my-flow-execution-row-shell')).toHaveCount(5);
+    await expect(mobileOutline.getByTestId('my-flow-whole-flow-reading-summary')).toContainText('6단계');
+    await expect(mobileOutline.getByTestId('my-flow-whole-flow-reading-summary')).toContainText('0/24 완료');
+    await expect(mobileOutline.getByTestId('my-flow-execution-row-shell')).toHaveCount(4);
     const firstExecutionRow = mobileOutline.getByTestId('my-flow-execution-row-shell').first();
-    const [completionBox, titleBox, metaBox] = await Promise.all([
+    const [completionBox, titleBox] = await Promise.all([
       firstExecutionRow.getByTestId('my-flow-task-complete-label').boundingBox(),
       firstExecutionRow.getByTestId('my-flow-row-title').boundingBox(),
-      firstExecutionRow.getByTestId('my-flow-row-date-meta').boundingBox(),
     ]);
     expect(completionBox?.width).toBeGreaterThanOrEqual(44);
     expect(completionBox?.height).toBeGreaterThanOrEqual(44);
-    expect(titleBox?.y).toBeLessThanOrEqual(metaBox?.y ?? Number.MAX_SAFE_INTEGER);
+    expect(titleBox).not.toBeNull();
+    await expect(firstExecutionRow.getByRole('button', { name: /7월 16일/ })).toBeVisible();
     await expect(firstExecutionRow.getByTestId('my-flow-inline-note-open')).toHaveCount(0);
     await expect(firstExecutionRow.getByTestId('my-flow-row-open-label')).toHaveText('열기');
     await firstExecutionRow.getByRole('button', { name: /열기/ }).click();
@@ -114,19 +115,23 @@ test.describe('P25 whole Flow workspace', () => {
     await page.goto('/flow-maps/moving-d30');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
-    await page.getByTestId('flow-map-anchor-input').fill('2030-08-15');
-    await page.getByTestId('flow-map-save-all').click();
+    await expect(page).toHaveURL('/f/moving-d30-basic');
+    await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
+    await page.getByTestId('public-flow-save-primary').click();
+    await page.getByTestId('public-flow-saved-receipt-primary').click();
 
     const postSave = page.getByTestId('my-flow-post-save-panel');
+    await expect(postSave).toHaveAttribute('data-receipt-total-count', '24');
     await expect(postSave.getByTestId('my-flow-whole-flow-outline')).toHaveAttribute('data-outline-mode', 'post-save');
     await postSave.getByTestId('my-flow-post-save-view-flow').click();
 
-    const selectedFlow = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-moving-d30"]');
+    const selectedFlow = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="moving-d30-basic"]');
     const responsiveWorkspace = selectedFlow.getByTestId('my-flow-whole-flow-workspace');
     const workspaceOutline = selectedFlow.getByTestId('my-flow-whole-flow-outline');
     await expect(responsiveWorkspace).toHaveAttribute('data-workspace-layout', 'wide-outline-detail');
     await expect(workspaceOutline).toHaveAttribute('data-outline-mode', 'workspace');
-    await expect(workspaceOutline.getByTestId('my-flow-execution-row-shell')).toHaveCount(5);
+    await expect(workspaceOutline.getByTestId('my-flow-whole-flow-reading-summary')).toContainText('0/24 완료');
+    await expect(workspaceOutline.getByTestId('my-flow-execution-row-shell')).toHaveCount(4);
     await expect(page.getByRole('tablist', { name: 'My Flow 보기' })).toHaveCount(0);
     await expect(page.getByTestId('my-flow-library-back')).toBeVisible();
     const selectedFlowBox = await selectedFlow.boundingBox();

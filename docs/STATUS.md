@@ -1,9 +1,9 @@
 # Project Status
 
-**Last Updated:** 2026-07-24 (P32 production closeout)
-**Status:** v0.1.0 RELEASED / P32 PRODUCTION GREEN
+**Last Updated:** 2026-07-24 (P33 local implementation gate)
+**Status:** v0.1.0 RELEASED / P32 PRODUCTION GREEN / P33 LOCAL GREEN
 **Current Version:** v0.1.0  
-**Primary Focus:** Independently review the released [P32 My Flow Focused Workspace](./specs/2026-07-24-p32-my-flow-focused-workspace/README.md) before selecting P33. P32 selected B1, keeps the cross-Flow library views, and shows one selected Flow in a focused object workspace with direct quick edit, anchor adjustment, export, and lifecycle commands. The 4-tab IA, public `/f`, stable data identities, and localStorage schema remain unchanged. Full Playwright is `314 / 314`, canonical production smoke is `7 / 7`, and observed-user sessions remain `0`.
+**Primary Focus:** Review and publish [P33 Cross-entry Canonical Alignment](./specs/2026-07-24-p33-cross-entry-canonical-alignment/spec.md). The local implementation makes Home, Flow finding, URL lookup, and legacy aliases resolve the same AJD moving job to one 24-item canonical Flow, while preserving legacy 5-item saved copies behind explicit reconciliation. Local evidence is pretest `55 / 55`, unit `587 / 587`, full Playwright `320 / 320`, build `18 / 18`, and screenshots `6`; commit, push, PR, merge, deploy, production smoke, independent post-release review, and observed-user validation remain undone.
 
 ## Current Control Panel
 
@@ -11,13 +11,15 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | Independent P32 post-release review and owner acceptance before P33 selection |
-| User action now | Review the focused My Flow workspace on canonical production; this is not yet observed-user validation |
-| AI action now | Preserve release `30281a7`, compare independent findings, and avoid opening P33 without a current reproducible gap |
+| Active product gate | P33 local evidence review, publish approval, production smoke, and independent post-release review |
+| User action now | Review the P33 canonical alignment evidence and decide whether to authorize commit/push/PR/merge/deploy |
+| AI action now | Preserve the scoped P33 diff and legacy data safety; do not start P34 before publish verification and independent review |
 | Blocked by evidence | Observed usability, real social proof/review data, account persistence choice, creator/update pilot, real AI backend, and external integrations |
-| Completed implementation | P32-01~07 and P32-OPS, PR #154, merge `30281a7`, unit `587 / 587`, full Playwright `314 / 314`, build pass, security audit 0, production smoke `7 / 7`, screenshots `10 + 7` |
+| Completed implementation | P33-01~07 locally: canonical registry/aliases, artifact parity, additive storage, explicit duplicate reconciliation, downstream parity, pretest `55 / 55`, unit `587 / 587`, full Playwright `320 / 320`, build `18 / 18`, screenshots `6` |
 
 ## Recent Direction Notes
+
+- 2026-07-24 P33 local implementation: AJD moving Home, Flow finding, source URL lookup, `/flow-maps/moving-d30`, and legacy public aliases now converge on `/f/moving-d30-basic`, the 24-item editorial snapshot, and canonical Flow ID `flow:ajd-moving:prepare-by-dday:comprehensive-calendar-v1`. Canonical identity uses source + user job + intentional editorial variant, never source URL alone. Moving/vehicle artifact controls now change the actual preview and saved receipt. New canonical metadata is additive; existing `flow:saved:*` records are not deleted, 24/5 copies are not automatically merged, and the user explicitly selects the active copy while the other remains archived and recoverable. Receipt, My Flow, Calendar, and export use the same title/count/identity; raw RRULE is humanized; canonical saved source Items support reversible personal exclusion; mobile sheet focus return has one owner. Local verification is pretest `55 / 55`, unit `587 / 587`, P33 Playwright `6 / 6`, full Playwright `320 / 320`, build `18 / 18`, screenshots `6`, overflow/browser errors `0`, and observed-user sessions `0`. Publish state is still local only. See [P33 evidence](./content-audit/2026-07-24-p33-cross-entry-canonical-alignment-evidence/README.md).
 
 - 2026-07-24 P32 production release: B1 `library_to_focused_workspace_with_cross_flow_queue` is released. Global My Flow local tabs remain in library state and disappear while one Flow is open; mobile uses `다음 행동 / 전체 계획 / 기록`, while wide keeps rail/canvas/inspector with an explicit `전체 보기` return. Item title/date/memo quick edit is directly reachable, saved moving Flows expose a contextual anchor command, and whole export/lifecycle actions live in the selected Flow command area. Six representative content shapes share one shell without a persistence migration or stable identity rewrite. [PR #154](https://github.com/knhbae/flowme2605/pull/154) merged as `30281a7a8ea9bea1194b4104b5a49b6211c07e3b`; post-merge GitHub CI and Vercel succeeded. Full Playwright is `314 / 314`, security audit is `0`, canonical production smoke is `7 / 7`, layout/browser error counts are `0`, screenshots are `10 + 7`, and observed-user sessions remain `0`. See [P32 final review package](./content-audit/2026-07-24-p32-final-review-package/README.md).
 

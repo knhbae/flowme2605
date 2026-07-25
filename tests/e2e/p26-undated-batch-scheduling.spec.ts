@@ -45,10 +45,7 @@ test('undated public Flow supports atomic one and many scheduling with removal u
   await page.getByTestId('public-flow-date-intent-undated').click();
   await expect(page.getByText('Calendar에는 넣지 않고 My Flow에 저장합니다.')).toBeVisible();
   await capture(page, '01-public-undated-intent-mobile.png');
-  await page
-    .getByTestId('public-flow-mobile-save-cta')
-    .getByRole('button', { name: '날짜 없이 시작' })
-    .click();
+  await page.getByTestId('public-flow-save-primary-mobile').click();
 
   await page.goto('/my?view=flows');
   const savedFlow = await openMyFlowLibraryFlow(page, 'vehicle-inspection-prep');

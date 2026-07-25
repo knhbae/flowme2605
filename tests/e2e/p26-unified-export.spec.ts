@@ -91,10 +91,7 @@ test('public whole Flow export predicts dates, output count, and result receipt'
   await undatedEntry.getByTestId('public-flow-export-secondary-toggle').click();
 
   await page.getByTestId('public-flow-date-intent-undated').click();
-  await page
-    .getByTestId('public-flow-mobile-save-cta')
-    .getByRole('button', { name: '날짜 없이 시작' })
-    .click();
+  await page.getByTestId('public-flow-save-primary-mobile').click();
   await page.goto('/calendar');
   const tray = page.getByTestId('my-flow-calendar-unscheduled-tray');
   const trayToggle = tray.getByTestId('my-flow-calendar-unscheduled-toggle');

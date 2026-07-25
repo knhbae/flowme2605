@@ -23,11 +23,13 @@ async function saveMovingFlow(page: import('@playwright/test').Page) {
   await page.goto('/flow-maps/moving-d30');
   await page.evaluate(() => window.localStorage.clear());
   await page.reload();
-  await page.getByTestId('flow-map-anchor-input').fill('2030-08-15');
-  const wideSave = page.getByTestId('flow-map-save-all');
+  await expect(page).toHaveURL('/f/moving-d30-basic');
+  await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
+  const wideSave = page.getByTestId('public-flow-save-primary');
   if (await wideSave.isVisible()) await wideSave.click();
-  else await page.getByTestId('flow-map-save-all-mobile').click();
-  await expect(page).toHaveURL('/my?savedMap=moving-d30');
+  else await page.getByTestId('public-flow-save-primary-mobile').click();
+  await page.getByTestId('public-flow-saved-receipt-primary').click();
+  await expect(page).toHaveURL('/my?savedFlow=moving-d30-basic');
   await page.getByTestId('my-flow-post-save-view-flow').click();
 }
 
@@ -62,7 +64,7 @@ test.describe('P27 reversible lifecycle foundation', () => {
     await page.setViewportSize({ width: 1024, height: 768 });
     await saveMovingFlow(page);
 
-    const flowCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-moving-d30"]');
+    const flowCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="moving-d30-basic"]');
     await expect(flowCard).toBeVisible();
     await flowCard.getByTestId('my-flow-management-menu-trigger').click();
     await flowCard.getByTestId('my-flow-archive-toggle').click();
@@ -72,11 +74,11 @@ test.describe('P27 reversible lifecycle foundation', () => {
     const afterArchive = await page.evaluate(() => ({
       lifecycle: JSON.parse(window.localStorage.getItem('flow:my-flow:lifecycle:v1') || '{}'),
       savedKeys: Object.keys(window.localStorage).filter((key) => key.startsWith('flow:saved:')),
-      savedMap: window.localStorage.getItem('flow:map:saved:moving-d30'),
+      saved: window.localStorage.getItem('flow:saved:moving-d30-basic'),
     }));
-    expect(afterArchive.lifecycle.archivedFlowSlugs).toContain('source-backed-moving-d30');
-    expect(afterArchive.savedKeys).toContain('flow:saved:source-backed-moving-d30');
-    expect(afterArchive.savedMap).toContain('2030-08-15');
+    expect(afterArchive.lifecycle.archivedFlowSlugs).toContain('moving-d30-basic');
+    expect(afterArchive.savedKeys).toContain('flow:saved:moving-d30-basic');
+    expect(afterArchive.saved).toContain('2030-08-15');
 
     await page.getByTestId('my-flow-lifecycle-undo').click();
     await expect(flowCard).toBeVisible();
@@ -87,16 +89,16 @@ test.describe('P27 reversible lifecycle foundation', () => {
     await expect(page.getByTestId('my-flow-open-archived')).toBeVisible();
     await page.getByTestId('my-flow-open-archived').click();
     await expect(page.getByTestId('my-flow-library-rail-filter')).toHaveValue('archived');
-    const archivedCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-moving-d30"]');
+    const archivedCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="moving-d30-basic"]');
     await expect(archivedCard).toBeVisible();
 
     await page.goto('/calendar');
     await expect(page.getByTestId('my-flow-empty-state')).toContainText('날짜 항목 없음');
-    await expect(page.locator('[data-flow-slug="source-backed-moving-d30"]')).toHaveCount(0);
+    await expect(page.locator('[data-flow-slug="moving-d30-basic"]')).toHaveCount(0);
 
     await page.goto('/my?view=flows');
     await page.getByTestId('my-flow-open-archived').click();
-    const persistedArchivedCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-moving-d30"]');
+    const persistedArchivedCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="moving-d30-basic"]');
     await persistedArchivedCard.getByTestId('my-flow-management-menu-trigger').click();
     await persistedArchivedCard.getByTestId('my-flow-archive-toggle').click();
     await expect(page.getByTestId('my-flow-lifecycle-snackbar')).toContainText('복구했습니다');
@@ -108,9 +110,9 @@ test.describe('P27 reversible lifecycle foundation', () => {
     await page.setViewportSize({ width: 1024, height: 768 });
     await saveMovingFlow(page);
 
-    const flowCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-moving-d30"]');
+    const flowCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="moving-d30-basic"]');
     const outline = flowCard.getByTestId('my-flow-whole-flow-outline');
-    await expect(outline.getByTestId('my-flow-execution-row-shell')).toHaveCount(5);
+    await expect(outline.getByTestId('my-flow-execution-row-shell')).toHaveCount(4);
 
     const removeFirstItem = async () => {
       await outline.getByTestId('my-flow-execution-row-shell').first().getByRole('button', { name: /열기/ }).click();
@@ -123,22 +125,22 @@ test.describe('P27 reversible lifecycle foundation', () => {
     };
 
     await removeFirstItem();
-    await expect(outline.getByTestId('my-flow-execution-row-shell')).toHaveCount(4);
+    await expect(outline.getByTestId('my-flow-execution-row-shell')).toHaveCount(3);
     await expect(flowCard.getByTestId('my-flow-batch-undo')).toContainText('Flow에서 뺐어요');
     await flowCard.getByTestId('my-flow-batch-undo-action').click();
-    await expect(outline.getByTestId('my-flow-execution-row-shell')).toHaveCount(5);
+    await expect(outline.getByTestId('my-flow-execution-row-shell')).toHaveCount(4);
 
     await removeFirstItem();
-    await expect(outline.getByTestId('my-flow-execution-row-shell')).toHaveCount(4);
+    await expect(outline.getByTestId('my-flow-execution-row-shell')).toHaveCount(3);
     await page.reload();
 
-    const reloadedCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-moving-d30"]');
-    await expect(reloadedCard.getByTestId('my-flow-whole-flow-outline').getByTestId('my-flow-execution-row-shell')).toHaveCount(4);
+    const reloadedCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="moving-d30-basic"]');
+    await expect(reloadedCard.getByTestId('my-flow-whole-flow-outline').getByTestId('my-flow-execution-row-shell')).toHaveCount(3);
     const excluded = reloadedCard.getByTestId('my-flow-excluded-steps');
     await excluded.locator('summary').click();
     await expect(excluded.getByTestId('my-flow-excluded-step-row')).toHaveCount(1);
     await excluded.getByTestId('my-flow-restore-excluded-item').click();
-    await expect(reloadedCard.getByTestId('my-flow-whole-flow-outline').getByTestId('my-flow-execution-row-shell')).toHaveCount(5);
+    await expect(reloadedCard.getByTestId('my-flow-whole-flow-outline').getByTestId('my-flow-execution-row-shell')).toHaveCount(4);
   });
 
   test('workout confirmation items and resources use a persistent personal overlay', async ({ page }) => {
@@ -410,14 +412,17 @@ test.describe('P27 reversible lifecycle foundation', () => {
     await page.goto('/flow-maps/moving-d30');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
-    await page.getByTestId('flow-map-anchor-input').fill('2030-08-15');
-    await page.getByTestId('flow-map-save-all-mobile').click();
+    await expect(page).toHaveURL('/f/moving-d30-basic');
+    await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
+    await page.getByTestId('public-flow-save-primary-mobile').click();
+    await page.getByTestId('public-flow-saved-receipt-primary').click();
 
     const postSave = page.getByTestId('my-flow-post-save-panel');
     await expect(postSave).toBeVisible();
     await expect(postSave.getByTestId('my-flow-post-save-metrics')).toHaveAttribute('data-layout', 'compact');
     await expect(postSave.getByTestId('my-flow-post-save-action-hub')).toHaveAttribute('data-layout', 'compact');
-    await expect(postSave.getByTestId('my-flow-post-save-step')).toHaveCount(5);
+    await expect(postSave.getByTestId('my-flow-post-save-step')).toHaveCount(4);
+    await expect(postSave).toHaveAttribute('data-receipt-total-count', '24');
     await expect(postSave.getByTestId('my-flow-post-save-export-region')).toHaveCount(0);
     const outlineBox = await postSave.getByTestId('my-flow-post-save-artifact').boundingBox();
     expect(outlineBox?.y ?? Number.MAX_SAFE_INTEGER).toBeLessThan(844);
@@ -429,14 +434,14 @@ test.describe('P27 reversible lifecycle foundation', () => {
     const exportPanel = exportRegion.getByTestId('my-flow-export-panel');
     await expect(exportPanel).toHaveAttribute('data-export-layout', 'compact-preflight');
     await expect(exportPanel).toHaveAttribute('data-default-expanded-secondary-count', '0');
-    await expect(exportPanel.getByTestId('my-flow-export-scope-summary')).toContainText('Flow 전체 · 5개');
+    await expect(exportPanel.getByTestId('my-flow-export-scope-summary')).toContainText('Flow 전체 · 24개');
     await expect(exportPanel.getByTestId('my-flow-export-detail-loss-notice')).toBeVisible();
     await expect(exportPanel).not.toContainText('1 범위');
     await expect(exportPanel).not.toContainText('2 예상 결과');
     await expect(exportPanel).not.toContainText('3 형식');
 
     await exportPanel.getByTestId('my-flow-export-scope-selected').click();
-    await expect(exportPanel.getByTestId('my-flow-export-selectable-item')).toHaveCount(5);
+    await expect(exportPanel.getByTestId('my-flow-export-selectable-item')).toHaveCount(24);
     await exportButton.click();
     await expect(exportRegion).toHaveCount(0);
     await expect(exportButton).toBeFocused();
@@ -444,7 +449,7 @@ test.describe('P27 reversible lifecycle foundation', () => {
 
     await page.setViewportSize({ width: 1024, height: 768 });
     await page.reload();
-    await expect(page.getByTestId('my-flow-post-save-panel').getByTestId('my-flow-post-save-step')).toHaveCount(5);
+    await expect(page.getByTestId('my-flow-post-save-panel').getByTestId('my-flow-post-save-step')).toHaveCount(4);
     await expectNoHorizontalOverflow(page);
   });
 });

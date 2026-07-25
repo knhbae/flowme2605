@@ -44,7 +44,7 @@ test('mobile public save exposes whole-Flow receipt, four next paths, and direct
   await page.reload();
   const savedReceipt = await savePublicFlow(
     page,
-    page.getByTestId('public-flow-mobile-save-cta').getByRole('button', { name: '날짜 없이 시작' }),
+    page.getByTestId('public-flow-save-primary-mobile'),
   );
   await openSavedPublicFlow(page, savedReceipt);
 
@@ -75,13 +75,16 @@ test('wide dated Flow receipt separates schedule summary, whole outline, and act
   await page.goto('/flow-maps/moving-d30');
   await page.evaluate(() => localStorage.clear());
   await page.reload();
-  await page.getByTestId('flow-map-anchor-input').fill('2030-08-15');
-  await page.getByTestId('flow-map-save-all').click();
+  await expect(page).toHaveURL('/f/moving-d30-basic');
+  await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
+  await page.getByTestId('public-flow-save-primary').click();
+  await page.getByTestId('public-flow-saved-receipt-primary').click();
 
   const hub = page.getByTestId('my-flow-post-save-panel');
-  await expect(hub.getByTestId('my-flow-post-save-metrics').locator('[data-metric="items"]')).toContainText('5개');
-  await expect(hub.getByTestId('my-flow-post-save-metrics').locator('[data-metric="date-range"]')).toContainText('7월 16일 - 8월 15일');
-  await expect(hub.getByTestId('my-flow-post-save-artifact').getByTestId('my-flow-post-save-step')).toHaveCount(5);
+  await expect(hub.getByTestId('my-flow-post-save-metrics').locator('[data-metric="items"]')).toContainText('24개');
+  await expect(hub.getByTestId('my-flow-post-save-metrics').locator('[data-metric="date-range"]')).toContainText('7월 16일 - 8월 16일');
+  await expect(hub).toHaveAttribute('data-receipt-total-count', '24');
+  await expect(hub.getByTestId('my-flow-post-save-artifact').getByTestId('my-flow-post-save-step')).toHaveCount(4);
   await capture(page, '02-moving-decision-hub-wide.png');
 
   await hub.getByTestId('my-flow-post-save-open-first').click();

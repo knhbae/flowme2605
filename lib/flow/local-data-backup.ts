@@ -29,6 +29,7 @@ const EXECUTION_KEY_PREFIXES = [
   'flow:my-flow:structural-overlay:',
   'flow:run-registry:',
   'flow:completion-detected-at:',
+  'flow:canonical:',
 ];
 
 const FLOW_ANCHOR_KEY_PATTERN = /^flow:[^:]+:anchorDate$/;

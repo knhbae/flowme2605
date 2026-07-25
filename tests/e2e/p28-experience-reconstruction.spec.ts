@@ -91,10 +91,10 @@ test.describe('P28 shared save-before experience', () => {
 
     const result = page.getByTestId('flow-url-lookup-result');
     const sharedWorkspaceLink = result.getByRole('link', { name: '전체 내용 열고 조정' });
-    await expect(sharedWorkspaceLink).toHaveAttribute('href', '/f/curated-ajd-moving-d30');
+    await expect(sharedWorkspaceLink).toHaveAttribute('href', '/f/moving-d30-basic');
     await expect(result.getByTestId('flow-url-quick-start')).not.toHaveAttribute('open', '');
     await sharedWorkspaceLink.click();
-    await expect(page).toHaveURL('/f/curated-ajd-moving-d30');
+    await expect(page).toHaveURL('/f/moving-d30-basic');
     await expect(page.getByTestId('public-flow-hero')).toHaveAttribute('data-experience-architecture', 'p29-artifact-first');
     await expectNoHorizontalOverflow(page);
   });

@@ -1,7 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { buildRoutineSchedulePresentation } from './routine-schedule-presentation';
+import {
+  buildRoutineSchedulePresentation,
+  formatRoutineRepeatRuleLabel,
+} from './routine-schedule-presentation';
 
 test('routine summary keeps weekday, time, duration, and count in one line', () => {
   const presentation = buildRoutineSchedulePresentation({
@@ -34,4 +37,22 @@ test('routine summary describes an open-ended series without a technical null la
   });
 
   assert.equal(presentation.summary, '월·수·금 · 시간 미정 · 계속 반복');
+});
+
+test('routine rule formats a weekly RRULE without exposing internal syntax', () => {
+  const label = formatRoutineRepeatRuleLabel(['FREQ=WEEKLY;BYDAY=MO,WE,FR;COUNT=8']);
+
+  assert.equal(label, '월·수·금 · 8회');
+  assert.doesNotMatch(label, /FREQ|BYDAY|COUNT/u);
+});
+
+test('routine rule formats daily and monthly intervals in user language', () => {
+  assert.equal(formatRoutineRepeatRuleLabel(['RRULE:FREQ=DAILY;INTERVAL=2']), '2일마다');
+  assert.equal(formatRoutineRepeatRuleLabel(['FREQ=MONTHLY;BYMONTHDAY=20']), '매월 20일');
+});
+
+test('routine rule preserves an existing readable rule and safely handles malformed syntax', () => {
+  assert.equal(formatRoutineRepeatRuleLabel(['@주 3회']), '주 3회');
+  assert.equal(formatRoutineRepeatRuleLabel(['FREQ=UNKNOWN;BYDAY=MO']), '반복 실행');
+  assert.equal(formatRoutineRepeatRuleLabel([]), '반복 실행');
 });

@@ -71,7 +71,7 @@ test('public save lands on a reload-safe whole-Flow receipt on mobile', async ({
 
   const savedReceipt = await savePublicFlow(
     page,
-    page.getByTestId('public-flow-mobile-save-cta').getByRole('button', { name: '날짜 없이 시작' }),
+    page.getByTestId('public-flow-save-primary-mobile'),
   );
   await openSavedPublicFlow(page, savedReceipt);
 
@@ -82,15 +82,17 @@ test('public save lands on a reload-safe whole-Flow receipt on mobile', async ({
   await assertReceiptSurvivesReload(page, handoff, receipt);
 });
 
-test('source-backed Flow Map and URL-first hit share the savedMap receipt contract', async ({ page }) => {
+test('canonical moving alias and URL-first hit keep their receipt contracts', async ({ page }) => {
   await page.setViewportSize({ width: 1024, height: 768 });
   await page.goto('/flow-maps/moving-d30');
   await page.evaluate(() => localStorage.clear());
   await page.reload();
-  await page.getByTestId('flow-map-anchor-input').fill('2030-08-15');
-  await page.getByTestId('flow-map-save-all').click();
+  await expect(page).toHaveURL('/f/moving-d30-basic');
+  await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
+  await page.getByTestId('public-flow-save-primary').click();
+  await page.getByTestId('public-flow-saved-receipt-primary').click();
 
-  const mapHandoff = /\/my\?savedMap=moving-d30$/;
+  const mapHandoff = /\/my\?savedFlow=moving-d30-basic$/;
   const mapReceipt = await assertCanonicalReceipt(page, mapHandoff);
   expect(mapReceipt.dated).toBe(mapReceipt.total);
   await capture(page, '02-flow-map-post-save-receipt-wide.png');

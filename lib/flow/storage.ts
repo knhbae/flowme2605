@@ -40,6 +40,7 @@ import {
   type MyFlowPersonalExecutionState,
 } from './my-flow-personal-state';
 import { FlowBundle, FlowComparisonState, FlowItemState, FlowWorkbenchState, ReactionLog } from './types';
+import { recordCanonicalFlowWrite } from './canonical-flow-storage';
 
 const BUNDLES_KEY = 'flow_builder_mvp_bundles_v11';
 const PREVIOUS_BUNDLES_KEYS = [
@@ -541,6 +542,7 @@ export function saveFlowRecord(
     ...(routineDefinition ? { routineDefinition } : {}),
   };
   localStorage.setItem(`${SAVED_FLOW_KEY_PREFIX}${slug}`, JSON.stringify(record));
+  recordCanonicalFlowWrite(localStorage, slug, record.savedAt);
   localStorage.setItem('flow:meta:last-visit', record.savedAt);
   return record;
 }

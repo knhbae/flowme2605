@@ -40,7 +40,7 @@ Only **Active Gate** is the current execution backlog. Unchecked boxes inside ga
 
 ### Active Gate
 
-- P32 implementation is locally complete and awaiting publish verification. No P33 product feature is active until P32 production smoke and independent review are recorded.
+- [2026-07-24 P33 Cross-entry Canonical Alignment](./2026-07-24-p33-cross-entry-canonical-alignment/spec.md) is locally complete and awaiting publish approval. Home, Flow finding, URL lookup, legacy aliases, receipt, My Flow, Calendar, and export now resolve the AJD moving job through one canonical 24-item identity. Legacy 5-item copies remain readable and require explicit active-copy choice; no automatic personal-state merge or destructive migration occurs. Local evidence is pretest `55 / 55`, unit `587 / 587`, full Playwright `320 / 320`, build `18 / 18`, screenshots `6`, and observed-user sessions `0`. No P34 feature is active before P33 publish verification and independent review.
 
 ### Completed Or Closed
 

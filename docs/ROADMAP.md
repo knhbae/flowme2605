@@ -2,9 +2,9 @@
 
 **Last Updated:** 2026-07-24<br>
 **Current Version:** v0.1.0 (released product PoC)<br>
-**Current Validation Stage:** internal alpha / P32 production green / independent review pending<br>
+**Current Validation Stage:** internal alpha / P32 production green / P33 local green<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** obtain an independent P32 review and owner acceptance before selecting P33
+**Next Milestone:** publish P33, run canonical production smoke, and obtain an independent post-release review
 
 Human-facing control surface: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
 
@@ -20,6 +20,24 @@ URL or memo -> prepared Flow or draft -> save -> personal edit
 ```
 
 This is a functioning product PoC with automated and browser QA. It is not evidence that repeated users understand, trust, or retain the product.
+
+## P33 Cross-entry Canonical Alignment
+
+Independent cross-entry review found that the same AJD source and D-day preparation job opened as a 24-item Home Flow and separate 5-item Find/URL/alias Flows. P33 selects the 24-item `moving-d30-basic` snapshot as the canonical editorial variant, resolves all new entry paths through one canonical identity, and preserves legacy personal copies without unsafe automatic merge.
+
+Detailed scope: [P33 Cross-entry Canonical Alignment](./specs/2026-07-24-p33-cross-entry-canonical-alignment/spec.md).
+
+| Slice | Purpose | State |
+| --- | --- | --- |
+| P33-01 | Define source + user job + editorial variant registry and cross-entry invariant | Complete locally |
+| P33-02 | Resolve AJD Home, Find, URL lookup, map, and public aliases to one 24-item detail | Complete locally |
+| P33-03 | Make moving/vehicle artifact choices change the actual preview, promise, and receipt | Complete locally |
+| P33-04 | Add canonical origin metadata with legacy dual-read and no key deletion | Complete locally |
+| P33-05 | Require explicit active-copy choice for 24/5 conflicts and preserve the inactive copy | Complete locally |
+| P33-06 | Align receipt, My Flow, Calendar, export, reversible exclusion, and recurrence copy | Complete locally |
+| P33-07 | Run serial full regression, responsive evidence, and tracking reconciliation | Complete locally; publish pending |
+
+P33 does not merge legacy 5-item personal values into 24-item IDs, rewrite stable source/personal/run/occurrence/export ownership, or delete existing `flow:saved:*` keys. Local evidence is pretest `55 / 55`, unit `587 / 587`, targeted P33 Playwright `6 / 6`, full Playwright `320 / 320`, build `18 / 18`, screenshots `6`, and observed-user sessions `0`. Commit, push, PR, merge, deployment, production smoke, and independent post-release review remain pending.
 
 ## P32 My Flow Focused Workspace
 
@@ -235,11 +253,13 @@ Detailed scope: [Save, Personalize, Execute Journey Reset](./specs/2026-07-18-sa
 
 ## Operating Queue
 
-There is no active external-user gate. P32 is canonical production. External user observation stays outside the queue until the owner explicitly reopens it.
+There is no active external-user gate. P32 remains canonical production while P33 is local-only and awaiting publish approval. External user observation stays outside the queue until the owner explicitly reopens it.
 
 | Lane | Owner | Work | Next checkpoint | Done when |
 | --- | --- | --- | --- | --- |
-| Active | AI + Owner | P32 independent post-release review | Re-run current production interaction and compare owner/independent findings | A reproducible gap or explicit keep decision exists before P33 |
+| Active | AI + Owner | P33 publish and production verification | Review the scoped diff, then authorize commit/push/PR/merge/deploy if accepted | Canonical production smoke and release SHA are recorded |
+| Next | AI + independent reviewer | P33 post-release cross-entry review | Re-run Home/Find/URL/alias and downstream parity on production | Reproducible gaps or a keep decision exist before P34 |
+| Completed | AI | P33-01~07 local implementation | Preserve additive metadata, explicit duplicate choice, and stable identities | Local pretest `55 / 55`, unit `587 / 587`, full E2E `320 / 320`, build `18 / 18`, screenshots `6` |
 | Completed | AI | P32-01~07 implementation and release | Preserve B1 and stable identities | PR #154, merge `30281a7`, CI green, production smoke `7 / 7` |
 | Completed | AI | P32-OPS dependency remediation | Keep PostCSS compatible without forced downgrade | security audit 0 with unit/build/full E2E |
 | Completed | AI | P31 release verification and publish | Preserve PR #150 and canonical production smoke | Release state, SHA, deployment, rollback, and observed-user count are explicit |
