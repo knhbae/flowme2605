@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   AJD_MOVING_CANONICAL_FLOW_ID,
+  AJD_MOVING_LEGACY_CANONICAL_FLOW_ID,
   getCanonicalFlowEntry,
 } from './canonical-flow-registry';
 import {
@@ -10,22 +11,36 @@ import {
   applyCanonicalReconciliationDecision,
   inspectCanonicalSavedCopyGroup,
   loadCanonicalFlowOriginMetadata,
+  loadCanonicalFlowReconciliationRecord,
   recordCanonicalFlowWrite,
 } from './canonical-flow-storage';
 import {
   PERSONAL_FLOW_LIFECYCLE_STORAGE_KEY,
   loadPersonalFlowLifecycle,
 } from './personal-flow-lifecycle';
-import { isFlowMeExecutionStorageKey } from './local-data-backup';
+import {
+  buildFlowMeLocalBackup,
+  isFlowMeExecutionStorageKey,
+  restoreFlowMeLocalBackup,
+} from './local-data-backup';
 
 function memoryStorage(initial: Record<string, string> = {}) {
   const values = new Map(Object.entries(initial));
   return {
+    get length() {
+      return values.size;
+    },
+    key(index: number) {
+      return Array.from(values.keys())[index] ?? null;
+    },
     getItem(key: string) {
       return values.get(key) ?? null;
     },
     setItem(key: string, value: string) {
       values.set(key, value);
+    },
+    removeItem(key: string) {
+      values.delete(key);
     },
     snapshot() {
       return Object.fromEntries(values);
@@ -102,6 +117,116 @@ test('canonical single write records additive origin metadata and ignores legacy
     loadCanonicalFlowOriginMetadata(storage).entries[AJD_MOVING_CANONICAL_FLOW_ID]?.lastCanonicalWriteAt,
     '2026-07-24T02:00:00.000Z',
   );
+});
+
+test('P33-CANONICAL-ID-COMPAT-READ exposes legacy preview metadata under the factory ID without rewriting storage', () => {
+  const legacyMetadata = {
+    schemaVersion: 1,
+    entries: {
+      [AJD_MOVING_LEGACY_CANONICAL_FLOW_ID]: {
+        canonicalFlowId: AJD_MOVING_LEGACY_CANONICAL_FLOW_ID,
+        canonicalSavedSlug: 'moving-d30-basic',
+        legacyOriginSlugs: ['source-backed-moving-d30'],
+        lastCanonicalWriteAt: '2026-07-24T01:00:00.000Z',
+      },
+    },
+  };
+  const storage = memoryStorage({
+    [CANONICAL_FLOW_ORIGIN_STORAGE_KEY]: JSON.stringify(legacyMetadata),
+  });
+  const before = storage.snapshot();
+  const loaded = loadCanonicalFlowOriginMetadata(storage);
+
+  assert.equal(
+    loaded.entries[AJD_MOVING_CANONICAL_FLOW_ID]?.canonicalSavedSlug,
+    'moving-d30-basic',
+  );
+  assert.equal(
+    loaded.entries[AJD_MOVING_LEGACY_CANONICAL_FLOW_ID]?.canonicalFlowId,
+    AJD_MOVING_LEGACY_CANONICAL_FLOW_ID,
+  );
+  assert.deepEqual(loaded.compatibilityWarnings, [
+    `legacy_canonical_id:${AJD_MOVING_LEGACY_CANONICAL_FLOW_ID}->${AJD_MOVING_CANONICAL_FLOW_ID}`,
+  ]);
+  assert.deepEqual(storage.snapshot(), before);
+});
+
+test('old and factory canonical records remain separate and produce a diagnostic instead of auto-merging', () => {
+  const factoryRecord = {
+    canonicalFlowId: AJD_MOVING_CANONICAL_FLOW_ID,
+    activeOriginSlug: 'moving-d30-basic',
+    archivedOriginSlugs: ['source-backed-moving-d30'],
+    decidedAt: '2026-07-25T01:00:00.000Z',
+  };
+  const legacyRecord = {
+    canonicalFlowId: AJD_MOVING_LEGACY_CANONICAL_FLOW_ID,
+    activeOriginSlug: 'source-backed-moving-d30',
+    archivedOriginSlugs: ['moving-d30-basic'],
+    decidedAt: '2026-07-24T01:00:00.000Z',
+  };
+  const storage = memoryStorage({
+    [CANONICAL_FLOW_RECONCILIATION_STORAGE_KEY]: JSON.stringify({
+      schemaVersion: 1,
+      decisions: {
+        [AJD_MOVING_CANONICAL_FLOW_ID]: factoryRecord,
+        [AJD_MOVING_LEGACY_CANONICAL_FLOW_ID]: legacyRecord,
+      },
+    }),
+  });
+  const before = storage.snapshot();
+  const loaded = loadCanonicalFlowReconciliationRecord(storage);
+
+  assert.deepEqual(loaded.decisions[AJD_MOVING_CANONICAL_FLOW_ID], factoryRecord);
+  assert.deepEqual(loaded.decisions[AJD_MOVING_LEGACY_CANONICAL_FLOW_ID], legacyRecord);
+  assert.ok(loaded.compatibilityWarnings.some((warning) => warning.startsWith('multiple_canonical_id_records:')));
+  assert.deepEqual(storage.snapshot(), before);
+});
+
+test('backup and restore preserve the raw legacy metadata while compatibility reads expose the factory ID', () => {
+  const legacyMetadata = JSON.stringify({
+    schemaVersion: 1,
+    entries: {
+      [AJD_MOVING_LEGACY_CANONICAL_FLOW_ID]: {
+        canonicalFlowId: AJD_MOVING_LEGACY_CANONICAL_FLOW_ID,
+        canonicalSavedSlug: 'moving-d30-basic',
+        legacyOriginSlugs: ['source-backed-moving-d30'],
+        lastCanonicalWriteAt: '2026-07-24T01:00:00.000Z',
+      },
+    },
+  });
+  const sourceStorage = memoryStorage({
+    [CANONICAL_FLOW_ORIGIN_STORAGE_KEY]: legacyMetadata,
+  });
+  const backup = buildFlowMeLocalBackup(sourceStorage, '2026-07-25T03:00:00.000Z');
+  const restoredStorage = memoryStorage();
+
+  restoreFlowMeLocalBackup(restoredStorage, backup);
+
+  assert.equal(restoredStorage.getItem(CANONICAL_FLOW_ORIGIN_STORAGE_KEY), legacyMetadata);
+  assert.equal(
+    loadCanonicalFlowOriginMetadata(restoredStorage).entries[AJD_MOVING_CANONICAL_FLOW_ID]?.canonicalFlowId,
+    AJD_MOVING_CANONICAL_FLOW_ID,
+  );
+});
+
+test('reconciliation called with the legacy preview ID writes the factory ID only', () => {
+  const storage = memoryStorage({
+    'flow:saved:moving-d30-basic': savedRecord('moving-d30-basic', '2026-07-02T00:00:00.000Z'),
+    'flow:saved:source-backed-moving-d30': savedRecord('source-backed-moving-d30', '2026-07-01T00:00:00.000Z'),
+  });
+
+  applyCanonicalReconciliationDecision(
+    storage,
+    AJD_MOVING_LEGACY_CANONICAL_FLOW_ID,
+    'moving-d30-basic',
+    '2026-07-25T02:00:00.000Z',
+  );
+  const raw = JSON.parse(storage.getItem(CANONICAL_FLOW_RECONCILIATION_STORAGE_KEY) ?? '{}') as {
+    decisions?: Record<string, { canonicalFlowId?: string }>;
+  };
+
+  assert.equal(raw.decisions?.[AJD_MOVING_CANONICAL_FLOW_ID]?.canonicalFlowId, AJD_MOVING_CANONICAL_FLOW_ID);
+  assert.equal(raw.decisions?.[AJD_MOVING_LEGACY_CANONICAL_FLOW_ID], undefined);
 });
 
 test('explicit reconciliation archives the inactive copy while preserving every personal data key', () => {

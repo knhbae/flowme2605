@@ -21,6 +21,7 @@ import {
   openMyFlowLibraryFlow,
 } from './helpers/my-flow-library';
 import { openSavedPublicFlow, savePublicFlow } from './helpers/public-flow-save';
+import { AJD_MOVING_CANONICAL_FLOW_ID } from '../../lib/flow/canonical-flow-registry';
 
 const userSurfaceInternalTerms = [
   /묶음/,
@@ -3139,7 +3140,7 @@ test('canonical moving aliases save one 24-item timeline without creating a lega
   expect(stored.canonical.anchor).toBe(movingDate.anchor);
   expect(stored.legacyMap).toBeNull();
   expect(stored.canonicalOrigin.entries[
-    'flow:ajd-moving:prepare-by-dday:comprehensive-calendar-v1'
+    AJD_MOVING_CANONICAL_FLOW_ID
   ].canonicalSavedSlug).toBe('moving-d30-basic');
 });
 

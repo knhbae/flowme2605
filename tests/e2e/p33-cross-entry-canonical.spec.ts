@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { expect, test, type Page } from '@playwright/test';
+import { AJD_MOVING_CANONICAL_FLOW_ID } from '../../lib/flow/canonical-flow-registry';
 
 const evidenceRoot = process.env.FLOWME_P33_EVIDENCE_DIR;
 const runtimeErrorsByPage = new WeakMap<Page, string[]>();
@@ -110,9 +111,9 @@ test.describe('P33 cross-entry canonical alignment', () => {
         const canonicalOrigin = await page.evaluate(() => JSON.parse(
           window.localStorage.getItem('flow:canonical:origin:v1') || 'null',
         ));
-        expect(canonicalOrigin.entries[
-          'flow:ajd-moving:prepare-by-dday:comprehensive-calendar-v1'
-        ]).toMatchObject({ canonicalSavedSlug: 'moving-d30-basic' });
+        expect(canonicalOrigin.entries[AJD_MOVING_CANONICAL_FLOW_ID]).toMatchObject({
+          canonicalSavedSlug: 'moving-d30-basic',
+        });
       }
     }
 
@@ -179,7 +180,7 @@ test.describe('P33 cross-entry canonical alignment', () => {
     expect(stored.legacyChecks).toBeTruthy();
     expect(stored.lifecycle.archivedFlowSlugs).toContain('source-backed-moving-d30');
     expect(stored.reconciliation.decisions[
-      'flow:ajd-moving:prepare-by-dday:comprehensive-calendar-v1'
+      AJD_MOVING_CANONICAL_FLOW_ID
     ].activeOriginSlug).toBe('moving-d30-basic');
 
     await page.reload();

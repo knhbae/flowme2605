@@ -25,6 +25,7 @@ export type CanonicalFlowAlias = {
 
 export type CanonicalFlowRegistryEntry = {
   identity: CanonicalFlowIdentity;
+  legacyCanonicalFlowIds: CanonicalFlowId[];
   title: string;
   canonicalPublicSlug: string;
   canonicalRoute: string;
@@ -76,7 +77,7 @@ export const AJD_MOVING_CANONICAL_VARIANT_ID: EditorialVariantId =
   'variant:ajd-moving:comprehensive-calendar-v1';
 export const AJD_MOVING_LEGACY_COMPACT_VARIANT_ID: EditorialVariantId =
   'variant:ajd-moving:legacy-compact-v1';
-export const AJD_MOVING_CANONICAL_FLOW_ID: CanonicalFlowId =
+export const AJD_MOVING_LEGACY_CANONICAL_FLOW_ID: CanonicalFlowId =
   'flow:ajd-moving:prepare-by-dday:comprehensive-calendar-v1';
 export const AJD_MOVING_CANONICAL_PUBLIC_SLUG = 'moving-d30-basic';
 export const AJD_MOVING_CANONICAL_ROUTE = `/f/${AJD_MOVING_CANONICAL_PUBLIC_SLUG}`;
@@ -94,6 +95,12 @@ export function createCanonicalFlowId({
   }
   return `canonical:${parts.join('|')}`;
 }
+
+export const AJD_MOVING_CANONICAL_FLOW_ID: CanonicalFlowId = createCanonicalFlowId({
+  canonicalSourceId: AJD_MOVING_CANONICAL_SOURCE_ID,
+  userJobId: AJD_MOVING_USER_JOB_ID,
+  editorialVariantId: AJD_MOVING_CANONICAL_VARIANT_ID,
+});
 
 function uniqueSorted(values: Array<string | number>): string[] {
   return Array.from(new Set(values.map(String))).sort((left, right) => left.localeCompare(right));
@@ -206,6 +213,7 @@ const ajdMovingRegistryEntry: CanonicalFlowRegistryEntry = {
     editorialVariantId: AJD_MOVING_CANONICAL_VARIANT_ID,
     canonicalFlowId: AJD_MOVING_CANONICAL_FLOW_ID,
   },
+  legacyCanonicalFlowIds: [AJD_MOVING_LEGACY_CANONICAL_FLOW_ID],
   title: '이사 D-30 준비 Flow',
   canonicalPublicSlug: AJD_MOVING_CANONICAL_PUBLIC_SLUG,
   canonicalRoute: AJD_MOVING_CANONICAL_ROUTE,
@@ -257,7 +265,15 @@ export function resolveCanonicalFlowRoute(
 }
 
 export function getCanonicalFlowEntry(canonicalFlowId: CanonicalFlowId): CanonicalFlowRegistryEntry | undefined {
-  return canonicalFlowRegistry.find((entry) => entry.identity.canonicalFlowId === canonicalFlowId);
+  return canonicalFlowRegistry.find(
+    (entry) =>
+      entry.identity.canonicalFlowId === canonicalFlowId ||
+      entry.legacyCanonicalFlowIds.includes(canonicalFlowId),
+  );
+}
+
+export function resolveCanonicalFlowId(canonicalFlowId: CanonicalFlowId): CanonicalFlowId | undefined {
+  return getCanonicalFlowEntry(canonicalFlowId)?.identity.canonicalFlowId;
 }
 
 export function isCanonicalWriteAllowedForDiagnostic(

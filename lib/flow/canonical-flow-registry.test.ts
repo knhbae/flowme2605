@@ -3,6 +3,8 @@ import test from 'node:test';
 import {
   AJD_MOVING_CANONICAL_FLOW_ID,
   AJD_MOVING_CANONICAL_SOURCE_ID,
+  AJD_MOVING_CANONICAL_VARIANT_ID,
+  AJD_MOVING_LEGACY_CANONICAL_FLOW_ID,
   AJD_MOVING_PRE_RESOLUTION_CANDIDATES,
   AJD_MOVING_PRE_RESOLUTION_DIAGNOSTIC,
   AJD_MOVING_USER_JOB_ID,
@@ -11,6 +13,7 @@ import {
   getCanonicalFlowEntry,
   isCanonicalWriteAllowedForDiagnostic,
   resolveCanonicalFlowAlias,
+  resolveCanonicalFlowId,
   resolveCanonicalFlowRoute,
 } from './canonical-flow-registry';
 
@@ -55,6 +58,30 @@ test('canonical identity includes source, user job, and editorial variant rather
     () => createCanonicalFlowId({ canonicalSourceId: '', userJobId: AJD_MOVING_USER_JOB_ID, editorialVariantId: 'variant:test' }),
     /requires source, user job, and editorial variant/i,
   );
+});
+
+test('P33-CANONICAL-ID-FACTORY-ONLY derives the registry identity from the shared factory', () => {
+  assert.equal(
+    createCanonicalFlowId({
+      canonicalSourceId: AJD_MOVING_CANONICAL_SOURCE_ID,
+      userJobId: AJD_MOVING_USER_JOB_ID,
+      editorialVariantId: AJD_MOVING_CANONICAL_VARIANT_ID,
+    }),
+    AJD_MOVING_CANONICAL_FLOW_ID,
+  );
+  assert.equal(
+    getCanonicalFlowEntry(AJD_MOVING_CANONICAL_FLOW_ID)?.identity.canonicalFlowId,
+    AJD_MOVING_CANONICAL_FLOW_ID,
+  );
+});
+
+test('P33-CANONICAL-ID-COMPAT-READ resolves the preview-only legacy ID without making it canonical', () => {
+  assert.equal(resolveCanonicalFlowId(AJD_MOVING_LEGACY_CANONICAL_FLOW_ID), AJD_MOVING_CANONICAL_FLOW_ID);
+  assert.equal(
+    getCanonicalFlowEntry(AJD_MOVING_LEGACY_CANONICAL_FLOW_ID)?.identity.canonicalFlowId,
+    AJD_MOVING_CANONICAL_FLOW_ID,
+  );
+  assert.notEqual(AJD_MOVING_LEGACY_CANONICAL_FLOW_ID, AJD_MOVING_CANONICAL_FLOW_ID);
 });
 
 test('same source with different user jobs is not diagnosed as a duplicate candidate group', () => {

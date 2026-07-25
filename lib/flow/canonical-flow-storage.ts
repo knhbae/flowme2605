@@ -1,5 +1,6 @@
 import {
   canonicalFlowRegistry,
+  getCanonicalFlowEntry,
   resolveCanonicalFlowAlias,
   type CanonicalFlowId,
   type CanonicalFlowRegistryEntry,
@@ -34,6 +35,10 @@ export type CanonicalFlowOriginMetadataRecord = {
   entries: Record<CanonicalFlowId, CanonicalFlowOriginMetadata>;
 };
 
+export type LoadedCanonicalFlowOriginMetadataRecord = CanonicalFlowOriginMetadataRecord & {
+  compatibilityWarnings: string[];
+};
+
 export type CanonicalFlowReconciliationDecision = {
   canonicalFlowId: CanonicalFlowId;
   activeOriginSlug: string;
@@ -44,6 +49,10 @@ export type CanonicalFlowReconciliationDecision = {
 export type CanonicalFlowReconciliationRecord = {
   schemaVersion: typeof CANONICAL_FLOW_RECONCILIATION_SCHEMA_VERSION;
   decisions: Record<CanonicalFlowId, CanonicalFlowReconciliationDecision>;
+};
+
+export type LoadedCanonicalFlowReconciliationRecord = CanonicalFlowReconciliationRecord & {
+  compatibilityWarnings: string[];
 };
 
 export type CanonicalSavedCopy = {
@@ -84,23 +93,70 @@ function uniqueStrings(value: unknown): string[] {
     .filter(Boolean)));
 }
 
-function emptyOriginMetadataRecord(): CanonicalFlowOriginMetadataRecord {
+function emptyOriginMetadataRecord(): LoadedCanonicalFlowOriginMetadataRecord {
   return {
     schemaVersion: CANONICAL_FLOW_ORIGIN_SCHEMA_VERSION,
     entries: {},
+    compatibilityWarnings: [],
   };
 }
 
-function emptyReconciliationRecord(): CanonicalFlowReconciliationRecord {
+function emptyReconciliationRecord(): LoadedCanonicalFlowReconciliationRecord {
   return {
     schemaVersion: CANONICAL_FLOW_RECONCILIATION_SCHEMA_VERSION,
     decisions: {},
+    compatibilityWarnings: [],
+  };
+}
+
+function addCanonicalIdCompatibilityReads<T extends { canonicalFlowId: CanonicalFlowId }>(
+  records: Record<CanonicalFlowId, T>,
+): {
+  records: Record<CanonicalFlowId, T>;
+  compatibilityWarnings: string[];
+} {
+  const compatibleRecords = { ...records };
+  const compatibilityWarnings: string[] = [];
+
+  for (const entry of canonicalFlowRegistry) {
+    const canonicalFlowId = entry.identity.canonicalFlowId;
+    const legacyRecords = entry.legacyCanonicalFlowIds.flatMap((legacyCanonicalFlowId) => {
+      const record = records[legacyCanonicalFlowId];
+      return record ? [{ legacyCanonicalFlowId, record }] : [];
+    });
+    if (legacyRecords.length === 0) continue;
+
+    compatibilityWarnings.push(
+      ...legacyRecords.map(
+        ({ legacyCanonicalFlowId }) =>
+          `legacy_canonical_id:${legacyCanonicalFlowId}->${canonicalFlowId}`,
+      ),
+    );
+    if (records[canonicalFlowId]) {
+      compatibilityWarnings.push(
+        `multiple_canonical_id_records:${[
+          canonicalFlowId,
+          ...legacyRecords.map(({ legacyCanonicalFlowId }) => legacyCanonicalFlowId),
+        ].join(',')}`,
+      );
+      continue;
+    }
+
+    compatibleRecords[canonicalFlowId] = {
+      ...legacyRecords[0].record,
+      canonicalFlowId,
+    };
+  }
+
+  return {
+    records: compatibleRecords,
+    compatibilityWarnings,
   };
 }
 
 export function loadCanonicalFlowOriginMetadata(
   storage: CanonicalFlowStorage,
-): CanonicalFlowOriginMetadataRecord {
+): LoadedCanonicalFlowOriginMetadataRecord {
   const parsed = parseJson(storage.getItem(CANONICAL_FLOW_ORIGIN_STORAGE_KEY));
   if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return emptyOriginMetadataRecord();
   const candidate = parsed as Partial<CanonicalFlowOriginMetadataRecord>;
@@ -127,9 +183,11 @@ export function loadCanonicalFlowOriginMetadata(
       lastCanonicalWriteAt: entry.lastCanonicalWriteAt,
     } satisfies CanonicalFlowOriginMetadata]];
   }));
+  const compatible = addCanonicalIdCompatibilityReads(entries);
   return {
     schemaVersion: CANONICAL_FLOW_ORIGIN_SCHEMA_VERSION,
-    entries,
+    entries: compatible.records,
+    compatibilityWarnings: compatible.compatibilityWarnings,
   };
 }
 
@@ -159,7 +217,7 @@ export function recordCanonicalFlowWrite(
 
 export function loadCanonicalFlowReconciliationRecord(
   storage: CanonicalFlowStorage,
-): CanonicalFlowReconciliationRecord {
+): LoadedCanonicalFlowReconciliationRecord {
   const parsed = parseJson(storage.getItem(CANONICAL_FLOW_RECONCILIATION_STORAGE_KEY));
   if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return emptyReconciliationRecord();
   const candidate = parsed as Partial<CanonicalFlowReconciliationRecord>;
@@ -186,9 +244,11 @@ export function loadCanonicalFlowReconciliationRecord(
       decidedAt: decision.decidedAt,
     } satisfies CanonicalFlowReconciliationDecision]];
   }));
+  const compatible = addCanonicalIdCompatibilityReads(decisions);
   return {
     schemaVersion: CANONICAL_FLOW_RECONCILIATION_SCHEMA_VERSION,
-    decisions,
+    decisions: compatible.records,
+    compatibilityWarnings: compatible.compatibilityWarnings,
   };
 }
 
@@ -303,8 +363,9 @@ export function applyCanonicalReconciliationDecision(
   activeOriginSlug: string,
   decidedAt = new Date().toISOString(),
 ): CanonicalSavedCopyGroup | undefined {
-  const entry = canonicalFlowRegistry.find((candidate) => candidate.identity.canonicalFlowId === canonicalFlowId);
+  const entry = getCanonicalFlowEntry(canonicalFlowId);
   if (!entry) return undefined;
+  const resolvedCanonicalFlowId = entry.identity.canonicalFlowId;
   const lifecycle = loadPersonalFlowLifecycle(storage, decidedAt).record;
   const currentGroup = inspectCanonicalSavedCopyGroup(storage, entry, lifecycle.archivedFlowSlugs);
   if (currentGroup.copies.length < 2) return currentGroup;
@@ -321,7 +382,7 @@ export function applyCanonicalReconciliationDecision(
 
   const record = loadCanonicalFlowReconciliationRecord(storage);
   const decision: CanonicalFlowReconciliationDecision = {
-    canonicalFlowId,
+    canonicalFlowId: resolvedCanonicalFlowId,
     activeOriginSlug,
     archivedOriginSlugs,
     decidedAt,
@@ -330,7 +391,7 @@ export function applyCanonicalReconciliationDecision(
     schemaVersion: CANONICAL_FLOW_RECONCILIATION_SCHEMA_VERSION,
     decisions: {
       ...record.decisions,
-      [canonicalFlowId]: decision,
+      [resolvedCanonicalFlowId]: decision,
     },
   } satisfies CanonicalFlowReconciliationRecord));
 
