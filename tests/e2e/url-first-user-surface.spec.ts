@@ -3048,15 +3048,17 @@ test('URL-first lab stays prototype-gated and absent from user navigation', asyn
 
   await page.setViewportSize({ width: 1024, height: 768 });
   await page.goto('/flow-maps/moving-d30');
-  await page.getByTestId('flow-map-anchor-input').fill('2026-07-22');
-  await page.getByTestId('flow-map-save-all').click();
-  await page.waitForURL('**/my?savedMap=moving-d30');
+  await expect(page).toHaveURL('/f/moving-d30-basic');
+  await page.getByTestId('public-flow-anchor-input').fill('2026-07-22');
+  await page.getByTestId('public-flow-save-primary').click();
+  await page.getByTestId('public-flow-saved-receipt-primary').click();
+  await page.waitForURL('**/my?savedFlow=moving-d30-basic');
   const studioLink = page.getByRole('link', { name: '스튜디오' });
   await expect(studioLink).toBeVisible();
   await expect(studioLink).toHaveAttribute('href', /^\/u\/[^?#]+$/);
 
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/my?savedMap=moving-d30');
+  await page.goto('/my?savedFlow=moving-d30-basic');
   const mobileStudioLink = page.getByRole('link', { name: '스튜디오' });
   await expect(mobileStudioLink).toBeVisible();
   await expect(mobileStudioLink).toHaveAttribute('href', /^\/u\/[^?#]+$/);

@@ -540,7 +540,7 @@ test.describe('P30-06 routine advanced setting density', () => {
 });
 
 test.describe('P30-07 legacy composition consumer gate', () => {
-  test('public Flow stays artifact-first while the live source-backed map keeps an explicit legacy frame', async ({ page }) => {
+  test('public Flow stays artifact-first and the retired moving map resolves to the canonical frame', async ({ page }) => {
     const consoleErrors: string[] = [];
     page.on('console', (message) => {
       if (message.type() === 'error') consoleErrors.push(message.text());
@@ -563,16 +563,17 @@ test.describe('P30-07 legacy composition consumer gate', () => {
 
     await page.setViewportSize({ width: 1024, height: 768 });
     await page.goto('/flow-maps/moving-d30');
-    const sourceBackedFrame = page.getByTestId('flow-map-hero');
-    await expect(sourceBackedFrame).toHaveAttribute('data-experience-architecture', 'hybrid');
-    await expect(sourceBackedFrame).toHaveAttribute('data-p30-marker', 'P30-LEGACY-COMPOSITION-ACTIVE');
+    await expect(page).toHaveURL('/f/moving-d30-basic');
+    const canonicalAliasFrame = page.getByTestId('public-flow-hero');
+    await expect(canonicalAliasFrame).toHaveAttribute('data-experience-architecture', 'p29-artifact-first');
+    await expect(page.getByTestId('flow-map-hero')).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
     await capture(page, 'p30-07-source-backed-active-legacy-1024.png', {
       route: '/flow-maps/moving-d30',
       viewport: { width: 1024, height: 768 },
-      composition: 'legacy',
-      activeProductionConsumerCount: 1,
-      removalDecision: 'deferred_active_consumer',
+      composition: 'canonical_alias',
+      activeProductionConsumerCount: 0,
+      removalDecision: 'retired_by_p33_canonical_alias',
       consoleErrorCount: consoleErrors.length,
     });
     expect(consoleErrors).toEqual([]);

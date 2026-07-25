@@ -62,8 +62,15 @@ test('home usage examples and catalog cards have distinct roles', async ({ page 
 
   await page.goto('/flows');
   const catalogCards = page.getByTestId('flow-map-catalog-card');
-  await expect(catalogCards).toHaveCount(9);
+  await expect(catalogCards).toHaveCount(8);
   await assertDiscoveryCard(catalogCards.first());
+  const canonicalMovingCard = page
+    .getByTestId('single-flow-catalog-card')
+    .filter({ hasText: '이사 D-30 준비' });
+  await expect(canonicalMovingCard).toHaveCount(1);
+  await expect(canonicalMovingCard.getByTestId('flow-card-support-meta')).toContainText(
+    '할 일 24개',
+  );
   await expect(page.getByText('인기순', { exact: true })).toHaveCount(0);
 
   for (const href of [
@@ -98,8 +105,9 @@ test('public save-before shows the whole Flow before one start decision', async 
     Boolean(result.compareDocumentPosition(decision as Node) & Node.DOCUMENT_POSITION_FOLLOWING)
   ), await setup.elementHandle())).toBe(true);
 
-  const mobileAction = page.getByTestId('public-flow-mobile-save-cta');
-  await expect(mobileAction.getByRole('button', { name: '날짜 없이 시작' })).toBeVisible();
+  await expect(page.getByTestId('public-flow-save-primary-mobile')).toHaveText(
+    '캘린더 10개로 시작',
+  );
   await expect(page.getByTestId('public-flow-adjust-entry-mobile')).toHaveAccessibleName('조정');
   await expect(hero).not.toContainText(/이사일 1개를 기준으로|원문 체크리스트의 실행 단서/u);
   await capture(page, '03-public-save-before-mobile.png');
@@ -109,12 +117,16 @@ test('source-backed map and public Flow use the same artifact-first decision gra
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/flow-maps/moving-d30');
 
-  const mapHero = page.getByTestId('flow-map-hero');
-  await expect(mapHero).toHaveAttribute('data-visual-structure', 'artifact-first');
-  await expect(mapHero.getByText('원문', { exact: true })).toBeVisible();
-  await expect(mapHero.getByTestId('flow-map-artifact-preview-row')).toHaveCount(5);
-  await expect(page.getByTestId('flow-map-save-all-mobile')).toHaveAccessibleName('그대로 시작');
-  await expect(page.getByTestId('flow-map-adjust-save-mobile')).toHaveAccessibleName('조정');
+  await expect(page).toHaveURL('/f/moving-d30-basic');
+  const canonicalHero = page.getByTestId('public-flow-hero');
+  await expect(canonicalHero).toHaveAttribute('data-visual-structure', 'artifact-first');
+  await expect(canonicalHero.getByText('원문', { exact: true })).toBeVisible();
+  await page.getByTestId('public-flow-artifact-preview-expand').click();
+  await expect(canonicalHero.getByTestId('public-flow-artifact-preview-row')).toHaveCount(24);
+  await expect(page.getByTestId('public-flow-save-primary-mobile')).toHaveAccessibleName(
+    '캘린더 24개로 시작',
+  );
+  await expect(page.getByTestId('public-flow-adjust-entry-mobile')).toHaveAccessibleName('조정');
   await capture(page, '04-source-backed-save-before-mobile.png');
 
   await page.goto('/flow-maps/curated-wedding-checklist-family');

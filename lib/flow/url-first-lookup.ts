@@ -14,6 +14,10 @@ import {
 import { toUserFacingMapTitle, toUserFacingSourceTitle } from './display-title';
 import { buildPostSaveHref } from './post-save-receipt';
 import type { FlowItemState } from './types';
+import {
+  AJD_MOVING_CANONICAL_PUBLIC_SLUG,
+  AJD_MOVING_CANONICAL_ROUTE,
+} from './canonical-flow-registry';
 
 export const AJD_MOVING_SOURCE_URL =
   'https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363';
@@ -131,7 +135,7 @@ const movingHitPreview: UrlFirstPreview = {
     '- [ ] 계량기·하자 사진 촬영 준비',
   ],
   checklist: ['이사일 입력', '견적 후보 2-3곳 메모', '주소 변경 대상 확인', '당일 사진 기록'],
-  myFlow: ['오늘 할 일 1개', '다가오는 일정 3개', '체크 완료 상태는 저장 전 미리보기'],
+  myFlow: ['전체 이사 준비 24개', '이사일 기준으로 날짜 계산', '체크 완료 상태는 저장 후 시작'],
 };
 
 const vehicleReviewPreview: UrlFirstPreview = {
@@ -332,9 +336,8 @@ const explicitLookupTemplatesByCanonicalUrl = new Map<string, UrlFirstLookupTemp
       sourceStatus: 'real',
       sourceLabel: toUserFacingSourceTitle('AJD 이사 준비 체크리스트'),
       sourceCheckedAt: '2026-06-23',
-      routeHref: '/flow-maps/curated-ajd-moving-d30',
-      flowMapId: 'curated-ajd-moving-d30',
-      flowSlug: 'curated-ajd-moving-d30',
+      routeHref: AJD_MOVING_CANONICAL_ROUTE,
+      flowSlug: AJD_MOVING_CANONICAL_PUBLIC_SLUG,
       exportModes: ['calendar', 'markdown', 'checklist'],
       canExport: true,
       canSaveToMyFlow: true,
@@ -575,7 +578,7 @@ function getUrlFirstMapStepSelection(
     const skippedStates = Object.fromEntries(
       flow.steps
         .filter((step) => !selectedStepIds.has(step.id))
-        .map((step) => [step.id, { skipped: true, note: 'excluded_on_start' } satisfies FlowItemState]),
+        .map((step) => [step.id, { personalExcluded: true } satisfies FlowItemState]),
     );
     if (Object.keys(skippedStates).length > 0) itemStatesByFlowSlug[flow.slug] = skippedStates;
   });

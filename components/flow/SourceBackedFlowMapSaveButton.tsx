@@ -11,6 +11,7 @@ import {
 } from '@/lib/flow/source-backed-my-flow';
 import { getItemStates, saveFlowRecord, saveItemStates, type SavedFlowArtifactMode } from '@/lib/flow/storage';
 import { buildPostSaveHref } from '@/lib/flow/post-save-receipt';
+import { setFlowItemPersonalExclusion } from '@/lib/flow/flow-item-state';
 
 type SourceBackedFlowMapSaveButtonProps = {
   mapId: string;
@@ -114,15 +115,12 @@ export function SourceBackedFlowMapSaveButton({ mapId, mapTitle, savedFlows, set
       });
       const nextItemStates = { ...getItemStates(flow.slug) };
       flow.steps.forEach((step) => {
-        if (selectedStepIdSet.has(step.id)) {
-          if (nextItemStates[step.id]?.note === 'excluded_on_start') delete nextItemStates[step.id];
-          return;
-        }
-        nextItemStates[step.id] = {
-          ...nextItemStates[step.id],
-          skipped: true,
-          note: 'excluded_on_start',
-        };
+        const nextState = setFlowItemPersonalExclusion(
+          nextItemStates[step.id],
+          !selectedStepIdSet.has(step.id),
+        );
+        if (nextState) nextItemStates[step.id] = nextState;
+        else delete nextItemStates[step.id];
       });
       saveItemStates(flow.slug, nextItemStates);
     });

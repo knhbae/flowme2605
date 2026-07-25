@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-07-25",
+  "branch": "codex/p33-integrated-program-plan",
+  "baselineSha": "e491d99ca61ecae4fd0dd009f785e737b6a59516",
+  "implementationCommit": "abb0a993077d53cafe365515df0289b3b3654354",
+  "verdict": "publish_ready_for_preview",
+  "observedUserCount": 0,
+  "checks": {
+    "pretest": {
+      "passed": 64,
+      "failed": 0
+    },
+    "unit": {
+      "passed": 588,
+      "failed": 0
+    },
+    "memoReloadRepeat": {
+      "passed": 30,
+      "failed": 0,
+      "workers": 1
+    },
+    "p24JourneyFrame": {
+      "passed": 6,
+      "failed": 0
+    },
+    "p27ServerDocument": {
+      "passed": 1,
+      "failed": 0
+    },
+    "fullE2eRun1": {
+      "passed": 320,
+      "failed": 0,
+      "workers": 1
+    },
+    "fullE2eRun2": {
+      "passed": 320,
+      "failed": 0,
+      "workers": 1
+    },
+    "build": {
+      "routes": 18,
+      "passed": true,
+      "buildIdPresent": true
+    },
+    "diffCheck": {
+      "passed": true
+    }
+  },
+  "builtServerSmoke": {
+    "/": 200,
+    "/flows": 200,
+    "/f/moving-d30-basic": 200,
+    "/my": 200,
+    "/calendar": 200,
+    "/flow-maps/moving-d30": 307
+  },
+  "publish": {
+    "branchPushed": true,
+    "draftPullRequest": 156,
+    "mainMerged": false,
+    "productionDeployed": false,
+    "previewAlias": "https://flowme2605-git-codex-p33-integrated-program-plan-flowme.vercel.app",
+    "anonymousPreviewAccess": "vercel_sso_redirect"
+  },
+  "evidenceKinds": [
+    "current_source",
+    "current_command",
+    "current_browser_automation",
+    "github_pull_request_state",
+    "vercel_preview_state"
+  ]
+}

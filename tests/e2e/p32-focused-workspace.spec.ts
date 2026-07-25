@@ -47,7 +47,7 @@ test.describe('P32 focused My Flow workspace', () => {
     await expect(page.locator('main')).toHaveAttribute('data-p32-workspace-state', 'focused');
     await expect(workspace.getByTestId('my-flow-workspace-tab-execute')).toHaveText('다음 행동');
     await expect(workspace.getByTestId('my-flow-workspace-commands')).toBeVisible();
-    await expect(workspace.locator(':scope > header')).toContainText('이사 준비');
+    await expect(workspace.locator(':scope > header')).toContainText('이사 D-30 준비');
     expect(
       await workspace.locator(':scope > header').evaluate((header) => getComputedStyle(header).position),
     ).toBe('static');

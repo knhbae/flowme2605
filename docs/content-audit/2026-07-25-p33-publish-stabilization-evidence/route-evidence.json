@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-07-25",
+  "observedUserCount": 0,
+  "markers": {
+    "P33-EXCLUSION-NOTE-SEPARATION": true,
+    "P33-LEGACY-SENTINEL-SAFE-READ": true,
+    "P33-EXCLUSION-PROJECTION-PARITY": true,
+    "P33-CANONICAL-ID-FACTORY-ONLY": true,
+    "P33-CANONICAL-ID-COMPAT-READ": true,
+    "P33-NO-PRODUCTION-MIGRATION": true,
+    "P33-MEMO-RELOAD-COMMITTED-DRAFT": true,
+    "P33-SERVER-DOCUMENT-SHELL-PRESERVED": true,
+    "P33-STANDARD-BUILD-ARTIFACT": true,
+    "P33-FULL-E2E-TWO-RUN-STABILITY": true,
+    "P33-DIFF-CHECK-CLEAN": true
+  },
+  "counts": {
+    "personalNoteLossCount": 0,
+    "legacySentinelUserExportHitCount": 0,
+    "canonicalIdFactoryMismatchCount": 0,
+    "automaticLegacyMergeCount": 0,
+    "productionMigrationCount": 0,
+    "memoReloadRepeatFailureCount": 0,
+    "fullE2eRun1FailureCount": 0,
+    "fullE2eRun2FailureCount": 0,
+    "observedUserCount": 0
+  },
+  "routes": [
+    {
+      "route": "/my",
+      "assertion": "saved source-backed memo survives reload and opens in the editor",
+      "status": "supported"
+    },
+    {
+      "route": "/my",
+      "assertion": "server document keeps the canonical four-tab shell",
+      "status": "supported"
+    },
+    {
+      "route": "/f/moving-d30-basic",
+      "assertion": "personal exclusion does not overwrite personal note",
+      "status": "supported"
+    },
+    {
+      "route": "/flow-maps/moving-d30",
+      "assertion": "legacy entry resolves to the canonical moving route",
+      "status": "canonical_redirect"
+    }
+  ],
+  "publishBoundary": {
+    "draftPullRequestOpen": true,
+    "mainMerged": false,
+    "productionDeployed": false,
+    "observedUserValidation": false
+  }
+}

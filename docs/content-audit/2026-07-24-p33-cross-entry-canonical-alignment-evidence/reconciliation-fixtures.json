@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "canonicalFlowId": "canonical:source:ajd:moving-checklist:23363|job:prepare-move-by-dday|variant:ajd-moving:comprehensive-calendar-v1",
+  "legacyCanonicalFlowId": "flow:ajd-moving:prepare-by-dday:comprehensive-calendar-v1",
+  "fixtures": [
+    {
+      "name": "canonical_only",
+      "inputSavedSlugs": ["moving-d30-basic"],
+      "status": "single",
+      "activeOriginSlug": "moving-d30-basic",
+      "archivedOriginSlugs": [],
+      "deletedKeys": []
+    },
+    {
+      "name": "legacy_only",
+      "inputSavedSlugs": ["source-backed-moving-d30"],
+      "status": "single",
+      "activeOriginSlug": "source-backed-moving-d30",
+      "archivedOriginSlugs": [],
+      "deletedKeys": []
+    },
+    {
+      "name": "canonical_and_legacy_unresolved",
+      "inputSavedSlugs": [
+        "moving-d30-basic",
+        "source-backed-moving-d30"
+      ],
+      "status": "needs_choice",
+      "automaticMerge": false,
+      "deletedKeys": []
+    },
+    {
+      "name": "canonical_selected",
+      "inputSavedSlugs": [
+        "moving-d30-basic",
+        "source-backed-moving-d30"
+      ],
+      "status": "resolved",
+      "activeOriginSlug": "moving-d30-basic",
+      "archivedOriginSlugs": ["source-backed-moving-d30"],
+      "preservedSavedSlugs": [
+        "moving-d30-basic",
+        "source-backed-moving-d30"
+      ],
+      "preservedLegacyCompletionState": true,
+      "deletedKeys": []
+    },
+    {
+      "name": "legacy_selected",
+      "inputSavedSlugs": [
+        "moving-d30-basic",
+        "source-backed-moving-d30"
+      ],
+      "status": "resolved",
+      "activeOriginSlug": "source-backed-moving-d30",
+      "archivedOriginSlugs": ["moving-d30-basic"],
+      "preservedSavedSlugs": [
+        "moving-d30-basic",
+        "source-backed-moving-d30"
+      ],
+      "deletedKeys": []
+    },
+    {
+      "name": "malformed_metadata",
+      "status": "safe_fallback",
+      "savedCopyItemLossCount": 0,
+      "deletedKeys": []
+    }
+  ],
+  "invariants": {
+    "autoMergeByArrayOrder": false,
+    "autoMergeByTitleSimilarity": false,
+    "autoMergeByLatestSavedAt": false,
+    "legacyKeysDeleted": false,
+    "inactiveCopyRecoverable": true,
+    "personalRunOccurrenceExportStatePreserved": true
+  }
+}

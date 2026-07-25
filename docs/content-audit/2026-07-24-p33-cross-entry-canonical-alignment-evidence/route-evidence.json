@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-07-24",
+  "baselineSha": "e491d99ca61ecae4fd0dd009f785e737b6a59516",
+  "evidenceKind": [
+    "current_source",
+    "current_command",
+    "current_browser_automation",
+    "current_package_screenshot"
+  ],
+  "observedUserCount": 0,
+  "markers": {
+    "P33-CANONICAL-REGISTRY": true,
+    "P33-CROSS-ENTRY-INVARIANT": true,
+    "P33-UNRESOLVED-VARIANT-GATE": true,
+    "P33-NO-STORAGE-WRITE-CHANGE": true,
+    "canonicalPublicRoute": "/f/moving-d30-basic",
+    "canonicalFlowId": "canonical:source:ajd:moving-checklist:23363|job:prepare-move-by-dday|variant:ajd-moving:comprehensive-calendar-v1",
+    "legacyCanonicalFlowId": "flow:ajd-moving:prepare-by-dday:comprehensive-calendar-v1",
+    "canonicalItemCount": 24,
+    "legacyItemCount": 5,
+    "legacyAliasRedirectCount": 4,
+    "findCanonicalCardCount": 1,
+    "findLegacyMovingMapCardCount": 0,
+    "artifactFalseAffordanceCount": 0,
+    "automaticMergedCopyCount": 0,
+    "deletedLegacySavedKeyCount": 0,
+    "personalStateLossCount": 0,
+    "rawRruleVisibleHitCount": 0,
+    "receiptCanonicalItemCount": 24,
+    "myFlowCanonicalItemCount": 24,
+    "calendarCanonicalItemCount": 24,
+    "exportCanonicalItemCount": 24,
+    "canonicalSourceItemExclusionPersisted": true,
+    "canonicalSourceItemRestorePersisted": true,
+    "mobileBottomSheetFocusReturnRaceCount": 0,
+    "p33PlaywrightTestCount": 6,
+    "fullPlaywrightTestCount": 320,
+    "horizontalOverflowCount": 0,
+    "consolePageErrorCount": 0,
+    "sourceMutationCount": 0
+  },
+  "routes": [
+    {
+      "entry": "home",
+      "route": "/",
+      "destination": "/f/moving-d30-basic",
+      "itemCount": 24,
+      "status": "supported"
+    },
+    {
+      "entry": "find",
+      "route": "/flows",
+      "destination": "/f/moving-d30-basic",
+      "itemCount": 24,
+      "status": "supported"
+    },
+    {
+      "entry": "legacy_map",
+      "route": "/flow-maps/moving-d30",
+      "destination": "/f/moving-d30-basic",
+      "itemCount": 24,
+      "status": "canonical_redirect"
+    },
+    {
+      "entry": "legacy_lookup_map",
+      "route": "/flow-maps/curated-ajd-moving-d30",
+      "destination": "/f/moving-d30-basic",
+      "itemCount": 24,
+      "status": "canonical_redirect"
+    },
+    {
+      "entry": "legacy_public_alias",
+      "route": "/f/source-backed-moving-d30",
+      "destination": "/f/moving-d30-basic",
+      "itemCount": 24,
+      "status": "canonical_redirect"
+    },
+    {
+      "entry": "legacy_curated_alias",
+      "route": "/f/curated-ajd-moving-d30",
+      "destination": "/f/moving-d30-basic",
+      "itemCount": 24,
+      "status": "canonical_redirect"
+    },
+    {
+      "entry": "my_flow",
+      "route": "/my",
+      "canonicalSavedSlug": "moving-d30-basic",
+      "itemCount": 24,
+      "status": "supported"
+    },
+    {
+      "entry": "calendar",
+      "route": "/calendar",
+      "canonicalSavedSlug": "moving-d30-basic",
+      "itemCount": 24,
+      "status": "supported"
+    }
+  ],
+  "viewports": {
+    "390x844": {
+      "covered": true,
+      "horizontalOverflowCount": 0,
+      "consolePageErrorCount": 0
+    },
+    "1024x768": {
+      "covered": true,
+      "horizontalOverflowCount": 0,
+      "consolePageErrorCount": 0
+    },
+    "1440x900": {
+      "covered": true,
+      "horizontalOverflowCount": 0,
+      "consolePageErrorCount": 0
+    }
+  },
+  "publish": {
+    "commit": false,
+    "push": false,
+    "pullRequest": false,
+    "merge": false,
+    "deploy": false
+  }
+}

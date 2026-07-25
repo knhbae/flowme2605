@@ -40,6 +40,12 @@ import {
   type MyFlowPersonalExecutionState,
 } from './my-flow-personal-state';
 import { FlowBundle, FlowComparisonState, FlowItemState, FlowWorkbenchState, ReactionLog } from './types';
+import { recordCanonicalFlowWrite } from './canonical-flow-storage';
+import {
+  getFlowItemUserNote,
+  isFlowItemOmittedFromActiveProjection,
+  isFlowItemPersonallyExcluded,
+} from './flow-item-state';
 
 const BUNDLES_KEY = 'flow_builder_mvp_bundles_v11';
 const PREVIOUS_BUNDLES_KEYS = [
@@ -541,6 +547,7 @@ export function saveFlowRecord(
     ...(routineDefinition ? { routineDefinition } : {}),
   };
   localStorage.setItem(`${SAVED_FLOW_KEY_PREFIX}${slug}`, JSON.stringify(record));
+  recordCanonicalFlowWrite(localStorage, slug, record.savedAt);
   localStorage.setItem('flow:meta:last-visit', record.savedAt);
   return record;
 }
@@ -1107,9 +1114,9 @@ export function getActiveFlowProgress(bundles: FlowBundle[] = getBundles()): Act
     const ids = bundle.flow.content_type === 'meal_plan'
       ? (bundle.mealSlots ?? []).map((slot) => slot.id)
       : bundle.items.map((item) => item.id);
-    const skipped = ids.filter((id) => itemStates[id]?.skipped).length;
+    const skipped = ids.filter((id) => isFlowItemOmittedFromActiveProjection(itemStates[id])).length;
     const total = Math.max(ids.length - skipped, 0);
-    const done = ids.filter((id) => checks[id] && !itemStates[id]?.skipped).length;
+    const done = ids.filter((id) => checks[id] && !isFlowItemOmittedFromActiveProjection(itemStates[id])).length;
     const hasProgress =
       Boolean(savedRecord) ||
       done > 0 ||
@@ -1117,7 +1124,11 @@ export function getActiveFlowProgress(bundles: FlowBundle[] = getBundles()): Act
       Boolean(storedAnchor.anchor) ||
       storedAnchor.mode === 'undated' ||
       storedAnchor.mode === 'undecided' ||
-      Object.values(itemStates).some((state) => Boolean(state.note)) ||
+      Object.values(itemStates).some((state) => (
+        Boolean(getFlowItemUserNote(state)) ||
+        isFlowItemPersonallyExcluded(state) ||
+        Boolean(state.skipped)
+      )) ||
       comparisonState.candidates.some((candidate) => candidate.name.trim()) ||
       Object.values(comparisonState.notes).some((row) => Object.values(row).some((note) => note.trim())) ||
       hasWorkbenchProgress(workbenchState);
@@ -1628,7 +1639,7 @@ function restorePersonalCopyExcludedItemStates(
     `${ITEM_STATE_KEY_PREFIX}${flowSlug}`,
     JSON.stringify(Object.fromEntries(excludedStepIds.map((stepId) => [
       stepId,
-      { skipped: true, note: 'excluded_on_start' } satisfies FlowItemState,
+      { personalExcluded: true } satisfies FlowItemState,
     ]))),
   );
 }

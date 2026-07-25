@@ -10,7 +10,8 @@ import {
   mergeSourceBackedMyFlowBundles,
 } from '@/lib/flow/source-backed-my-flow';
 import { cloneSeedBundles } from '@/lib/flow/storage';
-import { notFound } from 'next/navigation';
+import { resolveCanonicalFlowAlias } from '@/lib/flow/canonical-flow-registry';
+import { notFound, redirect } from 'next/navigation';
 import type { Metadata } from 'next';
 
 function decodeSlug(slug: string) {
@@ -36,7 +37,9 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const bundle = findPublicFlow(slug);
+  const decodedSlug = decodeSlug(slug);
+  const canonical = resolveCanonicalFlowAlias('public_slug', decodedSlug)?.entry;
+  const bundle = findPublicFlow(canonical?.canonicalPublicSlug ?? decodedSlug);
   if (!bundle) {
     return {
       title: 'Flow를 찾을 수 없습니다 | FlowMe',
@@ -49,13 +52,15 @@ export async function generateMetadata({
     title: `${publicTitle} | FlowMe`,
     description: bundle.flow.description,
     robots: { index: true, follow: true },
-    alternates: { canonical: `/f/${bundle.flow.slug}` },
+    alternates: { canonical: canonical?.canonicalRoute ?? `/f/${bundle.flow.slug}` },
   };
 }
 
 export default async function P({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const decodedSlug = decodeSlug(slug);
+  const canonical = resolveCanonicalFlowAlias('public_slug', decodedSlug)?.entry;
+  if (canonical && canonical.canonicalPublicSlug !== decodedSlug) redirect(canonical.canonicalRoute);
   if (!findPublicFlow(decodedSlug)) notFound();
   return <PublicFlow slug={decodedSlug} />;
 }

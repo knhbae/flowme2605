@@ -32,7 +32,8 @@ const CLOSED_REVIEW_FLOW_ROUTES = [
   '/f/real-fitvely-video-body-fat-6kg-method',
 ];
 
-const PUBLIC_START_ACTION_PATTERN = /그대로 시작|날짜 없이 시작|이 날짜로 시작/;
+const PUBLIC_START_ACTION_PATTERN =
+  /그대로 시작|날짜 없이 시작|이 날짜로 시작|(?:Flow 실행|실행표|캘린더(?: 일정)?|체크리스트|메모|시트) \d+(?:개|행)로 시작/;
 
 async function collectFocusableEntries(page: Page) {
   return page.evaluate<FocusableEntry[]>(() => {
@@ -238,9 +239,7 @@ test.describe('public share shell secondary browse order', () => {
           entry.testId === 'public-flow-primary-setup' ||
           entry.testId === 'public-flow-mobile-save-cta' ||
           entry.testId === 'public-flow-save-actions' ||
-          entry.text.includes('그대로 시작') ||
-          entry.text.includes('날짜 없이 시작') ||
-          entry.text.includes('이 날짜로 시작'),
+          PUBLIC_START_ACTION_PATTERN.test(entry.text),
       );
 
       expect(browseIndex).toBeGreaterThanOrEqual(0);
@@ -258,9 +257,9 @@ test.describe('public share shell secondary browse order', () => {
       expect(stickyPrimaryEntries.length).toBeGreaterThan(0);
 
       const [primaryEntry] = stickyPrimaryEntries;
-      expect(primaryEntry.accessibleName).toMatch(/그대로 시작|날짜 없이 시작|이 날짜로 시작/);
-      expect(primaryEntry.text).toMatch(/그대로 시작|날짜 없이 시작|이 날짜로 시작/);
-      expect(primaryEntry.text).not.toMatch(/도구|파일|받기|복사|시트|캘린더|xlsx|ics/i);
+      expect(primaryEntry.accessibleName).toMatch(PUBLIC_START_ACTION_PATTERN);
+      expect(primaryEntry.text).toMatch(PUBLIC_START_ACTION_PATTERN);
+      expect(primaryEntry.text).not.toMatch(/도구|파일|받기|복사|다운로드|xlsx|ics/i);
     });
   }
 
@@ -321,7 +320,7 @@ test.describe('public share shell secondary browse order', () => {
     await expect(page.getByTestId('flow-artifact-data-preview')).toBeVisible();
 
     const mobileSave = page.getByTestId('public-flow-mobile-save-cta');
-    const saveButton = mobileSave.getByRole('button', { name: '그대로 시작' });
+    const saveButton = mobileSave.getByRole('button', { name: PUBLIC_START_ACTION_PATTERN });
     await expect(saveButton).toBeVisible();
     await saveButton.focus();
     await expect(saveButton).toBeFocused();

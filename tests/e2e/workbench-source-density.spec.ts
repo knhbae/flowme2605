@@ -122,7 +122,7 @@ test.describe('field checklist workbench source density', () => {
       'href',
       'https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=17400000001&tp_seq=02',
     );
-    await expect(page.getByRole('button', { name: /그대로 시작|그대로 저장|내 Flow에 저장|날짜 없이 시작|날짜 없이 저장|이 날짜로 시작|이 날짜로 저장/ })).toBeVisible();
+    await expect(page.getByTestId('public-flow-save-primary-mobile')).toBeVisible();
     const body = page.locator('body');
     await expect(body).toContainText('1년 이내');
     await expect(body).not.toContainText(/일부 재산[^\n]{0,100}6개월/u);
@@ -171,7 +171,7 @@ test.describe('field checklist workbench source density', () => {
         'href',
         route.sourceUrl,
       );
-      await expect(page.getByRole('button', { name: /그대로 시작|그대로 저장|내 Flow에 저장|날짜 없이 시작|날짜 없이 저장|이 날짜로 시작|이 날짜로 저장/ })).toBeVisible();
+      await expect(page.getByTestId('public-flow-save-primary-mobile')).toBeVisible();
     }
   });
 

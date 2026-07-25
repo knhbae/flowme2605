@@ -6,7 +6,11 @@ export async function openMyFlowLibraryFlow(
   mobileSection: 'execute' | 'plan' | 'record' = 'plan',
 ): Promise<Locator> {
   const library = page.getByTestId('my-flow-library-workspace');
-  if (await library.isVisible().catch(() => false)) {
+  const wideViewport = (page.viewportSize()?.width ?? 0) >= 900;
+  if (wideViewport) {
+    await expect(library).toBeVisible();
+  }
+  if (wideViewport || await library.isVisible().catch(() => false)) {
     await library.locator(`[data-testid="my-flow-library-row"][data-flow-slug="${flowSlug}"]`).click();
     const card = library
       .getByTestId('my-flow-library-detail')

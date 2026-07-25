@@ -9,7 +9,7 @@ import {
   lookupUrlFirstP0Input,
 } from './url-first-lookup';
 
-test('canonical URL lookup resolves the AJD moving source to the curated D-30 representative without fake usage counts', () => {
+test('canonical URL lookup resolves the AJD moving source to the shared 24-item public Flow without fake usage counts', () => {
   const noisyUrl = AJD_MOVING_SOURCE_URL
     .replace('https://www.ajd.co.kr', 'http://m.ajd.co.kr')
     .concat('?utm_source=blog&utm_medium=social#comment-12');
@@ -19,9 +19,9 @@ test('canonical URL lookup resolves the AJD moving source to the curated D-30 re
   const result = lookupUrlFirstP0Input(noisyUrl);
   assert.equal(result.status, 'hit');
   assert.equal(result.canonicalUrl, AJD_MOVING_SOURCE_URL);
-  assert.equal(result.flowMapId, 'curated-ajd-moving-d30');
-  assert.equal(result.routeHref, '/flow-maps/curated-ajd-moving-d30');
-  assert.equal(result.flowSlug, 'curated-ajd-moving-d30');
+  assert.equal(result.flowMapId, undefined);
+  assert.equal(result.routeHref, '/f/moving-d30-basic');
+  assert.equal(result.flowSlug, 'moving-d30-basic');
   assert.equal(result.sourceStatus, 'real');
   assert.deepEqual(result.exportModes, ['calendar', 'markdown', 'checklist']);
   assert.equal(result.canSaveToMyFlow, true);
@@ -33,7 +33,7 @@ test('source-backed canary URLs resolve to existing Flow Map hits', () => {
   const canaries = [
     {
       url: `${AJD_MOVING_SOURCE_URL}?utm_source=blog`,
-      routeHref: '/flow-maps/curated-ajd-moving-d30',
+      routeHref: '/f/moving-d30-basic',
     },
     {
       url: 'https://mathbang.net/13?utm_medium=share',
@@ -354,7 +354,7 @@ test('hit URL start package saves the selected start date and builds a markdown 
   assert.match(started.markdownExport?.content ?? '', /middle-school-math-1/);
 });
 
-test('calendar start package keeps calendar artifact mode for dated saved flows', () => {
+test('AJD calendar start package writes the canonical public Flow identity', () => {
   const result = lookupUrlFirstP0Input(AJD_MOVING_SOURCE_URL);
   const started = buildUrlFirstStartPackage(result, {
     startDate: '2026-08-01',
@@ -363,15 +363,16 @@ test('calendar start package keeps calendar artifact mode for dated saved flows'
   });
 
   assert.equal(started.status, 'ready');
-  assert.equal(started.flowMapId, 'curated-ajd-moving-d30');
-  assert.equal(started.targetHref, '/my?savedMap=curated-ajd-moving-d30');
+  assert.equal(started.flowMapId, undefined);
+  assert.equal(started.flowSlug, 'moving-d30-basic');
+  assert.equal(started.targetHref, '/my?savedFlow=moving-d30-basic');
   assert.ok(started.savedFlows.length > 0);
   assert.deepEqual(
     started.savedFlows.map((flow) => flow.slug),
-    ['curated-ajd-moving-d30'],
+    ['moving-d30-basic'],
   );
   assert.ok(started.savedFlows.every((flow) => flow.selectedArtifactMode === 'calendar'));
-  assert.equal(started.savedMapSnapshot?.anchor, '2026-08-01');
+  assert.equal(started.savedMapSnapshot, undefined);
 });
 
 test('direct Flow start package lands on the canonical saved Flow receipt', () => {
@@ -385,8 +386,8 @@ test('direct Flow start package lands on the canonical saved Flow receipt', () =
 
   assert.equal(started.status, 'ready');
   assert.equal(started.flowMapId, undefined);
-  assert.equal(started.flowSlug, 'curated-ajd-moving-d30');
-  assert.equal(started.targetHref, '/my?savedFlow=curated-ajd-moving-d30');
+  assert.equal(started.flowSlug, 'moving-d30-basic');
+  assert.equal(started.targetHref, '/my?savedFlow=moving-d30-basic');
 });
 
 test('customized start package stores a personal title and excludes unchecked steps only in My Flow state', () => {
@@ -409,12 +410,12 @@ test('customized start package stores a personal title and excludes unchecked st
     ['math-prime-factorization'],
   );
   assert.equal(
-    started.itemStatesByFlowSlug?.['source-backed-middle-school-math-1']?.['math-integers-rationals']?.skipped,
+    started.itemStatesByFlowSlug?.['source-backed-middle-school-math-1']?.['math-integers-rationals']?.personalExcluded,
     true,
   );
   assert.equal(
     started.itemStatesByFlowSlug?.['source-backed-middle-school-math-1']?.['math-integers-rationals']?.note,
-    'excluded_on_start',
+    undefined,
   );
   assert.equal(started.savedMapSnapshot?.personalCopy?.source, 'url_first_custom_start');
   assert.deepEqual(started.savedMapSnapshot?.personalCopy?.includedStepIdsByFlow, {

@@ -17,8 +17,10 @@ import { addDays, formatDate, formatKoreanShortDate, formatLocalDate, getRangeEn
 import { toContentDisplayTitle, toUserFacingSourceTitle } from '@/lib/flow/display-title';
 import { buildEffectiveRoutineProjection } from '@/lib/flow/effective-routine-projection';
 import { resolveRoutineHorizon } from '@/lib/flow/routine-horizon';
+import { formatRoutineRepeatRuleLabel } from '@/lib/flow/routine-schedule-presentation';
 import type { SavedRoutineOccurrenceRow } from '@/lib/flow/saved-routine-occurrence';
 import { FLOW_EXPORT_LABELS } from '@/lib/flow/export-labels';
+import { isFlowItemOmittedFromActiveProjection } from '@/lib/flow/flow-item-state';
 import type {
   FlowExportDestination,
   FlowExportResultReceipt,
@@ -174,7 +176,9 @@ export function ArtifactWorkbench({
   onExportOpenChange,
 }: ArtifactWorkbenchProps) {
   const plan = getArtifactPlan(bundle);
-  const total = getExecutableItems(bundle).filter((item) => !itemStates[item.id]?.skipped).length;
+  const total = getExecutableItems(bundle).filter(
+    (item) => !isFlowItemOmittedFromActiveProjection(itemStates[item.id]),
+  ).length;
   const isJeonsePrecheck = bundle.flow.slug === 'jeonse-contract-precheck-docs';
 
   if (presentationMode === 'export-only') {
@@ -2358,11 +2362,14 @@ function MaintenanceRoutineWorkbench({
     : isDrainFilter
       ? '다음 배수필터 청소일'
       : '다음 상태 확인일';
-  const repeatLabel = isTubCleaning
+  const sourceRepeatLabel = isTubCleaning
     ? bundle.repeatRules?.[0] ?? '월 1회'
     : isDrainFilter
       ? '주 1회'
       : bundle.repeatRules?.[0] ?? '7~10일마다';
+  const repeatLabel = isDrainFilter
+    ? sourceRepeatLabel
+    : formatRoutineRepeatRuleLabel(bundle.repeatRules?.length ? bundle.repeatRules : [sourceRepeatLabel]);
   const memoPlaceholder = isTubCleaning
     ? '예: 드럼 세탁기 / 액상 전용 클리너 구매 링크 / 세제통 물기 제거 / 배수필터는 다음 주말에 확인'
     : isDrainFilter

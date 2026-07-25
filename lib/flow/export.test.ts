@@ -148,6 +148,43 @@ test('text and workbook exports include item notes and skipped state', () => {
   assert.equal(execution.rows[1][7], '스몰웨딩이라 후보 비교 범위를 줄임');
 });
 
+test('P33-EXCLUSION-PROJECTION-PARITY omits personal exclusions without exposing legacy sentinel notes', () => {
+  const wedding = seedBundles.find((bundle) => bundle.flow.slug === 'wedding-d180-basic');
+  assert.ok(wedding);
+  const first = wedding.items[0];
+  const second = wedding.items[1];
+  assert.ok(first);
+  assert.ok(second);
+
+  const personallyExcluded = {
+    [first.id]: {
+      personalExcluded: true,
+      note: '이 메모는 복구 뒤에도 남아야 함',
+    },
+    [second.id]: {
+      skipped: true,
+      note: 'excluded_on_start',
+    },
+  };
+  const text = buildText(wedding, {}, '2026-09-15', personallyExcluded);
+  const sheets = buildWorkbookSheets(wedding, {}, '2026-09-15', {
+    itemStates: personallyExcluded,
+  });
+  const execution = sheets.find((sheet) => sheet.name === '실행표');
+  const ics = buildIcsCalendar(wedding, {}, '2026-09-15', personallyExcluded)
+    .replaceAll('\r\n ', '');
+
+  assert.doesNotMatch(text, new RegExp(first.title));
+  assert.doesNotMatch(text, new RegExp(second.title));
+  assert.doesNotMatch(text, /excluded_on_start/);
+  assert.doesNotMatch(text, /이 메모는 복구 뒤에도 남아야 함/);
+  assert.ok(execution);
+  assert.equal(execution.rows.some((row) => row.includes(first.title)), false);
+  assert.equal(execution.rows.some((row) => row.includes(second.title)), false);
+  assert.doesNotMatch(ics, new RegExp(first.title));
+  assert.doesNotMatch(ics, new RegExp(second.title));
+});
+
 test('checklist exports ignore stale used-car comparison candidate notes', () => {
   const usedCar = seedBundles.find((bundle) => bundle.flow.slug === 'used-car-buying-check');
   assert.ok(usedCar);

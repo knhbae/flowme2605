@@ -57,7 +57,7 @@ test('mobile save journey uses one summary, receipt, outline, and export grammar
   await expect(page.locator('[data-action-priority="primary"]:visible')).toHaveCount(1);
   await capture(page, '01-public-save-before-mobile.png');
 
-  await page.getByTestId('public-flow-mobile-save-cta').getByRole('button', { name: '날짜 없이 시작' }).click();
+  await page.getByTestId('public-flow-save-primary-mobile').click();
   await page.getByTestId('public-flow-saved-receipt-primary').click();
 
   const hub = page.getByTestId('my-flow-post-save-panel');

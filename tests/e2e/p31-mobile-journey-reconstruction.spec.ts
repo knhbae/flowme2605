@@ -235,9 +235,7 @@ test.describe('P31 mobile journey reconstruction', () => {
     await page.getByTestId('public-flow-date-intent-undated').click();
     const receipt = await savePublicFlow(
       page,
-      page
-        .getByTestId('public-flow-mobile-save-cta')
-        .getByRole('button', { name: '날짜 없이 시작' }),
+      page.getByTestId('public-flow-save-primary-mobile'),
     );
     await openSavedPublicFlow(page, receipt);
     const postSaveView = page.getByTestId('my-flow-post-save-view-flow');

@@ -22,7 +22,7 @@
     "security:audit": "npm audit --audit-level=high",
     "audit:p26:journeys": "node scripts/content-audit/run-p26-six-shape-journey-gate.mjs",
     "verify": "npm run docs:check && npm test && npm run build",
-    "pretest": "tsx --test lib/flow/personal-flow-lifecycle.test.ts lib/flow/personal-item-detail-overlay.test.ts lib/flow/execution-ui-contract.test.ts lib/flow/responsive-execution-workspace.test.ts lib/flow/my-flow-local-ia.test.ts lib/flow/whole-flow-reading.test.ts lib/flow/routine-schedule-presentation.test.ts lib/flow/my-flow-workspace-presentation.test.ts lib/flow/my-flow-focused-workspace.test.ts lib/flow/artifact-recommendation.test.ts",
+    "pretest": "tsx --test lib/flow/canonical-flow-registry.test.ts lib/flow/canonical-flow-storage.test.ts lib/flow/flow-item-state.test.ts lib/flow/personal-flow-lifecycle.test.ts lib/flow/personal-item-detail-overlay.test.ts lib/flow/execution-ui-contract.test.ts lib/flow/responsive-execution-workspace.test.ts lib/flow/my-flow-local-ia.test.ts lib/flow/whole-flow-reading.test.ts lib/flow/routine-schedule-presentation.test.ts lib/flow/my-flow-workspace-presentation.test.ts lib/flow/my-flow-focused-workspace.test.ts lib/flow/artifact-recommendation.test.ts",
     "test": "tsx --test lib/flow/routine-horizon.test.ts lib/flow/execution-detail-content.test.ts lib/flow/date.test.ts lib/flow/public-date-intent.test.ts lib/flow/post-save-receipt.test.ts lib/flow/post-save-decision-hub.test.ts lib/flow/date-movement.test.ts lib/flow/calendar-unscheduled-tray.test.ts lib/flow/calendar-flow-scope.test.ts lib/flow/calendar-date-move.test.ts lib/flow/export-scope.test.ts lib/flow/projection-identity.test.ts lib/flow/execution-notes.test.ts lib/flow/flow-run-history.test.ts lib/flow/flow-run-reuse-preview.test.ts lib/flow/completion-presentation.test.ts lib/flow/parser.test.ts lib/flow/display-title.test.ts lib/flow/user-surface-guardrails.test.ts lib/flow/url-first-lookup.test.ts lib/flow/url-first-supply-queue.test.ts lib/flow/seed-flows.test.ts lib/flow/export.test.ts lib/flow/content-lab.test.ts lib/flow/storage.test.ts lib/flow/execution-model.test.ts lib/flow/recurrence.test.ts lib/flow/effective-routine-projection.test.ts lib/flow/source-fit.test.ts lib/flow/content-inventory.test.ts lib/flow/natural-artifact-audit.test.ts lib/flow/content-lifecycle.test.ts lib/flow/source-review-priority.test.ts lib/flow/artifact-plan.test.ts lib/flow/artifact-fields.test.ts lib/flow/representative-ux-content-review.test.ts lib/flow/mobile-simulation-protocol.test.ts lib/flow/ux-cleanup-backlog.test.ts lib/flow/moving-d30-restart.test.ts lib/flow/korean-flow-content-candidates.test.ts lib/flow/korean-flow-content-user-review.test.ts lib/flow/korean-flow-content-source-refresh.test.ts lib/flow/flow-content-selection-audit.test.ts lib/flow/content-flow-review-api.test.ts lib/flow/source-backed-my-flow.test.ts lib/flow/source-backed-manual-registration-report.test.ts lib/flow/my-flow-step-export.test.ts scripts/workflows/repo-workflow.test.mjs",
     "test:e2e": "playwright test"
   },
@@ -41,19 +41,14 @@
     "@types/react": "19.0.10",
     "@types/react-dom": "19.0.4",
     "autoprefixer": "10.4.21",
-    "postcss": "8.5.16",
+    "postcss": "8.5.23",
     "tailwindcss": "3.4.17",
     "tsx": "4.19.4",
     "typescript": "5.8.3"
   },
   "overrides": {
+    "brace-expansion": "5.0.8",
     "postcss": "$postcss",
-    "minimatch@3.1.5": {
-      "brace-expansion": "1.1.16"
-    },
-    "minimatch@5.1.9": {
-      "brace-expansion": "2.1.2"
-    },
     "sharp": "0.35.3",
     "tmp": "0.2.7",
     "uuid": "11.1.1"

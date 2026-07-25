@@ -62,7 +62,7 @@ const SHAPE_REASON: Record<FlowExperienceShape, string> = {
 };
 
 const DESTINATION_LABEL: Record<FlowExportDestination, string> = {
-  calendar: '캨린더 일정',
+  calendar: '캘린더 일정',
   checklist: '체크리스트',
   sheet: '시트',
   memo: '메모',
@@ -148,7 +148,7 @@ function exportActionLabel(
   count: number,
 ): string {
   const prefix = scopeLabel(plan);
-  if (destination === 'calendar') return `${prefix} · 캨린더 일정 ${count}개 받기`;
+  if (destination === 'calendar') return `${prefix} · 캘린더 일정 ${count}개 받기`;
   if (destination === 'sheet') return `${prefix} · 시트 ${count}행 복사`;
   return `${prefix} · ${DESTINATION_LABEL[destination]} ${count}개 복사`;
 }

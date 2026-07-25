@@ -21,6 +21,7 @@ import {
   openMyFlowLibraryFlow,
 } from './helpers/my-flow-library';
 import { openSavedPublicFlow, savePublicFlow } from './helpers/public-flow-save';
+import { AJD_MOVING_CANONICAL_FLOW_ID } from '../../lib/flow/canonical-flow-registry';
 
 const userSurfaceInternalTerms = [
   /묶음/,
@@ -337,7 +338,7 @@ test('home separates continuation and usage examples from the Flow catalog', asy
   await expect(page.getByRole('link', { name: '#D-Day 준비' })).toHaveCount(0);
   await expect(page.getByRole('heading', { name: 'Flow를 이렇게 사용해요' })).toBeVisible();
   await expect(page.getByText('이사 체크리스트를 이사일 기준 일정으로')).toBeVisible();
-  await expect(page.getByText('차량 점검표를 내 체크리스트로')).toBeVisible();
+  await expect(page.getByText('차량 검사 준비를 검사일 기준 일정으로')).toBeVisible();
   await expect(page.getByText('운동 영상을 주간 루틴으로')).toBeVisible();
   await expect(page.getByText('전세계약 전 서류 체크 Flow').first()).toHaveCount(0);
   await expect(page.getByText('중고차 구매 현장 점검 Flow').first()).toHaveCount(0);
@@ -378,7 +379,7 @@ test('home usage examples open detail pages and save into My Flow', async ({ pag
   await page.goto('/');
   await Promise.all([
     page.waitForURL('**/f/vehicle-inspection-prep', { timeout: 15_000 }),
-    page.getByTestId('home-usage-example').filter({ hasText: '차량 점검표' }).click(),
+    page.getByTestId('home-usage-example').filter({ hasText: '차량 검사 준비' }).click(),
   ]);
   await expect(page.getByTestId('flow-public-shell')).toBeVisible();
 });
@@ -408,12 +409,13 @@ test('wide home and My Flow keep action columns purposeful', async ({ page }) =>
   await expect(page.getByTestId('public-flow-detail-workspace')).toBeVisible();
   await expectNoHorizontalOverflow(page);
 
-  await page.goto('/flow-maps/moving-d30');
+  await page.goto('/f/moving-d30-basic');
   await page.evaluate(() => window.localStorage.clear());
   await page.reload();
-  await page.getByTestId('flow-map-anchor-input').fill('2026-07-22');
-  await page.getByTestId('flow-map-save-all').click();
-  await page.waitForURL('**/my?savedMap=moving-d30', { timeout: 15_000 });
+  await page.getByTestId('public-flow-anchor-input').fill('2026-07-22');
+  await page.getByTestId('public-flow-save-primary').click();
+  await page.getByTestId('public-flow-saved-receipt-primary').click();
+  await page.waitForURL('**/my?savedFlow=moving-d30-basic', { timeout: 15_000 });
 
   const visibleFlowFindingLinks = await page.locator('a[href="/flows"]').evaluateAll((links) =>
     links.filter((link) => {
@@ -436,9 +438,9 @@ test('flow list exposes the seed and online-sourced flows', async ({ page }) => 
   const flowMapCatalog = page.getByTestId('flow-map-catalog-section');
   await expect(flowMapCatalog).toBeVisible();
   await expect(flowMapCatalog.getByRole('heading', { name: '내 상황에 맞는 콘텐츠 고르기' })).toHaveCount(0);
-  await expect(flowMapCatalog.getByTestId('flow-map-catalog-card')).toHaveCount(9);
+  await expect(flowMapCatalog.getByTestId('flow-map-catalog-card')).toHaveCount(8);
   await expect(flowMapCatalog.locator('[data-testid="flow-map-catalog-card"][data-source-kind="curated-source"]')).toHaveCount(7);
-  await expect(flowMapCatalog.getByTestId('single-flow-catalog-card')).toHaveCount(0);
+  await expect(flowMapCatalog.getByTestId('single-flow-catalog-card')).toHaveCount(2);
   const firstCatalogCard = flowMapCatalog.getByTestId('flow-map-catalog-card').first();
   const firstCatalogCardTop = await firstCatalogCard.evaluate((element) => element.getBoundingClientRect().top);
   expect(firstCatalogCardTop).toBeLessThan(480);
@@ -446,7 +448,7 @@ test('flow list exposes the seed and online-sourced flows', async ({ page }) => 
   await expectCompactCatalogAction(firstCatalogCard, firstCatalogCard.getByTestId('flow-map-detail-link'));
   await expect(firstCatalogCard.getByTestId('flow-map-recommended-flow-link')).toHaveCount(0);
   await expect(firstCatalogCard.getByTestId('flow-card-source-link')).toHaveCount(1);
-  await expect(flowMapCatalog.locator('a[href="/flow-maps/moving-d30"]')).toBeVisible();
+  await expect(flowMapCatalog.locator('a[href="/f/moving-d30-basic"]')).toBeVisible();
   await expect(flowMapCatalog.locator('a[href="/flow-maps/middle-school-math-1"]')).toBeVisible();
   await expect(flowMapCatalog.locator('a[href="/f/curated-wedding-naver-timeline"]')).toBeVisible();
   await expect(flowMapCatalog.locator('a[href="/f/curated-wedding-gongysd-atoz"]')).toBeVisible();
@@ -462,7 +464,7 @@ test('flow list exposes the seed and online-sourced flows', async ({ page }) => 
   await expect(page.getByTestId('curated-source-catalog-section')).toHaveCount(0);
   await expect(page.getByTestId('single-flow-catalog-section')).toHaveCount(0);
   const catalogCount = flowMapCatalog.getByTestId('flow-catalog-count');
-  await expect(catalogCount).toContainText('Flow 9개');
+  await expect(catalogCount).toContainText('Flow 10개');
   await expect(catalogCount).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
   await expect(page.getByText('필터 조정')).toHaveCount(0);
   await expect(page.getByRole('heading', { name: '이사 D-30 준비 Flow' })).toHaveCount(0);
@@ -1035,8 +1037,8 @@ test('flow finding URL lookup starts a lightweight customized personal copy', as
   expect(savedState.snapshot.stepCountsByFlow['source-backed-middle-school-math-1']).toBe(1);
   expect(savedState.persistence.map.title).toBe('시험 전 소인수분해만');
   expect(savedState.persistence.childFlows[0].steps.map((step: { stepId: string }) => step.stepId)).toEqual(['math-prime-factorization']);
-  expect(savedState.itemStates['math-integers-rationals'].skipped).toBe(true);
-  expect(savedState.itemStates['math-integers-rationals'].note).toBe('excluded_on_start');
+  expect(savedState.itemStates['math-integers-rationals'].personalExcluded).toBe(true);
+  expect(savedState.itemStates['math-integers-rationals'].note).toBeUndefined();
   expect(savedState.itemStates['math-prime-factorization']).toBeUndefined();
   expect(savedState.savedRecord.anchor).toBe('2026-07-15');
   expect(savedState.savedRecord.selectedArtifactMode).toBe('checklist');
@@ -1066,8 +1068,8 @@ test('flow finding URL lookup starts a lightweight customized personal copy', as
   expect(updatedState.snapshot.personalCopy.source).toBe('url_first_custom_start');
   expect(updatedState.persistence.map.title).toBe('시험 전 소인수분해만');
   expect(updatedState.persistence.childFlows[0].steps.map((step: { stepId: string }) => step.stepId)).toEqual(['math-prime-factorization']);
-  expect(updatedState.itemStates['math-integers-rationals'].skipped).toBe(true);
-  expect(updatedState.itemStates['math-integers-rationals'].note).toBe('excluded_on_start');
+  expect(updatedState.itemStates['math-integers-rationals'].personalExcluded).toBe(true);
+  expect(updatedState.itemStates['math-integers-rationals'].note).toBeUndefined();
 
   await page.reload();
   await openPostSaveWorkspaceIfPresent(page);
@@ -1159,8 +1161,8 @@ test('my flow personal copy settings can readjust saved title date and included 
   expect(savedState.snapshot.personalCopy.excludedStepIdsByFlow['source-backed-middle-school-math-1']).toContain('math-prime-factorization');
   expect(savedState.persistence.map.title).toBe('1학기 앞부분 복습');
   expect(savedState.persistence.childFlows[0].steps.map((step: { stepId: string }) => step.stepId)).toEqual(['math-integers-rationals']);
-  expect(savedState.itemStates['math-prime-factorization'].skipped).toBe(true);
-  expect(savedState.itemStates['math-prime-factorization'].note).toBe('excluded_on_start');
+  expect(savedState.itemStates['math-prime-factorization'].personalExcluded).toBe(true);
+  expect(savedState.itemStates['math-prime-factorization'].note).toBeUndefined();
   expect(savedState.itemStates['math-integers-rationals']).toBeUndefined();
   expect(savedState.savedRecord.anchor).toBe('2026-08-01');
 
@@ -1192,122 +1194,79 @@ test('my flow personal copy settings can readjust saved title date and included 
   expect(updatedState.snapshot.personalCopy.includedStepIdsByFlow['source-backed-middle-school-math-1']).toEqual(['math-integers-rationals']);
   expect(updatedState.persistence.childFlows[0].steps.map((step: { stepId: string }) => step.stepId)).toEqual(['math-integers-rationals']);
   expect(updatedState.persistence.map.version).toBe('2026-01-01.old');
-  expect(updatedState.itemStates['math-prime-factorization'].skipped).toBe(true);
+  expect(updatedState.itemStates['math-prime-factorization'].personalExcluded).toBe(true);
   expect(updatedState.itemStates['math-integers-rationals']).toBeUndefined();
   await expectNoHorizontalOverflow(page);
 });
 
-test('my flow personal copy step detail exports current copy to memo checklist calendar and sheet row', async ({ page }) => {
+test('canonical moving item edits feed memo checklist calendar and sheet-row exports', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/flows');
+  await page.goto('/f/moving-d30-basic');
   await page.evaluate(() => window.localStorage.clear());
-
-  const lookup = page.getByTestId('flow-url-lookup-entry');
-  await expect(lookup).toBeVisible({ timeout: 15_000 });
-  await lookup
-    .getByLabel('URL 또는 메모')
-    .fill('https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363');
-  await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
-
-  const result = page.getByTestId('flow-url-lookup-result');
-  await expect(result).toContainText('Flow가 있어요');
-  await openUrlFirstQuickStart(result);
-  await result.getByRole('button', { name: '내게 맞게 조정' }).click();
-
-  const customPanel = result.getByTestId('flow-url-custom-start-panel');
-  await expect(customPanel).toBeVisible();
-  await customPanel.getByLabel('저장 이름').fill('8월 이사 핵심만');
-  const stepBoxes = customPanel.locator('input[type="checkbox"]');
-  const stepCount = await stepBoxes.count();
-  expect(stepCount).toBeGreaterThan(1);
-  for (let index = 1; index < stepCount; index += 1) {
-    await stepBoxes.nth(index).uncheck();
-  }
-  await result.getByLabel('이사일').fill('2026-08-01');
-  await result.getByRole('button', { name: '시작하기' }).click();
-  await expect(page).toHaveURL(/\/my\?savedMap=curated-ajd-moving-d30/);
-  await openPostSaveWorkspaceIfPresent(page);
-
-  let personalFlow = await openMyFlowLibraryFlow(
-    page,
-    'curated-ajd-moving-d30',
+  await page.reload();
+  await page.context().grantPermissions(
+    ['clipboard-read', 'clipboard-write'],
+    { origin: 'http://127.0.0.1:3104' },
   );
-  await expect(personalFlow).toBeVisible();
-  const settingsOpen = personalFlow.getByTestId('my-flow-personal-copy-settings-open');
-  await expect(settingsOpen).toHaveText('Flow 조정');
-  await expect(settingsOpen).toHaveAccessibleName(/8월 이사 핵심만 이사일 바꾸기/);
-  await settingsOpen.click();
-  const settings = personalFlow.getByTestId('my-flow-personal-copy-settings');
-  await settings.getByLabel('저장 이름').fill('8월 이사 준비 사본');
-  await expect(settings.getByRole('button', { name: '이사일 바꾸기' })).toBeVisible();
-  await expect(settings).toContainText('전체 일정 기준');
-  await expect(settings).toContainText('해당 할 일만');
-  await settings.getByLabel('이사일').fill('2026-08-04');
-  await settings.getByRole('button', { name: '저장' }).click();
 
+  await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
+  await page.getByTestId('public-flow-adjust-entry-mobile').click();
+  const adjustment = page.getByTestId('public-flow-personal-adjustment');
+  await adjustment.getByTestId('public-flow-adjustment-mode-content').click();
+  await adjustment.getByTestId('public-flow-adjustment-flow-title').fill('8월 이사 준비 사본');
+  await adjustment.getByTestId('public-flow-adjustment-title').fill('견적 후보 먼저 정하기');
+  await adjustment.getByTestId('public-flow-adjustment-save').click();
+  await page.getByTestId('public-flow-saved-receipt-primary').click();
+  await page.getByTestId('my-flow-post-save-view-flow').click();
+
+  const personalFlow = await openMyFlowLibraryFlow(page, 'moving-d30-basic');
+  await personalFlow.getByTestId('my-flow-workspace-tab-plan').click();
   let activeSteps = personalFlow.getByTestId('my-flow-whole-flow-outline');
-  await expect(activeSteps).toContainText('이사 방식');
-  await expect(activeSteps).not.toContainText('주소 변경');
-  const excludedSteps = personalFlow.getByTestId('my-flow-excluded-steps');
-  await expect(excludedSteps).toContainText('주소 변경');
-  await page.getByTestId('my-flow-mobile-library-back').click();
-  await page.getByTestId('my-flow-view-today').click();
-  await expect(page.getByTestId('my-flow-now-section')).toContainText('이사 방식');
-  await page.getByTestId('my-flow-view-flow').click();
-  personalFlow = await openMyFlowLibraryFlow(page, 'curated-ajd-moving-d30');
-  activeSteps = personalFlow.getByTestId('my-flow-whole-flow-outline');
-  await page.context().grantPermissions(['clipboard-read', 'clipboard-write'], { origin: 'http://127.0.0.1:3104' });
-  await personalFlow.getByTestId('my-flow-execution-row-shell').first().getByRole('button', { name: /열기/ }).click();
+  await expect(activeSteps).toContainText('견적 후보 먼저 정하기');
+  await expect(activeSteps).toHaveAttribute('data-effective-row-count', '24');
+  await expect(activeSteps.getByTestId('my-flow-execution-row-shell')).toHaveCount(4);
+
+  await personalFlow
+    .getByTestId('my-flow-execution-row-shell')
+    .first()
+    .getByRole('button', { name: /열기/ })
+    .click();
   let personalDetail = getOpenMyFlowItemDetail(page);
-  await expect(personalDetail).toContainText('이사 방식');
-  const quickEdit = personalDetail.getByTestId('my-flow-quick-item-edit');
-  if (await quickEdit.isVisible().catch(() => false)) {
-    await expect(quickEdit).toHaveText('할 일 수정');
-    await expect(quickEdit).toHaveAccessibleName(/이사 방식.*할 일 수정/);
-    await quickEdit.click();
-  } else {
-    const readSummary = personalDetail.getByTestId('my-flow-detail-read-summary');
-    await readSummary.locator('summary').click();
-    const itemEditEntry = readSummary.getByTestId('my-flow-detail-edit-toggle');
-    await expect(itemEditEntry).toHaveText('할 일 수정');
-    await expect(itemEditEntry).toHaveAccessibleName(/이사 방식.*할 일 수정/);
-    await itemEditEntry.click();
-  }
+  await personalDetail.getByTestId('my-flow-quick-item-edit').click();
   await personalDetail.getByTestId('my-flow-detail-title-input').fill('견적 후보만 먼저 확인');
-  await expect(personalDetail.getByLabel('이 할 일 날짜')).toBeVisible();
-  await personalDetail.getByTestId('my-flow-detail-date-input').fill('2026-07-07');
+  await personalDetail.getByTestId('my-flow-detail-date-input').fill('2030-08-02');
   await personalDetail.getByTestId('my-flow-detail-memo').fill('오전 중 후보 2곳만 확인');
   await personalDetail.getByTestId('my-flow-detail-save-changes').click();
 
   await expect(activeSteps).toContainText('견적 후보만 먼저 확인');
-  await personalFlow.getByTestId('my-flow-execution-row-shell').first().getByRole('button', { name: /열기/ }).click();
+  await personalFlow
+    .getByTestId('my-flow-execution-row-shell')
+    .first()
+    .getByRole('button', { name: /열기/ })
+    .click();
   personalDetail = getOpenMyFlowItemDetail(page);
   await expect(personalDetail).toContainText('오전 중 후보 2곳만 확인');
   const exportPanel = personalDetail.getByTestId('my-flow-detail-portable-export');
   await exportPanel.locator('summary').click();
-  await expect(exportPanel.getByTestId('my-flow-detail-personal-copy-export-note')).toContainText('내 개인 사본 기준');
 
   await exportPanel.getByTestId('my-flow-detail-copy-portable-text').click();
   let copied = await page.evaluate(() => navigator.clipboard.readText());
   expect(copied).toContain('Flow: 8월 이사 준비 사본');
-  expect(copied).toContain('일정: 2026-07-07');
+  expect(copied).toContain('일정: 2030-08-02');
   expect(copied).toContain('견적 후보만 먼저 확인');
   expect(copied).toContain('오전 중 후보 2곳만 확인');
-  expect(copied).not.toContain('주소 변경');
 
   await exportPanel.getByTestId('my-flow-detail-copy-checklist-text').click();
   copied = await page.evaluate(() => navigator.clipboard.readText());
   expect(copied).toContain('Flow: 8월 이사 준비 사본');
   expect(copied).toContain('견적 후보만 먼저 확인');
   expect(copied).toContain('- [ ]');
-  expect(copied).not.toContain('주소 변경');
 
   await exportPanel.getByTestId('my-flow-detail-copy-sheet-row').click();
   copied = await page.evaluate(() => navigator.clipboard.readText());
   expect(copied).toContain('Flow\t할 일\t구간\t날짜');
-  expect(copied).toContain('8월 이사 준비 사본\t견적 후보만 먼저 확인\tD-30\t2026-07-07');
+  expect(copied).toContain('8월 이사 준비 사본\t견적 후보만 먼저 확인\t큰 준비\t2030-08-02');
   expect(copied).toContain('오전 중 후보 2곳만 확인');
-  expect(copied).not.toContain('주소 변경');
 
   const downloadPromise = page.waitForEvent('download');
   await exportPanel.getByTestId('my-flow-detail-download-ics').click();
@@ -1315,33 +1274,24 @@ test('my flow personal copy step detail exports current copy to memo checklist c
   const downloadPath = await download.path();
   expect(downloadPath).toBeTruthy();
   const ics = fs.readFileSync(downloadPath!, 'utf8');
-  expect(ics).toContain('DTSTART;VALUE=DATE:20260707');
+  const unfoldedIcs = ics.replace(/\r?\n[ \t]/g, '');
+  expect(ics).toContain('DTSTART;VALUE=DATE:20300802');
   expect(ics).toContain('SUMMARY:견적 후보만 먼저 확인');
-  expect(ics).toContain('Flow: 8월 이사 준비 사본');
-  expect(ics).toContain('오전 중 후보 2곳만 확인');
-  expect(ics).not.toContain('주소 변경');
+  expect(unfoldedIcs).toContain('Flow: 8월 이사 준비 사본');
+  expect(unfoldedIcs).toContain('오전 중 후보 2곳만 확인');
 
-  const overlayState = await page.evaluate(() => ({
-    snapshot: JSON.parse(window.localStorage.getItem('flow:map:saved:curated-ajd-moving-d30') || 'null'),
-    persistence: JSON.parse(window.localStorage.getItem('flow:map:persistence:curated-ajd-moving-d30') || 'null'),
-  }));
-  const stepOverride = overlayState.snapshot.personalCopy.stepOverridesByFlow['curated-ajd-moving-d30']['moving-d30-method-quotes'];
-  expect(stepOverride).toEqual({
-    title: '견적 후보만 먼저 확인',
-    schedule: { mode: 'fixed_date', date: '2026-07-07' },
-    userMemo: '오전 중 후보 2곳만 확인',
-  });
-  expect(overlayState.persistence.personalCopy.stepOverridesByFlow['curated-ajd-moving-d30']['moving-d30-method-quotes']).toEqual(stepOverride);
-  expect(overlayState.persistence.childFlows[0].steps[0].title).toContain('이사 방식');
+  const saved = await page.evaluate(() => JSON.parse(
+    window.localStorage.getItem('flow:saved:moving-d30-basic') || 'null',
+  ));
+  expect(saved.personalTitle).toBe('8월 이사 준비 사본');
 
   await page.goto('/calendar');
-  await page.getByTestId('my-flow-month-picker').fill('2026-07');
-  const oldEvent = page.locator('.fc-daygrid-day[data-date="2026-07-05"] .fc-event', { hasText: '견적 후보만 먼저 확인' });
-  await expect(oldEvent).toHaveCount(0);
-  const movedEvent = page.locator('.fc-daygrid-day[data-date="2026-07-07"] .fc-event').first();
-  await expect(movedEvent).toHaveAttribute('title', /견적 후보만 먼저 확인/);
-  await movedEvent.click();
-  await expect(page.getByTestId('my-flow-calendar-selected-day')).toContainText('견적 후보만 먼저 확인');
+  await page.getByTestId('my-flow-month-picker').fill('2030-08');
+  const movedDateCell = page.locator('.fc-daygrid-day[data-date="2030-08-02"]');
+  const movedEvent = movedDateCell.locator('.fc-event');
+  await expect(movedEvent).toHaveCount(1);
+  await movedDateCell.getByTestId('my-flow-calendar-date-button').click();
+  await expect(page.getByTestId('my-flow-selected-date-group')).toContainText('견적 후보만 먼저 확인');
   await expectNoHorizontalOverflow(page);
 });
 
@@ -1397,23 +1347,21 @@ test('flow finding search and intent chips narrow commercial catalog cards', asy
   await expect(catalog).not.toContainText('신차 구매');
 });
 
-test('curated source Flow Map stays readable at 390px with step memo and source links', async ({ page }) => {
+test('legacy AJD Flow Map alias opens the canonical 24-item detail with its source', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/flow-maps/curated-ajd-moving-d30');
 
-  const publicMap = page.getByTestId('flow-map-public');
-  await expect(publicMap).toContainText('5개 할 일');
-  await expect(publicMap).toContainText('체크리스트');
-  await expect(publicMap).not.toContainText('묶음');
-  await publicMap.getByTestId('flow-map-execution-outline').locator('summary').first().click();
-  await expect(publicMap.getByRole('link', { name: '바로 시작' })).toHaveAttribute('href', '/f/curated-ajd-moving-d30');
-  await expect(publicMap.getByTestId('flow-map-public-step-items').first()).toContainText('이사 방식');
-
-  await publicMap.getByText('메모 · 원문').first().click();
-  await expect(publicMap).toContainText('이사 체크리스트는 날짜 기준으로 놓치기 쉬운 생활/행정 항목을 나누는 것이 자연스럽습니다.');
-  await expect(publicMap).not.toContainText('sourceTrace');
-  await expect(publicMap).not.toContainText('AJD moving checklist article');
-  await expect(publicMap.getByRole('link', { name: '이 단계 원문 보기' }).first()).toHaveAttribute('href', /ajd\.co\.kr/);
+  await expect(page).toHaveURL('/f/moving-d30-basic');
+  const publicFlow = page.getByTestId('public-flow-hero');
+  await expect(page.getByTestId('public-flow-artifact-preview-expand')).toContainText('24개 보기');
+  await page.getByTestId('public-flow-artifact-preview-expand').click();
+  await expect(page.getByTestId('public-flow-artifact-preview-row')).toHaveCount(24);
+  await expect(publicFlow).toContainText('이사 방식 정하기');
+  await expect(page.locator('body')).not.toContainText('sourceTrace');
+  await expect(page.getByRole('link', { name: '이사 체크리스트 참고' }).first()).toHaveAttribute(
+    'href',
+    /ajd\.co\.kr/,
+  );
 
   const width = await page.evaluate(() => ({
     client: document.documentElement.clientWidth,
@@ -1422,28 +1370,32 @@ test('curated source Flow Map stays readable at 390px with step memo and source 
   expect(width.scroll).toBeLessThanOrEqual(width.client);
 });
 
-test('curated source save lands in My Flow with user-facing overdue copy', async ({ page }) => {
+test('legacy AJD save entry lands on the canonical 24-item My Flow copy', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.clock.install({ time: new Date('2026-07-10T09:00:00+09:00') });
   await page.goto('/flow-maps/curated-ajd-moving-d30');
   await page.evaluate(() => window.localStorage.clear());
+  await page.reload();
 
+  await expect(page).toHaveURL('/f/moving-d30-basic');
   await page.getByLabel('이사일').fill('2026-07-31');
-  await page.getByTestId('flow-map-save-all-mobile').click();
-  await expect(page).toHaveURL('/my?savedMap=curated-ajd-moving-d30');
+  await page.getByTestId('public-flow-save-primary-mobile').click();
+  await expect(page.getByTestId('public-flow-saved-receipt')).toContainText('할 일 24개');
+  await page.getByTestId('public-flow-saved-receipt-primary').click();
+  await expect(page).toHaveURL('/my?savedFlow=moving-d30-basic');
 
   const postSavePanel = page.getByTestId('my-flow-post-save-panel');
   await expect(postSavePanel).not.toContainText('묶음');
-  await expect(postSavePanel.getByTestId('my-flow-post-save-receipt-summary')).toContainText('할 일 5개');
-  await expect(postSavePanel.getByTestId('my-flow-post-save-step')).toHaveCount(5);
+  await expect(postSavePanel).toHaveAttribute('data-receipt-total-count', '24');
+  await expect(postSavePanel.getByTestId('my-flow-post-save-step')).toHaveCount(4);
   await expect(postSavePanel).not.toContainText('지난 일정 2026-07-01');
   await expect(postSavePanel).not.toContainText('다음 2026-07-01');
   await postSavePanel.getByTestId('my-flow-post-save-open-first').click();
 
   const nowSection = page.getByTestId('my-flow-now-section');
   await expect(nowSection).toContainText('지난 할 일');
-  await expect(nowSection).toContainText('이사 방식과 견적 예약');
-  await expect(nowSection).toContainText('이사 준비');
+  await expect(nowSection).toContainText('이사 방식 정하기');
+  await expect(nowSection).toContainText('이사 D-30 준비');
   await expect(nowSection).not.toContainText('밀린 Step');
   await expect(nowSection).not.toContainText('원문 Step');
 });
@@ -1540,12 +1492,13 @@ test('main user routes keep internal operation labels off the visible surface', 
     await expectNoVisibleSourceBrandSlug(page.locator('body'));
   }
 
-  await page.goto('/flow-maps/moving-d30');
+  await page.goto('/f/moving-d30-basic');
   await page.evaluate(() => window.localStorage.clear());
   await page.reload();
-  await page.getByTestId('flow-map-anchor-input').fill('2026-07-22');
-  await page.getByTestId('flow-map-save-all-mobile').click();
-  await expect(page).toHaveURL('/my?savedMap=moving-d30');
+  await page.getByTestId('public-flow-anchor-input').fill('2026-07-22');
+  await page.getByTestId('public-flow-save-primary-mobile').click();
+  await page.getByTestId('public-flow-saved-receipt-primary').click();
+  await expect(page).toHaveURL('/my?savedFlow=moving-d30-basic');
   await openPostSaveWorkspaceIfPresent(page);
   await expectNoInternalUserSurfaceCopy(page.locator('body'));
   await expectNoVisibleSourceBrandSlug(page.locator('body'));
@@ -1588,12 +1541,13 @@ test('p7 guardrail keeps user routes clean and restart prototype in its own buck
     await expectNoHorizontalOverflow(page);
   }
 
-  await page.goto('/flow-maps/moving-d30');
+  await page.goto('/f/moving-d30-basic');
   await page.evaluate(() => window.localStorage.clear());
   await page.reload();
-  await page.getByTestId('flow-map-anchor-input').fill('2026-07-22');
-  await page.getByTestId('flow-map-save-all-mobile').click();
-  await expect(page).toHaveURL('/my?savedMap=moving-d30');
+  await page.getByTestId('public-flow-anchor-input').fill('2026-07-22');
+  await page.getByTestId('public-flow-save-primary-mobile').click();
+  await page.getByTestId('public-flow-saved-receipt-primary').click();
+  await expect(page).toHaveURL('/my?savedFlow=moving-d30-basic');
   await page.getByTestId('my-flow-post-save-open-first').click();
   const movingMyFlow = page.locator('body');
   await expectNoInternalUserSurfaceCopy(movingMyFlow);
@@ -1631,11 +1585,14 @@ test('p7 guardrail keeps user routes clean and restart prototype in its own buck
 test('flow catalog title opens the current public Flow Map page', async ({ page }) => {
   await page.goto('/flows');
 
-  await page.locator('a[href="/flow-maps/moving-d30"]').click();
+  const movingCard = page
+    .getByTestId('single-flow-catalog-card')
+    .filter({ hasText: '이사 D-30 준비' });
+  await movingCard.getByRole('link', { name: /더보기/ }).click();
 
-  await expect(page).toHaveURL(/\/flow-maps\/moving-d30/);
-  await expect(page.getByRole('heading', { name: '원룸 이사 D-30 일정' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: '원룸 이사 D-30 일정 지도' })).toHaveCount(0);
+  await expect(page).toHaveURL('/f/moving-d30-basic');
+  await expect(page.getByRole('heading', { name: '이사 D-30 준비' })).toBeVisible();
+  await expect(page.getByTestId('public-flow-artifact-preview-row')).toHaveCount(24);
 });
 
 test('user-facing content titles hide trailing Flow suffix while keeping app labels', async ({ page }) => {
@@ -1643,25 +1600,28 @@ test('user-facing content titles hide trailing Flow suffix while keeping app lab
   await page.goto('/flows');
   await page.evaluate(() => window.localStorage.clear());
   await expect(page.getByRole('link', { name: 'Flow 찾기' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: '원룸 이사 D-30' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: '원룸 이사 D-30 Flow' })).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: '이사 D-30 준비' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '이사 D-30 준비 Flow' })).toHaveCount(0);
 
   await page.goto('/f/vehicle-inspection-prep');
   await expect(page.getByRole('heading', { name: '자동차검사 D-14 준비' })).toBeVisible();
   await expect(page.getByRole('heading', { name: '자동차검사 D-14 준비 Flow' })).toHaveCount(0);
 
   await page.goto('/f/moving-d30-basic');
-  await page.getByLabel('이사일').fill('2026-07-15');
-  await page.getByTestId('public-flow-save-actions').getByRole('button', { name: '이 날짜로 시작' }).click();
+  await page.getByLabel('이사일').fill('2030-07-15');
+  await page
+    .getByTestId('public-flow-save-actions')
+    .getByRole('button', { name: '캘린더 24개로 시작' })
+    .click();
 
   await page.goto('/my');
   await expect(page.getByTestId('my-flow-workspace')).toBeVisible();
-  await expect(page.getByTestId('my-flow-now-section')).toContainText('이사 준비');
+  await expect(page.getByTestId('my-flow-now-section')).toContainText('이사 D-30 준비');
   await expect(page.getByTestId('my-flow-now-section')).not.toContainText('이사 D-30 준비 Flow');
 
   await page.goto('/calendar');
   await expect(page.getByTestId('my-flow-calendar-card')).toBeVisible();
-  await expect(page.locator('body')).toContainText('이사 준비');
+  await expect(page.locator('body')).toContainText('이사 D-30 준비');
   await expect(page.locator('body')).not.toContainText('이사 D-30 준비 Flow');
   await expect(page.locator('body')).not.toContainText('체크할 Flow');
 });
@@ -1830,7 +1790,7 @@ test('flow discovery keeps legacy tag queries out of the representative catalog 
   await page.goto('/flows?tag=돈이%20걸린%20결정');
 
   await expect(page.getByRole('heading', { name: 'URL·메모로 Flow 찾기' })).toBeVisible();
-  await expect(page.getByTestId('flow-map-catalog-section').getByTestId('single-flow-catalog-card')).toHaveCount(0);
+  await expect(page.getByTestId('flow-map-catalog-section').getByTestId('single-flow-catalog-card')).toHaveCount(2);
   await expect(page.getByText('필터 조정')).toHaveCount(0);
   await expect(page.getByLabel('태그')).toHaveCount(0);
   await expect(page.getByText('#돈이 걸린 결정').first()).toHaveCount(0);
@@ -2165,9 +2125,10 @@ test('text editor shows a public-style parsed preview while drafting', async ({ 
 
 
 test('my flow management uses today and flow locally while calendar is global', async ({ page }) => {
+  await page.clock.install({ time: new Date('2026-06-01T09:00:00+09:00') });
   await page.goto('/f/moving-d30-basic');
   await page.getByLabel('이사일').fill('2026-06-26');
-  await page.getByTestId('public-flow-save-actions').getByRole('button', { name: '이 날짜로 시작' }).click();
+  await page.getByTestId('public-flow-save-primary').click();
 
   await page.goto('/my');
   await expect(page.getByRole('heading', { name: 'My Flow', exact: true })).toBeVisible();
@@ -2327,20 +2288,20 @@ test('my flow today dedupes rows when today overdue and next queues coexist on m
   await expect(overdueGroups.first()).toBeVisible();
   await expect(overdueGroups.first()).toContainText('5월 27일');
   await expect(overdueGroups.first()).toContainText('기준 D-30');
-  await expect(overdueGroups.first()).toContainText('이사 준비');
+  await expect(overdueGroups.first()).toContainText('이사 D-30 준비');
   await expectTextOccurrenceAtMost(overdueGroups.first(), '5월 27일', 1);
   await expectTextOccurrenceAtMost(overdueGroups.first(), '기준 D-30', 1);
   const firstOverdueGroupRow = overdueGroups.first().getByTestId('my-flow-status-sheet-row').first();
   await expect(firstOverdueGroupRow).not.toContainText('5월 27일');
   await expect(firstOverdueGroupRow).not.toContainText('기준 D-30');
-  await expect(firstOverdueGroupRow).not.toContainText('이사 준비');
+  await expect(firstOverdueGroupRow).not.toContainText('이사 D-30 준비');
   const overdueKeys = await overdueSheet
     .getByTestId('my-flow-status-sheet-row')
     .evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-row-key')).filter(Boolean));
   expect(overdueKeys.length).toBeGreaterThan(0);
   const firstOverdueSheetOpen = firstOverdueGroupRow.locator('button').filter({ hasText: '열기' });
   await expect(firstOverdueSheetOpen).toHaveText('열기');
-  await expect(firstOverdueSheetOpen).toHaveAttribute('aria-label', /5월 27일.*이사 준비.*기준 D-30.*열기$/);
+  await expect(firstOverdueSheetOpen).toHaveAttribute('aria-label', /5월 27일.*이사 D-30 준비.*기준 D-30.*열기$/);
   await expect(firstOverdueSheetOpen).not.toContainText('항목 열기');
   const allQueueKeys = [...visibleQueueKeys, ...overdueKeys];
   expect(new Set(allQueueKeys).size).toBe(allQueueKeys.length);
@@ -2457,7 +2418,7 @@ test('calendar route opens the nearest saved schedule instead of an empty today'
   await expect(selectedDay.locator('h3')).not.toContainText(/\d{4}-\d{2}-\d{2}/);
   await expect(selectedDay).not.toContainText('이 날짜에 등록된 일정이 없습니다.');
   const selectedDateGroup = selectedDay.getByTestId('my-flow-selected-date-group').first();
-  await expect(selectedDateGroup).toContainText('이사 준비');
+  await expect(selectedDateGroup).toContainText('이사 D-30 준비');
   await expect(selectedDateGroup).toContainText('2개 · 2개 남음');
   await expect(selectedDateGroup.getByTestId('my-flow-selected-date-group-meta')).toHaveCount(1);
   await expect(selectedDateGroup.getByTestId('my-flow-group-timing-chip')).toContainText('기준 D+1');
@@ -2505,14 +2466,14 @@ test('calendar route distinguishes multiple saved flows on the same selected dat
   await expect(selectedDay.locator('h3')).toContainText('6월 3일');
 
   const groupTexts = (await selectedDay.getByTestId('my-flow-selected-date-group').allInnerTexts()).join(' ');
-  expect(groupTexts).toContain('이사 준비');
+  expect(groupTexts).toContain('이사 D-30 준비');
   expect(groupTexts).toContain('컴퓨터활용능력 1급 학습');
   expect(groupTexts).not.toMatch(/저장한 일정|저장한 루틴|일정 흐름|체크 흐름|반복 흐름/);
 
   const flowMarkers = selectedDay.getByTestId('my-flow-selected-date-flow-marker');
   await expect(flowMarkers).toHaveCount(2);
   const markerLabels = (await flowMarkers.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('aria-label') ?? ''))).join(' ');
-  expect(markerLabels).toContain('이사 준비');
+  expect(markerLabels).toContain('이사 D-30 준비');
   expect(markerLabels).toContain('컴퓨터활용능력 1급 학습');
 
   const dateCell = page.locator('.fc-daygrid-day[data-date="2026-06-03"]');
@@ -2587,7 +2548,7 @@ test('calendar route compacts three-plus same-date flow labels in the month grid
   await expect(selectedDay.getByTestId('my-flow-selected-date-group')).toHaveCount(4);
   await expect(selectedDay.getByTestId('my-flow-selected-date-flow-marker')).toHaveCount(4);
   const selectedDayGroupText = (await selectedDay.getByTestId('my-flow-selected-date-group').allInnerTexts()).join(' ');
-  expect(selectedDayGroupText).toContain('이사 준비');
+  expect(selectedDayGroupText).toContain('이사 D-30 준비');
   expect(selectedDayGroupText).toContain('컴퓨터활용능력 1급 학습');
   expect(selectedDayGroupText).toContain('자동차검사 준비');
   expect(selectedDayGroupText).toContain('개발 프로젝트 포트폴리오');
@@ -2629,13 +2590,15 @@ test('calendar route keeps the compact month grid before the selected-day agenda
   const selectedDayBox = await selectedDay.boundingBox();
   const calendarBox = await page.locator('.fc').boundingBox();
   expect(selectedDayBox?.y ?? 0).toBeGreaterThan(calendarBox?.y ?? 9999);
-  await expect(selectedDay.getByTestId('my-flow-selected-date-group').first()).toContainText('이사 준비');
+  await expect(selectedDay.getByTestId('my-flow-selected-date-group').first()).toContainText('이사 D-30 준비');
 
   const scheduleContent = page.locator('.fc-daygrid-day[data-date="2026-07-12"] [data-testid="my-flow-calendar-schedule-content"]').first();
   await expect(scheduleContent).toBeVisible();
   await expect(scheduleContent).not.toContainText('이사 방식과 견적 후보 정하기');
-  const scheduleLabelText = (await scheduleContent.getByTestId('my-flow-calendar-flow-label').innerText()).trim();
-  expect(scheduleLabelText.length).toBeLessThanOrEqual(6);
+  const scheduleLabel = scheduleContent.getByTestId('my-flow-calendar-flow-label');
+  await expect(scheduleLabel).toHaveText(/^이사 D-30(?:\.\.\.|…)$/);
+  await expect(scheduleLabel).toHaveAttribute('title', '이사 D-30 준비');
+  await expect(scheduleContent).toHaveAttribute('data-p30-marker', 'P30-CALENDAR-COMPACT-IDENTITY');
   await expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
 });
 
@@ -3146,102 +3109,49 @@ test('source-backed single progress map opens step detail on mobile My Flow', as
   await expect(flowDetail.getByTestId('my-flow-detail-checklist-progress')).toContainText('개념 항목 1/15');
 });
 
-test('source-backed moving map saves one dated timeline into My Flow calendar', async ({ page }) => {
+test('canonical moving aliases save one 24-item timeline without creating a legacy map copy', async ({ page }) => {
   const movingDate = createMovingDateFixture();
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/flow-maps/moving-d30');
 
-  const publicMap = page.getByTestId('flow-map-public');
-  await expect(publicMap.getByRole('heading', { name: '원룸 이사 D-30 일정' })).toBeVisible();
-  await expect(publicMap.getByRole('heading', { name: '원룸 이사 D-30 일정 지도' })).toHaveCount(0);
-  await expect(publicMap.getByLabel('이사일')).toBeVisible();
-  await expect(publicMap.getByTestId('flow-map-hero')).toContainText('이사일');
-  await expect(publicMap.getByTestId('flow-map-hero')).toContainText('할 일 5개');
-  await expect(publicMap.getByTestId('flow-map-artifact-preview')).toContainText('이사 방식과 견적 후보 정하기');
-  await expect(publicMap).not.toContainText('저장되는 결과물');
-  const anchorTop = await publicMap.getByTestId('flow-map-anchor-input').evaluate((element) => element.getBoundingClientRect().top);
-  const firstActionTop = await publicMap.getByTestId('flow-map-artifact-preview').evaluate((element) => element.getBoundingClientRect().top);
-  expect(anchorTop).toBeLessThan(720);
-  expect(firstActionTop).toBeLessThan(760);
-  await expect(publicMap).toContainText('원룸 이사 D-30 준비');
-  await expect(publicMap).toContainText('이사 방식과 견적 후보 정하기');
-  await publicMap.getByTestId('flow-map-execution-outline').locator('summary').first().click();
-  await expect(publicMap).toContainText('견적 후보 2-3곳을 열고 연락처를 메모합니다.');
-  await expectNoVisibleSourceBrandSlug(publicMap);
-
+  await expect(page).toHaveURL('/f/moving-d30-basic');
+  const publicFlow = page.getByTestId('public-flow-hero');
+  await expect(publicFlow.getByRole('heading', { name: '이사 D-30 준비' })).toBeVisible();
+  await expect(publicFlow).toContainText('할 일 24개');
   await page.getByLabel('이사일').fill(movingDate.anchor);
-  await page.getByTestId('flow-map-save-all-mobile').click();
-  await expect(page).toHaveURL('/my?savedMap=moving-d30');
-  await expect(page.getByTestId('my-flow-demo-badge')).toHaveCount(0);
-
-  const postSavePanel = page.getByTestId('my-flow-post-save-panel');
-  await expect(postSavePanel).toContainText('원룸 이사 D-30 일정');
-  await expect(postSavePanel).not.toContainText('원룸 이사 D-30 일정 지도');
-  await expect(postSavePanel.getByTestId('my-flow-post-save-receipt-summary')).toContainText('할 일 5개');
-  await expect(postSavePanel).not.toContainText('묶음');
-  await expect(postSavePanel).toContainText('이사 방식과 견적 후보 정하기');
-  await expect(postSavePanel.getByTestId('my-flow-post-save-step')).toHaveCount(5);
-  await expect(postSavePanel.getByTestId('my-flow-post-save-view-all')).toHaveCount(0);
-  await expectNoVisibleSourceBrandSlug(postSavePanel);
-
-  await postSavePanel.getByTestId('my-flow-post-save-open-first').click();
-  const nowSection = page.getByTestId('my-flow-now-section');
-  await expect(nowSection.getByTestId('my-flow-inline-detail')).toContainText('확인 항목');
-  await expect(nowSection.getByTestId('my-flow-inline-detail')).toContainText('견적 후보 2-3곳을 열고 연락처를 메모합니다.');
-
-  await page.getByTestId('my-flow-view-flow').click();
-  const movingOverviewCard = await openMyFlowLibraryFlow(
-    page,
-    'source-backed-moving-d30',
-  );
+  const receipt = await savePublicFlow(page, page.getByTestId('public-flow-save-primary-mobile'));
+  await expect(receipt).toContainText('24');
+  await openSavedPublicFlow(page, receipt);
+  await page.getByTestId('my-flow-post-save-view-flow').click();
+  const movingOverviewCard = await openMyFlowLibraryFlow(page, 'moving-d30-basic');
   await expect(movingOverviewCard).toBeVisible();
+  await expect(movingOverviewCard.getByTestId('my-flow-whole-flow-outline')).toHaveAttribute(
+    'data-effective-row-count',
+    '24',
+  );
   await expectNoVisibleSourceBrandSlug(movingOverviewCard);
-  await expect(movingOverviewCard).not.toContainText(/\b2026-\d{2}-\d{2}\b/);
   await expect(movingOverviewCard).toContainText(movingDate.firstActionLabel);
 
-  await page.getByTestId('platform-mobile-tabs').getByRole('link', { name: '캘린더' }).click();
-  const calendarCard = page.getByTestId('my-flow-calendar-card');
-  await expect(calendarCard).toBeVisible();
-  await expect(page.getByTestId('my-flow-calendar-selected-day').locator('h3')).not.toContainText(/\d{4}-\d{2}-\d{2}/);
-  await expect(page.getByTestId('my-flow-calendar-selected-day').locator('h3')).toContainText(/\d{1,2}월 \d{1,2}일/);
-  const selectedDateGroup = page.getByTestId('my-flow-selected-date-group').first();
-  await expect(selectedDateGroup).not.toContainText('저장한 일정');
-  await expect(selectedDateGroup).not.toContainText('날짜 항목');
-  await expect(selectedDateGroup).toContainText('원룸 이사 D-30 일정');
-  await expectNoVisibleSourceBrandSlug(selectedDateGroup);
-  await expect(selectedDateGroup).not.toContainText('원룸 이사 D-30 일정 지도');
-  await expect(selectedDateGroup).not.toContainText('1개 · 1개 남음');
-  await expect(selectedDateGroup.getByTestId('my-flow-row-flow-chip')).toHaveCount(0);
-  await expect(selectedDateGroup.getByTestId('my-flow-row-progress-chip')).toHaveCount(0);
-
-  const savedMap = await page.evaluate(() => JSON.parse(localStorage.getItem('flow:map:saved:moving-d30') || 'null'));
-  expect(savedMap.version).toBe('2026-06-24.1');
-  expect(savedMap.anchor).toBe(movingDate.anchor);
-  expect(savedMap.flowSlugs).toEqual(['source-backed-moving-d30']);
-  expect(savedMap.stepCountsByFlow).toEqual({
-    'source-backed-moving-d30': 5,
-  });
-  const persistenceRecord = await page.evaluate(() => JSON.parse(localStorage.getItem('flow:map:persistence:moving-d30') || 'null'));
-  expect(persistenceRecord.schemaVersion).toBe(1);
-  expect(persistenceRecord.readiness.content).toBe('ready_for_my_flow');
-  expect(persistenceRecord.childFlows[0].stepIds).toEqual([
-    'moving-method-quotes',
-    'moving-cleaning-waste',
-    'moving-address-admin',
-    'moving-meter-photos',
-    'moving-move-day-admin',
-  ]);
+  const stored = await page.evaluate(() => ({
+    canonical: JSON.parse(localStorage.getItem('flow:saved:moving-d30-basic') || 'null'),
+    legacyMap: localStorage.getItem('flow:map:saved:moving-d30'),
+    canonicalOrigin: JSON.parse(localStorage.getItem('flow:canonical:origin:v1') || 'null'),
+  }));
+  expect(stored.canonical.anchor).toBe(movingDate.anchor);
+  expect(stored.legacyMap).toBeNull();
+  expect(stored.canonicalOrigin.entries[
+    AJD_MOVING_CANONICAL_FLOW_ID
+  ].canonicalSavedSlug).toBe('moving-d30-basic');
 });
 
 test('P19 task completion controls use one checkbox pattern in My Flow and Calendar', async ({ page }) => {
   await page.clock.install({ time: new Date('2026-07-20T10:00:00+09:00') });
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/flow-maps/moving-d30');
+  await page.goto('/f/moving-d30-basic');
 
   await page.getByLabel('이사일').fill('2026-07-22');
-  await page.getByTestId('flow-map-save-all-mobile').click();
-  await expect(page).toHaveURL('/my?savedMap=moving-d30');
-
+  const receipt = await savePublicFlow(page, page.getByTestId('public-flow-save-primary-mobile'));
+  await openSavedPublicFlow(page, receipt);
   await page.getByTestId('my-flow-post-save-open-first').click();
 
   const nowSection = page.getByTestId('my-flow-now-section');
@@ -3687,13 +3597,14 @@ test('source-backed creator saved preview opens the requested My Flow map demo',
 });
 
 test('my flow step detail saves portable calendar task fields', async ({ page }) => {
-  await page.goto('/flow-maps/moving-d30');
+  await page.clock.install({ time: new Date('2026-07-01T09:00:00+09:00') });
+  await page.goto('/f/moving-d30-basic');
 
   await page.getByLabel('이사일').fill('2026-07-22');
-  await page.getByRole('button', { name: '그대로 시작' }).click();
-  await expect(page).toHaveURL('/my?savedMap=moving-d30');
+  const receipt = await savePublicFlow(page, page.getByTestId('public-flow-save-primary'));
+  await openSavedPublicFlow(page, receipt);
   await page.getByTestId('my-flow-post-save-panel').getByTestId('my-flow-post-save-view-flow').click();
-  const movingCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-moving-d30"]');
+  const movingCard = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="moving-d30-basic"]');
   await movingCard.getByTestId('my-flow-execution-row-shell').first().getByRole('button', { name: /열기/ }).click();
 
   const detail = movingCard.getByTestId('my-flow-workspace-detail-pane').getByTestId('my-flow-item-detail');
@@ -3734,10 +3645,11 @@ test('my flow step detail saves portable calendar task fields', async ({ page })
   const downloadPath = await download.path();
   expect(downloadPath).toBeTruthy();
   const ics = fs.readFileSync(downloadPath!, 'utf8');
+  const unfoldedIcs = ics.replace(/\r?\n[ \t]/g, '');
   expect(ics).toContain('DTSTART:20260624T093000');
   expect(ics).toContain('RRULE:FREQ=WEEKLY');
   expect(ics).toContain('LOCATION:집');
-  expect(ics).toContain('견적 후보 3곳과 포함 범위만 메모');
+  expect(unfoldedIcs).toContain('견적 후보 3곳과 포함 범위만 메모');
 });
 
 test('source-backed undated checklist can add and remove a personal date', async ({ page }) => {
@@ -3868,17 +3780,18 @@ test('direct saved Flow Map can change its anchor while preserving item override
   }
 
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/flow-maps/moving-d30');
+  await page.clock.install({ time: new Date('2026-07-01T09:00:00+09:00') });
+  await page.goto('/f/moving-d30-basic');
   await page.evaluate(() => window.localStorage.clear());
   await page.reload();
   await page.getByLabel('이사일').fill('2026-07-22');
-  await page.getByTestId('flow-map-save-all-mobile').click();
-  await expect(page).toHaveURL('/my?savedMap=moving-d30');
-  await openPostSaveWorkspaceIfPresent(page);
+  const receipt = await savePublicFlow(page, page.getByTestId('public-flow-save-primary-mobile'));
+  await openSavedPublicFlow(page, receipt);
+  await page.getByTestId('my-flow-post-save-view-flow').click();
 
-  let flow = await openMyFlowLibraryFlow(page, 'source-backed-moving-d30');
+  let flow = await openMyFlowLibraryFlow(page, 'moving-d30-basic');
   await expect(flow.getByTestId('my-flow-direct-anchor-settings-open')).toHaveAccessibleName(
-    /원룸 이사.*이사일 바꾸기/,
+    /이사 D-30 준비.*이사일 바꾸기/,
   );
   await expect(flow.getByTestId('my-flow-personal-copy-settings-open')).toHaveCount(0);
   await expect(flow.getByTestId('personal-draft-add-entry')).toHaveCount(0);
@@ -3904,31 +3817,27 @@ test('direct saved Flow Map can change its anchor while preserving item override
   await expect(flow.getByTestId('my-flow-direct-anchor-settings')).toHaveCount(0);
 
   const savedState = await page.evaluate(() => ({
-    snapshot: JSON.parse(window.localStorage.getItem('flow:map:saved:moving-d30') || 'null'),
-    persistence: JSON.parse(window.localStorage.getItem('flow:map:persistence:moving-d30') || 'null'),
-    savedRecord: JSON.parse(window.localStorage.getItem('flow:saved:source-backed-moving-d30') || 'null'),
-    storedAnchor: JSON.parse(window.localStorage.getItem('flow:source-backed-moving-d30:anchorDate') || 'null'),
+    savedRecord: JSON.parse(window.localStorage.getItem('flow:saved:moving-d30-basic') || 'null'),
+    storedAnchor: JSON.parse(window.localStorage.getItem('flow:moving-d30-basic:anchorDate') || 'null'),
     dateOverrides: JSON.parse(window.localStorage.getItem('flow:my-flow:date-overrides') || '{}'),
     itemDrafts: JSON.parse(window.localStorage.getItem('flow:my-flow:item-drafts') || '{}'),
   }));
-  expect(savedState.snapshot.anchor).toBe('2026-08-05');
-  expect(savedState.snapshot.version).toBe('2026-06-24.1');
-  expect(savedState.snapshot.personalCopy).toBeUndefined();
-  expect(savedState.persistence.saved.anchor).toBe('2026-08-05');
-  expect(savedState.persistence.map.version).toBe('2026-06-24.1');
   expect(savedState.savedRecord.anchor).toBe('2026-08-05');
   expect(savedState.storedAnchor.anchor).toBe('2026-08-05');
-  expect(savedState.dateOverrides['source-backed-moving-d30::moving-method-quotes::2026-07-06']).toBe('2026-07-07');
-  expect(savedState.dateOverrides['source-backed-moving-d30::moving-method-quotes::2026-06-22']).toBeUndefined();
-  expect(savedState.itemDrafts['source-backed-moving-d30::moving-method-quotes::draft-overlay'].memo).toBe('오전 중 후보 2곳만 확인');
+  expect(Object.values(savedState.dateOverrides)).toContain('2026-07-07');
+  expect(Object.values(savedState.itemDrafts).some(
+    (draft) => (draft as { memo?: string }).memo === '오전 중 후보 2곳만 확인',
+  )).toBe(true);
 
   await page.goto('/calendar');
   await page.getByTestId('my-flow-month-picker').fill('2026-07');
-  await expect(page.locator('.fc-daygrid-day[data-date="2026-06-22"] .fc-event')).toHaveCount(0);
-  await expect(page.locator('.fc-daygrid-day[data-date="2026-07-08"] .fc-event')).toHaveCount(0);
-  await expect(page.locator('.fc-daygrid-day[data-date="2026-07-06"] .fc-event')).toHaveCount(0);
-  await expect(page.locator('.fc-daygrid-day[data-date="2026-07-07"] .fc-event')).toHaveCount(1);
-  await expect(page.locator('.fc-daygrid-day[data-date="2026-07-22"] .fc-event')).toHaveCount(1);
+  const originalDateCell = page.locator('.fc-daygrid-day[data-date="2026-07-06"]');
+  await originalDateCell.getByTestId('my-flow-calendar-date-button').click();
+  await expect(page.getByTestId('my-flow-selected-date-group')).not.toContainText('이사 방식 정하기');
+  const overriddenDateCell = page.locator('.fc-daygrid-day[data-date="2026-07-07"]');
+  await expect(overriddenDateCell.locator('.fc-event')).toHaveCount(1);
+  await overriddenDateCell.getByTestId('my-flow-calendar-date-button').click();
+  await expect(page.getByTestId('my-flow-selected-date-group')).toContainText('이사 방식 정하기');
   if (evidenceDir) {
     await page.screenshot({ path: `${evidenceDir}/screenshots/02-direct-anchor-calendar-shift-mobile.png`, fullPage: true });
   }
@@ -3936,7 +3845,7 @@ test('direct saved Flow Map can change its anchor while preserving item override
   await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
   await page.goto('/my');
   await page.getByTestId('my-flow-view-flow').click();
-  flow = await openMyFlowLibraryFlow(page, 'source-backed-moving-d30');
+  flow = await openMyFlowLibraryFlow(page, 'moving-d30-basic');
   await expect(flow).toBeVisible();
   await flow.getByTestId('my-flow-execution-row-shell').first().getByRole('button', { name: /열기/ }).click();
   detail = getOpenMyFlowItemDetail(page);
@@ -3963,7 +3872,7 @@ test('direct saved Flow Map can change its anchor while preserving item override
   await page.setViewportSize({ width: 1024, height: 768 });
   await page.goto('/my');
   await page.getByTestId('my-flow-view-flow').click();
-  const wideFlow = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="source-backed-moving-d30"]');
+  const wideFlow = page.locator('[data-testid="my-flow-overview-card"][data-flow-slug="moving-d30-basic"]');
   await expect(wideFlow.getByTestId('my-flow-direct-anchor-settings-open')).toBeVisible();
   await wideFlow.getByTestId('my-flow-direct-anchor-settings-open').click();
   await expect(wideFlow.getByTestId('my-flow-direct-anchor-input')).toHaveValue('2026-08-05');
@@ -3976,19 +3885,18 @@ test('direct saved Flow Map can change its anchor while preserving item override
 
 test('my flow mobile saved map edit and revisit keeps step detail lightweight', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/flow-maps/moving-d30');
+  await page.clock.install({ time: new Date('2026-07-20T09:00:00+09:00') });
+  await page.goto('/f/moving-d30-basic');
 
-  const publicMap = page.getByTestId('flow-map-public');
-  await publicMap.locator('input[type="date"]').fill('2026-07-22');
-  await publicMap.locator('button').last().click();
-  await expect(page).toHaveURL('/my?savedMap=moving-d30');
-  await page.getByTestId('platform-mobile-tabs').getByRole('link', { name: '캘린더' }).click();
-  await expect(page).toHaveURL('/calendar');
+  await page.getByLabel('이사일').fill('2026-07-22');
+  await savePublicFlow(page, page.getByTestId('public-flow-save-primary-mobile'));
+  await page.goto('/calendar');
   await expect(page.getByTestId('my-flow-calendar-card')).toBeVisible();
+  await page.getByTestId('my-flow-month-picker').fill('2026-06');
+  await page.locator('.fc-daygrid-day[data-date="2026-06-22"]').getByTestId('my-flow-calendar-date-button').click();
   const selectedDateGroup = page.getByTestId('my-flow-selected-date-group').first();
-  await expect(selectedDateGroup).toContainText('원룸 이사 D-30 일정');
-  await expect(selectedDateGroup).not.toContainText('원룸 이사 D-30 일정 지도');
-  await selectedDateGroup.getByRole('button').first().click();
+  await expect(selectedDateGroup).toContainText('이사 D-30 준비');
+  await selectedDateGroup.getByRole('button', { name: /열기/ }).first().click();
 
   await expect(page.getByRole('dialog')).toHaveCount(1);
   const detail = getOpenMyFlowItemDetail(page);
@@ -4060,7 +3968,7 @@ test('non-catalog source-backed routes follow the direct lookup quality gate', a
 
 test('current source-backed routes keep source link checklist and memo in my flow', async ({ page }) => {
   const cases = [
-    { mapId: 'curated-ajd-moving-d30', slug: 'curated-ajd-moving-d30', anchor: '2026-07-31' },
+    { mapId: 'middle-school-math-1', slug: 'source-backed-middle-school-math-1' },
   ];
 
   for (const flowCase of cases) {
@@ -4106,6 +4014,10 @@ test('current source-backed routes keep source link checklist and memo in my flo
     expect(JSON.stringify(storedAfterEdit.itemDrafts)).toContain(memo);
 
     await page.goto('/my');
+    const storedAfterReload = await page.evaluate(() =>
+      JSON.parse(window.localStorage.getItem('flow:my-flow:item-drafts') || '{}'),
+    );
+    expect(JSON.stringify(storedAfterReload)).toContain(memo);
     await page.getByTestId('my-flow-view-flow').click();
     const restoredCard = page.locator(`[data-testid="my-flow-overview-card"][data-flow-slug="${flowCase.slug}"]`);
     await expect(restoredCard).toBeVisible();
@@ -4751,6 +4663,7 @@ test('source-fit decisions keep archived and review-gated flows out of public ro
 
 test('moving mobile keeps save sticky and full-flow export secondary', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
+  await page.clock.install({ time: new Date('2026-07-01T09:00:00+09:00') });
   await page.goto('/f/moving-d30-basic');
 
   await page.getByLabel('이사일').fill('2026-07-15');
@@ -4758,7 +4671,7 @@ test('moving mobile keeps save sticky and full-flow export secondary', async ({ 
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
 
   const stickySave = page.getByTestId('public-flow-mobile-save-cta');
-  await expect(stickySave.getByRole('button', { name: /그대로 시작|날짜 없이 시작|이 날짜로 시작/ })).toBeVisible();
+  await expect(stickySave.getByRole('button', { name: '캘린더 24개로 시작' })).toBeVisible();
   await expect(stickySave.getByRole('button', { name: '체크리스트 복사' })).toHaveCount(0);
   await expect(stickySave.getByRole('button', { name: '엑셀 받기' })).toHaveCount(0);
 
@@ -5863,7 +5776,7 @@ test('url-first p0 lab previews hit review miss and memo states without public n
 
   await expect(page.getByRole('heading', { name: 'URL-first P0 실험' })).toBeVisible();
   await expect(page.getByTestId('url-first-result-card')).toContainText('상태 hit');
-  await expect(page.getByTestId('url-first-result-card')).toContainText('/flow-maps/curated-ajd-moving-d30');
+  await expect(page.getByTestId('url-first-result-card')).toContainText('/f/moving-d30-basic');
   await expect(page.getByTestId('url-first-export-preview')).toContainText('moving-d30-flow.ics');
   await expect(page.getByTestId('url-first-export-preview')).toContainText('Markdown');
   await expect(page.getByTestId('url-first-export-preview')).toContainText('checklist');
@@ -5935,12 +5848,12 @@ test('url lookup keeps the result focused and makes the catalog secondary', asyn
 
 test('source-backed flow map uses one artifact-first promise and a flat execution outline', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/flow-maps/moving-d30');
+  await page.goto('/flow-maps/middle-school-math-1');
 
   await expect(page.getByTestId('flow-map-hero')).toHaveAttribute('data-visual-structure', 'artifact-first');
   const outline = page.getByTestId('flow-map-execution-outline');
   await expect(outline).toBeVisible();
-  await expect(outline.getByTestId('flow-map-execution-step-row')).toHaveCount(5);
+  await expect(outline.getByTestId('flow-map-execution-step-row')).toHaveCount(8);
   await expect(page.getByTestId('flow-map-mobile-sticky-save')).toBeVisible();
   await expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
 });

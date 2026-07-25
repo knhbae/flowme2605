@@ -35,6 +35,18 @@ Do not use this for:
 
 ## Decisions
 
+### 2026-07-24 - Cross-entry Flow identity uses source, user job, and editorial variant
+
+**Decision:** Resolve Home, Flow finding, URL lookup, legacy Flow Map routes, and public aliases through a canonical registry keyed by `canonicalSourceId + userJobId + editorialVariantId`. For the AJD D-day preparation job, use `moving-d30-basic` and its 24-item comprehensive calendar snapshot as the canonical public variant. Keep legacy 5-item saved copies readable. When canonical and legacy copies coexist, require an explicit active-copy choice, archive the inactive copy recoverably, and never merge personal values, completion, runs, occurrences, or export identity by title, order, or latest timestamp.
+
+**Reason:** The same source and user job produced separate 24-item and 5-item saved objects depending on entry route. A source URL alone cannot distinguish intentional user jobs or editorial variants, while automatic 5-to-24 item mapping cannot preserve personal state safely. One canonical entry identity plus additive metadata removes future duplication without destroying existing local work.
+
+**Applies to:** Home and `/flows` cards, URL-first lookup, `/flow-maps/moving-d30`, AJD public aliases, public detail and artifact selection, saved receipt, My Flow, Calendar, export, local backup, duplicate reconciliation, source Item personal exclusion, recurrence display copy, and cross-entry invariant tests.
+
+**Reopen when:** An editorial review replaces the 24-item snapshot, a new user job needs a deliberate variant, stable Item provenance supports a deterministic legacy migration, or observed users cannot understand active-copy reconciliation. Automated similarity must not reopen or merge records by itself.
+
+**Related docs:** [P33 spec](./specs/2026-07-24-p33-cross-entry-canonical-alignment/spec.md), [P33 evidence](./content-audit/2026-07-24-p33-cross-entry-canonical-alignment-evidence/README.md)
+
 ### 2026-07-24 - P32 keeps cross-Flow library views and opens one focused Flow workspace
 
 **Decision:** Use B1 `library_to_focused_workspace_with_cross_flow_queue`. Keep `지금 / Flow 목록 / 완료` in the My Flow library state. When one Flow is opened, hide those global local tabs and show a single object workspace with `다음 행동 / 전체 계획 / 기록`, direct Item quick edit, contextual Flow anchor adjustment, consolidated export, and existing lifecycle management. Keep the 4-tab IA, public `/f` shell, source/personal/run/occurrence/export identities, and localStorage schema unchanged.
