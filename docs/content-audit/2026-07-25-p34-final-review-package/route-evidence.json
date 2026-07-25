@@ -190,13 +190,29 @@
   },
   "publish": {
     "implementationCommit": "108d7d9e2c6e647e4c8352655472e5001d461794",
+    "closeoutCommit": "5e2955db0fde6c31f92a4838122f6dbfb1f02311",
     "push": true,
     "pullRequest": "https://github.com/knhbae/flowme2605/pull/157",
-    "pullRequestDraft": true,
-    "pullRequestBase": "codex/p33-integrated-program-plan",
+    "pullRequestDraft": false,
+    "pullRequestBase": "main",
     "previewUrl": "https://flowme2605-hks37ahd0-flowme.vercel.app",
     "previewStatus": "ready_sso_protected",
-    "mergeToMain": false,
-    "productionDeploy": false
+    "mergeToMain": true,
+    "mergeCommit": "98ede0f848f8cd854c6a79e3a92f847012844704",
+    "productionDeploy": true,
+    "productionUrl": "https://flowme2605.vercel.app",
+    "productionStatus": "success",
+    "postMergeGithubCi": "success"
+  },
+  "productionSmoke": {
+    "evidenceKind": "current_production_interaction",
+    "publicSaveReceiptVisible": true,
+    "mobileFlowManagementVisible": true,
+    "archiveUndoWorking": true,
+    "wideFlowManagementVisible": true,
+    "calendarDateButtonCount": 42,
+    "horizontalOverflowCount": 0,
+    "consolePageErrorCount": 0,
+    "observedUserCount": 0
   }
 }

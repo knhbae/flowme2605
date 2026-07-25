@@ -8,10 +8,12 @@ user evidence. `observedUserCount` is `0`.
 
 Baseline:
 
-- P33 dependent SHA: `8c54992ce5628ab2a3884a530a83d2c8226223dc`
-- P33 Draft PR: `#156`
+- P33 release merge SHA: `7948bc42424cfaba5370c47323badb7b485bbe48`
+- P33 PR: `#156`
 - P34 worktree: `D:\flowme2605\flow-p34-execution-crud`
 - P34 branch: `codex/p34-execution-crud`
+- P34 release merge SHA: `98ede0f848f8cd854c6a79e3a92f847012844704`
+- Production: <https://flowme2605.vercel.app>
 
 ## Decision
 
@@ -105,8 +107,8 @@ render. The test now verifies persistence through the stable
 
 ## Remaining Risks
 
-1. P34 is stacked on an unmerged P33 branch. Production does not yet represent
-   this source.
+1. Automated production smoke is green, but no observed user has yet evaluated
+   command comprehension or destructive-action confidence.
 2. Source-backed Item structural reorder remains intentionally unavailable.
    Personal value edits and source Item exclusion remain supported.
 3. Small-screen command comprehension and destructive-action confidence need
@@ -118,10 +120,11 @@ render. The test now verifies persistence through the stable
 
 ## Recommendation
 
-`dependent_preview_ready_sso_protected`. Implementation commit `108d7d9` is
-pushed to Draft PR `#157` against the P33 branch. The Vercel preview is READY
-at `https://flowme2605-hks37ahd0-flowme.vercel.app`, but anonymous access
-redirects to Vercel SSO. The first CI attempt exposed new PostCSS and
-brace-expansion advisories; bounded patched versions produce audit `0`, unit
-`588 / 588`, and build `18 / 18`. Do not merge to `main` or deploy production
-in this gate.
+`production_released_automated_green_observation_pending`. P33 PR `#156`
+merged as `7948bc4`, followed by P34 PR `#157` as `98ede0f`. Post-merge
+GitHub CI and Vercel Production succeeded. Canonical production smoke confirms
+the public save receipt, mobile/wide Flow management, archive undo, Calendar
+grid, overflow `0`, and console/page errors `0`. The first CI attempt exposed
+new PostCSS and brace-expansion advisories; bounded patched versions produce
+audit `0`, unit `588 / 588`, and build `18 / 18`. Observed-user count remains
+`0`.

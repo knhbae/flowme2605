@@ -2,9 +2,9 @@
 
 **Last Updated:** 2026-07-25<br>
 **Current Version:** v0.1.0 (released product PoC)<br>
-**Current Validation Stage:** internal alpha / P32 production green / P33 Draft PR green / P34 local green<br>
+**Current Validation Stage:** internal alpha / P33 + P34 production green / observed users 0<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** review P33 #156, then review P34 #157 on its SSO-protected preview without merging or production deployment
+**Next Milestone:** independently review released P34 production and select one bounded next slice
 
 Human-facing control surface: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
 
@@ -29,17 +29,17 @@ Detailed scope: [P34 Execution CRUD UX](./specs/2026-07-25-p34-execution-crud-ux
 
 | Slice | Purpose | State |
 | --- | --- | --- |
-| P34-00 | Reconcile current source, P33 dependency, Claude findings, alternatives, and rollback boundary | Complete locally |
-| P34-01 | Unify active/archive/restore/backup/permanent-delete lifecycle commands | Complete locally |
-| P34-02 | Separate source, personal Item, execution, occurrence, schedule, and Flow verbs | Complete locally |
-| P34-03 | Keep the actual save-before artifact visible during bounded adjustment | Complete locally |
-| P34-04 | Make draft structure and advanced Item editing progressive | Complete locally |
-| P34-05 | Add one roving Tab stop and standard date-grid keyboard navigation | Complete locally |
-| P34-06 | Keep routine summary-first and name series versus occurrence scope | Complete locally |
-| P34-07 | Name whole/selected/current export scope and actual count before format | Complete locally |
-| P34-08 | Re-run 8 personas x 3 heuristic sessions, responsive evidence, and full regression | Draft PR #157; protected preview ready |
+| P34-00 | Reconcile current source, P33 dependency, Claude findings, alternatives, and rollback boundary | Released |
+| P34-01 | Unify active/archive/restore/backup/permanent-delete lifecycle commands | Released |
+| P34-02 | Separate source, personal Item, execution, occurrence, schedule, and Flow verbs | Released |
+| P34-03 | Keep the actual save-before artifact visible during bounded adjustment | Released |
+| P34-04 | Make draft structure and advanced Item editing progressive | Released |
+| P34-05 | Add one roving Tab stop and standard date-grid keyboard navigation | Released |
+| P34-06 | Keep routine summary-first and name series versus occurrence scope | Released |
+| P34-07 | Name whole/selected/current export scope and actual count before format | Released |
+| P34-08 | Re-run 8 personas x 3 heuristic sessions, responsive evidence, and full regression | Released through PR #157 / merge `98ede0f` |
 
-P34 reuses P33 lifecycle, storage, projection, recurrence, and export handlers. It does not migrate localStorage, auto-merge the canonical 24-Item and legacy 5-Item moving copies, delete published source, change the 4-tab IA, add cloud trash, or claim automated evidence as observed-user validation. Draft PR [#157](https://github.com/knhbae/flowme2605/pull/157) targets the P33 branch, and its [Vercel preview](https://flowme2605-hks37ahd0-flowme.vercel.app) is READY but SSO-protected. Evidence is pretest `73 / 73`, unit `588 / 588`, dedicated P34 Playwright `6 / 6`, affected regressions `58 / 58`, full Playwright `326 / 326`, build `18 / 18`, dependency audit `0`, screenshots `18`, and observed-user sessions `0`. See the [P34 final review package](./content-audit/2026-07-25-p34-final-review-package/README.md).
+P34 reuses P33 lifecycle, storage, projection, recurrence, and export handlers. It does not migrate localStorage, auto-merge the canonical 24-Item and legacy 5-Item moving copies, delete published source, change the 4-tab IA, add cloud trash, or claim automated evidence as observed-user validation. [PR #157](https://github.com/knhbae/flowme2605/pull/157) merged as `98ede0f848f8cd854c6a79e3a92f847012844704`; GitHub CI and Vercel Production succeeded. Evidence is pretest `73 / 73`, unit `588 / 588`, dedicated P34 Playwright `6 / 6`, affected regressions `58 / 58`, full Playwright `326 / 326`, build `18 / 18`, dependency audit `0`, screenshots `18`, and production smoke with overflow/browser errors `0`. Observed-user sessions remain `0`. See the [P34 final review package](./content-audit/2026-07-25-p34-final-review-package/README.md).
 
 ## P33 Cross-entry Canonical Alignment
 
@@ -49,15 +49,15 @@ Detailed scope: [P33 Cross-entry Canonical Alignment](./specs/2026-07-24-p33-cro
 
 | Slice | Purpose | State |
 | --- | --- | --- |
-| P33-01 | Define source + user job + editorial variant registry and cross-entry invariant | Complete on Draft PR |
-| P33-02 | Resolve AJD Home, Find, URL lookup, map, and public aliases to one 24-item detail | Complete on Draft PR |
-| P33-03 | Make moving/vehicle artifact choices change the actual preview, promise, and receipt | Complete on Draft PR |
-| P33-04 | Add canonical origin metadata with legacy dual-read and no key deletion | Complete on Draft PR |
-| P33-05 | Require explicit active-copy choice for 24/5 conflicts and preserve the inactive copy | Complete on Draft PR |
-| P33-06 | Align receipt, My Flow, Calendar, export, reversible exclusion, and recurrence copy | Complete on Draft PR |
-| P33-07 | Run serial full regression, responsive evidence, and tracking reconciliation | Draft PR #156; review pending |
+| P33-01 | Define source + user job + editorial variant registry and cross-entry invariant | Released |
+| P33-02 | Resolve AJD Home, Find, URL lookup, map, and public aliases to one 24-item detail | Released |
+| P33-03 | Make moving/vehicle artifact choices change the actual preview, promise, and receipt | Released |
+| P33-04 | Add canonical origin metadata with legacy dual-read and no key deletion | Released |
+| P33-05 | Require explicit active-copy choice for 24/5 conflicts and preserve the inactive copy | Released |
+| P33-06 | Align receipt, My Flow, Calendar, export, reversible exclusion, and recurrence copy | Released |
+| P33-07 | Run serial full regression, responsive evidence, and tracking reconciliation | Released through PR #156 / merge `7948bc4` |
 
-P33 does not merge legacy 5-item personal values into 24-item IDs, rewrite stable source/personal/run/occurrence/export ownership, or delete existing `flow:saved:*` keys. Draft PR [#156](https://github.com/knhbae/flowme2605/pull/156) is pushed with stabilization evidence: pretest `64 / 64`, unit `588 / 588`, memo reload repeat `30 / 30`, full Playwright `320 / 320` twice, and build `18 / 18`. Main merge, production deployment, production smoke, independent approval, and observed-user validation remain pending.
+P33 does not merge legacy 5-item personal values into 24-item IDs, rewrite stable source/personal/run/occurrence/export ownership, or delete existing `flow:saved:*` keys. [PR #156](https://github.com/knhbae/flowme2605/pull/156) merged as `7948bc42424cfaba5370c47323badb7b485bbe48`; GitHub CI and Vercel Production succeeded. Stabilization evidence is pretest `64 / 64`, unit `588 / 588`, memo reload repeat `30 / 30`, full Playwright `320 / 320` twice, build `18 / 18`, audit `0`, and canonical production smoke green at 390px and 1024px. Independent observed-user validation remains pending.
 
 ## P32 My Flow Focused Workspace
 
@@ -273,14 +273,14 @@ Detailed scope: [Save, Personalize, Execute Journey Reset](./specs/2026-07-18-sa
 
 ## Operating Queue
 
-There is no active external-user gate. P32 remains canonical production while P33 is an unmerged Draft PR and P34 is a dependent Draft PR with an SSO-protected preview. External user observation stays outside the queue until the owner explicitly reopens it.
+There is no active external-user gate. P33 and P34 are the canonical production baseline. External user observation stays outside the queue until the owner explicitly reopens it.
 
 | Lane | Owner | Work | Next checkpoint | Done when |
 | --- | --- | --- | --- | --- |
-| Active | AI + Owner | P33 and P34 dependent Draft PR review | Review P33 #156, then P34 #157 and its protected preview without merging either branch | Both review decisions and exact preview SHAs are recorded |
-| Next | AI + independent reviewer | P34 independent UX/code review | Re-run lifecycle, editing, Calendar keyboard, recurrence, and export scope on the dependent preview | Reproducible gaps or a keep decision exist before any merge |
-| Completed | AI | P34-00~08 implementation and dependent preview publication | Preserve P33 identities, storage, 24/5 no-auto-merge, and rollback boundary | Draft PR #157, preview READY, audit `0`, pretest `73 / 73`, unit `588 / 588`, full E2E `326 / 326`, build `18 / 18`, screenshots `18` |
-| Completed | AI | P33-01~07 implementation and stabilization | Preserve additive metadata, explicit duplicate choice, and stable identities | Draft PR #156, pretest `64 / 64`, unit `588 / 588`, full E2E `320 / 320` twice, build `18 / 18` |
+| Active | AI + Owner | P34 production reassessment | Review current production and choose one bounded next slice without reopening stable data contracts | Reproducible current-production gap or keep decision is recorded |
+| Next | AI + independent reviewer | P34 independent production UX/code review | Re-run lifecycle, editing, Calendar keyboard, recurrence, and export scope on canonical production | Current evidence separates reproducible gaps from heuristic preference |
+| Completed | AI | P34-00~08 implementation and release | Preserve P33 identities, storage, 24/5 no-auto-merge, and rollback boundary | PR #157, merge `98ede0f`, CI/Vercel green, audit `0`, full E2E `326 / 326`, production smoke green |
+| Completed | AI | P33-01~07 implementation, stabilization, and release | Preserve additive metadata, explicit duplicate choice, and stable identities | PR #156, merge `7948bc4`, CI/Vercel green, audit `0`, canonical production smoke green |
 | Completed | AI | P32-01~07 implementation and release | Preserve B1 and stable identities | PR #154, merge `30281a7`, CI green, production smoke `7 / 7` |
 | Completed | AI | P32-OPS dependency remediation | Keep PostCSS compatible without forced downgrade | security audit 0 with unit/build/full E2E |
 | Completed | AI | P31 release verification and publish | Preserve PR #150 and canonical production smoke | Release state, SHA, deployment, rollback, and observed-user count are explicit |

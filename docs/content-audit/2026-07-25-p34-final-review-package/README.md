@@ -2,19 +2,19 @@
 
 ## Verdict
 
-`dependent_preview_ready_sso_protected`
+`production_released_automated_green_observation_pending`
 
 P34 completes the bounded CRUD and execution-command revision on top of the
-P33 Draft PR baseline. It changes interaction composition and labels, not the
+released P33 baseline. It changes interaction composition and labels, not the
 source, personal overlay, execution run, recurrence occurrence, or export
 identity contracts.
 
-P34 is dependent Draft PR
-[#157](https://github.com/knhbae/flowme2605/pull/157), based on P33 Draft PR
-[#156](https://github.com/knhbae/flowme2605/pull/156). Its
-[Vercel preview](https://flowme2605-hks37ahd0-flowme.vercel.app) is READY but
-redirects anonymous access to Vercel SSO. Neither P34 nor its canonical
-24-Item moving baseline is released to production.
+P33 [PR #156](https://github.com/knhbae/flowme2605/pull/156) merged as
+`7948bc42424cfaba5370c47323badb7b485bbe48`. P34
+[PR #157](https://github.com/knhbae/flowme2605/pull/157) then merged as
+`98ede0f848f8cd854c6a79e3a92f847012844704`. Both post-merge GitHub CI runs
+and Vercel Production deployments succeeded. Canonical production is
+<https://flowme2605.vercel.app>.
 
 ## What Changed
 
@@ -88,21 +88,39 @@ Automated browser evidence covers 390x844, 1024x768, and 1440x900:
 
 Screenshots and heuristic simulations are not actual user observation.
 
+## Production Closeout
+
+Current production interaction on merge SHA `98ede0f` confirmed:
+
+- public save receipt: visible
+- mobile `Flow 관리`: visible and accessibly named
+- archive feedback and immediate undo: working
+- wide `Flow 관리`: visible and accessibly named
+- Calendar date-grid buttons: `42`
+- horizontal overflow at checked 390px/1024px surfaces: `0`
+- console/page errors: `0`
+
+The preceding P33 production smoke also confirmed `/`, `/flows`,
+`/f/moving-d30-basic`, `/flow-maps/moving-d30`, `/my`, and `/calendar` at
+390px and 1024px. The Flow Map route resolved to the canonical public Flow,
+and the 24-item result was visible. This is automated browser evidence, not
+observed-user validation.
+
 ## Publish Boundary
 
 - Implementation commit: `108d7d9e2c6e647e4c8352655472e5001d461794`
+- Closeout commit before merge: `5e2955db0fde6c31f92a4838122f6dbfb1f02311`
 - Branch: `codex/p34-execution-crud`
-- Draft PR: [#157](https://github.com/knhbae/flowme2605/pull/157)
-- Base branch: `codex/p33-integrated-program-plan`
-- Preview: <https://flowme2605-hks37ahd0-flowme.vercel.app>
-- Preview state: READY, anonymous access redirects to Vercel SSO
-- Merge to `main`: false
-- Production deploy: false
+- PR: [#157](https://github.com/knhbae/flowme2605/pull/157)
+- Merge SHA: `98ede0f848f8cd854c6a79e3a92f847012844704`
+- Production: <https://flowme2605.vercel.app>
+- Production deployment: `success`
+- Post-merge GitHub CI: `success`
+- Merge to `main`: true
 
 The first GitHub CI run encountered newly published high-severity advisories
 before app verification. P34 updates only the affected transitive tooling
 boundary to `postcss 8.5.23` and `brace-expansion 5.0.8`; `npm audit` is now
 zero, unit and build remain green, and no app data contract changes. Independent
-Claude Design and Codex review should use the Draft PR, evidence package, and
-protected preview. P33 and P34 require separate approval before any merge or
-production deployment.
+Claude Design and Codex review should now use canonical production, the merged
+PR, and this evidence package.
