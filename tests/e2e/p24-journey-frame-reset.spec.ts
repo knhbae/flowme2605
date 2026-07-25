@@ -74,9 +74,9 @@ test.describe('P24 save-personalize-execute journey frame', () => {
     expect(stored.saved.personalTitle).toBe('내 이사 준비');
     expect(excludedItemId).toBeTruthy();
     expect(stored.itemStates[excludedItemId as string]).toMatchObject({
-      skipped: true,
-      note: 'excluded_on_start',
+      personalExcluded: true,
     });
+    expect(stored.itemStates[excludedItemId as string].note).toBeUndefined();
 
     await postSave.getByTestId('my-flow-post-save-view-flow').click();
     await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);

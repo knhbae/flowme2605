@@ -5313,6 +5313,10 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
   const myFlowCompletionNoticeActionRef = useRef<HTMLButtonElement | null>(null);
   const myFlowLifecycleNoticeActionRef = useRef<HTMLButtonElement | null>(null);
   const showDemoData = Boolean(myFlowDemoMode);
+  const myFlowCommittedItemDrafts =
+    typeof window !== 'undefined' && !isMyFlowScenarioDemo
+      ? getStoredMyFlowItemDrafts()
+      : myFlowItemDrafts;
 
   useEffect(() => {
     if (!myFlowCompletionUndo) return;
@@ -6593,9 +6597,9 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
         : getMyFlowManualScheduleKey(row.flow.progress.slug, row.id)
       : '';
     return {
-      ...(baseRoutineDraftKey ? myFlowItemDrafts[baseRoutineDraftKey] ?? {} : {}),
-      ...(myFlowItemDrafts[getPersonalDraftProjectionValueKey(row.flow.progress.slug, row.id)] ?? {}),
-      ...(myFlowItemDrafts[getMyFlowRowInstanceKey(row)] ?? {}),
+      ...(baseRoutineDraftKey ? myFlowCommittedItemDrafts[baseRoutineDraftKey] ?? {} : {}),
+      ...(myFlowCommittedItemDrafts[getPersonalDraftProjectionValueKey(row.flow.progress.slug, row.id)] ?? {}),
+      ...(myFlowCommittedItemDrafts[getMyFlowRowInstanceKey(row)] ?? {}),
       ...getMyFlowPersonalCopyStepDraft(row),
     };
   };
@@ -11122,10 +11126,23 @@ export function MyFlows({ initialView = 'today', surface = 'my' }: MyFlowsProps 
       cancelMyFlowEditingDraft(row);
     };
     const openMyFlowItemQuickEdit = () => {
-      setMyFlowEditorDiscardPromptOpen(false);
-      setMyFlowEditorAdvancedDisclosure({ rowKey: routineKey, expanded: false });
-      setMyFlowEditingDetailKey(portableExportKey);
-      focusVisibleMyFlowEditorTitle();
+      const enterEditMode = () => {
+        setMyFlowEditorDiscardPromptOpen(false);
+        setMyFlowEditorAdvancedDisclosure({ rowKey: routineKey, expanded: false });
+        setMyFlowEditingDetailKey(portableExportKey);
+        focusVisibleMyFlowEditorTitle();
+      };
+
+      if (typeof window === 'undefined' || isMyFlowScenarioDemo) {
+        enterEditMode();
+        return;
+      }
+
+      // A direct /my load can paint the saved Flow before React has committed
+      // the local personal-state refresh. Re-read once at the edit boundary so
+      // the editor never falls back to the source memo for a saved user draft.
+      setMyFlowItemDrafts(getStoredMyFlowItemDrafts());
+      window.requestAnimationFrame(enterEditMode);
     };
     const focusVisibleMyFlowEditorTitle = () => {
       if (typeof window === 'undefined') return;

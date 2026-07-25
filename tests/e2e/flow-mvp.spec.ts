@@ -4014,6 +4014,10 @@ test('current source-backed routes keep source link checklist and memo in my flo
     expect(JSON.stringify(storedAfterEdit.itemDrafts)).toContain(memo);
 
     await page.goto('/my');
+    const storedAfterReload = await page.evaluate(() =>
+      JSON.parse(window.localStorage.getItem('flow:my-flow:item-drafts') || '{}'),
+    );
+    expect(JSON.stringify(storedAfterReload)).toContain(memo);
     await page.getByTestId('my-flow-view-flow').click();
     const restoredCard = page.locator(`[data-testid="my-flow-overview-card"][data-flow-slug="${flowCase.slug}"]`);
     await expect(restoredCard).toBeVisible();
