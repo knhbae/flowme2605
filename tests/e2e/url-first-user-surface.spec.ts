@@ -2625,7 +2625,7 @@ test('personal draft recurrence expands into Calendar occurrences with reversibl
   await secondOccurrenceRow.getByRole('button', { name: new RegExp(`${recurringTitle} 열기`) }).click();
   let occurrenceStateDetail = getOpenMyFlowItemDetail(page);
   const skipAction = occurrenceStateDetail.getByTestId('personal-draft-occurrence-skip');
-  await expect(skipAction).toHaveAccessibleName(`${recurringTitle} 이번 일정만 건너뛰기`);
+  await expect(skipAction).toHaveAccessibleName(`${recurringTitle} 이번 회차 건너뛰기`);
   await skipAction.focus();
   await skipAction.press('Space');
   secondOccurrenceRow = page
@@ -2660,7 +2660,7 @@ test('personal draft recurrence expands into Calendar occurrences with reversibl
   await expect(secondOccurrenceRow).toHaveAttribute('data-occurrence-state', 'reopened');
   await expect(secondOccurrenceRow.getByRole('checkbox')).toBeEnabled();
   const holdAction = occurrenceStateDetail.getByTestId('personal-draft-occurrence-hold');
-  await expect(holdAction).toHaveAccessibleName(`${recurringTitle} 이번 일정 잠시 보류`);
+  await expect(holdAction).toHaveAccessibleName(`${recurringTitle} 이번 회차 보류`);
   await holdAction.focus();
   await holdAction.press('Enter');
   await expect(page.locator(`article[data-occurrence-id="${secondOccurrenceId}"]`)).toHaveCount(0);

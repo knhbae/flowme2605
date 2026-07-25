@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "flowme-p34-screenshot-manifest-v1",
+  "evidenceKind": "current_package_screenshot",
+  "observedUserCount": 0,
+  "screenshots": [
+    {
+      "file": "screenshots/p34-01-active-flow-manage-390.png",
+      "viewport": "390x844",
+      "state": "active Flow management"
+    },
+    {
+      "file": "screenshots/p34-01-archived-restore-390.png",
+      "viewport": "390x844",
+      "state": "archived direct restore"
+    },
+    {
+      "file": "screenshots/p34-01-permanent-delete-backup-390.png",
+      "viewport": "390x844",
+      "state": "archived permanent-delete confirmation and backup"
+    },
+    {
+      "file": "screenshots/p34-01-lifecycle-1024.png",
+      "viewport": "1024x768",
+      "state": "wide Flow management"
+    },
+    {
+      "file": "screenshots/p34-01-lifecycle-1440.png",
+      "viewport": "1440x900",
+      "state": "desktop Flow management"
+    },
+    {
+      "file": "screenshots/p34-03-moving-adjust-390.png",
+      "viewport": "390x844",
+      "state": "artifact-first moving adjustment"
+    },
+    {
+      "file": "screenshots/p34-04-draft-preview-390.png",
+      "viewport": "390x844",
+      "state": "memo draft preview before structure mode"
+    },
+    {
+      "file": "screenshots/p34-04-draft-structure-mode-390.png",
+      "viewport": "390x844",
+      "state": "memo draft structure mode"
+    },
+    {
+      "file": "screenshots/01-mobile-quick-editor.png",
+      "viewport": "390x844",
+      "state": "quick Item editor"
+    },
+    {
+      "file": "screenshots/02-mobile-advanced-editor.png",
+      "viewport": "390x844",
+      "state": "advanced Item editor"
+    },
+    {
+      "file": "screenshots/03-wide-advanced-detail-pane.png",
+      "viewport": "1024x768",
+      "state": "wide Item editor"
+    },
+    {
+      "file": "screenshots/00-batch-date-preview-mobile.png",
+      "viewport": "390x844",
+      "state": "selected Item date preview"
+    },
+    {
+      "file": "screenshots/01-batch-selection-wide.png",
+      "viewport": "1024x768",
+      "state": "wide structural selection"
+    },
+    {
+      "file": "screenshots/p34-05-calendar-roving-390.png",
+      "viewport": "390x844",
+      "state": "Calendar roving date focus"
+    },
+    {
+      "file": "screenshots/p34-06-routine-summary-390.png",
+      "viewport": "390x844",
+      "state": "routine summary before advanced setup"
+    },
+    {
+      "file": "screenshots/p34-07-export-scope-390.png",
+      "viewport": "390x844",
+      "state": "whole Flow export scope"
+    },
+    {
+      "file": "screenshots/02-selected-items-mobile.png",
+      "viewport": "390x844",
+      "state": "selected Item export"
+    },
+    {
+      "file": "screenshots/04-whole-flow-wide.png",
+      "viewport": "1024x768",
+      "state": "whole Flow export"
+    }
+  ]
+}

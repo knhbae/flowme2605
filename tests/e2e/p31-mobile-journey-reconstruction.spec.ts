@@ -335,8 +335,11 @@ test.describe('P31 mobile journey reconstruction', () => {
     ).toBeVisible();
     await page.keyboard.press('Escape');
     await expect(dialog).toHaveCount(0);
-    await expect(deleteTrigger).toBeFocused();
+    await expect(
+      archivedMenu.getByTestId('my-flow-archived-management-trigger'),
+    ).toBeFocused();
 
+    await archivedMenu.locator('summary').click();
     await deleteTrigger.click();
     await page.getByTestId('my-flow-permanent-delete-confirm').click();
     await page.reload();

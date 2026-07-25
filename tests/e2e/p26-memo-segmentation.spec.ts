@@ -70,6 +70,9 @@ test('memo intake preserves source fragments through review, save, reload, and w
   await expectNoHorizontalOverflow(page);
   await capture(page, editor, '02-memo-source-result-review-wide.png');
 
+  await expect(editor.getByTestId('draft-structure-edit-controls')).toHaveCount(0);
+  await editor.getByTestId('draft-structure-edit-toggle').click();
+  await expect(editor.getByTestId('draft-structure-edit-controls')).toHaveCount(5);
   const secondRow = rows.nth(1);
   await secondRow.getByRole('button', { name: /합치기$/ }).click();
   await expect(rows).toHaveCount(4);
@@ -131,6 +134,7 @@ test('memo intake preserves source fragments through review, save, reload, and w
   await expect(page.getByTestId('my-flow-post-save-panel')).toHaveAttribute('data-receipt-total-count', '4');
   await page.getByTestId('my-flow-post-save-view-flow').click();
   await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/my?view=flows');
   const savedFlow = await openMyFlowLibraryFlow(page, savedSlug!, 'record');
   await expect(savedFlow).toContainText('제주 출발 준비');
   const exportSurface = await openPersonalDraftListExport(savedFlow);

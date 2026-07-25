@@ -271,6 +271,8 @@ export function FlowBottomSheet({
   eyebrow,
   title,
   onClose,
+  initialFocusSelector,
+  returnFocusSelector,
   className = '',
   children,
 }: {
@@ -280,6 +282,8 @@ export function FlowBottomSheet({
   eyebrow?: string;
   title: string;
   onClose: () => void;
+  initialFocusSelector?: string;
+  returnFocusSelector?: string;
   className?: string;
   children: ReactNode;
 }) {
@@ -295,7 +299,12 @@ export function FlowBottomSheet({
     const returnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    const frame = window.requestAnimationFrame(() => closeButtonRef.current?.focus({ preventScroll: true }));
+    const frame = window.requestAnimationFrame(() => {
+      const requestedTarget = initialFocusSelector
+        ? dialogRef.current?.querySelector<HTMLElement>(initialFocusSelector)
+        : null;
+      (requestedTarget ?? closeButtonRef.current)?.focus({ preventScroll: true });
+    });
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key !== 'Escape') return;
       event.preventDefault();
@@ -307,9 +316,12 @@ export function FlowBottomSheet({
       window.cancelAnimationFrame(frame);
       document.removeEventListener('keydown', closeOnEscape, true);
       document.body.style.overflow = previousOverflow;
-      returnFocus?.focus({ preventScroll: true });
+      const requestedReturnTarget = returnFocusSelector
+        ? document.querySelector<HTMLElement>(returnFocusSelector)
+        : null;
+      (requestedReturnTarget ?? returnFocus)?.focus({ preventScroll: true });
     };
-  }, []);
+  }, [initialFocusSelector, returnFocusSelector]);
 
   const handleKeyDown = (event: ReactKeyboardEvent<HTMLElement>) => {
     if (event.key === 'Escape') {

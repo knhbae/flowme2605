@@ -1010,7 +1010,7 @@ test('flow finding URL lookup starts a lightweight customized personal copy', as
   await expect(activeSteps).toContainText('소인수분해');
   await expect(activeSteps).not.toContainText('정수와 유리수');
   const excludedSteps = personalFlow.getByTestId('my-flow-excluded-steps');
-  await expect(excludedSteps).toContainText('목록에서 뺀 할 일');
+  await expect(excludedSteps).toContainText('Flow에서 제외한 할 일');
   await expect(excludedSteps).toContainText('정수와 유리수');
 
   await page.context().grantPermissions(['clipboard-read', 'clipboard-write'], { origin: 'http://127.0.0.1:3104' });
@@ -2837,7 +2837,7 @@ test('my flow ux12 demo renders grouped fixture flows without saving them', asyn
   const routineLocationBox = await selectedRoutineDetail.getByLabel('장소').boundingBox();
   expect(routineTimeBox?.y ?? 9999).toBeLessThan(routineRepeatToggleBox?.y ?? 0);
   expect(routineLocationBox?.y ?? 9999).toBeLessThan(routineRepeatToggleBox?.y ?? 0);
-  await expect(selectedRoutineDetail.getByTestId('my-flow-routine-occurrence-section')).toContainText('이번 일정');
+  await expect(selectedRoutineDetail.getByTestId('my-flow-routine-occurrence-section')).toContainText('이번 회차');
   const routineOccurrenceBox = await selectedRoutineDetail.getByTestId('my-flow-routine-occurrence-section').boundingBox();
   expect(routineOccurrenceBox?.y ?? 9999).toBeLessThan(routineRepeatToggleBox?.y ?? 0);
   await expect(selectedRoutineDetail.getByTestId('my-flow-routine-repeat-editor')).toHaveCount(0);
@@ -3104,7 +3104,7 @@ test('source-backed single progress map opens step detail on mobile My Flow', as
   const itemChecklist = flowDetail.getByTestId('my-flow-item-checklist');
   await expect(itemChecklist).toContainText('점, 선, 면, 직선, 반직선, 선분');
   await expect(flowDetail.getByTestId('my-flow-detail-read-summary')).toContainText('메모·일정');
-  await expect(flowDetail.getByTestId('my-flow-detail-portable-export').locator('summary')).toContainText('현재 항목 가져가기 · 1개');
+  await expect(flowDetail.getByTestId('my-flow-detail-portable-export').locator('summary')).toContainText('현재 항목 1개 가져가기');
   await itemChecklist.getByLabel('점, 선, 면, 직선, 반직선, 선분').check();
   await expect(flowDetail.getByTestId('my-flow-detail-checklist-progress')).toContainText('개념 항목 1/15');
 });

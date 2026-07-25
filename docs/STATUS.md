@@ -1,9 +1,9 @@
 # Project Status
 
-**Last Updated:** 2026-07-25 (P33 Draft PR preview gate)
-**Status:** v0.1.0 RELEASED / P32 PRODUCTION GREEN / P33 DRAFT PR GREEN
+**Last Updated:** 2026-07-25 (P34 dependent Draft PR preview)
+**Status:** v0.1.0 RELEASED / P32 PRODUCTION GREEN / P33 DRAFT PR GREEN / P34 DRAFT PR PREVIEW READY
 **Current Version:** v0.1.0  
-**Primary Focus:** Independently review [P33 Draft PR #156](https://github.com/knhbae/flowme2605/pull/156) and the [publish stabilization evidence](./content-audit/2026-07-25-p33-publish-stabilization-evidence/README.md). P33 makes Home, Flow finding, URL lookup, and legacy aliases resolve the same AJD moving job to one 24-item canonical Flow while preserving legacy 5-item saved copies behind explicit reconciliation. The branch is pushed and local verification is pretest `64 / 64`, unit `588 / 588`, memo reload repeat `30 / 30`, full Playwright `320 / 320` twice, and build `18 / 18`. Main merge, production deploy, production smoke, independent review approval, and observed-user validation remain undone.
+**Primary Focus:** Review [P33 Draft PR #156](https://github.com/knhbae/flowme2605/pull/156) first, then inspect [P34 Draft PR #157](https://github.com/knhbae/flowme2605/pull/157) and its [SSO-protected Vercel preview](https://flowme2605-hks37ahd0-flowme.vercel.app). P34 unifies Flow lifecycle, Item/source/occurrence command grammar, save-before adjustment, draft and Item editing, Calendar keyboard navigation, recurrence scope, and export scope without changing P33 identities or persistence. Verification is pretest `73 / 73`, unit `588 / 588`, dedicated P34 Playwright `6 / 6`, affected regressions `58 / 58`, full Playwright `326 / 326`, build `18 / 18`, docs `3,150` links, and dependency audit `0`. Main merge, production deploy, and observed-user validation remain undone.
 
 ## Current Control Panel
 
@@ -11,13 +11,15 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P33 Draft PR CI, protected preview review, merge approval, production smoke, and independent post-release review |
-| User action now | Review Draft PR #156 and its preview/evidence; separately decide whether to authorize merge and production deploy |
-| AI action now | Verify the final PR SHA, GitHub checks, and Vercel preview; preserve legacy data safety and do not start P34 before independent review |
+| Active product gate | Review P33 Draft PR #156, then P34 dependent Draft PR #157 and its protected preview; neither branch is authorized for main or production |
+| User action now | Review P33 #156 first, then compare the P34 lifecycle/edit/Calendar/export evidence on PR #157 and the preview |
+| AI action now | Monitor final PR CI and independent review; keep the preview protected and preserve the original dirty worktree |
 | Blocked by evidence | Observed usability, real social proof/review data, account persistence choice, creator/update pilot, real AI backend, and external integrations |
-| Completed implementation | P33-01~07 plus publish stabilization on the Draft PR branch: canonical registry/aliases, artifact parity, additive storage, explicit duplicate reconciliation, downstream parity, note/exclusion separation, canonical ID factory parity, stable memo reload, pretest `64 / 64`, unit `588 / 588`, full Playwright `320 / 320` twice, build `18 / 18` |
+| Completed implementation | P33-01~07 plus stabilization, and P34-00~08 locally: shared lifecycle surface, object-specific command grammar, progressive adjustment/editing, Calendar roving focus, recurrence scope, export scope/count, full Playwright `326 / 326`, build `18 / 18` |
 
 ## Recent Direction Notes
+
+- 2026-07-25 P34 dependent preview: Alternative B, a bounded structural revision, was selected instead of copy-only cleanup or a planner rewrite. Active and archived Flows now share one `Flow 관리` surface with archive, immediate undo, direct restore, personal backup, and archived-only permanent deletion. Source exclusion, personal Item deletion, occurrence skip/hold, completion, and date removal use distinct object-specific verbs. Save-before adjustment keeps the actual artifact visible; draft structure controls remain progressive; Calendar uses one roving date Tab stop; routine and export actions name occurrence and output scope. P33 source/personal/run/occurrence/export identities, the 24/5 no-auto-merge policy, localStorage schema, 4-tab IA, and public shell remain unchanged. Implementation commit `108d7d9` is pushed to dependent Draft PR [#157](https://github.com/knhbae/flowme2605/pull/157), and the [Vercel preview](https://flowme2605-hks37ahd0-flowme.vercel.app) is READY but requires Vercel SSO. A newly surfaced `postcss`/`brace-expansion` audit gate is addressed with bounded patched versions; dependency audit is `0`, pretest is `73 / 73`, unit is `588 / 588`, dedicated P34 is `6 / 6`, affected regressions are `58 / 58`, full Playwright is `326 / 326`, build is `18 / 18`, layout/browser error counts are `0`, and observed-user sessions are `0`. See [P34 final review package](./content-audit/2026-07-25-p34-final-review-package/README.md).
 
 - 2026-07-25 P33 publish stabilization: Personal Item exclusion now uses a dedicated state instead of overwriting user memo with `excluded_on_start`; legacy sentinel data remains read-compatible but never enters user exports. The canonical AJD registry now derives its ID from the shared factory, while the old P33 preview ID is compatibility-read only and no production migration is introduced. Source-backed My Flow memo reload now resolves committed drafts from current storage without replacing the server-rendered 4-tab shell. Current verification is pretest `64 / 64`, unit `588 / 588`, memo reload repeat `30 / 30`, P24 regression `6 / 6`, SSR regression `1 / 1`, full Playwright `320 / 320` twice, build `18 / 18`, and observed-user sessions `0`. Stabilization implementation commit `abb0a99` is pushed to Draft PR [#156](https://github.com/knhbae/flowme2605/pull/156). Main merge and production deploy remain false. See [P33 publish stabilization evidence](./content-audit/2026-07-25-p33-publish-stabilization-evidence/README.md).
 
