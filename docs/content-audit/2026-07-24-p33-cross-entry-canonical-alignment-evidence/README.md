@@ -2,7 +2,7 @@
 
 ## 판정
 
-`implemented_locally_awaiting_publish`
+`draft_pr_awaiting_independent_review`
 
 P33은 같은 AJD 이사 원문과 같은 사용자 목적이 Home, Flow 찾기, URL lookup,
 legacy Flow Map, direct public alias에서 서로 다른 24개/5개 Flow로 열리고 저장되던
@@ -17,7 +17,9 @@ legacy Flow Map, direct public alias에서 서로 다른 24개/5개 Flow로 열�
 
 - Canonical identity는 `source + user job + editorial variant`로 만든다.
 - AJD canonical Flow ID는
-  `flow:ajd-moving:prepare-by-dday:comprehensive-calendar-v1`이다.
+  `canonical:source:ajd:moving-checklist:23363|job:prepare-move-by-dday|variant:ajd-moving:comprehensive-calendar-v1`이다.
+- 이전 P33 preview ID `flow:ajd-moving:prepare-by-dday:comprehensive-calendar-v1`은
+  compatibility read alias로만 유지한다.
 - 신규 canonical 저장 slug는 `moving-d30-basic`, 전체 항목 수는 `24`다.
 - legacy 5개 사본은 `source-backed-moving-d30` 및
   `curated-ajd-moving-d30` origin으로 계속 읽을 수 있다.
@@ -41,10 +43,11 @@ legacy Flow Map, direct public alias에서 서로 다른 24개/5개 Flow로 열�
 
 ## Current verification
 
-- Contract/pretest: `55 / 55`
-- Unit: `587 / 587`
+- Contract/pretest: `64 / 64`
+- Unit: `588 / 588`
 - P33 targeted Playwright: `6 / 6`
-- Full Playwright: `320 / 320`을 메모리 안정성을 위해 3개 serial shard로 검증
+- My Flow memo reload repeat: `30 / 30`
+- Full Playwright: `320 / 320` 직렬 실행을 연속 두 번 검증
 - Production build: `18 / 18`
 - Viewport: `390x844`, `1024x768`, `1440x900`
 - Horizontal overflow / console-page error: `0 / 0`
@@ -56,6 +59,7 @@ legacy Flow Map, direct public alias에서 서로 다른 24개/5개 Flow로 열�
 - Route marker: [route-evidence.json](./route-evidence.json)
 - 저장 충돌 fixture: [reconciliation-fixtures.json](./reconciliation-fixtures.json)
 - 구현 spec: [P33 Cross-entry Canonical Alignment](../../specs/2026-07-24-p33-cross-entry-canonical-alignment/spec.md)
+- Publish 안정화: [P33 Publish Stabilization](../2026-07-25-p33-publish-stabilization-evidence/README.md)
 
 ## 검증 경계
 
@@ -65,5 +69,7 @@ legacy Flow Map, direct public alias에서 서로 다른 24개/5개 Flow로 열�
 
 ## Publish 상태
 
-이번 작업은 별도 clean worktree에서 수행했다. Commit, push, PR, merge, deploy는
-사용자 승인 전까지 수행하지 않는다. 따라서 current production은 아직 P32 release다.
+이번 작업은 별도 clean worktree에서 수행했다. Branch
+`codex/p33-integrated-program-plan`은 push됐고 Draft PR
+[#156](https://github.com/knhbae/flowme2605/pull/156)이 열려 있다. Main merge와
+production deploy는 하지 않았으므로 current production은 아직 P32 release다.

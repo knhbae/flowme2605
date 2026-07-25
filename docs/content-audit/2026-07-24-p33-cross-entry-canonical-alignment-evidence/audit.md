@@ -22,7 +22,9 @@
 - canonical source: `source:ajd:moving-checklist:23363`
 - user job: `job:prepare-move-by-dday`
 - editorial variant: `variant:ajd-moving:comprehensive-calendar-v1`
-- canonical Flow: `flow:ajd-moving:prepare-by-dday:comprehensive-calendar-v1`
+- canonical Flow:
+  `canonical:source:ajd:moving-checklist:23363|job:prepare-move-by-dday|variant:ajd-moving:comprehensive-calendar-v1`
+- compatibility read ID: `flow:ajd-moving:prepare-by-dday:comprehensive-calendar-v1`
 - canonical route: `/f/moving-d30-basic`
 - canonical item count: `24`
 
@@ -122,10 +124,11 @@ Observed-user count: `0`.
 
 Current command 결과:
 
-- pretest `55 / 55`
-- unit `587 / 587`
+- pretest `64 / 64`
+- unit `588 / 588`
 - P33 Playwright `6 / 6`
-- full Playwright `320 / 320` serial shards
+- memo reload repeat `30 / 30`
+- full Playwright `320 / 320` serial run twice
 - production build `18 / 18`
 - docs check pass
 
@@ -136,3 +139,5 @@ Current command 결과:
 - Canonical registry는 현재 AJD moving group부터 시작한다. 다른 source/job group은
   invariant evidence와 editorial 결정 후 추가해야 한다.
 - Production 반영은 commit/push/PR/merge/deploy 승인 및 production smoke 이후다.
+- 현재 branch는 push됐고 Draft PR #156이 열려 있으나 main merge와 production
+  deploy는 하지 않았다.

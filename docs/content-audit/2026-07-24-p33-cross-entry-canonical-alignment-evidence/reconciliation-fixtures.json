@@ -1,6 +1,7 @@
 {
   "schemaVersion": 1,
-  "canonicalFlowId": "flow:ajd-moving:prepare-by-dday:comprehensive-calendar-v1",
+  "canonicalFlowId": "canonical:source:ajd:moving-checklist:23363|job:prepare-move-by-dday|variant:ajd-moving:comprehensive-calendar-v1",
+  "legacyCanonicalFlowId": "flow:ajd-moving:prepare-by-dday:comprehensive-calendar-v1",
   "fixtures": [
     {
       "name": "canonical_only",
