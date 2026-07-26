@@ -1,0 +1,215 @@
+{
+  "packageId": "2026-07-26-flowme-mece-ux-reset-claude-design-handoff",
+  "reviewerRole": "claude_design",
+  "workType": "independent_ux_design_and_interactive_wireflow",
+  "observedUserCount": 0,
+  "appCodeChangesAllowed": false,
+  "publishActionsAllowed": false,
+  "environment": {
+    "localWorktree": "D:\\flowme2605\\flow-current-main",
+    "localBranchAtHandoff": "main",
+    "localHeadAtHandoff": "98ede0f848f8cd854c6a79e3a92f847012844704",
+    "originMainAtHandoff": "2c951633d13adb0aab3ddd9d3cdddf506d9e97cd",
+    "production": "https://flowme2605.vercel.app",
+    "github": "https://github.com/knhbae/flowme2605",
+    "baselineMustBeRefreshedAtStart": true
+  },
+  "evidenceKinds": [
+    "current_production_interaction",
+    "current_source",
+    "current_package_screenshot",
+    "codex_proposed_artifact",
+    "claude_proposed_artifact",
+    "reference_pattern",
+    "heuristic_simulation",
+    "inaccessible"
+  ],
+  "canonicalInstructions": [
+    {
+      "path": "D:\\flowme2605\\flow-current-main\\docs\\content-audit\\2026-07-26-flowme-mece-ux-reset-claude-design-handoff\\claude-design-master-prompt-ko.md",
+      "kind": "review_instruction",
+      "required": true
+    },
+    {
+      "path": "D:\\flowme2605\\flow-current-main\\docs\\content-audit\\2026-07-26-flowme-mece-ux-reset-claude-design-handoff\\response-template-ko.md",
+      "kind": "response_contract",
+      "required": true
+    },
+    {
+      "path": "D:\\flowme2605\\flow-current-main\\docs\\content-audit\\2026-07-26-flowme-mece-ux-reset-claude-design-handoff\\output-contract.json",
+      "kind": "structured_output_contract",
+      "required": true
+    }
+  ],
+  "codexFirstDesignBundle": [
+    {
+      "path": "D:\\flowme2605\\flow-current-main\\docs\\content-audit\\2026-07-26-flowme-mece-ux-reset\\README.md",
+      "evidenceKind": "codex_proposed_artifact",
+      "role": "entry_and_decision_summary"
+    },
+    {
+      "path": "D:\\flowme2605\\flow-current-main\\docs\\content-audit\\2026-07-26-flowme-mece-ux-reset\\review.html",
+      "evidenceKind": "codex_proposed_artifact",
+      "role": "interactive_current_proposed_wireflow"
+    },
+    {
+      "path": "D:\\flowme2605\\flow-current-main\\docs\\content-audit\\2026-07-26-flowme-mece-ux-reset\\journey-scorecard.json",
+      "evidenceKind": "heuristic_simulation",
+      "role": "fifteen_cell_scorecard"
+    },
+    {
+      "path": "D:\\flowme2605\\flow-current-main\\docs\\specs\\2026-07-26-flowme-mece-ux-reset\\design-package.md",
+      "evidenceKind": "codex_proposed_artifact",
+      "role": "journey_ownership_state_contract"
+    },
+    {
+      "path": "D:\\flowme2605\\flow-current-main\\docs\\specs\\2026-07-26-flowme-mece-ux-reset\\simulation.md",
+      "evidenceKind": "heuristic_simulation",
+      "role": "simulation_and_browser_qa"
+    },
+    {
+      "path": "D:\\flowme2605\\flow-current-main\\docs\\specs\\2026-07-26-flowme-mece-ux-reset\\plan.md",
+      "evidenceKind": "codex_proposed_artifact",
+      "role": "phased_design_and_implementation_gate"
+    },
+    {
+      "path": "D:\\flowme2605\\flow-current-main\\docs\\content-audit\\2026-07-26-flowme-mece-ux-reset\\screenshots",
+      "evidenceKind": "current_package_screenshot",
+      "role": "current_and_codex_proposed_captures"
+    }
+  ],
+  "currentProductDocuments": [
+    "D:\\flowme2605\\flow-current-main\\AGENTS.md",
+    "D:\\flowme2605\\flow-current-main\\agent.md",
+    "D:\\flowme2605\\flow-current-main\\docs\\SERVICE_STRUCTURE.md",
+    "D:\\flowme2605\\flow-current-main\\docs\\PRODUCT_PRINCIPLES.md",
+    "D:\\flowme2605\\flow-current-main\\docs\\DECISIONS.md",
+    "D:\\flowme2605\\flow-current-main\\docs\\flow-rules\\quality-rubric.md",
+    "D:\\flowme2605\\flow-current-main\\docs\\flow-rules\\quality-gate.md",
+    "D:\\flowme2605\\flow-current-main\\docs\\flow-rules\\ux-copy.md"
+  ],
+  "currentSourceCandidates": [
+    "D:\\flowme2605\\flow-current-main\\components\\flow\\AppClient.tsx",
+    "D:\\flowme2605\\flow-current-main\\components\\flow\\MyFlowDataManager.tsx",
+    "D:\\flowme2605\\flow-current-main\\components\\flow\\FlowExecutionPrimitives.tsx",
+    "D:\\flowme2605\\flow-current-main\\components\\flow\\ArtifactWorkbench.tsx",
+    "D:\\flowme2605\\flow-current-main\\components\\flow\\FlowSaveBeforeFrame.tsx",
+    "D:\\flowme2605\\flow-current-main\\components\\flow\\FlowArtifactDataPreview.tsx",
+    "D:\\flowme2605\\flow-current-main\\components\\flow\\RoutineScheduleEditor.tsx",
+    "D:\\flowme2605\\flow-current-main\\components\\flow\\CalendarFlowScopePicker.tsx",
+    "D:\\flowme2605\\flow-current-main\\lib\\flow\\storage.ts",
+    "D:\\flowme2605\\flow-current-main\\lib\\flow\\flow-experience-projection.ts",
+    "D:\\flowme2605\\flow-current-main\\lib\\flow\\whole-flow-reading.ts",
+    "D:\\flowme2605\\flow-current-main\\lib\\flow\\effective-routine-projection.ts"
+  ],
+  "routes": [
+    "/",
+    "/flows",
+    "/f/moving-d30-basic",
+    "/f/vehicle-inspection-prep",
+    "/f/curated-allblanc-morning-workout",
+    "/f/source-backed-middle-school-math-1",
+    "/my",
+    "/calendar"
+  ],
+  "viewports": [
+    {
+      "width": 390,
+      "height": 844,
+      "label": "mobile"
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "label": "wide"
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "label": "desktop"
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "moving-d30",
+      "shape": "anchor_backplanning",
+      "expectedItemCount": 24,
+      "primaryArtifact": "calendar",
+      "requiredUserValuesBeforeUsefulPreview": 1
+    },
+    {
+      "id": "vehicle-inspection",
+      "shape": "undated_checklist",
+      "expectedItemCount": 10,
+      "primaryArtifact": "checklist",
+      "requiredUserValuesBeforeUsefulPreview": 0
+    },
+    {
+      "id": "morning-workout",
+      "shape": "recurrence_series_occurrence",
+      "expectedPreviewOccurrenceCount": 8,
+      "primaryArtifact": "routine_execution",
+      "requiredUserValuesBeforeUsefulPreview": 1
+    },
+    {
+      "id": "middle-school-math",
+      "shape": "ordered_progress",
+      "expectedItemCount": 8,
+      "primaryArtifact": "sheet_or_progress_list",
+      "requiredUserValuesBeforeUsefulPreview": 0
+    },
+    {
+      "id": "jeju-personal-draft",
+      "shape": "personal_memo_draft",
+      "expectedItemCount": 5,
+      "primaryArtifact": "checklist",
+      "requiredUserValuesBeforeUsefulPreview": 0
+    }
+  ],
+  "decisionsToChallenge": [
+    "remove_home_and_redirect_to_flow_find",
+    "make_my_flow_library_only",
+    "make_calendar_lens_only"
+  ],
+  "mustPreserve": [
+    "source_personal_run_occurrence_export_separation",
+    "canonical_identity",
+    "twenty_four_and_five_item_editorial_variants_not_auto_merged",
+    "archive_restore_permanent_delete_safety_boundary",
+    "source_item_exclusion_and_reinclude",
+    "personal_item_delete_restore_reorder",
+    "whole_selected_current_export_scope"
+  ],
+  "mustNotEdit": [
+    "D:\\flowme2605\\flow-current-main\\components",
+    "D:\\flowme2605\\flow-current-main\\app",
+    "D:\\flowme2605\\flow-current-main\\lib",
+    "D:\\flowme2605\\flow-current-main\\tests",
+    "D:\\flowme2605\\flow-current-main\\package.json",
+    "D:\\flowme2605\\flow-current-main\\package-lock.json",
+    "D:\\flowme2605\\flow-current-main\\docs\\STATUS.md",
+    "D:\\flowme2605\\flow-current-main\\docs\\ROADMAP.md",
+    "D:\\flowme2605\\flow-current-main\\docs\\DECISIONS.md",
+    "D:\\flowme2605\\flow-current-main\\docs\\IDEAS.md",
+    "D:\\flowme2605\\flow-current-main\\docs\\content-audit\\2026-07-26-flowme-mece-ux-reset",
+    "D:\\flowme2605\\flow-current-main\\docs\\specs\\2026-07-26-flowme-mece-ux-reset"
+  ],
+  "preExistingDirtyPathsToPreserve": [
+    "D:\\flowme2605\\flow-current-main\\docs\\IDEAS.md",
+    "D:\\flowme2605\\flow-current-main\\.agents\\skills\\flow-ux-subtract",
+    "D:\\flowme2605\\flow-current-main\\docs\\content-audit\\2026-07-25-flowme-progress-operating-model-review-ko.pptx"
+  ],
+  "expectedOutputRoot": "D:\\flowme2605\\flow-current-main\\docs\\content-audit\\2026-07-26-flowme-mece-ux-reset-claude-design-proposal",
+  "requiredOutputs": [
+    "README.md",
+    "audit.md",
+    "review.html",
+    "decision-matrix.json",
+    "journey-scorecard.json",
+    "screen-message-contract.json",
+    "interaction-grammar.md",
+    "visual-system.md",
+    "implementation-handoff.md",
+    "screenshots"
+  ]
+}
