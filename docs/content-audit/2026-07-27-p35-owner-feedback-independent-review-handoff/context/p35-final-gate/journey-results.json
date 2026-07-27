@@ -1,0 +1,150 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-26",
+  "baselineSha": "2c951633d13adb0aab3ddd9d3cdddf506d9e97cd",
+  "branch": "codex/p35-mece-ux-reset",
+  "verdict": "pass_local_automation",
+  "observedUserCount": 0,
+  "summary": {
+    "journeyCount": 5,
+    "automatedPassCount": 5,
+    "automatedPartialCount": 0,
+    "automatedFailCount": 0,
+    "observedUserPassCount": 0
+  },
+  "journeys": [
+    {
+      "id": "moving_dday",
+      "persona": "기준일 역산형",
+      "entry": "/f/moving-d30-basic",
+      "steps": [
+        "Calendar 24개 결과 확인",
+        "이사일 또는 포함 항목 조정",
+        "개인 Flow 저장",
+        "My Flow에서 실행",
+        "Calendar 확인",
+        "whole export"
+      ],
+      "surfaceOwners": {
+        "discovery": "Flow 찾기",
+        "preSave": "public Flow",
+        "execution": "개인 Flow",
+        "dateLens": "Calendar",
+        "portableResult": "Export"
+      },
+      "result": "pass_automated",
+      "identityParity": true,
+      "evidenceKind": [
+        "current_browser_automation",
+        "current_source",
+        "current_package_screenshot"
+      ]
+    },
+    {
+      "id": "undated_vehicle_check",
+      "persona": "날짜 없는 체크리스트형",
+      "entry": "/f/vehicle-inspection-prep",
+      "steps": [
+        "Checklist 10개 결과 확인",
+        "날짜 없이 저장",
+        "개인 Flow에서 실행",
+        "필요한 항목만 날짜 지정 또는 제거",
+        "Calendar와 list export eligibility 확인"
+      ],
+      "result": "pass_automated",
+      "forcedCalendarDateCount": 0,
+      "sourceMutationCount": 0,
+      "evidenceKind": [
+        "current_browser_automation",
+        "current_source",
+        "current_package_screenshot"
+      ]
+    },
+    {
+      "id": "recurring_workout",
+      "persona": "반복 루틴형",
+      "entry": "/f/curated-allblanc-morning-workout",
+      "steps": [
+        "Flow 실행 결과와 반복 요약 확인",
+        "한 종류 반복 설정 조정",
+        "저장",
+        "한 occurrence 완료와 다시 열기",
+        "Calendar와 ICS 확인"
+      ],
+      "result": "pass_automated",
+      "seriesOccurrenceIdentitySeparated": true,
+      "evidenceKind": [
+        "current_browser_automation",
+        "current_source",
+        "current_package_screenshot"
+      ]
+    },
+    {
+      "id": "long_term_study",
+      "persona": "순서형 장기 학습",
+      "entry": "/f/source-backed-middle-school-math-1",
+      "steps": [
+        "Sheet 8개 전체 범위 확인",
+        "개인 Flow 저장",
+        "현재 단원 열기",
+        "완료와 다시 열기",
+        "current 또는 selected export"
+      ],
+      "result": "pass_automated",
+      "oneFocusedFlowOwner": true,
+      "evidenceKind": [
+        "current_browser_automation",
+        "current_source",
+        "current_package_screenshot"
+      ]
+    },
+    {
+      "id": "personal_memo_draft",
+      "persona": "개인 메모 초안형",
+      "entry": "/flows",
+      "steps": [
+        "메모 또는 URL miss 입력",
+        "사용자 문장 기반 draft 저장",
+        "항목 추가, 삭제, 복구, 순서 변경",
+        "날짜, 시간, 반복 조정",
+        "My Flow, Calendar, portable export 확인"
+      ],
+      "result": "pass_automated",
+      "inventedItemCount": 0,
+      "structuralPersistencePreserved": true,
+      "evidenceKind": [
+        "current_browser_automation",
+        "current_source"
+      ]
+    }
+  ],
+  "scaleChecks": [
+    {
+      "fixture": "ux1",
+      "savedFlowCount": 1,
+      "result": "pass"
+    },
+    {
+      "fixture": "ux5",
+      "savedFlowCount": 5,
+      "result": "pass_regression"
+    },
+    {
+      "fixture": "ux20",
+      "savedFlowCount": 20,
+      "result": "pass"
+    },
+    {
+      "fixture": "ux60",
+      "savedFlowCount": 60,
+      "result": "pass"
+    }
+  ],
+  "humanObservationRequired": [
+    "첫 화면 결과만 보고 저장 결과를 올바르게 예측하는가",
+    "Flow 조정에서 원하는 조정 종류를 설명 없이 찾는가",
+    "My Flow library와 한 Flow workspace의 차이를 자연스럽게 이해하는가",
+    "Calendar에서 편집 대신 Flow에서 열기를 받아들이는가",
+    "export의 whole, selected, current 범위를 실행 전에 구분하는가"
+  ]
+}

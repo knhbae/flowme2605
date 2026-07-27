@@ -1,0 +1,250 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-27",
+  "target": {
+    "previewUrl": "https://flowme2605-n5o0dw81h-flowme.vercel.app",
+    "productionComparisonUrl": "https://flowme2605.vercel.app",
+    "observedUserCount": 0
+  },
+  "viewports": [
+    {
+      "name": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "name": "wide",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "name": "large_workspace",
+      "width": 1440,
+      "height": 900,
+      "requiredFor": [
+        "my_flow_60_fixture",
+        "wide_workspace_hierarchy"
+      ]
+    }
+  ],
+  "evidenceKinds": [
+    "current_preview_interaction",
+    "current_source",
+    "current_package_screenshot",
+    "current_automated_test",
+    "production_comparison",
+    "reference_pattern",
+    "heuristic_simulation",
+    "inaccessible",
+    "observed_user"
+  ],
+  "sessions": [
+    {
+      "id": "J01",
+      "persona": "기준일 역산형",
+      "flowShape": "calendar_timeline",
+      "route": "/f/moving-d30-basic",
+      "fixture": "moving_24_items",
+      "goal": "이사일을 기준으로 전체 일정을 확인하고 필요한 항목을 조정해 저장하거나 캘린더로 가져간다.",
+      "steps": [
+        "Flow 찾기에서 이사 Flow를 찾아 연다.",
+        "첫 viewport에서 원문, 전체 24개, 날짜 범위, 실제 일정 일부를 확인한다.",
+        "Flow 조정을 열고 이름과 이사일을 각각 바꿔 본다.",
+        "포함 항목 조정에서 한 항목을 제외하고 결과 개수 변화를 확인한다.",
+        "특정 항목의 제목, 상세 내용, 날짜를 저장 전에 바꾸려 시도한다.",
+        "eligible artifact와 FlowMe 저장 또는 외부 가져가기 경로를 찾는다.",
+        "FlowMe에 저장하고 receipt에서 전체 저장 결과를 검증한다.",
+        "내 Flow를 열어 다음 행동, 전체 계획, 기록을 각각 확인한다.",
+        "같은 날짜에 있는 여러 항목이 다음 실행에서 어떻게 보이는지 확인한다.",
+        "한 항목을 완료하고 행이 남는지, 사라지는지, 되돌리기 경로가 무엇인지 확인한다.",
+        "전체 Flow를 캘린더 또는 portable 형식으로 가져간다."
+      ],
+      "questions": [
+        "저장 전 개별 제목·상세·날짜 수정이 필요한가?",
+        "저장 직후 전체 계획과 첫 실행 중 무엇이 primary여야 하는가?",
+        "같은 날짜 항목을 한 묶음으로 보여 주는가?",
+        "FlowMe 저장 전 외부 캘린더 가져가기가 자연스럽게 보이는가?"
+      ],
+      "captureStates": [
+        "public_result",
+        "adjustment_item",
+        "artifact_destination_choice",
+        "saved_receipt",
+        "my_flow_first_open",
+        "same_date_next_group",
+        "completion_undo"
+      ]
+    },
+    {
+      "id": "J02",
+      "persona": "날짜 없는 체크리스트형",
+      "flowShape": "undated_checklist_todo",
+      "route": "/f/vehicle-inspection-prep",
+      "fixture": "vehicle_10_items",
+      "goal": "날짜 없이 전체 체크리스트를 저장하고 필요한 항목만 날짜에 배치하거나 Todo로 가져간다.",
+      "steps": [
+        "차량 점검 Flow를 열고 10개 Checklist 결과를 확인한다.",
+        "날짜 입력을 강요하는지 확인한다.",
+        "저장 전 항목 제목, 상세, 날짜를 편집할 수 있는지 확인한다.",
+        "Checklist 또는 Todo 가져가기와 FlowMe 저장의 차이를 확인한다.",
+        "저장 후 내 Flow에서 전체 10개가 보이는지 확인한다.",
+        "다음 행동이 날짜 없는 체크리스트에서 무엇을 뜻하는지 설명 없이 판단한다.",
+        "한 항목에 날짜를 지정하고 Calendar 반영을 확인한다.",
+        "완료 후 같은 행에서 다시 열 수 있는지 확인한다.",
+        "날짜를 제거한 뒤 My Flow와 list export에 남는지 확인한다."
+      ],
+      "questions": [
+        "날짜 없는 Flow에 다음 행동 탭이 적합한가?",
+        "Todo와 Checklist를 별도 고정 탭 없이 어떻게 추천하는가?",
+        "Calendar로 이동하지 않은 항목을 어디에서 쉽게 찾는가?",
+        "행이 남으면 별도 undo가 중복인가?"
+      ],
+      "captureStates": [
+        "undated_public_result",
+        "artifact_destination_choice",
+        "my_flow_undated_first_open",
+        "item_date_edit",
+        "completion_reopen"
+      ]
+    },
+    {
+      "id": "J03",
+      "persona": "반복 루틴형",
+      "flowShape": "routine_occurrence",
+      "route": "/f/curated-allblanc-morning-workout",
+      "fixture": "workout_one_series",
+      "goal": "반복 설정을 이해하고 이번 회차를 실행한 뒤 series와 기록을 혼동하지 않는다.",
+      "steps": [
+        "홈트 Flow를 열고 기본 결과와 다음 occurrence를 확인한다.",
+        "반복 조정에서 요일, 시간, 소요 시간, 종료 조건을 확인한다.",
+        "저장 전 Item 상세와 resource 링크의 역할을 구분한다.",
+        "FlowMe 저장과 Calendar/ICS 가져가기의 선택 위치를 확인한다.",
+        "저장 후 내 Flow에서 다음 행동, 전체 계획, 기록을 각각 확인한다.",
+        "이번 회차를 완료하고 series 전체가 완료되지 않는지 확인한다.",
+        "완료를 다시 열고 Calendar identity가 유지되는지 확인한다.",
+        "기록 탭이 session history, 회고, 다시 쓰기를 구분하는지 확인한다."
+      ],
+      "questions": [
+        "다음 행동보다 이번 회차라는 라벨이 더 정확한가?",
+        "기록 탭을 session history로 좁혀야 하는가?",
+        "routine만 다른 상태 문법을 쓰고 있지 않은가?",
+        "원본 영상은 실행 Item이 아니라 resource로 보이는가?"
+      ],
+      "captureStates": [
+        "routine_public_result",
+        "routine_adjustment",
+        "routine_destination_choice",
+        "routine_current_occurrence",
+        "routine_record"
+      ]
+    },
+    {
+      "id": "J04",
+      "persona": "순서·진도형",
+      "flowShape": "sheet_progress",
+      "route": "/f/source-backed-middle-school-math-1",
+      "fixture": "study_8_rows",
+      "goal": "전체 8개 진도를 먼저 확인하고 현재 위치를 실행하며 Sheet로 가져간다.",
+      "steps": [
+        "학습 Flow를 열고 8개 행과 계층을 확인한다.",
+        "저장 전에 단원 제목, 상세 메모, 필요 날짜를 수정하려 시도한다.",
+        "Sheet가 primary인 이유와 Calendar가 기본이 아닌 이유를 확인한다.",
+        "FlowMe 저장 또는 Sheet 가져가기의 결과 개수와 손실을 비교한다.",
+        "내 Flow에서 전체 진도와 현재 위치를 확인한다.",
+        "다음 행동 라벨이 현재 단원 또는 다음 행보다 명확한지 평가한다.",
+        "단계 메모를 남기고 기록 탭에서 찾을 수 있는지 확인한다.",
+        "selected 범위로 Sheet를 가져가고 receipt count를 확인한다."
+      ],
+      "questions": [
+        "Sheet형 Flow의 실행 단위를 next action 하나로 표현할 수 있는가?",
+        "개인 메모는 Item detail과 기록 중 어디에 있어야 하는가?",
+        "저장 전 외부 Sheet 가져가기가 핵심 경로인가?"
+      ],
+      "captureStates": [
+        "sheet_public_result",
+        "sheet_destination_choice",
+        "sheet_my_flow_first_open",
+        "sheet_item_note",
+        "sheet_selected_export"
+      ]
+    },
+    {
+      "id": "J05",
+      "persona": "메모·개인 초안형",
+      "flowShape": "memo_personal_draft",
+      "route": "/flows",
+      "fixture": "five_action_memo_draft",
+      "input": "8월 첫째 주 여행 준비: 항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 할 일 확인",
+      "goal": "메모를 실행 항목으로 나누고 저장 전후 수정 범위와 가져가기 결과를 이해한다.",
+      "steps": [
+        "메모를 입력하고 다섯 항목 분할 결과를 확인한다.",
+        "저장 전에 제목, 상세, 날짜, 포함 여부를 수정할 수 있는지 확인한다.",
+        "Checklist, Memo, Calendar 중 eligible artifact와 추천 이유를 확인한다.",
+        "FlowMe 저장 또는 외부 가져가기 중 원하는 경로를 선택한다.",
+        "저장 후 전체 5개가 보이는지 확인한다.",
+        "개인 항목 추가, 삭제, 복구, 순서 변경을 수행한다.",
+        "단계 메모와 Flow-level 회고가 어디에 저장되는지 확인한다.",
+        "전체 또는 선택 항목을 Checklist/Memo로 가져간다."
+      ],
+      "questions": [
+        "저장 전 조정과 저장 후 구조 편집의 경계가 자연스러운가?",
+        "기록 탭이 Item 메모와 Flow 회고를 혼동시키는가?",
+        "외부로만 가져간 사용자가 다시 FlowMe에 돌아올 이유가 명확한가?"
+      ],
+      "captureStates": [
+        "memo_proposal",
+        "memo_adjustment",
+        "memo_destination_choice",
+        "memo_saved_flow",
+        "memo_record"
+      ]
+    }
+  ],
+  "crossScenarioChecks": [
+    {
+      "id": "C01",
+      "title": "첫 화면 promise",
+      "assertion": "긴 설명보다 실제 결과, 개수, 필요한 최소 입력이 먼저 보인다."
+    },
+    {
+      "id": "C02",
+      "title": "Artifact eligibility",
+      "assertion": "Primary 1개와 가치 있는 secondary 최대 2개만 보이고 의미 없는 형태는 숨긴다."
+    },
+    {
+      "id": "C03",
+      "title": "Save/export destination",
+      "assertion": "FlowMe 저장과 외부 가져가기의 결과, 손실, 다음 상태를 실행 전에 예측할 수 있다."
+    },
+    {
+      "id": "C04",
+      "title": "Contextual adjustment",
+      "assertion": "Item 제목·상세·날짜를 수정할 수 있지만 full editor가 기본으로 펼쳐지지 않는다."
+    },
+    {
+      "id": "C05",
+      "title": "Shape-aware next unit",
+      "assertion": "날짜 묶음, checklist next items, routine occurrence, sheet current row가 같은 추상 규칙으로 왜곡되지 않는다."
+    },
+    {
+      "id": "C06",
+      "title": "Undo policy",
+      "assertion": "대상이 현재 문맥에서 사라지거나 이동할 때 즉시 복구가 있고, 행이 남는 경우 직접 toggle이 우선이다."
+    },
+    {
+      "id": "C07",
+      "title": "Record semantics",
+      "assertion": "실행 history, Item memo, Flow reflection, reuse가 명확히 구분된다."
+    },
+    {
+      "id": "C08",
+      "title": "Projection parity",
+      "assertion": "같은 effective title, date, memo, identity를 preview, My Flow, Calendar, export가 읽는다."
+    },
+    {
+      "id": "C09",
+      "title": "Responsive and accessibility",
+      "assertion": "390/1024에서 overflow, fixed overlap, unnamed control이 없고 focus가 예측 가능하다."
+    }
+  ]
+}

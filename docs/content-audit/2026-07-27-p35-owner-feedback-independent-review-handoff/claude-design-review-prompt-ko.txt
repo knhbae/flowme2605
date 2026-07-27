@@ -1,0 +1,331 @@
+FlowMe P35 Preview를 직접 조작하고, 사용자 피드백과 전체 제품 방향을 독립적으로
+평가해 주세요. 단순 UI polish가 아니라 저장 전 개인화, 저장/외부 가져가기,
+저장 결과, 실행, 완료 복구, 기록의 전체 연결을 검토하는 작업입니다.
+
+======================================================================
+1. 검토 대상
+======================================================================
+
+P35 Preview:
+https://flowme2605-n5o0dw81h-flowme.vercel.app
+
+Production 비교 기준:
+https://flowme2605.vercel.app
+
+첨부 자료:
+FlowMe P35 사용자 피드백 독립 검토 Handoff 2026-07-27 v3-offline.zip
+
+Preview deployment:
+dpl_5LnB4w6kAzTkBuwR48y3qCupVGQS
+
+현재 P35 기준 SHA:
+2c951633d13adb0aab3ddd9d3cdddf506d9e97cd
+
+중요:
+- Preview가 현재 검토 대상이며 production은 비교 기준입니다.
+- P35 source는 아직 commit/push되지 않았습니다.
+- 첨부 ZIP의 문서와 screenshot, Preview interaction을 우선 사용하세요.
+- 로컬 경로나 source에 접근할 수 없으면 중단하지 말고 evidenceKind=inaccessible로
+  표시한 뒤 Preview와 첨부 자료로 계속하세요.
+- Vercel Preview에도 접근할 수 없으면 ZIP을 푼 뒤
+  `offline-preview/index.html`부터 여세요. 공개 Flow, 내 Flow, 캘린더,
+  가져가기의 현재 상태 18개와 P35 참고 캡처 37개를 서버 없이 볼 수 있습니다.
+- 오프라인 화면만 본 경우 직접 조작했다고 쓰지 말고
+  `current_package_screenshot` 또는 `current_local_browser_capture`로 표시하세요.
+- 앱 코드는 수정하지 않습니다.
+- 자동화, heuristic simulation, screenshot은 실제 사용자 관찰이 아닙니다.
+- observed-user count는 0입니다.
+
+첨부 자료 읽기 순서:
+1. offline-preview/index.html
+2. offline-preview/public-flow.html
+3. offline-preview/my-flow.html
+4. offline-preview/calendar.html
+5. offline-preview/export.html
+6. offline-preview/preview-manifest.json
+7. offline-preview/state-snapshots/
+8. README.md
+9. review-brief-ko.md
+10. evaluation-matrix.json
+11. review-scenarios.json
+12. reference-patterns.md
+13. review-response-template-ko.md
+14. screenshots/
+15. context/p35-spec/design-package.md
+16. context/p35-spec/simulation.md
+17. context/p35-final-gate/README.md
+18. context/p35-final-gate/route-evidence.json
+19. context/user-feedback/2026-07-26-flowme-user-feedback-product-direction-master-ko.txt
+
+======================================================================
+2. 제품 목표
+======================================================================
+
+FlowMe는 캘린더, 할 일 앱, 노션을 대체하는 무거운 planner가 아닙니다.
+
+원문 URL 또는 메모
+→ 실행 가능한 전체 결과 확인
+→ 필요한 최소 개인화
+→ FlowMe에 저장하거나 기존 도구로 가져가기
+→ 실행·완료·다시 열기
+→ 수정·기록·재사용
+
+을 연결하는 portable execution layer입니다.
+
+화면이 답해야 할 질문:
+- 무엇이 만들어지는가?
+- 지금 무엇을 바꿀 수 있는가?
+- FlowMe에 저장할 것인가, 기존 도구로 가져갈 것인가?
+- 저장한 뒤 어디에서 무엇을 실행하는가?
+- 완료와 기록을 어떻게 다시 찾는가?
+
+======================================================================
+3. P35 후보 방향
+======================================================================
+
+P35는 다음 후보안을 구현했습니다.
+
+1. 전역 탐색을 Flow 찾기 / 캘린더 / 내 Flow 3개로 단순화
+2. public Flow에서 설명보다 실제 결과를 먼저 표시
+3. 저장 전 한 번에 한 종류의 조정만 열기
+4. 내 Flow를 저장 목록과 focused workspace로 분리
+5. Calendar를 날짜가 있는 개인 실행 항목의 lens로 제한
+6. 가져가기는 범위와 개수를 먼저 정한 뒤 형식을 선택
+
+이 방향은 자동화 gate를 통과했지만 실제 사용자가 이해하는지는 검증되지 않았습니다.
+P35를 승인하기 위한 형식적 검토가 아닙니다. 잘못됐으면 composition을 크게 다시
+설계해도 됩니다.
+
+다만 다음 데이터 계약은 특별한 근거 없이 재작성하지 않습니다.
+
+- source와 published Flow
+- personal overlay와 personal structural overlay
+- execution run
+- recurrence series와 occurrence
+- whole/selected/current export identity
+- 기존 저장 데이터
+
+======================================================================
+4. 사용자 피드백
+======================================================================
+
+F01.
+Flow 조정에서 항목 상세 내용과 개별 날짜를 수정할 수 있으면 좋겠습니다.
+현재 UI에 contextual Item edit를 연결하는 것과 full editor를 만드는 것의 차이를
+비교해 주세요.
+
+F02.
+저장 완료 후 바로 다음 행동 또는 오늘 할 일 중심으로 보내는 화면이 필요한지
+의문입니다. 사용자는 먼저 저장한 전체 Flow가 맞는지 확인할 수 있어야 할 수 있습니다.
+
+F03.
+날짜형 Flow의 다음 할 일은 한 항목이 아니라 같은 날짜의 미완료 항목을 한꺼번에
+보여 주는 편이 맞는지 검토해 주세요. 날짜 없는 Checklist, routine, sheet에는
+각 shape에 맞는 실행 단위를 제안해 주세요.
+
+F04.
+Flow 찾기/public preview에서 자연스러운 Calendar, Checklist/Todo, Sheet, Memo,
+Routine 결과를 먼저 확인하고, FlowMe에 저장할지 본인 캘린더·할 일·표·메모로
+가져갈지 선택할 수 있어야 하지 않는지 검토해 주세요.
+
+다섯 고정 탭을 모두 노출하라는 뜻은 아닙니다. primary artifact 1개와 의미 있는
+secondary artifact 최대 2개를 보여 주는 방법을 설계해 주세요.
+
+F05.
+완료 체크 후 항목이 현재 목록에서 사라지는 경우에만 즉시 되돌리기를 활성화하고,
+행이 남으면 checkbox로 다시 여는 방식이 더 단순하지 않은지 검토해 주세요.
+완료, 제외, 삭제, 날짜 이동, Flow 보관의 복구 문법은 구분해 주세요.
+
+F06.
+내 Flow의 `다음 행동` 탭 정체성이 모호합니다. 날짜형은 `다가오는 일정`,
+체크형은 `남은 할 일`, routine은 `이번 회차`, sheet는 `현재 단원`처럼
+shape-specific label을 쓸지, 아예 탭이 아니라 첫 section으로 합칠지 비교해 주세요.
+
+F07.
+`기록` 탭도 애매합니다. 완료 history, 단계 메모, 회고, held occurrence,
+다시 쓰기를 한곳에 두는 것이 맞는지 검토해 주세요. `진행 기록`으로 좁히거나
+각 문맥으로 분산하는 대안을 제안해 주세요.
+
+이 피드백에 무조건 동의하지 말고 각 항목을 다음 중 하나로 판정해 주세요.
+
+- supported
+- partly_supported
+- rejected
+- needs_observation
+
+======================================================================
+5. 직접 확인할 route와 persona
+======================================================================
+
+필수 route:
+- /flows
+- /f/moving-d30-basic
+- /f/vehicle-inspection-prep
+- /f/curated-allblanc-morning-workout
+- /f/source-backed-middle-school-math-1
+- /f/overseas-safety-register
+- /my
+- /calendar
+
+필수 viewport:
+- Mobile 390x844
+- Wide 1024x768
+- 필요하면 1440x900
+
+다음 5개 persona를 세 session으로 이어서 simulation하세요.
+
+1. 이사 D-30
+   발견 → 24개 전체 결과 → 이사일 → 항목 조정 → 저장/캘린더 가져가기
+   → receipt → 같은 날짜 다음 묶음 → 완료/다시 열기 → 전체 export
+
+2. 날짜 없는 차량 점검
+   10개 Checklist → 저장/ Todo 가져가기 → 내 Flow → 한 항목 날짜 지정
+   → Calendar → 완료/다시 열기 → 날짜 제거
+
+3. 홈트 routine
+   반복 요약 → 일정 조정 → 저장/ICS 가져가기 → 이번 occurrence
+   → 완료/다시 열기 → session history
+
+4. 학습 Sheet
+   8개 전체 진도 → 항목 상세/날짜 조정 → 저장/Sheet 가져가기
+   → 현재 단원 → 단계 메모 → selected export
+
+5. 메모 개인 초안
+   여러 행동이 있는 메모 → 항목 분할 → 저장 전 수정 → 저장/외부 가져가기
+   → 추가·삭제·복구·순서 → 기록과 회고
+
+각 단계에서 다음을 기록하세요.
+
+- 사용자가 보는 첫 정보
+- primary action
+- 다음 상태 예측 가능성
+- tap/click depth
+- 긴 설명에 의존하는 지점
+- 현재 화면에서 찾지 못한 기능
+- mobile/wide 차이
+
+simulation은 observed-user validation이라고 표현하지 마세요.
+
+======================================================================
+6. 레퍼런스 비교
+======================================================================
+
+첨부 reference-patterns.md의 공식 링크를 확인하세요.
+
+비교 대상:
+- Todoist: Today, task detail, completion undo
+- Things: Today/Anytime/Logbook, project next steps
+- Google Calendar Tasks: dated task와 task detail
+- Notion: 동일 데이터의 views와 contextual edit
+- Wanderlog: 날짜별 itinerary 묶음과 전체 날짜 이동
+- Strava/Nike: plan, current occurrence, history
+
+화면을 그대로 복제하지 마세요.
+각 제품에서 surface ownership, progressive disclosure, reversible action,
+history semantics만 추출해 FlowMe에 adopt/adapt/reject 판정을 내려 주세요.
+
+======================================================================
+7. 반드시 비교할 구조 대안
+======================================================================
+
+A. 현재 P35
+
+Public result
+→ 최소 조정
+→ FlowMe 저장
+→ receipt
+→ 다음 행동 / 전체 계획 / 기록
+→ 가져가기
+
+B. 저장 전 full editor
+
+Public result
+→ 전체 구조 편집
+→ 저장 또는 export
+
+C. Artifact preflight + contextual personalization
+
+Public result
+→ 필요한 항목만 contextual edit
+→ 자연스러운 artifact와 개수 확인
+→ FlowMe 저장 또는 외부 가져가기
+→ 짧은 receipt
+→ shape-specific 개인 Flow workspace
+
+세 대안을 5개 Flow shape와 390px에서 비교하고, retain / revise /
+structural_reopen 중 하나를 선택하세요.
+
+======================================================================
+8. 디자인 산출물
+======================================================================
+
+current와 proposed를 나란히 보여 주는 standalone HTML 또는 동등한 review package를
+작성해 주세요.
+
+필수 proposed 화면:
+
+1. Public result + contextual Item edit, 390
+2. Artifact preflight + FlowMe/외부 destination, 390
+3. Saved receipt, 390
+4. 날짜형 personal Flow 첫 화면과 같은 날짜 next group, 390
+5. 날짜 없는 Checklist personal Flow, 390
+6. Routine current occurrence, 390
+7. 진행 기록/history, 390
+8. Public/Personal Flow wide workspace, 1024
+
+각 화면에 표시할 것:
+
+- 이 화면이 답하는 한 가지 질문
+- primary action
+- secondary action
+- 숨긴 command
+- 다음 상태
+- focus order
+- current 대비 제거·이동·추가한 요소
+
+Cards 안에 cards를 반복하지 말고, 긴 설명으로 구조 문제를 덮지 마세요.
+모바일에서 텍스트와 control이 겹치지 않고, fixed action과 bottom navigation이
+경쟁하지 않게 하세요.
+
+======================================================================
+9. 결과 형식
+======================================================================
+
+첨부 review-response-template-ko.md를 따르세요.
+
+필수 결과:
+1. severity 순 findings
+2. P35 전체 판정
+3. F01~F07 판정
+4. persona별 여정 score
+5. reference adopt/adapt/reject
+6. 390/1024 current-proposed wireframe
+7. 최종 surface ownership
+8. 다음 구현 slice와 rollback 경계
+9. 실제 사용자 관찰 전 반드시 고칠 것
+10. 실제 사용자에게만 확인할 질문
+
+EvidenceKind:
+- current_preview_interaction
+- current_package_screenshot
+- current_source
+- current_automated_test
+- production_comparison
+- reference_pattern
+- heuristic_simulation
+- inaccessible
+- observed_user
+
+======================================================================
+10. 금지
+======================================================================
+
+- 앱 코드 수정
+- 실제 AI/crawler/OAuth 제안으로 UX 문제 우회
+- 모든 artifact를 고정 탭으로 노출
+- source 원본과 개인 수정, 완료 상태를 같은 객체로 합치기
+- 가짜 사용자 수, 평점, 리뷰를 실제 정보처럼 사용
+- 자동화나 simulation을 실제 사용자 검증으로 표현
+- 문구만 조금 줄이고 구조 문제를 해결했다고 판단
+
+마지막에 observed-user count 0과 접근하지 못한 자료를 명시해 주세요.

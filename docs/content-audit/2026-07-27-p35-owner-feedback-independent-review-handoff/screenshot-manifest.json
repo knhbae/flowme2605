@@ -1,0 +1,164 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-27",
+  "source": "Copied from current P35 evidence packages without image modification.",
+  "observedUserEvidence": false,
+  "screenshots": [
+    {
+      "file": "screenshots/01-moving-save-before-390.png",
+      "route": "/f/moving-d30-basic",
+      "viewport": "390x844",
+      "state": "public_result_before_save",
+      "reviewFocus": [
+        "result-first hierarchy",
+        "minimum anchor input",
+        "Flow adjustment entry",
+        "save versus external destination"
+      ]
+    },
+    {
+      "file": "screenshots/02-moving-receipt-390.png",
+      "route": "/f/moving-d30-basic",
+      "viewport": "390x844",
+      "state": "saved_receipt",
+      "reviewFocus": [
+        "whole saved result verification",
+        "primary next action",
+        "calendar secondary action",
+        "whether today or first action is overemphasized"
+      ]
+    },
+    {
+      "file": "screenshots/03-adjust-anchor-390.png",
+      "route": "/f/moving-d30-basic",
+      "viewport": "390x844",
+      "state": "adjust_anchor",
+      "reviewFocus": [
+        "one-kind adjustment",
+        "before and after comparison",
+        "mobile density"
+      ]
+    },
+    {
+      "file": "screenshots/04-adjust-items-1024.png",
+      "route": "/f/moving-d30-basic",
+      "viewport": "1024x768",
+      "state": "adjust_included_items",
+      "reviewFocus": [
+        "include-only limitation",
+        "contextual title detail date edit opportunity",
+        "long-flow density"
+      ]
+    },
+    {
+      "file": "screenshots/05-vehicle-result-390.png",
+      "route": "/f/vehicle-inspection-prep",
+      "viewport": "390x844",
+      "state": "undated_checklist_result",
+      "reviewFocus": [
+        "undated execution model",
+        "checklist or todo artifact",
+        "external destination"
+      ]
+    },
+    {
+      "file": "screenshots/06-workout-result-390.png",
+      "route": "/f/curated-allblanc-morning-workout",
+      "viewport": "390x844",
+      "state": "routine_result",
+      "reviewFocus": [
+        "series versus occurrence",
+        "routine summary",
+        "resource separation"
+      ]
+    },
+    {
+      "file": "screenshots/07-study-result-390.png",
+      "route": "/f/source-backed-middle-school-math-1",
+      "viewport": "390x844",
+      "state": "sheet_progress_result",
+      "reviewFocus": [
+        "sheet primary artifact",
+        "progress hierarchy",
+        "current row semantics"
+      ]
+    },
+    {
+      "file": "screenshots/08-memo-result-390.png",
+      "route": "/f/overseas-safety-register",
+      "viewport": "390x844",
+      "state": "memo_result",
+      "reviewFocus": [
+        "memo and guide hierarchy",
+        "action versus reference",
+        "portable memo destination"
+      ]
+    },
+    {
+      "file": "screenshots/09-my-flow-focused-390.png",
+      "route": "/my",
+      "viewport": "390x844",
+      "state": "focused_personal_flow",
+      "reviewFocus": [
+        "next action plan record tabs",
+        "shape-specific execution unit",
+        "export and adjustment placement"
+      ]
+    },
+    {
+      "file": "screenshots/10-my-flow-library-20-390.png",
+      "route": "/my?demo=ux20&view=flows",
+      "viewport": "390x844",
+      "state": "saved_flow_library",
+      "reviewFocus": [
+        "20-flow scanability",
+        "row command count",
+        "library to workspace transition"
+      ]
+    },
+    {
+      "file": "screenshots/11-calendar-selected-day-1024.png",
+      "route": "/calendar",
+      "viewport": "1024x768",
+      "state": "selected_day",
+      "reviewFocus": [
+        "calendar date lens",
+        "same-day grouping",
+        "open personal flow action"
+      ]
+    },
+    {
+      "file": "screenshots/12-export-whole-390.png",
+      "route": "/my",
+      "viewport": "390x844",
+      "state": "whole_export_preflight",
+      "reviewFocus": [
+        "whole scope and count",
+        "format eligibility",
+        "whether export belongs before save"
+      ]
+    },
+    {
+      "file": "screenshots/13-export-selected-390.png",
+      "route": "/my",
+      "viewport": "390x844",
+      "state": "selected_export_preflight",
+      "reviewFocus": [
+        "selected scope",
+        "count parity",
+        "mobile command density"
+      ]
+    },
+    {
+      "file": "screenshots/14-export-current-1024.png",
+      "route": "/my",
+      "viewport": "1024x768",
+      "state": "current_item_export_preflight",
+      "reviewFocus": [
+        "current scope",
+        "wide hierarchy",
+        "export entry ownership"
+      ]
+    }
+  ]
+}

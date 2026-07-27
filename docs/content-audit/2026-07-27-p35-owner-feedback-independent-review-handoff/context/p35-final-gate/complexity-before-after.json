@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "measuredAt": "2026-07-26",
+  "baselineSha": "2c951633d13adb0aab3ddd9d3cdddf506d9e97cd",
+  "branch": "codex/p35-mece-ux-reset",
+  "userFacing": [
+    {
+      "metric": "primaryNavigationDestinationCount",
+      "before": 4,
+      "after": 3,
+      "delta": -1,
+      "evidenceKind": "current_source_and_browser"
+    },
+    {
+      "metric": "discoveryOwnerSurfaceCount",
+      "before": 2,
+      "after": 1,
+      "delta": -1,
+      "note": "Home plus Flow 찾기에서 Flow 찾기 하나로 통합"
+    },
+    {
+      "metric": "myFlowTopLevelModeCount",
+      "before": 3,
+      "after": 1,
+      "delta": -2,
+      "note": "지금, Flow 목록, 완료에서 저장 Flow library 하나로 단순화"
+    },
+    {
+      "metric": "mobileMyFlowVisibleCommandPerLibraryRowMaximum",
+      "before": "multiple_context_dependent",
+      "after": 1,
+      "note": "목록 행은 한 Flow 열기만 소유"
+    },
+    {
+      "metric": "calendarDirectEditKindCount",
+      "before": 4,
+      "after": 2,
+      "delta": -2,
+      "note": "완료와 다시 열기만 공유하고 메모와 날짜 이동은 개인 Flow로 이동"
+    },
+    {
+      "metric": "calendarInlineNoteEntryCount",
+      "before": "present",
+      "after": 0
+    },
+    {
+      "metric": "calendarDateMoveEntryCount",
+      "before": "present",
+      "after": 0
+    },
+    {
+      "metric": "calendarUnscheduledTrayCount",
+      "before": "present",
+      "after": 0
+    },
+    {
+      "metric": "publicResultShapeChoiceCount",
+      "before": "context_dependent_multiple",
+      "after": 0,
+      "note": "콘텐츠에 자연스러운 실제 primary result 하나를 먼저 표시"
+    },
+    {
+      "metric": "simultaneousPublicAdjustmentPanelMaximum",
+      "before": "multiple_possible",
+      "after": 1
+    },
+    {
+      "metric": "visiblePrimaryActionMaximumPerFrame",
+      "before": "multiple_context_dependent",
+      "after": 1
+    }
+  ],
+  "sourceComplexity": {
+    "measurement": {
+      "baselineRange": "components/flow/AppClient.tsx export function MyFlows through before export function CreatorProfile",
+      "currentRuntimeRange": "components/flow/AppClient.tsx function MyFlowRuntime through before export function CreatorProfile",
+      "combinedCurrentFiles": [
+        "components/flow/AppClient.tsx runtime range",
+        "components/flow/MyFlowCalendarSurface.tsx"
+      ]
+    },
+    "before": {
+      "functionLines": 12554,
+      "buttonCount": 151,
+      "conditionalRenderCount": 341,
+      "uniqueKoreanTokenCount": 624
+    },
+    "afterRuntime": {
+      "functionLines": 10667,
+      "buttonCount": 115,
+      "conditionalRenderCount": 272,
+      "uniqueKoreanTokenCount": 559
+    },
+    "afterRuntimePlusExtractedCalendarSurface": {
+      "functionLines": 10813,
+      "buttonCount": 119,
+      "conditionalRenderCount": 272,
+      "uniqueKoreanTokenCount": 561
+    },
+    "combinedDelta": {
+      "functionLines": -1741,
+      "buttonCount": -32,
+      "conditionalRenderCount": -69,
+      "uniqueKoreanTokenCount": -63
+    }
+  },
+  "quality": {
+    "horizontalOverflowCount": 0,
+    "fixedOverlapCount": 0,
+    "unnamedVisibleInteractiveCount": 0,
+    "consolePageErrorCount": 0
+  },
+  "dataContract": {
+    "newStorageKeyCount": 0,
+    "schemaChangeCount": 0,
+    "migrationCount": 0,
+    "sourceMutationCount": 0,
+    "stableIdentityChangeCount": 0
+  }
+}
