@@ -1,0 +1,76 @@
+{
+  "generatedAt": "2026-07-27",
+  "verdict": "pass_local_final_gate",
+  "observedUserCount": 0,
+  "acceptance": [
+    {
+      "criterion": "R0 temporal first group",
+      "status": "complete",
+      "evidence": "full E2E and calendar journey cell"
+    },
+    {
+      "criterion": "R1 artifact preflight parity",
+      "status": "complete",
+      "evidence": "five preview and preflight count pairs"
+    },
+    {
+      "criterion": "R2 contextual item personalization",
+      "status": "complete",
+      "evidence": "keyboard item editor and projection regression"
+    },
+    {
+      "criterion": "R3 receipt workspace continuity",
+      "status": "complete",
+      "evidence": "single receipt action and focused workspace"
+    },
+    {
+      "criterion": "R4 shape-aware execution",
+      "status": "complete",
+      "evidence": "five execution-kind outcomes"
+    },
+    {
+      "criterion": "R5 memo result grammar",
+      "status": "complete",
+      "evidence": "memo preview, preflight, workspace cell"
+    },
+    {
+      "criterion": "R6 Calendar selected-day composition",
+      "status": "complete",
+      "evidence": "mobile sheet and wide inspector regressions"
+    },
+    {
+      "criterion": "five shapes x three sessions",
+      "status": "complete",
+      "evidence": "15/15 supported journey cells"
+    },
+    {
+      "criterion": "390, 1024, and 1440 quality gate",
+      "status": "complete",
+      "evidence": "16 screenshots and page-quality assertions"
+    },
+    {
+      "criterion": "docs, unit, build, targeted and full E2E",
+      "status": "complete",
+      "evidence": "docs 14/3294, 91 pretest, 590 unit, 6 R7, 381 full E2E, build pass"
+    },
+    {
+      "criterion": "current Preview direct interaction",
+      "status": "not_run",
+      "evidence": "current R7 state is uncommitted and no deploy was requested"
+    },
+    {
+      "criterion": "actual user observation",
+      "status": "not_run",
+      "evidence": "observed-user count 0"
+    }
+  ],
+  "publish": {
+    "localEdits": true,
+    "commit": false,
+    "push": false,
+    "pullRequest": false,
+    "merge": false,
+    "previewDeployment": false,
+    "productionDeployment": false
+  }
+}

@@ -1,0 +1,266 @@
+{
+  "url": "http://127.0.0.1:3104/f/moving-d30-basic",
+  "title": "이사 D-30 준비 | FlowMe",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "quality": {
+    "horizontalOverflow": 0,
+    "unnamedInteractiveCount": 0,
+    "brokenImageCount": 0
+  },
+  "headings": [
+    {
+      "level": 1,
+      "text": "이사 D-30 준비"
+    },
+    {
+      "level": 2,
+      "text": "캘린더 · 24개"
+    },
+    {
+      "level": 2,
+      "text": "이사 체크리스트 참고"
+    }
+  ],
+  "actions": [
+    {
+      "tag": "a",
+      "name": "FLOW",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "a",
+      "name": "이사 체크리스트 참고",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "이사 방식 정하기 내용과 날짜 수정 수정",
+      "testId": "public-flow-artifact-preview-row-edit",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "이사할 집 하자 점검하기 내용과 날짜 수정 수정",
+      "testId": "public-flow-artifact-preview-row-edit",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "필요 없는 물건 정리하기 내용과 날짜 수정 수정",
+      "testId": "public-flow-artifact-preview-row-edit",
+      "disabled": false
+    },
+    {
+      "tag": "summary",
+      "name": "나머지 21개 보기⌄",
+      "testId": "public-flow-artifact-preview-expand",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "이사/청소 업체 견적 받고 예약하기 내용과 날짜 수정 수정",
+      "testId": "public-flow-artifact-preview-row-edit",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "우편물/카드/은행 주소 변경하기 내용과 날짜 수정 수정",
+      "testId": "public-flow-artifact-preview-row-edit",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "정기 배달 서비스 중지 요청하기 내용과 날짜 수정 수정",
+      "testId": "public-flow-artifact-preview-row-edit",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "대형폐기물 배출 신고와 수거일 확인하기 내용과 날짜 수정 수정",
+      "testId": "public-flow-artifact-preview-row-edit",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "엘리베이터 또는 사다리차 사용 예약하기 내용과 날짜 수정 수정",
+      "testId": "public-flow-artifact-preview-row-edit",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "인터넷/정수기 이전 설치 예약하기 내용과 날짜 수정 수정",
+      "testId": "public-flow-artifact-preview-row-edit",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "도시가스 철거/설치 예약하기 내용과 날짜 수정 수정",
+      "testId": "public-flow-artifact-preview-row-edit",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "자동이체 해지 또는 변경 확인하기 내용과 날짜 수정 수정",
+      "testId": "public-flow-artifact-preview-row-edit",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "이사 당일 사용할 물건 따로 포장하기 내용과 날짜 수정 수정",
+      "testId": "public-flow-artifact-preview-row-edit",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "관리사무소에 이사 시간과 차량 동선 공유하기 내용과 날짜 수정 수정",
+      "testId": "public-flow-artifact-preview-row-edit",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "이사 업체와 일정 최종 확인하기 내용과 날짜 수정 수정",
+      "testId": "public-flow-artifact-preview-row-edit",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "이체 한도 증액 확인하기 내용과 날짜 수정 수정",
+      "testId": "public-flow-artifact-preview-row-edit",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "귀중품과 중요 서류 별도 보관하기 내용과 날짜 수정 수정",
+      "testId": "public-flow-artifact-preview-row-edit",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "냉장고 음식과 쓰레기 최종 정리하기 내용과 날짜 수정 수정",
+      "testId": "public-flow-artifact-preview-row-edit",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "전기/가스/수도/관리비 정산하기 내용과 날짜 수정 수정",
+      "testId": "public-flow-artifact-preview-row-edit",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "이삿짐 분실/파손 확인하기 내용과 날짜 수정 수정",
+      "testId": "public-flow-artifact-preview-row-edit",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "계량기와 집 상태 사진 남기기 내용과 날짜 수정 수정",
+      "testId": "public-flow-artifact-preview-row-edit",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "열쇠, 출입카드, 주차등록 인수인계하기 내용과 날짜 수정 수정",
+      "testId": "public-flow-artifact-preview-row-edit",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "전입신고와 확정일자 확인하기 내용과 날짜 수정 수정",
+      "testId": "public-flow-artifact-preview-row-edit",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "정부24 전입신고 처리 결과 확인하기 내용과 날짜 수정 수정",
+      "testId": "public-flow-artifact-preview-row-edit",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "임대차 계약 확정일자 부여 여부 확인하기 내용과 날짜 수정 수정",
+      "testId": "public-flow-artifact-preview-row-edit",
+      "disabled": false
+    },
+    {
+      "tag": "input",
+      "name": "이사일 이사일 2026-08-24",
+      "testId": "public-flow-anchor-input",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "Flow 조정",
+      "testId": "public-flow-adjust-entry-mobile",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "캘린더 24개로 시작",
+      "testId": "public-flow-save-primary-mobile",
+      "disabled": false
+    },
+    {
+      "tag": "summary",
+      "name": "Flow 가져가기필요할 때 열기",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "summary",
+      "name": "이 Flow 통째로 가져가기캘린더 · 일정 24개 · 캘린더 24개형식 보기접기",
+      "testId": "public-flow-export-secondary-toggle",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "내 버전: 이사 D-30 준비 내 버전",
+      "testId": "public-flow-editable-draft-action",
+      "disabled": false
+    },
+    {
+      "tag": "summary",
+      "name": "출처와 주의",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "summary",
+      "name": "원문과 근거이사 체크리스트 참고ajd.co.kr · 7월 11일 원문 확인 기록 · 5월 20일 Flow 정리 · 개별 원문 페이지열기",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "a",
+      "name": "원문 보기",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "캘린더 24개로 시작",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "a",
+      "name": "콘텐츠 더 보기",
+      "testId": "flow-public-secondary-browse-link",
+      "disabled": false
+    }
+  ],
+  "visibleText": "FLOW\n공유 화면\n\nFlow 미리보기\n이사\n\n이사 D-30 준비\n\n원문 · 이사 체크리스트 참고\n\n먼저 확인할 결과\n\n캘린더 · 24개\n\n7월 25일 - 8월 25일\n\n25\n(토)\n이사 방식 정하기\nD-30 큰 준비\n수정\n이사할 집 하자 점검하기\nD-30 큰 준비\n수정\n필요 없는 물건 정리하기\nD-30 큰 준비\n수정\n나머지 21개 보기\n⌄\n\n지난 할 일 4개(7/25)도 함께 저장돼요.\n\n이사일\n이사일: 8월 24일 (월) · 가까운 일정부터 시작합니다.\nFlow 조정\n캘린더 24개로 시작\nFlow 가져가기\n필요할 때 열기\n출처와 주의\n\nFlow 전체 · 24개 항목\n\n이사 D-30 준비\n\n캘린더 24개로 시작\n콘텐츠 더 보기",
+  "consoleAndPageErrors": [],
+  "label": "이사 Flow 저장 전 전체 결과",
+  "state": "public_result_ready",
+  "route": "/f/moving-d30-basic",
+  "reviewQuestions": [
+    "전체 결과가 먼저 읽히는가",
+    "저장과 외부 가져가기의 차이가 보이는가"
+  ]
+}

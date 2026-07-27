@@ -1,0 +1,297 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-27",
+  "reviewerRole": "codex_independent",
+  "observedUserCount": 0,
+  "target": {
+    "previewUrl": "https://flowme2605-n5o0dw81h-flowme.vercel.app",
+    "previewInteraction": "inaccessible",
+    "localCandidateBranch": "codex/p35-mece-ux-reset",
+    "baselineSha": "2c951633d13adb0aab3ddd9d3cdddf506d9e97cd",
+    "candidateState": "uncommitted_local_changes"
+  },
+  "evidenceBoundary": {
+    "localBrowser": "Built current source served locally and manipulated with isolated browser contexts. This is current_automated_test, not deployed Preview interaction.",
+    "screenshots": "Screenshots are current_package_screenshot, not observed-user evidence.",
+    "production": "P32 production was used only as production_comparison.",
+    "observedUsers": 0
+  },
+  "viewports": [
+    "390x844",
+    "1024x768"
+  ],
+  "journeys": [
+    {
+      "id": "J01",
+      "shape": "calendar_timeline",
+      "route": "/f/moving-d30-basic",
+      "sessions": {
+        "A": {
+          "status": "partial",
+          "verified": [
+            "24-row result-first preview",
+            "anchor-date entry",
+            "one-kind adjustment",
+            "saved receipt",
+            "public whole-flow export disclosure"
+          ],
+          "screenshots": [
+            "02-moving-public-local-390.png",
+            "03-moving-adjust-local-390.png",
+            "04-moving-receipt-local-390.png",
+            "12-moving-public-export-open-local-390.png",
+            "13-moving-public-export-formats-local-390.png",
+            "33-moving-public-local-1024.png"
+          ]
+        },
+        "B": {
+          "status": "partial",
+          "verified": [
+            "second post-save hub",
+            "24-row whole-flow outline",
+            "post-save item detail and edit",
+            "completion and reopen contract"
+          ],
+          "screenshots": [
+            "05-moving-my-flow-first-local-390.png",
+            "06-moving-item-detail-local-390.png",
+            "64-moving-workspace-local-1024.png"
+          ]
+        },
+        "C": {
+          "status": "partial",
+          "verified": [
+            "whole, selected, and current export contracts",
+            "reuse command remains in personal Flow management",
+            "source, personal, run, occurrence, and export identities remain separate"
+          ],
+          "evidenceKinds": [
+            "current_automated_test",
+            "current_source"
+          ]
+        }
+      }
+    },
+    {
+      "id": "J02",
+      "shape": "undated_checklist_todo",
+      "route": "/f/vehicle-inspection-prep",
+      "sessions": {
+        "A": {
+          "status": "partial",
+          "verified": [
+            "10-row undated checklist preview",
+            "save without date",
+            "receipt count and natural result label"
+          ],
+          "screenshots": [
+            "33-vehicle-public-local-390.png",
+            "33-vehicle-public-local-1024.png",
+            "34-vehicle-receipt-local-390.png"
+          ]
+        },
+        "B": {
+          "status": "supported",
+          "verified": [
+            "second post-save hub",
+            "completion with focused undo",
+            "title change",
+            "date placement",
+            "Calendar projection with changed title and date",
+            "reload persistence"
+          ],
+          "screenshots": [
+            "35-vehicle-post-save-local-390.png",
+            "36-vehicle-workspace-local-390.png",
+            "37-vehicle-complete-undo-local-390.png",
+            "38-vehicle-item-detail-local-390.png",
+            "39-vehicle-item-edited-local-390.png",
+            "40-vehicle-calendar-local-390.png",
+            "65-vehicle-workspace-local-1024.png"
+          ]
+        },
+        "C": {
+          "status": "supported",
+          "verified": [
+            "whole export count 10",
+            "selected export count 2",
+            "current-item export is available in Item detail"
+          ],
+          "screenshots": [
+            "41-vehicle-export-whole-local-390.png",
+            "42-vehicle-export-selected-local-390.png",
+            "38-vehicle-item-detail-local-390.png"
+          ]
+        }
+      }
+    },
+    {
+      "id": "J03",
+      "shape": "routine_occurrence",
+      "route": "/f/curated-allblanc-morning-workout",
+      "sessions": {
+        "A": {
+          "status": "partial",
+          "verified": [
+            "Monday, Wednesday, Friday schedule",
+            "07:30 time",
+            "15-minute duration",
+            "8-occurrence end condition",
+            "saved receipt"
+          ],
+          "screenshots": [
+            "43-workout-adjust-local-390.png",
+            "44-workout-receipt-local-390.png",
+            "33-workout-public-local-1024.png"
+          ],
+          "discontinuity": "When the start date is not explicitly committed, the preview shows a dated recurring result but the saved Flow and export become one undated item."
+        },
+        "B": {
+          "status": "partial",
+          "verified": [
+            "post-save hub",
+            "personal routine workspace",
+            "completion with focused undo",
+            "whole-plan row"
+          ],
+          "screenshots": [
+            "45-workout-post-save-local-390.png",
+            "46-workout-workspace-local-390.png",
+            "59-workout-default-receipt-local-390.png",
+            "60-workout-default-post-save-local-390.png",
+            "61-workout-default-workspace-local-390.png",
+            "62-workout-default-plan-local-390.png",
+            "66-workout-workspace-local-1024.png"
+          ]
+        },
+        "C": {
+          "status": "partial",
+          "verified": [
+            "Calendar projection for committed start date",
+            "whole export",
+            "record tab only exposes current-run summary when no event history exists"
+          ],
+          "screenshots": [
+            "47-workout-calendar-local-390.png",
+            "63-workout-default-export-local-390.png"
+          ]
+        }
+      }
+    },
+    {
+      "id": "J04",
+      "shape": "sheet_progress",
+      "route": "/f/source-backed-middle-school-math-1",
+      "sessions": {
+        "A": {
+          "status": "partial",
+          "verified": [
+            "8-row execution-table preview",
+            "save without date",
+            "receipt count and primary result label"
+          ],
+          "screenshots": [
+            "33-study-public-local-390.png",
+            "33-study-public-local-1024.png",
+            "49-study-receipt-local-390.png"
+          ]
+        },
+        "B": {
+          "status": "partial",
+          "verified": [
+            "second post-save hub",
+            "one-row next action",
+            "completion with focused undo",
+            "8-row whole plan"
+          ],
+          "screenshots": [
+            "50-study-post-save-local-390.png",
+            "51-study-workspace-local-390.png",
+            "52-study-plan-local-390.png",
+            "67-study-workspace-local-1024.png"
+          ]
+        },
+        "C": {
+          "status": "partial",
+          "verified": [
+            "whole Sheet export count 8",
+            "Calendar output disabled for zero dated rows",
+            "record tab exposes only a generic current-run summary"
+          ],
+          "screenshots": [
+            "53-study-export-local-390.png"
+          ]
+        }
+      }
+    },
+    {
+      "id": "J05",
+      "shape": "memo_guide",
+      "route": "/f/overseas-safety-register",
+      "sessions": {
+        "A": {
+          "status": "partial",
+          "verified": [
+            "4-row memo preview",
+            "save without synthetic date",
+            "official source remains visible"
+          ],
+          "screenshots": [
+            "33-guide-public-local-390.png",
+            "33-guide-public-local-1024.png",
+            "54-guide-receipt-local-390.png"
+          ]
+        },
+        "B": {
+          "status": "partial",
+          "verified": [
+            "second post-save hub",
+            "completion with focused undo",
+            "4-row whole plan"
+          ],
+          "screenshots": [
+            "55-guide-post-save-local-390.png",
+            "56-guide-workspace-local-390.png",
+            "57-guide-plan-local-390.png",
+            "68-guide-workspace-local-1024.png"
+          ]
+        },
+        "C": {
+          "status": "partial",
+          "verified": [
+            "whole memo export count 4",
+            "Calendar output disabled for zero dated rows",
+            "reload retained the saved Flow"
+          ],
+          "screenshots": [
+            "58-guide-export-local-390.png"
+          ]
+        }
+      }
+    }
+  ],
+  "additionalJourney": {
+    "id": "J05-DRAFT",
+    "shape": "memo_personal_draft",
+    "route": "/flows",
+    "status": "partial",
+    "verified": [
+      "memo split into 5 proposal rows",
+      "14 visible inputs after proposal",
+      "1541px document height at 390px",
+      "save and completion undo"
+    ],
+    "screenshots": [
+      "27-memo-draft-local-390.png",
+      "28-memo-post-save-local-390.png",
+      "29-completion-undo-local-390.png"
+    ]
+  },
+  "qualityChecks": {
+    "sampledHorizontalOverflow": 0,
+    "sampledUnnamedVisibleControls": 0,
+    "consoleOrPageErrors": [],
+    "targetedP35E2E": "30 passed",
+    "build": "passed"
+  }
+}

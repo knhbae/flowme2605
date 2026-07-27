@@ -1,0 +1,320 @@
+FlowMe P35-R7의 현재 로컬 구현을 독립적으로 검토해줘.
+
+이번 요청은 리뷰·시뮬레이션·피드백·제안 작업이다. 앱 코드를 먼저 수정하지 않는다.
+
+======================================================================
+1. 작업 위치와 현재 사실
+======================================================================
+
+검토 대상:
+D:\flowme2605\flow-p35-mece-ux-reset
+
+branch:
+codex/p35-mece-ux-reset
+
+기준 origin/main:
+2c951633d13adb0aab3ddd9d3cdddf506d9e97cd
+
+최신 검토 handoff:
+D:\flowme2605\flow-p35-mece-ux-reset\docs\content-audit\2026-07-28-p35-r7-codex-claude-code-independent-review-handoff
+
+최신 R7 final evidence:
+D:\flowme2605\flow-p35-mece-ux-reset\docs\content-audit\2026-07-27-p35-r7-bounded-revision-final-gate
+
+중요:
+- P35-R0~R7은 현재 큰 dirty worktree에 있는 미커밋 candidate다.
+- current R7 commit, push, PR, Vercel Preview, production deploy는 없다.
+- 과거 Preview와 production은 이 candidate를 나타내지 않는다.
+- 기존 dirty 파일을 reset, checkout, clean, revert, stage하지 않는다.
+- 앱 코드, dependency, 문서 상태를 수정하지 않는다.
+- commit, push, PR, merge, deploy를 하지 않는다.
+- 자동화, screenshot, fixture, agent simulation은 실제 사용자 검증이 아니다.
+- observed-user count는 0이다.
+
+작업 시작 시 다음을 기록한다.
+- git status --short --branch
+- HEAD
+- origin/main
+- 직접 열 수 있었던 자료
+- 열지 못한 자료
+
+======================================================================
+2. 반드시 읽을 자료
+======================================================================
+
+저장소 지침:
+1. AGENTS.md
+2. agent.md
+3. docs/PRODUCT_PRINCIPLES.md
+4. docs/SERVICE_STRUCTURE.md
+
+주의:
+docs/STATUS.md와 docs/SERVICE_STRUCTURE.md는 released P34 기준을 포함하며, 현재
+로컬 P35 candidate와 다를 수 있다. current source와 P35 spec/evidence를 우선하고
+차이를 finding으로 기록한다.
+
+검토 package:
+1. review.html
+2. README.md
+3. review-brief-ko.md
+4. review-checklist-ko.md
+5. review-context.json
+6. review-scenarios.json
+7. screenshot-index.md
+8. screenshot-catalog.json
+9. screenshot-manifest.json
+10. current-journeys/preview-manifest.json
+11. slice-reference-manifest.json
+12. review-response-template-ko.md
+
+Screenshot은 세 묶음으로 구분한다.
+- R7 final gate 16장: 현재 형태별·세션별 기준
+- 현재 상세 여정 18장: 같은 local production build에서 행동을 순서대로 재현
+- P35 단계 참고 37장: 이전 slice acceptance 참고이며 현재 UI의 정답은 아님
+
+GitHub에서 검토할 때는 다음 package를 사용한다.
+https://github.com/knhbae/flowme2605/tree/codex/p35-r7-review-handoff/docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff
+
+P35 정본:
+1. docs/specs/2026-07-26-flowme-mece-ux-reset/design-package.md
+2. docs/specs/2026-07-26-flowme-mece-ux-reset/p35-bounded-revision-developer-handoff-ko.md
+3. docs/content-audit/2026-07-27-p35-r7-bounded-revision-final-gate/README.md
+4. docs/content-audit/2026-07-27-p35-r7-bounded-revision-final-gate/audit.md
+5. docs/content-audit/2026-07-27-p35-r7-bounded-revision-final-gate/route-evidence.json
+6. docs/content-audit/2026-07-27-p35-r7-bounded-revision-final-gate/journey-scorecard.json
+
+핵심 source:
+1. components/flow/AppClient.tsx
+2. components/flow/FlowArtifactDataPreview.tsx
+3. components/flow/PublicFlowAdjustmentPanel.tsx
+4. components/flow/MyFlowCalendarSurface.tsx
+5. components/flow/FlowExportPanel.tsx
+6. components/flow/SavedFlowReceiptFrame.tsx
+7. lib/flow/my-flow-shape-aware-workspace.ts
+8. lib/flow/my-flow-workspace-presentation.ts
+9. lib/flow/artifact-plan.ts
+10. lib/flow/artifact-recommendation.ts
+
+핵심 E2E:
+1. tests/e2e/p35-r0-temporal-first-group.spec.ts
+2. tests/e2e/p35-r1-artifact-preflight-parity.spec.ts
+3. tests/e2e/p35-r2-contextual-item-personalization.spec.ts
+4. tests/e2e/p35-r3-receipt-workspace-continuity.spec.ts
+5. tests/e2e/p35-r4-shape-aware-workspace.spec.ts
+6. tests/e2e/p35-r5-memo-result-grammar.spec.ts
+7. tests/e2e/p35-r6-calendar-day-sheet.spec.ts
+8. tests/e2e/p35-r7-bounded-revision-final-gate.spec.ts
+
+======================================================================
+3. 제품 방향
+======================================================================
+
+FlowMe는 무거운 planner가 아니라 portable execution layer다.
+
+외부 URL 또는 개인 메모
+→ 실제 결과 미리보기
+→ 필요한 값만 최소 조정
+→ FlowMe에 저장하거나 익숙한 도구로 가져가기
+→ 실행·완료·다시 열기
+→ 수정·기록·재사용
+
+현재 P35 방향:
+- 전역 진입은 Flow 찾기 / 캘린더 / 내 Flow 3개
+- public Flow는 긴 설명보다 실제 결과 우선
+- 저장 전 조정은 한 번에 한 종류
+- My Flow는 library와 선택한 개인 Flow workspace 분리
+- Calendar는 날짜가 있는 여러 Flow의 cross-Flow lens
+- export는 범위 → 개수 → 형식 → 결과
+- Calendar, Checklist, Routine, Sheet, Memo는 콘텐츠별 자연스러운 projection
+
+아래 데이터 계약은 기본적으로 유지한다.
+- source / published Flow
+- personal structural/value overlay
+- execution run
+- recurrence series / occurrence
+- whole / selected / current export identity
+- 기존 localStorage schema
+
+UI 문제를 해결하기 위해 별도 임시 identity, count, 저장 경로를 만들지 않는다.
+
+======================================================================
+4. 검토 목표
+======================================================================
+
+자동 테스트가 통과했는지를 다시 요약하는 것이 목적이 아니다.
+
+다음을 독립적으로 판단한다.
+
+1. P35가 실제로 더 쉽고 직관적인가.
+2. 설명을 읽지 않아도 첫 행동과 저장 결과를 이해할 수 있는가.
+3. public preview와 저장 후 workspace가 같은 Flow의 연속된 상태처럼 보이는가.
+4. 다섯 형태가 서로 다른 콘텐츠 특성을 살리면서 같은 서비스 문법을 쓰는가.
+5. My Flow가 1개와 60개 Flow 모두에서 실서비스 수준인가.
+6. 현재 구성을 유지할지, 제한적으로 고칠지, 구조를 다시 열지.
+
+전체 verdict는 다음 중 하나로 선택한다.
+- retain
+- bounded_revision
+- structural_reopen
+- block_publish
+
+======================================================================
+5. Owner feedback 질문
+======================================================================
+
+F01. public preview와 저장 후 날짜 묶음의 UI가 너무 다른가?
+같은 row anatomy를 사용하고 checkbox를 오른쪽에 두는 대안을 비교해라.
+
+F02. 저장 완료 후 바로 Today 같은 중간 화면이 필요한가?
+저장한 전체 결과와 가장 가까운 실행 묶음을 한 workspace에서 보여주는 대안과
+비교해라.
+
+F03. Calendar형 Flow의 다음 할 일은 같은 날짜 항목을 한 번에 묶어 보여줘야 하는가?
+완료 후 다음 날짜 묶음으로 넘어가는 규칙까지 검토해라.
+
+F04. Flow 조정에서 제목, 상세, 날짜를 수정하는 현재 bounded edit가 충분한가?
+저장 전 full editor가 정말 필요한지 구분해라.
+
+F05. public preview에서 자연스러운 artifact와 외부 export를 함께 예측·실행할 수
+있어야 하는가?
+고정 5탭을 만들지 말고 primary 1개, secondary 최대 2개 원칙을 유지해라.
+
+F06. 되돌리기는 완료 후 항목이 현재 화면에서 사라질 때만 보여주는 것이 나은가?
+항목이 남으면 checkbox의 다시 열기로 충분한지 비교해라.
+
+F07. shape-aware 첫 실행 단위의 정체성이 여전히 모호한가?
+Calendar 날짜 묶음, Checklist 다음 항목, Routine 현재 회차, Sheet 현재/다음 행,
+Memo 실행 단위 없음이 설명 없이 이해되는지 검토해라.
+
+F08. 기록 영역이 완료 history, 단계 메모, 회고, 보류를 섞고 있는가?
+없으면 숨기고 필요하면 별도 문법으로 분리하는 대안을 제안해라.
+
+F09. 60개 Flow에서 찾기, 열기, 돌아가기, export, 관리가 쉬운가?
+
+F10. 기능은 존재하지만 설명 없이 찾기 어려운 hidden capability가 남았는가?
+
+각 항목을 다음 중 하나로 판정한다.
+- supported
+- partly_supported
+- rejected
+- needs_observation
+
+======================================================================
+6. 필수 시나리오
+======================================================================
+
+가능하면 로컬 production build를 사용한다. 로컬 실행이 불가능하면 package
+screenshot과 current source를 사용하고 evidenceKind=inaccessible을 명시한다.
+Vercel 접근 불가만으로 검토를 중단하지 않는다.
+
+Viewport:
+- 390x844
+- 1024x768
+- 1440x900
+
+대표 route:
+- Calendar: /f/moving-d30-basic
+- Checklist: /f/vehicle-inspection-prep
+- Routine: /f/curated-allblanc-morning-workout
+- Sheet: /f/source-backed-middle-school-math-1
+- Memo: /f/overseas-safety-register
+- Input composer: /flows
+- My Flow: /my
+- Calendar: /calendar
+- 60 Flow scale: /my?demo=ux60&view=flows
+
+각 shape에서 세 세션을 검토한다.
+
+Session 1:
+발견 → 실제 전체 결과 → 최소 입력 → 한 항목 조정 → 저장 또는 외부 가져가기
+
+Session 2:
+저장 receipt → 개인 Flow workspace → 첫 실행 묶음 → 완료 → 다시 열기
+
+Session 3:
+항목 수정 → Calendar/전체 계획 일치 → whole/selected/current export →
+기록·archive/restore·재사용
+
+추가 확인:
+- memo 입력이 여러 항목으로 분리된 뒤 전체가 표시되는지
+- source/personal/run/occurrence/export identity가 surface마다 같은지
+- mobile focus order와 bottom navigation
+- dialog/sheet Escape, focus trap, focus return
+- horizontal overflow, fixed overlap, console/page error
+
+======================================================================
+7. UX 평가 방식
+======================================================================
+
+각 화면에서 다음을 센다.
+- 첫 viewport의 competing primary action
+- 같은 대상에 대한 중복 control
+- 반복되는 card/section
+- 핵심 작업의 tap/click depth
+- 긴 설명 블록
+- unnamed visible interactive
+- overflow와 fixed overlap
+
+reference pattern은 공식 제품 자료를 우선한다.
+- Todoist / Things: Today와 project, contextual item detail
+- Google Calendar: month/day hierarchy, selected event detail
+- Notion: database row와 page detail, progressive property editing
+- Wanderlog: itinerary day grouping
+- Strava / Nike Training: series, current session, history separation
+
+화면을 복제하지 말고 adopt / adapt / reject로 판단한다.
+
+======================================================================
+8. Evidence 규칙
+======================================================================
+
+모든 finding에 하나 이상 붙인다.
+- current_source
+- current_local_production_build
+- current_browser_interaction
+- current_browser_automation
+- current_package_screenshot
+- current_automated_test
+- prior_artifact
+- reference_pattern
+- heuristic_simulation
+- inaccessible
+- observed_user
+
+observed_user는 실제 참여자가 수행한 세션에만 사용한다. 현재 수는 0이다.
+
+======================================================================
+9. 결과 형식
+======================================================================
+
+review-response-template-ko.md 순서를 사용한다.
+
+필수 결과:
+1. severity 순 findings
+2. 전체 verdict
+3. F01~F10 판정
+4. 다섯 shape x 세 session 판정
+5. 390 / 1024 / 1440 current-proposed 비교
+6. 최종 surface ownership
+7. keep / change / defer
+8. 데이터·migration 영향
+9. 다음 개발 프로그램과 첫 bounded slice
+10. 실제 사용자에게만 확인할 질문
+11. 앱 코드 무변경과 publish 상태
+
+finding마다 다음을 포함한다.
+- route
+- viewport
+- 재현 단계
+- 기대
+- 실제
+- 사용자 영향
+- evidenceKind
+- 제안
+- acceptance screenshot 또는 test marker
+
+Codex는 UX 판정과 함께 영향 파일, rollback, unit/E2E acceptance까지 제안한다.
+Claude Code는 source/data ownership, state transition, regression gap, 테스트의
+오탐·누락 가능성을 더 깊게 검토한다.
+
+둘 다 앱 코드는 수정하지 않는다. 검토 결과를 먼저 반환한다.

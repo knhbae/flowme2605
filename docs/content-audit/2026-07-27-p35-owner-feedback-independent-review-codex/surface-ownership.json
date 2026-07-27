@@ -1,0 +1,189 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-27",
+  "principle": "한 surface는 한 질문에 답하고, 같은 command는 하나의 canonical owner를 가진다.",
+  "surfaces": [
+    {
+      "id": "discovery",
+      "route": "/flows",
+      "question": "어떤 원문 또는 메모를 어떤 Flow로 쓸 수 있는가?",
+      "owns": [
+        "URL/메모 입력",
+        "기존 canonical Flow 찾기",
+        "정직한 memo proposal",
+        "source unavailable 상태"
+      ],
+      "doesNotOwn": [
+        "개인 실행 history",
+        "Calendar execution",
+        "Flow lifecycle"
+      ]
+    },
+    {
+      "id": "public_result",
+      "route": "/f/[slug]",
+      "question": "저장하거나 가져가면 실제로 무엇이 만들어지는가?",
+      "owns": [
+        "source와 전체 범위",
+        "primary artifact preview",
+        "eligible secondary artifact 최대 2개",
+        "최소 anchor",
+        "contextual Item title/detail/date proposal",
+        "FlowMe 저장 또는 외부 destination preflight"
+      ],
+      "doesNotOwn": [
+        "full structural editor",
+        "execution completion",
+        "run history"
+      ]
+    },
+    {
+      "id": "saved_receipt",
+      "route": "/f/[slug] 저장 완료 상태",
+      "question": "무엇이 정확히 저장됐는가?",
+      "owns": [
+        "저장 이름",
+        "전체 count",
+        "날짜 범위",
+        "source",
+        "저장한 전체 Flow 보기 primary"
+      ],
+      "doesNotOwn": [
+        "네 개 next-path 선택",
+        "실행",
+        "편집",
+        "export workbench"
+      ]
+    },
+    {
+      "id": "my_flow_library",
+      "route": "/my",
+      "question": "어느 개인 Flow를 열 것인가?",
+      "owns": [
+        "검색",
+        "lifecycle 상태 filter",
+        "Flow row summary",
+        "보관함 진입"
+      ],
+      "doesNotOwn": [
+        "inline completion",
+        "row별 export",
+        "Calendar execution",
+        "result-shape primary filter"
+      ]
+    },
+    {
+      "id": "personal_flow_workspace",
+      "route": "/my?selected=<flow>",
+      "question": "이 Flow에서 지금 무엇을 하고 전체 구조를 어떻게 관리하는가?",
+      "owns": [
+        "shape-aware execution unit",
+        "whole plan",
+        "completion/reopen",
+        "Item detail/edit/memo",
+        "selected/current export",
+        "Flow settings",
+        "archive/reuse"
+      ],
+      "doesNotOwn": [
+        "중복 저장 receipt",
+        "고정 next-action view",
+        "비어 있는 record tab"
+      ]
+    },
+    {
+      "id": "calendar",
+      "route": "/calendar",
+      "question": "날짜가 정해진 여러 Flow 항목이 언제 있는가?",
+      "owns": [
+        "dated item month lens",
+        "Flow scope",
+        "selected-day agenda",
+        "Flow 열기"
+      ],
+      "doesNotOwn": [
+        "undated queue",
+        "structural Item editor",
+        "Flow lifecycle",
+        "run reflection"
+      ]
+    },
+    {
+      "id": "progress_history",
+      "route": "personal Flow disclosure",
+      "question": "이 실행에서 어떤 상태 변화가 있었는가?",
+      "owns": [
+        "completion",
+        "reopen",
+        "skip",
+        "hold event timeline"
+      ],
+      "doesNotOwn": [
+        "Item memo",
+        "Flow progress summary",
+        "reuse command",
+        "export"
+      ]
+    }
+  ],
+  "commands": [
+    {
+      "action": "항목 제목·상세·날짜 저장 전 수정",
+      "ownerSurface": "public_result contextual Item sheet",
+      "otherSurfaceBehavior": "preview row는 수정 상태만 표시하고 source는 유지"
+    },
+    {
+      "action": "FlowMe 저장",
+      "ownerSurface": "public_result artifact preflight",
+      "otherSurfaceBehavior": "saved receipt는 결과만 확인"
+    },
+    {
+      "action": "외부 가져가기",
+      "ownerSurface": "public_result preflight 또는 personal_flow_workspace export",
+      "otherSurfaceBehavior": "public은 whole만, personal은 whole/selected/current"
+    },
+    {
+      "action": "전체 저장 결과 확인",
+      "ownerSurface": "personal_flow_workspace whole plan",
+      "otherSurfaceBehavior": "saved receipt는 count/date/source summary"
+    },
+    {
+      "action": "다음 실행",
+      "ownerSurface": "personal_flow_workspace shape-aware execution unit",
+      "otherSurfaceBehavior": "Calendar는 dated item에서 Flow를 여는 lens"
+    },
+    {
+      "action": "완료·다시 열기",
+      "ownerSurface": "personal_flow_workspace row와 Item detail",
+      "otherSurfaceBehavior": "Calendar는 같은 completion primitive를 사용하되 Flow identity 유지"
+    },
+    {
+      "action": "단계 메모",
+      "ownerSurface": "Item detail",
+      "otherSurfaceBehavior": "history에는 메모 본문을 복제하지 않음"
+    },
+    {
+      "action": "실행 기록",
+      "ownerSurface": "personal_flow_workspace 진행 기록 disclosure",
+      "otherSurfaceBehavior": "event가 없으면 숨김"
+    },
+    {
+      "action": "회고",
+      "ownerSurface": "완료된 execution run summary",
+      "otherSurfaceBehavior": "Item memo와 별도 저장"
+    },
+    {
+      "action": "새 실행으로 다시 쓰기",
+      "ownerSurface": "Flow 관리",
+      "otherSurfaceBehavior": "지난 run과 personal overlay 보존 preview"
+    }
+  ],
+  "dataContracts": {
+    "source": "unchanged",
+    "personalOverlay": "reuse",
+    "executionRun": "unchanged",
+    "occurrence": "unchanged",
+    "exportIdentity": "unchanged",
+    "migrationRequired": false
+  }
+}

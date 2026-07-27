@@ -1,0 +1,9 @@
+아래 공용 프롬프트를 그대로 읽고 FlowMe P35-R7을 독립 검토해줘.
+
+D:\flowme2605\flow-p35-mece-ux-reset\docs\content-audit\2026-07-28-p35-r7-codex-claude-code-independent-review-handoff\unified-review-prompt-ko.txt
+
+Codex 추가 관점:
+- current source와 screenshot을 대조해 UX finding을 severity 순으로 먼저 쓴다.
+- 제안한 변경마다 영향 파일, rollback 경계, unit/E2E/browser acceptance를 적는다.
+- 앱 코드를 수정하거나 commit/push/deploy하지 않는다.
+- 자동화를 실제 사용자 검증으로 표현하지 않는다.

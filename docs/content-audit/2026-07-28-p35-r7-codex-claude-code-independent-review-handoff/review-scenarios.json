@@ -1,0 +1,132 @@
+{
+  "generatedAt": "2026-07-28",
+  "observedUserCount": 0,
+  "method": "independent_agent_review_and_heuristic_simulation",
+  "sharedSessions": [
+    {
+      "id": "session_1",
+      "name": "발견과 저장 전 결과",
+      "steps": [
+        "Flow 찾기 또는 대표 public route로 진입한다.",
+        "첫 viewport에서 실제 결과 형태와 개수를 파악한다.",
+        "필요한 입력을 넣고 한 항목의 제목, 상세, 날짜를 조정한다.",
+        "FlowMe 저장과 외부 가져가기 결과를 비교한다."
+      ]
+    },
+    {
+      "id": "session_2",
+      "name": "저장과 첫 실행",
+      "steps": [
+        "FlowMe에 저장한다.",
+        "receipt에서 저장된 전체 결과와 다음 목적지를 이해한다.",
+        "개인 Flow workspace를 연다.",
+        "첫 실행 단위를 완료하고 필요하면 다시 연다."
+      ]
+    },
+    {
+      "id": "session_3",
+      "name": "수정, export, 기록, 재사용",
+      "steps": [
+        "항목 제목, 상세, 날짜 또는 개인 메모를 수정한다.",
+        "Calendar 또는 전체 계획에서 같은 effective item을 확인한다.",
+        "whole, selected, current 중 필요한 범위로 가져간다.",
+        "기록, archive/restore 또는 다시 쓰기 경로를 확인한다."
+      ]
+    }
+  ],
+  "personas": [
+    {
+      "id": "calendar_anchor",
+      "name": "이사일 기준 일정 사용자",
+      "route": "/f/moving-d30-basic",
+      "shape": "calendar",
+      "goal": "이사일 기준 24개 일정을 확인하고 같은 날짜 할 일을 묶어서 실행한다.",
+      "checks": [
+        "public 날짜 행과 saved 날짜 묶음의 visual anatomy",
+        "이사일 변경과 개인 고정 날짜 보존",
+        "같은 날짜 여러 항목의 완료와 다음 묶음 이동",
+        "24-event export count"
+      ]
+    },
+    {
+      "id": "undated_checklist",
+      "name": "날짜 없는 차량 점검 사용자",
+      "route": "/f/vehicle-inspection-prep",
+      "shape": "checklist",
+      "goal": "날짜 없이 시작하고 필요한 한 항목만 일정에 배치한다.",
+      "checks": [
+        "다음 미완료 항목의 발견성",
+        "날짜 없음에서 날짜 설정으로 가는 깊이",
+        "Calendar에 날짜 지정 항목만 나타나는지",
+        "완료 후 다시 열기와 즉시 undo의 역할"
+      ]
+    },
+    {
+      "id": "routine_occurrence",
+      "name": "반복 홈트 사용자",
+      "route": "/f/curated-allblanc-morning-workout",
+      "shape": "routine",
+      "goal": "반복 series를 설정하고 현재 회차만 실행한다.",
+      "checks": [
+        "series summary와 current occurrence의 구분",
+        "반복 설정의 progressive disclosure",
+        "한 회차 완료가 series를 끝내지 않는지",
+        "Calendar와 workspace가 같은 occurrence를 가리키는지"
+      ]
+    },
+    {
+      "id": "ordered_sheet",
+      "name": "순서형 학습 사용자",
+      "route": "/f/source-backed-middle-school-math-1",
+      "shape": "sheet",
+      "goal": "현재 행과 다음 행을 파악하고 순서가 보존된 시트를 가져간다.",
+      "checks": [
+        "현재/다음 행의 우선순위",
+        "전체 계획과 첫 실행 단위의 중복",
+        "8-row preflight와 export parity",
+        "날짜 없는 학습 Flow에 Calendar가 강요되지 않는지"
+      ]
+    },
+    {
+      "id": "memo_reference",
+      "name": "해외 안전 메모 사용자",
+      "route": "/f/overseas-safety-register",
+      "shape": "memo",
+      "goal": "실행 체크리스트가 아닌 기록을 보존하고 필요한 형식으로 가져간다.",
+      "checks": [
+        "가짜 next action이나 완료 checkbox가 없는지",
+        "4-record memo preflight",
+        "source와 개인 메모 구분",
+        "기록 영역이 빈 탭이나 generic history를 만들지 않는지"
+      ]
+    },
+    {
+      "id": "personal_memo_draft",
+      "name": "개인 메모 초안 사용자",
+      "route": "/flows",
+      "shape": "personal_draft",
+      "goal": "여러 문장을 실제 항목으로 나누고 저장 전 수정한 뒤 개인 Flow로 쓴다.",
+      "checks": [
+        "raw input 보존",
+        "분리된 모든 항목 표시",
+        "제목, 상세, 날짜의 bounded edit",
+        "추가, 삭제, 복구, 순서 변경의 발견성",
+        "export에 effective items 전체 포함"
+      ]
+    },
+    {
+      "id": "large_library",
+      "name": "60개 Flow를 가진 반복 사용자",
+      "route": "/my?demo=ux60&view=flows",
+      "shape": "scale",
+      "goal": "필요한 Flow를 빠르게 찾아 열고 다시 목록 맥락으로 돌아온다.",
+      "checks": [
+        "검색과 필터",
+        "row density와 visible command 수",
+        "selected workspace의 object identity",
+        "back navigation과 scroll 보존",
+        "archive, export, manage command의 위계"
+      ]
+    }
+  ]
+}

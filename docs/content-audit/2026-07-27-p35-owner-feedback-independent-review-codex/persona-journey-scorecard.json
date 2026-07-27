@@ -1,0 +1,357 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-27",
+  "observedUserCount": 0,
+  "statusValues": [
+    "supported",
+    "hidden",
+    "partial",
+    "missing",
+    "blocked",
+    "inaccessible"
+  ],
+  "journeys": [
+    {
+      "id": "J01",
+      "persona": "기준일 역산형 이사 사용자",
+      "flowShape": "calendar_timeline",
+      "route": "/f/moving-d30-basic",
+      "overallStatus": "partial",
+      "completionPossible": true,
+      "sessions": [
+        {
+          "id": "A",
+          "goal": "발견 -> 전체 결과 -> 조정 -> 저장 또는 외부 가져가기",
+          "status": "partial",
+          "actionCount": {
+            "firstUsefulPreviewRequiredInputs": 0,
+            "basicSave": "기준일 입력 + 저장",
+            "adjustedSave": "조정 열기, kind 선택, 값 변경, 적용, 저장"
+          },
+          "supported": [
+            "24개 실제 결과 우선",
+            "기준일과 포함 수 변경",
+            "저장 count/date 반영"
+          ],
+          "gap": [
+            "개별 title/detail/date 수정 없음",
+            "checklist preview와 external format 불일치"
+          ]
+        },
+        {
+          "id": "B",
+          "goal": "receipt -> 전체 저장 결과 -> 실행 -> 완료/다시 열기",
+          "status": "partial",
+          "supported": [
+            "저장된 24개 전체 outline",
+            "completion undo와 focus return",
+            "저장 후 Item editor"
+          ],
+          "gap": [
+            "receipt가 두 번 나타남",
+            "4개 next command 경쟁",
+            "same-date next group 대신 한 row"
+          ]
+        },
+        {
+          "id": "C",
+          "goal": "기록 -> export -> 새 실행으로 다시 쓰기",
+          "status": "partial",
+          "supported": [
+            "whole/selected/current export 계약",
+            "reuse command와 기존 기록 보존 계약"
+          ],
+          "gap": [
+            "기록 탭의 목적 불명확",
+            "Preview interaction inaccessible"
+          ]
+        }
+      ],
+      "understandableWithoutExplanation": "partial",
+      "proposedDifference": "다음 날짜의 미완료 항목 묶음, 짧은 receipt, artifact와 export의 동일 이름/count",
+      "observedUserQuestion": "저장 직후 전체 일정과 가장 가까운 날짜 묶음 중 어느 것을 먼저 확인하는가?",
+      "directEvidence": [
+        "02-moving-public-local-390.png",
+        "03-moving-adjust-local-390.png",
+        "04-moving-receipt-local-390.png",
+        "05-moving-my-flow-first-local-390.png",
+        "06-moving-item-detail-local-390.png",
+        "64-moving-workspace-local-1024.png"
+      ]
+    },
+    {
+      "id": "J02",
+      "persona": "날짜 없는 차량 점검 사용자",
+      "flowShape": "undated_checklist_todo",
+      "route": "/f/vehicle-inspection-prep",
+      "overallStatus": "partial",
+      "completionPossible": true,
+      "sessions": [
+        {
+          "id": "A",
+          "goal": "10개 checklist 확인 -> 날짜 없이 저장/가져가기",
+          "status": "partial",
+          "supported": [
+            "날짜 입력 강제 없음",
+            "체크리스트 10개 preview",
+            "날짜 없는 상태 유지"
+          ],
+          "gap": [
+            "Todo/checklist external destination preflight 불명확",
+            "저장 전 Item contextual edit 없음"
+          ]
+        },
+        {
+          "id": "B",
+          "goal": "My Flow 실행 -> 일부 날짜 배치 -> 완료/다시 열기",
+          "status": "supported",
+          "supported": [
+            "날짜 편집과 제거",
+            "날짜가 생긴 항목의 Calendar projection",
+            "완료와 reopen"
+          ],
+          "gap": [
+            "다음 행동이 한 항목으로만 표현됨"
+          ]
+        },
+        {
+          "id": "C",
+          "goal": "export -> reload -> 재사용",
+          "status": "supported",
+          "supported": [
+            "undated item은 My Flow에 유지",
+            "scope/count 계약",
+            "whole 10개, selected 2개, current 1개 범위 확인",
+            "제목과 날짜를 새로고침 뒤에도 유지"
+          ],
+          "gap": [
+            "public preflight와 personal export의 용어 차이"
+          ]
+        }
+      ],
+      "understandableWithoutExplanation": "partial",
+      "proposedDifference": "남은 할 일 1-3개와 전체 checklist를 같은 frame에 표시하고 Calendar는 날짜가 생긴 항목만 소유",
+      "observedUserQuestion": "날짜 없는 checklist에서 사용자는 다음 1-3개 추천과 전체 목록 중 무엇을 선호하는가?",
+      "directEvidence": [
+        "34-vehicle-receipt-local-390.png",
+        "35-vehicle-post-save-local-390.png",
+        "37-vehicle-complete-undo-local-390.png",
+        "39-vehicle-item-edited-local-390.png",
+        "40-vehicle-calendar-local-390.png",
+        "41-vehicle-export-whole-local-390.png",
+        "42-vehicle-export-selected-local-390.png",
+        "65-vehicle-workspace-local-1024.png"
+      ]
+    },
+    {
+      "id": "J03",
+      "persona": "반복 홈트 사용자",
+      "flowShape": "routine_occurrence",
+      "route": "/f/curated-allblanc-morning-workout",
+      "overallStatus": "partial",
+      "completionPossible": true,
+      "sessions": [
+        {
+          "id": "A",
+          "goal": "반복 summary -> 조정 -> 저장/Calendar",
+          "status": "partial",
+          "supported": [
+            "요일, 시간, duration, 종료의 compact summary",
+            "한 종류 routine adjustment",
+            "result-first",
+            "월·수·금, 07:30, 15분, 8회 설정"
+          ],
+          "gap": [
+            "resource와 execution Item의 시각 구분이 약함",
+            "시작일을 확정하지 않으면 미리보기의 날짜 있는 반복 결과가 저장 후 날짜 없는 1개 항목으로 바뀜"
+          ]
+        },
+        {
+          "id": "B",
+          "goal": "이번 회차 실행 -> 완료/재개",
+          "status": "partial",
+          "supported": [
+            "series/occurrence 데이터 계약",
+            "Calendar occurrence projection"
+          ],
+          "gap": [
+            "모바일은 일반 다음 행동 탭",
+            "완료 fixture에서 남은 할 일 없음으로 축약되어 occurrence hierarchy가 숨음"
+          ]
+        },
+        {
+          "id": "C",
+          "goal": "history -> 재사용",
+          "status": "partial",
+          "supported": [
+            "새 실행으로 다시 쓰기",
+            "기록 보존 계약"
+          ],
+          "gap": [
+            "기록 탭이 occurrence history와 run reflection을 구분하지 않음"
+          ]
+        }
+      ],
+      "understandableWithoutExplanation": "partial",
+      "proposedDifference": "이번 회차를 primary unit으로, series summary를 보조로, history는 event가 있을 때만 표시",
+      "observedUserQuestion": "routine 사용자는 이번 회차와 다음 3회 중 무엇을 첫 화면에서 먼저 찾는가?",
+      "directEvidence": [
+        "43-workout-adjust-local-390.png",
+        "44-workout-receipt-local-390.png",
+        "45-workout-post-save-local-390.png",
+        "46-workout-workspace-local-390.png",
+        "47-workout-calendar-local-390.png",
+        "63-workout-default-export-local-390.png",
+        "66-workout-workspace-local-1024.png"
+      ]
+    },
+    {
+      "id": "J04",
+      "persona": "순서·진도형 학습 사용자",
+      "flowShape": "sheet_progress",
+      "route": "/f/source-backed-middle-school-math-1",
+      "overallStatus": "partial",
+      "completionPossible": true,
+      "sessions": [
+        {
+          "id": "A",
+          "goal": "8개 진도표 확인 -> 저장/Sheet",
+          "status": "partial",
+          "supported": [
+            "실행표 8개를 natural artifact로 표시",
+            "날짜 강제 없음"
+          ],
+          "gap": [
+            "저장 전 단원 detail/date 편집 없음",
+            "Sheet preflight와 손실 설명이 약함"
+          ]
+        },
+        {
+          "id": "B",
+          "goal": "현재 단원 실행 -> 메모 -> 완료",
+          "status": "partial",
+          "supported": [
+            "Item detail memo와 quick edit",
+            "전체 progress"
+          ],
+          "gap": [
+            "현재 단원 대신 다음 행동이라는 추상 label",
+            "모바일 plan과 wide plan의 semantic order 차이"
+          ]
+        },
+        {
+          "id": "C",
+          "goal": "selected Sheet export -> 진행 기록",
+          "status": "partial",
+          "supported": [
+            "selected scope와 count",
+            "sheet rows export"
+          ],
+          "gap": [
+            "기록과 Item memo의 소유권 불명확"
+          ]
+        }
+      ],
+      "understandableWithoutExplanation": "partial",
+      "proposedDifference": "현재 단원 + 다음 단원, 전체 8개 진도표, selected Sheet export를 한 object hierarchy로 연결",
+      "observedUserQuestion": "학습 진도형 Flow에서 현재 단원과 전체 진도표 중 어느 것이 재방문 primary인가?",
+      "directEvidence": [
+        "49-study-receipt-local-390.png",
+        "50-study-post-save-local-390.png",
+        "51-study-workspace-local-390.png",
+        "52-study-plan-local-390.png",
+        "53-study-export-local-390.png",
+        "67-study-workspace-local-1024.png"
+      ]
+    },
+    {
+      "id": "J05",
+      "persona": "안전정보 Memo/Guide 사용자",
+      "flowShape": "memo_guide",
+      "route": "/f/overseas-safety-register",
+      "overallStatus": "partial",
+      "completionPossible": true,
+      "sessions": [
+        {
+          "id": "A",
+          "goal": "공식 안내 -> 4개 Memo 결과 -> 저장/가져가기",
+          "status": "partial",
+          "supported": [
+            "공식 source와 4개 실행 항목을 함께 표시",
+            "날짜를 억지로 만들지 않음",
+            "Memo를 natural primary artifact로 표시"
+          ],
+          "gap": [
+            "저장 전 Item contextual edit 없음",
+            "Memo preview와 external preflight의 표현 문법 차이"
+          ]
+        },
+        {
+          "id": "B",
+          "goal": "receipt -> 전체 Flow -> Item 수정/완료",
+          "status": "partial",
+          "supported": [
+            "4개 전체 outline",
+            "completion undo"
+          ],
+          "gap": [
+            "두 번째 receipt와 4개 command",
+            "첫 할 일 시작 sheet 안에 completion control 없음"
+          ]
+        },
+        {
+          "id": "C",
+          "goal": "Memo export -> reload -> 회고/재사용",
+          "status": "partial",
+          "supported": [
+            "whole Memo 4개 export",
+            "날짜 없는 항목의 Calendar 비활성 이유",
+            "reload 뒤 개인 Flow 유지"
+          ],
+          "gap": [
+            "고정 기록 탭의 의미 불명확",
+            "외부로만 가져간 사용자의 재방문 가치 미검증"
+          ]
+        }
+      ],
+      "understandableWithoutExplanation": "partial",
+      "proposedDifference": "Memo 4개와 source를 유지하면서 contextual edit, Memo export preflight, 개인 Flow 실행을 한 hierarchy로 연결",
+      "observedUserQuestion": "안전 Guide 사용자는 Memo 복사와 FlowMe 내 체크 실행 중 무엇을 우선하는가?",
+      "directEvidence": [
+        "54-guide-receipt-local-390.png",
+        "55-guide-post-save-local-390.png",
+        "56-guide-workspace-local-390.png",
+        "57-guide-plan-local-390.png",
+        "58-guide-export-local-390.png",
+        "68-guide-workspace-local-1024.png"
+      ]
+    }
+  ],
+  "additionalRouteCheck": {
+    "id": "J05-DRAFT",
+    "persona": "메모 개인 초안 사용자",
+    "flowShape": "memo_personal_draft",
+    "route": "/flows",
+    "status": "partial",
+    "metrics": {
+      "firstUsefulPreviewRequiredInputs": 1,
+      "visibleInputCountAfterProposal": 14,
+      "documentHeightAt390": 1541
+    },
+    "supported": [
+      "입력 문장을 5개 proposal로 정직하게 분할",
+      "가짜 source 또는 live AI 결과 없음",
+      "저장 후 Item 수정과 완료 undo"
+    ],
+    "gap": [
+      "5개 제목 field가 모두 펼쳐짐",
+      "artifact preflight와 외부 가져가기 없음",
+      "source-backed public Flow와 다른 문법"
+    ],
+    "directEvidence": [
+      "27-memo-draft-local-390.png",
+      "28-memo-post-save-local-390.png",
+      "29-completion-undo-local-390.png"
+    ]
+  }
+}

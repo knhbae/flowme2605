@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-27T23:49:04.916Z",
+  "observedUserCount": 0,
+  "totalScreenshotCount": 71,
+  "categories": [
+    {
+      "id": "r7_final_gate",
+      "evidenceKind": "current_package_screenshot",
+      "count": 16,
+      "manifest": "screenshot-manifest.json"
+    },
+    {
+      "id": "current_detailed_journeys",
+      "evidenceKind": "current_local_browser_capture",
+      "count": 18,
+      "manifest": "current-journeys/preview-manifest.json"
+    },
+    {
+      "id": "prior_p35_slice_references",
+      "evidenceKind": "prior_p35_slice_screenshot",
+      "count": 37,
+      "manifest": "slice-reference-manifest.json"
+    }
+  ],
+  "quality": {
+    "currentJourneyCaptureFailureCount": 0,
+    "currentJourneyHorizontalOverflowCount": 0,
+    "currentJourneyUnnamedInteractiveCount": 0,
+    "currentJourneyBrokenImageCount": 0,
+    "currentJourneyConsoleAndPageErrorCount": 0
+  }
+}
