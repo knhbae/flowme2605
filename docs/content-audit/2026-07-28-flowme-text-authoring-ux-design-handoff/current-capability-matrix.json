@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "flowme-text-authoring-current-capability-v1",
+  "evidenceBoundary": "repository evidence and deterministic tests, not observed-user validation",
+  "capabilities": [
+    {
+      "capability": "plain_memo_segmentation",
+      "status": "supported_deterministic",
+      "evidence": "tests/e2e/p26-memo-segmentation.spec.ts"
+    },
+    {
+      "capability": "item_merge_split_reorder",
+      "status": "supported_in_personal_draft_fixture",
+      "evidence": "tests/e2e/p26-memo-segmentation.spec.ts"
+    },
+    {
+      "capability": "title_and_include_exclude_edit",
+      "status": "supported_in_personal_draft_fixture",
+      "evidence": "tests/e2e/p26-memo-segmentation.spec.ts"
+    },
+    {
+      "capability": "markdown_round_trip",
+      "status": "partial",
+      "evidence": "existing Markdown exports; no general Markdown authoring contract"
+    },
+    {
+      "capability": "table_import",
+      "status": "prototype_only",
+      "evidence": "docs/specs/2026-07-20-flowme-input-composer-lab-v1"
+    },
+    {
+      "capability": "url_source_import",
+      "status": "gated_or_fixture",
+      "evidence": "URL lookup and source-import-required contracts; no general crawler"
+    },
+    {
+      "capability": "live_ai_structure_detection",
+      "status": "missing",
+      "evidence": "production provider lane not approved"
+    },
+    {
+      "capability": "creator_draft_publish_editor",
+      "status": "missing_or_gated",
+      "evidence": "creator publish contracts only"
+    },
+    {
+      "capability": "open_wiki_editing",
+      "status": "rejected_for_current_stage",
+      "evidence": "initial participation model and docs/IDEAS.md"
+    },
+    {
+      "capability": "personal_draft_local_persistence",
+      "status": "supported_local",
+      "evidence": "personal draft storage and E2E"
+    }
+  ]
+}

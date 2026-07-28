@@ -1,0 +1,7 @@
+"item_id","flow","step","title","schedule","status","source_url"
+"fitpet-vaccine-1-item","강아지 생후 6~16주 예방접종 일정","생후 6주","생후 6주 1차 접종","{""type"":""source_age_week"",""week"":6}","not_started","https://www.fitpetmall.com/blog/dog-vaccinations"
+"fitpet-vaccine-2-item","강아지 생후 6~16주 예방접종 일정","생후 8주","생후 8주 2차 접종","{""type"":""source_age_week"",""week"":8}","not_started","https://www.fitpetmall.com/blog/dog-vaccinations"
+"fitpet-vaccine-3-item","강아지 생후 6~16주 예방접종 일정","생후 10주","생후 10주 3차 접종","{""type"":""source_age_week"",""week"":10}","not_started","https://www.fitpetmall.com/blog/dog-vaccinations"
+"fitpet-vaccine-4-item","강아지 생후 6~16주 예방접종 일정","생후 12주","생후 12주 4차 접종","{""type"":""source_age_week"",""week"":12}","not_started","https://www.fitpetmall.com/blog/dog-vaccinations"
+"fitpet-vaccine-5-item","강아지 생후 6~16주 예방접종 일정","생후 14주","생후 14주 5차 접종","{""type"":""source_age_week"",""week"":14}","not_started","https://www.fitpetmall.com/blog/dog-vaccinations"
+"fitpet-vaccine-6-item","강아지 생후 6~16주 예방접종 일정","생후 16주","생후 16주 6차 접종","{""type"":""source_age_week"",""week"":16}","not_started","https://www.fitpetmall.com/blog/dog-vaccinations"
