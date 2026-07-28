@@ -1,0 +1,117 @@
+FlowMe의 실제 콘텐츠와 canonical 데이터 계약을 근거로, Wiki·Obsidian처럼 텍스트를
+작성하거나 붙여넣어 Flow 콘텐츠를 만드는 사용자 경험을 설계해줘.
+
+이번 작업은 UX 기획, wireflow, interactive prototype, 기술 handoff 작업이다.
+앱 코드를 수정하지 않는다.
+
+먼저 아래 자료를 순서대로 읽는다.
+
+1. 전체 목표
+https://github.com/knhbae/flowme2605/blob/codex/text-authoring-ux-design-handoff-20260728/docs/content-audit/2026-07-28-flowme-text-authoring-ux-design-goal-ko.md
+
+2. Handoff README
+https://github.com/knhbae/flowme2605/blob/codex/text-authoring-ux-design-handoff-20260728/docs/content-audit/2026-07-28-flowme-text-authoring-ux-design-handoff/README.md
+
+3. Evidence index
+https://github.com/knhbae/flowme2605/blob/codex/text-authoring-ux-design-handoff-20260728/docs/content-audit/2026-07-28-flowme-text-authoring-ux-design-handoff/evidence-index.md
+
+4. 실제 콘텐츠 corpus
+https://github.com/knhbae/flowme2605/blob/codex/text-authoring-ux-design-handoff-20260728/docs/content-audit/2026-07-28-flowme-text-authoring-ux-design-handoff/content-corpus-index.md
+
+5. Source-to-text-to-Flow 예시
+https://github.com/knhbae/flowme2605/blob/codex/text-authoring-ux-design-handoff-20260728/docs/content-audit/2026-07-28-flowme-text-authoring-ux-design-handoff/source-to-text-to-flow-examples.md
+
+6. 제품 경계와 용어
+https://github.com/knhbae/flowme2605/blob/codex/text-authoring-ux-design-handoff-20260728/docs/content-audit/2026-07-28-flowme-text-authoring-ux-design-handoff/product-boundary.md
+https://github.com/knhbae/flowme2605/blob/codex/text-authoring-ux-design-handoff-20260728/docs/content-audit/2026-07-28-flowme-text-authoring-ux-design-handoff/terminology-ko.md
+
+7. 응답 템플릿
+https://github.com/knhbae/flowme2605/blob/codex/text-authoring-ux-design-handoff-20260728/docs/content-audit/2026-07-28-flowme-text-authoring-ux-design-handoff/response-template-ko.md
+
+핵심 질문:
+
+사용자가 일반 메모, Markdown, Obsidian 문서, 표를 가장 가볍게 입력하고,
+FlowMe가 해석한 Flow/Step/Item과 실제 Calendar, Todo, Sheet, Memo 결과를 먼저
+확인한 뒤 잘못 해석된 부분만 고칠 수 있는가?
+
+반드시 비교할 대안:
+
+A. Markdown-first split editor
+B. Block/outline editor
+C. Text composer + structured Flow/artifact preview
+
+하나를 미리 정답으로 가정하지 않는다. 실제 8개 콘텐츠 사례에서 첫 useful preview까지
+필요한 입력, 전용 문법 학습량, 구조 수정 행동 수, 의미 손실, 모바일 복잡도,
+source provenance, round-trip 가능성을 비교한다.
+
+반드시 사용할 사례:
+
+1. 이사 D-30
+2. 날짜 없는 차량 점검
+3. Allblanc 운동
+4. K-MOOC 14주
+5. LibriVox 38장
+6. 신차 구매 8단계
+7. 해외여행 안전정보
+8. 개인 제주 여행 메모
+
+반드시 분리할 write path:
+
+- source snapshot
+- creator draft
+- published Flow
+- personal draft와 personal overlay
+- execution run
+- recurrence series와 occurrence
+- export identity와 receipt
+- canonical correction suggestion
+
+Claude Design 역할:
+
+- 앱 코드를 수정하지 않는다.
+- 390x844, 1024x768, 핵심 1440x900 current/proposed wireflow를 만든다.
+- 실제 텍스트, 해석된 outline, actual artifact를 화면에서 함께 비교한다.
+- source-derived 값과 user-authored 값을 구분한다.
+- parsing, partial, unsupported, conflict, save, export, recovery 상태를 포함한다.
+- 8개 사례를 전환하고 입력·구조 수정·artifact 확인·저장·내보내기를 조작할 수 있는
+  standalone 한국어 HTML을 만든다.
+- 긴 설명, 중첩 카드, 고정된 다섯 artifact tab으로 문제를 덮지 않는다.
+
+Codex 또는 Claude Code 역할:
+
+- current source와 evidence snapshot을 구분한다.
+- canonical Item, Step grouping, projection, ownership 계약을 대조한다.
+- 디자인 제안을 현재 계약으로 가능한 것과 선행 계약이 필요한 것으로 나눈다.
+- migration, persistence, accessibility, recovery, testing, rollback 영향을 기록한다.
+- 이번 planning lane에서 앱 runtime을 수정하지 않는다.
+
+금지:
+
+- 범용 Wiki, Notion, Obsidian clone
+- open wiki가 published Flow를 직접 덮어쓰기
+- source에서 없는 Item·날짜·반복 발명
+- 모든 콘텐츠를 Todo나 Calendar로 강제
+- 실제 AI/crawler가 없는 상태를 live generation처럼 표현
+- 자동화와 agent simulation을 실제 사용자 검증으로 표현
+- account, DB, cloud sync, OAuth 구현
+- app code, dependency, STATUS, ROADMAP 수정
+- commit, push, PR, merge, deploy
+
+최종 산출물:
+
+1. 전체 판정
+2. current authoring audit
+3. 8개 사례 source -> text -> Flow/Step/Item -> artifact mapping
+4. A/B/C 대안 비교
+5. 권장 text grammar와 unsupported 경계
+6. creator/personal/suggestion ownership
+7. 전체 state model
+8. 390px, 1024px, 1440px wireflow
+9. standalone interactive prototype
+10. Keep / Change / Remove / Defer
+11. 데이터 계약, migration, 회귀 위험
+12. 구현 가능한 4~7개 slice
+13. 첫 구현 slice의 상세 목표
+14. 실제 사용자에게만 확인 가능한 질문 최대 5개
+
+observed-user count는 0으로 기록한다.

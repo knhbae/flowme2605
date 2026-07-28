@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "flowme-text-authoring-corpus-index-v1",
+  "evidenceKind": "local_uncommitted_snapshot",
+  "observedUserCount": 0,
+  "qualifiedCorpus": [
+    {
+      "id": "bundle-moving-d30",
+      "title": "이사 D-30 체크리스트",
+      "primary": "calendar",
+      "secondary": ["checklist"],
+      "flows": 1,
+      "steps": 6,
+      "items": 27,
+      "datedItems": 27
+    },
+    {
+      "id": "bundle-baby-food-174",
+      "title": "초기 이유식 D+174~209 식단",
+      "primary": "calendar",
+      "secondary": ["checklist", "sheet"],
+      "flows": 1,
+      "steps": 12,
+      "items": 36,
+      "datedItems": 36
+    },
+    {
+      "id": "bundle-opic-plan",
+      "title": "오픽 모의고사 계획표",
+      "primary": "sheet",
+      "secondary": ["calendar", "checklist"],
+      "flows": 2,
+      "steps": 7,
+      "items": 42,
+      "datedItems": 42
+    },
+    {
+      "id": "bundle-opentutorials-web1-progress",
+      "title": "생활코딩 WEB1 진도표",
+      "primary": "sheet",
+      "secondary": ["checklist"],
+      "flows": 1,
+      "steps": 1,
+      "items": 26,
+      "datedItems": 0
+    },
+    {
+      "id": "bundle-new-car-comparison",
+      "title": "신차 구매 8단계",
+      "primary": "checklist",
+      "secondary": ["sheet", "memo"],
+      "flows": 1,
+      "steps": 8,
+      "items": 14,
+      "datedItems": 0
+    },
+    {
+      "id": "bundle-allblanc-7day-abs",
+      "title": "Allblanc 7일 복근 챌린지",
+      "primary": "calendar",
+      "secondary": ["checklist"],
+      "flows": 7,
+      "steps": 7,
+      "items": 7,
+      "datedItems": 7
+    },
+    {
+      "id": "bundle-wtable-summer-banchan-five",
+      "title": "이번 주 여름 반찬 5가지",
+      "primary": "checklist",
+      "secondary": ["memo"],
+      "flows": 5,
+      "steps": 5,
+      "items": 5,
+      "datedItems": 0
+    },
+    {
+      "id": "bundle-andstudio-job-prep-videos",
+      "title": "AND 취업 준비 영상 3편",
+      "primary": "todo",
+      "secondary": ["memo"],
+      "flows": 3,
+      "steps": 3,
+      "items": 3,
+      "datedItems": 0
+    }
+  ],
+  "authoringBenchmarks": [
+    "moving-relative-date",
+    "vehicle-undated-checklist",
+    "workout-recurrence-resource",
+    "kmooc-14-row-progress",
+    "librivox-38-row-resource-queue",
+    "new-car-decision-record",
+    "overseas-safety-guide",
+    "personal-jeju-travel-memo"
+  ]
+}

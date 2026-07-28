@@ -1,0 +1,44 @@
+# 오픽 모의고사 계획표 · Todo
+
+- 1회 모의고사 실전처럼 풀기 <!-- bundle-opic-plan-2w-w1-월 -->
+- 2회 모의고사 실전처럼 풀기 <!-- bundle-opic-plan-2w-w1-화 -->
+- 3회 모의고사 실전처럼 풀기 <!-- bundle-opic-plan-2w-w1-수 -->
+- 4회 모의고사 실전처럼 풀기 <!-- bundle-opic-plan-2w-w1-목 -->
+- 5회 모의고사 실전처럼 풀기 <!-- bundle-opic-plan-2w-w1-금 -->
+- 1~5회 답변 총복습 <!-- bundle-opic-plan-2w-w1-토 -->
+- 6회 모의고사 실전처럼 풀기 <!-- bundle-opic-plan-2w-w2-월 -->
+- 7회 모의고사 실전처럼 풀기 <!-- bundle-opic-plan-2w-w2-화 -->
+- 8회 모의고사 실전처럼 풀기 <!-- bundle-opic-plan-2w-w2-수 -->
+- 9회 모의고사 실전처럼 풀기 <!-- bundle-opic-plan-2w-w2-목 -->
+- 10회 모의고사 실전처럼 풀기 <!-- bundle-opic-plan-2w-w2-금 -->
+- 6~10회 답변 총복습 <!-- bundle-opic-plan-2w-w2-토 -->
+- 1회 실전처럼 풀기 <!-- bundle-opic-plan-1m-w1-월 -->
+- 1회 녹음 듣고 보완하기 <!-- bundle-opic-plan-1m-w1-화 -->
+- 1회 녹음 듣고 보완하기 <!-- bundle-opic-plan-1m-w1-수 -->
+- 2회 실전처럼 풀기 <!-- bundle-opic-plan-1m-w1-목 -->
+- 2회 녹음 듣고 보완하기 <!-- bundle-opic-plan-1m-w1-금 -->
+- 2회 녹음 듣고 보완하기 <!-- bundle-opic-plan-1m-w1-토 -->
+- 3회 실전처럼 풀기 <!-- bundle-opic-plan-1m-w2-월 -->
+- 3회 녹음 듣고 보완하기 <!-- bundle-opic-plan-1m-w2-화 -->
+- 3회 녹음 듣고 보완하기 <!-- bundle-opic-plan-1m-w2-수 -->
+- 4회 실전처럼 풀기 <!-- bundle-opic-plan-1m-w2-목 -->
+- 4회 녹음 듣고 보완하기 <!-- bundle-opic-plan-1m-w2-금 -->
+- 4회 녹음 듣고 보완하기 <!-- bundle-opic-plan-1m-w2-토 -->
+- 5회 실전처럼 풀기 <!-- bundle-opic-plan-1m-w3-월 -->
+- 5회 녹음 듣고 보완하기 <!-- bundle-opic-plan-1m-w3-화 -->
+- 5회 녹음 듣고 보완하기 <!-- bundle-opic-plan-1m-w3-수 -->
+- 6회 실전처럼 풀기 <!-- bundle-opic-plan-1m-w3-목 -->
+- 6회 녹음 듣고 보완하기 <!-- bundle-opic-plan-1m-w3-금 -->
+- 6회 녹음 듣고 보완하기 <!-- bundle-opic-plan-1m-w3-토 -->
+- 7회 실전처럼 풀기 <!-- bundle-opic-plan-1m-w4-월 -->
+- 7회 녹음 듣고 보완하기 <!-- bundle-opic-plan-1m-w4-화 -->
+- 7회 녹음 듣고 보완하기 <!-- bundle-opic-plan-1m-w4-수 -->
+- 8회 실전처럼 풀기 <!-- bundle-opic-plan-1m-w4-목 -->
+- 8회 녹음 듣고 보완하기 <!-- bundle-opic-plan-1m-w4-금 -->
+- 8회 녹음 듣고 보완하기 <!-- bundle-opic-plan-1m-w4-토 -->
+- 9회 실전처럼 풀기 <!-- bundle-opic-plan-1m-w5-월 -->
+- 9회 녹음 듣고 보완하기 <!-- bundle-opic-plan-1m-w5-화 -->
+- 9회 녹음 듣고 보완하기 <!-- bundle-opic-plan-1m-w5-수 -->
+- 10회 실전처럼 풀기 <!-- bundle-opic-plan-1m-w5-목 -->
+- 10회 녹음 듣고 보완하기 <!-- bundle-opic-plan-1m-w5-금 -->
+- 10회 녹음 듣고 보완하기 <!-- bundle-opic-plan-1m-w5-토 -->
