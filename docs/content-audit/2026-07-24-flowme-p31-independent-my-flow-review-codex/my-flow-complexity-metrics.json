@@ -1,0 +1,248 @@
+{
+  "schemaVersion": 1,
+  "originMainSha": "a2e1d72dadda0104f97682ae662dfbc113a85318",
+  "production": "https://flowme2605.vercel.app",
+  "observedUserCount": 0,
+  "evidenceKinds": [
+    "current_browser_automation",
+    "fixture_only",
+    "current_source",
+    "heuristic_simulation"
+  ],
+  "measurementNotes": [
+    "1/5/20/60은 current production DOM에 localStorage fixture를 주입해 측정했다.",
+    "60개 중 11개는 scale 전용 synthetic local copies이며 social proof나 production inventory가 아니다.",
+    "proposed 수치는 구현 전 wireframe interaction estimate이며 production 측정값이 아니다."
+  ],
+  "scaleMeasurements": [
+    {
+      "flowCount": 1,
+      "viewport": "390x844",
+      "fixtureKind": "fixture_only_seeded_current_bundles",
+      "reportedTotal": 1,
+      "renderedListRows": 1,
+      "searchVisible": false,
+      "firstViewportDistinctCardTypeCount": 2,
+      "firstViewportHeadingCount": 2,
+      "firstViewportVisibleCommandCount": 13,
+      "firstActionDepth": 1,
+      "flowOpenDepth": 2,
+      "horizontalOverflowPx": 0,
+      "unnamedFocusableCount": 0,
+      "screenshot": "scale-1-mobile-list.png"
+    },
+    {
+      "flowCount": 5,
+      "viewport": "390x844",
+      "fixtureKind": "fixture_only_seeded_current_bundles",
+      "reportedTotal": 5,
+      "renderedListRows": 5,
+      "searchVisible": true,
+      "firstViewportDistinctCardTypeCount": 3,
+      "firstViewportHeadingCount": 2,
+      "firstViewportVisibleCommandCount": 21,
+      "firstActionDepth": 1,
+      "flowOpenDepth": 2,
+      "horizontalOverflowPx": 0,
+      "unnamedFocusableCount": 0,
+      "screenshot": "scale-5-mobile-list.png"
+    },
+    {
+      "flowCount": 20,
+      "viewport": "390x844",
+      "fixtureKind": "fixture_only_seeded_current_bundles",
+      "reportedTotal": 20,
+      "renderedListRows": 8,
+      "searchVisible": true,
+      "firstViewportDistinctCardTypeCount": 3,
+      "firstViewportHeadingCount": 2,
+      "firstViewportVisibleCommandCount": 21,
+      "firstActionDepth": 1,
+      "flowOpenDepth": 2,
+      "horizontalOverflowPx": 0,
+      "unnamedFocusableCount": 0,
+      "screenshot": "scale-20-mobile-list.png"
+    },
+    {
+      "flowCount": 60,
+      "viewport": "390x844",
+      "fixtureKind": "fixture_only_with_synthetic_local_copies",
+      "reportedTotal": 60,
+      "renderedListRows": 8,
+      "searchVisible": true,
+      "firstViewportDistinctCardTypeCount": 3,
+      "firstViewportHeadingCount": 2,
+      "firstViewportVisibleCommandCount": 21,
+      "firstActionDepth": 1,
+      "flowOpenDepth": 2,
+      "horizontalOverflowPx": 0,
+      "unnamedFocusableCount": 0,
+      "screenshot": "scale-60-mobile-list.png"
+    },
+    {
+      "flowCount": 1,
+      "viewport": "1024x768",
+      "fixtureKind": "fixture_only_seeded_current_bundles",
+      "reportedTotal": 1,
+      "renderedListRows": 1,
+      "searchVisible": false,
+      "firstViewportDistinctCardTypeCount": 2,
+      "firstViewportHeadingCount": 4,
+      "firstViewportVisibleCommandCount": 17,
+      "firstActionDepth": 1,
+      "flowOpenDepth": 2,
+      "horizontalOverflowPx": 0,
+      "unnamedFocusableCount": 0,
+      "screenshot": "scale-1-wide-list.png"
+    },
+    {
+      "flowCount": 5,
+      "viewport": "1024x768",
+      "fixtureKind": "fixture_only_seeded_current_bundles",
+      "reportedTotal": 5,
+      "renderedListRows": 5,
+      "searchVisible": true,
+      "firstViewportDistinctCardTypeCount": 3,
+      "firstViewportHeadingCount": 4,
+      "firstViewportVisibleCommandCount": 20,
+      "firstActionDepth": 1,
+      "flowOpenDepth": 2,
+      "horizontalOverflowPx": 0,
+      "unnamedFocusableCount": 0,
+      "screenshot": "scale-5-wide-list.png"
+    },
+    {
+      "flowCount": 20,
+      "viewport": "1024x768",
+      "fixtureKind": "fixture_only_seeded_current_bundles",
+      "reportedTotal": 20,
+      "renderedListRows": 20,
+      "searchVisible": true,
+      "firstViewportDistinctCardTypeCount": 3,
+      "firstViewportHeadingCount": 4,
+      "firstViewportVisibleCommandCount": 20,
+      "firstActionDepth": 1,
+      "flowOpenDepth": 2,
+      "horizontalOverflowPx": 0,
+      "unnamedFocusableCount": 0,
+      "screenshot": "scale-20-wide-list.png"
+    },
+    {
+      "flowCount": 60,
+      "viewport": "1024x768",
+      "fixtureKind": "fixture_only_with_synthetic_local_copies",
+      "reportedTotal": 60,
+      "renderedListRows": 60,
+      "searchVisible": true,
+      "firstViewportDistinctCardTypeCount": 3,
+      "firstViewportHeadingCount": 4,
+      "firstViewportVisibleCommandCount": 20,
+      "firstActionDepth": 1,
+      "flowOpenDepth": 2,
+      "horizontalOverflowPx": 0,
+      "unnamedFocusableCount": 0,
+      "screenshot": "scale-60-wide-list.png"
+    }
+  ],
+  "currentPathMetrics": {
+    "reopenDepth": 1,
+    "completedViewReopenDepth": 2,
+    "itemEditDepth": 6,
+    "wholeExportDepth": 6,
+    "archiveRestoreDepth": 6,
+    "actionableDuplicateCount": 0,
+    "contextLossCount": 1,
+    "explanationDependencyCount": 1
+  },
+  "contentShapes": [
+    {
+      "id": "anchor_timeline",
+      "route": "/f/moving-d30-basic",
+      "status": "partial",
+      "meaningPreserved": true,
+      "gap": "post-save global anchor change missing"
+    },
+    {
+      "id": "undated_checklist",
+      "route": "/f/vehicle-inspection-prep",
+      "status": "supported",
+      "meaningPreserved": true,
+      "gap": null
+    },
+    {
+      "id": "recurrence_routine",
+      "route": "/f/curated-allblanc-morning-workout",
+      "status": "supported",
+      "meaningPreserved": true,
+      "gap": "history depth remains hidden"
+    },
+    {
+      "id": "artifact_choice",
+      "route": "/f/curated-wedding-naver-timeline",
+      "status": "supported",
+      "meaningPreserved": true,
+      "gap": null
+    },
+    {
+      "id": "mixed_travel",
+      "route": "/f/real-mofa-overseas-travel-prep",
+      "status": "blocked",
+      "meaningPreserved": false,
+      "gap": "404; replacement is memo-first and not equivalent"
+    },
+    {
+      "id": "personal_draft",
+      "route": "/flows",
+      "status": "hidden",
+      "meaningPreserved": true,
+      "gap": "structure mode required before add/delete/reorder"
+    }
+  ],
+  "alternatives": [
+    {
+      "id": "A_keep_and_tighten",
+      "evidenceKind": "heuristic_simulation",
+      "estimatedMetrics": {
+        "itemEditDepth": 5,
+        "wholeExportDepth": 5,
+        "archiveRestoreDepth": 5,
+        "firstViewportVisibleCommandCount": 18
+      },
+      "benefit": "낮은 구현 위험과 빠른 시각 정리",
+      "failure": "핵심 command가 서로 다른 탭/disclosure에 남아 structural gate를 닫지 못함"
+    },
+    {
+      "id": "B_library_to_focused_workspace",
+      "selected": true,
+      "evidenceKind": "heuristic_simulation",
+      "estimatedMetrics": {
+        "itemEditDepth": 3,
+        "wholeExportDepth": 3,
+        "archiveRestoreDepth": 4,
+        "firstViewportVisibleCommandCount": 12
+      },
+      "benefit": "현재 projection과 4탭을 유지하면서 object command를 한 workspace에 모음",
+      "failure": "Flow 선택 context/back restoration을 별도 regression gate로 고정해야 함"
+    },
+    {
+      "id": "C_run_first_workspace",
+      "evidenceKind": "heuristic_simulation",
+      "estimatedMetrics": {
+        "itemEditDepth": 3,
+        "wholeExportDepth": 4,
+        "archiveRestoreDepth": 5,
+        "firstViewportVisibleCommandCount": 10
+      },
+      "benefit": "routine과 반복 실행에서 강한 집중",
+      "failure": "단순 checklist, artifact-choice, source definition을 current run 아래로 밀어 product scope를 왜곡함"
+    }
+  ],
+  "structuralReopenGate": {
+    "triggeredCriteria": [
+      5
+    ],
+    "evidence": "수정, 전체 export, archive/restore 중 3개가 hidden 또는 5 interactions 초과",
+    "verdict": "my_flow_structural_reopen",
+    "crossTabGateTriggered": false
+  }
+}

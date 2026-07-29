@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "verdict": "my_flow_structural_reopen",
+  "currentEvidence": {
+    "originMainSha": "a2e1d72dadda0104f97682ae662dfbc113a85318",
+    "productionCapture": "current-production-capture.json",
+    "journeyProbes": "current-journey-probes.json",
+    "scorecard": {
+      "supported": 11,
+      "partial": 8,
+      "hidden": 4,
+      "blocked": 1
+    },
+    "observedUserCount": 0
+  },
+  "criteria": [
+    {
+      "id": "depth_reduction",
+      "weight": 0.25
+    },
+    {
+      "id": "six_shape_fit",
+      "weight": 0.2
+    },
+    {
+      "id": "contract_safety",
+      "weight": 0.2
+    },
+    {
+      "id": "mobile_focus",
+      "weight": 0.15
+    },
+    {
+      "id": "implementation_feasibility",
+      "weight": 0.1
+    },
+    {
+      "id": "rollback_clarity",
+      "weight": 0.1
+    }
+  ],
+  "alternativeScores": [
+    {
+      "id": "A_keep_and_tighten",
+      "scores": [
+        2,
+        3,
+        5,
+        2,
+        5,
+        5
+      ],
+      "weightedScore": 3.35,
+      "decision": "reject"
+    },
+    {
+      "id": "B_library_to_focused_workspace",
+      "scores": [
+        5,
+        5,
+        4,
+        5,
+        3,
+        4
+      ],
+      "weightedScore": 4.5,
+      "decision": "select"
+    },
+    {
+      "id": "C_run_first_workspace",
+      "scores": [
+        4,
+        2,
+        2,
+        4,
+        1,
+        2
+      ],
+      "weightedScore": 2.75,
+      "decision": "defer"
+    }
+  ],
+  "selectedAlternative": "B_library_to_focused_workspace",
+  "rejectedAlternatives": {
+    "A_keep_and_tighten": "시각 정리만으로 수정/export/lifecycle 깊이 기준을 닫지 못한다.",
+    "C_run_first_workspace": "routine에는 맞지만 checklist, mixed plan, source Flow를 run 중심으로 과도하게 재해석한다."
+  },
+  "stableContracts": [
+    "source definition and source version",
+    "personal title/date/memo/structural overlay",
+    "execution run and completion/reopen",
+    "recurrence series/revision/occurrence",
+    "export scope/count/stable identity receipt",
+    "4-tab global IA and public /f shell"
+  ],
+  "migrationRequired": false,
+  "stagedRollout": [
+    "P32-01",
+    "P32-02",
+    "P32-03",
+    "P32-04",
+    "P32-05"
+  ],
+  "rollback": "각 slice는 기존 projection/storage API를 유지하고 composition entry를 독립적으로 되돌린다.",
+  "acceptanceMarkers": [
+    "P32-MIXED-SHAPE-ROUTE-CONTRACT",
+    "P32-MY-FLOW-FOCUSED-COMMANDS",
+    "P32-ITEM-QUICK-EDIT",
+    "P32-ANCHOR-REUSE",
+    "P32-CONTEXT-RESTORE"
+  ],
+  "observedUserQuestions": [
+    "Flow를 연 뒤 수정, 가져가기, 보관 위치를 설명 없이 찾는가?",
+    "지금과 실행, 완료와 기록을 서로 다른 수준으로 이해하는가?",
+    "보관과 영구 삭제의 차이를 예측하는가?",
+    "전체 기준일과 개별 날짜 override 차이를 이해하는가?",
+    "날짜 없는 항목을 Calendar 배치 대기열로 이해하는가?",
+    "routine과 이번 occurrence를 구분하는가?",
+    "외부 export 후 My Flow에 돌아올 이유가 있는가?"
+  ],
+  "claudeDesignAlternative": {
+    "status": "inaccessible",
+    "note": "current P31 handoff package에 완성된 Claude Design 대안은 없고 prompt만 확인됐다."
+  }
+}

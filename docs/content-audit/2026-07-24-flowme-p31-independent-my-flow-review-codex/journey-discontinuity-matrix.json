@@ -1,0 +1,166 @@
+{
+  "schemaVersion": 1,
+  "observedUserCount": 0,
+  "transitions": [
+    {
+      "id": "P31-D01",
+      "personaId": "P1",
+      "transition": "discover_save_land -> personalize_execute_reopen",
+      "carriedState": "saved flow and 24 item identities",
+      "discontinuity": "global anchor edit entry missing",
+      "recovery": "새 public save로 돌아감",
+      "severity": "High",
+      "evidenceKind": "heuristic_simulation"
+    },
+    {
+      "id": "P31-D02",
+      "personaId": "P1",
+      "transition": "personalize_execute_reopen -> export_lifecycle_reuse",
+      "carriedState": "personal item overrides",
+      "discontinuity": "export/reuse commands are hidden in record/advanced",
+      "recovery": "workspace record tab",
+      "severity": "High",
+      "evidenceKind": "heuristic_simulation"
+    },
+    {
+      "id": "P31-D03",
+      "personaId": "P2",
+      "transition": "preview_save -> schedule_undo_complete",
+      "carriedState": "undated stable items",
+      "discontinuity": "none observed",
+      "recovery": "Calendar tray",
+      "severity": "Low",
+      "evidenceKind": "current_browser_automation"
+    },
+    {
+      "id": "P31-D04",
+      "personaId": "P2",
+      "transition": "schedule_undo_complete -> scope_export_remove_date",
+      "carriedState": "personal date override",
+      "discontinuity": "full production parity not replayed",
+      "recovery": "item detail and export panel",
+      "severity": "Medium",
+      "evidenceKind": "heuristic_simulation"
+    },
+    {
+      "id": "P31-D05",
+      "personaId": "P3",
+      "transition": "configure_save -> execute_occurrence_reopen",
+      "carriedState": "series and occurrence identity",
+      "discontinuity": "none observed",
+      "recovery": "workspace execute",
+      "severity": "Low",
+      "evidenceKind": "current_browser_automation"
+    },
+    {
+      "id": "P31-D06",
+      "personaId": "P3",
+      "transition": "execute_occurrence_reopen -> history_next_occurrence_export",
+      "carriedState": "run completion state",
+      "discontinuity": "history/export are nested",
+      "recovery": "record tab and advanced actions",
+      "severity": "Medium",
+      "evidenceKind": "heuristic_simulation"
+    },
+    {
+      "id": "P31-D07",
+      "personaId": "P4",
+      "transition": "choose_artifact_save -> adjust_phase_item_note",
+      "carriedState": "mixed Flow identity",
+      "discontinuity": "requested route is 404",
+      "recovery": "no equivalent recovery",
+      "severity": "High",
+      "evidenceKind": "heuristic_simulation"
+    },
+    {
+      "id": "P31-D08",
+      "personaId": "P4",
+      "transition": "adjust_phase_item_note -> export_source_update",
+      "carriedState": "none",
+      "discontinuity": "journey cannot start",
+      "recovery": "replace fixture after source gate",
+      "severity": "High",
+      "evidenceKind": "heuristic_simulation"
+    },
+    {
+      "id": "P31-D09",
+      "personaId": "P5",
+      "transition": "miss_memo_save_land -> structure_schedule_edit",
+      "carriedState": "draft stable slug and source fragments",
+      "discontinuity": "structure controls hidden until batch mode",
+      "recovery": "whole plan then multi-item adjustment",
+      "severity": "High",
+      "evidenceKind": "heuristic_simulation"
+    },
+    {
+      "id": "P31-D10",
+      "personaId": "P5",
+      "transition": "structure_schedule_edit -> projection_lifecycle",
+      "carriedState": "effective item order and tombstones",
+      "discontinuity": "full export/lifecycle parity not production-replayed",
+      "recovery": "reload plus current E2E evidence",
+      "severity": "Medium",
+      "evidenceKind": "heuristic_simulation"
+    },
+    {
+      "id": "P31-D11",
+      "personaId": "P6",
+      "transition": "find_open -> switch_cross_surface_restore",
+      "carriedState": "selected Flow identity",
+      "discontinuity": "filter/scroll context may be lost across route",
+      "recovery": "search again",
+      "severity": "Medium",
+      "evidenceKind": "heuristic_simulation"
+    },
+    {
+      "id": "P31-D12",
+      "personaId": "P6",
+      "transition": "switch_cross_surface_restore -> archive_restore_delete_resave",
+      "carriedState": "saved Flow identity",
+      "discontinuity": "lifecycle actions split across menu/filter/dialog",
+      "recovery": "archived filter",
+      "severity": "High",
+      "evidenceKind": "heuristic_simulation"
+    },
+    {
+      "id": "P31-D13",
+      "personaId": "P7",
+      "transition": "resume -> complete_undo_reopen",
+      "carriedState": "active run and next item",
+      "discontinuity": "none observed",
+      "recovery": "undo/completed view",
+      "severity": "Low",
+      "evidenceKind": "current_browser_automation"
+    },
+    {
+      "id": "P31-D14",
+      "personaId": "P7",
+      "transition": "complete_undo_reopen -> reflect_new_run_history",
+      "carriedState": "completed run",
+      "discontinuity": "reflection/reuse hidden in record",
+      "recovery": "record tab",
+      "severity": "Medium",
+      "evidenceKind": "heuristic_simulation"
+    },
+    {
+      "id": "P31-D15",
+      "personaId": "P8",
+      "transition": "keyboard_core -> overlay_focus_return",
+      "carriedState": "selected date and trigger identity",
+      "discontinuity": "none observed",
+      "recovery": "Escape focus return",
+      "severity": "Low",
+      "evidenceKind": "current_browser_automation"
+    },
+    {
+      "id": "P31-D16",
+      "personaId": "P8",
+      "transition": "overlay_focus_return -> error_destructive_cancel",
+      "carriedState": "focus origin",
+      "discontinuity": "production error injection not performed",
+      "recovery": "cancel and current test evidence",
+      "severity": "Medium",
+      "evidenceKind": "heuristic_simulation"
+    }
+  ]
+}

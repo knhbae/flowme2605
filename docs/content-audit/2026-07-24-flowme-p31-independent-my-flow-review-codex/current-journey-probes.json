@@ -1,0 +1,840 @@
+{
+  "schemaVersion": 1,
+  "reviewerRole": "codex_independent",
+  "baseUrl": "https://flowme2605.vercel.app",
+  "startedAt": "2026-07-23T16:02:36.232Z",
+  "completedAt": "2026-07-23T16:03:05.604Z",
+  "observedUserCount": 0,
+  "probes": [
+    {
+      "id": "moving",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "evidenceKind": "current_browser_automation",
+      "actions": [
+        {
+          "action": "navigate",
+          "route": "/f/moving-d30-basic",
+          "httpStatus": 200
+        },
+        {
+          "action": "clear_storage_and_reload",
+          "route": "/f/moving-d30-basic"
+        },
+        {
+          "action": "fill_anchor",
+          "ok": true,
+          "elapsedMs": 28
+        },
+        {
+          "action": "expand_whole_preview",
+          "ok": true,
+          "elapsedMs": 39
+        },
+        {
+          "action": "save_public_flow",
+          "ok": true,
+          "elapsedMs": 57
+        },
+        {
+          "action": "receipt_to_my_flow",
+          "ok": true,
+          "elapsedMs": 609
+        },
+        {
+          "action": "receipt_open_whole_flow",
+          "ok": true,
+          "elapsedMs": 36
+        },
+        {
+          "action": "open_plan_tab",
+          "ok": true,
+          "elapsedMs": 52
+        },
+        {
+          "action": "open_first_item",
+          "ok": true,
+          "elapsedMs": 61
+        },
+        {
+          "action": "expand_item_read_summary",
+          "ok": true,
+          "elapsedMs": 25
+        },
+        {
+          "action": "enter_item_edit",
+          "ok": true,
+          "elapsedMs": 48
+        },
+        {
+          "action": "save_personal_item_values",
+          "ok": true,
+          "elapsedMs": 91
+        },
+        {
+          "action": "open_record_tab",
+          "ok": true,
+          "elapsedMs": 45
+        },
+        {
+          "action": "open_advanced_actions",
+          "ok": true,
+          "elapsedMs": 40
+        },
+        {
+          "action": "open_whole_export",
+          "ok": true,
+          "elapsedMs": 47
+        },
+        {
+          "action": "archive_flow_tab",
+          "ok": true,
+          "elapsedMs": 23
+        },
+        {
+          "action": "archive_open_workspace",
+          "ok": true,
+          "elapsedMs": 39
+        },
+        {
+          "action": "open_management_menu",
+          "ok": true,
+          "elapsedMs": 27
+        },
+        {
+          "action": "archive_flow",
+          "ok": true,
+          "elapsedMs": 37
+        },
+        {
+          "action": "open_archived_after_reload",
+          "ok": true,
+          "elapsedMs": 30
+        },
+        {
+          "action": "restore_archived_flow",
+          "ok": true,
+          "elapsedMs": 56
+        }
+      ],
+      "assertions": [
+        {
+          "name": "save_before_has_real_rows",
+          "pass": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "receipt_is_distinct",
+          "pass": true,
+          "expected": "P29-SAVED-RECEIPT-DISTINCT",
+          "actual": "P29-SAVED-RECEIPT-DISTINCT"
+        },
+        {
+          "name": "receipt_names_saved_scope",
+          "pass": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "dedicated_workspace_marker",
+          "pass": true,
+          "expected": "P31-03-DEDICATED-MOBILE-WORKSPACE",
+          "actual": "P31-03-DEDICATED-MOBILE-WORKSPACE"
+        },
+        {
+          "name": "whole_anchor_adjustment_reachable",
+          "pass": false,
+          "expected": true,
+          "actual": false
+        },
+        {
+          "name": "item_edit_mode",
+          "pass": true,
+          "expected": "edit",
+          "actual": "edit"
+        },
+        {
+          "name": "whole_export_preflight_visible",
+          "pass": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "archive_immediate_undo_visible",
+          "pass": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "archived_row_persisted",
+          "pass": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "restored_row_visible",
+          "pass": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshots": [
+        "probe-moving-workspace.png",
+        "probe-moving-export.png"
+      ],
+      "status": "partial",
+      "anchorAdjustmentKind": "personal_copy",
+      "exportPreflight": {
+        "scope": "flow",
+        "includedCount": "24",
+        "summary": "Flow 전체 · 24개",
+        "calendarSummary": "캘린더 24개"
+      },
+      "depths": {
+        "saveToWorkspace": 5,
+        "itemEditFromMyFlow": 7,
+        "wholeExportFromMyFlow": 6,
+        "archiveReloadRestore": 6
+      }
+    },
+    {
+      "id": "vehicle",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "evidenceKind": "current_browser_automation",
+      "actions": [
+        {
+          "action": "navigate",
+          "route": "/f/vehicle-inspection-prep",
+          "httpStatus": 200
+        },
+        {
+          "action": "clear_storage_and_reload",
+          "route": "/f/vehicle-inspection-prep"
+        },
+        {
+          "action": "choose_undated",
+          "ok": true,
+          "elapsedMs": 51
+        },
+        {
+          "action": "save_public_flow",
+          "ok": true,
+          "elapsedMs": 37
+        },
+        {
+          "action": "receipt_to_my_flow",
+          "ok": true,
+          "elapsedMs": 624
+        },
+        {
+          "action": "receipt_open_whole_flow",
+          "ok": true,
+          "elapsedMs": 29
+        },
+        {
+          "action": "complete_one_undated_item",
+          "ok": true,
+          "elapsedMs": 19
+        },
+        {
+          "action": "undo_completion",
+          "ok": true,
+          "elapsedMs": 30
+        },
+        {
+          "action": "navigate",
+          "route": "/calendar",
+          "httpStatus": 200
+        },
+        {
+          "action": "open_undated_tray",
+          "ok": true,
+          "elapsedMs": 48
+        },
+        {
+          "action": "select_undated_item",
+          "ok": true,
+          "elapsedMs": 35
+        },
+        {
+          "action": "set_undated_target_date",
+          "ok": true,
+          "elapsedMs": 16
+        },
+        {
+          "action": "apply_calendar_placement",
+          "ok": true,
+          "elapsedMs": 79
+        },
+        {
+          "action": "undo_calendar_placement",
+          "ok": true,
+          "elapsedMs": 42
+        }
+      ],
+      "assertions": [
+        {
+          "name": "save_before_has_real_rows",
+          "pass": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "receipt_is_distinct",
+          "pass": true,
+          "expected": "P29-SAVED-RECEIPT-DISTINCT",
+          "actual": "P29-SAVED-RECEIPT-DISTINCT"
+        },
+        {
+          "name": "undated_receipt_keeps_item_count",
+          "pass": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "undated_workspace_visible",
+          "pass": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "completion_undo_visible",
+          "pass": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "calendar_undated_tray_visible",
+          "pass": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "undated_sheet_visible",
+          "pass": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "calendar_placement_undo_visible",
+          "pass": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshots": [
+        "probe-vehicle-undated-calendar.png"
+      ],
+      "status": "completed",
+      "exportPreflight": {
+        "summary": "Flow 전체 · 10개",
+        "eligibility": "날짜 있음 0개날짜 없음 10개",
+        "calendarSummary": "캘린더 0개"
+      }
+    },
+    {
+      "id": "routine",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "evidenceKind": "current_browser_automation",
+      "actions": [
+        {
+          "action": "navigate",
+          "route": "/f/curated-allblanc-morning-workout",
+          "httpStatus": 200
+        },
+        {
+          "action": "clear_storage_and_reload",
+          "route": "/f/curated-allblanc-morning-workout"
+        },
+        {
+          "action": "set_routine_start",
+          "ok": true,
+          "elapsedMs": 23
+        },
+        {
+          "action": "open_routine_settings",
+          "ok": true,
+          "elapsedMs": 44
+        },
+        {
+          "action": "set_routine_count",
+          "ok": true,
+          "elapsedMs": 21
+        },
+        {
+          "action": "save_routine",
+          "ok": true,
+          "elapsedMs": 49
+        },
+        {
+          "action": "receipt_to_my_flow",
+          "ok": true,
+          "elapsedMs": 623
+        },
+        {
+          "action": "receipt_open_whole_flow",
+          "ok": true,
+          "elapsedMs": 41
+        },
+        {
+          "action": "complete_occurrence",
+          "ok": true,
+          "elapsedMs": 16
+        },
+        {
+          "action": "reopen_occurrence_with_undo",
+          "ok": true,
+          "elapsedMs": 32
+        },
+        {
+          "action": "routine_record_tab",
+          "ok": true,
+          "elapsedMs": 40
+        },
+        {
+          "action": "routine_advanced_actions",
+          "ok": true,
+          "elapsedMs": 24
+        },
+        {
+          "action": "routine_export_open",
+          "ok": true,
+          "elapsedMs": 46
+        }
+      ],
+      "assertions": [
+        {
+          "name": "compact_routine_summary_visible",
+          "pass": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "three_occurrence_preview",
+          "pass": true,
+          "expected": 3,
+          "actual": 3
+        },
+        {
+          "name": "routine_workspace_visible",
+          "pass": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "routine_completion_undo",
+          "pass": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshots": [
+        "probe-routine-record-export.png"
+      ],
+      "status": "completed",
+      "executionLevels": [
+        "item"
+      ],
+      "exportPreflight": {
+        "summary": "Flow 전체 · 1개",
+        "calendarSummary": "반복 일정 1개 · 표시 회차 0개"
+      }
+    },
+    {
+      "id": "artifact-mixed",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "evidenceKind": "current_browser_automation",
+      "actions": [
+        {
+          "action": "navigate",
+          "route": "/f/curated-wedding-naver-timeline",
+          "httpStatus": 200
+        },
+        {
+          "action": "clear_storage_and_reload",
+          "route": "/f/curated-wedding-naver-timeline"
+        },
+        {
+          "action": "choose_calendar",
+          "ok": true,
+          "elapsedMs": 37
+        },
+        {
+          "action": "choose_checklist",
+          "ok": true,
+          "elapsedMs": 29
+        },
+        {
+          "action": "choose_memo",
+          "ok": true,
+          "elapsedMs": 32
+        },
+        {
+          "action": "navigate",
+          "route": "/f/real-mofa-overseas-travel-prep",
+          "httpStatus": 404
+        },
+        {
+          "action": "navigate",
+          "route": "/f/overseas-safety-register",
+          "httpStatus": 200
+        }
+      ],
+      "assertions": [
+        {
+          "name": "wedding_artifact_choice_count",
+          "pass": true,
+          "expected": 3,
+          "actual": 3
+        },
+        {
+          "name": "handoff_mixed_route_is_open",
+          "pass": false,
+          "expected": 200,
+          "actual": 404
+        },
+        {
+          "name": "replacement_mixed_route_is_open",
+          "pass": true,
+          "expected": 200,
+          "actual": 200
+        },
+        {
+          "name": "replacement_is_memo_first",
+          "pass": true,
+          "expected": "memo",
+          "actual": "memo"
+        }
+      ],
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 ()"
+      ],
+      "pageErrors": [],
+      "screenshots": [
+        "probe-artifact-mixed-wedding-artifacts.png"
+      ],
+      "status": "partial",
+      "artifactSelections": [
+        {
+          "shape": "calendar",
+          "selectedShape": "calendar",
+          "rowCount": 6,
+          "setupVisible": true,
+          "saveLabel": "캘린더 6개로 시작"
+        },
+        {
+          "shape": "checklist",
+          "selectedShape": "checklist",
+          "rowCount": 6,
+          "setupVisible": false,
+          "saveLabel": "체크리스트 6개로 시작"
+        },
+        {
+          "shape": "memo",
+          "selectedShape": "memo",
+          "rowCount": 6,
+          "setupVisible": false,
+          "saveLabel": "메모 6개로 시작"
+        }
+      ],
+      "routeReconciliation": {
+        "requestedRouteStatus": 404,
+        "replacementRouteStatus": 200
+      }
+    },
+    {
+      "id": "personal-draft",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "evidenceKind": "current_browser_automation",
+      "actions": [
+        {
+          "action": "navigate",
+          "route": "/flows",
+          "httpStatus": 200
+        },
+        {
+          "action": "clear_storage_and_reload",
+          "route": "/flows"
+        },
+        {
+          "action": "submit_personal_memo",
+          "ok": true,
+          "elapsedMs": 89
+        },
+        {
+          "action": "save_personal_draft",
+          "ok": true,
+          "elapsedMs": 75
+        },
+        {
+          "action": "receipt_open_whole_flow",
+          "ok": true,
+          "elapsedMs": 64
+        },
+        {
+          "action": "draft_plan_tab",
+          "ok": true,
+          "elapsedMs": 11
+        },
+        {
+          "action": "enter_draft_structure_mode",
+          "ok": true,
+          "elapsedMs": 37
+        },
+        {
+          "action": "add_draft_item",
+          "ok": true,
+          "elapsedMs": 146
+        },
+        {
+          "action": "select_draft_item",
+          "ok": true,
+          "elapsedMs": 31
+        },
+        {
+          "action": "delete_draft_item",
+          "ok": true,
+          "elapsedMs": 39
+        },
+        {
+          "action": "undo_draft_delete",
+          "ok": true,
+          "elapsedMs": 42
+        },
+        {
+          "action": "open_flow_list",
+          "ok": true,
+          "elapsedMs": 19
+        },
+        {
+          "action": "open_flow_workspace",
+          "ok": true,
+          "elapsedMs": 34
+        }
+      ],
+      "assertions": [
+        {
+          "name": "memo_split_into_multiple_items",
+          "pass": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "draft_stable_slug_created",
+          "pass": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "draft_structural_controls_visible",
+          "pass": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "draft_delete_undo_visible",
+          "pass": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "draft_item_count_restored",
+          "pass": true,
+          "expected": 6,
+          "actual": 6
+        },
+        {
+          "name": "draft_persists_after_reload",
+          "pass": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshots": [
+        "probe-personal-draft-structure.png"
+      ],
+      "status": "completed",
+      "suggestionCount": 5,
+      "draftCounts": {
+        "suggestions": 5,
+        "effectiveBeforeDelete": 6,
+        "effectiveAfterUndo": 6
+      }
+    },
+    {
+      "id": "completed-keyboard",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "evidenceKind": "current_browser_automation",
+      "actions": [
+        {
+          "action": "navigate",
+          "route": "/f/curated-allblanc-morning-workout",
+          "httpStatus": 200
+        },
+        {
+          "action": "clear_storage_and_reload",
+          "route": "/f/curated-allblanc-morning-workout"
+        },
+        {
+          "action": "fill_anchor",
+          "ok": true,
+          "elapsedMs": 26
+        },
+        {
+          "action": "save_public_flow",
+          "ok": true,
+          "elapsedMs": 48
+        },
+        {
+          "action": "receipt_to_my_flow",
+          "ok": true,
+          "elapsedMs": 616
+        },
+        {
+          "action": "receipt_open_whole_flow",
+          "ok": true,
+          "elapsedMs": 46
+        },
+        {
+          "action": "complete_short_flow",
+          "ok": true,
+          "elapsedMs": 17
+        },
+        {
+          "action": "immediate_undo",
+          "ok": true,
+          "elapsedMs": 35
+        },
+        {
+          "action": "complete_short_flow_again",
+          "ok": true,
+          "elapsedMs": 48
+        },
+        {
+          "action": "open_completed_record",
+          "ok": true,
+          "elapsedMs": 43
+        },
+        {
+          "action": "open_reuse_preview",
+          "ok": true,
+          "elapsedMs": 40
+        },
+        {
+          "action": "cancel_reuse",
+          "ok": true,
+          "elapsedMs": 43
+        },
+        {
+          "action": "navigate",
+          "route": "/calendar?demo=ux12",
+          "httpStatus": 200
+        },
+        {
+          "action": "select_calendar_event_date",
+          "ok": true,
+          "elapsedMs": 86
+        },
+        {
+          "action": "open_calendar_item_sheet",
+          "ok": true,
+          "elapsedMs": 70
+        }
+      ],
+      "assertions": [
+        {
+          "name": "save_before_has_real_rows",
+          "pass": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "receipt_is_distinct",
+          "pass": true,
+          "expected": "P29-SAVED-RECEIPT-DISTINCT",
+          "actual": "P29-SAVED-RECEIPT-DISTINCT"
+        },
+        {
+          "name": "reuse_action_after_completion",
+          "pass": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "reuse_preview_preserves_previous_run",
+          "pass": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "calendar_sheet_visible",
+          "pass": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "calendar_sheet_escape_closes",
+          "pass": true,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "name": "calendar_focus_returns",
+          "pass": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "no_unnamed_focusable",
+          "pass": true,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "name": "no_horizontal_overflow",
+          "pass": true,
+          "expected": 0,
+          "actual": 0
+        }
+      ],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshots": [
+        "probe-completed-keyboard-calendar-focus.png"
+      ],
+      "status": "completed",
+      "focusReturnTrigger": "이사 방식 정하기 열기 · 이사 준비 · 5월 27일",
+      "accessibility": {
+        "focusableCount": 83,
+        "unnamedFocusableCount": 0,
+        "overflowPx": 0
+      }
+    }
+  ]
+}

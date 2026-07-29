@@ -1,0 +1,422 @@
+{
+  "schemaVersion": 1,
+  "reviewerRole": "codex_independent",
+  "originMainSha": "a2e1d72dadda0104f97682ae662dfbc113a85318",
+  "production": "https://flowme2605.vercel.app",
+  "capturedAt": {
+    "surfaces": {
+      "startedAt": "2026-07-23T15:41:32.053Z",
+      "completedAt": "2026-07-23T15:42:37.488Z"
+    },
+    "journeys": {
+      "startedAt": "2026-07-23T16:02:36.232Z",
+      "completedAt": "2026-07-23T16:03:05.604Z"
+    }
+  },
+  "observedUserCount": 0,
+  "appCodeChanged": false,
+  "dependencyChanged": false,
+  "statusRoadmapChanged": false,
+  "routes": [
+    {
+      "route": "/",
+      "viewport": "390x844",
+      "status": 200,
+      "screenshot": "screenshots/home-mobile.png",
+      "visibleCommandCount": 12,
+      "horizontalOverflowPx": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "evidenceKind": "current_browser_automation"
+    },
+    {
+      "route": "/flows",
+      "viewport": "390x844",
+      "status": 200,
+      "screenshot": "screenshots/find-mobile.png",
+      "visibleCommandCount": 20,
+      "horizontalOverflowPx": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "evidenceKind": "current_browser_automation"
+    },
+    {
+      "route": "/my?demo=ux20&view=flows",
+      "viewport": "390x844",
+      "status": 200,
+      "screenshot": "screenshots/my-flow-20-mobile.png",
+      "visibleCommandCount": 21,
+      "horizontalOverflowPx": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "evidenceKind": "current_browser_automation"
+    },
+    {
+      "route": "/calendar?demo=ux12",
+      "viewport": "390x844",
+      "status": 200,
+      "screenshot": "screenshots/calendar-12-mobile.png",
+      "visibleCommandCount": 67,
+      "horizontalOverflowPx": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "evidenceKind": "current_browser_automation"
+    },
+    {
+      "route": "/f/moving-d30-basic",
+      "viewport": "390x844",
+      "status": 200,
+      "screenshot": "screenshots/moving-mobile.png",
+      "visibleCommandCount": 7,
+      "horizontalOverflowPx": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "evidenceKind": "current_browser_automation"
+    },
+    {
+      "route": "/f/vehicle-inspection-prep",
+      "viewport": "390x844",
+      "status": 200,
+      "screenshot": "screenshots/vehicle-mobile.png",
+      "visibleCommandCount": 7,
+      "horizontalOverflowPx": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "evidenceKind": "current_browser_automation"
+    },
+    {
+      "route": "/f/curated-allblanc-morning-workout",
+      "viewport": "390x844",
+      "status": 200,
+      "screenshot": "screenshots/routine-mobile.png",
+      "visibleCommandCount": 13,
+      "horizontalOverflowPx": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "evidenceKind": "current_browser_automation"
+    },
+    {
+      "route": "/f/curated-wedding-naver-timeline",
+      "viewport": "390x844",
+      "status": 200,
+      "screenshot": "screenshots/wedding-mobile.png",
+      "visibleCommandCount": 7,
+      "horizontalOverflowPx": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "evidenceKind": "current_browser_automation"
+    },
+    {
+      "route": "/f/real-mofa-overseas-travel-prep",
+      "viewport": "390x844",
+      "status": 404,
+      "screenshot": "screenshots/mixed-travel-mobile.png",
+      "visibleCommandCount": 2,
+      "horizontalOverflowPx": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 1,
+      "pageErrorCount": 0,
+      "evidenceKind": "current_browser_automation"
+    },
+    {
+      "route": "/f/overseas-safety-register",
+      "viewport": "390x844",
+      "status": 200,
+      "screenshot": "screenshots/mixed-travel-replacement-mobile.png",
+      "visibleCommandCount": 7,
+      "horizontalOverflowPx": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "evidenceKind": "current_browser_automation"
+    },
+    {
+      "route": "/u/my-flow-studio",
+      "viewport": "390x844",
+      "status": 200,
+      "screenshot": "screenshots/studio-mobile.png",
+      "visibleCommandCount": 14,
+      "horizontalOverflowPx": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "evidenceKind": "current_browser_automation"
+    },
+    {
+      "route": "/",
+      "viewport": "1024x768",
+      "status": 200,
+      "screenshot": "screenshots/home-wide.png",
+      "visibleCommandCount": 12,
+      "horizontalOverflowPx": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "evidenceKind": "current_browser_automation"
+    },
+    {
+      "route": "/flows",
+      "viewport": "1024x768",
+      "status": 200,
+      "screenshot": "screenshots/find-wide.png",
+      "visibleCommandCount": 24,
+      "horizontalOverflowPx": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "evidenceKind": "current_browser_automation"
+    },
+    {
+      "route": "/my?demo=ux20&view=flows",
+      "viewport": "1024x768",
+      "status": 200,
+      "screenshot": "screenshots/my-flow-20-wide.png",
+      "visibleCommandCount": 20,
+      "horizontalOverflowPx": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "evidenceKind": "current_browser_automation"
+    },
+    {
+      "route": "/calendar?demo=ux12",
+      "viewport": "1024x768",
+      "status": 200,
+      "screenshot": "screenshots/calendar-12-wide.png",
+      "visibleCommandCount": 49,
+      "horizontalOverflowPx": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "evidenceKind": "current_browser_automation"
+    },
+    {
+      "route": "/f/moving-d30-basic",
+      "viewport": "1024x768",
+      "status": 200,
+      "screenshot": "screenshots/moving-wide.png",
+      "visibleCommandCount": 12,
+      "horizontalOverflowPx": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "evidenceKind": "current_browser_automation"
+    },
+    {
+      "route": "/f/vehicle-inspection-prep",
+      "viewport": "1024x768",
+      "status": 200,
+      "screenshot": "screenshots/vehicle-wide.png",
+      "visibleCommandCount": 12,
+      "horizontalOverflowPx": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "evidenceKind": "current_browser_automation"
+    },
+    {
+      "route": "/f/curated-allblanc-morning-workout",
+      "viewport": "1024x768",
+      "status": 200,
+      "screenshot": "screenshots/routine-wide.png",
+      "visibleCommandCount": 11,
+      "horizontalOverflowPx": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "evidenceKind": "current_browser_automation"
+    },
+    {
+      "route": "/f/curated-wedding-naver-timeline",
+      "viewport": "1024x768",
+      "status": 200,
+      "screenshot": "screenshots/wedding-wide.png",
+      "visibleCommandCount": 12,
+      "horizontalOverflowPx": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "evidenceKind": "current_browser_automation"
+    },
+    {
+      "route": "/f/real-mofa-overseas-travel-prep",
+      "viewport": "1024x768",
+      "status": 404,
+      "screenshot": "screenshots/mixed-travel-wide.png",
+      "visibleCommandCount": 2,
+      "horizontalOverflowPx": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 1,
+      "pageErrorCount": 0,
+      "evidenceKind": "current_browser_automation"
+    },
+    {
+      "route": "/f/overseas-safety-register",
+      "viewport": "1024x768",
+      "status": 200,
+      "screenshot": "screenshots/mixed-travel-replacement-wide.png",
+      "visibleCommandCount": 8,
+      "horizontalOverflowPx": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "evidenceKind": "current_browser_automation"
+    },
+    {
+      "route": "/u/my-flow-studio",
+      "viewport": "1024x768",
+      "status": 200,
+      "screenshot": "screenshots/studio-wide.png",
+      "visibleCommandCount": 14,
+      "horizontalOverflowPx": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "evidenceKind": "current_browser_automation"
+    },
+    {
+      "route": "/my?demo=ux20&view=flows",
+      "viewport": "1440x900",
+      "status": 200,
+      "screenshot": "screenshots/my-flow-20-desktop.png",
+      "visibleCommandCount": 26,
+      "horizontalOverflowPx": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "evidenceKind": "current_browser_automation"
+    },
+    {
+      "route": "/calendar?demo=ux12",
+      "viewport": "1440x900",
+      "status": 200,
+      "screenshot": "screenshots/calendar-12-desktop.png",
+      "visibleCommandCount": 61,
+      "horizontalOverflowPx": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "evidenceKind": "current_browser_automation"
+    },
+    {
+      "route": "/f/moving-d30-basic",
+      "viewport": "1440x900",
+      "status": 200,
+      "screenshot": "screenshots/moving-desktop.png",
+      "visibleCommandCount": 15,
+      "horizontalOverflowPx": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "evidenceKind": "current_browser_automation"
+    }
+  ],
+  "commands": [
+    {
+      "command": "npm.cmd ci",
+      "status": "passed",
+      "detail": "215 packages installed from package-lock"
+    },
+    {
+      "command": "npm.cmd run docs:check",
+      "status": "passed_final",
+      "detail": "14 required files, 3113 local links"
+    },
+    {
+      "command": "npm.cmd test",
+      "status": "passed",
+      "detail": "34 pretest + 587 unit/workflow tests"
+    },
+    {
+      "command": "npm.cmd run build",
+      "status": "passed",
+      "detail": "Next 15.5.21, 18 static pages"
+    },
+    {
+      "command": "targeted P31 Playwright",
+      "status": "passed",
+      "detail": "5/5"
+    },
+    {
+      "command": "npm.cmd run test:e2e -- --reporter=line",
+      "status": "environment_retry_required",
+      "detail": "306/310; 4 browser allocation/navigation timeouts after VirtualAlloc failure"
+    },
+    {
+      "command": "npx.cmd playwright test --last-failed --workers=1 --reporter=line",
+      "status": "passed",
+      "detail": "4/4; all 310 test assertions passed across retry"
+    },
+    {
+      "command": "npm.cmd run security:audit",
+      "status": "failed",
+      "detail": "postcss advisory: 1 high, 1 moderate; force fix would downgrade Next to 9.3.3"
+    }
+  ],
+  "sourceEvidence": [
+    {
+      "file": "components/flow/AppClient.tsx",
+      "lines": [
+        5850,
+        7551,
+        7557
+      ],
+      "claim": "20+ grouping and mobile 8-row limit"
+    },
+    {
+      "file": "components/flow/AppClient.tsx",
+      "lines": [
+        15255,
+        15301,
+        15420
+      ],
+      "claim": "management, workspace tabs, advanced export disclosure"
+    },
+    {
+      "file": "lib/flow/personal-flow-lifecycle.ts",
+      "lines": [
+        135,
+        150
+      ],
+      "claim": "archive and restore are separate"
+    },
+    {
+      "file": "lib/flow/storage.ts",
+      "lines": [
+        932
+      ],
+      "claim": "permanent delete is separate and removes lifecycle references"
+    },
+    {
+      "file": "lib/flow/export-scope.ts",
+      "lines": [
+        10,
+        134,
+        231
+      ],
+      "claim": "flow/selected/item scope and receipt contract"
+    },
+    {
+      "file": "tests/e2e/flow-mvp.spec.ts",
+      "lines": [
+        5840
+      ],
+      "claim": "requested mixed travel route is intentionally closed"
+    }
+  ],
+  "verificationGaps": [
+    "실제 사용자 관찰 0명",
+    "cross-device/account persistence는 범위 밖",
+    "production error injection을 하지 않아 export retry는 source/test evidence만 사용",
+    "60 Flow는 fixture_only이며 real user data와 performance telemetry가 아님",
+    "P31 Claude Design 완성 대안은 package에서 확인되지 않음"
+  ]
+}

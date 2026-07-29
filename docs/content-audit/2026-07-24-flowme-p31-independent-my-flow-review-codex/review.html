@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe P31 Production 독립 검토 - Codex</title>
+  <style>
+    :root{--ink:#171815;--muted:#666960;--line:#dfe2dc;--soft:#f5f6f2;--paper:#fff;--action:#2457e6;--red:#b42318;--amber:#9a6700;--green:#16794c}
+    *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;background:#eef0eb;color:var(--ink);font-family:Inter,Pretendard,"Noto Sans KR",Arial,sans-serif;letter-spacing:0}
+    a{color:var(--action)} code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.9em}
+    header{background:#171815;color:white;padding:34px 24px 30px} header .inner,main{width:min(1180px,calc(100% - 32px));margin:auto}
+    .eyebrow{font-size:12px;font-weight:800;color:#a9bfff;text-transform:uppercase}.verdict{display:inline-flex;margin-top:14px;padding:7px 10px;border:1px solid #718fff;background:#253053;font-weight:800;border-radius:4px}
+    h1{max-width:900px;margin:12px 0 8px;font-size:clamp(28px,4vw,50px);line-height:1.12} header p{max-width:850px;color:#d8ddd5;line-height:1.65}
+    nav{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line);overflow:auto;white-space:nowrap} nav .inner{display:flex;gap:4px;padding:8px 0} nav a{padding:9px 11px;color:#333;text-decoration:none;font-size:13px;font-weight:750;border-radius:4px} nav a:hover{background:var(--soft)}
+    main{padding:26px 0 60px}.section{min-width:0;margin-top:28px;background:var(--paper);border:1px solid var(--line);padding:22px;border-radius:6px}.section>h2{margin:0 0 7px;font-size:23px}.lead{margin:0;color:var(--muted);line-height:1.65}
+    .metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:18px}.metric{background:var(--soft);border:1px solid var(--line);padding:15px;border-radius:4px}.metric b{display:block;font-size:24px}.metric span{font-size:12px;color:var(--muted)}
+    .findings{display:grid;min-width:0;gap:12px;margin-top:18px}.finding{min-width:0;overflow-wrap:anywhere;border:1px solid var(--line);border-left:5px solid var(--amber);padding:16px;border-radius:4px}.severity-high{border-left-color:var(--red)}.severity-medium{border-left-color:var(--amber)}.finding-top{display:flex;gap:8px;align-items:center}.severity{font-size:11px;font-weight:900;text-transform:uppercase}.finding h3{margin:8px 0 4px}.route,.evidence{font-size:12px;color:var(--muted);overflow-wrap:anywhere}.compare{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}.compare>div{min-width:0;background:var(--soft);padding:10px}.compare p{margin:5px 0;line-height:1.5}
+    table{width:100%;border-collapse:collapse;margin-top:16px;font-size:13px}th,td{text-align:left;vertical-align:top;padding:10px;border-bottom:1px solid var(--line);line-height:1.45}th{background:var(--soft);font-size:12px}.table-wrap{max-width:100%;overflow:auto}
+    .status{display:inline-flex;padding:4px 7px;border-radius:3px;font-size:11px;font-weight:850}.supported{background:#dff5e9;color:#11663f}.hidden{background:#fff0c7;color:#795400}.partial{background:#e7edff;color:#244aa5}.blocked{background:#ffe1dd;color:#8f2117}.missing{background:#ececec;color:#555}
+    .filters{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}.filters button{border:1px solid var(--line);background:white;padding:8px 10px;border-radius:4px;font-weight:700;cursor:pointer}.filters button[aria-pressed="true"]{background:#171815;color:white}
+    .alternatives{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}.alternative{border:1px solid var(--line);padding:15px;border-radius:4px}.alternative.selected{border:2px solid var(--action);background:#f5f8ff}.alternative h3{margin:0 0 8px}.score{font-size:30px;font-weight:900}
+    .wire-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;margin-top:16px}.wire{min-width:0;border:1px solid var(--line);background:#f7f8f5;padding:14px;border-radius:5px}.phone{width:min(100%,340px);margin:auto;border:2px solid #343633;background:white;padding:8px;border-radius:18px}.wide-wire{min-width:0;border:2px solid #343633;background:white;padding:8px;min-height:290px}.wire-block{min-width:0;overflow-wrap:anywhere;border:1px solid #cfd3cb;padding:9px;margin:7px 0;background:white;border-radius:3px;font-size:12px}.wire-block.primary{border-color:var(--action);background:#f3f6ff}.wire-block.muted{background:#f0f1ed;color:#666}.row{display:flex;gap:7px}.row>*{min-width:0;flex:1}.wide-layout{display:grid;grid-template-columns:190px minmax(0,1fr) 220px;gap:7px}.wide-layout .wire-block{margin:0;min-height:250px}
+    .gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}.shot{margin:0;border:1px solid var(--line);background:#fff;padding:8px}.shot img{display:block;width:100%;height:250px;object-fit:cover;object-position:top;border:1px solid #eee}.shot figcaption{padding:8px 2px 2px;font-size:12px;color:var(--muted)}
+    .program{display:grid;gap:10px;margin-top:15px}.slice{border-left:4px solid var(--action);background:var(--soft);padding:13px}.slice h3{margin:0 0 5px}.footnote{font-size:12px;color:var(--muted);line-height:1.55}
+    @media(max-width:760px){header{padding:26px 0}.metrics{grid-template-columns:1fr 1fr}.alternatives,.wire-grid,.gallery{grid-template-columns:1fr}.compare{grid-template-columns:1fr}.section{padding:16px}.wide-layout{grid-template-columns:1fr}.wide-layout .wire-block{min-height:auto}.shot img{height:340px}}
+  </style>
+</head>
+<body>
+<header><div class="inner">
+  <div class="eyebrow">REVIEWER_ROLE: codex_independent · origin/main a2e1d72dadda</div>
+  <h1>FlowMe P31 Production<br>My Flow 독립 검토</h1>
+  <div class="verdict">my_flow_structural_reopen</div>
+  <p>P31의 projection과 lifecycle 계약은 유지한다. 다시 열 범위는 My Flow 내부의 command hierarchy다. 기능이 없는 문제가 아니라 수정, 가져가기, 보관/삭제가 서로 다른 탭과 접힘 영역에 흩어진 문제가 남았다.</p>
+</div></header>
+<nav><div class="inner"><a href="#verdict">판정</a><a href="#findings">Findings</a><a href="#journeys">24 cells</a><a href="#complexity">복잡도</a><a href="#alternatives">A/B/C</a><a href="#wireframes">Wireframe</a><a href="#contracts">계약</a><a href="#program">P32</a><a href="#evidence">Evidence</a></div></nav>
+<main>
+  <section class="section" id="verdict">
+    <h2>Executive verdict</h2>
+    <p class="lead">Flow 찾기와 열기는 scale에 버틴다. 그러나 선택한 Flow에서 항목 수정, whole export, archive/restore가 각각 6단계다. 정본 criterion 5가 발동하므로 bounded polish가 아니라 My Flow 내부 구조를 제한적으로 다시 연다. Home/Find/Calendar와 4탭 IA는 현재 근거로 재개하지 않는다.</p>
+    <div class="metrics">
+      <div class="metric"><b>24</b><span>persona-session cells</span></div>
+      <div class="metric"><b>11</b><span>supported</span></div>
+      <div class="metric"><b>13</b><span>hidden + partial + blocked</span></div>
+      <div class="metric"><b>0</b><span>observed users</span></div>
+      <div class="metric"><b>2</b><span>Flow open depth at 1/5/20/60</span></div>
+      <div class="metric"><b>6</b><span>item edit depth</span></div>
+      <div class="metric"><b>6</b><span>whole export depth</span></div>
+      <div class="metric"><b>6</b><span>archive/restore depth</span></div>
+    </div>
+  </section>
+
+  <section class="section" id="findings"><h2>Severity findings</h2><p class="lead">Blocking은 없었다. High 4개와 Medium 2개를 current production/source/command 근거로 분리했다.</p><div class="findings">
+  <article class="finding severity-high">
+    <div class="finding-top"><span class="severity">High</span><code>P31-IR-F01</code></div>
+    <h3>선택한 Flow의 핵심 조작이 탭과 접힘 영역에 분산된다</h3>
+    <p class="route">/my?view=flows · 390x844, 1024x768</p>
+    <div class="compare"><div><b>기대</b><p>선택한 Flow의 자주 쓰는 수정과 가져가기는 3단계 이내, 보관과 복구는 4단계 이내에서 한 객체의 명령으로 예측할 수 있어야 한다.</p></div><div><b>실제</b><p>Flow 열기는 2단계지만 항목 수정 6단계, 전체 export 6단계, 보관 후 복구 6단계다. 실행/전체 계획/기록 탭과 별도 고급 disclosure, 관리 메뉴를 오가야 한다.</p></div></div>
+    <p><b>사용자 영향:</b> 기능은 존재하지만 사용자가 기능이 없다고 판단하거나, 항목을 실행하는 대신 설정 구조를 탐색하게 된다.</p>
+    <p><b>권장:</b> B안의 focused workspace를 채택한다. Flow를 연 뒤 object header 아래에 다음 행동, 빠른 수정, 가져가기, 관리 명령을 모으고 전체 계획과 기록은 progressive disclosure로 둔다.</p>
+    <p class="evidence"><b>Evidence:</b> current_production_interaction, current_browser_automation, current_source, heuristic_simulation<br>current-journey-probes.json#moving · screenshots/probe-moving-workspace.png · components/flow/AppClient.tsx:15255 · components/flow/AppClient.tsx:15301 · components/flow/AppClient.tsx:15420</p>
+    <p><b>Acceptance:</b> <code>P32-MY-FLOW-FOCUSED-COMMANDS</code></p>
+  </article>
+  <article class="finding severity-high">
+    <div class="finding-top"><span class="severity">High</span><code>P31-IR-F02</code></div>
+    <h3>public 이사 Flow 저장 후 전체 기준일을 다시 바꿀 진입이 없다</h3>
+    <p class="route">/f/moving-d30-basic -&gt; /my?savedFlow=moving-d30-basic · 390x844</p>
+    <div class="compare"><div><b>기대</b><p>이사일 변경 한 번으로 상대 일정이 다시 계산되고, 개인 고정 날짜와 메모는 유지되어야 한다.</p></div><div><b>실제</b><p>production workspace에는 direct anchor와 personal-copy anchor 진입이 모두 없다. 개별 항목 제목/날짜/메모 편집은 가능하다.</p></div></div>
+    <p><b>사용자 영향:</b> 재사용할 때 24개 일정을 개별 수정하거나 새로 저장해야 하므로 P1의 두 번째 세션이 끊긴다.</p>
+    <p><b>권장:</b> Flow header의 빠른 수정에서 전체 기준일 변경을 제공하고, 개인 고정 날짜를 유지한다는 결과 preview를 저장 전에 보여준다.</p>
+    <p class="evidence"><b>Evidence:</b> current_browser_automation, current_source<br>current-journey-probes.json#moving.whole_anchor_adjustment_reachable=false · components/flow/AppClient.tsx:15372 · tests/e2e/flow-mvp.spec.ts:3842</p>
+    <p><b>Acceptance:</b> <code>P32-ANCHOR-REUSE</code></p>
+  </article>
+  <article class="finding severity-high">
+    <div class="finding-top"><span class="severity">High</span><code>P31-IR-F03</code></div>
+    <h3>보관, 복구, 영구 삭제의 데이터 의미는 맞지만 발견 경로가 분리돼 있다</h3>
+    <p class="route">/my?view=flows · 390x844</p>
+    <div class="compare"><div><b>기대</b><p>한 Flow의 관리 메뉴에서 보관과 삭제의 차이, 되돌릴 수 있는 범위, 다음 위치가 예측되어야 한다.</p></div><div><b>실제</b><p>보관은 object menu, 영구 삭제는 보관됨 inventory, 전체 데이터 관리는 page header에 있다. 데이터 보호는 강하지만 사용자는 삭제가 어디 있는지 알기 어렵다.</p></div></div>
+    <p><b>사용자 영향:</b> 삭제 기능이 없다고 오해하거나, 보관과 영구 삭제를 같은 동작으로 이해할 수 있다.</p>
+    <p><b>권장:</b> Flow 관리 sheet에 보관을 기본으로 두고, 보관된 Flow에서만 영구 삭제를 노출한다. 현재 상태와 이동할 위치를 action label에 포함한다.</p>
+    <p class="evidence"><b>Evidence:</b> current_production_interaction, current_browser_automation, current_source<br>current-journey-probes.json#moving.archive · screenshots/scale-20-mobile-workspace.png · components/flow/AppClient.tsx:14804 · components/flow/AppClient.tsx:15179 · lib/flow/personal-flow-lifecycle.ts:135 · lib/flow/storage.ts:932</p>
+    <p><b>Acceptance:</b> <code>P32-LIFECYCLE-DISCLOSURE</code></p>
+  </article>
+  <article class="finding severity-high">
+    <div class="finding-top"><span class="severity">High</span><code>P31-IR-F04</code></div>
+    <h3>검토 정본의 mixed travel route가 production에서 404다</h3>
+    <p class="route">/f/real-mofa-overseas-travel-prep · 390x844, 1024x768</p>
+    <div class="compare"><div><b>기대</b><p>날짜, checklist, resource가 함께 있는 Flow를 current production에서 검증할 수 있어야 한다.</p></div><div><b>실제</b><p>지정 route는 404이고 current E2E도 의도적으로 closed 상태를 요구한다. 대체 route는 200이지만 memo-first 4개 항목이라 같은 shape가 아니다.</p></div></div>
+    <p><b>사용자 영향:</b> P4의 source update/export 세션을 동일 객체로 끝까지 검증할 수 없고 handoff package가 current route contract와 어긋난다.</p>
+    <p><b>권장:</b> P32 correctness slice에서 검토 fixture를 유효한 mixed route로 교체하거나, 승인된 mixed Flow가 생길 때까지 이 cell을 blocked로 유지한다.</p>
+    <p class="evidence"><b>Evidence:</b> current_production_interaction, current_browser_automation, current_source<br>current-production-capture.json#mixed-travel · current-journey-probes.json#artifact-mixed · screenshots/mixed-travel-mobile.png · tests/e2e/flow-mvp.spec.ts:5840</p>
+    <p><b>Acceptance:</b> <code>P32-MIXED-SHAPE-ROUTE-CONTRACT</code></p>
+  </article>
+  <article class="finding severity-medium">
+    <div class="finding-top"><span class="severity">Medium</span><code>P31-IR-F05</code></div>
+    <h3>모바일 집중 workspace에서도 global과 local navigation이 동시에 경쟁한다</h3>
+    <p class="route">/my?view=flows · 390x844</p>
+    <div class="compare"><div><b>기대</b><p>Flow를 연 뒤에는 back, Flow identity, 다음 행동, object commands가 우선이고 global 분류는 한 단계 뒤로 물러나야 한다.</p></div><div><b>실제</b><p>global 3 tabs, Flow header와 관리 메뉴, local 3 tabs가 연속해서 나타난다. 5/20/60개 mobile list 첫 viewport에는 21개 focusable command가 보인다.</p></div></div>
+    <p><b>사용자 영향:</b> 지금과 실행, 완료와 기록을 같은 수준의 선택지로 오해할 수 있고 한 Flow에 집중하기 어렵다.</p>
+    <p><b>권장:</b> Flow drill-in 중 global local-tab strip을 숨기고 back으로 목록의 filter/scroll을 복구한다. object workspace 안에서는 next action과 전체 계획을 한 세로 흐름으로 둔다.</p>
+    <p class="evidence"><b>Evidence:</b> current_production_screenshot, current_browser_automation, heuristic_simulation, reference_pattern<br>screenshots/probe-moving-workspace.png · screenshots/scale-20-mobile-list.png · current-production-capture.json#scaleResults</p>
+    <p><b>Acceptance:</b> <code>P32-MOBILE-OBJECT-FOCUS</code></p>
+  </article>
+  <article class="finding severity-medium">
+    <div class="finding-top"><span class="severity">Medium</span><code>P31-IR-F06</code></div>
+    <h3>현재 dependency audit가 high 취약점으로 실패한다</h3>
+    <p class="route">build/release gate · not_applicable</p>
+    <div class="compare"><div><b>기대</b><p>high severity dependency advisory가 없어야 한다.</p></div><div><b>실제</b><p>Next 15.5.21 내부 postcss에 1 high, 1 moderate advisory가 남아 audit가 실패한다. 제안된 force fix는 Next 9.3.3으로의 breaking change다.</p></div></div>
+    <p><b>사용자 영향:</b> 현재 UX 판정과 별개인 release/security risk다. 자동 force fix는 제품 회귀를 만들 수 있다.</p>
+    <p><b>권장:</b> 별도 dependency remediation 작업으로 분리하고 Next 호환 패치가 나온 뒤 unit/build/full E2E를 다시 통과시킨다.</p>
+    <p class="evidence"><b>Evidence:</b> current_command<br>npm.cmd run security:audit · package.json#next=15.5.21</p>
+    <p><b>Acceptance:</b> <code>SECURITY-AUDIT-HIGH-0</code></p>
+  </article></div></section>
+
+  <section class="section" id="journeys">
+    <h2>8 personas x 3 sessions</h2>
+    <p class="lead">지원 여부는 capability 존재와 발견성을 분리했다. hidden은 기능이 있지만 현재 설명 없이 찾기 어려운 상태다.</p>
+    <div class="filters" aria-label="여정 상태 필터">
+      <button type="button" data-filter="all" aria-pressed="true">전체 24</button>
+      <button type="button" data-filter="supported" aria-pressed="false">지원 11</button><button type="button" data-filter="hidden" aria-pressed="false">숨김 4</button><button type="button" data-filter="partial" aria-pressed="false">부분 8</button><button type="button" data-filter="missing" aria-pressed="false">누락 0</button><button type="button" data-filter="blocked" aria-pressed="false">차단 1</button>
+    </div>
+    <div class="table-wrap"><table><thead><tr><th>Cell</th><th>Route / steps</th><th>판정</th><th>실제 결과</th><th>설명 없이 / parity</th></tr></thead><tbody id="score-body">
+  <tr data-status="supported">
+    <td><strong>P1</strong><br><span>discover_save_land</span></td>
+    <td><code>/f/moving-d30-basic -&gt; /my?savedFlow=moving-d30-basic</code><br>이사일 입력 -&gt; 24개 전체 preview 펼치기 -&gt; 저장 -&gt; receipt 확인 -&gt; 전체 Flow 보기</td>
+    <td><span class="status supported">지원</span></td>
+    <td>실제 row와 24개 receipt가 보이고 dedicated workspace로 연결됐다.</td>
+    <td>예 / supported</td>
+  </tr>
+  <tr data-status="partial">
+    <td><strong>P1</strong><br><span>personalize_execute_reopen</span></td>
+    <td><code>/my?view=flows</code><br>Flow 열기 -&gt; 전체 계획 -&gt; 항목 열기 -&gt; 제목/날짜/메모 수정 -&gt; 완료 -&gt; undo/reopen -&gt; 전체 기준일 찾기</td>
+    <td><span class="status partial">부분</span></td>
+    <td>개별 값과 완료/reopen은 지원되지만 전체 기준일 변경 진입은 보이지 않았다.</td>
+    <td>아니오 / partial</td>
+  </tr>
+  <tr data-status="hidden">
+    <td><strong>P1</strong><br><span>export_lifecycle_reuse</span></td>
+    <td><code>/my?view=flows -&gt; /calendar</code><br>기록 탭 -&gt; 고급 작업 -&gt; whole export -&gt; 보관 -&gt; reload -&gt; 보관됨 필터 -&gt; 복구 -&gt; 새 이사일 재사용 찾기</td>
+    <td><span class="status hidden">숨김</span></td>
+    <td>whole export와 archive/restore는 작동하지만 6단계 경로이며 새 기준일 재사용은 이어지지 않는다.</td>
+    <td>아니오 / partial</td>
+  </tr>
+  <tr data-status="supported">
+    <td><strong>P2</strong><br><span>preview_save</span></td>
+    <td><code>/f/vehicle-inspection-prep</code><br>10개 preview 확인 -&gt; 날짜 없이 시작 -&gt; receipt -&gt; 전체 Flow 보기</td>
+    <td><span class="status supported">지원</span></td>
+    <td>read-only preview, undated intent, receipt와 workspace가 일치했다.</td>
+    <td>예 / supported</td>
+  </tr>
+  <tr data-status="supported">
+    <td><strong>P2</strong><br><span>schedule_undo_complete</span></td>
+    <td><code>/my -&gt; /calendar</code><br>My Flow 실행 -&gt; Calendar undated tray -&gt; 날짜 지정 -&gt; undo -&gt; 완료 -&gt; 완료 취소</td>
+    <td><span class="status supported">지원</span></td>
+    <td>stable item을 배치하고 undo했으며 completion/reopen 계약도 유지됐다.</td>
+    <td>예 / supported</td>
+  </tr>
+  <tr data-status="partial">
+    <td><strong>P2</strong><br><span>scope_export_remove_date</span></td>
+    <td><code>/my -&gt; /calendar</code><br>whole export -&gt; selected export -&gt; current item export -&gt; 날짜 제거 -&gt; undated tray 복귀 확인</td>
+    <td><span class="status partial">부분</span></td>
+    <td>scope 계약과 date removal 구현은 source/test에서 확인했으나 current production multi-session parity를 한 세션에서 끝까지 재현하지 못했다.</td>
+    <td>아니오 / partial</td>
+  </tr>
+  <tr data-status="supported">
+    <td><strong>P3</strong><br><span>configure_save</span></td>
+    <td><code>/f/curated-allblanc-morning-workout</code><br>반복 summary 확인 -&gt; 요일/시간/duration/종료 조정 -&gt; 다음 회차 확인 -&gt; 저장</td>
+    <td><span class="status supported">지원</span></td>
+    <td>compact summary와 advanced settings가 분리되고 저장됐다.</td>
+    <td>예 / supported</td>
+  </tr>
+  <tr data-status="supported">
+    <td><strong>P3</strong><br><span>execute_occurrence_reopen</span></td>
+    <td><code>/my?view=flows</code><br>Flow 열기 -&gt; 이번 occurrence 완료 -&gt; undo로 재개 -&gt; series/occurrence label 확인</td>
+    <td><span class="status supported">지원</span></td>
+    <td>execution level이 구분되고 한 회차 completion과 undo가 동작했다.</td>
+    <td>예 / supported</td>
+  </tr>
+  <tr data-status="partial">
+    <td><strong>P3</strong><br><span>history_next_occurrence_export</span></td>
+    <td><code>/my -&gt; /calendar</code><br>기록 탭 -&gt; history 확인 -&gt; 다음 occurrence -&gt; Calendar -&gt; series ICS preflight</td>
+    <td><span class="status partial">부분</span></td>
+    <td>series export summary는 확인했지만 production에서 세 세션의 과거 run 보존을 끝까지 재현하지 않았다.</td>
+    <td>아니오 / partial</td>
+  </tr>
+  <tr data-status="partial">
+    <td><strong>P4</strong><br><span>choose_artifact_save</span></td>
+    <td><code>/f/curated-wedding-naver-timeline, /f/real-mofa-overseas-travel-prep</code><br>wedding artifact 3개 비교 -&gt; 각 actual row 확인 -&gt; mixed travel route 열기</td>
+    <td><span class="status partial">부분</span></td>
+    <td>wedding calendar/checklist/memo 3개는 동작했지만 mixed travel route는 404였다.</td>
+    <td>예 / partial</td>
+  </tr>
+  <tr data-status="partial">
+    <td><strong>P4</strong><br><span>adjust_phase_item_note</span></td>
+    <td><code>/f/real-mofa-overseas-travel-prep</code><br>phase 확인 -&gt; dated item 조정 -&gt; check item 조정 -&gt; resource 확인 -&gt; note 저장</td>
+    <td><span class="status partial">부분</span></td>
+    <td>요청 route가 닫혀 production 재현은 불가했다. 대체 memo-first route는 같은 shape를 제공하지 않는다.</td>
+    <td>아니오 / blocked</td>
+  </tr>
+  <tr data-status="blocked">
+    <td><strong>P4</strong><br><span>export_source_update</span></td>
+    <td><code>/f/real-mofa-overseas-travel-prep -&gt; /my</code><br>save -&gt; export -&gt; source update -&gt; personal overlay 보존 확인</td>
+    <td><span class="status blocked">차단</span></td>
+    <td>동일 route가 404라 current production에서 시작할 수 없다.</td>
+    <td>아니오 / blocked</td>
+  </tr>
+  <tr data-status="supported">
+    <td><strong>P5</strong><br><span>miss_memo_save_land</span></td>
+    <td><code>/flows -&gt; /my</code><br>5문장 메모 입력 -&gt; 5개 제안 확인 -&gt; 초안 저장 -&gt; receipt -&gt; workspace</td>
+    <td><span class="status supported">지원</span></td>
+    <td>5개 item과 stable draft slug가 만들어지고 reload 가능한 workspace로 연결됐다.</td>
+    <td>예 / supported</td>
+  </tr>
+  <tr data-status="hidden">
+    <td><strong>P5</strong><br><span>structure_schedule_edit</span></td>
+    <td><code>/my?view=flows</code><br>Flow 열기 -&gt; 전체 계획 -&gt; 여러 할 일 조정 -&gt; 항목 추가 -&gt; 선택 -&gt; 삭제 -&gt; undo -&gt; 순서/날짜 편집</td>
+    <td><span class="status hidden">숨김</span></td>
+    <td>add/delete/restore는 정상 동작하지만 structure mode를 먼저 켜야 해 일반 항목 수정과 batch 편집이 같은 모드에 묶여 있다.</td>
+    <td>아니오 / supported</td>
+  </tr>
+  <tr data-status="partial">
+    <td><strong>P5</strong><br><span>projection_lifecycle</span></td>
+    <td><code>/my -&gt; /calendar</code><br>reload -&gt; order 확인 -&gt; Calendar projection -&gt; checklist/sheet/memo export -&gt; archive/restore</td>
+    <td><span class="status partial">부분</span></td>
+    <td>reload persistence와 current tests는 통과했지만 production에서 모든 export와 lifecycle 조합을 한 연속 세션으로 측정하지 않았다.</td>
+    <td>아니오 / partial</td>
+  </tr>
+  <tr data-status="supported">
+    <td><strong>P6</strong><br><span>find_open</span></td>
+    <td><code>/my?view=flows</code><br>Flow 목록 -&gt; 검색 노출 확인 -&gt; 원하는 Flow 찾기 -&gt; Flow 열기</td>
+    <td><span class="status supported">지원</span></td>
+    <td>1/5/20/60 모두 flowOpenDepth 2, mobile 20/60은 8개 row와 더보기, wide는 rail 검색으로 열렸다.</td>
+    <td>예 / supported</td>
+  </tr>
+  <tr data-status="partial">
+    <td><strong>P6</strong><br><span>switch_cross_surface_restore</span></td>
+    <td><code>/my -&gt; /calendar -&gt; /my</code><br>Flow 검색 -&gt; Flow 열기 -&gt; Calendar 이동 -&gt; 같은 Flow scope -&gt; My Flow 복귀 -&gt; filter/scroll 확인</td>
+    <td><span class="status partial">부분</span></td>
+    <td>stable item identity는 유지되지만 cross-route filter/scroll 복구를 current production에서 확정하지 못했다.</td>
+    <td>아니오 / partial</td>
+  </tr>
+  <tr data-status="hidden">
+    <td><strong>P6</strong><br><span>archive_restore_delete_resave</span></td>
+    <td><code>/my?view=flows</code><br>관리 메뉴 -&gt; 보관 -&gt; reload -&gt; 보관됨 필터 -&gt; 복구 -&gt; 다시 보관 -&gt; backup -&gt; 영구 삭제</td>
+    <td><span class="status hidden">숨김</span></td>
+    <td>계약과 동작은 지원되지만 경로가 6단계 이상이고 영구 삭제는 보관 후에야 드러난다.</td>
+    <td>아니오 / supported</td>
+  </tr>
+  <tr data-status="supported">
+    <td><strong>P7</strong><br><span>resume</span></td>
+    <td><code>/ -&gt; /my</code><br>홈 이어서 실행 -&gt; My Flow -&gt; 다음 할 일 -&gt; 항목 열기</td>
+    <td><span class="status supported">지원</span></td>
+    <td>continuation과 workspace next action이 유지됐다.</td>
+    <td>예 / supported</td>
+  </tr>
+  <tr data-status="supported">
+    <td><strong>P7</strong><br><span>complete_undo_reopen</span></td>
+    <td><code>/my?view=flows</code><br>항목 완료 -&gt; 즉시 undo -&gt; 다시 완료 -&gt; 완료 view -&gt; 체크 해제 reopen</td>
+    <td><span class="status supported">지원</span></td>
+    <td>즉시 undo와 completed reopen이 동작했고 duplicate completion control은 관찰되지 않았다.</td>
+    <td>예 / supported</td>
+  </tr>
+  <tr data-status="hidden">
+    <td><strong>P7</strong><br><span>reflect_new_run_history</span></td>
+    <td><code>/my?view=flows</code><br>기록 탭 -&gt; 회고 -&gt; 새 run preview -&gt; 취소 -&gt; 새 run 시작 -&gt; 과거 run 확인</td>
+    <td><span class="status hidden">숨김</span></td>
+    <td>reuse preview와 취소는 동작하지만 record tab 안쪽이며 production에서 과거 run 보존까지 끝까지 확정하지 않았다.</td>
+    <td>아니오 / partial</td>
+  </tr>
+  <tr data-status="supported">
+    <td><strong>P8</strong><br><span>keyboard_core</span></td>
+    <td><code>/f/moving-d30-basic -&gt; /my</code><br>header tab -&gt; save-before controls -&gt; save -&gt; receipt -&gt; workspace tabs -&gt; completion</td>
+    <td><span class="status supported">지원</span></td>
+    <td>captured surfaces에서 unnamed focusable 0, overflow 0이며 targeted E2E가 통과했다.</td>
+    <td>예 / supported</td>
+  </tr>
+  <tr data-status="supported">
+    <td><strong>P8</strong><br><span>overlay_focus_return</span></td>
+    <td><code>/calendar?demo=ux12</code><br>날짜 선택 -&gt; agenda item 열기 -&gt; detail sheet -&gt; Escape -&gt; trigger focus 확인</td>
+    <td><span class="status supported">지원</span></td>
+    <td>production에서 sheet, Escape close, agenda trigger focus return이 모두 통과했다.</td>
+    <td>예 / supported</td>
+  </tr>
+  <tr data-status="partial">
+    <td><strong>P8</strong><br><span>error_destructive_cancel</span></td>
+    <td><code>/my?view=flows</code><br>관리 메뉴 -&gt; 영구 삭제 dialog -&gt; 취소 -&gt; export 실패 상태 -&gt; 재시도</td>
+    <td><span class="status partial">부분</span></td>
+    <td>dialog/취소와 current tests는 확인했지만 production에 실패를 주입하지 않아 export retry는 미검증이다.</td>
+    <td>아니오 / partial</td>
+  </tr></tbody></table></div>
+  </section>
+
+  <section class="section" id="complexity">
+    <h2>My Flow complexity metrics</h2>
+    <p class="lead">production DOM에 localStorage fixture를 주입한 fixture_only 측정이다. 60개 중 11개는 scale 전용 synthetic copies이며 실제 사용자 데이터가 아니다.</p>
+    <div class="table-wrap"><table><thead><tr><th>Flow</th><th>Viewport</th><th>총수</th><th>렌더 row</th><th>검색</th><th>첫 viewport command</th><th>열기 depth</th><th>overflow</th><th>unnamed</th></tr></thead><tbody>
+  <tr>
+    <td>1</td><td>390x844</td><td>1</td><td>1</td>
+    <td>숨김</td><td>13</td>
+    <td>2</td><td>0</td><td>0</td>
+  </tr>
+  <tr>
+    <td>5</td><td>390x844</td><td>5</td><td>5</td>
+    <td>표시</td><td>21</td>
+    <td>2</td><td>0</td><td>0</td>
+  </tr>
+  <tr>
+    <td>20</td><td>390x844</td><td>20</td><td>8</td>
+    <td>표시</td><td>21</td>
+    <td>2</td><td>0</td><td>0</td>
+  </tr>
+  <tr>
+    <td>60</td><td>390x844</td><td>60</td><td>8</td>
+    <td>표시</td><td>21</td>
+    <td>2</td><td>0</td><td>0</td>
+  </tr>
+  <tr>
+    <td>1</td><td>1024x768</td><td>1</td><td>1</td>
+    <td>숨김</td><td>17</td>
+    <td>2</td><td>0</td><td>0</td>
+  </tr>
+  <tr>
+    <td>5</td><td>1024x768</td><td>5</td><td>5</td>
+    <td>표시</td><td>20</td>
+    <td>2</td><td>0</td><td>0</td>
+  </tr>
+  <tr>
+    <td>20</td><td>1024x768</td><td>20</td><td>20</td>
+    <td>표시</td><td>20</td>
+    <td>2</td><td>0</td><td>0</td>
+  </tr>
+  <tr>
+    <td>60</td><td>1024x768</td><td>60</td><td>60</td>
+    <td>표시</td><td>20</td>
+    <td>2</td><td>0</td><td>0</td>
+  </tr></tbody></table></div>
+    <div class="metrics">
+      <div class="metric"><b>0 px</b><span>all measured horizontal overflow</span></div>
+      <div class="metric"><b>0</b><span>all measured unnamed focusables</span></div>
+      <div class="metric"><b>8</b><span>mobile initial rows at 20/60</span></div>
+      <div class="metric"><b>21</b><span>mobile first-view commands at 5+</span></div>
+    </div>
+  </section>
+
+  <section class="section" id="alternatives"><h2>A/B/C technical decision</h2><p class="lead">점수는 current findings를 대상으로 한 heuristic comparison이며 사용자 검증이 아니다.</p>
+    <div class="alternatives">
+      <article class="alternative"><h3>A. Keep and tighten</h3><div class="score">3.35</div><p>계약 안전성은 높지만 command depth가 거의 줄지 않는다.</p><b>Reject</b></article>
+      <article class="alternative selected"><h3>B. Focused workspace</h3><div class="score">4.50</div><p>library는 유지하고 Flow를 연 뒤 object commands를 한곳에 모은다.</p><b>Select</b></article>
+      <article class="alternative"><h3>C. Run-first</h3><div class="score">2.75</div><p>routine에는 강하지만 checklist와 source Flow까지 run 중심으로 왜곡한다.</p><b>Defer</b></article>
+    </div>
+  </section>
+
+  <section class="section" id="wireframes">
+    <h2>Current vs proposed 390px</h2>
+    <div class="wire-grid">
+      <div class="wire"><h3>Current</h3><div class="phone">
+        <div class="wire-block muted">My Flow: 지금 | Flow 목록 | 완료</div>
+        <div class="wire-block">‹ 이사 준비 · ⋯ 관리</div>
+        <div class="wire-block muted">실행 | 전체 계획 | 기록</div>
+        <div class="wire-block primary">다음 할 일 · 완료 · 열기</div>
+        <div class="wire-block">전체 계획 보기</div>
+        <div class="wire-block muted">기록 안의 가져가기와 고급 작업</div>
+      </div><p class="footnote">두 navigation axis와 advanced disclosure가 command 위치를 나눈다.</p></div>
+      <div class="wire"><h3>Proposed B</h3><div class="phone">
+        <div class="wire-block">‹ Flow 목록 <b>이사 준비</b> · 관리</div>
+        <div class="wire-block primary"><b>다음 할 일</b><br>이사 방식 정하기 · 7월 2일<br>[완료] [열기]</div>
+        <div class="row"><div class="wire-block">빠른 수정</div><div class="wire-block">가져가기</div></div>
+        <div class="wire-block"><b>전체 계획 24개</b><br>phase/date group · 펼치기</div>
+        <div class="wire-block muted">최근 기록 0개 · 더보기</div>
+      </div><p class="footnote">global tabs는 drill-in에서 물러나고 item edit/export/manage는 object command로 모인다.</p></div>
+    </div>
+    <h2 style="margin-top:24px">Current vs proposed 1024px</h2>
+    <div class="wire-grid">
+      <div class="wire"><h3>Current</h3><div class="wide-wire wide-layout">
+        <div class="wire-block muted">Library rail<br>search/filter<br>20 rows</div>
+        <div class="wire-block">Plan canvas<br>전체 Flow rows<br>batch mode</div>
+        <div class="wire-block muted">Inspector<br>next action<br>progress</div>
+      </div></div>
+      <div class="wire"><h3>Proposed B</h3><div class="wide-wire wide-layout">
+        <div class="wire-block muted">Library rail<br>search/filter<br>selected identity</div>
+        <div class="wire-block primary">Focused canvas<br>next action<br>phase/date plan<br>record summary</div>
+        <div class="wire-block">Command inspector<br>quick edit<br>export scope<br>manage</div>
+      </div></div>
+    </div>
+  </section>
+
+  <section class="section" id="contracts">
+    <h2>계약과 구현 경계</h2>
+    <div class="table-wrap"><table><thead><tr><th>Layer</th><th>현재 상태</th><th>P32 원칙</th><th>Migration</th></tr></thead><tbody>
+      <tr><td>source</td><td>source definition/version 분리</td><td>read-only provenance 유지</td><td>없음</td></tr>
+      <tr><td>personal overlay</td><td>title/date/memo/structure overlay</td><td>quick edit가 동일 overlay 사용</td><td>없음</td></tr>
+      <tr><td>run</td><td>completion/reopen/history 분리</td><td>next action과 record 위치만 조정</td><td>없음</td></tr>
+      <tr><td>occurrence</td><td>series/revision/occurrence 분리</td><td>run-first C안으로 합치지 않음</td><td>없음</td></tr>
+      <tr><td>export</td><td>flow/selected/item scope와 receipt</td><td>entry depth만 줄이고 count/identity 유지</td><td>없음</td></tr>
+      <tr><td>lifecycle</td><td>archive/restore/permanent delete 분리</td><td>한 manage sheet에서 상태별 노출</td><td>없음</td></tr>
+    </tbody></table></div>
+  </section>
+
+  <section class="section" id="program">
+    <h2>P32 staged program</h2><p class="lead">순서가 필요한 5개 slice다. P32-01 correctness 후 P32-02 composition, P32-03 quick edit, P32-04 command consolidation, P32-05 final gate 순서다.</p>
+    <div class="program">
+      <article class="slice"><h3>P32-01 Route/Evidence Correctness</h3><p>404 mixed fixture를 유효 계약으로 교체하거나 blocked로 고정. <code>P32-MIXED-SHAPE-ROUTE-CONTRACT</code></p></article>
+      <article class="slice"><h3>P32-02 Focused Workspace</h3><p>object header, next action, quick edit, export, manage로 mobile/wide hierarchy 통일. <code>P32-MY-FLOW-FOCUSED-COMMANDS</code></p></article>
+      <article class="slice"><h3>P32-03 Quick Item Edit</h3><p>title/date/memo를 3단계 안에 수정하고 advanced fields는 접는다. <code>P32-ITEM-QUICK-EDIT</code></p></article>
+      <article class="slice"><h3>P32-04 Anchor, Export, Lifecycle</h3><p>global anchor reuse와 scope/export/lifecycle entry를 같은 object command grammar로 연결. <code>P32-ANCHOR-REUSE</code></p></article>
+      <article class="slice"><h3>P32-05 Continuity Final Gate</h3><p>24 cells, 1/5/20/60, six shapes, 390/1024/1440, full regression. <code>P32-FINAL-24-CELL-GATE</code></p></article>
+    </div><p><a href="./next-program.md">상세 범위, 비범위, dependency, rollback 보기</a></p>
+  </section>
+
+  <section class="section" id="evidence">
+    <h2>Current evidence gallery</h2>
+    <div class="gallery">
+      <figure class="shot"><img src="./screenshots/my-flow-20-mobile.png" alt="20개 My Flow 모바일 목록"><figcaption>20 Flow mobile list · 8 rows + more</figcaption></figure>
+      <figure class="shot"><img src="./screenshots/probe-moving-workspace.png" alt="이사 Flow 모바일 집중 workspace"><figcaption>saved moving workspace · global/local axes</figcaption></figure>
+      <figure class="shot"><img src="./screenshots/probe-moving-export.png" alt="이사 Flow 전체 export panel"><figcaption>whole export · record and advanced path</figcaption></figure>
+      <figure class="shot"><img src="./screenshots/probe-vehicle-undated-calendar.png" alt="날짜 없는 차량 점검 Calendar 배치"><figcaption>undated scheduling and undo</figcaption></figure>
+      <figure class="shot"><img src="./screenshots/probe-routine-record-export.png" alt="반복 운동 기록과 export"><figcaption>routine record/export</figcaption></figure>
+      <figure class="shot"><img src="./screenshots/probe-personal-draft-structure.png" alt="개인 draft 구조 편집"><figcaption>structure mode add/delete/restore</figcaption></figure>
+      <figure class="shot"><img src="./screenshots/mixed-travel-mobile.png" alt="닫힌 mixed travel route 404"><figcaption>required mixed route · 404</figcaption></figure>
+      <figure class="shot"><img src="./screenshots/my-flow-20-wide.png" alt="20개 My Flow wide rail canvas inspector"><figcaption>wide rail/canvas/inspector</figcaption></figure>
+      <figure class="shot"><img src="./screenshots/probe-completed-keyboard-calendar-focus.png" alt="Calendar item sheet focus return 검증"><figcaption>Calendar sheet Escape and focus return</figcaption></figure>
+    </div>
+    <div class="table-wrap"><table><thead><tr><th>Gate</th><th>결과</th></tr></thead><tbody>
+      <tr><td><code>npm.cmd ci</code></td><td>passed · 215 packages installed from package-lock</td></tr><tr><td><code>npm.cmd run docs:check</code></td><td>passed_final · 14 required files, 3113 local links</td></tr><tr><td><code>npm.cmd test</code></td><td>passed · 34 pretest + 587 unit/workflow tests</td></tr><tr><td><code>npm.cmd run build</code></td><td>passed · Next 15.5.21, 18 static pages</td></tr><tr><td><code>targeted P31 Playwright</code></td><td>passed · 5/5</td></tr><tr><td><code>npm.cmd run test:e2e -- --reporter=line</code></td><td>environment_retry_required · 306/310; 4 browser allocation/navigation timeouts after VirtualAlloc failure</td></tr><tr><td><code>npx.cmd playwright test --last-failed --workers=1 --reporter=line</code></td><td>passed · 4/4; all 310 test assertions passed across retry</td></tr><tr><td><code>npm.cmd run security:audit</code></td><td>failed · postcss advisory: 1 high, 1 moderate; force fix would downgrade Next to 9.3.3</td></tr>
+    </tbody></table></div>
+    <p class="footnote">App code, dependency, STATUS, ROADMAP 변경 없음. commit/push/deploy 없음. observed-user count 0.</p>
+  </section>
+</main>
+<script>
+  const buttons = Array.from(document.querySelectorAll('[data-filter]'));
+  const rows = Array.from(document.querySelectorAll('#score-body tr'));
+  buttons.forEach((button) => button.addEventListener('click', () => {
+    buttons.forEach((entry) => entry.setAttribute('aria-pressed', String(entry === button)));
+    const filter = button.dataset.filter;
+    rows.forEach((row) => { row.hidden = filter !== 'all' && row.dataset.status !== filter; });
+  }));
+</script>
+</body></html>

@@ -1,0 +1,796 @@
+{
+  "schemaVersion": 1,
+  "reviewerRole": "codex_independent",
+  "observedUserCount": 0,
+  "requiredCellCount": 24,
+  "actualCellCount": 24,
+  "statusCounts": {
+    "supported": 11,
+    "partial": 8,
+    "hidden": 4,
+    "blocked": 1
+  },
+  "cells": [
+    {
+      "personaId": "P1",
+      "sessionId": "discover_save_land",
+      "route": "/f/moving-d30-basic -> /my?savedFlow=moving-d30-basic",
+      "viewport": "390x844, representative 1024x768",
+      "initialState": "fresh localStorage",
+      "steps": [
+        "이사일 입력",
+        "24개 전체 preview 펼치기",
+        "저장",
+        "receipt 확인",
+        "전체 Flow 보기"
+      ],
+      "stepCount": 5,
+      "status": "supported",
+      "mentalModelPrediction": "이사일을 기준으로 24개 일정이 저장되고 같은 Flow가 My Flow에 열린다.",
+      "actualResult": "실제 row와 24개 receipt가 보이고 dedicated workspace로 연결됐다.",
+      "explanationFree": true,
+      "crossSurfaceParity": "supported",
+      "recoveryPath": "receipt에서 My Flow 또는 Calendar로 이동",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_browser_automation",
+        "current_production_screenshot"
+      ],
+      "evidenceRefs": [
+        "current-journey-probes.json#moving",
+        "screenshots/moving-mobile.png",
+        "screenshots/probe-moving-workspace.png"
+      ],
+      "observedUserQuestion": "24개 일정이라는 저장 단위를 첫 화면만 보고 예측하는가?"
+    },
+    {
+      "personaId": "P1",
+      "sessionId": "personalize_execute_reopen",
+      "route": "/my?view=flows",
+      "viewport": "390x844, representative 1024x768",
+      "initialState": "saved moving-d30-basic",
+      "steps": [
+        "Flow 열기",
+        "전체 계획",
+        "항목 열기",
+        "제목/날짜/메모 수정",
+        "완료",
+        "undo/reopen",
+        "전체 기준일 찾기"
+      ],
+      "stepCount": 7,
+      "status": "partial",
+      "mentalModelPrediction": "개별 일정과 전체 이사일을 각각 바꿀 수 있다.",
+      "actualResult": "개별 값과 완료/reopen은 지원되지만 전체 기준일 변경 진입은 보이지 않았다.",
+      "explanationFree": false,
+      "crossSurfaceParity": "partial",
+      "recoveryPath": "개별 날짜 override는 유지되지만 전체 기준일은 새 저장 경로로 돌아가야 한다.",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_browser_automation",
+        "current_source"
+      ],
+      "evidenceRefs": [
+        "current-journey-probes.json#moving",
+        "components/flow/AppClient.tsx:15372"
+      ],
+      "observedUserQuestion": "개별 날짜와 전체 기준일의 차이를 사용자가 이해하는가?"
+    },
+    {
+      "personaId": "P1",
+      "sessionId": "export_lifecycle_reuse",
+      "route": "/my?view=flows -> /calendar",
+      "viewport": "390x844, representative 1024x768",
+      "initialState": "personal item override exists",
+      "steps": [
+        "기록 탭",
+        "고급 작업",
+        "whole export",
+        "보관",
+        "reload",
+        "보관됨 필터",
+        "복구",
+        "새 이사일 재사용 찾기"
+      ],
+      "stepCount": 8,
+      "status": "hidden",
+      "mentalModelPrediction": "현재 개인 수정본을 내보내고 같은 Flow를 새 날짜로 재사용한다.",
+      "actualResult": "whole export와 archive/restore는 작동하지만 6단계 경로이며 새 기준일 재사용은 이어지지 않는다.",
+      "explanationFree": false,
+      "crossSurfaceParity": "partial",
+      "recoveryPath": "보관 직후 undo와 보관됨 direct restore",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_browser_automation",
+        "current_source",
+        "heuristic_simulation"
+      ],
+      "evidenceRefs": [
+        "current-journey-probes.json#moving.exportPreflight",
+        "lib/flow/storage.ts:932"
+      ],
+      "observedUserQuestion": "가져가기와 새 run 시작을 서로 다른 행동으로 예측하는가?"
+    },
+    {
+      "personaId": "P2",
+      "sessionId": "preview_save",
+      "route": "/f/vehicle-inspection-prep",
+      "viewport": "390x844, representative 1024x768",
+      "initialState": "fresh localStorage",
+      "steps": [
+        "10개 preview 확인",
+        "날짜 없이 시작",
+        "receipt",
+        "전체 Flow 보기"
+      ],
+      "stepCount": 4,
+      "status": "supported",
+      "mentalModelPrediction": "날짜 없는 10개 checklist가 My Flow에 저장된다.",
+      "actualResult": "read-only preview, undated intent, receipt와 workspace가 일치했다.",
+      "explanationFree": true,
+      "crossSurfaceParity": "supported",
+      "recoveryPath": "receipt에서 전체 Flow 보기",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_browser_automation",
+        "current_production_screenshot"
+      ],
+      "evidenceRefs": [
+        "current-journey-probes.json#vehicle",
+        "screenshots/vehicle-mobile.png"
+      ],
+      "observedUserQuestion": "날짜 없이 시작이 오류가 아니라 실행 가능한 checklist로 읽히는가?"
+    },
+    {
+      "personaId": "P2",
+      "sessionId": "schedule_undo_complete",
+      "route": "/my -> /calendar",
+      "viewport": "390x844, representative 1024x768",
+      "initialState": "vehicle checklist saved undated",
+      "steps": [
+        "My Flow 실행",
+        "Calendar undated tray",
+        "날짜 지정",
+        "undo",
+        "완료",
+        "완료 취소"
+      ],
+      "stepCount": 6,
+      "status": "supported",
+      "mentalModelPrediction": "날짜 없는 항목을 Calendar에 배치해도 동일 항목으로 유지된다.",
+      "actualResult": "stable item을 배치하고 undo했으며 completion/reopen 계약도 유지됐다.",
+      "explanationFree": true,
+      "crossSurfaceParity": "supported",
+      "recoveryPath": "Calendar batch undo와 completion undo",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_browser_automation",
+        "current_command",
+        "current_source"
+      ],
+      "evidenceRefs": [
+        "current-journey-probes.json#vehicle",
+        "screenshots/probe-vehicle-undated-calendar.png"
+      ],
+      "observedUserQuestion": "사용자는 Calendar tray를 배치 대기열로 이해하는가?"
+    },
+    {
+      "personaId": "P2",
+      "sessionId": "scope_export_remove_date",
+      "route": "/my -> /calendar",
+      "viewport": "390x844, representative 1024x768",
+      "initialState": "one vehicle item has a personal date",
+      "steps": [
+        "whole export",
+        "selected export",
+        "current item export",
+        "날짜 제거",
+        "undated tray 복귀 확인"
+      ],
+      "stepCount": 5,
+      "status": "partial",
+      "mentalModelPrediction": "scope와 count를 먼저 고르고 날짜 제거 시 tray로 돌아간다.",
+      "actualResult": "scope 계약과 date removal 구현은 source/test에서 확인했으나 current production multi-session parity를 한 세션에서 끝까지 재현하지 못했다.",
+      "explanationFree": false,
+      "crossSurfaceParity": "partial",
+      "recoveryPath": "개별 날짜 제거와 export receipt",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_source",
+        "current_command",
+        "heuristic_simulation"
+      ],
+      "evidenceRefs": [
+        "lib/flow/export-scope.ts:10",
+        "tests/e2e/p26-unified-export.spec.ts:127",
+        "tests/e2e/flow-mvp.spec.ts:3728"
+      ],
+      "observedUserQuestion": "whole/selected/current 범위를 format보다 먼저 인식하는가?"
+    },
+    {
+      "personaId": "P3",
+      "sessionId": "configure_save",
+      "route": "/f/curated-allblanc-morning-workout",
+      "viewport": "390x844, representative 1024x768",
+      "initialState": "fresh localStorage",
+      "steps": [
+        "반복 summary 확인",
+        "요일/시간/duration/종료 조정",
+        "다음 회차 확인",
+        "저장"
+      ],
+      "stepCount": 4,
+      "status": "supported",
+      "mentalModelPrediction": "routine definition과 다음 occurrence가 분리된다.",
+      "actualResult": "compact summary와 advanced settings가 분리되고 저장됐다.",
+      "explanationFree": true,
+      "crossSurfaceParity": "supported",
+      "recoveryPath": "조정 취소 후 기본 cadence 유지",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_browser_automation",
+        "current_production_screenshot"
+      ],
+      "evidenceRefs": [
+        "current-journey-probes.json#routine",
+        "screenshots/routine-mobile.png"
+      ],
+      "observedUserQuestion": "사용자는 반복 Flow와 이번 운동 회차를 구분하는가?"
+    },
+    {
+      "personaId": "P3",
+      "sessionId": "execute_occurrence_reopen",
+      "route": "/my?view=flows",
+      "viewport": "390x844, representative 1024x768",
+      "initialState": "routine saved",
+      "steps": [
+        "Flow 열기",
+        "이번 occurrence 완료",
+        "undo로 재개",
+        "series/occurrence label 확인"
+      ],
+      "stepCount": 4,
+      "status": "supported",
+      "mentalModelPrediction": "한 회차 완료가 series 전체 완료로 보이지 않는다.",
+      "actualResult": "execution level이 구분되고 한 회차 completion과 undo가 동작했다.",
+      "explanationFree": true,
+      "crossSurfaceParity": "supported",
+      "recoveryPath": "즉시 completion undo",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_browser_automation",
+        "current_source"
+      ],
+      "evidenceRefs": [
+        "current-journey-probes.json#routine.executionLevels"
+      ],
+      "observedUserQuestion": "회차 완료 후 다음 회차로 넘어가는 피드백이 충분한가?"
+    },
+    {
+      "personaId": "P3",
+      "sessionId": "history_next_occurrence_export",
+      "route": "/my -> /calendar",
+      "viewport": "390x844, representative 1024x768",
+      "initialState": "one occurrence was completed and reopened",
+      "steps": [
+        "기록 탭",
+        "history 확인",
+        "다음 occurrence",
+        "Calendar",
+        "series ICS preflight"
+      ],
+      "stepCount": 5,
+      "status": "partial",
+      "mentalModelPrediction": "과거 run, 현재 occurrence, 다음 occurrence, series ICS가 다른 범위다.",
+      "actualResult": "series export summary는 확인했지만 production에서 세 세션의 과거 run 보존을 끝까지 재현하지 않았다.",
+      "explanationFree": false,
+      "crossSurfaceParity": "partial",
+      "recoveryPath": "run history registry와 reuse preview",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_browser_automation",
+        "current_source",
+        "current_command"
+      ],
+      "evidenceRefs": [
+        "current-journey-probes.json#routine.exportPreflight",
+        "lib/flow/storage.ts:1367"
+      ],
+      "observedUserQuestion": "사용자는 series ICS와 이번 회차 export 차이를 예상하는가?"
+    },
+    {
+      "personaId": "P4",
+      "sessionId": "choose_artifact_save",
+      "route": "/f/curated-wedding-naver-timeline, /f/real-mofa-overseas-travel-prep",
+      "viewport": "390x844, representative 1024x768",
+      "initialState": "fresh localStorage",
+      "steps": [
+        "wedding artifact 3개 비교",
+        "각 actual row 확인",
+        "mixed travel route 열기"
+      ],
+      "stepCount": 3,
+      "status": "partial",
+      "mentalModelPrediction": "콘텐츠별 natural artifact를 고르고 같은 전체 Flow를 저장한다.",
+      "actualResult": "wedding calendar/checklist/memo 3개는 동작했지만 mixed travel route는 404였다.",
+      "explanationFree": true,
+      "crossSurfaceParity": "partial",
+      "recoveryPath": "wedding 선택은 되돌릴 수 있으나 mixed route 대체는 동일 객체가 아니다.",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_browser_automation",
+        "current_production_interaction"
+      ],
+      "evidenceRefs": [
+        "current-journey-probes.json#artifact-mixed",
+        "screenshots/probe-artifact-mixed-wedding-artifacts.png"
+      ],
+      "observedUserQuestion": "추천 artifact 이유와 손실을 실제 row만 보고 이해하는가?"
+    },
+    {
+      "personaId": "P4",
+      "sessionId": "adjust_phase_item_note",
+      "route": "/f/real-mofa-overseas-travel-prep",
+      "viewport": "390x844, representative 1024x768",
+      "initialState": "requested mixed Flow route",
+      "steps": [
+        "phase 확인",
+        "dated item 조정",
+        "check item 조정",
+        "resource 확인",
+        "note 저장"
+      ],
+      "stepCount": 5,
+      "status": "partial",
+      "mentalModelPrediction": "한 Flow 안에서 date/check/resource가 역할별로 구분된다.",
+      "actualResult": "요청 route가 닫혀 production 재현은 불가했다. 대체 memo-first route는 같은 shape를 제공하지 않는다.",
+      "explanationFree": false,
+      "crossSurfaceParity": "blocked",
+      "recoveryPath": "유효한 mixed fixture가 필요",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_production_interaction",
+        "current_source"
+      ],
+      "evidenceRefs": [
+        "screenshots/mixed-travel-mobile.png",
+        "tests/e2e/flow-mvp.spec.ts:5840"
+      ],
+      "observedUserQuestion": "유효 fixture가 생긴 뒤 resource와 실행 항목이 구분되는지 확인해야 한다."
+    },
+    {
+      "personaId": "P4",
+      "sessionId": "export_source_update",
+      "route": "/f/real-mofa-overseas-travel-prep -> /my",
+      "viewport": "390x844, representative 1024x768",
+      "initialState": "route closed",
+      "steps": [
+        "save",
+        "export",
+        "source update",
+        "personal overlay 보존 확인"
+      ],
+      "stepCount": 4,
+      "status": "blocked",
+      "mentalModelPrediction": "source update가 개인 수정과 run을 덮지 않는다.",
+      "actualResult": "동일 route가 404라 current production에서 시작할 수 없다.",
+      "explanationFree": false,
+      "crossSurfaceParity": "blocked",
+      "recoveryPath": "내부 route/evidence 계약을 먼저 정정",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_production_interaction",
+        "current_source"
+      ],
+      "evidenceRefs": [
+        "current-production-capture.json#mixed-travel"
+      ],
+      "observedUserQuestion": "없음. 내부 correctness gate 선행."
+    },
+    {
+      "personaId": "P5",
+      "sessionId": "miss_memo_save_land",
+      "route": "/flows -> /my",
+      "viewport": "390x844, representative 1024x768",
+      "initialState": "fresh localStorage",
+      "steps": [
+        "5문장 메모 입력",
+        "5개 제안 확인",
+        "초안 저장",
+        "receipt",
+        "workspace"
+      ],
+      "stepCount": 5,
+      "status": "supported",
+      "mentalModelPrediction": "메모 문장이 개인 draft item으로 분리되고 같은 draft로 저장된다.",
+      "actualResult": "5개 item과 stable draft slug가 만들어지고 reload 가능한 workspace로 연결됐다.",
+      "explanationFree": true,
+      "crossSurfaceParity": "supported",
+      "recoveryPath": "저장 전 item 검토와 receipt",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_browser_automation",
+        "current_source"
+      ],
+      "evidenceRefs": [
+        "current-journey-probes.json#personal-draft"
+      ],
+      "observedUserQuestion": "문장 분할 결과를 사용자가 충분히 신뢰하는가?"
+    },
+    {
+      "personaId": "P5",
+      "sessionId": "structure_schedule_edit",
+      "route": "/my?view=flows",
+      "viewport": "390x844, representative 1024x768",
+      "initialState": "saved personal draft",
+      "steps": [
+        "Flow 열기",
+        "전체 계획",
+        "여러 할 일 조정",
+        "항목 추가",
+        "선택",
+        "삭제",
+        "undo",
+        "순서/날짜 편집"
+      ],
+      "stepCount": 8,
+      "status": "hidden",
+      "mentalModelPrediction": "간단한 항목 수정은 바로 보이고 batch는 필요할 때만 켠다.",
+      "actualResult": "add/delete/restore는 정상 동작하지만 structure mode를 먼저 켜야 해 일반 항목 수정과 batch 편집이 같은 모드에 묶여 있다.",
+      "explanationFree": false,
+      "crossSurfaceParity": "supported",
+      "recoveryPath": "batch undo와 persistent recovery",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_browser_automation",
+        "current_source"
+      ],
+      "evidenceRefs": [
+        "current-journey-probes.json#personal-draft",
+        "components/flow/AppClient.tsx:12834"
+      ],
+      "observedUserQuestion": "한 항목 추가를 위해 여러 할 일 조정 모드를 예상하는가?"
+    },
+    {
+      "personaId": "P5",
+      "sessionId": "projection_lifecycle",
+      "route": "/my -> /calendar",
+      "viewport": "390x844, representative 1024x768",
+      "initialState": "draft item added and restored",
+      "steps": [
+        "reload",
+        "order 확인",
+        "Calendar projection",
+        "checklist/sheet/memo export",
+        "archive/restore"
+      ],
+      "stepCount": 5,
+      "status": "partial",
+      "mentalModelPrediction": "effective personal items와 stable identity가 모든 projection에 유지된다.",
+      "actualResult": "reload persistence와 current tests는 통과했지만 production에서 모든 export와 lifecycle 조합을 한 연속 세션으로 측정하지 않았다.",
+      "explanationFree": false,
+      "crossSurfaceParity": "partial",
+      "recoveryPath": "overlay persistence, archive restore",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_browser_automation",
+        "current_command",
+        "current_source"
+      ],
+      "evidenceRefs": [
+        "current-journey-probes.json#personal-draft.draftCounts",
+        "tests/e2e/url-first-user-surface.spec.ts:1395"
+      ],
+      "observedUserQuestion": "외부 export 후에도 My Flow를 계속 써야 할 이유가 명확한가?"
+    },
+    {
+      "personaId": "P6",
+      "sessionId": "find_open",
+      "route": "/my?view=flows",
+      "viewport": "390x844, representative 1024x768",
+      "initialState": "fixture_only 1/5/20/60 Flow",
+      "steps": [
+        "Flow 목록",
+        "검색 노출 확인",
+        "원하는 Flow 찾기",
+        "Flow 열기"
+      ],
+      "stepCount": 4,
+      "status": "supported",
+      "mentalModelPrediction": "규모가 커지면 search-first로 전환되고 Flow는 4단계 이내 열린다.",
+      "actualResult": "1/5/20/60 모두 flowOpenDepth 2, mobile 20/60은 8개 row와 더보기, wide는 rail 검색으로 열렸다.",
+      "explanationFree": true,
+      "crossSurfaceParity": "supported",
+      "recoveryPath": "back으로 목록 복귀",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "fixture_only",
+        "current_browser_automation"
+      ],
+      "evidenceRefs": [
+        "current-production-capture.json#scaleResults",
+        "screenshots/scale-60-mobile-list.png"
+      ],
+      "observedUserQuestion": "20개 이상에서 사용자가 검색과 최근 Flow 중 무엇을 먼저 쓰는가?"
+    },
+    {
+      "personaId": "P6",
+      "sessionId": "switch_cross_surface_restore",
+      "route": "/my -> /calendar -> /my",
+      "viewport": "390x844, representative 1024x768",
+      "initialState": "20 Flow, one selected Flow and list scroll",
+      "steps": [
+        "Flow 검색",
+        "Flow 열기",
+        "Calendar 이동",
+        "같은 Flow scope",
+        "My Flow 복귀",
+        "filter/scroll 확인"
+      ],
+      "stepCount": 6,
+      "status": "partial",
+      "mentalModelPrediction": "selected Flow identity와 list context가 surface 이동 뒤 복구된다.",
+      "actualResult": "stable item identity는 유지되지만 cross-route filter/scroll 복구를 current production에서 확정하지 못했다.",
+      "explanationFree": false,
+      "crossSurfaceParity": "partial",
+      "recoveryPath": "Flow 검색으로 다시 찾기",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 1,
+      "evidenceKinds": [
+        "current_source",
+        "heuristic_simulation"
+      ],
+      "evidenceRefs": [
+        "components/flow/AppClient.tsx:5174",
+        "components/flow/AppClient.tsx:5624"
+      ],
+      "observedUserQuestion": "Calendar에서 돌아왔을 때 이전 Flow와 scroll을 기대하는가?"
+    },
+    {
+      "personaId": "P6",
+      "sessionId": "archive_restore_delete_resave",
+      "route": "/my?view=flows",
+      "viewport": "390x844, representative 1024x768",
+      "initialState": "one selected Flow among 20",
+      "steps": [
+        "관리 메뉴",
+        "보관",
+        "reload",
+        "보관됨 필터",
+        "복구",
+        "다시 보관",
+        "backup",
+        "영구 삭제"
+      ],
+      "stepCount": 8,
+      "status": "hidden",
+      "mentalModelPrediction": "Flow 관리 한 곳에서 lifecycle 단계를 이해한다.",
+      "actualResult": "계약과 동작은 지원되지만 경로가 6단계 이상이고 영구 삭제는 보관 후에야 드러난다.",
+      "explanationFree": false,
+      "crossSurfaceParity": "supported",
+      "recoveryPath": "immediate undo, direct restore, backup-gated permanent delete",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_browser_automation",
+        "current_source",
+        "current_command"
+      ],
+      "evidenceRefs": [
+        "current-journey-probes.json#moving",
+        "tests/e2e/p31-mobile-journey-reconstruction.spec.ts:222"
+      ],
+      "observedUserQuestion": "사용자가 보관과 삭제를 올바르게 구분하는가?"
+    },
+    {
+      "personaId": "P7",
+      "sessionId": "resume",
+      "route": "/ -> /my",
+      "viewport": "390x844, representative 1024x768",
+      "initialState": "saved incomplete Flow",
+      "steps": [
+        "홈 이어서 실행",
+        "My Flow",
+        "다음 할 일",
+        "항목 열기"
+      ],
+      "stepCount": 4,
+      "status": "supported",
+      "mentalModelPrediction": "재방문하면 Flow 전체보다 다음 행동이 먼저 보인다.",
+      "actualResult": "continuation과 workspace next action이 유지됐다.",
+      "explanationFree": true,
+      "crossSurfaceParity": "supported",
+      "recoveryPath": "Flow 목록에서 다시 열기",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_production_screenshot",
+        "current_source"
+      ],
+      "evidenceRefs": [
+        "screenshots/home-mobile.png",
+        "components/flow/AppClient.tsx:3341"
+      ],
+      "observedUserQuestion": "홈의 이어서 실행이 재방문 이유로 충분한가?"
+    },
+    {
+      "personaId": "P7",
+      "sessionId": "complete_undo_reopen",
+      "route": "/my?view=flows",
+      "viewport": "390x844, representative 1024x768",
+      "initialState": "one active short Flow",
+      "steps": [
+        "항목 완료",
+        "즉시 undo",
+        "다시 완료",
+        "완료 view",
+        "체크 해제 reopen"
+      ],
+      "stepCount": 5,
+      "status": "supported",
+      "mentalModelPrediction": "완료와 완료 취소가 같은 item identity에 적용된다.",
+      "actualResult": "즉시 undo와 completed reopen이 동작했고 duplicate completion control은 관찰되지 않았다.",
+      "explanationFree": true,
+      "crossSurfaceParity": "supported",
+      "recoveryPath": "completion undo 또는 완료 view checkbox",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_browser_automation",
+        "current_source"
+      ],
+      "evidenceRefs": [
+        "current-journey-probes.json#completed-keyboard"
+      ],
+      "observedUserQuestion": "undo 시간이 지난 뒤 완료 view에서 다시 여는 위치를 찾는가?"
+    },
+    {
+      "personaId": "P7",
+      "sessionId": "reflect_new_run_history",
+      "route": "/my?view=flows",
+      "viewport": "390x844, representative 1024x768",
+      "initialState": "completed Flow",
+      "steps": [
+        "기록 탭",
+        "회고",
+        "새 run preview",
+        "취소",
+        "새 run 시작",
+        "과거 run 확인"
+      ],
+      "stepCount": 6,
+      "status": "hidden",
+      "mentalModelPrediction": "기록과 새 run이 현재 실행과 분리된다.",
+      "actualResult": "reuse preview와 취소는 동작하지만 record tab 안쪽이며 production에서 과거 run 보존까지 끝까지 확정하지 않았다.",
+      "explanationFree": false,
+      "crossSurfaceParity": "partial",
+      "recoveryPath": "reuse preview cancel",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_browser_automation",
+        "current_source",
+        "current_command"
+      ],
+      "evidenceRefs": [
+        "current-journey-probes.json#completed-keyboard",
+        "lib/flow/storage.ts:1467"
+      ],
+      "observedUserQuestion": "완료 후 회고와 새 run 중 어떤 행동을 먼저 기대하는가?"
+    },
+    {
+      "personaId": "P8",
+      "sessionId": "keyboard_core",
+      "route": "/f/moving-d30-basic -> /my",
+      "viewport": "390x844, representative 1024x768",
+      "initialState": "keyboard-only, 390x844",
+      "steps": [
+        "header tab",
+        "save-before controls",
+        "save",
+        "receipt",
+        "workspace tabs",
+        "completion"
+      ],
+      "stepCount": 6,
+      "status": "supported",
+      "mentalModelPrediction": "모든 핵심 action이 이름과 focus indicator를 가진다.",
+      "actualResult": "captured surfaces에서 unnamed focusable 0, overflow 0이며 targeted E2E가 통과했다.",
+      "explanationFree": true,
+      "crossSurfaceParity": "supported",
+      "recoveryPath": "Escape와 back",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_browser_automation",
+        "current_command"
+      ],
+      "evidenceRefs": [
+        "current-production-capture.json",
+        "tests/e2e/p31-evidence-surfaces.spec.ts"
+      ],
+      "observedUserQuestion": "screen reader의 Flow identity 반복이 과도하지 않은가?"
+    },
+    {
+      "personaId": "P8",
+      "sessionId": "overlay_focus_return",
+      "route": "/calendar?demo=ux12",
+      "viewport": "390x844, representative 1024x768",
+      "initialState": "selected day with at least one event",
+      "steps": [
+        "날짜 선택",
+        "agenda item 열기",
+        "detail sheet",
+        "Escape",
+        "trigger focus 확인"
+      ],
+      "stepCount": 5,
+      "status": "supported",
+      "mentalModelPrediction": "sheet를 닫으면 연 control로 focus가 돌아온다.",
+      "actualResult": "production에서 sheet, Escape close, agenda trigger focus return이 모두 통과했다.",
+      "explanationFree": true,
+      "crossSurfaceParity": "supported",
+      "recoveryPath": "Escape",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_browser_automation",
+        "current_source"
+      ],
+      "evidenceRefs": [
+        "current-journey-probes.json#completed-keyboard",
+        "screenshots/probe-completed-keyboard-calendar-focus.png"
+      ],
+      "observedUserQuestion": "focus 복귀 후 현재 날짜와 Flow context를 음성으로 이해할 수 있는가?"
+    },
+    {
+      "personaId": "P8",
+      "sessionId": "error_destructive_cancel",
+      "route": "/my?view=flows",
+      "viewport": "390x844, representative 1024x768",
+      "initialState": "archive/permanent-delete and export error states",
+      "steps": [
+        "관리 메뉴",
+        "영구 삭제 dialog",
+        "취소",
+        "export 실패 상태",
+        "재시도"
+      ],
+      "stepCount": 5,
+      "status": "partial",
+      "mentalModelPrediction": "destructive action은 focus trap과 취소를 제공하고 export 실패는 데이터 손실 없이 재시도한다.",
+      "actualResult": "dialog/취소와 current tests는 확인했지만 production에 실패를 주입하지 않아 export retry는 미검증이다.",
+      "explanationFree": false,
+      "crossSurfaceParity": "partial",
+      "recoveryPath": "dialog cancel, export retry",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_source",
+        "current_command",
+        "heuristic_simulation"
+      ],
+      "evidenceRefs": [
+        "components/flow/AppClient.tsx:17247",
+        "tests/e2e/p31-mobile-journey-reconstruction.spec.ts:222"
+      ],
+      "observedUserQuestion": "파괴적 동작 확인 문구가 저시력/키보드 사용자에게 충분한가?"
+    }
+  ]
+}
