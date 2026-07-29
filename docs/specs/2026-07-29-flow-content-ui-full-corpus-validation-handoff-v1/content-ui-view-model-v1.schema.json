@@ -1,0 +1,466 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flowme.local/schemas/content-ui-view-model-v1.schema.json",
+  "title": "Flow Content UI Full-Corpus View Model v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "generatedAt",
+    "corpusFingerprint",
+    "claimBoundary",
+    "counts",
+    "filters",
+    "contents"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "flow-content-ui-view-model-v1"
+    },
+    "generatedAt": {
+      "type": "string",
+      "minLength": 1
+    },
+    "corpusFingerprint": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "claimBoundary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "counts": {
+      "$ref": "#/$defs/counts"
+    },
+    "filters": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": [
+            "string",
+            "number",
+            "boolean"
+          ]
+        }
+      }
+    },
+    "contents": {
+      "type": "array",
+      "minItems": 80,
+      "items": {
+        "$ref": "#/$defs/content"
+      }
+    }
+  },
+  "$defs": {
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "gallery",
+        "normal",
+        "productCandidate",
+        "structureProbe",
+        "boundary",
+        "historical",
+        "item",
+        "sourceRow",
+        "projectionCell"
+      ],
+      "properties": {
+        "gallery": {
+          "type": "integer",
+          "minimum": 80
+        },
+        "normal": {
+          "type": "integer",
+          "minimum": 80
+        },
+        "productCandidate": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "structureProbe": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "boundary": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "historical": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "item": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sourceRow": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "projectionCell": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "content": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "contentId",
+        "userJobId",
+        "displayTitle",
+        "saveReason",
+        "userJob",
+        "contentMode",
+        "corpusTier",
+        "source",
+        "taxonomy",
+        "readiness",
+        "minimumInputs",
+        "primaryProjection",
+        "secondaryProjections",
+        "pacingEligible",
+        "canonical",
+        "eventSource",
+        "lineage",
+        "evidenceNotes",
+        "userReviewStatus",
+        "projectionCells",
+        "dataGraph"
+      ],
+      "properties": {
+        "contentId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "userJobId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "displayTitle": {
+          "type": "string",
+          "minLength": 1
+        },
+        "title": {
+          "type": "string"
+        },
+        "saveReason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "userJob": {
+          "type": "string",
+          "minLength": 1
+        },
+        "contentMode": {
+          "enum": [
+            "flow_content",
+            "field_template_probe",
+            "event_source_before_user_intent",
+            "boundary_control",
+            "historical_preview"
+          ]
+        },
+        "corpusTier": {
+          "enum": [
+            "product_candidate",
+            "structure_probe",
+            "boundary_control",
+            "historical_preview"
+          ]
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        },
+        "taxonomy": {
+          "$ref": "#/$defs/taxonomy"
+        },
+        "readiness": {
+          "type": "object",
+          "minProperties": 7
+        },
+        "minimumInputs": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "primaryProjection": {
+          "$ref": "#/$defs/projectionName"
+        },
+        "secondaryProjections": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/projectionName"
+          }
+        },
+        "calendarGroupingPolicy": {
+          "type": "string"
+        },
+        "pacingEligible": {
+          "type": "boolean"
+        },
+        "canonical": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "eventSource": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "lineage": {
+          "type": "object",
+          "minProperties": 1
+        },
+        "evidenceNotes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "userReviewStatus": {
+          "const": "not_reviewed"
+        },
+        "projectionCells": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 5,
+          "items": {
+            "$ref": "#/$defs/projectionCell"
+          }
+        },
+        "dataGraph": {
+          "type": "object"
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "title",
+        "provider",
+        "url",
+        "canonicalUrl",
+        "sourceFormat",
+        "accessStatus",
+        "evidenceMethod"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "provider": {
+          "type": "string",
+          "minLength": 1
+        },
+        "url": {
+          "type": "string",
+          "minLength": 1
+        },
+        "canonicalUrl": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceFormat": {
+          "type": "string",
+          "minLength": 1
+        },
+        "accessStatus": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidenceMethod": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "taxonomy": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "primaryLifeArea",
+        "sourceShape",
+        "primaryExecutionPattern",
+        "temporalIntent"
+      ],
+      "properties": {
+        "primaryLifeArea": {
+          "enum": [
+            "family_parenting",
+            "health_fitness",
+            "hobby_pet",
+            "home_living",
+            "meals_grocery",
+            "money_admin_purchase",
+            "study_reading",
+            "travel_outings",
+            "work_career"
+          ]
+        },
+        "sourceShape": {
+          "type": "string",
+          "minLength": 1
+        },
+        "primaryExecutionPattern": {
+          "enum": [
+            "compare_decide",
+            "date_preparation",
+            "ordered_procedure",
+            "phase_lifecycle",
+            "progress_tracking",
+            "repeating_routine",
+            "resource_queue"
+          ]
+        },
+        "temporalIntent": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "projectionName": {
+      "enum": [
+        "calendar",
+        "checklist",
+        "todo",
+        "sheet",
+        "memo"
+      ]
+    },
+    "projectionCell": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "contentId",
+        "projection",
+        "recommendation",
+        "availability",
+        "fidelity",
+        "generationState",
+        "minimumUserInputs",
+        "destinationCapabilitiesNeeded",
+        "counts",
+        "preservedPaths",
+        "omittedPaths",
+        "lossManifest",
+        "fallback",
+        "cellId",
+        "engineVersion",
+        "inputHash"
+      ],
+      "properties": {
+        "contentId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "projection": {
+          "$ref": "#/$defs/projectionName"
+        },
+        "recommendation": {
+          "enum": [
+            "primary",
+            "secondary",
+            "optional",
+            "not_recommended"
+          ]
+        },
+        "availability": {
+          "enum": [
+            "available_now",
+            "available_after_user_overlay",
+            "unavailable"
+          ]
+        },
+        "fidelity": {
+          "enum": [
+            "lossless_or_low_loss",
+            "bounded_loss",
+            "misleading_or_prohibited"
+          ]
+        },
+        "generationState": {
+          "enum": [
+            "generated",
+            "preview_requires_overlay",
+            "prohibited"
+          ]
+        },
+        "minimumUserInputs": {
+          "type": "array"
+        },
+        "destinationCapabilitiesNeeded": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "counts": {
+          "type": "object"
+        },
+        "output": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "preview": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "preservedPaths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "omittedPaths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "lossManifest": {
+          "type": "array"
+        },
+        "prohibitionReason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "fallback": {
+          "type": "string",
+          "minLength": 1
+        },
+        "cellId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "engineVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "inputHash": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      }
+    }
+  }
+}

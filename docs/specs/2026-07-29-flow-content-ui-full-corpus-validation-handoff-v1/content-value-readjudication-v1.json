@@ -1,0 +1,4011 @@
+{
+  "schemaVersion": "flow-content-ui-value-readjudication-v1",
+  "generatedAt": "2026-07-29T23:59:00+09:00",
+  "corpusFingerprint": "sha256:d56b289fd301805fe1299b867497b0840f8d379d1459ec0148639f8b7d5dce32",
+  "claimBoundary": "Deterministic pre-screen plus two independent internal agent reviews; not user save intent.",
+  "summary": {
+    "records": 110,
+    "internalGo": 30,
+    "internalModify": 68,
+    "internalHold": 12,
+    "valueDisagreement": 48,
+    "userReviewed": 0
+  },
+  "records": [
+    {
+      "contentId": "canonical:base-moving-d30",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "mixed",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "bundle_same_day_items_without_hiding_child_completion",
+          "separate_unrelated_actions_inside_composite_items",
+          "show_current_step_first_on_mobile"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "itemGranularity",
+        "contentValue",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "canonical:base-baby-food-174",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "go",
+      "disagreeingAxes": []
+    },
+    {
+      "contentId": "canonical:base-opic-plan",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "planVariant ?? ??? 2??1? ? Flow? 42? Item? ?? ???? ?? ??? ?? ??? ?? ??."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "mixed",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "disambiguate_duplicate_review_items_by_day_or_session",
+          "collapse_visually_duplicate_rows_without_merging_state",
+          "keep_calendar_secondary_to_sheet_progress"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "itemGranularity",
+        "scheduleSuitability",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "canonical:base-opentutorials-web1-progress",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "go",
+      "disagreeingAxes": [
+        "scheduleSuitability"
+      ]
+    },
+    {
+      "contentId": "canonical:base-new-car-comparison",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "go",
+      "disagreeingAxes": [
+        "scheduleSuitability"
+      ]
+    },
+    {
+      "contentId": "canonical:base-allblanc-7day-abs",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "go",
+      "disagreeingAxes": []
+    },
+    {
+      "contentId": "canonical:base-wtable-summer-banchan-five",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "go",
+      "disagreeingAxes": [
+        "scheduleSuitability"
+      ]
+    },
+    {
+      "contentId": "canonical:base-andstudio-job-prep-videos",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "todo",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "todo",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "go",
+      "disagreeingAxes": [
+        "scheduleSuitability"
+      ]
+    },
+    {
+      "contentId": "canonical:oq-oq-c02-kmooc-full",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "surface_unlinked_enrollment_and_completion_rows",
+          "keep_week_progress_primary_and_dates_optional"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "contentValue"
+      ]
+    },
+    {
+      "contentId": "canonical:oq-oq-c03-librivox",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "go",
+      "disagreeingAxes": [
+        "checklistTodoDecision",
+        "scheduleSuitability"
+      ]
+    },
+    {
+      "contentId": "canonical:oq-oq-c04-passport",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "todo",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "surface_fee_and_proxy_restriction_in_item_detail",
+          "keep_conditional_document_rows_visible"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "primaryProjection",
+        "checklistTodoDecision",
+        "contentValue",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "canonical:oq-oq-c05-washer",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "todo",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "too_small",
+        "primaryProjection": "todo",
+        "checklistTodoDecision": "both_with_primary",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "collapse_power_and_course_selection_into_one_maintenance_task",
+          "keep_four_source_steps_as_embedded_checklist",
+          "trigger_by_40_washes_or_device_alert_not_calendar"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "itemGranularity",
+        "checklistTodoDecision",
+        "scheduleSuitability",
+        "contentValue",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "canonical:oq-oq-c06-nasa",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "go",
+      "disagreeingAxes": []
+    },
+    {
+      "contentId": "canonical:oq-oq-c07-fit100",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "todo",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "show_only_user_owned_next_action_on_mobile",
+          "separate_institution_result_states_from_user_completion",
+          "keep_booking_date_as_optional_overlay"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "primaryProjection",
+        "checklistTodoDecision",
+        "contentValue",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "canonical:oq-oq-c08-ac-decision",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "modify",
+      "linkSaveValueDelta": "weak_or_reference_heavy",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": false,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "modify",
+        "itemGranularity": "too_large",
+        "primaryProjection": "memo",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "세척 범위 비교와 최종 선택이 하나의 Item에 합쳐져 비교 기준을 UI에서 펼쳐 보여줘야 한다."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "memo",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "render_all_five_comparison_rows_in_decision_memo",
+          "preserve_contact_and_cost_basis_before_selection"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "itemGranularity"
+      ]
+    },
+    {
+      "contentId": "canonical:oq-oq-b01-heat",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "memo",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "hold",
+        "itemGranularity": "mixed",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "restore_20_minute_hydration_and_stop_work_actions",
+          "surface_symptom_and_119_escalation_before_completion",
+          "separate_safety_thresholds_from_optional_notes"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "itemGranularity",
+        "primaryProjection",
+        "scheduleSuitability",
+        "contentValue",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "canonical:oq-oq-b03-remodel",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "weak_or_reference_heavy",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": false,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "modify",
+        "itemGranularity": "too_large",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "10개 계약 기준과 보완 요청이 하나의 결정 Item으로 압축되어 기준별 확인·기록이 불가능하다."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "too_large",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "make_ten_contract_criteria_individually_visible_and_stateful",
+          "do_not_export_one_opaque_sheet_row_for_ten_checks",
+          "keep_final_vendor_decision_separate_from_criteria"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": []
+    },
+    {
+      "contentId": "canonical:oq-oq-p01-ossu",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "go",
+      "disagreeingAxes": [
+        "checklistTodoDecision",
+        "scheduleSuitability"
+      ]
+    },
+    {
+      "contentId": "canonical:oq-oq-p02-packing",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "go",
+      "disagreeingAxes": []
+    },
+    {
+      "contentId": "canonical:oq-oq-p03-vehicle",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "weak_or_reference_heavy",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": false,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "todo",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "activate_visit_date_only_after_official_window_lookup",
+          "avoid_one_item_checklist_shell",
+          "show_window_start_end_and_selected_date_together"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "primaryProjection",
+        "checklistTodoDecision",
+        "contentValue"
+      ]
+    },
+    {
+      "contentId": "canonical:oq-oq-p04-portfolio",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "go",
+      "disagreeingAxes": [
+        "checklistTodoDecision",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "canonical:value-vq-01",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "todo",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "todo",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "go",
+      "disagreeingAxes": []
+    },
+    {
+      "contentId": "canonical:value-vq-03",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "go",
+      "disagreeingAxes": []
+    },
+    {
+      "contentId": "canonical:value-vq-04",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "go",
+      "disagreeingAxes": [
+        "scheduleSuitability"
+      ]
+    },
+    {
+      "contentId": "canonical:value-vq-05",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "go",
+      "disagreeingAxes": [
+        "scheduleSuitability"
+      ]
+    },
+    {
+      "contentId": "canonical:value-vq-06",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "go",
+      "disagreeingAxes": [
+        "checklistTodoDecision"
+      ]
+    },
+    {
+      "contentId": "canonical:value-vq-10",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "mixed",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "remove_redundant_global_repair_cycle_item_or_make_it_guidance",
+          "localize_internal_field_labels_for_mobile",
+          "keep_photo_repair_recheck_fields_on_each_trade_row"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "itemGranularity",
+        "contentValue",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "canonical:value-vq-11",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "go",
+      "disagreeingAxes": [
+        "checklistTodoDecision"
+      ]
+    },
+    {
+      "contentId": "canonical:value-vq-12",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "go",
+      "disagreeingAxes": []
+    },
+    {
+      "contentId": "canonical:deep-ds06",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "hold",
+        "itemGranularity": "too_large",
+        "primaryProjection": "memo",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "source_rows_name_only_broad_safety_sections",
+          "do_not_present_generic_category_titles_as_executable_checks",
+          "require_action_level_safety_rows_before_checklist"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "itemGranularity",
+        "primaryProjection",
+        "checklistTodoDecision",
+        "contentValue",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "canonical:deep-ds08",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "방문지 Item에는 시간·이동 순서 schedule이 없어 일정화는 사용자 오버레이가 필요하다."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "contentValue",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "canonical:live-c01",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "검진 차수 Item에는 schedule이 비어 있어 실제 검진일 안내를 별도 오버레이로 설명해야 한다."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "resolve_age_windows_from_birth_date_before_calendar_export",
+          "show_visit_window_not_single_invented_date",
+          "keep_sheet_as_reference_fallback"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "primaryProjection",
+        "checklistTodoDecision",
+        "scheduleSuitability"
+      ]
+    },
+    {
+      "contentId": "canonical:live-c13",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "go",
+      "disagreeingAxes": []
+    },
+    {
+      "contentId": "canonical:live-c16",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "memo",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "frame_three_rows_as_creator_experience_not_required_checklist",
+          "ask_for_one_selected_reuse_path_before_task_activation"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "primaryProjection",
+        "checklistTodoDecision",
+        "contentValue",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "canonical:live-r02",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "go",
+      "disagreeingAxes": [
+        "checklistTodoDecision",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "canonical:live-kr-stibee-01",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": [
+          "keep_legal_scope_and_permission_evidence_visible",
+          "avoid_implying_four_checks_guarantee_reuse_rights"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "contentValue"
+      ]
+    },
+    {
+      "contentId": "canonical:live-live-mdn-core-01",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "go",
+      "disagreeingAxes": [
+        "scheduleSuitability"
+      ]
+    },
+    {
+      "contentId": "canonical:live-live-dyson-filter-01",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "too_small",
+        "primaryProjection": "todo",
+        "checklistTodoDecision": "both_with_primary",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "collapse_five_monthly_steps_into_one_recurring_task",
+          "keep_wash_and_24_hour_dry_steps_inside_task_detail",
+          "avoid_five_calendar_events_per_cleaning"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "itemGranularity",
+        "primaryProjection",
+        "checklistTodoDecision",
+        "scheduleSuitability",
+        "contentValue",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "canonical:live-live-jotform-event-intake-01",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "weak_or_reference_heavy",
+      "firstActionVisible": false,
+      "startInputCount": 0,
+      "returnStateExists": false,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "hold",
+        "itemGranularity": "mixed",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "11개 sourceRows가 있으나 canonical.items가 0개여서 실행 단위와 완료 상태가 없다."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "hold",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "template_has_eleven_fields_but_no_executable_items",
+          "avoid_pii_heavy_form_flow_without_privacy_contract",
+          "show_field_schema_as_reference_not_zero_row_execution_sheet"
+        ]
+      },
+      "synthesizedInternalVerdict": "hold",
+      "disagreeingAxes": [
+        "itemGranularity",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "events:new-nps-ten-essentials",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "go",
+      "disagreeingAxes": []
+    },
+    {
+      "contentId": "events:new-apple-quick-start",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "go",
+      "disagreeingAxes": []
+    },
+    {
+      "contentId": "events:new-github-account-onboarding",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "todo",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "todo",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "go",
+      "disagreeingAxes": [
+        "scheduleSuitability"
+      ]
+    },
+    {
+      "contentId": "events:new-google-codelab-ai-agent",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "go",
+      "disagreeingAxes": [
+        "scheduleSuitability"
+      ]
+    },
+    {
+      "contentId": "events:new-mdn-core-scripting",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "todo",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "todo",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "go",
+      "disagreeingAxes": [
+        "scheduleSuitability"
+      ]
+    },
+    {
+      "contentId": "events:new-gutenberg-top-reading-queue",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "todo",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "todo",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "go",
+      "disagreeingAxes": [
+        "scheduleSuitability"
+      ]
+    },
+    {
+      "contentId": "events:event-kr-single-performance",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 2,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "hold",
+        "itemGranularity": "mixed",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "이벤트 sourceRows는 있으나 canonical.items가 0개여서 저장·완료의 canonical owner가 없다."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "hold",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "clear",
+        "modifyReasons": [
+          "event_is_ended_and_sold_out",
+          "retain_as_historical_reference_without_activation"
+        ]
+      },
+      "synthesizedInternalVerdict": "hold",
+      "disagreeingAxes": [
+        "itemGranularity",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "events:event-kr-multi-show-choir",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 2,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "hold",
+        "itemGranularity": "mixed",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "이벤트 sourceRows는 있으나 canonical.items가 0개여서 저장·완료의 canonical owner가 없다."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "hold",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "clear",
+        "modifyReasons": [
+          "all_four_occurrences_are_ended",
+          "require_current_edition_before_save_or_calendar_action"
+        ]
+      },
+      "synthesizedInternalVerdict": "hold",
+      "disagreeingAxes": [
+        "itemGranularity",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "events:event-kr-sokcho-summer",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 2,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "hold",
+        "itemGranularity": "mixed",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "이벤트 sourceRows는 있으나 canonical.items가 0개여서 저장·완료의 canonical owner가 없다."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "itemGranularity",
+        "contentValue",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "events:event-kr-sema-martin-parr",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "weak_or_reference_heavy",
+      "firstActionVisible": true,
+      "startInputCount": 1,
+      "returnStateExists": false,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "hold",
+        "itemGranularity": "mixed",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "이벤트 sourceRows는 있으나 canonical.items가 0개여서 저장·완료의 canonical owner가 없다."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "require_visit_date_selection_inside_availability_window",
+          "show_weekday_hours_and_last_admission_before_save"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "itemGranularity",
+        "scheduleSuitability",
+        "contentValue",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "events:event-kr-ballet-ticket-show",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 2,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "hold",
+        "itemGranularity": "mixed",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "이벤트 sourceRows는 있으나 canonical.items가 0개여서 저장·완료의 canonical owner가 없다."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "itemGranularity",
+        "contentValue",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "events:event-kr-qnet-exam-lifecycle",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "weak_or_reference_heavy",
+      "firstActionVisible": true,
+      "startInputCount": 1,
+      "returnStateExists": false,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "hold",
+        "itemGranularity": "mixed",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "이벤트 sourceRows는 있으나 canonical.items가 0개여서 일정 lifecycle의 canonical owner가 없다."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "memo",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "current_todo_projection_is_unavailable_without_intent_items",
+          "show_application_windows_and_result_milestones_as_reference",
+          "activate_one_todo_or_calendar_record_only_after_user_intent_or_assignment"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "itemGranularity",
+        "primaryProjection",
+        "checklistTodoDecision",
+        "scheduleSuitability",
+        "contentValue"
+      ]
+    },
+    {
+      "contentId": "events:event-kr-revised-musical",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "weak_or_reference_heavy",
+      "firstActionVisible": true,
+      "startInputCount": 1,
+      "returnStateExists": false,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "hold",
+        "itemGranularity": "mixed",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "이벤트 sourceRows는 있으나 canonical.items가 0개여서 변경된 일정의 canonical owner가 없다."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "hold",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "memo",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "current_calendar_projection_is_primary_but_unavailable",
+          "source_rows_do_not_resolve_current_showtimes",
+          "require_refreshed_schedule_version_before_activation"
+        ]
+      },
+      "synthesizedInternalVerdict": "hold",
+      "disagreeingAxes": [
+        "itemGranularity",
+        "primaryProjection",
+        "scheduleSuitability"
+      ]
+    },
+    {
+      "contentId": "events:event-pattern-nps-all-day",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 2,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "hold",
+        "itemGranularity": "mixed",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "이벤트 sourceRows는 있으나 canonical.items가 0개여서 all-day 이벤트를 저장할 canonical Item이 없다."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "itemGranularity",
+        "contentValue",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "events:event-pattern-online-foia",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 2,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "hold",
+        "itemGranularity": "mixed",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "이벤트 sourceRows는 있으나 canonical.items가 0개여서 회의 이벤트의 canonical Item이 없다."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "hold",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "clear",
+        "modifyReasons": [
+          "occurrence_is_ended",
+          "retain_registration_and_watch_urls_as_historical_context"
+        ]
+      },
+      "synthesizedInternalVerdict": "hold",
+      "disagreeingAxes": [
+        "itemGranularity",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "events:event-pattern-nps-weekly",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "weak_or_reference_heavy",
+      "firstActionVisible": true,
+      "startInputCount": 1,
+      "returnStateExists": false,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "hold",
+        "itemGranularity": "mixed",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "이벤트 sourceRows는 있으나 canonical.items가 0개여서 반복 이벤트의 canonical Item이 없다."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "hold",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "memo",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "overloaded",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "recurrence_rule_lacks_a_resolvable_start_time",
+          "calendar_primary_is_unavailable",
+          "refresh_complete_occurrence_schedule_before_activation"
+        ]
+      },
+      "synthesizedInternalVerdict": "hold",
+      "disagreeingAxes": [
+        "itemGranularity",
+        "primaryProjection",
+        "scheduleSuitability"
+      ]
+    },
+    {
+      "contentId": "events:event-pattern-chimac-edition",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "weak_or_reference_heavy",
+      "firstActionVisible": true,
+      "startInputCount": 1,
+      "returnStateExists": false,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "hold",
+        "itemGranularity": "mixed",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "?? ???? ??? canonical Item? ?? ????? ??? ??? ?? ??? ??.",
+          "Calendar preview? source fact? ?? record? ??? ???."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "hold",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "clear",
+        "modifyReasons": [
+          "edition_window_ended_before_review_date",
+          "retain_as_edition_history_without_calendar_activation"
+        ]
+      },
+      "synthesizedInternalVerdict": "hold",
+      "disagreeingAxes": [
+        "itemGranularity",
+        "scheduleSuitability",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "events:event-pattern-nps-rescheduled",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 2,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "hold",
+        "itemGranularity": "mixed",
+        "primaryProjection": "memo",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "?? ??? ??? ??? ??? canonical Item? ?? ???? ????? ??? ??? ??? ??.",
+          "?? ??? ??? ?? ?????? ????? ?? Calendar ??? ???? ??."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "hold",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "memo",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "replacement_time_and_location_are_unconfirmed",
+          "do_not_project_cancelled_occurrence_as_actionable",
+          "refresh_rescheduled_occurrence_before_activation"
+        ]
+      },
+      "synthesizedInternalVerdict": "hold",
+      "disagreeingAxes": [
+        "itemGranularity",
+        "scheduleSuitability",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "events:event-pattern-fun-seoul-interest-list",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "weak_or_reference_heavy",
+      "firstActionVisible": true,
+      "startInputCount": 1,
+      "returnStateExists": false,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "hold",
+        "itemGranularity": "mixed",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "?????? ?? 5? ?? SourceRow? ??? intent Item? ??.",
+          "Primary Sheet? available_now?? ?? ??? ???? ?? ?? ??? ???? ???."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "hold",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "listing_rows_lack_confirmed_time_and_venue",
+          "interest_rows_need_detail_import_before_todo_or_calendar",
+          "do_not_create_five_automatic_tasks"
+        ]
+      },
+      "synthesizedInternalVerdict": "hold",
+      "disagreeingAxes": [
+        "itemGranularity",
+        "scheduleSuitability",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "events:event-pattern-boryeong-operations",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 1,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "hold",
+        "itemGranularity": "mixed",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "?? ?????? ????????????? ??? ??? canonical Item? ??.",
+          "Primary Sheet? ?? ?? ??? ??? ???? ???."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "overloaded",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "keep_operating_windows_closures_and_extensions_in_sheet",
+          "allow_calendar_only_for_user_selected_program",
+          "avoid_flat_daily_rrule"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "itemGranularity",
+        "scheduleSuitability",
+        "contentValue",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "legacy:preapp:airport-departure-order",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "go",
+      "disagreeingAxes": []
+    },
+    {
+      "contentId": "legacy:preapp:busan-friends-2n3d-route",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 1,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "bundle_calendar_by_day_while_preserving_stop_order",
+          "label_duplicate_busan_station_as_departure_and_return",
+          "show_route_detail_in_mobile_day_card"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "contentValue",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "legacy:preapp:weekday-lunchbox-menu",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 1,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "?~? SourceRow? ?? weekStartDate ??? ??? ?? Item schedule? null??.",
+          "Primary Calendar? overlay ??? ??? ?? ??? preview? ???? ???."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "required_week_start_is_not_applied_to_item_schedules",
+          "resolve_weekday_rows_before_calendar_export",
+          "keep_recipe_detail_inside_each_day"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "scheduleSuitability"
+      ]
+    },
+    {
+      "contentId": "legacy:preapp:interview-d1-check",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 1,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "go",
+      "disagreeingAxes": []
+    },
+    {
+      "contentId": "legacy:preapp:license-class1-medical-check",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "surface_application_place_and_late_penalty_rows",
+          "show_personal_renewal_window_before_due_actions",
+          "keep_conditional_health_exam_rules_visible"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "contentValue"
+      ]
+    },
+    {
+      "contentId": "legacy:preapp:license-class2-renewal",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "surface_application_place_and_late_penalty_rows",
+          "show_personal_renewal_window_before_due_actions",
+          "keep_conditional_fee_and_proxy_rules_visible"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "contentValue"
+      ]
+    },
+    {
+      "contentId": "legacy:preapp:aircon-ultrafine-filter-routine",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "weak_or_reference_heavy",
+      "firstActionVisible": true,
+      "startInputCount": 1,
+      "returnStateExists": false,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "??? 4? 1? ??? ????? Item schedule? null??.",
+          "?? startDate? ??? Primary Calendar? prohibited? ?? ??? ???? ???."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "source_defines_four_week_cadence_but_item_schedule_is_null",
+          "calendar_primary_cell_is_unavailable",
+          "generate_one_recurring_task_after_start_date"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": []
+    },
+    {
+      "contentId": "legacy:preapp:beginner-5k-8week-program",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 1,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overloaded",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "step_bundle? ?? ?? ??? ??? ?? ?? VEVENT ??? ?? ?? ?? ??? ???."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "prefix_repeated_titles_with_week_and_weekday",
+          "show_current_session_not_29_flat_rows_on_mobile",
+          "keep_source_safety_and_stop_conditions_visible"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "checklistTodoDecision",
+        "scheduleSuitability",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "legacy:preapp:kitten-arrival-first-week",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 1,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overloaded",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "?? ?? ??? ?? dayOffset=0? ?? Calendar record? ???? Checklist ?? ???? ????.",
+          "? ? date_window Item ? ?? startDayOffset? endDayOffset? ?? ?? ??? ??? ? ??."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "group_items_by_arrival_day_and_first_week",
+          "separate_one_time_setup_from_date_window_visit",
+          "show_caregiver_monitoring_cues_in_detail"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "scheduleSuitability"
+      ]
+    },
+    {
+      "contentId": "legacy:round2:kmooc-hundred-schools-fifteen-week",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 1,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "clear",
+        "modifyReasons": [
+          "keep_progress_sheet_primary_for_fifteen_week_sequence",
+          "use_calendar_only_as_secondary_after_start_date"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "primaryProjection",
+        "scheduleSuitability",
+        "contentValue",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "legacy:round2:kids-birthday-four-week",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 1,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "modify",
+        "itemGranularity": "too_large",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "??? Item? ??????????? ?? ??????????? ?? ??? ??? ??? ? ?? ??? ???."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "itemGranularity",
+        "contentValue",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "legacy:round2:dol-party-four-month",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 1,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "modify",
+        "itemGranularity": "mixed",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "?? ??? ?? ??? ? Item?? ?? ?? ?? ??? ???.",
+          "eventDate? ??? 6? Item ? 4?? ??? ?? ??? ?? ?? ??? ????."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "make_anchor_offsets_primary_for_four_month_preparation",
+          "keep_unscheduled_conditional_rows_in_checklist",
+          "show_next_due_task_first_on_mobile"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "itemGranularity",
+        "primaryProjection"
+      ]
+    },
+    {
+      "contentId": "legacy:round2:canon-photo-thirty-day",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 1,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overloaded",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "step_bundle? ??? ?? 30? ?? ?? Item? 5? VEVENT? ??? Day? ??? ???."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "scheduleSuitability",
+        "contentValue",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "legacy:round2:banchan-day-one",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 1,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "too_large",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "split_independently_finishable_dishes_inside_first_day_bundle",
+          "keep_shopping_as_separate_item",
+          "avoid_one_completion_state_for_multiple_recipes"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "itemGranularity",
+        "contentValue",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "legacy:round2:banchan-day-two-three",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 1,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "?? ?? Item? ????? Item description? ?? ??? ??? ?? ? ?? ?? ?? ??? ????."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "too_large",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "split_independently_finishable_dishes_inside_each_day_bundle",
+          "preserve_day_grouping_without_one_state_for_four_dishes",
+          "show_recipe_links_per_dish"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "itemGranularity",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "legacy:round2:work24-jobseeker-start",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "todo",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "??? ?? ??? ?? ??? ?? ?? ??? closed checklist? primary? ????."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "primaryProjection",
+        "checklistTodoDecision",
+        "scheduleSuitability",
+        "contentValue",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "legacy:round2:work24-midcareer-transition",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "modify",
+        "itemGranularity": "mixed",
+        "primaryProjection": "todo",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "??? ??????? ?????? ???? ???? act? ??? ?? ??????? ?? ?? Item?? ????."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "mixed",
+        "primaryProjection": "todo",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "separate_user_actions_from_service_approval_and_assignment_states",
+          "show_one_next_action_and_wait_state_on_mobile",
+          "retain_thirteen_stage_history_without_all_at_once_checklist"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "legacy:round2:personal-business-registration-flow",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "modify",
+        "itemGranularity": "mixed",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "??? ?? ??? ?? ?? ??? ?? ??? ? ?? ??? ?? ??? ??? ???? ???."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "surface_all_required_and_conditional_document_rows",
+          "keep_application_fields_as_detail_not_extra_tasks",
+          "show_official_conditions_before_submit"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "itemGranularity"
+      ]
+    },
+    {
+      "contentId": "legacy:round2:corporate-mail-order-registration-flow",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "keep_exemption_and_host_conditions_visible_before_submission",
+          "group_three_document_rows_without_hiding_each_requirement",
+          "show_waiting_for_certificate_as_state_not_user_action"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "contentValue",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "legacy:round2:minor-passport-renewal",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "surface_conditional_guardian_relationship_documents",
+          "keep_application_date_optional_until_route_selected",
+          "show_existing_passport_condition_in_detail"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "scheduleSuitability",
+        "contentValue",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "legacy:round2:social-content-thirty-day",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 1,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overloaded",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "step_bundle? ?? ?? ??? 30? ?? Item? 5? VEVENT? ?? Day? ???? ???."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "show_today_and_next_prompt_instead_of_thirty_equal_cards",
+          "keep_calendar_dates_tied_to_user_start",
+          "add_distinct_completion_output_for_each_post"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "scheduleSuitability",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "generalization:GB-01",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 1,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "todo",
+        "checklistTodoDecision": "both_with_primary",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "?? ? 1?? ??? ????? deadline Item schedule? Todo due? ?? null??.",
+          "?? birth_date? ??? Calendar? prohibited? ?? ??? ???? ???? ???."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "hold",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "todo",
+        "checklistTodoDecision": "both_with_primary",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "birth_date_deadline_not_mapped_to_schedule",
+          "make_one_report_deadline_todo_with_embedded_checklist",
+          "retain_conditional_documents_and_penalty_context"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "contentValue"
+      ]
+    },
+    {
+      "contentId": "generalization:GB-02",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "modify",
+        "itemGranularity": "too_small",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "? ?? ???? ?? ??? ?? ?? ?? ? ??? ?? canonical ?? Item? ?? ???? ?? ???."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "itemGranularity",
+        "contentValue",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "generalization:GB-03",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 2,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "modify",
+        "itemGranularity": "mixed",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "overloaded",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "??? Item? ??? ???? ?? ?? cadence? ?? ?? ?? schedule? ??? ? ??.",
+          "?? maintenance_start_date? ??? ?? Item schedule? null?? Calendar? prohibited?."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "hold",
+        "itemGranularity": "mixed",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "split_cleaning_and_replacement_cadences_within_filter_items",
+          "source_cadences_are_present_but_calendar_cell_is_unavailable",
+          "require_model_match_before_activation"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "scheduleSuitability",
+        "contentValue"
+      ]
+    },
+    {
+      "contentId": "generalization:GB-04",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 1,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": [
+          "keep_model_match_gate_before_showing_steps",
+          "retain_video_timestamps_in_mobile_detail"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "contentValue"
+      ]
+    },
+    {
+      "contentId": "generalization:GB-05",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "modify",
+        "itemGranularity": "too_small",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "? ?? ??? ?? ????? ?? ?? ?? ???? ?? canonical ?? Item?? ???."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "itemGranularity",
+        "contentValue",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "generalization:GB-06",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "todo",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "?? ?????? user job?? ?????? ??? Todo? Sheet?? ?????."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "todo",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "clear",
+        "modifyReasons": [
+          "use_todo_queue_for_user_selected_books_not_progress_sheet",
+          "preserve_source_order_as_reference_only",
+          "avoid_imposed_dates"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "scheduleSuitability",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "generalization:GB-07",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "modify",
+      "linkSaveValueDelta": "weak_or_reference_heavy",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": false,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "memo",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "show_six_comparison_criteria_as_columns_or_rows",
+          "keep_final_choice_and_reason_separate",
+          "do_not_recommend_one_backup_method_without_user_priority"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "primaryProjection",
+        "contentValue",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "generalization:GB-08",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 2,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "?? visit_date? visit_time_slot? ??? ? Item ?? schedule? null??.",
+          "?? ??? ???? ?? user job?? Primary Calendar? prohibited?."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "hold",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "todo",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "calendar_primary_is_unavailable_even_with_visit_inputs",
+          "model_application_approval_preparation_and_visit_as_states",
+          "block_excluded_months_and_require_approved_timeslot"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "primaryProjection",
+        "checklistTodoDecision",
+        "scheduleSuitability",
+        "contentValue"
+      ]
+    },
+    {
+      "contentId": "generalization:GB-13",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 1,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "todo",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": [
+          "keep_14_day_processing_period_as_reference_until_application_date_exists",
+          "surface_conditional_fee_and_documents_before_submit"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "primaryProjection",
+        "checklistTodoDecision",
+        "contentValue"
+      ]
+    },
+    {
+      "contentId": "generalization:GB-15",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "weak_or_reference_heavy",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": false,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "modify",
+        "itemGranularity": "too_large",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "????????? 11? ??? ??? ? Item? Sheet ? ??? ??? ? ??? ???.",
+          "2026-08-12~14? ?? ?? ??? schedule?? Calendar? ???? ???."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "hold",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "memo",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "thirteen_source_rows_collapse_to_one_empty_detail_item",
+          "show_fixed_three_day_window_and_topic_durations_before_decision",
+          "activate_calendar_only_after_participation_confirmation"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "itemGranularity",
+        "primaryProjection",
+        "scheduleSuitability",
+        "contentValue"
+      ]
+    },
+    {
+      "contentId": "generalization:GB-16",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 2,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "2?? ?? ??? ?? plan_start_date? ??? Item schedule? ?? null?? Calendar ?? ??? ?? ??."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "calendar",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "relative_weekday_rows_are_not_mapped_to_start_date",
+          "calendar_is_only_secondary_despite_schedule_job",
+          "require_brand_context_before_task_activation"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "primaryProjection",
+        "checklistTodoDecision",
+        "scheduleSuitability",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "new:new-a01-seoul-wedding-110",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "weak_or_reference_heavy",
+      "firstActionVisible": false,
+      "startInputCount": 0,
+      "returnStateExists": false,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "hold",
+        "itemGranularity": "mixed",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "??? 110?? ????? view model?? 12? SourceRow? ??.",
+          "Primary Sheet? available_now?? ?? ?? 0?? ?? ??? ??? ? ??."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "hold",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "title_promises_110_rows_but_fixture_contains_12",
+          "no_executable_items_or_user_quote_rows_yet",
+          "complete_source_import_before_product_use"
+        ]
+      },
+      "synthesizedInternalVerdict": "hold",
+      "disagreeingAxes": [
+        "itemGranularity",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "new:new-a02-seoul-museum-group",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 1,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "modify",
+        "itemGranularity": "mixed",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "?? ?? ??? ?? ?? ?? ?? ????? ??? ?? Item?? ????.",
+          "?? visitDate? ??? ?? Item schedule? null?? Calendar? prohibited?."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "hold",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "only_12_of_30_execution_rows_are_present",
+          "group_reservation_preparation_and_visit_on_mobile",
+          "keep_child_supervision_cautions_visible"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "itemGranularity",
+        "contentValue",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "new:new-a03-kakaopay-jeonse",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "hold",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": [
+          "legal_financial_caution_review_required",
+          "do_not_imply_check_completion_guarantees_safe_contract",
+          "retain_official_verification_links"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "contentValue"
+      ]
+    },
+    {
+      "contentId": "new:new-a05-nfa-home-fire",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "modify",
+        "itemGranularity": "mixed",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "??? ?? ??? ?? ??? ?? ?? Item?? ???.",
+          "installedAt ??? 10? ?? ?? ??? replacement schedule? ???? ???."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "mixed",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "group_installation_microsteps_under_each_device",
+          "separate_installation_from_periodic_inspection",
+          "keep_fire_safety_cautions_visible"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "scheduleSuitability"
+      ]
+    },
+    {
+      "contentId": "new:new-a07-seoul-bus-support",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 1,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "modify",
+        "itemGranularity": "too_small",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "? ??? ?? ??? ?? ?????????? ?? ?? ??? ?? ?? canonical ?? Item?? ?????."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": [
+          "keep_identity_card_and_account_data_entry_on_official_site",
+          "show_privacy_boundary_before_external_handoff"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "itemGranularity",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "new:new-a08-income-tax",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 2,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "hold",
+        "itemGranularity": "mixed",
+        "primaryProjection": "todo",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "natural",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "?? ????????? ????? ?? ?? ??? ??? ?? act Item?? ???? ?? ??? ???? ???.",
+          "??? ????? deadline? Todo due? schedule? ??? ????? ???."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "hold",
+        "itemGranularity": "mixed",
+        "primaryProjection": "memo",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "condition_and_deadline_facts_are_modeled_as_ten_tasks",
+          "representative_rows_do_not_cover_full_eligibility_logic",
+          "activate_one_filing_todo_only_after_user_decision"
+        ]
+      },
+      "synthesizedInternalVerdict": "hold",
+      "disagreeingAxes": [
+        "primaryProjection",
+        "scheduleSuitability"
+      ]
+    },
+    {
+      "contentId": "new:new-b03-fridge-week",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "?~? ?? weekStart overlay? ??? Item schedule? null?? ??? Calendar? ???? ???."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "contentValue",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "new:new-b04-organize-seven",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 1,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "go",
+      "disagreeingAxes": []
+    },
+    {
+      "contentId": "new:new-b05-storage-projects",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 1,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "todo",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "?? selectedProject ??? ??? Todo? ??? ???? ?? ?? ????? ?? task? ????."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "hold",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "todo",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "collection_items_need_child_procedure_import_after_selection",
+          "do_not_mark_project_done_without_opening_source_steps",
+          "creator_image_and_tool_cautions_need_review"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "scheduleSuitability",
+        "contentValue"
+      ]
+    },
+    {
+      "contentId": "new:new-b06-wtable-lemon-weekend",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "hold",
+        "itemGranularity": "too_small",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "? ??? ??? ????? ?? ?? 12?? ?? canonical Item?? ?????.",
+          "user job? 50? ?? ???? SourceRow? Item? ?? ???? ?? ????? ??? ??."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "hold",
+        "itemGranularity": "too_small",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "fixture_stops_at_row_12_of_19_before_bake_completion",
+          "group_prep_mixing_baking_and_finishing_for_mobile",
+          "do_not_publish_incomplete_recipe_flow"
+        ]
+      },
+      "synthesizedInternalVerdict": "hold",
+      "disagreeingAxes": []
+    },
+    {
+      "contentId": "new:new-b07-interior-consultation",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "?? ?? ?????? ???? checklist primary? ?? Item ???? ??? ????? ???? ???."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "make_two_or_more_vendor_quote_rows_primary",
+          "separate_source_actions_from_user_vendor_data",
+          "keep_short_checklist_as_process_navigation"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": []
+    },
+    {
+      "contentId": "new:new-b08-banchan-ten",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "?~? ?? ?? weekStart overlay? ??? Item schedule? null?? Calendar ?? ??? ?? ??."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "contentValue",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "new:new-c01-programmers-kit",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "47? ??? ???????? ???? 57? parent/subtask Todo?? ?? ??? Sheet? primary? ? ?????.",
+          "startDate? pacing overlay? ??? ?? preview? ???? ???."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "forty_seven_flat_todos_overload_mobile",
+          "group_by_source_algorithm_category_in_sheet",
+          "activate_due_dates_only_from_user_pacing"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": []
+    },
+    {
+      "contentId": "new:new-c02-ifixit-hose",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "hold",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": [
+          "noncommercial_license_and_safety_review_required",
+          "keep_cutting_and_leak_test_cautions_visible"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "contentValue"
+      ]
+    },
+    {
+      "contentId": "new:new-c03-nps-junior-ranger",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "show_current_activity_page_instead_of_twelve_equal_cards",
+          "keep_guardian_outdoor_caution_and_asset_rights_visible"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "scheduleSuitability",
+        "contentValue",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "new:new-c04-instructables-origami",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "todo",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "hold",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "forty_one_project_queue_needs_filter_and_selection_before_tasks",
+          "source_count_conflicts_with_intro_count",
+          "import_child_instructions_only_after_project_selection"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "primaryProjection",
+        "scheduleSuitability",
+        "contentValue",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "new:new-c05-foodsafety-storage",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "weak_or_reference_heavy",
+      "firstActionVisible": false,
+      "startInputCount": 3,
+      "returnStateExists": false,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "hold",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "confusing",
+        "modifyReasons": [
+          "53? ???? SourceRow? checkable Item?? ??? ?? ?? ????? Primary Sheet? ?? ??? ???? ???.",
+          "????? ??? typed table ??? UI?? ????."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "sheet",
+        "checklistTodoDecision": "neither",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "keep_53_food_rows_as_searchable_reference_not_tasks",
+          "activate_due_only_after_food_and_storage_date_selection",
+          "group_duplicate_row_titles_by_food_category"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "scheduleSuitability",
+        "contentValue",
+        "uiUnderstandability"
+      ]
+    },
+    {
+      "contentId": "new:new-c06-goodfood-lemon",
+      "initialTier": "structure_probe",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 0,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "go",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "not_applicable",
+        "uiUnderstandability": "clear",
+        "modifyReasons": []
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "appropriate",
+        "primaryProjection": "checklist",
+        "checklistTodoDecision": "checklist",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "clear",
+        "modifyReasons": [
+          "keep_oven_and_allergen_cautions_visible",
+          "do_not_auto_create_time_block_from_recipe_duration"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": [
+        "scheduleSuitability",
+        "contentValue"
+      ]
+    },
+    {
+      "contentId": "new:new-c08-todoist-podcast",
+      "initialTier": "product_candidate",
+      "deterministicVerdict": "go",
+      "linkSaveValueDelta": "clear_execution_state",
+      "firstActionVisible": true,
+      "startInputCount": 1,
+      "returnStateExists": true,
+      "userReviewStatus": "NOT_REVIEWED_BY_USER",
+      "reviewerA": {
+        "contentValue": "modify",
+        "itemGranularity": "mixed",
+        "primaryProjection": "todo",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "??? Buy/check equipment ?? ?? ??? canonical sibling Item?? ????? ?? ?? ??? ????.",
+          "??? ??? ?? SourceRow? ??? schedule overlay? due? ???? ???."
+        ]
+      },
+      "reviewerB": {
+        "contentValue": "modify",
+        "itemGranularity": "mixed",
+        "primaryProjection": "todo",
+        "checklistTodoDecision": "todo",
+        "scheduleSuitability": "overlay_only",
+        "uiUnderstandability": "needs_explanation",
+        "modifyReasons": [
+          "group_equipment_microitems_under_setup",
+          "use_phase_parent_tasks_for_twenty_three_rows",
+          "keep_dates_user_owned_because_csv_dates_are_blank"
+        ]
+      },
+      "synthesizedInternalVerdict": "modify",
+      "disagreeingAxes": []
+    }
+  ]
+}

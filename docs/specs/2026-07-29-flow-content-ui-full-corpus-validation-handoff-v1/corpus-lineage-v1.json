@@ -1,0 +1,1781 @@
+{
+  "schemaVersion": "flow-content-ui-lineage-v1",
+  "generatedAt": "2026-07-29T23:59:00+09:00",
+  "corpusFingerprint": "sha256:d56b289fd301805fe1299b867497b0840f8d379d1459ec0148639f8b7d5dce32",
+  "inputArtifacts": [
+    {
+      "path": "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json",
+      "sha256": "sha256:7d78e2d44812aa9dadf3ea336a130e5301960483c5f8bc275b9eea115333f852",
+      "bytes": 2711405
+    },
+    {
+      "path": "docs/specs/2026-07-29-flow-projection-semantics-scheduling-event-corpus-v1/event-schedule-corpus-v1.json",
+      "sha256": "sha256:da7db6ade80145c5fbe77daa1f47149390cc493fb7c36de4771d5d68c312acef",
+      "bytes": 96690
+    },
+    {
+      "path": "docs/content-audit/2026-07-11-content-portfolio-preapp-v1.json",
+      "sha256": "sha256:ba1dd4362c248ab38fe6d53c6642f56a58f71e66a79d271f0dd7d149cf3e9cb2",
+      "bytes": 237994
+    },
+    {
+      "path": "docs/content-audit/2026-07-11-content-portfolio-expansion-round2-v1.json",
+      "sha256": "sha256:1fa858241716090da2049cc98c6bfa39b16a036a3bb37238cf4a3504dcb5e0c7",
+      "bytes": 396105
+    },
+    {
+      "path": "docs/specs/2026-07-21-flow-content-generalization-benchmark-v1/gold-source-contract-v1.json",
+      "sha256": "sha256:1480bb01651874918c1d73aacef24825c833fff7559b836bb0163242691241af",
+      "bytes": 63955
+    },
+    {
+      "path": "docs/specs/2026-07-21-flow-content-generalization-benchmark-v1/source-manifest-v1.json",
+      "sha256": "sha256:faccdade841f3f4300f7eded448c55c4fe961a82b045a9e0c185abffaa099619",
+      "bytes": 4556
+    },
+    {
+      "path": "docs/specs/2026-07-21-flow-content-generalization-benchmark-v1/blind-source-packets-v1.json",
+      "sha256": "sha256:cd9b1f61227c4052091615884483c3242af9d5869f909b28240b052d9c06b3de",
+      "bytes": 33938
+    },
+    {
+      "path": "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/new-source-verification-v1.json",
+      "sha256": "sha256:33ecb506ad676c2de1365e43b6c3743ffc678a590a68983a65057c1a25350e3a",
+      "bytes": 125955
+    },
+    {
+      "path": "docs/content-audit/reference-260601-preview-structure.json",
+      "sha256": "sha256:c943579edcefd9e96b6dd551b69f5229adc5fba8dca4f25c08484a3c49f51ba1",
+      "bytes": 279145
+    }
+  ],
+  "recordLineage": [
+    {
+      "contentId": "canonical:base-moving-d30",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/base-moving-d30",
+      "canonicalContentHash": "sha256:c39d3e01dadc9e9f27f9a80ae36aae2fc9ae32544e87109f64e36e8538d0cb6c",
+      "sourcePacketHash": "sha256:b7055b0f21f3635cb0b54adf53b304e20e9e2aad2d95f9aeb16e1ee323e09b2d",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "canonical:base-baby-food-174",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/base-baby-food-174",
+      "canonicalContentHash": "sha256:3fc09c7b8401aea2d60594336d67abe9714395e1bb1ccb1b2a747768bf784750",
+      "sourcePacketHash": "sha256:41234b2abaf215773bc64a250f1f4b6db7d30be31cd479b0a61acf8bd0589a55",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "canonical:base-opic-plan",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/base-opic-plan",
+      "canonicalContentHash": "sha256:e60b32fe5b6a1d9cb0a20e325beae74af3115d5c7749f840288c06160dbb7a2a",
+      "sourcePacketHash": "sha256:b12718d90ff5f7d536dcef34db5a9f667e9e2b506b93d0dc35629d432f6a13c1",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "canonical:base-opentutorials-web1-progress",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/base-opentutorials-web1-progress",
+      "canonicalContentHash": "sha256:5810be5479a829ec44682dcca54f81ce168a51ebc4749a203c59e6b416d6a47c",
+      "sourcePacketHash": "sha256:3291eda0f7e3e15c199920b18e7f275a61e75da30b7c9c6a7223a0810ca4a0da",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "canonical:base-new-car-comparison",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/base-new-car-comparison",
+      "canonicalContentHash": "sha256:ebbd23990e6c836a8e2dc45d6878507a6aeec8ebcd6978fe029e85fa7006328f",
+      "sourcePacketHash": "sha256:541bcb749c04df98d781b10ed9dc284f5372b3cc0fc85c2f477187dd7f088104",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "canonical:base-allblanc-7day-abs",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/base-allblanc-7day-abs",
+      "canonicalContentHash": "sha256:76427c7fa7b6dce645f65ec9d82b5c2b8a2e9a6516127bfaaffbefc063d71089",
+      "sourcePacketHash": "sha256:3866486e6294b5dd5e34e2f7a930e1b42a348693979ddfd4e43b961be7c40d6d",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "canonical:base-wtable-summer-banchan-five",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/base-wtable-summer-banchan-five",
+      "canonicalContentHash": "sha256:c210bdca962f103da493f439ccc506af3180cf1b9dc1e5a81d76c368e2081956",
+      "sourcePacketHash": "sha256:d6d14091f73545c93221184f59bca6cedf0cc9203e66ddef324544b74bdc4aa4",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "canonical:base-andstudio-job-prep-videos",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/base-andstudio-job-prep-videos",
+      "canonicalContentHash": "sha256:97287c74e9a58cb0343189830365c922736cf0343fed20f6ca14f1d1d3410e81",
+      "sourcePacketHash": "sha256:45d160f02d6f3a56ba5d0700d07904903c66b4617896057fd8a720018e4ebac6",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "canonical:oq-oq-c02-kmooc-full",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/oq-oq-c02-kmooc-full",
+      "canonicalContentHash": "sha256:44084f8e6ab2648fba22edc6b878f65c29a63cad3ae6ea4962c387d5c25c476d",
+      "sourcePacketHash": "sha256:02be41613ab7ee287135bd6eeaeec0b1ee1fdbab740166554b16a4804fa1d82d",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "canonical:oq-oq-c03-librivox",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/oq-oq-c03-librivox",
+      "canonicalContentHash": "sha256:308b327476facb49f75903e6e6c6ba2fa2cdf3eb8a0b341df5275ac16e3bb20a",
+      "sourcePacketHash": "sha256:7de1fe60b740823c4b9e00f21019fc535fe81fa3df751105ba69d4321a2ad62c",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "canonical:oq-oq-c04-passport",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/oq-oq-c04-passport",
+      "canonicalContentHash": "sha256:02e7da7794f86d48b930466d3b684e8a7b98ce24dd648f70590f03828ee56915",
+      "sourcePacketHash": "sha256:97133975887607715ac9be4763f920df8f5019fc5c675e57ad8154a38c095695",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "canonical:oq-oq-c05-washer",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/oq-oq-c05-washer",
+      "canonicalContentHash": "sha256:400a094efb4318dfe697d3e4c8f6d47337cc221d60475116444c2b6fde6d2ed0",
+      "sourcePacketHash": "sha256:7ada002ed853c5b566f3c3fa43ad169f79a9170baeab4f70d2786866c42e46e1",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "canonical:oq-oq-c06-nasa",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/oq-oq-c06-nasa",
+      "canonicalContentHash": "sha256:c9939b822cbf4a00abad82ac0996e4bf00cf79812a387790b790172ab2962210",
+      "sourcePacketHash": "sha256:eac6d0f54a33f876cd27a3dcab42f962157ecbda59fde2b0de91a2880b55cc14",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "canonical:oq-oq-c07-fit100",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/oq-oq-c07-fit100",
+      "canonicalContentHash": "sha256:8f1232ac8fb5d66a7ed4917d29a3871c4abb9fa9a2e6eb485f4a2e39f7e648fc",
+      "sourcePacketHash": "sha256:ba4e74618c5cb621fda069aa9f5f13fb7bcab74eb62f4217d232e35795d4ff32",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "canonical:oq-oq-c08-ac-decision",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/oq-oq-c08-ac-decision",
+      "canonicalContentHash": "sha256:a576994e886b8fd03b7659ab404dd5e3e45063c1ba02036e45a3d5087505799c",
+      "sourcePacketHash": "sha256:ce5b61d99f909f491a6f1e02f9f422677e377370999ccb0e4b1936922c10386b",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "canonical:oq-oq-b01-heat",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/oq-oq-b01-heat",
+      "canonicalContentHash": "sha256:e2b3d1b35689d4a4433cf1b55290704e80bddc02e2fca1bbb4d12c96e303a2c7",
+      "sourcePacketHash": "sha256:a71bac65bf5fdde9663116468eb1519ce8f7f20e756c0e219970b6517a4bd578",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "canonical:oq-oq-b03-remodel",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/oq-oq-b03-remodel",
+      "canonicalContentHash": "sha256:7cbf79f49ef1300e7179f5bb58031f4444e468bc4c9ab5b515beab12b52f1bcc",
+      "sourcePacketHash": "sha256:3c11083c373ccaae78f1bac98b72c48157ccf57a5cf9c871ca368f18253058e8",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "canonical:oq-oq-p01-ossu",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/oq-oq-p01-ossu",
+      "canonicalContentHash": "sha256:2de86a0f0ecabf9e2120d7a8d993d858aea94281b16b91324edee324c5db6431",
+      "sourcePacketHash": "sha256:f40a2619080220fc5f1acf50f5b1432cd7665c76e1151923ba6511f9e0544619",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "canonical:oq-oq-p02-packing",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/oq-oq-p02-packing",
+      "canonicalContentHash": "sha256:6591f951295fe847dc2e72258443873430f032257311a9a62b8da35a211afd24",
+      "sourcePacketHash": "sha256:5b0decb0f8068a300e389f1234d830cb6872f0739cf4a94d91d45be6bcec9e75",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "canonical:oq-oq-p03-vehicle",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/oq-oq-p03-vehicle",
+      "canonicalContentHash": "sha256:4456392a0841f5cb82246e5ae02bfe0f5453368e041ca65767c1a5e924442bc2",
+      "sourcePacketHash": "sha256:4628aafbd839e06c833f1202618d923b58ac55fe4284fbd0b572b6212de5ac93",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "canonical:oq-oq-p04-portfolio",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/oq-oq-p04-portfolio",
+      "canonicalContentHash": "sha256:9a4c2dcd837dc1631dd524fa164db46a202dc6f0e4fb0bcc838dc6b4a2860b9b",
+      "sourcePacketHash": "sha256:c7f0a865cabe1714819d728120eea2ed2c4cf7ce9c15c8b565858ceb92743662",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "canonical:value-vq-01",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/value-vq-01",
+      "canonicalContentHash": "sha256:020f1bdd3c8c150ffdef655248f814c5563850ae0e8ac6010b68189c49e150e6",
+      "sourcePacketHash": "sha256:af575b7252dcaefd4e994b06e3715ac5b07f9de33b1607f40638c3caa55173b5",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "canonical:value-vq-03",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/value-vq-03",
+      "canonicalContentHash": "sha256:de411885cd747df9e8674d0ba336a8304194c155f0c4b91e95b9bcc02f5409ad",
+      "sourcePacketHash": "sha256:5062ff3fc428c0db6cac1b00b34a7b0fbbf548e8acd1d00f699f6f7977d6fd3d",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "canonical:value-vq-04",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/value-vq-04",
+      "canonicalContentHash": "sha256:11e4f4db2276423977b4d6fb0c9d00005d839d788a7ba09ecbac83be11186c37",
+      "sourcePacketHash": "sha256:02cfd82942f673c7e6a4d75bfbed60cc40aef54801395f6be9ae8ced680d1365",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "canonical:value-vq-05",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/value-vq-05",
+      "canonicalContentHash": "sha256:d376942070e8d5c2c763d405685d604fa76ebfe6386440414430bff384eb8e62",
+      "sourcePacketHash": "sha256:bef2104e0da2fff292bd4d1bb97f5c6a3fd5f332ad3d75824c53d35c79c8e87b",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "canonical:value-vq-06",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/value-vq-06",
+      "canonicalContentHash": "sha256:4052e683469aaf2708df7b1d2bd679083a90f1ee83aa14f5fecd489e7e4c0755",
+      "sourcePacketHash": "sha256:ec6e6153cf29dd9d79097785bb1eea51bbc3485578ac3c17132ae45c887ea23b",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "canonical:value-vq-10",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/value-vq-10",
+      "canonicalContentHash": "sha256:b84007b61868f0de4b84962e0fd82c5d8c29a2ba47c2ccab8fa6e7657fd23676",
+      "sourcePacketHash": "sha256:72122791177016809423d1015afa9f99f9f5495dbe5b0e10495d5aa2e5d993aa",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "canonical:value-vq-11",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/value-vq-11",
+      "canonicalContentHash": "sha256:5a0c9e4d8cb5548775b4610ffdcb1b392e2f479d72989378db139c8b680f213c",
+      "sourcePacketHash": "sha256:1829c74db299b9dcbf95aa272e2b4d054c8edbe8b2947b2d69270c7e0b54fb61",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "canonical:value-vq-12",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/value-vq-12",
+      "canonicalContentHash": "sha256:68748c81fe58c76178b1f18e43bfc5b5a4aa6ef56a6ec9865a7977cc0baa437a",
+      "sourcePacketHash": "sha256:1ad3731652c2d7b18965c5fa1c274c17f544f481200b497803873e0a2ae0d940",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "canonical:deep-ds06",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/deep-ds06",
+      "canonicalContentHash": "sha256:f670a5b4a0a74f8507748ff87392f7be22003bed1683c9c0255c04e9b33f91a2",
+      "sourcePacketHash": "sha256:0838348264c7f06e7131e73c6278069774a3370c9b3524a19f7eb7b465085526",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "canonical:deep-ds08",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/deep-ds08",
+      "canonicalContentHash": "sha256:2d63d094b820e73e01fdd7e7b7943dbc249754a56a1ad8841d0d8535902fcc69",
+      "sourcePacketHash": "sha256:31981bd88496d4c54fafc6b2e05b645050538e3a17c2aa5b1508e1f84f81642c",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "canonical:live-c01",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/live-c01",
+      "canonicalContentHash": "sha256:adb7d0d5a37517199ad4a9558522a895d616ed86b1d12e0fa84c942d5883fd2e",
+      "sourcePacketHash": "sha256:0beaa9c2ec3d5fedf1497ed192d2f8a024d65dcdd214fa36cfce9ad03d90f2ac",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "canonical:live-c13",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/live-c13",
+      "canonicalContentHash": "sha256:05475b08f5a64228ab3420acc93754f57e916e4908cd3e968245e049d3b020d0",
+      "sourcePacketHash": "sha256:4cda06f8193d20a682e4831164a8c4a6d1a5462c8135af83dab8b246bc8a356a",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "canonical:live-c16",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/live-c16",
+      "canonicalContentHash": "sha256:3d49c00d46fd03c9d2fced03e5d276030c0cac7789f118df5824a7aea8354d6d",
+      "sourcePacketHash": "sha256:66d2d524baea1971fa7b037b8cf8bd448597f8fddbb078b064230a59e9b15cdc",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "canonical:live-r02",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/live-r02",
+      "canonicalContentHash": "sha256:e1670a182e32adf5d899eaa93a0f2276de46a555fd157dde11e738dc523eef52",
+      "sourcePacketHash": "sha256:a8425d7f05b5157f0085971c4cc7b57c8142db8486cc989049e2a108a195f338",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "canonical:live-kr-stibee-01",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/live-kr-stibee-01",
+      "canonicalContentHash": "sha256:6667d45f908381e7195d60a4ebe584b6fbfb2182fbdbdfb530acc6e6a623acbf",
+      "sourcePacketHash": "sha256:e5a1babd230e31f9aba39e97705a7a743665621531285371177061954dae9d34",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "canonical:live-live-mdn-core-01",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/live-live-mdn-core-01",
+      "canonicalContentHash": "sha256:b08e962652031d4abc2fe413b6d568cc8884b1deabc54b74544433beed6c6837",
+      "sourcePacketHash": "sha256:cd9223177fe76837a6229f049fdc944db0c26e51d1637b7a60b0b80d06868abd",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "canonical:live-live-dyson-filter-01",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/live-live-dyson-filter-01",
+      "canonicalContentHash": "sha256:69d2ab67246cf5c83f4dbad5d431e261a65327932c8dd5dc9dc05dda6d2d9185",
+      "sourcePacketHash": "sha256:3952394da63014a95ef006be7cc6949292e8d011406c5a2d156666c7ae4dcc71",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "canonical:live-live-jotform-event-intake-01",
+      "datasetId": "canonical-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/live-live-jotform-event-intake-01",
+      "canonicalContentHash": "sha256:c4d3ac8f147bbba9bb403426786ced3fbaa127ee9d49727cd463813b523f7ab2",
+      "sourcePacketHash": "sha256:215d5d6650f6ec9d1e3259d184ab4ac1fbafa0ef3c60c111dd05c02a3cdd0036",
+      "relation": "frozen_canonical"
+    },
+    {
+      "contentId": "events:new-nps-ten-essentials",
+      "datasetId": "event-schedule-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-projection-semantics-scheduling-event-corpus-v1/event-schedule-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/new-nps-ten-essentials",
+      "canonicalContentHash": "sha256:7fb96829b1821ee509cc7b7559a559cd31a4c205568dccbad964bc4a490dc2b8",
+      "sourcePacketHash": "sha256:83c28d886a042868186641f53fc2b7ed93ca313a962706248974fdc6b95f6e67",
+      "relation": "event_or_boundary_fixture"
+    },
+    {
+      "contentId": "events:new-apple-quick-start",
+      "datasetId": "event-schedule-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-projection-semantics-scheduling-event-corpus-v1/event-schedule-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/new-apple-quick-start",
+      "canonicalContentHash": "sha256:05d3d722d39468898b12f283c81e3ee113e7021532083330315381a809404c9b",
+      "sourcePacketHash": "sha256:941aa43e85e1d10991179e9e33acfae9fa5bff98476ef293b1d330048d9aa19e",
+      "relation": "event_or_boundary_fixture"
+    },
+    {
+      "contentId": "events:new-github-account-onboarding",
+      "datasetId": "event-schedule-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-projection-semantics-scheduling-event-corpus-v1/event-schedule-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/new-github-account-onboarding",
+      "canonicalContentHash": "sha256:5c549511f5b22577db8bf781aa9dafc80eaec8cb5d89c187151d8daaf7159c7a",
+      "sourcePacketHash": "sha256:19db914d07ee5d2da58ba574113e29f0ccdc245fc1597fb9e7de2dbd36e0ed92",
+      "relation": "event_or_boundary_fixture"
+    },
+    {
+      "contentId": "events:new-google-codelab-ai-agent",
+      "datasetId": "event-schedule-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-projection-semantics-scheduling-event-corpus-v1/event-schedule-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/new-google-codelab-ai-agent",
+      "canonicalContentHash": "sha256:3b03944443f7b5c6505b5d7e82bd5a03d9bddff3b263ad0f6248ad1ccc55c2ba",
+      "sourcePacketHash": "sha256:899b7bcb348b890270e1fccf74c3fdbfcc4fbd6de012c2957764b8fe7dee03fc",
+      "relation": "event_or_boundary_fixture"
+    },
+    {
+      "contentId": "events:new-mdn-core-scripting",
+      "datasetId": "event-schedule-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-projection-semantics-scheduling-event-corpus-v1/event-schedule-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/new-mdn-core-scripting",
+      "canonicalContentHash": "sha256:568a7a9d1a5946ec3cde5dd337c40bcf778d85fa025e979c5386a65507b61569",
+      "sourcePacketHash": "sha256:e3e047a026fbf0f49d1823313cc5c80e32dcdfe174c8f3b0dcb2a5199b1cdb81",
+      "relation": "event_or_boundary_fixture"
+    },
+    {
+      "contentId": "events:new-gutenberg-top-reading-queue",
+      "datasetId": "event-schedule-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-projection-semantics-scheduling-event-corpus-v1/event-schedule-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/new-gutenberg-top-reading-queue",
+      "canonicalContentHash": "sha256:cfc3c6e746202a5b5463daf522ec40b8fb442fc082caaf8dfe7ab96c1e29e9ae",
+      "sourcePacketHash": "sha256:ff25292157d25f356c822e473ad87735ffc1830caf3293fd6fb5a08004759f03",
+      "relation": "event_or_boundary_fixture"
+    },
+    {
+      "contentId": "events:event-kr-single-performance",
+      "datasetId": "event-schedule-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-projection-semantics-scheduling-event-corpus-v1/event-schedule-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/event-kr-single-performance",
+      "canonicalContentHash": "sha256:f9f0ffd5b5112746fde5f3b334ea069148a6e6b64d053aeed6e23de07e97cf1d",
+      "sourcePacketHash": "sha256:4187483d28502cd021fecae615f43ab19e51bc3fddcda13b99447f71db846634",
+      "relation": "event_or_boundary_fixture"
+    },
+    {
+      "contentId": "events:event-kr-multi-show-choir",
+      "datasetId": "event-schedule-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-projection-semantics-scheduling-event-corpus-v1/event-schedule-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/event-kr-multi-show-choir",
+      "canonicalContentHash": "sha256:0e96e2fd786cd0b7660326ad394826a54e6418f4a06b2850f92face9ca1b0fd4",
+      "sourcePacketHash": "sha256:317c3662fd4589eba3497379686d32301c3a3790ff35b664489e6e580c1443b5",
+      "relation": "event_or_boundary_fixture"
+    },
+    {
+      "contentId": "events:event-kr-sokcho-summer",
+      "datasetId": "event-schedule-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-projection-semantics-scheduling-event-corpus-v1/event-schedule-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/event-kr-sokcho-summer",
+      "canonicalContentHash": "sha256:8f190831ccd90484da72b234f43686231594b975334c08f30171159f4f5d4445",
+      "sourcePacketHash": "sha256:5f6476eef2265c6cafbb4b42f121d14885621a0a1ad8646c2a24b5f07b486775",
+      "relation": "event_or_boundary_fixture"
+    },
+    {
+      "contentId": "events:event-kr-sema-martin-parr",
+      "datasetId": "event-schedule-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-projection-semantics-scheduling-event-corpus-v1/event-schedule-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/event-kr-sema-martin-parr",
+      "canonicalContentHash": "sha256:f628bd3b2ed5b13a46ccb34d9de435b62dacc52ddb258f368d1ddb3d9982bb78",
+      "sourcePacketHash": "sha256:27c56deaa1aefa74089c014ef78fb3b62bdd1d55864661ee5587c1a9325bff29",
+      "relation": "event_or_boundary_fixture"
+    },
+    {
+      "contentId": "events:event-kr-ballet-ticket-show",
+      "datasetId": "event-schedule-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-projection-semantics-scheduling-event-corpus-v1/event-schedule-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/event-kr-ballet-ticket-show",
+      "canonicalContentHash": "sha256:98c668dcb1ca464bd8d6ae6d4604a24437167a728a6e4d24ab12b04da1e3ff5f",
+      "sourcePacketHash": "sha256:448d54d8973d6bbb89cf12b591b6b4c012f229b771e7507dbb59bfe637bac2dc",
+      "relation": "event_or_boundary_fixture"
+    },
+    {
+      "contentId": "events:event-kr-qnet-exam-lifecycle",
+      "datasetId": "event-schedule-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-projection-semantics-scheduling-event-corpus-v1/event-schedule-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/event-kr-qnet-exam-lifecycle",
+      "canonicalContentHash": "sha256:ad6e42bbde22e354cdf07047fe93f347f4235d7a3a86849ceec16a509391f7a4",
+      "sourcePacketHash": "sha256:daebdff2d4155f5f476980cde65b237d3e94564fe92357d2d8f8872d8047c602",
+      "relation": "event_or_boundary_fixture"
+    },
+    {
+      "contentId": "events:event-kr-revised-musical",
+      "datasetId": "event-schedule-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-projection-semantics-scheduling-event-corpus-v1/event-schedule-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/event-kr-revised-musical",
+      "canonicalContentHash": "sha256:406a4033d1e437d1db8bdc610d8dbf8ed82062cfb418f70a6e627d9a5784591b",
+      "sourcePacketHash": "sha256:6ec1c074a6ef32788ceb4b74b8fc45f7cde130280dd8b373fba3f6c1f5d36c3a",
+      "relation": "event_or_boundary_fixture"
+    },
+    {
+      "contentId": "events:event-pattern-nps-all-day",
+      "datasetId": "event-schedule-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-projection-semantics-scheduling-event-corpus-v1/event-schedule-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/event-pattern-nps-all-day",
+      "canonicalContentHash": "sha256:c3c2c71df8325d03df475304336586c9cd2a68ea770bed0b29c419ae8e4d3486",
+      "sourcePacketHash": "sha256:fbf07b710377916336a0bc380c91665bccf251d486b088a3809ea8de5a666d70",
+      "relation": "event_or_boundary_fixture"
+    },
+    {
+      "contentId": "events:event-pattern-online-foia",
+      "datasetId": "event-schedule-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-projection-semantics-scheduling-event-corpus-v1/event-schedule-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/event-pattern-online-foia",
+      "canonicalContentHash": "sha256:46444fcdcde3e20856e54193ef2714d74b730534022f2e97fc81740f05fec0c0",
+      "sourcePacketHash": "sha256:f467d7f31d7d54876a8334ff0c3e75aeb49425e78e4de74dcf37b6e059e33432",
+      "relation": "event_or_boundary_fixture"
+    },
+    {
+      "contentId": "events:event-pattern-nps-weekly",
+      "datasetId": "event-schedule-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-projection-semantics-scheduling-event-corpus-v1/event-schedule-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/event-pattern-nps-weekly",
+      "canonicalContentHash": "sha256:16eeaee3bd1155ad29bee7d912d30a4f8f9e8ed2a0ef376cde3ebbea51848919",
+      "sourcePacketHash": "sha256:496642c17cacace0379fe0daab336654461c37b87fc98e9eccb3b72ebb254ad9",
+      "relation": "event_or_boundary_fixture"
+    },
+    {
+      "contentId": "events:event-pattern-chimac-edition",
+      "datasetId": "event-schedule-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-projection-semantics-scheduling-event-corpus-v1/event-schedule-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/event-pattern-chimac-edition",
+      "canonicalContentHash": "sha256:770bdde2e69be6c445f225492eadbafb2ca5df27bb6c597765f9777ae8a5c7c3",
+      "sourcePacketHash": "sha256:328bb6406b146d51c424c2e46144935eb5368ebcb6f06fbdf56a9e02bf5365b1",
+      "relation": "event_or_boundary_fixture"
+    },
+    {
+      "contentId": "events:event-pattern-nps-rescheduled",
+      "datasetId": "event-schedule-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-projection-semantics-scheduling-event-corpus-v1/event-schedule-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/event-pattern-nps-rescheduled",
+      "canonicalContentHash": "sha256:d795863c7b4385b12cb3167dff3f5996ab6a59bb0aaa5f1bfc33c138a7c591e5",
+      "sourcePacketHash": "sha256:0e5c74022433cd13ffe294dc7e31fae093e9bb67ad6da4d154ec729dd114a75c",
+      "relation": "event_or_boundary_fixture"
+    },
+    {
+      "contentId": "events:event-pattern-fun-seoul-interest-list",
+      "datasetId": "event-schedule-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-projection-semantics-scheduling-event-corpus-v1/event-schedule-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/event-pattern-fun-seoul-interest-list",
+      "canonicalContentHash": "sha256:4282a72c179ddf5ac1bac5414fa385c4428e3a9dffa084fed1b444c0cd1bf9ec",
+      "sourcePacketHash": "sha256:b780e347d4332faf80dcbba4f526fdcb49608c155bbe91fc4c74fff1ed742e24",
+      "relation": "event_or_boundary_fixture"
+    },
+    {
+      "contentId": "events:event-pattern-boryeong-operations",
+      "datasetId": "event-schedule-corpus-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-projection-semantics-scheduling-event-corpus-v1/event-schedule-corpus-v1.json"
+      ],
+      "originRecordRef": "#/fixtures/event-pattern-boryeong-operations",
+      "canonicalContentHash": "sha256:d9024f558ed5ad08d0994ff64c544b0e1b2dca4c2dbbee6010a65bcbf9f35ab4",
+      "sourcePacketHash": "sha256:148c905294a8869bb96fc0262f21c5235b1daf7099b719d1dd8ff16267bbc80b",
+      "relation": "event_or_boundary_fixture"
+    },
+    {
+      "contentId": "legacy:preapp:airport-departure-order",
+      "datasetId": "legacy:preapp",
+      "originArtifacts": [
+        "docs/content-audit/2026-07-11-content-portfolio-preapp-v1.json"
+      ],
+      "originRecordRef": "#/contentBundles/overseas-trip-prep-map/flows/airport-departure-order",
+      "canonicalContentHash": "sha256:bfc4af02dc58e1710ea77fde4c7c6e811d260112b7b4436e3ddd8ea8a4bc1727",
+      "sourcePacketHash": "sha256:34f4585a5cc0c03e7caaacbeefa3d1f7a1f479b39bfdfc419638d35b18945739",
+      "relation": "legacy_adapter"
+    },
+    {
+      "contentId": "legacy:preapp:busan-friends-2n3d-route",
+      "datasetId": "legacy:preapp",
+      "originArtifacts": [
+        "docs/content-audit/2026-07-11-content-portfolio-preapp-v1.json"
+      ],
+      "originRecordRef": "#/contentBundles/busan-friends-2n3d/flows/busan-friends-2n3d-route",
+      "canonicalContentHash": "sha256:9fb85491db8df6af8386d41cea4c33688538f64f6be57ea992f2c3e392e67b74",
+      "sourcePacketHash": "sha256:329455b6de82dd8e593292f6a1316ef1637098270b9c966f66b1f78a082a88dc",
+      "relation": "legacy_adapter"
+    },
+    {
+      "contentId": "legacy:preapp:weekday-lunchbox-menu",
+      "datasetId": "legacy:preapp",
+      "originArtifacts": [
+        "docs/content-audit/2026-07-11-content-portfolio-preapp-v1.json"
+      ],
+      "originRecordRef": "#/contentBundles/weekday-lunchbox-week/flows/weekday-lunchbox-menu",
+      "canonicalContentHash": "sha256:4dd94f3132de699fb26a8e6076ac7492f7f34bd44b675d7610440f4ef503d3e0",
+      "sourcePacketHash": "sha256:93f679d662b75296c585f7368830abaa540e06d5c5a213c3e713f4b97492fa5b",
+      "relation": "legacy_adapter"
+    },
+    {
+      "contentId": "legacy:preapp:interview-d1-check",
+      "datasetId": "legacy:preapp",
+      "originArtifacts": [
+        "docs/content-audit/2026-07-11-content-portfolio-preapp-v1.json"
+      ],
+      "originRecordRef": "#/contentBundles/interview-day-before/flows/interview-d1-check",
+      "canonicalContentHash": "sha256:d36dbd49755222af4dfc838a001c3e6d7c15273e10f8afe6fdd985bcea5b7d72",
+      "sourcePacketHash": "sha256:ee18e43d297845db6df7d05d3910c2d6042fef7dc52ce18bbb5f12ab8d0ed1ef",
+      "relation": "legacy_adapter"
+    },
+    {
+      "contentId": "legacy:preapp:license-class1-medical-check",
+      "datasetId": "legacy:preapp",
+      "originArtifacts": [
+        "docs/content-audit/2026-07-11-content-portfolio-preapp-v1.json"
+      ],
+      "originRecordRef": "#/contentBundles/driver-license-renewal-map/flows/license-class1-medical-check",
+      "canonicalContentHash": "sha256:0a59754e18ed9d3974502cf7e71b76beda10c5662d46ac25896b65f27882b46d",
+      "sourcePacketHash": "sha256:8f3821814f23d3223baed07fa9e74f0735ded4ff1a5bdb9dc802ef4fda3c794a",
+      "relation": "legacy_adapter"
+    },
+    {
+      "contentId": "legacy:preapp:license-class2-renewal",
+      "datasetId": "legacy:preapp",
+      "originArtifacts": [
+        "docs/content-audit/2026-07-11-content-portfolio-preapp-v1.json"
+      ],
+      "originRecordRef": "#/contentBundles/driver-license-renewal-map/flows/license-class2-renewal",
+      "canonicalContentHash": "sha256:797ecb0c4e8a6be806731a2d687f67bd336c6c1d101fbfb95148360fdc927d9d",
+      "sourcePacketHash": "sha256:44303d9c79c957fb7cb7235470a32ee307e2c7ca2b92d8fe661fdd613a1eba8d",
+      "relation": "legacy_adapter"
+    },
+    {
+      "contentId": "legacy:preapp:aircon-ultrafine-filter-routine",
+      "datasetId": "legacy:preapp",
+      "originArtifacts": [
+        "docs/content-audit/2026-07-11-content-portfolio-preapp-v1.json"
+      ],
+      "originRecordRef": "#/contentBundles/aircon-filter-4week/flows/aircon-ultrafine-filter-routine",
+      "canonicalContentHash": "sha256:2034c3312c28520784cb5225aa57e365025fdc6961551fe53d94de627d7102d0",
+      "sourcePacketHash": "sha256:42986b94a0746a682f4f11388208cd7a51d898f376e4a7efe8e70999e1c5d0d7",
+      "relation": "legacy_adapter"
+    },
+    {
+      "contentId": "legacy:preapp:beginner-5k-8week-program",
+      "datasetId": "legacy:preapp",
+      "originArtifacts": [
+        "docs/content-audit/2026-07-11-content-portfolio-preapp-v1.json"
+      ],
+      "originRecordRef": "#/contentBundles/beginner-5k-8week/flows/beginner-5k-8week-program",
+      "canonicalContentHash": "sha256:ca139fbcec66fd580a876ebacc40906f426d90323cf7ba8aaeb2d783250b1f23",
+      "sourcePacketHash": "sha256:9c31152134c6b718e4bc8d0c2ea2345b835081fd7e95e3d612d0edb2d9cb5db8",
+      "relation": "legacy_adapter"
+    },
+    {
+      "contentId": "legacy:preapp:kitten-arrival-first-week",
+      "datasetId": "legacy:preapp",
+      "originArtifacts": [
+        "docs/content-audit/2026-07-11-content-portfolio-preapp-v1.json"
+      ],
+      "originRecordRef": "#/contentBundles/kitten-first-week/flows/kitten-arrival-first-week",
+      "canonicalContentHash": "sha256:cfd6f3bce18a2eb1c34e29af17e4fe009090dea7f1b9908400e5cde407370be4",
+      "sourcePacketHash": "sha256:d39a940cb88f35df34f0b96162339b13d0aa7579d4f4c7a00a172cce9ae9ee97",
+      "relation": "legacy_adapter"
+    },
+    {
+      "contentId": "legacy:round2:kmooc-hundred-schools-fifteen-week",
+      "datasetId": "legacy:round2",
+      "originArtifacts": [
+        "docs/content-audit/2026-07-11-content-portfolio-expansion-round2-v1.json"
+      ],
+      "originRecordRef": "#/contentBundles/kmooc-philosophy-fifteen-week/flows/kmooc-hundred-schools-fifteen-week",
+      "canonicalContentHash": "sha256:a9b11002a1fb5b78ad1b094fb5aa13f232d7bd495472b86ca058153751ab434a",
+      "sourcePacketHash": "sha256:a1c3de17872dc09259e6658b83492820c7b733abacd33c89a40b90011ca29393",
+      "relation": "legacy_adapter"
+    },
+    {
+      "contentId": "legacy:round2:kids-birthday-four-week",
+      "datasetId": "legacy:round2",
+      "originArtifacts": [
+        "docs/content-audit/2026-07-11-content-portfolio-expansion-round2-v1.json"
+      ],
+      "originRecordRef": "#/contentBundles/family-birthday-event-map/flows/kids-birthday-four-week",
+      "canonicalContentHash": "sha256:896632c967e56e67d28230f670bfeb2a362ba27ea92a7f574b567669c285c3f2",
+      "sourcePacketHash": "sha256:2af96f2ccf19fec4cdeab8167853adcacaf71615d115b134e73c1d5e0ec16a40",
+      "relation": "legacy_adapter"
+    },
+    {
+      "contentId": "legacy:round2:dol-party-four-month",
+      "datasetId": "legacy:round2",
+      "originArtifacts": [
+        "docs/content-audit/2026-07-11-content-portfolio-expansion-round2-v1.json"
+      ],
+      "originRecordRef": "#/contentBundles/family-birthday-event-map/flows/dol-party-four-month",
+      "canonicalContentHash": "sha256:ad2cb998ff3d2f24e190604b8b42b6af2e97ddbeb98332f1f5ddd0f3dc83222e",
+      "sourcePacketHash": "sha256:2ea30ce22f0394e8951127c485d29870a600c80986516523651b49d1df851c46",
+      "relation": "legacy_adapter"
+    },
+    {
+      "contentId": "legacy:round2:canon-photo-thirty-day",
+      "datasetId": "legacy:round2",
+      "originArtifacts": [
+        "docs/content-audit/2026-07-11-content-portfolio-expansion-round2-v1.json"
+      ],
+      "originRecordRef": "#/contentBundles/photo-thirty-day-challenge/flows/canon-photo-thirty-day",
+      "canonicalContentHash": "sha256:8e7ed8a75f483260a347aedbda67e6b3990df97b93b59370e567eb1d44ba1a5e",
+      "sourcePacketHash": "sha256:4574689f25775c2d70f720d55ff19bb6b9be7bd68c16cf5f4e1c0aa27603a44e",
+      "relation": "legacy_adapter"
+    },
+    {
+      "contentId": "legacy:round2:banchan-day-one",
+      "datasetId": "legacy:round2",
+      "originArtifacts": [
+        "docs/content-audit/2026-07-11-content-portfolio-expansion-round2-v1.json"
+      ],
+      "originRecordRef": "#/contentBundles/banchan-three-day-map/flows/banchan-day-one",
+      "canonicalContentHash": "sha256:30410f4e2ccd830c669e41c02046310723afad08743bbb04003486b8842abe97",
+      "sourcePacketHash": "sha256:b7c43cfd2216fd448724abee6da85e57f15df43ccf3eda4ef3907a34d471adc8",
+      "relation": "legacy_adapter"
+    },
+    {
+      "contentId": "legacy:round2:banchan-day-two-three",
+      "datasetId": "legacy:round2",
+      "originArtifacts": [
+        "docs/content-audit/2026-07-11-content-portfolio-expansion-round2-v1.json"
+      ],
+      "originRecordRef": "#/contentBundles/banchan-three-day-map/flows/banchan-day-two-three",
+      "canonicalContentHash": "sha256:849d930bb7b2bb92b06d8a8723e42e42d068072ecd24526ecc5aeeb28685eaa3",
+      "sourcePacketHash": "sha256:47c4a9f038491ec14f4b97699507968eb850bbf9a674b0ede2a4d23a537ce2cb",
+      "relation": "legacy_adapter"
+    },
+    {
+      "contentId": "legacy:round2:work24-jobseeker-start",
+      "datasetId": "legacy:round2",
+      "originArtifacts": [
+        "docs/content-audit/2026-07-11-content-portfolio-expansion-round2-v1.json"
+      ],
+      "originRecordRef": "#/contentBundles/work24-job-support-map/flows/work24-jobseeker-start",
+      "canonicalContentHash": "sha256:dc442576b40292bdc28a5ca66585c44cfd4101c6e40c15082b0cfa131616287b",
+      "sourcePacketHash": "sha256:a0def12b391233a8238845674de3ce68ebeb557cc60f320098eee0da74fcceb3",
+      "relation": "legacy_adapter"
+    },
+    {
+      "contentId": "legacy:round2:work24-midcareer-transition",
+      "datasetId": "legacy:round2",
+      "originArtifacts": [
+        "docs/content-audit/2026-07-11-content-portfolio-expansion-round2-v1.json"
+      ],
+      "originRecordRef": "#/contentBundles/work24-job-support-map/flows/work24-midcareer-transition",
+      "canonicalContentHash": "sha256:e18294e004c5fca58b846b9993832b013f2413748a9c12893f31af9e61e1bcfc",
+      "sourcePacketHash": "sha256:94cf26135e254800da6050cde7d777e85a7869e9421281fcfa8de2dc2024b369",
+      "relation": "legacy_adapter"
+    },
+    {
+      "contentId": "legacy:round2:personal-business-registration-flow",
+      "datasetId": "legacy:round2",
+      "originArtifacts": [
+        "docs/content-audit/2026-07-11-content-portfolio-expansion-round2-v1.json"
+      ],
+      "originRecordRef": "#/contentBundles/personal-business-registration/flows/personal-business-registration-flow",
+      "canonicalContentHash": "sha256:bfe8c4da87e7157df83cd7fa71eb5b2adf95bc23a6e8c478d705a05fe8b72b74",
+      "sourcePacketHash": "sha256:443f5e595dbafcd346f3c66e5c10ca87b5cc77375f81db2bff1376c22e464061",
+      "relation": "legacy_adapter"
+    },
+    {
+      "contentId": "legacy:round2:corporate-mail-order-registration-flow",
+      "datasetId": "legacy:round2",
+      "originArtifacts": [
+        "docs/content-audit/2026-07-11-content-portfolio-expansion-round2-v1.json"
+      ],
+      "originRecordRef": "#/contentBundles/corporate-mail-order-registration/flows/corporate-mail-order-registration-flow",
+      "canonicalContentHash": "sha256:5fcb805cf96bf259a4d03e6377fbd3450564cd1503d7bf99f2d6152a050e5e79",
+      "sourcePacketHash": "sha256:e1f86d70bb62650ff1b3b2110f2783541a9774ad067ce745c0fb613da21c31c9",
+      "relation": "legacy_adapter"
+    },
+    {
+      "contentId": "legacy:round2:minor-passport-renewal",
+      "datasetId": "legacy:round2",
+      "originArtifacts": [
+        "docs/content-audit/2026-07-11-content-portfolio-expansion-round2-v1.json"
+      ],
+      "originRecordRef": "#/contentBundles/passport-renewal-map/flows/minor-passport-renewal",
+      "canonicalContentHash": "sha256:55545669fba1ecb1f69a66c60387aa54a20344692af40386302ad365b5f09a04",
+      "sourcePacketHash": "sha256:8034b409bc69a5218412b6bb264078188256b9db754459d403b49630b00b98d5",
+      "relation": "legacy_adapter"
+    },
+    {
+      "contentId": "legacy:round2:social-content-thirty-day",
+      "datasetId": "legacy:round2",
+      "originArtifacts": [
+        "docs/content-audit/2026-07-11-content-portfolio-expansion-round2-v1.json"
+      ],
+      "originRecordRef": "#/contentBundles/creator-content-thirty-day/flows/social-content-thirty-day",
+      "canonicalContentHash": "sha256:4f03e9dd2c9746a2c37894c7cbd52581894df13f8380c976309f45c19a7e2739",
+      "sourcePacketHash": "sha256:a0297c7360796549406fe1ca24bb16e990d2651d6c53aff38eb8b2a5c3f6f4c5",
+      "relation": "legacy_adapter"
+    },
+    {
+      "contentId": "generalization:GB-01",
+      "datasetId": "generalization-gold-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-21-flow-content-generalization-benchmark-v1/gold-source-contract-v1.json",
+        "docs/specs/2026-07-21-flow-content-generalization-benchmark-v1/blind-source-packets-v1.json"
+      ],
+      "originRecordRef": "#/cases/GB-01",
+      "canonicalContentHash": "sha256:f0ce2b8ea1a5e7266c431e45ab5e93b98032133fbeedb178000cf6b8f1e31271",
+      "sourcePacketHash": "sha256:f41bea555a00c531feccd150f44d684c135d4064face02a868e88265efd2249c",
+      "relation": "gold_allowed_item_adapter"
+    },
+    {
+      "contentId": "generalization:GB-02",
+      "datasetId": "generalization-gold-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-21-flow-content-generalization-benchmark-v1/gold-source-contract-v1.json",
+        "docs/specs/2026-07-21-flow-content-generalization-benchmark-v1/blind-source-packets-v1.json"
+      ],
+      "originRecordRef": "#/cases/GB-02",
+      "canonicalContentHash": "sha256:239d31caa42da157c69528fc4797a4027ca28bcf7897fe87a9ed5bf273686671",
+      "sourcePacketHash": "sha256:a500ede5356e2a82533268d0c820539965c842c9986d6662653ab195293dd987",
+      "relation": "gold_allowed_item_adapter"
+    },
+    {
+      "contentId": "generalization:GB-03",
+      "datasetId": "generalization-gold-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-21-flow-content-generalization-benchmark-v1/gold-source-contract-v1.json",
+        "docs/specs/2026-07-21-flow-content-generalization-benchmark-v1/blind-source-packets-v1.json"
+      ],
+      "originRecordRef": "#/cases/GB-03",
+      "canonicalContentHash": "sha256:b1649dbd5dcbb7a961f2efe879261c35e7dfb1e3fab2f0c797715c291265b8f6",
+      "sourcePacketHash": "sha256:29a25b81bbb8b9005bff5956bf8492a1b8f51d22559a0f54e9df166d5a323a4a",
+      "relation": "gold_allowed_item_adapter"
+    },
+    {
+      "contentId": "generalization:GB-04",
+      "datasetId": "generalization-gold-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-21-flow-content-generalization-benchmark-v1/gold-source-contract-v1.json",
+        "docs/specs/2026-07-21-flow-content-generalization-benchmark-v1/blind-source-packets-v1.json"
+      ],
+      "originRecordRef": "#/cases/GB-04",
+      "canonicalContentHash": "sha256:08292c5d2ef5a0abd27f660ccd73df9dfc9e8f422077bd2adc85011afbc9401c",
+      "sourcePacketHash": "sha256:54e6d442ed52aaa6c068974eb148f472d9254053f716c791d713d83b428abfd2",
+      "relation": "gold_allowed_item_adapter"
+    },
+    {
+      "contentId": "generalization:GB-05",
+      "datasetId": "generalization-gold-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-21-flow-content-generalization-benchmark-v1/gold-source-contract-v1.json",
+        "docs/specs/2026-07-21-flow-content-generalization-benchmark-v1/blind-source-packets-v1.json"
+      ],
+      "originRecordRef": "#/cases/GB-05",
+      "canonicalContentHash": "sha256:dfab662f6ab9a267f6c034ea6e6e935e5a23e2326f43bd6999915402c5c15852",
+      "sourcePacketHash": "sha256:13d5058060027f041b9f5ac5ff4b2a1cfda9ce5185b539fc6bd7bbc8a08a6a5c",
+      "relation": "gold_allowed_item_adapter"
+    },
+    {
+      "contentId": "generalization:GB-06",
+      "datasetId": "generalization-gold-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-21-flow-content-generalization-benchmark-v1/gold-source-contract-v1.json",
+        "docs/specs/2026-07-21-flow-content-generalization-benchmark-v1/blind-source-packets-v1.json"
+      ],
+      "originRecordRef": "#/cases/GB-06",
+      "canonicalContentHash": "sha256:cc2b860f4b09ef0c6ba4be4bac1ec72e5ce2b9b9a7f530aa7d90c32f878855e8",
+      "sourcePacketHash": "sha256:e60ca6aaab9e7070ee7dc259343de6a8075e6a72f14ee69c84e4a6ec3a583eed",
+      "relation": "gold_allowed_item_adapter"
+    },
+    {
+      "contentId": "generalization:GB-07",
+      "datasetId": "generalization-gold-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-21-flow-content-generalization-benchmark-v1/gold-source-contract-v1.json",
+        "docs/specs/2026-07-21-flow-content-generalization-benchmark-v1/blind-source-packets-v1.json"
+      ],
+      "originRecordRef": "#/cases/GB-07",
+      "canonicalContentHash": "sha256:55caa12ec78a4a4f79773ebb85e53a9a4e7ff2ad23a3ad028d2dd52d89ac1d60",
+      "sourcePacketHash": "sha256:af879dabb62b29b09499a4f755133ebb244002780a02cefab51b1c4020e4cf2b",
+      "relation": "gold_allowed_item_adapter"
+    },
+    {
+      "contentId": "generalization:GB-08",
+      "datasetId": "generalization-gold-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-21-flow-content-generalization-benchmark-v1/gold-source-contract-v1.json",
+        "docs/specs/2026-07-21-flow-content-generalization-benchmark-v1/blind-source-packets-v1.json"
+      ],
+      "originRecordRef": "#/cases/GB-08",
+      "canonicalContentHash": "sha256:84057771fc5b44894ccb28808b059071ad63e49239b9592214123044a4ff5e6a",
+      "sourcePacketHash": "sha256:968c1ee8b313debe30aa33bb3d7fb969a0646091a46f23d07ec6ff4821d6fcef",
+      "relation": "gold_allowed_item_adapter"
+    },
+    {
+      "contentId": "generalization:GB-13",
+      "datasetId": "generalization-gold-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-21-flow-content-generalization-benchmark-v1/gold-source-contract-v1.json",
+        "docs/specs/2026-07-21-flow-content-generalization-benchmark-v1/blind-source-packets-v1.json"
+      ],
+      "originRecordRef": "#/cases/GB-13",
+      "canonicalContentHash": "sha256:2050dad18bded529369ec480e91922e011967dfc5f65067b1926bb915bb5fde9",
+      "sourcePacketHash": "sha256:19649855b9bfefad4789dba240df5f28718e5b24492dc4ff152ff334bed77603",
+      "relation": "gold_allowed_item_adapter"
+    },
+    {
+      "contentId": "generalization:GB-15",
+      "datasetId": "generalization-gold-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-21-flow-content-generalization-benchmark-v1/gold-source-contract-v1.json",
+        "docs/specs/2026-07-21-flow-content-generalization-benchmark-v1/blind-source-packets-v1.json"
+      ],
+      "originRecordRef": "#/cases/GB-15",
+      "canonicalContentHash": "sha256:0547fe86531912454869eb0ff7617255051407be788f1ded8ebd516edbcdd48c",
+      "sourcePacketHash": "sha256:c65c7c77cd22f1565a62a2428d07fca0ef74d01ac0b5ef8c0127e3963aa210ba",
+      "relation": "gold_allowed_item_adapter"
+    },
+    {
+      "contentId": "generalization:GB-16",
+      "datasetId": "generalization-gold-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-21-flow-content-generalization-benchmark-v1/gold-source-contract-v1.json",
+        "docs/specs/2026-07-21-flow-content-generalization-benchmark-v1/blind-source-packets-v1.json"
+      ],
+      "originRecordRef": "#/cases/GB-16",
+      "canonicalContentHash": "sha256:933a6ed44ce2e4536f59bf7624d6cb7929f615d65b6fdad9faa714faae99260d",
+      "sourcePacketHash": "sha256:5dfd28d509e8eb2a2fa3cd184444e38ae7a0d0ad721e7698c6d8b286cd559e35",
+      "relation": "gold_allowed_item_adapter"
+    },
+    {
+      "contentId": "new:new-a01-seoul-wedding-110",
+      "datasetId": "new-source-verification-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/new-source-verification-v1.json"
+      ],
+      "originRecordRef": "#/records/new-a01-seoul-wedding-110",
+      "canonicalContentHash": "sha256:e7bb7e7ba50a6da6c76d8c3be50e50f2c84bf072c4aee9302f5493e99346a4b5",
+      "sourcePacketHash": "sha256:9799eab9abef8e045eda5ed77a017908417d41c2844077c2c3a8436c532f90ea",
+      "relation": "directly_inspected_new_source"
+    },
+    {
+      "contentId": "new:new-a02-seoul-museum-group",
+      "datasetId": "new-source-verification-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/new-source-verification-v1.json"
+      ],
+      "originRecordRef": "#/records/new-a02-seoul-museum-group",
+      "canonicalContentHash": "sha256:5cfb4683c2a7e04f75eb21a00cf02eda54d906de89b2a9892d46533d5c2d35c2",
+      "sourcePacketHash": "sha256:324589869fb0325a0018e844f6d740aeb3e30ce9d098d7b0be0573140a98e268",
+      "relation": "directly_inspected_new_source"
+    },
+    {
+      "contentId": "new:new-a03-kakaopay-jeonse",
+      "datasetId": "new-source-verification-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/new-source-verification-v1.json"
+      ],
+      "originRecordRef": "#/records/new-a03-kakaopay-jeonse",
+      "canonicalContentHash": "sha256:8aa221b4297a0dccaced135decd87d4cd491456323d4f5de3d56914e584eecf2",
+      "sourcePacketHash": "sha256:087fafd587092640647211bab97879f3c6255216229f776c28496b7c36775431",
+      "relation": "directly_inspected_new_source"
+    },
+    {
+      "contentId": "new:new-a05-nfa-home-fire",
+      "datasetId": "new-source-verification-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/new-source-verification-v1.json"
+      ],
+      "originRecordRef": "#/records/new-a05-nfa-home-fire",
+      "canonicalContentHash": "sha256:eaaabf80b565323b13e1b767f408909885e1415300240771481ab2166197f310",
+      "sourcePacketHash": "sha256:420b56d140ecae17dd2430e6cf86bd53165a728acd0bf2e6af63f8a654977563",
+      "relation": "directly_inspected_new_source"
+    },
+    {
+      "contentId": "new:new-a06-elementary-entry-2026",
+      "datasetId": "new-source-verification-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/new-source-verification-v1.json"
+      ],
+      "originRecordRef": "#/records/new-a06-elementary-entry-2026",
+      "canonicalContentHash": "sha256:cd3602ddc20d03037efba002390da548871496e0536680a6d83dd9a8a33132d2",
+      "sourcePacketHash": "sha256:60b1ec5f2614959632f298928a75c755e4e5687f21070c45a1bc871ed29b414a",
+      "relation": "directly_inspected_new_source"
+    },
+    {
+      "contentId": "new:new-a07-seoul-bus-support",
+      "datasetId": "new-source-verification-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/new-source-verification-v1.json"
+      ],
+      "originRecordRef": "#/records/new-a07-seoul-bus-support",
+      "canonicalContentHash": "sha256:6bbf6f9be1823085fb13d215986093b9f98f4bd5564795ea0cec633156122631",
+      "sourcePacketHash": "sha256:c30a82e551df0c5f8a2898aad79e0d944136cedfbd2684f2a728d44ece448c01",
+      "relation": "directly_inspected_new_source"
+    },
+    {
+      "contentId": "new:new-a08-income-tax",
+      "datasetId": "new-source-verification-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/new-source-verification-v1.json"
+      ],
+      "originRecordRef": "#/records/new-a08-income-tax",
+      "canonicalContentHash": "sha256:2975794654c51f4cfb87199826f4d70b09e543b766b2337ed4c62b0ae23c3493",
+      "sourcePacketHash": "sha256:5bbaf79bcd0877038596b9481029b5bde957284f6dc5824d0df8e5744b4440e4",
+      "relation": "directly_inspected_new_source"
+    },
+    {
+      "contentId": "new:new-b03-fridge-week",
+      "datasetId": "new-source-verification-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/new-source-verification-v1.json"
+      ],
+      "originRecordRef": "#/records/new-b03-fridge-week",
+      "canonicalContentHash": "sha256:316bdf6a7e4e3e089eeb987e01a50932c59b67810ea567e5c4b7bb3e6a8ab82a",
+      "sourcePacketHash": "sha256:a5f37e9d06b11e86a197b3271815ae16100494c2a5adc3e7ed29407aaa429046",
+      "relation": "directly_inspected_new_source"
+    },
+    {
+      "contentId": "new:new-b04-organize-seven",
+      "datasetId": "new-source-verification-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/new-source-verification-v1.json"
+      ],
+      "originRecordRef": "#/records/new-b04-organize-seven",
+      "canonicalContentHash": "sha256:8367c27ec0cb5894b5bad8ba2ff00bb4e9ee90e0ed682d641898cfba6f5eb59e",
+      "sourcePacketHash": "sha256:b17b25db9a12ec3fd00841b7690586718b5dfe400ecdcd3f1e1bffea5e8c1866",
+      "relation": "directly_inspected_new_source"
+    },
+    {
+      "contentId": "new:new-b05-storage-projects",
+      "datasetId": "new-source-verification-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/new-source-verification-v1.json"
+      ],
+      "originRecordRef": "#/records/new-b05-storage-projects",
+      "canonicalContentHash": "sha256:96c106b8744a48e5c990232f90f138cb06a61ed873f61fdcd0b4f1bf7e624a1e",
+      "sourcePacketHash": "sha256:ab0695d2babde22862135e85195774b490b36a61c12664718835458c785d0d1d",
+      "relation": "directly_inspected_new_source"
+    },
+    {
+      "contentId": "new:new-b06-wtable-lemon-weekend",
+      "datasetId": "new-source-verification-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/new-source-verification-v1.json"
+      ],
+      "originRecordRef": "#/records/new-b06-wtable-lemon-weekend",
+      "canonicalContentHash": "sha256:36918be58fb1af7ed2d6ad753977ef00adca582a6cfb9c86a4a4de0b0dd7fac3",
+      "sourcePacketHash": "sha256:5cf7e62f173ad0a6c619798d45a9a5594547f58af6ac7327511560d3c79ad15e",
+      "relation": "directly_inspected_new_source"
+    },
+    {
+      "contentId": "new:new-b07-interior-consultation",
+      "datasetId": "new-source-verification-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/new-source-verification-v1.json"
+      ],
+      "originRecordRef": "#/records/new-b07-interior-consultation",
+      "canonicalContentHash": "sha256:ebc9fb4ad3a4e9f2049686f404b6584b5399cfaa3b6619e7b55f343c37e268a9",
+      "sourcePacketHash": "sha256:619797f9d0a1c342ee3ccf04a8ef8d577998369e5d2631db00ee5456178617c6",
+      "relation": "directly_inspected_new_source"
+    },
+    {
+      "contentId": "new:new-b08-banchan-ten",
+      "datasetId": "new-source-verification-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/new-source-verification-v1.json"
+      ],
+      "originRecordRef": "#/records/new-b08-banchan-ten",
+      "canonicalContentHash": "sha256:95029b955fd53888795c5c834350af0cbacddff712bff1435c207d125998a357",
+      "sourcePacketHash": "sha256:f955012abc0d7bbc2e8cdd40e10b6fcf6f9b816ae0067aeec451f772d18c4ea0",
+      "relation": "directly_inspected_new_source"
+    },
+    {
+      "contentId": "new:new-c01-programmers-kit",
+      "datasetId": "new-source-verification-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/new-source-verification-v1.json"
+      ],
+      "originRecordRef": "#/records/new-c01-programmers-kit",
+      "canonicalContentHash": "sha256:1cf107d00c9b9ff620e18e2ba3886d3a6f47d57fbd920f9284c6f712a314883f",
+      "sourcePacketHash": "sha256:58a57e835a89ce18d6d82437bf4dab6cecddd025d78ccbf80157756634883d61",
+      "relation": "directly_inspected_new_source"
+    },
+    {
+      "contentId": "new:new-c02-ifixit-hose",
+      "datasetId": "new-source-verification-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/new-source-verification-v1.json"
+      ],
+      "originRecordRef": "#/records/new-c02-ifixit-hose",
+      "canonicalContentHash": "sha256:70c89e0e26bc3fbad114ba43391059ac78fec1480536a96d5efcb0068f94b308",
+      "sourcePacketHash": "sha256:692ccdfe1aabd88ff31e834df7fe8f7656098fec797e4b563fa17cbd7232ed74",
+      "relation": "directly_inspected_new_source"
+    },
+    {
+      "contentId": "new:new-c03-nps-junior-ranger",
+      "datasetId": "new-source-verification-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/new-source-verification-v1.json"
+      ],
+      "originRecordRef": "#/records/new-c03-nps-junior-ranger",
+      "canonicalContentHash": "sha256:e46e641f463ef33e51f93d2c86da01b5eabb7b4e1f7796c048f2cbb8db830d6d",
+      "sourcePacketHash": "sha256:77c5a11d9978b1a2870bb94f046e31df48968f81df2f67fa01d819b25f7553e8",
+      "relation": "directly_inspected_new_source"
+    },
+    {
+      "contentId": "new:new-c04-instructables-origami",
+      "datasetId": "new-source-verification-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/new-source-verification-v1.json"
+      ],
+      "originRecordRef": "#/records/new-c04-instructables-origami",
+      "canonicalContentHash": "sha256:5672aa57fb8938dbe44fb11fc56e7f1db9f9ecf5bf34801bc6abde17137af60a",
+      "sourcePacketHash": "sha256:1ca7dbe040e3adee276ec726e7d4d47845bb734b4a2af7b380aba4003ee79e2c",
+      "relation": "directly_inspected_new_source"
+    },
+    {
+      "contentId": "new:new-c05-foodsafety-storage",
+      "datasetId": "new-source-verification-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/new-source-verification-v1.json"
+      ],
+      "originRecordRef": "#/records/new-c05-foodsafety-storage",
+      "canonicalContentHash": "sha256:31b4698372bb1579e7f3147b99cc62ed697bfb241dcd47d27c64532e0924b95b",
+      "sourcePacketHash": "sha256:95e11a6614f33bb42319b17d2e1f98017a981bf8c681084e880c4fac13fb0c9b",
+      "relation": "directly_inspected_new_source"
+    },
+    {
+      "contentId": "new:new-c06-goodfood-lemon",
+      "datasetId": "new-source-verification-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/new-source-verification-v1.json"
+      ],
+      "originRecordRef": "#/records/new-c06-goodfood-lemon",
+      "canonicalContentHash": "sha256:58354becb73fb4ea0377d85b89e4441b357de8326e20ba7bdb1af73131465c00",
+      "sourcePacketHash": "sha256:c74312401ecc12f0828d78c0db846eae53776e7180261711cac6142e9fbf9b51",
+      "relation": "directly_inspected_new_source"
+    },
+    {
+      "contentId": "new:new-c07-roadmap-root",
+      "datasetId": "new-source-verification-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/new-source-verification-v1.json"
+      ],
+      "originRecordRef": "#/records/new-c07-roadmap-root",
+      "canonicalContentHash": "sha256:ddb6d5e632a81c81769a49026f03693baa02f3fdc082f320d0d7221f6ba2b4a4",
+      "sourcePacketHash": "sha256:85c591a3f7897ad03f1118c3efc9fd39d4335a1451508da6309c950c2d2838c6",
+      "relation": "directly_inspected_new_source"
+    },
+    {
+      "contentId": "new:new-c08-todoist-podcast",
+      "datasetId": "new-source-verification-v1",
+      "originArtifacts": [
+        "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/new-source-verification-v1.json"
+      ],
+      "originRecordRef": "#/records/new-c08-todoist-podcast",
+      "canonicalContentHash": "sha256:d0b8de0c1b0b259d2f99676dc60ccd174bdf5ddc79345f158bea5cafb12133db",
+      "sourcePacketHash": "sha256:fe89d7668bfe3015a9a540c16bb077332464a71a288f38042d0675ba1be485f5",
+      "relation": "directly_inspected_new_source"
+    },
+    {
+      "contentId": "historical:national-scholarship-apply-html:1",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/0",
+      "canonicalContentHash": "sha256:3cef151c880eb498e6aff8557387c51d7c0ea030c21d7cb900b26d12076893d5",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:housing-subscription-account-html:2",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/1",
+      "canonicalContentHash": "sha256:d93fdfaef5579e5e4e376e158ca391eaf8c2e1b5e599366233c4b710b485e06c",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:jeonse-guarantee-apply-html:3",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/2",
+      "canonicalContentHash": "sha256:40957f057ff3aebacc88b4fc962c60d2ecfbece9d9f34856a531720a6ed3a40f",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:welfare-benefit-finder-html:4",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/3",
+      "canonicalContentHash": "sha256:5d40c85c53a3c40292525a75565c5751886f5b55de10035725d387f1374f7f6d",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:small-business-fund-check-html:5",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/4",
+      "canonicalContentHash": "sha256:398528431c2fd3e7892617e58f9035de7d695779c46ff3feb209d56fa29aa4e0",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:unemployment-benefit-apply-html:6",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/5",
+      "canonicalContentHash": "sha256:93b5768179fc7ccd80befcfb484abdd9084a59a7a6a0e18b333320781901955d",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:job-seeker-allowance-apply-html:7",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/6",
+      "canonicalContentHash": "sha256:b36b631993892ca07b0e2dc20f8efe042d818663af8b7fa2af306c2ff2f97205",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:pension-estimate-check-html:8",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/7",
+      "canonicalContentHash": "sha256:cdffa484e39d1811d7ca90d9523cb0feadc5dbec89cd937d0bbb1df9b525fc10",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:health-insurance-dependent-html:9",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/8",
+      "canonicalContentHash": "sha256:272b8a22903892d3c25edc602e3eb8facfcf0b56125ec0c0ddc78805ee104880",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:infant-health-checkup-schedule-html:10",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/9",
+      "canonicalContentHash": "sha256:0ef5fbadb60f6ecba6518250433a03eb2760b54c18c20fc534a3d91ed66ce856",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:adult-vaccine-schedule-check-html:11",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/10",
+      "canonicalContentHash": "sha256:3f0893e98320d495511a586ecd09e4e245b174eb14da85d4d4c7a8ae2d2b4150",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:citizen-secretary-alerts-html:12",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/11",
+      "canonicalContentHash": "sha256:874bf8d96b50001764c3abb2b75bf55241cf29330109f16ffc4aebd53a76dd6e",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:first-passport-issue-html:13",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/12",
+      "canonicalContentHash": "sha256:c2a035bf119dda36dbbe3b5279212845d4785a6f6dd26dc84e6e6f4e335a66cd",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:overseas-safety-register-html:14",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/13",
+      "canonicalContentHash": "sha256:6b489ab95893448941d5a088a1d09e2102f7f433c9a1aacc76d47a344f0410d5",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:customs-traveler-declare-html:15",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/14",
+      "canonicalContentHash": "sha256:78ed55ca8d88df1e869633e39751a89d92af90a1ed92de442a1778fecde9a014",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:used-car-ownership-transfer-html:16",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/15",
+      "canonicalContentHash": "sha256:0bddd29817e7322b26c00fb06a96a1324f056ab38bd9732b0e37d6209e6e792f",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:ev-subsidy-apply-html:17",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/16",
+      "canonicalContentHash": "sha256:97af202d30993cff510729e599ac23773f2488889e764d9f0e799ef45074ee00",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:property-local-tax-pay-html:18",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/17",
+      "canonicalContentHash": "sha256:6783ef491abcaf14ff37e2ec448c65f1a6b2c26a0494a829d37434d278b4996b",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:tax-refund-find-html:19",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/18",
+      "canonicalContentHash": "sha256:5d13f2a0edd240eca504cd883750e909e0d5908c7c81bb4bb31856a50c47398b",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:birth-registration-prep-html:20",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/19",
+      "canonicalContentHash": "sha256:db47096d231f9a54bd26eba8ab6ac6435e2fc21857005800bd93851795a71585",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:safe-inheritance-onestop-html:21",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/20",
+      "canonicalContentHash": "sha256:e7ef80314535987f4788e0c79651c07e27d70af25150247968f5c82ed2afdbad",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:seal-or-signature-certificate-html:22",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/21",
+      "canonicalContentHash": "sha256:c4a19d61ccf068bf076848b2fe6c02b68ef7ce4beabefd95b61e9801dedb3f96",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:childcare-fee-support-apply-html:23",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/22",
+      "canonicalContentHash": "sha256:9b16de813a9c85477d26b62420fab063d0f7a4219e3b95b59596af28e68595f8",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:military-exam-prep-html:24",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/23",
+      "canonicalContentHash": "sha256:08d57600810bb66e4116dfac92533b0132d95e2da881251f084921a3e7ca44f0",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:recipe-video-execute-html:25",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/24",
+      "canonicalContentHash": "sha256:d7239f48009a1bd1b76534b727bd798bc2ca7f4431e1a47eb846c4cc1a6d40aa",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:weekly-meal-plan-html:26",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/25",
+      "canonicalContentHash": "sha256:0e19ca45864f1edef55f2009429f42dc8ed6e6b9a4fc450a2e9f12409cc6e570",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:closet-organize-1day-html:27",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/26",
+      "canonicalContentHash": "sha256:6f4a8f91e9e3b2d0311752748f2205bfc2530666f994bb61610fa88dbd569fd6",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:kitchen-reset-organize-html:28",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/27",
+      "canonicalContentHash": "sha256:78978d3ce6e72888f8f375860892c63912d824ccfae4b60e177d75ad1998e1db",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:monthly-household-budget-html:29",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/28",
+      "canonicalContentHash": "sha256:6fd2e549216208e2a0414b004a27d5f0ebacc5633ca25fc2478b31605758e891",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:payday-finance-routine-html:30",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/29",
+      "canonicalContentHash": "sha256:c51e98cb0c534c0e5f93bcd8aef63908aa7fba71036c2ca94bab00bbecda83cc",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:reading-habit-30day-html:31",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/30",
+      "canonicalContentHash": "sha256:7d2e4b1a968216eb3eb0ea74e3c5dd736cd8bc217d95383f07e75a27763d3a1c",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:book-finish-one-html:32",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/31",
+      "canonicalContentHash": "sha256:491d6dad7fa7e02a594ad78fdfdca973dedb1a6548552c29dd47cee182b01f26",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:morning-skincare-routine-html:33",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/32",
+      "canonicalContentHash": "sha256:21879cea7d3501c9511714216fd743eb1c17c2fd5cf0fc4f9b2af9fb784cf2ac",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:skin-weekly-check-html:34",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/33",
+      "canonicalContentHash": "sha256:bf77e9214fd9cac7afc58e72efedaa5ee5fd1de7ec594a9513639c5435e248ab",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:domestic-trip-d7-html:35",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/34",
+      "canonicalContentHash": "sha256:ab2b6177d22fe70481f339c74a2d9fdef1cfbb114bb9930f5945af2d28b40e1e",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:travel-packing-list-html:36",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/35",
+      "canonicalContentHash": "sha256:36196634a1ded11e52b0197b865d71966033976acaf0737594c46a7ef9eaf873",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:home-cafe-daily-html:37",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/36",
+      "canonicalContentHash": "sha256:4d1b4f55ed03dd76d8a5971052fe7b709b931baa51a1fe4fe3c02d5a88b2a5f0",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:new-hobby-30day-html:38",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/37",
+      "canonicalContentHash": "sha256:f2bec27d975a2dd4ee5ff3957c3f9d675d3b2db800686b2fdf804e8be8ba02d5",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:portfolio-4week-html:39",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/38",
+      "canonicalContentHash": "sha256:731a0a09582c9cdac733929e8e6f3c02cfb6587918bfa2839ec41e0bc65b0f6d",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:blog-youtube-start-html:40",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/39",
+      "canonicalContentHash": "sha256:558824b021e5a616eb36d6047e3afe5cdee98271816928b5916c15b3baed10e4",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:morning-routine-30day-html:41",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/40",
+      "canonicalContentHash": "sha256:febae340b31defcac7c9224b18bb6be5d576ce4090d3e91138cc33d2146a9ddb",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:digital-detox-weekly-html:42",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/41",
+      "canonicalContentHash": "sha256:82f9170fe0010dc2af470c005602905c776cd7e539153e5f1a1dee2f8f38e7eb",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:dog-walk-routine-html:43",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/42",
+      "canonicalContentHash": "sha256:12ecdc887344690a4ccbe3a0240d9f7dace5106d7b8e9741333c0057922519da",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    },
+    {
+      "contentId": "historical:pet-health-observation-html:44",
+      "datasetId": "reference-260601-preview-structure",
+      "originArtifacts": [
+        "docs/content-audit/reference-260601-preview-structure.json"
+      ],
+      "originRecordRef": "#/43",
+      "canonicalContentHash": "sha256:a1a09c759d895f1b67ea5a75247ca79c5e4bd73075807955d10841426fba0931",
+      "sourcePacketHash": null,
+      "relation": "historical_preview_only"
+    }
+  ]
+}

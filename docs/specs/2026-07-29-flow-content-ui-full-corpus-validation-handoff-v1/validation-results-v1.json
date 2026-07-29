@@ -1,0 +1,370 @@
+{
+  "schemaVersion": "flow-content-ui-validation-results-v1",
+  "generatedAt": "2026-07-29T23:59:00+09:00",
+  "corpusFingerprint": "sha256:d56b289fd301805fe1299b867497b0840f8d379d1459ec0148639f8b7d5dce32",
+  "summary": {
+    "status": "PASS",
+    "checks": 41,
+    "passed": 41,
+    "failed": 0
+  },
+  "corpus": {
+    "gallery": 156,
+    "normal": 110,
+    "productCandidate": 43,
+    "structureProbe": 67,
+    "newUrlsReviewed": 24,
+    "newNormal": 22,
+    "projectionCells": 550,
+    "pacingTargets": 16,
+    "eventTargets": 14
+  },
+  "claimBoundary": {
+    "observedUserValidation": "NOT_REVIEWED_BY_USER",
+    "externalCalendarVtodoRoundTrip": "NOT_RUN",
+    "browserQa": "PENDING"
+  },
+  "checks": [
+    {
+      "id": "schema.view_model_shape",
+      "pass": true,
+      "evidence": []
+    },
+    {
+      "id": "corpus.gallery_count_matches",
+      "pass": true,
+      "evidence": {
+        "declared": 156,
+        "actual": 156
+      }
+    },
+    {
+      "id": "corpus.normal_minimum_80",
+      "pass": true,
+      "evidence": {
+        "normal": 110,
+        "target": 80
+      }
+    },
+    {
+      "id": "corpus.normal_target_100",
+      "pass": true,
+      "evidence": {
+        "normal": 110,
+        "target": 100
+      }
+    },
+    {
+      "id": "corpus.unique_content_ids",
+      "pass": true,
+      "evidence": {
+        "total": 156,
+        "unique": 156
+      }
+    },
+    {
+      "id": "corpus.normal_unique_user_jobs",
+      "pass": true,
+      "evidence": {
+        "normal": 110,
+        "uniqueUserJobs": 110
+      }
+    },
+    {
+      "id": "corpus.counts_recomputed",
+      "pass": true,
+      "evidence": {
+        "gallery": 156,
+        "normal": 110,
+        "productCandidate": 43,
+        "structureProbe": 67,
+        "boundary": 1,
+        "historical": 45,
+        "item": 893,
+        "sourceRow": 1172,
+        "projectionCell": 550
+      }
+    },
+    {
+      "id": "corpus.inclusion_counts_match",
+      "pass": true,
+      "evidence": {
+        "rawSourceBacked": 123,
+        "includedSourceBacked": 112,
+        "normal": 110,
+        "excludedVariantOrDuplicate": 11,
+        "historicalIncluded": 44
+      }
+    },
+    {
+      "id": "corpus.inventory_lineage_complete",
+      "pass": true,
+      "evidence": {
+        "records": 167
+      }
+    },
+    {
+      "id": "corpus.new_urls_reviewed_24",
+      "pass": true,
+      "evidence": {
+        "reviewedUrls": 24,
+        "normal": 22,
+        "boundary": 1,
+        "historical": 1
+      }
+    },
+    {
+      "id": "corpus.new_normal_16",
+      "pass": true,
+      "evidence": {
+        "reviewedUrls": 24,
+        "normal": 22,
+        "boundary": 1,
+        "historical": 1
+      }
+    },
+    {
+      "id": "corpus.new_sources_have_direct_evidence",
+      "pass": true,
+      "evidence": {
+        "records": 24
+      }
+    },
+    {
+      "id": "corpus.coverage_counts_are_machine_derived",
+      "pass": true,
+      "evidence": {
+        "gallery": 156,
+        "normal": 110,
+        "productCandidate": 43,
+        "structureProbe": 67,
+        "boundary": 1,
+        "historical": 45,
+        "item": 893,
+        "sourceRow": 1172,
+        "projectionCell": 550
+      }
+    },
+    {
+      "id": "projection.five_cells_per_normal_content",
+      "pass": true,
+      "evidence": {
+        "content": 110,
+        "expectedCells": 550
+      }
+    },
+    {
+      "id": "projection.result_count_matches",
+      "pass": true,
+      "evidence": {
+        "expected": 550,
+        "results": 550,
+        "embedded": 550
+      }
+    },
+    {
+      "id": "projection.unique_cells",
+      "pass": true,
+      "evidence": {
+        "cells": 550
+      }
+    },
+    {
+      "id": "projection.no_blank_or_unexplained_cells",
+      "pass": true,
+      "evidence": {
+        "blankCellIds": []
+      }
+    },
+    {
+      "id": "projection.recommendation_availability_fidelity_present",
+      "pass": true,
+      "evidence": {
+        "cells": 550
+      }
+    },
+    {
+      "id": "canonical.item_provenance_100_percent",
+      "pass": true,
+      "evidence": {
+        "errors": []
+      }
+    },
+    {
+      "id": "calendar.undated_source_item_vevent_zero",
+      "pass": true,
+      "evidence": {
+        "records": []
+      }
+    },
+    {
+      "id": "calendar.due_only_auto_timeblock_zero",
+      "pass": true,
+      "evidence": {
+        "records": []
+      }
+    },
+    {
+      "id": "calendar.generated_source_owner_is_source",
+      "pass": true,
+      "evidence": {
+        "records": []
+      }
+    },
+    {
+      "id": "icalendar.vevent_vtodo_nested_zero",
+      "pass": true,
+      "evidence": {
+        "records": []
+      }
+    },
+    {
+      "id": "calendar.bundle_child_ids_and_completion_loss_visible",
+      "pass": true,
+      "evidence": {
+        "cells": []
+      }
+    },
+    {
+      "id": "todo.vtodo_unsupported_fallback_present",
+      "pass": true,
+      "evidence": {
+        "cells": []
+      }
+    },
+    {
+      "id": "projection.checklist_todo_schema_distinct",
+      "pass": true,
+      "evidence": {
+        "contents": []
+      }
+    },
+    {
+      "id": "projection.sheet_columns_stable",
+      "pass": true,
+      "evidence": {
+        "columnContracts": 1
+      }
+    },
+    {
+      "id": "projection.memo_is_not_canonical_raw_json",
+      "pass": true,
+      "evidence": {
+        "cells": []
+      }
+    },
+    {
+      "id": "pacing.no_duplicate_or_missing_items",
+      "pass": true,
+      "evidence": {
+        "contents": [],
+        "targetItems": 156,
+        "assignments": 156
+      }
+    },
+    {
+      "id": "pacing.source_and_overlay_are_separate",
+      "pass": true,
+      "evidence": {
+        "experiments": 16
+      }
+    },
+    {
+      "id": "event.provenance_and_component_nesting_valid",
+      "pass": true,
+      "evidence": {
+        "contents": []
+      }
+    },
+    {
+      "id": "event.false_yearly_rrule_zero",
+      "pass": true,
+      "evidence": {
+        "contents": []
+      }
+    },
+    {
+      "id": "ui.direct_links_cover_gallery",
+      "pass": true,
+      "evidence": {
+        "gallery": 156,
+        "covered": 156
+      }
+    },
+    {
+      "id": "review.user_state_initially_empty",
+      "pass": true,
+      "evidence": {
+        "records": 156,
+        "expected": 156
+      }
+    },
+    {
+      "id": "review.value_readjudication_keeps_user_not_reviewed",
+      "pass": true,
+      "evidence": {
+        "records": 110
+      }
+    },
+    {
+      "id": "review.two_independent_runs_cover_full_normal_corpus",
+      "pass": true,
+      "evidence": {
+        "runs": [
+          {
+            "runId": "independent-ui-review-a-v1",
+            "reviewerRole": "internal_agent_semantics",
+            "peerOutputVisible": false,
+            "records": 110,
+            "resultHash": "sha256:f33b3e0b2a31e7c7b47a892f08b1ced2ab221b705e8eb73775801905d4337d05"
+          },
+          {
+            "runId": "independent-ui-review-b-v1",
+            "reviewerRole": "internal_agent_execution_ux",
+            "peerOutputVisible": false,
+            "records": 110,
+            "resultHash": "sha256:1d7db369f520577e2ba80f2761593d077da9aa1f508370ed5aa065b5e95e90ec"
+          }
+        ],
+        "comparisons": 110
+      }
+    },
+    {
+      "id": "review.disagreements_are_explicit",
+      "pass": true,
+      "evidence": {
+        "anyDisagreement": 91,
+        "disagreementIds": 91
+      }
+    },
+    {
+      "id": "planning.handoff_is_draft_pending_user_review",
+      "pass": true,
+      "evidence": {
+        "status": "DRAFT_PENDING_USER_REVIEW",
+        "decisions": 14
+      }
+    },
+    {
+      "id": "planning.gaps_have_counts_and_evidence",
+      "pass": true,
+      "evidence": {
+        "gaps": 7
+      }
+    },
+    {
+      "id": "claim.external_calendar_round_trip_not_run",
+      "pass": true,
+      "evidence": {
+        "status": "NOT_RUN"
+      }
+    },
+    {
+      "id": "claim.observed_user_validation_not_claimed",
+      "pass": true,
+      "evidence": {
+        "status": "NOT_REVIEWED_BY_USER"
+      }
+    }
+  ]
+}

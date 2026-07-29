@@ -1,0 +1,2791 @@
+{
+  "schemaVersion": "flow-content-ui-schedule-playground-v1",
+  "corpusFingerprint": "sha256:d56b289fd301805fe1299b867497b0840f8d379d1459ec0148639f8b7d5dce32",
+  "counts": {
+    "content": 16,
+    "targetItems": 156,
+    "assignments": 156
+  },
+  "results": [
+    {
+      "contentId": "canonical:base-opentutorials-web1-progress",
+      "title": "생활코딩 WEB1 진도표",
+      "policy": {
+        "mode": "items_per_day",
+        "startDate": "2026-08-03",
+        "itemsPerDay": 2,
+        "allowedWeekdays": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "restDates": [],
+        "allDay": true,
+        "outputMode": "todo_due",
+        "bundleMode": "per_item"
+      },
+      "result": {
+        "ok": true,
+        "errors": [],
+        "policy": {
+          "mode": "items_per_day",
+          "startDate": "2026-08-03",
+          "itemsPerDay": 2,
+          "allowedWeekdays": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "restDates": [],
+          "allDay": true,
+          "outputMode": "todo_due",
+          "bundleMode": "per_item"
+        },
+        "suggestionStatus": "draft",
+        "targetItemIds": [
+          "base-opentutorials-web1-progress-flow-1-step-1-item-1",
+          "base-opentutorials-web1-progress-flow-1-step-1-item-2",
+          "base-opentutorials-web1-progress-flow-1-step-1-item-3",
+          "base-opentutorials-web1-progress-flow-1-step-1-item-4",
+          "base-opentutorials-web1-progress-flow-1-step-1-item-5",
+          "base-opentutorials-web1-progress-flow-1-step-1-item-6",
+          "base-opentutorials-web1-progress-flow-1-step-1-item-7",
+          "base-opentutorials-web1-progress-flow-1-step-1-item-8",
+          "base-opentutorials-web1-progress-flow-1-step-1-item-9",
+          "base-opentutorials-web1-progress-flow-1-step-1-item-10",
+          "base-opentutorials-web1-progress-flow-1-step-1-item-11",
+          "base-opentutorials-web1-progress-flow-1-step-1-item-12",
+          "base-opentutorials-web1-progress-flow-1-step-1-item-13",
+          "base-opentutorials-web1-progress-flow-1-step-1-item-14",
+          "base-opentutorials-web1-progress-flow-1-step-1-item-15",
+          "base-opentutorials-web1-progress-flow-1-step-1-item-16",
+          "base-opentutorials-web1-progress-flow-1-step-1-item-17",
+          "base-opentutorials-web1-progress-flow-1-step-1-item-18",
+          "base-opentutorials-web1-progress-flow-1-step-1-item-19",
+          "base-opentutorials-web1-progress-flow-1-step-1-item-20",
+          "base-opentutorials-web1-progress-flow-1-step-1-item-21",
+          "base-opentutorials-web1-progress-flow-1-step-1-item-22",
+          "base-opentutorials-web1-progress-flow-1-step-1-item-23",
+          "base-opentutorials-web1-progress-flow-1-step-1-item-24",
+          "base-opentutorials-web1-progress-flow-1-step-1-item-25",
+          "base-opentutorials-web1-progress-flow-1-step-1-item-26"
+        ],
+        "excludedItemIds": [],
+        "lockedPastAssignments": [],
+        "assignments": [
+          {
+            "assignmentId": "base-opentutorials-web1-progress-flow-1-step-1-item-1-2026-08-03",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-1",
+            "date": "2026-08-03",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-opentutorials-web1-progress-flow-1-step-1-item-2-2026-08-03",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-2",
+            "date": "2026-08-03",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-opentutorials-web1-progress-flow-1-step-1-item-3-2026-08-04",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-3",
+            "date": "2026-08-04",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-opentutorials-web1-progress-flow-1-step-1-item-4-2026-08-04",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-4",
+            "date": "2026-08-04",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-opentutorials-web1-progress-flow-1-step-1-item-5-2026-08-05",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-5",
+            "date": "2026-08-05",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-opentutorials-web1-progress-flow-1-step-1-item-6-2026-08-05",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-6",
+            "date": "2026-08-05",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-opentutorials-web1-progress-flow-1-step-1-item-7-2026-08-06",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-7",
+            "date": "2026-08-06",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-opentutorials-web1-progress-flow-1-step-1-item-8-2026-08-06",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-8",
+            "date": "2026-08-06",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-opentutorials-web1-progress-flow-1-step-1-item-9-2026-08-07",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-9",
+            "date": "2026-08-07",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-opentutorials-web1-progress-flow-1-step-1-item-10-2026-08-07",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-10",
+            "date": "2026-08-07",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-opentutorials-web1-progress-flow-1-step-1-item-11-2026-08-10",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-11",
+            "date": "2026-08-10",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-opentutorials-web1-progress-flow-1-step-1-item-12-2026-08-10",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-12",
+            "date": "2026-08-10",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-opentutorials-web1-progress-flow-1-step-1-item-13-2026-08-11",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-13",
+            "date": "2026-08-11",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-opentutorials-web1-progress-flow-1-step-1-item-14-2026-08-11",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-14",
+            "date": "2026-08-11",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-opentutorials-web1-progress-flow-1-step-1-item-15-2026-08-12",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-15",
+            "date": "2026-08-12",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-opentutorials-web1-progress-flow-1-step-1-item-16-2026-08-12",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-16",
+            "date": "2026-08-12",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-opentutorials-web1-progress-flow-1-step-1-item-17-2026-08-13",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-17",
+            "date": "2026-08-13",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-opentutorials-web1-progress-flow-1-step-1-item-18-2026-08-13",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-18",
+            "date": "2026-08-13",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-opentutorials-web1-progress-flow-1-step-1-item-19-2026-08-14",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-19",
+            "date": "2026-08-14",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-opentutorials-web1-progress-flow-1-step-1-item-20-2026-08-14",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-20",
+            "date": "2026-08-14",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-opentutorials-web1-progress-flow-1-step-1-item-21-2026-08-17",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-21",
+            "date": "2026-08-17",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-opentutorials-web1-progress-flow-1-step-1-item-22-2026-08-17",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-22",
+            "date": "2026-08-17",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-opentutorials-web1-progress-flow-1-step-1-item-23-2026-08-18",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-23",
+            "date": "2026-08-18",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-opentutorials-web1-progress-flow-1-step-1-item-24-2026-08-18",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-24",
+            "date": "2026-08-18",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-opentutorials-web1-progress-flow-1-step-1-item-25-2026-08-19",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-25",
+            "date": "2026-08-19",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-opentutorials-web1-progress-flow-1-step-1-item-26-2026-08-19",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-26",
+            "date": "2026-08-19",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          }
+        ],
+        "inputHash": "sha256:772652f46febf1a80bb680e68acc479617c4c42d3414643366618110662e4903",
+        "resultHash": "sha256:46a8355d9a20af51a6a5289f2499c3bf73106915ea5da4cced2156d0d0ba60f3"
+      }
+    },
+    {
+      "contentId": "canonical:base-new-car-comparison",
+      "title": "신차 구매 8단계",
+      "policy": {
+        "mode": "items_per_week",
+        "startDate": "2026-08-03",
+        "itemsPerWeek": 3,
+        "allowedWeekdays": [
+          1,
+          3,
+          5
+        ],
+        "restDates": [],
+        "allDay": true,
+        "outputMode": "calendar",
+        "bundleMode": "session_bundle"
+      },
+      "result": {
+        "ok": true,
+        "errors": [],
+        "policy": {
+          "mode": "items_per_week",
+          "startDate": "2026-08-03",
+          "itemsPerWeek": 3,
+          "allowedWeekdays": [
+            1,
+            3,
+            5
+          ],
+          "restDates": [],
+          "allDay": true,
+          "outputMode": "calendar",
+          "bundleMode": "session_bundle"
+        },
+        "suggestionStatus": "draft",
+        "targetItemIds": [
+          "base-new-car-comparison-flow-1-step-1-item-1",
+          "base-new-car-comparison-flow-1-step-1-item-2",
+          "base-new-car-comparison-flow-1-step-2-item-1",
+          "base-new-car-comparison-flow-1-step-3-item-1",
+          "base-new-car-comparison-flow-1-step-3-item-2",
+          "base-new-car-comparison-flow-1-step-4-item-1",
+          "base-new-car-comparison-flow-1-step-4-item-2",
+          "base-new-car-comparison-flow-1-step-5-item-1",
+          "base-new-car-comparison-flow-1-step-5-item-2",
+          "base-new-car-comparison-flow-1-step-6-item-1",
+          "base-new-car-comparison-flow-1-step-6-item-2",
+          "base-new-car-comparison-flow-1-step-7-item-1",
+          "base-new-car-comparison-flow-1-step-8-item-1",
+          "base-new-car-comparison-flow-1-step-8-item-2"
+        ],
+        "excludedItemIds": [],
+        "lockedPastAssignments": [],
+        "assignments": [
+          {
+            "assignmentId": "base-new-car-comparison-flow-1-step-1-item-1-2026-08-03",
+            "itemId": "base-new-car-comparison-flow-1-step-1-item-1",
+            "date": "2026-08-03",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-new-car-comparison-flow-1-step-1-item-2-2026-08-05",
+            "itemId": "base-new-car-comparison-flow-1-step-1-item-2",
+            "date": "2026-08-05",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-new-car-comparison-flow-1-step-2-item-1-2026-08-07",
+            "itemId": "base-new-car-comparison-flow-1-step-2-item-1",
+            "date": "2026-08-07",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-new-car-comparison-flow-1-step-3-item-1-2026-08-10",
+            "itemId": "base-new-car-comparison-flow-1-step-3-item-1",
+            "date": "2026-08-10",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-new-car-comparison-flow-1-step-3-item-2-2026-08-12",
+            "itemId": "base-new-car-comparison-flow-1-step-3-item-2",
+            "date": "2026-08-12",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-new-car-comparison-flow-1-step-4-item-1-2026-08-14",
+            "itemId": "base-new-car-comparison-flow-1-step-4-item-1",
+            "date": "2026-08-14",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-new-car-comparison-flow-1-step-4-item-2-2026-08-17",
+            "itemId": "base-new-car-comparison-flow-1-step-4-item-2",
+            "date": "2026-08-17",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-new-car-comparison-flow-1-step-5-item-1-2026-08-19",
+            "itemId": "base-new-car-comparison-flow-1-step-5-item-1",
+            "date": "2026-08-19",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-new-car-comparison-flow-1-step-5-item-2-2026-08-21",
+            "itemId": "base-new-car-comparison-flow-1-step-5-item-2",
+            "date": "2026-08-21",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-new-car-comparison-flow-1-step-6-item-1-2026-08-24",
+            "itemId": "base-new-car-comparison-flow-1-step-6-item-1",
+            "date": "2026-08-24",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-new-car-comparison-flow-1-step-6-item-2-2026-08-26",
+            "itemId": "base-new-car-comparison-flow-1-step-6-item-2",
+            "date": "2026-08-26",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-new-car-comparison-flow-1-step-7-item-1-2026-08-28",
+            "itemId": "base-new-car-comparison-flow-1-step-7-item-1",
+            "date": "2026-08-28",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-new-car-comparison-flow-1-step-8-item-1-2026-08-31",
+            "itemId": "base-new-car-comparison-flow-1-step-8-item-1",
+            "date": "2026-08-31",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-new-car-comparison-flow-1-step-8-item-2-2026-09-02",
+            "itemId": "base-new-car-comparison-flow-1-step-8-item-2",
+            "date": "2026-09-02",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          }
+        ],
+        "inputHash": "sha256:294d3cca6b6a6ca1224e22abf2ea088a3e65ffca1c5ba46c3e5c6543396a9879",
+        "resultHash": "sha256:8d566d6089d126454338eb94a4d1f8088ed28eb6a66fe181fe91f766c972d231"
+      }
+    },
+    {
+      "contentId": "canonical:base-wtable-summer-banchan-five",
+      "title": "이번 주 여름 반찬 5가지",
+      "policy": {
+        "mode": "items_per_day",
+        "startDate": "2026-08-03",
+        "itemsPerDay": 2,
+        "allowedWeekdays": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "restDates": [],
+        "allDay": true,
+        "outputMode": "todo_due",
+        "bundleMode": "per_item"
+      },
+      "result": {
+        "ok": true,
+        "errors": [],
+        "policy": {
+          "mode": "items_per_day",
+          "startDate": "2026-08-03",
+          "itemsPerDay": 2,
+          "allowedWeekdays": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "restDates": [],
+          "allDay": true,
+          "outputMode": "todo_due",
+          "bundleMode": "per_item"
+        },
+        "suggestionStatus": "draft",
+        "targetItemIds": [
+          "base-wtable-summer-banchan-five-flow-1-step-1-item-1",
+          "base-wtable-summer-banchan-five-flow-2-step-1-item-1",
+          "base-wtable-summer-banchan-five-flow-3-step-1-item-1",
+          "base-wtable-summer-banchan-five-flow-4-step-1-item-1",
+          "base-wtable-summer-banchan-five-flow-5-step-1-item-1"
+        ],
+        "excludedItemIds": [],
+        "lockedPastAssignments": [],
+        "assignments": [
+          {
+            "assignmentId": "base-wtable-summer-banchan-five-flow-1-step-1-item-1-2026-08-03",
+            "itemId": "base-wtable-summer-banchan-five-flow-1-step-1-item-1",
+            "date": "2026-08-03",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-wtable-summer-banchan-five-flow-2-step-1-item-1-2026-08-03",
+            "itemId": "base-wtable-summer-banchan-five-flow-2-step-1-item-1",
+            "date": "2026-08-03",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-wtable-summer-banchan-five-flow-3-step-1-item-1-2026-08-04",
+            "itemId": "base-wtable-summer-banchan-five-flow-3-step-1-item-1",
+            "date": "2026-08-04",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-wtable-summer-banchan-five-flow-4-step-1-item-1-2026-08-04",
+            "itemId": "base-wtable-summer-banchan-five-flow-4-step-1-item-1",
+            "date": "2026-08-04",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-wtable-summer-banchan-five-flow-5-step-1-item-1-2026-08-05",
+            "itemId": "base-wtable-summer-banchan-five-flow-5-step-1-item-1",
+            "date": "2026-08-05",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          }
+        ],
+        "inputHash": "sha256:2798acafb79a8df162db3ed7c55b7c87e051139d67ac4fcd3471de9829c64ca4",
+        "resultHash": "sha256:b943ada79e4e51b64fdeb89f3b0fa6b809f7e3b14dbdefb203dcfd2de797bba2"
+      }
+    },
+    {
+      "contentId": "canonical:base-andstudio-job-prep-videos",
+      "title": "AND 취업 준비 영상 3편",
+      "policy": {
+        "mode": "items_per_week",
+        "startDate": "2026-08-03",
+        "itemsPerWeek": 3,
+        "allowedWeekdays": [
+          1,
+          3,
+          5
+        ],
+        "restDates": [],
+        "allDay": true,
+        "outputMode": "calendar",
+        "bundleMode": "session_bundle"
+      },
+      "result": {
+        "ok": true,
+        "errors": [],
+        "policy": {
+          "mode": "items_per_week",
+          "startDate": "2026-08-03",
+          "itemsPerWeek": 3,
+          "allowedWeekdays": [
+            1,
+            3,
+            5
+          ],
+          "restDates": [],
+          "allDay": true,
+          "outputMode": "calendar",
+          "bundleMode": "session_bundle"
+        },
+        "suggestionStatus": "draft",
+        "targetItemIds": [
+          "base-andstudio-job-prep-videos-flow-1-step-1-item-1",
+          "base-andstudio-job-prep-videos-flow-2-step-1-item-1",
+          "base-andstudio-job-prep-videos-flow-3-step-1-item-1"
+        ],
+        "excludedItemIds": [],
+        "lockedPastAssignments": [],
+        "assignments": [
+          {
+            "assignmentId": "base-andstudio-job-prep-videos-flow-1-step-1-item-1-2026-08-03",
+            "itemId": "base-andstudio-job-prep-videos-flow-1-step-1-item-1",
+            "date": "2026-08-03",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-andstudio-job-prep-videos-flow-2-step-1-item-1-2026-08-05",
+            "itemId": "base-andstudio-job-prep-videos-flow-2-step-1-item-1",
+            "date": "2026-08-05",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "base-andstudio-job-prep-videos-flow-3-step-1-item-1-2026-08-07",
+            "itemId": "base-andstudio-job-prep-videos-flow-3-step-1-item-1",
+            "date": "2026-08-07",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          }
+        ],
+        "inputHash": "sha256:d680815b1be8038dbd61e76b85fd45bfd09150abe6f62e9ff06538cf220ddf4a",
+        "resultHash": "sha256:05b0f5faa8d1f927b8edcd8286a0e92fe1afffebd150af3c8e40f52d52359edf"
+      }
+    },
+    {
+      "contentId": "canonical:oq-oq-c02-kmooc-full",
+      "title": "Introduction to Data Analysis",
+      "policy": {
+        "mode": "items_per_day",
+        "startDate": "2026-08-03",
+        "itemsPerDay": 2,
+        "allowedWeekdays": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "restDates": [],
+        "allDay": true,
+        "outputMode": "todo_due",
+        "bundleMode": "per_item"
+      },
+      "result": {
+        "ok": true,
+        "errors": [],
+        "policy": {
+          "mode": "items_per_day",
+          "startDate": "2026-08-03",
+          "itemsPerDay": 2,
+          "allowedWeekdays": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "restDates": [],
+          "allDay": true,
+          "outputMode": "todo_due",
+          "bundleMode": "per_item"
+        },
+        "suggestionStatus": "draft",
+        "targetItemIds": [
+          "oq-oq-c02-kmooc-full-item-1",
+          "oq-oq-c02-kmooc-full-item-2",
+          "oq-oq-c02-kmooc-full-item-3",
+          "oq-oq-c02-kmooc-full-item-4",
+          "oq-oq-c02-kmooc-full-item-5",
+          "oq-oq-c02-kmooc-full-item-6",
+          "oq-oq-c02-kmooc-full-item-7",
+          "oq-oq-c02-kmooc-full-item-8",
+          "oq-oq-c02-kmooc-full-item-9",
+          "oq-oq-c02-kmooc-full-item-10",
+          "oq-oq-c02-kmooc-full-item-11",
+          "oq-oq-c02-kmooc-full-item-12",
+          "oq-oq-c02-kmooc-full-item-13",
+          "oq-oq-c02-kmooc-full-item-14"
+        ],
+        "excludedItemIds": [],
+        "lockedPastAssignments": [],
+        "assignments": [
+          {
+            "assignmentId": "oq-oq-c02-kmooc-full-item-1-2026-08-03",
+            "itemId": "oq-oq-c02-kmooc-full-item-1",
+            "date": "2026-08-03",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c02-kmooc-full-item-2-2026-08-03",
+            "itemId": "oq-oq-c02-kmooc-full-item-2",
+            "date": "2026-08-03",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c02-kmooc-full-item-3-2026-08-04",
+            "itemId": "oq-oq-c02-kmooc-full-item-3",
+            "date": "2026-08-04",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c02-kmooc-full-item-4-2026-08-04",
+            "itemId": "oq-oq-c02-kmooc-full-item-4",
+            "date": "2026-08-04",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c02-kmooc-full-item-5-2026-08-05",
+            "itemId": "oq-oq-c02-kmooc-full-item-5",
+            "date": "2026-08-05",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c02-kmooc-full-item-6-2026-08-05",
+            "itemId": "oq-oq-c02-kmooc-full-item-6",
+            "date": "2026-08-05",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c02-kmooc-full-item-7-2026-08-06",
+            "itemId": "oq-oq-c02-kmooc-full-item-7",
+            "date": "2026-08-06",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c02-kmooc-full-item-8-2026-08-06",
+            "itemId": "oq-oq-c02-kmooc-full-item-8",
+            "date": "2026-08-06",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c02-kmooc-full-item-9-2026-08-07",
+            "itemId": "oq-oq-c02-kmooc-full-item-9",
+            "date": "2026-08-07",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c02-kmooc-full-item-10-2026-08-07",
+            "itemId": "oq-oq-c02-kmooc-full-item-10",
+            "date": "2026-08-07",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c02-kmooc-full-item-11-2026-08-10",
+            "itemId": "oq-oq-c02-kmooc-full-item-11",
+            "date": "2026-08-10",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c02-kmooc-full-item-12-2026-08-10",
+            "itemId": "oq-oq-c02-kmooc-full-item-12",
+            "date": "2026-08-10",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c02-kmooc-full-item-13-2026-08-11",
+            "itemId": "oq-oq-c02-kmooc-full-item-13",
+            "date": "2026-08-11",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c02-kmooc-full-item-14-2026-08-11",
+            "itemId": "oq-oq-c02-kmooc-full-item-14",
+            "date": "2026-08-11",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          }
+        ],
+        "inputHash": "sha256:227672adddc3f9f6a81f89d9000d96072adfaaae83fd19b49be516f6c3ee6670",
+        "resultHash": "sha256:dffbf8108986c1d86e7e2e27045a99af7cb35a00c78154e02d1026afcf25ac70"
+      }
+    },
+    {
+      "contentId": "canonical:oq-oq-c03-librivox",
+      "title": "Anne of Green Gables, Version 5",
+      "policy": {
+        "mode": "items_per_week",
+        "startDate": "2026-08-03",
+        "itemsPerWeek": 3,
+        "allowedWeekdays": [
+          1,
+          3,
+          5
+        ],
+        "restDates": [],
+        "allDay": true,
+        "outputMode": "calendar",
+        "bundleMode": "session_bundle"
+      },
+      "result": {
+        "ok": true,
+        "errors": [],
+        "policy": {
+          "mode": "items_per_week",
+          "startDate": "2026-08-03",
+          "itemsPerWeek": 3,
+          "allowedWeekdays": [
+            1,
+            3,
+            5
+          ],
+          "restDates": [],
+          "allDay": true,
+          "outputMode": "calendar",
+          "bundleMode": "session_bundle"
+        },
+        "suggestionStatus": "draft",
+        "targetItemIds": [
+          "oq-oq-c03-librivox-item-1",
+          "oq-oq-c03-librivox-item-2",
+          "oq-oq-c03-librivox-item-3",
+          "oq-oq-c03-librivox-item-4",
+          "oq-oq-c03-librivox-item-5",
+          "oq-oq-c03-librivox-item-6",
+          "oq-oq-c03-librivox-item-7",
+          "oq-oq-c03-librivox-item-8",
+          "oq-oq-c03-librivox-item-9",
+          "oq-oq-c03-librivox-item-10",
+          "oq-oq-c03-librivox-item-11",
+          "oq-oq-c03-librivox-item-12",
+          "oq-oq-c03-librivox-item-13",
+          "oq-oq-c03-librivox-item-14",
+          "oq-oq-c03-librivox-item-15",
+          "oq-oq-c03-librivox-item-16",
+          "oq-oq-c03-librivox-item-17",
+          "oq-oq-c03-librivox-item-18",
+          "oq-oq-c03-librivox-item-19",
+          "oq-oq-c03-librivox-item-20",
+          "oq-oq-c03-librivox-item-21",
+          "oq-oq-c03-librivox-item-22",
+          "oq-oq-c03-librivox-item-23",
+          "oq-oq-c03-librivox-item-24",
+          "oq-oq-c03-librivox-item-25",
+          "oq-oq-c03-librivox-item-26",
+          "oq-oq-c03-librivox-item-27",
+          "oq-oq-c03-librivox-item-28",
+          "oq-oq-c03-librivox-item-29",
+          "oq-oq-c03-librivox-item-30",
+          "oq-oq-c03-librivox-item-31",
+          "oq-oq-c03-librivox-item-32",
+          "oq-oq-c03-librivox-item-33",
+          "oq-oq-c03-librivox-item-34",
+          "oq-oq-c03-librivox-item-35",
+          "oq-oq-c03-librivox-item-36",
+          "oq-oq-c03-librivox-item-37",
+          "oq-oq-c03-librivox-item-38"
+        ],
+        "excludedItemIds": [],
+        "lockedPastAssignments": [],
+        "assignments": [
+          {
+            "assignmentId": "oq-oq-c03-librivox-item-1-2026-08-03",
+            "itemId": "oq-oq-c03-librivox-item-1",
+            "date": "2026-08-03",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c03-librivox-item-2-2026-08-05",
+            "itemId": "oq-oq-c03-librivox-item-2",
+            "date": "2026-08-05",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c03-librivox-item-3-2026-08-07",
+            "itemId": "oq-oq-c03-librivox-item-3",
+            "date": "2026-08-07",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c03-librivox-item-4-2026-08-10",
+            "itemId": "oq-oq-c03-librivox-item-4",
+            "date": "2026-08-10",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c03-librivox-item-5-2026-08-12",
+            "itemId": "oq-oq-c03-librivox-item-5",
+            "date": "2026-08-12",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c03-librivox-item-6-2026-08-14",
+            "itemId": "oq-oq-c03-librivox-item-6",
+            "date": "2026-08-14",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c03-librivox-item-7-2026-08-17",
+            "itemId": "oq-oq-c03-librivox-item-7",
+            "date": "2026-08-17",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c03-librivox-item-8-2026-08-19",
+            "itemId": "oq-oq-c03-librivox-item-8",
+            "date": "2026-08-19",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c03-librivox-item-9-2026-08-21",
+            "itemId": "oq-oq-c03-librivox-item-9",
+            "date": "2026-08-21",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c03-librivox-item-10-2026-08-24",
+            "itemId": "oq-oq-c03-librivox-item-10",
+            "date": "2026-08-24",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c03-librivox-item-11-2026-08-26",
+            "itemId": "oq-oq-c03-librivox-item-11",
+            "date": "2026-08-26",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c03-librivox-item-12-2026-08-28",
+            "itemId": "oq-oq-c03-librivox-item-12",
+            "date": "2026-08-28",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c03-librivox-item-13-2026-08-31",
+            "itemId": "oq-oq-c03-librivox-item-13",
+            "date": "2026-08-31",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c03-librivox-item-14-2026-09-02",
+            "itemId": "oq-oq-c03-librivox-item-14",
+            "date": "2026-09-02",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c03-librivox-item-15-2026-09-04",
+            "itemId": "oq-oq-c03-librivox-item-15",
+            "date": "2026-09-04",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c03-librivox-item-16-2026-09-07",
+            "itemId": "oq-oq-c03-librivox-item-16",
+            "date": "2026-09-07",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c03-librivox-item-17-2026-09-09",
+            "itemId": "oq-oq-c03-librivox-item-17",
+            "date": "2026-09-09",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c03-librivox-item-18-2026-09-11",
+            "itemId": "oq-oq-c03-librivox-item-18",
+            "date": "2026-09-11",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c03-librivox-item-19-2026-09-14",
+            "itemId": "oq-oq-c03-librivox-item-19",
+            "date": "2026-09-14",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c03-librivox-item-20-2026-09-16",
+            "itemId": "oq-oq-c03-librivox-item-20",
+            "date": "2026-09-16",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c03-librivox-item-21-2026-09-18",
+            "itemId": "oq-oq-c03-librivox-item-21",
+            "date": "2026-09-18",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c03-librivox-item-22-2026-09-21",
+            "itemId": "oq-oq-c03-librivox-item-22",
+            "date": "2026-09-21",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c03-librivox-item-23-2026-09-23",
+            "itemId": "oq-oq-c03-librivox-item-23",
+            "date": "2026-09-23",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c03-librivox-item-24-2026-09-25",
+            "itemId": "oq-oq-c03-librivox-item-24",
+            "date": "2026-09-25",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c03-librivox-item-25-2026-09-28",
+            "itemId": "oq-oq-c03-librivox-item-25",
+            "date": "2026-09-28",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c03-librivox-item-26-2026-09-30",
+            "itemId": "oq-oq-c03-librivox-item-26",
+            "date": "2026-09-30",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c03-librivox-item-27-2026-10-02",
+            "itemId": "oq-oq-c03-librivox-item-27",
+            "date": "2026-10-02",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c03-librivox-item-28-2026-10-05",
+            "itemId": "oq-oq-c03-librivox-item-28",
+            "date": "2026-10-05",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c03-librivox-item-29-2026-10-07",
+            "itemId": "oq-oq-c03-librivox-item-29",
+            "date": "2026-10-07",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c03-librivox-item-30-2026-10-09",
+            "itemId": "oq-oq-c03-librivox-item-30",
+            "date": "2026-10-09",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c03-librivox-item-31-2026-10-12",
+            "itemId": "oq-oq-c03-librivox-item-31",
+            "date": "2026-10-12",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c03-librivox-item-32-2026-10-14",
+            "itemId": "oq-oq-c03-librivox-item-32",
+            "date": "2026-10-14",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c03-librivox-item-33-2026-10-16",
+            "itemId": "oq-oq-c03-librivox-item-33",
+            "date": "2026-10-16",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c03-librivox-item-34-2026-10-19",
+            "itemId": "oq-oq-c03-librivox-item-34",
+            "date": "2026-10-19",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c03-librivox-item-35-2026-10-21",
+            "itemId": "oq-oq-c03-librivox-item-35",
+            "date": "2026-10-21",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c03-librivox-item-36-2026-10-23",
+            "itemId": "oq-oq-c03-librivox-item-36",
+            "date": "2026-10-23",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c03-librivox-item-37-2026-10-26",
+            "itemId": "oq-oq-c03-librivox-item-37",
+            "date": "2026-10-26",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c03-librivox-item-38-2026-10-28",
+            "itemId": "oq-oq-c03-librivox-item-38",
+            "date": "2026-10-28",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          }
+        ],
+        "inputHash": "sha256:769acb2be40cc09f6dea5661cd19cdf1eb823118aa819cf0d4ce31fcb6864a8e",
+        "resultHash": "sha256:fd3ccbcd8c6d0a945cb305c0948fc5cb1a9953a55bc17ac11ce5a9a62ec50b32"
+      }
+    },
+    {
+      "contentId": "canonical:oq-oq-c04-passport",
+      "title": "유효기간 만료에 따른 재발급",
+      "policy": {
+        "mode": "items_per_day",
+        "startDate": "2026-08-03",
+        "itemsPerDay": 2,
+        "allowedWeekdays": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "restDates": [],
+        "allDay": true,
+        "outputMode": "todo_due",
+        "bundleMode": "per_item"
+      },
+      "result": {
+        "ok": true,
+        "errors": [],
+        "policy": {
+          "mode": "items_per_day",
+          "startDate": "2026-08-03",
+          "itemsPerDay": 2,
+          "allowedWeekdays": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "restDates": [],
+          "allDay": true,
+          "outputMode": "todo_due",
+          "bundleMode": "per_item"
+        },
+        "suggestionStatus": "draft",
+        "targetItemIds": [
+          "oq-oq-c04-passport-item-1",
+          "oq-oq-c04-passport-item-2",
+          "oq-oq-c04-passport-item-3",
+          "oq-oq-c04-passport-item-4",
+          "oq-oq-c04-passport-item-5"
+        ],
+        "excludedItemIds": [],
+        "lockedPastAssignments": [],
+        "assignments": [
+          {
+            "assignmentId": "oq-oq-c04-passport-item-1-2026-08-03",
+            "itemId": "oq-oq-c04-passport-item-1",
+            "date": "2026-08-03",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c04-passport-item-2-2026-08-03",
+            "itemId": "oq-oq-c04-passport-item-2",
+            "date": "2026-08-03",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c04-passport-item-3-2026-08-04",
+            "itemId": "oq-oq-c04-passport-item-3",
+            "date": "2026-08-04",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c04-passport-item-4-2026-08-04",
+            "itemId": "oq-oq-c04-passport-item-4",
+            "date": "2026-08-04",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c04-passport-item-5-2026-08-05",
+            "itemId": "oq-oq-c04-passport-item-5",
+            "date": "2026-08-05",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          }
+        ],
+        "inputHash": "sha256:51ada3ed515e1685c04c3911eafaf6af342e03a8742877edec5c03753310a618",
+        "resultHash": "sha256:795dc74affda6223e8b06f0b8a874d1695a3b11698d647384e62786166bc4314"
+      }
+    },
+    {
+      "contentId": "canonical:oq-oq-c05-washer",
+      "title": "Washing Machine Maintenance: tips to keep your machine running smoothly",
+      "policy": {
+        "mode": "items_per_week",
+        "startDate": "2026-08-03",
+        "itemsPerWeek": 3,
+        "allowedWeekdays": [
+          1,
+          3,
+          5
+        ],
+        "restDates": [],
+        "allDay": true,
+        "outputMode": "calendar",
+        "bundleMode": "session_bundle"
+      },
+      "result": {
+        "ok": true,
+        "errors": [],
+        "policy": {
+          "mode": "items_per_week",
+          "startDate": "2026-08-03",
+          "itemsPerWeek": 3,
+          "allowedWeekdays": [
+            1,
+            3,
+            5
+          ],
+          "restDates": [],
+          "allDay": true,
+          "outputMode": "calendar",
+          "bundleMode": "session_bundle"
+        },
+        "suggestionStatus": "draft",
+        "targetItemIds": [
+          "oq-oq-c05-washer-item-1",
+          "oq-oq-c05-washer-item-2",
+          "oq-oq-c05-washer-item-3",
+          "oq-oq-c05-washer-item-4"
+        ],
+        "excludedItemIds": [],
+        "lockedPastAssignments": [],
+        "assignments": [
+          {
+            "assignmentId": "oq-oq-c05-washer-item-1-2026-08-03",
+            "itemId": "oq-oq-c05-washer-item-1",
+            "date": "2026-08-03",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c05-washer-item-2-2026-08-05",
+            "itemId": "oq-oq-c05-washer-item-2",
+            "date": "2026-08-05",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c05-washer-item-3-2026-08-07",
+            "itemId": "oq-oq-c05-washer-item-3",
+            "date": "2026-08-07",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c05-washer-item-4-2026-08-10",
+            "itemId": "oq-oq-c05-washer-item-4",
+            "date": "2026-08-10",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          }
+        ],
+        "inputHash": "sha256:7596690b43c83ca73fe6a39c2b11b65057079acec4e33978d182f22f34a3025d",
+        "resultHash": "sha256:1ff47912bd8657a39cf494f946de51bf289df6e8383ea8e95933924440bab5b5"
+      }
+    },
+    {
+      "contentId": "canonical:oq-oq-c06-nasa",
+      "title": "Build, Launch, Recover: Build a Crane Activity",
+      "policy": {
+        "mode": "items_per_day",
+        "startDate": "2026-08-03",
+        "itemsPerDay": 2,
+        "allowedWeekdays": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "restDates": [],
+        "allDay": true,
+        "outputMode": "todo_due",
+        "bundleMode": "per_item"
+      },
+      "result": {
+        "ok": true,
+        "errors": [],
+        "policy": {
+          "mode": "items_per_day",
+          "startDate": "2026-08-03",
+          "itemsPerDay": 2,
+          "allowedWeekdays": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "restDates": [],
+          "allDay": true,
+          "outputMode": "todo_due",
+          "bundleMode": "per_item"
+        },
+        "suggestionStatus": "draft",
+        "targetItemIds": [
+          "oq-oq-c06-nasa-item-1",
+          "oq-oq-c06-nasa-item-2",
+          "oq-oq-c06-nasa-item-3",
+          "oq-oq-c06-nasa-item-4",
+          "oq-oq-c06-nasa-item-5"
+        ],
+        "excludedItemIds": [],
+        "lockedPastAssignments": [],
+        "assignments": [
+          {
+            "assignmentId": "oq-oq-c06-nasa-item-1-2026-08-03",
+            "itemId": "oq-oq-c06-nasa-item-1",
+            "date": "2026-08-03",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c06-nasa-item-2-2026-08-03",
+            "itemId": "oq-oq-c06-nasa-item-2",
+            "date": "2026-08-03",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c06-nasa-item-3-2026-08-04",
+            "itemId": "oq-oq-c06-nasa-item-3",
+            "date": "2026-08-04",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c06-nasa-item-4-2026-08-04",
+            "itemId": "oq-oq-c06-nasa-item-4",
+            "date": "2026-08-04",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c06-nasa-item-5-2026-08-05",
+            "itemId": "oq-oq-c06-nasa-item-5",
+            "date": "2026-08-05",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          }
+        ],
+        "inputHash": "sha256:fcf6e20a4548adc651b7c7a7580a30ad3b1e4d6fc3da009e1d22183d430f6b2e",
+        "resultHash": "sha256:7778acc4b979bbfa4cc6b9c812bd9085a3cb223189416f08df034b264dbefaaa"
+      }
+    },
+    {
+      "contentId": "canonical:oq-oq-c07-fit100",
+      "title": "국민체력인증 이용안내",
+      "policy": {
+        "mode": "items_per_week",
+        "startDate": "2026-08-03",
+        "itemsPerWeek": 3,
+        "allowedWeekdays": [
+          1,
+          3,
+          5
+        ],
+        "restDates": [],
+        "allDay": true,
+        "outputMode": "calendar",
+        "bundleMode": "session_bundle"
+      },
+      "result": {
+        "ok": true,
+        "errors": [],
+        "policy": {
+          "mode": "items_per_week",
+          "startDate": "2026-08-03",
+          "itemsPerWeek": 3,
+          "allowedWeekdays": [
+            1,
+            3,
+            5
+          ],
+          "restDates": [],
+          "allDay": true,
+          "outputMode": "calendar",
+          "bundleMode": "session_bundle"
+        },
+        "suggestionStatus": "draft",
+        "targetItemIds": [
+          "oq-oq-c07-fit100-item-1",
+          "oq-oq-c07-fit100-item-2",
+          "oq-oq-c07-fit100-item-3",
+          "oq-oq-c07-fit100-item-4",
+          "oq-oq-c07-fit100-item-5",
+          "oq-oq-c07-fit100-item-6",
+          "oq-oq-c07-fit100-item-7",
+          "oq-oq-c07-fit100-item-8"
+        ],
+        "excludedItemIds": [],
+        "lockedPastAssignments": [],
+        "assignments": [
+          {
+            "assignmentId": "oq-oq-c07-fit100-item-1-2026-08-03",
+            "itemId": "oq-oq-c07-fit100-item-1",
+            "date": "2026-08-03",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c07-fit100-item-2-2026-08-05",
+            "itemId": "oq-oq-c07-fit100-item-2",
+            "date": "2026-08-05",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c07-fit100-item-3-2026-08-07",
+            "itemId": "oq-oq-c07-fit100-item-3",
+            "date": "2026-08-07",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c07-fit100-item-4-2026-08-10",
+            "itemId": "oq-oq-c07-fit100-item-4",
+            "date": "2026-08-10",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c07-fit100-item-5-2026-08-12",
+            "itemId": "oq-oq-c07-fit100-item-5",
+            "date": "2026-08-12",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c07-fit100-item-6-2026-08-14",
+            "itemId": "oq-oq-c07-fit100-item-6",
+            "date": "2026-08-14",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c07-fit100-item-7-2026-08-17",
+            "itemId": "oq-oq-c07-fit100-item-7",
+            "date": "2026-08-17",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-c07-fit100-item-8-2026-08-19",
+            "itemId": "oq-oq-c07-fit100-item-8",
+            "date": "2026-08-19",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          }
+        ],
+        "inputHash": "sha256:25488fc8f7301a4f501dfc9146a4612f1ebf1b3904eddcccfb3acbdb4afeeb32",
+        "resultHash": "sha256:753150ab2f7b83f884fa01154ee0b39054ce98bdc49ba837900c24330a3fcb4f"
+      }
+    },
+    {
+      "contentId": "canonical:oq-oq-b01-heat",
+      "title": "2026년 농업인 온열질환 예방가이드 및 체크리스트",
+      "policy": {
+        "mode": "items_per_day",
+        "startDate": "2026-08-03",
+        "itemsPerDay": 2,
+        "allowedWeekdays": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "restDates": [],
+        "allDay": true,
+        "outputMode": "todo_due",
+        "bundleMode": "per_item"
+      },
+      "result": {
+        "ok": true,
+        "errors": [],
+        "policy": {
+          "mode": "items_per_day",
+          "startDate": "2026-08-03",
+          "itemsPerDay": 2,
+          "allowedWeekdays": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "restDates": [],
+          "allDay": true,
+          "outputMode": "todo_due",
+          "bundleMode": "per_item"
+        },
+        "suggestionStatus": "draft",
+        "targetItemIds": [
+          "oq-oq-b01-heat-item-1",
+          "oq-oq-b01-heat-item-2",
+          "oq-oq-b01-heat-item-3",
+          "oq-oq-b01-heat-item-4"
+        ],
+        "excludedItemIds": [],
+        "lockedPastAssignments": [],
+        "assignments": [
+          {
+            "assignmentId": "oq-oq-b01-heat-item-1-2026-08-03",
+            "itemId": "oq-oq-b01-heat-item-1",
+            "date": "2026-08-03",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-b01-heat-item-2-2026-08-03",
+            "itemId": "oq-oq-b01-heat-item-2",
+            "date": "2026-08-03",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-b01-heat-item-3-2026-08-04",
+            "itemId": "oq-oq-b01-heat-item-3",
+            "date": "2026-08-04",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-b01-heat-item-4-2026-08-04",
+            "itemId": "oq-oq-b01-heat-item-4",
+            "date": "2026-08-04",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          }
+        ],
+        "inputHash": "sha256:969c7c6e7d49545103051b53cd3d079bd6914f1f7ca4e164cd3b43f7a130578c",
+        "resultHash": "sha256:506a2031069c22bb03f7c4a5397934d30758a557422de76f10aae86a259484a4"
+      }
+    },
+    {
+      "contentId": "canonical:oq-oq-p01-ossu",
+      "title": "OSSU Computer Science Curriculum",
+      "policy": {
+        "mode": "items_per_week",
+        "startDate": "2026-08-03",
+        "itemsPerWeek": 3,
+        "allowedWeekdays": [
+          1,
+          3,
+          5
+        ],
+        "restDates": [],
+        "allDay": true,
+        "outputMode": "calendar",
+        "bundleMode": "session_bundle"
+      },
+      "result": {
+        "ok": true,
+        "errors": [],
+        "policy": {
+          "mode": "items_per_week",
+          "startDate": "2026-08-03",
+          "itemsPerWeek": 3,
+          "allowedWeekdays": [
+            1,
+            3,
+            5
+          ],
+          "restDates": [],
+          "allDay": true,
+          "outputMode": "calendar",
+          "bundleMode": "session_bundle"
+        },
+        "suggestionStatus": "draft",
+        "targetItemIds": [
+          "oq-oq-p01-ossu-item-1",
+          "oq-oq-p01-ossu-item-2",
+          "oq-oq-p01-ossu-item-3",
+          "oq-oq-p01-ossu-item-4",
+          "oq-oq-p01-ossu-item-5",
+          "oq-oq-p01-ossu-item-6"
+        ],
+        "excludedItemIds": [],
+        "lockedPastAssignments": [],
+        "assignments": [
+          {
+            "assignmentId": "oq-oq-p01-ossu-item-1-2026-08-03",
+            "itemId": "oq-oq-p01-ossu-item-1",
+            "date": "2026-08-03",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-p01-ossu-item-2-2026-08-05",
+            "itemId": "oq-oq-p01-ossu-item-2",
+            "date": "2026-08-05",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-p01-ossu-item-3-2026-08-07",
+            "itemId": "oq-oq-p01-ossu-item-3",
+            "date": "2026-08-07",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-p01-ossu-item-4-2026-08-10",
+            "itemId": "oq-oq-p01-ossu-item-4",
+            "date": "2026-08-10",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-p01-ossu-item-5-2026-08-12",
+            "itemId": "oq-oq-p01-ossu-item-5",
+            "date": "2026-08-12",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-p01-ossu-item-6-2026-08-14",
+            "itemId": "oq-oq-p01-ossu-item-6",
+            "date": "2026-08-14",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          }
+        ],
+        "inputHash": "sha256:cc0a9c1d4e08a50dfa29910a35790f23fdbf73b7ef511551b2c91eebe941ee46",
+        "resultHash": "sha256:20810c84ff4a2bca4dc323f44556871bd616dfef8171ba4f7cdd9260b49542f2"
+      }
+    },
+    {
+      "contentId": "canonical:oq-oq-p02-packing",
+      "title": "Packing list",
+      "policy": {
+        "mode": "items_per_day",
+        "startDate": "2026-08-03",
+        "itemsPerDay": 2,
+        "allowedWeekdays": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "restDates": [],
+        "allDay": true,
+        "outputMode": "todo_due",
+        "bundleMode": "per_item"
+      },
+      "result": {
+        "ok": true,
+        "errors": [],
+        "policy": {
+          "mode": "items_per_day",
+          "startDate": "2026-08-03",
+          "itemsPerDay": 2,
+          "allowedWeekdays": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "restDates": [],
+          "allDay": true,
+          "outputMode": "todo_due",
+          "bundleMode": "per_item"
+        },
+        "suggestionStatus": "draft",
+        "targetItemIds": [
+          "oq-oq-p02-packing-item-1",
+          "oq-oq-p02-packing-item-2",
+          "oq-oq-p02-packing-item-3",
+          "oq-oq-p02-packing-item-4",
+          "oq-oq-p02-packing-item-5",
+          "oq-oq-p02-packing-item-6",
+          "oq-oq-p02-packing-item-7"
+        ],
+        "excludedItemIds": [],
+        "lockedPastAssignments": [],
+        "assignments": [
+          {
+            "assignmentId": "oq-oq-p02-packing-item-1-2026-08-03",
+            "itemId": "oq-oq-p02-packing-item-1",
+            "date": "2026-08-03",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-p02-packing-item-2-2026-08-03",
+            "itemId": "oq-oq-p02-packing-item-2",
+            "date": "2026-08-03",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-p02-packing-item-3-2026-08-04",
+            "itemId": "oq-oq-p02-packing-item-3",
+            "date": "2026-08-04",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-p02-packing-item-4-2026-08-04",
+            "itemId": "oq-oq-p02-packing-item-4",
+            "date": "2026-08-04",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-p02-packing-item-5-2026-08-05",
+            "itemId": "oq-oq-p02-packing-item-5",
+            "date": "2026-08-05",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-p02-packing-item-6-2026-08-05",
+            "itemId": "oq-oq-p02-packing-item-6",
+            "date": "2026-08-05",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-p02-packing-item-7-2026-08-06",
+            "itemId": "oq-oq-p02-packing-item-7",
+            "date": "2026-08-06",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          }
+        ],
+        "inputHash": "sha256:fbaa84e92d599308fd9ef683cf37c442dd92f4e5c8286ac8480dcca32ffecc1c",
+        "resultHash": "sha256:601f2d7b034063a5dad93030c7bc22630d02a61e0b41168f880f01b93eeacee0"
+      }
+    },
+    {
+      "contentId": "canonical:oq-oq-p04-portfolio",
+      "title": "포트폴리오 4주 만에 준비하기",
+      "policy": {
+        "mode": "items_per_week",
+        "startDate": "2026-08-03",
+        "itemsPerWeek": 3,
+        "allowedWeekdays": [
+          1,
+          3,
+          5
+        ],
+        "restDates": [],
+        "allDay": true,
+        "outputMode": "calendar",
+        "bundleMode": "session_bundle"
+      },
+      "result": {
+        "ok": true,
+        "errors": [],
+        "policy": {
+          "mode": "items_per_week",
+          "startDate": "2026-08-03",
+          "itemsPerWeek": 3,
+          "allowedWeekdays": [
+            1,
+            3,
+            5
+          ],
+          "restDates": [],
+          "allDay": true,
+          "outputMode": "calendar",
+          "bundleMode": "session_bundle"
+        },
+        "suggestionStatus": "draft",
+        "targetItemIds": [
+          "oq-oq-p04-portfolio-item-1",
+          "oq-oq-p04-portfolio-item-2",
+          "oq-oq-p04-portfolio-item-3",
+          "oq-oq-p04-portfolio-item-4",
+          "oq-oq-p04-portfolio-item-5",
+          "oq-oq-p04-portfolio-item-6",
+          "oq-oq-p04-portfolio-item-7"
+        ],
+        "excludedItemIds": [],
+        "lockedPastAssignments": [],
+        "assignments": [
+          {
+            "assignmentId": "oq-oq-p04-portfolio-item-1-2026-08-03",
+            "itemId": "oq-oq-p04-portfolio-item-1",
+            "date": "2026-08-03",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-p04-portfolio-item-2-2026-08-05",
+            "itemId": "oq-oq-p04-portfolio-item-2",
+            "date": "2026-08-05",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-p04-portfolio-item-3-2026-08-07",
+            "itemId": "oq-oq-p04-portfolio-item-3",
+            "date": "2026-08-07",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-p04-portfolio-item-4-2026-08-10",
+            "itemId": "oq-oq-p04-portfolio-item-4",
+            "date": "2026-08-10",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-p04-portfolio-item-5-2026-08-12",
+            "itemId": "oq-oq-p04-portfolio-item-5",
+            "date": "2026-08-12",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-p04-portfolio-item-6-2026-08-14",
+            "itemId": "oq-oq-p04-portfolio-item-6",
+            "date": "2026-08-14",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "oq-oq-p04-portfolio-item-7-2026-08-17",
+            "itemId": "oq-oq-p04-portfolio-item-7",
+            "date": "2026-08-17",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          }
+        ],
+        "inputHash": "sha256:a57d81aec23e4eec4a307cf53d98f570c97f5b009238becb36a606e36aef5050",
+        "resultHash": "sha256:119732b9828cd6b5e8554831eadb6998562f4924395c77532693a72cf3e6c873"
+      }
+    },
+    {
+      "contentId": "canonical:value-vq-01",
+      "title": "어린이집 보육료 지원 신청",
+      "policy": {
+        "mode": "items_per_day",
+        "startDate": "2026-08-03",
+        "itemsPerDay": 2,
+        "allowedWeekdays": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "restDates": [],
+        "allDay": true,
+        "outputMode": "todo_due",
+        "bundleMode": "per_item"
+      },
+      "result": {
+        "ok": true,
+        "errors": [],
+        "policy": {
+          "mode": "items_per_day",
+          "startDate": "2026-08-03",
+          "itemsPerDay": 2,
+          "allowedWeekdays": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "restDates": [],
+          "allDay": true,
+          "outputMode": "todo_due",
+          "bundleMode": "per_item"
+        },
+        "suggestionStatus": "draft",
+        "targetItemIds": [
+          "value-vq-01-item-1",
+          "value-vq-01-item-2",
+          "value-vq-01-item-3",
+          "value-vq-01-item-4"
+        ],
+        "excludedItemIds": [],
+        "lockedPastAssignments": [],
+        "assignments": [
+          {
+            "assignmentId": "value-vq-01-item-1-2026-08-03",
+            "itemId": "value-vq-01-item-1",
+            "date": "2026-08-03",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "value-vq-01-item-2-2026-08-03",
+            "itemId": "value-vq-01-item-2",
+            "date": "2026-08-03",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "value-vq-01-item-3-2026-08-04",
+            "itemId": "value-vq-01-item-3",
+            "date": "2026-08-04",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "value-vq-01-item-4-2026-08-04",
+            "itemId": "value-vq-01-item-4",
+            "date": "2026-08-04",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "todo_due",
+            "bundleMode": "per_item",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          }
+        ],
+        "inputHash": "sha256:fc8ca147474de6587dbc61ce6c1c9fc979d3149d15cfc4f37ec46112e1c3e1a5",
+        "resultHash": "sha256:fe0bd7281f3282a946e1ea26a2e0c75872da3eaff57695c1f0c4b09cf75e181c"
+      }
+    },
+    {
+      "contentId": "canonical:value-vq-04",
+      "title": "옷장 정리 1일",
+      "policy": {
+        "mode": "items_per_week",
+        "startDate": "2026-08-03",
+        "itemsPerWeek": 3,
+        "allowedWeekdays": [
+          1,
+          3,
+          5
+        ],
+        "restDates": [],
+        "allDay": true,
+        "outputMode": "calendar",
+        "bundleMode": "session_bundle"
+      },
+      "result": {
+        "ok": true,
+        "errors": [],
+        "policy": {
+          "mode": "items_per_week",
+          "startDate": "2026-08-03",
+          "itemsPerWeek": 3,
+          "allowedWeekdays": [
+            1,
+            3,
+            5
+          ],
+          "restDates": [],
+          "allDay": true,
+          "outputMode": "calendar",
+          "bundleMode": "session_bundle"
+        },
+        "suggestionStatus": "draft",
+        "targetItemIds": [
+          "value-vq-04-item-1",
+          "value-vq-04-item-2",
+          "value-vq-04-item-3",
+          "value-vq-04-item-4",
+          "value-vq-04-item-5",
+          "value-vq-04-item-6"
+        ],
+        "excludedItemIds": [],
+        "lockedPastAssignments": [],
+        "assignments": [
+          {
+            "assignmentId": "value-vq-04-item-1-2026-08-03",
+            "itemId": "value-vq-04-item-1",
+            "date": "2026-08-03",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "value-vq-04-item-2-2026-08-05",
+            "itemId": "value-vq-04-item-2",
+            "date": "2026-08-05",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "value-vq-04-item-3-2026-08-07",
+            "itemId": "value-vq-04-item-3",
+            "date": "2026-08-07",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "value-vq-04-item-4-2026-08-10",
+            "itemId": "value-vq-04-item-4",
+            "date": "2026-08-10",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "value-vq-04-item-5-2026-08-12",
+            "itemId": "value-vq-04-item-5",
+            "date": "2026-08-12",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          },
+          {
+            "assignmentId": "value-vq-04-item-6-2026-08-14",
+            "itemId": "value-vq-04-item-6",
+            "date": "2026-08-14",
+            "preferredTime": null,
+            "allDay": true,
+            "outputMode": "calendar",
+            "bundleMode": "session_bundle",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "draft"
+          }
+        ],
+        "inputHash": "sha256:2cfc8343d2c88de17ea05d6c0f1eee6de1c6ac2254837f476ed134cf1c057bed",
+        "resultHash": "sha256:cc9caa4e78a35cd9c932aaa7a31f15f678bab6a7af5be6c6e405f128d3af7891"
+      }
+    }
+  ]
+}
