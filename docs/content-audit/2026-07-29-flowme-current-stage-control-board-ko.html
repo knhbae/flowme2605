@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>FlowMe 현재 단계와 다음 결정 · 2026-07-29</title>
+  <style>
+    :root {
+      --ink: #17191f;
+      --muted: #626873;
+      --line: #d9dde5;
+      --soft: #f4f6f9;
+      --blue: #1657d9;
+      --blue-soft: #edf3ff;
+      --coral: #d94832;
+      --coral-soft: #fff0ed;
+      --green: #16724a;
+      --green-soft: #eaf7f0;
+      --amber: #8a5a00;
+      --amber-soft: #fff5d9;
+      --white: #ffffff;
+      --max: 1180px;
+      font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", Arial, sans-serif;
+      color: var(--ink);
+      background: var(--white);
+      letter-spacing: 0;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--white); color: var(--ink); }
+    a { color: var(--blue); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+    a:hover { text-decoration-thickness: 2px; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 16px; font-size: 42px; line-height: 1.16; letter-spacing: 0; }
+    h2 { margin-bottom: 20px; font-size: 30px; line-height: 1.25; letter-spacing: 0; }
+    h3 { margin-bottom: 9px; font-size: 18px; line-height: 1.4; letter-spacing: 0; }
+    p { line-height: 1.68; }
+    code { font-family: Consolas, "SFMono-Regular", monospace; font-size: .92em; }
+
+    .wrap { width: min(var(--max), calc(100% - 40px)); margin: 0 auto; }
+    .topbar { border-bottom: 1px solid var(--line); background: var(--white); }
+    .topbar .wrap { min-height: 54px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .brand { font-weight: 800; }
+    .topnav { display: flex; flex-wrap: wrap; gap: 18px; font-size: 14px; }
+    .topnav a { color: var(--muted); text-decoration: none; }
+    .topnav a:hover { color: var(--ink); }
+
+    .hero { padding: 48px 0 38px; border-bottom: 1px solid var(--line); }
+    .hero-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(280px, .6fr); gap: 64px; align-items: end; }
+    .eyebrow { margin-bottom: 12px; color: var(--blue); font-size: 13px; font-weight: 800; text-transform: uppercase; }
+    .hero-copy { max-width: 760px; margin-bottom: 0; color: var(--muted); font-size: 18px; }
+    .stage-box { border-left: 5px solid var(--coral); padding: 8px 0 8px 22px; }
+    .stage-box span { display: block; margin-bottom: 7px; color: var(--muted); font-size: 13px; font-weight: 700; }
+    .stage-box strong { display: block; font-size: 27px; line-height: 1.25; }
+    .stage-box small { display: block; margin-top: 10px; color: var(--coral); font-weight: 800; }
+
+    .metric-band { border-bottom: 1px solid var(--line); background: var(--soft); }
+    .metrics { display: grid; grid-template-columns: repeat(4, 1fr); }
+    .metric { min-width: 0; padding: 25px 24px; border-right: 1px solid var(--line); }
+    .metric:first-child { border-left: 1px solid var(--line); }
+    .metric strong { display: block; margin-bottom: 4px; font-size: 31px; }
+    .metric span { color: var(--muted); font-size: 13px; font-weight: 700; }
+
+    section { padding: 58px 0; border-bottom: 1px solid var(--line); }
+    .section-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, .55fr); gap: 36px; align-items: end; margin-bottom: 26px; }
+    .section-head h2 { margin-bottom: 0; }
+    .section-head p { margin-bottom: 1px; color: var(--muted); }
+
+    .progress-shell { border: 1px solid var(--line); border-radius: 6px; padding: 24px; }
+    .progress-meta { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 15px; font-weight: 800; }
+    .progress-meta strong { color: var(--coral); }
+    .session-grid { display: grid; grid-template-columns: repeat(15, 1fr); gap: 5px; }
+    .session-grid span { height: 18px; border: 1px solid #bfc5cf; background: var(--white); }
+    .progress-foot { display: flex; justify-content: space-between; gap: 16px; margin: 13px 0 0; color: var(--muted); font-size: 13px; }
+
+    .action-list { border-top: 2px solid var(--ink); }
+    .action-row { display: grid; grid-template-columns: 82px minmax(0, 1.35fr) minmax(210px, .65fr) 96px; gap: 20px; align-items: start; padding: 22px 0; border-bottom: 1px solid var(--line); }
+    .rank { width: 54px; padding: 7px 8px; border-radius: 4px; background: var(--blue-soft); color: var(--blue); text-align: center; font-size: 12px; font-weight: 800; }
+    .action-row:nth-child(3) .rank, .action-row:nth-child(4) .rank { background: var(--amber-soft); color: var(--amber); }
+    .action-row p { margin: 0; color: var(--muted); font-size: 14px; }
+    .action-evidence { color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .status { display: inline-flex; align-items: center; justify-content: center; min-width: 84px; min-height: 30px; padding: 5px 9px; border-radius: 4px; font-size: 12px; font-weight: 800; }
+    .status.ready { color: var(--blue); background: var(--blue-soft); }
+    .status.human { color: var(--coral); background: var(--coral-soft); }
+    .status.done { color: var(--green); background: var(--green-soft); }
+    .status.blocked { color: var(--amber); background: var(--amber-soft); }
+    .status.reference { color: #4e5561; background: #eef0f4; }
+
+    .lane-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 2px solid var(--ink); border-bottom: 1px solid var(--line); }
+    .lane { min-width: 0; padding: 22px; border-right: 1px solid var(--line); }
+    .lane:last-child { border-right: 0; }
+    .lane-kicker { display: block; margin-bottom: 18px; font-size: 12px; font-weight: 800; text-transform: uppercase; }
+    .lane.now .lane-kicker { color: var(--coral); }
+    .lane.next .lane-kicker { color: var(--blue); }
+    .lane.blocked .lane-kicker { color: var(--amber); }
+    .lane.done .lane-kicker { color: var(--green); }
+    .lane h3 { min-height: 50px; }
+    .lane p { margin-bottom: 20px; color: var(--muted); font-size: 14px; }
+    .lane small { display: block; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); line-height: 1.55; }
+
+    .owner-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+    .owner-panel { border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+    .owner-panel header { padding: 18px 20px; border-bottom: 1px solid var(--line); background: var(--soft); }
+    .owner-panel header h3 { margin-bottom: 3px; }
+    .owner-panel header p { margin: 0; color: var(--muted); font-size: 13px; }
+    .owner-panel ol { margin: 0; padding: 0; list-style: none; counter-reset: owner; }
+    .owner-panel li { counter-increment: owner; position: relative; min-height: 75px; padding: 17px 18px 17px 56px; border-bottom: 1px solid var(--line); line-height: 1.55; }
+    .owner-panel li:last-child { border-bottom: 0; }
+    .owner-panel li::before { content: counter(owner); position: absolute; top: 18px; left: 20px; width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; background: var(--blue); color: var(--white); font-size: 12px; font-weight: 800; }
+    .owner-panel.ai li::before { background: var(--green); }
+    .owner-panel li span { display: block; margin-top: 4px; color: var(--muted); font-size: 13px; }
+
+    .decision-band { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 28px; padding: 24px; border-left: 5px solid var(--amber); background: var(--amber-soft); }
+    .decision-band strong { font-size: 20px; }
+    .decision-band p { margin: 0; }
+
+    .table-wrap { overflow-x: auto; border-top: 2px solid var(--ink); }
+    table { width: 100%; border-collapse: collapse; min-width: 760px; }
+    th, td { padding: 17px 14px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; line-height: 1.5; }
+    th { color: var(--muted); font-size: 12px; text-transform: uppercase; }
+    td { font-size: 14px; }
+    td:first-child { width: 142px; }
+    td:last-child { width: 210px; color: var(--muted); }
+
+    .review-shelf { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .review-item { min-width: 0; padding: 22px; border: 1px solid var(--line); border-top: 4px solid var(--blue); border-radius: 6px; }
+    .review-item:nth-child(2) { border-top-color: var(--coral); }
+    .review-item:nth-child(3) { border-top-color: var(--green); }
+    .review-item p { color: var(--muted); font-size: 14px; }
+
+    .visual-grid { display: grid; grid-template-columns: minmax(250px, .72fr) minmax(0, 1.28fr); gap: 20px; align-items: stretch; }
+    .visual-grid figure { min-width: 0; margin: 0; }
+    .visual-grid a { display: grid; min-height: 360px; place-items: center; padding: 14px; border: 1px solid var(--line); border-radius: 6px; background: var(--soft); }
+    .visual-grid img { display: block; width: 100%; height: 330px; object-fit: contain; }
+    .visual-grid figcaption { padding-top: 10px; color: var(--muted); font-size: 13px; line-height: 1.55; }
+
+    .truth-map { display: grid; grid-template-columns: 1fr 58px 1fr 58px 1fr; align-items: center; }
+    .truth-node { min-height: 145px; padding: 22px; border: 1px solid var(--line); border-radius: 6px; }
+    .truth-node strong { display: block; margin-bottom: 9px; font-size: 18px; }
+    .truth-node p { margin: 0; color: var(--muted); font-size: 14px; }
+    .truth-arrow { color: var(--blue); text-align: center; font-size: 26px; font-weight: 800; }
+
+    .cleanup-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+    .cleanup-list div { min-height: 124px; padding: 20px; background: var(--white); }
+    .cleanup-list strong { display: block; margin-bottom: 8px; }
+    .cleanup-list p { margin: 0; color: var(--muted); font-size: 14px; }
+
+    footer { padding: 38px 0 56px; color: var(--muted); font-size: 13px; }
+    footer .wrap { display: flex; justify-content: space-between; gap: 24px; }
+
+    @media (max-width: 900px) {
+      .hero-grid, .section-head { grid-template-columns: 1fr; gap: 24px; }
+      .metrics { grid-template-columns: 1fr 1fr; }
+      .metric:nth-child(2) { border-right: 1px solid var(--line); }
+      .metric:nth-child(3) { border-left: 1px solid var(--line); border-top: 1px solid var(--line); }
+      .metric:nth-child(4) { border-top: 1px solid var(--line); }
+      .action-row { grid-template-columns: 72px 1fr 92px; }
+      .action-evidence { grid-column: 2 / -1; }
+      .lane-grid { grid-template-columns: 1fr 1fr; }
+      .lane:nth-child(2) { border-right: 0; }
+      .lane:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+      .review-shelf, .cleanup-list { grid-template-columns: 1fr; }
+      .truth-map { grid-template-columns: 1fr; gap: 12px; }
+      .truth-arrow { transform: rotate(90deg); }
+      .visual-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .wrap { width: min(100% - 28px, var(--max)); }
+      .topbar .wrap { align-items: flex-start; padding: 13px 0; }
+      .topnav { justify-content: flex-end; gap: 10px 14px; }
+      .topnav a:nth-child(n+4) { display: none; }
+      .hero { padding: 48px 0 34px; }
+      h1 { font-size: 32px; }
+      h2 { font-size: 24px; }
+      .hero-copy { font-size: 16px; }
+      .metrics { grid-template-columns: 1fr 1fr; }
+      .metric { padding: 19px 15px; }
+      .metric strong { font-size: 26px; }
+      section { padding: 44px 0; }
+      .progress-shell { padding: 18px; }
+      .session-grid { grid-template-columns: repeat(5, 1fr); }
+      .action-row { grid-template-columns: 1fr auto; gap: 12px; }
+      .rank { width: max-content; }
+      .action-main { grid-column: 1 / -1; }
+      .action-evidence { grid-column: 1 / -1; }
+      .lane-grid, .owner-layout { grid-template-columns: 1fr; }
+      .lane { border-right: 0; border-bottom: 1px solid var(--line); }
+      .lane:last-child { border-bottom: 0; }
+      .lane h3 { min-height: 0; }
+      .decision-band { grid-template-columns: 1fr; gap: 10px; }
+      .visual-grid a { min-height: 0; }
+      .visual-grid img { height: auto; max-height: 420px; }
+      table { min-width: 0; }
+      thead { display: none; }
+      tbody, tr, td { display: block; width: 100%; }
+      tr { padding: 12px 0; border-bottom: 1px solid var(--line); }
+      td, td:first-child, td:last-child { width: auto; padding: 6px 12px; border-bottom: 0; }
+      footer .wrap { display: block; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap">
+      <div class="brand">FLOWME / CONTROL</div>
+      <nav class="topnav" aria-label="보드 내 이동">
+        <a href="#now">지금 확인</a>
+        <a href="#lanes">현재 단계</a>
+        <a href="#specs">작업 상태</a>
+        <a href="#reviews">근거 화면</a>
+        <a href="#truth">관리 원칙</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <h1>FlowMe 현재 단계와 다음 결정</h1>
+          <p class="hero-copy">공개된 제품, 내부 검토 후보, 설계만 끝난 작업, 연구 근거를 분리했습니다. 지금 사용자가 볼 것과 AI가 마무리할 일을 같은 우선순위로 섞지 않습니다.</p>
+        </div>
+        <div class="stage-box">
+          <span>현재 제품 단계</span>
+          <strong>P34 공개 기준선<br>P35 내부 검토 후보</strong>
+          <small>관찰 사용자 0명</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="metric-band" aria-label="현재 핵심 지표">
+      <div class="wrap metrics">
+        <div class="metric"><strong>P34</strong><span>현재 production 기준선</span></div>
+        <div class="metric"><strong>P35</strong><span>단일 내부 제품 후보</span></div>
+        <div class="metric"><strong>405 / 405</strong><span>P35 전체 E2E 근거</span></div>
+        <div class="metric"><strong>0</strong><span>관찰 사용자</span></div>
+      </div>
+    </div>
+
+    <section id="now">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>사용자가 지금 확인할 것</h2>
+          <p>첫 번째 결정만 현재 제품 게이트입니다. 나머지는 P35가 정리된 뒤 하나만 승격합니다.</p>
+        </div>
+
+        <div class="progress-shell">
+          <div class="progress-meta"><span>P35 내부 검증 묶음</span><strong>5 / 5 통과</strong></div>
+          <div class="session-grid" style="grid-template-columns: repeat(5, 1fr);" aria-label="P35 내부 검증 5개 통과, 관찰 사용자 검증은 별도">
+            <span style="background: var(--green-soft); border-color: var(--green);"></span>
+            <span style="background: var(--green-soft); border-color: var(--green);"></span>
+            <span style="background: var(--green-soft); border-color: var(--green);"></span>
+            <span style="background: var(--green-soft); border-color: var(--green);"></span>
+            <span style="background: var(--green-soft); border-color: var(--green);"></span>
+          </div>
+          <p class="progress-foot"><span>unit · P35 E2E · full E2E · build · docs/diff</span><span>관찰 사용자 증거는 0으로 별도 유지</span></p>
+        </div>
+
+        <div class="action-list" style="margin-top: 28px;">
+          <div class="action-row">
+            <div class="rank">P0 · 지금</div>
+            <div class="action-main">
+              <h3>P35 화면 결정을 검토</h3>
+              <p>My Flow의 `할 일 / Flow` 분리, 날짜별 묶음, 낮은 행 명령 밀도, 저장 직후 첫 진입만 전체 계획 펼침이 맞는지 봅니다.</p>
+            </div>
+            <div class="action-evidence"><a href="./2026-07-29-p35-r13-final-internal-gate/README.md">판정과 근거</a><br><a href="./2026-07-29-p35-r13-final-internal-gate/audit.md">상세 audit</a></div>
+            <span class="status human">검토 필요</span>
+          </div>
+          <div class="action-row">
+            <div class="rank">P1 · 다음</div>
+            <div class="action-main">
+              <h3>텍스트 저작을 다음 구현으로 올릴지 결정</h3>
+              <p>메모·Markdown·표를 원문 그대로 두고 구조와 결과를 미리 보는 C안을 검토합니다. 현재는 설계와 프로토타입만 완료됐습니다.</p>
+            </div>
+            <div class="action-evidence"><a href="./2026-07-29-flowme-text-authoring-ux-v1-1-detail-ko.html">상세 프로토타입</a><br><a href="../specs/2026-07-28-flowme-text-authoring-ux-v1/spec.md">결정 문서</a></div>
+            <span class="status ready">P35 뒤</span>
+          </div>
+          <div class="action-row">
+            <div class="rank">P2 · 참고</div>
+            <div class="action-main">
+              <h3>연구 결과는 결정 요약부터 확인</h3>
+              <p>전체 corpus와 스크린샷을 모두 읽기보다 적용·검증·보류·비적용으로 나눈 제품 결정표를 먼저 봅니다.</p>
+            </div>
+            <div class="action-evidence"><a href="./2026-07-28-flowme-research-to-product-application-playbook-ceo-ko.html">제품 적용 플레이북</a><br><a href="./2026-07-28-flowme-research-to-product-decision-matrix.json">결정 matrix</a></div>
+            <span class="status reference">비차단</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="lanes">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>현재 단계와 다음 순서</h2>
+          <p>production, 내부 후보, 다음 후보, 장기 게이트를 한 줄의 진행률로 계산하지 않습니다.</p>
+        </div>
+        <div class="lane-grid">
+          <article class="lane now">
+            <span class="lane-kicker">Now</span>
+            <h3>P35<br>내부 리뷰·출시 정리</h3>
+            <p>후보 화면을 검토하고 통합, 전체 검증, PR, merge, 배포 상태를 사실대로 닫습니다.</p>
+            <small>완료 조건: keep/fix/block 결정과 publish truth</small>
+          </article>
+          <article class="lane next">
+            <span class="lane-kicker">Next</span>
+            <h3>하나의<br>후속 slice</h3>
+            <p>`TA-01`, P35의 한정 수정, 또는 아무것도 하지 않기 중 하나만 승격합니다.</p>
+            <small>완료 조건: 범위·비범위·검증이 한 묶음</small>
+          </article>
+          <article class="lane blocked">
+            <span class="lane-kicker">Human evidence</span>
+            <h3>실사용·외부 앱<br>검증 대기</h3>
+            <p>관찰 사용자, 실제 Calendar/VTODO 왕복, 다른 기기 복원은 자동화로 완료 처리하지 않습니다.</p>
+            <small>해제 조건: 구성된 실제 환경의 관찰 기록</small>
+          </article>
+          <article class="lane done">
+            <span class="lane-kicker">Production</span>
+            <h3>P33 + P34<br>공개 기준선</h3>
+            <p>canonical identity, lifecycle, 편집, Calendar keyboard, recurrence, export 계약은 배포 근거와 함께 유지합니다.</p>
+            <small>다시 열 조건: 재현 가능한 결함 또는 사용자 증거</small>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head">
+          <h2>사람과 AI의 역할 분리</h2>
+          <p>사람은 제품 판단과 실제 환경 증거를, AI는 보존·통합·검증·상태 동기화를 맡습니다.</p>
+        </div>
+        <div class="owner-layout">
+          <article class="owner-panel">
+            <header><h3>사용자</h3><p>실제 환경과 가치 판단의 소유자</p></header>
+            <ol>
+              <li>P35 후보를 keep, bounded fix, block 중 하나로 판단<span>필요하면 route, viewport, 기대/실제 차이로 코멘트</span></li>
+              <li>P35 뒤 승격할 작업을 하나만 선택<span>텍스트 저작, 근거 기반 수정, 또는 보류</span></li>
+              <li>실사용·Calendar 왕복·기기 간 복원이 필요할 때 직접 확인<span>자동화 근거와 섞지 않음</span></li>
+            </ol>
+          </article>
+          <article class="owner-panel ai">
+            <header><h3>AI</h3><p>준비, 정리, 검증, 다음 작업안의 소유자</p></header>
+            <ol>
+              <li>분산 작업을 원격 브랜치에 보존하고 안전하게 통합<span>사용자 변경과 원시 리뷰 자료를 임의 삭제하지 않음</span></li>
+              <li>docs, unit, build, E2E와 연구 validator를 실행<span>실패·미실행·관찰 0을 그대로 표시</span></li>
+              <li>STATUS, ROADMAP, spec index와 이 HTML을 동기화<span>연구를 제품 구현으로 부풀리지 않음</span></li>
+            </ol>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="decision-band">
+          <strong>같은 완료가 아님</strong>
+          <p>P35의 `405 / 405` E2E는 구현 회귀 근거입니다. 텍스트 저작 프로토타입은 설계 근거이고, corpus lab은 연구 근거입니다. 어느 것도 관찰 사용자, 실제 Calendar/VTODO 왕복, production 배포를 대신하지 않습니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="specs">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>작업 상태를 섞지 않기</h2>
+          <p>코드가 있는 것, 설계가 끝난 것, 연구가 재현되는 것, 공개된 것을 별도 상태로 봅니다.</p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>분류</th><th>범위</th><th>현재 의미</th></tr></thead>
+            <tbody>
+              <tr><td><span class="status human">활성 게이트</span></td><td><a href="../specs/2026-07-26-flowme-mece-ux-reset/p35-r13-final-internal-gate-goal-ko.md">P35 MECE UX Reset</a></td><td>내부 검토와 publish closeout</td></tr>
+              <tr><td><span class="status done">공개 기준선</span></td><td><a href="../specs/2026-07-25-p34-execution-crud-ux/spec.md">P34 Execution CRUD UX</a> + P33 canonical alignment</td><td>production 검증 완료, 관찰 사용자 0</td></tr>
+              <tr><td><span class="status ready">설계 완료</span></td><td><a href="../specs/2026-07-28-flowme-text-authoring-ux-v1/spec.md">Text Authoring UX v1</a></td><td>`TA-01`~`TA-06` 구현 미착수</td></tr>
+              <tr><td><span class="status reference">연구 근거</span></td><td><a href="../specs/2026-07-29-flow-projection-semantics-scheduling-event-corpus-v1/spec.md">Projection/Event lab</a>, <a href="../specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/spec.md">Full-corpus UI lab</a></td><td>runtime 변경 없음, 외부 왕복·관찰 미실행</td></tr>
+              <tr><td><span class="status blocked">승인·대기</span></td><td>Canonical DB migration, real AI/crawler, Creator publish, direct integrations</td><td>P35 뒤에도 한 축만 승격</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top: 16px; color: var(--muted); font-size: 13px;">전체 분류는 <a href="../specs/README.md">FLOW Spec Layer</a>에서 관리합니다.</p>
+      </div>
+    </section>
+
+    <section id="reviews">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>먼저 볼 근거 화면</h2>
+          <p>P35의 핵심 변화는 문서 설명보다 실제 날짜 그룹과 첫 진입 상태를 먼저 확인합니다.</p>
+        </div>
+        <div class="visual-grid">
+          <figure>
+            <a href="./2026-07-29-p35-r13-final-internal-gate/screenshots/p35-r13-b-date-groups-390.png">
+              <img src="./2026-07-29-p35-r13-final-internal-gate/screenshots/p35-r13-b-date-groups-390.png" alt="390픽셀 화면에서 날짜별로 묶인 P35 My Flow 할 일 보기">
+            </a>
+            <figcaption>390px: 날짜 rail, 행 전체 열기, 오른쪽 완료 checkbox만 남긴 기본 실행 화면.</figcaption>
+          </figure>
+          <figure>
+            <a href="./2026-07-29-p35-r13-final-internal-gate/screenshots/p35-r13-b-date-groups-1440.png">
+              <img src="./2026-07-29-p35-r13-final-internal-gate/screenshots/p35-r13-b-date-groups-1440.png" alt="1440픽셀 화면에서 날짜별 목록과 상세 inspector가 분리된 P35 My Flow">
+            </a>
+            <figcaption>1440px: 날짜별 실행 목록과 contextual inspector를 분리한 넓은 화면.</figcaption>
+          </figure>
+        </div>
+        <div class="review-shelf" style="margin-top: 28px;">
+          <article class="review-item">
+            <span class="status ready">다음 후보</span>
+            <h3 style="margin-top: 16px;">텍스트 저작 UX</h3>
+            <p>일반 텍스트를 보존하면서 Flow 구조와 실제 결과를 함께 고치는 설계입니다. 앱 구현은 아직 시작하지 않았습니다.</p>
+            <a href="./2026-07-29-flowme-text-authoring-ux-v1-1-detail-ko.html">상세 프로토타입 열기</a>
+          </article>
+          <article class="review-item">
+            <span class="status reference">연구 snapshot</span>
+            <h3 style="margin-top: 16px;">전체 content UI lab</h3>
+            <p>포함 corpus를 다섯 projection으로 비교하는 독립 harness입니다. production runtime 변경이나 실사용 검증이 아닙니다.</p>
+            <a href="./2026-07-29-flow-content-ui-full-corpus-validation-review-v1-ko.html">검증 보고서 열기</a>
+          </article>
+          <article class="review-item">
+            <span class="status reference">시장 근거</span>
+            <h3 style="margin-top: 16px;">Vertical execution benchmark</h3>
+            <p>24개 서비스와 10개 deep dive에서 실행 UX 패턴을 비교했습니다. 채택 여부는 제품 결정표에서 따로 판단합니다.</p>
+            <a href="./2026-07-28-vertical-execution-service-review-ko.html">benchmark 열기</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="truth">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>관리 정보가 흐르는 방식</h2>
+          <p>이 HTML은 원본 문서를 요약할 뿐 새 정책이나 완료 상태를 독립적으로 만들지 않습니다.</p>
+        </div>
+        <div class="truth-map">
+          <div class="truth-node"><strong>원본 정책·아이디어</strong><p><code>DECISIONS.md</code>, <code>IDEAS.md</code>, 각 <code>spec.md</code>가 왜와 경계를 보존합니다.</p></div>
+          <div class="truth-arrow" aria-hidden="true">›</div>
+          <div class="truth-node"><strong>현재 운영 상태</strong><p><code>ROADMAP.md</code>, <code>STATUS.md</code>, spec index가 production·후보·연구·보류를 구분합니다.</p></div>
+          <div class="truth-arrow" aria-hidden="true">›</div>
+          <div class="truth-node"><strong>사람이 보는 화면</strong><p>이 HTML은 지금 판단할 것과 근거 링크만 보여 줍니다. 불일치하면 repo 원본을 먼저 고칩니다.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head">
+          <h2>이번 통합에서 정리한 것</h2>
+          <p>삭제 전에 구현, 설계, 연구, 원시 리뷰를 분류하고 원격 보존 여부를 확인했습니다.</p>
+        </div>
+        <div class="cleanup-list">
+          <div><strong>분산 작업 원격 보존</strong><p>P35, 텍스트 저작, P30/P31/P33/P34 리뷰, prompt 연구, 통합 연구를 전용 branch에 보존했습니다.</p></div>
+          <div><strong>활성 게이트 1개</strong><p>P35만 현재 제품 게이트로 두고 설계·연구 패키지는 별도 선반으로 내렸습니다.</p></div>
+          <div><strong>오래된 상태 문구 교체</strong><p>P33 배포 대기와 P30 다음 결정처럼 이미 끝난 문구를 현재 P35 상태로 바꿨습니다.</p></div>
+          <div><strong>실행과 근거 분리</strong><p>코드 구현, prototype, corpus validator, 외부 앱 검증, 관찰 사용자를 서로 다른 완료 상태로 표시합니다.</p></div>
+          <div><strong>워크트리 축소</strong><p>merge·upstream·byte identity·remote archive를 확인한 비활성 worktree만 제거했습니다.</p></div>
+          <div><strong>다음 일 하나만 승격</strong><p>P35가 닫힌 뒤 `TA-01`, 한정 수정, 보류 중 하나를 선택합니다.</p></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span>FlowMe current stage control board · updated 2026-07-29</span>
+      <span>Source: <a href="../ROADMAP.md">ROADMAP</a> · <a href="../STATUS.md">STATUS</a> · <a href="../specs/README.md">SPECS</a> · <a href="./2026-07-29-flowme-workspace-consolidation-handoff-ko.md">통합 기록</a></span>
+    </div>
+  </footer>
+</body>
+</html>

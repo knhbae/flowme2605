@@ -6,7 +6,7 @@
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
 **Next Milestone:** review the P35 candidate, complete publish verification if accepted, then promote at most one next product slice
 
-Human-facing control surface: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
+Human-facing control surface: [FlowMe current stage control board](./content-audit/2026-07-29-flowme-current-stage-control-board-ko.html).
 
 ## Current Candidate: P35 MECE UX Reset
 

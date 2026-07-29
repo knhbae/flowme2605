@@ -7,7 +7,7 @@
 
 ## Current Control Panel
 
-Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
+Human-facing summary: [FlowMe current stage control board](./content-audit/2026-07-29-flowme-current-stage-control-board-ko.html).
 
 | Lane | Current truth |
 | --- | --- |
