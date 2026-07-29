@@ -1,0 +1,225 @@
+{
+  "schemaVersion": "1.0",
+  "packageId": "2026-07-26-flowme-mece-ux-reset-claude-design-handoff",
+  "reviewerRole": "claude_design",
+  "allowedOverallVerdicts": [
+    "codex_structure_keep",
+    "bounded_revision",
+    "alternative_structure_required"
+  ],
+  "allowedDecisionVerdicts": [
+    "keep",
+    "revise",
+    "reject"
+  ],
+  "allowedSeverity": [
+    "blocking",
+    "high",
+    "medium",
+    "low"
+  ],
+  "allowedCurrentJourneyStatus": [
+    "supported",
+    "hidden",
+    "partial",
+    "missing",
+    "blocked"
+  ],
+  "allowedProposedJourneyStatus": [
+    "pass",
+    "revise",
+    "fail"
+  ],
+  "allowedEvidenceKinds": [
+    "current_production_interaction",
+    "current_source",
+    "current_package_screenshot",
+    "codex_proposed_artifact",
+    "claude_proposed_artifact",
+    "reference_pattern",
+    "heuristic_simulation",
+    "inaccessible"
+  ],
+  "requiredFiles": [
+    "README.md",
+    "audit.md",
+    "review.html",
+    "decision-matrix.json",
+    "journey-scorecard.json",
+    "screen-message-contract.json",
+    "interaction-grammar.md",
+    "visual-system.md",
+    "implementation-handoff.md",
+    "screenshots"
+  ],
+  "resultShape": {
+    "metadata": {
+      "required": [
+        "reviewerRole",
+        "reviewDate",
+        "localHead",
+        "originMain",
+        "productionCheckedAt",
+        "observedUserCount",
+        "appCodeChanged",
+        "publishActionsPerformed"
+      ]
+    },
+    "verdict": {
+      "required": [
+        "overall",
+        "summary",
+        "homeDecision",
+        "myFlowDecision",
+        "calendarDecision"
+      ]
+    },
+    "findings": {
+      "type": "array",
+      "itemRequired": [
+        "id",
+        "severity",
+        "title",
+        "route",
+        "viewport",
+        "startingState",
+        "reproduction",
+        "expected",
+        "actual",
+        "userImpact",
+        "evidenceKinds",
+        "recommendedChange",
+        "acceptanceMarker"
+      ]
+    },
+    "alternatives": {
+      "type": "array",
+      "requiredIds": [
+        "A_subtractive_ownership",
+        "B_current_model_tightened",
+        "C_claude_independent"
+      ],
+      "itemRequired": [
+        "id",
+        "description",
+        "userValue",
+        "mobileLoad",
+        "actionOwnership",
+        "dataContractRisk",
+        "implementationRisk",
+        "tradeoffs",
+        "verdict"
+      ]
+    },
+    "journeys": {
+      "type": "array",
+      "exactItemCount": 15,
+      "requiredPersonaIds": [
+        "moving_d30",
+        "vehicle_inspection",
+        "morning_workout",
+        "long_term_study",
+        "personal_memo_draft"
+      ],
+      "requiredSessionIds": [
+        "A",
+        "B",
+        "C"
+      ],
+      "itemRequired": [
+        "personaId",
+        "sessionId",
+        "userGoal",
+        "startingState",
+        "route",
+        "viewports",
+        "currentStatus",
+        "proposedStatus",
+        "firstMessage",
+        "primaryAction",
+        "tapDepth",
+        "scrollDepth",
+        "continuity",
+        "recovery",
+        "evidenceKinds",
+        "observedUserOnlyAssumption"
+      ]
+    },
+    "screens": {
+      "type": "array",
+      "requiredSurfaceIds": [
+        "flow_find",
+        "public_flow",
+        "adjust",
+        "saved_receipt",
+        "my_flow",
+        "personal_flow",
+        "item_detail",
+        "calendar",
+        "export",
+        "flow_management"
+      ],
+      "itemRequired": [
+        "surfaceId",
+        "userQuestion",
+        "messageOne",
+        "messageTwo",
+        "primaryAction",
+        "secondaryActions",
+        "defaultVisible",
+        "collapsed",
+        "removed",
+        "ownedCapabilities",
+        "notOwnedCapabilities",
+        "nextState"
+      ]
+    },
+    "complexityMetrics": {
+      "type": "array",
+      "itemRequired": [
+        "surfaceId",
+        "version",
+        "messageCount",
+        "primaryActionCount",
+        "visibleCommandCount",
+        "cardOrBlockCount",
+        "explanationBlockCount",
+        "firstUsefulResultDepth",
+        "scrollDepth"
+      ]
+    },
+    "implementationSlices": {
+      "type": "array",
+      "minimumItemCount": 5,
+      "maximumItemCount": 9,
+      "itemRequired": [
+        "id",
+        "problem",
+        "routes",
+        "uxDirection",
+        "keep",
+        "cut",
+        "nonGoals",
+        "classification",
+        "likelyAffectedComponents",
+        "dataImpact",
+        "dependencies",
+        "mobileAcceptance",
+        "wideAcceptance",
+        "accessibilityAcceptance",
+        "screenshotMarker",
+        "testMarker",
+        "rollback",
+        "doneCriteria"
+      ]
+    }
+  },
+  "hardConstraints": {
+    "observedUserCount": 0,
+    "appCodeChanged": false,
+    "productionClaimForProposedArtifact": false,
+    "fakeSocialProofAllowed": false,
+    "newGlobalTabWithoutEvidenceAllowed": false,
+    "dataContractRewriteForVisualResetAllowed": false
+  }
+}

@@ -39,6 +39,16 @@ Capture the idea during the same session when it could influence future product 
 
 ## Ideas
 
+### 2026-07-25 - UX 수렴·테스트 가능성 규칙을 기존 review skill에 통합
+
+**Idea:** 현재 운영 진단이 승인되면 새 skill을 늘리기보다 canonical `.agents/skills/flow-ux-review/SKILL.md`에 한 개의 golden journey, 구현 전 저비용 대안 비교, 최소 테스트 가능성 기준, 승인된 화면 snapshot, 재개방 trigger, 이전 단계의 Test-ready 판정 전 새 대형 UX 단계 금지 규칙을 통합한다. Claude Code 사본은 기존 동기화 절차로만 갱신한다.
+
+**Why not now:** “전진형 도돌이표”라는 진단과 개선 운영안은 아직 사용자 검토 전이다. 지금 skill에 넣으면 승인되지 않은 분석을 영구 규칙으로 승격하고, 제품마다 필요한 예외와 기준을 검토할 기회를 잃는다.
+
+**Revisit when:** 사용자가 [FlowMe 진척·운영 방식 리뷰](./content-audit/2026-07-25-flowme-progress-operating-model-review-ko.pptx)의 진단과 운영안을 승인할 때, 또는 다음 광범위 UX 프로그램을 시작하기 전에 다시 본다. 적용 시 `.agents/skills/flow-ux-review/SKILL.md`만 수정하고 `npm run skills:sync`와 `npm run docs:check`를 실행한다.
+
+**Source context:** 2026-07-25 진행 방식 리뷰에서 사용자는 UX 개발이 실제로 도돌이표인지 검토하고, 재발 방지에 필요한 중요한 진행 규칙은 나중에 skill로 묶어 달라고 요청했다.
+
 ### 2026-07-19 - Advanced planner interactions after the P25 workspace model
 
 **Idea:** After P25 proves a coherent whole-Flow, Anytime, Calendar placement, personal adjustment, and export model, consider direct drag-and-drop scheduling, user-defined saved views, timezone controls, and one narrow external Calendar/Task integration. These may improve expert planning speed but must consume the same effective Flow projection and preserve source/personal/run ownership.
