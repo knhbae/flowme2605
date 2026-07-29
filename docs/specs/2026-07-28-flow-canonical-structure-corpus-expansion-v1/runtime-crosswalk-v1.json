@@ -1,0 +1,858 @@
+{
+  "schemaVersion": "flowme-runtime-crosswalk-v1",
+  "date": "2026-07-28",
+  "status": "read_only_runtime_audit",
+  "inspectedRuntimeFiles": [
+    "lib/flow/types.ts",
+    "lib/flow/export.ts"
+  ],
+  "canonicalReferences": [
+    "docs/specs/2026-07-11-canonical-flow-data-model/canonical-flow-contract.ts",
+    "docs/specs/2026-07-11-canonical-flow-data-model/spec.md",
+    "docs/specs/2026-07-20-flowme-taxonomy-v1-1/taxonomy-v1.1.json"
+  ],
+  "statusDefinitions": {
+    "direct": "The runtime already carries the core value with compatible meaning.",
+    "automatic_adapter": "A deterministic adapter can construct the canonical value when required evidence is present.",
+    "lossy_adapter": "An adapter can propose a value, but canonical meaning or provenance is lost.",
+    "new_backend_field": "The inspected runtime has no durable first-class representation.",
+    "human_decision": "Source/user-job judgment is required before persistence.",
+    "not_implemented": "The contract is defined but runtime/export support is absent and out of scope here."
+  },
+  "summary": {
+    "fieldMappingCount": 56,
+    "byStatus": {
+      "direct": 9,
+      "automatic_adapter": 11,
+      "lossy_adapter": 10,
+      "new_backend_field": 18,
+      "human_decision": 4,
+      "not_implemented": 4
+    },
+    "runtimeFilesChanged": 0,
+    "databaseChanged": false,
+    "apiChanged": false
+  },
+  "fieldMappings": [
+    {
+      "mappingId": "X01",
+      "area": "bundle",
+      "runtimeFields": [
+        "FlowBundle.flow.id"
+      ],
+      "canonicalTargets": [
+        "bundle.bundleId"
+      ],
+      "status": "automatic_adapter",
+      "loss": "Runtime has no separate Bundle identity when one Flow and one Bundle are represented by the same object.",
+      "rule": "Mint a stable Bundle ID while preserving Flow ID as a legacy alias."
+    },
+    {
+      "mappingId": "X02",
+      "area": "bundle",
+      "runtimeFields": [
+        "Flow.title"
+      ],
+      "canonicalTargets": [
+        "bundle.title"
+      ],
+      "status": "automatic_adapter",
+      "loss": "None for a one-Flow Bundle.",
+      "rule": "Copy title; multi-Flow Map title needs an explicit source/product value."
+    },
+    {
+      "mappingId": "X03",
+      "area": "taxonomy",
+      "runtimeFields": [
+        "Flow.category"
+      ],
+      "canonicalTargets": [
+        "bundle.lifeArea"
+      ],
+      "status": "human_decision",
+      "loss": "Free-text category mixes immediate outcome and topic.",
+      "rule": "Use Taxonomy v1.1 tie-breakers; do not persist an alias-only guess."
+    },
+    {
+      "mappingId": "X04",
+      "area": "taxonomy",
+      "runtimeFields": [
+        "Flow.category",
+        "Flow.tags"
+      ],
+      "canonicalTargets": [
+        "bundle.topicTags"
+      ],
+      "status": "automatic_adapter",
+      "loss": "None when legacy labels remain display metadata.",
+      "rule": "Preserve category label and tags as deduplicated topicTags."
+    },
+    {
+      "mappingId": "X05",
+      "area": "flow",
+      "runtimeFields": [
+        "Flow.id"
+      ],
+      "canonicalTargets": [
+        "flows[].flowId"
+      ],
+      "status": "direct",
+      "loss": "None.",
+      "rule": "Preserve stable ID."
+    },
+    {
+      "mappingId": "X06",
+      "area": "flow",
+      "runtimeFields": [
+        "Flow.title"
+      ],
+      "canonicalTargets": [
+        "flows[].title"
+      ],
+      "status": "direct",
+      "loss": "None.",
+      "rule": "Copy."
+    },
+    {
+      "mappingId": "X07",
+      "area": "flow",
+      "runtimeFields": [
+        "Flow.description"
+      ],
+      "canonicalTargets": [
+        "flows[].summary"
+      ],
+      "status": "direct",
+      "loss": "None when description is a summary rather than instructions.",
+      "rule": "Copy summary; move procedural detail to Memo."
+    },
+    {
+      "mappingId": "X08",
+      "area": "flow",
+      "runtimeFields": [],
+      "canonicalTargets": [
+        "flows[].userNeed"
+      ],
+      "status": "new_backend_field",
+      "loss": "The user job cannot be reliably reconstructed from category/title.",
+      "rule": "Persist an explicit one-sentence user need."
+    },
+    {
+      "mappingId": "X09",
+      "area": "flow",
+      "runtimeFields": [
+        "Flow.source_url"
+      ],
+      "canonicalTargets": [
+        "flows[].primarySourceId"
+      ],
+      "status": "lossy_adapter",
+      "loss": "A URL is not stable Source identity and has no snapshot relation.",
+      "rule": "Resolve or mint SourceDescriptor, then link its sourceId."
+    },
+    {
+      "mappingId": "X10",
+      "area": "flow",
+      "runtimeFields": [
+        "FlowItemDetail.links"
+      ],
+      "canonicalTargets": [
+        "flows[].supportingSourceIds"
+      ],
+      "status": "human_decision",
+      "loss": "Links mix creator, official, tool, and utility targets.",
+      "rule": "Only sources that support boundary/caution become supporting sources; utility links stay Memo."
+    },
+    {
+      "mappingId": "X11",
+      "area": "taxonomy",
+      "runtimeFields": [
+        "Flow.structure_type"
+      ],
+      "canonicalTargets": [
+        "flows[].planningPattern"
+      ],
+      "status": "human_decision",
+      "loss": "timeline/phase/routine/checklist mix layout and execution semantics.",
+      "rule": "Classify from source rows and terminal job using Taxonomy v1.1."
+    },
+    {
+      "mappingId": "X12",
+      "area": "taxonomy",
+      "runtimeFields": [],
+      "canonicalTargets": [
+        "flows[].secondaryPatterns"
+      ],
+      "status": "new_backend_field",
+      "loss": "Secondary execution behavior is absent.",
+      "rule": "Persist only controlled Taxonomy v1.1 values distinct from primary."
+    },
+    {
+      "mappingId": "X13",
+      "area": "artifact",
+      "runtimeFields": [
+        "Flow.primary_destination"
+      ],
+      "canonicalTargets": [
+        "flows[].primaryArtifact"
+      ],
+      "status": "human_decision",
+      "loss": "internal_check is a surface and hybrid hides the dominant retained artifact.",
+      "rule": "Choose calendar/checklist/todo/sheet/memo by user-job loss test."
+    },
+    {
+      "mappingId": "X14",
+      "area": "artifact",
+      "runtimeFields": [
+        "Flow.primary_destination=hybrid"
+      ],
+      "canonicalTargets": [
+        "secondaryArtifacts"
+      ],
+      "status": "lossy_adapter",
+      "loss": "The legacy value does not say which outputs are actually needed.",
+      "rule": "Use demonstrated export profiles to propose secondary artifacts; require review if ambiguous."
+    },
+    {
+      "mappingId": "X15",
+      "area": "setup",
+      "runtimeFields": [
+        "Flow.anchor_type",
+        "Flow.setup_anchor_label",
+        "Flow.setup_anchor_hint"
+      ],
+      "canonicalTargets": [
+        "flows[].anchorDefinition"
+      ],
+      "status": "automatic_adapter",
+      "loss": "Legacy enum has fewer anchor kinds and no stable generic Field definition.",
+      "rule": "Map known kinds and mint a schedule-purpose Field."
+    },
+    {
+      "mappingId": "X16",
+      "area": "setup",
+      "runtimeFields": [],
+      "canonicalTargets": [
+        "fields[]",
+        "flows[].setupFieldIds"
+      ],
+      "status": "new_backend_field",
+      "loss": "Generic typed setup Fields do not exist in Flow types.",
+      "rule": "Persist FieldDefinition with owner, type, purpose, value source, and provenance."
+    },
+    {
+      "mappingId": "X17",
+      "area": "projection",
+      "runtimeFields": [
+        "Flow.primary_destination",
+        "artifact-plan derived behavior"
+      ],
+      "canonicalTargets": [
+        "flows[].projectionProfiles"
+      ],
+      "status": "lossy_adapter",
+      "loss": "Granularity, source/caution inclusion, and loss behavior are not stored as profiles.",
+      "rule": "Generate explicit profiles from canonical artifact decisions."
+    },
+    {
+      "mappingId": "X18",
+      "area": "review",
+      "runtimeFields": [
+        "Flow.risk_level"
+      ],
+      "canonicalTargets": [
+        "flows[].riskLevel"
+      ],
+      "status": "direct",
+      "loss": "Runtime enum lacks some canonical risk values.",
+      "rule": "Copy supported values; keep structure-corpus reviewFlags in a separate sidecar."
+    },
+    {
+      "mappingId": "X19",
+      "area": "step",
+      "runtimeFields": [
+        "FlowSection.id",
+        "FlowSection.flow_id",
+        "FlowSection.title",
+        "FlowSection.description",
+        "FlowSection.order"
+      ],
+      "canonicalTargets": [
+        "steps[].stepId",
+        "steps[].flowId",
+        "steps[].title",
+        "steps[].description",
+        "steps[].order"
+      ],
+      "status": "direct",
+      "loss": "None for core grouping fields.",
+      "rule": "Direct mapping."
+    },
+    {
+      "mappingId": "X20",
+      "area": "step",
+      "runtimeFields": [
+        "FlowItem.section_id"
+      ],
+      "canonicalTargets": [
+        "steps[].itemIds"
+      ],
+      "status": "automatic_adapter",
+      "loss": "None when section IDs resolve.",
+      "rule": "Collect and order Item IDs by parent section."
+    },
+    {
+      "mappingId": "X21",
+      "area": "step",
+      "runtimeFields": [],
+      "canonicalTargets": [
+        "steps[].sourceRefIds"
+      ],
+      "status": "new_backend_field",
+      "loss": "Step-level provenance is absent.",
+      "rule": "Persist direct Step SourceRefs only when the Step label/grouping is source-backed."
+    },
+    {
+      "mappingId": "X22",
+      "area": "step",
+      "runtimeFields": [
+        "FlowSection.title",
+        "FlowSection.description"
+      ],
+      "canonicalTargets": [
+        "steps[].groupingHint"
+      ],
+      "status": "lossy_adapter",
+      "loss": "Schedule/grouping meaning is embedded in display text.",
+      "rule": "Extract only as a proposal; Item.schedule stays authoritative."
+    },
+    {
+      "mappingId": "X23",
+      "area": "item",
+      "runtimeFields": [
+        "FlowItem.id",
+        "FlowItem.flow_id",
+        "FlowItem.section_id",
+        "FlowItem.title",
+        "FlowItem.description",
+        "FlowItem.order"
+      ],
+      "canonicalTargets": [
+        "items[].itemId",
+        "items[].stepId",
+        "items[].title",
+        "items[].description",
+        "items[].order"
+      ],
+      "status": "direct",
+      "loss": "None after valid parent resolution.",
+      "rule": "Direct mapping."
+    },
+    {
+      "mappingId": "X24",
+      "area": "item",
+      "runtimeFields": [
+        "FlowItem.type"
+      ],
+      "canonicalTargets": [
+        "items[].intent"
+      ],
+      "status": "lossy_adapter",
+      "loss": "todo/calendar is a delivery hint, not act/inspect/decide/record/use_resource.",
+      "rule": "Determine intent from action and completion evidence, never from raw type alone."
+    },
+    {
+      "mappingId": "X25",
+      "area": "completion",
+      "runtimeFields": [
+        "FlowItemDetail.completion_criteria"
+      ],
+      "canonicalTargets": [
+        "items[].completion.mode=check",
+        "items[].completion.doneWhen"
+      ],
+      "status": "automatic_adapter",
+      "loss": "Only check-style completion is directly expressible.",
+      "rule": "Map a source-backed criterion; reject generic filler."
+    },
+    {
+      "mappingId": "X26",
+      "area": "completion",
+      "runtimeFields": [],
+      "canonicalTargets": [
+        "items[].completion.mode=decision",
+        "items[].completion.mode=record"
+      ],
+      "status": "new_backend_field",
+      "loss": "Typed decision options and record Field requirements are absent from FlowItem.",
+      "rule": "Persist CompletionSpec and required Field IDs."
+    },
+    {
+      "mappingId": "X27",
+      "area": "schedule",
+      "runtimeFields": [
+        "FlowItem.day_offset",
+        "Flow.anchor_type"
+      ],
+      "canonicalTargets": [
+        "items[].schedule.mode=anchor_offset"
+      ],
+      "status": "automatic_adapter",
+      "loss": "Provenance and timezone may be absent.",
+      "rule": "Map only when the named anchor is valid and the offset was not synthesized from order."
+    },
+    {
+      "mappingId": "X28",
+      "area": "schedule",
+      "runtimeFields": [
+        "FlowItem.day_offset=0 with a supplied anchor"
+      ],
+      "canonicalTargets": [
+        "items[].schedule.mode=absolute"
+      ],
+      "status": "lossy_adapter",
+      "loss": "Runtime does not distinguish a fixed source date from a user-provided anchor resolved at export time.",
+      "rule": "Keep source/user ownership in property provenance; do not auto-upgrade without evidence."
+    },
+    {
+      "mappingId": "X29",
+      "area": "schedule",
+      "runtimeFields": [
+        "FlowItem.date_window"
+      ],
+      "canonicalTargets": [
+        "items[].schedule.mode=date_window"
+      ],
+      "status": "automatic_adapter",
+      "loss": "Runtime shape is anchor-offset only and does not make reminder ownership explicit.",
+      "rule": "Map offsets and label; persist one reminder policy separately."
+    },
+    {
+      "mappingId": "X30",
+      "area": "schedule",
+      "runtimeFields": [
+        "FlowItem.repeat_rule",
+        "FlowBundle.repeatRules",
+        "Flow.routine_duration_days"
+      ],
+      "canonicalTargets": [
+        "items[].schedule.recurrence"
+      ],
+      "status": "lossy_adapter",
+      "loss": "RRULE strings and flow duration do not preserve sourceDefined, occurrence state, or unsupported-rule review.",
+      "rule": "Parse only a supported subset and keep unsupported rules for review."
+    },
+    {
+      "mappingId": "X31",
+      "area": "field",
+      "runtimeFields": [
+        "artifact-specific comparison/workbench/log state"
+      ],
+      "canonicalTargets": [
+        "fields[]",
+        "items[].fieldIds"
+      ],
+      "status": "new_backend_field",
+      "loss": "Current Field schemas are derived by artifact/slug rather than persisted generically.",
+      "rule": "Add generic typed FieldDefinitions in backend DTO."
+    },
+    {
+      "mappingId": "X32",
+      "area": "memo",
+      "runtimeFields": [
+        "FlowItemDetail.why",
+        "FlowItemDetail.how"
+      ],
+      "canonicalTargets": [
+        "memos[].kind=source_detail or instruction"
+      ],
+      "status": "automatic_adapter",
+      "loss": "Memo kind and source relation need classification.",
+      "rule": "Map text deterministically and review kind/provenance."
+    },
+    {
+      "mappingId": "X33",
+      "area": "memo",
+      "runtimeFields": [
+        "FlowItemDetail.caution",
+        "Flow.warning",
+        "Flow.stop_conditions"
+      ],
+      "canonicalTargets": [
+        "memos[].kind=caution",
+        "items[].cautionMemoIds"
+      ],
+      "status": "automatic_adapter",
+      "loss": "Scope and source/creator boundary may be ambiguous.",
+      "rule": "Attach to the narrowest supported scope and retain provenance."
+    },
+    {
+      "mappingId": "X34",
+      "area": "source",
+      "runtimeFields": [
+        "Flow.source_title",
+        "Flow.source_url",
+        "Flow.source_status",
+        "Flow.source_precision",
+        "Flow.source_checked_at"
+      ],
+      "canonicalTargets": [
+        "sources[]"
+      ],
+      "status": "lossy_adapter",
+      "loss": "Canonical URL, source ID, locale, publisher, rights, and complete risk metadata are missing or conflated.",
+      "rule": "Create SourceDescriptor with structure-research sidecar; do not infer public clearance."
+    },
+    {
+      "mappingId": "X35",
+      "area": "source",
+      "runtimeFields": [],
+      "canonicalTargets": [
+        "sourceSnapshots[]"
+      ],
+      "status": "new_backend_field",
+      "loss": "No immutable fetch/extraction identity.",
+      "rule": "Persist snapshot/evidence packet hash and extractor version."
+    },
+    {
+      "mappingId": "X36",
+      "area": "source",
+      "runtimeFields": [],
+      "canonicalTargets": [
+        "sourceRows[]"
+      ],
+      "status": "new_backend_field",
+      "loss": "No row-level evidence or locator.",
+      "rule": "Persist stable SourceRows before conversion."
+    },
+    {
+      "mappingId": "X37",
+      "area": "source",
+      "runtimeFields": [],
+      "canonicalTargets": [
+        "sourceRefs[]"
+      ],
+      "status": "new_backend_field",
+      "loss": "No entity-level provenance relation.",
+      "rule": "Persist N:M SourceReferences."
+    },
+    {
+      "mappingId": "X38",
+      "area": "conversion_audit",
+      "runtimeFields": [],
+      "canonicalTargets": [
+        "propertyProvenance[]"
+      ],
+      "status": "new_backend_field",
+      "loss": "Title, completion, schedule, condition, and Field values cannot be audited independently.",
+      "rule": "Store property-level provenance in a conversion-audit sidecar."
+    },
+    {
+      "mappingId": "X39",
+      "area": "user_overlay",
+      "runtimeFields": [
+        "FlowItemState.skipped",
+        "FlowItemState.note",
+        "checks"
+      ],
+      "canonicalTargets": [
+        "UserFlowCopy.itemOverlays",
+        "ExecutionRun.itemStates"
+      ],
+      "status": "lossy_adapter",
+      "loss": "Copy-level inclusion/title/schedule and run-level state are not consistently separated.",
+      "rule": "Migrate personal content edits to copy overlay and completion to run state."
+    },
+    {
+      "mappingId": "X40",
+      "area": "execution",
+      "runtimeFields": [
+        "FlowWorkbenchState.occurrences",
+        "FlowWorkbenchState.logRows",
+        "FlowWorkbenchState.memoCards"
+      ],
+      "canonicalTargets": [
+        "ExecutionRun.itemStates",
+        "Field values",
+        "userMemo"
+      ],
+      "status": "lossy_adapter",
+      "loss": "String-keyed artifact state lacks content version and typed Field identity.",
+      "rule": "Adapter proposal only; require stable Item/Field mapping."
+    },
+    {
+      "mappingId": "X41",
+      "area": "execution",
+      "runtimeFields": [
+        "FlowWorkbenchState.occurrences keys"
+      ],
+      "canonicalTargets": [
+        "ExecutionRun.itemStates[].occurrenceKey"
+      ],
+      "status": "new_backend_field",
+      "loss": "Occurrence-key semantics are not contracted.",
+      "rule": "Use the schedule-and-occurrence contract and retain past keys."
+    },
+    {
+      "mappingId": "X42",
+      "area": "versioning",
+      "runtimeFields": [],
+      "canonicalTargets": [
+        "VersionResolution"
+      ],
+      "status": "new_backend_field",
+      "loss": "A saved user copy cannot review added/changed/removed Items against a new version.",
+      "rule": "Add explicit three-way version resolution."
+    },
+    {
+      "mappingId": "X43",
+      "area": "review",
+      "runtimeFields": [
+        "Flow.status",
+        "Flow.source_status",
+        "Flow.risk_level"
+      ],
+      "canonicalTargets": [
+        "CanonicalFlowReviewRecord",
+        "minimal structure review sidecar"
+      ],
+      "status": "new_backend_field",
+      "loss": "Lifecycle, source completeness, risk, and promotion are conflated or incomplete.",
+      "rule": "Keep review records outside user content; this corpus sets publicReadiness=not_assessed."
+    },
+    {
+      "mappingId": "X44",
+      "area": "conversion_audit",
+      "runtimeFields": [],
+      "canonicalTargets": [
+        "SourceRow accounting",
+        "mergeSplitOmit decisions",
+        "input contract",
+        "projection loss"
+      ],
+      "status": "new_backend_field",
+      "loss": "Conversion decisions cannot be reproduced or audited.",
+      "rule": "Persist a conversion-audit sidecar linked to content version."
+    },
+    {
+      "mappingId": "X45",
+      "area": "experimental_structure",
+      "runtimeFields": [],
+      "canonicalTargets": [
+        "optional",
+        "conditions",
+        "dependencies",
+        "location"
+      ],
+      "status": "new_backend_field",
+      "loss": "These values only survive as free text today.",
+      "rule": "Keep source-explicit forms in a sidecar until canonical adoption decisions are made."
+    },
+    {
+      "mappingId": "X46",
+      "area": "map",
+      "runtimeFields": [],
+      "canonicalTargets": [
+        "Bundle or Flow Map child Flow relations"
+      ],
+      "status": "new_backend_field",
+      "loss": "No first-class multi-Flow Map is present in the inspected FlowBundle/export files.",
+      "rule": "Backend groups independently usable Flows; no execution state on Map."
+    },
+    {
+      "mappingId": "X47",
+      "area": "creator_versioning",
+      "runtimeFields": [
+        "Flow.created_at",
+        "Flow.updated_at"
+      ],
+      "canonicalTargets": [
+        "immutable content versions",
+        "creator proposal/change layer"
+      ],
+      "status": "new_backend_field",
+      "loss": "Timestamps do not provide immutable semantic versions or creator/user separation.",
+      "rule": "Creator edits create new versions; user overlays remain separate."
+    },
+    {
+      "mappingId": "X48",
+      "area": "calendar_export",
+      "runtimeFields": [
+        "buildIcsCalendar"
+      ],
+      "canonicalTargets": [
+        "calendar per_item VEVENT projection"
+      ],
+      "status": "direct",
+      "loss": "Current function covers legacy day-offset/all-day Items only.",
+      "rule": "Reuse serialization mechanics after canonical effective schedule adaptation."
+    },
+    {
+      "mappingId": "X49",
+      "area": "calendar_export",
+      "runtimeFields": [
+        "buildCalendarIcs",
+        "RRULE",
+        "routine_duration_days"
+      ],
+      "canonicalTargets": [
+        "recurrence projection"
+      ],
+      "status": "automatic_adapter",
+      "loss": "One flow-level recurring VEVENT cannot own per-Item occurrence state.",
+      "rule": "Use only after Item-level recurrence and occurrence identity are resolved."
+    },
+    {
+      "mappingId": "X50",
+      "area": "calendar_export",
+      "runtimeFields": [],
+      "canonicalTargets": [
+        "VTODO projection"
+      ],
+      "status": "not_implemented",
+      "loss": "No VTODO output.",
+      "rule": "Keep disabled by default; use Checklist/Todo/Sheet/Memo fallback."
+    },
+    {
+      "mappingId": "X51",
+      "area": "calendar_export",
+      "runtimeFields": [],
+      "canonicalTargets": [
+        "calendarPolicy=step_bundle"
+      ],
+      "status": "not_implemented",
+      "loss": "Current export emits one VEVENT per eligible Item.",
+      "rule": "Implement only as projection-time grouping with child Item IDs and loss declaration."
+    },
+    {
+      "mappingId": "X52",
+      "area": "text_export",
+      "runtimeFields": [
+        "buildText"
+      ],
+      "canonicalTargets": [
+        "checklist",
+        "todo",
+        "memo projections"
+      ],
+      "status": "direct",
+      "loss": "Decision/record typing and some states flatten to text.",
+      "rule": "Retain as a destination adapter with loss manifest."
+    },
+    {
+      "mappingId": "X53",
+      "area": "sheet_export",
+      "runtimeFields": [
+        "buildWorkbookSheets"
+      ],
+      "canonicalTargets": [
+        "sheet projection"
+      ],
+      "status": "direct",
+      "loss": "Many columns are artifact/slug-driven rather than generic Field-driven.",
+      "rule": "Keep renderer; supply canonical Item/occurrence/Field rows through an adapter."
+    },
+    {
+      "mappingId": "X54",
+      "area": "projection",
+      "runtimeFields": [],
+      "canonicalTargets": [
+        "projection loss manifest"
+      ],
+      "status": "new_backend_field",
+      "loss": "Export limitations are not machine-readable.",
+      "rule": "Return loss metadata with every projection."
+    },
+    {
+      "mappingId": "X55",
+      "area": "projection",
+      "runtimeFields": [],
+      "canonicalTargets": [
+        "projection request and result DTO"
+      ],
+      "status": "not_implemented",
+      "loss": "Current functions are in-process helpers, not a versioned backend contract.",
+      "rule": "Add after canonical storage and effective-state resolver."
+    },
+    {
+      "mappingId": "X56",
+      "area": "input_contract",
+      "runtimeFields": [
+        "Flow.anchor_type",
+        "setup labels"
+      ],
+      "canonicalTargets": [
+        "requiredBeforeStart",
+        "optionalBeforeStart",
+        "autoFilledFromSource",
+        "capturedDuringRun",
+        "neverAskAgain"
+      ],
+      "status": "not_implemented",
+      "loss": "Runtime cannot prove that source-owned values are not asked again.",
+      "rule": "Generate the input contract from Field ownership and property provenance."
+    }
+  ],
+  "layerCrosswalk": [
+    {
+      "layer": "published canonical content",
+      "runtimeState": "partially represented in FlowBundle",
+      "backendNeed": "immutable versioned CanonicalFlowContent"
+    },
+    {
+      "layer": "conversion audit",
+      "runtimeState": "absent",
+      "backendNeed": "SourceRow accounting and property-level provenance sidecar"
+    },
+    {
+      "layer": "user copy overlay",
+      "runtimeState": "partial and distributed",
+      "backendNeed": "UserFlowCopy"
+    },
+    {
+      "layer": "execution run",
+      "runtimeState": "local checks/workbench state",
+      "backendNeed": "typed ExecutionRun and occurrence state"
+    },
+    {
+      "layer": "projection",
+      "runtimeState": "text, ICS, and workbook helper functions",
+      "backendNeed": "versioned request/result DTO plus loss manifest"
+    },
+    {
+      "layer": "review and promotion",
+      "runtimeState": "partial Flow status/risk flags",
+      "backendNeed": "separate review sidecars; not a structure conversion gate"
+    }
+  ],
+  "recommendedMigrationOrder": [
+    {
+      "phase": 1,
+      "action": "Store canonical proposal plus conversion-audit sidecar without changing app runtime."
+    },
+    {
+      "phase": 2,
+      "action": "Build a read-only canonical-to-FlowBundle adapter and compare current text/ICS/workbook outputs."
+    },
+    {
+      "phase": 3,
+      "action": "Add effective-state resolver for UserFlowCopy and ExecutionRun."
+    },
+    {
+      "phase": 4,
+      "action": "Add projection request/result DTO and loss manifest behind a feature flag."
+    },
+    {
+      "phase": 5,
+      "action": "Run external destination capability and round-trip tests before enabling VTODO or relation-dependent behavior."
+    }
+  ],
+  "outOfScope": [
+    "Changing lib/flow/types.ts or lib/flow/export.ts",
+    "Database migration",
+    "Production URL crawler or LLM API",
+    "Seed conversion",
+    "External Calendar account round trip",
+    "Observed-user validation"
+  ]
+}

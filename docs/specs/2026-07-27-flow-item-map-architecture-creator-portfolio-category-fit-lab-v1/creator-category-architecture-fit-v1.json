@@ -1,0 +1,334 @@
+{
+  "schemaVersion": "flowme-creator-category-architecture-fit-v1",
+  "evidenceType": "source_backed_internal_review",
+  "records": [
+    {
+      "bundleId": "bundle-moving-d30",
+      "creatorId": "home-ajd",
+      "lifeArea": "home_living",
+      "title": "이사 D-30 체크리스트",
+      "mapType": "ordered",
+      "sourceShape": "date_offsets",
+      "executionPattern": "date_preparation",
+      "primaryArtifact": "calendar",
+      "secondaryArtifacts": [
+        "checklist"
+      ],
+      "itemCount": 27,
+      "scheduledItemCount": 27,
+      "setupRequiredCount": 0,
+      "calendarProjectionAdditionalInputCount": 1,
+      "naturalCalendarPolicy": "step_bundle",
+      "recommendedArchitecture": "current_canonical_with_projection_policy",
+      "architectureFit": {
+        "current_canonical_v1": {
+          "score5": 5,
+          "verdict": "Go",
+          "reason": "Preserves Item state, provenance and non-calendar artifacts without new hierarchy."
+        },
+        "literal_ics_first": {
+          "score5": 3,
+          "verdict": "Hold",
+          "reason": "Dates serialize, but completion, SourceRow and review meaning still rely on non-portable metadata."
+        },
+        "item_first_shared_context": {
+          "score5": 5,
+          "verdict": "Modify",
+          "reason": "Meaning is preserved, but the corpus does not show a user-input reduction beyond existing bundle setup fields for most categories."
+        }
+      }
+    },
+    {
+      "bundleId": "bundle-baby-food-174",
+      "creatorId": "family-babyfood016",
+      "lifeArea": "family_parenting",
+      "title": "초기 이유식 D+174~209 식단",
+      "mapType": "ordered",
+      "sourceShape": "table_rows",
+      "executionPattern": "progress_tracking",
+      "primaryArtifact": "calendar",
+      "secondaryArtifacts": [
+        "checklist",
+        "sheet"
+      ],
+      "itemCount": 36,
+      "scheduledItemCount": 36,
+      "setupRequiredCount": 0,
+      "calendarProjectionAdditionalInputCount": 1,
+      "naturalCalendarPolicy": "per_item",
+      "recommendedArchitecture": "current_canonical_with_projection_policy",
+      "architectureFit": {
+        "current_canonical_v1": {
+          "score5": 5,
+          "verdict": "Go",
+          "reason": "Preserves Item state, provenance and non-calendar artifacts without new hierarchy."
+        },
+        "literal_ics_first": {
+          "score5": 3,
+          "verdict": "Hold",
+          "reason": "Dates serialize, but completion, SourceRow and review meaning still rely on non-portable metadata."
+        },
+        "item_first_shared_context": {
+          "score5": 4,
+          "verdict": "Hold",
+          "reason": "Meaning is preserved, but the corpus does not show a user-input reduction beyond existing bundle setup fields for most categories."
+        }
+      }
+    },
+    {
+      "bundleId": "bundle-opic-plan",
+      "creatorId": "study-mansour",
+      "lifeArea": "study_reading",
+      "title": "오픽 모의고사 계획표",
+      "mapType": "ordered",
+      "sourceShape": "lesson_rows",
+      "executionPattern": "progress_tracking",
+      "primaryArtifact": "sheet",
+      "secondaryArtifacts": [
+        "calendar",
+        "checklist"
+      ],
+      "itemCount": 42,
+      "scheduledItemCount": 42,
+      "setupRequiredCount": 1,
+      "calendarProjectionAdditionalInputCount": 1,
+      "naturalCalendarPolicy": "optional_per_item",
+      "recommendedArchitecture": "current_canonical_with_projection_policy",
+      "architectureFit": {
+        "current_canonical_v1": {
+          "score5": 5,
+          "verdict": "Go",
+          "reason": "Preserves Item state, provenance and non-calendar artifacts without new hierarchy."
+        },
+        "literal_ics_first": {
+          "score5": 2,
+          "verdict": "Hold",
+          "reason": "Dates serialize, but completion, SourceRow and review meaning still rely on non-portable metadata."
+        },
+        "item_first_shared_context": {
+          "score5": 4,
+          "verdict": "Hold",
+          "reason": "Meaning is preserved, but the corpus does not show a user-input reduction beyond existing bundle setup fields for most categories."
+        }
+      }
+    },
+    {
+      "bundleId": "bundle-new-car-comparison",
+      "creatorId": "money-getcha",
+      "lifeArea": "money_admin_purchase",
+      "title": "신차 구매 8단계",
+      "mapType": "ordered",
+      "sourceShape": "procedure_rows",
+      "executionPattern": "ordered_procedure",
+      "primaryArtifact": "checklist",
+      "secondaryArtifacts": [
+        "sheet",
+        "memo"
+      ],
+      "itemCount": 14,
+      "scheduledItemCount": 0,
+      "setupRequiredCount": 0,
+      "calendarProjectionAdditionalInputCount": 0,
+      "naturalCalendarPolicy": "none",
+      "recommendedArchitecture": "current_canonical_with_projection_policy",
+      "architectureFit": {
+        "current_canonical_v1": {
+          "score5": 5,
+          "verdict": "Go",
+          "reason": "Preserves Item state, provenance and non-calendar artifacts without new hierarchy."
+        },
+        "literal_ics_first": {
+          "score5": 2,
+          "verdict": "Hold",
+          "reason": "Unscheduled or non-calendar meaning depends on VTODO/VJOURNAL and client behavior not proven by official docs."
+        },
+        "item_first_shared_context": {
+          "score5": 4,
+          "verdict": "Hold",
+          "reason": "Meaning is preserved, but the corpus does not show a user-input reduction beyond existing bundle setup fields for most categories."
+        }
+      }
+    },
+    {
+      "bundleId": "bundle-allblanc-7day-abs",
+      "creatorId": "health-allblanc",
+      "lifeArea": "health_fitness",
+      "title": "Allblanc 7일 복근 챌린지",
+      "mapType": "ordered",
+      "sourceShape": "resource_collection",
+      "executionPattern": "progress_tracking",
+      "primaryArtifact": "calendar",
+      "secondaryArtifacts": [
+        "checklist"
+      ],
+      "itemCount": 7,
+      "scheduledItemCount": 7,
+      "setupRequiredCount": 0,
+      "calendarProjectionAdditionalInputCount": 1,
+      "naturalCalendarPolicy": "per_item",
+      "recommendedArchitecture": "current_canonical_with_projection_policy",
+      "architectureFit": {
+        "current_canonical_v1": {
+          "score5": 5,
+          "verdict": "Go",
+          "reason": "Preserves Item state, provenance and non-calendar artifacts without new hierarchy."
+        },
+        "literal_ics_first": {
+          "score5": 3,
+          "verdict": "Hold",
+          "reason": "Dates serialize, but completion, SourceRow and review meaning still rely on non-portable metadata."
+        },
+        "item_first_shared_context": {
+          "score5": 4,
+          "verdict": "Hold",
+          "reason": "Meaning is preserved, but the corpus does not show a user-input reduction beyond existing bundle setup fields for most categories."
+        }
+      }
+    },
+    {
+      "bundleId": "bundle-triple-cappadocia-departure",
+      "creatorId": "travel-triple",
+      "lifeArea": "travel_outings",
+      "title": "카파도키아 출국 전 체크",
+      "mapType": "single_flow",
+      "sourceShape": "checklist_rows",
+      "executionPattern": "ordered_procedure",
+      "primaryArtifact": "checklist",
+      "secondaryArtifacts": [
+        "memo"
+      ],
+      "itemCount": 8,
+      "scheduledItemCount": 0,
+      "setupRequiredCount": 0,
+      "calendarProjectionAdditionalInputCount": 0,
+      "naturalCalendarPolicy": "none",
+      "recommendedArchitecture": "current_canonical_with_projection_policy",
+      "architectureFit": {
+        "current_canonical_v1": {
+          "score5": 5,
+          "verdict": "Go",
+          "reason": "Preserves Item state, provenance and non-calendar artifacts without new hierarchy."
+        },
+        "literal_ics_first": {
+          "score5": 2,
+          "verdict": "Hold",
+          "reason": "Unscheduled or non-calendar meaning depends on VTODO/VJOURNAL and client behavior not proven by official docs."
+        },
+        "item_first_shared_context": {
+          "score5": 4,
+          "verdict": "Hold",
+          "reason": "Meaning is preserved, but the corpus does not show a user-input reduction beyond existing bundle setup fields for most categories."
+        }
+      }
+    },
+    {
+      "bundleId": "bundle-wtable-summer-banchan-five",
+      "creatorId": "meals-wtable",
+      "lifeArea": "meals_grocery",
+      "title": "이번 주 여름 반찬 5가지",
+      "mapType": "source_curation",
+      "sourceShape": "resource_collection",
+      "executionPattern": "resource_queue",
+      "primaryArtifact": "checklist",
+      "secondaryArtifacts": [
+        "memo"
+      ],
+      "itemCount": 5,
+      "scheduledItemCount": 0,
+      "setupRequiredCount": 0,
+      "calendarProjectionAdditionalInputCount": 0,
+      "naturalCalendarPolicy": "none",
+      "recommendedArchitecture": "current_canonical_with_projection_policy",
+      "architectureFit": {
+        "current_canonical_v1": {
+          "score5": 5,
+          "verdict": "Go",
+          "reason": "Preserves Item state, provenance and non-calendar artifacts without new hierarchy."
+        },
+        "literal_ics_first": {
+          "score5": 2,
+          "verdict": "Hold",
+          "reason": "Unscheduled or non-calendar meaning depends on VTODO/VJOURNAL and client behavior not proven by official docs."
+        },
+        "item_first_shared_context": {
+          "score5": 4,
+          "verdict": "Hold",
+          "reason": "Meaning is preserved, but the corpus does not show a user-input reduction beyond existing bundle setup fields for most categories."
+        }
+      }
+    },
+    {
+      "bundleId": "bundle-andstudio-job-prep-videos",
+      "creatorId": "work-andstudio",
+      "lifeArea": "work_career",
+      "title": "AND 취업 준비 영상 3편",
+      "mapType": "unordered_collection",
+      "sourceShape": "resource_collection",
+      "executionPattern": "resource_queue",
+      "primaryArtifact": "todo",
+      "secondaryArtifacts": [
+        "memo"
+      ],
+      "itemCount": 3,
+      "scheduledItemCount": 0,
+      "setupRequiredCount": 0,
+      "calendarProjectionAdditionalInputCount": 0,
+      "naturalCalendarPolicy": "none",
+      "recommendedArchitecture": "current_canonical_with_projection_policy",
+      "architectureFit": {
+        "current_canonical_v1": {
+          "score5": 5,
+          "verdict": "Go",
+          "reason": "Preserves Item state, provenance and non-calendar artifacts without new hierarchy."
+        },
+        "literal_ics_first": {
+          "score5": 2,
+          "verdict": "Hold",
+          "reason": "Unscheduled or non-calendar meaning depends on VTODO/VJOURNAL and client behavior not proven by official docs."
+        },
+        "item_first_shared_context": {
+          "score5": 4,
+          "verdict": "Hold",
+          "reason": "Meaning is preserved, but the corpus does not show a user-input reduction beyond existing bundle setup fields for most categories."
+        }
+      }
+    },
+    {
+      "bundleId": "bundle-fitpet-puppy-vaccination",
+      "creatorId": "hobby-fitpet",
+      "lifeArea": "hobby_pet",
+      "title": "강아지 생후 6~16주 예방접종 일정",
+      "mapType": "single_sensitive_schedule",
+      "sourceShape": "table_rows",
+      "executionPattern": "date_preparation",
+      "primaryArtifact": "calendar",
+      "secondaryArtifacts": [
+        "checklist",
+        "memo"
+      ],
+      "itemCount": 6,
+      "scheduledItemCount": 6,
+      "setupRequiredCount": 0,
+      "calendarProjectionAdditionalInputCount": 1,
+      "naturalCalendarPolicy": "per_item",
+      "recommendedArchitecture": "current_canonical_with_safety_gate",
+      "architectureFit": {
+        "current_canonical_v1": {
+          "score5": 5,
+          "verdict": "Go",
+          "reason": "Preserves Item state, provenance and non-calendar artifacts without new hierarchy."
+        },
+        "literal_ics_first": {
+          "score5": 3,
+          "verdict": "Hold",
+          "reason": "Dates serialize, but completion, SourceRow and review meaning still rely on non-portable metadata."
+        },
+        "item_first_shared_context": {
+          "score5": 4,
+          "verdict": "Hold",
+          "reason": "Meaning is preserved, but the corpus does not show a user-input reduction beyond existing bundle setup fields for most categories."
+        }
+      }
+    }
+  ]
+}

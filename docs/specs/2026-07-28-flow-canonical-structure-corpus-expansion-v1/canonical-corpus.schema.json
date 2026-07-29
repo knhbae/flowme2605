@@ -1,0 +1,2586 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flowme.local/schemas/canonical-corpus-v1.schema.json",
+  "title": "FlowMe Canonical Structure Corpus v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "generatedAt",
+    "counts",
+    "controlledEnums",
+    "fixtures",
+    "boundaryControls"
+  ],
+  "$defs": {
+    "OwnerRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "id"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "bundle",
+            "flow",
+            "step",
+            "item"
+          ]
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "Source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceId",
+        "title",
+        "sourceType",
+        "originalUrl",
+        "canonicalUrl",
+        "locale",
+        "publisher",
+        "checkedAt",
+        "rightsStatus",
+        "riskLevel"
+      ],
+      "properties": {
+        "sourceId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceType": {
+          "enum": [
+            "reference",
+            "creator_experience"
+          ]
+        },
+        "originalUrl": {
+          "type": "string",
+          "minLength": 1
+        },
+        "canonicalUrl": {
+          "type": "string",
+          "minLength": 1
+        },
+        "locale": {
+          "type": "string",
+          "minLength": 1
+        },
+        "publisher": {
+          "type": "string",
+          "minLength": 1
+        },
+        "checkedAt": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rightsStatus": {
+          "enum": [
+            "needs_review"
+          ]
+        },
+        "riskLevel": {
+          "enum": [
+            "low",
+            "medical_sensitive",
+            "legal_sensitive",
+            "financial_sensitive",
+            "safety_sensitive"
+          ]
+        }
+      }
+    },
+    "SourceSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "snapshotId",
+        "sourceId",
+        "fetchedAt",
+        "finalUrl",
+        "contentHash",
+        "extractionVersion",
+        "hashBasis",
+        "capturedSourceRowCount"
+      ],
+      "properties": {
+        "snapshotId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fetchedAt": {
+          "type": "string",
+          "minLength": 1
+        },
+        "finalUrl": {
+          "type": "string",
+          "minLength": 1
+        },
+        "contentHash": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "extractionVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "hashBasis": {
+          "const": "canonical_url_observed_at_and_captured_source_rows"
+        },
+        "capturedSourceRowCount": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "SourceRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceRowId",
+        "sourceId",
+        "snapshotId",
+        "rowType",
+        "title",
+        "detail",
+        "locator",
+        "order"
+      ],
+      "properties": {
+        "sourceRowId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "snapshotId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rowType": {
+          "enum": [
+            "date",
+            "offset",
+            "check",
+            "table_row",
+            "procedure",
+            "resource",
+            "reference"
+          ]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "detail": {
+          "type": "string"
+        },
+        "locator": {
+          "type": "string",
+          "minLength": 1
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "SourceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceRefId",
+        "entityType",
+        "entityId",
+        "sourceRowIds",
+        "relation",
+        "supportLevel"
+      ],
+      "properties": {
+        "sourceRefId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "entityType": {
+          "enum": [
+            "item",
+            "field",
+            "memo"
+          ]
+        },
+        "entityId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceRowIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        },
+        "relation": {
+          "enum": [
+            "derived_from",
+            "supports"
+          ]
+        },
+        "supportLevel": {
+          "const": "direct"
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "Recurrence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "frequency",
+        "interval",
+        "sourceDefined"
+      ],
+      "properties": {
+        "frequency": {
+          "enum": [
+            "daily",
+            "weekly",
+            "monthly"
+          ]
+        },
+        "interval": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sourceDefined": {
+          "type": "boolean"
+        },
+        "weekdays": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "until": {
+          "type": "string"
+        }
+      }
+    },
+    "Schedule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "absolute",
+            "anchor_offset",
+            "date_window"
+          ]
+        },
+        "start": {
+          "type": "string"
+        },
+        "end": {
+          "type": "string"
+        },
+        "allDay": {
+          "type": "boolean"
+        },
+        "timezone": {
+          "type": "string"
+        },
+        "anchorFieldId": {
+          "type": "string"
+        },
+        "dayOffset": {
+          "type": "integer"
+        },
+        "basis": {
+          "enum": [
+            "absolute",
+            "anchor_offset"
+          ]
+        },
+        "startDate": {
+          "type": "string"
+        },
+        "endDate": {
+          "type": "string"
+        },
+        "sourceReminder": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "startDayOffset": {
+          "type": "integer"
+        },
+        "endDayOffset": {
+          "type": "integer"
+        },
+        "reminderDayOffset": {
+          "type": "integer"
+        },
+        "recurrence": {
+          "$ref": "#/$defs/Recurrence"
+        }
+      }
+    },
+    "Completion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "doneWhen"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "check",
+            "decision",
+            "record"
+          ]
+        },
+        "doneWhen": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recordFieldIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "options": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "value",
+              "label"
+            ],
+            "properties": {
+              "value": {
+                "type": "string",
+                "minLength": 1
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "SourceTrace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceRefId",
+        "sourceRowIds",
+        "relation",
+        "supportLevel"
+      ],
+      "properties": {
+        "sourceRefId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceRowIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        },
+        "relation": {
+          "enum": [
+            "derived_from",
+            "supports"
+          ]
+        },
+        "supportLevel": {
+          "const": "direct"
+        }
+      }
+    },
+    "Item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "itemId",
+        "stepId",
+        "title",
+        "description",
+        "intent",
+        "order",
+        "completion",
+        "fieldIds",
+        "memoIds",
+        "cautionMemoIds",
+        "sourceRefIds",
+        "optional",
+        "dependsOnItemIds",
+        "conditionMemoIds",
+        "sourceTrace",
+        "userOverlayPolicy"
+      ],
+      "properties": {
+        "itemId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "stepId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string"
+        },
+        "intent": {
+          "enum": [
+            "act",
+            "inspect",
+            "decide",
+            "record",
+            "use_resource"
+          ]
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "completion": {
+          "$ref": "#/$defs/Completion"
+        },
+        "schedule": {
+          "$ref": "#/$defs/Schedule"
+        },
+        "fieldIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "memoIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "cautionMemoIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "sourceRefIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        },
+        "optional": {
+          "type": "boolean"
+        },
+        "dependsOnItemIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "dependencySourceRefIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "conditionMemoIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "sourceTrace": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/SourceTrace"
+          }
+        },
+        "userOverlayPolicy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "canRename",
+            "canExclude",
+            "canAddPersonalMemo",
+            "canOverrideSchedule",
+            "cannotRewriteSourceRows",
+            "cannotRemoveCautions"
+          ],
+          "properties": {
+            "canRename": {
+              "type": "boolean"
+            },
+            "canExclude": {
+              "type": "boolean"
+            },
+            "canAddPersonalMemo": {
+              "type": "boolean"
+            },
+            "canOverrideSchedule": {
+              "type": "boolean"
+            },
+            "cannotRewriteSourceRows": {
+              "type": "boolean"
+            },
+            "cannotRemoveCautions": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "Field": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fieldId",
+        "owner",
+        "key",
+        "label",
+        "valueType",
+        "purposes",
+        "valueSource",
+        "required"
+      ],
+      "properties": {
+        "fieldId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "owner": {
+          "$ref": "#/$defs/OwnerRef"
+        },
+        "key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "valueType": {
+          "enum": [
+            "short_text",
+            "long_text",
+            "number",
+            "boolean",
+            "date",
+            "datetime",
+            "url",
+            "single_select",
+            "multi_select",
+            "file_ref"
+          ]
+        },
+        "purposes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "schedule",
+              "sort",
+              "filter",
+              "record",
+              "export",
+              "generation"
+            ]
+          }
+        },
+        "valueSource": {
+          "enum": [
+            "source",
+            "user"
+          ]
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "sourceDefault": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "sourceRefIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "value",
+              "label"
+            ],
+            "properties": {
+              "value": {
+                "type": "string",
+                "minLength": 1
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "Memo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "memoId",
+        "scope",
+        "kind",
+        "title",
+        "text",
+        "sourceRefIds"
+      ],
+      "properties": {
+        "memoId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scope": {
+          "$ref": "#/$defs/OwnerRef"
+        },
+        "kind": {
+          "enum": [
+            "source_detail",
+            "instruction",
+            "caution"
+          ]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "text": {
+          "type": "string"
+        },
+        "sourceRefIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        }
+      }
+    },
+    "Step": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stepId",
+        "flowId",
+        "title",
+        "order",
+        "itemIds",
+        "sourceRefIds",
+        "groupingHint"
+      ],
+      "properties": {
+        "stepId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "flowId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "itemIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        },
+        "sourceRefIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "groupingHint": {
+          "type": "string"
+        }
+      }
+    },
+    "ProjectionProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target",
+        "formats",
+        "granularity",
+        "groupBy",
+        "includeSource",
+        "includeCautions",
+        "includeUserMemo"
+      ],
+      "properties": {
+        "target": {
+          "enum": [
+            "calendar",
+            "checklist",
+            "todo",
+            "sheet",
+            "memo"
+          ]
+        },
+        "formats": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "granularity": {
+          "enum": [
+            "item",
+            "step_bundle"
+          ]
+        },
+        "groupBy": {
+          "enum": [
+            "flow",
+            "step"
+          ]
+        },
+        "includeSource": {
+          "type": "boolean"
+        },
+        "includeCautions": {
+          "type": "boolean"
+        },
+        "includeUserMemo": {
+          "type": "boolean"
+        }
+      }
+    },
+    "Flow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "flowId",
+        "bundleId",
+        "title",
+        "summary",
+        "userNeed",
+        "primarySourceId",
+        "supportingSourceIds",
+        "setupFieldIds",
+        "stepIds",
+        "planningPattern",
+        "secondaryPatterns",
+        "primaryArtifact",
+        "projectionProfiles",
+        "riskLevel"
+      ],
+      "properties": {
+        "flowId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "bundleId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string"
+        },
+        "userNeed": {
+          "type": "string"
+        },
+        "primarySourceId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "supportingSourceIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "setupFieldIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "stepIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "planningPattern": {
+          "type": "string"
+        },
+        "secondaryPatterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "primaryArtifact": {
+          "enum": [
+            "calendar",
+            "checklist",
+            "todo",
+            "sheet",
+            "memo"
+          ]
+        },
+        "projectionProfiles": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/ProjectionProfile"
+          }
+        },
+        "riskLevel": {
+          "enum": [
+            "low",
+            "medical_sensitive",
+            "legal_sensitive",
+            "financial_sensitive",
+            "safety_sensitive"
+          ]
+        },
+        "anchorDefinition": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "fieldId",
+            "kind",
+            "label",
+            "required"
+          ],
+          "properties": {
+            "fieldId": {
+              "type": "string",
+              "minLength": 1
+            },
+            "kind": {
+              "enum": [
+                "birth_date",
+                "event_date",
+                "start_date"
+              ]
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1
+            },
+            "required": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "Bundle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bundleId",
+        "title",
+        "summary",
+        "lifeArea",
+        "topicTags",
+        "flowIds"
+      ],
+      "properties": {
+        "bundleId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string"
+        },
+        "lifeArea": {
+          "enum": [
+            "home_living",
+            "family_parenting",
+            "study_reading",
+            "money_admin_purchase",
+            "health_fitness",
+            "travel_outings",
+            "meals_grocery",
+            "work_career",
+            "hobby_pet"
+          ]
+        },
+        "topicTags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "flowIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        }
+      }
+    },
+    "CanonicalContent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "contentId",
+        "version",
+        "contentHash",
+        "lifecycleStatus",
+        "createdAt",
+        "updatedAt",
+        "bundle",
+        "flows",
+        "steps",
+        "items",
+        "fields",
+        "memos",
+        "sources",
+        "sourceSnapshots",
+        "sourceRows",
+        "sourceRefs"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "flowme-canonical-flow-v1"
+        },
+        "contentId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "contentHash": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "lifecycleStatus": {
+          "const": "draft"
+        },
+        "createdAt": {
+          "type": "string",
+          "minLength": 1
+        },
+        "updatedAt": {
+          "type": "string",
+          "minLength": 1
+        },
+        "bundle": {
+          "$ref": "#/$defs/Bundle"
+        },
+        "flows": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/Flow"
+          }
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Step"
+          }
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Item"
+          }
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Field"
+          }
+        },
+        "memos": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Memo"
+          }
+        },
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/Source"
+          }
+        },
+        "sourceSnapshots": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/SourceSnapshot"
+          }
+        },
+        "sourceRows": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/SourceRow"
+          }
+        },
+        "sourceRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceRef"
+          }
+        }
+      }
+    },
+    "RowAccounting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceRowId",
+        "targetType",
+        "targets",
+        "relationType",
+        "reason"
+      ],
+      "properties": {
+        "sourceRowId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "targetType": {
+          "enum": [
+            "item",
+            "field",
+            "memo",
+            "flow_context",
+            "step_context",
+            "omitted"
+          ]
+        },
+        "targets": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "relationType": {
+          "enum": [
+            "one_to_one",
+            "many_to_one",
+            "one_to_many",
+            "many_to_many",
+            "omitted"
+          ]
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "ProvenanceClaim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "itemId",
+        "actionRefIds",
+        "detailRefIds",
+        "completionRefIds",
+        "completionDerivation",
+        "scheduleRefIds",
+        "recurrenceRefIds",
+        "dependencyRefIds",
+        "note"
+      ],
+      "properties": {
+        "itemId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "actionRefIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "detailRefIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "completionRefIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "completionDerivation": {
+          "const": "controlled_system_grammar_over_source_backed_action"
+        },
+        "scheduleRefIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "recurrenceRefIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "dependencyRefIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "ConversionAudit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rowAccounting",
+        "itemProvenanceClaims",
+        "relationTypes",
+        "unresolvedQuestions",
+        "canonicalExtensionCandidates",
+        "occurrenceIdentityExamples"
+      ],
+      "properties": {
+        "rowAccounting": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/RowAccounting"
+          }
+        },
+        "itemProvenanceClaims": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ProvenanceClaim"
+          }
+        },
+        "relationTypes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "one_to_one",
+              "many_to_one",
+              "one_to_many",
+              "many_to_many",
+              "omitted"
+            ]
+          }
+        },
+        "unresolvedQuestions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "canonicalExtensionCandidates": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "occurrenceIdentityExamples": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "itemId",
+              "keyTemplate",
+              "identityTupleTemplate",
+              "simulationStatus",
+              "simulationAnchor",
+              "occurrenceKeys",
+              "identityTuples"
+            ],
+            "properties": {
+              "itemId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "keyTemplate": {
+                "const": "date:<local-YYYY-MM-DD>"
+              },
+              "identityTupleTemplate": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "uniqueItems": true
+              },
+              "simulationStatus": {
+                "const": "contract_test_not_source_fact"
+              },
+              "simulationAnchor": {
+                "const": "2099-01-01"
+              },
+              "occurrenceKeys": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "uniqueItems": true,
+                "minItems": 2
+              },
+              "identityTuples": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "uniqueItems": true,
+                "minItems": 2
+              }
+            }
+          }
+        },
+        "classificationDelta": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "fromPrimaryArtifact",
+            "toPrimaryArtifact",
+            "reason"
+          ],
+          "properties": {
+            "fromPrimaryArtifact": {
+              "enum": [
+                "calendar",
+                "checklist",
+                "todo",
+                "sheet",
+                "memo"
+              ]
+            },
+            "toPrimaryArtifact": {
+              "enum": [
+                "calendar",
+                "checklist",
+                "todo",
+                "sheet",
+                "memo"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
+    "InputDefinition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "label",
+        "type"
+      ],
+      "properties": {
+        "key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "enum": [
+            "short_text",
+            "long_text",
+            "number",
+            "boolean",
+            "date",
+            "datetime",
+            "url",
+            "single_select",
+            "multi_select",
+            "file_ref"
+          ]
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "value",
+              "label"
+            ],
+            "properties": {
+              "value": {
+                "type": "string",
+                "minLength": 1
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "InputContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required",
+        "optional",
+        "duringExecution",
+        "autoFilled",
+        "neverAskAgain"
+      ],
+      "properties": {
+        "required": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/InputDefinition"
+          }
+        },
+        "optional": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/InputDefinition"
+          }
+        },
+        "duringExecution": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/InputDefinition"
+          }
+        },
+        "autoFilled": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "neverAskAgain": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "CalendarEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "component",
+        "projectionId",
+        "itemId",
+        "stepId",
+        "title",
+        "schedule",
+        "childItemIds",
+        "completionOwner",
+        "unresolvedAnchor"
+      ],
+      "properties": {
+        "component": {
+          "const": "VEVENT"
+        },
+        "projectionId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "itemId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "stepId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "schedule": {
+          "$ref": "#/$defs/Schedule"
+        },
+        "childItemIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        },
+        "completionOwner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "unresolvedAnchor": {
+          "type": "boolean"
+        },
+        "lossNote": {
+          "type": "string"
+        }
+      }
+    },
+    "ChecklistEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "itemId",
+        "group",
+        "title",
+        "completion",
+        "sourceRefIds"
+      ],
+      "properties": {
+        "itemId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "group": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "completion": {
+          "enum": [
+            "check",
+            "decision",
+            "record"
+          ]
+        },
+        "sourceRefIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true,
+          "minItems": 1
+        }
+      }
+    },
+    "SheetRow": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "rowKind",
+            "itemId",
+            "step",
+            "title",
+            "intent",
+            "completion",
+            "scheduleMode",
+            "sourceRefIds"
+          ],
+          "properties": {
+            "rowKind": {
+              "const": "item"
+            },
+            "itemId": {
+              "type": "string",
+              "minLength": 1
+            },
+            "step": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "intent": {
+              "enum": [
+                "act",
+                "inspect",
+                "decide",
+                "record",
+                "use_resource"
+              ]
+            },
+            "completion": {
+              "enum": [
+                "check",
+                "decision",
+                "record"
+              ]
+            },
+            "scheduleMode": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "absolute",
+                    "anchor_offset",
+                    "date_window"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sourceRefIds": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true,
+              "minItems": 1
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "rowKind",
+            "fieldId",
+            "title",
+            "valueType",
+            "required",
+            "sourceRefIds"
+          ],
+          "properties": {
+            "rowKind": {
+              "const": "field_definition"
+            },
+            "fieldId": {
+              "type": "string",
+              "minLength": 1
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "valueType": {
+              "enum": [
+                "short_text",
+                "long_text",
+                "number",
+                "boolean",
+                "date",
+                "datetime",
+                "url",
+                "single_select",
+                "multi_select",
+                "file_ref"
+              ]
+            },
+            "required": {
+              "type": "boolean"
+            },
+            "sourceRefIds": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true,
+              "minItems": 1
+            }
+          }
+        }
+      ]
+    },
+    "MemoProjectionBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "description"
+      ],
+      "properties": {
+        "itemId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "memoId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string"
+        },
+        "sourceRefIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "ProjectionEvaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "primaryArtifact",
+        "secondaryArtifacts",
+        "calendarPolicy",
+        "calendar",
+        "vtodo",
+        "checklist",
+        "todo",
+        "sheet",
+        "memo",
+        "forbidden",
+        "lossNotes"
+      ],
+      "properties": {
+        "primaryArtifact": {
+          "enum": [
+            "calendar",
+            "checklist",
+            "todo",
+            "sheet",
+            "memo"
+          ]
+        },
+        "secondaryArtifacts": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "calendar",
+              "checklist",
+              "todo",
+              "sheet",
+              "memo"
+            ]
+          }
+        },
+        "calendarPolicy": {
+          "enum": [
+            "none",
+            "optional_per_item",
+            "per_item",
+            "step_bundle"
+          ]
+        },
+        "calendar": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "selected",
+            "eligibleScheduledItemCount",
+            "eventCount",
+            "entries",
+            "suppressedUndatedItemIds",
+            "rule"
+          ],
+          "properties": {
+            "selected": {
+              "type": "boolean"
+            },
+            "eligibleScheduledItemCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "eventCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "entries": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/CalendarEntry"
+              }
+            },
+            "suppressedUndatedItemIds": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            },
+            "rule": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "vtodo": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "capabilityStatus",
+            "entries",
+            "fallbackOrder"
+          ],
+          "properties": {
+            "capabilityStatus": {
+              "const": "not_tested"
+            },
+            "entries": {
+              "type": "array"
+            },
+            "fallbackOrder": {
+              "type": "array",
+              "items": {
+                "enum": [
+                  "calendar",
+                  "checklist",
+                  "todo",
+                  "sheet",
+                  "memo"
+                ]
+              },
+              "uniqueItems": true
+            }
+          }
+        },
+        "checklist": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "selected",
+            "entries"
+          ],
+          "properties": {
+            "selected": {
+              "type": "boolean"
+            },
+            "entries": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/ChecklistEntry"
+              }
+            }
+          }
+        },
+        "todo": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "selected",
+            "entries"
+          ],
+          "properties": {
+            "selected": {
+              "type": "boolean"
+            },
+            "entries": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/ChecklistEntry"
+              }
+            }
+          }
+        },
+        "sheet": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "selected",
+            "rows"
+          ],
+          "properties": {
+            "selected": {
+              "type": "boolean"
+            },
+            "rows": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/SheetRow"
+              }
+            }
+          }
+        },
+        "memo": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "selected",
+            "blocks"
+          ],
+          "properties": {
+            "selected": {
+              "type": "boolean"
+            },
+            "blocks": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/MemoProjectionBlock"
+              }
+            }
+          }
+        },
+        "forbidden": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "lossNotes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "ResearchReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "researchUseStatus",
+        "publicReadiness",
+        "reviewFlags",
+        "claimBoundary"
+      ],
+      "properties": {
+        "researchUseStatus": {
+          "const": "research_only"
+        },
+        "publicReadiness": {
+          "const": "not_assessed"
+        },
+        "reviewFlags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "claimBoundary": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "Metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "flowCount",
+        "stepCount",
+        "itemCount",
+        "fieldCount",
+        "memoCount",
+        "sourceRowCount",
+        "scheduledItemCount",
+        "undatedItemCount"
+      ],
+      "properties": {
+        "flowCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "stepCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "itemCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "fieldCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "memoCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sourceRowCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "scheduledItemCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "undatedItemCount": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  },
+  "properties": {
+    "schemaVersion": {
+      "const": "flowme-canonical-structure-corpus-v1"
+    },
+    "generatedAt": {
+      "type": "string"
+    },
+    "claimBoundary": {
+      "type": "string"
+    },
+    "controlledEnums": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "lifeAreas",
+        "sourceShapes",
+        "executionPatterns",
+        "artifacts",
+        "intents",
+        "completionModes",
+        "scheduleModes",
+        "rowTargets",
+        "fieldValueTypes",
+        "fieldPurposes"
+      ],
+      "properties": {
+        "lifeAreas": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "home_living",
+              "family_parenting",
+              "study_reading",
+              "money_admin_purchase",
+              "health_fitness",
+              "travel_outings",
+              "meals_grocery",
+              "work_career",
+              "hobby_pet"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "sourceShapes": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "single_action",
+              "checklist_rows",
+              "date_offsets",
+              "date_window",
+              "recurrence_rule",
+              "procedure_rows",
+              "table_rows",
+              "lesson_rows",
+              "resource_collection",
+              "decision_criteria",
+              "narrative_guidance",
+              "template_fields"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "executionPatterns": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "date_preparation",
+              "ordered_procedure",
+              "repeating_routine",
+              "progress_tracking",
+              "resource_queue",
+              "compare_decide",
+              "phase_lifecycle"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "calendar",
+              "checklist",
+              "todo",
+              "sheet",
+              "memo"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "intents": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "act",
+              "inspect",
+              "decide",
+              "record",
+              "use_resource"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "completionModes": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "check",
+              "decision",
+              "record"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "scheduleModes": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "absolute",
+              "anchor_offset",
+              "date_window"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "rowTargets": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "item",
+              "field",
+              "memo",
+              "flow_context",
+              "step_context",
+              "omitted"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "fieldValueTypes": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "short_text",
+              "long_text",
+              "number",
+              "boolean",
+              "date",
+              "datetime",
+              "url",
+              "single_select",
+              "multi_select",
+              "file_ref"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "fieldPurposes": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "schedule",
+              "sort",
+              "filter",
+              "record",
+              "export",
+              "generation"
+            ]
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "completeFixtures",
+        "boundaryControls",
+        "bundles",
+        "maps",
+        "sourceRows",
+        "flows",
+        "steps",
+        "items",
+        "fields",
+        "memos",
+        "scheduledItems",
+        "undatedItems"
+      ],
+      "properties": {
+        "completeFixtures": {
+          "type": "integer",
+          "minimum": 40
+        },
+        "boundaryControls": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "bundles": {
+          "type": "integer",
+          "minimum": 40
+        },
+        "maps": {
+          "type": "integer",
+          "minimum": 40
+        },
+        "sourceRows": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "flows": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "steps": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "items": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "fields": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "memos": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "scheduledItems": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "undatedItems": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "fixtureSelection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ordering",
+        "duplicateRule",
+        "rejectedDuplicates"
+      ],
+      "properties": {
+        "ordering": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "duplicateRule": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rejectedDuplicates": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "fixtures": {
+      "type": "array",
+      "minItems": 40,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "fixtureId",
+          "batch",
+          "evidenceTier",
+          "originalRecordRef",
+          "source",
+          "userNeed",
+          "taxonomy",
+          "canonicalContent",
+          "conversionAudit",
+          "inputs",
+          "projectionEvaluation",
+          "researchReview",
+          "metrics"
+        ],
+        "properties": {
+          "fixtureId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "batch": {
+            "type": "string",
+            "minLength": 1
+          },
+          "originalRecordRef": {
+            "type": "string",
+            "minLength": 1
+          },
+          "userNeed": {
+            "type": "string"
+          },
+          "evidenceTier": {
+            "enum": [
+              "frozen_qualified_v2_canonical",
+              "frozen_gold_source_contract",
+              "frozen_value_gold_contract",
+              "frozen_deep_set_source_rows",
+              "live_source_reverified"
+            ]
+          },
+          "source": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "sourceId",
+              "snapshotId",
+              "snapshotContentHash",
+              "title",
+              "provider",
+              "url",
+              "canonicalUrl",
+              "locale",
+              "observedAt",
+              "accessStatus",
+              "evidenceTier"
+            ],
+            "properties": {
+              "sourceId": {
+                "type": "string"
+              },
+              "snapshotId": {
+                "type": "string"
+              },
+              "snapshotContentHash": {
+                "type": "string",
+                "pattern": "^sha256:[a-f0-9]{64}$"
+              },
+              "title": {
+                "type": "string"
+              },
+              "provider": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string"
+              },
+              "canonicalUrl": {
+                "type": "string"
+              },
+              "locale": {
+                "type": "string"
+              },
+              "observedAt": {
+                "type": "string"
+              },
+              "accessStatus": {
+                "const": "captured_in_internal_research_artifact"
+              },
+              "evidenceTier": {
+                "type": "string"
+              }
+            }
+          },
+          "taxonomy": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "version",
+              "primaryLifeArea",
+              "secondaryLifeAreas",
+              "topicTags",
+              "sourceShape",
+              "secondarySourceShapes",
+              "primaryExecutionPattern",
+              "secondaryExecutionPatterns",
+              "primaryArtifact",
+              "secondaryArtifacts"
+            ],
+            "properties": {
+              "version": {
+                "const": "flowme-taxonomy-v1.1"
+              },
+              "primaryLifeArea": {
+                "enum": [
+                  "home_living",
+                  "family_parenting",
+                  "study_reading",
+                  "money_admin_purchase",
+                  "health_fitness",
+                  "travel_outings",
+                  "meals_grocery",
+                  "work_career",
+                  "hobby_pet"
+                ]
+              },
+              "secondaryLifeAreas": {
+                "type": "array",
+                "items": {
+                  "enum": [
+                    "home_living",
+                    "family_parenting",
+                    "study_reading",
+                    "money_admin_purchase",
+                    "health_fitness",
+                    "travel_outings",
+                    "meals_grocery",
+                    "work_career",
+                    "hobby_pet"
+                  ]
+                },
+                "uniqueItems": true
+              },
+              "topicTags": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "sourceShape": {
+                "enum": [
+                  "single_action",
+                  "checklist_rows",
+                  "date_offsets",
+                  "date_window",
+                  "recurrence_rule",
+                  "procedure_rows",
+                  "table_rows",
+                  "lesson_rows",
+                  "resource_collection",
+                  "decision_criteria",
+                  "narrative_guidance",
+                  "template_fields"
+                ]
+              },
+              "secondarySourceShapes": {
+                "type": "array",
+                "items": {
+                  "enum": [
+                    "single_action",
+                    "checklist_rows",
+                    "date_offsets",
+                    "date_window",
+                    "recurrence_rule",
+                    "procedure_rows",
+                    "table_rows",
+                    "lesson_rows",
+                    "resource_collection",
+                    "decision_criteria",
+                    "narrative_guidance",
+                    "template_fields"
+                  ]
+                },
+                "uniqueItems": true
+              },
+              "primaryExecutionPattern": {
+                "enum": [
+                  "date_preparation",
+                  "ordered_procedure",
+                  "repeating_routine",
+                  "progress_tracking",
+                  "resource_queue",
+                  "compare_decide",
+                  "phase_lifecycle"
+                ]
+              },
+              "secondaryExecutionPatterns": {
+                "type": "array",
+                "items": {
+                  "enum": [
+                    "date_preparation",
+                    "ordered_procedure",
+                    "repeating_routine",
+                    "progress_tracking",
+                    "resource_queue",
+                    "compare_decide",
+                    "phase_lifecycle"
+                  ]
+                },
+                "uniqueItems": true
+              },
+              "primaryArtifact": {
+                "enum": [
+                  "calendar",
+                  "checklist",
+                  "todo",
+                  "sheet",
+                  "memo"
+                ]
+              },
+              "secondaryArtifacts": {
+                "type": "array",
+                "items": {
+                  "enum": [
+                    "calendar",
+                    "checklist",
+                    "todo",
+                    "sheet",
+                    "memo"
+                  ]
+                },
+                "uniqueItems": true
+              }
+            }
+          },
+          "canonicalContent": {
+            "$ref": "#/$defs/CanonicalContent"
+          },
+          "conversionAudit": {
+            "$ref": "#/$defs/ConversionAudit"
+          },
+          "inputs": {
+            "$ref": "#/$defs/InputContract"
+          },
+          "projectionEvaluation": {
+            "$ref": "#/$defs/ProjectionEvaluation"
+          },
+          "researchReview": {
+            "$ref": "#/$defs/ResearchReview"
+          },
+          "metrics": {
+            "$ref": "#/$defs/Metrics"
+          }
+        }
+      }
+    },
+    "boundaryControls": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "type": "object"
+      }
+    }
+  }
+}

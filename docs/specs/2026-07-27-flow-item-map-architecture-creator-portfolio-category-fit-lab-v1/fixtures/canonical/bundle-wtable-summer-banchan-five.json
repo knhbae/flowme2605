@@ -1,0 +1,386 @@
+{
+  "schemaVersion": "flowme-current-canonical-v1",
+  "architecture": "current_canonical_v1",
+  "bundleId": "bundle-wtable-summer-banchan-five",
+  "title": "이번 주 여름 반찬 5가지",
+  "taxonomy": {
+    "primaryLifeArea": "meals_grocery",
+    "secondaryLifeAreas": [],
+    "topicTags": [],
+    "sourceShape": "resource_collection",
+    "primaryExecutionPattern": "resource_queue",
+    "secondaryExecutionPatterns": [],
+    "primaryArtifact": "checklist",
+    "secondaryArtifacts": [
+      "memo"
+    ]
+  },
+  "userJob": "제작자가 고른 다섯 레시피 중 이번 주에 만들 것을 고르고 완료한다.",
+  "setupFields": [],
+  "sampleUserOverlay": {},
+  "map": {
+    "id": "bundle-wtable-summer-banchan-five-map",
+    "title": "이번 주 여름 반찬 5가지",
+    "type": "source_curation",
+    "ordering": "source_display_order_not_execution_dependency",
+    "childFlowIds": [
+      "wtable-summer-1-flow",
+      "wtable-summer-2-flow",
+      "wtable-summer-3-flow",
+      "wtable-summer-4-flow",
+      "wtable-summer-5-flow"
+    ],
+    "derivedProgressOnly": true
+  },
+  "sharedContexts": [],
+  "attribution": {
+    "creatorId": "meals-wtable",
+    "providerId": "creator-brand",
+    "sourceOwnerId": "meals-wtable",
+    "curatorId": "meals-wtable",
+    "trustAnchorRefs": [],
+    "decisionBand": "Go",
+    "creatorVerdict": "creator_flow_map_candidate",
+    "publicationApproval": "not_implied"
+  },
+  "rights": {
+    "mode": "link_and_minimal_execution_metadata",
+    "publicReleaseAllowed": false,
+    "personalTransformAllowed": true,
+    "rationale": "Existing research allows link plus minimal execution metadata; public release remains a separate review."
+  },
+  "review": {
+    "sourceRowStatus": "complete_for_representative_example",
+    "promotionState": "internal_review_only",
+    "safetyReview": "not_required"
+  },
+  "sourceRows": [
+    {
+      "sourceRowId": "wtable-summer-1",
+      "bundleId": "bundle-wtable-summer-banchan-five",
+      "sourceUrl": "https://wtable.co.kr/recipes/otoQ5JpRjgNPpuDtsYUwpRxC",
+      "sourceLocator": "원문 19·63·184행; 큐레이션 https://wtable.co.kr/curations/562",
+      "label": "오이지무침",
+      "detail": "초급 · 15분",
+      "verifiedAt": "2026-07-23"
+    },
+    {
+      "sourceRowId": "wtable-summer-2",
+      "bundleId": "bundle-wtable-summer-banchan-five",
+      "sourceUrl": "https://wtable.co.kr/recipes/ACxZbqBF1Vb3snHtZdTMwPDe",
+      "sourceLocator": "원문 25·84·186행; 큐레이션 https://wtable.co.kr/curations/562",
+      "label": "한치 초무침",
+      "detail": "초급 · 30분",
+      "verifiedAt": "2026-07-23"
+    },
+    {
+      "sourceRowId": "wtable-summer-3",
+      "bundleId": "bundle-wtable-summer-banchan-five",
+      "sourceUrl": "https://wtable.co.kr/recipes/Phq1srHvzgYtDueKGZFcBHS5",
+      "sourceLocator": "원문 31·107·188행; 큐레이션 https://wtable.co.kr/curations/562",
+      "label": "브로콜리 참깨무침",
+      "detail": "초급 · 20분",
+      "verifiedAt": "2026-07-23"
+    },
+    {
+      "sourceRowId": "wtable-summer-4",
+      "bundleId": "bundle-wtable-summer-banchan-five",
+      "sourceUrl": "https://wtable.co.kr/recipes/cZvq4myCFaK4Es7uJzaUyUBn",
+      "sourceLocator": "원문 37·130·190행; 큐레이션 https://wtable.co.kr/curations/562",
+      "label": "오이고추 된장 무침",
+      "detail": "초급 · 15분",
+      "verifiedAt": "2026-07-23"
+    },
+    {
+      "sourceRowId": "wtable-summer-5",
+      "bundleId": "bundle-wtable-summer-banchan-five",
+      "sourceUrl": "https://wtable.co.kr/recipes/kPW41Sk1utYTteW8jzzzigvp",
+      "sourceLocator": "원문 42·161·191행; 큐레이션 https://wtable.co.kr/curations/562",
+      "label": "꽈리고추찜무침",
+      "detail": "초급 · 20분",
+      "verifiedAt": "2026-07-23"
+    }
+  ],
+  "flows": [
+    {
+      "id": "wtable-summer-1-flow",
+      "title": "오이지무침",
+      "primarySourceUrl": "https://wtable.co.kr/curations/562",
+      "steps": [
+        {
+          "id": "wtable-summer-1-step",
+          "flowId": "wtable-summer-1-flow",
+          "title": "레시피 실행",
+          "order": 1,
+          "sourceScheduleGroup": null,
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "wtable-summer-1-item",
+              "flowId": "wtable-summer-1-flow",
+              "stepId": "wtable-summer-1-step",
+              "title": "오이지무침 만들기",
+              "detail": "초급 · 15분 · 원문 레시피: https://wtable.co.kr/recipes/otoQ5JpRjgNPpuDtsYUwpRxC",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": null,
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "초급 · 15분 · 원문 레시피: https://wtable.co.kr/recipes/otoQ5JpRjgNPpuDtsYUwpRxC",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "wtable-summer-1",
+                  "sourceUrl": "https://wtable.co.kr/recipes/otoQ5JpRjgNPpuDtsYUwpRxC",
+                  "sourceLocator": "원문 19·63·184행; 큐레이션 https://wtable.co.kr/curations/562"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wtable-summer-2-flow",
+      "title": "한치 초무침",
+      "primarySourceUrl": "https://wtable.co.kr/curations/562",
+      "steps": [
+        {
+          "id": "wtable-summer-2-step",
+          "flowId": "wtable-summer-2-flow",
+          "title": "레시피 실행",
+          "order": 1,
+          "sourceScheduleGroup": null,
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "wtable-summer-2-item",
+              "flowId": "wtable-summer-2-flow",
+              "stepId": "wtable-summer-2-step",
+              "title": "한치 초무침 만들기",
+              "detail": "초급 · 30분 · 원문 레시피: https://wtable.co.kr/recipes/ACxZbqBF1Vb3snHtZdTMwPDe",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": null,
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "초급 · 30분 · 원문 레시피: https://wtable.co.kr/recipes/ACxZbqBF1Vb3snHtZdTMwPDe",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "wtable-summer-2",
+                  "sourceUrl": "https://wtable.co.kr/recipes/ACxZbqBF1Vb3snHtZdTMwPDe",
+                  "sourceLocator": "원문 25·84·186행; 큐레이션 https://wtable.co.kr/curations/562"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wtable-summer-3-flow",
+      "title": "브로콜리 참깨무침",
+      "primarySourceUrl": "https://wtable.co.kr/curations/562",
+      "steps": [
+        {
+          "id": "wtable-summer-3-step",
+          "flowId": "wtable-summer-3-flow",
+          "title": "레시피 실행",
+          "order": 1,
+          "sourceScheduleGroup": null,
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "wtable-summer-3-item",
+              "flowId": "wtable-summer-3-flow",
+              "stepId": "wtable-summer-3-step",
+              "title": "브로콜리 참깨무침 만들기",
+              "detail": "초급 · 20분 · 원문 레시피: https://wtable.co.kr/recipes/Phq1srHvzgYtDueKGZFcBHS5",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": null,
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "초급 · 20분 · 원문 레시피: https://wtable.co.kr/recipes/Phq1srHvzgYtDueKGZFcBHS5",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "wtable-summer-3",
+                  "sourceUrl": "https://wtable.co.kr/recipes/Phq1srHvzgYtDueKGZFcBHS5",
+                  "sourceLocator": "원문 31·107·188행; 큐레이션 https://wtable.co.kr/curations/562"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wtable-summer-4-flow",
+      "title": "오이고추 된장 무침",
+      "primarySourceUrl": "https://wtable.co.kr/curations/562",
+      "steps": [
+        {
+          "id": "wtable-summer-4-step",
+          "flowId": "wtable-summer-4-flow",
+          "title": "레시피 실행",
+          "order": 1,
+          "sourceScheduleGroup": null,
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "wtable-summer-4-item",
+              "flowId": "wtable-summer-4-flow",
+              "stepId": "wtable-summer-4-step",
+              "title": "오이고추 된장 무침 만들기",
+              "detail": "초급 · 15분 · 원문 레시피: https://wtable.co.kr/recipes/cZvq4myCFaK4Es7uJzaUyUBn",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": null,
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "초급 · 15분 · 원문 레시피: https://wtable.co.kr/recipes/cZvq4myCFaK4Es7uJzaUyUBn",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "wtable-summer-4",
+                  "sourceUrl": "https://wtable.co.kr/recipes/cZvq4myCFaK4Es7uJzaUyUBn",
+                  "sourceLocator": "원문 37·130·190행; 큐레이션 https://wtable.co.kr/curations/562"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wtable-summer-5-flow",
+      "title": "꽈리고추찜무침",
+      "primarySourceUrl": "https://wtable.co.kr/curations/562",
+      "steps": [
+        {
+          "id": "wtable-summer-5-step",
+          "flowId": "wtable-summer-5-flow",
+          "title": "레시피 실행",
+          "order": 1,
+          "sourceScheduleGroup": null,
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "wtable-summer-5-item",
+              "flowId": "wtable-summer-5-flow",
+              "stepId": "wtable-summer-5-step",
+              "title": "꽈리고추찜무침 만들기",
+              "detail": "초급 · 20분 · 원문 레시피: https://wtable.co.kr/recipes/kPW41Sk1utYTteW8jzzzigvp",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": null,
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "초급 · 20분 · 원문 레시피: https://wtable.co.kr/recipes/kPW41Sk1utYTteW8jzzzigvp",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "wtable-summer-5",
+                  "sourceUrl": "https://wtable.co.kr/recipes/kPW41Sk1utYTteW8jzzzigvp",
+                  "sourceLocator": "원문 42·161·191행; 큐레이션 https://wtable.co.kr/curations/562"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

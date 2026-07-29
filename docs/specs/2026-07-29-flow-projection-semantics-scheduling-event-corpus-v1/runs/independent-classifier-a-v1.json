@@ -1,0 +1,254 @@
+[
+  {
+    "bundleId": "bundle-base-moving-d30",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "calendar",
+    "evidence": "The date_offsets/date_preparation bundle has 27 anchor-offset items grouped in six ordered moving stages from D-30 through moving day."
+  },
+  {
+    "bundleId": "bundle-base-baby-food-174",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "calendar",
+    "evidence": "The table_rows/progress_tracking bundle fixes 36 daily meal items to consecutive anchor offsets D+174 through D+209 in 12 ordered ranges."
+  },
+  {
+    "bundleId": "bundle-base-opic-plan",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "calendar",
+    "evidence": "The lesson_rows/progress_tracking plan places all 42 practice and review items on anchor offsets across seven ordered weekly steps."
+  },
+  {
+    "bundleId": "bundle-base-opentutorials-web1-progress",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "sheet",
+    "evidence": "The unscheduled lesson_rows/progress_tracking bundle is a bounded 26-topic WEB1 curriculum whose numbered learning progress is naturally tracked as rows."
+  },
+  {
+    "bundleId": "bundle-base-new-car-comparison",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The procedure_rows/ordered_procedure bundle contains 14 unscheduled actions grouped into eight sequential car-purchase stages where omissions matter."
+  },
+  {
+    "bundleId": "bundle-base-allblanc-7day-abs",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "calendar",
+    "evidence": "The seven-video progress_tracking challenge assigns one workout to each consecutive anchor-offset day, making a bounded ordered week."
+  },
+  {
+    "bundleId": "bundle-base-wtable-summer-banchan-five",
+    "checklistTodoLabel": "todo",
+    "primaryProjection": "todo",
+    "evidence": "The resource_collection/resource_queue bundle has five unscheduled standalone recipes that can be deferred or reordered independently."
+  },
+  {
+    "bundleId": "bundle-base-andstudio-job-prep-videos",
+    "checklistTodoLabel": "todo",
+    "primaryProjection": "todo",
+    "evidence": "The resource_collection/resource_queue bundle has three unscheduled job-preparation videos that remain independent next resources."
+  },
+  {
+    "bundleId": "bundle-oq-oq-c01-moving",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "calendar",
+    "evidence": "The moving checklist groups 24 omission-sensitive items into six stages, with 20 items tied to anchor offsets or date windows."
+  },
+  {
+    "bundleId": "bundle-oq-oq-c02-kmooc-full",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "sheet",
+    "evidence": "The unscheduled lesson_rows/progress_tracking bundle preserves a complete 14-week course as one ordered row per week."
+  },
+  {
+    "bundleId": "bundle-oq-oq-c03-librivox",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "sheet",
+    "evidence": "Although shaped as a resource queue, the 38 unscheduled numbered book sections form one bounded reading sequence whose order and progress should be preserved."
+  },
+  {
+    "bundleId": "bundle-oq-oq-c04-passport",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The checklist_rows/ordered_procedure bundle groups five unscheduled application-route and required-document items into two omission-sensitive sections."
+  },
+  {
+    "bundleId": "bundle-oq-oq-c05-washer",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "calendar",
+    "evidence": "The recurrence_rule/repeating_routine bundle defines one repeatable maintenance session whose four unscheduled actions must stay in cycle and step order."
+  },
+  {
+    "bundleId": "bundle-oq-oq-c06-nasa",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The procedure_rows/ordered_procedure activity has five unscheduled build actions aligned to five successive preparation and procedure stages."
+  },
+  {
+    "bundleId": "bundle-oq-oq-c07-fit100",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The procedure_rows/phase_lifecycle bundle contains eight unscheduled STEP-labelled actions spanning signup through certification and management."
+  },
+  {
+    "bundleId": "bundle-oq-oq-c08-ac-decision",
+    "checklistTodoLabel": "neither",
+    "primaryProjection": "memo",
+    "evidence": "The decision_criteria/compare_decide bundle collapses the service-scope choice into one unscheduled decision item rather than a set or queue."
+  },
+  {
+    "bundleId": "bundle-oq-oq-b01-heat",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The narrative_guidance/phase_lifecycle bundle groups four unscheduled heat-safety actions into before-work and after-work sections where omissions matter."
+  },
+  {
+    "bundleId": "bundle-oq-oq-b03-remodel",
+    "checklistTodoLabel": "neither",
+    "primaryProjection": "memo",
+    "evidence": "The decision_criteria/compare_decide bundle represents ten contract checks as one unscheduled compare-and-request decision item, not separately stateful entries."
+  },
+  {
+    "bundleId": "bundle-oq-oq-p01-ossu",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "sheet",
+    "evidence": "The unscheduled lesson_rows/progress_tracking bundle is a bounded six-course curriculum grouped into two ordered curriculum tables."
+  },
+  {
+    "bundleId": "bundle-oq-oq-p02-packing",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The checklist_rows/ordered_procedure bundle groups seven unscheduled travel essentials into carry-on and document sections where missing one matters."
+  },
+  {
+    "bundleId": "bundle-oq-oq-p03-vehicle",
+    "checklistTodoLabel": "neither",
+    "primaryProjection": "todo",
+    "evidence": "The date_window/date_preparation bundle has one currently unscheduled next action to look up the official inspection window and choose a visit date."
+  },
+  {
+    "bundleId": "bundle-oq-oq-p04-portfolio",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The procedure_rows/phase_lifecycle bundle has seven unscheduled portfolio-building actions ordered from selection and planning through deployment and completion."
+  },
+  {
+    "bundleId": "bundle-value-vq-01",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The procedure_rows/ordered_procedure bundle preserves four unscheduled childcare-support actions across confirmation, application, and result stages."
+  },
+  {
+    "bundleId": "bundle-value-vq-03",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "calendar",
+    "evidence": "The table_rows/date_preparation bundle assigns five dinners to consecutive Monday-through-Friday anchor offsets."
+  },
+  {
+    "bundleId": "bundle-value-vq-04",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The one-day procedure_rows/ordered_procedure bundle has six unscheduled actions that must retain preparation, classification, storage, and follow-up order."
+  },
+  {
+    "bundleId": "bundle-value-vq-05",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "sheet",
+    "evidence": "The unscheduled lesson_rows/progress_tracking bundle contains ten course units grouped into learning-material and execution sections."
+  },
+  {
+    "bundleId": "bundle-value-vq-06",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "sheet",
+    "evidence": "The decision_criteria/compare_decide bundle exposes six unscheduled comparison dimensions that belong together as one omission-sensitive decision matrix."
+  },
+  {
+    "bundleId": "bundle-value-vq-10",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "sheet",
+    "evidence": "The table_rows/progress_tracking bundle has 13 unscheduled defect and follow-up rows whose inspection grouping and recorded status must be preserved."
+  },
+  {
+    "bundleId": "bundle-value-vq-11",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "calendar",
+    "evidence": "The date_window/date_preparation bundle orders five scholarship actions around one application window and one absolute document deadline."
+  },
+  {
+    "bundleId": "bundle-value-vq-12",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The checklist_rows/ordered_procedure bundle contains six unscheduled, omission-sensitive pet-disaster preparation and drill actions in one readiness goal."
+  },
+  {
+    "bundleId": "bundle-deep-ds06",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The table_rows/progress_tracking bundle contains four unscheduled safety checks grouped by fall, burn, poisoning, and vehicle hazards."
+  },
+  {
+    "bundleId": "bundle-deep-ds08",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The narrative_guidance/date_preparation bundle presents four unscheduled destinations as a fixed Course 1 through Course 4 day-trip sequence."
+  },
+  {
+    "bundleId": "bundle-live-c01",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "calendar",
+    "evidence": "The table_rows/date_preparation bundle preserves 12 ordered infant health and dental screening windows identified by age ranges in the step titles."
+  },
+  {
+    "bundleId": "bundle-live-c10",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The checklist_rows/date_preparation bundle groups seven unscheduled family-trip packing categories into one bounded omission-sensitive preparation set."
+  },
+  {
+    "bundleId": "bundle-live-c13",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The procedure_rows/ordered_procedure recipe has four unscheduled Step 1/4 through Step 4/4 actions whose cooking order must be preserved."
+  },
+  {
+    "bundleId": "bundle-live-c16",
+    "checklistTodoLabel": "todo",
+    "primaryProjection": "todo",
+    "evidence": "The narrative_guidance/phase_lifecycle bundle has three unscheduled cross-channel reuse actions that can be adopted, deferred, or reordered independently."
+  },
+  {
+    "bundleId": "bundle-live-r02",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "calendar",
+    "evidence": "The table_rows/progress_tracking bundle combines three setup actions with four explicitly ordered day-range meal actions in a bounded seven-day plan."
+  },
+  {
+    "bundleId": "bundle-live-live-ifixit-washer-01",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The procedure_rows/ordered_procedure bundle has seven unscheduled washing-machine maintenance actions labelled Step 1 through Step 7."
+  },
+  {
+    "bundleId": "bundle-live-kr-stibee-01",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The decision_criteria/compare_decide bundle exposes four unscheduled rights and privacy checks that must all be covered before secondary content use."
+  },
+  {
+    "bundleId": "bundle-live-live-mdn-core-01",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "sheet",
+    "evidence": "The unscheduled lesson_rows/progress_tracking bundle is a bounded nine-module core curriculum whose ordered module progress is naturally row-based."
+  },
+  {
+    "bundleId": "bundle-live-live-dyson-filter-01",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "calendar",
+    "evidence": "The procedure_rows/repeating_routine bundle schedules all five ordered filter-care actions as a source-defined monthly anchor-offset recurrence."
+  },
+  {
+    "bundleId": "bundle-live-live-jotform-event-intake-01",
+    "checklistTodoLabel": "neither",
+    "primaryProjection": "sheet",
+    "evidence": "The template_fields/progress_tracking intake form has no steps, items, or schedules, so its structured event-registration fields are row data rather than checks or tasks."
+  }
+]

@@ -1,0 +1,281 @@
+{
+  "schemaVersion": "flowme-architecture-comparison-v1",
+  "generatedAt": "2026-07-29T12:00:00+09:00",
+  "evidenceCorpus": {
+    "baselineFixtures": 42,
+    "newFixtures": 21,
+    "eventNativeFixtures": 15,
+    "projectionCells": 315
+  },
+  "criteria": [
+    {
+      "key": "independentCompletion",
+      "label": "Item별 독립 완료 상태",
+      "weight": 14
+    },
+    {
+      "key": "undatedCoverage",
+      "label": "날짜 없는 콘텐츠 포괄성",
+      "weight": 12
+    },
+    {
+      "key": "todoReorder",
+      "label": "Todo 재정렬·연기",
+      "weight": 9
+    },
+    {
+      "key": "stepGrouping",
+      "label": "Step/session grouping",
+      "weight": 9
+    },
+    {
+      "key": "destinationMobility",
+      "label": "destination 간 이동",
+      "weight": 11
+    },
+    {
+      "key": "externalLoss",
+      "label": "외부 도구 손실 가시성",
+      "weight": 10
+    },
+    {
+      "key": "backendComplexity",
+      "label": "backend DTO 복잡도",
+      "weight": 10
+    },
+    {
+      "key": "runtimeMigration",
+      "label": "현재 runtime migration 영향",
+      "weight": 10
+    },
+    {
+      "key": "eventNativeFit",
+      "label": "행사·회차·window 표현력",
+      "weight": 9
+    },
+    {
+      "key": "userExplainability",
+      "label": "사용자 설명 가능성",
+      "weight": 6
+    }
+  ],
+  "alternatives": [
+    {
+      "architectureId": "current_sibling",
+      "axisScores": [
+        {
+          "key": "independentCompletion",
+          "label": "Item별 독립 완료 상태",
+          "max": 14,
+          "score": 10
+        },
+        {
+          "key": "undatedCoverage",
+          "label": "날짜 없는 콘텐츠 포괄성",
+          "max": 12,
+          "score": 11
+        },
+        {
+          "key": "todoReorder",
+          "label": "Todo 재정렬·연기",
+          "max": 9,
+          "score": 6
+        },
+        {
+          "key": "stepGrouping",
+          "label": "Step/session grouping",
+          "max": 9,
+          "score": 6
+        },
+        {
+          "key": "destinationMobility",
+          "label": "destination 간 이동",
+          "max": 11,
+          "score": 10
+        },
+        {
+          "key": "externalLoss",
+          "label": "외부 도구 손실 가시성",
+          "max": 10,
+          "score": 7
+        },
+        {
+          "key": "backendComplexity",
+          "label": "backend DTO 복잡도",
+          "max": 10,
+          "score": 8
+        },
+        {
+          "key": "runtimeMigration",
+          "label": "현재 runtime migration 영향",
+          "max": 10,
+          "score": 10
+        },
+        {
+          "key": "eventNativeFit",
+          "label": "행사·회차·window 표현력",
+          "max": 9,
+          "score": 5
+        },
+        {
+          "key": "userExplainability",
+          "label": "사용자 설명 가능성",
+          "max": 6,
+          "score": 5
+        }
+      ],
+      "total": 78,
+      "max": 100,
+      "label": "A. Current sibling projection",
+      "structure": "Item → Calendar / Checklist / Todo / Sheet / Memo",
+      "verdict": "modify",
+      "reason": "Canonical boundary is sound, but Todo semantics, event source facts, and destination grouping need first-class adapter contracts."
+    },
+    {
+      "architectureId": "progressive_wrapper",
+      "axisScores": [
+        {
+          "key": "independentCompletion",
+          "label": "Item별 독립 완료 상태",
+          "max": 14,
+          "score": 7
+        },
+        {
+          "key": "undatedCoverage",
+          "label": "날짜 없는 콘텐츠 포괄성",
+          "max": 12,
+          "score": 5
+        },
+        {
+          "key": "todoReorder",
+          "label": "Todo 재정렬·연기",
+          "max": 9,
+          "score": 4
+        },
+        {
+          "key": "stepGrouping",
+          "label": "Step/session grouping",
+          "max": 9,
+          "score": 5
+        },
+        {
+          "key": "destinationMobility",
+          "label": "destination 간 이동",
+          "max": 11,
+          "score": 4
+        },
+        {
+          "key": "externalLoss",
+          "label": "외부 도구 손실 가시성",
+          "max": 10,
+          "score": 3
+        },
+        {
+          "key": "backendComplexity",
+          "label": "backend DTO 복잡도",
+          "max": 10,
+          "score": 4
+        },
+        {
+          "key": "runtimeMigration",
+          "label": "현재 runtime migration 영향",
+          "max": 10,
+          "score": 2
+        },
+        {
+          "key": "eventNativeFit",
+          "label": "행사·회차·window 표현력",
+          "max": 9,
+          "score": 3
+        },
+        {
+          "key": "userExplainability",
+          "label": "사용자 설명 가능성",
+          "max": 6,
+          "score": 4
+        }
+      ],
+      "total": 41,
+      "max": 100,
+      "label": "B. Progressive wrapper hierarchy",
+      "structure": "Action → Checklist → Todo → Calendar",
+      "verdict": "reject_as_canonical",
+      "reason": "Checklist and Todo are not universal wrappers; due dates do not imply VEVENT, and event facts may exist before any action Item."
+    },
+    {
+      "architectureId": "item_plus_destination_grouping",
+      "axisScores": [
+        {
+          "key": "independentCompletion",
+          "label": "Item별 독립 완료 상태",
+          "max": 14,
+          "score": 14
+        },
+        {
+          "key": "undatedCoverage",
+          "label": "날짜 없는 콘텐츠 포괄성",
+          "max": 12,
+          "score": 12
+        },
+        {
+          "key": "todoReorder",
+          "label": "Todo 재정렬·연기",
+          "max": 9,
+          "score": 9
+        },
+        {
+          "key": "stepGrouping",
+          "label": "Step/session grouping",
+          "max": 9,
+          "score": 9
+        },
+        {
+          "key": "destinationMobility",
+          "label": "destination 간 이동",
+          "max": 11,
+          "score": 10
+        },
+        {
+          "key": "externalLoss",
+          "label": "외부 도구 손실 가시성",
+          "max": 10,
+          "score": 9
+        },
+        {
+          "key": "backendComplexity",
+          "label": "backend DTO 복잡도",
+          "max": 10,
+          "score": 8
+        },
+        {
+          "key": "runtimeMigration",
+          "label": "현재 runtime migration 영향",
+          "max": 10,
+          "score": 8
+        },
+        {
+          "key": "eventNativeFit",
+          "label": "행사·회차·window 표현력",
+          "max": 9,
+          "score": 9
+        },
+        {
+          "key": "userExplainability",
+          "label": "사용자 설명 가능성",
+          "max": 6,
+          "score": 6
+        }
+      ],
+      "total": 94,
+      "max": 100,
+      "label": "C. Item canonical + destination-specific grouping",
+      "structure": "Item + Step canonical → capability-aware checklist/task/event/row adapters",
+      "verdict": "adopt",
+      "reason": "Preserves one stateful Item while allowing bounded checklists, reorderable task queues, session bundles, and event occurrence selection."
+    }
+  ],
+  "finalAdjudication": {
+    "decision": "adopt_item_canonical_with_destination_specific_grouping",
+    "userProposalDisposition": "수정 채택: Action이 최소 Item이라는 통찰과 묶음 adapter는 채택하되 Checklist→Todo→Calendar 고정 상하관계는 채택하지 않는다."
+  }
+}

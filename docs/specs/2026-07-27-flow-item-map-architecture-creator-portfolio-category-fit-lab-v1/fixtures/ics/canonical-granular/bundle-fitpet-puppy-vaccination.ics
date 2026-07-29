@@ -1,0 +1,89 @@
+BEGIN:VCALENDAR
+PRODID:-//FlowMe//Canonical Projection Lab v1//KO
+VERSION:2.0
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:fitpet-vaccine-1-item@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:생후 6주 1차 접종
+DESCRIPTION:DHPPL 1차 + 코로나 장염 1차 · 실제 접종 일정은 
+ 담당 수의사·동물병원에 확인하고 특이사항은 개인 메
+ 모에 기록하세요. · 원문: https://www.fitpetmall.com/blog/dog-vac
+ cinations\nhttps://www.fitpetmall.com/blog/dog-vaccinations
+DTSTART;VALUE=DATE:20260612
+DTEND;VALUE=DATE:20260613
+URL:https://www.fitpetmall.com/blog/dog-vaccinations
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:fitpet-vaccine-1-item
+END:VEVENT
+BEGIN:VEVENT
+UID:fitpet-vaccine-2-item@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:생후 8주 2차 접종
+DESCRIPTION:DHPPL 2차 + 코로나 장염 2차 · 실제 접종 일정은 
+ 담당 수의사·동물병원에 확인하고 특이사항은 개인 메
+ 모에 기록하세요. · 원문: https://www.fitpetmall.com/blog/dog-vac
+ cinations\nhttps://www.fitpetmall.com/blog/dog-vaccinations
+DTSTART;VALUE=DATE:20260626
+DTEND;VALUE=DATE:20260627
+URL:https://www.fitpetmall.com/blog/dog-vaccinations
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:fitpet-vaccine-2-item
+END:VEVENT
+BEGIN:VEVENT
+UID:fitpet-vaccine-3-item@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:생후 10주 3차 접종
+DESCRIPTION:DHPPL 3차 + 켄넬 코프 1차 · 실제 접종 일정은 담
+ 당 수의사·동물병원에 확인하고 특이사항은 개인 메모
+ 에 기록하세요. · 원문: https://www.fitpetmall.com/blog/dog-vaccin
+ ations\nhttps://www.fitpetmall.com/blog/dog-vaccinations
+DTSTART;VALUE=DATE:20260710
+DTEND;VALUE=DATE:20260711
+URL:https://www.fitpetmall.com/blog/dog-vaccinations
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:fitpet-vaccine-3-item
+END:VEVENT
+BEGIN:VEVENT
+UID:fitpet-vaccine-4-item@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:생후 12주 4차 접종
+DESCRIPTION:DHPPL 4차 + 켄넬 코프 2차 · 실제 접종 일정은 담
+ 당 수의사·동물병원에 확인하고 특이사항은 개인 메모
+ 에 기록하세요. · 원문: https://www.fitpetmall.com/blog/dog-vaccin
+ ations\nhttps://www.fitpetmall.com/blog/dog-vaccinations
+DTSTART;VALUE=DATE:20260724
+DTEND;VALUE=DATE:20260725
+URL:https://www.fitpetmall.com/blog/dog-vaccinations
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:fitpet-vaccine-4-item
+END:VEVENT
+BEGIN:VEVENT
+UID:fitpet-vaccine-5-item@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:생후 14주 5차 접종
+DESCRIPTION:DHPPL 5차 + 신종 플루 1차 · 실제 접종 일정은 담
+ 당 수의사·동물병원에 확인하고 특이사항은 개인 메모
+ 에 기록하세요. · 원문: https://www.fitpetmall.com/blog/dog-vaccin
+ ations\nhttps://www.fitpetmall.com/blog/dog-vaccinations
+DTSTART;VALUE=DATE:20260807
+DTEND;VALUE=DATE:20260808
+URL:https://www.fitpetmall.com/blog/dog-vaccinations
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:fitpet-vaccine-5-item
+END:VEVENT
+BEGIN:VEVENT
+UID:fitpet-vaccine-6-item@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:생후 16주 6차 접종
+DESCRIPTION:신종 플루 2차 + 광견병 예방 접종 · 실제 접종 
+ 일정은 담당 수의사·동물병원에 확인하고 특이사항은 
+ 개인 메모에 기록하세요. · 원문: https://www.fitpetmall.com/bl
+ og/dog-vaccinations\nhttps://www.fitpetmall.com/blog/dog-vaccinations
+DTSTART;VALUE=DATE:20260821
+DTEND;VALUE=DATE:20260822
+URL:https://www.fitpetmall.com/blog/dog-vaccinations
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:fitpet-vaccine-6-item
+END:VEVENT
+END:VCALENDAR

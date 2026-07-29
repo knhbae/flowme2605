@@ -1,0 +1,97 @@
+BEGIN:VCALENDAR
+PRODID:-//FlowMe//Canonical Projection Lab v1//KO
+VERSION:2.0
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:bundle-moving-d30-s1-bundle@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D-30 · 큰 결정과 예약
+DESCRIPTION:□ 이사 방식과 이사업체 정하기 [bundle-moving-d30-
+ s1-i1]\n□ 새집 상태 확인하고 필요한 수리 잡기 [bundle-mov
+ ing-d30-s1-i2]\n□ 가져가지 않을 물건 처분 시작하기 [bundle
+ -moving-d30-s1-i3]\n□ 학교 전학과 돌봄 계획 세우기 [bundle-m
+ oving-d30-s1-i4]
+DTSTART;VALUE=DATE:20260802
+DTEND;VALUE=DATE:20260803
+X-FLOWME-KIND:STEP_BUNDLE_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-moving-d30-s1-i1\,bundle-moving-d30-s1-i2\,bundle-
+ moving-d30-s1-i3\,bundle-moving-d30-s1-i4
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-moving-d30-s2-bundle@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D-10 · 주소·서비스·짐 줄이기
+DESCRIPTION:□ 우편·배송·전출 주소 변경하기 [bundle-moving-d
+ 30-s2-i1]\n□ 엘리베이터·사다리차·주차 예약하기 [bundle-
+ moving-d30-s2-i2]\n□ 폐기물과 남은 짐 처리하기 [bundle-moving
+ -d30-s2-i3]\n□ 냉장고 비우고 새집 물품 배치 정하기 [bundl
+ e-moving-d30-s2-i4]\n□ 인터넷·정수기 등 이전 신청하기 [bun
+ dle-moving-d30-s2-i5]
+DTSTART;VALUE=DATE:20260822
+DTEND;VALUE=DATE:20260823
+X-FLOWME-KIND:STEP_BUNDLE_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-moving-d30-s2-i1\,bundle-moving-d30-s2-i2\,bundle-
+ moving-d30-s2-i3\,bundle-moving-d30-s2-i4\,bundle-moving-d30-s2-i5
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-moving-d30-s3-bundle@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D-3 · 해지와 당일 준비
+DESCRIPTION:□ 도시가스 철거·설치 예약하기 [bundle-moving-d30
+ -s3-i1]\n□ 기존 집 자동이체 해지하기 [bundle-moving-d30-s3-i2
+ ]\n□ 세탁기 배수하고 운반 상태 만들기 [bundle-moving-d30-s
+ 3-i3]\n□ 임대차 권리 서류 확인하기 [bundle-moving-d30-s3-i4]\
+ n□ 당일 바로 쓸 짐을 따로 싸기 [bundle-moving-d30-s3-i5]
+DTSTART;VALUE=DATE:20260829
+DTEND;VALUE=DATE:20260830
+X-FLOWME-KIND:STEP_BUNDLE_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-moving-d30-s3-i1\,bundle-moving-d30-s3-i2\,bundle-
+ moving-d30-s3-i3\,bundle-moving-d30-s3-i4\,bundle-moving-d30-s3-i5
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-moving-d30-s4-bundle@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D-1 · 돈·귀중품·인계 확인
+DESCRIPTION:□ 당일 일정·송금 한도·잔금 확인하기 [bundle-m
+ oving-d30-s4-i1]\n□ 출발지·도착지 주차 다시 확인하기 [bun
+ dle-moving-d30-s4-i2]\n□ 귀중품과 중요서류 직접 보관하기 [
+ bundle-moving-d30-s4-i3]\n□ 열쇠·리모컨·비밀번호 인계 준
+ 비하기 [bundle-moving-d30-s4-i4]\n□ 가전·가구 상태 사진 남
+ 기기 [bundle-moving-d30-s4-i5]
+DTSTART;VALUE=DATE:20260831
+DTEND;VALUE=DATE:20260901
+X-FLOWME-KIND:STEP_BUNDLE_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-moving-d30-s4-i1\,bundle-moving-d30-s4-i2\,bundle-
+ moving-d30-s4-i3\,bundle-moving-d30-s4-i4\,bundle-moving-d30-s4-i5
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-moving-d30-s5-bundle@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:이사 당일 · 출발지 마감
+DESCRIPTION:□ 전기·수도·가스·관리비 정산하기 [bundle-movi
+ ng-d30-s5-i1]\n□ 장기수선충당금 환급 확인하기 [bundle-movin
+ g-d30-s5-i2]\n□ 남은 물건 확인하고 열쇠 반납하기 [bundle-m
+ oving-d30-s5-i3]
+DTSTART;VALUE=DATE:20260901
+DTEND;VALUE=DATE:20260902
+X-FLOWME-KIND:STEP_BUNDLE_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-moving-d30-s5-i1\,bundle-moving-d30-s5-i2\,bundle-
+ moving-d30-s5-i3
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-moving-d30-s6-bundle@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:이사 당일 · 도착지 시작
+DESCRIPTION:□ 분실·파손 확인하고 이사업체 정산하기 [bund
+ le-moving-d30-s6-i1]\n□ 인터넷·TV와 도어락 확인하기 [bundle-
+ moving-d30-s6-i2]\n□ 잔금·관리비·열쇠 인수 마치기 [bundle-
+ moving-d30-s6-i3]\n□ 전기·수도 명의와 가스 개통하기 [bundl
+ e-moving-d30-s6-i4]\n□ 전입신고와 확정일자 처리하기 [bundle
+ -moving-d30-s6-i5]
+DTSTART;VALUE=DATE:20260901
+DTEND;VALUE=DATE:20260902
+X-FLOWME-KIND:STEP_BUNDLE_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-moving-d30-s6-i1\,bundle-moving-d30-s6-i2\,bundle-
+ moving-d30-s6-i3\,bundle-moving-d30-s6-i4\,bundle-moving-d30-s6-i5
+END:VEVENT
+END:VCALENDAR

@@ -1,0 +1,254 @@
+{
+  "schemaVersion": "flowme-current-canonical-v1",
+  "architecture": "current_canonical_v1",
+  "bundleId": "bundle-andstudio-job-prep-videos",
+  "title": "AND 취업 준비 영상 3편",
+  "taxonomy": {
+    "primaryLifeArea": "work_career",
+    "secondaryLifeAreas": [],
+    "topicTags": [],
+    "sourceShape": "resource_collection",
+    "primaryExecutionPattern": "resource_queue",
+    "secondaryExecutionPatterns": [],
+    "primaryArtifact": "todo",
+    "secondaryArtifacts": [
+      "memo"
+    ]
+  },
+  "userJob": "서로 독립적인 취업 준비 영상 중 필요한 것을 골라 보고 적용한다.",
+  "setupFields": [],
+  "sampleUserOverlay": {},
+  "map": {
+    "id": "bundle-andstudio-job-prep-videos-map",
+    "title": "AND 취업 준비 영상 3편",
+    "type": "unordered_collection",
+    "ordering": "none",
+    "childFlowIds": [
+      "andstudio-job-1-flow",
+      "andstudio-job-2-flow",
+      "andstudio-job-3-flow"
+    ],
+    "derivedProgressOnly": true
+  },
+  "sharedContexts": [],
+  "attribution": {
+    "creatorId": "work-andstudio",
+    "providerId": "youtube",
+    "sourceOwnerId": "work-andstudio",
+    "curatorId": null,
+    "trustAnchorRefs": [],
+    "decisionBand": "Go",
+    "creatorVerdict": "creator_flow_map_candidate",
+    "publicationApproval": "not_implied"
+  },
+  "rights": {
+    "mode": "link_and_minimal_execution_metadata",
+    "publicReleaseAllowed": false,
+    "personalTransformAllowed": true,
+    "rationale": "Existing research allows link plus minimal execution metadata; public release remains a separate review."
+  },
+  "review": {
+    "sourceRowStatus": "complete_for_representative_example",
+    "promotionState": "internal_review_only",
+    "safetyReview": "not_required"
+  },
+  "sourceRows": [
+    {
+      "sourceRowId": "andstudio-job-1",
+      "bundleId": "bundle-andstudio-job-prep-videos",
+      "sourceUrl": "https://www.youtube.com/watch?v=OIliv2jpDyM",
+      "sourceLocator": "영상 제목·공개 설명",
+      "label": "자소서 지원동기 6단계",
+      "detail": "조회 889,279 · 좋아요 17,011 · 댓글 201",
+      "verifiedAt": "2026-07-23"
+    },
+    {
+      "sourceRowId": "andstudio-job-2",
+      "bundleId": "bundle-andstudio-job-prep-videos",
+      "sourceUrl": "https://www.youtube.com/watch?v=qXRMV7TgsSg",
+      "sourceLocator": "영상 제목·공개 설명",
+      "label": "산업분석 방법",
+      "detail": "조회 186,826 · 댓글 139",
+      "verifiedAt": "2026-07-23"
+    },
+    {
+      "sourceRowId": "andstudio-job-3",
+      "bundleId": "bundle-andstudio-job-prep-videos",
+      "sourceUrl": "https://www.youtube.com/watch?v=Sd176kgo1Es",
+      "sourceLocator": "영상 제목·공개 설명",
+      "label": "면접 전 확인할 6가지",
+      "detail": "조회 103,294 · 댓글 32",
+      "verifiedAt": "2026-07-23"
+    }
+  ],
+  "flows": [
+    {
+      "id": "andstudio-job-1-flow",
+      "title": "자소서 지원동기 6단계",
+      "primarySourceUrl": "https://www.youtube.com/watch?v=OIliv2jpDyM",
+      "steps": [
+        {
+          "id": "andstudio-job-1-step",
+          "flowId": "andstudio-job-1-flow",
+          "title": "영상 1편",
+          "order": 1,
+          "sourceScheduleGroup": null,
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "andstudio-job-1-item",
+              "flowId": "andstudio-job-1-flow",
+              "stepId": "andstudio-job-1-step",
+              "title": "자소서 지원동기 6단계 영상으로 준비하기",
+              "detail": "조회 889,279 · 좋아요 17,011 · 댓글 201 · 영상: https://www.youtube.com/watch?v=OIliv2jpDyM",
+              "intent": "use_resource",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": null,
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "조회 889,279 · 좋아요 17,011 · 댓글 201 · 영상: https://www.youtube.com/watch?v=OIliv2jpDyM",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "andstudio-job-1",
+                  "sourceUrl": "https://www.youtube.com/watch?v=OIliv2jpDyM",
+                  "sourceLocator": "영상 제목·공개 설명"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "andstudio-job-2-flow",
+      "title": "산업분석 방법",
+      "primarySourceUrl": "https://www.youtube.com/watch?v=qXRMV7TgsSg",
+      "steps": [
+        {
+          "id": "andstudio-job-2-step",
+          "flowId": "andstudio-job-2-flow",
+          "title": "영상 1편",
+          "order": 1,
+          "sourceScheduleGroup": null,
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "andstudio-job-2-item",
+              "flowId": "andstudio-job-2-flow",
+              "stepId": "andstudio-job-2-step",
+              "title": "산업분석 방법 영상으로 준비하기",
+              "detail": "조회 186,826 · 댓글 139 · 영상: https://www.youtube.com/watch?v=qXRMV7TgsSg",
+              "intent": "use_resource",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": null,
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "조회 186,826 · 댓글 139 · 영상: https://www.youtube.com/watch?v=qXRMV7TgsSg",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "andstudio-job-2",
+                  "sourceUrl": "https://www.youtube.com/watch?v=qXRMV7TgsSg",
+                  "sourceLocator": "영상 제목·공개 설명"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "andstudio-job-3-flow",
+      "title": "면접 전 확인할 6가지",
+      "primarySourceUrl": "https://www.youtube.com/watch?v=Sd176kgo1Es",
+      "steps": [
+        {
+          "id": "andstudio-job-3-step",
+          "flowId": "andstudio-job-3-flow",
+          "title": "영상 1편",
+          "order": 1,
+          "sourceScheduleGroup": null,
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "andstudio-job-3-item",
+              "flowId": "andstudio-job-3-flow",
+              "stepId": "andstudio-job-3-step",
+              "title": "면접 전 확인할 6가지 영상으로 준비하기",
+              "detail": "조회 103,294 · 댓글 32 · 영상: https://www.youtube.com/watch?v=Sd176kgo1Es",
+              "intent": "use_resource",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": null,
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "조회 103,294 · 댓글 32 · 영상: https://www.youtube.com/watch?v=Sd176kgo1Es",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "andstudio-job-3",
+                  "sourceUrl": "https://www.youtube.com/watch?v=Sd176kgo1Es",
+                  "sourceLocator": "영상 제목·공개 설명"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,491 @@
+{
+  "schemaVersion": "flowme-creator-boundary-controls-v1",
+  "generatedAt": "2026-07-27",
+  "sourceArtifacts": [
+    "docs/content-audit/2026-07-23-creator-flow-portfolio-data-v1.json",
+    "docs/content-audit/2026-07-23-creator-flow-portfolio-assets/opened-creator-url-ledger-v1.json"
+  ],
+  "minimumRequired": 6,
+  "count": 8,
+  "expectedStopCounts": {
+    "source_import_required": 1,
+    "hold": 3,
+    "creator_map_not_ready": 2,
+    "single_content_only": 2
+  },
+  "nonPromotionRule": "A strong creator or an opened URL is not sufficient evidence for a creator Map, complete SourceRows, public release, or sensitive-content correctness.",
+  "cases": [
+    {
+      "boundaryCaseId": "CB-01",
+      "creatorId": "family-funmom",
+      "creatorName": "펀맘",
+      "categoryId": "family_parenting",
+      "creatorReadiness": {
+        "decisionBand": "Modify",
+        "verdict": "source_import_required",
+        "totalScore": 69,
+        "representativeFlowOwner": false,
+        "hardGatesAsOriginallyRecorded": {
+          "profileOpened": true,
+          "atLeastThreeContentsOpened": true,
+          "sourceRowsForRepresentativeExample": true,
+          "noInventedActionsRequired": true,
+          "publicRightsReady": true,
+          "sensitiveBoundaryRequired": false
+        },
+        "interpretationBoundary": "Creator readiness is an internal portfolio judgment. It does not prove complete SourceRows, public-catalog approval, rights permission, partnership, or current sensitive-source verification."
+      },
+      "selectedSource": {
+        "title": "엄마표 수학학습지 무료프린트자료",
+        "url": "https://funmom.tistory.com/766",
+        "sourceOpened": true,
+        "sourceShape": "html_table",
+        "userJob": "아이 단계에 맞는 준비·식단·자료를 바로 실행하기",
+        "naturalArtifact": "checklist_or_source_table",
+        "sourceRowReadiness": "visible_rows_or_metadata",
+        "flowVerdict": "flow_candidate",
+        "flowMapRole": "candidate_child_flow",
+        "demandEvidence": "visible demand unknown",
+        "communicationEvidence": "댓글",
+        "sourceTrace": {
+          "sourceUrl": "https://funmom.tistory.com/766",
+          "sourceTitle": "엄마표 수학학습지 무료프린트자료",
+          "observedAt": "2026-07-23",
+          "evidenceLedger": "2026-07-23-creator-flow-portfolio-assets/opened-creator-url-ledger-v1.json"
+        }
+      },
+      "openedUrlEvidence": {
+        "requestedUrl": "https://funmom.tistory.com/766",
+        "finalUrl": "https://funmom.tistory.com/766",
+        "status": 200,
+        "opened": true,
+        "title": "엄마표 수학학습지 무료프린트자료"
+      },
+      "expectedStop": "source_import_required",
+      "boundaryType": "resource_library_rows_not_imported",
+      "goldReason": "A useful worksheet source exists, but a de-duplicated audience-tagged 14-row queue has not been imported.",
+      "successCriteria": "No multi-Item or creator-wide Map is generated beyond the source_import_required boundary.",
+      "allowedOutput": {
+        "status": "source_import_required",
+        "sourceUrl": "https://funmom.tistory.com/766",
+        "sourceTitle": "엄마표 수학학습지 무료프린트자료",
+        "missingEvidence": "과목별 14개 article row를 우선 import하고 중복·대상 나이를 검증한다.",
+        "generatedItems": []
+      },
+      "publicReleaseApproved": false
+    },
+    {
+      "boundaryCaseId": "CB-02",
+      "creatorId": "travel-kkday",
+      "creatorName": "KKday Korea",
+      "categoryId": "travel_outings",
+      "creatorReadiness": {
+        "decisionBand": "Hold",
+        "verdict": "hold",
+        "totalScore": 70,
+        "representativeFlowOwner": false,
+        "hardGatesAsOriginallyRecorded": {
+          "profileOpened": true,
+          "atLeastThreeContentsOpened": true,
+          "sourceRowsForRepresentativeExample": true,
+          "noInventedActionsRequired": false,
+          "publicRightsReady": true,
+          "sensitiveBoundaryRequired": false
+        },
+        "interpretationBoundary": "Creator readiness is an internal portfolio judgment. It does not prove complete SourceRows, public-catalog approval, rights permission, partnership, or current sensitive-source verification."
+      },
+      "selectedSource": {
+        "title": "하와이 여행 준비물 :: 입국부터 교통, 환전, 날씨, 가볼만한곳 등 기본정보 총정리 - KKday Korea 공식 블로그",
+        "url": "https://www.kkday.com/ko/blog/18218/america-usa-hawaii-travel-information",
+        "sourceOpened": true,
+        "sourceShape": "html_table",
+        "userJob": "출발 전에 필요한 준비물·서류·예약을 빠뜨리지 않기",
+        "naturalArtifact": "travel_checklist",
+        "sourceRowReadiness": "visible_rows_or_metadata",
+        "flowVerdict": "flow_candidate",
+        "flowMapRole": "candidate_child_flow",
+        "demandEvidence": "visible demand unknown",
+        "communicationEvidence": "public communication unknown",
+        "sourceTrace": {
+          "sourceUrl": "https://www.kkday.com/ko/blog/18218/america-usa-hawaii-travel-information",
+          "sourceTitle": "하와이 여행 준비물 :: 입국부터 교통, 환전, 날씨, 가볼만한곳 등 기본정보 총정리 - KKday Korea 공식 블로그",
+          "observedAt": "2026-07-23",
+          "evidenceLedger": "2026-07-23-creator-flow-portfolio-assets/opened-creator-url-ledger-v1.json"
+        }
+      },
+      "openedUrlEvidence": {
+        "requestedUrl": "https://www.kkday.com/ko/blog/18218/america-usa-hawaii-travel-information",
+        "finalUrl": "https://www.kkday.com/ko/blog/18218/america-usa-hawaii-travel-information",
+        "status": 200,
+        "opened": true,
+        "title": "하와이 여행 준비물 :: 입국부터 교통, 환전, 날씨, 가볼만한곳 등 기본정보 총정리 - KKday Korea 공식 블로그"
+      },
+      "expectedStop": "hold",
+      "boundaryType": "commercial_destination_guide_not_one_frozen_job",
+      "goldReason": "The creator verdict is Hold and the record fails the no-invented-actions gate; broad guide sections cannot become a Flow spine.",
+      "successCriteria": "No multi-Item or creator-wide Map is generated beyond the hold boundary.",
+      "allowedOutput": {
+        "status": "hold",
+        "sourceUrl": "https://www.kkday.com/ko/blog/18218/america-usa-hawaii-travel-information",
+        "sourceTitle": "하와이 여행 준비물 :: 입국부터 교통, 환전, 날씨, 가볼만한곳 등 기본정보 총정리 - KKday Korea 공식 블로그",
+        "missingEvidence": "2026 최신 글만 선별하고 공식 입국 trust anchor를 연결한다.",
+        "generatedItems": []
+      },
+      "publicReleaseApproved": false
+    },
+    {
+      "boundaryCaseId": "CB-03",
+      "creatorId": "work-baeminsquare",
+      "creatorName": "배민외식업광장",
+      "categoryId": "work_career",
+      "creatorReadiness": {
+        "decisionBand": "Hold",
+        "verdict": "hold",
+        "totalScore": 70,
+        "representativeFlowOwner": false,
+        "hardGatesAsOriginallyRecorded": {
+          "profileOpened": true,
+          "atLeastThreeContentsOpened": true,
+          "sourceRowsForRepresentativeExample": true,
+          "noInventedActionsRequired": false,
+          "publicRightsReady": true,
+          "sensitiveBoundaryRequired": false
+        },
+        "interpretationBoundary": "Creator readiness is an internal portfolio judgment. It does not prove complete SourceRows, public-catalog approval, rights permission, partnership, or current sensitive-source verification."
+      },
+      "selectedSource": {
+        "title": "살아남으려면 '이렇게' 메뉴 가격을 올려보세요! | 장사과몰입 EP.5 (돈슐랭 김바비)",
+        "url": "https://www.youtube.com/watch?v=MkZurqk4vgo",
+        "sourceOpened": true,
+        "sourceShape": "chapter_rows",
+        "userJob": "지원·면접·가게 운영 자료의 다음 행동을 실행하기",
+        "naturalArtifact": "resource_queue_or_checklist",
+        "sourceRowReadiness": "visible_rows_or_metadata",
+        "flowVerdict": "flow_candidate",
+        "flowMapRole": "candidate_child_flow",
+        "demandEvidence": "조회 3,269 · 댓글 4개",
+        "communicationEvidence": "댓글 4개",
+        "sourceTrace": {
+          "sourceUrl": "https://www.youtube.com/watch?v=MkZurqk4vgo",
+          "sourceTitle": "살아남으려면 '이렇게' 메뉴 가격을 올려보세요! | 장사과몰입 EP.5 (돈슐랭 김바비)",
+          "observedAt": "2026-07-23",
+          "evidenceLedger": "2026-07-23-creator-flow-portfolio-assets/opened-creator-url-ledger-v1.json"
+        }
+      },
+      "openedUrlEvidence": {
+        "requestedUrl": "https://www.youtube.com/watch?v=MkZurqk4vgo",
+        "finalUrl": "https://www.youtube.com/watch?v=MkZurqk4vgo",
+        "status": 200,
+        "opened": true,
+        "title": "살아남으려면 '이렇게' 메뉴 가격을 올려보세요! | 장사과몰입 EP.5 (돈슐랭 김바비)"
+      },
+      "expectedStop": "hold",
+      "boundaryType": "operator_advice_without_reusable_template",
+      "goldReason": "Chapters alone do not provide a complete reusable operator template, and the creator record fails the no-invented-actions gate.",
+      "successCriteria": "No multi-Item or creator-wide Map is generated beyond the hold boundary.",
+      "allowedOutput": {
+        "status": "hold",
+        "sourceUrl": "https://www.youtube.com/watch?v=MkZurqk4vgo",
+        "sourceTitle": "살아남으려면 '이렇게' 메뉴 가격을 올려보세요! | 장사과몰입 EP.5 (돈슐랭 김바비)",
+        "missingEvidence": "다운로드 양식·운영 캘린더가 있는 원문을 추가 탐색한다.",
+        "generatedItems": []
+      },
+      "publicReleaseApproved": false
+    },
+    {
+      "boundaryCaseId": "CB-04",
+      "creatorId": "home-ohouse",
+      "creatorName": "오늘의집 고수 콘텐츠",
+      "categoryId": "home_living",
+      "creatorReadiness": {
+        "decisionBand": "Modify",
+        "verdict": "creator_content_partner_candidate",
+        "totalScore": 89,
+        "representativeFlowOwner": false,
+        "hardGatesAsOriginallyRecorded": {
+          "profileOpened": true,
+          "atLeastThreeContentsOpened": true,
+          "sourceRowsForRepresentativeExample": true,
+          "noInventedActionsRequired": true,
+          "publicRightsReady": true,
+          "sensitiveBoundaryRequired": false
+        },
+        "interpretationBoundary": "Creator readiness is an internal portfolio judgment. It does not prove complete SourceRows, public-catalog approval, rights permission, partnership, or current sensitive-source verification."
+      },
+      "selectedSource": {
+        "title": "예쁘고 간단하게 준비하는 🍱 도시락 일주일 식단표, 오늘의집 고수들의 꿀팁 | 라이프스타일 슈퍼앱, 오늘의집",
+        "url": "https://ohou.se/advices/9098",
+        "sourceOpened": true,
+        "sourceShape": "plan_or_table",
+        "userJob": "집안일·이사·정리의 다음 행동을 놓치지 않기",
+        "naturalArtifact": "calendar_checklist",
+        "sourceRowReadiness": "visible_rows_or_metadata",
+        "flowVerdict": "flow_candidate",
+        "flowMapRole": "candidate_child_flow",
+        "demandEvidence": "조회 10,945 · 좋아요. · 좋아요 226",
+        "communicationEvidence": "댓글 27",
+        "sourceTrace": {
+          "sourceUrl": "https://ohou.se/advices/9098",
+          "sourceTitle": "예쁘고 간단하게 준비하는 🍱 도시락 일주일 식단표, 오늘의집 고수들의 꿀팁 | 라이프스타일 슈퍼앱, 오늘의집",
+          "observedAt": "2026-07-23",
+          "evidenceLedger": "2026-07-23-creator-flow-portfolio-assets/opened-creator-url-ledger-v1.json"
+        }
+      },
+      "openedUrlEvidence": {
+        "requestedUrl": "https://ohou.se/advices/9098",
+        "finalUrl": "https://ohou.se/advices/9098",
+        "status": 200,
+        "opened": true,
+        "title": "예쁘고 간단하게 준비하는 🍱 도시락 일주일 식단표, 오늘의집 고수들의 꿀팁 | 라이프스타일 슈퍼앱, 오늘의집"
+      },
+      "expectedStop": "creator_map_not_ready",
+      "boundaryType": "platform_provider_is_not_one_creator",
+      "goldReason": "An individual article may later pass, but Todayhouse is the provider and different article authors cannot be merged into one creator-owned Map.",
+      "successCriteria": "No multi-Item or creator-wide Map is generated beyond the creator_map_not_ready boundary.",
+      "allowedOutput": {
+        "status": "creator_map_not_ready",
+        "sourceUrl": "https://ohou.se/advices/9098",
+        "sourceTitle": "예쁘고 간단하게 준비하는 🍱 도시락 일주일 식단표, 오늘의집 고수들의 꿀팁 | 라이프스타일 슈퍼앱, 오늘의집",
+        "missingEvidence": "개별 고수 ownerId와 플랫폼 providerId를 분리하는 계약이 필요하다.",
+        "generatedItems": []
+      },
+      "publicReleaseApproved": false
+    },
+    {
+      "boundaryCaseId": "CB-05",
+      "creatorId": "travel-yeomi",
+      "creatorName": "여행에미치다",
+      "categoryId": "travel_outings",
+      "creatorReadiness": {
+        "decisionBand": "Single",
+        "verdict": "single_content_candidate",
+        "totalScore": 66,
+        "representativeFlowOwner": false,
+        "hardGatesAsOriginallyRecorded": {
+          "profileOpened": true,
+          "atLeastThreeContentsOpened": true,
+          "sourceRowsForRepresentativeExample": true,
+          "noInventedActionsRequired": true,
+          "publicRightsReady": true,
+          "sensitiveBoundaryRequired": false
+        },
+        "interpretationBoundary": "Creator readiness is an internal portfolio judgment. It does not prove complete SourceRows, public-catalog approval, rights permission, partnership, or current sensitive-source verification."
+      },
+      "selectedSource": {
+        "title": "지금부터 제 꿈은 우주선에서 브이로그 찍기예요 | 여행토크 : 과학여행 3부 ‘행성’ 🌟",
+        "url": "https://www.youtube.com/watch?v=rOOKMGrzwMs",
+        "sourceOpened": true,
+        "sourceShape": "chapter_rows",
+        "userJob": "출발 전에 필요한 준비물·서류·예약을 빠뜨리지 않기",
+        "naturalArtifact": "travel_checklist",
+        "sourceRowReadiness": "visible_rows_or_metadata",
+        "flowVerdict": "flow_candidate",
+        "flowMapRole": "candidate_child_flow",
+        "demandEvidence": "조회 126 · 댓글 2개",
+        "communicationEvidence": "댓글 2개",
+        "sourceTrace": {
+          "sourceUrl": "https://www.youtube.com/watch?v=rOOKMGrzwMs",
+          "sourceTitle": "지금부터 제 꿈은 우주선에서 브이로그 찍기예요 | 여행토크 : 과학여행 3부 ‘행성’ 🌟",
+          "observedAt": "2026-07-23",
+          "evidenceLedger": "2026-07-23-creator-flow-portfolio-assets/opened-creator-url-ledger-v1.json"
+        }
+      },
+      "openedUrlEvidence": {
+        "requestedUrl": "https://www.youtube.com/watch?v=rOOKMGrzwMs",
+        "finalUrl": "https://www.youtube.com/watch?v=rOOKMGrzwMs",
+        "status": 200,
+        "opened": true,
+        "title": "지금부터 제 꿈은 우주선에서 브이로그 찍기예요 | 여행토크 : 과학여행 3부 ‘행성’ 🌟"
+      },
+      "expectedStop": "single_content_only",
+      "boundaryType": "single_candidate_not_creator_map",
+      "goldReason": "The preserved Single verdict permits evaluating one source but not promoting the channel to a reusable travel-preparation Map.",
+      "successCriteria": "No multi-Item or creator-wide Map is generated beyond the single_content_only boundary.",
+      "allowedOutput": {
+        "status": "single_content_only",
+        "sourceUrl": "https://www.youtube.com/watch?v=rOOKMGrzwMs",
+        "sourceTitle": "지금부터 제 꿈은 우주선에서 브이로그 찍기예요 | 여행토크 : 과학여행 3부 ‘행성’ 🌟",
+        "missingEvidence": "조회 상위 영상 중 실제 일정표·준비물 행이 있는 원문을 추가 탐색한다.",
+        "generatedItems": []
+      },
+      "publicReleaseApproved": false
+    },
+    {
+      "boundaryCaseId": "CB-06",
+      "creatorId": "meals-10000recipe",
+      "creatorName": "만개의레시피",
+      "categoryId": "meals_grocery",
+      "creatorReadiness": {
+        "decisionBand": "Modify",
+        "verdict": "creator_content_partner_candidate",
+        "totalScore": 90,
+        "representativeFlowOwner": false,
+        "hardGatesAsOriginallyRecorded": {
+          "profileOpened": true,
+          "atLeastThreeContentsOpened": true,
+          "sourceRowsForRepresentativeExample": false,
+          "noInventedActionsRequired": true,
+          "publicRightsReady": true,
+          "sensitiveBoundaryRequired": false
+        },
+        "interpretationBoundary": "Creator readiness is an internal portfolio judgment. It does not prove complete SourceRows, public-catalog approval, rights permission, partnership, or current sensitive-source verification."
+      },
+      "selectedSource": {
+        "title": "도시락에 빠질 수 없는 ✿유부초밥✿ 레시피 모음",
+        "url": "https://www.10000recipe.com/recipe/6988334",
+        "sourceOpened": true,
+        "sourceShape": "recipe_or_source_curation",
+        "userJob": "메뉴를 정하고 원문 레시피로 바로 조리하기",
+        "naturalArtifact": "recipe_queue_or_checklist",
+        "sourceRowReadiness": "needs_deeper_row_import",
+        "flowVerdict": "single_content_or_bucket_only",
+        "flowMapRole": "not_a_map_row_yet",
+        "demandEvidence": "조회 3,749,653,194",
+        "communicationEvidence": "댓글 5",
+        "sourceTrace": {
+          "sourceUrl": "https://www.10000recipe.com/recipe/6988334",
+          "sourceTitle": "도시락에 빠질 수 없는 ✿유부초밥✿ 레시피 모음",
+          "observedAt": "2026-07-23",
+          "evidenceLedger": "2026-07-23-creator-flow-portfolio-assets/opened-creator-url-ledger-v1.json"
+        }
+      },
+      "openedUrlEvidence": {
+        "requestedUrl": "https://www.10000recipe.com/recipe/6988334",
+        "finalUrl": "https://www.10000recipe.com/recipe/6988334",
+        "status": 200,
+        "opened": true,
+        "title": "도시락에 빠질 수 없는 ✿유부초밥✿ 레시피 모음"
+      },
+      "expectedStop": "creator_map_not_ready",
+      "boundaryType": "provider_and_recipe_creator_attribution_split",
+      "goldReason": "The platform provider and each recipe creator must be separated; platform collections cannot become one creator spine.",
+      "successCriteria": "No multi-Item or creator-wide Map is generated beyond the creator_map_not_ready boundary.",
+      "allowedOutput": {
+        "status": "creator_map_not_ready",
+        "sourceUrl": "https://www.10000recipe.com/recipe/6988334",
+        "sourceTitle": "도시락에 빠질 수 없는 ✿유부초밥✿ 레시피 모음",
+        "missingEvidence": "provider=만개의레시피, creator=개별 쉐프의 이중 소유 모델을 정의한다.",
+        "generatedItems": []
+      },
+      "publicReleaseApproved": false
+    },
+    {
+      "boundaryCaseId": "CB-07",
+      "creatorId": "hobby-bodeum",
+      "creatorName": "강형욱의 보듬TV",
+      "categoryId": "hobby_pet",
+      "creatorReadiness": {
+        "decisionBand": "Modify",
+        "verdict": "creator_content_partner_candidate",
+        "totalScore": 84,
+        "representativeFlowOwner": false,
+        "hardGatesAsOriginallyRecorded": {
+          "profileOpened": true,
+          "atLeastThreeContentsOpened": true,
+          "sourceRowsForRepresentativeExample": true,
+          "noInventedActionsRequired": true,
+          "publicRightsReady": true,
+          "sensitiveBoundaryRequired": false
+        },
+        "interpretationBoundary": "Creator readiness is an internal portfolio judgment. It does not prove complete SourceRows, public-catalog approval, rights permission, partnership, or current sensitive-source verification."
+      },
+      "selectedSource": {
+        "title": "\"내 몸 만지지마!!\" 개통령 손길도 피하는 예민쓰 파피용 [퍼피교육]",
+        "url": "https://www.youtube.com/watch?v=Ry3NnrbVjAM",
+        "sourceOpened": true,
+        "sourceShape": "chapter_rows",
+        "userJob": "취미·반려 상황에 맞는 원문을 저장하고 필요한 행동만 실행하기",
+        "naturalArtifact": "quick_flow_or_reference",
+        "sourceRowReadiness": "visible_rows_or_metadata",
+        "flowVerdict": "flow_candidate",
+        "flowMapRole": "candidate_child_flow",
+        "demandEvidence": "조회 223,629 · 댓글 214개",
+        "communicationEvidence": "댓글 214개",
+        "sourceTrace": {
+          "sourceUrl": "https://www.youtube.com/watch?v=Ry3NnrbVjAM",
+          "sourceTitle": "\"내 몸 만지지마!!\" 개통령 손길도 피하는 예민쓰 파피용 [퍼피교육]",
+          "observedAt": "2026-07-23",
+          "evidenceLedger": "2026-07-23-creator-flow-portfolio-assets/opened-creator-url-ledger-v1.json"
+        }
+      },
+      "openedUrlEvidence": {
+        "requestedUrl": "https://www.youtube.com/watch?v=Ry3NnrbVjAM",
+        "finalUrl": "https://www.youtube.com/watch?v=Ry3NnrbVjAM",
+        "status": 200,
+        "opened": true,
+        "title": "\"내 몸 만지지마!!\" 개통령 손길도 피하는 예민쓰 파피용 [퍼피교육]"
+      },
+      "expectedStop": "single_content_only",
+      "boundaryType": "expert_video_not_ordered_channel_map",
+      "goldReason": "One chaptered video may be reviewed independently; an official ordered training playlist or workbook is still missing.",
+      "successCriteria": "No multi-Item or creator-wide Map is generated beyond the single_content_only boundary.",
+      "allowedOutput": {
+        "status": "single_content_only",
+        "sourceUrl": "https://www.youtube.com/watch?v=Ry3NnrbVjAM",
+        "sourceTitle": "\"내 몸 만지지마!!\" 개통령 손길도 피하는 예민쓰 파피용 [퍼피교육]",
+        "missingEvidence": "공식 단계형 교육 재생목록이나 워크북이 있는지 확인한다.",
+        "generatedItems": []
+      },
+      "publicReleaseApproved": false
+    },
+    {
+      "boundaryCaseId": "CB-08",
+      "creatorId": "hobby-catdoctor",
+      "creatorName": "미야옹철의 냥냥펀치",
+      "categoryId": "hobby_pet",
+      "creatorReadiness": {
+        "decisionBand": "Modify",
+        "verdict": "creator_content_partner_candidate",
+        "totalScore": 76,
+        "representativeFlowOwner": false,
+        "hardGatesAsOriginallyRecorded": {
+          "profileOpened": true,
+          "atLeastThreeContentsOpened": true,
+          "sourceRowsForRepresentativeExample": true,
+          "noInventedActionsRequired": true,
+          "publicRightsReady": true,
+          "sensitiveBoundaryRequired": true
+        },
+        "interpretationBoundary": "Creator readiness is an internal portfolio judgment. It does not prove complete SourceRows, public-catalog approval, rights permission, partnership, or current sensitive-source verification."
+      },
+      "selectedSource": {
+        "title": "겨우 1세의 나이에 집이 있고 불로소득이 있으며 고양이용품 500개, 전용요리사가 있습니다. 재정 조언을 위해 팔로우 하세요.",
+        "url": "https://www.youtube.com/watch?v=lxaIuPj2LrY",
+        "sourceOpened": true,
+        "sourceShape": "chapter_rows",
+        "userJob": "취미·반려 상황에 맞는 원문을 저장하고 필요한 행동만 실행하기",
+        "naturalArtifact": "quick_flow_or_reference",
+        "sourceRowReadiness": "visible_rows_or_metadata",
+        "flowVerdict": "flow_candidate",
+        "flowMapRole": "candidate_child_flow",
+        "demandEvidence": "조회 3,425 · 댓글 46개",
+        "communicationEvidence": "댓글 46개",
+        "sourceTrace": {
+          "sourceUrl": "https://www.youtube.com/watch?v=lxaIuPj2LrY",
+          "sourceTitle": "겨우 1세의 나이에 집이 있고 불로소득이 있으며 고양이용품 500개, 전용요리사가 있습니다. 재정 조언을 위해 팔로우 하세요.",
+          "observedAt": "2026-07-23",
+          "evidenceLedger": "2026-07-23-creator-flow-portfolio-assets/opened-creator-url-ledger-v1.json"
+        }
+      },
+      "openedUrlEvidence": {
+        "requestedUrl": "https://www.youtube.com/watch?v=lxaIuPj2LrY",
+        "finalUrl": "https://www.youtube.com/watch?v=lxaIuPj2LrY",
+        "status": 200,
+        "opened": true,
+        "title": "겨우 1세의 나이에 집이 있고 불로소득이 있으며 고양이용품 500개, 전용요리사가 있습니다. 재정 조언을 위해 팔로우 하세요."
+      },
+      "expectedStop": "hold",
+      "boundaryType": "sensitive_subtype_and_user_job_unresolved",
+      "goldReason": "The record requires separating lifestyle content from medical advice; this video metadata does not define a safe reusable user job.",
+      "successCriteria": "No multi-Item or creator-wide Map is generated beyond the hold boundary.",
+      "allowedOutput": {
+        "status": "hold",
+        "sourceUrl": "https://www.youtube.com/watch?v=lxaIuPj2LrY",
+        "sourceTitle": "겨우 1세의 나이에 집이 있고 불로소득이 있으며 고양이용품 500개, 전용요리사가 있습니다. 재정 조언을 위해 팔로우 하세요.",
+        "missingEvidence": "생활 관리와 의료 조언을 content subtype으로 분리한다.",
+        "generatedItems": []
+      },
+      "publicReleaseApproved": false
+    }
+  ]
+}

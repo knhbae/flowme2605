@@ -1,0 +1,242 @@
+{
+  "documentType": "flowme_creator_provider_attribution_contract",
+  "schemaVersion": "flowme-creator-provider-attribution-contract-v1",
+  "date": "2026-07-27",
+  "status": "evaluation_contract",
+  "claimBoundary": [
+    "Attribution records who created, hosted, owned, curated, or verified a source; attribution is not rights permission.",
+    "Creator portfolio scores and Go/Modify/Single/Hold judgments do not prove SourceRow completeness, rights approval, partnership, public-catalog approval, or current sensitive applicability.",
+    "Internal review/provider metadata is excluded from user projections."
+  ],
+  "roleDefinitions": [
+    {
+      "role": "creator",
+      "field": "creatorId",
+      "definition": "The actual author, video producer, recipe creator, instructor, or organization that created the source content.",
+      "requiredWhen": "The source identifies a creator.",
+      "mustNotInferFrom": [
+        "hosting platform",
+        "distribution platform",
+        "category ownership",
+        "curator identity"
+      ]
+    },
+    {
+      "role": "provider",
+      "field": "providerId",
+      "definition": "The platform or service that hosts, distributes, entitles, or exposes the source.",
+      "requiredWhen": "A provider is distinct from the creator or source owner.",
+      "examples": [
+        "YouTube",
+        "오늘의집",
+        "만개의레시피"
+      ]
+    },
+    {
+      "role": "source_owner",
+      "field": "sourceOwnerId",
+      "definition": "The entity that operates, publishes, or controls the source page or source rights.",
+      "requiredWhen": "The owner is known or differs from the creator/provider."
+    },
+    {
+      "role": "curator",
+      "field": "curatorId",
+      "definition": "The entity that selected several child sources for a source-curation Map.",
+      "requiredWhen": "mapType=source_curation or another explicit curation act exists.",
+      "mustNotImply": [
+        "authorship of every child source",
+        "ownership of child source rights",
+        "execution order"
+      ]
+    },
+    {
+      "role": "trust_anchor",
+      "field": "trustAnchorRefs",
+      "definition": "Official, professional, or separately reviewed evidence that bounds sensitive facts, applicability, freshness, or safety.",
+      "requiredWhen": "A sensitive schedule or caution depends on evidence beyond the creator source.",
+      "mustNotAdd": "New execution Items unless the trust anchor becomes the primary source of a separate Flow."
+    }
+  ],
+  "entityTypes": [
+    "individual",
+    "creator_organization",
+    "brand",
+    "platform",
+    "publisher",
+    "official_body",
+    "community",
+    "unknown"
+  ],
+  "entityRecordShape": {
+    "required": [
+      "entityId",
+      "displayName",
+      "entityType"
+    ],
+    "properties": {
+      "entityId": "stable string ID",
+      "displayName": "source-grounded display name",
+      "entityType": "controlled entityTypes value",
+      "canonicalUrl": "optional canonical profile or organization URL",
+      "locale": "optional BCP 47-like locale string",
+      "externalIds": "optional provider-specific identity map"
+    },
+    "additionalIdentityRule": "The same entity may fill several roles, but each role field remains explicit."
+  },
+  "attributionRecordShape": {
+    "required": [
+      "attributionId",
+      "flowId",
+      "primarySourceId",
+      "sourceUrl",
+      "creatorIds",
+      "providerIds",
+      "sourceOwnerIds",
+      "curatorIds",
+      "trustAnchorRefs",
+      "sourceTrace"
+    ],
+    "properties": {
+      "attributionId": "stable string ID",
+      "flowId": "one Flow ID",
+      "primarySourceId": "the one structure-controlling source ID",
+      "sourceUrl": "the executable original source URL",
+      "creatorIds": "unique array of entity IDs in the creator role; may be empty only when genuinely unknown",
+      "providerIds": "unique array of entity IDs in the provider role",
+      "sourceOwnerIds": "unique array of entity IDs in the source-owner role",
+      "curatorIds": "unique array of entity IDs in the curator role",
+      "trustAnchorRefs": "array of trust-anchor records",
+      "sourceTrace": "Item-to-SourceRow relations for this Flow",
+      "rightsRefId": "optional reference to separate rights contract",
+      "reviewRefIds": "optional internal review references; never user export"
+    }
+  },
+  "sourceTraceShape": {
+    "required": [
+      "itemId",
+      "sourceRowIds",
+      "relation",
+      "supportLevel"
+    ],
+    "properties": {
+      "itemId": "stable canonical Item ID",
+      "sourceRowIds": "non-empty unique array of SourceRow IDs",
+      "relation": "derived_from | supports | caution | boundary",
+      "supportLevel": "direct | creator_interpretation | user_request | inferred_draft",
+      "sourceUrl": "source URL used for the trace",
+      "sourceLocator": "human-reviewable locator or row address"
+    }
+  },
+  "trustAnchorShape": {
+    "required": [
+      "trustAnchorRefId",
+      "sourceId",
+      "sourceUrl",
+      "purpose",
+      "checkedAt",
+      "reviewState"
+    ],
+    "properties": {
+      "trustAnchorRefId": "stable reference ID",
+      "sourceId": "supporting source ID",
+      "sourceUrl": "official or reviewed supporting source URL",
+      "purpose": "freshness | locale | safety | legal_boundary | administrative_boundary | professional_confirmation",
+      "checkedAt": "ISO date or datetime",
+      "reviewState": "pending | current | stale | restricted | blocked",
+      "note": "internal review note; not automatically exported"
+    }
+  },
+  "rightsBoundary": {
+    "separateFields": [
+      "rightsBasis",
+      "allowedUse",
+      "territory",
+      "rightsReviewStatus",
+      "personalTransformAllowed",
+      "publicReleaseAllowed"
+    ],
+    "rules": [
+      "Attribution completeness cannot set publicReleaseAllowed=true.",
+      "A source URL being public cannot set rightsReviewStatus=approved.",
+      "Creator permission, provider terms, and source-owner permission are separate evidence.",
+      "User-facing attribution must not leak internal rights-review notes."
+    ]
+  },
+  "projectionPolicy": {
+    "userVisible": [
+      "creator display name when known",
+      "provider display name when relevant",
+      "source title and URL",
+      "source checked date when freshness matters",
+      "trust-boundary label when sensitive"
+    ],
+    "internalOnly": [
+      "creator portfolio score",
+      "decisionBand",
+      "provider/model/prompt metadata",
+      "review score comments",
+      "rights-review notes",
+      "source extraction internals"
+    ],
+    "rule": "Loss of required source attribution or sensitive boundary makes the projection forbidden."
+  },
+  "mapRules": [
+    {
+      "id": "ATTR-MAP-CHILD-OWNERSHIP",
+      "rule": "Each child Flow retains its own primarySourceId, creatorIds, providerIds, and sourceTrace."
+    },
+    {
+      "id": "ATTR-CURATION-SEPARATION",
+      "rule": "A curator may group child Flows but does not replace child creators or source owners."
+    },
+    {
+      "id": "ATTR-NO-PLATFORM-CREATOR-COLLAPSE",
+      "rule": "A platform collection cannot be represented as one creator when child sources have different creators."
+    },
+    {
+      "id": "ATTR-NO-CROSS-SOURCE-FLOW-SPINE",
+      "rule": "Rows from different primary sources or creators cannot silently form one Flow spine; use separately source-owned child Flows in a Map."
+    },
+    {
+      "id": "ATTR-SINGLE-NOT-PORTFOLIO",
+      "rule": "A single_content_candidate or single_sensitive_schedule cannot imply a creator-wide Flow Map."
+    }
+  ],
+  "validationRules": [
+    "Every attribution entity reference resolves to exactly one entityRecord.",
+    "Every Flow has exactly one primarySourceId and one sourceUrl.",
+    "Every source-derived Item has at least one sourceTrace entry and every sourceRowId resolves.",
+    "creatorIds, providerIds, sourceOwnerIds, and curatorIds are unique arrays and remain role-distinct.",
+    "source_curation requires at least one curatorId and preserves child attribution.",
+    "trustAnchorRefs are required when a sensitive boundary depends on supporting evidence.",
+    "Attribution never mutates rightsReviewStatus, promotionState, or creator decisionBand.",
+    "Internal-only fields are forbidden in Calendar, Checklist, Todo, Sheet, and Memo user artifacts."
+  ],
+  "creatorPortfolioExamples": [
+    {
+      "caseId": "meals-wtable",
+      "mapType": "source_curation",
+      "rule": "Our Table may be creator and curator; each recipe source remains separately attributable and ordering is not execution order."
+    },
+    {
+      "caseId": "work-andstudio",
+      "mapType": "unordered_collection",
+      "rule": "AND Studio is creator; hosting platform remains provider; each video is an independent child Flow."
+    },
+    {
+      "caseId": "meals-10000recipe",
+      "boundary": "provider_creator_split",
+      "rule": "만개의레시피 may be provider while individual recipe authors remain creators."
+    },
+    {
+      "caseId": "home-ohouse",
+      "boundary": "platform_collection",
+      "rule": "오늘의집 may provide or curate content but different authors cannot be collapsed into one creator."
+    },
+    {
+      "caseId": "hobby-fitpet",
+      "mapType": "single_sensitive_schedule",
+      "rule": "Fitpet attribution does not replace current veterinary/official trust review and does not create a creator-wide Map."
+    }
+  ]
+}

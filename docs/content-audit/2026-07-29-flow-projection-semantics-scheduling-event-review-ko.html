@@ -1,0 +1,3069 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>Flow Projection Semantics·Scheduling·Event Corpus Lab v1</title>
+  <style>
+    :root{--ink:#15211b;--muted:#607068;--paper:#f4f6ef;--card:#fffdf7;--line:#dce3d8;--green:#1b6b4b;--mint:#daf4e6;--blue:#245da8;--blue-soft:#e8f0ff;--amber:#a56800;--amber-soft:#fff0c8;--red:#9b3d34;--red-soft:#ffe8e4;--shadow:0 18px 48px rgba(25,54,39,.09)}
+    *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;background:linear-gradient(180deg,#eef3e8 0,#f8f4ec 100%);color:var(--ink);font-family:Pretendard,"Noto Sans KR",system-ui,sans-serif;line-height:1.55}
+    a{color:inherit}.deck{max-width:1440px;margin:0 auto;padding:24px}.slide{min-height:calc(100vh - 48px);margin:0 0 24px;padding:clamp(34px,5vw,76px);border:1px solid rgba(27,107,75,.12);border-radius:32px;background:rgba(255,253,247,.94);box-shadow:var(--shadow);display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+    .cover{background:radial-gradient(circle at 86% 12%,#c8f1db 0,transparent 34%),linear-gradient(135deg,#fffdf7,#edf6ee)}.eyebrow{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--green);font-weight:800;margin-bottom:12px}.kicker{display:inline-flex;gap:8px;flex-wrap:wrap;margin:16px 0 28px}.kicker span,.pill{padding:8px 12px;border-radius:999px;background:var(--mint);color:var(--green);font-size:13px;font-weight:700}
+    h1{font-size:clamp(42px,6vw,78px);line-height:1.02;letter-spacing:-.055em;margin:0;max-width:1240px}h2{font-size:clamp(32px,4.2vw,62px);line-height:1.08;letter-spacing:-.045em;margin:0 0 18px;max-width:1100px}h3{font-size:clamp(22px,2.3vw,34px);margin:0 0 12px;letter-spacing:-.025em}h4{font-size:18px;margin:8px 0}p{margin:0}.lead{max-width:950px;font-size:clamp(17px,1.7vw,25px);color:var(--muted);margin-bottom:32px}.hero-example{margin-top:42px;display:grid;grid-template-columns:1.1fr .9fr;gap:24px}.hero-flow,.hero-answer{border-radius:24px;padding:28px;background:#fff;border:1px solid var(--line)}.hero-flow ol{margin:18px 0 0;padding-left:24px}.hero-answer strong{display:block;font-size:32px;color:var(--green);margin-bottom:12px}.source-chain{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:4px 0 30px}.source-chain span{padding:13px 16px;border:1px solid var(--line);background:#fff;border-radius:14px;font-weight:700}.source-chain b{color:var(--green)}
+    .format-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}.format-card{min-height:270px;border:1px solid var(--line);border-radius:20px;padding:18px;background:#fff;display:flex;flex-direction:column}.format-head{display:flex;justify-content:space-between;align-items:center;gap:8px}.format-head span{font-weight:900;letter-spacing:.04em}.format-head em{font-style:normal;font-size:11px;border-radius:999px;padding:4px 7px;background:#f0f3ef}.one-line{font-size:14px;color:var(--muted);min-height:44px;margin:12px 0}.record-preview{font-size:13px;background:#f7f8f5;border-radius:12px;padding:12px;min-height:70px}.format-card dl{margin:14px 0 8px;font-size:12px}.format-card dl div{display:flex;justify-content:space-between;gap:8px;padding:3px 0}.format-card dt{color:var(--muted)}.format-card dd{margin:0;text-align:right;font-weight:700}.loss{font-size:11px;color:var(--red);margin-top:auto}.format-calendar{border-top:5px solid #d55448}.format-checklist{border-top:5px solid #d89a18}.format-todo{border-top:5px solid #3a78c2}.format-sheet{border-top:5px solid #2d8d5a}.format-memo{border-top:5px solid #7d6fa8}
+    .definition-grid,.event-grid,.two-col,.metric-grid{display:grid;gap:18px}.definition-grid{grid-template-columns:repeat(5,minmax(0,1fr))}.definition-card,.source-card,.panel{border:1px solid var(--line);border-radius:22px;background:#fff;padding:24px}.definition-card strong{font-size:22px;display:block;margin-bottom:8px}.definition-card p{color:var(--muted)}.definition-card ul{padding-left:18px;font-size:13px}.two-col{grid-template-columns:1fr 1fr}.panel h3{color:var(--green)}.compare-stack{display:grid;gap:14px}.compare-row{display:grid;grid-template-columns:180px 1fr 1fr;gap:12px;align-items:stretch}.compare-row>*{padding:16px;border-radius:16px;border:1px solid var(--line);background:#fff}.compare-row strong{background:#f0f5ef}.yes{background:var(--mint)!important}.no{background:var(--red-soft)!important}.warn{background:var(--amber-soft)!important}
+    .timeline{display:flex;align-items:stretch;gap:10px;flex-wrap:wrap}.timeline article{flex:1;min-width:150px;border-radius:18px;background:#fff;border:1px solid var(--line);padding:18px}.timeline b{display:block;color:var(--green);font-size:13px;margin-bottom:8px}.timeline i{font-style:normal;color:var(--muted);font-size:13px}.event-grid{grid-template-columns:repeat(3,minmax(0,1fr));max-height:62vh;overflow:auto;padding-right:8px}.source-card span{font-size:11px;color:var(--green);font-weight:800;text-transform:uppercase}.source-card p{color:var(--muted);font-size:14px}.source-card small{display:block;margin-top:14px;color:#7a887f}.architecture-table,.matrix-table{width:100%;border-collapse:collapse;background:#fff;border-radius:18px;overflow:hidden}.architecture-table th,.architecture-table td,.matrix-table th,.matrix-table td{border-bottom:1px solid var(--line);padding:14px;text-align:left;vertical-align:top}.architecture-table th,.matrix-table th{background:#f1f5ef;color:var(--muted);font-size:12px;position:sticky;top:0}.architecture-table small,.matrix-table small{display:block;color:var(--muted);margin-top:5px}.score{font-size:22px;font-weight:900}.badge{display:inline-block;padding:5px 9px;border-radius:999px;font-size:11px;font-weight:900}.badge.go{background:var(--mint);color:var(--green)}.badge.modify{background:var(--amber-soft);color:var(--amber)}.badge.stop{background:var(--red-soft);color:var(--red)}
+    .filterbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}.filterbar select,.filterbar input{border:1px solid var(--line);background:#fff;padding:11px 13px;border-radius:12px;font:inherit;min-width:150px}.table-wrap{max-height:58vh;overflow:auto;border:1px solid var(--line);border-radius:18px}.matrix-table{font-size:13px}.metric-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.metric{padding:24px;border-radius:20px;background:#fff;border:1px solid var(--line)}.metric strong{display:block;font-size:38px;color:var(--green)}.metric span{color:var(--muted)}.footnote{font-size:12px;color:var(--muted);margin-top:18px}.callout{padding:22px;border-radius:20px;background:var(--blue-soft);color:#173f73;margin-top:20px}.mono{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+    @media(max-width:1050px){.format-grid,.definition-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.event-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hero-example,.two-col{grid-template-columns:1fr}.compare-row{grid-template-columns:1fr}.metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:600px){.deck{padding:8px}.slide{min-height:auto;margin-bottom:10px;padding:28px 18px;border-radius:22px}.format-grid,.definition-grid,.event-grid,.metric-grid{grid-template-columns:1fr}.event-grid{max-height:none}.format-card{min-height:auto}.hero-example{margin-top:24px}.source-chain{gap:7px}.source-chain span{padding:9px 10px;font-size:12px}.architecture-table{min-width:850px}.matrix-table{min-width:900px}.table-wrap{max-height:65vh}.slide:has(.architecture-table){overflow-x:auto}h1{font-size:44px}.cover .lead{font-size:17px}.timeline article{min-width:100%}}
+  </style>
+</head>
+<body>
+<main class="deck">
+  <section class="slide cover">
+    <div class="eyebrow">Flow Projection Lab v1 · 2026-07-29</div>
+    <h1>같은 Flow를 다섯 방식으로 쓰되,<br>같은 뜻이라고 속이지 않는다.</h1>
+    <p class="lead">42개 기존 콘텐츠와 21개 신규 원문을 이용해 Calendar·Checklist·Todo·Sheet·Memo의 생성 조건, 손실, 개인 일정화, 행사 회차 구조를 다시 검증했습니다.</p>
+    <div class="kicker"><span>42 × 5 baseline</span><span>21 new fixtures</span><span>15 event-native</span><span>외부 왕복 NOT_RUN</span></div>
+    <div class="hero-example">
+      <article class="hero-flow">
+        <div class="eyebrow">첫 실제 사례 · WEB1 26강</div>
+        <h3>원문에는 날짜가 없다</h3>
+        <ol><li>26개 강의 Item은 그대로 보존</li><li>기본은 Sheet 진도 + Todo queue</li><li>“8월 3일부터 평일 하루 2개” 확인</li><li>user overlay에서 13일 일정 생성</li></ol>
+      </article>
+      <article class="hero-answer">
+        <strong>0 → 26 VEVENT</strong>
+        <p>source 기반 VEVENT는 0개. 사용자가 pacing을 확인한 뒤에만 26개 개인 일정이 생깁니다. 그 날짜는 원문 사실이 아닙니다.</p>
+      </article>
+    </div>
+  </section>
+  
+    <section class="slide case-slide" id="dto-base-opentutorials-web1-progress">
+      <div class="eyebrow">사례 1 · 날짜 없는 학습</div>
+      <h2>WEB1 26강은 왜 Sheet·Todo이고, 언제 Calendar가 되나?</h2>
+      <p class="lead">Item은 바뀌지 않습니다. 기본 실행 queue와 진도표를 먼저 만들고, 확인된 하루 2개 정책만 개인 Calendar로 투영합니다.</p>
+      <div class="source-chain">
+        <span>SourceRow 26</span>
+        <b>→</b><span>Item 26</span>
+        <b>→</b><span>같은 canonical</span>
+        <b>→</b><span>5개 projection</span>
+      </div>
+      <div class="format-grid">
+        <article class="format-card format-calendar">
+              <div class="format-head"><span>CALENDAR</span><em>secondary</em></div>
+              <p class="one-line">실행·참석 시점을 시간축에 놓는 projection</p>
+              <div class="record-preview">26개 record · 「프로젝트의 동기」 학습하기 / 「기획」 학습하기 / 「코딩과 HTML」 학습하기</div>
+              <dl>
+                <div><dt>현재 가능</dt><dd>available_after_user_overlay</dd></div>
+                <div><dt>손실</dt><dd>bounded_loss</dd></div>
+              </dl>
+              <p class="loss">Calendar does not own Item completion.</p>
+            </article><article class="format-card format-checklist">
+              <div class="format-head"><span>CHECKLIST</span><em>optional</em></div>
+              <p class="one-line">한 상황에서 빠짐없이 끝내는 유한 항목 묶음</p>
+              <div class="record-preview">1개 record · WEB1 토픽 목록</div>
+              <dl>
+                <div><dt>현재 가능</dt><dd>available_now</dd></div>
+                <div><dt>손실</dt><dd>bounded_loss</dd></div>
+              </dl>
+              <p class="loss">Queue reordering/defer semantics are not represented as first-class fields.</p>
+            </article><article class="format-card format-todo">
+              <div class="format-head"><span>TODO</span><em>secondary</em></div>
+              <p class="one-line">독립적으로 꺼내고 미루고 재정렬하는 다음 행동·자료 queue</p>
+              <div class="record-preview">27개 record · WEB1 토픽 목록 / 「프로젝트의 동기」 학습하기 / 「기획」 학습하기</div>
+              <dl>
+                <div><dt>현재 가능</dt><dd>available_now</dd></div>
+                <div><dt>손실</dt><dd>lossless_or_low_loss</dd></div>
+              </dl>
+              <p class="loss">Step layout depends on parent/subtask destination support.</p>
+            </article><article class="format-card format-sheet">
+              <div class="format-head"><span>SHEET</span><em>primary</em></div>
+              <p class="one-line">항목·회차·상태를 안정적인 행과 열로 관리하는 projection</p>
+              <div class="record-preview">26개 record · 「프로젝트의 동기」 학습하기 / 「기획」 학습하기 / 「코딩과 HTML」 학습하기</div>
+              <dl>
+                <div><dt>현재 가능</dt><dd>available_now</dd></div>
+                <div><dt>손실</dt><dd>lossless_or_low_loss</dd></div>
+              </dl>
+              <p class="loss">Native reminders and attendance notifications are not represented.</p>
+            </article><article class="format-card format-memo">
+              <div class="format-head"><span>MEMO</span><em>optional</em></div>
+              <p class="one-line">사람이 읽고 복사하기 쉬운 TXT/Markdown 문서 projection</p>
+              <div class="record-preview">1개 record · WEB1 토픽 목록</div>
+              <dl>
+                <div><dt>현재 가능</dt><dd>available_now</dd></div>
+                <div><dt>손실</dt><dd>bounded_loss</dd></div>
+              </dl>
+              <p class="loss">Typed completion, schedule, and relation fields are human-readable text only.</p>
+            </article>
+      </div>
+    </section>
+  
+    <section class="slide case-slide" id="dto-base-moving-d30">
+      <div class="eyebrow">사례 2 · 한 세션과 날짜 묶음</div>
+      <h2>이사 당일 Item을 Checklist·Todo·Calendar로 내보내면 무엇이 달라지나?</h2>
+      <p class="lead">Checklist는 “빠뜨리지 않기”, Todo는 parent/subtask 실행, Calendar bundle은 같은 세션의 시간축 표현입니다. Calendar가 개별 완료를 소유하지 않는다는 손실을 표시합니다.</p>
+      <div class="source-chain">
+        <span>SourceRow 52</span>
+        <b>→</b><span>Item 27</span>
+        <b>→</b><span>같은 canonical</span>
+        <b>→</b><span>5개 projection</span>
+      </div>
+      <div class="format-grid">
+        <article class="format-card format-calendar">
+              <div class="format-head"><span>CALENDAR</span><em>primary</em></div>
+              <p class="one-line">실행·참석 시점을 시간축에 놓는 projection</p>
+              <div class="record-preview">27개 record · 이사 방식과 이사업체 정하기 / 새집 상태 확인하고 필요한 수리 잡기 / 가져가지 않을 물건 처분 시작하기</div>
+              <dl>
+                <div><dt>현재 가능</dt><dd>available_after_user_overlay</dd></div>
+                <div><dt>손실</dt><dd>bounded_loss</dd></div>
+              </dl>
+              <p class="loss">Calendar does not own Item completion.</p>
+            </article><article class="format-card format-checklist">
+              <div class="format-head"><span>CHECKLIST</span><em>secondary</em></div>
+              <p class="one-line">한 상황에서 빠짐없이 끝내는 유한 항목 묶음</p>
+              <div class="record-preview">6개 record · D-30 · 큰 결정과 예약 / D-10 · 주소·서비스·짐 줄이기 / D-3 · 해지와 당일 준비</div>
+              <dl>
+                <div><dt>현재 가능</dt><dd>available_now</dd></div>
+                <div><dt>손실</dt><dd>lossless_or_low_loss</dd></div>
+              </dl>
+              <p class="loss">Rich typed fields may be flattened into entry detail.</p>
+            </article><article class="format-card format-todo">
+              <div class="format-head"><span>TODO</span><em>optional</em></div>
+              <p class="one-line">독립적으로 꺼내고 미루고 재정렬하는 다음 행동·자료 queue</p>
+              <div class="record-preview">33개 record · D-30 · 큰 결정과 예약 / 이사 방식과 이사업체 정하기 / 새집 상태 확인하고 필요한 수리 잡기</div>
+              <dl>
+                <div><dt>현재 가능</dt><dd>available_now</dd></div>
+                <div><dt>손실</dt><dd>bounded_loss</dd></div>
+              </dl>
+              <p class="loss">Closed-set omission sensitivity may be weakened in an open task queue.</p>
+            </article><article class="format-card format-sheet">
+              <div class="format-head"><span>SHEET</span><em>optional</em></div>
+              <p class="one-line">항목·회차·상태를 안정적인 행과 열로 관리하는 projection</p>
+              <div class="record-preview">27개 record · 이사 방식과 이사업체 정하기 / 새집 상태 확인하고 필요한 수리 잡기 / 가져가지 않을 물건 처분 시작하기</div>
+              <dl>
+                <div><dt>현재 가능</dt><dd>available_now</dd></div>
+                <div><dt>손실</dt><dd>lossless_or_low_loss</dd></div>
+              </dl>
+              <p class="loss">Native reminders and attendance notifications are not represented.</p>
+            </article><article class="format-card format-memo">
+              <div class="format-head"><span>MEMO</span><em>optional</em></div>
+              <p class="one-line">사람이 읽고 복사하기 쉬운 TXT/Markdown 문서 projection</p>
+              <div class="record-preview">6개 record · D-30 · 큰 결정과 예약 / D-10 · 주소·서비스·짐 줄이기 / D-3 · 해지와 당일 준비</div>
+              <dl>
+                <div><dt>현재 가능</dt><dd>available_now</dd></div>
+                <div><dt>손실</dt><dd>bounded_loss</dd></div>
+              </dl>
+              <p class="loss">Typed completion, schedule, and relation fields are human-readable text only.</p>
+            </article>
+      </div>
+    </section>
+  
+    <section class="slide case-slide" id="dto-event-kr-ballet-ticket-show">
+      <div class="eyebrow">사례 3 · 티켓 오픈 + 다회차 공연</div>
+      <h2>예매 행동과 공연 참석은 같은 날짜 데이터가 아니다</h2>
+      <p class="lead">티켓 오픈은 due 중심 Todo/VTODO, 선택한 공연 회차는 VEVENT입니다. Series·Edition·Occurrence를 먼저 보존한 뒤 사용자의 선택이 Item을 만듭니다.</p>
+      <div class="source-chain">
+        <span>SourceRow 6</span>
+        <b>→</b><span>Item 0</span>
+        <b>→</b><span>같은 canonical</span>
+        <b>→</b><span>5개 projection</span>
+      </div>
+      <div class="format-grid">
+        <article class="format-card format-calendar">
+              <div class="format-head"><span>CALENDAR</span><em>primary</em></div>
+              <p class="one-line">실행·참석 시점을 시간축에 놓는 projection</p>
+              <div class="record-preview">1개 record · 서울시발레단 더블 빌 〈죽음과 소녀〉</div>
+              <dl>
+                <div><dt>현재 가능</dt><dd>available_after_user_overlay</dd></div>
+                <div><dt>손실</dt><dd>bounded_loss</dd></div>
+              </dl>
+              <p class="loss">Calendar does not own Item completion.</p>
+            </article><article class="format-card format-checklist">
+              <div class="format-head"><span>CHECKLIST</span><em>not_recommended</em></div>
+              <p class="one-line">한 상황에서 빠짐없이 끝내는 유한 항목 묶음</p>
+              <div class="record-preview">사용자 입력 후 생성</div>
+              <dl>
+                <div><dt>현재 가능</dt><dd>unavailable</dd></div>
+                <div><dt>손실</dt><dd>misleading_or_prohibited</dd></div>
+              </dl>
+              <p class="loss">명시 손실 없음</p>
+            </article><article class="format-card format-todo">
+              <div class="format-head"><span>TODO</span><em>optional</em></div>
+              <p class="one-line">독립적으로 꺼내고 미루고 재정렬하는 다음 행동·자료 queue</p>
+              <div class="record-preview">1개 record · 서울시발레단 더블 빌 〈죽음과 소녀〉 예매하기</div>
+              <dl>
+                <div><dt>현재 가능</dt><dd>available_now</dd></div>
+                <div><dt>손실</dt><dd>bounded_loss</dd></div>
+              </dl>
+              <p class="loss">Closed-set omission sensitivity may be weakened in an open task queue.</p>
+            </article><article class="format-card format-sheet">
+              <div class="format-head"><span>SHEET</span><em>secondary</em></div>
+              <p class="one-line">항목·회차·상태를 안정적인 행과 열로 관리하는 projection</p>
+              <div class="record-preview">3개 record · 서울시발레단 더블 빌 〈죽음과 소녀〉 / 서울시발레단 더블 빌 〈죽음과 소녀〉 / 서울시발레단 더블 빌 〈죽음과 소녀〉</div>
+              <dl>
+                <div><dt>현재 가능</dt><dd>available_now</dd></div>
+                <div><dt>손실</dt><dd>lossless_or_low_loss</dd></div>
+              </dl>
+              <p class="loss">Native reminders and attendance notifications are not represented.</p>
+            </article><article class="format-card format-memo">
+              <div class="format-head"><span>MEMO</span><em>optional</em></div>
+              <p class="one-line">사람이 읽고 복사하기 쉬운 TXT/Markdown 문서 projection</p>
+              <div class="record-preview">1개 record · 서울시발레단 더블 빌 〈죽음과 소녀〉</div>
+              <dl>
+                <div><dt>현재 가능</dt><dd>available_now</dd></div>
+                <div><dt>손실</dt><dd>bounded_loss</dd></div>
+              </dl>
+              <p class="loss">Typed completion, schedule, and relation fields are human-readable text only.</p>
+            </article>
+      </div>
+    </section>
+  <section class="slide">
+    <div class="eyebrow">질문 1</div>
+    <h2>Todo와 Checklist는 무엇이 다른가?</h2>
+    <div class="two-col">
+      <article class="panel"><h3>Checklist</h3><p>한 상황에서 빠뜨리면 안 되는 유한 묶음</p><div class="callout mono">groups[] → orderedEntries[]<br>bounded=true · orderLocked=true</div><p class="footnote">이사 당일 · 여권 서류 · 설치 절차 · 여행 짐</p></article>
+      <article class="panel"><h3>Todo</h3><p>독립적으로 꺼내고 미루고 재정렬하는 다음 행동·자료 queue</p><div class="callout mono">tasks[]<br>parentTaskId · queuePosition · canDefer · due</div><p class="footnote">볼 영상 · 읽을 자료 · 독립 심부름 · 결과 확인</p></article>
+    </div>
+    <div class="callout"><strong>상하관계가 아닙니다.</strong> 같은 Item을 서로 다른 실행 문법으로 보여주는 sibling projection이며, 목적지의 parent/subtask 지원은 adapter 문제입니다.</div>
+  </section>
+  <section class="slide">
+    <div class="eyebrow">질문 2</div>
+    <h2>다섯 포맷은 무엇을 보존하고 잃는가?</h2>
+    <div class="definition-grid">
+      <article class="definition-card"><strong>calendar</strong><p>실행·참석 시점을 시간축에 놓는 projection</p><ul><li>단위: scheduled Item occurrence or eligible session bundle</li><li>보존: start/end or all-day date</li><li>손실: independent completion when bundled</li></ul></article><article class="definition-card"><strong>checklist</strong><p>한 상황에서 빠짐없이 끝내는 유한 항목 묶음</p><ul><li>단위: Step group with ordered Item entries</li><li>보존: bounded membership</li><li>손실: open-queue semantics</li></ul></article><article class="definition-card"><strong>todo</strong><p>독립적으로 꺼내고 미루고 재정렬하는 다음 행동·자료 queue</p><ul><li>단위: Item task, optionally Step parent plus Item subtasks</li><li>보존: independent completion</li><li>손실: closed-set completeness unless adapter retains it</li></ul></article><article class="definition-card"><strong>sheet</strong><p>항목·회차·상태를 안정적인 행과 열로 관리하는 projection</p><ul><li>단위: Item or Occurrence row</li><li>보존: stable IDs</li><li>손실: native reminders</li></ul></article><article class="definition-card"><strong>memo</strong><p>사람이 읽고 복사하기 쉬운 TXT/Markdown 문서 projection</p><ul><li>단위: Flow or Step document section</li><li>보존: titles</li><li>손실: typed state</li></ul></article>
+    </div>
+    <p class="footnote">JSON/DTO는 canonical raw다. Memo TXT/Markdown은 사람이 읽는 projection이며 같은 것이 아니다.</p>
+  </section>
+  <section class="slide">
+    <div class="eyebrow">질문 3</div>
+    <h2>“생성 가능”과 “자연스럽다”는 왜 다른가?</h2>
+    <div class="compare-stack">
+      <div class="compare-row"><strong>추천도</strong><div class="yes">primary / secondary / optional</div><div class="no">not_recommended</div></div>
+      <div class="compare-row"><strong>현재 가능</strong><div class="yes">available_now</div><div class="warn">overlay 후 가능 / unavailable</div></div>
+      <div class="compare-row"><strong>정보 보존</strong><div class="yes">lossless_or_low_loss</div><div class="warn">bounded_loss / prohibited</div></div>
+    </div>
+    <div class="callout">Sheet와 Memo는 거의 항상 만들 수 있습니다. 하지만 일정 없는 콘텐츠를 Calendar로, 수동 관심 목록을 Todo로 만들면 record는 생겨도 의미가 틀립니다.</div>
+  </section>
+  
+    <section class="slide case-slide" id="dto-oq-oq-c02-kmooc-full">
+      <div class="eyebrow">사례 4 · 14주 진도</div>
+      <h2>K-MOOC는 매주 한 번 체크가 아니라 “펼쳐진 진도”가 핵심이다</h2>
+      <p class="lead">Sheet가 전체 진도 개요를 보존하고 Todo가 다음 강의를 꺼냅니다. Calendar는 사용자가 주 3개 pacing을 확인한 뒤에만 개인 일정으로 생성됩니다.</p>
+      <div class="source-chain">
+        <span>SourceRow 19</span>
+        <b>→</b><span>Item 14</span>
+        <b>→</b><span>같은 canonical</span>
+        <b>→</b><span>5개 projection</span>
+      </div>
+      <div class="format-grid">
+        <article class="format-card format-calendar">
+              <div class="format-head"><span>CALENDAR</span><em>secondary</em></div>
+              <p class="one-line">실행·참석 시점을 시간축에 놓는 projection</p>
+              <div class="record-preview">14개 record · 1주차 · 데이터 리터러시 / 2주차 · 생성형 AI 활용 데이터 분석 / 3주차 · 데이터 분석</div>
+              <dl>
+                <div><dt>현재 가능</dt><dd>available_after_user_overlay</dd></div>
+                <div><dt>손실</dt><dd>bounded_loss</dd></div>
+              </dl>
+              <p class="loss">Calendar does not own Item completion.</p>
+            </article><article class="format-card format-checklist">
+              <div class="format-head"><span>CHECKLIST</span><em>optional</em></div>
+              <p class="one-line">한 상황에서 빠짐없이 끝내는 유한 항목 묶음</p>
+              <div class="record-preview">14개 record · 강의계획 이미지 1행 / 강의계획 이미지 2행 / 강의계획 이미지 3행</div>
+              <dl>
+                <div><dt>현재 가능</dt><dd>available_now</dd></div>
+                <div><dt>손실</dt><dd>bounded_loss</dd></div>
+              </dl>
+              <p class="loss">Queue reordering/defer semantics are not represented as first-class fields.</p>
+            </article><article class="format-card format-todo">
+              <div class="format-head"><span>TODO</span><em>secondary</em></div>
+              <p class="one-line">독립적으로 꺼내고 미루고 재정렬하는 다음 행동·자료 queue</p>
+              <div class="record-preview">14개 record · 1주차 · 데이터 리터러시 / 2주차 · 생성형 AI 활용 데이터 분석 / 3주차 · 데이터 분석</div>
+              <dl>
+                <div><dt>현재 가능</dt><dd>available_now</dd></div>
+                <div><dt>손실</dt><dd>lossless_or_low_loss</dd></div>
+              </dl>
+              <p class="loss">Step layout depends on parent/subtask destination support.</p>
+            </article><article class="format-card format-sheet">
+              <div class="format-head"><span>SHEET</span><em>primary</em></div>
+              <p class="one-line">항목·회차·상태를 안정적인 행과 열로 관리하는 projection</p>
+              <div class="record-preview">14개 record · 1주차 · 데이터 리터러시 / 2주차 · 생성형 AI 활용 데이터 분석 / 3주차 · 데이터 분석</div>
+              <dl>
+                <div><dt>현재 가능</dt><dd>available_now</dd></div>
+                <div><dt>손실</dt><dd>lossless_or_low_loss</dd></div>
+              </dl>
+              <p class="loss">Native reminders and attendance notifications are not represented.</p>
+            </article><article class="format-card format-memo">
+              <div class="format-head"><span>MEMO</span><em>optional</em></div>
+              <p class="one-line">사람이 읽고 복사하기 쉬운 TXT/Markdown 문서 projection</p>
+              <div class="record-preview">14개 record · 강의계획 이미지 1행 / 강의계획 이미지 2행 / 강의계획 이미지 3행</div>
+              <dl>
+                <div><dt>현재 가능</dt><dd>available_now</dd></div>
+                <div><dt>손실</dt><dd>bounded_loss</dd></div>
+              </dl>
+              <p class="loss">Typed completion, schedule, and relation fields are human-readable text only.</p>
+            </article>
+      </div>
+    </section>
+  
+    <section class="slide case-slide" id="dto-event-kr-qnet-exam-lifecycle">
+      <div class="eyebrow">사례 5 · 시험 생애주기</div>
+      <h2>접수 기간·시험 기간·발표일을 전부 VEVENT로 만들면 왜 틀리나?</h2>
+      <p class="lead">접수는 기간 안에 완료할 Todo, 시험 기간은 배정 가능 window, 발표는 결과 확인 Todo입니다. 개인 시험 VEVENT는 수험표의 실제 일시·장소가 있어야 합니다.</p>
+      <div class="source-chain">
+        <span>SourceRow 7</span>
+        <b>→</b><span>Item 0</span>
+        <b>→</b><span>같은 canonical</span>
+        <b>→</b><span>5개 projection</span>
+      </div>
+      <div class="format-grid">
+        <article class="format-card format-calendar">
+              <div class="format-head"><span>CALENDAR</span><em>not_recommended</em></div>
+              <p class="one-line">실행·참석 시점을 시간축에 놓는 projection</p>
+              <div class="record-preview">사용자 입력 후 생성</div>
+              <dl>
+                <div><dt>현재 가능</dt><dd>unavailable</dd></div>
+                <div><dt>손실</dt><dd>misleading_or_prohibited</dd></div>
+              </dl>
+              <p class="loss">Calendar does not own Item completion.</p>
+            </article><article class="format-card format-checklist">
+              <div class="format-head"><span>CHECKLIST</span><em>not_recommended</em></div>
+              <p class="one-line">한 상황에서 빠짐없이 끝내는 유한 항목 묶음</p>
+              <div class="record-preview">사용자 입력 후 생성</div>
+              <dl>
+                <div><dt>현재 가능</dt><dd>unavailable</dd></div>
+                <div><dt>손실</dt><dd>misleading_or_prohibited</dd></div>
+              </dl>
+              <p class="loss">명시 손실 없음</p>
+            </article><article class="format-card format-todo">
+              <div class="format-head"><span>TODO</span><em>primary</em></div>
+              <p class="one-line">독립적으로 꺼내고 미루고 재정렬하는 다음 행동·자료 queue</p>
+              <div class="record-preview">5개 record · 수산양식기사 2026년 정기 기사 3회 결과 확인하기 / 수산양식기사 2026년 정기 기사 3회 결과 확인하기 / 수산양식기사 2026년 정기 기사 3회 qnet-written-regular 처리하기</div>
+              <dl>
+                <div><dt>현재 가능</dt><dd>available_now</dd></div>
+                <div><dt>손실</dt><dd>bounded_loss</dd></div>
+              </dl>
+              <p class="loss">Closed-set omission sensitivity may be weakened in an open task queue.</p>
+            </article><article class="format-card format-sheet">
+              <div class="format-head"><span>SHEET</span><em>secondary</em></div>
+              <p class="one-line">항목·회차·상태를 안정적인 행과 열로 관리하는 projection</p>
+              <div class="record-preview">7개 record · 필기 정기 접수 / 필기 빈자리 접수 / 필기 시험 시행 기간</div>
+              <dl>
+                <div><dt>현재 가능</dt><dd>available_now</dd></div>
+                <div><dt>손실</dt><dd>lossless_or_low_loss</dd></div>
+              </dl>
+              <p class="loss">Native reminders and attendance notifications are not represented.</p>
+            </article><article class="format-card format-memo">
+              <div class="format-head"><span>MEMO</span><em>optional</em></div>
+              <p class="one-line">사람이 읽고 복사하기 쉬운 TXT/Markdown 문서 projection</p>
+              <div class="record-preview">1개 record · 수산양식기사 2026년 정기 기사 3회</div>
+              <dl>
+                <div><dt>현재 가능</dt><dd>available_now</dd></div>
+                <div><dt>손실</dt><dd>bounded_loss</dd></div>
+              </dl>
+              <p class="loss">Typed completion, schedule, and relation fields are human-readable text only.</p>
+            </article>
+      </div>
+    </section>
+  <section class="slide">
+    <div class="eyebrow">질문 4</div>
+    <h2>날짜 없는 Item은 어디서 하루 N개가 되나?</h2>
+    <div class="timeline">
+      <article><b>1 · canonical</b><strong>26 Item, 날짜 없음</strong><i>원문 순서와 provenance 유지</i></article>
+      <article><b>2 · draft</b><strong>평일 하루 2개 제안</strong><i>아직 일정 record 아님</i></article>
+      <article><b>3 · confirm</b><strong>UserFlowCopy policy</strong><i>시작일·요일·휴일·시간</i></article>
+      <article><b>4 · derive</b><strong>26 assignment</strong><i>중복 0 · 누락 0 · deterministic</i></article>
+      <article><b>5 · project</b><strong>dated Todo 또는 VEVENT</strong><i>scheduleOwner=user_overlay</i></article>
+    </div>
+    <div class="callout">정책 변경 시 완료된 과거 occurrence는 그대로 두고 미래 미완료만 재계산합니다. 원문에 duration이 없으면 작업량을 사실처럼 추정하지 않습니다.</div>
+  </section>
+  <section class="slide">
+    <div class="eyebrow">질문 5</div>
+    <h2>Due와 Calendar time은 같은 날짜가 아니다</h2>
+    <div class="compare-stack">
+      <div class="compare-row"><strong>9월 21일까지 접수</strong><div class="yes">Todo / VTODO DUE</div><div class="no">임의 10:00 VEVENT 금지</div></div>
+      <div class="compare-row"><strong>9월 25일 14:00 시험</strong><div class="yes">VEVENT</div><div class="no">단순 due task만으로 축소 금지</div></div>
+      <div class="compare-row"><strong>8월 1~2일 접수 가능</strong><div class="yes">application window + Todo</div><div class="warn">개인 실행시각은 사용자 선택</div></div>
+      <div class="compare-row"><strong>6월 15일 14:00 티켓 오픈</strong><div class="yes">dated Todo / VTODO</div><div class="warn">사용자가 원하면 Calendar reminder</div></div>
+    </div>
+  </section>
+  <section class="slide">
+    <div class="eyebrow">행사 corpus</div>
+    <h2>단일 일정이 아니라 15개의 시간 구조를 넣었다</h2>
+    <p class="lead">단일 공연, 여러 회차, 여러 날 축제, 전시 운영창, 티켓 오픈, 시험 생애주기, 일정 변경, 온라인 URL, 실제 주간 반복, annual edition, 취소·재일정, 관심 목록, 예외 운영창, 프로그램 충돌을 직접 확인했습니다.</p>
+    <div class="event-grid"><article class="source-card" data-kind="single_fixed_performance_with_sales_status" data-projection="calendar">
+        <span>single fixed performance with sales status</span>
+        <h4>필묵으로 펼쳐지는 한국춤</h4>
+        <p>고정된 공연 일시와 장소를 저장하고 참석 의사를 관리한다.</p>
+        <small>국립극장 · 4 SourceRow · 1 Occurrence</small>
+      </article><article class="source-card" data-kind="multi_show_performance_with_distinct_programs" data-projection="calendar">
+        <span>multi show performance with distinct programs</span>
+        <h4>제46회 한국합창제</h4>
+        <p>프로그램과 관람 조건이 다른 회차 중 하나를 골라 저장한다.</p>
+        <small>국립극장 · 5 SourceRow · 4 Occurrence</small>
+      </article><article class="source-card" data-kind="multi_day_festival_daily_hours" data-projection="calendar">
+        <span>multi day festival daily hours</span>
+        <h4>속초 썸머페스티벌</h4>
+        <p>공식 2026 축제 일정 중 방문 날짜를 골라 저장한다.</p>
+        <small>문화체육관광부 · 2 SourceRow · 3 Occurrence</small>
+      </article><article class="source-card" data-kind="exhibition_availability_window" data-projection="calendar">
+        <span>exhibition availability window</span>
+        <h4>마틴 파 : We Are Martin Parr</h4>
+        <p>전시 운영창 안에서 실제 방문 시간을 골라 저장한다.</p>
+        <small>서울시립미술관 · 5 SourceRow · 0 Occurrence</small>
+      </article><article class="source-card" data-kind="ticket_open_plus_multi_show" data-projection="calendar">
+        <span>ticket open plus multi show</span>
+        <h4>서울시발레단 더블 빌 〈죽음과 소녀〉</h4>
+        <p>티켓 오픈을 놓치지 않고 선택한 공연 회차에 참석한다.</p>
+        <small>국립극장 · 6 SourceRow · 3 Occurrence</small>
+      </article><article class="source-card" data-kind="exam_registration_test_result_lifecycle" data-projection="todo">
+        <span>exam registration test result lifecycle</span>
+        <h4>수산양식기사 2026년 정기 기사 3회</h4>
+        <p>접수·시험 배정·발표 생애주기에서 내가 해야 할 행동을 놓치지 않는다.</p>
+        <small>한국산업인력공단 Q-Net · 7 SourceRow · 0 Occurrence</small>
+      </article><article class="source-card" data-kind="schedule_version_change" data-projection="calendar">
+        <span>schedule version change</span>
+        <h4>뮤지컬 〈몽유도원〉 일정 변경</h4>
+        <p>변경된 유효 공연 일정에서 회차를 다시 선택한다.</p>
+        <small>국립극장 · 5 SourceRow · 0 Occurrence</small>
+      </article><article class="source-card" data-kind="all_day_occurrence" data-projection="calendar">
+        <span>all day occurrence</span>
+        <h4>Fee Free Day — NPS Birthday</h4>
+        <p>종일 행사 날짜와 적용 자격을 함께 저장한다.</p>
+        <small>U.S. National Park Service · 2 SourceRow · 1 Occurrence</small>
+      </article><article class="source-card" data-kind="online_event_with_registration_and_watch_urls" data-projection="calendar">
+        <span>online event with registration and watch urls</span>
+        <h4>FOIA Advisory Committee Meeting</h4>
+        <p>온라인 회의를 시청하거나 발언 참여를 위해 등록한다.</p>
+        <small>U.S. National Archives · 3 SourceRow · 1 Occurrence</small>
+      </article><article class="source-card" data-kind="source_fixed_weekly_recurrence" data-projection="calendar">
+        <span>source fixed weekly recurrence</span>
+        <h4>Declaration Reading</h4>
+        <p>공식 반복 행사 전체 또는 선택 회차를 저장한다.</p>
+        <small>U.S. National Park Service · 2 SourceRow · 0 Occurrence</small>
+      </article><article class="source-card" data-kind="annual_series_new_dates_each_edition" data-projection="calendar">
+        <span>annual series new dates each edition</span>
+        <h4>2026 대구치맥페스티벌</h4>
+        <p>해당 연도의 공식 축제 기간을 저장하고 방문일을 고른다.</p>
+        <small>대구치맥페스티벌 조직위원회 · 1 SourceRow · 0 Occurrence</small>
+      </article><article class="source-card" data-kind="cancelled_and_incomplete_replacement" data-projection="memo">
+        <span>cancelled and incomplete replacement</span>
+        <h4>Sandy Hook Park Cleanup</h4>
+        <p>취소된 기존 일정과 불완전한 대체 일정을 구분한다.</p>
+        <small>U.S. National Park Service · 2 SourceRow · 2 Occurrence</small>
+      </article><article class="source-card" data-kind="provider_listing_interest_map" data-projection="sheet">
+        <span>provider listing interest map</span>
+        <h4>FUN SEOUL 행사 관심 목록</h4>
+        <p>여러 행사 중 관심 항목을 고르고 상세 일정이 확인된 것만 저장한다.</p>
+        <small>서울특별시 · 5 SourceRow · 0 Occurrence</small>
+      </article><article class="source-card" data-kind="edition_operating_windows_with_exceptions" data-projection="sheet">
+        <span>edition operating windows with exceptions</span>
+        <h4>2026 보령머드축제 운영시간</h4>
+        <p>운영일·휴장·연장 예외를 확인한 뒤 방문일을 선택한다.</p>
+        <small>보령축제관광재단 · 6 SourceRow · 0 Occurrence</small>
+      </article><article class="source-card" data-kind="festival_program_occurrences_with_conflict" data-projection="sheet">
+        <span>festival program occurrences with conflict</span>
+        <h4>2026 보령머드축제 행사일정표</h4>
+        <p>날짜별 프로그램을 비교하고 관심 회차만 저장한다.</p>
+        <small>보령축제관광재단 · 6 SourceRow · 3 Occurrence</small>
+      </article></div>
+  </section>
+  <section class="slide">
+    <div class="eyebrow">행사 모델</div>
+    <h2>행사 정보 자체는 아직 “할 일”이 아닐 수 있다</h2>
+    <div class="timeline">
+      <article><b>Source</b><strong>EventSeries</strong><i>반복되는 정체성</i></article>
+      <article><b>Edition</b><strong>2026 edition</strong><i>해마다 달라지는 공식 범위</i></article>
+      <article><b>Fact</b><strong>Occurrence / Window</strong><i>회차·운영창·milestone</i></article>
+      <article><b>User</b><strong>관심·예매·참석 선택</strong><i>개인 intent</i></article>
+      <article><b>FlowMe</b><strong>Item → Projection</strong><i>VEVENT / VTODO / Sheet</i></article>
+    </div>
+    <div class="callout">매년 새 날짜가 발표되는 축제에는 YEARLY RRULE을 만들지 않습니다. Series 아래 2026 Edition을 저장하고 다음 해는 새 원문으로 갱신합니다.</div>
+  </section>
+  <section class="slide">
+    <div class="eyebrow">아키텍처 판정</div>
+    <h2>Action → Checklist → Todo → Calendar 제안은 “수정 채택”</h2>
+    <p class="lead">가장 작은 독립 상태 단위를 Item으로 잡고 목적지에서 묶는 통찰은 맞습니다. 다만 Checklist·Todo·Calendar는 서로를 감싸는 보편 계층이 아닙니다.</p>
+    <div class="table-wrap"><table class="architecture-table"><thead><tr><th>구조</th><th>재계산 점수</th><th>판정</th><th>이유</th></tr></thead><tbody><tr>
+        <td><strong>A. Current sibling projection</strong><small>Item → Calendar / Checklist / Todo / Sheet / Memo</small></td>
+        <td class="score">78/100</td>
+        <td><span class="badge modify">modify</span></td>
+        <td>Canonical boundary is sound, but Todo semantics, event source facts, and destination grouping need first-class adapter contracts.</td>
+      </tr><tr>
+        <td><strong>B. Progressive wrapper hierarchy</strong><small>Action → Checklist → Todo → Calendar</small></td>
+        <td class="score">41/100</td>
+        <td><span class="badge stop">reject_as_canonical</span></td>
+        <td>Checklist and Todo are not universal wrappers; due dates do not imply VEVENT, and event facts may exist before any action Item.</td>
+      </tr><tr>
+        <td><strong>C. Item canonical + destination-specific grouping</strong><small>Item + Step canonical → capability-aware checklist/task/event/row adapters</small></td>
+        <td class="score">94/100</td>
+        <td><span class="badge go">adopt</span></td>
+        <td>Preserves one stateful Item while allowing bounded checklists, reorderable task queues, session bundles, and event occurrence selection.</td>
+      </tr></tbody></table></div>
+  </section>
+  <section class="slide">
+    <div class="eyebrow">전체 315칸</div>
+    <h2>어떤 원문이 어떤 포맷으로 실제 생성되는가?</h2>
+    <div class="filterbar">
+      <input id="matrix-search" placeholder="콘텐츠 검색">
+      <select id="matrix-projection"><option value="">모든 projection</option><option>calendar</option><option>checklist</option><option>todo</option><option>sheet</option><option>memo</option></select>
+      <select id="matrix-availability"><option value="">모든 가능 상태</option><option>available_now</option><option>available_after_user_overlay</option><option>unavailable</option></select>
+      <select id="matrix-group"><option value="">기존+신규</option><option value="frozen_baseline_42">기존 42</option><option value="checklist_todo_boundary">Checklist/Todo 신규</option><option value="event_native">행사 신규</option></select>
+    </div>
+    <div class="table-wrap"><table class="matrix-table"><thead><tr><th>콘텐츠</th><th>포맷</th><th>추천</th><th>가능</th><th>손실</th><th>record</th><th>최소 입력</th></tr></thead><tbody id="matrix-body"><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="available_after_user_overlay" data-recommendation="primary">
+        <td>이사 D-30 체크리스트<small>base-moving-d30</small></td>
+        <td>calendar</td>
+        <td>primary</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>이사일</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="secondary">
+        <td>이사 D-30 체크리스트<small>base-moving-d30</small></td>
+        <td>checklist</td>
+        <td>secondary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>6</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="optional">
+        <td>이사 D-30 체크리스트<small>base-moving-d30</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>33</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="optional">
+        <td>이사 D-30 체크리스트<small>base-moving-d30</small></td>
+        <td>sheet</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>27</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>이사 D-30 체크리스트<small>base-moving-d30</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>6</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="available_after_user_overlay" data-recommendation="secondary">
+        <td>초기 이유식 D+174~209 식단<small>base-baby-food-174</small></td>
+        <td>calendar</td>
+        <td>secondary</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>D+174 시작일</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="secondary">
+        <td>초기 이유식 D+174~209 식단<small>base-baby-food-174</small></td>
+        <td>checklist</td>
+        <td>secondary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>12</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="optional">
+        <td>초기 이유식 D+174~209 식단<small>base-baby-food-174</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>48</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="primary">
+        <td>초기 이유식 D+174~209 식단<small>base-baby-food-174</small></td>
+        <td>sheet</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>36</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>초기 이유식 D+174~209 식단<small>base-baby-food-174</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>12</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="available_after_user_overlay" data-recommendation="secondary">
+        <td>오픽 모의고사 계획표<small>base-opic-plan</small></td>
+        <td>calendar</td>
+        <td>secondary</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>시작일, 시작일</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="optional">
+        <td>오픽 모의고사 계획표<small>base-opic-plan</small></td>
+        <td>checklist</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>7</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="secondary">
+        <td>오픽 모의고사 계획표<small>base-opic-plan</small></td>
+        <td>todo</td>
+        <td>secondary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>49</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="primary">
+        <td>오픽 모의고사 계획표<small>base-opic-plan</small></td>
+        <td>sheet</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>42</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>오픽 모의고사 계획표<small>base-opic-plan</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>7</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="available_after_user_overlay" data-recommendation="secondary">
+        <td>생활코딩 WEB1 진도표<small>base-opentutorials-web1-progress</small></td>
+        <td>calendar</td>
+        <td>secondary</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>시작일, pacing 정책 확인</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="optional">
+        <td>생활코딩 WEB1 진도표<small>base-opentutorials-web1-progress</small></td>
+        <td>checklist</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="secondary">
+        <td>생활코딩 WEB1 진도표<small>base-opentutorials-web1-progress</small></td>
+        <td>todo</td>
+        <td>secondary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>27</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="primary">
+        <td>생활코딩 WEB1 진도표<small>base-opentutorials-web1-progress</small></td>
+        <td>sheet</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>26</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>생활코딩 WEB1 진도표<small>base-opentutorials-web1-progress</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>신차 구매 8단계<small>base-new-car-comparison</small></td>
+        <td>calendar</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="primary">
+        <td>신차 구매 8단계<small>base-new-car-comparison</small></td>
+        <td>checklist</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>8</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="optional">
+        <td>신차 구매 8단계<small>base-new-car-comparison</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>20</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="optional">
+        <td>신차 구매 8단계<small>base-new-car-comparison</small></td>
+        <td>sheet</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>14</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>신차 구매 8단계<small>base-new-car-comparison</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>8</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="available_after_user_overlay" data-recommendation="secondary">
+        <td>Allblanc 7일 복근 챌린지<small>base-allblanc-7day-abs</small></td>
+        <td>calendar</td>
+        <td>secondary</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>시작일, 시작일, 시작일, 시작일, 시작일, 시작일, 시작일</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="primary">
+        <td>Allblanc 7일 복근 챌린지<small>base-allblanc-7day-abs</small></td>
+        <td>checklist</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>7</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="optional">
+        <td>Allblanc 7일 복근 챌린지<small>base-allblanc-7day-abs</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>7</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="secondary">
+        <td>Allblanc 7일 복근 챌린지<small>base-allblanc-7day-abs</small></td>
+        <td>sheet</td>
+        <td>secondary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>7</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>Allblanc 7일 복근 챌린지<small>base-allblanc-7day-abs</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>7</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="available_after_user_overlay" data-recommendation="secondary">
+        <td>이번 주 여름 반찬 5가지<small>base-wtable-summer-banchan-five</small></td>
+        <td>calendar</td>
+        <td>secondary</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>시작일, pacing 정책 확인</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="optional">
+        <td>이번 주 여름 반찬 5가지<small>base-wtable-summer-banchan-five</small></td>
+        <td>checklist</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>5</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="primary">
+        <td>이번 주 여름 반찬 5가지<small>base-wtable-summer-banchan-five</small></td>
+        <td>todo</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>5</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="secondary">
+        <td>이번 주 여름 반찬 5가지<small>base-wtable-summer-banchan-five</small></td>
+        <td>sheet</td>
+        <td>secondary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>5</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>이번 주 여름 반찬 5가지<small>base-wtable-summer-banchan-five</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>5</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="available_after_user_overlay" data-recommendation="secondary">
+        <td>AND 취업 준비 영상 3편<small>base-andstudio-job-prep-videos</small></td>
+        <td>calendar</td>
+        <td>secondary</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>시작일, pacing 정책 확인</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="optional">
+        <td>AND 취업 준비 영상 3편<small>base-andstudio-job-prep-videos</small></td>
+        <td>checklist</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>3</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="primary">
+        <td>AND 취업 준비 영상 3편<small>base-andstudio-job-prep-videos</small></td>
+        <td>todo</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>3</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="secondary">
+        <td>AND 취업 준비 영상 3편<small>base-andstudio-job-prep-videos</small></td>
+        <td>sheet</td>
+        <td>secondary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>3</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>AND 취업 준비 영상 3편<small>base-andstudio-job-prep-videos</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>3</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="available_after_user_overlay" data-recommendation="primary">
+        <td>이사 준비 체크리스트<small>oq-oq-c01-moving</small></td>
+        <td>calendar</td>
+        <td>primary</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>이사일</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="secondary">
+        <td>이사 준비 체크리스트<small>oq-oq-c01-moving</small></td>
+        <td>checklist</td>
+        <td>secondary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>6</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="optional">
+        <td>이사 준비 체크리스트<small>oq-oq-c01-moving</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>30</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="optional">
+        <td>이사 준비 체크리스트<small>oq-oq-c01-moving</small></td>
+        <td>sheet</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>24</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>이사 준비 체크리스트<small>oq-oq-c01-moving</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>6</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="available_after_user_overlay" data-recommendation="secondary">
+        <td>Introduction to Data Analysis<small>oq-oq-c02-kmooc-full</small></td>
+        <td>calendar</td>
+        <td>secondary</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>시작일, pacing 정책 확인</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="optional">
+        <td>Introduction to Data Analysis<small>oq-oq-c02-kmooc-full</small></td>
+        <td>checklist</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>14</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="secondary">
+        <td>Introduction to Data Analysis<small>oq-oq-c02-kmooc-full</small></td>
+        <td>todo</td>
+        <td>secondary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>14</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="primary">
+        <td>Introduction to Data Analysis<small>oq-oq-c02-kmooc-full</small></td>
+        <td>sheet</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>14</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>Introduction to Data Analysis<small>oq-oq-c02-kmooc-full</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>14</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="available_after_user_overlay" data-recommendation="secondary">
+        <td>Anne of Green Gables, Version 5<small>oq-oq-c03-librivox</small></td>
+        <td>calendar</td>
+        <td>secondary</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>시작일, pacing 정책 확인</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="optional">
+        <td>Anne of Green Gables, Version 5<small>oq-oq-c03-librivox</small></td>
+        <td>checklist</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>38</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="secondary">
+        <td>Anne of Green Gables, Version 5<small>oq-oq-c03-librivox</small></td>
+        <td>todo</td>
+        <td>secondary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>38</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="primary">
+        <td>Anne of Green Gables, Version 5<small>oq-oq-c03-librivox</small></td>
+        <td>sheet</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>38</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>Anne of Green Gables, Version 5<small>oq-oq-c03-librivox</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>38</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>유효기간 만료에 따른 재발급<small>oq-oq-c04-passport</small></td>
+        <td>calendar</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="primary">
+        <td>유효기간 만료에 따른 재발급<small>oq-oq-c04-passport</small></td>
+        <td>checklist</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>2</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="optional">
+        <td>유효기간 만료에 따른 재발급<small>oq-oq-c04-passport</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>6</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="optional">
+        <td>유효기간 만료에 따른 재발급<small>oq-oq-c04-passport</small></td>
+        <td>sheet</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>5</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>유효기간 만료에 따른 재발급<small>oq-oq-c04-passport</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>2</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>Washing Machine Maintenance: tips to keep your machine running smoothly<small>oq-oq-c05-washer</small></td>
+        <td>calendar</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="primary">
+        <td>Washing Machine Maintenance: tips to keep your machine running smoothly<small>oq-oq-c05-washer</small></td>
+        <td>checklist</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>4</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="optional">
+        <td>Washing Machine Maintenance: tips to keep your machine running smoothly<small>oq-oq-c05-washer</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>4</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="optional">
+        <td>Washing Machine Maintenance: tips to keep your machine running smoothly<small>oq-oq-c05-washer</small></td>
+        <td>sheet</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>4</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>Washing Machine Maintenance: tips to keep your machine running smoothly<small>oq-oq-c05-washer</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>4</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>Build, Launch, Recover: Build a Crane Activity<small>oq-oq-c06-nasa</small></td>
+        <td>calendar</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="primary">
+        <td>Build, Launch, Recover: Build a Crane Activity<small>oq-oq-c06-nasa</small></td>
+        <td>checklist</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>5</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="optional">
+        <td>Build, Launch, Recover: Build a Crane Activity<small>oq-oq-c06-nasa</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>5</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="optional">
+        <td>Build, Launch, Recover: Build a Crane Activity<small>oq-oq-c06-nasa</small></td>
+        <td>sheet</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>5</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>Build, Launch, Recover: Build a Crane Activity<small>oq-oq-c06-nasa</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>5</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="available_after_user_overlay" data-recommendation="secondary">
+        <td>국민체력인증 이용안내<small>oq-oq-c07-fit100</small></td>
+        <td>calendar</td>
+        <td>secondary</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>시작일, pacing 정책 확인</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="primary">
+        <td>국민체력인증 이용안내<small>oq-oq-c07-fit100</small></td>
+        <td>checklist</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>8</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="optional">
+        <td>국민체력인증 이용안내<small>oq-oq-c07-fit100</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>8</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="optional">
+        <td>국민체력인증 이용안내<small>oq-oq-c07-fit100</small></td>
+        <td>sheet</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>8</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>국민체력인증 이용안내<small>oq-oq-c07-fit100</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>8</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>시스템 에어컨 세척 서비스 안내<small>oq-oq-c08-ac-decision</small></td>
+        <td>calendar</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="optional">
+        <td>시스템 에어컨 세척 서비스 안내<small>oq-oq-c08-ac-decision</small></td>
+        <td>checklist</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="optional">
+        <td>시스템 에어컨 세척 서비스 안내<small>oq-oq-c08-ac-decision</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="primary">
+        <td>시스템 에어컨 세척 서비스 안내<small>oq-oq-c08-ac-decision</small></td>
+        <td>sheet</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>시스템 에어컨 세척 서비스 안내<small>oq-oq-c08-ac-decision</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="available_after_user_overlay" data-recommendation="secondary">
+        <td>2026년 농업인 온열질환 예방가이드 및 체크리스트<small>oq-oq-b01-heat</small></td>
+        <td>calendar</td>
+        <td>secondary</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>시작일, pacing 정책 확인</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="primary">
+        <td>2026년 농업인 온열질환 예방가이드 및 체크리스트<small>oq-oq-b01-heat</small></td>
+        <td>checklist</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>2</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="optional">
+        <td>2026년 농업인 온열질환 예방가이드 및 체크리스트<small>oq-oq-b01-heat</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>5</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="optional">
+        <td>2026년 농업인 온열질환 예방가이드 및 체크리스트<small>oq-oq-b01-heat</small></td>
+        <td>sheet</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>4</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>2026년 농업인 온열질환 예방가이드 및 체크리스트<small>oq-oq-b01-heat</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>2</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>리모델링 계약서 체크리스트 10<small>oq-oq-b03-remodel</small></td>
+        <td>calendar</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="optional">
+        <td>리모델링 계약서 체크리스트 10<small>oq-oq-b03-remodel</small></td>
+        <td>checklist</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="optional">
+        <td>리모델링 계약서 체크리스트 10<small>oq-oq-b03-remodel</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="primary">
+        <td>리모델링 계약서 체크리스트 10<small>oq-oq-b03-remodel</small></td>
+        <td>sheet</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>리모델링 계약서 체크리스트 10<small>oq-oq-b03-remodel</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="available_after_user_overlay" data-recommendation="secondary">
+        <td>OSSU Computer Science Curriculum<small>oq-oq-p01-ossu</small></td>
+        <td>calendar</td>
+        <td>secondary</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>시작일, pacing 정책 확인</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="optional">
+        <td>OSSU Computer Science Curriculum<small>oq-oq-p01-ossu</small></td>
+        <td>checklist</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>2</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="secondary">
+        <td>OSSU Computer Science Curriculum<small>oq-oq-p01-ossu</small></td>
+        <td>todo</td>
+        <td>secondary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>7</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="primary">
+        <td>OSSU Computer Science Curriculum<small>oq-oq-p01-ossu</small></td>
+        <td>sheet</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>6</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>OSSU Computer Science Curriculum<small>oq-oq-p01-ossu</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>2</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>Packing list<small>oq-oq-p02-packing</small></td>
+        <td>calendar</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="primary">
+        <td>Packing list<small>oq-oq-p02-packing</small></td>
+        <td>checklist</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>2</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="optional">
+        <td>Packing list<small>oq-oq-p02-packing</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>9</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="optional">
+        <td>Packing list<small>oq-oq-p02-packing</small></td>
+        <td>sheet</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>7</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>Packing list<small>oq-oq-p02-packing</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>2</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>정기검사 대상·기준·유효기간 안내<small>oq-oq-p03-vehicle</small></td>
+        <td>calendar</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="optional">
+        <td>정기검사 대상·기준·유효기간 안내<small>oq-oq-p03-vehicle</small></td>
+        <td>checklist</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="primary">
+        <td>정기검사 대상·기준·유효기간 안내<small>oq-oq-p03-vehicle</small></td>
+        <td>todo</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="optional">
+        <td>정기검사 대상·기준·유효기간 안내<small>oq-oq-p03-vehicle</small></td>
+        <td>sheet</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>정기검사 대상·기준·유효기간 안내<small>oq-oq-p03-vehicle</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="available_after_user_overlay" data-recommendation="secondary">
+        <td>포트폴리오 4주 만에 준비하기<small>oq-oq-p04-portfolio</small></td>
+        <td>calendar</td>
+        <td>secondary</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>시작일, pacing 정책 확인</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="primary">
+        <td>포트폴리오 4주 만에 준비하기<small>oq-oq-p04-portfolio</small></td>
+        <td>checklist</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>7</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="optional">
+        <td>포트폴리오 4주 만에 준비하기<small>oq-oq-p04-portfolio</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>7</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="optional">
+        <td>포트폴리오 4주 만에 준비하기<small>oq-oq-p04-portfolio</small></td>
+        <td>sheet</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>7</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>포트폴리오 4주 만에 준비하기<small>oq-oq-p04-portfolio</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>7</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>어린이집 보육료 지원 신청<small>value-vq-01</small></td>
+        <td>calendar</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="primary">
+        <td>어린이집 보육료 지원 신청<small>value-vq-01</small></td>
+        <td>checklist</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>3</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="optional">
+        <td>어린이집 보육료 지원 신청<small>value-vq-01</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>5</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="optional">
+        <td>어린이집 보육료 지원 신청<small>value-vq-01</small></td>
+        <td>sheet</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>4</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>어린이집 보육료 지원 신청<small>value-vq-01</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>3</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="available_after_user_overlay" data-recommendation="primary">
+        <td>평일 5일 저녁 식단<small>value-vq-03</small></td>
+        <td>calendar</td>
+        <td>primary</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>사용할 시작 주</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="secondary">
+        <td>평일 5일 저녁 식단<small>value-vq-03</small></td>
+        <td>checklist</td>
+        <td>secondary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="optional">
+        <td>평일 5일 저녁 식단<small>value-vq-03</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>6</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="optional">
+        <td>평일 5일 저녁 식단<small>value-vq-03</small></td>
+        <td>sheet</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>5</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>평일 5일 저녁 식단<small>value-vq-03</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>옷장 정리 1일<small>value-vq-04</small></td>
+        <td>calendar</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="primary">
+        <td>옷장 정리 1일<small>value-vq-04</small></td>
+        <td>checklist</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>2</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="optional">
+        <td>옷장 정리 1일<small>value-vq-04</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>7</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="optional">
+        <td>옷장 정리 1일<small>value-vq-04</small></td>
+        <td>sheet</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>6</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>옷장 정리 1일<small>value-vq-04</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>2</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="available_after_user_overlay" data-recommendation="secondary">
+        <td>코드 없이 따라하는 빅데이터 분석<small>value-vq-05</small></td>
+        <td>calendar</td>
+        <td>secondary</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>시작일, pacing 정책 확인</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="optional">
+        <td>코드 없이 따라하는 빅데이터 분석<small>value-vq-05</small></td>
+        <td>checklist</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>2</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="secondary">
+        <td>코드 없이 따라하는 빅데이터 분석<small>value-vq-05</small></td>
+        <td>todo</td>
+        <td>secondary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>11</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="primary">
+        <td>코드 없이 따라하는 빅데이터 분석<small>value-vq-05</small></td>
+        <td>sheet</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>10</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>코드 없이 따라하는 빅데이터 분석<small>value-vq-05</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>2</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>식물성 음료 품질비교<small>value-vq-06</small></td>
+        <td>calendar</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="secondary">
+        <td>식물성 음료 품질비교<small>value-vq-06</small></td>
+        <td>checklist</td>
+        <td>secondary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="optional">
+        <td>식물성 음료 품질비교<small>value-vq-06</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>7</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="primary">
+        <td>식물성 음료 품질비교<small>value-vq-06</small></td>
+        <td>sheet</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>6</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>식물성 음료 품질비교<small>value-vq-06</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="available_after_user_overlay" data-recommendation="secondary">
+        <td>리모델링 공정별 하자 점검<small>value-vq-10</small></td>
+        <td>calendar</td>
+        <td>secondary</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>시작일, pacing 정책 확인</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="secondary">
+        <td>리모델링 공정별 하자 점검<small>value-vq-10</small></td>
+        <td>checklist</td>
+        <td>secondary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>2</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="optional">
+        <td>리모델링 공정별 하자 점검<small>value-vq-10</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>14</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="primary">
+        <td>리모델링 공정별 하자 점검<small>value-vq-10</small></td>
+        <td>sheet</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>13</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>리모델링 공정별 하자 점검<small>value-vq-10</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>2</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="available_after_user_overlay" data-recommendation="secondary">
+        <td>2026년 2학기 국가근로장학금 신청<small>value-vq-11</small></td>
+        <td>calendar</td>
+        <td>secondary</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>기준일 또는 실제 날짜</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="primary">
+        <td>2026년 2학기 국가근로장학금 신청<small>value-vq-11</small></td>
+        <td>checklist</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>5</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="optional">
+        <td>2026년 2학기 국가근로장학금 신청<small>value-vq-11</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>5</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="optional">
+        <td>2026년 2학기 국가근로장학금 신청<small>value-vq-11</small></td>
+        <td>sheet</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>5</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>2026년 2학기 국가근로장학금 신청<small>value-vq-11</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>5</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>반려동물 가족 재난 대응 준비<small>value-vq-12</small></td>
+        <td>calendar</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="primary">
+        <td>반려동물 가족 재난 대응 준비<small>value-vq-12</small></td>
+        <td>checklist</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="optional">
+        <td>반려동물 가족 재난 대응 준비<small>value-vq-12</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>7</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="optional">
+        <td>반려동물 가족 재난 대응 준비<small>value-vq-12</small></td>
+        <td>sheet</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>6</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>반려동물 가족 재난 대응 준비<small>value-vq-12</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="available_after_user_overlay" data-recommendation="secondary">
+        <td>25~36개월 행동·안전<small>deep-ds06</small></td>
+        <td>calendar</td>
+        <td>secondary</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>시작일, pacing 정책 확인</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="secondary">
+        <td>25~36개월 행동·안전<small>deep-ds06</small></td>
+        <td>checklist</td>
+        <td>secondary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>4</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="optional">
+        <td>25~36개월 행동·안전<small>deep-ds06</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>4</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="primary">
+        <td>25~36개월 행동·안전<small>deep-ds06</small></td>
+        <td>sheet</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>4</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>25~36개월 행동·안전<small>deep-ds06</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>4</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>공주 부모님과 당일치기 힐링 여행코스<small>deep-ds08</small></td>
+        <td>calendar</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="primary">
+        <td>공주 부모님과 당일치기 힐링 여행코스<small>deep-ds08</small></td>
+        <td>checklist</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>4</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="optional">
+        <td>공주 부모님과 당일치기 힐링 여행코스<small>deep-ds08</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>4</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="optional">
+        <td>공주 부모님과 당일치기 힐링 여행코스<small>deep-ds08</small></td>
+        <td>sheet</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>4</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>공주 부모님과 당일치기 힐링 여행코스<small>deep-ds08</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>4</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>영유아 건강검진 일정<small>live-c01</small></td>
+        <td>calendar</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="primary">
+        <td>영유아 건강검진 일정<small>live-c01</small></td>
+        <td>checklist</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>12</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="optional">
+        <td>영유아 건강검진 일정<small>live-c01</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>12</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="optional">
+        <td>영유아 건강검진 일정<small>live-c01</small></td>
+        <td>sheet</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>12</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>영유아 건강검진 일정<small>live-c01</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>12</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>가족여행 짐 준비표<small>live-c10</small></td>
+        <td>calendar</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="primary">
+        <td>가족여행 짐 준비표<small>live-c10</small></td>
+        <td>checklist</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>7</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="optional">
+        <td>가족여행 짐 준비표<small>live-c10</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>7</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="optional">
+        <td>가족여행 짐 준비표<small>live-c10</small></td>
+        <td>sheet</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>7</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>가족여행 짐 준비표<small>live-c10</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>7</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>노밀가루 바나나 땅콩버터 빵<small>live-c13</small></td>
+        <td>calendar</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="primary">
+        <td>노밀가루 바나나 땅콩버터 빵<small>live-c13</small></td>
+        <td>checklist</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>4</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="optional">
+        <td>노밀가루 바나나 땅콩버터 빵<small>live-c13</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>4</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="optional">
+        <td>노밀가루 바나나 땅콩버터 빵<small>live-c13</small></td>
+        <td>sheet</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>4</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>노밀가루 바나나 땅콩버터 빵<small>live-c13</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>4</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="available_after_user_overlay" data-recommendation="secondary">
+        <td>블로그를 활용해 유튜브 쉽게 시작하는 법<small>live-c16</small></td>
+        <td>calendar</td>
+        <td>secondary</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>시작일, pacing 정책 확인</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="optional">
+        <td>블로그를 활용해 유튜브 쉽게 시작하는 법<small>live-c16</small></td>
+        <td>checklist</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>3</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="primary">
+        <td>블로그를 활용해 유튜브 쉽게 시작하는 법<small>live-c16</small></td>
+        <td>todo</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>3</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="optional">
+        <td>블로그를 활용해 유튜브 쉽게 시작하는 법<small>live-c16</small></td>
+        <td>sheet</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>3</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>블로그를 활용해 유튜브 쉽게 시작하는 법<small>live-c16</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>3</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="available_after_user_overlay" data-recommendation="secondary">
+        <td>냉장고 파먹기 7일 식단 플랜<small>live-r02</small></td>
+        <td>calendar</td>
+        <td>secondary</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>시작일, pacing 정책 확인</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="secondary">
+        <td>냉장고 파먹기 7일 식단 플랜<small>live-r02</small></td>
+        <td>checklist</td>
+        <td>secondary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>7</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="optional">
+        <td>냉장고 파먹기 7일 식단 플랜<small>live-r02</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>7</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="primary">
+        <td>냉장고 파먹기 7일 식단 플랜<small>live-r02</small></td>
+        <td>sheet</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>7</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>냉장고 파먹기 7일 식단 플랜<small>live-r02</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>7</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>How To Maintain Your Washing Machine<small>live-live-ifixit-washer-01</small></td>
+        <td>calendar</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="primary">
+        <td>How To Maintain Your Washing Machine<small>live-live-ifixit-washer-01</small></td>
+        <td>checklist</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>7</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="optional">
+        <td>How To Maintain Your Washing Machine<small>live-live-ifixit-washer-01</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>7</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="optional">
+        <td>How To Maintain Your Washing Machine<small>live-live-ifixit-washer-01</small></td>
+        <td>sheet</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>7</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>How To Maintain Your Washing Machine<small>live-live-ifixit-washer-01</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>7</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>인플루언서 콘텐츠 2차 활용 체크포인트<small>live-kr-stibee-01</small></td>
+        <td>calendar</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="secondary">
+        <td>인플루언서 콘텐츠 2차 활용 체크포인트<small>live-kr-stibee-01</small></td>
+        <td>checklist</td>
+        <td>secondary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>4</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="optional">
+        <td>인플루언서 콘텐츠 2차 활용 체크포인트<small>live-kr-stibee-01</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>4</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="primary">
+        <td>인플루언서 콘텐츠 2차 활용 체크포인트<small>live-kr-stibee-01</small></td>
+        <td>sheet</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>4</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>인플루언서 콘텐츠 2차 활용 체크포인트<small>live-kr-stibee-01</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>4</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="available_after_user_overlay" data-recommendation="secondary">
+        <td>MDN Core learning modules<small>live-live-mdn-core-01</small></td>
+        <td>calendar</td>
+        <td>secondary</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>시작일, pacing 정책 확인</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="optional">
+        <td>MDN Core learning modules<small>live-live-mdn-core-01</small></td>
+        <td>checklist</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>9</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="secondary">
+        <td>MDN Core learning modules<small>live-live-mdn-core-01</small></td>
+        <td>todo</td>
+        <td>secondary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>9</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="primary">
+        <td>MDN Core learning modules<small>live-live-mdn-core-01</small></td>
+        <td>sheet</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>9</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>MDN Core learning modules<small>live-live-mdn-core-01</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>9</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="available_after_user_overlay" data-recommendation="primary">
+        <td>Dyson cordless vacuum filter care<small>live-live-dyson-filter-01</small></td>
+        <td>calendar</td>
+        <td>primary</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>첫 실행일</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="available_now" data-recommendation="secondary">
+        <td>Dyson cordless vacuum filter care<small>live-live-dyson-filter-01</small></td>
+        <td>checklist</td>
+        <td>secondary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>5</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="available_now" data-recommendation="optional">
+        <td>Dyson cordless vacuum filter care<small>live-live-dyson-filter-01</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>5</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="optional">
+        <td>Dyson cordless vacuum filter care<small>live-live-dyson-filter-01</small></td>
+        <td>sheet</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>5</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>Dyson cordless vacuum filter care<small>live-live-dyson-filter-01</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>5</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="calendar" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>Event Registration Intake Form<small>live-live-jotform-event-intake-01</small></td>
+        <td>calendar</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="checklist" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>Event Registration Intake Form<small>live-live-jotform-event-intake-01</small></td>
+        <td>checklist</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="todo" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>Event Registration Intake Form<small>live-live-jotform-event-intake-01</small></td>
+        <td>todo</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="sheet" data-availability="available_now" data-recommendation="primary">
+        <td>Event Registration Intake Form<small>live-live-jotform-event-intake-01</small></td>
+        <td>sheet</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>11</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="frozen_baseline_42" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>Event Registration Intake Form<small>live-live-jotform-event-intake-01</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="checklist_todo_boundary" data-projection="calendar" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>Ten Essentials<small>new-nps-ten-essentials</small></td>
+        <td>calendar</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="checklist_todo_boundary" data-projection="checklist" data-availability="available_now" data-recommendation="primary">
+        <td>Ten Essentials<small>new-nps-ten-essentials</small></td>
+        <td>checklist</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="checklist_todo_boundary" data-projection="todo" data-availability="available_now" data-recommendation="optional">
+        <td>Ten Essentials<small>new-nps-ten-essentials</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>11</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="checklist_todo_boundary" data-projection="sheet" data-availability="available_now" data-recommendation="optional">
+        <td>Ten Essentials<small>new-nps-ten-essentials</small></td>
+        <td>sheet</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>10</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="checklist_todo_boundary" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>Ten Essentials<small>new-nps-ten-essentials</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="checklist_todo_boundary" data-projection="calendar" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>Quick Start로 새 iPhone 또는 iPad 설정<small>new-apple-quick-start</small></td>
+        <td>calendar</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="checklist_todo_boundary" data-projection="checklist" data-availability="available_now" data-recommendation="primary">
+        <td>Quick Start로 새 iPhone 또는 iPad 설정<small>new-apple-quick-start</small></td>
+        <td>checklist</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="checklist_todo_boundary" data-projection="todo" data-availability="available_now" data-recommendation="optional">
+        <td>Quick Start로 새 iPhone 또는 iPad 설정<small>new-apple-quick-start</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>7</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="checklist_todo_boundary" data-projection="sheet" data-availability="available_now" data-recommendation="optional">
+        <td>Quick Start로 새 iPhone 또는 iPad 설정<small>new-apple-quick-start</small></td>
+        <td>sheet</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>6</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="checklist_todo_boundary" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>Quick Start로 새 iPhone 또는 iPad 설정<small>new-apple-quick-start</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="checklist_todo_boundary" data-projection="calendar" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>GitHub 계정 시작하기<small>new-github-account-onboarding</small></td>
+        <td>calendar</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="checklist_todo_boundary" data-projection="checklist" data-availability="available_now" data-recommendation="optional">
+        <td>GitHub 계정 시작하기<small>new-github-account-onboarding</small></td>
+        <td>checklist</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="checklist_todo_boundary" data-projection="todo" data-availability="available_now" data-recommendation="primary">
+        <td>GitHub 계정 시작하기<small>new-github-account-onboarding</small></td>
+        <td>todo</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>6</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="checklist_todo_boundary" data-projection="sheet" data-availability="available_now" data-recommendation="optional">
+        <td>GitHub 계정 시작하기<small>new-github-account-onboarding</small></td>
+        <td>sheet</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>5</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="checklist_todo_boundary" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>GitHub 계정 시작하기<small>new-github-account-onboarding</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="checklist_todo_boundary" data-projection="calendar" data-availability="available_after_user_overlay" data-recommendation="secondary">
+        <td>AI Agent End-to-End Codelab<small>new-google-codelab-ai-agent</small></td>
+        <td>calendar</td>
+        <td>secondary</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>시작일, pacing 정책 확인</td>
+      </tr><tr data-fixture-group="checklist_todo_boundary" data-projection="checklist" data-availability="available_now" data-recommendation="primary">
+        <td>AI Agent End-to-End Codelab<small>new-google-codelab-ai-agent</small></td>
+        <td>checklist</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="checklist_todo_boundary" data-projection="todo" data-availability="available_now" data-recommendation="optional">
+        <td>AI Agent End-to-End Codelab<small>new-google-codelab-ai-agent</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>6</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="checklist_todo_boundary" data-projection="sheet" data-availability="available_now" data-recommendation="optional">
+        <td>AI Agent End-to-End Codelab<small>new-google-codelab-ai-agent</small></td>
+        <td>sheet</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>5</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="checklist_todo_boundary" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>AI Agent End-to-End Codelab<small>new-google-codelab-ai-agent</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="checklist_todo_boundary" data-projection="calendar" data-availability="available_after_user_overlay" data-recommendation="secondary">
+        <td>MDN Dynamic scripting with JavaScript<small>new-mdn-core-scripting</small></td>
+        <td>calendar</td>
+        <td>secondary</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>시작일, pacing 정책 확인</td>
+      </tr><tr data-fixture-group="checklist_todo_boundary" data-projection="checklist" data-availability="available_now" data-recommendation="optional">
+        <td>MDN Dynamic scripting with JavaScript<small>new-mdn-core-scripting</small></td>
+        <td>checklist</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="checklist_todo_boundary" data-projection="todo" data-availability="available_now" data-recommendation="primary">
+        <td>MDN Dynamic scripting with JavaScript<small>new-mdn-core-scripting</small></td>
+        <td>todo</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>11</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="checklist_todo_boundary" data-projection="sheet" data-availability="available_now" data-recommendation="secondary">
+        <td>MDN Dynamic scripting with JavaScript<small>new-mdn-core-scripting</small></td>
+        <td>sheet</td>
+        <td>secondary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>10</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="checklist_todo_boundary" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>MDN Dynamic scripting with JavaScript<small>new-mdn-core-scripting</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="checklist_todo_boundary" data-projection="calendar" data-availability="available_after_user_overlay" data-recommendation="secondary">
+        <td>Project Gutenberg Top 100 reading queue snapshot<small>new-gutenberg-top-reading-queue</small></td>
+        <td>calendar</td>
+        <td>secondary</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>시작일, pacing 정책 확인</td>
+      </tr><tr data-fixture-group="checklist_todo_boundary" data-projection="checklist" data-availability="available_now" data-recommendation="optional">
+        <td>Project Gutenberg Top 100 reading queue snapshot<small>new-gutenberg-top-reading-queue</small></td>
+        <td>checklist</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="checklist_todo_boundary" data-projection="todo" data-availability="available_now" data-recommendation="primary">
+        <td>Project Gutenberg Top 100 reading queue snapshot<small>new-gutenberg-top-reading-queue</small></td>
+        <td>todo</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>9</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="checklist_todo_boundary" data-projection="sheet" data-availability="available_now" data-recommendation="secondary">
+        <td>Project Gutenberg Top 100 reading queue snapshot<small>new-gutenberg-top-reading-queue</small></td>
+        <td>sheet</td>
+        <td>secondary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>8</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="checklist_todo_boundary" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>Project Gutenberg Top 100 reading queue snapshot<small>new-gutenberg-top-reading-queue</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="calendar" data-availability="available_now" data-recommendation="primary">
+        <td>필묵으로 펼쳐지는 한국춤<small>event-kr-single-performance</small></td>
+        <td>calendar</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="checklist" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>필묵으로 펼쳐지는 한국춤<small>event-kr-single-performance</small></td>
+        <td>checklist</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="todo" data-availability="available_after_user_overlay" data-recommendation="optional">
+        <td>필묵으로 펼쳐지는 한국춤<small>event-kr-single-performance</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>action or attendance intent</td>
+      </tr><tr data-fixture-group="event_native" data-projection="sheet" data-availability="available_now" data-recommendation="secondary">
+        <td>필묵으로 펼쳐지는 한국춤<small>event-kr-single-performance</small></td>
+        <td>sheet</td>
+        <td>secondary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>필묵으로 펼쳐지는 한국춤<small>event-kr-single-performance</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="calendar" data-availability="available_after_user_overlay" data-recommendation="primary">
+        <td>제46회 한국합창제<small>event-kr-multi-show-choir</small></td>
+        <td>calendar</td>
+        <td>primary</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>selectedOccurrenceId 또는 saveAllOccurrences</td>
+      </tr><tr data-fixture-group="event_native" data-projection="checklist" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>제46회 한국합창제<small>event-kr-multi-show-choir</small></td>
+        <td>checklist</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="todo" data-availability="available_after_user_overlay" data-recommendation="optional">
+        <td>제46회 한국합창제<small>event-kr-multi-show-choir</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>action or attendance intent</td>
+      </tr><tr data-fixture-group="event_native" data-projection="sheet" data-availability="available_now" data-recommendation="secondary">
+        <td>제46회 한국합창제<small>event-kr-multi-show-choir</small></td>
+        <td>sheet</td>
+        <td>secondary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>4</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>제46회 한국합창제<small>event-kr-multi-show-choir</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="calendar" data-availability="available_after_user_overlay" data-recommendation="primary">
+        <td>속초 썸머페스티벌<small>event-kr-sokcho-summer</small></td>
+        <td>calendar</td>
+        <td>primary</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>selectedOccurrenceId 또는 saveAllOccurrences</td>
+      </tr><tr data-fixture-group="event_native" data-projection="checklist" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>속초 썸머페스티벌<small>event-kr-sokcho-summer</small></td>
+        <td>checklist</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="todo" data-availability="available_after_user_overlay" data-recommendation="optional">
+        <td>속초 썸머페스티벌<small>event-kr-sokcho-summer</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>action or attendance intent</td>
+      </tr><tr data-fixture-group="event_native" data-projection="sheet" data-availability="available_now" data-recommendation="secondary">
+        <td>속초 썸머페스티벌<small>event-kr-sokcho-summer</small></td>
+        <td>sheet</td>
+        <td>secondary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>3</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>속초 썸머페스티벌<small>event-kr-sokcho-summer</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="calendar" data-availability="available_after_user_overlay" data-recommendation="primary">
+        <td>마틴 파 : We Are Martin Parr<small>event-kr-sema-martin-parr</small></td>
+        <td>calendar</td>
+        <td>primary</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>selectedVisitStart</td>
+      </tr><tr data-fixture-group="event_native" data-projection="checklist" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>마틴 파 : We Are Martin Parr<small>event-kr-sema-martin-parr</small></td>
+        <td>checklist</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="todo" data-availability="available_after_user_overlay" data-recommendation="optional">
+        <td>마틴 파 : We Are Martin Parr<small>event-kr-sema-martin-parr</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>action or attendance intent</td>
+      </tr><tr data-fixture-group="event_native" data-projection="sheet" data-availability="available_now" data-recommendation="secondary">
+        <td>마틴 파 : We Are Martin Parr<small>event-kr-sema-martin-parr</small></td>
+        <td>sheet</td>
+        <td>secondary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>5</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>마틴 파 : We Are Martin Parr<small>event-kr-sema-martin-parr</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="calendar" data-availability="available_after_user_overlay" data-recommendation="primary">
+        <td>서울시발레단 더블 빌 〈죽음과 소녀〉<small>event-kr-ballet-ticket-show</small></td>
+        <td>calendar</td>
+        <td>primary</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>selectedOccurrenceId 또는 saveAllOccurrences</td>
+      </tr><tr data-fixture-group="event_native" data-projection="checklist" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>서울시발레단 더블 빌 〈죽음과 소녀〉<small>event-kr-ballet-ticket-show</small></td>
+        <td>checklist</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="todo" data-availability="available_now" data-recommendation="optional">
+        <td>서울시발레단 더블 빌 〈죽음과 소녀〉<small>event-kr-ballet-ticket-show</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="sheet" data-availability="available_now" data-recommendation="secondary">
+        <td>서울시발레단 더블 빌 〈죽음과 소녀〉<small>event-kr-ballet-ticket-show</small></td>
+        <td>sheet</td>
+        <td>secondary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>3</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>서울시발레단 더블 빌 〈죽음과 소녀〉<small>event-kr-ballet-ticket-show</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="calendar" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>수산양식기사 2026년 정기 기사 3회<small>event-kr-qnet-exam-lifecycle</small></td>
+        <td>calendar</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="checklist" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>수산양식기사 2026년 정기 기사 3회<small>event-kr-qnet-exam-lifecycle</small></td>
+        <td>checklist</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="todo" data-availability="available_now" data-recommendation="primary">
+        <td>수산양식기사 2026년 정기 기사 3회<small>event-kr-qnet-exam-lifecycle</small></td>
+        <td>todo</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>5</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="sheet" data-availability="available_now" data-recommendation="secondary">
+        <td>수산양식기사 2026년 정기 기사 3회<small>event-kr-qnet-exam-lifecycle</small></td>
+        <td>sheet</td>
+        <td>secondary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>7</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>수산양식기사 2026년 정기 기사 3회<small>event-kr-qnet-exam-lifecycle</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="calendar" data-availability="unavailable" data-recommendation="primary">
+        <td>뮤지컬 〈몽유도원〉 일정 변경<small>event-kr-revised-musical</small></td>
+        <td>calendar</td>
+        <td>primary</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="checklist" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>뮤지컬 〈몽유도원〉 일정 변경<small>event-kr-revised-musical</small></td>
+        <td>checklist</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="todo" data-availability="available_after_user_overlay" data-recommendation="optional">
+        <td>뮤지컬 〈몽유도원〉 일정 변경<small>event-kr-revised-musical</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>action or attendance intent</td>
+      </tr><tr data-fixture-group="event_native" data-projection="sheet" data-availability="available_now" data-recommendation="secondary">
+        <td>뮤지컬 〈몽유도원〉 일정 변경<small>event-kr-revised-musical</small></td>
+        <td>sheet</td>
+        <td>secondary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>5</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>뮤지컬 〈몽유도원〉 일정 변경<small>event-kr-revised-musical</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="calendar" data-availability="available_now" data-recommendation="primary">
+        <td>Fee Free Day — NPS Birthday<small>event-pattern-nps-all-day</small></td>
+        <td>calendar</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="checklist" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>Fee Free Day — NPS Birthday<small>event-pattern-nps-all-day</small></td>
+        <td>checklist</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="todo" data-availability="available_after_user_overlay" data-recommendation="optional">
+        <td>Fee Free Day — NPS Birthday<small>event-pattern-nps-all-day</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>action or attendance intent</td>
+      </tr><tr data-fixture-group="event_native" data-projection="sheet" data-availability="available_now" data-recommendation="secondary">
+        <td>Fee Free Day — NPS Birthday<small>event-pattern-nps-all-day</small></td>
+        <td>sheet</td>
+        <td>secondary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>Fee Free Day — NPS Birthday<small>event-pattern-nps-all-day</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="calendar" data-availability="available_now" data-recommendation="primary">
+        <td>FOIA Advisory Committee Meeting<small>event-pattern-online-foia</small></td>
+        <td>calendar</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="checklist" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>FOIA Advisory Committee Meeting<small>event-pattern-online-foia</small></td>
+        <td>checklist</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="todo" data-availability="available_after_user_overlay" data-recommendation="optional">
+        <td>FOIA Advisory Committee Meeting<small>event-pattern-online-foia</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>action or attendance intent</td>
+      </tr><tr data-fixture-group="event_native" data-projection="sheet" data-availability="available_now" data-recommendation="secondary">
+        <td>FOIA Advisory Committee Meeting<small>event-pattern-online-foia</small></td>
+        <td>sheet</td>
+        <td>secondary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>FOIA Advisory Committee Meeting<small>event-pattern-online-foia</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="calendar" data-availability="available_after_user_overlay" data-recommendation="primary">
+        <td>Declaration Reading<small>event-pattern-nps-weekly</small></td>
+        <td>calendar</td>
+        <td>primary</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>전체 시리즈 또는 개별 회차 선택</td>
+      </tr><tr data-fixture-group="event_native" data-projection="checklist" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>Declaration Reading<small>event-pattern-nps-weekly</small></td>
+        <td>checklist</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="todo" data-availability="available_after_user_overlay" data-recommendation="optional">
+        <td>Declaration Reading<small>event-pattern-nps-weekly</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>action or attendance intent</td>
+      </tr><tr data-fixture-group="event_native" data-projection="sheet" data-availability="available_now" data-recommendation="secondary">
+        <td>Declaration Reading<small>event-pattern-nps-weekly</small></td>
+        <td>sheet</td>
+        <td>secondary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>2</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>Declaration Reading<small>event-pattern-nps-weekly</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="calendar" data-availability="available_after_user_overlay" data-recommendation="primary">
+        <td>2026 대구치맥페스티벌<small>event-pattern-chimac-edition</small></td>
+        <td>calendar</td>
+        <td>primary</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>selectedVisitDateTime</td>
+      </tr><tr data-fixture-group="event_native" data-projection="checklist" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>2026 대구치맥페스티벌<small>event-pattern-chimac-edition</small></td>
+        <td>checklist</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="todo" data-availability="available_after_user_overlay" data-recommendation="optional">
+        <td>2026 대구치맥페스티벌<small>event-pattern-chimac-edition</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>action or attendance intent</td>
+      </tr><tr data-fixture-group="event_native" data-projection="sheet" data-availability="available_now" data-recommendation="secondary">
+        <td>2026 대구치맥페스티벌<small>event-pattern-chimac-edition</small></td>
+        <td>sheet</td>
+        <td>secondary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>2026 대구치맥페스티벌<small>event-pattern-chimac-edition</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="calendar" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>Sandy Hook Park Cleanup<small>event-pattern-nps-rescheduled</small></td>
+        <td>calendar</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="checklist" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>Sandy Hook Park Cleanup<small>event-pattern-nps-rescheduled</small></td>
+        <td>checklist</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="todo" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>Sandy Hook Park Cleanup<small>event-pattern-nps-rescheduled</small></td>
+        <td>todo</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="sheet" data-availability="available_now" data-recommendation="secondary">
+        <td>Sandy Hook Park Cleanup<small>event-pattern-nps-rescheduled</small></td>
+        <td>sheet</td>
+        <td>secondary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>2</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="memo" data-availability="available_now" data-recommendation="primary">
+        <td>Sandy Hook Park Cleanup<small>event-pattern-nps-rescheduled</small></td>
+        <td>memo</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="calendar" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>FUN SEOUL 행사 관심 목록<small>event-pattern-fun-seoul-interest-list</small></td>
+        <td>calendar</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="checklist" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>FUN SEOUL 행사 관심 목록<small>event-pattern-fun-seoul-interest-list</small></td>
+        <td>checklist</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="todo" data-availability="available_after_user_overlay" data-recommendation="optional">
+        <td>FUN SEOUL 행사 관심 목록<small>event-pattern-fun-seoul-interest-list</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>action or attendance intent</td>
+      </tr><tr data-fixture-group="event_native" data-projection="sheet" data-availability="available_now" data-recommendation="primary">
+        <td>FUN SEOUL 행사 관심 목록<small>event-pattern-fun-seoul-interest-list</small></td>
+        <td>sheet</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>5</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>FUN SEOUL 행사 관심 목록<small>event-pattern-fun-seoul-interest-list</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="calendar" data-availability="available_after_user_overlay" data-recommendation="secondary">
+        <td>2026 보령머드축제 운영시간<small>event-pattern-boryeong-operations</small></td>
+        <td>calendar</td>
+        <td>secondary</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>selectedVisitDateTime</td>
+      </tr><tr data-fixture-group="event_native" data-projection="checklist" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>2026 보령머드축제 운영시간<small>event-pattern-boryeong-operations</small></td>
+        <td>checklist</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="todo" data-availability="available_after_user_overlay" data-recommendation="optional">
+        <td>2026 보령머드축제 운영시간<small>event-pattern-boryeong-operations</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>action or attendance intent</td>
+      </tr><tr data-fixture-group="event_native" data-projection="sheet" data-availability="available_now" data-recommendation="primary">
+        <td>2026 보령머드축제 운영시간<small>event-pattern-boryeong-operations</small></td>
+        <td>sheet</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>6</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>2026 보령머드축제 운영시간<small>event-pattern-boryeong-operations</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="calendar" data-availability="available_after_user_overlay" data-recommendation="secondary">
+        <td>2026 보령머드축제 행사일정표<small>event-pattern-boryeong-programs</small></td>
+        <td>calendar</td>
+        <td>secondary</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>selectedOccurrenceId 또는 saveAllOccurrences</td>
+      </tr><tr data-fixture-group="event_native" data-projection="checklist" data-availability="unavailable" data-recommendation="not_recommended">
+        <td>2026 보령머드축제 행사일정표<small>event-pattern-boryeong-programs</small></td>
+        <td>checklist</td>
+        <td>not_recommended</td>
+        <td>unavailable</td>
+        <td>misleading_or_prohibited</td>
+        <td>—</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="todo" data-availability="available_after_user_overlay" data-recommendation="optional">
+        <td>2026 보령머드축제 행사일정표<small>event-pattern-boryeong-programs</small></td>
+        <td>todo</td>
+        <td>optional</td>
+        <td>available_after_user_overlay</td>
+        <td>bounded_loss</td>
+        <td>—</td>
+        <td>action or attendance intent</td>
+      </tr><tr data-fixture-group="event_native" data-projection="sheet" data-availability="available_now" data-recommendation="primary">
+        <td>2026 보령머드축제 행사일정표<small>event-pattern-boryeong-programs</small></td>
+        <td>sheet</td>
+        <td>primary</td>
+        <td>available_now</td>
+        <td>lossless_or_low_loss</td>
+        <td>3</td>
+        <td>0</td>
+      </tr><tr data-fixture-group="event_native" data-projection="memo" data-availability="available_now" data-recommendation="optional">
+        <td>2026 보령머드축제 행사일정표<small>event-pattern-boryeong-programs</small></td>
+        <td>memo</td>
+        <td>optional</td>
+        <td>available_now</td>
+        <td>bounded_loss</td>
+        <td>1</td>
+        <td>0</td>
+      </tr></tbody></table></div>
+  </section>
+  <section class="slide">
+    <div class="eyebrow">결론과 검증 경계</div>
+    <h2>기획으로 넘길 기본값은 여섯 가지다</h2>
+    <div class="metric-grid">
+      <article class="metric"><strong>42</strong><span>기존 canonical fixture</span></article>
+      <article class="metric"><strong>21</strong><span>신규 실제 fixture</span></article>
+      <article class="metric"><strong>315</strong><span>projection 비교 cell</span></article>
+      <article class="metric"><strong>8</strong><span>pacing deterministic 실험</span></article>
+    </div>
+    <div class="two-col" style="margin-top:18px">
+      <article class="panel"><h3>승인 권고</h3><ol><li>Item canonical 유지</li><li>Checklist/Todo sibling</li><li>목적지별 grouping adapter</li><li>pacing은 user overlay</li><li>due 자동 VEVENT 금지</li><li>Series/Edition/Occurrence 분리</li></ol></article>
+      <article class="panel"><h3>아직 검증하지 않음</h3><ul><li>실제 사용자 이해·저장 의사</li><li>Google/Outlook/Apple 왕복</li><li>VTODO 지원·RELATED-TO 보존</li><li>운영 crawler의 freshness 처리</li></ul><div class="callout"><strong>모두 NOT_RUN</strong><br>자동 QA 통과를 사용자 검증으로 표현하지 않습니다.</div></article>
+    </div>
+  </section>
+</main>
+<script>
+  const search = document.getElementById('matrix-search');
+  const projection = document.getElementById('matrix-projection');
+  const availability = document.getElementById('matrix-availability');
+  const group = document.getElementById('matrix-group');
+  const rows = [...document.querySelectorAll('#matrix-body tr')];
+  function applyFilters(){
+    const query = search.value.trim().toLowerCase();
+    rows.forEach((row)=>{
+      const show = (!query || row.textContent.toLowerCase().includes(query))
+        && (!projection.value || row.dataset.projection === projection.value)
+        && (!availability.value || row.dataset.availability === availability.value)
+        && (!group.value || row.dataset.fixtureGroup === group.value);
+      row.hidden = !show;
+    });
+  }
+  [search,projection,availability,group].forEach((control)=>control.addEventListener('input',applyFilters));
+</script>
+</body>
+</html>

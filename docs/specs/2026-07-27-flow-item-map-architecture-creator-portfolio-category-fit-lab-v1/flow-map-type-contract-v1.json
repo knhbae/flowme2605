@@ -1,0 +1,363 @@
+{
+  "documentType": "flowme_flow_map_type_contract",
+  "schemaVersion": "flowme-flow-map-type-contract-v1",
+  "date": "2026-07-27",
+  "status": "evaluation_contract",
+  "claimBoundary": [
+    "This contract classifies composition semantics; it does not approve any creator, source, content, or public release.",
+    "A Flow Map is not an execution Item, completion owner, schedule owner, or parent ICS component.",
+    "An ordinary single Flow may use representationMode=flow_only and does not require a Flow Map."
+  ],
+  "hierarchy": [
+    "SourceRow",
+    "Item",
+    "Step",
+    "Flow",
+    "FlowMap"
+  ],
+  "representationModes": [
+    {
+      "id": "flow_only",
+      "definition": "One independent Flow with no meaningful parent composition.",
+      "mapRequired": false,
+      "legacyInputs": [
+        "single_flow"
+      ]
+    },
+    {
+      "id": "flow_map",
+      "definition": "Two or more child Flows, or one sensitive Flow whose review wrapper must remain explicit.",
+      "mapRequired": true,
+      "allowedMapTypes": [
+        "ordered_life_event_map",
+        "source_curation",
+        "unordered_collection",
+        "single_sensitive_schedule"
+      ]
+    }
+  ],
+  "mapTypes": [
+    {
+      "id": "ordered_life_event_map",
+      "semanticKind": "ordered",
+      "definition": "The primary source defines a meaningful child-Flow order, phase, D-day progression, day sequence, round, or curriculum sequence.",
+      "selectionConditions": [
+        "Child order is present in the primary source or in an explicit user-authored plan.",
+        "Changing child order would change the execution meaning.",
+        "Every dependency or order value can be traced to SourceRows or explicit user input."
+      ],
+      "exclusionConditions": [
+        "The creator merely listed or curated resources.",
+        "The UI display order is the only evidence of sequence.",
+        "Items share a category, creator, or date but have no execution dependency."
+      ],
+      "requiredFields": [
+        "mapId",
+        "mapType",
+        "title",
+        "childFlowIds",
+        "ordering",
+        "attributionRefIds",
+        "progressPolicy",
+        "calendarPolicy"
+      ],
+      "orderingContract": {
+        "mode": "source_defined",
+        "childOrderRequired": true,
+        "dependenciesAllowed": true,
+        "displayOrderMayDiffer": false
+      },
+      "progressContract": {
+        "mode": "derived_from_descendant_items",
+        "storedCompletionForbidden": true,
+        "sequenceProgressAllowed": true
+      },
+      "calendarContract": {
+        "parentCalendarComponentForbidden": true,
+        "allowedChildPolicies": [
+          "none",
+          "per_item",
+          "step_bundle"
+        ],
+        "rule": "Only scheduled descendant Items are eligible for Calendar projection."
+      },
+      "representativeCreatorPortfolioCases": [
+        "home-ajd",
+        "family-babyfood016",
+        "study-mansour",
+        "health-allblanc"
+      ]
+    },
+    {
+      "id": "source_curation",
+      "semanticKind": "source_curation",
+      "definition": "A creator or curator selected a set of independent source-backed child Flows; selection and attribution matter, but displayed order is not execution dependency.",
+      "selectionConditions": [
+        "The source explicitly presents a curated set.",
+        "Each child Flow can be used independently.",
+        "The curator identity and each child primary source remain separable."
+      ],
+      "exclusionConditions": [
+        "The source defines a required Day, phase, prerequisite, or curriculum order.",
+        "Rows from different creators would need to be merged into one Flow spine.",
+        "A collection page exists but child source rows were not imported."
+      ],
+      "requiredFields": [
+        "mapId",
+        "mapType",
+        "title",
+        "childFlowIds",
+        "ordering",
+        "attributionRefIds",
+        "progressPolicy",
+        "calendarPolicy"
+      ],
+      "orderingContract": {
+        "mode": "source_display_only",
+        "childOrderRequired": false,
+        "dependenciesAllowed": false,
+        "displayOrderMayDiffer": true
+      },
+      "progressContract": {
+        "mode": "derived_count_only",
+        "storedCompletionForbidden": true,
+        "sequenceProgressAllowed": false
+      },
+      "calendarContract": {
+        "parentCalendarComponentForbidden": true,
+        "defaultPolicy": "none",
+        "allowedChildPolicies": [
+          "none",
+          "per_item",
+          "step_bundle"
+        ],
+        "rule": "Curation membership never creates a schedule or SharedContext."
+      },
+      "representativeCreatorPortfolioCases": [
+        "meals-wtable"
+      ]
+    },
+    {
+      "id": "unordered_collection",
+      "semanticKind": "unordered",
+      "definition": "Child Flows are independent resources or actions with no source-defined execution order.",
+      "selectionConditions": [
+        "Every child Flow remains meaningful when opened or completed first.",
+        "The primary value is queueing, choosing, or saving independent child content.",
+        "No source row establishes dependencies among child Flows."
+      ],
+      "exclusionConditions": [
+        "The source defines a curriculum, Day sequence, phase, or prerequisite.",
+        "A curator's selection rationale is the primary value; use source_curation.",
+        "A channel or collection lacks imported child rows; use source_import_required instead."
+      ],
+      "requiredFields": [
+        "mapId",
+        "mapType",
+        "title",
+        "childFlowIds",
+        "ordering",
+        "attributionRefIds",
+        "progressPolicy",
+        "calendarPolicy"
+      ],
+      "orderingContract": {
+        "mode": "none",
+        "childOrderRequired": false,
+        "dependenciesAllowed": false,
+        "displayOrderMayDiffer": true
+      },
+      "progressContract": {
+        "mode": "derived_count_only",
+        "storedCompletionForbidden": true,
+        "sequenceProgressAllowed": false
+      },
+      "calendarContract": {
+        "parentCalendarComponentForbidden": true,
+        "defaultPolicy": "none",
+        "allowedChildPolicies": [
+          "none",
+          "per_item",
+          "step_bundle"
+        ],
+        "rule": "Collection membership never creates a schedule or execution order."
+      },
+      "representativeCreatorPortfolioCases": [
+        "work-andstudio"
+      ]
+    },
+    {
+      "id": "single_sensitive_schedule",
+      "semanticKind": "single_sensitive",
+      "definition": "A review wrapper around exactly one sensitive schedule Flow whose dates or applicability require source, locale, freshness, safety, or professional confirmation.",
+      "selectionConditions": [
+        "Exactly one child Flow is in scope.",
+        "The source contains a real schedule or age/date window.",
+        "Applicability and trust boundaries must remain visible before date resolution or promotion."
+      ],
+      "exclusionConditions": [
+        "The candidate is being used to imply a creator-wide portfolio Map.",
+        "Required SourceRows or trust anchors are missing.",
+        "A date would have to be invented from general knowledge."
+      ],
+      "requiredFields": [
+        "mapId",
+        "mapType",
+        "title",
+        "childFlowIds",
+        "ordering",
+        "attributionRefIds",
+        "progressPolicy",
+        "calendarPolicy",
+        "sensitiveReview"
+      ],
+      "cardinality": {
+        "minimumChildFlows": 1,
+        "maximumChildFlows": 1
+      },
+      "orderingContract": {
+        "mode": "not_applicable",
+        "childOrderRequired": false,
+        "dependenciesAllowed": false,
+        "displayOrderMayDiffer": false
+      },
+      "progressContract": {
+        "mode": "derived_from_descendant_items",
+        "storedCompletionForbidden": true,
+        "sequenceProgressAllowed": false
+      },
+      "calendarContract": {
+        "parentCalendarComponentForbidden": true,
+        "allowedChildPolicies": [
+          "none",
+          "per_item",
+          "step_bundle"
+        ],
+        "rule": "Unresolved anchor, locale, freshness, or safety review emits no VEVENT."
+      },
+      "sensitiveReviewContract": {
+        "requiredFields": [
+          "riskLevel",
+          "freshnessReview",
+          "localeReview",
+          "safetyReview",
+          "privacyReview",
+          "trustAnchorRefIds",
+          "blockers"
+        ],
+        "mustNotImplyProfessionalAdvice": true,
+        "mustNotPromoteCreatorPortfolio": true
+      },
+      "representativeCreatorPortfolioCases": [
+        "hobby-fitpet"
+      ]
+    }
+  ],
+  "mapRecordShape": {
+    "required": [
+      "mapId",
+      "mapType",
+      "title",
+      "childFlowIds",
+      "ordering",
+      "attributionRefIds",
+      "progressPolicy",
+      "calendarPolicy"
+    ],
+    "properties": {
+      "mapId": "stable string ID",
+      "mapType": "ordered_life_event_map | source_curation | unordered_collection | single_sensitive_schedule",
+      "title": "user-facing title",
+      "childFlowIds": "unique array of stable Flow IDs",
+      "ordering": "map-type-specific ordering object",
+      "attributionRefIds": "references to creator/provider/source-owner/curator attribution records",
+      "progressPolicy": "derived-only progress policy",
+      "calendarPolicy": "none | descendant_items_only",
+      "sensitiveReview": "required only for single_sensitive_schedule"
+    },
+    "forbiddenProperties": [
+      "completionState",
+      "schedule",
+      "effectiveSchedule",
+      "calendarEventId",
+      "parentIcsUid",
+      "itemStates"
+    ]
+  },
+  "legacyMapping": [
+    {
+      "legacyValue": "ordered_life_event_map",
+      "result": "ordered_life_event_map",
+      "review": "direct_when_source_order_is_evidenced"
+    },
+    {
+      "legacyValue": "missing_mapType_on_reused_ordered_bundle",
+      "result": "ordered_life_event_map",
+      "review": "human_or_rule_review_required; absence alone is not evidence"
+    },
+    {
+      "legacyValue": "source_curation",
+      "result": "source_curation",
+      "review": "direct"
+    },
+    {
+      "legacyValue": "unordered_collection",
+      "result": "unordered_collection",
+      "review": "direct"
+    },
+    {
+      "legacyValue": "single_sensitive_schedule",
+      "result": "single_sensitive_schedule",
+      "review": "direct_with_sensitive_gate"
+    },
+    {
+      "legacyValue": "single_flow",
+      "result": "flow_only",
+      "review": "do_not_promote_to_map"
+    }
+  ],
+  "globalInvariants": [
+    {
+      "id": "MAP-ONE-PRIMARY-SOURCE-PER-FLOW",
+      "rule": "Every child Flow has exactly one structure-controlling primary source."
+    },
+    {
+      "id": "MAP-NO-CROSS-CREATOR-SPINE",
+      "rule": "SourceRows from different creators are not merged into one Flow spine; a Map may curate separately source-owned child Flows."
+    },
+    {
+      "id": "MAP-NO-STATE-OWNERSHIP",
+      "rule": "Map and Step do not own authoritative Item completion, decision, record, hold, or occurrence state."
+    },
+    {
+      "id": "MAP-DERIVED-PROGRESS",
+      "rule": "Map progress is derived from descendant Item states and cannot be written independently."
+    },
+    {
+      "id": "MAP-NO-PARENT-ICS",
+      "rule": "A Flow Map is never represented as a date-less parent VEVENT, VTODO, or VJOURNAL."
+    },
+    {
+      "id": "MAP-NO-INVENTED-ORDER",
+      "rule": "Source curation and unordered collection cannot gain execution order from display order."
+    },
+    {
+      "id": "MAP-NO-SHARED-CONTEXT-BY-MEMBERSHIP",
+      "rule": "Map membership, creator, category, or curation alone cannot create a SharedContext."
+    },
+    {
+      "id": "MAP-STABLE-CHILD-IDENTITY",
+      "rule": "Child Flow and Item IDs remain stable across Map projection and reordering."
+    }
+  ],
+  "validatorRules": [
+    "mapType must be one of the four canonical map type IDs",
+    "childFlowIds must be unique and resolve to existing Flows",
+    "ordered_life_event_map requires source-defined order evidence for every ordered child",
+    "source_curation and unordered_collection forbid execution dependencies",
+    "single_sensitive_schedule requires exactly one child Flow and a complete sensitiveReview object",
+    "no map record may contain authoritative schedule or completion state",
+    "no Calendar projection may use a Map as its event owner",
+    "each child Flow must retain its primary source and attribution references"
+  ]
+}

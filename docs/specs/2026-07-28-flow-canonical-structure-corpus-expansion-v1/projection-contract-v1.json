@@ -1,0 +1,483 @@
+{
+  "schemaVersion": "flowme-projection-contract-v1",
+  "date": "2026-07-28",
+  "status": "planning_backend_contract",
+  "canonicalBase": "flowme-canonical-flow-v1",
+  "taxonomyBase": "flowme-taxonomy-v1.1",
+  "decision": "Calendar, Checklist, Todo, Sheet, and Memo are projections of effective Item data and never canonical storage alternatives.",
+  "claimBoundary": {
+    "externalCalendarRoundTrip": "NOT_RUN",
+    "vtodoClientSupport": "NOT_PROVEN",
+    "relatedToPreservation": "NOT_PROVEN",
+    "xPropertyPreservation": "NOT_PROVEN",
+    "observedUserValidation": "NOT_RUN"
+  },
+  "effectiveInputOrder": [
+    "pinned immutable content version",
+    "reviewed version resolution",
+    "UserFlowCopy overlay",
+    "ExecutionRun state",
+    "occurrence-specific override",
+    "projection request settings"
+  ],
+  "artifactSelectionPriority": [
+    {
+      "rank": 1,
+      "when": "The job fails without real date/time control.",
+      "primaryArtifact": "calendar"
+    },
+    {
+      "rank": 2,
+      "when": "The retained control surface is one bounded set of independent completions.",
+      "primaryArtifact": "checklist"
+    },
+    {
+      "rank": 3,
+      "when": "The retained control surface is an open or reorderable next-action/resource queue.",
+      "primaryArtifact": "todo"
+    },
+    {
+      "rank": 4,
+      "when": "Stable rows, Fields, comparisons, progress, or records are central.",
+      "primaryArtifact": "sheet"
+    },
+    {
+      "rank": 5,
+      "when": "Retained guidance, context, recipe detail, or source explanation completes the job.",
+      "primaryArtifact": "memo"
+    }
+  ],
+  "artifactRules": {
+    "primary": {
+      "allowed": [
+        "calendar",
+        "checklist",
+        "todo",
+        "sheet",
+        "memo"
+      ],
+      "forbidden": [
+        "hybrid",
+        "internal_check"
+      ],
+      "rule": "Choose the one artifact whose loss would make the user job fail."
+    },
+    "secondary": {
+      "allowed": [
+        "calendar",
+        "checklist",
+        "todo",
+        "sheet",
+        "memo"
+      ],
+      "rule": "Add only when it provides distinct utility and does not duplicate the primary artifact."
+    },
+    "forbiddenProjection": {
+      "rule": "Record a reason when a plausible-looking destination would invent schedule, flatten required state, expose private/review data, or misrepresent the source."
+    }
+  },
+  "selectionInvariants": [
+    "The selected primary projection contains at least one entry, row, or block.",
+    "calendar.eventCount equals calendar.entries.length.",
+    "When calendar.selected is false, calendar.eventCount and calendar.entries are both zero; eligibleScheduledItemCount may still describe a future selectable Calendar path.",
+    "A primary Calendar requires at least one scheduled Item and one VEVENT projection entry.",
+    "A structure_only_no_items template may select Sheet or Memo only when SourceRows map to Field or Memo entities; it never receives a synthetic Item or Calendar event."
+  ],
+  "targets": [
+    {
+      "target": "calendar",
+      "canonicalEligibility": "Item has an effective supported schedule, or a Step bundle contains only Items with one equal effective schedule.",
+      "defaultGranularity": "item",
+      "formats": [
+        "ics"
+      ],
+      "minimumFields": [
+        "projectionId",
+        "itemId or childItemIds",
+        "occurrenceKey",
+        "summary",
+        "resolvedStart",
+        "resolvedEnd or allDay",
+        "description",
+        "source URL when allowed"
+      ],
+      "descriptionCarries": [
+        "action detail needed at execution time",
+        "completion criterion",
+        "source link",
+        "source caution needed for execution",
+        "user memo when explicitly requested"
+      ],
+      "doesNotOwn": [
+        "canonical completion",
+        "decision value",
+        "record Fields",
+        "source provenance",
+        "review or promotion state"
+      ],
+      "fallback": [
+        "checklist",
+        "todo",
+        "sheet",
+        "memo"
+      ]
+    },
+    {
+      "target": "checklist",
+      "canonicalEligibility": "Item has check or decision completion and remains meaningful as a bounded set.",
+      "defaultGranularity": "item",
+      "formats": [
+        "plain_text",
+        "markdown"
+      ],
+      "minimumFields": [
+        "itemId",
+        "Step grouping",
+        "ordered action title",
+        "completion marker or decision prompt",
+        "detail or source link when needed"
+      ],
+      "preserves": [
+        "Item order",
+        "Step grouping",
+        "independent visible rows"
+      ],
+      "loss": [
+        "skip and hold may degrade to labels",
+        "typed decision or record values may need a link back or Sheet fallback"
+      ]
+    },
+    {
+      "target": "todo",
+      "canonicalEligibility": "Item is a next action, decision, or resource use that can stand alone in a queue.",
+      "defaultGranularity": "item",
+      "formats": [
+        "plain_text",
+        "markdown"
+      ],
+      "minimumFields": [
+        "itemId",
+        "title",
+        "detail or source link",
+        "optional due date only when scheduled"
+      ],
+      "preserves": [
+        "one row per canonical Item",
+        "open queue semantics"
+      ],
+      "loss": [
+        "Step hierarchy may flatten",
+        "record Fields require Sheet or FlowMe fallback"
+      ]
+    },
+    {
+      "target": "sheet",
+      "canonicalEligibility": "Stable source rows, Item or occurrence state, comparison columns, or record Fields exist.",
+      "defaultGranularity": "item_or_occurrence_row",
+      "formats": [
+        "csv",
+        "tsv",
+        "xlsx"
+      ],
+      "minimumFields": [
+        "itemId",
+        "occurrenceKey when expanded",
+        "Flow and Step labels",
+        "title",
+        "status",
+        "schedule columns when present",
+        "typed Field columns",
+        "source link or SourceRow IDs according to export policy"
+      ],
+      "preserves": [
+        "stable row identity",
+        "typed record/decision values",
+        "progress and comparison state"
+      ],
+      "loss": [
+        "rich Memo formatting",
+        "complex dependency or condition behavior unless exported as columns"
+      ]
+    },
+    {
+      "target": "memo",
+      "canonicalEligibility": "Any Flow may use Memo as a loss-aware fallback; it is primary when retained context is the natural artifact.",
+      "defaultGranularity": "flow_or_step_document",
+      "formats": [
+        "plain_text",
+        "markdown"
+      ],
+      "minimumFields": [
+        "Flow title and user job",
+        "ordered Step and Item text",
+        "Memo blocks",
+        "source URL",
+        "cautions that belong to user execution"
+      ],
+      "preserves": [
+        "human-readable context",
+        "source detail",
+        "instructions and cautions"
+      ],
+      "loss": [
+        "machine-checkable completion",
+        "typed Field constraints",
+        "recurrence behavior"
+      ]
+    }
+  ],
+  "calendarPolicy": {
+    "allowed": [
+      "none",
+      "per_item",
+      "step_bundle"
+    ],
+    "none": {
+      "chooseWhen": "No effective supported schedule exists or Calendar would not help the user job.",
+      "hardRule": "Undated Items produce zero VEVENT components."
+    },
+    "per_item": {
+      "chooseWhen": "Default for scheduled Items and whenever child completion, time, location, or meaning differs.",
+      "component": "one sibling VEVENT per scheduled Item or recurrence master/instance according to request policy",
+      "identity": "stable Item ID plus occurrence identity"
+    },
+    "step_bundle": {
+      "chooseWhenAll": [
+        "two or more child Items share one exact effective schedule",
+        "the child Items form one user moment",
+        "the event description contains all child Item IDs and labels",
+        "FlowMe remains the completion owner",
+        "independent completion loss is declared"
+      ],
+      "rejectWhenAny": [
+        "effective schedules differ",
+        "one child needs separate decision or record state in the destination",
+        "one child has a different location/timezone",
+        "the compact event would obscure a source-required action",
+        "the destination is expected to round-trip child completion"
+      ],
+      "canonicalEffect": "none",
+      "component": "one VEVENT with childItemIds metadata/description; never nested VEVENT or VTODO"
+    }
+  },
+  "iCalendar": {
+    "container": "VCALENDAR",
+    "components": {
+      "VEVENT": "Scheduled occurrence or qualified Step bundle.",
+      "VTODO": "Optional task projection only after destination capability confirmation.",
+      "VALARM": "May be nested in VEVENT or VTODO when a reminder is explicitly requested.",
+      "VJOURNAL": "Not used as a Flow, Step, or Map representation."
+    },
+    "nestingRules": [
+      "VEVENT and VTODO are siblings inside VCALENDAR.",
+      "VEVENT never contains VTODO.",
+      "VTODO never contains VEVENT.",
+      "Flow, Step, Bundle, and Map are never serialized as parent components."
+    ],
+    "identity": {
+      "uidInput": [
+        "copyId",
+        "itemId or deterministic Step bundle key",
+        "occurrenceKey"
+      ],
+      "forbiddenUidInput": [
+        "title alone",
+        "array index alone"
+      ]
+    },
+    "relations": {
+      "relatedTo": "Optional capability; canonical hierarchy never depends on its preservation.",
+      "xProperties": "Optional implementation detail; canonical provenance and state never depend on their round trip."
+    }
+  },
+  "vtodoPolicy": {
+    "defaultEnabled": false,
+    "enableOnlyWhen": [
+      "destination capability is positively identified",
+      "the request explicitly selects VTODO",
+      "loss behavior is disclosed"
+    ],
+    "notAssumed": [
+      "import support",
+      "re-export preservation",
+      "RELATED-TO preservation",
+      "completion synchronization"
+    ],
+    "fallbackOrderByShape": [
+      {
+        "shape": "bounded_check_rows",
+        "fallback": [
+          "checklist",
+          "todo",
+          "sheet",
+          "memo"
+        ]
+      },
+      {
+        "shape": "progress_or_record_rows",
+        "fallback": [
+          "sheet",
+          "checklist",
+          "memo"
+        ]
+      },
+      {
+        "shape": "resource_queue",
+        "fallback": [
+          "todo",
+          "sheet",
+          "memo"
+        ]
+      },
+      {
+        "shape": "guidance",
+        "fallback": [
+          "memo",
+          "checklist"
+        ]
+      }
+    ]
+  },
+  "projectionRequest": {
+    "required": [
+      "copyId or contentId plus version",
+      "target",
+      "format"
+    ],
+    "optional": [
+      "runId",
+      "dateRange",
+      "timezone",
+      "calendarPolicy",
+      "recurrenceExportMode",
+      "includeSource",
+      "includeCautions",
+      "includeUserMemo",
+      "destinationCapabilities"
+    ],
+    "serverMustResolve": [
+      "effective content version",
+      "user overlay",
+      "run and occurrence state",
+      "projection eligibility",
+      "loss manifest"
+    ]
+  },
+  "projectionResult": {
+    "required": [
+      "projectionId",
+      "contentId",
+      "contentVersion",
+      "target",
+      "format",
+      "records",
+      "lossManifest",
+      "generatedAt"
+    ],
+    "recordIdentity": "Every record carries Item ID, child Item IDs, or a Flow/Step document scope.",
+    "mustNotInclude": [
+      "internal quality scores",
+      "model/provider generation metadata",
+      "rights-review notes",
+      "raw extraction internals",
+      "private values not selected by the user"
+    ]
+  },
+  "lossManifestContract": {
+    "perProjectionRequired": [
+      "target",
+      "format",
+      "includedItemIds",
+      "omittedItemIds",
+      "lostProperties",
+      "completionOwner",
+      "fallbackTargets",
+      "externalInteroperability"
+    ],
+    "severity": [
+      "none",
+      "display_only",
+      "state_not_round_trippable",
+      "unsupported"
+    ],
+    "lostPropertyShape": {
+      "path": "Canonical or effective property path.",
+      "reason": "Why the destination cannot represent it.",
+      "severity": "Controlled loss severity.",
+      "fallback": "Target or FlowMe surface that retains the value."
+    },
+    "hardFailures": [
+      "scheduled data invented for an undated Item",
+      "required Item silently omitted",
+      "child Item IDs missing from a Step bundle",
+      "review/private sidecar leaked",
+      "projection presented as completion owner when it cannot round-trip state"
+    ]
+  },
+  "projectionProfiles": [
+    {
+      "sourceShape": "date_offsets",
+      "usualPrimary": "calendar",
+      "usualSecondary": [
+        "checklist",
+        "sheet",
+        "memo"
+      ],
+      "calendarDefault": "per_item",
+      "exception": "step_bundle only for equal schedule and one user moment"
+    },
+    {
+      "sourceShape": "lesson_rows",
+      "usualPrimary": "sheet",
+      "usualSecondary": [
+        "checklist",
+        "todo",
+        "memo"
+      ],
+      "calendarDefault": "none",
+      "exception": "calendar only after a supported source/user schedule exists"
+    },
+    {
+      "sourceShape": "decision_criteria",
+      "usualPrimary": "sheet",
+      "usualSecondary": [
+        "checklist",
+        "memo"
+      ],
+      "calendarDefault": "none",
+      "exception": "calendar only for a real revisit/deadline date"
+    },
+    {
+      "sourceShape": "resource_collection",
+      "usualPrimary": "todo",
+      "usualSecondary": [
+        "sheet",
+        "memo"
+      ],
+      "calendarDefault": "none",
+      "exception": "scheduled imported resources may use per-item Calendar"
+    },
+    {
+      "sourceShape": "narrative_guidance",
+      "usualPrimary": "memo",
+      "usualSecondary": [
+        "checklist"
+      ],
+      "calendarDefault": "none",
+      "exception": "one real application Item may be scheduled by user overlay"
+    }
+  ],
+  "validationRules": [
+    "Primary and secondary artifacts do not overlap.",
+    "New primaryArtifact is never hybrid.",
+    "Calendar records reference only scheduled effective Items.",
+    "Undated VEVENT count is zero.",
+    "VEVENT/VTODO nested count is zero.",
+    "Every scheduled calendar record has stable Item/occurrence identity.",
+    "Every Step bundle retains child Item IDs and declares completion loss.",
+    "Every non-Calendar primary artifact remains usable without ICS.",
+    "Every projection has a loss manifest, even when severity is none.",
+    "VTODO support is not described as verified.",
+    "Review and promotion sidecars do not enter user projection."
+  ]
+}

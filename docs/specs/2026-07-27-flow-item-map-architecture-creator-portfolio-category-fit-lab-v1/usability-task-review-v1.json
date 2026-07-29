@@ -1,0 +1,143 @@
+{
+  "schemaVersion": "flowme-usability-task-review-v1",
+  "evidenceType": "internal_expert_task_walkthrough",
+  "observedUserValidation": "not_run",
+  "externalAccountImport": "not_run",
+  "tasks": [
+    "first_action_visible",
+    "setup_inputs_zero_to_two",
+    "shared_anchor_entered_once",
+    "single_item_override_possible",
+    "sibling_completion_independent",
+    "projection_predictable",
+    "source_and_caution_findable"
+  ],
+  "records": [
+    {
+      "bundleId": "bundle-moving-d30",
+      "title": "이사 D-30 체크리스트",
+      "results": {
+        "first_action_visible": "pass",
+        "setup_inputs_zero_to_two": "pass",
+        "shared_anchor_entered_once": "pass_existing_setup_field",
+        "single_item_override_possible": "pass_in_item_overlay_contract",
+        "sibling_completion_independent": "pass",
+        "projection_predictable": "pass",
+        "source_and_caution_findable": "pass"
+      },
+      "note": "Task result is derived from the source-backed fixture and contract; no participant was observed."
+    },
+    {
+      "bundleId": "bundle-baby-food-174",
+      "title": "초기 이유식 D+174~209 식단",
+      "results": {
+        "first_action_visible": "pass",
+        "setup_inputs_zero_to_two": "pass",
+        "shared_anchor_entered_once": "pass_existing_setup_field",
+        "single_item_override_possible": "pass_in_item_overlay_contract",
+        "sibling_completion_independent": "pass",
+        "projection_predictable": "pass",
+        "source_and_caution_findable": "pass"
+      },
+      "note": "Task result is derived from the source-backed fixture and contract; no participant was observed."
+    },
+    {
+      "bundleId": "bundle-opic-plan",
+      "title": "오픽 모의고사 계획표",
+      "results": {
+        "first_action_visible": "pass",
+        "setup_inputs_zero_to_two": "pass",
+        "shared_anchor_entered_once": "pass_existing_setup_field",
+        "single_item_override_possible": "pass_in_item_overlay_contract",
+        "sibling_completion_independent": "pass",
+        "projection_predictable": "needs_copy_clarification",
+        "source_and_caution_findable": "pass"
+      },
+      "note": "Task result is derived from the source-backed fixture and contract; no participant was observed."
+    },
+    {
+      "bundleId": "bundle-new-car-comparison",
+      "title": "신차 구매 8단계",
+      "results": {
+        "first_action_visible": "pass",
+        "setup_inputs_zero_to_two": "pass",
+        "shared_anchor_entered_once": "not_applicable",
+        "single_item_override_possible": "pass_in_item_overlay_contract",
+        "sibling_completion_independent": "pass",
+        "projection_predictable": "pass",
+        "source_and_caution_findable": "pass"
+      },
+      "note": "Task result is derived from the source-backed fixture and contract; no participant was observed."
+    },
+    {
+      "bundleId": "bundle-allblanc-7day-abs",
+      "title": "Allblanc 7일 복근 챌린지",
+      "results": {
+        "first_action_visible": "pass",
+        "setup_inputs_zero_to_two": "pass",
+        "shared_anchor_entered_once": "pass_existing_setup_field",
+        "single_item_override_possible": "pass_in_item_overlay_contract",
+        "sibling_completion_independent": "pass",
+        "projection_predictable": "pass",
+        "source_and_caution_findable": "pass"
+      },
+      "note": "Task result is derived from the source-backed fixture and contract; no participant was observed."
+    },
+    {
+      "bundleId": "bundle-triple-cappadocia-departure",
+      "title": "카파도키아 출국 전 체크",
+      "results": {
+        "first_action_visible": "pass",
+        "setup_inputs_zero_to_two": "pass",
+        "shared_anchor_entered_once": "not_applicable",
+        "single_item_override_possible": "pass_in_item_overlay_contract",
+        "sibling_completion_independent": "pass",
+        "projection_predictable": "pass",
+        "source_and_caution_findable": "pass"
+      },
+      "note": "Task result is derived from the source-backed fixture and contract; no participant was observed."
+    },
+    {
+      "bundleId": "bundle-wtable-summer-banchan-five",
+      "title": "이번 주 여름 반찬 5가지",
+      "results": {
+        "first_action_visible": "pass",
+        "setup_inputs_zero_to_two": "pass",
+        "shared_anchor_entered_once": "not_applicable",
+        "single_item_override_possible": "pass_in_item_overlay_contract",
+        "sibling_completion_independent": "pass",
+        "projection_predictable": "pass",
+        "source_and_caution_findable": "pass"
+      },
+      "note": "Task result is derived from the source-backed fixture and contract; no participant was observed."
+    },
+    {
+      "bundleId": "bundle-andstudio-job-prep-videos",
+      "title": "AND 취업 준비 영상 3편",
+      "results": {
+        "first_action_visible": "pass",
+        "setup_inputs_zero_to_two": "pass",
+        "shared_anchor_entered_once": "not_applicable",
+        "single_item_override_possible": "pass_in_item_overlay_contract",
+        "sibling_completion_independent": "pass",
+        "projection_predictable": "pass",
+        "source_and_caution_findable": "pass"
+      },
+      "note": "Task result is derived from the source-backed fixture and contract; no participant was observed."
+    },
+    {
+      "bundleId": "bundle-fitpet-puppy-vaccination",
+      "title": "강아지 생후 6~16주 예방접종 일정",
+      "results": {
+        "first_action_visible": "pass",
+        "setup_inputs_zero_to_two": "pass",
+        "shared_anchor_entered_once": "pass_existing_setup_field",
+        "single_item_override_possible": "pass_in_item_overlay_contract",
+        "sibling_completion_independent": "pass",
+        "projection_predictable": "pass",
+        "source_and_caution_findable": "pass_with_trust_anchor_pending"
+      },
+      "note": "Task result is derived from the source-backed fixture and contract; no participant was observed."
+    }
+  ]
+}

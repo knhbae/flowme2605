@@ -1,0 +1,214 @@
+{
+  "schemaVersion": "flowme-structural-saturation-log-v1",
+  "generatedAt": "2026-07-28T23:59:00+09:00",
+  "entries": [
+    {
+      "batch": "batch_0_baseline",
+      "batchKind": "frozen_baseline",
+      "fixtureCount": 8,
+      "fixtureIds": [
+        "base-moving-d30",
+        "base-baby-food-174",
+        "base-opic-plan",
+        "base-opentutorials-web1-progress",
+        "base-new-car-comparison",
+        "base-allblanc-7day-abs",
+        "base-wtable-summer-banchan-five",
+        "base-andstudio-job-prep-videos"
+      ],
+      "cumulativeFixtureCount": 8,
+      "newStructuralValues": {
+        "shapes": 5,
+        "patterns": 4,
+        "artifacts": 4,
+        "intents": 5,
+        "completion": 2,
+        "schedule": 2
+      },
+      "cumulativeCoverage": {
+        "shapes": 5,
+        "patterns": 4,
+        "artifacts": 4,
+        "intents": 5,
+        "completion": 2,
+        "schedule": 2
+      },
+      "newMandatoryCanonicalFields": [],
+      "newCommonRules": [],
+      "note": "동결 baseline 8개를 첫 batch로 보존했다."
+    },
+    {
+      "batch": "batch_1_expansion",
+      "batchKind": "blind_conversion_chunk",
+      "fixtureCount": 10,
+      "fixtureIds": [
+        "oq-oq-c01-moving",
+        "oq-oq-c02-kmooc-full",
+        "oq-oq-c03-librivox",
+        "oq-oq-c04-passport",
+        "oq-oq-c05-washer",
+        "oq-oq-c06-nasa",
+        "oq-oq-c07-fit100",
+        "oq-oq-c08-ac-decision",
+        "oq-oq-b01-heat",
+        "oq-oq-b03-remodel"
+      ],
+      "cumulativeFixtureCount": 18,
+      "newStructuralValues": {
+        "shapes": 4,
+        "patterns": 3,
+        "artifacts": 1,
+        "intents": 0,
+        "completion": 0,
+        "schedule": 1
+      },
+      "cumulativeCoverage": {
+        "shapes": 9,
+        "patterns": 7,
+        "artifacts": 5,
+        "intents": 5,
+        "completion": 2,
+        "schedule": 3
+      },
+      "newMandatoryCanonicalFields": [],
+      "newCommonRules": [],
+      "note": "동결된 공통 변환 규칙으로 순서대로 10개 이하를 변환했으며 사례별 예외나 새 mandatory core field를 추가하지 않았다."
+    },
+    {
+      "batch": "batch_2_expansion",
+      "batchKind": "blind_conversion_chunk",
+      "fixtureCount": 10,
+      "fixtureIds": [
+        "oq-oq-p01-ossu",
+        "oq-oq-p02-packing",
+        "oq-oq-p03-vehicle",
+        "oq-oq-p04-portfolio",
+        "value-vq-01",
+        "value-vq-03",
+        "value-vq-04",
+        "value-vq-05",
+        "value-vq-06",
+        "value-vq-10"
+      ],
+      "cumulativeFixtureCount": 28,
+      "newStructuralValues": {
+        "shapes": 1,
+        "patterns": 0,
+        "artifacts": 0,
+        "intents": 0,
+        "completion": 1,
+        "schedule": 0
+      },
+      "cumulativeCoverage": {
+        "shapes": 10,
+        "patterns": 7,
+        "artifacts": 5,
+        "intents": 5,
+        "completion": 3,
+        "schedule": 3
+      },
+      "newMandatoryCanonicalFields": [],
+      "newCommonRules": [],
+      "note": "동결된 공통 변환 규칙으로 순서대로 10개 이하를 변환했으며 사례별 예외나 새 mandatory core field를 추가하지 않았다."
+    },
+    {
+      "batch": "batch_3_expansion",
+      "batchKind": "blind_conversion_chunk",
+      "fixtureCount": 10,
+      "fixtureIds": [
+        "value-vq-11",
+        "value-vq-12",
+        "deep-ds06",
+        "deep-ds08",
+        "live-c01",
+        "live-c10",
+        "live-c13",
+        "live-c16",
+        "live-r02",
+        "live-live-ifixit-washer-01"
+      ],
+      "cumulativeFixtureCount": 38,
+      "newStructuralValues": {
+        "shapes": 0,
+        "patterns": 0,
+        "artifacts": 0,
+        "intents": 0,
+        "completion": 0,
+        "schedule": 1
+      },
+      "cumulativeCoverage": {
+        "shapes": 10,
+        "patterns": 7,
+        "artifacts": 5,
+        "intents": 5,
+        "completion": 3,
+        "schedule": 4
+      },
+      "newMandatoryCanonicalFields": [],
+      "newCommonRules": [],
+      "note": "동결된 공통 변환 규칙으로 순서대로 10개 이하를 변환했으며 사례별 예외나 새 mandatory core field를 추가하지 않았다."
+    },
+    {
+      "batch": "batch_4_expansion",
+      "batchKind": "blind_conversion_chunk",
+      "fixtureCount": 4,
+      "fixtureIds": [
+        "live-kr-stibee-01",
+        "live-live-mdn-core-01",
+        "live-live-dyson-filter-01",
+        "live-live-jotform-event-intake-01"
+      ],
+      "cumulativeFixtureCount": 42,
+      "newStructuralValues": {
+        "shapes": 1,
+        "patterns": 0,
+        "artifacts": 0,
+        "intents": 0,
+        "completion": 0,
+        "schedule": 0
+      },
+      "cumulativeCoverage": {
+        "shapes": 11,
+        "patterns": 7,
+        "artifacts": 5,
+        "intents": 5,
+        "completion": 3,
+        "schedule": 4
+      },
+      "newMandatoryCanonicalFields": [],
+      "newCommonRules": [],
+      "note": "동결된 공통 변환 규칙으로 순서대로 10개 이하를 변환했으며 사례별 예외나 새 mandatory core field를 추가하지 않았다."
+    }
+  ],
+  "last20FixtureStability": {
+    "fixtureCount": 20,
+    "fixtureIds": [
+      "value-vq-01",
+      "value-vq-03",
+      "value-vq-04",
+      "value-vq-05",
+      "value-vq-06",
+      "value-vq-10",
+      "value-vq-11",
+      "value-vq-12",
+      "deep-ds06",
+      "deep-ds08",
+      "live-c01",
+      "live-c10",
+      "live-c13",
+      "live-c16",
+      "live-r02",
+      "live-live-ifixit-washer-01",
+      "live-kr-stibee-01",
+      "live-live-mdn-core-01",
+      "live-live-dyson-filter-01",
+      "live-live-jotform-event-intake-01"
+    ],
+    "newMandatoryCanonicalFields": [],
+    "newCommonRules": [],
+    "stable": true,
+    "interpretation": "마지막 20개는 동결 규칙으로 변환됐다. 새 source shape 관측은 coverage 증가일 수 있지만 mandatory canonical field 또는 공통 규칙 변경을 뜻하지 않는다."
+  },
+  "decision": "planning_handoff_ready_with_open_questions",
+  "rationale": "40개 이상 실제 행 기반 fixture와 핵심 실행·projection 축을 확보했다. 남은 공백은 사례별 예외가 아니라 dependency, 고급 recurrence, 실제 destination 호환성 검증이다."
+}

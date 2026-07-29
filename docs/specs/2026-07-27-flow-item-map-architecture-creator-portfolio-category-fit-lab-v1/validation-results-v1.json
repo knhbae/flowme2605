@@ -1,0 +1,3769 @@
+{
+  "passed": true,
+  "checkCount": 752,
+  "passedCount": 752,
+  "failedCount": 0,
+  "errors": [],
+  "checks": [
+    {
+      "name": "primary_corpus_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "snapshot_primary_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "snapshot_exact_primary_examples",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "source_flow_count",
+      "passed": true,
+      "detail": "{\"flows\":22,\"steps\":57,\"items\":148,\"sourceRows\":198}"
+    },
+    {
+      "name": "source_step_count",
+      "passed": true,
+      "detail": "{\"flows\":22,\"steps\":57,\"items\":148,\"sourceRows\":198}"
+    },
+    {
+      "name": "source_item_count",
+      "passed": true,
+      "detail": "{\"flows\":22,\"steps\":57,\"items\":148,\"sourceRows\":198}"
+    },
+    {
+      "name": "source_row_count",
+      "passed": true,
+      "detail": "{\"flows\":22,\"steps\":57,\"items\":148,\"sourceRows\":198}"
+    },
+    {
+      "name": "normalization_totals",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "expansion_max_nine",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "expansion_count_matches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "boundary_at_least_six",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "boundary_count_matches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "boundary_generates_no_items",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "regression_four_to_six",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "gold_primary_nine",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "gold_frozen",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "current_run_nine",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "literal_run_nine",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "shared_run_nine",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-moving-d30:source_refs_resolve",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-moving-d30:source_trace_resolves",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-moving-d30:current_exists",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-moving-d30:shared_exists",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-moving-d30:literal_exists",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-moving-d30:current_item_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-moving-d30:shared_item_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-moving-d30:current_source_rows_exact",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-moving-d30:shared_source_rows_exact",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-moving-d30:setup_fields_not_expanded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-moving-d30:primary_artifact_not_hybrid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-moving-d30:same_item_ids_across_json_architectures",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-moving-d30:no_invented_item_schedule",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-moving-d30:no_invented_item_title",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-moving-d30:source_refs_preserved",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-moving-d30:literal_item_component_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-moving-d30:literal_flat_components",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:matched_VCALENDAR",
+      "passed": true,
+      "detail": "VCALENDAR != VCALENDAR"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:balanced",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:no_nested_components",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-moving-d30.ics:no_scheduleless_vevent",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-moving-d30.ics:matched_VCALENDAR",
+      "passed": true,
+      "detail": "VCALENDAR != VCALENDAR"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-moving-d30.ics:balanced",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-moving-d30.ics:no_nested_components",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-moving-d30.ics:no_scheduleless_vevent",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-moving-d30.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-moving-d30.ics:matched_VCALENDAR",
+      "passed": true,
+      "detail": "VCALENDAR != VCALENDAR"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-moving-d30.ics:balanced",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-moving-d30.ics:no_nested_components",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-moving-d30.ics:no_scheduleless_vevent",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "bundle-baby-food-174:source_refs_resolve",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-baby-food-174:source_trace_resolves",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-baby-food-174:current_exists",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-baby-food-174:shared_exists",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-baby-food-174:literal_exists",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-baby-food-174:current_item_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-baby-food-174:shared_item_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-baby-food-174:current_source_rows_exact",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-baby-food-174:shared_source_rows_exact",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-baby-food-174:setup_fields_not_expanded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-baby-food-174:primary_artifact_not_hybrid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-baby-food-174:same_item_ids_across_json_architectures",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-baby-food-174:no_invented_item_schedule",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-baby-food-174:no_invented_item_title",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-baby-food-174:source_refs_preserved",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-baby-food-174:literal_item_component_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-baby-food-174:literal_flat_components",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:matched_VCALENDAR",
+      "passed": true,
+      "detail": "VCALENDAR != VCALENDAR"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:balanced",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:no_nested_components",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-baby-food-174.ics:no_scheduleless_vevent",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:matched_VCALENDAR",
+      "passed": true,
+      "detail": "VCALENDAR != VCALENDAR"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:balanced",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:no_nested_components",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics:no_scheduleless_vevent",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:matched_VCALENDAR",
+      "passed": true,
+      "detail": "VCALENDAR != VCALENDAR"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:balanced",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:no_nested_components",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics:no_scheduleless_vevent",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "bundle-opic-plan:source_refs_resolve",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-opic-plan:source_trace_resolves",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-opic-plan:current_exists",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-opic-plan:shared_exists",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-opic-plan:literal_exists",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-opic-plan:current_item_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-opic-plan:shared_item_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-opic-plan:current_source_rows_exact",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-opic-plan:shared_source_rows_exact",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-opic-plan:setup_fields_not_expanded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-opic-plan:primary_artifact_not_hybrid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-opic-plan:same_item_ids_across_json_architectures",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-opic-plan:no_invented_item_schedule",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-opic-plan:no_invented_item_title",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-opic-plan:source_refs_preserved",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-opic-plan:literal_item_component_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-opic-plan:literal_flat_components",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:matched_VCALENDAR",
+      "passed": true,
+      "detail": "VCALENDAR != VCALENDAR"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:balanced",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:no_nested_components",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-opic-plan.ics:no_scheduleless_vevent",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:matched_VCALENDAR",
+      "passed": true,
+      "detail": "VCALENDAR != VCALENDAR"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:balanced",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:no_nested_components",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-opic-plan.ics:no_scheduleless_vevent",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:matched_VCALENDAR",
+      "passed": true,
+      "detail": "VCALENDAR != VCALENDAR"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:balanced",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:no_nested_components",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-opic-plan.ics:no_scheduleless_vevent",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "bundle-new-car-comparison:source_refs_resolve",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-new-car-comparison:source_trace_resolves",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-new-car-comparison:current_exists",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-new-car-comparison:shared_exists",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-new-car-comparison:literal_exists",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-new-car-comparison:current_item_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-new-car-comparison:shared_item_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-new-car-comparison:current_source_rows_exact",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-new-car-comparison:shared_source_rows_exact",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-new-car-comparison:setup_fields_not_expanded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-new-car-comparison:primary_artifact_not_hybrid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-new-car-comparison:same_item_ids_across_json_architectures",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-new-car-comparison:no_invented_item_schedule",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-new-car-comparison:no_invented_item_title",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-new-car-comparison:source_refs_preserved",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-new-car-comparison:literal_item_component_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-new-car-comparison:literal_flat_components",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-new-car-comparison.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-new-car-comparison.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-new-car-comparison.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-new-car-comparison.ics:matched_VTODO",
+      "passed": true,
+      "detail": "VTODO != VTODO"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-new-car-comparison.ics:matched_VTODO",
+      "passed": true,
+      "detail": "VTODO != VTODO"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-new-car-comparison.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-new-car-comparison.ics:matched_VTODO",
+      "passed": true,
+      "detail": "VTODO != VTODO"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-new-car-comparison.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-new-car-comparison.ics:matched_VTODO",
+      "passed": true,
+      "detail": "VTODO != VTODO"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-new-car-comparison.ics:matched_VTODO",
+      "passed": true,
+      "detail": "VTODO != VTODO"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-new-car-comparison.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-new-car-comparison.ics:matched_VTODO",
+      "passed": true,
+      "detail": "VTODO != VTODO"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-new-car-comparison.ics:matched_VTODO",
+      "passed": true,
+      "detail": "VTODO != VTODO"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-new-car-comparison.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-new-car-comparison.ics:matched_VTODO",
+      "passed": true,
+      "detail": "VTODO != VTODO"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-new-car-comparison.ics:matched_VTODO",
+      "passed": true,
+      "detail": "VTODO != VTODO"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-new-car-comparison.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-new-car-comparison.ics:matched_VTODO",
+      "passed": true,
+      "detail": "VTODO != VTODO"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-new-car-comparison.ics:matched_VTODO",
+      "passed": true,
+      "detail": "VTODO != VTODO"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-new-car-comparison.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-new-car-comparison.ics:matched_VTODO",
+      "passed": true,
+      "detail": "VTODO != VTODO"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-new-car-comparison.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-new-car-comparison.ics:matched_VTODO",
+      "passed": true,
+      "detail": "VTODO != VTODO"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-new-car-comparison.ics:matched_VTODO",
+      "passed": true,
+      "detail": "VTODO != VTODO"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-new-car-comparison.ics:matched_VCALENDAR",
+      "passed": true,
+      "detail": "VCALENDAR != VCALENDAR"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-new-car-comparison.ics:balanced",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-new-car-comparison.ics:no_nested_components",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-new-car-comparison.ics:no_scheduleless_vevent",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-new-car-comparison.ics:matched_VCALENDAR",
+      "passed": true,
+      "detail": "VCALENDAR != VCALENDAR"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-new-car-comparison.ics:balanced",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-new-car-comparison.ics:no_nested_components",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-new-car-comparison.ics:no_scheduleless_vevent",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-new-car-comparison.ics:matched_VCALENDAR",
+      "passed": true,
+      "detail": "VCALENDAR != VCALENDAR"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-new-car-comparison.ics:balanced",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-new-car-comparison.ics:no_nested_components",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-new-car-comparison.ics:no_scheduleless_vevent",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "bundle-allblanc-7day-abs:source_refs_resolve",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-allblanc-7day-abs:source_trace_resolves",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-allblanc-7day-abs:current_exists",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-allblanc-7day-abs:shared_exists",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-allblanc-7day-abs:literal_exists",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-allblanc-7day-abs:current_item_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-allblanc-7day-abs:shared_item_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-allblanc-7day-abs:current_source_rows_exact",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-allblanc-7day-abs:shared_source_rows_exact",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-allblanc-7day-abs:setup_fields_not_expanded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-allblanc-7day-abs:primary_artifact_not_hybrid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-allblanc-7day-abs:same_item_ids_across_json_architectures",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-allblanc-7day-abs:no_invented_item_schedule",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-allblanc-7day-abs:no_invented_item_title",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-allblanc-7day-abs:source_refs_preserved",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-allblanc-7day-abs:literal_item_component_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-allblanc-7day-abs:literal_flat_components",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-allblanc-7day-abs.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-allblanc-7day-abs.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-allblanc-7day-abs.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-allblanc-7day-abs.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-allblanc-7day-abs.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-allblanc-7day-abs.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-allblanc-7day-abs.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-allblanc-7day-abs.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-allblanc-7day-abs.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-allblanc-7day-abs.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-allblanc-7day-abs.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-allblanc-7day-abs.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-allblanc-7day-abs.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-allblanc-7day-abs.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-allblanc-7day-abs.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-allblanc-7day-abs.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-allblanc-7day-abs.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-allblanc-7day-abs.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-allblanc-7day-abs.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-allblanc-7day-abs.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-allblanc-7day-abs.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-allblanc-7day-abs.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-allblanc-7day-abs.ics:matched_VCALENDAR",
+      "passed": true,
+      "detail": "VCALENDAR != VCALENDAR"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-allblanc-7day-abs.ics:balanced",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-allblanc-7day-abs.ics:no_nested_components",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-allblanc-7day-abs.ics:no_scheduleless_vevent",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-allblanc-7day-abs.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-allblanc-7day-abs.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-allblanc-7day-abs.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-allblanc-7day-abs.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-allblanc-7day-abs.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-allblanc-7day-abs.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-allblanc-7day-abs.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-allblanc-7day-abs.ics:matched_VCALENDAR",
+      "passed": true,
+      "detail": "VCALENDAR != VCALENDAR"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-allblanc-7day-abs.ics:balanced",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-allblanc-7day-abs.ics:no_nested_components",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-allblanc-7day-abs.ics:no_scheduleless_vevent",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-allblanc-7day-abs.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-allblanc-7day-abs.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-allblanc-7day-abs.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-allblanc-7day-abs.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-allblanc-7day-abs.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-allblanc-7day-abs.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-allblanc-7day-abs.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-allblanc-7day-abs.ics:matched_VCALENDAR",
+      "passed": true,
+      "detail": "VCALENDAR != VCALENDAR"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-allblanc-7day-abs.ics:balanced",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-allblanc-7day-abs.ics:no_nested_components",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-allblanc-7day-abs.ics:no_scheduleless_vevent",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "bundle-triple-cappadocia-departure:source_refs_resolve",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-triple-cappadocia-departure:source_trace_resolves",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-triple-cappadocia-departure:current_exists",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-triple-cappadocia-departure:shared_exists",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-triple-cappadocia-departure:literal_exists",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-triple-cappadocia-departure:current_item_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-triple-cappadocia-departure:shared_item_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-triple-cappadocia-departure:current_source_rows_exact",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-triple-cappadocia-departure:shared_source_rows_exact",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-triple-cappadocia-departure:setup_fields_not_expanded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-triple-cappadocia-departure:primary_artifact_not_hybrid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-triple-cappadocia-departure:same_item_ids_across_json_architectures",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-triple-cappadocia-departure:no_invented_item_schedule",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-triple-cappadocia-departure:no_invented_item_title",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-triple-cappadocia-departure:source_refs_preserved",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-triple-cappadocia-departure:literal_item_component_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-triple-cappadocia-departure:literal_flat_components",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-triple-cappadocia-departure.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-triple-cappadocia-departure.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-triple-cappadocia-departure.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-triple-cappadocia-departure.ics:matched_VTODO",
+      "passed": true,
+      "detail": "VTODO != VTODO"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-triple-cappadocia-departure.ics:matched_VTODO",
+      "passed": true,
+      "detail": "VTODO != VTODO"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-triple-cappadocia-departure.ics:matched_VTODO",
+      "passed": true,
+      "detail": "VTODO != VTODO"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-triple-cappadocia-departure.ics:matched_VTODO",
+      "passed": true,
+      "detail": "VTODO != VTODO"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-triple-cappadocia-departure.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-triple-cappadocia-departure.ics:matched_VTODO",
+      "passed": true,
+      "detail": "VTODO != VTODO"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-triple-cappadocia-departure.ics:matched_VTODO",
+      "passed": true,
+      "detail": "VTODO != VTODO"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-triple-cappadocia-departure.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-triple-cappadocia-departure.ics:matched_VTODO",
+      "passed": true,
+      "detail": "VTODO != VTODO"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-triple-cappadocia-departure.ics:matched_VTODO",
+      "passed": true,
+      "detail": "VTODO != VTODO"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-triple-cappadocia-departure.ics:matched_VCALENDAR",
+      "passed": true,
+      "detail": "VCALENDAR != VCALENDAR"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-triple-cappadocia-departure.ics:balanced",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-triple-cappadocia-departure.ics:no_nested_components",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-triple-cappadocia-departure.ics:no_scheduleless_vevent",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-triple-cappadocia-departure.ics:matched_VCALENDAR",
+      "passed": true,
+      "detail": "VCALENDAR != VCALENDAR"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-triple-cappadocia-departure.ics:balanced",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-triple-cappadocia-departure.ics:no_nested_components",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-triple-cappadocia-departure.ics:no_scheduleless_vevent",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-triple-cappadocia-departure.ics:matched_VCALENDAR",
+      "passed": true,
+      "detail": "VCALENDAR != VCALENDAR"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-triple-cappadocia-departure.ics:balanced",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-triple-cappadocia-departure.ics:no_nested_components",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-triple-cappadocia-departure.ics:no_scheduleless_vevent",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "bundle-wtable-summer-banchan-five:source_refs_resolve",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-wtable-summer-banchan-five:source_trace_resolves",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-wtable-summer-banchan-five:current_exists",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-wtable-summer-banchan-five:shared_exists",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-wtable-summer-banchan-five:literal_exists",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-wtable-summer-banchan-five:current_item_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-wtable-summer-banchan-five:shared_item_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-wtable-summer-banchan-five:current_source_rows_exact",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-wtable-summer-banchan-five:shared_source_rows_exact",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-wtable-summer-banchan-five:setup_fields_not_expanded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-wtable-summer-banchan-five:primary_artifact_not_hybrid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-wtable-summer-banchan-five:same_item_ids_across_json_architectures",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-wtable-summer-banchan-five:no_invented_item_schedule",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-wtable-summer-banchan-five:no_invented_item_title",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-wtable-summer-banchan-five:source_refs_preserved",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-wtable-summer-banchan-five:literal_item_component_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-wtable-summer-banchan-five:literal_flat_components",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-wtable-summer-banchan-five.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-wtable-summer-banchan-five.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-wtable-summer-banchan-five.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-wtable-summer-banchan-five.ics:matched_VTODO",
+      "passed": true,
+      "detail": "VTODO != VTODO"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-wtable-summer-banchan-five.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-wtable-summer-banchan-five.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-wtable-summer-banchan-five.ics:matched_VTODO",
+      "passed": true,
+      "detail": "VTODO != VTODO"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-wtable-summer-banchan-five.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-wtable-summer-banchan-five.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-wtable-summer-banchan-five.ics:matched_VTODO",
+      "passed": true,
+      "detail": "VTODO != VTODO"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-wtable-summer-banchan-five.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-wtable-summer-banchan-five.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-wtable-summer-banchan-five.ics:matched_VTODO",
+      "passed": true,
+      "detail": "VTODO != VTODO"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-wtable-summer-banchan-five.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-wtable-summer-banchan-five.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-wtable-summer-banchan-five.ics:matched_VTODO",
+      "passed": true,
+      "detail": "VTODO != VTODO"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-wtable-summer-banchan-five.ics:matched_VCALENDAR",
+      "passed": true,
+      "detail": "VCALENDAR != VCALENDAR"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-wtable-summer-banchan-five.ics:balanced",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-wtable-summer-banchan-five.ics:no_nested_components",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-wtable-summer-banchan-five.ics:no_scheduleless_vevent",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-wtable-summer-banchan-five.ics:matched_VCALENDAR",
+      "passed": true,
+      "detail": "VCALENDAR != VCALENDAR"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-wtable-summer-banchan-five.ics:balanced",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-wtable-summer-banchan-five.ics:no_nested_components",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-wtable-summer-banchan-five.ics:no_scheduleless_vevent",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-wtable-summer-banchan-five.ics:matched_VCALENDAR",
+      "passed": true,
+      "detail": "VCALENDAR != VCALENDAR"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-wtable-summer-banchan-five.ics:balanced",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-wtable-summer-banchan-five.ics:no_nested_components",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-wtable-summer-banchan-five.ics:no_scheduleless_vevent",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "bundle-andstudio-job-prep-videos:source_refs_resolve",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-andstudio-job-prep-videos:source_trace_resolves",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-andstudio-job-prep-videos:current_exists",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-andstudio-job-prep-videos:shared_exists",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-andstudio-job-prep-videos:literal_exists",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-andstudio-job-prep-videos:current_item_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-andstudio-job-prep-videos:shared_item_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-andstudio-job-prep-videos:current_source_rows_exact",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-andstudio-job-prep-videos:shared_source_rows_exact",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-andstudio-job-prep-videos:setup_fields_not_expanded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-andstudio-job-prep-videos:primary_artifact_not_hybrid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-andstudio-job-prep-videos:same_item_ids_across_json_architectures",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-andstudio-job-prep-videos:no_invented_item_schedule",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-andstudio-job-prep-videos:no_invented_item_title",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-andstudio-job-prep-videos:source_refs_preserved",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-andstudio-job-prep-videos:literal_item_component_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-andstudio-job-prep-videos:literal_flat_components",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-andstudio-job-prep-videos.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-andstudio-job-prep-videos.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-andstudio-job-prep-videos.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-andstudio-job-prep-videos.ics:matched_VTODO",
+      "passed": true,
+      "detail": "VTODO != VTODO"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-andstudio-job-prep-videos.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-andstudio-job-prep-videos.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-andstudio-job-prep-videos.ics:matched_VTODO",
+      "passed": true,
+      "detail": "VTODO != VTODO"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-andstudio-job-prep-videos.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-andstudio-job-prep-videos.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-andstudio-job-prep-videos.ics:matched_VTODO",
+      "passed": true,
+      "detail": "VTODO != VTODO"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-andstudio-job-prep-videos.ics:matched_VCALENDAR",
+      "passed": true,
+      "detail": "VCALENDAR != VCALENDAR"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-andstudio-job-prep-videos.ics:balanced",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-andstudio-job-prep-videos.ics:no_nested_components",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-andstudio-job-prep-videos.ics:no_scheduleless_vevent",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-andstudio-job-prep-videos.ics:matched_VCALENDAR",
+      "passed": true,
+      "detail": "VCALENDAR != VCALENDAR"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-andstudio-job-prep-videos.ics:balanced",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-andstudio-job-prep-videos.ics:no_nested_components",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-andstudio-job-prep-videos.ics:no_scheduleless_vevent",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-andstudio-job-prep-videos.ics:matched_VCALENDAR",
+      "passed": true,
+      "detail": "VCALENDAR != VCALENDAR"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-andstudio-job-prep-videos.ics:balanced",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-andstudio-job-prep-videos.ics:no_nested_components",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-andstudio-job-prep-videos.ics:no_scheduleless_vevent",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "bundle-fitpet-puppy-vaccination:source_refs_resolve",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-fitpet-puppy-vaccination:source_trace_resolves",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-fitpet-puppy-vaccination:current_exists",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-fitpet-puppy-vaccination:shared_exists",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-fitpet-puppy-vaccination:literal_exists",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-fitpet-puppy-vaccination:current_item_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-fitpet-puppy-vaccination:shared_item_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-fitpet-puppy-vaccination:current_source_rows_exact",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-fitpet-puppy-vaccination:shared_source_rows_exact",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-fitpet-puppy-vaccination:setup_fields_not_expanded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-fitpet-puppy-vaccination:primary_artifact_not_hybrid",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-fitpet-puppy-vaccination:same_item_ids_across_json_architectures",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-fitpet-puppy-vaccination:no_invented_item_schedule",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-fitpet-puppy-vaccination:no_invented_item_title",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-fitpet-puppy-vaccination:source_refs_preserved",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-fitpet-puppy-vaccination:literal_item_component_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "bundle-fitpet-puppy-vaccination:literal_flat_components",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-fitpet-puppy-vaccination.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-fitpet-puppy-vaccination.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-fitpet-puppy-vaccination.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-fitpet-puppy-vaccination.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-fitpet-puppy-vaccination.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-fitpet-puppy-vaccination.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-fitpet-puppy-vaccination.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-fitpet-puppy-vaccination.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-fitpet-puppy-vaccination.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-fitpet-puppy-vaccination.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-fitpet-puppy-vaccination.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-fitpet-puppy-vaccination.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-fitpet-puppy-vaccination.ics:matched_VJOURNAL",
+      "passed": true,
+      "detail": "VJOURNAL != VJOURNAL"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-fitpet-puppy-vaccination.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-fitpet-puppy-vaccination.ics:matched_VCALENDAR",
+      "passed": true,
+      "detail": "VCALENDAR != VCALENDAR"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-fitpet-puppy-vaccination.ics:balanced",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-fitpet-puppy-vaccination.ics:no_nested_components",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/literal/bundle-fitpet-puppy-vaccination.ics:no_scheduleless_vevent",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-fitpet-puppy-vaccination.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-fitpet-puppy-vaccination.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-fitpet-puppy-vaccination.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-fitpet-puppy-vaccination.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-fitpet-puppy-vaccination.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-fitpet-puppy-vaccination.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-fitpet-puppy-vaccination.ics:matched_VCALENDAR",
+      "passed": true,
+      "detail": "VCALENDAR != VCALENDAR"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-fitpet-puppy-vaccination.ics:balanced",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-fitpet-puppy-vaccination.ics:no_nested_components",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/canonical-compact/bundle-fitpet-puppy-vaccination.ics:no_scheduleless_vevent",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-fitpet-puppy-vaccination.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-fitpet-puppy-vaccination.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-fitpet-puppy-vaccination.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-fitpet-puppy-vaccination.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-fitpet-puppy-vaccination.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-fitpet-puppy-vaccination.ics:matched_VEVENT",
+      "passed": true,
+      "detail": "VEVENT != VEVENT"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-fitpet-puppy-vaccination.ics:matched_VCALENDAR",
+      "passed": true,
+      "detail": "VCALENDAR != VCALENDAR"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-fitpet-puppy-vaccination.ics:balanced",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-fitpet-puppy-vaccination.ics:no_nested_components",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "fixtures/ics/canonical-granular/bundle-fitpet-puppy-vaccination.ics:no_scheduleless_vevent",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "loss_record_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "loss_values_controlled",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "canonical_roundtrips_pass",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "literal_roundtrips_have_no_parser_error",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "literal_unique_source_rows_recovered",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "category_fit_nine",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "all_life_areas_covered",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "score_weights_sum_100",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "score_totals_match_dimensions",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "shared_context_adoption_not_overclaimed",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "final_keeps_current_canonical",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "runtime_unchanged_claim",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "publication_not_claimed",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "observed_user_not_claimed",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "external_client_not_claimed",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "current-canonical-v1.schema.json:is_json_schema",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "current-canonical-v1.schema.json:has_id",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "literal-ics-graph-v1.schema.json:is_json_schema",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "literal-ics-graph-v1.schema.json:has_id",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "item-shared-context-v1.schema.json:is_json_schema",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "item-shared-context-v1.schema.json:has_id",
+      "passed": true,
+      "detail": null
+    }
+  ]
+}

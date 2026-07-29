@@ -1,0 +1,472 @@
+{
+  "schemaVersion": "flowme-current-canonical-v1",
+  "architecture": "current_canonical_v1",
+  "bundleId": "bundle-fitpet-puppy-vaccination",
+  "title": "강아지 생후 6~16주 예방접종 일정",
+  "taxonomy": {
+    "primaryLifeArea": "hobby_pet",
+    "secondaryLifeAreas": [],
+    "topicTags": [],
+    "sourceShape": "table_rows",
+    "primaryExecutionPattern": "date_preparation",
+    "secondaryExecutionPatterns": [
+      "progress_tracking"
+    ],
+    "primaryArtifact": "calendar",
+    "secondaryArtifacts": [
+      "checklist",
+      "memo"
+    ]
+  },
+  "userJob": "원문 생후 주차를 참고 일정으로 보고 실제 일정은 담당 수의사와 확인한다.",
+  "setupFields": [
+    {
+      "key": "birthDate",
+      "label": "생년월일",
+      "type": "date",
+      "required": false,
+      "purpose": "입력한 경우에만 생후 주차를 실제 날짜로 계산한다."
+    }
+  ],
+  "sampleUserOverlay": {
+    "birthDate": "2026-05-01"
+  },
+  "map": {
+    "id": "bundle-fitpet-puppy-vaccination-map",
+    "title": "강아지 생후 6~16주 예방접종 일정",
+    "type": "single_sensitive_schedule",
+    "ordering": "none",
+    "childFlowIds": [
+      "bundle-fitpet-puppy-vaccination-flow"
+    ],
+    "derivedProgressOnly": true
+  },
+  "sharedContexts": [],
+  "attribution": {
+    "creatorId": "hobby-fitpet",
+    "providerId": "creator-brand",
+    "sourceOwnerId": "hobby-fitpet",
+    "curatorId": null,
+    "trustAnchorRefs": [
+      {
+        "status": "required_before_promotion",
+        "reason": "Creator-brand schedule requires current veterinarian or official confirmation."
+      }
+    ],
+    "decisionBand": "Single",
+    "creatorVerdict": "single_content_candidate",
+    "publicationApproval": "not_implied"
+  },
+  "rights": {
+    "mode": "link_and_minimal_execution_metadata",
+    "publicReleaseAllowed": false,
+    "personalTransformAllowed": true,
+    "rationale": "Existing research allows link plus minimal execution metadata; public release remains a separate review."
+  },
+  "review": {
+    "sourceRowStatus": "complete_for_representative_example",
+    "promotionState": "internal_review_only",
+    "safetyReview": "needs_trust_anchor"
+  },
+  "sourceRows": [
+    {
+      "sourceRowId": "fitpet-vaccine-1",
+      "bundleId": "bundle-fitpet-puppy-vaccination",
+      "sourceUrl": "https://www.fitpetmall.com/blog/dog-vaccinations",
+      "sourceLocator": "원문 93·174행",
+      "label": "생후 6주 1차 접종",
+      "detail": "DHPPL 1차 + 코로나 장염 1차",
+      "sourceAgeWeeks": 6,
+      "verifiedAt": "2026-07-23"
+    },
+    {
+      "sourceRowId": "fitpet-vaccine-2",
+      "bundleId": "bundle-fitpet-puppy-vaccination",
+      "sourceUrl": "https://www.fitpetmall.com/blog/dog-vaccinations",
+      "sourceLocator": "원문 95·176행",
+      "label": "생후 8주 2차 접종",
+      "detail": "DHPPL 2차 + 코로나 장염 2차",
+      "sourceAgeWeeks": 8,
+      "verifiedAt": "2026-07-23"
+    },
+    {
+      "sourceRowId": "fitpet-vaccine-3",
+      "bundleId": "bundle-fitpet-puppy-vaccination",
+      "sourceUrl": "https://www.fitpetmall.com/blog/dog-vaccinations",
+      "sourceLocator": "원문 97·178행",
+      "label": "생후 10주 3차 접종",
+      "detail": "DHPPL 3차 + 켄넬 코프 1차",
+      "sourceAgeWeeks": 10,
+      "verifiedAt": "2026-07-23"
+    },
+    {
+      "sourceRowId": "fitpet-vaccine-4",
+      "bundleId": "bundle-fitpet-puppy-vaccination",
+      "sourceUrl": "https://www.fitpetmall.com/blog/dog-vaccinations",
+      "sourceLocator": "원문 99·180행",
+      "label": "생후 12주 4차 접종",
+      "detail": "DHPPL 4차 + 켄넬 코프 2차",
+      "sourceAgeWeeks": 12,
+      "verifiedAt": "2026-07-23"
+    },
+    {
+      "sourceRowId": "fitpet-vaccine-5",
+      "bundleId": "bundle-fitpet-puppy-vaccination",
+      "sourceUrl": "https://www.fitpetmall.com/blog/dog-vaccinations",
+      "sourceLocator": "원문 101·182행",
+      "label": "생후 14주 5차 접종",
+      "detail": "DHPPL 5차 + 신종 플루 1차",
+      "sourceAgeWeeks": 14,
+      "verifiedAt": "2026-07-23"
+    },
+    {
+      "sourceRowId": "fitpet-vaccine-6",
+      "bundleId": "bundle-fitpet-puppy-vaccination",
+      "sourceUrl": "https://www.fitpetmall.com/blog/dog-vaccinations",
+      "sourceLocator": "원문 103·184행",
+      "label": "생후 16주 6차 접종",
+      "detail": "신종 플루 2차 + 광견병 예방 접종",
+      "sourceAgeWeeks": 16,
+      "verifiedAt": "2026-07-23"
+    }
+  ],
+  "flows": [
+    {
+      "id": "bundle-fitpet-puppy-vaccination-flow",
+      "title": "강아지 생후 6~16주 예방접종 일정",
+      "primarySourceUrl": "https://www.fitpetmall.com/blog/dog-vaccinations",
+      "steps": [
+        {
+          "id": "fitpet-vaccine-1-step",
+          "flowId": "bundle-fitpet-puppy-vaccination-flow",
+          "title": "생후 6주",
+          "order": 1,
+          "sourceScheduleGroup": {
+            "type": "source_age_week",
+            "week": 6
+          },
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "fitpet-vaccine-1-item",
+              "flowId": "bundle-fitpet-puppy-vaccination-flow",
+              "stepId": "fitpet-vaccine-1-step",
+              "title": "생후 6주 1차 접종",
+              "detail": "DHPPL 1차 + 코로나 장염 1차 · 실제 접종 일정은 담당 수의사·동물병원에 확인하고 특이사항은 개인 메모에 기록하세요. · 원문: https://www.fitpetmall.com/blog/dog-vaccinations",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_age_week",
+                "week": 6
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "DHPPL 1차 + 코로나 장염 1차 · 실제 접종 일정은 담당 수의사·동물병원에 확인하고 특이사항은 개인 메모에 기록하세요. · 원문: https://www.fitpetmall.com/blog/dog-vaccinations",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "fitpet-vaccine-1",
+                  "sourceUrl": "https://www.fitpetmall.com/blog/dog-vaccinations",
+                  "sourceLocator": "원문 93·174행"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        },
+        {
+          "id": "fitpet-vaccine-2-step",
+          "flowId": "bundle-fitpet-puppy-vaccination-flow",
+          "title": "생후 8주",
+          "order": 2,
+          "sourceScheduleGroup": {
+            "type": "source_age_week",
+            "week": 8
+          },
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "fitpet-vaccine-2-item",
+              "flowId": "bundle-fitpet-puppy-vaccination-flow",
+              "stepId": "fitpet-vaccine-2-step",
+              "title": "생후 8주 2차 접종",
+              "detail": "DHPPL 2차 + 코로나 장염 2차 · 실제 접종 일정은 담당 수의사·동물병원에 확인하고 특이사항은 개인 메모에 기록하세요. · 원문: https://www.fitpetmall.com/blog/dog-vaccinations",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_age_week",
+                "week": 8
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "DHPPL 2차 + 코로나 장염 2차 · 실제 접종 일정은 담당 수의사·동물병원에 확인하고 특이사항은 개인 메모에 기록하세요. · 원문: https://www.fitpetmall.com/blog/dog-vaccinations",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "fitpet-vaccine-2",
+                  "sourceUrl": "https://www.fitpetmall.com/blog/dog-vaccinations",
+                  "sourceLocator": "원문 95·176행"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        },
+        {
+          "id": "fitpet-vaccine-3-step",
+          "flowId": "bundle-fitpet-puppy-vaccination-flow",
+          "title": "생후 10주",
+          "order": 3,
+          "sourceScheduleGroup": {
+            "type": "source_age_week",
+            "week": 10
+          },
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "fitpet-vaccine-3-item",
+              "flowId": "bundle-fitpet-puppy-vaccination-flow",
+              "stepId": "fitpet-vaccine-3-step",
+              "title": "생후 10주 3차 접종",
+              "detail": "DHPPL 3차 + 켄넬 코프 1차 · 실제 접종 일정은 담당 수의사·동물병원에 확인하고 특이사항은 개인 메모에 기록하세요. · 원문: https://www.fitpetmall.com/blog/dog-vaccinations",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_age_week",
+                "week": 10
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "DHPPL 3차 + 켄넬 코프 1차 · 실제 접종 일정은 담당 수의사·동물병원에 확인하고 특이사항은 개인 메모에 기록하세요. · 원문: https://www.fitpetmall.com/blog/dog-vaccinations",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "fitpet-vaccine-3",
+                  "sourceUrl": "https://www.fitpetmall.com/blog/dog-vaccinations",
+                  "sourceLocator": "원문 97·178행"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        },
+        {
+          "id": "fitpet-vaccine-4-step",
+          "flowId": "bundle-fitpet-puppy-vaccination-flow",
+          "title": "생후 12주",
+          "order": 4,
+          "sourceScheduleGroup": {
+            "type": "source_age_week",
+            "week": 12
+          },
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "fitpet-vaccine-4-item",
+              "flowId": "bundle-fitpet-puppy-vaccination-flow",
+              "stepId": "fitpet-vaccine-4-step",
+              "title": "생후 12주 4차 접종",
+              "detail": "DHPPL 4차 + 켄넬 코프 2차 · 실제 접종 일정은 담당 수의사·동물병원에 확인하고 특이사항은 개인 메모에 기록하세요. · 원문: https://www.fitpetmall.com/blog/dog-vaccinations",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_age_week",
+                "week": 12
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "DHPPL 4차 + 켄넬 코프 2차 · 실제 접종 일정은 담당 수의사·동물병원에 확인하고 특이사항은 개인 메모에 기록하세요. · 원문: https://www.fitpetmall.com/blog/dog-vaccinations",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "fitpet-vaccine-4",
+                  "sourceUrl": "https://www.fitpetmall.com/blog/dog-vaccinations",
+                  "sourceLocator": "원문 99·180행"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        },
+        {
+          "id": "fitpet-vaccine-5-step",
+          "flowId": "bundle-fitpet-puppy-vaccination-flow",
+          "title": "생후 14주",
+          "order": 5,
+          "sourceScheduleGroup": {
+            "type": "source_age_week",
+            "week": 14
+          },
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "fitpet-vaccine-5-item",
+              "flowId": "bundle-fitpet-puppy-vaccination-flow",
+              "stepId": "fitpet-vaccine-5-step",
+              "title": "생후 14주 5차 접종",
+              "detail": "DHPPL 5차 + 신종 플루 1차 · 실제 접종 일정은 담당 수의사·동물병원에 확인하고 특이사항은 개인 메모에 기록하세요. · 원문: https://www.fitpetmall.com/blog/dog-vaccinations",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_age_week",
+                "week": 14
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "DHPPL 5차 + 신종 플루 1차 · 실제 접종 일정은 담당 수의사·동물병원에 확인하고 특이사항은 개인 메모에 기록하세요. · 원문: https://www.fitpetmall.com/blog/dog-vaccinations",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "fitpet-vaccine-5",
+                  "sourceUrl": "https://www.fitpetmall.com/blog/dog-vaccinations",
+                  "sourceLocator": "원문 101·182행"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        },
+        {
+          "id": "fitpet-vaccine-6-step",
+          "flowId": "bundle-fitpet-puppy-vaccination-flow",
+          "title": "생후 16주",
+          "order": 6,
+          "sourceScheduleGroup": {
+            "type": "source_age_week",
+            "week": 16
+          },
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "fitpet-vaccine-6-item",
+              "flowId": "bundle-fitpet-puppy-vaccination-flow",
+              "stepId": "fitpet-vaccine-6-step",
+              "title": "생후 16주 6차 접종",
+              "detail": "신종 플루 2차 + 광견병 예방 접종 · 실제 접종 일정은 담당 수의사·동물병원에 확인하고 특이사항은 개인 메모에 기록하세요. · 원문: https://www.fitpetmall.com/blog/dog-vaccinations",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_age_week",
+                "week": 16
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "신종 플루 2차 + 광견병 예방 접종 · 실제 접종 일정은 담당 수의사·동물병원에 확인하고 특이사항은 개인 메모에 기록하세요. · 원문: https://www.fitpetmall.com/blog/dog-vaccinations",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "fitpet-vaccine-6",
+                  "sourceUrl": "https://www.fitpetmall.com/blog/dog-vaccinations",
+                  "sourceLocator": "원문 103·184행"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

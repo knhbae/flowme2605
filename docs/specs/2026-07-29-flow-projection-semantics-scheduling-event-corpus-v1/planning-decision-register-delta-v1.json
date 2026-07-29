@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "flowme-planning-decision-register-delta-v1",
+  "generatedAt": "2026-07-29T12:00:00+09:00",
+  "status": "planning_defaults_pending_product_approval",
+  "decisions": [
+    {
+      "id": "PDS-01",
+      "decision": "Keep Item canonical; projections remain siblings.",
+      "recommendation": "approve"
+    },
+    {
+      "id": "PDS-02",
+      "decision": "Use destination-specific Step parent/Item subtask and Calendar bundle adapters.",
+      "recommendation": "approve"
+    },
+    {
+      "id": "PDS-03",
+      "decision": "Treat pacing as confirmed UserFlowCopy overlay; default preview is draft.",
+      "recommendation": "approve"
+    },
+    {
+      "id": "PDS-04",
+      "decision": "Due-only Items stay Todo/VTODO; never auto time-block them.",
+      "recommendation": "approve"
+    },
+    {
+      "id": "PDS-05",
+      "decision": "Store Series/Edition/Occurrence source facts separately; create user Items on intent.",
+      "recommendation": "approve"
+    },
+    {
+      "id": "PDS-06",
+      "decision": "Do not promise VTODO portability until destination round-trip tests exist.",
+      "recommendation": "approve"
+    }
+  ]
+}

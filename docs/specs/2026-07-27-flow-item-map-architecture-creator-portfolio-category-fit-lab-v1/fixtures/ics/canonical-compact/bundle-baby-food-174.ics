@@ -1,0 +1,487 @@
+BEGIN:VCALENDAR
+PRODID:-//FlowMe//Canonical Projection Lab v1//KO
+VERSION:2.0
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:bundle-baby-food-174-d174@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D+174 식단 제공
+DESCRIPTION:한 끼: 쌀미음 · 먹은 양이나 반응을 남기려면 
+ 이 Item의 개인 메모를 사용한다.\nhttps://blog.naver.com/0169525
+ 8757/222768860919
+DTSTART;VALUE=DATE:20260801
+DTEND;VALUE=DATE:20260802
+URL:https://blog.naver.com/01695258757/222768860919
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-baby-food-174-d174
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-baby-food-174-d175@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D+175 식단 제공
+DESCRIPTION:한 끼: 쌀미음 · 먹은 양이나 반응을 남기려면 
+ 이 Item의 개인 메모를 사용한다.\nhttps://blog.naver.com/0169525
+ 8757/222768860919
+DTSTART;VALUE=DATE:20260802
+DTEND;VALUE=DATE:20260803
+URL:https://blog.naver.com/01695258757/222768860919
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-baby-food-174-d175
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-baby-food-174-d176@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D+176 식단 제공
+DESCRIPTION:한 끼: 쌀미음 · 먹은 양이나 반응을 남기려면 
+ 이 Item의 개인 메모를 사용한다.\nhttps://blog.naver.com/0169525
+ 8757/222768860919
+DTSTART;VALUE=DATE:20260803
+DTEND;VALUE=DATE:20260804
+URL:https://blog.naver.com/01695258757/222768860919
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-baby-food-174-d176
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-baby-food-174-d177@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D+177 식단 제공
+DESCRIPTION:한 끼: 쌀·오트밀 미음 · 먹은 양이나 반응을 
+ 남기려면 이 Item의 개인 메모를 사용한다.\nhttps://blog.nave
+ r.com/01695258757/222768860919
+DTSTART;VALUE=DATE:20260804
+DTEND;VALUE=DATE:20260805
+URL:https://blog.naver.com/01695258757/222768860919
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-baby-food-174-d177
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-baby-food-174-d178@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D+178 식단 제공
+DESCRIPTION:한 끼: 쌀·오트밀 미음 · 먹은 양이나 반응을 
+ 남기려면 이 Item의 개인 메모를 사용한다.\nhttps://blog.nave
+ r.com/01695258757/222768860919
+DTSTART;VALUE=DATE:20260805
+DTEND;VALUE=DATE:20260806
+URL:https://blog.naver.com/01695258757/222768860919
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-baby-food-174-d178
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-baby-food-174-d179@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D+179 식단 제공
+DESCRIPTION:한 끼: 쌀·오트밀 미음 · 먹은 양이나 반응을 
+ 남기려면 이 Item의 개인 메모를 사용한다.\nhttps://blog.nave
+ r.com/01695258757/222768860919
+DTSTART;VALUE=DATE:20260806
+DTEND;VALUE=DATE:20260807
+URL:https://blog.naver.com/01695258757/222768860919
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-baby-food-174-d179
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-baby-food-174-d180@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D+180 식단 제공
+DESCRIPTION:한 끼: 쌀·오트밀 미음 + 소고기 · 먹은 양이나 
+ 반응을 남기려면 이 Item의 개인 메모를 사용한다.\nhttps:/
+ /blog.naver.com/01695258757/222768860919
+DTSTART;VALUE=DATE:20260807
+DTEND;VALUE=DATE:20260808
+URL:https://blog.naver.com/01695258757/222768860919
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-baby-food-174-d180
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-baby-food-174-d181@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D+181 식단 제공
+DESCRIPTION:한 끼: 쌀·오트밀 미음 + 소고기 · 먹은 양이나 
+ 반응을 남기려면 이 Item의 개인 메모를 사용한다.\nhttps:/
+ /blog.naver.com/01695258757/222768860919
+DTSTART;VALUE=DATE:20260808
+DTEND;VALUE=DATE:20260809
+URL:https://blog.naver.com/01695258757/222768860919
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-baby-food-174-d181
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-baby-food-174-d182@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D+182 식단 제공
+DESCRIPTION:한 끼: 쌀·오트밀 미음 + 소고기 · 먹은 양이나 
+ 반응을 남기려면 이 Item의 개인 메모를 사용한다.\nhttps:/
+ /blog.naver.com/01695258757/222768860919
+DTSTART;VALUE=DATE:20260809
+DTEND;VALUE=DATE:20260810
+URL:https://blog.naver.com/01695258757/222768860919
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-baby-food-174-d182
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-baby-food-174-d183@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D+183 식단 제공
+DESCRIPTION:한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 · 먹
+ 은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용
+ 한다.\nhttps://blog.naver.com/01695258757/222768860919
+DTSTART;VALUE=DATE:20260810
+DTEND;VALUE=DATE:20260811
+URL:https://blog.naver.com/01695258757/222768860919
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-baby-food-174-d183
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-baby-food-174-d184@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D+184 식단 제공
+DESCRIPTION:한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 · 먹
+ 은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용
+ 한다.\nhttps://blog.naver.com/01695258757/222768860919
+DTSTART;VALUE=DATE:20260811
+DTEND;VALUE=DATE:20260812
+URL:https://blog.naver.com/01695258757/222768860919
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-baby-food-174-d184
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-baby-food-174-d185@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D+185 식단 제공
+DESCRIPTION:한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 · 먹
+ 은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용
+ 한다.\nhttps://blog.naver.com/01695258757/222768860919
+DTSTART;VALUE=DATE:20260812
+DTEND;VALUE=DATE:20260813
+URL:https://blog.naver.com/01695258757/222768860919
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-baby-food-174-d185
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-baby-food-174-d186@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D+186 식단 제공
+DESCRIPTION:한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 청경
+ 채 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모
+ 를 사용한다.\nhttps://blog.naver.com/01695258757/222768860919
+DTSTART;VALUE=DATE:20260813
+DTEND;VALUE=DATE:20260814
+URL:https://blog.naver.com/01695258757/222768860919
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-baby-food-174-d186
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-baby-food-174-d187@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D+187 식단 제공
+DESCRIPTION:한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 청경
+ 채 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모
+ 를 사용한다.\nhttps://blog.naver.com/01695258757/222768860919
+DTSTART;VALUE=DATE:20260814
+DTEND;VALUE=DATE:20260815
+URL:https://blog.naver.com/01695258757/222768860919
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-baby-food-174-d187
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-baby-food-174-d188@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D+188 식단 제공
+DESCRIPTION:한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 청경
+ 채 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모
+ 를 사용한다.\nhttps://blog.naver.com/01695258757/222768860919
+DTSTART;VALUE=DATE:20260815
+DTEND;VALUE=DATE:20260816
+URL:https://blog.naver.com/01695258757/222768860919
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-baby-food-174-d188
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-baby-food-174-d189@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D+189 식단 제공
+DESCRIPTION:한 끼: 쌀·오트밀 미음 + 소고기 + 청경채 + 오이
+  · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 
+ 사용한다.\nhttps://blog.naver.com/01695258757/222768860919
+DTSTART;VALUE=DATE:20260816
+DTEND;VALUE=DATE:20260817
+URL:https://blog.naver.com/01695258757/222768860919
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-baby-food-174-d189
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-baby-food-174-d190@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D+190 식단 제공
+DESCRIPTION:한 끼: 쌀·오트밀 미음 + 소고기 + 청경채 + 오이
+  · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 
+ 사용한다.\nhttps://blog.naver.com/01695258757/222768860919
+DTSTART;VALUE=DATE:20260817
+DTEND;VALUE=DATE:20260818
+URL:https://blog.naver.com/01695258757/222768860919
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-baby-food-174-d190
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-baby-food-174-d191@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D+191 식단 제공
+DESCRIPTION:한 끼: 쌀·오트밀 미음 + 소고기 + 청경채 + 오이
+  · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 
+ 사용한다.\nhttps://blog.naver.com/01695258757/222768860919
+DTSTART;VALUE=DATE:20260818
+DTEND;VALUE=DATE:20260819
+URL:https://blog.naver.com/01695258757/222768860919
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-baby-food-174-d191
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-baby-food-174-d192@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D+192 식단 제공
+DESCRIPTION:한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 브로
+ 콜리 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메
+ 모를 사용한다.\nhttps://blog.naver.com/01695258757/222768860919
+DTSTART;VALUE=DATE:20260819
+DTEND;VALUE=DATE:20260820
+URL:https://blog.naver.com/01695258757/222768860919
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-baby-food-174-d192
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-baby-food-174-d193@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D+193 식단 제공
+DESCRIPTION:한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 브로
+ 콜리 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메
+ 모를 사용한다.\nhttps://blog.naver.com/01695258757/222768860919
+DTSTART;VALUE=DATE:20260820
+DTEND;VALUE=DATE:20260821
+URL:https://blog.naver.com/01695258757/222768860919
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-baby-food-174-d193
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-baby-food-174-d194@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D+194 식단 제공
+DESCRIPTION:한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 브로
+ 콜리 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메
+ 모를 사용한다.\nhttps://blog.naver.com/01695258757/222768860919
+DTSTART;VALUE=DATE:20260821
+DTEND;VALUE=DATE:20260822
+URL:https://blog.naver.com/01695258757/222768860919
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-baby-food-174-d194
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-baby-food-174-d195@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D+195 식단 제공
+DESCRIPTION:한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 양
+ 배추 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메
+ 모를 사용한다.\nhttps://blog.naver.com/01695258757/222768860919
+DTSTART;VALUE=DATE:20260822
+DTEND;VALUE=DATE:20260823
+URL:https://blog.naver.com/01695258757/222768860919
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-baby-food-174-d195
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-baby-food-174-d196@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D+196 식단 제공
+DESCRIPTION:한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 양
+ 배추 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메
+ 모를 사용한다.\nhttps://blog.naver.com/01695258757/222768860919
+DTSTART;VALUE=DATE:20260823
+DTEND;VALUE=DATE:20260824
+URL:https://blog.naver.com/01695258757/222768860919
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-baby-food-174-d196
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-baby-food-174-d197@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D+197 식단 제공
+DESCRIPTION:한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 양
+ 배추 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메
+ 모를 사용한다.\nhttps://blog.naver.com/01695258757/222768860919
+DTSTART;VALUE=DATE:20260824
+DTEND;VALUE=DATE:20260825
+URL:https://blog.naver.com/01695258757/222768860919
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-baby-food-174-d197
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-baby-food-174-d198@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D+198 식단 제공
+DESCRIPTION:한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 청
+ 경채 + 당근 · 먹은 양이나 반응을 남기려면 이 Item의 개
+ 인 메모를 사용한다.\nhttps://blog.naver.com/01695258757/2227688609
+ 19
+DTSTART;VALUE=DATE:20260825
+DTEND;VALUE=DATE:20260826
+URL:https://blog.naver.com/01695258757/222768860919
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-baby-food-174-d198
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-baby-food-174-d199@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D+199 식단 제공
+DESCRIPTION:한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 청
+ 경채 + 당근 · 먹은 양이나 반응을 남기려면 이 Item의 개
+ 인 메모를 사용한다.\nhttps://blog.naver.com/01695258757/2227688609
+ 19
+DTSTART;VALUE=DATE:20260826
+DTEND;VALUE=DATE:20260827
+URL:https://blog.naver.com/01695258757/222768860919
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-baby-food-174-d199
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-baby-food-174-d200@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D+200 식단 제공
+DESCRIPTION:한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 청
+ 경채 + 당근 · 먹은 양이나 반응을 남기려면 이 Item의 개
+ 인 메모를 사용한다.\nhttps://blog.naver.com/01695258757/2227688609
+ 19
+DTSTART;VALUE=DATE:20260827
+DTEND;VALUE=DATE:20260828
+URL:https://blog.naver.com/01695258757/222768860919
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-baby-food-174-d200
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-baby-food-174-d201@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D+201 식단 제공
+DESCRIPTION:한 끼: 쌀·오트밀 미음 + 소고기 + 양배추 + 브로
+ 콜리 + 단호박 · 먹은 양이나 반응을 남기려면 이 Item의 
+ 개인 메모를 사용한다.\nhttps://blog.naver.com/01695258757/2227688
+ 60919
+DTSTART;VALUE=DATE:20260828
+DTEND;VALUE=DATE:20260829
+URL:https://blog.naver.com/01695258757/222768860919
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-baby-food-174-d201
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-baby-food-174-d202@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D+202 식단 제공
+DESCRIPTION:한 끼: 쌀·오트밀 미음 + 소고기 + 양배추 + 브로
+ 콜리 + 단호박 · 먹은 양이나 반응을 남기려면 이 Item의 
+ 개인 메모를 사용한다.\nhttps://blog.naver.com/01695258757/2227688
+ 60919
+DTSTART;VALUE=DATE:20260829
+DTEND;VALUE=DATE:20260830
+URL:https://blog.naver.com/01695258757/222768860919
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-baby-food-174-d202
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-baby-food-174-d203@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D+203 식단 제공
+DESCRIPTION:한 끼: 쌀·오트밀 미음 + 소고기 + 양배추 + 브로
+ 콜리 + 단호박 · 간식: 사과 · 먹은 양이나 반응을 남기
+ 려면 이 Item의 개인 메모를 사용한다.\nhttps://blog.naver.com/
+ 01695258757/222768860919
+DTSTART;VALUE=DATE:20260830
+DTEND;VALUE=DATE:20260831
+URL:https://blog.naver.com/01695258757/222768860919
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-baby-food-174-d203
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-baby-food-174-d204@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D+204 식단 제공
+DESCRIPTION:아침: 쌀·오트밀 + 소고기 + 양배추 + 단호박 + 
+ 완두콩 · 점심: 쌀·오트밀 + 당근 + 사과 + 브로콜리 + 청
+ 경채 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메
+ 모를 사용한다.\nhttps://blog.naver.com/01695258757/222768860919
+DTSTART;VALUE=DATE:20260831
+DTEND;VALUE=DATE:20260901
+URL:https://blog.naver.com/01695258757/222768860919
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-baby-food-174-d204
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-baby-food-174-d205@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D+205 식단 제공
+DESCRIPTION:아침: 쌀·오트밀 + 소고기 + 양배추 + 단호박 + 
+ 완두콩 · 점심: 쌀·오트밀 + 당근 + 사과 + 브로콜리 + 청
+ 경채 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메
+ 모를 사용한다.\nhttps://blog.naver.com/01695258757/222768860919
+DTSTART;VALUE=DATE:20260901
+DTEND;VALUE=DATE:20260902
+URL:https://blog.naver.com/01695258757/222768860919
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-baby-food-174-d205
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-baby-food-174-d206@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D+206 식단 제공
+DESCRIPTION:아침: 쌀·오트밀 + 소고기 + 양배추 + 단호박 + 
+ 완두콩 · 점심: 쌀·오트밀 + 당근 + 사과 + 브로콜리 + 청
+ 경채 · 간식: 바나나 · 먹은 양이나 반응을 남기려면 이
+  Item의 개인 메모를 사용한다.\nhttps://blog.naver.com/0169525875
+ 7/222768860919
+DTSTART;VALUE=DATE:20260902
+DTEND;VALUE=DATE:20260903
+URL:https://blog.naver.com/01695258757/222768860919
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-baby-food-174-d206
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-baby-food-174-d207@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D+207 식단 제공
+DESCRIPTION:아침: 쌀·오트밀 + 달걀 + 당근 + 완두콩 + 브로
+ 콜리 · 점심: 쌀·오트밀 + 소고기 + 단호박 + 양배추 + 청
+ 경채 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메
+ 모를 사용한다.\nhttps://blog.naver.com/01695258757/222768860919
+DTSTART;VALUE=DATE:20260903
+DTEND;VALUE=DATE:20260904
+URL:https://blog.naver.com/01695258757/222768860919
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-baby-food-174-d207
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-baby-food-174-d208@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D+208 식단 제공
+DESCRIPTION:아침: 쌀·오트밀 + 달걀 + 당근 + 완두콩 + 브로
+ 콜리 · 점심: 쌀·오트밀 + 소고기 + 단호박 + 양배추 + 청
+ 경채 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메
+ 모를 사용한다.\nhttps://blog.naver.com/01695258757/222768860919
+DTSTART;VALUE=DATE:20260904
+DTEND;VALUE=DATE:20260905
+URL:https://blog.naver.com/01695258757/222768860919
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-baby-food-174-d208
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-baby-food-174-d209@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:D+209 식단 제공
+DESCRIPTION:아침: 쌀·오트밀 + 달걀 + 당근 + 완두콩 + 브로
+ 콜리 · 점심: 쌀·오트밀 + 소고기 + 단호박 + 양배추 + 청
+ 경채 · 간식: 바나나 · 먹은 양이나 반응을 남기려면 이
+  Item의 개인 메모를 사용한다.\nhttps://blog.naver.com/0169525875
+ 7/222768860919
+DTSTART;VALUE=DATE:20260905
+DTEND;VALUE=DATE:20260906
+URL:https://blog.naver.com/01695258757/222768860919
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-baby-food-174-d209
+END:VEVENT
+END:VCALENDAR

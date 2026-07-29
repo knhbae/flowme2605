@@ -1,0 +1,2675 @@
+{
+  "schemaVersion": "flowme-current-canonical-v1",
+  "architecture": "current_canonical_v1",
+  "bundleId": "bundle-opic-plan",
+  "title": "오픽 모의고사 계획표",
+  "taxonomy": {
+    "primaryLifeArea": "study_reading",
+    "secondaryLifeAreas": [],
+    "topicTags": [],
+    "sourceShape": "lesson_rows",
+    "primaryExecutionPattern": "progress_tracking",
+    "secondaryExecutionPatterns": [
+      "date_preparation"
+    ],
+    "primaryArtifact": "sheet",
+    "secondaryArtifacts": [
+      "calendar",
+      "checklist"
+    ]
+  },
+  "userJob": "원문 2주 또는 1달 계획의 회차별 진도를 펼쳐서 관리한다.",
+  "setupFields": [
+    {
+      "key": "planVariant",
+      "label": "계획",
+      "type": "choice",
+      "options": [
+        "2주",
+        "1달"
+      ],
+      "required": true
+    },
+    {
+      "key": "startDate",
+      "label": "시작일",
+      "type": "date",
+      "required": false
+    }
+  ],
+  "sampleUserOverlay": {
+    "planVariant": "2주",
+    "startDate": "2026-08-03"
+  },
+  "map": {
+    "id": "bundle-opic-plan-map",
+    "title": "오픽 모의고사 학습 플랜",
+    "type": "ordered",
+    "ordering": "source_defined",
+    "childFlowIds": [
+      "bundle-opic-plan-2week",
+      "bundle-opic-plan-1month"
+    ],
+    "derivedProgressOnly": true
+  },
+  "sharedContexts": [],
+  "attribution": {
+    "creatorId": "study-mansour",
+    "providerId": "creator-business",
+    "sourceOwnerId": "study-mansour",
+    "curatorId": null,
+    "trustAnchorRefs": [],
+    "decisionBand": "Go",
+    "creatorVerdict": "creator_flow_map_candidate",
+    "publicationApproval": "not_implied"
+  },
+  "rights": {
+    "mode": "link_and_minimal_execution_metadata",
+    "publicReleaseAllowed": false,
+    "personalTransformAllowed": true,
+    "rationale": "Existing research allows link plus minimal execution metadata; public release remains a separate review."
+  },
+  "review": {
+    "sourceRowStatus": "complete_for_representative_example",
+    "promotionState": "internal_review_only",
+    "safetyReview": "not_required"
+  },
+  "sourceRows": [
+    {
+      "sourceRowId": "bundle-opic-plan-2w-w1-월",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "2주 계획표 1주차 월요일",
+      "label": "1회 모의고사 실전·녹음·보완·복습",
+      "detail": "영상: https://www.youtube.com/watch?v=MZmrXlAc6k4 · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-video-1",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://www.youtube.com/watch?v=MZmrXlAc6k4",
+      "sourceLocator": "오픽 모의고사 1회 영상",
+      "label": "1회 모의고사 영상",
+      "detail": "15문항 모의고사",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-2w-w1-화",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "2주 계획표 1주차 화요일",
+      "label": "2회 모의고사 실전·녹음·보완·복습",
+      "detail": "영상: https://www.youtube.com/watch?v=YOZADzoC22s · 범위: 은행·바·카페·MP3·걷기 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-video-2",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://www.youtube.com/watch?v=YOZADzoC22s",
+      "sourceLocator": "오픽 모의고사 2회 영상",
+      "label": "2회 모의고사 영상",
+      "detail": "은행·바·카페·MP3·걷기",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-2w-w1-수",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "2주 계획표 1주차 수요일",
+      "label": "3회 모의고사 실전·녹음·보완·복습",
+      "detail": "영상: https://www.youtube.com/watch?v=bRjvaQ380MU · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-video-3",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://www.youtube.com/watch?v=bRjvaQ380MU",
+      "sourceLocator": "오픽 모의고사 3회 영상",
+      "label": "3회 모의고사 영상",
+      "detail": "15문항 모의고사",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-2w-w1-목",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "2주 계획표 1주차 목요일",
+      "label": "4회 모의고사 실전·녹음·보완·복습",
+      "detail": "영상: https://www.youtube.com/watch?v=N2s5golewUI · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-video-4",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://www.youtube.com/watch?v=N2s5golewUI",
+      "sourceLocator": "오픽 모의고사 4회 영상",
+      "label": "4회 모의고사 영상",
+      "detail": "15문항 모의고사",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-2w-w1-금",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "2주 계획표 1주차 금요일",
+      "label": "5회 모의고사 실전·녹음·보완·복습",
+      "detail": "영상: https://www.youtube.com/watch?v=uCUiUlggGlE · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-video-5",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://www.youtube.com/watch?v=uCUiUlggGlE",
+      "sourceLocator": "오픽 모의고사 5회 영상",
+      "label": "5회 모의고사 영상",
+      "detail": "15문항 모의고사",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-2w-w1-토",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "2주 계획표 1주차 토요일",
+      "label": "1~5회 총복습",
+      "detail": "주중 녹음을 다시 듣고 반복해서 막힌 질문과 보완 표현을 정리한다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-2w-w2-월",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "2주 계획표 2주차 월요일",
+      "label": "6회 모의고사 실전·녹음·보완·복습",
+      "detail": "영상: https://www.youtube.com/watch?v=KddRF_nM9uI · 범위: 동네·건강·국내여행·은행·가족 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-video-6",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://www.youtube.com/watch?v=KddRF_nM9uI",
+      "sourceLocator": "오픽 모의고사 6회 영상",
+      "label": "6회 모의고사 영상",
+      "detail": "동네·건강·국내여행·은행·가족",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-2w-w2-화",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "2주 계획표 2주차 화요일",
+      "label": "7회 모의고사 실전·녹음·보완·복습",
+      "detail": "영상: https://www.youtube.com/watch?v=cAOaiJsT7ac · 범위: 집에서 보내는 휴가·지리·공휴일·집·음악 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-video-7",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://www.youtube.com/watch?v=cAOaiJsT7ac",
+      "sourceLocator": "오픽 모의고사 7회 영상",
+      "label": "7회 모의고사 영상",
+      "detail": "집에서 보내는 휴가·지리·공휴일·집·음악",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-2w-w2-수",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "2주 계획표 2주차 수요일",
+      "label": "8회 모의고사 실전·녹음·보완·복습",
+      "detail": "영상: https://www.youtube.com/watch?v=VFWF-HUYggI · 범위: 기술·캠핑·패션·쇼핑·건강 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-video-8",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://www.youtube.com/watch?v=VFWF-HUYggI",
+      "sourceLocator": "오픽 모의고사 8회 영상",
+      "label": "8회 모의고사 영상",
+      "detail": "기술·캠핑·패션·쇼핑·건강",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-2w-w2-목",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "2주 계획표 2주차 목요일",
+      "label": "9회 모의고사 실전·녹음·보완·복습",
+      "detail": "영상: https://www.youtube.com/watch?v=y0Y1j7fEZj4 · 범위: 외식·영화·날씨·계절·콘서트·바 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-video-9",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://www.youtube.com/watch?v=y0Y1j7fEZj4",
+      "sourceLocator": "오픽 모의고사 9회 영상",
+      "label": "9회 모의고사 영상",
+      "detail": "외식·영화·날씨·계절·콘서트·바",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-2w-w2-금",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "2주 계획표 2주차 금요일",
+      "label": "10회 모의고사 실전·녹음·보완·복습",
+      "detail": "영상: https://www.youtube.com/watch?v=xh_zHNfAgQo · 범위: 해외여행·모임·공연·가족·친구·산업 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-video-10",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://www.youtube.com/watch?v=xh_zHNfAgQo",
+      "sourceLocator": "오픽 모의고사 10회 영상",
+      "label": "10회 모의고사 영상",
+      "detail": "해외여행·모임·공연·가족·친구·산업",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-2w-w2-토",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "2주 계획표 2주차 토요일",
+      "label": "6~10회 총복습",
+      "detail": "주중 녹음을 다시 듣고 반복해서 막힌 질문과 보완 표현을 정리한다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-1m-w1-월",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "1달 계획표 1주차 월요일",
+      "label": "1회 실전처럼 풀기",
+      "detail": "영상: https://www.youtube.com/watch?v=MZmrXlAc6k4 · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-1m-w1-화",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "1달 계획표 1주차 화요일",
+      "label": "1회 녹음 듣고 보완하기",
+      "detail": "영상: https://www.youtube.com/watch?v=MZmrXlAc6k4 · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-1m-w1-수",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "1달 계획표 1주차 수요일",
+      "label": "1회 녹음 듣고 보완하기",
+      "detail": "영상: https://www.youtube.com/watch?v=MZmrXlAc6k4 · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-1m-w1-목",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "1달 계획표 1주차 목요일",
+      "label": "2회 실전처럼 풀기",
+      "detail": "영상: https://www.youtube.com/watch?v=YOZADzoC22s · 범위: 은행·바·카페·MP3·걷기 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-1m-w1-금",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "1달 계획표 1주차 금요일",
+      "label": "2회 녹음 듣고 보완하기",
+      "detail": "영상: https://www.youtube.com/watch?v=YOZADzoC22s · 범위: 은행·바·카페·MP3·걷기 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-1m-w1-토",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "1달 계획표 1주차 토요일",
+      "label": "2회 녹음 듣고 보완하기",
+      "detail": "영상: https://www.youtube.com/watch?v=YOZADzoC22s · 범위: 은행·바·카페·MP3·걷기 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-1m-w2-월",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "1달 계획표 2주차 월요일",
+      "label": "3회 실전처럼 풀기",
+      "detail": "영상: https://www.youtube.com/watch?v=bRjvaQ380MU · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-1m-w2-화",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "1달 계획표 2주차 화요일",
+      "label": "3회 녹음 듣고 보완하기",
+      "detail": "영상: https://www.youtube.com/watch?v=bRjvaQ380MU · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-1m-w2-수",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "1달 계획표 2주차 수요일",
+      "label": "3회 녹음 듣고 보완하기",
+      "detail": "영상: https://www.youtube.com/watch?v=bRjvaQ380MU · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-1m-w2-목",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "1달 계획표 2주차 목요일",
+      "label": "4회 실전처럼 풀기",
+      "detail": "영상: https://www.youtube.com/watch?v=N2s5golewUI · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-1m-w2-금",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "1달 계획표 2주차 금요일",
+      "label": "4회 녹음 듣고 보완하기",
+      "detail": "영상: https://www.youtube.com/watch?v=N2s5golewUI · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-1m-w2-토",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "1달 계획표 2주차 토요일",
+      "label": "4회 녹음 듣고 보완하기",
+      "detail": "영상: https://www.youtube.com/watch?v=N2s5golewUI · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-1m-w3-월",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "1달 계획표 3주차 월요일",
+      "label": "5회 실전처럼 풀기",
+      "detail": "영상: https://www.youtube.com/watch?v=uCUiUlggGlE · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-1m-w3-화",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "1달 계획표 3주차 화요일",
+      "label": "5회 녹음 듣고 보완하기",
+      "detail": "영상: https://www.youtube.com/watch?v=uCUiUlggGlE · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-1m-w3-수",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "1달 계획표 3주차 수요일",
+      "label": "5회 녹음 듣고 보완하기",
+      "detail": "영상: https://www.youtube.com/watch?v=uCUiUlggGlE · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-1m-w3-목",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "1달 계획표 3주차 목요일",
+      "label": "6회 실전처럼 풀기",
+      "detail": "영상: https://www.youtube.com/watch?v=KddRF_nM9uI · 범위: 동네·건강·국내여행·은행·가족 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-1m-w3-금",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "1달 계획표 3주차 금요일",
+      "label": "6회 녹음 듣고 보완하기",
+      "detail": "영상: https://www.youtube.com/watch?v=KddRF_nM9uI · 범위: 동네·건강·국내여행·은행·가족 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-1m-w3-토",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "1달 계획표 3주차 토요일",
+      "label": "6회 녹음 듣고 보완하기",
+      "detail": "영상: https://www.youtube.com/watch?v=KddRF_nM9uI · 범위: 동네·건강·국내여행·은행·가족 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-1m-w4-월",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "1달 계획표 4주차 월요일",
+      "label": "7회 실전처럼 풀기",
+      "detail": "영상: https://www.youtube.com/watch?v=cAOaiJsT7ac · 범위: 집에서 보내는 휴가·지리·공휴일·집·음악 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-1m-w4-화",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "1달 계획표 4주차 화요일",
+      "label": "7회 녹음 듣고 보완하기",
+      "detail": "영상: https://www.youtube.com/watch?v=cAOaiJsT7ac · 범위: 집에서 보내는 휴가·지리·공휴일·집·음악 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-1m-w4-수",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "1달 계획표 4주차 수요일",
+      "label": "7회 녹음 듣고 보완하기",
+      "detail": "영상: https://www.youtube.com/watch?v=cAOaiJsT7ac · 범위: 집에서 보내는 휴가·지리·공휴일·집·음악 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-1m-w4-목",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "1달 계획표 4주차 목요일",
+      "label": "8회 실전처럼 풀기",
+      "detail": "영상: https://www.youtube.com/watch?v=VFWF-HUYggI · 범위: 기술·캠핑·패션·쇼핑·건강 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-1m-w4-금",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "1달 계획표 4주차 금요일",
+      "label": "8회 녹음 듣고 보완하기",
+      "detail": "영상: https://www.youtube.com/watch?v=VFWF-HUYggI · 범위: 기술·캠핑·패션·쇼핑·건강 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-1m-w4-토",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "1달 계획표 4주차 토요일",
+      "label": "8회 녹음 듣고 보완하기",
+      "detail": "영상: https://www.youtube.com/watch?v=VFWF-HUYggI · 범위: 기술·캠핑·패션·쇼핑·건강 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-1m-w5-월",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "1달 계획표 5주차 월요일",
+      "label": "9회 실전처럼 풀기",
+      "detail": "영상: https://www.youtube.com/watch?v=y0Y1j7fEZj4 · 범위: 외식·영화·날씨·계절·콘서트·바 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-1m-w5-화",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "1달 계획표 5주차 화요일",
+      "label": "9회 녹음 듣고 보완하기",
+      "detail": "영상: https://www.youtube.com/watch?v=y0Y1j7fEZj4 · 범위: 외식·영화·날씨·계절·콘서트·바 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-1m-w5-수",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "1달 계획표 5주차 수요일",
+      "label": "9회 녹음 듣고 보완하기",
+      "detail": "영상: https://www.youtube.com/watch?v=y0Y1j7fEZj4 · 범위: 외식·영화·날씨·계절·콘서트·바 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-1m-w5-목",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "1달 계획표 5주차 목요일",
+      "label": "10회 실전처럼 풀기",
+      "detail": "영상: https://www.youtube.com/watch?v=xh_zHNfAgQo · 범위: 해외여행·모임·공연·가족·친구·산업 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-1m-w5-금",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "1달 계획표 5주차 금요일",
+      "label": "10회 녹음 듣고 보완하기",
+      "detail": "영상: https://www.youtube.com/watch?v=xh_zHNfAgQo · 범위: 해외여행·모임·공연·가족·친구·산업 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-opic-plan-1m-w5-토",
+      "bundleId": "bundle-opic-plan",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "sourceLocator": "1달 계획표 5주차 토요일",
+      "label": "10회 녹음 듣고 보완하기",
+      "detail": "영상: https://www.youtube.com/watch?v=xh_zHNfAgQo · 범위: 해외여행·모임·공연·가족·친구·산업 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+      "verifiedAt": "2026-07-22"
+    }
+  ],
+  "flows": [
+    {
+      "id": "bundle-opic-plan-2week",
+      "title": "오픽 모의고사 2주 플랜",
+      "primarySourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "steps": [
+        {
+          "id": "bundle-opic-plan-2w-week-1",
+          "flowId": "bundle-opic-plan-2week",
+          "title": "1주차 · 1~5회",
+          "order": 1,
+          "sourceScheduleGroup": {
+            "type": "relative_week",
+            "week": 1
+          },
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-opic-plan-2w-w1-월",
+              "flowId": "bundle-opic-plan-2week",
+              "stepId": "bundle-opic-plan-2w-week-1",
+              "title": "1회 모의고사 실전처럼 풀기",
+              "detail": "영상: https://www.youtube.com/watch?v=MZmrXlAc6k4 · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 1,
+                "weekday": "월"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=MZmrXlAc6k4 · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-2w-w1-월",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "2주 계획표 1주차 월요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-1",
+                  "sourceUrl": "https://www.youtube.com/watch?v=MZmrXlAc6k4",
+                  "sourceLocator": "오픽 모의고사 1회 영상"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-opic-plan-2w-w1-화",
+              "flowId": "bundle-opic-plan-2week",
+              "stepId": "bundle-opic-plan-2w-week-1",
+              "title": "2회 모의고사 실전처럼 풀기",
+              "detail": "영상: https://www.youtube.com/watch?v=YOZADzoC22s · 범위: 은행·바·카페·MP3·걷기 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 1,
+                "weekday": "화"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=YOZADzoC22s · 범위: 은행·바·카페·MP3·걷기 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-2w-w1-화",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "2주 계획표 1주차 화요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-2",
+                  "sourceUrl": "https://www.youtube.com/watch?v=YOZADzoC22s",
+                  "sourceLocator": "오픽 모의고사 2회 영상"
+                }
+              ],
+              "order": 2,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-opic-plan-2w-w1-수",
+              "flowId": "bundle-opic-plan-2week",
+              "stepId": "bundle-opic-plan-2w-week-1",
+              "title": "3회 모의고사 실전처럼 풀기",
+              "detail": "영상: https://www.youtube.com/watch?v=bRjvaQ380MU · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 1,
+                "weekday": "수"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=bRjvaQ380MU · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-2w-w1-수",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "2주 계획표 1주차 수요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-3",
+                  "sourceUrl": "https://www.youtube.com/watch?v=bRjvaQ380MU",
+                  "sourceLocator": "오픽 모의고사 3회 영상"
+                }
+              ],
+              "order": 3,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-opic-plan-2w-w1-목",
+              "flowId": "bundle-opic-plan-2week",
+              "stepId": "bundle-opic-plan-2w-week-1",
+              "title": "4회 모의고사 실전처럼 풀기",
+              "detail": "영상: https://www.youtube.com/watch?v=N2s5golewUI · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 1,
+                "weekday": "목"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=N2s5golewUI · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-2w-w1-목",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "2주 계획표 1주차 목요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-4",
+                  "sourceUrl": "https://www.youtube.com/watch?v=N2s5golewUI",
+                  "sourceLocator": "오픽 모의고사 4회 영상"
+                }
+              ],
+              "order": 4,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-opic-plan-2w-w1-금",
+              "flowId": "bundle-opic-plan-2week",
+              "stepId": "bundle-opic-plan-2w-week-1",
+              "title": "5회 모의고사 실전처럼 풀기",
+              "detail": "영상: https://www.youtube.com/watch?v=uCUiUlggGlE · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 1,
+                "weekday": "금"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=uCUiUlggGlE · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-2w-w1-금",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "2주 계획표 1주차 금요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-5",
+                  "sourceUrl": "https://www.youtube.com/watch?v=uCUiUlggGlE",
+                  "sourceLocator": "오픽 모의고사 5회 영상"
+                }
+              ],
+              "order": 5,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-opic-plan-2w-w1-토",
+              "flowId": "bundle-opic-plan-2week",
+              "stepId": "bundle-opic-plan-2w-week-1",
+              "title": "1~5회 답변 총복습",
+              "detail": "이번 주 녹음을 다시 듣고 반복해서 막힌 질문과 다음 주에 쓸 핵심 표현을 한 메모로 정리한다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 1,
+                "weekday": "토"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "이번 주 녹음을 다시 듣고 반복해서 막힌 질문과 다음 주에 쓸 핵심 표현을 한 메모로 정리한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-2w-w1-토",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "2주 계획표 1주차 토요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-1",
+                  "sourceUrl": "https://www.youtube.com/watch?v=MZmrXlAc6k4",
+                  "sourceLocator": "오픽 모의고사 1회 영상"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-2",
+                  "sourceUrl": "https://www.youtube.com/watch?v=YOZADzoC22s",
+                  "sourceLocator": "오픽 모의고사 2회 영상"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-3",
+                  "sourceUrl": "https://www.youtube.com/watch?v=bRjvaQ380MU",
+                  "sourceLocator": "오픽 모의고사 3회 영상"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-4",
+                  "sourceUrl": "https://www.youtube.com/watch?v=N2s5golewUI",
+                  "sourceLocator": "오픽 모의고사 4회 영상"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-5",
+                  "sourceUrl": "https://www.youtube.com/watch?v=uCUiUlggGlE",
+                  "sourceLocator": "오픽 모의고사 5회 영상"
+                }
+              ],
+              "order": 6,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        },
+        {
+          "id": "bundle-opic-plan-2w-week-2",
+          "flowId": "bundle-opic-plan-2week",
+          "title": "2주차 · 6~10회",
+          "order": 2,
+          "sourceScheduleGroup": {
+            "type": "relative_week",
+            "week": 2
+          },
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-opic-plan-2w-w2-월",
+              "flowId": "bundle-opic-plan-2week",
+              "stepId": "bundle-opic-plan-2w-week-2",
+              "title": "6회 모의고사 실전처럼 풀기",
+              "detail": "영상: https://www.youtube.com/watch?v=KddRF_nM9uI · 범위: 동네·건강·국내여행·은행·가족 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 2,
+                "weekday": "월"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=KddRF_nM9uI · 범위: 동네·건강·국내여행·은행·가족 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-2w-w2-월",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "2주 계획표 2주차 월요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-6",
+                  "sourceUrl": "https://www.youtube.com/watch?v=KddRF_nM9uI",
+                  "sourceLocator": "오픽 모의고사 6회 영상"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-opic-plan-2w-w2-화",
+              "flowId": "bundle-opic-plan-2week",
+              "stepId": "bundle-opic-plan-2w-week-2",
+              "title": "7회 모의고사 실전처럼 풀기",
+              "detail": "영상: https://www.youtube.com/watch?v=cAOaiJsT7ac · 범위: 집에서 보내는 휴가·지리·공휴일·집·음악 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 2,
+                "weekday": "화"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=cAOaiJsT7ac · 범위: 집에서 보내는 휴가·지리·공휴일·집·음악 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-2w-w2-화",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "2주 계획표 2주차 화요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-7",
+                  "sourceUrl": "https://www.youtube.com/watch?v=cAOaiJsT7ac",
+                  "sourceLocator": "오픽 모의고사 7회 영상"
+                }
+              ],
+              "order": 2,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-opic-plan-2w-w2-수",
+              "flowId": "bundle-opic-plan-2week",
+              "stepId": "bundle-opic-plan-2w-week-2",
+              "title": "8회 모의고사 실전처럼 풀기",
+              "detail": "영상: https://www.youtube.com/watch?v=VFWF-HUYggI · 범위: 기술·캠핑·패션·쇼핑·건강 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 2,
+                "weekday": "수"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=VFWF-HUYggI · 범위: 기술·캠핑·패션·쇼핑·건강 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-2w-w2-수",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "2주 계획표 2주차 수요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-8",
+                  "sourceUrl": "https://www.youtube.com/watch?v=VFWF-HUYggI",
+                  "sourceLocator": "오픽 모의고사 8회 영상"
+                }
+              ],
+              "order": 3,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-opic-plan-2w-w2-목",
+              "flowId": "bundle-opic-plan-2week",
+              "stepId": "bundle-opic-plan-2w-week-2",
+              "title": "9회 모의고사 실전처럼 풀기",
+              "detail": "영상: https://www.youtube.com/watch?v=y0Y1j7fEZj4 · 범위: 외식·영화·날씨·계절·콘서트·바 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 2,
+                "weekday": "목"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=y0Y1j7fEZj4 · 범위: 외식·영화·날씨·계절·콘서트·바 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-2w-w2-목",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "2주 계획표 2주차 목요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-9",
+                  "sourceUrl": "https://www.youtube.com/watch?v=y0Y1j7fEZj4",
+                  "sourceLocator": "오픽 모의고사 9회 영상"
+                }
+              ],
+              "order": 4,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-opic-plan-2w-w2-금",
+              "flowId": "bundle-opic-plan-2week",
+              "stepId": "bundle-opic-plan-2w-week-2",
+              "title": "10회 모의고사 실전처럼 풀기",
+              "detail": "영상: https://www.youtube.com/watch?v=xh_zHNfAgQo · 범위: 해외여행·모임·공연·가족·친구·산업 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 2,
+                "weekday": "금"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=xh_zHNfAgQo · 범위: 해외여행·모임·공연·가족·친구·산업 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-2w-w2-금",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "2주 계획표 2주차 금요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-10",
+                  "sourceUrl": "https://www.youtube.com/watch?v=xh_zHNfAgQo",
+                  "sourceLocator": "오픽 모의고사 10회 영상"
+                }
+              ],
+              "order": 5,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-opic-plan-2w-w2-토",
+              "flowId": "bundle-opic-plan-2week",
+              "stepId": "bundle-opic-plan-2w-week-2",
+              "title": "6~10회 답변 총복습",
+              "detail": "이번 주 녹음을 다시 듣고 반복해서 막힌 질문과 다음 주에 쓸 핵심 표현을 한 메모로 정리한다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 2,
+                "weekday": "토"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "이번 주 녹음을 다시 듣고 반복해서 막힌 질문과 다음 주에 쓸 핵심 표현을 한 메모로 정리한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-2w-w2-토",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "2주 계획표 2주차 토요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-6",
+                  "sourceUrl": "https://www.youtube.com/watch?v=KddRF_nM9uI",
+                  "sourceLocator": "오픽 모의고사 6회 영상"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-7",
+                  "sourceUrl": "https://www.youtube.com/watch?v=cAOaiJsT7ac",
+                  "sourceLocator": "오픽 모의고사 7회 영상"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-8",
+                  "sourceUrl": "https://www.youtube.com/watch?v=VFWF-HUYggI",
+                  "sourceLocator": "오픽 모의고사 8회 영상"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-9",
+                  "sourceUrl": "https://www.youtube.com/watch?v=y0Y1j7fEZj4",
+                  "sourceLocator": "오픽 모의고사 9회 영상"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-10",
+                  "sourceUrl": "https://www.youtube.com/watch?v=xh_zHNfAgQo",
+                  "sourceLocator": "오픽 모의고사 10회 영상"
+                }
+              ],
+              "order": 6,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bundle-opic-plan-1month",
+      "title": "오픽 모의고사 1달 플랜",
+      "primarySourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "steps": [
+        {
+          "id": "bundle-opic-plan-1m-week-1",
+          "flowId": "bundle-opic-plan-1month",
+          "title": "1주차 · 1~2회",
+          "order": 1,
+          "sourceScheduleGroup": {
+            "type": "relative_week",
+            "week": 1
+          },
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-opic-plan-1m-w1-월",
+              "flowId": "bundle-opic-plan-1month",
+              "stepId": "bundle-opic-plan-1m-week-1",
+              "title": "1회 실전처럼 풀기",
+              "detail": "영상: https://www.youtube.com/watch?v=MZmrXlAc6k4 · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 1,
+                "weekday": "월"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=MZmrXlAc6k4 · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-1m-w1-월",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "1달 계획표 1주차 월요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-1",
+                  "sourceUrl": "https://www.youtube.com/watch?v=MZmrXlAc6k4",
+                  "sourceLocator": "오픽 모의고사 1회 영상"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-opic-plan-1m-w1-화",
+              "flowId": "bundle-opic-plan-1month",
+              "stepId": "bundle-opic-plan-1m-week-1",
+              "title": "1회 녹음 듣고 보완하기",
+              "detail": "영상: https://www.youtube.com/watch?v=MZmrXlAc6k4 · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 1,
+                "weekday": "화"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=MZmrXlAc6k4 · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-1m-w1-화",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "1달 계획표 1주차 화요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-1",
+                  "sourceUrl": "https://www.youtube.com/watch?v=MZmrXlAc6k4",
+                  "sourceLocator": "오픽 모의고사 1회 영상"
+                }
+              ],
+              "order": 2,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-opic-plan-1m-w1-수",
+              "flowId": "bundle-opic-plan-1month",
+              "stepId": "bundle-opic-plan-1m-week-1",
+              "title": "1회 녹음 듣고 보완하기",
+              "detail": "영상: https://www.youtube.com/watch?v=MZmrXlAc6k4 · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 1,
+                "weekday": "수"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=MZmrXlAc6k4 · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-1m-w1-수",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "1달 계획표 1주차 수요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-1",
+                  "sourceUrl": "https://www.youtube.com/watch?v=MZmrXlAc6k4",
+                  "sourceLocator": "오픽 모의고사 1회 영상"
+                }
+              ],
+              "order": 3,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-opic-plan-1m-w1-목",
+              "flowId": "bundle-opic-plan-1month",
+              "stepId": "bundle-opic-plan-1m-week-1",
+              "title": "2회 실전처럼 풀기",
+              "detail": "영상: https://www.youtube.com/watch?v=YOZADzoC22s · 범위: 은행·바·카페·MP3·걷기 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 1,
+                "weekday": "목"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=YOZADzoC22s · 범위: 은행·바·카페·MP3·걷기 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-1m-w1-목",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "1달 계획표 1주차 목요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-2",
+                  "sourceUrl": "https://www.youtube.com/watch?v=YOZADzoC22s",
+                  "sourceLocator": "오픽 모의고사 2회 영상"
+                }
+              ],
+              "order": 4,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-opic-plan-1m-w1-금",
+              "flowId": "bundle-opic-plan-1month",
+              "stepId": "bundle-opic-plan-1m-week-1",
+              "title": "2회 녹음 듣고 보완하기",
+              "detail": "영상: https://www.youtube.com/watch?v=YOZADzoC22s · 범위: 은행·바·카페·MP3·걷기 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 1,
+                "weekday": "금"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=YOZADzoC22s · 범위: 은행·바·카페·MP3·걷기 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-1m-w1-금",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "1달 계획표 1주차 금요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-2",
+                  "sourceUrl": "https://www.youtube.com/watch?v=YOZADzoC22s",
+                  "sourceLocator": "오픽 모의고사 2회 영상"
+                }
+              ],
+              "order": 5,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-opic-plan-1m-w1-토",
+              "flowId": "bundle-opic-plan-1month",
+              "stepId": "bundle-opic-plan-1m-week-1",
+              "title": "2회 녹음 듣고 보완하기",
+              "detail": "영상: https://www.youtube.com/watch?v=YOZADzoC22s · 범위: 은행·바·카페·MP3·걷기 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 1,
+                "weekday": "토"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=YOZADzoC22s · 범위: 은행·바·카페·MP3·걷기 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-1m-w1-토",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "1달 계획표 1주차 토요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-2",
+                  "sourceUrl": "https://www.youtube.com/watch?v=YOZADzoC22s",
+                  "sourceLocator": "오픽 모의고사 2회 영상"
+                }
+              ],
+              "order": 6,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        },
+        {
+          "id": "bundle-opic-plan-1m-week-2",
+          "flowId": "bundle-opic-plan-1month",
+          "title": "2주차 · 3~4회",
+          "order": 2,
+          "sourceScheduleGroup": {
+            "type": "relative_week",
+            "week": 2
+          },
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-opic-plan-1m-w2-월",
+              "flowId": "bundle-opic-plan-1month",
+              "stepId": "bundle-opic-plan-1m-week-2",
+              "title": "3회 실전처럼 풀기",
+              "detail": "영상: https://www.youtube.com/watch?v=bRjvaQ380MU · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 2,
+                "weekday": "월"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=bRjvaQ380MU · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-1m-w2-월",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "1달 계획표 2주차 월요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-3",
+                  "sourceUrl": "https://www.youtube.com/watch?v=bRjvaQ380MU",
+                  "sourceLocator": "오픽 모의고사 3회 영상"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-opic-plan-1m-w2-화",
+              "flowId": "bundle-opic-plan-1month",
+              "stepId": "bundle-opic-plan-1m-week-2",
+              "title": "3회 녹음 듣고 보완하기",
+              "detail": "영상: https://www.youtube.com/watch?v=bRjvaQ380MU · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 2,
+                "weekday": "화"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=bRjvaQ380MU · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-1m-w2-화",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "1달 계획표 2주차 화요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-3",
+                  "sourceUrl": "https://www.youtube.com/watch?v=bRjvaQ380MU",
+                  "sourceLocator": "오픽 모의고사 3회 영상"
+                }
+              ],
+              "order": 2,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-opic-plan-1m-w2-수",
+              "flowId": "bundle-opic-plan-1month",
+              "stepId": "bundle-opic-plan-1m-week-2",
+              "title": "3회 녹음 듣고 보완하기",
+              "detail": "영상: https://www.youtube.com/watch?v=bRjvaQ380MU · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 2,
+                "weekday": "수"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=bRjvaQ380MU · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-1m-w2-수",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "1달 계획표 2주차 수요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-3",
+                  "sourceUrl": "https://www.youtube.com/watch?v=bRjvaQ380MU",
+                  "sourceLocator": "오픽 모의고사 3회 영상"
+                }
+              ],
+              "order": 3,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-opic-plan-1m-w2-목",
+              "flowId": "bundle-opic-plan-1month",
+              "stepId": "bundle-opic-plan-1m-week-2",
+              "title": "4회 실전처럼 풀기",
+              "detail": "영상: https://www.youtube.com/watch?v=N2s5golewUI · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 2,
+                "weekday": "목"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=N2s5golewUI · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-1m-w2-목",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "1달 계획표 2주차 목요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-4",
+                  "sourceUrl": "https://www.youtube.com/watch?v=N2s5golewUI",
+                  "sourceLocator": "오픽 모의고사 4회 영상"
+                }
+              ],
+              "order": 4,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-opic-plan-1m-w2-금",
+              "flowId": "bundle-opic-plan-1month",
+              "stepId": "bundle-opic-plan-1m-week-2",
+              "title": "4회 녹음 듣고 보완하기",
+              "detail": "영상: https://www.youtube.com/watch?v=N2s5golewUI · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 2,
+                "weekday": "금"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=N2s5golewUI · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-1m-w2-금",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "1달 계획표 2주차 금요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-4",
+                  "sourceUrl": "https://www.youtube.com/watch?v=N2s5golewUI",
+                  "sourceLocator": "오픽 모의고사 4회 영상"
+                }
+              ],
+              "order": 5,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-opic-plan-1m-w2-토",
+              "flowId": "bundle-opic-plan-1month",
+              "stepId": "bundle-opic-plan-1m-week-2",
+              "title": "4회 녹음 듣고 보완하기",
+              "detail": "영상: https://www.youtube.com/watch?v=N2s5golewUI · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 2,
+                "weekday": "토"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=N2s5golewUI · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-1m-w2-토",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "1달 계획표 2주차 토요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-4",
+                  "sourceUrl": "https://www.youtube.com/watch?v=N2s5golewUI",
+                  "sourceLocator": "오픽 모의고사 4회 영상"
+                }
+              ],
+              "order": 6,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        },
+        {
+          "id": "bundle-opic-plan-1m-week-3",
+          "flowId": "bundle-opic-plan-1month",
+          "title": "3주차 · 5~6회",
+          "order": 3,
+          "sourceScheduleGroup": {
+            "type": "relative_week",
+            "week": 3
+          },
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-opic-plan-1m-w3-월",
+              "flowId": "bundle-opic-plan-1month",
+              "stepId": "bundle-opic-plan-1m-week-3",
+              "title": "5회 실전처럼 풀기",
+              "detail": "영상: https://www.youtube.com/watch?v=uCUiUlggGlE · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 3,
+                "weekday": "월"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=uCUiUlggGlE · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-1m-w3-월",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "1달 계획표 3주차 월요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-5",
+                  "sourceUrl": "https://www.youtube.com/watch?v=uCUiUlggGlE",
+                  "sourceLocator": "오픽 모의고사 5회 영상"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-opic-plan-1m-w3-화",
+              "flowId": "bundle-opic-plan-1month",
+              "stepId": "bundle-opic-plan-1m-week-3",
+              "title": "5회 녹음 듣고 보완하기",
+              "detail": "영상: https://www.youtube.com/watch?v=uCUiUlggGlE · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 3,
+                "weekday": "화"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=uCUiUlggGlE · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-1m-w3-화",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "1달 계획표 3주차 화요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-5",
+                  "sourceUrl": "https://www.youtube.com/watch?v=uCUiUlggGlE",
+                  "sourceLocator": "오픽 모의고사 5회 영상"
+                }
+              ],
+              "order": 2,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-opic-plan-1m-w3-수",
+              "flowId": "bundle-opic-plan-1month",
+              "stepId": "bundle-opic-plan-1m-week-3",
+              "title": "5회 녹음 듣고 보완하기",
+              "detail": "영상: https://www.youtube.com/watch?v=uCUiUlggGlE · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 3,
+                "weekday": "수"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=uCUiUlggGlE · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-1m-w3-수",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "1달 계획표 3주차 수요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-5",
+                  "sourceUrl": "https://www.youtube.com/watch?v=uCUiUlggGlE",
+                  "sourceLocator": "오픽 모의고사 5회 영상"
+                }
+              ],
+              "order": 3,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-opic-plan-1m-w3-목",
+              "flowId": "bundle-opic-plan-1month",
+              "stepId": "bundle-opic-plan-1m-week-3",
+              "title": "6회 실전처럼 풀기",
+              "detail": "영상: https://www.youtube.com/watch?v=KddRF_nM9uI · 범위: 동네·건강·국내여행·은행·가족 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 3,
+                "weekday": "목"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=KddRF_nM9uI · 범위: 동네·건강·국내여행·은행·가족 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-1m-w3-목",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "1달 계획표 3주차 목요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-6",
+                  "sourceUrl": "https://www.youtube.com/watch?v=KddRF_nM9uI",
+                  "sourceLocator": "오픽 모의고사 6회 영상"
+                }
+              ],
+              "order": 4,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-opic-plan-1m-w3-금",
+              "flowId": "bundle-opic-plan-1month",
+              "stepId": "bundle-opic-plan-1m-week-3",
+              "title": "6회 녹음 듣고 보완하기",
+              "detail": "영상: https://www.youtube.com/watch?v=KddRF_nM9uI · 범위: 동네·건강·국내여행·은행·가족 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 3,
+                "weekday": "금"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=KddRF_nM9uI · 범위: 동네·건강·국내여행·은행·가족 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-1m-w3-금",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "1달 계획표 3주차 금요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-6",
+                  "sourceUrl": "https://www.youtube.com/watch?v=KddRF_nM9uI",
+                  "sourceLocator": "오픽 모의고사 6회 영상"
+                }
+              ],
+              "order": 5,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-opic-plan-1m-w3-토",
+              "flowId": "bundle-opic-plan-1month",
+              "stepId": "bundle-opic-plan-1m-week-3",
+              "title": "6회 녹음 듣고 보완하기",
+              "detail": "영상: https://www.youtube.com/watch?v=KddRF_nM9uI · 범위: 동네·건강·국내여행·은행·가족 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 3,
+                "weekday": "토"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=KddRF_nM9uI · 범위: 동네·건강·국내여행·은행·가족 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-1m-w3-토",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "1달 계획표 3주차 토요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-6",
+                  "sourceUrl": "https://www.youtube.com/watch?v=KddRF_nM9uI",
+                  "sourceLocator": "오픽 모의고사 6회 영상"
+                }
+              ],
+              "order": 6,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        },
+        {
+          "id": "bundle-opic-plan-1m-week-4",
+          "flowId": "bundle-opic-plan-1month",
+          "title": "4주차 · 7~8회",
+          "order": 4,
+          "sourceScheduleGroup": {
+            "type": "relative_week",
+            "week": 4
+          },
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-opic-plan-1m-w4-월",
+              "flowId": "bundle-opic-plan-1month",
+              "stepId": "bundle-opic-plan-1m-week-4",
+              "title": "7회 실전처럼 풀기",
+              "detail": "영상: https://www.youtube.com/watch?v=cAOaiJsT7ac · 범위: 집에서 보내는 휴가·지리·공휴일·집·음악 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 4,
+                "weekday": "월"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=cAOaiJsT7ac · 범위: 집에서 보내는 휴가·지리·공휴일·집·음악 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-1m-w4-월",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "1달 계획표 4주차 월요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-7",
+                  "sourceUrl": "https://www.youtube.com/watch?v=cAOaiJsT7ac",
+                  "sourceLocator": "오픽 모의고사 7회 영상"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-opic-plan-1m-w4-화",
+              "flowId": "bundle-opic-plan-1month",
+              "stepId": "bundle-opic-plan-1m-week-4",
+              "title": "7회 녹음 듣고 보완하기",
+              "detail": "영상: https://www.youtube.com/watch?v=cAOaiJsT7ac · 범위: 집에서 보내는 휴가·지리·공휴일·집·음악 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 4,
+                "weekday": "화"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=cAOaiJsT7ac · 범위: 집에서 보내는 휴가·지리·공휴일·집·음악 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-1m-w4-화",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "1달 계획표 4주차 화요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-7",
+                  "sourceUrl": "https://www.youtube.com/watch?v=cAOaiJsT7ac",
+                  "sourceLocator": "오픽 모의고사 7회 영상"
+                }
+              ],
+              "order": 2,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-opic-plan-1m-w4-수",
+              "flowId": "bundle-opic-plan-1month",
+              "stepId": "bundle-opic-plan-1m-week-4",
+              "title": "7회 녹음 듣고 보완하기",
+              "detail": "영상: https://www.youtube.com/watch?v=cAOaiJsT7ac · 범위: 집에서 보내는 휴가·지리·공휴일·집·음악 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 4,
+                "weekday": "수"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=cAOaiJsT7ac · 범위: 집에서 보내는 휴가·지리·공휴일·집·음악 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-1m-w4-수",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "1달 계획표 4주차 수요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-7",
+                  "sourceUrl": "https://www.youtube.com/watch?v=cAOaiJsT7ac",
+                  "sourceLocator": "오픽 모의고사 7회 영상"
+                }
+              ],
+              "order": 3,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-opic-plan-1m-w4-목",
+              "flowId": "bundle-opic-plan-1month",
+              "stepId": "bundle-opic-plan-1m-week-4",
+              "title": "8회 실전처럼 풀기",
+              "detail": "영상: https://www.youtube.com/watch?v=VFWF-HUYggI · 범위: 기술·캠핑·패션·쇼핑·건강 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 4,
+                "weekday": "목"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=VFWF-HUYggI · 범위: 기술·캠핑·패션·쇼핑·건강 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-1m-w4-목",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "1달 계획표 4주차 목요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-8",
+                  "sourceUrl": "https://www.youtube.com/watch?v=VFWF-HUYggI",
+                  "sourceLocator": "오픽 모의고사 8회 영상"
+                }
+              ],
+              "order": 4,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-opic-plan-1m-w4-금",
+              "flowId": "bundle-opic-plan-1month",
+              "stepId": "bundle-opic-plan-1m-week-4",
+              "title": "8회 녹음 듣고 보완하기",
+              "detail": "영상: https://www.youtube.com/watch?v=VFWF-HUYggI · 범위: 기술·캠핑·패션·쇼핑·건강 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 4,
+                "weekday": "금"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=VFWF-HUYggI · 범위: 기술·캠핑·패션·쇼핑·건강 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-1m-w4-금",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "1달 계획표 4주차 금요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-8",
+                  "sourceUrl": "https://www.youtube.com/watch?v=VFWF-HUYggI",
+                  "sourceLocator": "오픽 모의고사 8회 영상"
+                }
+              ],
+              "order": 5,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-opic-plan-1m-w4-토",
+              "flowId": "bundle-opic-plan-1month",
+              "stepId": "bundle-opic-plan-1m-week-4",
+              "title": "8회 녹음 듣고 보완하기",
+              "detail": "영상: https://www.youtube.com/watch?v=VFWF-HUYggI · 범위: 기술·캠핑·패션·쇼핑·건강 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 4,
+                "weekday": "토"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=VFWF-HUYggI · 범위: 기술·캠핑·패션·쇼핑·건강 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-1m-w4-토",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "1달 계획표 4주차 토요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-8",
+                  "sourceUrl": "https://www.youtube.com/watch?v=VFWF-HUYggI",
+                  "sourceLocator": "오픽 모의고사 8회 영상"
+                }
+              ],
+              "order": 6,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        },
+        {
+          "id": "bundle-opic-plan-1m-week-5",
+          "flowId": "bundle-opic-plan-1month",
+          "title": "5주차 · 9~10회",
+          "order": 5,
+          "sourceScheduleGroup": {
+            "type": "relative_week",
+            "week": 5
+          },
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-opic-plan-1m-w5-월",
+              "flowId": "bundle-opic-plan-1month",
+              "stepId": "bundle-opic-plan-1m-week-5",
+              "title": "9회 실전처럼 풀기",
+              "detail": "영상: https://www.youtube.com/watch?v=y0Y1j7fEZj4 · 범위: 외식·영화·날씨·계절·콘서트·바 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 5,
+                "weekday": "월"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=y0Y1j7fEZj4 · 범위: 외식·영화·날씨·계절·콘서트·바 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-1m-w5-월",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "1달 계획표 5주차 월요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-9",
+                  "sourceUrl": "https://www.youtube.com/watch?v=y0Y1j7fEZj4",
+                  "sourceLocator": "오픽 모의고사 9회 영상"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-opic-plan-1m-w5-화",
+              "flowId": "bundle-opic-plan-1month",
+              "stepId": "bundle-opic-plan-1m-week-5",
+              "title": "9회 녹음 듣고 보완하기",
+              "detail": "영상: https://www.youtube.com/watch?v=y0Y1j7fEZj4 · 범위: 외식·영화·날씨·계절·콘서트·바 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 5,
+                "weekday": "화"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=y0Y1j7fEZj4 · 범위: 외식·영화·날씨·계절·콘서트·바 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-1m-w5-화",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "1달 계획표 5주차 화요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-9",
+                  "sourceUrl": "https://www.youtube.com/watch?v=y0Y1j7fEZj4",
+                  "sourceLocator": "오픽 모의고사 9회 영상"
+                }
+              ],
+              "order": 2,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-opic-plan-1m-w5-수",
+              "flowId": "bundle-opic-plan-1month",
+              "stepId": "bundle-opic-plan-1m-week-5",
+              "title": "9회 녹음 듣고 보완하기",
+              "detail": "영상: https://www.youtube.com/watch?v=y0Y1j7fEZj4 · 범위: 외식·영화·날씨·계절·콘서트·바 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 5,
+                "weekday": "수"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=y0Y1j7fEZj4 · 범위: 외식·영화·날씨·계절·콘서트·바 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-1m-w5-수",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "1달 계획표 5주차 수요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-9",
+                  "sourceUrl": "https://www.youtube.com/watch?v=y0Y1j7fEZj4",
+                  "sourceLocator": "오픽 모의고사 9회 영상"
+                }
+              ],
+              "order": 3,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-opic-plan-1m-w5-목",
+              "flowId": "bundle-opic-plan-1month",
+              "stepId": "bundle-opic-plan-1m-week-5",
+              "title": "10회 실전처럼 풀기",
+              "detail": "영상: https://www.youtube.com/watch?v=xh_zHNfAgQo · 범위: 해외여행·모임·공연·가족·친구·산업 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 5,
+                "weekday": "목"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=xh_zHNfAgQo · 범위: 해외여행·모임·공연·가족·친구·산업 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-1m-w5-목",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "1달 계획표 5주차 목요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-10",
+                  "sourceUrl": "https://www.youtube.com/watch?v=xh_zHNfAgQo",
+                  "sourceLocator": "오픽 모의고사 10회 영상"
+                }
+              ],
+              "order": 4,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-opic-plan-1m-w5-금",
+              "flowId": "bundle-opic-plan-1month",
+              "stepId": "bundle-opic-plan-1m-week-5",
+              "title": "10회 녹음 듣고 보완하기",
+              "detail": "영상: https://www.youtube.com/watch?v=xh_zHNfAgQo · 범위: 해외여행·모임·공연·가족·친구·산업 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 5,
+                "weekday": "금"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=xh_zHNfAgQo · 범위: 해외여행·모임·공연·가족·친구·산업 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-1m-w5-금",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "1달 계획표 5주차 금요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-10",
+                  "sourceUrl": "https://www.youtube.com/watch?v=xh_zHNfAgQo",
+                  "sourceLocator": "오픽 모의고사 10회 영상"
+                }
+              ],
+              "order": 5,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-opic-plan-1m-w5-토",
+              "flowId": "bundle-opic-plan-1month",
+              "stepId": "bundle-opic-plan-1m-week-5",
+              "title": "10회 녹음 듣고 보완하기",
+              "detail": "영상: https://www.youtube.com/watch?v=xh_zHNfAgQo · 범위: 해외여행·모임·공연·가족·친구·산업 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_weekday",
+                "week": 5,
+                "weekday": "토"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=xh_zHNfAgQo · 범위: 해외여행·모임·공연·가족·친구·산업 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-opic-plan-1m-w5-토",
+                  "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+                  "sourceLocator": "1달 계획표 5주차 토요일"
+                },
+                {
+                  "sourceRowId": "bundle-opic-plan-video-10",
+                  "sourceUrl": "https://www.youtube.com/watch?v=xh_zHNfAgQo",
+                  "sourceLocator": "오픽 모의고사 10회 영상"
+                }
+              ],
+              "order": 6,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

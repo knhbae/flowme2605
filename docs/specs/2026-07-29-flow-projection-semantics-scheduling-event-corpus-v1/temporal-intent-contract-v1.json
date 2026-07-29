@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "flowme-temporal-intent-contract-v1",
+  "generatedAt": "2026-07-29T12:00:00+09:00",
+  "intents": [
+    {
+      "intent": "fixed_occurrence",
+      "definition": "확정된 참석·방문·수업·공연 시각",
+      "defaultMapping": "VEVENT"
+    },
+    {
+      "intent": "all_day_occurrence",
+      "definition": "시간 없는 종일 행사",
+      "defaultMapping": "all-day VEVENT"
+    },
+    {
+      "intent": "time_block",
+      "definition": "실제 실행하기로 정한 시간 구간",
+      "defaultMapping": "VEVENT"
+    },
+    {
+      "intent": "due_deadline",
+      "definition": "그때까지 완료해야 하는 기한",
+      "defaultMapping": "Todo or VTODO DUE"
+    },
+    {
+      "intent": "availability_window",
+      "definition": "방문·선택 가능한 기간",
+      "defaultMapping": "window UI/Sheet; selected visit becomes VEVENT"
+    },
+    {
+      "intent": "application_window",
+      "definition": "기간 안에 접수를 완료해야 함",
+      "defaultMapping": "Todo/VTODO with window metadata"
+    },
+    {
+      "intent": "ticket_open",
+      "definition": "예매 시작 시각",
+      "defaultMapping": "dated Todo/VTODO; optional Calendar reminder"
+    },
+    {
+      "intent": "anchor_offset",
+      "definition": "사용자 기준일에서 계산되는 상대 일정",
+      "defaultMapping": "after anchor resolution"
+    },
+    {
+      "intent": "source_recurrence",
+      "definition": "원문이 명시한 반복",
+      "defaultMapping": "VEVENT RRULE only when complete and fixed"
+    },
+    {
+      "intent": "user_pacing_assignment",
+      "definition": "확인된 개인 진도 배치",
+      "defaultMapping": "dated Todo or optional all-day VEVENT"
+    },
+    {
+      "intent": "manually_selected_date",
+      "definition": "사용자가 직접 선택한 날짜",
+      "defaultMapping": "Todo or VEVENT by intent"
+    },
+    {
+      "intent": "no_schedule",
+      "definition": "일정 의미 없음",
+      "defaultMapping": "no Calendar"
+    }
+  ],
+  "dueVsEvent": {
+    "due": "완료 기한이다. 기본은 Todo/VTODO DUE이며 실행 시간을 의미하지 않는다.",
+    "event": "실제 참석·방문·수업·공연 또는 사용자가 정한 실행 시간이다. VEVENT로 표현한다.",
+    "prohibited": "DUE만 있는 Item을 자동으로 임의 time-block VEVENT로 만들지 않는다."
+  },
+  "provenance": {
+    "scheduleOwner": [
+      "source",
+      "user_overlay"
+    ],
+    "derivation": [
+      "direct",
+      "anchor_resolution",
+      "pacing_policy",
+      "manual"
+    ],
+    "suggestionStatus": [
+      "none",
+      "draft",
+      "confirmed"
+    ]
+  }
+}

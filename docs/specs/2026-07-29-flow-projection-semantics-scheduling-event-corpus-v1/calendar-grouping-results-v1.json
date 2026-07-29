@@ -1,0 +1,1801 @@
+{
+  "schemaVersion": "flowme-calendar-grouping-results-v1",
+  "generatedAt": "2026-07-29T12:00:00+09:00",
+  "policyDefinitions": {
+    "none": "Calendar projection을 생성하지 않는다.",
+    "per_item": "각 scheduled Item occurrence를 독립 VEVENT로 만든다.",
+    "session_or_step_bundle": "같은 date/time, place/context, Step session인 Item만 하나의 VEVENT로 묶고 child Item ID를 보존한다."
+  },
+  "experiments": [
+    {
+      "experimentId": "moving-anchor-grouping",
+      "fixtureId": "base-moving-d30",
+      "anchorValues": {
+        "moveDate": "2026-09-01"
+      },
+      "none": {
+        "projectionType": "calendar",
+        "schemaVersion": "flowme-calendar-projection-v2",
+        "container": "VCALENDAR",
+        "groupingPolicy": "none",
+        "events": [],
+        "nestedVtodoCount": 0,
+        "completionOwner": "FlowMe"
+      },
+      "perItem": {
+        "projectionType": "calendar",
+        "schemaVersion": "flowme-calendar-projection-v2",
+        "container": "VCALENDAR",
+        "groupingPolicy": "per_item",
+        "events": [
+          {
+            "component": "VEVENT",
+            "uid": "vevent-base-moving-d30-flow-1-step-1-item-1@flowme.local",
+            "canonicalItemId": "base-moving-d30-flow-1-step-1-item-1",
+            "canonicalStepId": "base-moving-d30-flow-1-step-1",
+            "summary": "이사 방식과 이사업체 정하기",
+            "temporalIntent": "anchor_offset",
+            "start": "2026-08-02",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "anchor_resolution",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-moving-d30-flow-1-step-1-item-1"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-moving-d30--bundle-moving-d30-s1-i1-r1",
+              "base-moving-d30--bundle-moving-d30-s1-i1-r2",
+              "base-moving-d30--bundle-moving-d30-s1-i1-r3"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-base-moving-d30-flow-1-step-1-item-2@flowme.local",
+            "canonicalItemId": "base-moving-d30-flow-1-step-1-item-2",
+            "canonicalStepId": "base-moving-d30-flow-1-step-1",
+            "summary": "새집 상태 확인하고 필요한 수리 잡기",
+            "temporalIntent": "anchor_offset",
+            "start": "2026-08-02",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "anchor_resolution",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-moving-d30-flow-1-step-1-item-2"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-moving-d30--bundle-moving-d30-s1-i2-r1",
+              "base-moving-d30--bundle-moving-d30-s1-i2-r2"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-base-moving-d30-flow-1-step-1-item-3@flowme.local",
+            "canonicalItemId": "base-moving-d30-flow-1-step-1-item-3",
+            "canonicalStepId": "base-moving-d30-flow-1-step-1",
+            "summary": "가져가지 않을 물건 처분 시작하기",
+            "temporalIntent": "anchor_offset",
+            "start": "2026-08-02",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "anchor_resolution",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-moving-d30-flow-1-step-1-item-3"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-moving-d30--bundle-moving-d30-s1-i3-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-base-moving-d30-flow-1-step-1-item-4@flowme.local",
+            "canonicalItemId": "base-moving-d30-flow-1-step-1-item-4",
+            "canonicalStepId": "base-moving-d30-flow-1-step-1",
+            "summary": "학교 전학과 돌봄 계획 세우기",
+            "temporalIntent": "anchor_offset",
+            "start": "2026-08-02",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "anchor_resolution",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-moving-d30-flow-1-step-1-item-4"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-moving-d30--bundle-moving-d30-s1-i4-r1",
+              "base-moving-d30--bundle-moving-d30-s1-i4-r2"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-base-moving-d30-flow-1-step-2-item-1@flowme.local",
+            "canonicalItemId": "base-moving-d30-flow-1-step-2-item-1",
+            "canonicalStepId": "base-moving-d30-flow-1-step-2",
+            "summary": "우편·배송·전출 주소 변경하기",
+            "temporalIntent": "anchor_offset",
+            "start": "2026-08-22",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "anchor_resolution",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-moving-d30-flow-1-step-2-item-1"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-moving-d30--bundle-moving-d30-s2-i1-r1",
+              "base-moving-d30--bundle-moving-d30-s2-i1-r2",
+              "base-moving-d30--bundle-moving-d30-s2-i1-r3"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-base-moving-d30-flow-1-step-2-item-2@flowme.local",
+            "canonicalItemId": "base-moving-d30-flow-1-step-2-item-2",
+            "canonicalStepId": "base-moving-d30-flow-1-step-2",
+            "summary": "엘리베이터·사다리차·주차 예약하기",
+            "temporalIntent": "anchor_offset",
+            "start": "2026-08-22",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "anchor_resolution",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-moving-d30-flow-1-step-2-item-2"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-moving-d30--bundle-moving-d30-s2-i2-r1",
+              "base-moving-d30--bundle-moving-d30-s2-i2-r2"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-base-moving-d30-flow-1-step-2-item-3@flowme.local",
+            "canonicalItemId": "base-moving-d30-flow-1-step-2-item-3",
+            "canonicalStepId": "base-moving-d30-flow-1-step-2",
+            "summary": "폐기물과 남은 짐 처리하기",
+            "temporalIntent": "anchor_offset",
+            "start": "2026-08-22",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "anchor_resolution",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-moving-d30-flow-1-step-2-item-3"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-moving-d30--bundle-moving-d30-s2-i3-r1",
+              "base-moving-d30--bundle-moving-d30-s2-i3-r2",
+              "base-moving-d30--bundle-moving-d30-s2-i3-r3"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-base-moving-d30-flow-1-step-2-item-4@flowme.local",
+            "canonicalItemId": "base-moving-d30-flow-1-step-2-item-4",
+            "canonicalStepId": "base-moving-d30-flow-1-step-2",
+            "summary": "냉장고 비우고 새집 물품 배치 정하기",
+            "temporalIntent": "anchor_offset",
+            "start": "2026-08-22",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "anchor_resolution",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-moving-d30-flow-1-step-2-item-4"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-moving-d30--bundle-moving-d30-s2-i4-r1",
+              "base-moving-d30--bundle-moving-d30-s2-i4-r2",
+              "base-moving-d30--bundle-moving-d30-s2-i4-r3"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-base-moving-d30-flow-1-step-2-item-5@flowme.local",
+            "canonicalItemId": "base-moving-d30-flow-1-step-2-item-5",
+            "canonicalStepId": "base-moving-d30-flow-1-step-2",
+            "summary": "인터넷·정수기 등 이전 신청하기",
+            "temporalIntent": "anchor_offset",
+            "start": "2026-08-22",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "anchor_resolution",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-moving-d30-flow-1-step-2-item-5"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-moving-d30--bundle-moving-d30-s2-i5-r1",
+              "base-moving-d30--bundle-moving-d30-s2-i5-r2"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-base-moving-d30-flow-1-step-3-item-1@flowme.local",
+            "canonicalItemId": "base-moving-d30-flow-1-step-3-item-1",
+            "canonicalStepId": "base-moving-d30-flow-1-step-3",
+            "summary": "도시가스 철거·설치 예약하기",
+            "temporalIntent": "anchor_offset",
+            "start": "2026-08-29",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "anchor_resolution",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-moving-d30-flow-1-step-3-item-1"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-moving-d30--bundle-moving-d30-s3-i1-r1",
+              "base-moving-d30--bundle-moving-d30-s3-i1-r2"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-base-moving-d30-flow-1-step-3-item-2@flowme.local",
+            "canonicalItemId": "base-moving-d30-flow-1-step-3-item-2",
+            "canonicalStepId": "base-moving-d30-flow-1-step-3",
+            "summary": "기존 집 자동이체 해지하기",
+            "temporalIntent": "anchor_offset",
+            "start": "2026-08-29",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "anchor_resolution",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-moving-d30-flow-1-step-3-item-2"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-moving-d30--bundle-moving-d30-s3-i2-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-base-moving-d30-flow-1-step-3-item-3@flowme.local",
+            "canonicalItemId": "base-moving-d30-flow-1-step-3-item-3",
+            "canonicalStepId": "base-moving-d30-flow-1-step-3",
+            "summary": "세탁기 배수하고 운반 상태 만들기",
+            "temporalIntent": "anchor_offset",
+            "start": "2026-08-29",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "anchor_resolution",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-moving-d30-flow-1-step-3-item-3"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-moving-d30--bundle-moving-d30-s3-i3-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-base-moving-d30-flow-1-step-3-item-4@flowme.local",
+            "canonicalItemId": "base-moving-d30-flow-1-step-3-item-4",
+            "canonicalStepId": "base-moving-d30-flow-1-step-3",
+            "summary": "임대차 권리 서류 확인하기",
+            "temporalIntent": "anchor_offset",
+            "start": "2026-08-29",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "anchor_resolution",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-moving-d30-flow-1-step-3-item-4"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-moving-d30--bundle-moving-d30-s3-i4-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-base-moving-d30-flow-1-step-3-item-5@flowme.local",
+            "canonicalItemId": "base-moving-d30-flow-1-step-3-item-5",
+            "canonicalStepId": "base-moving-d30-flow-1-step-3",
+            "summary": "당일 바로 쓸 짐을 따로 싸기",
+            "temporalIntent": "anchor_offset",
+            "start": "2026-08-29",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "anchor_resolution",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-moving-d30-flow-1-step-3-item-5"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-moving-d30--bundle-moving-d30-s3-i5-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-base-moving-d30-flow-1-step-4-item-1@flowme.local",
+            "canonicalItemId": "base-moving-d30-flow-1-step-4-item-1",
+            "canonicalStepId": "base-moving-d30-flow-1-step-4",
+            "summary": "당일 일정·송금 한도·잔금 확인하기",
+            "temporalIntent": "anchor_offset",
+            "start": "2026-08-31",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "anchor_resolution",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-moving-d30-flow-1-step-4-item-1"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-moving-d30--bundle-moving-d30-s4-i1-r1",
+              "base-moving-d30--bundle-moving-d30-s4-i1-r2",
+              "base-moving-d30--bundle-moving-d30-s4-i1-r3"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-base-moving-d30-flow-1-step-4-item-2@flowme.local",
+            "canonicalItemId": "base-moving-d30-flow-1-step-4-item-2",
+            "canonicalStepId": "base-moving-d30-flow-1-step-4",
+            "summary": "출발지·도착지 주차 다시 확인하기",
+            "temporalIntent": "anchor_offset",
+            "start": "2026-08-31",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "anchor_resolution",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-moving-d30-flow-1-step-4-item-2"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-moving-d30--bundle-moving-d30-s4-i2-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-base-moving-d30-flow-1-step-4-item-3@flowme.local",
+            "canonicalItemId": "base-moving-d30-flow-1-step-4-item-3",
+            "canonicalStepId": "base-moving-d30-flow-1-step-4",
+            "summary": "귀중품과 중요서류 직접 보관하기",
+            "temporalIntent": "anchor_offset",
+            "start": "2026-08-31",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "anchor_resolution",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-moving-d30-flow-1-step-4-item-3"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-moving-d30--bundle-moving-d30-s4-i3-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-base-moving-d30-flow-1-step-4-item-4@flowme.local",
+            "canonicalItemId": "base-moving-d30-flow-1-step-4-item-4",
+            "canonicalStepId": "base-moving-d30-flow-1-step-4",
+            "summary": "열쇠·리모컨·비밀번호 인계 준비하기",
+            "temporalIntent": "anchor_offset",
+            "start": "2026-08-31",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "anchor_resolution",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-moving-d30-flow-1-step-4-item-4"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-moving-d30--bundle-moving-d30-s4-i4-r1",
+              "base-moving-d30--bundle-moving-d30-s4-i4-r2"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-base-moving-d30-flow-1-step-4-item-5@flowme.local",
+            "canonicalItemId": "base-moving-d30-flow-1-step-4-item-5",
+            "canonicalStepId": "base-moving-d30-flow-1-step-4",
+            "summary": "가전·가구 상태 사진 남기기",
+            "temporalIntent": "anchor_offset",
+            "start": "2026-08-31",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "anchor_resolution",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-moving-d30-flow-1-step-4-item-5"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-moving-d30--bundle-moving-d30-s4-i5-r1",
+              "base-moving-d30--bundle-moving-d30-s4-i5-r2"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-base-moving-d30-flow-1-step-5-item-1@flowme.local",
+            "canonicalItemId": "base-moving-d30-flow-1-step-5-item-1",
+            "canonicalStepId": "base-moving-d30-flow-1-step-5",
+            "summary": "전기·수도·가스·관리비 정산하기",
+            "temporalIntent": "anchor_offset",
+            "start": "2026-09-01",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "anchor_resolution",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-moving-d30-flow-1-step-5-item-1"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-moving-d30--bundle-moving-d30-s5-i1-r1",
+              "base-moving-d30--bundle-moving-d30-s5-i1-r2"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-base-moving-d30-flow-1-step-5-item-2@flowme.local",
+            "canonicalItemId": "base-moving-d30-flow-1-step-5-item-2",
+            "canonicalStepId": "base-moving-d30-flow-1-step-5",
+            "summary": "장기수선충당금 환급 확인하기",
+            "temporalIntent": "anchor_offset",
+            "start": "2026-09-01",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "anchor_resolution",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-moving-d30-flow-1-step-5-item-2"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-moving-d30--bundle-moving-d30-s5-i2-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-base-moving-d30-flow-1-step-5-item-3@flowme.local",
+            "canonicalItemId": "base-moving-d30-flow-1-step-5-item-3",
+            "canonicalStepId": "base-moving-d30-flow-1-step-5",
+            "summary": "남은 물건 확인하고 열쇠 반납하기",
+            "temporalIntent": "anchor_offset",
+            "start": "2026-09-01",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "anchor_resolution",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-moving-d30-flow-1-step-5-item-3"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-moving-d30--bundle-moving-d30-s5-i3-r1",
+              "base-moving-d30--bundle-moving-d30-s5-i3-r2"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-base-moving-d30-flow-1-step-6-item-1@flowme.local",
+            "canonicalItemId": "base-moving-d30-flow-1-step-6-item-1",
+            "canonicalStepId": "base-moving-d30-flow-1-step-6",
+            "summary": "분실·파손 확인하고 이사업체 정산하기",
+            "temporalIntent": "anchor_offset",
+            "start": "2026-09-01",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "anchor_resolution",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-moving-d30-flow-1-step-6-item-1"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-moving-d30--bundle-moving-d30-s6-i1-r1",
+              "base-moving-d30--bundle-moving-d30-s6-i1-r2"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-base-moving-d30-flow-1-step-6-item-2@flowme.local",
+            "canonicalItemId": "base-moving-d30-flow-1-step-6-item-2",
+            "canonicalStepId": "base-moving-d30-flow-1-step-6",
+            "summary": "인터넷·TV와 도어락 확인하기",
+            "temporalIntent": "anchor_offset",
+            "start": "2026-09-01",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "anchor_resolution",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-moving-d30-flow-1-step-6-item-2"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-moving-d30--bundle-moving-d30-s6-i2-r1",
+              "base-moving-d30--bundle-moving-d30-s6-i2-r2"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-base-moving-d30-flow-1-step-6-item-3@flowme.local",
+            "canonicalItemId": "base-moving-d30-flow-1-step-6-item-3",
+            "canonicalStepId": "base-moving-d30-flow-1-step-6",
+            "summary": "잔금·관리비·열쇠 인수 마치기",
+            "temporalIntent": "anchor_offset",
+            "start": "2026-09-01",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "anchor_resolution",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-moving-d30-flow-1-step-6-item-3"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-moving-d30--bundle-moving-d30-s6-i3-r1",
+              "base-moving-d30--bundle-moving-d30-s6-i3-r2",
+              "base-moving-d30--bundle-moving-d30-s6-i3-r3"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-base-moving-d30-flow-1-step-6-item-4@flowme.local",
+            "canonicalItemId": "base-moving-d30-flow-1-step-6-item-4",
+            "canonicalStepId": "base-moving-d30-flow-1-step-6",
+            "summary": "전기·수도 명의와 가스 개통하기",
+            "temporalIntent": "anchor_offset",
+            "start": "2026-09-01",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "anchor_resolution",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-moving-d30-flow-1-step-6-item-4"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-moving-d30--bundle-moving-d30-s6-i4-r1",
+              "base-moving-d30--bundle-moving-d30-s6-i4-r2"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-base-moving-d30-flow-1-step-6-item-5@flowme.local",
+            "canonicalItemId": "base-moving-d30-flow-1-step-6-item-5",
+            "canonicalStepId": "base-moving-d30-flow-1-step-6",
+            "summary": "전입신고와 확정일자 처리하기",
+            "temporalIntent": "anchor_offset",
+            "start": "2026-09-01",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "anchor_resolution",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-moving-d30-flow-1-step-6-item-5"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-moving-d30--bundle-moving-d30-s6-i5-r1",
+              "base-moving-d30--bundle-moving-d30-s6-i5-r2"
+            ]
+          }
+        ],
+        "nestedVtodoCount": 0,
+        "completionOwner": "FlowMe"
+      },
+      "sessionBundle": {
+        "projectionType": "calendar",
+        "schemaVersion": "flowme-calendar-projection-v2",
+        "container": "VCALENDAR",
+        "groupingPolicy": "session_or_step_bundle",
+        "events": [
+          {
+            "component": "VEVENT",
+            "uid": "vevent-bundle-base-moving-d30-flow-1-step-1@flowme.local",
+            "canonicalItemId": null,
+            "canonicalStepId": "base-moving-d30-flow-1-step-1",
+            "summary": "D-30 · 큰 결정과 예약",
+            "temporalIntent": "anchor_offset",
+            "start": "2026-08-02",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "location": null,
+            "scheduleOwner": "user_overlay",
+            "derivation": "anchor_resolution",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-moving-d30-flow-1-step-1-item-1",
+              "base-moving-d30-flow-1-step-1-item-2",
+              "base-moving-d30-flow-1-step-1-item-3",
+              "base-moving-d30-flow-1-step-1-item-4"
+            ],
+            "individualCompletionOutsideCalendar": true,
+            "sourceRowIds": [
+              "base-moving-d30--bundle-moving-d30-s1-i1-r1",
+              "base-moving-d30--bundle-moving-d30-s1-i1-r2",
+              "base-moving-d30--bundle-moving-d30-s1-i1-r3",
+              "base-moving-d30--bundle-moving-d30-s1-i2-r1",
+              "base-moving-d30--bundle-moving-d30-s1-i2-r2",
+              "base-moving-d30--bundle-moving-d30-s1-i3-r1",
+              "base-moving-d30--bundle-moving-d30-s1-i4-r1",
+              "base-moving-d30--bundle-moving-d30-s1-i4-r2"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-bundle-base-moving-d30-flow-1-step-2@flowme.local",
+            "canonicalItemId": null,
+            "canonicalStepId": "base-moving-d30-flow-1-step-2",
+            "summary": "D-10 · 주소·서비스·짐 줄이기",
+            "temporalIntent": "anchor_offset",
+            "start": "2026-08-22",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "location": null,
+            "scheduleOwner": "user_overlay",
+            "derivation": "anchor_resolution",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-moving-d30-flow-1-step-2-item-1",
+              "base-moving-d30-flow-1-step-2-item-2",
+              "base-moving-d30-flow-1-step-2-item-3",
+              "base-moving-d30-flow-1-step-2-item-4",
+              "base-moving-d30-flow-1-step-2-item-5"
+            ],
+            "individualCompletionOutsideCalendar": true,
+            "sourceRowIds": [
+              "base-moving-d30--bundle-moving-d30-s2-i1-r1",
+              "base-moving-d30--bundle-moving-d30-s2-i1-r2",
+              "base-moving-d30--bundle-moving-d30-s2-i1-r3",
+              "base-moving-d30--bundle-moving-d30-s2-i2-r1",
+              "base-moving-d30--bundle-moving-d30-s2-i2-r2",
+              "base-moving-d30--bundle-moving-d30-s2-i3-r1",
+              "base-moving-d30--bundle-moving-d30-s2-i3-r2",
+              "base-moving-d30--bundle-moving-d30-s2-i3-r3",
+              "base-moving-d30--bundle-moving-d30-s2-i4-r1",
+              "base-moving-d30--bundle-moving-d30-s2-i4-r2",
+              "base-moving-d30--bundle-moving-d30-s2-i4-r3",
+              "base-moving-d30--bundle-moving-d30-s2-i5-r1",
+              "base-moving-d30--bundle-moving-d30-s2-i5-r2"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-bundle-base-moving-d30-flow-1-step-3@flowme.local",
+            "canonicalItemId": null,
+            "canonicalStepId": "base-moving-d30-flow-1-step-3",
+            "summary": "D-3 · 해지와 당일 준비",
+            "temporalIntent": "anchor_offset",
+            "start": "2026-08-29",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "location": null,
+            "scheduleOwner": "user_overlay",
+            "derivation": "anchor_resolution",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-moving-d30-flow-1-step-3-item-1",
+              "base-moving-d30-flow-1-step-3-item-2",
+              "base-moving-d30-flow-1-step-3-item-3",
+              "base-moving-d30-flow-1-step-3-item-4",
+              "base-moving-d30-flow-1-step-3-item-5"
+            ],
+            "individualCompletionOutsideCalendar": true,
+            "sourceRowIds": [
+              "base-moving-d30--bundle-moving-d30-s3-i1-r1",
+              "base-moving-d30--bundle-moving-d30-s3-i1-r2",
+              "base-moving-d30--bundle-moving-d30-s3-i2-r1",
+              "base-moving-d30--bundle-moving-d30-s3-i3-r1",
+              "base-moving-d30--bundle-moving-d30-s3-i4-r1",
+              "base-moving-d30--bundle-moving-d30-s3-i5-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-bundle-base-moving-d30-flow-1-step-4@flowme.local",
+            "canonicalItemId": null,
+            "canonicalStepId": "base-moving-d30-flow-1-step-4",
+            "summary": "D-1 · 돈·귀중품·인계 확인",
+            "temporalIntent": "anchor_offset",
+            "start": "2026-08-31",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "location": null,
+            "scheduleOwner": "user_overlay",
+            "derivation": "anchor_resolution",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-moving-d30-flow-1-step-4-item-1",
+              "base-moving-d30-flow-1-step-4-item-2",
+              "base-moving-d30-flow-1-step-4-item-3",
+              "base-moving-d30-flow-1-step-4-item-4",
+              "base-moving-d30-flow-1-step-4-item-5"
+            ],
+            "individualCompletionOutsideCalendar": true,
+            "sourceRowIds": [
+              "base-moving-d30--bundle-moving-d30-s4-i1-r1",
+              "base-moving-d30--bundle-moving-d30-s4-i1-r2",
+              "base-moving-d30--bundle-moving-d30-s4-i1-r3",
+              "base-moving-d30--bundle-moving-d30-s4-i2-r1",
+              "base-moving-d30--bundle-moving-d30-s4-i3-r1",
+              "base-moving-d30--bundle-moving-d30-s4-i4-r1",
+              "base-moving-d30--bundle-moving-d30-s4-i4-r2",
+              "base-moving-d30--bundle-moving-d30-s4-i5-r1",
+              "base-moving-d30--bundle-moving-d30-s4-i5-r2"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-bundle-base-moving-d30-flow-1-step-5@flowme.local",
+            "canonicalItemId": null,
+            "canonicalStepId": "base-moving-d30-flow-1-step-5",
+            "summary": "이사 당일 · 출발지 마감",
+            "temporalIntent": "anchor_offset",
+            "start": "2026-09-01",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "location": null,
+            "scheduleOwner": "user_overlay",
+            "derivation": "anchor_resolution",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-moving-d30-flow-1-step-5-item-1",
+              "base-moving-d30-flow-1-step-5-item-2",
+              "base-moving-d30-flow-1-step-5-item-3"
+            ],
+            "individualCompletionOutsideCalendar": true,
+            "sourceRowIds": [
+              "base-moving-d30--bundle-moving-d30-s5-i1-r1",
+              "base-moving-d30--bundle-moving-d30-s5-i1-r2",
+              "base-moving-d30--bundle-moving-d30-s5-i2-r1",
+              "base-moving-d30--bundle-moving-d30-s5-i3-r1",
+              "base-moving-d30--bundle-moving-d30-s5-i3-r2"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-bundle-base-moving-d30-flow-1-step-6@flowme.local",
+            "canonicalItemId": null,
+            "canonicalStepId": "base-moving-d30-flow-1-step-6",
+            "summary": "이사 당일 · 도착지 시작",
+            "temporalIntent": "anchor_offset",
+            "start": "2026-09-01",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "location": null,
+            "scheduleOwner": "user_overlay",
+            "derivation": "anchor_resolution",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-moving-d30-flow-1-step-6-item-1",
+              "base-moving-d30-flow-1-step-6-item-2",
+              "base-moving-d30-flow-1-step-6-item-3",
+              "base-moving-d30-flow-1-step-6-item-4",
+              "base-moving-d30-flow-1-step-6-item-5"
+            ],
+            "individualCompletionOutsideCalendar": true,
+            "sourceRowIds": [
+              "base-moving-d30--bundle-moving-d30-s6-i1-r1",
+              "base-moving-d30--bundle-moving-d30-s6-i1-r2",
+              "base-moving-d30--bundle-moving-d30-s6-i2-r1",
+              "base-moving-d30--bundle-moving-d30-s6-i2-r2",
+              "base-moving-d30--bundle-moving-d30-s6-i3-r1",
+              "base-moving-d30--bundle-moving-d30-s6-i3-r2",
+              "base-moving-d30--bundle-moving-d30-s6-i3-r3",
+              "base-moving-d30--bundle-moving-d30-s6-i4-r1",
+              "base-moving-d30--bundle-moving-d30-s6-i4-r2",
+              "base-moving-d30--bundle-moving-d30-s6-i5-r1",
+              "base-moving-d30--bundle-moving-d30-s6-i5-r2"
+            ]
+          }
+        ],
+        "nestedVtodoCount": 0,
+        "completionOwner": "FlowMe"
+      }
+    },
+    {
+      "experimentId": "web1-pacing-grouping",
+      "fixtureId": "base-opentutorials-web1-progress",
+      "none": {
+        "projectionType": "calendar",
+        "schemaVersion": "flowme-calendar-projection-v2",
+        "container": "VCALENDAR",
+        "groupingPolicy": "none",
+        "events": [],
+        "nestedVtodoCount": 0,
+        "completionOwner": "FlowMe"
+      },
+      "perItem": {
+        "projectionType": "calendar",
+        "schemaVersion": "flowme-calendar-projection-v2",
+        "container": "VCALENDAR",
+        "groupingPolicy": "per_item",
+        "events": [
+          {
+            "component": "VEVENT",
+            "uid": "vevent-pacing-base-opentutorials-web1-progress-flow-1-step-1-item-1@flowme.local",
+            "canonicalItemId": "base-opentutorials-web1-progress-flow-1-step-1-item-1",
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "「프로젝트의 동기」 학습하기",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-03",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-1"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i1-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-pacing-base-opentutorials-web1-progress-flow-1-step-1-item-2@flowme.local",
+            "canonicalItemId": "base-opentutorials-web1-progress-flow-1-step-1-item-2",
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "「기획」 학습하기",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-03",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-2"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i2-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-pacing-base-opentutorials-web1-progress-flow-1-step-1-item-3@flowme.local",
+            "canonicalItemId": "base-opentutorials-web1-progress-flow-1-step-1-item-3",
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "「코딩과 HTML」 학습하기",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-04",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-3"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i3-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-pacing-base-opentutorials-web1-progress-flow-1-step-1-item-4@flowme.local",
+            "canonicalItemId": "base-opentutorials-web1-progress-flow-1-step-1-item-4",
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "「HTML 코딩 실습 환경 준비」 학습하기",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-04",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-4"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i4-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-pacing-base-opentutorials-web1-progress-flow-1-step-1-item-5@flowme.local",
+            "canonicalItemId": "base-opentutorials-web1-progress-flow-1-step-1-item-5",
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "「기본 문법 - 태그」 학습하기",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-05",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-5"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i5-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-pacing-base-opentutorials-web1-progress-flow-1-step-1-item-6@flowme.local",
+            "canonicalItemId": "base-opentutorials-web1-progress-flow-1-step-1-item-6",
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "「혁명적인 변화」 학습하기",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-05",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-6"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i6-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-pacing-base-opentutorials-web1-progress-flow-1-step-1-item-7@flowme.local",
+            "canonicalItemId": "base-opentutorials-web1-progress-flow-1-step-1-item-7",
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "「통계에 기반한 학습」 학습하기",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-06",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-7"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i7-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-pacing-base-opentutorials-web1-progress-flow-1-step-1-item-8@flowme.local",
+            "canonicalItemId": "base-opentutorials-web1-progress-flow-1-step-1-item-8",
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "「줄바꿈」 학습하기",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-06",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-8"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i8-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-pacing-base-opentutorials-web1-progress-flow-1-step-1-item-9@flowme.local",
+            "canonicalItemId": "base-opentutorials-web1-progress-flow-1-step-1-item-9",
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "「HTML이 중요한 이유」 학습하기",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-07",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-9"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i9-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-pacing-base-opentutorials-web1-progress-flow-1-step-1-item-10@flowme.local",
+            "canonicalItemId": "base-opentutorials-web1-progress-flow-1-step-1-item-10",
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "「최후의 문법 속성과 img」 학습하기",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-07",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-10"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i10-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-pacing-base-opentutorials-web1-progress-flow-1-step-1-item-11@flowme.local",
+            "canonicalItemId": "base-opentutorials-web1-progress-flow-1-step-1-item-11",
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "「부모 자식과 목록」 학습하기",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-10",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-11"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i11-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-pacing-base-opentutorials-web1-progress-flow-1-step-1-item-12@flowme.local",
+            "canonicalItemId": "base-opentutorials-web1-progress-flow-1-step-1-item-12",
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "「문서의 구조와 슈퍼스타들」 학습하기",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-10",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-12"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i12-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-pacing-base-opentutorials-web1-progress-flow-1-step-1-item-13@flowme.local",
+            "canonicalItemId": "base-opentutorials-web1-progress-flow-1-step-1-item-13",
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "「HTML 태그의 제왕」 학습하기",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-11",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-13"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i13-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-pacing-base-opentutorials-web1-progress-flow-1-step-1-item-14@flowme.local",
+            "canonicalItemId": "base-opentutorials-web1-progress-flow-1-step-1-item-14",
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "「웹사이트 완성」 학습하기",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-11",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-14"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i14-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-pacing-base-opentutorials-web1-progress-flow-1-step-1-item-15@flowme.local",
+            "canonicalItemId": "base-opentutorials-web1-progress-flow-1-step-1-item-15",
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "「원시웹」 학습하기",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-12",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-15"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i15-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-pacing-base-opentutorials-web1-progress-flow-1-step-1-item-16@flowme.local",
+            "canonicalItemId": "base-opentutorials-web1-progress-flow-1-step-1-item-16",
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "「인터넷을 여는 열쇠 : 서버와 클라이언트」 학습하기",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-12",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-16"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i16-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-pacing-base-opentutorials-web1-progress-flow-1-step-1-item-17@flowme.local",
+            "canonicalItemId": "base-opentutorials-web1-progress-flow-1-step-1-item-17",
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "「웹호스팅 github pages」 학습하기",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-13",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-17"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i17-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-pacing-base-opentutorials-web1-progress-flow-1-step-1-item-18@flowme.local",
+            "canonicalItemId": "base-opentutorials-web1-progress-flow-1-step-1-item-18",
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "「웹서버 운영하기」 학습하기",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-13",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-18"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i18-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-pacing-base-opentutorials-web1-progress-flow-1-step-1-item-19@flowme.local",
+            "canonicalItemId": "base-opentutorials-web1-progress-flow-1-step-1-item-19",
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "「수업을 마치며 1」 학습하기",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-17",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-19"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i19-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-pacing-base-opentutorials-web1-progress-flow-1-step-1-item-20@flowme.local",
+            "canonicalItemId": "base-opentutorials-web1-progress-flow-1-step-1-item-20",
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "「수업을 마치며 2」 학습하기",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-17",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-20"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i20-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-pacing-base-opentutorials-web1-progress-flow-1-step-1-item-21@flowme.local",
+            "canonicalItemId": "base-opentutorials-web1-progress-flow-1-step-1-item-21",
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "「수업을 마치며 3」 학습하기",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-18",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-21"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i21-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-pacing-base-opentutorials-web1-progress-flow-1-step-1-item-22@flowme.local",
+            "canonicalItemId": "base-opentutorials-web1-progress-flow-1-step-1-item-22",
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "「부록 : 코드의 힘」 학습하기",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-18",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-22"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i22-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-pacing-base-opentutorials-web1-progress-flow-1-step-1-item-23@flowme.local",
+            "canonicalItemId": "base-opentutorials-web1-progress-flow-1-step-1-item-23",
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "「부록 : 코드의 힘 - 동영상 삽입」 학습하기",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-19",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-23"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i23-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-pacing-base-opentutorials-web1-progress-flow-1-step-1-item-24@flowme.local",
+            "canonicalItemId": "base-opentutorials-web1-progress-flow-1-step-1-item-24",
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "「부록 : 코드의 힘 - 댓글 기능 추가」 학습하기",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-19",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-24"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i24-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-pacing-base-opentutorials-web1-progress-flow-1-step-1-item-25@flowme.local",
+            "canonicalItemId": "base-opentutorials-web1-progress-flow-1-step-1-item-25",
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "「부록 : 코드의 힘 - 채팅 기능 추가」 학습하기",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-20",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-25"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i25-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-pacing-base-opentutorials-web1-progress-flow-1-step-1-item-26@flowme.local",
+            "canonicalItemId": "base-opentutorials-web1-progress-flow-1-step-1-item-26",
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "「부록 : 코드의 힘 - 방문자 분석기」 학습하기",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-20",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-26"
+            ],
+            "individualCompletionOutsideCalendar": false,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i26-r1"
+            ]
+          }
+        ],
+        "nestedVtodoCount": 0,
+        "completionOwner": "FlowMe"
+      },
+      "sessionBundle": {
+        "projectionType": "calendar",
+        "schemaVersion": "flowme-calendar-projection-v2",
+        "container": "VCALENDAR",
+        "groupingPolicy": "session_or_step_bundle",
+        "events": [
+          {
+            "component": "VEVENT",
+            "uid": "vevent-bundle-base-opentutorials-web1-progress-flow-1-step-1@flowme.local",
+            "canonicalItemId": null,
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "WEB1 토픽 목록",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-03",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "location": null,
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-1",
+              "base-opentutorials-web1-progress-flow-1-step-1-item-2"
+            ],
+            "individualCompletionOutsideCalendar": true,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i1-r1",
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i2-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-bundle-base-opentutorials-web1-progress-flow-1-step-1@flowme.local",
+            "canonicalItemId": null,
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "WEB1 토픽 목록",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-04",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "location": null,
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-3",
+              "base-opentutorials-web1-progress-flow-1-step-1-item-4"
+            ],
+            "individualCompletionOutsideCalendar": true,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i3-r1",
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i4-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-bundle-base-opentutorials-web1-progress-flow-1-step-1@flowme.local",
+            "canonicalItemId": null,
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "WEB1 토픽 목록",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-05",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "location": null,
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-5",
+              "base-opentutorials-web1-progress-flow-1-step-1-item-6"
+            ],
+            "individualCompletionOutsideCalendar": true,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i5-r1",
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i6-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-bundle-base-opentutorials-web1-progress-flow-1-step-1@flowme.local",
+            "canonicalItemId": null,
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "WEB1 토픽 목록",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-06",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "location": null,
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-7",
+              "base-opentutorials-web1-progress-flow-1-step-1-item-8"
+            ],
+            "individualCompletionOutsideCalendar": true,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i7-r1",
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i8-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-bundle-base-opentutorials-web1-progress-flow-1-step-1@flowme.local",
+            "canonicalItemId": null,
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "WEB1 토픽 목록",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-07",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "location": null,
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-9",
+              "base-opentutorials-web1-progress-flow-1-step-1-item-10"
+            ],
+            "individualCompletionOutsideCalendar": true,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i9-r1",
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i10-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-bundle-base-opentutorials-web1-progress-flow-1-step-1@flowme.local",
+            "canonicalItemId": null,
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "WEB1 토픽 목록",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-10",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "location": null,
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-11",
+              "base-opentutorials-web1-progress-flow-1-step-1-item-12"
+            ],
+            "individualCompletionOutsideCalendar": true,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i11-r1",
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i12-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-bundle-base-opentutorials-web1-progress-flow-1-step-1@flowme.local",
+            "canonicalItemId": null,
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "WEB1 토픽 목록",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-11",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "location": null,
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-13",
+              "base-opentutorials-web1-progress-flow-1-step-1-item-14"
+            ],
+            "individualCompletionOutsideCalendar": true,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i13-r1",
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i14-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-bundle-base-opentutorials-web1-progress-flow-1-step-1@flowme.local",
+            "canonicalItemId": null,
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "WEB1 토픽 목록",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-12",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "location": null,
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-15",
+              "base-opentutorials-web1-progress-flow-1-step-1-item-16"
+            ],
+            "individualCompletionOutsideCalendar": true,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i15-r1",
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i16-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-bundle-base-opentutorials-web1-progress-flow-1-step-1@flowme.local",
+            "canonicalItemId": null,
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "WEB1 토픽 목록",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-13",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "location": null,
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-17",
+              "base-opentutorials-web1-progress-flow-1-step-1-item-18"
+            ],
+            "individualCompletionOutsideCalendar": true,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i17-r1",
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i18-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-bundle-base-opentutorials-web1-progress-flow-1-step-1@flowme.local",
+            "canonicalItemId": null,
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "WEB1 토픽 목록",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-17",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "location": null,
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-19",
+              "base-opentutorials-web1-progress-flow-1-step-1-item-20"
+            ],
+            "individualCompletionOutsideCalendar": true,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i19-r1",
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i20-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-bundle-base-opentutorials-web1-progress-flow-1-step-1@flowme.local",
+            "canonicalItemId": null,
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "WEB1 토픽 목록",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-18",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "location": null,
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-21",
+              "base-opentutorials-web1-progress-flow-1-step-1-item-22"
+            ],
+            "individualCompletionOutsideCalendar": true,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i21-r1",
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i22-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-bundle-base-opentutorials-web1-progress-flow-1-step-1@flowme.local",
+            "canonicalItemId": null,
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "WEB1 토픽 목록",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-19",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "location": null,
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-23",
+              "base-opentutorials-web1-progress-flow-1-step-1-item-24"
+            ],
+            "individualCompletionOutsideCalendar": true,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i23-r1",
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i24-r1"
+            ]
+          },
+          {
+            "component": "VEVENT",
+            "uid": "vevent-bundle-base-opentutorials-web1-progress-flow-1-step-1@flowme.local",
+            "canonicalItemId": null,
+            "canonicalStepId": "base-opentutorials-web1-progress-flow-1-step-1",
+            "summary": "WEB1 토픽 목록",
+            "temporalIntent": "user_pacing_assignment",
+            "start": "2026-08-20",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "location": null,
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "childItemIds": [
+              "base-opentutorials-web1-progress-flow-1-step-1-item-25",
+              "base-opentutorials-web1-progress-flow-1-step-1-item-26"
+            ],
+            "individualCompletionOutsideCalendar": true,
+            "sourceRowIds": [
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i25-r1",
+              "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i26-r1"
+            ]
+          }
+        ],
+        "nestedVtodoCount": 0,
+        "completionOwner": "FlowMe"
+      }
+    }
+  ]
+}

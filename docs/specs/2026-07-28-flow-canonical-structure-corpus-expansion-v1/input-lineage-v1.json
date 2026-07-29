@@ -1,0 +1,343 @@
+{
+  "schemaVersion": "flowme-canonical-structure-input-lineage-v1",
+  "generatedAt": "2026-07-28T23:59:00+09:00",
+  "frozenBeforeBuild": true,
+  "inputs": [
+    {
+      "role": "baseline",
+      "path": "docs/specs/2026-07-28-flow-item-map-architecture-qualified-corpus-revalidation-v2/qualified-corpus-fixture-v2.json",
+      "sha256": "338648484e18c558ecb7c61a2e3002689c54af89ff55b5de6bcb2718a2778260",
+      "bytes": 382603
+    },
+    {
+      "role": "outputQuality",
+      "path": "docs/specs/2026-07-20-url-to-flow-output-quality-lab-v2/gold-source-contract-v2.json",
+      "sha256": "ab8f38d8715ef471cee601a2334a6f96bb13e620a85f053c4028f6f41b3e71e4",
+      "bytes": 191297
+    },
+    {
+      "role": "valueGold",
+      "path": "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/gold-source-contract-v1.json",
+      "sha256": "b391c26163ab78a901c5818d1ca0372e1a3248455a8f1248732e2b2a6c90101b",
+      "bytes": 180029
+    },
+    {
+      "role": "deepSet",
+      "path": "docs/content-audit/2026-07-19-flow-content-source-expansion/deep-set-v1.json",
+      "sha256": "33abf6782cda4118ec73850ed55cf8268524158c8eab13005a38f15de8e247cd",
+      "bytes": 49040
+    },
+    {
+      "role": "reverified",
+      "path": "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/reverified-source-packets-v1.json",
+      "sha256": "2cbc7ada6dc8302c7b01ec3b1d98583a7ffb12ac8c8cbc1a764590619dbd8010",
+      "bytes": 55374
+    },
+    {
+      "role": "seed",
+      "path": "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json",
+      "sha256": "84a17a06b2287f9b31e2670e90cb14d2a4c6d8cfaa18d03158a2dd6f9bd2f105",
+      "bytes": 60003
+    },
+    {
+      "role": "discoveryLedger",
+      "path": "docs/content-audit/2026-07-20-flow-content-discovery-candidate-ledger-v1.json",
+      "sha256": "cdcbad65c33dd59ec5fb2b9e8f2ce04cf819dc5d43ae22e1d0d681ac53a9c512",
+      "bytes": 28543
+    },
+    {
+      "role": "p0",
+      "path": "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json",
+      "sha256": "553f693135afabf8af244e70ae67f2293c81bc487d9cdd56bea6ecc977aac47b",
+      "bytes": 70040
+    },
+    {
+      "role": "valuePool",
+      "path": "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json",
+      "sha256": "32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c",
+      "bytes": 215876
+    },
+    {
+      "role": "qualified",
+      "path": "docs/content-audit/2026-07-27-creator-portfolio-qualified-v2.json",
+      "sha256": "aa85b1da3b4403694895cc0647e462daefaec47930a7f43611a489c29db5a16f",
+      "bytes": 994499
+    },
+    {
+      "role": "vertical",
+      "path": "docs/content-audit/2026-07-28-vertical-execution-service-benchmark-v1.json",
+      "sha256": "c8e5f1e75316d2324dcd592907ce0cd224600b1f26500394e04f25f9e6a61f22",
+      "bytes": 259492
+    },
+    {
+      "role": "taxonomy",
+      "path": "docs/specs/2026-07-20-flowme-taxonomy-v1-1/taxonomy-v1.1.json",
+      "sha256": "5b910bab49d8c96cd160a52fb790af1585c4b2015d8e3fdd05df544ac8fb5d3c",
+      "bytes": 73942
+    },
+    {
+      "role": "canonicalContract",
+      "path": "docs/specs/2026-07-11-canonical-flow-data-model/canonical-flow-contract.ts",
+      "sha256": "5064f2a1095355b3f133eff2a371767607551e16add8e8a0e14ed8abbde34f6f",
+      "bytes": 10067
+    },
+    {
+      "role": "runtimeTypes",
+      "path": "lib/flow/types.ts",
+      "sha256": "3453affef78227cccb6868b8b0692f50ac7f0ff8bec64b97e153133533d6d451",
+      "bytes": 5447
+    },
+    {
+      "role": "runtimeExport",
+      "path": "lib/flow/export.ts",
+      "sha256": "e595258af48f226596324f094cd06efd8ae9e49c98a23d3f4957426382f7bbef",
+      "bytes": 46243
+    }
+  ],
+  "ownership": {
+    "ownedPaths": [
+      "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/",
+      "docs/content-audit/2026-07-28-flow-canonical-structure-corpus-expansion-review-ko.html"
+    ],
+    "existingDirtyFilesPreserved": true,
+    "runtimeFilesChanged": false
+  },
+  "baselinePreservation": [
+    {
+      "baselineBundleId": "bundle-moving-d30",
+      "fixtureId": "base-moving-d30",
+      "originalRecordSha256": "sha256:f686ed71398a27a73ac3ed318d8a255d7d33085e198451a3abc0cc138af3aac7",
+      "original": {
+        "sourceRowsSha256": "sha256:65887b9b68b0591ac44a4968296aadd85f9d6b34e9b76004a7f83266678cce29",
+        "itemsSha256": "sha256:c9fa6ecbf203c9132ce6d6096f7d7b7d16fbbacc8e9c42f1743847a33c593d62"
+      },
+      "generated": {
+        "sourceRowsSha256": "sha256:65887b9b68b0591ac44a4968296aadd85f9d6b34e9b76004a7f83266678cce29",
+        "itemsSha256": "sha256:c9fa6ecbf203c9132ce6d6096f7d7b7d16fbbacc8e9c42f1743847a33c593d62"
+      },
+      "checks": {
+        "sourceRowCardinality": true,
+        "itemCardinality": true,
+        "flowCardinality": true,
+        "stepCardinality": true,
+        "sourceRowSemantics": true,
+        "itemSemantics": true
+      },
+      "allSemanticChecksPassed": true,
+      "allowedTransforms": [
+        "stable fixture-scoped ID namespace",
+        "memo to canonical description alias",
+        "legacy schedule shape to canonical schedule mode",
+        "SourceRef and property provenance addition",
+        "system completion grammar when the frozen record has no canonical CompletionSpec"
+      ]
+    },
+    {
+      "baselineBundleId": "bundle-baby-food-174",
+      "fixtureId": "base-baby-food-174",
+      "originalRecordSha256": "sha256:c4926725767cdfca7b208534664c3e616aa10a4a42cba3a67d089fda91e5860c",
+      "original": {
+        "sourceRowsSha256": "sha256:759e3356a6e70df9ab3596ca94c530bc55210947c580af36ba020920bb04ba81",
+        "itemsSha256": "sha256:8877d2a0368d7c65d7ad6ddd8824bf47faeec849a5852c9dc4228e3d37e84188"
+      },
+      "generated": {
+        "sourceRowsSha256": "sha256:759e3356a6e70df9ab3596ca94c530bc55210947c580af36ba020920bb04ba81",
+        "itemsSha256": "sha256:8877d2a0368d7c65d7ad6ddd8824bf47faeec849a5852c9dc4228e3d37e84188"
+      },
+      "checks": {
+        "sourceRowCardinality": true,
+        "itemCardinality": true,
+        "flowCardinality": true,
+        "stepCardinality": true,
+        "sourceRowSemantics": true,
+        "itemSemantics": true
+      },
+      "allSemanticChecksPassed": true,
+      "allowedTransforms": [
+        "stable fixture-scoped ID namespace",
+        "memo to canonical description alias",
+        "legacy schedule shape to canonical schedule mode",
+        "SourceRef and property provenance addition",
+        "system completion grammar when the frozen record has no canonical CompletionSpec"
+      ]
+    },
+    {
+      "baselineBundleId": "bundle-opic-plan",
+      "fixtureId": "base-opic-plan",
+      "originalRecordSha256": "sha256:d6083033ab2fcff1fb486813530125c2976a25334693875c6f3ab0eb79acac95",
+      "original": {
+        "sourceRowsSha256": "sha256:b17324aee1f50d1fdf73dbdfc1f8bb67b5b8172d8c331c2a4cf2b9e2f2c48a1a",
+        "itemsSha256": "sha256:c4172b4240c3a36232bec2cb76d30b1bcfad8acb78d6fea2efb3e5dcb05180d1"
+      },
+      "generated": {
+        "sourceRowsSha256": "sha256:b17324aee1f50d1fdf73dbdfc1f8bb67b5b8172d8c331c2a4cf2b9e2f2c48a1a",
+        "itemsSha256": "sha256:c4172b4240c3a36232bec2cb76d30b1bcfad8acb78d6fea2efb3e5dcb05180d1"
+      },
+      "checks": {
+        "sourceRowCardinality": true,
+        "itemCardinality": true,
+        "flowCardinality": true,
+        "stepCardinality": true,
+        "sourceRowSemantics": true,
+        "itemSemantics": true
+      },
+      "allSemanticChecksPassed": true,
+      "allowedTransforms": [
+        "stable fixture-scoped ID namespace",
+        "memo to canonical description alias",
+        "legacy schedule shape to canonical schedule mode",
+        "SourceRef and property provenance addition",
+        "system completion grammar when the frozen record has no canonical CompletionSpec"
+      ]
+    },
+    {
+      "baselineBundleId": "bundle-opentutorials-web1-progress",
+      "fixtureId": "base-opentutorials-web1-progress",
+      "originalRecordSha256": "sha256:011d1e1476f7c8126ab7ceb014ec1dffca17594662532191910814aa31096bc2",
+      "original": {
+        "sourceRowsSha256": "sha256:8138c1113144c5ebc8e78feb678e39cc25108b1c4fed37946c1d03ed2f8861c8",
+        "itemsSha256": "sha256:dd0f227e463a53263ddf0d78b1c80e515e57a067381a28a2edac8b87b484eaeb"
+      },
+      "generated": {
+        "sourceRowsSha256": "sha256:8138c1113144c5ebc8e78feb678e39cc25108b1c4fed37946c1d03ed2f8861c8",
+        "itemsSha256": "sha256:dd0f227e463a53263ddf0d78b1c80e515e57a067381a28a2edac8b87b484eaeb"
+      },
+      "checks": {
+        "sourceRowCardinality": true,
+        "itemCardinality": true,
+        "flowCardinality": true,
+        "stepCardinality": true,
+        "sourceRowSemantics": true,
+        "itemSemantics": true
+      },
+      "allSemanticChecksPassed": true,
+      "allowedTransforms": [
+        "stable fixture-scoped ID namespace",
+        "memo to canonical description alias",
+        "legacy schedule shape to canonical schedule mode",
+        "SourceRef and property provenance addition",
+        "system completion grammar when the frozen record has no canonical CompletionSpec"
+      ]
+    },
+    {
+      "baselineBundleId": "bundle-new-car-comparison",
+      "fixtureId": "base-new-car-comparison",
+      "originalRecordSha256": "sha256:f769c1e4332765539a4ce6a319bfcfd5821b7062ed6754f2498e595b3c18541a",
+      "original": {
+        "sourceRowsSha256": "sha256:57285e0162a5b1a9112fe1eab48255f28118435b67e2714fc2d4b8428a5cbde0",
+        "itemsSha256": "sha256:24f3225637ef15e135845d51599d7663dd53240334d7b7edf369fc872ff7bfe2"
+      },
+      "generated": {
+        "sourceRowsSha256": "sha256:57285e0162a5b1a9112fe1eab48255f28118435b67e2714fc2d4b8428a5cbde0",
+        "itemsSha256": "sha256:24f3225637ef15e135845d51599d7663dd53240334d7b7edf369fc872ff7bfe2"
+      },
+      "checks": {
+        "sourceRowCardinality": true,
+        "itemCardinality": true,
+        "flowCardinality": true,
+        "stepCardinality": true,
+        "sourceRowSemantics": true,
+        "itemSemantics": true
+      },
+      "allSemanticChecksPassed": true,
+      "allowedTransforms": [
+        "stable fixture-scoped ID namespace",
+        "memo to canonical description alias",
+        "legacy schedule shape to canonical schedule mode",
+        "SourceRef and property provenance addition",
+        "system completion grammar when the frozen record has no canonical CompletionSpec"
+      ]
+    },
+    {
+      "baselineBundleId": "bundle-allblanc-7day-abs",
+      "fixtureId": "base-allblanc-7day-abs",
+      "originalRecordSha256": "sha256:ea61ccc338300ef656dc9a119700b65e92a1909da79ce2c1fd9f7e70f0348b3d",
+      "original": {
+        "sourceRowsSha256": "sha256:50a4bbcd6d0cf725cb71515501d062abc30feb83b19365131b36bdf820037330",
+        "itemsSha256": "sha256:8188c7a3f1a82dd2489e1cb5ad13f4bf287f414569620df9ab3749d5ab34383b"
+      },
+      "generated": {
+        "sourceRowsSha256": "sha256:50a4bbcd6d0cf725cb71515501d062abc30feb83b19365131b36bdf820037330",
+        "itemsSha256": "sha256:8188c7a3f1a82dd2489e1cb5ad13f4bf287f414569620df9ab3749d5ab34383b"
+      },
+      "checks": {
+        "sourceRowCardinality": true,
+        "itemCardinality": true,
+        "flowCardinality": true,
+        "stepCardinality": true,
+        "sourceRowSemantics": true,
+        "itemSemantics": true
+      },
+      "allSemanticChecksPassed": true,
+      "allowedTransforms": [
+        "stable fixture-scoped ID namespace",
+        "memo to canonical description alias",
+        "legacy schedule shape to canonical schedule mode",
+        "SourceRef and property provenance addition",
+        "system completion grammar when the frozen record has no canonical CompletionSpec"
+      ]
+    },
+    {
+      "baselineBundleId": "bundle-wtable-summer-banchan-five",
+      "fixtureId": "base-wtable-summer-banchan-five",
+      "originalRecordSha256": "sha256:c330f6d9f554f600ad59f2e0c6bd41d74b5d89f33c323d16d0911bd2bb1cf3e3",
+      "original": {
+        "sourceRowsSha256": "sha256:1baddfc2d708d56c94c2133218c60d8a8a386bd08bf0e5d16352a016acf0110e",
+        "itemsSha256": "sha256:a61be442142a872a978901745c09ce4a73683912500e566226b66986ec2380fc"
+      },
+      "generated": {
+        "sourceRowsSha256": "sha256:1baddfc2d708d56c94c2133218c60d8a8a386bd08bf0e5d16352a016acf0110e",
+        "itemsSha256": "sha256:a61be442142a872a978901745c09ce4a73683912500e566226b66986ec2380fc"
+      },
+      "checks": {
+        "sourceRowCardinality": true,
+        "itemCardinality": true,
+        "flowCardinality": true,
+        "stepCardinality": true,
+        "sourceRowSemantics": true,
+        "itemSemantics": true
+      },
+      "allSemanticChecksPassed": true,
+      "allowedTransforms": [
+        "stable fixture-scoped ID namespace",
+        "memo to canonical description alias",
+        "legacy schedule shape to canonical schedule mode",
+        "SourceRef and property provenance addition",
+        "system completion grammar when the frozen record has no canonical CompletionSpec"
+      ]
+    },
+    {
+      "baselineBundleId": "bundle-andstudio-job-prep-videos",
+      "fixtureId": "base-andstudio-job-prep-videos",
+      "originalRecordSha256": "sha256:78a6a955cf161ffcf8c6de9337ce2957d403c61df8e53e79f7ba80cfb73c745d",
+      "original": {
+        "sourceRowsSha256": "sha256:2c808a3a78228b922fd540333a6abd59292d2e358602f293dd6d223aa04951ac",
+        "itemsSha256": "sha256:571e37c95cd1991e922c09c552c46c39e318a7170eb81e6c272479e8302a55b3"
+      },
+      "generated": {
+        "sourceRowsSha256": "sha256:2c808a3a78228b922fd540333a6abd59292d2e358602f293dd6d223aa04951ac",
+        "itemsSha256": "sha256:571e37c95cd1991e922c09c552c46c39e318a7170eb81e6c272479e8302a55b3"
+      },
+      "checks": {
+        "sourceRowCardinality": true,
+        "itemCardinality": true,
+        "flowCardinality": true,
+        "stepCardinality": true,
+        "sourceRowSemantics": true,
+        "itemSemantics": true
+      },
+      "allSemanticChecksPassed": true,
+      "allowedTransforms": [
+        "stable fixture-scoped ID namespace",
+        "memo to canonical description alias",
+        "legacy schedule shape to canonical schedule mode",
+        "SourceRef and property provenance addition",
+        "system completion grammar when the frozen record has no canonical CompletionSpec"
+      ]
+    }
+  ],
+  "baselinePreservationSummary": {
+    "fixtureCount": 8,
+    "allSemanticChecksPassed": true
+  }
+}

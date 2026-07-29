@@ -1,0 +1,1220 @@
+{
+  "schemaVersion": "flowme-classification-comparison-v1",
+  "generatedAt": "2026-07-29T12:00:00+09:00",
+  "independenceProtocol": {
+    "classifiers": [
+      "independent_agent_A",
+      "independent_agent_B"
+    ],
+    "sharedInputs": "Frozen canonical corpus metadata, Item/Step structure, sourceShape, executionPattern, schedule, and title.",
+    "hiddenFromEachOther": true,
+    "hiddenArtifacts": [
+      "other classifier output",
+      "new lab target artifacts",
+      "final adjudication"
+    ],
+    "observedUserValidation": false
+  },
+  "iterations": [
+    {
+      "round": 1,
+      "rules": "Initial bounded-set versus independent-queue definitions.",
+      "metrics": {
+        "records": 42,
+        "checklistTodo": {
+          "matches": 38,
+          "disagreements": 4,
+          "agreementPercent": 90.48,
+          "thresholdPercent": 90,
+          "pass": true
+        },
+        "primaryProjection": {
+          "matches": 37,
+          "disagreements": 5,
+          "agreementPercent": 88.1,
+          "thresholdPercent": 90,
+          "pass": false
+        },
+        "exactBothAxes": {
+          "matches": 36,
+          "disagreements": 6,
+          "agreementPercent": 85.71
+        }
+      }
+    },
+    {
+      "round": 2,
+      "rules": "General temporal-intent, field-versus-Item, relative-plan, and lesson-progress tie-breakers added without exposing either classifier output.",
+      "metrics": {
+        "records": 42,
+        "checklistTodo": {
+          "matches": 39,
+          "disagreements": 3,
+          "agreementPercent": 92.86,
+          "thresholdPercent": 90,
+          "pass": true
+        },
+        "primaryProjection": {
+          "matches": 41,
+          "disagreements": 1,
+          "agreementPercent": 97.62,
+          "thresholdPercent": 90,
+          "pass": true
+        },
+        "exactBothAxes": {
+          "matches": 39,
+          "disagreements": 3,
+          "agreementPercent": 92.86
+        }
+      }
+    }
+  ],
+  "metrics": {
+    "records": 42,
+    "checklistTodo": {
+      "matches": 39,
+      "disagreements": 3,
+      "agreementPercent": 92.86,
+      "thresholdPercent": 90,
+      "pass": true
+    },
+    "primaryProjection": {
+      "matches": 41,
+      "disagreements": 1,
+      "agreementPercent": 97.62,
+      "thresholdPercent": 90,
+      "pass": true
+    },
+    "exactBothAxes": {
+      "matches": 39,
+      "disagreements": 3,
+      "agreementPercent": 92.86
+    }
+  },
+  "iterationDecision": {
+    "rerunRequired": false,
+    "reason": "Round 1 primary projection agreement missed the threshold. Round 2 reached both required thresholds without exposing either classifier output to the other.",
+    "commonTieBreakersAddedForAdjudication": true,
+    "caseSpecificExceptionsAdded": false
+  },
+  "disagreements": [
+    {
+      "bundleId": "bundle-base-allblanc-7day-abs",
+      "fixtureId": "base-allblanc-7day-abs",
+      "title": "Allblanc 7일 복근 챌린지",
+      "cause": "A seven-day challenge is both a finite sequence and a set of independently completed daily workouts; one classifier also prioritized the resolved Calendar while the other prioritized the progress overview.",
+      "tieBreaker": "Across days, daily workouts are Todo-style progress units; Calendar is primary only after the start anchor is confirmed. The exercise steps inside a single day may still render as Checklist.",
+      "agentA": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "calendar",
+        "evidence": "The seven-video challenge is a bounded sequence, and one workout is truly placed on each Day 1–7 anchor offset after a start date is chosen."
+      },
+      "agentB": {
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "sheet",
+        "evidence": "The seven relative Day 1~7 workout rows have no fixed personal start occurrence, so the challenge needs a progress sheet before calendar overlay."
+      },
+      "finalAdjudication": {
+        "fixtureId": "base-allblanc-7day-abs",
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist"
+      }
+    },
+    {
+      "bundleId": "bundle-value-vq-10",
+      "fixtureId": "value-vq-10",
+      "title": "리모델링 공정별 하자 점검",
+      "cause": "Independent defect rows are individually actionable, but the source defines a finite inspection scope where omissions matter.",
+      "tieBreaker": "Use Checklist semantics for the bounded inspection session and Sheet as the primary status overview.",
+      "agentA": {
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "sheet",
+        "evidence": "The 13 defect rows carry photo, repair-request, and recheck status Fields whose cross-row overview is primary, while each inspection or follow-up executes separately."
+      },
+      "agentB": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "sheet",
+        "evidence": "The omission-sensitive inspection spans twelve trade rows with issue, photo, repair-request, and recheck status Fields that require an overview."
+      },
+      "finalAdjudication": {
+        "fixtureId": "value-vq-10",
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "sheet"
+      }
+    },
+    {
+      "bundleId": "bundle-live-r02",
+      "fixtureId": "live-r02",
+      "title": "냉장고 파먹기 7일 식단 플랜",
+      "cause": "Day-numbered meal rows suggest Calendar, but the source contains relative plan positions rather than resolved personal dates.",
+      "tieBreaker": "Sheet is primary for the seven-day plan; Calendar is available only after a user start-date overlay.",
+      "agentA": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "sheet",
+        "evidence": "The seven unscheduled setup and Day 1–7 meal-plan rows require a plan-wide overview, while Calendar placement must wait for a personal start-date overlay."
+      },
+      "agentB": {
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "sheet",
+        "evidence": "The table_rows/progress_tracking fixture needs a seven-day meal-plan overview, and its undated setup and day-range rows remain executable next actions."
+      },
+      "finalAdjudication": {
+        "fixtureId": "live-r02",
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "sheet"
+      }
+    }
+  ],
+  "records": [
+    {
+      "bundleId": "bundle-base-moving-d30",
+      "fixtureId": "base-moving-d30",
+      "title": "이사 D-30 체크리스트",
+      "agentA": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "calendar",
+        "evidence": "The 27 omission-sensitive moving actions form six ordered stages, and their D-30 through moving-day anchor offsets truly place execution relative to the selected move date."
+      },
+      "agentB": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "calendar",
+        "evidence": "The bounded moving checklist preserves six D-day groups, and its anchor-offset schedules place each item relative to the source-defined move date."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "base-moving-d30",
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "calendar"
+      }
+    },
+    {
+      "bundleId": "bundle-base-baby-food-174",
+      "fixtureId": "base-baby-food-174",
+      "title": "초기 이유식 D+174~209 식단",
+      "agentA": {
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "sheet",
+        "evidence": "The 36 D+174–209 meal rows form a long progress table whose cross-day overview matters, while each anchor-placed meal remains an individual execution task."
+      },
+      "agentB": {
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "sheet",
+        "evidence": "The 36 table_rows/progress_tracking meal occurrences need a D+174~209 overview, while each dated row remains an individually executable next action."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "base-baby-food-174",
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "sheet"
+      }
+    },
+    {
+      "bundleId": "bundle-base-opic-plan",
+      "fixtureId": "base-opic-plan",
+      "title": "오픽 모의고사 계획표",
+      "agentA": {
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "sheet",
+        "evidence": "The 42 mock-test and review rows span two multiweek progress plans, so plan-wide status belongs in a Sheet while the anchor-placed sessions execute as individual tasks."
+      },
+      "agentB": {
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "sheet",
+        "evidence": "The lesson_rows/progress_tracking plans need a test-and-review overview, and their relative offsets become execution dates only after a personal start-date overlay."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "base-opic-plan",
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "sheet"
+      }
+    },
+    {
+      "bundleId": "bundle-base-opentutorials-web1-progress",
+      "fixtureId": "base-opentutorials-web1-progress",
+      "title": "생활코딩 WEB1 진도표",
+      "agentA": {
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "sheet",
+        "evidence": "The unscheduled 26-topic WEB1 lesson list is progress-oriented row data whose overall completion view matters and whose topics execute one at a time."
+      },
+      "agentB": {
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "sheet",
+        "evidence": "The undated 26-topic WEB1 lesson sequence is primarily a progress overview whose individual lesson rows can surface as next actions."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "base-opentutorials-web1-progress",
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "sheet"
+      }
+    },
+    {
+      "bundleId": "bundle-base-new-car-comparison",
+      "fixtureId": "base-new-car-comparison",
+      "title": "신차 구매 8단계",
+      "agentA": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist",
+        "evidence": "The 14 actions are an unscheduled but bounded eight-stage purchase procedure whose order and omission coverage must be preserved."
+      },
+      "agentB": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist",
+        "evidence": "The procedure_rows/ordered_procedure fixture has eight bounded purchase stages whose decisions and confirmations are omission-sensitive and order-dependent."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "base-new-car-comparison",
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist"
+      }
+    },
+    {
+      "bundleId": "bundle-base-allblanc-7day-abs",
+      "fixtureId": "base-allblanc-7day-abs",
+      "title": "Allblanc 7일 복근 챌린지",
+      "agentA": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "calendar",
+        "evidence": "The seven-video challenge is a bounded sequence, and one workout is truly placed on each Day 1–7 anchor offset after a start date is chosen."
+      },
+      "agentB": {
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "sheet",
+        "evidence": "The seven relative Day 1~7 workout rows have no fixed personal start occurrence, so the challenge needs a progress sheet before calendar overlay."
+      },
+      "agreement": {
+        "checklistTodo": false,
+        "primaryProjection": false,
+        "exact": false
+      },
+      "finalAdjudication": {
+        "fixtureId": "base-allblanc-7day-abs",
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist"
+      }
+    },
+    {
+      "bundleId": "bundle-base-wtable-summer-banchan-five",
+      "fixtureId": "base-wtable-summer-banchan-five",
+      "title": "이번 주 여름 반찬 5가지",
+      "agentA": {
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "todo",
+        "evidence": "The five unscheduled recipes are independent resource-queue actions that can be deferred, selected, or reordered without breaking a procedure."
+      },
+      "agentB": {
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "todo",
+        "evidence": "The resource_collection/resource_queue contains five undated independent recipe actions that can be chosen, reordered, or deferred separately."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "base-wtable-summer-banchan-five",
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "todo"
+      }
+    },
+    {
+      "bundleId": "bundle-base-andstudio-job-prep-videos",
+      "fixtureId": "base-andstudio-job-prep-videos",
+      "title": "AND 취업 준비 영상 3편",
+      "agentA": {
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "todo",
+        "evidence": "The three unscheduled job-preparation videos are independent resources that can be watched or deferred in any order."
+      },
+      "agentB": {
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "todo",
+        "evidence": "The resource_collection/resource_queue contains three undated job-preparation videos that remain independent and deferable next actions."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "base-andstudio-job-prep-videos",
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "todo"
+      }
+    },
+    {
+      "bundleId": "bundle-oq-oq-c01-moving",
+      "fixtureId": "oq-oq-c01-moving",
+      "title": "이사 준비 체크리스트",
+      "agentA": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "calendar",
+        "evidence": "The 24 moving checks form six omission-sensitive stages, with 15 anchor-offset executions and five relative execution windows tied to the selected move date."
+      },
+      "agentB": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "calendar",
+        "evidence": "The omission-sensitive moving set is grouped by relative period, and its offsets and windows are anchored to the source-defined move date."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "oq-oq-c01-moving",
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "calendar"
+      }
+    },
+    {
+      "bundleId": "bundle-oq-oq-c02-kmooc-full",
+      "fixtureId": "oq-oq-c02-kmooc-full",
+      "title": "Introduction to Data Analysis",
+      "agentA": {
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "sheet",
+        "evidence": "The unscheduled 14-week lesson-row curriculum needs a course-wide progress overview, while each week remains an individual learning task."
+      },
+      "agentB": {
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "sheet",
+        "evidence": "The fourteen undated weekly lesson_rows require a course-progress overview, with each lesson available as a separate execution action."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "oq-oq-c02-kmooc-full",
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "sheet"
+      }
+    },
+    {
+      "bundleId": "bundle-oq-oq-c03-librivox",
+      "fixtureId": "oq-oq-c03-librivox",
+      "title": "Anne of Green Gables, Version 5",
+      "agentA": {
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "sheet",
+        "evidence": "The 38 numbered audiobook sections are unscheduled progress rows whose book-wide completion overview matters, with each section executed as a separate listening task."
+      },
+      "agentB": {
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "sheet",
+        "evidence": "The 38 numbered resource_queue sections need a whole-book progress overview while each undated section remains a queue action."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "oq-oq-c03-librivox",
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "sheet"
+      }
+    },
+    {
+      "bundleId": "bundle-oq-oq-c04-passport",
+      "fixtureId": "oq-oq-c04-passport",
+      "title": "유효기간 만료에 따른 재발급",
+      "agentA": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist",
+        "evidence": "The application route and four required-document rows are one bounded, omission-sensitive passport-renewal procedure."
+      },
+      "agentB": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist",
+        "evidence": "The checklist_rows/ordered_procedure groups one application-path choice with four bounded required-document items."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "oq-oq-c04-passport",
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist"
+      }
+    },
+    {
+      "bundleId": "bundle-oq-oq-c05-washer",
+      "fixtureId": "oq-oq-c05-washer",
+      "title": "Washing Machine Maintenance: tips to keep your machine running smoothly",
+      "agentA": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist",
+        "evidence": "The four washer-cleaning actions are an ordered maintenance session, but no item has an actual recurrence or execution schedule yet."
+      },
+      "agentB": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist",
+        "evidence": "The four maintenance items form one bounded ordered cleaning session, while the recurrence trigger is undated and does not yet place execution."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "oq-oq-c05-washer",
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist"
+      }
+    },
+    {
+      "bundleId": "bundle-oq-oq-c06-nasa",
+      "fixtureId": "oq-oq-c06-nasa",
+      "title": "Build, Launch, Recover: Build a Crane Activity",
+      "agentA": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist",
+        "evidence": "The five unscheduled crane-building actions align to preparation and successive procedure stages whose order must be preserved."
+      },
+      "agentB": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist",
+        "evidence": "The procedure_rows/ordered_procedure fixture groups five undated crane-building stages whose sequence must be preserved within one activity."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "oq-oq-c06-nasa",
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist"
+      }
+    },
+    {
+      "bundleId": "bundle-oq-oq-c07-fit100",
+      "fixtureId": "oq-oq-c07-fit100",
+      "title": "국민체력인증 이용안내",
+      "agentA": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist",
+        "evidence": "The eight unscheduled STEP-labelled actions form one bounded certification lifecycle from signup through measurement, issuance, and management."
+      },
+      "agentB": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist",
+        "evidence": "The procedure_rows/phase_lifecycle structure is an eight-step certification path whose ordered stages are jointly required."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "oq-oq-c07-fit100",
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist"
+      }
+    },
+    {
+      "bundleId": "bundle-oq-oq-c08-ac-decision",
+      "fixtureId": "oq-oq-c08-ac-decision",
+      "title": "시스템 에어컨 세척 서비스 안내",
+      "agentA": {
+        "checklistTodoLabel": "neither",
+        "primaryProjection": "sheet",
+        "evidence": "One composite compare-and-select Item holds three typed comparison Fields for professional scope, general scope, and time-cost difference, rather than independently completable checks."
+      },
+      "agentB": {
+        "checklistTodoLabel": "neither",
+        "primaryProjection": "sheet",
+        "evidence": "The fixture has one composite compare-and-decide Item with three typed comparison Fields rather than independently completable checklist rows."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "oq-oq-c08-ac-decision",
+        "checklistTodoLabel": "neither",
+        "primaryProjection": "sheet"
+      }
+    },
+    {
+      "bundleId": "bundle-oq-oq-b01-heat",
+      "fixtureId": "oq-oq-b01-heat",
+      "title": "2026년 농업인 온열질환 예방가이드 및 체크리스트",
+      "agentA": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist",
+        "evidence": "The four heat-safety actions are a bounded omission-sensitive work session grouped into before-work and after-work stages."
+      },
+      "agentB": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist",
+        "evidence": "The pre-work and post-work groups form a bounded, omission-sensitive safety procedure for one farm-work situation."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "oq-oq-b01-heat",
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist"
+      }
+    },
+    {
+      "bundleId": "bundle-oq-oq-b03-remodel",
+      "fixtureId": "oq-oq-b03-remodel",
+      "title": "리모델링 계약서 체크리스트 10",
+      "agentA": {
+        "checklistTodoLabel": "neither",
+        "primaryProjection": "sheet",
+        "evidence": "One composite contract decision Item carries ten typed agreement Fields, so comparison coverage is tabular rather than ten independently completable checklist entries."
+      },
+      "agentB": {
+        "checklistTodoLabel": "neither",
+        "primaryProjection": "sheet",
+        "evidence": "The fixture stores ten contract criteria as typed Fields on one composite compare-and-decide Item, not as ten separately completable actions."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "oq-oq-b03-remodel",
+        "checklistTodoLabel": "neither",
+        "primaryProjection": "sheet"
+      }
+    },
+    {
+      "bundleId": "bundle-oq-oq-p01-ossu",
+      "fixtureId": "oq-oq-p01-ossu",
+      "title": "OSSU Computer Science Curriculum",
+      "agentA": {
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "sheet",
+        "evidence": "The six unscheduled curriculum rows across two course tables need an overall learning-progress view, while courses execute as individual tasks."
+      },
+      "agentB": {
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "sheet",
+        "evidence": "The lesson_rows/progress_tracking curriculum needs a course overview, while its six undated course rows remain individual study actions."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "oq-oq-p01-ossu",
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "sheet"
+      }
+    },
+    {
+      "bundleId": "bundle-oq-oq-p02-packing",
+      "fixtureId": "oq-oq-p02-packing",
+      "title": "Packing list",
+      "agentA": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist",
+        "evidence": "The seven travel essentials form one bounded omission-sensitive packing set grouped into carry-on and document sections."
+      },
+      "agentB": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist",
+        "evidence": "The checklist_rows/ordered_procedure groups seven omission-sensitive packing items into carry-on essentials and documents for one trip."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "oq-oq-p02-packing",
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist"
+      }
+    },
+    {
+      "bundleId": "bundle-oq-oq-p03-vehicle",
+      "fixtureId": "oq-oq-p03-vehicle",
+      "title": "정기검사 대상·기준·유효기간 안내",
+      "agentA": {
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "todo",
+        "evidence": "The sole action is to look up the inspection window and choose a visit date, so it remains a Todo until an actual visit occurrence is selected."
+      },
+      "agentB": {
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "todo",
+        "evidence": "The single action has only an official inspection window and an optional visit-date Field, so it remains a Todo until a visit date is selected."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "oq-oq-p03-vehicle",
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "todo"
+      }
+    },
+    {
+      "bundleId": "bundle-oq-oq-p04-portfolio",
+      "fixtureId": "oq-oq-p04-portfolio",
+      "title": "포트폴리오 4주 만에 준비하기",
+      "agentA": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist",
+        "evidence": "The seven unscheduled actions form a bounded portfolio procedure from selection and planning through development, deployment, and completion."
+      },
+      "agentB": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist",
+        "evidence": "The procedure_rows/phase_lifecycle fixture preserves seven undated stages from team and item selection through portfolio completion."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "oq-oq-p04-portfolio",
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist"
+      }
+    },
+    {
+      "bundleId": "bundle-value-vq-01",
+      "fixtureId": "value-vq-01",
+      "title": "어린이집 보육료 지원 신청",
+      "agentA": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist",
+        "evidence": "The four unscheduled childcare-support actions form an ordered application procedure across confirmation, submission, and result stages."
+      },
+      "agentB": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist",
+        "evidence": "The ordered procedure groups eligibility confirmation, application, and result checks into one bounded support-application goal."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "value-vq-01",
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist"
+      }
+    },
+    {
+      "bundleId": "bundle-value-vq-03",
+      "fixtureId": "value-vq-03",
+      "title": "평일 5일 저녁 식단",
+      "agentA": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "calendar",
+        "evidence": "The five weekday dinner items are a bounded meal set, and the chosen week-start anchor truly places one dinner on each Monday-through-Friday offset."
+      },
+      "agentB": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "calendar",
+        "evidence": "A required week-start anchor places the bounded Monday-to-Friday meal items on consecutive execution dates."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "value-vq-03",
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "calendar"
+      }
+    },
+    {
+      "bundleId": "bundle-value-vq-04",
+      "fixtureId": "value-vq-04",
+      "title": "옷장 정리 1일",
+      "agentA": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist",
+        "evidence": "The six unscheduled one-day closet actions preserve a bounded preparation, classification, storage, disposal, and follow-up order."
+      },
+      "agentB": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist",
+        "evidence": "The procedure_rows/ordered_procedure contains a bounded one-day closet session with five ordered execution items and one follow-up state item."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "value-vq-04",
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist"
+      }
+    },
+    {
+      "bundleId": "bundle-value-vq-05",
+      "fixtureId": "value-vq-05",
+      "title": "코드 없이 따라하는 빅데이터 분석",
+      "agentA": {
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "sheet",
+        "evidence": "The ten unscheduled lesson rows include per-row status, completion time, and notes, making the overall progress table primary and each lesson a Todo execution."
+      },
+      "agentB": {
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "sheet",
+        "evidence": "The lesson_rows/progress_tracking fixture needs an overview of nine learning rows and one assessment row, with each row executable independently."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "value-vq-05",
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "sheet"
+      }
+    },
+    {
+      "bundleId": "bundle-value-vq-06",
+      "fixtureId": "value-vq-06",
+      "title": "식물성 음료 품질비교",
+      "agentA": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "sheet",
+        "evidence": "The six omission-sensitive comparison Items each carry evidence, decision, reason, and priority Fields, so the decision matrix is Sheet-first."
+      },
+      "agentB": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "sheet",
+        "evidence": "Six omission-sensitive comparison Items each carry priority, evidence, decision, and reason Fields, making a comparison sheet primary."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "value-vq-06",
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "sheet"
+      }
+    },
+    {
+      "bundleId": "bundle-value-vq-10",
+      "fixtureId": "value-vq-10",
+      "title": "리모델링 공정별 하자 점검",
+      "agentA": {
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "sheet",
+        "evidence": "The 13 defect rows carry photo, repair-request, and recheck status Fields whose cross-row overview is primary, while each inspection or follow-up executes separately."
+      },
+      "agentB": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "sheet",
+        "evidence": "The omission-sensitive inspection spans twelve trade rows with issue, photo, repair-request, and recheck status Fields that require an overview."
+      },
+      "agreement": {
+        "checklistTodo": false,
+        "primaryProjection": true,
+        "exact": false
+      },
+      "finalAdjudication": {
+        "fixtureId": "value-vq-10",
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "sheet"
+      }
+    },
+    {
+      "bundleId": "bundle-value-vq-11",
+      "fixtureId": "value-vq-11",
+      "title": "2026년 2학기 국가근로장학금 신청",
+      "agentA": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist",
+        "evidence": "The five scholarship actions form an ordered application checklist, while the application window and document deadline are due boundaries rather than selected execution occurrences."
+      },
+      "agentB": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist",
+        "evidence": "The bounded application procedure preserves five ordered checks, while its application window and document deadline do not select execution times."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "value-vq-11",
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist"
+      }
+    },
+    {
+      "bundleId": "bundle-value-vq-12",
+      "fixtureId": "value-vq-12",
+      "title": "반려동물 가족 재난 대응 준비",
+      "agentA": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist",
+        "evidence": "The six unscheduled pet-disaster actions form one bounded readiness set whose supplies, contacts, plan, and drill are omission-sensitive."
+      },
+      "agentB": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist",
+        "evidence": "The checklist_rows/ordered_procedure is one omission-sensitive emergency-preparation set with six grouped household actions."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "value-vq-12",
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist"
+      }
+    },
+    {
+      "bundleId": "bundle-deep-ds06",
+      "fixtureId": "deep-ds06",
+      "title": "25~36개월 행동·안전",
+      "agentA": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist",
+        "evidence": "The four unscheduled fall, burn, poisoning, and vehicle checks are one bounded child-safety assessment where omitted hazard areas matter."
+      },
+      "agentB": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist",
+        "evidence": "The four safety items form one bounded home inspection across fall, burn, poisoning, and vehicle hazards."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "deep-ds06",
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "sheet"
+      }
+    },
+    {
+      "bundleId": "bundle-deep-ds08",
+      "fixtureId": "deep-ds08",
+      "title": "공주 부모님과 당일치기 힐링 여행코스",
+      "agentA": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist",
+        "evidence": "The four Course 1–4 destinations form an ordered day-trip itinerary, but no actual visit date or time exists for Calendar placement."
+      },
+      "agentB": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist",
+        "evidence": "The four numbered stops form an ordered same-day itinerary, but no actual visit date or time exists for calendar placement."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "deep-ds08",
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist"
+      }
+    },
+    {
+      "bundleId": "bundle-live-c01",
+      "fixtureId": "live-c01",
+      "title": "영유아 건강검진 일정",
+      "agentA": {
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "sheet",
+        "evidence": "The 12 infant screening rows are age-window reference and progress data with no selected visit dates, so overview is primary and each screening remains a Todo until booked."
+      },
+      "agentB": {
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "sheet",
+        "evidence": "The twelve age-window screening rows need a lifecycle overview, while each unscheduled visit remains a separate next action until a visit date is chosen."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "live-c01",
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist"
+      }
+    },
+    {
+      "bundleId": "bundle-live-c10",
+      "fixtureId": "live-c10",
+      "title": "가족여행 짐 준비표",
+      "agentA": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist",
+        "evidence": "The seven unscheduled family-trip packing categories form one bounded omission-sensitive preparation set."
+      },
+      "agentB": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist",
+        "evidence": "The checklist_rows fixture groups seven omission-sensitive packing categories into one bounded family-trip preparation set without execution dates."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "live-c10",
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist"
+      }
+    },
+    {
+      "bundleId": "bundle-live-c13",
+      "fixtureId": "live-c13",
+      "title": "노밀가루 바나나 땅콩버터 빵",
+      "agentA": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist",
+        "evidence": "The four unscheduled recipe actions are explicitly labelled Step 1/4 through Step 4/4 and must preserve cooking order."
+      },
+      "agentB": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist",
+        "evidence": "The procedure_rows/ordered_procedure preserves four numbered cooking actions within one recipe session."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "live-c13",
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist"
+      }
+    },
+    {
+      "bundleId": "bundle-live-c16",
+      "fixtureId": "live-c16",
+      "title": "블로그를 활용해 유튜브 쉽게 시작하는 법",
+      "agentA": {
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "todo",
+        "evidence": "The three unscheduled blog-video reuse actions have no schedule or ordering dependency and can be adopted or deferred independently."
+      },
+      "agentB": {
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "todo",
+        "evidence": "The narrative guidance yields three undated cross-channel actions with no dependencies, so they can be executed or deferred independently."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "live-c16",
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "todo"
+      }
+    },
+    {
+      "bundleId": "bundle-live-r02",
+      "fixtureId": "live-r02",
+      "title": "냉장고 파먹기 7일 식단 플랜",
+      "agentA": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "sheet",
+        "evidence": "The seven unscheduled setup and Day 1–7 meal-plan rows require a plan-wide overview, while Calendar placement must wait for a personal start-date overlay."
+      },
+      "agentB": {
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "sheet",
+        "evidence": "The table_rows/progress_tracking fixture needs a seven-day meal-plan overview, and its undated setup and day-range rows remain executable next actions."
+      },
+      "agreement": {
+        "checklistTodo": false,
+        "primaryProjection": true,
+        "exact": false
+      },
+      "finalAdjudication": {
+        "fixtureId": "live-r02",
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "sheet"
+      }
+    },
+    {
+      "bundleId": "bundle-live-live-ifixit-washer-01",
+      "fixtureId": "live-live-ifixit-washer-01",
+      "title": "How To Maintain Your Washing Machine",
+      "agentA": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist",
+        "evidence": "The seven unscheduled maintenance actions are explicitly ordered Step 1 through Step 7 within one washer-care session."
+      },
+      "agentB": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist",
+        "evidence": "The procedure_rows/ordered_procedure is one seven-step washer-maintenance session whose numbered order must be preserved."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "live-live-ifixit-washer-01",
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist"
+      }
+    },
+    {
+      "bundleId": "bundle-live-kr-stibee-01",
+      "fixtureId": "live-kr-stibee-01",
+      "title": "인플루언서 콘텐츠 2차 활용 체크포인트",
+      "agentA": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist",
+        "evidence": "The four unscheduled rights and privacy checks form one bounded omission-sensitive clearance set for secondary content use."
+      },
+      "agentB": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "checklist",
+        "evidence": "The four decision_criteria Items are omission-sensitive rights and privacy checks for one content-reuse decision."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "live-kr-stibee-01",
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "sheet"
+      }
+    },
+    {
+      "bundleId": "bundle-live-live-mdn-core-01",
+      "fixtureId": "live-live-mdn-core-01",
+      "title": "MDN Core learning modules",
+      "agentA": {
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "sheet",
+        "evidence": "The nine unscheduled MDN module rows need a curriculum-wide progress overview, with each module executed as an individual learning Todo."
+      },
+      "agentB": {
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "sheet",
+        "evidence": "The nine lesson_rows/progress_tracking modules require a curriculum overview, with each undated module available as a next study action."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "live-live-mdn-core-01",
+        "checklistTodoLabel": "todo",
+        "primaryProjection": "sheet"
+      }
+    },
+    {
+      "bundleId": "bundle-live-live-dyson-filter-01",
+      "fixtureId": "live-live-dyson-filter-01",
+      "title": "Dyson cordless vacuum filter care",
+      "agentA": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "calendar",
+        "evidence": "The five ordered filter-care actions share a source-defined monthly recurrence and a first-execution anchor that truly places the maintenance session."
+      },
+      "agentB": {
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "calendar",
+        "evidence": "A required first-execution date anchors the five ordered filter-care steps to a source-defined monthly recurrence."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "live-live-dyson-filter-01",
+        "checklistTodoLabel": "checklist",
+        "primaryProjection": "calendar"
+      }
+    },
+    {
+      "bundleId": "bundle-live-live-jotform-event-intake-01",
+      "fixtureId": "live-live-jotform-event-intake-01",
+      "title": "Event Registration Intake Form",
+      "agentA": {
+        "checklistTodoLabel": "neither",
+        "primaryProjection": "sheet",
+        "evidence": "The intake template contains eleven typed registration Fields but no Items, Steps, or schedules, so it is structured row data rather than a checklist or Todo queue."
+      },
+      "agentB": {
+        "checklistTodoLabel": "neither",
+        "primaryProjection": "sheet",
+        "evidence": "The template_fields/progress_tracking fixture contains eleven typed intake Fields but no independently completable Items or schedules."
+      },
+      "agreement": {
+        "checklistTodo": true,
+        "primaryProjection": true,
+        "exact": true
+      },
+      "finalAdjudication": {
+        "fixtureId": "live-live-jotform-event-intake-01",
+        "checklistTodoLabel": "neither",
+        "primaryProjection": "sheet"
+      }
+    }
+  ]
+}

@@ -1,0 +1,3442 @@
+{
+  "schemaVersion": "flowme-candidate-master-ledger-v1",
+  "generatedAt": "2026-07-28T23:59:00+09:00",
+  "claimBoundary": "후보 계보와 구조 fixture 포함 여부를 나타낸다. 공개 자격 또는 사용자 수요 점수가 아니다.",
+  "controlledCorpusStatuses": [
+    "converted",
+    "candidate_only",
+    "source_missing",
+    "duplicate",
+    "structurally_redundant"
+  ],
+  "counts": {
+    "rawReferences": 116,
+    "deduplicatedCandidates": 114,
+    "completeFixtures": 42,
+    "candidateOnly": 56,
+    "duplicate": 8,
+    "structurallyRedundant": 0
+  },
+  "records": [
+    {
+      "ledgerId": "ledger-87be47b7909d",
+      "canonicalUrl": "https://www.50plus.or.kr/appView.do?ANN_NO=1540",
+      "title": "2026 교육·일자리 지원 공고 예시",
+      "candidateIds": [
+        "KR-50PLUS-01"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json#/candidates/10"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:84a17a06b2287f9b31e2670e90cb14d2a4c6d8cfaa18d03158a2dd6f9bd2f105"
+      ],
+      "stableContentId": "ledger-87be47b7909d",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-132db909ad1e",
+      "canonicalUrl": "https://mediahub.seoul.go.kr/archives/2018516",
+      "title": "2026 서울시민대학 여름 계절학기",
+      "candidateIds": [
+        "NEW-SEOUL-LEARNING-2026"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-candidate-ledger-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-candidate-ledger-v1.json#/freshCandidates/10"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:cdcbad65c33dd59ec5fb2b9e8f2ce04cf819dc5d43ae22e1d0d681ac53a9c512"
+      ],
+      "stableContentId": "ledger-132db909ad1e",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-9f2d38d12449",
+      "canonicalUrl": "https://news.seoul.go.kr/welfare/archives/579652",
+      "title": "2026 여기저기 서울형 키즈카페",
+      "candidateIds": [
+        "NEW-SEOUL-KIDS-CAFE"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-candidate-ledger-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-candidate-ledger-v1.json#/freshCandidates/15"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:cdcbad65c33dd59ec5fb2b9e8f2ce04cf819dc5d43ae22e1d0d681ac53a9c512"
+      ],
+      "stableContentId": "ledger-9f2d38d12449",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-7375d8d8047a",
+      "canonicalUrl": "https://www.easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=3&cciNo=1&cnpClsNo=1&csmSeq=666&popMenu=ov",
+      "title": "2026 이사 체크리스트",
+      "candidateIds": [
+        "KR-EASYLAW-01",
+        "R01",
+        "INT-MOVING-USED"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json",
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate",
+        "ready_for_internal_canary"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "oq-oq-c01-moving",
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json#/candidates/5",
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json#/records/20",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/17"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:84a17a06b2287f9b31e2670e90cb14d2a4c6d8cfaa18d03158a2dd6f9bd2f105",
+        "sha256:553f693135afabf8af244e70ae67f2293c81bc487d9cdd56bea6ecc977aac47b",
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "oq-oq-c01-moving",
+      "duplicateLineage": true,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:5ce963e322c447f6e771fdf21b58834e3e8e2f1672a0997a198ce5d29b40ef84"
+      ],
+      "sourceRowsSha256": "sha256:06b0c414e38e0beda9c57bd358c413047014ad807a8519d42ae839117741a35b"
+    },
+    {
+      "ledgerId": "ledger-95ec57d3fb0c",
+      "canonicalUrl": "https://m.bokjiro.go.kr/ssis-tem/cms/mob/customer/notice/1309680_1155.html",
+      "title": "2026 청년내일저축계좌",
+      "candidateIds": [
+        "NEW-BOKJIRO-SAVINGS"
+      ],
+      "sourceArtifacts": [
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/38"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "ledger-95ec57d3fb0c",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-b2a6489e53b1",
+      "canonicalUrl": "https://www.kosaf.go.kr/ko/scholar.do?pg=scholarship05_04_01&ttab1=3",
+      "title": "2026년 2학기 국가근로장학금 신청",
+      "candidateIds": [
+        "NEW-KOSAF-WORK"
+      ],
+      "sourceArtifacts": [
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "value-vq-11",
+      "evidenceRefs": [
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/10"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "value-vq-11",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:1829c74db299b9dcbf95aa272e2b4d054c8edbe8b2947b2d69270c7e0b54fb61"
+      ],
+      "sourceRowsSha256": "sha256:45d5f1a23d72ade696a941159da0a39d8c5d1d7b5bb369fb561a6574fc020355"
+    },
+    {
+      "ledgerId": "ledger-dc55b14fef61",
+      "canonicalUrl": "https://www.nongsaro.go.kr/portal/ps/psz/psza/contentSub.ps?bbsId=10&cntntsNo=51&menuId=PS02485&nttSeCode=&pageIndex=1&pageSize=10&searchText=&searchType=title",
+      "title": "2026년 농업인 온열질환 예방가이드 및 체크리스트",
+      "candidateIds": [
+        "KR-NONGSARO-01"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "oq-oq-b01-heat",
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json#/candidates/26"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:84a17a06b2287f9b31e2670e90cb14d2a4c6d8cfaa18d03158a2dd6f9bd2f105"
+      ],
+      "stableContentId": "oq-oq-b01-heat",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:a71bac65bf5fdde9663116468eb1519ce8f7f20e756c0e219970b6517a4bd578"
+      ],
+      "sourceRowsSha256": "sha256:543edf3fb78530531fff61324cb445376cfa8709efb87cbee047f509b3926247"
+    },
+    {
+      "ledgerId": "ledger-c3e2a51794bd",
+      "canonicalUrl": "https://www.runday.co.kr/",
+      "title": "5km 달리기 4주",
+      "candidateIds": [
+        "C15"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json"
+      ],
+      "observedStatuses": [
+        "source_and_health_review_required"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json#/records/14"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:553f693135afabf8af244e70ae67f2293c81bc487d9cdd56bea6ecc977aac47b"
+      ],
+      "stableContentId": "ledger-c3e2a51794bd",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-727f02955c8a",
+      "canonicalUrl": "https://kr.trip.com/guide/info/%EA%B5%AD%EB%82%B4+%EC%97%AC%ED%96%89+%EC%A4%80%EB%B9%84%EB%AC%BC.html",
+      "title": "가족여행 짐 준비표",
+      "candidateIds": [
+        "C10"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json"
+      ],
+      "observedStatuses": [
+        "ready_second_wave"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json#/records/9"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:553f693135afabf8af244e70ae67f2293c81bc487d9cdd56bea6ecc977aac47b"
+      ],
+      "stableContentId": "ledger-727f02955c8a",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-db243250d14e",
+      "canonicalUrl": "https://kr.trip.com/guide/info/%EA%B5%AD%EB%82%B4%2B%EC%97%AC%ED%96%89%2B%EC%A4%80%EB%B9%84%EB%AC%BC.html",
+      "title": "가족여행 짐 준비표",
+      "candidateIds": [
+        "live-c10"
+      ],
+      "sourceArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/reverified-source-packets-v1.json"
+      ],
+      "evidenceRefs": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/reverified-source-packets-v1.json#/completePackets/C10"
+      ],
+      "observedStatuses": [
+        "complete_structure_fixture"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "live-c10",
+      "sourceArtifactHashes": [
+        "sha256:2cbc7ada6dc8302c7b01ec3b1d98583a7ffb12ac8c8cbc1a764590619dbd8010"
+      ],
+      "stableContentId": "live-c10",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:0ca468a9085a8a941b584384763d1560cacd68e75db0c3eac885e253c8a8ae22"
+      ],
+      "sourceRowsSha256": "sha256:016a6e4580736a6b0fd88e6c23dee97eef3bfd64f233d853e987b569c89e865b"
+    },
+    {
+      "ledgerId": "ledger-3a45c6a7028c",
+      "canonicalUrl": "https://velog.io/@vonvoyage27/%ED%9A%A8%EC%9C%A8%EC%A0%81%EC%9C%BC%EB%A1%9C-IT-%EA%B0%9C%EB%B0%9C%EC%9E%90%EB%A1%9C-%EC%B7%A8%EC%97%85-%EC%A4%80%EB%B9%84%ED%95%98%EA%B8%B0-%ED%8F%AC%ED%8A%B8%ED%8F%B4%EB%A6%AC%EC%98%A4-%ED%8E%B8",
+      "title": "개발 포트폴리오 4주",
+      "candidateIds": [
+        "R03"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json"
+      ],
+      "observedStatuses": [
+        "rights_review_required"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "oq-oq-p04-portfolio",
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json#/records/22"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:553f693135afabf8af244e70ae67f2293c81bc487d9cdd56bea6ecc977aac47b"
+      ],
+      "stableContentId": "oq-oq-p04-portfolio",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:c7f0a865cabe1714819d728120eea2ed2c4cf7ce9c15c8b565858ceb92743662"
+      ],
+      "sourceRowsSha256": "sha256:b4b1840e009b609a511988d7414e6b7d4223f7066f44251ecf002848e01613c5"
+    },
+    {
+      "ledgerId": "ledger-3c40141db50b",
+      "canonicalUrl": null,
+      "title": "공간·기간별 집 관리 루틴",
+      "candidateIds": [
+        "opp-home-routine"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-28-vertical-execution-service-benchmark-v1.json"
+      ],
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-28-vertical-execution-service-benchmark-v1.json#/contentDiscoveryOpportunities/opp-home-routine"
+      ],
+      "observedStatuses": [
+        "go"
+      ],
+      "corpusRole": "future_content_opportunity",
+      "fixtureId": null,
+      "requiredSourceRows": [
+        "공간",
+        "작업 제목",
+        "권장 주기 또는 원문 순서",
+        "원문 링크"
+      ],
+      "futureContractOnly": true,
+      "sourceArtifactHashes": [
+        "sha256:c8e5f1e75316d2324dcd592907ce0cd224600b1f26500394e04f25f9e6a61f22"
+      ],
+      "stableContentId": "ledger-3c40141db50b",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "source_missing"
+    },
+    {
+      "ledgerId": "ledger-ddb5a85bcc3d",
+      "canonicalUrl": "https://info.childcare.go.kr/info/pnis/search/PnisFileDownload.jsp?STCODE_POP=41480000016&filetype=YUPLOADU&flag=DNGB&schoolyear=2026&wkyear=202604",
+      "title": "공룡 발자국 미술 놀이",
+      "candidateIds": [
+        "C03"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json"
+      ],
+      "observedStatuses": [
+        "source_import_required"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json#/records/2"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:553f693135afabf8af244e70ae67f2293c81bc487d9cdd56bea6ecc977aac47b"
+      ],
+      "stableContentId": "ledger-ddb5a85bcc3d",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-410efce61f52",
+      "canonicalUrl": "https://korean.visitkorea.or.kr/detail/rem_detail.do?cotid=c46eff3a-4213-42df-8640-5369238dc50c",
+      "title": "공주 부모님과 당일치기 힐링 여행코스",
+      "candidateIds": [
+        "KR-VISITKOREA-01",
+        "C11",
+        "INT-VISITKOREA"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json",
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate",
+        "rights_restricted_no_derivatives"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "deep-ds08",
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json#/candidates/8",
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json#/records/10",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/19"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:84a17a06b2287f9b31e2670e90cb14d2a4c6d8cfaa18d03158a2dd6f9bd2f105",
+        "sha256:553f693135afabf8af244e70ae67f2293c81bc487d9cdd56bea6ecc977aac47b",
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "deep-ds08",
+      "duplicateLineage": true,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:31981bd88496d4c54fafc6b2e05b645050538e3a17c2aa5b1508e1f84f81642c"
+      ],
+      "sourceRowsSha256": "sha256:f2edc4e2b67e6fa9ea0b2174dbb49815e62a343d5fe31e596c9967ae5d889c00"
+    },
+    {
+      "ledgerId": "ledger-500db477e4d2",
+      "canonicalUrl": "https://nfa.kspo.or.kr/reserve/selectMeasureUseGuide.kspo",
+      "title": "국민체력100 측정·상담·운동관리 절차",
+      "candidateIds": [
+        "KR-FIT100-01",
+        "INT-FIT100"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "oq-oq-c07-fit100",
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json#/candidates/7",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/18"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:84a17a06b2287f9b31e2670e90cb14d2a4c6d8cfaa18d03158a2dd6f9bd2f105",
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "oq-oq-c07-fit100",
+      "duplicateLineage": true,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:ba4e74618c5cb621fda069aa9f5f13fb7bcab74eb62f4217d232e35795d4ff32"
+      ],
+      "sourceRowsSha256": "sha256:a2cfbd89520a0b755ec8f8c3f2c1697abc4fe4d0e15afa29e14c631f8322d420"
+    },
+    {
+      "ledgerId": "ledger-934e0f35306f",
+      "canonicalUrl": "https://image.aladdin.co.kr/img/files/150922_workbook/%EC%9C%A0%EC%95%84/16%20%ED%86%A0%ED%86%A0%EB%B6%81_%EB%8F%85%EC%88%98%EB%A6%AC%EC%99%80%20%EA%B5%B4%EB%9A%9D%EC%83%88.pdf",
+      "title": "그림책 질문 한 가지",
+      "candidateIds": [
+        "C04"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json"
+      ],
+      "observedStatuses": [
+        "source_import_required"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json#/records/3"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:553f693135afabf8af244e70ae67f2293c81bc487d9cdd56bea6ecc977aac47b"
+      ],
+      "stableContentId": "ledger-934e0f35306f",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-be3fe905a2d9",
+      "canonicalUrl": null,
+      "title": "기간형 운동 프로그램 실행표",
+      "candidateIds": [
+        "opp-training-program"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-28-vertical-execution-service-benchmark-v1.json"
+      ],
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-28-vertical-execution-service-benchmark-v1.json#/contentDiscoveryOpportunities/opp-training-program"
+      ],
+      "observedStatuses": [
+        "go"
+      ],
+      "corpusRole": "future_content_opportunity",
+      "fixtureId": null,
+      "requiredSourceRows": [
+        "주차/회차",
+        "운동 제목",
+        "원문 URL",
+        "원문에 명시된 휴식·범위"
+      ],
+      "futureContractOnly": true,
+      "sourceArtifactHashes": [
+        "sha256:c8e5f1e75316d2324dcd592907ce0cd224600b1f26500394e04f25f9e6a61f22"
+      ],
+      "stableContentId": "ledger-be3fe905a2d9",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "source_missing"
+    },
+    {
+      "ledgerId": "ledger-8cee3e4a2282",
+      "canonicalUrl": "https://touredu.visitkorea.or.kr/common/C202300286/0000/0",
+      "title": "기업 인센티브 관광 패키지 과정",
+      "candidateIds": [
+        "NEW-KTO-INCENTIVE-COURSE"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-candidate-ledger-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-candidate-ledger-v1.json#/freshCandidates/11"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:cdcbad65c33dd59ec5fb2b9e8f2ce04cf819dc5d43ae22e1d0d681ac53a9c512"
+      ],
+      "stableContentId": "ledger-8cee3e4a2282",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-1da6eeb720c3",
+      "canonicalUrl": "https://smilellama.tistory.com/entry/%EC%9B%94-10%EB%A7%8C-%EC%9B%90-%EC%8B%9D%EB%B9%84-%EC%A0%88%EC%95%BD-%EC%A0%9C%EA%B0%80-%EC%84%B1%EA%B3%B5%ED%95%9C-%EB%83%89%EC%9E%A5%EA%B3%A0-%ED%8C%8C%EB%A8%B9%EA%B8%B0-7%EC%9D%BC-%EC%8B%9D%EB%8B%A8-%ED%94%8C%EB%9E%9C-%EC%95%8C%EB%9C%B0-%EC%9E%A5%EB%B3%B4%EA%B8%B0-%ED%8C%81-%ED%8F%AC%ED%95%A8",
+      "title": "냉장고 파먹기 7일",
+      "candidateIds": [
+        "R02"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json"
+      ],
+      "observedStatuses": [
+        "rights_review_required"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "live-r02",
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json#/records/21"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:553f693135afabf8af244e70ae67f2293c81bc487d9cdd56bea6ecc977aac47b"
+      ],
+      "stableContentId": "live-r02",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:a8425d7f05b5157f0085971c4cc7b57c8142db8486cc989049e2a108a195f338"
+      ],
+      "sourceRowsSha256": "sha256:6ec4e47394c900a7cf5ff16a7c4d26bcb6510f6b77b5e9d4cacdc8dedf64accb"
+    },
+    {
+      "ledgerId": "ledger-c4e15fbfa02d",
+      "canonicalUrl": "https://ohou.se/advices/8086",
+      "title": "냉장고 파먹기 주간식단",
+      "candidateIds": [
+        "NEW-OHOUSE-FRIDGE"
+      ],
+      "sourceArtifacts": [
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/34"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "ledger-c4e15fbfa02d",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-7e980e0217dd",
+      "canonicalUrl": null,
+      "title": "대상별 반복 관리 루틴",
+      "candidateIds": [
+        "opp-care-routine"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-28-vertical-execution-service-benchmark-v1.json"
+      ],
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-28-vertical-execution-service-benchmark-v1.json#/contentDiscoveryOpportunities/opp-care-routine"
+      ],
+      "observedStatuses": [
+        "go"
+      ],
+      "corpusRole": "future_content_opportunity",
+      "fixtureId": null,
+      "requiredSourceRows": [
+        "대상",
+        "관리/훈련 행동",
+        "원문 주기·순서",
+        "원문 링크"
+      ],
+      "futureContractOnly": true,
+      "sourceArtifactHashes": [
+        "sha256:c8e5f1e75316d2324dcd592907ce0cd224600b1f26500394e04f25f9e6a61f22"
+      ],
+      "stableContentId": "ledger-7e980e0217dd",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "source_missing"
+    },
+    {
+      "ledgerId": "ledger-03676ff0c5c2",
+      "canonicalUrl": null,
+      "title": "레시피 묶음에서 식단·장보기·오늘 조리로",
+      "candidateIds": [
+        "opp-meal-plan"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-28-vertical-execution-service-benchmark-v1.json"
+      ],
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-28-vertical-execution-service-benchmark-v1.json#/contentDiscoveryOpportunities/opp-meal-plan"
+      ],
+      "observedStatuses": [
+        "partner"
+      ],
+      "corpusRole": "future_content_opportunity",
+      "fixtureId": null,
+      "requiredSourceRows": [
+        "식사/날짜",
+        "레시피 제목",
+        "원문 URL",
+        "원문 재료 묶음"
+      ],
+      "futureContractOnly": true,
+      "sourceArtifactHashes": [
+        "sha256:c8e5f1e75316d2324dcd592907ce0cd224600b1f26500394e04f25f9e6a61f22"
+      ],
+      "stableContentId": "ledger-03676ff0c5c2",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "source_missing"
+    },
+    {
+      "ledgerId": "ledger-2301918ae681",
+      "canonicalUrl": "https://ohou.se/advices/1972",
+      "title": "리모델링 계약서 체크리스트 10",
+      "candidateIds": [
+        "KR-OHOUSE-02",
+        "C02",
+        "INT-OHOUSE-CONTRACT"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json",
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate",
+        "rights_and_legal_review_required"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "oq-oq-b03-remodel",
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json#/candidates/1",
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json#/records/1",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/13"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:84a17a06b2287f9b31e2670e90cb14d2a4c6d8cfaa18d03158a2dd6f9bd2f105",
+        "sha256:553f693135afabf8af244e70ae67f2293c81bc487d9cdd56bea6ecc977aac47b",
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "oq-oq-b03-remodel",
+      "duplicateLineage": true,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:3c11083c373ccaae78f1bac98b72c48157ccf57a5cf9c871ca368f18253058e8"
+      ],
+      "sourceRowsSha256": "sha256:f4da242dbda1b916bed38489426e1c5f135b23a0005f3ae9fa13bcda3446495f"
+    },
+    {
+      "ledgerId": "ledger-4b38a0c561f5",
+      "canonicalUrl": "https://ohou.se/advices/2327",
+      "title": "리모델링 공정별 하자 점검",
+      "candidateIds": [
+        "NEW-OHOUSE-DEFECT"
+      ],
+      "sourceArtifacts": [
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "value-vq-10",
+      "evidenceRefs": [
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/9"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "value-vq-10",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:72122791177016809423d1015afa9f99f9f5495dbe5b0e10495d5aa2e5d993aa"
+      ],
+      "sourceRowsSha256": "sha256:496218470328274e85c5ca865df3c0edf180a502306f146adc2e29dca17fb1ac"
+    },
+    {
+      "ledgerId": "ledger-db2e3e982efd",
+      "canonicalUrl": "https://www.10000recipe.com/company/intro.html",
+      "title": "만개의레시피 데이터·API 공급 제공자",
+      "candidateIds": [
+        "KR-10000RECIPE-01",
+        "INT-10000-PROVIDER"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json#/candidates/11",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/21"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:84a17a06b2287f9b31e2670e90cb14d2a4c6d8cfaa18d03158a2dd6f9bd2f105",
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "ledger-db2e3e982efd",
+      "duplicateLineage": true,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-e60f01c6dd60",
+      "canonicalUrl": "https://www.incheon.go.kr/IC010101/view?cntPerPage=&curPage=311&nttNo=2041827&srchKey=srchSj&srchSiteRealmCode=&srchWord=",
+      "title": "반려동물 가족 재난 대응 준비",
+      "candidateIds": [
+        "NEW-INCHEON-PET"
+      ],
+      "sourceArtifacts": [
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "value-vq-12",
+      "evidenceRefs": [
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/11"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "value-vq-12",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:1ad3731652c2d7b18965c5fa1c274c17f544f481200b497803873e0a2ae0d940"
+      ],
+      "sourceRowsSha256": "sha256:c563f1b487aad009c43f4d21980af2ba091c3d52ebe743649b0b5664240f4d21"
+    },
+    {
+      "ledgerId": "ledger-3e8634391ebb",
+      "canonicalUrl": "https://brunch.co.kr/@skychang44/346",
+      "title": "블로그 글을 영상으로 옮기기",
+      "candidateIds": [
+        "C16"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json"
+      ],
+      "observedStatuses": [
+        "rights_review_required"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "live-c16",
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json#/records/15"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:553f693135afabf8af244e70ae67f2293c81bc487d9cdd56bea6ecc977aac47b"
+      ],
+      "stableContentId": "live-c16",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:66d2d524baea1971fa7b037b8cf8bd448597f8fddbb078b064230a59e9b15cdc"
+      ],
+      "sourceRowsSha256": "sha256:c29390c5fa6aa7083c842a01ba564b79c412358113725db30278e9943603512e"
+    },
+    {
+      "ledgerId": "ledger-4a7e85b9f17e",
+      "canonicalUrl": "https://www.ifixit.com/Guide/How+to+Fix+a+Leaking+Garden+Hose+Connector/189188",
+      "title": "새는 정원 호스 연결부 교체",
+      "candidateIds": [
+        "NEW-IFIXIT-HOSE"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-candidate-ledger-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-candidate-ledger-v1.json#/freshCandidates/8"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:cdcbad65c33dd59ec5fb2b9e8f2ce04cf819dc5d43ae22e1d0d681ac53a9c512"
+      ],
+      "stableContentId": "ledger-4a7e85b9f17e",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-21a17c7a966d",
+      "canonicalUrl": "https://opentutorials.org/course/3084",
+      "title": "생활코딩 WEB1",
+      "candidateIds": [
+        "NEW-WEB1"
+      ],
+      "sourceArtifacts": [
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "base-opentutorials-web1-progress",
+      "evidenceRefs": [
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/8"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "base-opentutorials-web1-progress",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:3291eda0f7e3e15c199920b18e7f275a61e75da30b7c9c6a7223a0810ca4a0da"
+      ],
+      "sourceRowsSha256": "sha256:651e5e5628ae67ad213c8f73fe1724c8a68ba0d1b0cd83a7a92ceb8886a1e39c"
+    },
+    {
+      "ledgerId": "ledger-9aeda2d80e14",
+      "canonicalUrl": "https://www.seoulchildrensmuseum.org/download.do?fn=%EC%82%AC%EC%A0%84%EB%8B%A8%EC%B2%B4%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8%2819.10%29.pdf&fnR=%2Ff00_files%2F20191003112143_492.pdf",
+      "title": "서울상상나라 인솔교사 사전 단체 체크리스트",
+      "candidateIds": [
+        "NEW-SEOUL-MUSEUM-GROUP"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-candidate-ledger-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-candidate-ledger-v1.json#/freshCandidates/4"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:cdcbad65c33dd59ec5fb2b9e8f2ce04cf819dc5d43ae22e1d0d681ac53a9c512"
+      ],
+      "stableContentId": "ledger-9aeda2d80e14",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-b848c01eb56b",
+      "canonicalUrl": "https://opengov.seoul.go.kr/og/com/download.php?dname=%EC%98%88%EB%B9%84%EB%B6%80%EB%B6%80+%EC%8A%A4%C2%B7%EB%93%9C%C2%B7%EB%A9%94+%EC%B6%94%EA%B0%80%EA%B8%88+%ED%8F%AD%ED%83%84%E2%80%A6+%EC%84%9C%EC%9A%B8%EC%8B%9C+%EA%B2%B0%ED%98%BC+%EC%A4%80%EB%B9%84+%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8+%EC%A0%9C%EC%9E%91.pdf&dtype=basic&nid=31208121&rid=F0000105564892",
+      "title": "서울시 결혼 준비 체크리스트 110선",
+      "candidateIds": [
+        "NEW-SEOUL-WEDDING-110"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-candidate-ledger-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-candidate-ledger-v1.json#/freshCandidates/2"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:cdcbad65c33dd59ec5fb2b9e8f2ce04cf819dc5d43ae22e1d0d681ac53a9c512"
+      ],
+      "stableContentId": "ledger-b848c01eb56b",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-c6849ab902d5",
+      "canonicalUrl": "https://news.seoul.go.kr/welfare/dsbus/ko/conts/view.do?menuId=K_USAGE_INFO",
+      "title": "서울시 장애인 버스요금 지원 신청",
+      "candidateIds": [
+        "NEW-SEOUL-BUS-FARE"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-candidate-ledger-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-candidate-ledger-v1.json#/freshCandidates/13"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:cdcbad65c33dd59ec5fb2b9e8f2ce04cf819dc5d43ae22e1d0d681ac53a9c512"
+      ],
+      "stableContentId": "ledger-c6849ab902d5",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-b7fb764b6ee9",
+      "canonicalUrl": "https://www.ifixit.com/Guide/How+To+Maintain+Your+Washing+Machine/182518",
+      "title": "세탁기 정기 관리 7단계",
+      "candidateIds": [
+        "NEW-IFIXIT-WASHER"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-candidate-ledger-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "live-live-ifixit-washer-01",
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-candidate-ledger-v1.json#/freshCandidates/7"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:cdcbad65c33dd59ec5fb2b9e8f2ce04cf819dc5d43ae22e1d0d681ac53a9c512"
+      ],
+      "stableContentId": "live-live-ifixit-washer-01",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:37f98431e9994bfc885502501fdcd6d419cc7f7f07a92093e5d0ea6ec4f24b4f"
+      ],
+      "sourceRowsSha256": "sha256:760d98617f0bd9b27938a4b33abe2784f0826a8173e89572e73774eccc9928e5"
+    },
+    {
+      "ledgerId": "ledger-a8bfd96b0315",
+      "canonicalUrl": "https://help.soomgo.com/hc/ko/articles/44174824912793-%EC%88%A8%EA%B3%A0%EC%9D%98-%EC%83%88%EB%A1%9C%EC%9A%B4-%EB%B3%80%ED%99%94-%EC%9D%B4%EB%A0%87%EA%B2%8C-%EC%8B%9C%EC%9E%91%ED%95%A9%EB%8B%88%EB%8B%A4",
+      "title": "숨고 전문가 공급망",
+      "candidateIds": [
+        "KR-SOOMGO-01"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json#/candidates/14"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:84a17a06b2287f9b31e2670e90cb14d2a4c6d8cfaa18d03158a2dd6f9bd2f105"
+      ],
+      "stableContentId": "ledger-a8bfd96b0315",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-31f1643bed19",
+      "canonicalUrl": "https://help.soomgo.com/hc/ko/articles/44174824912793",
+      "title": "숨고 전문가 공급망",
+      "candidateIds": [
+        "INT-SOOMGO"
+      ],
+      "sourceArtifacts": [
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/29"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "ledger-31f1643bed19",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-6f9673f0e0f4",
+      "canonicalUrl": "https://ohou.se/advices/9345",
+      "title": "스크랩 1000 이상! 삶의질을 높여줄 신박 수납팁 5",
+      "candidateIds": [
+        "KR-OHOUSE-01",
+        "INT-OHOUSE-STORAGE"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json#/candidates/0",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/12"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:84a17a06b2287f9b31e2670e90cb14d2a4c6d8cfaa18d03158a2dd6f9bd2f105",
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "ledger-6f9673f0e0f4",
+      "duplicateLineage": true,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-69656376cdb2",
+      "canonicalUrl": "https://www.samsungsvc.co.kr/video/28612",
+      "title": "시스템 에어컨 세척 서비스 안내",
+      "candidateIds": [
+        "KR-SAMSUNGSVC-01"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "oq-oq-c08-ac-decision",
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json#/candidates/27"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:84a17a06b2287f9b31e2670e90cb14d2a4c6d8cfaa18d03158a2dd6f9bd2f105"
+      ],
+      "stableContentId": "oq-oq-c08-ac-decision",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:ce5b61d99f909f491a6f1e02f9f422677e377370999ccb0e4b1936922c10386b"
+      ],
+      "sourceRowsSha256": "sha256:0f6b8dcfc96fe6cdcbbe526f8df33de3b1d8a544d389d994a7499ff0e0523ea3"
+    },
+    {
+      "ledgerId": "ledger-11f637cbd8fe",
+      "canonicalUrl": "https://www.kca.go.kr/home/sub.do?menukey=4002&mode=view&no=1003995520",
+      "title": "식물성 음료 품질비교 결과",
+      "candidateIds": [
+        "KR-KCA-01",
+        "INT-KCA"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "value-vq-06",
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json#/candidates/24",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/5"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:84a17a06b2287f9b31e2670e90cb14d2a4c6d8cfaa18d03158a2dd6f9bd2f105",
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "value-vq-06",
+      "duplicateLineage": true,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:ec6e6153cf29dd9d79097785bb1eea51bbc3485578ac3c17132ae45c887ea23b"
+      ],
+      "sourceRowsSha256": "sha256:08392e5d2b7d3948e9553c3ac20fa8435e45bd5e21070b2a2288f407ced6e315"
+    },
+    {
+      "ledgerId": "ledger-6d804e4a34f7",
+      "canonicalUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "title": "신차 구매 8단계",
+      "candidateIds": [
+        "base-new-car-comparison"
+      ],
+      "sourceArtifacts": [
+        "docs/specs/2026-07-28-flow-item-map-architecture-qualified-corpus-revalidation-v2/qualified-corpus-fixture-v2.json"
+      ],
+      "evidenceRefs": [
+        "docs/specs/2026-07-28-flow-item-map-architecture-qualified-corpus-revalidation-v2/qualified-corpus-fixture-v2.json#/bundles/4"
+      ],
+      "observedStatuses": [
+        "complete_structure_fixture"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "base-new-car-comparison",
+      "sourceArtifactHashes": [
+        "sha256:338648484e18c558ecb7c61a2e3002689c54af89ff55b5de6bcb2718a2778260"
+      ],
+      "stableContentId": "base-new-car-comparison",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:541bcb749c04df98d781b10ed9dc284f5372b3cc0fc85c2f477187dd7f088104"
+      ],
+      "sourceRowsSha256": "sha256:22d9b99eb8f3effc44894909b3d62bd6dae8504dd5ed0ef9c88da8f1c1a1d7ad"
+    },
+    {
+      "ledgerId": "ledger-dfe5ac4e03cd",
+      "canonicalUrl": "https://blog.naver.com/PostView.naver?blogId=makeitdiy&logNo=223260911491",
+      "title": "아이 도안 스퀴시 만들기",
+      "candidateIds": [
+        "C07"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json"
+      ],
+      "observedStatuses": [
+        "rights_review_required"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json#/records/6"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:553f693135afabf8af244e70ae67f2293c81bc487d9cdd56bea6ecc977aac47b"
+      ],
+      "stableContentId": "ledger-dfe5ac4e03cd",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-4de87428f827",
+      "canonicalUrl": "https://maily.so/notioninside/posts/92zew6vnzep",
+      "title": "아이디어가 자라면 프로젝트가 된다? 자동화 시스템의 힘",
+      "candidateIds": [
+        "KR-MAILY-01",
+        "INT-MAILY-GATED"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json#/candidates/2",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/14"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:84a17a06b2287f9b31e2670e90cb14d2a4c6d8cfaa18d03158a2dd6f9bd2f105",
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "ledger-4de87428f827",
+      "duplicateLineage": true,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-75a3f42c090b",
+      "canonicalUrl": "https://www.bokjiro.go.kr/ssis-tbu/twataa/wlfareInfo/moveTWAT52011M.do?wlfareInfoId=WLF00003250&wlfareInfoReldBztpCd=01",
+      "title": "어린이집 보육료 지원 신청",
+      "candidateIds": [
+        "C05",
+        "INT-C05"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "ready_second_wave",
+        "candidate"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "value-vq-01",
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json#/records/4",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/0"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:553f693135afabf8af244e70ae67f2293c81bc487d9cdd56bea6ecc977aac47b",
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "value-vq-01",
+      "duplicateLineage": true,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:af575b7252dcaefd4e994b06e3715ac5b07f9de33b1607f40638c3caa55173b5"
+      ],
+      "sourceRowsSha256": "sha256:87492ef0823436d9921553cb8ebcb10a3673b5458dfee93c194879124311ac0d"
+    },
+    {
+      "ledgerId": "ledger-ec152cdfd302",
+      "canonicalUrl": "https://www.passport.go.kr/home/kor/contents.do?menuPos=7",
+      "title": "여권 재발급 준비",
+      "candidateIds": [
+        "O01"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json"
+      ],
+      "observedStatuses": [
+        "ready_second_wave"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "oq-oq-c04-passport",
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json#/records/16"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:553f693135afabf8af244e70ae67f2293c81bc487d9cdd56bea6ecc977aac47b"
+      ],
+      "stableContentId": "oq-oq-c04-passport",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:97133975887607715ac9be4763f920df8f5019fc5c675e57ad8154a38c095695"
+      ],
+      "sourceRowsSha256": "sha256:822d870fced7b046403a6c17bca1f28874f6083fd4e94a7a105808e9a46f0d40"
+    },
+    {
+      "ledgerId": "ledger-709726298909",
+      "canonicalUrl": "https://maily.so/honjokking/posts/p1do13plzx6",
+      "title": "여러분의 청소 생활, 안녕한가요?",
+      "candidateIds": [
+        "KR-MAILY-02",
+        "INT-MAILY-CLEAN"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json#/candidates/3",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/15"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:84a17a06b2287f9b31e2670e90cb14d2a4c6d8cfaa18d03158a2dd6f9bd2f105",
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "ledger-709726298909",
+      "duplicateLineage": true,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-db9b770a84e9",
+      "canonicalUrl": "https://www.kkday.com/ko/blog/35618/world-overseatravel-checklist",
+      "title": "여행 짐 준비표",
+      "candidateIds": [
+        "R04"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json"
+      ],
+      "observedStatuses": [
+        "ready_second_wave"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json#/records/23"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:553f693135afabf8af244e70ae67f2293c81bc487d9cdd56bea6ecc977aac47b"
+      ],
+      "stableContentId": "ledger-db9b770a84e9",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-a65374a08dea",
+      "canonicalUrl": "https://yeomi.travel/creator",
+      "title": "여행에미치다 크리에이터 네트워크",
+      "candidateIds": [
+        "KR-YEOMI-01"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json#/candidates/13"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:84a17a06b2287f9b31e2670e90cb14d2a4c6d8cfaa18d03158a2dd6f9bd2f105"
+      ],
+      "stableContentId": "ledger-a65374a08dea",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-02a99566ef63",
+      "canonicalUrl": "https://www.nhis.or.kr/nhis/healthin/wbhaca04800m01.do",
+      "title": "영유아 건강검진 일정",
+      "candidateIds": [
+        "C01"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json"
+      ],
+      "observedStatuses": [
+        "ready_for_internal_canary"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "live-c01",
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json#/records/0"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:553f693135afabf8af244e70ae67f2293c81bc487d9cdd56bea6ecc977aac47b"
+      ],
+      "stableContentId": "live-c01",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:0beaa9c2ec3d5fedf1497ed192d2f8a024d65dcdd214fa36cfce9ad03d90f2ac"
+      ],
+      "sourceRowsSha256": "sha256:f20931626cbda096cbd1bdc4ad3504df9be73db5fd758f26c84a72c1f5d8bf09"
+    },
+    {
+      "ledgerId": "ledger-2a3538d05ac2",
+      "canonicalUrl": "https://ohou.se/advices/9760",
+      "title": "오늘의집 사용자가 좋아하는 콘텐츠 가이드",
+      "candidateIds": [
+        "NEW-OHOUSE-CREATOR-GUIDE"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-candidate-ledger-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-candidate-ledger-v1.json#/freshCandidates/12"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:cdcbad65c33dd59ec5fb2b9e8f2ce04cf819dc5d43ae22e1d0d681ac53a9c512"
+      ],
+      "stableContentId": "ledger-2a3538d05ac2",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-81c357046158",
+      "canonicalUrl": "https://contents.ohou.se/advices/guides/self_interior",
+      "title": "오늘의집 셀프인테리어 가이드 묶음",
+      "candidateIds": [
+        "NEW-OHOUSE-MAP-01"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-candidate-ledger-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-candidate-ledger-v1.json#/freshCandidates/0"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:cdcbad65c33dd59ec5fb2b9e8f2ce04cf819dc5d43ae22e1d0d681ac53a9c512"
+      ],
+      "stableContentId": "ledger-81c357046158",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-673d05148f4a",
+      "canonicalUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "title": "오픽 모의고사 계획표",
+      "candidateIds": [
+        "base-opic-plan"
+      ],
+      "sourceArtifacts": [
+        "docs/specs/2026-07-28-flow-item-map-architecture-qualified-corpus-revalidation-v2/qualified-corpus-fixture-v2.json"
+      ],
+      "evidenceRefs": [
+        "docs/specs/2026-07-28-flow-item-map-architecture-qualified-corpus-revalidation-v2/qualified-corpus-fixture-v2.json#/bundles/2"
+      ],
+      "observedStatuses": [
+        "complete_structure_fixture"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "base-opic-plan",
+      "sourceArtifactHashes": [
+        "sha256:338648484e18c558ecb7c61a2e3002689c54af89ff55b5de6bcb2718a2778260"
+      ],
+      "stableContentId": "base-opic-plan",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:b12718d90ff5f7d536dcef34db5a9f667e9e2b506b93d0dc35629d432f6a13c1",
+        "sha256:6ca8e161acde48654839c84c7a870adea48e7a6ecf3b51cfd71d6692ffac467f",
+        "sha256:2b5f5dc4c77905b1c5a6446942155922426dba4e61215c95a481c14a3eea1f66",
+        "sha256:ead0a76c64c275628dd476f463cce3c9e2aba4ca9639df4e10a33cfa1a012c2c",
+        "sha256:371e80b1566ba2fd6323e773b014a5f8ad78fe7c05f56d213da7470b8ef52282",
+        "sha256:31dc80782190c339d64054232c44d438da2d9d3448758acf4ccc4b55c121e40a",
+        "sha256:49bd468f65adcb00c840458fd91ace6b8dab0fa9fe19a49094d54601c9358d18",
+        "sha256:7b6ad9f62658573560e2cb88617d4fcf66d1cadc36b1ee83e448dca082338b81",
+        "sha256:c6c01034a6e4e1d0c712327e60feb03cfb8dab5ff327948cb61074af649b2700",
+        "sha256:80239e0060790b4b0147bdcf1a15a2aac9d57145d4acd88252f3f70bffaf77e3",
+        "sha256:9c9cfe5604afc9b08ad3730897eedad21762705e28d8a7db11b1d1d2e40e6652"
+      ],
+      "sourceRowsSha256": "sha256:0bb32a3c93b89f42eed248df9ae4daf3c2e00235b6b1d65601ed81fa6fe67f9c"
+    },
+    {
+      "ledgerId": "ledger-5a1d2bd88289",
+      "canonicalUrl": "https://ohou.se/advices/7406",
+      "title": "옷장 정리 1일",
+      "candidateIds": [
+        "C14",
+        "INT-C14"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "rights_review_required",
+        "candidate"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "value-vq-04",
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json#/records/13",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/3"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:553f693135afabf8af244e70ae67f2293c81bc487d9cdd56bea6ecc977aac47b",
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "value-vq-04",
+      "duplicateLineage": true,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:02cfd82942f673c7e6a4d75bfbed60cc40aef54801395f6be9ae8ced680d1365"
+      ],
+      "sourceRowsSha256": "sha256:2ad8cded17773232bb02fa858ea047bf2ee5e1e56e1726b080384fa37de6d52c"
+    },
+    {
+      "ledgerId": "ledger-534d55931785",
+      "canonicalUrl": "https://wtable.co.kr/recipes/YVHyCaPf13UspJnCxQyBDroh",
+      "title": "우리의식탁 구조화 레시피 예시",
+      "candidateIds": [
+        "KR-WTABLE-01",
+        "INT-WTABLE"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json#/candidates/12",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/22"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:84a17a06b2287f9b31e2670e90cb14d2a4c6d8cfaa18d03158a2dd6f9bd2f105",
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "ledger-534d55931785",
+      "duplicateLineage": true,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-12a072c8ac3e",
+      "canonicalUrl": null,
+      "title": "월령·목표별 2주 놀이 루틴",
+      "candidateIds": [
+        "opp-age-play"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-28-vertical-execution-service-benchmark-v1.json"
+      ],
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-28-vertical-execution-service-benchmark-v1.json#/contentDiscoveryOpportunities/opp-age-play"
+      ],
+      "observedStatuses": [
+        "partner"
+      ],
+      "corpusRole": "future_content_opportunity",
+      "fixtureId": null,
+      "requiredSourceRows": [
+        "활동 제목",
+        "대상 월령",
+        "원문 URL",
+        "원문에 적힌 준비물/주의"
+      ],
+      "futureContractOnly": true,
+      "sourceArtifactHashes": [
+        "sha256:c8e5f1e75316d2324dcd592907ce0cd224600b1f26500394e04f25f9e6a61f22"
+      ],
+      "stableContentId": "ledger-12a072c8ac3e",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "source_missing"
+    },
+    {
+      "ledgerId": "ledger-25a909d1efe3",
+      "canonicalUrl": "https://www.childcare.go.kr/?menuno=463",
+      "title": "월령별 가정 내 안전 행동",
+      "candidateIds": [
+        "KR-CHILDCARE-01"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "deep-ds06",
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json#/candidates/6"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:84a17a06b2287f9b31e2670e90cb14d2a4c6d8cfaa18d03158a2dd6f9bd2f105"
+      ],
+      "stableContentId": "deep-ds06",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:0838348264c7f06e7131e73c6278069774a3370c9b3524a19f7eb7b465085526"
+      ],
+      "sourceRowsSha256": "sha256:596fc7fad69902f8460597d6149a05664fb30aa212bf15e13ec8fe9a4fa75247"
+    },
+    {
+      "ledgerId": "ledger-5542cca157ff",
+      "canonicalUrl": "https://1350.moel.go.kr/rtmview.do?id=1000296162",
+      "title": "육아휴직급여 월별 신청",
+      "candidateIds": [
+        "NEW-MOEL-LEAVE"
+      ],
+      "sourceArtifacts": [
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/35"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "ledger-5542cca157ff",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-42417a49177b",
+      "canonicalUrl": "https://wtable.co.kr/curations/562",
+      "title": "이번 주 여름 반찬 5가지",
+      "candidateIds": [
+        "base-wtable-summer-banchan-five"
+      ],
+      "sourceArtifacts": [
+        "docs/specs/2026-07-28-flow-item-map-architecture-qualified-corpus-revalidation-v2/qualified-corpus-fixture-v2.json"
+      ],
+      "evidenceRefs": [
+        "docs/specs/2026-07-28-flow-item-map-architecture-qualified-corpus-revalidation-v2/qualified-corpus-fixture-v2.json#/bundles/6"
+      ],
+      "observedStatuses": [
+        "complete_structure_fixture"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "base-wtable-summer-banchan-five",
+      "sourceArtifactHashes": [
+        "sha256:338648484e18c558ecb7c61a2e3002689c54af89ff55b5de6bcb2718a2778260"
+      ],
+      "stableContentId": "base-wtable-summer-banchan-five",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:d6d14091f73545c93221184f59bca6cedf0cc9203e66ddef324544b74bdc4aa4",
+        "sha256:1d26d0ef9c3754bb60bfe075a869d07caf8f9167f3835eb44902a9bd49159573",
+        "sha256:d0066502fe7f2e1dfdb8a9d1d7e285bc02eff67c209e37af35adef71cfea5fd9",
+        "sha256:3316b980917aec7a99eb9c9c76a9c9ef0d4c0c5c60207780671ce418f1ee4551",
+        "sha256:076b3b8e6c313edc5d2d31196a985b1ef8216105f5b7ee03485fed54b8e90732",
+        "sha256:c462374f8bc5a33420394a15beb0ea4677916e3822d5329e9ba8b45e3433a6d7"
+      ],
+      "sourceRowsSha256": "sha256:1b9645ff04c8b26d52a2e93516d2b87d99679dc6b5bcfec9d2c0750a57ba0c67"
+    },
+    {
+      "ledgerId": "ledger-81e306e8d5f0",
+      "canonicalUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "title": "이사 D-30 체크리스트",
+      "candidateIds": [
+        "base-moving-d30"
+      ],
+      "sourceArtifacts": [
+        "docs/specs/2026-07-28-flow-item-map-architecture-qualified-corpus-revalidation-v2/qualified-corpus-fixture-v2.json"
+      ],
+      "evidenceRefs": [
+        "docs/specs/2026-07-28-flow-item-map-architecture-qualified-corpus-revalidation-v2/qualified-corpus-fixture-v2.json#/bundles/0"
+      ],
+      "observedStatuses": [
+        "complete_structure_fixture"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "base-moving-d30",
+      "sourceArtifactHashes": [
+        "sha256:338648484e18c558ecb7c61a2e3002689c54af89ff55b5de6bcb2718a2778260"
+      ],
+      "stableContentId": "base-moving-d30",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:b7055b0f21f3635cb0b54adf53b304e20e9e2aad2d95f9aeb16e1ee323e09b2d"
+      ],
+      "sourceRowsSha256": "sha256:70253c6eda18e00895c4ba3bfb8476f21275dbd32149012f513dd8752caa0540"
+    },
+    {
+      "ledgerId": "ledger-628063754873",
+      "canonicalUrl": "https://ohou.se/advices/12360",
+      "title": "인테리어 상담 준비 체크리스트",
+      "candidateIds": [
+        "NEW-OHOUSE-QUOTE-01"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-candidate-ledger-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-candidate-ledger-v1.json#/freshCandidates/1"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:cdcbad65c33dd59ec5fb2b9e8f2ce04cf819dc5d43ae22e1d0d681ac53a9c512"
+      ],
+      "stableContentId": "ledger-628063754873",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-59eff229183b",
+      "canonicalUrl": "https://ohou.se/advices/2151",
+      "title": "인테리어 업체 선택 5기준",
+      "candidateIds": [
+        "NEW-OHOUSE-CONTRACTOR"
+      ],
+      "sourceArtifacts": [
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/30"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "ledger-59eff229183b",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-63558ad75c72",
+      "canonicalUrl": "https://stibee.com/api/v1.0/emails/share/yp9iBwMY5n1Z3fOC9NInk_ujOuvgEPs",
+      "title": "인플루언서 콘텐츠 2차 활용 체크포인트",
+      "candidateIds": [
+        "KR-STIBEE-01"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "live-kr-stibee-01",
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json#/candidates/28"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:84a17a06b2287f9b31e2670e90cb14d2a4c6d8cfaa18d03158a2dd6f9bd2f105"
+      ],
+      "stableContentId": "live-kr-stibee-01",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:e5a1babd230e31f9aba39e97705a7a743665621531285371177061954dae9d34"
+      ],
+      "sourceRowsSha256": "sha256:3a8a799a0a7b39609c2cf567586480d4d88539e9b89765eb717ee972c223c7dc"
+    },
+    {
+      "ledgerId": "ledger-3ac427adc567",
+      "canonicalUrl": "https://blog.naver.com/PostView.naver?blogId=travelnote_jp&logNo=223529001204",
+      "title": "일본 eSIM 출국 전 등록",
+      "candidateIds": [
+        "C09"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json"
+      ],
+      "observedStatuses": [
+        "source_import_required"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json#/records/8"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:553f693135afabf8af244e70ae67f2293c81bc487d9cdd56bea6ecc977aac47b"
+      ],
+      "stableContentId": "ledger-3ac427adc567",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-bcbbc2fbb059",
+      "canonicalUrl": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+      "title": "자동차검사 D-14",
+      "candidateIds": [
+        "O02",
+        "INT-O02"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "ready_for_internal_canary",
+        "candidate"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "oq-oq-p03-vehicle",
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json#/records/17",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/1"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:553f693135afabf8af244e70ae67f2293c81bc487d9cdd56bea6ecc977aac47b",
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "oq-oq-p03-vehicle",
+      "duplicateLineage": true,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:4628aafbd839e06c833f1202618d923b58ac55fe4284fbd0b572b6212de5ac93"
+      ],
+      "sourceRowsSha256": "sha256:7e376ba0fa78f2b13c3a1f116199adf199bbcd111951c40660a9b28be4a14918"
+    },
+    {
+      "ledgerId": "ledger-08b509b53e8d",
+      "canonicalUrl": "https://contents.kakaopay.com/contents/2056",
+      "title": "전세계약 전 공식 서류 확인",
+      "candidateIds": [
+        "O04"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json"
+      ],
+      "observedStatuses": [
+        "official_source_and_legal_review_required"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json#/records/19"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:553f693135afabf8af244e70ae67f2293c81bc487d9cdd56bea6ecc977aac47b"
+      ],
+      "stableContentId": "ledger-08b509b53e8d",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-0f5847a38f8b",
+      "canonicalUrl": "https://ohou.se/advices/28",
+      "title": "정리정돈 7단계",
+      "candidateIds": [
+        "NEW-OHOUSE-ORGANIZE"
+      ],
+      "sourceArtifacts": [
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/31"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "ledger-0f5847a38f8b",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-9e80d9131ac7",
+      "canonicalUrl": "https://www.gov.kr/portal/main/nologin",
+      "title": "정부24 원스톱 서비스 모음",
+      "candidateIds": [
+        "NEW-GOV24-ONESTOP"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-candidate-ledger-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-candidate-ledger-v1.json#/freshCandidates/5"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:cdcbad65c33dd59ec5fb2b9e8f2ce04cf819dc5d43ae22e1d0d681ac53a9c512"
+      ],
+      "stableContentId": "ledger-9e80d9131ac7",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-7e904d32a426",
+      "canonicalUrl": null,
+      "title": "제작자 강의·연습 시리즈 진도 Flow",
+      "candidateIds": [
+        "opp-learning-series"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-28-vertical-execution-service-benchmark-v1.json"
+      ],
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-28-vertical-execution-service-benchmark-v1.json#/contentDiscoveryOpportunities/opp-learning-series"
+      ],
+      "observedStatuses": [
+        "go"
+      ],
+      "corpusRole": "future_content_opportunity",
+      "fixtureId": null,
+      "requiredSourceRows": [
+        "회차 제목",
+        "순서",
+        "영상/글 URL",
+        "원문 학습 목표"
+      ],
+      "futureContractOnly": true,
+      "sourceArtifactHashes": [
+        "sha256:c8e5f1e75316d2324dcd592907ce0cd224600b1f26500394e04f25f9e6a61f22"
+      ],
+      "stableContentId": "ledger-7e904d32a426",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "source_missing"
+    },
+    {
+      "ledgerId": "ledger-a4935d05798c",
+      "canonicalUrl": "https://www.recipio.kr/recipes/WwyL63J3",
+      "title": "제작자 레시피 한 끼",
+      "candidateIds": [
+        "C13"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json"
+      ],
+      "observedStatuses": [
+        "rights_review_required"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "live-c13",
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json#/records/12"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:553f693135afabf8af244e70ae67f2293c81bc487d9cdd56bea6ecc977aac47b"
+      ],
+      "stableContentId": "live-c13",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:4cda06f8193d20a682e4831164a8c4a6d1a5462c8135af83dab8b246bc8a356a"
+      ],
+      "sourceRowsSha256": "sha256:e9cdc8edb89fc36941107e24871b2ace879cb08af28fad6d9be2c7a9f2367714"
+    },
+    {
+      "ledgerId": "ledger-b2875b357c44",
+      "canonicalUrl": null,
+      "title": "제작자·브랜드 D-day 준비 타임라인",
+      "candidateIds": [
+        "opp-event-dday"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-28-vertical-execution-service-benchmark-v1.json"
+      ],
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-28-vertical-execution-service-benchmark-v1.json#/contentDiscoveryOpportunities/opp-event-dday"
+      ],
+      "observedStatuses": [
+        "partner"
+      ],
+      "corpusRole": "future_content_opportunity",
+      "fixtureId": null,
+      "requiredSourceRows": [
+        "D-day 구간",
+        "체크 행동",
+        "업체/자료 링크",
+        "원문 조건"
+      ],
+      "futureContractOnly": true,
+      "sourceArtifactHashes": [
+        "sha256:c8e5f1e75316d2324dcd592907ce0cd224600b1f26500394e04f25f9e6a61f22"
+      ],
+      "stableContentId": "ledger-b2875b357c44",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "source_missing"
+    },
+    {
+      "ledgerId": "ledger-0302c9c6f62c",
+      "canonicalUrl": "https://b.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7664&mi=2224",
+      "title": "종합소득세 신고 개요",
+      "candidateIds": [
+        "NEW-NTS-TAX"
+      ],
+      "sourceArtifacts": [
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/39"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "ledger-0302c9c6f62c",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-269de547a867",
+      "canonicalUrl": "https://ohou.se/advices/8563",
+      "title": "주간 밑반찬 10종",
+      "candidateIds": [
+        "NEW-OHOUSE-SIDEDISH"
+      ],
+      "sourceArtifacts": [
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/32"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "ledger-269de547a867",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-792c3c694255",
+      "canonicalUrl": "https://nfa.go.kr/nfa/safetyinfo/residentialfire/residentialfire",
+      "title": "주택용 소방시설 설치·수명 관리",
+      "candidateIds": [
+        "NEW-NFA-FIRE"
+      ],
+      "sourceArtifacts": [
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/33"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "ledger-792c3c694255",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-1fbffe987c91",
+      "canonicalUrl": null,
+      "title": "직무별 지원 준비·후속 Flow",
+      "candidateIds": [
+        "opp-career-application"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-28-vertical-execution-service-benchmark-v1.json"
+      ],
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-28-vertical-execution-service-benchmark-v1.json#/contentDiscoveryOpportunities/opp-career-application"
+      ],
+      "observedStatuses": [
+        "go"
+      ],
+      "corpusRole": "future_content_opportunity",
+      "fixtureId": null,
+      "requiredSourceRows": [
+        "지원 단계",
+        "체크 행동",
+        "후속 시점 또는 순서",
+        "원문 링크"
+      ],
+      "futureContractOnly": true,
+      "sourceArtifactHashes": [
+        "sha256:c8e5f1e75316d2324dcd592907ce0cd224600b1f26500394e04f25f9e6a61f22"
+      ],
+      "stableContentId": "ledger-1fbffe987c91",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "source_missing"
+    },
+    {
+      "ledgerId": "ledger-dfa3dcb67942",
+      "canonicalUrl": "https://easylaw.go.kr/CSP/SysChartRetrievePLst.laf?csmSeq=170",
+      "title": "찾기쉬운 생활법령 결혼준비자 법령 맵",
+      "candidateIds": [
+        "NEW-EASYLAW-WEDDING-MAP"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-candidate-ledger-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-candidate-ledger-v1.json#/freshCandidates/6"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:cdcbad65c33dd59ec5fb2b9e8f2ce04cf819dc5d43ae22e1d0d681ac53a9c512"
+      ],
+      "stableContentId": "ledger-dfa3dcb67942",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-9b2d37f801e5",
+      "canonicalUrl": "https://www.kinfa.or.kr/financialLife/youthFinancialCounseling.do",
+      "title": "청년 모두를 위한 재무상담",
+      "candidateIds": [
+        "KR-KINFA-01"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json#/candidates/29"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:84a17a06b2287f9b31e2670e90cb14d2a4c6d8cfaa18d03158a2dd6f9bd2f105"
+      ],
+      "stableContentId": "ledger-9b2d37f801e5",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-f79097728dea",
+      "canonicalUrl": "https://blog.naver.com/01695258757/222768860919",
+      "title": "초기 이유식 D+174~209 식단",
+      "candidateIds": [
+        "base-baby-food-174"
+      ],
+      "sourceArtifacts": [
+        "docs/specs/2026-07-28-flow-item-map-architecture-qualified-corpus-revalidation-v2/qualified-corpus-fixture-v2.json"
+      ],
+      "evidenceRefs": [
+        "docs/specs/2026-07-28-flow-item-map-architecture-qualified-corpus-revalidation-v2/qualified-corpus-fixture-v2.json#/bundles/1"
+      ],
+      "observedStatuses": [
+        "complete_structure_fixture"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "base-baby-food-174",
+      "sourceArtifactHashes": [
+        "sha256:338648484e18c558ecb7c61a2e3002689c54af89ff55b5de6bcb2718a2778260"
+      ],
+      "stableContentId": "base-baby-food-174",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:41234b2abaf215773bc64a250f1f4b6db7d30be31cd479b0a61acf8bd0589a55"
+      ],
+      "sourceRowsSha256": "sha256:0dc7c820cd7a87106c175cbaa9fcbba071dc5a7571f4698e4e556a0a2ffc8fa9"
+    },
+    {
+      "ledgerId": "ledger-4b1b188f7f06",
+      "canonicalUrl": "https://www.moe.go.kr/boardCnts/viewRenew.do?boardID=294&boardSeq=104634&lev=0&m=020402&opType=N&page=1&s=moe&searchType=null&statusYN=W",
+      "title": "초등학교 입학 공식 준비",
+      "candidateIds": [
+        "O03"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json"
+      ],
+      "observedStatuses": [
+        "local_source_import_required"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json#/records/18"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:553f693135afabf8af244e70ae67f2293c81bc487d9cdd56bea6ecc977aac47b"
+      ],
+      "stableContentId": "ledger-4b1b188f7f06",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-3c9b51d4c575",
+      "canonicalUrl": "https://easylaw.go.kr/CSP/CnpClsMainBtr.laf?ccfNo=2&cciNo=1&cnpClsNo=1&csmSeq=707&popMenu=ov",
+      "title": "출생신고 준비",
+      "candidateIds": [
+        "NEW-EASYLAW-BIRTH-REPORT"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-candidate-ledger-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-candidate-ledger-v1.json#/freshCandidates/14"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:cdcbad65c33dd59ec5fb2b9e8f2ce04cf819dc5d43ae22e1d0d681ac53a9c512"
+      ],
+      "stableContentId": "ledger-3c9b51d4c575",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-cee91581353e",
+      "canonicalUrl": "https://news.seoul.go.kr/env/archives/570011",
+      "title": "친환경 여름휴가 체크리스트",
+      "candidateIds": [
+        "NEW-SEOUL-ECO-VACATION"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-candidate-ledger-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-candidate-ledger-v1.json#/freshCandidates/3"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:cdcbad65c33dd59ec5fb2b9e8f2ce04cf819dc5d43ae22e1d0d681ac53a9c512"
+      ],
+      "stableContentId": "ledger-cee91581353e",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-91096c28ca91",
+      "canonicalUrl": "https://kocw.net/home/search/kemView.do?kemId=1422415",
+      "title": "코드 없이 따라하는 빅데이터 분석",
+      "candidateIds": [
+        "KR-KOCW-01",
+        "INT-KOCW"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "value-vq-05",
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json#/candidates/25",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/4"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:84a17a06b2287f9b31e2670e90cb14d2a4c6d8cfaa18d03158a2dd6f9bd2f105",
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "value-vq-05",
+      "duplicateLineage": true,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:bef2104e0da2fff292bd4d1bb97f5c6a3fd5f332ad3d75824c53d35c79c8e87b"
+      ],
+      "sourceRowsSha256": "sha256:3a709837a9ba5b38b2840a6f04bf3569b3ea8ff13ec75d324a86f452236aeda2"
+    },
+    {
+      "ledgerId": "ledger-e4d052817056",
+      "canonicalUrl": "https://school.programmers.co.kr/learn/challenges?tab=algorithm_practice_kit",
+      "title": "코딩테스트 고득점 Kit",
+      "candidateIds": [
+        "NEW-PROGRAMMERS"
+      ],
+      "sourceArtifacts": [
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/36"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "ledger-e4d052817056",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-2c8ba5330a8a",
+      "canonicalUrl": "https://toss.im/tossfeed/series",
+      "title": "토스피드 생활재무 액션플랜 시리즈",
+      "candidateIds": [
+        "KR-TOSSFEED-01",
+        "INT-TOSS-SERIES"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json#/candidates/9",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/20"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:84a17a06b2287f9b31e2670e90cb14d2a4c6d8cfaa18d03158a2dd6f9bd2f105",
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "ledger-2c8ba5330a8a",
+      "duplicateLineage": true,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-2eecd37a31dc",
+      "canonicalUrl": "https://ohou.se/advices/8220",
+      "title": "평일 5일 저녁 식단",
+      "candidateIds": [
+        "C06",
+        "INT-C06"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "rights_review_required",
+        "candidate"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "value-vq-03",
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json#/records/5",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/2"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:553f693135afabf8af244e70ae67f2293c81bc487d9cdd56bea6ecc977aac47b",
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "value-vq-03",
+      "duplicateLineage": true,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:5062ff3fc428c0db6cac1b00b34a7b0fbbf548e8acd1d00f699f6f7977d6fd3d"
+      ],
+      "sourceRowsSha256": "sha256:29cd6f122c9acf0d67aa58789964d383610f917bf019ec59e038d53935ff9a91"
+    },
+    {
+      "ledgerId": "ledger-ac4deb1699a5",
+      "canonicalUrl": "https://youtube.com/@allblanctv",
+      "title": "Allblanc 7일 복근 챌린지",
+      "candidateIds": [
+        "base-allblanc-7day-abs"
+      ],
+      "sourceArtifacts": [
+        "docs/specs/2026-07-28-flow-item-map-architecture-qualified-corpus-revalidation-v2/qualified-corpus-fixture-v2.json"
+      ],
+      "evidenceRefs": [
+        "docs/specs/2026-07-28-flow-item-map-architecture-qualified-corpus-revalidation-v2/qualified-corpus-fixture-v2.json#/bundles/5"
+      ],
+      "observedStatuses": [
+        "complete_structure_fixture"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "base-allblanc-7day-abs",
+      "sourceArtifactHashes": [
+        "sha256:338648484e18c558ecb7c61a2e3002689c54af89ff55b5de6bcb2718a2778260"
+      ],
+      "stableContentId": "base-allblanc-7day-abs",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:3866486e6294b5dd5e34e2f7a930e1b42a348693979ddfd4e43b961be7c40d6d",
+        "sha256:ef77de3faf0cb28e7a757b9e645cc27799e3fb37afebf52ed6f0bb3d7596c1d7",
+        "sha256:7f7df78b8f92a8ba28c1e63d990b4294d425836cfa02f165d3a4a72344d5c878",
+        "sha256:0d0357cb50f33c9b8fbe4a5cd16322ac35655c8da9b6ea620b134841f2d6c0ef",
+        "sha256:a34a35c26efb90d6c17220bebdab3ac9d0ad7d7ddfb180d2c9662e2480dd5653",
+        "sha256:df30b07813801c3d254411fde426b1900ac974229e7e3d6403ed6ba66a95e5fe",
+        "sha256:e5220edc5ef0f1206c546967264eb5985599d7344bdfa7dba5fb23363cb31e79",
+        "sha256:4e02156654a2c41c1aee74b7b87b0f38a21e9ef25f4d952683614c078d641930",
+        "sha256:471c9efd5200a9a2b7822d6aeedc7b08598ed159caab2dd8fbec2fec9fb528e2"
+      ],
+      "sourceRowsSha256": "sha256:4fd97e912b3f64fc2d6d26f3953036302bd03e7f297e5f5ede59d2b958a7d378"
+    },
+    {
+      "ledgerId": "ledger-9d88e8a4aeb9",
+      "canonicalUrl": "https://www.youtube.com/watch?v=OIliv2jpDyM",
+      "title": "AND 취업 준비 영상 3편",
+      "candidateIds": [
+        "base-andstudio-job-prep-videos"
+      ],
+      "sourceArtifacts": [
+        "docs/specs/2026-07-28-flow-item-map-architecture-qualified-corpus-revalidation-v2/qualified-corpus-fixture-v2.json"
+      ],
+      "evidenceRefs": [
+        "docs/specs/2026-07-28-flow-item-map-architecture-qualified-corpus-revalidation-v2/qualified-corpus-fixture-v2.json#/bundles/7"
+      ],
+      "observedStatuses": [
+        "complete_structure_fixture"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "base-andstudio-job-prep-videos",
+      "sourceArtifactHashes": [
+        "sha256:338648484e18c558ecb7c61a2e3002689c54af89ff55b5de6bcb2718a2778260"
+      ],
+      "stableContentId": "base-andstudio-job-prep-videos",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:45d160f02d6f3a56ba5d0700d07904903c66b4617896057fd8a720018e4ebac6",
+        "sha256:edb3ecb8a9095b60208ad311fefbc938e3e1660fbf8cb88e4124ba21b3624faf",
+        "sha256:ff075c6ad0547d734286d629013dc21073c62c395ae6e8aa949425a763742440"
+      ],
+      "sourceRowsSha256": "sha256:63a10f3a2e9867086a277245581e0c6ebfdbf4d20849d7fca0a9585faeee417e"
+    },
+    {
+      "ledgerId": "ledger-9b2873c169ab",
+      "canonicalUrl": "https://librivox.org/anne-of-green-gables-version-5-by-lucy-maud-montgomery",
+      "title": "Anne of Green Gables, Version 5",
+      "candidateIds": [
+        "GLOBAL-LIBRIVOX-01"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "oq-oq-c03-librivox",
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json#/candidates/30"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:84a17a06b2287f9b31e2670e90cb14d2a4c6d8cfaa18d03158a2dd6f9bd2f105"
+      ],
+      "stableContentId": "oq-oq-c03-librivox",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:7de1fe60b740823c4b9e00f21019fc535fe81fa3df751105ba69d4321a2ad62c"
+      ],
+      "sourceRowsSha256": "sha256:63f6b70cc3d0ba96c3bdcc895848d0b661bac0a74f12f819728a9b7463afff3e"
+    },
+    {
+      "ledgerId": "ledger-fcf9726abed1",
+      "canonicalUrl": "https://www.rei.com/learn/expert-advice/backpacking-checklist.html",
+      "title": "Backpacking Checklist",
+      "candidateIds": [
+        "GLOBAL-REI-01"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json#/candidates/21"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:84a17a06b2287f9b31e2670e90cb14d2a4c6d8cfaa18d03158a2dd6f9bd2f105"
+      ],
+      "stableContentId": "ledger-fcf9726abed1",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-e6bc849d6278",
+      "canonicalUrl": "https://www.notion.com/templates/content-calendar",
+      "title": "Basic Content Calendar",
+      "candidateIds": [
+        "GLOBAL-NOTION-01",
+        "INT-NOTION"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json#/candidates/19",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/24"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:84a17a06b2287f9b31e2670e90cb14d2a4c6d8cfaa18d03158a2dd6f9bd2f105",
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "ledger-e6bc849d6278",
+      "duplicateLineage": true,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-cc10a53d6228",
+      "canonicalUrl": "https://www.nasa.gov/stem-content/build-launch-recover-build-crane-activity",
+      "title": "Build, Launch, Recover: Build a Crane Activity",
+      "candidateIds": [
+        "GLOBAL-NASA-01",
+        "INT-NASA"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "oq-oq-c06-nasa",
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json#/candidates/17",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/23"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:84a17a06b2287f9b31e2670e90cb14d2a4c6d8cfaa18d03158a2dd6f9bd2f105",
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "oq-oq-c06-nasa",
+      "duplicateLineage": true,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:eac6d0f54a33f876cd27a3dcab42f962157ecbda59fde2b0de91a2880b55cc14"
+      ],
+      "sourceRowsSha256": "sha256:b4068226401f3b231232afbac14ea66d724bea4173fb6c5be1407ee0311ff597"
+    },
+    {
+      "ledgerId": "ledger-f31e222c2337",
+      "canonicalUrl": "https://www.foodsafety.gov/food-safety-charts/cold-food-storage-charts",
+      "title": "Cold Food Storage Chart",
+      "candidateIds": [
+        "GLOBAL-FOODSAFETY-01"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json#/candidates/33"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:84a17a06b2287f9b31e2670e90cb14d2a4c6d8cfaa18d03158a2dd6f9bd2f105"
+      ],
+      "stableContentId": "ledger-f31e222c2337",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-beabe7b3b7e2",
+      "canonicalUrl": "https://theorganizednotebook.gumroad.com/l/content-planner-template",
+      "title": "Content Planner Template",
+      "candidateIds": [
+        "GLOBAL-GUMROAD-01",
+        "INT-GUMROAD"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json#/candidates/22",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/25"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:84a17a06b2287f9b31e2670e90cb14d2a4c6d8cfaa18d03158a2dd6f9bd2f105",
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "ledger-beabe7b3b7e2",
+      "duplicateLineage": true,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-cafa081228da",
+      "canonicalUrl": "https://www.nongsaro.go.kr/portal/ps/psz/psza/contentSub.ps?bbsId=10&cntntsNo=51&menuId=PS02485&nttSeCode=&pageIndex=1&pageSize=10&searchText=&searchType=title",
+      "title": "deep-ds01",
+      "candidateIds": [
+        "deep-ds01"
+      ],
+      "sourceArtifacts": [],
+      "evidenceRefs": [],
+      "observedStatuses": [
+        "duplicate_primary_url"
+      ],
+      "corpusRole": "exclusion",
+      "fixtureId": null,
+      "forcedCorpusStatus": "duplicate",
+      "exclusionReason": "duplicate_primary_url",
+      "sourceArtifactHashes": [],
+      "stableContentId": "ledger-cafa081228da",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "duplicate"
+    },
+    {
+      "ledgerId": "ledger-2659dd893a76",
+      "canonicalUrl": "https://ohou.se/advices/1972",
+      "title": "deep-ds02",
+      "candidateIds": [
+        "deep-ds02"
+      ],
+      "sourceArtifacts": [],
+      "evidenceRefs": [],
+      "observedStatuses": [
+        "duplicate_primary_url"
+      ],
+      "corpusRole": "exclusion",
+      "fixtureId": null,
+      "forcedCorpusStatus": "duplicate",
+      "exclusionReason": "duplicate_primary_url",
+      "sourceArtifactHashes": [],
+      "stableContentId": "ledger-2659dd893a76",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "duplicate"
+    },
+    {
+      "ledgerId": "ledger-608628a93da0",
+      "canonicalUrl": "https://www.kmooc.kr/view/course/detail/20097",
+      "title": "deep-ds04",
+      "candidateIds": [
+        "deep-ds04"
+      ],
+      "sourceArtifacts": [],
+      "evidenceRefs": [],
+      "observedStatuses": [
+        "duplicate_primary_url"
+      ],
+      "corpusRole": "exclusion",
+      "fixtureId": null,
+      "forcedCorpusStatus": "duplicate",
+      "exclusionReason": "duplicate_primary_url",
+      "sourceArtifactHashes": [],
+      "stableContentId": "ledger-608628a93da0",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "duplicate"
+    },
+    {
+      "ledgerId": "ledger-caa7beaa62cb",
+      "canonicalUrl": "https://www.easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=3&cciNo=1&cnpClsNo=1&csmSeq=666&popMenu=ov",
+      "title": "deep-ds05",
+      "candidateIds": [
+        "deep-ds05"
+      ],
+      "sourceArtifacts": [],
+      "evidenceRefs": [],
+      "observedStatuses": [
+        "duplicate_primary_url"
+      ],
+      "corpusRole": "exclusion",
+      "fixtureId": null,
+      "forcedCorpusStatus": "duplicate",
+      "exclusionReason": "duplicate_primary_url",
+      "sourceArtifactHashes": [],
+      "stableContentId": "ledger-caa7beaa62cb",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "duplicate"
+    },
+    {
+      "ledgerId": "ledger-f1f27bb31ccf",
+      "canonicalUrl": "https://nfa.kspo.or.kr/reserve/selectMeasureUseGuide.kspo",
+      "title": "deep-ds07",
+      "candidateIds": [
+        "deep-ds07"
+      ],
+      "sourceArtifacts": [],
+      "evidenceRefs": [],
+      "observedStatuses": [
+        "duplicate_primary_url"
+      ],
+      "corpusRole": "exclusion",
+      "fixtureId": null,
+      "forcedCorpusStatus": "duplicate",
+      "exclusionReason": "duplicate_primary_url",
+      "sourceArtifactHashes": [],
+      "stableContentId": "ledger-f1f27bb31ccf",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "duplicate"
+    },
+    {
+      "ledgerId": "ledger-0fad49bdd171",
+      "canonicalUrl": "https://github.com/ossu/computer-science",
+      "title": "deep-ds10",
+      "candidateIds": [
+        "deep-ds10"
+      ],
+      "sourceArtifacts": [],
+      "evidenceRefs": [],
+      "observedStatuses": [
+        "duplicate_primary_url"
+      ],
+      "corpusRole": "exclusion",
+      "fixtureId": null,
+      "forcedCorpusStatus": "duplicate",
+      "exclusionReason": "duplicate_primary_url",
+      "sourceArtifactHashes": [],
+      "stableContentId": "ledger-0fad49bdd171",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "duplicate"
+    },
+    {
+      "ledgerId": "ledger-884a5a9ec123",
+      "canonicalUrl": "https://en.wikivoyage.org/wiki/Packing_list",
+      "title": "deep-ds11",
+      "candidateIds": [
+        "deep-ds11"
+      ],
+      "sourceArtifacts": [],
+      "evidenceRefs": [],
+      "observedStatuses": [
+        "duplicate_primary_url"
+      ],
+      "corpusRole": "exclusion",
+      "fixtureId": null,
+      "forcedCorpusStatus": "duplicate",
+      "exclusionReason": "duplicate_primary_url",
+      "sourceArtifactHashes": [],
+      "stableContentId": "ledger-884a5a9ec123",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "duplicate"
+    },
+    {
+      "ledgerId": "ledger-40f3d16dc601",
+      "canonicalUrl": "https://www.nasa.gov/stem-content/build-launch-recover-build-crane-activity",
+      "title": "deep-ds12",
+      "candidateIds": [
+        "deep-ds12"
+      ],
+      "sourceArtifacts": [],
+      "evidenceRefs": [],
+      "observedStatuses": [
+        "duplicate_primary_url"
+      ],
+      "corpusRole": "exclusion",
+      "fixtureId": null,
+      "forcedCorpusStatus": "duplicate",
+      "exclusionReason": "duplicate_primary_url",
+      "sourceArtifactHashes": [],
+      "stableContentId": "ledger-40f3d16dc601",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "duplicate"
+    },
+    {
+      "ledgerId": "ledger-8e9e714dedf9",
+      "canonicalUrl": "https://www.dyson.com/support/vacuum-cleaners/cordless/filter-care",
+      "title": "Dyson cordless vacuum filter care",
+      "candidateIds": [
+        "live-live-dyson-filter-01"
+      ],
+      "sourceArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/reverified-source-packets-v1.json"
+      ],
+      "evidenceRefs": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/reverified-source-packets-v1.json#/completePackets/LIVE-DYSON-FILTER-01"
+      ],
+      "observedStatuses": [
+        "complete_structure_fixture"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "live-live-dyson-filter-01",
+      "sourceArtifactHashes": [
+        "sha256:2cbc7ada6dc8302c7b01ec3b1d98583a7ffb12ac8c8cbc1a764590619dbd8010"
+      ],
+      "stableContentId": "live-live-dyson-filter-01",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:3952394da63014a95ef006be7cc6949292e8d011406c5a2d156666c7ae4dcc71"
+      ],
+      "sourceRowsSha256": "sha256:49cf0f5701822442b51f9c6800ac9afaf76172dddf9c21920845de823e75b30e"
+    },
+    {
+      "ledgerId": "ledger-9c97b918052b",
+      "canonicalUrl": "https://www.jotform.com/form-templates/event-registration-intake-form",
+      "title": "Event Registration Intake Form",
+      "candidateIds": [
+        "live-live-jotform-event-intake-01"
+      ],
+      "sourceArtifacts": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/reverified-source-packets-v1.json"
+      ],
+      "evidenceRefs": [
+        "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/reverified-source-packets-v1.json#/completePackets/LIVE-JOTFORM-EVENT-INTAKE-01"
+      ],
+      "observedStatuses": [
+        "complete_structure_fixture"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "live-live-jotform-event-intake-01",
+      "sourceArtifactHashes": [
+        "sha256:2cbc7ada6dc8302c7b01ec3b1d98583a7ffb12ac8c8cbc1a764590619dbd8010"
+      ],
+      "stableContentId": "live-live-jotform-event-intake-01",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:215d5d6650f6ec9d1e3259d184ab4ac1fbafa0ef3c60c111dd05c02a3cdd0036"
+      ],
+      "sourceRowsSha256": "sha256:9620465e4d4dc9001ebc5152357e167160b8a7b8c13b09460d4c717a2f4dc286"
+    },
+    {
+      "ledgerId": "ledger-39881f3f3c3b",
+      "canonicalUrl": "https://www.nps.gov/iatr/learn/kidsyouth/junior-ranger.htm",
+      "title": "Ice Age Trail Junior Ranger",
+      "candidateIds": [
+        "GLOBAL-NPS-01"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json#/candidates/32"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:84a17a06b2287f9b31e2670e90cb14d2a4c6d8cfaa18d03158a2dd6f9bd2f105"
+      ],
+      "stableContentId": "ledger-39881f3f3c3b",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-bf0569a7bc8e",
+      "canonicalUrl": "https://www.ifixit.com/Device/Household",
+      "title": "iFixit Household 수리 가이드 묶음",
+      "candidateIds": [
+        "NEW-IFIXIT-HOUSEHOLD-MAP"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-candidate-ledger-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-20-flow-content-discovery-candidate-ledger-v1.json#/freshCandidates/9"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:cdcbad65c33dd59ec5fb2b9e8f2ce04cf819dc5d43ae22e1d0d681ac53a9c512"
+      ],
+      "stableContentId": "ledger-bf0569a7bc8e",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-cef1a54a0996",
+      "canonicalUrl": "https://www.kmooc.kr/view/course/detail/20097",
+      "title": "Introduction to Data Analysis",
+      "candidateIds": [
+        "KR-KMOOC-01",
+        "C08",
+        "INT-KMOOC-USED"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json",
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate",
+        "ready_for_internal_canary"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "oq-oq-c02-kmooc-full",
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json#/candidates/4",
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json#/records/7",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/16"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:84a17a06b2287f9b31e2670e90cb14d2a4c6d8cfaa18d03158a2dd6f9bd2f105",
+        "sha256:553f693135afabf8af244e70ae67f2293c81bc487d9cdd56bea6ecc977aac47b",
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "oq-oq-c02-kmooc-full",
+      "duplicateLineage": true,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:02be41613ab7ee287135bd6eeaeec0b1ee1fdbab740166554b16a4804fa1d82d"
+      ],
+      "sourceRowsSha256": "sha256:6c1a72202c320a6aeaed2b4bc6a84b6945f6e129f96b7bcc56e6e63f082b6d33"
+    },
+    {
+      "ledgerId": "ledger-2ab94836cae0",
+      "canonicalUrl": "https://www.bbcgoodfood.com/recipes/lemon-drizzle-cake",
+      "title": "Lemon Drizzle Cake",
+      "candidateIds": [
+        "GLOBAL-BBC-01"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json#/candidates/20"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:84a17a06b2287f9b31e2670e90cb14d2a4c6d8cfaa18d03158a2dd6f9bd2f105"
+      ],
+      "stableContentId": "ledger-2ab94836cae0",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-66ae716dff39",
+      "canonicalUrl": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core",
+      "title": "MDN Core learning modules",
+      "candidateIds": [
+        "GLOBAL-MDN-01"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "live-live-mdn-core-01",
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json#/candidates/31"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:84a17a06b2287f9b31e2670e90cb14d2a4c6d8cfaa18d03158a2dd6f9bd2f105"
+      ],
+      "stableContentId": "live-live-mdn-core-01",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:cd9223177fe76837a6229f049fdc944db0c26e51d1637b7a60b0b80d06868abd"
+      ],
+      "sourceRowsSha256": "sha256:87b74143b948e646acd37f539db3d63908280b8c32f8eaa9b9aa5680688172bb"
+    },
+    {
+      "ledgerId": "ledger-d3dda3f8ad5e",
+      "canonicalUrl": "https://www.netmums.com/baby/6-month-old-baby",
+      "title": "Netmums 6-month-old guide",
+      "candidateIds": [
+        "INT-NETMUMS"
+      ],
+      "sourceArtifacts": [
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/28"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "ledger-d3dda3f8ad5e",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-fdaf497d8a0e",
+      "canonicalUrl": "https://www.instructables.com/Origami-For-Everyone",
+      "title": "Origami For Everyone",
+      "candidateIds": [
+        "GLOBAL-INSTRUCTABLES-01"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json#/candidates/18"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:84a17a06b2287f9b31e2670e90cb14d2a4c6d8cfaa18d03158a2dd6f9bd2f105"
+      ],
+      "stableContentId": "ledger-fdaf497d8a0e",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-d7ec1836f9bc",
+      "canonicalUrl": "https://github.com/ossu/computer-science",
+      "title": "OSSU Computer Science Curriculum",
+      "candidateIds": [
+        "GLOBAL-OSSU-01",
+        "C12",
+        "INT-OSSU"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json",
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate",
+        "ready_second_wave"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "oq-oq-p01-ossu",
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json#/candidates/15",
+        "docs/content-audit/2026-07-20-flow-content-discovery-p0-reclassification-v1.json#/records/11",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/6"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:84a17a06b2287f9b31e2670e90cb14d2a4c6d8cfaa18d03158a2dd6f9bd2f105",
+        "sha256:553f693135afabf8af244e70ae67f2293c81bc487d9cdd56bea6ecc977aac47b",
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "oq-oq-p01-ossu",
+      "duplicateLineage": true,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:f40a2619080220fc5f1acf50f5b1432cd7665c76e1151923ba6511f9e0544619"
+      ],
+      "sourceRowsSha256": "sha256:ff4111763c981a2a915fc02f02eaf742ccde22456e90cee985cca1ef5fec96b8"
+    },
+    {
+      "ledgerId": "ledger-02e0f7ca68ef",
+      "canonicalUrl": "https://brunch.co.kr/%40%403lvL/96",
+      "title": "PM 프로젝트 프로세스 7단계",
+      "candidateIds": [
+        "NEW-BRUNCH-PM"
+      ],
+      "sourceArtifacts": [
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/37"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "ledger-02e0f7ca68ef",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-d76880394137",
+      "canonicalUrl": "https://www.todoist.com/templates/podcast-workflow",
+      "title": "Podcast Workflow template",
+      "candidateIds": [
+        "GLOBAL-TODOIST-01"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json#/candidates/34"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:84a17a06b2287f9b31e2670e90cb14d2a4c6d8cfaa18d03158a2dd6f9bd2f105"
+      ],
+      "stableContentId": "ledger-d76880394137",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-cd9e0c222d3e",
+      "canonicalUrl": "https://roadmap.sh/",
+      "title": "roadmap.sh",
+      "candidateIds": [
+        "GLOBAL-ROADMAP-01",
+        "INT-ROADMAP"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json#/candidates/23",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/26"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:84a17a06b2287f9b31e2670e90cb14d2a4c6d8cfaa18d03158a2dd6f9bd2f105",
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "ledger-cd9e0c222d3e",
+      "duplicateLineage": true,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-bc62489b120e",
+      "canonicalUrl": "https://www.teacherspayteachers.com/Product/Science-Fair-Project-Planner-260479",
+      "title": "Science Fair Project Planner",
+      "candidateIds": [
+        "GLOBAL-TPT-01",
+        "INT-TPT"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "candidate_only",
+      "fixtureId": null,
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json#/candidates/35",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/27"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:84a17a06b2287f9b31e2670e90cb14d2a4c6d8cfaa18d03158a2dd6f9bd2f105",
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "ledger-bc62489b120e",
+      "duplicateLineage": true,
+      "sourceRowsAvailable": false,
+      "canonicalFixtureAvailable": false,
+      "corpusStatus": "candidate_only"
+    },
+    {
+      "ledgerId": "ledger-8758ce24e0dd",
+      "canonicalUrl": "https://www.samsung.com/uk/support/home-appliances/washing-machine-maintenance-tips-to-keep-your-machine-running-smoothly",
+      "title": "Washing Machine Maintenance: tips to keep your machine running smoothly",
+      "candidateIds": [
+        "oq-oq-c05-washer"
+      ],
+      "sourceArtifacts": [
+        "docs/specs/2026-07-20-url-to-flow-output-quality-lab-v2/gold-source-contract-v2.json"
+      ],
+      "evidenceRefs": [
+        "docs/specs/2026-07-20-url-to-flow-output-quality-lab-v2/gold-source-contract-v2.json#/cases/OQ-C05-WASHER"
+      ],
+      "observedStatuses": [
+        "complete_structure_fixture"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "oq-oq-c05-washer",
+      "sourceArtifactHashes": [
+        "sha256:ab8f38d8715ef471cee601a2334a6f96bb13e620a85f053c4028f6f41b3e71e4"
+      ],
+      "stableContentId": "oq-oq-c05-washer",
+      "duplicateLineage": false,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:7ada002ed853c5b566f3c3fa43ad169f79a9170baeab4f70d2786866c42e46e1"
+      ],
+      "sourceRowsSha256": "sha256:ff86b17544cc8555bdeea39da7f5191cb892b10140ff4874b54c4a6877d818a3"
+    },
+    {
+      "ledgerId": "ledger-f6e37a15dc74",
+      "canonicalUrl": "https://en.wikivoyage.org/wiki/Packing_list",
+      "title": "Wikivoyage Packing List",
+      "candidateIds": [
+        "GLOBAL-WIKIVOYAGE-01",
+        "INT-WIKIVOYAGE"
+      ],
+      "sourceArtifacts": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json"
+      ],
+      "observedStatuses": [
+        "candidate"
+      ],
+      "corpusRole": "complete_fixture",
+      "fixtureId": "oq-oq-p02-packing",
+      "evidenceRefs": [
+        "docs/content-audit/2026-07-19-flow-content-source-expansion-seed.json#/candidates/16",
+        "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/candidate-pool-v1.json#/candidates/7"
+      ],
+      "sourceArtifactHashes": [
+        "sha256:84a17a06b2287f9b31e2670e90cb14d2a4c6d8cfaa18d03158a2dd6f9bd2f105",
+        "sha256:32c7bde05f15bb966fd759caa9e5b708fca050284731a9db8a9421097e408f2c"
+      ],
+      "stableContentId": "oq-oq-p02-packing",
+      "duplicateLineage": true,
+      "sourceRowsAvailable": true,
+      "canonicalFixtureAvailable": true,
+      "corpusStatus": "converted",
+      "sourceSnapshotHashes": [
+        "sha256:5b0decb0f8068a300e389f1234d830cb6872f0739cf4a94d91d45be6bcec9e75"
+      ],
+      "sourceRowsSha256": "sha256:9012754518f16f2a1a5840cd446ff277e28bb0360097dbf255c547d613289038"
+    }
+  ]
+}

@@ -1,0 +1,407 @@
+{
+  "schemaVersion": "flowme-vertical-opportunity-appendix-v1",
+  "generatedAt": "2026-07-28T00:00:00.000Z",
+  "sourceArtifact": "docs/content-audit/2026-07-28-vertical-execution-service-benchmark-v1.json",
+  "sourceSha256": "c8e5f1e75316d2324dcd592907ce0cd224600b1f26500394e04f25f9e6a61f22",
+  "sourceSummary": {
+    "discovered": 36,
+    "publiclyVerified": 24,
+    "deepDive": 10,
+    "opportunities": 8
+  },
+  "contributionToQualifiedCorpus": {
+    "bundles": 0,
+    "flows": 0,
+    "steps": 0,
+    "items": 0,
+    "sourceRows": 0,
+    "reason": "The eight records are discovery directions, not creator content with acquired SourceRows."
+  },
+  "categoryMappingContract": {
+    "study_learning": "study_reading",
+    "travel_outings_events": "travel_outings",
+    "allOtherValues": "already canonical Taxonomy v1.1 lifeArea values"
+  },
+  "executionPatternContract": "Vertical service executionPattern values remain benchmark metadata. Canonical candidates are planning hypotheses until actual creator SourceRows are acquired.",
+  "opportunities": [
+    {
+      "opportunityId": "opp-home-routine",
+      "rank": 1,
+      "title": "공간·기간별 집 관리 루틴",
+      "opportunityStatus": "Go",
+      "corpusRole": "future_content_discovery_only",
+      "contributesToQualifiedCorpusCounts": false,
+      "sourceCategoryAsRecorded": "home_living",
+      "canonicalCategoryMapping": {
+        "canonicalLifeArea": "home_living",
+        "mappingType": "already_canonical"
+      },
+      "userMoment": "집안일을 누구부터 무엇을 해야 할지 정하기 어려울 때",
+      "naturalArtifact": "반복 체크리스트 + 캘린더",
+      "minimumAnchor": [
+        "공간/방",
+        "청소 빈도"
+      ],
+      "expectedContentInputs": [
+        "시작일 또는 반복 요일 0~1개"
+      ],
+      "requiredSourceRows": [
+        "공간",
+        "작업 제목",
+        "권장 주기 또는 원문 순서",
+        "원문 링크"
+      ],
+      "dateIntent": "source_defined_recurrence_or_order",
+      "defaultDestination": "checklist",
+      "executionPatternBoundary": {
+        "benchmarkServicePatternIds": [
+          "environment_to_maintenance"
+        ],
+        "canonicalExecutionPatternCandidate": "repeating_routine",
+        "mappingStatus": "candidate_only_reclassify_after_actual_creator_source_rows_are_acquired"
+      },
+      "doNotBuildBoundary": "가사량 최적화 점수 엔진 / 가족 간 경쟁·보상 시스템",
+      "publicUseBoundary": "작업 제목·최소 주기·출처 링크만 사용하며 유료 표 전문과 자동 최적화 규칙은 복제하지 않는다.",
+      "sourceShapeAsDiscoveryBrief": "제작자 블로그·브랜드의 공간별 체크리스트, 주기표, 계절 관리표",
+      "evidenceSource": {
+        "representativeServiceId": "sweepy",
+        "inspiredByServiceIds": [
+          "sweepy",
+          "tody"
+        ]
+      }
+    },
+    {
+      "opportunityId": "opp-age-play",
+      "rank": 2,
+      "title": "월령·목표별 2주 놀이 루틴",
+      "opportunityStatus": "Partner",
+      "corpusRole": "future_content_discovery_only",
+      "contributesToQualifiedCorpusCounts": false,
+      "sourceCategoryAsRecorded": "family_parenting",
+      "canonicalCategoryMapping": {
+        "canonicalLifeArea": "family_parenting",
+        "mappingType": "already_canonical"
+      },
+      "userMoment": "아이 월령에 맞는 오늘 놀이를 바로 찾고 싶을 때",
+      "naturalArtifact": "하루 한 활동 루틴 + 원문 링크",
+      "minimumAnchor": [
+        "생년월일/월령"
+      ],
+      "expectedContentInputs": [
+        "아이 월령 또는 시작일 1개"
+      ],
+      "requiredSourceRows": [
+        "활동 제목",
+        "대상 월령",
+        "원문 URL",
+        "원문에 적힌 준비물/주의"
+      ],
+      "dateIntent": "optional_start_anchor",
+      "defaultDestination": "checklist",
+      "executionPatternBoundary": {
+        "benchmarkServicePatternIds": [
+          "profile_to_daily_plan"
+        ],
+        "canonicalExecutionPatternCandidate": "repeating_routine",
+        "mappingStatus": "candidate_only_reclassify_after_actual_creator_source_rows_are_acquired"
+      },
+      "doNotBuildBoundary": "발달 진단·평가 엔진 / 유료 활동 영상 복제",
+      "publicUseBoundary": "발달 진단을 하지 않고 공개 활동 메타데이터와 링크만 사용한다. 유료 영상은 제휴가 필요하다.",
+      "sourceShapeAsDiscoveryBrief": "공개 육아 활동 글·영상 시리즈와 월령·준비물·활동 목표",
+      "evidenceSource": {
+        "representativeServiceId": "kinedu",
+        "inspiredByServiceIds": [
+          "kinedu",
+          "babysparks"
+        ]
+      }
+    },
+    {
+      "opportunityId": "opp-learning-series",
+      "rank": 3,
+      "title": "제작자 강의·연습 시리즈 진도 Flow",
+      "opportunityStatus": "Go",
+      "corpusRole": "future_content_discovery_only",
+      "contributesToQualifiedCorpusCounts": false,
+      "sourceCategoryAsRecorded": "study_learning",
+      "canonicalCategoryMapping": {
+        "canonicalLifeArea": "study_reading",
+        "mappingType": "explicit_alias_normalization"
+      },
+      "userMoment": "짧게라도 매일 언어 학습을 이어가고 싶을 때",
+      "naturalArtifact": "회차 큐 + 오늘의 다음 학습",
+      "minimumAnchor": [
+        "학습 언어"
+      ],
+      "expectedContentInputs": [
+        "완료 목표일 또는 반복 요일 0~1개"
+      ],
+      "requiredSourceRows": [
+        "회차 제목",
+        "순서",
+        "영상/글 URL",
+        "원문 학습 목표"
+      ],
+      "dateIntent": "undated_progress_with_optional_target_or_weekdays",
+      "defaultDestination": "sheet",
+      "executionPatternBoundary": {
+        "benchmarkServicePatternIds": [
+          "progress_to_next_lesson"
+        ],
+        "canonicalExecutionPatternCandidate": "progress_tracking",
+        "mappingStatus": "candidate_only_reclassify_after_actual_creator_source_rows_are_acquired"
+      },
+      "doNotBuildBoundary": "적응형 문제 출제 엔진 / 스트릭·게임 경제 복제",
+      "publicUseBoundary": "문항·자막·유료 강의 내용을 복제하지 않고 회차 제목·링크·진도만 제공한다.",
+      "sourceShapeAsDiscoveryBrief": "공개 강의 재생목록, 회차형 튜토리얼, 악기·언어 연습 시리즈",
+      "evidenceSource": {
+        "representativeServiceId": "duolingo",
+        "inspiredByServiceIds": [
+          "duolingo",
+          "brilliant",
+          "yousician"
+        ]
+      }
+    },
+    {
+      "opportunityId": "opp-training-program",
+      "rank": 4,
+      "title": "기간형 운동 프로그램 실행표",
+      "opportunityStatus": "Go",
+      "corpusRole": "future_content_discovery_only",
+      "contributesToQualifiedCorpusCounts": false,
+      "sourceCategoryAsRecorded": "health_fitness",
+      "canonicalCategoryMapping": {
+        "canonicalLifeArea": "health_fitness",
+        "mappingType": "already_canonical"
+      },
+      "userMoment": "레이스·거리 목표에 맞춘 주간 러닝 계획이 필요할 때",
+      "naturalArtifact": "주차별 일정 + 오늘 세션",
+      "minimumAnchor": [
+        "목표 유형/레이스",
+        "현재 능력·주간 거리",
+        "주당 러닝 횟수"
+      ],
+      "expectedContentInputs": [
+        "시작일 또는 목표일 1개"
+      ],
+      "requiredSourceRows": [
+        "주차/회차",
+        "운동 제목",
+        "원문 URL",
+        "원문에 명시된 휴식·범위"
+      ],
+      "dateIntent": "start_or_target_date_anchor",
+      "defaultDestination": "calendar",
+      "executionPatternBoundary": {
+        "benchmarkServicePatternIds": [
+          "goal_to_plan",
+          "profile_to_daily_plan",
+          "content_to_guided_session"
+        ],
+        "canonicalExecutionPatternCandidate": "progress_tracking",
+        "mappingStatus": "candidate_only_reclassify_after_actual_creator_source_rows_are_acquired"
+      },
+      "doNotBuildBoundary": "훈련 부하·부상 위험 계산 / GPS·웨어러블 코칭 엔진",
+      "publicUseBoundary": "강도·부상 위험을 새로 계산하지 않고 원문 계획과 안전 안내를 그대로 추적한다.",
+      "sourceShapeAsDiscoveryBrief": "공개 코치 프로그램, 영상 재생목록, 주차·회차별 운동표",
+      "evidenceSource": {
+        "representativeServiceId": "runna",
+        "inspiredByServiceIds": [
+          "runna",
+          "freeletics",
+          "nike-training-club"
+        ]
+      }
+    },
+    {
+      "opportunityId": "opp-event-dday",
+      "rank": 5,
+      "title": "제작자·브랜드 D-day 준비 타임라인",
+      "opportunityStatus": "Partner",
+      "corpusRole": "future_content_discovery_only",
+      "contributesToQualifiedCorpusCounts": false,
+      "sourceCategoryAsRecorded": "travel_outings_events",
+      "canonicalCategoryMapping": {
+        "canonicalLifeArea": "travel_outings",
+        "mappingType": "explicit_alias_normalization"
+      },
+      "userMoment": "결혼일까지 해야 할 준비를 빠짐없이 일정화하고 싶을 때",
+      "naturalArtifact": "역산 캘린더 + 체크리스트",
+      "minimumAnchor": [
+        "결혼일"
+      ],
+      "expectedContentInputs": [
+        "행사일 1개"
+      ],
+      "requiredSourceRows": [
+        "D-day 구간",
+        "체크 행동",
+        "업체/자료 링크",
+        "원문 조건"
+      ],
+      "dateIntent": "relative_to_target_date",
+      "defaultDestination": "calendar",
+      "executionPatternBoundary": {
+        "benchmarkServicePatternIds": [
+          "anchor_date_to_timeline"
+        ],
+        "canonicalExecutionPatternCandidate": "date_preparation",
+        "mappingStatus": "candidate_only_reclassify_after_actual_creator_source_rows_are_acquired"
+      },
+      "doNotBuildBoundary": "웨딩 업체 마켓플레이스 / 레지스트리·결제 인프라",
+      "publicUseBoundary": "업체 마켓플레이스를 만들지 않고 제작자·업체 원문 유입을 보존한다.",
+      "sourceShapeAsDiscoveryBrief": "결혼·돌잔치·집들이·여행 준비 체크리스트와 원문 D-day 구간",
+      "evidenceSource": {
+        "representativeServiceId": "the-knot",
+        "inspiredByServiceIds": [
+          "the-knot"
+        ]
+      }
+    },
+    {
+      "opportunityId": "opp-meal-plan",
+      "rank": 6,
+      "title": "레시피 묶음에서 식단·장보기·오늘 조리로",
+      "opportunityStatus": "Partner",
+      "corpusRole": "future_content_discovery_only",
+      "contributesToQualifiedCorpusCounts": false,
+      "sourceCategoryAsRecorded": "meals_grocery",
+      "canonicalCategoryMapping": {
+        "canonicalLifeArea": "meals_grocery",
+        "mappingType": "already_canonical"
+      },
+      "userMoment": "무엇을 먹을지 정하고 장보기부터 조리까지 한 번에 이어가고 싶을 때",
+      "naturalArtifact": "식단 캘린더 + 통합 장보기 + 조리 링크",
+      "minimumAnchor": [
+        "식단 기간/식사 수"
+      ],
+      "expectedContentInputs": [
+        "시작일 또는 식사 수 0~1개"
+      ],
+      "requiredSourceRows": [
+        "식사/날짜",
+        "레시피 제목",
+        "원문 URL",
+        "원문 재료 묶음"
+      ],
+      "dateIntent": "optional_start_anchor",
+      "defaultDestination": "calendar",
+      "executionPatternBoundary": {
+        "benchmarkServicePatternIds": [
+          "content_to_guided_session",
+          "collection_to_itinerary"
+        ],
+        "canonicalExecutionPatternCandidate": "date_preparation",
+        "mappingStatus": "candidate_only_reclassify_after_actual_creator_source_rows_are_acquired"
+      },
+      "doNotBuildBoundary": "식료품 주문·재고 연동 / 유료 레시피·강의 복제",
+      "publicUseBoundary": "레시피 전문을 복제하지 않고 제목·링크·최소 재료 메타만 사용한다.",
+      "sourceShapeAsDiscoveryBrief": "제작자의 공개 레시피 시리즈, 식단표, 장보기표",
+      "evidenceSource": {
+        "representativeServiceId": "sidechef",
+        "inspiredByServiceIds": [
+          "sidechef",
+          "samsung-food",
+          "mealime"
+        ]
+      }
+    },
+    {
+      "opportunityId": "opp-career-application",
+      "rank": 7,
+      "title": "직무별 지원 준비·후속 Flow",
+      "opportunityStatus": "Go",
+      "corpusRole": "future_content_discovery_only",
+      "contributesToQualifiedCorpusCounts": false,
+      "sourceCategoryAsRecorded": "work_career",
+      "canonicalCategoryMapping": {
+        "canonicalLifeArea": "work_career",
+        "mappingType": "already_canonical"
+      },
+      "userMoment": "여러 채용 공고의 지원 상태와 다음 행동을 놓치지 않고 싶을 때",
+      "naturalArtifact": "상태형 체크리스트 + 후속 캘린더",
+      "minimumAnchor": [
+        "채용 공고 URL"
+      ],
+      "expectedContentInputs": [
+        "공고 URL 또는 면접일 0~1개"
+      ],
+      "requiredSourceRows": [
+        "지원 단계",
+        "체크 행동",
+        "후속 시점 또는 순서",
+        "원문 링크"
+      ],
+      "dateIntent": "optional_follow_up_or_interview_date",
+      "defaultDestination": "checklist",
+      "executionPatternBoundary": {
+        "benchmarkServicePatternIds": [
+          "state_to_follow_up"
+        ],
+        "canonicalExecutionPatternCandidate": "ordered_procedure",
+        "mappingStatus": "candidate_only_reclassify_after_actual_creator_source_rows_are_acquired"
+      },
+      "doNotBuildBoundary": "이력서 ATS 점수 엔진 / 채용공고 데이터베이스 복제",
+      "publicUseBoundary": "공고 데이터베이스·이력서 점수 엔진을 만들지 않고 실행 항목과 출처를 제공한다.",
+      "sourceShapeAsDiscoveryBrief": "커리어 코치의 지원 체크리스트, 면접 준비표, 직무별 포트폴리오 가이드",
+      "evidenceSource": {
+        "representativeServiceId": "teal",
+        "inspiredByServiceIds": [
+          "teal",
+          "huntr"
+        ]
+      }
+    },
+    {
+      "opportunityId": "opp-care-routine",
+      "rank": 8,
+      "title": "대상별 반복 관리 루틴",
+      "opportunityStatus": "Go",
+      "corpusRole": "future_content_discovery_only",
+      "contributesToQualifiedCorpusCounts": false,
+      "sourceCategoryAsRecorded": "hobby_pet",
+      "canonicalCategoryMapping": {
+        "canonicalLifeArea": "hobby_pet",
+        "mappingType": "already_canonical"
+      },
+      "userMoment": "식물마다 다른 물주기·비료·분갈이 시점을 놓치지 않고 싶을 때",
+      "naturalArtifact": "반복 관리 캘린더 또는 일일 훈련 루틴",
+      "minimumAnchor": [
+        "식물 종류",
+        "위치·빛·화분 환경"
+      ],
+      "expectedContentInputs": [
+        "대상 이름과 시작일 1~2개"
+      ],
+      "requiredSourceRows": [
+        "대상",
+        "관리/훈련 행동",
+        "원문 주기·순서",
+        "원문 링크"
+      ],
+      "dateIntent": "source_defined_recurrence_or_sequence",
+      "defaultDestination": "calendar",
+      "executionPatternBoundary": {
+        "benchmarkServicePatternIds": [
+          "environment_to_maintenance",
+          "profile_to_daily_plan"
+        ],
+        "canonicalExecutionPatternCandidate": "repeating_routine",
+        "mappingStatus": "candidate_only_reclassify_after_actual_creator_source_rows_are_acquired"
+      },
+      "doNotBuildBoundary": "사진 기반 질병 진단 / 날씨·토양 계산 엔진",
+      "publicUseBoundary": "진단·교정 판단을 하지 않고 공개 관리 주기·훈련 순서와 전문가 링크를 보존한다.",
+      "sourceShapeAsDiscoveryBrief": "전문가·판매자의 식물 관리표 또는 반려 훈련 시리즈",
+      "evidenceSource": {
+        "representativeServiceId": "planta",
+        "inspiredByServiceIds": [
+          "planta",
+          "dogo",
+          "hundeo"
+        ]
+      }
+    }
+  ]
+}

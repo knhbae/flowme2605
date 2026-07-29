@@ -1,0 +1,482 @@
+{
+  "schemaVersion": "flowme-conversion-decision-tree-v1",
+  "date": "2026-07-28",
+  "status": "planning_backend_contract",
+  "entryNodeId": "source_access",
+  "evidenceBoundary": {
+    "purpose": "Choose a traceable canonical structure, not public promotion status.",
+    "publicReadiness": "not_assessed",
+    "externalCalendarRoundTrip": "NOT_RUN",
+    "observedUserValidation": "NOT_RUN"
+  },
+  "controlledValues": {
+    "itemIntents": [
+      "act",
+      "inspect",
+      "decide",
+      "record",
+      "use_resource"
+    ],
+    "completionModes": [
+      "check",
+      "decision",
+      "record"
+    ],
+    "primaryArtifacts": [
+      "calendar",
+      "checklist",
+      "todo",
+      "sheet",
+      "memo"
+    ],
+    "calendarPolicies": [
+      "none",
+      "per_item",
+      "step_bundle"
+    ],
+    "rowAccountingTargets": [
+      "item",
+      "field",
+      "memo",
+      "omitted"
+    ]
+  },
+  "nodes": [
+    {
+      "nodeId": "source_access",
+      "question": "Can the exact source document and required rows be inspected without bypassing access controls?",
+      "branches": [
+        {
+          "when": "yes",
+          "next": "one_job"
+        },
+        {
+          "when": "no",
+          "outcome": "source_missing"
+        }
+      ]
+    },
+    {
+      "nodeId": "one_job",
+      "question": "Can one bounded user job be supported by one primary source?",
+      "branches": [
+        {
+          "when": "yes",
+          "next": "rows_complete"
+        },
+        {
+          "when": "several_sources_have_independent_jobs",
+          "outcome": "split_into_source_specific_flows_then_consider_map"
+        },
+        {
+          "when": "only_a_blended_source_can_create_the_job",
+          "outcome": "hold_source_blend_required"
+        }
+      ]
+    },
+    {
+      "nodeId": "rows_complete",
+      "question": "Are the rows needed for the bounded job captured with stable IDs and source locators or evidence-packet identity?",
+      "branches": [
+        {
+          "when": "yes",
+          "next": "row_user_value"
+        },
+        {
+          "when": "partially",
+          "outcome": "source_import_required"
+        },
+        {
+          "when": "no",
+          "outcome": "source_missing"
+        }
+      ]
+    },
+    {
+      "nodeId": "row_user_value",
+      "question": "For each SourceRow, is there an independently stateful user action, decision, record, or resource use?",
+      "branches": [
+        {
+          "when": "yes",
+          "next": "row_cardinality"
+        },
+        {
+          "when": "typed_value_needed",
+          "decision": "map_row_to_field",
+          "next": "row_accounting_complete"
+        },
+        {
+          "when": "instruction_context_caution_or_link",
+          "decision": "map_row_to_memo",
+          "next": "row_accounting_complete"
+        },
+        {
+          "when": "outside_job_duplicate_or_incomplete",
+          "decision": "omit_with_reason",
+          "next": "row_accounting_complete"
+        }
+      ]
+    },
+    {
+      "nodeId": "row_cardinality",
+      "question": "How many independently completable actions are explicit in the row or row group?",
+      "branches": [
+        {
+          "when": "one_row_one_action",
+          "decision": "one_to_one_item",
+          "next": "row_accounting_complete"
+        },
+        {
+          "when": "many_rows_one_action",
+          "decision": "merge_many_to_one_item",
+          "next": "row_accounting_complete"
+        },
+        {
+          "when": "one_row_many_explicit_actions",
+          "decision": "split_one_to_many_items",
+          "next": "row_accounting_complete"
+        },
+        {
+          "when": "many_rows_many_explicit_actions",
+          "decision": "map_many_to_many_items",
+          "next": "row_accounting_complete"
+        },
+        {
+          "when": "action_boundaries_require_invention",
+          "outcome": "hold_unsupported_action_boundary"
+        }
+      ]
+    },
+    {
+      "nodeId": "row_accounting_complete",
+      "question": "Have all captured SourceRows been mapped to Item, Field, Memo, or omission, and is the result executable or structure-only?",
+      "branches": [
+        {
+          "when": "more_rows_remain",
+          "next": "row_user_value"
+        },
+        {
+          "when": "all_rows_accounted_and_items_exist",
+          "next": "item_intent"
+        },
+        {
+          "when": "all_rows_accounted_no_items_but_fields_or_memos_exist",
+          "outcome": "structure_only_no_items_with_non_calendar_projection"
+        },
+        {
+          "when": "all_rows_accounted_no_items_and_no_fields_or_memos",
+          "outcome": "not_a_flow"
+        }
+      ]
+    },
+    {
+      "nodeId": "item_intent",
+      "question": "What is the Item's terminal user intent?",
+      "branches": [
+        {
+          "when": "perform",
+          "value": "act",
+          "next": "completion_mode"
+        },
+        {
+          "when": "verify_condition",
+          "value": "inspect",
+          "next": "completion_mode"
+        },
+        {
+          "when": "choose",
+          "value": "decide",
+          "next": "completion_mode"
+        },
+        {
+          "when": "capture_required_value",
+          "value": "record",
+          "next": "completion_mode"
+        },
+        {
+          "when": "consume_or_use_linked_resource",
+          "value": "use_resource",
+          "next": "completion_mode"
+        }
+      ]
+    },
+    {
+      "nodeId": "completion_mode",
+      "question": "What is the smallest source-backed proof of completion?",
+      "branches": [
+        {
+          "when": "done_or_not_done",
+          "value": "check",
+          "next": "schedule_evidence"
+        },
+        {
+          "when": "one_of_source_backed_options",
+          "value": "decision",
+          "next": "schedule_evidence"
+        },
+        {
+          "when": "required_field_values_captured",
+          "value": "record",
+          "next": "schedule_evidence"
+        },
+        {
+          "when": "requires_invented_done_condition",
+          "outcome": "demote_to_memo_or_hold"
+        }
+      ]
+    },
+    {
+      "nodeId": "schedule_evidence",
+      "question": "Does the source or user own a real date, date window, anchor-offset formula, or recurrence?",
+      "branches": [
+        {
+          "when": "source_or_user_absolute_date",
+          "value": "absolute",
+          "next": "recurrence"
+        },
+        {
+          "when": "source_date_window",
+          "value": "date_window",
+          "next": "recurrence"
+        },
+        {
+          "when": "source_offset_plus_named_user_or_source_anchor",
+          "value": "anchor_offset",
+          "next": "recurrence"
+        },
+        {
+          "when": "only_sequence_day_week_age_or_order_exists",
+          "value": "none_until_resolved_by_user_overlay",
+          "next": "experimental_controls"
+        },
+        {
+          "when": "none",
+          "value": "none",
+          "next": "experimental_controls"
+        },
+        {
+          "when": "date_would_need_to_be_invented",
+          "decision": "keep_undated",
+          "next": "experimental_controls"
+        }
+      ]
+    },
+    {
+      "nodeId": "recurrence",
+      "question": "Is a cadence explicitly source-defined or user-selected?",
+      "branches": [
+        {
+          "when": "yes",
+          "decision": "attach_structured_recurrence_and_occurrence_policy",
+          "next": "experimental_controls"
+        },
+        {
+          "when": "no",
+          "decision": "do_not_create_recurrence",
+          "next": "experimental_controls"
+        }
+      ]
+    },
+    {
+      "nodeId": "experimental_controls",
+      "question": "Are optionality, a condition, or a dependency explicit in the source?",
+      "branches": [
+        {
+          "when": "simple_and_explicit",
+          "decision": "record_in_conversion_audit_sidecar",
+          "next": "step_boundary"
+        },
+        {
+          "when": "requires_domain_judgment_or_free_prose",
+          "decision": "retain_as_memo",
+          "next": "step_boundary"
+        },
+        {
+          "when": "none",
+          "next": "step_boundary"
+        }
+      ]
+    },
+    {
+      "nodeId": "step_boundary",
+      "question": "Do Items share a meaningful source period, phase, week, procedure group, row group, or user moment?",
+      "branches": [
+        {
+          "when": "yes",
+          "decision": "group_in_step_without_moving_item_state",
+          "next": "flow_boundary"
+        },
+        {
+          "when": "no",
+          "decision": "use_minimal_single_item_step",
+          "next": "flow_boundary"
+        }
+      ]
+    },
+    {
+      "nodeId": "flow_boundary",
+      "question": "Do the Steps serve one user job and one primary source?",
+      "branches": [
+        {
+          "when": "yes",
+          "decision": "one_flow",
+          "next": "map_boundary"
+        },
+        {
+          "when": "different_terminal_jobs_or_primary_sources",
+          "decision": "separate_flows",
+          "next": "map_boundary"
+        }
+      ]
+    },
+    {
+      "nodeId": "map_boundary",
+      "question": "Are two or more independently usable Flows a source-defined family, variant set, or coordinated project?",
+      "branches": [
+        {
+          "when": "yes",
+          "decision": "group_in_bundle_or_flow_map",
+          "next": "primary_projection"
+        },
+        {
+          "when": "no",
+          "decision": "keep_standalone_flow",
+          "next": "primary_projection"
+        }
+      ]
+    },
+    {
+      "nodeId": "primary_projection",
+      "question": "Which artifact's loss would make the user job fail?",
+      "branches": [
+        {
+          "when": "real_date_or_time_control",
+          "value": "calendar",
+          "next": "calendar_policy"
+        },
+        {
+          "when": "bounded_completion_set",
+          "value": "checklist",
+          "next": "secondary_projections"
+        },
+        {
+          "when": "open_next_action_queue",
+          "value": "todo",
+          "next": "secondary_projections"
+        },
+        {
+          "when": "stable_rows_fields_status_or_progress",
+          "value": "sheet",
+          "next": "secondary_projections"
+        },
+        {
+          "when": "retained_guidance_or_context",
+          "value": "memo",
+          "next": "secondary_projections"
+        }
+      ]
+    },
+    {
+      "nodeId": "calendar_policy",
+      "question": "For calendar-eligible Items, should projection be per Item or one Step bundle?",
+      "branches": [
+        {
+          "when": "items_share_one_effective_schedule_and_one_user_moment_and_child_ids_are_retained",
+          "value": "step_bundle",
+          "next": "secondary_projections"
+        },
+        {
+          "when": "otherwise",
+          "value": "per_item",
+          "next": "secondary_projections"
+        },
+        {
+          "when": "item_is_undated",
+          "value": "none",
+          "next": "secondary_projections"
+        }
+      ]
+    },
+    {
+      "nodeId": "secondary_projections",
+      "question": "Which additional destination adds utility without becoming another canonical Item?",
+      "branches": [
+        {
+          "when": "supported",
+          "decision": "add_unique_secondary_artifacts_and_projection_loss_records",
+          "next": "final_validation"
+        },
+        {
+          "when": "unsupported_or_misleading",
+          "decision": "record_forbidden_projection_and_reason",
+          "next": "final_validation"
+        }
+      ]
+    },
+    {
+      "nodeId": "final_validation",
+      "question": "Do all references resolve, every row have accounting, every material property have provenance, and every projection obey the no-invention rules?",
+      "branches": [
+        {
+          "when": "yes",
+          "outcome": "complete_structure_fixture"
+        },
+        {
+          "when": "no",
+          "outcome": "incomplete_fixture_or_boundary_control"
+        }
+      ]
+    }
+  ],
+  "outcomes": {
+    "complete_structure_fixture": {
+      "countsAsComplete": true,
+      "nextState": "structure_review",
+      "promotionMeaning": "none"
+    },
+    "source_import_required": {
+      "countsAsComplete": false,
+      "nextState": "source_acquisition"
+    },
+    "source_missing": {
+      "countsAsComplete": false,
+      "nextState": "source_acquisition"
+    },
+    "hold_source_blend_required": {
+      "countsAsComplete": false,
+      "nextState": "source_boundary_review"
+    },
+    "split_into_source_specific_flows_then_consider_map": {
+      "countsAsComplete": false,
+      "nextState": "restart_once_per_primary_source"
+    },
+    "hold_unsupported_action_boundary": {
+      "countsAsComplete": false,
+      "nextState": "conversion_review"
+    },
+    "demote_to_memo_or_hold": {
+      "countsAsComplete": false,
+      "nextState": "reclassify_row_or_reselect_source"
+    },
+    "memo_only_or_not_a_flow": {
+      "countsAsComplete": false,
+      "nextState": "keep_as_reference_or_reselect_source"
+    },
+    "incomplete_fixture_or_boundary_control": {
+      "countsAsComplete": false,
+      "nextState": "fix_or_keep_as_boundary"
+    }
+  },
+  "invariants": [
+    "A new primaryArtifact is never hybrid.",
+    "A SourceRow may support many targets and an Item may reference many SourceRows.",
+    "Every SourceRow is accounted for as Item, Field, Memo, or omitted.",
+    "Every omitted row has a reason.",
+    "Source-filled values are never requested again from the user.",
+    "An undated Item never projects to VEVENT.",
+    "VEVENT and VTODO are siblings under VCALENDAR and are never nested.",
+    "VTODO is never the only fallback when client support is not proven.",
+    "Step, Flow, and Map never take completion state away from Item.",
+    "Public readiness and structure completeness are independent."
+  ]
+}

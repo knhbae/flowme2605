@@ -1,0 +1,835 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe Item·Map Architecture & Creator Portfolio Fit</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><rect width=%2264%22 height=%2264%22 rx=%2216%22 fill=%22%23102c22%22/><path d=%22M18 18h29v8H27v8h16v8H27v15h-9z%22 fill=%22%23d8f26a%22/></svg>">
+  <style>
+    :root{--ink:#14211c;--muted:#65736c;--line:#dce7df;--paper:#f5f8f3;--green:#1d6f4f;--lime:#d8f26a;--navy:#17352b;--amber:#b66a13;--red:#a8493e;--blue:#285da8;--white:#fff;--shadow:0 18px 50px rgba(20,42,32,.09)}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font-family:Pretendard,"Noto Sans KR","Apple SD Gothic Neo",Arial,sans-serif;line-height:1.55}a{color:inherit}.shell{width:min(1360px,calc(100% - 48px));margin:auto}.slide{min-height:760px;padding:64px 0;border-bottom:1px solid var(--line);display:flex;align-items:center}.slide>.shell{width:min(1360px,calc(100% - 48px))}.hero{min-height:900px;background:radial-gradient(circle at 85% 15%,rgba(216,242,106,.24),transparent 32%),linear-gradient(145deg,#102c22,#1b4435);color:white}.eyebrow{display:inline-block;color:#4f745f;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.hero .eyebrow{color:var(--lime)}h1{font-size:clamp(44px,6vw,82px);line-height:1.03;letter-spacing:-.055em;margin:20px 0;max-width:1100px}h2{font-size:clamp(34px,4.2vw,60px);line-height:1.08;letter-spacing:-.045em;margin:10px 0 18px}h3{font-size:26px;line-height:1.2;letter-spacing:-.025em;margin:7px 0}h4{font-size:16px;margin:22px 0 10px}.lead{max-width:880px;font-size:21px;color:#dbe9e1}.decision-banner{display:grid;grid-template-columns:1.4fr .6fr;gap:22px;margin-top:44px}.decision-copy{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:24px;padding:30px}.decision-copy strong{display:block;font-size:31px;color:var(--lime)}.decision-copy p{margin:8px 0 0;color:#d9e7df}.metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.metrics div{background:white;color:var(--ink);padding:18px;border-radius:18px}.metrics span{display:block;color:var(--muted);font-size:12px}.metrics strong{display:block;font-size:30px}.evidence-note{margin-top:24px;font-size:13px;color:#c9d8d0}.section-intro{max-width:880px;margin-bottom:36px}.section-intro p{color:var(--muted);font-size:18px}.hero-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.mini-case{background:white;border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:var(--shadow)}.mini-case img{width:100%;height:190px;object-fit:cover;display:block}.mini-case div{padding:20px}.mini-case span{font-size:12px;color:var(--green);font-weight:800}.mini-case h3{font-size:22px}.mini-case p{color:var(--muted);font-size:14px}.model-flow{display:grid;grid-template-columns:repeat(7,auto);align-items:center;gap:12px;margin:36px 0}.model-flow span{background:white;border:1px solid var(--line);padding:18px 20px;border-radius:16px;text-align:center;font-weight:800;box-shadow:var(--shadow)}.model-flow i{font-style:normal;color:var(--green);font-size:24px}.model-flow .projection{background:#e5f2e8}.score-table{width:100%;border-collapse:separate;border-spacing:0 10px}.score-table tr{background:white}.score-table td{padding:20px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}.score-table td:first-child{border-left:1px solid var(--line);border-radius:16px 0 0 16px;width:240px}.score-table td:last-child{border-right:1px solid var(--line);border-radius:0 16px 16px 0;color:var(--muted)}.score-table small{display:block;color:var(--muted)}.score-table td:nth-child(2){width:300px}.score-bar{display:inline-block;width:210px;height:10px;background:#e5ebe7;border-radius:99px;margin-right:12px;vertical-align:middle;overflow:hidden}.score-bar i{display:block;height:100%;background:var(--green);border-radius:99px}.filter-shell{position:sticky;top:0;z-index:10;background:rgba(245,248,243,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:12px 0}.filters{display:flex;gap:8px;overflow:auto}.filter{appearance:none;border:1px solid var(--line);background:white;border-radius:99px;padding:9px 14px;white-space:nowrap;font-weight:700;color:var(--ink);cursor:pointer}.filter[aria-pressed="true"]{background:var(--navy);color:white;border-color:var(--navy)}.content-stack{display:grid;gap:24px}.content-card{background:white;border:1px solid var(--line);border-radius:26px;padding:28px;box-shadow:var(--shadow)}.content-card[hidden]{display:none}.content-head{display:flex;justify-content:space-between;gap:24px}.content-head p{color:var(--muted);margin:8px 0;max-width:760px}.verdict{width:76px;height:42px;display:grid;place-items:center;border-radius:99px;font-weight:900}.verdict.go{background:#e1f4e9;color:var(--green)}.verdict.modify{background:#fff1d7;color:var(--amber)}.content-layout{display:grid;grid-template-columns:360px 1fr;gap:30px;margin-top:18px}.source-shot{margin:0;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#eef2ee}.source-shot img{width:100%;height:250px;object-fit:cover;display:block}.source-shot figcaption{display:flex;justify-content:space-between;padding:13px 15px;font-size:13px}.source-shot figcaption span{color:var(--muted)}.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.facts div{background:#f4f7f3;border-radius:13px;padding:12px}.facts span{display:block;color:var(--muted);font-size:11px}.facts strong{font-size:13px}.item-list{list-style:none;padding:0;margin:0;display:grid;gap:8px}.item-list li{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #edf2ee}.item-list .check{width:24px;height:24px;display:grid;place-items:center;border-radius:7px;background:#e2f3e9;color:var(--green);font-weight:900}.item-list small{display:block;color:var(--muted)}.more{color:var(--muted);font-size:12px}.content-card details{border-top:1px solid var(--line);margin-top:22px;padding-top:18px}.content-card summary{cursor:pointer;font-weight:900;color:var(--green)}.detail-body{padding-top:20px}.source-rows{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.source-rows>div{display:grid;grid-template-columns:150px 1fr;gap:10px;background:#f6f8f5;border-radius:12px;padding:10px}.source-rows span{font-family:ui-monospace,Consolas,monospace;font-size:10px;color:var(--blue);word-break:break-all}.source-rows p{font-size:12px;margin:0}.architecture-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:22px}.arch{border:1px solid var(--line);border-radius:18px;padding:18px}.arch-top{display:flex;gap:9px;align-items:center}.arch-top span{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:#eef2ef;font-weight:900}.arch-top strong{flex:1}.arch-top b{font-size:11px}.arch p{font-size:13px;color:var(--muted);min-height:82px}.arch dl{margin:0}.arch dl div{display:flex;justify-content:space-between;border-top:1px solid var(--line);padding:7px 0;font-size:11px}.arch dt{color:var(--muted)}.arch-go{border-color:#9dd2b4}.arch-hold{border-color:#e5b1ab}.arch-modify{border-color:#e5ca91}.projection-line{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}.projection-line span{background:#eef3ef;border-radius:99px;padding:8px 11px;font-size:11px}.boundary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.boundary{background:white;border:1px solid var(--line);border-radius:18px;padding:18px}.boundary span{color:var(--red);font-size:11px;font-weight:900}.boundary h4{font-size:19px;margin:6px 0}.boundary p{font-size:12px;color:var(--muted);min-height:60px}.boundary strong{font-size:12px}.evidence-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.evidence-card{background:white;border:1px solid var(--line);border-radius:20px;padding:24px}.evidence-card strong{font-size:38px;display:block}.evidence-card span{color:var(--muted)}.footer{background:#102c22;color:white;padding:58px 0}.footer a{color:var(--lime)}.footer-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:30px}.footer ul{margin:0;padding-left:18px;color:#d6e3dc}.mono{font-family:ui-monospace,Consolas,monospace;font-size:12px}.hidden-count{padding:22px;text-align:center;color:var(--muted)}
+    @media(max-width:900px){.slide{padding:46px 0;min-height:auto}.shell,.slide>.shell{width:min(100% - 28px,1360px)}.decision-banner,.content-layout,.footer-grid{grid-template-columns:1fr}.hero-grid,.architecture-grid,.boundary-grid,.evidence-grid{grid-template-columns:1fr 1fr}.content-layout{gap:18px}.source-shot img{height:280px}.facts{grid-template-columns:1fr 1fr}.model-flow{grid-template-columns:1fr;gap:5px}.model-flow i{transform:rotate(90deg);text-align:center}.score-table td:nth-child(2){width:220px}.score-bar{width:140px}}
+    @media(max-width:600px){.hero{min-height:844px}.hero-grid,.architecture-grid,.boundary-grid,.evidence-grid,.source-rows{grid-template-columns:1fr}.metrics{grid-template-columns:1fr 1fr}h1{font-size:43px}.lead{font-size:17px}.content-card{padding:18px;border-radius:20px}.content-head{display:block}.verdict{margin-top:10px}.source-shot img{height:220px}.facts{grid-template-columns:1fr 1fr}.source-rows>div{grid-template-columns:1fr}.arch p{min-height:0}.score-table,.score-table tbody,.score-table tr,.score-table td{display:block}.score-table tr{margin-bottom:14px;border-radius:16px}.score-table td{border:0!important;width:auto!important}.score-bar{width:75%}.filter-shell{top:0}.footer-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <aside style="background:#fff4cf;border-bottom:1px solid #e6c86f;color:#473b17;padding:14px 24px;font-size:14px;line-height:1.55">
+    <strong>Historical baseline · 2026-07-23 corpus</strong>
+    이 보고서는 9 Bundle·148 Item·198 SourceRow를 사용한 동결 architecture
+    baseline입니다. 카드의 Go/Modify/Hold는 최신 공개 판정이 아니라 당시
+    architecture fit 판정입니다.
+    <a href="2026-07-28-flow-item-map-architecture-qualified-portfolio-fit-review-v2-ko.html" style="font-weight:800;text-decoration:underline">최신 Qualified v2 재검증 보고서</a>와
+    <a href="2026-07-27-creator-portfolio-qualified-review-ko.html" style="font-weight:800;text-decoration:underline">최신 콘텐츠 자격 판정</a>을 함께 확인하세요.
+  </aside>
+  <section class="slide hero">
+    <div class="shell">
+      <span class="eyebrow">2026-07-27 · source-backed architecture lab</span>
+      <h1>ICS를 원본으로<br>삼지 않아도 된다</h1>
+      <p class="lead">9개 카테고리의 실제 제작자 콘텐츠를 세 구조로 변환했습니다. 결론은 canonical Item을 유지하고, 같은 날짜의 여러 할 일은 <strong>내보낼 때만 묶는 것</strong>입니다.</p>
+      <div class="decision-banner">
+        <div class="decision-copy">
+          <span>최종 권고</span>
+          <strong>Canonical v1 유지 + projection-time grouping</strong>
+          <p>SharedContext는 의미를 보존했지만 사용자 입력 감소 근거가 1개 콘텐츠뿐이라 canonical 채택을 보류했습니다.</p>
+        </div>
+        <div class="metrics">
+          <div><span>카테고리</span><strong>9</strong></div>
+          <div><span>실제 Item</span><strong>148</strong></div>
+          <div><span>SourceRow</span><strong>198</strong></div>
+          <div><span>자동 검증</span><strong>752</strong></div>
+        </div>
+      </div>
+      <p class="evidence-note">내부 구조·parser·렌더 QA 결과입니다. 외부 Calendar 실제 import와 관찰 사용자 검증은 실행하지 않았습니다.</p>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="shell">
+      <div class="section-intro"><span class="eyebrow">첫 화면부터 실제 예시</span><h2>묶음은 같아도<br>시간 관계는 다르다</h2><p>이사에는 날짜 묶음이 필요하지만, 반찬 큐레이션과 취업 영상 컬렉션에 날짜나 필수 순서를 만들면 원문 의미가 바뀝니다.</p></div>
+      <div class="hero-grid">
+        <article class="mini-case"><img src="2026-07-23-creator-flow-portfolio-assets/creator-home-ajd-source.png" alt="아정당 원문"><div><span>순서형 Map</span><h3>이사 D-30 체크리스트</h3><p>이사일을 기준으로 준비 시점을 놓치지 않고, 같은 시점의 할 일을 함께 끝낸다.</p><strong>Calendar: step_bundle</strong></div></article><article class="mini-case"><img src="2026-07-23-creator-flow-portfolio-assets/creator-meals-wtable-source.png" alt="우리의식탁 원문"><div><span>제작자 큐레이션</span><h3>이번 주 여름 반찬 5가지</h3><p>제작자가 고른 다섯 레시피 중 이번 주에 만들 것을 고르고 완료한다.</p><strong>Calendar: none</strong></div></article><article class="mini-case"><img src="2026-07-23-creator-flow-portfolio-assets/creator-work-andstudio-source.png" alt="AND Studio 원문"><div><span>순서 없는 컬렉션</span><h3>AND 취업 준비 영상 3편</h3><p>서로 독립적인 취업 준비 영상 중 필요한 것을 골라 보고 적용한다.</p><strong>Calendar: none</strong></div></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="shell">
+      <div class="section-intro"><span class="eyebrow">권고 데이터 구조</span><h2>Item은 원본,<br>ICS는 전달물</h2><p>Map과 Step은 의미를 묶고, 상태는 Item이 소유합니다. Calendar는 일정이 있는 effective Item만 선택적으로 직렬화합니다.</p></div>
+      <div class="model-flow"><span>SourceRow<br><small>근거</small></span><i>→</i><span>Item<br><small>실행 상태</small></span><i>→</i><span>Step / Flow / Map<br><small>의미 그룹</small></span><i>→</i><span class="projection">Calendar · Checklist<br>Todo · Sheet · Memo</span></div>
+      <table class="score-table"><tbody><tr><td><strong>current_canonical_v1</strong><small>Go</small></td><td><span class="score-bar"><i style="width:96%"></i></span><b>96</b></td><td>148 Item and 198 SourceRow remain direct; unscheduled content stays outside VEVENT; existing setup fields already collect shared anchor dates once.</td></tr><tr><td><strong>literal_ics_first</strong><small>Hold</small></td><td><span class="score-bar"><i style="width:51%"></i></span><b>51</b></td><td>118 scheduled Items become VEVENT without native FlowMe completion; hierarchy/provenance rely on VJOURNAL, RELATED-TO and X-properties whose client round-trip is not proven.</td></tr><tr><td><strong>item_first_shared_context</strong><small>Modify</small></td><td><span class="score-bar"><i style="width:95%"></i></span><b>95</b></td><td>Semantics pass, but only 1 distinct primary bundle demonstrates repeated equal Item schedules and existing anchor fields already provide one-time date entry. Canonical persistence is not justified yet.</td></tr></tbody></table>
+    </div>
+  </section>
+
+  <div class="filter-shell">
+    <div class="shell filters" aria-label="콘텐츠 필터">
+      <button class="filter" data-filter="all" aria-pressed="true">전체 9개</button>
+      <button class="filter" data-filter="category:home_living" aria-pressed="false">집·살림</button><button class="filter" data-filter="category:family_parenting" aria-pressed="false">가족·육아</button><button class="filter" data-filter="category:study_reading" aria-pressed="false">공부·독서</button><button class="filter" data-filter="category:money_admin_purchase" aria-pressed="false">돈·행정·구매</button><button class="filter" data-filter="category:health_fitness" aria-pressed="false">건강·운동</button><button class="filter" data-filter="category:travel_outings" aria-pressed="false">여행·외출</button><button class="filter" data-filter="category:meals_grocery" aria-pressed="false">식사·장보기</button><button class="filter" data-filter="category:work_career" aria-pressed="false">일·커리어</button><button class="filter" data-filter="category:hobby_pet" aria-pressed="false">취미·반려</button>
+      <button class="filter" data-filter="calendar:none" aria-pressed="false">ICS 불필요</button>
+      <button class="filter" data-filter="map:ordered" aria-pressed="false">순서형</button>
+      <button class="filter" data-filter="map:source_curation" aria-pressed="false">큐레이션</button>
+      <button class="filter" data-filter="map:unordered_collection" aria-pressed="false">컬렉션</button>
+    </div>
+  </div>
+
+  <section class="slide" style="align-items:flex-start">
+    <div class="shell">
+      <div class="section-intro"><span class="eyebrow">9개 category fit</span><h2>실제 콘텐츠에<br>세 구조를 적용한 결과</h2><p>각 카드에서 SourceRow, 실제 Item, 세 아키텍처, projection 손실을 연속해서 볼 수 있습니다.</p></div>
+      <div class="content-stack" id="contentStack">
+        <article class="content-card featured" data-content-card data-category="home_living" data-map="ordered" data-calendar="step_bundle" data-verdict="Go">
+    <header class="content-head">
+      <div>
+        <span class="eyebrow">집·살림 · 순서형 Map</span>
+        <h3>이사 D-30 체크리스트</h3>
+        <p>이사일을 기준으로 준비 시점을 놓치지 않고, 같은 시점의 할 일을 함께 끝낸다.</p>
+      </div>
+      <div class="verdict go">Go</div>
+    </header>
+    <div class="content-layout">
+      <figure class="source-shot">
+        <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer"><img src="2026-07-23-creator-flow-portfolio-assets/creator-home-ajd-source.png" alt="아정당 원문 근거 화면" loading="lazy"></a>
+        <figcaption><strong>아정당</strong><span>Go · creator_flow_map_candidate</span></figcaption>
+      </figure>
+      <section>
+        <div class="facts">
+          <div><span>Map</span><strong>순서형 Map</strong></div>
+          <div><span>원문 단위</span><strong>date_offsets</strong></div>
+          <div><span>기본 결과물</span><strong>calendar</strong></div>
+          <div><span>필요 입력</span><strong>이사일</strong></div>
+        </div>
+        <h4>사용자가 실제로 체크하는 Item</h4>
+        
+    <ol class="item-list">
+      <li>
+            <span class="check">✓</span>
+            <div><strong>이사 방식과 이사업체 정하기</strong><small>D-30 · 큰 결정과 예약 · 일정 근거 있음</small></div>
+          </li><li>
+            <span class="check">✓</span>
+            <div><strong>새집 상태 확인하고 필요한 수리 잡기</strong><small>D-30 · 큰 결정과 예약 · 일정 근거 있음</small></div>
+          </li><li>
+            <span class="check">✓</span>
+            <div><strong>가져가지 않을 물건 처분 시작하기</strong><small>D-30 · 큰 결정과 예약 · 일정 근거 있음</small></div>
+          </li><li>
+            <span class="check">✓</span>
+            <div><strong>학교 전학과 돌봄 계획 세우기</strong><small>D-30 · 큰 결정과 예약 · 일정 근거 있음</small></div>
+          </li><li>
+            <span class="check">✓</span>
+            <div><strong>우편·배송·전출 주소 변경하기</strong><small>D-10 · 주소·서비스·짐 줄이기 · 일정 근거 있음</small></div>
+          </li><li>
+            <span class="check">✓</span>
+            <div><strong>엘리베이터·사다리차·주차 예약하기</strong><small>D-10 · 주소·서비스·짐 줄이기 · 일정 근거 있음</small></div>
+          </li>
+    </ol>
+    <p class="more">외 21개 Item · 전체 데이터는 JSON/fixture에서 확인</p>
+      </section>
+    </div>
+    <details open>
+      <summary>SourceRow와 세 구조 비교 보기</summary>
+      <div class="detail-body">
+        <h4>원문에서 확보한 행</h4>
+        <div class="source-rows"><div><span>bundle-moving-d30-s1-i1-r1</span><p><strong>포장이사·반포장이사·일반이사 중 방식 선택</strong></p></div><div><span>bundle-moving-d30-s1-i1-r2</span><p><strong>이사업체 견적 비교와 예약</strong></p></div><div><span>bundle-moving-d30-s1-i1-r3</span><p><strong>입주청소 업체 견적 비교와 예약</strong></p></div><div><span>bundle-moving-d30-s1-i2-r1</span><p><strong>새집 현장 점검</strong></p></div></div>
+        
+    <div class="architecture-grid">
+      <article class="arch arch-go">
+        <div class="arch-top"><span>A</span><strong>Current canonical</strong><b>Go</b></div>
+        <p><strong>27 Item</strong>과 SourceRow를 직접 보존합니다. 일정 없는 Item은 Calendar 밖에 남습니다.</p>
+        <dl><div><dt>Calendar</dt><dd>6 compact / 27 granular</dd></div><div><dt>의미 round-trip</dt><dd>100%</dd></div></dl>
+      </article>
+      <article class="arch arch-hold">
+        <div class="arch-top"><span>B</span><strong>Literal ICS-first</strong><b>Hold</b></div>
+        <p><strong>27 VEVENT · 0 VTODO</strong>. 일정 직렬화는 되지만 완료·계층·출처는 비표준/미보장 metadata에 의존합니다.</p>
+        <dl><div><dt>외부 client</dt><dd>not run</dd></div><div><dt>관계 보존</dt><dd>not proven</dd></div></dl>
+      </article>
+      <article class="arch arch-modify">
+        <div class="arch-top"><span>C</span><strong>Item + SharedContext</strong><b>Modify</b></div>
+        <p><strong>7 context</strong>를 만들 수 있지만 기존 setup field가 날짜를 이미 한 번만 받습니다.</p>
+        <dl><div><dt>일정 Item</dt><dd>27</dd></div><div><dt>추가 사용자 이득</dt><dd>부분적</dd></div></dl>
+      </article>
+    </div>
+        <div class="projection-line">
+          <span>Calendar: <b>step_bundle</b></span>
+          <span>Checklist: <b>natural</b></span>
+          <span>Sheet: <b>lossy</b></span>
+          <span>Memo: <b>source/caution 보존</b></span>
+        </div>
+      </div>
+    </details>
+  </article><article class="content-card featured" data-content-card data-category="meals_grocery" data-map="source_curation" data-calendar="none" data-verdict="Go">
+    <header class="content-head">
+      <div>
+        <span class="eyebrow">식사·장보기 · 제작자 큐레이션</span>
+        <h3>이번 주 여름 반찬 5가지</h3>
+        <p>제작자가 고른 다섯 레시피 중 이번 주에 만들 것을 고르고 완료한다.</p>
+      </div>
+      <div class="verdict go">Go</div>
+    </header>
+    <div class="content-layout">
+      <figure class="source-shot">
+        <a href="https://wtable.co.kr/curations/562" target="_blank" rel="noreferrer"><img src="2026-07-23-creator-flow-portfolio-assets/creator-meals-wtable-source.png" alt="우리의식탁 원문 근거 화면" loading="lazy"></a>
+        <figcaption><strong>우리의식탁</strong><span>Go · creator_flow_map_candidate</span></figcaption>
+      </figure>
+      <section>
+        <div class="facts">
+          <div><span>Map</span><strong>제작자 큐레이션</strong></div>
+          <div><span>원문 단위</span><strong>resource_collection</strong></div>
+          <div><span>기본 결과물</span><strong>checklist</strong></div>
+          <div><span>필요 입력</span><strong>0개</strong></div>
+        </div>
+        <h4>사용자가 실제로 체크하는 Item</h4>
+        
+    <ol class="item-list">
+      <li>
+            <span class="check">✓</span>
+            <div><strong>오이지무침 만들기</strong><small>레시피 실행 · 날짜 없음</small></div>
+          </li><li>
+            <span class="check">✓</span>
+            <div><strong>한치 초무침 만들기</strong><small>레시피 실행 · 날짜 없음</small></div>
+          </li><li>
+            <span class="check">✓</span>
+            <div><strong>브로콜리 참깨무침 만들기</strong><small>레시피 실행 · 날짜 없음</small></div>
+          </li><li>
+            <span class="check">✓</span>
+            <div><strong>오이고추 된장 무침 만들기</strong><small>레시피 실행 · 날짜 없음</small></div>
+          </li><li>
+            <span class="check">✓</span>
+            <div><strong>꽈리고추찜무침 만들기</strong><small>레시피 실행 · 날짜 없음</small></div>
+          </li>
+    </ol>
+    
+      </section>
+    </div>
+    <details open>
+      <summary>SourceRow와 세 구조 비교 보기</summary>
+      <div class="detail-body">
+        <h4>원문에서 확보한 행</h4>
+        <div class="source-rows"><div><span>wtable-summer-1</span><p><strong>오이지무침</strong><br>초급 · 15분</p></div><div><span>wtable-summer-2</span><p><strong>한치 초무침</strong><br>초급 · 30분</p></div><div><span>wtable-summer-3</span><p><strong>브로콜리 참깨무침</strong><br>초급 · 20분</p></div><div><span>wtable-summer-4</span><p><strong>오이고추 된장 무침</strong><br>초급 · 15분</p></div></div>
+        
+    <div class="architecture-grid">
+      <article class="arch arch-go">
+        <div class="arch-top"><span>A</span><strong>Current canonical</strong><b>Go</b></div>
+        <p><strong>5 Item</strong>과 SourceRow를 직접 보존합니다. 일정 없는 Item은 Calendar 밖에 남습니다.</p>
+        <dl><div><dt>Calendar</dt><dd>0 compact / 0 granular</dd></div><div><dt>의미 round-trip</dt><dd>100%</dd></div></dl>
+      </article>
+      <article class="arch arch-hold">
+        <div class="arch-top"><span>B</span><strong>Literal ICS-first</strong><b>Hold</b></div>
+        <p><strong>0 VEVENT · 5 VTODO</strong>. 일정 직렬화는 되지만 완료·계층·출처는 비표준/미보장 metadata에 의존합니다.</p>
+        <dl><div><dt>외부 client</dt><dd>not run</dd></div><div><dt>관계 보존</dt><dd>not proven</dd></div></dl>
+      </article>
+      <article class="arch arch-modify">
+        <div class="arch-top"><span>C</span><strong>Item + SharedContext</strong><b>Modify</b></div>
+        <p><strong>0 context</strong>를 만들 수 있지만 기존 setup field가 날짜를 이미 한 번만 받습니다.</p>
+        <dl><div><dt>일정 Item</dt><dd>0</dd></div><div><dt>추가 사용자 이득</dt><dd>근거 부족</dd></div></dl>
+      </article>
+    </div>
+        <div class="projection-line">
+          <span>Calendar: <b>none</b></span>
+          <span>Checklist: <b>natural</b></span>
+          <span>Sheet: <b>lossy</b></span>
+          <span>Memo: <b>source/caution 보존</b></span>
+        </div>
+      </div>
+    </details>
+  </article><article class="content-card featured" data-content-card data-category="work_career" data-map="unordered_collection" data-calendar="none" data-verdict="Go">
+    <header class="content-head">
+      <div>
+        <span class="eyebrow">일·커리어 · 순서 없는 컬렉션</span>
+        <h3>AND 취업 준비 영상 3편</h3>
+        <p>서로 독립적인 취업 준비 영상 중 필요한 것을 골라 보고 적용한다.</p>
+      </div>
+      <div class="verdict go">Go</div>
+    </header>
+    <div class="content-layout">
+      <figure class="source-shot">
+        <a href="https://www.youtube.com/watch?v=OIliv2jpDyM" target="_blank" rel="noreferrer"><img src="2026-07-23-creator-flow-portfolio-assets/creator-work-andstudio-source.png" alt="AND Studio 원문 근거 화면" loading="lazy"></a>
+        <figcaption><strong>AND Studio</strong><span>Go · creator_flow_map_candidate</span></figcaption>
+      </figure>
+      <section>
+        <div class="facts">
+          <div><span>Map</span><strong>순서 없는 컬렉션</strong></div>
+          <div><span>원문 단위</span><strong>resource_collection</strong></div>
+          <div><span>기본 결과물</span><strong>todo</strong></div>
+          <div><span>필요 입력</span><strong>0개</strong></div>
+        </div>
+        <h4>사용자가 실제로 체크하는 Item</h4>
+        
+    <ol class="item-list">
+      <li>
+            <span class="check">✓</span>
+            <div><strong>자소서 지원동기 6단계 영상으로 준비하기</strong><small>영상 1편 · 날짜 없음</small></div>
+          </li><li>
+            <span class="check">✓</span>
+            <div><strong>산업분석 방법 영상으로 준비하기</strong><small>영상 1편 · 날짜 없음</small></div>
+          </li><li>
+            <span class="check">✓</span>
+            <div><strong>면접 전 확인할 6가지 영상으로 준비하기</strong><small>영상 1편 · 날짜 없음</small></div>
+          </li>
+    </ol>
+    
+      </section>
+    </div>
+    <details open>
+      <summary>SourceRow와 세 구조 비교 보기</summary>
+      <div class="detail-body">
+        <h4>원문에서 확보한 행</h4>
+        <div class="source-rows"><div><span>andstudio-job-1</span><p><strong>자소서 지원동기 6단계</strong><br>조회 889,279 · 좋아요 17,011 · 댓글 201</p></div><div><span>andstudio-job-2</span><p><strong>산업분석 방법</strong><br>조회 186,826 · 댓글 139</p></div><div><span>andstudio-job-3</span><p><strong>면접 전 확인할 6가지</strong><br>조회 103,294 · 댓글 32</p></div></div>
+        
+    <div class="architecture-grid">
+      <article class="arch arch-go">
+        <div class="arch-top"><span>A</span><strong>Current canonical</strong><b>Go</b></div>
+        <p><strong>3 Item</strong>과 SourceRow를 직접 보존합니다. 일정 없는 Item은 Calendar 밖에 남습니다.</p>
+        <dl><div><dt>Calendar</dt><dd>0 compact / 0 granular</dd></div><div><dt>의미 round-trip</dt><dd>100%</dd></div></dl>
+      </article>
+      <article class="arch arch-hold">
+        <div class="arch-top"><span>B</span><strong>Literal ICS-first</strong><b>Hold</b></div>
+        <p><strong>0 VEVENT · 3 VTODO</strong>. 일정 직렬화는 되지만 완료·계층·출처는 비표준/미보장 metadata에 의존합니다.</p>
+        <dl><div><dt>외부 client</dt><dd>not run</dd></div><div><dt>관계 보존</dt><dd>not proven</dd></div></dl>
+      </article>
+      <article class="arch arch-modify">
+        <div class="arch-top"><span>C</span><strong>Item + SharedContext</strong><b>Modify</b></div>
+        <p><strong>0 context</strong>를 만들 수 있지만 기존 setup field가 날짜를 이미 한 번만 받습니다.</p>
+        <dl><div><dt>일정 Item</dt><dd>0</dd></div><div><dt>추가 사용자 이득</dt><dd>근거 부족</dd></div></dl>
+      </article>
+    </div>
+        <div class="projection-line">
+          <span>Calendar: <b>none</b></span>
+          <span>Checklist: <b>available</b></span>
+          <span>Sheet: <b>lossy</b></span>
+          <span>Memo: <b>source/caution 보존</b></span>
+        </div>
+      </div>
+    </details>
+  </article>
+        <article class="content-card " data-content-card data-category="family_parenting" data-map="ordered" data-calendar="per_item" data-verdict="Go">
+    <header class="content-head">
+      <div>
+        <span class="eyebrow">가족·육아 · 순서형 Map</span>
+        <h3>초기 이유식 D+174~209 식단</h3>
+        <p>원문 식단 행을 생후 일수 순서대로 보고 실제 제공 여부를 기록한다.</p>
+      </div>
+      <div class="verdict go">Go</div>
+    </header>
+    <div class="content-layout">
+      <figure class="source-shot">
+        <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer"><img src="2026-07-23-creator-flow-portfolio-assets/creator-family-babyfood016-source.png" alt="뿐이토핑이유식 원문 근거 화면" loading="lazy"></a>
+        <figcaption><strong>뿐이토핑이유식</strong><span>Go · creator_flow_map_candidate</span></figcaption>
+      </figure>
+      <section>
+        <div class="facts">
+          <div><span>Map</span><strong>순서형 Map</strong></div>
+          <div><span>원문 단위</span><strong>table_rows</strong></div>
+          <div><span>기본 결과물</span><strong>calendar</strong></div>
+          <div><span>필요 입력</span><strong>현재 D+n · D+174 시작일</strong></div>
+        </div>
+        <h4>사용자가 실제로 체크하는 Item</h4>
+        
+    <ol class="item-list">
+      <li>
+            <span class="check">✓</span>
+            <div><strong>D+174 식단 제공</strong><small>D+174~176 · 일정 근거 있음</small></div>
+          </li><li>
+            <span class="check">✓</span>
+            <div><strong>D+175 식단 제공</strong><small>D+174~176 · 일정 근거 있음</small></div>
+          </li><li>
+            <span class="check">✓</span>
+            <div><strong>D+176 식단 제공</strong><small>D+174~176 · 일정 근거 있음</small></div>
+          </li><li>
+            <span class="check">✓</span>
+            <div><strong>D+177 식단 제공</strong><small>D+177~179 · 일정 근거 있음</small></div>
+          </li>
+    </ol>
+    <p class="more">외 32개 Item · 전체 데이터는 JSON/fixture에서 확인</p>
+      </section>
+    </div>
+    <details >
+      <summary>SourceRow와 세 구조 비교 보기</summary>
+      <div class="detail-body">
+        <h4>원문에서 확보한 행</h4>
+        <div class="source-rows"><div><span>bundle-baby-food-174-d174</span><p><strong>D+174 식단</strong><br>한 끼: 쌀미음</p></div><div><span>bundle-baby-food-174-d175</span><p><strong>D+175 식단</strong><br>한 끼: 쌀미음</p></div><div><span>bundle-baby-food-174-d176</span><p><strong>D+176 식단</strong><br>한 끼: 쌀미음</p></div><div><span>bundle-baby-food-174-d177</span><p><strong>D+177 식단</strong><br>한 끼: 쌀·오트밀 미음</p></div></div>
+        
+    <div class="architecture-grid">
+      <article class="arch arch-go">
+        <div class="arch-top"><span>A</span><strong>Current canonical</strong><b>Go</b></div>
+        <p><strong>36 Item</strong>과 SourceRow를 직접 보존합니다. 일정 없는 Item은 Calendar 밖에 남습니다.</p>
+        <dl><div><dt>Calendar</dt><dd>36 compact / 36 granular</dd></div><div><dt>의미 round-trip</dt><dd>100%</dd></div></dl>
+      </article>
+      <article class="arch arch-hold">
+        <div class="arch-top"><span>B</span><strong>Literal ICS-first</strong><b>Hold</b></div>
+        <p><strong>36 VEVENT · 0 VTODO</strong>. 일정 직렬화는 되지만 완료·계층·출처는 비표준/미보장 metadata에 의존합니다.</p>
+        <dl><div><dt>외부 client</dt><dd>not run</dd></div><div><dt>관계 보존</dt><dd>not proven</dd></div></dl>
+      </article>
+      <article class="arch arch-modify">
+        <div class="arch-top"><span>C</span><strong>Item + SharedContext</strong><b>Modify</b></div>
+        <p><strong>1 context</strong>를 만들 수 있지만 기존 setup field가 날짜를 이미 한 번만 받습니다.</p>
+        <dl><div><dt>일정 Item</dt><dd>36</dd></div><div><dt>추가 사용자 이득</dt><dd>근거 부족</dd></div></dl>
+      </article>
+    </div>
+        <div class="projection-line">
+          <span>Calendar: <b>per_item</b></span>
+          <span>Checklist: <b>natural</b></span>
+          <span>Sheet: <b>natural</b></span>
+          <span>Memo: <b>source/caution 보존</b></span>
+        </div>
+      </div>
+    </details>
+  </article><article class="content-card " data-content-card data-category="study_reading" data-map="ordered" data-calendar="optional_per_item" data-verdict="Go">
+    <header class="content-head">
+      <div>
+        <span class="eyebrow">공부·독서 · 순서형 Map</span>
+        <h3>오픽 모의고사 계획표</h3>
+        <p>원문 2주 또는 1달 계획의 회차별 진도를 펼쳐서 관리한다.</p>
+      </div>
+      <div class="verdict go">Go</div>
+    </header>
+    <div class="content-layout">
+      <figure class="source-shot">
+        <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer"><img src="2026-07-23-creator-flow-portfolio-assets/creator-study-mansour-source.png" alt="오픽만수르 원문 근거 화면" loading="lazy"></a>
+        <figcaption><strong>오픽만수르</strong><span>Go · creator_flow_map_candidate</span></figcaption>
+      </figure>
+      <section>
+        <div class="facts">
+          <div><span>Map</span><strong>순서형 Map</strong></div>
+          <div><span>원문 단위</span><strong>lesson_rows</strong></div>
+          <div><span>기본 결과물</span><strong>sheet</strong></div>
+          <div><span>필요 입력</span><strong>계획 · 시작일</strong></div>
+        </div>
+        <h4>사용자가 실제로 체크하는 Item</h4>
+        
+    <ol class="item-list">
+      <li>
+            <span class="check">✓</span>
+            <div><strong>1회 모의고사 실전처럼 풀기</strong><small>1주차 · 1~5회 · 일정 근거 있음</small></div>
+          </li><li>
+            <span class="check">✓</span>
+            <div><strong>2회 모의고사 실전처럼 풀기</strong><small>1주차 · 1~5회 · 일정 근거 있음</small></div>
+          </li><li>
+            <span class="check">✓</span>
+            <div><strong>3회 모의고사 실전처럼 풀기</strong><small>1주차 · 1~5회 · 일정 근거 있음</small></div>
+          </li><li>
+            <span class="check">✓</span>
+            <div><strong>4회 모의고사 실전처럼 풀기</strong><small>1주차 · 1~5회 · 일정 근거 있음</small></div>
+          </li>
+    </ol>
+    <p class="more">외 38개 Item · 전체 데이터는 JSON/fixture에서 확인</p>
+      </section>
+    </div>
+    <details >
+      <summary>SourceRow와 세 구조 비교 보기</summary>
+      <div class="detail-body">
+        <h4>원문에서 확보한 행</h4>
+        <div class="source-rows"><div><span>bundle-opic-plan-2w-w1-월</span><p><strong>1회 모의고사 실전·녹음·보완·복습</strong><br>영상: https://www.youtube.com/watch?v=MZmrXlAc6k4 · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</p></div><div><span>bundle-opic-plan-video-1</span><p><strong>1회 모의고사 영상</strong><br>15문항 모의고사</p></div><div><span>bundle-opic-plan-2w-w1-화</span><p><strong>2회 모의고사 실전·녹음·보완·복습</strong><br>영상: https://www.youtube.com/watch?v=YOZADzoC22s · 범위: 은행·바·카페·MP3·걷기 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</p></div><div><span>bundle-opic-plan-video-2</span><p><strong>2회 모의고사 영상</strong><br>은행·바·카페·MP3·걷기</p></div></div>
+        
+    <div class="architecture-grid">
+      <article class="arch arch-go">
+        <div class="arch-top"><span>A</span><strong>Current canonical</strong><b>Go</b></div>
+        <p><strong>42 Item</strong>과 SourceRow를 직접 보존합니다. 일정 없는 Item은 Calendar 밖에 남습니다.</p>
+        <dl><div><dt>Calendar</dt><dd>42 compact / 42 granular</dd></div><div><dt>의미 round-trip</dt><dd>100%</dd></div></dl>
+      </article>
+      <article class="arch arch-hold">
+        <div class="arch-top"><span>B</span><strong>Literal ICS-first</strong><b>Hold</b></div>
+        <p><strong>42 VEVENT · 0 VTODO</strong>. 일정 직렬화는 되지만 완료·계층·출처는 비표준/미보장 metadata에 의존합니다.</p>
+        <dl><div><dt>외부 client</dt><dd>not run</dd></div><div><dt>관계 보존</dt><dd>not proven</dd></div></dl>
+      </article>
+      <article class="arch arch-modify">
+        <div class="arch-top"><span>C</span><strong>Item + SharedContext</strong><b>Modify</b></div>
+        <p><strong>1 context</strong>를 만들 수 있지만 기존 setup field가 날짜를 이미 한 번만 받습니다.</p>
+        <dl><div><dt>일정 Item</dt><dd>42</dd></div><div><dt>추가 사용자 이득</dt><dd>근거 부족</dd></div></dl>
+      </article>
+    </div>
+        <div class="projection-line">
+          <span>Calendar: <b>optional_per_item</b></span>
+          <span>Checklist: <b>natural</b></span>
+          <span>Sheet: <b>natural</b></span>
+          <span>Memo: <b>source/caution 보존</b></span>
+        </div>
+      </div>
+    </details>
+  </article><article class="content-card " data-content-card data-category="money_admin_purchase" data-map="ordered" data-calendar="none" data-verdict="Go">
+    <header class="content-head">
+      <div>
+        <span class="eyebrow">돈·행정·구매 · 순서형 Map</span>
+        <h3>신차 구매 8단계</h3>
+        <p>신차 구매 과정의 확인·비교·결정 단계를 빠뜨리지 않고 기록한다.</p>
+      </div>
+      <div class="verdict go">Go</div>
+    </header>
+    <div class="content-layout">
+      <figure class="source-shot">
+        <a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners" target="_blank" rel="noreferrer"><img src="2026-07-23-creator-flow-portfolio-assets/creator-money-getcha-source.png" alt="겟차 원문 근거 화면" loading="lazy"></a>
+        <figcaption><strong>겟차</strong><span>Modify · creator_content_partner_candidate</span></figcaption>
+      </figure>
+      <section>
+        <div class="facts">
+          <div><span>Map</span><strong>순서형 Map</strong></div>
+          <div><span>원문 단위</span><strong>procedure_rows</strong></div>
+          <div><span>기본 결과물</span><strong>checklist</strong></div>
+          <div><span>필요 입력</span><strong>차량 후보</strong></div>
+        </div>
+        <h4>사용자가 실제로 체크하는 Item</h4>
+        
+    <ol class="item-list">
+      <li>
+            <span class="check">✓</span>
+            <div><strong>총예산과 월 납입 가능액 정하기</strong><small>1. 예산과 차량 선택 · 날짜 없음</small></div>
+          </li><li>
+            <span class="check">✓</span>
+            <div><strong>차종·트림·옵션 후보 좁히기</strong><small>1. 예산과 차량 선택 · 날짜 없음</small></div>
+          </li><li>
+            <span class="check">✓</span>
+            <div><strong>현금·할부·리스·장기렌트 비교하기</strong><small>2. 구매 방식 선택 · 날짜 없음</small></div>
+          </li><li>
+            <span class="check">✓</span>
+            <div><strong>여러 판매처 견적 비교하기</strong><small>3. 견적과 할인 협상 · 날짜 없음</small></div>
+          </li>
+    </ol>
+    <p class="more">외 10개 Item · 전체 데이터는 JSON/fixture에서 확인</p>
+      </section>
+    </div>
+    <details >
+      <summary>SourceRow와 세 구조 비교 보기</summary>
+      <div class="detail-body">
+        <h4>원문에서 확보한 행</h4>
+        <div class="source-rows"><div><span>bundle-new-car-comparison-s1-i1-r1</span><p><strong>차량 가격 외 취등록세·보험·유지비를 포함한 총예산 확인</strong></p></div><div><span>bundle-new-car-comparison-s1-i1-r2</span><p><strong>현금·할부 시 월 납입 가능액 확인</strong></p></div><div><span>bundle-new-car-comparison-s1-i2-r1</span><p><strong>용도와 탑승 인원에 맞는 차종 선택</strong></p></div><div><span>bundle-new-car-comparison-s1-i2-r2</span><p><strong>트림과 필수 옵션 후보 정리</strong></p></div></div>
+        
+    <div class="architecture-grid">
+      <article class="arch arch-go">
+        <div class="arch-top"><span>A</span><strong>Current canonical</strong><b>Go</b></div>
+        <p><strong>14 Item</strong>과 SourceRow를 직접 보존합니다. 일정 없는 Item은 Calendar 밖에 남습니다.</p>
+        <dl><div><dt>Calendar</dt><dd>0 compact / 0 granular</dd></div><div><dt>의미 round-trip</dt><dd>100%</dd></div></dl>
+      </article>
+      <article class="arch arch-hold">
+        <div class="arch-top"><span>B</span><strong>Literal ICS-first</strong><b>Hold</b></div>
+        <p><strong>0 VEVENT · 14 VTODO</strong>. 일정 직렬화는 되지만 완료·계층·출처는 비표준/미보장 metadata에 의존합니다.</p>
+        <dl><div><dt>외부 client</dt><dd>not run</dd></div><div><dt>관계 보존</dt><dd>not proven</dd></div></dl>
+      </article>
+      <article class="arch arch-modify">
+        <div class="arch-top"><span>C</span><strong>Item + SharedContext</strong><b>Modify</b></div>
+        <p><strong>0 context</strong>를 만들 수 있지만 기존 setup field가 날짜를 이미 한 번만 받습니다.</p>
+        <dl><div><dt>일정 Item</dt><dd>0</dd></div><div><dt>추가 사용자 이득</dt><dd>근거 부족</dd></div></dl>
+      </article>
+    </div>
+        <div class="projection-line">
+          <span>Calendar: <b>none</b></span>
+          <span>Checklist: <b>natural</b></span>
+          <span>Sheet: <b>natural</b></span>
+          <span>Memo: <b>source/caution 보존</b></span>
+        </div>
+      </div>
+    </details>
+  </article><article class="content-card " data-content-card data-category="health_fitness" data-map="ordered" data-calendar="per_item" data-verdict="Go">
+    <header class="content-head">
+      <div>
+        <span class="eyebrow">건강·운동 · 순서형 Map</span>
+        <h3>Allblanc 7일 복근 챌린지</h3>
+        <p>제작자가 정한 7일 영상 순서를 따라가며 오늘 영상 완료 상태를 남긴다.</p>
+      </div>
+      <div class="verdict go">Go</div>
+    </header>
+    <div class="content-layout">
+      <figure class="source-shot">
+        <a href="https://youtube.com/@allblanctv" target="_blank" rel="noreferrer"><img src="2026-07-23-creator-flow-portfolio-assets/creator-health-allblanc-source.png" alt="Allblanc TV 원문 근거 화면" loading="lazy"></a>
+        <figcaption><strong>Allblanc TV</strong><span>Go · creator_flow_map_candidate</span></figcaption>
+      </figure>
+      <section>
+        <div class="facts">
+          <div><span>Map</span><strong>순서형 Map</strong></div>
+          <div><span>원문 단위</span><strong>resource_collection</strong></div>
+          <div><span>기본 결과물</span><strong>calendar</strong></div>
+          <div><span>필요 입력</span><strong>시작일 · 운동 요일</strong></div>
+        </div>
+        <h4>사용자가 실제로 체크하는 Item</h4>
+        
+    <ol class="item-list">
+      <li>
+            <span class="check">✓</span>
+            <div><strong>코어 + 복근 한방에! 20분 복근 운동</strong><small>영상 따라 하기 · 일정 근거 있음</small></div>
+          </li><li>
+            <span class="check">✓</span>
+            <div><strong>허리 통증 없이 20분 복근 운동</strong><small>영상 따라 하기 · 일정 근거 있음</small></div>
+          </li><li>
+            <span class="check">✓</span>
+            <div><strong>아랫 뱃살 집중 타격 20분 운동</strong><small>영상 따라 하기 · 일정 근거 있음</small></div>
+          </li><li>
+            <span class="check">✓</span>
+            <div><strong>서서하는 20분 복근 운동</strong><small>영상 따라 하기 · 일정 근거 있음</small></div>
+          </li>
+    </ol>
+    <p class="more">외 3개 Item · 전체 데이터는 JSON/fixture에서 확인</p>
+      </section>
+    </div>
+    <details >
+      <summary>SourceRow와 세 구조 비교 보기</summary>
+      <div class="detail-body">
+        <h4>원문에서 확보한 행</h4>
+        <div class="source-rows"><div><span>bundle-allblanc-7day-abs-day-1</span><p><strong>코어 + 복근 한방에! 20분 복근 운동</strong><br>영상 길이 21:25 · 확인 조회수 150,000</p></div><div><span>bundle-allblanc-7day-abs-day-2</span><p><strong>허리 통증 없이 20분 복근 운동</strong><br>영상 길이 20:41 · 확인 조회수 78,000</p></div><div><span>bundle-allblanc-7day-abs-day-3</span><p><strong>아랫 뱃살 집중 타격 20분 운동</strong><br>영상 길이 21:01 · 확인 조회수 73,000</p></div><div><span>bundle-allblanc-7day-abs-day-4</span><p><strong>서서하는 20분 복근 운동</strong><br>영상 길이 20:49 · 확인 조회수 88,000</p></div></div>
+        
+    <div class="architecture-grid">
+      <article class="arch arch-go">
+        <div class="arch-top"><span>A</span><strong>Current canonical</strong><b>Go</b></div>
+        <p><strong>7 Item</strong>과 SourceRow를 직접 보존합니다. 일정 없는 Item은 Calendar 밖에 남습니다.</p>
+        <dl><div><dt>Calendar</dt><dd>7 compact / 7 granular</dd></div><div><dt>의미 round-trip</dt><dd>100%</dd></div></dl>
+      </article>
+      <article class="arch arch-hold">
+        <div class="arch-top"><span>B</span><strong>Literal ICS-first</strong><b>Hold</b></div>
+        <p><strong>7 VEVENT · 0 VTODO</strong>. 일정 직렬화는 되지만 완료·계층·출처는 비표준/미보장 metadata에 의존합니다.</p>
+        <dl><div><dt>외부 client</dt><dd>not run</dd></div><div><dt>관계 보존</dt><dd>not proven</dd></div></dl>
+      </article>
+      <article class="arch arch-modify">
+        <div class="arch-top"><span>C</span><strong>Item + SharedContext</strong><b>Modify</b></div>
+        <p><strong>1 context</strong>를 만들 수 있지만 기존 setup field가 날짜를 이미 한 번만 받습니다.</p>
+        <dl><div><dt>일정 Item</dt><dd>7</dd></div><div><dt>추가 사용자 이득</dt><dd>근거 부족</dd></div></dl>
+      </article>
+    </div>
+        <div class="projection-line">
+          <span>Calendar: <b>per_item</b></span>
+          <span>Checklist: <b>natural</b></span>
+          <span>Sheet: <b>lossy</b></span>
+          <span>Memo: <b>source/caution 보존</b></span>
+        </div>
+      </div>
+    </details>
+  </article><article class="content-card " data-content-card data-category="travel_outings" data-map="single_flow" data-calendar="none" data-verdict="Go">
+    <header class="content-head">
+      <div>
+        <span class="eyebrow">여행·외출 · 단일 Flow</span>
+        <h3>카파도키아 출국 전 체크</h3>
+        <p>카파도키아 출국 전 원문 확인 항목을 날짜 입력 없이 빠르게 점검한다.</p>
+      </div>
+      <div class="verdict go">Go</div>
+    </header>
+    <div class="content-layout">
+      <figure class="source-shot">
+        <a href="https://triple.guide/articles/6bebeecc-83e2-4b03-8b22-04dccf80c729" target="_blank" rel="noreferrer"><img src="2026-07-23-creator-flow-portfolio-assets/creator-travel-triple-source.png" alt="트리플 원문 근거 화면" loading="lazy"></a>
+        <figcaption><strong>트리플</strong><span>Modify · creator_content_partner_candidate</span></figcaption>
+      </figure>
+      <section>
+        <div class="facts">
+          <div><span>Map</span><strong>단일 Flow</strong></div>
+          <div><span>원문 단위</span><strong>checklist_rows</strong></div>
+          <div><span>기본 결과물</span><strong>checklist</strong></div>
+          <div><span>필요 입력</span><strong>0개</strong></div>
+        </div>
+        <h4>사용자가 실제로 체크하는 Item</h4>
+        
+    <ol class="item-list">
+      <li>
+            <span class="check">✓</span>
+            <div><strong>여권 유효기간 6개월 이상 확인</strong><small>출국 기본 확인 · 날짜 없음</small></div>
+          </li><li>
+            <span class="check">✓</span>
+            <div><strong>출국·귀국 일정 다시 확인</strong><small>출국 기본 확인 · 날짜 없음</small></div>
+          </li><li>
+            <span class="check">✓</span>
+            <div><strong>여행 예산에 맞게 환전</strong><small>출국 기본 확인 · 날짜 없음</small></div>
+          </li><li>
+            <span class="check">✓</span>
+            <div><strong>여행자 보험 준비</strong><small>출국 기본 확인 · 날짜 없음</small></div>
+          </li>
+    </ol>
+    <p class="more">외 4개 Item · 전체 데이터는 JSON/fixture에서 확인</p>
+      </section>
+    </div>
+    <details >
+      <summary>SourceRow와 세 구조 비교 보기</summary>
+      <div class="detail-body">
+        <h4>원문에서 확보한 행</h4>
+        <div class="source-rows"><div><span>travel-triple-passport</span><p><strong>여권</strong><br>여권 유효기간 6개월 이상 확인</p></div><div><span>travel-triple-ticket</span><p><strong>항공권 일정</strong><br>출국·귀국 일정 다시 확인</p></div><div><span>travel-triple-exchange</span><p><strong>환전</strong><br>여행 예산에 맞게 환전</p></div><div><span>travel-triple-insurance</span><p><strong>여행자 보험</strong><br>여행자 보험 준비</p></div></div>
+        
+    <div class="architecture-grid">
+      <article class="arch arch-go">
+        <div class="arch-top"><span>A</span><strong>Current canonical</strong><b>Go</b></div>
+        <p><strong>8 Item</strong>과 SourceRow를 직접 보존합니다. 일정 없는 Item은 Calendar 밖에 남습니다.</p>
+        <dl><div><dt>Calendar</dt><dd>0 compact / 0 granular</dd></div><div><dt>의미 round-trip</dt><dd>100%</dd></div></dl>
+      </article>
+      <article class="arch arch-hold">
+        <div class="arch-top"><span>B</span><strong>Literal ICS-first</strong><b>Hold</b></div>
+        <p><strong>0 VEVENT · 8 VTODO</strong>. 일정 직렬화는 되지만 완료·계층·출처는 비표준/미보장 metadata에 의존합니다.</p>
+        <dl><div><dt>외부 client</dt><dd>not run</dd></div><div><dt>관계 보존</dt><dd>not proven</dd></div></dl>
+      </article>
+      <article class="arch arch-modify">
+        <div class="arch-top"><span>C</span><strong>Item + SharedContext</strong><b>Modify</b></div>
+        <p><strong>0 context</strong>를 만들 수 있지만 기존 setup field가 날짜를 이미 한 번만 받습니다.</p>
+        <dl><div><dt>일정 Item</dt><dd>0</dd></div><div><dt>추가 사용자 이득</dt><dd>근거 부족</dd></div></dl>
+      </article>
+    </div>
+        <div class="projection-line">
+          <span>Calendar: <b>none</b></span>
+          <span>Checklist: <b>natural</b></span>
+          <span>Sheet: <b>lossy</b></span>
+          <span>Memo: <b>source/caution 보존</b></span>
+        </div>
+      </div>
+    </details>
+  </article><article class="content-card " data-content-card data-category="hobby_pet" data-map="single_sensitive_schedule" data-calendar="per_item" data-verdict="Modify">
+    <header class="content-head">
+      <div>
+        <span class="eyebrow">취미·반려 · 민감 일정 1건</span>
+        <h3>강아지 생후 6~16주 예방접종 일정</h3>
+        <p>원문 생후 주차를 참고 일정으로 보고 실제 일정은 담당 수의사와 확인한다.</p>
+      </div>
+      <div class="verdict modify">Modify</div>
+    </header>
+    <div class="content-layout">
+      <figure class="source-shot">
+        <a href="https://www.fitpetmall.com/blog/dog-vaccinations" target="_blank" rel="noreferrer"><img src="2026-07-23-creator-flow-portfolio-assets/creator-hobby-fitpet-source.png" alt="핏펫 원문 근거 화면" loading="lazy"></a>
+        <figcaption><strong>핏펫</strong><span>Single · single_content_candidate</span></figcaption>
+      </figure>
+      <section>
+        <div class="facts">
+          <div><span>Map</span><strong>민감 일정 1건</strong></div>
+          <div><span>원문 단위</span><strong>table_rows</strong></div>
+          <div><span>기본 결과물</span><strong>calendar</strong></div>
+          <div><span>필요 입력</span><strong>생년월일</strong></div>
+        </div>
+        <h4>사용자가 실제로 체크하는 Item</h4>
+        
+    <ol class="item-list">
+      <li>
+            <span class="check">✓</span>
+            <div><strong>생후 6주 1차 접종</strong><small>생후 6주 · 일정 근거 있음</small></div>
+          </li><li>
+            <span class="check">✓</span>
+            <div><strong>생후 8주 2차 접종</strong><small>생후 8주 · 일정 근거 있음</small></div>
+          </li><li>
+            <span class="check">✓</span>
+            <div><strong>생후 10주 3차 접종</strong><small>생후 10주 · 일정 근거 있음</small></div>
+          </li><li>
+            <span class="check">✓</span>
+            <div><strong>생후 12주 4차 접종</strong><small>생후 12주 · 일정 근거 있음</small></div>
+          </li>
+    </ol>
+    <p class="more">외 2개 Item · 전체 데이터는 JSON/fixture에서 확인</p>
+      </section>
+    </div>
+    <details >
+      <summary>SourceRow와 세 구조 비교 보기</summary>
+      <div class="detail-body">
+        <h4>원문에서 확보한 행</h4>
+        <div class="source-rows"><div><span>fitpet-vaccine-1</span><p><strong>생후 6주 1차 접종</strong><br>DHPPL 1차 + 코로나 장염 1차</p></div><div><span>fitpet-vaccine-2</span><p><strong>생후 8주 2차 접종</strong><br>DHPPL 2차 + 코로나 장염 2차</p></div><div><span>fitpet-vaccine-3</span><p><strong>생후 10주 3차 접종</strong><br>DHPPL 3차 + 켄넬 코프 1차</p></div><div><span>fitpet-vaccine-4</span><p><strong>생후 12주 4차 접종</strong><br>DHPPL 4차 + 켄넬 코프 2차</p></div></div>
+        
+    <div class="architecture-grid">
+      <article class="arch arch-go">
+        <div class="arch-top"><span>A</span><strong>Current canonical</strong><b>Go</b></div>
+        <p><strong>6 Item</strong>과 SourceRow를 직접 보존합니다. 일정 없는 Item은 Calendar 밖에 남습니다.</p>
+        <dl><div><dt>Calendar</dt><dd>6 compact / 6 granular</dd></div><div><dt>의미 round-trip</dt><dd>100%</dd></div></dl>
+      </article>
+      <article class="arch arch-hold">
+        <div class="arch-top"><span>B</span><strong>Literal ICS-first</strong><b>Hold</b></div>
+        <p><strong>6 VEVENT · 0 VTODO</strong>. 일정 직렬화는 되지만 완료·계층·출처는 비표준/미보장 metadata에 의존합니다.</p>
+        <dl><div><dt>외부 client</dt><dd>not run</dd></div><div><dt>관계 보존</dt><dd>not proven</dd></div></dl>
+      </article>
+      <article class="arch arch-modify">
+        <div class="arch-top"><span>C</span><strong>Item + SharedContext</strong><b>Modify</b></div>
+        <p><strong>1 context</strong>를 만들 수 있지만 기존 setup field가 날짜를 이미 한 번만 받습니다.</p>
+        <dl><div><dt>일정 Item</dt><dd>6</dd></div><div><dt>추가 사용자 이득</dt><dd>근거 부족</dd></div></dl>
+      </article>
+    </div>
+        <div class="projection-line">
+          <span>Calendar: <b>per_item</b></span>
+          <span>Checklist: <b>natural</b></span>
+          <span>Sheet: <b>lossy</b></span>
+          <span>Memo: <b>source/caution 보존</b></span>
+        </div>
+      </div>
+    </details>
+  </article>
+      </div>
+      <p class="hidden-count" id="hiddenCount" hidden>선택한 필터에 맞는 콘텐츠가 없습니다.</p>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="shell">
+      <div class="section-intro"><span class="eyebrow">정확히 멈추기</span><h2>좋은 제작자도<br>아직 Flow는 아닐 수 있다</h2><p>Go 제작자라도 SourceRow가 없으면 멈추고, Single 콘텐츠를 제작자 전체 Map으로 승격하지 않습니다.</p></div>
+      <div class="boundary-grid"><article class="boundary">
+      <span>Modify → source_import_required</span>
+      <h4>펀맘</h4>
+      <p>엄마표 수학학습지 무료프린트자료</p>
+      <strong>A useful worksheet source exists, but a de-duplicated audience-tagged 14-row queue has not been imported.</strong>
+    </article><article class="boundary">
+      <span>Hold → hold</span>
+      <h4>KKday Korea</h4>
+      <p>하와이 여행 준비물 :: 입국부터 교통, 환전, 날씨, 가볼만한곳 등 기본정보 총정리 - KKday Korea 공식 블로그</p>
+      <strong>The creator verdict is Hold and the record fails the no-invented-actions gate; broad guide sections cannot become a Flow spine.</strong>
+    </article><article class="boundary">
+      <span>Hold → hold</span>
+      <h4>배민외식업광장</h4>
+      <p>살아남으려면 '이렇게' 메뉴 가격을 올려보세요! | 장사과몰입 EP.5 (돈슐랭 김바비)</p>
+      <strong>Chapters alone do not provide a complete reusable operator template, and the creator record fails the no-invented-actions gate.</strong>
+    </article><article class="boundary">
+      <span>Modify → creator_map_not_ready</span>
+      <h4>오늘의집 고수 콘텐츠</h4>
+      <p>예쁘고 간단하게 준비하는 🍱 도시락 일주일 식단표, 오늘의집 고수들의 꿀팁 | 라이프스타일 슈퍼앱, 오늘의집</p>
+      <strong>An individual article may later pass, but Todayhouse is the provider and different article authors cannot be merged into one creator-owned Map.</strong>
+    </article><article class="boundary">
+      <span>Single → single_content_only</span>
+      <h4>여행에미치다</h4>
+      <p>지금부터 제 꿈은 우주선에서 브이로그 찍기예요 | 여행토크 : 과학여행 3부 ‘행성’ 🌟</p>
+      <strong>The preserved Single verdict permits evaluating one source but not promoting the channel to a reusable travel-preparation Map.</strong>
+    </article><article class="boundary">
+      <span>Modify → creator_map_not_ready</span>
+      <h4>만개의레시피</h4>
+      <p>도시락에 빠질 수 없는 ✿유부초밥✿ 레시피 모음</p>
+      <strong>The platform provider and each recipe creator must be separated; platform collections cannot become one creator spine.</strong>
+    </article><article class="boundary">
+      <span>Modify → single_content_only</span>
+      <h4>강형욱의 보듬TV</h4>
+      <p>&quot;내 몸 만지지마!!&quot; 개통령 손길도 피하는 예민쓰 파피용 [퍼피교육]</p>
+      <strong>One chaptered video may be reviewed independently; an official ordered training playlist or workbook is still missing.</strong>
+    </article><article class="boundary">
+      <span>Modify → hold</span>
+      <h4>미야옹철의 냥냥펀치</h4>
+      <p>겨우 1세의 나이에 집이 있고 불로소득이 있으며 고양이용품 500개, 전용요리사가 있습니다. 재정 조언을 위해 팔로우 하세요.</p>
+      <strong>The record requires separating lifestyle content from medical advice; this video metadata does not define a safe reusable user job.</strong>
+    </article></div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="shell">
+      <div class="section-intro"><span class="eyebrow">검증과 경계</span><h2>통과한 것과<br>아직 모르는 것</h2></div>
+      <div class="evidence-grid">
+        <article class="evidence-card"><span>Canonical semantic round-trip</span><strong>9 / 9</strong><p>Item ID, SourceRow, schedule 의미가 JSON 직렬화 후 동일합니다.</p></article>
+        <article class="evidence-card"><span>잘못된 날짜 없는 VEVENT</span><strong>0</strong><p>날짜 없는 30 Item은 canonical Calendar에서 제외했습니다.</p></article>
+        <article class="evidence-card"><span>Stop control</span><strong>8 / 8</strong><p>Hold·Single·source import·provider 경계를 별도 상태로 유지합니다.</p></article>
+        <article class="evidence-card"><span>Literal ICS syntax</span><strong>9 / 9</strong><p>자체 parser에서는 통과했지만 외부 client 의미 보존은 증명하지 못했습니다.</p></article>
+        <article class="evidence-card"><span>External client round-trip</span><strong style="font-size:28px">NOT RUN</strong><p>Google·Outlook·Apple 계정에 데이터를 쓰지 않았습니다.</p></article>
+        <article class="evidence-card"><span>Observed-user validation</span><strong style="font-size:28px">NOT RUN</strong><p>이 보고서는 내부 구조·사용성 walkthrough입니다.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="shell footer-grid">
+      <div>
+        <span class="eyebrow">다음 backend 목표</span>
+        <h2>Canonical validator와<br>projection adapter 구현</h2>
+        <p>이번 결과가 승인되면 runtime을 갈아엎지 않고 canonical DTO validator, projectionPolicy, compact/granular Calendar adapter부터 구현합니다.</p>
+      </div>
+      <div>
+        <strong>이번에 하지 않은 것</strong>
+        <ul><li>앱·DB·seed 변경</li><li>실제 Calendar import</li><li>콘텐츠 공개 승인</li><li>사용자 검증 주장</li><li>commit·push·deploy</li></ul>
+        <p class="mono">Expansion 9 · Decision keep_current_canonical_v1_add_projection_time_grouping<br>Validator 752/752</p>
+      </div>
+    </div>
+  </footer>
+  <script>
+    const buttons=[...document.querySelectorAll('[data-filter]')];
+    const cards=[...document.querySelectorAll('[data-content-card]')];
+    const empty=document.getElementById('hiddenCount');
+    buttons.forEach(button=>button.addEventListener('click',()=>{
+      buttons.forEach(candidate=>candidate.setAttribute('aria-pressed','false'));
+      button.setAttribute('aria-pressed','true');
+      const value=button.dataset.filter;
+      let shown=0;
+      cards.forEach(card=>{
+        const visible=value==='all'||(() => {
+          const [axis,expected]=value.split(':');
+          return card.dataset[axis]===expected;
+        })();
+        card.hidden=!visible;
+        if(visible) shown++;
+      });
+      empty.hidden=shown!==0;
+    }));
+  </script>
+</body>
+</html>

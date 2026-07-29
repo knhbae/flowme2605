@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "flowme-ics-interoperability-evidence-v1",
+  "reviewedAt": "2026-07-27",
+  "evidenceBoundary": {
+    "standardsValidation": "run_in_lab",
+    "internalParserRoundTrip": "run_in_lab",
+    "officiallyDocumentedClientSupport": "source_reviewed",
+    "observedClientRoundTrip": "not_run",
+    "reason": "No authorization was given to write fixtures into external Google, Microsoft, or Apple accounts."
+  },
+  "findings": [
+    {
+      "id": "ICS-01",
+      "claim": "VCALENDAR is a container for sibling calendar components; VEVENT, VTODO, and VJOURNAL are not physically nested inside one another.",
+      "status": "standards_confirmed",
+      "source": "https://www.rfc-editor.org/rfc/rfc5545.html",
+      "sections": ["3.6", "3.6.1", "3.6.2", "3.6.3"]
+    },
+    {
+      "id": "ICS-02",
+      "claim": "For the ordinary publish/import object used by this lab, a scheduled VEVENT requires DTSTART. The RFC has special scheduling-object qualifications, so the lab does not generalize this to every possible METHOD-bearing object.",
+      "status": "standards_confirmed",
+      "source": "https://www.rfc-editor.org/rfc/rfc5545.html",
+      "sections": ["3.6.1"]
+    },
+    {
+      "id": "ICS-03",
+      "claim": "VTODO can omit DTSTART and DUE, but that does not prove that consumer calendar clients will expose or preserve it as a FlowMe backlog task.",
+      "status": "standard_valid_client_support_not_proven",
+      "source": "https://www.rfc-editor.org/rfc/rfc5545.html",
+      "sections": ["3.6.2"]
+    },
+    {
+      "id": "ICS-04",
+      "claim": "RELATED-TO references another component UID, but target systems own the behavioral implications of the relationship.",
+      "status": "standard_valid_client_support_not_proven",
+      "sources": [
+        "https://www.rfc-editor.org/rfc/rfc5545.html",
+        "https://www.rfc-editor.org/rfc/rfc9253.html"
+      ],
+      "sections": ["RFC5545 3.8.4.5", "RFC9253"]
+    },
+    {
+      "id": "ICS-05",
+      "claim": "X-properties may be ignored by user agents, so X-FLOWME fields cannot be the only canonical store for hierarchy, provenance, rights, or review meaning.",
+      "status": "standards_confirmed",
+      "source": "https://www.rfc-editor.org/rfc/rfc5545.html",
+      "sections": ["3.8.8.2"]
+    },
+    {
+      "id": "ICS-06",
+      "claim": "Google officially documents ICS/CSV event import and event export, but the reviewed user and API documentation does not promise VTODO, VJOURNAL, RELATED-TO, or X-property preservation.",
+      "status": "vevent_documented_other_components_not_proven",
+      "sources": [
+        "https://support.google.com/calendar/answer/37118?hl=en",
+        "https://support.google.com/calendar/answer/37111?hl=en",
+        "https://developers.google.com/workspace/calendar/api/guides/create-events",
+        "https://developers.google.com/workspace/calendar/api/v3/reference/events",
+        "https://developers.google.com/workspace/tasks/reference/rest"
+      ]
+    },
+    {
+      "id": "ICS-07",
+      "claim": "Microsoft documents importing calendar events from ICS and provides separate event and To Do task APIs; preservation of VTODO, VJOURNAL, RELATED-TO, and X-properties is not proven by the reviewed UI documentation.",
+      "status": "vevent_documented_other_components_not_proven",
+      "sources": [
+        "https://support.microsoft.com/en-us/outlook/import-or-subscribe-to-a-calendar-in-outlook-com-or-outlook-on-the-web",
+        "https://learn.microsoft.com/en-us/graph/api/resources/event?view=graph-rest-1.0",
+        "https://learn.microsoft.com/en-us/graph/api/resources/todotask?view=graph-rest-1.0"
+      ]
+    },
+    {
+      "id": "ICS-08",
+      "claim": "Apple documents Calendar event import/export and separately describes Reminders integration; this does not prove that imported ICS VTODO becomes or round-trips as a Reminder.",
+      "status": "vevent_documented_vtodo_not_proven",
+      "sources": [
+        "https://support.apple.com/en-ca/guide/calendar/-icl1023/mac",
+        "https://support.apple.com/en-nz/guide/calendar/icl873b9a527/mac"
+      ]
+    }
+  ],
+  "labPolicy": {
+    "allowedClaims": [
+      "RFC syntax and semantics",
+      "lab parser round-trip",
+      "field-level semantic diff",
+      "officially documented VEVENT import scope"
+    ],
+    "forbiddenClaimsWithoutExternalTest": [
+      "VTODO appears as a task or reminder in a target client",
+      "VJOURNAL is preserved",
+      "RELATED-TO hierarchy survives import and export",
+      "X-FLOWME properties survive import and export",
+      "recurrence exceptions and completion states survive cross-client round-trip"
+    ]
+  }
+}
