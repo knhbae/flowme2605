@@ -1,0 +1,254 @@
+{
+  "schemaVersion": "flowme.cross-entry-invariant-matrix.v1",
+  "reviewerRole": "codex_independent",
+  "observedUserCount": 0,
+  "subject": {
+    "source": "AJD 이사 준비 체크리스트",
+    "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363",
+    "expectedInvariant": "같은 source와 같은 사용자 job은 entry role과 무관하게 하나의 canonicalFlowId, content snapshot, save identity로 이어진다.",
+    "currentCanonicalFlowId": null,
+    "currentResult": "failed"
+  },
+  "surfaces": [
+    {
+      "surface": "Home",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363",
+      "canonicalFlowId": null,
+      "route": "/f/moving-d30-basic",
+      "displayTitle": "이사 D-30 준비",
+      "itemCount": 24,
+      "primaryArtifact": "calendar",
+      "secondaryArtifacts": [
+        "checklist"
+      ],
+      "adjustCapabilities": [
+        "anchor date",
+        "personal title",
+        "include/exclude",
+        "order"
+      ],
+      "saveObjectId": "moving-d30-basic",
+      "storageKeys": [
+        "flow:saved:moving-d30-basic",
+        "flow:moving-d30-basic:anchorDate"
+      ],
+      "receiptBehavior": "same-route inline public saved receipt",
+      "postSaveDestination": "/my?savedFlow=moving-d30-basic",
+      "myFlowObjectCount": 1,
+      "calendarProjectionCount": 24,
+      "exportProjectionCount": 24,
+      "classification": "unresolved_content_variant_or_alias_bug"
+    },
+    {
+      "surface": "Find catalog",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363",
+      "canonicalFlowId": null,
+      "route": "/flow-maps/moving-d30",
+      "displayTitle": "원룸 이사 D-30",
+      "itemCount": 5,
+      "primaryArtifact": "calendar",
+      "secondaryArtifacts": [],
+      "adjustCapabilities": [
+        "anchor date",
+        "save mode"
+      ],
+      "saveObjectId": "source-backed-moving-d30",
+      "storageKeys": [
+        "flow:saved:source-backed-moving-d30",
+        "flow:map:saved:moving-d30",
+        "flow:map:persistence:moving-d30"
+      ],
+      "receiptBehavior": "immediate navigation to My Flow post-save panel",
+      "postSaveDestination": "/my?savedMap=moving-d30",
+      "myFlowObjectCount": 1,
+      "calendarProjectionCount": 5,
+      "exportProjectionCount": 5,
+      "classification": "legacy_rollout_gap"
+    },
+    {
+      "surface": "URL lookup",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363",
+      "canonicalFlowId": null,
+      "route": "/f/curated-ajd-moving-d30",
+      "displayTitle": "이사 D-30 준비",
+      "itemCount": 5,
+      "primaryArtifact": "calendar",
+      "secondaryArtifacts": [],
+      "adjustCapabilities": [
+        "anchor date",
+        "personal title",
+        "include/exclude"
+      ],
+      "saveObjectId": "curated-ajd-moving-d30",
+      "storageKeys": [
+        "flow:saved:curated-ajd-moving-d30",
+        "flow:map:saved:curated-ajd-moving-d30",
+        "flow:map:persistence:curated-ajd-moving-d30"
+      ],
+      "receiptBehavior": "immediate navigation to My Flow post-save panel",
+      "postSaveDestination": "/my?savedMap=curated-ajd-moving-d30",
+      "myFlowObjectCount": 1,
+      "calendarProjectionCount": 5,
+      "exportProjectionCount": 5,
+      "classification": "route_alias_bug_and_legacy_rollout_gap"
+    },
+    {
+      "surface": "Direct public alias",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363",
+      "canonicalFlowId": null,
+      "route": "/f/source-backed-moving-d30",
+      "displayTitle": "원룸 이사 D-30 준비",
+      "itemCount": 5,
+      "primaryArtifact": "calendar",
+      "secondaryArtifacts": [],
+      "adjustCapabilities": [
+        "anchor date",
+        "personal title",
+        "include/exclude"
+      ],
+      "saveObjectId": "source-backed-moving-d30",
+      "storageKeys": [
+        "flow:saved:source-backed-moving-d30"
+      ],
+      "receiptBehavior": "public route receipt or existing source-backed bridge",
+      "postSaveDestination": "/my?savedFlow=source-backed-moving-d30",
+      "myFlowObjectCount": 1,
+      "calendarProjectionCount": 5,
+      "exportProjectionCount": 5,
+      "classification": "route_alias_bug"
+    },
+    {
+      "surface": "Flow Map",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363",
+      "canonicalFlowId": null,
+      "route": "/flow-maps/moving-d30",
+      "displayTitle": "원룸 이사 D-30 일정 지도",
+      "itemCount": 5,
+      "primaryArtifact": "hybrid",
+      "secondaryArtifacts": [],
+      "adjustCapabilities": [
+        "anchor date"
+      ],
+      "saveObjectId": "moving-d30 map + source-backed-moving-d30 child",
+      "storageKeys": [
+        "flow:map:saved:moving-d30",
+        "flow:map:persistence:moving-d30"
+      ],
+      "receiptBehavior": "map-specific post-save panel",
+      "postSaveDestination": "/my?savedMap=moving-d30",
+      "myFlowObjectCount": 1,
+      "calendarProjectionCount": 5,
+      "exportProjectionCount": 5,
+      "classification": "internal_bundle_exposed_as_user_grammar"
+    },
+    {
+      "surface": "Saved receipt",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363",
+      "canonicalFlowId": null,
+      "route": "same /f route or /my?savedMap=*",
+      "displayTitle": "entry-specific",
+      "itemCount": "24 or 5",
+      "primaryArtifact": "entry-specific",
+      "secondaryArtifacts": [],
+      "adjustCapabilities": [],
+      "saveObjectId": "entry slug",
+      "storageKeys": [
+        "entry-specific saved key"
+      ],
+      "receiptBehavior": "two different receipt grammars",
+      "postSaveDestination": "entry-specific",
+      "myFlowObjectCount": "1 per saved slug",
+      "calendarProjectionCount": "24 or 5",
+      "exportProjectionCount": "24 or 5",
+      "classification": "legacy_rollout_gap"
+    },
+    {
+      "surface": "My Flow",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363",
+      "canonicalFlowId": null,
+      "route": "/my",
+      "displayTitle": "personal title per saved slug",
+      "itemCount": "24 + 5 + 5 possible",
+      "primaryArtifact": "execution",
+      "secondaryArtifacts": [
+        "calendar",
+        "export"
+      ],
+      "adjustCapabilities": [
+        "personal title",
+        "date",
+        "memo",
+        "completion",
+        "archive"
+      ],
+      "saveObjectId": "three independent saved slugs",
+      "storageKeys": [
+        "flow:saved:moving-d30-basic",
+        "flow:saved:source-backed-moving-d30",
+        "flow:saved:curated-ajd-moving-d30"
+      ],
+      "receiptBehavior": "focused P32 workspace",
+      "postSaveDestination": "same focused workspace",
+      "myFlowObjectCount": "up to 3 for one source/job",
+      "calendarProjectionCount": "independent per object",
+      "exportProjectionCount": "independent per object",
+      "classification": "data_migration_risk"
+    },
+    {
+      "surface": "Calendar",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363",
+      "canonicalFlowId": null,
+      "route": "/calendar",
+      "displayTitle": "saved object title",
+      "itemCount": "independent 24/5/5 projections",
+      "primaryArtifact": "calendar",
+      "secondaryArtifacts": [
+        "undated queue"
+      ],
+      "adjustCapabilities": [
+        "date placement",
+        "Flow scope"
+      ],
+      "saveObjectId": "saved slug",
+      "storageKeys": [
+        "saved-slug execution records"
+      ],
+      "receiptBehavior": "none",
+      "postSaveDestination": "selected day / Flow scope",
+      "myFlowObjectCount": "inherits duplicates",
+      "calendarProjectionCount": "can duplicate source-level intent",
+      "exportProjectionCount": "scope per object",
+      "classification": "downstream_duplicate_projection"
+    },
+    {
+      "surface": "Export",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363",
+      "canonicalFlowId": null,
+      "route": "My Flow / Calendar export surfaces",
+      "displayTitle": "personal saved title",
+      "itemCount": "24 or 5 per selected object",
+      "primaryArtifact": "format-specific",
+      "secondaryArtifacts": [],
+      "adjustCapabilities": [
+        "whole",
+        "selected",
+        "current"
+      ],
+      "saveObjectId": "saved slug embedded in export identity",
+      "storageKeys": [
+        "saved-slug selection state"
+      ],
+      "receiptBehavior": "scope/count receipt",
+      "postSaveDestination": "external tool",
+      "myFlowObjectCount": "n/a",
+      "calendarProjectionCount": "n/a",
+      "exportProjectionCount": "duplicates remain independent",
+      "classification": "export_identity_split"
+    }
+  ],
+  "conclusions": [
+    "source URL alone is not a safe deduplication key; canonical identity must also encode the user job and an intentional editorial variant.",
+    "The current moving variants do not expose a variant contract, so users experience an alias bug rather than an intentional choice.",
+    "The 24-item and 5-item records cannot be auto-merged because item identity and cardinality do not align."
+  ]
+}

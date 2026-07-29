@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "flowme.cross-entry-verification.v1",
+  "reviewerRole": "codex_independent",
+  "baseline": {
+    "originMainSha": "e491d99ca61ecae4fd0dd009f785e737b6a59516",
+    "cleanWorktree": "D:\\flowme2605\\flow-p33-cross-entry-independent-main",
+    "productionReachable": true
+  },
+  "commands": [
+    {
+      "command": "npm.cmd ci",
+      "result": "pass",
+      "detail": "214 packages, 0 vulnerabilities"
+    },
+    {
+      "command": "npm.cmd test",
+      "result": "pass",
+      "detail": "587/587"
+    },
+    {
+      "command": "npm.cmd run build",
+      "result": "pass",
+      "detail": "Next 15.5.21, 18 static pages"
+    },
+    {
+      "command": "targeted E2E, 4 workers",
+      "result": "harness_failure",
+      "detail": "local Next web server crashed before product assertions completed"
+    },
+    {
+      "command": "targeted E2E, 1 worker",
+      "result": "pass",
+      "detail": "14/14 across P25/P26/P31/P32 related journeys"
+    },
+    {
+      "command": "URL-first targeted E2E, 1 worker",
+      "result": "pass",
+      "detail": "1/1"
+    },
+    {
+      "command": "production browser capture",
+      "result": "pass",
+      "detail": "21 surfaces + 24 journey cells; 0 page/console errors; no horizontal overflow"
+    },
+    {
+      "command": "npm.cmd run docs:check",
+      "result": "pass",
+      "detail": "14 required files, 3135 local links"
+    },
+    {
+      "command": "review.html render QA",
+      "result": "pass",
+      "detail": "390x844 and 1440x900; all evidence images loaded; no horizontal overflow"
+    },
+    {
+      "command": "git diff --check and scoped status inspection",
+      "result": "pass",
+      "detail": "only the new review package is untracked; no app-code or tracked-file diff"
+    }
+  ],
+  "pendingAtGeneration": [],
+  "observedUserCount": 0,
+  "appCodeChanged": false,
+  "publishActions": {
+    "commit": false,
+    "push": false,
+    "pullRequest": false,
+    "merge": false,
+    "deploy": false
+  }
+}

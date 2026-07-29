@@ -1,0 +1,1081 @@
+{
+  "schemaVersion": "flowme.cross-entry-persona-scorecard.v1",
+  "reviewerRole": "codex_independent",
+  "production": "https://flowme2605.vercel.app",
+  "baseline": {
+    "originMainSha": "e491d99ca61ecae4fd0dd009f785e737b6a59516",
+    "handoffBranchSha": "ba234b55c95f6705653efe47dcdd1a213afb9212",
+    "productionAppRelease": "30281a7a8ea9bea1194b4104b5a49b6211c07e3b"
+  },
+  "observedUserCount": 0,
+  "cellCount": 24,
+  "expectedCellCount": 24,
+  "statusSummary": {
+    "partial": 15,
+    "supported": 8,
+    "missing": 1
+  },
+  "runErrors": [],
+  "note": "Browser automation and heuristic simulation are not observed-user validation. Raw capture is retained separately; this normalized scorecard corrects SPA-settle and reload-note errors found during supplemental probes.",
+  "cells": [
+    {
+      "personaId": "P1",
+      "sessionId": "S1",
+      "userGoal": "Home의 이사 예시에서 전체 결과를 이해하고 조정해 저장한다.",
+      "route": [
+        "/",
+        "/f/moving-d30-basic"
+      ],
+      "viewport": "390x844",
+      "startingState": "clean localStorage",
+      "steps": [
+        "Home 이사 예시 열기",
+        "24개 Calendar preview 확인",
+        "Checklist 선택",
+        "이사일 입력",
+        "조정 열기",
+        "저장",
+        "receipt 확인"
+      ],
+      "interactionDepth": 6,
+      "expectedMentalModel": "Calendar와 Checklist 중 선택한 결과가 즉시 바뀌고 한 Flow로 저장된다.",
+      "actualFeedback": "24개 전체 preview와 inline receipt는 명확하지만 Checklist를 눌러도 Calendar projection과 CTA가 그대로다.",
+      "nextAction": "내 Flow에서 시작 또는 캘린더에서 보기",
+      "flowIdentityObserved": "public slug moving-d30-basic",
+      "itemCountObserved": "24",
+      "artifactObserved": "Calendar 고정; visible Checklist control은 비작동",
+      "saveObjectObserved": "flow:saved:moving-d30-basic",
+      "reloadPersistence": "이사일 anchor는 reload 후 유지됨",
+      "parity": {
+        "myFlow": "24개 public object로 연결",
+        "calendar": "24개 날짜 projection으로 연결",
+        "export": "public object 범위 24개"
+      },
+      "recoveryAndDataPreservation": "같은 slug 재저장은 한 key를 갱신하지만 artifact 선택 실패 설명은 없다.",
+      "status": "partial",
+      "severity": "high",
+      "evidenceKinds": [
+        "current_production_interaction",
+        "current_source",
+        "current_package_screenshot",
+        "heuristic_simulation"
+      ],
+      "evidenceRef": "screenshots/p1-s1.png",
+      "observedUserQuestion": "사용자는 Calendar와 Checklist를 실제 destination 선택으로 이해하는가?",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P1",
+      "sessionId": "S2",
+      "userGoal": "저장한 24개 이사 Flow를 My Flow와 Calendar에서 실행한다.",
+      "route": [
+        "/my?savedFlow=moving-d30-basic",
+        "/calendar"
+      ],
+      "viewport": "1024x768",
+      "startingState": "P1-S1 public save 유지",
+      "steps": [
+        "My Flow 진입",
+        "저장 Flow 열기",
+        "첫 항목 완료",
+        "다시 열기",
+        "Calendar 이동",
+        "export 범위 확인"
+      ],
+      "interactionDepth": 5,
+      "expectedMentalModel": "저장한 제목·날짜·항목 수와 완료 상태가 downstream에서 일치한다.",
+      "actualFeedback": "같은 public slug 내부에서는 24개 저장 객체가 My Flow와 Calendar로 이어지고 완료·재개가 가능하다.",
+      "nextAction": "전체 계획 실행 또는 export",
+      "flowIdentityObserved": "moving-d30-basic",
+      "itemCountObserved": "24",
+      "artifactObserved": "My Flow execution + Calendar",
+      "saveObjectObserved": "flow:saved:moving-d30-basic",
+      "reloadPersistence": "저장 및 완료 상태 유지",
+      "parity": {
+        "myFlow": "supported",
+        "calendar": "supported",
+        "export": "supported for the saved slug"
+      },
+      "recoveryAndDataPreservation": "완료 취소가 가능하고 record는 보존된다.",
+      "status": "supported",
+      "severity": "low",
+      "evidenceKinds": [
+        "current_production_interaction",
+        "current_source",
+        "current_package_screenshot",
+        "heuristic_simulation"
+      ],
+      "evidenceRef": "screenshots/p1-s2.png",
+      "observedUserQuestion": "저장 직후 사용자는 My Flow와 Calendar 중 어디로 가야 할지 자연스럽게 고르는가?",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P1",
+      "sessionId": "S3",
+      "userGoal": "Home 저장 후 Find와 URL lookup에서 같은 Flow 상태를 재발견한다.",
+      "route": [
+        "/flows",
+        "/flow-maps/moving-d30",
+        "/f/curated-ajd-moving-d30"
+      ],
+      "viewport": "390x844",
+      "startingState": "moving-d30-basic 24개 저장됨",
+      "steps": [
+        "Flow 찾기에서 이사 검색",
+        "5개 map 열기",
+        "AJD URL lookup",
+        "curated 5개 열기",
+        "저장 표시 비교"
+      ],
+      "interactionDepth": 4,
+      "expectedMentalModel": "모든 entry가 이미 저장한 동일 Flow를 가리키고 개인 상태를 공유한다.",
+      "actualFeedback": "Find는 5개 source-backed map, URL lookup은 다른 curated 5개 slug를 열며 24개 저장과 연결되지 않는다.",
+      "nextAction": "사용자는 중복 저장하거나 어느 것이 최신인지 추측해야 한다.",
+      "flowIdentityObserved": "moving-d30-basic / source-backed-moving-d30 / curated-ajd-moving-d30",
+      "itemCountObserved": "24 / 5 / 5",
+      "artifactObserved": "Calendar 계열이나 shell과 content snapshot이 다름",
+      "saveObjectObserved": "세 slug별 별도 key",
+      "reloadPersistence": "각 alias 상태만 개별 유지",
+      "parity": {
+        "myFlow": "alias별 별도 object",
+        "calendar": "alias별 별도 projection",
+        "export": "alias별 24 또는 5"
+      },
+      "recoveryAndDataPreservation": "canonical representative나 중복 경고가 없다.",
+      "status": "partial",
+      "severity": "high",
+      "evidenceKinds": [
+        "current_production_interaction",
+        "current_source",
+        "current_package_screenshot",
+        "heuristic_simulation"
+      ],
+      "evidenceRef": "screenshots/p1-s3.png",
+      "observedUserQuestion": "사용자는 24개 전체판과 5개 핵심판을 서로 다른 상품으로 인식하는가?",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P2",
+      "sessionId": "S1",
+      "userGoal": "Flow 찾기에서 이사 Flow를 비교하고 저장한다.",
+      "route": [
+        "/flows",
+        "/flow-maps/moving-d30"
+      ],
+      "viewport": "390x844",
+      "startingState": "clean localStorage",
+      "steps": [
+        "catalog scan",
+        "원룸 이사 카드 열기",
+        "5개 map 확인",
+        "이사일 입력",
+        "저장"
+      ],
+      "interactionDepth": 4,
+      "expectedMentalModel": "catalog detail과 저장 결과가 같은 5개 Flow를 유지한다.",
+      "actualFeedback": "Find 내부에서는 5개 map과 저장 receipt가 일관되지만 public /f와 다른 legacy grammar다.",
+      "nextAction": "My Flow에서 5개 실행",
+      "flowIdentityObserved": "map moving-d30 + child source-backed-moving-d30",
+      "itemCountObserved": "5",
+      "artifactObserved": "Calendar/hybrid",
+      "saveObjectObserved": "flow:saved:source-backed-moving-d30 + map bridge records",
+      "reloadPersistence": "map persistence key로 유지",
+      "parity": {
+        "myFlow": "5개 object로 연결",
+        "calendar": "5개 projection",
+        "export": "5개"
+      },
+      "recoveryAndDataPreservation": "Find 내부 저장 복구는 지원",
+      "status": "supported",
+      "severity": "medium",
+      "evidenceKinds": [
+        "current_production_interaction",
+        "current_source",
+        "current_package_screenshot",
+        "heuristic_simulation"
+      ],
+      "evidenceRef": "screenshots/p2-s1.png",
+      "observedUserQuestion": "Find 사용자는 이 5개판이 Home의 24개판과 다른 이유를 알아야 하는가?",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P2",
+      "sessionId": "S2",
+      "userGoal": "Find에서 저장한 5개 Flow를 재방문해 실행한다.",
+      "route": [
+        "/my?savedMap=moving-d30",
+        "/calendar"
+      ],
+      "viewport": "1024x768",
+      "startingState": "P2-S1 map save 유지",
+      "steps": [
+        "receipt 확인",
+        "전체 Flow 열기",
+        "항목 완료",
+        "Calendar 확인",
+        "export 열기"
+      ],
+      "interactionDepth": 4,
+      "expectedMentalModel": "Find에서 본 5개가 downstream에서도 같은 객체다.",
+      "actualFeedback": "source-backed-moving-d30 객체 자체는 완료·수정·export 가능한 focused workspace로 열린다.",
+      "nextAction": "다음 항목 실행",
+      "flowIdentityObserved": "source-backed-moving-d30",
+      "itemCountObserved": "5",
+      "artifactObserved": "My Flow + Calendar",
+      "saveObjectObserved": "flow:saved:source-backed-moving-d30",
+      "reloadPersistence": "supported",
+      "parity": {
+        "myFlow": "supported",
+        "calendar": "supported",
+        "export": "supported for 5-item object"
+      },
+      "recoveryAndDataPreservation": "완료 취소와 archive가 가능",
+      "status": "supported",
+      "severity": "low",
+      "evidenceKinds": [
+        "current_production_interaction",
+        "current_source",
+        "current_package_screenshot",
+        "heuristic_simulation"
+      ],
+      "evidenceRef": "screenshots/p2-s2.png",
+      "observedUserQuestion": "5개 핵심판만으로 실제 이사 준비가 충분하다고 느끼는가?",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P2",
+      "sessionId": "S3",
+      "userGoal": "Find 저장 후 Home 이사 Flow를 추가 저장해 중복을 확인한다.",
+      "route": [
+        "/",
+        "/f/moving-d30-basic",
+        "/my?view=flows"
+      ],
+      "viewport": "1024x768",
+      "startingState": "source-backed-moving-d30 5개 저장됨",
+      "steps": [
+        "Home 이사 열기",
+        "24개 저장",
+        "My Flow 목록 이동",
+        "두 행 비교"
+      ],
+      "interactionDepth": 3,
+      "expectedMentalModel": "기존 저장 감지 또는 variant 설명과 대표 선택이 나온다.",
+      "actualFeedback": "24개와 5개가 별도 행으로 생기며 동일 source 경고나 차이 설명이 없다.",
+      "nextAction": "사용자가 임의로 하나를 archive/delete해야 한다.",
+      "flowIdentityObserved": "moving-d30-basic + source-backed-moving-d30",
+      "itemCountObserved": "24 + 5",
+      "artifactObserved": "두 Calendar projection",
+      "saveObjectObserved": "별도 slug keys",
+      "reloadPersistence": "두 객체 모두 유지",
+      "parity": {
+        "myFlow": "2 objects",
+        "calendar": "separate projections",
+        "export": "각 객체별 24/5"
+      },
+      "recoveryAndDataPreservation": "자동 merge 없음; 개별 archive만 가능",
+      "status": "partial",
+      "severity": "high",
+      "evidenceKinds": [
+        "current_production_interaction",
+        "current_source",
+        "current_package_screenshot",
+        "heuristic_simulation"
+      ],
+      "evidenceRef": "screenshots/p2-s3.png",
+      "observedUserQuestion": "중복 후보가 보이면 사용자는 합치기, 둘 다 유지, 하나 숨기기 중 무엇을 원할까?",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P3",
+      "sessionId": "S1",
+      "userGoal": "AJD 원문 URL로 기존 이사 Flow를 찾는다.",
+      "route": [
+        "/flows",
+        "/f/curated-ajd-moving-d30"
+      ],
+      "viewport": "390x844",
+      "startingState": "clean localStorage + AJD canonical URL",
+      "steps": [
+        "URL 붙여넣기",
+        "lookup 실행",
+        "hit 결과 확인",
+        "detail 열기"
+      ],
+      "interactionDepth": 3,
+      "expectedMentalModel": "제품 전체에서 쓰는 canonical 이사 Flow를 연다.",
+      "actualFeedback": "URL lookup은 curated 5개 child를 열며 Home 24개나 Find 5개 map과 같은 object라는 표시가 없다.",
+      "nextAction": "curated 5개 저장",
+      "flowIdentityObserved": "curated-ajd-moving-d30",
+      "itemCountObserved": "5",
+      "artifactObserved": "Calendar",
+      "saveObjectObserved": "저장 전",
+      "reloadPersistence": "lookup 결과는 재입력 가능",
+      "parity": {
+        "myFlow": "not yet saved",
+        "calendar": "not yet saved",
+        "export": "5개 preview"
+      },
+      "recoveryAndDataPreservation": "다른 alias 탐색 수단 없음",
+      "status": "partial",
+      "severity": "high",
+      "evidenceKinds": [
+        "current_production_interaction",
+        "current_source",
+        "current_package_screenshot",
+        "heuristic_simulation"
+      ],
+      "evidenceRef": "screenshots/p3-s1.png",
+      "observedUserQuestion": "URL-first 사용자는 '핵심 5개'와 '전체 24개' 중 무엇을 기대하는가?",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P3",
+      "sessionId": "S2",
+      "userGoal": "URL lookup 결과를 저장해 My Flow와 Calendar에서 확인한다.",
+      "route": [
+        "/f/curated-ajd-moving-d30",
+        "/my?savedMap=curated-ajd-moving-d30",
+        "/calendar"
+      ],
+      "viewport": "1024x768",
+      "startingState": "P3-S1 lookup hit",
+      "steps": [
+        "이사일 입력",
+        "저장",
+        "receipt 확인",
+        "My Flow 열기",
+        "Calendar 확인"
+      ],
+      "interactionDepth": 4,
+      "expectedMentalModel": "lookup에서 본 5개와 downstream count가 같다.",
+      "actualFeedback": "curated 5개 객체 자체의 save-to-execution은 동작한다.",
+      "nextAction": "첫 항목 실행",
+      "flowIdentityObserved": "curated-ajd-moving-d30",
+      "itemCountObserved": "5",
+      "artifactObserved": "Calendar",
+      "saveObjectObserved": "flow:saved:curated-ajd-moving-d30 + map keys",
+      "reloadPersistence": "supported",
+      "parity": {
+        "myFlow": "5개",
+        "calendar": "5개",
+        "export": "5개"
+      },
+      "recoveryAndDataPreservation": "alias-level record 보존",
+      "status": "supported",
+      "severity": "low",
+      "evidenceKinds": [
+        "current_production_interaction",
+        "current_source",
+        "current_package_screenshot",
+        "heuristic_simulation"
+      ],
+      "evidenceRef": "screenshots/p3-s2.png",
+      "observedUserQuestion": "lookup receipt에서 source와 개인 Flow의 관계가 충분히 명확한가?",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P3",
+      "sessionId": "S3",
+      "userGoal": "네 개 이사 alias가 저장·개인 상태를 공유하는지 확인한다.",
+      "route": [
+        "/f/moving-d30-basic",
+        "/flow-maps/moving-d30",
+        "/f/curated-ajd-moving-d30",
+        "/f/source-backed-moving-d30"
+      ],
+      "viewport": "390x844",
+      "startingState": "curated 5개 저장됨",
+      "steps": [
+        "각 route 직접 열기",
+        "title/count 비교",
+        "저장 신호 비교",
+        "storage key 비교"
+      ],
+      "interactionDepth": 3,
+      "expectedMentalModel": "alias는 하나의 canonicalFlowId와 personal overlay를 공유한다.",
+      "actualFeedback": "네 route가 24/5/5/5로 갈리고 세 saved slug identity를 사용한다.",
+      "nextAction": "canonical editorial choice와 alias registry 필요",
+      "flowIdentityObserved": "3 save identities across 4 routes",
+      "itemCountObserved": "24 / 5 / 5 / 5",
+      "artifactObserved": "Calendar 계열",
+      "saveObjectObserved": "slug별 분리",
+      "reloadPersistence": "alias별 유지",
+      "parity": {
+        "myFlow": "최대 3 objects",
+        "calendar": "최대 3 projections",
+        "export": "각 alias 단위"
+      },
+      "recoveryAndDataPreservation": "canonical alias graph 없음",
+      "status": "partial",
+      "severity": "high",
+      "evidenceKinds": [
+        "current_production_interaction",
+        "current_source",
+        "current_package_screenshot",
+        "heuristic_simulation"
+      ],
+      "evidenceRef": "screenshots/p3-s3.png",
+      "observedUserQuestion": "같은 원문의 세 편집본을 사용자에게 variant로 노출할 가치가 있는가?",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P4",
+      "sessionId": "S1",
+      "userGoal": "24개와 5개 이사 Flow를 모두 가진 상태에서 중복을 인지한다.",
+      "route": [
+        "/my?view=flows"
+      ],
+      "viewport": "1024x768",
+      "startingState": "public 24개 + map 5개 저장",
+      "steps": [
+        "My Flow 목록 열기",
+        "두 이사 행 scan",
+        "source/항목 수 비교"
+      ],
+      "interactionDepth": 2,
+      "expectedMentalModel": "같은 source 후보 표시와 차이 비교가 제공된다.",
+      "actualFeedback": "두 행은 보이지만 동일 source, 대표본, 중복 이유가 표시되지 않는다.",
+      "nextAction": "각 Flow를 따로 열어 추론",
+      "flowIdentityObserved": "two unrelated-looking rows",
+      "itemCountObserved": "24 + 5",
+      "artifactObserved": "두 execution objects",
+      "saveObjectObserved": "two slug keys",
+      "reloadPersistence": "둘 다 유지",
+      "parity": {
+        "myFlow": "2 objects",
+        "calendar": "separate",
+        "export": "separate"
+      },
+      "recoveryAndDataPreservation": "중복 reconcile entry 없음",
+      "status": "partial",
+      "severity": "high",
+      "evidenceKinds": [
+        "current_production_interaction",
+        "current_source",
+        "current_package_screenshot",
+        "heuristic_simulation"
+      ],
+      "evidenceRef": "screenshots/p4-s1.png",
+      "observedUserQuestion": "사용자는 두 행을 중복으로 볼까, 목적이 다른 계획으로 볼까?",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P4",
+      "sessionId": "S2",
+      "userGoal": "중복 이사 Flow의 상태와 Calendar projection 분기를 확인한다.",
+      "route": [
+        "/my",
+        "/calendar"
+      ],
+      "viewport": "1024x768",
+      "startingState": "P4-S1 두 object",
+      "steps": [
+        "한쪽 완료",
+        "한쪽 날짜 변경",
+        "다른 object 열기",
+        "Calendar 비교",
+        "export 비교"
+      ],
+      "interactionDepth": 4,
+      "expectedMentalModel": "같은 canonical item이면 충돌을 설명하거나 한쪽 상태를 대표로 쓴다.",
+      "actualFeedback": "두 object는 독립 personal/run/projection을 만들며 서로의 변경을 모른다.",
+      "nextAction": "사용자가 수동 정리",
+      "flowIdentityObserved": "independent slugs",
+      "itemCountObserved": "24 + 5",
+      "artifactObserved": "separate Calendar/export",
+      "saveObjectObserved": "independent",
+      "reloadPersistence": "각각 유지",
+      "parity": {
+        "myFlow": "상태 분리",
+        "calendar": "중복 가능",
+        "export": "중복 가능"
+      },
+      "recoveryAndDataPreservation": "개별 undo는 가능하나 cross-object 보존 정책 없음",
+      "status": "partial",
+      "severity": "high",
+      "evidenceKinds": [
+        "current_production_interaction",
+        "current_source",
+        "current_package_screenshot",
+        "heuristic_simulation"
+      ],
+      "evidenceRef": "screenshots/p4-s2.png",
+      "observedUserQuestion": "중복 정리 시 어느 기록을 우선 보존해야 한다고 느끼는가?",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P4",
+      "sessionId": "S3",
+      "userGoal": "중복 객체를 reconcile하며 개인 기록을 보존한다.",
+      "route": [
+        "/my?view=flows"
+      ],
+      "viewport": "390x844",
+      "startingState": "항목 수와 상태가 다른 duplicate pair",
+      "steps": [
+        "archive 찾기",
+        "restore 찾기",
+        "merge/대표 선택 찾기"
+      ],
+      "interactionDepth": 2,
+      "expectedMentalModel": "대표본 선택, 차이 확인, 비파괴 보관이 가능하다.",
+      "actualFeedback": "개별 archive/delete는 있지만 source-level alias 비교·merge·대표 선택이 없다.",
+      "nextAction": "P33 reconciliation gate 필요",
+      "flowIdentityObserved": "unreconciled aliases",
+      "itemCountObserved": "24 + 5",
+      "artifactObserved": "n/a",
+      "saveObjectObserved": "legacy objects retained",
+      "reloadPersistence": "retained",
+      "parity": {
+        "myFlow": "reconcile missing",
+        "calendar": "reconcile missing",
+        "export": "reconcile missing"
+      },
+      "recoveryAndDataPreservation": "자동 병합하면 24↔5 item state를 안전하게 대응할 수 없어 data-loss 위험이 크다.",
+      "status": "missing",
+      "severity": "high",
+      "evidenceKinds": [
+        "current_production_interaction",
+        "current_source",
+        "current_package_screenshot",
+        "heuristic_simulation"
+      ],
+      "evidenceRef": "screenshots/p4-s3.png",
+      "observedUserQuestion": "대표본 선택 전에 어떤 비교 정보가 있어야 안심하고 정리할 수 있는가?",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P5",
+      "sessionId": "S1",
+      "userGoal": "Home의 필요할 때 차량 체크리스트 약속과 target을 비교한다.",
+      "route": [
+        "/",
+        "/f/vehicle-inspection-prep"
+      ],
+      "viewport": "390x844",
+      "startingState": "clean localStorage",
+      "steps": [
+        "Home vehicle card 읽기",
+        "target 열기",
+        "primary artifact 확인",
+        "Checklist 누르기"
+      ],
+      "interactionDepth": 3,
+      "expectedMentalModel": "필요할 때 실행하는 날짜 없는 Checklist가 먼저 보인다.",
+      "actualFeedback": "target은 자동차검사 D-14 Calendar 10개가 기본이고 Checklist control도 projection을 바꾸지 않는다.",
+      "nextAction": "날짜 없이 시작 또는 Calendar 저장",
+      "flowIdentityObserved": "vehicle-inspection-prep",
+      "itemCountObserved": "10",
+      "artifactObserved": "Home promise Checklist / target Calendar",
+      "saveObjectObserved": "저장 전",
+      "reloadPersistence": "n/a",
+      "parity": {
+        "myFlow": "not yet saved",
+        "calendar": "not yet saved",
+        "export": "10개"
+      },
+      "recoveryAndDataPreservation": "promise 수정이나 작동하는 artifact 선택 필요",
+      "status": "partial",
+      "severity": "high",
+      "evidenceKinds": [
+        "current_production_interaction",
+        "current_source",
+        "current_package_screenshot",
+        "heuristic_simulation"
+      ],
+      "evidenceRef": "screenshots/p5-s1.png",
+      "observedUserQuestion": "차량 점검 사용자는 검사일 역산과 필요할 때 체크 중 어느 job으로 진입하는가?",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P5",
+      "sessionId": "S2",
+      "userGoal": "차량 Flow를 날짜 없이 저장하고 실행·배치한다.",
+      "route": [
+        "/f/vehicle-inspection-prep",
+        "/my",
+        "/calendar"
+      ],
+      "viewport": "1024x768",
+      "startingState": "P5-S1 public detail",
+      "steps": [
+        "날짜 없이 시작",
+        "저장",
+        "My Flow 확인",
+        "Calendar undated queue 확인",
+        "날짜 배치"
+      ],
+      "interactionDepth": 4,
+      "expectedMentalModel": "날짜 없는 항목이 My Flow 실행과 Calendar 배치 queue로 이어진다.",
+      "actualFeedback": "undated 저장과 downstream 배치 모델은 지원된다. entry promise와 artifact state만 어긋난다.",
+      "nextAction": "날짜 배치 또는 항목 완료",
+      "flowIdentityObserved": "vehicle-inspection-prep",
+      "itemCountObserved": "10",
+      "artifactObserved": "undated execution",
+      "saveObjectObserved": "flow:saved:vehicle-inspection-prep",
+      "reloadPersistence": "supported",
+      "parity": {
+        "myFlow": "supported",
+        "calendar": "undated queue supported",
+        "export": "Checklist/ICS eligibility differs by date"
+      },
+      "recoveryAndDataPreservation": "날짜 제거 시 queue 복귀 가능",
+      "status": "supported",
+      "severity": "low",
+      "evidenceKinds": [
+        "current_production_interaction",
+        "current_source",
+        "current_package_screenshot",
+        "heuristic_simulation"
+      ],
+      "evidenceRef": "screenshots/p5-s2.png",
+      "observedUserQuestion": "Calendar의 날짜 없는 queue를 사용자가 자연스럽게 발견하는가?",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P5",
+      "sessionId": "S3",
+      "userGoal": "Flow 찾기에서 Home 차량 Flow를 재발견한다.",
+      "route": [
+        "/flows"
+      ],
+      "viewport": "390x844",
+      "startingState": "vehicle-inspection-prep 저장됨",
+      "steps": [
+        "차량 검색",
+        "차량 점검 검색",
+        "자동차검사 검색",
+        "9개 inventory 비교"
+      ],
+      "interactionDepth": 3,
+      "expectedMentalModel": "Home target이 Find에서 같은 title·promise·saved state로 검색된다.",
+      "actualFeedback": "hydrated catalog 9개에 Home vehicle public target이 없고 검색어도 canonical 재발견으로 이어지지 않는다.",
+      "nextAction": "Home history 또는 직접 URL에 의존",
+      "flowIdentityObserved": "Find inventory missing vehicle-inspection-prep",
+      "itemCountObserved": "0 matching canonical cards",
+      "artifactObserved": "n/a",
+      "saveObjectObserved": "기존 key는 있지만 catalog signal 없음",
+      "reloadPersistence": "catalog result 동일",
+      "parity": {
+        "myFlow": "저장 객체는 존재",
+        "calendar": "projection 존재",
+        "export": "저장 객체에서만 접근"
+      },
+      "recoveryAndDataPreservation": "Find inventory alignment 필요",
+      "status": "partial",
+      "severity": "high",
+      "evidenceKinds": [
+        "current_production_interaction",
+        "current_source",
+        "current_package_screenshot",
+        "heuristic_simulation"
+      ],
+      "evidenceRef": "screenshots/p5-s3.png",
+      "observedUserQuestion": "재방문자는 Find보다 My Flow 검색으로 저장 콘텐츠를 찾는가?",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P6",
+      "sessionId": "S1",
+      "userGoal": "반복 운동 Flow의 entry와 artifact·series 설정 연속성을 확인한다.",
+      "route": [
+        "/",
+        "/flows",
+        "/f/curated-allblanc-morning-workout"
+      ],
+      "viewport": "390x844",
+      "startingState": "clean localStorage",
+      "steps": [
+        "Home workout 열기",
+        "Find 동일 card 확인",
+        "Flow execution 확인",
+        "Calendar 선택",
+        "요일·시간·종료 조정"
+      ],
+      "interactionDepth": 4,
+      "expectedMentalModel": "두 entry가 같은 public object와 작동하는 artifact controls를 쓴다.",
+      "actualFeedback": "Home/Find가 같은 slug를 쓰며 Flow execution↔Calendar 선택도 실제 projection을 바꾼다.",
+      "nextAction": "routine 저장",
+      "flowIdentityObserved": "curated-allblanc-morning-workout",
+      "itemCountObserved": "1 series item",
+      "artifactObserved": "Flow execution / Calendar / Memo",
+      "saveObjectObserved": "저장 전",
+      "reloadPersistence": "설정은 저장 후 유지",
+      "parity": {
+        "myFlow": "not yet saved",
+        "calendar": "next occurrence preview",
+        "export": "eligible artifact별 1 item/occurrences"
+      },
+      "recoveryAndDataPreservation": "조정 취소 가능",
+      "status": "supported",
+      "severity": "low",
+      "evidenceKinds": [
+        "current_production_interaction",
+        "current_source",
+        "current_package_screenshot",
+        "heuristic_simulation"
+      ],
+      "evidenceRef": "screenshots/p6-s1.png",
+      "observedUserQuestion": "Flow 실행과 Calendar의 차이를 control만 보고 이해하는가?",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P6",
+      "sessionId": "S2",
+      "userGoal": "날짜 없는 운동 series를 My Flow와 Calendar에서 확인한다.",
+      "route": [
+        "/my",
+        "/calendar"
+      ],
+      "viewport": "390x844",
+      "startingState": "undated workout 저장",
+      "steps": [
+        "My Flow 열기",
+        "focused Flow 열기",
+        "반복 summary 읽기",
+        "Calendar 확인",
+        "완료·재개"
+      ],
+      "interactionDepth": 4,
+      "expectedMentalModel": "사람이 읽는 요일 summary와 series/occurrence 관계가 일관된다.",
+      "actualFeedback": "실행은 이어지지만 My Flow focused workspace에 raw RRULE FREQ=WEEKLY;BYDAY=MO,WE,FR가 노출된다.",
+      "nextAction": "display adapter로 사람이 읽는 문구 제공",
+      "flowIdentityObserved": "curated-allblanc-morning-workout",
+      "itemCountObserved": "1 series; undated Calendar event 0",
+      "artifactObserved": "routine execution",
+      "saveObjectObserved": "flow:saved:curated-allblanc-morning-workout",
+      "reloadPersistence": "supported",
+      "parity": {
+        "myFlow": "partial due raw RRULE",
+        "calendar": "raw RRULE은 노출되지 않음",
+        "export": "series/occurrence 범위 별도 확인 필요"
+      },
+      "recoveryAndDataPreservation": "완료 취소는 지원",
+      "status": "partial",
+      "severity": "medium",
+      "evidenceKinds": [
+        "current_production_interaction",
+        "current_source",
+        "current_package_screenshot",
+        "heuristic_simulation"
+      ],
+      "evidenceRef": "screenshots/p6-s2.png",
+      "observedUserQuestion": "사용자는 날짜 없는 반복을 유효한 설정으로 이해하는가?",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P6",
+      "sessionId": "S3",
+      "userGoal": "운동 Flow 재진입 시 series 설정·실행 상태·resource 연속성을 확인한다.",
+      "route": [
+        "/f/curated-allblanc-morning-workout",
+        "/my"
+      ],
+      "viewport": "1024x768",
+      "startingState": "저장 및 일부 실행 상태",
+      "steps": [
+        "public route 재진입",
+        "저장 표시 확인",
+        "resource 열기",
+        "My Flow occurrence 비교",
+        "export 확인"
+      ],
+      "interactionDepth": 4,
+      "expectedMentalModel": "public detail은 saved signal을 주고 execution state는 My Flow에서 이어진다.",
+      "actualFeedback": "slug 저장 신호와 source resource는 유지되나 public shell에서 occurrence 상태를 직접 이어 보여주지는 않는다.",
+      "nextAction": "My Flow에서 계속",
+      "flowIdentityObserved": "same public slug",
+      "itemCountObserved": "1 series",
+      "artifactObserved": "routine",
+      "saveObjectObserved": "same key",
+      "reloadPersistence": "supported",
+      "parity": {
+        "myFlow": "execution state source of truth",
+        "calendar": "dated occurrence only",
+        "export": "series/occurrence scope should remain explicit"
+      },
+      "recoveryAndDataPreservation": "source와 run 분리가 보존됨",
+      "status": "partial",
+      "severity": "medium",
+      "evidenceKinds": [
+        "current_production_interaction",
+        "current_source",
+        "current_package_screenshot",
+        "heuristic_simulation"
+      ],
+      "evidenceRef": "screenshots/p6-s3.png",
+      "observedUserQuestion": "재진입 public 화면에서 진행률까지 보여주는 것이 유용한가, 혼란스러운가?",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P7",
+      "sessionId": "S1",
+      "userGoal": "결혼 두 콘텐츠와 작동하는 artifact choice를 positive control로 확인한다.",
+      "route": [
+        "/flows",
+        "/f/curated-wedding-naver-timeline",
+        "/f/curated-wedding-gongysd-atoz"
+      ],
+      "viewport": "390x844",
+      "startingState": "clean localStorage",
+      "steps": [
+        "결혼 카드 2개 비교",
+        "timeline 열기",
+        "Calendar→Checklist 선택",
+        "sheet형 콘텐츠 열기"
+      ],
+      "interactionDepth": 3,
+      "expectedMentalModel": "서로 다른 source/job은 별도 Flow이고 artifact control은 실제 결과를 바꾼다.",
+      "actualFeedback": "두 독립 card가 유지되고 wedding artifact 선택은 projection과 CTA를 바꾼다.",
+      "nextAction": "선택 결과로 저장",
+      "flowIdentityObserved": "two intentional Flow slugs",
+      "itemCountObserved": "6 and 4",
+      "artifactObserved": "Calendar/Checklist/Memo and Sheet",
+      "saveObjectObserved": "저장 전",
+      "reloadPersistence": "n/a",
+      "parity": {
+        "myFlow": "not yet saved",
+        "calendar": "preview only",
+        "export": "content-eligible results"
+      },
+      "recoveryAndDataPreservation": "artifact 재선택 가능",
+      "status": "supported",
+      "severity": "low",
+      "evidenceKinds": [
+        "current_production_interaction",
+        "current_source",
+        "current_package_screenshot",
+        "heuristic_simulation"
+      ],
+      "evidenceRef": "screenshots/p7-s1.png",
+      "observedUserQuestion": "추천 artifact 이유가 선택에 충분한가?",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P7",
+      "sessionId": "S2",
+      "userGoal": "서로 다른 결혼 Flow의 receipt와 downstream 연속성을 확인한다.",
+      "route": [
+        "/my",
+        "/calendar"
+      ],
+      "viewport": "1024x768",
+      "startingState": "wedding 2개 저장",
+      "steps": [
+        "각 receipt 확인",
+        "My Flow 목록 비교",
+        "Calendar projection 비교",
+        "export 확인"
+      ],
+      "interactionDepth": 3,
+      "expectedMentalModel": "의도적으로 다른 source/job은 별도 object로 보존된다.",
+      "actualFeedback": "두 Flow가 다른 count와 artifact를 가진 별도 object로 이어진다.",
+      "nextAction": "각 Flow 실행",
+      "flowIdentityObserved": "curated-wedding-naver-timeline / curated-wedding-gongysd-atoz",
+      "itemCountObserved": "6 + 4",
+      "artifactObserved": "content-specific",
+      "saveObjectObserved": "two intentional keys",
+      "reloadPersistence": "supported",
+      "parity": {
+        "myFlow": "supported",
+        "calendar": "eligible dated items",
+        "export": "supported by each object"
+      },
+      "recoveryAndDataPreservation": "개별 archive/restore",
+      "status": "supported",
+      "severity": "low",
+      "evidenceKinds": [
+        "current_production_interaction",
+        "current_source",
+        "current_package_screenshot",
+        "heuristic_simulation"
+      ],
+      "evidenceRef": "screenshots/p7-s2.png",
+      "observedUserQuestion": "두 결혼 Flow를 함께 쓸 때 관계 표시가 필요한가?",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P7",
+      "sessionId": "S3",
+      "userGoal": "결혼에서 작동하는 interaction grammar를 moving/vehicle과 비교한다.",
+      "route": [
+        "/f/curated-wedding-naver-timeline",
+        "/f/moving-d30-basic",
+        "/f/vehicle-inspection-prep"
+      ],
+      "viewport": "390x844",
+      "startingState": "clean comparison context",
+      "steps": [
+        "각 artifact control 선택",
+        "selected state 비교",
+        "CTA 비교",
+        "source handler 대조"
+      ],
+      "interactionDepth": 3,
+      "expectedMentalModel": "같은 component는 category와 무관하게 동일하게 동작한다.",
+      "actualFeedback": "차이는 content shape가 아니라 결혼/운동/러닝에만 handler를 전달하는 category gate에서 발생한다.",
+      "nextAction": "eligibility 기반 공통 handler로 수정",
+      "flowIdentityObserved": "component-level inconsistency",
+      "itemCountObserved": "n/a",
+      "artifactObserved": "working vs false affordance",
+      "saveObjectObserved": "n/a",
+      "reloadPersistence": "n/a",
+      "parity": {
+        "myFlow": "downstream unaffected until save",
+        "calendar": "selected projection affected",
+        "export": "selected artifact mismatch risk"
+      },
+      "recoveryAndDataPreservation": "control을 숨기거나 작동시켜야 함",
+      "status": "partial",
+      "severity": "high",
+      "evidenceKinds": [
+        "current_production_interaction",
+        "current_source",
+        "current_package_screenshot",
+        "heuristic_simulation"
+      ],
+      "evidenceRef": "screenshots/p7-s3.png",
+      "observedUserQuestion": "artifact 선택을 언제 노출해야 과도한 선택이 되지 않는가?",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P8",
+      "sessionId": "S1",
+      "userGoal": "390px keyboard-only로 Home에서 public save-before까지 이동한다.",
+      "route": [
+        "/",
+        "/flows",
+        "/f/moving-d30-basic"
+      ],
+      "viewport": "390x844",
+      "startingState": "clean keyboard navigation",
+      "steps": [
+        "header focus",
+        "Home card focus",
+        "public controls focus",
+        "adjustment focus",
+        "receipt link focus"
+      ],
+      "interactionDepth": 4,
+      "expectedMentalModel": "같은 과업은 entry와 무관하게 동일한 focus grammar와 accessible name을 쓴다.",
+      "actualFeedback": "주요 control은 접근 가능하지만 public과 legacy map의 focus anatomy가 다르고 일부 summary/link accessible name이 빈다.",
+      "nextAction": "shared semantic component와 focus-return marker",
+      "flowIdentityObserved": "route-dependent interaction grammar",
+      "itemCountObserved": "n/a",
+      "artifactObserved": "keyboard operable with gaps",
+      "saveObjectObserved": "n/a",
+      "reloadPersistence": "n/a",
+      "parity": {
+        "myFlow": "not tested in this cell",
+        "calendar": "not tested in this cell",
+        "export": "not tested"
+      },
+      "recoveryAndDataPreservation": "back은 가능하나 동일 focus return 계약 없음",
+      "status": "partial",
+      "severity": "medium",
+      "evidenceKinds": [
+        "current_production_interaction",
+        "current_source",
+        "current_package_screenshot",
+        "heuristic_simulation"
+      ],
+      "evidenceRef": "screenshots/p8-s1.png",
+      "observedUserQuestion": "키보드 사용자가 legacy detail의 중첩 summary를 자연스럽게 이해하는가?",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P8",
+      "sessionId": "S2",
+      "userGoal": "1024/1440에서 Home·Find·public·map·My Flow·Calendar anatomy를 비교한다.",
+      "route": [
+        "/",
+        "/flows",
+        "/f/moving-d30-basic",
+        "/flow-maps/moving-d30",
+        "/my",
+        "/calendar"
+      ],
+      "viewport": "1024x768 + 1440x900",
+      "startingState": "clean responsive comparison",
+      "steps": [
+        "각 route capture",
+        "first viewport 비교",
+        "fixed layer 확인",
+        "overflow 확인",
+        "accessible name scan"
+      ],
+      "interactionDepth": 4,
+      "expectedMentalModel": "역할은 달라도 동일 Flow anatomy와 command placement가 유지된다.",
+      "actualFeedback": "가로 overflow와 page/console error는 없지만 public /f와 legacy /flow-maps가 같은 Flow처럼 보이지 않는다.",
+      "nextAction": "role-specific shell 아래 canonical Flow anatomy 공유",
+      "flowIdentityObserved": "visual identity split",
+      "itemCountObserved": "24 vs 5",
+      "artifactObserved": "public artifact-first vs map legacy",
+      "saveObjectObserved": "route-dependent",
+      "reloadPersistence": "stable",
+      "parity": {
+        "myFlow": "P32 focused shell은 positive control",
+        "calendar": "stable downstream",
+        "export": "route-dependent upstream"
+      },
+      "recoveryAndDataPreservation": "fixed overlap은 캡처에서 확인되지 않음",
+      "status": "partial",
+      "severity": "medium",
+      "evidenceKinds": [
+        "current_production_interaction",
+        "current_source",
+        "current_package_screenshot",
+        "heuristic_simulation"
+      ],
+      "evidenceRef": "screenshots/p8-s2.png",
+      "observedUserQuestion": "사용자는 화면 문법 차이를 콘텐츠 유형 차이로 오인하는가?",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P8",
+      "sessionId": "S3",
+      "userGoal": "reload·반복 저장·back과 alias 중복 복구를 확인한다.",
+      "route": [
+        "/f/moving-d30-basic",
+        "/flow-maps/moving-d30",
+        "/my"
+      ],
+      "viewport": "390x844",
+      "startingState": "disposable persisted profile",
+      "steps": [
+        "이사일 입력",
+        "reload",
+        "같은 slug 반복 저장",
+        "다른 alias 저장",
+        "My Flow 비교"
+      ],
+      "interactionDepth": 4,
+      "expectedMentalModel": "같은 Flow 반복 저장은 한 객체를 갱신하고 alias도 같은 객체를 가리킨다.",
+      "actualFeedback": "public anchor와 같은 slug 반복 저장은 유지·갱신되지만 다른 alias를 저장하면 별도 object가 생긴다.",
+      "nextAction": "canonical save identity + duplicate reconciliation",
+      "flowIdentityObserved": "same-slug stable, cross-alias split",
+      "itemCountObserved": "1 same-slug key; additional alias key",
+      "artifactObserved": "n/a",
+      "saveObjectObserved": "slug-scoped",
+      "reloadPersistence": "anchor persists after reload",
+      "parity": {
+        "myFlow": "alias duplicates persist",
+        "calendar": "alias projections persist",
+        "export": "alias scope persists"
+      },
+      "recoveryAndDataPreservation": "same-slug idempotence positive; cross-alias recovery missing",
+      "status": "partial",
+      "severity": "high",
+      "evidenceKinds": [
+        "current_production_interaction",
+        "current_source",
+        "current_package_screenshot",
+        "heuristic_simulation"
+      ],
+      "evidenceRef": "screenshots/p8-s3.png",
+      "observedUserQuestion": "중복 저장 경고는 저장 전과 저장 후 중 어디에서 가장 유용한가?",
+      "observedUserCount": 0
+    }
+  ]
+}

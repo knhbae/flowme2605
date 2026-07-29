@@ -1,0 +1,151 @@
+{
+  "schemaVersion": "flowme.alias-storage-impact.v1",
+  "reviewerRole": "codex_independent",
+  "observedUserCount": 0,
+  "aliasGraph": {
+    "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363",
+    "nodes": [
+      {
+        "id": "moving-d30-basic",
+        "kind": "public_seed_flow",
+        "itemCount": 24
+      },
+      {
+        "id": "moving-d30",
+        "kind": "source_backed_flow_map",
+        "itemCount": 5
+      },
+      {
+        "id": "source-backed-moving-d30",
+        "kind": "source_backed_child_flow",
+        "itemCount": 5
+      },
+      {
+        "id": "curated-ajd-moving-d30",
+        "kind": "curated_map_and_child",
+        "itemCount": 5
+      }
+    ],
+    "edges": [
+      {
+        "from": "Home",
+        "to": "moving-d30-basic",
+        "relation": "links_to"
+      },
+      {
+        "from": "Find",
+        "to": "moving-d30",
+        "relation": "links_to"
+      },
+      {
+        "from": "moving-d30",
+        "to": "source-backed-moving-d30",
+        "relation": "saves_child"
+      },
+      {
+        "from": "URL lookup",
+        "to": "curated-ajd-moving-d30",
+        "relation": "resolves_to"
+      },
+      {
+        "from": "direct alias",
+        "to": "source-backed-moving-d30",
+        "relation": "opens"
+      }
+    ],
+    "missingEdge": "all aliases -> one canonicalFlowId"
+  },
+  "currentOwnership": [
+    {
+      "layer": "source",
+      "owner": "Flow seed/map modules",
+      "key": "sourceUrl",
+      "risk": "URL variants are normalized for lookup but do not establish user Flow identity."
+    },
+    {
+      "layer": "personal",
+      "owner": "saved slug",
+      "key": "flow:saved:{slug}",
+      "risk": "aliases create separate title/date/inclusion overlays."
+    },
+    {
+      "layer": "run",
+      "owner": "slug/item identity",
+      "key": "execution state keys",
+      "risk": "completion and memo diverge across aliases."
+    },
+    {
+      "layer": "occurrence",
+      "owner": "saved routine projection",
+      "key": "series/occurrence IDs",
+      "risk": "must not be regenerated or merged from source URL alone."
+    },
+    {
+      "layer": "export",
+      "owner": "selected saved object",
+      "key": "slug + scope",
+      "risk": "same source can be exported twice with 24 and 5 rows/events."
+    }
+  ],
+  "currentDuplicateBehavior": {
+    "sameSlugRepeatedSave": "one saved key is updated",
+    "differentAliasSave": "separate saved object is created",
+    "duplicateWarning": false,
+    "canonicalRepresentative": false,
+    "automaticMerge": false
+  },
+  "migrationRecommendation": {
+    "strategy": "additive registry, dual-read, gated single-write",
+    "canonicalKey": "canonicalFlowId = source identity + user job + intentional editorial variant",
+    "backupKeyExample": "flow:canonical-migration-backup:v1",
+    "steps": [
+      "Introduce a read-only canonical registry and invariant tests before changing writes.",
+      "Choose the canonical AJD moving content snapshot editorially; do not infer 24 vs 5 from popularity or route age.",
+      "Attach legacy aliases to the canonical record while preserving legacy origin IDs.",
+      "Dual-read old slug keys and canonical records; write only canonical identity after a feature gate.",
+      "For one unambiguous legacy record, adopt it with a backup and provenance.",
+      "For multiple records or 24-vs-5 mismatch, ask the user to choose an active copy; preserve the other as archived legacy history."
+    ],
+    "forbidden": [
+      "Delete old localStorage keys during first migration.",
+      "Map completion or memo state between 24 and 5 items by array index or title similarity.",
+      "Use source URL alone as canonicalFlowId.",
+      "Rewrite stable run, occurrence, or export identities as part of the visual alignment."
+    ],
+    "rollback": [
+      "Feature flag returns reads to legacy slug keys.",
+      "Backup retains pre-migration records.",
+      "Canonical writes carry legacyOriginIds for reverse lookup."
+    ]
+  },
+  "dataLossRisks": [
+    {
+      "severity": "blocking_for_auto_merge",
+      "risk": "24 items cannot be deterministically paired with 5 items.",
+      "affected": [
+        "completion",
+        "personal memo",
+        "date override",
+        "exclusion",
+        "export selection"
+      ]
+    },
+    {
+      "severity": "high",
+      "risk": "Choosing the newest savedAt record can discard a richer or more progressed object.",
+      "affected": [
+        "personal overlay",
+        "execution run"
+      ]
+    },
+    {
+      "severity": "high",
+      "risk": "Rekeying routine records can duplicate or lose occurrence history.",
+      "affected": [
+        "series",
+        "occurrence",
+        "ICS identity"
+      ]
+    }
+  ]
+}

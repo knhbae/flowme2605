@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe cross-entry canonical 독립 검토</title>
+  <style>
+    :root {
+      --ink: #172126;
+      --muted: #5d6a70;
+      --paper: #f6f7f4;
+      --panel: #ffffff;
+      --line: #d8dedb;
+      --mint: #0b6b58;
+      --mint-soft: #dff2eb;
+      --coral: #b54b3e;
+      --coral-soft: #f8e7e3;
+      --amber: #8a5a00;
+      --amber-soft: #fff1ce;
+      --blue: #245d8f;
+      --blue-soft: #e7f1fb;
+      --shadow: 0 8px 28px rgba(23, 33, 38, .08);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: Inter, "Pretendard", "Noto Sans KR", system-ui, sans-serif;
+      line-height: 1.55;
+      letter-spacing: 0;
+    }
+    a { color: inherit; }
+    img { display: block; width: 100%; height: auto; border: 1px solid var(--line); background: #fff; }
+    .shell { width: min(1180px, calc(100% - 32px)); margin: 0 auto; }
+    .topbar {
+      position: sticky; top: 0; z-index: 10;
+      border-bottom: 1px solid var(--line);
+      background: rgba(246,247,244,.94);
+      backdrop-filter: blur(12px);
+    }
+    .topbar .shell { min-height: 56px; display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+    .brand { font-weight: 800; }
+    .nav { display: flex; gap: 14px; overflow-x: auto; font-size: 13px; color: var(--muted); white-space: nowrap; }
+    .hero { padding: 56px 0 30px; border-bottom: 1px solid var(--line); background: #eef3ef; }
+    .eyebrow { margin: 0 0 10px; color: var(--mint); font-size: 12px; font-weight: 800; text-transform: uppercase; }
+    h1 { max-width: 780px; margin: 0; font-size: clamp(32px, 5vw, 58px); line-height: 1.06; letter-spacing: 0; }
+    .lede { max-width: 780px; margin: 20px 0 0; color: var(--muted); font-size: 18px; }
+    .verdict {
+      display: inline-flex; margin-top: 24px; padding: 8px 12px;
+      color: #fff; background: var(--coral); font-size: 13px; font-weight: 800;
+    }
+    .metrics { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 10px; margin-top: 34px; }
+    .metric { padding: 16px; border: 1px solid var(--line); background: rgba(255,255,255,.74); }
+    .metric b { display: block; font-size: 26px; }
+    .metric span { color: var(--muted); font-size: 12px; }
+    section { padding: 48px 0; border-bottom: 1px solid var(--line); }
+    h2 { margin: 0 0 8px; font-size: 28px; }
+    h3 { margin: 0; font-size: 18px; }
+    .section-copy { max-width: 760px; margin: 0 0 24px; color: var(--muted); }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 18px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; }
+    .panel { padding: 20px; border: 1px solid var(--line); background: var(--panel); box-shadow: var(--shadow); }
+    .panel p { margin: 8px 0 0; color: var(--muted); }
+    .kicker { color: var(--muted); font-size: 12px; font-weight: 700; }
+    .bad { color: var(--coral); }
+    .good { color: var(--mint); }
+    .tag { display: inline-block; padding: 3px 7px; font-size: 11px; font-weight: 800; background: var(--blue-soft); color: var(--blue); }
+    .tag.high { background: var(--coral-soft); color: var(--coral); }
+    .tag.medium { background: var(--amber-soft); color: var(--amber); }
+    .flowline { display: grid; grid-template-columns: repeat(7, minmax(0,1fr)); gap: 8px; align-items: stretch; }
+    .flow-node { min-height: 92px; padding: 12px; border: 1px solid var(--line); background: #fff; }
+    .flow-node strong { display: block; font-size: 13px; }
+    .flow-node span { display: block; margin-top: 6px; color: var(--muted); font-size: 11px; }
+    .flow-node.problem { border-color: #e3aaa2; background: var(--coral-soft); }
+    .flow-node.target { border-color: #8fc6b7; background: var(--mint-soft); }
+    .shot { margin: 0; }
+    .shot figcaption { padding: 10px 0 0; color: var(--muted); font-size: 12px; }
+    .phone img { max-height: 700px; object-fit: contain; object-position: top; }
+    table { width: 100%; border-collapse: collapse; background: #fff; font-size: 13px; }
+    th, td { padding: 12px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: #edf1ee; }
+    .table-wrap { overflow-x: auto; }
+    .finding { display: grid; grid-template-columns: 82px minmax(0,1fr); gap: 16px; padding: 18px 0; border-top: 1px solid var(--line); }
+    .finding:first-of-type { border-top: 0; }
+    .finding p { margin: 6px 0 0; color: var(--muted); }
+    .option.recommended { border: 2px solid var(--mint); }
+    .score { margin-top: 16px; font-size: 30px; font-weight: 850; }
+    .wireframe { padding: 14px; border: 1px solid var(--line); background: #f8faf8; }
+    .wf-bar { height: 38px; padding: 8px; background: #172126; color: #fff; font-size: 12px; }
+    .wf-row { display: grid; grid-template-columns: 1fr 2fr; gap: 8px; margin-top: 8px; }
+    .wf-box { min-height: 58px; padding: 10px; border: 1px dashed #9aa8a2; background: #fff; font-size: 12px; }
+    .wf-primary { min-height: 84px; border: 2px solid var(--mint); background: var(--mint-soft); }
+    .wf-danger { border-color: var(--coral); background: var(--coral-soft); }
+    .slice { display: grid; grid-template-columns: 82px minmax(0,1fr); gap: 14px; padding: 16px 0; border-top: 1px solid var(--line); }
+    details { border-top: 1px solid var(--line); background: #fff; }
+    summary { cursor: pointer; padding: 14px; font-weight: 750; }
+    details .detail-body { padding: 0 14px 14px; color: var(--muted); font-size: 13px; }
+    footer { padding: 40px 0 80px; color: var(--muted); font-size: 13px; }
+    @media (max-width: 860px) {
+      .metrics { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .flowline { grid-template-columns: 1fr; }
+      .flow-node { min-height: 0; }
+      .wf-row { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 520px) {
+      .shell { width: min(100% - 20px, 1180px); }
+      .topbar .shell { align-items: flex-start; padding: 10px 0; flex-direction: column; gap: 6px; }
+      .hero { padding-top: 36px; }
+      h1 { font-size: 36px; }
+      .lede { font-size: 16px; }
+      section { padding: 36px 0; }
+      .metrics { grid-template-columns: 1fr 1fr; }
+      .metric b { font-size: 22px; }
+      .finding, .slice { grid-template-columns: 1fr; gap: 6px; }
+      th, td { padding: 9px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell">
+      <div class="brand">FlowMe · 독립 검토</div>
+      <nav class="nav" aria-label="보고서 목차">
+        <a href="#verdict">판정</a><a href="#continuity">연속성</a><a href="#evidence">화면</a><a href="#findings">Findings</a><a href="#journeys">24 cells</a><a href="#decision">A/B/C</a><a href="#p33">P33</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="hero" id="verdict">
+      <div class="shell">
+        <p class="eyebrow">Codex independent · production/current source</p>
+        <h1>같은 이사 콘텐츠가<br>하나의 사용자 Flow가 아니다.</h1>
+        <p class="lede">각 route 내부의 저장과 실행은 대체로 동작한다. 그러나 Home 24개, Find 5개, URL lookup 5개가 서로 다른 저장 객체가 되어 My Flow·Calendar·export에서 갈라진다.</p>
+        <div class="verdict">canonical_flow_contract_reopen</div>
+        <div class="metrics">
+          <div class="metric"><b>24</b><span>persona × session cells</span></div>
+          <div class="metric"><b>8</b><span>supported</span></div>
+          <div class="metric"><b>15</b><span>partial</span></div>
+          <div class="metric"><b>1</b><span>missing</span></div>
+          <div class="metric"><b>0</b><span>observed users</span></div>
+        </div>
+      </div>
+    </div>
+
+    <section id="continuity">
+      <div class="shell">
+        <h2>현재 continuity</h2>
+        <p class="section-copy">entry 역할이 다른 것은 문제가 아니다. 같은 source/job이 다른 content snapshot과 저장 identity가 되는 것이 문제다.</p>
+        <div class="flowline" aria-label="현재 cross-entry 흐름">
+          <div class="flow-node problem"><strong>Home</strong><span>moving-d30-basic<br>24개</span></div>
+          <div class="flow-node problem"><strong>Find</strong><span>moving-d30 map<br>5개</span></div>
+          <div class="flow-node problem"><strong>URL lookup</strong><span>curated-ajd<br>5개</span></div>
+          <div class="flow-node problem"><strong>Save keys</strong><span>세 slug identity</span></div>
+          <div class="flow-node problem"><strong>My Flow</strong><span>최대 3개 객체</span></div>
+          <div class="flow-node problem"><strong>Calendar</strong><span>별도 projection</span></div>
+          <div class="flow-node problem"><strong>Export</strong><span>24 또는 5</span></div>
+        </div>
+        <h3 style="margin-top:28px">권장 continuity</h3>
+        <div class="flowline" style="margin-top:12px" aria-label="권장 cross-entry 흐름">
+          <div class="flow-node target"><strong>Home</strong><span>사용 예시 context</span></div>
+          <div class="flow-node target"><strong>Find</strong><span>탐색 context</span></div>
+          <div class="flow-node target"><strong>URL lookup</strong><span>source context</span></div>
+          <div class="flow-node target"><strong>Canonical registry</strong><span>source + job + variant</span></div>
+          <div class="flow-node target"><strong>One saved Flow</strong><span>personal overlay</span></div>
+          <div class="flow-node target"><strong>Run/Calendar</strong><span>stable identity</span></div>
+          <div class="flow-node target"><strong>Export</strong><span>whole/selected/current</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="evidence">
+      <div class="shell">
+        <h2>눈으로 확인되는 단절</h2>
+        <p class="section-copy">같은 AJD source가 current public shell과 legacy map shell에서 서로 다른 Flow처럼 보인다.</p>
+        <div class="grid-2">
+          <figure class="shot phone">
+            <img src="screenshots/moving-public-mobile.png" alt="모바일 public 이사 Flow 24개 화면">
+            <figcaption>Home → public /f · 24개 · artifact-first shell</figcaption>
+          </figure>
+          <figure class="shot phone">
+            <img src="screenshots/moving-map-mobile.png" alt="모바일 Flow Map 이사 Flow 5개 화면">
+            <figcaption>Find → /flow-maps · 5개 · legacy map shell</figcaption>
+          </figure>
+        </div>
+        <div class="grid-2" style="margin-top:18px">
+          <figure class="shot">
+            <img src="screenshots/p4-s1.png" alt="My Flow에 이사 Flow 두 개가 표시된 화면">
+            <figcaption>같은 원문을 저장한 뒤 My Flow에 24개와 5개가 별도 행으로 나타남.</figcaption>
+          </figure>
+          <div class="panel">
+            <p class="kicker">Current source explanation</p>
+            <h3>slug가 곧 저장 identity다.</h3>
+            <p><code>flow:saved:{slug}</code>가 public, source-backed, curated에서 각각 생성된다. URL lookup은 source URL을 찾지만 결과를 one user-facing Flow registry로 합치지 않는다.</p>
+            <p><strong class="bad">자동 병합 금지:</strong> 24개와 5개는 item cardinality와 title이 달라 completion, memo, date override를 안전하게 대응시킬 수 없다.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="findings">
+      <div class="shell">
+        <h2>Severity findings</h2>
+        <p class="section-copy">Blocking crash는 없었다. High는 사용자 Flow identity와 저장 결과 예측을 직접 깨는 문제다.</p>
+        <article class="finding">
+          <div><span class="tag high">High</span><div class="kicker">HIGH-01</div></div>
+          <div><h3>같은 source/job이 네 route, 세 save identity, 24/5 item snapshot으로 갈린다.</h3><p><strong>실제:</strong> canonicalFlowId가 없고 3개 slug key로 분기</p><p><strong>영향:</strong> 이미 저장했는지 알 수 없고 My Flow/Calendar/export 중복이 생긴다.</p><p><strong>조치:</strong> B안 canonical registry와 role-specific shell · <code>P33-CROSS-ENTRY-INVARIANT</code></p></div>
+        </article><article class="finding">
+          <div><span class="tag high">High</span><div class="kicker">HIGH-02</div></div>
+          <div><h3>기존 24개/5개 개인 상태는 자동 병합할 수 없는데 reconciliation이 없다.</h3><p><strong>실제:</strong> 별도 행과 projection만 생성되고 개별 archive/delete 외 source-level 정리 수단이 없다.</p><p><strong>영향:</strong> 자동 merge는 memo/completion/date/export selection을 잃을 수 있고 수동 삭제도 불안하다.</p><p><strong>조치:</strong> dual-read 후 explicit active-copy selection; 24↔5 auto-merge 금지 · <code>P33-NO-AUTO-MERGE</code></p></div>
+        </article><article class="finding">
+          <div><span class="tag high">High</span><div class="kicker">HIGH-03</div></div>
+          <div><h3>moving/vehicle의 visible Checklist control이 false affordance다.</h3><p><strong>실제:</strong> Calendar 상태가 유지된다. wedding/workout에서는 같은 control이 작동한다.</p><p><strong>영향:</strong> 사용자는 저장될 결과를 잘못 예측한다.</p><p><strong>조치:</strong> category hardcode 제거, eligibility 기반 handler 또는 unsupported control 숨김 · <code>P33-ARTIFACT-CONTROL</code></p></div>
+        </article><article class="finding">
+          <div><span class="tag high">High</span><div class="kicker">HIGH-04</div></div>
+          <div><h3>Home vehicle promise, detail 기본 결과, Find 재발견이 하나의 job으로 이어지지 않는다.</h3><p><strong>실제:</strong> D-14 Calendar가 기본이고 Find hydrated inventory에 canonical card가 없다.</p><p><strong>영향:</strong> 첫 기대가 깨지고 저장한 콘텐츠를 다시 찾기 어렵다.</p><p><strong>조치:</strong> entry promise 계약과 canonical inventory를 같은 registry에서 생성 · <code>P33-ENTRY-PROMISE-PARITY</code></p></div>
+        </article><article class="finding">
+          <div><span class="tag medium">Medium</span><div class="kicker">MED-01</div></div>
+          <div><h3>Find의 legacy map과 current public detail/receipt가 다른 화면 문법을 쓴다.</h3><p><strong>실제:</strong> legacy map shell과 public artifact-first shell, 두 receipt grammar가 공존한다.</p><p><strong>영향:</strong> 콘텐츠 차이보다 시스템 세대 차이가 먼저 보인다.</p><p><strong>조치:</strong> canonical detail/receipt anatomy 공유, map은 internal bundle 또는 alias로 제한 · <code>P33-RECEIPT-PARITY</code></p></div>
+        </article><article class="finding">
+          <div><span class="tag medium">Medium</span><div class="kicker">MED-02</div></div>
+          <div><h3>반복 규칙의 raw RRULE이 My Flow 사용자 문구로 노출된다.</h3><p><strong>실제:</strong> FREQ=WEEKLY;BYDAY=MO,WE,FR</p><p><strong>영향:</strong> 데이터 모델이 UI로 새고 반복 설정 신뢰를 낮춘다.</p><p><strong>조치:</strong> display adapter만 수정하고 occurrence identity는 유지 · <code>P33-RRULE-DISPLAY</code></p></div>
+        </article><article class="finding">
+          <div><span class="tag medium">Medium</span><div class="kicker">MED-03</div></div>
+          <div><h3>legacy detail의 focus/accessible-name 문법이 public shell과 다르다.</h3><p><strong>실제:</strong> 일부 summary/link가 unnamed로 잡히고 중첩 interaction 순서가 다르다.</p><p><strong>영향:</strong> 키보드 사용자는 같은 Flow 과업을 route마다 다시 학습한다.</p><p><strong>조치:</strong> shared semantic anatomy와 explicit accessible name/focus return · <code>P33-A11Y-CROSS-ENTRY</code></p></div>
+        </article><article class="finding">
+          <div><span class="tag low">Low</span><div class="kicker">LOW-01</div></div>
+          <div><h3>예시 날짜와 '날짜 없이 시작' CTA의 관계는 설명 없이 즉시 명확하지 않을 수 있다.</h3><p><strong>실제:</strong> 예시 날짜가 먼저 보이는 동안 CTA는 날짜 없이 시작을 제안한다.</p><p><strong>영향:</strong> 실제 사용자 오해 여부는 아직 확인되지 않았다.</p><p><strong>조치:</strong> 예시 badge와 anchor-required transition을 직접 조작으로 구분; 설명문 증가는 피함 · <code>P33-EXAMPLE-DATE-STATE</code></p></div>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <div class="shell">
+        <h2>H1–H7 재판정</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>판정</th><th>현재 production 결과</th><th>Evidence</th></tr></thead>
+            <tbody>
+              <tr><td><strong>H1</strong></td><td><span class="tag">confirmed</span></td><td>같은 AJD 원문이 네 사용자 route와 24/5/5/5 item snapshot으로 노출된다.</td><td>current_production_interaction, current_source</td></tr><tr><td><strong>H2</strong></td><td><span class="tag">confirmed</span></td><td>Home 24개와 Find 5개를 저장하면 서로 다른 saved key와 My Flow 행이 생긴다.</td><td>current_production_interaction, current_package_screenshot, current_source</td></tr><tr><td><strong>H3</strong></td><td><span class="tag">confirmed</span></td><td>hydrated catalog 9개 중 앞 5개는 /flow-maps, 뒤 4개는 /f로 연결된다.</td><td>current_production_interaction, current_source</td></tr><tr><td><strong>H4</strong></td><td><span class="tag">confirmed</span></td><td>moving/vehicle Checklist 선택은 state를 바꾸지 않고 wedding/workout은 바꾼다. category-gated handler와 controlled component 조합이 원인이다.</td><td>current_production_interaction, current_source</td></tr><tr><td><strong>H5</strong></td><td><span class="tag">confirmed</span></td><td>Home은 필요할 때 Checklist를 약속하지만 target은 D-14 Calendar 10개가 기본이다.</td><td>current_production_interaction, current_source</td></tr><tr><td><strong>H6</strong></td><td><span class="tag">confirmed</span></td><td>현재 hydrated catalog에는 vehicle-inspection-prep이 없고 차량 점검/자동차검사 검색으로 canonical target을 재발견하지 못했다. server-to-hydration flicker는 재현되지 않았다.</td><td>current_production_interaction, current_source</td></tr><tr><td><strong>H7</strong></td><td><span class="tag">confirmed</span></td><td>날짜 없이 저장한 focused My Flow에 raw RRULE이 표시된다. Calendar에는 raw 문자열이 표시되지 않는다.</td><td>current_production_interaction, current_source</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="journeys">
+      <div class="shell">
+        <h2>8 personas × 3 sessions</h2>
+        <p class="section-copy">화면 단위 pass와 journey identity pass를 분리했다. supported 8, partial 15, missing 1.</p>
+        <div>
+          <details>
+            <summary>P1-S1 · Home의 이사 예시에서 전체 결과를 이해하고 조정해 저장한다. · <span class="tag high">부분</span></summary>
+            <div class="detail-body">
+              <p><strong>Route:</strong> / → /f/moving-d30-basic · <strong>Viewport:</strong> 390x844</p>
+              <p><strong>기대:</strong> Calendar와 Checklist 중 선택한 결과가 즉시 바뀌고 한 Flow로 저장된다.</p>
+              <p><strong>실제:</strong> 24개 전체 preview와 inline receipt는 명확하지만 Checklist를 눌러도 Calendar projection과 CTA가 그대로다.</p>
+              <p><strong>Identity/count:</strong> public slug moving-d30-basic · 24</p>
+              <p><strong>Recovery:</strong> 같은 slug 재저장은 한 key를 갱신하지만 artifact 선택 실패 설명은 없다.</p>
+            </div>
+          </details><details>
+            <summary>P1-S2 · 저장한 24개 이사 Flow를 My Flow와 Calendar에서 실행한다. · <span class="tag low">지원</span></summary>
+            <div class="detail-body">
+              <p><strong>Route:</strong> /my?savedFlow=moving-d30-basic → /calendar · <strong>Viewport:</strong> 1024x768</p>
+              <p><strong>기대:</strong> 저장한 제목·날짜·항목 수와 완료 상태가 downstream에서 일치한다.</p>
+              <p><strong>실제:</strong> 같은 public slug 내부에서는 24개 저장 객체가 My Flow와 Calendar로 이어지고 완료·재개가 가능하다.</p>
+              <p><strong>Identity/count:</strong> moving-d30-basic · 24</p>
+              <p><strong>Recovery:</strong> 완료 취소가 가능하고 record는 보존된다.</p>
+            </div>
+          </details><details>
+            <summary>P1-S3 · Home 저장 후 Find와 URL lookup에서 같은 Flow 상태를 재발견한다. · <span class="tag high">부분</span></summary>
+            <div class="detail-body">
+              <p><strong>Route:</strong> /flows → /flow-maps/moving-d30 → /f/curated-ajd-moving-d30 · <strong>Viewport:</strong> 390x844</p>
+              <p><strong>기대:</strong> 모든 entry가 이미 저장한 동일 Flow를 가리키고 개인 상태를 공유한다.</p>
+              <p><strong>실제:</strong> Find는 5개 source-backed map, URL lookup은 다른 curated 5개 slug를 열며 24개 저장과 연결되지 않는다.</p>
+              <p><strong>Identity/count:</strong> moving-d30-basic / source-backed-moving-d30 / curated-ajd-moving-d30 · 24 / 5 / 5</p>
+              <p><strong>Recovery:</strong> canonical representative나 중복 경고가 없다.</p>
+            </div>
+          </details><details>
+            <summary>P2-S1 · Flow 찾기에서 이사 Flow를 비교하고 저장한다. · <span class="tag medium">지원</span></summary>
+            <div class="detail-body">
+              <p><strong>Route:</strong> /flows → /flow-maps/moving-d30 · <strong>Viewport:</strong> 390x844</p>
+              <p><strong>기대:</strong> catalog detail과 저장 결과가 같은 5개 Flow를 유지한다.</p>
+              <p><strong>실제:</strong> Find 내부에서는 5개 map과 저장 receipt가 일관되지만 public /f와 다른 legacy grammar다.</p>
+              <p><strong>Identity/count:</strong> map moving-d30 + child source-backed-moving-d30 · 5</p>
+              <p><strong>Recovery:</strong> Find 내부 저장 복구는 지원</p>
+            </div>
+          </details><details>
+            <summary>P2-S2 · Find에서 저장한 5개 Flow를 재방문해 실행한다. · <span class="tag low">지원</span></summary>
+            <div class="detail-body">
+              <p><strong>Route:</strong> /my?savedMap=moving-d30 → /calendar · <strong>Viewport:</strong> 1024x768</p>
+              <p><strong>기대:</strong> Find에서 본 5개가 downstream에서도 같은 객체다.</p>
+              <p><strong>실제:</strong> source-backed-moving-d30 객체 자체는 완료·수정·export 가능한 focused workspace로 열린다.</p>
+              <p><strong>Identity/count:</strong> source-backed-moving-d30 · 5</p>
+              <p><strong>Recovery:</strong> 완료 취소와 archive가 가능</p>
+            </div>
+          </details><details>
+            <summary>P2-S3 · Find 저장 후 Home 이사 Flow를 추가 저장해 중복을 확인한다. · <span class="tag high">부분</span></summary>
+            <div class="detail-body">
+              <p><strong>Route:</strong> / → /f/moving-d30-basic → /my?view=flows · <strong>Viewport:</strong> 1024x768</p>
+              <p><strong>기대:</strong> 기존 저장 감지 또는 variant 설명과 대표 선택이 나온다.</p>
+              <p><strong>실제:</strong> 24개와 5개가 별도 행으로 생기며 동일 source 경고나 차이 설명이 없다.</p>
+              <p><strong>Identity/count:</strong> moving-d30-basic + source-backed-moving-d30 · 24 + 5</p>
+              <p><strong>Recovery:</strong> 자동 merge 없음; 개별 archive만 가능</p>
+            </div>
+          </details><details>
+            <summary>P3-S1 · AJD 원문 URL로 기존 이사 Flow를 찾는다. · <span class="tag high">부분</span></summary>
+            <div class="detail-body">
+              <p><strong>Route:</strong> /flows → /f/curated-ajd-moving-d30 · <strong>Viewport:</strong> 390x844</p>
+              <p><strong>기대:</strong> 제품 전체에서 쓰는 canonical 이사 Flow를 연다.</p>
+              <p><strong>실제:</strong> URL lookup은 curated 5개 child를 열며 Home 24개나 Find 5개 map과 같은 object라는 표시가 없다.</p>
+              <p><strong>Identity/count:</strong> curated-ajd-moving-d30 · 5</p>
+              <p><strong>Recovery:</strong> 다른 alias 탐색 수단 없음</p>
+            </div>
+          </details><details>
+            <summary>P3-S2 · URL lookup 결과를 저장해 My Flow와 Calendar에서 확인한다. · <span class="tag low">지원</span></summary>
+            <div class="detail-body">
+              <p><strong>Route:</strong> /f/curated-ajd-moving-d30 → /my?savedMap=curated-ajd-moving-d30 → /calendar · <strong>Viewport:</strong> 1024x768</p>
+              <p><strong>기대:</strong> lookup에서 본 5개와 downstream count가 같다.</p>
+              <p><strong>실제:</strong> curated 5개 객체 자체의 save-to-execution은 동작한다.</p>
+              <p><strong>Identity/count:</strong> curated-ajd-moving-d30 · 5</p>
+              <p><strong>Recovery:</strong> alias-level record 보존</p>
+            </div>
+          </details><details>
+            <summary>P3-S3 · 네 개 이사 alias가 저장·개인 상태를 공유하는지 확인한다. · <span class="tag high">부분</span></summary>
+            <div class="detail-body">
+              <p><strong>Route:</strong> /f/moving-d30-basic → /flow-maps/moving-d30 → /f/curated-ajd-moving-d30 → /f/source-backed-moving-d30 · <strong>Viewport:</strong> 390x844</p>
+              <p><strong>기대:</strong> alias는 하나의 canonicalFlowId와 personal overlay를 공유한다.</p>
+              <p><strong>실제:</strong> 네 route가 24/5/5/5로 갈리고 세 saved slug identity를 사용한다.</p>
+              <p><strong>Identity/count:</strong> 3 save identities across 4 routes · 24 / 5 / 5 / 5</p>
+              <p><strong>Recovery:</strong> canonical alias graph 없음</p>
+            </div>
+          </details><details>
+            <summary>P4-S1 · 24개와 5개 이사 Flow를 모두 가진 상태에서 중복을 인지한다. · <span class="tag high">부분</span></summary>
+            <div class="detail-body">
+              <p><strong>Route:</strong> /my?view=flows · <strong>Viewport:</strong> 1024x768</p>
+              <p><strong>기대:</strong> 같은 source 후보 표시와 차이 비교가 제공된다.</p>
+              <p><strong>실제:</strong> 두 행은 보이지만 동일 source, 대표본, 중복 이유가 표시되지 않는다.</p>
+              <p><strong>Identity/count:</strong> two unrelated-looking rows · 24 + 5</p>
+              <p><strong>Recovery:</strong> 중복 reconcile entry 없음</p>
+            </div>
+          </details><details>
+            <summary>P4-S2 · 중복 이사 Flow의 상태와 Calendar projection 분기를 확인한다. · <span class="tag high">부분</span></summary>
+            <div class="detail-body">
+              <p><strong>Route:</strong> /my → /calendar · <strong>Viewport:</strong> 1024x768</p>
+              <p><strong>기대:</strong> 같은 canonical item이면 충돌을 설명하거나 한쪽 상태를 대표로 쓴다.</p>
+              <p><strong>실제:</strong> 두 object는 독립 personal/run/projection을 만들며 서로의 변경을 모른다.</p>
+              <p><strong>Identity/count:</strong> independent slugs · 24 + 5</p>
+              <p><strong>Recovery:</strong> 개별 undo는 가능하나 cross-object 보존 정책 없음</p>
+            </div>
+          </details><details>
+            <summary>P4-S3 · 중복 객체를 reconcile하며 개인 기록을 보존한다. · <span class="tag high">없음</span></summary>
+            <div class="detail-body">
+              <p><strong>Route:</strong> /my?view=flows · <strong>Viewport:</strong> 390x844</p>
+              <p><strong>기대:</strong> 대표본 선택, 차이 확인, 비파괴 보관이 가능하다.</p>
+              <p><strong>실제:</strong> 개별 archive/delete는 있지만 source-level alias 비교·merge·대표 선택이 없다.</p>
+              <p><strong>Identity/count:</strong> unreconciled aliases · 24 + 5</p>
+              <p><strong>Recovery:</strong> 자동 병합하면 24↔5 item state를 안전하게 대응할 수 없어 data-loss 위험이 크다.</p>
+            </div>
+          </details><details>
+            <summary>P5-S1 · Home의 필요할 때 차량 체크리스트 약속과 target을 비교한다. · <span class="tag high">부분</span></summary>
+            <div class="detail-body">
+              <p><strong>Route:</strong> / → /f/vehicle-inspection-prep · <strong>Viewport:</strong> 390x844</p>
+              <p><strong>기대:</strong> 필요할 때 실행하는 날짜 없는 Checklist가 먼저 보인다.</p>
+              <p><strong>실제:</strong> target은 자동차검사 D-14 Calendar 10개가 기본이고 Checklist control도 projection을 바꾸지 않는다.</p>
+              <p><strong>Identity/count:</strong> vehicle-inspection-prep · 10</p>
+              <p><strong>Recovery:</strong> promise 수정이나 작동하는 artifact 선택 필요</p>
+            </div>
+          </details><details>
+            <summary>P5-S2 · 차량 Flow를 날짜 없이 저장하고 실행·배치한다. · <span class="tag low">지원</span></summary>
+            <div class="detail-body">
+              <p><strong>Route:</strong> /f/vehicle-inspection-prep → /my → /calendar · <strong>Viewport:</strong> 1024x768</p>
+              <p><strong>기대:</strong> 날짜 없는 항목이 My Flow 실행과 Calendar 배치 queue로 이어진다.</p>
+              <p><strong>실제:</strong> undated 저장과 downstream 배치 모델은 지원된다. entry promise와 artifact state만 어긋난다.</p>
+              <p><strong>Identity/count:</strong> vehicle-inspection-prep · 10</p>
+              <p><strong>Recovery:</strong> 날짜 제거 시 queue 복귀 가능</p>
+            </div>
+          </details><details>
+            <summary>P5-S3 · Flow 찾기에서 Home 차량 Flow를 재발견한다. · <span class="tag high">부분</span></summary>
+            <div class="detail-body">
+              <p><strong>Route:</strong> /flows · <strong>Viewport:</strong> 390x844</p>
+              <p><strong>기대:</strong> Home target이 Find에서 같은 title·promise·saved state로 검색된다.</p>
+              <p><strong>실제:</strong> hydrated catalog 9개에 Home vehicle public target이 없고 검색어도 canonical 재발견으로 이어지지 않는다.</p>
+              <p><strong>Identity/count:</strong> Find inventory missing vehicle-inspection-prep · 0 matching canonical cards</p>
+              <p><strong>Recovery:</strong> Find inventory alignment 필요</p>
+            </div>
+          </details><details>
+            <summary>P6-S1 · 반복 운동 Flow의 entry와 artifact·series 설정 연속성을 확인한다. · <span class="tag low">지원</span></summary>
+            <div class="detail-body">
+              <p><strong>Route:</strong> / → /flows → /f/curated-allblanc-morning-workout · <strong>Viewport:</strong> 390x844</p>
+              <p><strong>기대:</strong> 두 entry가 같은 public object와 작동하는 artifact controls를 쓴다.</p>
+              <p><strong>실제:</strong> Home/Find가 같은 slug를 쓰며 Flow execution↔Calendar 선택도 실제 projection을 바꾼다.</p>
+              <p><strong>Identity/count:</strong> curated-allblanc-morning-workout · 1 series item</p>
+              <p><strong>Recovery:</strong> 조정 취소 가능</p>
+            </div>
+          </details><details>
+            <summary>P6-S2 · 날짜 없는 운동 series를 My Flow와 Calendar에서 확인한다. · <span class="tag medium">부분</span></summary>
+            <div class="detail-body">
+              <p><strong>Route:</strong> /my → /calendar · <strong>Viewport:</strong> 390x844</p>
+              <p><strong>기대:</strong> 사람이 읽는 요일 summary와 series/occurrence 관계가 일관된다.</p>
+              <p><strong>실제:</strong> 실행은 이어지지만 My Flow focused workspace에 raw RRULE FREQ=WEEKLY;BYDAY=MO,WE,FR가 노출된다.</p>
+              <p><strong>Identity/count:</strong> curated-allblanc-morning-workout · 1 series; undated Calendar event 0</p>
+              <p><strong>Recovery:</strong> 완료 취소는 지원</p>
+            </div>
+          </details><details>
+            <summary>P6-S3 · 운동 Flow 재진입 시 series 설정·실행 상태·resource 연속성을 확인한다. · <span class="tag medium">부분</span></summary>
+            <div class="detail-body">
+              <p><strong>Route:</strong> /f/curated-allblanc-morning-workout → /my · <strong>Viewport:</strong> 1024x768</p>
+              <p><strong>기대:</strong> public detail은 saved signal을 주고 execution state는 My Flow에서 이어진다.</p>
+              <p><strong>실제:</strong> slug 저장 신호와 source resource는 유지되나 public shell에서 occurrence 상태를 직접 이어 보여주지는 않는다.</p>
+              <p><strong>Identity/count:</strong> same public slug · 1 series</p>
+              <p><strong>Recovery:</strong> source와 run 분리가 보존됨</p>
+            </div>
+          </details><details>
+            <summary>P7-S1 · 결혼 두 콘텐츠와 작동하는 artifact choice를 positive control로 확인한다. · <span class="tag low">지원</span></summary>
+            <div class="detail-body">
+              <p><strong>Route:</strong> /flows → /f/curated-wedding-naver-timeline → /f/curated-wedding-gongysd-atoz · <strong>Viewport:</strong> 390x844</p>
+              <p><strong>기대:</strong> 서로 다른 source/job은 별도 Flow이고 artifact control은 실제 결과를 바꾼다.</p>
+              <p><strong>실제:</strong> 두 독립 card가 유지되고 wedding artifact 선택은 projection과 CTA를 바꾼다.</p>
+              <p><strong>Identity/count:</strong> two intentional Flow slugs · 6 and 4</p>
+              <p><strong>Recovery:</strong> artifact 재선택 가능</p>
+            </div>
+          </details><details>
+            <summary>P7-S2 · 서로 다른 결혼 Flow의 receipt와 downstream 연속성을 확인한다. · <span class="tag low">지원</span></summary>
+            <div class="detail-body">
+              <p><strong>Route:</strong> /my → /calendar · <strong>Viewport:</strong> 1024x768</p>
+              <p><strong>기대:</strong> 의도적으로 다른 source/job은 별도 object로 보존된다.</p>
+              <p><strong>실제:</strong> 두 Flow가 다른 count와 artifact를 가진 별도 object로 이어진다.</p>
+              <p><strong>Identity/count:</strong> curated-wedding-naver-timeline / curated-wedding-gongysd-atoz · 6 + 4</p>
+              <p><strong>Recovery:</strong> 개별 archive/restore</p>
+            </div>
+          </details><details>
+            <summary>P7-S3 · 결혼에서 작동하는 interaction grammar를 moving/vehicle과 비교한다. · <span class="tag high">부분</span></summary>
+            <div class="detail-body">
+              <p><strong>Route:</strong> /f/curated-wedding-naver-timeline → /f/moving-d30-basic → /f/vehicle-inspection-prep · <strong>Viewport:</strong> 390x844</p>
+              <p><strong>기대:</strong> 같은 component는 category와 무관하게 동일하게 동작한다.</p>
+              <p><strong>실제:</strong> 차이는 content shape가 아니라 결혼/운동/러닝에만 handler를 전달하는 category gate에서 발생한다.</p>
+              <p><strong>Identity/count:</strong> component-level inconsistency · n/a</p>
+              <p><strong>Recovery:</strong> control을 숨기거나 작동시켜야 함</p>
+            </div>
+          </details><details>
+            <summary>P8-S1 · 390px keyboard-only로 Home에서 public save-before까지 이동한다. · <span class="tag medium">부분</span></summary>
+            <div class="detail-body">
+              <p><strong>Route:</strong> / → /flows → /f/moving-d30-basic · <strong>Viewport:</strong> 390x844</p>
+              <p><strong>기대:</strong> 같은 과업은 entry와 무관하게 동일한 focus grammar와 accessible name을 쓴다.</p>
+              <p><strong>실제:</strong> 주요 control은 접근 가능하지만 public과 legacy map의 focus anatomy가 다르고 일부 summary/link accessible name이 빈다.</p>
+              <p><strong>Identity/count:</strong> route-dependent interaction grammar · n/a</p>
+              <p><strong>Recovery:</strong> back은 가능하나 동일 focus return 계약 없음</p>
+            </div>
+          </details><details>
+            <summary>P8-S2 · 1024/1440에서 Home·Find·public·map·My Flow·Calendar anatomy를 비교한다. · <span class="tag medium">부분</span></summary>
+            <div class="detail-body">
+              <p><strong>Route:</strong> / → /flows → /f/moving-d30-basic → /flow-maps/moving-d30 → /my → /calendar · <strong>Viewport:</strong> 1024x768 + 1440x900</p>
+              <p><strong>기대:</strong> 역할은 달라도 동일 Flow anatomy와 command placement가 유지된다.</p>
+              <p><strong>실제:</strong> 가로 overflow와 page/console error는 없지만 public /f와 legacy /flow-maps가 같은 Flow처럼 보이지 않는다.</p>
+              <p><strong>Identity/count:</strong> visual identity split · 24 vs 5</p>
+              <p><strong>Recovery:</strong> fixed overlap은 캡처에서 확인되지 않음</p>
+            </div>
+          </details><details>
+            <summary>P8-S3 · reload·반복 저장·back과 alias 중복 복구를 확인한다. · <span class="tag high">부분</span></summary>
+            <div class="detail-body">
+              <p><strong>Route:</strong> /f/moving-d30-basic → /flow-maps/moving-d30 → /my · <strong>Viewport:</strong> 390x844</p>
+              <p><strong>기대:</strong> 같은 Flow 반복 저장은 한 객체를 갱신하고 alias도 같은 객체를 가리킨다.</p>
+              <p><strong>실제:</strong> public anchor와 같은 slug 반복 저장은 유지·갱신되지만 다른 alias를 저장하면 별도 object가 생긴다.</p>
+              <p><strong>Identity/count:</strong> same-slug stable, cross-alias split · 1 same-slug key; additional alias key</p>
+              <p><strong>Recovery:</strong> same-slug idempotence positive; cross-alias recovery missing</p>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section id="decision">
+      <div class="shell">
+        <h2>A/B/C 결정</h2>
+        <p class="section-copy">시각 통일만으로는 저장 identity가 해결되지 않는다. data contract를 전면 rewrite할 필요도 없다.</p>
+        <div class="grid-3">
+          <article class="panel option ">
+            <p class="kicker">OPTION A · not_selected</p>
+            <h3>canonical public /f + legacy alias/handoff</h3>
+            <p>한 public slug를 정하고 legacy route를 해당 detail로 넘긴다.</p>
+            <div class="score">3.3/5</div>
+            <p><strong>장점:</strong> 작은 route change, public shell 재사용, 빠른 vertical slice</p>
+            <p><strong>위험:</strong> route winner를 hardcode, 기존 3개 saved identity와 duplicate를 충분히 해결하지 못함, 새 source/job variant 확장에 취약</p>
+          </article><article class="panel option recommended">
+            <p class="kicker">OPTION B · recommended</p>
+            <h3>canonical registry + role-specific shell, one save identity</h3>
+            <p>Home/Find/URL의 역할은 유지하되 source+job+variant registry에서 같은 canonicalFlowId와 content snapshot을 해석한다.</p>
+            <div class="score">4.25/5</div>
+            <p><strong>장점:</strong> entry 역할과 user object identity 분리, 중복 방지와 향후 variant 정책 확장, P32 downstream 계약 보존 가능</p>
+            <p><strong>위험:</strong> additive registry와 dual-read 필요, AJD 24 vs 5 editorial decision 필요, reconciliation UX 필요</p>
+          </article><article class="panel option ">
+            <p class="kicker">OPTION C · defer</p>
+            <h3>broader discovery/detail consolidation</h3>
+            <p>Home, Find, detail IA와 data를 함께 다시 설계한다.</p>
+            <div class="score">2.25/5</div>
+            <p><strong>장점:</strong> 최대 시각 일관성 가능</p>
+            <p><strong>위험:</strong> 4탭 IA와 P32를 불필요하게 재개방, 데이터 회귀 범위가 큼, 현재 evidence gap보다 범위가 넓음</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="shell">
+        <h2>Current vs proposed anatomy</h2>
+        <div class="grid-2">
+          <div>
+            <p class="kicker">CURRENT · entry가 object를 결정</p>
+            <div class="wireframe">
+              <div class="wf-bar">Home / Find / URL</div>
+              <div class="wf-row">
+                <div class="wf-box wf-danger">각자 다른 title/count</div>
+                <div class="wf-box wf-danger">각자 다른 detail shell</div>
+              </div>
+              <div class="wf-box wf-danger" style="margin-top:8px">slug별 저장 + 서로 다른 receipt</div>
+              <div class="wf-box" style="margin-top:8px">My Flow에 중복 행</div>
+            </div>
+          </div>
+          <div>
+            <p class="kicker">PROPOSED · entry는 context만 전달</p>
+            <div class="wireframe">
+              <div class="wf-bar">Home / Find / URL context</div>
+              <div class="wf-row">
+                <div class="wf-box">source + job + variant resolver</div>
+                <div class="wf-box wf-primary">동일 canonical Flow preview</div>
+              </div>
+              <div class="wf-box wf-primary" style="margin-top:8px">one save identity + shared receipt</div>
+              <div class="wf-box" style="margin-top:8px">P32 My Flow / Calendar 유지</div>
+            </div>
+          </div>
+        </div>
+        <div class="grid-2" style="margin-top:18px">
+          <div class="wireframe">
+            <p class="kicker">390px</p>
+            <div class="wf-box">entry context 한 줄 · source link</div>
+            <div class="wf-box wf-primary" style="margin-top:8px">Flow title · 실제 item count · primary artifact</div>
+            <div class="wf-box" style="margin-top:8px">작동하는 secondary control만</div>
+            <div class="wf-box" style="margin-top:8px">최소 anchor / 조정</div>
+            <div class="wf-bar" style="margin-top:8px">24개 Calendar로 저장</div>
+          </div>
+          <div class="wireframe">
+            <p class="kicker">1024/1440px</p>
+            <div class="wf-row">
+              <div class="wf-box">entry/source rail<br>saved signal</div>
+              <div class="wf-box wf-primary">전체 artifact preview<br>item count/version</div>
+            </div>
+            <div class="wf-row">
+              <div class="wf-box">contextual adjustment</div>
+              <div class="wf-box">receipt → P32 focused workspace</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="p33">
+      <div class="shell">
+        <h2>P33 실행 순서</h2>
+        <p class="section-copy">먼저 read-only identity gate를 만든 뒤, AJD 한 개 vertical slice로 결정하고, 그 다음에만 새 canonical write를 연다.</p>
+        <article class="slice">
+          <div><span class="tag">P33-01</span></div>
+          <div><h3>Canonical registry와 invariant gate</h3><p>같은 source/job을 가리키는 route와 save identity를 판정할 공통 계약이 없다.</p><p class="kicker">DEPENDS: none · TEST: P33-CANONICAL-REGISTRY, P33-CROSS-ENTRY-INVARIANT</p></div>
+        </article><article class="slice">
+          <div><span class="tag">P33-02</span></div>
+          <div><h3>AJD moving canonical vertical slice</h3><p>24개와 5개 중 어떤 content snapshot이 canonical인지 제품이 정하지 않았다.</p><p class="kicker">DEPENDS: P33-01 · TEST: P33-AJD-ONE-FLOW, P33-AJD-COUNT-PARITY</p></div>
+        </article><article class="slice">
+          <div><span class="tag">P33-03</span></div>
+          <div><h3>Artifact control과 entry promise correctness</h3><p>moving/vehicle의 visible result control이 동작하지 않고 vehicle promise가 target과 다르다.</p><p class="kicker">DEPENDS: P33-01 · TEST: P33-ARTIFACT-CONTROL, P33-ENTRY-PROMISE-PARITY</p></div>
+        </article><article class="slice">
+          <div><span class="tag">P33-04</span></div>
+          <div><h3>Canonical save identity dual-read/single-write</h3><p>slug별 저장이 같은 user Flow를 여러 object로 만든다.</p><p class="kicker">DEPENDS: P33-01, P33-02 · TEST: P33-CANONICAL-SAVE-ID, P33-LEGACY-DUAL-READ</p></div>
+        </article><article class="slice">
+          <div><span class="tag">P33-05</span></div>
+          <div><h3>Legacy duplicate reconciliation</h3><p>이미 존재하는 24개/5개 기록을 안전하게 자동 병합할 수 없다.</p><p class="kicker">DEPENDS: P33-04 · TEST: P33-DUPLICATE-RECONCILE, P33-NO-AUTO-MERGE</p></div>
+        </article><article class="slice">
+          <div><span class="tag">P33-06</span></div>
+          <div><h3>Receipt, My Flow, Calendar, export parity</h3><p>upstream receipt grammar와 downstream identity가 entry별로 다르고 raw recurrence가 노출된다.</p><p class="kicker">DEPENDS: P33-04 · TEST: P33-RECEIPT-PARITY, P33-DOWNSTREAM-IDENTITY, P33-RRULE-DISPLAY</p></div>
+        </article><article class="slice">
+          <div><span class="tag">P33-07</span></div>
+          <div><h3>Regression and final independent gate</h3><p>기존 tests가 각 route를 독립 검증해 cross-entry invariant를 놓쳤다.</p><p class="kicker">DEPENDS: P33-02, P33-03, P33-04, P33-05, P33-06 · TEST: P33-FINAL-CROSS-ENTRY-GATE, P33-24-CELL, P33-ROLLBACK-REHEARSAL</p></div>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <div class="shell">
+        <h2>보존할 계약</h2>
+        <div class="grid-2">
+          <div class="panel"><h3>Keep</h3><p>P32 focused My Flow, 4탭 IA, public /f shell, source provenance, undated item model, reversible completion, whole/selected/current export scope.</p></div>
+          <div class="panel"><h3>Do not merge</h3><p>source, personal overlay, execution run, recurrence occurrence, export identity. 특히 24개와 5개 item state를 index/title 유사도로 합치지 않는다.</p></div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="shell">Production/current source independent review · observed users 0 · app code 변경 없음 · commit/push/PR/merge/deploy 없음</div>
+  </footer>
+</body>
+</html>

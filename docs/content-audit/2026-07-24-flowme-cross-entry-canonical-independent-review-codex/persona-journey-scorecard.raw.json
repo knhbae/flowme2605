@@ -1,0 +1,3619 @@
+{
+  "schemaVersion": "flowme.cross-entry-persona-scorecard.v1",
+  "reviewerRole": "codex_independent",
+  "production": "https://flowme2605.vercel.app",
+  "capturedAt": "2026-07-24T01:00:31.824Z",
+  "observedUserCount": 0,
+  "cellCount": 24,
+  "expectedCellCount": 24,
+  "runErrors": [],
+  "cells": [
+    {
+      "personaId": "P1",
+      "sessionId": "S1",
+      "userGoal": "Home 이사 예시에서 전체 결과를 이해하고 조정해 저장",
+      "status": "partial",
+      "route": "/f/moving-d30-basic",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "evidence": {
+        "homePromise": "일정으로 쓰기 이사 체크리스트를 이사일 기준 일정으로 Calendar · 날짜별 할 일 →",
+        "beforeTitle": "필요한 Flow를 시작하세요",
+        "beforeItemCount": 0,
+        "beforeArtifact": null,
+        "selectedAfterChecklist": "calendar",
+        "adjustmentText": "내 Flow로 조정 저장할 항목 정리 24/24개 저장 내 Flow 이름 항목 고르기 24/24개 저장 날짜 24개 날짜 있음 제목·메모 Flow 이름과 할 일 순서 24개 실행 순서 전체 항목 고르기 24/24개 포함 취소 24개 항목으로 내 Flow에 저장",
+        "receiptSteps": 24
+      },
+      "notes": "Home과 public detail은 이어지지만 Checklist를 눌러도 선택 projection이 Calendar에서 바뀌지 않는다.",
+      "page": {
+        "url": "https://flowme2605.vercel.app/f/moving-d30-basic",
+        "headings": [
+          "이사 D-30 준비",
+          "이사 체크리스트 참고",
+          "이사 체크리스트 참고"
+        ],
+        "bodyText": "FLOW 공유 화면 저장 완료 이사 이사 D-30 준비 원문 · 이사 체크리스트 참고 내 Flow에 저장됨 24개 할 일을 저장했어요 저장한 전체 계획을 확인하거나 첫 할 일부터 시작할 수 있습니다. 저장 이름 이사 D-30 준비 전체 할 일 24개 주요 결과 캘린더 일정 범위 7월 16일 - 8월 16일 내 Flow에서 시작 캘린더에서 보기 Flow 가져가기 필요할 때 열기 출처와 주의 Flow 전체 · 24개 항목 이사 D-30 준비 내 Flow에서 보기",
+        "artifactSelectedShape": null,
+        "artifactChoices": [],
+        "publicPreviewRows": 0,
+        "mapPreviewRows": 0,
+        "receiptSteps": 0,
+        "receiptVisible": false,
+        "myFlowSlugs": [],
+        "myFlowSavedCountText": null,
+        "calendarEventCount": 0,
+        "calendarEvents": [],
+        "anytimeCountText": null,
+        "sourceLinks": [
+          {
+            "href": "https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363",
+            "text": "이사 체크리스트 참고"
+          },
+          {
+            "href": "https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363",
+            "text": "원문 보기"
+          },
+          {
+            "href": "https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363",
+            "text": "원문 보기"
+          }
+        ],
+        "catalogCards": [],
+        "focusableCount": 13,
+        "unnamedFocusables": [
+          {
+            "tag": "SUMMARY",
+            "testId": "public-flow-export-secondary-toggle",
+            "type": null
+          },
+          {
+            "tag": "SUMMARY",
+            "testId": null,
+            "type": null
+          },
+          {
+            "tag": "A",
+            "testId": null,
+            "type": null
+          }
+        ],
+        "horizontalOverflow": false
+      },
+      "storage": {
+        "keyCount": 11,
+        "savedFlowKeys": [
+          "flow:saved:moving-d30-basic"
+        ],
+        "savedMapKeys": [],
+        "mapPersistenceKeys": [],
+        "movingKeys": [
+          "flow:moving-d30-basic:anchorDate",
+          "flow:saved:moving-d30-basic",
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_moving-d30-basic",
+          "flow_builder_mvp_comparison_moving-d30-basic",
+          "flow_builder_mvp_item_state_moving-d30-basic",
+          "flow_builder_mvp_reactions_moving-d30-basic",
+          "flow_builder_mvp_workbench_moving-d30-basic"
+        ],
+        "savedFlows": [
+          {
+            "key": "flow:saved:moving-d30-basic",
+            "slug": "moving-d30-basic",
+            "value": {
+              "slug": "moving-d30-basic",
+              "savedAt": "2026-07-24T00:59:32.603Z",
+              "personalTitle": "이사 D-30 준비",
+              "selectedArtifactMode": "calendar",
+              "dateIntent": "custom",
+              "anchor": "2030-08-15"
+            }
+          }
+        ],
+        "lifecycle": null
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p1-s1.png",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P1",
+      "sessionId": "S2",
+      "userGoal": "저장한 24개 이사 Flow를 My Flow와 Calendar에서 실행",
+      "status": "supported",
+      "route": "/calendar",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "evidence": {
+        "myFlowRowCount": 0,
+        "completionRoundTrip": false,
+        "calendarEventCount": 6
+      },
+      "notes": "24개 저장 객체는 My Flow와 Calendar로 이어진다. 이 세션 내부 연속성은 지원된다.",
+      "page": {
+        "url": "https://flowme2605.vercel.app/calendar",
+        "headings": [
+          "캘린더",
+          "월간 날짜 보기",
+          "7월 16일 (화)"
+        ],
+        "bodyText": "FLOW ≡ 날짜별 실행 캘린더 스튜디오 이전 2030년 7월 월 선택 다음 일 월 화 수 목 금 토 30일 1일 2일 3일 4일 5일 6일 7일 8일 9일 10일 11일 12일 13일 14일 15일 16일 +2 이 이사 준비 이 이사 준비 17일 18일 19일 20일 21일 22일 23일 24일 25일 26일 27일 28일 29일 30일 31일 1일 2일 3일 4일 5일 +3 이 이사 준비 이 이사 준비 6일 7일 8일 9일 10일 7월 16일 (화) 4개 항목 · 4개 남음 날짜 옮기기 이 이사 준비 4개 · 4개 남음 기준 D-30 큰 준비 이사 방식 정하기 열기 메모 이사할 집 하자 점검하기 열기 메모 필요 없는 물건 정리하기 열기 메모 이사/청소 업체 견적 받고 예약하기 열기 메모 홈 Flow 찾기 캘린더 내 Flow",
+        "artifactSelectedShape": null,
+        "artifactChoices": [],
+        "publicPreviewRows": 0,
+        "mapPreviewRows": 0,
+        "receiptSteps": 0,
+        "receiptVisible": false,
+        "myFlowSlugs": [],
+        "myFlowSavedCountText": null,
+        "calendarEventCount": 6,
+        "calendarEvents": [
+          {
+            "title": "2030-07-16 숨은 일정 2개",
+            "eventId": null
+          },
+          {
+            "title": "이사 방식 정하기 상세 열기",
+            "eventId": null
+          },
+          {
+            "title": "이사할 집 하자 점검하기 상세 열기",
+            "eventId": null
+          },
+          {
+            "title": "2030-08-05 숨은 일정 3개",
+            "eventId": null
+          },
+          {
+            "title": "우편물/카드/은행 주소 변경하기 상세 열기",
+            "eventId": null
+          },
+          {
+            "title": "정기 배달 서비스 중지 요청하기 상세 열기",
+            "eventId": null
+          }
+        ],
+        "anytimeCountText": null,
+        "sourceLinks": [],
+        "catalogCards": [],
+        "focusableCount": 78,
+        "unnamedFocusables": [
+          {
+            "tag": "A",
+            "testId": null,
+            "type": null
+          }
+        ],
+        "horizontalOverflow": false
+      },
+      "storage": {
+        "keyCount": 11,
+        "savedFlowKeys": [
+          "flow:saved:moving-d30-basic"
+        ],
+        "savedMapKeys": [],
+        "mapPersistenceKeys": [],
+        "movingKeys": [
+          "flow:moving-d30-basic:anchorDate",
+          "flow:saved:moving-d30-basic",
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_moving-d30-basic",
+          "flow_builder_mvp_comparison_moving-d30-basic",
+          "flow_builder_mvp_item_state_moving-d30-basic",
+          "flow_builder_mvp_reactions_moving-d30-basic",
+          "flow_builder_mvp_workbench_moving-d30-basic"
+        ],
+        "savedFlows": [
+          {
+            "key": "flow:saved:moving-d30-basic",
+            "slug": "moving-d30-basic",
+            "value": {
+              "slug": "moving-d30-basic",
+              "savedAt": "2026-07-24T00:59:32.603Z",
+              "personalTitle": "이사 D-30 준비",
+              "selectedArtifactMode": "calendar",
+              "dateIntent": "custom",
+              "anchor": "2030-08-15"
+            }
+          }
+        ],
+        "lifecycle": null
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p1-s2.png",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P1",
+      "sessionId": "S3",
+      "userGoal": "Home 저장 후 Find와 URL lookup에서 같은 상태 재발견",
+      "status": "partial",
+      "route": "/flows",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "evidence": {
+        "repeatedHomeBody": "일정으로 쓰기 이사 체크리스트를 이사일 기준 일정으로 Calendar · 날짜별 할 일 →",
+        "findMoving": "생활 일정 할 일 5개 · D-30 일정 원룸 이사 D-30 원문 · 이사 준비 체크리스트 이사 방식과 견적 후보 정하기 입주청소와 대형폐기물 일정 확인 더보기 → 원룸 이사 D-30 더보기",
+        "lookup": {
+          "text": "기존 콘텐츠 이미 만든 준비가 있는지 먼저 찾아봤어요 이미 변환된 Flow가 있어요 같은 원문 URL 기준으로 이사 D-30 Flow를 재사용합니다. 시작일 옵션만 바꾸고 바로 미리볼 수 있습니다. 옮길 수 있는 형태 캘린더 메모 문서 체크리스트 내 Flow 오늘 할 일 1개 전체 내용 열고 조정 빠르게 저장 설정만 입력",
+          "detailHref": "/f/curated-ajd-moving-d30",
+          "quickStartExists": true
+        },
+        "movingSavedKeys": [
+          "flow:moving-d30-basic:anchorDate",
+          "flow:saved:moving-d30-basic",
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_moving-d30-basic",
+          "flow_builder_mvp_comparison_moving-d30-basic",
+          "flow_builder_mvp_item_state_moving-d30-basic",
+          "flow_builder_mvp_reactions_moving-d30-basic",
+          "flow_builder_mvp_workbench_moving-d30-basic"
+        ]
+      },
+      "notes": "Find는 5개 map, URL lookup은 curated 5개 child를 제안하며 기존 24개 저장 상태와 하나로 연결하지 않는다.",
+      "page": {
+        "url": "https://flowme2605.vercel.app/flows",
+        "headings": [
+          "URL·메모로 Flow 찾기",
+          "이미 변환된 Flow가 있어요",
+          "원룸 이사 D-30",
+          "중1 수학 목차 진도",
+          "오픽 모의고사 2주/1달 계획표",
+          "월 4권 독서 기록 루틴",
+          "신차 구매 7단계 체크리스트",
+          "결혼 준비 1년 참고 타임라인",
+          "결혼 준비 핵심 4가지 시작표",
+          "Allblanc 아침 5분 홈트",
+          "Allblanc 노점프 유산소"
+        ],
+        "bodyText": "FLOW ≡ 홈 Flow 찾기 캘린더 내 Flow Flow 찾기 URL·메모로 Flow 찾기 Flow 9개 링크나 메모로 찾고, 준비된 Flow를 비교하세요. URL 또는 메모 Flow 찾기 기존 콘텐츠 이미 만든 준비가 있는지 먼저 찾아봤어요 이미 변환된 Flow가 있어요 같은 원문 URL 기준으로 이사 D-30 Flow를 재사용합니다. 시작일 옵션만 바꾸고 바로 미리볼 수 있습니다. 옮길 수 있는 형태 캘린더 메모 문서 체크리스트 내 Flow 오늘 할 일 1개 전체 내용 열고 조정 빠르게 저장 설정만 입력 다른 Flow 둘러보기 +",
+        "artifactSelectedShape": null,
+        "artifactChoices": [],
+        "publicPreviewRows": 0,
+        "mapPreviewRows": 0,
+        "receiptSteps": 0,
+        "receiptVisible": false,
+        "myFlowSlugs": [],
+        "myFlowSavedCountText": null,
+        "calendarEventCount": 0,
+        "calendarEvents": [],
+        "anytimeCountText": null,
+        "sourceLinks": [
+          {
+            "href": "https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363",
+            "text": "원문 · 이사 준비 체크리스트"
+          },
+          {
+            "href": "https://mathbang.net/13",
+            "text": "원문 · 중1 수학 목차"
+          },
+          {
+            "href": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "text": "원문 · 오픽 모의고사 공부 방법"
+          },
+          {
+            "href": "https://blog.naver.com/naristyle87/222978131890",
+            "text": "원문 · 독서 기록 Naver blog"
+          },
+          {
+            "href": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+            "text": "원문 · Getcha 신차 구매 절차 참고 가이드"
+          },
+          {
+            "href": "https://blog.naver.com/wilklove/223518896995",
+            "text": "원문 · 린지 개인 결혼 준비 타임라인"
+          },
+          {
+            "href": "https://gongysd.com/wedding-notion/?bmode=view&idx=167989966",
+            "text": "원문 · 공여사들 결혼준비 체크리스트 A to Z"
+          },
+          {
+            "href": "https://www.youtube.com/watch?v=fLLScgWQcHc",
+            "text": "원문 · Allblanc 매일 아침 5분 전신 운동 영상"
+          },
+          {
+            "href": "https://www.youtube.com/watch?v=2dail5Imi04",
+            "text": "원문 · Allblanc 점프 없는 10분 전신 운동 영상"
+          }
+        ],
+        "catalogCards": [
+          {
+            "href": "/flow-maps/moving-d30",
+            "text": "생활 일정할 일 5개 · D-30 일정원룸 이사 D-30원문 · 이사 준비 체크리스트이사 방식과 견적 후보 정하기입주청소와 대형폐기물 일정 확인더보기→원룸 이사 D-30 더보기"
+          },
+          {
+            "href": "/flow-maps/middle-school-math-1",
+            "text": "교육 진도할 일 8개 · 8개 단원 진도표중1 수학 목차 진도원문 · 중1 수학 목차1. 소인수분해2. 정수와 유리수더보기→중1 수학 목차 진도 더보기"
+          },
+          {
+            "href": "/flow-maps/curated-opic-mock-course",
+            "text": "어학 학습할 일 19개 · 2주 모의고사 캘린더오픽 모의고사 2주/1달 계획표원문 · 오픽 모의고사 공부 방법1일차: 1회차 연습1주차: 1~2회차를 3번씩 반복더보기→오픽 모의고사 2주/1달 계획표 더보기"
+          },
+          {
+            "href": "/flow-maps/curated-reading-routine-log",
+            "text": "독서 루틴할 일 8개 · 4주 독서 캘린더월 4권 독서 기록 루틴원문 · 독서 기록 Naver blog1일차: 이번 달 책 4권 고르기더보기→월 4권 독서 기록 루틴 더보기"
+          },
+          {
+            "href": "/flow-maps/curated-new-car-purchase-guide",
+            "text": "구매 준비할 일 7개 · 구매 절차 체크리스트신차 구매 7단계 체크리스트원문 · Getcha 신차 구매 절차 참고 가이드예산과 차량 선택더보기→신차 구매 7단계 체크리스트 더보기"
+          },
+          {
+            "href": "/f/curated-wedding-naver-timeline",
+            "text": "결혼할 일 6개 · 캘린더 + 체크결혼 준비 1년 참고 타임라인원문 · 린지 개인 결혼 준비 타임라인D-12개월: 예산과 웨딩홀 후보 정하기D-10개월: 스드메와 촬영 후보 잡기더보기→결혼 준비 1년 참고 타임라인 더보기"
+          },
+          {
+            "href": "/f/curated-wedding-gongysd-atoz",
+            "text": "결혼할 일 4개 · 시트결혼 준비 핵심 4가지 시작표원문 · 공여사들 결혼준비 체크리스트 A to Z웨딩홀 확인상견례 확인더보기→결혼 준비 핵심 4가지 시작표 더보기"
+          },
+          {
+            "href": "/f/curated-allblanc-morning-workout",
+            "text": "운동/홈트할 일 1개 · 캘린더 일정Allblanc 아침 5분 홈트원문 · Allblanc 매일 아침 5분 전신 운동 영상아침 5분 전신 운동 영상 열기더보기→Allblanc 아침 5분 홈트 더보기"
+          },
+          {
+            "href": "/f/curated-allblanc-no-jump-cardio",
+            "text": "운동/홈트할 일 1개 · 캘린더 일정Allblanc 노점프 유산소원문 · Allblanc 점프 없는 10분 전신 운동 영상점프 없는 10분 전신 운동 영상 열기더보기→Allblanc 노점프 유산소 더보기"
+          }
+        ],
+        "focusableCount": 47,
+        "unnamedFocusables": [
+          {
+            "tag": "A",
+            "testId": null,
+            "type": null
+          },
+          {
+            "tag": "BUTTON",
+            "testId": "flow-url-start-mode-direct",
+            "type": "button"
+          },
+          {
+            "tag": "BUTTON",
+            "testId": "flow-url-start-mode-custom",
+            "type": "button"
+          },
+          {
+            "tag": "BUTTON",
+            "testId": "url-first-memo-document-download",
+            "type": "button"
+          },
+          {
+            "tag": "BUTTON",
+            "testId": null,
+            "type": "button"
+          }
+        ],
+        "horizontalOverflow": false
+      },
+      "storage": {
+        "keyCount": 12,
+        "savedFlowKeys": [
+          "flow:saved:moving-d30-basic"
+        ],
+        "savedMapKeys": [],
+        "mapPersistenceKeys": [],
+        "movingKeys": [
+          "flow:moving-d30-basic:anchorDate",
+          "flow:saved:moving-d30-basic",
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_moving-d30-basic",
+          "flow_builder_mvp_comparison_moving-d30-basic",
+          "flow_builder_mvp_item_state_moving-d30-basic",
+          "flow_builder_mvp_reactions_moving-d30-basic",
+          "flow_builder_mvp_workbench_moving-d30-basic"
+        ],
+        "savedFlows": [
+          {
+            "key": "flow:saved:moving-d30-basic",
+            "slug": "moving-d30-basic",
+            "value": {
+              "slug": "moving-d30-basic",
+              "savedAt": "2026-07-24T00:59:32.603Z",
+              "personalTitle": "이사 D-30 준비",
+              "selectedArtifactMode": "calendar",
+              "dateIntent": "custom",
+              "anchor": "2030-08-15"
+            }
+          }
+        ],
+        "lifecycle": null
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p1-s3.png",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P2",
+      "sessionId": "S1",
+      "userGoal": "Flow 찾기에서 이사 Flow를 비교하고 저장",
+      "status": "supported",
+      "route": "/my?savedMap=moving-d30",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "evidence": {
+        "cardText": "생활 일정 할 일 5개 · D-30 일정 원룸 이사 D-30 원문 · 이사 준비 체크리스트 이사 방식과 견적 후보 정하기 입주청소와 대형폐기물 일정 확인 더보기 → 원룸 이사 D-30 더보기",
+        "cardHref": "/flow-maps/moving-d30",
+        "receiptSteps": 5
+      },
+      "notes": "Find 내부 map 저장은 5개 source-backed child와 receipt로 일관된다.",
+      "page": {
+        "url": "https://flowme2605.vercel.app/my?savedMap=moving-d30",
+        "headings": [
+          "My Flow",
+          "저장된 전체 Flow"
+        ],
+        "bodyText": "FLOW 홈 Flow 찾기 캘린더 내 Flow 메뉴 ≡ 내 실행 공간 My Flow 지금 할 일과 저장한 Flow를 관리합니다. 스튜디오 데이터 관리 내 Flow에 저장됨 원룸 이사 D-30 일정 할 일 5개 · 날짜 있음 5개 내 Flow에 저장됨 할 일 5개 · 날짜 있음 5개 할 일 5개 기간 7월 16일 - 8월 15일 단계 2개 다음 행동 첫 할 일 시작 전체 Flow 보기 캘린더 가져가기 저장된 전체 Flow 전체 항목 2단계 7월 16일 - 8월 15일 0/5 완료 이사 전 준비 7월 16일 - 8월 14일 · 4개 · 0/4 완료 ⌃ 1 이사 방식과 견적 후보 정하기 7월 16일 2 입주청소와 대형폐기물 일정 확인 8월 1일 3 관리사무소 공유와 주소 변경 대상 확인 8월 8일 4 계량기와 집 상태 사진 남기기 8월 14일 이사 당일 8월 15일 · 1개 · 0/1 완료 ⌃ 5 정산과 전입신고 확인 8월 15일",
+        "artifactSelectedShape": null,
+        "artifactChoices": [],
+        "publicPreviewRows": 0,
+        "mapPreviewRows": 0,
+        "receiptSteps": 5,
+        "receiptVisible": true,
+        "myFlowSlugs": [],
+        "myFlowSavedCountText": null,
+        "calendarEventCount": 0,
+        "calendarEvents": [],
+        "anytimeCountText": null,
+        "sourceLinks": [],
+        "catalogCards": [],
+        "focusableCount": 19,
+        "unnamedFocusables": [
+          {
+            "tag": "A",
+            "testId": null,
+            "type": null
+          }
+        ],
+        "horizontalOverflow": false
+      },
+      "storage": {
+        "keyCount": 7,
+        "savedFlowKeys": [
+          "flow:saved:source-backed-moving-d30"
+        ],
+        "savedMapKeys": [
+          "flow:map:saved:moving-d30"
+        ],
+        "mapPersistenceKeys": [
+          "flow:map:persistence:moving-d30"
+        ],
+        "movingKeys": [
+          "flow:map:persistence:moving-d30",
+          "flow:map:saved:moving-d30",
+          "flow:saved:source-backed-moving-d30",
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_item_state_source-backed-moving-d30"
+        ],
+        "savedFlows": [
+          {
+            "key": "flow:saved:source-backed-moving-d30",
+            "slug": "source-backed-moving-d30",
+            "value": {
+              "slug": "source-backed-moving-d30",
+              "savedAt": "2026-07-24T00:59:39.187Z",
+              "selectedArtifactMode": "calendar",
+              "dateIntent": "custom",
+              "anchor": "2030-08-15"
+            }
+          }
+        ],
+        "lifecycle": null
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p2-s1.png",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P2",
+      "sessionId": "S2",
+      "userGoal": "Find에서 저장한 5개 Flow를 재방문 실행",
+      "status": "supported",
+      "route": "/my?savedMap=moving-d30&view=flows",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "evidence": {
+        "objectVisible": true,
+        "rowCount": 5
+      },
+      "notes": "Find 저장 객체 자체는 완료·수정·export 가능한 My Flow 객체로 열린다.",
+      "page": {
+        "url": "https://flowme2605.vercel.app/my?savedMap=moving-d30&view=flows",
+        "headings": [
+          "원룸 이사 준비",
+          "저장한 Flow",
+          "원룸 이사 준비"
+        ],
+        "bodyText": "FLOW 홈 Flow 찾기 캘린더 내 Flow 메뉴 ≡ 원룸 이사 준비 ‹ 전체 보기 라이브러리 저장한 Flow 1개 원룸 이사 준비 체크리스트 · 7월 16일 - 8월 15일 전체 0/5 완료 다음 할 일 · 이사 방식과 견적 후보 정하기 원룸 이사 준비 저장한 콘텐츠 · 원룸 이사 D-30 일정 이사일 8월 15일 일정 5 메모 1 이사일 바꾸기 가져가기 전체 Flow 5개 여러 할 일 조정 2단계 7월 16일 - 8월 15일 0/5 완료 이사 전 준비 7월 16일 - 8월 14일 · 4개 · 0/4 완료 ⌃ 이사 방식과 견적 후보 정하기 열기 7월 16일 기준 D-30 입주청소와 대형폐기물 일정 확인 열기 8월 1일 기준 D-14 관리사무소 공유와 주소 변경 대상 확인 열기 8월 8일 기준 D-7 계량기와 집 상태 사진 남기기 열기 8월 14일 기준 D-1 이사 당일 8월 15일 · 1개 · 0/1 완료 ⌃ 정산과 전입신고 확인 열기 8월 15일 기준 D-Day 다음 할 일 이사 방식과 견적 후보 정하기 7월 16일 열기 전체 진행 전체 0/5 완료 더보기",
+        "artifactSelectedShape": null,
+        "artifactChoices": [],
+        "publicPreviewRows": 0,
+        "mapPreviewRows": 0,
+        "receiptSteps": 0,
+        "receiptVisible": false,
+        "myFlowSlugs": [
+          {
+            "slug": "source-backed-moving-d30",
+            "text": "원룸 이사 준비저장한 콘텐츠 · 원룸 이사 D-30 일정이사일 8월 15일일정 5메모 1이사일 바꾸기가져가기전체 Flow5개여러 할 일 조정2단계7월 16일 - 8월 15일0/5 완료이사 전 준비7월 16일 - 8월 14일 · 4개 · 0/4 완료⌃이사 방식과 견적 후보 정하기열기7월 16일기준 D-30입주청소와 대형폐기물 일정 확인열기8월 1일기준 D-14관리사무소 공유와 주소 변경 대상 "
+          }
+        ],
+        "myFlowSavedCountText": null,
+        "calendarEventCount": 0,
+        "calendarEvents": [],
+        "anytimeCountText": null,
+        "sourceLinks": [],
+        "catalogCards": [],
+        "focusableCount": 32,
+        "unnamedFocusables": [
+          {
+            "tag": "A",
+            "testId": null,
+            "type": null
+          },
+          {
+            "tag": "A",
+            "testId": "my-flow-management-source",
+            "type": null
+          }
+        ],
+        "horizontalOverflow": false
+      },
+      "storage": {
+        "keyCount": 7,
+        "savedFlowKeys": [
+          "flow:saved:source-backed-moving-d30"
+        ],
+        "savedMapKeys": [
+          "flow:map:saved:moving-d30"
+        ],
+        "mapPersistenceKeys": [
+          "flow:map:persistence:moving-d30"
+        ],
+        "movingKeys": [
+          "flow:map:persistence:moving-d30",
+          "flow:map:saved:moving-d30",
+          "flow:saved:source-backed-moving-d30",
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_item_state_source-backed-moving-d30"
+        ],
+        "savedFlows": [
+          {
+            "key": "flow:saved:source-backed-moving-d30",
+            "slug": "source-backed-moving-d30",
+            "value": {
+              "slug": "source-backed-moving-d30",
+              "savedAt": "2026-07-24T00:59:39.187Z",
+              "selectedArtifactMode": "calendar",
+              "dateIntent": "custom",
+              "anchor": "2030-08-15"
+            }
+          }
+        ],
+        "lifecycle": null
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p2-s2.png",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P2",
+      "sessionId": "S3",
+      "userGoal": "Find 저장 후 Home 이사 Flow를 열어 같은 저장 상태인지 확인",
+      "status": "partial",
+      "route": "/my?view=flows",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "evidence": {
+        "movingSavedKeys": [
+          "flow:map:persistence:moving-d30",
+          "flow:map:saved:moving-d30",
+          "flow:moving-d30-basic:anchorDate",
+          "flow:saved:moving-d30-basic",
+          "flow:saved:source-backed-moving-d30",
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_moving-d30-basic",
+          "flow_builder_mvp_comparison_moving-d30-basic",
+          "flow_builder_mvp_item_state_moving-d30-basic",
+          "flow_builder_mvp_item_state_source-backed-moving-d30",
+          "flow_builder_mvp_reactions_moving-d30-basic",
+          "flow_builder_mvp_workbench_moving-d30-basic"
+        ],
+        "movingObjects": 1
+      },
+      "notes": "Home target을 추가 저장하면 24개와 5개가 별도 My Flow 객체가 된다. UI에는 source 중복 안내나 대표 선택이 없다.",
+      "page": {
+        "url": "https://flowme2605.vercel.app/my?view=flows",
+        "headings": [
+          "My Flow",
+          "저장한 Flow",
+          "저장한 Flow",
+          "이사 준비"
+        ],
+        "bodyText": "FLOW 홈 Flow 찾기 캘린더 내 Flow 메뉴 ≡ 내 실행 공간 My Flow 지금 할 일과 저장한 Flow를 관리합니다. 스튜디오 데이터 관리 지금 Flow 목록 완료 저장한 계획 관리 저장한 Flow 2개 라이브러리 저장한 Flow 2개 이사 준비 체크리스트 · 7월 16일 - 8월 16일 전체 0/24 완료 다음 할 일 · 이사 방식 정하기 원룸 이사 준비 체크리스트 · 7월 16일 - 8월 15일 전체 0/5 완료 다음 할 일 · 이사 방식과 견적 후보 정하기 이사 준비 이사일 8월 15일 D-day 일정 일정 24 메모 5 이사일 바꾸기 가져가기 전체 Flow 24개 여러 할 일 조정 6단계 7월 16일 - 8월 16일 0/24 완료 전체 펼치기 큰 준비 7월 16일 · 4개 · 0/4 완료 ⌃ 7월 16일 4개 이사 방식 정하기 열기 기준 D-30 이사할 집 하자 점검하기 열기 기준 D-30 필요 없는 물건 정리하기 열기 기준 D-30 이사/청소 업체 견적 받고 예약하기 열기 기준 D-30 생활 이전 준비 8월 5일 · 5개 · 0/5 완료 ⌄ 필수 예약 확인 8월 12일 · 4개 · 0/4 완료 ⌄ 최종 점검 8월 14일 · 4개 · 0/4 완료 ⌄ 이사 당일 8월 15일 · 5개 · 0/5 완료 ⌄ 행정 마무리 8월 16일 · 2개 · 0/2 완료 ⌄ 다음 할 일 이사 방식 정하기 7월 16일 열기 전체 진행 전체 0/24 완료 더보기",
+        "artifactSelectedShape": null,
+        "artifactChoices": [],
+        "publicPreviewRows": 0,
+        "mapPreviewRows": 0,
+        "receiptSteps": 0,
+        "receiptVisible": false,
+        "myFlowSlugs": [
+          {
+            "slug": "moving-d30-basic",
+            "text": "이사 준비이사일 8월 15일D-day 일정일정 24메모 5이사일 바꾸기가져가기전체 Flow24개여러 할 일 조정6단계7월 16일 - 8월 16일0/24 완료전체 펼치기큰 준비7월 16일 · 4개 · 0/4 완료⌃7월 16일4개이사 방식 정하기열기기준 D-30이사할 집 하자 점검하기열기기준 D-30필요 없는 물건 정리하기열기기준 D-30이사/청소 업체 견적 받고 예약하기열기기준 D-30생활 이"
+          }
+        ],
+        "myFlowSavedCountText": "2개",
+        "calendarEventCount": 0,
+        "calendarEvents": [],
+        "anytimeCountText": null,
+        "sourceLinks": [],
+        "catalogCards": [],
+        "focusableCount": 40,
+        "unnamedFocusables": [
+          {
+            "tag": "A",
+            "testId": null,
+            "type": null
+          },
+          {
+            "tag": "A",
+            "testId": "my-flow-management-source",
+            "type": null
+          }
+        ],
+        "horizontalOverflow": false
+      },
+      "storage": {
+        "keyCount": 14,
+        "savedFlowKeys": [
+          "flow:saved:moving-d30-basic",
+          "flow:saved:source-backed-moving-d30"
+        ],
+        "savedMapKeys": [
+          "flow:map:saved:moving-d30"
+        ],
+        "mapPersistenceKeys": [
+          "flow:map:persistence:moving-d30"
+        ],
+        "movingKeys": [
+          "flow:map:persistence:moving-d30",
+          "flow:map:saved:moving-d30",
+          "flow:moving-d30-basic:anchorDate",
+          "flow:saved:moving-d30-basic",
+          "flow:saved:source-backed-moving-d30",
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_moving-d30-basic",
+          "flow_builder_mvp_comparison_moving-d30-basic",
+          "flow_builder_mvp_item_state_moving-d30-basic",
+          "flow_builder_mvp_item_state_source-backed-moving-d30",
+          "flow_builder_mvp_reactions_moving-d30-basic",
+          "flow_builder_mvp_workbench_moving-d30-basic"
+        ],
+        "savedFlows": [
+          {
+            "key": "flow:saved:moving-d30-basic",
+            "slug": "moving-d30-basic",
+            "value": {
+              "slug": "moving-d30-basic",
+              "savedAt": "2026-07-24T00:59:41.551Z",
+              "personalTitle": "이사 D-30 준비",
+              "selectedArtifactMode": "calendar",
+              "dateIntent": "custom",
+              "anchor": "2030-08-15"
+            }
+          },
+          {
+            "key": "flow:saved:source-backed-moving-d30",
+            "slug": "source-backed-moving-d30",
+            "value": {
+              "slug": "source-backed-moving-d30",
+              "savedAt": "2026-07-24T00:59:39.187Z",
+              "selectedArtifactMode": "calendar",
+              "dateIntent": "custom",
+              "anchor": "2030-08-15"
+            }
+          }
+        ],
+        "lifecycle": null
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p2-s3.png",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P3",
+      "sessionId": "S1",
+      "userGoal": "AJD 원문 URL로 기존 이사 Flow 찾기",
+      "status": "partial",
+      "route": "/flows",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "evidence": {
+        "lookup": {
+          "text": "기존 콘텐츠 이미 만든 준비가 있는지 먼저 찾아봤어요 이미 변환된 Flow가 있어요 같은 원문 URL 기준으로 이사 D-30 Flow를 재사용합니다. 시작일 옵션만 바꾸고 바로 미리볼 수 있습니다. 옮길 수 있는 형태 캘린더 메모 문서 체크리스트 내 Flow 오늘 할 일 1개 전체 내용 열고 조정 빠르게 저장 설정만 입력",
+          "detailHref": "/f/curated-ajd-moving-d30",
+          "quickStartExists": true
+        }
+      },
+      "notes": "URL lookup은 실제로 /f/curated-ajd-moving-d30을 연다. Home 24개나 Find 5개 map과 같은 object라는 단서는 없다.",
+      "page": {
+        "url": "https://flowme2605.vercel.app/flows",
+        "headings": [
+          "URL·메모로 Flow 찾기",
+          "이미 변환된 Flow가 있어요",
+          "원룸 이사 D-30",
+          "중1 수학 목차 진도",
+          "오픽 모의고사 2주/1달 계획표",
+          "월 4권 독서 기록 루틴",
+          "신차 구매 7단계 체크리스트",
+          "결혼 준비 1년 참고 타임라인",
+          "결혼 준비 핵심 4가지 시작표",
+          "Allblanc 아침 5분 홈트",
+          "Allblanc 노점프 유산소"
+        ],
+        "bodyText": "FLOW ≡ 홈 Flow 찾기 캘린더 내 Flow Flow 찾기 URL·메모로 Flow 찾기 Flow 9개 링크나 메모로 찾고, 준비된 Flow를 비교하세요. URL 또는 메모 Flow 찾기 기존 콘텐츠 이미 만든 준비가 있는지 먼저 찾아봤어요 이미 변환된 Flow가 있어요 같은 원문 URL 기준으로 이사 D-30 Flow를 재사용합니다. 시작일 옵션만 바꾸고 바로 미리볼 수 있습니다. 옮길 수 있는 형태 캘린더 메모 문서 체크리스트 내 Flow 오늘 할 일 1개 전체 내용 열고 조정 빠르게 저장 설정만 입력 다른 Flow 둘러보기 +",
+        "artifactSelectedShape": null,
+        "artifactChoices": [],
+        "publicPreviewRows": 0,
+        "mapPreviewRows": 0,
+        "receiptSteps": 0,
+        "receiptVisible": false,
+        "myFlowSlugs": [],
+        "myFlowSavedCountText": null,
+        "calendarEventCount": 0,
+        "calendarEvents": [],
+        "anytimeCountText": null,
+        "sourceLinks": [
+          {
+            "href": "https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363",
+            "text": "원문 · 이사 준비 체크리스트"
+          },
+          {
+            "href": "https://mathbang.net/13",
+            "text": "원문 · 중1 수학 목차"
+          },
+          {
+            "href": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "text": "원문 · 오픽 모의고사 공부 방법"
+          },
+          {
+            "href": "https://blog.naver.com/naristyle87/222978131890",
+            "text": "원문 · 독서 기록 Naver blog"
+          },
+          {
+            "href": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+            "text": "원문 · Getcha 신차 구매 절차 참고 가이드"
+          },
+          {
+            "href": "https://blog.naver.com/wilklove/223518896995",
+            "text": "원문 · 린지 개인 결혼 준비 타임라인"
+          },
+          {
+            "href": "https://gongysd.com/wedding-notion/?bmode=view&idx=167989966",
+            "text": "원문 · 공여사들 결혼준비 체크리스트 A to Z"
+          },
+          {
+            "href": "https://www.youtube.com/watch?v=fLLScgWQcHc",
+            "text": "원문 · Allblanc 매일 아침 5분 전신 운동 영상"
+          },
+          {
+            "href": "https://www.youtube.com/watch?v=2dail5Imi04",
+            "text": "원문 · Allblanc 점프 없는 10분 전신 운동 영상"
+          }
+        ],
+        "catalogCards": [
+          {
+            "href": "/flow-maps/moving-d30",
+            "text": "생활 일정할 일 5개 · D-30 일정원룸 이사 D-30원문 · 이사 준비 체크리스트이사 방식과 견적 후보 정하기입주청소와 대형폐기물 일정 확인더보기→원룸 이사 D-30 더보기"
+          },
+          {
+            "href": "/flow-maps/middle-school-math-1",
+            "text": "교육 진도할 일 8개 · 8개 단원 진도표중1 수학 목차 진도원문 · 중1 수학 목차1. 소인수분해2. 정수와 유리수더보기→중1 수학 목차 진도 더보기"
+          },
+          {
+            "href": "/flow-maps/curated-opic-mock-course",
+            "text": "어학 학습할 일 19개 · 2주 모의고사 캘린더오픽 모의고사 2주/1달 계획표원문 · 오픽 모의고사 공부 방법1일차: 1회차 연습1주차: 1~2회차를 3번씩 반복더보기→오픽 모의고사 2주/1달 계획표 더보기"
+          },
+          {
+            "href": "/flow-maps/curated-reading-routine-log",
+            "text": "독서 루틴할 일 8개 · 4주 독서 캘린더월 4권 독서 기록 루틴원문 · 독서 기록 Naver blog1일차: 이번 달 책 4권 고르기더보기→월 4권 독서 기록 루틴 더보기"
+          },
+          {
+            "href": "/flow-maps/curated-new-car-purchase-guide",
+            "text": "구매 준비할 일 7개 · 구매 절차 체크리스트신차 구매 7단계 체크리스트원문 · Getcha 신차 구매 절차 참고 가이드예산과 차량 선택더보기→신차 구매 7단계 체크리스트 더보기"
+          },
+          {
+            "href": "/f/curated-wedding-naver-timeline",
+            "text": "결혼할 일 6개 · 캘린더 + 체크결혼 준비 1년 참고 타임라인원문 · 린지 개인 결혼 준비 타임라인D-12개월: 예산과 웨딩홀 후보 정하기D-10개월: 스드메와 촬영 후보 잡기더보기→결혼 준비 1년 참고 타임라인 더보기"
+          },
+          {
+            "href": "/f/curated-wedding-gongysd-atoz",
+            "text": "결혼할 일 4개 · 시트결혼 준비 핵심 4가지 시작표원문 · 공여사들 결혼준비 체크리스트 A to Z웨딩홀 확인상견례 확인더보기→결혼 준비 핵심 4가지 시작표 더보기"
+          },
+          {
+            "href": "/f/curated-allblanc-morning-workout",
+            "text": "운동/홈트할 일 1개 · 캘린더 일정Allblanc 아침 5분 홈트원문 · Allblanc 매일 아침 5분 전신 운동 영상아침 5분 전신 운동 영상 열기더보기→Allblanc 아침 5분 홈트 더보기"
+          },
+          {
+            "href": "/f/curated-allblanc-no-jump-cardio",
+            "text": "운동/홈트할 일 1개 · 캘린더 일정Allblanc 노점프 유산소원문 · Allblanc 점프 없는 10분 전신 운동 영상점프 없는 10분 전신 운동 영상 열기더보기→Allblanc 노점프 유산소 더보기"
+          }
+        ],
+        "focusableCount": 47,
+        "unnamedFocusables": [
+          {
+            "tag": "A",
+            "testId": null,
+            "type": null
+          },
+          {
+            "tag": "BUTTON",
+            "testId": "flow-url-start-mode-direct",
+            "type": "button"
+          },
+          {
+            "tag": "BUTTON",
+            "testId": "flow-url-start-mode-custom",
+            "type": "button"
+          },
+          {
+            "tag": "BUTTON",
+            "testId": "url-first-memo-document-download",
+            "type": "button"
+          },
+          {
+            "tag": "BUTTON",
+            "testId": null,
+            "type": "button"
+          }
+        ],
+        "horizontalOverflow": false
+      },
+      "storage": {
+        "keyCount": 2,
+        "savedFlowKeys": [],
+        "savedMapKeys": [],
+        "mapPersistenceKeys": [],
+        "movingKeys": [
+          "flow_builder_mvp_bundles_v11"
+        ],
+        "savedFlows": [],
+        "lifecycle": null
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p3-s1.png",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P3",
+      "sessionId": "S2",
+      "userGoal": "URL lookup 결과를 저장해 My Flow와 Calendar에서 확인",
+      "status": "supported",
+      "route": "/calendar",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "evidence": {
+        "receiptCount": 5,
+        "calendarEventCount": 2,
+        "storage": {
+          "keyCount": 7,
+          "savedFlowKeys": [
+            "flow:saved:curated-ajd-moving-d30"
+          ],
+          "savedMapKeys": [
+            "flow:map:saved:curated-ajd-moving-d30"
+          ],
+          "mapPersistenceKeys": [
+            "flow:map:persistence:curated-ajd-moving-d30"
+          ],
+          "movingKeys": [
+            "flow:curated-ajd-moving-d30:anchorDate",
+            "flow:map:persistence:curated-ajd-moving-d30",
+            "flow:map:saved:curated-ajd-moving-d30",
+            "flow:saved:curated-ajd-moving-d30",
+            "flow_builder_mvp_bundles_v11"
+          ],
+          "savedFlows": [
+            {
+              "key": "flow:saved:curated-ajd-moving-d30",
+              "slug": "curated-ajd-moving-d30",
+              "value": {
+                "slug": "curated-ajd-moving-d30",
+                "savedAt": "2026-07-24T00:59:44.836Z",
+                "selectedArtifactMode": "calendar",
+                "dateIntent": "custom",
+                "anchor": "2030-08-15"
+              }
+            }
+          ],
+          "lifecycle": null
+        }
+      },
+      "notes": "curated 5개 객체 자체의 save-to-execution은 동작한다.",
+      "page": {
+        "url": "https://flowme2605.vercel.app/calendar",
+        "headings": [
+          "캘린더",
+          "월간 날짜 보기",
+          "7월 16일 (화)"
+        ],
+        "bodyText": "FLOW ≡ 날짜별 실행 캘린더 스튜디오 이전 2030년 7월 월 선택 다음 일 월 화 수 목 금 토 30일 1일 2일 3일 4일 5일 6일 7일 8일 9일 10일 11일 12일 13일 14일 15일 16일 이 이사 D-30... 17일 18일 19일 20일 21일 22일 23일 24일 25일 26일 27일 28일 29일 30일 31일 1일 2일 3일 4일 5일 이 이사 D-30... 6일 7일 8일 9일 10일 7월 16일 (화) 1개 항목 · 1개 남음 날짜 옮기기 이 이사 D-30 체크리스트 기준 D-30 D-30 이사 방식과 견적 예약 열기 메모 홈 Flow 찾기 캘린더 내 Flow",
+        "artifactSelectedShape": null,
+        "artifactChoices": [],
+        "publicPreviewRows": 0,
+        "mapPreviewRows": 0,
+        "receiptSteps": 0,
+        "receiptVisible": false,
+        "myFlowSlugs": [],
+        "myFlowSavedCountText": null,
+        "calendarEventCount": 2,
+        "calendarEvents": [
+          {
+            "title": "이사 방식과 견적 예약 상세 열기",
+            "eventId": null
+          },
+          {
+            "title": "주소 변경과 예약 상태 확인 상세 열기",
+            "eventId": null
+          }
+        ],
+        "anytimeCountText": null,
+        "sourceLinks": [],
+        "catalogCards": [],
+        "focusableCount": 65,
+        "unnamedFocusables": [
+          {
+            "tag": "A",
+            "testId": null,
+            "type": null
+          }
+        ],
+        "horizontalOverflow": false
+      },
+      "storage": {
+        "keyCount": 7,
+        "savedFlowKeys": [
+          "flow:saved:curated-ajd-moving-d30"
+        ],
+        "savedMapKeys": [
+          "flow:map:saved:curated-ajd-moving-d30"
+        ],
+        "mapPersistenceKeys": [
+          "flow:map:persistence:curated-ajd-moving-d30"
+        ],
+        "movingKeys": [
+          "flow:curated-ajd-moving-d30:anchorDate",
+          "flow:map:persistence:curated-ajd-moving-d30",
+          "flow:map:saved:curated-ajd-moving-d30",
+          "flow:saved:curated-ajd-moving-d30",
+          "flow_builder_mvp_bundles_v11"
+        ],
+        "savedFlows": [
+          {
+            "key": "flow:saved:curated-ajd-moving-d30",
+            "slug": "curated-ajd-moving-d30",
+            "value": {
+              "slug": "curated-ajd-moving-d30",
+              "savedAt": "2026-07-24T00:59:44.836Z",
+              "selectedArtifactMode": "calendar",
+              "dateIntent": "custom",
+              "anchor": "2030-08-15"
+            }
+          }
+        ],
+        "lifecycle": null
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p3-s2.png",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P3",
+      "sessionId": "S3",
+      "userGoal": "네 개 이사 alias가 저장·개인 상태를 공유하는지 확인",
+      "status": "partial",
+      "route": "/flow-maps/moving-d30",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "evidence": {
+        "aliases": [
+          {
+            "route": "/f/moving-d30-basic",
+            "title": "이사 D-30 준비",
+            "publicCount": 6,
+            "mapCount": 0,
+            "bodySavedSignal": false
+          },
+          {
+            "route": "/f/curated-ajd-moving-d30",
+            "title": "이사 D-30 준비",
+            "publicCount": 0,
+            "mapCount": 0,
+            "bodySavedSignal": true
+          },
+          {
+            "route": "/f/source-backed-moving-d30",
+            "title": "원룸 이사 D-30 준비",
+            "publicCount": 5,
+            "mapCount": 0,
+            "bodySavedSignal": false
+          },
+          {
+            "route": "/flow-maps/moving-d30",
+            "title": "원룸 이사 D-30 일정",
+            "publicCount": 0,
+            "mapCount": 5,
+            "bodySavedSignal": false
+          }
+        ],
+        "storage": {
+          "keyCount": 22,
+          "savedFlowKeys": [
+            "flow:saved:curated-ajd-moving-d30"
+          ],
+          "savedMapKeys": [
+            "flow:map:saved:curated-ajd-moving-d30"
+          ],
+          "mapPersistenceKeys": [
+            "flow:map:persistence:curated-ajd-moving-d30"
+          ],
+          "movingKeys": [
+            "flow:curated-ajd-moving-d30:anchorDate",
+            "flow:map:persistence:curated-ajd-moving-d30",
+            "flow:map:saved:curated-ajd-moving-d30",
+            "flow:saved:curated-ajd-moving-d30",
+            "flow_builder_mvp_bundles_v11",
+            "flow_builder_mvp_checks_curated-ajd-moving-d30",
+            "flow_builder_mvp_checks_moving-d30-basic",
+            "flow_builder_mvp_checks_source-backed-moving-d30",
+            "flow_builder_mvp_comparison_curated-ajd-moving-d30",
+            "flow_builder_mvp_comparison_moving-d30-basic",
+            "flow_builder_mvp_comparison_source-backed-moving-d30",
+            "flow_builder_mvp_item_state_curated-ajd-moving-d30",
+            "flow_builder_mvp_item_state_moving-d30-basic",
+            "flow_builder_mvp_item_state_source-backed-moving-d30",
+            "flow_builder_mvp_reactions_curated-ajd-moving-d30",
+            "flow_builder_mvp_reactions_moving-d30-basic",
+            "flow_builder_mvp_reactions_source-backed-moving-d30",
+            "flow_builder_mvp_workbench_curated-ajd-moving-d30",
+            "flow_builder_mvp_workbench_moving-d30-basic",
+            "flow_builder_mvp_workbench_source-backed-moving-d30"
+          ],
+          "savedFlows": [
+            {
+              "key": "flow:saved:curated-ajd-moving-d30",
+              "slug": "curated-ajd-moving-d30",
+              "value": {
+                "slug": "curated-ajd-moving-d30",
+                "savedAt": "2026-07-24T00:59:44.836Z",
+                "selectedArtifactMode": "calendar",
+                "dateIntent": "custom",
+                "anchor": "2030-08-15"
+              }
+            }
+          ],
+          "lifecycle": null
+        }
+      },
+      "notes": "동일 source의 네 route가 24/5/5/5 구조로 갈리고 curated 저장 키만 존재한다. canonical route를 사용자가 식별할 방법이 없다.",
+      "page": {
+        "url": "https://flowme2605.vercel.app/flow-maps/moving-d30",
+        "headings": [
+          "원룸 이사 D-30 일정",
+          "이사 준비 체크리스트",
+          "원룸 이사 D-30 준비"
+        ],
+        "bodyText": "FLOW ≡ 홈 Flow 찾기 캘린더 내 Flow Flow 미리보기 이사 준비 원룸 이사 D-30 일정 원문 · 이사 준비 체크리스트 내 조건 이사일 저장 결과 D-30 일정 전체 할 일 5개 저장될 전체 Flow 5개 1 이사 방식과 견적 후보 정하기 이사 방식 1개를 정합니다. 2 입주청소와 대형폐기물 일정 확인 입주청소가 필요하면 예약 가능일을 확인합니다. 3 관리사무소 공유와 주소 변경 대상 확인 관리사무소에 이사 시간과 차량 동선을 공유합니다. 4 계량기와 집 상태 사진 남기기 전기, 가스, 수도 계량기를 촬영합니다. 5 정산과 전입신고 확인 잔금/정산 확인 내용을 메모합니다. 이사일 이사일에 맞춰 할 일 날짜가 정해집니다. 5개 할 일 조정 그대로 시작 전체 내용과 원문 할 일 5개",
+        "artifactSelectedShape": null,
+        "artifactChoices": [],
+        "publicPreviewRows": 0,
+        "mapPreviewRows": 5,
+        "receiptSteps": 0,
+        "receiptVisible": false,
+        "myFlowSlugs": [],
+        "myFlowSavedCountText": null,
+        "calendarEventCount": 0,
+        "calendarEvents": [],
+        "anytimeCountText": null,
+        "sourceLinks": [
+          {
+            "href": "https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363",
+            "text": "이사 준비 체크리스트"
+          },
+          {
+            "href": "https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363",
+            "text": "원문 보기"
+          },
+          {
+            "href": "https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363",
+            "text": "이 단계 원문 보기"
+          },
+          {
+            "href": "https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363",
+            "text": "이 단계 원문 보기"
+          },
+          {
+            "href": "https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363",
+            "text": "이 단계 원문 보기"
+          },
+          {
+            "href": "https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363",
+            "text": "이 단계 원문 보기"
+          },
+          {
+            "href": "https://www.gov.kr",
+            "text": "이 단계 원문 보기"
+          }
+        ],
+        "catalogCards": [],
+        "focusableCount": 35,
+        "unnamedFocusables": [
+          {
+            "tag": "A",
+            "testId": null,
+            "type": null
+          },
+          {
+            "tag": "A",
+            "testId": "flow-map-source-link",
+            "type": null
+          },
+          {
+            "tag": "A",
+            "testId": null,
+            "type": null
+          },
+          {
+            "tag": "SUMMARY",
+            "testId": null,
+            "type": null
+          },
+          {
+            "tag": "SUMMARY",
+            "testId": null,
+            "type": null
+          },
+          {
+            "tag": "A",
+            "testId": null,
+            "type": null
+          },
+          {
+            "tag": "SUMMARY",
+            "testId": null,
+            "type": null
+          },
+          {
+            "tag": "SUMMARY",
+            "testId": null,
+            "type": null
+          },
+          {
+            "tag": "A",
+            "testId": null,
+            "type": null
+          },
+          {
+            "tag": "SUMMARY",
+            "testId": null,
+            "type": null
+          },
+          {
+            "tag": "SUMMARY",
+            "testId": null,
+            "type": null
+          },
+          {
+            "tag": "A",
+            "testId": null,
+            "type": null
+          },
+          {
+            "tag": "SUMMARY",
+            "testId": null,
+            "type": null
+          },
+          {
+            "tag": "SUMMARY",
+            "testId": null,
+            "type": null
+          },
+          {
+            "tag": "A",
+            "testId": null,
+            "type": null
+          },
+          {
+            "tag": "SUMMARY",
+            "testId": null,
+            "type": null
+          },
+          {
+            "tag": "SUMMARY",
+            "testId": null,
+            "type": null
+          },
+          {
+            "tag": "A",
+            "testId": null,
+            "type": null
+          }
+        ],
+        "horizontalOverflow": false
+      },
+      "storage": {
+        "keyCount": 22,
+        "savedFlowKeys": [
+          "flow:saved:curated-ajd-moving-d30"
+        ],
+        "savedMapKeys": [
+          "flow:map:saved:curated-ajd-moving-d30"
+        ],
+        "mapPersistenceKeys": [
+          "flow:map:persistence:curated-ajd-moving-d30"
+        ],
+        "movingKeys": [
+          "flow:curated-ajd-moving-d30:anchorDate",
+          "flow:map:persistence:curated-ajd-moving-d30",
+          "flow:map:saved:curated-ajd-moving-d30",
+          "flow:saved:curated-ajd-moving-d30",
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_curated-ajd-moving-d30",
+          "flow_builder_mvp_checks_moving-d30-basic",
+          "flow_builder_mvp_checks_source-backed-moving-d30",
+          "flow_builder_mvp_comparison_curated-ajd-moving-d30",
+          "flow_builder_mvp_comparison_moving-d30-basic",
+          "flow_builder_mvp_comparison_source-backed-moving-d30",
+          "flow_builder_mvp_item_state_curated-ajd-moving-d30",
+          "flow_builder_mvp_item_state_moving-d30-basic",
+          "flow_builder_mvp_item_state_source-backed-moving-d30",
+          "flow_builder_mvp_reactions_curated-ajd-moving-d30",
+          "flow_builder_mvp_reactions_moving-d30-basic",
+          "flow_builder_mvp_reactions_source-backed-moving-d30",
+          "flow_builder_mvp_workbench_curated-ajd-moving-d30",
+          "flow_builder_mvp_workbench_moving-d30-basic",
+          "flow_builder_mvp_workbench_source-backed-moving-d30"
+        ],
+        "savedFlows": [
+          {
+            "key": "flow:saved:curated-ajd-moving-d30",
+            "slug": "curated-ajd-moving-d30",
+            "value": {
+              "slug": "curated-ajd-moving-d30",
+              "savedAt": "2026-07-24T00:59:44.836Z",
+              "selectedArtifactMode": "calendar",
+              "dateIntent": "custom",
+              "anchor": "2030-08-15"
+            }
+          }
+        ],
+        "lifecycle": null
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p3-s3.png",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P4",
+      "sessionId": "S1",
+      "userGoal": "24개와 5개 이사 Flow를 모두 가진 재방문자의 중복 인지",
+      "status": "partial",
+      "route": "/my?view=flows",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "evidence": {
+        "movingSavedKeys": [
+          "flow:map:persistence:moving-d30",
+          "flow:map:saved:moving-d30",
+          "flow:moving-d30-basic:anchorDate",
+          "flow:saved:moving-d30-basic",
+          "flow:saved:source-backed-moving-d30",
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_moving-d30-basic",
+          "flow_builder_mvp_comparison_moving-d30-basic",
+          "flow_builder_mvp_item_state_moving-d30-basic",
+          "flow_builder_mvp_item_state_source-backed-moving-d30",
+          "flow_builder_mvp_reactions_moving-d30-basic",
+          "flow_builder_mvp_workbench_moving-d30-basic"
+        ],
+        "overviewCards": 1,
+        "duplicateWarningVisible": false
+      },
+      "notes": "별도 객체는 보이지만 동일 source 중복 경고나 비교·대표 선택은 없다.",
+      "page": {
+        "url": "https://flowme2605.vercel.app/my?view=flows",
+        "headings": [
+          "My Flow",
+          "저장한 Flow",
+          "저장한 Flow",
+          "원룸 이사 준비"
+        ],
+        "bodyText": "FLOW 홈 Flow 찾기 캘린더 내 Flow 메뉴 ≡ 내 실행 공간 My Flow 지금 할 일과 저장한 Flow를 관리합니다. 스튜디오 데이터 관리 지금 Flow 목록 완료 저장한 계획 관리 저장한 Flow 2개 라이브러리 저장한 Flow 2개 원룸 이사 준비 체크리스트 · 7월 16일 - 8월 15일 전체 0/5 완료 다음 할 일 · 이사 방식과 견적 후보 정하기 이사 준비 체크리스트 · 7월 16일 - 8월 16일 전체 0/24 완료 다음 할 일 · 이사 방식 정하기 원룸 이사 준비 저장한 콘텐츠 · 원룸 이사 D-30 일정 이사일 8월 15일 일정 5 메모 1 이사일 바꾸기 가져가기 전체 Flow 5개 여러 할 일 조정 2단계 7월 16일 - 8월 15일 0/5 완료 이사 전 준비 7월 16일 - 8월 14일 · 4개 · 0/4 완료 ⌃ 이사 방식과 견적 후보 정하기 열기 7월 16일 기준 D-30 입주청소와 대형폐기물 일정 확인 열기 8월 1일 기준 D-14 관리사무소 공유와 주소 변경 대상 확인 열기 8월 8일 기준 D-7 계량기와 집 상태 사진 남기기 열기 8월 14일 기준 D-1 이사 당일 8월 15일 · 1개 · 0/1 완료 ⌃ 정산과 전입신고 확인 열기 8월 15일 기준 D-Day 다음 할 일 이사 방식과 견적 후보 정하기 7월 16일 열기 전체 진행 전체 0/5 완료 더보기",
+        "artifactSelectedShape": null,
+        "artifactChoices": [],
+        "publicPreviewRows": 0,
+        "mapPreviewRows": 0,
+        "receiptSteps": 0,
+        "receiptVisible": false,
+        "myFlowSlugs": [
+          {
+            "slug": "source-backed-moving-d30",
+            "text": "원룸 이사 준비저장한 콘텐츠 · 원룸 이사 D-30 일정이사일 8월 15일일정 5메모 1이사일 바꾸기가져가기전체 Flow5개여러 할 일 조정2단계7월 16일 - 8월 15일0/5 완료이사 전 준비7월 16일 - 8월 14일 · 4개 · 0/4 완료⌃이사 방식과 견적 후보 정하기열기7월 16일기준 D-30입주청소와 대형폐기물 일정 확인열기8월 1일기준 D-14관리사무소 공유와 주소 변경 대상 "
+          }
+        ],
+        "myFlowSavedCountText": "2개",
+        "calendarEventCount": 0,
+        "calendarEvents": [],
+        "anytimeCountText": null,
+        "sourceLinks": [],
+        "catalogCards": [],
+        "focusableCount": 37,
+        "unnamedFocusables": [
+          {
+            "tag": "A",
+            "testId": null,
+            "type": null
+          },
+          {
+            "tag": "A",
+            "testId": "my-flow-management-source",
+            "type": null
+          }
+        ],
+        "horizontalOverflow": false
+      },
+      "storage": {
+        "keyCount": 13,
+        "savedFlowKeys": [
+          "flow:saved:moving-d30-basic",
+          "flow:saved:source-backed-moving-d30"
+        ],
+        "savedMapKeys": [
+          "flow:map:saved:moving-d30"
+        ],
+        "mapPersistenceKeys": [
+          "flow:map:persistence:moving-d30"
+        ],
+        "movingKeys": [
+          "flow:map:persistence:moving-d30",
+          "flow:map:saved:moving-d30",
+          "flow:moving-d30-basic:anchorDate",
+          "flow:saved:moving-d30-basic",
+          "flow:saved:source-backed-moving-d30",
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_moving-d30-basic",
+          "flow_builder_mvp_comparison_moving-d30-basic",
+          "flow_builder_mvp_item_state_moving-d30-basic",
+          "flow_builder_mvp_item_state_source-backed-moving-d30",
+          "flow_builder_mvp_reactions_moving-d30-basic",
+          "flow_builder_mvp_workbench_moving-d30-basic"
+        ],
+        "savedFlows": [
+          {
+            "key": "flow:saved:moving-d30-basic",
+            "slug": "moving-d30-basic",
+            "value": {
+              "slug": "moving-d30-basic",
+              "savedAt": "2026-07-24T00:59:52.886Z",
+              "personalTitle": "이사 D-30 준비",
+              "selectedArtifactMode": "calendar",
+              "dateIntent": "custom",
+              "anchor": "2030-08-15"
+            }
+          },
+          {
+            "key": "flow:saved:source-backed-moving-d30",
+            "slug": "source-backed-moving-d30",
+            "value": {
+              "slug": "source-backed-moving-d30",
+              "savedAt": "2026-07-24T00:59:53.752Z",
+              "selectedArtifactMode": "calendar",
+              "dateIntent": "custom",
+              "anchor": "2030-08-15"
+            }
+          }
+        ],
+        "lifecycle": null
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p4-s1.png",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P4",
+      "sessionId": "S2",
+      "userGoal": "중복 이사 Flow의 상태와 Calendar projection 분기 확인",
+      "status": "partial",
+      "route": "/calendar",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "evidence": {
+        "eventCount": 8,
+        "eventSamples": [
+          "+3",
+          "이이사 준비",
+          "원원룸 이사 D...",
+          "원원룸 이사 D...",
+          "+3",
+          "이이사 준비",
+          "이이사 준비",
+          "원원룸 이사 D..."
+        ],
+        "expectedCombinedItemCount": 29
+      },
+      "notes": "두 object는 각자 projection을 만들며 같은 source를 합치거나 중복을 설명하지 않는다.",
+      "page": {
+        "url": "https://flowme2605.vercel.app/calendar",
+        "headings": [
+          "캘린더",
+          "월간 날짜 보기",
+          "7월 16일 (화)"
+        ],
+        "bodyText": "FLOW 홈 Flow 찾기 캘린더 내 Flow 메뉴 ≡ 날짜별 실행 캘린더 언제 할지 정해진 항목을 날짜별로 확인합니다. 스튜디오 월간 날짜 보기 날짜 5 · 반복 0 전체 5 이 이사 준비 4 원 원룸 이사 D-30 일정 1 이전 2030년 7월 월 선택 오늘 첫 일정 다음 일 월 화 수 목 금 토 30일 1일 2일 3일 4일 5일 6일 7일 8일 9일 10일 11일 12일 13일 14일 15일 16일 +3 이 이사 준비 원 원룸 이사 D... 17일 18일 19일 20일 21일 22일 23일 24일 25일 26일 27일 28일 29일 30일 31일 1일 원 원룸 이사 D... 2일 3일 4일 5일 +3 이 이사 준비 이 이사 준비 6일 7일 8일 원 원룸 이사 D... 9일 10일 7월 16일 (화) 모든 Flow · 5개 항목 · 5개 남음 날짜 옮기기 이 이사 준비 4개 · 4개 남음 기준 D-30 큰 준비 이사 방식 정하기 열기 메모 이사할 집 하자 점검하기 열기 메모 필요 없는 물건 정리하기 열기 메모 이사/청소 업체 견적 받고 예약하기 열기 메모 원 원룸 이사 D-30 일정 기준 D-30 이사 전 준비 이사 방식과 견적 후보 정하기 열기 메모",
+        "artifactSelectedShape": null,
+        "artifactChoices": [],
+        "publicPreviewRows": 0,
+        "mapPreviewRows": 0,
+        "receiptSteps": 0,
+        "receiptVisible": false,
+        "myFlowSlugs": [],
+        "myFlowSavedCountText": null,
+        "calendarEventCount": 8,
+        "calendarEvents": [
+          {
+            "title": "2030-07-16 숨은 일정 3개",
+            "eventId": null
+          },
+          {
+            "title": "이사 방식 정하기 상세 열기",
+            "eventId": null
+          },
+          {
+            "title": "이사 방식과 견적 후보 정하기 상세 열기",
+            "eventId": null
+          },
+          {
+            "title": "입주청소와 대형폐기물 일정 확인 상세 열기",
+            "eventId": null
+          },
+          {
+            "title": "2030-08-05 숨은 일정 3개",
+            "eventId": null
+          },
+          {
+            "title": "우편물/카드/은행 주소 변경하기 상세 열기",
+            "eventId": null
+          },
+          {
+            "title": "정기 배달 서비스 중지 요청하기 상세 열기",
+            "eventId": null
+          },
+          {
+            "title": "관리사무소 공유와 주소 변경 대상 확인 상세 열기",
+            "eventId": null
+          }
+        ],
+        "anytimeCountText": null,
+        "sourceLinks": [],
+        "catalogCards": [],
+        "focusableCount": 86,
+        "unnamedFocusables": [
+          {
+            "tag": "A",
+            "testId": null,
+            "type": null
+          }
+        ],
+        "horizontalOverflow": false
+      },
+      "storage": {
+        "keyCount": 13,
+        "savedFlowKeys": [
+          "flow:saved:moving-d30-basic",
+          "flow:saved:source-backed-moving-d30"
+        ],
+        "savedMapKeys": [
+          "flow:map:saved:moving-d30"
+        ],
+        "mapPersistenceKeys": [
+          "flow:map:persistence:moving-d30"
+        ],
+        "movingKeys": [
+          "flow:map:persistence:moving-d30",
+          "flow:map:saved:moving-d30",
+          "flow:moving-d30-basic:anchorDate",
+          "flow:saved:moving-d30-basic",
+          "flow:saved:source-backed-moving-d30",
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_moving-d30-basic",
+          "flow_builder_mvp_comparison_moving-d30-basic",
+          "flow_builder_mvp_item_state_moving-d30-basic",
+          "flow_builder_mvp_item_state_source-backed-moving-d30",
+          "flow_builder_mvp_reactions_moving-d30-basic",
+          "flow_builder_mvp_workbench_moving-d30-basic"
+        ],
+        "savedFlows": [
+          {
+            "key": "flow:saved:moving-d30-basic",
+            "slug": "moving-d30-basic",
+            "value": {
+              "slug": "moving-d30-basic",
+              "savedAt": "2026-07-24T00:59:52.886Z",
+              "personalTitle": "이사 D-30 준비",
+              "selectedArtifactMode": "calendar",
+              "dateIntent": "custom",
+              "anchor": "2030-08-15"
+            }
+          },
+          {
+            "key": "flow:saved:source-backed-moving-d30",
+            "slug": "source-backed-moving-d30",
+            "value": {
+              "slug": "source-backed-moving-d30",
+              "savedAt": "2026-07-24T00:59:53.752Z",
+              "selectedArtifactMode": "calendar",
+              "dateIntent": "custom",
+              "anchor": "2030-08-15"
+            }
+          }
+        ],
+        "lifecycle": null
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p4-s2.png",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P4",
+      "sessionId": "S3",
+      "userGoal": "중복 객체를 reconcile할 사용자 행동과 보존 범위 확인",
+      "status": "missing",
+      "route": "/my?view=flows",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "evidence": {
+        "archiveVisible": false,
+        "deleteVisible": false,
+        "mergeVisible": false,
+        "storage": {
+          "keyCount": 13,
+          "savedFlowKeys": [
+            "flow:saved:moving-d30-basic",
+            "flow:saved:source-backed-moving-d30"
+          ],
+          "savedMapKeys": [
+            "flow:map:saved:moving-d30"
+          ],
+          "mapPersistenceKeys": [
+            "flow:map:persistence:moving-d30"
+          ],
+          "movingKeys": [
+            "flow:map:persistence:moving-d30",
+            "flow:map:saved:moving-d30",
+            "flow:moving-d30-basic:anchorDate",
+            "flow:saved:moving-d30-basic",
+            "flow:saved:source-backed-moving-d30",
+            "flow_builder_mvp_bundles_v11",
+            "flow_builder_mvp_checks_moving-d30-basic",
+            "flow_builder_mvp_comparison_moving-d30-basic",
+            "flow_builder_mvp_item_state_moving-d30-basic",
+            "flow_builder_mvp_item_state_source-backed-moving-d30",
+            "flow_builder_mvp_reactions_moving-d30-basic",
+            "flow_builder_mvp_workbench_moving-d30-basic"
+          ],
+          "savedFlows": [
+            {
+              "key": "flow:saved:moving-d30-basic",
+              "slug": "moving-d30-basic",
+              "value": {
+                "slug": "moving-d30-basic",
+                "savedAt": "2026-07-24T00:59:52.886Z",
+                "personalTitle": "이사 D-30 준비",
+                "selectedArtifactMode": "calendar",
+                "dateIntent": "custom",
+                "anchor": "2030-08-15"
+              }
+            },
+            {
+              "key": "flow:saved:source-backed-moving-d30",
+              "slug": "source-backed-moving-d30",
+              "value": {
+                "slug": "source-backed-moving-d30",
+                "savedAt": "2026-07-24T00:59:53.752Z",
+                "selectedArtifactMode": "calendar",
+                "dateIntent": "custom",
+                "anchor": "2030-08-15"
+              }
+            }
+          ],
+          "lifecycle": null
+        }
+      },
+      "notes": "개별 보관/삭제 수단은 있으나 source-level alias, merge, personal/run/export 보존 안내는 없다.",
+      "page": {
+        "url": "https://flowme2605.vercel.app/my?view=flows",
+        "headings": [
+          "My Flow",
+          "저장한 Flow",
+          "저장한 Flow",
+          "원룸 이사 준비"
+        ],
+        "bodyText": "FLOW 홈 Flow 찾기 캘린더 내 Flow 메뉴 ≡ 내 실행 공간 My Flow 지금 할 일과 저장한 Flow를 관리합니다. 스튜디오 데이터 관리 지금 Flow 목록 완료 저장한 계획 관리 저장한 Flow 2개 라이브러리 저장한 Flow 2개 원룸 이사 준비 체크리스트 · 7월 16일 - 8월 15일 전체 0/5 완료 다음 할 일 · 이사 방식과 견적 후보 정하기 이사 준비 체크리스트 · 7월 16일 - 8월 16일 전체 0/24 완료 다음 할 일 · 이사 방식 정하기 원룸 이사 준비 저장한 콘텐츠 · 원룸 이사 D-30 일정 이사일 8월 15일 일정 5 메모 1 이사일 바꾸기 가져가기 전체 Flow 5개 여러 할 일 조정 2단계 7월 16일 - 8월 15일 0/5 완료 이사 전 준비 7월 16일 - 8월 14일 · 4개 · 0/4 완료 ⌃ 이사 방식과 견적 후보 정하기 열기 7월 16일 기준 D-30 입주청소와 대형폐기물 일정 확인 열기 8월 1일 기준 D-14 관리사무소 공유와 주소 변경 대상 확인 열기 8월 8일 기준 D-7 계량기와 집 상태 사진 남기기 열기 8월 14일 기준 D-1 이사 당일 8월 15일 · 1개 · 0/1 완료 ⌃ 정산과 전입신고 확인 열기 8월 15일 기준 D-Day 다음 할 일 이사 방식과 견적 후보 정하기 7월 16일 열기 전체 진행 전체 0/5 완료 더보기",
+        "artifactSelectedShape": null,
+        "artifactChoices": [],
+        "publicPreviewRows": 0,
+        "mapPreviewRows": 0,
+        "receiptSteps": 0,
+        "receiptVisible": false,
+        "myFlowSlugs": [
+          {
+            "slug": "source-backed-moving-d30",
+            "text": "원룸 이사 준비저장한 콘텐츠 · 원룸 이사 D-30 일정이사일 8월 15일일정 5메모 1이사일 바꾸기가져가기전체 Flow5개여러 할 일 조정2단계7월 16일 - 8월 15일0/5 완료이사 전 준비7월 16일 - 8월 14일 · 4개 · 0/4 완료⌃이사 방식과 견적 후보 정하기열기7월 16일기준 D-30입주청소와 대형폐기물 일정 확인열기8월 1일기준 D-14관리사무소 공유와 주소 변경 대상 "
+          }
+        ],
+        "myFlowSavedCountText": "2개",
+        "calendarEventCount": 0,
+        "calendarEvents": [],
+        "anytimeCountText": null,
+        "sourceLinks": [],
+        "catalogCards": [],
+        "focusableCount": 37,
+        "unnamedFocusables": [
+          {
+            "tag": "A",
+            "testId": null,
+            "type": null
+          },
+          {
+            "tag": "A",
+            "testId": "my-flow-management-source",
+            "type": null
+          }
+        ],
+        "horizontalOverflow": false
+      },
+      "storage": {
+        "keyCount": 13,
+        "savedFlowKeys": [
+          "flow:saved:moving-d30-basic",
+          "flow:saved:source-backed-moving-d30"
+        ],
+        "savedMapKeys": [
+          "flow:map:saved:moving-d30"
+        ],
+        "mapPersistenceKeys": [
+          "flow:map:persistence:moving-d30"
+        ],
+        "movingKeys": [
+          "flow:map:persistence:moving-d30",
+          "flow:map:saved:moving-d30",
+          "flow:moving-d30-basic:anchorDate",
+          "flow:saved:moving-d30-basic",
+          "flow:saved:source-backed-moving-d30",
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_moving-d30-basic",
+          "flow_builder_mvp_comparison_moving-d30-basic",
+          "flow_builder_mvp_item_state_moving-d30-basic",
+          "flow_builder_mvp_item_state_source-backed-moving-d30",
+          "flow_builder_mvp_reactions_moving-d30-basic",
+          "flow_builder_mvp_workbench_moving-d30-basic"
+        ],
+        "savedFlows": [
+          {
+            "key": "flow:saved:moving-d30-basic",
+            "slug": "moving-d30-basic",
+            "value": {
+              "slug": "moving-d30-basic",
+              "savedAt": "2026-07-24T00:59:52.886Z",
+              "personalTitle": "이사 D-30 준비",
+              "selectedArtifactMode": "calendar",
+              "dateIntent": "custom",
+              "anchor": "2030-08-15"
+            }
+          },
+          {
+            "key": "flow:saved:source-backed-moving-d30",
+            "slug": "source-backed-moving-d30",
+            "value": {
+              "slug": "source-backed-moving-d30",
+              "savedAt": "2026-07-24T00:59:53.752Z",
+              "selectedArtifactMode": "calendar",
+              "dateIntent": "custom",
+              "anchor": "2030-08-15"
+            }
+          }
+        ],
+        "lifecycle": null
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p4-s3.png",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P5",
+      "sessionId": "S1",
+      "userGoal": "Home의 필요할 때 차량 체크리스트 약속과 target 비교",
+      "status": "partial",
+      "route": "/f/vehicle-inspection-prep",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "evidence": {
+        "homePromise": "체크하며 쓰기 차량 점검표를 내 체크리스트로 Checklist · 필요할 때 실행 →",
+        "targetTitle": "필요한 Flow를 시작하세요",
+        "targetArtifact": null,
+        "selectedAfterChecklist": "calendar",
+        "targetCount": 0
+      },
+      "notes": "Home은 필요할 때 체크리스트를 약속하지만 target은 자동차검사 D-14 Calendar가 기본이며 Checklist 버튼도 projection을 바꾸지 않는다.",
+      "page": {
+        "url": "https://flowme2605.vercel.app/f/vehicle-inspection-prep",
+        "headings": [
+          "자동차검사 D-14 준비",
+          "캘린더 · 10개",
+          "TS한국교통안전공단 정기검사 대상·기준·유효기간 안내"
+        ],
+        "bodyText": "FLOW 공유 화면 Flow 미리보기 자동차/검사 자동차검사 D-14 준비 원문 · TS한국교통안전공단 정기검사 대상·기준·유효기간 안내 내 조건 검사일 저장 결과 캘린더 전체 할 일 10개 먼저 확인할 결과 캘린더 · 10개 날짜에 맞춰 실행할 Flow예요. · 전체 항목 유지 캘린더 일정 10개 체크리스트 10개 10 (금) 자동차검사 기간과 예약 가능일 확인하기 D-14 검사 기간 확인 차량번호와 예약 정보 확인하기 D-14 검사 기간 확인 14 (화) 가까운 검사소와 수수료 확인하기 D-14 검사 기간 확인 21 (화) 번호판과 차대번호 식별 상태 확인하기 D-3 차량 상태 점검 등화장치와 경음기 작동 확인하기 D-3 차량 상태 점검 타이어 마모와 공기압 확인하기 D-3 차량 상태 점검 나머지 4개 보기 ⌄ 검사일 입력 날짜 정하기 날짜 없이 예시만 보기 예시 날짜로 미리보기 · 검사일 7월 24일 (금) 전체 Flow 구조 10개 보기 조정 날짜 없이 시작 Flow 가져가기 필요할 때 열기 출처와 주의 Flow 전체 · 10개 항목 자동차검사 D-14 준비 날짜 없이 시작 콘텐츠 더 보기",
+        "artifactSelectedShape": "calendar",
+        "artifactChoices": [
+          {
+            "shape": "calendar",
+            "pressed": "true",
+            "text": "캘린더 일정 10개"
+          },
+          {
+            "shape": "checklist",
+            "pressed": "false",
+            "text": "체크리스트 10개"
+          }
+        ],
+        "publicPreviewRows": 6,
+        "mapPreviewRows": 0,
+        "receiptSteps": 0,
+        "receiptVisible": false,
+        "myFlowSlugs": [],
+        "myFlowSavedCountText": null,
+        "calendarEventCount": 0,
+        "calendarEvents": [],
+        "anytimeCountText": null,
+        "sourceLinks": [
+          {
+            "href": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+            "text": "TS한국교통안전공단 정기검사 대상·기준·유효기간 안내"
+          },
+          {
+            "href": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+            "text": "원문 보기"
+          }
+        ],
+        "catalogCards": [],
+        "focusableCount": 23,
+        "unnamedFocusables": [
+          {
+            "tag": "SUMMARY",
+            "testId": "public-flow-export-secondary-toggle",
+            "type": null
+          },
+          {
+            "tag": "SUMMARY",
+            "testId": null,
+            "type": null
+          },
+          {
+            "tag": "A",
+            "testId": null,
+            "type": null
+          }
+        ],
+        "horizontalOverflow": false
+      },
+      "storage": {
+        "keyCount": 7,
+        "savedFlowKeys": [],
+        "savedMapKeys": [],
+        "mapPersistenceKeys": [],
+        "movingKeys": [
+          "flow_builder_mvp_bundles_v11"
+        ],
+        "savedFlows": [],
+        "lifecycle": null
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p5-s1.png",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P5",
+      "sessionId": "S2",
+      "userGoal": "차량 Flow를 날짜 없이 저장하고 My Flow/Calendar tray 확인",
+      "status": "supported",
+      "route": "/calendar",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "evidence": {
+        "receiptCount": 10,
+        "anytimeText": "날짜 없는 할 일 아직 일정에 놓지 않은 실행 항목 10 날짜 정하기 자동차검사 기간과 예약 가능일 확인하기 열기 날짜 없음 검사 기간 확인 메모 차량번호와 예약 정보 확인하기 열기 날짜 없음 검사 기간 확인 메모 가까운 검사소와 수수료 확인하기 열기 날짜 없음 검사 기간 확인 메모 번호판과 차대번호 식별 상태 확인하기 열기 날짜 없음 차량 상태 점검 메모 등화장치와 경음기 작동 확인하기 열기 날짜 없음 차량 상태 점검 메모 타이어 마모와 공기압 확인하기 열기 날짜 없음 차량 상태 점검 메모 전체 Flow에서 4개 더 보기",
+        "calendarHasUndatedQueue": true
+      },
+      "notes": "날짜 없는 저장은 My Flow 실행 목록과 Calendar 배치 queue로 이어진다. 진입 약속과 target 의미만 어긋난다.",
+      "page": {
+        "url": "https://flowme2605.vercel.app/calendar",
+        "headings": [
+          "캘린더",
+          "월간 날짜 보기",
+          "7월 24일 (금)"
+        ],
+        "bodyText": "FLOW ≡ 날짜별 실행 캘린더 스튜디오 날짜 없는 할 일 아직 일정에 놓지 않은 실행 항목 10 + 이전 2026년 7월 월 선택 다음 일 월 화 수 목 금 토 28일 29일 30일 1일 2일 3일 4일 5일 6일 7일 8일 9일 10일 11일 12일 13일 14일 15일 16일 17일 18일 19일 20일 21일 22일 23일 24일 25일 26일 27일 28일 29일 30일 31일 1일 2일 3일 4일 5일 6일 7일 8일 7월 24일 (금) 0개 항목 · 0개 남음 이 날짜에 등록된 일정이 없습니다. 홈 Flow 찾기 캘린더 내 Flow",
+        "artifactSelectedShape": null,
+        "artifactChoices": [],
+        "publicPreviewRows": 0,
+        "mapPreviewRows": 0,
+        "receiptSteps": 0,
+        "receiptVisible": false,
+        "myFlowSlugs": [],
+        "myFlowSavedCountText": null,
+        "calendarEventCount": 0,
+        "calendarEvents": [],
+        "anytimeCountText": null,
+        "sourceLinks": [],
+        "catalogCards": [],
+        "focusableCount": 60,
+        "unnamedFocusables": [
+          {
+            "tag": "A",
+            "testId": null,
+            "type": null
+          }
+        ],
+        "horizontalOverflow": false
+      },
+      "storage": {
+        "keyCount": 9,
+        "savedFlowKeys": [
+          "flow:saved:vehicle-inspection-prep"
+        ],
+        "savedMapKeys": [],
+        "mapPersistenceKeys": [],
+        "movingKeys": [
+          "flow_builder_mvp_bundles_v11"
+        ],
+        "savedFlows": [
+          {
+            "key": "flow:saved:vehicle-inspection-prep",
+            "slug": "vehicle-inspection-prep",
+            "value": {
+              "slug": "vehicle-inspection-prep",
+              "savedAt": "2026-07-24T01:00:00.251Z",
+              "personalTitle": "자동차검사 D-14 준비",
+              "selectedArtifactMode": "calendar",
+              "dateIntent": "undated"
+            }
+          }
+        ],
+        "lifecycle": null
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p5-s2.png",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P5",
+      "sessionId": "S3",
+      "userGoal": "Flow 찾기에서 Home 차량 Flow 재발견",
+      "status": "partial",
+      "route": "/flows",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "evidence": {
+        "searchResults": [
+          {
+            "term": "차량",
+            "count": 2,
+            "cards": [
+              {
+                "href": "/flow-maps/moving-d30",
+                "text": "생활 일정할 일 5개 · D-30 일정원룸 이사 D-30원문 · 이사 준비 체크리스트이사 방식과 견적 후보 정하기입주청소와 대형폐기물 일정 확인더보기→원룸 이사 D-30 더보기"
+              },
+              {
+                "href": "/flow-maps/curated-new-car-purchase-guide",
+                "text": "구매 준비할 일 7개 · 구매 절차 체크리스트신차 구매 7단계 체크리스트원문 · Getcha 신차 구매 절차 참고 가이드예산과 차량 선택더보기→신차 구매 7단계 체크리스트 더보기"
+              }
+            ]
+          },
+          {
+            "term": "차량 점검",
+            "count": 0,
+            "cards": []
+          },
+          {
+            "term": "자동차검사",
+            "count": 0,
+            "cards": []
+          }
+        ]
+      },
+      "notes": "검색어에 따라 도달성이 달라진다. current hydrated catalog에서 Home target의 canonical inventory 표지가 약하다.",
+      "page": {
+        "url": "https://flowme2605.vercel.app/flows",
+        "headings": [
+          "URL·메모로 Flow 찾기"
+        ],
+        "bodyText": "FLOW ≡ 홈 Flow 찾기 캘린더 내 Flow Flow 찾기 URL·메모로 Flow 찾기 Flow 0/9개 링크나 메모로 찾고, 준비된 Flow를 비교하세요. URL 또는 메모 Flow 찾기 검색 전체 이사/계약 공부 아이/건강 구매/생활 루틴 맞는 콘텐츠가 없습니다. 검색어나 상황 필터를 줄이면 다시 볼 수 있습니다.",
+        "artifactSelectedShape": null,
+        "artifactChoices": [],
+        "publicPreviewRows": 0,
+        "mapPreviewRows": 0,
+        "receiptSteps": 0,
+        "receiptVisible": false,
+        "myFlowSlugs": [],
+        "myFlowSavedCountText": null,
+        "calendarEventCount": 0,
+        "calendarEvents": [],
+        "anytimeCountText": null,
+        "sourceLinks": [],
+        "catalogCards": [],
+        "focusableCount": 20,
+        "unnamedFocusables": [
+          {
+            "tag": "A",
+            "testId": null,
+            "type": null
+          }
+        ],
+        "horizontalOverflow": false
+      },
+      "storage": {
+        "keyCount": 10,
+        "savedFlowKeys": [
+          "flow:saved:vehicle-inspection-prep"
+        ],
+        "savedMapKeys": [],
+        "mapPersistenceKeys": [],
+        "movingKeys": [
+          "flow_builder_mvp_bundles_v11"
+        ],
+        "savedFlows": [
+          {
+            "key": "flow:saved:vehicle-inspection-prep",
+            "slug": "vehicle-inspection-prep",
+            "value": {
+              "slug": "vehicle-inspection-prep",
+              "savedAt": "2026-07-24T01:00:00.251Z",
+              "personalTitle": "자동차검사 D-14 준비",
+              "selectedArtifactMode": "calendar",
+              "dateIntent": "undated"
+            }
+          }
+        ],
+        "lifecycle": null
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p5-s3.png",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P6",
+      "sessionId": "S1",
+      "userGoal": "Home/Find 운동 entry와 artifact·series 설정 연속성 확인",
+      "status": "supported",
+      "route": "/f/curated-allblanc-morning-workout",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "evidence": {
+        "homeWorkoutHref": "/f/curated-allblanc-morning-workout",
+        "findWorkoutHref": "/f/curated-allblanc-morning-workout",
+        "selectedSequence": [
+          "calendar",
+          "memo",
+          "flow_execution"
+        ],
+        "nextOccurrenceCount": 3
+      },
+      "notes": "운동은 Home/Find가 같은 public slug를 사용하고 artifact choice도 실제 projection을 바꾸는 positive control이다.",
+      "page": {
+        "url": "https://flowme2605.vercel.app/f/curated-allblanc-morning-workout",
+        "headings": [
+          "Allblanc 아침 5분 홈트",
+          "Flow 실행 · 1개",
+          "Allblanc 매일 아침 5분 전신 운동 영상",
+          "Allblanc 매일 아침 5분 전신 운동 영상"
+        ],
+        "bodyText": "FLOW 공유 화면 Flow 미리보기 운동/홈트 Allblanc 아침 5분 홈트 원문 · Allblanc 매일 아침 5분 전신 운동 영상 내 조건 시작일 저장 결과 Flow 실행 전체 할 일 1개 먼저 확인할 결과 Flow 실행 · 1개 회차와 다음 행동을 이어서 실행하기 좋아요. · 전체 항목 유지 Flow 실행 1개 캘린더 일정 1개 메모 1개 1 아침 5분 전신 운동 영상 열기 8월 15일 (목) · 반복 실행 시작일 입력 날짜 정하기 날짜 없이 예시만 보기 시작일: 8월 15일 (목) 반복 일정 월·수·금 · 시간 미정 · 계속 반복 반복 설정 바꾸기 다음 일정 8월 16일 (금) 8월 19일 (월) 8월 21일 (수) 전체 Flow 구조 1개 보기 조정 Flow 실행 1개로 시작 Flow 가져가기 필요할 때 열기 출처와 주의 Flow 전체 · 1개 항목 Allblanc 아침 5분 홈트 Flow 실행 1개로 시작 콘텐츠 더 보기",
+        "artifactSelectedShape": "flow_execution",
+        "artifactChoices": [
+          {
+            "shape": "flow_execution",
+            "pressed": "true",
+            "text": "Flow 실행 1개"
+          },
+          {
+            "shape": "calendar",
+            "pressed": "false",
+            "text": "캘린더 일정 1개"
+          },
+          {
+            "shape": "memo",
+            "pressed": "false",
+            "text": "메모 1개"
+          }
+        ],
+        "publicPreviewRows": 1,
+        "mapPreviewRows": 0,
+        "receiptSteps": 0,
+        "receiptVisible": false,
+        "myFlowSlugs": [],
+        "myFlowSavedCountText": null,
+        "calendarEventCount": 0,
+        "calendarEvents": [],
+        "anytimeCountText": null,
+        "sourceLinks": [
+          {
+            "href": "https://www.youtube.com/watch?v=fLLScgWQcHc",
+            "text": "Allblanc 매일 아침 5분 전신 운동 영상"
+          },
+          {
+            "href": "https://www.youtube.com/watch?v=fLLScgWQcHc",
+            "text": "원문 열기"
+          },
+          {
+            "href": "https://www.cdc.gov/healthy-weight-growth/physical-activity/getting-started.html",
+            "text": "운동 시작 전 공식 안내"
+          },
+          {
+            "href": "https://www.youtube.com/watch?v=fLLScgWQcHc",
+            "text": "원문 보기"
+          }
+        ],
+        "catalogCards": [],
+        "focusableCount": 26,
+        "unnamedFocusables": [
+          {
+            "tag": "A",
+            "testId": null,
+            "type": null
+          },
+          {
+            "tag": "A",
+            "testId": null,
+            "type": null
+          },
+          {
+            "tag": "SUMMARY",
+            "testId": "public-flow-export-secondary-toggle",
+            "type": null
+          },
+          {
+            "tag": "SUMMARY",
+            "testId": null,
+            "type": null
+          },
+          {
+            "tag": "A",
+            "testId": null,
+            "type": null
+          }
+        ],
+        "horizontalOverflow": false
+      },
+      "storage": {
+        "keyCount": 9,
+        "savedFlowKeys": [],
+        "savedMapKeys": [],
+        "mapPersistenceKeys": [],
+        "movingKeys": [
+          "flow_builder_mvp_bundles_v11"
+        ],
+        "savedFlows": [],
+        "lifecycle": null
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p6-s1.png",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P6",
+      "sessionId": "S2",
+      "userGoal": "날짜 없는 운동 series를 My Flow와 Calendar에서 확인",
+      "status": "partial",
+      "route": "/calendar",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "evidence": {
+        "receiptCount": 1,
+        "rawRruleInMyFlow": false,
+        "rawRruleInCalendar": false,
+        "calendarHasUndated": false
+      },
+      "notes": "실행 객체는 이어지지만 날짜 없는 상태에서 raw recurrence 표현이 노출될 가능성을 별도로 확인해야 한다.",
+      "page": {
+        "url": "https://flowme2605.vercel.app/calendar",
+        "headings": [
+          "캘린더",
+          "월간 날짜 보기",
+          "7월 24일 (금)"
+        ],
+        "bodyText": "FLOW ≡ 날짜별 실행 캘린더 스튜디오 이전 2026년 7월 월 선택 다음 일 월 화 수 목 금 토 28일 29일 30일 1일 2일 3일 4일 5일 6일 7일 8일 9일 10일 11일 12일 13일 14일 15일 16일 17일 18일 19일 20일 21일 22일 23일 24일 25일 26일 27일 28일 29일 30일 31일 1일 2일 3일 4일 5일 6일 7일 8일 7월 24일 (금) 0개 항목 · 0개 남음 이 날짜에 등록된 일정이 없습니다. 홈 Flow 찾기 캘린더 내 Flow",
+        "artifactSelectedShape": null,
+        "artifactChoices": [],
+        "publicPreviewRows": 0,
+        "mapPreviewRows": 0,
+        "receiptSteps": 0,
+        "receiptVisible": false,
+        "myFlowSlugs": [],
+        "myFlowSavedCountText": null,
+        "calendarEventCount": 0,
+        "calendarEvents": [],
+        "anytimeCountText": null,
+        "sourceLinks": [],
+        "catalogCards": [],
+        "focusableCount": 59,
+        "unnamedFocusables": [
+          {
+            "tag": "A",
+            "testId": null,
+            "type": null
+          }
+        ],
+        "horizontalOverflow": false
+      },
+      "storage": {
+        "keyCount": 10,
+        "savedFlowKeys": [
+          "flow:saved:curated-allblanc-morning-workout"
+        ],
+        "savedMapKeys": [],
+        "mapPersistenceKeys": [],
+        "movingKeys": [
+          "flow_builder_mvp_bundles_v11"
+        ],
+        "savedFlows": [
+          {
+            "key": "flow:saved:curated-allblanc-morning-workout",
+            "slug": "curated-allblanc-morning-workout",
+            "value": {
+              "slug": "curated-allblanc-morning-workout",
+              "savedAt": "2026-07-24T01:00:07.368Z",
+              "personalTitle": "Allblanc 아침 5분 홈트",
+              "selectedArtifactMode": "checklist",
+              "dateIntent": "custom",
+              "anchor": "2030-08-15",
+              "weekdays": [
+                "월",
+                "수",
+                "금"
+              ],
+              "routineDefinition": {
+                "schemaVersion": 1,
+                "end": {
+                  "mode": "none"
+                }
+              }
+            }
+          }
+        ],
+        "lifecycle": null
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p6-s2.png",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P6",
+      "sessionId": "S3",
+      "userGoal": "운동 Flow 재진입 시 series 설정·실행 상태·resource 연속성 확인",
+      "status": "partial",
+      "route": "/f/curated-allblanc-morning-workout",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "evidence": {
+        "savedSignal": true,
+        "sourceLinks": [
+          {
+            "href": "https://www.youtube.com/watch?v=fLLScgWQcHc",
+            "text": "Allblanc 매일 아침 5분 전신 운동 영상"
+          },
+          {
+            "href": "https://www.youtube.com/watch?v=fLLScgWQcHc",
+            "text": "원문 열기"
+          },
+          {
+            "href": "https://www.cdc.gov/healthy-weight-growth/physical-activity/getting-started.html",
+            "text": "운동 시작 전 공식 안내"
+          },
+          {
+            "href": "https://www.youtube.com/watch?v=fLLScgWQcHc",
+            "text": "원문 보기"
+          }
+        ],
+        "storage": {
+          "keyCount": 10,
+          "savedFlowKeys": [
+            "flow:saved:curated-allblanc-morning-workout"
+          ],
+          "savedMapKeys": [],
+          "mapPersistenceKeys": [],
+          "movingKeys": [
+            "flow_builder_mvp_bundles_v11"
+          ],
+          "savedFlows": [
+            {
+              "key": "flow:saved:curated-allblanc-morning-workout",
+              "slug": "curated-allblanc-morning-workout",
+              "value": {
+                "slug": "curated-allblanc-morning-workout",
+                "savedAt": "2026-07-24T01:00:07.368Z",
+                "personalTitle": "Allblanc 아침 5분 홈트",
+                "selectedArtifactMode": "checklist",
+                "dateIntent": "custom",
+                "anchor": "2030-08-15",
+                "weekdays": [
+                  "월",
+                  "수",
+                  "금"
+                ],
+                "routineDefinition": {
+                  "schemaVersion": 1,
+                  "end": {
+                    "mode": "none"
+                  }
+                }
+              }
+            }
+          ],
+          "lifecycle": null
+        }
+      },
+      "notes": "slug 단위 저장은 유지되지만 public 재진입 화면이 execution occurrence 상태를 직접 이어 보여주지는 않는다.",
+      "page": {
+        "url": "https://flowme2605.vercel.app/f/curated-allblanc-morning-workout",
+        "headings": [
+          "Allblanc 아침 5분 홈트",
+          "Allblanc 매일 아침 5분 전신 운동 영상",
+          "Allblanc 매일 아침 5분 전신 운동 영상"
+        ],
+        "bodyText": "FLOW 공유 화면 저장 완료 운동/홈트 Allblanc 아침 5분 홈트 원문 · Allblanc 매일 아침 5분 전신 운동 영상 내 Flow에 저장됨 1개 할 일을 저장했어요 저장한 전체 계획을 확인하거나 첫 할 일부터 시작할 수 있습니다. 저장 이름 Allblanc 아침 5분 홈트 전체 할 일 1개 주요 결과 Flow 실행 일정 범위 8월 15일 (목) 내 Flow에서 시작 캘린더에서 보기 Flow 가져가기 필요할 때 열기 출처와 주의 Flow 전체 · 1개 항목 Allblanc 아침 5분 홈트 내 Flow에서 보기",
+        "artifactSelectedShape": null,
+        "artifactChoices": [],
+        "publicPreviewRows": 0,
+        "mapPreviewRows": 0,
+        "receiptSteps": 0,
+        "receiptVisible": false,
+        "myFlowSlugs": [],
+        "myFlowSavedCountText": null,
+        "calendarEventCount": 0,
+        "calendarEvents": [],
+        "anytimeCountText": null,
+        "sourceLinks": [
+          {
+            "href": "https://www.youtube.com/watch?v=fLLScgWQcHc",
+            "text": "Allblanc 매일 아침 5분 전신 운동 영상"
+          },
+          {
+            "href": "https://www.youtube.com/watch?v=fLLScgWQcHc",
+            "text": "원문 열기"
+          },
+          {
+            "href": "https://www.cdc.gov/healthy-weight-growth/physical-activity/getting-started.html",
+            "text": "운동 시작 전 공식 안내"
+          },
+          {
+            "href": "https://www.youtube.com/watch?v=fLLScgWQcHc",
+            "text": "원문 보기"
+          }
+        ],
+        "catalogCards": [],
+        "focusableCount": 13,
+        "unnamedFocusables": [
+          {
+            "tag": "A",
+            "testId": null,
+            "type": null
+          },
+          {
+            "tag": "A",
+            "testId": null,
+            "type": null
+          },
+          {
+            "tag": "SUMMARY",
+            "testId": "public-flow-export-secondary-toggle",
+            "type": null
+          },
+          {
+            "tag": "SUMMARY",
+            "testId": null,
+            "type": null
+          },
+          {
+            "tag": "A",
+            "testId": null,
+            "type": null
+          }
+        ],
+        "horizontalOverflow": false
+      },
+      "storage": {
+        "keyCount": 10,
+        "savedFlowKeys": [
+          "flow:saved:curated-allblanc-morning-workout"
+        ],
+        "savedMapKeys": [],
+        "mapPersistenceKeys": [],
+        "movingKeys": [
+          "flow_builder_mvp_bundles_v11"
+        ],
+        "savedFlows": [
+          {
+            "key": "flow:saved:curated-allblanc-morning-workout",
+            "slug": "curated-allblanc-morning-workout",
+            "value": {
+              "slug": "curated-allblanc-morning-workout",
+              "savedAt": "2026-07-24T01:00:07.368Z",
+              "personalTitle": "Allblanc 아침 5분 홈트",
+              "selectedArtifactMode": "checklist",
+              "dateIntent": "custom",
+              "anchor": "2030-08-15",
+              "weekdays": [
+                "월",
+                "수",
+                "금"
+              ],
+              "routineDefinition": {
+                "schemaVersion": 1,
+                "end": {
+                  "mode": "none"
+                }
+              }
+            }
+          }
+        ],
+        "lifecycle": null
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p6-s3.png",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P7",
+      "sessionId": "S1",
+      "userGoal": "결혼 독립 card와 artifact choice를 positive control로 확인",
+      "status": "supported",
+      "route": "/f/curated-wedding-naver-timeline",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "evidence": {
+        "weddingCards": [
+          {
+            "href": "/f/curated-wedding-naver-timeline",
+            "text": "결혼할 일 6개 · 캘린더 + 체크결혼 준비 1년 참고 타임라인원문 · 린지 개인 결혼 준비 타임라인D-12개월: 예산과 웨딩홀 후보 정하기D-10개월: 스드메와 촬영 후보 잡기더보기→결혼 준비 1년 참고 타임라인 더보기"
+          },
+          {
+            "href": "/f/curated-wedding-gongysd-atoz",
+            "text": "결혼할 일 4개 · 시트결혼 준비 핵심 4가지 시작표원문 · 공여사들 결혼준비 체크리스트 A to Z웨딩홀 확인상견례 확인더보기→결혼 준비 핵심 4가지 시작표 더보기"
+          }
+        ],
+        "selectedSequence": [
+          "checklist",
+          "memo",
+          "calendar"
+        ]
+      },
+      "notes": "결혼 콘텐츠는 source/job별 독립 card와 작동하는 artifact choice를 제공한다.",
+      "page": {
+        "url": "https://flowme2605.vercel.app/f/curated-wedding-naver-timeline",
+        "headings": [
+          "결혼 준비 1년 참고 타임라인",
+          "캘린더 · 6개",
+          "린지 개인 결혼 준비 타임라인"
+        ],
+        "bodyText": "FLOW 공유 화면 Flow 미리보기 결혼 결혼 준비 1년 참고 타임라인 원문 · 린지 개인 결혼 준비 타임라인 내 조건 결혼식 날짜 저장 결과 캘린더 전체 할 일 6개 먼저 확인할 결과 캘린더 · 6개 날짜에 맞춰 실행할 Flow예요. · 전체 항목 유지 캘린더 일정 6개 체크리스트 6개 메모 6개 19 (월) D-12개월: 예산과 웨딩홀 후보 정하기 기간별 준비 21 (토) D-10개월: 스드메와 촬영 후보 잡기 기간별 준비 20 (토) D-7개월: 신혼여행과 예물 후보 정리 기간별 준비 21 (화) D-6개월: 촬영과 본식 준비 확정 기간별 준비 20 (화) D-3개월: 청첩장과 식순 준비 기간별 준비 20 (일) D-1개월: 최종 인원과 당일 동선 확인 기간별 준비 결혼식 날짜 입력 날짜 정하기 날짜 없이 예시만 보기 예시 날짜로 미리보기 · 결혼식 날짜 1월 19일 (화) 내게 맞게 조정 캘린더 6개로 시작 전체 Flow 구조 6개 보기 Flow 가져가기 필요할 때 열기 출처와 주의 콘텐츠 더 보기",
+        "artifactSelectedShape": "calendar",
+        "artifactChoices": [
+          {
+            "shape": "calendar",
+            "pressed": "true",
+            "text": "캘린더 일정 6개"
+          },
+          {
+            "shape": "checklist",
+            "pressed": "false",
+            "text": "체크리스트 6개"
+          },
+          {
+            "shape": "memo",
+            "pressed": "false",
+            "text": "메모 6개"
+          }
+        ],
+        "publicPreviewRows": 6,
+        "mapPreviewRows": 0,
+        "receiptSteps": 0,
+        "receiptVisible": false,
+        "myFlowSlugs": [],
+        "myFlowSavedCountText": null,
+        "calendarEventCount": 0,
+        "calendarEvents": [],
+        "anytimeCountText": null,
+        "sourceLinks": [
+          {
+            "href": "https://blog.naver.com/wilklove/223518896995",
+            "text": "린지 개인 결혼 준비 타임라인"
+          },
+          {
+            "href": "https://blog.naver.com/wilklove/223518896995",
+            "text": "원문 보기"
+          }
+        ],
+        "catalogCards": [],
+        "focusableCount": 23,
+        "unnamedFocusables": [
+          {
+            "tag": "SUMMARY",
+            "testId": "public-flow-export-secondary-toggle",
+            "type": null
+          },
+          {
+            "tag": "SUMMARY",
+            "testId": null,
+            "type": null
+          },
+          {
+            "tag": "A",
+            "testId": null,
+            "type": null
+          }
+        ],
+        "horizontalOverflow": false
+      },
+      "storage": {
+        "keyCount": 8,
+        "savedFlowKeys": [],
+        "savedMapKeys": [],
+        "mapPersistenceKeys": [],
+        "movingKeys": [
+          "flow_builder_mvp_bundles_v11"
+        ],
+        "savedFlows": [],
+        "lifecycle": null
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p7-s1.png",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P7",
+      "sessionId": "S2",
+      "userGoal": "두 결혼 Flow의 receipt와 My Flow object 연속성 확인",
+      "status": "supported",
+      "route": "/my?savedFlow=curated-wedding-gongysd-atoz",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "evidence": {
+        "firstReceipt": 6,
+        "secondReceipt": 4,
+        "savedFlowKeys": [
+          "flow:saved:curated-wedding-gongysd-atoz",
+          "flow:saved:curated-wedding-naver-timeline"
+        ]
+      },
+      "notes": "서로 다른 source/job인 두 결혼 Flow가 별도 object인 것은 의도와 맞는다.",
+      "page": {
+        "url": "https://flowme2605.vercel.app/my?savedFlow=curated-wedding-gongysd-atoz",
+        "headings": [
+          "My Flow",
+          "저장된 전체 Flow"
+        ],
+        "bodyText": "FLOW 홈 Flow 찾기 캘린더 내 Flow 메뉴 ≡ 내 실행 공간 My Flow 지금 할 일과 저장한 Flow를 관리합니다. 스튜디오 데이터 관리 내 Flow에 저장됨 결혼 준비 핵심 4가지 시작표 할 일 4개 · 날짜 있음 0개 · 날짜 없음 4개 내 Flow에 저장됨 할 일 4개 · 날짜 있음 0개 · 날짜 없음 4개 할 일 4개 날짜 없음 4개 다음 행동 첫 할 일 시작 전체 Flow 보기 캘린더 가져가기 저장된 전체 Flow 전체 항목 체크 4개 날짜 없음 0/4 완료 먼저 비교할 4가지 날짜 없음 · 4개 · 0/4 완료 1 웨딩홀 확인 날짜 없음 2 상견례 확인 날짜 없음 3 플래너 확인 날짜 없음 4 스드메 확인 날짜 없음",
+        "artifactSelectedShape": null,
+        "artifactChoices": [],
+        "publicPreviewRows": 0,
+        "mapPreviewRows": 0,
+        "receiptSteps": 4,
+        "receiptVisible": true,
+        "myFlowSlugs": [],
+        "myFlowSavedCountText": null,
+        "calendarEventCount": 0,
+        "calendarEvents": [],
+        "anytimeCountText": null,
+        "sourceLinks": [],
+        "catalogCards": [],
+        "focusableCount": 17,
+        "unnamedFocusables": [
+          {
+            "tag": "A",
+            "testId": null,
+            "type": null
+          }
+        ],
+        "horizontalOverflow": false
+      },
+      "storage": {
+        "keyCount": 17,
+        "savedFlowKeys": [
+          "flow:saved:curated-wedding-gongysd-atoz",
+          "flow:saved:curated-wedding-naver-timeline"
+        ],
+        "savedMapKeys": [],
+        "mapPersistenceKeys": [],
+        "movingKeys": [
+          "flow_builder_mvp_bundles_v11"
+        ],
+        "savedFlows": [
+          {
+            "key": "flow:saved:curated-wedding-gongysd-atoz",
+            "slug": "curated-wedding-gongysd-atoz",
+            "value": {
+              "slug": "curated-wedding-gongysd-atoz",
+              "savedAt": "2026-07-24T01:00:13.566Z",
+              "personalTitle": "결혼 준비 핵심 4가지 시작표",
+              "selectedArtifactMode": "sheet",
+              "dateIntent": "undated"
+            }
+          },
+          {
+            "key": "flow:saved:curated-wedding-naver-timeline",
+            "slug": "curated-wedding-naver-timeline",
+            "value": {
+              "slug": "curated-wedding-naver-timeline",
+              "savedAt": "2026-07-24T01:00:12.618Z",
+              "personalTitle": "결혼 준비 1년 참고 타임라인",
+              "selectedArtifactMode": "calendar",
+              "dateIntent": "custom",
+              "anchor": "2030-08-15"
+            }
+          }
+        ],
+        "lifecycle": null
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p7-s2.png",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P7",
+      "sessionId": "S3",
+      "userGoal": "결혼에서 작동하는 grammar를 moving/vehicle과 비교",
+      "status": "partial",
+      "route": "/f/vehicle-inspection-prep",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "evidence": {
+        "movingSelectedAfterChecklist": "calendar",
+        "vehicleSelectedAfterChecklist": "calendar",
+        "expected": "checklist"
+      },
+      "notes": "차이는 콘텐츠 shape가 아니라 category hardcode로 handler가 연결된 구현 gate다.",
+      "page": {
+        "url": "https://flowme2605.vercel.app/f/vehicle-inspection-prep",
+        "headings": [
+          "자동차검사 D-14 준비",
+          "캘린더 · 10개",
+          "TS한국교통안전공단 정기검사 대상·기준·유효기간 안내"
+        ],
+        "bodyText": "FLOW 공유 화면 Flow 미리보기 자동차/검사 자동차검사 D-14 준비 원문 · TS한국교통안전공단 정기검사 대상·기준·유효기간 안내 내 조건 검사일 저장 결과 캘린더 전체 할 일 10개 먼저 확인할 결과 캘린더 · 10개 날짜에 맞춰 실행할 Flow예요. · 전체 항목 유지 캘린더 일정 10개 체크리스트 10개 10 (금) 자동차검사 기간과 예약 가능일 확인하기 D-14 검사 기간 확인 차량번호와 예약 정보 확인하기 D-14 검사 기간 확인 14 (화) 가까운 검사소와 수수료 확인하기 D-14 검사 기간 확인 21 (화) 번호판과 차대번호 식별 상태 확인하기 D-3 차량 상태 점검 등화장치와 경음기 작동 확인하기 D-3 차량 상태 점검 타이어 마모와 공기압 확인하기 D-3 차량 상태 점검 나머지 4개 보기 ⌄ 검사일 입력 날짜 정하기 날짜 없이 예시만 보기 예시 날짜로 미리보기 · 검사일 7월 24일 (금) 내게 맞게 조정 날짜 없이 시작 전체 Flow 구조 10개 보기 Flow 가져가기 필요할 때 열기 출처와 주의 콘텐츠 더 보기",
+        "artifactSelectedShape": "calendar",
+        "artifactChoices": [
+          {
+            "shape": "calendar",
+            "pressed": "true",
+            "text": "캘린더 일정 10개"
+          },
+          {
+            "shape": "checklist",
+            "pressed": "false",
+            "text": "체크리스트 10개"
+          }
+        ],
+        "publicPreviewRows": 6,
+        "mapPreviewRows": 0,
+        "receiptSteps": 0,
+        "receiptVisible": false,
+        "myFlowSlugs": [],
+        "myFlowSavedCountText": null,
+        "calendarEventCount": 0,
+        "calendarEvents": [],
+        "anytimeCountText": null,
+        "sourceLinks": [
+          {
+            "href": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+            "text": "TS한국교통안전공단 정기검사 대상·기준·유효기간 안내"
+          },
+          {
+            "href": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+            "text": "원문 보기"
+          }
+        ],
+        "catalogCards": [],
+        "focusableCount": 23,
+        "unnamedFocusables": [
+          {
+            "tag": "SUMMARY",
+            "testId": "public-flow-export-secondary-toggle",
+            "type": null
+          },
+          {
+            "tag": "SUMMARY",
+            "testId": null,
+            "type": null
+          },
+          {
+            "tag": "A",
+            "testId": null,
+            "type": null
+          }
+        ],
+        "horizontalOverflow": false
+      },
+      "storage": {
+        "keyCount": 27,
+        "savedFlowKeys": [
+          "flow:saved:curated-wedding-gongysd-atoz",
+          "flow:saved:curated-wedding-naver-timeline"
+        ],
+        "savedMapKeys": [],
+        "mapPersistenceKeys": [],
+        "movingKeys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_moving-d30-basic",
+          "flow_builder_mvp_comparison_moving-d30-basic",
+          "flow_builder_mvp_item_state_moving-d30-basic",
+          "flow_builder_mvp_reactions_moving-d30-basic",
+          "flow_builder_mvp_workbench_moving-d30-basic"
+        ],
+        "savedFlows": [
+          {
+            "key": "flow:saved:curated-wedding-gongysd-atoz",
+            "slug": "curated-wedding-gongysd-atoz",
+            "value": {
+              "slug": "curated-wedding-gongysd-atoz",
+              "savedAt": "2026-07-24T01:00:13.566Z",
+              "personalTitle": "결혼 준비 핵심 4가지 시작표",
+              "selectedArtifactMode": "sheet",
+              "dateIntent": "undated"
+            }
+          },
+          {
+            "key": "flow:saved:curated-wedding-naver-timeline",
+            "slug": "curated-wedding-naver-timeline",
+            "value": {
+              "slug": "curated-wedding-naver-timeline",
+              "savedAt": "2026-07-24T01:00:12.618Z",
+              "personalTitle": "결혼 준비 1년 참고 타임라인",
+              "selectedArtifactMode": "calendar",
+              "dateIntent": "custom",
+              "anchor": "2030-08-15"
+            }
+          }
+        ],
+        "lifecycle": null
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p7-s3.png",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P8",
+      "sessionId": "S1",
+      "userGoal": "390px keyboard-only Home에서 public save-before로 이동",
+      "status": "partial",
+      "route": "/f/moving-d30-basic",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "evidence": {
+        "keyboardTrail": [
+          {
+            "tag": "A",
+            "text": "FLOW",
+            "aria": null,
+            "href": "/",
+            "testId": null
+          },
+          {
+            "tag": "SUMMARY",
+            "text": "메뉴≡",
+            "aria": "보조 메뉴 열기",
+            "href": null,
+            "testId": null
+          },
+          {
+            "tag": "A",
+            "text": "홈",
+            "aria": null,
+            "href": "/",
+            "testId": null
+          },
+          {
+            "tag": "A",
+            "text": "Flow 찾기",
+            "aria": null,
+            "href": "/flows",
+            "testId": null
+          },
+          {
+            "tag": "A",
+            "text": "캘린더",
+            "aria": null,
+            "href": "/calendar",
+            "testId": null
+          },
+          {
+            "tag": "A",
+            "text": "내 Flow",
+            "aria": null,
+            "href": "/my",
+            "testId": null
+          },
+          {
+            "tag": "A",
+            "text": "URL이나 메모로 새 Flow 찾기준비된 Flow와 내 초안을 한곳에서 찾습니다→",
+            "aria": null,
+            "href": "/flows",
+            "testId": "home-url-first-entry"
+          },
+          {
+            "tag": "A",
+            "text": "전체 찾기",
+            "aria": null,
+            "href": "/flows",
+            "testId": null
+          },
+          {
+            "tag": "A",
+            "text": "일정으로 쓰기이사 체크리스트를 이사일 기준 일정으로Calendar · 날짜별 할 일→",
+            "aria": null,
+            "href": "/f/moving-d30-basic",
+            "testId": "home-usage-example"
+          },
+          {
+            "tag": "A",
+            "text": "체크하며 쓰기차량 점검표를 내 체크리스트로Checklist · 필요할 때 실행→",
+            "aria": null,
+            "href": "/f/vehicle-inspection-prep",
+            "testId": "home-usage-example"
+          },
+          {
+            "tag": "A",
+            "text": "반복해서 쓰기운동 영상을 주간 루틴으로Routine · 회차별 완료→",
+            "aria": null,
+            "href": "/f/curated-allblanc-morning-workout",
+            "testId": "home-usage-example"
+          },
+          {
+            "tag": "BODY",
+            "text": "FLOW홈Flow 찾기캘린더내 Flow메뉴≡보조 기능Flow 만들기내 콘텐츠를 실행형 Flow로 정리홈Flow 찾기캘린더내 Flow필요한 Flow를 시작하세요저장한 Flow를 이어",
+            "aria": null,
+            "href": null,
+            "testId": null
+          }
+        ],
+        "publicUnnamedFocusables": [
+          {
+            "tag": "SUMMARY",
+            "testId": "public-flow-export-secondary-toggle",
+            "type": null
+          },
+          {
+            "tag": "SUMMARY",
+            "testId": null,
+            "type": null
+          },
+          {
+            "tag": "A",
+            "testId": null,
+            "type": null
+          }
+        ],
+        "overflow": false
+      },
+      "notes": "기본 focus와 accessible name은 대체로 존재하지만 entry별 다른 interaction grammar 때문에 동일 과업의 키보드 경로가 달라진다.",
+      "page": {
+        "url": "https://flowme2605.vercel.app/f/moving-d30-basic",
+        "headings": [
+          "이사 D-30 준비",
+          "캘린더 · 24개",
+          "이사 체크리스트 참고",
+          "이사 체크리스트 참고"
+        ],
+        "bodyText": "FLOW 공유 화면 Flow 미리보기 이사 이사 D-30 준비 원문 · 이사 체크리스트 참고 내 조건 이사일 저장 결과 캘린더 전체 할 일 24개 먼저 확인할 결과 캘린더 · 24개 날짜에 맞춰 실행할 Flow예요. · 전체 항목 유지 캘린더 일정 24개 체크리스트 24개 23 (목) 이사 방식 정하기 D-30 큰 준비 이사할 집 하자 점검하기 D-30 큰 준비 필요 없는 물건 정리하기 D-30 큰 준비 이사/청소 업체 견적 받고 예약하기 D-30 큰 준비 12 (수) 우편물/카드/은행 주소 변경하기 D-10 생활 이전 준비 정기 배달 서비스 중지 요청하기 D-10 생활 이전 준비 나머지 18개 보기 ⌄ 이사일 입력 날짜 정하기 날짜 없이 예시만 보기 예시 날짜로 미리보기 · 이사일 8월 22일 (토) 전체 Flow 구조 24개 보기 조정 날짜 없이 시작 Flow 가져가기 필요할 때 열기 출처와 주의 Flow 전체 · 24개 항목 이사 D-30 준비 날짜 없이 시작 콘텐츠 더 보기",
+        "artifactSelectedShape": "calendar",
+        "artifactChoices": [
+          {
+            "shape": "calendar",
+            "pressed": "true",
+            "text": "캘린더 일정 24개"
+          },
+          {
+            "shape": "checklist",
+            "pressed": "false",
+            "text": "체크리스트 24개"
+          }
+        ],
+        "publicPreviewRows": 6,
+        "mapPreviewRows": 0,
+        "receiptSteps": 0,
+        "receiptVisible": false,
+        "myFlowSlugs": [],
+        "myFlowSavedCountText": null,
+        "calendarEventCount": 0,
+        "calendarEvents": [],
+        "anytimeCountText": null,
+        "sourceLinks": [
+          {
+            "href": "https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363",
+            "text": "이사 체크리스트 참고"
+          },
+          {
+            "href": "https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363",
+            "text": "원문 보기"
+          },
+          {
+            "href": "https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363",
+            "text": "원문 보기"
+          }
+        ],
+        "catalogCards": [],
+        "focusableCount": 25,
+        "unnamedFocusables": [
+          {
+            "tag": "SUMMARY",
+            "testId": "public-flow-export-secondary-toggle",
+            "type": null
+          },
+          {
+            "tag": "SUMMARY",
+            "testId": null,
+            "type": null
+          },
+          {
+            "tag": "A",
+            "testId": null,
+            "type": null
+          }
+        ],
+        "horizontalOverflow": false
+      },
+      "storage": {
+        "keyCount": 7,
+        "savedFlowKeys": [],
+        "savedMapKeys": [],
+        "mapPersistenceKeys": [],
+        "movingKeys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_moving-d30-basic",
+          "flow_builder_mvp_comparison_moving-d30-basic",
+          "flow_builder_mvp_item_state_moving-d30-basic",
+          "flow_builder_mvp_reactions_moving-d30-basic",
+          "flow_builder_mvp_workbench_moving-d30-basic"
+        ],
+        "savedFlows": [],
+        "lifecycle": null
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p8-s1.png",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P8",
+      "sessionId": "S2",
+      "userGoal": "1024/1440에서 Home·Find·public·map·My Flow·Calendar anatomy 비교",
+      "status": "partial",
+      "route": "/calendar",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "evidence": {
+        "responsive": [
+          {
+            "viewport": {
+              "width": 1024,
+              "height": 768
+            },
+            "route": "/",
+            "heading": "필요한 Flow를 시작하세요",
+            "overflow": false,
+            "unnamedFocusables": [
+              {
+                "tag": "A",
+                "testId": null,
+                "type": null
+              }
+            ]
+          },
+          {
+            "viewport": {
+              "width": 1024,
+              "height": 768
+            },
+            "route": "/flows",
+            "heading": "URL·메모로 Flow 찾기",
+            "overflow": false,
+            "unnamedFocusables": [
+              {
+                "tag": "A",
+                "testId": null,
+                "type": null
+              }
+            ]
+          },
+          {
+            "viewport": {
+              "width": 1024,
+              "height": 768
+            },
+            "route": "/f/moving-d30-basic",
+            "heading": "이사 D-30 준비",
+            "overflow": false,
+            "unnamedFocusables": [
+              {
+                "tag": "SUMMARY",
+                "testId": "public-flow-export-secondary-toggle",
+                "type": null
+              },
+              {
+                "tag": "SUMMARY",
+                "testId": null,
+                "type": null
+              },
+              {
+                "tag": "A",
+                "testId": null,
+                "type": null
+              }
+            ]
+          },
+          {
+            "viewport": {
+              "width": 1024,
+              "height": 768
+            },
+            "route": "/flow-maps/moving-d30",
+            "heading": "원룸 이사 D-30 일정",
+            "overflow": false,
+            "unnamedFocusables": [
+              {
+                "tag": "A",
+                "testId": null,
+                "type": null
+              },
+              {
+                "tag": "A",
+                "testId": "flow-map-source-link",
+                "type": null
+              },
+              {
+                "tag": "A",
+                "testId": null,
+                "type": null
+              },
+              {
+                "tag": "SUMMARY",
+                "testId": null,
+                "type": null
+              },
+              {
+                "tag": "SUMMARY",
+                "testId": null,
+                "type": null
+              },
+              {
+                "tag": "A",
+                "testId": null,
+                "type": null
+              },
+              {
+                "tag": "SUMMARY",
+                "testId": null,
+                "type": null
+              },
+              {
+                "tag": "SUMMARY",
+                "testId": null,
+                "type": null
+              },
+              {
+                "tag": "A",
+                "testId": null,
+                "type": null
+              },
+              {
+                "tag": "SUMMARY",
+                "testId": null,
+                "type": null
+              },
+              {
+                "tag": "SUMMARY",
+                "testId": null,
+                "type": null
+              },
+              {
+                "tag": "A",
+                "testId": null,
+                "type": null
+              },
+              {
+                "tag": "SUMMARY",
+                "testId": null,
+                "type": null
+              },
+              {
+                "tag": "SUMMARY",
+                "testId": null,
+                "type": null
+              },
+              {
+                "tag": "A",
+                "testId": null,
+                "type": null
+              },
+              {
+                "tag": "SUMMARY",
+                "testId": null,
+                "type": null
+              },
+              {
+                "tag": "SUMMARY",
+                "testId": null,
+                "type": null
+              },
+              {
+                "tag": "A",
+                "testId": null,
+                "type": null
+              }
+            ]
+          },
+          {
+            "viewport": {
+              "width": 1024,
+              "height": 768
+            },
+            "route": "/my",
+            "heading": "My Flow",
+            "overflow": false,
+            "unnamedFocusables": [
+              {
+                "tag": "A",
+                "testId": null,
+                "type": null
+              }
+            ]
+          },
+          {
+            "viewport": {
+              "width": 1024,
+              "height": 768
+            },
+            "route": "/calendar",
+            "heading": "캘린더",
+            "overflow": false,
+            "unnamedFocusables": [
+              {
+                "tag": "A",
+                "testId": null,
+                "type": null
+              }
+            ]
+          },
+          {
+            "viewport": {
+              "width": 1440,
+              "height": 900
+            },
+            "route": "/",
+            "heading": "필요한 Flow를 시작하세요",
+            "overflow": false,
+            "unnamedFocusables": [
+              {
+                "tag": "A",
+                "testId": null,
+                "type": null
+              }
+            ]
+          },
+          {
+            "viewport": {
+              "width": 1440,
+              "height": 900
+            },
+            "route": "/flows",
+            "heading": "URL·메모로 Flow 찾기",
+            "overflow": false,
+            "unnamedFocusables": [
+              {
+                "tag": "A",
+                "testId": null,
+                "type": null
+              }
+            ]
+          },
+          {
+            "viewport": {
+              "width": 1440,
+              "height": 900
+            },
+            "route": "/f/moving-d30-basic",
+            "heading": "이사 D-30 준비",
+            "overflow": false,
+            "unnamedFocusables": [
+              {
+                "tag": "SUMMARY",
+                "testId": "public-flow-export-secondary-toggle",
+                "type": null
+              },
+              {
+                "tag": "A",
+                "testId": null,
+                "type": null
+              },
+              {
+                "tag": "SUMMARY",
+                "testId": null,
+                "type": null
+              },
+              {
+                "tag": "A",
+                "testId": null,
+                "type": null
+              }
+            ]
+          },
+          {
+            "viewport": {
+              "width": 1440,
+              "height": 900
+            },
+            "route": "/flow-maps/moving-d30",
+            "heading": "원룸 이사 D-30 일정",
+            "overflow": false,
+            "unnamedFocusables": [
+              {
+                "tag": "A",
+                "testId": null,
+                "type": null
+              },
+              {
+                "tag": "A",
+                "testId": "flow-map-source-link",
+                "type": null
+              },
+              {
+                "tag": "A",
+                "testId": null,
+                "type": null
+              },
+              {
+                "tag": "SUMMARY",
+                "testId": null,
+                "type": null
+              },
+              {
+                "tag": "SUMMARY",
+                "testId": null,
+                "type": null
+              },
+              {
+                "tag": "A",
+                "testId": null,
+                "type": null
+              },
+              {
+                "tag": "SUMMARY",
+                "testId": null,
+                "type": null
+              },
+              {
+                "tag": "SUMMARY",
+                "testId": null,
+                "type": null
+              },
+              {
+                "tag": "A",
+                "testId": null,
+                "type": null
+              },
+              {
+                "tag": "SUMMARY",
+                "testId": null,
+                "type": null
+              },
+              {
+                "tag": "SUMMARY",
+                "testId": null,
+                "type": null
+              },
+              {
+                "tag": "A",
+                "testId": null,
+                "type": null
+              },
+              {
+                "tag": "SUMMARY",
+                "testId": null,
+                "type": null
+              },
+              {
+                "tag": "SUMMARY",
+                "testId": null,
+                "type": null
+              },
+              {
+                "tag": "A",
+                "testId": null,
+                "type": null
+              },
+              {
+                "tag": "SUMMARY",
+                "testId": null,
+                "type": null
+              },
+              {
+                "tag": "SUMMARY",
+                "testId": null,
+                "type": null
+              },
+              {
+                "tag": "A",
+                "testId": null,
+                "type": null
+              }
+            ]
+          },
+          {
+            "viewport": {
+              "width": 1440,
+              "height": 900
+            },
+            "route": "/my",
+            "heading": "My Flow",
+            "overflow": false,
+            "unnamedFocusables": [
+              {
+                "tag": "A",
+                "testId": null,
+                "type": null
+              }
+            ]
+          },
+          {
+            "viewport": {
+              "width": 1440,
+              "height": 900
+            },
+            "route": "/calendar",
+            "heading": "캘린더",
+            "overflow": false,
+            "unnamedFocusables": [
+              {
+                "tag": "A",
+                "testId": null,
+                "type": null
+              }
+            ]
+          }
+        ]
+      },
+      "notes": "기술적 overflow는 없지만 public /f와 legacy /flow-maps는 같은 Flow anatomy가 아니다.",
+      "page": {
+        "url": "https://flowme2605.vercel.app/calendar",
+        "headings": [
+          "캘린더",
+          "날짜가 있는 콘텐츠를 먼저 고르세요"
+        ],
+        "bodyText": "FLOW 홈 Flow 찾기 캘린더 내 Flow 메뉴 ≡ 날짜별 실행 캘린더 언제 할지 정해진 항목을 날짜별로 확인합니다. 날짜 항목 없음 날짜가 있는 콘텐츠를 먼저 고르세요 언제 할지 정해진 항목을 날짜별로 확인합니다. 콘텐츠 고르러 가기",
+        "artifactSelectedShape": null,
+        "artifactChoices": [],
+        "publicPreviewRows": 0,
+        "mapPreviewRows": 0,
+        "receiptSteps": 0,
+        "receiptVisible": false,
+        "myFlowSlugs": [],
+        "myFlowSavedCountText": null,
+        "calendarEventCount": 0,
+        "calendarEvents": [],
+        "anytimeCountText": null,
+        "sourceLinks": [],
+        "catalogCards": [],
+        "focusableCount": 12,
+        "unnamedFocusables": [
+          {
+            "tag": "A",
+            "testId": null,
+            "type": null
+          }
+        ],
+        "horizontalOverflow": false
+      },
+      "storage": {
+        "keyCount": 8,
+        "savedFlowKeys": [],
+        "savedMapKeys": [],
+        "mapPersistenceKeys": [],
+        "movingKeys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_moving-d30-basic",
+          "flow_builder_mvp_comparison_moving-d30-basic",
+          "flow_builder_mvp_item_state_moving-d30-basic",
+          "flow_builder_mvp_reactions_moving-d30-basic",
+          "flow_builder_mvp_workbench_moving-d30-basic"
+        ],
+        "savedFlows": [],
+        "lifecycle": null
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p8-s2.png",
+      "observedUserCount": 0
+    },
+    {
+      "personaId": "P8",
+      "sessionId": "S3",
+      "userGoal": "reload·반복 저장·복구와 duplicate 객체 확인",
+      "status": "partial",
+      "route": "/f/moving-d30-basic",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "evidence": {
+        "anchorAfterReload": "2030-08-15",
+        "repeatedSameSlugSavedFlowKeys": [
+          "flow:saved:moving-d30-basic"
+        ],
+        "repeatedSameSlugCount": 1
+      },
+      "notes": "저장 전 anchor는 reload 시 사라진다. 같은 slug 반복 저장은 한 key를 덮지만 다른 entry alias는 별도 object를 만든다.",
+      "page": {
+        "url": "https://flowme2605.vercel.app/f/moving-d30-basic",
+        "headings": [
+          "이사 D-30 준비",
+          "이사 체크리스트 참고",
+          "이사 체크리스트 참고"
+        ],
+        "bodyText": "FLOW 공유 화면 저장 완료 이사 이사 D-30 준비 원문 · 이사 체크리스트 참고 내 Flow에 저장됨 24개 할 일을 저장했어요 저장한 전체 계획을 확인하거나 첫 할 일부터 시작할 수 있습니다. 저장 이름 이사 D-30 준비 전체 할 일 24개 주요 결과 캘린더 일정 범위 7월 16일 - 8월 16일 내 Flow에서 시작 캘린더에서 보기 Flow 가져가기 필요할 때 열기 출처와 주의 Flow 전체 · 24개 항목 이사 D-30 준비 내 Flow에서 보기",
+        "artifactSelectedShape": null,
+        "artifactChoices": [],
+        "publicPreviewRows": 0,
+        "mapPreviewRows": 0,
+        "receiptSteps": 0,
+        "receiptVisible": false,
+        "myFlowSlugs": [],
+        "myFlowSavedCountText": null,
+        "calendarEventCount": 0,
+        "calendarEvents": [],
+        "anytimeCountText": null,
+        "sourceLinks": [
+          {
+            "href": "https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363",
+            "text": "이사 체크리스트 참고"
+          },
+          {
+            "href": "https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363",
+            "text": "원문 보기"
+          },
+          {
+            "href": "https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363",
+            "text": "원문 보기"
+          }
+        ],
+        "catalogCards": [],
+        "focusableCount": 13,
+        "unnamedFocusables": [
+          {
+            "tag": "SUMMARY",
+            "testId": "public-flow-export-secondary-toggle",
+            "type": null
+          },
+          {
+            "tag": "SUMMARY",
+            "testId": null,
+            "type": null
+          },
+          {
+            "tag": "A",
+            "testId": null,
+            "type": null
+          }
+        ],
+        "horizontalOverflow": false
+      },
+      "storage": {
+        "keyCount": 10,
+        "savedFlowKeys": [
+          "flow:saved:moving-d30-basic"
+        ],
+        "savedMapKeys": [],
+        "mapPersistenceKeys": [],
+        "movingKeys": [
+          "flow:moving-d30-basic:anchorDate",
+          "flow:saved:moving-d30-basic",
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_moving-d30-basic",
+          "flow_builder_mvp_comparison_moving-d30-basic",
+          "flow_builder_mvp_item_state_moving-d30-basic",
+          "flow_builder_mvp_reactions_moving-d30-basic",
+          "flow_builder_mvp_workbench_moving-d30-basic"
+        ],
+        "savedFlows": [
+          {
+            "key": "flow:saved:moving-d30-basic",
+            "slug": "moving-d30-basic",
+            "value": {
+              "slug": "moving-d30-basic",
+              "savedAt": "2026-07-24T01:00:30.017Z",
+              "personalTitle": "이사 D-30 준비",
+              "selectedArtifactMode": "calendar",
+              "dateIntent": "custom",
+              "anchor": "2030-08-15"
+            }
+          }
+        ],
+        "lifecycle": null
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "screenshots/p8-s3.png",
+      "observedUserCount": 0
+    }
+  ]
+}

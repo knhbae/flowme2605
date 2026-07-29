@@ -1,0 +1,99 @@
+{
+  "schemaVersion": "flowme.cross-entry-decision-matrix.v1",
+  "reviewerRole": "codex_independent",
+  "verdict": "canonical_flow_contract_reopen",
+  "observedUserCount": 0,
+  "weights": {
+    "userContinuity": 0.35,
+    "implementationSafety": 0.2,
+    "legacyDataSafety": 0.25,
+    "rollback": 0.1,
+    "longTermScale": 0.1
+  },
+  "alternatives": [
+    {
+      "id": "A",
+      "name": "canonical public /f + legacy alias/handoff",
+      "description": "한 public slug를 정하고 legacy route를 해당 detail로 넘긴다.",
+      "scores": {
+        "userContinuity": 3,
+        "implementationSafety": 4,
+        "legacyDataSafety": 3,
+        "rollback": 4,
+        "longTermScale": 3
+      },
+      "strengths": [
+        "작은 route change",
+        "public shell 재사용",
+        "빠른 vertical slice"
+      ],
+      "weaknesses": [
+        "route winner를 hardcode",
+        "기존 3개 saved identity와 duplicate를 충분히 해결하지 못함",
+        "새 source/job variant 확장에 취약"
+      ],
+      "decision": "not_selected",
+      "weightedScore": 3.3
+    },
+    {
+      "id": "B",
+      "name": "canonical registry + role-specific shell, one save identity",
+      "description": "Home/Find/URL의 역할은 유지하되 source+job+variant registry에서 같은 canonicalFlowId와 content snapshot을 해석한다.",
+      "scores": {
+        "userContinuity": 5,
+        "implementationSafety": 3,
+        "legacyDataSafety": 4,
+        "rollback": 4,
+        "longTermScale": 5
+      },
+      "strengths": [
+        "entry 역할과 user object identity 분리",
+        "중복 방지와 향후 variant 정책 확장",
+        "P32 downstream 계약 보존 가능"
+      ],
+      "weaknesses": [
+        "additive registry와 dual-read 필요",
+        "AJD 24 vs 5 editorial decision 필요",
+        "reconciliation UX 필요"
+      ],
+      "decision": "recommended",
+      "weightedScore": 4.25
+    },
+    {
+      "id": "C",
+      "name": "broader discovery/detail consolidation",
+      "description": "Home, Find, detail IA와 data를 함께 다시 설계한다.",
+      "scores": {
+        "userContinuity": 4,
+        "implementationSafety": 1,
+        "legacyDataSafety": 1,
+        "rollback": 1,
+        "longTermScale": 3
+      },
+      "strengths": [
+        "최대 시각 일관성 가능"
+      ],
+      "weaknesses": [
+        "4탭 IA와 P32를 불필요하게 재개방",
+        "데이터 회귀 범위가 큼",
+        "현재 evidence gap보다 범위가 넓음"
+      ],
+      "decision": "defer",
+      "weightedScore": 2.25
+    }
+  ],
+  "recommendation": {
+    "selected": "B",
+    "rationale": "B만 Home/Find 역할과 P32 downstream을 보존하면서 one user-facing Flow identity와 비파괴 legacy migration을 함께 충족한다.",
+    "rejectedScope": "C는 current evidence보다 범위가 넓고 4탭 IA와 P32 focused workspace를 불필요하게 다시 연다."
+  },
+  "p33Order": [
+    "P33-01",
+    "P33-02",
+    "P33-03",
+    "P33-04",
+    "P33-05",
+    "P33-06",
+    "P33-07"
+  ]
+}

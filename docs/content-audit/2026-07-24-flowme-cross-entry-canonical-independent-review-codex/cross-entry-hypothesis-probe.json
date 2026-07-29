@@ -1,0 +1,289 @@
+{
+  "schemaVersion": "flowme.cross-entry-hypothesis-probe.v1",
+  "reviewerRole": "codex_independent",
+  "production": "https://flowme2605.vercel.app",
+  "capturedAt": "2026-07-24T01:04:38.877Z",
+  "observedUserCount": 0,
+  "checks": {
+    "homePromise": {
+      "homeCards": [
+        {
+          "href": "/f/moving-d30-basic",
+          "text": "일정으로 쓰기이사 체크리스트를 이사일 기준 일정으로Calendar · 날짜별 할 일→"
+        },
+        {
+          "href": "/f/vehicle-inspection-prep",
+          "text": "체크하며 쓰기차량 점검표를 내 체크리스트로Checklist · 필요할 때 실행→"
+        },
+        {
+          "href": "/f/curated-allblanc-morning-workout",
+          "text": "반복해서 쓰기운동 영상을 주간 루틴으로Routine · 회차별 완료→"
+        }
+      ],
+      "publicMoving": {
+        "route": "/f/moving-d30-basic",
+        "title": "이사 D-30 준비",
+        "shapeLabels": [],
+        "visiblePreviewRows": 6,
+        "sourceHref": "https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363"
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "evidenceKind": "current_production_interaction"
+    },
+    "catalogRouting": {
+      "serverEarly": [
+        {
+          "href": "/flow-maps/moving-d30",
+          "text": "생활 일정할 일 5개 · D-30 일정원룸 이사 D-30원문 · 이사 준비 체크리스트이사 방식과 견적 후보 정하기입주청소와 대형폐기물 일정 확인더보기→원룸 이사 D-30 더보기"
+        },
+        {
+          "href": "/flow-maps/middle-school-math-1",
+          "text": "교육 진도할 일 8개 · 8개 단원 진도표중1 수학 목차 진도원문 · 중1 수학 목차1. 소인수분해2. 정수와 유리수더보기→중1 수학 목차 진도 더보기"
+        },
+        {
+          "href": "/flow-maps/curated-opic-mock-course",
+          "text": "어학 학습할 일 19개 · 2주 모의고사 캘린더오픽 모의고사 2주/1달 계획표원문 · 오픽 모의고사 공부 방법1일차: 1회차 연습1주차: 1~2회차를 3번씩 반복더보기→오픽 모의고사 2주/1달 계획표 더보기"
+        },
+        {
+          "href": "/flow-maps/curated-reading-routine-log",
+          "text": "독서 루틴할 일 8개 · 4주 독서 캘린더월 4권 독서 기록 루틴원문 · 독서 기록 Naver blog1일차: 이번 달 책 4권 고르기더보기→월 4권 독서 기록 루틴 더보기"
+        },
+        {
+          "href": "/flow-maps/curated-new-car-purchase-guide",
+          "text": "구매 준비할 일 7개 · 구매 절차 체크리스트신차 구매 7단계 체크리스트원문 · Getcha 신차 구매 절차 참고 가이드예산과 차량 선택더보기→신차 구매 7단계 체크리스트 더보기"
+        },
+        {
+          "href": "/f/curated-wedding-naver-timeline",
+          "text": "결혼할 일 6개 · 캘린더 + 체크결혼 준비 1년 참고 타임라인원문 · 린지 개인 결혼 준비 타임라인D-12개월: 예산과 웨딩홀 후보 정하기D-10개월: 스드메와 촬영 후보 잡기더보기→결혼 준비 1년 참고 타임라인 더보기"
+        },
+        {
+          "href": "/f/curated-wedding-gongysd-atoz",
+          "text": "결혼할 일 4개 · 시트결혼 준비 핵심 4가지 시작표원문 · 공여사들 결혼준비 체크리스트 A to Z웨딩홀 확인상견례 확인더보기→결혼 준비 핵심 4가지 시작표 더보기"
+        },
+        {
+          "href": "/f/curated-allblanc-morning-workout",
+          "text": "운동/홈트할 일 1개 · 캘린더 일정Allblanc 아침 5분 홈트원문 · Allblanc 매일 아침 5분 전신 운동 영상아침 5분 전신 운동 영상 열기더보기→Allblanc 아침 5분 홈트 더보기"
+        },
+        {
+          "href": "/f/curated-allblanc-no-jump-cardio",
+          "text": "운동/홈트할 일 1개 · 캘린더 일정Allblanc 노점프 유산소원문 · Allblanc 점프 없는 10분 전신 운동 영상점프 없는 10분 전신 운동 영상 열기더보기→Allblanc 노점프 유산소 더보기"
+        }
+      ],
+      "hydrated": [
+        {
+          "href": "/flow-maps/moving-d30",
+          "text": "생활 일정할 일 5개 · D-30 일정원룸 이사 D-30원문 · 이사 준비 체크리스트이사 방식과 견적 후보 정하기입주청소와 대형폐기물 일정 확인더보기→원룸 이사 D-30 더보기"
+        },
+        {
+          "href": "/flow-maps/middle-school-math-1",
+          "text": "교육 진도할 일 8개 · 8개 단원 진도표중1 수학 목차 진도원문 · 중1 수학 목차1. 소인수분해2. 정수와 유리수더보기→중1 수학 목차 진도 더보기"
+        },
+        {
+          "href": "/flow-maps/curated-opic-mock-course",
+          "text": "어학 학습할 일 19개 · 2주 모의고사 캘린더오픽 모의고사 2주/1달 계획표원문 · 오픽 모의고사 공부 방법1일차: 1회차 연습1주차: 1~2회차를 3번씩 반복더보기→오픽 모의고사 2주/1달 계획표 더보기"
+        },
+        {
+          "href": "/flow-maps/curated-reading-routine-log",
+          "text": "독서 루틴할 일 8개 · 4주 독서 캘린더월 4권 독서 기록 루틴원문 · 독서 기록 Naver blog1일차: 이번 달 책 4권 고르기더보기→월 4권 독서 기록 루틴 더보기"
+        },
+        {
+          "href": "/flow-maps/curated-new-car-purchase-guide",
+          "text": "구매 준비할 일 7개 · 구매 절차 체크리스트신차 구매 7단계 체크리스트원문 · Getcha 신차 구매 절차 참고 가이드예산과 차량 선택더보기→신차 구매 7단계 체크리스트 더보기"
+        },
+        {
+          "href": "/f/curated-wedding-naver-timeline",
+          "text": "결혼할 일 6개 · 캘린더 + 체크결혼 준비 1년 참고 타임라인원문 · 린지 개인 결혼 준비 타임라인D-12개월: 예산과 웨딩홀 후보 정하기D-10개월: 스드메와 촬영 후보 잡기더보기→결혼 준비 1년 참고 타임라인 더보기"
+        },
+        {
+          "href": "/f/curated-wedding-gongysd-atoz",
+          "text": "결혼할 일 4개 · 시트결혼 준비 핵심 4가지 시작표원문 · 공여사들 결혼준비 체크리스트 A to Z웨딩홀 확인상견례 확인더보기→결혼 준비 핵심 4가지 시작표 더보기"
+        },
+        {
+          "href": "/f/curated-allblanc-morning-workout",
+          "text": "운동/홈트할 일 1개 · 캘린더 일정Allblanc 아침 5분 홈트원문 · Allblanc 매일 아침 5분 전신 운동 영상아침 5분 전신 운동 영상 열기더보기→Allblanc 아침 5분 홈트 더보기"
+        },
+        {
+          "href": "/f/curated-allblanc-no-jump-cardio",
+          "text": "운동/홈트할 일 1개 · 캘린더 일정Allblanc 노점프 유산소원문 · Allblanc 점프 없는 10분 전신 운동 영상점프 없는 10분 전신 운동 영상 열기더보기→Allblanc 노점프 유산소 더보기"
+        }
+      ],
+      "firstFiveKinds": [
+        "/flow-maps/moving-d30",
+        "/flow-maps/middle-school-math-1",
+        "/flow-maps/curated-opic-mock-course",
+        "/flow-maps/curated-reading-routine-log",
+        "/flow-maps/curated-new-car-purchase-guide"
+      ],
+      "lastFourKinds": [
+        "/f/curated-wedding-naver-timeline",
+        "/f/curated-wedding-gongysd-atoz",
+        "/f/curated-allblanc-morning-workout",
+        "/f/curated-allblanc-no-jump-cardio"
+      ],
+      "vehiclePublicPresent": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "evidenceKind": "current_production_interaction"
+    },
+    "artifactChoice": {
+      "moving": {
+        "route": "/f/moving-d30-basic",
+        "targetShape": "checklist",
+        "before": {
+          "selected": "calendar",
+          "heading": "먼저 확인할 결과 캘린더 · 24개 날짜에 맞춰 실행할 Flow예요. · 전체 항목 유지 캘린더 일정 24개 체크리스트 24개 23 (목) 이사 방식 정하기 D-30 큰 준비 이사할 집 하자 점검하기 D-30 큰 준비 필요 없는 물건 정리하기 D-30 큰 준비 이사/청소 업체 견적 받고 예약하기 D-30 큰 준비 12 (수) 우편물/카드/은행 주소 변경하기 D-10 생활 이전 준비 정기 배달 서비스 중지 요청하기 D-10 생활 이전 준비 나머지 18개 보기 ⌄",
+          "cta": "날짜 없이 시작"
+        },
+        "after": {
+          "selected": "calendar",
+          "heading": "먼저 확인할 결과 캘린더 · 24개 날짜에 맞춰 실행할 Flow예요. · 전체 항목 유지 캘린더 일정 24개 체크리스트 24개 23 (목) 이사 방식 정하기 D-30 큰 준비 이사할 집 하자 점검하기 D-30 큰 준비 필요 없는 물건 정리하기 D-30 큰 준비 이사/청소 업체 견적 받고 예약하기 D-30 큰 준비 12 (수) 우편물/카드/은행 주소 변경하기 D-10 생활 이전 준비 정기 배달 서비스 중지 요청하기 D-10 생활 이전 준비 나머지 18개 보기 ⌄",
+          "cta": "날짜 없이 시작"
+        }
+      },
+      "vehicle": {
+        "route": "/f/vehicle-inspection-prep",
+        "targetShape": "checklist",
+        "before": {
+          "selected": "calendar",
+          "heading": "먼저 확인할 결과 캘린더 · 10개 날짜에 맞춰 실행할 Flow예요. · 전체 항목 유지 캘린더 일정 10개 체크리스트 10개 10 (금) 자동차검사 기간과 예약 가능일 확인하기 D-14 검사 기간 확인 차량번호와 예약 정보 확인하기 D-14 검사 기간 확인 14 (화) 가까운 검사소와 수수료 확인하기 D-14 검사 기간 확인 21 (화) 번호판과 차대번호 식별 상태 확인하기 D-3 차량 상태 점검 등화장치와 경음기 작동 확인하기 D-3 차량 상태 점검 타이어 마모와 공기압 확인하기 D-3 차량 상태 점검 나머지 4개 보기 ⌄",
+          "cta": "날짜 없이 시작"
+        },
+        "after": {
+          "selected": "calendar",
+          "heading": "먼저 확인할 결과 캘린더 · 10개 날짜에 맞춰 실행할 Flow예요. · 전체 항목 유지 캘린더 일정 10개 체크리스트 10개 10 (금) 자동차검사 기간과 예약 가능일 확인하기 D-14 검사 기간 확인 차량번호와 예약 정보 확인하기 D-14 검사 기간 확인 14 (화) 가까운 검사소와 수수료 확인하기 D-14 검사 기간 확인 21 (화) 번호판과 차대번호 식별 상태 확인하기 D-3 차량 상태 점검 등화장치와 경음기 작동 확인하기 D-3 차량 상태 점검 타이어 마모와 공기압 확인하기 D-3 차량 상태 점검 나머지 4개 보기 ⌄",
+          "cta": "날짜 없이 시작"
+        }
+      },
+      "wedding": {
+        "route": "/f/curated-wedding-naver-timeline",
+        "targetShape": "checklist",
+        "before": {
+          "selected": "calendar",
+          "heading": "먼저 확인할 결과 캘린더 · 6개 날짜에 맞춰 실행할 Flow예요. · 전체 항목 유지 캘린더 일정 6개 체크리스트 6개 메모 6개 19 (월) D-12개월: 예산과 웨딩홀 후보 정하기 기간별 준비 21 (토) D-10개월: 스드메와 촬영 후보 잡기 기간별 준비 20 (토) D-7개월: 신혼여행과 예물 후보 정리 기간별 준비 21 (화) D-6개월: 촬영과 본식 준비 확정 기간별 준비 20 (화) D-3개월: 청첩장과 식순 준비 기간별 준비 20 (일) D-1개월: 최종 인원과 당일 동선 확인 기간별 준비",
+          "cta": "캘린더 6개로 시작"
+        },
+        "after": {
+          "selected": "checklist",
+          "heading": "먼저 확인할 결과 체크리스트 · 6개 하나씩 확인하고 완료하기 좋아요. · 전체 항목 유지 캘린더 일정 6개 체크리스트 6개 메모 6개 D-12개월: 예산과 웨딩홀 후보 정하기 1월 19일 (월) · 기간별 준비 D-10개월: 스드메와 촬영 후보 잡기 3월 21일 (토) · 기간별 준비 D-7개월: 신혼여행과 예물 후보 정리 6월 20일 (토) · 기간별 준비 D-6개월: 촬영과 본식 준비 확정 7월 21일 (화) · 기간별 준비 D-3개월: 청첩장과 식순 준비 10월 20일 (화) · 기간별 준비 D-1개월: 최종 인원과 당일 동선 확인 12월 20일 (일) · 기간별 준비",
+          "cta": "체크리스트 6개로 시작"
+        }
+      },
+      "workout": {
+        "route": "/f/curated-allblanc-morning-workout",
+        "targetShape": "calendar",
+        "before": {
+          "selected": "flow_execution",
+          "heading": "먼저 확인할 결과 Flow 실행 · 1개 회차와 다음 행동을 이어서 실행하기 좋아요. · 전체 항목 유지 Flow 실행 1개 캘린더 일정 1개 메모 1개 1 아침 5분 전신 운동 영상 열기 7월 26일 (일) · 반복 실행",
+          "cta": "Flow 실행 1개로 시작"
+        },
+        "after": {
+          "selected": "calendar",
+          "heading": "먼저 확인할 결과 캘린더 · 1개 날짜에 맞춰 실행할 Flow예요. · 전체 항목 유지 Flow 실행 1개 캘린더 일정 1개 메모 1개 26 (일) 아침 5분 전신 운동 영상 열기 반복 실행",
+          "cta": "캘린더 1개로 시작"
+        }
+      },
+      "consoleErrors": [],
+      "pageErrors": [],
+      "evidenceKind": "current_production_interaction"
+    },
+    "publicReceipt": {
+      "route": "/f/moving-d30-basic",
+      "text": "저장 완료 이사 이사 D-30 준비 원문 · 이사 체크리스트 참고 내 Flow에 저장됨 24개 할 일을 저장했어요 저장한 전체 계획을 확인하거나 첫 할 일부터 시작할 수 있습니다. 저장 이름 이사 D-30 준비 전체 할 일 24개 주요 결과 캘린더 일정 범위 7월 16일 - 8월 16일 내 Flow에서 시작 캘린더에서 보기",
+      "primaryHref": "/my?savedFlow=moving-d30-basic",
+      "keys": [
+        {
+          "key": "flow:moving-d30-basic:anchorDate",
+          "value": "{\"mode\":\"custom\",\"anchor\":\"2030-08-15\"}"
+        },
+        {
+          "key": "flow:saved:moving-d30-basic",
+          "value": "{\"slug\":\"moving-d30-basic\",\"savedAt\":\"2026-07-24T01:04:49.807Z\",\"personalTitle\":\"이사 D-30 준비\",\"selectedArtifactMode\":\"calendar\",\"dateIntent\":\"custom\",\"anchor\":\"2030-08-15\"}"
+        }
+      ],
+      "myRoute": "/my?savedFlow=moving-d30-basic",
+      "myText": "FLOW ≡ 내 실행 공간 My Flow 지금 할 일과 저장한 Flow를 관리합니다. 데이터 관리 지금 Flow 목록 완료 지금 지금 이어갈 할 일이 없습니다 Flow를 저장하면 여러 Flow의 다음 행동이 여기 모입니다. 콘텐츠 고르러 가기 홈 Flow 찾기 캘린더 내 Flow",
+      "myFlowSlugs": [
+        "moving-d30-basic"
+      ],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "evidenceKind": "current_production_interaction"
+    },
+    "mapReceipt": {
+      "route": "/my?savedMap=moving-d30",
+      "receiptText": "내 Flow에 저장됨 원룸 이사 D-30 일정 할 일 5개 · 날짜 있음 5개 내 Flow에 저장됨 할 일 5개 · 날짜 있음 5개 할 일 5개 기간 7월 16일 - 8월 15일 단계 2개 다음 행동 첫 할 일 시작 전체 Flow 보기 캘린더 가져가기 저장된 전체 Flow 전체 항목 2단계 7월 16일 - 8월 15일 0/5 완료 이사 전 준비 7월 16일 - 8월 14일 · 4개 · 0/4 완료 ⌃ 1 이사 방식과 견적 후보 정하기 7월 16일 2 입주청소와 대형폐기물 일정 확인 8월 1일 3 관리사무소 공유와 주소 변경 대상 확인 8월 8일 4 계량기와 집 상태 사진 남기기 8월 14일 이사 당일 8월 15일 · 1개 · 0/1 완료 ⌃ 5 정산과 전입신고 확인 8월 15일",
+      "receiptStepCount": 5,
+      "keys": [
+        {
+          "key": "flow:map:persistence:moving-d30",
+          "value": "{\"schemaVersion\":1,\"recordType\":\"saved_source_backed_flow_map\",\"bridgeStorageKey\":\"flow:map:saved:moving-d30\",\"map\":{\"id\":\"moving-d30\",\"title\":\"원룸 이사 D-30 일정 지도\",\"userLabel\":\"이사 D-30 지도\",\"version\":\"2026-06-24.1\",\"updatedAt\":\"2026-06-23T00:00:00.000Z\",\"updatePolicy\":\"auto_patch_when_safe\",\"sourceTitle\":\"AJD 이사 준비 체크리스트\",\"sourceUrl\":\"https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363\"},\"saved\":{\"savedAt\":\"2026-07-24T01:04:51.223Z\",\"sourceSurface\":\"public_save\",\"anchor\":\"2030-08-15\"},\"readiness\":{\"content\":\"ready_for_my_flow\",\"update\":\"up_to_date\",\"reasons\":[\"공개 저장 후 My Flow에서 실행 가능한 source-backed Step 기록으로 사용할 수 있습니다.\"]},\"childFlows\":[{\"slug\":\"source-backed-moving-d30\",\"flowId\":\"flow-source-backed-moving-d30\",\"title\":\"원룸 이사 D-30 준비\",\"category\":\"이사\",\"structureType\":\"timeline\",\"anchorType\":\"end_date\",\"primaryDestination\":\"hybrid\",\"riskLevel\":\"low\",\"sourceTitle\":\"AJD 이사 준비 체크리스트\",\"sourceUrl\":\"https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363\",\"sourceCheckedAt\":\"2026-06-23\",\"stepCount\":5,\"itemFallbackCount\":15,\"stepIds\":[\"moving-method-quotes\",\"moving-cleaning-waste\",\"moving-address-admin\",\"moving-meter-photos\",\"moving-move-day-admin\"],\"steps\":[{\"stepId\":\"moving-method-quotes\",\"title\":\"이사 방식과 견적 후보 정하기\",\"destination\":\"calendar\",\"calendar\":{\"mode\":\"anchor_offset\",\"anchorType\":\"end_date\",\"dayOffset\":-30,\"allDay\":true},\"textFallback\":{\"title\":\"이사 방식과 견적 후보 정하기\",\"description\":\"방식, 후보 업체, 비용 범위만 짧게 남깁니다.\",\"items\":[\"이사 방식 1개를 정합니다.\",\"견적 후보 2-3곳을 열고 연락처를 메모합니다.\",\"포함 범위와 예상 비용을 짧게 남깁니다.\"],\"memoHint\":\"연락처, 예약번호, 다시 볼 링크만 짧게 남기기\",\"url\":\"https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363\",\"doneWhen\":\"견적 후보 2-3곳과 연락처, 비용 범위가 메모됐습니다.\"},\"sourceUrl\":\"https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363\",\"sourceType\":\"creator_experience\",\"riskLevel\":\"low\"},{\"stepId\":\"moving-cleaning-waste\",\"title\":\"입주청소와 대형폐기물 일정 확인\",\"destination\":\"calendar\",\"calendar\":{\"mode\":\"anchor_offset\",\"anchorType\":\"end_date\",\"dayOffset\":-14,\"allDay\":true},\"textFallback\":{\"title\":\"입주청소와 대형폐기물 일정 확인\",\"description\":\"예약일과 수거일이 이사일과 겹치지 않는지 봅니다.\",\"items\":[\"입주청소가 필요하면 예약 가능일을 확인합니다.\",\"대형폐기물 신고 가능 품목과 수거일을 확인합니다.\",\"예약처와 신고 번호를 메모합니다.\"],\"memoHint\":\"연락처, 예약번호, 다시 볼 링크만 짧게 남기기\",\"url\":\"https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363\",\"doneWhen\":\"예약일, 수거일, 신고 번호가 메모됐습니다.\"},\"sourceUrl\":\"https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363\",\"sourceType\":\"creator_experience\",\"riskLevel\":\"low\"},{\"stepId\":\"moving-address-admin\",\"title\":\"관리사무소 공유와 주소 변경 대상 확인\",\"destination\":\"calendar\",\"calendar\":{\"mode\":\"anchor_offset\",\"anchorType\":\"end_date\",\"dayOffset\":-7,\"allDay\":true},\"textFallback\":{\"title\":\"관리사무소 공유와 주소 변경 대상 확인\",\"description\":\"이사 시간, 차량 동선, 주소 변경 대상을 메모합니다.\",\"items\":[\"관리사무소에 이사 시간과 차량 동선을 공유합니다.\",\"자주 쓰는 배송 계정 주소 변경 대상을 확인합니다.\",\"우편물 주소 변경이 필요한 곳을 메모합니다.\"],\"memoHint\":\"연락처, 예약번호, 다시 볼 링크만 짧게 남기기\",\"url\":\"https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363\",\"doneWhen\":\"관리사무소 공유와 주소 변경 대상 메모가 끝났습니다.\"},\"sourceUrl\":\"https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363\",\"sourceType\":\"creator_experience\",\"riskLevel\":\"low\"},{\"stepId\":\"moving-meter-photos\",\"title\":\"계량기와 집 상태 사진 남기기\",\"destination\":\"calendar\",\"calendar\":{\"mode\":\"anchor_offset\",\"anchorType\":\"end_date\",\"dayOffset\":-1,\"allDay\":true},\"textFallback\":{\"title\":\"계량기와 집 상태 사진 남기기\",\"description\":\"정산과 하자 확인에 필요한 사진 위치만 남깁니다.\",\"items\":[\"전기, 가스, 수도 계량기를 촬영합니다.\",\"현관, 욕실, 창문, 콘센트 주변 상태를 촬영합니다.\",\"사진 위치나 공유 여부만 짧게 메모합니다.\"],\"memoHint\":\"연락처, 예약번호, 다시 볼 링크만 짧게 남기기\",\"url\":\"https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363\",\"doneWhen\":\"계량기와 주요 공간 사진 위치가 메모됐습니다.\"},\"sourceUrl\":\"https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363\",\"sourceType\":\"creator_experience\",\"riskLevel\":\"low\"},{\"stepId\":\"moving-move-day-admin\",\"title\":\"정산과 전입신고 확인\",\"destination\":\"calendar\",\"calendar\":{\"mode\":\"anchor_offset\",\"anchorType\":\"end_date\",\"dayOffset\":0,\"allDay\":true},\"textFallback\":{\"title\":\"정산과 전입신고 확인\",\"description\":\"당일 정산과 전입신고/확정일자 확인 결과만 남깁니다.\",\"items\":[\"잔금/정산 확인 내용을 메모합니다.\",\"전입신고와 확정일자 확인 필요 여부를 체크합니다.\",\"처리 결과나 다시 볼 링크만 남깁니다.\"],\"memoHint\":\"연락처, 예약번호, 다시 볼 링크만 짧게 남기기\",\"url\":\"https://www.gov.kr\",\"doneWhen\":\"정산 메모와 행정 확인 결과가 남았습니다.\"},\"sourceUrl\":\"https://www.gov.kr\",\"sourceType\":\"official\",\"riskLevel\":\"low\"}]}],\"updateAssessment\":{\"status\":\"up_to_date\",\"userAction\":\"none\",\"canApplyAutomatically\":false,\"savedVersion\":\"2026-06-24.1\",\"currentVersion\":\"2026-06-24.1\",\"reasons\":[],\"affectedFlows\":[]}}"
+        },
+        {
+          "key": "flow:map:saved:moving-d30",
+          "value": "{\"mapId\":\"moving-d30\",\"title\":\"원룸 이사 D-30 일정 지도\",\"version\":\"2026-06-24.1\",\"savedAt\":\"2026-07-24T01:04:51.223Z\",\"anchor\":\"2030-08-15\",\"flowSlugs\":[\"source-backed-moving-d30\"],\"stepCountsByFlow\":{\"source-backed-moving-d30\":5},\"riskLevelsByFlow\":{\"source-backed-moving-d30\":\"low\"},\"sourceCheckedAtByFlow\":{\"source-backed-moving-d30\":\"2026-06-23\"}}"
+        },
+        {
+          "key": "flow:saved:source-backed-moving-d30",
+          "value": "{\"slug\":\"source-backed-moving-d30\",\"savedAt\":\"2026-07-24T01:04:51.223Z\",\"selectedArtifactMode\":\"calendar\",\"dateIntent\":\"custom\",\"anchor\":\"2030-08-15\"}"
+        }
+      ],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "evidenceKind": "current_production_interaction"
+    },
+    "urlLookupReceipt": {
+      "detailHref": "/f/curated-ajd-moving-d30",
+      "route": "/my?savedMap=curated-ajd-moving-d30",
+      "receiptText": "내 Flow에 저장됨 이사 D-30 체크리스트 할 일 5개 · 날짜 있음 5개 내 Flow에 저장됨 할 일 5개 · 날짜 있음 5개 할 일 5개 기간 7월 16일 - 8월 15일 단계 5개 다음 행동 첫 할 일 시작 전체 Flow 보기 캘린더 가져가기 저장된 전체 Flow 전체 항목 5단계 7월 16일 - 8월 15일 0/5 완료 D-30 7월 16일 · 1개 · 0/1 완료 ⌃ 1 이사 방식과 견적 예약 7월 16일 D-10 8월 5일 · 1개 · 0/1 완료 ⌃ 2 주소 변경과 예약 상태 확인 8월 5일 D-3 8월 12일 · 1개 · 0/1 완료 ⌃ 3 장비와 서류 확인 8월 12일 D-1 8월 14일 · 1개 · 0/1 완료 ⌃ 4 최종 점검 8월 14일 D-Day 8월 15일 · 1개 · 0/1 완료 ⌃ 5 정산과 전입 관련 확인 8월 15일",
+      "receiptStepCount": 5,
+      "keys": [
+        {
+          "key": "flow:curated-ajd-moving-d30:anchorDate",
+          "value": "{\"mode\":\"custom\",\"anchor\":\"2030-08-15\"}"
+        },
+        {
+          "key": "flow:map:persistence:curated-ajd-moving-d30",
+          "value": "{\"schemaVersion\":1,\"recordType\":\"saved_source_backed_flow_map\",\"bridgeStorageKey\":\"flow:map:saved:curated-ajd-moving-d30\",\"map\":{\"id\":\"curated-ajd-moving-d30\",\"title\":\"이사 D-30 체크리스트\",\"userLabel\":\"이사 D-30\",\"version\":\"2026-07-12.1\",\"updatedAt\":\"2026-07-12T00:00:00.000Z\",\"updatePolicy\":\"auto_patch_when_safe\",\"sourceTitle\":\"AJD 이사 준비 체크리스트\",\"sourceUrl\":\"https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363\"},\"saved\":{\"savedAt\":\"2026-07-24T01:04:53.205Z\",\"sourceSurface\":\"public_save\",\"anchor\":\"2030-08-15\"},\"readiness\":{\"content\":\"ready_for_my_flow\",\"update\":\"up_to_date\",\"reasons\":[\"공개 저장 후 My Flow에서 실행 가능한 source-backed Step 기록으로 사용할 수 있습니다.\"]},\"childFlows\":[{\"slug\":\"curated-ajd-moving-d30\",\"flowId\":\"flow-curated-ajd-moving-d30\",\"title\":\"이사 D-30 준비\",\"category\":\"이사\",\"structureType\":\"timeline\",\"anchorType\":\"end_date\",\"primaryDestination\":\"hybrid\",\"riskLevel\":\"medium\",\"sourceTitle\":\"AJD 이사 준비 체크리스트\",\"sourceUrl\":\"https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363\",\"sourceCheckedAt\":\"2026-07-12\",\"stepCount\":5,\"itemFallbackCount\":15,\"stepIds\":[\"moving-d30-method-quotes\",\"moving-d10-address-admin\",\"moving-d3-equipment-docs\",\"moving-d1-final-check\",\"moving-dday-settlement\"],\"steps\":[{\"stepId\":\"moving-d30-method-quotes\",\"title\":\"D-30: 이사 방식과 견적 예약\",\"destination\":\"calendar\",\"calendar\":{\"mode\":\"anchor_offset\",\"anchorType\":\"end_date\",\"dayOffset\":-30,\"allDay\":true},\"textFallback\":{\"title\":\"D-30: 이사 방식과 견적 예약\",\"description\":\"원문 D-day 체크리스트의 해당 구간을 확인합니다.\",\"items\":[\"이사 방식 확인\",\"견적 후보 메모\",\"업체 연락처 메모\"],\"memoHint\":\"연락처, 예약번호, 다시 볼 링크만 짧게 남기기\",\"url\":\"https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363\",\"doneWhen\":\"D-30: 이사 방식과 견적 예약 상태가 기록되었습니다.\"},\"sourceUrl\":\"https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363\",\"sourceType\":\"reference\",\"riskLevel\":\"medium\"},{\"stepId\":\"moving-d10-address-admin\",\"title\":\"D-10: 주소 변경과 예약 상태 확인\",\"destination\":\"calendar\",\"calendar\":{\"mode\":\"anchor_offset\",\"anchorType\":\"end_date\",\"dayOffset\":-10,\"allDay\":true},\"textFallback\":{\"title\":\"D-10: 주소 변경과 예약 상태 확인\",\"description\":\"원문 D-day 체크리스트의 해당 구간을 확인합니다.\",\"items\":[\"주소 변경 대상 확인\",\"자동이체 확인\",\"이사 예약 상태 확인\"],\"memoHint\":\"연락처, 예약번호, 다시 볼 링크만 짧게 남기기\",\"url\":\"https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363\",\"doneWhen\":\"D-10: 주소 변경과 예약 상태 확인 상태가 기록되었습니다.\"},\"sourceUrl\":\"https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363\",\"sourceType\":\"reference\",\"riskLevel\":\"medium\"},{\"stepId\":\"moving-d3-equipment-docs\",\"title\":\"D-3: 장비와 서류 확인\",\"destination\":\"calendar\",\"calendar\":{\"mode\":\"anchor_offset\",\"anchorType\":\"end_date\",\"dayOffset\":-3,\"allDay\":true},\"textFallback\":{\"title\":\"D-3: 장비와 서류 확인\",\"description\":\"원문 D-day 체크리스트의 해당 구간을 확인합니다.\",\"items\":[\"장비/준비물 확인\",\"필요 서류 확인\",\"문의 필요한 항목 표시\"],\"memoHint\":\"연락처, 예약번호, 다시 볼 링크만 짧게 남기기\",\"url\":\"https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363\",\"doneWhen\":\"D-3: 장비와 서류 확인 상태가 기록되었습니다.\"},\"sourceUrl\":\"https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363\",\"sourceType\":\"reference\",\"riskLevel\":\"medium\"},{\"stepId\":\"moving-d1-final-check\",\"title\":\"D-1: 최종 점검\",\"destination\":\"calendar\",\"calendar\":{\"mode\":\"anchor_offset\",\"anchorType\":\"end_date\",\"dayOffset\":-1,\"allDay\":true},\"textFallback\":{\"title\":\"D-1: 최종 점검\",\"description\":\"원문 D-day 체크리스트의 해당 구간을 확인합니다.\",\"items\":[\"짐/귀중품 확인\",\"요금/폐기물 확인\",\"이사 당일 연락처 확인\"],\"memoHint\":\"연락처, 예약번호, 다시 볼 링크만 짧게 남기기\",\"url\":\"https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363\",\"doneWhen\":\"D-1: 최종 점검 상태가 기록되었습니다.\"},\"sourceUrl\":\"https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363\",\"sourceType\":\"reference\",\"riskLevel\":\"medium\"},{\"stepId\":\"moving-dday-settlement\",\"title\":\"D-Day: 정산과 전입 관련 확인\",\"destination\":\"calendar\",\"calendar\":{\"mode\":\"anchor_offset\",\"anchorType\":\"end_date\",\"dayOffset\":0,\"allDay\":true},\"textFallback\":{\"title\":\"D-Day: 정산과 전입 관련 확인\",\"description\":\"원문 D-day 체크리스트의 해당 구간을 확인합니다.\",\"items\":[\"정산 확인\",\"전입 관련 확인\",\"현장 보류 사항 메모\"],\"memoHint\":\"연락처, 예약번호, 다시 볼 링크만 짧게 남기기\",\"url\":\"https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363\",\"doneWhen\":\"D-Day: 정산과 전입 관련 확인 상태가 기록되었습니다.\"},\"sourceUrl\":\"https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363\",\"sourceType\":\"reference\",\"riskLevel\":\"medium\"}]}],\"updateAssessment\":{\"status\":\"up_to_date\",\"userAction\":\"none\",\"canApplyAutomatically\":false,\"savedVersion\":\"2026-07-12.1\",\"currentVersion\":\"2026-07-12.1\",\"reasons\":[],\"affectedFlows\":[]}}"
+        },
+        {
+          "key": "flow:map:saved:curated-ajd-moving-d30",
+          "value": "{\"mapId\":\"curated-ajd-moving-d30\",\"title\":\"이사 D-30 체크리스트\",\"version\":\"2026-07-12.1\",\"savedAt\":\"2026-07-24T01:04:53.205Z\",\"anchor\":\"2030-08-15\",\"flowSlugs\":[\"curated-ajd-moving-d30\"],\"stepCountsByFlow\":{\"curated-ajd-moving-d30\":5},\"riskLevelsByFlow\":{\"curated-ajd-moving-d30\":\"medium\"},\"sourceCheckedAtByFlow\":{\"curated-ajd-moving-d30\":\"2026-07-12\"}}"
+        },
+        {
+          "key": "flow:saved:curated-ajd-moving-d30",
+          "value": "{\"slug\":\"curated-ajd-moving-d30\",\"savedAt\":\"2026-07-24T01:04:53.205Z\",\"selectedArtifactMode\":\"calendar\",\"dateIntent\":\"custom\",\"anchor\":\"2030-08-15\"}"
+        }
+      ],
+      "consoleErrors": [],
+      "pageErrors": [],
+      "evidenceKind": "current_production_interaction"
+    },
+    "undatedWorkout": {
+      "initial": {
+        "anchor": "",
+        "cta": "Flow 실행 1개로 시작"
+      },
+      "saved": {
+        "receiptText": "저장 완료 운동/홈트 Allblanc 아침 5분 홈트 원문 · Allblanc 매일 아침 5분 전신 운동 영상 내 Flow에 저장됨 1개 할 일을 저장했어요 저장한 전체 계획을 확인하거나 첫 할 일부터 시작할 수 있습니다. 저장 이름 Allblanc 아침 5분 홈트 전체 할 일 1개 주요 결과 Flow 실행 내 Flow에서 시작 캘린더에서 보기",
+        "keys": [
+          {
+            "key": "flow:curated-allblanc-morning-workout:anchorDate",
+            "value": "{\"mode\":\"undated\",\"anchor\":\"\"}"
+          },
+          {
+            "key": "flow:saved:curated-allblanc-morning-workout",
+            "value": "{\"slug\":\"curated-allblanc-morning-workout\",\"savedAt\":\"2026-07-24T01:04:55.356Z\",\"personalTitle\":\"Allblanc 아침 5분 홈트\",\"selectedArtifactMode\":\"checklist\",\"dateIntent\":\"undated\",\"weekdays\":[\"월\",\"수\",\"금\"],\"routineDefinition\":{\"schemaVersion\":1,\"end\":{\"mode\":\"none\"}}}"
+          }
+        ]
+      },
+      "rawRruleInMyFlow": true,
+      "rawRruleInCalendar": false,
+      "myFlowExcerpt": "FLOW ≡ Allblanc 아침 5분 홈트 ‹ Allblanc 아침 5분 홈트 전체 0/1 완료 ⋯ 다음 행동 전체 계획 기록 날짜 없음 아침 5분 전신 운동 영상 열기 열기 FREQ=WEEKLY;BYDAY=MO,WE,FR 반복 설정 전체 진행 전체 0/1 완료 전체 계획 보기 시작일 바꾸기 가져가기 홈 Flow 찾기 캘린더 내 Flow",
+      "calendarExcerpt": "FLOW ≡ 날짜별 실행 캘린더 스튜디오 이전 2026년 7월 월 선택 다음 일 월 화 수 목 금 토 28일 29일 30일 1일 2일 3일 4일 5일 6일 7일 8일 9일 10일 11일 12일 13일 14일 15일 16일 17일 18일 19일 20일 21일 22일 23일 24일 25일 26일 27일 28일 29일 30일 31일 1일 2일 3일 4일 5일 6일 7일 8일 7월 24일 (금) 0개 항목 · 0개 남음 이 날짜에 등록된 일정이 없습니다. 홈 Flow 찾기 캘린더 내 Flow",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "evidenceKind": "current_production_interaction"
+    }
+  }
+}
