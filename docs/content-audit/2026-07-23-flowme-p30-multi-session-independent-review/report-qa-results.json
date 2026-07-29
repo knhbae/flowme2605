@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-23T07:36:37.720Z",
+  "report": "review.html",
+  "status": "pass",
+  "results": [
+    {
+      "viewport": "390x844",
+      "screenshot": "screenshots/report-review-390.png",
+      "horizontalOverflow": 0,
+      "journeyRows": 24,
+      "brokenImages": [],
+      "unnamedInteractive": 0,
+      "h1Count": 1,
+      "navLinkCount": 11,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "viewport": "1024x768",
+      "screenshot": "screenshots/report-review-1024.png",
+      "horizontalOverflow": 0,
+      "journeyRows": 24,
+      "brokenImages": [],
+      "unnamedInteractive": 0,
+      "h1Count": 1,
+      "navLinkCount": 11,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "viewport": "1440x900",
+      "screenshot": "screenshots/report-review-1440.png",
+      "horizontalOverflow": 0,
+      "journeyRows": 24,
+      "brokenImages": [],
+      "unnamedInteractive": 0,
+      "h1Count": 1,
+      "navLinkCount": 11,
+      "consoleErrors": [],
+      "pageErrors": []
+    }
+  ]
+}

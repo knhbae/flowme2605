@@ -1,0 +1,2548 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-23T00:17:24.870Z",
+  "reviewerRole": "codex_independent",
+  "canonicalUrl": "https://flowme2605.vercel.app",
+  "sourceCommit": "4c5bbb34f5c8633d4b4b48fb8070e523ec5def6b",
+  "observedUserCount": 0,
+  "cellCount": 24,
+  "statusCounts": {
+    "partial": 8,
+    "supported": 16
+  },
+  "complexitySummary": {
+    "explanationFreeCells": 13,
+    "explanationDependentCells": 11,
+    "totalScriptedInteractionDepth": 191,
+    "averageScriptedInteractionDepthPerCell": 7.96,
+    "mobileTabsToSavePrimary": 16,
+    "expandedMyFlowFocusableRange": "74-90",
+    "interpretation": "supported는 과업 수행 가능성을 뜻하며 쉬움이나 실제 사용자 이해를 뜻하지 않는다. interaction depth는 지정된 자동화 시나리오의 단계 합계다."
+  },
+  "cells": [
+    {
+      "personaId": "P1",
+      "sessionId": "S1",
+      "userGoal": "이사일 기준의 전체 일정을 보고 필요한 항목만 조정해 저장한다.",
+      "route": "/ -> /flows -> /f/moving-d30-basic",
+      "viewport": "390x844",
+      "fixture": "none",
+      "startingState": {
+        "keyCount": 0,
+        "keys": [],
+        "savedFlowKeys": [],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "steps": [
+        {
+          "label": "홈에서 Flow 찾기로 이동",
+          "ok": true,
+          "required": true,
+          "depth": 1,
+          "elapsedMs": 727,
+          "evidence": {
+            "finalUrl": "https://flowme2605.vercel.app/flows"
+          }
+        },
+        {
+          "label": "카탈로그에서 이사 public Flow 진입점 확인 후 route 이동",
+          "ok": true,
+          "required": true,
+          "depth": 2,
+          "elapsedMs": 1958,
+          "evidence": {
+            "publicRouteLinkCount": 0,
+            "visibleCatalogCards": 1,
+            "emptyResultShown": false,
+            "title": "이사 D-30 준비"
+          }
+        },
+        {
+          "label": "24개 전체 artifact와 기준일 확인",
+          "ok": true,
+          "required": true,
+          "depth": 1,
+          "elapsedMs": 16,
+          "evidence": {
+            "artifactRows": 24,
+            "primaryActions": 1
+          }
+        },
+        {
+          "label": "개인 제목·첫 항목·날짜·포함 항목 조정",
+          "ok": true,
+          "required": true,
+          "depth": 8,
+          "elapsedMs": 348,
+          "evidence": {
+            "total": 24,
+            "included": 23
+          }
+        },
+        {
+          "label": "개인 사본 저장과 receipt 확인",
+          "ok": true,
+          "required": true,
+          "depth": 2,
+          "elapsedMs": 655,
+          "evidence": {
+            "receiptText": "저장 완료\n이사\n\n8월 이사 준비\n\n원문 · 이사 체크리스트 참고\n\n내 Flow에 저장됨\n\n23개 할 일을 저장했어요\n\n저장한 전체 계획을 확인하거나 첫 할 일부터 시작할 수 있습니다.\n\n저장 이름\n8월 이사 준비\n전체\n할 일 23개\n주요 결과\n캘린더 + 체크\n일정 범위\n7월 29일 - 8월 29일\n내 Flow에서 시작\n캘린더에서 보기",
+            "finalUrl": "https://flowme2605.vercel.app/my?savedFlow=moving-d30-basic"
+          }
+        }
+      ],
+      "expectedMentalModel": "원본 Flow를 먼저 보고, 내 이사일과 작은 수정만 더한 개인 사본을 저장한다.",
+      "actualUiFeedback": [],
+      "nextAction": "My Flow에서 첫 할 일을 실행",
+      "visibleReachable": true,
+      "reloadPersistence": "not_yet_revisited",
+      "parity": {
+        "title": "8월 이사 준비",
+        "anchor": "2026-08-28",
+        "expectedItemCount": 23
+      },
+      "failureRecovery": {
+        "discovery": "/flows 검색 결과에는 moving-d30-basic public route로 이어지는 직접 진입점이 없어 URL route로 계속했다."
+      },
+      "explanationFree": false,
+      "status": "partial",
+      "severity": "Medium",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "observedUserAssumption": "사용자가 24개 중 제외할 항목을 선택하는 비용을 감수할지는 관찰되지 않았다.",
+      "health": {
+        "horizontalOverflow": 0,
+        "unnamedFocusableCount": 0,
+        "focusableCount": 20,
+        "fixedLayerCount": 1,
+        "visibleCardCount": 0,
+        "visibleDetailsCount": 1
+      },
+      "storage": {
+        "keyCount": 12,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_moving-d30-basic",
+          "flow_builder_mvp_comparison_moving-d30-basic",
+          "flow_builder_mvp_item_state_moving-d30-basic",
+          "flow_builder_mvp_reactions_moving-d30-basic",
+          "flow_builder_mvp_workbench_moving-d30-basic",
+          "flow:meta:last-visit",
+          "flow:moving-d30-basic:anchorDate",
+          "flow:my-flow:date-overrides",
+          "flow:my-flow:item-drafts",
+          "flow:saved:moving-d30-basic",
+          "flow:url-first:supply-candidates"
+        ],
+        "savedFlowKeys": [
+          "flow:saved:moving-d30-basic"
+        ],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "screenshots": [
+        "screenshots/p1-s1-adjusted-before-save-390.png",
+        "screenshots/p1-s1-saved-receipt-390.png"
+      ],
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "personaId": "P1",
+      "sessionId": "S2",
+      "userGoal": "저장한 이사 Flow를 다시 열어 완료를 되돌리고 날짜를 재조정한다.",
+      "route": "/my -> /calendar",
+      "viewport": "390x844",
+      "fixture": "none",
+      "startingState": {
+        "keyCount": 12,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_moving-d30-basic",
+          "flow_builder_mvp_comparison_moving-d30-basic",
+          "flow_builder_mvp_item_state_moving-d30-basic",
+          "flow_builder_mvp_reactions_moving-d30-basic",
+          "flow_builder_mvp_workbench_moving-d30-basic",
+          "flow:meta:last-visit",
+          "flow:moving-d30-basic:anchorDate",
+          "flow:my-flow:date-overrides",
+          "flow:my-flow:item-drafts",
+          "flow:saved:moving-d30-basic",
+          "flow:url-first:supply-candidates"
+        ],
+        "savedFlowKeys": [
+          "flow:saved:moving-d30-basic"
+        ],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "steps": [
+        {
+          "label": "reload 후 같은 개인 사본 열기",
+          "ok": true,
+          "required": true,
+          "depth": 1,
+          "elapsedMs": 962,
+          "evidence": {
+            "titleVisible": true
+          }
+        },
+        {
+          "label": "첫 할 일 완료 후 즉시 취소",
+          "ok": true,
+          "required": true,
+          "depth": 2,
+          "elapsedMs": 593,
+          "evidence": {
+            "completedText": "“견적 후보 먼저 비교” 완료\n\n되돌리기",
+            "reopened": true
+          }
+        },
+        {
+          "label": "첫 할 일 날짜와 메모 고정",
+          "ok": true,
+          "required": true,
+          "depth": 4,
+          "elapsedMs": 262,
+          "evidence": {
+            "fixedDate": "2026-08-03",
+            "storedOverrideDates": [
+              "2026-08-03"
+            ],
+            "storedDraftCount": 1
+          }
+        },
+        {
+          "label": "Flow 기준일 변경 시 고정 날짜 보존",
+          "ok": true,
+          "required": true,
+          "depth": 3,
+          "elapsedMs": 5,
+          "evidence": {
+            "directAnchorControlCount": 0,
+            "personalSettingsControlCount": 0,
+            "changed": false
+          }
+        },
+        {
+          "label": "Calendar에서 고정 날짜 확인",
+          "ok": true,
+          "required": true,
+          "depth": 1,
+          "elapsedMs": 761,
+          "evidence": {
+            "fixedDateEventCount": 0,
+            "staleSaveBeforeDateEventCount": 1
+          }
+        }
+      ],
+      "expectedMentalModel": "개인 수정은 유지되고 완료와 날짜만 실행 중에 바뀐다.",
+      "actualUiFeedback": [],
+      "nextAction": "남은 항목 실행 또는 전체 export",
+      "visibleReachable": true,
+      "reloadPersistence": "preserved",
+      "parity": {
+        "title": "8월 이사 준비",
+        "fixedDate": "2026-08-03",
+        "anchor": "2026-09-05"
+      },
+      "failureRecovery": {
+        "anchorEdit": "public /f에서 조정 저장한 Flow에는 My Flow 기준일 재조정 진입점이 보이지 않는다."
+      },
+      "explanationFree": false,
+      "status": "partial",
+      "severity": "High",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "observedUserAssumption": "기준일과 개별 고정 날짜의 차이를 설명 없이 이해하는지는 확인되지 않았다.",
+      "health": {
+        "horizontalOverflow": 0,
+        "unnamedFocusableCount": 0,
+        "focusableCount": 74,
+        "fixedLayerCount": 1,
+        "visibleCardCount": 2,
+        "visibleDetailsCount": 1
+      },
+      "storage": {
+        "keyCount": 12,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_moving-d30-basic",
+          "flow_builder_mvp_comparison_moving-d30-basic",
+          "flow_builder_mvp_item_state_moving-d30-basic",
+          "flow_builder_mvp_reactions_moving-d30-basic",
+          "flow_builder_mvp_workbench_moving-d30-basic",
+          "flow:meta:last-visit",
+          "flow:moving-d30-basic:anchorDate",
+          "flow:my-flow:date-overrides",
+          "flow:my-flow:item-drafts",
+          "flow:saved:moving-d30-basic",
+          "flow:url-first:supply-candidates"
+        ],
+        "savedFlowKeys": [
+          "flow:saved:moving-d30-basic"
+        ],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "screenshots": [
+        "screenshots/p1-s2-calendar-after-date-adjustment-390.png"
+      ],
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "personaId": "P1",
+      "sessionId": "S3",
+      "userGoal": "완료한 이사 Flow를 내보내고 새 이사일로 재사용하며 과거 실행을 보존한다.",
+      "route": "/my",
+      "viewport": "390x844",
+      "fixture": "none",
+      "startingState": {
+        "keyCount": 12,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_moving-d30-basic",
+          "flow_builder_mvp_comparison_moving-d30-basic",
+          "flow_builder_mvp_item_state_moving-d30-basic",
+          "flow_builder_mvp_reactions_moving-d30-basic",
+          "flow_builder_mvp_workbench_moving-d30-basic",
+          "flow:meta:last-visit",
+          "flow:moving-d30-basic:anchorDate",
+          "flow:my-flow:date-overrides",
+          "flow:my-flow:item-drafts",
+          "flow:saved:moving-d30-basic",
+          "flow:url-first:supply-candidates"
+        ],
+        "savedFlowKeys": [
+          "flow:saved:moving-d30-basic"
+        ],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "steps": [
+        {
+          "label": "My Flow 재진입과 개인 변경 보존",
+          "ok": true,
+          "required": true,
+          "depth": 1,
+          "elapsedMs": 1046,
+          "evidence": {
+            "titleVisible": true
+          }
+        },
+        {
+          "label": "Flow 전체 Calendar export",
+          "ok": true,
+          "required": true,
+          "depth": 3,
+          "elapsedMs": 236,
+          "evidence": {
+            "summary": "Flow 전체 · 23개",
+            "eventCount": 23,
+            "firstEventDate": "20260801"
+          }
+        },
+        {
+          "label": "모든 남은 항목 완료",
+          "ok": true,
+          "required": true,
+          "depth": 24,
+          "elapsedMs": 2583,
+          "evidence": {
+            "completedByUi": 23,
+            "feedbackVisible": true
+          }
+        },
+        {
+          "label": "회고 저장 후 새 이사일로 다시 쓰기",
+          "ok": true,
+          "required": true,
+          "depth": 7,
+          "elapsedMs": 1143,
+          "evidence": {
+            "pastRunCount": 1,
+            "status": "새 이사일 11월 20일로 시작했어요. 지난 실행은 기록으로 남아 있어요.\n따로 고친 날짜 1개 재계산 · 완료 체크 새로 시작"
+          }
+        }
+      ],
+      "expectedMentalModel": "완료한 실행은 기록으로 남고 새 실행만 새 날짜와 빈 체크 상태로 시작한다.",
+      "actualUiFeedback": [],
+      "nextAction": "새 실행의 첫 할 일 시작",
+      "visibleReachable": true,
+      "reloadPersistence": "preserved_across_three_sessions",
+      "parity": {},
+      "failureRecovery": {},
+      "explanationFree": false,
+      "status": "supported",
+      "severity": "Low",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "observedUserAssumption": "23개 완료 후에야 나타나는 회고·재사용 경로를 실제 사용자가 발견하는지는 확인되지 않았다.",
+      "health": {
+        "horizontalOverflow": 0,
+        "unnamedFocusableCount": 0,
+        "focusableCount": 90,
+        "fixedLayerCount": 2,
+        "visibleCardCount": 25,
+        "visibleDetailsCount": 6
+      },
+      "storage": {
+        "keyCount": 10,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow:meta:last-visit",
+          "flow:moving-d30-basic:anchorDate",
+          "flow:my-flow:date-overrides",
+          "flow:my-flow:item-drafts",
+          "flow:my-flow:occurrence-execution",
+          "flow:my-flow:step-item-checks",
+          "flow:run-registry:moving-d30-basic",
+          "flow:saved:moving-d30-basic",
+          "flow:url-first:supply-candidates"
+        ],
+        "savedFlowKeys": [
+          "flow:saved:moving-d30-basic"
+        ],
+        "runRegistryKeys": [
+          "flow:run-registry:moving-d30-basic"
+        ],
+        "occurrenceExecutionPresent": true
+      },
+      "screenshots": [
+        "screenshots/p1-s3-new-run-and-past-history-390.png"
+      ],
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "personaId": "P2",
+      "sessionId": "S1",
+      "userGoal": "차량 점검 Flow를 날짜 없이 저장한다.",
+      "route": "/f/vehicle-inspection-prep",
+      "viewport": "390x844",
+      "fixture": "none",
+      "startingState": {
+        "keyCount": 0,
+        "keys": [],
+        "savedFlowKeys": [],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "steps": [
+        {
+          "label": "10개 preview와 날짜 없음 선택 확인",
+          "ok": true,
+          "required": true,
+          "depth": 1,
+          "elapsedMs": 850,
+          "evidence": {
+            "itemCount": 10,
+            "saveLabel": "조정\n날짜 없이 시작"
+          }
+        },
+        {
+          "label": "날짜 없이 저장하고 receipt에서 My Flow 이동",
+          "ok": true,
+          "required": true,
+          "depth": 2,
+          "elapsedMs": 104,
+          "evidence": {
+            "finalUrl": "https://flowme2605.vercel.app/f/vehicle-inspection-prep"
+          }
+        }
+      ],
+      "expectedMentalModel": "날짜를 정하지 않아도 10개 할 일은 My Flow에서 실행할 수 있다.",
+      "actualUiFeedback": [],
+      "nextAction": "My Flow에서 실행하거나 Calendar에 일부 배치",
+      "visibleReachable": true,
+      "reloadPersistence": "not_yet_revisited",
+      "parity": {
+        "title": "차량 점검 준비",
+        "itemCount": 10,
+        "dateIntent": "undated"
+      },
+      "failureRecovery": {},
+      "explanationFree": true,
+      "status": "supported",
+      "severity": "Low",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "observedUserAssumption": "날짜 없는 일이 유효한 상태라는 문구를 사용자가 신뢰하는지는 확인되지 않았다.",
+      "health": {
+        "horizontalOverflow": 0,
+        "unnamedFocusableCount": 0,
+        "focusableCount": 11,
+        "fixedLayerCount": 1,
+        "visibleCardCount": 2,
+        "visibleDetailsCount": 4
+      },
+      "storage": {
+        "keyCount": 9,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_vehicle-inspection-prep",
+          "flow_builder_mvp_comparison_vehicle-inspection-prep",
+          "flow_builder_mvp_item_state_vehicle-inspection-prep",
+          "flow_builder_mvp_reactions_vehicle-inspection-prep",
+          "flow_builder_mvp_workbench_vehicle-inspection-prep",
+          "flow:meta:last-visit",
+          "flow:saved:vehicle-inspection-prep",
+          "flow:vehicle-inspection-prep:anchorDate"
+        ],
+        "savedFlowKeys": [
+          "flow:saved:vehicle-inspection-prep"
+        ],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "screenshots": [
+        "screenshots/p2-s1-undated-saved-receipt-390.png"
+      ],
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "personaId": "P2",
+      "sessionId": "S2",
+      "userGoal": "날짜 없는 항목 하나를 Calendar에 배치하고 완료를 되돌린다.",
+      "route": "/my -> /calendar",
+      "viewport": "390x844",
+      "fixture": "none",
+      "startingState": {
+        "keyCount": 9,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_vehicle-inspection-prep",
+          "flow_builder_mvp_comparison_vehicle-inspection-prep",
+          "flow_builder_mvp_item_state_vehicle-inspection-prep",
+          "flow_builder_mvp_reactions_vehicle-inspection-prep",
+          "flow_builder_mvp_workbench_vehicle-inspection-prep",
+          "flow:meta:last-visit",
+          "flow:saved:vehicle-inspection-prep",
+          "flow:vehicle-inspection-prep:anchorDate"
+        ],
+        "savedFlowKeys": [
+          "flow:saved:vehicle-inspection-prep"
+        ],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "steps": [
+        {
+          "label": "reload 후 10개 날짜 없는 항목 보존",
+          "ok": true,
+          "required": true,
+          "depth": 1,
+          "elapsedMs": 984,
+          "evidence": {
+            "rows": 10
+          }
+        },
+        {
+          "label": "Calendar tray에서 한 항목 배치",
+          "ok": true,
+          "required": true,
+          "depth": 4,
+          "elapsedMs": 1175,
+          "evidence": {
+            "before": "10",
+            "after": "9",
+            "key": "vehicle-inspection-prep::flow-vehicle-inspection-prep-item-0",
+            "title": "자동차검사 기간과 예약 가능일 확인하기"
+          }
+        },
+        {
+          "label": "배치한 항목 완료 후 취소",
+          "ok": true,
+          "required": true,
+          "depth": 2,
+          "elapsedMs": 119,
+          "evidence": {
+            "reopened": true
+          }
+        }
+      ],
+      "expectedMentalModel": "날짜 배치는 항목의 실행 상태를 잃지 않고 Calendar 표시만 추가한다.",
+      "actualUiFeedback": [],
+      "nextAction": "날짜를 제거하거나 선택 항목 export",
+      "visibleReachable": true,
+      "reloadPersistence": "preserved",
+      "parity": {
+        "date": "2026-08-03",
+        "stableIdentityExpected": true,
+        "completion": "reopened"
+      },
+      "failureRecovery": {},
+      "explanationFree": true,
+      "status": "supported",
+      "severity": "Low",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "observedUserAssumption": "tray와 selected-day 사이의 객체 동일성을 사용자가 인지하는지는 확인되지 않았다.",
+      "health": {
+        "horizontalOverflow": 0,
+        "unnamedFocusableCount": 0,
+        "focusableCount": 60,
+        "fixedLayerCount": 1,
+        "visibleCardCount": 2,
+        "visibleDetailsCount": 1
+      },
+      "storage": {
+        "keyCount": 10,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_vehicle-inspection-prep",
+          "flow_builder_mvp_comparison_vehicle-inspection-prep",
+          "flow_builder_mvp_item_state_vehicle-inspection-prep",
+          "flow_builder_mvp_reactions_vehicle-inspection-prep",
+          "flow_builder_mvp_workbench_vehicle-inspection-prep",
+          "flow:meta:last-visit",
+          "flow:my-flow:date-overrides",
+          "flow:saved:vehicle-inspection-prep",
+          "flow:vehicle-inspection-prep:anchorDate"
+        ],
+        "savedFlowKeys": [
+          "flow:saved:vehicle-inspection-prep"
+        ],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "screenshots": [
+        "screenshots/p2-s2-scheduled-and-reopened-390.png"
+      ],
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "personaId": "P2",
+      "sessionId": "S3",
+      "userGoal": "항목 날짜를 제거해 tray로 돌리고 export 범위를 비교한다.",
+      "route": "/calendar -> /my",
+      "viewport": "1024x768",
+      "fixture": "none",
+      "startingState": {
+        "keyCount": 10,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_vehicle-inspection-prep",
+          "flow_builder_mvp_comparison_vehicle-inspection-prep",
+          "flow_builder_mvp_item_state_vehicle-inspection-prep",
+          "flow_builder_mvp_reactions_vehicle-inspection-prep",
+          "flow_builder_mvp_workbench_vehicle-inspection-prep",
+          "flow:meta:last-visit",
+          "flow:my-flow:date-overrides",
+          "flow:saved:vehicle-inspection-prep",
+          "flow:vehicle-inspection-prep:anchorDate"
+        ],
+        "savedFlowKeys": [
+          "flow:saved:vehicle-inspection-prep"
+        ],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "steps": [
+        {
+          "label": "Calendar reload 후 배치 상태 보존",
+          "ok": true,
+          "required": true,
+          "depth": 1,
+          "elapsedMs": 600,
+          "evidence": {
+            "eventCount": 1
+          }
+        },
+        {
+          "label": "Calendar item detail에서 날짜 제거 후 tray 복귀",
+          "ok": true,
+          "required": true,
+          "depth": 4,
+          "elapsedMs": 361,
+          "evidence": {
+            "eventCountAfterRemoval": 0,
+            "trayCountAfterRemoval": "10"
+          }
+        },
+        {
+          "label": "My Flow whole/selected export 범위 확인",
+          "ok": true,
+          "required": true,
+          "depth": 4,
+          "elapsedMs": 1069,
+          "evidence": {
+            "whole": "Flow 전체 · 10개",
+            "selected": "직접 선택 · 2개",
+            "calendarCount": "0",
+            "checklistCount": "2"
+          }
+        },
+        {
+          "label": "현재 항목 export 진입 확인",
+          "ok": true,
+          "required": true,
+          "depth": 1,
+          "elapsedMs": 91,
+          "evidence": {
+            "currentItemTools": 4
+          }
+        }
+      ],
+      "expectedMentalModel": "날짜 제거는 삭제가 아니며 checklist에는 남고 ICS에서는 빠진다.",
+      "actualUiFeedback": [],
+      "nextAction": "날짜 없는 항목을 계속 실행하거나 다시 배치",
+      "visibleReachable": true,
+      "reloadPersistence": "preserved",
+      "parity": {},
+      "failureRecovery": {},
+      "explanationFree": true,
+      "status": "supported",
+      "severity": "Low",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "observedUserAssumption": "Calendar에서 날짜 제거 후 tray 복귀를 자연스럽게 예상하는지는 확인되지 않았다.",
+      "health": {
+        "horizontalOverflow": 0,
+        "unnamedFocusableCount": 0,
+        "focusableCount": 68,
+        "fixedLayerCount": 0,
+        "visibleCardCount": 11,
+        "visibleDetailsCount": 4
+      },
+      "storage": {
+        "keyCount": 10,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_vehicle-inspection-prep",
+          "flow_builder_mvp_comparison_vehicle-inspection-prep",
+          "flow_builder_mvp_item_state_vehicle-inspection-prep",
+          "flow_builder_mvp_reactions_vehicle-inspection-prep",
+          "flow_builder_mvp_workbench_vehicle-inspection-prep",
+          "flow:meta:last-visit",
+          "flow:my-flow:date-overrides",
+          "flow:saved:vehicle-inspection-prep",
+          "flow:vehicle-inspection-prep:anchorDate"
+        ],
+        "savedFlowKeys": [
+          "flow:saved:vehicle-inspection-prep"
+        ],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "screenshots": [
+        "screenshots/p2-s3-export-scopes-wide-1024.png"
+      ],
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "personaId": "P3",
+      "sessionId": "S1",
+      "userGoal": "홈트 반복 요일·시간·길이·종료 횟수를 설정해 저장한다.",
+      "route": "/f/curated-allblanc-morning-workout",
+      "viewport": "390x844",
+      "fixture": "none",
+      "startingState": {
+        "keyCount": 0,
+        "keys": [],
+        "savedFlowKeys": [],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "steps": [
+        {
+          "label": "반복 요약과 다음 3회 확인",
+          "ok": true,
+          "required": true,
+          "depth": 1,
+          "elapsedMs": 905,
+          "evidence": {
+            "summary": "월·수·금 · 시간 미정 · 계속 반복",
+            "nextCount": 3
+          }
+        },
+        {
+          "label": "시간·예상 시간·8회 종료 설정",
+          "ok": true,
+          "required": true,
+          "depth": 5,
+          "elapsedMs": 99,
+          "evidence": {
+            "summary": "월·수·금 · 07:30 · 45분 · 8회"
+          }
+        },
+        {
+          "label": "저장 receipt와 My Flow 이동",
+          "ok": true,
+          "required": true,
+          "depth": 1,
+          "elapsedMs": 128,
+          "evidence": {
+            "finalUrl": "https://flowme2605.vercel.app/f/curated-allblanc-morning-workout"
+          }
+        }
+      ],
+      "expectedMentalModel": "영상 resource와 반복 실행 회차는 분리되고 다음 세 회차를 저장 전에 예측한다.",
+      "actualUiFeedback": [],
+      "nextAction": "이번 회차 실행",
+      "visibleReachable": true,
+      "reloadPersistence": "not_yet_revisited",
+      "parity": {
+        "series": 1,
+        "visibleOccurrences": 8,
+        "time": "07:30",
+        "durationMinutes": 45
+      },
+      "failureRecovery": {},
+      "explanationFree": true,
+      "status": "supported",
+      "severity": "Low",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "observedUserAssumption": "8회 종료가 콘텐츠 소비 종료와 같은 뜻으로 읽히는지는 확인되지 않았다.",
+      "health": {
+        "horizontalOverflow": 0,
+        "unnamedFocusableCount": 0,
+        "focusableCount": 13,
+        "fixedLayerCount": 1,
+        "visibleCardCount": 2,
+        "visibleDetailsCount": 4
+      },
+      "storage": {
+        "keyCount": 9,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_curated-allblanc-morning-workout",
+          "flow_builder_mvp_comparison_curated-allblanc-morning-workout",
+          "flow_builder_mvp_item_state_curated-allblanc-morning-workout",
+          "flow_builder_mvp_reactions_curated-allblanc-morning-workout",
+          "flow_builder_mvp_workbench_curated-allblanc-morning-workout",
+          "flow:curated-allblanc-morning-workout:anchorDate",
+          "flow:meta:last-visit",
+          "flow:saved:curated-allblanc-morning-workout"
+        ],
+        "savedFlowKeys": [
+          "flow:saved:curated-allblanc-morning-workout"
+        ],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "screenshots": [
+        "screenshots/p3-s1-routine-receipt-390.png"
+      ],
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "personaId": "P3",
+      "sessionId": "S2",
+      "userGoal": "한 회차를 완료·재개하고 다음 회차와 series를 구분한다.",
+      "route": "/calendar",
+      "viewport": "390x844",
+      "fixture": "none",
+      "startingState": {
+        "keyCount": 9,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_curated-allblanc-morning-workout",
+          "flow_builder_mvp_comparison_curated-allblanc-morning-workout",
+          "flow_builder_mvp_item_state_curated-allblanc-morning-workout",
+          "flow_builder_mvp_reactions_curated-allblanc-morning-workout",
+          "flow_builder_mvp_workbench_curated-allblanc-morning-workout",
+          "flow:curated-allblanc-morning-workout:anchorDate",
+          "flow:meta:last-visit",
+          "flow:saved:curated-allblanc-morning-workout"
+        ],
+        "savedFlowKeys": [
+          "flow:saved:curated-allblanc-morning-workout"
+        ],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "steps": [
+        {
+          "label": "Calendar에서 routine occurrence 찾기",
+          "ok": true,
+          "required": true,
+          "depth": 3,
+          "elapsedMs": 731,
+          "evidence": {
+            "occurrenceId": "saved-routine:curated-allblanc-morning-workout:allblanc-morning-run:revision:1:2026-07-27:occurrence:2026-07-27T07:30",
+            "routineKey": "curated-allblanc-morning-workout::allblanc-morning-run::2026-07-27"
+          }
+        },
+        {
+          "label": "이번 회차 완료 후 undo",
+          "ok": true,
+          "required": true,
+          "depth": 2,
+          "elapsedMs": 164,
+          "evidence": {
+            "doneState": "done",
+            "reopenedState": "reopened"
+          }
+        }
+      ],
+      "expectedMentalModel": "이번 회차 상태만 바뀌고 반복 series 정의는 유지된다.",
+      "actualUiFeedback": [],
+      "nextAction": "다음 회차 또는 series 설정 확인",
+      "visibleReachable": true,
+      "reloadPersistence": "preserved",
+      "parity": {},
+      "failureRecovery": {},
+      "explanationFree": true,
+      "status": "supported",
+      "severity": "Low",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "observedUserAssumption": "사용자가 작은 “이번 회차” 상태 문구로 series와 occurrence를 충분히 구분하는지는 확인되지 않았다.",
+      "health": {
+        "horizontalOverflow": 0,
+        "unnamedFocusableCount": 0,
+        "focusableCount": 71,
+        "fixedLayerCount": 1,
+        "visibleCardCount": 2,
+        "visibleDetailsCount": 3
+      },
+      "storage": {
+        "keyCount": 10,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_curated-allblanc-morning-workout",
+          "flow_builder_mvp_comparison_curated-allblanc-morning-workout",
+          "flow_builder_mvp_item_state_curated-allblanc-morning-workout",
+          "flow_builder_mvp_reactions_curated-allblanc-morning-workout",
+          "flow_builder_mvp_workbench_curated-allblanc-morning-workout",
+          "flow:curated-allblanc-morning-workout:anchorDate",
+          "flow:meta:last-visit",
+          "flow:my-flow:occurrence-execution",
+          "flow:saved:curated-allblanc-morning-workout"
+        ],
+        "savedFlowKeys": [
+          "flow:saved:curated-allblanc-morning-workout"
+        ],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": true
+      },
+      "screenshots": [
+        "screenshots/p3-s2-occurrence-reopened-390.png"
+      ],
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "personaId": "P3",
+      "sessionId": "S3",
+      "userGoal": "Calendar·ICS 회차 수와 resource/실행 항목 경계를 확인한다.",
+      "route": "/my -> /calendar",
+      "viewport": "1024x768",
+      "fixture": "none",
+      "startingState": {
+        "keyCount": 10,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_curated-allblanc-morning-workout",
+          "flow_builder_mvp_comparison_curated-allblanc-morning-workout",
+          "flow_builder_mvp_item_state_curated-allblanc-morning-workout",
+          "flow_builder_mvp_reactions_curated-allblanc-morning-workout",
+          "flow_builder_mvp_workbench_curated-allblanc-morning-workout",
+          "flow:curated-allblanc-morning-workout:anchorDate",
+          "flow:meta:last-visit",
+          "flow:my-flow:occurrence-execution",
+          "flow:saved:curated-allblanc-morning-workout"
+        ],
+        "savedFlowKeys": [
+          "flow:saved:curated-allblanc-morning-workout"
+        ],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": true
+      },
+      "steps": [
+        {
+          "label": "routine export series/count 확인",
+          "ok": true,
+          "required": true,
+          "depth": 3,
+          "elapsedMs": 1085,
+          "evidence": {
+            "summary": "반복 일정 1개 · 표시 회차 3개",
+            "eventCount": 1,
+            "hasRrule": true
+          }
+        },
+        {
+          "label": "resource와 실행 row 수 비교",
+          "ok": true,
+          "required": true,
+          "depth": 1,
+          "elapsedMs": 838,
+          "evidence": {
+            "resourceLinks": 3,
+            "previewRows": 0
+          }
+        }
+      ],
+      "expectedMentalModel": "ICS는 하나의 반복 series이고 UI는 개별 occurrence를 보여주며 영상은 완료 대상과 다르다.",
+      "actualUiFeedback": [],
+      "nextAction": "다음 occurrence 실행",
+      "visibleReachable": true,
+      "reloadPersistence": "occurrence_state_persisted",
+      "parity": {},
+      "failureRecovery": {
+        "history": "개별 회차의 과거 기록을 한눈에 보는 전용 history는 현재 surface에서 발견하지 못했다."
+      },
+      "explanationFree": false,
+      "status": "partial",
+      "severity": "Medium",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "observedUserAssumption": "RRULE 1개와 화면의 8회가 모순 없이 읽히는지는 확인되지 않았다.",
+      "health": {
+        "horizontalOverflow": 0,
+        "unnamedFocusableCount": 0,
+        "focusableCount": 12,
+        "fixedLayerCount": 0,
+        "visibleCardCount": 2,
+        "visibleDetailsCount": 4
+      },
+      "storage": {
+        "keyCount": 10,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_curated-allblanc-morning-workout",
+          "flow_builder_mvp_comparison_curated-allblanc-morning-workout",
+          "flow_builder_mvp_item_state_curated-allblanc-morning-workout",
+          "flow_builder_mvp_reactions_curated-allblanc-morning-workout",
+          "flow_builder_mvp_workbench_curated-allblanc-morning-workout",
+          "flow:curated-allblanc-morning-workout:anchorDate",
+          "flow:meta:last-visit",
+          "flow:my-flow:occurrence-execution",
+          "flow:saved:curated-allblanc-morning-workout"
+        ],
+        "savedFlowKeys": [
+          "flow:saved:curated-allblanc-morning-workout"
+        ],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": true
+      },
+      "screenshots": [
+        "screenshots/p3-s3-routine-wide-boundary-1024.png"
+      ],
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "personaId": "P4",
+      "sessionId": "S1",
+      "userGoal": "20~50개 Flow 중 필요한 두 개만 Calendar에서 선택한다.",
+      "route": "/calendar?demo=ux50",
+      "viewport": "390x844",
+      "fixture": "query_only_demo_ux50",
+      "startingState": {
+        "keyCount": 0,
+        "keys": [],
+        "savedFlowKeys": [],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "steps": [
+        {
+          "label": "50+ 범위 picker에서 두 Flow 선택",
+          "ok": true,
+          "required": true,
+          "depth": 5,
+          "elapsedMs": 1021,
+          "evidence": {
+            "optionCount": 62,
+            "firstTitle": "이\n이사 준비 Flow 25\n이번 달 17개",
+            "trigger": "2개 Flow\n선택"
+          }
+        }
+      ],
+      "expectedMentalModel": "검색한 Flow 두 개만 month grid와 agenda에 동일하게 적용된다.",
+      "actualUiFeedback": [],
+      "nextAction": "같은 날짜의 선택 Flow agenda 확인",
+      "visibleReachable": true,
+      "reloadPersistence": "fixture_session_only",
+      "parity": {},
+      "failureRecovery": {},
+      "explanationFree": true,
+      "status": "supported",
+      "severity": "Low",
+      "evidenceKind": [
+        "fixture_only",
+        "current_browser_automation"
+      ],
+      "observedUserAssumption": "실제 50개 개인 라이브러리에서 검색어를 기억하고 쓸지는 확인되지 않았다.",
+      "health": {
+        "horizontalOverflow": 0,
+        "unnamedFocusableCount": 0,
+        "focusableCount": 99,
+        "fixedLayerCount": 1,
+        "visibleCardCount": 6,
+        "visibleDetailsCount": 1
+      },
+      "storage": {
+        "keyCount": 2,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow:calendar:selected-flows:v1"
+        ],
+        "savedFlowKeys": [],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "screenshots": [
+        "screenshots/p4-s1-scope-two-flows-390.png"
+      ],
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "personaId": "P4",
+      "sessionId": "S2",
+      "userGoal": "같은 날짜의 여러 Flow를 full identity로 구분하고 완료를 되돌린다.",
+      "route": "/calendar?demo=ux50",
+      "viewport": "1024x768",
+      "fixture": "query_only_demo_ux50",
+      "startingState": {
+        "keyCount": 2,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow:calendar:selected-flows:v1"
+        ],
+        "savedFlowKeys": [],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "steps": [
+        {
+          "label": "같은 날짜 5개 Flow full identity 열기",
+          "ok": true,
+          "required": true,
+          "depth": 3,
+          "elapsedMs": 1929,
+          "evidence": {
+            "groupCount": 5,
+            "fullIdentityCount": 5
+          }
+        },
+        {
+          "label": "agenda 첫 항목 완료·재개",
+          "ok": true,
+          "required": false,
+          "depth": 2,
+          "elapsedMs": 986,
+          "evidence": {
+            "reopened": true
+          }
+        }
+      ],
+      "expectedMentalModel": "month cell은 compact하고 selected-day에서는 Flow 전체 이름과 행동이 복원된다.",
+      "actualUiFeedback": [],
+      "nextAction": "날짜 없는 두 항목 batch 배치",
+      "visibleReachable": true,
+      "reloadPersistence": "fixture_recreated",
+      "parity": {},
+      "failureRecovery": {},
+      "explanationFree": true,
+      "status": "supported",
+      "severity": "Low",
+      "evidenceKind": [
+        "fixture_only",
+        "current_browser_automation"
+      ],
+      "observedUserAssumption": "compact 월 셀의 축약 라벨만으로 원하는 Flow를 고르는지는 확인되지 않았다.",
+      "health": {
+        "horizontalOverflow": 0,
+        "unnamedFocusableCount": 0,
+        "focusableCount": 282,
+        "fixedLayerCount": 0,
+        "visibleCardCount": 23,
+        "visibleDetailsCount": 1
+      },
+      "storage": {
+        "keyCount": 2,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow:calendar:selected-flows:v1"
+        ],
+        "savedFlowKeys": [],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "screenshots": [
+        "screenshots/p4-s2-same-date-full-identity-1024.png"
+      ],
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "personaId": "P4",
+      "sessionId": "S3",
+      "userGoal": "날짜 없는 두 항목을 batch 배치하고 undo·focus·stable ID를 확인한다.",
+      "route": "/calendar",
+      "viewport": "390x844",
+      "fixture": "seeded_saved_flows",
+      "startingState": {
+        "keyCount": 2,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow:calendar:selected-flows:v1"
+        ],
+        "savedFlowKeys": [],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "steps": [
+        {
+          "label": "날짜 없는 sheet의 두 항목 배치와 undo",
+          "ok": true,
+          "required": true,
+          "depth": 7,
+          "elapsedMs": 2057,
+          "evidence": {
+            "stableIdsRestored": true,
+            "pageScrollChanged": false
+          }
+        }
+      ],
+      "expectedMentalModel": "배치 전후에도 항목 identity와 page 위치가 유지되고 undo로 원복된다.",
+      "actualUiFeedback": [],
+      "nextAction": "선택 날짜 agenda 확인",
+      "visibleReachable": true,
+      "reloadPersistence": "fixture_recreated",
+      "parity": {},
+      "failureRecovery": {},
+      "explanationFree": true,
+      "status": "supported",
+      "severity": "Low",
+      "evidenceKind": [
+        "fixture_only",
+        "current_browser_automation"
+      ],
+      "observedUserAssumption": "실제 저장 데이터 20~60개에서 동일 성능이 나는지는 fixture 밖에서 확인되지 않았다.",
+      "health": {
+        "horizontalOverflow": 0,
+        "unnamedFocusableCount": 0,
+        "focusableCount": 89,
+        "fixedLayerCount": 2,
+        "visibleCardCount": 5,
+        "visibleDetailsCount": 1
+      },
+      "storage": {
+        "keyCount": 5,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow:moving-d30-basic:anchorDate",
+          "flow:my-flow:date-overrides",
+          "flow:saved:moving-d30-basic",
+          "flow:saved:vehicle-inspection-prep"
+        ],
+        "savedFlowKeys": [
+          "flow:saved:moving-d30-basic",
+          "flow:saved:vehicle-inspection-prep"
+        ],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "screenshots": [
+        "screenshots/p4-s3-undated-batch-undo-390.png"
+      ],
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "personaId": "P5",
+      "sessionId": "S1",
+      "userGoal": "저장 전 primary/secondary artifact와 scope·count·loss를 예측한다.",
+      "route": "/f/moving-d30-basic",
+      "viewport": "390x844",
+      "fixture": "none",
+      "startingState": {
+        "keyCount": 0,
+        "keys": [],
+        "savedFlowKeys": [],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "steps": [
+        {
+          "label": "artifact 추천과 count 확인",
+          "ok": true,
+          "required": true,
+          "depth": 3,
+          "elapsedMs": 996,
+          "evidence": {
+            "scope": "Flow 전체 · 24개",
+            "recommendations": 3,
+            "lossNotices": 0
+          }
+        },
+        {
+          "label": "Flow 저장",
+          "ok": true,
+          "required": true,
+          "depth": 2,
+          "elapsedMs": 171,
+          "evidence": {
+            "finalUrl": "https://flowme2605.vercel.app/f/moving-d30-basic"
+          }
+        }
+      ],
+      "expectedMentalModel": "형식보다 먼저 Flow 전체 범위와 실제 결과 개수를 이해한다.",
+      "actualUiFeedback": [],
+      "nextAction": "My Flow에서 범위별 export",
+      "visibleReachable": true,
+      "reloadPersistence": "not_yet_revisited",
+      "parity": {},
+      "failureRecovery": {},
+      "explanationFree": true,
+      "status": "supported",
+      "severity": "Low",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "observedUserAssumption": "loss 문구가 실제 도구별 손실을 이해시키는지는 확인되지 않았다.",
+      "health": {
+        "horizontalOverflow": 0,
+        "unnamedFocusableCount": 0,
+        "focusableCount": 11,
+        "fixedLayerCount": 1,
+        "visibleCardCount": 0,
+        "visibleDetailsCount": 4
+      },
+      "storage": {
+        "keyCount": 9,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_moving-d30-basic",
+          "flow_builder_mvp_comparison_moving-d30-basic",
+          "flow_builder_mvp_item_state_moving-d30-basic",
+          "flow_builder_mvp_reactions_moving-d30-basic",
+          "flow_builder_mvp_workbench_moving-d30-basic",
+          "flow:meta:last-visit",
+          "flow:moving-d30-basic:anchorDate",
+          "flow:saved:moving-d30-basic"
+        ],
+        "savedFlowKeys": [
+          "flow:saved:moving-d30-basic"
+        ],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "screenshots": [
+        "screenshots/p5-s1-public-export-preflight-390.png"
+      ],
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "personaId": "P5",
+      "sessionId": "S2",
+      "userGoal": "whole/selected/current 범위를 실행 전에 비교하고 receipt를 확인한다.",
+      "route": "/my",
+      "viewport": "390x844",
+      "fixture": "none",
+      "startingState": {
+        "keyCount": 9,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_moving-d30-basic",
+          "flow_builder_mvp_comparison_moving-d30-basic",
+          "flow_builder_mvp_item_state_moving-d30-basic",
+          "flow_builder_mvp_reactions_moving-d30-basic",
+          "flow_builder_mvp_workbench_moving-d30-basic",
+          "flow:meta:last-visit",
+          "flow:moving-d30-basic:anchorDate",
+          "flow:saved:moving-d30-basic"
+        ],
+        "savedFlowKeys": [
+          "flow:saved:moving-d30-basic"
+        ],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "steps": [
+        {
+          "label": "whole과 selected 범위 비교",
+          "ok": true,
+          "required": true,
+          "depth": 5,
+          "elapsedMs": 13170,
+          "evidence": {
+            "whole": "Flow 전체 · 24개",
+            "selected": "직접 선택 · 2개",
+            "receipt": ""
+          }
+        },
+        {
+          "label": "현재 항목 export 범위 확인",
+          "ok": true,
+          "required": true,
+          "depth": 3,
+          "elapsedMs": 296,
+          "evidence": {
+            "copiedLineCount": 7,
+            "containsFlowTitle": true
+          }
+        }
+      ],
+      "expectedMentalModel": "범위가 먼저 고정되고 형식마다 같은 item identity와 count를 사용한다.",
+      "actualUiFeedback": [],
+      "nextAction": "외부 도구에서 import",
+      "visibleReachable": true,
+      "reloadPersistence": "preserved",
+      "parity": {},
+      "failureRecovery": {},
+      "explanationFree": true,
+      "status": "supported",
+      "severity": "Low",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "observedUserAssumption": "사용자가 whole/selected/current를 실제로 올바르게 예측하는지는 확인되지 않았다.",
+      "health": {
+        "horizontalOverflow": 0,
+        "unnamedFocusableCount": 0,
+        "focusableCount": 77,
+        "fixedLayerCount": 1,
+        "visibleCardCount": 5,
+        "visibleDetailsCount": 5
+      },
+      "storage": {
+        "keyCount": 9,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_moving-d30-basic",
+          "flow_builder_mvp_comparison_moving-d30-basic",
+          "flow_builder_mvp_item_state_moving-d30-basic",
+          "flow_builder_mvp_reactions_moving-d30-basic",
+          "flow_builder_mvp_workbench_moving-d30-basic",
+          "flow:meta:last-visit",
+          "flow:moving-d30-basic:anchorDate",
+          "flow:saved:moving-d30-basic"
+        ],
+        "savedFlowKeys": [
+          "flow:saved:moving-d30-basic"
+        ],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "screenshots": [
+        "screenshots/p5-s2-selected-current-export-390.png"
+      ],
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "personaId": "P5",
+      "sessionId": "S3",
+      "userGoal": "Calendar/checklist/sheet/memo parity와 중복 import·cross-device 지원 상태를 확인한다.",
+      "route": "/my",
+      "viewport": "1024x768",
+      "fixture": "none",
+      "startingState": {
+        "keyCount": 9,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_moving-d30-basic",
+          "flow_builder_mvp_comparison_moving-d30-basic",
+          "flow_builder_mvp_item_state_moving-d30-basic",
+          "flow_builder_mvp_reactions_moving-d30-basic",
+          "flow_builder_mvp_workbench_moving-d30-basic",
+          "flow:meta:last-visit",
+          "flow:moving-d30-basic:anchorDate",
+          "flow:saved:moving-d30-basic"
+        ],
+        "savedFlowKeys": [
+          "flow:saved:moving-d30-basic"
+        ],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "steps": [
+        {
+          "label": "네 projection의 count parity 확인",
+          "ok": true,
+          "required": true,
+          "depth": 1,
+          "elapsedMs": 942,
+          "evidence": {
+            "counts": {
+              "calendar": "24",
+              "checklist": "24",
+              "sheet": "24",
+              "memo": "24"
+            }
+          }
+        },
+        {
+          "label": "중복 import와 cross-device 안내 탐색",
+          "ok": true,
+          "required": true,
+          "depth": 1,
+          "elapsedMs": 1,
+          "evidence": {
+            "duplicateImportControl": false,
+            "crossDeviceControl": false
+          }
+        }
+      ],
+      "expectedMentalModel": "각 projection은 같은 항목 집합을 쓰고, 반복 가져오기는 중복 위험을 알려준다.",
+      "actualUiFeedback": [],
+      "nextAction": "외부 도구에서 수동 import",
+      "visibleReachable": true,
+      "reloadPersistence": "same_browser_only",
+      "parity": {},
+      "failureRecovery": {
+        "duplicateImport": "외부 도구 중복 import를 식별하거나 다른 기기로 이어가는 계약은 현재 UI에 없다."
+      },
+      "explanationFree": false,
+      "status": "partial",
+      "severity": "Medium",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "observedUserAssumption": "파일을 두 번 가져갈 때 사용자가 스스로 중복을 관리할 수 있는지는 확인되지 않았다.",
+      "health": {
+        "horizontalOverflow": 0,
+        "unnamedFocusableCount": 0,
+        "focusableCount": 42,
+        "fixedLayerCount": 0,
+        "visibleCardCount": 5,
+        "visibleDetailsCount": 3
+      },
+      "storage": {
+        "keyCount": 9,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_moving-d30-basic",
+          "flow_builder_mvp_comparison_moving-d30-basic",
+          "flow_builder_mvp_item_state_moving-d30-basic",
+          "flow_builder_mvp_reactions_moving-d30-basic",
+          "flow_builder_mvp_workbench_moving-d30-basic",
+          "flow:meta:last-visit",
+          "flow:moving-d30-basic:anchorDate",
+          "flow:saved:moving-d30-basic"
+        ],
+        "savedFlowKeys": [
+          "flow:saved:moving-d30-basic"
+        ],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "screenshots": [
+        "screenshots/p5-s3-projection-parity-wide-1024.png"
+      ],
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "personaId": "P6",
+      "sessionId": "S1",
+      "userGoal": "여행 메모를 여러 할 일로 나눈 개인 초안으로 저장한다.",
+      "route": "/flows",
+      "viewport": "390x844",
+      "fixture": "none",
+      "startingState": {
+        "keyCount": 0,
+        "keys": [],
+        "savedFlowKeys": [],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "steps": [
+        {
+          "label": "메모 입력과 5개 분할 preview",
+          "ok": true,
+          "required": true,
+          "depth": 2,
+          "elapsedMs": 724,
+          "evidence": {
+            "splitCount": 5
+          }
+        },
+        {
+          "label": "초안 제목·첫 날짜 저장",
+          "ok": true,
+          "required": true,
+          "depth": 3,
+          "elapsedMs": 108,
+          "evidence": {
+            "draftSlug": "url-draft-1784765815330-l8m5b",
+            "sourceTitle": "내 메모",
+            "sourceUrl": null
+          }
+        }
+      ],
+      "expectedMentalModel": "내 문장만 분할되고 source-backed 공개 Flow와 섞이지 않는다.",
+      "actualUiFeedback": [],
+      "nextAction": "My Flow에서 구성 편집",
+      "visibleReachable": true,
+      "reloadPersistence": "not_yet_revisited",
+      "parity": {
+        "title": "8월 제주 여행 준비",
+        "expectedItemCount": 5,
+        "sourceOwnership": "personal_memo"
+      },
+      "failureRecovery": {},
+      "explanationFree": true,
+      "status": "supported",
+      "severity": "Low",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "observedUserAssumption": "문장 분할 품질이 다양한 실제 메모에서도 충분한지는 확인되지 않았다.",
+      "health": {
+        "horizontalOverflow": 0,
+        "unnamedFocusableCount": 0,
+        "focusableCount": 13,
+        "fixedLayerCount": 1,
+        "visibleCardCount": 0,
+        "visibleDetailsCount": 1
+      },
+      "storage": {
+        "keyCount": 6,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow:meta:last-visit",
+          "flow:projection-identity-migration:url-draft-1784765815330-l8m5b",
+          "flow:saved:url-draft-1784765815330-l8m5b",
+          "flow:url-draft-1784765815330-l8m5b:anchorDate",
+          "flow:url-first:supply-candidates"
+        ],
+        "savedFlowKeys": [
+          "flow:saved:url-draft-1784765815330-l8m5b"
+        ],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "screenshots": [
+        "screenshots/p6-s1-memo-draft-receipt-390.png"
+      ],
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "personaId": "P6",
+      "sessionId": "S2",
+      "userGoal": "초안 항목을 추가·이동·삭제·복구하고 날짜·시간·메모를 수정한다.",
+      "route": "/my",
+      "viewport": "390x844",
+      "fixture": "none",
+      "startingState": {
+        "keyCount": 6,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow:meta:last-visit",
+          "flow:projection-identity-migration:url-draft-1784765815330-l8m5b",
+          "flow:saved:url-draft-1784765815330-l8m5b",
+          "flow:url-draft-1784765815330-l8m5b:anchorDate",
+          "flow:url-first:supply-candidates"
+        ],
+        "savedFlowKeys": [
+          "flow:saved:url-draft-1784765815330-l8m5b"
+        ],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "steps": [
+        {
+          "label": "개인 초안 다시 열기",
+          "ok": true,
+          "required": true,
+          "depth": 1,
+          "elapsedMs": 902,
+          "evidence": {
+            "draftSlug": "url-draft-1784765815330-l8m5b"
+          }
+        },
+        {
+          "label": "구성 편집에서 항목 추가와 위 이동",
+          "ok": true,
+          "required": true,
+          "depth": 5,
+          "elapsedMs": 146,
+          "evidence": {
+            "stableItemId": "personal-item-f66a41f3-e588-495e-baa8-72703cfc89de"
+          }
+        },
+        {
+          "label": "추가 항목 삭제와 undo 복구",
+          "ok": true,
+          "required": true,
+          "depth": 3,
+          "elapsedMs": 103,
+          "evidence": {
+            "restored": true
+          }
+        },
+        {
+          "label": "일반 mode에서 첫 항목 제목·날짜·시간·메모 수정",
+          "ok": true,
+          "required": true,
+          "depth": 7,
+          "elapsedMs": 300,
+          "evidence": {
+            "title": "항공권 시간 다시 확인",
+            "date": "2026-08-02",
+            "time": "09:30"
+          }
+        }
+      ],
+      "expectedMentalModel": "구조 변경과 실행 완료는 다른 mode이며 모든 변경은 reload 후 남는다.",
+      "actualUiFeedback": [],
+      "nextAction": "Calendar와 export에서 변경 결과 확인",
+      "visibleReachable": true,
+      "reloadPersistence": "pending_next_session",
+      "parity": {},
+      "failureRecovery": {
+        "complexity": "구성 편집과 항목 상세 편집을 오가야 해 조작 깊이가 높다."
+      },
+      "explanationFree": false,
+      "status": "supported",
+      "severity": "Medium",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "observedUserAssumption": "일반 사용자가 mode 전환 없이 구조 변경과 실행 변경을 구분하는지는 확인되지 않았다.",
+      "health": {
+        "horizontalOverflow": 0,
+        "unnamedFocusableCount": 0,
+        "focusableCount": 36,
+        "fixedLayerCount": 1,
+        "visibleCardCount": 7,
+        "visibleDetailsCount": 2
+      },
+      "storage": {
+        "keyCount": 9,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow:meta:last-visit",
+          "flow:my-flow:date-overrides",
+          "flow:my-flow:item-drafts",
+          "flow:my-flow:structural-overlay:url-draft-1784765815330-l8m5b",
+          "flow:projection-identity-migration:url-draft-1784765815330-l8m5b",
+          "flow:saved:url-draft-1784765815330-l8m5b",
+          "flow:url-draft-1784765815330-l8m5b:anchorDate",
+          "flow:url-first:supply-candidates"
+        ],
+        "savedFlowKeys": [
+          "flow:saved:url-draft-1784765815330-l8m5b"
+        ],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "screenshots": [
+        "screenshots/p6-s2-draft-structure-and-item-edit-390.png"
+      ],
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "personaId": "P6",
+      "sessionId": "S3",
+      "userGoal": "reload 후 초안 변경을 Calendar·export에서 확인하고 공유 Flow와 경계를 본다.",
+      "route": "/calendar -> /my",
+      "viewport": "1024x768",
+      "fixture": "none",
+      "startingState": {
+        "keyCount": 9,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow:meta:last-visit",
+          "flow:my-flow:date-overrides",
+          "flow:my-flow:item-drafts",
+          "flow:my-flow:structural-overlay:url-draft-1784765815330-l8m5b",
+          "flow:projection-identity-migration:url-draft-1784765815330-l8m5b",
+          "flow:saved:url-draft-1784765815330-l8m5b",
+          "flow:url-draft-1784765815330-l8m5b:anchorDate",
+          "flow:url-first:supply-candidates"
+        ],
+        "savedFlowKeys": [
+          "flow:saved:url-draft-1784765815330-l8m5b"
+        ],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "steps": [
+        {
+          "label": "reload 후 Calendar 날짜 parity",
+          "ok": true,
+          "required": true,
+          "depth": 1,
+          "elapsedMs": 642,
+          "evidence": {
+            "matchingEventCount": 1,
+            "selectedDayHasTitle": true
+          }
+        },
+        {
+          "label": "My Flow list export와 개인 source 경계",
+          "ok": true,
+          "required": true,
+          "depth": 3,
+          "elapsedMs": 976,
+          "evidence": {
+            "itemCount": "6",
+            "personalBadge": false,
+            "publicShareControlCount": 0
+          }
+        }
+      ],
+      "expectedMentalModel": "개인 초안은 이 브라우저에 남고 외부 projection은 같은 title/date/item identity를 사용한다.",
+      "actualUiFeedback": [],
+      "nextAction": "외부 도구로 복사하거나 My Flow에서 계속 실행",
+      "visibleReachable": true,
+      "reloadPersistence": "preserved_same_browser",
+      "parity": {},
+      "failureRecovery": {
+        "crossDevice": "개인 초안은 localStorage 기반이라 다른 기기·브라우저 복구 경로가 없다."
+      },
+      "explanationFree": false,
+      "status": "partial",
+      "severity": "Medium",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "observedUserAssumption": "개인 초안이 공개되지 않는다는 경계를 사용자가 명확히 인지하는지는 확인되지 않았다.",
+      "health": {
+        "horizontalOverflow": 0,
+        "unnamedFocusableCount": 0,
+        "focusableCount": 42,
+        "fixedLayerCount": 0,
+        "visibleCardCount": 7,
+        "visibleDetailsCount": 3
+      },
+      "storage": {
+        "keyCount": 9,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow:meta:last-visit",
+          "flow:my-flow:date-overrides",
+          "flow:my-flow:item-drafts",
+          "flow:my-flow:structural-overlay:url-draft-1784765815330-l8m5b",
+          "flow:projection-identity-migration:url-draft-1784765815330-l8m5b",
+          "flow:saved:url-draft-1784765815330-l8m5b",
+          "flow:url-draft-1784765815330-l8m5b:anchorDate",
+          "flow:url-first:supply-candidates"
+        ],
+        "savedFlowKeys": [
+          "flow:saved:url-draft-1784765815330-l8m5b"
+        ],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "screenshots": [
+        "screenshots/p6-s3-draft-revisit-wide-1024.png"
+      ],
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "personaId": "P7",
+      "sessionId": "S1",
+      "userGoal": "날짜 없는 Flow를 저장하고 첫 실행 메모를 남긴다.",
+      "route": "/f/vehicle-inspection-prep -> /my",
+      "viewport": "390x844",
+      "fixture": "none",
+      "startingState": {
+        "keyCount": 0,
+        "keys": [],
+        "savedFlowKeys": [],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "steps": [
+        {
+          "label": "저장 receipt와 My Flow 이동",
+          "ok": true,
+          "required": true,
+          "depth": 2,
+          "elapsedMs": 1605,
+          "evidence": {
+            "receiptText": "저장 완료\n자동차/검사\n\n자동차검사 D-14 준비\n\n원문 · TS한국교통안전공단 정기검사 대상·기준·유효기간 안내\n\n내 Flow에 저장됨\n\n10개 할 일을 저장했어요\n\n저장한 전체 계획을 확인하거나 첫 할 일부터 시작할 수 있습니다.\n\n저장 이름\n자동차검사 D-14 준비\n전체\n할 일 10개\n주요 결과\n캘린더 + 체크\n내 Flow에서 시작\n캘린더에서 보기"
+          }
+        },
+        {
+          "label": "첫 항목 실행 메모 저장",
+          "ok": true,
+          "required": true,
+          "depth": 4,
+          "elapsedMs": 940,
+          "evidence": {
+            "memoSaved": true
+          }
+        }
+      ],
+      "expectedMentalModel": "저장 receipt 이후 바로 첫 항목을 실행하며 메모는 개인 실행 기록이다.",
+      "actualUiFeedback": [],
+      "nextAction": "남은 항목 완료",
+      "visibleReachable": true,
+      "reloadPersistence": "pending_next_session",
+      "parity": {},
+      "failureRecovery": {},
+      "explanationFree": true,
+      "status": "supported",
+      "severity": "Low",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "observedUserAssumption": "항목 메모를 실행 중 실제로 사용할지는 확인되지 않았다.",
+      "health": {
+        "horizontalOverflow": 0,
+        "unnamedFocusableCount": 0,
+        "focusableCount": 43,
+        "fixedLayerCount": 1,
+        "visibleCardCount": 11,
+        "visibleDetailsCount": 2
+      },
+      "storage": {
+        "keyCount": 10,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_vehicle-inspection-prep",
+          "flow_builder_mvp_comparison_vehicle-inspection-prep",
+          "flow_builder_mvp_item_state_vehicle-inspection-prep",
+          "flow_builder_mvp_reactions_vehicle-inspection-prep",
+          "flow_builder_mvp_workbench_vehicle-inspection-prep",
+          "flow:meta:last-visit",
+          "flow:my-flow:item-drafts",
+          "flow:saved:vehicle-inspection-prep",
+          "flow:vehicle-inspection-prep:anchorDate"
+        ],
+        "savedFlowKeys": [
+          "flow:saved:vehicle-inspection-prep"
+        ],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "screenshots": [
+        "screenshots/p7-s1-first-execution-note-390.png"
+      ],
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "personaId": "P7",
+      "sessionId": "S2",
+      "userGoal": "일부 완료·reopen 후 전체 완료하고 회고와 source correction을 구분한다.",
+      "route": "/my",
+      "viewport": "390x844",
+      "fixture": "none",
+      "startingState": {
+        "keyCount": 10,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_vehicle-inspection-prep",
+          "flow_builder_mvp_comparison_vehicle-inspection-prep",
+          "flow_builder_mvp_item_state_vehicle-inspection-prep",
+          "flow_builder_mvp_reactions_vehicle-inspection-prep",
+          "flow_builder_mvp_workbench_vehicle-inspection-prep",
+          "flow:meta:last-visit",
+          "flow:my-flow:item-drafts",
+          "flow:saved:vehicle-inspection-prep",
+          "flow:vehicle-inspection-prep:anchorDate"
+        ],
+        "savedFlowKeys": [
+          "flow:saved:vehicle-inspection-prep"
+        ],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "steps": [
+        {
+          "label": "reload 후 메모 보존 확인",
+          "ok": true,
+          "required": true,
+          "depth": 1,
+          "elapsedMs": 1103,
+          "evidence": {
+            "memoVisible": false
+          }
+        },
+        {
+          "label": "첫 항목 완료·reopen 후 전체 완료",
+          "ok": true,
+          "required": true,
+          "depth": 12,
+          "elapsedMs": 1182,
+          "evidence": {
+            "reopenedThenCompleted": true,
+            "completedByUi": 10
+          }
+        },
+        {
+          "label": "회고와 전송 전 source correction 저장",
+          "ok": true,
+          "required": true,
+          "depth": 6,
+          "elapsedMs": 12296,
+          "evidence": {
+            "summary": ""
+          }
+        }
+      ],
+      "expectedMentalModel": "내 회고는 private이고 원본 수정 제안은 아직 전송되지 않은 별도 draft다.",
+      "actualUiFeedback": [],
+      "nextAction": "새 실행으로 다시 쓰기",
+      "visibleReachable": true,
+      "reloadPersistence": "preserved",
+      "parity": {},
+      "failureRecovery": {},
+      "explanationFree": false,
+      "status": "supported",
+      "severity": "Low",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "observedUserAssumption": "회고와 source correction의 차이를 현재 copy만으로 이해하는지는 확인되지 않았다.",
+      "health": {
+        "horizontalOverflow": 0,
+        "unnamedFocusableCount": 0,
+        "focusableCount": 58,
+        "fixedLayerCount": 1,
+        "visibleCardCount": 11,
+        "visibleDetailsCount": 4
+      },
+      "storage": {
+        "keyCount": 12,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_vehicle-inspection-prep",
+          "flow_builder_mvp_comparison_vehicle-inspection-prep",
+          "flow_builder_mvp_item_state_vehicle-inspection-prep",
+          "flow_builder_mvp_reactions_vehicle-inspection-prep",
+          "flow_builder_mvp_workbench_vehicle-inspection-prep",
+          "flow:completion-detected-at:vehicle-inspection-prep",
+          "flow:meta:last-visit",
+          "flow:my-flow:completion-feedback:vehicle-inspection-prep",
+          "flow:my-flow:item-drafts",
+          "flow:saved:vehicle-inspection-prep",
+          "flow:vehicle-inspection-prep:anchorDate"
+        ],
+        "savedFlowKeys": [
+          "flow:saved:vehicle-inspection-prep"
+        ],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "screenshots": [
+        "screenshots/p7-s2-reflection-and-source-correction-390.png"
+      ],
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "personaId": "P7",
+      "sessionId": "S3",
+      "userGoal": "새 실행을 시작하고 과거 완료·메모·회고를 보존한다.",
+      "route": "/my",
+      "viewport": "1024x768",
+      "fixture": "none",
+      "startingState": {
+        "keyCount": 12,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_vehicle-inspection-prep",
+          "flow_builder_mvp_comparison_vehicle-inspection-prep",
+          "flow_builder_mvp_item_state_vehicle-inspection-prep",
+          "flow_builder_mvp_reactions_vehicle-inspection-prep",
+          "flow_builder_mvp_workbench_vehicle-inspection-prep",
+          "flow:completion-detected-at:vehicle-inspection-prep",
+          "flow:meta:last-visit",
+          "flow:my-flow:completion-feedback:vehicle-inspection-prep",
+          "flow:my-flow:item-drafts",
+          "flow:saved:vehicle-inspection-prep",
+          "flow:vehicle-inspection-prep:anchorDate"
+        ],
+        "savedFlowKeys": [
+          "flow:saved:vehicle-inspection-prep"
+        ],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "steps": [
+        {
+          "label": "reload 후 완료 feedback 보존",
+          "ok": true,
+          "required": true,
+          "depth": 1,
+          "elapsedMs": 957,
+          "evidence": {
+            "savedSummary": "내 회고 저장됨 · 전송 전 메모 저장됨"
+          }
+        },
+        {
+          "label": "날짜 없는 Flow 새 실행 시작",
+          "ok": true,
+          "required": true,
+          "depth": 3,
+          "elapsedMs": 464,
+          "evidence": {
+            "anchorInputs": 1,
+            "undatedReuseOffered": false,
+            "validationBeforeDate": true,
+            "pastRuns": 1,
+            "reuseStatus": "새 검사일 9월 15일로 시작했어요. 지난 실행은 기록으로 남아 있어요.\n완료 체크 새로 시작"
+          }
+        }
+      ],
+      "expectedMentalModel": "새 실행은 체크만 비우고 과거 run은 읽기 전용 기록으로 남는다.",
+      "actualUiFeedback": [],
+      "nextAction": "새 run 첫 항목 실행",
+      "visibleReachable": true,
+      "reloadPersistence": "preserved_across_three_sessions",
+      "parity": {},
+      "failureRecovery": {
+        "undatedReuse": "날짜 없이 저장·실행한 Flow도 재사용 시 새 검사일을 필수로 요구하며 날짜 없는 새 run 선택이 없다."
+      },
+      "explanationFree": false,
+      "status": "partial",
+      "severity": "High",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "observedUserAssumption": "과거 run을 다시 열어보는 재방문 가치가 실제로 있는지는 확인되지 않았다.",
+      "health": {
+        "horizontalOverflow": 0,
+        "unnamedFocusableCount": 0,
+        "focusableCount": 48,
+        "fixedLayerCount": 0,
+        "visibleCardCount": 11,
+        "visibleDetailsCount": 5
+      },
+      "storage": {
+        "keyCount": 9,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow:meta:last-visit",
+          "flow:my-flow:date-overrides",
+          "flow:my-flow:item-drafts",
+          "flow:my-flow:occurrence-execution",
+          "flow:my-flow:step-item-checks",
+          "flow:run-registry:vehicle-inspection-prep",
+          "flow:saved:vehicle-inspection-prep",
+          "flow:vehicle-inspection-prep:anchorDate"
+        ],
+        "savedFlowKeys": [
+          "flow:saved:vehicle-inspection-prep"
+        ],
+        "runRegistryKeys": [
+          "flow:run-registry:vehicle-inspection-prep"
+        ],
+        "occurrenceExecutionPresent": true
+      },
+      "screenshots": [
+        "screenshots/p7-s3-new-run-history-wide-1024.png"
+      ],
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "personaId": "P8",
+      "sessionId": "S1",
+      "userGoal": "키보드만으로 save-before 핵심 조정을 열고 저장 순서를 이해한다.",
+      "route": "/f/moving-d30-basic",
+      "viewport": "390x844",
+      "fixture": "none",
+      "startingState": {
+        "keyCount": 0,
+        "keys": [],
+        "savedFlowKeys": [],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "steps": [
+        {
+          "label": "save-before keyboard focus trace",
+          "ok": true,
+          "required": true,
+          "depth": 1,
+          "elapsedMs": 949,
+          "evidence": {
+            "stepsToSaveLayer": 16,
+            "trace": [
+              {
+                "testId": "flow-public-shell",
+                "tag": "a",
+                "name": "FLOW"
+              },
+              {
+                "testId": "public-flow-hero",
+                "tag": "a",
+                "name": "이사 체크리스트 참고"
+              },
+              {
+                "testId": "flow-artifact-data-preview",
+                "tag": "button",
+                "name": "캘린더 일정 24개"
+              },
+              {
+                "testId": "flow-artifact-data-preview",
+                "tag": "button",
+                "name": "체크리스트 24개"
+              },
+              {
+                "testId": "flow-artifact-data-preview",
+                "tag": "summary",
+                "name": "나머지 18개 보기⌄"
+              },
+              {
+                "testId": "public-flow-anchor-input",
+                "tag": "input",
+                "name": "이사일"
+              },
+              {
+                "testId": "public-flow-anchor-input",
+                "tag": "input",
+                "name": "이사일"
+              },
+              {
+                "testId": "public-flow-anchor-input",
+                "tag": "input",
+                "name": "이사일"
+              },
+              {
+                "testId": "public-flow-anchor-input",
+                "tag": "input",
+                "name": "이사일"
+              },
+              {
+                "testId": "public-flow-anchor-action-row",
+                "tag": "button",
+                "name": "입력"
+              },
+              {
+                "testId": "public-flow-date-intent-custom",
+                "tag": "button",
+                "name": "날짜 정하기"
+              },
+              {
+                "testId": "public-flow-date-intent-undated",
+                "tag": "button",
+                "name": "날짜 없이"
+              },
+              {
+                "testId": "public-flow-date-intent-example",
+                "tag": "button",
+                "name": "예시만 보기"
+              },
+              {
+                "testId": "public-flow-artifact-preview-expand",
+                "tag": "summary",
+                "name": "전체 Flow 구조24개 보기"
+              },
+              {
+                "testId": "public-flow-adjust-entry-mobile",
+                "tag": "button",
+                "name": "조정"
+              },
+              {
+                "testId": "public-flow-save-primary-mobile",
+                "tag": "button",
+                "name": "날짜 없이 시작"
+              }
+            ]
+          }
+        },
+        {
+          "label": "키보드로 조정 열기와 명시적 취소 후 focus 복귀",
+          "ok": true,
+          "required": true,
+          "depth": 1,
+          "elapsedMs": 145,
+          "evidence": {
+            "adjustmentFocused": true,
+            "escapeClosed": false,
+            "explicitCancelClosed": true,
+            "focusReturnedAfterCancel": false
+          }
+        }
+      ],
+      "expectedMentalModel": "header 이후 결과·날짜·조정·저장 순으로 focus가 이동한다.",
+      "actualUiFeedback": [],
+      "nextAction": "조정 후 저장",
+      "visibleReachable": true,
+      "reloadPersistence": "not_applicable",
+      "parity": {},
+      "failureRecovery": {
+        "tabDepth": "24개 항목 전체 선택을 키보드로 조정하면 focus 이동량이 크게 늘어난다."
+      },
+      "explanationFree": false,
+      "status": "partial",
+      "severity": "Medium",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ],
+      "observedUserAssumption": "저시력 사용자가 현재 대비와 compact label을 읽을 수 있는지는 확인되지 않았다.",
+      "health": {
+        "horizontalOverflow": 0,
+        "unnamedFocusableCount": 0,
+        "focusableCount": 21,
+        "fixedLayerCount": 2,
+        "visibleCardCount": 0,
+        "visibleDetailsCount": 6
+      },
+      "storage": {
+        "keyCount": 7,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_moving-d30-basic",
+          "flow_builder_mvp_comparison_moving-d30-basic",
+          "flow_builder_mvp_item_state_moving-d30-basic",
+          "flow_builder_mvp_reactions_moving-d30-basic",
+          "flow_builder_mvp_workbench_moving-d30-basic",
+          "flow:meta:last-visit"
+        ],
+        "savedFlowKeys": [],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "screenshots": [
+        "screenshots/p8-s1-keyboard-save-before-390.png"
+      ],
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "personaId": "P8",
+      "sessionId": "S2",
+      "userGoal": "My Flow menu·export sheet를 키보드로 열고 닫아 focus 복귀를 확인한다.",
+      "route": "/my?demo=ux20&view=flows",
+      "viewport": "390x844",
+      "fixture": "query_only_demo_ux20",
+      "startingState": {
+        "keyCount": 7,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_moving-d30-basic",
+          "flow_builder_mvp_comparison_moving-d30-basic",
+          "flow_builder_mvp_item_state_moving-d30-basic",
+          "flow_builder_mvp_reactions_moving-d30-basic",
+          "flow_builder_mvp_workbench_moving-d30-basic",
+          "flow:meta:last-visit"
+        ],
+        "savedFlowKeys": [],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "steps": [
+        {
+          "label": "header-workspace-tabs focus order",
+          "ok": true,
+          "required": true,
+          "depth": 1,
+          "elapsedMs": 706,
+          "evidence": {
+            "header": 0,
+            "workspace": 4,
+            "tabs": 19,
+            "ordered": true
+          }
+        },
+        {
+          "label": "management menu Escape focus return",
+          "ok": true,
+          "required": true,
+          "depth": 3,
+          "elapsedMs": 383,
+          "evidence": {
+            "focusReturned": true
+          }
+        }
+      ],
+      "expectedMentalModel": "workspace controls가 persistent tabs보다 먼저 오고 dialog/sheet를 닫으면 호출 지점으로 돌아온다.",
+      "actualUiFeedback": [],
+      "nextAction": "Calendar batch와 undo를 keyboard-only로 실행",
+      "visibleReachable": true,
+      "reloadPersistence": "fixture_recreated",
+      "parity": {},
+      "failureRecovery": {},
+      "explanationFree": true,
+      "status": "supported",
+      "severity": "Low",
+      "evidenceKind": [
+        "fixture_only",
+        "current_browser_automation"
+      ],
+      "observedUserAssumption": "스크린리더의 실제 낭독 순서는 자동 focus trace만으로 확인되지 않았다.",
+      "health": {
+        "horizontalOverflow": 0,
+        "unnamedFocusableCount": 0,
+        "focusableCount": 30,
+        "fixedLayerCount": 1,
+        "visibleCardCount": 2,
+        "visibleDetailsCount": 2
+      },
+      "storage": {
+        "keyCount": 7,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_moving-d30-basic",
+          "flow_builder_mvp_comparison_moving-d30-basic",
+          "flow_builder_mvp_item_state_moving-d30-basic",
+          "flow_builder_mvp_reactions_moving-d30-basic",
+          "flow_builder_mvp_workbench_moving-d30-basic",
+          "flow:meta:last-visit"
+        ],
+        "savedFlowKeys": [],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "screenshots": [
+        "screenshots/p8-s2-keyboard-my-flow-menu-390.png"
+      ],
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "personaId": "P8",
+      "sessionId": "S3",
+      "userGoal": "Calendar batch·undo·export를 keyboard-only와 200% 확대 조건에서 확인한다.",
+      "route": "/calendar",
+      "viewport": "390x844",
+      "fixture": "seeded_saved_flows",
+      "startingState": {
+        "keyCount": 7,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_moving-d30-basic",
+          "flow_builder_mvp_comparison_moving-d30-basic",
+          "flow_builder_mvp_item_state_moving-d30-basic",
+          "flow_builder_mvp_reactions_moving-d30-basic",
+          "flow_builder_mvp_workbench_moving-d30-basic",
+          "flow:meta:last-visit"
+        ],
+        "savedFlowKeys": [],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "steps": [
+        {
+          "label": "날짜 없는 sheet keyboard open/Escape/focus return",
+          "ok": true,
+          "required": true,
+          "depth": 1,
+          "elapsedMs": 1220,
+          "evidence": {
+            "focusReturned": true
+          }
+        },
+        {
+          "label": "200% 확대 equivalent overflow audit",
+          "ok": true,
+          "required": true,
+          "depth": 1,
+          "elapsedMs": 259,
+          "evidence": {
+            "horizontalOverflow": 106,
+            "unnamedFocusableCount": 0,
+            "focusableCount": 73,
+            "fixedLayerCount": 1,
+            "visibleCardCount": 5,
+            "visibleDetailsCount": 1
+          }
+        },
+        {
+          "label": "320 CSS px reflow audit",
+          "ok": true,
+          "required": true,
+          "depth": 1,
+          "elapsedMs": 264,
+          "evidence": {
+            "horizontalOverflow": 0,
+            "unnamedFocusableCount": 0,
+            "focusableCount": 73,
+            "fixedLayerCount": 1,
+            "visibleCardCount": 5,
+            "visibleDetailsCount": 1
+          }
+        }
+      ],
+      "expectedMentalModel": "확대해도 가로 넘침 없이 control 이름과 focus가 유지된다.",
+      "actualUiFeedback": [],
+      "nextAction": "선택 항목 날짜 배치 또는 export",
+      "visibleReachable": true,
+      "reloadPersistence": "fixture_recreated",
+      "parity": {},
+      "failureRecovery": {
+        "zoom": "CSS zoom 기반 자동 점검은 실제 OS/브라우저 저시력 설정과 동등한 사용자 검증이 아니다."
+      },
+      "explanationFree": false,
+      "status": "partial",
+      "severity": "Medium",
+      "evidenceKind": [
+        "fixture_only",
+        "current_browser_automation"
+      ],
+      "observedUserAssumption": "저시력·스크린리더 사용자의 실제 성공 여부는 확인되지 않았다.",
+      "health": {
+        "horizontalOverflow": 0,
+        "unnamedFocusableCount": 0,
+        "focusableCount": 73,
+        "fixedLayerCount": 1,
+        "visibleCardCount": 5,
+        "visibleDetailsCount": 1
+      },
+      "storage": {
+        "keyCount": 10,
+        "keys": [
+          "flow_builder_mvp_bundles_v11",
+          "flow_builder_mvp_checks_moving-d30-basic",
+          "flow_builder_mvp_comparison_moving-d30-basic",
+          "flow_builder_mvp_item_state_moving-d30-basic",
+          "flow_builder_mvp_reactions_moving-d30-basic",
+          "flow_builder_mvp_workbench_moving-d30-basic",
+          "flow:meta:last-visit",
+          "flow:moving-d30-basic:anchorDate",
+          "flow:saved:moving-d30-basic",
+          "flow:saved:vehicle-inspection-prep"
+        ],
+        "savedFlowKeys": [
+          "flow:saved:moving-d30-basic",
+          "flow:saved:vehicle-inspection-prep"
+        ],
+        "runRegistryKeys": [],
+        "occurrenceExecutionPresent": false
+      },
+      "screenshots": [
+        "screenshots/p8-s3-keyboard-calendar-zoom-200-390.png",
+        "screenshots/p8-s3-keyboard-calendar-reflow-320-320.png",
+        "screenshots/p8-s3-keyboard-calendar-zoom-390.png"
+      ],
+      "consoleErrors": [],
+      "pageErrors": []
+    }
+  ],
+  "globalErrors": []
+}

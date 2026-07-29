@@ -1,0 +1,324 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//FlowMe//Scoped Flow Export//KO
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:moving-d30-basic::flow-moving-item-0@flowme.local
+DTSTAMP:20260723T001611Z
+DTSTART;VALUE=DATE:20260801
+DTEND;VALUE=DATE:20260802
+SUMMARY:견적 후보 먼저 비교
+DESCRIPTION:견적 후보 먼저 비교\nFlow: 8월 이사 준비\n구간:
+  큰 준비\n일정: 2026-08-01\n\n메모: 오전 중 후보 두 곳만
+  비교\n\n원문: 이사 체크리스트 참고 https://www.ajd.co.kr/con
+ tents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_
+ Xls_PDF_노션_notion_첨부-23363\n
+URL:https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리
+ 스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+END:VEVENT
+BEGIN:VEVENT
+UID:moving-d30-basic::flow-moving-item-1@flowme.local
+DTSTAMP:20260723T001611Z
+DTSTART;VALUE=DATE:20260729
+DTEND;VALUE=DATE:20260730
+SUMMARY:이사할 집 하자 점검하기
+DESCRIPTION:이사할 집 하자 점검하기\nFlow: 8월 이사 준비\n
+ 구간: 큰 준비\n일정: 2026-07-29\n\n완료 기준: 주요 공간 사
+ 진과 하자 목록을 집주인 또는 중개인에게 공유했다.\n\n
+ 원문: 이사 체크리스트 참고 https://www.ajd.co.kr/contents/basic
+ -tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노
+ 션_notion_첨부-23363\n
+URL:https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리
+ 스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+END:VEVENT
+BEGIN:VEVENT
+UID:moving-d30-basic::flow-moving-item-2@flowme.local
+DTSTAMP:20260723T001611Z
+DTSTART;VALUE=DATE:20260729
+DTEND;VALUE=DATE:20260730
+SUMMARY:필요 없는 물건 정리하기
+DESCRIPTION:필요 없는 물건 정리하기\nFlow: 8월 이사 준비\n
+ 구간: 큰 준비\n일정: 2026-07-29\n\n원문: 이사 체크리스트
+  참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체
+ 크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363\n
+URL:https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리
+ 스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+END:VEVENT
+BEGIN:VEVENT
+UID:moving-d30-basic::flow-moving-item-3@flowme.local
+DTSTAMP:20260723T001611Z
+DTSTART;VALUE=DATE:20260729
+DTEND;VALUE=DATE:20260730
+SUMMARY:이사/청소 업체 견적 받고 예약하기
+DESCRIPTION:이사/청소 업체 견적 받고 예약하기\nFlow: 8월 이
+ 사 준비\n구간: 큰 준비\n일정: 2026-07-29\n\n원문: 이사 체
+ 크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사
+ _준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-
+ 23363\n
+URL:https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리
+ 스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+END:VEVENT
+BEGIN:VEVENT
+UID:moving-d30-basic::flow-moving-item-4@flowme.local
+DTSTAMP:20260723T001611Z
+DTSTART;VALUE=DATE:20260818
+DTEND;VALUE=DATE:20260819
+SUMMARY:우편물/카드/은행 주소 변경하기
+DESCRIPTION:우편물/카드/은행 주소 변경하기\nFlow: 8월 이사
+  준비\n구간: 생활 이전 준비\n일정: 2026-08-18\n\n원문: 이
+ 사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail
+ /이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_
+ 첨부-23363\n
+URL:https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리
+ 스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+END:VEVENT
+BEGIN:VEVENT
+UID:moving-d30-basic::flow-moving-item-5@flowme.local
+DTSTAMP:20260723T001611Z
+DTSTART;VALUE=DATE:20260818
+DTEND;VALUE=DATE:20260819
+SUMMARY:정기 배달 서비스 중지 요청하기
+DESCRIPTION:정기 배달 서비스 중지 요청하기\nFlow: 8월 이사
+  준비\n구간: 생활 이전 준비\n일정: 2026-08-18\n\n원문: 이
+ 사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail
+ /이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_
+ 첨부-23363\n
+URL:https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리
+ 스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+END:VEVENT
+BEGIN:VEVENT
+UID:moving-d30-basic::flow-moving-item-6@flowme.local
+DTSTAMP:20260723T001611Z
+DTSTART;VALUE=DATE:20260818
+DTEND;VALUE=DATE:20260819
+SUMMARY:대형폐기물 배출 신고와 수거일 확인하기
+DESCRIPTION:대형폐기물 배출 신고와 수거일 확인하기\nFlow:
+  8월 이사 준비\n구간: 생활 이전 준비\n일정: 2026-08-18\n\n
+ 완료 기준: 배출 신고 번호와 수거 예정일을 기록했다.\n
+ \n원문: 이사 체크리스트 참고 https://www.ajd.co.kr/contents/bas
+ ic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_
+ 노션_notion_첨부-23363\n
+URL:https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리
+ 스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+END:VEVENT
+BEGIN:VEVENT
+UID:moving-d30-basic::flow-moving-item-7@flowme.local
+DTSTAMP:20260723T001611Z
+DTSTART;VALUE=DATE:20260818
+DTEND;VALUE=DATE:20260819
+SUMMARY:엘리베이터 또는 사다리차 사용 예약하기
+DESCRIPTION:엘리베이터 또는 사다리차 사용 예약하기\nFlow:
+  8월 이사 준비\n구간: 생활 이전 준비\n일정: 2026-08-18\n\n
+ 원문: 이사 체크리스트 참고 https://www.ajd.co.kr/contents/basic
+ -tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노
+ 션_notion_첨부-23363\n
+URL:https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리
+ 스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+END:VEVENT
+BEGIN:VEVENT
+UID:moving-d30-basic::flow-moving-item-8@flowme.local
+DTSTAMP:20260723T001611Z
+DTSTART;VALUE=DATE:20260818
+DTEND;VALUE=DATE:20260819
+SUMMARY:인터넷/정수기 이전 설치 예약하기
+DESCRIPTION:인터넷/정수기 이전 설치 예약하기\nFlow: 8월 이
+ 사 준비\n구간: 생활 이전 준비\n일정: 2026-08-18\n\n원문:
+  이사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/de
+ tail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_not
+ ion_첨부-23363\n
+URL:https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리
+ 스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+END:VEVENT
+BEGIN:VEVENT
+UID:moving-d30-basic::flow-moving-item-9@flowme.local
+DTSTAMP:20260723T001611Z
+DTSTART;VALUE=DATE:20260825
+DTEND;VALUE=DATE:20260826
+SUMMARY:도시가스 철거/설치 예약하기
+DESCRIPTION:도시가스 철거/설치 예약하기\nFlow: 8월 이사 준
+ 비\n구간: 필수 예약 확인\n일정: 2026-08-25\n\n원문: 이사
+  체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/
+ 이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_
+ 첨부-23363\n
+URL:https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리
+ 스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+END:VEVENT
+BEGIN:VEVENT
+UID:moving-d30-basic::flow-moving-item-10@flowme.local
+DTSTAMP:20260723T001611Z
+DTSTART;VALUE=DATE:20260825
+DTEND;VALUE=DATE:20260826
+SUMMARY:자동이체 해지 또는 변경 확인하기
+DESCRIPTION:자동이체 해지 또는 변경 확인하기\nFlow: 8월 이
+ 사 준비\n구간: 필수 예약 확인\n일정: 2026-08-25\n\n원문:
+  이사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/de
+ tail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_not
+ ion_첨부-23363\n
+URL:https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리
+ 스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+END:VEVENT
+BEGIN:VEVENT
+UID:moving-d30-basic::flow-moving-item-11@flowme.local
+DTSTAMP:20260723T001611Z
+DTSTART;VALUE=DATE:20260825
+DTEND;VALUE=DATE:20260826
+SUMMARY:이사 당일 사용할 물건 따로 포장하기
+DESCRIPTION:이사 당일 사용할 물건 따로 포장하기\nFlow: 8월
+  이사 준비\n구간: 필수 예약 확인\n일정: 2026-08-25\n\n원문
+ : 이사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/d
+ etail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_no
+ tion_첨부-23363\n
+URL:https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리
+ 스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+END:VEVENT
+BEGIN:VEVENT
+UID:moving-d30-basic::flow-moving-item-12@flowme.local
+DTSTAMP:20260723T001611Z
+DTSTART;VALUE=DATE:20260825
+DTEND;VALUE=DATE:20260826
+SUMMARY:관리사무소에 이사 시간과 차량 동선 공유하기
+DESCRIPTION:관리사무소에 이사 시간과 차량 동선 공유하기\
+ nFlow: 8월 이사 준비\n구간: 필수 예약 확인\n일정: 2026-08-2
+ 5\n\n원문: 이사 체크리스트 참고 https://www.ajd.co.kr/contents/
+ basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PD
+ F_노션_notion_첨부-23363\n
+URL:https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리
+ 스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+END:VEVENT
+BEGIN:VEVENT
+UID:moving-d30-basic::flow-moving-item-13@flowme.local
+DTSTAMP:20260723T001611Z
+DTSTART;VALUE=DATE:20260827
+DTEND;VALUE=DATE:20260828
+SUMMARY:이사 업체와 일정 최종 확인하기
+DESCRIPTION:이사 업체와 일정 최종 확인하기\nFlow: 8월 이사
+  준비\n구간: 최종 점검\n일정: 2026-08-27\n\n원문: 이사 체
+ 크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사
+ _준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-
+ 23363\n
+URL:https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리
+ 스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+END:VEVENT
+BEGIN:VEVENT
+UID:moving-d30-basic::flow-moving-item-14@flowme.local
+DTSTAMP:20260723T001611Z
+DTSTART;VALUE=DATE:20260827
+DTEND;VALUE=DATE:20260828
+SUMMARY:이체 한도 증액 확인하기
+DESCRIPTION:이체 한도 증액 확인하기\nFlow: 8월 이사 준비\n
+ 구간: 최종 점검\n일정: 2026-08-27\n\n원문: 이사 체크리스
+ 트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_
+ 체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363\n
+URL:https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리
+ 스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+END:VEVENT
+BEGIN:VEVENT
+UID:moving-d30-basic::flow-moving-item-15@flowme.local
+DTSTAMP:20260723T001611Z
+DTSTART;VALUE=DATE:20260827
+DTEND;VALUE=DATE:20260828
+SUMMARY:귀중품과 중요 서류 별도 보관하기
+DESCRIPTION:귀중품과 중요 서류 별도 보관하기\nFlow: 8월 이
+ 사 준비\n구간: 최종 점검\n일정: 2026-08-27\n\n원문: 이사
+  체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/
+ 이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_
+ 첨부-23363\n
+URL:https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리
+ 스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+END:VEVENT
+BEGIN:VEVENT
+UID:moving-d30-basic::flow-moving-item-16@flowme.local
+DTSTAMP:20260723T001611Z
+DTSTART;VALUE=DATE:20260827
+DTEND;VALUE=DATE:20260828
+SUMMARY:냉장고 음식과 쓰레기 최종 정리하기
+DESCRIPTION:냉장고 음식과 쓰레기 최종 정리하기\nFlow: 8월
+  이사 준비\n구간: 최종 점검\n일정: 2026-08-27\n\n원문: 이
+ 사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail
+ /이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_
+ 첨부-23363\n
+URL:https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리
+ 스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+END:VEVENT
+BEGIN:VEVENT
+UID:moving-d30-basic::flow-moving-item-17@flowme.local
+DTSTAMP:20260723T001611Z
+DTSTART;VALUE=DATE:20260828
+DTEND;VALUE=DATE:20260829
+SUMMARY:전기/가스/수도/관리비 정산하기
+DESCRIPTION:전기/가스/수도/관리비 정산하기\nFlow: 8월 이사
+  준비\n구간: 이사 당일\n일정: 2026-08-28\n\n원문: 이사 체
+ 크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사
+ _준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-
+ 23363\n
+URL:https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리
+ 스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+END:VEVENT
+BEGIN:VEVENT
+UID:moving-d30-basic::flow-moving-item-18@flowme.local
+DTSTAMP:20260723T001611Z
+DTSTART;VALUE=DATE:20260828
+DTEND;VALUE=DATE:20260829
+SUMMARY:이삿짐 분실/파손 확인하기
+DESCRIPTION:이삿짐 분실/파손 확인하기\nFlow: 8월 이사 준비\
+ n구간: 이사 당일\n일정: 2026-08-28\n\n원문: 이사 체크리스
+ 트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_
+ 체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363\n
+URL:https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리
+ 스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+END:VEVENT
+BEGIN:VEVENT
+UID:moving-d30-basic::flow-moving-item-19@flowme.local
+DTSTAMP:20260723T001611Z
+DTSTART;VALUE=DATE:20260828
+DTEND;VALUE=DATE:20260829
+SUMMARY:계량기와 집 상태 사진 남기기
+DESCRIPTION:계량기와 집 상태 사진 남기기\nFlow: 8월 이사 준
+ 비\n구간: 이사 당일\n일정: 2026-08-28\n\n원문: 이사 체크리
+ 스트 참고 https://www.ajd.co.kr/contents/basic-tip/detail/이사_준
+ 비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-2336
+ 3\n
+URL:https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리
+ 스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+END:VEVENT
+BEGIN:VEVENT
+UID:moving-d30-basic::flow-moving-item-20@flowme.local
+DTSTAMP:20260723T001611Z
+DTSTART;VALUE=DATE:20260828
+DTEND;VALUE=DATE:20260829
+SUMMARY:열쇠\, 출입카드\, 주차등록 인수인계하기
+DESCRIPTION:열쇠\, 출입카드\, 주차등록 인수인계하기\nFlow:
+  8월 이사 준비\n구간: 이사 당일\n일정: 2026-08-28\n\n원문:
+  이사 체크리스트 참고 https://www.ajd.co.kr/contents/basic-tip/de
+ tail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_not
+ ion_첨부-23363\n
+URL:https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리
+ 스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363
+END:VEVENT
+BEGIN:VEVENT
+UID:moving-d30-basic::flow-moving-item-21@flowme.local
+DTSTAMP:20260723T001611Z
+DTSTART;VALUE=DATE:20260828
+DTEND;VALUE=DATE:20260829
+SUMMARY:전입신고와 확정일자 확인하기
+DESCRIPTION:전입신고와 확정일자 확인하기\nFlow: 8월 이사
+  준비\n구간: 이사 당일\n일정: 2026-08-28\n\n완료 기준: 전
+ 입신고 접수 상태와 확정일자 부여 여부를 각각 확인했
+ 다.\n\n원문: 정부24 전입신고 https://www.gov.kr/mw/AA020InfoCappV
+ iew.do?CappBizCD=13100000016\n
+URL:https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000016
+END:VEVENT
+BEGIN:VEVENT
+UID:moving-d30-basic::flow-moving-item-22@flowme.local
+DTSTAMP:20260723T001611Z
+DTSTART;VALUE=DATE:20260829
+DTEND;VALUE=DATE:20260830
+SUMMARY:정부24 전입신고 처리 결과 확인하기
+DESCRIPTION:정부24 전입신고 처리 결과 확인하기\nFlow: 8월
+  이사 준비\n구간: 행정 마무리\n일정: 2026-08-29\n\n완료 기
+ 준: 처리 완료 또는 보완 필요 상태를 확인하고 캡처/메
+ 모를 남겼다.\n\n원문: 정부24 https://www.gov.kr\n
+URL:https://www.gov.kr
+END:VEVENT
+END:VCALENDAR

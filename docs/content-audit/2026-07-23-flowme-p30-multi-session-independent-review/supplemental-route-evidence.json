@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-23T00:19:30.128Z",
+  "canonicalUrl": "https://flowme2605.vercel.app",
+  "observedUserCount": 0,
+  "routes": [
+    {
+      "route": "/f/moving-d30-basic",
+      "viewport": "1440x900",
+      "screenshot": "screenshots/supplemental-public-moving-1440.png",
+      "health": {
+        "horizontalOverflow": 0,
+        "focusableCount": 25
+      },
+      "evidenceKind": "current_production_interaction"
+    },
+    {
+      "route": "/my?demo=ux20&view=flows",
+      "viewport": "1440x900",
+      "screenshot": "screenshots/supplemental-my-flow-1440.png",
+      "health": {
+        "horizontalOverflow": 0,
+        "focusableCount": 64
+      },
+      "evidenceKind": "current_production_interaction"
+    },
+    {
+      "route": "/calendar?demo=ux50",
+      "viewport": "1440x900",
+      "screenshot": "screenshots/supplemental-calendar-1440.png",
+      "health": {
+        "horizontalOverflow": 0,
+        "focusableCount": 217
+      },
+      "evidenceKind": "current_production_interaction"
+    }
+  ],
+  "discovery": {
+    "route": "/flows",
+    "query": "이사",
+    "resultHref": "/flow-maps/moving-d30",
+    "resultAccessibleName": "원룸 이사 D-30 Flow 열기",
+    "resultItemCountText": "할 일 5개",
+    "publicMovingHrefCount": 0,
+    "evidenceKind": "current_production_interaction",
+    "mapSaveAction": "그대로 시작",
+    "mapAdjustAction": "조정",
+    "mapPublicChildLinkCount": 0
+  },
+  "consoleErrors": [],
+  "pageErrors": []
+}

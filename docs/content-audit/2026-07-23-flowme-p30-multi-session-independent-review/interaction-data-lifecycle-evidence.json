@@ -1,0 +1,219 @@
+{
+  "schemaVersion": "flowme.interaction-data-lifecycle-evidence.v1",
+  "reviewDate": "2026-07-23",
+  "reviewType": "production_interaction_and_source_review",
+  "productionBaseUrl": "https://flowme2605.vercel.app",
+  "observedUserCount": 0,
+  "appCodeChanged": false,
+  "verdict": "coordinated_interaction_grammar_revision_required",
+  "currentFlowDeletion": {
+    "userReachablePermanentDelete": false,
+    "userReachableArchive": true,
+    "archiveEntry": "My Flow detail bottom overflow menu",
+    "dataManagerActions": [
+      "backup_download",
+      "backup_import"
+    ],
+    "unusedSourceFunction": {
+      "name": "removeSavedFlow",
+      "location": "components/flow/AppClient.tsx:8329",
+      "reachableCallSites": 0
+    }
+  },
+  "findings": [
+    {
+      "id": "H-08",
+      "severity": "high",
+      "title": "Mobile archived Flow recovery is unreachable after the undo notice expires",
+      "route": "/my?demo=ux20&view=flows",
+      "viewports": [
+        "390x844",
+        "1024x768"
+      ],
+      "steps": [
+        "Open wedding Flow in My Flow",
+        "Scroll to the bottom management menu",
+        "Archive the Flow",
+        "Wait for the lifecycle undo notice to disappear",
+        "Select the archived filter",
+        "Open the archived Flow row"
+      ],
+      "expected": "The row provides direct restore or opens a restorable detail on every viewport",
+      "actual": {
+        "390x844": "The row click leaves the user in the archived list with no restore action",
+        "1024x768": "The wide canvas renders the archived detail and its restore menu"
+      },
+      "userImpact": "A mobile user who misses the short undo window cannot recover the archived Flow through the product UI",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_source",
+        "fixture_only",
+        "heuristic_simulation"
+      ],
+      "screenshots": [
+        "screenshots/mobile-feedback/mobile-archived-flow-no-restore-390.png",
+        "screenshots/mobile-feedback/wide-archived-flow-restore-menu-1024.png"
+      ],
+      "acceptanceMarkers": [
+        "P31-03-ARCHIVE-RESTORE-PARITY",
+        "P31-03-MOBILE-ARCHIVED-DIRECT-RESTORE"
+      ]
+    },
+    {
+      "id": "H-09",
+      "severity": "high",
+      "title": "User-facing manipulation verbs do not reveal the affected data state",
+      "routes": [
+        "/my",
+        "/calendar",
+        "/flows"
+      ],
+      "expected": "Completion, scheduling, personal inclusion, draft deletion and Flow lifecycle use distinct and predictable verbs",
+      "actual": [
+        "List removal is used for source-backed item exclusion",
+        "List removal is also used for personal draft deletion",
+        "List removal is also used for subchecks and resources",
+        "Flow archive is hidden in a detail-bottom overflow menu",
+        "Permanent Flow deletion has no reachable UI"
+      ],
+      "userImpact": "Users cannot predict whether an action changes the current run, only their personal copy, or permanently removes local data",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_source",
+        "heuristic_simulation"
+      ],
+      "acceptanceMarkers": [
+        "P31-03-FLOW-LIFECYCLE-GRAMMAR",
+        "P31-05-PERMANENT-DELETE-CONTRACT"
+      ]
+    }
+  ],
+  "currentInteractionGrammar": [
+    {
+      "stateAxis": "execution",
+      "currentActions": [
+        "complete",
+        "reopen"
+      ],
+      "status": "keep"
+    },
+    {
+      "stateAxis": "schedule",
+      "currentActions": [
+        "set_date",
+        "remove_date"
+      ],
+      "status": "keep_and_standardize"
+    },
+    {
+      "stateAxis": "source_backed_membership",
+      "currentActions": [
+        "remove_from_list",
+        "restore"
+      ],
+      "status": "rename_to_exclude_include"
+    },
+    {
+      "stateAxis": "personal_draft_structure",
+      "currentActions": [
+        "remove_from_list",
+        "restore"
+      ],
+      "status": "rename_to_delete_restore_item"
+    },
+    {
+      "stateAxis": "flow_lifecycle",
+      "currentActions": [
+        "archive",
+        "restore"
+      ],
+      "status": "standardize_and_fix_mobile_recovery"
+    },
+    {
+      "stateAxis": "permanent_local_removal",
+      "currentActions": [],
+      "status": "missing"
+    }
+  ],
+  "proposedInteractionGrammar": [
+    {
+      "stateAxis": "execution",
+      "actions": [
+        "완료",
+        "다시 열기"
+      ]
+    },
+    {
+      "stateAxis": "schedule",
+      "actions": [
+        "날짜 정하기",
+        "날짜 없애기"
+      ]
+    },
+    {
+      "stateAxis": "personal_membership",
+      "actions": [
+        "Flow에서 제외",
+        "다시 포함"
+      ]
+    },
+    {
+      "stateAxis": "personal_draft_structure",
+      "actions": [
+        "항목 삭제",
+        "항목 복구"
+      ]
+    },
+    {
+      "stateAxis": "flow_lifecycle",
+      "actions": [
+        "보관",
+        "복구",
+        "이 기기에서 영구 삭제"
+      ]
+    }
+  ],
+  "sourceEvidence": [
+    {
+      "file": "components/flow/AppClient.tsx",
+      "lines": "5739-5750",
+      "fact": "Archived Flow slugs are excluded from workspaceSavedFlows and invalid selection is reset to all"
+    },
+    {
+      "file": "components/flow/AppClient.tsx",
+      "lines": "6820-6855",
+      "fact": "Archive and restore update personal lifecycle state and expose a transient undo"
+    },
+    {
+      "file": "components/flow/AppClient.tsx",
+      "lines": "8329-8343",
+      "fact": "removeSavedFlow exists but has no rendered call site"
+    },
+    {
+      "file": "components/flow/AppClient.tsx",
+      "lines": "11809-11818",
+      "fact": "Both source-backed exclusion and personal draft deletion display list removal wording"
+    },
+    {
+      "file": "components/flow/AppClient.tsx",
+      "lines": "14969-15000",
+      "fact": "Flow archive and restore live in the bottom management overflow"
+    },
+    {
+      "file": "components/flow/MyFlowDataManager.tsx",
+      "lines": "123-200",
+      "fact": "Data Manager exposes backup download and import but no deletion action"
+    },
+    {
+      "file": "lib/flow/storage.ts",
+      "lines": "827-849",
+      "fact": "clearFlowLocalProgress removes multiple Flow-scoped records but does not itself define a complete user-visible deletion contract"
+    }
+  ],
+  "p31Markers": [
+    "P31-03-FLOW-LIFECYCLE-GRAMMAR",
+    "P31-03-ARCHIVE-RESTORE-PARITY",
+    "P31-03-MOBILE-ARCHIVED-DIRECT-RESTORE",
+    "P31-05-PERMANENT-DELETE-CONTRACT"
+  ]
+}

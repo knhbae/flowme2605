@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-07-23",
+  "reviewerRole": "codex_independent",
+  "sourceCommit": "4c5bbb34f5c8633d4b4b48fb8070e523ec5def6b",
+  "worktree": "clean detached origin/main plus this docs-only review package",
+  "observedUserCount": 0,
+  "commands": [
+    {
+      "command": "npm.cmd ci",
+      "status": "pass",
+      "note": "package-lock.json unchanged"
+    },
+    {
+      "command": "npm.cmd run docs:check",
+      "status": "pass_final",
+      "note": "14 required files and 2931 local links after mobile feedback supplement"
+    },
+    {
+      "command": "npm.cmd test",
+      "status": "pass",
+      "count": "584/584"
+    },
+    {
+      "command": "npm.cmd run build",
+      "status": "pass",
+      "note": "Next.js 15.5.20, 18 static pages"
+    },
+    {
+      "command": "npx.cmd playwright test tests/e2e/p30-evidence-gap-closure.spec.ts --workers=2",
+      "status": "pass",
+      "count": "12/12"
+    },
+    {
+      "command": "related P29 + P24 execution trust + P26 structural + P27 foundation E2E",
+      "status": "pass",
+      "count": "41/41"
+    },
+    {
+      "command": "supplemental 390x844 production replay for home, flows, wedding, routine, My Flow and Calendar",
+      "status": "pass",
+      "count": "6 surfaces, 13 evidence screenshots",
+      "note": "includes archive, restore and data-manager lifecycle replay; heuristic and automated evidence only; observed users remain 0"
+    },
+    {
+      "command": "node verify-review-report.mjs",
+      "status": "pass",
+      "count": "3/3 viewports",
+      "note": "390x844, 1024x768 and 1440x900: overflow 0, broken images 0, unnamed interactive 0, console/page errors 0"
+    },
+    {
+      "command": "npm.cmd run security:audit",
+      "status": "fail",
+      "count": "2 vulnerabilities: 1 moderate, 1 high",
+      "note": "Next.js 15.5.20 high advisory and postcss moderate advisory. Automatic force fix would change the pinned framework range, so no dependency change was made in this review."
+    }
+  ],
+  "notRun": [
+    "full E2E suite in this review; prior package values were not copied as current evidence"
+  ],
+  "productionBrowser": {
+    "journeyCells": 24,
+    "supported": 16,
+    "partial": 8,
+    "consoleErrors": 0,
+    "pageErrors": 0,
+    "screenshots": 50,
+    "viewports": ["390x844", "1024x768", "1440x900"]
+  },
+  "publishState": {
+    "appCodeChanged": false,
+    "commit": false,
+    "push": false,
+    "pullRequest": false,
+    "deploy": false
+  }
+}

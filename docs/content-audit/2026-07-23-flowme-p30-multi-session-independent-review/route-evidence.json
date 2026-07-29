@@ -1,0 +1,446 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-23T00:17:24.870Z",
+  "canonicalUrl": "https://flowme2605.vercel.app",
+  "sourceCommit": "4c5bbb34f5c8633d4b4b48fb8070e523ec5def6b",
+  "observedUserCount": 0,
+  "evidenceKind": [
+    "current_production_interaction",
+    "current_browser_automation"
+  ],
+  "routes": [
+    {
+      "personaId": "P1",
+      "sessionId": "S1",
+      "route": "/ -> /flows -> /f/moving-d30-basic",
+      "finalUrl": "https://flowme2605.vercel.app/my?savedFlow=moving-d30-basic",
+      "viewport": "390x844",
+      "fixture": "none",
+      "status": "partial",
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "screenshot": "screenshots/p1-s1-adjusted-before-save-390.png",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ]
+    },
+    {
+      "personaId": "P1",
+      "sessionId": "S2",
+      "route": "/my -> /calendar",
+      "finalUrl": "https://flowme2605.vercel.app/calendar",
+      "viewport": "390x844",
+      "fixture": "none",
+      "status": "partial",
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "screenshot": "screenshots/p1-s2-calendar-after-date-adjustment-390.png",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ]
+    },
+    {
+      "personaId": "P1",
+      "sessionId": "S3",
+      "route": "/my",
+      "finalUrl": "https://flowme2605.vercel.app/my?view=flows",
+      "viewport": "390x844",
+      "fixture": "none",
+      "status": "supported",
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "screenshot": "screenshots/p1-s3-new-run-and-past-history-390.png",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ]
+    },
+    {
+      "personaId": "P2",
+      "sessionId": "S1",
+      "route": "/f/vehicle-inspection-prep",
+      "finalUrl": "https://flowme2605.vercel.app/f/vehicle-inspection-prep",
+      "viewport": "390x844",
+      "fixture": "none",
+      "status": "supported",
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "screenshot": "screenshots/p2-s1-undated-saved-receipt-390.png",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ]
+    },
+    {
+      "personaId": "P2",
+      "sessionId": "S2",
+      "route": "/my -> /calendar",
+      "finalUrl": "https://flowme2605.vercel.app/calendar",
+      "viewport": "390x844",
+      "fixture": "none",
+      "status": "supported",
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "screenshot": "screenshots/p2-s2-scheduled-and-reopened-390.png",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ]
+    },
+    {
+      "personaId": "P2",
+      "sessionId": "S3",
+      "route": "/calendar -> /my",
+      "finalUrl": "https://flowme2605.vercel.app/my?view=flows",
+      "viewport": "1024x768",
+      "fixture": "none",
+      "status": "supported",
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "screenshot": "screenshots/p2-s3-export-scopes-wide-1024.png",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ]
+    },
+    {
+      "personaId": "P3",
+      "sessionId": "S1",
+      "route": "/f/curated-allblanc-morning-workout",
+      "finalUrl": "https://flowme2605.vercel.app/f/curated-allblanc-morning-workout",
+      "viewport": "390x844",
+      "fixture": "none",
+      "status": "supported",
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "screenshot": "screenshots/p3-s1-routine-receipt-390.png",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ]
+    },
+    {
+      "personaId": "P3",
+      "sessionId": "S2",
+      "route": "/calendar",
+      "finalUrl": "https://flowme2605.vercel.app/calendar",
+      "viewport": "390x844",
+      "fixture": "none",
+      "status": "supported",
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "screenshot": "screenshots/p3-s2-occurrence-reopened-390.png",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ]
+    },
+    {
+      "personaId": "P3",
+      "sessionId": "S3",
+      "route": "/my -> /calendar",
+      "finalUrl": "https://flowme2605.vercel.app/f/curated-allblanc-morning-workout",
+      "viewport": "1024x768",
+      "fixture": "none",
+      "status": "partial",
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "screenshot": "screenshots/p3-s3-routine-wide-boundary-1024.png",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ]
+    },
+    {
+      "personaId": "P4",
+      "sessionId": "S1",
+      "route": "/calendar?demo=ux50",
+      "finalUrl": "https://flowme2605.vercel.app/calendar?demo=ux50",
+      "viewport": "390x844",
+      "fixture": "query_only_demo_ux50",
+      "status": "supported",
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "screenshot": "screenshots/p4-s1-scope-two-flows-390.png",
+      "evidenceKind": [
+        "fixture_only",
+        "current_browser_automation"
+      ]
+    },
+    {
+      "personaId": "P4",
+      "sessionId": "S2",
+      "route": "/calendar?demo=ux50",
+      "finalUrl": "https://flowme2605.vercel.app/calendar?demo=ux50",
+      "viewport": "1024x768",
+      "fixture": "query_only_demo_ux50",
+      "status": "supported",
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "screenshot": "screenshots/p4-s2-same-date-full-identity-1024.png",
+      "evidenceKind": [
+        "fixture_only",
+        "current_browser_automation"
+      ]
+    },
+    {
+      "personaId": "P4",
+      "sessionId": "S3",
+      "route": "/calendar",
+      "finalUrl": "https://flowme2605.vercel.app/calendar",
+      "viewport": "390x844",
+      "fixture": "seeded_saved_flows",
+      "status": "supported",
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "screenshot": "screenshots/p4-s3-undated-batch-undo-390.png",
+      "evidenceKind": [
+        "fixture_only",
+        "current_browser_automation"
+      ]
+    },
+    {
+      "personaId": "P5",
+      "sessionId": "S1",
+      "route": "/f/moving-d30-basic",
+      "finalUrl": "https://flowme2605.vercel.app/f/moving-d30-basic",
+      "viewport": "390x844",
+      "fixture": "none",
+      "status": "supported",
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "screenshot": "screenshots/p5-s1-public-export-preflight-390.png",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ]
+    },
+    {
+      "personaId": "P5",
+      "sessionId": "S2",
+      "route": "/my",
+      "finalUrl": "https://flowme2605.vercel.app/my?view=flows",
+      "viewport": "390x844",
+      "fixture": "none",
+      "status": "supported",
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "screenshot": "screenshots/p5-s2-selected-current-export-390.png",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ]
+    },
+    {
+      "personaId": "P5",
+      "sessionId": "S3",
+      "route": "/my",
+      "finalUrl": "https://flowme2605.vercel.app/my?view=flows",
+      "viewport": "1024x768",
+      "fixture": "none",
+      "status": "partial",
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "screenshot": "screenshots/p5-s3-projection-parity-wide-1024.png",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ]
+    },
+    {
+      "personaId": "P6",
+      "sessionId": "S1",
+      "route": "/flows",
+      "finalUrl": "https://flowme2605.vercel.app/my?savedFlow=url-draft-1784765815330-l8m5b",
+      "viewport": "390x844",
+      "fixture": "none",
+      "status": "supported",
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "screenshot": "screenshots/p6-s1-memo-draft-receipt-390.png",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ]
+    },
+    {
+      "personaId": "P6",
+      "sessionId": "S2",
+      "route": "/my",
+      "finalUrl": "https://flowme2605.vercel.app/my?view=flows",
+      "viewport": "390x844",
+      "fixture": "none",
+      "status": "supported",
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "screenshot": "screenshots/p6-s2-draft-structure-and-item-edit-390.png",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ]
+    },
+    {
+      "personaId": "P6",
+      "sessionId": "S3",
+      "route": "/calendar -> /my",
+      "finalUrl": "https://flowme2605.vercel.app/my?view=flows",
+      "viewport": "1024x768",
+      "fixture": "none",
+      "status": "partial",
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "screenshot": "screenshots/p6-s3-draft-revisit-wide-1024.png",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ]
+    },
+    {
+      "personaId": "P7",
+      "sessionId": "S1",
+      "route": "/f/vehicle-inspection-prep -> /my",
+      "finalUrl": "https://flowme2605.vercel.app/my?savedFlow=vehicle-inspection-prep&view=flows",
+      "viewport": "390x844",
+      "fixture": "none",
+      "status": "supported",
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "screenshot": "screenshots/p7-s1-first-execution-note-390.png",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ]
+    },
+    {
+      "personaId": "P7",
+      "sessionId": "S2",
+      "route": "/my",
+      "finalUrl": "https://flowme2605.vercel.app/my?view=flows",
+      "viewport": "390x844",
+      "fixture": "none",
+      "status": "supported",
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "screenshot": "screenshots/p7-s2-reflection-and-source-correction-390.png",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ]
+    },
+    {
+      "personaId": "P7",
+      "sessionId": "S3",
+      "route": "/my",
+      "finalUrl": "https://flowme2605.vercel.app/my?view=flows",
+      "viewport": "1024x768",
+      "fixture": "none",
+      "status": "partial",
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "screenshot": "screenshots/p7-s3-new-run-history-wide-1024.png",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ]
+    },
+    {
+      "personaId": "P8",
+      "sessionId": "S1",
+      "route": "/f/moving-d30-basic",
+      "finalUrl": "https://flowme2605.vercel.app/f/moving-d30-basic",
+      "viewport": "390x844",
+      "fixture": "none",
+      "status": "partial",
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "screenshot": "screenshots/p8-s1-keyboard-save-before-390.png",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_browser_automation"
+      ]
+    },
+    {
+      "personaId": "P8",
+      "sessionId": "S2",
+      "route": "/my?demo=ux20&view=flows",
+      "finalUrl": "https://flowme2605.vercel.app/my?demo=ux20&view=flows",
+      "viewport": "390x844",
+      "fixture": "query_only_demo_ux20",
+      "status": "supported",
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "screenshot": "screenshots/p8-s2-keyboard-my-flow-menu-390.png",
+      "evidenceKind": [
+        "fixture_only",
+        "current_browser_automation"
+      ]
+    },
+    {
+      "personaId": "P8",
+      "sessionId": "S3",
+      "route": "/calendar",
+      "finalUrl": "https://flowme2605.vercel.app/calendar",
+      "viewport": "390x844",
+      "fixture": "seeded_saved_flows",
+      "status": "partial",
+      "horizontalOverflow": 0,
+      "unnamedFocusableCount": 0,
+      "consoleErrorCount": 0,
+      "pageErrorCount": 0,
+      "screenshot": "screenshots/p8-s3-keyboard-calendar-zoom-200-390.png",
+      "evidenceKind": [
+        "fixture_only",
+        "current_browser_automation"
+      ]
+    }
+  ],
+  "globalErrors": []
+}

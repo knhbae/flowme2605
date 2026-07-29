@@ -1,0 +1,898 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe P30 멀티세션 독립 검토</title>
+  <style>
+    :root {
+      --ink: #17202a;
+      --muted: #5f6b76;
+      --line: #dce2e8;
+      --paper: #ffffff;
+      --canvas: #f3f5f7;
+      --navy: #173b57;
+      --blue: #1769aa;
+      --cyan: #dff3f5;
+      --green: #167451;
+      --green-bg: #e5f4ed;
+      --amber: #8c5800;
+      --amber-bg: #fff1cc;
+      --red: #a02a2a;
+      --red-bg: #fde8e5;
+      --violet: #67509a;
+      --shadow: 0 14px 36px rgba(23, 32, 42, .08);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--canvas);
+      font-family: Inter, Pretendard, "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+    a { color: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    .skip {
+      position: fixed; left: 12px; top: -60px; z-index: 20;
+      padding: 10px 14px; background: #fff; border: 2px solid var(--blue); border-radius: 6px;
+    }
+    .skip:focus { top: 12px; }
+    .topbar {
+      position: sticky; top: 0; z-index: 10;
+      display: flex; align-items: center; justify-content: space-between; gap: 18px;
+      min-height: 58px; padding: 10px clamp(16px, 4vw, 56px);
+      color: #fff; background: rgba(23, 59, 87, .96); backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,.18);
+    }
+    .brand { font-weight: 800; white-space: nowrap; }
+    .topnav { display: flex; gap: 5px; overflow-x: auto; scrollbar-width: thin; }
+    .topnav a {
+      flex: 0 0 auto; min-height: 34px; display: inline-flex; align-items: center;
+      padding: 7px 10px; color: #dcecf7; text-decoration: none; font-size: 13px; font-weight: 700;
+      border-radius: 5px;
+    }
+    .topnav a:hover, .topnav a:focus-visible { color: #fff; background: rgba(255,255,255,.13); outline: none; }
+    main { overflow: clip; }
+    .band { padding: clamp(46px, 7vw, 92px) clamp(16px, 5vw, 72px); }
+    section[id], .section-head[id] { scroll-margin-top: 74px; }
+    .band.white { background: var(--paper); }
+    .band.dark { color: #f7fbff; background: var(--navy); }
+    .band.soft { background: #eaf0f3; }
+    .inner { width: min(1180px, 100%); margin: 0 auto; }
+    .eyebrow { margin: 0 0 10px; color: var(--blue); font-size: 12px; font-weight: 850; text-transform: uppercase; }
+    .dark .eyebrow { color: #8cdde0; }
+    h1, h2, h3, p { overflow-wrap: anywhere; }
+    h1 { margin: 0; max-width: 880px; font-size: clamp(36px, 6vw, 72px); line-height: 1.04; letter-spacing: 0; }
+    h2 { margin: 0; font-size: clamp(28px, 4vw, 44px); line-height: 1.13; letter-spacing: 0; }
+    h3 { margin: 0; font-size: 19px; line-height: 1.35; letter-spacing: 0; }
+    .lede { max-width: 760px; margin: 20px 0 0; color: #d7e5ed; font-size: clamp(16px, 2vw, 20px); line-height: 1.7; }
+    .section-lede { max-width: 760px; margin: 14px 0 0; color: var(--muted); font-size: 16px; line-height: 1.7; }
+    .verdict-row { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(280px, .7fr); gap: 34px; align-items: end; margin-top: 48px; }
+    .verdict {
+      display: inline-flex; align-items: center; min-height: 44px; width: fit-content; padding: 10px 14px;
+      color: #102b3e; background: #9ce4df; border-radius: 5px; font-size: 14px; font-weight: 900;
+    }
+    .decision { margin: 18px 0 0; max-width: 780px; color: #fff; font-size: 21px; line-height: 1.55; font-weight: 650; }
+    .meta { margin: 0; border-top: 1px solid rgba(255,255,255,.22); }
+    .meta div { display: flex; justify-content: space-between; gap: 20px; padding: 11px 0; border-bottom: 1px solid rgba(255,255,255,.16); }
+    .meta dt { color: #a9c2d1; font-size: 12px; font-weight: 700; }
+    .meta dd { margin: 0; text-align: right; font-size: 13px; font-weight: 800; }
+    .metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 34px; border-top: 1px solid rgba(255,255,255,.18); border-bottom: 1px solid rgba(255,255,255,.18); }
+    .metric { padding: 21px 18px; border-right: 1px solid rgba(255,255,255,.18); }
+    .metric:last-child { border-right: 0; }
+    .metric strong { display: block; font-size: 34px; line-height: 1; }
+    .metric span { display: block; margin-top: 9px; color: #bcd1dd; font-size: 12px; font-weight: 700; }
+    .section-head { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: 28px; }
+    .section-index { color: #83909a; font-size: 12px; font-weight: 800; }
+    .alert {
+      display: grid; grid-template-columns: minmax(0, .75fr) minmax(0, 1.25fr); gap: 0;
+      background: var(--paper); border: 1px solid #e3b4ae; border-left: 5px solid var(--red); border-radius: 7px; box-shadow: var(--shadow); overflow: hidden;
+    }
+    .alert-copy { padding: clamp(24px, 4vw, 44px); }
+    .severity { display: inline-flex; padding: 6px 9px; color: #fff; background: var(--red); border-radius: 4px; font-size: 11px; font-weight: 900; }
+    .alert-copy h3 { margin-top: 16px; font-size: clamp(24px, 3vw, 34px); }
+    .alert-copy p { color: var(--muted); line-height: 1.7; }
+    .evidence-code { display: grid; gap: 10px; margin: 24px 0 0; }
+    .evidence-code div { display: grid; grid-template-columns: 110px minmax(0,1fr); gap: 16px; padding-top: 10px; border-top: 1px solid var(--line); }
+    .evidence-code dt { color: var(--muted); font-size: 12px; font-weight: 750; }
+    .evidence-code dd { margin: 0; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 13px; font-weight: 800; }
+    .alert-image { min-height: 520px; background: #dfe7eb; display: flex; align-items: center; justify-content: center; padding: 18px; }
+    .alert-image img { display: block; max-width: 100%; max-height: 610px; object-fit: contain; border: 1px solid #cad2d8; border-radius: 5px; box-shadow: 0 12px 28px rgba(30,40,50,.14); }
+    .contract { display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px; align-items: stretch; margin-top: 28px; }
+    .contract-panel { background: #fff; border: 1px solid var(--line); border-radius: 7px; overflow: hidden; }
+    .contract-panel header { padding: 15px 18px; border-bottom: 1px solid var(--line); font-size: 13px; font-weight: 850; }
+    .contract-panel.current header { color: var(--red); background: var(--red-bg); }
+    .contract-panel.proposed header { color: var(--green); background: var(--green-bg); }
+    .timeline { padding: 18px; }
+    .timeline-row { display: grid; grid-template-columns: 126px 1fr; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+    .timeline-row:last-child { border-bottom: 0; }
+    .timeline-row span { color: var(--muted); font-size: 12px; font-weight: 700; }
+    .timeline-row strong { font-size: 14px; }
+    .bad { color: var(--red); }
+    .good { color: var(--green); }
+    .arrow { align-self: center; color: var(--blue); font-size: 28px; font-weight: 900; }
+    .findings { border-top: 1px solid var(--line); }
+    .finding { display: grid; grid-template-columns: 130px minmax(0,1fr) minmax(230px,.52fr); gap: 24px; padding: 24px 0; border-bottom: 1px solid var(--line); }
+    .finding .rank { font-size: 12px; font-weight: 900; }
+    .finding .rank.blocking { color: var(--red); }
+    .finding .rank.high { color: #a04c1c; }
+    .finding .rank.medium { color: var(--amber); }
+    .finding h3 { margin-bottom: 8px; }
+    .finding p { margin: 0; color: var(--muted); line-height: 1.65; }
+    .finding aside { padding-left: 18px; border-left: 2px solid var(--line); color: #43505c; font-size: 13px; line-height: 1.6; }
+    .complexity-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 1px; margin-top: 28px; background: var(--line); border: 1px solid var(--line); }
+    .complexity-card { min-height: 170px; padding: 22px; background: #fff; }
+    .complexity-card strong { display: block; color: var(--navy); font-size: 34px; line-height: 1; }
+    .complexity-card span { display: block; margin-top: 9px; font-size: 13px; font-weight: 850; }
+    .complexity-card p { margin: 10px 0 0; color: var(--muted); font-size: 12px; line-height: 1.55; }
+    .simplify-rule { display: grid; grid-template-columns: 150px minmax(0,1fr) minmax(0,1fr); gap: 18px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+    .simplify-rule:last-child { border-bottom: 0; }
+    .simplify-rule > strong { color: var(--blue); font-size: 13px; }
+    .simplify-rule span { font-size: 13px; line-height: 1.55; }
+    .simplify-rule span:last-child { color: var(--muted); }
+    .tag { display: inline-flex; margin: 0 5px 5px 0; padding: 4px 7px; border: 1px solid #cad4dc; border-radius: 4px; color: #475660; background: #fff; font-size: 10px; font-weight: 800; }
+    .gallery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+    figure { margin: 0; min-width: 0; }
+    .shot { background: #e8edf0; border: 1px solid var(--line); border-radius: 7px; overflow: hidden; }
+    .shot img { display: block; width: 100%; height: 340px; object-fit: contain; background: #eef2f4; }
+    figcaption { padding: 12px 14px 14px; color: #4d5964; font-size: 12px; line-height: 1.55; }
+    .wide-shot { grid-column: span 2; }
+    .wide-shot .shot img { height: 420px; }
+    .score-summary { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0; }
+    .pill { display: inline-flex; min-height: 31px; align-items: center; padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 850; }
+    .pill.supported { color: var(--green); background: var(--green-bg); }
+    .pill.partial { color: var(--amber); background: var(--amber-bg); }
+    .pill.blocked { color: var(--red); background: var(--red-bg); }
+    .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 7px; background: #fff; }
+    table { width: 100%; border-collapse: collapse; min-width: 850px; }
+    th, td { padding: 12px 13px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); font-size: 12px; line-height: 1.5; }
+    th { position: sticky; top: 58px; z-index: 2; color: #33424e; background: #edf2f5; font-weight: 850; }
+    tr:last-child td { border-bottom: 0; }
+    td strong { font-size: 13px; }
+    .status-dot { display: inline-flex; align-items: center; gap: 6px; font-weight: 850; }
+    .status-dot::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #84929d; }
+    .status-dot.supported { color: var(--green); }
+    .status-dot.supported::before { background: var(--green); }
+    .status-dot.partial { color: var(--amber); }
+    .status-dot.partial::before { background: #cc8500; }
+    .journey-map { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); border: 1px solid rgba(255,255,255,.22); border-radius: 7px; overflow: hidden; margin-top: 30px; }
+    .journey-stage { min-height: 150px; padding: 20px; border-right: 1px solid rgba(255,255,255,.18); border-bottom: 1px solid rgba(255,255,255,.18); }
+    .journey-stage:nth-child(4n) { border-right: 0; }
+    .journey-stage strong { display: block; font-size: 15px; }
+    .journey-stage span { display: block; margin-top: 10px; color: #bcd1dd; font-size: 12px; line-height: 1.6; }
+    .journey-stage.revise { background: rgba(255,192,96,.10); }
+    .feedback-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 18px; }
+    .feedback-card { display: flex; min-width: 0; flex-direction: column; background: #fff; border: 1px solid var(--line); border-radius: 7px; overflow: hidden; }
+    .feedback-card img { display: block; width: 100%; height: 360px; object-fit: contain; background: #eef2f4; border-bottom: 1px solid var(--line); }
+    .feedback-card .copy { display: grid; gap: 12px; padding: 18px; }
+    .feedback-card .copy p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.65; }
+    .feedback-card .facts { display: grid; gap: 7px; padding-top: 12px; border-top: 1px solid var(--line); }
+    .feedback-card .facts span { color: #43505c; font-size: 11px; line-height: 1.5; }
+    .feedback-card .decision-line { padding: 10px 12px; color: var(--green); background: var(--green-bg); border-left: 3px solid var(--green); font-size: 12px; font-weight: 800; line-height: 1.5; }
+    .wire-stack { display: grid; gap: 16px; margin-top: 28px; }
+    .mobile-wire { display: grid; grid-template-columns: 145px minmax(0,1fr) minmax(0,1fr); gap: 0; background: #fff; border: 1px solid var(--line); border-radius: 7px; overflow: hidden; }
+    .mobile-wire > header { padding: 18px; color: #fff; background: var(--navy); }
+    .mobile-wire > header strong { display: block; font-size: 14px; }
+    .mobile-wire > header span { display: block; margin-top: 7px; color: #bbd1df; font-size: 11px; line-height: 1.5; }
+    .mobile-wire .state { padding: 18px; border-left: 1px solid var(--line); }
+    .mobile-wire .state h3 { font-size: 14px; }
+    .mobile-wire .state p { margin: 8px 0 0; color: var(--muted); font-size: 12px; line-height: 1.55; }
+    .mobile-wire .state.proposed { background: #f0f8f4; }
+    .mobile-wire .state ul { margin: 12px 0 0; padding-left: 17px; color: #43505c; font-size: 12px; line-height: 1.7; }
+    .reference-list { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 1px; margin-top: 28px; background: var(--line); border: 1px solid var(--line); }
+    .reference-list article { min-height: 150px; padding: 18px; background: #fff; }
+    .reference-list strong { display: block; font-size: 14px; }
+    .reference-list p { margin: 8px 0 13px; color: var(--muted); font-size: 12px; line-height: 1.55; }
+    .reference-list a { color: var(--blue); font-size: 11px; font-weight: 800; }
+    .policy-note { margin-top: 24px; padding: 18px 20px; color: #4b3a12; background: var(--amber-bg); border-left: 4px solid #d2921c; }
+    .policy-note strong { display: block; margin-bottom: 6px; font-size: 14px; }
+    .policy-note p { margin: 0; font-size: 13px; line-height: 1.65; }
+    .comparison { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 20px; }
+    .wire { border: 1px solid var(--line); background: #fff; border-radius: 7px; overflow: hidden; }
+    .wire > header { display: flex; justify-content: space-between; gap: 12px; padding: 13px 16px; border-bottom: 1px solid var(--line); font-size: 12px; font-weight: 850; }
+    .wire-body { padding: 16px; }
+    .ui-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+    .ui-row:last-child { border-bottom: 0; }
+    .ui-row strong { font-size: 13px; }
+    .ui-row small { display: block; margin-top: 3px; color: var(--muted); line-height: 1.45; }
+    .ui-button { flex: 0 0 auto; padding: 7px 10px; color: #fff; background: var(--blue); border-radius: 4px; font-size: 11px; font-weight: 850; }
+    .ui-button.secondary { color: var(--navy); background: #e4edf3; }
+    .ui-button.danger { color: var(--red); background: var(--red-bg); }
+    .radio-line { display: grid; gap: 8px; margin: 10px 0; }
+    .radio-line span { padding: 10px 12px; border: 1px solid var(--line); border-radius: 5px; font-size: 12px; font-weight: 750; }
+    .radio-line span.selected { border-color: var(--blue); background: #edf7ff; color: #164f78; }
+    .service-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); border-top: 1px solid var(--line); }
+    .service { display: grid; grid-template-columns: 1fr auto; gap: 16px; padding: 18px 0; border-bottom: 1px solid var(--line); }
+    .service:nth-child(odd) { padding-right: 28px; border-right: 1px solid var(--line); }
+    .service:nth-child(even) { padding-left: 28px; }
+    .service strong { display: block; font-size: 14px; }
+    .service p { margin: 6px 0 0; color: var(--muted); font-size: 12px; line-height: 1.55; }
+    .score { color: var(--blue); font-size: 23px; font-weight: 900; }
+    .backlog { counter-reset: item; border-top: 1px solid var(--line); }
+    .backlog article { counter-increment: item; display: grid; grid-template-columns: 120px minmax(0,1fr) minmax(240px,.45fr); gap: 24px; padding: 25px 0; border-bottom: 1px solid var(--line); }
+    .backlog .id { color: var(--blue); font-size: 13px; font-weight: 900; }
+    .backlog h3 { margin-bottom: 7px; }
+    .backlog p { margin: 0; color: var(--muted); line-height: 1.6; }
+    .backlog aside { font-size: 12px; line-height: 1.6; }
+    .verify { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 1px; margin-top: 28px; background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.18); }
+    .verify div { min-height: 100px; padding: 17px; background: var(--navy); }
+    .verify strong { display: block; font-size: 20px; }
+    .verify span { display: block; margin-top: 8px; color: #bcd1dd; font-size: 11px; line-height: 1.5; }
+    .link-list { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 24px; }
+    .link-list a { display: inline-flex; align-items: center; min-height: 38px; padding: 8px 11px; color: #fff; text-decoration: none; border: 1px solid rgba(255,255,255,.3); border-radius: 5px; font-size: 12px; font-weight: 750; }
+    footer { padding: 28px 20px; color: #51606b; background: #dfe5e9; text-align: center; font-size: 12px; }
+    @media (max-width: 820px) {
+      .topbar { align-items: flex-start; flex-direction: column; gap: 6px; padding: 9px 14px; }
+      section[id], .section-head[id] { scroll-margin-top: 104px; }
+      .topnav { width: 100%; }
+      .band { padding-left: 16px; padding-right: 16px; }
+      .verdict-row, .alert, .comparison { grid-template-columns: 1fr; }
+      .feedback-grid, .reference-list { grid-template-columns: 1fr; }
+      .mobile-wire { grid-template-columns: 1fr; }
+      .mobile-wire .state { border-left: 0; border-top: 1px solid var(--line); }
+      .metrics { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .metric:nth-child(2) { border-right: 0; }
+      .metric:nth-child(-n+2) { border-bottom: 1px solid rgba(255,255,255,.18); }
+      .alert-image { min-height: 340px; }
+      .contract { grid-template-columns: 1fr; }
+      .arrow { transform: rotate(90deg); justify-self: center; }
+      .finding, .backlog article { grid-template-columns: 1fr; gap: 10px; }
+      .complexity-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .simplify-rule { grid-template-columns: 1fr; gap: 6px; }
+      .finding aside { padding: 10px 0 0; border-left: 0; border-top: 2px solid var(--line); }
+      .gallery { grid-template-columns: 1fr; }
+      .wide-shot { grid-column: auto; }
+      .shot img, .wide-shot .shot img { height: 430px; }
+      .journey-map { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .journey-stage:nth-child(4n) { border-right: 1px solid rgba(255,255,255,.18); }
+      .journey-stage:nth-child(2n) { border-right: 0; }
+      .service-grid { grid-template-columns: 1fr; }
+      .service:nth-child(odd), .service:nth-child(even) { padding-left: 0; padding-right: 0; border-right: 0; }
+      .verify { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      th { top: 92px; }
+    }
+    @media (max-width: 430px) {
+      h1 { font-size: 39px; }
+      .decision { font-size: 18px; }
+      .metrics { grid-template-columns: 1fr; }
+      .metric { border-right: 0; border-bottom: 1px solid rgba(255,255,255,.18); }
+      .metric:last-child { border-bottom: 0; }
+      .journey-map, .verify { grid-template-columns: 1fr; }
+      .complexity-grid { grid-template-columns: 1fr; }
+      .journey-stage { border-right: 0; }
+      .shot img, .wide-shot .shot img { height: 500px; }
+      .feedback-card img { height: 500px; }
+      .evidence-code div, .timeline-row { grid-template-columns: 1fr; gap: 4px; }
+      .section-head { align-items: flex-start; flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">본문으로 이동</a>
+  <header class="topbar">
+    <div class="brand">FLOWME / P30 REVIEW</div>
+    <nav class="topnav" aria-label="보고서 섹션">
+      <a href="#verdict">판정</a>
+      <a href="#blocking">Blocking</a>
+      <a href="#complexity">복잡도</a>
+      <a href="#mobile-feedback">모바일 보강</a>
+      <a href="#lifecycle">조작·삭제</a>
+      <a href="#findings">Findings</a>
+      <a href="#journeys">24 Journeys</a>
+      <a href="#continuity">Continuity</a>
+      <a href="#proposed">Proposed</a>
+      <a href="#p31">P31</a>
+      <a href="#verification">검증</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="band dark" id="verdict">
+      <div class="inner">
+        <p class="eyebrow">Independent automated simulation / 2026-07-23</p>
+        <h1>골격은 유지한다.<br>사용법은 더 단순해져야 한다.</h1>
+        <p class="lede">데이터·IA의 전면 rewrite는 필요 없다. 그러나 수행 가능하다는 사실을 쉬움으로 해석해서는 안 된다. 날짜 신뢰를 먼저 고친 뒤 저장 전, My Flow, Calendar의 기본 노출량을 함께 줄여야 한다.</p>
+        <div class="verdict-row">
+          <div>
+            <span class="verdict">ARCHITECTURE · bounded_revision</span>
+            <p class="decision">INTERACTION · coordinated_simplification_required. P31은 correctness 수정과 공통 surface 복잡도 감축을 함께 진행한다.</p>
+          </div>
+          <dl class="meta">
+            <div><dt>Reviewer role</dt><dd>codex_independent</dd></div>
+            <div><dt>Origin/main</dt><dd>4c5bbb34</dd></div>
+            <div><dt>Observed users</dt><dd>0</dd></div>
+            <div><dt>App code changes</dt><dd>없음</dd></div>
+          </dl>
+        </div>
+        <div class="metrics" aria-label="검토 요약">
+          <div class="metric"><strong>16</strong><span>supported cells</span></div>
+          <div class="metric"><strong>11</strong><span>설명에 의존한 cells</span></div>
+          <div class="metric"><strong>191</strong><span>scripted interaction depth</span></div>
+          <div class="metric"><strong>0</strong><span>observed users</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="blocking">
+      <div class="inner">
+        <div class="section-head">
+          <div><p class="eyebrow">Highest priority</p><h2>최신 날짜가 export까지 가지 않는다</h2></div>
+          <span class="section-index">B-01</span>
+        </div>
+        <div class="alert">
+          <div class="alert-copy">
+            <span class="severity">BLOCKING</span>
+            <h3>사용자는 8월 3일로 바꿨지만 Calendar는 8월 1일을 쓴다.</h3>
+            <p>저장 전 조정 날짜가 item draft에 남고, 저장 후 실행 날짜 override보다 먼저 읽힌다. 제목과 메모는 최신인데 날짜만 과거 값인 혼합 artifact가 만들어졌다.</p>
+            <dl class="evidence-code">
+              <div><dt>Save-before</dt><dd>2026-08-01</dd></div>
+              <div><dt>My Flow edit</dt><dd>2026-08-03</dd></div>
+              <div><dt>Calendar 08-03</dt><dd class="bad">0 events</dd></div>
+              <div><dt>Calendar 08-01</dt><dd class="bad">1 stale event</dd></div>
+              <div><dt>Whole ICS</dt><dd class="bad">DTSTART:20260801</dd></div>
+            </dl>
+            <p><span class="tag">current_production_interaction</span><span class="tag">current_browser_automation</span><span class="tag">current_source</span></p>
+          </div>
+          <div class="alert-image">
+            <img src="screenshots/p1-s2-calendar-after-date-adjustment-390.png" alt="My Flow에서 날짜를 수정한 뒤 Calendar에 오래된 날짜가 남은 모바일 production 화면">
+          </div>
+        </div>
+
+        <div class="contract" aria-label="현재와 제안 날짜 계약 비교">
+          <section class="contract-panel current">
+            <header>Current · 두 저장소가 경쟁</header>
+            <div class="timeline">
+              <div class="timeline-row"><span>save-before draft</span><strong>2026-08-01 · 1순위</strong></div>
+              <div class="timeline-row"><span>execution override</span><strong>2026-08-03 · 2순위</strong></div>
+              <div class="timeline-row"><span>projection</span><strong class="bad">오래된 8월 1일 선택</strong></div>
+            </div>
+          </section>
+          <div class="arrow" aria-hidden="true">→</div>
+          <section class="contract-panel proposed">
+            <header>Proposed · 사용자 최신 의도 우선</header>
+            <div class="timeline">
+              <div class="timeline-row"><span>explicit removal</span><strong>가장 먼저 적용</strong></div>
+              <div class="timeline-row"><span>execution override</span><strong>2026-08-03 · 최신 의도</strong></div>
+              <div class="timeline-row"><span>projection</span><strong class="good">모든 surface가 8월 3일</strong></div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <section class="band soft" id="complexity">
+      <div class="inner">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Capability is not simplicity</p>
+            <h2>지원되지만 아직 설명 없이 쉽지는 않다</h2>
+            <p class="section-lede">P30은 주요 과업을 수행할 수 있다. 하지만 여러 기능이 같은 층에 노출돼 사용자가 지금 필요한 행동보다 제품 구조를 먼저 이해해야 한다.</p>
+          </div>
+          <span class="section-index">interaction complexity</span>
+        </div>
+        <div class="complexity-grid" aria-label="복잡도 지표">
+          <div class="complexity-card"><strong>13/24</strong><span>설명 없이 이해 가능</span><p>나머지 11개 cell은 화면 구조만으로 다음 행동을 확신하기 어려웠다.</p></div>
+          <div class="complexity-card"><strong>7.96</strong><span>cell당 scripted depth</span><p>합계 191회. 실제 사용자 최적 경로가 아니라 지정 시나리오의 자동화 단계다.</p></div>
+          <div class="complexity-card"><strong>16 Tab</strong><span>모바일 save 도달</span><p>artifact control과 날짜·조정 action을 지나 primary save에 도달했다.</p></div>
+          <div class="complexity-card"><strong>74~90</strong><span>펼친 My Flow focusable</span><p>실행, 수정, export, 회고, correction, reuse, 관리가 같은 surface에 누적됐다.</p></div>
+        </div>
+        <div class="findings" style="margin-top: 28px">
+          <div class="simplify-rule"><strong>Save-before</strong><span>전체 결과 + 필수 입력 0~1개 + primary 1개</span><span>항목 조정, secondary artifact, export는 요청할 때 연다.</span></div>
+          <div class="simplify-rule"><strong>My Flow</strong><span>다음 행동 + 진행률 + 전체 Flow</span><span>수정, batch, export, 회고, correction, reuse, 관리는 문맥별 disclosure로 이동한다.</span></div>
+          <div class="simplify-rule"><strong>Calendar</strong><span>선택 날짜 agenda를 기본 mode로 사용</span><span>Flow 범위와 날짜 없는 batch 배치는 별도 mode 또는 sheet로 연다.</span></div>
+          <div class="simplify-rule"><strong>Item detail</strong><span>완료/reopen + 제목 + 날짜의 quick edit</span><span>시간, duration, memo, source, current export는 상세 영역으로 이동한다.</span></div>
+        </div>
+        <p class="section-lede">목표는 기능 삭제가 아니라 기본 노출 감축이다. 설명 없이 수행 가능한 cell을 13/24에서 20/24 이상으로 높이고, 일반 next action은 surface 진입 후 2 tap/click 이내로 제한한다.</p>
+      </div>
+    </section>
+
+    <section class="band white" id="mobile-feedback">
+      <div class="inner">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">User feedback replay · mobile 390x844</p>
+            <h2>피드백은 재현됐다.<br>카드를 다듬는 수준으로는 부족하다.</h2>
+            <p class="section-lede">홈과 찾기의 역할, 콘텐츠별 저장 전 문법, 목록과 상세의 navigation layer를 분리해야 한다. 아래 수치는 production 자동화의 화면 상태이며 실제 사용자 행동 통계가 아니다.</p>
+          </div>
+          <span class="section-index">supplemental evidence</span>
+        </div>
+
+        <div class="complexity-grid" aria-label="추가 모바일 재현 지표">
+          <div class="complexity-card"><strong>2 vs 9</strong><span>홈·찾기 카드</span><p>같은 URL·메모 진입과 같은 card anatomy가 축약/전체 형태로 반복됐다.</p></div>
+          <div class="complexity-card"><strong>24 → 33</strong><span>운동 화면 controls</span><p>한 항목짜리 routine에서 반복 설정을 열면 interactive control이 9개 늘었다.</p></div>
+          <div class="complexity-card"><strong>1702px</strong><span>열린 My Flow 높이</span><p>목록 안에 결혼 Flow workspace가 인라인으로 펼쳐졌다.</p></div>
+          <div class="complexity-card"><strong>1644px</strong><span>Calendar detail 높이</span><p>항목 detail이 선택일 agenda 안에 삽입돼 다음 행을 밀었다.</p></div>
+        </div>
+
+        <div class="feedback-grid" style="margin-top: 28px">
+          <article class="feedback-card">
+            <img src="screenshots/mobile-feedback/mobile-home-current-390.png" alt="모바일 FlowMe 홈 production 화면">
+            <div class="copy">
+              <div><span class="rank high">HIGH · HOME ROLE</span><h3>홈이 Flow 찾기의 축약판이다</h3></div>
+              <p>URL·메모 진입과 같은 카드 2개가 보인다. 재방문 사용자에게 지금 이어갈 실행 맥락을 주지 않는다.</p>
+              <div class="decision-line">처음 방문: 실제 사용 사례 · 재방문: 오늘 이어갈 일. 최근/인기는 Flow 찾기가 소유한다.</div>
+              <div class="facts"><span>Route `/` · 390x844</span><span>current_production_interaction · heuristic_simulation</span></div>
+            </div>
+          </article>
+
+          <article class="feedback-card">
+            <img src="screenshots/mobile-feedback/mobile-discovery-current-390.png" alt="모바일 Flow 찾기 카드 목록 production 화면">
+            <div class="copy">
+              <div><span class="rank medium">MEDIUM · CARD ANATOMY</span><h3>source와 결과보다 반복 metadata가 먼저 읽힌다</h3></div>
+              <p>번호 1·2·3, 조건 chip, 결과 chip, `Flow 열기`가 반복된다. 카드 전체가 링크지만 source는 별도 외부 링크가 아니다.</p>
+              <div class="decision-line">결과 한 줄 + source link + 범위 + primary artifact. 대표 항목은 1~2개, 중복 CTA는 제거한다.</div>
+              <div class="facts"><span>Route `/flows` · 9 cards</span><span>current_production_interaction · current_package_screenshot</span></div>
+            </div>
+          </article>
+
+          <article class="feedback-card">
+            <img src="screenshots/mobile-feedback/mobile-wedding-d180-current-390.png" alt="모바일 결혼 준비 Flow 저장 전 production 화면">
+            <div class="copy">
+              <div><span class="rank high">HIGH · SAVE-BEFORE</span><h3>결과를 고르는 것과 시작하는 것이 연결되지 않는다</h3></div>
+              <p>Calendar, Checklist, Memo가 동등하고 날짜 mode도 세 개다. 선택해도 CTA와 저장 결과의 문법이 곧바로 바뀌지 않는다.</p>
+              <div class="decision-line">Calendar 12개를 추천하고 결혼식 날짜 하나만 연결한다. CTA는 `캘린더 일정 12개 확인`으로 결과를 말한다.</div>
+              <div class="facts"><span>Routes `/f/curated-wedding-naver-timeline`, `/f/wedding-d180-basic`</span><span>current_production_interaction · heuristic_simulation</span></div>
+            </div>
+          </article>
+
+          <article class="feedback-card">
+            <img src="screenshots/mobile-feedback/mobile-workout-current-390.png" alt="모바일 반복 홈트 Flow 저장 전 production 화면">
+            <div class="copy">
+              <div><span class="rank high">HIGH · ROUTINE</span><h3>한 개 운동에도 workbench 전체가 나타난다</h3></div>
+              <p>세 artifact, 세 date mode, 반복, 다음 3회, 전체 구조, 조정, export가 같은 흐름에 있다.</p>
+              <div class="decision-line">영상 + 일정 요약 + 다음 3회 + primary 하나. 일정 미정/설정 후에 따라 artifact eligibility를 바꾼다.</div>
+              <div class="facts"><span>Route `/f/curated-allblanc-morning-workout`</span><span>1353→1703px · controls 24→33</span></div>
+            </div>
+          </article>
+
+          <article class="feedback-card">
+            <img src="screenshots/mobile-feedback/mobile-my-flow-detail-current-390.png" alt="모바일 My Flow 안에서 결혼 Flow가 인라인으로 펼쳐진 production 화면">
+            <div class="copy">
+              <div><span class="rank high">HIGH · MY FLOW</span><h3>목록과 실행 workspace가 한 화면에 겹친다</h3></div>
+              <p>목록 row는 간결하지만 열면 next action, 12개 계획, 7단계, batch, export, progress, 관리가 인라인 누적된다.</p>
+              <div class="decision-line">Flow tap 후 dedicated mobile workspace. 상위 mode는 `실행 · 전체 계획 · 기록`만 유지한다.</div>
+              <div class="facts"><span>Route `/my?demo=ux20&view=flows`</span><span>1702px · controls 30 · first viewport 19</span></div>
+            </div>
+          </article>
+
+          <article class="feedback-card">
+            <img src="screenshots/mobile-feedback/mobile-calendar-item-inline-current-390.png" alt="모바일 Calendar 선택일 agenda 안에 항목 상세가 인라인으로 열린 production 화면">
+            <div class="copy">
+              <div><span class="rank medium">MEDIUM · ITEM DETAIL</span><h3>달력 탐색과 항목 편집이 같은 세로 흐름이다</h3></div>
+              <p>항목을 열면 상세가 agenda 안에 삽입되고 다음 항목이 아래로 밀린다. 선택일 맥락과 편집 layer가 분리되지 않는다.</p>
+              <div class="decision-line">모바일 bottom sheet, wide side inspector. 닫을 때 선택 날짜·scroll·focus를 그대로 복원한다.</div>
+              <div class="facts"><span>Route `/calendar?demo=ux20`</span><span>1644px · first viewport controls 47 · console 0</span></div>
+            </div>
+          </article>
+        </div>
+
+        <div class="section-head" id="lifecycle" style="margin-top: 54px">
+          <div>
+            <p class="eyebrow">Interaction grammar · archive / restore / delete</p>
+            <h2>Flow 삭제는 없다.<br>보관과 복구도 모바일·와이드가 다르다.</h2>
+            <p class="section-lede">현재 접근 가능한 Flow lifecycle는 `보관`뿐이며 영구 삭제 UI는 없다. 더 큰 문제는 완료, 날짜, 제외, 보관이 같은 객체 조작 문법으로 읽히지 않는다는 점이다.</p>
+          </div>
+          <span class="section-index">H-08 · H-09</span>
+        </div>
+
+        <div class="feedback-grid">
+          <article class="feedback-card">
+            <img src="screenshots/mobile-feedback/mobile-flow-management-menu-390.png" alt="모바일 Flow 상세 맨 아래 더보기 메뉴에 Flow 보기와 보관하기가 표시된 production 화면">
+            <div class="copy">
+              <div><span class="rank high">HIGH · HIDDEN LIFECYCLE</span><h3>보관은 상세의 마지막에 숨어 있다</h3></div>
+              <p>Flow를 지우려는 사용자는 전체 계획 끝까지 내려간 뒤 `더보기`를 열어야 처음으로 `보관하기`를 발견한다. 이 동작은 삭제가 아니지만 차이를 미리 설명하는 구조도 없다.</p>
+              <div class="decision-line">dedicated workspace header의 overflow에 `보관`을 고정하고, active Flow에서는 영구 삭제를 노출하지 않는다.</div>
+              <div class="facts"><span>Route `/my?demo=ux20&view=flows` · 390x844</span><span>current_production_interaction · fixture_only</span></div>
+            </div>
+          </article>
+
+          <article class="feedback-card">
+            <img src="screenshots/mobile-feedback/mobile-archived-flow-no-restore-390.png" alt="모바일 My Flow 보관됨 필터에 보관된 Flow 행만 있고 복구 버튼이 없는 production 화면">
+            <div class="copy">
+              <div><span class="rank high">HIGH · MOBILE RECOVERY</span><h3>8초 undo 뒤 모바일 복구가 끊긴다</h3></div>
+              <p>`보관됨` 행을 눌러도 상세가 열리지 않고 직접 `복구` action도 없다. 잠깐의 snackbar를 놓치면 모바일 사용자는 복구 경로에 도달하지 못한다.</p>
+              <div class="decision-line">보관 행 자체에 `복구`를 두고 archive → reload → restore를 390/1024에서 같은 상태 전이로 만든다.</div>
+              <div class="facts"><span>26개 · 보관됨 1개</span><span>current_production_interaction · current_source · fixture_only</span></div>
+            </div>
+          </article>
+
+          <article class="feedback-card">
+            <img src="screenshots/mobile-feedback/wide-archived-flow-restore-menu-1024.png" alt="와이드 My Flow에서 보관 Flow 상세 하단 더보기 메뉴에 복구하기가 표시된 production 화면">
+            <div class="copy">
+              <div><span class="rank high">HIGH · VIEWPORT PARITY</span><h3>와이드만 상세를 통해 복구할 수 있다</h3></div>
+              <p>1024px에서는 보관 목록의 첫 Flow가 오른쪽 canvas에 렌더링되고 최하단 menu에서 복구할 수 있다. 같은 데이터 상태가 viewport에 따라 다른 capability를 가진다.</p>
+              <div class="decision-line">모바일과 wide가 같은 selection, archive inventory, restore component를 공유해야 한다.</div>
+              <div class="facts"><span>Route `/my?demo=ux20&view=flows` · 1024x768</span><span>current_production_interaction · current_source</span></div>
+            </div>
+          </article>
+
+          <article class="feedback-card">
+            <img src="screenshots/mobile-feedback/mobile-data-manager-backup-only-390.png" alt="백업 파일 받기와 불러오기만 제공하는 모바일 데이터 관리 dialog">
+            <div class="copy">
+              <div><span class="rank high">HIGH · DELETE CONTRACT</span><h3>데이터 관리에도 삭제는 없다</h3></div>
+              <p>백업과 불러오기만 제공한다. source의 `removeSavedFlow`는 UI call site가 없고, `clearFlowLocalProgress`를 바로 연결하면 archive slug와 source-backed/personal draft 차이가 사용자 계약으로 남지 않는다.</p>
+              <div class="decision-line">보관된 Flow의 danger zone에서만 `이 기기에서 영구 삭제`를 제공하고, 지워질 개인 데이터와 공개 source 보존을 확인한다.</div>
+              <div class="facts"><span>User-reachable permanent delete 0</span><span>current_production_interaction · current_source</span></div>
+            </div>
+          </article>
+        </div>
+
+        <div class="wire-stack" style="margin-top: 28px">
+          <article class="mobile-wire">
+            <header><strong>공통 조작 문법</strong><span>데이터 축마다 한 쌍의 동사</span></header>
+            <div class="state"><h3>Current</h3><p>완료 · 날짜 제거 · 목록에서 빼기 · 보관 · 미연결 삭제 함수</p><ul><li>`목록에서 빼기`가 Item, draft, subcheck, resource에 반복</li><li>Flow lifecycle는 상세 최하단</li><li>영구 삭제 UI 없음</li></ul></div>
+            <div class="state proposed"><h3>Proposed</h3><p>실행 · 일정 · 개인 구성 · Flow lifecycle를 분리</p><ul><li>완료 / 다시 열기</li><li>날짜 정하기 / 날짜 없애기</li><li>Flow에서 제외 / 다시 포함</li><li>항목 삭제 / 항목 복구</li><li>보관 / 복구 / 이 기기에서 영구 삭제</li></ul></div>
+          </article>
+        </div>
+
+        <div class="section-head" style="margin-top: 54px">
+          <div>
+            <p class="eyebrow">Current vs proposed grammar</p>
+            <h2>한 화면이 답할 질문을 하나로 줄인다</h2>
+            <p class="section-lede">새 글로벌 탭이나 full editor를 추가하지 않는다. 기존 object와 projection을 유지하고 mobile composition과 action placement만 바꾼다.</p>
+          </div>
+        </div>
+
+        <div class="wire-stack">
+          <article class="mobile-wire">
+            <header><strong>Home</strong><span>시작 또는 이어가기</span></header>
+            <div class="state"><h3>Current</h3><p>URL·메모 entry + Flow 찾기와 같은 card 2개</p><ul><li>처음/재방문 구분 없음</li><li>탐색 역할 중복</li></ul></div>
+            <div class="state proposed"><h3>Proposed</h3><p>처음에는 실제 변환 사례, 저장 후에는 next action</p><ul><li>이사 URL → Calendar 24개</li><li>홈트 영상 → 월·수·금 5분</li><li>오늘 이어갈 2개 · 최근 Flow 1개</li></ul></div>
+          </article>
+
+          <article class="mobile-wire">
+            <header><strong>Flow 찾기</strong><span>검색과 신뢰 판단</span></header>
+            <div class="state"><h3>Current</h3><p>category · count · source 문자열 · 1/2/3 · chips · Flow 열기</p><ul><li>whole card와 CTA 중복</li><li>source 직접 열기 불가</li></ul></div>
+            <div class="state proposed"><h3>Proposed</h3><p>결혼식 날짜 기준 Calendar 일정 12개</p><ul><li>원문 ↗ 네이버 일정표</li><li>12개 · Calendar 중심</li><li>대표 2개 · 더보기 chevron</li></ul></div>
+          </article>
+
+          <article class="mobile-wire">
+            <header><strong>결혼 Flow</strong><span>결과 선택과 최소 입력</span></header>
+            <div class="state"><h3>Current</h3><p>Calendar / Checklist / Memo + 날짜 정하기 / 날짜 없이 / 예시</p><ul><li>선택과 저장 action 불연속</li><li>전체 구조 중복</li><li>export output preview 없음</li></ul></div>
+            <div class="state proposed"><h3>Proposed</h3><p>추천: Calendar 타임라인 · 12개</p><ul><li>결혼식 날짜 [2026-11-24]</li><li>단계별 전체 일정 미리보기</li><li>캘린더 일정 12개 확인</li><li>다른 방식 2개</li></ul></div>
+          </article>
+
+          <article class="mobile-wire">
+            <header><strong>홈트 Flow</strong><span>series와 occurrence</span></header>
+            <div class="state"><h3>Current</h3><p>Flow 1 / Calendar 1 / Memo 1 + date modes + 반복 + 전체 구조</p><ul><li>`Calendar 1` 의미 약함</li><li>설정 전후 eligibility 동일</li></ul></div>
+            <div class="state proposed"><h3>Proposed</h3><p>월·수·금 · 5분 · 시간 미정 · 계속</p><ul><li>다음 3회</li><li>반복 설정 변경 sheet</li><li>설정 전: My Flow에서 시작</li><li>설정 후: 반복 일정 1개 확인</li></ul></div>
+          </article>
+
+          <article class="mobile-wire">
+            <header><strong>My Flow</strong><span>한 Flow 실행</span></header>
+            <div class="state"><h3>Current</h3><p>Flow 목록 안에 큰 detail workspace 인라인 삽입</p><ul><li>next / whole / batch / export / progress / manage 동시</li><li>목록과 상세 back-stack 약함</li></ul></div>
+            <div class="state proposed"><h3>Proposed</h3><p>← 결혼 준비 타임라인 · 5/12</p><ul><li>실행 | 전체 계획 | 기록</li><li>다음 할 일 1개</li><li>조정·가져가기·재사용·관리는 overflow/sheet</li></ul></div>
+          </article>
+
+          <article class="mobile-wire">
+            <header><strong>Calendar</strong><span>날짜 탐색과 item detail</span></header>
+            <div class="state"><h3>Current</h3><p>month → selected day → item row → inline detail → 다음 row</p><ul><li>detail open 시 list 높이 변경</li><li>탐색과 편집이 같은 layer</li></ul></div>
+            <div class="state proposed"><h3>Proposed</h3><p>month + selected-day agenda 유지</p><ul><li>item tap → 60% bottom sheet</li><li>완료/reopen · 날짜 · 메모</li><li>expand full-screen</li><li>close 후 날짜·scroll·focus 복원</li></ul></div>
+          </article>
+        </div>
+
+        <div class="policy-note">
+          <strong>사용자 수와 리뷰 수 정책</strong>
+          <p>Notion Marketplace처럼 실제 추가 수·평점·리뷰는 유용한 신뢰 정보다. 그러나 현재 FlowMe에는 해당 telemetry, 기간, review eligibility, moderation 계약이 없다. production의 가상 수치는 금지하고, 비교 prototype에서만 `시뮬레이션 데이터`라고 명시한다.</p>
+        </div>
+
+        <div class="section-head" style="margin-top: 54px">
+          <div>
+            <p class="eyebrow">Official reference patterns</p>
+            <h2>복제하지 않고 역할과 정보 밀도만 차용한다</h2>
+          </div>
+        </div>
+        <div class="reference-list">
+          <article><strong>Todoist</strong><p>Today는 여러 project의 오늘 일을 모으고 탐색은 Browse/Search가 맡는다.</p><a href="https://www.todoist.com/help/articles/plan-your-day-with-the-today-view-UVUXaiSs">공식 Today 문서 ↗</a></article>
+          <article><strong>Apple Reminders</strong><p>Today, Scheduled, All, Completed를 서로 다른 실행 view로 분리한다.</p><a href="https://support.apple.com/en-mide/guide/iphone/iphe882772ed/ios">공식 Smart Lists 문서 ↗</a></article>
+          <article><strong>Notion Home</strong><p>최근 맥락, shortcut, 일정, My Tasks를 모으고 전체 탐색은 다른 surface가 맡는다.</p><a href="https://www.notion.com/it/help/home-and-my-tasks">공식 Home 문서 ↗</a></article>
+          <article><strong>Notion Marketplace</strong><p>실제 추가 수, rating, review, 최근 업데이트로 template 신뢰를 보조한다.</p><a href="https://www.notion.com/help/finding-templates-on-marketplace">공식 Marketplace 문서 ↗</a></article>
+          <article><strong>Strava</strong><p>activity 종류에 맞는 핵심 통계와 한 가지 notable achievement만 카드에서 강조한다.</p><a href="https://support.strava.com/en-us/articles/15401664-activity-stats-in-the-feed">공식 feed stats 문서 ↗</a></article>
+          <article><strong>Nike Training Club</strong><p>단일 workout은 duration과 실행 구조, program은 단계와 진도를 중심으로 읽힌다.</p><a href="https://www.nike.com/help/a/ntc-info">공식 NTC 문서 ↗</a></article>
+          <article><strong>Google Calendar</strong><p>모바일 event detail을 별도 edit 문맥으로 열고 상세 field는 필요할 때 확장한다.</p><a href="https://support.google.com/calendar/answer/72143?co=GENIE.Platform%3DAndroid&amp;hl=en">공식 event 문서 ↗</a></article>
+          <article><strong>Apple Calendar</strong><p>month density와 event detail/edit를 서로 다른 view level로 다룬다.</p><a href="https://support.apple.com/en-gb/guide/iphone/iphfd1054569/ios">공식 Calendar view 문서 ↗</a></article>
+          <article><strong>Wanderlog</strong><p>itinerary는 day별로 읽고 map과 batch move는 문맥별 기능으로 분리한다.</p><a href="https://wanderlog.com/blog/faq/">공식 FAQ ↗</a></article>
+        </div>
+        <p class="section-lede">전체 재현, screenshot 경로, metric 정책과 P31 marker는 <a href="mobile-feedback-supplement.md">모바일 피드백 보강</a>, <a href="mobile-feedback-evidence.json">모바일 구조화 evidence</a>, <a href="interaction-data-lifecycle-supplement.md">조작·삭제 보강</a>에서 확인할 수 있다.</p>
+      </div>
+    </section>
+
+    <section class="band white" id="findings">
+      <div class="inner">
+        <div class="section-head">
+          <div><p class="eyebrow">Severity findings</p><h2>가장 중요한 correctness와 interaction findings</h2><p class="section-lede">취향 차이나 prior artifact의 미해결 목록을 되살리지 않았다. current production에서 재현한 correctness와 interaction evidence만 사용했다.</p></div>
+          <span class="section-index">핵심 08</span>
+        </div>
+        <div class="findings">
+          <article class="finding">
+            <div class="rank blocking">BLOCKING · B-01</div>
+            <div><h3>날짜 precedence 불일치</h3><p>post-save 날짜가 Calendar와 whole ICS에서 무시된다. portable artifact 신뢰를 직접 깨뜨린다.</p></div>
+            <aside>먼저 resolver와 저장 중복을 고정한다.<br><span class="tag">P31-01</span><span class="tag">date contract</span></aside>
+          </article>
+          <article class="finding">
+            <div class="rank high">HIGH · H-00</div>
+            <div><h3>기능이 한 surface에 누적돼 설명 없이 쉽지 않음</h3><p>24개 중 11개 cell이 설명에 의존했다. save-before, My Flow, Calendar에서 실행과 조정·관리 기능의 노출 계층을 줄여야 한다.</p></div>
+            <aside>P31-02~05를 coordinated simplification으로 재구성한다.<br><span class="tag">interaction hierarchy</span><span class="tag">progressive disclosure</span></aside>
+          </article>
+          <article class="finding">
+            <div class="rank high">HIGH · H-01</div>
+            <div><h3>현재 실행의 전체 기준일을 다시 조정할 수 없음</h3><p>`/f`에서 조정 저장한 이사 Flow는 item 편집만 있고 anchor/settings action이 렌더링되지 않는다.</p></div>
+            <aside>My Flow execution-first disclosure 안에서 기존 personal settings를 연결한다.<br><span class="tag">P31-03</span><span class="tag">component composition</span></aside>
+          </article>
+          <article class="finding">
+            <div class="rank high">HIGH · H-02</div>
+            <div><h3>날짜 없는 재사용이 날짜를 강제</h3><p>날짜 없이 시작한 차량 점검도 새 run에서는 검사일을 필수로 요구한다.</p></div>
+            <aside>undated와 dated 두 경로를 같은 reuse preview에서 제공한다.<br><span class="tag">P31-03</span><span class="tag">interaction state</span></aside>
+          </article>
+          <article class="finding">
+            <div class="rank high">HIGH · H-03</div>
+            <div><h3>발견 결과와 public Flow identity가 분리</h3><p>`/flows`의 5-item 이사 map과 `/f`의 24-item 이사 Flow가 같은 job 안에서 연결되지 않는다.</p></div>
+            <aside>save-before 단순화와 함께 canonical variant bridge를 둔다.<br><span class="tag">P31-02</span><span class="tag">identity</span></aside>
+          </article>
+          <article class="finding">
+            <div class="rank high">HIGH · H-08</div>
+            <div><h3>Flow lifecycle가 숨고 모바일 복구가 끊김</h3><p>보관은 상세 최하단에 있고, 8초 undo 뒤 모바일 보관 행에서는 복구 action에 도달하지 못한다. 와이드에서만 상세 menu로 복구할 수 있다.</p></div>
+            <aside>보관 행 직접 복구와 viewport parity를 고정한다.<br><span class="tag">P31-03</span><span class="tag">lifecycle</span></aside>
+          </article>
+          <article class="finding">
+            <div class="rank high">HIGH · H-09</div>
+            <div><h3>조작 동사가 데이터 영향을 설명하지 못함</h3><p>`목록에서 빼기`가 개인 제외와 구조 삭제에 함께 쓰이고 Flow 영구 삭제 UI는 없다.</p></div>
+            <aside>실행·일정·구성·lifecycle 문법과 delete contract를 분리한다.<br><span class="tag">P31-03</span><span class="tag">P31-05</span></aside>
+          </article>
+          <article class="finding">
+            <div class="rank medium">MEDIUM · M-01</div>
+            <div><h3>조정 취소 후 keyboard focus 유실</h3><p>조정 frame은 닫히지만 focus가 호출한 `조정` 버튼으로 돌아오지 않는다.</p></div>
+            <aside>trigger ref와 close focus contract를 추가한다.<br><span class="tag">P31-05</span><span class="tag">accessibility</span></aside>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="band soft" id="production">
+      <div class="inner">
+        <div class="section-head">
+          <div><p class="eyebrow">Current production</p><h2>Composition은 유지하고 control density는 줄인다</h2><p class="section-lede">1440px에서도 public, My Flow, Calendar는 서로 다른 작업 역할을 가진다. 이 골격은 유지할 수 있지만 한 화면에 보이는 command 종류가 많다는 문제까지 해결된 것은 아니다.</p></div>
+          <span class="section-index">visual evidence</span>
+        </div>
+        <div class="gallery">
+          <figure class="wide-shot"><div class="shot"><img src="screenshots/supplemental-public-moving-1440.png" alt="1440픽셀 public 이사 Flow 저장 전 production 화면"></div><figcaption><strong>Public save-before</strong><br>전체 artifact canvas와 조정 inspector가 분리된다. 실제 결과가 설명보다 앞선다.</figcaption></figure>
+          <figure><div class="shot"><img src="screenshots/p1-s1-saved-receipt-390.png" alt="모바일 저장 완료 receipt 화면"></div><figcaption><strong>Saved receipt</strong><br>저장 전 frame과 다른 완료 상태를 제공한다.</figcaption></figure>
+          <figure class="wide-shot"><div class="shot"><img src="screenshots/supplemental-my-flow-1440.png" alt="1440픽셀 My Flow production 화면"></div><figcaption><strong>Returning execution</strong><br>탐색 rail, 실행 canvas, inspector가 next action과 전체 계획을 분리한다.</figcaption></figure>
+          <figure><div class="shot"><img src="screenshots/p2-s3-export-scopes-wide-1024.png" alt="1024픽셀 whole selected current export 범위 화면"></div><figcaption><strong>Export scope</strong><br>format 전에 whole, selected, current와 실제 count를 확인한다.</figcaption></figure>
+          <figure class="wide-shot"><div class="shot"><img src="screenshots/supplemental-calendar-1440.png" alt="1440픽셀 Calendar month와 day agenda production 화면"></div><figcaption><strong>Calendar workspace</strong><br>Flow scope, month canvas, selected-day agenda, undated queue가 한 workspace에 있다.</figcaption></figure>
+          <figure><div class="shot"><img src="screenshots/p3-s1-routine-receipt-390.png" alt="모바일 반복 홈트 저장 완료 화면"></div><figcaption><strong>Routine</strong><br>series 설정과 다음 occurrence가 일반 Flow 실행 문법에 합류한다.</figcaption></figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="band white" id="journeys">
+      <div class="inner">
+        <div class="section-head">
+          <div><p class="eyebrow">8 personas x 3 sessions</p><h2>24-cell journey scorecard</h2><p class="section-lede">같은 persona는 S1의 localStorage를 S2와 S3로 이어갔다. `fixture_only`는 실제 사용자 도달 상태와 분리했다.</p></div>
+          <span class="section-index">16 supported / 8 partial</span>
+        </div>
+        <div class="score-summary"><span class="pill supported">supported 16</span><span class="pill partial">partial 8</span><span class="pill supported">설명 없이 이해 13</span><span class="pill partial">설명 의존 11</span><span class="pill">observed users 0</span></div>
+        <div class="table-wrap">
+          <table aria-label="24개 persona session scorecard">
+            <thead><tr><th>Cell</th><th>사용자 목표</th><th>Route / viewport</th><th>판정</th><th>핵심 evidence 또는 단절</th></tr></thead>
+            <tbody id="journey-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="band dark" id="continuity">
+      <div class="inner">
+        <div class="section-head">
+          <div><p class="eyebrow">Cross-session continuity</p><h2>같은 Flow가 이어지는 곳과 끊기는 곳</h2><p class="lede">대부분의 identity와 실행 상태는 reload를 견뎠다. 날짜와 새 실행 mode에서만 계약이 갈라졌다.</p></div>
+          <span class="section-index">16 transitions</span>
+        </div>
+        <div class="journey-map" aria-label="Flow lifecycle continuity map">
+          <div class="journey-stage"><strong>발견</strong><span>URL·메모 진입과 lookup 상태는 유지. 이사 map과 public Flow 연결은 revise.</span></div>
+          <div class="journey-stage"><strong>저장 전</strong><span>전체 artifact, 최소 anchor, item 조정, primary result를 keep.</span></div>
+          <div class="journey-stage"><strong>Receipt</strong><span>별도 완료 frame, 저장 수와 destination action을 keep.</span></div>
+          <div class="journey-stage revise"><strong>My Flow 조정</strong><span>개별 item은 가능. `/f` adjustment 저장 객체의 전체 기준일 action은 missing.</span></div>
+          <div class="journey-stage"><strong>실행</strong><span>완료/reopen, add/delete/restore/reorder, memo를 keep.</span></div>
+          <div class="journey-stage revise"><strong>Calendar</strong><span>scope, agenda, undated queue는 keep. 최신 날짜 precedence는 blocking.</span></div>
+          <div class="journey-stage"><strong>Export</strong><span>whole/selected/current와 count를 keep. 날짜 resolver를 P31-01에 종속.</span></div>
+          <div class="journey-stage revise"><strong>재사용</strong><span>과거 run 보존은 keep. undated 새 run을 추가.</span></div>
+        </div>
+        <div class="link-list">
+          <a href="journey-discontinuity-matrix.json">16개 transition JSON</a>
+          <a href="persona-journey-scorecard.json">24-cell 상세 JSON</a>
+          <a href="route-evidence.json">Route evidence</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="proposed">
+      <div class="inner">
+        <div class="section-head">
+          <div><p class="eyebrow">Current vs proposed</p><h2>새 화면보다 끊긴 문법을 연결한다</h2><p class="section-lede">제안은 P30 component anatomy를 유지한다. full editor나 새 tab을 만들지 않는다.</p></div>
+          <span class="section-index">bounded changes</span>
+        </div>
+        <div class="comparison">
+          <section class="wire">
+            <header><span>현재 · 완료한 날짜 없는 Flow</span><span class="bad">blocked reuse</span></header>
+            <div class="wire-body">
+              <div class="ui-row"><div><strong>차량 점검 준비</strong><small>10/10 완료 · 과거 실행 보존</small></div><span class="ui-button secondary">새 실행</span></div>
+              <div class="ui-row"><div><strong>새 검사일</strong><small>날짜를 선택해야 계속할 수 있음</small></div><span class="ui-button danger">필수</span></div>
+              <div class="radio-line"><span class="selected">2026-09-15</span></div>
+            </div>
+          </section>
+          <section class="wire">
+            <header><span>제안 · 실행 mode를 먼저 선택</span><span class="good">two paths</span></header>
+            <div class="wire-body">
+              <div class="ui-row"><div><strong>차량 점검 준비</strong><small>지난 실행 1개는 그대로 보관</small></div><span class="ui-button">새 실행</span></div>
+              <div class="radio-line"><span class="selected">날짜 없이 다시 시작 · My Flow에서 실행</span><span>검사일 정하기 · Calendar에도 배치</span></div>
+              <div class="ui-row"><div><strong>예상 결과</strong><small>날짜 없는 할 일 10개 · 완료 체크 비움</small></div><span class="ui-button secondary">확인</span></div>
+            </div>
+          </section>
+          <section class="wire">
+            <header><span>현재 · 내부 발견</span><span class="bad">identity split</span></header>
+            <div class="wire-body">
+              <div class="ui-row"><div><strong>원룸 이사 D-30</strong><small>할 일 5개 · /flow-maps/moving-d30</small></div><span class="ui-button">열기</span></div>
+              <div class="ui-row"><div><strong>외부 public link</strong><small>별도 24개 Flow · 내부 이동 없음</small></div><span class="ui-button danger">분리</span></div>
+            </div>
+          </section>
+          <section class="wire">
+            <header><span>제안 · 범위와 variant bridge</span><span class="good">same job</span></header>
+            <div class="wire-body">
+              <div class="ui-row"><div><strong>이사 준비</strong><small>핵심 5개 · 빠르게 시작</small></div><span class="ui-button secondary">핵심만</span></div>
+              <div class="ui-row"><div><strong>상세 이사 체크</strong><small>24개 · Calendar 중심</small></div><span class="ui-button">전체 보기</span></div>
+              <div class="ui-row"><div><strong>저장 단위</strong><small>선택한 variant가 receipt와 My Flow identity를 유지</small></div><span class="ui-button secondary">24개</span></div>
+            </div>
+          </section>
+          <section class="wire">
+            <header><span>현재 · 조정 저장 후</span><span class="bad">item only</span></header>
+            <div class="wire-body">
+              <div class="ui-row"><div><strong>8월 이사 준비</strong><small>23개 항목 · 기준일 action 없음</small></div><span class="ui-button secondary">열기</span></div>
+              <div class="ui-row"><div><strong>견적 후보 먼저 비교</strong><small>제목·날짜·메모 개별 수정 가능</small></div><span class="ui-button">수정</span></div>
+            </div>
+          </section>
+          <section class="wire">
+            <header><span>제안 · 현재 실행 설정 연결</span><span class="good">contextual</span></header>
+            <div class="wire-body">
+              <div class="ui-row"><div><strong>8월 이사 준비</strong><small>이사일 8월 28일 · 포함 23개</small></div><span class="ui-button">현재 Flow 조정</span></div>
+              <div class="ui-row"><div><strong>기준일 변경 영향</strong><small>연결 일정 22개 재배치 · 고정 날짜 1개 유지/재계산 선택</small></div><span class="ui-button secondary">미리보기</span></div>
+            </div>
+          </section>
+          <section class="wire">
+            <header><span>현재 · My Flow action 누적</span><span class="bad">many peers</span></header>
+            <div class="wire-body">
+              <div class="ui-row"><div><strong>다음 할 일</strong><small>완료 · 수정 · 전체 보기</small></div><span class="ui-button">실행</span></div>
+              <div class="ui-row"><div><strong>같은 화면의 추가 기능</strong><small>일괄 조정 · export · 회고 · 원본 알릴 점 · 새 실행 · 관리</small></div><span class="ui-button danger">7 groups</span></div>
+            </div>
+          </section>
+          <section class="wire">
+            <header><span>제안 · execution-first My Flow</span><span class="good">one question</span></header>
+            <div class="wire-body">
+              <div class="ui-row"><div><strong>견적 후보 먼저 비교</strong><small>7월 7일 · 오전 중 후보 2곳만 확인</small></div><span class="ui-button">완료</span></div>
+              <div class="ui-row"><div><strong>8월 이사 준비 · 3/23</strong><small>전체 계획은 필요할 때 열기</small></div><span class="ui-button secondary">전체 보기</span></div>
+              <div class="ui-row"><div><strong>문맥별 action</strong><small>조정 · 가져가기 · 완료 후 · 다시 쓰기 · 관리</small></div><span class="ui-button secondary">더보기</span></div>
+            </div>
+          </section>
+          <section class="wire">
+            <header><span>현재 · Calendar control 경쟁</span><span class="bad">mixed modes</span></header>
+            <div class="wire-body">
+              <div class="ui-row"><div><strong>선택 날짜 일정</strong><small>완료와 reopen</small></div><span class="ui-button">실행</span></div>
+              <div class="ui-row"><div><strong>동시 노출</strong><small>Flow 검색 · 다중 선택 · 날짜 없는 tray · batch 배치</small></div><span class="ui-button danger">4 groups</span></div>
+            </div>
+          </section>
+          <section class="wire">
+            <header><span>제안 · 보기와 배치 mode</span><span class="good">focused workspace</span></header>
+            <div class="wire-body">
+              <div class="ui-row"><div><strong>8월 3일 월요일</strong><small>이사 준비 2개 · 차량 점검 1개</small></div><span class="ui-button">일정 실행</span></div>
+              <div class="ui-row"><div><strong>필요할 때 전환</strong><small>Flow 범위 · 날짜 없는 할 일 배치</small></div><span class="ui-button secondary">배치 mode</span></div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <section class="band white" id="service">
+      <div class="inner">
+        <div class="section-head">
+          <div><p class="eyebrow">Service platform assessment</p><h2>Projection 신뢰와 기본 화면 인지 부하가 함께 약하다</h2><p class="section-lede">날짜 correctness를 먼저 닫되, source에서 개인화·실행·외부 artifact로 이동하는 동안 사용자가 매번 제품 구조를 해석하지 않게 해야 한다.</p></div>
+          <span class="section-index">5-point heuristic</span>
+        </div>
+        <div class="service-grid">
+          <div class="service"><div><strong>가치 제안 명확성</strong><p>artifact-first는 작동. control 경쟁과 discovery bridge 보완.</p></div><span class="score">3.5</span></div>
+          <div class="service"><div><strong>Source 신뢰</strong><p>source와 개인 기록 경계는 대체로 유지.</p></div><span class="score">4.0</span></div>
+          <div class="service"><div><strong>Artifact 적합성</strong><p>projection count는 일치. 날짜 오류가 감점.</p></div><span class="score">4.0</span></div>
+          <div class="service"><div><strong>개인화 균형</strong><p>기능은 충분하지만 빠른 수정과 상세 수정의 층이 약함.</p></div><span class="score">3.0</span></div>
+          <div class="service"><div><strong>실행·복구</strong><p>reopen/undo/run 보존 양호, undated reuse 보완.</p></div><span class="score">4.0</span></div>
+          <div class="service"><div><strong>Surface 정합성</strong><p>최신 날짜 precedence가 핵심 신뢰를 훼손.</p></div><span class="score">3.0</span></div>
+          <div class="service"><div><strong>기본 화면 인지 부하</strong><p>11/24 cell 설명 의존, interaction depth 191.</p></div><span class="score">2.5</span></div>
+          <div class="service"><div><strong>접근성·responsive</strong><p>기본 운용 양호, Tab depth와 cancel focus 보완.</p></div><span class="score">3.0</span></div>
+          <div class="service"><div><strong>20~60 Flow scale</strong><p>fixture capability만 확인, real-data는 미검증.</p></div><span class="score">3.0</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band soft" id="p31">
+      <div class="inner">
+        <div class="section-head">
+          <div><p class="eyebrow">P31 implementation order</p><h2>Correctness 다음에 세 surface를 함께 단순화한다</h2><p class="section-lede">P31-01을 먼저 통과한다. 이후 discovery/save-before, My Flow, Calendar를 같은 interaction 원칙으로 줄이고 final gate에서 기능 회귀와 복잡도 지표를 함께 본다.</p></div>
+          <span class="section-index">max 5 candidates</span>
+        </div>
+        <div class="backlog">
+          <article><div class="id">P31-01 · SEQUENTIAL</div><div><h3>Effective date와 projection correctness</h3><p>save-before draft와 post-save override의 경쟁을 없애 My Flow, Today, Calendar, export가 최신 사용자 날짜를 사용하게 한다.</p></div><aside><strong>Gate</strong><br>Unit + `P31-EFFECTIVE-DATE-PRECEDENCE`<br>Non-destructive normalization</aside></article>
+          <article><div class="id">P31-02 · AFTER 01</div><div><h3>Home·Discovery·save-before 단순화</h3><p>홈은 시작/이어가기, `/flows`는 탐색으로 역할을 나눈다. source link와 간결한 card를 만들고, 결혼·운동은 콘텐츠와 설정 상태에 맞는 primary artifact 하나를 먼저 제안한다.</p></div><aside><strong>Acceptance</strong><br>`P31-02-HOME-ROLE`<br>`P31-02-CONTEXTUAL-ARTIFACT`<br>Save primary 8 Tab 이내</aside></article>
+          <article><div class="id">P31-03 · AFTER 01</div><div><h3>My Flow dedicated workspace와 lifecycle grammar</h3><p>목록 안의 인라인 확장을 없애고 `실행 · 전체 계획 · 기록` workspace로 전환한다. 완료·일정·제외·보관 동사를 분리하고 보관 행에 직접 복구를 제공한다.</p></div><aside><strong>Acceptance</strong><br>`P31-03-MOBILE-WORKSPACE`<br>`P31-03-ARCHIVE-RESTORE-PARITY`<br>일반 행동 2 tap 이내</aside></article>
+          <article><div class="id">P31-04 · PARALLEL</div><div><h3>Calendar 보기·배치·item detail 분리</h3><p>selected-day agenda를 기본으로 두고 Flow scope와 undated batch placement를 명시적 mode로 분리한다. 모바일 item detail은 bottom sheet, wide는 side inspector를 사용한다.</p></div><aside><strong>Acceptance</strong><br>`P31-04-ITEM-SHEET`<br>날짜·scroll·focus 복원<br>Batch·undo·tray parity</aside></article>
+          <article><div class="id">P31-05 · FINAL</div><div><h3>Export·삭제 계약·접근성·복잡도 gate</h3><p>whole/selected/current 계약을 유지하면서 고급 action 기본 노출을 줄인다. 보관된 Flow 영구 삭제의 local data 범위와 source 보존을 고정하고 24-cell metric을 다시 측정한다.</p></div><aside><strong>Target</strong><br>`P31-05-PERMANENT-DELETE-CONTRACT`<br>설명 없이 수행 20/24 이상<br>overflow / overlap 0</aside></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="band dark" id="verification">
+      <div class="inner">
+        <div class="section-head">
+          <div><p class="eyebrow">Verification and publish state</p><h2>자동 검증은 통과했지만 사용자 검증은 아니다</h2><p class="lede">기존 수치를 복사하지 않고 clean origin/main worktree에서 현재 실행했다. full E2E와 observed-user validation은 이번 범위에 포함하지 않았다.</p></div>
+          <span class="section-index">evidence closure</span>
+        </div>
+        <div class="verify">
+          <div><strong>584 / 584</strong><span>현재 unit test 통과</span></div>
+          <div><strong>12 / 12</strong><span>P30 targeted E2E 통과</span></div>
+          <div><strong>41 / 41</strong><span>관련 regression E2E 통과</span></div>
+          <div><strong>PASS</strong><span>production build · 18 static pages</span></div>
+          <div><strong>0</strong><span>24 journeys의 console/page errors</span></div>
+          <div><strong>50</strong><span>production/report evidence screenshots</span></div>
+          <div><strong>FAIL</strong><span>security audit · high 1, moderate 1</span></div>
+          <div><strong>NONE</strong><span>commit · push · PR · deploy</span></div>
+        </div>
+        <div class="link-list">
+          <a href="audit.md">전체 findings</a>
+          <a href="mobile-feedback-supplement.md">모바일 피드백 보강</a>
+          <a href="mobile-feedback-evidence.json">모바일 evidence JSON</a>
+          <a href="interaction-data-lifecycle-supplement.md">조작·삭제 보강</a>
+          <a href="interaction-data-lifecycle-evidence.json">조작·lifecycle JSON</a>
+          <a href="p31-candidates.md">P31 상세 backlog</a>
+          <a href="service-platform-assessment.md">서비스 평가</a>
+          <a href="verification-results.json">검증 JSON</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>FlowMe P30 independent automated simulation · observed users 0 · app code unchanged</footer>
+
+  <script>
+    const journeys = [
+      ["P1-S1", "이사 전체 일정 확인·조정·저장", "/ -> /flows -> /f/moving-d30-basic · 390", "partial", "내부 발견은 5개 map, public route는 24개"],
+      ["P1-S2", "완료 취소·날짜 재조정", "/my -> /calendar · 390", "partial", "최신 8/3 override를 Calendar가 무시"],
+      ["P1-S3", "whole export·회고·새 run", "/my · 390", "supported", "23개 완료, past run 1개 보존"],
+      ["P2-S1", "차량 점검 날짜 없이 저장", "/f/vehicle-inspection-prep · 390", "supported", "10개 undated item 저장"],
+      ["P2-S2", "한 항목 배치·완료·reopen", "/my -> /calendar · 390", "supported", "tray 10 -> 9, 완료 취소"],
+      ["P2-S3", "날짜 제거·export 범위", "/calendar -> /my · 1024", "supported", "tray 10 복귀, selected 2 / current 1"],
+      ["P3-S1", "반복 설정·저장", "/f/curated-allblanc-morning-workout · 390", "supported", "요일·시간·duration·종료 유지"],
+      ["P3-S2", "occurrence 완료·reopen", "/calendar · 390", "supported", "series와 개별 회차 상태 분리"],
+      ["P3-S3", "Calendar·ICS·resource 경계", "/my -> /calendar · 1024", "partial", "RRULE parity 확인, 장기 history는 미입증"],
+      ["P4-S1", "50개 중 2 Flow 선택", "/calendar?demo=ux50 · 390", "supported", "fixture 검색과 scope 지원"],
+      ["P4-S2", "같은 날짜 full identity", "/calendar?demo=ux50 · 1024", "supported", "다중 Flow identity와 reopen"],
+      ["P4-S3", "undated batch·undo", "/calendar · 390", "supported", "stable ID로 2개 배치 후 복구"],
+      ["P5-S1", "artifact·scope·loss 예측", "/f/moving-d30-basic · 390", "supported", "primary/secondary와 count 노출"],
+      ["P5-S2", "whole·selected·current", "/my · 390", "supported", "receipt scope/count 일치"],
+      ["P5-S3", "4 projection parity", "/my · 1024", "partial", "24개 parity, cross-device/중복 import 미지원"],
+      ["P6-S1", "여행 메모 초안 저장", "/flows · 390", "supported", "5개 분할 후 개인 draft 저장"],
+      ["P6-S2", "add·delete·restore·reorder", "/my · 390", "supported", "최종 6개와 item metadata 유지"],
+      ["P6-S3", "reload·Calendar·export", "/calendar -> /my · 1024", "partial", "parity 유지, private 표시는 약함"],
+      ["P7-S1", "첫 실행과 개인 메모", "/f/vehicle-inspection-prep -> /my · 390", "supported", "undated 실행과 memo 저장"],
+      ["P7-S2", "완료·회고·source correction", "/my · 390", "supported", "private/correction write path 분리"],
+      ["P7-S3", "새 run과 과거 기록", "/my · 1024", "partial", "past run 보존, undated reuse는 차단"],
+      ["P8-S1", "save-before keyboard 조정", "/f/moving-d30-basic · 390", "partial", "조정 진입 성공, 취소 focus 복귀 실패"],
+      ["P8-S2", "My Flow menu focus", "/my?demo=ux20 · 390", "supported", "Escape와 trigger focus return"],
+      ["P8-S3", "Calendar keyboard·reflow", "/calendar · 390/320", "partial", "320px overflow 0, CSS zoom은 별도 검증 필요"]
+    ];
+    const tbody = document.getElementById("journey-body");
+    journeys.forEach(([id, goal, route, status, evidence]) => {
+      const row = document.createElement("tr");
+      row.innerHTML = `<td><strong>${id}</strong></td><td>${goal}</td><td>${route}</td><td><span class="status-dot ${status}">${status}</span></td><td>${evidence}</td>`;
+      tbody.appendChild(row);
+    });
+  </script>
+</body>
+</html>

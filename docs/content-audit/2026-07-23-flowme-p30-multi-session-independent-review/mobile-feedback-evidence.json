@@ -1,0 +1,259 @@
+{
+  "schemaVersion": "flowme.mobile-feedback-evidence.v1",
+  "reviewDate": "2026-07-23",
+  "reviewType": "supplemental_mobile_feedback_simulation",
+  "productionBaseUrl": "https://flowme2605.vercel.app",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "observedUserCount": 0,
+  "appCodeChanged": false,
+  "verdict": {
+    "architecture": "bounded_revision",
+    "mobileInteraction": "coordinated_simplification_required"
+  },
+  "surfaces": [
+    {
+      "id": "home",
+      "route": "/",
+      "screenshot": "screenshots/mobile-feedback/mobile-home-current-390.png",
+      "status": "revise",
+      "currentFacts": [
+        "URL and memo entry is repeated from /flows",
+        "Two discovery cards use the same anatomy as /flows",
+        "The screen does not materially change for a returning execution user"
+      ],
+      "proposal": [
+        "First visit: show two or three real content-to-artifact usage stories",
+        "Return visit: show next actions, recent Flow and undated summary",
+        "Keep recent and popular catalog browsing in /flows"
+      ],
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_package_screenshot",
+        "heuristic_simulation",
+        "reference_pattern"
+      ]
+    },
+    {
+      "id": "discovery_cards",
+      "route": "/flows",
+      "screenshot": "screenshots/mobile-feedback/mobile-discovery-current-390.png",
+      "status": "revise",
+      "currentFacts": [
+        "Nine cards repeat category, count, title, source text, three numbered samples, chips and Flow open",
+        "The whole card links to detail while Flow open repeats the same destination",
+        "The source text is not a separate external link"
+      ],
+      "proposal": [
+        "Make the source an explicit external link",
+        "Use one result sentence, scope and primary artifact instead of multiple generic chips",
+        "Remove numbered samples and duplicate Flow open action",
+        "Defer usage and review metrics until real telemetry and review contracts exist"
+      ],
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_package_screenshot",
+        "heuristic_simulation"
+      ]
+    },
+    {
+      "id": "wedding_save_before",
+      "route": "/f/curated-wedding-naver-timeline",
+      "comparisonRoute": "/f/wedding-d180-basic",
+      "screenshots": [
+        "screenshots/mobile-feedback/mobile-wedding-curated-current-390.png",
+        "screenshots/mobile-feedback/mobile-wedding-d180-current-390.png",
+        "screenshots/mobile-feedback/mobile-wedding-export-current-390.png"
+      ],
+      "status": "revise",
+      "currentFacts": [
+        "Calendar, checklist and memo are displayed as equal tabs",
+        "Selecting an artifact does not make the save or export destination explicit",
+        "Date set, undated and example modes do not communicate the next committed result",
+        "Export requires nested disclosures and executes without an output preview",
+        "Whole Flow structure duplicates the selected artifact list"
+      ],
+      "proposal": [
+        "Recommend one primary artifact and place secondary artifacts under another-way disclosure",
+        "Attach the one required date input directly to the selected Calendar artifact",
+        "Use outcome-specific actions such as Calendar schedule 12 review",
+        "Preview count, date range, examples and loss before save or export"
+      ],
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_package_screenshot",
+        "heuristic_simulation"
+      ]
+    },
+    {
+      "id": "routine_save_before",
+      "route": "/f/curated-allblanc-morning-workout",
+      "screenshot": "screenshots/mobile-feedback/mobile-workout-current-390.png",
+      "status": "revise",
+      "measurements": {
+        "defaultScrollHeight": 1353,
+        "defaultInteractiveCount": 24,
+        "expandedScheduleScrollHeight": 1703,
+        "expandedScheduleInteractiveCount": 33
+      },
+      "currentFacts": [
+        "One execution item exposes three artifacts, three date modes, recurrence, whole structure, adjustment and export",
+        "Calendar 1 does not express one series and multiple occurrences",
+        "Whole Flow structure 1 is redundant"
+      ],
+      "proposal": [
+        "Show source, compact schedule summary, next three occurrences and one primary action",
+        "Before schedule selection make My Flow execution primary",
+        "After schedule selection expose one recurring calendar series with next occurrence preview",
+        "Open recurrence controls in a bottom sheet"
+      ],
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_package_screenshot",
+        "heuristic_simulation",
+        "reference_pattern"
+      ]
+    },
+    {
+      "id": "my_flow_detail",
+      "route": "/my?demo=ux20&view=flows",
+      "screenshot": "screenshots/mobile-feedback/mobile-my-flow-detail-current-390.png",
+      "status": "revise",
+      "measurements": {
+        "openedFlowScrollHeight": 1702,
+        "interactiveCount": 30,
+        "firstViewportInteractiveCount": 19
+      },
+      "currentFacts": [
+        "The compact Flow list is understandable",
+        "Opening a Flow inserts a large workspace inside the list tab",
+        "Next action, whole plan, batch edit, export, progress and management share one vertical surface"
+      ],
+      "proposal": [
+        "Open a dedicated mobile Flow workspace instead of inline expansion",
+        "Use execution, whole plan and record as the only top-level internal modes",
+        "Move adjustment, export, reuse and management into contextual actions"
+      ],
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_package_screenshot",
+        "current_source",
+        "heuristic_simulation"
+      ]
+    },
+    {
+      "id": "calendar_item_detail",
+      "route": "/calendar?demo=ux20",
+      "screenshots": [
+        "screenshots/mobile-feedback/mobile-calendar-current-390.png",
+        "screenshots/mobile-feedback/mobile-calendar-item-inline-current-390.png"
+      ],
+      "status": "revise",
+      "measurements": {
+        "openedDetailScrollHeight": 1644,
+        "totalInteractiveCountIncludingMonthGrid": 148,
+        "firstViewportInteractiveCount": 47,
+        "consoleMessages": 0
+      },
+      "currentFacts": [
+        "Opening an item inserts its detail inside the selected-day agenda",
+        "Month grid, agenda, opened detail and following items compete in one vertical flow"
+      ],
+      "proposal": [
+        "Open mobile item detail in a bottom sheet that can expand to full screen",
+        "Preserve selected date, scroll and focus on close",
+        "Keep a side inspector on wide viewports",
+        "Keep batch date placement as a separate mode"
+      ],
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_package_screenshot",
+        "heuristic_simulation",
+        "reference_pattern"
+      ]
+    }
+  ],
+  "trustMetricPolicy": {
+    "productionFakeMetricsAllowed": false,
+    "prototypeSyntheticMetricsAllowed": true,
+    "prototypeLabelRequired": "시뮬레이션 데이터",
+    "requiredBeforeProduction": [
+      "usage telemetry definition",
+      "review eligibility and moderation policy",
+      "time window and denominator",
+      "privacy and retention decision"
+    ],
+    "safeCurrentSignals": [
+      "source",
+      "last updated date",
+      "item count",
+      "natural primary artifact"
+    ]
+  },
+  "references": [
+    {
+      "product": "Todoist",
+      "pattern": "Today focuses execution across projects while Browse/Search own discovery",
+      "decision": "adapt",
+      "url": "https://www.todoist.com/help/articles/plan-your-day-with-the-today-view-UVUXaiSs"
+    },
+    {
+      "product": "Apple Reminders",
+      "pattern": "Today, Scheduled, All and Completed are distinct execution views",
+      "decision": "adapt",
+      "url": "https://support.apple.com/en-mide/guide/iphone/iphe882772ed/ios"
+    },
+    {
+      "product": "Notion Home",
+      "pattern": "Home aggregates recent context, shortcuts, events and tasks while discovery is elsewhere",
+      "decision": "adapt",
+      "url": "https://www.notion.com/it/help/home-and-my-tasks"
+    },
+    {
+      "product": "Notion Marketplace",
+      "pattern": "Usage, ratings and reviews support template discovery when backed by actual marketplace data",
+      "decision": "defer_until_real_data",
+      "url": "https://www.notion.com/help/finding-templates-on-marketplace"
+    },
+    {
+      "product": "Strava",
+      "pattern": "Feed cards display activity-specific stats and one notable achievement instead of every property",
+      "decision": "adapt",
+      "url": "https://support.strava.com/en-us/articles/15401664-activity-stats-in-the-feed"
+    },
+    {
+      "product": "Nike Training Club",
+      "pattern": "A workout exposes duration and execution structure while programs expose phased progression",
+      "decision": "adapt",
+      "url": "https://www.nike.com/help/a/ntc-info"
+    },
+    {
+      "product": "Google Calendar",
+      "pattern": "Mobile event details expand in a dedicated edit context",
+      "decision": "adapt",
+      "url": "https://support.google.com/calendar/answer/72143?co=GENIE.Platform%3DAndroid&hl=en"
+    },
+    {
+      "product": "Apple Calendar",
+      "pattern": "Month density and event detail are separate view levels",
+      "decision": "adapt",
+      "url": "https://support.apple.com/en-gb/guide/iphone/iphfd1054569/ios"
+    },
+    {
+      "product": "Wanderlog",
+      "pattern": "A trip is grouped by day while map and batch movement remain contextual views",
+      "decision": "adapt_for_timeline_flows",
+      "url": "https://wanderlog.com/blog/faq/"
+    }
+  ],
+  "p31Markers": [
+    "P31-02-HOME-ROLE",
+    "P31-02-DISCOVERY-CARD",
+    "P31-02-CONTEXTUAL-ARTIFACT",
+    "P31-02-EXPORT-PREVIEW",
+    "P31-03-MOBILE-WORKSPACE",
+    "P31-04-ITEM-SHEET"
+  ]
+}
