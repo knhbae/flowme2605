@@ -321,7 +321,7 @@ document.addEventListener("click",e=>{const b=e.target.closest("button,[data-rou
   if(b.dataset.inspector){state.inspector=b.dataset.inspector;document.querySelectorAll("[data-inspector]").forEach(x=>x.classList.toggle("active",x.dataset.inspector===state.inspector));renderInspector(BY_ID.get(route().contentId))}
   const a=b.dataset.action;if(a==="load-more"){state.limit+=24;render()}if(a==="next-unreviewed")nextUnreviewed();
   if(a==="copy-link"){navigator.clipboard?.writeText(location.href).then(()=>toast("직접 링크를 복사했습니다")).catch(()=>toast(location.href))}
-  if(a==="export-review"){const payload={...reviews,exportedAt:new Date().toISOString()};const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const link=document.createElement("a");link.href=url;link.download="flowme-full-corpus-review-v1.json";link.click();URL.revokeObjectURL(url)}
+  if(a==="export-review"){const payload={...reviews,exportedAt:new Date().toISOString()};const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const link=document.createElement("a");link.href=url;link.download="flowme-full-corpus-review-v1.json";document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),0);toast("검토 JSON을 내보냈습니다")}
   if(a==="open-import")importDialog.showModal();if(a==="close-import")importDialog.close();
   if(a==="run-import")runImport();
   if(a==="open-mobile-review"){const c=BY_ID.get(route().contentId);if(c){mobileReviewBody.innerHTML=reviewForm(c);mobileReviewDialog.showModal();bindReview()}}
