@@ -1,5 +1,19 @@
 # Plan
 
+## Current progress snapshot
+
+| Phase | Status | Current evidence |
+| --- | --- | --- |
+| 1. Freeze and inventory | `COMPLETE_FOR_CURRENT_SNAPSHOT` | 167 raw, 123 source-backed raw, 156 Gallery and 110 normal records; 24 new URLs yielded 19 distinct additions plus 3 existing-job reverifications |
+| 2. Derived data and engines | `COMPLETE_FOR_CURRENT_SNAPSHOT` | 893 Item, 1,172 SourceRow, 550 projection cells, 16 pacing and 14 event fixtures |
+| 3. Interactive Gallery | `IMPLEMENTED_FINAL_BROWSER_QA_PENDING` | Standalone Gallery and summary report exist; final responsive and interaction pass remains `PENDING` |
+| 4. Independent review and planning handoff | `COMPLETE_INTERNAL_EVIDENCE_USER_REVIEW_PENDING` | Final A2/B2 runs cover 110/110 records; manual SourceRow adjudication covers 141/141 fields with 17 Modify keys across 11 contents; synthesis now links 10 gaps and 16 draft decisions |
+| 5. Validation and handoff | `IN_PROGRESS_BROWSER_QA_PENDING` | Manual semantic integration is complete; validator 54/54 and targeted tests 13/13 pass. Final docs rerun after the last Gallery/report build and browser QA remain |
+
+Observed-user validation and external Calendar/VTODO round-trip both remain
+`NOT_RUN`. Completing this plan must not change those states without the
+corresponding external evidence.
+
 ## Phase 1 — Freeze and inventory
 
 1. Hash all source artifacts.
@@ -74,6 +88,19 @@ Exit:
 Exit:
 
 - automated QA passes;
+- 141/141 manual semantic decisions and all 17 Modify field keys remain linked
+  to their content, planning decisions and open gaps;
+- completion 412 and schedule 124 provenance gaps remain explicitly open and
+  zero invention remains `NOT_PROVEN`;
 - observed-user and external Calendar status remain accurately `NOT_RUN`;
 - production code and existing dirty files remain untouched.
 
+## Final handoff order
+
+1. Rebuild all generated data and HTML from the final frozen inputs.
+2. Run schema, validator, targeted tests and docs checks.
+3. Complete browser QA at 1440×900, 768×1024 and 390×844.
+4. Record console, overflow, broken-asset, direct-link and interaction evidence.
+5. Leave the Gallery open for direct user review.
+6. Keep every planning recommendation at `DRAFT_PENDING_USER_REVIEW` until the
+   user submits review data.

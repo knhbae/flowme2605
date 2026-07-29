@@ -3,7 +3,7 @@
   "corpusFingerprint": "sha256:d56b289fd301805fe1299b867497b0840f8d379d1459ec0148639f8b7d5dce32",
   "counts": {
     "content": 156,
-    "links": 1248
+    "links": 1315
   },
   "links": [
     {
@@ -167,6 +167,11 @@
       "hash": "#content/canonical%3Abase-opentutorials-web1-progress/review"
     },
     {
+      "contentId": "canonical:base-opentutorials-web1-progress",
+      "mode": "pacing",
+      "hash": "#content/canonical%3Abase-opentutorials-web1-progress/pacing"
+    },
+    {
       "contentId": "canonical:base-new-car-comparison",
       "mode": "detail",
       "hash": "#content/canonical%3Abase-new-car-comparison"
@@ -205,6 +210,11 @@
       "contentId": "canonical:base-new-car-comparison",
       "mode": "review",
       "hash": "#content/canonical%3Abase-new-car-comparison/review"
+    },
+    {
+      "contentId": "canonical:base-new-car-comparison",
+      "mode": "pacing",
+      "hash": "#content/canonical%3Abase-new-car-comparison/pacing"
     },
     {
       "contentId": "canonical:base-allblanc-7day-abs",
@@ -287,6 +297,11 @@
       "hash": "#content/canonical%3Abase-wtable-summer-banchan-five/review"
     },
     {
+      "contentId": "canonical:base-wtable-summer-banchan-five",
+      "mode": "pacing",
+      "hash": "#content/canonical%3Abase-wtable-summer-banchan-five/pacing"
+    },
+    {
       "contentId": "canonical:base-andstudio-job-prep-videos",
       "mode": "detail",
       "hash": "#content/canonical%3Abase-andstudio-job-prep-videos"
@@ -325,6 +340,11 @@
       "contentId": "canonical:base-andstudio-job-prep-videos",
       "mode": "review",
       "hash": "#content/canonical%3Abase-andstudio-job-prep-videos/review"
+    },
+    {
+      "contentId": "canonical:base-andstudio-job-prep-videos",
+      "mode": "pacing",
+      "hash": "#content/canonical%3Abase-andstudio-job-prep-videos/pacing"
     },
     {
       "contentId": "canonical:oq-oq-c02-kmooc-full",
@@ -367,6 +387,11 @@
       "hash": "#content/canonical%3Aoq-oq-c02-kmooc-full/review"
     },
     {
+      "contentId": "canonical:oq-oq-c02-kmooc-full",
+      "mode": "pacing",
+      "hash": "#content/canonical%3Aoq-oq-c02-kmooc-full/pacing"
+    },
+    {
       "contentId": "canonical:oq-oq-c03-librivox",
       "mode": "detail",
       "hash": "#content/canonical%3Aoq-oq-c03-librivox"
@@ -405,6 +430,11 @@
       "contentId": "canonical:oq-oq-c03-librivox",
       "mode": "review",
       "hash": "#content/canonical%3Aoq-oq-c03-librivox/review"
+    },
+    {
+      "contentId": "canonical:oq-oq-c03-librivox",
+      "mode": "pacing",
+      "hash": "#content/canonical%3Aoq-oq-c03-librivox/pacing"
     },
     {
       "contentId": "canonical:oq-oq-c04-passport",
@@ -447,6 +477,11 @@
       "hash": "#content/canonical%3Aoq-oq-c04-passport/review"
     },
     {
+      "contentId": "canonical:oq-oq-c04-passport",
+      "mode": "pacing",
+      "hash": "#content/canonical%3Aoq-oq-c04-passport/pacing"
+    },
+    {
       "contentId": "canonical:oq-oq-c05-washer",
       "mode": "detail",
       "hash": "#content/canonical%3Aoq-oq-c05-washer"
@@ -485,6 +520,11 @@
       "contentId": "canonical:oq-oq-c05-washer",
       "mode": "review",
       "hash": "#content/canonical%3Aoq-oq-c05-washer/review"
+    },
+    {
+      "contentId": "canonical:oq-oq-c05-washer",
+      "mode": "pacing",
+      "hash": "#content/canonical%3Aoq-oq-c05-washer/pacing"
     },
     {
       "contentId": "canonical:oq-oq-c06-nasa",
@@ -527,6 +567,11 @@
       "hash": "#content/canonical%3Aoq-oq-c06-nasa/review"
     },
     {
+      "contentId": "canonical:oq-oq-c06-nasa",
+      "mode": "pacing",
+      "hash": "#content/canonical%3Aoq-oq-c06-nasa/pacing"
+    },
+    {
       "contentId": "canonical:oq-oq-c07-fit100",
       "mode": "detail",
       "hash": "#content/canonical%3Aoq-oq-c07-fit100"
@@ -565,6 +610,11 @@
       "contentId": "canonical:oq-oq-c07-fit100",
       "mode": "review",
       "hash": "#content/canonical%3Aoq-oq-c07-fit100/review"
+    },
+    {
+      "contentId": "canonical:oq-oq-c07-fit100",
+      "mode": "pacing",
+      "hash": "#content/canonical%3Aoq-oq-c07-fit100/pacing"
     },
     {
       "contentId": "canonical:oq-oq-c08-ac-decision",
@@ -647,6 +697,11 @@
       "hash": "#content/canonical%3Aoq-oq-b01-heat/review"
     },
     {
+      "contentId": "canonical:oq-oq-b01-heat",
+      "mode": "pacing",
+      "hash": "#content/canonical%3Aoq-oq-b01-heat/pacing"
+    },
+    {
       "contentId": "canonical:oq-oq-b03-remodel",
       "mode": "detail",
       "hash": "#content/canonical%3Aoq-oq-b03-remodel"
@@ -727,6 +782,11 @@
       "hash": "#content/canonical%3Aoq-oq-p01-ossu/review"
     },
     {
+      "contentId": "canonical:oq-oq-p01-ossu",
+      "mode": "pacing",
+      "hash": "#content/canonical%3Aoq-oq-p01-ossu/pacing"
+    },
+    {
       "contentId": "canonical:oq-oq-p02-packing",
       "mode": "detail",
       "hash": "#content/canonical%3Aoq-oq-p02-packing"
@@ -765,6 +825,11 @@
       "contentId": "canonical:oq-oq-p02-packing",
       "mode": "review",
       "hash": "#content/canonical%3Aoq-oq-p02-packing/review"
+    },
+    {
+      "contentId": "canonical:oq-oq-p02-packing",
+      "mode": "pacing",
+      "hash": "#content/canonical%3Aoq-oq-p02-packing/pacing"
     },
     {
       "contentId": "canonical:oq-oq-p03-vehicle",
@@ -847,6 +912,11 @@
       "hash": "#content/canonical%3Aoq-oq-p04-portfolio/review"
     },
     {
+      "contentId": "canonical:oq-oq-p04-portfolio",
+      "mode": "pacing",
+      "hash": "#content/canonical%3Aoq-oq-p04-portfolio/pacing"
+    },
+    {
       "contentId": "canonical:value-vq-01",
       "mode": "detail",
       "hash": "#content/canonical%3Avalue-vq-01"
@@ -885,6 +955,11 @@
       "contentId": "canonical:value-vq-01",
       "mode": "review",
       "hash": "#content/canonical%3Avalue-vq-01/review"
+    },
+    {
+      "contentId": "canonical:value-vq-01",
+      "mode": "pacing",
+      "hash": "#content/canonical%3Avalue-vq-01/pacing"
     },
     {
       "contentId": "canonical:value-vq-03",
@@ -967,6 +1042,11 @@
       "hash": "#content/canonical%3Avalue-vq-04/review"
     },
     {
+      "contentId": "canonical:value-vq-04",
+      "mode": "pacing",
+      "hash": "#content/canonical%3Avalue-vq-04/pacing"
+    },
+    {
       "contentId": "canonical:value-vq-05",
       "mode": "detail",
       "hash": "#content/canonical%3Avalue-vq-05"
@@ -1005,6 +1085,11 @@
       "contentId": "canonical:value-vq-05",
       "mode": "review",
       "hash": "#content/canonical%3Avalue-vq-05/review"
+    },
+    {
+      "contentId": "canonical:value-vq-05",
+      "mode": "pacing",
+      "hash": "#content/canonical%3Avalue-vq-05/pacing"
     },
     {
       "contentId": "canonical:value-vq-06",
@@ -1047,6 +1132,11 @@
       "hash": "#content/canonical%3Avalue-vq-06/review"
     },
     {
+      "contentId": "canonical:value-vq-06",
+      "mode": "pacing",
+      "hash": "#content/canonical%3Avalue-vq-06/pacing"
+    },
+    {
       "contentId": "canonical:value-vq-10",
       "mode": "detail",
       "hash": "#content/canonical%3Avalue-vq-10"
@@ -1085,6 +1175,11 @@
       "contentId": "canonical:value-vq-10",
       "mode": "review",
       "hash": "#content/canonical%3Avalue-vq-10/review"
+    },
+    {
+      "contentId": "canonical:value-vq-10",
+      "mode": "pacing",
+      "hash": "#content/canonical%3Avalue-vq-10/pacing"
     },
     {
       "contentId": "canonical:value-vq-11",
@@ -1167,6 +1262,11 @@
       "hash": "#content/canonical%3Avalue-vq-12/review"
     },
     {
+      "contentId": "canonical:value-vq-12",
+      "mode": "pacing",
+      "hash": "#content/canonical%3Avalue-vq-12/pacing"
+    },
+    {
       "contentId": "canonical:deep-ds06",
       "mode": "detail",
       "hash": "#content/canonical%3Adeep-ds06"
@@ -1205,6 +1305,11 @@
       "contentId": "canonical:deep-ds06",
       "mode": "review",
       "hash": "#content/canonical%3Adeep-ds06/review"
+    },
+    {
+      "contentId": "canonical:deep-ds06",
+      "mode": "pacing",
+      "hash": "#content/canonical%3Adeep-ds06/pacing"
     },
     {
       "contentId": "canonical:deep-ds08",
@@ -1247,6 +1352,11 @@
       "hash": "#content/canonical%3Adeep-ds08/review"
     },
     {
+      "contentId": "canonical:deep-ds08",
+      "mode": "pacing",
+      "hash": "#content/canonical%3Adeep-ds08/pacing"
+    },
+    {
       "contentId": "canonical:live-c01",
       "mode": "detail",
       "hash": "#content/canonical%3Alive-c01"
@@ -1285,6 +1395,11 @@
       "contentId": "canonical:live-c01",
       "mode": "review",
       "hash": "#content/canonical%3Alive-c01/review"
+    },
+    {
+      "contentId": "canonical:live-c01",
+      "mode": "pacing",
+      "hash": "#content/canonical%3Alive-c01/pacing"
     },
     {
       "contentId": "canonical:live-c13",
@@ -1327,6 +1442,11 @@
       "hash": "#content/canonical%3Alive-c13/review"
     },
     {
+      "contentId": "canonical:live-c13",
+      "mode": "pacing",
+      "hash": "#content/canonical%3Alive-c13/pacing"
+    },
+    {
       "contentId": "canonical:live-c16",
       "mode": "detail",
       "hash": "#content/canonical%3Alive-c16"
@@ -1365,6 +1485,11 @@
       "contentId": "canonical:live-c16",
       "mode": "review",
       "hash": "#content/canonical%3Alive-c16/review"
+    },
+    {
+      "contentId": "canonical:live-c16",
+      "mode": "pacing",
+      "hash": "#content/canonical%3Alive-c16/pacing"
     },
     {
       "contentId": "canonical:live-r02",
@@ -1407,6 +1532,11 @@
       "hash": "#content/canonical%3Alive-r02/review"
     },
     {
+      "contentId": "canonical:live-r02",
+      "mode": "pacing",
+      "hash": "#content/canonical%3Alive-r02/pacing"
+    },
+    {
       "contentId": "canonical:live-kr-stibee-01",
       "mode": "detail",
       "hash": "#content/canonical%3Alive-kr-stibee-01"
@@ -1447,6 +1577,11 @@
       "hash": "#content/canonical%3Alive-kr-stibee-01/review"
     },
     {
+      "contentId": "canonical:live-kr-stibee-01",
+      "mode": "pacing",
+      "hash": "#content/canonical%3Alive-kr-stibee-01/pacing"
+    },
+    {
       "contentId": "canonical:live-live-mdn-core-01",
       "mode": "detail",
       "hash": "#content/canonical%3Alive-live-mdn-core-01"
@@ -1485,6 +1620,11 @@
       "contentId": "canonical:live-live-mdn-core-01",
       "mode": "review",
       "hash": "#content/canonical%3Alive-live-mdn-core-01/review"
+    },
+    {
+      "contentId": "canonical:live-live-mdn-core-01",
+      "mode": "pacing",
+      "hash": "#content/canonical%3Alive-live-mdn-core-01/pacing"
     },
     {
       "contentId": "canonical:live-live-dyson-filter-01",
@@ -1727,6 +1867,11 @@
       "hash": "#content/events%3Anew-google-codelab-ai-agent/review"
     },
     {
+      "contentId": "events:new-google-codelab-ai-agent",
+      "mode": "pacing",
+      "hash": "#content/events%3Anew-google-codelab-ai-agent/pacing"
+    },
+    {
       "contentId": "events:new-mdn-core-scripting",
       "mode": "detail",
       "hash": "#content/events%3Anew-mdn-core-scripting"
@@ -1765,6 +1910,11 @@
       "contentId": "events:new-mdn-core-scripting",
       "mode": "review",
       "hash": "#content/events%3Anew-mdn-core-scripting/review"
+    },
+    {
+      "contentId": "events:new-mdn-core-scripting",
+      "mode": "pacing",
+      "hash": "#content/events%3Anew-mdn-core-scripting/pacing"
     },
     {
       "contentId": "events:new-gutenberg-top-reading-queue",
@@ -1807,6 +1957,11 @@
       "hash": "#content/events%3Anew-gutenberg-top-reading-queue/review"
     },
     {
+      "contentId": "events:new-gutenberg-top-reading-queue",
+      "mode": "pacing",
+      "hash": "#content/events%3Anew-gutenberg-top-reading-queue/pacing"
+    },
+    {
       "contentId": "events:event-kr-single-performance",
       "mode": "detail",
       "hash": "#content/events%3Aevent-kr-single-performance"
@@ -1845,6 +2000,11 @@
       "contentId": "events:event-kr-single-performance",
       "mode": "review",
       "hash": "#content/events%3Aevent-kr-single-performance/review"
+    },
+    {
+      "contentId": "events:event-kr-single-performance",
+      "mode": "event",
+      "hash": "#content/events%3Aevent-kr-single-performance/event"
     },
     {
       "contentId": "events:event-kr-multi-show-choir",
@@ -1887,6 +2047,11 @@
       "hash": "#content/events%3Aevent-kr-multi-show-choir/review"
     },
     {
+      "contentId": "events:event-kr-multi-show-choir",
+      "mode": "event",
+      "hash": "#content/events%3Aevent-kr-multi-show-choir/event"
+    },
+    {
       "contentId": "events:event-kr-sokcho-summer",
       "mode": "detail",
       "hash": "#content/events%3Aevent-kr-sokcho-summer"
@@ -1925,6 +2090,11 @@
       "contentId": "events:event-kr-sokcho-summer",
       "mode": "review",
       "hash": "#content/events%3Aevent-kr-sokcho-summer/review"
+    },
+    {
+      "contentId": "events:event-kr-sokcho-summer",
+      "mode": "event",
+      "hash": "#content/events%3Aevent-kr-sokcho-summer/event"
     },
     {
       "contentId": "events:event-kr-sema-martin-parr",
@@ -1967,6 +2137,11 @@
       "hash": "#content/events%3Aevent-kr-sema-martin-parr/review"
     },
     {
+      "contentId": "events:event-kr-sema-martin-parr",
+      "mode": "event",
+      "hash": "#content/events%3Aevent-kr-sema-martin-parr/event"
+    },
+    {
       "contentId": "events:event-kr-ballet-ticket-show",
       "mode": "detail",
       "hash": "#content/events%3Aevent-kr-ballet-ticket-show"
@@ -2005,6 +2180,11 @@
       "contentId": "events:event-kr-ballet-ticket-show",
       "mode": "review",
       "hash": "#content/events%3Aevent-kr-ballet-ticket-show/review"
+    },
+    {
+      "contentId": "events:event-kr-ballet-ticket-show",
+      "mode": "event",
+      "hash": "#content/events%3Aevent-kr-ballet-ticket-show/event"
     },
     {
       "contentId": "events:event-kr-qnet-exam-lifecycle",
@@ -2047,6 +2227,11 @@
       "hash": "#content/events%3Aevent-kr-qnet-exam-lifecycle/review"
     },
     {
+      "contentId": "events:event-kr-qnet-exam-lifecycle",
+      "mode": "event",
+      "hash": "#content/events%3Aevent-kr-qnet-exam-lifecycle/event"
+    },
+    {
       "contentId": "events:event-kr-revised-musical",
       "mode": "detail",
       "hash": "#content/events%3Aevent-kr-revised-musical"
@@ -2085,6 +2270,11 @@
       "contentId": "events:event-kr-revised-musical",
       "mode": "review",
       "hash": "#content/events%3Aevent-kr-revised-musical/review"
+    },
+    {
+      "contentId": "events:event-kr-revised-musical",
+      "mode": "event",
+      "hash": "#content/events%3Aevent-kr-revised-musical/event"
     },
     {
       "contentId": "events:event-pattern-nps-all-day",
@@ -2127,6 +2317,11 @@
       "hash": "#content/events%3Aevent-pattern-nps-all-day/review"
     },
     {
+      "contentId": "events:event-pattern-nps-all-day",
+      "mode": "event",
+      "hash": "#content/events%3Aevent-pattern-nps-all-day/event"
+    },
+    {
       "contentId": "events:event-pattern-online-foia",
       "mode": "detail",
       "hash": "#content/events%3Aevent-pattern-online-foia"
@@ -2165,6 +2360,11 @@
       "contentId": "events:event-pattern-online-foia",
       "mode": "review",
       "hash": "#content/events%3Aevent-pattern-online-foia/review"
+    },
+    {
+      "contentId": "events:event-pattern-online-foia",
+      "mode": "event",
+      "hash": "#content/events%3Aevent-pattern-online-foia/event"
     },
     {
       "contentId": "events:event-pattern-nps-weekly",
@@ -2207,6 +2407,11 @@
       "hash": "#content/events%3Aevent-pattern-nps-weekly/review"
     },
     {
+      "contentId": "events:event-pattern-nps-weekly",
+      "mode": "event",
+      "hash": "#content/events%3Aevent-pattern-nps-weekly/event"
+    },
+    {
       "contentId": "events:event-pattern-chimac-edition",
       "mode": "detail",
       "hash": "#content/events%3Aevent-pattern-chimac-edition"
@@ -2245,6 +2450,11 @@
       "contentId": "events:event-pattern-chimac-edition",
       "mode": "review",
       "hash": "#content/events%3Aevent-pattern-chimac-edition/review"
+    },
+    {
+      "contentId": "events:event-pattern-chimac-edition",
+      "mode": "event",
+      "hash": "#content/events%3Aevent-pattern-chimac-edition/event"
     },
     {
       "contentId": "events:event-pattern-nps-rescheduled",
@@ -2287,6 +2497,11 @@
       "hash": "#content/events%3Aevent-pattern-nps-rescheduled/review"
     },
     {
+      "contentId": "events:event-pattern-nps-rescheduled",
+      "mode": "event",
+      "hash": "#content/events%3Aevent-pattern-nps-rescheduled/event"
+    },
+    {
       "contentId": "events:event-pattern-fun-seoul-interest-list",
       "mode": "detail",
       "hash": "#content/events%3Aevent-pattern-fun-seoul-interest-list"
@@ -2325,6 +2540,11 @@
       "contentId": "events:event-pattern-fun-seoul-interest-list",
       "mode": "review",
       "hash": "#content/events%3Aevent-pattern-fun-seoul-interest-list/review"
+    },
+    {
+      "contentId": "events:event-pattern-fun-seoul-interest-list",
+      "mode": "event",
+      "hash": "#content/events%3Aevent-pattern-fun-seoul-interest-list/event"
     },
     {
       "contentId": "events:event-pattern-boryeong-operations",
@@ -2367,6 +2587,11 @@
       "hash": "#content/events%3Aevent-pattern-boryeong-operations/review"
     },
     {
+      "contentId": "events:event-pattern-boryeong-operations",
+      "mode": "event",
+      "hash": "#content/events%3Aevent-pattern-boryeong-operations/event"
+    },
+    {
       "contentId": "legacy:preapp:airport-departure-order",
       "mode": "detail",
       "hash": "#content/legacy%3Apreapp%3Aairport-departure-order"
@@ -2405,6 +2630,11 @@
       "contentId": "legacy:preapp:airport-departure-order",
       "mode": "review",
       "hash": "#content/legacy%3Apreapp%3Aairport-departure-order/review"
+    },
+    {
+      "contentId": "legacy:preapp:airport-departure-order",
+      "mode": "pacing",
+      "hash": "#content/legacy%3Apreapp%3Aairport-departure-order/pacing"
     },
     {
       "contentId": "legacy:preapp:busan-friends-2n3d-route",
@@ -2487,6 +2717,11 @@
       "hash": "#content/legacy%3Apreapp%3Aweekday-lunchbox-menu/review"
     },
     {
+      "contentId": "legacy:preapp:weekday-lunchbox-menu",
+      "mode": "pacing",
+      "hash": "#content/legacy%3Apreapp%3Aweekday-lunchbox-menu/pacing"
+    },
+    {
       "contentId": "legacy:preapp:interview-d1-check",
       "mode": "detail",
       "hash": "#content/legacy%3Apreapp%3Ainterview-d1-check"
@@ -2567,6 +2802,11 @@
       "hash": "#content/legacy%3Apreapp%3Alicense-class1-medical-check/review"
     },
     {
+      "contentId": "legacy:preapp:license-class1-medical-check",
+      "mode": "pacing",
+      "hash": "#content/legacy%3Apreapp%3Alicense-class1-medical-check/pacing"
+    },
+    {
       "contentId": "legacy:preapp:license-class2-renewal",
       "mode": "detail",
       "hash": "#content/legacy%3Apreapp%3Alicense-class2-renewal"
@@ -2605,6 +2845,11 @@
       "contentId": "legacy:preapp:license-class2-renewal",
       "mode": "review",
       "hash": "#content/legacy%3Apreapp%3Alicense-class2-renewal/review"
+    },
+    {
+      "contentId": "legacy:preapp:license-class2-renewal",
+      "mode": "pacing",
+      "hash": "#content/legacy%3Apreapp%3Alicense-class2-renewal/pacing"
     },
     {
       "contentId": "legacy:preapp:aircon-ultrafine-filter-routine",
@@ -3007,6 +3252,11 @@
       "hash": "#content/legacy%3Around2%3Awork24-jobseeker-start/review"
     },
     {
+      "contentId": "legacy:round2:work24-jobseeker-start",
+      "mode": "pacing",
+      "hash": "#content/legacy%3Around2%3Awork24-jobseeker-start/pacing"
+    },
+    {
       "contentId": "legacy:round2:work24-midcareer-transition",
       "mode": "detail",
       "hash": "#content/legacy%3Around2%3Awork24-midcareer-transition"
@@ -3045,6 +3295,11 @@
       "contentId": "legacy:round2:work24-midcareer-transition",
       "mode": "review",
       "hash": "#content/legacy%3Around2%3Awork24-midcareer-transition/review"
+    },
+    {
+      "contentId": "legacy:round2:work24-midcareer-transition",
+      "mode": "pacing",
+      "hash": "#content/legacy%3Around2%3Awork24-midcareer-transition/pacing"
     },
     {
       "contentId": "legacy:round2:personal-business-registration-flow",
@@ -3087,6 +3342,11 @@
       "hash": "#content/legacy%3Around2%3Apersonal-business-registration-flow/review"
     },
     {
+      "contentId": "legacy:round2:personal-business-registration-flow",
+      "mode": "pacing",
+      "hash": "#content/legacy%3Around2%3Apersonal-business-registration-flow/pacing"
+    },
+    {
       "contentId": "legacy:round2:corporate-mail-order-registration-flow",
       "mode": "detail",
       "hash": "#content/legacy%3Around2%3Acorporate-mail-order-registration-flow"
@@ -3127,6 +3387,11 @@
       "hash": "#content/legacy%3Around2%3Acorporate-mail-order-registration-flow/review"
     },
     {
+      "contentId": "legacy:round2:corporate-mail-order-registration-flow",
+      "mode": "pacing",
+      "hash": "#content/legacy%3Around2%3Acorporate-mail-order-registration-flow/pacing"
+    },
+    {
       "contentId": "legacy:round2:minor-passport-renewal",
       "mode": "detail",
       "hash": "#content/legacy%3Around2%3Aminor-passport-renewal"
@@ -3165,6 +3430,11 @@
       "contentId": "legacy:round2:minor-passport-renewal",
       "mode": "review",
       "hash": "#content/legacy%3Around2%3Aminor-passport-renewal/review"
+    },
+    {
+      "contentId": "legacy:round2:minor-passport-renewal",
+      "mode": "pacing",
+      "hash": "#content/legacy%3Around2%3Aminor-passport-renewal/pacing"
     },
     {
       "contentId": "legacy:round2:social-content-thirty-day",
@@ -3287,6 +3557,11 @@
       "hash": "#content/generalization%3AGB-02/review"
     },
     {
+      "contentId": "generalization:GB-02",
+      "mode": "pacing",
+      "hash": "#content/generalization%3AGB-02/pacing"
+    },
+    {
       "contentId": "generalization:GB-03",
       "mode": "detail",
       "hash": "#content/generalization%3AGB-03"
@@ -3367,6 +3642,11 @@
       "hash": "#content/generalization%3AGB-04/review"
     },
     {
+      "contentId": "generalization:GB-04",
+      "mode": "pacing",
+      "hash": "#content/generalization%3AGB-04/pacing"
+    },
+    {
       "contentId": "generalization:GB-05",
       "mode": "detail",
       "hash": "#content/generalization%3AGB-05"
@@ -3407,6 +3687,11 @@
       "hash": "#content/generalization%3AGB-05/review"
     },
     {
+      "contentId": "generalization:GB-05",
+      "mode": "pacing",
+      "hash": "#content/generalization%3AGB-05/pacing"
+    },
+    {
       "contentId": "generalization:GB-06",
       "mode": "detail",
       "hash": "#content/generalization%3AGB-06"
@@ -3445,6 +3730,11 @@
       "contentId": "generalization:GB-06",
       "mode": "review",
       "hash": "#content/generalization%3AGB-06/review"
+    },
+    {
+      "contentId": "generalization:GB-06",
+      "mode": "pacing",
+      "hash": "#content/generalization%3AGB-06/pacing"
     },
     {
       "contentId": "generalization:GB-07",
@@ -3567,6 +3857,11 @@
       "hash": "#content/generalization%3AGB-13/review"
     },
     {
+      "contentId": "generalization:GB-13",
+      "mode": "pacing",
+      "hash": "#content/generalization%3AGB-13/pacing"
+    },
+    {
       "contentId": "generalization:GB-15",
       "mode": "detail",
       "hash": "#content/generalization%3AGB-15"
@@ -3645,6 +3940,11 @@
       "contentId": "generalization:GB-16",
       "mode": "review",
       "hash": "#content/generalization%3AGB-16/review"
+    },
+    {
+      "contentId": "generalization:GB-16",
+      "mode": "pacing",
+      "hash": "#content/generalization%3AGB-16/pacing"
     },
     {
       "contentId": "new:new-a01-seoul-wedding-110",
@@ -3967,6 +4267,11 @@
       "hash": "#content/new%3Anew-b03-fridge-week/review"
     },
     {
+      "contentId": "new:new-b03-fridge-week",
+      "mode": "pacing",
+      "hash": "#content/new%3Anew-b03-fridge-week/pacing"
+    },
+    {
       "contentId": "new:new-b04-organize-seven",
       "mode": "detail",
       "hash": "#content/new%3Anew-b04-organize-seven"
@@ -4007,6 +4312,11 @@
       "hash": "#content/new%3Anew-b04-organize-seven/review"
     },
     {
+      "contentId": "new:new-b04-organize-seven",
+      "mode": "pacing",
+      "hash": "#content/new%3Anew-b04-organize-seven/pacing"
+    },
+    {
       "contentId": "new:new-b05-storage-projects",
       "mode": "detail",
       "hash": "#content/new%3Anew-b05-storage-projects"
@@ -4045,6 +4355,11 @@
       "contentId": "new:new-b05-storage-projects",
       "mode": "review",
       "hash": "#content/new%3Anew-b05-storage-projects/review"
+    },
+    {
+      "contentId": "new:new-b05-storage-projects",
+      "mode": "pacing",
+      "hash": "#content/new%3Anew-b05-storage-projects/pacing"
     },
     {
       "contentId": "new:new-b06-wtable-lemon-weekend",
@@ -4167,6 +4482,11 @@
       "hash": "#content/new%3Anew-b08-banchan-ten/review"
     },
     {
+      "contentId": "new:new-b08-banchan-ten",
+      "mode": "pacing",
+      "hash": "#content/new%3Anew-b08-banchan-ten/pacing"
+    },
+    {
       "contentId": "new:new-c01-programmers-kit",
       "mode": "detail",
       "hash": "#content/new%3Anew-c01-programmers-kit"
@@ -4205,6 +4525,11 @@
       "contentId": "new:new-c01-programmers-kit",
       "mode": "review",
       "hash": "#content/new%3Anew-c01-programmers-kit/review"
+    },
+    {
+      "contentId": "new:new-c01-programmers-kit",
+      "mode": "pacing",
+      "hash": "#content/new%3Anew-c01-programmers-kit/pacing"
     },
     {
       "contentId": "new:new-c02-ifixit-hose",
@@ -4325,6 +4650,11 @@
       "contentId": "new:new-c04-instructables-origami",
       "mode": "review",
       "hash": "#content/new%3Anew-c04-instructables-origami/review"
+    },
+    {
+      "contentId": "new:new-c04-instructables-origami",
+      "mode": "pacing",
+      "hash": "#content/new%3Anew-c04-instructables-origami/pacing"
     },
     {
       "contentId": "new:new-c05-foodsafety-storage",
@@ -4485,6 +4815,11 @@
       "contentId": "new:new-c08-todoist-podcast",
       "mode": "review",
       "hash": "#content/new%3Anew-c08-todoist-podcast/review"
+    },
+    {
+      "contentId": "new:new-c08-todoist-podcast",
+      "mode": "pacing",
+      "hash": "#content/new%3Anew-c08-todoist-podcast/pacing"
     },
     {
       "contentId": "historical:national-scholarship-apply-html:1",

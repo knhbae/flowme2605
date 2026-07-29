@@ -4,8 +4,8 @@
   "counts": {
     "gallery": 156,
     "normal": 110,
-    "productCandidate": 43,
-    "structureProbe": 67,
+    "productCandidate": 41,
+    "structureProbe": 69,
     "boundary": 1,
     "historical": 45,
     "item": 893,
@@ -56420,7 +56420,7 @@
       "corpusTier": "structure_probe",
       "source": {
         "sourceId": "generalization:GB-01:source",
-        "title": null,
+        "title": "출생신고 준비 및 제출",
         "provider": "찾기쉬운 생활법령정보",
         "url": "https://easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=2&cciNo=1&cnpClsNo=1&csmSeq=707&popMenu=ov",
         "canonicalUrl": "https://easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=2&cciNo=1&cnpClsNo=1&csmSeq=707&popMenu=ov",
@@ -56619,7 +56619,7 @@
         "sources": [
           {
             "sourceId": "generalization:GB-01:source",
-            "title": null,
+            "title": "출생신고 준비 및 제출",
             "originalUrl": "https://easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=2&cciNo=1&cnpClsNo=1&csmSeq=707&popMenu=ov",
             "canonicalUrl": "https://easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=2&cciNo=1&cnpClsNo=1&csmSeq=707&popMenu=ov",
             "locale": "ko-KR",
@@ -56710,7 +56710,7 @@
       "corpusTier": "structure_probe",
       "source": {
         "sourceId": "generalization:GB-02:source",
-        "title": null,
+        "title": "Google 계정 2단계 인증 설정",
         "provider": "Google 계정 고객센터",
         "url": "https://support.google.com/accounts/answer/185839?hl=ko",
         "canonicalUrl": "https://support.google.com/accounts/answer/185839?hl=ko",
@@ -56883,7 +56883,7 @@
         "sources": [
           {
             "sourceId": "generalization:GB-02:source",
-            "title": null,
+            "title": "Google 계정 2단계 인증 설정",
             "originalUrl": "https://support.google.com/accounts/answer/185839?hl=ko",
             "canonicalUrl": "https://support.google.com/accounts/answer/185839?hl=ko",
             "locale": "ko-KR",
@@ -56944,7 +56944,7 @@
       "corpusTier": "structure_probe",
       "source": {
         "sourceId": "generalization:GB-03:source",
-        "title": null,
+        "title": "LG 가습기 필터 및 본체 반복 관리",
         "provider": "LG전자",
         "url": "https://www.lge.co.kr/support/solutions-20154871046245",
         "canonicalUrl": "https://www.lge.co.kr/support/solutions-20154871046245",
@@ -57141,7 +57141,7 @@
         "sources": [
           {
             "sourceId": "generalization:GB-03:source",
-            "title": null,
+            "title": "LG 가습기 필터 및 본체 반복 관리",
             "originalUrl": "https://www.lge.co.kr/support/solutions-20154871046245",
             "canonicalUrl": "https://www.lge.co.kr/support/solutions-20154871046245",
             "locale": "ko-KR",
@@ -57412,7 +57412,7 @@
       "corpusTier": "structure_probe",
       "source": {
         "sourceId": "generalization:GB-05:source",
-        "title": null,
+        "title": "달걀말이 김밥 만들기",
         "provider": "만개의레시피",
         "url": "https://www.10000recipe.com/recipe/7071314",
         "canonicalUrl": "https://www.10000recipe.com/recipe/7071314",
@@ -57633,7 +57633,7 @@
         "sources": [
           {
             "sourceId": "generalization:GB-05:source",
-            "title": null,
+            "title": "달걀말이 김밥 만들기",
             "originalUrl": "https://www.10000recipe.com/recipe/7071314",
             "canonicalUrl": "https://www.10000recipe.com/recipe/7071314",
             "locale": "ko-KR",
@@ -57714,7 +57714,7 @@
       "corpusTier": "structure_probe",
       "source": {
         "sourceId": "generalization:GB-06:source",
-        "title": null,
+        "title": "가족 함께 읽기 추천 도서 10권",
         "provider": "BookTrust",
         "url": "https://www.booktrust.org.uk/book-recommendations/booklists/10-books-for-families-with-toddlers-to-teens-to-read-together/",
         "canonicalUrl": "https://www.booktrust.org.uk/book-recommendations/booklists/10-books-for-families-with-toddlers-to-teens-to-read-together/",
@@ -58031,7 +58031,7 @@
         "sources": [
           {
             "sourceId": "generalization:GB-06:source",
-            "title": null,
+            "title": "가족 함께 읽기 추천 도서 10권",
             "originalUrl": "https://www.booktrust.org.uk/book-recommendations/booklists/10-books-for-families-with-toddlers-to-teens-to-read-together/",
             "canonicalUrl": "https://www.booktrust.org.uk/book-recommendations/booklists/10-books-for-families-with-toddlers-to-teens-to-read-together/",
             "locale": "en-GB",
@@ -58152,7 +58152,7 @@
       "corpusTier": "structure_probe",
       "source": {
         "sourceId": "generalization:GB-07:source",
-        "title": null,
+        "title": "iCloud 백업과 컴퓨터 백업 비교",
         "provider": "Apple 지원",
         "url": "https://support.apple.com/ko-kr/108771",
         "canonicalUrl": "https://support.apple.com/ko-kr/108771",
@@ -58258,7 +58258,7 @@
         "sources": [
           {
             "sourceId": "generalization:GB-07:source",
-            "title": null,
+            "title": "iCloud 백업과 컴퓨터 백업 비교",
             "originalUrl": "https://support.apple.com/ko-kr/108771",
             "canonicalUrl": "https://support.apple.com/ko-kr/108771",
             "locale": "ko-KR",
@@ -58339,7 +58339,7 @@
       "corpusTier": "structure_probe",
       "source": {
         "sourceId": "generalization:GB-08:source",
-        "title": null,
+        "title": "국립현대미술관 어린이 단체관람 예약 및 방문",
         "provider": "국립현대미술관",
         "url": "https://www.mmca.go.kr/visitingInfo/childBookingForm.do",
         "canonicalUrl": "https://www.mmca.go.kr/visitingInfo/childBookingForm.do",
@@ -58516,7 +58516,7 @@
         "sources": [
           {
             "sourceId": "generalization:GB-08:source",
-            "title": null,
+            "title": "국립현대미술관 어린이 단체관람 예약 및 방문",
             "originalUrl": "https://www.mmca.go.kr/visitingInfo/childBookingForm.do",
             "canonicalUrl": "https://www.mmca.go.kr/visitingInfo/childBookingForm.do",
             "locale": "ko-KR",
@@ -58617,7 +58617,7 @@
       "corpusTier": "structure_probe",
       "source": {
         "sourceId": "generalization:GB-13:source",
-        "title": null,
+        "title": "주민등록증 재발급 준비",
         "provider": "정부24",
         "url": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000018&HighCtgCD=A01010&tp_seq=01",
         "canonicalUrl": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000018&HighCtgCD=A01010&tp_seq=01",
@@ -58793,7 +58793,7 @@
         "sources": [
           {
             "sourceId": "generalization:GB-13:source",
-            "title": null,
+            "title": "주민등록증 재발급 준비",
             "originalUrl": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000018&HighCtgCD=A01010&tp_seq=01",
             "canonicalUrl": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000018&HighCtgCD=A01010&tp_seq=01",
             "locale": "ko-KR",
@@ -58874,7 +58874,7 @@
       "corpusTier": "structure_probe",
       "source": {
         "sourceId": "generalization:GB-15:source",
-        "title": null,
+        "title": "2026 국제정세 교육과정",
         "provider": "국가공무원인재개발원",
         "url": "https://www.nhi.go.kr/upload/eduList/04/26-4-1-3.pdf",
         "canonicalUrl": "https://www.nhi.go.kr/upload/eduList/04/26-4-1-3.pdf",
@@ -58987,7 +58987,7 @@
         "sources": [
           {
             "sourceId": "generalization:GB-15:source",
-            "title": null,
+            "title": "2026 국제정세 교육과정",
             "originalUrl": "https://www.nhi.go.kr/upload/eduList/04/26-4-1-3.pdf",
             "canonicalUrl": "https://www.nhi.go.kr/upload/eduList/04/26-4-1-3.pdf",
             "locale": "ko-KR",
@@ -59138,7 +59138,7 @@
       "corpusTier": "structure_probe",
       "source": {
         "sourceId": "generalization:GB-16:source",
-        "title": null,
+        "title": "2주 소셜 미디어 콘텐츠 계획",
         "provider": "Hopper HQ",
         "url": "https://www.hopperhq.com/tools/content-planner/",
         "canonicalUrl": "https://www.hopperhq.com/tools/content-planner/",
@@ -59407,7 +59407,7 @@
         "sources": [
           {
             "sourceId": "generalization:GB-16:source",
-            "title": null,
+            "title": "2주 소셜 미디어 콘텐츠 계획",
             "originalUrl": "https://www.hopperhq.com/tools/content-planner/",
             "canonicalUrl": "https://www.hopperhq.com/tools/content-planner/",
             "locale": "en",
@@ -59794,7 +59794,7 @@
     {
       "contentId": "new:new-a02-seoul-museum-group",
       "contentMode": "flow_content",
-      "corpusTier": "product_candidate",
+      "corpusTier": "structure_probe",
       "source": {
         "sourceId": "new:new-a02-seoul-museum-group:source",
         "title": "서울상상나라 단체관람 안내서",
@@ -63492,7 +63492,7 @@
     {
       "contentId": "new:new-b06-wtable-lemon-weekend",
       "contentMode": "flow_content",
-      "corpusTier": "product_candidate",
+      "corpusTier": "structure_probe",
       "source": {
         "sourceId": "new:new-b06-wtable-lemon-weekend:source",
         "title": "레몬 위크엔드",
@@ -63518,7 +63518,7 @@
       },
       "readiness": {
         "architectureFit": "go",
-        "logicReadiness": "go",
+        "logicReadiness": "modify",
         "publicReadiness": "modify",
         "rightsStatus": "permission_review_required",
         "personalConversionAvailability": "available",
@@ -74466,7 +74466,7 @@
       "corpusTier": "historical_preview",
       "source": {
         "sourceId": "historical:skin-weekly-check-html:34:source",
-        "title": "",
+        "title": "주간 피부 상태 관찰 Flow",
         "provider": "creator",
         "url": "",
         "canonicalUrl": "",
@@ -74746,7 +74746,7 @@
       "corpusTier": "historical_preview",
       "source": {
         "sourceId": "historical:portfolio-4week-html:39:source",
-        "title": "",
+        "title": "포트폴리오 제작 4주 플랜 Flow",
         "provider": "creator",
         "url": "",
         "canonicalUrl": "",
@@ -74914,7 +74914,7 @@
       "corpusTier": "historical_preview",
       "source": {
         "sourceId": "historical:digital-detox-weekly-html:42:source",
-        "title": "",
+        "title": "디지털 디톡스 주간 루틴 Flow",
         "provider": "creator",
         "url": "",
         "canonicalUrl": "",
@@ -74970,7 +74970,7 @@
       "corpusTier": "historical_preview",
       "source": {
         "sourceId": "historical:dog-walk-routine-html:43:source",
-        "title": "",
+        "title": "강아지 산책 루틴 Flow",
         "provider": "creator",
         "url": "",
         "canonicalUrl": "",

@@ -3,7 +3,212 @@
   "generatedAt": "2026-07-29T23:59:00+09:00",
   "corpusFingerprint": "sha256:d56b289fd301805fe1299b867497b0840f8d379d1459ec0148639f8b7d5dce32",
   "status": "DRAFT_PENDING_USER_REVIEW",
-  "claimBoundary": "Recommendations are internal synthesis and remain pending user review in the Gallery.",
+  "claimBoundary": "Recommendations are internal synthesis from the frozen corpus and remain pending direct user review in the Gallery. They are not approved product defaults.",
+  "corpusSnapshot": {
+    "gallery": 156,
+    "normal": 110,
+    "existingNormal": 91,
+    "newlyInspectedQualifiedNormal": 22,
+    "newlyAddedDistinctNormal": 19,
+    "reverifiedNormalVariantsMerged": 3,
+    "directlyInspectedNewUrls": 24,
+    "productCandidate": 41,
+    "structureProbe": 69,
+    "boundary": 1,
+    "historical": 45,
+    "item": 893,
+    "sourceRow": 1172,
+    "projectionCell": 550
+  },
+  "manualSemanticAdjudication": {
+    "artifact": "semantic-provenance-manual-adjudication-v1.json",
+    "reviewMethod": "independent_manual_comparison_of_frozen_item_field_against_linked_source_rows",
+    "traceOnlyReviewed": 141,
+    "traceOnlyContentReviewed": 26,
+    "traceOnlyReviewedContentIds": [
+      "canonical:base-moving-d30",
+      "canonical:base-opic-plan",
+      "canonical:base-new-car-comparison",
+      "canonical:oq-oq-c08-ac-decision",
+      "canonical:oq-oq-b03-remodel",
+      "canonical:oq-oq-p03-vehicle",
+      "legacy:preapp:interview-d1-check",
+      "legacy:preapp:license-class1-medical-check",
+      "legacy:preapp:license-class2-renewal",
+      "legacy:preapp:aircon-ultrafine-filter-routine",
+      "legacy:preapp:kitten-arrival-first-week",
+      "legacy:round2:kmooc-hundred-schools-fifteen-week",
+      "legacy:round2:banchan-day-one",
+      "legacy:round2:work24-jobseeker-start",
+      "legacy:round2:personal-business-registration-flow",
+      "legacy:round2:corporate-mail-order-registration-flow",
+      "legacy:round2:minor-passport-renewal",
+      "generalization:GB-01",
+      "generalization:GB-02",
+      "generalization:GB-03",
+      "generalization:GB-04",
+      "generalization:GB-05",
+      "generalization:GB-07",
+      "generalization:GB-08",
+      "generalization:GB-13",
+      "generalization:GB-16"
+    ],
+    "verdictCounts": {
+      "verified_equivalent": 37,
+      "bounded_normalization": 87,
+      "needs_modify": 17,
+      "unknown": 0
+    },
+    "acceptableWithoutMeaningChange": 124,
+    "needsModify": 17,
+    "needsModifyContentCount": 11,
+    "needsModifyContentIds": [
+      "canonical:base-moving-d30",
+      "canonical:base-opic-plan",
+      "canonical:base-new-car-comparison",
+      "canonical:oq-oq-c08-ac-decision",
+      "canonical:oq-oq-b03-remodel",
+      "canonical:oq-oq-p03-vehicle",
+      "legacy:preapp:interview-d1-check",
+      "legacy:preapp:license-class1-medical-check",
+      "legacy:preapp:license-class2-renewal",
+      "legacy:round2:personal-business-registration-flow",
+      "generalization:GB-03"
+    ],
+    "needsModifyByReason": {
+      "critical_source_row_hidden": 3,
+      "mixed_action_label_misleading": 2,
+      "unsupported_action_or_scope": 2,
+      "unsupported_future_timeframe": 2,
+      "projection_rationale_replaces_detail": 2,
+      "unsupported_user_overlay_in_source_item": 1,
+      "unsupported_packaging_constraint": 1,
+      "source_route_narrowed": 2,
+      "conditional_branch_hidden": 1,
+      "safety_instruction_hidden": 1
+    },
+    "needsModifyByContent": {
+      "canonical:base-moving-d30": 5,
+      "canonical:base-opic-plan": 2,
+      "canonical:base-new-car-comparison": 1,
+      "canonical:oq-oq-c08-ac-decision": 1,
+      "canonical:oq-oq-b03-remodel": 2,
+      "canonical:oq-oq-p03-vehicle": 1,
+      "legacy:preapp:interview-d1-check": 1,
+      "legacy:preapp:license-class1-medical-check": 1,
+      "legacy:preapp:license-class2-renewal": 1,
+      "legacy:round2:personal-business-registration-flow": 1,
+      "generalization:GB-03": 1
+    },
+    "ownerOrProvenanceGapCounts": {
+      "completion": 412,
+      "schedule": 124,
+      "total": 536
+    },
+    "completionGapContentIds": [
+      "canonical:base-moving-d30",
+      "canonical:base-baby-food-174",
+      "canonical:base-opic-plan",
+      "canonical:base-opentutorials-web1-progress",
+      "canonical:base-new-car-comparison",
+      "canonical:base-allblanc-7day-abs",
+      "canonical:base-wtable-summer-banchan-five",
+      "canonical:base-andstudio-job-prep-videos",
+      "canonical:oq-oq-c02-kmooc-full",
+      "canonical:oq-oq-c03-librivox",
+      "canonical:oq-oq-c04-passport",
+      "canonical:oq-oq-c05-washer",
+      "canonical:oq-oq-c06-nasa",
+      "canonical:oq-oq-c07-fit100",
+      "canonical:oq-oq-c08-ac-decision",
+      "canonical:oq-oq-b01-heat",
+      "canonical:oq-oq-b03-remodel",
+      "canonical:oq-oq-p01-ossu",
+      "canonical:oq-oq-p02-packing",
+      "canonical:oq-oq-p03-vehicle",
+      "canonical:oq-oq-p04-portfolio",
+      "canonical:value-vq-01",
+      "canonical:value-vq-03",
+      "canonical:value-vq-04",
+      "canonical:value-vq-05",
+      "canonical:value-vq-06",
+      "canonical:value-vq-10",
+      "canonical:value-vq-11",
+      "canonical:value-vq-12",
+      "canonical:deep-ds06",
+      "canonical:deep-ds08",
+      "canonical:live-c01",
+      "canonical:live-c13",
+      "canonical:live-c16",
+      "canonical:live-r02",
+      "canonical:live-kr-stibee-01",
+      "canonical:live-live-mdn-core-01",
+      "canonical:live-live-dyson-filter-01",
+      "events:new-nps-ten-essentials",
+      "events:new-apple-quick-start",
+      "events:new-github-account-onboarding",
+      "events:new-google-codelab-ai-agent",
+      "events:new-mdn-core-scripting",
+      "events:new-gutenberg-top-reading-queue"
+    ],
+    "scheduleGapContentIds": [
+      "canonical:base-moving-d30",
+      "canonical:base-baby-food-174",
+      "canonical:base-opic-plan",
+      "canonical:base-allblanc-7day-abs",
+      "canonical:value-vq-03",
+      "canonical:value-vq-11",
+      "canonical:live-live-dyson-filter-01"
+    ],
+    "zeroInventionClaim": "NOT_PROVEN",
+    "selfValidation": {
+      "status": "PASS",
+      "executedAt": "2026-07-29T14:22:00+09:00",
+      "passed": 13,
+      "total": 13,
+      "checks": [
+        "semantic provenance audit file hash matches",
+        "content UI view-model file hash matches",
+        "adjudication count is exactly 141",
+        "queue indexes cover exactly 0..140",
+        "unique key count is exactly 141",
+        "unique key set exactly matches the audit trace-only queue",
+        "all verdicts are allowed values",
+        "verdict distribution matches 37/87/17/0",
+        "all reason codes resolve in reasonCatalog",
+        "17 mismatch queue indexes equal the needs_modify index set",
+        "temporal adjudication count is exactly 5",
+        "temporal keys exactly match the five Dyson schedule audits",
+        "embedded self-validation status and counts are internally consistent"
+      ]
+    },
+    "claimBoundary": {
+      "canEstablish": [
+        "동결된 corpus의 141개 trace-only 의미 필드가 모두 독립 수동 판정을 받았다.",
+        "124개 필드는 verified_equivalent 또는 bounded_normalization이다.",
+        "17개 필드는 동결된 SourceRow 대비 수정이 필요하다.",
+        "Dyson 5개 schedule의 월 1회 cadence는 source-backed이며 개인 기준일 배치는 별도 layer다."
+      ],
+      "cannotEstablish": [
+        "live source가 동결 SourceRow와 지금도 동일한지",
+        "나머지 4324개 자동 분류 필드까지 포함한 full-corpus invention zero",
+        "completion 412개와 schedule 124개의 owner/derivation 무결성",
+        "rights, freshness, locale, safety approval",
+        "observed-user validation 또는 외부 Calendar round-trip"
+      ],
+      "zeroInventionClaim": "NOT_PROVEN",
+      "observedUserValidation": "NOT_RUN",
+      "externalCalendarRoundTrip": "NOT_RUN",
+      "result": "MANUAL_TRACE_QUEUE_COMPLETE_WITH_17_MODIFICATIONS_AND_OPEN_PROVENANCE_GAPS"
+    }
+  },
+  "reviewStatus": {
+    "internalAgentReview": "COMPLETE_FOR_CURRENT_FROZEN_INPUT",
+    "browserQa": "PENDING",
+    "observedUserValidation": "NOT_RUN",
+    "userReviewStatus": "NOT_REVIEWED_BY_USER",
+    "externalCalendarVtodoRoundTrip": "NOT_RUN"
+  },
   "decisions": [
     {
       "decisionId": "PD-01-item-minimum-unit",
@@ -12,25 +217,28 @@
       "alternative": "원문 문장 또는 화면 행마다 Item을 하나씩 만든다.",
       "evidenceContentIds": [
         "canonical:base-moving-d30",
-        "canonical:base-opic-plan",
         "canonical:oq-oq-c05-washer",
-        "canonical:oq-oq-c08-ac-decision",
         "canonical:oq-oq-b01-heat",
         "canonical:oq-oq-b03-remodel",
-        "canonical:value-vq-10",
-        "canonical:deep-ds06",
         "canonical:live-live-dyson-filter-01",
-        "canonical:live-live-jotform-event-intake-01",
-        "events:event-kr-single-performance",
-        "events:event-kr-multi-show-choir"
+        "legacy:round2:banchan-day-one",
+        "legacy:round2:banchan-day-two-three",
+        "generalization:GB-15",
+        "new:new-a05-nfa-home-fire",
+        "new:new-a08-income-tax",
+        "new:new-b06-wtable-lemon-weekend",
+        "new:new-b08-banchan-ten"
       ],
-      "repeatedProblemCount": 41,
+      "repeatedProblemCount": 13,
       "affectedAreas": [
         "backend DTO",
         "conversion prompt",
         "Flow detail UI"
       ],
-      "userApprovalRequired": true
+      "userApprovalRequired": true,
+      "status": "DRAFT_PENDING_USER_REVIEW",
+      "evidenceBasis": "internal_agent_review",
+      "observedUserValidation": "NOT_RUN"
     },
     {
       "decisionId": "PD-02-step-grouping",
@@ -42,13 +250,16 @@
         "canonical:base-opic-plan",
         "new:new-c08-todoist-podcast"
       ],
-      "repeatedProblemCount": 41,
+      "repeatedProblemCount": 13,
       "affectedAreas": [
         "canonical contract",
         "projection adapter",
         "mobile Flow UI"
       ],
-      "userApprovalRequired": true
+      "userApprovalRequired": true,
+      "status": "DRAFT_PENDING_USER_REVIEW",
+      "evidenceBasis": "internal_agent_review",
+      "observedUserValidation": "NOT_RUN"
     },
     {
       "decisionId": "PD-03-checklist-versus-todo",
@@ -56,26 +267,29 @@
       "recommendation": "끝이 정해진 한 상황의 누락 방지 묶음은 Checklist, 독립적으로 재정렬·연기·추가하는 queue는 Todo로 둔다.",
       "alternative": "Checklist를 Todo의 하위 canonical entity로 둔다.",
       "evidenceContentIds": [
-        "canonical:oq-oq-c03-librivox",
+        "canonical:base-moving-d30",
+        "canonical:base-baby-food-174",
+        "canonical:base-opic-plan",
+        "canonical:base-opentutorials-web1-progress",
+        "canonical:base-allblanc-7day-abs",
+        "canonical:oq-oq-c02-kmooc-full",
         "canonical:oq-oq-c04-passport",
         "canonical:oq-oq-c05-washer",
-        "canonical:oq-oq-c07-fit100",
-        "canonical:oq-oq-p01-ossu",
-        "canonical:oq-oq-p03-vehicle",
-        "canonical:oq-oq-p04-portfolio",
-        "canonical:value-vq-06",
-        "canonical:value-vq-11",
-        "canonical:deep-ds06",
-        "canonical:live-c01",
-        "canonical:live-c16"
+        "canonical:oq-oq-c08-ac-decision",
+        "canonical:oq-oq-b01-heat",
+        "canonical:oq-oq-b03-remodel",
+        "canonical:oq-oq-p01-ossu"
       ],
-      "repeatedProblemCount": 20,
+      "repeatedProblemCount": 56,
       "affectedAreas": [
         "projection classifier",
         "Todo adapter",
         "Checklist UI"
       ],
-      "userApprovalRequired": true
+      "userApprovalRequired": true,
+      "status": "DRAFT_PENDING_USER_REVIEW",
+      "evidenceBasis": "internal_agent_review",
+      "observedUserValidation": "NOT_RUN"
     },
     {
       "decisionId": "PD-04-primary-projection",
@@ -84,25 +298,28 @@
       "alternative": "생성 가능한 모든 포맷을 동등하게 노출한다.",
       "evidenceContentIds": [
         "canonical:oq-oq-c04-passport",
-        "canonical:oq-oq-c07-fit100",
+        "canonical:oq-oq-c05-washer",
+        "canonical:oq-oq-c08-ac-decision",
         "canonical:oq-oq-b01-heat",
-        "canonical:oq-oq-p03-vehicle",
-        "canonical:deep-ds06",
+        "canonical:oq-oq-b03-remodel",
+        "canonical:deep-ds08",
         "canonical:live-c01",
-        "canonical:live-c16",
         "canonical:live-live-dyson-filter-01",
-        "events:event-kr-qnet-exam-lifecycle",
-        "events:event-kr-revised-musical",
-        "events:event-pattern-nps-weekly",
-        "legacy:round2:kmooc-hundred-schools-fifteen-week"
+        "canonical:live-live-jotform-event-intake-01",
+        "events:new-github-account-onboarding",
+        "events:event-kr-sema-martin-parr",
+        "events:event-kr-qnet-exam-lifecycle"
       ],
-      "repeatedProblemCount": 21,
+      "repeatedProblemCount": 31,
       "affectedAreas": [
         "artifact planner",
         "Gallery card",
         "backend response"
       ],
-      "userApprovalRequired": true
+      "userApprovalRequired": true,
+      "status": "DRAFT_PENDING_USER_REVIEW",
+      "evidenceBasis": "internal_agent_review",
+      "observedUserValidation": "NOT_RUN"
     },
     {
       "decisionId": "PD-05-secondary-projection-exposure",
@@ -111,24 +328,27 @@
       "alternative": "다섯 포맷 버튼을 항상 같은 중요도로 노출한다.",
       "evidenceContentIds": [
         "canonical:oq-oq-c04-passport",
-        "canonical:oq-oq-c07-fit100",
+        "canonical:oq-oq-c05-washer",
+        "canonical:oq-oq-c08-ac-decision",
         "canonical:oq-oq-b01-heat",
-        "canonical:oq-oq-p03-vehicle",
-        "canonical:deep-ds06",
+        "canonical:oq-oq-b03-remodel",
+        "canonical:deep-ds08",
         "canonical:live-c01",
-        "canonical:live-c16",
         "canonical:live-live-dyson-filter-01",
-        "events:event-kr-qnet-exam-lifecycle",
-        "events:event-kr-revised-musical",
-        "events:event-pattern-nps-weekly",
-        "legacy:round2:kmooc-hundred-schools-fifteen-week"
+        "canonical:live-live-jotform-event-intake-01",
+        "events:new-github-account-onboarding",
+        "events:event-kr-sema-martin-parr",
+        "events:event-kr-qnet-exam-lifecycle"
       ],
-      "repeatedProblemCount": 21,
+      "repeatedProblemCount": 31,
       "affectedAreas": [
         "Flow detail IA",
         "export drawer"
       ],
-      "userApprovalRequired": true
+      "userApprovalRequired": true,
+      "status": "DRAFT_PENDING_USER_REVIEW",
+      "evidenceBasis": "internal_agent_review",
+      "observedUserValidation": "NOT_RUN"
     },
     {
       "decisionId": "PD-06-undated-start",
@@ -140,13 +360,16 @@
         "canonical:oq-oq-c03-librivox",
         "new:new-c04-instructables-origami"
       ],
-      "repeatedProblemCount": 54,
+      "repeatedProblemCount": 53,
       "affectedAreas": [
         "Input Composer",
         "UserFlowCopy",
         "schedule playground"
       ],
-      "userApprovalRequired": true
+      "userApprovalRequired": true,
+      "status": "DRAFT_PENDING_USER_REVIEW",
+      "evidenceBasis": "internal_agent_review",
+      "observedUserValidation": "NOT_RUN"
     },
     {
       "decisionId": "PD-07-pacing-default",
@@ -158,13 +381,16 @@
         "canonical:oq-oq-c02-kmooc-full",
         "events:new-gutenberg-top-reading-queue"
       ],
-      "repeatedProblemCount": 46,
+      "repeatedProblemCount": 43,
       "affectedAreas": [
         "pacing engine",
         "UserFlowCopy",
         "Calendar adapter"
       ],
-      "userApprovalRequired": true
+      "userApprovalRequired": true,
+      "status": "DRAFT_PENDING_USER_REVIEW",
+      "evidenceBasis": "internal_agent_review",
+      "observedUserValidation": "NOT_RUN"
     },
     {
       "decisionId": "PD-08-due-versus-calendar",
@@ -176,13 +402,16 @@
         "new:new-a08-income-tax",
         "events:event-kr-qnet-exam-lifecycle"
       ],
-      "repeatedProblemCount": 46,
+      "repeatedProblemCount": 43,
       "affectedAreas": [
         "temporal intent",
         "ICS exporter",
         "Todo adapter"
       ],
-      "userApprovalRequired": true
+      "userApprovalRequired": true,
+      "status": "DRAFT_PENDING_USER_REVIEW",
+      "evidenceBasis": "internal_agent_review",
+      "observedUserValidation": "NOT_RUN"
     },
     {
       "decisionId": "PD-09-calendar-grouping",
@@ -194,13 +423,16 @@
         "canonical:base-allblanc-7day-abs",
         "legacy:preapp:busan-friends-2n3d-route"
       ],
-      "repeatedProblemCount": 7,
+      "repeatedProblemCount": 3,
       "affectedAreas": [
         "Calendar projection",
         "loss manifest",
         "mobile calendar"
       ],
-      "userApprovalRequired": true
+      "userApprovalRequired": true,
+      "status": "DRAFT_PENDING_USER_REVIEW",
+      "evidenceBasis": "internal_agent_review",
+      "observedUserValidation": "NOT_RUN"
     },
     {
       "decisionId": "PD-10-event-contract",
@@ -218,7 +450,10 @@
         "event intent UI",
         "ICS projection"
       ],
-      "userApprovalRequired": true
+      "userApprovalRequired": true,
+      "status": "DRAFT_PENDING_USER_REVIEW",
+      "evidenceBasis": "internal_agent_review",
+      "observedUserValidation": "NOT_RUN"
     },
     {
       "decisionId": "PD-11-source-overlay-display",
@@ -230,13 +465,16 @@
         "canonical:base-moving-d30",
         "events:event-kr-single-performance"
       ],
-      "repeatedProblemCount": 46,
+      "repeatedProblemCount": 43,
       "affectedAreas": [
         "data contract",
         "schedule UI",
         "audit log"
       ],
-      "userApprovalRequired": true
+      "userApprovalRequired": true,
+      "status": "DRAFT_PENDING_USER_REVIEW",
+      "evidenceBasis": "internal_agent_review",
+      "observedUserValidation": "NOT_RUN"
     },
     {
       "decisionId": "PD-12-readiness-state-display",
@@ -248,13 +486,16 @@
         "canonical:base-opentutorials-web1-progress",
         "new:new-a01-seoul-wedding-110"
       ],
-      "repeatedProblemCount": 76,
+      "repeatedProblemCount": 90,
       "affectedAreas": [
         "admin UI",
         "public content card",
         "promotion gate"
       ],
-      "userApprovalRequired": true
+      "userApprovalRequired": true,
+      "status": "DRAFT_PENDING_USER_REVIEW",
+      "evidenceBasis": "internal_agent_review",
+      "observedUserValidation": "NOT_RUN"
     },
     {
       "decisionId": "PD-13-memo-sheet-position",
@@ -266,13 +507,16 @@
         "canonical:base-opentutorials-web1-progress",
         "new:new-a01-seoul-wedding-110"
       ],
-      "repeatedProblemCount": 21,
+      "repeatedProblemCount": 31,
       "affectedAreas": [
         "export contract",
         "Sheet UI",
         "Memo UI"
       ],
-      "userApprovalRequired": true
+      "userApprovalRequired": true,
+      "status": "DRAFT_PENDING_USER_REVIEW",
+      "evidenceBasis": "internal_agent_review",
+      "observedUserValidation": "NOT_RUN"
     },
     {
       "decisionId": "PD-14-backend-required-fields",
@@ -299,7 +543,87 @@
         "DB design",
         "LLM output schema"
       ],
-      "userApprovalRequired": true
+      "userApprovalRequired": true,
+      "status": "DRAFT_PENDING_USER_REVIEW",
+      "evidenceBasis": "internal_agent_review",
+      "observedUserValidation": "NOT_RUN"
+    },
+    {
+      "decisionId": "PD-15-semantic-source-preservation",
+      "question": "SourceRow를 Item 제목·상세로 줄일 때 어떤 의미 손실을 자동 차단할 것인가?",
+      "recommendation": "조건부 분기·안전 금지·복수 공식 경로·서로 다른 행동·계약 조건을 제목이나 detail에서 숨기지 않는다. projection 선택 이유와 user overlay는 source-backed Item 문구에 넣지 않는다.",
+      "alternative": "sourceRefs만 남아 있으면 Item 제목과 detail의 의미 손실을 허용한다.",
+      "evidenceContentIds": [
+        "canonical:base-moving-d30",
+        "canonical:base-opic-plan",
+        "canonical:base-new-car-comparison",
+        "canonical:oq-oq-c08-ac-decision",
+        "canonical:oq-oq-b03-remodel",
+        "canonical:oq-oq-p03-vehicle",
+        "legacy:preapp:interview-d1-check",
+        "legacy:preapp:license-class1-medical-check",
+        "legacy:preapp:license-class2-renewal",
+        "legacy:round2:personal-business-registration-flow",
+        "generalization:GB-03"
+      ],
+      "repeatedProblemCount": 17,
+      "affectedAreas": [
+        "conversion prompt",
+        "semantic validator",
+        "Item copy",
+        "UI Modify queue"
+      ],
+      "userApprovalRequired": true,
+      "manualSemanticReasonCounts": {
+        "critical_source_row_hidden": 3,
+        "mixed_action_label_misleading": 2,
+        "unsupported_action_or_scope": 2,
+        "unsupported_future_timeframe": 2,
+        "projection_rationale_replaces_detail": 2,
+        "unsupported_user_overlay_in_source_item": 1,
+        "unsupported_packaging_constraint": 1,
+        "source_route_narrowed": 2,
+        "conditional_branch_hidden": 1,
+        "safety_instruction_hidden": 1
+      },
+      "status": "DRAFT_PENDING_USER_REVIEW",
+      "evidenceBasis": "internal_agent_review",
+      "observedUserValidation": "NOT_RUN"
+    },
+    {
+      "decisionId": "PD-16-completion-schedule-provenance",
+      "question": "completion과 schedule의 owner·derivation을 canonical 계약에 어떻게 넣을 것인가?",
+      "recommendation": "completion 412개와 schedule 124개에 source·user_overlay·system_template owner와 direct·normalized·derived derivation을 명시한다. source cadence와 개인 기준일 배치를 같은 schedule fact로 저장하지 않는다.",
+      "alternative": "완료 문구와 일정 값만 저장하고 provenance는 sourceRefs에서 추정한다.",
+      "evidenceContentIds": [
+        "canonical:base-moving-d30",
+        "canonical:base-opic-plan",
+        "canonical:base-new-car-comparison",
+        "canonical:oq-oq-c08-ac-decision",
+        "canonical:oq-oq-b03-remodel",
+        "canonical:oq-oq-p03-vehicle",
+        "legacy:preapp:interview-d1-check",
+        "legacy:preapp:license-class1-medical-check",
+        "legacy:preapp:license-class2-renewal",
+        "legacy:round2:personal-business-registration-flow",
+        "canonical:live-live-dyson-filter-01"
+      ],
+      "repeatedProblemCount": 536,
+      "affectedAreas": [
+        "canonical Item",
+        "backend DTO",
+        "schedule derivation",
+        "completion UI"
+      ],
+      "userApprovalRequired": true,
+      "openFieldCounts": {
+        "completion": 412,
+        "schedule": 124,
+        "total": 536
+      },
+      "status": "DRAFT_PENDING_USER_REVIEW",
+      "evidenceBasis": "internal_agent_review",
+      "observedUserValidation": "NOT_RUN"
     }
   ]
 }

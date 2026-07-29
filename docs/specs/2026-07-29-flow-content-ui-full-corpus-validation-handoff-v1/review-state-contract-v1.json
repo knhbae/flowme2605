@@ -1107,11 +1107,82 @@
     "merge",
     "replace"
   ],
+  "requiredBeforeReviewed": [
+    "verdict",
+    "useful",
+    "itemSize",
+    "projection"
+  ],
+  "questions": {
+    "verdict": [
+      "go",
+      "modify",
+      "hold"
+    ],
+    "useful": [
+      "yes",
+      "partly",
+      "no"
+    ],
+    "saveReason": [
+      "clear",
+      "weak",
+      "none"
+    ],
+    "itemSize": [
+      "appropriate",
+      "too_small",
+      "too_large",
+      "mixed"
+    ],
+    "detailEnough": [
+      "yes",
+      "partly",
+      "no"
+    ],
+    "firstAction": [
+      "yes",
+      "partly",
+      "no"
+    ],
+    "projection": [
+      "yes",
+      "change",
+      "unsure"
+    ],
+    "checklistTodo": [
+      "yes",
+      "change",
+      "not_applicable"
+    ],
+    "schedule": [
+      "yes",
+      "too_much",
+      "too_little",
+      "not_applicable"
+    ],
+    "calendarLoad": [
+      "helpful",
+      "too_many",
+      "too_few",
+      "not_applicable"
+    ],
+    "modificationDegree": [
+      "none",
+      "minor",
+      "major",
+      "rebuild"
+    ]
+  },
   "validations": [
     "schemaVersion",
     "corpusFingerprint",
     "known contentId",
     "unknown contentId reporting",
+    "review enum sanitization",
+    "replace starts from empty initial state",
+    "pacing import accepts policy only",
+    "pacing assignments are recomputed from canonical Items",
     "pre-replace automatic backup",
     "rollback on error"
   ],

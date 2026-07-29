@@ -1,10 +1,13 @@
 # Flow Content UI Full-Corpus Validation & Planning Handoff Lab v1
 
-- Status: Active implementation
+- Status: Active implementation — data/UI artifacts generated; final browser
+  QA and direct user review pending
 - Date: 2026-07-29
 - Scope: standalone docs harness, derived corpus/view model, projection and
   interaction previews, internal review, planning handoff
 - Production app/runtime/DB/API: unchanged
+- Final browser QA: `PENDING`
+- Local user review state: `NOT_REVIEWED_BY_USER`
 - Observed-user validation: `NOT_RUN`
 - External Calendar/VTODO round-trip: `NOT_RUN`
 
@@ -24,6 +27,33 @@ failures as contract or generation-rule gaps:
 Calendar, ICS, Checklist, Todo, Sheet, and Memo remain derived projections for
 this experiment. The lab may recommend changes but does not modify production
 types or routes.
+
+## 1.1 Current machine-readable snapshot
+
+The current generated snapshot contains:
+
+- 156 Gallery records;
+- 110 normal Product/Structure records;
+- 91 existing/inherited normal records plus 19 distinct normal records added
+  from 24 directly inspected new URLs;
+- 893 canonical Items;
+- 1,172 SourceRows;
+- 550 explained projection cells;
+- 16 pacing fixtures; and
+- 14 event interaction fixtures.
+
+One boundary record and 45 historical previews remain visible but do not count
+toward the 110 normal records. These counts come from the JSON artifacts, not
+from hand-entered report markup.
+
+Of the 24 newly inspected URLs, 22 passed the normal source/structure gate. The
+remaining difference is intentional: three normal sources reverified an
+existing `canonical URL + user job` and were merged instead of counted as new
+content.
+
+The snapshot is implementation and internal-review evidence. It is not an
+approved product default, observed-user validation, or external Calendar
+compatibility proof.
 
 ## 2. Corpus contract
 
@@ -171,6 +201,7 @@ Recommended hash routes:
 #content/{contentId}/lineage
 #content/{contentId}/review
 #coverage
+#exclusions
 ```
 
 ## 9. Review boundary
@@ -179,10 +210,92 @@ Two independent internal-agent reviews inspect Item granularity, primary
 projection, Checklist/Todo semantics, pacing suitability, content value and UI
 understandability. They are kept separate from local user review.
 
+The final A2/B2 runs each cover all 110 normal contents and record the same
+frozen Gallery, view-model and projection-result fingerprints. Their normalized
+agreement rates are 88% for Item granularity, 72% for primary-projection
+suitability, 95% for Checklist/Todo semantics, 66% for schedule suitability,
+52% for content value and 46% for UI understandability. Only 6/110 records
+match across all six verdicts plus both concrete projection choices. This low
+exact match is retained as a planning signal rather than hidden by averaging.
+
+The independent reviews inspected Gallery SHA
+`9be4105dcf5a62a82dc31ddc3a6b37acaa87b9e886d70d27c9fc5f979c1d7d0b`.
+After synthesis, the Gallery was regenerated to show the combined internal
+verdicts; its current SHA is
+`9c6732991ac455d65d693550cf8e9de54f1cdf4d6906713633f94ea17117b86c`.
+The view-model and projection-result hashes did not change. Therefore the
+reviews remain valid for the frozen content/projection inputs, while the final
+post-synthesis rendered surface still requires its own browser QA and must not
+be described as independently reviewed byte-for-byte.
+
 Every local user state begins as `NOT_REVIEWED_BY_USER`. Screenshots, browser
 QA, agent agreement and validator success are not observed-user validation.
 
-## 10. Out of scope
+The independent-review output is an internal reading of the frozen corpus and
+review surface. Its disagreement counts identify rules that need inspection;
+they do not substitute for the user's direct review in the Gallery.
+
+### 9.1 Manual semantic provenance boundary
+
+The deterministic provenance audit left 141 title/detail fields in a
+`trace_only_semantics_unverified` queue. A separate manual adjudication compared
+all 141 fields across 26 contents with their frozen linked SourceRows:
+
+- `verified_equivalent`: 37;
+- `bounded_normalization`: 87;
+- `needs_modify`: 17;
+- `unknown`: 0.
+
+The 17 modifications are field-level keys across 11 contents, not 17 distinct
+contents:
+
+- `canonical:base-moving-d30` — 5;
+- `canonical:base-opic-plan` — 2;
+- `canonical:oq-oq-b03-remodel` — 2;
+- `canonical:base-new-car-comparison` — 1;
+- `canonical:oq-oq-c08-ac-decision` — 1;
+- `canonical:oq-oq-p03-vehicle` — 1;
+- `legacy:preapp:interview-d1-check` — 1;
+- `legacy:preapp:license-class1-medical-check` — 1;
+- `legacy:preapp:license-class2-renewal` — 1;
+- `legacy:round2:personal-business-registration-flow` — 1;
+- `generalization:GB-03` — 1.
+
+Repeated causes include hidden critical SourceRows, misleading mixed-action
+labels, unsupported actions or future timeframes, projection rationale
+replacing source detail, narrowed official routes, user overlay mixed into a
+source Item, hidden conditional branches, and hidden safety instructions.
+
+This closes the 141-entry manual queue but does not prove zero invention for
+the full corpus. Completion owner/derivation remains unencoded for 412 fields
+and schedule owner/derivation for 124 fields. The combined
+`zeroInventionClaim` is `NOT_PROVEN`.
+
+## 10. Deliverables and current gate
+
+Primary review surfaces:
+
+- `docs/content-audit/2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html`
+- `docs/content-audit/2026-07-29-flow-content-ui-full-corpus-validation-review-v1-ko.html`
+
+Five-minute handoff:
+
+- `decision-summary-ko.md`
+
+Machine-readable planning evidence:
+
+- `planning-decision-handoff-v1.json`
+- `content-and-logic-gap-register-v1.json`
+- `semantic-provenance-audit-v1.json`
+- `semantic-provenance-manual-adjudication-v1.json`
+- `validation-results-v1.json`
+
+All planning decisions remain `DRAFT_PENDING_USER_REVIEW`. Final browser QA is
+still `PENDING`. The final machine validator and targeted tests must include
+the manual semantic adjudication contract. Observed-user validation and external
+Calendar/VTODO round-trip remain `NOT_RUN`.
+
+## 11. Out of scope
 
 - production routes or app UI;
 - runtime types and export APIs;
@@ -190,4 +303,3 @@ QA, agent agreement and validator success are not observed-user validation.
 - actual Calendar account integration;
 - rights/publication workflow redesign;
 - commit, push, PR, merge or deploy.
-

@@ -11,8 +11,8 @@
   "counts": {
     "gallery": 156,
     "normal": 110,
-    "productCandidate": 43,
-    "structureProbe": 67,
+    "productCandidate": 41,
+    "structureProbe": 69,
     "boundary": 1,
     "historical": 45,
     "item": 893,
@@ -2483,6 +2483,7 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "sourceVariants": [
         {
           "contentId": "canonical:oq-oq-c01-moving",
@@ -10837,6 +10838,7 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -21481,6 +21483,7 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -31793,6 +31796,7 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -37026,6 +37030,7 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -41622,6 +41627,7 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -44678,6 +44684,7 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -46687,6 +46694,7 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -47785,41 +47793,7 @@
         "privacyReview": "not_assessed",
         "promotionState": "research_only"
       },
-      "minimumInputs": [
-        {
-          "key": "id_7ddb31ec63",
-          "label": "수강 신청·운영 기간",
-          "type": "long_text",
-          "required": false,
-          "purposes": [
-            "filter",
-            "export"
-          ],
-          "source": "source"
-        },
-        {
-          "key": "id_65d37078aa",
-          "label": "과정 분량",
-          "type": "long_text",
-          "required": false,
-          "purposes": [
-            "filter",
-            "export"
-          ],
-          "source": "source"
-        },
-        {
-          "key": "id_367269ea1a",
-          "label": "수료 조건",
-          "type": "long_text",
-          "required": false,
-          "purposes": [
-            "filter",
-            "export"
-          ],
-          "source": "source"
-        }
-      ],
+      "minimumInputs": [],
       "primaryProjection": "sheet",
       "secondaryProjections": [
         "todo",
@@ -49159,6 +49133,56 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [
+        {
+          "fieldId": "oq-oq-c02-kmooc-full-field-kmooc-window",
+          "key": "id_7ddb31ec63",
+          "label": "수강 신청·운영 기간",
+          "type": "long_text",
+          "purposes": [
+            "filter",
+            "export"
+          ],
+          "value": "2026-07-01부터 2026-08-31까지",
+          "source": "source",
+          "requiredForProjection": false,
+          "sourceRefIds": [
+            "ref-oq-oq-c02-kmooc-full-field-oq-oq-c02-kmooc-full-field-kmooc-window-a237c83d"
+          ]
+        },
+        {
+          "fieldId": "oq-oq-c02-kmooc-full-field-kmooc-progress",
+          "key": "id_65d37078aa",
+          "label": "과정 분량",
+          "type": "long_text",
+          "purposes": [
+            "filter",
+            "export"
+          ],
+          "value": "14주, 총 40시간, VOD 26시간 15분",
+          "source": "source",
+          "requiredForProjection": false,
+          "sourceRefIds": [
+            "ref-oq-oq-c02-kmooc-full-field-oq-oq-c02-kmooc-full-field-kmooc-progress-51e9b353"
+          ]
+        },
+        {
+          "fieldId": "oq-oq-c02-kmooc-full-field-kmooc-certificate",
+          "key": "id_367269ea1a",
+          "label": "수료 조건",
+          "type": "long_text",
+          "purposes": [
+            "filter",
+            "export"
+          ],
+          "value": "참여 80% 조건",
+          "source": "source",
+          "requiredForProjection": false,
+          "sourceRefIds": [
+            "ref-oq-oq-c02-kmooc-full-field-oq-oq-c02-kmooc-full-field-kmooc-certificate-e7a8e94d"
+          ]
+        }
+      ],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -55021,6 +55045,7 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -62570,6 +62595,7 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "sourceVariants": [
         {
           "contentId": "legacy:round2:adult-passport-renewal",
@@ -63849,19 +63875,7 @@
         "privacyReview": "not_assessed",
         "promotionState": "research_only"
       },
-      "minimumInputs": [
-        {
-          "key": "id_f49b1b84d6",
-          "label": "실행 시점",
-          "type": "long_text",
-          "required": false,
-          "purposes": [
-            "filter",
-            "export"
-          ],
-          "source": "source"
-        }
-      ],
+      "minimumInputs": [],
       "primaryProjection": "todo",
       "secondaryProjections": [
         "checklist",
@@ -64400,6 +64414,24 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [
+        {
+          "fieldId": "oq-oq-c05-washer-field-washer-trigger",
+          "key": "id_f49b1b84d6",
+          "label": "실행 시점",
+          "type": "long_text",
+          "purposes": [
+            "filter",
+            "export"
+          ],
+          "value": "40회 세탁마다 또는 세탁기가 필요 알림을 표시하면 더 일찍 실행",
+          "source": "source",
+          "requiredForProjection": false,
+          "sourceRefIds": [
+            "ref-oq-oq-c05-washer-field-oq-oq-c05-washer-field-washer-trigger-08c6b0ea"
+          ]
+        }
+      ],
       "sourceVariants": [
         {
           "contentId": "canonical:live-live-ifixit-washer-01",
@@ -65651,19 +65683,7 @@
         "privacyReview": "not_assessed",
         "promotionState": "research_only"
       },
-      "minimumInputs": [
-        {
-          "key": "id_6772c2b88f",
-          "label": "재료 준비",
-          "type": "short_text",
-          "required": false,
-          "purposes": [
-            "filter",
-            "export"
-          ],
-          "source": "source"
-        }
-      ],
+      "minimumInputs": [],
       "primaryProjection": "checklist",
       "secondaryProjections": [
         "memo"
@@ -66258,6 +66278,24 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [
+        {
+          "fieldId": "oq-oq-c06-nasa-field-nasa-materials",
+          "key": "id_6772c2b88f",
+          "label": "재료 준비",
+          "type": "short_text",
+          "purposes": [
+            "filter",
+            "export"
+          ],
+          "value": "상자, 골판지, 종이클립, 컵, 카드지, 필기구, 나무 막대, 가위, 보안경, 끈, 테이프, 무게추, 스케치 종이",
+          "source": "source",
+          "requiredForProjection": false,
+          "sourceRefIds": [
+            "ref-oq-oq-c06-nasa-field-oq-oq-c06-nasa-field-nasa-materials-27ba9962"
+          ]
+        }
+      ],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -68406,6 +68444,7 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -70294,41 +70333,7 @@
         "privacyReview": "not_assessed",
         "promotionState": "research_only"
       },
-      "minimumInputs": [
-        {
-          "key": "id_d1d6779e5a",
-          "label": "전문세척 범위",
-          "type": "short_text",
-          "required": false,
-          "purposes": [
-            "filter",
-            "export"
-          ],
-          "source": "source"
-        },
-        {
-          "key": "id_115fb5582c",
-          "label": "일반세척 범위",
-          "type": "short_text",
-          "required": false,
-          "purposes": [
-            "filter",
-            "export"
-          ],
-          "source": "source"
-        },
-        {
-          "key": "id_9e9cd94cbe",
-          "label": "시간·비용 차이",
-          "type": "short_text",
-          "required": false,
-          "purposes": [
-            "filter",
-            "export"
-          ],
-          "source": "source"
-        }
-      ],
+      "minimumInputs": [],
       "primaryProjection": "memo",
       "secondaryProjections": [
         "sheet",
@@ -70745,6 +70750,56 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [
+        {
+          "fieldId": "oq-oq-c08-ac-decision-field-ac-pro",
+          "key": "id_d1d6779e5a",
+          "label": "전문세척 범위",
+          "type": "short_text",
+          "purposes": [
+            "filter",
+            "export"
+          ],
+          "value": "전문 장비를 이용해 제품을 분해하고 주요 부품의 먼지·이물·오염물을 세척",
+          "source": "source",
+          "requiredForProjection": false,
+          "sourceRefIds": [
+            "ref-oq-oq-c08-ac-decision-field-oq-oq-c08-ac-decision-field-ac-pro-2a43f036"
+          ]
+        },
+        {
+          "fieldId": "oq-oq-c08-ac-decision-field-ac-general",
+          "key": "id_115fb5582c",
+          "label": "일반세척 범위",
+          "type": "short_text",
+          "purposes": [
+            "filter",
+            "export"
+          ],
+          "value": "세척용 스프레이로 제품 외관과 필터 등 주요 부위의 먼지·이물을 제거",
+          "source": "source",
+          "requiredForProjection": false,
+          "sourceRefIds": [
+            "ref-oq-oq-c08-ac-decision-field-oq-oq-c08-ac-decision-field-ac-general-d6ead05b"
+          ]
+        },
+        {
+          "fieldId": "oq-oq-c08-ac-decision-field-ac-tradeoff",
+          "key": "id_9e9cd94cbe",
+          "label": "시간·비용 차이",
+          "type": "short_text",
+          "purposes": [
+            "filter",
+            "export"
+          ],
+          "value": "전문세척은 일반세척보다 시간과 비용이 더 든다",
+          "source": "source",
+          "requiredForProjection": false,
+          "sourceRefIds": [
+            "ref-oq-oq-c08-ac-decision-field-oq-oq-c08-ac-decision-field-ac-tradeoff-a915ca13"
+          ]
+        }
+      ],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -72154,6 +72209,7 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -73361,118 +73417,7 @@
         "privacyReview": "not_assessed",
         "promotionState": "research_only"
       },
-      "minimumInputs": [
-        {
-          "key": "id_66f8caff5c",
-          "label": "업체 정보",
-          "type": "short_text",
-          "required": false,
-          "purposes": [
-            "filter",
-            "export"
-          ],
-          "source": "source"
-        },
-        {
-          "key": "id_7579317fa0",
-          "label": "공사 시작일과 종료일",
-          "type": "short_text",
-          "required": false,
-          "purposes": [
-            "filter",
-            "export"
-          ],
-          "source": "source"
-        },
-        {
-          "key": "id_97b1a9b791",
-          "label": "지연배상",
-          "type": "short_text",
-          "required": false,
-          "purposes": [
-            "filter",
-            "export"
-          ],
-          "source": "source"
-        },
-        {
-          "key": "id_22042fdf5a",
-          "label": "대금 지급 방법과 날짜",
-          "type": "short_text",
-          "required": false,
-          "purposes": [
-            "filter",
-            "export"
-          ],
-          "source": "source"
-        },
-        {
-          "key": "id_2664490b16",
-          "label": "최종 금액과 추가 비용",
-          "type": "short_text",
-          "required": false,
-          "purposes": [
-            "filter",
-            "export"
-          ],
-          "source": "source"
-        },
-        {
-          "key": "id_a84da6b07e",
-          "label": "세금계산서 발행 기한",
-          "type": "short_text",
-          "required": false,
-          "purposes": [
-            "filter",
-            "export"
-          ],
-          "source": "source"
-        },
-        {
-          "key": "id_874c2d85c0",
-          "label": "자재내역서",
-          "type": "short_text",
-          "required": false,
-          "purposes": [
-            "filter",
-            "export"
-          ],
-          "source": "source"
-        },
-        {
-          "key": "id_973c93d566",
-          "label": "변경 권한",
-          "type": "short_text",
-          "required": false,
-          "purposes": [
-            "filter",
-            "export"
-          ],
-          "source": "source"
-        },
-        {
-          "key": "a_s",
-          "label": "A/S 기간",
-          "type": "short_text",
-          "required": false,
-          "purposes": [
-            "filter",
-            "export"
-          ],
-          "source": "source"
-        },
-        {
-          "key": "id_6bfe40f653",
-          "label": "계약 해지와 위약금",
-          "type": "short_text",
-          "required": false,
-          "purposes": [
-            "filter",
-            "export"
-          ],
-          "source": "source"
-        }
-      ],
+      "minimumInputs": [],
       "primaryProjection": "sheet",
       "secondaryProjections": [
         "memo",
@@ -74121,6 +74066,168 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [
+        {
+          "fieldId": "oq-oq-b03-remodel-field-remodel-ds02-r01",
+          "key": "id_66f8caff5c",
+          "label": "업체 정보",
+          "type": "short_text",
+          "purposes": [
+            "filter",
+            "export"
+          ],
+          "value": "계약 상대방의 회사 정보",
+          "source": "source",
+          "requiredForProjection": false,
+          "sourceRefIds": [
+            "ref-oq-oq-b03-remodel-field-oq-oq-b03-remodel-field-remodel-ds02-r01-1bf09e44"
+          ]
+        },
+        {
+          "fieldId": "oq-oq-b03-remodel-field-remodel-ds02-r02",
+          "key": "id_7579317fa0",
+          "label": "공사 시작일과 종료일",
+          "type": "short_text",
+          "purposes": [
+            "filter",
+            "export"
+          ],
+          "value": "공사 기간의 시작·종료일",
+          "source": "source",
+          "requiredForProjection": false,
+          "sourceRefIds": [
+            "ref-oq-oq-b03-remodel-field-oq-oq-b03-remodel-field-remodel-ds02-r02-8ec62d31"
+          ]
+        },
+        {
+          "fieldId": "oq-oq-b03-remodel-field-remodel-ds02-r03",
+          "key": "id_97b1a9b791",
+          "label": "지연배상",
+          "type": "short_text",
+          "purposes": [
+            "filter",
+            "export"
+          ],
+          "value": "공사 지연 시 배상 조건",
+          "source": "source",
+          "requiredForProjection": false,
+          "sourceRefIds": [
+            "ref-oq-oq-b03-remodel-field-oq-oq-b03-remodel-field-remodel-ds02-r03-e2c54440"
+          ]
+        },
+        {
+          "fieldId": "oq-oq-b03-remodel-field-remodel-ds02-r04",
+          "key": "id_22042fdf5a",
+          "label": "대금 지급 방법과 날짜",
+          "type": "short_text",
+          "purposes": [
+            "filter",
+            "export"
+          ],
+          "value": "지급 단계·방법·시점",
+          "source": "source",
+          "requiredForProjection": false,
+          "sourceRefIds": [
+            "ref-oq-oq-b03-remodel-field-oq-oq-b03-remodel-field-remodel-ds02-r04-b2527965"
+          ]
+        },
+        {
+          "fieldId": "oq-oq-b03-remodel-field-remodel-ds02-r05",
+          "key": "id_2664490b16",
+          "label": "최종 금액과 추가 비용",
+          "type": "short_text",
+          "purposes": [
+            "filter",
+            "export"
+          ],
+          "value": "총액과 추가 비용 발생 조건",
+          "source": "source",
+          "requiredForProjection": false,
+          "sourceRefIds": [
+            "ref-oq-oq-b03-remodel-field-oq-oq-b03-remodel-field-remodel-ds02-r05-4113ed26"
+          ]
+        },
+        {
+          "fieldId": "oq-oq-b03-remodel-field-remodel-ds02-r06",
+          "key": "id_a84da6b07e",
+          "label": "세금계산서 발행 기한",
+          "type": "short_text",
+          "purposes": [
+            "filter",
+            "export"
+          ],
+          "value": "세금계산서 발행 시점",
+          "source": "source",
+          "requiredForProjection": false,
+          "sourceRefIds": [
+            "ref-oq-oq-b03-remodel-field-oq-oq-b03-remodel-field-remodel-ds02-r06-9d9e67a5"
+          ]
+        },
+        {
+          "fieldId": "oq-oq-b03-remodel-field-remodel-ds02-r07",
+          "key": "id_874c2d85c0",
+          "label": "자재내역서",
+          "type": "short_text",
+          "purposes": [
+            "filter",
+            "export"
+          ],
+          "value": "자재 명칭·규격 등을 담는 별지",
+          "source": "source",
+          "requiredForProjection": false,
+          "sourceRefIds": [
+            "ref-oq-oq-b03-remodel-field-oq-oq-b03-remodel-field-remodel-ds02-r07-65aab11c"
+          ]
+        },
+        {
+          "fieldId": "oq-oq-b03-remodel-field-remodel-ds02-r08",
+          "key": "id_973c93d566",
+          "label": "변경 권한",
+          "type": "short_text",
+          "purposes": [
+            "filter",
+            "export"
+          ],
+          "value": "공사 내용 변경의 승인 주체와 방식",
+          "source": "source",
+          "requiredForProjection": false,
+          "sourceRefIds": [
+            "ref-oq-oq-b03-remodel-field-oq-oq-b03-remodel-field-remodel-ds02-r08-ac21ae61"
+          ]
+        },
+        {
+          "fieldId": "oq-oq-b03-remodel-field-remodel-ds02-r09",
+          "key": "a_s",
+          "label": "A/S 기간",
+          "type": "short_text",
+          "purposes": [
+            "filter",
+            "export"
+          ],
+          "value": "하자 보수 또는 A/S 기간",
+          "source": "source",
+          "requiredForProjection": false,
+          "sourceRefIds": [
+            "ref-oq-oq-b03-remodel-field-oq-oq-b03-remodel-field-remodel-ds02-r09-c45fa024"
+          ]
+        },
+        {
+          "fieldId": "oq-oq-b03-remodel-field-remodel-ds02-r10",
+          "key": "id_6bfe40f653",
+          "label": "계약 해지와 위약금",
+          "type": "short_text",
+          "purposes": [
+            "filter",
+            "export"
+          ],
+          "value": "해지 조건과 위약금",
+          "source": "source",
+          "requiredForProjection": false,
+          "sourceRefIds": [
+            "ref-oq-oq-b03-remodel-field-oq-oq-b03-remodel-field-remodel-ds02-r10-8d16905d"
+          ]
+        }
+      ],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -75599,6 +75706,7 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -77520,6 +77628,7 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "sourceVariants": [
         {
           "contentId": "legacy:preapp:overseas-packing-check",
@@ -79311,6 +79420,7 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "sourceVariants": [
         {
           "contentId": "legacy:round2:vehicle-regular-inspection-flow",
@@ -80639,6 +80749,7 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -82957,6 +83068,7 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -84977,6 +85089,7 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -87121,6 +87234,7 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -89836,6 +89950,7 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -92804,6 +92919,7 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -96293,6 +96409,7 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -99605,6 +99722,7 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -102080,6 +102198,7 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -103831,6 +103950,7 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -105398,6 +105518,7 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -107571,6 +107692,7 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "sourceVariants": [
         {
           "contentId": "generalization:GB-14",
@@ -110117,20 +110239,7 @@
         "privacyReview": "not_assessed",
         "promotionState": "research_only"
       },
-      "minimumInputs": [
-        {
-          "key": "id_3a912ad7b6",
-          "label": "재료·도구",
-          "type": "long_text",
-          "required": false,
-          "purposes": [
-            "schedule",
-            "filter",
-            "export"
-          ],
-          "source": "source"
-        }
-      ],
+      "minimumInputs": [],
       "primaryProjection": "checklist",
       "secondaryProjections": [],
       "calendarGroupingPolicy": "none",
@@ -110583,6 +110692,25 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [
+        {
+          "fieldId": "live-c13-field-1",
+          "key": "id_3a912ad7b6",
+          "label": "재료·도구",
+          "type": "long_text",
+          "purposes": [
+            "schedule",
+            "filter",
+            "export"
+          ],
+          "value": "3인분 기준 바나나 2개, 계란 3개, 땅콩버터 3큰술, 초코칩 30g; 숟가락, 에어프라이어, 내열용기, 포크",
+          "source": "source",
+          "requiredForProjection": false,
+          "sourceRefIds": [
+            "ref-live-c13-field-live-c13-field-1-bb396ca0"
+          ]
+        }
+      ],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -112087,6 +112215,7 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -113672,6 +113801,7 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -115729,6 +115859,7 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -117630,6 +117761,7 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -120251,6 +120383,25 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [
+        {
+          "fieldId": "live-live-dyson-filter-01-field-1",
+          "key": "1",
+          "label": "최소 월 1회 필터 세척",
+          "type": "long_text",
+          "purposes": [
+            "schedule",
+            "filter",
+            "export"
+          ],
+          "value": "Dyson은 흡입 성능 유지를 위해 무선청소기 필터를 최소 월 1회 세척하라고 제안한다.",
+          "source": "source",
+          "requiredForProjection": false,
+          "sourceRefIds": [
+            "ref-live-live-dyson-filter-01-field-live-live-dyson-filter-01-field-1-b932115d"
+          ]
+        }
+      ],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -122569,6 +122720,7 @@
         "이 fixture는 데이터 구조와 변환 로직 검토용이다. 공개 허가, 전문 안전 검토, 사용자 유용성, 외부 Calendar 왕복을 증명하지 않는다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -123669,6 +123821,7 @@
         "Individual products and quantities remain user choices."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -125659,6 +125812,7 @@
         "Page publication date observed as 2026-07-20."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -127131,6 +127285,7 @@
         "An adapter may create one parent task with five subtasks."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -128481,6 +128636,7 @@
         "Pacing is user-owned because the source does not assign dates."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -130054,6 +130210,7 @@
         "Source order is meaningful, but each lesson is an independently trackable progress unit."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -132142,6 +132299,7 @@
         "Ranking freshness is source metadata; reading order is a user overlay."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -133773,6 +133931,7 @@
         "Historical status fixture; a current ticket-purchase Item is prohibited after sold out/ended."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -134612,6 +134771,7 @@
         "The listed duration is variable; no shared end time is invented."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -135589,6 +135749,7 @@
         "Program-level occurrences are not created because this page does not provide them."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -136442,6 +136603,7 @@
         "Booking requirement remains unknown."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -137264,6 +137426,7 @@
         "Ticket opening is an actionable milestone; the selected showtime is a separate attendance occurrence."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -138300,6 +138463,7 @@
         "A personal VEVENT requires the assigned date, time, and venue."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -139137,6 +139301,7 @@
         "Do not expand every weekly occurrence without a complete exception calendar."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -139880,6 +140045,7 @@
         "Explicit allDay=true outranks provider UI values 00:00 and 23h45."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -140579,6 +140745,7 @@
         "Registration URL and direct watch URL have different meanings."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -141282,6 +141449,7 @@
         "A source-fixed recurrence may use RRULE; it is not user pacing."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -141888,6 +142056,7 @@
         "No daily end time and no annual RRULE are invented."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -142500,6 +142669,7 @@
         "The old time and location are not copied to the replacement occurrence."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -143284,6 +143454,7 @@
         "Several rows lack time and exact venue, so Calendar generation is gated."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -144113,6 +144284,7 @@
         "동일 edition section 병합: events:event-pattern-boryeong-programs"
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "sourceVariants": [
         {
           "contentId": "events:event-pattern-boryeong-programs",
@@ -145244,6 +145416,7 @@
         "완료 기준이 원문에 없으면 generic doneWhen을 발명하지 않고 null로 유지한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -147304,6 +147477,7 @@
         "완료 기준이 원문에 없으면 generic doneWhen을 발명하지 않고 null로 유지한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -149892,6 +150066,7 @@
         "완료 기준이 원문에 없으면 generic doneWhen을 발명하지 않고 null로 유지한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -151557,6 +151732,7 @@
         "완료 기준이 원문에 없으면 generic doneWhen을 발명하지 않고 null로 유지한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -153461,6 +153637,7 @@
         "완료 기준이 원문에 없으면 generic doneWhen을 발명하지 않고 null로 유지한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -154690,6 +154867,7 @@
         "완료 기준이 원문에 없으면 generic doneWhen을 발명하지 않고 null로 유지한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -155825,6 +156003,7 @@
         "완료 기준이 원문에 없으면 generic doneWhen을 발명하지 않고 null로 유지한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -157832,6 +158011,7 @@
         "완료 기준이 원문에 없으면 generic doneWhen을 발명하지 않고 null로 유지한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -163312,6 +163492,7 @@
         "완료 기준이 원문에 없으면 generic doneWhen을 발명하지 않고 null로 유지한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -166458,6 +166639,7 @@
         "완료 기준이 원문에 없으면 generic doneWhen을 발명하지 않고 null로 유지한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -170288,6 +170470,7 @@
         "완료 기준이 원문에 없으면 generic doneWhen을 발명하지 않고 null로 유지한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -172182,6 +172365,7 @@
         "완료 기준이 원문에 없으면 generic doneWhen을 발명하지 않고 null로 유지한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -175007,6 +175191,7 @@
         "완료 기준이 원문에 없으면 generic doneWhen을 발명하지 않고 null로 유지한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -180101,6 +180286,7 @@
         "완료 기준이 원문에 없으면 generic doneWhen을 발명하지 않고 null로 유지한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -181364,6 +181550,7 @@
         "완료 기준이 원문에 없으면 generic doneWhen을 발명하지 않고 null로 유지한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -182718,6 +182905,7 @@
         "완료 기준이 원문에 없으면 generic doneWhen을 발명하지 않고 null로 유지한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -184512,6 +184700,7 @@
         "완료 기준이 원문에 없으면 generic doneWhen을 발명하지 않고 null로 유지한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -186955,6 +187144,7 @@
         "완료 기준이 원문에 없으면 generic doneWhen을 발명하지 않고 null로 유지한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -188817,6 +189007,7 @@
         "완료 기준이 원문에 없으면 generic doneWhen을 발명하지 않고 null로 유지한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -191063,6 +191254,7 @@
         "완료 기준이 원문에 없으면 generic doneWhen을 발명하지 않고 null로 유지한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -193589,6 +193781,7 @@
         "완료 기준이 원문에 없으면 generic doneWhen을 발명하지 않고 null로 유지한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -198366,7 +198559,7 @@
       "corpusTier": "structure_probe",
       "source": {
         "sourceId": "generalization:GB-01:source",
-        "title": null,
+        "title": "출생신고 준비 및 제출",
         "provider": "찾기쉬운 생활법령정보",
         "url": "https://easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=2&cciNo=1&cnpClsNo=1&csmSeq=707&popMenu=ov",
         "canonicalUrl": "https://easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=2&cciNo=1&cnpClsNo=1&csmSeq=707&popMenu=ov",
@@ -198594,7 +198787,7 @@
         "sources": [
           {
             "sourceId": "generalization:GB-01:source",
-            "title": null,
+            "title": "출생신고 준비 및 제출",
             "originalUrl": "https://easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=2&cciNo=1&cnpClsNo=1&csmSeq=707&popMenu=ov",
             "canonicalUrl": "https://easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=2&cciNo=1&cnpClsNo=1&csmSeq=707&popMenu=ov",
             "locale": "ko-KR",
@@ -198695,6 +198888,7 @@
         "금지: 조건 확인 없이 추가 서류를 필수로 단정"
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "sourceVariants": [
         {
           "contentId": "new:new-a04-birth-registration",
@@ -199276,7 +199470,7 @@
             "label": "출생신고 준비 및 제출",
             "data": {
               "sourceId": "generalization:GB-01:source",
-              "title": null,
+              "title": "출생신고 준비 및 제출",
               "provider": "찾기쉬운 생활법령정보",
               "url": "https://easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=2&cciNo=1&cnpClsNo=1&csmSeq=707&popMenu=ov",
               "canonicalUrl": "https://easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=2&cciNo=1&cnpClsNo=1&csmSeq=707&popMenu=ov",
@@ -199783,7 +199977,7 @@
       "corpusTier": "structure_probe",
       "source": {
         "sourceId": "generalization:GB-02:source",
-        "title": null,
+        "title": "Google 계정 2단계 인증 설정",
         "provider": "Google 계정 고객센터",
         "url": "https://support.google.com/accounts/answer/185839?hl=ko",
         "canonicalUrl": "https://support.google.com/accounts/answer/185839?hl=ko",
@@ -199963,7 +200157,7 @@
         "sources": [
           {
             "sourceId": "generalization:GB-02:source",
-            "title": null,
+            "title": "Google 계정 2단계 인증 설정",
             "originalUrl": "https://support.google.com/accounts/answer/185839?hl=ko",
             "canonicalUrl": "https://support.google.com/accounts/answer/185839?hl=ko",
             "locale": "ko-KR",
@@ -200033,6 +200227,7 @@
         "금지: 원문에 없는 인증 수단 또는 복구 절차 추가"
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -200549,7 +200744,7 @@
             "label": "Google 계정 2단계 인증 설정",
             "data": {
               "sourceId": "generalization:GB-02:source",
-              "title": null,
+              "title": "Google 계정 2단계 인증 설정",
               "provider": "Google 계정 고객센터",
               "url": "https://support.google.com/accounts/answer/185839?hl=ko",
               "canonicalUrl": "https://support.google.com/accounts/answer/185839?hl=ko",
@@ -200945,7 +201140,7 @@
       "corpusTier": "structure_probe",
       "source": {
         "sourceId": "generalization:GB-03:source",
-        "title": null,
+        "title": "LG 가습기 필터 및 본체 반복 관리",
         "provider": "LG전자",
         "url": "https://www.lge.co.kr/support/solutions-20154871046245",
         "canonicalUrl": "https://www.lge.co.kr/support/solutions-20154871046245",
@@ -201170,7 +201365,7 @@
         "sources": [
           {
             "sourceId": "generalization:GB-03:source",
-            "title": null,
+            "title": "LG 가습기 필터 및 본체 반복 관리",
             "originalUrl": "https://www.lge.co.kr/support/solutions-20154871046245",
             "canonicalUrl": "https://www.lge.co.kr/support/solutions-20154871046245",
             "locale": "ko-KR",
@@ -201251,6 +201446,7 @@
         "금지: 3~5개월 교체 주기를 단일 확정일로 바꾸기"
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -201814,7 +202010,7 @@
             "label": "LG 가습기 필터 및 본체 반복 관리",
             "data": {
               "sourceId": "generalization:GB-03:source",
-              "title": null,
+              "title": "LG 가습기 필터 및 본체 반복 관리",
               "provider": "LG전자",
               "url": "https://www.lge.co.kr/support/solutions-20154871046245",
               "canonicalUrl": "https://www.lge.co.kr/support/solutions-20154871046245",
@@ -202496,6 +202692,7 @@
         "금지: 영상에 없는 세척제·건조 시간 추가"
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -203291,7 +203488,7 @@
       "corpusTier": "structure_probe",
       "source": {
         "sourceId": "generalization:GB-05:source",
-        "title": null,
+        "title": "달걀말이 김밥 만들기",
         "provider": "만개의레시피",
         "url": "https://www.10000recipe.com/recipe/7071314",
         "canonicalUrl": "https://www.10000recipe.com/recipe/7071314",
@@ -203519,7 +203716,7 @@
         "sources": [
           {
             "sourceId": "generalization:GB-05:source",
-            "title": null,
+            "title": "달걀말이 김밥 만들기",
             "originalUrl": "https://www.10000recipe.com/recipe/7071314",
             "canonicalUrl": "https://www.10000recipe.com/recipe/7071314",
             "locale": "ko-KR",
@@ -203610,6 +203807,7 @@
         "금지: 이미지·원문 재배포"
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -204242,7 +204440,7 @@
             "label": "달걀말이 김밥 만들기",
             "data": {
               "sourceId": "generalization:GB-05:source",
-              "title": null,
+              "title": "달걀말이 김밥 만들기",
               "provider": "만개의레시피",
               "url": "https://www.10000recipe.com/recipe/7071314",
               "canonicalUrl": "https://www.10000recipe.com/recipe/7071314",
@@ -204756,7 +204954,7 @@
       "corpusTier": "structure_probe",
       "source": {
         "sourceId": "generalization:GB-06:source",
-        "title": null,
+        "title": "가족 함께 읽기 추천 도서 10권",
         "provider": "BookTrust",
         "url": "https://www.booktrust.org.uk/book-recommendations/booklists/10-books-for-families-with-toddlers-to-teens-to-read-together/",
         "canonicalUrl": "https://www.booktrust.org.uk/book-recommendations/booklists/10-books-for-families-with-toddlers-to-teens-to-read-together/",
@@ -205091,7 +205289,7 @@
         "sources": [
           {
             "sourceId": "generalization:GB-06:source",
-            "title": null,
+            "title": "가족 함께 읽기 추천 도서 10권",
             "originalUrl": "https://www.booktrust.org.uk/book-recommendations/booklists/10-books-for-families-with-toddlers-to-teens-to-read-together/",
             "canonicalUrl": "https://www.booktrust.org.uk/book-recommendations/booklists/10-books-for-families-with-toddlers-to-teens-to-read-together/",
             "locale": "en-GB",
@@ -205221,6 +205419,7 @@
         "금지: 원문에 없는 읽기 순서·기한·반복 생성"
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -206085,7 +206284,7 @@
             "label": "가족 함께 읽기 추천 도서 10권",
             "data": {
               "sourceId": "generalization:GB-06:source",
-              "title": null,
+              "title": "가족 함께 읽기 추천 도서 10권",
               "provider": "BookTrust",
               "url": "https://www.booktrust.org.uk/book-recommendations/booklists/10-books-for-families-with-toddlers-to-teens-to-read-together/",
               "canonicalUrl": "https://www.booktrust.org.uk/book-recommendations/booklists/10-books-for-families-with-toddlers-to-teens-to-read-together/",
@@ -206835,7 +207034,7 @@
       "corpusTier": "structure_probe",
       "source": {
         "sourceId": "generalization:GB-07:source",
-        "title": null,
+        "title": "iCloud 백업과 컴퓨터 백업 비교",
         "provider": "Apple 지원",
         "url": "https://support.apple.com/ko-kr/108771",
         "canonicalUrl": "https://support.apple.com/ko-kr/108771",
@@ -206959,7 +207158,7 @@
         "sources": [
           {
             "sourceId": "generalization:GB-07:source",
-            "title": null,
+            "title": "iCloud 백업과 컴퓨터 백업 비교",
             "originalUrl": "https://support.apple.com/ko-kr/108771",
             "canonicalUrl": "https://support.apple.com/ko-kr/108771",
             "locale": "ko-KR",
@@ -207050,6 +207249,7 @@
         "금지: 특정 방식을 정답으로 추천"
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -207401,7 +207601,7 @@
             "label": "iCloud 백업과 컴퓨터 백업 비교",
             "data": {
               "sourceId": "generalization:GB-07:source",
-              "title": null,
+              "title": "iCloud 백업과 컴퓨터 백업 비교",
               "provider": "Apple 지원",
               "url": "https://support.apple.com/ko-kr/108771",
               "canonicalUrl": "https://support.apple.com/ko-kr/108771",
@@ -207750,7 +207950,7 @@
       "corpusTier": "structure_probe",
       "source": {
         "sourceId": "generalization:GB-08:source",
-        "title": null,
+        "title": "국립현대미술관 어린이 단체관람 예약 및 방문",
         "provider": "국립현대미술관",
         "url": "https://www.mmca.go.kr/visitingInfo/childBookingForm.do",
         "canonicalUrl": "https://www.mmca.go.kr/visitingInfo/childBookingForm.do",
@@ -207956,7 +208156,7 @@
         "sources": [
           {
             "sourceId": "generalization:GB-08:source",
-            "title": null,
+            "title": "국립현대미술관 어린이 단체관람 예약 및 방문",
             "originalUrl": "https://www.mmca.go.kr/visitingInfo/childBookingForm.do",
             "canonicalUrl": "https://www.mmca.go.kr/visitingInfo/childBookingForm.do",
             "locale": "ko-KR",
@@ -208067,6 +208267,7 @@
         "금지: 운영 제외 월에 방문 일정 생성"
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -208588,7 +208789,7 @@
             "label": "국립현대미술관 어린이 단체관람 예약 및 방문",
             "data": {
               "sourceId": "generalization:GB-08:source",
-              "title": null,
+              "title": "국립현대미술관 어린이 단체관람 예약 및 방문",
               "provider": "국립현대미술관",
               "url": "https://www.mmca.go.kr/visitingInfo/childBookingForm.do",
               "canonicalUrl": "https://www.mmca.go.kr/visitingInfo/childBookingForm.do",
@@ -209088,7 +209289,7 @@
       "corpusTier": "structure_probe",
       "source": {
         "sourceId": "generalization:GB-13:source",
-        "title": null,
+        "title": "주민등록증 재발급 준비",
         "provider": "정부24",
         "url": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000018&HighCtgCD=A01010&tp_seq=01",
         "canonicalUrl": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000018&HighCtgCD=A01010&tp_seq=01",
@@ -209293,7 +209494,7 @@
         "sources": [
           {
             "sourceId": "generalization:GB-13:source",
-            "title": null,
+            "title": "주민등록증 재발급 준비",
             "originalUrl": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000018&HighCtgCD=A01010&tp_seq=01",
             "canonicalUrl": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000018&HighCtgCD=A01010&tp_seq=01",
             "locale": "ko-KR",
@@ -209384,6 +209585,7 @@
         "금지: 14일을 사용자 신청일 없는 캘린더 날짜로 생성"
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -209912,7 +210114,7 @@
             "label": "주민등록증 재발급 준비",
             "data": {
               "sourceId": "generalization:GB-13:source",
-              "title": null,
+              "title": "주민등록증 재발급 준비",
               "provider": "정부24",
               "url": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000018&HighCtgCD=A01010&tp_seq=01",
               "canonicalUrl": "https://www.gov.kr/mw/AA020InfoCappView.do?CappBizCD=13100000018&HighCtgCD=A01010&tp_seq=01",
@@ -210366,7 +210568,7 @@
       "corpusTier": "structure_probe",
       "source": {
         "sourceId": "generalization:GB-15:source",
-        "title": null,
+        "title": "2026 국제정세 교육과정",
         "provider": "국가공무원인재개발원",
         "url": "https://www.nhi.go.kr/upload/eduList/04/26-4-1-3.pdf",
         "canonicalUrl": "https://www.nhi.go.kr/upload/eduList/04/26-4-1-3.pdf",
@@ -210498,7 +210700,7 @@
         "sources": [
           {
             "sourceId": "generalization:GB-15:source",
-            "title": null,
+            "title": "2026 국제정세 교육과정",
             "originalUrl": "https://www.nhi.go.kr/upload/eduList/04/26-4-1-3.pdf",
             "canonicalUrl": "https://www.nhi.go.kr/upload/eduList/04/26-4-1-3.pdf",
             "locale": "ko-KR",
@@ -210659,6 +210861,7 @@
         "금지: 3일 범위를 13개 시간표 이벤트로 분배"
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -211038,7 +211241,7 @@
             "label": "2026 국제정세 교육과정",
             "data": {
               "sourceId": "generalization:GB-15:source",
-              "title": null,
+              "title": "2026 국제정세 교육과정",
               "provider": "국가공무원인재개발원",
               "url": "https://www.nhi.go.kr/upload/eduList/04/26-4-1-3.pdf",
               "canonicalUrl": "https://www.nhi.go.kr/upload/eduList/04/26-4-1-3.pdf",
@@ -211569,7 +211772,7 @@
       "corpusTier": "structure_probe",
       "source": {
         "sourceId": "generalization:GB-16:source",
-        "title": null,
+        "title": "2주 소셜 미디어 콘텐츠 계획",
         "provider": "Hopper HQ",
         "url": "https://www.hopperhq.com/tools/content-planner/",
         "canonicalUrl": "https://www.hopperhq.com/tools/content-planner/",
@@ -211866,7 +212069,7 @@
         "sources": [
           {
             "sourceId": "generalization:GB-16:source",
-            "title": null,
+            "title": "2주 소셜 미디어 콘텐츠 계획",
             "originalUrl": "https://www.hopperhq.com/tools/content-planner/",
             "canonicalUrl": "https://www.hopperhq.com/tools/content-planner/",
             "locale": "en",
@@ -211977,6 +212180,7 @@
         "금지: 빈 Post Description을 임의 콘텐츠로 채우기"
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -212725,7 +212929,7 @@
             "label": "2주 소셜 미디어 콘텐츠 계획",
             "data": {
               "sourceId": "generalization:GB-16:source",
-              "title": null,
+              "title": "2주 소셜 미디어 콘텐츠 계획",
               "provider": "Hopper HQ",
               "url": "https://www.hopperhq.com/tools/content-planner/",
               "canonicalUrl": "https://www.hopperhq.com/tools/content-planner/",
@@ -213675,6 +213879,7 @@
       ],
       "duplicateOf": null,
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -214319,7 +214524,7 @@
       "saveReason": "교사가 단체 견학을 빠뜨림 없이 준비하고 당일 인원·동선·퇴장을 관리한다.",
       "userJob": "교사가 단체 견학을 빠뜨림 없이 준비하고 당일 인원·동선·퇴장을 관리한다.",
       "contentMode": "flow_content",
-      "corpusTier": "product_candidate",
+      "corpusTier": "structure_probe",
       "source": {
         "sourceId": "new:new-a02-seoul-museum-group:source",
         "title": "서울상상나라 단체관람 안내서",
@@ -214975,10 +215180,12 @@
       },
       "evidenceNotes": [
         "2019 파일은 superseded로 보존하고 2025-11-07 최신 공식 안내서를 canonical source로 사용한다.",
+        "최신 공식 안내서 30행 중 실행 핵심 12행만 확보되어 Product candidate가 아니라 Structure probe로 검토한다.",
         "확인 원문 행 12/30"
       ],
       "duplicateOf": null,
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -217474,6 +217681,7 @@
       ],
       "duplicateOf": null,
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -219579,6 +219787,7 @@
       ],
       "duplicateOf": null,
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -221675,6 +221884,7 @@
       ],
       "duplicateOf": null,
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -222624,6 +222834,7 @@
       ],
       "duplicateOf": null,
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -224455,6 +224666,7 @@
       ],
       "duplicateOf": null,
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -226484,6 +226696,7 @@
       ],
       "duplicateOf": null,
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -228108,6 +228321,7 @@
       ],
       "duplicateOf": null,
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -229739,6 +229953,7 @@
       ],
       "duplicateOf": null,
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -230795,7 +231010,7 @@
       "saveReason": "50분 베이킹 세션에서 준비와 조리 단계를 순서대로 따른다.",
       "userJob": "50분 베이킹 세션에서 준비와 조리 단계를 순서대로 따른다.",
       "contentMode": "flow_content",
-      "corpusTier": "product_candidate",
+      "corpusTier": "structure_probe",
       "source": {
         "sourceId": "new:new-b06-wtable-lemon-weekend:source",
         "title": "레몬 위크엔드",
@@ -230821,7 +231036,7 @@
       },
       "readiness": {
         "architectureFit": "go",
-        "logicReadiness": "go",
+        "logicReadiness": "modify",
         "publicReadiness": "modify",
         "rightsStatus": "permission_review_required",
         "personalConversionAvailability": "available",
@@ -231409,10 +231624,12 @@
       },
       "evidenceNotes": [
         "고정 날짜가 없어 사용자 시간이 정해지기 전에는 Calendar event를 만들지 않는다.",
+        "검증된 19개 조리행 중 대표 12행만 확보되어 Product candidate가 아니라 Structure probe로 검토하고 logic readiness를 Modify로 둔다.",
         "확인 원문 행 12/19"
       ],
       "duplicateOf": null,
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -233729,6 +233946,7 @@
       ],
       "duplicateOf": null,
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -235266,6 +235484,7 @@
       ],
       "duplicateOf": null,
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -238639,6 +238858,7 @@
       ],
       "duplicateOf": null,
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -245643,6 +245863,7 @@
       ],
       "duplicateOf": null,
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -247449,6 +247670,7 @@
       ],
       "duplicateOf": null,
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -251259,6 +251481,7 @@
       ],
       "duplicateOf": null,
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -258044,6 +258267,7 @@
       ],
       "duplicateOf": null,
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -260423,6 +260647,7 @@
       ],
       "duplicateOf": null,
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -262142,6 +262367,7 @@
       ],
       "duplicateOf": null,
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -263935,6 +264161,7 @@
       ],
       "duplicateOf": null,
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -267592,6 +267819,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -268091,6 +268319,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -268590,6 +268819,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -269083,6 +269313,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -269568,6 +269799,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -270067,6 +270299,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -270552,6 +270785,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -271037,6 +271271,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -271509,6 +271744,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -272004,6 +272240,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -272484,6 +272721,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -272957,6 +273195,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -273438,6 +273677,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -273918,6 +274158,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -274390,6 +274631,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -274882,6 +275124,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -275361,6 +275604,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -275839,6 +276083,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -276311,6 +276556,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -276818,6 +277064,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -277311,6 +277558,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -277784,6 +278032,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -278257,6 +278506,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -278742,6 +278992,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -279249,6 +279500,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -279765,6 +280017,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -280272,6 +280525,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -280784,6 +281038,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -281296,6 +281551,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -281803,6 +282059,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -282333,6 +282590,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -282840,6 +283098,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -283362,6 +283621,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -283684,7 +283944,7 @@
       "corpusTier": "historical_preview",
       "source": {
         "sourceId": "historical:skin-weekly-check-html:34:source",
-        "title": "",
+        "title": "주간 피부 상태 관찰 Flow",
         "provider": "creator",
         "url": "",
         "canonicalUrl": "",
@@ -283860,6 +284120,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -284073,10 +284334,10 @@
           {
             "nodeId": "historical:skin-weekly-check-html:34:graph:source",
             "type": "source",
-            "label": "",
+            "label": "주간 피부 상태 관찰 Flow",
             "data": {
               "sourceId": "historical:skin-weekly-check-html:34:source",
-              "title": "",
+              "title": "주간 피부 상태 관찰 Flow",
               "provider": "creator",
               "url": "",
               "canonicalUrl": "",
@@ -284377,6 +284638,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -284889,6 +285151,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -285403,6 +285666,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -285915,6 +286179,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -286237,7 +286502,7 @@
       "corpusTier": "historical_preview",
       "source": {
         "sourceId": "historical:portfolio-4week-html:39:source",
-        "title": "",
+        "title": "포트폴리오 제작 4주 플랜 Flow",
         "provider": "creator",
         "url": "",
         "canonicalUrl": "",
@@ -286431,6 +286696,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -286644,10 +286910,10 @@
           {
             "nodeId": "historical:portfolio-4week-html:39:graph:source",
             "type": "source",
-            "label": "",
+            "label": "포트폴리오 제작 4주 플랜 Flow",
             "data": {
               "sourceId": "historical:portfolio-4week-html:39:source",
-              "title": "",
+              "title": "포트폴리오 제작 4주 플랜 Flow",
               "provider": "creator",
               "url": "",
               "canonicalUrl": "",
@@ -286938,6 +287204,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -287456,6 +287723,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -287778,7 +288046,7 @@
       "corpusTier": "historical_preview",
       "source": {
         "sourceId": "historical:digital-detox-weekly-html:42:source",
-        "title": "",
+        "title": "디지털 디톡스 주간 루틴 Flow",
         "provider": "creator",
         "url": "",
         "canonicalUrl": "",
@@ -287978,6 +288246,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -288191,10 +288460,10 @@
           {
             "nodeId": "historical:digital-detox-weekly-html:42:graph:source",
             "type": "source",
-            "label": "",
+            "label": "디지털 디톡스 주간 루틴 Flow",
             "data": {
               "sourceId": "historical:digital-detox-weekly-html:42:source",
-              "title": "",
+              "title": "디지털 디톡스 주간 루틴 Flow",
               "provider": "creator",
               "url": "",
               "canonicalUrl": "",
@@ -288300,7 +288569,7 @@
       "corpusTier": "historical_preview",
       "source": {
         "sourceId": "historical:dog-walk-routine-html:43:source",
-        "title": "",
+        "title": "강아지 산책 루틴 Flow",
         "provider": "creator",
         "url": "",
         "canonicalUrl": "",
@@ -288508,6 +288777,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",
@@ -288721,10 +288991,10 @@
           {
             "nodeId": "historical:dog-walk-routine-html:43:graph:source",
             "type": "source",
-            "label": "",
+            "label": "강아지 산책 루틴 Flow",
             "data": {
               "sourceId": "historical:dog-walk-routine-html:43:source",
-              "title": "",
+              "title": "강아지 산책 루틴 Flow",
               "provider": "creator",
               "url": "",
               "canonicalUrl": "",
@@ -289012,6 +289282,7 @@
         "SourceRow provenance가 없어 Product/Structure 정상 count에서 제외한다."
       ],
       "userReviewStatus": "not_reviewed",
+      "sourceProvidedFields": [],
       "projectionCells": [
         {
           "projection": "calendar",

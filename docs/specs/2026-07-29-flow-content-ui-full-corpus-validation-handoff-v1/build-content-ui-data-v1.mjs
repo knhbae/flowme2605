@@ -200,6 +200,52 @@ function minimumInputsFromCanonical(fixture) {
   }));
 }
 
+function separateInputOwnership(content) {
+  const sourceProvidedByKey = new Map();
+  for (const field of content.canonical?.fields ?? []) {
+    if (field.valueSource !== "source") continue;
+    sourceProvidedByKey.set(field.key, {
+      fieldId: field.fieldId ?? null,
+      key: field.key,
+      label: field.label,
+      type: field.valueType,
+      purposes: field.purposes ?? [],
+      value: field.sourceDefault ?? null,
+      source: "source",
+      requiredForProjection: Boolean(field.required),
+      sourceRefIds: field.sourceRefIds ?? [],
+    });
+  }
+
+  const userInputs = [];
+  for (const input of content.minimumInputs ?? []) {
+    if (input.source === "source") {
+      if (!sourceProvidedByKey.has(input.key)) {
+        sourceProvidedByKey.set(input.key, {
+          fieldId: input.fieldId ?? null,
+          key: input.key,
+          label: input.label,
+          type: input.type,
+          purposes: input.purposes ?? [],
+          value: input.value ?? input.sourceDefault ?? null,
+          source: "source",
+          requiredForProjection: Boolean(input.required),
+          sourceRefIds: input.sourceRefIds ?? [],
+        });
+      }
+      continue;
+    }
+    userInputs.push({
+      ...input,
+      source: "user_overlay",
+    });
+  }
+
+  content.minimumInputs = userInputs;
+  content.sourceProvidedFields = [...sourceProvidedByKey.values()];
+  return content;
+}
+
 function normalizeCanonicalFixture(fixture) {
   const canonical = structuredClone(fixture.canonicalContent);
   const userJob =
@@ -907,7 +953,7 @@ function normalizeGoldCase(goldCase, packet) {
     sources: [
       {
         sourceId: `${prefix}:source`,
-        title: packet.sourceMetadata?.title,
+        title: packet.sourceMetadata?.title ?? title,
         originalUrl: packet.sourceUrl,
         canonicalUrl: packet.sourceUrl,
         locale: packet.sourceMetadata?.localeHint ?? "unknown",
@@ -935,7 +981,7 @@ function normalizeGoldCase(goldCase, packet) {
     corpusTier: "structure_probe",
     source: {
       sourceId: `${prefix}:source`,
-      title: packet.sourceMetadata?.title,
+      title: packet.sourceMetadata?.title ?? title,
       provider: packet.sourceMetadata?.provider ?? "unknown",
       url: packet.sourceUrl,
       canonicalUrl: packet.sourceUrl,
@@ -1010,6 +1056,26 @@ function normalizeGoldCase(goldCase, packet) {
 
 function normalizeNewSource(record) {
   const prefix = `new:${record.researchId}`;
+  const partialSourceOverride = {
+    "new-a02-seoul-museum-group": {
+      evidence:
+        "최신 공식 안내서 30행 중 실행 핵심 12행만 확보되어 Product candidate가 아니라 Structure probe로 검토한다.",
+    },
+    "new-b06-wtable-lemon-weekend": {
+      evidence:
+        "검증된 19개 조리행 중 대표 12행만 확보되어 Product candidate가 아니라 Structure probe로 검토하고 logic readiness를 Modify로 둔다.",
+      logicReadiness: "modify",
+    },
+  }[record.researchId];
+  const effectiveCorpusTier = partialSourceOverride
+    ? "structure_probe"
+    : record.corpusTier;
+  const effectiveReadiness = {
+    ...record.readiness,
+    ...(partialSourceOverride?.logicReadiness
+      ? { logicReadiness: partialSourceOverride.logicReadiness }
+      : {}),
+  };
   const sourceRows = (record.sourceRows ?? []).map((row, index) => ({
     sourceRowId: `${prefix}:${row.sourceRowId ?? `row-${index + 1}`}`,
     sourceId: `${prefix}:source`,
@@ -1123,9 +1189,9 @@ function normalizeNewSource(record) {
     sourceRefs: [],
   };
   const contentMode =
-    record.corpusTier === "boundary_control"
+    effectiveCorpusTier === "boundary_control"
       ? "boundary_control"
-      : record.corpusTier === "historical_preview"
+      : effectiveCorpusTier === "historical_preview"
         ? "historical_preview"
         : generationMode === "field_template"
           ? "field_template_probe"
@@ -1143,7 +1209,7 @@ function normalizeNewSource(record) {
     saveReason: record.userJob,
     userJob: record.userJob,
     contentMode,
-    corpusTier: record.corpusTier,
+    corpusTier: effectiveCorpusTier,
     source: {
       sourceId: `${prefix}:source`,
       title: record.source.title,
@@ -1173,7 +1239,7 @@ function normalizeNewSource(record) {
       secondaryExecutionPatterns: [],
       temporalIntent: record.taxonomy.temporalIntent,
     },
-    readiness: record.readiness,
+    readiness: effectiveReadiness,
     minimumInputs: record.minimumInputs ?? [],
     primaryProjection,
     secondaryProjections: (record.taxonomy.secondaryProjections ?? []).map(mapProjection),
@@ -1191,6 +1257,7 @@ function normalizeNewSource(record) {
     },
     evidenceNotes: [
       ...(record.evidenceNotes ?? []),
+      ...(partialSourceOverride ? [partialSourceOverride.evidence] : []),
       `확인 원문 행 ${record.capturedSourceRowCount}/${record.confirmedSourceRowCount}`,
     ],
     duplicateOf: record.duplicateOf ?? null,
@@ -1215,7 +1282,7 @@ function normalizeHistoricalPreview(record, index) {
     corpusTier: "historical_preview",
     source: {
       sourceId: `${contentId}:source`,
-      title: record.sourceTitle,
+      title: record.sourceTitle || record.title,
       provider: record.type,
       url: record.sourceUrl,
       canonicalUrl: record.sourceUrl,
@@ -1501,6 +1568,7 @@ for (const goldCase of goldInput.cases.filter(
   rawRecords.push(normalizeGoldCase(goldCase, packetById.get(goldCase.caseId)));
 }
 for (const addition of additionsInput.records) rawRecords.push(normalizeNewSource(addition));
+for (const record of rawRecords) separateInputOwnership(record);
 
 const inventoryRecords = rawRecords.map((record) => ({
   contentId: record.contentId,
@@ -1569,7 +1637,9 @@ const includedSourceBacked = rawRecords.filter((record) => {
   return inventory.inclusionStatus === "included";
 });
 
-const historicalRecords = historicalInput.map(normalizeHistoricalPreview);
+const historicalRecords = historicalInput
+  .map(normalizeHistoricalPreview)
+  .map(separateInputOwnership);
 const includedRecords = [...includedSourceBacked, ...historicalRecords];
 for (const historical of historicalRecords) {
   inventoryRecords.push({
@@ -1694,6 +1764,12 @@ const directLinks = includedRecords.flatMap((record) => {
     })),
     { contentId: record.contentId, mode: "lineage", hash: `${base}/lineage` },
     { contentId: record.contentId, mode: "review", hash: `${base}/review` },
+    ...(record.pacingEligible
+      ? [{ contentId: record.contentId, mode: "pacing", hash: `${base}/pacing` }]
+      : []),
+    ...(record.contentMode === "event_source_before_user_intent"
+      ? [{ contentId: record.contentId, mode: "event", hash: `${base}/event` }]
+      : []),
   ];
 });
 
@@ -1768,11 +1844,29 @@ const reviewStateContract = {
     corpusFingerprint,
   ),
   importModes: ["merge", "replace"],
+  requiredBeforeReviewed: ["verdict", "useful", "itemSize", "projection"],
+  questions: {
+    verdict: ["go", "modify", "hold"],
+    useful: ["yes", "partly", "no"],
+    saveReason: ["clear", "weak", "none"],
+    itemSize: ["appropriate", "too_small", "too_large", "mixed"],
+    detailEnough: ["yes", "partly", "no"],
+    firstAction: ["yes", "partly", "no"],
+    projection: ["yes", "change", "unsure"],
+    checklistTodo: ["yes", "change", "not_applicable"],
+    schedule: ["yes", "too_much", "too_little", "not_applicable"],
+    calendarLoad: ["helpful", "too_many", "too_few", "not_applicable"],
+    modificationDegree: ["none", "minor", "major", "rebuild"],
+  },
   validations: [
     "schemaVersion",
     "corpusFingerprint",
     "known contentId",
     "unknown contentId reporting",
+    "review enum sanitization",
+    "replace starts from empty initial state",
+    "pacing import accepts policy only",
+    "pacing assignments are recomputed from canonical Items",
     "pre-replace automatic backup",
     "rollback on error",
   ],

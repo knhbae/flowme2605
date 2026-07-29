@@ -41,6 +41,7 @@ Only **Active Gate** is the current execution backlog. Unchecked boxes inside ga
 ### Active Gate
 
 - [2026-07-14 P24 Execution Trust and UX Simplification](./2026-07-14-p24-execution-trust-ux-simplification/spec.md) - implementation and operations prep are complete; two first sessions and then 5 participants x 3 sessions are the active gate.
+- [2026-07-29 Flow Content UI Full-Corpus Validation & Planning Handoff Lab v1](./2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/spec.md) - builds the standalone 110-content, 550-projection review Gallery and draft planning handoff; final browser QA and direct user review are pending, while observed-user validation and external Calendar/VTODO round-trip remain `NOT_RUN`.
 
 ### Completed Or Closed
 

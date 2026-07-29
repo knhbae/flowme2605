@@ -4,29 +4,84 @@
   "corpusFingerprint": "sha256:d56b289fd301805fe1299b867497b0840f8d379d1459ec0148639f8b7d5dce32",
   "summary": {
     "status": "PASS",
-    "checks": 41,
-    "passed": 41,
+    "checks": 54,
+    "passed": 54,
     "failed": 0
   },
   "corpus": {
     "gallery": 156,
     "normal": 110,
-    "productCandidate": 43,
-    "structureProbe": 67,
+    "productCandidate": 41,
+    "structureProbe": 69,
     "newUrlsReviewed": 24,
     "newNormal": 22,
     "projectionCells": 550,
     "pacingTargets": 16,
     "eventTargets": 14
   },
+  "semanticProvenance": {
+    "manualTraceQueueReviewed": 141,
+    "manualTraceContentsReviewed": 26,
+    "verdictCounts": {
+      "verified_equivalent": 37,
+      "bounded_normalization": 87,
+      "needs_modify": 17,
+      "unknown": 0
+    },
+    "needsModifyContentIds": [
+      "canonical:base-moving-d30",
+      "canonical:base-opic-plan",
+      "canonical:base-new-car-comparison",
+      "canonical:oq-oq-c08-ac-decision",
+      "canonical:oq-oq-b03-remodel",
+      "canonical:oq-oq-p03-vehicle",
+      "legacy:preapp:interview-d1-check",
+      "legacy:preapp:license-class1-medical-check",
+      "legacy:preapp:license-class2-renewal",
+      "legacy:round2:personal-business-registration-flow",
+      "generalization:GB-03"
+    ],
+    "ownerOrProvenanceGapCounts": {
+      "completion": 412,
+      "schedule": 124,
+      "total": 536
+    },
+    "manualSelfValidation": {
+      "status": "PASS",
+      "executedAt": "2026-07-29T14:22:00+09:00",
+      "passed": 13,
+      "total": 13,
+      "checks": [
+        "semantic provenance audit file hash matches",
+        "content UI view-model file hash matches",
+        "adjudication count is exactly 141",
+        "queue indexes cover exactly 0..140",
+        "unique key count is exactly 141",
+        "unique key set exactly matches the audit trace-only queue",
+        "all verdicts are allowed values",
+        "verdict distribution matches 37/87/17/0",
+        "all reason codes resolve in reasonCatalog",
+        "17 mismatch queue indexes equal the needs_modify index set",
+        "temporal adjudication count is exactly 5",
+        "temporal keys exactly match the five Dyson schedule audits",
+        "embedded self-validation status and counts are internally consistent"
+      ]
+    }
+  },
   "claimBoundary": {
     "observedUserValidation": "NOT_REVIEWED_BY_USER",
     "externalCalendarVtodoRoundTrip": "NOT_RUN",
-    "browserQa": "PENDING"
+    "browserQa": "PENDING",
+    "zeroInventionClaim": "NOT_PROVEN"
   },
   "checks": [
     {
       "id": "schema.view_model_shape",
+      "pass": true,
+      "evidence": []
+    },
+    {
+      "id": "schema.view_model_json_schema",
       "pass": true,
       "evidence": []
     },
@@ -76,8 +131,8 @@
       "evidence": {
         "gallery": 156,
         "normal": 110,
-        "productCandidate": 43,
-        "structureProbe": 67,
+        "productCandidate": 41,
+        "structureProbe": 69,
         "boundary": 1,
         "historical": 45,
         "item": 893,
@@ -101,6 +156,13 @@
       "pass": true,
       "evidence": {
         "records": 167
+      }
+    },
+    {
+      "id": "corpus.active_source_identity_complete",
+      "pass": true,
+      "evidence": {
+        "contents": []
       }
     },
     {
@@ -136,13 +198,35 @@
       "evidence": {
         "gallery": 156,
         "normal": 110,
-        "productCandidate": 43,
-        "structureProbe": 67,
+        "productCandidate": 41,
+        "structureProbe": 69,
         "boundary": 1,
         "historical": 45,
         "item": 893,
         "sourceRow": 1172,
         "projectionCell": 550
+      }
+    },
+    {
+      "id": "corpus.partial_source_is_not_product_candidate",
+      "pass": true,
+      "evidence": {
+        "contents": []
+      }
+    },
+    {
+      "id": "inputs.source_value_reentry_zero",
+      "pass": true,
+      "evidence": {
+        "leaks": []
+      }
+    },
+    {
+      "id": "inputs.source_provided_fields_preserved",
+      "pass": true,
+      "evidence": {
+        "errors": [],
+        "sourceProvidedFieldCount": 20
       }
     },
     {
@@ -292,6 +376,14 @@
       }
     },
     {
+      "id": "ui.direct_link_modes_and_hashes_exact",
+      "pass": true,
+      "evidence": {
+        "errors": [],
+        "links": 1315
+      }
+    },
+    {
       "id": "review.user_state_initially_empty",
       "pass": true,
       "evidence": {
@@ -312,18 +404,71 @@
       "evidence": {
         "runs": [
           {
-            "runId": "independent-ui-review-a-v1",
-            "reviewerRole": "internal_agent_semantics",
+            "runId": "independent-rendered-ui-review-a2-v1",
+            "reviewerRole": "internal_expert_review_not_observed_user_validation",
             "peerOutputVisible": false,
+            "peerReviewFilesRead": false,
+            "inputFile": "runs/independent-rendered-ui-review-a2-v1.json",
+            "inputFingerprints": [
+              {
+                "role": "view_model",
+                "path": "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/content-ui-view-model-v1.json",
+                "sha256": "25aacc34ad8b2062a6bf28dec683b14f3d989f407313af519284016d46ea05b9"
+              },
+              {
+                "role": "projection_results",
+                "path": "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/projection-ui-results-v1.json",
+                "sha256": "10a760062a1f38bc3c78a73bb603b7c947bfddb56376e899739ade2b171474eb"
+              },
+              {
+                "role": "gallery_html",
+                "path": "docs/content-audit/2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html",
+                "sha256": "9be4105dcf5a62a82dc31ddc3a6b37acaa87b9e886d70d27c9fc5f979c1d7d0b"
+              }
+            ],
             "records": 110,
-            "resultHash": "sha256:f33b3e0b2a31e7c7b47a892f08b1ced2ab221b705e8eb73775801905d4337d05"
+            "resultHash": "sha256:b647c9703c6538fda33f87b0490613f6139d2949ea5ed862eca43369d98b3ab6"
           },
           {
-            "runId": "independent-ui-review-b-v1",
-            "reviewerRole": "internal_agent_execution_ux",
+            "runId": "independent-rendered-ui-review-b2",
+            "reviewerRole": "B2",
             "peerOutputVisible": false,
+            "peerReviewFilesRead": false,
+            "inputFile": "runs/independent-rendered-ui-review-b2-v1.json",
+            "inputFingerprints": [
+              {
+                "role": "gallery_html",
+                "path": "docs/content-audit/2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html",
+                "sha256": "9be4105dcf5a62a82dc31ddc3a6b37acaa87b9e886d70d27c9fc5f979c1d7d0b",
+                "bytes": 8105284
+              },
+              {
+                "role": "view_model",
+                "path": "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/content-ui-view-model-v1.json",
+                "sha256": "25aacc34ad8b2062a6bf28dec683b14f3d989f407313af519284016d46ea05b9",
+                "bytes": 12001590
+              },
+              {
+                "role": "projection_results",
+                "path": "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/projection-ui-results-v1.json",
+                "sha256": "10a760062a1f38bc3c78a73bb603b7c947bfddb56376e899739ade2b171474eb",
+                "bytes": 3839062
+              },
+              {
+                "role": "schedule_results",
+                "path": "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/schedule-playground-results-v1.json",
+                "sha256": "86d6af1f35a73bd4c3489902dc4efc3db5497b3099bf8f4de976d346caf0d322",
+                "bytes": 99682
+              },
+              {
+                "role": "event_results",
+                "path": "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/event-ui-results-v1.json",
+                "sha256": "b8ff0d4ca834b63ad4c0446b605d793fd08803ecfb5620d27ee5b98602bc2446",
+                "bytes": 37938
+              }
+            ],
             "records": 110,
-            "resultHash": "sha256:1d7db369f520577e2ba80f2761593d077da9aa1f508370ed5aa065b5e95e90ec"
+            "resultHash": "sha256:9582b936904aca7f6eb3e186d37515872cfe5c181dff84aa6a4fd6221b46327c"
           }
         ],
         "comparisons": 110
@@ -333,8 +478,589 @@
       "id": "review.disagreements_are_explicit",
       "pass": true,
       "evidence": {
-        "anyDisagreement": 91,
-        "disagreementIds": 91
+        "anyDisagreement": 104,
+        "disagreementIds": 104
+      }
+    },
+    {
+      "id": "semantic.manual_adjudication_inputs_frozen",
+      "pass": true,
+      "evidence": {
+        "semantic-provenance-audit-v1.json": {
+          "fileSha256": "sha256:2d988143bbb8df3e15363094c862614c296e3d1e1d6b49a3e1a3215e4e8eb8c0",
+          "embeddedAuditHash": "sha256:f38c5890a13c8c3924cb9fd714ace39d1beab97e0e596c52be2cde3b053e20d1"
+        },
+        "content-ui-view-model-v1.json": {
+          "fileSha256": "sha256:25aacc34ad8b2062a6bf28dec683b14f3d989f407313af519284016d46ea05b9"
+        },
+        "corpusFingerprint": "sha256:d56b289fd301805fe1299b867497b0840f8d379d1459ec0148639f8b7d5dce32"
+      }
+    },
+    {
+      "id": "semantic.manual_adjudication_exact_queue_coverage",
+      "pass": true,
+      "evidence": {
+        "auditQueue": 141,
+        "adjudications": 141,
+        "uniqueKeys": 141
+      }
+    },
+    {
+      "id": "semantic.manual_adjudication_distribution",
+      "pass": true,
+      "evidence": {
+        "actual": {
+          "needs_modify": 17,
+          "bounded_normalization": 87,
+          "verified_equivalent": 37
+        },
+        "declared": {
+          "verified_equivalent": 37,
+          "bounded_normalization": 87,
+          "needs_modify": 17,
+          "unknown": 0
+        }
+      }
+    },
+    {
+      "id": "semantic.manual_needs_modify_is_explicit",
+      "pass": true,
+      "evidence": {
+        "needsModify": 17,
+        "contentIds": [
+          "canonical:base-moving-d30",
+          "canonical:base-opic-plan",
+          "canonical:base-new-car-comparison",
+          "canonical:oq-oq-c08-ac-decision",
+          "canonical:oq-oq-b03-remodel",
+          "canonical:oq-oq-p03-vehicle",
+          "legacy:preapp:interview-d1-check",
+          "legacy:preapp:license-class1-medical-check",
+          "legacy:preapp:license-class2-renewal",
+          "legacy:round2:personal-business-registration-flow",
+          "generalization:GB-03"
+        ],
+        "reasonCounts": {
+          "critical_source_row_hidden": 3,
+          "mixed_action_label_misleading": 2,
+          "unsupported_action_or_scope": 2,
+          "unsupported_future_timeframe": 2,
+          "projection_rationale_replaces_detail": 2,
+          "unsupported_user_overlay_in_source_item": 1,
+          "unsupported_packaging_constraint": 1,
+          "source_route_narrowed": 2,
+          "conditional_branch_hidden": 1,
+          "safety_instruction_hidden": 1
+        }
+      }
+    },
+    {
+      "id": "semantic.owner_derivation_gaps_remain_open",
+      "pass": true,
+      "evidence": {
+        "completion": 412,
+        "schedule": 124,
+        "zeroInventionClaim": "NOT_PROVEN"
+      }
+    },
+    {
+      "id": "semantic.manual_self_validation_13_of_13",
+      "pass": true,
+      "evidence": {
+        "status": "PASS",
+        "executedAt": "2026-07-29T14:22:00+09:00",
+        "passed": 13,
+        "total": 13,
+        "checks": [
+          "semantic provenance audit file hash matches",
+          "content UI view-model file hash matches",
+          "adjudication count is exactly 141",
+          "queue indexes cover exactly 0..140",
+          "unique key count is exactly 141",
+          "unique key set exactly matches the audit trace-only queue",
+          "all verdicts are allowed values",
+          "verdict distribution matches 37/87/17/0",
+          "all reason codes resolve in reasonCatalog",
+          "17 mismatch queue indexes equal the needs_modify index set",
+          "temporal adjudication count is exactly 5",
+          "temporal keys exactly match the five Dyson schedule audits",
+          "embedded self-validation status and counts are internally consistent"
+        ]
+      }
+    },
+    {
+      "id": "semantic.manual_results_linked_to_review_and_planning",
+      "pass": true,
+      "evidence": {
+        "independentReview": {
+          "artifact": "semantic-provenance-manual-adjudication-v1.json",
+          "reviewMethod": "independent_manual_comparison_of_frozen_item_field_against_linked_source_rows",
+          "traceOnlyReviewed": 141,
+          "traceOnlyContentReviewed": 26,
+          "traceOnlyReviewedContentIds": [
+            "canonical:base-moving-d30",
+            "canonical:base-opic-plan",
+            "canonical:base-new-car-comparison",
+            "canonical:oq-oq-c08-ac-decision",
+            "canonical:oq-oq-b03-remodel",
+            "canonical:oq-oq-p03-vehicle",
+            "legacy:preapp:interview-d1-check",
+            "legacy:preapp:license-class1-medical-check",
+            "legacy:preapp:license-class2-renewal",
+            "legacy:preapp:aircon-ultrafine-filter-routine",
+            "legacy:preapp:kitten-arrival-first-week",
+            "legacy:round2:kmooc-hundred-schools-fifteen-week",
+            "legacy:round2:banchan-day-one",
+            "legacy:round2:work24-jobseeker-start",
+            "legacy:round2:personal-business-registration-flow",
+            "legacy:round2:corporate-mail-order-registration-flow",
+            "legacy:round2:minor-passport-renewal",
+            "generalization:GB-01",
+            "generalization:GB-02",
+            "generalization:GB-03",
+            "generalization:GB-04",
+            "generalization:GB-05",
+            "generalization:GB-07",
+            "generalization:GB-08",
+            "generalization:GB-13",
+            "generalization:GB-16"
+          ],
+          "verdictCounts": {
+            "verified_equivalent": 37,
+            "bounded_normalization": 87,
+            "needs_modify": 17,
+            "unknown": 0
+          },
+          "acceptableWithoutMeaningChange": 124,
+          "needsModify": 17,
+          "needsModifyContentCount": 11,
+          "needsModifyContentIds": [
+            "canonical:base-moving-d30",
+            "canonical:base-opic-plan",
+            "canonical:base-new-car-comparison",
+            "canonical:oq-oq-c08-ac-decision",
+            "canonical:oq-oq-b03-remodel",
+            "canonical:oq-oq-p03-vehicle",
+            "legacy:preapp:interview-d1-check",
+            "legacy:preapp:license-class1-medical-check",
+            "legacy:preapp:license-class2-renewal",
+            "legacy:round2:personal-business-registration-flow",
+            "generalization:GB-03"
+          ],
+          "needsModifyByReason": {
+            "critical_source_row_hidden": 3,
+            "mixed_action_label_misleading": 2,
+            "unsupported_action_or_scope": 2,
+            "unsupported_future_timeframe": 2,
+            "projection_rationale_replaces_detail": 2,
+            "unsupported_user_overlay_in_source_item": 1,
+            "unsupported_packaging_constraint": 1,
+            "source_route_narrowed": 2,
+            "conditional_branch_hidden": 1,
+            "safety_instruction_hidden": 1
+          },
+          "needsModifyByContent": {
+            "canonical:base-moving-d30": 5,
+            "canonical:base-opic-plan": 2,
+            "canonical:base-new-car-comparison": 1,
+            "canonical:oq-oq-c08-ac-decision": 1,
+            "canonical:oq-oq-b03-remodel": 2,
+            "canonical:oq-oq-p03-vehicle": 1,
+            "legacy:preapp:interview-d1-check": 1,
+            "legacy:preapp:license-class1-medical-check": 1,
+            "legacy:preapp:license-class2-renewal": 1,
+            "legacy:round2:personal-business-registration-flow": 1,
+            "generalization:GB-03": 1
+          },
+          "ownerOrProvenanceGapCounts": {
+            "completion": 412,
+            "schedule": 124,
+            "total": 536
+          },
+          "completionGapContentIds": [
+            "canonical:base-moving-d30",
+            "canonical:base-baby-food-174",
+            "canonical:base-opic-plan",
+            "canonical:base-opentutorials-web1-progress",
+            "canonical:base-new-car-comparison",
+            "canonical:base-allblanc-7day-abs",
+            "canonical:base-wtable-summer-banchan-five",
+            "canonical:base-andstudio-job-prep-videos",
+            "canonical:oq-oq-c02-kmooc-full",
+            "canonical:oq-oq-c03-librivox",
+            "canonical:oq-oq-c04-passport",
+            "canonical:oq-oq-c05-washer",
+            "canonical:oq-oq-c06-nasa",
+            "canonical:oq-oq-c07-fit100",
+            "canonical:oq-oq-c08-ac-decision",
+            "canonical:oq-oq-b01-heat",
+            "canonical:oq-oq-b03-remodel",
+            "canonical:oq-oq-p01-ossu",
+            "canonical:oq-oq-p02-packing",
+            "canonical:oq-oq-p03-vehicle",
+            "canonical:oq-oq-p04-portfolio",
+            "canonical:value-vq-01",
+            "canonical:value-vq-03",
+            "canonical:value-vq-04",
+            "canonical:value-vq-05",
+            "canonical:value-vq-06",
+            "canonical:value-vq-10",
+            "canonical:value-vq-11",
+            "canonical:value-vq-12",
+            "canonical:deep-ds06",
+            "canonical:deep-ds08",
+            "canonical:live-c01",
+            "canonical:live-c13",
+            "canonical:live-c16",
+            "canonical:live-r02",
+            "canonical:live-kr-stibee-01",
+            "canonical:live-live-mdn-core-01",
+            "canonical:live-live-dyson-filter-01",
+            "events:new-nps-ten-essentials",
+            "events:new-apple-quick-start",
+            "events:new-github-account-onboarding",
+            "events:new-google-codelab-ai-agent",
+            "events:new-mdn-core-scripting",
+            "events:new-gutenberg-top-reading-queue"
+          ],
+          "scheduleGapContentIds": [
+            "canonical:base-moving-d30",
+            "canonical:base-baby-food-174",
+            "canonical:base-opic-plan",
+            "canonical:base-allblanc-7day-abs",
+            "canonical:value-vq-03",
+            "canonical:value-vq-11",
+            "canonical:live-live-dyson-filter-01"
+          ],
+          "zeroInventionClaim": "NOT_PROVEN",
+          "selfValidation": {
+            "status": "PASS",
+            "executedAt": "2026-07-29T14:22:00+09:00",
+            "passed": 13,
+            "total": 13,
+            "checks": [
+              "semantic provenance audit file hash matches",
+              "content UI view-model file hash matches",
+              "adjudication count is exactly 141",
+              "queue indexes cover exactly 0..140",
+              "unique key count is exactly 141",
+              "unique key set exactly matches the audit trace-only queue",
+              "all verdicts are allowed values",
+              "verdict distribution matches 37/87/17/0",
+              "all reason codes resolve in reasonCatalog",
+              "17 mismatch queue indexes equal the needs_modify index set",
+              "temporal adjudication count is exactly 5",
+              "temporal keys exactly match the five Dyson schedule audits",
+              "embedded self-validation status and counts are internally consistent"
+            ]
+          },
+          "claimBoundary": {
+            "canEstablish": [
+              "동결된 corpus의 141개 trace-only 의미 필드가 모두 독립 수동 판정을 받았다.",
+              "124개 필드는 verified_equivalent 또는 bounded_normalization이다.",
+              "17개 필드는 동결된 SourceRow 대비 수정이 필요하다.",
+              "Dyson 5개 schedule의 월 1회 cadence는 source-backed이며 개인 기준일 배치는 별도 layer다."
+            ],
+            "cannotEstablish": [
+              "live source가 동결 SourceRow와 지금도 동일한지",
+              "나머지 4324개 자동 분류 필드까지 포함한 full-corpus invention zero",
+              "completion 412개와 schedule 124개의 owner/derivation 무결성",
+              "rights, freshness, locale, safety approval",
+              "observed-user validation 또는 외부 Calendar round-trip"
+            ],
+            "zeroInventionClaim": "NOT_PROVEN",
+            "observedUserValidation": "NOT_RUN",
+            "externalCalendarRoundTrip": "NOT_RUN",
+            "result": "MANUAL_TRACE_QUEUE_COMPLETE_WITH_17_MODIFICATIONS_AND_OPEN_PROVENANCE_GAPS"
+          },
+          "needsModifyRecords": [
+            {
+              "queueIndex": 0,
+              "uniqueKey": "canonical:base-moving-d30|base-moving-d30-flow-1-step-1-item-1|title",
+              "verdict": "needs_modify",
+              "reasonCode": "critical_source_row_hidden",
+              "contentId": "canonical:base-moving-d30",
+              "itemId": "base-moving-d30-flow-1-step-1-item-1",
+              "field": "title",
+              "mismatch": {
+                "queueIndex": 0,
+                "current": "이사 방식과 이사업체 정하기",
+                "issue": "연결된 입주청소 업체 견적·예약 행이 제목과 설명의 단일 '업체' 표현에서 명확히 보존되지 않는다.",
+                "recommendedDirection": "이사업체와 입주청소 업체를 분리하거나 둘을 모두 제목에 명시한다."
+              }
+            },
+            {
+              "queueIndex": 4,
+              "uniqueKey": "canonical:base-moving-d30|base-moving-d30-flow-1-step-2-item-1|title",
+              "verdict": "needs_modify",
+              "reasonCode": "mixed_action_label_misleading",
+              "contentId": "canonical:base-moving-d30",
+              "itemId": "base-moving-d30-flow-1-step-2-item-1",
+              "field": "title",
+              "mismatch": {
+                "queueIndex": 4,
+                "current": "우편·배송·전출 주소 변경하기",
+                "issue": "관리사무소 퇴거 일정 통보를 주소 변경으로 묶어 다른 행동으로 읽힌다.",
+                "recommendedDirection": "주소 변경과 관리사무소 통보를 분리하거나 제목을 '주소 변경과 퇴거 통보'로 바꾼다."
+              }
+            },
+            {
+              "queueIndex": 5,
+              "uniqueKey": "canonical:base-moving-d30|base-moving-d30-flow-1-step-2-item-2|title",
+              "verdict": "needs_modify",
+              "reasonCode": "unsupported_action_or_scope",
+              "contentId": "canonical:base-moving-d30",
+              "itemId": "base-moving-d30-flow-1-step-2-item-2",
+              "field": "title",
+              "mismatch": {
+                "queueIndex": 5,
+                "current": "엘리베이터·사다리차·주차 예약하기",
+                "issue": "원문은 사다리차 사용 여부와 주차 공간 확인이며 예약까지 지시하지 않는다.",
+                "recommendedDirection": "엘리베이터 예약과 사다리차·주차 확인을 구분한다."
+              }
+            },
+            {
+              "queueIndex": 6,
+              "uniqueKey": "canonical:base-moving-d30|base-moving-d30-flow-1-step-2-item-3|title",
+              "verdict": "needs_modify",
+              "reasonCode": "mixed_action_label_misleading",
+              "contentId": "canonical:base-moving-d30",
+              "itemId": "base-moving-d30-flow-1-step-2-item-3",
+              "field": "title",
+              "mismatch": {
+                "queueIndex": 6,
+                "current": "폐기물과 남은 짐 처리하기",
+                "issue": "열쇠·리모컨·설명서 모으기가 폐기물 처리처럼 읽힌다.",
+                "recommendedDirection": "폐기물 처리와 인계 물품 모으기를 별도 Item으로 둔다."
+              }
+            },
+            {
+              "queueIndex": 18,
+              "uniqueKey": "canonical:base-moving-d30|base-moving-d30-flow-1-step-4-item-5|title",
+              "verdict": "needs_modify",
+              "reasonCode": "critical_source_row_hidden",
+              "contentId": "canonical:base-moving-d30",
+              "itemId": "base-moving-d30-flow-1-step-4-item-5",
+              "field": "title",
+              "mismatch": {
+                "queueIndex": 18,
+                "current": "가전·가구 상태 사진 남기기",
+                "issue": "조건부 어항 이동 준비가 제목에서 완전히 숨는다.",
+                "recommendedDirection": "어항 조건부 Item을 분리한다."
+              }
+            },
+            {
+              "queueIndex": 31,
+              "uniqueKey": "canonical:base-opic-plan|base-opic-plan-flow-1-step-1-item-6|detail",
+              "verdict": "needs_modify",
+              "reasonCode": "unsupported_future_timeframe",
+              "contentId": "canonical:base-opic-plan",
+              "itemId": "base-opic-plan-flow-1-step-1-item-6",
+              "field": "detail",
+              "mismatch": {
+                "queueIndex": 31,
+                "current": "이번 주 녹음을 다시 듣고 반복해서 막힌 질문과 다음 주에 쓸 핵심 표현을 한 메모로 정리한다.",
+                "issue": "SourceRow는 보완 표현 정리만 말하며 '다음 주에 쓸' 시점은 뒷받침하지 않는다.",
+                "recommendedDirection": "다음 주 표현을 '보완 표현'으로 되돌린다."
+              }
+            },
+            {
+              "queueIndex": 38,
+              "uniqueKey": "canonical:base-opic-plan|base-opic-plan-flow-1-step-2-item-6|detail",
+              "verdict": "needs_modify",
+              "reasonCode": "unsupported_future_timeframe",
+              "contentId": "canonical:base-opic-plan",
+              "itemId": "base-opic-plan-flow-1-step-2-item-6",
+              "field": "detail",
+              "mismatch": {
+                "queueIndex": 38,
+                "current": "이번 주 녹음을 다시 듣고 반복해서 막힌 질문과 다음 주에 쓸 핵심 표현을 한 메모로 정리한다.",
+                "issue": "SourceRow는 보완 표현 정리만 말하며 '다음 주에 쓸' 시점은 뒷받침하지 않는다.",
+                "recommendedDirection": "다음 주 표현을 '보완 표현'으로 되돌린다."
+              }
+            },
+            {
+              "queueIndex": 44,
+              "uniqueKey": "canonical:base-new-car-comparison|base-new-car-comparison-flow-1-step-4-item-1|title",
+              "verdict": "needs_modify",
+              "reasonCode": "critical_source_row_hidden",
+              "contentId": "canonical:base-new-car-comparison",
+              "itemId": "base-new-car-comparison-flow-1-step-4-item-1",
+              "field": "title",
+              "mismatch": {
+                "queueIndex": 44,
+                "current": "계약서 차량 사양과 금액 확인하기",
+                "issue": "출고 예정일과 취소·환불 조건이라는 중요한 계약 행이 제목에서 드러나지 않는다.",
+                "recommendedDirection": "계약 사양·금액·출고·취소 조건 확인으로 넓히거나 계약 조건 Item을 분리한다."
+              }
+            },
+            {
+              "queueIndex": 52,
+              "uniqueKey": "canonical:oq-oq-c08-ac-decision|oq-oq-c08-ac-decision-item-decision|detail",
+              "verdict": "needs_modify",
+              "reasonCode": "projection_rationale_replaces_detail",
+              "contentId": "canonical:oq-oq-c08-ac-decision",
+              "itemId": "oq-oq-c08-ac-decision-item-decision",
+              "field": "detail",
+              "mismatch": {
+                "queueIndex": 52,
+                "current": "한 번의 선택과 그 근거·연락처를 함께 남기는 결정 Memo가 주 결과물이다.",
+                "issue": "세척 범위·시간·비용을 설명해야 할 Item detail이 projection 선택 근거로 대체됐다.",
+                "recommendedDirection": "source-backed 비교 정보를 detail에 두고 Memo 적합성은 projection metadata로 이동한다."
+              }
+            },
+            {
+              "queueIndex": 53,
+              "uniqueKey": "canonical:oq-oq-b03-remodel|oq-oq-b03-remodel-item-decision|title",
+              "verdict": "needs_modify",
+              "reasonCode": "unsupported_action_or_scope",
+              "contentId": "canonical:oq-oq-b03-remodel",
+              "itemId": "oq-oq-b03-remodel-item-decision",
+              "field": "title",
+              "mismatch": {
+                "queueIndex": 53,
+                "current": "리모델링 계약 전에 10개 계약 기준을 비교하고 보완 요청을 정한다.",
+                "issue": "SourceRows는 10개 계약 확인 항목이며 '비교'와 '보완 요청 결정'이라는 추가 행동은 직접 근거가 없다.",
+                "recommendedDirection": "10개 계약 기준 확인으로 제한하고 보완 요청은 사용자 판단 또는 별도 overlay로 둔다."
+              }
+            },
+            {
+              "queueIndex": 54,
+              "uniqueKey": "canonical:oq-oq-b03-remodel|oq-oq-b03-remodel-item-decision|detail",
+              "verdict": "needs_modify",
+              "reasonCode": "projection_rationale_replaces_detail",
+              "contentId": "canonical:oq-oq-b03-remodel",
+              "itemId": "oq-oq-b03-remodel-item-decision",
+              "field": "detail",
+              "mismatch": {
+                "queueIndex": 54,
+                "current": "10개 기준별 확인값과 보완 요청을 나란히 비교해야 하므로 Sheet가 주 결과물이다.",
+                "issue": "10개 기준의 실제 내용 대신 Sheet 선택 이유만 남는다.",
+                "recommendedDirection": "계약 기준 설명은 Item detail에 두고 Sheet 근거는 projection metadata로 이동한다."
+              }
+            },
+            {
+              "queueIndex": 55,
+              "uniqueKey": "canonical:oq-oq-p03-vehicle|oq-oq-p03-vehicle-item-1|title",
+              "verdict": "needs_modify",
+              "reasonCode": "unsupported_user_overlay_in_source_item",
+              "contentId": "canonical:oq-oq-p03-vehicle",
+              "itemId": "oq-oq-p03-vehicle-item-1",
+              "field": "title",
+              "mismatch": {
+                "queueIndex": 55,
+                "current": "공식 검사 가능 기간을 조회하고 방문일 정하기",
+                "issue": "원문은 검사 가능 시작·종료일 조회만 뒷받침하며 방문일 결정은 사용자 overlay다.",
+                "recommendedDirection": "조회 Item과 사용자 방문일 선택 overlay를 분리한다."
+              }
+            },
+            {
+              "queueIndex": 57,
+              "uniqueKey": "legacy:preapp:interview-d1-check|legacy:preapp:interview-d1-check:interview-docs-step-item|title",
+              "verdict": "needs_modify",
+              "reasonCode": "unsupported_packaging_constraint",
+              "contentId": "legacy:preapp:interview-d1-check",
+              "itemId": "legacy:preapp:interview-d1-check:interview-docs-step-item",
+              "field": "title",
+              "mismatch": {
+                "queueIndex": 57,
+                "current": "요청 서류를 한 파일에 넣기",
+                "issue": "원문은 서류 확인만 말하며 '한 파일'이라는 포장 방식을 지시하지 않는다.",
+                "recommendedDirection": "요청 서류 준비·확인으로 바꾼다."
+              }
+            },
+            {
+              "queueIndex": 60,
+              "uniqueKey": "legacy:preapp:license-class1-medical-check|legacy:preapp:license-class1-medical-check:license-class1-medical-check-period-item|title",
+              "verdict": "needs_modify",
+              "reasonCode": "source_route_narrowed",
+              "contentId": "legacy:preapp:license-class1-medical-check",
+              "itemId": "legacy:preapp:license-class1-medical-check:license-class1-medical-check-period-item",
+              "field": "title",
+              "mismatch": {
+                "queueIndex": 60,
+                "current": "공식 마이페이지에서 갱신기간 확인하기",
+                "issue": "원문은 안전운전 통합민원 마이페이지 또는 교통민원24 두 경로를 제시한다.",
+                "recommendedDirection": "공식 조회 서비스에서 개인 갱신기간 확인으로 일반화한다."
+              }
+            },
+            {
+              "queueIndex": 63,
+              "uniqueKey": "legacy:preapp:license-class2-renewal|legacy:preapp:license-class2-renewal:license-class2-renewal-period-item|title",
+              "verdict": "needs_modify",
+              "reasonCode": "source_route_narrowed",
+              "contentId": "legacy:preapp:license-class2-renewal",
+              "itemId": "legacy:preapp:license-class2-renewal:license-class2-renewal-period-item",
+              "field": "title",
+              "mismatch": {
+                "queueIndex": 63,
+                "current": "공식 마이페이지에서 갱신기간 확인하기",
+                "issue": "원문은 안전운전 통합민원 마이페이지 또는 교통민원24 두 경로를 제시한다.",
+                "recommendedDirection": "공식 조회 서비스에서 개인 갱신기간 확인으로 일반화한다."
+              }
+            },
+            {
+              "queueIndex": 98,
+              "uniqueKey": "legacy:round2:personal-business-registration-flow|legacy:round2:personal-business-registration-flow:business-doc-license|title",
+              "verdict": "needs_modify",
+              "reasonCode": "conditional_branch_hidden",
+              "contentId": "legacy:round2:personal-business-registration-flow",
+              "itemId": "legacy:round2:personal-business-registration-flow:business-doc-license",
+              "field": "title",
+              "mismatch": {
+                "queueIndex": 98,
+                "current": "인허가 업종 서류 챙기기",
+                "issue": "운수업의 별도 차량등록증·허가증·위수탁계약서 분기가 제목에서 숨는다.",
+                "recommendedDirection": "인허가·운수업 조건부 서류로 넓히거나 운수업 분기를 별도 Item으로 둔다."
+              }
+            },
+            {
+              "queueIndex": 121,
+              "uniqueKey": "generalization:GB-03|generalization:GB-03:item:humidifying-filter|title",
+              "verdict": "needs_modify",
+              "reasonCode": "safety_instruction_hidden",
+              "contentId": "generalization:GB-03",
+              "itemId": "generalization:GB-03:item:humidifying-filter",
+              "field": "title",
+              "mismatch": {
+                "queueIndex": 121,
+                "current": "가습 필터 교체 및 알림 초기화",
+                "issue": "물세척 금지라는 중요한 원문 주의가 빈 detail과 제목에서 사라진다.",
+                "recommendedDirection": "물세척 금지를 caution/detail에 보존한다."
+              }
+            }
+          ]
+        },
+        "planningDecisionIds": [
+          "PD-01-item-minimum-unit",
+          "PD-02-step-grouping",
+          "PD-03-checklist-versus-todo",
+          "PD-04-primary-projection",
+          "PD-05-secondary-projection-exposure",
+          "PD-06-undated-start",
+          "PD-07-pacing-default",
+          "PD-08-due-versus-calendar",
+          "PD-09-calendar-grouping",
+          "PD-10-event-contract",
+          "PD-11-source-overlay-display",
+          "PD-12-readiness-state-display",
+          "PD-13-memo-sheet-position",
+          "PD-14-backend-required-fields",
+          "PD-15-semantic-source-preservation",
+          "PD-16-completion-schedule-provenance"
+        ],
+        "gapIds": [
+          "GAP-01-composite-item-boundary",
+          "GAP-02-primary-projection-disagreement",
+          "GAP-03-checklist-todo-disagreement",
+          "GAP-04-calendar-overload",
+          "GAP-05-event-intent-activation",
+          "GAP-06-ui-explanation-load",
+          "GAP-07-agent-value-disagreement",
+          "GAP-08-manual-semantic-needs-modify",
+          "GAP-09-completion-provenance",
+          "GAP-10-schedule-owner-derivation"
+        ]
       }
     },
     {
@@ -342,14 +1068,14 @@
       "pass": true,
       "evidence": {
         "status": "DRAFT_PENDING_USER_REVIEW",
-        "decisions": 14
+        "decisions": 16
       }
     },
     {
       "id": "planning.gaps_have_counts_and_evidence",
       "pass": true,
       "evidence": {
-        "gaps": 7
+        "gaps": 10
       }
     },
     {

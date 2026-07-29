@@ -75412,7 +75412,7 @@
     {
       "contentId": "new:new-a02-seoul-museum-group",
       "title": "서울상상나라 단체관람 준비와 당일 인솔",
-      "corpusTier": "product_candidate",
+      "corpusTier": "structure_probe",
       "projection": "calendar",
       "label": "Calendar",
       "recommendation": "not_recommended",
@@ -75444,7 +75444,7 @@
     {
       "contentId": "new:new-a02-seoul-museum-group",
       "title": "서울상상나라 단체관람 준비와 당일 인솔",
-      "corpusTier": "product_candidate",
+      "corpusTier": "structure_probe",
       "projection": "checklist",
       "label": "Checklist",
       "recommendation": "primary",
@@ -75737,7 +75737,7 @@
     {
       "contentId": "new:new-a02-seoul-museum-group",
       "title": "서울상상나라 단체관람 준비와 당일 인솔",
-      "corpusTier": "product_candidate",
+      "corpusTier": "structure_probe",
       "projection": "todo",
       "label": "Todo",
       "recommendation": "not_recommended",
@@ -76131,7 +76131,7 @@
     {
       "contentId": "new:new-a02-seoul-museum-group",
       "title": "서울상상나라 단체관람 준비와 당일 인솔",
-      "corpusTier": "product_candidate",
+      "corpusTier": "structure_probe",
       "projection": "sheet",
       "label": "Sheet",
       "recommendation": "secondary",
@@ -76355,7 +76355,7 @@
     {
       "contentId": "new:new-a02-seoul-museum-group",
       "title": "서울상상나라 단체관람 준비와 당일 인솔",
-      "corpusTier": "product_candidate",
+      "corpusTier": "structure_probe",
       "projection": "memo",
       "label": "Memo",
       "recommendation": "secondary",
@@ -81619,7 +81619,7 @@
     {
       "contentId": "new:new-b06-wtable-lemon-weekend",
       "title": "레몬 위크엔드 베이킹 세션",
-      "corpusTier": "product_candidate",
+      "corpusTier": "structure_probe",
       "projection": "calendar",
       "label": "Calendar",
       "recommendation": "not_recommended",
@@ -81651,7 +81651,7 @@
     {
       "contentId": "new:new-b06-wtable-lemon-weekend",
       "title": "레몬 위크엔드 베이킹 세션",
-      "corpusTier": "product_candidate",
+      "corpusTier": "structure_probe",
       "projection": "checklist",
       "label": "Checklist",
       "recommendation": "primary",
@@ -81928,7 +81928,7 @@
     {
       "contentId": "new:new-b06-wtable-lemon-weekend",
       "title": "레몬 위크엔드 베이킹 세션",
-      "corpusTier": "product_candidate",
+      "corpusTier": "structure_probe",
       "projection": "todo",
       "label": "Todo",
       "recommendation": "not_recommended",
@@ -82308,7 +82308,7 @@
     {
       "contentId": "new:new-b06-wtable-lemon-weekend",
       "title": "레몬 위크엔드 베이킹 세션",
-      "corpusTier": "product_candidate",
+      "corpusTier": "structure_probe",
       "projection": "sheet",
       "label": "Sheet",
       "recommendation": "optional",
@@ -82532,7 +82532,7 @@
     {
       "contentId": "new:new-b06-wtable-lemon-weekend",
       "title": "레몬 위크엔드 베이킹 세션",
-      "corpusTier": "product_candidate",
+      "corpusTier": "structure_probe",
       "projection": "memo",
       "label": "Memo",
       "recommendation": "secondary",

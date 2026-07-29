@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -8,6 +9,135 @@ const NORMAL_TIERS = new Set(["product_candidate", "structure_probe"]);
 
 function readJson(file) {
   return JSON.parse(fs.readFileSync(path.join(SPEC_DIR, file), "utf8"));
+}
+
+function fileSha256(file) {
+  return `sha256:${crypto
+    .createHash("sha256")
+    .update(fs.readFileSync(path.join(SPEC_DIR, file)))
+    .digest("hex")}`;
+}
+
+function jsonEqual(left, right) {
+  return JSON.stringify(left) === JSON.stringify(right);
+}
+
+function valueType(value) {
+  if (value === null) return "null";
+  if (Array.isArray(value)) return "array";
+  if (Number.isInteger(value)) return "integer";
+  if (typeof value === "number") return "number";
+  return typeof value;
+}
+
+function resolveJsonPointer(rootSchema, ref) {
+  if (!ref.startsWith("#/")) {
+    throw new Error(`Only local JSON Schema refs are supported: ${ref}`);
+  }
+  return ref
+    .slice(2)
+    .split("/")
+    .map((part) => part.replaceAll("~1", "/").replaceAll("~0", "~"))
+    .reduce((value, part) => value?.[part], rootSchema);
+}
+
+export function validateJsonSchemaSubset(instance, schema) {
+  const errors = [];
+  const walk = (value, node, instancePath) => {
+    if (!node || typeof node !== "object") return;
+    if (node.$ref) {
+      const resolved = resolveJsonPointer(schema, node.$ref);
+      if (!resolved) {
+        errors.push(`${instancePath}: unresolved schema ref ${node.$ref}`);
+        return;
+      }
+      walk(value, resolved, instancePath);
+      return;
+    }
+    if ("const" in node && !jsonEqual(value, node.const)) {
+      errors.push(`${instancePath}: must equal ${JSON.stringify(node.const)}`);
+    }
+    if (node.enum && !node.enum.some((candidate) => jsonEqual(candidate, value))) {
+      errors.push(`${instancePath}: must be one of ${JSON.stringify(node.enum)}`);
+    }
+
+    const acceptedTypes = node.type
+      ? (Array.isArray(node.type) ? node.type : [node.type])
+      : [];
+    if (
+      acceptedTypes.length &&
+      !acceptedTypes.some(
+        (type) =>
+          valueType(value) === type ||
+          (type === "number" && valueType(value) === "integer"),
+      )
+    ) {
+      errors.push(
+        `${instancePath}: expected ${acceptedTypes.join("|")}, got ${valueType(value)}`,
+      );
+      return;
+    }
+
+    if (typeof value === "string") {
+      if (node.minLength != null && value.length < node.minLength) {
+        errors.push(`${instancePath}: string shorter than ${node.minLength}`);
+      }
+      if (node.pattern && !new RegExp(node.pattern).test(value)) {
+        errors.push(`${instancePath}: does not match ${node.pattern}`);
+      }
+    }
+    if (typeof value === "number") {
+      if (node.minimum != null && value < node.minimum) {
+        errors.push(`${instancePath}: number below ${node.minimum}`);
+      }
+      if (node.maximum != null && value > node.maximum) {
+        errors.push(`${instancePath}: number above ${node.maximum}`);
+      }
+    }
+    if (Array.isArray(value)) {
+      if (node.minItems != null && value.length < node.minItems) {
+        errors.push(`${instancePath}: fewer than ${node.minItems} items`);
+      }
+      if (node.maxItems != null && value.length > node.maxItems) {
+        errors.push(`${instancePath}: more than ${node.maxItems} items`);
+      }
+      if (
+        node.uniqueItems &&
+        new Set(value.map((item) => JSON.stringify(item))).size !== value.length
+      ) {
+        errors.push(`${instancePath}: items must be unique`);
+      }
+      if (node.items) {
+        value.forEach((item, index) => walk(item, node.items, `${instancePath}/${index}`));
+      }
+    }
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      const keys = Object.keys(value);
+      if (node.minProperties != null && keys.length < node.minProperties) {
+        errors.push(`${instancePath}: fewer than ${node.minProperties} properties`);
+      }
+      for (const key of node.required ?? []) {
+        if (!(key in value)) errors.push(`${instancePath}/${key}: is required`);
+      }
+      for (const [key, child] of Object.entries(node.properties ?? {})) {
+        if (key in value) walk(value[key], child, `${instancePath}/${key}`);
+      }
+      const known = new Set(Object.keys(node.properties ?? {}));
+      for (const key of keys.filter((candidate) => !known.has(candidate))) {
+        if (node.additionalProperties === false) {
+          errors.push(`${instancePath}/${key}: additional property is not allowed`);
+        } else if (
+          node.additionalProperties &&
+          typeof node.additionalProperties === "object"
+        ) {
+          walk(value[key], node.additionalProperties, `${instancePath}/${key}`);
+        }
+      }
+    }
+  };
+
+  walk(instance, schema, "$");
+  return errors;
 }
 
 function unique(values) {
@@ -88,6 +218,8 @@ function verifyViewModelShape(viewModel) {
       "source",
       "taxonomy",
       "readiness",
+      "minimumInputs",
+      "sourceProvidedFields",
       "primaryProjection",
       "secondaryProjections",
       "projectionCells",
@@ -113,6 +245,7 @@ function verifyViewModelShape(viewModel) {
 
 export function validateLab({ writeResult = false } = {}) {
   const view = readJson("content-ui-view-model-v1.json");
+  const viewSchema = readJson("content-ui-view-model-v1.schema.json");
   const inventory = readJson("corpus-inventory-v1.json");
   const inclusion = readJson("corpus-inclusion-exclusion-v1.json");
   const coverage = readJson("corpus-coverage-matrix-v1.json");
@@ -126,6 +259,10 @@ export function validateLab({ writeResult = false } = {}) {
   const planningHandoff = readJson("planning-decision-handoff-v1.json");
   const independentReview = readJson("independent-ui-review-v1.json");
   const gapRegister = readJson("content-and-logic-gap-register-v1.json");
+  const semanticAudit = readJson("semantic-provenance-audit-v1.json");
+  const semanticManual = readJson(
+    "semantic-provenance-manual-adjudication-v1.json",
+  );
 
   const checks = [];
   const check = (id, pass, evidence) => {
@@ -140,6 +277,12 @@ export function validateLab({ writeResult = false } = {}) {
 
   const schemaErrors = verifyViewModelShape(view);
   check("schema.view_model_shape", schemaErrors.length === 0, schemaErrors);
+  const jsonSchemaErrors = validateJsonSchemaSubset(view, viewSchema);
+  check(
+    "schema.view_model_json_schema",
+    jsonSchemaErrors.length === 0,
+    jsonSchemaErrors.slice(0, 100),
+  );
   check(
     "corpus.gallery_count_matches",
     view.counts.gallery === contents.length,
@@ -197,6 +340,20 @@ export function validateLab({ writeResult = false } = {}) {
     ),
     { records: inventory.records.length },
   );
+  const activeSourceIdentityErrors = contents
+    .filter((content) => content.corpusTier !== "historical_preview")
+    .filter(
+      (content) =>
+        !content.source?.title?.trim() ||
+        !content.source?.url?.trim() ||
+        !content.source?.canonicalUrl?.trim(),
+    )
+    .map((content) => content.contentId);
+  check(
+    "corpus.active_source_identity_complete",
+    activeSourceIdentityErrors.length === 0,
+    { contents: activeSourceIdentityErrors },
+  );
   check(
     "corpus.new_urls_reviewed_24",
     newSources.counts.reviewedUrls >= 24,
@@ -227,6 +384,70 @@ export function validateLab({ writeResult = false } = {}) {
       Object.values(coverage.primaryProjection).reduce((sum, count) => sum + count, 0) ===
         normal.length,
     coverage.counts,
+  );
+  const partialProductCandidates = normal.filter(
+    (content) =>
+      content.corpusTier === "product_candidate" &&
+      content.readiness.sourceCompleteness !== "complete",
+  );
+  check(
+    "corpus.partial_source_is_not_product_candidate",
+    partialProductCandidates.length === 0,
+    {
+      contents: partialProductCandidates.map((content) => ({
+        contentId: content.contentId,
+        sourceCompleteness: content.readiness.sourceCompleteness,
+      })),
+    },
+  );
+
+  const sourceInputLeaks = [];
+  const sourceProvidedFieldErrors = [];
+  for (const content of contents) {
+    for (const input of content.minimumInputs ?? []) {
+      if (input.source !== "user_overlay") {
+        sourceInputLeaks.push({
+          contentId: content.contentId,
+          key: input.key,
+          source: input.source,
+        });
+      }
+    }
+    const canonicalSourceFields = (content.canonical?.fields ?? []).filter(
+      (field) => field.valueSource === "source",
+    );
+    const providedByKey = new Map(
+      (content.sourceProvidedFields ?? []).map((field) => [field.key, field]),
+    );
+    for (const field of canonicalSourceFields) {
+      const provided = providedByKey.get(field.key);
+      if (
+        !provided ||
+        provided.source !== "source" ||
+        !jsonEqual(provided.value, field.sourceDefault ?? null) ||
+        (content.minimumInputs ?? []).some((input) => input.key === field.key)
+      ) {
+        sourceProvidedFieldErrors.push({
+          contentId: content.contentId,
+          key: field.key,
+          provided: provided ?? null,
+        });
+      }
+    }
+  }
+  check("inputs.source_value_reentry_zero", sourceInputLeaks.length === 0, {
+    leaks: sourceInputLeaks,
+  });
+  check(
+    "inputs.source_provided_fields_preserved",
+    sourceProvidedFieldErrors.length === 0,
+    {
+      errors: sourceProvidedFieldErrors.slice(0, 50),
+      sourceProvidedFieldCount: contents.reduce(
+        (sum, content) => sum + (content.sourceProvidedFields?.length ?? 0),
+        0,
+      ),
+    },
   );
 
   check(
@@ -469,6 +690,48 @@ export function validateLab({ writeResult = false } = {}) {
     contents.every((content) => directLinkIds.has(content.contentId)),
     { gallery: contents.length, covered: directLinkIds.size },
   );
+  const directLinkErrors = [];
+  for (const content of contents) {
+    const base = `#content/${encodeURIComponent(content.contentId)}`;
+    const expected = new Map([
+      ["detail", base],
+      ...PROJECTIONS.map((projection) => [
+        `projection:${projection}`,
+        `${base}/projection/${projection}`,
+      ]),
+      ["lineage", `${base}/lineage`],
+      ["review", `${base}/review`],
+      ...(content.pacingEligible ? [["pacing", `${base}/pacing`]] : []),
+      ...(content.contentMode === "event_source_before_user_intent"
+        ? [["event", `${base}/event`]]
+        : []),
+    ]);
+    const actual = directLinks.links.filter(
+      (link) => link.contentId === content.contentId,
+    );
+    const actualModes = new Map(actual.map((link) => [link.mode, link.hash]));
+    const duplicateModes = actual
+      .map((link) => link.mode)
+      .filter((mode, index, modes) => modes.indexOf(mode) !== index);
+    const missing = [...expected.keys()].filter((mode) => !actualModes.has(mode));
+    const unexpected = [...actualModes.keys()].filter((mode) => !expected.has(mode));
+    const hashMismatches = [...expected].filter(
+      ([mode, hash]) => actualModes.has(mode) && actualModes.get(mode) !== hash,
+    );
+    if (duplicateModes.length || missing.length || unexpected.length || hashMismatches.length) {
+      directLinkErrors.push({
+        contentId: content.contentId,
+        duplicateModes: unique(duplicateModes),
+        missing,
+        unexpected,
+        hashMismatches,
+      });
+    }
+  }
+  check("ui.direct_link_modes_and_hashes_exact", directLinkErrors.length === 0, {
+    errors: directLinkErrors.slice(0, 50),
+    links: directLinks.links.length,
+  });
   check(
     "review.user_state_initially_empty",
     Object.keys(reviewContract.initialState.reviewsByContentId ?? {}).length ===
@@ -517,6 +780,174 @@ export function validateLab({ writeResult = false } = {}) {
     {
       anyDisagreement: independentReview.metrics.anyDisagreement,
       disagreementIds: independentReview.disagreementContentIds.length,
+    },
+  );
+
+  const semanticAuditQueue =
+    semanticAudit.manualReviewQueue.traceOnlySemantics;
+  const semanticAuditKeys = semanticAuditQueue.map(
+    (record) => `${record.contentId}|${record.itemId}|${record.field}`,
+  );
+  const semanticManualKeys = semanticManual.adjudications.map(
+    (record) => record.uniqueKey,
+  );
+  const semanticNeedsModify = semanticManual.adjudications.filter(
+    (record) => record.verdict === "needs_modify",
+  );
+  const semanticNeedsModifyContentIds = unique(
+    semanticNeedsModify.map((record) => record.uniqueKey.split("|")[0]),
+  );
+  const semanticVerdictCounts = Object.fromEntries(
+    Object.entries(
+      Object.groupBy(
+        semanticManual.adjudications,
+        (record) => record.verdict,
+      ),
+    ).map(([verdict, records]) => [verdict, records.length]),
+  );
+  const semanticReasonCounts = Object.fromEntries(
+    Object.entries(
+      Object.groupBy(
+        semanticNeedsModify,
+        (record) => record.reasonCode,
+      ),
+    ).map(([reasonCode, records]) => [reasonCode, records.length]),
+  );
+  const ownerOrProvenanceMissing =
+    semanticAudit.manualReviewQueue.ownerOrProvenanceMissing;
+  const completionProvenanceGaps = ownerOrProvenanceMissing.filter(
+    (record) => record.field === "completion",
+  );
+  const scheduleProvenanceGaps = ownerOrProvenanceMissing.filter(
+    (record) => record.field === "schedule",
+  );
+  check(
+    "semantic.manual_adjudication_inputs_frozen",
+    semanticManual.inputArtifacts[
+      "semantic-provenance-audit-v1.json"
+    ].fileSha256 === fileSha256("semantic-provenance-audit-v1.json") &&
+      semanticManual.inputArtifacts[
+        "content-ui-view-model-v1.json"
+      ].fileSha256 === fileSha256("content-ui-view-model-v1.json") &&
+      semanticManual.inputArtifacts.corpusFingerprint ===
+        view.corpusFingerprint,
+    semanticManual.inputArtifacts,
+  );
+  check(
+    "semantic.manual_adjudication_exact_queue_coverage",
+    semanticManual.adjudications.length === 141 &&
+      unique(semanticManualKeys).length === 141 &&
+      semanticAuditKeys.length === 141 &&
+      jsonEqual(
+        [...semanticManualKeys].sort(),
+        [...semanticAuditKeys].sort(),
+      ) &&
+      jsonEqual(
+        semanticManual.adjudications
+          .map((record) => record.queueIndex)
+          .sort((left, right) => left - right),
+        Array.from({ length: 141 }, (_, index) => index),
+      ),
+    {
+      auditQueue: semanticAuditKeys.length,
+      adjudications: semanticManualKeys.length,
+      uniqueKeys: unique(semanticManualKeys).length,
+    },
+  );
+  check(
+    "semantic.manual_adjudication_distribution",
+    semanticVerdictCounts.verified_equivalent === 37 &&
+      semanticVerdictCounts.bounded_normalization === 87 &&
+      semanticVerdictCounts.needs_modify === 17 &&
+      (semanticVerdictCounts.unknown ?? 0) === 0 &&
+      Object.values(semanticVerdictCounts).reduce(
+        (sum, count) => sum + count,
+        0,
+      ) === 141,
+    {
+      actual: semanticVerdictCounts,
+      declared: semanticManual.summary.traceOnlyVerdictCounts,
+    },
+  );
+  check(
+    "semantic.manual_needs_modify_is_explicit",
+    semanticNeedsModify.length === 17 &&
+      semanticNeedsModifyContentIds.length === 11 &&
+      semanticNeedsModifyContentIds.every((contentId) =>
+        normalIds.has(contentId),
+      ) &&
+      semanticManual.mismatches.length === 17 &&
+      jsonEqual(
+        semanticManual.mismatches
+          .map((record) => record.queueIndex)
+          .sort((left, right) => left - right),
+        semanticNeedsModify
+          .map((record) => record.queueIndex)
+          .sort((left, right) => left - right),
+      ) &&
+      Object.values(semanticReasonCounts).reduce(
+        (sum, count) => sum + count,
+        0,
+      ) === 17,
+    {
+      needsModify: semanticNeedsModify.length,
+      contentIds: semanticNeedsModifyContentIds,
+      reasonCounts: semanticReasonCounts,
+    },
+  );
+  check(
+    "semantic.owner_derivation_gaps_remain_open",
+    completionProvenanceGaps.length === 412 &&
+      scheduleProvenanceGaps.length === 124 &&
+      semanticManual.summary.ownerOrProvenanceGapCounts.total === 536 &&
+      semanticManual.combinedClaimBoundary.zeroInventionClaim ===
+        "NOT_PROVEN",
+    {
+      completion: completionProvenanceGaps.length,
+      schedule: scheduleProvenanceGaps.length,
+      zeroInventionClaim:
+        semanticManual.combinedClaimBoundary.zeroInventionClaim,
+    },
+  );
+  check(
+    "semantic.manual_self_validation_13_of_13",
+    semanticManual.selfValidation.status === "PASS" &&
+      semanticManual.selfValidation.passed === 13 &&
+      semanticManual.selfValidation.total === 13,
+    semanticManual.selfValidation,
+  );
+  const manualStatusByContent = new Map(
+    valueReadjudication.records.map((record) => [
+      record.contentId,
+      record.manualSemanticAdjudication,
+    ]),
+  );
+  const planningDecisionIds = new Set(
+    planningHandoff.decisions.map((decision) => decision.decisionId),
+  );
+  const gapIds = new Set(gapRegister.gaps.map((gap) => gap.gapId));
+  check(
+    "semantic.manual_results_linked_to_review_and_planning",
+    independentReview.manualSemanticAdjudication?.needsModify === 17 &&
+      independentReview.manualSemanticAdjudication
+        ?.needsModifyContentCount === 11 &&
+      semanticNeedsModifyContentIds.every(
+        (contentId) =>
+          manualStatusByContent.get(contentId)?.status === "NEEDS_MODIFY",
+      ) &&
+      planningHandoff.manualSemanticAdjudication?.needsModify === 17 &&
+      planningDecisionIds.has("PD-15-semantic-source-preservation") &&
+      planningDecisionIds.has(
+        "PD-16-completion-schedule-provenance",
+      ) &&
+      gapIds.has("GAP-08-manual-semantic-needs-modify") &&
+      gapIds.has("GAP-09-completion-provenance") &&
+      gapIds.has("GAP-10-schedule-owner-derivation"),
+    {
+      independentReview:
+        independentReview.manualSemanticAdjudication,
+      planningDecisionIds: [...planningDecisionIds],
+      gapIds: [...gapIds],
     },
   );
   check(
@@ -584,10 +1015,26 @@ export function validateLab({ writeResult = false } = {}) {
       pacingTargets: pacing.counts.content,
       eventTargets: events.counts.content,
     },
+    semanticProvenance: {
+      manualTraceQueueReviewed:
+        semanticManual.scope.traceOnlyQueueReviewed,
+      manualTraceContentsReviewed:
+        semanticManual.scope.traceOnlyContentReviewed,
+      verdictCounts:
+        semanticManual.summary.traceOnlyVerdictCounts,
+      needsModifyContentIds:
+        semanticNeedsModifyContentIds,
+      ownerOrProvenanceGapCounts:
+        semanticManual.summary.ownerOrProvenanceGapCounts,
+      manualSelfValidation:
+        semanticManual.selfValidation,
+    },
     claimBoundary: {
       observedUserValidation: observedUserValidationStatus,
       externalCalendarVtodoRoundTrip: externalRoundTripStatus,
       browserQa: "PENDING",
+      zeroInventionClaim:
+        semanticManual.combinedClaimBoundary.zeroInventionClaim,
     },
     checks,
   };

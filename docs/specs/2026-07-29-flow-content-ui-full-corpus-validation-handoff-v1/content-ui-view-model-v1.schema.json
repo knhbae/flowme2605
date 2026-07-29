@@ -26,8 +26,28 @@
       "pattern": "^sha256:[0-9a-f]{64}$"
     },
     "claimBoundary": {
-      "type": "string",
-      "minLength": 1
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "observedUserValidation",
+        "externalCalendarVtodoRoundTrip",
+        "internalAgentReviewIsUserReview",
+        "productionRuntimeChanged"
+      ],
+      "properties": {
+        "observedUserValidation": {
+          "const": "NOT_RUN"
+        },
+        "externalCalendarVtodoRoundTrip": {
+          "const": "NOT_RUN"
+        },
+        "internalAgentReviewIsUserReview": {
+          "const": false
+        },
+        "productionRuntimeChanged": {
+          "const": false
+        }
+      }
     },
     "counts": {
       "$ref": "#/$defs/counts"
@@ -123,6 +143,7 @@
         "taxonomy",
         "readiness",
         "minimumInputs",
+        "sourceProvidedFields",
         "primaryProjection",
         "secondaryProjections",
         "pacingEligible",
@@ -188,7 +209,13 @@
         "minimumInputs": {
           "type": "array",
           "items": {
-            "type": "object"
+            "$ref": "#/$defs/minimumInput"
+          }
+        },
+        "sourceProvidedFields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/sourceProvidedField"
           }
         },
         "primaryProjection": {
@@ -245,6 +272,101 @@
         }
       }
     },
+    "minimumInput": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "key",
+        "label",
+        "type",
+        "required",
+        "purposes",
+        "source"
+      ],
+      "properties": {
+        "key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "purposes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "source": {
+          "const": "user_overlay"
+        }
+      }
+    },
+    "sourceProvidedField": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fieldId",
+        "key",
+        "label",
+        "type",
+        "purposes",
+        "value",
+        "source",
+        "requiredForProjection",
+        "sourceRefIds"
+      ],
+      "properties": {
+        "fieldId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "purposes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "value": {},
+        "source": {
+          "const": "source"
+        },
+        "requiredForProjection": {
+          "type": "boolean"
+        },
+        "sourceRefIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
     "source": {
       "type": "object",
       "additionalProperties": true,
@@ -268,11 +390,11 @@
         },
         "url": {
           "type": "string",
-          "minLength": 1
+          "description": "May be empty only for historical_preview records; validator enforces non-empty URLs for active corpus tiers."
         },
         "canonicalUrl": {
           "type": "string",
-          "minLength": 1
+          "description": "May be empty only for historical_preview records; validator enforces non-empty URLs for active corpus tiers."
         },
         "sourceFormat": {
           "type": "string",
