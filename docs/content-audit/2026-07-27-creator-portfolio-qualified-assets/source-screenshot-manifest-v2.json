@@ -1,0 +1,129 @@
+{
+  "schemaVersion": "flowme-creator-portfolio-source-screenshot-manifest-v2",
+  "generatedAt": "2026-07-27T15:00:21.593Z",
+  "observedAt": "2026-07-27",
+  "evidenceBoundary": [
+    "캡처는 원문 제목·구조·목록을 확인하기 위한 일부 화면이며 원문 전체 복제본이 아니다.",
+    "캡처 성공은 공개 이용 허가나 사용자 검증을 뜻하지 않는다."
+  ],
+  "summary": {
+    "expected": 8,
+    "captured": 8,
+    "failed": 0
+  },
+  "captures": [
+    {
+      "creatorId": "home-ajd",
+      "bundleId": "bundle-moving-d30",
+      "evidenceRole": "representative_source_structure",
+      "observedAt": "2026-07-27",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "captureUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "finalUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "status": 200,
+      "pageTitle": "이사 준비 체크리스트 완벽정리! (엑셀 Xls, PDF, 노션 notion 첨부)",
+      "positionedBy": "text:이사 체크 리스트",
+      "filename": "creator-home-ajd-source.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-27-creator-portfolio-qualified-assets\\creator-home-ajd-source.png"
+    },
+    {
+      "creatorId": "family-babyfood016",
+      "bundleId": "bundle-baby-food-174",
+      "evidenceRole": "representative_source_structure",
+      "observedAt": "2026-07-27",
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "captureUrl": "https://blog.naver.com/PostView.naver?blogId=01695258757&logNo=222768860919",
+      "finalUrl": "https://blog.naver.com/PostView.naver?blogId=01695258757&logNo=222768860919",
+      "status": 200,
+      "pageTitle": "초기이유식 식단표 (5개월/6개월 시작시기별 식단표, 이유식재료 스케줄 완벽정리) : 네이버 블로그",
+      "positionedBy": "text:초기이유식 식단표",
+      "filename": "creator-family-babyfood016-source.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-27-creator-portfolio-qualified-assets\\creator-family-babyfood016-source.png"
+    },
+    {
+      "creatorId": "study-mansour",
+      "bundleId": "bundle-opic-plan",
+      "evidenceRole": "representative_source_structure",
+      "observedAt": "2026-07-27",
+      "sourceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "captureUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "finalUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+      "status": 200,
+      "pageTitle": "오픽 모의고사 공부 방법 7가지 공유, 계획표 다운로드",
+      "positionedBy": "text:오픽 모의고사 공부 방법",
+      "filename": "creator-study-mansour-source.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-27-creator-portfolio-qualified-assets\\creator-study-mansour-source.png"
+    },
+    {
+      "creatorId": "study-opentutorials",
+      "bundleId": "bundle-opentutorials-web1-progress",
+      "evidenceRole": "representative_source_structure",
+      "observedAt": "2026-07-27",
+      "sourceUrl": "https://opentutorials.org/course/3084",
+      "captureUrl": "https://opentutorials.org/course/3084",
+      "finalUrl": "https://opentutorials.org/course/3084",
+      "status": 200,
+      "pageTitle": "WEB1 - HTML & Internet - 생활코딩",
+      "positionedBy": "text:토픽 목록",
+      "filename": "creator-study-opentutorials-source.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-27-creator-portfolio-qualified-assets\\creator-study-opentutorials-source.png"
+    },
+    {
+      "creatorId": "money-getcha",
+      "bundleId": "bundle-new-car-comparison",
+      "evidenceRole": "representative_source_structure",
+      "observedAt": "2026-07-27",
+      "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "captureUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "finalUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "status": 200,
+      "pageTitle": "초보자를 위한 신차 구매 전체 절차 완벽 정리 | 처음부터 끝까지",
+      "positionedBy": "text:신차 구매",
+      "filename": "creator-money-getcha-source.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-27-creator-portfolio-qualified-assets\\creator-money-getcha-source.png"
+    },
+    {
+      "creatorId": "health-allblanc",
+      "bundleId": "bundle-allblanc-7day-abs",
+      "evidenceRole": "representative_source_structure",
+      "observedAt": "2026-07-27",
+      "sourceUrl": "https://youtube.com/@allblanctv",
+      "captureUrl": "https://youtube.com/@allblanctv",
+      "finalUrl": "https://www.youtube.com/@allblanctv",
+      "status": 200,
+      "pageTitle": "Allblanc TV - YouTube",
+      "positionedBy": "youtube_top",
+      "filename": "creator-health-allblanc-source.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-27-creator-portfolio-qualified-assets\\creator-health-allblanc-source.png"
+    },
+    {
+      "creatorId": "meals-wtable",
+      "bundleId": "bundle-wtable-summer-banchan-five",
+      "evidenceRole": "representative_source_structure",
+      "observedAt": "2026-07-27",
+      "sourceUrl": "https://wtable.co.kr/curations/562",
+      "captureUrl": "https://wtable.co.kr/curations/562",
+      "finalUrl": "https://wtable.co.kr/curations/562",
+      "status": 200,
+      "pageTitle": "이번주 일주일 반찬 이렇게 종결(여름 반찬ver.) - 우리의식탁 | 큐레이션",
+      "positionedBy": "text:여름 반찬",
+      "filename": "creator-meals-wtable-source.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-27-creator-portfolio-qualified-assets\\creator-meals-wtable-source.png"
+    },
+    {
+      "creatorId": "work-andstudio",
+      "bundleId": "bundle-andstudio-job-prep-videos",
+      "evidenceRole": "representative_source_structure",
+      "observedAt": "2026-07-27",
+      "sourceUrl": "https://www.youtube.com/watch?v=OIliv2jpDyM",
+      "captureUrl": "https://www.youtube.com/watch?v=OIliv2jpDyM",
+      "finalUrl": "https://www.youtube.com/watch?v=OIliv2jpDyM",
+      "status": 200,
+      "pageTitle": "자소서 지원동기 6단계만 따라 쓰면 합격합니다 [마스터 자소서 I EP 04. 지원동기] - YouTube",
+      "positionedBy": "youtube_top",
+      "filename": "creator-work-andstudio-source.png",
+      "absolutePath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-27-creator-portfolio-qualified-assets\\creator-work-andstudio-source.png"
+    }
+  ],
+  "failures": []
+}

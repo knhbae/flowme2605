@@ -1,0 +1,2163 @@
+{
+  "schemaVersion": "flowme-content-personal-adoption-evidence-v1",
+  "generatedAt": "2026-07-27T15:09:43.025Z",
+  "checkedAt": "2026-07-27",
+  "status": "strategy_research_public_self_report_proxy",
+  "headline": {
+    "checkedSources": 44,
+    "fixedReactions": 560,
+    "platforms": 7,
+    "categories": 7,
+    "e2ToE5Evidence": 67,
+    "e3ToE5Evidence": 56,
+    "fixedE2ToE5": 34,
+    "fixedE3ToE5": 30,
+    "rereadCount": 84,
+    "agreementRate": 97.6
+  },
+  "evidenceLadder": [
+    {
+      "level": "E0",
+      "label": "일반 반응",
+      "short": "좋다·고맙다",
+      "interpretation": "관심 신호일 뿐 실행 증거가 아니다."
+    },
+    {
+      "level": "E1",
+      "label": "실행 의향",
+      "short": "해볼 생각",
+      "interpretation": "계획은 있으나 실행은 확인되지 않았다."
+    },
+    {
+      "level": "E2",
+      "label": "결과물 수요",
+      "short": "표·파일·목록 요청",
+      "interpretation": "콘텐츠를 옮겨 쓸 형식이 필요하다는 구체적 신호다."
+    },
+    {
+      "level": "E3",
+      "label": "실행 중",
+      "short": "며칠째 진행",
+      "interpretation": "기간·진도·수정 내용이 있는 공개 자기보고다."
+    },
+    {
+      "level": "E4",
+      "label": "완료·결과",
+      "short": "직접 완료",
+      "interpretation": "완료, 결과 또는 실패가 구체적으로 언급됐다."
+    },
+    {
+      "level": "E5",
+      "label": "반복·재사용",
+      "short": "다시 사용",
+      "interpretation": "동일 콘텐츠를 반복하거나 변형·공유했다."
+    }
+  ],
+  "evidenceUnits": [
+    {
+      "evidenceId": "YT-EXE-01-R08",
+      "sourceId": "YT-EXE-01",
+      "platform": "YouTube",
+      "category": "운동·습관·챌린지",
+      "sourceTitle": "Do This Everyday To Lose Weight | 2 Weeks Shred Challenge",
+      "sourceUrl": "https://www.youtube.com/watch?v=2MoGxae-zyo",
+      "evidenceUrl": "https://www.youtube.com/watch?v=2MoGxae-zyo&lc=UgwMQpOxAHB7areJzC14AaABAg",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E3",
+      "evidenceSignal": "실행 중",
+      "excerptKo": "Doing this in the heat of July is a level of masochism I didn't know I am capable of achieving",
+      "userAddedInputs": [],
+      "arrivalShape": [
+        "루틴"
+      ],
+      "evidenceMode": "비교용 고정 표본의 공개 상위 댓글",
+      "confidence": "medium",
+      "interpretationKo": "기간·진도·수정 내용이 있는 공개 자기보고다.",
+      "limitationKo": "공개 자기보고이며 실제 행동을 직접 관찰하지 않았다. 댓글 작성자와 전체 시청자의 차이도 알 수 없다."
+    },
+    {
+      "evidenceId": "YT-EXE-01-R20",
+      "sourceId": "YT-EXE-01",
+      "platform": "YouTube",
+      "category": "운동·습관·챌린지",
+      "sourceTitle": "Do This Everyday To Lose Weight | 2 Weeks Shred Challenge",
+      "sourceUrl": "https://www.youtube.com/watch?v=2MoGxae-zyo",
+      "evidenceUrl": "https://www.youtube.com/watch?v=2MoGxae-zyo&lc=UgxJ3mOwGpu6pzSHLz54AaABAg",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E5",
+      "evidenceSignal": "반복·재사용",
+      "excerptKo": "Hey it's 16 April 2026. Starting today, weight: 59kg waist: 29.3 inches, tummy:36 inches, bum:38 inches, thighs: 20.4 inches, arms: 10.4 inches height: 5'2 or 158 age: 15.8 Day 1✅ Day 2✅ Day 3✅ Day 4✅ Day 5✅ Day 6✅ Day 7",
+      "userAddedInputs": [
+        "날짜·진도",
+        "개인 측정값"
+      ],
+      "arrivalShape": [
+        "루틴"
+      ],
+      "evidenceMode": "비교용 고정 표본의 공개 상위 댓글",
+      "confidence": "medium",
+      "interpretationKo": "동일 콘텐츠를 반복하거나 변형·공유했다.",
+      "limitationKo": "공개 자기보고이며 실제 행동을 직접 관찰하지 않았다. 댓글 작성자와 전체 시청자의 차이도 알 수 없다."
+    },
+    {
+      "evidenceId": "YT-EXE-02-R04",
+      "sourceId": "YT-EXE-02",
+      "platform": "YouTube",
+      "category": "운동·습관·챌린지",
+      "sourceTitle": "30 minute fat burning home workout for beginners. Achievable, low impact results.",
+      "sourceUrl": "https://www.youtube.com/watch?v=gC_L9qAHVJ8",
+      "evidenceUrl": "https://www.youtube.com/watch?v=gC_L9qAHVJ8&lc=Ugx2Foq6f-TWqsihrBV4AaABAg",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E3",
+      "evidenceSignal": "실행 중",
+      "excerptKo": "I started today date is 20/05/26 Wight is 101 kg . Wish me luck 🤞",
+      "userAddedInputs": [
+        "날짜·진도",
+        "개인 측정값"
+      ],
+      "arrivalShape": [
+        "캘린더"
+      ],
+      "evidenceMode": "비교용 고정 표본의 공개 상위 댓글",
+      "confidence": "medium",
+      "interpretationKo": "기간·진도·수정 내용이 있는 공개 자기보고다.",
+      "limitationKo": "공개 자기보고이며 실제 행동을 직접 관찰하지 않았다. 댓글 작성자와 전체 시청자의 차이도 알 수 없다."
+    },
+    {
+      "evidenceId": "YT-EXE-02-R08",
+      "sourceId": "YT-EXE-02",
+      "platform": "YouTube",
+      "category": "운동·습관·챌린지",
+      "sourceTitle": "30 minute fat burning home workout for beginners. Achievable, low impact results.",
+      "sourceUrl": "https://www.youtube.com/watch?v=gC_L9qAHVJ8",
+      "evidenceUrl": "https://www.youtube.com/watch?v=gC_L9qAHVJ8&lc=UgzwY4WI0An-PjCogzh4AaABAg",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E5",
+      "evidenceSignal": "반복·재사용",
+      "excerptKo": "Yesterday I tried this but only made it until 8 minutes. Today I did it again and made it to 15. I know it's not much, but I'm kinda proud of myself for doing it again and improving a bit. After all it's about progress, ",
+      "userAddedInputs": [
+        "날짜·진도"
+      ],
+      "arrivalShape": [
+        "프로젝트"
+      ],
+      "evidenceMode": "비교용 고정 표본의 공개 상위 댓글",
+      "confidence": "medium",
+      "interpretationKo": "동일 콘텐츠를 반복하거나 변형·공유했다.",
+      "limitationKo": "공개 자기보고이며 실제 행동을 직접 관찰하지 않았다. 댓글 작성자와 전체 시청자의 차이도 알 수 없다."
+    },
+    {
+      "evidenceId": "YT-EXE-02-R13",
+      "sourceId": "YT-EXE-02",
+      "platform": "YouTube",
+      "category": "운동·습관·챌린지",
+      "sourceTitle": "30 minute fat burning home workout for beginners. Achievable, low impact results.",
+      "sourceUrl": "https://www.youtube.com/watch?v=gC_L9qAHVJ8",
+      "evidenceUrl": "https://www.youtube.com/watch?v=gC_L9qAHVJ8&lc=UgyCDu8BoFT6lmpIZht4AaABAg",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E4",
+      "evidenceSignal": "완료·결과",
+      "excerptKo": "I was diagnosed with PCOS. I tried working out in my bedroom but my dad saw me. It was awkward so I stop. The next day as I entered our house the whole family are waiting for me so we can start our workout all together. ",
+      "userAddedInputs": [
+        "가족 구성"
+      ],
+      "arrivalShape": [
+        "협업"
+      ],
+      "evidenceMode": "비교용 고정 표본의 공개 상위 댓글",
+      "confidence": "medium",
+      "interpretationKo": "완료, 결과 또는 실패가 구체적으로 언급됐다.",
+      "limitationKo": "공개 자기보고이며 실제 행동을 직접 관찰하지 않았다. 댓글 작성자와 전체 시청자의 차이도 알 수 없다."
+    },
+    {
+      "evidenceId": "YT-EXE-03-R04",
+      "sourceId": "YT-EXE-03",
+      "platform": "YouTube",
+      "category": "운동·습관·챌린지",
+      "sourceTitle": "ENG)매일하는 30일 플랭크 챌린지 (feat.기초근력, 코어힘 기르기)",
+      "sourceUrl": "https://www.youtube.com/watch?v=v54Jtmi2BwU",
+      "evidenceUrl": "https://www.youtube.com/watch?v=v54Jtmi2BwU&lc=UgyXThN8g7wgYjxim2d4AaABAg",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E4",
+      "evidenceSignal": "완료·결과",
+      "excerptKo": "2026년 3월 7일 아침 1회 저녁 1회 성공 50대 여자입니다 😅",
+      "userAddedInputs": [],
+      "arrivalShape": [
+        "루틴"
+      ],
+      "evidenceMode": "비교용 고정 표본의 공개 상위 댓글",
+      "confidence": "medium",
+      "interpretationKo": "완료, 결과 또는 실패가 구체적으로 언급됐다.",
+      "limitationKo": "공개 자기보고이며 실제 행동을 직접 관찰하지 않았다. 댓글 작성자와 전체 시청자의 차이도 알 수 없다."
+    },
+    {
+      "evidenceId": "YT-EXE-03-R07",
+      "sourceId": "YT-EXE-03",
+      "platform": "YouTube",
+      "category": "운동·습관·챌린지",
+      "sourceTitle": "ENG)매일하는 30일 플랭크 챌린지 (feat.기초근력, 코어힘 기르기)",
+      "sourceUrl": "https://www.youtube.com/watch?v=v54Jtmi2BwU",
+      "evidenceUrl": "https://www.youtube.com/watch?v=v54Jtmi2BwU&lc=UgxTSQfebes_ioajgKx4AaABAg",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E5",
+      "evidenceSignal": "반복·재사용",
+      "excerptKo": "7/29 1일차 성공 죽을 거 같음 7/30 2일차 성공 뒤질 거 같음 7/31 3일차 성공 아침에 해서 그런지 좀 덜 힘듬 8/1 4일차 성공 으뜸언니 너무 이쁨 점점 덜 힘들어짐 처음 할 때는 땀이 폭포처럼 나옴 으뜸언니가 자세 설명 계속 해주니까 정확한 자세로 오래 버틸 수 있음 언니 사랑해 8/2 5일차 성공 원래 팔 힘으로 버티는 플랭크를 했었는데 언니 설명 들으니까 진짜 코어로 버",
+      "userAddedInputs": [
+        "날짜·진도"
+      ],
+      "arrivalShape": [
+        "루틴"
+      ],
+      "evidenceMode": "비교용 고정 표본의 공개 상위 댓글",
+      "confidence": "medium",
+      "interpretationKo": "동일 콘텐츠를 반복하거나 변형·공유했다.",
+      "limitationKo": "공개 자기보고이며 실제 행동을 직접 관찰하지 않았다. 댓글 작성자와 전체 시청자의 차이도 알 수 없다."
+    },
+    {
+      "evidenceId": "YT-EXE-03-R13",
+      "sourceId": "YT-EXE-03",
+      "platform": "YouTube",
+      "category": "운동·습관·챌린지",
+      "sourceTitle": "ENG)매일하는 30일 플랭크 챌린지 (feat.기초근력, 코어힘 기르기)",
+      "sourceUrl": "https://www.youtube.com/watch?v=v54Jtmi2BwU",
+      "evidenceUrl": "https://www.youtube.com/watch?v=v54Jtmi2BwU&lc=UgzQn-MBiu7d6ndUuaR4AaABAg",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E5",
+      "evidenceSignal": "반복·재사용",
+      "excerptKo": "11/22 처음시작 어렵게 성공 11/23 요가매트없어서 이불깔고 힘겹게 성공 11/24 궁디가 높다는 남편의 지적에 짜증내며 성공 11/25 일주일은 한줄 알았는데 아직 4일차 성공 11/26 오늘은 뭐가 잘못됐는지 무릎과 팔꿈치가 아픔 그치만 성공 11/27 어제까진 갈비뼈근육이 아팠는데 오늘부터 근육통은 없어짐 힘듦 성공 11/28 늘 시간이 안감.마치고보니 자세가 무너져서 무릎이 아픔",
+      "userAddedInputs": [
+        "날짜·진도",
+        "보유 준비물"
+      ],
+      "arrivalShape": [
+        "루틴"
+      ],
+      "evidenceMode": "비교용 고정 표본의 공개 상위 댓글",
+      "confidence": "medium",
+      "interpretationKo": "동일 콘텐츠를 반복하거나 변형·공유했다.",
+      "limitationKo": "공개 자기보고이며 실제 행동을 직접 관찰하지 않았다. 댓글 작성자와 전체 시청자의 차이도 알 수 없다."
+    },
+    {
+      "evidenceId": "YT-EXE-03-R19",
+      "sourceId": "YT-EXE-03",
+      "platform": "YouTube",
+      "category": "운동·습관·챌린지",
+      "sourceTitle": "ENG)매일하는 30일 플랭크 챌린지 (feat.기초근력, 코어힘 기르기)",
+      "sourceUrl": "https://www.youtube.com/watch?v=v54Jtmi2BwU",
+      "evidenceUrl": "https://www.youtube.com/watch?v=v54Jtmi2BwU&lc=UgzcyW0sIdnq9WpdS994AaABAg",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E5",
+      "evidenceSignal": "반복·재사용",
+      "excerptKo": "12/3 2일차. 어제보다 더 힘들었다. 양말 신으니 미끄러워서 잘 안 되었다ㅠㅠ 아침에 한번 하고 저녁에 재도전했다. 중간에 못 한 부분도 있지만 다시 도전하면서 마지막까지 해냈다. 대단해!! 12/4 배 근육이 아파서 쉬려고 했는데 좋아요 알림받고 힘내서 했다. 눌러주신분들 감사합니다! 배가 아파서 못할거라고 생각했는데 어제보다도 더 많이 할 수 있었다. 힘들어도 완벽하지 않아도 오늘처럼",
+      "userAddedInputs": [
+        "날짜·진도"
+      ],
+      "arrivalShape": [
+        "루틴"
+      ],
+      "evidenceMode": "비교용 고정 표본의 공개 상위 댓글",
+      "confidence": "medium",
+      "interpretationKo": "동일 콘텐츠를 반복하거나 변형·공유했다.",
+      "limitationKo": "공개 자기보고이며 실제 행동을 직접 관찰하지 않았다. 댓글 작성자와 전체 시청자의 차이도 알 수 없다."
+    },
+    {
+      "evidenceId": "YT-EXE-03-R20",
+      "sourceId": "YT-EXE-03",
+      "platform": "YouTube",
+      "category": "운동·습관·챌린지",
+      "sourceTitle": "ENG)매일하는 30일 플랭크 챌린지 (feat.기초근력, 코어힘 기르기)",
+      "sourceUrl": "https://www.youtube.com/watch?v=v54Jtmi2BwU",
+      "evidenceUrl": "https://www.youtube.com/watch?v=v54Jtmi2BwU&lc=UgyEMMHDHItDi4OMvoJ4AaABAg",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E5",
+      "evidenceSignal": "반복·재사용",
+      "excerptKo": "매일 싸웁니다. 근만할까... 잠깐 쉴까... 오늘은 반만하고 말까... 그러다.. 5분도 안되는 시간을 못견디는 제 자신이 싫어질까봐 질끈 눈 감고 이를 꽉물고 합니다. 매일 이 감정과 혼란을 느끼지만 조금씩 사라지는 배를 보면서 다시 용기를 내어 으뜸님의 클립을 틉니다. 😉",
+      "userAddedInputs": [
+        "날짜·진도"
+      ],
+      "arrivalShape": [
+        "루틴"
+      ],
+      "evidenceMode": "비교용 고정 표본의 공개 상위 댓글",
+      "confidence": "medium",
+      "interpretationKo": "동일 콘텐츠를 반복하거나 변형·공유했다.",
+      "limitationKo": "공개 자기보고이며 실제 행동을 직접 관찰하지 않았다. 댓글 작성자와 전체 시청자의 차이도 알 수 없다."
+    },
+    {
+      "evidenceId": "YT-EXE-04-R01",
+      "sourceId": "YT-EXE-04",
+      "platform": "YouTube",
+      "category": "운동·습관·챌린지",
+      "sourceTitle": "하루 딱6분! 다리라인 살리는 운동 [허벅지&엉덩이]",
+      "sourceUrl": "https://www.youtube.com/watch?v=9WhpAVOSyl8",
+      "evidenceUrl": "https://www.youtube.com/watch?v=9WhpAVOSyl8&lc=Ugxds3HDCHvmNWwIYAl4AaABAg",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E5",
+      "evidenceSignal": "반복·재사용",
+      "excerptKo": "지난 7개월 동안 땅끄 부부님 동영상으로 63kg에서 49kg 살빼고 현재도 계속 유지 중입니다. 칼소폭-> 핵핵 매운맛 칼소폭-> 스쿼트 100개 챌린지->종아리 날씬해 지는 스트레칭 이 루틴을 계속하니 허벅지에 점점 탄력이 생기고 다리가 몰라보게 늘씬해 졌습니다. ㅎㅎ 옷이 맞는게 하나도 없다는거!! 벨트며 속옷이며 레깅스며 다 너무 커서 줄줄 흘러 내립니다 스쿼트 100개 챌린지 정말 ",
+      "userAddedInputs": [
+        "개인 측정값"
+      ],
+      "arrivalShape": [
+        "루틴"
+      ],
+      "evidenceMode": "비교용 고정 표본의 공개 상위 댓글",
+      "confidence": "medium",
+      "interpretationKo": "동일 콘텐츠를 반복하거나 변형·공유했다.",
+      "limitationKo": "공개 자기보고이며 실제 행동을 직접 관찰하지 않았다. 댓글 작성자와 전체 시청자의 차이도 알 수 없다."
+    },
+    {
+      "evidenceId": "YT-EXE-04-R04",
+      "sourceId": "YT-EXE-04",
+      "platform": "YouTube",
+      "category": "운동·습관·챌린지",
+      "sourceTitle": "하루 딱6분! 다리라인 살리는 운동 [허벅지&엉덩이]",
+      "sourceUrl": "https://www.youtube.com/watch?v=9WhpAVOSyl8",
+      "evidenceUrl": "https://www.youtube.com/watch?v=9WhpAVOSyl8&lc=UgyMYWuQkxgwvTEsWSp4AaABAg",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E3",
+      "evidenceSignal": "실행 중",
+      "excerptKo": "4일차인데 스쿼트가 익숙하지 않다,,,마지막 점프잭...? 내 인생이 하늘로 점프하는줄",
+      "userAddedInputs": [
+        "날짜·진도"
+      ],
+      "arrivalShape": [
+        "루틴"
+      ],
+      "evidenceMode": "비교용 고정 표본의 공개 상위 댓글",
+      "confidence": "medium",
+      "interpretationKo": "기간·진도·수정 내용이 있는 공개 자기보고다.",
+      "limitationKo": "공개 자기보고이며 실제 행동을 직접 관찰하지 않았다. 댓글 작성자와 전체 시청자의 차이도 알 수 없다."
+    },
+    {
+      "evidenceId": "YT-EXE-04-R10",
+      "sourceId": "YT-EXE-04",
+      "platform": "YouTube",
+      "category": "운동·습관·챌린지",
+      "sourceTitle": "하루 딱6분! 다리라인 살리는 운동 [허벅지&엉덩이]",
+      "sourceUrl": "https://www.youtube.com/watch?v=9WhpAVOSyl8",
+      "evidenceUrl": "https://www.youtube.com/watch?v=9WhpAVOSyl8&lc=Ugy91xEp8JgQOhP_2sd4AaABAg",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E5",
+      "evidenceSignal": "반복·재사용",
+      "excerptKo": "안녕하세요~ 오늘로 영상을 따라한지 7개월이 된 사람입니다! 여자친구에게 따끔하게 한소리 들어 시작했는데 어느 순간 여기까지 왔네요 매일 매일 스쿼트 챌린지 ,플랭크 챌린지 .유산소,전신 근력 운동을 아침 저녘 꾸준히 해왔습니다 학교 건강건진 겸 병원을 가서 검사를 해보았더니 106kg에서 67kg 약 40kg 에 감량했어요 ㅠㅠㅠㅠㅠㅠㅠ 진짜 오늘 너무 기뻐가지고 30분동안 안절부절 못해가",
+      "userAddedInputs": [
+        "날짜·진도",
+        "개인 측정값"
+      ],
+      "arrivalShape": [
+        "루틴"
+      ],
+      "evidenceMode": "비교용 고정 표본의 공개 상위 댓글",
+      "confidence": "medium",
+      "interpretationKo": "동일 콘텐츠를 반복하거나 변형·공유했다.",
+      "limitationKo": "공개 자기보고이며 실제 행동을 직접 관찰하지 않았다. 댓글 작성자와 전체 시청자의 차이도 알 수 없다."
+    },
+    {
+      "evidenceId": "YT-EXE-04-R13",
+      "sourceId": "YT-EXE-04",
+      "platform": "YouTube",
+      "category": "운동·습관·챌린지",
+      "sourceTitle": "하루 딱6분! 다리라인 살리는 운동 [허벅지&엉덩이]",
+      "sourceUrl": "https://www.youtube.com/watch?v=9WhpAVOSyl8",
+      "evidenceUrl": "https://www.youtube.com/watch?v=9WhpAVOSyl8&lc=UgzxQw6PMJA5irrsMOd4AaABAg",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E5",
+      "evidenceSignal": "반복·재사용",
+      "excerptKo": "열흘정도 찐핵핵+2주복근 했고 어제부터 스쿼트 30일챌린지 추가해서 열심히 홈트중입니다!(현재 뱃살best5+허리둘레-5cm+스쿼트30일+칼소폭찐핵핵+전신스트레칭 루틴) 6/23 💯 6/24 💯 6/25 💯 (수정하면 좋아요 눌러주신 표시 없어져서 아까워ㅠㅠㅠ) 6/26 💯 (컨디션이 좋지 않아서 좀 천천히 완료!!) 6/27 💯 6/28 💯 (뱃살best5+찐핵핵+스쿼트30일로 ",
+      "userAddedInputs": [
+        "날짜·진도",
+        "개인 측정값"
+      ],
+      "arrivalShape": [
+        "루틴"
+      ],
+      "evidenceMode": "비교용 고정 표본의 공개 상위 댓글",
+      "confidence": "medium",
+      "interpretationKo": "동일 콘텐츠를 반복하거나 변형·공유했다.",
+      "limitationKo": "공개 자기보고이며 실제 행동을 직접 관찰하지 않았다. 댓글 작성자와 전체 시청자의 차이도 알 수 없다."
+    },
+    {
+      "evidenceId": "YT-HOB-01-R18",
+      "sourceId": "YT-HOB-01",
+      "platform": "YouTube",
+      "category": "취미·만들기·프로젝트",
+      "sourceTitle": "Origami Ice Cream Cone Tutorial (Swirl) - Easy for Beginners!",
+      "sourceUrl": "https://www.youtube.com/watch?v=ybmxJVe2QpA",
+      "evidenceUrl": "https://www.youtube.com/watch?v=ybmxJVe2QpA&lc=UgxRrRBlyLJBz43Rn1Z4AaABAg",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E4",
+      "evidenceSignal": "완료·결과",
+      "excerptKo": "OMG! Soooooo Kawaii! When I saw this video, I instantly clicked on it, to everybody who's reading this, if you haven't made this cute ice cream yet, you definitely should! Very happy with the result :washhands::washhands",
+      "userAddedInputs": [],
+      "arrivalShape": [
+        "프로젝트"
+      ],
+      "evidenceMode": "비교용 고정 표본의 공개 상위 댓글",
+      "confidence": "medium",
+      "interpretationKo": "완료, 결과 또는 실패가 구체적으로 언급됐다.",
+      "limitationKo": "공개 자기보고이며 실제 행동을 직접 관찰하지 않았다. 댓글 작성자와 전체 시청자의 차이도 알 수 없다."
+    },
+    {
+      "evidenceId": "YT-HOB-02-R08",
+      "sourceId": "YT-HOB-02",
+      "platform": "YouTube",
+      "category": "취미·만들기·프로젝트",
+      "sourceTitle": "진짜 쓸 수 있는! 미니 각티슈만들기🧻｜DIY Mini Paper Tissue Box",
+      "sourceUrl": "https://www.youtube.com/watch?v=0hCPJ7NRKVQ",
+      "evidenceUrl": "https://www.youtube.com/watch?v=0hCPJ7NRKVQ&lc=UgzNZjqrPxLgFHVLtO54AaABAg",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E5",
+      "evidenceSignal": "반복·재사용",
+      "excerptKo": "따니님!전 심심할때마다 따니님 영상보면서 만들기하고있어요! 오늘도 너무재밌어요! 미니각틱슈 갔고다니면 너무 좋을것 같아요!매일 토요일날 영상 올려주셔서 감사합니다! 주말잘보내시고 언제나 화이팅! 사랑해요!~♡",
+      "userAddedInputs": [
+        "날짜·진도"
+      ],
+      "arrivalShape": [
+        "루틴",
+        "프로젝트"
+      ],
+      "evidenceMode": "비교용 고정 표본의 공개 상위 댓글",
+      "confidence": "medium",
+      "interpretationKo": "동일 콘텐츠를 반복하거나 변형·공유했다.",
+      "limitationKo": "공개 자기보고이며 실제 행동을 직접 관찰하지 않았다. 댓글 작성자와 전체 시청자의 차이도 알 수 없다."
+    },
+    {
+      "evidenceId": "YT-HOB-02-R12",
+      "sourceId": "YT-HOB-02",
+      "platform": "YouTube",
+      "category": "취미·만들기·프로젝트",
+      "sourceTitle": "진짜 쓸 수 있는! 미니 각티슈만들기🧻｜DIY Mini Paper Tissue Box",
+      "sourceUrl": "https://www.youtube.com/watch?v=0hCPJ7NRKVQ",
+      "evidenceUrl": "https://www.youtube.com/watch?v=0hCPJ7NRKVQ&lc=UgyWExft1yrBpJlFe5N4AaABAg",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E4",
+      "evidenceSignal": "완료·결과",
+      "excerptKo": "벌써 다 만들었어용~!! 따니언니 이쁘고 귀엽고 아기자기한 만들기 넘 감사해용!!😄💗 만드니깐 더 귀엽네용!!😄💗💕",
+      "userAddedInputs": [],
+      "arrivalShape": [
+        "프로젝트"
+      ],
+      "evidenceMode": "비교용 고정 표본의 공개 상위 댓글",
+      "confidence": "medium",
+      "interpretationKo": "완료, 결과 또는 실패가 구체적으로 언급됐다.",
+      "limitationKo": "공개 자기보고이며 실제 행동을 직접 관찰하지 않았다. 댓글 작성자와 전체 시청자의 차이도 알 수 없다."
+    },
+    {
+      "evidenceId": "YT-HOB-03-R17",
+      "sourceId": "YT-HOB-03",
+      "platform": "YouTube",
+      "category": "취미·만들기·프로젝트",
+      "sourceTitle": "초간단! 무지개 물 말랑이 만들기｜(Easy) DIY Rainbow water squishy",
+      "sourceUrl": "https://www.youtube.com/watch?v=EeaivTak3E4",
+      "evidenceUrl": "https://www.youtube.com/watch?v=EeaivTak3E4&lc=UgxxZ9RFGgeGvvk8bLB4AaABAg",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E4",
+      "evidenceSignal": "완료·결과",
+      "excerptKo": "저는 그안에 반짝이가루도넣어 봤어요",
+      "userAddedInputs": [],
+      "arrivalShape": [
+        "프로젝트"
+      ],
+      "evidenceMode": "비교용 고정 표본의 공개 상위 댓글",
+      "confidence": "medium",
+      "interpretationKo": "완료, 결과 또는 실패가 구체적으로 언급됐다.",
+      "limitationKo": "공개 자기보고이며 실제 행동을 직접 관찰하지 않았다. 댓글 작성자와 전체 시청자의 차이도 알 수 없다."
+    },
+    {
+      "evidenceId": "YT-HOB-03-R20",
+      "sourceId": "YT-HOB-03",
+      "platform": "YouTube",
+      "category": "취미·만들기·프로젝트",
+      "sourceTitle": "초간단! 무지개 물 말랑이 만들기｜(Easy) DIY Rainbow water squishy",
+      "sourceUrl": "https://www.youtube.com/watch?v=EeaivTak3E4",
+      "evidenceUrl": "https://www.youtube.com/watch?v=EeaivTak3E4&lc=UgxyYXHXAqqpZBk8uu14AaABAg",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E4",
+      "evidenceSignal": "완료·결과",
+      "excerptKo": "저도 따라 해봤는데 너무 예쁘네요",
+      "userAddedInputs": [],
+      "arrivalShape": [
+        "프로젝트"
+      ],
+      "evidenceMode": "비교용 고정 표본의 공개 상위 댓글",
+      "confidence": "medium",
+      "interpretationKo": "완료, 결과 또는 실패가 구체적으로 언급됐다.",
+      "limitationKo": "공개 자기보고이며 실제 행동을 직접 관찰하지 않았다. 댓글 작성자와 전체 시청자의 차이도 알 수 없다."
+    },
+    {
+      "evidenceId": "YT-HOM-01-R12",
+      "sourceId": "YT-HOM-01",
+      "platform": "YouTube",
+      "category": "집·정리·생활관리",
+      "sourceTitle": "Let's Declutter Shoes & Coats - Day 1 - 30 Day Declutter Challenge",
+      "sourceUrl": "https://www.youtube.com/watch?v=nHAbsGNcLFA",
+      "evidenceUrl": "https://www.youtube.com/watch?v=nHAbsGNcLFA&lc=Ugy7ZXhxSo6pMjfB12V4AaABAg",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E3",
+      "evidenceSignal": "실행 중",
+      "excerptKo": "I am so overwhelmed and 5 minutes a day isn’t going to make much of a dent at all. BUT I’m doing it anyway and you can actually see a difference after only 5 minutes! I am excited for tomorrow’s little shot of dopamine! ",
+      "userAddedInputs": [],
+      "arrivalShape": [
+        "체크리스트"
+      ],
+      "evidenceMode": "비교용 고정 표본의 공개 상위 댓글",
+      "confidence": "medium",
+      "interpretationKo": "기간·진도·수정 내용이 있는 공개 자기보고다.",
+      "limitationKo": "공개 자기보고이며 실제 행동을 직접 관찰하지 않았다. 댓글 작성자와 전체 시청자의 차이도 알 수 없다."
+    },
+    {
+      "evidenceId": "YT-HOM-02-R06",
+      "sourceId": "YT-HOM-02",
+      "platform": "YouTube",
+      "category": "집·정리·생활관리",
+      "sourceTitle": "Declutter Cleaning Supplies - Day 5 - 30 Day Declutter Challenge",
+      "sourceUrl": "https://www.youtube.com/watch?v=74fLf2RcYiM",
+      "evidenceUrl": "https://www.youtube.com/watch?v=74fLf2RcYiM&lc=UgwZQumgtuzG_x-gToh4AaABAg",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E3",
+      "evidenceSignal": "실행 중",
+      "excerptKo": "I love this challenge because it shows how to break down overwhelming, large tasks into small, bite-sized, easily manageable pieces. Thanks Cas! Today, day 5, is done! See everyone tomorrow!",
+      "userAddedInputs": [
+        "날짜·진도"
+      ],
+      "arrivalShape": [
+        "루틴"
+      ],
+      "evidenceMode": "비교용 고정 표본의 공개 상위 댓글",
+      "confidence": "medium",
+      "interpretationKo": "기간·진도·수정 내용이 있는 공개 자기보고다.",
+      "limitationKo": "공개 자기보고이며 실제 행동을 직접 관찰하지 않았다. 댓글 작성자와 전체 시청자의 차이도 알 수 없다."
+    },
+    {
+      "evidenceId": "YT-HOM-02-R07",
+      "sourceId": "YT-HOM-02",
+      "platform": "YouTube",
+      "category": "집·정리·생활관리",
+      "sourceTitle": "Declutter Cleaning Supplies - Day 5 - 30 Day Declutter Challenge",
+      "sourceUrl": "https://www.youtube.com/watch?v=74fLf2RcYiM",
+      "evidenceUrl": "https://www.youtube.com/watch?v=74fLf2RcYiM&lc=UgxljekGZ8QYZme2HVV4AaABAg",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E5",
+      "evidenceSignal": "반복·재사용",
+      "excerptKo": "12 things gone today. It’s nice doing these simple tasks daily and it’s like a game.",
+      "userAddedInputs": [
+        "날짜·진도"
+      ],
+      "arrivalShape": [
+        "체크리스트"
+      ],
+      "evidenceMode": "비교용 고정 표본의 공개 상위 댓글",
+      "confidence": "medium",
+      "interpretationKo": "동일 콘텐츠를 반복하거나 변형·공유했다.",
+      "limitationKo": "공개 자기보고이며 실제 행동을 직접 관찰하지 않았다. 댓글 작성자와 전체 시청자의 차이도 알 수 없다."
+    },
+    {
+      "evidenceId": "YT-LRN-01-R06",
+      "sourceId": "YT-LRN-01",
+      "platform": "YouTube",
+      "category": "학습·커리어",
+      "sourceTitle": "Daily Study Routine for Learning a Language - 15/30/15 method",
+      "sourceUrl": "https://www.youtube.com/watch?v=vdWoVs_ypyE",
+      "evidenceUrl": "https://www.youtube.com/watch?v=vdWoVs_ypyE&lc=UgwpidFOV-eGIQe62914AaABAg",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E5",
+      "evidenceSignal": "반복·재사용",
+      "excerptKo": "Oh wow, I am doing better then I thought I have been learning French for 6 months 3 hours every day. I do a lot of it while I do my makeup everyday which takes me 1.5 hours to do. It is quite easy to learn while doing my",
+      "userAddedInputs": [],
+      "arrivalShape": [
+        "체크리스트"
+      ],
+      "evidenceMode": "비교용 고정 표본의 공개 상위 댓글",
+      "confidence": "medium",
+      "interpretationKo": "동일 콘텐츠를 반복하거나 변형·공유했다.",
+      "limitationKo": "공개 자기보고이며 실제 행동을 직접 관찰하지 않았다. 댓글 작성자와 전체 시청자의 차이도 알 수 없다."
+    },
+    {
+      "evidenceId": "YT-LRN-02-R01",
+      "sourceId": "YT-LRN-02",
+      "platform": "YouTube",
+      "category": "학습·커리어",
+      "sourceTitle": "How I Created a 30-Day Language Study Plan That Works!",
+      "sourceUrl": "https://www.youtube.com/watch?v=4dyo9MZ9c50",
+      "evidenceUrl": "https://www.youtube.com/watch?v=4dyo9MZ9c50&lc=UgzB_57d8ZZA-th0Vep4AaABAg",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E5",
+      "evidenceSignal": "반복·재사용",
+      "excerptKo": "I am still doing my English routine, and I started doing that for 30 days, it was like three months ago. And I wholeheartedly believe that my English skills are going from strength to strength and that is thanks to you, ",
+      "userAddedInputs": [
+        "날짜·진도"
+      ],
+      "arrivalShape": [
+        "루틴"
+      ],
+      "evidenceMode": "비교용 고정 표본의 공개 상위 댓글",
+      "confidence": "medium",
+      "interpretationKo": "동일 콘텐츠를 반복하거나 변형·공유했다.",
+      "limitationKo": "공개 자기보고이며 실제 행동을 직접 관찰하지 않았다. 댓글 작성자와 전체 시청자의 차이도 알 수 없다."
+    },
+    {
+      "evidenceId": "YT-LRN-02-R10",
+      "sourceId": "YT-LRN-02",
+      "platform": "YouTube",
+      "category": "학습·커리어",
+      "sourceTitle": "How I Created a 30-Day Language Study Plan That Works!",
+      "sourceUrl": "https://www.youtube.com/watch?v=4dyo9MZ9c50",
+      "evidenceUrl": "https://www.youtube.com/watch?v=4dyo9MZ9c50&lc=UgwNh5HVVAjB4k1hjWV4AaABAg",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E2",
+      "evidenceSignal": "결과물 수요",
+      "excerptKo": "WOW! You've put so much work into this Shea! Thank you so much~ ❤️ I'm gathering materials to start learning Italian right now and definitely adding your planner to my tool kit 😊",
+      "userAddedInputs": [
+        "보유 준비물"
+      ],
+      "arrivalShape": [
+        "표"
+      ],
+      "evidenceMode": "비교용 고정 표본의 공개 상위 댓글",
+      "confidence": "medium",
+      "interpretationKo": "콘텐츠를 옮겨 쓸 형식이 필요하다는 구체적 신호다.",
+      "limitationKo": "공개 자기보고이며 실제 행동을 직접 관찰하지 않았다. 댓글 작성자와 전체 시청자의 차이도 알 수 없다."
+    },
+    {
+      "evidenceId": "YT-LRN-02-R15",
+      "sourceId": "YT-LRN-02",
+      "platform": "YouTube",
+      "category": "학습·커리어",
+      "sourceTitle": "How I Created a 30-Day Language Study Plan That Works!",
+      "sourceUrl": "https://www.youtube.com/watch?v=4dyo9MZ9c50",
+      "evidenceUrl": "https://www.youtube.com/watch?v=4dyo9MZ9c50&lc=Ugy8kr_3O_apiLNXEAh4AaABAg",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E5",
+      "evidenceSignal": "반복·재사용",
+      "excerptKo": "Your video popped up on my feed but i found this topic insteresting. I do a similar thing with English, i study every day and i do tasks related to all the four skills. This study style helped me a lot through these long",
+      "userAddedInputs": [],
+      "arrivalShape": [
+        "체크리스트"
+      ],
+      "evidenceMode": "비교용 고정 표본의 공개 상위 댓글",
+      "confidence": "medium",
+      "interpretationKo": "동일 콘텐츠를 반복하거나 변형·공유했다.",
+      "limitationKo": "공개 자기보고이며 실제 행동을 직접 관찰하지 않았다. 댓글 작성자와 전체 시청자의 차이도 알 수 없다."
+    },
+    {
+      "evidenceId": "YT-LRN-02-R17",
+      "sourceId": "YT-LRN-02",
+      "platform": "YouTube",
+      "category": "학습·커리어",
+      "sourceTitle": "How I Created a 30-Day Language Study Plan That Works!",
+      "sourceUrl": "https://www.youtube.com/watch?v=4dyo9MZ9c50",
+      "evidenceUrl": "https://www.youtube.com/watch?v=4dyo9MZ9c50&lc=UgwYaqsvVpDtW2KhIxV4AaABAg",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E2",
+      "evidenceSignal": "결과물 수요",
+      "excerptKo": "Ciao Bella come stai? I love your tips. Currently struggling to figure out how to build a language study plan. So thanks!",
+      "userAddedInputs": [],
+      "arrivalShape": [
+        "체크리스트"
+      ],
+      "evidenceMode": "비교용 고정 표본의 공개 상위 댓글",
+      "confidence": "medium",
+      "interpretationKo": "콘텐츠를 옮겨 쓸 형식이 필요하다는 구체적 신호다.",
+      "limitationKo": "공개 자기보고이며 실제 행동을 직접 관찰하지 않았다. 댓글 작성자와 전체 시청자의 차이도 알 수 없다."
+    },
+    {
+      "evidenceId": "YT-LRN-04-R09",
+      "sourceId": "YT-LRN-04",
+      "platform": "YouTube",
+      "category": "학습·커리어",
+      "sourceTitle": "영어 공부 이대로만 해보세요 - 100% 순수 국내파 해외 직장인이 하루 30분 딱 정해드립니다 (말이터지는 영어공부 노하우/자료/툴 방법 총정리)",
+      "sourceUrl": "https://www.youtube.com/watch?v=cPfLsKldido",
+      "evidenceUrl": "https://www.youtube.com/watch?v=cPfLsKldido&lc=UgzpOiQ0QtrThqFgo8t4AaABAg",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E2",
+      "evidenceSignal": "결과물 수요",
+      "excerptKo": "⭐️ 월금토 회화루틴 - 1차복습은 그날 강의영상끝나고 5-10분 바로 - 2차복습은 5~6회 후에 쌓였을 때 -> 월금토 월금(토)->2주차 토요일마다 스프레스시트 복습 ⭐️화목 변역 루틴 - 아 이게뭐였지! 고통을 느끼는 취지.",
+      "userAddedInputs": [],
+      "arrivalShape": [
+        "루틴"
+      ],
+      "evidenceMode": "비교용 고정 표본의 공개 상위 댓글",
+      "confidence": "medium",
+      "interpretationKo": "콘텐츠를 옮겨 쓸 형식이 필요하다는 구체적 신호다.",
+      "limitationKo": "공개 자기보고이며 실제 행동을 직접 관찰하지 않았다. 댓글 작성자와 전체 시청자의 차이도 알 수 없다."
+    },
+    {
+      "evidenceId": "YT-PAR-01-R16",
+      "sourceId": "YT-PAR-01",
+      "platform": "YouTube",
+      "category": "육아·가족",
+      "sourceTitle": "40 Easy DIY Toddler Activities for Busy Parents - How to Keep a Toddler Entertained at Home.",
+      "sourceUrl": "https://www.youtube.com/watch?v=BcDuq8-YiwM",
+      "evidenceUrl": "https://www.youtube.com/watch?v=BcDuq8-YiwM&lc=UgxbernYKIOUNkpJW714AaABAg",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E4",
+      "evidenceSignal": "완료·결과",
+      "excerptKo": "I tried these activities with my 20 month old. To give you an idea of how they went, with the first activity she got frustrated when I showed her how to transfer so I just let her play with the box of balls her way. She ",
+      "userAddedInputs": [],
+      "arrivalShape": [
+        "체크리스트"
+      ],
+      "evidenceMode": "비교용 고정 표본의 공개 상위 댓글",
+      "confidence": "medium",
+      "interpretationKo": "완료, 결과 또는 실패가 구체적으로 언급됐다.",
+      "limitationKo": "공개 자기보고이며 실제 행동을 직접 관찰하지 않았다. 댓글 작성자와 전체 시청자의 차이도 알 수 없다."
+    },
+    {
+      "evidenceId": "YT-PAR-02-R01",
+      "sourceId": "YT-PAR-02",
+      "platform": "YouTube",
+      "category": "육아·가족",
+      "sourceTitle": "10 Simple Amazing KIDS ACTIVITY IDEAS to keep them entertained | 2+ years CHILDREN ACTIVITIES",
+      "sourceUrl": "https://www.youtube.com/watch?v=HBSjEeM_U68",
+      "evidenceUrl": "https://www.youtube.com/watch?v=HBSjEeM_U68&lc=UgxlVh-RhYZbhDCRKuh4AaABAg",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E4",
+      "evidenceSignal": "완료·결과",
+      "excerptKo": "I tried a bunch of these and my son just threw and destroyed everything 😂😂 love it",
+      "userAddedInputs": [
+        "가족 구성"
+      ],
+      "arrivalShape": [
+        "체크리스트"
+      ],
+      "evidenceMode": "비교용 고정 표본의 공개 상위 댓글",
+      "confidence": "medium",
+      "interpretationKo": "완료, 결과 또는 실패가 구체적으로 언급됐다.",
+      "limitationKo": "공개 자기보고이며 실제 행동을 직접 관찰하지 않았다. 댓글 작성자와 전체 시청자의 차이도 알 수 없다."
+    },
+    {
+      "evidenceId": "YT-TRV-01-R20",
+      "sourceId": "YT-TRV-01",
+      "platform": "YouTube",
+      "category": "여행·외출",
+      "sourceTitle": "Travel Checklist: 37 Things to Do Before Your Next Trip",
+      "sourceUrl": "https://www.youtube.com/watch?v=vFN7uDM8SrA",
+      "evidenceUrl": "https://www.youtube.com/watch?v=vFN7uDM8SrA&lc=UgwppzvlWb8GnECn9Wx4AaABAg",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E3",
+      "evidenceSignal": "실행 중",
+      "excerptKo": "You guys rock and helped me alot with down sizing my items to travel I'm still downsizing and I am down to 2 backpacks now I'm trying to get to just one backpack",
+      "userAddedInputs": [],
+      "arrivalShape": [
+        "체크리스트"
+      ],
+      "evidenceMode": "비교용 고정 표본의 공개 상위 댓글",
+      "confidence": "medium",
+      "interpretationKo": "기간·진도·수정 내용이 있는 공개 자기보고다.",
+      "limitationKo": "공개 자기보고이며 실제 행동을 직접 관찰하지 않았다. 댓글 작성자와 전체 시청자의 차이도 알 수 없다."
+    },
+    {
+      "evidenceId": "YT-TRV-02-R13",
+      "sourceId": "YT-TRV-02",
+      "platform": "YouTube",
+      "category": "여행·외출",
+      "sourceTitle": "11 Minimalist Packing Tips For Travel",
+      "sourceUrl": "https://www.youtube.com/watch?v=9PcDIwyYatE",
+      "evidenceUrl": "https://www.youtube.com/watch?v=9PcDIwyYatE&lc=Ugy3kwnrFyrj7fEoHg94AaABAg",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E5",
+      "evidenceSignal": "반복·재사용",
+      "excerptKo": "I definitely agree with packing a few days ahead of time. It really does help to narrow stuff down, gives you time to remember something you might need, do laundry, etc. I have a basic packing list, too, as recommended b",
+      "userAddedInputs": [],
+      "arrivalShape": [
+        "체크리스트"
+      ],
+      "evidenceMode": "비교용 고정 표본의 공개 상위 댓글",
+      "confidence": "medium",
+      "interpretationKo": "동일 콘텐츠를 반복하거나 변형·공유했다.",
+      "limitationKo": "공개 자기보고이며 실제 행동을 직접 관찰하지 않았다. 댓글 작성자와 전체 시청자의 차이도 알 수 없다."
+    },
+    {
+      "evidenceId": "YT-TRV-02-R18",
+      "sourceId": "YT-TRV-02",
+      "platform": "YouTube",
+      "category": "여행·외출",
+      "sourceTitle": "11 Minimalist Packing Tips For Travel",
+      "sourceUrl": "https://www.youtube.com/watch?v=9PcDIwyYatE",
+      "evidenceUrl": "https://www.youtube.com/watch?v=9PcDIwyYatE&lc=UgxGRmhMt-TWy-2qY6B4AaABAg",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E4",
+      "evidenceSignal": "완료·결과",
+      "excerptKo": "I just finished a month trip to Malaysia - Singapore with week-long stays in Penang and Malacca (I'm literally on my last day and I'm packing to go back home). Started out with less clothes (basics, four days), then fill",
+      "userAddedInputs": [
+        "날짜·진도"
+      ],
+      "arrivalShape": [
+        "체크리스트"
+      ],
+      "evidenceMode": "비교용 고정 표본의 공개 상위 댓글",
+      "confidence": "medium",
+      "interpretationKo": "완료, 결과 또는 실패가 구체적으로 언급됐다.",
+      "limitationKo": "공개 자기보고이며 실제 행동을 직접 관찰하지 않았다. 댓글 작성자와 전체 시청자의 차이도 알 수 없다."
+    },
+    {
+      "evidenceId": "YT-TRV-03-R18",
+      "sourceId": "YT-TRV-03",
+      "platform": "YouTube",
+      "category": "여행·외출",
+      "sourceTitle": "이대로만 따라해도 파리 관광지 다 감. 걸어서 3일 파리 완전정복",
+      "sourceUrl": "https://www.youtube.com/watch?v=5waWQ0_A9Is",
+      "evidenceUrl": "https://www.youtube.com/watch?v=5waWQ0_A9Is&lc=UgzJDVnhuGiAgZAMaot4AaABAg",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E2",
+      "evidenceSignal": "결과물 수요",
+      "excerptKo": "영상 넘 많이 참고가 되었어요 좋은 정보 감사합니다. 구글맵 공유 부탁드립니다^^",
+      "userAddedInputs": [],
+      "arrivalShape": [
+        "체크리스트"
+      ],
+      "evidenceMode": "비교용 고정 표본의 공개 상위 댓글",
+      "confidence": "medium",
+      "interpretationKo": "콘텐츠를 옮겨 쓸 형식이 필요하다는 구체적 신호다.",
+      "limitationKo": "공개 자기보고이며 실제 행동을 직접 관찰하지 않았다. 댓글 작성자와 전체 시청자의 차이도 알 수 없다."
+    },
+    {
+      "evidenceId": "SUP-REC-01-E01",
+      "sourceId": "SUP-REC-01",
+      "platform": "만개의레시피",
+      "category": "요리·식단",
+      "sourceTitle": "야채 참치 볶음",
+      "sourceUrl": "https://www.10000recipe.com/recipe/6865737",
+      "evidenceUrl": "https://www.10000recipe.com/recipe/6865737",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E5",
+      "evidenceSignal": "반복·재사용",
+      "excerptKo": "남은 채소와 참치 양을 바꿔 만들었고, 다시 해 먹을 메뉴라고 남겼다.",
+      "userAddedInputs": [
+        "보유 재료",
+        "재료 양"
+      ],
+      "arrivalShape": [
+        "메모",
+        "체크리스트"
+      ],
+      "evidenceMode": "강한 사례 탐색 표본의 공개 후기·플랫폼 완료 신호",
+      "confidence": "medium",
+      "interpretationKo": "동일 콘텐츠를 반복하거나 변형·공유했다.",
+      "limitationKo": "공개 자기보고 또는 플랫폼의 자기신고형 완료 수다. 실제 행동을 FlowMe가 관찰한 결과가 아니다."
+    },
+    {
+      "evidenceId": "SUP-REC-01-E02",
+      "sourceId": "SUP-REC-01",
+      "platform": "만개의레시피",
+      "category": "요리·식단",
+      "sourceTitle": "야채 참치 볶음",
+      "sourceUrl": "https://www.10000recipe.com/recipe/6865737",
+      "evidenceUrl": "https://www.10000recipe.com/recipe/6865737",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E4",
+      "evidenceSignal": "완료·결과",
+      "excerptKo": "어린 자녀가 먹을 수 있게 매운 양념을 줄인 뒤 한 끼를 완성했다.",
+      "userAddedInputs": [
+        "자녀 연령",
+        "매운맛 조정"
+      ],
+      "arrivalShape": [
+        "메모"
+      ],
+      "evidenceMode": "강한 사례 탐색 표본의 공개 후기·플랫폼 완료 신호",
+      "confidence": "medium",
+      "interpretationKo": "완료, 결과 또는 실패가 구체적으로 언급됐다.",
+      "limitationKo": "공개 자기보고 또는 플랫폼의 자기신고형 완료 수다. 실제 행동을 FlowMe가 관찰한 결과가 아니다."
+    },
+    {
+      "evidenceId": "SUP-REC-01-E03",
+      "sourceId": "SUP-REC-01",
+      "platform": "만개의레시피",
+      "category": "요리·식단",
+      "sourceTitle": "야채 참치 볶음",
+      "sourceUrl": "https://www.10000recipe.com/recipe/6865737",
+      "evidenceUrl": "https://www.10000recipe.com/recipe/6865737",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E5",
+      "evidenceSignal": "반복·재사용",
+      "excerptKo": "간단히 따라 한 뒤 한 끼를 해결했고 자주 다시 만들겠다고 했다.",
+      "userAddedInputs": [],
+      "arrivalShape": [
+        "메모",
+        "체크리스트"
+      ],
+      "evidenceMode": "강한 사례 탐색 표본의 공개 후기·플랫폼 완료 신호",
+      "confidence": "medium",
+      "interpretationKo": "동일 콘텐츠를 반복하거나 변형·공유했다.",
+      "limitationKo": "공개 자기보고 또는 플랫폼의 자기신고형 완료 수다. 실제 행동을 FlowMe가 관찰한 결과가 아니다."
+    },
+    {
+      "evidenceId": "SUP-REC-01-E04",
+      "sourceId": "SUP-REC-01",
+      "platform": "만개의레시피",
+      "category": "요리·식단",
+      "sourceTitle": "야채 참치 볶음",
+      "sourceUrl": "https://www.10000recipe.com/recipe/6865737",
+      "evidenceUrl": "https://www.10000recipe.com/recipe/6865737",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E4",
+      "evidenceSignal": "완료·결과",
+      "excerptKo": "아이용과 어른용 반찬을 조리 중간에 나눠 한 번에 만들었다.",
+      "userAddedInputs": [
+        "먹는 사람",
+        "양념 분기"
+      ],
+      "arrivalShape": [
+        "메모"
+      ],
+      "evidenceMode": "강한 사례 탐색 표본의 공개 후기·플랫폼 완료 신호",
+      "confidence": "medium",
+      "interpretationKo": "완료, 결과 또는 실패가 구체적으로 언급됐다.",
+      "limitationKo": "공개 자기보고 또는 플랫폼의 자기신고형 완료 수다. 실제 행동을 FlowMe가 관찰한 결과가 아니다."
+    },
+    {
+      "evidenceId": "SUP-REC-02-E01",
+      "sourceId": "SUP-REC-02",
+      "platform": "만개의레시피",
+      "category": "요리·식단",
+      "sourceTitle": "닭볶음탕 황금레시피",
+      "sourceUrl": "https://www.10000recipe.com/recipe/6876357",
+      "evidenceUrl": "https://www.10000recipe.com/recipe/6876357",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E5",
+      "evidenceSignal": "반복·재사용",
+      "excerptKo": "같은 레시피로 대여섯 번 만들고 간장 양을 줄인 방식으로 정착했다.",
+      "userAddedInputs": [
+        "간장 양"
+      ],
+      "arrivalShape": [
+        "메모"
+      ],
+      "evidenceMode": "강한 사례 탐색 표본의 공개 후기·플랫폼 완료 신호",
+      "confidence": "medium",
+      "interpretationKo": "동일 콘텐츠를 반복하거나 변형·공유했다.",
+      "limitationKo": "공개 자기보고 또는 플랫폼의 자기신고형 완료 수다. 실제 행동을 FlowMe가 관찰한 결과가 아니다."
+    },
+    {
+      "evidenceId": "SUP-REC-02-E02",
+      "sourceId": "SUP-REC-02",
+      "platform": "만개의레시피",
+      "category": "요리·식단",
+      "sourceTitle": "닭볶음탕 황금레시피",
+      "sourceUrl": "https://www.10000recipe.com/recipe/6876357",
+      "evidenceUrl": "https://www.10000recipe.com/recipe/6876357",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E5",
+      "evidenceSignal": "반복·재사용",
+      "excerptKo": "몇 년째 이 레시피를 기준으로 닭볶음탕을 만들고 있다고 했다.",
+      "userAddedInputs": [],
+      "arrivalShape": [
+        "메모"
+      ],
+      "evidenceMode": "강한 사례 탐색 표본의 공개 후기·플랫폼 완료 신호",
+      "confidence": "medium",
+      "interpretationKo": "동일 콘텐츠를 반복하거나 변형·공유했다.",
+      "limitationKo": "공개 자기보고 또는 플랫폼의 자기신고형 완료 수다. 실제 행동을 FlowMe가 관찰한 결과가 아니다."
+    },
+    {
+      "evidenceId": "SUP-REC-02-E03",
+      "sourceId": "SUP-REC-02",
+      "platform": "만개의레시피",
+      "category": "요리·식단",
+      "sourceTitle": "닭볶음탕 황금레시피",
+      "sourceUrl": "https://www.10000recipe.com/recipe/6876357",
+      "evidenceUrl": "https://www.10000recipe.com/recipe/6876357",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E5",
+      "evidenceSignal": "반복·재사용",
+      "excerptKo": "세 번째로 만들었고 가족 반응이 좋았다고 남겼다.",
+      "userAddedInputs": [
+        "가족 반응"
+      ],
+      "arrivalShape": [
+        "메모"
+      ],
+      "evidenceMode": "강한 사례 탐색 표본의 공개 후기·플랫폼 완료 신호",
+      "confidence": "medium",
+      "interpretationKo": "동일 콘텐츠를 반복하거나 변형·공유했다.",
+      "limitationKo": "공개 자기보고 또는 플랫폼의 자기신고형 완료 수다. 실제 행동을 FlowMe가 관찰한 결과가 아니다."
+    },
+    {
+      "evidenceId": "SUP-REC-02-E04",
+      "sourceId": "SUP-REC-02",
+      "platform": "만개의레시피",
+      "category": "요리·식단",
+      "sourceTitle": "닭볶음탕 황금레시피",
+      "sourceUrl": "https://www.10000recipe.com/recipe/6876357",
+      "evidenceUrl": "https://www.10000recipe.com/recipe/6876357",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E4",
+      "evidenceSignal": "완료·결과",
+      "excerptKo": "레시피 순서를 따라 완성했고 결과가 안정적이었다고 설명했다.",
+      "userAddedInputs": [],
+      "arrivalShape": [
+        "체크리스트",
+        "메모"
+      ],
+      "evidenceMode": "강한 사례 탐색 표본의 공개 후기·플랫폼 완료 신호",
+      "confidence": "medium",
+      "interpretationKo": "완료, 결과 또는 실패가 구체적으로 언급됐다.",
+      "limitationKo": "공개 자기보고 또는 플랫폼의 자기신고형 완료 수다. 실제 행동을 FlowMe가 관찰한 결과가 아니다."
+    },
+    {
+      "evidenceId": "SUP-REC-03-E01",
+      "sourceId": "SUP-REC-03",
+      "platform": "만개의레시피",
+      "category": "요리·식단",
+      "sourceTitle": "소고기 미역국 끓이는 법",
+      "sourceUrl": "https://www.10000recipe.com/recipe/6873683",
+      "evidenceUrl": "https://www.10000recipe.com/recipe/6873683",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E5",
+      "evidenceSignal": "반복·재사용",
+      "excerptKo": "가족 생일 두 번에 같은 미역국 레시피를 사용해 모두 완성했다.",
+      "userAddedInputs": [
+        "가족 생일"
+      ],
+      "arrivalShape": [
+        "캘린더",
+        "메모"
+      ],
+      "evidenceMode": "강한 사례 탐색 표본의 공개 후기·플랫폼 완료 신호",
+      "confidence": "medium",
+      "interpretationKo": "동일 콘텐츠를 반복하거나 변형·공유했다.",
+      "limitationKo": "공개 자기보고 또는 플랫폼의 자기신고형 완료 수다. 실제 행동을 FlowMe가 관찰한 결과가 아니다."
+    },
+    {
+      "evidenceId": "SUP-REC-03-E02",
+      "sourceId": "SUP-REC-03",
+      "platform": "만개의레시피",
+      "category": "요리·식단",
+      "sourceTitle": "소고기 미역국 끓이는 법",
+      "sourceUrl": "https://www.10000recipe.com/recipe/6873683",
+      "evidenceUrl": "https://www.10000recipe.com/recipe/6873683",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E5",
+      "evidenceSignal": "반복·재사용",
+      "excerptKo": "같은 레시피를 수십 번 사용했다고 남겼다.",
+      "userAddedInputs": [],
+      "arrivalShape": [
+        "메모"
+      ],
+      "evidenceMode": "강한 사례 탐색 표본의 공개 후기·플랫폼 완료 신호",
+      "confidence": "medium",
+      "interpretationKo": "동일 콘텐츠를 반복하거나 변형·공유했다.",
+      "limitationKo": "공개 자기보고 또는 플랫폼의 자기신고형 완료 수다. 실제 행동을 FlowMe가 관찰한 결과가 아니다."
+    },
+    {
+      "evidenceId": "SUP-REC-03-E03",
+      "sourceId": "SUP-REC-03",
+      "platform": "만개의레시피",
+      "category": "요리·식단",
+      "sourceTitle": "소고기 미역국 끓이는 법",
+      "sourceUrl": "https://www.10000recipe.com/recipe/6873683",
+      "evidenceUrl": "https://www.10000recipe.com/recipe/6873683",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E4",
+      "evidenceSignal": "완료·결과",
+      "excerptKo": "배우자 생일에 처음 끓였고 한 번에 완성했다고 했다.",
+      "userAddedInputs": [
+        "가족 생일"
+      ],
+      "arrivalShape": [
+        "캘린더",
+        "메모"
+      ],
+      "evidenceMode": "강한 사례 탐색 표본의 공개 후기·플랫폼 완료 신호",
+      "confidence": "medium",
+      "interpretationKo": "완료, 결과 또는 실패가 구체적으로 언급됐다.",
+      "limitationKo": "공개 자기보고 또는 플랫폼의 자기신고형 완료 수다. 실제 행동을 FlowMe가 관찰한 결과가 아니다."
+    },
+    {
+      "evidenceId": "SUP-REC-03-E04",
+      "sourceId": "SUP-REC-03",
+      "platform": "만개의레시피",
+      "category": "요리·식단",
+      "sourceTitle": "소고기 미역국 끓이는 법",
+      "sourceUrl": "https://www.10000recipe.com/recipe/6873683",
+      "evidenceUrl": "https://www.10000recipe.com/recipe/6873683",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E5",
+      "evidenceSignal": "반복·재사용",
+      "excerptKo": "다음 생일에도 쓰려고 원문을 다시 찾아왔다고 했다.",
+      "userAddedInputs": [
+        "다음 생일"
+      ],
+      "arrivalShape": [
+        "캘린더",
+        "메모"
+      ],
+      "evidenceMode": "강한 사례 탐색 표본의 공개 후기·플랫폼 완료 신호",
+      "confidence": "medium",
+      "interpretationKo": "동일 콘텐츠를 반복하거나 변형·공유했다.",
+      "limitationKo": "공개 자기보고 또는 플랫폼의 자기신고형 완료 수다. 실제 행동을 FlowMe가 관찰한 결과가 아니다."
+    },
+    {
+      "evidenceId": "SUP-REC-04-E01",
+      "sourceId": "SUP-REC-04",
+      "platform": "만개의레시피",
+      "category": "요리·식단",
+      "sourceTitle": "열무물김치 담는 법",
+      "sourceUrl": "https://www.10000recipe.com/recipe/6934861",
+      "evidenceUrl": "https://www.10000recipe.com/recipe/6934861",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E4",
+      "evidenceSignal": "완료·결과",
+      "excerptKo": "처음 레시피를 보고 열무물김치를 담가 가족 식사에 사용했다.",
+      "userAddedInputs": [
+        "가족 식사"
+      ],
+      "arrivalShape": [
+        "메모",
+        "체크리스트"
+      ],
+      "evidenceMode": "강한 사례 탐색 표본의 공개 후기·플랫폼 완료 신호",
+      "confidence": "medium",
+      "interpretationKo": "완료, 결과 또는 실패가 구체적으로 언급됐다.",
+      "limitationKo": "공개 자기보고 또는 플랫폼의 자기신고형 완료 수다. 실제 행동을 FlowMe가 관찰한 결과가 아니다."
+    },
+    {
+      "evidenceId": "SUP-REC-04-E02",
+      "sourceId": "SUP-REC-04",
+      "platform": "만개의레시피",
+      "category": "요리·식단",
+      "sourceTitle": "열무물김치 담는 법",
+      "sourceUrl": "https://www.10000recipe.com/recipe/6934861",
+      "evidenceUrl": "https://www.10000recipe.com/recipe/6934861",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E5",
+      "evidenceSignal": "반복·재사용",
+      "excerptKo": "벌써 세 번째 만들어 먹었다고 남겼다.",
+      "userAddedInputs": [],
+      "arrivalShape": [
+        "메모"
+      ],
+      "evidenceMode": "강한 사례 탐색 표본의 공개 후기·플랫폼 완료 신호",
+      "confidence": "medium",
+      "interpretationKo": "동일 콘텐츠를 반복하거나 변형·공유했다.",
+      "limitationKo": "공개 자기보고 또는 플랫폼의 자기신고형 완료 수다. 실제 행동을 FlowMe가 관찰한 결과가 아니다."
+    },
+    {
+      "evidenceId": "SUP-REC-04-E03",
+      "sourceId": "SUP-REC-04",
+      "platform": "만개의레시피",
+      "category": "요리·식단",
+      "sourceTitle": "열무물김치 담는 법",
+      "sourceUrl": "https://www.10000recipe.com/recipe/6934861",
+      "evidenceUrl": "https://www.10000recipe.com/recipe/6934861",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E4",
+      "evidenceSignal": "완료·결과",
+      "excerptKo": "레시피 순서를 따라 직접 완성할 수 있었다고 했다.",
+      "userAddedInputs": [],
+      "arrivalShape": [
+        "체크리스트"
+      ],
+      "evidenceMode": "강한 사례 탐색 표본의 공개 후기·플랫폼 완료 신호",
+      "confidence": "medium",
+      "interpretationKo": "완료, 결과 또는 실패가 구체적으로 언급됐다.",
+      "limitationKo": "공개 자기보고 또는 플랫폼의 자기신고형 완료 수다. 실제 행동을 FlowMe가 관찰한 결과가 아니다."
+    },
+    {
+      "evidenceId": "SUP-REC-04-E04",
+      "sourceId": "SUP-REC-04",
+      "platform": "만개의레시피",
+      "category": "요리·식단",
+      "sourceTitle": "열무물김치 담는 법",
+      "sourceUrl": "https://www.10000recipe.com/recipe/6934861",
+      "evidenceUrl": "https://www.10000recipe.com/recipe/6934861",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E5",
+      "evidenceSignal": "반복·재사용",
+      "excerptKo": "여름 반찬과 국수에 반복해서 활용했다고 했다.",
+      "userAddedInputs": [
+        "활용 메뉴"
+      ],
+      "arrivalShape": [
+        "메모"
+      ],
+      "evidenceMode": "강한 사례 탐색 표본의 공개 후기·플랫폼 완료 신호",
+      "confidence": "medium",
+      "interpretationKo": "동일 콘텐츠를 반복하거나 변형·공유했다.",
+      "limitationKo": "공개 자기보고 또는 플랫폼의 자기신고형 완료 수다. 실제 행동을 FlowMe가 관찰한 결과가 아니다."
+    },
+    {
+      "evidenceId": "SUP-INS-01-E01",
+      "sourceId": "SUP-INS-01",
+      "platform": "Instructables",
+      "category": "취미·만들기·프로젝트",
+      "sourceTitle": "How to Make Slime Without Borax",
+      "sourceUrl": "https://www.instructables.com/How-to-Make-Slime-Without-Borax/",
+      "evidenceUrl": "https://www.instructables.com/How-to-Make-Slime-Without-Borax/",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E4",
+      "evidenceSignal": "완료·결과",
+      "excerptKo": "126명이 이 프로젝트를 만들었다고 표시된다.",
+      "userAddedInputs": [],
+      "arrivalShape": [
+        "프로젝트",
+        "체크리스트"
+      ],
+      "evidenceMode": "플랫폼의 People Made This Project 누적 자기신고 수",
+      "confidence": "high",
+      "interpretationKo": "완료, 결과 또는 실패가 구체적으로 언급됐다.",
+      "limitationKo": "공개 자기보고 또는 플랫폼의 자기신고형 완료 수다. 실제 행동을 FlowMe가 관찰한 결과가 아니다."
+    },
+    {
+      "evidenceId": "SUP-INS-02-E01",
+      "sourceId": "SUP-INS-02",
+      "platform": "Instructables",
+      "category": "취미·만들기·프로젝트",
+      "sourceTitle": "Sewing the Whip Stitch",
+      "sourceUrl": "https://www.instructables.com/Sewing-Whip-Stitch-Coasters/",
+      "evidenceUrl": "https://www.instructables.com/Sewing-Whip-Stitch-Coasters/",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E4",
+      "evidenceSignal": "완료·결과",
+      "excerptKo": "10명이 이 프로젝트를 만들었다고 표시된다.",
+      "userAddedInputs": [],
+      "arrivalShape": [
+        "프로젝트",
+        "체크리스트"
+      ],
+      "evidenceMode": "플랫폼의 People Made This Project 누적 자기신고 수",
+      "confidence": "high",
+      "interpretationKo": "완료, 결과 또는 실패가 구체적으로 언급됐다.",
+      "limitationKo": "공개 자기보고 또는 플랫폼의 자기신고형 완료 수다. 실제 행동을 FlowMe가 관찰한 결과가 아니다."
+    },
+    {
+      "evidenceId": "SUP-INS-03-E01",
+      "sourceId": "SUP-INS-03",
+      "platform": "Instructables",
+      "category": "취미·만들기·프로젝트",
+      "sourceTitle": "Origami Single-sheet Cube",
+      "sourceUrl": "https://www.instructables.com/How-to-make-an-Origami-single-sheet-cube/",
+      "evidenceUrl": "https://www.instructables.com/How-to-make-an-Origami-single-sheet-cube/",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E4",
+      "evidenceSignal": "완료·결과",
+      "excerptKo": "6명이 이 프로젝트를 만들었다고 표시된다.",
+      "userAddedInputs": [],
+      "arrivalShape": [
+        "프로젝트",
+        "체크리스트"
+      ],
+      "evidenceMode": "플랫폼의 People Made This Project 누적 자기신고 수",
+      "confidence": "high",
+      "interpretationKo": "완료, 결과 또는 실패가 구체적으로 언급됐다.",
+      "limitationKo": "공개 자기보고 또는 플랫폼의 자기신고형 완료 수다. 실제 행동을 FlowMe가 관찰한 결과가 아니다."
+    },
+    {
+      "evidenceId": "SUP-INS-04-E01",
+      "sourceId": "SUP-INS-04",
+      "platform": "Instructables",
+      "category": "취미·만들기·프로젝트",
+      "sourceTitle": "Pop Up Skyline Card",
+      "sourceUrl": "https://www.instructables.com/Pop-Up-Skyline-Card/",
+      "evidenceUrl": "https://www.instructables.com/Pop-Up-Skyline-Card/",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E4",
+      "evidenceSignal": "완료·결과",
+      "excerptKo": "4명이 이 프로젝트를 만들었다고 표시된다.",
+      "userAddedInputs": [],
+      "arrivalShape": [
+        "프로젝트",
+        "체크리스트"
+      ],
+      "evidenceMode": "플랫폼의 People Made This Project 누적 자기신고 수",
+      "confidence": "high",
+      "interpretationKo": "완료, 결과 또는 실패가 구체적으로 언급됐다.",
+      "limitationKo": "공개 자기보고 또는 플랫폼의 자기신고형 완료 수다. 실제 행동을 FlowMe가 관찰한 결과가 아니다."
+    },
+    {
+      "evidenceId": "SUP-IFX-01-E01",
+      "sourceId": "SUP-IFX-01",
+      "platform": "iFixit",
+      "category": "취미·만들기·프로젝트",
+      "sourceTitle": "iPhone 4S Battery Replacement",
+      "sourceUrl": "https://www.ifixit.com/Guide/iPhone+4S+Battery+Replacement/7111",
+      "evidenceUrl": "https://www.ifixit.com/Guide/iPhone+4S+Battery+Replacement/7111",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E4",
+      "evidenceSignal": "완료·결과",
+      "excerptKo": "4,094명이 이 수리 안내서를 완료했다고 표시된다.",
+      "userAddedInputs": [],
+      "arrivalShape": [
+        "프로젝트",
+        "체크리스트"
+      ],
+      "evidenceMode": "플랫폼의 I did it 누적 자기신고 수",
+      "confidence": "high",
+      "interpretationKo": "완료, 결과 또는 실패가 구체적으로 언급됐다.",
+      "limitationKo": "공개 자기보고 또는 플랫폼의 자기신고형 완료 수다. 실제 행동을 FlowMe가 관찰한 결과가 아니다."
+    },
+    {
+      "evidenceId": "SUP-IFX-02-E01",
+      "sourceId": "SUP-IFX-02",
+      "platform": "iFixit",
+      "category": "취미·만들기·프로젝트",
+      "sourceTitle": "iPhone 12 Battery Replacement",
+      "sourceUrl": "https://www.ifixit.com/Guide/iPhone+12+Battery+Replacement/140588",
+      "evidenceUrl": "https://www.ifixit.com/Guide/iPhone+12+Battery+Replacement/140588",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E4",
+      "evidenceSignal": "완료·결과",
+      "excerptKo": "135명이 이 수리 안내서를 완료했다고 표시된다.",
+      "userAddedInputs": [],
+      "arrivalShape": [
+        "프로젝트",
+        "체크리스트"
+      ],
+      "evidenceMode": "플랫폼의 I did it 누적 자기신고 수",
+      "confidence": "high",
+      "interpretationKo": "완료, 결과 또는 실패가 구체적으로 언급됐다.",
+      "limitationKo": "공개 자기보고 또는 플랫폼의 자기신고형 완료 수다. 실제 행동을 FlowMe가 관찰한 결과가 아니다."
+    },
+    {
+      "evidenceId": "SUP-IFX-03-E01",
+      "sourceId": "SUP-IFX-03",
+      "platform": "iFixit",
+      "category": "취미·만들기·프로젝트",
+      "sourceTitle": "How to Repair a Tear Inside a Backpack",
+      "sourceUrl": "https://www.ifixit.com/Guide/How+to+Repair+a+Tear+Inside+a+Backpack/53528",
+      "evidenceUrl": "https://www.ifixit.com/Guide/How+to+Repair+a+Tear+Inside+a+Backpack/53528",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E4",
+      "evidenceSignal": "완료·결과",
+      "excerptKo": "3명이 이 수리 안내서를 완료했다고 표시된다.",
+      "userAddedInputs": [],
+      "arrivalShape": [
+        "프로젝트",
+        "체크리스트"
+      ],
+      "evidenceMode": "플랫폼의 I did it 누적 자기신고 수",
+      "confidence": "high",
+      "interpretationKo": "완료, 결과 또는 실패가 구체적으로 언급됐다.",
+      "limitationKo": "공개 자기보고 또는 플랫폼의 자기신고형 완료 수다. 실제 행동을 FlowMe가 관찰한 결과가 아니다."
+    },
+    {
+      "evidenceId": "SUP-IFX-04-E01",
+      "sourceId": "SUP-IFX-04",
+      "platform": "iFixit",
+      "category": "취미·만들기·프로젝트",
+      "sourceTitle": "How to Lubricate a Zipper",
+      "sourceUrl": "https://www.ifixit.com/Guide/How+to+Lubricate+a+Zipper/19450",
+      "evidenceUrl": "https://www.ifixit.com/Guide/How+to+Lubricate+a+Zipper/19450",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E4",
+      "evidenceSignal": "완료·결과",
+      "excerptKo": "6명이 이 수리 안내서를 완료했다고 표시된다.",
+      "userAddedInputs": [],
+      "arrivalShape": [
+        "프로젝트",
+        "체크리스트"
+      ],
+      "evidenceMode": "플랫폼의 I did it 누적 자기신고 수",
+      "confidence": "high",
+      "interpretationKo": "완료, 결과 또는 실패가 구체적으로 언급됐다.",
+      "limitationKo": "공개 자기보고 또는 플랫폼의 자기신고형 완료 수다. 실제 행동을 FlowMe가 관찰한 결과가 아니다."
+    },
+    {
+      "evidenceId": "SUP-IG-01-E01",
+      "sourceId": "SUP-IG-01",
+      "platform": "Instagram",
+      "category": "육아·가족",
+      "sourceTitle": "수정 가능한 초기 이유식 식단표",
+      "sourceUrl": "https://www.instagram.com/p/DX6-viaj3eV/",
+      "evidenceUrl": "https://www.instagram.com/p/DX6-viaj3eV/",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E2",
+      "evidenceSignal": "결과물 수요",
+      "excerptKo": "게시된 식단표를 그대로 따라 쓰고 싶다며 입자감과 단계 전환을 물었다.",
+      "userAddedInputs": [
+        "자녀 단계",
+        "입자감"
+      ],
+      "arrivalShape": [
+        "표",
+        "메모"
+      ],
+      "evidenceMode": "공개 댓글",
+      "confidence": "medium",
+      "interpretationKo": "콘텐츠를 옮겨 쓸 형식이 필요하다는 구체적 신호다.",
+      "limitationKo": "공개 자기보고 또는 플랫폼의 자기신고형 완료 수다. 실제 행동을 FlowMe가 관찰한 결과가 아니다."
+    },
+    {
+      "evidenceId": "SUP-IG-01-E02",
+      "sourceId": "SUP-IG-01",
+      "platform": "Instagram",
+      "category": "육아·가족",
+      "sourceTitle": "수정 가능한 초기 이유식 식단표",
+      "sourceUrl": "https://www.instagram.com/p/DX6-viaj3eV/",
+      "evidenceUrl": "https://www.instagram.com/p/DX6-viaj3eV/",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E2",
+      "evidenceSignal": "결과물 수요",
+      "excerptKo": "현재 식단표가 끝난 뒤 사용할 다음 단계 식단표도 공유해 달라고 요청했다.",
+      "userAddedInputs": [
+        "다음 단계"
+      ],
+      "arrivalShape": [
+        "표"
+      ],
+      "evidenceMode": "공개 댓글",
+      "confidence": "medium",
+      "interpretationKo": "콘텐츠를 옮겨 쓸 형식이 필요하다는 구체적 신호다.",
+      "limitationKo": "공개 자기보고 또는 플랫폼의 자기신고형 완료 수다. 실제 행동을 FlowMe가 관찰한 결과가 아니다."
+    },
+    {
+      "evidenceId": "SUP-IG-02-E01",
+      "sourceId": "SUP-IG-02",
+      "platform": "Instagram",
+      "category": "육아·가족",
+      "sourceTitle": "예비 초등학교 입학 체크리스트",
+      "sourceUrl": "https://www.instagram.com/p/DSPsMRwj1eC/",
+      "evidenceUrl": "https://www.instagram.com/p/DSPsMRwj1eC/",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E2",
+      "evidenceSignal": "결과물 수요",
+      "excerptKo": "아이 이름을 넣어 출력할 수 있는 입학 준비 체크리스트를 받고 싶다고 했다.",
+      "userAddedInputs": [
+        "아이 이름"
+      ],
+      "arrivalShape": [
+        "체크리스트"
+      ],
+      "evidenceMode": "공개 댓글",
+      "confidence": "medium",
+      "interpretationKo": "콘텐츠를 옮겨 쓸 형식이 필요하다는 구체적 신호다.",
+      "limitationKo": "공개 자기보고 또는 플랫폼의 자기신고형 완료 수다. 실제 행동을 FlowMe가 관찰한 결과가 아니다."
+    },
+    {
+      "evidenceId": "SUP-IG-02-E02",
+      "sourceId": "SUP-IG-02",
+      "platform": "Instagram",
+      "category": "육아·가족",
+      "sourceTitle": "예비 초등학교 입학 체크리스트",
+      "sourceUrl": "https://www.instagram.com/p/DSPsMRwj1eC/",
+      "evidenceUrl": "https://www.instagram.com/p/DSPsMRwj1eC/",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E2",
+      "evidenceSignal": "결과물 수요",
+      "excerptKo": "출력용 체크리스트 공유를 직접 요청했다.",
+      "userAddedInputs": [],
+      "arrivalShape": [
+        "체크리스트"
+      ],
+      "evidenceMode": "공개 댓글",
+      "confidence": "medium",
+      "interpretationKo": "콘텐츠를 옮겨 쓸 형식이 필요하다는 구체적 신호다.",
+      "limitationKo": "공개 자기보고 또는 플랫폼의 자기신고형 완료 수다. 실제 행동을 FlowMe가 관찰한 결과가 아니다."
+    },
+    {
+      "evidenceId": "SUP-THR-01-E01",
+      "sourceId": "SUP-THR-01",
+      "platform": "Threads",
+      "category": "육아·가족",
+      "sourceTitle": "돌잔치 준비 체크리스트 엑셀",
+      "sourceUrl": "https://www.threads.com/@momentree.kr/post/DXJWpX8Dyrs",
+      "evidenceUrl": "https://www.threads.com/@momentree.kr/post/DXJWpX8Dyrs",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E2",
+      "evidenceSignal": "결과물 수요",
+      "excerptKo": "돌잔치 준비 엑셀 다운로드 링크 공유를 요청했다.",
+      "userAddedInputs": [],
+      "arrivalShape": [
+        "표",
+        "체크리스트"
+      ],
+      "evidenceMode": "공개 답글",
+      "confidence": "medium",
+      "interpretationKo": "콘텐츠를 옮겨 쓸 형식이 필요하다는 구체적 신호다.",
+      "limitationKo": "공개 자기보고 또는 플랫폼의 자기신고형 완료 수다. 실제 행동을 FlowMe가 관찰한 결과가 아니다."
+    },
+    {
+      "evidenceId": "SUP-THR-01-E02",
+      "sourceId": "SUP-THR-01",
+      "platform": "Threads",
+      "category": "육아·가족",
+      "sourceTitle": "돌잔치 준비 체크리스트 엑셀",
+      "sourceUrl": "https://www.threads.com/@momentree.kr/post/DXJWpX8Dyrs",
+      "evidenceUrl": "https://www.threads.com/@momentree.kr/post/DXJWpX8Dyrs",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E2",
+      "evidenceSignal": "결과물 수요",
+      "excerptKo": "전에 받은 링크가 사라져 같은 체크리스트를 다시 보내 달라고 요청했다.",
+      "userAddedInputs": [],
+      "arrivalShape": [
+        "표",
+        "체크리스트"
+      ],
+      "evidenceMode": "공개 답글",
+      "confidence": "medium",
+      "interpretationKo": "콘텐츠를 옮겨 쓸 형식이 필요하다는 구체적 신호다.",
+      "limitationKo": "공개 자기보고 또는 플랫폼의 자기신고형 완료 수다. 실제 행동을 FlowMe가 관찰한 결과가 아니다."
+    },
+    {
+      "evidenceId": "SUP-WAC-01-E01",
+      "sourceId": "SUP-WAC-01",
+      "platform": "와캠퍼스",
+      "category": "학습·커리어",
+      "sourceTitle": "실무 강의 수강 후기 모음",
+      "sourceUrl": "https://v2.wacampus.kr/community/reviews",
+      "evidenceUrl": "https://v2.wacampus.kr/story/reviews?pg=1&sort_review_id=desc",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E2",
+      "evidenceSignal": "결과물 수요",
+      "excerptKo": "후기를 남긴 뒤 약속된 엑셀 양식이 보이지 않는다며 재요청했다.",
+      "userAddedInputs": [],
+      "arrivalShape": [
+        "표"
+      ],
+      "evidenceMode": "공개 수강 후기",
+      "confidence": "medium",
+      "interpretationKo": "콘텐츠를 옮겨 쓸 형식이 필요하다는 구체적 신호다.",
+      "limitationKo": "공개 자기보고 또는 플랫폼의 자기신고형 완료 수다. 실제 행동을 FlowMe가 관찰한 결과가 아니다."
+    },
+    {
+      "evidenceId": "SUP-WAC-01-E02",
+      "sourceId": "SUP-WAC-01",
+      "platform": "와캠퍼스",
+      "category": "학습·커리어",
+      "sourceTitle": "실무 강의 수강 후기 모음",
+      "sourceUrl": "https://v2.wacampus.kr/community/reviews",
+      "evidenceUrl": "https://v2.wacampus.kr/community/reviews?course_id=81",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E4",
+      "evidenceSignal": "완료·결과",
+      "excerptKo": "월별 업무 순서를 적용해 실제 업무에 도움이 됐고 야근이 줄었다고 했다.",
+      "userAddedInputs": [
+        "월별 업무"
+      ],
+      "arrivalShape": [
+        "캘린더",
+        "체크리스트"
+      ],
+      "evidenceMode": "공개 수강 후기",
+      "confidence": "medium",
+      "interpretationKo": "완료, 결과 또는 실패가 구체적으로 언급됐다.",
+      "limitationKo": "공개 자기보고 또는 플랫폼의 자기신고형 완료 수다. 실제 행동을 FlowMe가 관찰한 결과가 아니다."
+    },
+    {
+      "evidenceId": "SUP-WAC-01-E03",
+      "sourceId": "SUP-WAC-01",
+      "platform": "와캠퍼스",
+      "category": "학습·커리어",
+      "sourceTitle": "실무 강의 수강 후기 모음",
+      "sourceUrl": "https://v2.wacampus.kr/community/reviews",
+      "evidenceUrl": "https://v2.wacampus.kr/community/reviews?course_id=&sort_review_id=desc",
+      "checkedAt": "2026-07-27",
+      "evidenceLevel": "E5",
+      "evidenceSignal": "반복·재사용",
+      "excerptKo": "같은 실무 강의를 두세 번째 반복 중이며 다시 시험에 도전하겠다고 했다.",
+      "userAddedInputs": [
+        "반복 횟수"
+      ],
+      "arrivalShape": [
+        "루틴",
+        "체크리스트"
+      ],
+      "evidenceMode": "공개 수강 후기",
+      "confidence": "medium",
+      "interpretationKo": "동일 콘텐츠를 반복하거나 변형·공유했다.",
+      "limitationKo": "공개 자기보고 또는 플랫폼의 자기신고형 완료 수다. 실제 행동을 FlowMe가 관찰한 결과가 아니다."
+    }
+  ],
+  "sourceIndex": [
+    {
+      "sourceId": "YT-EXE-01",
+      "platform": "YouTube",
+      "category": "운동·습관·챌린지",
+      "market": "global",
+      "sourceTitle": "Do This Everyday To Lose Weight | 2 Weeks Shred Challenge",
+      "sourceUrl": "https://www.youtube.com/watch?v=2MoGxae-zyo",
+      "provider": "Chloe Ting",
+      "contentFormat": "영상·공개 댓글",
+      "checkedAt": "2026-07-27",
+      "accessNote": "공개 영상과 최상위 댓글을 고정 방식으로 확인",
+      "sampleRole": "fixed_comparison"
+    },
+    {
+      "sourceId": "YT-EXE-02",
+      "platform": "YouTube",
+      "category": "운동·습관·챌린지",
+      "market": "global",
+      "sourceTitle": "30 minute fat burning home workout for beginners. Achievable, low impact results.",
+      "sourceUrl": "https://www.youtube.com/watch?v=gC_L9qAHVJ8",
+      "provider": "Body Project",
+      "contentFormat": "영상·공개 댓글",
+      "checkedAt": "2026-07-27",
+      "accessNote": "공개 영상과 최상위 댓글을 고정 방식으로 확인",
+      "sampleRole": "fixed_comparison"
+    },
+    {
+      "sourceId": "YT-EXE-03",
+      "platform": "YouTube",
+      "category": "운동·습관·챌린지",
+      "market": "ko",
+      "sourceTitle": "ENG)매일하는 30일 플랭크 챌린지 (feat.기초근력, 코어힘 기르기)",
+      "sourceUrl": "https://www.youtube.com/watch?v=v54Jtmi2BwU",
+      "provider": "힙으뜸",
+      "contentFormat": "영상·공개 댓글",
+      "checkedAt": "2026-07-27",
+      "accessNote": "공개 영상과 최상위 댓글을 고정 방식으로 확인",
+      "sampleRole": "fixed_comparison"
+    },
+    {
+      "sourceId": "YT-EXE-04",
+      "platform": "YouTube",
+      "category": "운동·습관·챌린지",
+      "market": "ko",
+      "sourceTitle": "하루 딱6분! 다리라인 살리는 운동 [허벅지&엉덩이]",
+      "sourceUrl": "https://www.youtube.com/watch?v=9WhpAVOSyl8",
+      "provider": "Thankyou BUBU",
+      "contentFormat": "영상·공개 댓글",
+      "checkedAt": "2026-07-27",
+      "accessNote": "공개 영상과 최상위 댓글을 고정 방식으로 확인",
+      "sampleRole": "fixed_comparison"
+    },
+    {
+      "sourceId": "YT-FOD-01",
+      "platform": "YouTube",
+      "category": "요리·식단",
+      "market": "global",
+      "sourceTitle": "How to Become a Meal Prep Pro this Year | The Beginner's Guide to Meal Prep",
+      "sourceUrl": "https://www.youtube.com/watch?v=NO-EbXMB4gc",
+      "provider": "Josh Cortis",
+      "contentFormat": "영상·공개 댓글",
+      "checkedAt": "2026-07-27",
+      "accessNote": "공개 영상과 최상위 댓글을 고정 방식으로 확인",
+      "sampleRole": "fixed_comparison"
+    },
+    {
+      "sourceId": "YT-FOD-02",
+      "platform": "YouTube",
+      "category": "요리·식단",
+      "market": "global",
+      "sourceTitle": "Healthy & Easy Asian Meal Prep (20 meals!)",
+      "sourceUrl": "https://www.youtube.com/watch?v=6SjCBgyKv9I",
+      "provider": "Doobydobap",
+      "contentFormat": "영상·공개 댓글",
+      "checkedAt": "2026-07-27",
+      "accessNote": "공개 영상과 최상위 댓글을 고정 방식으로 확인",
+      "sampleRole": "fixed_comparison"
+    },
+    {
+      "sourceId": "YT-FOD-03",
+      "platform": "YouTube",
+      "category": "요리·식단",
+      "market": "ko",
+      "sourceTitle": "일주일이 편한 밀프렙 다이어트 샐러드 도시락 만들기ㅣ아침이 여유로워지는 건강 식단ㅣ염증이 줄어드는 야채 레시피",
+      "sourceUrl": "https://www.youtube.com/watch?v=vK_HVnW-fHc",
+      "provider": "냠냠다이어트",
+      "contentFormat": "영상·공개 댓글",
+      "checkedAt": "2026-07-27",
+      "accessNote": "공개 영상과 최상위 댓글을 고정 방식으로 확인",
+      "sampleRole": "fixed_comparison"
+    },
+    {
+      "sourceId": "YT-FOD-04",
+      "platform": "YouTube",
+      "category": "요리·식단",
+      "market": "ko",
+      "sourceTitle": "밑반찬 없어도 돼요! 이렇게 하면 일주일이 편한 한그릇 요리 7가지 !",
+      "sourceUrl": "https://www.youtube.com/watch?v=qvqX-KaeU8s",
+      "provider": "Jungmi Kitchen",
+      "contentFormat": "영상·공개 댓글",
+      "checkedAt": "2026-07-27",
+      "accessNote": "공개 영상과 최상위 댓글을 고정 방식으로 확인",
+      "sampleRole": "fixed_comparison"
+    },
+    {
+      "sourceId": "YT-HOB-01",
+      "platform": "YouTube",
+      "category": "취미·만들기·프로젝트",
+      "market": "global",
+      "sourceTitle": "Origami Ice Cream Cone Tutorial (Swirl) - Easy for Beginners!",
+      "sourceUrl": "https://www.youtube.com/watch?v=ybmxJVe2QpA",
+      "provider": "Origami Tree",
+      "contentFormat": "영상·공개 댓글",
+      "checkedAt": "2026-07-27",
+      "accessNote": "공개 영상과 최상위 댓글을 고정 방식으로 확인",
+      "sampleRole": "fixed_comparison"
+    },
+    {
+      "sourceId": "YT-HOB-02",
+      "platform": "YouTube",
+      "category": "취미·만들기·프로젝트",
+      "market": "ko",
+      "sourceTitle": "진짜 쓸 수 있는! 미니 각티슈만들기🧻｜DIY Mini Paper Tissue Box",
+      "sourceUrl": "https://www.youtube.com/watch?v=0hCPJ7NRKVQ",
+      "provider": "DDany Crafts 따니네 만들기",
+      "contentFormat": "영상·공개 댓글",
+      "checkedAt": "2026-07-27",
+      "accessNote": "공개 영상과 최상위 댓글을 고정 방식으로 확인",
+      "sampleRole": "fixed_comparison"
+    },
+    {
+      "sourceId": "YT-HOB-03",
+      "platform": "YouTube",
+      "category": "취미·만들기·프로젝트",
+      "market": "ko",
+      "sourceTitle": "초간단! 무지개 물 말랑이 만들기｜(Easy) DIY Rainbow water squishy",
+      "sourceUrl": "https://www.youtube.com/watch?v=EeaivTak3E4",
+      "provider": "와우손꼬야 KKoya Crafts",
+      "contentFormat": "영상·공개 댓글",
+      "checkedAt": "2026-07-27",
+      "accessNote": "공개 영상과 최상위 댓글을 고정 방식으로 확인",
+      "sampleRole": "fixed_comparison"
+    },
+    {
+      "sourceId": "YT-HOB-04",
+      "platform": "YouTube",
+      "category": "취미·만들기·프로젝트",
+      "market": "ko",
+      "sourceTitle": "[종이접기] 색이 변하는 마법 반지! / 색종이 한 장으로 만들어요. /Origami magic ring",
+      "sourceUrl": "https://www.youtube.com/watch?v=PDAU7YZjE_M",
+      "provider": "Origami Jina",
+      "contentFormat": "영상·공개 댓글",
+      "checkedAt": "2026-07-27",
+      "accessNote": "공개 영상과 최상위 댓글을 고정 방식으로 확인",
+      "sampleRole": "fixed_comparison"
+    },
+    {
+      "sourceId": "YT-HOM-01",
+      "platform": "YouTube",
+      "category": "집·정리·생활관리",
+      "market": "global",
+      "sourceTitle": "Let's Declutter Shoes & Coats - Day 1 - 30 Day Declutter Challenge",
+      "sourceUrl": "https://www.youtube.com/watch?v=nHAbsGNcLFA",
+      "provider": "Clutterbug",
+      "contentFormat": "영상·공개 댓글",
+      "checkedAt": "2026-07-27",
+      "accessNote": "공개 영상과 최상위 댓글을 고정 방식으로 확인",
+      "sampleRole": "fixed_comparison"
+    },
+    {
+      "sourceId": "YT-HOM-02",
+      "platform": "YouTube",
+      "category": "집·정리·생활관리",
+      "market": "global",
+      "sourceTitle": "Declutter Cleaning Supplies - Day 5 - 30 Day Declutter Challenge",
+      "sourceUrl": "https://www.youtube.com/watch?v=74fLf2RcYiM",
+      "provider": "Clutterbug",
+      "contentFormat": "영상·공개 댓글",
+      "checkedAt": "2026-07-27",
+      "accessNote": "공개 영상과 최상위 댓글을 고정 방식으로 확인",
+      "sampleRole": "fixed_comparison"
+    },
+    {
+      "sourceId": "YT-HOM-03",
+      "platform": "YouTube",
+      "category": "집·정리·생활관리",
+      "market": "ko",
+      "sourceTitle": "쉽고 깔끔한 냉장고 정리 방법 | 청소루틴 | 정리정돈 | 주방정리 | 집정리 | 냉장고 용기",
+      "sourceUrl": "https://www.youtube.com/watch?v=HYvrHLXyxvA",
+      "provider": "티아 Tia",
+      "contentFormat": "영상·공개 댓글",
+      "checkedAt": "2026-07-27",
+      "accessNote": "공개 영상과 최상위 댓글을 고정 방식으로 확인",
+      "sampleRole": "fixed_comparison"
+    },
+    {
+      "sourceId": "YT-HOM-04",
+      "platform": "YouTube",
+      "category": "집·정리·생활관리",
+      "market": "ko",
+      "sourceTitle": "SUB) 우리집 옷장이 사계절 내내 단정한 이유/ 늘 궁금한 남의 집 옷장, 정리 노하우/ 18가지 옷종류 접기부터 보관까지 꿀팁대방출/ Organize closet with me",
+      "sourceUrl": "https://www.youtube.com/watch?v=OEk5bA7KFEo",
+      "provider": "SisLetter",
+      "contentFormat": "영상·공개 댓글",
+      "checkedAt": "2026-07-27",
+      "accessNote": "공개 영상과 최상위 댓글을 고정 방식으로 확인",
+      "sampleRole": "fixed_comparison"
+    },
+    {
+      "sourceId": "YT-LRN-01",
+      "platform": "YouTube",
+      "category": "학습·커리어",
+      "market": "global",
+      "sourceTitle": "Daily Study Routine for Learning a Language - 15/30/15 method",
+      "sourceUrl": "https://www.youtube.com/watch?v=vdWoVs_ypyE",
+      "provider": "Alex Rawlings",
+      "contentFormat": "영상·공개 댓글",
+      "checkedAt": "2026-07-27",
+      "accessNote": "공개 영상과 최상위 댓글을 고정 방식으로 확인",
+      "sampleRole": "fixed_comparison"
+    },
+    {
+      "sourceId": "YT-LRN-02",
+      "platform": "YouTube",
+      "category": "학습·커리어",
+      "market": "global",
+      "sourceTitle": "How I Created a 30-Day Language Study Plan That Works!",
+      "sourceUrl": "https://www.youtube.com/watch?v=4dyo9MZ9c50",
+      "provider": "Shea Jordan",
+      "contentFormat": "영상·공개 댓글",
+      "checkedAt": "2026-07-27",
+      "accessNote": "공개 영상과 최상위 댓글을 고정 방식으로 확인",
+      "sampleRole": "fixed_comparison"
+    },
+    {
+      "sourceId": "YT-LRN-03",
+      "platform": "YouTube",
+      "category": "학습·커리어",
+      "market": "global",
+      "sourceTitle": "ENGLISH STUDY PLAN | Boost Your English Skills With This Morning Study Routine",
+      "sourceUrl": "https://www.youtube.com/watch?v=qU07t-VHrew",
+      "provider": "Speak English With Tiffani",
+      "contentFormat": "영상·공개 댓글",
+      "checkedAt": "2026-07-27",
+      "accessNote": "공개 영상과 최상위 댓글을 고정 방식으로 확인",
+      "sampleRole": "fixed_comparison"
+    },
+    {
+      "sourceId": "YT-LRN-04",
+      "platform": "YouTube",
+      "category": "학습·커리어",
+      "market": "ko",
+      "sourceTitle": "영어 공부 이대로만 해보세요 - 100% 순수 국내파 해외 직장인이 하루 30분 딱 정해드립니다 (말이터지는 영어공부 노하우/자료/툴 방법 총정리)",
+      "sourceUrl": "https://www.youtube.com/watch?v=cPfLsKldido",
+      "provider": "할리노트",
+      "contentFormat": "영상·공개 댓글",
+      "checkedAt": "2026-07-27",
+      "accessNote": "공개 영상과 최상위 댓글을 고정 방식으로 확인",
+      "sampleRole": "fixed_comparison"
+    },
+    {
+      "sourceId": "YT-PAR-01",
+      "platform": "YouTube",
+      "category": "육아·가족",
+      "market": "global",
+      "sourceTitle": "40 Easy DIY Toddler Activities for Busy Parents - How to Keep a Toddler Entertained at Home.",
+      "sourceUrl": "https://www.youtube.com/watch?v=BcDuq8-YiwM",
+      "provider": "Lily b Coco ",
+      "contentFormat": "영상·공개 댓글",
+      "checkedAt": "2026-07-27",
+      "accessNote": "공개 영상과 최상위 댓글을 고정 방식으로 확인",
+      "sampleRole": "fixed_comparison"
+    },
+    {
+      "sourceId": "YT-PAR-02",
+      "platform": "YouTube",
+      "category": "육아·가족",
+      "market": "global",
+      "sourceTitle": "10 Simple Amazing KIDS ACTIVITY IDEAS to keep them entertained | 2+ years CHILDREN ACTIVITIES",
+      "sourceUrl": "https://www.youtube.com/watch?v=HBSjEeM_U68",
+      "provider": "Savory and Sweet Food",
+      "contentFormat": "영상·공개 댓글",
+      "checkedAt": "2026-07-27",
+      "accessNote": "공개 영상과 최상위 댓글을 고정 방식으로 확인",
+      "sampleRole": "fixed_comparison"
+    },
+    {
+      "sourceId": "YT-PAR-03",
+      "platform": "YouTube",
+      "category": "육아·가족",
+      "market": "global",
+      "sourceTitle": "FUN & EASY ACTIVITIES FOR 18-24 MONTHS! | Developmental Toddler Activities 18-24 Months",
+      "sourceUrl": "https://www.youtube.com/watch?v=m5rhaqrD2EA",
+      "provider": "Pocketful of Parenting",
+      "contentFormat": "영상·공개 댓글",
+      "checkedAt": "2026-07-27",
+      "accessNote": "공개 영상과 최상위 댓글을 고정 방식으로 확인",
+      "sampleRole": "fixed_comparison"
+    },
+    {
+      "sourceId": "YT-PAR-04",
+      "platform": "YouTube",
+      "category": "육아·가족",
+      "market": "global",
+      "sourceTitle": "MONTESSORI AT HOME: Numbers and Counting Activities for Toddlers & Preschool",
+      "sourceUrl": "https://www.youtube.com/watch?v=14yItz-CNNI",
+      "provider": "Hapa Family",
+      "contentFormat": "영상·공개 댓글",
+      "checkedAt": "2026-07-27",
+      "accessNote": "공개 영상과 최상위 댓글을 고정 방식으로 확인",
+      "sampleRole": "fixed_comparison"
+    },
+    {
+      "sourceId": "YT-TRV-01",
+      "platform": "YouTube",
+      "category": "여행·외출",
+      "market": "global",
+      "sourceTitle": "Travel Checklist: 37 Things to Do Before Your Next Trip",
+      "sourceUrl": "https://www.youtube.com/watch?v=vFN7uDM8SrA",
+      "provider": "Pack Hacker",
+      "contentFormat": "영상·공개 댓글",
+      "checkedAt": "2026-07-27",
+      "accessNote": "공개 영상과 최상위 댓글을 고정 방식으로 확인",
+      "sampleRole": "fixed_comparison"
+    },
+    {
+      "sourceId": "YT-TRV-02",
+      "platform": "YouTube",
+      "category": "여행·외출",
+      "market": "global",
+      "sourceTitle": "11 Minimalist Packing Tips For Travel",
+      "sourceUrl": "https://www.youtube.com/watch?v=9PcDIwyYatE",
+      "provider": "Pack Hacker",
+      "contentFormat": "영상·공개 댓글",
+      "checkedAt": "2026-07-27",
+      "accessNote": "공개 영상과 최상위 댓글을 고정 방식으로 확인",
+      "sampleRole": "fixed_comparison"
+    },
+    {
+      "sourceId": "YT-TRV-03",
+      "platform": "YouTube",
+      "category": "여행·외출",
+      "market": "ko",
+      "sourceTitle": "이대로만 따라해도 파리 관광지 다 감. 걸어서 3일 파리 완전정복",
+      "sourceUrl": "https://www.youtube.com/watch?v=5waWQ0_A9Is",
+      "provider": "토모 트래블 : 유럽여행 플래너",
+      "contentFormat": "영상·공개 댓글",
+      "checkedAt": "2026-07-27",
+      "accessNote": "공개 영상과 최상위 댓글을 고정 방식으로 확인",
+      "sampleRole": "fixed_comparison"
+    },
+    {
+      "sourceId": "YT-TRV-04",
+      "platform": "YouTube",
+      "category": "여행·외출",
+      "market": "ko",
+      "sourceTitle": "부산 2박3일 여행  계획없이 가도 그대로 따라하면 성공하는 부산 여행 코스! 효율적인 동선과 알짜코스를 그대로 담았어요.  국제시장, 부평깡통시장, 감천마을, 광안리, 해운대 등",
+      "sourceUrl": "https://www.youtube.com/watch?v=i67V5ZPL7uo",
+      "provider": "일상이여행 Everyday travel",
+      "contentFormat": "영상·공개 댓글",
+      "checkedAt": "2026-07-27",
+      "accessNote": "공개 영상과 최상위 댓글을 고정 방식으로 확인",
+      "sampleRole": "fixed_comparison"
+    },
+    {
+      "sourceId": "SUP-REC-01",
+      "platform": "만개의레시피",
+      "category": "요리·식단",
+      "market": "ko",
+      "sourceTitle": "야채 참치 볶음",
+      "sourceUrl": "https://www.10000recipe.com/recipe/6865737",
+      "provider": "공개 레시피 제작자",
+      "contentFormat": "레시피·조리 후기",
+      "checkedAt": "2026-07-27",
+      "captureAsset": "source-10000recipe-tuna.png",
+      "accessNote": "로그인 없이 레시피와 공개 후기를 확인",
+      "sampleRole": "strong_case_discovery"
+    },
+    {
+      "sourceId": "SUP-REC-02",
+      "platform": "만개의레시피",
+      "category": "요리·식단",
+      "market": "ko",
+      "sourceTitle": "닭볶음탕 황금레시피",
+      "sourceUrl": "https://www.10000recipe.com/recipe/6876357",
+      "provider": "공개 레시피 제작자",
+      "contentFormat": "레시피·조리 후기",
+      "checkedAt": "2026-07-27",
+      "captureAsset": "source-10000recipe-chicken.png",
+      "accessNote": "로그인 없이 레시피와 공개 후기를 확인",
+      "sampleRole": "strong_case_discovery"
+    },
+    {
+      "sourceId": "SUP-REC-03",
+      "platform": "만개의레시피",
+      "category": "요리·식단",
+      "market": "ko",
+      "sourceTitle": "소고기 미역국 끓이는 법",
+      "sourceUrl": "https://www.10000recipe.com/recipe/6873683",
+      "provider": "공개 레시피 제작자",
+      "contentFormat": "레시피·조리 후기",
+      "checkedAt": "2026-07-27",
+      "accessNote": "로그인 없이 레시피와 공개 후기를 확인",
+      "sampleRole": "strong_case_discovery"
+    },
+    {
+      "sourceId": "SUP-REC-04",
+      "platform": "만개의레시피",
+      "category": "요리·식단",
+      "market": "ko",
+      "sourceTitle": "열무물김치 담는 법",
+      "sourceUrl": "https://www.10000recipe.com/recipe/6934861",
+      "provider": "공개 레시피 제작자",
+      "contentFormat": "레시피·조리 후기",
+      "checkedAt": "2026-07-27",
+      "accessNote": "로그인 없이 레시피와 공개 후기를 확인",
+      "sampleRole": "strong_case_discovery"
+    },
+    {
+      "sourceId": "SUP-INS-01",
+      "platform": "Instructables",
+      "category": "취미·만들기·프로젝트",
+      "market": "global",
+      "sourceTitle": "How to Make Slime Without Borax",
+      "sourceUrl": "https://www.instructables.com/How-to-Make-Slime-Without-Borax/",
+      "provider": "Instructables 제작자",
+      "contentFormat": "단계형 만들기 가이드",
+      "checkedAt": "2026-07-27",
+      "captureAsset": "source-instructables-slime.png",
+      "accessNote": "공개 페이지의 People Made This Project 수를 확인",
+      "sampleRole": "strong_case_discovery"
+    },
+    {
+      "sourceId": "SUP-INS-02",
+      "platform": "Instructables",
+      "category": "취미·만들기·프로젝트",
+      "market": "global",
+      "sourceTitle": "Sewing the Whip Stitch",
+      "sourceUrl": "https://www.instructables.com/Sewing-Whip-Stitch-Coasters/",
+      "provider": "Instructables 제작자",
+      "contentFormat": "단계형 만들기 가이드",
+      "checkedAt": "2026-07-27",
+      "captureAsset": "source-instructables-coaster.png",
+      "accessNote": "공개 페이지의 People Made This Project 수를 확인",
+      "sampleRole": "strong_case_discovery"
+    },
+    {
+      "sourceId": "SUP-INS-03",
+      "platform": "Instructables",
+      "category": "취미·만들기·프로젝트",
+      "market": "global",
+      "sourceTitle": "Origami Single-sheet Cube",
+      "sourceUrl": "https://www.instructables.com/How-to-make-an-Origami-single-sheet-cube/",
+      "provider": "Instructables 제작자",
+      "contentFormat": "단계형 만들기 가이드",
+      "checkedAt": "2026-07-27",
+      "accessNote": "공개 페이지의 People Made This Project 수를 확인",
+      "sampleRole": "strong_case_discovery"
+    },
+    {
+      "sourceId": "SUP-INS-04",
+      "platform": "Instructables",
+      "category": "취미·만들기·프로젝트",
+      "market": "global",
+      "sourceTitle": "Pop Up Skyline Card",
+      "sourceUrl": "https://www.instructables.com/Pop-Up-Skyline-Card/",
+      "provider": "Instructables 제작자",
+      "contentFormat": "단계형 만들기 가이드",
+      "checkedAt": "2026-07-27",
+      "accessNote": "공개 페이지의 People Made This Project 수를 확인",
+      "sampleRole": "strong_case_discovery"
+    },
+    {
+      "sourceId": "SUP-IFX-01",
+      "platform": "iFixit",
+      "category": "취미·만들기·프로젝트",
+      "market": "global",
+      "sourceTitle": "iPhone 4S Battery Replacement",
+      "sourceUrl": "https://www.ifixit.com/Guide/iPhone+4S+Battery+Replacement/7111",
+      "provider": "iFixit 편집 가이드",
+      "contentFormat": "단계형 수리 가이드",
+      "checkedAt": "2026-07-27",
+      "accessNote": "공개 페이지의 completed this guide 수를 확인",
+      "sampleRole": "strong_case_discovery"
+    },
+    {
+      "sourceId": "SUP-IFX-02",
+      "platform": "iFixit",
+      "category": "취미·만들기·프로젝트",
+      "market": "global",
+      "sourceTitle": "iPhone 12 Battery Replacement",
+      "sourceUrl": "https://www.ifixit.com/Guide/iPhone+12+Battery+Replacement/140588",
+      "provider": "iFixit 편집 가이드",
+      "contentFormat": "단계형 수리 가이드",
+      "checkedAt": "2026-07-27",
+      "captureAsset": "source-ifixit-iphone12.png",
+      "accessNote": "공개 페이지의 completed this guide 수를 확인",
+      "sampleRole": "strong_case_discovery"
+    },
+    {
+      "sourceId": "SUP-IFX-03",
+      "platform": "iFixit",
+      "category": "취미·만들기·프로젝트",
+      "market": "global",
+      "sourceTitle": "How to Repair a Tear Inside a Backpack",
+      "sourceUrl": "https://www.ifixit.com/Guide/How+to+Repair+a+Tear+Inside+a+Backpack/53528",
+      "provider": "iFixit 커뮤니티 가이드",
+      "contentFormat": "단계형 수리 가이드",
+      "checkedAt": "2026-07-27",
+      "accessNote": "공개 페이지의 completed this guide 수를 확인",
+      "sampleRole": "strong_case_discovery"
+    },
+    {
+      "sourceId": "SUP-IFX-04",
+      "platform": "iFixit",
+      "category": "취미·만들기·프로젝트",
+      "market": "global",
+      "sourceTitle": "How to Lubricate a Zipper",
+      "sourceUrl": "https://www.ifixit.com/Guide/How+to+Lubricate+a+Zipper/19450",
+      "provider": "iFixit 커뮤니티 가이드",
+      "contentFormat": "단계형 수리 가이드",
+      "checkedAt": "2026-07-27",
+      "accessNote": "공개 페이지의 completed this guide 수를 확인",
+      "sampleRole": "strong_case_discovery"
+    },
+    {
+      "sourceId": "SUP-IG-01",
+      "platform": "Instagram",
+      "category": "육아·가족",
+      "market": "ko",
+      "sourceTitle": "수정 가능한 초기 이유식 식단표",
+      "sourceUrl": "https://www.instagram.com/p/DX6-viaj3eV/",
+      "provider": "육아 콘텐츠 제작자",
+      "contentFormat": "게시물·댓글·엑셀 안내",
+      "checkedAt": "2026-07-27",
+      "captureAsset": "evidence-instagram-mealplan-anonymized.png",
+      "accessNote": "로그인 유도 화면이 있으나 공개 게시물과 일부 댓글을 확인",
+      "sampleRole": "strong_case_discovery"
+    },
+    {
+      "sourceId": "SUP-IG-02",
+      "platform": "Instagram",
+      "category": "육아·가족",
+      "market": "ko",
+      "sourceTitle": "예비 초등학교 입학 체크리스트",
+      "sourceUrl": "https://www.instagram.com/p/DSPsMRwj1eC/",
+      "provider": "초등 학습·정서 콘텐츠 제작자",
+      "contentFormat": "게시물·댓글·파일 DM 안내",
+      "checkedAt": "2026-07-27",
+      "captureAsset": "evidence-instagram-school-checklist-anonymized.png",
+      "accessNote": "로그인 유도 화면이 있으나 공개 게시물과 일부 댓글을 확인",
+      "sampleRole": "strong_case_discovery"
+    },
+    {
+      "sourceId": "SUP-THR-01",
+      "platform": "Threads",
+      "category": "육아·가족",
+      "market": "ko",
+      "sourceTitle": "돌잔치 준비 체크리스트 엑셀",
+      "sourceUrl": "https://www.threads.com/@momentree.kr/post/DXJWpX8Dyrs",
+      "provider": "가족행사 콘텐츠 제작자",
+      "contentFormat": "게시물·답글·파일 DM 안내",
+      "checkedAt": "2026-07-27",
+      "captureAsset": "evidence-threads-checklist-anonymized.png",
+      "accessNote": "로그인 없이 공개 스레드와 답글을 확인",
+      "sampleRole": "strong_case_discovery"
+    },
+    {
+      "sourceId": "SUP-WAC-01",
+      "platform": "와캠퍼스",
+      "category": "학습·커리어",
+      "market": "ko",
+      "sourceTitle": "실무 강의 수강 후기 모음",
+      "sourceUrl": "https://v2.wacampus.kr/community/reviews",
+      "provider": "와캠퍼스 수강생 공개 후기",
+      "contentFormat": "강의 후기·업무 적용·엑셀 요청",
+      "checkedAt": "2026-07-27",
+      "accessNote": "로그인 없이 공개 후기와 페이지별 과목명을 확인",
+      "sampleRole": "strong_case_discovery"
+    }
+  ],
+  "officialFeatureSources": [
+    {
+      "platform": "Instructables",
+      "url": "https://www.instructables.com/I-Made-It-a-Teachers-Guide/",
+      "findingKo": "I Made It은 전체 새 가이드를 쓰지 않고 사진과 짧은 설명으로 완성 결과를 남기는 작은 기여 단위다."
+    },
+    {
+      "platform": "iFixit",
+      "url": "https://www.ifixit.com/News/14165/three-new-guide-features",
+      "findingKo": "I did it 버튼은 완료한 가이드를 프로필과 연결하고 누적 수리 횟수를 남긴다."
+    }
+  ],
+  "interpretationLimits": [
+    "공개 댓글과 완료 버튼은 자기보고다. 실제 행동의 독립적 관찰이 아니다.",
+    "강한 사례 탐색 표본은 사례 발견용이며 비율 계산에 쓰지 않는다.",
+    "플랫폼마다 댓글과 완료 버튼을 쓰는 문화가 달라 단순 수치 비교를 피한다.",
+    "FlowMe의 사용성, 전환율, 반복률은 아직 미측정이다."
+  ]
+}

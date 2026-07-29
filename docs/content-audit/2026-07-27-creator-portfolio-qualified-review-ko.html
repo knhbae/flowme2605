@@ -1,0 +1,4113 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe 제작자 포트폴리오 Qualified v2</title>
+  <style>
+    :root {
+      --ink: #17202a;
+      --muted: #5c6673;
+      --line: #dfe3e8;
+      --paper: #ffffff;
+      --canvas: #f4f6f8;
+      --blue: #1d5d8f;
+      --green: #196a4b;
+      --gold: #8a5b00;
+      --red: #9a3b35;
+      --soft-blue: #eaf3fa;
+      --soft-green: #e8f5ee;
+      --soft-gold: #fff4d6;
+      --soft-red: #fbeceb;
+    }
+    * { box-sizing: border-box; }
+    html { color-scheme: light; }
+    body {
+      margin: 0;
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: Pretendard, "Noto Sans KR", system-ui, sans-serif;
+      line-height: 1.55;
+      letter-spacing: 0;
+    }
+    a { color: var(--blue); overflow-wrap: anywhere; }
+    button, summary { font: inherit; }
+    .page { max-width: 1180px; margin: 0 auto; padding: 28px 20px 80px; }
+    .hero {
+      background: var(--paper);
+      border-bottom: 4px solid var(--ink);
+      padding: 26px 0 22px;
+    }
+    .hero .inner { max-width: 1180px; margin: 0 auto; padding: 0 20px; }
+    .hero h1 { margin: 6px 0 8px; font-size: clamp(26px, 4vw, 42px); line-height: 1.16; }
+    .hero p { margin: 0; max-width: 780px; color: var(--muted); }
+    .eyebrow { color: var(--blue); font-size: 12px; font-weight: 800; }
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .summary-grid article {
+      border: 1px solid var(--line);
+      background: var(--paper);
+      padding: 14px;
+      min-width: 0;
+    }
+    .summary-grid span { display: block; color: var(--muted); font-size: 12px; }
+    .summary-grid strong { display: block; margin-top: 4px; font-size: 24px; }
+    .notice {
+      margin: 20px 0;
+      border-left: 5px solid var(--gold);
+      background: var(--soft-gold);
+      padding: 14px 16px;
+    }
+    .notice strong { display: block; margin-bottom: 4px; }
+    .filters {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 10px 0;
+      background: color-mix(in srgb, var(--canvas) 94%, transparent);
+      scrollbar-width: thin;
+    }
+    .filter {
+      flex: 0 0 auto;
+      border: 1px solid #aeb7c0;
+      background: var(--paper);
+      color: var(--ink);
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+    .filter.active { background: var(--ink); color: white; border-color: var(--ink); }
+    .section-heading { margin: 34px 0 14px; }
+    .section-heading h2 { margin: 0; font-size: 24px; }
+    .section-heading p { margin: 4px 0 0; color: var(--muted); }
+    .candidate-list { display: grid; gap: 18px; }
+    .candidate-card, .boundary-card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-top: 4px solid var(--blue);
+      padding: 20px;
+      min-width: 0;
+    }
+    .boundary-card { border-top-color: var(--gold); }
+    .candidate-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .candidate-header h3 { margin: 3px 0 0; font-size: 22px; line-height: 1.25; }
+    .creator-name { margin: 3px 0 0; color: var(--muted); }
+    .decision-stack, .chip-row { display: flex; flex-wrap: wrap; gap: 6px; }
+    .decision-stack { justify-content: flex-end; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      border: 1px solid var(--line);
+      padding: 3px 8px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .badge-go { color: var(--green); background: var(--soft-green); border-color: #9ac9b4; }
+    .badge-modify { color: var(--gold); background: var(--soft-gold); border-color: #ddc27e; }
+    .badge-hold { color: var(--red); background: var(--soft-red); border-color: #e0aaa7; }
+    .badge-neutral { color: #34404c; background: #f4f5f6; }
+    .promise {
+      margin: 16px 0 10px;
+      border-left: 4px solid var(--green);
+      padding: 10px 12px;
+      background: var(--soft-green);
+      font-weight: 750;
+    }
+    .source-panel {
+      display: grid;
+      grid-template-columns: minmax(260px, 1fr) 1fr;
+      gap: 14px;
+      margin-top: 16px;
+      border: 1px solid var(--line);
+      padding: 12px;
+    }
+    .source-panel img {
+      width: 100%;
+      max-height: 320px;
+      object-fit: cover;
+      object-position: top;
+      border: 1px solid var(--line);
+      background: #eef1f4;
+    }
+    .source-panel strong { display: block; margin-bottom: 6px; }
+    .source-panel p { color: var(--muted); margin: 10px 0 0; }
+    .evidence-grid, .preflight-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .evidence-grid article, .preflight-grid article {
+      border: 1px solid var(--line);
+      padding: 11px;
+      min-width: 0;
+    }
+    .evidence-grid span, .preflight-grid span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .evidence-grid strong { display: block; margin: 4px 0; font-size: 13px; }
+    .evidence-grid p, .preflight-grid p { margin: 4px 0 0; font-size: 13px; }
+    .full-content { margin-top: 14px; border: 1px solid var(--line); }
+    .full-content > summary, .step > summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      cursor: pointer;
+      padding: 13px;
+      font-weight: 850;
+    }
+    .full-content > summary { background: var(--soft-blue); }
+    .full-content > summary small, .step > summary small { color: var(--muted); font-weight: 650; }
+    .flow-stack { padding: 10px; }
+    .flow { border: 1px solid var(--line); margin-bottom: 10px; }
+    .flow:last-child { margin-bottom: 0; }
+    .flow-heading {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px;
+      background: #f8f9fa;
+      border-bottom: 1px solid var(--line);
+    }
+    .flow-heading small { color: var(--muted); }
+    .flow-heading h4 { margin: 2px 0 0; font-size: 16px; }
+    .step { border-bottom: 1px solid var(--line); }
+    .step:last-child { border-bottom: 0; }
+    .item-list { list-style: none; margin: 0; padding: 0 12px 12px; }
+    .item {
+      display: grid;
+      grid-template-columns: 18px minmax(0, 1fr);
+      gap: 9px;
+      padding: 10px 0;
+      border-top: 1px solid #edf0f2;
+    }
+    .check { width: 16px; height: 16px; border: 1.5px solid #77818c; margin-top: 3px; }
+    .item-body { min-width: 0; }
+    .item-body strong { font-size: 14px; overflow-wrap: anywhere; }
+    .item-body p { margin: 4px 0 0; color: var(--muted); font-size: 13px; overflow-wrap: anywhere; }
+    .trace { margin-top: 6px; }
+    .trace summary { color: var(--blue); cursor: pointer; font-size: 12px; }
+    .trace-list { display: grid; gap: 4px; padding: 7px 0 0; }
+    .trace-list a { font-size: 12px; }
+    .boundary-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .promotion { display: grid; gap: 3px; background: var(--soft-gold); padding: 10px; }
+    .promotion span { color: #5f470c; }
+    .source-link { display: inline-block; margin-top: 10px; }
+    .audit-list { display: grid; gap: 8px; }
+    .audit-card {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px 16px;
+      align-items: start;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      padding: 12px;
+    }
+    .audit-card span { display: block; color: var(--muted); font-size: 12px; }
+    .audit-card p { grid-column: 1 / -1; margin: 0; color: var(--muted); font-size: 13px; }
+    .audit-card small { color: var(--gold); }
+    .audit-decisions { display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-end; }
+    .hidden { display: none !important; }
+    .footer { margin-top: 36px; color: var(--muted); font-size: 12px; }
+    @media (max-width: 760px) {
+      .page, .hero .inner { padding-left: 12px; padding-right: 12px; }
+      .summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .candidate-card, .boundary-card { padding: 14px; }
+      .candidate-header { display: grid; }
+      .decision-stack { justify-content: flex-start; }
+      .source-panel { grid-template-columns: minmax(0, 1fr); }
+      .source-panel img { max-height: 260px; }
+      .evidence-grid, .preflight-grid { grid-template-columns: minmax(0, 1fr); }
+      .boundary-grid { grid-template-columns: minmax(0, 1fr); }
+      .audit-card { grid-template-columns: minmax(0, 1fr); }
+      .audit-decisions { justify-content: flex-start; }
+      .audit-card p { grid-column: auto; }
+      .full-content > summary, .step > summary { align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="inner">
+      <div class="eyebrow">2026-07-27 · creator portfolio qualification</div>
+      <h1>제작자 후보 27명, 로직 이관 8개로 정리</h1>
+      <p>조사상 유망함과 실제 로직 전환 가능성, 공개 활용 가능성을 분리했다. 아래 8개는 source row 기반 로직 검토 대상이며 공개 Go는 별도 권리 근거가 있는 경우만 표시한다.</p>
+      <div class="summary-grid">
+        <article><span>정규화한 주체</span><strong>27명</strong></article>
+        <article><span>다시 연 원문</span><strong>15개</strong></article>
+        <article><span>로직 이관</span><strong>8개</strong></article>
+        <article><span>공개 Go</span><strong>1개</strong></article>
+      </div>
+    </div>
+  </header>
+  <main class="page">
+    <div class="notice">
+      <strong>판정 읽는 법</strong>
+      조사 Go는 인기와 가능성, 로직 Go는 source row와 실행 구조, 공개 Go는 직접 확인한 권리 근거까지 통과했다는 뜻이다. 세 상태를 합치지 않는다.
+    </div>
+    <nav class="filters" aria-label="후보 필터">
+      <button class="filter active" data-filter="all">전체</button>
+      <button class="filter" data-filter="selected">로직 이관 8</button>
+      <button class="filter" data-filter="public-go">공개 Go</button>
+      <button class="filter" data-filter="public-modify">공개 Modify</button>
+      <button class="filter" data-filter="public-hold">공개 Hold</button>
+      <button class="filter" data-filter="boundary">경계 사례</button>
+    </nav>
+
+    <section>
+      <div class="section-heading">
+        <h2>로직 이관 후보</h2>
+        <p>주요 결과, 원문 캡처, 권리 상태, 전체 Flow를 한 카드에서 확인한다.</p>
+      </div>
+      <div class="candidate-list"><article class="candidate-card" data-kind="selected" data-logic="Go" data-public="Modify">
+    <header class="candidate-header">
+      <div>
+        <div class="eyebrow">집·살림 · 브랜드</div>
+        <h3>이사 D-30 체크리스트</h3>
+        <p class="creator-name">아정당</p>
+      </div>
+      <div class="decision-stack">
+        <span class="badge badge-go">로직 Go</span>
+        <span class="badge badge-modify">공개 Modify</span>
+      </div>
+    </header>
+    <div class="promise">이사일을 기준으로 D-30·D-10·D-3·D-1·당일 할 일이 생긴다.</div>
+    <div class="chip-row">
+      <span class="badge badge-neutral">full_flow</span>
+      <span class="badge badge-neutral">calendar_checklist</span>
+      <span class="badge badge-neutral">최초 입력 1개</span>
+      <span class="badge badge-modify">공개 전 허가 필요</span>
+    </div>
+    <div class="source-panel">
+      <img src="2026-07-27-creator-portfolio-qualified-assets/creator-home-ajd-source.png" alt="이사 D-30 체크리스트 원문 캡처">
+      <div>
+        <strong>원문</strong>
+        <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363</a>
+        <p>공개 페이지의 제목·링크는 표시할 수 있지만, D-day 체크 행 전체를 공개 Flow로 재배포하려면 권리자 확인이 필요하다.</p>
+      </div>
+    </div>
+    <div class="evidence-grid">
+    <article>
+      <span>사용자 반응</span>
+      <strong>observed_current</strong>
+      <p>2026-07-27 재확인: 조회 98,874 · 스크랩 20</p>
+    </article>
+    <article>
+      <span>자료 요청</span>
+      <strong>observed_current</strong>
+      <p>PDF·XLSX·Notion 체크리스트를 원문에서 직접 제공한다.</p>
+    </article>
+    <article>
+      <span>실행 결과</span>
+      <strong>unknown</strong>
+      <p>실행·완주·수정 결과를 독립적으로 확인하지 못했다.</p>
+    </article>
+    <article>
+      <span>제작자 응답</span>
+      <strong>unknown</strong>
+      <p>댓글 또는 후기는 보이지만 제작자 본인의 답변 여부와 답변률은 확인하지 못했다.</p>
+    </article>
+  </div>
+    <div class="preflight-grid">
+      <article><span>한 가지 사용자 일</span><p>이사일을 기준으로 원문 D-day 체크 행을 빠뜨리지 않고 실행한다.</p></article>
+      <article><span>첫 행동</span><p>이사 방식과 이사업체 정하기</p></article>
+      <article><span>날짜 규칙</span><p>원문의 D-day 구간을 그대로 사용한다.</p></article>
+      <article><span>현재 UX 적합성</span><p>항목 수가 많지만 D-day별로 접으면 캘린더·체크리스트 구조에 자연스럽다.</p></article>
+    </div>
+    <details class="full-content">
+      <summary>
+        <span>실제 Flow 전체 보기</span>
+        <small>1 Flow · 6 Step · 27 Item</small>
+      </summary>
+      <div class="flow-stack">
+        <section class="flow">
+    <div class="flow-heading">
+      <div>
+        <small>Flow 1</small>
+        <h4>이사 D-30 체크리스트</h4>
+      </div>
+      <span class="badge badge-neutral">6 Step</span>
+    </div>
+    <details class="step" open>
+    <summary>
+      <span>D-30 · 큰 결정과 예약</span>
+      <small>4개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>이사 방식과 이사업체 정하기</strong>
+      <p>선택한 방식, 업체명, 견적 링크와 예약 내용을 같은 메모에 적는다.</p>
+      <details class="trace">
+    <summary>원문 대응 3개</summary>
+    <div class="trace-list">
+      <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 D-30 행 · 포장이사·반포장이사·일반이사 중 방식 선택
+          </a><a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 D-30 행 · 이사업체 견적 비교와 예약
+          </a><a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 D-30 행 · 입주청소 업체 견적 비교와 예약
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>새집 상태 확인하고 필요한 수리 잡기</strong>
+      <p>새집 현장 점검 · 도배·장판·수리 필요 항목 확인과 일정 잡기</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 D-30 행 · 새집 현장 점검
+          </a><a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 D-30 행 · 도배·장판·수리 필요 항목 확인과 일정 잡기
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>가져가지 않을 물건 처분 시작하기</strong>
+      <p>대형폐기물·중고판매·기부 등 처분 대상 정리</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 D-30 행 · 대형폐기물·중고판매·기부 등 처분 대상 정리
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>학교 전학과 돌봄 계획 세우기</strong>
+      <p>자녀 학교 전학 절차 확인 · 이사 당일 아이·어르신·반려동물 돌봄 계획</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 D-30 행 · 자녀 학교 전학 절차 확인
+          </a><a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 D-30 행 · 이사 당일 아이·어르신·반려동물 돌봄 계획
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details><details class="step" >
+    <summary>
+      <span>D-10 · 주소·서비스·짐 줄이기</span>
+      <small>5개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>우편·배송·전출 주소 변경하기</strong>
+      <p>우편물 주소 이전 신청 · 정기배송 주소 변경 또는 중지 · 관리사무소에 퇴거 일정 알리기</p>
+      <details class="trace">
+    <summary>원문 대응 3개</summary>
+    <div class="trace-list">
+      <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 D-10 행 · 우편물 주소 이전 신청
+          </a><a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 D-10 행 · 정기배송 주소 변경 또는 중지
+          </a><a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 D-10 행 · 관리사무소에 퇴거 일정 알리기
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>엘리베이터·사다리차·주차 예약하기</strong>
+      <p>출발지와 도착지 엘리베이터 예약 · 사다리차 사용 여부와 주차 공간 확인</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 D-10 행 · 출발지와 도착지 엘리베이터 예약
+          </a><a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 D-10 행 · 사다리차 사용 여부와 주차 공간 확인
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>폐기물과 남은 짐 처리하기</strong>
+      <p>종량제 봉투와 폐기물 스티커 준비 · 대형폐기물 수거 신청 · 열쇠·리모컨·설명서 한곳에 모으기</p>
+      <details class="trace">
+    <summary>원문 대응 3개</summary>
+    <div class="trace-list">
+      <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 D-10 행 · 종량제 봉투와 폐기물 스티커 준비
+          </a><a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 D-10 행 · 대형폐기물 수거 신청
+          </a><a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 D-10 행 · 열쇠·리모컨·설명서 한곳에 모으기
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>냉장고 비우고 새집 물품 배치 정하기</strong>
+      <p>냉장고 식재료 소진 시작 · 새집에 필요한 물품 주문 · 가구·가전 배치도 정리</p>
+      <details class="trace">
+    <summary>원문 대응 3개</summary>
+    <div class="trace-list">
+      <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 D-10 행 · 냉장고 식재료 소진 시작
+          </a><a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 D-10 행 · 새집에 필요한 물품 주문
+          </a><a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 D-10 행 · 가구·가전 배치도 정리
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>인터넷·정수기 등 이전 신청하기</strong>
+      <p>인터넷·TV 이전 설치 신청 · 정수기 등 렌탈 기기 이전 신청</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 D-10 행 · 인터넷·TV 이전 설치 신청
+          </a><a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 D-10 행 · 정수기 등 렌탈 기기 이전 신청
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details><details class="step" >
+    <summary>
+      <span>D-3 · 해지와 당일 준비</span>
+      <small>5개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>도시가스 철거·설치 예약하기</strong>
+      <p>출발지 도시가스 철거 예약 · 도착지 도시가스 설치 예약</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 D-3 행 · 출발지 도시가스 철거 예약
+          </a><a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 D-3 행 · 도착지 도시가스 설치 예약
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>기존 집 자동이체 해지하기</strong>
+      <p>전기·수도·가스·관리비 자동이체 해지 또는 변경</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 D-3 행 · 전기·수도·가스·관리비 자동이체 해지 또는 변경
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>세탁기 배수하고 운반 상태 만들기</strong>
+      <p>세탁기 물 빼기와 운반 준비</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 D-3 행 · 세탁기 물 빼기와 운반 준비
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>임대차 권리 서류 확인하기</strong>
+      <p>필요한 경우 임차권·보증금 관련 서류 확인</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 D-3 행 · 필요한 경우 임차권·보증금 관련 서류 확인
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>당일 바로 쓸 짐을 따로 싸기</strong>
+      <p>신분증·충전기·세면도구·약·옷 등 당일 물품 분리</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 D-3 행 · 신분증·충전기·세면도구·약·옷 등 당일 물품 분리
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details><details class="step" >
+    <summary>
+      <span>D-1 · 돈·귀중품·인계 확인</span>
+      <small>5개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>당일 일정·송금 한도·잔금 확인하기</strong>
+      <p>이사업체와 최종 시간 확인 · 은행 이체 한도 확인 · 보증금·잔금 지급 계획 확인</p>
+      <details class="trace">
+    <summary>원문 대응 3개</summary>
+    <div class="trace-list">
+      <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 D-1 행 · 이사업체와 최종 시간 확인
+          </a><a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 D-1 행 · 은행 이체 한도 확인
+          </a><a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 D-1 행 · 보증금·잔금 지급 계획 확인
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>출발지·도착지 주차 다시 확인하기</strong>
+      <p>이삿짐 차량 주차 위치 최종 확인</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 D-1 행 · 이삿짐 차량 주차 위치 최종 확인
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>귀중품과 중요서류 직접 보관하기</strong>
+      <p>현금·귀중품·중요서류 별도 보관</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 D-1 행 · 현금·귀중품·중요서류 별도 보관
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>열쇠·리모컨·비밀번호 인계 준비하기</strong>
+      <p>출발지 열쇠·리모컨 모으기 · 도착지 공동현관·도어락 정보 확인</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 D-1 행 · 출발지 열쇠·리모컨 모으기
+          </a><a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 D-1 행 · 도착지 공동현관·도어락 정보 확인
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>가전·가구 상태 사진 남기기</strong>
+      <p>운반 전 가전·가구 외관 사진 촬영 · 어항이 있으면 이동 준비</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 D-1 행 · 운반 전 가전·가구 외관 사진 촬영
+          </a><a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 D-1 행 · 어항이 있으면 이동 준비
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details><details class="step" >
+    <summary>
+      <span>이사 당일 · 출발지 마감</span>
+      <small>3개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>전기·수도·가스·관리비 정산하기</strong>
+      <p>출발지 전기·수도·가스 사용량 확인과 정산 · 관리비 정산</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 이사 당일 기존 집 행 · 출발지 전기·수도·가스 사용량 확인과 정산
+          </a><a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 이사 당일 기존 집 행 · 관리비 정산
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>장기수선충당금 환급 확인하기</strong>
+      <p>세입자인 경우 장기수선충당금 반환 요청</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 이사 당일 기존 집 행 · 세입자인 경우 장기수선충당금 반환 요청
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>남은 물건 확인하고 열쇠 반납하기</strong>
+      <p>방·수납장·계량기 주변 남은 물건 확인 · 집주인 또는 관리실에 열쇠 반납</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 이사 당일 기존 집 행 · 방·수납장·계량기 주변 남은 물건 확인
+          </a><a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 이사 당일 기존 집 행 · 집주인 또는 관리실에 열쇠 반납
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details><details class="step" >
+    <summary>
+      <span>이사 당일 · 도착지 시작</span>
+      <small>5개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>분실·파손 확인하고 이사업체 정산하기</strong>
+      <p>짐 분실·파손 여부 확인 · 이사업체 잔금 정산</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 이사 당일 새집 행 · 짐 분실·파손 여부 확인
+          </a><a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 이사 당일 새집 행 · 이사업체 잔금 정산
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>인터넷·TV와 도어락 확인하기</strong>
+      <p>인터넷·TV 연결 확인 · 도어락 비밀번호 변경</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 이사 당일 새집 행 · 인터넷·TV 연결 확인
+          </a><a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 이사 당일 새집 행 · 도어락 비밀번호 변경
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>잔금·관리비·열쇠 인수 마치기</strong>
+      <p>주택 잔금 또는 보증금 정산 · 관리비 확인 · 열쇠·리모컨 인수</p>
+      <details class="trace">
+    <summary>원문 대응 3개</summary>
+    <div class="trace-list">
+      <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 이사 당일 새집 행 · 주택 잔금 또는 보증금 정산
+          </a><a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 이사 당일 새집 행 · 관리비 확인
+          </a><a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 이사 당일 새집 행 · 열쇠·리모컨 인수
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>전기·수도 명의와 가스 개통하기</strong>
+      <p>전기·수도 명의 변경 · 도착지 도시가스 개통</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 이사 당일 새집 행 · 전기·수도 명의 변경
+          </a><a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 이사 당일 새집 행 · 도착지 도시가스 개통
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>전입신고와 확정일자 처리하기</strong>
+      <p>전입신고 · 필요한 경우 확정일자 받기</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 이사 당일 새집 행 · 전입신고
+          </a><a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363" target="_blank" rel="noreferrer">
+            원문 이사 당일 새집 행 · 필요한 경우 확정일자 받기
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details>
+  </section>
+      </div>
+    </details>
+  </article><article class="candidate-card" data-kind="selected" data-logic="Go" data-public="Hold">
+    <header class="candidate-header">
+      <div>
+        <div class="eyebrow">가족·육아 · 개인 제작자</div>
+        <h3>초기 이유식 D+174~209 식단</h3>
+        <p class="creator-name">뿐이토핑이유식</p>
+      </div>
+      <div class="decision-stack">
+        <span class="badge badge-go">로직 Go</span>
+        <span class="badge badge-hold">공개 Hold</span>
+      </div>
+    </header>
+    <div class="promise">시작일과 시작 구간에 맞춰 D+174~209 식단 행이 일정으로 생긴다.</div>
+    <div class="chip-row">
+      <span class="badge badge-neutral">full_flow</span>
+      <span class="badge badge-neutral">calendar_checklist</span>
+      <span class="badge badge-neutral">최초 입력 2개</span>
+      <span class="badge badge-modify">개인 변환만</span>
+    </div>
+    <div class="source-panel">
+      <img src="2026-07-27-creator-portfolio-qualified-assets/creator-family-babyfood016-source.png" alt="초기 이유식 D+174~209 식단 원문 캡처">
+      <div>
+        <strong>원문</strong>
+        <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">https://blog.naver.com/01695258757/222768860919</a>
+        <p>비밀번호가 있는 식단 파일 행은 내부 검토와 개인 실행 변환에만 사용하며 공개 카탈로그에는 제작자 허가가 필요하다.</p>
+      </div>
+    </div>
+    <div class="evidence-grid">
+    <article>
+      <span>사용자 반응</span>
+      <strong>observed_current</strong>
+      <p>2026-07-27 재확인: 좋아요.</p>
+    </article>
+    <article>
+      <span>자료 요청</span>
+      <strong>observed_current</strong>
+      <p>댓글 9,999+와 식단 파일·비밀번호 관련 요청 문구가 현재 원문에서 보인다.</p>
+    </article>
+    <article>
+      <span>실행 결과</span>
+      <strong>observed_prior_capture</strong>
+      <p>초기·중기·후기 식단 사용 후기와 단계별 질문이 기존 캡처에서 확인됐다.</p>
+    </article>
+    <article>
+      <span>제작자 응답</span>
+      <strong>observed_prior_capture</strong>
+      <p>제작자가 파일 비밀번호·사용 시기·재료 질문에 답변한 기존 캡처가 있다.</p>
+    </article>
+  </div>
+    <div class="preflight-grid">
+      <article><span>한 가지 사용자 일</span><p>원문 식단표의 D+n 순서대로 초기 이유식을 제공한다.</p></article>
+      <article><span>첫 행동</span><p>선택한 시작일의 첫 식단 제공하기</p></article>
+      <article><span>날짜 규칙</span><p>원문 D+n 행을 기준으로 시작일에 상대 배치한다.</p></article>
+      <article><span>현재 UX 적합성</span><p>날짜별 메뉴는 한 Item으로 유지하고 재료·섭취 상태는 메모로 남겨야 과밀하지 않다.</p></article>
+    </div>
+    <details class="full-content">
+      <summary>
+        <span>실제 Flow 전체 보기</span>
+        <small>1 Flow · 12 Step · 36 Item</small>
+      </summary>
+      <div class="flow-stack">
+        <section class="flow">
+    <div class="flow-heading">
+      <div>
+        <small>Flow 1</small>
+        <h4>D+174부터 36일 식단</h4>
+      </div>
+      <span class="badge badge-neutral">12 Step</span>
+    </div>
+    <details class="step" open>
+    <summary>
+      <span>D+174~176</span>
+      <small>3개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>D+174 식단 제공</strong>
+      <p>한 끼: 쌀미음 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">
+            첨부 PDF D+174 행
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>D+175 식단 제공</strong>
+      <p>한 끼: 쌀미음 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">
+            첨부 PDF D+175 행
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>D+176 식단 제공</strong>
+      <p>한 끼: 쌀미음 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">
+            첨부 PDF D+176 행
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details><details class="step" >
+    <summary>
+      <span>D+177~179</span>
+      <small>3개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>D+177 식단 제공</strong>
+      <p>한 끼: 쌀·오트밀 미음 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">
+            첨부 PDF D+177 행
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>D+178 식단 제공</strong>
+      <p>한 끼: 쌀·오트밀 미음 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">
+            첨부 PDF D+178 행
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>D+179 식단 제공</strong>
+      <p>한 끼: 쌀·오트밀 미음 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">
+            첨부 PDF D+179 행
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details><details class="step" >
+    <summary>
+      <span>D+180~182</span>
+      <small>3개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>D+180 식단 제공</strong>
+      <p>한 끼: 쌀·오트밀 미음 + 소고기 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">
+            첨부 PDF D+180 행
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>D+181 식단 제공</strong>
+      <p>한 끼: 쌀·오트밀 미음 + 소고기 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">
+            첨부 PDF D+181 행
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>D+182 식단 제공</strong>
+      <p>한 끼: 쌀·오트밀 미음 + 소고기 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">
+            첨부 PDF D+182 행
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details><details class="step" >
+    <summary>
+      <span>D+183~185</span>
+      <small>3개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>D+183 식단 제공</strong>
+      <p>한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">
+            첨부 PDF D+183 행
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>D+184 식단 제공</strong>
+      <p>한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">
+            첨부 PDF D+184 행
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>D+185 식단 제공</strong>
+      <p>한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">
+            첨부 PDF D+185 행
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details><details class="step" >
+    <summary>
+      <span>D+186~188</span>
+      <small>3개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>D+186 식단 제공</strong>
+      <p>한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 청경채 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">
+            첨부 PDF D+186 행
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>D+187 식단 제공</strong>
+      <p>한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 청경채 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">
+            첨부 PDF D+187 행
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>D+188 식단 제공</strong>
+      <p>한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 청경채 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">
+            첨부 PDF D+188 행
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details><details class="step" >
+    <summary>
+      <span>D+189~191</span>
+      <small>3개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>D+189 식단 제공</strong>
+      <p>한 끼: 쌀·오트밀 미음 + 소고기 + 청경채 + 오이 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">
+            첨부 PDF D+189 행
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>D+190 식단 제공</strong>
+      <p>한 끼: 쌀·오트밀 미음 + 소고기 + 청경채 + 오이 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">
+            첨부 PDF D+190 행
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>D+191 식단 제공</strong>
+      <p>한 끼: 쌀·오트밀 미음 + 소고기 + 청경채 + 오이 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">
+            첨부 PDF D+191 행
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details><details class="step" >
+    <summary>
+      <span>D+192~194</span>
+      <small>3개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>D+192 식단 제공</strong>
+      <p>한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 브로콜리 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">
+            첨부 PDF D+192 행
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>D+193 식단 제공</strong>
+      <p>한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 브로콜리 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">
+            첨부 PDF D+193 행
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>D+194 식단 제공</strong>
+      <p>한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 브로콜리 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">
+            첨부 PDF D+194 행
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details><details class="step" >
+    <summary>
+      <span>D+195~197</span>
+      <small>3개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>D+195 식단 제공</strong>
+      <p>한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 양배추 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">
+            첨부 PDF D+195 행
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>D+196 식단 제공</strong>
+      <p>한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 양배추 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">
+            첨부 PDF D+196 행
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>D+197 식단 제공</strong>
+      <p>한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 양배추 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">
+            첨부 PDF D+197 행
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details><details class="step" >
+    <summary>
+      <span>D+198~200</span>
+      <small>3개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>D+198 식단 제공</strong>
+      <p>한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 청경채 + 당근 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">
+            첨부 PDF D+198 행
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>D+199 식단 제공</strong>
+      <p>한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 청경채 + 당근 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">
+            첨부 PDF D+199 행
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>D+200 식단 제공</strong>
+      <p>한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 청경채 + 당근 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">
+            첨부 PDF D+200 행
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details><details class="step" >
+    <summary>
+      <span>D+201~203</span>
+      <small>3개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>D+201 식단 제공</strong>
+      <p>한 끼: 쌀·오트밀 미음 + 소고기 + 양배추 + 브로콜리 + 단호박 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">
+            첨부 PDF D+201 행
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>D+202 식단 제공</strong>
+      <p>한 끼: 쌀·오트밀 미음 + 소고기 + 양배추 + 브로콜리 + 단호박 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">
+            첨부 PDF D+202 행
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>D+203 식단 제공</strong>
+      <p>한 끼: 쌀·오트밀 미음 + 소고기 + 양배추 + 브로콜리 + 단호박 · 간식: 사과 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">
+            첨부 PDF D+203 행
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details><details class="step" >
+    <summary>
+      <span>D+204~206</span>
+      <small>3개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>D+204 식단 제공</strong>
+      <p>아침: 쌀·오트밀 + 소고기 + 양배추 + 단호박 + 완두콩 · 점심: 쌀·오트밀 + 당근 + 사과 + 브로콜리 + 청경채 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">
+            첨부 PDF D+204 행
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>D+205 식단 제공</strong>
+      <p>아침: 쌀·오트밀 + 소고기 + 양배추 + 단호박 + 완두콩 · 점심: 쌀·오트밀 + 당근 + 사과 + 브로콜리 + 청경채 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">
+            첨부 PDF D+205 행
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>D+206 식단 제공</strong>
+      <p>아침: 쌀·오트밀 + 소고기 + 양배추 + 단호박 + 완두콩 · 점심: 쌀·오트밀 + 당근 + 사과 + 브로콜리 + 청경채 · 간식: 바나나 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">
+            첨부 PDF D+206 행
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details><details class="step" >
+    <summary>
+      <span>D+207~209</span>
+      <small>3개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>D+207 식단 제공</strong>
+      <p>아침: 쌀·오트밀 + 달걀 + 당근 + 완두콩 + 브로콜리 · 점심: 쌀·오트밀 + 소고기 + 단호박 + 양배추 + 청경채 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">
+            첨부 PDF D+207 행
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>D+208 식단 제공</strong>
+      <p>아침: 쌀·오트밀 + 달걀 + 당근 + 완두콩 + 브로콜리 · 점심: 쌀·오트밀 + 소고기 + 단호박 + 양배추 + 청경채 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">
+            첨부 PDF D+208 행
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>D+209 식단 제공</strong>
+      <p>아침: 쌀·오트밀 + 달걀 + 당근 + 완두콩 + 브로콜리 · 점심: 쌀·오트밀 + 소고기 + 단호박 + 양배추 + 청경채 · 간식: 바나나 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://blog.naver.com/01695258757/222768860919" target="_blank" rel="noreferrer">
+            첨부 PDF D+209 행
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details>
+  </section>
+      </div>
+    </details>
+  </article><article class="candidate-card" data-kind="selected" data-logic="Go" data-public="Modify">
+    <header class="candidate-header">
+      <div>
+        <div class="eyebrow">공부·독서 · 전문가</div>
+        <h3>오픽 모의고사 계획표</h3>
+        <p class="creator-name">오픽만수르</p>
+      </div>
+      <div class="decision-stack">
+        <span class="badge badge-go">로직 Go</span>
+        <span class="badge badge-modify">공개 Modify</span>
+      </div>
+    </header>
+    <div class="promise">선택한 2주·1달 계획과 시작일에 맞춰 회차별 영상 링크가 배치된다.</div>
+    <div class="chip-row">
+      <span class="badge badge-neutral">full_flow</span>
+      <span class="badge badge-neutral">calendar_checklist</span>
+      <span class="badge badge-neutral">최초 입력 2개</span>
+      <span class="badge badge-modify">공개 전 허가 필요</span>
+    </div>
+    <div class="source-panel">
+      <img src="2026-07-27-creator-portfolio-qualified-assets/creator-study-mansour-source.png" alt="오픽 모의고사 계획표 원문 캡처">
+      <div>
+        <strong>원문</strong>
+        <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95</a>
+        <p>공개 글·영상 링크는 표시할 수 있으나 계획표 파일과 회차 구조를 공개 Flow로 배포하려면 제작자 확인이 필요하다.</p>
+      </div>
+    </div>
+    <div class="evidence-grid">
+    <article>
+      <span>사용자 반응</span>
+      <strong>observed_prior</strong>
+      <p>연결 모의고사 영상 조회 11,861·좋아요 56과 채널 구독자 6.09천명이 이전 검증에서 확인됐다</p>
+    </article>
+    <article>
+      <span>자료 요청</span>
+      <strong>observed_current</strong>
+      <p>모의고사 계획표 다운로드와 영상 자료 연결을 현재 원문에서 확인했다.</p>
+    </article>
+    <article>
+      <span>실행 결과</span>
+      <strong>unknown</strong>
+      <p>실행·완주·수정 결과를 독립적으로 확인하지 못했다.</p>
+    </article>
+    <article>
+      <span>제작자 응답</span>
+      <strong>unknown</strong>
+      <p>댓글 또는 후기는 보이지만 제작자 본인의 답변 여부와 답변률은 확인하지 못했다.</p>
+    </article>
+  </div>
+    <div class="preflight-grid">
+      <article><span>한 가지 사용자 일</span><p>2주 또는 1달 계획표를 따라 모의고사 영상 회차를 실행한다.</p></article>
+      <article><span>첫 행동</span><p>선택한 계획의 첫 모의고사 영상 실행하기</p></article>
+      <article><span>날짜 규칙</span><p>원문 계획표의 회차·기간 구조를 사용하고 임의 횟수를 추가하지 않는다.</p></article>
+      <article><span>현재 UX 적합성</span><p>영상 실행을 주 Item으로 두고 녹음·복습 설명은 원문이 명시한 회차 안에서만 보조한다.</p></article>
+    </div>
+    <details class="full-content">
+      <summary>
+        <span>실제 Flow 전체 보기</span>
+        <small>2 Flow · 7 Step · 42 Item</small>
+      </summary>
+      <div class="flow-stack">
+        <section class="flow">
+    <div class="flow-heading">
+      <div>
+        <small>Flow 1</small>
+        <h4>오픽 모의고사 2주 플랜</h4>
+      </div>
+      <span class="badge badge-neutral">2 Step</span>
+    </div>
+    <details class="step" open>
+    <summary>
+      <span>1주차 · 1~5회</span>
+      <small>6개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>1회 모의고사 실전처럼 풀기</strong>
+      <p>영상: https://www.youtube.com/watch?v=MZmrXlAc6k4 · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            2주 계획표 1주차 월요일
+          </a><a href="https://www.youtube.com/watch?v=MZmrXlAc6k4" target="_blank" rel="noreferrer">
+            오픽 모의고사 1회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>2회 모의고사 실전처럼 풀기</strong>
+      <p>영상: https://www.youtube.com/watch?v=YOZADzoC22s · 범위: 은행·바·카페·MP3·걷기 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            2주 계획표 1주차 화요일
+          </a><a href="https://www.youtube.com/watch?v=YOZADzoC22s" target="_blank" rel="noreferrer">
+            오픽 모의고사 2회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>3회 모의고사 실전처럼 풀기</strong>
+      <p>영상: https://www.youtube.com/watch?v=bRjvaQ380MU · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            2주 계획표 1주차 수요일
+          </a><a href="https://www.youtube.com/watch?v=bRjvaQ380MU" target="_blank" rel="noreferrer">
+            오픽 모의고사 3회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>4회 모의고사 실전처럼 풀기</strong>
+      <p>영상: https://www.youtube.com/watch?v=N2s5golewUI · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            2주 계획표 1주차 목요일
+          </a><a href="https://www.youtube.com/watch?v=N2s5golewUI" target="_blank" rel="noreferrer">
+            오픽 모의고사 4회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>5회 모의고사 실전처럼 풀기</strong>
+      <p>영상: https://www.youtube.com/watch?v=uCUiUlggGlE · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            2주 계획표 1주차 금요일
+          </a><a href="https://www.youtube.com/watch?v=uCUiUlggGlE" target="_blank" rel="noreferrer">
+            오픽 모의고사 5회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>1~5회 답변 총복습</strong>
+      <p>이번 주 녹음을 다시 듣고 반복해서 막힌 질문과 다음 주에 쓸 핵심 표현을 한 메모로 정리한다.</p>
+      <details class="trace">
+    <summary>원문 대응 6개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            2주 계획표 1주차 토요일
+          </a><a href="https://www.youtube.com/watch?v=MZmrXlAc6k4" target="_blank" rel="noreferrer">
+            오픽 모의고사 1회 영상
+          </a><a href="https://www.youtube.com/watch?v=YOZADzoC22s" target="_blank" rel="noreferrer">
+            오픽 모의고사 2회 영상
+          </a><a href="https://www.youtube.com/watch?v=bRjvaQ380MU" target="_blank" rel="noreferrer">
+            오픽 모의고사 3회 영상
+          </a><a href="https://www.youtube.com/watch?v=N2s5golewUI" target="_blank" rel="noreferrer">
+            오픽 모의고사 4회 영상
+          </a><a href="https://www.youtube.com/watch?v=uCUiUlggGlE" target="_blank" rel="noreferrer">
+            오픽 모의고사 5회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details><details class="step" >
+    <summary>
+      <span>2주차 · 6~10회</span>
+      <small>6개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>6회 모의고사 실전처럼 풀기</strong>
+      <p>영상: https://www.youtube.com/watch?v=KddRF_nM9uI · 범위: 동네·건강·국내여행·은행·가족 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            2주 계획표 2주차 월요일
+          </a><a href="https://www.youtube.com/watch?v=KddRF_nM9uI" target="_blank" rel="noreferrer">
+            오픽 모의고사 6회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>7회 모의고사 실전처럼 풀기</strong>
+      <p>영상: https://www.youtube.com/watch?v=cAOaiJsT7ac · 범위: 집에서 보내는 휴가·지리·공휴일·집·음악 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            2주 계획표 2주차 화요일
+          </a><a href="https://www.youtube.com/watch?v=cAOaiJsT7ac" target="_blank" rel="noreferrer">
+            오픽 모의고사 7회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>8회 모의고사 실전처럼 풀기</strong>
+      <p>영상: https://www.youtube.com/watch?v=VFWF-HUYggI · 범위: 기술·캠핑·패션·쇼핑·건강 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            2주 계획표 2주차 수요일
+          </a><a href="https://www.youtube.com/watch?v=VFWF-HUYggI" target="_blank" rel="noreferrer">
+            오픽 모의고사 8회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>9회 모의고사 실전처럼 풀기</strong>
+      <p>영상: https://www.youtube.com/watch?v=y0Y1j7fEZj4 · 범위: 외식·영화·날씨·계절·콘서트·바 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            2주 계획표 2주차 목요일
+          </a><a href="https://www.youtube.com/watch?v=y0Y1j7fEZj4" target="_blank" rel="noreferrer">
+            오픽 모의고사 9회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>10회 모의고사 실전처럼 풀기</strong>
+      <p>영상: https://www.youtube.com/watch?v=xh_zHNfAgQo · 범위: 해외여행·모임·공연·가족·친구·산업 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            2주 계획표 2주차 금요일
+          </a><a href="https://www.youtube.com/watch?v=xh_zHNfAgQo" target="_blank" rel="noreferrer">
+            오픽 모의고사 10회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>6~10회 답변 총복습</strong>
+      <p>이번 주 녹음을 다시 듣고 반복해서 막힌 질문과 다음 주에 쓸 핵심 표현을 한 메모로 정리한다.</p>
+      <details class="trace">
+    <summary>원문 대응 6개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            2주 계획표 2주차 토요일
+          </a><a href="https://www.youtube.com/watch?v=KddRF_nM9uI" target="_blank" rel="noreferrer">
+            오픽 모의고사 6회 영상
+          </a><a href="https://www.youtube.com/watch?v=cAOaiJsT7ac" target="_blank" rel="noreferrer">
+            오픽 모의고사 7회 영상
+          </a><a href="https://www.youtube.com/watch?v=VFWF-HUYggI" target="_blank" rel="noreferrer">
+            오픽 모의고사 8회 영상
+          </a><a href="https://www.youtube.com/watch?v=y0Y1j7fEZj4" target="_blank" rel="noreferrer">
+            오픽 모의고사 9회 영상
+          </a><a href="https://www.youtube.com/watch?v=xh_zHNfAgQo" target="_blank" rel="noreferrer">
+            오픽 모의고사 10회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details>
+  </section><section class="flow">
+    <div class="flow-heading">
+      <div>
+        <small>Flow 2</small>
+        <h4>오픽 모의고사 1달 플랜</h4>
+      </div>
+      <span class="badge badge-neutral">5 Step</span>
+    </div>
+    <details class="step" open>
+    <summary>
+      <span>1주차 · 1~2회</span>
+      <small>6개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>1회 실전처럼 풀기</strong>
+      <p>영상: https://www.youtube.com/watch?v=MZmrXlAc6k4 · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            1달 계획표 1주차 월요일
+          </a><a href="https://www.youtube.com/watch?v=MZmrXlAc6k4" target="_blank" rel="noreferrer">
+            오픽 모의고사 1회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>1회 녹음 듣고 보완하기</strong>
+      <p>영상: https://www.youtube.com/watch?v=MZmrXlAc6k4 · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            1달 계획표 1주차 화요일
+          </a><a href="https://www.youtube.com/watch?v=MZmrXlAc6k4" target="_blank" rel="noreferrer">
+            오픽 모의고사 1회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>1회 녹음 듣고 보완하기</strong>
+      <p>영상: https://www.youtube.com/watch?v=MZmrXlAc6k4 · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            1달 계획표 1주차 수요일
+          </a><a href="https://www.youtube.com/watch?v=MZmrXlAc6k4" target="_blank" rel="noreferrer">
+            오픽 모의고사 1회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>2회 실전처럼 풀기</strong>
+      <p>영상: https://www.youtube.com/watch?v=YOZADzoC22s · 범위: 은행·바·카페·MP3·걷기 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            1달 계획표 1주차 목요일
+          </a><a href="https://www.youtube.com/watch?v=YOZADzoC22s" target="_blank" rel="noreferrer">
+            오픽 모의고사 2회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>2회 녹음 듣고 보완하기</strong>
+      <p>영상: https://www.youtube.com/watch?v=YOZADzoC22s · 범위: 은행·바·카페·MP3·걷기 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            1달 계획표 1주차 금요일
+          </a><a href="https://www.youtube.com/watch?v=YOZADzoC22s" target="_blank" rel="noreferrer">
+            오픽 모의고사 2회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>2회 녹음 듣고 보완하기</strong>
+      <p>영상: https://www.youtube.com/watch?v=YOZADzoC22s · 범위: 은행·바·카페·MP3·걷기 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            1달 계획표 1주차 토요일
+          </a><a href="https://www.youtube.com/watch?v=YOZADzoC22s" target="_blank" rel="noreferrer">
+            오픽 모의고사 2회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details><details class="step" >
+    <summary>
+      <span>2주차 · 3~4회</span>
+      <small>6개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>3회 실전처럼 풀기</strong>
+      <p>영상: https://www.youtube.com/watch?v=bRjvaQ380MU · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            1달 계획표 2주차 월요일
+          </a><a href="https://www.youtube.com/watch?v=bRjvaQ380MU" target="_blank" rel="noreferrer">
+            오픽 모의고사 3회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>3회 녹음 듣고 보완하기</strong>
+      <p>영상: https://www.youtube.com/watch?v=bRjvaQ380MU · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            1달 계획표 2주차 화요일
+          </a><a href="https://www.youtube.com/watch?v=bRjvaQ380MU" target="_blank" rel="noreferrer">
+            오픽 모의고사 3회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>3회 녹음 듣고 보완하기</strong>
+      <p>영상: https://www.youtube.com/watch?v=bRjvaQ380MU · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            1달 계획표 2주차 수요일
+          </a><a href="https://www.youtube.com/watch?v=bRjvaQ380MU" target="_blank" rel="noreferrer">
+            오픽 모의고사 3회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>4회 실전처럼 풀기</strong>
+      <p>영상: https://www.youtube.com/watch?v=N2s5golewUI · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            1달 계획표 2주차 목요일
+          </a><a href="https://www.youtube.com/watch?v=N2s5golewUI" target="_blank" rel="noreferrer">
+            오픽 모의고사 4회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>4회 녹음 듣고 보완하기</strong>
+      <p>영상: https://www.youtube.com/watch?v=N2s5golewUI · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            1달 계획표 2주차 금요일
+          </a><a href="https://www.youtube.com/watch?v=N2s5golewUI" target="_blank" rel="noreferrer">
+            오픽 모의고사 4회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>4회 녹음 듣고 보완하기</strong>
+      <p>영상: https://www.youtube.com/watch?v=N2s5golewUI · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            1달 계획표 2주차 토요일
+          </a><a href="https://www.youtube.com/watch?v=N2s5golewUI" target="_blank" rel="noreferrer">
+            오픽 모의고사 4회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details><details class="step" >
+    <summary>
+      <span>3주차 · 5~6회</span>
+      <small>6개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>5회 실전처럼 풀기</strong>
+      <p>영상: https://www.youtube.com/watch?v=uCUiUlggGlE · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            1달 계획표 3주차 월요일
+          </a><a href="https://www.youtube.com/watch?v=uCUiUlggGlE" target="_blank" rel="noreferrer">
+            오픽 모의고사 5회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>5회 녹음 듣고 보완하기</strong>
+      <p>영상: https://www.youtube.com/watch?v=uCUiUlggGlE · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            1달 계획표 3주차 화요일
+          </a><a href="https://www.youtube.com/watch?v=uCUiUlggGlE" target="_blank" rel="noreferrer">
+            오픽 모의고사 5회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>5회 녹음 듣고 보완하기</strong>
+      <p>영상: https://www.youtube.com/watch?v=uCUiUlggGlE · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            1달 계획표 3주차 수요일
+          </a><a href="https://www.youtube.com/watch?v=uCUiUlggGlE" target="_blank" rel="noreferrer">
+            오픽 모의고사 5회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>6회 실전처럼 풀기</strong>
+      <p>영상: https://www.youtube.com/watch?v=KddRF_nM9uI · 범위: 동네·건강·국내여행·은행·가족 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            1달 계획표 3주차 목요일
+          </a><a href="https://www.youtube.com/watch?v=KddRF_nM9uI" target="_blank" rel="noreferrer">
+            오픽 모의고사 6회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>6회 녹음 듣고 보완하기</strong>
+      <p>영상: https://www.youtube.com/watch?v=KddRF_nM9uI · 범위: 동네·건강·국내여행·은행·가족 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            1달 계획표 3주차 금요일
+          </a><a href="https://www.youtube.com/watch?v=KddRF_nM9uI" target="_blank" rel="noreferrer">
+            오픽 모의고사 6회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>6회 녹음 듣고 보완하기</strong>
+      <p>영상: https://www.youtube.com/watch?v=KddRF_nM9uI · 범위: 동네·건강·국내여행·은행·가족 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            1달 계획표 3주차 토요일
+          </a><a href="https://www.youtube.com/watch?v=KddRF_nM9uI" target="_blank" rel="noreferrer">
+            오픽 모의고사 6회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details><details class="step" >
+    <summary>
+      <span>4주차 · 7~8회</span>
+      <small>6개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>7회 실전처럼 풀기</strong>
+      <p>영상: https://www.youtube.com/watch?v=cAOaiJsT7ac · 범위: 집에서 보내는 휴가·지리·공휴일·집·음악 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            1달 계획표 4주차 월요일
+          </a><a href="https://www.youtube.com/watch?v=cAOaiJsT7ac" target="_blank" rel="noreferrer">
+            오픽 모의고사 7회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>7회 녹음 듣고 보완하기</strong>
+      <p>영상: https://www.youtube.com/watch?v=cAOaiJsT7ac · 범위: 집에서 보내는 휴가·지리·공휴일·집·음악 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            1달 계획표 4주차 화요일
+          </a><a href="https://www.youtube.com/watch?v=cAOaiJsT7ac" target="_blank" rel="noreferrer">
+            오픽 모의고사 7회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>7회 녹음 듣고 보완하기</strong>
+      <p>영상: https://www.youtube.com/watch?v=cAOaiJsT7ac · 범위: 집에서 보내는 휴가·지리·공휴일·집·음악 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            1달 계획표 4주차 수요일
+          </a><a href="https://www.youtube.com/watch?v=cAOaiJsT7ac" target="_blank" rel="noreferrer">
+            오픽 모의고사 7회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>8회 실전처럼 풀기</strong>
+      <p>영상: https://www.youtube.com/watch?v=VFWF-HUYggI · 범위: 기술·캠핑·패션·쇼핑·건강 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            1달 계획표 4주차 목요일
+          </a><a href="https://www.youtube.com/watch?v=VFWF-HUYggI" target="_blank" rel="noreferrer">
+            오픽 모의고사 8회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>8회 녹음 듣고 보완하기</strong>
+      <p>영상: https://www.youtube.com/watch?v=VFWF-HUYggI · 범위: 기술·캠핑·패션·쇼핑·건강 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            1달 계획표 4주차 금요일
+          </a><a href="https://www.youtube.com/watch?v=VFWF-HUYggI" target="_blank" rel="noreferrer">
+            오픽 모의고사 8회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>8회 녹음 듣고 보완하기</strong>
+      <p>영상: https://www.youtube.com/watch?v=VFWF-HUYggI · 범위: 기술·캠핑·패션·쇼핑·건강 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            1달 계획표 4주차 토요일
+          </a><a href="https://www.youtube.com/watch?v=VFWF-HUYggI" target="_blank" rel="noreferrer">
+            오픽 모의고사 8회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details><details class="step" >
+    <summary>
+      <span>5주차 · 9~10회</span>
+      <small>6개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>9회 실전처럼 풀기</strong>
+      <p>영상: https://www.youtube.com/watch?v=y0Y1j7fEZj4 · 범위: 외식·영화·날씨·계절·콘서트·바 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            1달 계획표 5주차 월요일
+          </a><a href="https://www.youtube.com/watch?v=y0Y1j7fEZj4" target="_blank" rel="noreferrer">
+            오픽 모의고사 9회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>9회 녹음 듣고 보완하기</strong>
+      <p>영상: https://www.youtube.com/watch?v=y0Y1j7fEZj4 · 범위: 외식·영화·날씨·계절·콘서트·바 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            1달 계획표 5주차 화요일
+          </a><a href="https://www.youtube.com/watch?v=y0Y1j7fEZj4" target="_blank" rel="noreferrer">
+            오픽 모의고사 9회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>9회 녹음 듣고 보완하기</strong>
+      <p>영상: https://www.youtube.com/watch?v=y0Y1j7fEZj4 · 범위: 외식·영화·날씨·계절·콘서트·바 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            1달 계획표 5주차 수요일
+          </a><a href="https://www.youtube.com/watch?v=y0Y1j7fEZj4" target="_blank" rel="noreferrer">
+            오픽 모의고사 9회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>10회 실전처럼 풀기</strong>
+      <p>영상: https://www.youtube.com/watch?v=xh_zHNfAgQo · 범위: 해외여행·모임·공연·가족·친구·산업 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            1달 계획표 5주차 목요일
+          </a><a href="https://www.youtube.com/watch?v=xh_zHNfAgQo" target="_blank" rel="noreferrer">
+            오픽 모의고사 10회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>10회 녹음 듣고 보완하기</strong>
+      <p>영상: https://www.youtube.com/watch?v=xh_zHNfAgQo · 범위: 해외여행·모임·공연·가족·친구·산업 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            1달 계획표 5주차 금요일
+          </a><a href="https://www.youtube.com/watch?v=xh_zHNfAgQo" target="_blank" rel="noreferrer">
+            오픽 모의고사 10회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>10회 녹음 듣고 보완하기</strong>
+      <p>영상: https://www.youtube.com/watch?v=xh_zHNfAgQo · 범위: 해외여행·모임·공연·가족·친구·산업 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95" target="_blank" rel="noreferrer">
+            1달 계획표 5주차 토요일
+          </a><a href="https://www.youtube.com/watch?v=xh_zHNfAgQo" target="_blank" rel="noreferrer">
+            오픽 모의고사 10회 영상
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details>
+  </section>
+      </div>
+    </details>
+  </article><article class="candidate-card" data-kind="selected" data-logic="Go" data-public="Go">
+    <header class="candidate-header">
+      <div>
+        <div class="eyebrow">공부·독서 · 커뮤니티</div>
+        <h3>생활코딩 WEB1 진도표</h3>
+        <p class="creator-name">생활코딩</p>
+      </div>
+      <div class="decision-stack">
+        <span class="badge badge-go">로직 Go</span>
+        <span class="badge badge-go">공개 Go</span>
+      </div>
+    </header>
+    <div class="promise">WEB1 토픽 26개가 원문 순서대로 진도 체크 목록에 생긴다.</div>
+    <div class="chip-row">
+      <span class="badge badge-neutral">full_flow</span>
+      <span class="badge badge-neutral">sheet_checklist</span>
+      <span class="badge badge-neutral">최초 입력 0개</span>
+      <span class="badge badge-go">공개 전환 가능</span>
+    </div>
+    <div class="source-panel">
+      <img src="2026-07-27-creator-portfolio-qualified-assets/creator-study-opentutorials-source.png" alt="생활코딩 WEB1 진도표 원문 캡처">
+      <div>
+        <strong>원문</strong>
+        <a href="https://opentutorials.org/course/3084" target="_blank" rel="noreferrer">https://opentutorials.org/course/3084</a>
+        <p>WEB1 원문이 모든 내용과 이미지의 자유로운 수정·배포 가능성을 명시한다. 이 판정은 WEB1 해당 코스에만 적용한다.</p>
+      </div>
+    </div>
+    <div class="evidence-grid">
+    <article>
+      <span>사용자 반응</span>
+      <strong>observed_prior</strong>
+      <p>WEB1 공동공부 참여 9,199와 장기 운영된 다수 코스가 확인된다</p>
+    </article>
+    <article>
+      <span>자료 요청</span>
+      <strong>unknown</strong>
+      <p>자료·파일 요청을 제작자 단위의 독립 증거로 확인하지 못했다.</p>
+    </article>
+    <article>
+      <span>실행 결과</span>
+      <strong>observed_current</strong>
+      <p>댓글에 시작일·학습 시작·완료 기록이 반복적으로 보인다.</p>
+    </article>
+    <article>
+      <span>제작자 응답</span>
+      <strong>community_response_observed</strong>
+      <p>질문과 답변이 연결된 대화는 보이지만 답변자가 코스 제작자인지 커뮤니티 구성원인지는 분리 확인이 필요하다.</p>
+    </article>
+  </div>
+    <div class="preflight-grid">
+      <article><span>한 가지 사용자 일</span><p>WEB1의 공개 토픽 목록을 순서대로 학습하고 진도를 체크한다.</p></article>
+      <article><span>첫 행동</span><p>프로젝트의 동기 학습하기</p></article>
+      <article><span>날짜 규칙</span><p>원문에 일정이 없으므로 날짜를 만들지 않는다.</p></article>
+      <article><span>현재 UX 적합성</span><p>긴 커리큘럼은 한 Step의 접힌 진도 목록으로 보여주고 사용자가 필요할 때 개별 날짜를 붙인다.</p></article>
+    </div>
+    <details class="full-content">
+      <summary>
+        <span>실제 Flow 전체 보기</span>
+        <small>1 Flow · 1 Step · 26 Item</small>
+      </summary>
+      <div class="flow-stack">
+        <section class="flow">
+    <div class="flow-heading">
+      <div>
+        <small>Flow 1</small>
+        <h4>WEB1 - HTML &amp; Internet</h4>
+      </div>
+      <span class="badge badge-neutral">1 Step</span>
+    </div>
+    <details class="step" open>
+    <summary>
+      <span>WEB1 토픽 목록</span>
+      <small>26개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>「프로젝트의 동기」 학습하기</strong>
+      <p>생활코딩 WEB1 토픽 1. 원문 강의: https://opentutorials.org/course/3084/18438</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://opentutorials.org/course/3084" target="_blank" rel="noreferrer">
+            WEB1 토픽 목록 1번 · 프로젝트의 동기
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>「기획」 학습하기</strong>
+      <p>생활코딩 WEB1 토픽 2. 원문 강의: https://opentutorials.org/course/3084/18437</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://opentutorials.org/course/3084" target="_blank" rel="noreferrer">
+            WEB1 토픽 목록 2번 · 기획
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>「코딩과 HTML」 학습하기</strong>
+      <p>생활코딩 WEB1 토픽 3. 원문 강의: https://opentutorials.org/course/3084/18445</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://opentutorials.org/course/3084" target="_blank" rel="noreferrer">
+            WEB1 토픽 목록 3번 · 코딩과 HTML
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>「HTML 코딩 실습 환경 준비」 학습하기</strong>
+      <p>생활코딩 WEB1 토픽 4. 원문 강의: https://opentutorials.org/course/3084/18448</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://opentutorials.org/course/3084" target="_blank" rel="noreferrer">
+            WEB1 토픽 목록 4번 · HTML 코딩 실습 환경 준비
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>「기본 문법 - 태그」 학습하기</strong>
+      <p>생활코딩 WEB1 토픽 5. 원문 강의: https://opentutorials.org/course/3084/18392</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://opentutorials.org/course/3084" target="_blank" rel="noreferrer">
+            WEB1 토픽 목록 5번 · 기본 문법 - 태그
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>「혁명적인 변화」 학습하기</strong>
+      <p>생활코딩 WEB1 토픽 6. 원문 강의: https://opentutorials.org/course/3084/18400</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://opentutorials.org/course/3084" target="_blank" rel="noreferrer">
+            WEB1 토픽 목록 6번 · 혁명적인 변화
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>「통계에 기반한 학습」 학습하기</strong>
+      <p>생활코딩 WEB1 토픽 7. 원문 강의: https://opentutorials.org/course/3084/18452</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://opentutorials.org/course/3084" target="_blank" rel="noreferrer">
+            WEB1 토픽 목록 7번 · 통계에 기반한 학습
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>「줄바꿈」 학습하기</strong>
+      <p>생활코딩 WEB1 토픽 8. 원문 강의: https://opentutorials.org/course/3084/18403</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://opentutorials.org/course/3084" target="_blank" rel="noreferrer">
+            WEB1 토픽 목록 8번 · 줄바꿈
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>「HTML이 중요한 이유」 학습하기</strong>
+      <p>생활코딩 WEB1 토픽 9. 원문 강의: https://opentutorials.org/course/3084/18488</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://opentutorials.org/course/3084" target="_blank" rel="noreferrer">
+            WEB1 토픽 목록 9번 · HTML이 중요한 이유
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>「최후의 문법 속성과 img」 학습하기</strong>
+      <p>생활코딩 WEB1 토픽 10. 원문 강의: https://opentutorials.org/course/3084/18407</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://opentutorials.org/course/3084" target="_blank" rel="noreferrer">
+            WEB1 토픽 목록 10번 · 최후의 문법 속성과 img
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>「부모 자식과 목록」 학습하기</strong>
+      <p>생활코딩 WEB1 토픽 11. 원문 강의: https://opentutorials.org/course/3084/18408</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://opentutorials.org/course/3084" target="_blank" rel="noreferrer">
+            WEB1 토픽 목록 11번 · 부모 자식과 목록
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>「문서의 구조와 슈퍼스타들」 학습하기</strong>
+      <p>생활코딩 WEB1 토픽 12. 원문 강의: https://opentutorials.org/course/3084/18409</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://opentutorials.org/course/3084" target="_blank" rel="noreferrer">
+            WEB1 토픽 목록 12번 · 문서의 구조와 슈퍼스타들
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>「HTML 태그의 제왕」 학습하기</strong>
+      <p>생활코딩 WEB1 토픽 13. 원문 강의: https://opentutorials.org/course/3084/18418</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://opentutorials.org/course/3084" target="_blank" rel="noreferrer">
+            WEB1 토픽 목록 13번 · HTML 태그의 제왕
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>「웹사이트 완성」 학습하기</strong>
+      <p>생활코딩 WEB1 토픽 14. 원문 강의: https://opentutorials.org/course/3084/18431</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://opentutorials.org/course/3084" target="_blank" rel="noreferrer">
+            WEB1 토픽 목록 14번 · 웹사이트 완성
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>「원시웹」 학습하기</strong>
+      <p>생활코딩 WEB1 토픽 15. 원문 강의: https://opentutorials.org/course/3084/18889</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://opentutorials.org/course/3084" target="_blank" rel="noreferrer">
+            WEB1 토픽 목록 15번 · 원시웹
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>「인터넷을 여는 열쇠 : 서버와 클라이언트」 학습하기</strong>
+      <p>생활코딩 WEB1 토픽 16. 원문 강의: https://opentutorials.org/course/3084/18890</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://opentutorials.org/course/3084" target="_blank" rel="noreferrer">
+            WEB1 토픽 목록 16번 · 인터넷을 여는 열쇠 : 서버와 클라이언트
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>「웹호스팅 github pages」 학습하기</strong>
+      <p>생활코딩 WEB1 토픽 17. 원문 강의: https://opentutorials.org/course/3084/18891</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://opentutorials.org/course/3084" target="_blank" rel="noreferrer">
+            WEB1 토픽 목록 17번 · 웹호스팅 github pages
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>「웹서버 운영하기」 학습하기</strong>
+      <p>생활코딩 WEB1 토픽 18. 원문 강의: https://opentutorials.org/course/3084/31144</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://opentutorials.org/course/3084" target="_blank" rel="noreferrer">
+            WEB1 토픽 목록 18번 · 웹서버 운영하기
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>「수업을 마치며 1」 학습하기</strong>
+      <p>생활코딩 WEB1 토픽 19. 원문 강의: https://opentutorials.org/course/3084/18896</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://opentutorials.org/course/3084" target="_blank" rel="noreferrer">
+            WEB1 토픽 목록 19번 · 수업을 마치며 1
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>「수업을 마치며 2」 학습하기</strong>
+      <p>생활코딩 WEB1 토픽 20. 원문 강의: https://opentutorials.org/course/3084/18897</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://opentutorials.org/course/3084" target="_blank" rel="noreferrer">
+            WEB1 토픽 목록 20번 · 수업을 마치며 2
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>「수업을 마치며 3」 학습하기</strong>
+      <p>생활코딩 WEB1 토픽 21. 원문 강의: https://opentutorials.org/course/3084/18898</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://opentutorials.org/course/3084" target="_blank" rel="noreferrer">
+            WEB1 토픽 목록 21번 · 수업을 마치며 3
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>「부록 : 코드의 힘」 학습하기</strong>
+      <p>생활코딩 WEB1 토픽 22. 원문 강의: https://opentutorials.org/course/3084/18598</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://opentutorials.org/course/3084" target="_blank" rel="noreferrer">
+            WEB1 토픽 목록 22번 · 부록 : 코드의 힘
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>「부록 : 코드의 힘 - 동영상 삽입」 학습하기</strong>
+      <p>생활코딩 WEB1 토픽 23. 원문 강의: https://opentutorials.org/course/3084/18453</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://opentutorials.org/course/3084" target="_blank" rel="noreferrer">
+            WEB1 토픽 목록 23번 · 부록 : 코드의 힘 - 동영상 삽입
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>「부록 : 코드의 힘 - 댓글 기능 추가」 학습하기</strong>
+      <p>생활코딩 WEB1 토픽 24. 원문 강의: https://opentutorials.org/course/3084/18594</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://opentutorials.org/course/3084" target="_blank" rel="noreferrer">
+            WEB1 토픽 목록 24번 · 부록 : 코드의 힘 - 댓글 기능 추가
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>「부록 : 코드의 힘 - 채팅 기능 추가」 학습하기</strong>
+      <p>생활코딩 WEB1 토픽 25. 원문 강의: https://opentutorials.org/course/3084/18597</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://opentutorials.org/course/3084" target="_blank" rel="noreferrer">
+            WEB1 토픽 목록 25번 · 부록 : 코드의 힘 - 채팅 기능 추가
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>「부록 : 코드의 힘 - 방문자 분석기」 학습하기</strong>
+      <p>생활코딩 WEB1 토픽 26. 원문 강의: https://opentutorials.org/course/3084/18899</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://opentutorials.org/course/3084" target="_blank" rel="noreferrer">
+            WEB1 토픽 목록 26번 · 부록 : 코드의 힘 - 방문자 분석기
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details>
+  </section>
+      </div>
+    </details>
+  </article><article class="candidate-card" data-kind="selected" data-logic="Go" data-public="Modify">
+    <header class="candidate-header">
+      <div>
+        <div class="eyebrow">돈·행정·구매 · 브랜드</div>
+        <h3>신차 구매 8단계</h3>
+        <p class="creator-name">겟차</p>
+      </div>
+      <div class="decision-stack">
+        <span class="badge badge-go">로직 Go</span>
+        <span class="badge badge-modify">공개 Modify</span>
+      </div>
+    </header>
+    <div class="promise">예산 설정부터 차량 등록까지 8단계 체크리스트가 생긴다.</div>
+    <div class="chip-row">
+      <span class="badge badge-neutral">full_flow</span>
+      <span class="badge badge-neutral">checklist_sheet</span>
+      <span class="badge badge-neutral">최초 입력 1개</span>
+      <span class="badge badge-modify">공개 전 허가 필요</span>
+    </div>
+    <div class="source-panel">
+      <img src="2026-07-27-creator-portfolio-qualified-assets/creator-money-getcha-source.png" alt="신차 구매 8단계 원문 캡처">
+      <div>
+        <strong>원문</strong>
+        <a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners" target="_blank" rel="noreferrer">https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners</a>
+        <p>구매 절차 제목·원문 링크는 표시할 수 있지만 상세 체크 행을 공개 재배포하려면 브랜드 허가가 필요하다.</p>
+      </div>
+    </div>
+    <div class="evidence-grid">
+    <article>
+      <span>사용자 반응</span>
+      <strong>observed_prior</strong>
+      <p>플랫폼 원문에서 누적 구매·견적 성과를 공개하지만 개별 가이드의 조회·댓글 수는 보이지 않는다</p>
+    </article>
+    <article>
+      <span>자료 요청</span>
+      <strong>unknown</strong>
+      <p>자료·파일 요청을 제작자 단위의 독립 증거로 확인하지 못했다.</p>
+    </article>
+    <article>
+      <span>실행 결과</span>
+      <strong>unknown</strong>
+      <p>실행·완주·수정 결과를 독립적으로 확인하지 못했다.</p>
+    </article>
+    <article>
+      <span>제작자 응답</span>
+      <strong>unknown</strong>
+      <p>댓글 또는 후기는 보이지만 제작자 본인의 답변 여부와 답변률은 확인하지 못했다.</p>
+    </article>
+  </div>
+    <div class="preflight-grid">
+      <article><span>한 가지 사용자 일</span><p>신차 구매의 원문 8단계를 순서대로 확인하고 계약·출고 누락을 줄인다.</p></article>
+      <article><span>첫 행동</span><p>예산과 구매 조건 정리하기</p></article>
+      <article><span>날짜 규칙</span><p>원문 단계 순서만 유지하고 사용자가 날짜를 정하기 전에는 일정화하지 않는다.</p></article>
+      <article><span>현재 UX 적합성</span><p>단계는 유지하되 견적·비용·차량 정보는 Item이 아니라 메모나 시트 값으로 둔다.</p></article>
+    </div>
+    <details class="full-content">
+      <summary>
+        <span>실제 Flow 전체 보기</span>
+        <small>1 Flow · 8 Step · 14 Item</small>
+      </summary>
+      <div class="flow-stack">
+        <section class="flow">
+    <div class="flow-heading">
+      <div>
+        <small>Flow 1</small>
+        <h4>신차 구매 8단계</h4>
+      </div>
+      <span class="badge badge-neutral">8 Step</span>
+    </div>
+    <details class="step" open>
+    <summary>
+      <span>1. 예산과 차량 선택</span>
+      <small>2개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>총예산과 월 납입 가능액 정하기</strong>
+      <p>차량 가격 외 취등록세·보험·유지비를 포함한 총예산 확인 · 현금·할부 시 월 납입 가능액 확인</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners" target="_blank" rel="noreferrer">
+            1. 예산과 차량 선택 · 차량 가격 외 취등록세·보험·유지비를 포함한 총예산 확인
+          </a><a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners" target="_blank" rel="noreferrer">
+            1. 예산과 차량 선택 · 현금·할부 시 월 납입 가능액 확인
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>차종·트림·옵션 후보 좁히기</strong>
+      <p>용도와 탑승 인원에 맞는 차종 선택 · 트림과 필수 옵션 후보 정리</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners" target="_blank" rel="noreferrer">
+            1. 예산과 차량 선택 · 용도와 탑승 인원에 맞는 차종 선택
+          </a><a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners" target="_blank" rel="noreferrer">
+            1. 예산과 차량 선택 · 트림과 필수 옵션 후보 정리
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details><details class="step" >
+    <summary>
+      <span>2. 구매 방식 선택</span>
+      <small>1개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>현금·할부·리스·장기렌트 비교하기</strong>
+      <p>소유권·월 납입액·세금·만기 조건 비교 · 본인 상황에 맞는 구매 방식 선택</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners" target="_blank" rel="noreferrer">
+            2. 구매 방식 선택 · 소유권·월 납입액·세금·만기 조건 비교
+          </a><a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners" target="_blank" rel="noreferrer">
+            2. 구매 방식 선택 · 본인 상황에 맞는 구매 방식 선택
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details><details class="step" >
+    <summary>
+      <span>3. 견적과 할인 협상</span>
+      <small>2개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>여러 판매처 견적 비교하기</strong>
+      <p>동일 트림·옵션 기준으로 견적 받기 · 차량 가격·탁송료·등록비·서비스 품목 비교</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners" target="_blank" rel="noreferrer">
+            3. 견적과 할인 협상 · 동일 트림·옵션 기준으로 견적 받기
+          </a><a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners" target="_blank" rel="noreferrer">
+            3. 견적과 할인 협상 · 차량 가격·탁송료·등록비·서비스 품목 비교
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>할인과 서비스 조건 확정하기</strong>
+      <p>제조사 할인과 딜러 할인 확인 · 현금 지원·용품 등 서비스 조건 기록</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners" target="_blank" rel="noreferrer">
+            3. 견적과 할인 협상 · 제조사 할인과 딜러 할인 확인
+          </a><a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners" target="_blank" rel="noreferrer">
+            3. 견적과 할인 협상 · 현금 지원·용품 등 서비스 조건 기록
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details><details class="step" >
+    <summary>
+      <span>4. 계약</span>
+      <small>2개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>계약서 차량 사양과 금액 확인하기</strong>
+      <p>차종·트림·색상·옵션 확인 · 총액과 계약금 확인 · 출고 예정일과 취소·환불 조건 확인</p>
+      <details class="trace">
+    <summary>원문 대응 3개</summary>
+    <div class="trace-list">
+      <a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners" target="_blank" rel="noreferrer">
+            4. 계약 · 차종·트림·색상·옵션 확인
+          </a><a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners" target="_blank" rel="noreferrer">
+            4. 계약 · 총액과 계약금 확인
+          </a><a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners" target="_blank" rel="noreferrer">
+            4. 계약 · 출고 예정일과 취소·환불 조건 확인
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>계약금 납부하고 서류 보관하기</strong>
+      <p>계약금 납부 · 계약서와 영수증 보관</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners" target="_blank" rel="noreferrer">
+            4. 계약 · 계약금 납부
+          </a><a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners" target="_blank" rel="noreferrer">
+            4. 계약 · 계약서와 영수증 보관
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details><details class="step" >
+    <summary>
+      <span>5. 출고와 검수</span>
+      <small>2개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>차대번호와 출고 정보 확인하기</strong>
+      <p>차대번호·생산연월·출고 일정 확인</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners" target="_blank" rel="noreferrer">
+            5. 출고와 검수 · 차대번호·생산연월·출고 일정 확인
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>외관·내장·기능 검수하기</strong>
+      <p>도장·유리·타이어·휠 외관 확인 · 시트·내장재 확인 · 등화·전자장비·옵션 작동 확인</p>
+      <details class="trace">
+    <summary>원문 대응 3개</summary>
+    <div class="trace-list">
+      <a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners" target="_blank" rel="noreferrer">
+            5. 출고와 검수 · 도장·유리·타이어·휠 외관 확인
+          </a><a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners" target="_blank" rel="noreferrer">
+            5. 출고와 검수 · 시트·내장재 확인
+          </a><a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners" target="_blank" rel="noreferrer">
+            5. 출고와 검수 · 등화·전자장비·옵션 작동 확인
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details><details class="step" >
+    <summary>
+      <span>6. 등록</span>
+      <small>2개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>등록 서류와 비용 확인하기</strong>
+      <p>신분증·계약서·보험가입증명 등 필요 서류 확인 · 취득세·공채·번호판 등 등록 비용 확인</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners" target="_blank" rel="noreferrer">
+            6. 등록 · 신분증·계약서·보험가입증명 등 필요 서류 확인
+          </a><a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners" target="_blank" rel="noreferrer">
+            6. 등록 · 취득세·공채·번호판 등 등록 비용 확인
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>차량 등록과 번호판 발급 마치기</strong>
+      <p>직접 등록 또는 등록 대행 선택 · 자동차등록증과 번호판 수령</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners" target="_blank" rel="noreferrer">
+            6. 등록 · 직접 등록 또는 등록 대행 선택
+          </a><a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners" target="_blank" rel="noreferrer">
+            6. 등록 · 자동차등록증과 번호판 수령
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details><details class="step" >
+    <summary>
+      <span>7. 보험</span>
+      <small>1개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>자동차보험 조건 비교하고 가입하기</strong>
+      <p>운전자 범위·보장 한도·자기부담금 비교 · 차량 인수 전에 보험 효력 시작 확인</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners" target="_blank" rel="noreferrer">
+            7. 보험 · 운전자 범위·보장 한도·자기부담금 비교
+          </a><a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners" target="_blank" rel="noreferrer">
+            7. 보험 · 차량 인수 전에 보험 효력 시작 확인
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details><details class="step" >
+    <summary>
+      <span>8. 출고 후 관리</span>
+      <small>2개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>차량 문서와 보증 조건 보관하기</strong>
+      <p>등록증·보험증권·보증서 보관 · 보증 기간과 정기점검 조건 확인</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners" target="_blank" rel="noreferrer">
+            8. 출고 후 관리 · 등록증·보험증권·보증서 보관
+          </a><a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners" target="_blank" rel="noreferrer">
+            8. 출고 후 관리 · 보증 기간과 정기점검 조건 확인
+          </a>
+    </div>
+  </details>
+    </div>
+  </li><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>초기 점검과 소모품 일정 확인하기</strong>
+      <p>제조사 초기 점검 안내 확인 · 소모품 교환 주기 확인</p>
+      <details class="trace">
+    <summary>원문 대응 2개</summary>
+    <div class="trace-list">
+      <a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners" target="_blank" rel="noreferrer">
+            8. 출고 후 관리 · 제조사 초기 점검 안내 확인
+          </a><a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners" target="_blank" rel="noreferrer">
+            8. 출고 후 관리 · 소모품 교환 주기 확인
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details>
+  </section>
+      </div>
+    </details>
+  </article><article class="candidate-card" data-kind="selected" data-logic="Go" data-public="Modify">
+    <header class="candidate-header">
+      <div>
+        <div class="eyebrow">건강·운동 · 브랜드</div>
+        <h3>Allblanc 7일 복근 챌린지</h3>
+        <p class="creator-name">Allblanc TV</p>
+      </div>
+      <div class="decision-stack">
+        <span class="badge badge-go">로직 Go</span>
+        <span class="badge badge-modify">공개 Modify</span>
+      </div>
+    </header>
+    <div class="promise">7일 동안 하루 한 편의 영상 제목과 링크가 일정에 생긴다.</div>
+    <div class="chip-row">
+      <span class="badge badge-neutral">full_flow</span>
+      <span class="badge badge-neutral">calendar_checklist</span>
+      <span class="badge badge-neutral">최초 입력 2개</span>
+      <span class="badge badge-modify">링크·메타만</span>
+    </div>
+    <div class="source-panel">
+      <img src="2026-07-27-creator-portfolio-qualified-assets/creator-health-allblanc-source.png" alt="Allblanc 7일 복근 챌린지 원문 캡처">
+      <div>
+        <strong>원문</strong>
+        <a href="https://youtube.com/@allblanctv" target="_blank" rel="noreferrer">https://youtube.com/@allblanctv</a>
+        <p>공개 재생목록의 영상 제목·URL·순서만 사용하며 운동 설명이나 자막을 복제하지 않는다.</p>
+      </div>
+    </div>
+    <div class="evidence-grid">
+    <article>
+      <span>사용자 반응</span>
+      <strong>observed_prior</strong>
+      <p>7일 복근 챌린지 7개 영상 합산 약 53.9만 조회, 개별 최고 약 15만 조회가 이전 검증에서 확인됐다</p>
+    </article>
+    <article>
+      <span>자료 요청</span>
+      <strong>unknown</strong>
+      <p>자료·파일 요청을 제작자 단위의 독립 증거로 확인하지 못했다.</p>
+    </article>
+    <article>
+      <span>실행 결과</span>
+      <strong>unknown</strong>
+      <p>실행·완주·수정 결과를 독립적으로 확인하지 못했다.</p>
+    </article>
+    <article>
+      <span>제작자 응답</span>
+      <strong>unknown</strong>
+      <p>댓글 또는 후기는 보이지만 제작자 본인의 답변 여부와 답변률은 확인하지 못했다.</p>
+    </article>
+  </div>
+    <div class="preflight-grid">
+      <article><span>한 가지 사용자 일</span><p>7일 재생목록의 영상을 하루 한 편씩 따라 한다.</p></article>
+      <article><span>첫 행동</span><p>Day 1 영상 따라 하기</p></article>
+      <article><span>날짜 규칙</span><p>재생목록의 Day 1~7 순서만 사용한다.</p></article>
+      <article><span>현재 UX 적합성</span><p>영상 하나를 Item 하나로 유지하고 동작 설명·통증 기록용 별도 Item은 만들지 않는다.</p></article>
+    </div>
+    <details class="full-content">
+      <summary>
+        <span>실제 Flow 전체 보기</span>
+        <small>7 Flow · 7 Step · 7 Item</small>
+      </summary>
+      <div class="flow-stack">
+        <section class="flow">
+    <div class="flow-heading">
+      <div>
+        <small>Flow 1</small>
+        <h4>Day 1 · 코어 + 복근 한방에! 20분 복근 운동</h4>
+      </div>
+      <span class="badge badge-neutral">1 Step</span>
+    </div>
+    <details class="step" open>
+    <summary>
+      <span>영상 따라 하기</span>
+      <small>1개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>코어 + 복근 한방에! 20분 복근 운동</strong>
+      <p>영상: https://www.youtube.com/watch?v=XwUKn-52ykk · 길이: 21:25 · 운동 후 남길 내용이 있으면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://www.youtube.com/watch?v=XwUKn-52ykk" target="_blank" rel="noreferrer">
+            7 Days Abs Challenge · Day 1
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details>
+  </section><section class="flow">
+    <div class="flow-heading">
+      <div>
+        <small>Flow 2</small>
+        <h4>Day 2 · 허리 통증 없이 20분 복근 운동</h4>
+      </div>
+      <span class="badge badge-neutral">1 Step</span>
+    </div>
+    <details class="step" open>
+    <summary>
+      <span>영상 따라 하기</span>
+      <small>1개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>허리 통증 없이 20분 복근 운동</strong>
+      <p>영상: https://www.youtube.com/watch?v=KzH8TcfyKFA · 길이: 20:41 · 운동 후 남길 내용이 있으면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://www.youtube.com/watch?v=KzH8TcfyKFA" target="_blank" rel="noreferrer">
+            7 Days Abs Challenge · Day 2
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details>
+  </section><section class="flow">
+    <div class="flow-heading">
+      <div>
+        <small>Flow 3</small>
+        <h4>Day 3 · 아랫 뱃살 집중 타격 20분 운동</h4>
+      </div>
+      <span class="badge badge-neutral">1 Step</span>
+    </div>
+    <details class="step" open>
+    <summary>
+      <span>영상 따라 하기</span>
+      <small>1개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>아랫 뱃살 집중 타격 20분 운동</strong>
+      <p>영상: https://www.youtube.com/watch?v=Ft5gNO-2Je4 · 길이: 21:01 · 운동 후 남길 내용이 있으면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://www.youtube.com/watch?v=Ft5gNO-2Je4" target="_blank" rel="noreferrer">
+            7 Days Abs Challenge · Day 3
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details>
+  </section><section class="flow">
+    <div class="flow-heading">
+      <div>
+        <small>Flow 4</small>
+        <h4>Day 4 · 서서하는 20분 복근 운동</h4>
+      </div>
+      <span class="badge badge-neutral">1 Step</span>
+    </div>
+    <details class="step" open>
+    <summary>
+      <span>영상 따라 하기</span>
+      <small>1개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>서서하는 20분 복근 운동</strong>
+      <p>영상: https://www.youtube.com/watch?v=8RzHWcq6eq0 · 길이: 20:49 · 운동 후 남길 내용이 있으면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://www.youtube.com/watch?v=8RzHWcq6eq0" target="_blank" rel="noreferrer">
+            7 Days Abs Challenge · Day 4
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details>
+  </section><section class="flow">
+    <div class="flow-heading">
+      <div>
+        <small>Flow 5</small>
+        <h4>Day 5 · 집에서 옆구리살 빼기 20분 운동</h4>
+      </div>
+      <span class="badge badge-neutral">1 Step</span>
+    </div>
+    <details class="step" open>
+    <summary>
+      <span>영상 따라 하기</span>
+      <small>1개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>집에서 옆구리살 빼기 20분 운동</strong>
+      <p>영상: https://www.youtube.com/watch?v=peQuipmDIuc · 길이: 20:40 · 운동 후 남길 내용이 있으면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://www.youtube.com/watch?v=peQuipmDIuc" target="_blank" rel="noreferrer">
+            7 Days Abs Challenge · Day 5
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details>
+  </section><section class="flow">
+    <div class="flow-heading">
+      <div>
+        <small>Flow 6</small>
+        <h4>Day 6 · 허리 군살 제거 20분 복근 홈트</h4>
+      </div>
+      <span class="badge badge-neutral">1 Step</span>
+    </div>
+    <details class="step" open>
+    <summary>
+      <span>영상 따라 하기</span>
+      <small>1개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>허리 군살 제거 20분 복근 홈트</strong>
+      <p>영상: https://www.youtube.com/watch?v=K3yO9oHgaIs · 길이: 20:36 · 운동 후 남길 내용이 있으면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://www.youtube.com/watch?v=K3yO9oHgaIs" target="_blank" rel="noreferrer">
+            7 Days Abs Challenge · Day 6
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details>
+  </section><section class="flow">
+    <div class="flow-heading">
+      <div>
+        <small>Flow 7</small>
+        <h4>Day 7 · 헤어질 결심: 복부지방 20분 운동</h4>
+      </div>
+      <span class="badge badge-neutral">1 Step</span>
+    </div>
+    <details class="step" open>
+    <summary>
+      <span>영상 따라 하기</span>
+      <small>1개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>헤어질 결심: 복부지방 20분 운동</strong>
+      <p>영상: https://www.youtube.com/watch?v=W2fS4TqeWCc · 길이: 20:49 · 운동 후 남길 내용이 있으면 이 Item의 개인 메모를 사용한다.</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://www.youtube.com/watch?v=W2fS4TqeWCc" target="_blank" rel="noreferrer">
+            7 Days Abs Challenge · Day 7
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details>
+  </section>
+      </div>
+    </details>
+  </article><article class="candidate-card" data-kind="selected" data-logic="Go" data-public="Modify">
+    <header class="candidate-header">
+      <div>
+        <div class="eyebrow">식사·장보기 · 브랜드</div>
+        <h3>이번 주 여름 반찬 5가지</h3>
+        <p class="creator-name">우리의식탁</p>
+      </div>
+      <div class="decision-stack">
+        <span class="badge badge-go">로직 Go</span>
+        <span class="badge badge-modify">공개 Modify</span>
+      </div>
+    </header>
+    <div class="promise">반찬 5개의 제목과 레시피 링크가 선택 가능한 목록으로 생긴다.</div>
+    <div class="chip-row">
+      <span class="badge badge-neutral">quick_flow_collection</span>
+      <span class="badge badge-neutral">checklist_memo</span>
+      <span class="badge badge-neutral">최초 입력 0개</span>
+      <span class="badge badge-modify">공개 전 허가 필요</span>
+    </div>
+    <div class="source-panel">
+      <img src="2026-07-27-creator-portfolio-qualified-assets/creator-meals-wtable-source.png" alt="이번 주 여름 반찬 5가지 원문 캡처">
+      <div>
+        <strong>원문</strong>
+        <a href="https://wtable.co.kr/curations/562" target="_blank" rel="noreferrer">https://wtable.co.kr/curations/562</a>
+        <p>큐레이션 제목·레시피 링크는 표시할 수 있지만 메뉴 묶음과 조리 상세를 공개 Flow로 배포하려면 브랜드 허가가 필요하다.</p>
+      </div>
+    </div>
+    <div class="evidence-grid">
+    <article>
+      <span>사용자 반응</span>
+      <strong>observed_current</strong>
+      <p>2026-07-27 재확인: 좋아요.</p>
+    </article>
+    <article>
+      <span>자료 요청</span>
+      <strong>unknown</strong>
+      <p>자료·파일 요청을 제작자 단위의 독립 증거로 확인하지 못했다.</p>
+    </article>
+    <article>
+      <span>실행 결과</span>
+      <strong>unknown</strong>
+      <p>실행·완주·수정 결과를 독립적으로 확인하지 못했다.</p>
+    </article>
+    <article>
+      <span>제작자 응답</span>
+      <strong>unknown</strong>
+      <p>댓글 또는 후기는 보이지만 제작자 본인의 답변 여부와 답변률은 확인하지 못했다.</p>
+    </article>
+  </div>
+    <div class="preflight-grid">
+      <article><span>한 가지 사용자 일</span><p>큐레이션의 반찬 5개 중 만들 메뉴를 골라 원문 레시피를 연다.</p></article>
+      <article><span>첫 행동</span><p>첫 번째 반찬 레시피 열고 만들기</p></article>
+      <article><span>날짜 규칙</span><p>원문에 날짜가 없으므로 날짜를 만들지 않는다.</p></article>
+      <article><span>현재 UX 적합성</span><p>레시피 하나를 Quick Flow 하나로 두고 조리 순서는 원문으로 돌려보낸다.</p></article>
+    </div>
+    <details class="full-content">
+      <summary>
+        <span>실제 Flow 전체 보기</span>
+        <small>5 Flow · 5 Step · 5 Item</small>
+      </summary>
+      <div class="flow-stack">
+        <section class="flow">
+    <div class="flow-heading">
+      <div>
+        <small>Flow 1</small>
+        <h4>오이지무침</h4>
+      </div>
+      <span class="badge badge-neutral">1 Step</span>
+    </div>
+    <details class="step" open>
+    <summary>
+      <span>레시피 실행</span>
+      <small>1개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>오이지무침 만들기</strong>
+      <p>초급 · 15분 · 원문 레시피: https://wtable.co.kr/recipes/otoQ5JpRjgNPpuDtsYUwpRxC</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://wtable.co.kr/recipes/otoQ5JpRjgNPpuDtsYUwpRxC" target="_blank" rel="noreferrer">
+            원문 19·63·184행; 큐레이션 https://wtable.co.kr/curations/562
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details>
+  </section><section class="flow">
+    <div class="flow-heading">
+      <div>
+        <small>Flow 2</small>
+        <h4>한치 초무침</h4>
+      </div>
+      <span class="badge badge-neutral">1 Step</span>
+    </div>
+    <details class="step" open>
+    <summary>
+      <span>레시피 실행</span>
+      <small>1개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>한치 초무침 만들기</strong>
+      <p>초급 · 30분 · 원문 레시피: https://wtable.co.kr/recipes/ACxZbqBF1Vb3snHtZdTMwPDe</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://wtable.co.kr/recipes/ACxZbqBF1Vb3snHtZdTMwPDe" target="_blank" rel="noreferrer">
+            원문 25·84·186행; 큐레이션 https://wtable.co.kr/curations/562
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details>
+  </section><section class="flow">
+    <div class="flow-heading">
+      <div>
+        <small>Flow 3</small>
+        <h4>브로콜리 참깨무침</h4>
+      </div>
+      <span class="badge badge-neutral">1 Step</span>
+    </div>
+    <details class="step" open>
+    <summary>
+      <span>레시피 실행</span>
+      <small>1개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>브로콜리 참깨무침 만들기</strong>
+      <p>초급 · 20분 · 원문 레시피: https://wtable.co.kr/recipes/Phq1srHvzgYtDueKGZFcBHS5</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://wtable.co.kr/recipes/Phq1srHvzgYtDueKGZFcBHS5" target="_blank" rel="noreferrer">
+            원문 31·107·188행; 큐레이션 https://wtable.co.kr/curations/562
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details>
+  </section><section class="flow">
+    <div class="flow-heading">
+      <div>
+        <small>Flow 4</small>
+        <h4>오이고추 된장 무침</h4>
+      </div>
+      <span class="badge badge-neutral">1 Step</span>
+    </div>
+    <details class="step" open>
+    <summary>
+      <span>레시피 실행</span>
+      <small>1개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>오이고추 된장 무침 만들기</strong>
+      <p>초급 · 15분 · 원문 레시피: https://wtable.co.kr/recipes/cZvq4myCFaK4Es7uJzaUyUBn</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://wtable.co.kr/recipes/cZvq4myCFaK4Es7uJzaUyUBn" target="_blank" rel="noreferrer">
+            원문 37·130·190행; 큐레이션 https://wtable.co.kr/curations/562
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details>
+  </section><section class="flow">
+    <div class="flow-heading">
+      <div>
+        <small>Flow 5</small>
+        <h4>꽈리고추찜무침</h4>
+      </div>
+      <span class="badge badge-neutral">1 Step</span>
+    </div>
+    <details class="step" open>
+    <summary>
+      <span>레시피 실행</span>
+      <small>1개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>꽈리고추찜무침 만들기</strong>
+      <p>초급 · 20분 · 원문 레시피: https://wtable.co.kr/recipes/kPW41Sk1utYTteW8jzzzigvp</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://wtable.co.kr/recipes/kPW41Sk1utYTteW8jzzzigvp" target="_blank" rel="noreferrer">
+            원문 42·161·191행; 큐레이션 https://wtable.co.kr/curations/562
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details>
+  </section>
+      </div>
+    </details>
+  </article><article class="candidate-card" data-kind="selected" data-logic="Go" data-public="Modify">
+    <header class="candidate-header">
+      <div>
+        <div class="eyebrow">일·커리어 · 브랜드</div>
+        <h3>AND 취업 준비 영상 3편</h3>
+        <p class="creator-name">AND Studio</p>
+      </div>
+      <div class="decision-stack">
+        <span class="badge badge-go">로직 Go</span>
+        <span class="badge badge-modify">공개 Modify</span>
+      </div>
+    </header>
+    <div class="promise">지원동기·산업분석·면접 영상 3편이 링크 큐로 생긴다.</div>
+    <div class="chip-row">
+      <span class="badge badge-neutral">quick_flow_collection</span>
+      <span class="badge badge-neutral">resource_queue</span>
+      <span class="badge badge-neutral">최초 입력 0개</span>
+      <span class="badge badge-modify">링크·메타만</span>
+    </div>
+    <div class="source-panel">
+      <img src="2026-07-27-creator-portfolio-qualified-assets/creator-work-andstudio-source.png" alt="AND 취업 준비 영상 3편 원문 캡처">
+      <div>
+        <strong>원문</strong>
+        <a href="https://www.youtube.com/watch?v=OIliv2jpDyM" target="_blank" rel="noreferrer">https://www.youtube.com/watch?v=OIliv2jpDyM</a>
+        <p>영상 제목·URL을 학습 큐로 제공할 수 있지만 영상의 6단계 내용과 자막은 허가 없이 복제하지 않는다.</p>
+      </div>
+    </div>
+    <div class="evidence-grid">
+    <article>
+      <span>사용자 반응</span>
+      <strong>observed_current</strong>
+      <p>2026-07-27 재확인: 조회 889,644</p>
+    </article>
+    <article>
+      <span>자료 요청</span>
+      <strong>unknown</strong>
+      <p>자료·파일 요청을 제작자 단위의 독립 증거로 확인하지 못했다.</p>
+    </article>
+    <article>
+      <span>실행 결과</span>
+      <strong>unknown</strong>
+      <p>실행·완주·수정 결과를 독립적으로 확인하지 못했다.</p>
+    </article>
+    <article>
+      <span>제작자 응답</span>
+      <strong>unknown</strong>
+      <p>댓글 또는 후기는 보이지만 제작자 본인의 답변 여부와 답변률은 확인하지 못했다.</p>
+    </article>
+  </div>
+    <div class="preflight-grid">
+      <article><span>한 가지 사용자 일</span><p>취업 준비 영상 3편을 필요한 순서로 보고 실행 메모를 남긴다.</p></article>
+      <article><span>첫 행동</span><p>지원동기 영상 보기</p></article>
+      <article><span>날짜 규칙</span><p>원문에 일정이 없으므로 날짜를 만들지 않는다.</p></article>
+      <article><span>현재 UX 적합성</span><p>영상 내부 6단계를 복제하지 않고 영상 제목·URL 단위로만 관리한다.</p></article>
+    </div>
+    <details class="full-content">
+      <summary>
+        <span>실제 Flow 전체 보기</span>
+        <small>3 Flow · 3 Step · 3 Item</small>
+      </summary>
+      <div class="flow-stack">
+        <section class="flow">
+    <div class="flow-heading">
+      <div>
+        <small>Flow 1</small>
+        <h4>자소서 지원동기 6단계</h4>
+      </div>
+      <span class="badge badge-neutral">1 Step</span>
+    </div>
+    <details class="step" open>
+    <summary>
+      <span>영상 1편</span>
+      <small>1개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>자소서 지원동기 6단계 영상으로 준비하기</strong>
+      <p>조회 889,279 · 좋아요 17,011 · 댓글 201 · 영상: https://www.youtube.com/watch?v=OIliv2jpDyM</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://www.youtube.com/watch?v=OIliv2jpDyM" target="_blank" rel="noreferrer">
+            영상 제목·공개 설명
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details>
+  </section><section class="flow">
+    <div class="flow-heading">
+      <div>
+        <small>Flow 2</small>
+        <h4>산업분석 방법</h4>
+      </div>
+      <span class="badge badge-neutral">1 Step</span>
+    </div>
+    <details class="step" open>
+    <summary>
+      <span>영상 1편</span>
+      <small>1개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>산업분석 방법 영상으로 준비하기</strong>
+      <p>조회 186,826 · 댓글 139 · 영상: https://www.youtube.com/watch?v=qXRMV7TgsSg</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://www.youtube.com/watch?v=qXRMV7TgsSg" target="_blank" rel="noreferrer">
+            영상 제목·공개 설명
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details>
+  </section><section class="flow">
+    <div class="flow-heading">
+      <div>
+        <small>Flow 3</small>
+        <h4>면접 전 확인할 6가지</h4>
+      </div>
+      <span class="badge badge-neutral">1 Step</span>
+    </div>
+    <details class="step" open>
+    <summary>
+      <span>영상 1편</span>
+      <small>1개 Item</small>
+    </summary>
+    <ul class="item-list"><li class="item">
+    <span class="check" aria-hidden="true"></span>
+    <div class="item-body">
+      <strong>면접 전 확인할 6가지 영상으로 준비하기</strong>
+      <p>조회 103,294 · 댓글 32 · 영상: https://www.youtube.com/watch?v=Sd176kgo1Es</p>
+      <details class="trace">
+    <summary>원문 대응 1개</summary>
+    <div class="trace-list">
+      <a href="https://www.youtube.com/watch?v=Sd176kgo1Es" target="_blank" rel="noreferrer">
+            영상 제목·공개 설명
+          </a>
+    </div>
+  </details>
+    </div>
+  </li></ul>
+  </details>
+  </section>
+      </div>
+    </details>
+  </article></div>
+    </section>
+
+    <section>
+      <div class="section-heading">
+        <h2>경계 사례 5개</h2>
+        <p>주제가 아니라 정확히 무엇을 확보하면 승격되는지 적었다.</p>
+      </div>
+      <div class="boundary-grid"><article class="boundary-card" data-kind="boundary" data-logic="Modify" data-public="Modify">
+    <div class="candidate-header">
+      <div>
+        <div class="eyebrow">집·살림 · 플랫폼</div>
+        <h3>오늘의집 고수 콘텐츠</h3>
+      </div>
+      <span class="badge badge-modify">경계 사례</span>
+    </div>
+    <p>수요는 강하지만 플랫폼과 개별 고수의 소유권·작성자 귀속을 먼저 분리해야 한다.</p>
+    <div class="promotion"><strong>승격 조건</strong><span>개별 고수 ID·원문 귀속·플랫폼 허가 범위를 연결한다.</span></div>
+    <a class="source-link" href="https://ohou.se/advices/9345" target="_blank" rel="noreferrer">대표 원문 열기</a>
+  </article><article class="boundary-card" data-kind="boundary" data-logic="Modify" data-public="Modify">
+    <div class="candidate-header">
+      <div>
+        <div class="eyebrow">가족·육아 · 브랜드</div>
+        <h3>베이비빌리</h3>
+      </div>
+      <span class="badge badge-modify">경계 사례</span>
+    </div>
+    <p>준비물 PDF 수요는 확인됐지만 브랜드 파일 행과 공개 Flow 범위를 합의해야 한다.</p>
+    <div class="promotion"><strong>승격 조건</strong><span>PDF 전체 row와 브랜드 공개 허가 범위를 확보한다.</span></div>
+    <a class="source-link" href="https://babybilly.co/post/1927" target="_blank" rel="noreferrer">대표 원문 열기</a>
+  </article><article class="boundary-card" data-kind="boundary" data-logic="Modify" data-public="Modify">
+    <div class="candidate-header">
+      <div>
+        <div class="eyebrow">건강·운동 · 개인 제작자</div>
+        <h3>빅씨스 Bigsis</h3>
+      </div>
+      <span class="badge badge-modify">경계 사례</span>
+    </div>
+    <p>영상 단위 Quick Flow는 가능하지만 Allblanc와 중복되지 않는 구조화된 시리즈를 먼저 골라야 한다.</p>
+    <div class="promotion"><strong>승격 조건</strong><span>명시된 기간형 재생목록과 영상 순서를 확보한다.</span></div>
+    <a class="source-link" href="https://www.youtube.com/watch?v=4hl-L8RX5_s" target="_blank" rel="noreferrer">대표 원문 열기</a>
+  </article><article class="boundary-card" data-kind="boundary" data-logic="Modify" data-public="Modify">
+    <div class="candidate-header">
+      <div>
+        <div class="eyebrow">여행·외출 · 플랫폼</div>
+        <h3>트리플</h3>
+      </div>
+      <span class="badge badge-modify">경계 사례</span>
+    </div>
+    <p>체크 행은 있으나 저장 15·리뷰 1 수준이고 목적지 정보 최신성 관리 주체가 불분명하다.</p>
+    <div class="promotion"><strong>승격 조건</strong><span>최신 업데이트 책임과 목적지별 구조화 행을 확보한다.</span></div>
+    <a class="source-link" href="https://triple.guide/articles/6bebeecc-83e2-4b03-8b22-04dccf80c729" target="_blank" rel="noreferrer">대표 원문 열기</a>
+  </article><article class="boundary-card" data-kind="boundary" data-logic="Modify" data-public="Modify">
+    <div class="candidate-header">
+      <div>
+        <div class="eyebrow">취미·반려 · 전문가</div>
+        <h3>강형욱의 보듬TV</h3>
+      </div>
+      <span class="badge badge-modify">경계 사례</span>
+    </div>
+    <p>수요는 강하지만 대표 영상 다수가 예능형이며 단계형 훈련 행을 그대로 옮길 근거가 부족하다.</p>
+    <div class="promotion"><strong>승격 조건</strong><span>훈련 목적·대상·순서가 명시된 교육 시리즈를 확보한다.</span></div>
+    <a class="source-link" href="https://www.youtube.com/watch?v=Ry3NnrbVjAM" target="_blank" rel="noreferrer">대표 원문 열기</a>
+  </article></div>
+    </section>
+
+    <section>
+      <div class="section-heading">
+        <h2>27명 재분류 원장</h2>
+        <p>플랫폼·브랜드·제작자를 분리하고 조사·로직·공개 판정을 나란히 본다.</p>
+      </div>
+      <div class="audit-list"><article class="audit-card" data-kind="audit" data-logic="Go" data-public="Modify">
+    <div>
+      <strong>아정당</strong>
+      <span>집·살림 · 브랜드</span>
+    </div>
+    <div class="audit-decisions">
+      <span class="badge badge-go">조사 Go</span>
+      <span class="badge badge-go">로직 Go</span>
+      <span class="badge badge-modify">공개 Modify</span>
+    </div>
+    <p>2026-07-27 재확인: 조회 98,874 · 스크랩 20</p>
+    <small>공개 전 허가 필요</small>
+  </article><article class="audit-card" data-kind="audit" data-logic="Modify" data-public="Modify">
+    <div>
+      <strong>오늘의집 고수 콘텐츠</strong>
+      <span>집·살림 · 플랫폼</span>
+    </div>
+    <div class="audit-decisions">
+      <span class="badge badge-modify">조사 Modify</span>
+      <span class="badge badge-modify">로직 Modify</span>
+      <span class="badge badge-modify">공개 Modify</span>
+    </div>
+    <p>2026-07-27 재확인: 조회 684,815 · 스크랩 1000 · 스크랩 1,000 · 스크랩 1 · 좋아요 12,989 · 스크랩 53,124</p>
+    <small>공개 전 허가 필요</small>
+  </article><article class="audit-card" data-kind="audit" data-logic="Modify" data-public="Modify">
+    <div>
+      <strong>정리왕</strong>
+      <span>집·살림 · 개인 제작자</span>
+    </div>
+    <div class="audit-decisions">
+      <span class="badge badge-modify">조사 Modify</span>
+      <span class="badge badge-modify">로직 Modify</span>
+      <span class="badge badge-modify">공개 Modify</span>
+    </div>
+    <p>검토 영상 최고 조회 130,525, 4개 영상 조회 수치를 직접 확인했다</p>
+    <small>링크·메타만</small>
+  </article><article class="audit-card" data-kind="audit" data-logic="Hold" data-public="Hold">
+    <div>
+      <strong>펀맘</strong>
+      <span>가족·육아 · 개인 제작자</span>
+    </div>
+    <div class="audit-decisions">
+      <span class="badge badge-modify">조사 Modify</span>
+      <span class="badge badge-hold">로직 Hold</span>
+      <span class="badge badge-hold">공개 Hold</span>
+    </div>
+    <p>홈에서 1,124개 글과 과목별 프린트 자료 이용 흔적이 확인된다</p>
+    <small>링크·메타만</small>
+  </article><article class="audit-card" data-kind="audit" data-logic="Go" data-public="Hold">
+    <div>
+      <strong>뿐이토핑이유식</strong>
+      <span>가족·육아 · 개인 제작자</span>
+    </div>
+    <div class="audit-decisions">
+      <span class="badge badge-go">조사 Go</span>
+      <span class="badge badge-go">로직 Go</span>
+      <span class="badge badge-hold">공개 Hold</span>
+    </div>
+    <p>2026-07-27 재확인: 좋아요.</p>
+    <small>개인 변환만</small>
+  </article><article class="audit-card" data-kind="audit" data-logic="Modify" data-public="Modify">
+    <div>
+      <strong>베이비빌리</strong>
+      <span>가족·육아 · 브랜드</span>
+    </div>
+    <div class="audit-decisions">
+      <span class="badge badge-go">조사 Go</span>
+      <span class="badge badge-modify">로직 Modify</span>
+      <span class="badge badge-modify">공개 Modify</span>
+    </div>
+    <p>2026-07-27 재확인: 조회 239,977</p>
+    <small>공개 전 허가 필요</small>
+  </article><article class="audit-card" data-kind="audit" data-logic="Go" data-public="Modify">
+    <div>
+      <strong>오픽만수르</strong>
+      <span>공부·독서 · 전문가</span>
+    </div>
+    <div class="audit-decisions">
+      <span class="badge badge-go">조사 Go</span>
+      <span class="badge badge-go">로직 Go</span>
+      <span class="badge badge-modify">공개 Modify</span>
+    </div>
+    <p>연결 모의고사 영상 조회 11,861·좋아요 56과 채널 구독자 6.09천명이 이전 검증에서 확인됐다</p>
+    <small>공개 전 허가 필요</small>
+  </article><article class="audit-card" data-kind="audit" data-logic="Go" data-public="Go">
+    <div>
+      <strong>생활코딩</strong>
+      <span>공부·독서 · 커뮤니티</span>
+    </div>
+    <div class="audit-decisions">
+      <span class="badge badge-go">조사 Go</span>
+      <span class="badge badge-go">로직 Go</span>
+      <span class="badge badge-go">공개 Go</span>
+    </div>
+    <p>WEB1 공동공부 참여 9,199와 장기 운영된 다수 코스가 확인된다</p>
+    <small>공개 전환 가능</small>
+  </article><article class="audit-card" data-kind="audit" data-logic="Modify" data-public="Modify">
+    <div>
+      <strong>노마드 코더</strong>
+      <span>공부·독서 · 브랜드</span>
+    </div>
+    <div class="audit-decisions">
+      <span class="badge badge-go">조사 Go</span>
+      <span class="badge badge-modify">로직 Modify</span>
+      <span class="badge badge-modify">공개 Modify</span>
+    </div>
+    <p>사이트가 10만+ 수강생과 다수 강좌·챌린지를 공개하고 있다</p>
+    <small>공개 전 허가 필요</small>
+  </article><article class="audit-card" data-kind="audit" data-logic="Go" data-public="Modify">
+    <div>
+      <strong>겟차</strong>
+      <span>돈·행정·구매 · 브랜드</span>
+    </div>
+    <div class="audit-decisions">
+      <span class="badge badge-modify">조사 Modify</span>
+      <span class="badge badge-go">로직 Go</span>
+      <span class="badge badge-modify">공개 Modify</span>
+    </div>
+    <p>플랫폼 원문에서 누적 구매·견적 성과를 공개하지만 개별 가이드의 조회·댓글 수는 보이지 않는다</p>
+    <small>공개 전 허가 필요</small>
+  </article><article class="audit-card" data-kind="audit" data-logic="Modify" data-public="Modify">
+    <div>
+      <strong>김짠부 재테크</strong>
+      <span>돈·행정·구매 · 전문가</span>
+    </div>
+    <div class="audit-decisions">
+      <span class="badge badge-go">조사 Go</span>
+      <span class="badge badge-modify">로직 Modify</span>
+      <span class="badge badge-modify">공개 Modify</span>
+    </div>
+    <p>2026-07-27 재확인: 조회 385,667</p>
+    <small>공개 전 허가 필요</small>
+  </article><article class="audit-card" data-kind="audit" data-logic="Modify" data-public="Modify">
+    <div>
+      <strong>박곰희TV</strong>
+      <span>돈·행정·구매 · 전문가</span>
+    </div>
+    <div class="audit-decisions">
+      <span class="badge badge-modify">조사 Modify</span>
+      <span class="badge badge-modify">로직 Modify</span>
+      <span class="badge badge-modify">공개 Modify</span>
+    </div>
+    <p>검토 영상 최고 조회 33,123, 4개 영상 조회 수치를 직접 확인했다</p>
+    <small>링크·메타만</small>
+  </article><article class="audit-card" data-kind="audit" data-logic="Go" data-public="Modify">
+    <div>
+      <strong>Allblanc TV</strong>
+      <span>건강·운동 · 브랜드</span>
+    </div>
+    <div class="audit-decisions">
+      <span class="badge badge-go">조사 Go</span>
+      <span class="badge badge-go">로직 Go</span>
+      <span class="badge badge-modify">공개 Modify</span>
+    </div>
+    <p>7일 복근 챌린지 7개 영상 합산 약 53.9만 조회, 개별 최고 약 15만 조회가 이전 검증에서 확인됐다</p>
+    <small>링크·메타만</small>
+  </article><article class="audit-card" data-kind="audit" data-logic="Modify" data-public="Modify">
+    <div>
+      <strong>빅씨스 Bigsis</strong>
+      <span>건강·운동 · 개인 제작자</span>
+    </div>
+    <div class="audit-decisions">
+      <span class="badge badge-go">조사 Go</span>
+      <span class="badge badge-modify">로직 Modify</span>
+      <span class="badge badge-modify">공개 Modify</span>
+    </div>
+    <p>2026-07-27 재확인: 조회 17,140</p>
+    <small>링크·메타만</small>
+  </article><article class="audit-card" data-kind="audit" data-logic="Hold" data-public="Hold">
+    <div>
+      <strong>Thankyou BUBU</strong>
+      <span>건강·운동 · 브랜드</span>
+    </div>
+    <div class="audit-decisions">
+      <span class="badge badge-go">조사 Go</span>
+      <span class="badge badge-hold">로직 Hold</span>
+      <span class="badge badge-hold">공개 Hold</span>
+    </div>
+    <p>검토 영상 최고 조회 1,440,624, 4개 영상 조회 수치를 직접 확인했다</p>
+    <small>링크·메타만</small>
+  </article><article class="audit-card" data-kind="audit" data-logic="Hold" data-public="Hold">
+    <div>
+      <strong>KKday Korea</strong>
+      <span>여행·외출 · 플랫폼</span>
+    </div>
+    <div class="audit-decisions">
+      <span class="badge badge-hold">조사 Hold</span>
+      <span class="badge badge-hold">로직 Hold</span>
+      <span class="badge badge-hold">공개 Hold</span>
+    </div>
+    <p>프로필과 원문은 열었지만 공개 조회·저장 수치는 unknown이다</p>
+    <small>공개 전 허가 필요</small>
+  </article><article class="audit-card" data-kind="audit" data-logic="Modify" data-public="Modify">
+    <div>
+      <strong>트리플</strong>
+      <span>여행·외출 · 플랫폼</span>
+    </div>
+    <div class="audit-decisions">
+      <span class="badge badge-modify">조사 Modify</span>
+      <span class="badge badge-modify">로직 Modify</span>
+      <span class="badge badge-modify">공개 Modify</span>
+    </div>
+    <p>2026-07-27 재확인: 리뷰 1 · 저장 15</p>
+    <small>공개 전 허가 필요</small>
+  </article><article class="audit-card" data-kind="audit" data-logic="Hold" data-public="Hold">
+    <div>
+      <strong>여행에미치다</strong>
+      <span>여행·외출 · 브랜드</span>
+    </div>
+    <div class="audit-decisions">
+      <span class="badge badge-hold">조사 Single</span>
+      <span class="badge badge-hold">로직 Hold</span>
+      <span class="badge badge-hold">공개 Hold</span>
+    </div>
+    <p>검토 영상 최고 조회 43,486, 4개 영상 조회 수치를 직접 확인했다</p>
+    <small>링크·메타만</small>
+  </article><article class="audit-card" data-kind="audit" data-logic="Go" data-public="Modify">
+    <div>
+      <strong>우리의식탁</strong>
+      <span>식사·장보기 · 브랜드</span>
+    </div>
+    <div class="audit-decisions">
+      <span class="badge badge-go">조사 Go</span>
+      <span class="badge badge-go">로직 Go</span>
+      <span class="badge badge-modify">공개 Modify</span>
+    </div>
+    <p>2026-07-27 재확인: 좋아요.</p>
+    <small>공개 전 허가 필요</small>
+  </article><article class="audit-card" data-kind="audit" data-logic="Hold" data-public="Hold">
+    <div>
+      <strong>만개의레시피</strong>
+      <span>식사·장보기 · 플랫폼</span>
+    </div>
+    <div class="audit-decisions">
+      <span class="badge badge-modify">조사 Modify</span>
+      <span class="badge badge-hold">로직 Hold</span>
+      <span class="badge badge-hold">공개 Hold</span>
+    </div>
+    <p>사이트가 누적 조회 37억대와 15만+ 레시피를 표시하고, 네이버 채널 구독 61만+도 확인된다</p>
+    <small>공개 전 허가 필요</small>
+  </article><article class="audit-card" data-kind="audit" data-logic="Hold" data-public="Hold">
+    <div>
+      <strong>매일맛나</strong>
+      <span>식사·장보기 · 브랜드</span>
+    </div>
+    <div class="audit-decisions">
+      <span class="badge badge-modify">조사 Modify</span>
+      <span class="badge badge-hold">로직 Hold</span>
+      <span class="badge badge-hold">공개 Hold</span>
+    </div>
+    <p>검토 영상 최고 조회 132,940, 4개 영상 조회 수치를 직접 확인했다</p>
+    <small>링크·메타만</small>
+  </article><article class="audit-card" data-kind="audit" data-logic="Hold" data-public="Hold">
+    <div>
+      <strong>면접왕 이형</strong>
+      <span>일·커리어 · 전문가</span>
+    </div>
+    <div class="audit-decisions">
+      <span class="badge badge-modify">조사 Modify</span>
+      <span class="badge badge-hold">로직 Hold</span>
+      <span class="badge badge-hold">공개 Hold</span>
+    </div>
+    <p>검토 영상 최고 조회 26,383, 4개 영상 조회 수치를 직접 확인했다</p>
+    <small>링크·메타만</small>
+  </article><article class="audit-card" data-kind="audit" data-logic="Go" data-public="Modify">
+    <div>
+      <strong>AND Studio</strong>
+      <span>일·커리어 · 브랜드</span>
+    </div>
+    <div class="audit-decisions">
+      <span class="badge badge-go">조사 Go</span>
+      <span class="badge badge-go">로직 Go</span>
+      <span class="badge badge-modify">공개 Modify</span>
+    </div>
+    <p>2026-07-27 재확인: 조회 889,644</p>
+    <small>링크·메타만</small>
+  </article><article class="audit-card" data-kind="audit" data-logic="Hold" data-public="Hold">
+    <div>
+      <strong>배민외식업광장</strong>
+      <span>일·커리어 · 브랜드</span>
+    </div>
+    <div class="audit-decisions">
+      <span class="badge badge-hold">조사 Hold</span>
+      <span class="badge badge-hold">로직 Hold</span>
+      <span class="badge badge-hold">공개 Hold</span>
+    </div>
+    <p>검토 영상 최고 조회 3,269, 4개 영상 조회 수치를 직접 확인했다</p>
+    <small>링크·메타만</small>
+  </article><article class="audit-card" data-kind="audit" data-logic="Hold" data-public="Hold">
+    <div>
+      <strong>핏펫</strong>
+      <span>취미·반려 · 브랜드</span>
+    </div>
+    <div class="audit-decisions">
+      <span class="badge badge-hold">조사 Single</span>
+      <span class="badge badge-hold">로직 Hold</span>
+      <span class="badge badge-hold">공개 Hold</span>
+    </div>
+    <p>예방접종 글은 인기글 목록에 반복 노출되지만 글 단위 조회·댓글 수는 공개되지 않아 수요 수치는 unknown이다</p>
+    <small>공개 전 허가 필요</small>
+  </article><article class="audit-card" data-kind="audit" data-logic="Modify" data-public="Modify">
+    <div>
+      <strong>강형욱의 보듬TV</strong>
+      <span>취미·반려 · 전문가</span>
+    </div>
+    <div class="audit-decisions">
+      <span class="badge badge-modify">조사 Modify</span>
+      <span class="badge badge-modify">로직 Modify</span>
+      <span class="badge badge-modify">공개 Modify</span>
+    </div>
+    <p>2026-07-27 재확인: 조회 240,800</p>
+    <small>링크·메타만</small>
+  </article><article class="audit-card" data-kind="audit" data-logic="Modify" data-public="Modify">
+    <div>
+      <strong>미야옹철의 냥냥펀치</strong>
+      <span>취미·반려 · 전문가</span>
+    </div>
+    <div class="audit-decisions">
+      <span class="badge badge-modify">조사 Modify</span>
+      <span class="badge badge-modify">로직 Modify</span>
+      <span class="badge badge-modify">공개 Modify</span>
+    </div>
+    <p>검토 영상 최고 조회 126,119, 4개 영상 조회 수치를 직접 확인했다</p>
+    <small>링크·메타만</small>
+  </article></div>
+    </section>
+    <p class="footer">이 파일은 콘텐츠·로직 검토 자료다. 앱 구현, 공개 허가, 제작자 제휴 의향, 실제 사용자 검증을 의미하지 않는다.</p>
+  </main>
+  <script>
+    const filters = [...document.querySelectorAll('.filter')];
+    const cards = [...document.querySelectorAll('[data-kind]')];
+    function matches(card, filter) {
+      if (filter === 'all') return true;
+      if (filter === 'selected') return card.dataset.kind === 'selected';
+      if (filter === 'boundary') return card.dataset.kind === 'boundary';
+      if (filter === 'public-go') return card.dataset.public === 'Go';
+      if (filter === 'public-modify') return card.dataset.public === 'Modify';
+      if (filter === 'public-hold') return card.dataset.public === 'Hold';
+      return true;
+    }
+    filters.forEach((button) => {
+      button.addEventListener('click', () => {
+        filters.forEach((entry) => entry.classList.toggle('active', entry === button));
+        cards.forEach((card) => card.classList.toggle('hidden', !matches(card, button.dataset.filter)));
+      });
+    });
+  </script>
+</body>
+</html>
