@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" fill="#0d1117"/><rect x="60" y="60" width="34" height="80" rx="6" fill="#e6edf3"/><rect x="106" y="60" width="34" height="80" rx="6" fill="oklch(0.55 0.12 268)"/></svg></template>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ext-resource-dependency" content="screenshots/current-home-390.png">
+<meta name="ext-resource-dependency" content="screenshots/current-flows-390.png">
+<meta name="ext-resource-dependency" content="screenshots/current-public-moving-390.png">
+<meta name="ext-resource-dependency" content="screenshots/current-receipt-moving-390.png">
+<meta name="ext-resource-dependency" content="screenshots/current-my-flow-workspace-390.png">
+<meta name="ext-resource-dependency" content="screenshots/current-my-flow-1024.png">
+<meta name="ext-resource-dependency" content="screenshots/current-calendar-390.png">
+<meta name="ext-resource-dependency" content="screenshots/current-calendar-1024.png">
+<title>FlowMe MECE UX Reset · claude_design 독립 설계</title>
+<style>
+  html, body { margin:0; padding:0; background:#0d1117; }
+  body { font-family:"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,-apple-system,sans-serif; -webkit-font-smoothing:antialiased; text-wrap:pretty; }
+  * { box-sizing:border-box; }
+  a { color:#8ab4ff; text-decoration:none; }
+  a:hover { color:#b8cdff; text-decoration:underline; }
+  button { font-family:inherit; }
+  input, textarea { font-family:inherit; }
+  ::-webkit-scrollbar { width:10px; height:10px; }
+  ::-webkit-scrollbar-thumb { background:#2b323b; border-radius:8px; }
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:#0d1117;color:#e6edf3;padding-bottom:80px">
+
+  <header style="position:sticky;top:0;z-index:40;background:#0d1117ee;backdrop-filter:blur(8px);border-bottom:1px solid #21262d;padding:18px 24px 14px">
+    <div style="display:flex;flex-wrap:wrap;gap:16px 20px;align-items:flex-start;justify-content:space-between">
+      <div style="display:flex;flex-direction:column;gap:4px;flex:1 1 420px;min-width:0">
+        <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#7d8590;font-family:ui-monospace,SFMono-Regular,Menlo,monospace">reviewerRole: claude_design · 독립 검토 · 2026-07-26</div>
+        <h1 style="margin:0;font-size:21px;font-weight:700;letter-spacing:-.01em;line-height:1.35">FlowMe MECE UX Reset — 독립 설계 및 interactive wireflow</h1>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;flex:0 1 auto;min-width:0">
+        <span style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:oklch(0.30 0.06 268);border:1px solid oklch(0.45 0.10 268);font-size:12.5px;font-weight:600">Overall verdict · bounded_revision</span>
+        <span style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:#161b22;border:1px solid #30363d;font-size:12.5px;color:#adbac7">observed-user 0명 · 앱 코드 변경 없음</span>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-top:14px">
+      <div style="border:1px solid #30363d;border-radius:10px;padding:10px 12px;background:#12171e">
+        <div style="font-size:11.5px;color:#7d8590;margin-bottom:3px">결정 1 · Home 제거하고 Flow 찾기와 합칠 것인가</div>
+        <div style="font-size:13.5px;font-weight:700;color:#f0f6fc">revise — 제거는 승인, <span style="color:oklch(0.72 0.12 268)">`/`는 상태 기반 entry router</span></div>
+      </div>
+      <div style="border:1px solid #30363d;border-radius:10px;padding:10px 12px;background:#12171e">
+        <div style="font-size:11.5px;color:#7d8590;margin-bottom:3px">결정 2 · My Flow를 저장 library로 한정할 것인가</div>
+        <div style="font-size:13.5px;font-weight:700;color:#f0f6fc">keep — <span style="color:oklch(0.72 0.12 155)">단, 행마다 읽기 전용 다음 예정 1줄</span></div>
+      </div>
+      <div style="border:1px solid #30363d;border-radius:10px;padding:10px 12px;background:#12171e">
+        <div style="font-size:11.5px;color:#7d8590;margin-bottom:3px">결정 3 · Calendar를 날짜 lens로 한정할 것인가</div>
+        <div style="font-size:13.5px;font-weight:700;color:#f0f6fc">revise — <span style="color:oklch(0.75 0.12 65)">완료 토글 1개만 남기고 편집은 전부 이동</span></div>
+      </div>
+    </div>
+  </header>
+
+  <section style="padding:20px 24px 0;max-width:1560px">
+    <div style="border:1px solid #30363d;border-radius:12px;background:#12171e;padding:16px 18px">
+      <p style="margin:0 0 10px;font-size:14.5px;line-height:1.75;color:#c9d1d9">
+        Codex의 소유권 방향(찾기 → 공개 Flow → 저장 결과 → 개인 Flow, My Flow는 목록, Calendar는 날짜 렌즈)은 <b style="color:#f0f6fc">유지한다</b>.
+        production을 직접 확인한 결과 실제 결함은 “탭이 4개”가 아니라 <b style="color:#f0f6fc">한 화면이 여러 질문에 동시에 답하는 composition</b>이었고, 그 문제는 Codex 안으로 대부분 닫힌다.
+        다만 두 곳에서 Codex 안은 <b style="color:#f0f6fc">덜어내는 방향을 사용자 비용으로 지불</b>한다 — 재방문 첫 화면(결정 1)과 가장 잦은 단일 동작인 완료(결정 3).
+        그래서 최종 권장은 <b style="color:oklch(0.78 0.13 268)">A′ = A(subtractive) 기반 + 두 surface에만 C 수정</b>이다.
+      </p>
+      <p style="margin:0;font-size:13px;line-height:1.7;color:#8b949e">
+        아래 wireflow는 실제 콘텐츠 5종(이사 24개 · 자동차검사 10개 · 아침 5분 홈트 반복 · 중1 수학 8단원 · 개인 메모 5개)으로 동작한다.
+        회색 배경은 review chrome이고, 흰 화면 안쪽만 제품 surface다. current/proposed 설명은 제품 화면 안에 넣지 않았다.
+      </p>
+    </div>
+  </section>
+
+  <section style="padding:20px 24px 0;max-width:1560px">
+    <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;border:1px solid #30363d;border-radius:12px;background:#12171e;padding:12px 14px">
+      <span style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#7d8590;font-family:ui-monospace,monospace;width:100%">사례</span>
+      <sc-for list="{{ caseTabs }}" as="c" hint-placeholder-count="5">
+        <button type="button" onClick="{{ c.pick }}" aria-pressed="{{ c.pressed }}" style="{{ c.style }}">{{ c.label }}</button>
+      </sc-for>
+      <div style="width:100%;height:1px;background:#21262d;margin:4px 0"></div>
+      <span style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#7d8590;font-family:ui-monospace,monospace">viewport</span>
+      <sc-for list="{{ vpTabs }}" as="v" hint-placeholder-count="3">
+        <button type="button" onClick="{{ v.pick }}" aria-pressed="{{ v.pressed }}" style="{{ v.style }}">{{ v.label }}</button>
+      </sc-for>
+      <span style="width:16px"></span>
+      <span style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#7d8590;font-family:ui-monospace,monospace">단계</span>
+      <sc-for list="{{ stageTabs }}" as="s" hint-placeholder-count="8">
+        <button type="button" onClick="{{ s.pick }}" aria-pressed="{{ s.pressed }}" style="{{ s.style }}">{{ s.label }}</button>
+      </sc-for>
+      <span style="flex:1"></span>
+      <button type="button" onClick="{{ goBack }}" style="padding:7px 13px;border-radius:8px;border:1px solid #30363d;background:#0d1117;color:#c9d1d9;font-size:13px;cursor:pointer">← 뒤로</button>
+      <button type="button" onClick="{{ resetAll }}" style="padding:7px 13px;border-radius:8px;border:1px solid #30363d;background:#0d1117;color:#c9d1d9;font-size:13px;cursor:pointer">상태 초기화</button>
+    </div>
+  </section>
+
+  <main style="display:grid;grid-template-columns:minmax(280px,360px) minmax(0,1fr);gap:20px;padding:20px 24px;max-width:1560px;align-items:start">
+
+    <section aria-label="현재 production" style="border:1px solid #30363d;border-radius:12px;background:#12171e;overflow:hidden">
+      <div style="padding:12px 14px;border-bottom:1px solid #21262d;display:flex;align-items:center;gap:8px">
+        <span style="width:8px;height:8px;border-radius:99px;background:#8b949e"></span>
+        <b style="font-size:13.5px;white-space:nowrap">현재 production</b>
+        <span style="font-size:11px;color:#7d8590;font-family:ui-monospace,monospace;white-space:nowrap">{{ currentRoute }}</span>
+      </div>
+      <div style="padding:12px 14px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          <sc-for list="{{ currentMetrics }}" as="m" hint-placeholder-count="4">
+            <span style="display:inline-flex;gap:5px;align-items:baseline;padding:4px 9px;border-radius:7px;background:#0d1117;border:1px solid #262d36;font-size:11.5px;color:#adbac7;white-space:nowrap;flex:none;flex-wrap:nowrap">{{ m.k }}<b style="color:#f0f6fc;font-size:12.5px">{{ m.v }}</b></span>
+          </sc-for>
+        </div>
+        <sc-if value="{{ hasShots }}" hint-placeholder-val="{{ false }}">
+          <sc-for list="{{ currentShots }}" as="shot" hint-placeholder-count="0">
+            <figure style="margin:0">
+              <div role="img" aria-label="{{ shot.alt }}" style="{{ shot.style }}"></div>
+              <figcaption style="margin-top:5px;display:flex;gap:8px;align-items:baseline;font-size:11px;color:#7d8590;font-family:ui-monospace,monospace">
+                <span style="flex:1;min-width:0">{{ shot.cap }}</span>
+                <a href="{{ shot.src }}" target="_blank" rel="noreferrer" style="flex:none">전체 보기 ↗</a>
+              </figcaption>
+            </figure>
+          </sc-for>
+        </sc-if>
+        <ul style="margin:0;padding-left:16px;display:flex;flex-direction:column;gap:7px">
+          <sc-for list="{{ currentNotes }}" as="n" hint-placeholder-count="3">
+            <li style="font-size:12.5px;line-height:1.65;color:#c9d1d9">{{ n }}</li>
+          </sc-for>
+        </ul>
+        <div style="font-size:11px;color:#6e7681;font-family:ui-monospace,monospace;line-height:1.6">evidenceKind: {{ currentEvidence }}</div>
+      </div>
+    </section>
+
+    <section aria-label="제안 A′ prototype" style="border:1px solid #30363d;border-radius:12px;background:#12171e;overflow:hidden">
+      <div style="padding:12px 14px;border-bottom:1px solid #21262d;display:flex;flex-wrap:wrap;align-items:center;gap:8px">
+        <span style="width:8px;height:8px;border-radius:99px;background:oklch(0.65 0.14 268)"></span>
+        <b style="font-size:13.5px;white-space:nowrap">제안 A′ · 조작 가능한 prototype</b>
+        <span style="font-size:11px;color:#7d8590;font-family:ui-monospace,monospace">{{ proposedRoute }} · {{ vpLabel }}</span>
+        <span style="flex:1"></span>
+        <span style="font-size:11.5px;color:#8b949e;white-space:nowrap">{{ stageTitle }}</span>
+      </div>
+
+      <div style="padding:18px;display:flex;justify-content:center;background:#0d1117;overflow:auto">
+        <div style="{{ frameOuterStyle }}">
+          <div style="{{ frameInnerStyle }}">
+
+            <!-- ============ 제품 surface 시작 ============ -->
+            <div style="position:relative;width:100%;height:100%;background:#f4f5f7;overflow:hidden;display:flex;flex-direction:column;color:#16191d">
+
+              <sc-if value="{{ showAppChrome }}" hint-placeholder-val="{{ true }}">
+                <div style="flex:none;display:flex;align-items:center;justify-content:space-between;padding:14px 18px 10px;background:#ffffff;border-bottom:1px solid #e4e7eb">
+                  <b style="font-size:15px;letter-spacing:-.01em">FLOW</b>
+                  <span style="font-size:12px;color:#616b76">{{ chromeRight }}</span>
+                </div>
+              </sc-if>
+
+              <div style="flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch">
+
+                <!-- 1 · Flow 찾기 -->
+                <sc-if value="{{ isStage1 }}" hint-placeholder-val="{{ true }}">
+                  <div style="padding:18px 18px 96px;display:flex;flex-direction:column;gap:14px">
+                    <div>
+                      <h2 style="margin:0 0 4px;font-size:21px;font-weight:700;letter-spacing:-.02em">무엇을 실행할까요</h2>
+                      <p style="margin:0;font-size:13.5px;color:#616b76;line-height:1.6">링크나 메모를 넣으면 실행할 수 있는 전체 Flow를 찾습니다.</p>
+                    </div>
+
+                    <sc-if value="{{ showResume }}" hint-placeholder-val="{{ false }}">
+                      <a href="#" onClick="{{ goLibrary }}" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:12px;background:#ffffff;border:1px solid #e4e7eb;text-decoration:none;color:#16191d">
+                        <span style="flex:1;min-width:0">
+                          <span style="display:block;font-size:11.5px;color:#616b76;margin-bottom:2px">이어서 하기</span>
+                          <b style="display:block;font-size:15px;letter-spacing:-.01em">{{ resumeTitle }}</b>
+                          <span style="display:block;font-size:12.5px;color:#616b76;margin-top:2px">{{ resumeLine }}</span>
+                        </span>
+                        <span style="font-size:16px;color:#616b76">→</span>
+                      </a>
+                    </sc-if>
+
+                    <div style="display:flex;gap:8px">
+                      <input type="text" value="{{ memoText }}" onInput="{{ onMemoInput }}" aria-label="URL 또는 메모" placeholder="링크를 붙여넣거나, 하려는 일을 적으세요" style="flex:1;min-width:0;padding:13px 14px;border-radius:10px;border:1px solid #d7dbe0;background:#fff;font-size:14px">
+                      <button type="button" onClick="{{ runParse }}" style="flex:none;padding:0 18px;height:48px;border-radius:10px;border:none;background:#16191d;color:#fff;font-size:14.5px;font-weight:600;cursor:pointer;white-space:nowrap">찾기</button>
+                    </div>
+
+                    <sc-if value="{{ parsedVisible }}" hint-placeholder-val="{{ false }}">
+                      <div style="border:1px solid oklch(0.72 0.05 268);border-radius:12px;background:oklch(0.975 0.012 268);padding:14px 15px">
+                        <div style="font-size:12px;color:oklch(0.45 0.09 268);font-weight:600;margin-bottom:6px">메모에서 찾은 5개 할 일</div>
+                        <ol style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:5px">
+                          <sc-for list="{{ memoItems }}" as="mi" hint-placeholder-count="5">
+                            <li style="font-size:14px;line-height:1.5">{{ mi.title }}</li>
+                          </sc-for>
+                        </ol>
+                        <button type="button" onClick="{{ goPreview }}" style="margin-top:12px;width:100%;height:48px;border-radius:10px;border:none;background:#16191d;color:#fff;font-size:15px;font-weight:600;cursor:pointer">5개 할 일로 열기</button>
+                      </div>
+                    </sc-if>
+
+                    <div style="display:flex;flex-direction:column;gap:8px">
+                      <div style="font-size:12px;color:#616b76">준비된 Flow</div>
+                      <sc-for list="{{ discoverCards }}" as="card" hint-placeholder-count="5">
+                        <button type="button" onClick="{{ card.open }}" style="{{ card.style }}">
+                          <span style="display:flex;align-items:baseline;justify-content:space-between;gap:10px">
+                            <b style="font-size:15.5px;letter-spacing:-.01em;color:#16191d">{{ card.title }}</b>
+                            <span style="flex:none;font-size:12px;color:#616b76;white-space:nowrap">{{ card.result }}</span>
+                          </span>
+                          <span style="display:block;font-size:12.5px;color:#616b76;margin-top:4px">원문 · {{ card.source }}</span>
+                          <span style="display:block;font-size:13px;color:#3d4650;margin-top:8px;line-height:1.5">{{ card.peek }}</span>
+                        </button>
+                      </sc-for>
+                    </div>
+                  </div>
+                </sc-if>
+
+                <!-- 2 · 공개 Flow (저장 전 전체 결과) -->
+                <sc-if value="{{ isStage2 }}" hint-placeholder-val="{{ false }}">
+                  <div style="{{ previewWrapStyle }}">
+                    <div style="flex:1;min-width:0;padding:18px 18px 120px;display:flex;flex-direction:column;gap:14px">
+                      <div>
+                        <div style="font-size:12px;color:#616b76;margin-bottom:4px">원문 · {{ caseSource }}</div>
+                        <h2 style="margin:0 0 6px;font-size:21px;font-weight:700;letter-spacing:-.02em">{{ caseTitle }}</h2>
+                        <p style="margin:0;font-size:14.5px;color:#16191d;line-height:1.6"><b>{{ previewHeadline }}</b></p>
+                        <p style="margin:4px 0 0;font-size:13.5px;color:#616b76;line-height:1.6">{{ previewSubline }}</p>
+                      </div>
+
+                      <div style="border:1px solid #e4e7eb;border-radius:12px;background:#fff;overflow:hidden">
+                        <sc-for list="{{ previewGroups }}" as="g" hint-placeholder-count="4">
+                          <div style="border-bottom:1px solid #eef0f2">
+                            <div style="display:flex;align-items:baseline;gap:8px;padding:10px 14px 6px;background:#fafbfc">
+                              <b style="font-size:12.5px;color:#3d4650;white-space:nowrap">{{ g.label }}</b>
+                              <span style="font-size:11.5px;color:#8a939d;white-space:nowrap">{{ g.meta }}</span>
+                            </div>
+                            <sc-for list="{{ g.rows }}" as="r" hint-placeholder-count="4">
+                              <div style="display:flex;gap:10px;align-items:flex-start;padding:9px 14px;border-top:1px solid #f2f4f6">
+                                <span style="flex:none;width:46px;font-size:11.5px;color:#8a939d;padding-top:2px;font-variant-numeric:tabular-nums">{{ r.left }}</span>
+                                <span style="{{ r.titleStyle }}">{{ r.title }}</span>
+                                <button type="button" onClick="{{ r.toggle }}" aria-label="{{ r.toggleLabel }}" style="{{ r.toggleStyle }}">{{ r.toggleText }}</button>
+                              </div>
+                            </sc-for>
+                          </div>
+                        </sc-for>
+                      </div>
+
+                      <details style="border:1px solid #e4e7eb;border-radius:10px;background:#fff;padding:10px 14px">
+                        <summary style="font-size:13.5px;font-weight:600;cursor:pointer;color:#3d4650">출처와 주의</summary>
+                        <p style="margin:8px 0 0;font-size:12.5px;color:#616b76;line-height:1.65">{{ caseSourceNote }}</p>
+                      </details>
+                    </div>
+
+                    <div style="{{ inspectorStyle }}">
+                      <div style="display:flex;flex-direction:column;gap:10px">
+                        <sc-if value="{{ needsAnchor }}" hint-placeholder-val="{{ true }}">
+                          <label style="display:flex;flex-direction:column;gap:6px">
+                            <span style="font-size:12.5px;color:#3d4650;font-weight:600">{{ anchorLabel }}</span>
+                            <input type="date" value="{{ anchor }}" onChange="{{ onAnchor }}" style="width:100%;height:46px;padding:0 12px;border-radius:10px;border:1px solid #d7dbe0;background:#fff;font-size:14.5px">
+                          </label>
+                          <div style="font-size:12px;color:#616b76;line-height:1.5">{{ anchorHelp }}</div>
+                        </sc-if>
+                        <sc-if value="{{ noAnchor }}" hint-placeholder-val="{{ false }}">
+                          <div style="font-size:12.5px;color:#616b76;line-height:1.55">{{ noAnchorHelp }}</div>
+                        </sc-if>
+                        <div style="display:flex;gap:8px">
+                          <button type="button" onClick="{{ goAdjust }}" style="flex:none;height:48px;padding:0 16px;border-radius:10px;border:1px solid #d7dbe0;background:#fff;color:#16191d;font-size:14.5px;font-weight:600;cursor:pointer">조정</button>
+                          <button type="button" onClick="{{ doSave }}" style="flex:1;height:48px;border-radius:10px;border:none;background:#16191d;color:#fff;font-size:15px;font-weight:700;cursor:pointer">{{ startLabel }}</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </sc-if>
+
+                <!-- 3 · 조정 -->
+                <sc-if value="{{ isStage3 }}" hint-placeholder-val="{{ false }}">
+                  <div style="padding:18px 18px 40px;max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:14px">
+                    <div>
+                      <h2 style="margin:0 0 4px;font-size:20px;font-weight:700;letter-spacing:-.02em">무엇을 바꿀까요</h2>
+                      <p style="margin:0;font-size:13.5px;color:#616b76;line-height:1.6">한 번에 한 종류만 엽니다. 바꾼 결과는 바로 위 숫자에 반영됩니다.</p>
+                    </div>
+                    <div style="display:flex;flex-wrap:wrap;gap:8px">
+                      <sc-for list="{{ adjustTabs }}" as="a" hint-placeholder-count="3">
+                        <button type="button" onClick="{{ a.pick }}" aria-pressed="{{ a.pressed }}" style="{{ a.style }}">{{ a.label }}</button>
+                      </sc-for>
+                    </div>
+
+                    <div style="border:1px solid #e4e7eb;border-radius:12px;background:#fff;padding:14px">
+                      <div style="display:flex;gap:14px;align-items:baseline;padding-bottom:12px;border-bottom:1px solid #eef0f2;margin-bottom:12px">
+                        <span style="font-size:12px;color:#616b76">변경 전</span>
+                        <span style="font-size:13.5px;color:#8a939d">{{ beforeLine }}</span>
+                        <span style="font-size:12px;color:#616b76">→ 변경 후</span>
+                        <b style="font-size:14px;color:oklch(0.45 0.10 155)">{{ afterLine }}</b>
+                      </div>
+
+                      <sc-if value="{{ adjustIsName }}" hint-placeholder-val="{{ false }}">
+                        <label style="display:flex;flex-direction:column;gap:6px">
+                          <span style="font-size:12.5px;color:#3d4650;font-weight:600">저장 이름</span>
+                          <input type="text" value="{{ savedName }}" onInput="{{ onName }}" style="width:100%;height:46px;padding:0 12px;border-radius:10px;border:1px solid #d7dbe0;font-size:14.5px">
+                        </label>
+                      </sc-if>
+
+                      <sc-if value="{{ adjustIsAnchor }}" hint-placeholder-val="{{ true }}">
+                        <label style="display:flex;flex-direction:column;gap:6px">
+                          <span style="font-size:12.5px;color:#3d4650;font-weight:600">{{ anchorLabel }}</span>
+                          <input type="date" value="{{ anchor }}" onChange="{{ onAnchor }}" style="width:100%;height:46px;padding:0 12px;border-radius:10px;border:1px solid #d7dbe0;font-size:14.5px">
+                          <span style="font-size:12px;color:#616b76;line-height:1.5">{{ anchorHelp }}</span>
+                        </label>
+                      </sc-if>
+
+                      <sc-if value="{{ adjustIsInclude }}" hint-placeholder-val="{{ false }}">
+                        <div style="display:flex;flex-direction:column;max-height:340px;overflow:auto">
+                          <sc-for list="{{ flatRows }}" as="r" hint-placeholder-count="6">
+                            <label style="display:flex;gap:10px;align-items:center;padding:9px 4px;border-bottom:1px solid #f2f4f6;cursor:pointer">
+                              <input type="checkbox" checked="{{ r.included }}" onChange="{{ r.toggle }}" style="width:20px;height:20px;flex:none;accent-color:#16191d">
+                              <span style="{{ r.titleStyle }}">{{ r.title }}</span>
+                              <span style="flex:none;font-size:11.5px;color:#8a939d">{{ r.left }}</span>
+                            </label>
+                          </sc-for>
+                        </div>
+                      </sc-if>
+
+                      <sc-if value="{{ adjustIsSeries }}" hint-placeholder-val="{{ false }}">
+                        <div style="display:flex;flex-direction:column;gap:12px">
+                          <div style="display:flex;flex-wrap:wrap;gap:8px">
+                            <sc-for list="{{ weekdayChips }}" as="w" hint-placeholder-count="7">
+                              <button type="button" onClick="{{ w.toggle }}" aria-pressed="{{ w.on }}" style="{{ w.style }}">{{ w.label }}</button>
+                            </sc-for>
+                          </div>
+                          <label style="display:flex;flex-direction:column;gap:6px">
+                            <span style="font-size:12.5px;color:#3d4650;font-weight:600">시작일</span>
+                            <input type="date" value="{{ anchor }}" onChange="{{ onAnchor }}" style="width:100%;height:46px;padding:0 12px;border-radius:10px;border:1px solid #d7dbe0;font-size:14.5px">
+                          </label>
+                          <div style="font-size:12.5px;color:#616b76;line-height:1.6">{{ seriesSummary }}</div>
+                        </div>
+                      </sc-if>
+                    </div>
+
+                    <div style="display:flex;gap:8px">
+                      <button type="button" onClick="{{ cancelAdjust }}" style="flex:none;height:48px;padding:0 18px;border-radius:10px;border:1px solid #d7dbe0;background:#fff;font-size:14.5px;font-weight:600;cursor:pointer">취소</button>
+                      <button type="button" onClick="{{ applyAdjust }}" style="flex:1;height:48px;border-radius:10px;border:none;background:#16191d;color:#fff;font-size:15px;font-weight:700;cursor:pointer">변경 적용</button>
+                    </div>
+                  </div>
+                </sc-if>
+
+                <!-- 4 · 저장 결과 -->
+                <sc-if value="{{ isStage4 }}" hint-placeholder-val="{{ false }}">
+                  <div style="padding:26px 18px 40px;max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:16px">
+                    <div style="display:flex;align-items:center;gap:9px">
+                      <span style="width:24px;height:24px;border-radius:99px;background:oklch(0.52 0.10 155);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px">✓</span>
+                      <b style="font-size:15px;color:oklch(0.42 0.09 155)">내 Flow에 저장했습니다</b>
+                    </div>
+                    <div>
+                      <h2 style="margin:0 0 6px;font-size:23px;font-weight:700;letter-spacing:-.02em">{{ receiptHeadline }}</h2>
+                      <p style="margin:0;font-size:14.5px;color:#616b76;line-height:1.6">{{ receiptSubline }}</p>
+                    </div>
+                    <dl style="margin:0;border:1px solid #e4e7eb;border-radius:12px;background:#fff;overflow:hidden">
+                      <sc-for list="{{ receiptRows }}" as="rr" hint-placeholder-count="4">
+                        <div style="display:flex;gap:12px;padding:11px 14px;border-bottom:1px solid #f2f4f6">
+                          <dt style="flex:none;width:78px;font-size:12.5px;color:#8a939d">{{ rr.k }}</dt>
+                          <dd style="margin:0;font-size:14px;font-weight:600">{{ rr.v }}</dd>
+                        </div>
+                      </sc-for>
+                    </dl>
+                    <button type="button" onClick="{{ goPersonal }}" style="width:100%;height:52px;border-radius:12px;border:none;background:#16191d;color:#fff;font-size:15.5px;font-weight:700;cursor:pointer">내 Flow 열기</button>
+                    <button type="button" onClick="{{ goExport }}" style="width:100%;height:44px;border-radius:10px;border:1px solid #e4e7eb;background:transparent;color:#3d4650;font-size:14px;cursor:pointer">지금 가져가기</button>
+                  </div>
+                </sc-if>
+
+                <!-- 5 · My Flow library -->
+                <sc-if value="{{ isStage5 }}" hint-placeholder-val="{{ false }}">
+                  <div style="{{ libWrapStyle }}">
+                    <div style="flex:1;min-width:0;padding:18px 18px 96px;display:flex;flex-direction:column;gap:12px">
+                      <div>
+                        <h2 style="margin:0 0 4px;font-size:20px;font-weight:700;letter-spacing:-.02em">저장한 Flow</h2>
+                        <p style="margin:0;font-size:13.5px;color:#616b76">{{ libSummary }}</p>
+                      </div>
+                      <div style="display:flex;gap:8px;align-items:center">
+                        <input type="text" value="{{ libQuery }}" onInput="{{ onLibQuery }}" aria-label="저장한 Flow 검색" placeholder="이름으로 찾기" style="flex:1;min-width:0;height:44px;padding:0 12px;border-radius:10px;border:1px solid #d7dbe0;background:#fff;font-size:14px">
+                        <sc-for list="{{ libFilters }}" as="f" hint-placeholder-count="3">
+                          <button type="button" onClick="{{ f.pick }}" aria-pressed="{{ f.pressed }}" style="{{ f.style }}">{{ f.label }}</button>
+                        </sc-for>
+                      </div>
+                      <div style="border:1px solid #e4e7eb;border-radius:12px;background:#fff;overflow:hidden">
+                        <sc-for list="{{ libraryRows }}" as="lr" hint-placeholder-count="5">
+                          <button type="button" onClick="{{ lr.open }}" style="{{ lr.style }}">
+                            <span style="display:flex;align-items:baseline;gap:8px">
+                              <b style="font-size:15px;letter-spacing:-.01em;flex:1;min-width:0;text-align:left">{{ lr.title }}</b>
+                              <span style="flex:none;font-size:12px;color:#8a939d;white-space:nowrap">{{ lr.count }}</span>
+                            </span>
+                            <span style="display:block;text-align:left;font-size:12.5px;color:#616b76;margin-top:3px">{{ lr.next }}</span>
+                          </button>
+                        </sc-for>
+                      </div>
+                      <div style="display:flex;gap:8px;align-items:center;font-size:12px;color:#8a939d">
+                        <span>규모 테스트</span>
+                        <sc-for list="{{ sizeTabs }}" as="s2" hint-placeholder-count="3">
+                          <button type="button" onClick="{{ s2.pick }}" aria-pressed="{{ s2.pressed }}" style="{{ s2.style }}">{{ s2.label }}</button>
+                        </sc-for>
+                      </div>
+                    </div>
+                    <sc-if value="{{ isWide }}" hint-placeholder-val="{{ false }}">
+                      <div style="flex:none;width:44%;min-width:320px;border-left:1px solid #e4e7eb;background:#fff;padding:18px;display:flex;flex-direction:column;gap:10px">
+                        <div style="font-size:12px;color:#8a939d">선택한 Flow</div>
+                        <b style="font-size:17px;letter-spacing:-.01em">{{ savedName }}</b>
+                        <div style="font-size:13px;color:#616b76;line-height:1.6">{{ workspaceSub }}</div>
+                        <button type="button" onClick="{{ goPersonal }}" style="margin-top:6px;height:48px;border-radius:10px;border:none;background:#16191d;color:#fff;font-size:15px;font-weight:700;cursor:pointer">이 Flow 열기</button>
+                      </div>
+                    </sc-if>
+                  </div>
+                </sc-if>
+
+                <!-- 6 · 개인 Flow workspace -->
+                <sc-if value="{{ isStage6 }}" hint-placeholder-val="{{ false }}">
+                  <div style="{{ wsWrapStyle }}">
+                    <div style="flex:1;min-width:0;padding:18px 18px 110px;display:flex;flex-direction:column;gap:14px">
+                      <div>
+                        <div style="font-size:12px;color:#616b76;margin-bottom:3px">{{ workspaceKicker }}</div>
+                        <h2 style="margin:0 0 6px;font-size:20px;font-weight:700;letter-spacing:-.02em">{{ savedName }}</h2>
+                        <p style="margin:0;font-size:13.5px;color:#616b76">{{ workspaceSub }}</p>
+                      </div>
+
+                      <div style="border:1px solid oklch(0.80 0.04 268);border-radius:12px;background:oklch(0.975 0.012 268);padding:14px">
+                        <div style="font-size:12px;color:oklch(0.45 0.09 268);font-weight:600;margin-bottom:6px">{{ nextLabel }}</div>
+                        <b style="display:block;font-size:16.5px;line-height:1.45;letter-spacing:-.01em">{{ nextTitle }}</b>
+                        <div style="font-size:12.5px;color:#616b76;margin-top:4px">{{ nextMeta }}</div>
+                        <div style="display:flex;gap:8px;margin-top:12px">
+                          <button type="button" onClick="{{ completeNext }}" style="flex:1;height:48px;border-radius:10px;border:none;background:#16191d;color:#fff;font-size:15px;font-weight:700;cursor:pointer">{{ nextPrimary }}</button>
+                          <button type="button" onClick="{{ openNext }}" style="flex:none;height:48px;padding:0 16px;border-radius:10px;border:1px solid #d7dbe0;background:#fff;font-size:14.5px;font-weight:600;cursor:pointer;white-space:nowrap">열기</button>
+                        </div>
+                      </div>
+
+                      <div>
+                        <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px">
+                          <b style="font-size:13.5px;white-space:nowrap">{{ structureLabel }}</b>
+                          <span style="font-size:12px;color:#8a939d;white-space:nowrap">{{ structureMeta }}</span>
+                        </div>
+                        <div style="border:1px solid #e4e7eb;border-radius:12px;background:#fff;overflow:hidden">
+                          <sc-for list="{{ personalGroups }}" as="pg" hint-placeholder-count="3">
+                            <div>
+                              <div style="display:flex;align-items:baseline;gap:8px;padding:10px 14px 6px;background:#fafbfc;border-top:1px solid #eef0f2">
+                                <b style="font-size:12.5px;color:#3d4650;white-space:nowrap">{{ pg.label }}</b>
+                                <span style="font-size:11.5px;color:#8a939d;white-space:nowrap">{{ pg.meta }}</span>
+                              </div>
+                              <sc-for list="{{ pg.rows }}" as="pr" hint-placeholder-count="4">
+                                <div style="display:flex;gap:10px;align-items:center;padding:8px 14px;border-top:1px solid #f2f4f6">
+                                  <button type="button" onClick="{{ pr.toggleDone }}" aria-pressed="{{ pr.done }}" aria-label="{{ pr.doneLabel }}" style="{{ pr.checkStyle }}">{{ pr.checkMark }}</button>
+                                  <button type="button" onClick="{{ pr.open }}" style="{{ pr.rowBtnStyle }}">
+                                    <span style="{{ pr.titleStyle }}">{{ pr.title }}</span>
+                                    <span style="display:block;font-size:11.5px;color:#8a939d;margin-top:2px">{{ pr.meta }}</span>
+                                  </button>
+                                </div>
+                              </sc-for>
+                            </div>
+                          </sc-for>
+                        </div>
+                      </div>
+
+                      <div style="display:flex;flex-wrap:wrap;gap:8px">
+                        <button type="button" onClick="{{ goAdjust }}" style="height:44px;padding:0 14px;border-radius:10px;border:1px solid #d7dbe0;background:#fff;font-size:13.5px;font-weight:600;cursor:pointer">구조 조정</button>
+                        <button type="button" onClick="{{ goExport }}" style="height:44px;padding:0 14px;border-radius:10px;border:1px solid #d7dbe0;background:#fff;font-size:13.5px;font-weight:600;cursor:pointer">가져가기</button>
+                        <button type="button" onClick="{{ doArchive }}" style="height:44px;padding:0 14px;border-radius:10px;border:1px solid #d7dbe0;background:#fff;font-size:13.5px;color:#3d4650;cursor:pointer">관리 · 보관</button>
+                      </div>
+
+                      <sc-if value="{{ hasResource }}" hint-placeholder-val="{{ false }}">
+                        <div style="border:1px dashed #d7dbe0;border-radius:10px;background:#fff;padding:12px 14px">
+                          <div style="font-size:11.5px;color:#8a939d;margin-bottom:4px">자료 · 완료 대상 아님</div>
+                          <a href="{{ resourceUrl }}" target="_blank" rel="noreferrer" style="font-size:13.5px;color:oklch(0.48 0.10 268)">{{ resourceLabel }}</a>
+                        </div>
+                      </sc-if>
+                    </div>
+
+                    <sc-if value="{{ isWide }}" hint-placeholder-val="{{ false }}">
+                      <div style="flex:none;width:38%;min-width:300px;border-left:1px solid #e4e7eb;background:#fff;padding:18px;display:flex;flex-direction:column;gap:12px">
+                        <div style="font-size:12px;color:#8a939d">선택한 할 일</div>
+                        <b style="font-size:16px;line-height:1.45">{{ inspectorTitle }}</b>
+                        <div style="font-size:12.5px;color:#616b76;line-height:1.6">{{ inspectorMeta }}</div>
+                        <div style="font-size:12px;color:#8a939d;margin-top:6px">왼쪽에서 할 일을 고르면 여기서 제목·날짜·메모를 바꿉니다.</div>
+                      </div>
+                    </sc-if>
+                  </div>
+                </sc-if>
+
+                <!-- 7 · Calendar -->
+                <sc-if value="{{ isStage7 }}" hint-placeholder-val="{{ false }}">
+                  <div style="{{ calWrapStyle }}">
+                    <div style="flex:1;min-width:0;padding:16px 14px 24px">
+                      <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px">
+                        <h2 style="margin:0;font-size:19px;font-weight:700;letter-spacing:-.02em">2026년 8월</h2>
+                        <span style="font-size:12.5px;color:#616b76;white-space:nowrap">{{ calSummary }}</span>
+                      </div>
+                      <div role="grid" aria-label="2026년 8월 달력" style="border:1px solid #e4e7eb;border-radius:12px;background:#fff;overflow:hidden">
+                        <div role="row" style="display:grid;grid-template-columns:repeat(7,1fr);background:#fafbfc;border-bottom:1px solid #eef0f2">
+                          <sc-for list="{{ dowLabels }}" as="d" hint-placeholder-count="7">
+                            <div role="columnheader" style="padding:6px 0;text-align:center;font-size:11.5px;color:#8a939d">{{ d }}</div>
+                          </sc-for>
+                        </div>
+                        <div style="display:grid;grid-template-columns:repeat(7,1fr)">
+                          <sc-for list="{{ calCells }}" as="cell" hint-placeholder-count="35">
+                            <button type="button" role="gridcell" onClick="{{ cell.pick }}" tabindex="{{ cell.tabIndex }}" aria-selected="{{ cell.selected }}" aria-label="{{ cell.aria }}" style="{{ cell.style }}">
+                              <span style="{{ cell.numStyle }}">{{ cell.num }}</span>
+                              <span style="display:flex;gap:3px;margin-top:4px;justify-content:center">
+                                <sc-for list="{{ cell.dots }}" as="dot" hint-placeholder-count="2">
+                                  <span style="{{ dot.style }}"></span>
+                                </sc-for>
+                              </span>
+                              <span style="{{ cell.countStyle }}">{{ cell.countText }}</span>
+                            </button>
+                          </sc-for>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style="{{ agendaStyle }}">
+                      <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px">
+                        <b style="font-size:16px;letter-spacing:-.01em">{{ calDayLabel }}</b>
+                        <span style="font-size:12.5px;color:#616b76;white-space:nowrap">{{ agendaMeta }}</span>
+                      </div>
+                      <div style="display:flex;flex-direction:column;gap:8px">
+                        <sc-for list="{{ agendaGroups }}" as="ag" hint-placeholder-count="2">
+                          <div style="border:1px solid #e4e7eb;border-radius:12px;background:#fff;overflow:hidden">
+                            <div style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid #f2f4f6">
+                              <span style="{{ ag.dotStyle }}"></span>
+                              <b style="font-size:13.5px;flex:1;min-width:0">{{ ag.flowTitle }}</b>
+                              <button type="button" onClick="{{ ag.open }}" style="flex:none;height:34px;padding:0 12px;border-radius:8px;border:1px solid #d7dbe0;background:#fff;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap">Flow 열기</button>
+                            </div>
+                            <sc-for list="{{ ag.rows }}" as="ar" hint-placeholder-count="3">
+                              <div style="display:flex;gap:10px;align-items:center;padding:9px 12px;border-top:1px solid #f6f7f9">
+                                <sc-if value="{{ ar.canToggle }}" hint-placeholder-val="{{ true }}">
+                                  <button type="button" onClick="{{ ar.toggleDone }}" aria-pressed="{{ ar.done }}" aria-label="{{ ar.doneLabel }}" style="{{ ar.checkStyle }}">{{ ar.checkMark }}</button>
+                                </sc-if>
+                                <span style="{{ ar.titleStyle }}">{{ ar.title }}</span>
+                              </div>
+                            </sc-for>
+                          </div>
+                        </sc-for>
+                        <sc-if value="{{ agendaEmpty }}" hint-placeholder-val="{{ false }}">
+                          <div style="border:1px dashed #d7dbe0;border-radius:12px;padding:18px 14px;text-align:center;font-size:13.5px;color:#8a939d">이 날짜에는 일정이 없습니다.</div>
+                        </sc-if>
+                        <div style="font-size:12px;color:#8a939d;line-height:1.6;padding:2px 2px 0">날짜 없는 할 일은 각 Flow 안에 있습니다. 제목·날짜·메모 수정은 Flow를 열어서 합니다.</div>
+                      </div>
+                    </div>
+                  </div>
+                </sc-if>
+
+                <!-- 8 · 가져가기 -->
+                <sc-if value="{{ isStage8 }}" hint-placeholder-val="{{ false }}">
+                  <div style="padding:18px 18px 40px;max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:14px">
+                    <div>
+                      <h2 style="margin:0 0 4px;font-size:20px;font-weight:700;letter-spacing:-.02em">무엇을 가져갈까요</h2>
+                      <p style="margin:0;font-size:13.5px;color:#616b76">범위를 먼저 고르면 나가는 개수가 바로 보입니다.</p>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:8px">
+                      <sc-for list="{{ scopeOptions }}" as="so" hint-placeholder-count="3">
+                        <button type="button" onClick="{{ so.pick }}" aria-pressed="{{ so.pressed }}" style="{{ so.style }}">
+                          <span style="display:flex;align-items:baseline;gap:8px">
+                            <b style="font-size:14.5px;flex:none;white-space:nowrap">{{ so.label }}</b>
+                            <span style="flex:1"></span>
+                            <b style="font-size:14.5px;flex:none;white-space:nowrap">{{ so.count }}</b>
+                          </span>
+                          <span style="display:block;text-align:left;font-size:12.5px;color:#616b76;margin-top:3px">{{ so.desc }}</span>
+                        </button>
+                      </sc-for>
+                    </div>
+
+                    <sc-if value="{{ scopeIsSelected }}" hint-placeholder-val="{{ false }}">
+                      <div style="border:1px solid #e4e7eb;border-radius:12px;background:#fff;max-height:240px;overflow:auto">
+                        <sc-for list="{{ flatRows }}" as="r" hint-placeholder-count="6">
+                          <label style="display:flex;gap:10px;align-items:center;padding:9px 12px;border-bottom:1px solid #f2f4f6;cursor:pointer">
+                            <input type="checkbox" checked="{{ r.picked }}" onChange="{{ r.pick }}" style="width:20px;height:20px;flex:none;accent-color:#16191d">
+                            <span style="{{ r.titleStyle }}">{{ r.title }}</span>
+                          </label>
+                        </sc-for>
+                      </div>
+                    </sc-if>
+
+                    <div>
+                      <div style="font-size:12.5px;color:#3d4650;font-weight:600;margin-bottom:6px">받을 형식</div>
+                      <div style="display:flex;flex-wrap:wrap;gap:8px">
+                        <sc-for list="{{ destOptions }}" as="d2" hint-placeholder-count="4">
+                          <button type="button" onClick="{{ d2.pick }}" aria-pressed="{{ d2.pressed }}" disabled="{{ d2.disabled }}" title="{{ d2.reason }}" style="{{ d2.style }}">{{ d2.label }}</button>
+                        </sc-for>
+                      </div>
+                      <p style="margin:8px 0 0;font-size:12.5px;color:#616b76;line-height:1.6">{{ destNote }}</p>
+                    </div>
+
+                    <button type="button" onClick="{{ doExport }}" style="width:100%;height:52px;border-radius:12px;border:none;background:#16191d;color:#fff;font-size:15.5px;font-weight:700;cursor:pointer">{{ exportCta }}</button>
+
+                    <sc-if value="{{ exportDone }}" hint-placeholder-val="{{ false }}">
+                      <div style="border:1px solid oklch(0.80 0.05 155);border-radius:12px;background:oklch(0.975 0.015 155);padding:14px">
+                        <b style="font-size:14.5px;color:oklch(0.40 0.09 155)">{{ exportReceipt }}</b>
+                        <div style="font-size:12.5px;color:#616b76;margin-top:4px">{{ exportWhere }}</div>
+                      </div>
+                    </sc-if>
+                  </div>
+                </sc-if>
+
+              </div>
+
+              <!-- Item detail sheet -->
+              <sc-if value="{{ sheetOpen }}" hint-placeholder-val="{{ false }}">
+                <div role="dialog" aria-modal="true" aria-label="할 일 상세" style="position:absolute;inset:0;background:#16191d55;display:flex;align-items:flex-end;z-index:20">
+                  <div style="width:100%;max-height:82%;overflow:auto;background:#fff;border-radius:18px 18px 0 0;padding:16px 18px 22px;box-shadow:0 -8px 40px #16191d33">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+                      <b style="flex:1;min-width:0;font-size:12px;color:#8a939d">{{ sheetKicker }}</b>
+                      <button type="button" onClick="{{ closeSheet }}" aria-label="닫기" style="flex:none;width:36px;height:36px;border-radius:9px;border:1px solid #e4e7eb;background:#fff;font-size:15px;cursor:pointer">✕</button>
+                    </div>
+                    <label style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px">
+                      <span style="font-size:12px;color:#8a939d">제목</span>
+                      <input type="text" value="{{ sheetTitle }}" onInput="{{ onSheetTitle }}" style="width:100%;height:46px;padding:0 12px;border-radius:10px;border:1px solid #d7dbe0;font-size:15px;font-weight:600">
+                    </label>
+                    <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+                      <label style="flex:1;min-width:180px;display:flex;flex-direction:column;gap:6px">
+                        <span style="font-size:12px;color:#8a939d">이 할 일 날짜</span>
+                        <input type="date" value="{{ sheetDate }}" onChange="{{ onSheetDate }}" style="width:100%;height:46px;padding:0 12px;border-radius:10px;border:1px solid #d7dbe0;font-size:14.5px">
+                      </label>
+                      <button type="button" onClick="{{ clearSheetDate }}" style="flex:none;align-self:flex-end;height:46px;padding:0 14px;border-radius:10px;border:1px solid #d7dbe0;background:#fff;font-size:13.5px;cursor:pointer">날짜 제거</button>
+                    </div>
+                    <label style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px">
+                      <span style="font-size:12px;color:#8a939d">내 메모</span>
+                      <textarea rows="3" value="{{ sheetMemo }}" onInput="{{ onSheetMemo }}" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid #d7dbe0;font-size:14px;line-height:1.6;resize:vertical"></textarea>
+                    </label>
+                    <div style="font-size:12.5px;color:#616b76;line-height:1.6;margin-bottom:14px">{{ sheetCriteria }}</div>
+                    <button type="button" onClick="{{ sheetToggleDone }}" style="{{ sheetDoneStyle }}">{{ sheetDoneLabel }}</button>
+                  </div>
+                </div>
+              </sc-if>
+
+              <!-- toast -->
+              <sc-if value="{{ toastVisible }}" hint-placeholder-val="{{ false }}">
+                <div role="status" style="position:absolute;left:12px;right:12px;bottom:76px;z-index:30;display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:12px;background:#16191d;color:#fff;box-shadow:0 6px 24px #16191d40">
+                  <span style="flex:1;min-width:0;font-size:13.5px">{{ toastMsg }}</span>
+                  <sc-if value="{{ toastHasUndo }}" hint-placeholder-val="{{ false }}">
+                    <button type="button" onClick="{{ doUndo }}" style="flex:none;height:34px;padding:0 12px;border-radius:8px;border:1px solid #ffffff44;background:transparent;color:#fff;font-size:13px;font-weight:700;cursor:pointer">되돌리기</button>
+                  </sc-if>
+                </div>
+              </sc-if>
+
+              <!-- bottom nav (3 tabs) -->
+              <sc-if value="{{ showAppChrome }}" hint-placeholder-val="{{ true }}">
+                <nav aria-label="주 메뉴" style="flex:none;display:grid;grid-template-columns:repeat(3,1fr);background:#fff;border-top:1px solid #e4e7eb">
+                  <sc-for list="{{ navTabs }}" as="t" hint-placeholder-count="3">
+                    <button type="button" onClick="{{ t.pick }}" aria-current="{{ t.current }}" style="{{ t.style }}">{{ t.label }}</button>
+                  </sc-for>
+                </nav>
+              </sc-if>
+
+            </div>
+            <!-- ============ 제품 surface 끝 ============ -->
+
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <section style="padding:0 24px;max-width:1560px">
+    <div style="border:1px solid #30363d;border-radius:12px;background:#12171e;padding:16px 18px">
+      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;margin-bottom:10px">
+        <b style="font-size:14px">{{ stageTitle }} · 설계 근거</b>
+        <span style="font-size:11.5px;color:#7d8590;font-family:ui-monospace,monospace">owner: {{ stageOwner }}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px">
+        <div>
+          <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#7d8590;margin-bottom:6px">메시지 · primary</div>
+          <ul style="margin:0;padding-left:16px;display:flex;flex-direction:column;gap:6px">
+            <sc-for list="{{ stageMessages }}" as="sm" hint-placeholder-count="3">
+              <li style="font-size:13px;line-height:1.6;color:#c9d1d9">{{ sm }}</li>
+            </sc-for>
+          </ul>
+        </div>
+        <div>
+          <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#7d8590;margin-bottom:6px">지운 것 · 옮긴 것</div>
+          <ul style="margin:0;padding-left:16px;display:flex;flex-direction:column;gap:6px">
+            <sc-for list="{{ stageCuts }}" as="sc" hint-placeholder-count="3">
+              <li style="font-size:13px;line-height:1.6;color:#c9d1d9">{{ sc }}</li>
+            </sc-for>
+          </ul>
+        </div>
+        <div>
+          <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#7d8590;margin-bottom:6px">복잡도 current → proposed</div>
+          <div style="display:flex;flex-direction:column;gap:5px">
+            <sc-for list="{{ stageDeltas }}" as="sd" hint-placeholder-count="4">
+              <div style="display:flex;align-items:baseline;gap:8px;font-size:12.5px;color:#c9d1d9"><span style="flex:1;color:#8b949e">{{ sd.k }}</span><span style="font-family:ui-monospace,monospace">{{ sd.from }}</span><span style="color:#6e7681">→</span><b style="font-family:ui-monospace,monospace;color:oklch(0.78 0.13 155)">{{ sd.to }}</b></div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding:24px;max-width:1560px;display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:20px">
+
+    <div style="border:1px solid #30363d;border-radius:12px;background:#12171e;padding:16px 18px">
+      <h3 style="margin:0 0 12px;font-size:15px">A / B / C 비교</h3>
+      <div role="table" style="font-size:12.5px">
+        <div role="row" style="display:grid;grid-template-columns:104px repeat(3,1fr);gap:10px;padding:0 4px 7px;border-bottom:1px solid #30363d">
+          <div role="columnheader" style="color:#8b949e;font-weight:600">기준</div>
+          <div role="columnheader" style="color:#8b949e;font-weight:600">A Subtractive</div>
+          <div role="columnheader" style="color:#8b949e;font-weight:600">B Tightened</div>
+          <div role="columnheader" style="color:#8b949e;font-weight:600">C = A′ 권장</div>
+        </div>
+        <sc-for list="{{ abcRows }}" as="ab" hint-placeholder-count="10">
+          <div role="row" style="display:grid;grid-template-columns:104px repeat(3,1fr);gap:10px;padding:8px 4px;border-bottom:1px solid #21262d;line-height:1.55">
+            <div role="cell" style="color:#8b949e">{{ ab.k }}</div>
+            <div role="cell" style="color:#c9d1d9">{{ ab.a }}</div>
+            <div role="cell" style="color:#c9d1d9">{{ ab.b }}</div>
+            <div role="cell" style="color:#f0f6fc">{{ ab.c }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="border:1px solid #30363d;border-radius:12px;background:#12171e;padding:16px 18px">
+      <h3 style="margin:0 0 12px;font-size:15px">15-cell journey (5 personas × 3 sessions)</h3>
+      <div role="table" style="font-size:12.5px">
+        <div role="row" style="display:grid;grid-template-columns:92px 22px 62px 58px 1fr;gap:10px;padding:0 4px 7px;border-bottom:1px solid #30363d">
+          <div role="columnheader" style="color:#8b949e;font-weight:600">Persona</div>
+          <div role="columnheader" style="color:#8b949e;font-weight:600">S</div>
+          <div role="columnheader" style="color:#8b949e;font-weight:600">Cur</div>
+          <div role="columnheader" style="color:#8b949e;font-weight:600">Prop</div>
+          <div role="columnheader" style="color:#8b949e;font-weight:600">가장 큰 단절</div>
+        </div>
+        <sc-for list="{{ journeyRows }}" as="j" hint-placeholder-count="15">
+          <div role="row" style="display:grid;grid-template-columns:92px 22px 62px 58px 1fr;gap:10px;padding:8px 4px;border-bottom:1px solid #21262d;line-height:1.55;align-items:baseline">
+            <div role="cell" style="color:#c9d1d9">{{ j.persona }}</div>
+            <div role="cell" style="color:#8b949e;font-family:ui-monospace,monospace">{{ j.session }}</div>
+            <div role="cell"><span style="{{ j.curStyle }}">{{ j.current }}</span></div>
+            <div role="cell"><span style="{{ j.propStyle }}">{{ j.proposed }}</span></div>
+            <div role="cell" style="color:#adbac7">{{ j.gap }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="border:1px solid #30363d;border-radius:12px;background:#12171e;padding:16px 18px">
+      <h3 style="margin:0 0 6px;font-size:15px">Red-team → 3회 수정</h3>
+      <p style="margin:0 0 12px;font-size:12.5px;color:#8b949e;line-height:1.6">첫 제안(순수 A)을 스스로 반박한 결과와 그에 따른 수정 이력.</p>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <sc-for list="{{ redTeamRows }}" as="rt" hint-placeholder-count="6">
+          <div style="border-left:2px solid oklch(0.55 0.12 65);padding:2px 0 2px 12px">
+            <div style="font-size:13px;color:#f0f6fc;font-weight:600">{{ rt.q }}</div>
+            <div style="font-size:12.5px;color:#8b949e;line-height:1.65;margin-top:3px">{{ rt.a }}</div>
+            <div style="font-size:11.5px;color:oklch(0.72 0.10 155);margin-top:3px;font-family:ui-monospace,monospace">{{ rt.fix }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="border:1px solid #30363d;border-radius:12px;background:#12171e;padding:16px 18px">
+      <h3 style="margin:0 0 12px;font-size:15px">구현 slice 7개 · 순서와 rollback</h3>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <sc-for list="{{ sliceRows }}" as="sl" hint-placeholder-count="7">
+          <div style="border:1px solid #21262d;border-radius:10px;padding:10px 12px;background:#0d1117">
+            <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:baseline">
+              <b style="font-size:13px;color:#f0f6fc">{{ sl.id }}</b>
+              <span style="font-size:13px;color:#c9d1d9;flex:1;min-width:160px">{{ sl.title }}</span>
+              <span style="{{ sl.classStyle }}">{{ sl.cls }}</span>
+            </div>
+            <div style="font-size:12px;color:#8b949e;line-height:1.65;margin-top:5px">{{ sl.detail }}</div>
+            <div style="font-size:11.5px;color:#6e7681;font-family:ui-monospace,monospace;margin-top:5px">{{ sl.marker }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+  </section>
+
+  <footer style="padding:0 24px 40px;max-width:1560px">
+    <div style="border:1px solid #30363d;border-radius:12px;background:#12171e;padding:16px 18px;font-size:12.5px;color:#8b949e;line-height:1.8">
+      <b style="color:#c9d1d9;font-size:13px">Evidence 경계</b><br>
+      current production interaction · current source(<span style="font-family:ui-monospace,monospace">app/f/[slug]/page.tsx</span>, <span style="font-family:ui-monospace,monospace">lib/flow/source-backed-my-flow.ts</span>, <span style="font-family:ui-monospace,monospace">lib/flow/real-content-pilot-flows.ts</span>) · current package screenshot(handoff <span style="font-family:ui-monospace,monospace">current-*.png</span>)이 현재 사실의 근거다.
+      이 보드의 오른쪽 화면 전체는 <span style="font-family:ui-monospace,monospace">claude_proposed_artifact</span>이며 production 구현이 아니다.
+      <span style="font-family:ui-monospace,monospace">/flows · /my · /calendar</span>의 라이브 hydration 클릭과 reload persistence는 이 환경에서 실행하지 못해 <span style="font-family:ui-monospace,monospace">inaccessible</span>로 남긴다.
+      자동 점검·screenshot·heuristic simulation은 실제 사용자 검증이 아니다 — <b style="color:#c9d1d9">observed-user count: 0</b>.
+    </div>
+  </footer>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:1100},&quot;entryRouter&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;stateful&quot;,&quot;flows_only&quot;],&quot;default&quot;:&quot;stateful&quot;,&quot;tsType&quot;:&quot;'stateful' | 'flows_only'&quot;,&quot;section&quot;:&quot;결정 1 · Home&quot;,&quot;label&quot;:&quot;`/` 진입 목적지&quot;},&quot;calendarCompletion&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;결정 3 · Calendar&quot;,&quot;label&quot;:&quot;Calendar 완료 토글 유지&quot;},&quot;libraryNextLine&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;결정 2 · My Flow&quot;,&quot;label&quot;:&quot;목록 행에 다음 예정 1줄&quot;}}">
+const ISO = (iso) => new Date(iso + 'T12:00:00Z');
+const addDays = (iso, n) => { const d = ISO(iso); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+const DOW = ['일', '월', '화', '수', '목', '금', '토'];
+const fmt = (iso) => { const d = ISO(iso); return (d.getUTCMonth() + 1) + '월 ' + d.getUTCDate() + '일'; };
+const fmtFull = (iso) => fmt(iso) + ' (' + DOW[ISO(iso).getUTCDay()] + ')';
+
+const MOVING = [
+  ['이사 방식 정하기', 0], ['이사할 집 하자 점검하기', 0], ['필요 없는 물건 정리하기', 0], ['이사/청소 업체 견적 받고 예약하기', 0],
+  ['우편물/카드/은행 주소 변경하기', 1], ['정기 배달 서비스 중지 요청하기', 1], ['대형폐기물 배출 신고와 수거일 확인하기', 1], ['엘리베이터 또는 사다리차 사용 예약하기', 1], ['인터넷/정수기 이전 설치 예약하기', 1],
+  ['도시가스 철거/설치 예약하기', 2], ['자동이체 해지 또는 변경 확인하기', 2], ['이사 당일 사용할 물건 따로 포장하기', 2], ['관리사무소에 이사 시간과 차량 동선 공유하기', 2],
+  ['이사 업체와 일정 최종 확인하기', 3], ['이체 한도 증액 확인하기', 3], ['귀중품과 중요 서류 별도 보관하기', 3], ['냉장고 음식과 쓰레기 최종 정리하기', 3],
+  ['전기/가스/수도/관리비 정산하기', 4], ['이삿짐 분실/파손 확인하기', 4], ['계량기와 집 상태 사진 남기기', 4], ['열쇠, 출입카드, 주차등록 인수인계하기', 4], ['전입신고와 확정일자 확인하기', 4],
+  ['정부24 전입신고 처리 결과 확인하기', 5], ['임대차 계약 확정일자 부여 여부 확인하기', 5],
+];
+const MOVING_SECTIONS = [
+  { label: 'D-30 큰 준비', off: -30 }, { label: 'D-10 생활 이전 준비', off: -10 }, { label: 'D-3 필수 예약 확인', off: -3 },
+  { label: 'D-1 최종 점검', off: -1 }, { label: 'D-Day 이사 당일', off: 0 }, { label: 'D+1 행정 마무리', off: 1 },
+];
+const VEHICLE = [
+  ['자동차검사 기간과 예약 가능일 확인하기', 0], ['차량번호와 예약 정보 확인하기', 0], ['가까운 검사소와 수수료 확인하기', 0],
+  ['번호판과 차대번호 식별 상태 확인하기', 1], ['등화장치와 경음기 작동 확인하기', 1], ['타이어 마모와 공기압 확인하기', 1], ['오일 누유와 경고등 여부 기록하기', 1],
+  ['예약 시간보다 여유 있게 검사소 도착하기', 2], ['접수와 수수료 결제 진행하기', 2], ['검사 결과와 재검사 필요 항목 기록하기', 2],
+];
+const VEHICLE_SECTIONS = [{ label: 'D-14 검사 기간 확인' }, { label: 'D-3 차량 상태 점검' }, { label: 'D-Day 검사 당일' }];
+const MATH = [
+  ['1. 소인수분해', 8], ['2. 정수와 유리수', 14], ['3. 문자와 식', 12], ['4. 좌표평면과 그래프', 4],
+  ['5. 기본도형', 15], ['6. 평면도형의 성질', 6], ['7. 입체도형의 성질', 6], ['8. 자료의 정리와 해석', 8],
+];
+const MEMO_ITEMS = ['항공권 확인', '숙소 예약번호 정리', '렌터카 예약', '준비물 체크', '출발 전날 온라인 체크인'];
+
+const LIB20 = [
+  '이사 D-30 준비', '자동차검사 준비', '아침 5분 홈트', '중1 수학 진도', '제주 여행 준비',
+  '에어컨 계절 점검', '세탁기 필터 청소', '컴활 1급 D-30', '전세 계약 갱신', '건강검진 예약',
+  '토익 3주 계획', '반려견 예방접종', '겨울 타이어 교체', '연말정산 서류', '독서 월 4권',
+  '주방 정리 2주', '자전거 정비', '캠핑 준비물', '부모님 생신 준비', '가계부 월결산',
+];
+
+class Component extends DCLogic {
+  state = {
+    caseId: 'moving', stage: 1, vp: 390, anchor: '2026-08-24',
+    names: {}, excluded: {}, done: {}, memos: {}, dates: {}, titles: {},
+    openId: null, calDay: '2026-08-14', scope: 'whole', picked: {}, dest: 'calendar',
+    libSize: 5, libQuery: '', libFilter: 'active', toast: null, undo: null,
+    adjustKind: 'anchor', exportDone: false, parsed: false,
+    memoText: '8월 제주 여행 준비. 항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인',
+    weekdays: { 1: true, 3: true, 5: true },
+  };
+
+  componentWillUnmount() { if (this._t) clearTimeout(this._t); }
+
+  toast(msg, undo) {
+    if (this._t) clearTimeout(this._t);
+    this.setState({ toast: msg, undo: undo || null });
+    this._t = setTimeout(() => this.setState({ toast: null, undo: null }), 4200);
+  }
+
+  cases() {
+    return {
+      moving: {
+        label: '이사 D-30', title: '이사 D-30 준비', route: '/f/moving-d30-basic',
+        source: '이사 체크리스트 참고 (ajd.co.kr)', shape: 'anchor_calendar', artifact: '캘린더',
+        anchorLabel: '이사일', defaultName: '이사 D-30 준비', count: 24,
+        note: '원문 체크리스트에서 옮긴 24개 할 일입니다. 날짜는 이사일 기준으로 계산되고, 따로 고정한 날짜는 유지됩니다.',
+      },
+      vehicle: {
+        label: '자동차검사', title: '자동차검사 준비', route: '/f/vehicle-inspection-prep',
+        source: 'TS한국교통안전공단 정기검사 안내', shape: 'checklist', artifact: '체크리스트',
+        anchorLabel: '검사일', defaultName: '자동차검사 준비', count: 10,
+        note: '공식 안내 기준 10개 준비 항목입니다. 검사 기간·수수료·재검사 기준은 차량과 검사소에 따라 달라질 수 있습니다.',
+      },
+      workout: {
+        label: '아침 5분 홈트', title: 'Allblanc 아침 5분 홈트', route: '/f/curated-allblanc-morning-workout',
+        source: 'Allblanc 매일 아침 5분 전신 운동 영상', shape: 'routine', artifact: '반복 실행',
+        anchorLabel: '시작일', defaultName: '아침 5분 홈트', count: 1,
+        note: '영상에 없는 칼로리·감량 효과는 만들지 않습니다. 반복 요일은 사용자가 정합니다.',
+      },
+      study: {
+        label: '중1 수학 진도', title: '중1 수학 목차 진도', route: '/f/source-backed-middle-school-math-1',
+        source: 'Mathbang 중1 수학 목차', shape: 'progress', artifact: '진도표',
+        anchorLabel: '학습 시작일', defaultName: '중1 수학 진도', count: 8,
+        note: '원문 목차의 8개 단원과 하위 개념입니다. 공부 코치가 아니라 읽은 개념과 다시 볼 개념만 남깁니다.',
+      },
+      memo: {
+        label: '개인 메모', title: '제주 여행 준비', route: '/flows',
+        source: '내가 쓴 메모', shape: 'draft', artifact: '체크리스트',
+        anchorLabel: '출발일', defaultName: '제주 여행 준비', count: 5,
+        note: '입력한 문장에 있는 행동만 나눕니다. 없는 행동은 만들지 않습니다.',
+      },
+    };
+  }
+
+  cfg() { return this.cases()[this.state.caseId]; }
+
+  baseRows() {
+    const s = this.state, id = s.caseId;
+    if (id === 'moving') return MOVING.map((m, i) => ({ id: 'm' + i, title: m[0], g: m[1], date: addDays(s.anchor, MOVING_SECTIONS[m[1]].off), meta: MOVING_SECTIONS[m[1]].label }));
+    if (id === 'vehicle') return VEHICLE.map((m, i) => ({ id: 'v' + i, title: m[0], g: m[1], date: null, meta: VEHICLE_SECTIONS[m[1]].label }));
+    if (id === 'study') return MATH.map((m, i) => ({ id: 's' + i, title: m[0], g: 0, date: null, meta: '하위 개념 ' + m[1] + '개' }));
+    if (id === 'memo') return MEMO_ITEMS.map((t, i) => ({ id: 'p' + i, title: t, g: 0, date: null, meta: '내 메모에서' }));
+    return this.occurrences().map((o, i) => ({ id: 'w' + i, title: '아침 5분 전신 운동 영상 열기', g: 0, date: o, meta: (i + 1) + '회차' }));
+  }
+
+  occurrences() {
+    const s = this.state, out = [];
+    let d = s.anchor, guard = 0;
+    while (out.length < 8 && guard < 120) { if (s.weekdays[ISO(d).getUTCDay()]) out.push(d); d = addDays(d, 1); guard++; }
+    return out;
+  }
+
+  rows() {
+    const s = this.state, ex = s.excluded[s.caseId] || {}, dn = s.done[s.caseId] || {};
+    const dt = s.dates[s.caseId] || {}, mm = s.memos[s.caseId] || {}, tt = s.titles[s.caseId] || {};
+    return this.baseRows().map((r) => ({
+      ...r,
+      title: tt[r.id] || r.title,
+      date: Object.prototype.hasOwnProperty.call(dt, r.id) ? dt[r.id] : r.date,
+      included: !ex[r.id], done: !!dn[r.id], memo: mm[r.id] || '',
+    }));
+  }
+
+  included() { return this.rows().filter((r) => r.included); }
+  nextRow() { const inc = this.included().filter((r) => !r.done); return inc[0] || null; }
+  savedName() { return this.state.names[this.state.caseId] || this.cfg().defaultName; }
+
+  dateRange() {
+    const ds = this.included().map((r) => r.date).filter(Boolean).sort();
+    if (!ds.length) return '날짜 없음';
+    return fmt(ds[0]) + ' - ' + fmt(ds[ds.length - 1]);
+  }
+
+  set(k, id, v) {
+    const s = this.state, bag = { ...(s[k] || {}) }, inner = { ...(bag[s.caseId] || {}) };
+    if (v === undefined) delete inner[id]; else inner[id] = v;
+    bag[s.caseId] = inner; this.setState({ [k]: bag });
+  }
+
+  // 다른 Flow의 날짜 있는 항목(캘린더 cross-Flow lens용)
+  crossEvents() {
+    const out = {};
+    const push = (d, flow, title, id, color) => { if (!d) return; (out[d] = out[d] || []).push({ flow, title, id, color }); };
+    const s = this.state;
+    const movingDone = s.done.moving || {}, movingEx = s.excluded.moving || {}, movingDt = s.dates.moving || {}, movingTt = s.titles.moving || {};
+    MOVING.forEach((m, i) => {
+      const id = 'm' + i; if (movingEx[id]) return;
+      const d = Object.prototype.hasOwnProperty.call(movingDt, id) ? movingDt[id] : addDays(s.anchor, MOVING_SECTIONS[m[1]].off);
+      push(d, '이사 D-30 준비', movingTt[id] || m[0], 'moving:' + id, 'oklch(0.52 0.10 268)');
+    });
+    let d = s.anchor, guard = 0, n = 0;
+    while (n < 8 && guard < 120) { if (s.weekdays[ISO(d).getUTCDay()]) { push(d, '아침 5분 홈트', '아침 5분 전신 운동 영상 열기 · ' + (n + 1) + '회차', 'workout:w' + n, 'oklch(0.52 0.10 155)'); n++; } d = addDays(d, 1); guard++; }
+    const vDt = s.dates.vehicle || {}, vTt = s.titles.vehicle || {};
+    Object.keys(vDt).forEach((id) => { const i = Number(id.slice(1)); if (VEHICLE[i]) push(vDt[id], '자동차검사 준비', vTt[id] || VEHICLE[i][0], 'vehicle:' + id, 'oklch(0.55 0.10 65)'); });
+    const pDt = s.dates.memo || {}, pTt = s.titles.memo || {};
+    Object.keys(pDt).forEach((id) => { const i = Number(id.slice(1)); if (MEMO_ITEMS[i]) push(pDt[id], '제주 여행 준비', pTt[id] || MEMO_ITEMS[i], 'memo:' + id, 'oklch(0.52 0.10 320)'); });
+    return out;
+  }
+
+  btn(on) {
+    return 'white-space:nowrap;padding:7px 12px;border-radius:8px;font-size:12.5px;cursor:pointer;border:1px solid ' +
+      (on ? 'oklch(0.55 0.12 268)' : '#30363d') + ';background:' + (on ? 'oklch(0.32 0.07 268)' : '#0d1117') +
+      ';color:' + (on ? '#f0f6fc' : '#adbac7') + ';font-weight:' + (on ? '700' : '400');
+  }
+
+  chip(on) {
+    return 'white-space:nowrap;height:40px;padding:0 14px;border-radius:9px;font-size:13.5px;cursor:pointer;border:1px solid ' +
+      (on ? '#16191d' : '#d7dbe0') + ';background:' + (on ? '#16191d' : '#fff') + ';color:' + (on ? '#fff' : '#3d4650') +
+      ';font-weight:' + (on ? '700' : '500');
+  }
+
+  renderVals() {
+    const s = this.state, cfg = this.cfg(), rows = this.rows(), inc = this.included();
+    const isWide = s.vp >= 1024;
+    const scale = s.vp === 390 ? 1 : s.vp === 1024 ? 0.66 : 0.52;
+    const h = s.vp === 390 ? 844 : s.vp === 1024 ? 768 : 900;
+    const stage = s.stage;
+    const props = this.props || {};
+    const entryRouter = props.entryRouter || 'stateful';
+    const calendarCompletion = props.calendarCompletion !== false;
+    const libraryNextLine = props.libraryNextLine !== false;
+
+    const go = (n) => () => this.setState({ stage: n, openId: null, exportDone: false });
+    const doneMap = s.done[s.caseId] || {};
+    const nx = this.nextRow();
+
+    // ---------- controls ----------
+    const caseTabs = Object.keys(this.cases()).map((k) => ({
+      label: this.cases()[k].label, pressed: s.caseId === k ? 'true' : 'false', style: this.btn(s.caseId === k),
+      pick: () => this.setState({ caseId: k, openId: null, exportDone: false, scope: 'whole', adjustKind: k === 'workout' ? 'series' : k === 'moving' ? 'anchor' : 'include' }),
+    }));
+    const vpTabs = [390, 1024, 1440].map((v) => ({
+      label: v + 'px', pressed: s.vp === v ? 'true' : 'false', style: this.btn(s.vp === v), pick: () => this.setState({ vp: v }),
+    }));
+    const STAGE_NAMES = ['Flow 찾기', '공개 Flow', '조정', '저장 결과', 'My Flow', '개인 Flow', 'Calendar', '가져가기'];
+    const stageTabs = STAGE_NAMES.map((nm, i) => ({
+      label: (i + 1) + ' ' + nm, pressed: stage === i + 1 ? 'true' : 'false', style: this.btn(stage === i + 1), pick: go(i + 1),
+    }));
+
+    // ---------- preview groups ----------
+    const groupsOf = (list) => {
+      const secs = s.caseId === 'moving' ? MOVING_SECTIONS : s.caseId === 'vehicle' ? VEHICLE_SECTIONS : null;
+      if (!secs) return [{ label: s.caseId === 'study' ? '8개 단원 · 순서대로' : s.caseId === 'workout' ? '다음 8회' : '내 메모에서 나눈 5개', meta: '', rows: list }];
+      return secs.map((sec, gi) => {
+        const rr = list.filter((r) => r.g === gi);
+        return { label: sec.label, meta: rr.filter((r) => r.included).length + '개', rows: rr };
+      }).filter((g) => g.rows.length);
+    };
+
+    const mkPreviewRow = (r) => ({
+      left: r.date ? fmt(r.date) : (s.caseId === 'study' ? String(r.title.split('.')[0]) + '단원' : s.caseId === 'workout' ? r.meta : '날짜 없음'),
+      title: r.title,
+      titleStyle: 'flex:1;min-width:0;font-size:14px;line-height:1.5;' + (r.included ? 'color:#16191d' : 'color:#a5adb6;text-decoration:line-through'),
+      toggle: () => { this.set('excluded', r.id, r.included ? true : undefined); this.toast(r.included ? '제외했습니다' : '다시 포함했습니다', () => this.set('excluded', r.id, r.included ? undefined : true)); },
+      toggleLabel: r.included ? r.title + ' 제외' : r.title + ' 다시 포함',
+      toggleText: r.included ? '제외' : '포함',
+      toggleStyle: 'flex:none;height:30px;padding:0 10px;border-radius:7px;font-size:12px;cursor:pointer;border:1px solid #e4e7eb;background:#fff;color:#616b76',
+    });
+
+    const previewGroups = groupsOf(rows).map((g) => ({ label: g.label, meta: g.meta, rows: g.rows.map(mkPreviewRow) }));
+
+    // ---------- personal workspace ----------
+    const mkPersonalRow = (r) => ({
+      done: r.done ? 'true' : 'false',
+      doneLabel: r.done ? r.title + ' 다시 열기' : r.title + ' 완료',
+      checkMark: r.done ? '✓' : '',
+      checkStyle: 'flex:none;width:30px;height:30px;border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:14px;border:1px solid ' +
+        (r.done ? 'oklch(0.52 0.10 155)' : '#d7dbe0') + ';background:' + (r.done ? 'oklch(0.52 0.10 155)' : '#fff') + ';color:#fff',
+      toggleDone: () => { this.set('done', r.id, r.done ? undefined : true); this.toast(r.done ? '다시 열었습니다' : '완료했습니다', () => this.set('done', r.id, r.done ? true : undefined)); },
+      open: () => this.setState({ openId: r.id }),
+      rowBtnStyle: 'flex:1;min-width:0;text-align:left;border:none;background:transparent;padding:2px 0;cursor:pointer',
+      titleStyle: 'display:block;font-size:14px;line-height:1.45;' + (r.done ? 'color:#a5adb6;text-decoration:line-through' : 'color:#16191d'),
+      title: r.title,
+      meta: (r.date ? fmtFull(r.date) : '날짜 없음') + (r.memo ? ' · 메모 있음' : '') + (r.included ? '' : ' · 제외됨'),
+    });
+    const personalGroups = groupsOf(inc).map((g) => ({ label: g.label, meta: g.rows.filter((r) => r.done).length + '/' + g.rows.length + ' 완료', rows: g.rows.map(mkPersonalRow) }));
+
+    // ---------- calendar ----------
+    const ev = this.crossEvents();
+    const first = '2026-08-01', firstDow = ISO(first).getUTCDay();
+    const cells = [];
+    for (let i = 0; i < 35; i++) {
+      const d = addDays(first, i - firstDow);
+      const inMonth = d.slice(0, 7) === '2026-08';
+      const list = ev[d] || [];
+      const flows = [...new Set(list.map((x) => x.flow))];
+      const sel = s.calDay === d;
+      cells.push({
+        num: String(ISO(d).getUTCDate()),
+        numStyle: 'font-size:12.5px;font-variant-numeric:tabular-nums;' + (sel ? 'font-weight:700;color:#fff' : inMonth ? 'color:#16191d' : 'color:#c3c9d0'),
+        dots: flows.slice(0, 3).map((f) => ({ style: 'width:6px;height:6px;border-radius:99px;background:' + (list.find((x) => x.flow === f) || {}).color })),
+        countText: list.length ? String(list.length) : '',
+        countStyle: 'display:block;margin-top:2px;font-size:10.5px;' + (sel ? 'color:#ffffffcc' : 'color:#8a939d'),
+        selected: sel ? 'true' : 'false',
+        tabIndex: sel ? 0 : -1,
+        aria: fmtFull(d) + ', 일정 ' + list.length + '개',
+        style: 'appearance:none;cursor:pointer;min-height:56px;padding:6px 2px;text-align:center;border:none;border-right:1px solid #f2f4f6;border-bottom:1px solid #f2f4f6;background:' + (sel ? '#16191d' : '#fff'),
+        pick: () => this.setState({ calDay: d }),
+      });
+    }
+    const dayList = ev[s.calDay] || [];
+    const byFlow = {};
+    dayList.forEach((x) => { (byFlow[x.flow] = byFlow[x.flow] || []).push(x); });
+    const agendaGroups = Object.keys(byFlow).map((f) => ({
+      flowTitle: f,
+      dotStyle: 'width:8px;height:8px;border-radius:99px;flex:none;background:' + byFlow[f][0].color,
+      open: () => { const cid = byFlow[f][0].id.split(':')[0]; this.setState({ caseId: cid, stage: 6, openId: null }); },
+      rows: byFlow[f].map((x) => {
+        const [cid, rid] = x.id.split(':');
+        const isDone = !!(s.done[cid] || {})[rid];
+        return {
+          title: x.title,
+          canToggle: calendarCompletion,
+          done: isDone ? 'true' : 'false',
+          doneLabel: isDone ? x.title + ' 다시 열기' : x.title + ' 완료',
+          checkMark: isDone ? '✓' : '',
+          checkStyle: 'flex:none;width:30px;height:30px;border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:14px;border:1px solid ' +
+            (isDone ? 'oklch(0.52 0.10 155)' : '#d7dbe0') + ';background:' + (isDone ? 'oklch(0.52 0.10 155)' : '#fff') + ';color:#fff',
+          toggleDone: () => {
+            const bag = { ...(s.done || {}) }, inner = { ...(bag[cid] || {}) };
+            if (isDone) delete inner[rid]; else inner[rid] = true;
+            bag[cid] = inner; this.setState({ done: bag });
+            this.toast(isDone ? '다시 열었습니다' : '완료했습니다', () => {
+              const b2 = { ...(this.state.done || {}) }, i2 = { ...(b2[cid] || {}) };
+              if (isDone) i2[rid] = true; else delete i2[rid];
+              b2[cid] = i2; this.setState({ done: b2 });
+            });
+          },
+          titleStyle: 'flex:1;min-width:0;font-size:13.5px;line-height:1.45;' + (isDone ? 'color:#a5adb6;text-decoration:line-through' : 'color:#16191d'),
+        };
+      }),
+    }));
+
+    // ---------- library ----------
+    const names = LIB20.slice(0, s.libSize);
+    const q = s.libQuery.trim();
+    const libraryRows = names.filter((n) => !q || n.indexOf(q) >= 0).map((n, i) => {
+      const cid = i === 0 ? 'moving' : i === 1 ? 'vehicle' : i === 2 ? 'workout' : i === 3 ? 'study' : i === 4 ? 'memo' : null;
+      const meta = cid ? this.cases()[cid] : null;
+      let nextLine = '저장한 Flow';
+      if (cid) {
+        const saved = { moving: '24개', vehicle: '10개', workout: '반복', study: '8단원', memo: '5개' }[cid];
+        nextLine = cid === 'moving' ? '다음 · ' + fmt(addDays(s.anchor, -30)) + ' 이사 방식 정하기'
+          : cid === 'vehicle' ? '날짜 없음 · 10개 중 다음 1개'
+            : cid === 'workout' ? '다음 회차 · ' + fmt(this.occurrences()[0])
+              : cid === 'study' ? '현재 단원 · 1. 소인수분해'
+                : '날짜 없음 · 5개 중 다음 1개';
+        nextLine = libraryNextLine ? nextLine : saved + ' 저장됨';
+      }
+      return {
+        title: cid ? this.cases()[cid].defaultName : n,
+        count: meta ? meta.count + '개' : '—',
+        next: nextLine,
+        style: 'display:block;width:100%;text-align:left;padding:13px 14px;border:none;border-top:1px solid #f2f4f6;background:#fff;cursor:pointer',
+        open: () => this.setState({ caseId: cid || s.caseId, stage: 6, openId: null }),
+      };
+    });
+
+    // ---------- export ----------
+    const pickedMap = s.picked[s.caseId] || {};
+    const pickedRows = inc.filter((r) => pickedMap[r.id]);
+    const currentRow = nx || inc[0];
+    const scopeCount = s.scope === 'whole' ? inc.length : s.scope === 'selected' ? pickedRows.length : (currentRow ? 1 : 0);
+    const DESTS = [
+      { k: 'calendar', label: '캘린더 (.ics)', need: 'date', note: '날짜가 있는 항목만 나갑니다. 메모와 완료 상태는 빠집니다.' },
+      { k: 'checklist', label: '체크리스트 (텍스트)', note: '제목과 완료 상태가 나갑니다. 날짜와 메모는 줄 안에 요약됩니다.' },
+      { k: 'sheet', label: '시트 (.csv)', note: '제목·날짜·완료·메모가 열로 나갑니다. 섹션 구분은 열 값으로만 남습니다.' },
+      { k: 'memo', label: '메모 (텍스트)', note: '제목과 내 메모만 나갑니다. 날짜와 완료 상태는 빠집니다.' },
+    ];
+    const datedCount = (s.scope === 'whole' ? inc : s.scope === 'selected' ? pickedRows : currentRow ? [currentRow] : []).filter((r) => r.date).length;
+    const destOptions = DESTS.map((d) => {
+      const disabled = d.need === 'date' && datedCount === 0;
+      return {
+        label: d.label, pressed: s.dest === d.k ? 'true' : 'false', disabled: disabled ? 'disabled' : '',
+        reason: disabled ? '이 범위에 날짜가 있는 항목이 없어 캘린더로 보낼 내용이 없습니다' : '',
+        style: this.chip(s.dest === d.k) + (disabled ? ';opacity:.45;cursor:not-allowed' : ''),
+        pick: () => { if (!disabled) this.setState({ dest: d.k, exportDone: false }); },
+      };
+    });
+    const destNote = (DESTS.find((d) => d.k === s.dest) || DESTS[0]).note + (s.dest === 'calendar' ? ' 이 범위의 날짜 있는 항목 ' + datedCount + '개.' : '');
+
+    // ---------- flat rows (조정 / export 선택) ----------
+    const flatRows = rows.map((r) => ({
+      title: r.title,
+      left: r.date ? fmt(r.date) : '날짜 없음',
+      included: r.included ? 'checked' : '',
+      picked: pickedMap[r.id] ? 'checked' : '',
+      titleStyle: 'flex:1;min-width:0;font-size:14px;line-height:1.45;' + (r.included ? 'color:#16191d' : 'color:#a5adb6;text-decoration:line-through'),
+      toggle: () => this.set('excluded', r.id, r.included ? true : undefined),
+      pick: () => { const bag = { ...(s.picked || {}) }, inner = { ...(bag[s.caseId] || {}) }; if (inner[r.id]) delete inner[r.id]; else inner[r.id] = true; bag[s.caseId] = inner; this.setState({ picked: bag }); },
+    }));
+
+    // ---------- item sheet ----------
+    const openRow = rows.find((r) => r.id === s.openId) || null;
+
+    // ---------- current panel ----------
+    const SHOT = 'screenshots/';
+    const CUR = {
+      1: {
+        route: '/ · /flows', ev: 'current_production_interaction · current_package_screenshot',
+        shots: [{ src: SHOT + 'current-home-390.png', alt: '현재 홈 390', cap: 'current-home-390.png' }, { src: SHOT + 'current-flows-390.png', alt: '현재 Flow 찾기 390', cap: 'current-flows-390.png' }],
+        m: [['탭', '4'], ['진입 화면', '2'], ['카드당 action', '3'], ['재방문 진입', '없음']],
+        notes: [
+          '`/`는 “필요한 Flow를 시작하세요” + `/flows`로 가는 CTA 1개 + 활용 예시 3개다. 예시 카드는 `/f/...`로 직행하므로 `/flows`의 부분집합이다.',
+          '홈 부제는 “저장한 Flow를 이어가거나”라고 말하지만 홈에는 저장 Flow를 잇는 surface가 없다 — 약속한 job을 소유하지 않는다.',
+          '`/flows` 카드는 카드 전체 열기 · 원문 링크 · 더보기가 함께 있어 한 카드에 목적지가 3개다.',
+        ],
+      },
+      2: {
+        route: '/f/moving-d30-basic', ev: 'current_package_screenshot · current_production_interaction',
+        shots: [{ src: SHOT + 'current-public-moving-390.png', alt: '현재 공개 이사 Flow 390', cap: 'current-public-moving-390.png' }],
+        m: [['visible command', '13'], ['결정 표면', '5'], ['핵심 메시지', '4'], ['최소 입력 위치', 'CTA 아래']],
+        notes: [
+          '요약 chip 3(내 조건·저장 결과·전체) + renderer 토글 2(캘린더 일정 24개 / 체크리스트 24개) + sticky 2버튼 + 날짜 mode 3버튼이 한 화면에 공존한다.',
+          '필수 입력인 이사일 입력란이 sticky CTA `캘린더 24개로 시작` **아래**에 있다. 입력 전에도 시작할 수 있어 “예시 날짜”와 실제 값의 구분이 흐려진다.',
+          '저장 전에 결과 형태(캘린더/체크리스트)를 고르게 한다 — 제품 원칙 8·10과 충돌.',
+          'JS 없는 첫 페인트에서는 “1. 이사일 입력 / 2. 실행 항목 체크 / 3. 내보내기” 3단 구성이 먼저 보여 hydration 전후 화면이 다르다.',
+        ],
+      },
+      3: {
+        route: '/f/[slug] 조정 state', ev: 'current_source · inaccessible',
+        shots: [], m: [['조정 종류', '동시 노출'], ['변경 전/후', '부분'], ['취소 경로', '있음']],
+        notes: [
+          '조정은 `Flow 조정` 이후 이름·기준일·포함·개별 날짜가 같은 흐름에 이어진다. 한 번에 한 종류만 여는 규칙은 없다.',
+          '이 상태의 라이브 클릭은 이 환경에서 실행하지 못해 `inaccessible`. source와 P30 evidence 인용만 사용한다.',
+        ],
+      },
+      4: {
+        route: '저장 결과 (receipt)', ev: 'current_package_screenshot',
+        shots: [{ src: SHOT + 'current-receipt-moving-390.png', alt: '현재 receipt 390', cap: 'current-receipt-moving-390.png' }],
+        m: [['핵심 메시지', '2'], ['primary', '1'], ['설명 block', '1']],
+        notes: [
+          'receipt는 이미 좋다 — 저장 이름·개수·주요 결과·일정 범위 4행 + `내 Flow에서 시작` 단일 primary.',
+          '유지 대상. 제안에서 바꾸는 것은 이름 라벨 정도이고 frame은 그대로 둔다.',
+        ],
+      },
+      5: {
+        route: '/my', ev: 'current_package_screenshot',
+        shots: [{ src: SHOT + (isWide ? 'current-my-flow-1024.png' : 'current-my-flow-workspace-390.png'), alt: '현재 My Flow', cap: isWide ? 'current-my-flow-1024.png' : 'current-my-flow-workspace-390.png' }],
+        m: [['경쟁 primary', '4'], ['카드 종류', '3+'], ['첫 viewport 강조', '2']],
+        notes: [
+          '한 저장 카드 안에 `첫 할 일 시작` · `전체 Flow 보기` · `캘린더` · `가져가기` 4개가 세로로 경쟁한다.',
+          '`스튜디오` · `데이터 관리`가 목록보다 위에 있어 일반 실행 여정과 경쟁한다.',
+          '목록과 실행 workspace가 같은 스크롤에 이어져 “무엇을 저장했나”와 “지금 무엇을 할까”가 한 화면에 섞인다.',
+        ],
+      },
+      6: {
+        route: '/my?savedFlow=…', ev: 'current_package_screenshot · current_source',
+        shots: [{ src: SHOT + 'current-my-flow-workspace-390.png', alt: '현재 개인 Flow workspace', cap: 'current-my-flow-workspace-390.png' }],
+        m: [['다음 행동', '암시적'], ['동시 카드 종류', '3'], ['완료 위치', '펼친 뒤']],
+        notes: [
+          '`저장된 전체 Flow` 섹션이 6단계 아코디언으로 펼쳐지고, 완료 체크는 단계를 펼친 뒤에야 보인다.',
+          '“다음에 할 일 하나”가 시각적으로 승격되지 않아 재방문 첫 초점이 목록 전체가 된다.',
+          '실행·구조·가져가기가 같은 세로 스택에 쌓여 카드 종류 3개가 동시에 경쟁한다(P30 M-7과 동일 패턴).',
+        ],
+      },
+      7: {
+        route: '/calendar', ev: 'current_package_screenshot',
+        shots: [{ src: SHOT + (isWide ? 'current-calendar-1024.png' : 'current-calendar-390.png'), alt: '현재 캘린더', cap: isWide ? 'current-calendar-1024.png' : 'current-calendar-390.png' }],
+        m: [['cell 표기', '제목 축약'], ['행별 command', '3'], ['agenda 위치', 'grid 아래']],
+        notes: [
+          '월간 cell이 `이…`처럼 잘린 제목 + `+2/+3`로 채워져 식별이 아니라 축약 벽이 된다.',
+          '선택일 agenda의 각 행에 체크박스 · `열기` · `메모` 3개 command가 있고 상단에 `날짜 옮기기`까지 있어 Calendar가 편집까지 소유한다.',
+          '월간 grid 날짜가 각각 tab stop이라 agenda까지 키보드 이동이 매우 길다(P30 M-3).',
+        ],
+      },
+      8: {
+        route: '가져가기', ev: 'current_source · inaccessible',
+        shots: [], m: [['scope 우선', '아니오'], ['형식 우선', '예'], ['count 표시', '부분']],
+        notes: [
+          '현재는 형식(체크리스트 복사 / 엑셀 / 캘린더 파일)이 먼저 보이고 범위는 그 다음이다.',
+          'whole/selected/current 계약은 source에 존재하지만 공개 화면의 하단 bar는 형식 버튼 4개로 먼저 노출된다.',
+          '라이브 export 실행은 `inaccessible` — 계약은 source 인용, 화면 배치는 screenshot 인용.',
+        ],
+      },
+    }[stage];
+
+    const STAGE_NOTE = {
+      1: { owner: 'Flow 찾기 — 발견과 입력만', msgs: ['메시지 1 · 무엇을 실행할지 입력하거나 고른다', '메시지 2 · 각 Flow의 출처와 대표 결과', 'primary 1개 · `찾기` 또는 카드 열기'], cuts: ['홈 삭제, `/`는 저장 Flow가 있으면 `/my`로 보내는 entry router', '카드의 원문 링크·더보기 제거 → 카드 전체가 하나의 열기', '가짜 이용자 수·리뷰 없음(데이터 없음)'], d: [['visible command', '9', '3'], ['카드당 목적지', '3', '1'], ['재방문 첫 탭', '2탭', '1탭']] },
+      2: { owner: '공개 Flow — 저장 전 전체 결과 + 최소 입력', msgs: ['메시지 1 · 실제로 만들어질 전체 결과와 개수', '메시지 2 · 필요한 최소 입력 한 개', 'primary 1개 · `N개로 시작`'], cuts: ['renderer 토글(캘린더/체크리스트) 제거 — 결과 형태는 콘텐츠가 정한다', '요약 chip 3개 제거 — 결과 자체가 요약이다', '최소 입력을 CTA 위(모바일은 고정 하단 영역 안)로 이동'], d: [['visible command', '13', '4'], ['결정 표면', '5', '2'], ['핵심 메시지', '4', '2']] },
+      3: { owner: '조정 — 한 번에 한 종류', msgs: ['메시지 1 · 지금 바꾸는 한 종류', '메시지 2 · 변경 전 → 변경 후 count/날짜', 'primary 1개 · `변경 적용`'], cuts: ['이름·기준일·포함·순서 동시 노출 제거', '고급 구조 조정은 저장 후 개인 Flow로 이동'], d: [['동시 편집 종류', '4', '1'], ['변경 전/후 표시', '부분', '항상']] },
+      4: { owner: '저장 결과 — 저장 사실 확인만', msgs: ['메시지 1 · 저장 이름과 개수', '메시지 2 · 날짜 범위 또는 `날짜 없음`', 'primary 1개 · `내 Flow 열기`'], cuts: ['현재 구조 유지 — 바꾸지 않는다', 'export는 secondary 한 줄로만 유지'], d: [['핵심 메시지', '2', '2'], ['primary', '1', '1']] },
+      5: { owner: 'My Flow — 저장 목록과 lifecycle 진입만', msgs: ['메시지 1 · 무엇을 저장했나', '메시지 2 · 각 Flow의 다음 예정 한 줄(읽기 전용)', 'primary 1개 · 행 전체가 `Flow 열기`'], cuts: ['카드 안 4버튼 제거 — 실행·캘린더·가져가기는 개인 Flow로', '`스튜디오`·`데이터 관리` 상단 노출 제거 → 보조 메뉴', '완료·보관은 별도 화면이 아니라 필터'], d: [['경쟁 primary', '4', '1'], ['행 높이', '가변', '고정 2줄'], ['20개 탐색', '스크롤', '검색+필터']] },
+      6: { owner: '개인 Flow — 실행·완료·편집·메모·가져가기 단독 소유', msgs: ['메시지 1 · 지금 할 하나', '메시지 2 · 전체 진행과 구조', 'primary 1개 · 다음 하나 완료'], cuts: ['전체 구조는 기본 접힘이 아니라 요약 + 섹션별 펼침', 'archive/restore/영구 삭제는 관리 영역에서만', '자료(영상 URL)는 완료 대상이 아닌 자료로 분리'], d: [['첫 viewport 강조', '2', '1'], ['동시 카드 종류', '3', '2'], ['완료까지 탭', '2~3', '1']] },
+      7: { owner: 'Calendar — 날짜 lens + 완료 토글 1개', msgs: ['메시지 1 · 이 달·이 날짜에 무엇이 있나', '메시지 2 · Flow별 색과 개수', 'primary 1개 · `Flow 열기`'], cuts: ['inline 메모·날짜 옮기기·제목 수정 제거 → 개인 Flow', '날짜 없는 tray 제거 → 개인 Flow가 소유', 'cell의 잘린 제목 제거 → 색 + 개수'], d: [['행별 command', '3', '1'], ['cell 식별', '축약 제목', '색+개수'], ['키보드 정지', '~76', '≤12']] },
+      8: { owner: '가져가기 — 개인 Flow가 소유', msgs: ['메시지 1 · 범위와 개수', '메시지 2 · 형식별로 빠지는 정보', 'primary 1개 · 형식별 실행'], cuts: ['형식 우선 노출 제거 → 범위 먼저', '의미 없는 형식은 비활성 + 이유 표기'], d: [['형식 우선', '예', '아니오'], ['count 표시', '부분', '항상']] },
+    }[stage];
+
+    return {
+      // controls
+      caseTabs, vpTabs, stageTabs,
+      goBack: () => this.setState({ stage: Math.max(1, stage - 1), openId: null }),
+      resetAll: () => this.setState({ excluded: {}, done: {}, memos: {}, dates: {}, titles: {}, names: {}, picked: {}, openId: null, exportDone: false, toast: null }),
+
+      // frame
+      vpLabel: s.vp + '×' + h + (isWide ? ' · rail/canvas 분할' : ' · 단일 column'),
+      isWide,
+      frameOuterStyle: 'width:' + Math.round(s.vp * scale) + 'px;height:' + Math.round(h * scale) + 'px;position:relative',
+      frameInnerStyle: 'width:' + s.vp + 'px;height:' + h + 'px;transform:scale(' + scale + ');transform-origin:top left;border:1px solid #30363d;border-radius:14px;overflow:hidden;background:#f4f5f7',
+
+      // stage flags
+      isStage1: stage === 1, isStage2: stage === 2, isStage3: stage === 3, isStage4: stage === 4,
+      isStage5: stage === 5, isStage6: stage === 6, isStage7: stage === 7, isStage8: stage === 8,
+      stageTitle: stage + ' · ' + STAGE_NAMES[stage - 1],
+      showAppChrome: stage !== 2 && stage !== 4,
+      chromeRight: stage === 8 ? '가져가기' : stage === 3 ? '조정' : '',
+      proposedRoute: stage === 1 ? '/ → /flows' : stage <= 4 ? cfg.route : stage === 5 ? '/my' : stage === 7 ? '/calendar' : '/my?flow=' + s.caseId,
+      currentRoute: CUR.route,
+      currentShots: CUR.shots.map((sh) => ({
+        ...sh,
+        style: 'height:400px;border:1px solid #262d36;border-radius:10px;background-color:#fff;background-image:url(' + sh.src + ');background-size:100% auto;background-position:top center;background-repeat:no-repeat',
+      })),
+      hasShots: CUR.shots.length > 0, currentEvidence: CUR.ev, currentNotes: CUR.notes,
+      currentMetrics: CUR.m.map((x) => ({ k: x[0], v: x[1] })),
+      stageOwner: STAGE_NOTE.owner, stageMessages: STAGE_NOTE.msgs, stageCuts: STAGE_NOTE.cuts,
+      stageDeltas: STAGE_NOTE.d.map((x) => ({ k: x[0], from: x[1], to: x[2] })),
+
+      // case
+      caseTitle: cfg.title, caseSource: cfg.source, caseSourceNote: cfg.note,
+      anchorLabel: cfg.anchorLabel, anchor: s.anchor,
+      anchorHelp: cfg.anchorLabel + '을 바꾸면 전체 일정이 다시 맞춰집니다. 따로 고정한 날짜는 유지됩니다.',
+      noAnchor: s.caseId === 'vehicle' || s.caseId === 'study' || s.caseId === 'memo',
+      needsAnchor: s.caseId === 'moving' || s.caseId === 'workout',
+      noAnchorHelp: s.caseId === 'study' ? '날짜 없이 저장합니다. 진도는 순서로 이어집니다.' : '날짜 없이 저장합니다. 필요한 항목에만 나중에 날짜를 넣습니다.',
+
+      // stage 1
+      showResume: entryRouter === 'stateful',
+      resumeTitle: this.cases().moving.defaultName,
+      resumeLine: '다음 · ' + fmt(addDays(s.anchor, -30)) + ' 이사 방식 정하기',
+      goLibrary: (e) => { if (e && e.preventDefault) e.preventDefault(); this.setState({ stage: 5 }); },
+      memoText: s.memoText,
+      onMemoInput: (e) => this.setState({ memoText: e.target.value, parsed: false }),
+      runParse: () => this.setState({ parsed: true, caseId: 'memo' }),
+      parsedVisible: s.parsed,
+      memoItems: MEMO_ITEMS.map((t) => ({ title: t })),
+      goPreview: () => this.setState({ caseId: 'memo', stage: 2 }),
+      discoverCards: Object.keys(this.cases()).filter((k) => k !== 'memo').map((k) => {
+        const c = this.cases()[k];
+        return {
+          title: c.title, source: c.source, result: c.count + '개 · ' + c.artifact,
+          peek: k === 'moving' ? '이사 방식 정하기 · 우편물/카드/은행 주소 변경하기 …' : k === 'vehicle' ? '자동차검사 기간과 예약 가능일 확인하기 …' : k === 'workout' ? '아침 5분 전신 운동 영상 열기 · 반복 요일 선택' : '1. 소인수분해 · 2. 정수와 유리수 …',
+          style: 'display:block;width:100%;text-align:left;padding:14px 15px;border-radius:12px;border:1px solid ' + (s.caseId === k ? '#16191d' : '#e4e7eb') + ';background:#fff;cursor:pointer',
+          open: () => this.setState({ caseId: k, stage: 2 }),
+        };
+      }),
+
+      // stage 2
+      previewWrapStyle: isWide ? 'display:flex;align-items:flex-start;min-height:100%' : 'display:block',
+      inspectorStyle: isWide
+        ? 'flex:none;width:340px;position:sticky;top:0;padding:18px;background:#fff;border-left:1px solid #e4e7eb;min-height:100%'
+        : 'position:absolute;left:0;right:0;bottom:0;padding:12px 16px 16px;background:#ffffffF2;border-top:1px solid #e4e7eb;backdrop-filter:blur(6px)',
+      previewHeadline: s.caseId === 'workout'
+        ? '월·수·금 아침 반복 · 다음 8회'
+        : inc.length + '개 ' + cfg.artifact + (s.caseId === 'moving' ? ' · ' + this.dateRange() : ''),
+      previewSubline: s.caseId === 'moving' ? '이사일을 넣으면 24개 날짜가 한 번에 계산됩니다.'
+        : s.caseId === 'vehicle' ? '날짜 없이 저장하고, 필요한 항목에만 나중에 날짜를 넣습니다.'
+          : s.caseId === 'workout' ? '요일과 시작일만 정하면 됩니다. 종료 조건은 나중에 바꿀 수 있습니다.'
+            : s.caseId === 'study' ? '8개 단원을 순서대로 진도로 봅니다. 날짜 입력은 없습니다.'
+              : '내가 쓴 문장에서 나눈 5개입니다. 없는 행동은 만들지 않았습니다.',
+      previewGroups,
+      startLabel: inc.length + '개 ' + cfg.artifact + '로 시작',
+      goAdjust: () => this.setState({ stage: 3 }),
+      doSave: () => { this.setState({ stage: 4 }); this.toast('저장했습니다', null); },
+      onAnchor: (e) => this.setState({ anchor: e.target.value || s.anchor }),
+
+      // stage 3
+      adjustTabs: [
+        { k: 'name', label: '저장 이름' },
+        { k: 'anchor', label: cfg.anchorLabel, hide: !(s.caseId === 'moving') },
+        { k: 'series', label: '반복 설정', hide: s.caseId !== 'workout' },
+        { k: 'include', label: '포함할 항목' },
+      ].filter((t) => !t.hide).map((t) => ({
+        label: t.label, pressed: s.adjustKind === t.k ? 'true' : 'false', style: this.chip(s.adjustKind === t.k),
+        pick: () => this.setState({ adjustKind: t.k }),
+      })),
+      adjustIsName: s.adjustKind === 'name', adjustIsAnchor: s.adjustKind === 'anchor',
+      adjustIsInclude: s.adjustKind === 'include', adjustIsSeries: s.adjustKind === 'series',
+      beforeLine: cfg.count + '개 · ' + (s.caseId === 'moving' ? fmt(addDays('2026-08-24', -30)) + ' - ' + fmt(addDays('2026-08-24', 1)) : '날짜 없음'),
+      afterLine: inc.length + '개 · ' + this.dateRange(),
+      savedName: this.savedName(),
+      onName: (e) => { const n = { ...s.names }; n[s.caseId] = e.target.value; this.setState({ names: n }); },
+      weekdayChips: [0, 1, 2, 3, 4, 5, 6].map((d) => ({
+        label: DOW[d], on: s.weekdays[d] ? 'true' : 'false', style: this.chip(!!s.weekdays[d]),
+        toggle: () => { const w = { ...s.weekdays }; if (w[d]) delete w[d]; else w[d] = true; this.setState({ weekdays: w }); },
+      })),
+      seriesSummary: '다음 8회 · ' + this.occurrences().map((d) => fmt(d)).join(' · '),
+      cancelAdjust: () => { this.setState({ stage: 2 }); this.toast('조정을 취소했습니다', null); },
+      applyAdjust: () => { this.setState({ stage: 2 }); this.toast('변경을 적용했습니다', null); },
+      flatRows,
+
+      // stage 4
+      receiptHeadline: inc.length + '개를 저장했어요',
+      receiptSubline: '이제 내 Flow에서 하나씩 실행합니다.',
+      receiptRows: [
+        { k: '저장 이름', v: this.savedName() },
+        { k: '전체', v: inc.length + '개' },
+        { k: '주요 결과', v: cfg.artifact },
+        { k: '일정 범위', v: this.dateRange() },
+      ],
+      goPersonal: () => this.setState({ stage: 6 }),
+      goExport: () => this.setState({ stage: 8, exportDone: false }),
+
+      // stage 5
+      libWrapStyle: isWide ? 'display:flex;align-items:stretch;min-height:100%' : 'display:block',
+      libSummary: names.length + '개 저장됨 · 최근 순',
+      libQuery: s.libQuery,
+      onLibQuery: (e) => this.setState({ libQuery: e.target.value }),
+      libFilters: [['active', '진행'], ['done', '완료'], ['archived', '보관']].map((f) => ({
+        label: f[1], pressed: s.libFilter === f[0] ? 'true' : 'false',
+        style: 'height:44px;padding:0 12px;border-radius:9px;font-size:13px;cursor:pointer;border:1px solid ' + (s.libFilter === f[0] ? '#16191d' : '#d7dbe0') + ';background:' + (s.libFilter === f[0] ? '#16191d' : '#fff') + ';color:' + (s.libFilter === f[0] ? '#fff' : '#3d4650'),
+        pick: () => this.setState({ libFilter: f[0] }),
+      })),
+      libraryRows,
+      sizeTabs: [1, 5, 20].map((n) => ({
+        label: n + '개', pressed: s.libSize === n ? 'true' : 'false',
+        style: 'height:28px;padding:0 9px;border-radius:7px;font-size:11.5px;cursor:pointer;border:1px solid ' + (s.libSize === n ? '#16191d' : '#d7dbe0') + ';background:' + (s.libSize === n ? '#16191d' : '#fff') + ';color:' + (s.libSize === n ? '#fff' : '#3d4650'),
+        pick: () => this.setState({ libSize: n }),
+      })),
+
+      // stage 6
+      wsWrapStyle: isWide ? 'display:flex;align-items:stretch;min-height:100%' : 'display:block',
+      workspaceKicker: '내 Flow · ' + cfg.artifact,
+      workspaceSub: inc.filter((r) => r.done).length + ' / ' + inc.length + ' 완료 · ' + this.dateRange(),
+      nextLabel: s.caseId === 'workout' ? '이번 회차' : s.caseId === 'study' ? '현재 단원' : '다음 할 일',
+      nextTitle: nx ? nx.title : '모두 완료했습니다',
+      nextMeta: nx ? (nx.date ? fmtFull(nx.date) : '날짜 없음') + ' · ' + nx.meta : '새 항목을 추가하거나 보관할 수 있습니다',
+      nextPrimary: nx ? '완료' : '다시 열기',
+      completeNext: () => {
+        if (nx) { this.set('done', nx.id, true); this.toast('완료했습니다 · ' + nx.title, () => this.set('done', nx.id, undefined)); }
+        else { const last = inc[inc.length - 1]; if (last) { this.set('done', last.id, undefined); this.toast('다시 열었습니다', null); } }
+      },
+      openNext: () => { if (nx) this.setState({ openId: nx.id }); },
+      structureLabel: s.caseId === 'study' ? '8개 단원' : s.caseId === 'workout' ? '다음 8회' : '전체 구조',
+      structureMeta: inc.length + '개 · ' + inc.filter((r) => r.done).length + '개 완료',
+      personalGroups,
+      hasResource: s.caseId === 'workout',
+      resourceUrl: 'https://www.youtube.com/watch?v=fLLScgWQcHc',
+      resourceLabel: 'Allblanc 매일 아침 5분 전신 운동 영상 열기',
+      doArchive: () => this.toast('보관했습니다 · 목록의 보관 필터에서 복구', () => this.toast('복구했습니다', null)),
+      inspectorTitle: openRow ? openRow.title : (nx ? nx.title : '—'),
+      inspectorMeta: openRow ? ((openRow.date ? fmtFull(openRow.date) : '날짜 없음') + ' · ' + openRow.meta) : '선택 없음',
+
+      // stage 7
+      calWrapStyle: isWide ? 'display:flex;align-items:flex-start;min-height:100%' : 'display:block',
+      agendaStyle: isWide ? 'flex:none;width:42%;min-width:320px;padding:16px;border-left:1px solid #e4e7eb;background:#fafbfc;min-height:100%' : 'padding:4px 14px 24px',
+      dowLabels: DOW,
+      calCells: cells,
+      calSummary: Object.keys(ev).filter((d) => d.slice(0, 7) === '2026-08').length + '일에 일정 있음',
+      calDayLabel: fmtFull(s.calDay),
+      agendaMeta: dayList.length + '개 · ' + Object.keys(byFlow).length + '개 Flow',
+      agendaGroups, agendaEmpty: dayList.length === 0,
+
+      // stage 8
+      scopeOptions: [
+        { k: 'whole', label: '전체', desc: '저장한 Flow에 포함된 모든 항목', count: inc.length + '개' },
+        { k: 'selected', label: '선택', desc: '아래에서 고른 항목만', count: pickedRows.length + '개' },
+        { k: 'current', label: '현재', desc: s.caseId === 'workout' ? '이번 회차만' : '지금 할 하나만', count: (currentRow ? 1 : 0) + '개' },
+      ].map((o) => ({
+        label: o.label, desc: o.desc, count: o.count, pressed: s.scope === o.k ? 'true' : 'false',
+        style: 'display:block;width:100%;text-align:left;padding:13px 14px;border-radius:12px;cursor:pointer;border:1px solid ' + (s.scope === o.k ? '#16191d' : '#e4e7eb') + ';background:#fff',
+        pick: () => this.setState({ scope: o.k, exportDone: false }),
+      })),
+      scopeIsSelected: s.scope === 'selected',
+      destOptions, destNote,
+      exportCta: scopeCount + '개 ' + (DESTS.find((d) => d.k === s.dest) || DESTS[0]).label.split(' ')[0] + '로 가져가기',
+      doExport: () => { this.setState({ exportDone: true }); this.toast('가져가기를 만들었습니다', null); },
+      exportDone: s.exportDone,
+      exportReceipt: scopeCount + '개를 ' + (DESTS.find((d) => d.k === s.dest) || DESTS[0]).label + '로 내보냈습니다',
+      exportWhere: '다음 위치 · 이 기기의 다운로드. 실패하면 같은 버튼에서 다시 시도합니다.',
+
+      // sheet
+      sheetOpen: !!openRow,
+      sheetKicker: openRow ? (this.savedName() + ' · ' + openRow.meta) : '',
+      sheetTitle: openRow ? openRow.title : '',
+      sheetDate: openRow ? (openRow.date || '') : '',
+      sheetMemo: openRow ? openRow.memo : '',
+      sheetCriteria: openRow ? '완료 기준 · 이 할 일을 마쳤다고 판단할 수 있는 결과를 남겼다.' : '',
+      onSheetTitle: (e) => { if (openRow) this.set('titles', openRow.id, e.target.value); },
+      onSheetDate: (e) => { if (openRow) this.set('dates', openRow.id, e.target.value || null); },
+      clearSheetDate: () => { if (openRow) { this.set('dates', openRow.id, null); this.toast('날짜를 제거했습니다 · 항목은 Flow에 남아 있습니다', () => this.set('dates', openRow.id, undefined)); } },
+      onSheetMemo: (e) => { if (openRow) this.set('memos', openRow.id, e.target.value); },
+      sheetDoneLabel: openRow && openRow.done ? '다시 열기' : '완료',
+      sheetDoneStyle: 'width:100%;height:50px;border-radius:12px;border:none;cursor:pointer;font-size:15px;font-weight:700;color:#fff;background:' + (openRow && openRow.done ? '#616b76' : 'oklch(0.52 0.10 155)'),
+      sheetToggleDone: () => { if (openRow) { this.set('done', openRow.id, openRow.done ? undefined : true); this.toast(openRow.done ? '다시 열었습니다' : '완료했습니다', () => this.set('done', openRow.id, openRow.done ? true : undefined)); } },
+      closeSheet: () => this.setState({ openId: null }),
+
+      // toast
+      toastVisible: !!s.toast, toastMsg: s.toast || '', toastHasUndo: !!s.undo,
+      doUndo: () => { if (s.undo) s.undo(); this.setState({ toast: null, undo: null }); },
+
+      // nav
+      navTabs: [['Flow 찾기', 1], ['Calendar', 7], ['My Flow', 5]].map((t) => ({
+        label: t[0], current: (stage === t[1] || (t[1] === 5 && stage === 6)) ? 'page' : 'false',
+        style: 'padding:12px 0 16px;border:none;background:transparent;font-size:12.5px;cursor:pointer;font-weight:' + ((stage === t[1] || (t[1] === 5 && stage === 6)) ? '700' : '500') + ';color:' + ((stage === t[1] || (t[1] === 5 && stage === 6)) ? '#16191d' : '#8a939d'),
+        pick: () => this.setState({ stage: t[1], openId: null }),
+      })),
+
+      // ---------- review tables ----------
+      abcRows: [
+        { k: '사용자 가치', a: '한 화면 한 질문이 가장 선명', b: '변화가 적어 학습 비용 최소', c: 'A의 선명함 + 재방문·완료 비용 회복' },
+        { k: '첫 viewport 명확성', a: '높음', b: '중간 — 홈이 여전히 두 역할', c: '높음' },
+        { k: '저장 전 예측 가능성', a: '높음 (A·B·C 동일 설계)', b: '높음', c: '높음' },
+        { k: 'session 연속성', a: '재방문이 찾기 화면으로 떨어짐', b: '홈이 잇지만 소유가 흐려짐', c: '`/`가 저장 여부로 목적지를 고름' },
+        { k: 'action owner 중복', a: '0 — 완료도 개인 Flow만', b: '3 (My Flow Today · Calendar inline · 개인 Flow)', c: '0 — 완료는 row primitive로 정의, 편집 owner는 1개' },
+        { k: '모바일 밀도', a: '가장 가벼움', b: '현재와 유사', c: 'A와 동일 (완료 토글 1개만 추가)' },
+        { k: '20개 Flow 확장성', a: '검색+필터로 충분', b: 'Today가 목록을 밀어냄', c: 'A와 동일 + 다음 예정 한 줄로 스캔 근거' },
+        { k: 'data-contract 위험', a: '없음 — 화면 소유권만', b: '없음', c: '없음' },
+        { k: '구현 난이도', a: '중 (Calendar 편집 제거 + /my 분리)', b: '하', c: '중 — A와 같고 완료 토글은 기존 컴포넌트 재사용' },
+        { k: 'rollback 가능성', a: 'composition prop 토글', b: '해당 없음', c: 'slice별 flag, 각 rollback 독립' },
+      ],
+      journeyRows: [
+        { persona: '이사 D-30', session: 'A', current: 'partial', proposed: 'pass', gap: '최소 입력이 CTA 아래 · 저장 전 결과 형태 선택' },
+        { persona: '이사 D-30', session: 'B', current: 'partial', proposed: 'pass', gap: '재방문 진입이 홈 → 탭 이동 2단계' },
+        { persona: '이사 D-30', session: 'C', current: 'partial', proposed: 'revise', gap: '새 기준일 재사용 시 개인 고정 날짜 보존은 라이브 미검증' },
+        { persona: '자동차검사', session: 'A', current: 'supported', proposed: 'pass', gap: '`날짜 없음` receipt는 이미 정상' },
+        { persona: '자동차검사', session: 'B', current: 'partial', proposed: 'pass', gap: '한 항목만 날짜 넣는 경로가 Calendar/개인 Flow로 갈림' },
+        { persona: '자동차검사', session: 'C', current: 'partial', proposed: 'pass', gap: '날짜 제거 후 Calendar에서만 사라진다는 확인 부족' },
+        { persona: '아침 5분 홈트', session: 'A', current: 'supported', proposed: 'pass', gap: 'series 요약은 이미 compact' },
+        { persona: '아침 5분 홈트', session: 'B', current: 'partial', proposed: 'pass', gap: '이번 회차와 series 구분이 화면에서 약함' },
+        { persona: '아침 5분 홈트', session: 'C', current: 'partial', proposed: 'revise', gap: 'ICS count와 반복 종료 후 과거 기록 보존 미검증' },
+        { persona: '중1 수학', session: 'A', current: 'supported', proposed: 'pass', gap: '날짜 없이 저장이 자연스러움' },
+        { persona: '중1 수학', session: 'B', current: 'partial', proposed: 'pass', gap: '현재 단원 승격이 없어 재진입 초점이 목록 전체' },
+        { persona: '중1 수학', session: 'C', current: 'partial', proposed: 'revise', gap: 'reload 후 마지막 위치 유지는 라이브 미검증' },
+        { persona: '개인 메모', session: 'A', current: 'partial', proposed: 'pass', gap: '입력 → 5개 확인 → 저장이 한 흐름으로 이어지지 않음' },
+        { persona: '개인 메모', session: 'B', current: 'partial', proposed: 'pass', gap: '추가·삭제·복구·재정렬 진입이 분산' },
+        { persona: '개인 메모', session: 'C', current: 'partial', proposed: 'revise', gap: 'reload 후 personal draft 유지 미검증' },
+      ].map((j) => ({
+        ...j,
+        curStyle: 'padding:2px 7px;border-radius:6px;font-size:11.5px;font-family:ui-monospace,monospace;background:' + (j.current === 'supported' ? 'oklch(0.30 0.06 155)' : 'oklch(0.32 0.06 65)') + ';color:#e6edf3',
+        propStyle: 'padding:2px 7px;border-radius:6px;font-size:11.5px;font-family:ui-monospace,monospace;background:' + (j.proposed === 'pass' ? 'oklch(0.30 0.06 155)' : 'oklch(0.32 0.06 65)') + ';color:#e6edf3',
+      })),
+      redTeamRows: [
+        { q: '기능을 지운 게 아니라 다른 메뉴로 옮겨 복잡도를 보존한 것 아닌가', a: 'Calendar의 메모·날짜 옮기기는 실제로 개인 Flow로 “이동”이다. 그래서 이동만으로 끝내지 않고 개인 Flow의 Item detail을 단일 편집 표면으로 합쳐 총 편집 표면 수를 3 → 1로 줄였다.', fix: 'rev.1 — Item detail sheet를 유일한 편집 표면으로 확정' },
+        { q: '순수 A는 재방문 사용자의 오늘 행동을 약하게 만들지 않나', a: '만든다. `/`→`/flows`는 저장 12개를 가진 사용자를 발견 화면에 떨어뜨린다. 새 탭이나 dashboard를 만들지 않고 진입 목적지만 상태로 고른다.', fix: 'rev.1 — `/`를 entry router로 (저장>0 → /my), 새 surface 0개' },
+        { q: 'Calendar lens-only가 가장 잦은 단일 동작을 3탭으로 만들지 않나', a: '만든다. 완료는 하루에 여러 번 일어나는 유일한 동작이다. 그래서 완료를 “소유 기능”이 아니라 “행 primitive”로 재정의했다 — 행이 보이는 곳에서는 같은 컨트롤, 편집은 개인 Flow 단독.', fix: 'rev.2 — Calendar 완료 토글 1개만 유지, 나머지 command 전부 제거' },
+        { q: '완료 토글을 두 곳에 두면 MECE가 깨지지 않나', a: '깨지지 않게 정의를 좁혔다. 소유는 “상태를 바꾸는 편집”이 아니라 “표시된 run row의 토글”이다. 라벨·아이콘·피드백·undo가 동일하고, 되돌리기도 같은 위치에서 제공한다.', fix: 'rev.2 — command grammar에 row primitive 조항 추가' },
+        { q: '날짜 없는 Item의 접근 경로가 사라졌나', a: 'Calendar의 undated tray는 제거되지만 개인 Flow가 전량을 소유하고 목록 행에 `날짜 없음 · N개 중 다음 1개`가 남는다. 접근 경로는 줄지 않고 한 곳으로 모인다.', fix: 'rev.2 — My Flow 행에 읽기 전용 다음 예정 1줄' },
+        { q: '390px에서 설명과 카드가 다시 쌓이지 않았나', a: '공개 Flow의 설명 block을 3 → 1(출처와 주의, 접힘)로 줄였고 요약 chip과 renderer 토글을 제거했다. 대신 최소 입력이 고정 하단 영역으로 올라와 첫 viewport 결정 표면이 2개다.', fix: 'rev.3 — 고정 하단 영역과 bottom nav를 같은 화면에 두지 않음(공개 Flow는 nav 없음)' },
+        { q: '1024가 늘어난 모바일 아닌가', a: '목록·workspace·캘린더 세 화면에서만 rail/canvas/inspector로 역할을 나눴다. 조정·receipt·가져가기는 단일 결정 화면이라 중앙 정렬 720px로 유지한다 — 확대가 아니라 의도적 동일.', fix: 'rev.3 — wide 전용 composition을 3개 화면으로 한정' },
+      ],
+      sliceRows: [
+        { id: 'S1', title: '`/` entry router + 4탭 → 3탭', cls: 'route/IA', detail: '저장 Flow가 있으면 `/my`, 없으면 `/flows`. 홈 route와 활용 예시 카드 제거. 유지: `/flows` 발견·입력, 예시 콘텐츠는 카드 목록 안에.', marker: 'P35-ENTRY-ROUTER-3TAB · 390/1024/1440 진입 캡처 · rollback: flag로 고정 `/flows`' },
+        { id: 'S2', title: '공개 Flow 첫 viewport 재구성', cls: 'component composition', detail: '요약 chip 3개와 renderer 토글 제거, 최소 입력을 CTA와 같은 영역으로. 유지: 전체 결과 먼저, 예시 날짜 미리보기, 출처 접힘.', marker: 'P35-PUBLIC-RESULT-FIRST · saveDecisionSurfaceCount==2 · rollback: composition prop' },
+        { id: 'S3', title: '조정 = 한 번에 한 종류', cls: 'interaction state', detail: '이름/기준일/포함/반복을 탭으로 분리하고 변경 전→후를 항상 표시. 데이터 계약 불변.', marker: 'P35-ADJUST-ONE-KIND · rollback: 단일 패널 복귀' },
+        { id: 'S4', title: '`/my` 목록 전용화', cls: 'route/IA', detail: '행 = 열기 하나. 4버튼 제거, 스튜디오·데이터 관리는 보조 메뉴, 완료·보관은 필터. 행에 읽기 전용 다음 예정 1줄.', marker: 'P35-MY-LIBRARY-ONLY · competingPrimary==1 · rollback: 카드 composition 복원' },
+        { id: 'S5', title: '개인 Flow workspace 초점', cls: 'component composition', detail: '다음 하나를 시각적으로 승격, 전체 구조는 섹션 요약 + 펼침, 자료와 실행 항목 분리. 완료·reopen·편집·메모·export 단독 소유.', marker: 'P35-PERSONAL-SINGLE-FOCUS · 첫 viewport 강조 카드 1 · rollback: 접힘 기본값' },
+        { id: 'S6', title: 'Calendar lens + 완료 primitive', cls: 'interaction state', detail: 'inline 메모·날짜 옮기기·제목 수정 제거, 완료 토글만 유지. cell은 색+개수. grid는 roving tabindex.', marker: 'P35-CALENDAR-LENS-ONE-TOGGLE · calendarFocusStops<=12 · rollback: inline command 복원' },
+        { id: 'S7', title: '가져가기 scope-first', cls: 'component composition', detail: '범위(전체/선택/현재)와 count를 먼저, 형식은 그 다음. 불가능한 형식은 비활성 + 이유. export identity 계약 불변.', marker: 'P35-EXPORT-SCOPE-FIRST · rollback: 형식 우선 bar' },
+      ].map((x) => ({
+        ...x,
+        classStyle: 'padding:2px 8px;border-radius:6px;font-size:11px;font-family:ui-monospace,monospace;background:' + (x.cls === 'route/IA' ? 'oklch(0.32 0.07 268)' : x.cls === 'interaction state' ? 'oklch(0.30 0.06 155)' : '#21262d') + ';color:#e6edf3',
+      })),
+    };
+  }
+}
+</script>
+</body>
+</html>

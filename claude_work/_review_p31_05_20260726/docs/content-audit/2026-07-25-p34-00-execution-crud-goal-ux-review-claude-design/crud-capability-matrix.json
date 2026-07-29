@@ -1,0 +1,1517 @@
+{
+  "schemaVersion": 1,
+  "reviewer": "claude_design",
+  "reviewedAt": "2026-07-25T10:55:00Z",
+  "reviewScope": "FlowMe 일정·Todo·체크리스트·진행 관리 UX와 CRUD 완성도",
+  "surfaceVersionBasis": {
+    "production_p32": "https://flowme2605.vercel.app (배포된 P32)",
+    "p33_preview": "vercel_sso_redirect — 익명 접근 불가(inaccessible)",
+    "reviewedCommit": "8c54992ce5628ab2a3884a530a83d2c8226223dc",
+    "branch": "codex/p33-integrated-program-plan",
+    "draftPullRequest": 156,
+    "pullRequestState": "open_draft"
+  },
+  "appCodeChanged": false,
+  "observedUserCount": 0,
+  "readLimit": "components/flow/AppClient.tsx 는 512KB 초과로 열람/검색 불가 — 해당 파일에만 존재하는 문구는 판정 불가로 표기",
+  "legend": {
+    "supported": "사용자가 발견하고 정상적으로 사용할 수 있음",
+    "hidden": "기능은 있으나 발견 경로가 접힘/메뉴/특정 상태 뒤에 있음",
+    "partial": "일부 surface·상태에서만 동작",
+    "inconsistent": "같은 조작이 화면마다 다른 문법이나 결과를 가짐",
+    "missing": "기능 또는 복구 경로가 없음",
+    "blocked": "오류·계약 충돌로 여정을 완료할 수 없음",
+    "undetermined": "증거 한도 밖(열람 불가 파일)에서만 존재할 수 있어 판정 불가"
+  },
+  "objects": [
+    {
+      "id": "source_backed_flow",
+      "name": "Source-backed Flow(원문 기반 공개 Flow)",
+      "ops": {
+        "create": {
+          "status": "missing",
+          "entry": "없음(편집자 전용)",
+          "label": "—",
+          "depth": "—",
+          "undo": "—",
+          "reload": "—",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": "의도된 제품 경계. 사용자는 원문을 소비하고 사본만 만든다."
+        },
+        "read": {
+          "status": "supported",
+          "entry": "/f/{slug}, /flow-maps/* → canonical redirect",
+          "label": "전체 Flow 미리보기",
+          "depth": "1",
+          "undo": "—",
+          "reload": "n/a",
+          "mobileWide": "동일 프레임",
+          "evidenceKind": [
+            "current_source",
+            "current_package_screenshot"
+          ],
+          "needsChange": false,
+          "note": "P33에서 alias 4개가 canonical 상세 1개로 수렴."
+        },
+        "update": {
+          "status": "partial",
+          "entry": "/f/{slug} → 내게 맞게 조정",
+          "label": "포함 / 내용 / 일정 / 순서",
+          "depth": "2",
+          "undo": "저장 전 취소",
+          "reload": "개인 overlay로만 저장",
+          "mobileWide": "mobile=adjust-entry-mobile",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": true,
+          "note": "원문은 불변, 개인 overlay만 수정. 4개 모드 문법이 My Flow 편집과 다름."
+        },
+        "delete": {
+          "status": "missing",
+          "entry": "—",
+          "label": "—",
+          "depth": "—",
+          "undo": "—",
+          "reload": "—",
+          "mobileWide": "—",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": "원문 삭제 불가 — 올바른 경계."
+        },
+        "restore": {
+          "status": "supported",
+          "entry": "조정 취소",
+          "label": "되돌리기",
+          "depth": "1",
+          "undo": "즉시",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "reuse": {
+          "status": "supported",
+          "entry": "My Flow > 완료 Flow",
+          "label": "새 이사일로 다시 쓰기",
+          "depth": "2",
+          "undo": "없음",
+          "reload": "새 run 생성, 이전 run 보관",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "export": {
+          "status": "supported",
+          "entry": "/f 저장 전 · receipt",
+          "label": "캘린더 24개로 시작 등",
+          "depth": "1",
+          "undo": "—",
+          "reload": "n/a",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        }
+      }
+    },
+    {
+      "id": "personal_flow_copy",
+      "name": "개인 Flow 사본",
+      "ops": {
+        "create": {
+          "status": "supported",
+          "entry": "/f/{slug} 저장",
+          "label": "이 날짜로 시작 / 날짜 없이 시작 / 그대로 시작",
+          "depth": "2",
+          "undo": "없음",
+          "reload": "flow:saved:{slug} 유지",
+          "mobileWide": "mobile save-primary-mobile",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": true,
+          "note": "같은 조작에 3가지 라벨. 라벨이 결과(저장)가 아니라 시작을 말한다."
+        },
+        "read": {
+          "status": "supported",
+          "entry": "/my > Flow 목록 > 카드",
+          "label": "열기",
+          "depth": "2",
+          "undo": "—",
+          "reload": "유지",
+          "mobileWide": "mobile 드릴인 / wide rail+canvas",
+          "evidenceKind": [
+            "current_source",
+            "current_package_screenshot"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "update": {
+          "status": "supported",
+          "entry": "워크스페이스",
+          "label": "이사일 바꾸기 · 여러 할 일 조정",
+          "depth": "1~2",
+          "undo": "조작별 상이",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source",
+            "current_package_screenshot"
+          ],
+          "needsChange": true,
+          "note": "undo 소유자가 조작마다 다름(M-2)."
+        },
+        "delete": {
+          "status": "undetermined",
+          "entry": "My Flow > 카드 ⋯ 메뉴",
+          "label": "이 기기에서 영구 삭제(문서상)",
+          "depth": "3+",
+          "undo": "판정 불가",
+          "reload": "판정 불가",
+          "mobileWide": "판정 불가",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": true,
+          "note": "문자열이 docs/STATUS.md·DECISIONS.md에만 존재. tests/e2e 0건, personal-flow-lifecycle.ts에 삭제 API 없음."
+        },
+        "restore": {
+          "status": "supported",
+          "entry": "보관함",
+          "label": "복구",
+          "depth": "3",
+          "undo": "스낵바 되돌리기",
+          "reload": "archivedFlowSlugs 유지",
+          "mobileWide": "wide=rail filter archived",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": true,
+          "note": ""
+        },
+        "reuse": {
+          "status": "supported",
+          "entry": "완료 후 피드백",
+          "label": "새 이사일로 다시 쓰기",
+          "depth": "2",
+          "undo": "없음",
+          "reload": "새 run",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": "이전 실행은 그대로 보관."
+        },
+        "export": {
+          "status": "supported",
+          "entry": "워크스페이스 > 가져가기",
+          "label": "Flow 전체 · 24개",
+          "depth": "2",
+          "undo": "—",
+          "reload": "n/a",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source",
+            "current_package_screenshot"
+          ],
+          "needsChange": false,
+          "note": ""
+        }
+      }
+    },
+    {
+      "id": "personal_draft",
+      "name": "개인 draft(URL·메모)",
+      "ops": {
+        "create": {
+          "status": "supported",
+          "entry": "/flows > URL이나 메모로 Flow 찾기",
+          "label": "Flow 이름 / 원하는 결과",
+          "depth": "3",
+          "undo": "저장 전 제외",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": "후보를 포함·이름변경·분할·병합·순서로 검토 후 저장."
+        },
+        "read": {
+          "status": "supported",
+          "entry": "/my > Flow 목록",
+          "label": "열기",
+          "depth": "2",
+          "undo": "—",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "update": {
+          "status": "supported",
+          "entry": "draft 워크스페이스 > 구성 편집",
+          "label": "구성 편집",
+          "depth": "2",
+          "undo": "즉시 undo",
+          "reload": "유지",
+          "mobileWide": "mobile 고정 툴바",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "delete": {
+          "status": "inconsistent",
+          "entry": "draft 행 / 구성 편집",
+          "label": "삭제 · 항목 삭제",
+          "depth": "2~3",
+          "undo": "confirm 다이얼로그",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": true,
+          "note": "저장 Flow는 \"제외\", draft는 \"삭제\" — 같은 결과에 다른 동사."
+        },
+        "restore": {
+          "status": "hidden",
+          "entry": "구성 편집",
+          "label": "나중에 구성 편집에서 복구",
+          "depth": "3",
+          "undo": "즉시 undo",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": true,
+          "note": "복구 경로가 confirm 문구 안에서만 안내된다."
+        },
+        "reuse": {
+          "status": "partial",
+          "entry": "—",
+          "label": "—",
+          "depth": "—",
+          "undo": "—",
+          "reload": "—",
+          "mobileWide": "—",
+          "evidenceKind": [
+            "current_source",
+            "heuristic_simulation"
+          ],
+          "needsChange": true,
+          "note": "기준일 재사용은 dated Flow 중심. draft 재사용 경로 증거 없음."
+        },
+        "export": {
+          "status": "supported",
+          "entry": "가져가기",
+          "label": "Flow 전체 / 직접 선택 / 현재 항목",
+          "depth": "2",
+          "undo": "—",
+          "reload": "n/a",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        }
+      }
+    },
+    {
+      "id": "item",
+      "name": "Item",
+      "ops": {
+        "create": {
+          "status": "partial",
+          "entry": "draft 구성 편집 / 확인 항목 추가",
+          "label": "항목 추가",
+          "depth": "3",
+          "undo": "즉시 undo",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": true,
+          "note": "source-backed 저장 Flow에 사용자 Item을 더하는 경로는 draft 대비 약함."
+        },
+        "read": {
+          "status": "supported",
+          "entry": "워크스페이스 outline 행",
+          "label": "열기",
+          "depth": "1",
+          "undo": "—",
+          "reload": "유지",
+          "mobileWide": "mobile=bottom sheet / wide=detail pane",
+          "evidenceKind": [
+            "current_source",
+            "current_package_screenshot"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "update": {
+          "status": "inconsistent",
+          "entry": "item detail",
+          "label": "빠른 수정 있으면 1탭, 없으면 요약 펼치기→수정",
+          "depth": "1 또는 3",
+          "undo": "저장/취소",
+          "reload": "유지(P33에서 메모 reload 30/30 안정화)",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": true,
+          "note": "E2E 헬퍼조차 두 경로를 분기 처리한다."
+        },
+        "delete": {
+          "status": "hidden",
+          "entry": "item detail(편집 모드)",
+          "label": "Flow에서 빼기",
+          "depth": "3",
+          "undo": "배치 스낵바 되돌리기",
+          "reload": "personalExcluded 유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": true,
+          "note": "편집 모드 진입 후에만 노출."
+        },
+        "restore": {
+          "status": "hidden",
+          "entry": "워크스페이스 > 뺀 항목(접힌 disclosure)",
+          "label": "복구",
+          "depth": "3",
+          "undo": "—",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": true,
+          "note": ""
+        },
+        "reuse": {
+          "status": "supported",
+          "entry": "다시 쓰기",
+          "label": "완료 체크만 새로 시작",
+          "depth": "2",
+          "undo": "—",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "export": {
+          "status": "supported",
+          "entry": "가져가기 > 현재 항목",
+          "label": "현재 항목 가져가기 · 1개",
+          "depth": "3",
+          "undo": "—",
+          "reload": "n/a",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": true,
+          "note": "item detail 안 disclosure — 3개 범위가 한 곳에 모이지 않음."
+        }
+      }
+    },
+    {
+      "id": "date_time_place",
+      "name": "날짜·시간·장소",
+      "ops": {
+        "create": {
+          "status": "supported",
+          "entry": "item editor",
+          "label": "날짜 / 세부 일정(시간·장소·반복)",
+          "depth": "2~4",
+          "undo": "취소",
+          "reload": "유지",
+          "mobileWide": "mobile 전체화면 다이얼로그",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": "시간·장소·반복은 접힘."
+        },
+        "read": {
+          "status": "supported",
+          "entry": "outline 행 메타",
+          "label": "기준 D-30 · 8월 1일",
+          "depth": "0",
+          "undo": "—",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source",
+            "current_package_screenshot"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "update": {
+          "status": "supported",
+          "entry": "item editor / 저장 전 일정 모드",
+          "label": "날짜",
+          "depth": "2~4",
+          "undo": "저장/취소",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "delete": {
+          "status": "partial",
+          "entry": "item editor",
+          "label": "날짜 제거",
+          "depth": "3",
+          "undo": "되돌리기",
+          "reload": "날짜 없는 할 일로 복귀",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source",
+            "heuristic_simulation"
+          ],
+          "needsChange": true,
+          "note": "draft 경로 증거는 있으나 source-backed 저장 Flow의 날짜 제거 증거는 확인 못함."
+        },
+        "restore": {
+          "status": "supported",
+          "entry": "Calendar 되돌리기",
+          "label": "되돌리기",
+          "depth": "1",
+          "undo": "즉시",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "reuse": {
+          "status": "supported",
+          "entry": "다시 쓰기 미리보기",
+          "label": "따로 고친 날짜 1개 재계산",
+          "depth": "2",
+          "undo": "커밋 전 미리보기",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "export": {
+          "status": "supported",
+          "entry": "가져가기 > 캘린더",
+          "label": "캘린더 24개",
+          "depth": "2",
+          "undo": "—",
+          "reload": "n/a",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        }
+      }
+    },
+    {
+      "id": "undated_item",
+      "name": "날짜 없는 Item",
+      "ops": {
+        "create": {
+          "status": "supported",
+          "entry": "/f 저장 전",
+          "label": "날짜 없이",
+          "depth": "1",
+          "undo": "—",
+          "reload": "dateIntent=undated",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "read": {
+          "status": "supported",
+          "entry": "/calendar > 날짜 없는 할 일",
+          "label": "아직 일정에 놓지 않은 실행 항목",
+          "depth": "1",
+          "undo": "—",
+          "reload": "유지",
+          "mobileWide": "mobile=접힌 드로어 / wide=고정 레일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "update": {
+          "status": "supported",
+          "entry": "트레이 선택 → 날짜 정하기",
+          "label": "날짜 정하기",
+          "depth": "2",
+          "undo": "되돌리기",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": "10→9→10, 3개 배치 10→7 검증됨."
+        },
+        "delete": {
+          "status": "partial",
+          "entry": "item editor",
+          "label": "날짜 제거",
+          "depth": "3",
+          "undo": "되돌리기",
+          "reload": "트레이로 복귀",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source",
+            "heuristic_simulation"
+          ],
+          "needsChange": true,
+          "note": ""
+        },
+        "restore": {
+          "status": "supported",
+          "entry": "되돌리기",
+          "label": "되돌리기",
+          "depth": "1",
+          "undo": "즉시",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "reuse": {
+          "status": "supported",
+          "entry": "다시 쓰기",
+          "label": "날짜 없음 유지",
+          "depth": "2",
+          "undo": "—",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "export": {
+          "status": "supported",
+          "entry": "가져가기",
+          "label": "체크리스트/메모에 포함, 캘린더에서 제외",
+          "depth": "2",
+          "undo": "—",
+          "reload": "n/a",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": "목적지 적격성으로 수량이 갈린다."
+        }
+      }
+    },
+    {
+      "id": "recurring_series",
+      "name": "반복 series",
+      "ops": {
+        "create": {
+          "status": "supported",
+          "entry": "item editor > 세부 일정",
+          "label": "반복 · 반복 종료",
+          "depth": "4",
+          "undo": "취소",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "read": {
+          "status": "partial",
+          "entry": "My Flow item detail",
+          "label": "반복 설정 바꾸기 · 캘린더에서 회차별 실행",
+          "depth": "2",
+          "undo": "—",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": true,
+          "note": "P32 production에서는 raw RRULE이 노출되는 화면이 있었고 P33이 사람 문구로 교정."
+        },
+        "update": {
+          "status": "supported",
+          "entry": "반복 설정 바꾸기",
+          "label": "반복 종료",
+          "depth": "3",
+          "undo": "저장/취소",
+          "reload": "seriesId 유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "delete": {
+          "status": "partial",
+          "entry": "반복 설정",
+          "label": "반복 종료",
+          "depth": "3",
+          "undo": "—",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": true,
+          "note": "\"종료\"와 \"삭제\"가 같은 컨트롤로 처리된다."
+        },
+        "restore": {
+          "status": "undetermined",
+          "entry": "—",
+          "label": "—",
+          "depth": "—",
+          "undo": "—",
+          "reload": "—",
+          "mobileWide": "—",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": true,
+          "note": "종료한 반복을 되살리는 경로 증거 없음."
+        },
+        "reuse": {
+          "status": "supported",
+          "entry": "다시 쓰기",
+          "label": "완료 체크만 새로 시작",
+          "depth": "2",
+          "undo": "—",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "export": {
+          "status": "supported",
+          "entry": "가져가기",
+          "label": "반복 1건 + 이번 범위 회차 구분",
+          "depth": "2",
+          "undo": "—",
+          "reload": "n/a",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": "RRULE 1 VEVENT, EXDATE/RECURRENCE-ID 없음."
+        }
+      }
+    },
+    {
+      "id": "occurrence",
+      "name": "개별 occurrence",
+      "ops": {
+        "create": {
+          "status": "missing",
+          "entry": "—",
+          "label": "—",
+          "depth": "—",
+          "undo": "—",
+          "reload": "—",
+          "mobileWide": "—",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": "series 정의에서만 파생 — 올바른 경계."
+        },
+        "read": {
+          "status": "supported",
+          "entry": "/calendar 선택일 상세",
+          "label": "이번 회차",
+          "depth": "2",
+          "undo": "—",
+          "reload": "유지",
+          "mobileWide": "mobile=bottom sheet",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "update": {
+          "status": "missing",
+          "entry": "—",
+          "label": "—",
+          "depth": "—",
+          "undo": "—",
+          "reload": "—",
+          "mobileWide": "—",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": true,
+          "note": "\"이번 회차만 수정\" 문자열·testid 모두 0건. 제목·시간 변경은 series 단위만."
+        },
+        "delete": {
+          "status": "partial",
+          "entry": "보류",
+          "label": "보류한 일정",
+          "depth": "2~3",
+          "undo": "—",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source",
+            "heuristic_simulation"
+          ],
+          "needsChange": true,
+          "note": "단일 회차 건너뛰기의 명시적 이름이 없다."
+        },
+        "restore": {
+          "status": "partial",
+          "entry": "보류한 일정",
+          "label": "재개",
+          "depth": "2~3",
+          "undo": "—",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source",
+            "heuristic_simulation"
+          ],
+          "needsChange": true,
+          "note": ""
+        },
+        "reuse": {
+          "status": "supported",
+          "entry": "다시 쓰기",
+          "label": "완료 체크 초기화",
+          "depth": "2",
+          "undo": "—",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "export": {
+          "status": "supported",
+          "entry": "가져가기",
+          "label": "이번 범위 회차 수 표시",
+          "depth": "2",
+          "undo": "—",
+          "reload": "n/a",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        }
+      }
+    },
+    {
+      "id": "completion_run",
+      "name": "완료 상태와 execution run",
+      "ops": {
+        "create": {
+          "status": "supported",
+          "entry": "outline 행 체크박스",
+          "label": "{제목} 완료 체크 / {제목} 이번 회차 완료 체크",
+          "depth": "1",
+          "undo": "되돌리기 상태줄",
+          "reload": "유지",
+          "mobileWide": "44px 타깃",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "read": {
+          "status": "supported",
+          "entry": "/my > 완료",
+          "label": "완료",
+          "depth": "1",
+          "undo": "—",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "update": {
+          "status": "supported",
+          "entry": "완료 행",
+          "label": "다시 열기",
+          "depth": "1",
+          "undo": "—",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": "같은 컨트롤의 accessible name이 완료 체크↔다시 열기로 전환."
+        },
+        "delete": {
+          "status": "missing",
+          "entry": "—",
+          "label": "—",
+          "depth": "—",
+          "undo": "—",
+          "reload": "—",
+          "mobileWide": "—",
+          "evidenceKind": [
+            "current_source",
+            "heuristic_simulation"
+          ],
+          "needsChange": false,
+          "note": "완료 기록 삭제는 제공하지 않음 — 의도된 경계로 판단."
+        },
+        "restore": {
+          "status": "supported",
+          "entry": "완료 목록",
+          "label": "다시 열기 → 같은 항목 상세로 복귀",
+          "depth": "2",
+          "undo": "—",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "reuse": {
+          "status": "supported",
+          "entry": "다시 쓰기",
+          "label": "지난 실행은 그대로 보관",
+          "depth": "2",
+          "undo": "커밋 전 미리보기",
+          "reload": "이전 run 보존",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "export": {
+          "status": "supported",
+          "entry": "가져가기",
+          "label": "완료 기준 함께 옮깁니다",
+          "depth": "2",
+          "undo": "—",
+          "reload": "n/a",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source",
+            "current_package_screenshot"
+          ],
+          "needsChange": false,
+          "note": ""
+        }
+      }
+    },
+    {
+      "id": "personal_note_resource",
+      "name": "개인 메모와 resource",
+      "ops": {
+        "create": {
+          "status": "supported",
+          "entry": "item detail 편집 모드",
+          "label": "개인 메모 · 확인 항목 추가 · 자료",
+          "depth": "3~4",
+          "undo": "저장/취소",
+          "reload": "P33에서 30/30 reload 안정화",
+          "mobileWide": "mobile 시트",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "read": {
+          "status": "supported",
+          "entry": "item detail",
+          "label": "메모 · 확인 항목 · 자료 링크",
+          "depth": "1",
+          "undo": "—",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "update": {
+          "status": "supported",
+          "entry": "item detail 편집 모드",
+          "label": "수정 후 변경 저장",
+          "depth": "3",
+          "undo": "저장/취소",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "delete": {
+          "status": "supported",
+          "entry": "자료 숨기기",
+          "label": "자료 숨기기",
+          "depth": "3",
+          "undo": "—",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "restore": {
+          "status": "partial",
+          "entry": "—",
+          "label": "—",
+          "depth": "—",
+          "undo": "—",
+          "reload": "—",
+          "mobileWide": "—",
+          "evidenceKind": [
+            "current_source",
+            "heuristic_simulation"
+          ],
+          "needsChange": true,
+          "note": "숨긴 자료의 복구 목록 증거 없음."
+        },
+        "reuse": {
+          "status": "supported",
+          "entry": "다시 쓰기",
+          "label": "내가 고친 내용은 유지",
+          "depth": "2",
+          "undo": "—",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "export": {
+          "status": "supported",
+          "entry": "가져가기",
+          "label": "세부 확인 항목과 자료는 FlowMe에 남습니다",
+          "depth": "2",
+          "undo": "—",
+          "reload": "n/a",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source",
+            "current_package_screenshot"
+          ],
+          "needsChange": false,
+          "note": "손실 고지가 명시된다 — 좋은 패턴."
+        }
+      }
+    },
+    {
+      "id": "flow_lifecycle",
+      "name": "Flow 보관·복구·영구 삭제",
+      "ops": {
+        "create": {
+          "status": "hidden",
+          "entry": "/my > Flow 목록 > 카드 ⋯ 관리 메뉴",
+          "label": "보관",
+          "depth": "3",
+          "undo": "스낵바 되돌리기",
+          "reload": "archivedFlowSlugs 유지",
+          "mobileWide": "wide 확인 / mobile parity는 문서 주장",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": true,
+          "note": "집중 워크스페이스(열린 Flow)에는 lifecycle 명령이 없다."
+        },
+        "read": {
+          "status": "hidden",
+          "entry": "/my > 보관함 열기 → 목록 필터=archived",
+          "label": "보관함 열기",
+          "depth": "2",
+          "undo": "—",
+          "reload": "유지",
+          "mobileWide": "wide=rail filter",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": true,
+          "note": "보관 이력이 없으면 진입점 자체가 나타나지 않는다."
+        },
+        "update": {
+          "status": "supported",
+          "entry": "보관 토글",
+          "label": "보관 / 복구",
+          "depth": "3",
+          "undo": "되돌리기",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": true,
+          "note": "같은 컨트롤이 양방향 — 상태 전이 예측이 어렵다."
+        },
+        "delete": {
+          "status": "undetermined",
+          "entry": "문서상 카드 관리 메뉴",
+          "label": "이 기기에서 영구 삭제",
+          "depth": "3+",
+          "undo": "없음(문서 기준)",
+          "reload": "—",
+          "mobileWide": "—",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": true,
+          "note": "E2E marker 0건 · lifecycle 모듈 API 없음 · 백업 동기화 대상도 archivedFlowSlugs 뿐."
+        },
+        "restore": {
+          "status": "supported",
+          "entry": "보관함 > 카드 ⋯ > 복구",
+          "label": "복구했습니다",
+          "depth": "3",
+          "undo": "—",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "reuse": {
+          "status": "supported",
+          "entry": "복구 후 다시 쓰기",
+          "label": "새 기준일로 다시 쓰기",
+          "depth": "4",
+          "undo": "—",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source",
+            "heuristic_simulation"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "export": {
+          "status": "supported",
+          "entry": "보관 중에는 Calendar/active projection 제외",
+          "label": "—",
+          "depth": "—",
+          "undo": "—",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": "보관이 데이터 삭제가 아님이 계약으로 확인됨."
+        }
+      }
+    },
+    {
+      "id": "item_exclusion",
+      "name": "Item 제외·복구·삭제",
+      "ops": {
+        "create": {
+          "status": "inconsistent",
+          "entry": "저장 전=체크박스 / 저장 후=편집 모드 버튼",
+          "label": "저장에 포함 / Flow에서 빼기",
+          "depth": "2~3",
+          "undo": "배치 되돌리기",
+          "reload": "personalExcluded 유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": true,
+          "note": "두 표면이 같은 상태를 다른 문법으로 만든다."
+        },
+        "read": {
+          "status": "hidden",
+          "entry": "워크스페이스 > 뺀 항목",
+          "label": "뺀 항목",
+          "depth": "2",
+          "undo": "—",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": true,
+          "note": "접힌 disclosure."
+        },
+        "update": {
+          "status": "supported",
+          "entry": "뺀 항목 행",
+          "label": "복구",
+          "depth": "3",
+          "undo": "—",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "delete": {
+          "status": "missing",
+          "entry": "—",
+          "label": "—",
+          "depth": "—",
+          "undo": "—",
+          "reload": "—",
+          "mobileWide": "—",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": "source Item의 물리 삭제 없음 — 올바른 경계(원문 보존)."
+        },
+        "restore": {
+          "status": "supported",
+          "entry": "뺀 항목 > 복구",
+          "label": "복구",
+          "depth": "3",
+          "undo": "—",
+          "reload": "메모 보존(P33-EXCLUSION-NOTE-SEPARATION)",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": "제외/복구가 개인 메모를 덮지 않음이 P33에서 닫힘."
+        },
+        "reuse": {
+          "status": "supported",
+          "entry": "다시 쓰기",
+          "label": "제외 상태 유지",
+          "depth": "2",
+          "undo": "—",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source",
+            "heuristic_simulation"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "export": {
+          "status": "supported",
+          "entry": "제외 중 캘린더·export 미포함",
+          "label": "—",
+          "depth": "—",
+          "undo": "—",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        }
+      }
+    },
+    {
+      "id": "export_scope",
+      "name": "export 범위(whole / selected / current)",
+      "ops": {
+        "create": {
+          "status": "supported",
+          "entry": "가져가기",
+          "label": "Flow 전체 · 24개 / 직접 선택 · 0개",
+          "depth": "2",
+          "undo": "닫기",
+          "reload": "n/a",
+          "mobileWide": "compact-preflight",
+          "evidenceKind": [
+            "current_source",
+            "current_package_screenshot"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "read": {
+          "status": "supported",
+          "entry": "범위 요약",
+          "label": "Flow 전체 · 24개 · 캘린더 24개",
+          "depth": "2",
+          "undo": "—",
+          "reload": "n/a",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source",
+            "current_package_screenshot"
+          ],
+          "needsChange": false,
+          "note": "예상 수량이 실제 산출과 같은 plan에서 나온다."
+        },
+        "update": {
+          "status": "supported",
+          "entry": "범위 전환",
+          "label": "직접 선택 → 항목 24개",
+          "depth": "3",
+          "undo": "—",
+          "reload": "n/a",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "delete": {
+          "status": "supported",
+          "entry": "가져가기 닫기",
+          "label": "가져가기 닫기",
+          "depth": "1",
+          "undo": "포커스 복귀",
+          "reload": "n/a",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "restore": {
+          "status": "missing",
+          "entry": "—",
+          "label": "—",
+          "depth": "—",
+          "undo": "—",
+          "reload": "—",
+          "mobileWide": "—",
+          "evidenceKind": [
+            "current_source",
+            "heuristic_simulation"
+          ],
+          "needsChange": false,
+          "note": "내보낸 파일의 되돌리기는 범위 밖 — 올바른 경계."
+        },
+        "reuse": {
+          "status": "partial",
+          "entry": "—",
+          "label": "—",
+          "depth": "—",
+          "undo": "—",
+          "reload": "—",
+          "mobileWide": "—",
+          "evidenceKind": [
+            "current_source",
+            "heuristic_simulation"
+          ],
+          "needsChange": true,
+          "note": "지난 선택 범위를 다시 쓰는 경로 없음."
+        },
+        "export": {
+          "status": "inconsistent",
+          "entry": "receipt / 워크스페이스 / item detail",
+          "label": "가져가기 · Flow별 가져가기 · 현재 항목 가져가기",
+          "depth": "1~3",
+          "undo": "—",
+          "reload": "n/a",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": true,
+          "note": "세 범위가 세 위치에 흩어져 있다."
+        }
+      }
+    },
+    {
+      "id": "goal_milestone_progress",
+      "name": "선택적 Goal·milestone·progress",
+      "ops": {
+        "create": {
+          "status": "missing",
+          "entry": "—",
+          "label": "—",
+          "depth": "—",
+          "undo": "—",
+          "reload": "—",
+          "mobileWide": "—",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": "Goal 객체 없음. \"목표\"는 콘텐츠 문구(목표일·오늘 목표)로만 존재."
+        },
+        "read": {
+          "status": "partial",
+          "entry": "워크스페이스 인스펙터",
+          "label": "전체 진행 · 전체 0/24 완료 · 6단계",
+          "depth": "0",
+          "undo": "—",
+          "reload": "유지",
+          "mobileWide": "동일",
+          "evidenceKind": [
+            "current_source",
+            "current_package_screenshot"
+          ],
+          "needsChange": true,
+          "note": "진행률은 카운트와 단계 그룹으로만 표현된다."
+        },
+        "update": {
+          "status": "missing",
+          "entry": "—",
+          "label": "—",
+          "depth": "—",
+          "undo": "—",
+          "reload": "—",
+          "mobileWide": "—",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "delete": {
+          "status": "missing",
+          "entry": "—",
+          "label": "—",
+          "depth": "—",
+          "undo": "—",
+          "reload": "—",
+          "mobileWide": "—",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "restore": {
+          "status": "missing",
+          "entry": "—",
+          "label": "—",
+          "depth": "—",
+          "undo": "—",
+          "reload": "—",
+          "mobileWide": "—",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "reuse": {
+          "status": "missing",
+          "entry": "—",
+          "label": "—",
+          "depth": "—",
+          "undo": "—",
+          "reload": "—",
+          "mobileWide": "—",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        },
+        "export": {
+          "status": "missing",
+          "entry": "—",
+          "label": "—",
+          "depth": "—",
+          "undo": "—",
+          "reload": "—",
+          "mobileWide": "—",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "needsChange": false,
+          "note": ""
+        }
+      }
+    }
+  ],
+  "cellSummary": {
+    "totalCells": 98,
+    "byStatus": {
+      "missing": 13,
+      "supported": 60,
+      "partial": 12,
+      "undetermined": 3,
+      "inconsistent": 4,
+      "hidden": 6
+    }
+  }
+}

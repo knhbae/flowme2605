@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "reviewerRole": "claude_design",
+  "reviewedAt": "2026-07-24 KST",
+  "appCodeChanged": false,
+  "observedUserCount": 0,
+  "primarySource": "AJD 이사 준비 체크리스트",
+  "requiredCrossEntrySurfaces": ["home", "find_catalog", "url_lookup", "direct_public_share", "flow_map", "save_receipt", "my_flow", "calendar", "export"],
+  "invariants": [
+    { "id": "INV-1", "statement": "같은 source URL은 하나의 canonical user-facing Flow ID로 해석된다", "current": "fail", "proposedTarget": "pass", "verdict": "confirmed" },
+    { "id": "INV-2", "statement": "Home·Find·URL lookup·alias의 displayTitle과 itemCount가 같다", "current": "fail (24 vs 5 vs 5)", "proposedTarget": "pass (canonical 1개 + scope preset)", "verdict": "confirmed" },
+    { "id": "INV-3", "statement": "서로 다른 alias를 저장해도 My Flow object는 하나다", "current": "fail (2 objects)", "proposedTarget": "pass (1 object)", "verdict": "confirmed" },
+    { "id": "INV-4", "statement": "같은 source의 artifact eligibility와 selected result가 같다", "current": "fail (moving/vehicle 토글 죽음)", "proposedTarget": "pass (eligible=live, ineligible=미렌더)", "verdict": "confirmed" },
+    { "id": "INV-5", "statement": "Home example은 Find에서 동일 identity로 재발견된다", "current": "fail (vehicle 검색 0건)", "proposedTarget": "pass (registry가 양쪽 inventory 공유)", "verdict": "confirmed" },
+    { "id": "INV-6", "statement": "visible artifact choice는 click 후 selected result·CTA·save result를 바꾼다", "current": "fail (moving/vehicle) / pass (wedding/workout)", "proposedTarget": "pass (전부)", "verdict": "confirmed" },
+    { "id": "INV-7", "statement": "save-before와 receipt handoff가 entry별로 달라지지 않는다", "current": "fail (/f는 receipt, /flow-maps는 즉시 이동)", "proposedTarget": "pass (one receipt grammar)", "verdict": "confirmed" }
+  ],
+  "currentRoutes": [
+    {
+      "entry": "home", "surface": "direct_public_share",
+      "sourceUrl": "AJD 이사 준비 체크리스트", "canonicalFlowId": "미정의(분기)",
+      "route": "/f/moving-d30-basic", "displayTitle": "이사 D-30 준비", "itemCount": 24,
+      "primaryArtifact": "calendar", "secondaryArtifacts": ["checklist(버튼만, 선택 불가)"],
+      "adjustCapabilities": ["include", "date", "title/memo", "order"],
+      "saveObjectId": "moving-d30-basic", "storageKeys": ["flow:saved:moving-d30-basic"],
+      "receiptBehavior": "distinct receipt (같은 화면)", "postSaveDestination": "receipt -> My Flow",
+      "myFlowObjectCount": 1, "calendarProjectionCount": 24, "exportProjectionCount": 24,
+      "architecture": "p29-artifact-first"
+    },
+    {
+      "entry": "find", "surface": "flow_map",
+      "sourceUrl": "AJD 이사 준비 체크리스트", "canonicalFlowId": "미정의(분기)",
+      "route": "/flow-maps/moving-d30", "displayTitle": "원룸 이사 D-30 일정", "itemCount": 5,
+      "primaryArtifact": "calendar", "secondaryArtifacts": ["list"],
+      "adjustCapabilities": ["name", "include"],
+      "saveObjectId": "moving-d30(map)", "storageKeys": ["flow:map:saved:moving-d30"],
+      "receiptBehavior": "none (즉시 이동)", "postSaveDestination": "즉시 /my",
+      "myFlowObjectCount": 1, "calendarProjectionCount": 5, "exportProjectionCount": 5,
+      "architecture": "hybrid-legacy"
+    },
+    {
+      "entry": "url_lookup", "surface": "url_lookup",
+      "sourceUrl": "AJD 이사 준비 체크리스트", "canonicalFlowId": "미정의(분기)",
+      "route": "/f/curated-ajd-moving-d30", "displayTitle": "source-backed 5-item variant", "itemCount": 5,
+      "primaryArtifact": "calendar", "secondaryArtifacts": ["checklist"],
+      "adjustCapabilities": ["include", "date", "title/memo", "order"],
+      "saveObjectId": "curated-ajd-moving-d30", "storageKeys": ["flow:saved:curated-ajd-moving-d30"],
+      "receiptBehavior": "distinct receipt", "postSaveDestination": "receipt -> My Flow",
+      "myFlowObjectCount": 1, "calendarProjectionCount": 5, "exportProjectionCount": 5,
+      "architecture": "p29-artifact-first"
+    },
+    {
+      "entry": "public_alias", "surface": "direct_public_share",
+      "sourceUrl": "AJD 이사 준비 체크리스트", "canonicalFlowId": "미정의(분기)",
+      "route": "/f/source-backed-moving-d30", "displayTitle": "source-backed 5-item variant", "itemCount": 5,
+      "primaryArtifact": "calendar", "secondaryArtifacts": ["checklist"],
+      "adjustCapabilities": ["include", "date", "title/memo", "order"],
+      "saveObjectId": "source-backed-moving-d30", "storageKeys": ["flow:saved:source-backed-moving-d30"],
+      "receiptBehavior": "distinct receipt", "postSaveDestination": "receipt -> My Flow",
+      "myFlowObjectCount": 1, "calendarProjectionCount": 5, "exportProjectionCount": 5,
+      "architecture": "p29-artifact-first"
+    }
+  ],
+  "currentAggregate": {
+    "sameSourceUserFacingRouteCount": 4,
+    "distinctDisplayTitles": ["이사 D-30 준비", "원룸 이사 D-30 일정", "source-backed 5-item variant"],
+    "distinctItemCounts": [24, 5],
+    "distinctStorageKeys": ["flow:saved:moving-d30-basic", "flow:map:saved:moving-d30", "flow:saved:curated-ajd-moving-d30", "flow:saved:source-backed-moving-d30"],
+    "myFlowObjectCountAfterTwoSaves": 2,
+    "receiptBehaviorConsistent": false
+  },
+  "proposedCanonical": {
+    "sourceUrl": "AJD 이사 준비 체크리스트",
+    "canonicalFlowId": "flow/moving-d30",
+    "resolvesFrom": ["/f/moving-d30-basic", "/flow-maps/moving-d30", "/f/curated-ajd-moving-d30", "/f/source-backed-moving-d30"],
+    "aliasStrategy": "registry maps 4 routes -> 1 canonicalFlowId (legacy route는 alias/handoff 또는 내부 bundle)",
+    "displayTitle": "이사 D-30 준비",
+    "itemCount": "24 (canonical, source fidelity) · 5 = 'core' scope preset of same object",
+    "itemCountOpenQuestion": "24 전체 vs 5 핵심 중 정본은 observed-user + source fidelity로 확정 (P33-01)",
+    "primaryArtifact": "calendar",
+    "secondaryArtifacts": ["checklist", "memo"],
+    "artifactRule": "eligible shape = live toggle(projection/CTA/save 변경) · ineligible = 버튼 미렌더",
+    "adjustCapabilities": ["include", "date", "title/memo", "order", "scope(핵심 5개)"],
+    "saveObjectId": "flow/moving-d30 (per user 1개)",
+    "storageKeys": ["기존 legacy key는 비파괴 reconciliation으로 canonical에 매핑 (스키마 무변경)"],
+    "receiptBehavior": "one receipt grammar (entry 무관 동일)",
+    "postSaveDestination": "My Flow focused workspace (P32, 단일 객체)",
+    "myFlowObjectCount": 1,
+    "calendarProjectionCount": "canonical count 기준 (24 또는 scope)",
+    "exportProjectionCount": "effective included rows 기준",
+    "reconciliationUi": "기존 중복 보유자에게만: 이어서 / 합치기(개인 날짜·메모·완료·run 보존) / 따로 유지"
+  },
+  "secondarySources": [
+    {
+      "source": "TS 자동차검사 정기검사 안내", "canonicalFlowId": "flow/vehicle-inspection",
+      "homePromise": "차량 점검표를 내 체크리스트로 · 필요할 때 실행",
+      "target": "자동차검사 D-14 준비 · 검사일 · 캘린더 10개",
+      "issue": "promise(checklist/anytime) != target(calendar/deadline) · checklist 토글 죽음 · Find 검색 0건",
+      "proposed": "Home 카드를 실제 job(D-14 검사일 캘린더)에 맞추거나 상시 점검 checklist를 별도 Flow로 분리 — 하나의 job 확정 + Find 재발견"
+    },
+    {
+      "source": "Allblanc 아침 5분 홈트", "canonicalFlowId": "flow/allblanc-morning-workout",
+      "issue": "날짜 없이 저장 시 My Flow에 raw RRULE(FREQ=WEEKLY;BYDAY=MO,WE,FR) 노출 (계산은 정상)",
+      "proposed": "display adapter: '매주 월·수·금 · 시간 미정 · 계속 반복' (Hevy식 definition/run 분리 정합)"
+    }
+  ]
+}

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>FlowMe P25 production 마감 · P26 전체 실행 백로그</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <style>
+    html, body { margin: 0; padding: 0; background: #F2F1EC; }
+    * { box-sizing: border-box; }
+    code { font-family: 'SF Mono', ui-monospace, Menlo, monospace; font-size: 0.92em; }
+    a { color: #3654FF; }
+    a:hover { color: #1F3BD6; }
+  </style>
+</helmet>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#101A2B"></rect><text x="50" y="43" font-family="sans-serif" font-size="28" font-weight="800" fill="#FFFFFF" text-anchor="middle">P26</text><text x="50" y="72" font-family="sans-serif" font-size="13" font-weight="700" fill="#9CC4FF" text-anchor="middle">전체 백로그</text></svg></template>
+<div style="font-family: 'Pretendard Variable', Pretendard, -apple-system, 'Segoe UI', sans-serif; color: #1B1A17; line-height: 1.6; letter-spacing: -0.01em;">
+
+  <header data-screen-label="헤더" style="background: #101A2B; color: #F0F3F8; padding: 52px 28px 44px;">
+    <div style="max-width: 1120px; margin: 0 auto;">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px;">
+        <span style="display: inline-flex; align-items: center; border: 1px solid rgba(156,196,255,0.4); background: rgba(27,58,107,0.5); border-radius: 999px; padding: 4px 12px; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; color: #9CC4FF;">FLOWME · P25 PRODUCTION 마감 판단</span>
+        <span style="font-size: 12px; font-weight: 600; color: rgba(240,243,248,0.6);">independent simulation + heuristic review · production b0fb899c · smoke 12장 + SSR fetch 5 route · reviewCycle P25 → nextBacklog P26-01~14 · 생성 2026-07-20 · 관찰 사용자 0/15</span>
+      </div>
+      <h1 style="margin: 18px 0 0; font-size: 38px; line-height: 1.22; font-weight: 800; letter-spacing: -0.02em; max-width: 1040px; text-wrap: balance;">P25의 기록은 <em>과장이 아니었다</em> — 구조(전체 Flow 작업공간·실행/배치 분리·가역 완료·scope-first export)는 production에서 실제로 서 있다.<br>그러나 직접 들여다본 production은 <em>첫 만남에서 스스로를 배신한다</em>: 예시 미리보기가 <em>과거 날짜를 "다가오는 할 일"로</em> 보여주고, 저장 결정 표면이 <em>하나가 아니라 셋</em>이며, 내 Flow와 캘린더의 빈 화면이 <em>같은 문장</em>으로 말한다.</h1>
+      <p style="margin: 16px 0 0; max-width: 1000px; font-size: 16px; line-height: 1.7; color: rgba(240,243,248,0.78); text-wrap: pretty;">P26은 새 구조가 아니라 <strong>이해도·정합·완성도 프로그램</strong>입니다. Blocking 0 · High 3 · Medium 8 · Low 2. 백로그는 P26-01(날짜 정합)부터 P26-14(final review)까지 6단계로 구성했고, 각 항목의 <a href="p25-review/p26-goal-prompts.md" style="color:#9CC4FF;">/goal 프롬프트</a>가 준비되어 있습니다.</p>
+    </div>
+  </header>
+
+  <nav style="position: sticky; top: 0; z-index: 50; background: rgba(242,241,236,0.92); backdrop-filter: blur(8px); border-bottom: 1px solid #DDD9D0;">
+    <div style="max-width: 1120px; margin: 0 auto; padding: 10px 28px; display: flex; flex-wrap: wrap; gap: 6px;">
+      <a href="#record" style="text-decoration: none; color: #F0F3F8; background: #1B3A6B; border: 1px solid #1B3A6B; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">1 기록 검증</a>
+      <a href="#concerns" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">2 10개 우려 판정</a>
+      <a href="#findings" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">3 Findings</a>
+      <a href="#journeys" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">4 여정 scorecard</a>
+      <a href="#screens" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">5 keep/change</a>
+      <a href="#refs" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">6 외부 패턴</a>
+      <a href="#wire" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">7 wireframe A/B</a>
+      <a href="#backlog" style="text-decoration: none; color: #F0F3F8; background: #3654FF; border: 1px solid #3654FF; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">8 P26 백로그</a>
+      <a href="#final" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">9 final review · P27</a>
+    </div>
+  </nav>
+
+  <section style="max-width: 1120px; margin: 0 auto; padding: 24px 28px 4px;">
+    <div style="background: #E9EEF6; border: 1px solid #C4D2E8; border-radius: 14px; padding: 16px 18px;">
+      <p style="margin: 0; font-size: 13px; font-weight: 800; color: #1B3A6B;">이번 검토 근거와 한계</p>
+      <p style="margin: 8px 0 0; font-size: 13.5px; line-height: 1.7; color: #2E4666;">이번 검토는 <strong>실제 사용자 관찰이 아니다</strong>(observed users 0/15 유지). 근거는 네 층입니다: ① <strong>production SSR fetch</strong> — <code>/ · /flows · /my · /f/vehicle-inspection-prep · /f/washer-tub-clean-monthly</code>를 2026-07-20 오전(KST)에 직접 수신 ② <strong>production smoke 캡처 12장</strong>(390/1024 × 6 route, repo의 P25 final closeout 패키지) ③ <strong>repo evidence</strong>(<code>completion-audit.md · route-evidence.json · decision-log.json · STATUS.md · results.json</code>) ④ 그 위의 <strong>heuristic 판단</strong>. 브라우저 상호작용(저장·완료·배치)은 직접 수행하지 않았으므로, 상호작용 판정은 P25-08 자동화 evidence 인용임을 <code>repo_evidence</code>로 구분 표기했습니다. 판단이 관찰 1회에 의존하는 항목(F-04·F-05)은 "재현 필요"로 명시했습니다.</p>
+    </div>
+  </section>
+
+  <!-- ===== 1 기록 검증 ===== -->
+  <section id="record" data-screen-label="1 기록 검증" style="max-width: 1120px; margin: 0 auto; padding: 26px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #1B3A6B;">SECTION 1</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">P25 기록 검증 — "구현·배포·자동 검증됨"은 사실인가</h2>
+    </div>
+    <p style="margin: 10px 0 0; max-width: 980px; font-size: 14.5px; color: #44413B;"><strong>사실이다.</strong> 독립적으로 받은 SSR 응답 5개 route 전부 정상, 기록된 smoke 12/12와 모순 없음, hydration 오류·overflow·console 오류의 흔적 없음. 9개 surface(저장 전/저장 직후/내 Flow/전체 Flow/캘린더/조정/배치/완료/export)의 <strong>구조 계약은 keep</strong>. 문제는 기록이 측정하지 않은 층 — <strong>첫 만남의 이해도와 날짜 정합</strong> — 에서 나왔다.</p>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 16px;">
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:12px 14px;"><p style="margin:0; font-size:24px; font-weight:800; color:#1F6A3E;">0</p><p style="margin:2px 0 0; font-size:12.5px; color:#6E6B64;">Blocking</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:12px 14px;"><p style="margin:0; font-size:24px; font-weight:800; color:#A03A2A;">3</p><p style="margin:2px 0 0; font-size:12.5px; color:#6E6B64;">High (F-01·02·03)</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:12px 14px;"><p style="margin:0; font-size:24px; font-weight:800; color:#8A6D1B;">8</p><p style="margin:2px 0 0; font-size:12.5px; color:#6E6B64;">Medium</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:12px 14px;"><p style="margin:0; font-size:24px; font-weight:800; color:#6E6B64;">2</p><p style="margin:2px 0 0; font-size:12.5px; color:#6E6B64;">Low</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:12px 14px;"><p style="margin:0; font-size:24px; font-weight:800; color:#1B3A6B;">9/9 keep</p><p style="margin:2px 0 0; font-size:12.5px; color:#6E6B64;">P25 surface 구조 유지</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:12px 14px;"><p style="margin:0; font-size:24px; font-weight:800; color:#1B1A17;">0/15</p><p style="margin:2px 0 0; font-size:12.5px; color:#6E6B64;">관찰 사용자 (변화 없음)</p></div>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-top: 14px;">
+      <figure style="margin:0; background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; overflow:hidden;"><img src="docs/content-audit/2026-07-20-p25-final-closeout/production-smoke/screenshots/mobile-home.png" alt="production 홈 390" style="display:block; width:100%; height:auto;"><figcaption style="padding:7px 10px; font-size:11px; color:#6E6B64;">/ · 390</figcaption></figure>
+      <figure style="margin:0; background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; overflow:hidden;"><img src="docs/content-audit/2026-07-20-p25-final-closeout/production-smoke/screenshots/mobile-flows.png" alt="production 찾기 390" style="display:block; width:100%; height:auto;"><figcaption style="padding:7px 10px; font-size:11px; color:#6E6B64;">/flows · 390</figcaption></figure>
+      <figure style="margin:0; background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; overflow:hidden;"><img src="docs/content-audit/2026-07-20-p25-final-closeout/production-smoke/screenshots/mobile-vehicle.png" alt="production 차량 390" style="display:block; width:100%; height:auto;"><figcaption style="padding:7px 10px; font-size:11px; color:#6E6B64;">/f/vehicle · 390</figcaption></figure>
+      <figure style="margin:0; background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; overflow:hidden;"><img src="docs/content-audit/2026-07-20-p25-final-closeout/production-smoke/screenshots/mobile-washer.png" alt="production 세탁기 390" style="display:block; width:100%; height:auto;"><figcaption style="padding:7px 10px; font-size:11px; color:#6E6B64;">/f/washer · 390</figcaption></figure>
+      <figure style="margin:0; background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; overflow:hidden;"><img src="docs/content-audit/2026-07-20-p25-final-closeout/production-smoke/screenshots/mobile-my.png" alt="production 내 Flow 390" style="display:block; width:100%; height:auto;"><figcaption style="padding:7px 10px; font-size:11px; color:#6E6B64;">/my · 390</figcaption></figure>
+      <figure style="margin:0; background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; overflow:hidden;"><img src="docs/content-audit/2026-07-20-p25-final-closeout/production-smoke/screenshots/mobile-calendar.png" alt="production 캘린더 390" style="display:block; width:100%; height:auto;"><figcaption style="padding:7px 10px; font-size:11px; color:#6E6B64;">/calendar · 390</figcaption></figure>
+    </div>
+  </section>
+
+  <!-- ===== 2 10개 우려 판정 ===== -->
+  <section id="concerns" data-screen-label="2 10개 우려 판정" style="max-width: 1120px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #1B3A6B;">SECTION 2</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">10개 우려 판정</h2>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 10px; margin-top: 16px;">
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #8A6D1B; border-radius:12px; padding:13px 16px;"><p style="margin:0; font-size:13px; font-weight:800;">1 · 날짜 없는 할 일의 이유 <span style="color:#8A6D1B;">부분 해결</span></p><p style="margin:6px 0 0; font-size:13px; color:#44413B;">실행처(내 Flow)·배치처(캘린더) 분리와 용어(<code>날짜 없는 할 일 / 날짜 정하기</code>)는 정착. "왜 날짜 없이 두는가"의 개념 온보딩은 없음 → <a href="p25-review/p26-backlog.md">P26-05</a></p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #8A6D1B; border-radius:12px; padding:13px 16px;"><p style="margin:0; font-size:13px; font-weight:800;">2 · 조정이 필드 나열인가 <span style="color:#8A6D1B;">구조 해결 · 길이 잔존</span></p><p style="margin:6px 0 0; font-size:13px; color:#44413B;">제목/날짜/메모 우선 + 세부 일정 접힘은 구현됨(repo_evidence). 경로 길이는 P25 스스로 Medium 인정 → intent-first는 P26-06</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #1F6A3E; border-radius:12px; padding:13px 16px;"><p style="margin:0; font-size:13px; font-weight:800;">3 · 저장 직후 확신 <span style="color:#1F6A3E;">자동화로 지지</span></p><p style="margin:6px 0 0; font-size:13px; color:#44413B;">첫 저장 = 전체 Flow 확인, 저장 Flow 자동 선택(repo_evidence). 단 F-01이 저장 <strong>전</strong> 신뢰를 깎고, 저장 결과 1줄 명세(날짜 n·날짜없음 m)는 없음</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #8A6D1B; border-radius:12px; padding:13px 16px;"><p style="margin:0; font-size:13px; font-weight:800;">4 · 전체 Flow 가독성 <span style="color:#8A6D1B;">부분</span></p><p style="margin:6px 0 0; font-size:13px; color:#44413B;">outline/detail·wide rail 성립. 1024 캘린더 3영역 밀도(F-07)와 다중 Flow 스캔은 잔존 → P26-08</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #A03A2A; border-radius:12px; padding:13px 16px;"><p style="margin:0; font-size:13px; font-weight:800;">5 · 내 Flow vs 캘린더 <span style="color:#A03A2A;">미해결</span></p><p style="margin:6px 0 0; font-size:13px; color:#44413B;">두 빈 상태가 같은 문장·같은 CTA(F-03). 역할이 설명 없이 이해되지 않음 → P26-05</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #1F6A3E; border-radius:12px; padding:13px 16px;"><p style="margin:0; font-size:13px; font-weight:800;">6 · 완료~순서변경 연쇄 <span style="color:#1F6A3E;">자동화로 지지</span></p><p style="margin:6px 0 0; font-size:13px; color:#44413B;">기능 존재는 P25-03B/05A로 증명. <strong>발견성</strong>은 정적 검토로 확인 불가 — 사용자 확인 가정(F-11) → P26-07</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #1F6A3E; border-radius:12px; padding:13px 16px;"><p style="margin:0; font-size:13px; font-weight:800;">7 · export 예측 <span style="color:#1F6A3E;">해결</span></p><p style="margin:6px 0 0; font-size:13px; color:#44413B;">scope(<code>Flow 전체/직접 선택/현재 항목</code>)+count 선표시, undated는 list 포함/ICS 제외. 사후 확인 surface만 없음 → P26-10</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #8A6D1B; border-radius:12px; padding:13px 16px;"><p style="margin:0; font-size:13px; font-weight:800;">8 · 설명문 과다 <span style="color:#8A6D1B;">부분</span></p><p style="margin:6px 0 0; font-size:13px; color:#44413B;">설명 접힘은 됐다. 본질은 카피가 아니라 <strong>CTA·표면 중복</strong>(F-02) — 구조로 풀어야 함 → P26-04</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #8A6D1B; border-radius:12px; padding:13px 16px;"><p style="margin:0; font-size:13px; font-weight:800;">9 · 모바일 복잡 / wide 늘어짐 <span style="color:#8A6D1B;">부분</span></p><p style="margin:6px 0 0; font-size:13px; color:#44413B;">앱 4탭의 wide 구성은 개선됨. public /f wide는 여전히 늘어진 단일 컬럼(F-06), 캘린더 밀도(F-07) → P26-08·12</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #A03A2A; border-radius:12px; padding:13px 16px;"><p style="margin:0; font-size:13px; font-weight:800;">10 · 상용 대비 완성도 <span style="color:#A03A2A;">미달</span></p><p style="margin:6px 0 0; font-size:13px; color:#44413B;">raw <code>yyyy-mm-dd</code>+입력 버튼(F-09), 과거 날짜 예시(F-01), 빈 상태의 <code>데이터 관리</code> 승격(F-13), 로그체 카피(F-14) → P26-11</p></div>
+    </div>
+  </section>
+
+  <!-- ===== 3 Findings ===== -->
+  <section id="findings" data-screen-label="3 Findings" style="max-width: 1120px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #1B3A6B;">SECTION 3</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">Findings — Blocking 0 · High 3 · Medium 8 · Low 2</h2>
+    </div>
+    <p style="margin: 10px 0 0; font-size: 14px; color: #6E6B64;">전체 상세(재현 단계·기대/실제·evidenceKind)는 <a href="p25-review/audit.md">audit.md</a>. 아래는 High 3건 전체와 Medium 요약.</p>
+
+    <div style="display: grid; gap: 12px; margin-top: 18px;">
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #A03A2A; border-radius:16px; padding:18px 22px;">
+        <div style="display:grid; grid-template-columns: 1fr 280px; gap:18px; align-items:start;">
+          <div>
+            <div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 12px;"><span style="font-size:12.5px; font-weight:800; background:#F7E9E5; color:#A03A2A; border-radius:6px; padding:2px 9px;">F-01 · HIGH</span><h3 style="margin:0; font-size:16.5px; font-weight:800;">예시 미리보기가 과거 날짜를 "다가오는 할 일"로 표시</h3></div>
+            <p style="margin:10px 0 0; font-size:13.5px; line-height:1.7; color:#44413B;"><code>/f/vehicle-inspection-prep</code> · 390+1024 · 첫 방문(날짜 미입력) → 예시 검사일이 <strong>오늘(7/20)</strong>로 잡혀 첫 행이 <strong><code>D-14 · 07-06</code></strong> — 2주 지난 날짜가 "다가오는 할 일" 최상단에 온다. 기대: 예시는 미래 anchor(검사일 D+21 등)로 역산 구조를 시연.</p>
+            <p style="margin:8px 0 0; font-size:13px; color:#8A6D1B;"><strong>영향</strong> · 첫 방문자의 저장 예측(우려 1·3·10) 정면 훼손 — "저장하면 과거 일정이 생기나?" · evidenceKind <code>production_screenshot</code> → <strong>P26-01</strong></p>
+          </div>
+          <figure style="margin:0; background:#F7F6F2; border:1px solid #E7E4DD; border-radius:12px; overflow:hidden;"><img src="docs/content-audit/2026-07-20-p25-final-closeout/production-smoke/screenshots/mobile-vehicle.png" alt="예시 과거 날짜 390" style="display:block; width:100%; height:auto;"><figcaption style="padding:8px 12px; font-size:11.5px; color:#6E6B64;">예시 검사일 7/20(오늘) → "다가오는 할 일" 첫 행 D-14 · 07-06</figcaption></figure>
+        </div>
+      </div>
+
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #A03A2A; border-radius:16px; padding:18px 22px;">
+        <div style="display:grid; grid-template-columns: 280px 1fr; gap:18px; align-items:start;">
+          <figure style="margin:0; background:#F7F6F2; border:1px solid #E7E4DD; border-radius:12px; overflow:hidden;"><img src="docs/content-audit/2026-07-20-p25-final-closeout/production-smoke/screenshots/wide-vehicle.png" alt="저장 전 CTA 1024" style="display:block; width:100%; height:auto;"><figcaption style="padding:8px 12px; font-size:11.5px; color:#6E6B64;">1024 · 입력 / 그대로 저장 / 내 버전으로 조정 — 아래로 산출물 진입이 더 있음</figcaption></figure>
+          <div>
+            <div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 12px;"><span style="font-size:12.5px; font-weight:800; background:#F7E9E5; color:#A03A2A; border-radius:6px; padding:2px 9px;">F-02 · HIGH</span><h3 style="margin:0; font-size:16.5px; font-weight:800;">저장 결정 표면이 1개가 아니라 실질 3개+</h3></div>
+            <p style="margin:10px 0 0; font-size:13.5px; line-height:1.7; color:#44413B;"><code>/f/washer-tub-clean-monthly</code> SSR 본문에서 <code>입력</code>(날짜) / sticky <code>그대로 저장·조정</code> / 본문 중간 <code>그대로 저장·내 버전으로 조정</code> / 저장 전 <code>산출물 받기</code>·<code>내 실행판</code> 진입이 공존. P25 계약 "one save decision surface"가 production에서는 지켜지지 않는다.</p>
+            <p style="margin:8px 0 0; font-size:13px; color:#8A6D1B;"><strong>영향</strong> · 우려 7·8이 카피가 아닌 CTA 중복으로 재발. 저장 단위·export 단위 예측 혼동 · evidenceKind <code>production_fetch + screenshot</code> → <strong>P26-04</strong></p>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #A03A2A; border-radius:16px; padding:18px 22px;">
+        <div style="display:grid; grid-template-columns: 1fr 280px; gap:18px; align-items:start;">
+          <div>
+            <div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 12px;"><span style="font-size:12.5px; font-weight:800; background:#F7E9E5; color:#A03A2A; border-radius:6px; padding:2px 9px;">F-03 · HIGH</span><h3 style="margin:0; font-size:16.5px; font-weight:800;">내 Flow와 캘린더의 빈 상태가 사실상 동일</h3></div>
+            <p style="margin:10px 0 0; font-size:13.5px; line-height:1.7; color:#44413B;">둘 다 "…콘텐츠를 먼저 고르세요" + 동일 CTA <code>콘텐츠 고르러 가기</code>. 차이는 부제 한 줄. 게다가 앱 용어는 <code>Flow</code>인데 빈 상태만 <code>콘텐츠</code>라고 말한다. 첫 사용자에게 두 탭은 같은 곳이다 — 우려 5 미해결.</p>
+            <p style="margin:8px 0 0; font-size:13px; color:#8A6D1B;"><strong>영향</strong> · 역할 학습 실패 → 이후 모든 여정에서 "어디서 하지?" 비용 · evidenceKind <code>production_screenshot ×4</code> → <strong>P26-05</strong></p>
+          </div>
+          <figure style="margin:0; background:#F7F6F2; border:1px solid #E7E4DD; border-radius:12px; overflow:hidden;"><img src="docs/content-audit/2026-07-20-p25-final-closeout/production-smoke/screenshots/wide-my.png" alt="내 Flow 빈 상태 1024" style="display:block; width:100%; height:auto;"><figcaption style="padding:8px 12px; font-size:11.5px; color:#6E6B64;">/my와 /calendar가 같은 문장·같은 CTA로 비어 있음</figcaption></figure>
+        </div>
+      </div>
+
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #8A6D1B; border-radius:16px; padding:16px 22px;">
+        <p style="margin:0 0 6px; font-size:12.5px; font-weight:800; color:#8A6D1B;">MEDIUM 8건 (요약 · 상세는 audit.md)</p>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:6px 18px; font-size:13px; line-height:1.65; color:#44413B;">
+          <p style="margin:4px 0;"><strong>F-04</strong> 반복 Flow 기본 관리일이 KST 기준 어제(7/19)로 관측 — server TZ anchor 의심, <em>재현 필요</em> → P26-01</p>
+          <p style="margin:4px 0;"><strong>F-05</strong> <code>/my</code> 비브라우저 요청에 legacy '제작자 스튜디오' 셸 응답 1회 관측 — 공유 미리보기/SEO 불일치 위험, <em>재현 필요</em> → P26-02</p>
+          <p style="margin:4px 0;"><strong>F-06</strong> public /f wide = 늘어진 단일 컬럼, 우측 공백 → P26-12</p>
+          <p style="margin:4px 0;"><strong>F-07</strong> 1024 캘린더 queue/grid/agenda 3영역 밀도 (P25 자체 Medium) → P26-08</p>
+          <p style="margin:4px 0;"><strong>F-08</strong> 고급 편집 경로 길이 (P25 자체 Medium) → P26-06</p>
+          <p style="margin:4px 0;"><strong>F-09</strong> 날짜 입력: raw <code>yyyy-mm-dd</code> + 별도 <code>입력</code> 버튼의 2단계 커밋 → P26-11</p>
+          <p style="margin:4px 0;"><strong>F-10</strong> 여정 A 진입 <code>/f/moving-d30-basic</code> 미검증(smoke 미포함, 홈은 <code>/flow-maps/moving-d30</code> 연결) → P26-02</p>
+          <p style="margin:4px 0;"><strong>F-11</strong> 완료 취소·복구·순서 변경의 <em>발견성</em> 미확인(기능 존재는 자동화 증명) → P26-07</p>
+          <p style="margin:4px 0;"><strong>F-12</strong> <code>AppClient.tsx</code> 단일 파일 512KB+ — P26 실행 속도·회귀 위험 → P26-03</p>
+        </div>
+        <p style="margin:10px 0 0; font-size:12.5px; color:#6E6B64;"><strong>LOW</strong> · F-13 빈 내 Flow에서 <code>데이터 관리</code>가 유일한 보조 버튼 / F-14 카드 카피 로그체("이사일만 넣으면 저장됩니다: D-30 일정") → P26-11</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 4 여정 scorecard ===== -->
+  <section id="journeys" data-screen-label="4 여정 scorecard" style="max-width: 1120px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #1B3A6B;">SECTION 4</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">6개 persona journey scorecard</h2>
+    </div>
+    <p style="margin: 10px 0 0; font-size: 14px; color: #6E6B64;">단계별 supported/hidden/partial/missing/blocked 전체는 <a href="p25-review/journey-scorecard.json">journey-scorecard.json</a>. blocked는 0 — 막힌 여정은 없고, 여정마다 이해도 층의 partial이 남는다.</p>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 10px; margin-top: 16px;">
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:14px 16px;"><p style="margin:0; font-size:13.5px; font-weight:800;">A · 이사 준비(역산형) <span style="color:#8A6D1B;">partial</span></p><p style="margin:6px 0 0; font-size:13px; color:#44413B;">저장→전체 확인→이사일 변경→날짜 고정→완료→export→재사용 전부 supported(repo_evidence). 단 진입 route 자체가 <strong>missing</strong>(F-10) — 검증부터 필요.</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:14px 16px;"><p style="margin:0; font-size:13.5px; font-weight:800;">B · 날짜 없는 차량 점검 <span style="color:#8A6D1B;">partial</span></p><p style="margin:6px 0 0; font-size:13px; color:#44413B;">undated 실행·배치·해제·checklist/ICS parity 모두 supported. "왜 날짜 없이 두는가"는 <strong>hidden</strong>, 저장 전 예측은 F-01로 partial.</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:14px 16px;"><p style="margin:0; font-size:13.5px; font-weight:800;">C · 월간 반복 루틴 <span style="color:#8A6D1B;">partial</span></p><p style="margin:6px 0 0; font-size:13px; color:#44413B;">canonical projection·회차 완료 1컨트롤·ICS parity supported. 다음 회차 기본 날짜가 F-04로 partial(재현 필요).</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:14px 16px;"><p style="margin:0; font-size:13.5px; font-weight:800;">D · 개인 메모 draft <span style="color:#8A6D1B;">partial</span></p><p style="margin:6px 0 0; font-size:13px; color:#44413B;">분할 검토(필러 0)·저장·날짜/시간/반복 supported. 추가/삭제/복구/순서 변경은 존재하지만 발견성 미확인(F-11) — partial.</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:14px 16px;"><p style="margin:0; font-size:13.5px; font-weight:800;">E · 다중 Flow 반복 사용자 <span style="color:#8A6D1B;">partial</span></p><p style="margin:6px 0 0; font-size:13px; color:#44413B;">지금/내 Flow/완료·rail·선택 export supported. 같은 날 다중 Flow 캘린더 스캔(F-07)·수정 경로 길이(F-08) partial.</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:14px 16px;"><p style="margin:0; font-size:13.5px; font-weight:800;">F · public 첫 방문자 <span style="color:#A03A2A;">partial−</span></p><p style="margin:6px 0 0; font-size:13px; color:#44413B;">artifact 1개·저장 전 완료 0은 성립. 예측은 F-01·F-02로 partial, 저장 후 탭 역할은 F-03으로 <strong>hidden</strong>. 여섯 여정 중 가장 약함.</p></div>
+    </div>
+  </section>
+
+  <!-- ===== 5 keep/change ===== -->
+  <section id="screens" data-screen-label="5 화면별 keep/change" style="max-width: 1120px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #1B3A6B;">SECTION 5</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">화면별 keep / change / remove / defer</h2>
+    </div>
+    <p style="margin: 10px 0 0; font-size: 14px; color: #6E6B64;">9개 surface 전체와 source/personal/run/occurrence/export 계약 영향은 <a href="p25-review/decision-matrix.json">decision-matrix.json</a>. 계약 영향 요약: <strong>모든 P26 항목이 표시·언어 계층만 건드리고 데이터 소유권 계약은 불변</strong>이다.</p>
+    <div style="overflow-x:auto; margin-top:16px;">
+      <table style="width:100%; border-collapse:collapse; background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; font-size:13px;">
+        <tbody>
+          <tr style="background:#F7F6F2;"><td style="padding:9px 12px; font-weight:800; border-bottom:1px solid #E7E4DD;">화면</td><td style="padding:9px 12px; font-weight:800; border-bottom:1px solid #E7E4DD; color:#1F6A3E;">keep</td><td style="padding:9px 12px; font-weight:800; border-bottom:1px solid #E7E4DD; color:#8A6D1B;">change</td><td style="padding:9px 12px; font-weight:800; border-bottom:1px solid #E7E4DD; color:#A03A2A;">remove</td></tr>
+          <tr><td style="padding:9px 12px; border-bottom:1px solid #F0EEE8; font-weight:700;">public 저장 전</td><td style="padding:9px 12px; border-bottom:1px solid #F0EEE8;">artifact 1개 · 저장 전 완료 0 · 설명 접힘</td><td style="padding:9px 12px; border-bottom:1px solid #F0EEE8;">예시 anchor 미래화 · 저장 표면 1개 · 날짜 피커 · wide 2-pane</td><td style="padding:9px 12px; border-bottom:1px solid #F0EEE8;">본문 중복 저장/조정 블록 · 저장 전 산출물 진입</td></tr>
+          <tr><td style="padding:9px 12px; border-bottom:1px solid #F0EEE8; font-weight:700;">저장 직후</td><td style="padding:9px 12px; border-bottom:1px solid #F0EEE8;">첫 저장 전체 Flow 확인</td><td style="padding:9px 12px; border-bottom:1px solid #F0EEE8;">"날짜 n · 날짜없음 m" 결과 1줄 명세</td><td style="padding:9px 12px; border-bottom:1px solid #F0EEE8;">—</td></tr>
+          <tr><td style="padding:9px 12px; border-bottom:1px solid #F0EEE8; font-weight:700;">내 Flow</td><td style="padding:9px 12px; border-bottom:1px solid #F0EEE8;">지금/내 Flow/완료 · undated 실행 섹션</td><td style="padding:9px 12px; border-bottom:1px solid #F0EEE8;">빈 상태 역할 언어 · 용어 통일 · 복구/순서 발견성</td><td style="padding:9px 12px; border-bottom:1px solid #F0EEE8;">빈 상태의 데이터 관리 승격</td></tr>
+          <tr><td style="padding:9px 12px; border-bottom:1px solid #F0EEE8; font-weight:700;">캘린더</td><td style="padding:9px 12px; border-bottom:1px solid #F0EEE8;">날짜별 실행 전담 · 날짜 정하기 큐 · 회차 체크 1개</td><td style="padding:9px 12px; border-bottom:1px solid #F0EEE8;">1024 2영역 비교 · 기본 관리일 TZ · 회차 카피</td><td style="padding:9px 12px; border-bottom:1px solid #F0EEE8;">—</td></tr>
+          <tr><td style="padding:9px 12px; border-bottom:1px solid #F0EEE8; font-weight:700;">조정/배치</td><td style="padding:9px 12px; border-bottom:1px solid #F0EEE8;">progressive 기본 · 임시 선택 모드 · 복구 가능한 제거</td><td style="padding:9px 12px; border-bottom:1px solid #F0EEE8;">intent-first 진입 · 선택 모드 발견성 점검</td><td style="padding:9px 12px; border-bottom:1px solid #F0EEE8;">—</td></tr>
+          <tr><td style="padding:9px 12px; font-weight:700;">완료/export</td><td style="padding:9px 12px;">체크 1개 · 되돌리기 · scope+count 선표시</td><td style="padding:9px 12px;">export 사후 결과 확인</td><td style="padding:9px 12px;">—</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin:10px 0 0; font-size:12.5px; color:#6E6B64;"><strong>defer</strong> · 계정/동기화 · 실제 AI intake · 외부 캘린더 직접 연동 · 창작자/마켓 · 관찰 세션 자체 (→ §9 P27)</p>
+  </section>
+
+  <!-- ===== 6 외부 패턴 ===== -->
+  <section id="refs" data-screen-label="6 외부 패턴" style="max-width: 1120px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #1B3A6B;">SECTION 6</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">외부 UX 참고 — 패턴만 대조, 복제 없음</h2>
+    </div>
+    <p style="margin: 10px 0 0; max-width:980px; font-size: 13.5px; color: #6E6B64;">아래는 각 도구군의 오래 안정된 공개 패턴을 heuristic 기준선으로 쓴 것이다(이번 턴에 각 제품 화면을 재캡처하지는 않음). FlowMe에 그대로 이식하라는 뜻이 아니라, <strong>사용자가 이미 학습한 기대치</strong>가 무엇인지의 대조군이다.</p>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 10px; margin-top: 16px;">
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:13px 16px;"><p style="margin:0; font-size:13px; font-weight:800;">undated/inbox 처리 — Things·Todoist·Microsoft To Do</p><p style="margin:6px 0 0; font-size:13px; color:#44413B;">날짜 없는 일은 <strong>이름 있는 집(Inbox/Anytime/Someday)</strong>을 갖고, 그 집의 존재 이유가 UI 위치만으로 학습된다. FlowMe의 '날짜 없는 할 일' 섹션은 집은 있으나 <strong>이유 문장이 없다</strong> → P26-05.</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:13px 16px;"><p style="margin:0; font-size:13px; font-weight:800;">저장/import 직후 — TickTick·Notion·Wanderlog·TripIt</p><p style="margin:6px 0 0; font-size:13px; color:#44413B;">import 계열은 "무엇이 몇 개 생겼고 어디 있는지" <strong>결과 명세</strong>를 즉시 보여준다. FlowMe는 전체 Flow는 보여주나 수량·목적지 1줄 명세가 없다 → 저장 배너·P26-10.</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:13px 16px;"><p style="margin:0; font-size:13px; font-weight:800;">빠른 수정 vs 고급 수정 — Fantastical·Google Calendar·Sunsama</p><p style="margin:6px 0 0; font-size:13px; color:#44413B;">탭 1번 = 가벼운 시트(제목·날짜), "옵션 더 보기"가 전체 편집으로. FlowMe P25 구조와 같은 방향 — 남은 건 intent-first 압축(P26-06).</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:13px 16px;"><p style="margin:0; font-size:13px; font-weight:800;">날짜 입력 — Todoist·Fantastical·Apple Reminders</p><p style="margin:6px 0 0; font-size:13px; color:#44413B;">피커+프리셋(오늘/내일/주말)+자연어. raw <code>yyyy-mm-dd</code>+확정 버튼 2단계는 이 군에서 존재하지 않는 패턴 → P26-11.</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:13px 16px;"><p style="margin:0; font-size:13px; font-weight:800;">batch scheduling — Sunsama·Structured·TickTick</p><p style="margin:6px 0 0; font-size:13px; color:#44413B;">선택 → 날짜 끌어놓기/일괄 이동 + 영향 미리보기. FlowMe의 임시 선택 모드는 동급 — <strong>keep</strong>. 발견성만 점검.</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:13px 16px;"><p style="margin:0; font-size:13px; font-weight:800;">완료와 reopen — Things·Todoist·Microsoft To Do</p><p style="margin:6px 0 0; font-size:13px; color:#44413B;">체크 즉시 undo + 완료 목록(Logbook)에서 재개방. FlowMe P25-05A는 이 기대치에 정확히 부합 — <strong>keep</strong>.</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:13px 16px;"><p style="margin:0; font-size:13px; font-weight:800;">반복 회차 — Google Calendar·Fitbod·Nike Training Club</p><p style="margin:6px 0 0; font-size:13px; color:#44413B;">"이번/다음 회차"를 항상 <strong>미래형 날짜+요일</strong>로 말하고 지난 회차는 기록으로 분리. FlowMe의 "이번 관리일 7/19(어제)"는 이 문법을 깬다 → P26-01·09.</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:13px 16px;"><p style="margin:0; font-size:13px; font-weight:800;">project/timeline 전체 보기 + wide — Notion Calendar·Wanderlog·Strava</p><p style="margin:6px 0 0; font-size:13px; color:#44413B;">wide는 컬럼을 늘리는 게 아니라 <strong>pane 역할을 나눈다</strong>(리스트|상세, 일정|지도). public /f wide 단일 컬럼과 캘린더 상시 3영역이 대조점 → P26-08·12.</p></div>
+    </div>
+  </section>
+
+  <!-- ===== 7 wireframe ===== -->
+  <section id="wire" data-screen-label="7 wireframe A/B" style="max-width: 1120px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #1B3A6B;">SECTION 7</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">wireframe A/B — 현재 vs 제안</h2>
+    </div>
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:14px; margin-top:16px;">
+
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:16px; padding:16px 18px;">
+        <p style="margin:0; font-size:13px; font-weight:800;">public 저장 전 · 390 — <span style="color:#A03A2A;">A 현재</span></p>
+        <div style="margin-top:10px; border:1.5px solid #C9C5BB; border-radius:14px; padding:10px; display:flex; flex-direction:column; gap:6px; font-size:11px; color:#6E6B64; background:#FBFAF7;">
+          <div style="border:1px solid #DDD9D0; border-radius:6px; padding:6px 8px;">제목 · by · ▸ 설명</div>
+          <div style="border:1px solid #DDD9D0; border-radius:6px; padding:6px 8px;">검사일 yyyy-mm-dd <b style="color:#3654FF;">[입력]</b> · ▸ 다른 방법 · 예시(오늘) <span style="color:#A03A2A;">→ 과거 D-14</span></div>
+          <div style="border:1px solid #DDD9D0; border-radius:6px; padding:6px 8px;"><b style="color:#3654FF;">[그대로 저장] [내 버전으로 조정]</b> <span style="color:#A03A2A;">← 표면 2</span></div>
+          <div style="border:1px solid #DDD9D0; border-radius:6px; padding:6px 8px; min-height:44px;">Flow 구성 · 항목 10개 + 자세히 ×N</div>
+          <div style="border:1px solid #DDD9D0; border-radius:6px; padding:6px 8px;">내 실행판 · 산출물 받기 <span style="color:#A03A2A;">← 저장 전 export</span></div>
+          <div style="border:1px solid #DDD9D0; border-radius:6px; padding:6px 8px;">원문/근거 · 제작자</div>
+          <div style="border:1.5px solid #3654FF; border-radius:6px; padding:6px 8px; background:#EEF1FF;">sticky: 제목 · <b style="color:#3654FF;">[그대로 저장] [조정]</b> <span style="color:#A03A2A;">← 표면 3</span></div>
+        </div>
+      </div>
+
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:16px; padding:16px 18px;">
+        <p style="margin:0; font-size:13px; font-weight:800;">public 저장 전 · 390 — <span style="color:#1F6A3E;">B 제안 (P26-01·04·11)</span></p>
+        <div style="margin-top:10px; border:1.5px solid #C9C5BB; border-radius:14px; padding:10px; display:flex; flex-direction:column; gap:6px; font-size:11px; color:#6E6B64; background:#FBFAF7;">
+          <div style="border:1px solid #DDD9D0; border-radius:6px; padding:6px 8px;">제목 · by · ▸ 설명 · 원문 공개 1줄</div>
+          <div style="border:1px solid #DDD9D0; border-radius:6px; padding:6px 8px;">검사일 <b>[📅 피커]</b> 프리셋: 오늘 / +2주 / 날짜 없이 <span style="color:#1F6A3E;">← 1단계 커밋</span></div>
+          <div style="border:1px solid #DDD9D0; border-radius:6px; padding:6px 8px; min-height:56px;">artifact: 예시 <b>검사일 8/10 가정</b> → D-14부터 전부 미래 날짜 · 항목 10개</div>
+          <div style="border:1px solid #DDD9D0; border-radius:6px; padding:6px 8px;">원문/근거 · 제작자</div>
+          <div style="border:1.5px solid #1F6A3E; border-radius:6px; padding:6px 8px; background:#EDF3EC;">sticky <b>유일한 저장 표면</b>: [그대로 저장] · 내 버전으로 조정 <span style="color:#1F6A3E;">— 산출물은 저장 후</span></div>
+        </div>
+      </div>
+
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:16px; padding:16px 18px;">
+        <p style="margin:0; font-size:13px; font-weight:800;">캘린더 · 1024 — <span style="color:#A03A2A;">A 현재 상시 3영역</span></p>
+        <div style="margin-top:10px; border:1.5px solid #C9C5BB; border-radius:14px; padding:10px; display:grid; grid-template-columns: 1fr 1.6fr 1.2fr; gap:6px; font-size:11px; color:#6E6B64; background:#FBFAF7; min-height:130px;">
+          <div style="border:1px solid #DDD9D0; border-radius:6px; padding:6px 8px;">날짜 정하기 큐<br>(항상 표시)</div>
+          <div style="border:1px solid #DDD9D0; border-radius:6px; padding:6px 8px;">월 grid</div>
+          <div style="border:1px solid #DDD9D0; border-radius:6px; padding:6px 8px;">agenda</div>
+        </div>
+        <p style="margin:8px 0 0; font-size:12px; color:#A03A2A;">세 영역이 항상 경쟁 — 다중 Flow에서 스캔 밀도 저하 (F-07)</p>
+      </div>
+
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:16px; padding:16px 18px;">
+        <p style="margin:0; font-size:13px; font-weight:800;">캘린더 · 1024 — <span style="color:#1F6A3E;">B 제안 2영역 (P26-08)</span></p>
+        <div style="margin-top:10px; border:1.5px solid #C9C5BB; border-radius:14px; padding:10px; display:grid; grid-template-columns: 1.8fr 1.2fr; gap:6px; font-size:11px; color:#6E6B64; background:#FBFAF7; min-height:130px;">
+          <div style="border:1px solid #DDD9D0; border-radius:6px; padding:6px 8px;">월 grid<br><span style="color:#1F6A3E;">상단 pill: "날짜 없는 할 일 n개 → 날짜 정하기"</span></div>
+          <div style="border:1px solid #DDD9D0; border-radius:6px; padding:6px 8px;">agenda / <span style="color:#1F6A3E;">pill 선택 시 이 pane이 큐로 전환</span></div>
+        </div>
+        <p style="margin:8px 0 0; font-size:12px; color:#1F6A3E;">기본은 grid+agenda, 큐는 의도 선언 시에만 — 역할 계약 불변</p>
+      </div>
+
+    </div>
+    <p style="margin:12px 0 0; font-size:12.5px; color:#6E6B64;">public /f wide는 좌 artifact / 우 sticky 날짜+저장 rail의 2-pane(P26-12). 단순 폴리시(F-09·13·14 → P26-11)와 구조 변경(F-01·02·03·06·07 → P26-01·04·05·08·12)은 백로그에서 분리되어 있다.</p>
+  </section>
+
+  <!-- ===== 8 P26 백로그 ===== -->
+  <section id="backlog" data-screen-label="8 P26 백로그" style="max-width: 1120px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #1B3A6B;">SECTION 8</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">P26 전체 실행 백로그 — P26-01 ~ P26-14</h2>
+    </div>
+    <p style="margin: 10px 0 0; max-width:980px; font-size: 14px; color: #44413B;">repo의 <strong>P26-00</strong>(이해도·밀도 결정 감사, docs-only)은 첫 게이트로 그대로 유지한다. 항목별 문제/영향/route/방향/데이터 영향/범위/의존성/검증/marker/완료 기준은 <a href="p25-review/p26-backlog.md">p26-backlog.md</a>, 복붙용 프롬프트는 <a href="p25-review/p26-goal-prompts.md">p26-goal-prompts.md</a>. <strong>P26-01은 첫 실행 항목일 뿐, 아래 전체가 프로그램이다.</strong></p>
+
+    <div style="display:grid; gap:12px; margin-top:18px;">
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #A03A2A; border-radius:16px; padding:16px 20px;">
+        <p style="margin:0; font-size:12.5px; font-weight:800; color:#A03A2A;">STAGE 1 · FOUNDATION / CORRECTNESS — 순차 시작 (03은 병렬 트랙)</p>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:8px 16px; margin-top:8px; font-size:13px; line-height:1.65; color:#44413B;">
+          <p style="margin:4px 0;"><strong>P26-01 예시·기본 anchor 날짜 정합</strong> ← 최우선 · F-01/F-04. 예시 anchor 미래화("검사일을 8/10로 가정"), 기본 날짜 TZ를 사용자 로컬로, 반대 TZ E2E. marker <code>examplePastDatedRowCount 0</code></p>
+          <p style="margin:4px 0;"><strong>P26-02 SSR·봇 응답 및 route 정합</strong> · F-05/F-10. <code>/my</code> legacy 셸 재현·정리, <code>/f/</code> alias 매핑표 + smoke 확장. 01과 병렬 가능</p>
+          <p style="margin:4px 0;"><strong>P26-03 AppClient.tsx 분할</strong> · F-12. surface 단위 동작 불변 리팩터, 최대 파일 ≤150KB. 전 단계와 병렬 트랙</p>
+        </div>
+      </div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #1B3A6B; border-radius:16px; padding:16px 20px;">
+        <p style="margin:0; font-size:12.5px; font-weight:800; color:#1B3A6B;">STAGE 2 · CORE JOURNEY / IA — P26-00 결정 이후 (04→05 순차, 05는 04와 부분 병렬)</p>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:8px 16px; margin-top:8px; font-size:13px; line-height:1.65; color:#44413B;">
+          <p style="margin:4px 0;"><strong>P26-04 public 저장 전 최소 프레임 + CTA 위계</strong> · F-02. 저장 결정 표면 1개(sticky), 저장 전 산출물 진입 0. marker <code>saveDecisionSurfaceCount 1</code></p>
+          <p style="margin:4px 0;"><strong>P26-05 내 Flow ↔ 캘린더 역할 언어 + undated 개념</strong> · F-03·우려 1/5. 빈 상태 역할 분리, '콘텐츠' 용어 제거, undated 1줄 규칙</p>
+        </div>
+      </div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #1B3A6B; border-radius:16px; padding:16px 20px;">
+        <p style="margin:0; font-size:12.5px; font-weight:800; color:#1B3A6B;">STAGE 3 · EDITING / EXECUTION — stage 2와 부분 병렬</p>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:8px 16px; margin-top:8px; font-size:13px; line-height:1.65; color:#44413B;">
+          <p style="margin:4px 0;"><strong>P26-06 intent-first 할 일 조정</strong> · F-08. intent 4개(날짜/시간/반복/메모) → 필요한 control만. marker <code>advancedEditTapDepthMax</code></p>
+          <p style="margin:4px 0;"><strong>P26-07 복구·순서 변경 발견성</strong> · F-11. 삭제 스낵바 되돌리기, 일반 모드 순서 핸들(44px). 06과 병렬</p>
+        </div>
+      </div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #1B3A6B; border-radius:16px; padding:16px 20px;">
+        <p style="margin:0; font-size:12.5px; font-weight:800; color:#1B3A6B;">STAGE 4 · CALENDAR / EXPORT — stage 3과 병렬 가능</p>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:8px 16px; margin-top:8px; font-size:13px; line-height:1.65; color:#44413B;">
+          <p style="margin:4px 0;"><strong>P26-08 1024 캘린더 2영역</strong> · F-07. 기본 grid+agenda, 큐는 선택형 보조 pane</p>
+          <p style="margin:4px 0;"><strong>P26-09 반복 회차 표시 언어</strong> · "다음 회차 · 8월 20일 (목)" 통일, 01 이후</p>
+          <p style="margin:4px 0;"><strong>P26-10 export 사후 확인</strong> · 우려 7 잔여. 결과(이벤트 n개·파일명) 확인 + 최근 기록 1줄, count는 canonical plan 재사용</p>
+        </div>
+      </div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #1B3A6B; border-radius:16px; padding:16px 20px;">
+        <p style="margin:0; font-size:12.5px; font-weight:800; color:#1B3A6B;">STAGE 5 · VISUAL SYSTEM / RESPONSIVE — stage 2 이후, 내부 병렬</p>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:8px 16px; margin-top:8px; font-size:13px; line-height:1.65; color:#44413B;">
+          <p style="margin:4px 0;"><strong>P26-11 시각 시스템 기준선</strong> · F-09/13/14·우려 10. 날짜 피커+프리셋, 타이포/간격/상태색 토큰, 보조 기능 강등, 카피 가이드</p>
+          <p style="margin:4px 0;"><strong>P26-12 public /f wide 2-pane</strong> · F-06. 좌 artifact / 우 sticky 날짜+저장 rail, 04 이후</p>
+        </div>
+      </div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #1F6A3E; border-radius:16px; padding:16px 20px;">
+        <p style="margin:0; font-size:12.5px; font-weight:800; color:#1F6A3E;">STAGE 6 · INTEGRATION / FINAL — 순차, 마지막</p>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:8px 16px; margin-top:8px; font-size:13px; line-height:1.65; color:#44413B;">
+          <p style="margin:4px 0;"><strong>P26-13 통합 여정 재게이트 + smoke 확장</strong> · 여정 A~F 재실행, 이사 route alias·다중 Flow 상태·이중 TZ 포함</p>
+          <p style="margin:4px 0;"><strong>P26-14 P26 final review</strong> · 아래 §9 조건으로 종료 판정, P27 이월 확정</p>
+        </div>
+      </div>
+    </div>
+    <p style="margin:12px 0 0; font-size:13px; color:#44413B;"><strong>순차 축</strong> · P26-00 → 01 → (04→05) → 13 → 14  /  <strong>병렬 가능</strong> · 02·03(처음부터), 05(04와), 07(06과), stage 4(stage 3과), 11·12(상호)</p>
+  </section>
+
+  <!-- ===== 9 final ===== -->
+  <section id="final" data-screen-label="9 final review · P27" style="max-width: 1120px; margin: 0 auto; padding: 30px 28px 56px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #1B3A6B;">SECTION 9</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">P26 final review 조건 · P27 이월 · 산출물</h2>
+    </div>
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:12px; margin-top:16px;">
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:14px; padding:16px 18px;">
+        <p style="margin:0; font-size:13px; font-weight:800; color:#1F6A3E;">P26 final review 통과 조건</p>
+        <p style="margin:8px 0 0; font-size:13px; line-height:1.7; color:#44413B;">① P26-01~13 marker 전부 green ② 3대 이해도 지표: <strong>저장 결정 표면 1 · 빈 상태 역할 분리 · 예시/기본 과거 날짜 0</strong> ③ 여정 6/6 재게이트, Blocking/High 0 ④ evidence 경계(자동/heuristic/owner/observed) 기록 유지, observed 0 표기</p>
+      </div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:14px; padding:16px 18px;">
+        <p style="margin:0; font-size:13px; font-weight:800; color:#8A6D1B;">사용자 관찰 전에 반드시 닫을 것</p>
+        <p style="margin:8px 0 0; font-size:13px; line-height:1.7; color:#44413B;">F-01/F-04류 <strong>날짜 정합 결함 전부</strong>, 저장 결정 표면 단일화, 빈 상태 역할 언어. 이 상태로 15세션을 시작하면 세션이 결함 재발견에 소모된다. 반대로 <strong>발견성(F-11)·카피 수위·밀도 선호</strong>는 관찰로만 닫을 수 있는 항목이다.</p>
+      </div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:14px; padding:16px 18px;">
+        <p style="margin:0; font-size:13px; font-weight:800; color:#1B3A6B;">P27로 이월</p>
+        <p style="margin:8px 0 0; font-size:13px; line-height:1.7; color:#44413B;">계정/DB/동기화 · 실제 AI intake · 외부 캘린더 직접 연동 · 창작자/업데이트 파이프라인·마켓 · 관찰 세션 15회 실행 자체(owner 재개 시)</p>
+      </div>
+    </div>
+    <div style="margin-top:16px; background:#E9EEF6; border:1px solid #C4D2E8; border-radius:14px; padding:14px 18px;">
+      <p style="margin:0; font-size:13px; font-weight:800; color:#1B3A6B;">산출물</p>
+      <p style="margin:8px 0 0; font-size:13.5px; line-height:1.8; color:#2E4666;">이 보고서(review.html 역할) · <a href="p25-review/audit.md">audit.md</a> · <a href="p25-review/journey-scorecard.json">journey-scorecard.json</a> · <a href="p25-review/decision-matrix.json">decision-matrix.json</a> · <a href="p25-review/p26-backlog.md">p26-backlog.md</a> · <a href="p25-review/p26-goal-prompts.md">p26-goal-prompts.md</a> · production 캡처 12장(<code>docs/content-audit/2026-07-20-p25-final-closeout/production-smoke/screenshots/</code>)</p>
+    </div>
+  </section>
+
+</div>
+</x-dc>
+</body>
+</html>

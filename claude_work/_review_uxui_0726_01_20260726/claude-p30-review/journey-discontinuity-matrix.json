@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "reviewerRole": "claude_design",
+  "capturedAt": "2026-07-23",
+  "observedUserCount": 0,
+  "legend": {
+    "persistence": [
+      "confirmed",
+      "fixture",
+      "not_tested",
+      "blocked"
+    ],
+    "severity": [
+      "High",
+      "Medium",
+      "Low",
+      "n/a",
+      "deferred_gate"
+    ]
+  },
+  "transitions": [
+    {
+      "id": "P1_S1_S2",
+      "from": "저장(/f)",
+      "to": "My Flow/Calendar",
+      "discontinuity": "저장 화면 '시작' ↔ My Flow '다음 할 일' 동사·상태 전환",
+      "recovery": "receipt·My Flow 존재",
+      "persistence": "not_tested",
+      "severity": "Medium",
+      "findings": [
+        "M-1",
+        "L-1"
+      ]
+    },
+    {
+      "id": "P1_S2_S3",
+      "from": "실행",
+      "to": "재사용/과거 run",
+      "discontinuity": "새 이사일 run과 과거 run 구분 표기 미관측",
+      "recovery": "run registry 존재(source)",
+      "persistence": "not_tested",
+      "severity": "n/a",
+      "findings": []
+    },
+    {
+      "id": "P2_S1_S2",
+      "from": "저장(undated)",
+      "to": "Calendar 배치",
+      "discontinuity": "실데이터 undated가 tray에 도달하는지 fixture로만 확인",
+      "recovery": "undated sheet·undo",
+      "persistence": "fixture",
+      "severity": "Medium",
+      "findings": [
+        "M-4"
+      ]
+    },
+    {
+      "id": "P2_S2_S3",
+      "from": "배치",
+      "to": "export·tray 복귀",
+      "discontinuity": "날짜 제거→tray 복귀·export scope 전환",
+      "recovery": "source상 존재",
+      "persistence": "not_tested",
+      "severity": "n/a",
+      "findings": []
+    },
+    {
+      "id": "P3_S1_S2",
+      "from": "루틴 저장",
+      "to": "회차 완료",
+      "discontinuity": "series 정의와 이번 회차 occurrence 시각 분리 유지",
+      "recovery": "분리 계약(source)",
+      "persistence": "not_tested",
+      "severity": "n/a",
+      "findings": []
+    },
+    {
+      "id": "P4_S1_S2",
+      "from": "scope 선택",
+      "to": "같은 날 5 Flow",
+      "discontinuity": "grid 축약(M2)에서 5 Flow 구분 어려움, selected-day로 유도",
+      "recovery": "selected-day full identity",
+      "persistence": "fixture",
+      "severity": "Medium",
+      "findings": [
+        "M-2"
+      ]
+    },
+    {
+      "id": "P5_S2_S3",
+      "from": "My Flow export",
+      "to": "외부 도구 parity",
+      "discontinuity": "4형식 parity·duplicate import는 외부 도구 의존",
+      "recovery": "gated(human)",
+      "persistence": "blocked",
+      "severity": "deferred_gate",
+      "findings": []
+    },
+    {
+      "id": "P6_S1_S2",
+      "from": "draft 저장",
+      "to": "편집",
+      "discontinuity": "진입 문법 이원화(H1) + draft reload 보존 미검",
+      "recovery": "overlay 존재(source)",
+      "persistence": "not_tested",
+      "severity": "High",
+      "findings": [
+        "H-1"
+      ]
+    },
+    {
+      "id": "P7_S1_S2",
+      "from": "첫 실행",
+      "to": "일부 완료·reopen",
+      "discontinuity": "개인 수정과 source correction 구분 — correction 전송 미구현",
+      "recovery": "gated(correction)",
+      "persistence": "not_tested",
+      "severity": "deferred_gate",
+      "findings": []
+    },
+    {
+      "id": "P8_S1_S2",
+      "from": "초점 진입",
+      "to": "sheet/menu trap",
+      "discontinuity": "Calendar grid 깊이(M3) 후 sheet 진입 focus 위치",
+      "recovery": "trap·Escape·return 구조 확인",
+      "persistence": "not_tested",
+      "severity": "Medium",
+      "findings": [
+        "M-3"
+      ]
+    }
+  ],
+  "mostStructural": "P6 S1→S2 및 P1 재접점의 진입 문법 이원화(H-1) — 세션이 아니라 진입 경로가 바뀔 때 모델이 흔들린다.",
+  "notTestedCount": 8,
+  "handoff": "persistence not_tested는 §8 관찰 + codex_independent 라이브 재현으로 닫는다."
+}

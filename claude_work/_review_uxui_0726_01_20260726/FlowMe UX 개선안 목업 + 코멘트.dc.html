@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>FlowMe UX 개선안 — 목업 + 코멘트 (핸드오프)</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <style>
+    html, body { margin: 0; padding: 0; background: #F2F1EC; }
+    * { box-sizing: border-box; }
+    code { font-family: 'SF Mono', ui-monospace, Menlo, monospace; font-size: 0.92em; background: #ECEAE3; padding: 1px 5px; border-radius: 4px; }
+    a { color: #3654FF; }
+    a:hover { color: #1F3BD6; }
+  </style>
+</helmet>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#101A2B"></rect><rect x="34" y="24" width="32" height="52" rx="7" fill="#F4F2EC"></rect><rect x="39" y="34" width="22" height="4" rx="2" fill="#3654FF"></rect><rect x="39" y="43" width="22" height="3" rx="1.5" fill="#B7B2A6"></rect><rect x="39" y="50" width="22" height="3" rx="1.5" fill="#B7B2A6"></rect><rect x="39" y="57" width="14" height="3" rx="1.5" fill="#B7B2A6"></rect></svg></template>
+
+<div style="font-family: 'Pretendard Variable', Pretendard, -apple-system, 'Segoe UI', sans-serif; color: #1B1A17; line-height: 1.6; letter-spacing: -0.01em;">
+
+  <!-- ===== HEADER ===== -->
+  <header data-screen-label="헤더" style="background: #101A2B; color: #F0F3F8; padding: 52px 32px 46px;">
+    <div style="max-width: 1180px; margin: 0 auto;">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px;">
+        <span style="display: inline-flex; align-items: center; border: 1px solid rgba(156,196,255,0.4); background: rgba(27,58,107,0.5); border-radius: 999px; padding: 4px 12px; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; color: #9CC4FF;">FLOWME · UX 개선안</span>
+        <span style="font-size: 12px; font-weight: 600; color: rgba(240,243,248,0.6);">여러 피드백(사용자 · QA · 코드 리뷰) 종합 → 목업 + 코멘트 · 개발 핸드오프 1장</span>
+      </div>
+      <h1 style="margin: 18px 0 0; font-size: 38px; line-height: 1.22; font-weight: 800; letter-spacing: -0.02em; max-width: 1040px; text-wrap: balance;">모든 피드백을 관통하는 한 문장은 <em>"글로 설명하는 게 너무 많다."</em><br>상태를 <em>텍스트로 설명</em>하는 대신 <em>화면에서 바로 보이고·바로 조작</em>되게 바꾸는 7개 안 + 그 코멘트입니다.</h1>
+      <p style="margin: 16px 0 0; max-width: 940px; font-size: 15.5px; line-height: 1.7; color: rgba(240,243,248,0.78); text-wrap: pretty;">각 안은 <strong>왼쪽에 목업(390px 모바일 기준), 오른쪽에 코멘트</strong>로 구성했습니다. 코멘트는 <strong>문제 → 제안 → 기대효과 → 하지 말 것</strong> 순서이고, 목업 위 <span style="display:inline-flex; width:18px; height:18px; border-radius:50%; background:#3654FF; color:#fff; font-size:11px; font-weight:800; align-items:center; justify-content:center; vertical-align:middle;">1</span> 핀 번호가 코멘트의 같은 번호와 연결됩니다. 목업은 실제 스크린샷이 아니라 <strong>방향을 보여주는 스케치</strong>이니, 픽셀보다 구조·순서·상태 표현을 봐주세요.</p>
+    </div>
+  </header>
+
+  <!-- ===== NAV ===== -->
+  <nav style="position: sticky; top: 0; z-index: 50; background: rgba(242,241,236,0.92); backdrop-filter: blur(8px); border-bottom: 1px solid #DDD9D0;">
+    <div style="max-width: 1180px; margin: 0 auto; padding: 10px 32px; display: flex; flex-wrap: wrap; gap: 6px;">
+      <a href="#bugs" style="text-decoration: none; color: #F0F3F8; background: #C0341D; border: 1px solid #C0341D; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">먼저 · 버그</a>
+      <a href="#a" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">A 편집 폼</a>
+      <a href="#b" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">B 완료</a>
+      <a href="#c" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">C 날짜없음</a>
+      <a href="#d" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">D 내보내기</a>
+      <a href="#e" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">E 날짜이동</a>
+      <a href="#f" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">F 중복표현</a>
+      <a href="#g" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">G 회고</a>
+      <a href="#sum" style="text-decoration: none; color: #F0F3F8; background: #3654FF; border: 1px solid #3654FF; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">우선순위</a>
+    </div>
+  </nav>
+
+  <!-- ===== BUGS FIRST ===== -->
+  <section id="bugs" data-screen-label="버그 선행" style="max-width: 1180px; margin: 0 auto; padding: 28px 32px 8px;">
+    <div style="background: #FBEAE5; border: 1px solid #EFC5B9; border-radius: 16px; padding: 20px 22px;">
+      <div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:10px;">
+        <span style="font-size:12.5px; font-weight:800; background:#FFFFFF; color:#C0341D; border-radius:6px; padding:3px 10px;">디자인보다 먼저</span>
+        <h2 style="margin:0; font-size:22px; font-weight:800; letter-spacing:-0.02em; color:#7A2917;">이건 UX가 아니라 버그입니다 — 여기부터 고쳐야 아래 개선안이 의미가 있어요</h2>
+      </div>
+      <p style="margin:12px 0 0; font-size:14px; line-height:1.7; color:#7A2917; max-width:960px;">피드백이 UX 문제와 섞여 있는데, 아래는 <strong>화면 설계로 풀 수 없는 엔지니어링 결함</strong>입니다. 특히 <strong>날짜가 하루 밀리는 문제</strong>는 아래 <a href="#e" style="color:#C0341D; font-weight:700;">E안(날짜 이동)</a>을 아무리 잘 설계해도 기준 날짜 자체가 틀리면 신뢰가 무너지므로 <strong>가장 먼저</strong> 고쳐야 합니다.</p>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:10px; margin-top:16px;">
+        <div style="background:#fff; border:1px solid #EFC5B9; border-radius:12px; padding:13px 15px;"><p style="margin:0; font-size:13px; font-weight:800; color:#C0341D;">B1 · 빌드/접근</p><p style="margin:6px 0 0; font-size:13px; line-height:1.6; color:#44413B;">빌드 실패 · Vercel SSO로 URL 테스트 불가. 안 고치면 "URL 테스트 안 됨" 피드백이 계속 반복됨.</p></div>
+        <div style="background:#fff; border:1px solid #EFC5B9; border-radius:12px; padding:13px 15px;"><p style="margin:0; font-size:13px; font-weight:800; color:#C0341D;">B2 · KST 날짜 하루 밀림</p><p style="margin:6px 0 0; font-size:13px; line-height:1.6; color:#44413B;"><code>toISOString()</code> UTC 변환으로 한국 시간 기준 날짜가 하루 앞당겨짐. E안의 전제 조건.</p></div>
+        <div style="background:#fff; border:1px solid #EFC5B9; border-radius:12px; padding:13px 15px;"><p style="margin:0; font-size:13px; font-weight:800; color:#C0341D;">B3 · 저장 유실</p><p style="margin:6px 0 0; font-size:13px; line-height:1.6; color:#44413B;">반복 회차가 1개만 저장됨 · 분할한 항목이 사라짐. 데이터 정합성 문제.</p></div>
+      </div>
+      <p style="margin:14px 0 0; font-size:12.5px; color:#9A6152;">→ 아래 A~G는 이 버그들이 해결됐다는 전제로 그린 <strong>UX/UI 방향</strong>입니다.</p>
+    </div>
+  </section>
+
+  <!-- ===== A : 편집 폼 progressive disclosure ===== -->
+  <section id="a" data-screen-label="A 편집폼 접기" style="max-width: 1180px; margin: 0 auto; padding: 34px 32px 10px;">
+    <div style="display:flex; align-items:baseline; gap:12px;">
+      <span style="font-size:13px; font-weight:800; color:#1B3A6B;">개선안 A</span>
+      <h2 style="margin:0; font-size:26px; font-weight:800; letter-spacing:-0.02em;">편집 폼 — 다 보여주지 말고 접기 (Progressive Disclosure)</h2>
+    </div>
+    <p style="margin:8px 0 0; max-width:960px; font-size:14.5px; color:#6E6B64;">피드백 #3 · M1 — 모든 항목에 범용 필드(반복·소요시간·결정상태)가 콘텐츠와 무관하게 다 떠서 캘린더·체크리스트보다 복잡해졌습니다.</p>
+
+    <div style="display:grid; grid-template-columns: 340px 1fr; gap:32px; align-items:start; margin-top:22px;">
+      <!-- phone -->
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div style="position:relative; width:320px;">
+          <!-- pins -->
+          <div style="position:absolute; top:150px; left:-9px; z-index:5;"><span style="display:flex; width:22px; height:22px; border-radius:50%; background:#3654FF; color:#fff; font-size:12px; font-weight:800; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.25);">1</span></div>
+          <div style="position:absolute; top:360px; left:-9px; z-index:5;"><span style="display:flex; width:22px; height:22px; border-radius:50%; background:#3654FF; color:#fff; font-size:12px; font-weight:800; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.25);">2</span></div>
+          <div style="position:absolute; top:470px; left:-9px; z-index:5;"><span style="display:flex; width:22px; height:22px; border-radius:50%; background:#3654FF; color:#fff; font-size:12px; font-weight:800; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.25);">3</span></div>
+          <div style="width:320px; background:#111; border-radius:40px; padding:12px; box-shadow:0 24px 50px rgba(16,26,43,0.20);">
+            <div style="background:#F4F2EC; border-radius:30px; overflow:hidden; height:620px; display:flex; flex-direction:column;">
+              <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 22px 6px; font-size:13px; font-weight:700; color:#1B1A17;"><span>9:41</span><span style="letter-spacing:1px;">● ● ●</span></div>
+              <div style="display:flex; align-items:center; gap:10px; padding:6px 18px 14px;"><span style="font-size:20px; color:#6E6B64;">‹</span><span style="font-size:16px; font-weight:800;">할 일 편집</span></div>
+              <div style="flex:1; overflow:hidden; padding:0 16px;">
+                <p style="margin:0 0 8px; font-size:12px; font-weight:700; color:#8A857B;">할 일</p>
+                <div style="background:#fff; border:1px solid #E7E4DD; border-radius:12px; padding:13px 14px; font-size:15px; font-weight:600;">냉장고 이전 설치 예약하기</div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px;">
+                  <div><p style="margin:0 0 6px; font-size:12px; font-weight:700; color:#8A857B;">날짜</p><div style="background:#fff; border:1px solid #E7E4DD; border-radius:12px; padding:12px 14px; font-size:14px; font-weight:600;">3월 14일</div></div>
+                  <div><p style="margin:0 0 6px; font-size:12px; font-weight:700; color:#8A857B;">시간</p><div style="background:#fff; border:1px solid #E7E4DD; border-radius:12px; padding:12px 14px; font-size:14px; font-weight:600; color:#8A857B;">미정</div></div>
+                </div>
+                <button style="width:100%; margin-top:18px; background:#F4F2EC; border:1px solid #DDD9D0; border-radius:12px; padding:13px 14px; display:flex; justify-content:space-between; align-items:center; font-size:14px; font-weight:700; color:#44413B; cursor:pointer;"><span>세부 설정 <span style="color:#8A857B; font-weight:500;">· 반복 · 소요시간</span></span><span style="color:#8A857B;">▾</span></button>
+                <div style="margin-top:16px; padding:12px 14px; background:#EEF1FF; border:1px dashed #C7CFFF; border-radius:12px;"><p style="margin:0; font-size:12px; line-height:1.55; color:#2A3570;"><strong>결정 상태 필드 없음</strong> — 이 항목은 "예약"이라 구매/거절이 필요 없음. 필드는 콘텐츠 타입에 맞을 때만.</p></div>
+              </div>
+              <div style="padding:12px 16px 20px;"><button style="width:100%; background:#1B3A6B; color:#fff; border:none; border-radius:14px; padding:15px; font-size:15px; font-weight:800; cursor:pointer;">저장</button></div>
+            </div>
+          </div>
+        </div>
+        <p style="width:320px; font-size:12px; color:#9A968C; text-wrap:pretty;">기본 상태 — 날짜/시간만, 나머지는 "세부 설정" 뒤로.</p>
+      </div>
+      <!-- comment -->
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #1B3A6B; border-radius:16px; padding:20px 24px;">
+        <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:6px;"><span style="font-size:12px; font-weight:800; background:#F7F0DC; color:#8A6D1B; border-radius:6px; padding:2px 9px;">Medium</span><span style="font-size:12px; font-weight:700; color:#6E6B64;">피드백 #3 · M1 · "이사 방식 정하기에 구매/거절 필드가 뜸"</span></div>
+        <div style="display:grid; gap:14px; margin-top:8px;">
+          <div style="display:flex; gap:12px;"><span style="flex:none; display:flex; width:22px; height:22px; border-radius:50%; background:#3654FF; color:#fff; font-size:12px; font-weight:800; align-items:center; justify-content:center;">1</span><p style="margin:0; font-size:14px; line-height:1.65;"><strong>기본은 날짜/시간만.</strong> 첫 화면에서 항목이 무엇이고 언제인지가 바로 잡히게. 지금은 모든 필드가 동시에 떠서 "이게 체크리스트인지 폼인지" 헷갈림.</p></div>
+          <div style="display:flex; gap:12px;"><span style="flex:none; display:flex; width:22px; height:22px; border-radius:50%; background:#3654FF; color:#fff; font-size:12px; font-weight:800; align-items:center; justify-content:center;">2</span><p style="margin:0; font-size:14px; line-height:1.65;"><strong>반복·소요시간·결정상태는 "세부 설정"으로 접기.</strong> 필요한 사람만 펼침. 덜 보여주는 게 "설명을 줄이는" 가장 빠른 길.</p></div>
+          <div style="display:flex; gap:12px;"><span style="flex:none; display:flex; width:22px; height:22px; border-radius:50%; background:#3654FF; color:#fff; font-size:12px; font-weight:800; align-items:center; justify-content:center;">3</span><p style="margin:0; font-size:14px; line-height:1.65;"><strong>결정 상태(구매/거절/보류)는 콘텐츠 타입이 맞을 때만.</strong> "예약", "정하기" 같은 항목엔 아예 렌더하지 않음 — 지금처럼 무관한 필드가 뜨는 게 혼란의 핵심.</p></div>
+        </div>
+        <div style="margin-top:16px; display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div style="background:#EDF3EC; border-radius:10px; padding:11px 13px;"><p style="margin:0; font-size:12px; font-weight:800; color:#1F6A3E;">기대효과</p><p style="margin:5px 0 0; font-size:13px; line-height:1.55; color:#35563A;">폼 높이 절반 이하 · "체크리스트답다"는 첫인상 회복.</p></div>
+          <div style="background:#F7F6F2; border-radius:10px; padding:11px 13px;"><p style="margin:0; font-size:12px; font-weight:800; color:#8A857B;">하지 말 것</p><p style="margin:5px 0 0; font-size:13px; line-height:1.55; color:#6E6B64;">접었다고 기능 삭제 아님 · 이미 값이 있는 필드는 펼친 상태로 노출.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== B : 완료 인라인 ===== -->
+  <section id="b" data-screen-label="B 완료 인라인" style="max-width: 1180px; margin: 0 auto; padding: 34px 32px 10px;">
+    <div style="display:flex; align-items:baseline; gap:12px;">
+      <span style="font-size:13px; font-weight:800; color:#1B3A6B;">개선안 B</span>
+      <h2 style="margin:0; font-size:26px; font-weight:800; letter-spacing:-0.02em;">완료 / 완료취소를 제자리에서</h2>
+    </div>
+    <p style="margin:8px 0 0; max-width:960px; font-size:14.5px; color:#6E6B64;">피드백 #4 — 지금은 완료하면 사라져서 "전체 → Flow 펼치기 → 완료 항목 열기 → 체크 해제" 4단계를 거쳐야 되돌릴 수 있습니다.</p>
+
+    <div style="display:grid; grid-template-columns: 340px 1fr; gap:32px; align-items:start; margin-top:22px;">
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div style="position:relative; width:320px;">
+          <div style="position:absolute; top:250px; left:-9px; z-index:5;"><span style="display:flex; width:22px; height:22px; border-radius:50%; background:#3654FF; color:#fff; font-size:12px; font-weight:800; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.25);">1</span></div>
+          <div style="position:absolute; top:330px; left:-9px; z-index:5;"><span style="display:flex; width:22px; height:22px; border-radius:50%; background:#3654FF; color:#fff; font-size:12px; font-weight:800; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.25);">2</span></div>
+          <div style="position:absolute; top:540px; left:-9px; z-index:5;"><span style="display:flex; width:22px; height:22px; border-radius:50%; background:#3654FF; color:#fff; font-size:12px; font-weight:800; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.25);">3</span></div>
+          <div style="width:320px; background:#111; border-radius:40px; padding:12px; box-shadow:0 24px 50px rgba(16,26,43,0.20);">
+            <div style="background:#F4F2EC; border-radius:30px; overflow:hidden; height:620px; display:flex; flex-direction:column; position:relative;">
+              <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 22px 6px; font-size:13px; font-weight:700;"><span>9:41</span><span style="letter-spacing:1px;">● ● ●</span></div>
+              <div style="padding:6px 18px 12px;"><p style="margin:0; font-size:16px; font-weight:800;">이사 준비</p><p style="margin:3px 0 0; font-size:12.5px; color:#8A857B;">오늘 · 3개 남음</p></div>
+              <div style="flex:1; overflow:hidden; padding:0 16px;">
+                <!-- active -->
+                <div style="background:#fff; border:1px solid #E7E4DD; border-radius:12px; overflow:hidden;">
+                  <div style="display:flex; align-items:center; gap:12px; padding:14px; border-bottom:1px solid #EFEDE7;"><span style="flex:none; width:22px; height:22px; border-radius:50%; border:2px solid #C4C0B6;"></span><span style="font-size:14.5px; font-weight:600;">관리사무소에 이사 신고</span></div>
+                  <div style="display:flex; align-items:center; gap:12px; padding:14px; border-bottom:1px solid #EFEDE7;"><span style="flex:none; width:22px; height:22px; border-radius:50%; border:2px solid #C4C0B6;"></span><span style="font-size:14.5px; font-weight:600;">인터넷 이전 신청</span></div>
+                  <div style="display:flex; align-items:center; gap:12px; padding:14px;"><span style="flex:none; width:22px; height:22px; border-radius:50%; border:2px solid #C4C0B6;"></span><span style="font-size:14.5px; font-weight:600;">엘리베이터 사용 예약</span></div>
+                </div>
+                <!-- completed section -->
+                <div style="display:flex; align-items:center; gap:8px; margin:18px 4px 8px;"><span style="font-size:12px; font-weight:800; color:#8A857B;">완료 2</span><span style="flex:1; height:1px; background:#DDD9D0;"></span><span style="font-size:12px; color:#B7B2A6;">▾</span></div>
+                <div style="background:#fff; border:1px solid #EFEDE7; border-radius:12px; overflow:hidden; opacity:0.75;">
+                  <div style="display:flex; align-items:center; gap:12px; padding:13px 14px; border-bottom:1px solid #F1EFE9;"><span style="flex:none; width:22px; height:22px; border-radius:50%; background:#1F6A3E; color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px;">✓</span><span style="font-size:14px; color:#9A968C; text-decoration:line-through;">이삿짐센터 견적 비교</span></div>
+                  <div style="display:flex; align-items:center; gap:12px; padding:13px 14px;"><span style="flex:none; width:22px; height:22px; border-radius:50%; background:#1F6A3E; color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px;">✓</span><span style="font-size:14px; color:#9A968C; text-decoration:line-through;">계약금 입금</span></div>
+                </div>
+              </div>
+              <!-- undo snackbar -->
+              <div style="position:absolute; left:16px; right:16px; bottom:18px; background:#101A2B; color:#F0F3F8; border-radius:14px; padding:13px 16px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 10px 24px rgba(0,0,0,0.28);"><span style="font-size:13.5px; font-weight:600;">'계약금 입금' 완료</span><span style="font-size:13.5px; font-weight:800; color:#9CC4FF; cursor:pointer;">실행 취소</span></div>
+            </div>
+          </div>
+        </div>
+        <p style="width:320px; font-size:12px; color:#9A968C; text-wrap:pretty;">한 리스트 안 · 완료는 취소선 처리 후 아래 "완료" 섹션으로.</p>
+      </div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #1B3A6B; border-radius:16px; padding:20px 24px;">
+        <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:6px;"><span style="font-size:12px; font-weight:800; background:#FBEAE5; color:#C0341D; border-radius:6px; padding:2px 9px;">High</span><span style="font-size:12px; font-weight:700; color:#6E6B64;">피드백 #4 · "완료 취소가 4단계"</span></div>
+        <div style="display:grid; gap:14px; margin-top:8px;">
+          <div style="display:flex; gap:12px;"><span style="flex:none; display:flex; width:22px; height:22px; border-radius:50%; background:#3654FF; color:#fff; font-size:12px; font-weight:800; align-items:center; justify-content:center;">1</span><p style="margin:0; font-size:14px; line-height:1.65;"><strong>완료해도 사라지지 않는다.</strong> Things · TickTick · Todoist 공통 패턴 — 그 자리에서 취소선 처리되고 리스트 <strong>맨 아래로 내려감</strong>. 완료취소는 그냥 다시 탭.</p></div>
+          <div style="display:flex; gap:12px;"><span style="flex:none; display:flex; width:22px; height:22px; border-radius:50%; background:#3654FF; color:#fff; font-size:12px; font-weight:800; align-items:center; justify-content:center;">2</span><p style="margin:0; font-size:14px; line-height:1.65;"><strong>탭 분리 대신 한 리스트 안 "완료" 섹션.</strong> 오늘/전체 탭으로 나누면 "완료한 게 어디 갔지?"가 또 다른 설명거리가 됨. 접힌 섹션으로 두면 스크롤로 바로 보임.</p></div>
+          <div style="display:flex; gap:12px;"><span style="flex:none; display:flex; width:22px; height:22px; border-radius:50%; background:#3654FF; color:#fff; font-size:12px; font-weight:800; align-items:center; justify-content:center;">3</span><p style="margin:0; font-size:14px; line-height:1.65;"><strong>완료 직후 3~5초 Undo 스낵바.</strong> 실수로 체크한 경우 대부분 여기서 끝남 — 굳이 완료 섹션까지 안 들어가도 됨.</p></div>
+        </div>
+        <div style="margin-top:16px; display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div style="background:#EDF3EC; border-radius:10px; padding:11px 13px;"><p style="margin:0; font-size:12px; font-weight:800; color:#1F6A3E;">기대효과</p><p style="margin:5px 0 0; font-size:13px; line-height:1.55; color:#35563A;">완료취소 4단계 → 1탭 · "완료가 사라진다"는 불안 제거.</p></div>
+          <div style="background:#F7F6F2; border-radius:10px; padding:11px 13px;"><p style="margin:0; font-size:12px; font-weight:800; color:#8A857B;">하지 말 것</p><p style="margin:5px 0 0; font-size:13px; line-height:1.55; color:#6E6B64;">완료 후 자동 화면 이동·모달 금지 · 순서 재정렬은 애니메이션으로 부드럽게.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== C : 날짜 없음 트레이 ===== -->
+  <section id="c" data-screen-label="C 날짜없음 트레이" style="max-width: 1180px; margin: 0 auto; padding: 34px 32px 10px;">
+    <div style="display:flex; align-items:baseline; gap:12px;">
+      <span style="font-size:13px; font-weight:800; color:#1B3A6B;">개선안 C</span>
+      <h2 style="margin:0; font-size:26px; font-weight:800; letter-spacing:-0.02em;">날짜 없는 할 일을 1급 상태로 — "날짜 없음" 트레이</h2>
+    </div>
+    <p style="margin:8px 0 0; max-width:960px; font-size:14.5px; color:#6E6B64;">피드백 #6 — "날짜 미정"이 지금은 버그처럼 숨겨져 사용자가 어디로 갔는지 모릅니다.</p>
+
+    <div style="display:grid; grid-template-columns: 340px 1fr; gap:32px; align-items:start; margin-top:22px;">
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div style="position:relative; width:320px;">
+          <div style="position:absolute; top:120px; left:-9px; z-index:5;"><span style="display:flex; width:22px; height:22px; border-radius:50%; background:#3654FF; color:#fff; font-size:12px; font-weight:800; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.25);">1</span></div>
+          <div style="position:absolute; top:190px; left:-9px; z-index:5;"><span style="display:flex; width:22px; height:22px; border-radius:50%; background:#3654FF; color:#fff; font-size:12px; font-weight:800; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.25);">2</span></div>
+          <div style="width:320px; background:#111; border-radius:40px; padding:12px; box-shadow:0 24px 50px rgba(16,26,43,0.20);">
+            <div style="background:#F4F2EC; border-radius:30px; overflow:hidden; height:620px; display:flex; flex-direction:column;">
+              <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 22px 6px; font-size:13px; font-weight:700;"><span>9:41</span><span style="letter-spacing:1px;">● ● ●</span></div>
+              <div style="padding:6px 18px 10px;"><p style="margin:0; font-size:16px; font-weight:800;">캘린더</p></div>
+              <!-- tray -->
+              <div style="margin:0 16px; background:#FFF6E0; border:1px solid #EAD9A6; border-radius:14px; padding:12px 14px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;"><span style="font-size:12.5px; font-weight:800; color:#8A6D1B;">📥 날짜 없음 2</span><span style="font-size:11.5px; color:#A98D3B;">끌어서 날짜에 놓기</span></div>
+                <div style="display:flex; gap:8px; margin-top:10px;"><span style="background:#fff; border:1px solid #EAD9A6; border-radius:8px; padding:7px 11px; font-size:12.5px; font-weight:600;">우체국 주소이전 신고</span><span style="background:#fff; border:1px solid #EAD9A6; border-radius:8px; padding:7px 11px; font-size:12.5px; font-weight:600;">커튼 치수 재기</span></div>
+              </div>
+              <!-- mini calendar -->
+              <div style="margin:14px 16px 0; background:#fff; border:1px solid #E7E4DD; border-radius:14px; padding:12px;">
+                <p style="margin:0 0 10px; font-size:13px; font-weight:800; text-align:center;">3월</p>
+                <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:6px; font-size:11px; text-align:center; color:#9A968C;"><span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span></div>
+                <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:6px; margin-top:8px; font-size:12.5px; text-align:center;">
+                  <span style="padding:7px 0; color:#C4C0B6;">9</span><span style="padding:7px 0;">10</span><span style="padding:7px 0;">11</span><span style="padding:7px 0; position:relative;">12<span style="position:absolute; bottom:2px; left:50%; transform:translateX(-50%); width:5px; height:5px; border-radius:50%; background:#3654FF;"></span></span><span style="padding:7px 0;">13</span><span style="padding:7px 0; background:#1B3A6B; color:#fff; border-radius:8px; font-weight:800;">14</span><span style="padding:7px 0;">15</span>
+                  <span style="padding:7px 0;">16</span><span style="padding:7px 0;">17</span><span style="padding:7px 0; position:relative;">18<span style="position:absolute; bottom:2px; left:50%; transform:translateX(-50%); width:5px; height:5px; border-radius:50%; background:#1F6A3E;"></span></span><span style="padding:7px 0;">19</span><span style="padding:7px 0;">20</span><span style="padding:7px 0;">21</span><span style="padding:7px 0;">22</span>
+                </div>
+              </div>
+              <div style="padding:14px 16px;"><button style="width:100%; background:#F4F2EC; border:1px dashed #C4C0B6; border-radius:12px; padding:13px; font-size:14px; font-weight:700; color:#6E6B64; cursor:pointer;">+ 할 일 추가</button></div>
+            </div>
+          </div>
+        </div>
+        <p style="width:320px; font-size:12px; color:#9A968C; text-wrap:pretty;">캘린더 상단 고정 트레이 · 드래그로 날짜 부여.</p>
+      </div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #1B3A6B; border-radius:16px; padding:20px 24px;">
+        <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:6px;"><span style="font-size:12px; font-weight:800; background:#F7F0DC; color:#8A6D1B; border-radius:6px; padding:2px 9px;">Medium</span><span style="font-size:12px; font-weight:700; color:#6E6B64;">피드백 #6 · "날짜 미정 할 일이 사라짐"</span></div>
+        <div style="display:grid; gap:14px; margin-top:8px;">
+          <div style="display:flex; gap:12px;"><span style="flex:none; display:flex; width:22px; height:22px; border-radius:50%; background:#3654FF; color:#fff; font-size:12px; font-weight:800; align-items:center; justify-content:center;">1</span><p style="margin:0; font-size:14px; line-height:1.65;"><strong>"날짜 없음"을 캘린더 상단에 고정된 인박스 트레이로.</strong> 숨기지 말고 항상 눈에 보이는 자리에 — 개수 배지로 몇 개 남았는지 표시.</p></div>
+          <div style="display:flex; gap:12px;"><span style="flex:none; display:flex; width:22px; height:22px; border-radius:50%; background:#3654FF; color:#fff; font-size:12px; font-weight:800; align-items:center; justify-content:center;">2</span><p style="margin:0; font-size:14px; line-height:1.65;"><strong>트레이에서 날짜 칸으로 드래그하면 날짜 부여.</strong> 반대로 날짜를 지우면 다시 트레이로. 진입점(+추가)도 목록·캘린더 어디서든 동일하게.</p></div>
+        </div>
+        <div style="margin-top:16px; display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div style="background:#EDF3EC; border-radius:10px; padding:11px 13px;"><p style="margin:0; font-size:12px; font-weight:800; color:#1F6A3E;">기대효과</p><p style="margin:5px 0 0; font-size:13px; line-height:1.55; color:#35563A;">"할 일이 사라졌다" 불안 제거 · 날짜 배정이 놀이처럼 쉬워짐.</p></div>
+          <div style="background:#F7F6F2; border-radius:10px; padding:11px 13px;"><p style="margin:0; font-size:12px; font-weight:800; color:#8A857B;">하지 말 것</p><p style="margin:5px 0 0; font-size:13px; line-height:1.55; color:#6E6B64;">트레이를 별도 화면으로 분리 금지 · 캘린더 안에 있어야 맥락이 유지됨.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== D : 내보내기 범위 ===== -->
+  <section id="d" data-screen-label="D 내보내기 범위" style="max-width: 1180px; margin: 0 auto; padding: 34px 32px 10px;">
+    <div style="display:flex; align-items:baseline; gap:12px;">
+      <span style="font-size:13px; font-weight:800; color:#1B3A6B;">개선안 D</span>
+      <h2 style="margin:0; font-size:26px; font-weight:800; letter-spacing:-0.02em;">내보내기 — Flow 레벨 + 범위 선택</h2>
+    </div>
+    <p style="margin:8px 0 0; max-width:960px; font-size:14.5px; color:#6E6B64;">피드백 #7 · M3 — "캘린더 파일 받기"가 제목 아래 있어 전체 같지만 실제로는 열어본 항목 1개만 나갑니다. 가장 헷갈리는 지점.</p>
+
+    <div style="display:grid; grid-template-columns: 340px 1fr; gap:32px; align-items:start; margin-top:22px;">
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div style="position:relative; width:320px;">
+          <div style="position:absolute; top:100px; left:-9px; z-index:5;"><span style="display:flex; width:22px; height:22px; border-radius:50%; background:#3654FF; color:#fff; font-size:12px; font-weight:800; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.25);">1</span></div>
+          <div style="position:absolute; top:420px; left:-9px; z-index:5;"><span style="display:flex; width:22px; height:22px; border-radius:50%; background:#3654FF; color:#fff; font-size:12px; font-weight:800; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.25);">2</span></div>
+          <div style="width:320px; background:#111; border-radius:40px; padding:12px; box-shadow:0 24px 50px rgba(16,26,43,0.20);">
+            <div style="background:#F4F2EC; border-radius:30px; overflow:hidden; height:620px; display:flex; flex-direction:column; position:relative;">
+              <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 22px 6px; font-size:13px; font-weight:700;"><span>9:41</span><span style="letter-spacing:1px;">● ● ●</span></div>
+              <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 18px 12px;"><div><p style="margin:0; font-size:16px; font-weight:800;">이사 준비</p><p style="margin:3px 0 0; font-size:12.5px; color:#8A857B;">8개 항목</p></div><button style="background:#fff; border:1px solid #DDD9D0; border-radius:10px; padding:8px 12px; font-size:12.5px; font-weight:700; color:#1B3A6B; cursor:pointer;">↓ 내보내기</button></div>
+              <div style="flex:1; overflow:hidden; padding:0 16px; filter:brightness(0.97);">
+                <div style="background:#fff; border:1px solid #E7E4DD; border-radius:12px; overflow:hidden; opacity:0.5;">
+                  <div style="padding:14px; border-bottom:1px solid #EFEDE7; font-size:14px;">관리사무소에 이사 신고</div>
+                  <div style="padding:14px; border-bottom:1px solid #EFEDE7; font-size:14px;">인터넷 이전 신청</div>
+                  <div style="padding:14px; font-size:14px;">엘리베이터 사용 예약</div>
+                </div>
+              </div>
+              <!-- action sheet -->
+              <div style="position:absolute; left:0; right:0; bottom:0; background:#fff; border-radius:22px 22px 0 0; padding:20px 18px 26px; box-shadow:0 -12px 30px rgba(0,0,0,0.15);">
+                <p style="margin:0 0 4px; font-size:15px; font-weight:800;">무엇을 내보낼까요?</p>
+                <p style="margin:0 0 14px; font-size:12.5px; color:#8A857B;">캘린더(.ics) 파일로 저장돼요</p>
+                <div style="display:grid; gap:8px;">
+                  <button style="display:flex; justify-content:space-between; align-items:center; background:#EEF1FF; border:1.5px solid #3654FF; border-radius:12px; padding:14px; font-size:14px; font-weight:700; cursor:pointer;"><span>전체 Flow <span style="color:#8A857B; font-weight:500;">· 8개</span></span><span style="color:#3654FF;">●</span></button>
+                  <button style="display:flex; justify-content:space-between; align-items:center; background:#F4F2EC; border:1px solid #DDD9D0; border-radius:12px; padding:14px; font-size:14px; font-weight:700; color:#44413B; cursor:pointer;"><span>선택한 항목만 <span style="color:#8A857B; font-weight:500;">· 0개</span></span><span style="color:#B7B2A6;">○</span></button>
+                </div>
+                <button style="width:100%; margin-top:14px; background:#1B3A6B; color:#fff; border:none; border-radius:14px; padding:15px; font-size:15px; font-weight:800; cursor:pointer;">내보내기</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p style="width:320px; font-size:12px; color:#9A968C; text-wrap:pretty;">Flow 헤더의 내보내기 → 범위 선택 시트.</p>
+      </div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #1B3A6B; border-radius:16px; padding:20px 24px;">
+        <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:6px;"><span style="font-size:12px; font-weight:800; background:#F7F0DC; color:#8A6D1B; border-radius:6px; padding:2px 9px;">Medium</span><span style="font-size:12px; font-weight:700; color:#6E6B64;">피드백 #7 · M3 · "1개만 나감"</span></div>
+        <div style="display:grid; gap:14px; margin-top:8px;">
+          <div style="display:flex; gap:12px;"><span style="flex:none; display:flex; width:22px; height:22px; border-radius:50%; background:#3654FF; color:#fff; font-size:12px; font-weight:800; align-items:center; justify-content:center;">1</span><p style="margin:0; font-size:14px; line-height:1.65;"><strong>내보내기 버튼을 Flow 레벨(헤더)로 올린다.</strong> 항목 옆에 있으면 "이 항목만"으로 오해됨. 헤더에 있으면 "이 Flow 전체" 맥락이 명확.</p></div>
+          <div style="display:flex; gap:12px;"><span style="flex:none; display:flex; width:22px; height:22px; border-radius:50%; background:#3654FF; color:#fff; font-size:12px; font-weight:800; align-items:center; justify-content:center;">2</span><p style="margin:0; font-size:14px; line-height:1.65;"><strong>누르면 범위를 명시적으로 선택:</strong> 전체 / 선택한 항목 / 이 항목. 기본값은 "전체"로 두고, 몇 개가 나가는지 개수를 함께 보여줌.</p></div>
+          <div style="display:flex; gap:12px;"><span style="flex:none; display:flex; width:22px; height:22px; border-radius:50%; background:#B7B2A6; color:#fff; font-size:12px; font-weight:800; align-items:center; justify-content:center;">+</span><p style="margin:0; font-size:14px; line-height:1.65; color:#6E6B64;"><strong>다중선택 모드 한 벌</strong>을 만들어 두면 "선택 내보내기"와 <a href="#e">E안</a>의 "선택 이동"이 같은 UI를 재사용할 수 있음.</p></div>
+        </div>
+        <div style="margin-top:16px; display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div style="background:#EDF3EC; border-radius:10px; padding:11px 13px;"><p style="margin:0; font-size:12px; font-weight:800; color:#1F6A3E;">기대효과</p><p style="margin:5px 0 0; font-size:13px; line-height:1.55; color:#35563A;">"1개만 나갔다"는 신뢰 붕괴 해소 · 내보낸 결과가 기대와 일치.</p></div>
+          <div style="background:#F7F6F2; border-radius:10px; padding:11px 13px;"><p style="margin:0; font-size:12px; font-weight:800; color:#8A857B;">하지 말 것</p><p style="margin:5px 0 0; font-size:13px; line-height:1.55; color:#6E6B64;">범위 선택 없이 바로 다운로드 금지 · 개수 라벨 없는 버튼 금지.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== E : 날짜 두 모드 ===== -->
+  <section id="e" data-screen-label="E 날짜 두 모드" style="max-width: 1180px; margin: 0 auto; padding: 34px 32px 10px;">
+    <div style="display:flex; align-items:baseline; gap:12px;">
+      <span style="font-size:13px; font-weight:800; color:#1B3A6B;">개선안 E</span>
+      <h2 style="margin:0; font-size:26px; font-weight:800; letter-spacing:-0.02em;">날짜 이동 로직 — 두 가지 모드를 눈에 보이게</h2>
+    </div>
+    <p style="margin:8px 0 0; max-width:960px; font-size:14.5px; color:#6E6B64;">피드백 #5 · B4 · B5 — 본인 말대로 "대충 하면 안 되는" 부분. 지금은 "내가 바꾼 날짜 유지"를 골라도 리셋됩니다. <strong>(B2 KST 버그 선행 필수)</strong></p>
+
+    <div style="display:grid; grid-template-columns: 340px 1fr; gap:32px; align-items:start; margin-top:22px;">
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div style="position:relative; width:320px;">
+          <div style="position:absolute; top:130px; left:-9px; z-index:5;"><span style="display:flex; width:22px; height:22px; border-radius:50%; background:#3654FF; color:#fff; font-size:12px; font-weight:800; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.25);">1</span></div>
+          <div style="position:absolute; top:300px; left:-9px; z-index:5;"><span style="display:flex; width:22px; height:22px; border-radius:50%; background:#3654FF; color:#fff; font-size:12px; font-weight:800; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.25);">2</span></div>
+          <div style="position:absolute; top:475px; left:-9px; z-index:5;"><span style="display:flex; width:22px; height:22px; border-radius:50%; background:#3654FF; color:#fff; font-size:12px; font-weight:800; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.25);">3</span></div>
+          <div style="width:320px; background:#111; border-radius:40px; padding:12px; box-shadow:0 24px 50px rgba(16,26,43,0.20);">
+            <div style="background:#F4F2EC; border-radius:30px; overflow:hidden; height:620px; display:flex; flex-direction:column;">
+              <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 22px 6px; font-size:13px; font-weight:700;"><span>9:41</span><span style="letter-spacing:1px;">● ● ●</span></div>
+              <div style="padding:6px 18px 10px;"><p style="margin:0; font-size:16px; font-weight:800;">이사 준비</p></div>
+              <!-- anchor -->
+              <div style="margin:0 16px; background:#101A2B; color:#F0F3F8; border-radius:14px; padding:13px 15px;">
+                <p style="margin:0; font-size:11.5px; font-weight:700; color:#9CC4FF;">기준일 · 이사일</p>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;"><span style="font-size:17px; font-weight:800;">3월 14일</span><span style="font-size:12px; background:rgba(156,196,255,0.2); border-radius:8px; padding:5px 10px; cursor:pointer;">날짜 이동 ›</span></div>
+              </div>
+              <div style="flex:1; overflow:hidden; padding:14px 16px 0;">
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                  <div style="background:#fff; border:1px solid #E7E4DD; border-radius:12px; padding:12px 13px;"><div style="display:flex; justify-content:space-between; align-items:center;"><span style="font-size:14px; font-weight:600;">이삿짐 견적</span><span style="font-size:11px; font-weight:700; color:#3654FF; background:#EEF1FF; border-radius:7px; padding:3px 7px;">🔗 연동</span></div><p style="margin:5px 0 0; font-size:12px; color:#8A857B;">이사 10일 전 · 3월 4일</p></div>
+                  <div style="background:#fff; border:1px solid #E7E4DD; border-radius:12px; padding:12px 13px;"><div style="display:flex; justify-content:space-between; align-items:center;"><span style="font-size:14px; font-weight:600;">인터넷 이전 신청</span><span style="font-size:11px; font-weight:700; color:#3654FF; background:#EEF1FF; border-radius:7px; padding:3px 7px;">🔗 연동</span></div><p style="margin:5px 0 0; font-size:12px; color:#8A857B;">이사 3일 전 · 3월 11일</p></div>
+                  <div style="background:#fff; border:1px solid #EAD9A6; border-radius:12px; padding:12px 13px;"><div style="display:flex; justify-content:space-between; align-items:center;"><span style="font-size:14px; font-weight:600;">부모님 방문</span><span style="font-size:11px; font-weight:700; color:#8A6D1B; background:#FFF6E0; border-radius:7px; padding:3px 7px;">📌 고정</span></div><p style="margin:5px 0 0; font-size:12px; color:#A98D3B;">3월 16일 · 내가 정한 날짜</p></div>
+                </div>
+                <div style="margin-top:14px; background:#EEF1FF; border:1px dashed #C7CFFF; border-radius:12px; padding:11px 13px;"><p style="margin:0; font-size:12px; line-height:1.55; color:#2A3570;"><strong>이사일을 옮기면</strong> 🔗연동 2개는 다시 계산, 📌고정 1개는 그대로 유지돼요.</p></div>
+              </div>
+              <div style="height:16px;"></div>
+            </div>
+          </div>
+        </div>
+        <p style="width:320px; font-size:12px; color:#9A968C; text-wrap:pretty;">각 항목이 🔗연동인지 📌고정인지 뱃지로 표시.</p>
+      </div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #C0341D; border-radius:16px; padding:20px 24px;">
+        <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:6px;"><span style="font-size:12px; font-weight:800; background:#FBEAE5; color:#C0341D; border-radius:6px; padding:2px 9px;">High · 가장 깊음</span><span style="font-size:12px; font-weight:700; color:#6E6B64;">피드백 #5 · B4 · B5</span></div>
+        <div style="display:grid; gap:14px; margin-top:8px;">
+          <div style="display:flex; gap:12px;"><span style="flex:none; display:flex; width:22px; height:22px; border-radius:50%; background:#3654FF; color:#fff; font-size:12px; font-weight:800; align-items:center; justify-content:center;">1</span><p style="margin:0; font-size:14px; line-height:1.65;"><strong>기준일(앵커)을 화면 맨 위 하나로.</strong> "이사일" 같은 기준 날짜 하나가 Flow 전체 일정의 원점. 여기를 옮기는 게 "날짜 이동"의 정식 진입점.</p></div>
+          <div style="display:flex; gap:12px;"><span style="flex:none; display:flex; width:22px; height:22px; border-radius:50%; background:#3654FF; color:#fff; font-size:12px; font-weight:800; align-items:center; justify-content:center;">2</span><p style="margin:0; font-size:14px; line-height:1.65;"><strong>항목마다 두 모드를 뱃지로 구분.</strong> <span style="color:#3654FF; font-weight:700;">🔗 연동</span> = 기준일 대비 상대(이사 10일 전) → 기준일 바뀌면 재계산. <span style="color:#8A6D1B; font-weight:700;">📌 고정</span> = 내가 직접 정한 날짜 → 기준일 바뀌어도 유지. 지금 B4/B5는 이 구분이 없어서 유지 옵션을 골라도 리셋됨.</p></div>
+          <div style="display:flex; gap:12px;"><span style="flex:none; display:flex; width:22px; height:22px; border-radius:50%; background:#3654FF; color:#fff; font-size:12px; font-weight:800; align-items:center; justify-content:center;">3</span><p style="margin:0; font-size:14px; line-height:1.65;"><strong>이동 결과를 실행 전에 문장으로 예고.</strong> "연동 2개는 다시 계산, 고정 1개는 유지" — 뱃지가 있으니 설명 없이도 이해됨. 항목의 날짜를 직접 고치면 자동으로 📌고정으로 전환.</p></div>
+        </div>
+        <div style="margin-top:16px; display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div style="background:#EDF3EC; border-radius:10px; padding:11px 13px;"><p style="margin:0; font-size:12px; font-weight:800; color:#1F6A3E;">기대효과</p><p style="margin:5px 0 0; font-size:13px; line-height:1.55; color:#35563A;">"내가 바꾼 날짜가 리셋" 버그의 근본 원인(모드 부재) 제거.</p></div>
+          <div style="background:#F7F6F2; border-radius:10px; padding:11px 13px;"><p style="margin:0; font-size:12px; font-weight:800; color:#8A857B;">하지 말 것</p><p style="margin:5px 0 0; font-size:13px; line-height:1.55; color:#6E6B64;">B2(KST 하루 밀림) 안 고치고 착수 금지 · 기준일 없이 상대 날짜 계산 금지.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== F : 중복 표현 ===== -->
+  <section id="f" data-screen-label="F 중복 표현" style="max-width: 1180px; margin: 0 auto; padding: 34px 32px 10px;">
+    <div style="display:flex; align-items:baseline; gap:12px;">
+      <span style="font-size:13px; font-weight:800; color:#1B3A6B;">개선안 F</span>
+      <h2 style="margin:0; font-size:26px; font-weight:800; letter-spacing:-0.02em;">중복 표현 제거 — "다음 할 일" vs "다음 항목"</h2>
+    </div>
+    <p style="margin:8px 0 0; max-width:960px; font-size:14.5px; color:#6E6B64;">피드백 #2 · Codex High-A — 같은 일이 두 곳에 완료체크까지 달려서 나와, 사용자가 같은 건지 다른 건지 모릅니다.</p>
+
+    <div style="display:grid; grid-template-columns: 340px 340px 1fr; gap:24px; align-items:start; margin-top:22px;">
+      <!-- before -->
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <span style="font-size:12px; font-weight:800; color:#C0341D; background:#FBEAE5; border-radius:6px; padding:3px 10px; align-self:flex-start;">지금 (혼란)</span>
+        <div style="width:320px; background:#111; border-radius:40px; padding:12px; box-shadow:0 24px 50px rgba(16,26,43,0.20);">
+          <div style="background:#F4F2EC; border-radius:30px; overflow:hidden; height:520px; display:flex; flex-direction:column;">
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 22px 6px; font-size:13px; font-weight:700;"><span>9:41</span><span style="letter-spacing:1px;">● ● ●</span></div>
+            <div style="padding:6px 18px 12px;"><p style="margin:0; font-size:16px; font-weight:800;">오늘</p></div>
+            <div style="flex:1; padding:0 16px;">
+              <p style="margin:0 0 6px; font-size:12px; font-weight:700; color:#8A857B;">다음 할 일</p>
+              <div style="background:#fff; border:1px solid #E7E4DD; border-radius:12px; padding:14px; display:flex; align-items:center; gap:12px;"><span style="flex:none; width:22px; height:22px; border-radius:50%; border:2px solid #C4C0B6;"></span><span style="font-size:14.5px; font-weight:600;">인터넷 이전 신청</span></div>
+              <p style="margin:16px 0 6px; font-size:12px; font-weight:700; color:#8A857B;">다음 항목</p>
+              <div style="background:#fff; border:1px solid #E7E4DD; border-radius:12px; padding:14px; display:flex; align-items:center; gap:12px;"><span style="flex:none; width:22px; height:22px; border-radius:50%; border:2px solid #C4C0B6;"></span><span style="font-size:14.5px; font-weight:600;">인터넷 이전 신청</span></div>
+              <div style="margin-top:16px; background:#FBEAE5; border:1px solid #EFC5B9; border-radius:10px; padding:11px 13px;"><p style="margin:0; font-size:12px; line-height:1.5; color:#C0341D;">같은 일이 두 번 · 둘 다 체크박스 → "완료하면 둘 다 되나? 다른 건가?"</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- after -->
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <span style="font-size:12px; font-weight:800; color:#1F6A3E; background:#EDF3EC; border-radius:6px; padding:3px 10px; align-self:flex-start;">제안 (정리)</span>
+        <div style="position:relative; width:320px;">
+          <div style="position:absolute; top:120px; left:-9px; z-index:5;"><span style="display:flex; width:22px; height:22px; border-radius:50%; background:#3654FF; color:#fff; font-size:12px; font-weight:800; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.25);">1</span></div>
+          <div style="position:absolute; top:230px; left:-9px; z-index:5;"><span style="display:flex; width:22px; height:22px; border-radius:50%; background:#3654FF; color:#fff; font-size:12px; font-weight:800; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.25);">2</span></div>
+          <div style="width:320px; background:#111; border-radius:40px; padding:12px; box-shadow:0 24px 50px rgba(16,26,43,0.20);">
+            <div style="background:#F4F2EC; border-radius:30px; overflow:hidden; height:520px; display:flex; flex-direction:column;">
+              <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 22px 6px; font-size:13px; font-weight:700;"><span>9:41</span><span style="letter-spacing:1px;">● ● ●</span></div>
+              <div style="padding:6px 18px 12px;"><p style="margin:0; font-size:16px; font-weight:800;">오늘</p></div>
+              <div style="flex:1; padding:0 16px;">
+                <p style="margin:0 0 6px; font-size:12px; font-weight:700; color:#8A857B;">지금 할 일</p>
+                <div style="background:#fff; border:1px solid #E7E4DD; border-radius:12px; padding:16px 14px; display:flex; align-items:center; gap:12px;"><span style="flex:none; width:24px; height:24px; border-radius:50%; border:2px solid #1B3A6B;"></span><span style="font-size:15.5px; font-weight:700;">인터넷 이전 신청</span></div>
+                <div style="margin-top:16px; padding:12px 14px; background:#F4F2EC; border-radius:10px;"><p style="margin:0; font-size:11.5px; font-weight:700; color:#A29C90;">다음 예정</p><p style="margin:5px 0 0; font-size:13px; color:#8A857B;">엘리베이터 사용 예약 · 3월 13일</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- comment -->
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #1B3A6B; border-radius:16px; padding:20px 24px;">
+        <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:6px;"><span style="font-size:12px; font-weight:800; background:#FBEAE5; color:#C0341D; border-radius:6px; padding:2px 9px;">High</span><span style="font-size:12px; font-weight:700; color:#6E6B64;">피드백 #2 · Codex High-A</span></div>
+        <div style="display:grid; gap:14px; margin-top:8px;">
+          <div style="display:flex; gap:12px;"><span style="flex:none; display:flex; width:22px; height:22px; border-radius:50%; background:#3654FF; color:#fff; font-size:12px; font-weight:800; align-items:center; justify-content:center;">1</span><p style="margin:0; font-size:14px; line-height:1.65;"><strong>오늘 화면엔 실제로 실행할 1행만.</strong> "지금 할 일" 하나에 완료 체크. 사용자의 시선이 갈 곳이 하나로 좁혀짐.</p></div>
+          <div style="display:flex; gap:12px;"><span style="flex:none; display:flex; width:22px; height:22px; border-radius:50%; background:#3654FF; color:#fff; font-size:12px; font-weight:800; align-items:center; justify-content:center;">2</span><p style="margin:0; font-size:14px; line-height:1.65;"><strong>예고가 필요하면 완료체크 없는 회색 보조정보로.</strong> "다음 예정"은 정보일 뿐 조작 대상이 아니므로 체크박스를 떼고 톤을 낮춤 → 중복·오해 소멸.</p></div>
+        </div>
+        <div style="margin-top:16px; display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div style="background:#EDF3EC; border-radius:10px; padding:11px 13px;"><p style="margin:0; font-size:12px; font-weight:800; color:#1F6A3E;">기대효과</p><p style="margin:5px 0 0; font-size:13px; line-height:1.55; color:#35563A;">"어느 걸 체크해야 하지" 판단 비용 제거 · 오늘 화면이 실행형으로.</p></div>
+          <div style="background:#F7F6F2; border-radius:10px; padding:11px 13px;"><p style="margin:0; font-size:12px; font-weight:800; color:#8A857B;">하지 말 것</p><p style="margin:5px 0 0; font-size:13px; line-height:1.55; color:#6E6B64;">보조정보에 체크박스·완료 스타일 재부여 금지.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== G : 회고 인라인 ===== -->
+  <section id="g" data-screen-label="G 회고 인라인" style="max-width: 1180px; margin: 0 auto; padding: 34px 32px 10px;">
+    <div style="display:flex; align-items:baseline; gap:12px;">
+      <span style="font-size:13px; font-weight:800; color:#1B3A6B;">개선안 G</span>
+      <h2 style="margin:0; font-size:26px; font-weight:800; letter-spacing:-0.02em;">회고를 가볍게 — 항목별 인라인 메모 → 자동 수집</h2>
+    </div>
+    <p style="margin:8px 0 0; max-width:960px; font-size:14.5px; color:#6E6B64;">피드백 #8 — 끝나고 몰아서 쓰는 무거운 회고 대신, 실행 중 남긴 메모가 마지막에 자동으로 모이게.</p>
+
+    <div style="display:grid; grid-template-columns: 340px 340px 1fr; gap:24px; align-items:start; margin-top:22px;">
+      <!-- inline memo -->
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <span style="font-size:12px; font-weight:800; color:#6E6B64; background:#F0EEE8; border-radius:6px; padding:3px 10px; align-self:flex-start;">실행 중 · 항목 메모</span>
+        <div style="position:relative; width:320px;">
+          <div style="position:absolute; top:150px; left:-9px; z-index:5;"><span style="display:flex; width:22px; height:22px; border-radius:50%; background:#3654FF; color:#fff; font-size:12px; font-weight:800; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.25);">1</span></div>
+          <div style="width:320px; background:#111; border-radius:40px; padding:12px; box-shadow:0 24px 50px rgba(16,26,43,0.20);">
+            <div style="background:#F4F2EC; border-radius:30px; overflow:hidden; height:520px; display:flex; flex-direction:column;">
+              <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 22px 6px; font-size:13px; font-weight:700;"><span>9:41</span><span style="letter-spacing:1px;">● ● ●</span></div>
+              <div style="padding:6px 18px 12px;"><p style="margin:0; font-size:16px; font-weight:800;">이사 준비</p></div>
+              <div style="flex:1; padding:0 16px;">
+                <div style="background:#fff; border:1px solid #E7E4DD; border-radius:12px; overflow:hidden;">
+                  <div style="display:flex; align-items:center; gap:12px; padding:14px; border-bottom:1px solid #EFEDE7;"><span style="flex:none; width:22px; height:22px; border-radius:50%; background:#1F6A3E; color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px;">✓</span><span style="flex:1; font-size:14px; color:#9A968C; text-decoration:line-through;">이삿짐센터 견적 비교</span><span style="font-size:16px; color:#3654FF;">✎</span></div>
+                  <div style="padding:0 14px 12px 48px;"><div style="background:#EEF1FF; border-radius:10px; padding:9px 12px;"><p style="margin:0; font-size:12.5px; line-height:1.5; color:#2A3570;">A업체가 15만원 쌌음. 다음엔 3주 전에 예약할 것.</p></div></div>
+                  <div style="display:flex; align-items:center; gap:12px; padding:14px;"><span style="flex:none; width:22px; height:22px; border-radius:50%; border:2px solid #C4C0B6;"></span><span style="flex:1; font-size:14px; font-weight:600;">인터넷 이전 신청</span><span style="font-size:16px; color:#C4C0B6;">✎</span></div>
+                </div>
+              </div>
+              <div style="height:16px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- retro screen -->
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <span style="font-size:12px; font-weight:800; color:#6E6B64; background:#F0EEE8; border-radius:6px; padding:3px 10px; align-self:flex-start;">마무리 · 자동 수집</span>
+        <div style="position:relative; width:320px;">
+          <div style="position:absolute; top:130px; left:-9px; z-index:5;"><span style="display:flex; width:22px; height:22px; border-radius:50%; background:#3654FF; color:#fff; font-size:12px; font-weight:800; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.25);">2</span></div>
+          <div style="width:320px; background:#111; border-radius:40px; padding:12px; box-shadow:0 24px 50px rgba(16,26,43,0.20);">
+            <div style="background:#F4F2EC; border-radius:30px; overflow:hidden; height:520px; display:flex; flex-direction:column;">
+              <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 22px 6px; font-size:13px; font-weight:700;"><span>9:41</span><span style="letter-spacing:1px;">● ● ●</span></div>
+              <div style="padding:6px 18px 12px;"><p style="margin:0; font-size:16px; font-weight:800;">이사 준비 마무리 🎉</p><p style="margin:3px 0 0; font-size:12.5px; color:#8A857B;">8개 모두 완료 · 남긴 메모 3개</p></div>
+              <div style="flex:1; padding:0 16px; overflow:hidden;">
+                <p style="margin:0 0 8px; font-size:12px; font-weight:700; color:#8A857B;">이번에 남긴 메모</p>
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                  <div style="background:#fff; border:1px solid #E7E4DD; border-radius:12px; padding:11px 13px;"><p style="margin:0; font-size:11.5px; font-weight:700; color:#8A857B;">이삿짐센터 견적 비교</p><p style="margin:4px 0 0; font-size:13px; line-height:1.5;">A업체가 15만원 쌌음. 다음엔 3주 전에 예약할 것.</p></div>
+                  <div style="background:#fff; border:1px solid #E7E4DD; border-radius:12px; padding:11px 13px;"><p style="margin:0; font-size:11.5px; font-weight:700; color:#8A857B;">인터넷 이전 신청</p><p style="margin:4px 0 0; font-size:13px; line-height:1.5;">기사님 방문 오전 예약이 편함.</p></div>
+                </div>
+              </div>
+              <div style="padding:12px 16px 20px;"><button style="width:100%; background:#1B3A6B; color:#fff; border:none; border-radius:14px; padding:14px; font-size:14.5px; font-weight:800; cursor:pointer;">회고 저장</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- comment -->
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #1B3A6B; border-radius:16px; padding:20px 24px;">
+        <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:6px;"><span style="font-size:12px; font-weight:800; background:#F0EEE8; color:#6E6B64; border-radius:6px; padding:2px 9px;">Low~Medium</span><span style="font-size:12px; font-weight:700; color:#6E6B64;">피드백 #8</span></div>
+        <div style="display:grid; gap:14px; margin-top:8px;">
+          <div style="display:flex; gap:12px;"><span style="flex:none; display:flex; width:22px; height:22px; border-radius:50%; background:#3654FF; color:#fff; font-size:12px; font-weight:800; align-items:center; justify-content:center;">1</span><p style="margin:0; font-size:14px; line-height:1.65;"><strong>각 항목에 작은 "메모" 아이콘(✎) 하나.</strong> 실행하다 떠오른 걸 그 자리에서 한 줄. 새 화면·플로우 없이 기존 항목에 인라인으로 얹음 — 이게 안 복잡하게 하는 열쇠.</p></div>
+          <div style="display:flex; gap:12px;"><span style="flex:none; display:flex; width:22px; height:22px; border-radius:50%; background:#3654FF; color:#fff; font-size:12px; font-weight:800; align-items:center; justify-content:center;">2</span><p style="margin:0; font-size:14px; line-height:1.65;"><strong>Flow를 다 끝내면 남긴 메모들이 회고 화면에 자동으로 모임.</strong> 몰아서 새로 쓰는 게 아니라 이미 쓴 것을 보여줄 뿐 — 회고의 심리적 문턱이 0에 가까워짐.</p></div>
+        </div>
+        <div style="margin-top:16px; display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div style="background:#EDF3EC; border-radius:10px; padding:11px 13px;"><p style="margin:0; font-size:12px; font-weight:800; color:#1F6A3E;">기대효과</p><p style="margin:5px 0 0; font-size:13px; line-height:1.55; color:#35563A;">"회고 쓰기" 부담 없이 다음 이사·여행 때 재사용할 팁이 쌓임.</p></div>
+          <div style="background:#F7F6F2; border-radius:10px; padding:11px 13px;"><p style="margin:0; font-size:12px; font-weight:800; color:#8A857B;">하지 말 것</p><p style="margin:5px 0 0; font-size:13px; line-height:1.55; color:#6E6B64;">필수 입력·별점·감정 태그 강제 금지 · 메모 없으면 회고 화면 생략.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SUMMARY ===== -->
+  <section id="sum" data-screen-label="우선순위 요약" style="max-width: 1180px; margin: 0 auto; padding: 36px 32px 56px;">
+    <div style="display:flex; align-items:baseline; gap:12px;">
+      <span style="font-size:13px; font-weight:800; color:#3654FF;">요약</span>
+      <h2 style="margin:0; font-size:26px; font-weight:800; letter-spacing:-0.02em;">우선순위 — 무엇부터</h2>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:12px; margin-top:20px;">
+      <div style="background:#fff; border:1px solid #E7E4DD; border-top:4px solid #C0341D; border-radius:14px; padding:16px 18px;"><p style="margin:0; font-size:13px; font-weight:800; color:#C0341D;">0 · 버그 (개발 선행)</p><p style="margin:8px 0 0; font-size:13.5px; line-height:1.6; color:#44413B;">B1 빌드/접근 · <strong>B2 KST 날짜 밀림</strong> · B3 저장 유실. UX보다 먼저.</p></div>
+      <div style="background:#fff; border:1px solid #E7E4DD; border-top:4px solid #C0341D; border-radius:14px; padding:16px 18px;"><p style="margin:0; font-size:13px; font-weight:800; color:#C0341D;">High · 지금</p><p style="margin:8px 0 0; font-size:13.5px; line-height:1.6; color:#44413B;"><strong>B</strong> 완료 인라인 · <strong>E</strong> 날짜 두 모드 · <strong>F</strong> 중복 표현 제거. 신뢰·핵심 루프에 직결.</p></div>
+      <div style="background:#fff; border:1px solid #E7E4DD; border-top:4px solid #C7A128; border-radius:14px; padding:16px 18px;"><p style="margin:0; font-size:13px; font-weight:800; color:#8A6D1B;">Medium · 다음</p><p style="margin:8px 0 0; font-size:13.5px; line-height:1.6; color:#44413B;"><strong>A</strong> 편집 폼 접기 · <strong>C</strong> 날짜없음 트레이 · <strong>D</strong> 내보내기 범위.</p></div>
+      <div style="background:#fff; border:1px solid #E7E4DD; border-top:4px solid #B7B2A6; border-radius:14px; padding:16px 18px;"><p style="margin:0; font-size:13px; font-weight:800; color:#6E6B64;">Low · 나중</p><p style="margin:8px 0 0; font-size:13.5px; line-height:1.6; color:#44413B;"><strong>G</strong> 인라인 메모 → 회고 수집. 위 안정화 후.</p></div>
+    </div>
+    <div style="margin-top:16px; background:#101A2B; color:#F0F3F8; border-radius:16px; padding:20px 22px;">
+      <p style="margin:0; font-size:14.5px; line-height:1.75;"><strong style="color:#9CC4FF;">한 줄 요약</strong> — 7개 안의 공통 원리는 <em>"상태를 글로 설명하지 말고 화면에서 바로 보이고·조작되게"</em>입니다. 완료는 취소선으로(B), 날짜 규칙은 뱃지로(E), 예고는 톤으로(F), 옵션은 접어서(A) — 전부 텍스트 설명을 UI 상태로 옮긴 것. <span style="color:rgba(240,243,248,0.6);">단, B2 날짜 버그를 먼저 잡지 않으면 E는 모래 위의 집입니다.</span></p>
+    </div>
+    <p style="margin:16px 0 0; font-size:12.5px; color:#9A968C; text-wrap:pretty;">FlowMe UX 개선안 · 사용자/QA/코드 리뷰 피드백 종합 · 목업은 방향 제시용 스케치(390px 기준) · 실제 컴포넌트 스펙은 채택 후 화면별로 상세화.</p>
+  </section>
+
+</div>
+</x-dc>
+</body>
+</html>

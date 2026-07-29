@@ -1,0 +1,166 @@
+{
+  "schemaVersion": 1,
+  "program": "P30 independent design review (claude_design)",
+  "capturedAt": "2026-07-23",
+  "productionMergeSha": "b3c8500be3b6aa673e2078d02a986f7cae6fe8bf",
+  "canonicalUrl": "https://flowme2605.vercel.app",
+  "reviewEvidenceKind": [
+    "current_source",
+    "current_package_screenshot",
+    "current_production_interaction",
+    "heuristic_simulation"
+  ],
+  "liveInteraction": "inaccessible (실행 결과 not_tested)",
+  "observedUserCount": 0,
+  "appCodeModified": false,
+  "citedPackageMetrics": {
+    "unit": "584/584",
+    "fullE2e": "304/304",
+    "p30E2e": "12/12",
+    "build": "18/18",
+    "productionSmoke": "13/13",
+    "note": "인용이며 재실행 아님. 구조·계약 증거, 사용성 증거 아님."
+  },
+  "findings": [
+    {
+      "id": "H-1",
+      "severity": "High",
+      "route": [
+        "/f/moving-d30-basic",
+        "/flow-maps/moving-d30"
+      ],
+      "viewport": [
+        "390x844",
+        "1024x768",
+        "1440x900"
+      ],
+      "issue": "공개 진입 문법 이원화(artifact-first vs legacy outline-first)",
+      "evidenceKind": [
+        "current_package_screenshot",
+        "current_source"
+      ],
+      "candidate": "P31-1"
+    },
+    {
+      "id": "M-1",
+      "severity": "Medium",
+      "route": [
+        "/f/moving-d30-basic"
+      ],
+      "viewport": [
+        "390x844",
+        "1440x900"
+      ],
+      "issue": "저장 결정영역 3구획 공존 + 동사 혼선",
+      "evidenceKind": [
+        "current_package_screenshot",
+        "heuristic_simulation"
+      ],
+      "candidate": "P31-2"
+    },
+    {
+      "id": "M-2",
+      "severity": "Medium",
+      "route": [
+        "/calendar?demo=ux50"
+      ],
+      "viewport": [
+        "1024x768",
+        "1440x900"
+      ],
+      "issue": "월간 grid 축약 제목 벽, 시각 구분 약함",
+      "evidenceKind": [
+        "current_package_screenshot",
+        "fixture_only"
+      ],
+      "candidate": "P31-4"
+    },
+    {
+      "id": "M-3",
+      "severity": "Medium",
+      "route": [
+        "/calendar?demo=ux20"
+      ],
+      "viewport": [
+        "390x844"
+      ],
+      "issue": "grid 키보드 초점 정지 ~76(agenda/tabs 도달)",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_source"
+      ],
+      "candidate": "P31-3"
+    },
+    {
+      "id": "M-4",
+      "severity": "Medium",
+      "route": [
+        "/calendar?demo=ux50",
+        "/calendar"
+      ],
+      "viewport": [
+        "390x844",
+        "1024x768",
+        "1440x900"
+      ],
+      "issue": "scale·undated가 동명 합성 fixture로만 검증(발견성 관찰 공백)",
+      "evidenceKind": [
+        "fixture_only",
+        "current_package_screenshot"
+      ],
+      "candidate": "관찰 Q4·Q5"
+    },
+    {
+      "id": "L-1",
+      "severity": "Low",
+      "route": [
+        "/f",
+        "/flow-maps",
+        "receipt"
+      ],
+      "viewport": [
+        "390x844",
+        "1024x768",
+        "1440x900"
+      ],
+      "issue": "동사 시작/저장 불일치",
+      "evidenceKind": [
+        "current_package_screenshot"
+      ],
+      "candidate": "P31-2"
+    },
+    {
+      "id": "L-2",
+      "severity": "Low",
+      "route": [
+        "/f/curated-allblanc-morning-workout"
+      ],
+      "viewport": [
+        "390x844"
+      ],
+      "issue": "루틴 미리보기 창↔종료 횟수 축 혼동 여지",
+      "evidenceKind": [
+        "current_package_screenshot"
+      ],
+      "candidate": "관찰 Q6"
+    },
+    {
+      "id": "L-3",
+      "severity": "Low",
+      "route": [
+        "/calendar?demo=ux50"
+      ],
+      "viewport": [
+        "1024x768"
+      ],
+      "issue": "대형 원시 카운트(날짜 929·반복 93) 의미 즉시성 미확인",
+      "evidenceKind": [
+        "fixture_only"
+      ],
+      "candidate": "관찰"
+    }
+  ],
+  "verdict": "bounded_revision",
+  "confidence": "4/5",
+  "structuralReopen": false
+}

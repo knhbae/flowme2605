@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>FlowMe P30 production 독립 검토 · claude_design · P31 후보</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <meta name="design_doc_mode" content="canvas">
+  <style>
+    html, body { margin: 0; padding: 0; background: #F2F1EC; }
+    * { box-sizing: border-box; }
+    code { font-family: 'SF Mono', ui-monospace, Menlo, monospace; font-size: 0.9em; }
+    a { color: #3654FF; }
+    a:hover { color: #1F3BD6; }
+    figure { margin: 0; }
+    .shot { width: 100%; display: block; border: 1px solid #DDD9D0; border-radius: 8px; background: #fff; }
+    .cap { margin: 6px 0 0; font-size: 11px; font-family: 'SF Mono', ui-monospace, Menlo, monospace; color: #6E6B64; line-height: 1.45; }
+    table { border-collapse: collapse; }
+  </style>
+</helmet>
+<template id="__bundler_thumbnail" data-bg-color="#101A2B"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#101A2B"></rect><text x="50" y="40" font-family="sans-serif" font-size="25" font-weight="800" fill="#FFFFFF" text-anchor="middle">P30</text><text x="50" y="63" font-family="sans-serif" font-size="8.5" font-weight="700" fill="#8FE3B0" text-anchor="middle">CLAUDE_DESIGN</text><text x="50" y="77" font-family="sans-serif" font-size="8.5" font-weight="700" fill="#8FE3B0" text-anchor="middle">JOURNEY REVIEW</text></svg></template>
+<div style="font-family: 'Pretendard Variable', Pretendard, -apple-system, 'Segoe UI', sans-serif; color: #1B1A17; line-height: 1.6; letter-spacing: -0.01em;">
+
+  <header data-screen-label="헤더" style="background: #101A2B; color: #F0F3F8; padding: 52px 28px 44px;">
+    <div style="max-width: 1140px; margin: 0 auto;">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px;">
+        <span style="display: inline-flex; align-items: center; border: 1px solid rgba(143,227,176,0.42); background: rgba(24,58,44,0.5); border-radius: 999px; padding: 4px 12px; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; color: #8FE3B0;">FLOWME · P30 PRODUCTION 독립 검토 · reviewerRole=claude_design</span>
+        <span style="font-size: 12px; font-weight: 600; color: rgba(240,243,248,0.6);">independent design review · production merge <code>b3c8500</code> / PR #148 · closeout <code>4c5bbb34</code> / PR #149 · 8 personas × 3 sessions = 24 cells · 관찰 사용자 0명</span>
+      </div>
+      <h1 style="margin: 18px 0 0; font-size: 37px; line-height: 1.24; font-weight: 800; letter-spacing: -0.02em; max-width: 1060px; text-wrap: balance;">P30은 P29 검토가 남긴 <em>중첩 상태·모바일 correctness·발견성</em> gap을 실제로 닫았다.<br>모바일 export는 <em>fixed layer와 교차 0</em>, 초점 순서는 <em>본문 우선</em>, 저장 전은 <em>결과 우선·조정은 한 목적</em>, My Flow는 <em>다음 행동 1개</em>, Calendar는 <em>50+ scope·compact identity</em>, 루틴은 <em>요약 우선</em>으로 production에 서 있다.</h1>
+      <p style="margin: 16px 0 0; max-width: 1020px; font-size: 16px; line-height: 1.7; color: rgba(240,243,248,0.82); text-wrap: pretty;">전체 판정은 <strong>bounded_revision</strong>입니다 — <strong>아키텍처·데이터 계약·4탭 IA·public <code>/f</code>는 keep</strong>, <strong>structural_reopen 대상은 없음</strong>. P29 검토가 지목한 Blocking/High 및 밀도 Medium은 production screenshot·source에서 <strong>실제 해소</strong>를 확인했습니다. 신규 Findings: <strong>Blocking 0 · High 2 · Medium 10 · Low 3</strong>(소유자 production 모바일 walkthrough로 <strong>H-2·M-5~M-10 보강</strong> — <a href="#owner" style="color:#8FE3B0;">§모바일 피드백</a>). H-1은 <em>P30이 명시적으로 미룬</em> <code>/f</code>(artifact-first)와 <code>/flow-maps</code>(legacy outline-first)의 <strong>공개 진입 문법 이원화</strong>이고, H-2는 <strong>콘텐츠 shape별(이사·결혼·홈트) 공개 상세가 서로 다른 화면처럼 읽혀</strong> 특히 결혼(타임라인)에서 “무엇을 눌러 어디서 저장하나” 흐름이 흐려진다는 점입니다 — 둘 다 밀도가 아니라 <em>모델 일관성·신뢰</em>의 단절입니다. 자동화·smoke·heuristic은 <strong>사용성 성공이 아니며</strong>, 실행 결과와 세션 간 persistence는 이 검토에서 직접 수행하지 못해 <code>not_tested</code>로 분리했습니다. <strong>앱 코드는 수정하지 않았습니다.</strong></p>
+    </div>
+  </header>
+
+  <nav style="position: sticky; top: 0; z-index: 50; background: rgba(242,241,236,0.92); backdrop-filter: blur(8px); border-bottom: 1px solid #DDD9D0;">
+    <div style="max-width: 1140px; margin: 0 auto; padding: 10px 28px; display: flex; flex-wrap: wrap; gap: 6px;">
+      <a href="#plain" style="text-decoration: none; color: #FFFFFF; background: #1F6A3E; border: 1px solid #1F6A3E; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">쉬운 정리</a>
+      <a href="#verdict" style="text-decoration: none; color: #F0F3F8; background: #1B3A6B; border: 1px solid #1B3A6B; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">1 판정</a>
+      <a href="#findings" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">2 Findings</a>
+      <a href="#owner" style="text-decoration: none; color: #FFFFFF; background: #B4530A; border: 1px solid #B4530A; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">모바일 피드백</a>
+      <a href="#scorecard" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">3 24-cell</a>
+      <a href="#matrix" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">4 단절 matrix</a>
+      <a href="#surface" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">5 keep/revise/defer</a>
+      <a href="#compare" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">현재↔제안</a>
+      <a href="#chains" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">6 약한 사슬</a>
+      <a href="#budget" style="text-decoration: none; color: #F0F3F8; background: #7A3EA0; border: 1px solid #7A3EA0; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">복잡도 예산</a>
+      <a href="#p31" style="text-decoration: none; color: #F0F3F8; background: #1F6A3E; border: 1px solid #1F6A3E; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">7 P31</a>
+      <a href="#ask" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">8 관찰 질문</a>
+      <a href="#publish" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">9 검증·publish</a>
+    </div>
+  </nav>
+
+  <!-- ===== 쉬운 정리 (plain-language) ===== -->
+  <section id="plain" data-screen-label="쉬운 정리" style="max-width: 1140px; margin: 0 auto; padding: 24px 28px 4px;">
+    <div style="background:#FFFFFF; border:1px solid #C4DBC2; border-left:5px solid #1F6A3E; border-radius:14px; padding:20px 22px;">
+      <p style="margin:0; font-size:15px; font-weight:800; color:#1F6A3E;">쉬운 말로 한눈에 (아래 자세한 부분은 용어가 많으니, 이 카드만 읽어도 됩니다)</p>
+      <p style="margin:12px 0 0; font-size:14.5px; line-height:1.75; color:#1B1A17;"><strong>이 문서가 뭐냐</strong> · 지금 라이브에 올라간 화면을 훑어보고, <strong>그대로 둘지 / 조금 다듬을지 / 크게 다시 볼지</strong>를 정리한 것입니다. 실제 사용자 테스트는 아니고, 코드·화면 캐처를 본 것입니다.</p>
+      <p style="margin:10px 0 0; font-size:14.5px; line-height:1.75; color:#1B1A17;"><strong>결론 한 줄</strong> · <strong style="color:#1F6A3E;">큰 틀은 좋습니다. 그대로 두세요.</strong> 다만 몇 군데를 다듬으면 더 쉽워집니다. 갈아엎을 필요는 없어요.</p>
+
+      <p style="margin:16px 0 6px; font-size:13.5px; font-weight:800; color:#1B3A6B;">고치면 좋은 것 (쉽게)</p>
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px,1fr)); gap:6px 22px;">
+        <p style="margin:4px 0; font-size:14px; line-height:1.7; color:#1B1A17;"><strong>1.</strong> 같은 ‘이사’ Flow인데 <strong>들어오는 링크에 따라 첫 화면이 달라요</strong> → 하나로 통일. <span style="color:#8E8B84;">(H-1)</span></p>
+        <p style="margin:4px 0; font-size:14px; line-height:1.7; color:#1B1A17;"><strong>2.</strong> 저장 화면에 <strong>버튼이 너무 많고 “시작”인지 “저장”인지 헷갈려요</strong> → 결정 하나·말 하나로. <span style="color:#8E8B84;">(M-1)</span></p>
+        <p style="margin:4px 0; font-size:14px; line-height:1.7; color:#1B1A17;"><strong>3.</strong> 콘텐츠(이사·결혼·홈트)마다 <strong>상세 화면이 딱 다른 화면 같아서 매번 새로 배워요</strong> → 뼈대를 같게. 결혼이 제일 심해요. <span style="color:#8E8B84;">(H-2)</span></p>
+        <p style="margin:4px 0; font-size:14px; line-height:1.7; color:#1B1A17;"><strong>4.</strong> 달력 칸 글자가 <strong>다 잘려서 뭐가 뭐지 안 보여요</strong> → 색·개수로. <span style="color:#8E8B84;">(M-2)</span></p>
+        <p style="margin:4px 0; font-size:14px; line-height:1.7; color:#1B1A17;"><strong>5.</strong> 달력을 <strong>키보드로 넘기려면 날짜를 다 눌러야 해요</strong> → 건너뛰기. <span style="color:#8E8B84;">(M-3)</span></p>
+        <p style="margin:4px 0; font-size:14px; line-height:1.7; color:#1B1A17;"><strong>6.</strong> <strong>홈과 ‘Flow 찾기’가 역할이 겹첤요</strong> → 홈은 ‘이어서 하기 + 다른 사람 사용 모습’으로. <span style="color:#8E8B84;">(M-5)</span></p>
+        <p style="margin:4px 0; font-size:14px; line-height:1.7; color:#1B1A17;"><strong>7.</strong> 찾기 카드는 <strong>원문 클릭되게, 버튼은 “더보기”, 후기·사용 수를 보여주기</strong>. <span style="color:#8E8B84;">(M-6)</span></p>
+        <p style="margin:4px 0; font-size:14px; line-height:1.7; color:#1B1A17;"><strong>8.</strong> ‘내 플로우’가 <strong>한 화면에 카드가 너무 많아 정신없어요</strong> → 한 화면엔 한 가지에만 집중. <span style="color:#8E8B84;">(M-7)</span></p>
+        <p style="margin:4px 0; font-size:14px; line-height:1.7; color:#1B1A17;"><strong>9.</strong> 달력 항목 상세를 <strong>아래로 펼치지 말고 팝업(시트)으로</strong>. <span style="color:#8E8B84;">(M-8)</span></p>
+        <p style="margin:4px 0; font-size:14px; line-height:1.7; color:#1B1A17;"><strong>10.</strong> 같은 동작인데 <strong>화면마다 이름이 달라요</strong>(조정·시작·보관…) → 말을 통일. <span style="color:#8E8B84;">(M-9)</span></p>
+        <p style="margin:4px 0; font-size:14px; line-height:1.7; color:#1B1A17;"><strong>11.</strong> <strong>Flow 삭제가 어디 있는지 안 보여요</strong> (지금은 ‘보관’으로 메뉴 안에 숨음) → 잘 보이게 + 되돌리기. <span style="color:#8E8B84;">(M-10)</span></p>
+      </div>
+
+      <p style="margin:16px 0 6px; font-size:13.5px; font-weight:800; color:#1B3A6B;">자주 나오는 어려운 말 (짧게)</p>
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap:4px 20px; font-size:13px; line-height:1.65; color:#44413B;">
+        <p style="margin:3px 0;"><code>bounded_revision</code> = 조금만 다듬기(갈아엎기 아님)</p>
+        <p style="margin:3px 0;"><code>not_tested</code> = 이번엔 직접 눌러보지 못함</p>
+        <p style="margin:3px 0;"><code>fixture</code> = 데모용 가짜 데이터</p>
+        <p style="margin:3px 0;"><code>artifact-first</code> = 결과부터 보여주기</p>
+        <p style="margin:3px 0;">진입 문법 = 들어올 때 첫 화면의 짜임새</p>
+        <p style="margin:3px 0;">provenance = 출처(어디서 온 내용인지)</p>
+      </div>
+      <p style="margin:14px 0 0; font-size:12.5px; color:#6E6B64;">급하면 이 카드만 보셔도 됩니다. 개발자·검증용 정밀한 근거는 아래 각 섹션에 그대로 두었습니다.</p>
+    </div>
+  </section>
+
+  <section style="max-width: 1140px; margin: 0 auto; padding: 24px 28px 4px;">
+    <div style="background: #E9EEF6; border: 1px solid #C4D2E8; border-radius: 14px; padding: 16px 18px;">
+      <p style="margin: 0; font-size: 13px; font-weight: 800; color: #1B3A6B;">이번 검토의 근거와 한계 (evidence boundary)</p>
+      <p style="margin: 8px 0 0; font-size: 13.5px; line-height: 1.72; color: #2E4666;">이 검토는 <strong>실제 사용자 관찰이 아니다</strong>(observed users 0명). 근거는 네 층입니다. ① <strong><code>current_source</code></strong> — P30 final package(<code>README.md · audit.md · route-evidence.json · journey-results.json · production-smoke/results.json · screenshot-manifest.json</code>)와 현재 <code>STATUS/ROADMAP/PRODUCT_PRINCIPLES</code>를 GitHub main <code>4c5bbb34</code>에서 직접 읽음. ② <strong><code>current_package_screenshot</code></strong> — canonical <strong>production smoke 캡처 13종</strong>(390/1024/1440, merge <code>b3c8500</code> / deployment <code>5557201045</code>)과 구현 캡처 17종을 직접 열어 확인. 이 검토의 production 화면 판단은 <em>이 13종</em>에 근거합니다. ③ 제한적 <strong><code>current_production_interaction</code></strong> — production focus-order trace(<code>/my</code>, <code>/calendar</code>)를 직접 읽어 초점 흐름을 분석. ④ 그 위의 <strong><code>heuristic_simulation</code></strong>. <strong>결정적 한계</strong>: 이 환경에서 production 하위 route의 hydration 이후 클릭(저장·완료·reopen·라이브 배치/undo·클립보드 복사)과 세션 간 reload persistence를 <strong>직접 수행하지 못했다</strong>(<code>inaccessible</code>). 따라서 <strong>실행 결과와 persistence 판정은 <code>not_tested</code></strong>로 분리했고, 화면·위계 판정과 명확히 구분합니다. 자동 E2E <code>304/304</code>·unit <code>584/584</code>·smoke <code>13/13</code>은 <strong>구조·계약 증거</strong>이지 사용성 증거가 아닙니다.</p>
+    </div>
+  </section>
+
+  <!-- ===== 1 판정 ===== -->
+  <section id="verdict" data-screen-label="1 전체 판정" style="max-width: 1140px; margin: 0 auto; padding: 26px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #1B3A6B;">SECTION 1</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">실행 정보 · 전체 verdict</h2>
+    </div>
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:10px; margin-top:16px;">
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:14px 16px;">
+        <p style="margin:0; font-size:12.5px; font-weight:800; color:#1B3A6B;">실행 정보</p>
+        <div style="margin-top:8px; font-size:13px; line-height:1.75; color:#44413B;">
+          <div><strong>reviewer</strong> · Claude Design (독립 시각·상호작용·여정 검토)</div>
+          <div><strong>lane</strong> · <code>claude_design</code> (시각·interaction·wireframe 중심)</div>
+          <div><strong>production</strong> · <code>flowme2605.vercel.app</code> · merge <code>b3c8500</code> · deploy <code>5557201045</code></div>
+          <div><strong>viewport</strong> · 390×844 · 1024×768 · 1440×900</div>
+          <div><strong>직접 읽음</strong> · P30 package 8종 + STATUS/ROADMAP/PRINCIPLES (<code>current_source</code>)</div>
+          <div><strong>직접 확인</strong> · production smoke 13 + 구현 17 캡처 (<code>current_package_screenshot</code>)</div>
+          <div><strong>직접 분석</strong> · production focus-order trace (<code>current_production_interaction</code>)</div>
+          <div><strong>직접 못함</strong> · 라이브 클릭·세션 reload persistence (<code>inaccessible</code> → 실행 결과 <code>not_tested</code>)</div>
+          <div><strong>observed-user</strong> · <strong>0</strong></div>
+        </div>
+      </div>
+      <div style="background:#101A2B; color:#F0F3F8; border-radius:12px; padding:14px 16px;">
+        <p style="margin:0; font-size:12.5px; font-weight:800; color:#8FE3B0;">전체 판정</p>
+        <p style="margin:8px 0 0; font-size:20px; font-weight:800; letter-spacing:-0.01em;">bounded_revision <span style="font-size:13px; font-weight:700; color:rgba(240,243,248,0.6);">(keep_p30 아키텍처 · structural_reopen 없음)</span></p>
+        <p style="margin:4px 0 0; font-size:13px; color:rgba(240,243,248,0.75);">확신도 <strong style="color:#F0F3F8;">4 / 5</strong> · (관찰 evidence 부재로 5는 아님)</p>
+        <p style="margin:10px 0 0; font-size:13px; line-height:1.7; color:rgba(240,243,248,0.9);"><strong>한 문장 근거</strong> · P29가 지목한 모바일 correctness·밀도 gap이 production에서 <em>실제로</em> 닫혔고 계약 회귀가 없다 → keep_p30. 그러나 <code>/f</code>↔<code>/flow-maps</code> 진입 문법 이원화(H-1)와 대량·키보드 발견성 Medium이 남아 무조건 keep은 이르다 → <strong>bounded_revision</strong>. 구조는 건강해 structural_reopen은 불필요하다.</p>
+      </div>
+      <div style="background:#EDF3EC; border:1px solid #C4DBC2; border-radius:12px; padding:14px 16px;">
+        <p style="margin:0; font-size:12.5px; font-weight:800; color:#1F6A3E;">keep — 흔들면 안 되는 것</p>
+        <p style="margin:8px 0 0; font-size:12.5px; line-height:1.7; color:#2C4A2A;">① source·personal overlay·run·occurrence·export identity 분리(P30 계약 불변) ② artifact-first save-before + 결과 우선 위계 ③ 모바일 export의 fixed-layer 교차 0 + 본문 우선 초점 순서(P30-01/02) ④ My Flow 다음 행동 1개 + secondary 1 + menu ⑤ Calendar 50+ scope collapse·selected-day full identity·undated sheet ⑥ 루틴 요약 우선 ⑦ 4탭 IA·public <code>/f</code>·primary 1+secondary≤2. 이 일곱은 P30의 성과이자 회귀 감시 대상이다.</p>
+      </div>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-top: 12px;">
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:12px 14px;"><p style="margin:0; font-size:24px; font-weight:800; color:#1F6A3E;">0</p><p style="margin:2px 0 0; font-size:12.5px; color:#6E6B64;">Blocking</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:12px 14px;"><p style="margin:0; font-size:24px; font-weight:800; color:#A03A2A;">2</p><p style="margin:2px 0 0; font-size:12.5px; color:#6E6B64;">High (H-1·H-2)</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:12px 14px;"><p style="margin:0; font-size:24px; font-weight:800; color:#8A6D1B;">10</p><p style="margin:2px 0 0; font-size:12.5px; color:#6E6B64;">Medium (M1–M10)</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:12px 14px;"><p style="margin:0; font-size:24px; font-weight:800; color:#6E6B64;">3</p><p style="margin:2px 0 0; font-size:12.5px; color:#6E6B64;">Low (L1–L3)</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:12px 14px;"><p style="margin:0; font-size:20px; font-weight:800; color:#1F6A3E;">회귀 0</p><p style="margin:2px 0 0; font-size:12.5px; color:#6E6B64;">계약 regression</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:12px 14px;"><p style="margin:0; font-size:24px; font-weight:800; color:#1B1A17;">0</p><p style="margin:2px 0 0; font-size:12.5px; color:#6E6B64;">관찰 사용자</p></div>
+    </div>
+    <div style="margin-top:12px; background:#FBFAF7; border:1px solid #E7E4DD; border-radius:12px; padding:14px 16px;">
+      <p style="margin:0; font-size:12.5px; font-weight:800; color:#1B3A6B;">P29 검토가 이월한 gap → P30에서 확인한 해소</p>
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px,1fr)); gap:4px 20px; margin-top:8px; font-size:12.5px; line-height:1.62; color:#44413B;">
+        <p style="margin:3px 0;"><strong style="color:#1F6A3E;">해소</strong> 모바일 export ↔ fixed CTA 교차 → <code>intersectionArea 0</code>, primary가 tabs 위로(P30-01). <code>current_package_screenshot</code></p>
+        <p style="margin:3px 0;"><strong style="color:#1F6A3E;">해소</strong> <code>/my·/calendar</code> 초점 순서 tabs 선행 → header→workspace→tabs <code>ordered:true</code>(P30-02). <code>current_production_interaction</code></p>
+        <p style="margin:3px 0;"><strong style="color:#1F6A3E;">해소</strong> save-before 행별 [수정] 밀도 → 초기 row-edit 0, 24항목은 명시 disclosure(P30-03). <code>current_package_screenshot</code></p>
+        <p style="margin:3px 0;"><strong style="color:#1F6A3E;">해소</strong> My Flow secondary peer 4개 → primary1·secondary1·나머지 menu(P30-04). <code>current_package_screenshot</code></p>
+        <p style="margin:3px 0;"><strong style="color:#1F6A3E;">해소</strong> undated 배치 미검증 → 10→8→undo10 stable ID fixture(P30-05). <code>fixture_only</code></p>
+        <p style="margin:3px 0;"><strong style="color:#8A6D1B;">부분</strong> 월간 cell 시각 구분 → compact identity 도입, 그러나 대량 fixture에서 잔존(M-2). <code>current_package_screenshot</code></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 2 Findings ===== -->
+  <section id="findings" data-screen-label="2 Findings" style="max-width: 1140px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #1B3A6B;">SECTION 2</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">Findings — Blocking 0 · High 2 · Medium 10 · Low 3</h2>
+    </div>
+    <p style="margin: 10px 0 0; max-width:1000px; font-size: 14px; color: #6E6B64;">모든 finding에 route·viewport·재현·기대/실제·사용자 영향·evidenceKind·권장 조치 포함. 모든 조치는 composition/파생 계층이며 <strong>source·personal·run·occurrence·export 계약을 바꾸지 않는다</strong>. 이미 해소된 P29 항목이나 취향 차이를 새 백로그로 되살리지 않았다. 아래 §2는 검토 자체 finding(H-1·M-1~M-4·L-1~3)이고, <strong>소유자 production 모바일 walkthrough</strong>에서 나온 <strong>H-2·M-5~M-10</strong>은 <a href="#owner">§모바일 피드백</a>에 상세히 정리했다.</p>
+
+    <div style="display: grid; gap: 12px; margin-top: 18px;">
+
+      <!-- H-1 -->
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #A03A2A; border-radius:16px; padding:18px 22px;">
+        <div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 12px;"><span style="font-size:12.5px; font-weight:800; background:#F7E9E5; color:#A03A2A; border-radius:6px; padding:2px 9px;">H-1 · HIGH · 최상위 여정 단절</span><h3 style="margin:0; font-size:16.5px; font-weight:800;">같은 이사 콘텐츠가 <code>/f</code>는 <em>결과 우선 artifact-first</em>, <code>/flow-maps</code>는 <em>목록 우선 legacy</em> — 진입 링크에 따라 다른 첫 화면·다른 결정 문법</h3></div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:14px; align-items:start; margin-top:12px;">
+          <figure><img class="shot" src="p30-production-desktop-public-save-before-1440.png" alt="/f artifact-first 1440"><figcaption class="cap"><code>/f/moving-d30-basic</code> 1440 · 결과(캘린더 24개) 먼저 · 우측 결정영역 · primary <code>날짜 없이 시작</code></figcaption></figure>
+          <figure><img class="shot" src="p30-production-flow-map-legacy-1024.png" alt="/flow-maps legacy 1024"><figcaption class="cap"><code>/flow-maps/moving-d30</code> 1024 · <em>목록</em>(저장될 전체 Flow 5단계) 먼저 · <code>그대로 시작 / 내게 맞게 조정</code></figcaption></figure>
+        </div>
+        <p style="margin:12px 0 0; font-size:13.5px; line-height:1.7; color:#44413B;"><strong>route</strong> <code>/f/moving-d30-basic</code> vs <code>/flow-maps/moving-d30</code> · <strong>viewport</strong> 390·1024·1440 · <strong>재현</strong> 두 route 모두 “이사 D-30” 콘텐츠를 다루지만, <code>/f</code>는 <em>실제 결과(캘린더/체크리스트 미리보기)</em>를 먼저 보이고 primary가 <code>날짜 없이 시작</code>인 반면, <code>/flow-maps</code>는 <em>번호가 붙은 단계 목록(1~5)</em>을 먼저 보이고 결정은 <code>그대로 시작 / 내게 맞게 조정</code> 2버튼이다. 두 화면의 <em>정보 순서·동사·조정 모델이 서로 다르다</em>.</p>
+        <p style="margin:8px 0 0; font-size:13.5px; line-height:1.7; color:#44413B;"><strong>기대</strong> PRODUCT_PRINCIPLES “첫 화면은 어떤 실행 artifact가 되는지 답한다” + 하나의 저장 문법. <strong>실제</strong> P30-07이 <code>/f</code>의 dead conditional은 제거했으나 <code>/flow-maps</code>는 <em>active production consumer</em>라 legacy를 <strong>명시적으로 보존</strong>(<code>P30-LEGACY-COMPOSITION-ACTIVE · removalDecision: deferred_active_consumer</code>). 즉 이 이원화는 <em>버그가 아니라 알려진 미결</em>이다. 그러나 사용자는 그 경계를 모르므로, 원문/검색을 통해 <code>/flow-maps</code>로 들어온 사용자(P6)와 공유 링크로 <code>/f</code>에 들어온 사용자(P1·P5)는 <strong>서로 다른 제품을 경험</strong>한다.</p>
+        <p style="margin:8px 0 0; font-size:13px; color:#A03A2A;"><strong>영향</strong> · provenance·신뢰 사슬(§6-1)의 첫 접점에서 “같은 Flow가 같은 객체인가”가 흔들린다. 재방문 시 어느 경로로 다시 왔는지에 따라 조정 모델이 달라 학습이 전이되지 않는다. <strong>evidenceKind</strong> <code>current_package_screenshot</code>(두 production 캡처) + <code>current_source</code>(route-evidence <code>P30-07</code>)</p>
+        <p style="margin:8px 0 0; font-size:13px; color:#1F6A3E;"><strong>조치</strong> <code>/flow-maps</code>를 <code>/f</code>와 <em>같은 artifact-first save-before</em>로 수렴(legacy는 rollback flag 뒤 보존). 계약·라우트·데이터 불변, composition만 → <strong>P31-1</strong>. High인 이유: 밀도가 아니라 <em>제품 정체성·신뢰</em> 사슬의 단절이기 때문.</p>
+      </div>
+
+      <!-- M-1 -->
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #8A6D1B; border-radius:16px; padding:18px 22px;">
+        <div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 12px;"><span style="font-size:12.5px; font-weight:800; background:#FFF7E9; color:#8A6D1B; border-radius:6px; padding:2px 9px;">M-1 · MEDIUM</span><h3 style="margin:0; font-size:16.5px; font-weight:800;"><code>/f</code> 저장 결정 영역이 여전히 <em>3구획</em> — 날짜 입력 + intent 3버튼 + [조정] + primary가 공존하고, 동사가 <code>시작</code>/<code>저장</code>으로 섞임</h3></div>
+        <div style="display:grid; grid-template-columns: 210px 1fr; gap:18px; align-items:start; margin-top:10px;">
+          <figure><img class="shot" src="p30-production-public-export-390.png" alt="/f 390 decision zone"><figcaption class="cap"><code>/f</code> 390 · 결과·토글·목록은 정리됐으나 하단 <code>이사일 입력 + 날짜 정하기/없이/예시 + 전체 Flow + 가져가기</code>가 순차로 쌓임</figcaption></figure>
+          <div>
+            <p style="margin:0; font-size:13.5px; line-height:1.7; color:#44413B;"><strong>route</strong> <code>/f/moving-d30-basic</code> · <strong>viewport</strong> 390·1440 · <strong>재현</strong> P30-03이 <em>행별</em> 수정 밀도를 없앤 것(초기 row-edit 0)은 확인된다. 그러나 <em>결정</em> 영역은 <code>이사일 [입력]</code> + <code>[날짜 정하기][날짜 없이][예시만 보기]</code> segmented + (1440)<code>[내게 맞게 조정]</code> + primary <code>[날짜 없이 시작]</code>이 여전히 peer로 공존한다. marker <code>P30-SAVE-BEFORE-SINGLE-DECISION</code>은 <em>save-before가 한 표면</em>임을 보증하지만, 그 표면 <em>안의</em> 결정 요소 수는 하나가 아니다.</p>
+            <p style="margin:8px 0 0; font-size:13.5px; line-height:1.7; color:#44413B;"><strong>기대</strong> 필수 anchor만 inline, 나머지 intent는 조정 안으로, 동사 통일. <strong>실제</strong> primary 동사가 <code>시작</code>인데 저장이 실제 동작(My Flow에 남음) — <code>/flow-maps</code>의 <code>그대로 시작</code>, receipt의 <code>저장</code>과 어휘가 갈린다(L-1 연동).</p>
+            <p style="margin:8px 0 0; font-size:13px; color:#8A6D1B;"><strong>영향</strong> · 첫 viewport에서 “무엇을 누르면 무엇이 남나” 예측이 약간 흐려짐. <strong>evidenceKind</strong> <code>current_package_screenshot</code>(public-export-390 · save-before-1440) + <code>heuristic_simulation</code></p>
+            <p style="margin:8px 0 0; font-size:13px; color:#1F6A3E;"><strong>조치</strong> anchor inline·intent를 조정으로·동사 <code>저장</code> 통일 → <strong>P31-2</strong>. composition만.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- M-2 -->
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #8A6D1B; border-radius:16px; padding:18px 22px;">
+        <div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 12px;"><span style="font-size:12.5px; font-weight:800; background:#FFF7E9; color:#8A6D1B; border-radius:6px; padding:2px 9px;">M-2 · MEDIUM</span><h3 style="margin:0; font-size:16.5px; font-weight:800;">월간 grid가 <em>거의 동일하게 축약된</em> 제목 벽이 됨 — 색점·개수는 있으나 truncated 제목이 구분에 기여하지 못함</h3></div>
+        <div style="display:grid; grid-template-columns: 1fr 210px; gap:18px; align-items:start; margin-top:10px;">
+          <div>
+            <p style="margin:0; font-size:13.5px; line-height:1.7; color:#44413B;"><strong>route</strong> <code>/calendar?demo=ux50</code> · <strong>viewport</strong> 1024·1440 · <strong>재현</strong> compact identity(짧은 label·initial·overflow count)는 도입됐고 selected-day가 full identity를 보존한다(P30-05, 확인). 그러나 대량 fixture에서 grid의 거의 모든 cell이 <code>이사 준비 F…</code>로 잘려, <em>색 initial + “+N”</em>만 실질 구분자가 된다. 제목 축약 텍스트는 화면을 채우지만 정보가치가 낮다.</p>
+            <p style="margin:8px 0 0; font-size:13.5px; line-height:1.7; color:#44413B;"><strong>기대</strong> cell은 색·개수로 “무엇이 얼마나”를 주고 상세는 selected-day로. <strong>실제</strong> truncated 제목이 여전히 cell 폭을 지배 — full accessible name은 보존(스크린리더 OK)되나 <em>눈으로</em>는 구분이 약하다. <em>주의</em>: ux50 fixture가 <code>이사 준비 Flow NN</code> 동명 다수라 실제보다 과장될 수 있음 → <code>heuristic_simulation</code> + 관찰(Q4).</p>
+            <p style="margin:8px 0 0; font-size:13px; color:#8A6D1B;"><strong>영향</strong> · 20~60 Flow scale에서 월간 뷰의 스캔 비용. <strong>evidenceKind</strong> <code>current_package_screenshot</code>(calendar-compact-identity-1024 · desktop-calendar-1440) + <code>fixture_only</code></p>
+            <p style="margin:8px 0 0; font-size:13px; color:#1F6A3E;"><strong>조치</strong> cell은 색+개수 우선, 제목 축약 의존 제거, 상세는 selected-day agenda로 → <strong>P31-4</strong>. 파생 표기만.</p>
+          </div>
+          <figure><img class="shot" src="p30-production-desktop-calendar-workspace-1440.png" alt="calendar 1440 grid"><figcaption class="cap"><code>/calendar?demo=ux50</code> 1440 · 대부분 cell이 <code>이사 준비 F…</code> 축약 반복 · 색 initial·<code>+N</code>이 실질 구분자</figcaption></figure>
+        </div>
+      </div>
+
+      <!-- M-3 -->
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #8A6D1B; border-radius:16px; padding:18px 22px;">
+        <div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 12px;"><span style="font-size:12.5px; font-weight:800; background:#FFF7E9; color:#8A6D1B; border-radius:6px; padding:2px 9px;">M-3 · MEDIUM · 접근성</span><h3 style="margin:0; font-size:16.5px; font-weight:800;">모바일 Calendar 키보드 순서가 <em>정렬은 맞지만</em> agenda·tabs 도달까지 초점 정지 ~76회 — 저시력·키보드 사용자에 과부하</h3></div>
+        <div style="display:grid; grid-template-columns: 210px 1fr; gap:18px; align-items:start; margin-top:10px;">
+          <figure><img class="shot" src="p30-production-mobile-calendar-focus-order-390.png" alt="calendar focus order 390"><figcaption class="cap"><code>/calendar?demo=ux20</code> 390 · header(0)→scope/grid→ … →tabs(index 76) · <code>ordered:true</code>지만 grid 날짜 버튼을 모두 통과</figcaption></figure>
+          <div>
+            <p style="margin:0; font-size:13.5px; line-height:1.7; color:#44413B;"><strong>route</strong> <code>/calendar?demo=ux20</code> · <strong>viewport</strong> 390 · <strong>재현</strong> production focus trace를 직접 읽음: <code>headerIndex 0 → workspaceIndex 3 → tabsIndex 76</code>, <code>ordered:true</code>. P30-02 목표(본문이 tabs보다 먼저)는 달성. 그러나 그 사이에 <em>월간 grid의 날짜 버튼 40여 개 + 일정/루틴 overflow</em>가 모두 초점 정지점이라, 키보드/스위치 사용자가 grid를 지나 day-agenda·bottom tabs에 닿기까지 <strong>~76 스톱</strong>을 밟는다.</p>
+            <p style="margin:8px 0 0; font-size:13.5px; line-height:1.7; color:#44413B;"><strong>기대</strong> grid는 roving tabindex(1 stop)로 진입 후 방향키 이동, 또는 “일정으로 건너뛰기” skip link. <strong>실제</strong> 각 날짜가 개별 tab 정지 — P8 세션에서 export/day-action 도달 전 피로. accessible name은 모두 존재(<code>unnamedFocusableCount 0</code>).</p>
+            <p style="margin:8px 0 0; font-size:13px; color:#8A6D1B;"><strong>영향</strong> · P8(키보드·저시력) S1·S3의 실질 operability. <strong>evidenceKind</strong> <code>current_production_interaction</code>(focus trace) + <code>current_source</code>(results.json)</p>
+            <p style="margin:8px 0 0; font-size:13px; color:#1F6A3E;"><strong>조치</strong> grid roving tabindex + skip-to-agenda link → <strong>P31-3</strong>. 시각·계약 불변, 초점 모델만.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- M-4 + Low block -->
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #8A6D1B; border-radius:16px; padding:16px 22px;">
+        <p style="margin:0 0 6px; font-size:12.5px; font-weight:800; color:#8A6D1B;">M-4 · MEDIUM · evidence gap</p>
+        <p style="margin:0; font-size:13px; line-height:1.65; color:#44413B;"><strong>50+ scope·undated 배치가 <em>합성 fixture</em>로만 검증됨 — 실제 varied-name·실데이터 발견성 미관측.</strong> <code>/calendar?demo=ux50</code> scope는 <code>optionCount 62</code>, inactive group 접힘, 검색 후 2개 선택까지 <code>meaningfulInteractionCount 5</code>로 <em>구조상</em> scale된다. 그러나 62개가 모두 <code>이사 준비 Flow 06/07/08/25/26…</code> 동명 합성이라 <strong>검색 전에는 사람이 스캔할 수 없다</strong>. undated 배치도 deterministic fixture(10→8→undo10) — 실제 사용자 데이터에서 이 경로가 자연스러운지는 미확인(P29에서 이월된 <code>not_seeded</code>가 <em>demo fixture</em>로 대체됐을 뿐 관찰은 아님). <strong>evidenceKind</strong> <code>fixture_only</code> + <code>current_package_screenshot</code>(scope-50-390) → 실데이터/varied-name 관찰(Q4·Q5).</p>
+        <div style="border-top:1px solid #F0EEE8; margin-top:12px; padding-top:10px;">
+          <p style="margin:0 0 4px; font-size:12.5px; font-weight:800; color:#6E6B64;">LOW 3건</p>
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:4px 18px; font-size:12.5px; line-height:1.6; color:#44413B;">
+            <p style="margin:3px 0;"><strong>L-1</strong> 동사 불일치: <code>/f</code> <code>날짜 없이 시작</code> vs <code>/flow-maps</code> <code>그대로 시작</code> vs receipt <code>저장</code>. 저장이 실제 동작임은 doc·E2E로 확인되나 표기 통일 여지(H-1·M-1과 연동) · <code>current_package_screenshot</code></p>
+            <p style="margin:3px 0;"><strong>L-2</strong> 루틴 고급에서 <code>전체 횟수 8</code>인데 <code>미리보기 범위 · 앞으로 4주</code>(월·수·금이면 ~12회 창) — 미리보기 창과 종료 횟수가 다른 축이라 <code>종료 조건</code> 오독 여지. 문법은 맞음 → 관찰 Q6 · <code>current_package_screenshot</code>(routine-advanced-390)</p>
+            <p style="margin:3px 0;"><strong>L-3</strong> ux50 월 헤더 <code>날짜 929 · 반복 93</code> 등 대형 원시 카운트가 노출 — fixture 산물이나 실데이터에서 상단 요약 수치의 의미(무엇의 929인지)가 즉시 읽히는지 미확인 · <code>fixture_only</code></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 2b owner mobile walkthrough ===== -->
+  <section id="owner" data-screen-label="2b 소유자 모바일 피드백" style="max-width:1140px; margin:0 auto; padding:30px 28px 12px;">
+    <div style="display:flex; align-items:baseline; gap:12px;">
+      <span style="font-size:13px; font-weight:800; color:#B4530A;">SECTION 2b · owner walkthrough</span>
+      <h2 style="margin:0; font-size:28px; font-weight:800; letter-spacing:-0.02em;">소유자 모바일 피드백 대조 및 보강</h2>
+    </div>
+    <div style="background:#FBF3EA; border:1px solid #E8D9B0; border-radius:14px; padding:16px 18px; margin-top:14px;">
+      <p style="margin:0; font-size:13.5px; line-height:1.72; color:#5E4E22;">소유자가 production 모바일을 직접 훑으며 남긴 피드백을 검토 근거와 대조했다. 소유자 walkthrough는 target-user 관찰은 아니지만 이 검토에서 <strong>가장 강한 실사용 신호</strong>이며 heuristic보다 우선한다(evidenceKind <code>owner_walkthrough</code>). 각 지적을 <b style="color:#1F6A3E;">확인(validated)</b> / <b style="color:#8A6D1B;">부분</b> / <b style="color:#A03A2A;">evidence-gap</b>으로 표시하고 finding·설계 방향을 연결한다. 방향은 PRODUCT_PRINCIPLES를 지킨다 — <strong>planner화 금지·긴 설명으로 덮기 금지·미검증 인기 금지</strong>. 이 피드백으로 <strong>H-2 및 M-5~M-10</strong>을 신규 등록했다. 홈·/flows 카드·<code>/f</code> 결혼 상세는 이 검토 캡처 13종에 없어 일부는 <code>evidence-gap</code>으로 표시하고 codex 라이브 캡처를 권장한다.</p>
+    </div>
+
+    <div style="display:grid; gap:12px; margin-top:14px;">
+
+      <!-- 홈 M-5 -->
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #8A6D1B; border-radius:16px; padding:16px 20px;">
+        <div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 12px;"><span style="font-size:12.5px; font-weight:800; background:#FFF7E9; color:#8A6D1B; border-radius:6px; padding:2px 9px;">M-5 · MEDIUM · 발견성/IA</span><h3 style="margin:0; font-size:16px; font-weight:800;">홈 탭이 Flow 찾기와 역할이 겹친다</h3></div>
+        <p style="margin:8px 0 0; font-size:13px; line-height:1.68; color:#44413B;"><strong style="color:#B4530A;">소유자</strong> · 홈이 찾기와 중복. 최근/인기 Flow는 찾기에 두고, 홈은 “사람들이 이 Flow를 어떻게 쓰는지” 같은 게 낫지 않나 — 다른 서비스 참고.</p>
+        <p style="margin:6px 0 0; font-size:13px; line-height:1.68; color:#44413B;"><strong style="color:#A03A2A;">확인</strong> · <code>evidence-gap</code> — 홈/찾기 route는 이 검토 캡처에 없음. 다만 현재 홈이 curated 추천을 보이면 <code>/flows</code>와 목적이 겹친다는 지적은 개념적으로 타당.</p>
+        <p style="margin:6px 0 0; font-size:13px; line-height:1.68; color:#1F6A3E;"><strong>방향</strong> · 최근/인기 = 찾기로. 홈 = ① <em>이어서 실행</em>(진행 중 Flow의 다음 행동) + ② <em>사람들이 이렇게 씀</em>(사용 사례·짧은 후기). 단 신뢰 신호는 실데이터 또는 명시적 “예시” 라벨만 — 미검증 인기 금지(PRODUCT_PRINCIPLES·P26-06). → 관찰 <strong>Q8</strong> 후 확정.</p>
+      </div>
+
+      <!-- 찾기 카드 M-6 -->
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #8A6D1B; border-radius:16px; padding:16px 20px;">
+        <div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 12px;"><span style="font-size:12.5px; font-weight:800; background:#FFF7E9; color:#8A6D1B; border-radius:6px; padding:2px 9px;">M-6 · MEDIUM · 카드 정보구조</span><h3 style="margin:0; font-size:16px; font-weight:800;">Flow 찾기 카드의 정보 순서·CTA·메타데이터·신뢰 신호</h3></div>
+        <p style="margin:8px 0 0; font-size:13px; line-height:1.68; color:#44413B;"><strong style="color:#B4530A;">소유자</strong> · 원문은 눌러서 링크로 가야 함 · “1·2·… flow 열기”보다 <code>더보기</code> · 이사일·D-30 같은 단추가 카드에 필요한가 · 생활 일정·할 일 5개 정보도 필요한가 · 사용자 수·리뷰 수 같은 신뢰 신호가 있으면 좋겠다(없으면 가성으로라도 느낌만).</p>
+        <p style="margin:6px 0 0; font-size:13px; line-height:1.68; color:#44413B;"><strong style="color:#8A6D1B;">확인</strong> · <code>부분</code> — 카드 자체 캡처는 없으나 source(P26-06 evidence-first 카드: 제목·검증 출처·대표 항목·입력·결과·개수) 기준으로 지적이 성립.</p>
+        <p style="margin:6px 0 0; font-size:13px; line-height:1.68; color:#1F6A3E;"><strong>방향</strong> · 카드 = <em>무슨 콘텐츠 · 검증 출처(클릭 가능 링크) · 어떤 결과 · 첫 행동</em>. CTA는 <code>더보기</code>. 이사일/D-30/생활일정/할일 5개 같은 anchor·메타는 카드에서 낮추고 상세로. 신뢰 신호는 (a) 실데이터 있으면 사용/후기 수, (b) 없으면 <strong>“예시” 배지</strong>로 느낌만 — 검증된 인기로 오인시키지 않기(원칙 준수). → 관찰 <strong>Q10</strong>.</p>
+      </div>
+
+      <!-- 상세 shape별 H-2 -->
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #A03A2A; border-radius:16px; padding:16px 20px;">
+        <div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 12px;"><span style="font-size:12.5px; font-weight:800; background:#F7E9E5; color:#A03A2A; border-radius:6px; padding:2px 9px;">H-2 · HIGH · shape 비일관</span><h3 style="margin:0; font-size:16px; font-weight:800;">콘텐츠 shape별 공개 상세가 서로 다른 화면처럼 읽힘 — 특히 결혼(타임라인)에서 “무엇을 눌러 어디서 저장하나” 흐름이 붕괴</h3></div>
+        <div style="display:grid; grid-template-columns: 210px 1fr; gap:18px; align-items:start; margin-top:10px;">
+          <figure><img class="shot" src="p30-production-my-command-hierarchy-390.png" alt="결혼 detail 390"><figcaption class="cap">결혼 준비(타임라인) 상세 · 다음 행동 카드 아래로 전체 Flow·단계가 세로로 계속 이어져 “여기서 하라”가 약함</figcaption></figure>
+          <div>
+            <p style="margin:0; font-size:13px; line-height:1.68; color:#44413B;"><strong style="color:#B4530A;">소유자</strong> · 이사와 결혼이 완전히 다름 · 결혼은 모바일에서 화면 분할 구분이 안 됨 · 포맷 3개 중 하나를 누르고 그 안에서 저장·수정이 이어져야 할 것 같은데 카드가 쭈루룩 내려가 뭘 하라는지 모르겠음 · 날짜 정하기/없이/예시 버튼을 눌러도 그 뒤에 뭘 하라는지 모르겠음 · “정할 항목 정리”가 이렇게 복잡한 게 맞나 · 가져가기도 미리보기가 없어 뭐가 나올지 예상 안 됨 · 전체 Flow 구조도 이해 안 됨 · 홈트는 실행·캘린더·메모가 루틴 개수·설정에 따라 달리 보여야 하지 않나, 시간/종료/횟수는 나쁘지 않지만 더 깔끔하게, 전체 구조가 안 맞음.</p>
+            <p style="margin:6px 0 0; font-size:13px; line-height:1.68; color:#44413B;"><strong style="color:#8A6D1B;">확인</strong> · <code>부분~validated</code> — My Flow 결혼 상세·allblanc <code>/f</code> 캡처로 “세로 카드 누적·format 토글 후 다음 행동 불명”은 확인. <code>/f</code> 결혼 <em>public</em> 상세 직접 캡처는 <code>evidence-gap</code>(codex 라이브 캡처 권장). M-1(결정영역 밀도)·H-1(진입 문법)과 결합해 나타남.</p>
+            <p style="margin:6px 0 0; font-size:13px; line-height:1.68; color:#1F6A3E;"><strong>방향</strong> · shape가 달라도 <strong>공통 뼈대</strong> 고정: (1) 결과 우선 → (2) <em>하나의</em> 저장 결정 → (3) 그 자리에서 조정 → (4) 전체 구조·출처는 접힘. 포맷 토글은 <em>“결과 미리보기 전환”</em>으로만 쓰고, 저장/수정은 선택한 포맷 컨텍스트 안에서. 가져가기는 <strong>미리보기 필수</strong>(무엇이 몇 개 나가는지). 홈트는 루틴 개수/설정에 따라 실행·캘린더·메모 노출을 조건화. → <strong>P31-6</strong>. High인 이유: 두 번째 콘텐츠에서 학습이 전이되지 않아 <em>매번 처음부터 헤맴</em>.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 캘린더 M-8 -->
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #8A6D1B; border-radius:16px; padding:16px 20px;">
+        <div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 12px;"><span style="font-size:12.5px; font-weight:800; background:#FFF7E9; color:#8A6D1B; border-radius:6px; padding:2px 9px;">M-8 · MEDIUM · 캘린더 상세 표면</span><h3 style="margin:0; font-size:16px; font-weight:800;">선택일 상세를 grid 아래 흐름 대신 sheet/overlay로</h3></div>
+        <div style="display:grid; grid-template-columns: 1fr 210px; gap:18px; align-items:start; margin-top:10px;">
+          <div>
+            <p style="margin:0; font-size:13px; line-height:1.68; color:#44413B;"><strong style="color:#B4530A;">소유자</strong> · 캘린더는 이 정도면 나쁘지 않은데, 항목 상세가 아래에 나오는 것보다 팝업이나 밑에서 올라오는 등 다른 UI가 필요하지 않을까.</p>
+            <p style="margin:6px 0 0; font-size:13px; line-height:1.68; color:#44413B;"><strong style="color:#1F6A3E;">확인</strong> · <code>validated</code> — production 캡처에서 selected-day agenda가 월간 grid <em>아래로</em> 이어져, grid를 보다 상세를 보려면 시선·스크롤이 끊긴다.</p>
+            <p style="margin:6px 0 0; font-size:13px; line-height:1.68; color:#1F6A3E;"><strong>방향</strong> · 선택일 상세를 <strong>bottom sheet/overlay</strong>로(이미 있는 undated sheet 패턴 재사용) — grid 맥락을 유지한 채 상세에 집중, focus trap·Escape·복귀도 그 패턴을 그대로 승계. wide는 현행 우측 pane 유지. → <strong>P31-8</strong>.</p>
+          </div>
+          <figure><img class="shot" src="p30-production-mobile-calendar-focus-order-390.png" alt="캘린더 390"><figcaption class="cap">모바일 캘린더 · 월간 grid 아래로 선택일 상세가 이어짐 → sheet/overlay 후보</figcaption></figure>
+        </div>
+      </div>
+
+      <!-- 내 플로우 M-7 -->
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #8A6D1B; border-radius:16px; padding:16px 20px;">
+        <div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 12px;"><span style="font-size:12.5px; font-weight:800; background:#FFF7E9; color:#8A6D1B; border-radius:6px; padding:2px 9px;">M-7 · MEDIUM · My Flow 모바일 밀도</span><h3 style="margin:0; font-size:16px; font-weight:800;">내 플로우가 세로로 길고 이질적인 카드가 한 화면에 뒤섞여 흐름이 헷갈림</h3></div>
+        <div style="display:grid; grid-template-columns: 210px 1fr; gap:18px; align-items:start; margin-top:10px;">
+          <figure><img class="shot" src="p30-production-my-export-390.png" alt="my flow 390"><figcaption class="cap">내 플로우 상세 · 다음 행동 카드 + 전체 Flow outline + 날짜 없음 카드 + 가져가기가 세로로 누적</figcaption></figure>
+          <div>
+            <p style="margin:0; font-size:13px; line-height:1.68; color:#44413B;"><strong style="color:#B4530A;">소유자</strong> · 여기도 아래로 긴 UI라 한 화면에 여러 종류의 카드가 보여 헷갈림 · 글씨도 많고 흐름이 헷갈림 · 총체적으로 어떻게 정리할지 감이 안 옴.</p>
+            <p style="margin:6px 0 0; font-size:13px; line-height:1.68; color:#44413B;"><strong style="color:#1F6A3E;">확인</strong> · <code>validated</code> — 모바일 My Flow가 next-action 카드 + 전체 Flow outline + 날짜 없음 카드 + 가져가기를 한 스크롤에 세로로 쌓아, 카드 <em>종류</em>가 3개 이상 동시에 경쟁한다.</p>
+            <p style="margin:6px 0 0; font-size:13px; line-height:1.68; color:#1F6A3E;"><strong>방향</strong> · <strong>한 화면 한 초점</strong> — 상단은 “다음 행동” 1개만 강조, 전체 구조·날짜 없음·가져가기는 접거나 보조로 내려 동시 노출을 줄임 · 텍스트 감량(라벨·설명 축약). 한 시야에 카드 종류가 3+ 겹치지 않게. → <strong>P31-7</strong>.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 조작 통일성 M-9 -->
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #8A6D1B; border-radius:16px; padding:16px 20px;">
+        <div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 12px;"><span style="font-size:12.5px; font-weight:800; background:#FFF7E9; color:#8A6D1B; border-radius:6px; padding:2px 9px;">M-9 · MEDIUM · 조작 통일성</span><h3 style="margin:0; font-size:16px; font-weight:800;">같은 동작이 표면마다 다른 말·다른 컴트롤 — UI/데이터 조작 어휘가 통일되지 않음</h3></div>
+        <p style="margin:8px 0 0; font-size:13px; line-height:1.68; color:#44413B;"><strong style="color:#B4530A;">소유자</strong> · UI나 데이터 조작의 통일성이 떨어지는 부분들이 있다.</p>
+        <p style="margin:6px 0 0; font-size:13px; line-height:1.68; color:#44413B;"><strong style="color:#1F6A3E;">확인</strong> · <code>validated(부분)</code> — 같은 성격의 동작이 표면마다 다른 단어·컴트롤을 씁. <strong>조정</strong>: <code>/f 내게 맞게 조정·조정</code> vs 저장 전 <code>항목 고르기/날짜/순서</code> vs My Flow <code>여러 할 일 조정</code>. <strong>시작/저장</strong>: 시작 vs 그대로 시작 vs 저장(H-1·L-1). <strong>제거</strong>: 보관 vs 항목 제외 vs (영구)삭제 부재(M-10). <strong>날짜</strong>: 캘린더 <code>날짜 옆기기</code> vs 편집기 날짜 필드. 각각은 미미하지만 합치면 “이 동작을 어떻게 부르고 어디서 하는지”가 매 표면 재학습.</p>
+        <p style="margin:6px 0 0; font-size:13px; line-height:1.68; color:#1F6A3E;"><strong>방향</strong> · <strong>동작 사전 1개</strong> — 조정·제거·날짜 옆기기·완료·가져가기 각각에 <em>한 단어·한 어포던스</em>를 정하고 모든 표면이 그것만 쓴다. 설명 추가가 아니라 label·컴트롤 통일(원칙 준수). → <strong>P31-9</strong>. <strong>evidenceKind</strong> owner_walkthrough + current_package_screenshot(My Flow·캘린더 명령) + current_source(P25/P26 편집 모드).</p>
+      </div>
+
+      <!-- 삭제 발견성 M-10 -->
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #8A6D1B; border-radius:16px; padding:16px 20px;">
+        <div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 12px;"><span style="font-size:12.5px; font-weight:800; background:#FFF7E9; color:#8A6D1B; border-radius:6px; padding:2px 9px;">M-10 · MEDIUM · 삭제 발견성</span><h3 style="margin:0; font-size:16px; font-weight:800;">Flow 삭제가 어디서 되는지 모름 — 제거=보관이고 메뉴에 숨음, 영구 삭제는 gated</h3></div>
+        <p style="margin:8px 0 0; font-size:13px; line-height:1.68; color:#44413B;"><strong style="color:#B4530A;">소유자</strong> · 플로우 삭제가 어디서 되는지 모르겠다.</p>
+        <p style="margin:6px 0 0; font-size:13px; line-height:1.68; color:#44413B;"><strong style="color:#1F6A3E;">확인</strong> · <code>validated</code> — My Flow에 보이는 명령은 열기·메모·여러 할 일 조정·가져가기·더보기·데이터 관리·스튜디오. Flow 카드/상세에 명시적 <em>“삭제”가 노출되지 않음</em>. 제거는 <strong>보관(archive)</strong>로 이뤄지고 <code>데이터 관리</code> 또는 상세 overflow 메뉴에 숨음(P30-04: source/archive→menu). 영구 삭제는 의도적으로 gated(ROADMAP).</p>
+        <p style="margin:6px 0 0; font-size:13px; line-height:1.68; color:#44413B;"><strong style="color:#8A6D1B;">영향</strong> · “이 Flow 없애기”의 정신모델(삭제)과 제품 모델(보관)이 어그러지고, 그 진입도 숨어 dead-end 감각.</p>
+        <p style="margin:6px 0 0; font-size:13px; line-height:1.68; color:#1F6A3E;"><strong>방향</strong> · (a) 각 Flow 상세의 <strong>일관된 위치</strong>(⋯ 메뉴)에 제거 동작 노출 + 되돌리기 · (b) 어휘를 정신모델에 맞춰 <code>삭제</code>로 하되 동작은 <em>복구 가능한 보관</em>임을 되돌리기로 명시 · (c) 영구 삭제는 gated임을 정직히. → <strong>P31-9</strong> + 관찰 <strong>Q11</strong>. <strong>evidenceKind</strong> owner_walkthrough + current_package_screenshot(My Flow 명령 집합) + current_source(archive/data-manager)</p>
+      </div>
+
+    </div>
+    <p style="margin:12px 0 0; font-size:12.5px; line-height:1.7; color:#44413B; background:#F3EEF8; border:1px solid #DBC9EC; border-radius:12px; padding:12px 14px;"><strong>한 줄로</strong> · 이 일곱(H-2·M-5~M-10)은 서로 다른 화면의 문제가 아니라 <a href="#budget">§복잡도 예산</a>의 <em>“표면 노출 예산 초과”</em>가 실사용에서 드러난 것이다. 소유자가 “총체적 난국”이라 부른 감각이 곧 그 증거다 — 각 화면은 개별로는 통과하지만 <strong>합치면 무겁다</strong>. 따라서 P31은 개별 수선이 아니라 <strong>“첫 viewport 결정 1개”</strong>를 공통 목표로 묶어 실행한다.</p>
+  </section>
+
+  <!-- ===== 3 24-cell scorecard ===== -->
+  <section id="scorecard" data-screen-label="3 24-cell scorecard" style="max-width: 1140px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #1B3A6B;">SECTION 3</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">8 personas × 3 sessions = 24-cell 여정 scorecard</h2>
+    </div>
+    <p style="margin: 10px 0 0; max-width:1020px; font-size: 13.5px; color: #6E6B64;">각 cell 상태: <code style="color:#1F6A3E;">supported</code>=위계가 행동을 명확히 안내(source+screenshot 확인) · <code style="color:#3B6EA5;">fixture</code>=demo query로만 도달(<code>fixture_only</code>) · <code style="color:#8A6D1B;">partial</code>=기능은 있으나 밀도/발견성 friction · <code style="color:#6E6B64;">not_tested</code>=hydration 클릭·reload 필요, 환경상 미수행(<code>inaccessible</code>) · <code style="color:#A03A2A;">blocked</code>=gated 플랫폼 기능(계정/동기화/전송). <strong>화면 pass</strong>와 <strong>end-to-end journey pass</strong>를 분리 판정. <strong>blocked/missing은 결함이 아니라 범위 밖</strong>(§5 defer).</p>
+    <div style="overflow-x:auto; margin-top:16px;">
+      <table style="width:100%; background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; font-size:12px;">
+        <tbody>
+          <tr style="background:#F7F6F2;">
+            <td style="padding:8px 10px; font-weight:800; border-bottom:1px solid #E7E4DD; min-width:190px;">persona</td>
+            <td style="padding:8px 10px; font-weight:800; border-bottom:1px solid #E7E4DD;">S1</td>
+            <td style="padding:8px 10px; font-weight:800; border-bottom:1px solid #E7E4DD;">S2</td>
+            <td style="padding:8px 10px; font-weight:800; border-bottom:1px solid #E7E4DD;">S3</td>
+            <td style="padding:8px 10px; font-weight:800; border-bottom:1px solid #E7E4DD; min-width:230px;">핵심 판정 근거</td>
+          </tr>
+
+          <tr>
+            <td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; font-weight:700;">P1 마감일 역산 이사<br><span style="color:#6E6B64; font-weight:400;">/f/moving-d30-basic</span></td>
+            <td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#8A6D1B;">partial<span style="color:#6E6B64;"> H1·M1</span></td>
+            <td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#6E6B64;">not_tested</td>
+            <td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#6E6B64;">not_tested</td>
+            <td style="padding:7px 10px; border-bottom:1px solid #F0EEE8;">S1 artifact-first 위계는 확인 · 결정영역 밀도·동사(M1) friction · 완료/기준일변경/재사용(S2·S3)은 라이브 미수행</td>
+          </tr>
+          <tr>
+            <td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; font-weight:700;">P2 날짜 없는 차량 점검<br><span style="color:#6E6B64; font-weight:400;">/f/vehicle-inspection-prep</span></td>
+            <td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#8A6D1B;">partial</td>
+            <td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#3B6EA5;">fixture</td>
+            <td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#6E6B64;">not_tested</td>
+            <td style="padding:7px 10px; border-bottom:1px solid #F0EEE8;">vehicle route 미캡처 → moving artifact-first 유추(heuristic) · undated 배치/undo는 fixture 확인 · 날짜 제거→tray 복귀 라이브 미수행</td>
+          </tr>
+          <tr>
+            <td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; font-weight:700;">P3 반복 홈트<br><span style="color:#6E6B64; font-weight:400;">/f/curated-allblanc…</span></td>
+            <td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#1F6A3E;">supported</td>
+            <td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#6E6B64;">not_tested</td>
+            <td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#6E6B64;">not_tested</td>
+            <td style="padding:7px 10px; border-bottom:1px solid #F0EEE8;">S1 요약 1줄+다음3회+고급(요일/시간/duration/종료) 확인 · 회차 완료·series↔occurrence 분리·ICS는 source만, 라이브 미수행(L2 관찰)</td>
+          </tr>
+          <tr>
+            <td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; font-weight:700;">P4 Calendar-heavy 다중 Flow<br><span style="color:#6E6B64; font-weight:400;">/calendar?demo=ux20·ux50</span></td>
+            <td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#3B6EA5;">fixture</td>
+            <td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#8A6D1B;">partial<span style="color:#6E6B64;"> M2</span></td>
+            <td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#3B6EA5;">fixture</td>
+            <td style="padding:7px 10px; border-bottom:1px solid #F0EEE8;">scope picker·검색·selected-day full identity 확인(fixture) · 월간 grid 시각 구분(M2) friction · batch 배치/undo/stable ID는 fixture green</td>
+          </tr>
+          <tr>
+            <td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; font-weight:700;">P5 export 중심<br><span style="color:#6E6B64; font-weight:400;">/f + /my 가져가기</span></td>
+            <td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#1F6A3E;">supported</td>
+            <td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#8A6D1B;">partial</td>
+            <td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#A03A2A;">blocked</td>
+            <td style="padding:7px 10px; border-bottom:1px solid #F0EEE8;">S1 범위·개수·손실 preflight(Flow전체·캘린더24개·primary1+secondary) 확인 · receipt count parity 라이브 미수행 · duplicate/cross-device import는 human gate(범위 밖)</td>
+          </tr>
+          <tr>
+            <td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; font-weight:700;">P6 URL/메모 개인 draft<br><span style="color:#6E6B64; font-weight:400;">/flows · draft · /my</span></td>
+            <td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#8A6D1B;">partial<span style="color:#6E6B64;"> H1</span></td>
+            <td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#6E6B64;">not_tested</td>
+            <td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#6E6B64;">not_tested</td>
+            <td style="padding:7px 10px; border-bottom:1px solid #F0EEE8;">source-import 경로가 /flow-maps legacy와 얽힘(H1) · add/delete/reorder/completion 구조는 source · reload persistence·draft↔공유 경계 라이브 미수행</td>
+          </tr>
+          <tr>
+            <td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; font-weight:700;">P7 재방문·회고·재사용<br><span style="color:#6E6B64; font-weight:400;">/my detail</span></td>
+            <td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#8A6D1B;">partial</td>
+            <td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#A03A2A;">blocked</td>
+            <td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#6E6B64;">not_tested</td>
+            <td style="padding:7px 10px; border-bottom:1px solid #F0EEE8;">S1 다음 행동 카드+열기 확인 · 일부완료/reopen 라이브 미수행 · source-correction 전송은 gated(범위 밖) · 새 run/과거 보존은 source만</td>
+          </tr>
+          <tr>
+            <td style="padding:7px 10px; font-weight:700;">P8 키보드·저시력<br><span style="color:#6E6B64; font-weight:400;">전 route</span></td>
+            <td style="padding:7px 10px; color:#8A6D1B;">partial<span style="color:#6E6B64;"> M3</span></td>
+            <td style="padding:7px 10px; color:#1F6A3E;">supported<span style="color:#6E6B64;">/구조</span></td>
+            <td style="padding:7px 10px; color:#6E6B64;">not_tested</td>
+            <td style="padding:7px 10px;">본문 우선 초점·focus trap/return·accessible name·overflow0은 확인 · Calendar 키보드 깊이 ~76(M3) friction · 완료/배치/export keyboard-only·확대 reflow 라이브 미수행</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(120px,1fr)); gap:8px; margin-top:12px;">
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:10px; padding:10px 12px;"><p style="margin:0; font-size:19px; font-weight:800; color:#1F6A3E;">3</p><p style="margin:2px 0 0; font-size:11.5px; color:#6E6B64;">supported</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:10px; padding:10px 12px;"><p style="margin:0; font-size:19px; font-weight:800; color:#3B6EA5;">3</p><p style="margin:2px 0 0; font-size:11.5px; color:#6E6B64;">fixture</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:10px; padding:10px 12px;"><p style="margin:0; font-size:19px; font-weight:800; color:#8A6D1B;">7</p><p style="margin:2px 0 0; font-size:11.5px; color:#6E6B64;">partial</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:10px; padding:10px 12px;"><p style="margin:0; font-size:19px; font-weight:800; color:#6E6B64;">9</p><p style="margin:2px 0 0; font-size:11.5px; color:#6E6B64;">not_tested</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:10px; padding:10px 12px;"><p style="margin:0; font-size:19px; font-weight:800; color:#A03A2A;">2</p><p style="margin:2px 0 0; font-size:11.5px; color:#6E6B64;">blocked (gated)</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:10px; padding:10px 12px;"><p style="margin:0; font-size:19px; font-weight:800; color:#1B1A17;">0</p><p style="margin:2px 0 0; font-size:11.5px; color:#6E6B64;">missing / hidden</p></div>
+    </div>
+    <p style="margin:10px 0 0; font-size:12px; color:#6E6B64;"><strong>정직한 요약</strong> · 화면·위계는 대체로 <code>supported</code>/<code>fixture</code>. <code>not_tested</code> 9개는 <em>결함이 아니라 이 검토의 도달 한계</em>(라이브 클릭·reload)이며 §4·§8로 이월. <code>blocked</code> 2개는 gated 플랫폼 기능으로 P30 범위 밖. 여정을 <em>막는</em>(blocked-by-defect) cell은 0.</p>
+  </section>
+
+  <!-- ===== 4 discontinuity matrix ===== -->
+  <section id="matrix" data-screen-label="4 단절 matrix" style="max-width: 1140px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #1B3A6B;">SECTION 4</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">세션 전환 discontinuity matrix</h2>
+    </div>
+    <p style="margin: 10px 0 0; max-width:1020px; font-size: 13.5px; color: #6E6B64;">각 persona의 <code>S1→S2</code>, <code>S2→S3</code> 전환에서 <strong>끊김 · recovery 존재 · persistence 판정</strong>. persistence는 reload/재진입이 필요해 이 검토에서 <code>not_tested</code>가 많다 — 정직하게 표기.</p>
+    <div style="overflow-x:auto; margin-top:16px;">
+      <table style="width:100%; background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; font-size:12px;">
+        <tbody>
+          <tr style="background:#F7F6F2;">
+            <td style="padding:8px 10px; font-weight:800; border-bottom:1px solid #E7E4DD;">전환</td>
+            <td style="padding:8px 10px; font-weight:800; border-bottom:1px solid #E7E4DD;">잠재 단절</td>
+            <td style="padding:8px 10px; font-weight:800; border-bottom:1px solid #E7E4DD;">recovery</td>
+            <td style="padding:8px 10px; font-weight:800; border-bottom:1px solid #E7E4DD;">persistence</td>
+          </tr>
+          <tr><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; font-weight:700;">P1 S1→S2 저장→My Flow/Calendar</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8;">저장 화면 <code>시작</code>과 My Flow의 <code>다음 할 일</code> 사이 동사·상태 전환(M1·L1)</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#1F6A3E;">receipt·My Flow 존재</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#6E6B64;">not_tested</td></tr>
+          <tr><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; font-weight:700;">P1 S2→S3 재사용/과거 run</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8;">새 이사일 run과 과거 run 구분 표기 미관측</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#6E6B64;">source상 run registry 존재</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#6E6B64;">not_tested</td></tr>
+          <tr><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; font-weight:700;">P2 S1→S2 저장→undated 배치</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8;">저장한 undated가 Calendar tray에 나타나는지(실데이터) — fixture로만 확인</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#1F6A3E;">undated sheet·undo 존재</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#3B6EA5;">fixture</td></tr>
+          <tr><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; font-weight:700;">P2 S2→S3 배치→export·tray 복귀</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8;">날짜 제거 후 tray 복귀·export scope 전환</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#6E6B64;">source상 존재</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#6E6B64;">not_tested</td></tr>
+          <tr><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; font-weight:700;">P3 S1→S2 저장→회차 완료</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8;">series 정의와 이번 회차 occurrence의 시각 분리 유지 여부</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#6E6B64;">source상 분리 계약</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#6E6B64;">not_tested</td></tr>
+          <tr><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; font-weight:700;">P4 S1→S2 scope 선택→같은 날 5 Flow</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8;">grid 축약(M2)에서 5 Flow 구분 → selected-day로 유도되나 grid에서 놓침 가능</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#1F6A3E;">selected-day full identity</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#3B6EA5;">fixture</td></tr>
+          <tr><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; font-weight:700;">P5 S2→S3 My Flow export→도구 parity</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8;">Calendar/checklist/sheet/memo parity·duplicate import는 외부 도구 의존</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#A03A2A;">gated (human)</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#A03A2A;">blocked</td></tr>
+          <tr><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; font-weight:700;">P6 S1→S2 draft 저장→편집</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8;">진입 문법 이원화(H1) + draft가 reload 후 남는지</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#6E6B64;">source상 overlay 존재</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#6E6B64;">not_tested</td></tr>
+          <tr><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; font-weight:700;">P7 S1→S2 첫 실행→일부 완료·reopen</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8;">개인 수정과 source correction 구분 — correction 전송은 미구현</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#A03A2A;">gated (correction)</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#6E6B64;">not_tested</td></tr>
+          <tr><td style="padding:7px 10px; font-weight:700;">P8 S1→S2 초점→sheet/menu trap</td><td style="padding:7px 10px;">Calendar grid 깊이(M3) 후 sheet 진입 시 focus 위치</td><td style="padding:7px 10px; color:#1F6A3E;">trap·Escape·return 구조 확인</td><td style="padding:7px 10px; color:#6E6B64;">not_tested (live AT)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin:10px 0 0; font-size:12px; color:#6E6B64;">가장 구조적인 단절은 <strong>P6 S1→S2와 P1 재접점의 진입 문법 이원화(H1)</strong> — 세션이 바뀔 때가 아니라 <em>진입 경로가 바뀔 때</em> 모델이 흔들린다. persistence <code>not_tested</code> 8건은 §8 관찰과 codex_independent 라이브 재현으로 닫아야 한다.</p>
+  </section>
+
+  <!-- ===== 5 surface keep/revise/defer ===== -->
+  <section id="surface" data-screen-label="5 keep/revise/defer" style="max-width: 1140px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #1B3A6B;">SECTION 5</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">surface별 keep / revise / defer</h2>
+    </div>
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap:12px; margin-top:16px;">
+      <div style="background:#EDF3EC; border:1px solid #C4DBC2; border-radius:14px; padding:16px 18px;">
+        <p style="margin:0; font-size:13px; font-weight:800; color:#1F6A3E;">keep (흔들지 말 것)</p>
+        <ul style="margin:8px 0 0; padding-left:18px; font-size:12.5px; line-height:1.7; color:#2C4A2A;">
+          <li><code>/f</code> artifact-first save-before + 결과 우선 위계</li>
+          <li>모바일 export fixed-layer 교차 0 · 본문 우선 초점(P30-01/02)</li>
+          <li>My Flow 다음 행동 1 + secondary 1 + menu</li>
+          <li>Calendar scope collapse · selected-day full identity · undated sheet(focus return·no page scroll)</li>
+          <li>루틴 요약 우선 + 다음 3회 + 언제/언제 끝 그룹</li>
+          <li>source/personal/run/occurrence/export identity 분리 · 4탭 IA · primary1+secondary≤2</li>
+        </ul>
+      </div>
+      <div style="background:#FFF7E9; border:1px solid #E8D9B0; border-radius:14px; padding:16px 18px;">
+        <p style="margin:0; font-size:13px; font-weight:800; color:#8A6D1B;">revise (bounded, 계약 불변)</p>
+        <ul style="margin:8px 0 0; padding-left:18px; font-size:12.5px; line-height:1.7; color:#5E4E22;">
+          <li><strong>진입 문법 수렴</strong>: <code>/flow-maps</code>를 <code>/f</code> artifact-first로(H1 → P31-1)</li>
+          <li><strong>저장 결정영역 축약 + 동사 통일</strong>(M1·L1 → P31-2)</li>
+          <li><strong>Calendar 키보드 깊이</strong>: grid roving tabindex + skip(M3 → P31-3)</li>
+          <li><strong>월간 cell 색·개수 우선</strong>, 축약 제목 의존 제거(M2 → P31-4)</li>
+          <li>루틴 미리보기 창↔종료 횟수 label 명료화(L2 → 관찰 후)</li>
+        </ul>
+      </div>
+      <div style="background:#F1EFEA; border:1px solid #DDD9D0; border-radius:14px; padding:16px 18px;">
+        <p style="margin:0; font-size:13px; font-weight:800; color:#6E6B64;">defer (지금 하지 말 것)</p>
+        <ul style="margin:8px 0 0; padding-left:18px; font-size:12.5px; line-height:1.7; color:#57544E;">
+          <li>source correction 전송·moderation·creator update loop</li>
+          <li>계정/DB/RLS · cross-device sync · 영구 persistence 결정</li>
+          <li>실제 URL fetch/crawler · 실 LLM provider</li>
+          <li>직접 Calendar/Notion/Todo/Sheets 연동 · duplicate import 보증</li>
+          <li>5탭 승격 · planner 확장 · Flow Pack · marketplace</li>
+          <li><code>/flow-maps</code> legacy <em>강제 삭제</em>(P31-1 수렴·근거 확보 후에만)</li>
+        </ul>
+      </div>
+    </div>
+    <p style="margin:12px 0 0; font-size:12.5px; line-height:1.7; color:#44413B; background:#EDF3EC; border:1px solid #C4DBC2; border-radius:12px; padding:12px 14px;"><strong>균형</strong> · revise 항목은 어느 것도 <em>긴 설명으로 위계를 덮는</em> 유형이 아니다(PRODUCT_PRINCIPLES 준수). 모두 composition/초점/표기 계층이며 계약·라우트·데이터·IA를 건드리지 않는다. structural_reopen(4탭·public /f·데이터 계약 재개봉) 사유는 <strong>없다</strong>.</p>
+  </section>
+
+  <!-- ===== current vs proposed ===== -->
+  <section id="compare" data-screen-label="현재↔제안 위계" style="max-width: 1140px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #1B3A6B;">claude_design</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">현재 ↔ 제안 위계 비교 (모바일 / wide)</h2>
+    </div>
+    <p style="margin: 10px 0 0; max-width:1020px; font-size: 13.5px; color: #6E6B64;">시각 변경이 어떤 journey discontinuity를 줄이는지 연결한다. Calendar·todo·Notion·여행/운동 앱의 reference pattern을 참고하되 <strong>FlowMe를 full planner로 만들지 않는다</strong> — 각 제안은 요소를 <em>더하지 않고 재배치</em>한다.</p>
+
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px,1fr)); gap:12px; margin-top:16px;">
+      <!-- compare 1: entry grammar -->
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:16px; padding:16px 18px;">
+        <p style="margin:0; font-size:13px; font-weight:800; color:#1B3A6B;">① 공개 진입 (H1 · P31-1) · 모바일</p>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; font-size:11.5px; line-height:1.55;">
+          <div style="background:#F7E9E5; border:1px solid #E4C4BC; border-radius:10px; padding:10px;">
+            <p style="margin:0; font-weight:800; color:#A03A2A;">현재</p>
+            <p style="margin:6px 0 0; color:#7A2A1E;"><code>/f</code>: 결과 → 입력 → 시작<br><code>/flow-maps</code>: <strong>번호 목록 1~5</strong> → 그대로 시작/조정</p>
+            <p style="margin:6px 0 0; color:#7A2A1E;">두 문법 공존 → 진입 링크 따라 다른 제품</p>
+          </div>
+          <div style="background:#EDF3EC; border:1px solid #C4DBC2; border-radius:10px; padding:10px;">
+            <p style="margin:0; font-weight:800; color:#1F6A3E;">제안</p>
+            <p style="margin:6px 0 0; color:#2C4A2A;">두 route 모두: <strong>실제 결과 미리보기</strong> → 원문/근거 접힘 → 하나의 저장 결정</p>
+            <p style="margin:6px 0 0; color:#2C4A2A;">legacy 목록은 <code>전체 Flow 구조</code> disclosure로 흡수(제거 아님)</p>
+          </div>
+        </div>
+        <p style="margin:8px 0 0; font-size:11.5px; color:#6E6B64;">줄이는 단절: P6 진입·P1 재접점 “같은 Flow가 같은 객체인가”</p>
+      </div>
+
+      <!-- compare 2: decision surface -->
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:16px; padding:16px 18px;">
+        <p style="margin:0; font-size:13px; font-weight:800; color:#1B3A6B;">② 저장 결정영역 (M1·L1 · P31-2) · 모바일</p>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; font-size:11.5px; line-height:1.55;">
+          <div style="background:#FFF7E9; border:1px solid #E8D9B0; border-radius:10px; padding:10px;">
+            <p style="margin:0; font-weight:800; color:#8A6D1B;">현재</p>
+            <p style="margin:6px 0 0; color:#5E4E22;">이사일 입력 + [정하기][없이][예시] + [조정] + <strong>시작</strong> — peer 공존, 동사 혼선</p>
+          </div>
+          <div style="background:#EDF3EC; border:1px solid #C4DBC2; border-radius:10px; padding:10px;">
+            <p style="margin:0; font-weight:800; color:#1F6A3E;">제안</p>
+            <p style="margin:6px 0 0; color:#2C4A2A;">필수 anchor만 inline · intent(없이/예시)는 <code>조정</code> 안으로 · 단일 primary <strong>저장</strong></p>
+          </div>
+        </div>
+        <p style="margin:8px 0 0; font-size:11.5px; color:#6E6B64;">줄이는 단절: P1 S1→S2 “무엇을 눌러 무엇이 남나”</p>
+      </div>
+
+      <!-- compare 3: calendar cell -->
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:16px; padding:16px 18px;">
+        <p style="margin:0; font-size:13px; font-weight:800; color:#1B3A6B;">③ 월간 cell 정체성 (M2 · P31-4) · wide</p>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; font-size:11.5px; line-height:1.55;">
+          <div style="background:#FFF7E9; border:1px solid #E8D9B0; border-radius:10px; padding:10px;">
+            <p style="margin:0; font-weight:800; color:#8A6D1B;">현재</p>
+            <p style="margin:6px 0 0; color:#5E4E22;"><code>이사 준비 F…</code> 축약 2~3줄 반복 + 색 initial + <code>+N</code> → 제목이 폭을 먹고 구분 약함</p>
+          </div>
+          <div style="background:#EDF3EC; border:1px solid #C4DBC2; border-radius:10px; padding:10px;">
+            <p style="margin:0; font-weight:800; color:#1F6A3E;">제안</p>
+            <p style="margin:6px 0 0; color:#2C4A2A;">cell = <strong>색 dot × 개수</strong>(예 <code>●●● 3</code>) 우선, 제목 축약 제거 · 상세는 selected-day agenda(이미 full identity)</p>
+          </div>
+        </div>
+        <p style="margin:8px 0 0; font-size:11.5px; color:#6E6B64;">reference: Google/Fantastical 월간 = 밀도 높을수록 dot 우선. 줄이는 단절: P4 S1→S2</p>
+      </div>
+
+      <!-- compare 4: calendar keyboard -->
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:16px; padding:16px 18px;">
+        <p style="margin:0; font-size:13px; font-weight:800; color:#1B3A6B;">④ Calendar 키보드 (M3 · P31-3) · 모바일</p>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; font-size:11.5px; line-height:1.55;">
+          <div style="background:#F7E9E5; border:1px solid #E4C4BC; border-radius:10px; padding:10px;">
+            <p style="margin:0; font-weight:800; color:#A03A2A;">현재</p>
+            <p style="margin:6px 0 0; color:#7A2A1E;">grid 날짜 40여 개가 <strong>각각 tab stop</strong> → agenda·tabs까지 ~76 정지</p>
+          </div>
+          <div style="background:#EDF3EC; border:1px solid #C4DBC2; border-radius:10px; padding:10px;">
+            <p style="margin:0; font-weight:800; color:#1F6A3E;">제안</p>
+            <p style="margin:6px 0 0; color:#2C4A2A;">grid = <strong>roving tabindex</strong>(1 stop, 방향키 이동) + “일정으로 건너뛰기” skip link</p>
+          </div>
+        </div>
+        <p style="margin:8px 0 0; font-size:11.5px; color:#6E6B64;">reference: ARIA grid 패턴. 줄이는 단절: P8 S1·S3</p>
+      </div>
+    </div>
+    <p style="margin:12px 0 0; font-size:12px; color:#6E6B64;"><strong>주의</strong> · 위 목업은 <em>방향</em> 서술이며 픽셀 시안이 아니다. 실제 시안은 P31 slice에서 production 컴포넌트로 검증한다. 어떤 제안도 새 화면/탭/설명문을 추가하지 않는다.</p>
+  </section>
+
+  <!-- ===== 6 weak value chains ===== -->
+  <section id="chains" data-screen-label="6 약한 가치 사슬" style="max-width: 1140px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #1B3A6B;">SECTION 6</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">서비스/플랫폼에서 가장 약한 가치 사슬 3개</h2>
+    </div>
+    <p style="margin: 10px 0 0; max-width:1020px; font-size: 13.5px; color: #6E6B64;">10개 종합 평가축(가치제안·provenance·artifact 품질·개인화·실행연속성·정합성·재방문·correction·접근성·scale) 중, 화면이 아니라 <strong>사슬</strong>이 끊기는 지점.</p>
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px,1fr)); gap:12px; margin-top:16px;">
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-top:4px solid #A03A2A; border-radius:14px; padding:16px 18px;">
+        <p style="margin:0; font-size:13px; font-weight:800; color:#A03A2A;">1. source 신뢰 · provenance · correction</p>
+        <p style="margin:8px 0 0; font-size:12.5px; line-height:1.7; color:#44413B;">FlowMe의 전제는 “믿을 만한 외부 콘텐츠 → 실행 artifact”다. 그런데 <strong>신뢰의 절반(provenance 일관성·오류 정정)이 비어 있다</strong>: 진입 route에 따라 원문 표기·저장 문법이 다르고(H1), source 항목이 틀렸을 때 사용자가 고쳐 되돌릴 correction 전송은 gated(P7 S2 blocked). “이 결과를 믿고 실행해도 되나”가 관찰되지 않았다. <strong>가장 약함.</strong></p>
+      </div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-top:4px solid #8A6D1B; border-radius:14px; padding:16px 18px;">
+        <p style="margin:0; font-size:13px; font-weight:800; color:#8A6D1B;">2. 재방문·재사용 이유 (return reason)</p>
+        <p style="margin:8px 0 0; font-size:12.5px; line-height:1.7; color:#44413B;">export-first 원칙상 사용자는 결과를 외부 도구로 가져간 뒤 <em>왜 FlowMe로 돌아오는가</em>? run registry·완료 기록·재사용은 <strong>코드로 존재</strong>하나(P7 S3 source), 돌아올 <em>이유</em>는 observed users 0으로 <strong>미증명</strong>. My Flow는 잘 만든 라이브러리지만, 재방문을 만드는 값(다음 회차 알림·회고 유인)은 화면이 아니라 관찰로만 닫힌다.</p>
+      </div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-top:4px solid #3B6EA5; border-radius:14px; padding:16px 18px;">
+        <p style="margin:0; font-size:13px; font-weight:800; color:#3B6EA5;">3. scale 발견성 (20~60 Flow)</p>
+        <p style="margin:8px 0 0; font-size:12.5px; line-height:1.7; color:#44413B;">scope collapse·selected-day identity는 <em>구조적으로</em> scale된다. 그러나 검증이 <strong>동명 합성 fixture</strong>(<code>이사 준비 Flow NN</code> 62개)로만 이뤄져, 실제 varied-name에서 <em>검색 전 스캔</em>(M2·M4)이 되는지 미관측. 월간 grid는 밀도가 오르면 축약 벽이 된다. scale의 <em>기능</em>은 있으나 <em>발견성</em>은 관찰 공백.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 6.5 복잡도 예산 (단순화 렌즈) ===== -->
+  <section id="budget" data-screen-label="6.5 복잡도 예산" style="max-width: 1140px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #7A3EA0;">보강 렌즈 · claude_design</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">복잡도 예산 — "아직 어렵다"를 하나의 문제로 다시 묶기</h2>
+    </div>
+    <div style="background:#F3EEF8; border:1px solid #DBC9EC; border-radius:14px; padding:16px 18px; margin-top:14px;">
+      <p style="margin:0; font-size:13.5px; line-height:1.72; color:#4A2E63;"><strong>왜 이 렌즈를 더하나</strong> · §2의 H-1·M-1·M-2·M-3을 각각 bounded revision으로 쪼개면 <em>"전체적으로 아직 복잡하다"</em>는 감각이 흐려진다. 네 finding은 사실 <strong>하나의 증상</strong>이다 — <strong>사용자가 동시에 머리에 들고 있어야 하는 모델이 너무 많다.</strong> 이 절은 그 감각을 예산 문제로 재구성한다. <em>새 결함이 아니라 §2의 재해석</em>이므로 severity를 새로 부여하지 않는다.</p>
+    </div>
+
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px,1fr)); gap:12px; margin-top:14px;">
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-top:4px solid #1F6A3E; border-radius:14px; padding:16px 18px;">
+        <p style="margin:0; font-size:13px; font-weight:800; color:#1F6A3E;">엔진 복잡도 — 숨겨야 정상 (keep)</p>
+        <p style="margin:8px 0 0; font-size:12.5px; line-height:1.7; color:#44413B;">source · personal overlay · run · occurrence · export identity <strong>5개 분리</strong>. 이건 제품을 <em>정확하게</em> 만드는 축이고 리뷰가 계속 지켜온 계약이다. <strong>문제는 이 5개가 존재한다는 것이 아니라, 표면으로 새어나온다는 것</strong>이다. 목표: 엔진은 그대로, 표면 노출을 0에 가깝게.</p>
+      </div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-top:4px solid #A03A2A; border-radius:14px; padding:16px 18px;">
+        <p style="margin:0; font-size:13px; font-weight:800; color:#A03A2A;">표면 복잡도 — 사용자가 실제로 드는 것 (무겁다)</p>
+        <p style="margin:8px 0 0; font-size:12.5px; line-height:1.7; color:#44413B;">진입 2문법(H-1) · 저장 결정영역 3구획+동사 2종(M-1·L-1) · 월간 셀 축약 벽(M-2) · scope 62개(M-4) · undated tray · 루틴 고급 설정. 각 화면은 "설명 없이 읽히는가" 기준은 통과하지만, <strong>합치면 예산 초과</strong> — 원칙의 "가벼운 실행 레이어"가 planner 쪽으로 표류.</p>
+      </div>
+    </div>
+
+    <p style="margin:16px 0 6px; font-size:13px; font-weight:800; color:#7A3EA0;">단순화 = 더하지 말고 걷어내기 — 각 표면 축소가 어떤 엔진 개념을 숨기는가</p>
+    <div style="overflow-x:auto;">
+      <table style="width:100%; background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; font-size:12px;">
+        <tbody>
+          <tr style="background:#F7F6F2;">
+            <td style="padding:8px 10px; font-weight:800; border-bottom:1px solid #E7E4DD; min-width:150px;">지금 표면에 있는 것</td>
+            <td style="padding:8px 10px; font-weight:800; border-bottom:1px solid #E7E4DD;">걷어내는 방향</td>
+            <td style="padding:8px 10px; font-weight:800; border-bottom:1px solid #E7E4DD;">숨겨지는 엔진 개념</td>
+            <td style="padding:8px 10px; font-weight:800; border-bottom:1px solid #E7E4DD;">연결 finding / 후보</td>
+          </tr>
+          <tr><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; font-weight:700;">진입 2문법</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8;">1문법(결과 우선)으로 수렴, legacy 목록은 disclosure로</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8;">source projection의 두 표현</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#A03A2A;">H-1 · P31-1</td></tr>
+          <tr><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; font-weight:700;">저장 결정 3구획 + 동사 2종</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8;">anchor 1개 inline + 결과 · intent는 조정 안으로 · 동사 <code>저장</code> 단일</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8;">dateIntent · personal overlay 생성 시점</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#8A6D1B;">M-1·L-1 · P31-2</td></tr>
+          <tr><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; font-weight:700;">월간 셀 축약 제목 벽</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8;">색 dot × 개수만 · 상세는 selected-day agenda</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8;">occurrence × Flow identity 밀도</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#8A6D1B;">M-2 · P31-4</td></tr>
+          <tr><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; font-weight:700;">scope 62 옵션 나열</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8;">검색 우선 · 이번 달만 기본 노출 · 나머지 접힘</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8;">export scope × run 집합</td><td style="padding:7px 10px; border-bottom:1px solid #F0EEE8; color:#8A6D1B;">M-4 · 관찰 Q4</td></tr>
+          <tr><td style="padding:7px 10px; font-weight:700;">루틴 고급 설정 노출</td><td style="padding:7px 10px;">요약 + 다음 3회만 기본 · 고급은 접힘(요일/종료 조건)</td><td style="padding:7px 10px;">series 정의 ↔ occurrence 창</td><td style="padding:7px 10px; color:#6E6B64;">L-2 · 관찰 Q6</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap:12px; margin-top:14px;">
+      <div style="background:#EDF3EC; border:1px solid #C4DBC2; border-radius:14px; padding:14px 16px;">
+        <p style="margin:0; font-size:12.5px; font-weight:800; color:#1F6A3E;">이 렌즈가 verdict를 바꾸는가?</p>
+        <p style="margin:8px 0 0; font-size:12.5px; line-height:1.7; color:#2C4A2A;">아니다 — 여전히 <strong>bounded_revision</strong>. 걷어낼 것은 전부 표면/기본값 계층이고, 엔진 5개 분리·4탭·public /f·데이터 계약은 손대지 않는다. 다만 <strong>우선순위를 바꾼다</strong>: P31을 "각각 고치기"가 아니라 <em>"표면 노출 예산 줄이기"라는 하나의 목표</em>로 묶어 실행한다.</p>
+      </div>
+      <div style="background:#F3EEF8; border:1px solid #DBC9EC; border-radius:14px; padding:14px 16px;">
+        <p style="margin:0; font-size:12.5px; font-weight:800; color:#7A3EA0;">한 줄 성공 기준 (관찰용)</p>
+        <p style="margin:8px 0 0; font-size:12.5px; line-height:1.7; color:#4A2E63;">첫 사용자가 <strong>"이 화면에서 지금 할 결정은 하나"</strong>라고 느끼는가. 각 핵심 route(<code>/f</code>·<code>/my</code>·<code>/calendar</code>·routine)의 <em>첫 viewport 결정 개수 = 1</em>을 acceptance로 삼는다. 5개 엔진 개념은 사용자가 <strong>세지 못해야</strong> 성공.</p>
+      </div>
+      <div style="background:#F1EFEA; border:1px solid #DDD9D0; border-radius:14px; padding:14px 16px;">
+        <p style="margin:0; font-size:12.5px; font-weight:800; color:#6E6B64;">이 렌즈에서도 하지 말 것</p>
+        <p style="margin:8px 0 0; font-size:12.5px; line-height:1.7; color:#57544E;">단순화를 <em>설명 추가</em>로 하지 않기(원칙 위반). 기능 삭제로 하지 않기 — 걷어내는 건 <strong>기본 노출</strong>이지 능력이 아니다(고급은 접힘). 엔진 개념 <em>병합</em>은 정확성을 깨므로 금지.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 7 P31 ===== -->
+  <section id="p31" data-screen-label="7 P31 후보" style="max-width: 1140px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #1B3A6B;">SECTION 7</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">P31 후보 (최대 5 · concrete production finding에서만)</h2>
+    </div>
+    <p style="margin: 10px 0 0; max-width:1020px; font-size: 13.5px; color: #6E6B64;">각 후보: <b>문제 · dependency · non-goal · rollback · acceptance(screenshot) · test marker</b>. 모두 <strong>이번 검토에서 실제 production 근거를 가진 finding</strong>에서만 도출했다(취향·이미 해결 항목 되살리지 않음). 검토 자체 finding에서 P31-1~4, 소유자 모바일 walkthrough에서 P31-6~9을 도출했다. correction loop(P31-5)는 <em>gated</em>라 defer, 홈·카드(M-5·M-6)는 <code>evidence-gap</code>이라 보류. 후보 pool이 5를 넘으므로 소유자가 top-5를 고른다 — <strong>권장 top-5: P31-1 · P31-6 · P31-2 · P31-7 · P31-3</strong>(진입/shape 뼈대 먼저, 밀도·접근성 병렬).</p>
+    <div style="display:grid; gap:10px; margin-top:16px;">
+
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #A03A2A; border-radius:14px; padding:14px 18px;">
+        <p style="margin:0; font-size:12.5px; font-weight:800; color:#A03A2A;">P31-1 · 공개 진입 문법 수렴 (최우선 · H1)</p>
+        <div style="font-size:12.5px; line-height:1.68; color:#44413B; margin-top:6px;">
+          <div><b>문제</b> <code>/flow-maps/[map]</code>가 legacy 목록 우선, <code>/f</code>는 artifact-first — 같은 콘텐츠 다른 첫 화면·동사.</div>
+          <div><b>dependency</b> <code>/flow-maps</code>의 artifact-first 전환 설계(P30-07이 명시 이월); shared save-before 컴포넌트(P29-01A) 재사용.</div>
+          <div><b>non-goal</b> <code>/flow-maps</code> route·source 데이터·map identity 삭제 금지 · projection/export 계약 불변.</div>
+          <div><b>rollback</b> legacy composition을 flag 뒤 보존, no-diff 확인 전 강제 삭제 안 함(ROADMAP 규칙 준수).</div>
+          <div><b>acceptance</b> <code>/f</code>·<code>/flow-maps</code> 두 route 390/1024/1440에서 <em>동일 결정 표면 수·동일 primary 동사</em> screenshot.</div>
+          <div><b>marker</b> <code>P31-PUBLIC-ENTRY-GRAMMAR-UNIFIED</code></div>
+        </div>
+      </div>
+
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #8A6D1B; border-radius:14px; padding:14px 18px;">
+        <p style="margin:0; font-size:12.5px; font-weight:800; color:#8A6D1B;">P31-2 · 저장 결정영역 축약 + 동사 통일 (M1·L1)</p>
+        <div style="font-size:12.5px; line-height:1.68; color:#44413B; margin-top:6px;">
+          <div><b>문제</b> <code>/f</code> 하단에 입력+intent 3버튼+조정+시작 공존, 동사 <code>시작</code>/<code>저장</code> 혼선.</div>
+          <div><b>dependency</b> 없음(P31-1과 병렬 가능, 수렴 후 함께 검증하면 효율적).</div>
+          <div><b>non-goal</b> save payload·dateIntent·projection 계약 불변.</div>
+          <div><b>rollback</b> composition prop 토글로 즉시 원복.</div>
+          <div><b>acceptance</b> <code>saveDecisionSurfaceCount==1 · saveVerbDistinct==1</code>, 390 screenshot.</div>
+          <div><b>marker</b> <code>P31-SAVE-SINGLE-DECISION-VERB</code></div>
+        </div>
+      </div>
+
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #8A6D1B; border-radius:14px; padding:14px 18px;">
+        <p style="margin:0; font-size:12.5px; font-weight:800; color:#8A6D1B;">P31-3 · Calendar grid 키보드 깊이 축소 (M3 · 접근성)</p>
+        <div style="font-size:12.5px; line-height:1.68; color:#44413B; margin-top:6px;">
+          <div><b>문제</b> 월간 grid 날짜가 각각 tab stop → agenda/tabs까지 ~76 정지(production focus trace).</div>
+          <div><b>dependency</b> 없음. ARIA grid roving tabindex 패턴.</div>
+          <div><b>non-goal</b> 날짜 선택 동작·accessible name·시각 레이아웃 불변.</div>
+          <div><b>rollback</b> tabindex 정책만 되돌리면 원복.</div>
+          <div><b>acceptance</b> <code>calendarFocusStopsToAgenda</code> 대폭 감소(예 ≤10) + skip link 도달, <code>unnamedFocusable 0</code> 유지, focus trace 캡처.</div>
+          <div><b>marker</b> <code>P31-CALENDAR-KEYBOARD-SKIP</code></div>
+        </div>
+      </div>
+
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #8A6D1B; border-radius:14px; padding:14px 18px;">
+        <p style="margin:0; font-size:12.5px; font-weight:800; color:#8A6D1B;">P31-4 · 월간 cell 색·개수 우선 + varied-name fixture (M2·M4)</p>
+        <div style="font-size:12.5px; line-height:1.68; color:#44413B; margin-top:6px;">
+          <div><b>문제</b> 대량 시 cell이 <code>이사 준비 F…</code> 축약 벽 · scale 검증이 동명 합성 fixture뿐.</div>
+          <div><b>dependency</b> varied-name scale fixture(테스트용, persistence schema 불변).</div>
+          <div><b>non-goal</b> selected-day full identity·accessible name·Calendar identity 계약 불변.</div>
+          <div><b>rollback</b> cell 렌더 파생 표기만 되돌림.</div>
+          <div><b>acceptance</b> cell truncated-title 의존 0 · varied-name 50 fixture에서 색·개수로 구분 · agenda full title, 1024/1440 캡처.</div>
+          <div><b>marker</b> <code>P31-CALENDAR-CELL-IDENTITY</code></div>
+        </div>
+      </div>
+
+      <div style="background:#F1EFEA; border:1px dashed #C9C4BB; border-radius:14px; padding:14px 18px;">
+        <p style="margin:0; font-size:12.5px; font-weight:800; color:#6E6B64;">P31-5(보류) · source correction loop — <em>만들지 않음</em></p>
+        <p style="margin:6px 0 0; font-size:12.5px; line-height:1.68; color:#57544E;">§6-1의 가장 약한 사슬이지만 correction 전송·moderation·creator update는 <strong>gated 플랫폼 작업</strong>이며 P30/P31 범위 밖(ROADMAP Gated Backlog). concrete production 결함이 아니라 <em>미구현 기능</em>이므로 P31 slice로 열지 않고 <strong>관찰(Q7)로 수요를 먼저 확인</strong>한다.</p>
+      </div>
+
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #A03A2A; border-radius:14px; padding:14px 18px;">
+        <p style="margin:0; font-size:12.5px; font-weight:800; color:#A03A2A;">P31-6 · shape 공통 save-before 뼈대 (소유자 · H-2, 최우선급)</p>
+        <div style="font-size:12.5px; line-height:1.68; color:#44413B; margin-top:6px;">
+          <div><b>문제</b> 이사·결혼·홈트 공개 상세가 서로 다른 화면처럼 읽혀 저장·조정 위치가 학습되지 않음(결혼에서 특히).</div>
+          <div><b>dependency</b> P31-1(진입 문법 수렴)과 같은 표면 — 함께 설계. shared save-before 컴포넌트 재사용.</div>
+          <div><b>non-goal</b> shape별 결과 종류(캘린더/체크/루틴)·projection·export 계약 불변. 포맷 능력 삭제 금지.</div>
+          <div><b>rollback</b> composition prop 토글로 shape 뼈대 원복.</div>
+          <div><b>acceptance</b> 3개 shape route(이사·결혼·홈트) 390에서 <em>동일한 결과→저장→조정 순서</em> · 포맷 토글=미리보기 전환만 · 가져가기 미리보기 노출, screenshot.</div>
+          <div><b>marker</b> <code>P31-SHAPE-SAVE-BEFORE-SKELETON</code></div>
+        </div>
+      </div>
+
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #8A6D1B; border-radius:14px; padding:14px 18px;">
+        <p style="margin:0; font-size:12.5px; font-weight:800; color:#8A6D1B;">P31-7 · My Flow 모바일 한 초점 (소유자 · M-7)</p>
+        <div style="font-size:12.5px; line-height:1.68; color:#44413B; margin-top:6px;">
+          <div><b>문제</b> next-action·전체 구조·날짜 없음·가져가기가 한 스크롤에 세로로 누적, 카드 종류 3+ 경쟁.</div>
+          <div><b>dependency</b> 없음. <b>non-goal</b> 데이터·완료/reopen·export 계약 불변, 정보 삭제 금지(접기만).</div>
+          <div><b>rollback</b> 접힘 기본값만 원복. <b>acceptance</b> 첫 viewport 강조 카드 1개 · 동시 노출 카드 종류 ≤2 · 텍스트량 감소, 390 screenshot.</div>
+          <div><b>marker</b> <code>P31-MY-FLOW-SINGLE-FOCUS</code></div>
+        </div>
+      </div>
+
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #8A6D1B; border-radius:14px; padding:14px 18px;">
+        <p style="margin:0; font-size:12.5px; font-weight:800; color:#8A6D1B;">P31-8 · 캘린더 선택일 상세를 sheet/overlay로 (소유자 · M-8)</p>
+        <div style="font-size:12.5px; line-height:1.68; color:#44413B; margin-top:6px;">
+          <div><b>문제</b> selected-day 상세가 grid 아래로 이어져 시선·스크롤 끊김.</div>
+          <div><b>dependency</b> 기존 undated sheet 패턴 재사용. <b>non-goal</b> Calendar identity·occurrence 계약 불변, wide 우측 pane 유지.</div>
+          <div><b>rollback</b> 표시 방식만 원복. <b>acceptance</b> 모바일 상세가 focus trap·Escape·복귀 갖춘 sheet로 · grid 맥락 유지, 390 screenshot.</div>
+          <div><b>marker</b> <code>P31-CALENDAR-DETAIL-SHEET</code></div>
+        </div>
+      </div>
+
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-left:4px solid #8A6D1B; border-radius:14px; padding:14px 18px;">
+        <p style="margin:0; font-size:12.5px; font-weight:800; color:#8A6D1B;">P31-9 · 조작 사전 + 제거(보관/삭제) 노출 (소유자 · M-9·M-10)</p>
+        <div style="font-size:12.5px; line-height:1.68; color:#44413B; margin-top:6px;">
+          <div><b>문제</b> 같은 동작이 표면마다 다른 말·컴트롤 · Flow 삭제 위치 불명(보관에 숨음).</div>
+          <div><b>dependency</b> 없음(단 어휘 결정은 소유자 승인). ARIA 메뉴 패턴.</div>
+          <div><b>non-goal</b> 실제 영구 삭제·계정 삭제는 gated 유지 · archive/exclusion 계약 불변.</div>
+          <div><b>rollback</b> label/노출 매핑만 원복.</div>
+          <div><b>acceptance</b> 동작 사전 1표(조정·제거·날짜 옆기기·완료·가져가기) 전 표면 동일 label·어포던스 · 각 Flow 상세에 일관 위치 제거 동작 + 되돌리기, 390 screenshot.</div>
+          <div><b>marker</b> <code>P31-OPERATION-VOCAB-UNIFIED</code></div>
+        </div>
+      </div>
+
+      <div style="background:#F1EFEA; border:1px dashed #C9C4BB; border-radius:14px; padding:12px 18px;">
+        <p style="margin:0; font-size:12px; line-height:1.62; color:#57544E;"><strong>M-5(홈 IA)·M-6(찾기 카드)</strong>는 홈·/flows 캡처가 없어(<code>evidence-gap</code>) 아직 slice로 못 박지 않는다 — 방향은 §모바일 피드백에 있고, codex 라이브 캡처 + 관찰 <strong>Q8·Q10</strong> 후 P31-9(홈 재정의)·P31-10(카드 스펙)으로 승격한다.</p>
+      </div>
+    </div>
+    <p style="margin:12px 0 0; font-size:12px; color:#6E6B64;"><strong>순서</strong> · <strong>P31-1·P31-6(진입 문법 + shape 공통 뼈대)</strong>를 같은 표면에서 먼저 → P31-2·3·4·7·8 병렬 → 관찰(Q1–Q10). P31-1은 <code>/flow-maps</code> no-diff·rollback 경계가 서야 착수. codex_independent가 각 acceptance를 라이브 focus trace·screenshot로 재현.</p>
+  </section>
+
+  <!-- ===== 8 관찰 질문 ===== -->
+  <section id="ask" data-screen-label="8 관찰 질문" style="max-width: 1140px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #1B3A6B;">SECTION 8</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">실제 사용자에게만 확인할 질문 (자동화 불가)</h2>
+    </div>
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px,1fr)); gap:12px; margin-top:16px;">
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:14px; padding:16px 18px;">
+        <p style="margin:0; font-size:13px; font-weight:800; color:#1B3A6B;">observed_user로만 닫히는 질문</p>
+        <p style="margin:8px 0 0; font-size:13px; line-height:1.75; color:#44413B;"><strong>Q1</strong> 첫 viewport에서 <em>결과 → 조정 → 저장</em>이 설명 없이 읽히는가? <strong>Q2</strong> <code>/f</code>로 들어온 사용자와 <code>/flow-maps</code>로 들어온 사용자가 <em>같은 Flow</em>라고 인지하는가(H1)? <strong>Q3</strong> 저장 화면과 완료 receipt를 다른 상태로 인지하는가? <strong>Q4</strong> 실제 varied-name 20~60 Flow에서 검색 전에 무엇으로 원하는 Flow를 찾는가(M2·M4)? <strong>Q5</strong> 날짜 없는 일을 Calendar에서 배치하는 것이 실데이터에서 자연스러운가? <strong>Q6</strong> 루틴 <code>전체 횟수 8</code> + <code>앞으로 4주 미리보기</code>로 종료 조건을 오해 없이 이해하는가(L2)? <strong>Q7</strong> source 항목이 틀렸을 때 <em>고쳐 알리고 싶은</em> 욕구가 있는가(correction 수요, §6-1)? <strong>Q8</strong> 홈과 Flow 찾기를 <em>다른 목적</em>으로 인지하는가 — 홈에서 무엇을 기대하는가(M-5)? <strong>Q9</strong> 서로 다른 콘텐츠(이사·결혼·홈트)를 처음 열 때 <em>같은 조작 흐름</em>으로 느끼는가(H-2)? <strong>Q10</strong> 사용/후기 같은 신뢰 신호가 저장 결정에 영향을 주는가 — 없으면 불안한가(M-6)? <strong>Q11</strong> 사용자가 Flow를 <em>없앨</em> 때 삭제를 기대하는가 보관을 기대하는가 — 되돌리기가 있으면 “삭제”라 불러도 안심하는가(M-10)?</p>
+      </div>
+      <div style="background:#FFF7E9; border:1px solid #E8D9B0; border-radius:14px; padding:16px 18px;">
+        <p style="margin:0; font-size:13px; font-weight:800; color:#8A6D1B;">관찰 전에 닫을 것 (P31 A slice)</p>
+        <p style="margin:8px 0 0; font-size:13px; line-height:1.75; color:#5E4E22;">P31-1 진입 문법 수렴 · P31-2 저장 결정·동사 · P31-3 Calendar 키보드 · P31-4 cell 색·개수. 이걸 열어두면 관찰 세션이 H1·M1·M2·M3 재발견에 소모된다. <strong>순서</strong> P31-1 먼저(Q2의 전제), 나머지 병렬.</p>
+        <p style="margin:10px 0 0; font-size:12.5px; line-height:1.7; color:#5E4E22;"><strong>codex_independent로 닫을 것</strong> · scorecard의 <code>not_tested</code> 9건(완료·reopen·라이브 배치/undo·클립보드·reload persistence) — 라이브 클릭으로 재현해 이 검토의 도달 한계를 메운다.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 9 검증·publish + 요약 ===== -->
+  <section id="publish" data-screen-label="9 검증·publish·요약" style="max-width: 1140px; margin: 0 auto; padding: 30px 28px 56px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #1B3A6B;">SECTION 9</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">검증 및 publish 상태 · 최종 요약</h2>
+    </div>
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap:10px; margin-top:16px;">
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:14px 16px;">
+        <p style="margin:0; font-size:12.5px; font-weight:800; color:#1B3A6B;">이 검토가 한 것 / 안 한 것</p>
+        <div style="margin-top:8px; font-size:12.5px; line-height:1.72; color:#44413B;">
+          <div><strong style="color:#1F6A3E;">한 것</strong> · P30 package 8종 + 제품 docs 정독 · production smoke 13 + 구현 17 캡처 직접 확인 · production focus trace 분석 · 24-cell 화면/위계 판정 · 현재↔제안 위계 비교 · P31 후보 도출</div>
+          <div style="margin-top:6px;"><strong style="color:#A03A2A;">안 한 것</strong> · 앱 코드 수정 <strong>false</strong> · 라이브 hydration 클릭(<code>inaccessible</code>) · 세션 간 reload persistence · unit/build/E2E <em>재실행</em>(package 수치를 <em>인용</em>만, 이번 결과로 복사하지 않음) · 사용자 모집</div>
+        </div>
+      </div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:14px 16px;">
+        <p style="margin:0; font-size:12.5px; font-weight:800; color:#1B3A6B;">package가 보고한 수치 (인용 · 재실행 아님)</p>
+        <div style="margin-top:8px; font-size:12.5px; line-height:1.72; color:#44413B;">
+          <div>unit <code>584/584</code> · full E2E <code>304/304</code> · P30 E2E <code>12/12</code> · build <code>18/18</code></div>
+          <div>production smoke <code>13/13</code> · overflow·unnamed·console/page error 모두 <code>0</code></div>
+          <div>fixed-layer intersection <code>0</code> · My Flow primary <code>1</code>/secondary <code>1</code></div>
+          <div>undated <code>10→8→undo10</code>(stable ID) · scope option <code>62</code>(collapse) · 같은 날 <code>5</code> full identity</div>
+          <div style="margin-top:4px; color:#6E6B64;">→ 이는 <strong>구조·계약 증거</strong>이며 사용성 증거가 아니다. observed users <strong>0</strong>.</div>
+        </div>
+      </div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:14px 16px;">
+        <p style="margin:0; font-size:12.5px; font-weight:800; color:#1B3A6B;">publish 상태</p>
+        <div style="margin-top:8px; font-size:12.5px; line-height:1.72; color:#44413B;">
+          <div>P30 구현: PR #148 / merge <code>b3c8500</code> · closeout PR #149 / <code>4c5bbb34</code> · CI green · deploy <code>5557201045</code> live</div>
+          <div style="margin-top:6px;">이 <strong>검토 산출물</strong>: 디자인 프로젝트 아티팩트로 게시(review.html DC + scorecard/matrix JSON + assessment/p31 md). <em>repo에 merge하지 않음</em> — 검토는 코드 변경이 아님.</div>
+          <div style="margin-top:6px;">다음 gate: 소유자 결정 → P31-1 착수 또는 keep_p30 유지.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:16px; background:#101A2B; color:#F0F3F8; border-radius:16px; padding:20px 22px;">
+      <p style="margin:0; font-size:13px; font-weight:800; color:#8FE3B0;">최종 요약</p>
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(230px,1fr)); gap:14px 24px; margin-top:12px; font-size:13px; line-height:1.7;">
+        <div><p style="margin:0; font-weight:800; color:#8FE3B0;">지금 당장 (P31 A)</p><p style="margin:4px 0 0; color:rgba(240,243,248,0.85);">P31-1 진입 문법 수렴 · P31-6 shape 공통 뼈대(H-2) → P31-2 저장 결정·동사 · P31-7 내 플로우 한 초점 → P31-3 Calendar 키보드 · P31-8 선택일 sheet → P31-4 cell 색·개수. 관찰 전에 닫는다.</p></div>
+        <div><p style="margin:0; font-weight:800; color:#F3D98F;">다음 루프</p><p style="margin:4px 0 0; color:rgba(240,243,248,0.85);">관찰 Q1–Q7 · codex_independent 라이브 재현으로 not_tested 9건 · varied-name scale 관찰.</p></div>
+        <div><p style="margin:0; font-weight:800; color:#F5A99B;">structural_reopen</p><p style="margin:4px 0 0; color:rgba(240,243,248,0.85);">없음. 4탭·public /f·데이터 계약은 건강. redesign 불필요.</p></div>
+        <div><p style="margin:0; font-weight:800; color:#C9C4BB;">defer (범위 밖)</p><p style="margin:4px 0 0; color:rgba(240,243,248,0.85);">correction 전송·계정/sync·실 AI/crawler·직접 연동·5탭·planner·marketplace.</p></div>
+      </div>
+      <p style="margin:14px 0 0; font-size:14px; line-height:1.7; color:#F0F3F8;"><strong>전체 판정 = bounded_revision · 확신도 4/5.</strong> P30은 P29 검토가 남긴 correctness·밀도 gap을 production에서 실제로 닫았고 계약 회귀가 없다(keep_p30). 남은 것은 진입 문법 이원화·콘텐츠 shape 비일관(High 2)과 밀도·발견성·모바일 density(Medium) — 소유자 모바일 walkthrough가 이를 <strong>“복잡도 예산 초과”</strong> 한 문제로 묶어준다(§복잡도 예산). 모두 composition/초점/표기·기본노출 계층의 <em>bounded revision</em>이며 구조 재개봉이 아니다.</p>
+      <p style="margin:10px 0 0; font-size:12.5px; color:rgba(240,243,248,0.6);">앱 코드 수정: <strong style="color:#F5A99B;">false</strong> · observed-user: <strong>0</strong> · evidence: <code>current_source</code>(P30 package 8 + 제품 docs) + <code>current_package_screenshot</code>(production smoke 13 + 구현 17) + <code>current_production_interaction</code>(focus trace) + <code>heuristic_simulation</code> · 라이브 클릭·persistence <code>inaccessible</code> → 실행 결과 <code>not_tested</code> · package E2E/smoke 수치는 인용이며 재실행이 아니고 사용성 증거가 아니다.</p>
+    </div>
+  </section>
+
+</div>
+</x-dc>
+</body>
+</html>

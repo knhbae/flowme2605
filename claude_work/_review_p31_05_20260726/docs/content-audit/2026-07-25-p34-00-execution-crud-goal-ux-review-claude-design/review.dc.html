@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:#eef0ea;color:#191b12;font-family:Pretendard,"Noto Sans KR",system-ui,-apple-system,sans-serif;line-height:1.62;-webkit-font-smoothing:antialiased}
+  a{color:#3451db;text-decoration:none}
+  a:hover{color:#22307a;text-decoration:underline}
+  ::selection{background:#dfe3ff}
+  [data-ann="off"] .ann{display:none!important}
+  [data-sev="high"] [data-fsev="medium"],[data-sev="high"] [data-fsev="low"]{display:none!important}
+  [data-sev="prio"] [data-fsev="low"]{display:none!important}
+  [data-lens="issues"] [data-ok="1"]{opacity:.16}
+  button[aria-pressed="true"]{background:#191b12!important;color:#fff!important;border-color:#191b12!important}
+  .st{display:block;font-size:10px;font-weight:800;letter-spacing:.02em;text-align:center;padding:5px 2px;border-radius:4px;border:1px solid transparent}
+  .st[data-st="supported"]{background:#e6f0ea;color:#176d5d;border-color:#c9e0d4}
+  .st[data-st="partial"]{background:#fbf1da;color:#8a5a00;border-color:#eedcb4}
+  .st[data-st="hidden"]{background:#f5e6e3;color:#a9362b;border-color:#e8cdc7}
+  .st[data-st="inconsistent"]{background:#f5e6e3;color:#a9362b;border-color:#e8cdc7}
+  .st[data-st="missing"]{background:#eceee8;color:#71766a;border-color:#dcdfd6}
+  .st[data-st="undetermined"]{background:#e9e7f2;color:#5a4c86;border-color:#d6d1e6}
+  .st[data-st="blocked"]{background:#a9362b;color:#fff}
+  .vd{display:inline-block;font-size:10px;font-weight:800;padding:3px 7px;border-radius:4px}
+  .vd[data-v="consistent"]{background:#e6f0ea;color:#176d5d}
+  .vd[data-v="variant"]{background:#fbf1da;color:#8a5a00}
+  .vd[data-v="split"]{background:#f5e6e3;color:#a9362b}
+  .vd[data-v="absent"]{background:#eceee8;color:#71766a}
+  .vd[data-v="undetermined"]{background:#e9e7f2;color:#5a4c86}
+  .fnd{background:#fff;border:1px solid #d4d8cc;border-radius:10px;padding:18px 20px}
+  .fnd h3{margin:0 0 4px;font-size:17px;letter-spacing:-.01em}
+  .fnd dl{display:grid;grid-template-columns:88px 1fr;gap:5px 14px;margin:12px 0 0;font-size:13px}
+  .fnd dt{color:#8b9083;font-weight:700}
+  .fnd dd{margin:0;color:#3f433a}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em;background:#e6e8e1;padding:1px 5px;border-radius:4px}
+  th{text-align:left;font-size:11px;letter-spacing:.06em;color:#8b9083;font-weight:800;padding:0 8px 8px;vertical-align:bottom}
+  td{padding:9px 8px;border-top:1px solid #e2e5dc;font-size:13px;vertical-align:top}
+</style>
+</helmet>
+<div ref="{{ rootRef }}" data-ann="on" data-sev="all" data-lens="all" style="max-width:1240px;margin:0 auto;padding:0 20px 96px">
+
+  <header style="padding:40px 0 26px;border-bottom:1px solid #d4d8cc">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap">
+      <div style="max-width:860px">
+        <p style="margin:0 0 10px;font-size:12px;font-weight:800;letter-spacing:.14em;color:#a9362b">독립 검토 · P34-00 실행 CRUD · 목표 UX · claude_design · 2026-07-25</p>
+        <h1 style="margin:0 0 14px;font-size:clamp(30px,4.4vw,52px);line-height:1.08;letter-spacing:-.02em">CRUD는 있다.<br>지우는 자리와 반복의 회차가 없다</h1>
+        <p style="margin:0;font-size:17px;color:#5b5f55;max-width:780px;text-wrap:pretty">98개 CRUD 셀 중 <b>blocked 0 · supported 60</b>. 저장·읽기·수정·완료·재사용·export의 본체는 건강하다. 문제는 기능 부재가 아니라 <b>파괴적 조작과 반복 조작의 위치·이름</b>이다. 목표 관리는 <b>A안(별도 Goal 객체 없음)</b>을 추천한다. 앱 코드를 수정하지 않았고 실제 관찰 사용자는 0명이다.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;flex:none">
+        <button type="button" aria-pressed="true" data-ctl="ann" onClick="{{ toggleAnn }}" style="border:1px solid #c7cbbf;background:#fff;color:#3a3d35;font-family:inherit;font-size:12px;font-weight:700;padding:8px 12px;border-radius:999px;cursor:pointer">주석 표시</button>
+        <div style="display:flex;gap:6px">
+          <button type="button" aria-pressed="true" data-ctl="sev" data-val="all" onClick="{{ pickSeverity }}" style="border:1px solid #c7cbbf;background:#fff;color:#3a3d35;font-family:inherit;font-size:12px;font-weight:700;padding:8px 10px;border-radius:999px;cursor:pointer">전체</button>
+          <button type="button" aria-pressed="false" data-ctl="sev" data-val="prio" onClick="{{ pickSeverity }}" style="border:1px solid #c7cbbf;background:#fff;color:#3a3d35;font-family:inherit;font-size:12px;font-weight:700;padding:8px 10px;border-radius:999px;cursor:pointer">high+medium</button>
+          <button type="button" aria-pressed="false" data-ctl="sev" data-val="high" onClick="{{ pickSeverity }}" style="border:1px solid #c7cbbf;background:#fff;color:#3a3d35;font-family:inherit;font-size:12px;font-weight:700;padding:8px 10px;border-radius:999px;cursor:pointer">high</button>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button type="button" aria-pressed="true" data-ctl="lens" data-val="all" onClick="{{ pickLens }}" style="border:1px solid #c7cbbf;background:#fff;color:#3a3d35;font-family:inherit;font-size:12px;font-weight:700;padding:8px 10px;border-radius:999px;cursor:pointer">매트릭스 전체</button>
+          <button type="button" aria-pressed="false" data-ctl="lens" data-val="issues" onClick="{{ pickLens }}" style="border:1px solid #c7cbbf;background:#fff;color:#3a3d35;font-family:inherit;font-size:12px;font-weight:700;padding:8px 10px;border-radius:999px;cursor:pointer">문제 셀만</button>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:22px">
+      <span style="border:1px solid #a9362b;background:#fff;color:#a9362b;padding:6px 11px;font-size:12px;font-weight:800;border-radius:6px">판정 · bounded_crud_revision</span>
+      <span style="border:1px solid #d4d8cc;background:#fff;padding:6px 11px;font-size:12px;font-weight:700;border-radius:6px">finding 12 · blocking 0 · high 3</span>
+      <span style="border:1px solid #d4d8cc;background:#fff;padding:6px 11px;font-size:12px;font-weight:700;border-radius:6px">CRUD 98셀 · blocked 0</span>
+      <span style="border:1px solid #d4d8cc;background:#fff;padding:6px 11px;font-size:12px;font-weight:700;border-radius:6px">목표 관리 · A 추천 / C 금지</span>
+      <span style="border:1px solid #d4d8cc;background:#fff;padding:6px 11px;font-size:12px;font-weight:700;border-radius:6px">앱 코드 변경 없음 · observed-user 0</span>
+      <a href="./current-proposed-wireframes.dc.html" style="border:1px solid #191b12;background:#191b12;color:#fff;padding:6px 11px;font-size:12px;font-weight:800;border-radius:6px">와이어프레임 11장면 →</a>
+    </div>
+  </header>
+
+  <section style="padding:32px 0;border-bottom:1px solid #d4d8cc">
+    <h2 style="margin:0 0 6px;font-size:13px;font-weight:800;letter-spacing:.12em;color:#8a5a00">한 줄 판정</h2>
+    <p style="margin:0 0 22px;font-size:22px;font-weight:700;letter-spacing:-.01em;max-width:960px;text-wrap:pretty">FlowMe는 <span style="color:#176d5d">일정·Todo·체크리스트 도구로서 필요한 CRUD를 대부분 갖췄다</span>. 그러나 <span style="color:#a9362b">삭제 계열이 결정 시점의 화면에 없고</span>, <span style="color:#a9362b">되돌릴 수 없는 조작에 회귀 계약이 없으며</span>, <span style="color:#a9362b">반복은 완료만 회차 단위</span>다. 구조 재오픈이 아니라 <b>bounded 수정</b>이다.</p>
+    <div style="display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr))">
+      <div style="border-left:4px solid #176d5d;background:#fff;padding:16px 18px;border-radius:0 8px 8px 0"><strong style="display:block;font-size:34px;line-height:1;letter-spacing:-.02em">60 / 98</strong><span style="color:#5b5f55;font-size:13px">supported 셀 · blocked 0</span></div>
+      <div style="border-left:4px solid #a9362b;background:#fff;padding:16px 18px;border-radius:0 8px 8px 0"><strong style="display:block;font-size:34px;line-height:1;letter-spacing:-.02em">4 tap</strong><span style="color:#5b5f55;font-size:13px">열린 Flow에서 보관까지 — 목록으로 되돌아가야 함</span></div>
+      <div style="border-left:4px solid #a9362b;background:#fff;padding:16px 18px;border-radius:0 8px 8px 0"><strong style="display:block;font-size:34px;line-height:1;letter-spacing:-.02em">0</strong><span style="color:#5b5f55;font-size:13px">‘영구 삭제’의 E2E marker · lifecycle 모듈 삭제 API</span></div>
+      <div style="border-left:4px solid #a9362b;background:#fff;padding:16px 18px;border-radius:0 8px 8px 0"><strong style="display:block;font-size:34px;line-height:1;letter-spacing:-.02em">0건</strong><span style="color:#5b5f55;font-size:13px">‘이번 회차만 수정’ — 완료만 회차 단위</span></div>
+      <div style="border-left:4px solid #8a5a00;background:#fff;padding:16px 18px;border-radius:0 8px 8px 0"><strong style="display:block;font-size:34px;line-height:1;letter-spacing:-.02em">4 : 1</strong><span style="color:#5b5f55;font-size:13px">빼기·삭제·제외·보류 어휘 수 : 사용자가 가진 의도 수</span></div>
+      <div style="border-left:4px solid #176d5d;background:#fff;padding:16px 18px;border-radius:0 8px 8px 0"><strong style="display:block;font-size:34px;line-height:1;letter-spacing:-.02em">A</strong><span style="color:#5b5f55;font-size:13px">목표 관리 — 진행률·단계·재사용으로 이미 구현됨</span></div>
+    </div>
+    <p class="ann" style="margin:18px 0 0;padding:13px 16px;background:#fbf1da;color:#5f430d;font-size:14px;border-radius:8px">‘발견되지 않는다’는 판정은 취향이 아니라 <b>진입 경로의 위치</b>로 내렸다. E2E 시나리오가 어떤 컨트롤을 거쳐 목표에 도달하는지가 곧 사용자가 거쳐야 하는 최소 경로다.</p>
+  </section>
+
+  <section style="padding:32px 0;border-bottom:1px solid #d4d8cc">
+    <h2 style="margin:0 0 14px;font-size:24px;letter-spacing:-.01em">증거 경계 — 무엇으로 판정했고 무엇을 못 했나</h2>
+    <div style="display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(290px,1fr))">
+      <div style="background:#fff;border:1px solid #d4d8cc;border-radius:10px;padding:18px">
+        <h3 style="margin:0 0 8px;font-size:15px;color:#176d5d">확인한 것</h3>
+        <ul style="margin:0;padding-left:18px;color:#4b4f45;font-size:14px">
+          <li><code>personal-flow-lifecycle.ts</code> · <code>flow-item-state.ts</code> · <code>canonical-flow-storage.ts</code> 전문</li>
+          <li><code>tests/e2e/p27-foundation.spec.ts</code> 전문 — lifecycle·항목 제외·조정·export 경로의 실제 컨트롤 순서</li>
+          <li><code>tests/e2e/*</code> 라벨·testid 전역 검색(보관·복구·삭제·완료·회차·날짜·가져가기·목표)</li>
+          <li><code>components/flow/*</code> 31개 파일 전역 검색</li>
+          <li>P33 publish stabilization evidence 4종 · 기존 evidence 캡처 14장</li>
+        </ul>
+      </div>
+      <div style="background:#fff;border:1px solid #d4d8cc;border-radius:10px;padding:18px">
+        <h3 style="margin:0 0 8px;font-size:15px;color:#a9362b">하지 못한 것 (inaccessible / undetermined)</h3>
+        <ul style="margin:0;padding-left:18px;color:#4b4f45;font-size:14px">
+          <li><b>P33 Preview 라이브 조작</b> — 익명 요청이 Vercel 인증 화면으로 이동(<code>vercel_sso_redirect</code>)</li>
+          <li><b>Production 라이브 조작·console·스크린리더·overflow 실측</b> — 이번 검토 범위에서 수행하지 않음</li>
+          <li><b><code>AppClient.tsx</code> 열람</b> — 512KB 초과로 도구 한도 밖. 이 파일에만 있을 수 있는 문구는 <code>undetermined</code></li>
+        </ul>
+        <p style="margin:10px 0 0;font-size:13px;color:#a9362b;font-weight:700">자동화·screenshot·source 판독·heuristic은 사용자 검증이 아니다.</p>
+      </div>
+      <div style="background:#fff;border:1px solid #d4d8cc;border-radius:10px;padding:18px">
+        <h3 style="margin:0 0 8px;font-size:15px">검토 시점 상태 재기록</h3>
+        <dl style="display:grid;grid-template-columns:96px 1fr;gap:5px 12px;margin:0;font-size:13px">
+          <dt style="color:#8b9083;font-weight:700">commit</dt><dd style="margin:0"><code>8c54992</code></dd>
+          <dt style="color:#8b9083;font-weight:700">branch</dt><dd style="margin:0">codex/p33-integrated-program-plan</dd>
+          <dt style="color:#8b9083;font-weight:700">PR #156</dt><dd style="margin:0">open · <b>draft</b> · merge 안 됨</dd>
+          <dt style="color:#8b9083;font-weight:700">production</dt><dd style="margin:0">P32 배포본 (P33 아님)</dd>
+          <dt style="color:#8b9083;font-weight:700">preview</dt><dd style="margin:0"><b>inaccessible</b></dd>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding:32px 0;border-bottom:1px solid #d4d8cc">
+    <h2 style="margin:0 0 4px;font-size:24px;letter-spacing:-.01em">Finding 12건</h2>
+    <p style="margin:0 0 20px;color:#5b5f55;font-size:15px">blocking 0 · high 3 · medium 6 · low 3. 위 필터로 심각도를 좁힐 수 있다.</p>
+    <div style="display:grid;gap:14px">
+
+      <div class="fnd" data-fsev="high" style="border-left:4px solid #a9362b">
+        <div style="display:flex;gap:10px;align-items:baseline;flex-wrap:wrap"><span style="font-size:11px;font-weight:800;color:#a9362b">H-1 · HIGH · hidden</span><span style="font-size:11px;color:#8b9083">shared · /my · 390 / 1024 / 1440</span></div>
+        <h3>열린 Flow에는 삭제 계열 명령이 없다</h3>
+        <p style="margin:0;color:#3f433a;font-size:15px;text-wrap:pretty">집중 워크스페이스에 보이는 명령은 <code>이사일 바꾸기</code> <code>가져가기</code> <code>여러 할 일 조정</code> <code>전체 펼치기</code>뿐이다. 보관·복구는 <b>목록 카드의 ⋯ 관리 메뉴</b>에만 있다.</p>
+        <dl>
+          <dt>재현</dt><dd>워크스페이스에서 정리 명령 탐색 → 없음 → 전체 보기 → 카드 ⋯ → 보관 (<b>tap 4</b>)</dd>
+          <dt>근거</dt><dd>p27-foundation.spec.ts의 lifecycle 시나리오 전체가 <code>my-flow-overview-card</code> → <code>my-flow-management-menu-trigger</code> → <code>my-flow-archive-toggle</code>. 1440 워크스페이스 캡처에도 lifecycle 명령 없음</dd>
+          <dt>사용자 영향</dt><dd>삭제 결정은 Flow를 열어 내용을 본 직후 생긴다. 그 순간 경로가 화면 밖이다</dd>
+          <dt>권장</dt><dd>P34-01 lifecycle 단일 소유자 · marker <code>P34-LIFECYCLE-SINGLE-OWNER</code></dd>
+          <dt>evidence</dt><dd>current_source · current_package_screenshot</dd>
+        </dl>
+      </div>
+
+      <div class="fnd" data-fsev="high" style="border-left:4px solid #a9362b">
+        <div style="display:flex;gap:10px;align-items:baseline;flex-wrap:wrap"><span style="font-size:11px;font-weight:800;color:#a9362b">H-2 · HIGH · undetermined + 계약 부재 confirmed</span><span style="font-size:11px;color:#8b9083">shared · /my</span></div>
+        <h3>“이 기기에서 영구 삭제”에 회귀 계약이 없다</h3>
+        <p style="margin:0;color:#3f433a;font-size:15px;text-wrap:pretty">repo 전역 검색에서 <code>영구 삭제</code>는 <code>docs/STATUS.md</code>·<code>docs/DECISIONS.md</code> 2건뿐이다. <b>tests/e2e 0건</b>, <code>personal-flow-lifecycle.ts</code>에는 archive/restore만 있고 삭제 API가 없으며, 백업 동기화 대상도 <code>archivedFlowSlugs</code>다.</p>
+        <dl>
+          <dt>판정</dt><dd>구현 여부는 <code>undetermined</code>(AppClient 열람 불가). <b>파괴적 조작에 회귀 계약이 없다는 사실은 confirmed</b></dd>
+          <dt>사용자 영향</dt><dd>로컬 저장이 유일한 저장소인 제품에서 되돌릴 수 없는 조작이 보호 밖이다. 부분 삭제 시 목록에서 사라진 Flow의 고아 key가 남을 수 있다</dd>
+          <dt>권장</dt><dd>P34-02 — 삭제 key 집합을 lifecycle 모듈 API로 명시 · 사라지는 것 고지 · 백업 유도 · <code>P34-PERMANENT-DELETE-ISOLATION</code></dd>
+          <dt>evidence</dt><dd>current_source</dd>
+        </dl>
+      </div>
+
+      <div class="fnd" data-fsev="high" style="border-left:4px solid #a9362b">
+        <div style="display:flex;gap:10px;align-items:baseline;flex-wrap:wrap"><span style="font-size:11px;font-weight:800;color:#a9362b">H-3 · HIGH · missing</span><span style="font-size:11px;color:#8b9083">shared · /calendar · /my · 390</span></div>
+        <h3>반복은 완료만 회차 단위, 수정은 series 단위</h3>
+        <p style="margin:0;color:#3f433a;font-size:15px;text-wrap:pretty"><code>이번 회차 완료 체크</code>는 있는데 <code>이번 회차만 수정</code>은 문자열·testid 모두 0건이다. series 상세는 <code>data-execution-level="series"</code>, 완료 컨트롤 0, <code>캘린더에서 회차별 실행</code> 링크만 제공한다.</p>
+        <dl>
+          <dt>사용자 영향</dt><dd>“이번 주 수요일만 시간 변경/건너뛰기”라는 반복 사용자의 가장 흔한 조작이 없다. series 전체를 바꾸면 지난 회차의 의미까지 흔들린다</dd>
+          <dt>데이터 영향</dt><dd><b>높음</b> — occurrence override 저장 형식 신설, ICS가 단일 VEVENT에서 <code>RECURRENCE-ID</code>/<code>EXDATE</code>로 확장</dd>
+          <dt>권장</dt><dd>P34-04 · 기본값은 가장 안전한 “이번 회차만” · <code>P34-OCCURRENCE-SCOPE-EDIT</code></dd>
+          <dt>evidence</dt><dd>current_source</dd>
+        </dl>
+      </div>
+
+      <div class="fnd" data-fsev="medium" style="border-left:4px solid #8a5a00">
+        <div style="display:flex;gap:10px;align-items:baseline;flex-wrap:wrap"><span style="font-size:11px;font-weight:800;color:#8a5a00">M-1 · MEDIUM · inconsistent</span><span style="font-size:11px;color:#8b9083">/f · /my · /calendar</span></div>
+        <h3>빼기 · 삭제 · 제외 · 보류가 4개 어휘</h3>
+        <p style="margin:0;color:#3f433a;font-size:15px">저장 전 <code>저장에 포함</code> 체크박스 / 저장 후 <code>Flow에서 빼기</code> 버튼 / draft <code>삭제</code>+confirm / 실행 <code>보류</code>. 복구 위치도 접힌 <code>뺀 항목</code>, confirm 문구 안내, 보류 목록 셋으로 흩어진다. → <b>P34-03</b></p>
+      </div>
+
+      <div class="fnd" data-fsev="medium" style="border-left:4px solid #8a5a00">
+        <div style="display:flex;gap:10px;align-items:baseline;flex-wrap:wrap"><span style="font-size:11px;font-weight:800;color:#8a5a00">M-2 · MEDIUM · inconsistent</span><span style="font-size:11px;color:#8b9083">전 표면</span></div>
+        <h3>undo의 주인이 셋</h3>
+        <p style="margin:0;color:#3f433a;font-size:15px"><code>my-flow-lifecycle-snackbar</code> + <code>my-flow-lifecycle-undo</code>, <code>my-flow-batch-undo</code> + <code>my-flow-batch-undo-action</code>, Calendar 패널 내부 <code>되돌리기</code>. 위치·문구·지속시간 계약이 하나가 아니다. → <b>P34-05</b></p>
+      </div>
+
+      <div class="fnd" data-fsev="medium" style="border-left:4px solid #8a5a00">
+        <div style="display:flex;gap:10px;align-items:baseline;flex-wrap:wrap"><span style="font-size:11px;font-weight:800;color:#8a5a00">M-3 · MEDIUM · inconsistent</span><span style="font-size:11px;color:#8b9083">/my · /calendar</span></div>
+        <h3>항목 편집 진입이 두 경로</h3>
+        <p style="margin:0;color:#3f433a;font-size:15px">빠른 수정이 있으면 1탭, 없으면 요약 펼치기 → 수정 토글로 3탭. E2E 헬퍼 <code>enterMyFlowDetailEditMode</code>가 이 분기를 코드로 증명한다. → <b>P34-06</b></p>
+      </div>
+
+      <div class="fnd" data-fsev="medium" style="border-left:4px solid #8a5a00">
+        <div style="display:flex;gap:10px;align-items:baseline;flex-wrap:wrap"><span style="font-size:11px;font-weight:800;color:#8a5a00">M-4 · MEDIUM · split</span><span style="font-size:11px;color:#8b9083">/f → /my</span></div>
+        <h3>저장 전 4모드와 저장 후 편집 문법이 다르다</h3>
+        <p style="margin:0;color:#3f433a;font-size:15px">저장 전은 <code>포함 / 내용 / 일정 / 순서</code> 모드 스위처, 저장 후는 항목별 editor + 배치 선택. 같은 네 가지 수정을 두 번 배운다. 특히 <b>순서 변경</b>은 저장 후 source-backed Flow에서 경로가 달라진다.</p>
+      </div>
+
+      <div class="fnd" data-fsev="medium" style="border-left:4px solid #8a5a00">
+        <div style="display:flex;gap:10px;align-items:baseline;flex-wrap:wrap"><span style="font-size:11px;font-weight:800;color:#8a5a00">M-5 · MEDIUM · visual polish</span><span style="font-size:11px;color:#8b9083">/my · 390</span></div>
+        <h3>모바일 첫 화면에서 도구 버튼이 사용자 작업과 동급</h3>
+        <p style="margin:0;color:#3f433a;font-size:15px"><code>스튜디오</code>와 <code>데이터 관리</code>가 탭 위 최상단에 나란히 있다. 첫 시선이 실행이 아니라 도구로 간다. 백업/복원은 보존 가치가 높지만 위계는 다르다.</p>
+      </div>
+
+      <div class="fnd" data-fsev="medium" style="border-left:4px solid #8a5a00">
+        <div style="display:flex;gap:10px;align-items:baseline;flex-wrap:wrap"><span style="font-size:11px;font-weight:800;color:#8a5a00">M-6 · MEDIUM · 관찰 필요</span><span style="font-size:11px;color:#8b9083">/my · 장기 Flow</span></div>
+        <h3>재방문 판단 신호가 완료 카운트뿐</h3>
+        <p style="margin:0;color:#3f433a;font-size:15px"><code>전체 0/24 완료</code>와 단계 그룹만으로는 장기 Flow가 아직 유효한지 판단하기 어렵다. 목표 관리 <b>B안의 유일한 근거</b>이며, 지금은 관찰 근거가 없어 A안을 유지한다.</p>
+      </div>
+
+      <div class="fnd" data-fsev="low" style="border-left:4px solid #b9bdb0">
+        <div style="display:flex;gap:10px;align-items:baseline;flex-wrap:wrap"><span style="font-size:11px;font-weight:800;color:#71766a">L-1 · LOW</span><span style="font-size:11px;color:#8b9083">/my</span></div>
+        <h3>보관과 복구가 같은 토글</h3>
+        <p style="margin:0;color:#3f433a;font-size:15px">같은 <code>my-flow-archive-toggle</code>이 라벨만 바꿔 양방향을 수행한다. 상태 전이 announce 계약은 실측 불가(<code>inaccessible</code>).</p>
+      </div>
+
+      <div class="fnd" data-fsev="low" style="border-left:4px solid #b9bdb0">
+        <div style="display:flex;gap:10px;align-items:baseline;flex-wrap:wrap"><span style="font-size:11px;font-weight:800;color:#71766a">L-2 · LOW</span><span style="font-size:11px;color:#8b9083">receipt · /my · item 상세</span></div>
+        <h3>export 3범위가 3위치</h3>
+        <p style="margin:0;color:#3f433a;font-size:15px"><code>가져가기</code>(워크스페이스) · <code>Flow별 가져가기</code>(다중 저장 receipt) · <code>현재 항목 가져가기 · 1개</code>(item 상세 disclosure). 범위 스위처는 둘만 담고 있다.</p>
+      </div>
+
+      <div class="fnd" data-fsev="low" style="border-left:4px solid #b9bdb0">
+        <div style="display:flex;gap:10px;align-items:baseline;flex-wrap:wrap"><span style="font-size:11px;font-weight:800;color:#71766a">L-3 · LOW</span><span style="font-size:11px;color:#8b9083">/my?view=flows</span></div>
+        <h3>보관함 진입점이 조건부</h3>
+        <p style="margin:0;color:#3f433a;font-size:15px"><code>my-flow-open-archived</code>는 보관 이력이 생긴 뒤에만 나타난다. 비어 있어도 존재해야 하는 장소다.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <section style="padding:32px 0;border-bottom:1px solid #d4d8cc">
+    <h2 style="margin:0 0 4px;font-size:24px;letter-spacing:-.01em">CRUD capability matrix — 14객체 × 7조작</h2>
+    <p style="margin:0 0 16px;color:#5b5f55;font-size:15px">supported 60 · missing 13(대부분 의도된 경계) · partial 12 · hidden 6 · inconsistent 4 · undetermined 3 · <b>blocked 0</b>. 셀 상세(진입·문구·depth·undo·reload·evidence)는 <code>crud-capability-matrix.json</code>.</p>
+    <div style="overflow-x:auto;background:#fff;border:1px solid #d4d8cc;border-radius:10px;padding:16px">
+      <table style="width:100%;min-width:900px;border-collapse:collapse">
+        <thead><tr>
+          <th style="width:210px">객체</th><th>Create</th><th>Read</th><th>Update</th><th>Delete</th><th>Restore</th><th>Reuse</th><th>Export</th>
+        </tr></thead>
+        <tbody>
+          <sc-for list="{{ crudRows }}" as="r" hint-placeholder-count="14">
+            <tr>
+              <td style="font-weight:700;font-size:12.5px;line-height:1.35">{{ r.name }}</td>
+              <sc-for list="{{ r.cells }}" as="c" hint-placeholder-count="7">
+                <td data-ok="{{ c.ok }}" style="padding:6px 4px"><span class="st" data-st="{{ c.status }}">{{ c.k }}</span></td>
+              </sc-for>
+            </tr>
+          </sc-for>
+        </tbody>
+      </table>
+    </div>
+    <p class="ann" style="margin:14px 0 0;padding:13px 16px;background:#fbf1da;color:#5f430d;font-size:14px;border-radius:8px"><b>missing 13개 중 9개는 결함이 아니다.</b> 원문 Flow 생성 불가, source Item 물리 삭제 불가, 완료 기록 삭제 불가, occurrence 신규 생성 불가는 “원문을 훼손하지 않는다”는 제품 경계의 결과다. 결함으로 센 것은 <b>occurrence 수정</b>과 <b>Goal 전 조작</b>이며, 후자는 A안을 추천하므로 backlog가 아니다.</p>
+  </section>
+
+  <section style="padding:32px 0;border-bottom:1px solid #d4d8cc">
+    <h2 style="margin:0 0 4px;font-size:24px;letter-spacing:-.01em">8 persona × 3 session = 24셀</h2>
+    <p style="margin:0 0 16px;color:#5b5f55;font-size:15px">supported 9 · partial 12 · hidden 2 · missing 1 · <b>blocked 0</b>. 각 셀의 계약 필드는 <code>persona-journey-scorecard.json</code>.</p>
+    <div style="display:grid;gap:10px">
+      <div style="display:grid;grid-template-columns:190px repeat(3,1fr);gap:10px;font-size:11px;font-weight:800;letter-spacing:.06em;color:#8b9083">
+        <span></span><span>A · 발견 → 저장</span><span>B · 수정 → 완료 → Calendar</span><span>C · 정리 → export → 재사용</span>
+      </div>
+      <sc-for list="{{ personaRows }}" as="p" hint-placeholder-count="8">
+        <div style="display:grid;grid-template-columns:190px repeat(3,1fr);gap:10px;align-items:stretch">
+          <div style="font-size:13px;font-weight:700;display:flex;align-items:center">{{ p.name }}</div>
+          <sc-for list="{{ p.sessions }}" as="s" hint-placeholder-count="3">
+            <div data-ok="{{ s.ok }}" style="background:#fff;border:1px solid #d4d8cc;border-radius:8px;padding:10px 12px">
+              <span class="st" data-st="{{ s.status }}" style="display:inline-block;margin-bottom:5px;padding:3px 8px">{{ s.status }}</span>
+              <p style="margin:0;font-size:12.5px;color:#4b4f45;line-height:1.5">{{ s.note }}</p>
+            </div>
+          </sc-for>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="padding:32px 0;border-bottom:1px solid #d4d8cc">
+    <h2 style="margin:0 0 4px;font-size:24px;letter-spacing:-.01em">조작 문법의 통일성 — 25개 명령</h2>
+    <p style="margin:0 0 16px;color:#5b5f55;font-size:15px">consistent 6 · variant 7 · <b>split 9</b> · absent 1 · undetermined 2. 표면별 실제 문구는 <code>interaction-consistency-matrix.json</code>.</p>
+    <div style="overflow-x:auto;background:#fff;border:1px solid #d4d8cc;border-radius:10px;padding:16px">
+      <table style="width:100%;min-width:820px;border-collapse:collapse">
+        <thead><tr><th style="width:96px">그룹</th><th style="width:150px">명령</th><th style="width:104px">판정</th><th>문제</th></tr></thead>
+        <tbody>
+          <sc-for list="{{ consistencyRows }}" as="c" hint-placeholder-count="25">
+            <tr data-ok="{{ c.ok }}">
+              <td style="color:#8b9083;font-weight:700;font-size:12px">{{ c.group }}</td>
+              <td style="font-weight:700">{{ c.cmd }}</td>
+              <td><span class="vd" data-v="{{ c.verdict }}">{{ c.verdict }}</span></td>
+              <td style="color:#4b4f45">{{ c.issue }}</td>
+            </tr>
+          </sc-for>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section style="padding:32px 0;border-bottom:1px solid #d4d8cc">
+    <h2 style="margin:0 0 16px;font-size:24px;letter-spacing:-.01em">Flow 삭제·복구 발견성 판정</h2>
+    <div style="display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">
+      <div style="background:#fff;border:1px solid #d4d8cc;border-radius:10px;padding:18px">
+        <h3 style="margin:0 0 12px;font-size:15px">현재 경로 (tap depth)</h3>
+        <ol style="margin:0;padding-left:20px;color:#3f433a;font-size:14px">
+          <li>열린 Flow 워크스페이스 — <b style="color:#a9362b">lifecycle 명령 없음</b></li>
+          <li><code>전체 보기</code>로 목록 복귀</li>
+          <li>카드 <code>⋯ 관리 메뉴</code></li>
+          <li><code>보관</code> → 스낵바 <code>보관했습니다</code> + 되돌리기</li>
+        </ol>
+        <p style="margin:12px 0 0;font-size:13px;color:#8b9083">복구: <code>보관함 열기</code>(보관 이력 있을 때만 노출) → 목록 필터 <code>archived</code> → 카드 ⋯ → <code>복구</code></p>
+      </div>
+      <div style="background:#fff;border:1px solid #d4d8cc;border-radius:10px;padding:18px">
+        <h3 style="margin:0 0 12px;font-size:15px">판정</h3>
+        <dl style="display:grid;grid-template-columns:1fr 92px;gap:8px 12px;margin:0;font-size:13.5px">
+          <dt style="color:#3f433a">삭제 진입이 발견되는가</dt><dd style="margin:0"><span class="st" data-st="hidden">hidden</span></dd>
+          <dt style="color:#3f433a">보관·복구·영구 삭제의 차이가 명확한가</dt><dd style="margin:0"><span class="st" data-st="partial">부분</span></dd>
+          <dt style="color:#3f433a">보관이 데이터 삭제가 아님이 보장되는가</dt><dd style="margin:0"><span class="st" data-st="supported">supported</span></dd>
+          <dt style="color:#3f433a">보관한 Flow를 다시 찾을 수 있는가</dt><dd style="margin:0"><span class="st" data-st="hidden">hidden</span></dd>
+          <dt style="color:#3f433a">영구 삭제가 계약으로 보호되는가</dt><dd style="margin:0"><span class="st" data-st="undetermined">계약 0</span></dd>
+        </dl>
+      </div>
+      <div style="background:#191b12;color:#f2f4ee;border-radius:10px;padding:18px">
+        <h3 style="margin:0 0 10px;font-size:15px;color:#fff">제안 (P34-01·02)</h3>
+        <p style="margin:0 0 10px;font-size:14px;color:#c9cdc2">열린 Flow의 command 영역에 lifecycle 그룹 1개. 목록 카드와 <b>같은 순서·같은 문구</b>. 보관함은 0건일 때도 존재한다.</p>
+        <p style="margin:0;font-size:13px;color:#9aa093">보관 → tap 2 · 복구 → tap 2 · 영구 삭제는 “무엇이 사라지는지”를 먼저 보여준 뒤 1회 확인.</p>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding:32px 0;border-bottom:1px solid #d4d8cc">
+    <h2 style="margin:0 0 4px;font-size:24px;letter-spacing:-.01em">목표 관리 — A / B / C</h2>
+    <p style="margin:0 0 18px;color:#5b5f55;font-size:15px">Goal 객체는 제품에 없다. <code>목표</code>는 콘텐츠 문구(<code>목표일</code>, <code>오늘 목표</code>)로만 존재하고, <code>마일스톤</code>은 이사 Flow의 날짜 그룹 라벨로만 쓰인다.</p>
+    <div style="display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">
+      <div style="background:#fff;border:2px solid #176d5d;border-radius:10px;padding:18px">
+        <span style="font-size:11px;font-weight:800;color:#176d5d;letter-spacing:.1em">추천</span>
+        <h3 style="margin:4px 0 8px;font-size:19px">A · 별도 Goal 객체 없음</h3>
+        <p style="margin:0 0 10px;font-size:14px;color:#3f433a">Flow 진행률과 완료만 제공한다.</p>
+        <p style="margin:0;font-size:13px;color:#5b5f55"><b>이미 구현되어 있다</b> — <code>전체 0/24 완료</code> 카운트, 전체 진행 바, 6단계 그룹(사실상 마일스톤), 재사용 시 완료만 초기화. 추가 작업이 아니라 <b>추가하지 않기로 하는 결정</b>이다.</p>
+      </div>
+      <div style="background:#fff;border:1px solid #d4d8cc;border-radius:10px;padding:18px">
+        <span style="font-size:11px;font-weight:800;color:#8a5a00;letter-spacing:.1em">조건부 보류</span>
+        <h3 style="margin:4px 0 8px;font-size:19px">B · bounded goal overlay</h3>
+        <p style="margin:0 0 10px;font-size:14px;color:#3f433a">목표 한 줄 + 다시 볼 날짜 2필드, 기존 단계를 마일스톤으로 재사용.</p>
+        <p style="margin:0;font-size:13px;color:#5b5f55">유일한 근거는 M-6이며 그것은 <b>가설</b>이다. 여는 조건: 실제 사용자 3명 이상이 장기 Flow에서 “다시 볼 날짜”를 스스로 만들려 시도한 관찰.</p>
+      </div>
+      <div style="background:#f5e6e3;border:1px solid #e8cdc7;border-radius:10px;padding:18px">
+        <span style="font-size:11px;font-weight:800;color:#a9362b;letter-spacing:.1em">적용 금지</span>
+        <h3 style="margin:4px 0 8px;font-size:19px">C · full planner</h3>
+        <p style="margin:0 0 10px;font-size:14px;color:#3f433a">목표 대시보드·습관·성과 추적.</p>
+        <p style="margin:0;font-size:13px;color:#7a3a31">사용자 가치 근거 0. 비교 대상이 planner로 바뀌고, 확인된 실제 gap(삭제 발견성·회차 수정·어휘)보다 우선순위가 낮다.</p>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding:32px 0;border-bottom:1px solid #d4d8cc">
+    <h2 style="margin:0 0 4px;font-size:24px;letter-spacing:-.01em">외부 reference 비교 — 패턴만</h2>
+    <p style="margin:0 0 16px;color:#5b5f55;font-size:15px">기능 목록·외형을 복제하지 않는다. 구조 패턴만 비교하고 FlowMe 기준으로 판정한다. evidenceKind <code>reference_pattern</code>(공개 제품 문서 기준, 이번 세션에서 라이브 캡처하지 않음).</p>
+    <div style="overflow-x:auto;background:#fff;border:1px solid #d4d8cc;border-radius:10px;padding:16px">
+      <table style="width:100%;min-width:860px;border-collapse:collapse">
+        <thead><tr><th style="width:170px">패턴</th><th style="width:220px">대표 사례</th><th style="width:96px">판정</th><th>FlowMe 적용 방식</th></tr></thead>
+        <tbody>
+          <sc-for list="{{ referenceRows }}" as="r" hint-placeholder-count="10">
+            <tr>
+              <td style="font-weight:700">{{ r.pattern }}</td>
+              <td style="color:#5b5f55;font-size:12.5px">{{ r.apps }}</td>
+              <td><span class="vd" data-v="{{ r.tone }}">{{ r.verdict }}</span></td>
+              <td style="color:#4b4f45">{{ r.how }}</td>
+            </tr>
+          </sc-for>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section style="padding:32px 0;border-bottom:1px solid #d4d8cc">
+    <h2 style="margin:0 0 16px;font-size:24px;letter-spacing:-.01em">화면별 Keep / Change / Remove / Defer</h2>
+    <div style="display:grid;gap:12px">
+      <sc-for list="{{ screenPlan }}" as="s" hint-placeholder-count="7">
+        <div style="background:#fff;border:1px solid #d4d8cc;border-radius:10px;padding:16px 18px;display:grid;gap:10px;grid-template-columns:170px 1fr">
+          <div style="font-weight:800;font-size:14px">{{ s.screen }}</div>
+          <div style="display:grid;gap:7px;font-size:13.5px">
+            <div><span style="display:inline-block;width:60px;font-size:11px;font-weight:800;color:#176d5d">KEEP</span><span style="color:#3f433a">{{ s.keep }}</span></div>
+            <div><span style="display:inline-block;width:60px;font-size:11px;font-weight:800;color:#8a5a00">CHANGE</span><span style="color:#3f433a">{{ s.change }}</span></div>
+            <div><span style="display:inline-block;width:60px;font-size:11px;font-weight:800;color:#a9362b">REMOVE</span><span style="color:#3f433a">{{ s.remove }}</span></div>
+            <div><span style="display:inline-block;width:60px;font-size:11px;font-weight:800;color:#71766a">DEFER</span><span style="color:#3f433a">{{ s.defer }}</span></div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="padding:32px 0;border-bottom:1px solid #d4d8cc">
+    <h2 style="margin:0 0 16px;font-size:24px;letter-spacing:-.01em">문제의 종류 분리</h2>
+    <div style="display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))">
+      <div style="background:#fff;border-top:3px solid #a9362b;border-radius:0 0 10px 10px;padding:16px 18px">
+        <h3 style="margin:0 0 8px;font-size:14px">correctness · 데이터 계약</h3>
+        <p style="margin:0;font-size:13.5px;color:#3f433a">H-2 영구 삭제 key 집합·격리 · H-3 occurrence override와 ICS 계약 확장. <b>선행 계약 필요</b>.</p>
+      </div>
+      <div style="background:#fff;border-top:3px solid #8a5a00;border-radius:0 0 10px 10px;padding:16px 18px">
+        <h3 style="margin:0 0 8px;font-size:14px">UX 구조</h3>
+        <p style="margin:0;font-size:13.5px;color:#3f433a">H-1 lifecycle 위치 · M-3 편집 진입 · M-4 저장 전후 문법 · L-3 보관함 상시성. <b>production 데이터 계약으로 지금 가능</b>.</p>
+      </div>
+      <div style="background:#fff;border-top:3px solid #3451db;border-radius:0 0 10px 10px;padding:16px 18px">
+        <h3 style="margin:0 0 8px;font-size:14px">조작 어휘·피드백</h3>
+        <p style="margin:0;font-size:13.5px;color:#3f433a">M-1 4어휘 · M-2 undo 3주인 · L-1 토글 이름 · L-2 export 3위치. <b>표시 계층만</b>, 저장 형식 불변.</p>
+      </div>
+      <div style="background:#fff;border-top:3px solid #71766a;border-radius:0 0 10px 10px;padding:16px 18px">
+        <h3 style="margin:0 0 8px;font-size:14px">visual polish · 관찰 필요</h3>
+        <p style="margin:0;font-size:13.5px;color:#3f433a">M-5 모바일 상단 도구 위계(polish) · M-6과 목표 B안(<b>observed-user 없이는 설계 금지</b>).</p>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding:32px 0;border-bottom:1px solid #d4d8cc">
+    <h2 style="margin:0 0 4px;font-size:24px;letter-spacing:-.01em">P34 backlog와 dependency</h2>
+    <p style="margin:0 0 16px;color:#5b5f55;font-size:15px">검증된 gap만 slice로 만든다. 각 slice의 범위·비범위·데이터 영향·acceptance·marker·rollback은 <code>p34-backlog.md</code>.</p>
+    <div style="background:#fff;border:1px solid #d4d8cc;border-radius:10px;padding:18px;margin-bottom:14px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;color:#3f433a;white-space:pre;overflow-x:auto">P34-01 ──▶ P34-02        (lifecycle 위치 → 영구 삭제 계약)
+   │
+   ├──▶ P34-03 ──▶ P34-05  (어휘 통일 → undo 단일 계약)
+   ├──▶ P34-06             (편집 진입 1개)
+   └─ (독립) P34-04        (occurrence 수정 · 데이터 영향 높음)
+
+           P34-07          observed-user gate 통과 전 착수 금지</div>
+    <div style="display:grid;gap:10px">
+      <sc-for list="{{ backlogRows }}" as="b" hint-placeholder-count="7">
+        <div style="background:#fff;border:1px solid #d4d8cc;border-radius:10px;padding:14px 18px;display:grid;gap:8px;grid-template-columns:96px 1fr 120px">
+          <div style="font-weight:800;font-size:13px;color:#a9362b">{{ b.id }}</div>
+          <div>
+            <p style="margin:0 0 3px;font-weight:700;font-size:14.5px">{{ b.title }}</p>
+            <p style="margin:0;font-size:13px;color:#5b5f55">{{ b.scope }}</p>
+          </div>
+          <div style="font-size:11.5px;color:#8b9083;text-align:right">{{ b.data }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="padding:32px 0;border-bottom:1px solid #d4d8cc">
+    <h2 style="margin:0 0 16px;font-size:24px;letter-spacing:-.01em">실제 사용자에게만 확인할 질문 7개</h2>
+    <ol style="margin:0;padding-left:22px;display:grid;gap:9px;font-size:15px;color:#3f433a;max-width:900px">
+      <li>Flow를 정리하려 할 때 “보관”과 “삭제” 중 무엇을 먼저 찾고, 어디를 보는가</li>
+      <li>“보관”이 데이터를 지운다고 느끼는가, 숨긴다고 느끼는가</li>
+      <li>반복 일정에서 “이번 주만” 바꾸려 한 적이 있는가, 그때 무엇을 눌렀는가</li>
+      <li>항목을 뺄 때 그것이 영구적이라고 생각하는가, 되돌릴 수 있다고 생각하는가</li>
+      <li>장기 Flow를 중단·재개할 때 무엇을 보고 판단하는가</li>
+      <li>“목표”를 FlowMe 안에서 관리하고 싶은가, 실행만 남기고 싶은가</li>
+      <li>저장 전 조정과 저장 후 수정이 다른 화면이라는 것을 인지했는가</li>
+    </ol>
+  </section>
+
+  <footer style="padding:28px 0 0;color:#71766a;font-size:13px;display:grid;gap:6px">
+    <p style="margin:0">앱 코드·저장 데이터·의존성·STATUS/ROADMAP·commit·push·PR·merge·deploy를 변경하지 않았다. 사용자 모집·인터뷰·관찰 계획도 작성하지 않았다.</p>
+    <p style="margin:0">자동화·screenshot·fixture·heuristic simulation은 실제 사용자 검증이 아니다. observed-user count <b>0</b>. 가짜 사용량·리뷰·평점 없음.</p>
+    <p style="margin:0">패키지: <code>README.md</code> · <code>audit.md</code> · <code>crud-capability-matrix.json</code> · <code>persona-journey-scorecard.json</code> · <code>interaction-consistency-matrix.json</code> · <code>p34-backlog.md</code> · <a href="./current-proposed-wireframes.dc.html">current-proposed-wireframes.dc.html</a></p>
+  </footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1240,&quot;height&quot;:1400}}">
+class Component extends DCLogic {
+  setAttr(name, value) {
+    const root = this.root;
+    if (root) root.setAttribute(name, value);
+  }
+  press(ctl, value) {
+    const root = this.root;
+    if (!root) return;
+    root.querySelectorAll('[data-ctl="' + ctl + '"]').forEach((b) => {
+      b.setAttribute('aria-pressed', String(b.getAttribute('data-val') === value));
+    });
+  }
+  renderVals() {
+    const S = (status, k) => ({ status, k, ok: status === 'supported' || status === 'missing' ? '1' : '0' });
+    const rows = [
+      ['Source-backed Flow', ['missing|경계','supported|전체 보기','partial|개인 overlay','missing|경계','supported|취소','supported|다시 쓰기','supported|시작 문구']],
+      ['개인 Flow 사본', ['supported|3가지 문구','supported|열기','supported|바꾸기','undetermined|영구 삭제?','supported|복구','supported|다시 쓰기','supported|가져가기']],
+      ['개인 draft', ['supported|후보 검토','supported|열기','supported|구성 편집','inconsistent|삭제','hidden|confirm 안내','partial|증거 없음','supported|3범위']],
+      ['Item', ['partial|draft만','supported|열기','inconsistent|1탭 or 3탭','hidden|편집 모드','hidden|뺀 항목','supported|유지','supported|현재 항목']],
+      ['날짜·시간·장소', ['supported|editor','supported|행 메타','supported|editor','partial|날짜 제거','supported|되돌리기','supported|재계산','supported|캘린더']],
+      ['날짜 없는 Item', ['supported|날짜 없이','supported|트레이','supported|날짜 정하기','partial|날짜 제거','supported|되돌리기','supported|유지','supported|목록만']],
+      ['반복 series', ['supported|세부 일정','partial|문구 교정','supported|반복 설정','partial|반복 종료','undetermined|되살리기?','supported|초기화','supported|1 VEVENT']],
+      ['개별 occurrence', ['missing|파생','supported|선택일','missing|회차 수정','partial|보류','partial|재개','supported|초기화','supported|회차 수']],
+      ['완료·execution run', ['supported|체크','supported|완료 탭','supported|다시 열기','missing|경계','supported|같은 항목','supported|보관','supported|완료 기준']],
+      ['개인 메모·resource', ['supported|편집 모드','supported|상세','supported|저장','supported|숨기기','partial|복구 목록?','supported|유지','supported|손실 고지']],
+      ['Flow 보관·복구·삭제', ['hidden|카드 메뉴','hidden|조건부','supported|토글','undetermined|계약 0','supported|복구','supported|다시 쓰기','supported|projection 제외']],
+      ['Item 제외·복구·삭제', ['inconsistent|2문법','hidden|접힘','supported|복구','missing|경계','supported|메모 보존','supported|유지','supported|미포함']],
+      ['export 범위', ['supported|범위 스위처','supported|예상 수량','supported|직접 선택','supported|닫기','missing|경계','partial|재사용 없음','inconsistent|3위치']],
+      ['Goal·milestone·progress', ['missing|객체 없음','partial|0/24·단계','missing|—','missing|—','missing|—','missing|—','missing|—']]
+    ];
+    const crudRows = rows.map(([name, cells]) => ({
+      name,
+      cells: cells.map((raw) => { const [status, k] = raw.split('|'); return S(status, k); })
+    }));
+
+    const P = (status, note) => ({ status, note, ok: status === 'supported' ? '1' : '0' });
+    const personaRows = [
+      { name: 'P1 이사 기준일 역산', sessions: [
+        P('supported', '24개 미리보기 = receipt = My Flow = Calendar = export. tap 4.'),
+        P('partial', '편집 진입이 1탭/3탭으로 갈림. 순서 변경은 저장 전 모드에만.'),
+        P('hidden', '워크스페이스에 보관 없음 → 목록 복귀 후 카드 메뉴. 영구 삭제 판정 불가.')] },
+      { name: 'P2 날짜 없는 차량 점검', sessions: [
+        P('partial', 'Home 약속(체크리스트) ↔ 상세(D-14 캘린더) 불일치. P33 정렬 실측 불가.'),
+        P('partial', '배치·되돌리기는 안전(10→9→10). 날짜 제거 복귀는 draft 경로만 증거.'),
+        P('partial', '목적지 적격성으로 캘린더 0 / 체크리스트 전체 — 예측 수량은 신뢰 요소.')] },
+      { name: 'P3 반복 홈트', sessions: [
+        P('supported', 'source cadence(MO/WE/FR) 유지, 다음 3회차 표시.'),
+        P('missing', '이번 회차만 수정 없음. series 상세는 완료 컨트롤 0 + 캘린더 링크.'),
+        P('partial', '“반복 종료”가 종료와 삭제를 겸함. 되살리기 경로 증거 없음.')] },
+      { name: 'P4 장기 학습·진도', sessions: [
+        P('supported', '단계 그룹 + 다음 행동 유지.'),
+        P('supported', '메모 reload 안정화(P33 committed draft resolver, 30/30).'),
+        P('partial', '“계속할지” 판단 신호가 완료 카운트뿐 — M-6.')] },
+      { name: 'P5 URL·메모 draft', sessions: [
+        P('supported', '5후보 → 1제외 → 4/4/4/4, generic filler 0.'),
+        P('supported', '구성 편집 모드 분리 + 키보드 재정렬 + 즉시 undo.'),
+        P('partial', 'draft “삭제” ↔ 저장 Flow “빼기” — 복구 위치도 다름.')] },
+      { name: 'P6 다수 Flow 재방문', sessions: [
+        P('supported', '3개 이하 compact / 대량 searchable 자동 전환.'),
+        P('partial', '진행·보관 상태가 목록 행에서 보이지 않음.'),
+        P('hidden', '보관함 진입점이 보관 이력 이후에만 노출.')] },
+      { name: 'P7 export 중심', sessions: [
+        P('supported', 'Flow 전체 · 24개 / 캘린더 24개 / 손실 고지.'),
+        P('supported', '직접 선택 24개 노출, 수량이 요약에 반영.'),
+        P('partial', '현재 항목만 item 상세 disclosure에 있음.')] },
+      { name: 'P8 키보드·저시력', sessions: [
+        P('partial', '계약은 확인(tabindex=-1, role=group, 포커스 트랩/복귀). 실측 inaccessible.'),
+        P('partial', '편집 진입 2경로 → 보조기술 사용자가 두 모델 학습.'),
+        P('partial', '보관/복구가 같은 토글. 상태 전이 announce 계약 미확인.')] }
+    ];
+
+    const C = (group, cmd, verdict, issue) => ({ group, cmd, verdict, issue, ok: verdict === 'consistent' ? '1' : '0' });
+    const consistencyRows = [
+      C('Flow','저장','variant','결과(저장)가 아니라 “시작”이라 말한다. 콘텐츠 형태마다 3가지 문구.'),
+      C('Flow','이름 변경','undetermined','Flow 제목 자체의 rename 컨트롤을 근거로 찾지 못함(AppClient 열람 한도).'),
+      C('Flow','조정','split','저장 전 4모드 스위처 ↔ 저장 후 항목 editor + 배치 선택.'),
+      C('Flow','전체 보기','variant','“전체”가 미리보기·복귀·펼치기 셋을 가리킨다.'),
+      C('Flow','보관','split','집중 워크스페이스에는 없고 목록 카드에만 있다.'),
+      C('Flow','복구','variant','보관과 같은 토글이 라벨만 바꿔 수행.'),
+      C('Flow','이 기기에서 영구 삭제','undetermined','docs에만 존재. E2E marker 0.'),
+      C('Flow','새 기준일로 다시 쓰기','consistent','기준일 종류에 따라 문구가 문맥화된다(좋은 패턴).'),
+      C('Flow','전체 가져가기','variant','가져가기 / Flow별 가져가기 / 캘린더 N개로 시작 — 4가지 문구.'),
+      C('Item','추가','split','저장된 source-backed Flow와 draft의 추가 경로가 다르다.'),
+      C('Item','제목 수정','split','진입이 1탭 또는 3탭.'),
+      C('Item','날짜 수정','variant','Calendar는 “정하기”, editor는 “날짜” 필드.'),
+      C('Item','시간·장소','consistent','접어두는 정책이 표면 간 일치.'),
+      C('Item','메모','consistent','문구·위치 일치.'),
+      C('Item','위아래 이동','split','저장 후 source-backed Flow의 순서 변경 경로가 저장 전과 다르다.'),
+      C('Item','포함·제외','split','체크박스 · 버튼 · 선택 3가지 형태.'),
+      C('Item','완료·다시 열기','consistent','My Flow와 Calendar가 같은 accessible name 패턴 — 가장 잘 된 부분.'),
+      C('Item','날짜 배치·제거','variant','배치는 Calendar, 제거는 editor — 왕복이 두 화면에 나뉜다.'),
+      C('Item','삭제·복구','split','draft “삭제” ↔ 저장 Flow “빼기”, 복구 위치도 다름.'),
+      C('Item','현재 항목 가져가기','split','3개 export 범위 중 1개만 다른 층에 있다.'),
+      C('반복','전체 반복 수정','consistent','반복 설정 바꾸기 하나로 모임.'),
+      C('반복','이번 회차만 수정','absent','문자열·testid 0건. 제품에 없다.'),
+      C('반복','이번 회차 완료·재개','consistent','완료만은 회차 단위로 올바르게 소유된다.'),
+      C('반복','반복 종료','variant','“종료”가 삭제인지 보관인지 이름이 말하지 않는다.'),
+      C('되돌리기','undo 소유자','split','lifecycle 스낵바 · 배치 스낵바 · Calendar 패널 — 주인이 셋.')
+    ];
+
+    const R = (pattern, apps, verdict, how) => ({
+      pattern, apps, verdict, how,
+      tone: verdict === '적용' ? 'consistent' : verdict === '변형 필요' ? 'variant' : 'split'
+    });
+    const referenceRows = [
+      R('빠른 생성 ↔ 상세 편집 분리','Todoist · TickTick · Microsoft To Do','적용','FlowMe는 이미 빠른 수정 + 세부 일정 접기를 갖췄다. 진입을 1개로 통일하면 완성(P34-06).'),
+      R('list/project 전체 보기','Things · Notion','적용','전체 Flow outline + 단계 그룹으로 이미 구현. 유지.'),
+      R('undated / inbox / someday','Apple Reminders · Todoist','적용','“날짜 없는 할 일” 트레이가 같은 역할. 이름이 이미 사용자 언어다.'),
+      R('완료와 reopen','Things Logbook · Microsoft To Do','적용','완료/다시 열기 accessible name 패턴이 표면 간 일치 — 회귀시키지 말 것.'),
+      R('archive / trash / restore 3단','Todoist(보관은 메뉴, 삭제는 별도 + 확인)','변형 필요','FlowMe는 보관·복구만 계약이 있고 삭제는 계약이 없다. 3단을 “보관 / 영구 삭제” 2단으로 좁히되 <b>삭제에 고지·백업 유도</b>를 붙인다(P34-02).'),
+      R('반복 series ↔ occurrence 범위 선택','Google Calendar · Apple Reminders · TickTick','변형 필요','“이번 회차만 / 이후 전체 / 전체” 3범위는 표준이나, FlowMe는 기본값을 가장 안전한 “이번 회차만”으로 둔다(P34-04).'),
+      R('batch select와 일정 이동','TickTick · Todoist','적용','“여러 할 일 조정”과 Calendar 날짜 이동 미리보기로 이미 구현.'),
+      R('mobile detail sheet','Apple Reminders · Structured','적용','bottom sheet + 포커스 트랩/복귀가 이미 계약. 유지.'),
+      R('export / share 범위','Notion · Todoist','적용','전체/선택/현재 3범위와 예상 수량·손실 고지는 오히려 앞선다. 위치만 한 곳으로(L-2).'),
+      R('goal ↔ ordinary task 구분','Structured · Notion(별도 DB)','적용 금지','목표를 별도 객체로 만드는 순간 planner 비교가 시작된다. FlowMe는 진행률·단계로 충분(A안).')
+    ];
+
+    const screenPlan = [
+      { screen: 'public Flow 저장 전 /f/*', keep: '전체 Flow 미리보기 우선 · 원문 배지 · “그대로 시작 / 내게 맞게 조정” 2선택',
+        change: '저장 버튼 문구를 결과 기준으로(“이 날짜로 저장”) · 4모드 라벨을 저장 후 편집과 동일 어휘로',
+        remove: '같은 내용을 반복하는 설명 블록 1개', defer: '콘텐츠 형태별 CTA 문구 A/B — 관찰 필요' },
+      { screen: '저장 직후 receipt', keep: '수량·기간·단계 요약 + 4개 액션 허브 · 저장 outline이 화면 안', change: '“저장 기록 보관됨” → 보관(archive) 어휘와 충돌하므로 분리',
+        remove: '없음', defer: '다중 Flow 저장 시 “Flow별 가져가기” 문구 정리' },
+      { screen: 'My Flow 목록', keep: '3개 이하 compact / 대량 searchable 자동 전환', change: '행에 진행·보관 상태 배지 · 보관함 진입점 상시 노출',
+        remove: '상단 “스튜디오 / 데이터 관리”를 메뉴로 강등(M-5)', defer: '20개 이상 그룹핑 규칙' },
+      { screen: 'My Flow 집중 workspace', keep: 'rail/canvas/inspector · 다음 행동 · 전체 진행 바', change: 'command 영역에 lifecycle 그룹 1개 추가(H-1)',
+        remove: '없음', defer: '진행률 시각화 확장 — A안 유지' },
+      { screen: 'Item editor', keep: '제목·날짜·메모 우선, 시간·장소·반복 접기 · dirty guard · 포커스 복귀', change: '편집 진입 1개 경로로 통일(M-3) · “빼기/삭제” 어휘 통일(M-1)',
+        remove: '읽기 요약 안의 두 번째 편집 토글', defer: 'subcheck/자료 복구 목록' },
+      { screen: 'Calendar 선택일 상세', keep: '이번 회차 완료 체크 · bottom sheet · 되돌리기', change: '회차 수정 범위 선택 추가(H-3) · “날짜 제거”를 같은 시트 안에',
+        remove: '없음', defer: '월 그리드 밀도' },
+      { screen: '가져가기 패널', keep: '범위 → 예상 수량 → 형식 · 손실 고지', change: '“현재 항목”을 같은 범위 스위처로 편입(L-2)',
+        remove: '없음', defer: '지난 선택 범위 재사용' }
+    ];
+
+    const backlogRows = [
+      { id: 'P34-01', title: 'Flow lifecycle 명령의 단일 소유자', scope: '열린 Flow에 보관/복구/영구 삭제 그룹 · 보관함 상시 노출 · 목록 카드와 같은 문구', data: '데이터 영향 없음' },
+      { id: 'P34-02', title: '“이 기기에서 영구 삭제”를 계약으로', scope: '삭제 key 집합을 lifecycle API로 · 사라지는 것 고지 · 백업 유도 · 격리 assertion', data: '데이터 영향 높음 · dep P34-01' },
+      { id: 'P34-03', title: '제외·삭제·완료·보류 어휘와 복구함 통일', scope: '사용자 어휘 3개(포함 안 함 / 완료 / 보류) · Flow당 복구함 1개', data: '표시 계층만 · dep P34-01' },
+      { id: 'P34-04', title: '반복 occurrence 단위 수정', scope: '이번 회차만 / 이후 전체 / 전체 범위 선택 · 회차 건너뛰기와 되돌리기', data: '데이터 영향 높음 · 독립' },
+      { id: 'P34-05', title: 'undo 계약 단일화', scope: 'undo 표면 1개 · 파괴 강도별 정책표(즉시 undo / confirm / 둘 다)', data: '데이터 영향 없음 · dep P34-03' },
+      { id: 'P34-06', title: '항목 편집 진입 1개 경로', scope: '6개 콘텐츠 형태 전부에서 편집 depth 1 · 진입 분기 0', data: '데이터 영향 없음 · dep P34-01' },
+      { id: 'P34-07', title: '(조건부 보류) bounded goal overlay', scope: 'observed-user 3명 이상의 관찰 기록 전에는 착수 금지. 최대 범위는 필드 2개', data: 'gate 통과 전 금지' }
+    ];
+
+    return {
+      rootRef: (el) => { this.root = el; },
+      toggleAnn: () => {
+        const root = this.root; if (!root) return;
+        const next = root.getAttribute('data-ann') === 'on' ? 'off' : 'on';
+        root.setAttribute('data-ann', next);
+        const btn = root.querySelector('[data-ctl="ann"]');
+        if (btn) btn.setAttribute('aria-pressed', String(next === 'on'));
+      },
+      pickSeverity: (e) => {
+        const v = e.currentTarget.getAttribute('data-val');
+        this.setAttr('data-sev', v); this.press('sev', v);
+      },
+      pickLens: (e) => {
+        const v = e.currentTarget.getAttribute('data-val');
+        this.setAttr('data-lens', v); this.press('lens', v);
+      },
+      crudRows, personaRows, consistencyRows, referenceRows, screenPlan, backlogRows
+    };
+  }
+}
+</script>
+</body>
+</html>

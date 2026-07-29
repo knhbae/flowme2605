@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-07-25 KST",
+  "target": "PR #156 · codex/p33-integrated-program-plan @ b4ba62ea5f8aa2a87b27558aafbba49ed9d4dc28",
+  "observedUserCount": 0,
+  "cellBasisLegend": {
+    "current_source": "PR commit의 소스를 직접 읽고 판정",
+    "pr_test_contract": "PR의 unit/E2E assertion을 읽고 판정 (실행하지 않음)",
+    "current_package_screenshot": "PR evidence 스크린샷 직접 열람",
+    "inaccessible": "이번 검토에서 확인 불가 (라이브 preview 로그인 벽 / AppClient.tsx 열람 한도 / 해당 assertion·캡처 없음)"
+  },
+  "statusLegend": {
+    "supported": "의도한 결과가 근거로 확인됨",
+    "partial": "기능은 있으나 진입점·상태에 따라 약속이 어긋남",
+    "missing": "이 단계에서 canonical 약속이 성립하지 않음",
+    "inaccessible": "근거 부족으로 판정 보류"
+  },
+  "totals": { "cells": 54, "supported": 36, "partial": 13, "missing": 2, "inaccessible": 3 },
+  "viewportsChecked": ["390x844 (evidence)", "1024x768 (evidence)", "1440x900 (evidence)"],
+  "personas": [
+    {
+      "id": "P1",
+      "name": "Home에서 이사 Flow를 처음 발견한 사용자",
+      "steps": [
+        { "step": "발견", "status": "partial", "note": "Home→/f/moving-d30-basic 정합은 registry·E2E로 확인. Home 카드의 제목·개수·약속 문구 자체는 AppClient.tsx 열람 불가 + 390 캡처 없음.", "basis": ["current_source", "pr_test_contract", "inaccessible"], "findings": [] },
+        { "step": "상세", "status": "supported", "note": "evidence p33-02: 이사 D-30 준비 · 전체 할 일 24개 · 캘린더 24개 미리보기.", "basis": ["current_package_screenshot"], "findings": ["F7"] },
+        { "step": "조정", "status": "supported", "note": "shape 버튼(캘린더/체크리스트) count>0 기반 렌더 + 기준일 입력·날짜 없이·예시만 3분기.", "basis": ["current_source", "current_package_screenshot"], "findings": [] },
+        { "step": "저장", "status": "supported", "note": "canonical saved slug moving-d30-basic + flow:canonical:origin:v1 기록.", "basis": ["pr_test_contract", "current_source"], "findings": [] },
+        { "step": "receipt", "status": "supported", "note": "receipt에 '이사 D-30 준비'와 24 포함, post-save panel data-receipt-total-count=24.", "basis": ["pr_test_contract"], "findings": [] },
+        { "step": "My Flow", "status": "supported", "note": "'전체 0/24 완료' progress summary.", "basis": ["pr_test_contract", "current_package_screenshot"], "findings": [] },
+        { "step": "Calendar", "status": "supported", "note": "2030-08-15 기준 6일 합계 24 (4+5+4+4+5+2), 그룹 identity data-flow-slug=moving-d30-basic.", "basis": ["pr_test_contract", "current_package_screenshot"], "findings": [] },
+        { "step": "export", "status": "supported", "note": "'Flow 전체' scope · '24개' summary.", "basis": ["pr_test_contract", "current_package_screenshot"], "findings": [] },
+        { "step": "새로고침", "status": "partial", "note": "canonical 저장 후 reload 지속성은 변경되지 않은 기존 저장 계약에 의존. P33 evidence에 canonical reload 캡처·assertion 없음.", "basis": ["inaccessible"], "findings": [] }
+      ]
+    },
+    {
+      "id": "P2",
+      "name": "Flow 찾기에서 같은 Flow를 발견한 사용자",
+      "steps": [
+        { "step": "발견", "status": "partial", "note": "hydrated catalog는 canonical 카드 1개 + '할 일 24개', legacy moving map 카드 0 (E2E). 그러나 SSR fallback은 '원룸 이사 D-30' → /flow-maps/moving-d30 유지.", "basis": ["pr_test_contract", "current_source"], "findings": ["F4"] },
+        { "step": "상세", "status": "supported", "note": "카드 링크 → /f/moving-d30-basic, preview row 24 (E2E) · evidence p33-02.", "basis": ["pr_test_contract", "current_package_screenshot"], "findings": ["F7"] },
+        { "step": "조정", "status": "supported", "note": "Home과 동일 상세 shell을 공유하므로 조정 경로 동일.", "basis": ["current_source"], "findings": [] },
+        { "step": "저장", "status": "supported", "note": "동일 canonical slug — 진입점별 저장 분기 없음.", "basis": ["current_source", "pr_test_contract"], "findings": [] },
+        { "step": "receipt", "status": "supported", "note": "P1과 동일 receipt 경로.", "basis": ["pr_test_contract"], "findings": [] },
+        { "step": "My Flow", "status": "supported", "note": "같은 객체 1개 — Home 저장과 중복 생성 없음.", "basis": ["current_source", "pr_test_contract"], "findings": [] },
+        { "step": "Calendar", "status": "supported", "note": "동일 slug 투영.", "basis": ["pr_test_contract"], "findings": [] },
+        { "step": "export", "status": "supported", "note": "동일 scope 계산.", "basis": ["pr_test_contract"], "findings": [] },
+        { "step": "새로고침", "status": "partial", "note": "P1과 동일 사유.", "basis": ["inaccessible"], "findings": [] }
+      ]
+    },
+    {
+      "id": "P3",
+      "name": "AJD URL을 붙여넣은 사용자",
+      "steps": [
+        { "step": "발견", "status": "partial", "note": "등록된 원문 URL은 hit(canonical routeHref/flowSlug). 그러나 ?from=kakao 같은 미등록 query가 붙으면 canonicalizeFlowSourceUrl이 값을 보존해 miss로 낙하.", "basis": ["current_source"], "findings": ["F5"] },
+        { "step": "상세", "status": "missing", "note": "lookup 결과 화면의 미리보기가 legacy 5개 세대 문구 3행 + markdown heading '# 원룸 이사 D-30 일정 지도'. 결정에 쓰는 내용이 canonical 24개와 다르다.", "basis": ["current_source"], "findings": ["F1"] },
+        { "step": "조정", "status": "partial", "note": "canonical 경로(flowMapId 없음)에서 buildUrlFirstStartPackage가 includedStepIds를 무시한다 — legacy map 경로에만 행 선택이 구현돼 있어 URL 진입의 저장 전 행 선택이 사라진다. 기준일·결과 형태는 유지.", "basis": ["current_source"], "findings": ["F1"] },
+        { "step": "저장", "status": "supported", "note": "savedFlows = [{slug:'moving-d30-basic'}] — 저장 identity는 canonical로 수렴.", "basis": ["current_source"], "findings": [] },
+        { "step": "receipt", "status": "supported", "note": "canonical slug 기준 receipt 경로 공유.", "basis": ["current_source", "pr_test_contract"], "findings": [] },
+        { "step": "My Flow", "status": "supported", "note": "별도 객체 생성 없음(legacy curated slug로 저장하지 않음).", "basis": ["current_source"], "findings": [] },
+        { "step": "Calendar", "status": "supported", "note": "canonical slug 투영 공유.", "basis": ["current_source"], "findings": [] },
+        { "step": "export", "status": "missing", "note": "markdownExport가 preview.markdown 기반 4줄 legacy 문서(filename moving-d30-flow.md). 저장한 24개 Flow와 다른 파일을 받는다.", "basis": ["current_source"], "findings": ["F1"] },
+        { "step": "새로고침", "status": "partial", "note": "저장 이후는 canonical 경로와 동일하나 lookup 결과 자체의 재현·지속성 assertion 없음.", "basis": ["inaccessible"], "findings": [] }
+      ]
+    },
+    {
+      "id": "P4",
+      "name": "예전 /flow-maps/moving-d30 북마크 사용자",
+      "steps": [
+        { "step": "발견", "status": "supported", "note": "서버 컴포넌트에서 렌더 전 redirect(canonical route). 4개 alias 모두 E2E로 URL 정합 고정. 상태 코드는 307(temporary)이라 영구 이전 신호는 아님.", "basis": ["current_source", "pr_test_contract"], "findings": ["F11"] },
+        { "step": "상세", "status": "supported", "note": "redirect 후 preview row 24 (E2E, 4 alias 반복).", "basis": ["pr_test_contract"], "findings": ["F7"] },
+        { "step": "조정", "status": "supported", "note": "canonical 상세의 조정 경로를 그대로 사용.", "basis": ["current_source"], "findings": [] },
+        { "step": "저장", "status": "supported", "note": "legacy slug로 새 저장이 생기지 않음(legacy route 도달 자체가 불가).", "basis": ["current_source"], "findings": [] },
+        { "step": "receipt", "status": "supported", "note": "canonical receipt 공유.", "basis": ["pr_test_contract"], "findings": [] },
+        { "step": "My Flow", "status": "supported", "note": "기존 legacy 저장본이 있으면 삭제·병합 없이 사본 선택 대상으로 노출.", "basis": ["current_source", "pr_test_contract"], "findings": [] },
+        { "step": "Calendar", "status": "supported", "note": "canonical 투영.", "basis": ["pr_test_contract"], "findings": [] },
+        { "step": "export", "status": "supported", "note": "canonical scope.", "basis": ["pr_test_contract"], "findings": [] },
+        { "step": "새로고침", "status": "partial", "note": "redirect는 매 요청 서버 처리로 안정적. 저장 이후 reload 캡처는 없음.", "basis": ["current_source", "inaccessible"], "findings": [] }
+      ]
+    },
+    {
+      "id": "P5",
+      "name": "기존 5개 사본과 24개 사본을 모두 가진 사용자",
+      "steps": [
+        { "step": "중복 감지", "status": "supported", "note": "/my?view=flows에서 canonical-saved-copy-reconciliation 노출, option 2개, '자동으로 합치지 않습니다' 문구 (E2E). dual-read는 flow:saved:{canonical, legacy} 기준.", "basis": ["pr_test_contract", "current_source"], "findings": [] },
+        { "step": "사본 비교", "status": "partial", "note": "각 사본의 origin·개수·저장 시각·사용자 제목이 데이터로 존재하나 라벨이 '전체 이사 준비'/'간단 이사 준비'로 하드코딩되어 canonical 제목 체계와 3중 불일치. needs_choice 화면 캡처가 없어 위계 확인 불가.", "basis": ["current_source", "current_package_screenshot"], "findings": ["F3"] },
+        { "step": "선택", "status": "partial", "note": "active 하나 선택 + 나머지 archive만 가능. P33-00이 제안한 '따로 유지'가 계약에 없다.", "basis": ["current_source", "pr_test_contract"], "findings": ["F2"] },
+        { "step": "보존", "status": "supported", "note": "flow:saved:*, flow_builder_mvp_checks_*, flow:run-registry:*, completion-feedback 모두 불변 — unit test가 protectedKeys 동일성으로 고정. 삭제 key 0.", "basis": ["pr_test_contract", "current_source"], "findings": [] },
+        { "step": "안내", "status": "supported", "note": "선택 후 canonical-saved-copy-reconciliation-notice에 선택한 사본명 표시.", "basis": ["pr_test_contract"], "findings": ["F3"] },
+        { "step": "My Flow 정리", "status": "supported", "note": "evidence p33-05: 저장한 Flow 1개 + 필터 칩에 '보관됨' — 비활성 사본 복구 경로 존재.", "basis": ["current_package_screenshot"], "findings": [] },
+        { "step": "Calendar", "status": "inaccessible", "note": "선택 이후 Calendar가 active 사본만 투영하는지에 대한 P33 assertion·캡처가 없다(기존 lifecycle 계약에 의존).", "basis": ["inaccessible"], "findings": [] },
+        { "step": "export", "status": "inaccessible", "note": "동일 사유 — 선택 결과가 export scope에 반영되는지 P33 근거 없음.", "basis": ["inaccessible"], "findings": [] },
+        { "step": "새로고침", "status": "partial", "note": "결정 후 reload 시 패널 미노출은 E2E로 확인. 그러나 보관 사본을 복구하면 status가 needs_choice로 되돌아가 패널이 다시 뜬다(unit test가 고정).", "basis": ["pr_test_contract", "current_source"], "findings": ["F2"] }
+      ]
+    },
+    {
+      "id": "P6",
+      "name": "반복 Flow와 Calendar/export를 계속 쓰는 기존 사용자",
+      "steps": [
+        { "step": "발견", "status": "supported", "note": "기존 저장본 목록 진입 경로 변경 없음(4탭 IA·P32 workspace 유지).", "basis": ["current_source"], "findings": [] },
+        { "step": "상세", "status": "supported", "note": "evidence p33-06(1024): My Flow 상세에 '2주마다' 같은 사용자 문구, body에 FREQ= 없음(E2E). malformed rule은 '반복 실행'.", "basis": ["current_package_screenshot", "pr_test_contract", "current_source"], "findings": [] },
+        { "step": "조정", "status": "supported", "note": "routine 정의·weekday·종료 조건 계산 로직 변경 없음. 표시 formatter만 추가.", "basis": ["current_source"], "findings": [] },
+        { "step": "저장/재시작", "status": "partial", "note": "완료 후 재시작(startFlowRunFromCompleted)이 flow:saved:{slug}를 직접 write하고 recordCanonicalFlowWrite를 호출하지 않아 canonical origin metadata가 갱신되지 않는다.", "basis": ["current_source"], "findings": ["F6"] },
+        { "step": "receipt", "status": "inaccessible", "note": "재시작 경로의 receipt/후속 안내에 대한 P33 assertion·캡처 없음.", "basis": ["inaccessible"], "findings": [] },
+        { "step": "My Flow", "status": "supported", "note": "run/occurrence/personal overlay key 불변 — 기존 기록 연속.", "basis": ["current_source"], "findings": [] },
+        { "step": "Calendar", "status": "supported", "note": "Calendar engine·occurrence identity 무변경. canonical 표시명은 좁은 셀에서 축약하되 title/accessible name은 전체 유지(evidence 1440).", "basis": ["current_source", "current_package_screenshot"], "findings": [] },
+        { "step": "export", "status": "supported", "note": "evidence 1440: My Flow export scope가 canonical 24개를 읽는다. export identity 계약 변경 없음.", "basis": ["current_package_screenshot", "current_source"], "findings": [] },
+        { "step": "새로고침", "status": "partial", "note": "기존 지속성 계약에 의존하며 P33 evidence에 반복 Flow reload 캡처가 없다.", "basis": ["inaccessible"], "findings": [] }
+      ]
+    }
+  ],
+  "readingNote": "supported는 '근거로 확인됨'이며 '사용자에게 검증됨'이 아니다. 이 매트릭스의 어떤 칸도 실제 사용자 관찰이 아니다."
+}

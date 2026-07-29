@@ -1,0 +1,147 @@
+{
+  "schemaVersion": "1.0",
+  "rule": "원문에서 확보한 값은 다시 묻지 않는다. 첫 useful result 전에 필요한 값만 저장 전에 노출하고, 나머지는 저장 후 필요한 순간에 연다.",
+  "conflictRule": "원문 값과 개인 값이 충돌하면 항상 개인 값이 화면에 우선하고, 원문 값은 detail의 원문 근거 영역에서 원본 그대로 남는다. 기준일 재계산은 개인 고정 날짜를 덮어쓰지 않는다.",
+  "fields": [
+    {
+      "field": "저장 이름",
+      "why": "목록에서 내 사본을 구분하기 위해",
+      "ownedBy": "personal",
+      "shownWhen": "저장 전 조정의 이름 탭, 저장 후 관리",
+      "requiredBeforeFirstResult": false,
+      "optional": true,
+      "defaultsTo": "원문 제목",
+      "reflectedIn": ["receipt", "My Flow 행", "개인 Flow 헤더", "export 파일명"],
+      "conflict": "개인 이름이 우선. 원문 제목은 detail에 남는다."
+    },
+    {
+      "field": "기준일 (이사일 · 시작일 · 검사일)",
+      "why": "역산·반복 shape에서 전체 날짜를 만드는 유일한 입력",
+      "ownedBy": "personal",
+      "shownWhen": "기준일이 필요한 shape의 저장 전 첫 화면(시작 버튼과 같은 영역)",
+      "requiredBeforeFirstResult": true,
+      "optional": false,
+      "defaultsTo": "예시 날짜(명시적으로 '예시'로 표기)",
+      "reflectedIn": ["전체 결과 날짜", "날짜 범위 요약", "receipt", "Calendar"],
+      "conflict": "기준일 변경은 개인 고정 날짜를 덮어쓰지 않는다."
+    },
+    {
+      "field": "개별 날짜 (이 할 일 날짜)",
+      "why": "한 항목만 다른 날에 하기로 정했을 때",
+      "ownedBy": "personal",
+      "shownWhen": "저장 후 Item detail",
+      "requiredBeforeFirstResult": false,
+      "optional": true,
+      "defaultsTo": "기준일 기반 계산값 또는 없음",
+      "reflectedIn": ["개인 Flow 행 메타", "Calendar", "export(캘린더·시트)"],
+      "conflict": "개인 고정 날짜가 기준일 계산값보다 우선하고, 행에 '고정' 표기를 남긴다."
+    },
+    {
+      "field": "시간",
+      "why": "하루 안에서 순서를 정해야 할 때만",
+      "ownedBy": "personal",
+      "shownWhen": "Item detail의 고급 필드(접힘)",
+      "requiredBeforeFirstResult": false,
+      "optional": true,
+      "defaultsTo": "없음(종일)",
+      "reflectedIn": ["Calendar agenda 정렬", "ICS"],
+      "conflict": "원문에 시간이 있으면 초기값으로 쓰되 개인 값이 우선."
+    },
+    {
+      "field": "장소",
+      "why": "이동이 필요한 항목에서만",
+      "ownedBy": "source 우선, personal 덮어쓰기 가능",
+      "shownWhen": "Item detail의 고급 필드(접힘)",
+      "requiredBeforeFirstResult": false,
+      "optional": true,
+      "defaultsTo": "원문 값 또는 없음",
+      "reflectedIn": ["Item detail", "ICS"],
+      "conflict": "개인 값이 표시되고 원문 값은 원문 근거에 남는다."
+    },
+    {
+      "field": "예상 시간",
+      "why": "반복 shape에서 회차 부담을 가늠할 때",
+      "ownedBy": "source",
+      "shownWhen": "반복 요약 카드",
+      "requiredBeforeFirstResult": false,
+      "optional": true,
+      "defaultsTo": "원문에 있으면 표시, 없으면 표시하지 않음",
+      "reflectedIn": ["series 요약"],
+      "conflict": "원문에 없으면 만들지 않는다."
+    },
+    {
+      "field": "반복 주기",
+      "why": "반복 shape의 결과를 결정",
+      "ownedBy": "personal",
+      "shownWhen": "저장 전 반복 조정 탭, 저장 후 반복 설정",
+      "requiredBeforeFirstResult": true,
+      "optional": false,
+      "defaultsTo": "원문이 제안한 요일 또는 사용자가 고른 요일",
+      "reflectedIn": ["다음 8회 미리보기", "Calendar", "ICS"],
+      "conflict": "사용자가 정한다. 원문이 요일을 강제하지 않는다."
+    },
+    {
+      "field": "반복 종료",
+      "why": "언제까지 할지 정해야 할 때",
+      "ownedBy": "personal",
+      "shownWhen": "저장 후 반복 설정(접힘). 저장 전에는 '계속 반복'으로 요약만.",
+      "requiredBeforeFirstResult": false,
+      "optional": true,
+      "defaultsTo": "계속 반복",
+      "reflectedIn": ["series 요약", "ICS count"],
+      "conflict": "종료해도 과거 occurrence 기록은 남는다."
+    },
+    {
+      "field": "현재 진도",
+      "why": "진도형에서 다음에 할 단원을 가리키기 위해",
+      "ownedBy": "execution",
+      "shownWhen": "개인 Flow의 현재 단원 카드",
+      "requiredBeforeFirstResult": false,
+      "optional": true,
+      "defaultsTo": "첫 단원",
+      "reflectedIn": ["개인 Flow 헤더", "My Flow 행의 다음 예정", "시트 export"],
+      "conflict": "없음(실행 기록에서 파생)."
+    },
+    {
+      "field": "Item 메모",
+      "why": "실행 중에 남길 개인 기록",
+      "ownedBy": "personal",
+      "shownWhen": "Item detail",
+      "requiredBeforeFirstResult": false,
+      "optional": true,
+      "defaultsTo": "빈 값",
+      "reflectedIn": ["행의 '메모 있음' 표기", "시트·메모 export"],
+      "conflict": "원문 정정(correction)과 같은 필드에 저장하지 않는다."
+    },
+    {
+      "field": "포함 여부",
+      "why": "내 상황에 해당 없는 원문 항목을 빼기 위해",
+      "ownedBy": "personal",
+      "shownWhen": "저장 전 결과 행, 저장 후 구조 조정",
+      "requiredBeforeFirstResult": false,
+      "optional": true,
+      "defaultsTo": "전부 포함",
+      "reflectedIn": ["개수", "날짜 범위", "export count"],
+      "conflict": "제외는 원문 삭제가 아니며 언제든 다시 포함할 수 있다."
+    },
+    {
+      "field": "순서",
+      "why": "개인 초안에서 실행 순서를 바꿔야 할 때",
+      "ownedBy": "personal",
+      "shownWhen": "저장 후 구조 조정",
+      "requiredBeforeFirstResult": false,
+      "optional": true,
+      "defaultsTo": "원문 순서",
+      "reflectedIn": ["개인 Flow 목록", "체크리스트·시트 export"],
+      "conflict": "원문 순서는 원문 근거에 남는다."
+    }
+  ],
+  "notShownBeforeSave": [
+    "시간", "장소", "반복 종료", "Item 메모", "순서", "고급 구조 편집"
+  ],
+  "neverAsked": [
+    "원문에서 이미 확보한 제목·설명·완료 기준·링크",
+    "결과 형태(캘린더/체크리스트/시트/메모) — 콘텐츠 shape가 정한다",
+    "진도형·체크리스트형의 날짜"
+  ]
+}

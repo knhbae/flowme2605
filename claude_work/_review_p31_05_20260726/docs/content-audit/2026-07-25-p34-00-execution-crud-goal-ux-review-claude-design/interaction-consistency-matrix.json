@@ -1,0 +1,457 @@
+{
+  "schemaVersion": 1,
+  "reviewer": "claude_design",
+  "reviewedAt": "2026-07-25T10:55:00Z",
+  "surfaces": {
+    "home": "Home /",
+    "publicFlow": "public Flow /f/*",
+    "receipt": "저장 receipt",
+    "myFlow": "My Flow /my",
+    "calendar": "Calendar /calendar",
+    "exportPanel": "가져가기 패널"
+  },
+  "verdictLegend": {
+    "consistent": "같은 뜻·비슷한 위치",
+    "variant": "뜻은 같으나 문구·위치가 다름",
+    "split": "한 조작이 표면마다 다른 상태로 갈림",
+    "absent": "해당 표면에 없음(의도적일 수 있음)",
+    "undetermined": "열람 한도 밖"
+  },
+  "rows": [
+    {
+      "group": "Flow",
+      "command": "저장",
+      "surfaces": {
+        "home": "—",
+        "publicFlow": "이 날짜로 시작 / 날짜 없이 시작 / 그대로 시작",
+        "receipt": "저장 기록 보관됨",
+        "myFlow": "—",
+        "calendar": "—",
+        "exportPanel": "—"
+      },
+      "verdict": "variant",
+      "issue": "결과(저장)가 아니라 \"시작\"이라고 말한다. 같은 버튼이 콘텐츠 형태마다 3가지 문구.",
+      "evidenceKind": [
+        "current_source"
+      ]
+    },
+    {
+      "group": "Flow",
+      "command": "이름 변경",
+      "surfaces": {
+        "home": "—",
+        "publicFlow": "조정 > 내용 모드",
+        "receipt": "—",
+        "myFlow": "item 단위만 확인됨",
+        "calendar": "—",
+        "exportPanel": "—"
+      },
+      "verdict": "undetermined",
+      "issue": "Flow 제목 자체의 이름 변경 컨트롤을 근거로 찾지 못함(AppClient 열람 한도).",
+      "evidenceKind": [
+        "current_source"
+      ]
+    },
+    {
+      "group": "Flow",
+      "command": "조정",
+      "surfaces": {
+        "home": "—",
+        "publicFlow": "내게 맞게 조정(포함/내용/일정/순서)",
+        "receipt": "—",
+        "myFlow": "여러 할 일 조정",
+        "calendar": "—",
+        "exportPanel": "—"
+      },
+      "verdict": "split",
+      "issue": "저장 전은 4모드 스위처, 저장 후는 배치 선택 모드. 같은 4가지 수정을 두 문법으로 배운다.",
+      "evidenceKind": [
+        "current_source"
+      ]
+    },
+    {
+      "group": "Flow",
+      "command": "전체 보기",
+      "surfaces": {
+        "home": "—",
+        "publicFlow": "전체 Flow 미리보기",
+        "receipt": "전체 Flow 보기",
+        "myFlow": "전체 보기 / 전체 펼치기",
+        "calendar": "—",
+        "exportPanel": "—"
+      },
+      "verdict": "variant",
+      "issue": "\"전체\"가 미리보기·복귀·펼치기 세 가지를 가리킨다.",
+      "evidenceKind": [
+        "current_source"
+      ]
+    },
+    {
+      "group": "Flow",
+      "command": "보관",
+      "surfaces": {
+        "home": "—",
+        "publicFlow": "—",
+        "receipt": "—",
+        "myFlow": "카드 ⋯ 관리 메뉴 > 보관",
+        "calendar": "—",
+        "exportPanel": "—"
+      },
+      "verdict": "split",
+      "issue": "집중 워크스페이스에는 없음. 목록 카드에만 존재.",
+      "evidenceKind": [
+        "current_source"
+      ]
+    },
+    {
+      "group": "Flow",
+      "command": "복구",
+      "surfaces": {
+        "home": "—",
+        "publicFlow": "—",
+        "receipt": "—",
+        "myFlow": "보관함 열기 > 카드 ⋯ > 복구",
+        "calendar": "—",
+        "exportPanel": "—"
+      },
+      "verdict": "variant",
+      "issue": "보관과 같은 토글이 라벨만 바꿔 수행.",
+      "evidenceKind": [
+        "current_source"
+      ]
+    },
+    {
+      "group": "Flow",
+      "command": "이 기기에서 영구 삭제",
+      "surfaces": {
+        "home": "—",
+        "publicFlow": "—",
+        "receipt": "—",
+        "myFlow": "문서상 관리 메뉴",
+        "calendar": "—",
+        "exportPanel": "—"
+      },
+      "verdict": "undetermined",
+      "issue": "repo 전역 검색에서 docs에만 존재. E2E marker 0.",
+      "evidenceKind": [
+        "current_source"
+      ]
+    },
+    {
+      "group": "Flow",
+      "command": "새 기준일로 다시 쓰기",
+      "surfaces": {
+        "home": "—",
+        "publicFlow": "—",
+        "receipt": "—",
+        "myFlow": "완료 피드백 > 새 이사일로 다시 쓰기",
+        "calendar": "—",
+        "exportPanel": "—"
+      },
+      "verdict": "consistent",
+      "issue": "기준일 종류에 따라 문구가 문맥화된다(좋은 패턴).",
+      "evidenceKind": [
+        "current_source"
+      ]
+    },
+    {
+      "group": "Flow",
+      "command": "전체 가져가기",
+      "surfaces": {
+        "home": "—",
+        "publicFlow": "캘린더 24개로 시작",
+        "receipt": "가져가기",
+        "myFlow": "가져가기 / Flow별 가져가기",
+        "calendar": "—",
+        "exportPanel": "Flow 전체 · 24개"
+      },
+      "verdict": "variant",
+      "issue": "같은 조작에 4가지 문구.",
+      "evidenceKind": [
+        "current_source"
+      ]
+    },
+    {
+      "group": "Item",
+      "command": "추가",
+      "surfaces": {
+        "home": "—",
+        "publicFlow": "—",
+        "receipt": "—",
+        "myFlow": "항목 추가(draft·확인 항목)",
+        "calendar": "—",
+        "exportPanel": "—"
+      },
+      "verdict": "split",
+      "issue": "저장된 source-backed Flow에 항목을 더하는 경로가 draft와 다르다.",
+      "evidenceKind": [
+        "current_source"
+      ]
+    },
+    {
+      "group": "Item",
+      "command": "제목 수정",
+      "surfaces": {
+        "home": "—",
+        "publicFlow": "조정 > 내용",
+        "receipt": "—",
+        "myFlow": "빠른 수정 또는 요약 펼치기 > 수정",
+        "calendar": "—",
+        "exportPanel": "item 상세 시트"
+      },
+      "verdict": "split",
+      "issue": "진입이 1탭 또는 3탭으로 갈린다.",
+      "evidenceKind": [
+        "current_source"
+      ]
+    },
+    {
+      "group": "Item",
+      "command": "날짜 수정",
+      "surfaces": {
+        "home": "—",
+        "publicFlow": "조정 > 일정",
+        "receipt": "—",
+        "myFlow": "item editor 날짜",
+        "calendar": "날짜 정하기 / 되돌리기",
+        "exportPanel": "—"
+      },
+      "verdict": "variant",
+      "issue": "Calendar는 \"정하기\", editor는 \"날짜\" 필드.",
+      "evidenceKind": [
+        "current_source"
+      ]
+    },
+    {
+      "group": "Item",
+      "command": "시간·장소",
+      "surfaces": {
+        "home": "—",
+        "publicFlow": "조정 > 일정",
+        "receipt": "—",
+        "myFlow": "세부 일정(접힘)",
+        "calendar": "item 상세",
+        "exportPanel": "—"
+      },
+      "verdict": "consistent",
+      "issue": "접어두는 정책이 표면 간 일치.",
+      "evidenceKind": [
+        "current_source"
+      ]
+    },
+    {
+      "group": "Item",
+      "command": "메모",
+      "surfaces": {
+        "home": "—",
+        "publicFlow": "조정 > 개인 메모",
+        "receipt": "—",
+        "myFlow": "개인 메모",
+        "calendar": "item 상세",
+        "exportPanel": "메모 복사"
+      },
+      "verdict": "consistent",
+      "issue": "",
+      "evidenceKind": [
+        "current_source"
+      ]
+    },
+    {
+      "group": "Item",
+      "command": "위아래 이동",
+      "surfaces": {
+        "home": "—",
+        "publicFlow": "조정 > 순서 모드",
+        "receipt": "—",
+        "myFlow": "구성 편집(draft)",
+        "calendar": "—",
+        "exportPanel": "—"
+      },
+      "verdict": "split",
+      "issue": "저장된 source-backed Flow에서 순서 변경 경로가 저장 전과 다르다.",
+      "evidenceKind": [
+        "current_source"
+      ]
+    },
+    {
+      "group": "Item",
+      "command": "포함·제외",
+      "surfaces": {
+        "home": "—",
+        "publicFlow": "저장에 포함(체크박스)",
+        "receipt": "—",
+        "myFlow": "Flow에서 빼기 / 뺀 항목 > 복구",
+        "calendar": "—",
+        "exportPanel": "직접 선택"
+      },
+      "verdict": "split",
+      "issue": "같은 개념이 체크박스·버튼·선택 3가지로 나타난다.",
+      "evidenceKind": [
+        "current_source"
+      ]
+    },
+    {
+      "group": "Item",
+      "command": "완료·다시 열기",
+      "surfaces": {
+        "home": "—",
+        "publicFlow": "—",
+        "receipt": "—",
+        "myFlow": "{제목} 완료 체크 / 다시 열기",
+        "calendar": "{제목} 완료 체크 / 다시 열기",
+        "exportPanel": "—"
+      },
+      "verdict": "consistent",
+      "issue": "My Flow와 Calendar가 같은 accessible name 패턴을 쓴다(가장 잘 된 부분).",
+      "evidenceKind": [
+        "current_source"
+      ]
+    },
+    {
+      "group": "Item",
+      "command": "날짜 배치·제거",
+      "surfaces": {
+        "home": "—",
+        "publicFlow": "—",
+        "receipt": "—",
+        "myFlow": "날짜 제거(경로별 상이)",
+        "calendar": "날짜 없는 할 일 > 날짜 정하기",
+        "exportPanel": "—"
+      },
+      "verdict": "variant",
+      "issue": "배치는 Calendar, 제거는 editor — 왕복 조작이 두 화면에 나뉜다.",
+      "evidenceKind": [
+        "current_source"
+      ]
+    },
+    {
+      "group": "Item",
+      "command": "삭제·복구",
+      "surfaces": {
+        "home": "—",
+        "publicFlow": "—",
+        "receipt": "—",
+        "myFlow": "삭제(draft) / 빼기(저장 Flow)",
+        "calendar": "—",
+        "exportPanel": "—"
+      },
+      "verdict": "split",
+      "issue": "파괴 정도가 다른 두 조작이 서로 다른 어휘를 쓰지만, 사용자에게는 같은 의도.",
+      "evidenceKind": [
+        "current_source"
+      ]
+    },
+    {
+      "group": "Item",
+      "command": "현재 항목 가져가기",
+      "surfaces": {
+        "home": "—",
+        "publicFlow": "—",
+        "receipt": "—",
+        "myFlow": "item 상세 > 현재 항목 가져가기 · 1개",
+        "calendar": "—",
+        "exportPanel": "—"
+      },
+      "verdict": "split",
+      "issue": "3개 export 범위 중 1개만 다른 층에 있다.",
+      "evidenceKind": [
+        "current_source"
+      ]
+    },
+    {
+      "group": "반복",
+      "command": "전체 반복 수정",
+      "surfaces": {
+        "home": "—",
+        "publicFlow": "—",
+        "receipt": "—",
+        "myFlow": "반복 설정 바꾸기",
+        "calendar": "—",
+        "exportPanel": "—"
+      },
+      "verdict": "consistent",
+      "issue": "",
+      "evidenceKind": [
+        "current_source"
+      ]
+    },
+    {
+      "group": "반복",
+      "command": "이번 회차만 수정",
+      "surfaces": {
+        "home": "—",
+        "publicFlow": "—",
+        "receipt": "—",
+        "myFlow": "—",
+        "calendar": "—",
+        "exportPanel": "—"
+      },
+      "verdict": "absent",
+      "issue": "문자열·testid 0건. 회차 단위 수정이 제품에 없다.",
+      "evidenceKind": [
+        "current_source"
+      ]
+    },
+    {
+      "group": "반복",
+      "command": "이번 회차 완료·재개",
+      "surfaces": {
+        "home": "—",
+        "publicFlow": "—",
+        "receipt": "—",
+        "myFlow": "series 상세에는 없음(캘린더에서 회차별 실행)",
+        "calendar": "{제목} 이번 회차 완료 체크",
+        "exportPanel": "—"
+      },
+      "verdict": "consistent",
+      "issue": "완료만은 회차 단위로 올바르게 소유된다.",
+      "evidenceKind": [
+        "current_source"
+      ]
+    },
+    {
+      "group": "반복",
+      "command": "반복 종료",
+      "surfaces": {
+        "home": "—",
+        "publicFlow": "—",
+        "receipt": "—",
+        "myFlow": "반복 설정 > 반복 종료",
+        "calendar": "—",
+        "exportPanel": "—"
+      },
+      "verdict": "variant",
+      "issue": "\"종료\"가 삭제·보관 중 무엇인지 이름이 말하지 않는다.",
+      "evidenceKind": [
+        "current_source"
+      ]
+    },
+    {
+      "group": "되돌리기",
+      "command": "undo 소유자",
+      "surfaces": {
+        "home": "—",
+        "publicFlow": "저장 전 취소",
+        "receipt": "—",
+        "myFlow": "lifecycle 스낵바 / 배치 undo",
+        "calendar": "패널 내 되돌리기",
+        "exportPanel": "닫기"
+      },
+      "verdict": "split",
+      "issue": "undo가 최소 3개 주인을 가진다 — 위치·문구·지속시간 계약이 하나가 아니다.",
+      "evidenceKind": [
+        "current_source"
+      ]
+    }
+  ],
+  "summary": {
+    "totalCommands": 25,
+    "byVerdict": {
+      "variant": 7,
+      "undetermined": 2,
+      "split": 9,
+      "consistent": 6,
+      "absent": 1
+    }
+  }
+}

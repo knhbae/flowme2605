@@ -1,0 +1,77 @@
+{
+  "packageId": "2026-07-20-p25-production-review-claude-design",
+  "basis": "production_fetch + production_screenshot + repo_evidence + heuristic; observed users 0",
+  "screens": [
+    {
+      "screen": "public save-before (/f/*)",
+      "keep": ["artifact 1개 원칙", "저장 전 완료 컨트롤 0", "이 Flow 설명 접힘", "source/creator 공개"],
+      "change": ["예시 미리보기 anchor를 미래로(F-01)", "저장 결정 표면 1개로 통합 — sticky 바만 유지(F-02)", "저장 전 산출물/내 실행판 진입 제거 또는 저장 후로 이동", "날짜 입력을 피커+프리셋으로(F-09)", "wide 2-pane(F-06)"],
+      "remove": ["본문 중간의 중복 그대로 저장/조정 블록"],
+      "defer": ["설명 문장 축약의 세부 수위 → P26-00 비교 결과 따름"]
+    },
+    {
+      "screen": "저장 직후 (post-save)",
+      "keep": ["첫 저장 = 전체 Flow 확인", "저장된 Flow 자동 선택"],
+      "change": ["저장 결과 배너에 '무엇이 몇 개, 어디로 갔는지'(날짜 n·날짜없음 m) 1줄 명세"],
+      "remove": [],
+      "defer": []
+    },
+    {
+      "screen": "내 Flow (/my)",
+      "keep": ["지금/내 Flow/완료 3구획", "날짜 없는 할 일 실행 섹션", "가역 완료"],
+      "change": ["빈 상태를 역할 언어로 재작성(F-03)", "용어 콘텐츠→Flow 통일", "데이터 관리 강등(F-13)", "복구·순서 변경 발견성(F-11)"],
+      "remove": [],
+      "defer": ["계정/동기화"]
+    },
+    {
+      "screen": "캘린더 (/calendar)",
+      "keep": ["날짜별 실행 전담", "선택형 날짜 정하기 큐", "회차 완료 체크 1개"],
+      "change": ["빈 상태 역할 분리(F-03)", "1024 3영역 → 2영역 비교(F-07)", "기본 관리일 TZ 정합(F-04)"],
+      "remove": [],
+      "defer": ["외부 캘린더 직접 연동"]
+    },
+    {
+      "screen": "item editor (할 일 조정)",
+      "keep": ["제목/날짜/메모 우선", "세부 일정 접힘 + 정직한 요약"],
+      "change": ["intent-first 2단계 진입(F-08)"],
+      "remove": [],
+      "defer": []
+    },
+    {
+      "screen": "batch edit (전체 Flow 선택 모드)",
+      "keep": ["임시 선택 모드", "영향 미리보기", "export 프리셀렉션", "복구 가능한 제거만 허용"],
+      "change": ["선택 모드 진입 발견성 점검(사용자 확인 가정)"],
+      "remove": [],
+      "defer": []
+    },
+    {
+      "screen": "completion/reopen",
+      "keep": ["행 체크박스 1개", "즉시 되돌리기", "완료 뷰 재개방"],
+      "change": [],
+      "remove": [],
+      "defer": []
+    },
+    {
+      "screen": "export",
+      "keep": ["scope(Flow 전체/직접 선택/현재 항목) → format 순서", "canonical count 선표시", "undated: list 포함/ICS 제외"],
+      "change": ["실행 후 결과 확인 surface(행/이벤트 수) 추가 — P26-10"],
+      "remove": [],
+      "defer": []
+    },
+    {
+      "screen": "홈/찾기 (/, /flows)",
+      "keep": ["4탭 IA", "URL/메모 진입", "추천 2개 절제"],
+      "change": ["카드 카피 톤(F-14)"],
+      "remove": [],
+      "defer": ["창작자/마켓 노출"]
+    }
+  ],
+  "p25NineSurfaceVerdict": "keep_all_structure_change_comprehension_layer",
+  "contractImpacts": {
+    "source": "변경 없음 — 모든 P26 항목은 source object 불변 유지",
+    "personalOverlay": "P26-01 예시 anchor는 overlay 아님(미저장 미리보기만). P26-06/07은 기존 overlay 필드 재배치만",
+    "executionRun": "변경 없음",
+    "occurrence": "P26-09는 표시 언어/TZ만, projection 규칙 불변",
+    "export": "P26-10은 plan 계약 위에 result 확인만 추가, count 산정 불변"
+  }
+}

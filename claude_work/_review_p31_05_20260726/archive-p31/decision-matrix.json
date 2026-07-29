@@ -1,0 +1,177 @@
+{
+  "schemaVersion": 1,
+  "reviewerRole": "claude_design",
+  "reviewedAt": "2026-07-24T14:00:00+09:00",
+  "reviewedOriginMain": "555da4e013cc9090b76b78cc81619057409772dc",
+  "production": "https://flowme2605.vercel.app",
+  "observedUserCount": 0,
+  "verdict": "my_flow_structural_reopen",
+  "currentEvidence": {
+    "summary": "current production screenshot(6) + current source(STATUS/PRODUCT_PRINCIPLES + P26~P31 changelog) + heuristic 24-cell. My Flow가 이중 탭(지금/Flow목록/완료 위에 실행/전체계획/기록)을 중첩해 동일 Item의 next-action/completion을 여러 곳에서 노출.",
+    "reproducedFindings": [
+      "F-01",
+      "F-02",
+      "F-03",
+      "F-04",
+      "F-05",
+      "F-06",
+      "F-07",
+      "F-08"
+    ],
+    "reopenCriteriaMet": 3,
+    "reopenThreshold": 2
+  },
+  "alternativeScores": [
+    {
+      "id": "A_keep_and_tighten",
+      "compositeComplexity": 40,
+      "reductionVsCurrentPct": 18.4,
+      "actionableDuplicateCount": 2,
+      "contextLossCount": 1,
+      "strengths": [
+        "최저 구현 위험",
+        "즉시 적용 가능한 copy/density 개선"
+      ],
+      "weaknesses": [
+        "이중 탭 collision 근본 미해결(D1/D2/D3)",
+        "20% 복잡도 감소 게이트 실패",
+        "20/60 scale 미해결"
+      ],
+      "recommended": false
+    },
+    {
+      "id": "B_library_to_focused_workspace",
+      "compositeComplexity": 26,
+      "reductionVsCurrentPct": 47,
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 0,
+      "strengths": [
+        "'지금' 탭 제거로 next-action 단일 소유",
+        "progressive disclosure(다음행동->계획->기록)",
+        "search-first로 20/60 scale",
+        "back이 filter/scroll 복원",
+        "6 content shape을 공통 shell + body renderer로 수용"
+      ],
+      "weaknesses": [
+        "workspace shell/ body renderer 구현 필요(중간 위험)",
+        "routine definition/run 경계는 body 차원에서 별도 처리 필요"
+      ],
+      "recommended": true
+    },
+    {
+      "id": "C_run_first_workspace",
+      "compositeComplexity": 33,
+      "reductionVsCurrentPct": 33,
+      "actionableDuplicateCount": 1,
+      "contextLossCount": 1,
+      "strengths": [
+        "routine/긴 timeline에서 definition vs run 명확",
+        "active run 우선으로 이어하기 강력"
+      ],
+      "weaknesses": [
+        "단순 undated checklist/personal draft에 'run' 개념이 과함",
+        "library/history가 secondary라 P6 대규모 탐색에 추가 depth"
+      ],
+      "recommended": false
+    }
+  ],
+  "selectedAlternative": "B_library_to_focused_workspace",
+  "selectedRationale": "B가 이중 탭 collision(D1/D2/D3)과 첫 viewport 과밀(D4), scale(D5), context 복구(D6)를 동시에 해결하고 복잡도를 47% 낮춤(A는 18.4%로 게이트 실패). C의 definition/run 분리는 B의 body renderer 안에서 recurrence·long-timeline에만 적용해 흡수 → 단순 콘텐츠 과설계 회피.",
+  "rejectedAlternatives": [
+    {
+      "id": "A",
+      "reason": "복잡도 20% 게이트 실패 + 근본 collision 미해결"
+    },
+    {
+      "id": "C",
+      "reason": "우수하나 단순 콘텐츠에 과함; 강점(definition/run)은 B에 body 차원으로 흡수"
+    },
+    {
+      "id": "cross_tab_ia_reopen",
+      "reason": "D7(공유 hub 중복)은 지속 competing primary가 아니며 B로 해소 → 4탭 재설계 게이트 미충족"
+    }
+  ],
+  "borrowedFromC": "recurrence_routine + long anchor_timeline body에서 Flow definition vs current run을 명시(Hevy 패턴 번역). 전역 모드로는 채택하지 않음.",
+  "stableContracts": [
+    "source definition/version",
+    "personal title/date/memo/structure overlay",
+    "execution run + completion/reopen",
+    "recurrence series/revision/occurrence",
+    "export stable identity + receipt",
+    "4-tab IA (홈/Flow 찾기/캘린더/내 Flow)"
+  ],
+  "migrationRequired": false,
+  "migrationNote": "B는 기존 effective projection을 소비하는 UI 재구성. 새 Item ID/별도 completion state/중복 count 없음 → schema migration 불필요.",
+  "stagedRollout": [
+    {
+      "stage": "S1",
+      "name": "Completion 단일 소유 + 완료/기록 의미 정리",
+      "scope": "동일 Item primary completion을 workspace가 소유; '지금'/Home은 deep-link(컨트롤 복제 금지). '완료'는 동일 run 상태의 cross-Flow 필터로 재라벨.",
+      "risk": "low",
+      "flag": "myflow_single_completion_owner",
+      "rollback": "플래그 off -> P31 컨트롤 복원",
+      "acceptance": [
+        "actionableDuplicateCount=0"
+      ]
+    },
+    {
+      "stage": "S2",
+      "name": "Library -> Focused Workspace shell (flag)",
+      "scope": "/my 첫 화면=continue strip+compact library; Flow open=focused workspace(global 숨김)+progressive disclosure(다음행동->계획->기록).",
+      "risk": "medium",
+      "flag": "myflow_focused_workspace",
+      "rollback": "플래그 off -> P31 탭 구조",
+      "acceptance": [
+        "firstViewportDistinctCardTypeCount<=2(library)",
+        "<=3(workspace)",
+        "firstActionDepth<=2"
+      ]
+    },
+    {
+      "stage": "S3",
+      "name": "Scale + wide + context restore",
+      "scope": "20/60 search-first+status/next-date group; wide library/canvas/inspector 채움 + 1024 overflow 확인; back이 filter/scroll 복원.",
+      "risk": "medium",
+      "flag": "myflow_scale_restore",
+      "rollback": "플래그 off",
+      "acceptance": [
+        "flowOpenDepth@20<=3",
+        "contextLossCount=0",
+        "horizontalOverflowPx=0 @390/1024"
+      ]
+    },
+    {
+      "stage": "S4",
+      "name": "Content-shape body renderers",
+      "scope": "timeline/checklist/routine/artifact/mixed/draft body; routine·long-timeline에 definition/run 분리(C 차용). 공통 header/action grammar 유지.",
+      "risk": "medium",
+      "flag": "myflow_shape_bodies",
+      "rollback": "플래그 off -> 공통 generic body",
+      "acceptance": [
+        "각 shape에서 explanationDependencyCount=0",
+        "reopenDepth<=2"
+      ]
+    }
+  ],
+  "rollback": "각 stage는 독립 feature flag. 게이트 미달 시 해당 stage만 off. 데이터 계약 불변이므로 어떤 stage에서도 저장된 Flow는 P31 UI로 안전 복귀.",
+  "acceptanceMarkers": [
+    "actionableDuplicateCount=0",
+    "contextLossCount=0 (Calendar 왕복)",
+    "flowOpenDepth@20<=3",
+    "firstViewportDistinctCardTypeCount<=2 (library)",
+    "reopenDepth<=2",
+    "horizontalOverflowPx=0 @390/1024",
+    "unnamedFocusableCount=0",
+    "완료<->기록 단일 run 상태 참조"
+  ],
+  "observedUserQuestions": [
+    "'지금'과 '실행'을 실제 사용자가 다른 목적으로 예측하는가?",
+    "이어하기를 Home/지금/실행 중 어디에서 시도하는가?",
+    "'완료'(cross-Flow)와 '기록'(per-Flow)을 별개로 기대하는가?",
+    "20/60개 규모에 실제 도달하는가? 도달 시 검색 vs 그룹 중 무엇을 먼저 쓰는가?",
+    "Calendar 왕복 후 scroll/filter 초기화가 실제 좌절을 유발하는가?",
+    "continue strip이 '이어하기' 멘탈모델과 맞는가, 아니면 캘린더식 'today'를 찾는가?"
+  ],
+  "prohibitedClaimsRespected": true,
+  "disclaimer": "자동화/screenshot/heuristic simulation은 실제 사용자 검증이 아니다. observed-user count 0. app code 변경 없음."
+}

@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>FlowMe UX/UI 재검토 — P0~P2 이후 · P4 백로그</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <style>
+    html, body { margin: 0; padding: 0; background: #F2F1EC; }
+    * { box-sizing: border-box; }
+  </style>
+</helmet>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#3654FF"></rect><text x="50" y="59" font-family="sans-serif" font-size="22" font-weight="800" fill="#FFFFFF" text-anchor="middle">P4</text></svg></template>
+<div style="font-family: 'Pretendard Variable', Pretendard, -apple-system, 'Segoe UI', sans-serif; color: #1B1A17; line-height: 1.6; letter-spacing: -0.01em;">
+
+  <header style="background: #1B1A17; color: #F5F4EF; padding: 52px 28px 44px;">
+    <div style="max-width: 1120px; margin: 0 auto;">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px;">
+        <span style="display: inline-flex; align-items: center; border: 1px solid rgba(245,244,239,0.3); border-radius: 999px; padding: 4px 12px; font-size: 12px; font-weight: 700; letter-spacing: 0.04em;">FLOWME · RE-AUDIT</span>
+        <span style="font-size: 12px; font-weight: 600; color: rgba(245,244,239,0.6);">commit c4ba63d · P0~P2 적용 이후 · 소스 + route-evidence.json + 390px 스크린샷 8장 기준 (Vercel preview 미사용)</span>
+      </div>
+      <h1 style="margin: 18px 0 0; font-size: 40px; line-height: 1.2; font-weight: 800; letter-spacing: -0.02em; max-width: 860px; text-wrap: balance;">P0~P2 이후 재검토와<br>바로 개발 가능한 P4 백로그</h1>
+      <p style="margin: 16px 0 0; max-width: 740px; font-size: 16px; line-height: 1.7; color: rgba(245,244,239,0.75); text-wrap: pretty;">P0~P2로 첫 화면 위계와 언어는 크게 좋아졌습니다. 이번 재검토의 결론은 두 가지입니다 — ① 실행 앱의 심장인 <strong>저장 후 My Flow · 캘린더가 자기 evidence(07·08)에서 빈 상태로 찍혔다</strong>는 점, ② 공개 <code style="font-size:13px;background:rgba(245,244,239,0.12);border-radius:4px;padding:1px 5px;">/f/</code> 상세만 아직 옛 톤·옛 문법으로 남아 있다는 점. P4는 이 둘을 닫는 데 집중합니다.</p>
+    </div>
+  </header>
+
+  <nav style="position: sticky; top: 0; z-index: 50; background: rgba(242,241,236,0.92); backdrop-filter: blur(8px); border-bottom: 1px solid #DDD9D0;">
+    <div style="max-width: 1120px; margin: 0 auto; padding: 10px 28px; display: flex; flex-wrap: wrap; gap: 6px;">
+      <a href="#verdict" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">판단 요약</a>
+      <a href="#routes" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">1 Route별 문제</a>
+      <a href="#prio" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">2 우선순위</a>
+      <a href="#backlog" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">3 P4 백로그</a>
+      <a href="#first" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">4 P4-01</a>
+      <a href="#reopen" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">5 재오픈</a>
+      <a href="#hold" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">6 유지 기준선</a>
+      <a href="#spec" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">7 Revised spec</a>
+      <a href="#final" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">8 최종 판단</a>
+    </div>
+  </nav>
+
+  <section style="max-width: 1120px; margin: 0 auto; padding: 26px 28px 6px;">
+    <p style="margin: 0 0 10px; font-size: 12px; font-weight: 700; color: #8A857B; letter-spacing: 0.04em;">근거 화면 · route-evidence 스크린샷 8장 (본문 01~08로 인용) · 390×844</p>
+    <div style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px;">
+      <figure style="margin: 0; flex: 0 0 auto; width: 116px;"><img src="docs/content-audit/2026-07-03-claude-design-p0-p2-final-audit-package/screenshots/01-home-mobile.png" alt="01" style="display:block;width:116px;border:1px solid #DDD9D0;border-radius:10px;"><figcaption style="margin-top:4px;font-size:11px;font-weight:700;color:#6E6B64;">01 홈</figcaption></figure>
+      <figure style="margin: 0; flex: 0 0 auto; width: 116px;"><img src="docs/content-audit/2026-07-03-claude-design-p0-p2-final-audit-package/screenshots/02-flows-mobile.png" alt="02" style="display:block;width:116px;border:1px solid #DDD9D0;border-radius:10px;"><figcaption style="margin-top:4px;font-size:11px;font-weight:700;color:#6E6B64;">02 Flow 찾기</figcaption></figure>
+      <figure style="margin: 0; flex: 0 0 auto; width: 116px;"><img src="docs/content-audit/2026-07-03-claude-design-p0-p2-final-audit-package/screenshots/03-flow-map-moving-mobile.png" alt="03" style="display:block;width:116px;border:1px solid #DDD9D0;border-radius:10px;"><figcaption style="margin-top:4px;font-size:11px;font-weight:700;color:#6E6B64;">03 지도 · 이사</figcaption></figure>
+      <figure style="margin: 0; flex: 0 0 auto; width: 116px;"><img src="docs/content-audit/2026-07-03-claude-design-p0-p2-final-audit-package/screenshots/04-flow-map-math-mobile.png" alt="04" style="display:block;width:116px;border:1px solid #DDD9D0;border-radius:10px;"><figcaption style="margin-top:4px;font-size:11px;font-weight:700;color:#6E6B64;">04 지도 · 수학</figcaption></figure>
+      <figure style="margin: 0; flex: 0 0 auto; width: 116px;"><img src="docs/content-audit/2026-07-03-claude-design-p0-p2-final-audit-package/screenshots/05-public-vehicle-inspection-mobile.png" alt="05" style="display:block;width:116px;border:1px solid #DDD9D0;border-radius:10px;"><figcaption style="margin-top:4px;font-size:11px;font-weight:700;color:#6E6B64;">05 공개 /f/</figcaption></figure>
+      <figure style="margin: 0; flex: 0 0 auto; width: 116px;"><img src="docs/content-audit/2026-07-03-claude-design-p0-p2-final-audit-package/screenshots/06-my-empty-mobile.png" alt="06" style="display:block;width:116px;border:1px solid #DDD9D0;border-radius:10px;"><figcaption style="margin-top:4px;font-size:11px;font-weight:700;color:#6E6B64;">06 내 Flow 빈</figcaption></figure>
+      <figure style="margin: 0; flex: 0 0 auto; width: 116px;"><img src="docs/content-audit/2026-07-03-claude-design-p0-p2-final-audit-package/screenshots/07-post-save-my-flow-mobile.png" alt="07" style="display:block;width:116px;border:2px solid #C0341D;border-radius:10px;"><figcaption style="margin-top:4px;font-size:11px;font-weight:700;color:#C0341D;">07 저장 후 ⚠</figcaption></figure>
+      <figure style="margin: 0; flex: 0 0 auto; width: 116px;"><img src="docs/content-audit/2026-07-03-claude-design-p0-p2-final-audit-package/screenshots/08-calendar-after-save-mobile.png" alt="08" style="display:block;width:116px;border:2px solid #C0341D;border-radius:10px;"><figcaption style="margin-top:4px;font-size:11px;font-weight:700;color:#C0341D;">08 캘린더 후 ⚠</figcaption></figure>
+    </div>
+  </section>
+
+  <!-- 판단 요약 -->
+  <section id="verdict" style="max-width: 1120px; margin: 0 auto; padding: 22px 28px 12px;">
+    <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 24px;">
+      <p style="margin: 0; font-size: 13px; font-weight: 800; color: #8A857B; letter-spacing: 0.03em;">한 줄 판단</p>
+      <p style="margin: 8px 0 0; font-size: 19px; line-height: 1.6; font-weight: 700; text-wrap: pretty;">저장 <em>전</em> 여정은 이제 실행형 앱처럼 보인다. 저장 <em>후</em> 여정은 — evidence상 — 아직 증명되지 않았다.</p>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin-top: 18px;">
+        <div style="background: #EDF3EC; border-radius: 12px; padding: 15px 17px;">
+          <p style="margin: 0; font-size: 12px; font-weight: 800; color: #1F6A3E;">확실히 좋아진 것</p>
+          <ul style="margin: 8px 0 0; padding-left: 17px; font-size: 13.5px; line-height: 1.65;">
+            <li>홈 모바일 primary CTA 노출 (01)</li>
+            <li>Flow 찾기 단일 헤더 + 카드 압축 (02)</li>
+            <li>지도 hero 압축 + sticky 상태기계 (03·04)</li>
+            <li>빈 상태 단일 CTA + 토큰 정리 (06)</li>
+            <li>가로 overflow 0 · 내부어 스캔 0건</li>
+          </ul>
+        </div>
+        <div style="background: #FBEAE5; border-radius: 12px; padding: 15px 17px;">
+          <p style="margin: 0; font-size: 12px; font-weight: 800; color: #C0341D;">이번 루프의 핵심 결함</p>
+          <ul style="margin: 8px 0 0; padding-left: 17px; font-size: 13.5px; line-height: 1.65;">
+            <li><strong>07·08이 빈 상태로 찍힘</strong> — 저장 후 허브가 evidence로 증명 안 됨</li>
+            <li>공개 /f/ 제목 "…Flow" 접미 잔존 (05)</li>
+            <li>공개 /f/가 옛 톤(slate/gray) + 이중 입력 동선 (05)</li>
+          </ul>
+        </div>
+        <div style="background: #FCF3E4; border-radius: 12px; padding: 15px 17px;">
+          <p style="margin: 0; font-size: 12px; font-weight: 800; color: #B95000;">아직 설명형으로 남은 화면</p>
+          <ul style="margin: 8px 0 0; padding-left: 17px; font-size: 13.5px; line-height: 1.65;">
+            <li>홈 하단 "시작 경로" 4단계 설명 카드 (01)</li>
+            <li>홈 추천 카드의 입력/저장/결과 3분할 (01)</li>
+            <li>공개 /f/ 상세 (05) — 상용 대비 밀도 최고</li>
+          </ul>
+        </div>
+      </div>
+      <p style="margin: 16px 0 0; font-size: 13.5px; line-height: 1.7; color: #6E6B64; background: #FAFAF8; border-radius: 10px; padding: 12px 14px;"><strong style="color:#1B1A17;">근거 한계 명시.</strong> Vercel preview 없이 소스·JSON·스크린샷만으로 판단했습니다. 07·08의 빈 상태는 (a) 스크린샷 하네스가 저장 데이터를 렌더에 못 실었거나, (b) 해당 route가 첫 페인트에서 빈 상태를 보여주는 실제 회귀 — 둘 중 하나입니다. 어느 쪽이든 <strong>"저장 후 실행 허브"는 현재 evidence로 증명 불가</strong>이므로, P4에서 채워진 상태의 07·08을 다시 만들어야 판단을 닫을 수 있습니다.</p>
+    </div>
+  </section>
+
+  <!-- 1. Route별 -->
+  <section id="routes" style="max-width: 1120px; margin: 0 auto; padding: 34px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 1</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">Route별 UX/UI 평가</h2>
+    </div>
+    <p style="margin: 10px 0 0; max-width: 780px; font-size: 14.5px; color: #6E6B64;">각 route마다 지금 상태 · 남은 문제 · 사용자가 겪는 혼란 · 근거 스크린샷. 5초 안에 목적/첫 행동/저장 결과/다음 할 일이 보이는지를 기준으로 봤습니다.</p>
+
+    <div style="display: grid; gap: 12px; margin-top: 18px;">
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 20px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <code style="font-size: 13.5px; font-weight: 800; background: #EEF1FF; color: #3654FF; border-radius: 6px; padding: 2px 8px;">/</code>
+          <h3 style="margin: 0; font-size: 17px; font-weight: 800;">홈</h3>
+          <span style="font-size: 12px; font-weight: 700; color: #1F6A3E; background: #EDF3EC; border-radius: 999px; padding: 2px 9px;">첫 행동 OK</span>
+          <span style="font-size: 12px; font-weight: 600; color: #8A857B;">01</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 84px 1fr; gap: 5px 14px; margin-top: 12px; font-size: 14px; line-height: 1.6;">
+          <span style="font-weight: 700; color: #1F6A3E;">좋음</span><span>hero에 "콘텐츠 고르러 가기" 전폭 CTA가 모바일에 노출 — 5초 안에 무엇을 누를지 보인다 (P0-01 반영 확인).</span>
+          <span style="font-weight: 700; color: #B95000;">문제</span><span>CTA 아래로 <strong>추천 콘텐츠 카드</strong>(입력/저장/결과 3분할 그리드) + <strong>"시작 경로 · 고르고 저장하고 이어가기" 4단계 설명 카드</strong>가 이어진다. 홈이 여전히 "사용법을 읽는 페이지"로 끝난다.</span>
+          <span style="font-weight: 700; color: #C0341D;">혼란</span><span>첫 CTA를 안 누르고 스크롤하면, 행동이 아니라 앱 설명(4단계)이 나와 진입 동력이 식는다. 추천 카드의 3분할은 스캔보다 해독을 요구한다.</span>
+        </div>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 20px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <code style="font-size: 13.5px; font-weight: 800; background: #EEF1FF; color: #3654FF; border-radius: 6px; padding: 2px 8px;">/flows</code>
+          <h3 style="margin: 0; font-size: 17px; font-weight: 800;">Flow 찾기</h3>
+          <span style="font-size: 12px; font-weight: 700; color: #1F6A3E; background: #EDF3EC; border-radius: 999px; padding: 2px 9px;">양호</span>
+          <span style="font-size: 12px; font-weight: 600; color: #8A857B;">02</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 84px 1fr; gap: 5px 14px; margin-top: 12px; font-size: 14px; line-height: 1.6;">
+          <span style="font-weight: 700; color: #1F6A3E;">좋음</span><span>"무엇을 저장할까요?" 단일 헤더 + 카드 = 카테고리·제목·약속 한 줄·먼저 할 일·CTA 하나. P1-01/02가 잘 들어왔다. 카드가 실행 앱의 카탈로그처럼 스캔된다.</span>
+          <span style="font-weight: 700; color: #B95000;">문제</span><span>"12개 콘텐츠" pill이 헤더 우측에 남아 시선을 한 번 뺏는다(경미). 검색창 + 칩 6개가 여전히 카드보다 먼저지만 밀도는 허용 범위.</span>
+          <span style="font-weight: 700; color: #C0341D;">혼란</span><span>거의 없음. 이 route는 P4에서 손대지 않아도 된다.</span>
+        </div>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 20px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <code style="font-size: 13.5px; font-weight: 800; background: #EEF1FF; color: #3654FF; border-radius: 6px; padding: 2px 8px;">/flow-maps/moving-d30</code>
+          <code style="font-size: 13.5px; font-weight: 800; background: #EEF1FF; color: #3654FF; border-radius: 6px; padding: 2px 8px;">…/middle-school-math-1</code>
+          <span style="font-size: 12px; font-weight: 700; color: #1F6A3E; background: #EDF3EC; border-radius: 999px; padding: 2px 9px;">양호</span>
+          <span style="font-size: 12px; font-weight: 600; color: #8A857B;">03·04</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 84px 1fr; gap: 5px 14px; margin-top: 12px; font-size: 14px; line-height: 1.6;">
+          <span style="font-weight: 700; color: #1F6A3E;">좋음</span><span>제목·결과 약속·결과 칩·날짜 입력·먼저 할 일이 한 뷰포트. 하단 sticky가 "이사일 입력됨 → 저장하고 시작"으로 상태 전환(P0-03·P1-04). 날짜 없는 수학은 fallback 유지.</span>
+          <span style="font-weight: 700; color: #B95000;">문제</span><span>결과 약속 한 줄이 길다("…D-30 일정 + 이사 전 체크 + 연락처·예약번호 메모"). 원문 섹션 제목의 "<strong>AJD</strong> 이사 준비 체크리스트"에서 <code style="font-size:12px;">AJD</code> 접두가 사용자에게 의미 없는 토큰으로 노출.</span>
+          <span style="font-weight: 700; color: #C0341D;">혼란</span><span>경미. "AJD"가 뭔지 잠깐 멈칫하는 정도. 본문 문단이 아직 3~4줄로 길다.</span>
+        </div>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #C0341D; border-radius: 16px; padding: 20px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <code style="font-size: 13.5px; font-weight: 800; background: #FBEAE5; color: #C0341D; border-radius: 6px; padding: 2px 8px;">/f/vehicle-inspection-prep</code>
+          <h3 style="margin: 0; font-size: 17px; font-weight: 800;">공개 Flow 상세</h3>
+          <span style="font-size: 12px; font-weight: 700; color: #C0341D; background: #FBEAE5; border-radius: 999px; padding: 2px 9px;">가장 약함</span>
+          <span style="font-size: 12px; font-weight: 600; color: #8A857B;">05</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 84px 1fr; gap: 5px 14px; margin-top: 12px; font-size: 14px; line-height: 1.6;">
+          <span style="font-weight: 700; color: #1F6A3E;">좋음</span><span>결과 약속·필요 입력·먼저 할 일·저장 CTA가 hero에 모여 있다(P1-03 방향).</span>
+          <span style="font-weight: 700; color: #C0341D;">문제</span><span>① 제목 "자동차검사 D-14 준비 <strong>Flow</strong>" — 내부 개체명 접미가 사용자 표면에 남음(P0-05 잔여). ② hero가 <strong>입력/저장 결과/먼저 할 일을 테두리 카드 3장</strong>으로 쌓아 /flows·지도의 압축 칩보다 무겁다. ③ hero "검사일 입력으로 시작"과 아래 "1. 검사일 입력하기"의 실제 date input이 <strong>날짜 입력을 두 번</strong> 제시. ④ 톤이 slate/gray/blue-700 유틸(소스 확인) — FlowMe 토큰(#3654FF·#FAFAF8)과 어긋남. ⑤ 하단 4탭 nav 없음(<code style="font-size:12px;">navVisible:false</code>), 우상단 "내 Flow" 버튼이 nav처럼 보임.</span>
+          <span style="font-weight: 700; color: #C0341D;">혼란</span><span>어디를 눌러 시작하는지(hero 버튼? 아래 input?)가 갈리고, 다른 화면과 톤이 달라 "같은 앱"이라는 신뢰가 흔들린다. 공유 링크로 처음 온 사람이 저장/다음을 어디서 하는지 모호.</span>
+        </div>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 20px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <code style="font-size: 13.5px; font-weight: 800; background: #EEF1FF; color: #3654FF; border-radius: 6px; padding: 2px 8px;">/my</code>
+          <h3 style="margin: 0; font-size: 17px; font-weight: 800;">내 Flow 빈 상태</h3>
+          <span style="font-size: 12px; font-weight: 700; color: #1F6A3E; background: #EDF3EC; border-radius: 999px; padding: 2px 9px;">좋음</span>
+          <span style="font-size: 12px; font-weight: 600; color: #8A857B;">06</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 84px 1fr; gap: 5px 14px; margin-top: 12px; font-size: 14px; line-height: 1.6;">
+          <span style="font-weight: 700; color: #1F6A3E;">좋음</span><span>"저장할 콘텐츠를 먼저 고르세요" + 단일 CTA. 저장 후 화면과 같은 헤더/탭 골격 유지(P2-02). 군더더기 없음.</span>
+          <span style="font-weight: 700; color: #B95000;">문제</span><span>없음(빈 상태로서 이상적).</span>
+        </div>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #C0341D; border-radius: 16px; padding: 20px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <code style="font-size: 13.5px; font-weight: 800; background: #FBEAE5; color: #C0341D; border-radius: 6px; padding: 2px 8px;">/my?savedMap=moving-d30</code>
+          <code style="font-size: 13.5px; font-weight: 800; background: #FBEAE5; color: #C0341D; border-radius: 6px; padding: 2px 8px;">/calendar</code>
+          <span style="font-size: 12px; font-weight: 700; color: #C0341D; background: #FBEAE5; border-radius: 999px; padding: 2px 9px;">증거 불일치</span>
+          <span style="font-size: 12px; font-weight: 600; color: #8A857B;">07·08</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 84px 1fr; gap: 5px 14px; margin-top: 12px; font-size: 14px; line-height: 1.6;">
+          <span style="font-weight: 700; color: #C0341D;">문제</span><span>두 route의 상태는 "moving-d30을 2026-07-22로 저장한 뒤"인데, <strong>스크린샷은 둘 다 빈 상태</strong>다 — 07은 "저장할 콘텐츠를 먼저 고르세요", 08은 "일정이 생길 콘텐츠를 먼저 고르세요". route-evidence.json도 두 화면 H1을 "내 Flow"/"캘린더"로만 기록해 실제 실행 항목을 캡처하지 못했다.</span>
+          <span style="font-weight: 700; color: #C0341D;">혼란</span><span>사용자 관점에서 이게 실제 동작이라면: 방금 저장했는데 저장 후 허브가 "아직 없다"고 답하는 최악의 신뢰 붕괴. P0-02가 고치려던 바로 그 문제의 재현이다.</span>
+          <span style="font-weight: 700; color: #6E6B64;">판정</span><span>소스(<code style="font-size:12px;">postSaveContinuationRows</code>, fallback 큐)는 존재하므로 코드 회귀보다 <em>스크린샷 하네스가 저장 상태를 렌더에 못 실었을</em> 가능성이 높다. 그러나 <strong>screenshots-only 검토 기준에서는 저장 후 실행 허브가 증명되지 않았다</strong>. P4에서 채워진 상태 evidence를 만들어 확정해야 한다.</span>
+        </div>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 20px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <code style="font-size: 13.5px; font-weight: 800; background: #F1F0EC; color: #6E6B64; border-radius: 6px; padding: 2px 8px;">특수 workbench</code>
+          <h3 style="margin: 0; font-size: 17px; font-weight: 800;">공개 artifact/기록표/루틴 화면</h3>
+          <span style="font-size: 12px; font-weight: 700; color: #B95000; background: #FCF3E4; border-radius: 999px; padding: 2px 9px;">톤 미정리</span>
+          <span style="font-size: 12px; font-weight: 600; color: #8A857B;">소스 기준 · ArtifactWorkbench.tsx</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 84px 1fr; gap: 5px 14px; margin-top: 12px; font-size: 14px; line-height: 1.6;">
+          <span style="font-weight: 700; color: #B95000;">문제</span><span>export 라벨은 P2-01로 통일됐지만, 컴포넌트 전반이 <code style="font-size:12px;">border-slate-200 bg-slate-50 text-blue-700 text-gray-950</code> 등 <strong>옛 유틸 클래스</strong>로 남아 있다(소스 확인). 전역 <code style="font-size:12px;">--flowme-*</code> 토큰과 <code style="font-size:12px;">.premium-dark</code> 오버라이드가 병존.</span>
+          <span style="font-weight: 700; color: #C0341D;">혼란</span><span>스크린샷 evidence가 없어 사용자 체감은 미확인이나, 주요 route와 색·라운드가 달라 "같은 앱"의 일관성이 약해질 위험. Low~Medium.</span>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- 2. 우선순위 -->
+  <section id="prio" style="max-width: 1120px; margin: 0 auto; padding: 34px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 2</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">Blocking / High / Medium / Low</h2>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 8px; margin-top: 24px;">
+      <span style="width: 10px; height: 10px; border-radius: 999px; background: #C0341D;"></span>
+      <h3 style="margin: 0; font-size: 18px; font-weight: 800;">Blocking — 사용 흐름을 막음</h3>
+    </div>
+    <div style="display: grid; gap: 10px; margin-top: 12px;">
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #C0341D; border-radius: 14px; padding: 16px 18px;">
+        <p style="margin: 0; font-size: 15.5px; font-weight: 800;"><span style="background:#FBEAE5;color:#C0341D;border-radius:6px;padding:1px 7px;font-size:11.5px;margin-right:8px;">BL-1</span>저장 후 실행 허브가 evidence로 증명되지 않음 (07·08)</p>
+        <p style="margin: 8px 0 0; font-size: 14px; line-height: 1.6; color: #44413B;">저장 직후 <code style="font-size:12px;">/my?savedMap=</code>와 <code style="font-size:12px;">/calendar</code>가 빈 상태로 캡처됐다. 실제 회귀라면 최악의 신뢰 붕괴, 하네스 문제라도 "실행 앱" 주장의 증거가 없다. → 채워진 상태 재현 + 첫 페인트에서 빈 CTA가 절대 먼저 나오지 않도록 가드. (P4-01)</p>
+      </article>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 8px; margin-top: 26px;">
+      <span style="width: 10px; height: 10px; border-radius: 999px; background: #B95000;"></span>
+      <h3 style="margin: 0; font-size: 18px; font-weight: 800;">High — 첫 행동·저장 후 실행·이해를 크게 방해</h3>
+    </div>
+    <div style="display: grid; gap: 10px; margin-top: 12px;">
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #B95000; border-radius: 14px; padding: 16px 18px;">
+        <p style="margin: 0; font-size: 15.5px; font-weight: 800;"><span style="background:#FCF3E4;color:#B95000;border-radius:6px;padding:1px 7px;font-size:11.5px;margin-right:8px;">HI-1</span>공개 /f/ 상세: 제목 "…Flow" 접미 + 이중 입력 동선 (05)</p>
+        <p style="margin: 8px 0 0; font-size: 14px; line-height: 1.6; color: #44413B;">공유 링크로 처음 온 사용자가 만나는 첫 화면인데 내부어가 새고, 시작 지점이 hero 버튼/아래 input으로 갈린다. 제목에서 "Flow" 제거, date input 하나로 통합(hero 버튼은 그 input으로 스크롤·포커스). (P4-02)</p>
+      </article>
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #B95000; border-radius: 14px; padding: 16px 18px;">
+        <p style="margin: 0; font-size: 15.5px; font-weight: 800;"><span style="background:#FCF3E4;color:#B95000;border-radius:6px;padding:1px 7px;font-size:11.5px;margin-right:8px;">HI-2</span>공개 /f/ 상세의 app shell 정책 미결 (05)</p>
+        <p style="margin: 8px 0 0; font-size: 14px; line-height: 1.6; color: #44413B;">하단 4탭이 없는 상태가 "공유 전용 shell"인지 "누락"인지 결정되지 않음. → 공유 shell로 <strong>유지하되</strong>, 단일 목적(저장)을 명확히: 하단에 persistent "내 Flow에 저장" sticky, 저장 후 4탭 앱 shell(/my)로 진입. (P4-03 · §7 결정)</p>
+      </article>
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #B95000; border-radius: 14px; padding: 16px 18px;">
+        <p style="margin: 0; font-size: 15.5px; font-weight: 800;"><span style="background:#FCF3E4;color:#B95000;border-radius:6px;padding:1px 7px;font-size:11.5px;margin-right:8px;">HI-3</span>홈이 아직 설명형으로 끝남 (01)</p>
+        <p style="margin: 8px 0 0; font-size: 14px; line-height: 1.6; color: #44413B;">"시작 경로" 4단계 설명 카드 + 추천 카드 3분할 그리드가 CTA 아래를 채운다. 4단계 카드 제거, 추천은 결과 한 줄로 압축해 홈을 "입구"로. (P4-04)</p>
+      </article>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 8px; margin-top: 26px;">
+      <span style="width: 10px; height: 10px; border-radius: 999px; background: #3654FF;"></span>
+      <h3 style="margin: 0; font-size: 18px; font-weight: 800;">Medium — 밀도·문구·카드 위계</h3>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 10px; margin-top: 12px;">
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 15px 17px;">
+        <p style="margin: 0; font-size: 14px; line-height: 1.6;"><span style="background:#EEF1FF;color:#3654FF;border-radius:6px;padding:1px 7px;font-size:11px;font-weight:800;margin-right:6px;">ME-1</span><strong>특수 workbench 톤 통일</strong> — slate/gray/blue-700 유틸 → FlowMe 토큰(#3654FF·#FAFAF8·#E7E4DD·16/12px radius). (P4-05)</p>
+      </article>
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 15px 17px;">
+        <p style="margin: 0; font-size: 14px; line-height: 1.6;"><span style="background:#EEF1FF;color:#3654FF;border-radius:6px;padding:1px 7px;font-size:11px;font-weight:800;margin-right:6px;">ME-2</span><strong>지도 원문 제목의 "AJD" 접두 제거</strong> — 사용자 표면에 무의미 토큰. 콘텐츠명만 노출 (03). (P4-06)</p>
+      </article>
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 15px 17px;">
+        <p style="margin: 0; font-size: 14px; line-height: 1.6;"><span style="background:#EEF1FF;color:#3654FF;border-radius:6px;padding:1px 7px;font-size:11px;font-weight:800;margin-right:6px;">ME-3</span><strong>지도 결과 약속 한 줄 길이</strong> — "+ … + …" 나열이 2줄 넘음. 핵심 결과 1개 + "외 N" 형태로 (03·04). (P4-06)</p>
+      </article>
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 15px 17px;">
+        <p style="margin: 0; font-size: 14px; line-height: 1.6;"><span style="background:#EEF1FF;color:#3654FF;border-radius:6px;padding:1px 7px;font-size:11px;font-weight:800;margin-right:6px;">ME-4</span><strong>/flows "12개 콘텐츠" pill 강등</strong> — 헤더 우측 배지 → 목록 위 12px 캡션 (02). (P4-04 묶음)</p>
+      </article>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 8px; margin-top: 26px;">
+      <span style="width: 10px; height: 10px; border-radius: 999px; background: #8A857B;"></span>
+      <h3 style="margin: 0; font-size: 18px; font-weight: 800;">Low — polish · spacing · tone</h3>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 10px; margin-top: 12px;">
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 15px 17px;">
+        <p style="margin: 0; font-size: 14px; line-height: 1.6;"><span style="background:#F1F0EC;color:#6E6B64;border-radius:6px;padding:1px 7px;font-size:11px;font-weight:800;margin-right:6px;">LO-1</span>공개 /f/ 신뢰 칩 2개("출처 확인됨" + "확인하며 진행")를 1줄로 정돈, 위계 낮춤 (05).</p>
+      </article>
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 15px 17px;">
+        <p style="margin: 0; font-size: 14px; line-height: 1.6;"><span style="background:#F1F0EC;color:#6E6B64;border-radius:6px;padding:1px 7px;font-size:11px;font-weight:800;margin-right:6px;">LO-2</span>지도 본문 문단 3~4줄 → 2줄 클램프 + 접힘 (03).</p>
+      </article>
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 15px 17px;">
+        <p style="margin: 0; font-size: 14px; line-height: 1.6;"><span style="background:#F1F0EC;color:#6E6B64;border-radius:6px;padding:1px 7px;font-size:11px;font-weight:800;margin-right:6px;">LO-3</span>로고 "FLOW" vs 서비스명 FlowMe vs 탭 "내 Flow" 표기 기준 1개 확정.</p>
+      </article>
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 15px 17px;">
+        <p style="margin: 0; font-size: 14px; line-height: 1.6;"><span style="background:#F1F0EC;color:#6E6B64;border-radius:6px;padding:1px 7px;font-size:11px;font-weight:800;margin-right:6px;">LO-4</span><code style="font-size:12px;">.premium-dark</code> 오버라이드가 아직 slate 팔레트 기반 — 정식 다크가 필요 없으면 정리 검토.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- 3. P4 백로그 -->
+  <section id="backlog" style="max-width: 1120px; margin: 0 auto; padding: 34px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 3</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">바로 개발 가능한 P4 백로그</h2>
+    </div>
+    <p style="margin: 10px 0 0; max-width: 780px; font-size: 14.5px; color: #6E6B64;">위→아래가 권장 착수 순서. 줄번호는 commit c4ba63d 근사치. 새 기능 없음 — 전부 위계·언어·톤·증거 정리.</p>
+
+    <div style="margin-top: 18px; display: grid; gap: 12px;">
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 20px; border-top: 4px solid #C0341D;">
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px;">
+          <span style="background: #1B1A17; color: #F5F4EF; border-radius: 6px; padding: 3px 9px; font-size: 12.5px; font-weight: 800;">P4-01</span>
+          <span style="background: #FBEAE5; color: #C0341D; border-radius: 999px; padding: 2px 9px; font-size: 11px; font-weight: 800;">Blocking</span>
+          <h3 style="margin: 0; font-size: 16.5px; font-weight: 800;">저장 후 실행 허브 증거 확정 + 첫 페인트 가드</h3>
+        </div>
+        <div style="display: grid; grid-template-columns: 96px 1fr; gap: 6px 14px; margin-top: 12px; font-size: 14px; line-height: 1.6;">
+          <span style="font-weight: 700; color: #8A857B;">목표</span><span>저장 직후 <code style="font-size:12px;">/my?savedMap=</code>·<code style="font-size:12px;">/calendar</code>가 항상 "다음 할 일/일정"부터 보이고, 빈 상태 CTA가 첫 페인트에 먼저 뜨지 않는다.</span>
+          <span style="font-weight: 700; color: #8A857B;">화면</span><span>MyFlows post-save/today, calendar surface · route-evidence 생성 스크립트</span>
+          <span style="font-weight: 700; color: #8A857B;">지시</span><span>① 저장 상태를 실제 localStorage에 심은 뒤 07·08을 재캡처(채워진 Today + agenda). ② 첫 페인트 가드: 저장 레코드가 존재(또는 <code style="font-size:12px;">savedMap</code> 파라미터 존재)하는데 hydration 전이면 빈 CTA 대신 스켈레톤/로딩을 렌더. ③ <code style="font-size:12px;">postSaveContinuationRows</code>가 비면 fallback 큐(오늘→밀림→다음→날짜없는 첫 항목)로 최소 1개를 보장.</span>
+          <span style="font-weight: 700; color: #1F6A3E;">완료</span><span>07은 방금 저장한 콘텐츠의 먼저 할 일 카드, 08은 2026-07-22 일정 + agenda가 첫 뷰포트에. 빈 상태 문구 미노출.</span>
+          <span style="font-weight: 700; color: #3654FF;">검증</span><span>저장 후 route evidence 재생성 + Playwright: 저장→/my 진입 시 실행 카드 존재, "먼저 고르세요" 부재 단언.</span>
+        </div>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 20px; border-top: 4px solid #B95000;">
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px;">
+          <span style="background: #1B1A17; color: #F5F4EF; border-radius: 6px; padding: 3px 9px; font-size: 12.5px; font-weight: 800;">P4-02</span>
+          <span style="background: #FCF3E4; color: #B95000; border-radius: 999px; padding: 2px 9px; font-size: 11px; font-weight: 800;">High</span>
+          <h3 style="margin: 0; font-size: 16.5px; font-weight: 800;">공개 /f/ 제목 "Flow" 접미 제거 + 입력 동선 단일화</h3>
+        </div>
+        <div style="display: grid; grid-template-columns: 96px 1fr; gap: 6px 14px; margin-top: 12px; font-size: 14px; line-height: 1.6;">
+          <span style="font-weight: 700; color: #8A857B;">목표</span><span>공유 링크 첫 화면에서 내부어를 없애고, 시작 지점을 하나로.</span>
+          <span style="font-weight: 700; color: #8A857B;">화면</span><span>/f/[slug] hero (PublicFlow) · seed 제목 데이터</span>
+          <span style="font-weight: 700; color: #8A857B;">지시</span><span>① 제목 "자동차검사 D-14 준비 <s>Flow</s>" → "자동차검사 D-14 준비". 사용자 표면 렌더에서 "~Flow" 접미 스트립(데이터 원본 보존, 표시만 정리). ② date input 1개만: hero "검사일 입력으로 시작"은 그 input으로 스크롤+포커스+하이라이트(지도 sticky와 동일 패턴), 아래 "1. 검사일 입력하기"의 중복 input 제거 또는 동일 input 참조.</span>
+          <span style="font-weight: 700; color: #1F6A3E;">완료</span><span>제목에 "Flow" 없음, date input 1개, hero 버튼이 그 input을 포커스.</span>
+          <span style="font-weight: 700; color: #3654FF;">검증</span><span>사용자 라우트 금지어 스캔에 "~ Flow$" 패턴 추가, /f/ 입력 포커스 e2e.</span>
+        </div>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 20px; border-top: 4px solid #B95000;">
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px;">
+          <span style="background: #1B1A17; color: #F5F4EF; border-radius: 6px; padding: 3px 9px; font-size: 12.5px; font-weight: 800;">P4-03</span>
+          <span style="background: #FCF3E4; color: #B95000; border-radius: 999px; padding: 2px 9px; font-size: 11px; font-weight: 800;">High</span>
+          <h3 style="margin: 0; font-size: 16.5px; font-weight: 800;">공개 /f/ 를 "공유 shell"로 확정 + 단일 저장 CTA</h3>
+        </div>
+        <div style="display: grid; grid-template-columns: 96px 1fr; gap: 6px 14px; margin-top: 12px; font-size: 14px; line-height: 1.6;">
+          <span style="font-weight: 700; color: #8A857B;">목표</span><span>4탭 없는 상태를 의도된 공유 화면으로 확정하고, 목적을 저장 하나로 좁힌다. (정책 결정은 §7)</span>
+          <span style="font-weight: 700; color: #8A857B;">화면</span><span>/f/[slug] shell · 상단 우측 "내 Flow" 버튼</span>
+          <span style="font-weight: 700; color: #8A857B;">지시</span><span>① 하단에 persistent sticky "내 Flow에 저장" 1개(4탭 대신). ② 우상단 "내 Flow"는 저장 이력이 있을 때만 노출하는 보조 링크로 강등(첫 방문자에겐 저장 CTA만). ③ 저장 완료 → <code style="font-size:12px;">/my?savedMap=</code>(4탭 앱 shell)로 이동. ④ 상단에 얇은 "FlowMe" 워드마크로 출처만 표기.</span>
+          <span style="font-weight: 700; color: #1F6A3E;">완료</span><span>공유 화면의 주행동이 저장 1개로 명확, 저장 후 앱 shell로 연속.</span>
+          <span style="font-weight: 700; color: #3654FF;">검증</span><span>/f/ 진입 시 sticky 저장 CTA 존재, 저장 후 4탭 shell 진입 e2e.</span>
+        </div>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 20px; border-top: 4px solid #B95000;">
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px;">
+          <span style="background: #1B1A17; color: #F5F4EF; border-radius: 6px; padding: 3px 9px; font-size: 12.5px; font-weight: 800;">P4-04</span>
+          <span style="background: #FCF3E4; color: #B95000; border-radius: 999px; padding: 2px 9px; font-size: 11px; font-weight: 800;">High</span>
+          <h3 style="margin: 0; font-size: 16.5px; font-weight: 800;">홈을 설명서에서 입구로</h3>
+        </div>
+        <div style="display: grid; grid-template-columns: 96px 1fr; gap: 6px 14px; margin-top: 12px; font-size: 14px; line-height: 1.6;">
+          <span style="font-weight: 700; color: #8A857B;">목표</span><span>CTA 아래를 "행동을 돕는 것"만 남긴다.</span>
+          <span style="font-weight: 700; color: #8A857B;">화면</span><span>HomeLanding (≈L1607~)</span>
+          <span style="font-weight: 700; color: #8A857B;">지시</span><span>① "시작 경로 · 고르고 저장하고 이어가기" 4단계 설명 카드 제거. ② 추천 콘텐츠 카드의 입력/저장/결과 3분할 그리드 → 결과 한 줄("이사일만 넣으면 D-30 일정 · 할 일 5개")로. ③ 추천은 1~2장까지만, 나머지는 /flows로. ④ (묶음) /flows "12개 콘텐츠" pill을 목록 위 캡션으로 강등(ME-4).</span>
+          <span style="font-weight: 700; color: #1F6A3E;">완료</span><span>홈 스크롤이 CTA→추천 1~2장에서 끝, 4단계 설명 없음.</span>
+          <span style="font-weight: 700; color: #3654FF;">검증</span><span>홈 첫 2뷰포트 스크린샷, "시작 경로" 텍스트 부재 단언.</span>
+        </div>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 20px; border-top: 4px solid #3654FF;">
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px;">
+          <span style="background: #1B1A17; color: #F5F4EF; border-radius: 6px; padding: 3px 9px; font-size: 12.5px; font-weight: 800;">P4-05</span>
+          <span style="background: #EEF1FF; color: #3654FF; border-radius: 999px; padding: 2px 9px; font-size: 11px; font-weight: 800;">Medium</span>
+          <h3 style="margin: 0; font-size: 16.5px; font-weight: 800;">특수 workbench 톤을 FlowMe 토큰으로 통일</h3>
+        </div>
+        <div style="display: grid; grid-template-columns: 96px 1fr; gap: 6px 14px; margin-top: 12px; font-size: 14px; line-height: 1.6;">
+          <span style="font-weight: 700; color: #8A857B;">목표</span><span>공개 artifact/기록표/루틴 화면이 주요 route와 같은 앱처럼 보인다.</span>
+          <span style="font-weight: 700; color: #8A857B;">화면</span><span>ArtifactWorkbench.tsx 전반</span>
+          <span style="font-weight: 700; color: #8A857B;">지시</span><span><code style="font-size:12px;">border-slate-200 bg-slate-50 text-blue-700 text-gray-950</code> 등 잔여 유틸을 FlowMe 토큰(<code style="font-size:12px;">--flowme-border/soft/action/text</code>, card 16px·button 12px radius)으로 매핑. 공통 카드/버튼/칩 클래스 상수(<code style="font-size:12px;">FLOWME_PANEL_CARD_CLASS</code>) 사용처 확대. export 파일 로직·<code style="font-size:12px;">data-testid</code>·문구는 변경 금지.</span>
+          <span style="font-weight: 700; color: #1F6A3E;">완료</span><span>workbench route에서 slate/gray/blue-700 클래스 잔존 0(다크 오버라이드 제외).</span>
+          <span style="font-weight: 700; color: #3654FF;">검증</span><span>design token rhythm Playwright 확장, 대표 workbench 스크린샷.</span>
+        </div>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 20px; border-top: 4px solid #3654FF;">
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px;">
+          <span style="background: #1B1A17; color: #F5F4EF; border-radius: 6px; padding: 3px 9px; font-size: 12.5px; font-weight: 800;">P4-06</span>
+          <span style="background: #EEF1FF; color: #3654FF; border-radius: 999px; padding: 2px 9px; font-size: 11px; font-weight: 800;">Medium</span>
+          <h3 style="margin: 0; font-size: 16.5px; font-weight: 800;">지도 상세 문구 다이어트</h3>
+        </div>
+        <div style="display: grid; grid-template-columns: 96px 1fr; gap: 6px 14px; margin-top: 12px; font-size: 14px; line-height: 1.6;">
+          <span style="font-weight: 700; color: #8A857B;">목표</span><span>결과 약속과 원문 제목을 한눈에.</span>
+          <span style="font-weight: 700; color: #8A857B;">화면</span><span>SourceBackedFlowMapPage / 지도 hero·원문 섹션</span>
+          <span style="font-weight: 700; color: #8A857B;">지시</span><span>① 원문 섹션 제목의 "AJD" 등 코드 접두를 사용자 표면에서 제거. ② 결과 약속을 "이사일만 넣으면 D-30 일정으로 저장" + 보조로 "체크·메모 포함" 정도로 압축(2줄 이내). ③ 본문 문단 2줄 클램프 + 접힘(LO-2).</span>
+          <span style="font-weight: 700; color: #1F6A3E;">완료</span><span>결과 약속 ≤2줄, 접두 토큰 미노출.</span>
+          <span style="font-weight: 700; color: #3654FF;">검증</span><span>지도 hero 스크린샷, 접두 패턴 스캔.</span>
+        </div>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 20px; border-top: 4px solid #8A857B;">
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px;">
+          <span style="background: #1B1A17; color: #F5F4EF; border-radius: 6px; padding: 3px 9px; font-size: 12.5px; font-weight: 800;">P4-07</span>
+          <span style="background: #F1F0EC; color: #6E6B64; border-radius: 999px; padding: 2px 9px; font-size: 11px; font-weight: 800;">Low</span>
+          <h3 style="margin: 0; font-size: 16.5px; font-weight: 800;">브랜드 표기 + 다크 오버라이드 정리</h3>
+        </div>
+        <div style="display: grid; grid-template-columns: 96px 1fr; gap: 6px 14px; margin-top: 12px; font-size: 14px; line-height: 1.6;">
+          <span style="font-weight: 700; color: #8A857B;">지시</span><span>로고/서비스명/탭 표기 기준 1개 확정(LO-3). 정식 다크 테마 계획이 없으면 <code style="font-size:12px;">.premium-dark</code> slate 오버라이드 범위 축소 검토(LO-4). 신뢰 칩 1줄 정돈(LO-1).</span>
+          <span style="font-weight: 700; color: #1F6A3E;">완료</span><span>표기 1종, 불필요 오버라이드 정리.</span>
+          <span style="font-weight: 700; color: #3654FF;">검증</span><span>시각 리뷰.</span>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- 4. P4-01 추천 -->
+  <section id="first" style="max-width: 1120px; margin: 0 auto; padding: 34px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 4</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">가장 먼저 — P4-01</h2>
+    </div>
+    <div style="margin-top: 16px; background: #1B1A17; color: #F5F4EF; border-radius: 16px; padding: 24px;">
+      <p style="margin: 0; font-size: 18px; font-weight: 800; color: #FFB4A0;">P4-01 · 저장 후 실행 허브 증거 확정 + 첫 페인트 가드</p>
+      <p style="margin: 12px 0 0; font-size: 15px; line-height: 1.75; color: rgba(245,244,239,0.85); text-wrap: pretty;">FlowMe의 제품 약속은 "저장 = 실행의 시작"입니다. 그런데 그 약속을 증명해야 할 두 화면(07·08)이 지금 <strong>빈 상태로 찍혀 있습니다.</strong> 이건 단순 버그 여부를 떠나, 상용 앱이라고 말하려면 반드시 닫아야 하는 증거 공백입니다. 다른 P4 항목(공개 /f/ 톤, 홈 압축)은 모두 "저장 전" 개선인데, 저장 전이 아무리 좋아도 저장 후가 빈 화면이면 재사용률이 무너집니다.</p>
+      <p style="margin: 12px 0 0; font-size: 15px; line-height: 1.75; color: rgba(245,244,239,0.85);">그래서 P4-01은 두 가지를 동시에 합니다 — <strong>(1) 채워진 상태의 07·08을 재현</strong>해 저장 후 허브가 실제로 동작함을 evidence로 고정하고, <strong>(2) 첫 페인트 가드</strong>를 넣어 저장 레코드가 있는데 hydration 전이라도 빈 CTA가 먼저 뜨지 않게 합니다. 이 하나로 Blocking이 닫히고, 나머지 P4는 안심하고 "저장 전" 품질에 집중할 수 있습니다.</p>
+      <p style="margin: 14px 0 0; font-size: 13px; font-weight: 700; color: rgba(245,244,239,0.6);">착수 근거: BL-1 · route 07·08 · <code style="font-size:12px;background:rgba(245,244,239,0.12);border-radius:4px;padding:1px 5px;">postSaveContinuationRows</code> 존재 확인</p>
+    </div>
+  </section>
+
+  <!-- 5. 재오픈 -->
+  <section id="reopen" style="max-width: 1120px; margin: 0 auto; padding: 34px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 5</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">P0~P3 닫힌 항목 중 재오픈</h2>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 12px; margin-top: 18px;">
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #C0341D; border-radius: 14px; padding: 18px;">
+        <p style="margin: 0; font-size: 15px; font-weight: 800; color: #C0341D;">재오픈 · P0-02 (저장 후 첫 실행 항목)</p>
+        <p style="margin: 8px 0 0; font-size: 14px; line-height: 1.65; color: #44413B;">"완료"로 닫혔으나, 이번 패키지의 07·08 evidence가 빈 상태다. 코드는 있으나 <strong>사용자가 보는 결과가 증명되지 않았다.</strong> 기존 evidence(H1만 기록)로는 부족 — 채워진 Today/agenda 스크린샷이 없기 때문. → P4-01로 재오픈.</p>
+      </article>
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #B95000; border-radius: 14px; padding: 18px;">
+        <p style="margin: 0; font-size: 15px; font-weight: 800; color: #B95000;">재오픈 · P0-05 (내부 계층 언어)</p>
+        <p style="margin: 8px 0 0; font-size: 14px; line-height: 1.65; color: #44413B;">사용자 라우트 ASCII 스캔은 0건이지만, <strong>한글 접미 "…준비 Flow"가 /f/ 제목에 남아</strong> 스캔을 통과했다(05). "Flow"를 브랜드로 두되 콘텐츠 <em>제목</em>의 개체명 접미는 금지 대상. → P4-02로 재오픈(스캔 규칙 보강 포함).</p>
+      </article>
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #B95000; border-radius: 14px; padding: 18px;">
+        <p style="margin: 0; font-size: 15px; font-weight: 800; color: #B95000;">부분 재오픈 · M1/L1 (홈 설명 카드)</p>
+        <p style="margin: 8px 0 0; font-size: 14px; line-height: 1.65; color: #44413B;">이전 리뷰에서 지적한 홈 "시작 경로" 4단계 카드와 추천 3분할이 이번 패키지 P0~P2 범위에 포함되지 않아 그대로 남았다(01). 회귀가 아니라 <strong>미착수</strong>. → P4-04로 처리.</p>
+      </article>
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #1F6A3E; border-radius: 14px; padding: 18px;">
+        <p style="margin: 0; font-size: 15px; font-weight: 800; color: #1F6A3E;">재오픈 없음 · P1·P2 대부분</p>
+        <p style="margin: 8px 0 0; font-size: 14px; line-height: 1.65; color: #44413B;">Flow 찾기 헤더/카드(P1-01·02), 지도 hero(P1-04), sticky 상태기계(P0-03), 빈 상태(P2-02), export 라벨(P2-01), fixed layer(P2-03), 토큰(P2-05)은 evidence·소스로 확인되며 <strong>재오픈 불필요</strong>. P4는 이 위에 얹는다.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- 6. 유지 기준선 -->
+  <section id="hold" style="max-width: 1120px; margin: 0 auto; padding: 34px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 6</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">유지 기준선 · 바꾸면 안 되는 것</h2>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 12px; margin-top: 18px;">
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-top: 4px solid #1F6A3E; border-radius: 16px; padding: 20px;">
+        <p style="margin: 0; font-size: 14px; font-weight: 800; color: #1F6A3E;">유지할 UX 기준선</p>
+        <ul style="margin: 10px 0 0; padding-left: 18px; font-size: 14px; line-height: 1.8; color: #44413B;">
+          <li>4탭 IA (홈 · Flow 찾기 · 캘린더 · 내 Flow)</li>
+          <li>저장 전 보기 → 저장하고 시작 → 먼저 할 일 루프</li>
+          <li>결과 중심 export 라벨 3종 + 상수화</li>
+          <li>원문 · 근거 · 메모 접힘 보존</li>
+          <li>read-first My Flow 상세, 오늘/전체 2탭</li>
+          <li>가장 가까운 일정 자동 선택 + agenda-first 캘린더</li>
+          <li>단일 CTA 빈 상태</li>
+        </ul>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-top: 4px solid #C0341D; border-radius: 16px; padding: 20px;">
+        <p style="margin: 0; font-size: 14px; font-weight: 800; color: #C0341D;">건드리면 위험한 파일/개념</p>
+        <ul style="margin: 10px 0 0; padding-left: 18px; font-size: 14px; line-height: 1.8; color: #44413B;">
+          <li><code style="font-size:12px;">storage.ts</code> 키 · 스냅샷 스키마</li>
+          <li><code style="font-size:12px;">source-backed-my-flow.ts</code> seed 병합/dedupe</li>
+          <li><code style="font-size:12px;">sourceTrace · sourceUrl</code> 데이터(표시만 정리, 삭제·가공 금지)</li>
+          <li><code style="font-size:12px;">export.ts</code> 파일 생성 로직 · <code style="font-size:12px;">data-testid</code></li>
+          <li>앵커 날짜 재계산 · recurrence — 문구 변경과 분리</li>
+          <li>P4-02/06의 "제목 정리"는 <strong>렌더 표시</strong>만, seed 원본 문자열은 보존</li>
+        </ul>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-top: 4px solid #B95000; border-radius: 16px; padding: 20px;">
+        <p style="margin: 0; font-size: 14px; font-weight: 800; color: #B95000;">지금은 하지 말 것</p>
+        <ul style="margin: 10px 0 0; padding-left: 18px; font-size: 14px; line-height: 1.8; color: #44413B;">
+          <li>새 기능 · 새 탭 · IA 변경</li>
+          <li>AppClient.tsx 대규모 분할(수정 끝난 화면부터 후행)</li>
+          <li>공개 /f/를 4탭 앱 shell로 강제 편입 — 공유 shell로 유지가 맞다(§7)</li>
+          <li>계정/서버 저장 도입</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. revised spec -->
+  <section id="spec" style="max-width: 1120px; margin: 0 auto; padding: 34px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 7</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">Revised spec — 결정과 카피</h2>
+    </div>
+
+    <h3 style="margin: 26px 0 0; font-size: 19px; font-weight: 800;">7.1 공개 /f/ 상세 — "공유 shell"로 확정 <span style="font-size: 13px; font-weight: 700; color: #3654FF;">(감사 open question 답)</span></h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px; margin-top: 12px;">
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 20px;">
+        <p style="margin: 0; font-size: 13px; font-weight: 800; color: #1F6A3E;">결정 — 4탭에 맞추지 말고, 공유 shell로 유지한다</p>
+        <p style="margin: 8px 0 0; font-size: 14px; line-height: 1.7; color: #44413B;">근거: /f/는 <strong>공유 링크로 앱 밖에서 처음 진입</strong>하는 화면이다. 여기에 4탭을 붙이면 "아직 내 것도 없는데 내비게이션부터" 주는 꼴이라 저장 전환을 흐린다. 공개 문서 뷰(노션·구글닥 공유)와 같은 패턴 — <strong>탐색이 아니라 단일 행동(저장)에 집중</strong>시키는 게 맞다.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 20px;">
+        <p style="margin: 0; font-size: 13px; font-weight: 800; color: #8A857B;">대신 지켜야 할 3가지</p>
+        <ul style="margin: 8px 0 0; padding-left: 18px; font-size: 14px; line-height: 1.75; color: #44413B;">
+          <li>하단 persistent <strong>"내 Flow에 저장"</strong> sticky 1개(4탭 대체) — 주행동 1개</li>
+          <li>저장 완료 → <code style="font-size:12px;">/my?savedMap=</code>로 이동해 <strong>거기서부터 4탭 앱 shell</strong></li>
+          <li>상단은 얇은 "FlowMe" 워드마크로 출처만. 우상단 "내 Flow"는 저장 이력 있을 때만</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 style="margin: 30px 0 0; font-size: 19px; font-weight: 800;">7.2 Copy 변경</h3>
+    <div style="margin-top: 12px; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; overflow-x: auto;">
+      <div style="min-width: 720px;">
+        <div style="display: grid; grid-template-columns: 150px 1fr 1fr; gap: 0 16px; padding: 12px 20px; border-bottom: 1px solid #E7E4DD; font-size: 12px; font-weight: 800; color: #8A857B;"><span>위치</span><span>현재</span><span style="color: #3654FF;">제안</span></div>
+        <div style="display: grid; grid-template-columns: 150px 1fr 1fr; gap: 0 16px; padding: 11px 20px; border-bottom: 1px solid #F1F0EC; font-size: 13.5px; line-height: 1.55;"><span style="font-weight: 700;">/f/ 제목</span><span style="color: #6E6B64;">자동차검사 D-14 준비 Flow</span><span style="font-weight: 700;">자동차검사 D-14 준비</span></div>
+        <div style="display: grid; grid-template-columns: 150px 1fr 1fr; gap: 0 16px; padding: 11px 20px; border-bottom: 1px solid #F1F0EC; font-size: 13.5px; line-height: 1.55;"><span style="font-weight: 700;">/f/ 주 CTA</span><span style="color: #6E6B64;">검사일 입력으로 시작 + (아래) 입력</span><span style="font-weight: 700;">하단 sticky "내 Flow에 저장" · hero 버튼은 입력으로 스크롤</span></div>
+        <div style="display: grid; grid-template-columns: 150px 1fr 1fr; gap: 0 16px; padding: 11px 20px; border-bottom: 1px solid #F1F0EC; font-size: 13.5px; line-height: 1.55;"><span style="font-weight: 700;">지도 원문 제목</span><span style="color: #6E6B64;">AJD 이사 준비 체크리스트</span><span style="font-weight: 700;">이사 준비 체크리스트</span></div>
+        <div style="display: grid; grid-template-columns: 150px 1fr 1fr; gap: 0 16px; padding: 11px 20px; border-bottom: 1px solid #F1F0EC; font-size: 13.5px; line-height: 1.55;"><span style="font-weight: 700;">지도 결과 약속</span><span style="color: #6E6B64;">이사일만 넣으면 저장됩니다: D-30 일정 + 이사 전 체크 + 연락처·예약번호 메모</span><span style="font-weight: 700;">이사일만 넣으면 D-30 일정으로 저장 <span style="font-weight: 400; color: #6E6B64;">· 체크·메모 포함</span></span></div>
+        <div style="display: grid; grid-template-columns: 150px 1fr 1fr; gap: 0 16px; padding: 11px 20px; border-bottom: 1px solid #F1F0EC; font-size: 13.5px; line-height: 1.55;"><span style="font-weight: 700;">홈 추천 카드</span><span style="color: #6E6B64;">입력 이사일 / 저장 D-30 일정 / 결과 5개 할 일 (3분할)</span><span style="font-weight: 700;">이사일만 넣으면 D-30 일정 · 할 일 5개 <span style="font-weight: 400; color: #6E6B64;">(한 줄)</span></span></div>
+        <div style="display: grid; grid-template-columns: 150px 1fr 1fr; gap: 0 16px; padding: 11px 20px; font-size: 13.5px; line-height: 1.55;"><span style="font-weight: 700;">홈 4단계 카드</span><span style="color: #6E6B64;">시작 경로 · 고르고 저장하고 이어가기 …</span><span style="font-weight: 700;">(제거)</span></div>
+      </div>
+    </div>
+    <p style="margin: 12px 0 0; font-size: 13px; color: #8A857B;">모든 "제목 정리"는 렌더 표시만 바꾸고 seed 원본 문자열은 보존합니다(§6).</p>
+  </section>
+
+  <!-- 8. 최종 판단 -->
+  <section id="final" style="max-width: 1120px; margin: 0 auto; padding: 34px 28px 64px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 8</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">최종 판단</h2>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; margin-top: 18px;">
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 20px;">
+        <p style="margin: 0; font-size: 13px; font-weight: 800; color: #8A857B;">설명형 vs 실행형</p>
+        <p style="margin: 8px 0 0; font-size: 14.5px; line-height: 1.7; color: #44413B;"><strong>저장 전은 실행형.</strong> 홈·Flow 찾기·지도는 이제 행동/결과 중심으로 읽힌다. <strong>저장 후는 미확정</strong> — 07·08이 빈 상태라 실행 허브를 증명하지 못했다. 공개 /f/만 아직 설명형 잔재.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 20px;">
+        <p style="margin: 0; font-size: 13px; font-weight: 800; color: #8A857B;">처음 온 사용자, 5초</p>
+        <p style="margin: 8px 0 0; font-size: 14.5px; line-height: 1.7; color: #44413B;"><strong>홈에선 이해한다</strong> — "콘텐츠를 일정·할 일로 저장" + 단일 CTA. 다만 스크롤 시 설명 카드가 동력을 깎는다(P4-04). 공유 /f/로 처음 온 경우엔 시작점이 갈려 5초 통과가 약하다(P4-02·03).</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 20px;">
+        <p style="margin: 0; font-size: 13px; font-weight: 800; color: #8A857B;">저장 후 다음 행동</p>
+        <p style="margin: 8px 0 0; font-size: 14.5px; line-height: 1.7; color: #44413B;">코드 경로(<code style="font-size:12px;">postSaveContinuationRows</code>·fallback 큐)는 설계됐으나 <strong>evidence로는 보이지 않는다.</strong> 반복 사용자에게 빠른 실행 허브인지는 채워진 07·08 없이 단언 불가 — P4-01의 존재 이유.</p>
+      </div>
+    </div>
+
+    <div style="margin-top: 14px; background: #FBEAE5; border: 1px solid #F0C9BE; border-radius: 16px; padding: 22px;">
+      <p style="margin: 0; font-size: 14px; font-weight: 800; color: #C0341D;">상용 앱 대비 아직 가장 약한 화면 3</p>
+      <ol style="margin: 10px 0 0; padding-left: 20px; font-size: 14.5px; line-height: 1.9; color: #1B1A17;">
+        <li><strong>저장 후 My Flow / 캘린더 (07·08)</strong> — 실행 허브 증거 공백. 최우선.</li>
+        <li><strong>공개 Flow 상세 /f/ (05)</strong> — 내부어 접미 + 이중 입력 + 옛 톤 + shell 미정. 밀도 최고.</li>
+        <li><strong>홈 하단 (01)</strong> — CTA 아래가 설명서로 끝남.</li>
+      </ol>
+    </div>
+
+    <div style="margin-top: 14px; background: #1B1A17; color: #F5F4EF; border-radius: 16px; padding: 22px;">
+      <p style="margin: 0; font-size: 14px; font-weight: 800; color: #9FB4FF;">다음 루프 착수 순서</p>
+      <p style="margin: 10px 0 0; font-size: 15px; line-height: 1.8;"><strong>P4-01</strong>(저장 후 증거·가드) → <strong>P4-02·03</strong>(공개 /f/ 접미·동선·shell) → <strong>P4-04</strong>(홈 압축) → <strong>P4-05·06</strong>(workbench 톤·지도 문구) → <strong>P4-07</strong>(브랜드·다크 정리). 앞 4개까지가 "실행형 앱"이라고 자신 있게 말할 수 있는 선입니다.</p>
+    </div>
+
+    <p style="margin: 26px 0 0; text-align: center; font-size: 12.5px; font-weight: 600; color: #8A857B;">FlowMe UX/UI 재검토 · P0~P2 이후 · commit c4ba63d · 근거: review.html · audit.md · route-evidence.json · 390px 스크린샷 8장 · components/flow · app/globals.css</p>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;showEvidence&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;표시 옵션&quot; }
+}">
+class Component extends DCLogic {
+  renderVals() {
+    return { showEvidence: this.props.showEvidence ?? true };
+  }
+}
+</script>
+</body>
+</html>

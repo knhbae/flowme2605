@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:#efece3;color:#201d1a;font-family:'IBM Plex Sans KR',system-ui,sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+  a{color:#2456d6;text-decoration:none;}
+  a:hover{color:#183a97;text-decoration:underline;}
+  ::selection{background:#d7e3fb;}
+  table{border-collapse:collapse;}
+</style>
+</helmet>
+<div id="flowme-review-root" style="max-width:1180px;margin:0 auto;padding:0 24px 140px;">
+
+  <div style="position:sticky;top:0;z-index:60;margin:0 -24px 0;padding:10px 24px;background:rgba(239,236,227,0.88);backdrop-filter:blur(10px);border-bottom:1px solid #ded7c8;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+    <span style="font-weight:700;letter-spacing:-0.01em;">FlowMe P31 · My Flow 구조 검토</span>
+    <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:#fff;background:#183a97;padding:3px 9px;border-radius:999px;">verdict · my_flow_structural_reopen → B</span>
+    <nav style="margin-left:auto;display:flex;gap:2px;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:11px;white-space:nowrap;">
+      <a href="#verdict" style="padding:4px 8px;border-radius:6px;color:#6b655c;white-space:nowrap;">판정</a>
+      <a href="#findings" style="padding:4px 8px;border-radius:6px;color:#6b655c;">findings</a>
+      <a href="#heatmap" style="padding:4px 8px;border-radius:6px;color:#6b655c;">24-cell</a>
+      <a href="#anatomy" style="padding:4px 8px;border-radius:6px;color:#6b655c;">anatomy</a>
+      <a href="#m390" style="padding:4px 8px;border-radius:6px;color:#6b655c;">A/B/C·390</a>
+      <a href="#m1024" style="padding:4px 8px;border-radius:6px;color:#6b655c;">·1024</a>
+      <a href="#scale" style="padding:4px 8px;border-radius:6px;color:#6b655c;">scale</a>
+      <a href="#shapes" style="padding:4px 8px;border-radius:6px;color:#6b655c;">shapes</a>
+      <a href="#rollout" style="padding:4px 8px;border-radius:6px;color:#6b655c;">rollout</a>
+    </nav>
+  </div>
+
+  <header style="padding:64px 0 40px;border-bottom:1px solid #ded7c8;">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.08em;color:#9a9182;text-transform:uppercase;">Independent UX/UI structural review · REVIEWER_ROLE: claude_design</div>
+    <h1 style="font-size:clamp(40px,7vw,76px);line-height:0.98;letter-spacing:-0.035em;font-weight:700;margin:18px 0 10px;max-width:16ch;">My&nbsp;Flow를<br>다시 구조화한다</h1>
+    <p style="font-size:18px;line-height:1.5;color:#4a453d;max-width:60ch;margin:0 0 30px;font-weight:400;text-wrap:pretty;">저장한 Flow를 찾고, 전체를 이해하고, 다음 행동을 실행하고, 완료·복구·export·재사용까지 이어지는지 — current P31을 8 personas × 3 sessions로 시뮬레이션하고 A/B/C를 같은 content·state로 비교했다.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:12px;">
+      <span style="padding:6px 11px;background:#fff;border:1px solid #ded7c8;border-radius:8px;">reviewedAt · 2026-07-24 KST</span>
+      <span style="padding:6px 11px;background:#fff;border:1px solid #ded7c8;border-radius:8px;">origin/main · 555da4e</span>
+      <span style="padding:6px 11px;background:#fff;border:1px solid #ded7c8;border-radius:8px;">prod · flowme2605.vercel.app</span>
+      <span style="padding:6px 11px;background:#1c1a17;color:#f3ede0;border-radius:8px;font-weight:600;">observed-user count · 0</span>
+      <span style="padding:6px 11px;background:#fff;border:1px solid #ded7c8;border-radius:8px;">app code 변경 · 없음</span>
+    </div>
+  </header>
+
+  <div data-annotation="true" style="margin:22px 0 0;padding:14px 16px;background:#fbf6e9;border:1px solid #ecdcae;border-radius:12px;font-size:13px;line-height:1.55;color:#6b5a2a;">
+    <strong style="font-weight:600;">근거 성격.</strong> 이 문서의 판정은 current production screenshot(handoff 6장) + current source(GitHub main) + reference pattern 관찰에 기반한 <strong style="font-weight:600;">설계 검토(heuristic)</strong>다. 자동화·screenshot·heuristic simulation은 실제 사용자 검증이 아니다. 실시간 interaction/console/screen-reader는 직접 수행하지 않았고 <span style="font-family:'IBM Plex Mono',monospace;">inaccessible</span>로 표기했다. 가짜 사용자 수·리뷰·검증 수는 사용하지 않는다.
+  </div>
+
+  <!-- ===================== 1. VERDICT + COMPLEXITY ===================== -->
+  <section id="verdict" style="padding:56px 0 8px;scroll-margin-top:64px;">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#9a9182;letter-spacing:0.06em;">01 · OVERALL VERDICT</div>
+    <div style="display:grid;grid-template-columns:1.15fr 1fr;gap:28px;margin-top:16px;align-items:start;">
+      <div>
+        <h2 style="font-size:30px;line-height:1.15;letter-spacing:-0.02em;font-weight:700;margin:0 0 12px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:19px;color:#183a97;">my_flow_structural_reopen</span><br>→ 대안 <span style="color:#2456d6;">B · Library → Focused Workspace</span></h2>
+        <p style="font-size:15px;line-height:1.62;color:#4a453d;margin:0 0 14px;text-wrap:pretty;">current My Flow는 page 탭(<b>지금 / Flow 목록 / 완료</b>) 위에 workspace 탭(<b>실행 / 전체 계획 / 기록</b>)을 <b>중첩</b>한다. 그래서 같은 stable Item의 next-action과 completion이 여러 표면에서 primary로 노출된다. 4-tab IA와 데이터 계약은 유지하되, My Flow 내부 IA를 재설계한다.</p>
+        <p style="font-size:15px;line-height:1.62;color:#4a453d;margin:0;text-wrap:pretty;">전면 재구성 기준 8개 중 <b>3개 재현</b>(지금/실행 혼동 · 완료 컨트롤 중복 · 첫 viewport 과밀) + 기준 #8: <b>A안의 복잡도 감소가 18.4%로 20% 게이트에 미달</b>. C는 우수하나 단순 콘텐츠에 과함 → 강점(definition/run 분리)만 B의 body에 차용.</p>
+        <div style="margin-top:18px;display:flex;gap:8px;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:11px;">
+          <span style="padding:5px 10px;background:#eef8f2;border:1px solid #bfe4cf;color:#116b3f;border-radius:999px;">유지: 4-tab IA</span>
+          <span style="padding:5px 10px;background:#eef8f2;border:1px solid #bfe4cf;color:#116b3f;border-radius:999px;">유지: source/personal/run/occurrence/export</span>
+          <span style="padding:5px 10px;background:#eef8f2;border:1px solid #bfe4cf;color:#116b3f;border-radius:999px;">migration 불필요</span>
+          <span style="padding:5px 10px;background:#fdecea;border:1px solid #f3c7c0;color:#b42318;border-radius:999px;">cross_tab_ia_reopen · 게이트 미충족</span>
+        </div>
+      </div>
+
+      <div style="background:#fff;border:1px solid #e3ddd0;border-radius:16px;padding:20px 20px 18px;">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9a9182;letter-spacing:0.05em;">COMPOSITE COMPLEXITY · lower = better</div>
+        <div style="font-size:12px;color:#8a8272;margin:2px 0 16px;">12개 depth·count metric 합 (390, 20-Flow 기준) · heuristic 추정</div>
+
+        <div style="display:flex;flex-direction:column;gap:13px;font-family:'IBM Plex Mono',monospace;">
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span style="color:#7a6f2a;">current</span><span style="color:#7a6f2a;">49</span></div>
+            <div style="height:14px;background:#f1ece0;border-radius:7px;overflow:hidden;"><div style="height:100%;width:100%;background:#c98a1e;border-radius:7px;"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span style="color:#6f6a61;">A · keep &amp; tighten</span><span style="color:#6f6a61;">40 · −18.4%</span></div>
+            <div style="height:14px;background:#f1ece0;border-radius:7px;overflow:hidden;"><div style="height:100%;width:81.6%;background:#8f8880;border-radius:7px;"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span style="color:#0f766e;">C · run-first</span><span style="color:#0f766e;">33 · −33%</span></div>
+            <div style="height:14px;background:#f1ece0;border-radius:7px;overflow:hidden;"><div style="height:100%;width:67.3%;background:#159086;border-radius:7px;"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:4px;font-weight:600;"><span style="color:#2456d6;">★ B · library → workspace</span><span style="color:#2456d6;">26 · −47%</span></div>
+            <div style="height:16px;background:#eaf0fd;border-radius:8px;overflow:hidden;box-shadow:0 0 0 1.5px #2456d6;"><div style="height:100%;width:53%;background:#2456d6;border-radius:8px;"></div></div>
+          </div>
+        </div>
+        <div data-annotation="true" style="margin-top:14px;font-size:11px;line-height:1.5;color:#8a8272;font-family:'IBM Plex Sans KR';">20% 게이트: A만 미달(−18.4%). B가 collision·scale·context 복구를 동시에 해결하며 가장 낮은 복잡도.</div>
+      </div>
+    </div>
+
+    <!-- metric table -->
+    <div style="margin-top:34px;background:#fff;border:1px solid #e3ddd0;border-radius:16px;overflow:hidden;">
+      <div style="padding:14px 18px;border-bottom:1px solid #eee5d6;display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;">
+        <span style="font-weight:600;font-size:15px;">My Flow 복잡도 metric · current vs A/B/C</span>
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9a9182;">390×844 · 5-Flow 기준(별도 표기 제외) · heuristic</span>
+      </div>
+      <div style="overflow-x:auto;">
+      <table style="width:100%;font-size:12.5px;min-width:640px;">
+        <thead>
+          <tr style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8a8272;text-align:right;">
+            <th style="text-align:left;padding:9px 18px;font-weight:500;">metric</th>
+            <th style="padding:9px 14px;font-weight:500;">current</th>
+            <th style="padding:9px 14px;font-weight:500;">A</th>
+            <th style="padding:9px 14px;font-weight:600;color:#2456d6;background:#f5f8ff;">B ★</th>
+            <th style="padding:9px 18px;font-weight:500;">C</th>
+          </tr>
+        </thead>
+        <tbody style="font-family:'IBM Plex Mono',monospace;">
+          <tr style="border-top:1px solid #f0eadd;"><td style="text-align:left;padding:8px 18px;font-family:'IBM Plex Sans KR';">firstViewportDistinctCardTypeCount</td><td style="text-align:right;padding:8px 14px;color:#b45309;">4</td><td style="text-align:right;padding:8px 14px;">3</td><td style="text-align:right;padding:8px 14px;background:#f5f8ff;color:#2456d6;font-weight:600;">2</td><td style="text-align:right;padding:8px 18px;">3</td></tr>
+          <tr style="border-top:1px solid #f0eadd;"><td style="text-align:left;padding:8px 18px;font-family:'IBM Plex Sans KR';">firstViewportHeadingCount</td><td style="text-align:right;padding:8px 14px;color:#b45309;">5</td><td style="text-align:right;padding:8px 14px;">3</td><td style="text-align:right;padding:8px 14px;background:#f5f8ff;color:#2456d6;font-weight:600;">2</td><td style="text-align:right;padding:8px 18px;">3</td></tr>
+          <tr style="border-top:1px solid #f0eadd;"><td style="text-align:left;padding:8px 18px;font-family:'IBM Plex Sans KR';">firstViewportVisibleCommandCount</td><td style="text-align:right;padding:8px 14px;color:#b45309;">11</td><td style="text-align:right;padding:8px 14px;">8</td><td style="text-align:right;padding:8px 14px;background:#f5f8ff;color:#2456d6;font-weight:600;">6</td><td style="text-align:right;padding:8px 18px;">7</td></tr>
+          <tr style="border-top:1px solid #f0eadd;"><td style="text-align:left;padding:8px 18px;font-family:'IBM Plex Sans KR';">firstActionDepth</td><td style="text-align:right;padding:8px 14px;">3</td><td style="text-align:right;padding:8px 14px;">3</td><td style="text-align:right;padding:8px 14px;background:#f5f8ff;color:#2456d6;font-weight:600;">2</td><td style="text-align:right;padding:8px 18px;">2</td></tr>
+          <tr style="border-top:1px solid #f0eadd;"><td style="text-align:left;padding:8px 18px;font-family:'IBM Plex Sans KR';">flowOpenDepth · 5 / 20</td><td style="text-align:right;padding:8px 14px;">2 / <span style="color:#b45309;">4</span></td><td style="text-align:right;padding:8px 14px;">2 / 4</td><td style="text-align:right;padding:8px 14px;background:#f5f8ff;color:#2456d6;font-weight:600;">2 / 3</td><td style="text-align:right;padding:8px 18px;">2 / 3</td></tr>
+          <tr style="border-top:1px solid #f0eadd;"><td style="text-align:left;padding:8px 18px;font-family:'IBM Plex Sans KR';">reopenDepth</td><td style="text-align:right;padding:8px 14px;">3</td><td style="text-align:right;padding:8px 14px;">3</td><td style="text-align:right;padding:8px 14px;background:#f5f8ff;color:#2456d6;font-weight:600;">2</td><td style="text-align:right;padding:8px 18px;">3</td></tr>
+          <tr style="border-top:1px solid #f0eadd;"><td style="text-align:left;padding:8px 18px;font-family:'IBM Plex Sans KR';">itemEditDepth</td><td style="text-align:right;padding:8px 14px;">4</td><td style="text-align:right;padding:8px 14px;">4</td><td style="text-align:right;padding:8px 14px;background:#f5f8ff;color:#2456d6;font-weight:600;">3</td><td style="text-align:right;padding:8px 18px;">3</td></tr>
+          <tr style="border-top:1px solid #f0eadd;"><td style="text-align:left;padding:8px 18px;font-family:'IBM Plex Sans KR';">wholeExportDepth</td><td style="text-align:right;padding:8px 14px;">4</td><td style="text-align:right;padding:8px 14px;">4</td><td style="text-align:right;padding:8px 14px;background:#f5f8ff;color:#2456d6;font-weight:600;">3</td><td style="text-align:right;padding:8px 18px;">3</td></tr>
+          <tr style="border-top:1px solid #f0eadd;"><td style="text-align:left;padding:8px 18px;font-family:'IBM Plex Sans KR';">archiveRestoreDepth</td><td style="text-align:right;padding:8px 14px;color:#b45309;">5</td><td style="text-align:right;padding:8px 14px;">4</td><td style="text-align:right;padding:8px 14px;background:#f5f8ff;color:#2456d6;font-weight:600;">3</td><td style="text-align:right;padding:8px 18px;">3</td></tr>
+          <tr style="border-top:1px solid #f0eadd;"><td style="text-align:left;padding:8px 18px;font-family:'IBM Plex Sans KR';">actionableDuplicateCount</td><td style="text-align:right;padding:8px 14px;color:#b42318;font-weight:600;">2</td><td style="text-align:right;padding:8px 14px;color:#b42318;font-weight:600;">2</td><td style="text-align:right;padding:8px 14px;background:#f5f8ff;color:#2456d6;font-weight:600;">0</td><td style="text-align:right;padding:8px 18px;">1</td></tr>
+          <tr style="border-top:1px solid #f0eadd;"><td style="text-align:left;padding:8px 18px;font-family:'IBM Plex Sans KR';">contextLossCount</td><td style="text-align:right;padding:8px 14px;color:#b42318;font-weight:600;">2</td><td style="text-align:right;padding:8px 14px;">1</td><td style="text-align:right;padding:8px 14px;background:#f5f8ff;color:#2456d6;font-weight:600;">0</td><td style="text-align:right;padding:8px 18px;">1</td></tr>
+          <tr style="border-top:1px solid #f0eadd;"><td style="text-align:left;padding:8px 18px;font-family:'IBM Plex Sans KR';">horizontalOverflowPx · unnamedFocusable</td><td style="text-align:right;padding:8px 14px;">0 · 0</td><td style="text-align:right;padding:8px 14px;">0 · 0</td><td style="text-align:right;padding:8px 14px;background:#f5f8ff;color:#2456d6;font-weight:600;">0 · 0</td><td style="text-align:right;padding:8px 18px;">0 · 0</td></tr>
+          <tr style="border-top:1px solid #f0eadd;"><td style="text-align:left;padding:8px 18px;font-family:'IBM Plex Sans KR';">explanationDependencyCount</td><td style="text-align:right;padding:8px 14px;color:#b45309;">2</td><td style="text-align:right;padding:8px 14px;">1</td><td style="text-align:right;padding:8px 14px;background:#f5f8ff;color:#2456d6;font-weight:600;">0</td><td style="text-align:right;padding:8px 18px;">1</td></tr>
+          <tr style="border-top:1.5px solid #ded7c8;font-weight:600;"><td style="text-align:left;padding:11px 18px;font-family:'IBM Plex Sans KR';">composite (12 metric 합)</td><td style="text-align:right;padding:11px 14px;color:#b45309;">49</td><td style="text-align:right;padding:11px 14px;">40</td><td style="text-align:right;padding:11px 14px;background:#eaf0fd;color:#2456d6;">26</td><td style="text-align:right;padding:11px 18px;">33</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 2. FINDINGS ===================== -->
+  <section id="findings" style="padding:56px 0 8px;scroll-margin-top:64px;">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#9a9182;letter-spacing:0.06em;">02 · SEVERITY FINDINGS · 10건 (High 3 · Medium 6 · Low 1)</div>
+    <h2 style="font-size:28px;letter-spacing:-0.02em;font-weight:700;margin:10px 0 6px;">무엇이 사용자를 멈추게 하는가</h2>
+    <p style="font-size:14px;color:#6b655c;margin:0 0 22px;max-width:70ch;">전체 계약 형식(route·startState·재현·기대/실제·rollback·acceptance)은 <a href="audit.md">audit.md</a>. 아래는 요약 ledger — 각 finding의 <b>실제</b>와 <b>B 해결</b>, acceptance marker.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px;">
+
+      <div style="background:#fff;border:1px solid #e3ddd0;border-left:3px solid #b42318;border-radius:12px;padding:15px 16px;">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:7px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:#b42318;">F-01 · High</span><span data-role="problem" data-annotation="true" style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#b42318;background:#fdecea;border:1px solid #f3c7c0;padding:1px 6px;border-radius:999px;">지금 ↔ 실행</span></div>
+        <div style="font-weight:600;font-size:14.5px;line-height:1.35;margin-bottom:6px;">'지금'과 workspace '실행'이 같은 오늘 할 일을 두 문법으로 노출</div>
+        <div style="font-size:12.5px;line-height:1.5;color:#6b655c;">page 탭 위에 workspace 탭이 중첩 → 어느 쪽이 canonical next-action인지 라벨로만 구분. <span style="color:#2456d6;">B: '지금' 제거, focused workspace가 next-action 단독 소유.</span></div>
+        <div style="margin-top:9px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#9a9182;">P1·P3·P6·P7 · marker: explanationDependencyCount=0</div>
+      </div>
+
+      <div style="background:#fff;border:1px solid #e3ddd0;border-left:3px solid #b42318;border-radius:12px;padding:15px 16px;">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:7px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:#b42318;">F-02 · High</span><span data-role="problem" data-annotation="true" style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#b42318;background:#fdecea;border:1px solid #f3c7c0;padding:1px 6px;border-radius:999px;">중복 완료</span></div>
+        <div style="font-weight:600;font-size:14.5px;line-height:1.35;margin-bottom:6px;">동일 stable Item의 primary 완료가 3표면 중복 (Home 이어하기 · 지금 · 실행)</div>
+        <div style="font-size:12.5px;line-height:1.5;color:#6b655c;">actionableDuplicateCount=2. 완료 상태는 이미 단일 run 저장 → 컨트롤 소유권만 문제. <span style="color:#2456d6;">B/S1: workspace가 완료 소유, 나머지는 deep-link.</span></div>
+        <div style="margin-top:9px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#9a9182;">P1·P7·P8 · marker: actionableDuplicateCount=0</div>
+      </div>
+
+      <div style="background:#fff;border:1px solid #e3ddd0;border-left:3px solid #b42318;border-radius:12px;padding:15px 16px;">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:7px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:#b42318;">F-03 · High</span><span data-role="problem" data-annotation="true" style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#b42318;background:#fdecea;border:1px solid #f3c7c0;padding:1px 6px;border-radius:999px;">완료 ↔ 기록</span></div>
+        <div style="font-weight:600;font-size:14.5px;line-height:1.35;margin-bottom:6px;">top-level '완료'와 workspace '기록'이 두 개의 완료 모델처럼 중복</div>
+        <div style="font-size:12.5px;line-height:1.5;color:#6b655c;">reopenDepth=3. <span style="color:#2456d6;">B: '기록'은 workspace 섹션, '완료'는 동일 run 상태의 cross-Flow 필터 뷰.</span></div>
+        <div style="margin-top:9px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#9a9182;">P3·P7 · marker: reopenDepth≤2 · 단일 run 참조</div>
+      </div>
+
+      <div style="background:#fff;border:1px solid #e3ddd0;border-left:3px solid #b45309;border-radius:12px;padding:15px 16px;">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:7px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:#b45309;">F-04 · Medium</span></div>
+        <div style="font-weight:600;font-size:14.5px;line-height:1.35;margin-bottom:6px;">열린 Flow 첫 viewport 과밀 (4 card type · 5 heading · 중첩 탭)</div>
+        <div style="font-size:12.5px;line-height:1.5;color:#6b655c;">다음 행동이 여러 섹션과 경쟁. <span style="color:#2456d6;">B: progressive disclosure(다음행동→계획→기록), card type 2.</span></div>
+        <div style="margin-top:9px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#9a9182;">P1·P4·P6 · marker: firstViewportDistinctCardTypeCount≤3</div>
+      </div>
+
+      <div style="background:#fff;border:1px solid #e3ddd0;border-left:3px solid #b45309;border-radius:12px;padding:15px 16px;">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:7px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:#b45309;">F-05 · Medium</span></div>
+        <div style="font-weight:600;font-size:14.5px;line-height:1.35;margin-bottom:6px;">mobile library가 20/60 규모에서 search-first/group 없이 스크롤 의존</div>
+        <div style="font-size:12.5px;line-height:1.5;color:#6b655c;">flowOpenDepth@20=4. <span style="color:#2456d6;">B/S3: mobile 상시 검색 + status/next-date section → ≤3.</span> <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#b45309;">fixture_only</span></div>
+        <div style="margin-top:9px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#9a9182;">P6 · marker: flowOpenDepth@20≤3</div>
+      </div>
+
+      <div style="background:#fff;border:1px solid #e3ddd0;border-left:3px solid #b45309;border-radius:12px;padding:15px 16px;">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:7px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:#b45309;">F-06 · Medium</span><span data-annotation="true" style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#8a6d1e;background:#fbf3dd;border:1px solid #ecdcae;padding:1px 6px;border-radius:999px;">계측 필요</span></div>
+        <div style="font-weight:600;font-size:14.5px;line-height:1.35;margin-bottom:6px;">1024 My Flow: canvas 여백 과다 + 상단 nav/버튼 우측 잘림</div>
+        <div style="font-size:12.5px;line-height:1.5;color:#6b655c;">screenshot상 잘림 관찰 ↔ smoke overflow=0 상충. <span style="color:#2456d6;">B/S3: rail/canvas/inspector 채움 + live 재계측.</span></div>
+        <div style="margin-top:9px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#9a9182;">P6 · marker: horizontalOverflowPx=0 @1024/1440</div>
+      </div>
+
+      <div style="background:#fff;border:1px solid #e3ddd0;border-left:3px solid #b45309;border-radius:12px;padding:15px 16px;">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:7px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:#b45309;">F-07 · Medium</span></div>
+        <div style="font-weight:600;font-size:14.5px;line-height:1.35;margin-bottom:6px;">Calendar 왕복 후 scroll/filter/expanded-phase 복구 미입증</div>
+        <div style="font-size:12.5px;line-height:1.5;color:#6b655c;">selected Flow는 URL 보존, 나머지 뷰 상태는? contextLossCount=2. <span style="color:#2456d6;">B/S3: back이 filter/scroll 명시 복원.</span></div>
+        <div style="margin-top:9px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#9a9182;">P2·P6 · marker: contextLossCount=0</div>
+      </div>
+
+      <div style="background:#fff;border:1px solid #e3ddd0;border-left:3px solid #b45309;border-radius:12px;padding:15px 16px;">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:7px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:#b45309;">F-08 · Medium</span><span data-role="problem" data-annotation="true" style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#b42318;background:#fdecea;border:1px solid #f3c7c0;padding:1px 6px;border-radius:999px;">/my ≈ /calendar</span></div>
+        <div style="font-weight:600;font-size:14.5px;line-height:1.35;margin-bottom:6px;">/my hub와 /calendar가 동일 green banner + '첫 할 일 시작' primary 공유</div>
+        <div style="font-size:12.5px;line-height:1.5;color:#6b655c;">cross-surface 중복. <span style="color:#2456d6;">canonical hub 1개(My Flow), Calendar는 날짜 배치 우선.</span> cross_tab 게이트엔 미달.</div>
+        <div style="margin-top:9px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#9a9182;">P1·P7 · marker: 동일 primary 동시 노출 없음</div>
+      </div>
+
+      <div style="background:#fff;border:1px solid #e3ddd0;border-left:3px solid #57534e;border-radius:12px;padding:15px 16px;">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:7px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:#57534e;">F-09 · Low</span></div>
+        <div style="font-weight:600;font-size:14.5px;line-height:1.35;margin-bottom:6px;">역할 구분이 copy 설명에 의존</div>
+        <div style="font-size:12.5px;line-height:1.5;color:#6b655c;">explanationDependencyCount=2. <span style="color:#2456d6;">B의 구조 단순화로 설명 의존 제거(copy는 보조).</span></div>
+        <div style="margin-top:9px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#9a9182;">P1·P5 · marker: explanationDependencyCount=0</div>
+      </div>
+
+      <div style="background:#fff;border:1px solid #e3ddd0;border-left:3px solid #b45309;border-radius:12px;padding:15px 16px;">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:7px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:#b45309;">F-10 · Medium</span><span data-annotation="true" style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#8a6d1e;background:#fbf3dd;border:1px solid #ecdcae;padding:1px 6px;border-radius:999px;">SR 미검증</span></div>
+        <div style="font-weight:600;font-size:14.5px;line-height:1.35;margin-bottom:6px;">icon/lifecycle 컨트롤의 accessible name 맥락</div>
+        <div style="font-size:12.5px;line-height:1.5;color:#6b655c;">focus 순서는 source로 확인. 이름 맥락/구분은 라이브 SR 미검증. <span style="color:#2456d6;">B: Flow/Item 맥락 name 규약 명문화.</span></div>
+        <div style="margin-top:9px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#9a9182;">P8 · marker: unnamedFocusableCount=0 · 맥락 name</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===================== 3. 24-CELL HEATMAP ===================== -->
+  <section id="heatmap" style="padding:56px 0 8px;scroll-margin-top:64px;">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#9a9182;letter-spacing:0.06em;">03 · 24-CELL SIMULATION · 8 personas × 3 sessions</div>
+    <h2 style="font-size:28px;letter-spacing:-0.02em;font-weight:700;margin:10px 0 6px;">기능은 있으나 구조가 역할을 흐린다</h2>
+    <p style="font-size:14px;color:#6b655c;margin:0 0 18px;max-width:74ch;text-wrap:pretty;"><b>partial</b>은 기능 부재가 아니라 <i>기능은 존재하나 hierarchy가 역할을 흐린다</i>는 뜻 — 이 검토의 핵심이다. 상세 cell은 <a href="persona-journey-scorecard.json">persona-journey-scorecard.json</a>, 끊김은 <a href="journey-discontinuity-matrix.json">journey-discontinuity-matrix.json</a>.</p>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:11px;margin-bottom:16px;">
+      <span style="padding:4px 10px;background:#eef8f2;border:1px solid #bfe4cf;color:#116b3f;border-radius:6px;">supported · 8</span>
+      <span style="padding:4px 10px;background:#fbf3dd;border:1px solid #ecdcae;color:#8a6d1e;border-radius:6px;">partial · 16</span>
+      <span style="padding:4px 10px;background:#f2efe8;border:1px solid #ded7c8;color:#8a8272;border-radius:6px;">hidden · 0</span>
+      <span style="padding:4px 10px;background:#f2efe8;border:1px solid #ded7c8;color:#8a8272;border-radius:6px;">missing · 0</span>
+      <span style="padding:4px 10px;background:#f2efe8;border:1px solid #ded7c8;color:#8a8272;border-radius:6px;">blocked · 0</span>
+    </div>
+
+    <div style="overflow-x:auto;background:#fff;border:1px solid #e3ddd0;border-radius:16px;padding:6px;">
+    <table style="width:100%;min-width:760px;font-size:12px;">
+      <thead>
+        <tr style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8a8272;">
+          <th style="text-align:left;padding:10px 12px;font-weight:500;width:210px;">persona</th>
+          <th style="text-align:left;padding:10px 12px;font-weight:500;">Session 1</th>
+          <th style="text-align:left;padding:10px 12px;font-weight:500;">Session 2</th>
+          <th style="text-align:left;padding:10px 12px;font-weight:500;">Session 3</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:6px 12px;vertical-align:top;"><div style="font-weight:600;font-size:12.5px;">P1 · 기준일 역산 timeline</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#9a9182;">/f/moving-d30-basic</div></td>
+          <td style="padding:6px 6px;"><div style="background:#eef8f2;border:1px solid #bfe4cf;border-radius:8px;padding:8px 9px;"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:#116b3f;">supported</div><div style="font-size:11px;color:#5a6b60;margin-top:2px;">발견·저장, artifact-first preview</div></div></td>
+          <td style="padding:6px 6px;"><div style="background:#fbf3dd;border:1px solid #ecdcae;border-radius:8px;padding:8px 9px;"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:#8a6d1e;">partial · F-01/02</div><div style="font-size:11px;color:#7a6a44;margin-top:2px;">지금↔실행 · 완료 컨트롤 중복</div></div></td>
+          <td style="padding:6px 6px;"><div style="background:#fbf3dd;border:1px solid #ecdcae;border-radius:8px;padding:8px 9px;"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:#8a6d1e;">partial</div><div style="font-size:11px;color:#7a6a44;margin-top:2px;">archiveRestore 5 · 재사용 hidden</div></div></td>
+        </tr>
+        <tr>
+          <td style="padding:6px 12px;vertical-align:top;"><div style="font-weight:600;font-size:12.5px;">P2 · 날짜 없는 체크리스트</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#9a9182;">/f/vehicle-inspection-prep</div></td>
+          <td style="padding:6px 6px;"><div style="background:#eef8f2;border:1px solid #bfe4cf;border-radius:8px;padding:8px 9px;"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:#116b3f;">supported</div><div style="font-size:11px;color:#5a6b60;margin-top:2px;">undated=실행 가능 상태</div></div></td>
+          <td style="padding:6px 6px;"><div style="background:#fbf3dd;border:1px solid #ecdcae;border-radius:8px;padding:8px 9px;"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:#8a6d1e;">partial · F-07</div><div style="font-size:11px;color:#7a6a44;margin-top:2px;">날짜 입구 이원화(My Flow/Calendar)</div></div></td>
+          <td style="padding:6px 6px;"><div style="background:#eef8f2;border:1px solid #bfe4cf;border-radius:8px;padding:8px 9px;"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:#116b3f;">supported</div><div style="font-size:11px;color:#5a6b60;margin-top:2px;">scope 예측 count · 목적지 정합</div></div></td>
+        </tr>
+        <tr>
+          <td style="padding:6px 12px;vertical-align:top;"><div style="font-weight:600;font-size:12.5px;">P3 · 반복 루틴</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#9a9182;">/f/curated-allblanc-morning-workout</div></td>
+          <td style="padding:6px 6px;"><div style="background:#eef8f2;border:1px solid #bfe4cf;border-radius:8px;padding:8px 9px;"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:#116b3f;">supported</div><div style="font-size:11px;color:#5a6b60;margin-top:2px;">summary-first · 임의 4주 없음</div></div></td>
+          <td style="padding:6px 6px;"><div style="background:#fbf3dd;border:1px solid #ecdcae;border-radius:8px;padding:8px 9px;"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:#8a6d1e;">partial</div><div style="font-size:11px;color:#7a6a44;margin-top:2px;">occurrence vs series 경계 약함</div></div></td>
+          <td style="padding:6px 6px;"><div style="background:#fbf3dd;border:1px solid #ecdcae;border-radius:8px;padding:8px 9px;"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:#8a6d1e;">partial · F-03</div><div style="font-size:11px;color:#7a6a44;margin-top:2px;">기록↔완료 두 모델</div></div></td>
+        </tr>
+        <tr>
+          <td style="padding:6px 12px;vertical-align:top;"><div style="font-weight:600;font-size:12.5px;">P4 · 선택·혼합 계획</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#9a9182;">wedding · mofa-travel</div></td>
+          <td style="padding:6px 6px;"><div style="background:#fbf3dd;border:1px solid #ecdcae;border-radius:8px;padding:8px 9px;"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:#8a6d1e;">partial</div><div style="font-size:11px;color:#7a6a44;margin-top:2px;">선택 전 count/loss 예측 확인 요</div></div></td>
+          <td style="padding:6px 6px;"><div style="background:#fbf3dd;border:1px solid #ecdcae;border-radius:8px;padding:8px 9px;"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:#8a6d1e;">partial · F-04</div><div style="font-size:11px;color:#7a6a44;margin-top:2px;">date/check/resource 구분 약함</div></div></td>
+          <td style="padding:6px 6px;"><div style="background:#fbf3dd;border:1px solid #ecdcae;border-radius:8px;padding:8px 9px;"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:#8a6d1e;">partial</div><div style="font-size:11px;color:#7a6a44;margin-top:2px;">source update 표시 가시성 미확정</div></div></td>
+        </tr>
+        <tr>
+          <td style="padding:6px 12px;vertical-align:top;"><div style="font-weight:600;font-size:12.5px;">P5 · 개인 초안</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#9a9182;">/flows miss / memo</div></td>
+          <td style="padding:6px 6px;"><div style="background:#eef8f2;border:1px solid #bfe4cf;border-radius:8px;padding:8px 9px;"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:#116b3f;">supported</div><div style="font-size:11px;color:#5a6b60;margin-top:2px;">filler 없음 · 전체 Item 착지</div></div></td>
+          <td style="padding:6px 6px;"><div style="background:#fbf3dd;border:1px solid #ecdcae;border-radius:8px;padding:8px 9px;"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:#8a6d1e;">partial · F-04</div><div style="font-size:11px;color:#7a6a44;margin-top:2px;">row에서 실행+관리 컨트롤 경쟁</div></div></td>
+          <td style="padding:6px 6px;"><div style="background:#eef8f2;border:1px solid #bfe4cf;border-radius:8px;padding:8px 9px;"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:#116b3f;">supported</div><div style="font-size:11px;color:#5a6b60;margin-top:2px;">canonical projection parity</div></div></td>
+        </tr>
+        <tr>
+          <td style="padding:6px 12px;vertical-align:top;"><div style="font-weight:600;font-size:12.5px;">P6 · 대규모 라이브러리</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#9a9182;">1 / 5 / 20 / 60 (fixture_only)</div></td>
+          <td style="padding:6px 6px;"><div style="background:#fbf3dd;border:1px solid #ecdcae;border-radius:8px;padding:8px 9px;"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:#8a6d1e;">partial · F-05</div><div style="font-size:11px;color:#7a6a44;margin-top:2px;">20/60 search-first 부재 · open&gt;3</div></div></td>
+          <td style="padding:6px 6px;"><div style="background:#fbf3dd;border:1px solid #ecdcae;border-radius:8px;padding:8px 9px;"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:#8a6d1e;">partial · F-07</div><div style="font-size:11px;color:#7a6a44;margin-top:2px;">Calendar 왕복 scroll/filter 손실</div></div></td>
+          <td style="padding:6px 6px;"><div style="background:#fbf3dd;border:1px solid #ecdcae;border-radius:8px;padding:8px 9px;"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:#8a6d1e;">partial</div><div style="font-size:11px;color:#7a6a44;margin-top:2px;">archived filter discoverability</div></div></td>
+        </tr>
+        <tr>
+          <td style="padding:6px 12px;vertical-align:top;"><div style="font-weight:600;font-size:12.5px;">P7 · 완료 후 복귀</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#9a9182;">/ → /my</div></td>
+          <td style="padding:6px 6px;"><div style="background:#fbf3dd;border:1px solid #ecdcae;border-radius:8px;padding:8px 9px;"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:#8a6d1e;">partial · F-02</div><div style="font-size:11px;color:#7a6a44;margin-top:2px;">이어하기 3중(Home/지금/실행)</div></div></td>
+          <td style="padding:6px 6px;"><div style="background:#fbf3dd;border:1px solid #ecdcae;border-radius:8px;padding:8px 9px;"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:#8a6d1e;">partial · F-03</div><div style="font-size:11px;color:#7a6a44;margin-top:2px;">즉시 undo/장기 reopen 두 모델</div></div></td>
+          <td style="padding:6px 6px;"><div style="background:#fbf3dd;border:1px solid #ecdcae;border-radius:8px;padding:8px 9px;"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:#8a6d1e;">partial</div><div style="font-size:11px;color:#7a6a44;margin-top:2px;">회고/수정/export/재사용 경쟁</div></div></td>
+        </tr>
+        <tr>
+          <td style="padding:6px 12px;vertical-align:top;"><div style="font-weight:600;font-size:12.5px;">P8 · 키보드·복구</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#9a9182;">keyboard · SR · recovery</div></td>
+          <td style="padding:6px 6px;"><div style="background:#fbf3dd;border:1px solid #ecdcae;border-radius:8px;padding:8px 9px;"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:#8a6d1e;">partial · F-10</div><div style="font-size:11px;color:#7a6a44;margin-top:2px;">icon name 맥락 SR 미검증</div></div></td>
+          <td style="padding:6px 6px;"><div style="background:#eef8f2;border:1px solid #bfe4cf;border-radius:8px;padding:8px 9px;"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:#116b3f;">supported</div><div style="font-size:11px;color:#5a6b60;margin-top:2px;">focus trap · Escape · return</div></div></td>
+          <td style="padding:6px 6px;"><div style="background:#eef8f2;border:1px solid #bfe4cf;border-radius:8px;padding:8px 9px;"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:#116b3f;">supported</div><div style="font-size:11px;color:#5a6b60;margin-top:2px;">오류가 Item 미삭제 · 200% ok</div></div></td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <p style="font-size:12px;color:#9a9182;margin:12px 2px 0;font-family:'IBM Plex Sans KR';">evidenceKind: current_production_screenshot + current_source + heuristic_simulation. 실시간 interaction/SR 미수행 항목은 scorecard에서 <span style="font-family:'IBM Plex Mono',monospace;">inaccessible</span>로 병기.</p>
+  </section>
+
+  <!-- ===================== 4. CURRENT ANATOMY ===================== -->
+  <section id="anatomy" style="padding:56px 0 8px;scroll-margin-top:64px;">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#9a9182;letter-spacing:0.06em;">04 · CURRENT MY FLOW ANATOMY</div>
+    <h2 style="font-size:28px;letter-spacing:-0.02em;font-weight:700;margin:10px 0 6px;">두 개의 탭 시스템이 겹쳐 있다</h2>
+    <p style="font-size:14px;color:#6b655c;margin:0 0 20px;max-width:74ch;text-wrap:pretty;">아래는 handoff current production screenshot(<a href="screenshots/current-my-flow-workspace-390.png">390</a> · <a href="screenshots/current-my-flow-workspace-1024.png">1024</a>)을 근거로 다시 그린 anatomy다. page 탭(지금/Flow 목록/완료) 위에 workspace 탭(실행/전체 계획/기록)이 얹혀, 같은 Item의 다음 행동·완료가 여러 층에서 반복된다.</p>
+
+    <div style="background:#1c1a17;color:#d9d2c4;border-radius:14px;padding:16px 18px;font-family:'IBM Plex Mono',monospace;font-size:12px;line-height:1.7;margin-bottom:26px;overflow-x:auto;">
+<span style="color:#f3ede0;">My Flow</span>
+├─ 지금 <span style="color:#e0894a;">◄ cross-Flow 실행 큐 ─┐</span>
+├─ Flow 목록                     <span style="color:#e0894a;">│ 같은 '오늘 할 일'</span>
+│   └─ Flow row → workspace       <span style="color:#e0894a;">│ 두 문법 (F-01)</span>
+│        ├─ 실행 <span style="color:#e0894a;">◄──────────────┘</span>
+│        ├─ 전체 계획
+│        └─ 기록 <span style="color:#c78">◄ per-Flow ─┐</span>
+└─ 완료 <span style="color:#c78">◄ cross-Flow ──┘ 두 완료 모델 (F-03)</span>
+    </div>
+
+    <div style="display:flex;gap:26px;flex-wrap:wrap;align-items:flex-start;">
+
+      <!-- 390 phone -->
+      <div style="flex:0 0 auto;">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9a9182;margin-bottom:10px;">390 × 844 · Flow 목록 → 하나 열림</div>
+        <div style="width:224px;background:#fff;border:1.5px solid #cbc4b6;border-radius:28px;padding:8px;box-shadow:0 14px 34px -14px rgba(60,50,30,0.3);">
+          <div style="height:15px;display:flex;align-items:center;justify-content:center;"><div style="width:48px;height:5px;background:#e0d9cc;border-radius:3px;"></div></div>
+          <div style="background:#f7f5f0;border-radius:18px;overflow:hidden;">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px 5px;"><span style="font-weight:700;font-size:12px;">FLOW</span><span style="width:15px;height:11px;border-top:2px solid #b7b0a2;border-bottom:2px solid #b7b0a2;border-radius:1px;"></span></div>
+            <div style="padding:0 12px 7px;font-size:8px;color:#a99f8d;">지금 할 일과 저장한 Flow를 관리합니다.</div>
+            <div style="display:flex;gap:5px;padding:0 12px 9px;"><span style="font-size:8px;padding:3px 8px;border:1px solid #ddd6c8;border-radius:6px;background:#fff;">스튜디오</span><span style="font-size:8px;padding:3px 8px;border:1px solid #ddd6c8;border-radius:6px;background:#fff;">데이터 관리</span></div>
+            <div data-role="problem" style="display:flex;gap:4px;padding:6px 12px;background:#fdf0ec;border-top:1px solid #f2d6cd;border-bottom:1px solid #f2d6cd;"><span style="flex:1;text-align:center;font-size:8.5px;padding:5px 0;color:#8a8272;">지금</span><span style="flex:1;text-align:center;font-size:8.5px;padding:5px 0;background:#fff;border:1px solid #d9d2c4;border-radius:6px;font-weight:600;">Flow 목록</span><span style="flex:1;text-align:center;font-size:8.5px;padding:5px 0;color:#8a8272;">완료</span></div>
+            <div style="padding:9px 12px 4px;"><div style="font-size:7.5px;color:#2456d6;font-weight:600;">저장한 계획 관리</div><div style="font-size:10px;font-weight:700;">저장한 Flow <span style="color:#a99f8d;font-weight:400;">· 3개</span></div></div>
+            <div style="margin:6px 10px 8px;border:1.5px solid #e0a34a;border-radius:12px;background:#fff;padding:8px 9px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:9.5px;font-weight:600;">원룸 이사 준비</span><span style="font-size:11px;color:#b7b0a2;">⋯</span></div>
+              <div style="font-size:7.5px;color:#a99f8d;margin:1px 0 7px;">전체 0/5 완료</div>
+              <div data-role="problem" style="display:flex;gap:3px;margin-bottom:8px;"><span style="flex:1;text-align:center;font-size:8px;padding:4px 0;background:#eaf0fd;border:1px solid #cfe0fb;border-radius:5px;color:#2456d6;font-weight:600;">실행</span><span style="flex:1;text-align:center;font-size:8px;padding:4px 0;color:#8a8272;">전체 계획</span><span style="flex:1;text-align:center;font-size:8px;padding:4px 0;color:#8a8272;">기록</span></div>
+              <div style="font-size:7.5px;color:#a99f8d;margin-bottom:4px;">지난 할 일</div>
+              <div data-role="problem" style="display:flex;align-items:center;gap:6px;background:#f7f5f0;border:1px solid #eadfd0;border-radius:7px;padding:6px 7px;"><span style="width:12px;height:12px;border:1.5px solid #c3bbab;border-radius:3px;flex:0 0 auto;"></span><span style="flex:1;font-size:8px;line-height:1.3;">이사 방식과 견적 후보 정하기</span><span style="font-size:8px;color:#2456d6;">열기</span></div>
+              <div style="display:flex;justify-content:space-between;margin-top:7px;font-size:7.5px;color:#a99f8d;"><span>전체 진행</span><span>0/5 완료</span></div>
+              <div style="font-size:8px;color:#2456d6;font-weight:600;margin-top:5px;">전체 계획 보기</div>
+            </div>
+            <div style="display:flex;border-top:1px solid #e6e0d3;background:#fff;">
+              <span style="flex:1;text-align:center;font-size:7.5px;padding:8px 0;color:#a99f8d;">홈</span><span style="flex:1;text-align:center;font-size:7.5px;padding:8px 0;color:#a99f8d;">Flow 찾기</span><span style="flex:1;text-align:center;font-size:7.5px;padding:8px 0;color:#a99f8d;">캘린더</span><span style="flex:1;text-align:center;font-size:7.5px;padding:8px 0;background:#1c1a17;color:#f3ede0;">내 Flow</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- annotations -->
+      <div style="flex:1;min-width:260px;display:flex;flex-direction:column;gap:12px;padding-top:28px;">
+        <div data-annotation="true" style="background:#fdf0ec;border:1px solid #f2d6cd;border-radius:11px;padding:12px 14px;">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;color:#b42318;margin-bottom:3px;">⚠ page 탭 3 · workspace 탭 3 중첩 · F-01</div>
+          <div style="font-size:13px;line-height:1.5;color:#5a4540;"><b>지금</b>(cross-Flow 큐)과 workspace <b>실행</b>(이 Flow)이 같은 '오늘 할 일'을 뜻한다. 어느 것이 canonical 다음 행동인지 라벨로만 구분된다.</div>
+        </div>
+        <div data-annotation="true" style="background:#fdf0ec;border:1px solid #f2d6cd;border-radius:11px;padding:12px 14px;">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;color:#b42318;margin-bottom:3px;">⚠ 완료 컨트롤 중복 · F-02</div>
+          <div style="font-size:13px;line-height:1.5;color:#5a4540;">같은 stable Item이 <b>지금</b> 큐와 workspace <b>실행</b>(그리고 Home 이어하기)에서 각각 primary 완료를 가진다. <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;">actionableDuplicateCount=2</span></div>
+        </div>
+        <div data-annotation="true" style="background:#fbf3dd;border:1px solid #ecdcae;border-radius:11px;padding:12px 14px;">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;color:#8a6d1e;margin-bottom:3px;">첫 viewport 과밀 · F-04</div>
+          <div style="font-size:13px;line-height:1.5;color:#6b5a2a;">한 화면에 <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;">card type 4 · heading 5 · command ≈11</span>. 다음 행동 하나가 명확히 서지 못한다.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1024 wide -->
+    <div style="margin-top:34px;">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9a9182;margin-bottom:10px;">1024 × 768 · library rail → plan canvas → inspector</div>
+      <div style="display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start;">
+        <div style="flex:0 0 auto;width:min(560px,100%);background:#fff;border:1.5px solid #cbc4b6;border-radius:16px;padding:10px;box-shadow:0 14px 34px -16px rgba(60,50,30,0.28);position:relative;overflow:hidden;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 8px 10px;border-bottom:1px solid #eee5d6;"><span style="font-weight:700;font-size:11px;">FLOW</span><span style="font-size:8px;color:#a99f8d;">홈 · Flow 찾기 · 캘린더 · <span style="background:#1c1a17;color:#f3ede0;padding:2px 5px;border-radius:4px;">내 F…</span></span></div>
+          <div style="display:flex;gap:10px;padding:12px 8px 8px;">
+            <div style="flex:0 0 150px;">
+              <div style="font-size:7px;color:#2456d6;font-weight:600;">라이브러리 · 3개</div>
+              <div style="margin-top:5px;background:#eaf0fd;border:1px solid #cfe0fb;border-radius:8px;padding:7px 8px;"><div style="font-size:8.5px;font-weight:600;">자동차검사 준비</div><div style="font-size:7px;color:#8a8272;">체크리스트 · 0/10</div></div>
+              <div style="margin-top:5px;background:#f7f5f0;border:1px solid #eadfd0;border-radius:8px;padding:7px 8px;"><div style="font-size:8.5px;font-weight:600;">원룸 이사 준비</div><div style="font-size:7px;color:#8a8272;">체크리스트 · 0/5</div></div>
+              <div style="margin-top:5px;background:#f7f5f0;border:1px solid #eadfd0;border-radius:8px;padding:7px 8px;"><div style="font-size:8.5px;font-weight:600;">영어공부 30일 루틴</div><div style="font-size:7px;color:#8a8272;">반복 · 0/12</div></div>
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:12px;font-weight:700;">자동차검사 준비</div>
+              <div style="display:inline-block;font-size:7.5px;background:#eef1f6;border-radius:5px;padding:2px 7px;margin:5px 0;">검사일 7월 19일</div>
+              <div style="display:flex;gap:5px;margin-bottom:8px;"><span style="font-size:7.5px;border:1px solid #ddd6c8;border-radius:5px;padding:2px 7px;">일정 10</span><span style="font-size:7.5px;border:1px solid #ddd6c8;border-radius:5px;padding:2px 7px;">메모 3</span></div>
+              <div style="font-size:8px;font-weight:600;">전체 Flow · 10개</div>
+              <div style="height:70px;border:1px dashed #ddd6c8;border-radius:8px;margin-top:5px;background:repeating-linear-gradient(135deg,#faf8f3,#faf8f3 6px,#f3efe6 6px,#f3efe6 12px);"></div>
+              <div data-annotation="true" style="height:44px;border:1px dashed #ecdcae;border-radius:8px;margin-top:6px;display:flex;align-items:center;justify-content:center;font-size:8px;color:#b08a2e;background:#fdfaf0;">canvas 하단 여백</div>
+            </div>
+            <div data-role="problem" style="flex:0 0 14px;background:linear-gradient(90deg,transparent,#fdecea);"></div>
+          </div>
+        </div>
+        <div data-annotation="true" style="flex:1;min-width:240px;background:#fbf3dd;border:1px solid #ecdcae;border-radius:11px;padding:13px 15px;">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;color:#8a6d1e;margin-bottom:4px;">F-06 · 계측 필요</div>
+          <div style="font-size:13px;line-height:1.55;color:#6b5a2a;">screenshot상 상단 nav('내 Flow')와 canvas 버튼('여러 흐름')이 <b>우측에서 잘리고</b> canvas 하단 <b>여백이 크다</b>. handoff smoke는 overflow=0으로 보고 → <b>1024/1440 live 재계측</b> 필요. B/S3에서 inspector를 실제로 채우고 overflow를 0으로 확정한다.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 5. A/B/C @ 390 ===================== -->
+  <section id="m390" style="padding:56px 0 8px;scroll-margin-top:64px;">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#9a9182;letter-spacing:0.06em;">05 · A / B / C @ 390 · 같은 content · 같은 state (원룸 이사 · 열린 Flow의 다음 행동)</div>
+    <h2 style="font-size:28px;letter-spacing:-0.02em;font-weight:700;margin:10px 0 6px;">한 Flow를 열었을 때</h2>
+    <p style="font-size:14px;color:#6b655c;margin:0 0 14px;max-width:76ch;text-wrap:pretty;">네 화면 모두 <b>같은 저장 상태</b>(5개 Item · 0/5 완료 · 기준일 D-30)를 연 순간이다. 각 화면에 <b>다음 행동 · 전체 계획 · 기록 · 관리</b>의 위치를 표시했다. 상단 렌즈(Tweaks)로 한 역할만 강조하거나 주석을 끌 수 있다.</p>
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;">
+      <span style="padding:3px 9px;background:#eaf0fd;border:1px solid #cfe0fb;color:#2456d6;border-radius:999px;">● 다음 행동</span>
+      <span style="padding:3px 9px;background:#e6f4f1;border:1px solid #bfe0d9;color:#0f766e;border-radius:999px;">● 전체 계획</span>
+      <span style="padding:3px 9px;background:#f1eafc;border:1px solid #ddc9f5;color:#6d28d9;border-radius:999px;">● 기록</span>
+      <span style="padding:3px 9px;background:#f0eee9;border:1px solid #ddd6c8;color:#57534e;border-radius:999px;">● 관리</span>
+      <span style="padding:3px 9px;background:#fdecea;border:1px solid #f3c7c0;color:#b42318;border-radius:999px;">⚠ 중복/과밀</span>
+    </div>
+
+    <div style="display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start;">
+
+      <!-- CURRENT -->
+      <div style="flex:0 0 auto;width:210px;">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:#7a6f2a;">current</span><span style="font-size:10px;color:#9a9182;">P31</span></div>
+        <div style="width:210px;background:#fff;border:1.5px solid #cbc4b6;border-radius:24px;padding:7px;box-shadow:0 12px 28px -14px rgba(60,50,30,0.28);">
+          <div style="background:#f7f5f0;border-radius:16px;overflow:hidden;">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px 4px;"><span style="font-weight:700;font-size:11px;">FLOW</span><span data-role="management" style="font-size:7px;background:#f0eee9;border:1px solid #ddd6c8;color:#57534e;border-radius:5px;padding:1px 5px;">관리 ≡</span></div>
+            <div data-role="problem" style="display:flex;gap:3px;padding:6px 10px;background:#fdf0ec;border-top:1px solid #f2d6cd;border-bottom:1px solid #f2d6cd;"><span style="flex:1;text-align:center;font-size:7.5px;padding:4px 0;color:#8a8272;">지금 ⚠</span><span style="flex:1;text-align:center;font-size:7.5px;padding:4px 0;background:#fff;border:1px solid #d9d2c4;border-radius:5px;font-weight:600;">Flow 목록</span><span style="flex:1;text-align:center;font-size:7.5px;padding:4px 0;color:#8a8272;">완료</span></div>
+            <div style="margin:7px 8px;border:1.5px solid #e0a34a;border-radius:11px;background:#fff;padding:7px 8px;">
+              <div style="display:flex;justify-content:space-between;"><span style="font-size:9px;font-weight:600;">원룸 이사 준비</span><span data-role="management" style="font-size:10px;color:#b7b0a2;">⋯</span></div>
+              <div data-role="problem" style="display:flex;gap:2px;margin:6px 0;"><span style="flex:1;text-align:center;font-size:7px;padding:3px 0;background:#eaf0fd;border:1px solid #cfe0fb;border-radius:4px;color:#2456d6;font-weight:600;">실행 ⚠</span><span style="flex:1;text-align:center;font-size:7px;padding:3px 0;color:#8a8272;">전체 계획</span><span style="flex:1;text-align:center;font-size:7px;padding:3px 0;color:#8a8272;">기록</span></div>
+              <div data-role="problem" style="display:flex;align-items:center;gap:5px;background:#f7f5f0;border:1px solid #eadfd0;border-radius:6px;padding:5px 6px;"><span style="width:11px;height:11px;border:1.5px solid #c3bbab;border-radius:3px;"></span><span style="flex:1;font-size:7.5px;">이사 방식과 견적 후보…</span><span style="font-size:7px;color:#2456d6;">열기</span></div>
+              <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:7px;color:#a99f8d;"><span>전체 진행</span><span>0/5</span></div>
+              <div data-role="whole-plan" style="font-size:7.5px;color:#0f766e;font-weight:600;margin-top:4px;">전체 계획 보기 ↓</div>
+            </div>
+            <div style="display:flex;border-top:1px solid #e6e0d3;background:#fff;"><span style="flex:1;text-align:center;font-size:6.5px;padding:6px 0;color:#a99f8d;">홈</span><span style="flex:1;text-align:center;font-size:6.5px;padding:6px 0;color:#a99f8d;">찾기</span><span style="flex:1;text-align:center;font-size:6.5px;padding:6px 0;color:#a99f8d;">캘린더</span><span style="flex:1;text-align:center;font-size:6.5px;padding:6px 0;background:#1c1a17;color:#f3ede0;">내 Flow</span></div>
+          </div>
+        </div>
+        <div style="margin-top:9px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#8a8272;line-height:1.7;"><span style="color:#b45309;">cardType 4</span> · dup <span style="color:#b42318;">2</span> · firstAct 3</div>
+        <div style="font-size:11px;color:#6b655c;margin-top:3px;line-height:1.4;">중첩 탭. 다음 행동이 여러 층에 흩어짐.</div>
+      </div>
+
+      <!-- A -->
+      <div style="flex:0 0 auto;width:210px;">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:#6f6a61;">A</span><span style="font-size:10px;color:#9a9182;">keep &amp; tighten</span></div>
+        <div style="width:210px;background:#fff;border:1.5px solid #cbc4b6;border-radius:24px;padding:7px;box-shadow:0 12px 28px -14px rgba(60,50,30,0.24);">
+          <div style="background:#f7f5f0;border-radius:16px;overflow:hidden;">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px 6px;"><span style="font-weight:700;font-size:11px;">My Flow</span><span data-role="management" style="font-size:7px;background:#f0eee9;border:1px solid #ddd6c8;color:#57534e;border-radius:5px;padding:1px 5px;">관리 ⋯</span></div>
+            <div data-role="problem" style="display:flex;gap:3px;padding:5px 10px 8px;"><span style="flex:1;text-align:center;font-size:7.5px;padding:4px 0;color:#8a8272;">지금</span><span style="flex:1;text-align:center;font-size:7.5px;padding:4px 0;background:#fff;border:1px solid #d9d2c4;border-radius:5px;font-weight:600;">Flow 목록</span><span style="flex:1;text-align:center;font-size:7.5px;padding:4px 0;color:#8a8272;">완료</span></div>
+            <div style="margin:0 8px 7px;background:#fff;border:1px solid #e6e0d3;border-radius:11px;padding:8px;">
+              <div style="font-size:9px;font-weight:600;">원룸 이사 준비 <span style="font-weight:400;color:#a99f8d;font-size:7px;">D-30 · 0/5</span></div>
+              <div data-role="problem" style="display:flex;gap:2px;margin:7px 0;"><span style="flex:1;text-align:center;font-size:7px;padding:3px 0;background:#eaf0fd;border:1px solid #cfe0fb;border-radius:4px;color:#2456d6;font-weight:600;">실행</span><span style="flex:1;text-align:center;font-size:7px;padding:3px 0;color:#8a8272;">전체 계획</span><span style="flex:1;text-align:center;font-size:7px;padding:3px 0;color:#8a8272;">기록</span></div>
+              <div data-role="next-action" style="display:flex;align-items:center;gap:5px;background:#f6f9ff;border:1px solid #dbe6fb;border-radius:6px;padding:6px;"><span style="width:12px;height:12px;border:1.5px solid #9db8ec;border-radius:3px;"></span><span style="flex:1;font-size:7.5px;">이사 방식과 견적…</span></div>
+              <div style="margin-top:6px;display:flex;justify-content:space-between;font-size:7px;"><span data-role="whole-plan" style="color:#0f766e;">전체 계획 ↓</span><span data-role="record" style="color:#6d28d9;">기록</span></div>
+            </div>
+            <div style="display:flex;border-top:1px solid #e6e0d3;background:#fff;"><span style="flex:1;text-align:center;font-size:6.5px;padding:6px 0;color:#a99f8d;">홈</span><span style="flex:1;text-align:center;font-size:6.5px;padding:6px 0;color:#a99f8d;">찾기</span><span style="flex:1;text-align:center;font-size:6.5px;padding:6px 0;color:#a99f8d;">캘린더</span><span style="flex:1;text-align:center;font-size:6.5px;padding:6px 0;background:#1c1a17;color:#f3ede0;">내 Flow</span></div>
+          </div>
+        </div>
+        <div style="margin-top:9px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#8a8272;line-height:1.7;">cardType 3 · dup <span style="color:#b42318;">2</span> · firstAct 3 · <span style="color:#b45309;">−18%</span></div>
+        <div style="font-size:11px;color:#6b655c;margin-top:3px;line-height:1.4;">density만 정리. 두 탭 층·완료 중복 잔존.</div>
+      </div>
+
+      <!-- B (winner) -->
+      <div style="flex:0 0 auto;width:210px;">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;color:#2456d6;">★ B</span><span style="font-size:10px;color:#2456d6;">focused workspace</span></div>
+        <div id="wf-b-390" style="width:210px;background:#fff;border:2px solid #2456d6;border-radius:24px;padding:7px;box-shadow:0 16px 34px -12px rgba(36,86,214,0.32);">
+          <div style="background:#f7f5f0;border-radius:16px;overflow:hidden;">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px 5px;"><span style="font-size:8px;color:#2456d6;">‹ 저장한 Flow</span><span data-role="management" style="font-size:7px;background:#f0eee9;border:1px solid #ddd6c8;color:#57534e;border-radius:5px;padding:1px 5px;">관리 ⋯</span></div>
+            <div style="padding:2px 11px 8px;"><div style="font-size:10.5px;font-weight:700;">원룸 이사 준비</div><div style="font-size:7px;color:#a99f8d;">기준일 D-30 · 6.22–7.22 · 0/5</div></div>
+            <div style="display:flex;gap:0;margin:0 11px 9px;background:#ece8e0;border-radius:7px;padding:2px;"><span style="flex:1;text-align:center;font-size:7.5px;padding:4px 0;background:#fff;border-radius:5px;font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,0.06);">다음 행동</span><span style="flex:1;text-align:center;font-size:7.5px;padding:4px 0;color:#8a8272;">전체 계획</span><span style="flex:1;text-align:center;font-size:7.5px;padding:4px 0;color:#8a8272;">기록</span></div>
+            <div data-role="next-action" style="margin:0 11px 8px;background:#eaf0fd;border:1.5px solid #2456d6;border-radius:11px;padding:9px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span style="font-size:7px;color:#2456d6;font-weight:600;">지금 할 일 · 1</span><span style="font-size:6.5px;background:#dbe6fb;color:#2456d6;border-radius:4px;padding:1px 5px;">다음 행동</span></div>
+              <div style="display:flex;align-items:center;gap:7px;"><span style="width:16px;height:16px;border:2px solid #2456d6;border-radius:5px;flex:0 0 auto;"></span><div style="flex:1;"><div style="font-size:8.5px;font-weight:600;line-height:1.25;">이사 방식과 견적 후보 정하기</div><div style="font-size:6.5px;color:#5a6b8a;">6월 22일 · D-30</div></div></div>
+            </div>
+            <div data-role="whole-plan" style="margin:0 11px 6px;background:#e6f4f1;border:1px solid #bfe0d9;border-radius:9px;padding:7px 9px;display:flex;justify-content:space-between;align-items:center;"><div><div style="font-size:7.5px;font-weight:600;color:#0f766e;">전체 계획</div><div style="font-size:6.5px;color:#5a8078;">2단계 · 5개 · 다음 7.8</div></div><span style="font-size:9px;color:#0f766e;">›</span></div>
+            <div data-role="record" style="margin:0 11px 9px;display:flex;justify-content:space-between;align-items:center;padding:2px 2px;"><span style="font-size:7.5px;color:#6d28d9;font-weight:600;">기록</span><span style="font-size:6.5px;color:#9a8fb0;">완료 0 · 회고 없음</span></div>
+            <div style="display:flex;border-top:1px solid #e6e0d3;background:#fff;"><span style="flex:1;text-align:center;font-size:6.5px;padding:6px 0;color:#a99f8d;">홈</span><span style="flex:1;text-align:center;font-size:6.5px;padding:6px 0;color:#a99f8d;">찾기</span><span style="flex:1;text-align:center;font-size:6.5px;padding:6px 0;color:#a99f8d;">캘린더</span><span style="flex:1;text-align:center;font-size:6.5px;padding:6px 0;background:#1c1a17;color:#f3ede0;">내 Flow</span></div>
+          </div>
+        </div>
+        <div style="margin-top:9px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#2456d6;line-height:1.7;font-weight:600;">cardType 2 · dup 0 · firstAct 2 · −47%</div>
+        <div style="font-size:11px;color:#4a453d;margin-top:3px;line-height:1.4;">'지금' 제거. 한 workspace가 next-action을 단독 소유. 계획·기록은 progressive disclosure.</div>
+      </div>
+
+      <!-- C -->
+      <div style="flex:0 0 auto;width:210px;">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:#0f766e;">C</span><span style="font-size:10px;color:#0f766e;">run-first</span></div>
+        <div style="width:210px;background:#fff;border:1.5px solid #7fbdb3;border-radius:24px;padding:7px;box-shadow:0 12px 28px -14px rgba(15,118,110,0.24);">
+          <div style="background:#f7f5f0;border-radius:16px;overflow:hidden;">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px 5px;"><span style="font-size:8px;color:#0f766e;">‹ 라이브러리</span><span data-role="management" style="font-size:7px;background:#f0eee9;border:1px solid #ddd6c8;color:#57534e;border-radius:5px;padding:1px 5px;">관리 ⋯</span></div>
+            <div style="padding:2px 11px 7px;"><div style="font-size:10.5px;font-weight:700;">원룸 이사 준비</div><div style="font-size:7px;color:#a99f8d;">정의 5개 · run 진행 0/5</div></div>
+            <div data-role="next-action" style="margin:0 11px 8px;background:#e6f4f1;border:1.5px solid #0f766e;border-radius:11px;padding:9px;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span style="font-size:7px;color:#0f766e;font-weight:600;">이번 실행 · current run</span><span style="font-size:6.5px;background:#cfe9e3;color:#0f766e;border-radius:4px;padding:1px 5px;">다음 행동</span></div>
+              <div style="display:flex;align-items:center;gap:7px;"><span style="width:16px;height:16px;border:2px solid #0f766e;border-radius:5px;flex:0 0 auto;"></span><div style="flex:1;"><div style="font-size:8.5px;font-weight:600;line-height:1.25;">이사 방식과 견적 후보 정하기</div><div style="font-size:6.5px;color:#5a8078;">6월 22일 · D-30</div></div></div>
+            </div>
+            <div data-role="whole-plan" style="margin:0 11px 6px;background:#fff;border:1px solid #e6e0d3;border-radius:9px;padding:7px 9px;display:flex;justify-content:space-between;align-items:center;"><div><div style="font-size:7.5px;font-weight:600;">Flow 정의 (definition)</div><div style="font-size:6.5px;color:#a99f8d;">전체 2단계 · 5개</div></div><span style="font-size:9px;color:#0f766e;">›</span></div>
+            <div data-role="record" style="margin:0 11px 9px;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:7.5px;color:#6d28d9;font-weight:600;">기록 · 이전 run</span><span style="font-size:6.5px;color:#9a8fb0;">0</span></div>
+            <div style="display:flex;border-top:1px solid #e6e0d3;background:#fff;"><span style="flex:1;text-align:center;font-size:6.5px;padding:6px 0;color:#a99f8d;">홈</span><span style="flex:1;text-align:center;font-size:6.5px;padding:6px 0;color:#a99f8d;">찾기</span><span style="flex:1;text-align:center;font-size:6.5px;padding:6px 0;color:#a99f8d;">캘린더</span><span style="flex:1;text-align:center;font-size:6.5px;padding:6px 0;background:#1c1a17;color:#f3ede0;">내 Flow</span></div>
+          </div>
+        </div>
+        <div style="margin-top:9px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#8a8272;line-height:1.7;">cardType 3 · dup 1 · firstAct 2 · −33%</div>
+        <div style="font-size:11px;color:#6b655c;margin-top:3px;line-height:1.4;">definition/run 분리 명확. 단순 체크리스트엔 'run' 개념이 과함.</div>
+      </div>
+
+    </div>
+
+    <div style="margin-top:26px;background:#eaf0fd;border:1px solid #cfe0fb;border-radius:14px;padding:16px 18px;">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#2456d6;font-weight:600;margin-bottom:5px;">왜 B인가</div>
+      <div style="font-size:14px;line-height:1.6;color:#33507f;text-wrap:pretty;">B는 '지금' 탭을 없애고 <b>한 focused workspace</b>가 next-action을 단독으로 소유한다(dup 0). 전체 계획·기록은 같은 화면에서 순서대로 열리는 progressive disclosure다. C의 <b>definition/run 분리</b>는 옳지만 단순 체크리스트·개인 초안에는 과하다 → B의 body renderer 안에서 <b>반복 루틴·장기 timeline에만</b> 차용한다(§8). A는 구조를 그대로 둬서 중복이 남는다.</div>
+    </div>
+  </section>
+
+  <!-- ===================== 6. A/B/C @ 1024 ===================== -->
+  <section id="m1024" style="padding:56px 0 8px;scroll-margin-top:64px;">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#9a9182;letter-spacing:0.06em;">06 · A / B / C @ 1024 · library · canvas · inspector</div>
+    <h2 style="font-size:28px;letter-spacing:-0.02em;font-weight:700;margin:10px 0 6px;">넓은 화면의 세 열</h2>
+    <p style="font-size:14px;color:#6b655c;margin:0 0 22px;max-width:76ch;text-wrap:pretty;">wide는 Notion peek / TickTick detail pane 원칙을 번역한다 — 하나의 Flow 객체, 지속되는 컨텍스트. current는 canvas가 비고 상단 nav가 잘린다(F-06). B는 rail을 <b>search-first</b>로, canvas를 <b>focused workspace</b>로, inspector를 <b>선택 Item detail</b>로 채운다.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(430px,1fr));gap:20px;">
+
+      <!-- current -->
+      <div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:#7a6f2a;margin-bottom:8px;">current · P31</div>
+        <div style="background:#fff;border:1.5px solid #cbc4b6;border-radius:14px;padding:9px;box-shadow:0 12px 28px -16px rgba(60,50,30,0.24);overflow:hidden;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:3px 6px 8px;border-bottom:1px solid #eee5d6;"><span style="font-weight:700;font-size:10px;">FLOW</span><span style="font-size:7px;color:#a99f8d;">홈 · 찾기 · 캘린더 · <span data-role="problem" style="background:#fdecea;color:#b42318;padding:1px 4px;border-radius:3px;">내 F…⚠</span></span></div>
+          <div style="display:flex;gap:7px;padding:8px 6px 4px;">
+            <div style="flex:0 0 108px;">
+              <div style="font-size:6.5px;color:#2456d6;font-weight:600;margin-bottom:4px;">라이브러리 · 3</div>
+              <div style="background:#eaf0fd;border:1px solid #cfe0fb;border-radius:6px;padding:5px 6px;font-size:7px;font-weight:600;">자동차검사 준비</div>
+              <div style="background:#f7f5f0;border:1px solid #eadfd0;border-radius:6px;padding:5px 6px;font-size:7px;margin-top:4px;">원룸 이사 준비</div>
+              <div style="background:#f7f5f0;border:1px solid #eadfd0;border-radius:6px;padding:5px 6px;font-size:7px;margin-top:4px;">영어 30일 루틴</div>
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:9px;font-weight:700;">자동차검사 준비</div>
+              <div data-role="problem" style="display:flex;gap:2px;margin:6px 0;"><span style="flex:1;text-align:center;font-size:6.5px;padding:3px 0;background:#eaf0fd;border:1px solid #cfe0fb;border-radius:4px;color:#2456d6;">실행 ⚠</span><span style="flex:1;text-align:center;font-size:6.5px;padding:3px 0;color:#8a8272;">전체 계획</span><span style="flex:1;text-align:center;font-size:6.5px;padding:3px 0;color:#8a8272;">기록</span></div>
+              <div data-role="problem" style="height:96px;border:1px dashed #ecdcae;border-radius:7px;background:repeating-linear-gradient(135deg,#fdfaf0,#fdfaf0 6px,#f6efdc 6px,#f6efdc 12px);display:flex;align-items:center;justify-content:center;font-size:7px;color:#b08a2e;">canvas 여백 · inspector 빈약</div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#8a8272;">nav 우측 잘림 · canvas 미충전 · 완료 컨트롤 중복</div>
+      </div>
+
+      <!-- A -->
+      <div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:#6f6a61;margin-bottom:8px;">A · keep &amp; tighten</div>
+        <div style="background:#fff;border:1.5px solid #cbc4b6;border-radius:14px;padding:9px;box-shadow:0 12px 28px -16px rgba(60,50,30,0.2);overflow:hidden;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:3px 6px 8px;border-bottom:1px solid #eee5d6;"><span style="font-weight:700;font-size:10px;">My Flow</span><span style="font-size:7px;color:#a99f8d;">홈 · 찾기 · 캘린더 · 내 Flow</span></div>
+          <div style="display:flex;gap:7px;padding:8px 6px 4px;">
+            <div style="flex:0 0 100px;">
+              <div style="font-size:6.5px;color:#8a8272;margin-bottom:4px;">Flow 목록 · 3</div>
+              <div style="background:#eaf0fd;border:1px solid #cfe0fb;border-radius:6px;padding:5px 6px;font-size:7px;font-weight:600;">자동차검사 준비</div>
+              <div style="background:#f7f5f0;border:1px solid #eadfd0;border-radius:6px;padding:5px 6px;font-size:7px;margin-top:4px;">원룸 이사 준비</div>
+              <div style="background:#f7f5f0;border:1px solid #eadfd0;border-radius:6px;padding:5px 6px;font-size:7px;margin-top:4px;">영어 30일 루틴</div>
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:9px;font-weight:700;">자동차검사 준비 <span style="font-size:6.5px;color:#a99f8d;font-weight:400;">0/10</span></div>
+              <div data-role="problem" style="display:flex;gap:2px;margin:6px 0;"><span style="flex:1;text-align:center;font-size:6.5px;padding:3px 0;background:#eaf0fd;border:1px solid #cfe0fb;border-radius:4px;color:#2456d6;">실행</span><span style="flex:1;text-align:center;font-size:6.5px;padding:3px 0;color:#8a8272;">전체 계획</span><span style="flex:1;text-align:center;font-size:6.5px;padding:3px 0;color:#8a8272;">기록</span></div>
+              <div data-role="next-action" style="background:#f6f9ff;border:1px solid #dbe6fb;border-radius:6px;padding:5px 6px;font-size:7px;">☐ 검사 기간 확인</div>
+            </div>
+            <div style="flex:0 0 96px;"><div data-role="management" style="font-size:6.5px;color:#57534e;margin-bottom:4px;">detail / 관리</div><div style="height:78px;border:1px solid #eadfd0;border-radius:6px;background:#faf8f3;"></div></div>
+          </div>
+        </div>
+        <div style="margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#8a8272;">3열 유지 · 중복 잔존 · <span style="color:#b45309;">−18%</span></div>
+      </div>
+
+      <!-- B -->
+      <div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;color:#2456d6;margin-bottom:8px;">★ B · library → focused workspace → inspector</div>
+        <div id="wf-b-1024" style="background:#fff;border:2px solid #2456d6;border-radius:14px;padding:9px;box-shadow:0 16px 34px -14px rgba(36,86,214,0.3);overflow:hidden;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:3px 6px 8px;border-bottom:1px solid #eef1f6;"><span style="font-weight:700;font-size:10px;">My Flow</span><span style="font-size:7px;color:#a99f8d;">홈 · 찾기 · 캘린더 · <span style="background:#1c1a17;color:#f3ede0;padding:1px 4px;border-radius:3px;">내 Flow</span></span></div>
+          <div style="display:flex;gap:7px;padding:8px 6px 4px;">
+            <div style="flex:0 0 104px;">
+              <div style="display:flex;align-items:center;gap:3px;background:#f2efe8;border:1px solid #e0d9cc;border-radius:6px;padding:3px 6px;font-size:6.5px;color:#8a8272;">🔍 검색</div>
+              <div style="font-size:6px;color:#2456d6;font-weight:600;margin:5px 0 3px;">진행 중</div>
+              <div style="background:#eaf0fd;border:1px solid #cfe0fb;border-radius:6px;padding:4px 6px;font-size:7px;font-weight:600;">원룸 이사 <span style="color:#8a8272;font-weight:400;">D-30</span></div>
+              <div style="background:#fff;border:1px solid #eadfd0;border-radius:6px;padding:4px 6px;font-size:7px;margin-top:3px;">자동차검사 <span style="color:#8a8272;">7.19</span></div>
+              <div data-role="record" style="font-size:6px;color:#6d28d9;margin-top:6px;">완료 · 보관 ▸</div>
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:9px;font-weight:700;">원룸 이사 준비</div>
+              <div style="display:flex;gap:0;margin:6px 0;background:#ece8e0;border-radius:5px;padding:2px;"><span style="flex:1;text-align:center;font-size:6.5px;padding:3px 0;background:#fff;border-radius:4px;font-weight:600;">다음 행동</span><span style="flex:1;text-align:center;font-size:6.5px;padding:3px 0;color:#8a8272;">전체 계획</span><span style="flex:1;text-align:center;font-size:6.5px;padding:3px 0;color:#8a8272;">기록</span></div>
+              <div data-role="next-action" style="background:#eaf0fd;border:1.5px solid #2456d6;border-radius:7px;padding:6px;font-size:7px;font-weight:600;">☐ 이사 방식과 견적 후보 정하기 <span style="font-weight:400;color:#5a6b8a;">· D-30</span></div>
+              <div data-role="whole-plan" style="background:#e6f4f1;border:1px solid #bfe0d9;border-radius:6px;padding:5px 6px;font-size:6.5px;color:#0f766e;margin-top:4px;">전체 계획 · 2단계 · 5개 ›</div>
+            </div>
+            <div data-role="management" style="flex:0 0 100px;">
+              <div style="font-size:6.5px;color:#57534e;margin-bottom:4px;">선택 Item · inspector</div>
+              <div style="border:1px solid #dbe6fb;border-radius:6px;padding:6px;background:#f6f9ff;"><div style="font-size:6.5px;color:#8a8272;">제목</div><div style="height:5px;background:#e0e8f5;border-radius:2px;margin:2px 0 5px;"></div><div style="font-size:6.5px;color:#8a8272;">날짜 · 메모</div><div style="height:5px;background:#e6e0d3;border-radius:2px;margin-top:2px;width:70%;"></div><div style="font-size:6px;color:#2456d6;margin-top:5px;">세부 일정 ▾</div></div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#2456d6;font-weight:600;">canvas 충전 · dup 0 · overflow 0 (계측) · −47%</div>
+      </div>
+
+      <!-- C -->
+      <div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;color:#0f766e;margin-bottom:8px;">C · run-first (routine에 강함)</div>
+        <div style="background:#fff;border:1.5px solid #7fbdb3;border-radius:14px;padding:9px;box-shadow:0 12px 28px -16px rgba(15,118,110,0.2);overflow:hidden;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:3px 6px 8px;border-bottom:1px solid #e6efec;"><span style="font-weight:700;font-size:10px;">My Flow</span><span style="font-size:7px;color:#a99f8d;">홈 · 찾기 · 캘린더 · 내 Flow</span></div>
+          <div style="display:flex;gap:7px;padding:8px 6px 4px;">
+            <div data-role="next-action" style="flex:1;min-width:0;background:#e6f4f1;border:1.5px solid #0f766e;border-radius:7px;padding:6px;">
+              <div style="font-size:6.5px;color:#0f766e;font-weight:600;">이번 실행 · current run</div>
+              <div style="font-size:8px;font-weight:700;margin:3px 0;">영어공부 · MWF</div>
+              <div style="background:#fff;border:1px solid #cfe9e3;border-radius:5px;padding:4px;font-size:7px;">☐ 짧은 영상 10분 듣기</div>
+            </div>
+            <div data-role="whole-plan" style="flex:0 0 108px;">
+              <div style="font-size:6.5px;color:#0f766e;">정의 · definition</div>
+              <div style="border:1px solid #eadfd0;border-radius:6px;padding:5px;font-size:6.5px;margin-top:4px;background:#faf8f3;">요일 MWF · 12개 회차</div>
+              <div data-role="record" style="font-size:6.5px;color:#6d28d9;margin-top:6px;">기록 · 이전 run ▸</div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#8a8272;">definition/run 분리 · 단순 콘텐츠 과설계 위험 · −33%</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===================== 7. SCALE 1/5/20/60 ===================== -->
+  <section id="scale" style="padding:56px 0 8px;scroll-margin-top:64px;">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#9a9182;letter-spacing:0.06em;">07 · SCALE · B의 첫 화면 @ 1 / 5 / 20 / 60 Flow</div>
+    <h2 style="font-size:28px;letter-spacing:-0.02em;font-weight:700;margin:10px 0 6px;">1개에서 편한 화면이 60개에서도 버티는가</h2>
+    <p style="font-size:14px;color:#6b655c;margin:0 0 22px;max-width:76ch;text-wrap:pretty;">B의 <b>첫 화면 = 이어서 하기 strip + compact library</b>. 규모가 커질수록 <b>search-first</b>가 앞으로 나오고 status/next-date section이 리스트를 대신한다. flowOpenDepth는 20/60에서도 ≤3. <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#b45309;">20/60 = fixture_only</span> — 실제 도달 여부는 observed 질문.</p>
+
+    <div id="wf-b-scale" style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;">
+
+      <!-- 1 -->
+      <div style="flex:0 0 auto;width:186px;">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8a8272;margin-bottom:8px;font-weight:600;">1 Flow · 저장 직후</div>
+        <div style="width:186px;background:#fff;border:1.5px solid #cbc4b6;border-radius:22px;padding:6px;box-shadow:0 10px 24px -14px rgba(60,50,30,0.24);">
+          <div style="background:#f7f5f0;border-radius:15px;overflow:hidden;">
+            <div style="display:flex;justify-content:space-between;padding:8px 9px 6px;"><span style="font-size:10px;font-weight:700;">My Flow</span><span data-role="management" style="font-size:6.5px;color:#57534e;">⋯</span></div>
+            <div data-role="next-action" style="margin:0 8px 7px;background:#eaf0fd;border:1.5px solid #2456d6;border-radius:10px;padding:8px;"><div style="font-size:6.5px;color:#2456d6;font-weight:600;margin-bottom:3px;">이어서 하기</div><div style="font-size:8px;font-weight:600;">원룸 이사 준비</div><div style="font-size:6.5px;color:#5a6b8a;margin-top:2px;">다음: 견적 후보 정하기 · D-30</div></div>
+            <div style="padding:0 9px 8px;"><div style="font-size:6.5px;color:#8a8272;">저장한 Flow · 1</div><div style="background:#fff;border:1px solid #eadfd0;border-radius:7px;padding:5px 7px;font-size:7px;margin-top:4px;">원룸 이사 · 0/5</div></div>
+          </div>
+        </div>
+        <div style="margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#2456d6;">flowOpen 1</div>
+      </div>
+
+      <!-- 5 -->
+      <div style="flex:0 0 auto;width:186px;">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8a8272;margin-bottom:8px;font-weight:600;">5 Flow · 일반 반복</div>
+        <div style="width:186px;background:#fff;border:1.5px solid #cbc4b6;border-radius:22px;padding:6px;box-shadow:0 10px 24px -14px rgba(60,50,30,0.24);">
+          <div style="background:#f7f5f0;border-radius:15px;overflow:hidden;">
+            <div style="display:flex;justify-content:space-between;padding:8px 9px 5px;"><span style="font-size:10px;font-weight:700;">My Flow</span><span data-role="management" style="font-size:6.5px;color:#57534e;">⋯</span></div>
+            <div style="padding:0 9px 6px;"><div data-role="next-action" style="font-size:6.5px;color:#2456d6;font-weight:600;margin-bottom:4px;">이어서 하기 · 2</div><div style="display:flex;gap:5px;"><div style="flex:1;background:#eaf0fd;border:1px solid #cfe0fb;border-radius:8px;padding:5px;font-size:6.5px;font-weight:600;">원룸 이사<div style="font-weight:400;color:#5a6b8a;">D-30</div></div><div style="flex:1;background:#fff;border:1px solid #cfe0fb;border-radius:8px;padding:5px;font-size:6.5px;font-weight:600;">자동차검사<div style="font-weight:400;color:#5a6b8a;">7.19</div></div></div></div>
+            <div style="padding:0 9px 8px;"><div style="font-size:6.5px;color:#8a8272;margin-bottom:3px;">저장한 Flow · 5</div><div style="background:#fff;border:1px solid #eadfd0;border-radius:6px;padding:4px 6px;font-size:6.5px;">영어 30일 루틴 · 반복</div><div style="background:#fff;border:1px solid #eadfd0;border-radius:6px;padding:4px 6px;font-size:6.5px;margin-top:3px;">결혼 준비 · 선택형</div><div style="background:#fff;border:1px solid #eadfd0;border-radius:6px;padding:4px 6px;font-size:6.5px;margin-top:3px;">해외여행 · 혼합</div></div>
+          </div>
+        </div>
+        <div style="margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#2456d6;">flowOpen ≤2</div>
+      </div>
+
+      <!-- 20 -->
+      <div style="flex:0 0 auto;width:186px;">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8a8272;margin-bottom:8px;font-weight:600;">20 Flow <span style="color:#b45309;">· fixture_only</span></div>
+        <div style="width:186px;background:#fff;border:1.5px solid #cbc4b6;border-radius:22px;padding:6px;box-shadow:0 10px 24px -14px rgba(60,50,30,0.24);">
+          <div style="background:#f7f5f0;border-radius:15px;overflow:hidden;">
+            <div style="display:flex;justify-content:space-between;padding:8px 9px 6px;"><span style="font-size:10px;font-weight:700;">My Flow</span><span data-role="management" style="font-size:6.5px;color:#57534e;">⋯</span></div>
+            <div style="margin:0 9px 7px;display:flex;align-items:center;gap:4px;background:#f2efe8;border:1px solid #e0d9cc;border-radius:8px;padding:5px 8px;font-size:7px;color:#8a8272;">🔍 이름·날짜·상태 검색</div>
+            <div style="padding:0 9px 8px;">
+              <div data-role="next-action" style="font-size:6.5px;color:#2456d6;font-weight:600;">진행 중 · 4</div>
+              <div style="background:#eaf0fd;border:1px solid #cfe0fb;border-radius:6px;padding:4px 6px;font-size:6.5px;margin:3px 0;">원룸 이사 · D-30</div>
+              <div data-role="whole-plan" style="font-size:6.5px;color:#0f766e;font-weight:600;margin-top:5px;">예정 · 9</div>
+              <div data-role="record" style="font-size:6.5px;color:#6d28d9;font-weight:600;margin-top:5px;">완료 · 7 ▸</div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#2456d6;">search + section · flowOpen ≤3</div>
+      </div>
+
+      <!-- 60 -->
+      <div style="flex:0 0 auto;width:186px;">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8a8272;margin-bottom:8px;font-weight:600;">60 Flow <span style="color:#b45309;">· fixture_only</span></div>
+        <div style="width:186px;background:#fff;border:1.5px solid #cbc4b6;border-radius:22px;padding:6px;box-shadow:0 10px 24px -14px rgba(60,50,30,0.24);">
+          <div style="background:#f7f5f0;border-radius:15px;overflow:hidden;">
+            <div style="display:flex;justify-content:space-between;padding:8px 9px 6px;"><span style="font-size:10px;font-weight:700;">My Flow</span><span data-role="management" style="font-size:6.5px;color:#57534e;">⋯</span></div>
+            <div style="margin:0 9px 6px;display:flex;align-items:center;gap:4px;background:#fff;border:1.5px solid #2456d6;border-radius:8px;padding:6px 8px;font-size:7px;color:#2456d6;font-weight:600;">🔍 검색 (search-first)</div>
+            <div style="padding:0 9px 8px;">
+              <div style="font-size:6px;color:#a99f8d;margin-bottom:4px;">60개 · 검색으로 좁히기</div>
+              <div data-role="next-action" style="font-size:6.5px;color:#2456d6;">진행 중 6 ›</div>
+              <div data-role="whole-plan" style="font-size:6.5px;color:#0f766e;margin-top:3px;">예정 22 ›</div>
+              <div data-role="record" style="font-size:6.5px;color:#6d28d9;margin-top:3px;">완료 28 ›</div>
+              <div style="font-size:6px;color:#a99f8d;margin-top:6px;font-style:italic;">가상 데이터 - production 금지</div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#2456d6;">search-first 기본 · flowOpen ≤3</div>
+      </div>
+
+    </div>
+    <p style="font-size:12px;color:#9a9182;margin:16px 2px 0;">rendering/navigation 안정성(가상 스크롤 등)은 60 규모에서 관찰 필요. 위 60 화면의 count는 <b>가상 데이터 - production 금지</b>: 실제 사용자 수/보유량이 아니라 배치 실험용.</p>
+  </section>
+
+  <!-- ===================== 8. CONTENT SHAPES ===================== -->
+  <section id="shapes" style="padding:56px 0 8px;scroll-margin-top:64px;">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#9a9182;letter-spacing:0.06em;">08 · 6 CONTENT SHAPES · B의 workspace body renderer</div>
+    <h2 style="font-size:28px;letter-spacing:-0.02em;font-weight:700;margin:10px 0 6px;">공통 shell, 콘텐츠 형태는 살린다</h2>
+    <p style="font-size:14px;color:#6b655c;margin:0 0 22px;max-width:76ch;text-wrap:pretty;">공통 identity/header + <b>다음 행동 · 전체 계획 · 기록</b> action grammar는 유지하되, body는 콘텐츠 형태를 드러낸다(H4). generic 카드 리스트로 납작하게 만들지 않는다.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:16px;">
+
+      <div style="background:#fff;border:1px solid #e3ddd0;border-radius:14px;padding:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;"><span style="font-weight:700;font-size:13px;">기준일 timeline</span><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#9a9182;">moving-d30</span></div>
+        <div style="margin-top:10px;background:#f7f5f0;border-radius:9px;padding:9px;">
+          <div style="font-size:8px;color:#0f766e;font-weight:600;">D-30 큰 준비 · 6.22</div>
+          <div data-role="next-action" style="background:#eaf0fd;border:1px solid #cfe0fb;border-radius:6px;padding:5px 7px;font-size:8.5px;margin:4px 0;">☐ 이사 방식·견적 정하기</div>
+          <div style="font-size:8px;color:#5a8078;">D-10 생활 이전 · 7.12 <span style="color:#b45309;">📌고정</span></div>
+          <div style="background:#fff;border:1px solid #eadfd0;border-radius:6px;padding:5px 7px;font-size:8.5px;margin-top:4px;">☐ 주소·카드 변경</div>
+        </div>
+        <div style="font-size:11px;color:#6b655c;margin-top:9px;line-height:1.45;">phase/date group · anchor vs 개인 고정날짜 구분 · 다음 날짜 + 전체 범위.</div>
+      </div>
+
+      <div style="background:#fff;border:1px solid #e3ddd0;border-radius:14px;padding:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;"><span style="font-weight:700;font-size:13px;">날짜 없는 체크리스트</span><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#9a9182;">vehicle</span></div>
+        <div style="margin-top:10px;background:#f7f5f0;border-radius:9px;padding:9px;">
+          <div style="font-size:8px;color:#8a8272;">날짜 없이 바로 실행 · 0/10</div>
+          <div data-role="next-action" style="background:#eaf0fd;border:1px solid #cfe0fb;border-radius:6px;padding:5px 7px;font-size:8.5px;margin:4px 0;">☐ 검사 기간 확인</div>
+          <div style="background:#fff;border:1px solid #eadfd0;border-radius:6px;padding:5px 7px;font-size:8.5px;">☐ 예약 가능일 확인 <span style="color:#0f766e;font-size:7.5px;">＋날짜</span></div>
+        </div>
+        <div style="font-size:11px;color:#6b655c;margin-top:9px;line-height:1.45;">'미완성 캘린더' 아님. 날짜는 <b>선택적</b> 입구(＋날짜). 날짜 제거해도 리스트 유지.</div>
+      </div>
+
+      <div style="background:#fff;border:1px solid #e3ddd0;border-radius:14px;padding:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;"><span style="font-weight:700;font-size:13px;">반복 루틴 <span style="font-size:8px;color:#0f766e;">(C 차용)</span></span><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#9a9182;">allblanc</span></div>
+        <div style="margin-top:10px;background:#f7f5f0;border-radius:9px;padding:9px;">
+          <div data-role="next-action" style="background:#e6f4f1;border:1px solid #bfe0d9;border-radius:6px;padding:5px 7px;font-size:8.5px;">이번 회차(occurrence) ☐ 영상 10분</div>
+          <div data-role="whole-plan" style="font-size:8px;color:#0f766e;margin-top:5px;">series 정의 · MWF · 12회 ›</div>
+          <div data-role="record" style="font-size:8px;color:#6d28d9;margin-top:3px;">run history · 0 ›</div>
+        </div>
+        <div style="font-size:11px;color:#6b655c;margin-top:9px;line-height:1.45;">definition · 이번 occurrence · run history 분리(Hevy). occurrence 완료 ≠ series 완료.</div>
+      </div>
+
+      <div style="background:#fff;border:1px solid #e3ddd0;border-radius:14px;padding:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;"><span style="font-weight:700;font-size:13px;">선택형 artifact</span><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#9a9182;">wedding</span></div>
+        <div style="margin-top:10px;background:#f7f5f0;border-radius:9px;padding:9px;">
+          <div style="display:flex;gap:4px;"><span data-role="next-action" style="flex:1;text-align:center;font-size:7.5px;background:#eaf0fd;border:1px solid #2456d6;border-radius:5px;padding:4px 0;color:#2456d6;font-weight:600;">캘린더 24</span><span style="flex:1;text-align:center;font-size:7.5px;background:#fff;border:1px solid #ddd6c8;border-radius:5px;padding:4px 0;">체크 24</span></div>
+          <div style="font-size:7.5px;color:#8a8272;margin-top:5px;">＋1 secondary 최대 · 선택 전 count/loss 예측</div>
+          <div style="background:#fff;border:1px solid #eadfd0;border-radius:6px;padding:5px 7px;font-size:8.5px;margin-top:5px;">☐ 예식장 예약 확인</div>
+        </div>
+        <div style="font-size:11px;color:#6b655c;margin-top:9px;line-height:1.45;">primary 1 + secondary ≤2. 5개 tab 상시 노출 금지. 선택이 body 문법 결정.</div>
+      </div>
+
+      <div style="background:#fff;border:1px solid #e3ddd0;border-radius:14px;padding:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;"><span style="font-weight:700;font-size:13px;">혼합 travel</span><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#9a9182;">mofa-travel</span></div>
+        <div style="margin-top:10px;background:#f7f5f0;border-radius:9px;padding:9px;">
+          <div style="font-size:8px;color:#0f766e;font-weight:600;">D-14 · 7.10</div>
+          <div data-role="next-action" style="background:#eaf0fd;border:1px solid #cfe0fb;border-radius:6px;padding:5px 7px;font-size:8.5px;margin:4px 0;">☐ 여권 유효기간 확인</div>
+          <div style="background:#f1eafc;border:1px solid #ddc9f5;border-radius:6px;padding:5px 7px;font-size:8px;color:#6d28d9;">🔗 영사콜센터 안내 <span style="font-size:7px;">resource</span></div>
+        </div>
+        <div style="font-size:11px;color:#6b655c;margin-top:9px;line-height:1.45;">날짜 · check · <b>resource(안내/링크)</b>를 시각적으로 분리. action과 참고자료 혼동 방지.</div>
+      </div>
+
+      <div style="background:#fff;border:1px solid #e3ddd0;border-radius:14px;padding:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;"><span style="font-weight:700;font-size:13px;">개인 초안</span><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#9a9182;">memo / URL miss</span></div>
+        <div style="margin-top:10px;background:#f7f5f0;border-radius:9px;padding:9px;">
+          <div data-role="next-action" style="background:#eaf0fd;border:1px solid #cfe0fb;border-radius:6px;padding:5px 7px;font-size:8.5px;">☐ 첫 번째 할 일</div>
+          <div style="background:#fff;border:1px solid #eadfd0;border-radius:6px;padding:5px 7px;font-size:8.5px;margin-top:4px;">☐ 두 번째 할 일 <span style="color:#57534e;font-size:7.5px;">⠿ 이동</span></div>
+          <div data-role="management" style="font-size:7.5px;color:#57534e;margin-top:5px;">＋추가 · 구성 편집(별도 mode)</div>
+        </div>
+        <div style="font-size:11px;color:#6b655c;margin-top:9px;line-height:1.45;">add/delete/undo/restore/reorder는 <b>구성 편집</b> mode에서 — normal row에서 실행과 경쟁 안 함. filler 없음.</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===================== 9. REFERENCE ===================== -->
+  <section id="reference" style="padding:56px 0 8px;scroll-margin-top:64px;">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#9a9182;letter-spacing:0.06em;">09 · REFERENCE TRANSLATION · 구조 원칙만, 화면·기능 복제 아님</div>
+    <h2 style="font-size:28px;letter-spacing:-0.02em;font-weight:700;margin:10px 0 6px;">참고하되 합체시키지 않는다</h2>
+    <p style="font-size:14px;color:#6b655c;margin:0 0 20px;max-width:76ch;text-wrap:pretty;">FlowMe는 portable execution layer다. 아래 어떤 제품도 기능 체크리스트로 쓰지 않는다. 전체 표는 <a href="reference-pattern-matrix.md">reference-pattern-matrix.md</a>.</p>
+    <div style="overflow-x:auto;background:#fff;border:1px solid #e3ddd0;border-radius:16px;">
+    <table style="width:100%;min-width:720px;font-size:12.5px;">
+      <thead><tr style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8a8272;text-align:left;">
+        <th style="padding:11px 14px;font-weight:500;">제품</th><th style="padding:11px 14px;font-weight:500;">번역할 원칙</th><th style="padding:11px 14px;font-weight:500;">복제 금지</th><th style="padding:11px 14px;font-weight:500;">개선</th></tr></thead>
+      <tbody style="vertical-align:top;">
+        <tr style="border-top:1px solid #f0eadd;"><td style="padding:9px 14px;font-weight:600;">Todoist</td><td style="padding:9px 14px;color:#4a453d;">Today=실행 가능 항목만, 컨텍스트는 프로젝트. 같은 task의 다른 view.</td><td style="padding:9px 14px;color:#8a8272;">priority/label/team/board</td><td style="padding:9px 14px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#2456d6;">P1·P7</td></tr>
+        <tr style="border-top:1px solid #f0eadd;"><td style="padding:9px 14px;font-weight:600;">Things</td><td style="padding:9px 14px;color:#4a453d;">시간축/컨텍스트축 분리. 날짜 제거=Anytime 복귀. 완료=Logbook.</td><td style="padding:9px 14px;color:#8a8272;">Someday 철학, 제스처</td><td style="padding:9px 14px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#2456d6;">P2·P7</td></tr>
+        <tr style="border-top:1px solid #f0eadd;"><td style="padding:9px 14px;font-weight:600;">Reminders</td><td style="padding:9px 14px;color:#4a453d;">smart list가 '사용자 질문'별로 모음: 지금 뭐 · 뭐 있나 · 뭐 끝냈나.</td><td style="padding:9px 14px;color:#8a8272;">위치/사람 기반, iCloud</td><td style="padding:9px 14px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#2456d6;">P6·P7</td></tr>
+        <tr style="border-top:1px solid #f0eadd;"><td style="padding:9px 14px;font-weight:600;">G. Calendar</td><td style="padding:9px 14px;color:#4a453d;">Calendar=날짜 배치+detail. 편집·lifecycle은 My Flow로 위임(P31 sheet 일치).</td><td style="padding:9px 14px;color:#8a8272;">게스트/회의/공유</td><td style="padding:9px 14px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#2456d6;">P2·P6</td></tr>
+        <tr style="border-top:1px solid #f0eadd;"><td style="padding:9px 14px;font-weight:600;">Notion</td><td style="padding:9px 14px;color:#4a453d;">한 객체, 여러 view, peek 단계 공개 → <b>B의 근거</b>.</td><td style="padding:9px 14px;color:#8a8272;">범용 DB/property 빌더</td><td style="padding:9px 14px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#2456d6;">P4·P5</td></tr>
+        <tr style="border-top:1px solid #f0eadd;"><td style="padding:9px 14px;font-weight:600;">TickTick</td><td style="padding:9px 14px;color:#4a453d;">list·calendar·detail 역할 분명. mobile은 drill-in, 세 열 붙이지 않음.</td><td style="padding:9px 14px;color:#8a8272;">habit/Pomodoro/통계</td><td style="padding:9px 14px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#2456d6;">P6</td></tr>
+        <tr style="border-top:1px solid #f0eadd;"><td style="padding:9px 14px;font-weight:600;">Wanderlog</td><td style="padding:9px 14px;color:#4a453d;">trip identity + day-by-day. 날짜/phase group 우선, 전체 후 Item 이동.</td><td style="padding:9px 14px;color:#8a8272;">예약/지도/경비</td><td style="padding:9px 14px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#2456d6;">P1·P4</td></tr>
+        <tr style="border-top:1px solid #f0eadd;background:#f5f8ff;"><td style="padding:9px 14px;font-weight:600;">Hevy</td><td style="padding:9px 14px;color:#33507f;">routine(정의) vs workout(run) 분리 → <b>C 차용, B의 routine body에</b>.</td><td style="padding:9px 14px;color:#8a8272;">세트/중량/근육 통계</td><td style="padding:9px 14px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#2456d6;">P3</td></tr>
+        <tr style="border-top:1px solid #f0eadd;"><td style="padding:9px 14px;font-weight:600;">Strava</td><td style="padding:9px 14px;color:#4a453d;">기록=완료 run·회고를 시간순. 계획 설명 반복 안 함.</td><td style="padding:9px 14px;color:#8a8272;">소셜 피드/segment</td><td style="padding:9px 14px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#2456d6;">P3·P7</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div style="margin-top:14px;background:#fdf0ec;border:1px solid #f2d6cd;border-radius:12px;padding:12px 15px;font-size:12.5px;line-height:1.55;color:#7a4a42;"><b style="font-weight:600;">금지:</b> My Flow에 습관·채팅·통계·협업·예약 추가 · 5 artifact 상시 노출 · Notion식 범용 편집기 · 가짜 인기/사용자 수 · Calendar/My Flow 별도 완료 상태 · 대시보드를 위해 다음 행동을 첫 viewport 아래로.</div>
+  </section>
+
+  <!-- ===================== 10. A11Y / RECOVERY ===================== -->
+  <section id="a11y" style="padding:56px 0 8px;scroll-margin-top:64px;">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#9a9182;letter-spacing:0.06em;">10 · ACCESSIBILITY · RECOVERY · DATA INTEGRITY</div>
+    <h2 style="font-size:28px;letter-spacing:-0.02em;font-weight:700;margin:10px 0 16px;">키보드 · 복구 · 정합성</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;">
+      <div style="background:#fff;border:1px solid #e3ddd0;border-radius:13px;padding:15px;">
+        <div style="font-weight:600;font-size:13.5px;margin-bottom:9px;">focus · 이름</div>
+        <div style="font-size:12px;line-height:1.9;color:#4a453d;">
+          <div><span style="color:#116b3f;">✓ source</span> DOM focus = visual (header→workspace→tabs, P30)</div>
+          <div><span style="color:#116b3f;">✓ source</span> bottom nav가 main 뒤 focus</div>
+          <div><span style="color:#b45309;">◐ SR 관찰</span> icon(⋯/스튜디오)에 Flow/Item 맥락 name</div>
+          <div><span style="color:#b45309;">◐ SR 관찰</span> 완료·열기·편집·재정렬 이름 구분</div>
+        </div>
+      </div>
+      <div style="background:#fff;border:1px solid #e3ddd0;border-radius:13px;padding:15px;">
+        <div style="font-weight:600;font-size:13.5px;margin-bottom:9px;">overlay · 키보드</div>
+        <div style="font-size:12px;line-height:1.9;color:#4a453d;">
+          <div><span style="color:#116b3f;">✓ source</span> sheet/dialog focus trap + Escape</div>
+          <div><span style="color:#116b3f;">✓ source</span> close 후 trigger focus 복귀</div>
+          <div><span style="color:#116b3f;">✓ source</span> Enter/Space 조작 (P26-18)</div>
+          <div><span style="color:#b45309;">◐ 관찰</span> status live announce</div>
+        </div>
+      </div>
+      <div style="background:#fff;border:1px solid #e3ddd0;border-radius:13px;padding:15px;">
+        <div style="font-weight:600;font-size:13.5px;margin-bottom:9px;">복구</div>
+        <div style="font-size:12px;line-height:1.9;color:#4a453d;">
+          <div><span style="color:#116b3f;">✓ source</span> 즉시 undo (P26-12)</div>
+          <div><span style="color:#116b3f;">✓ source</span> 장기 reopen · receipt</div>
+          <div><span style="color:#116b3f;">✓ source</span> archive restore · 영구삭제 cancel (P31)</div>
+          <div><span style="color:#b42318;">⚠ B/S1</span> 즉시·장기를 <b>단일 run 상태</b>로 통합(F-03)</div>
+        </div>
+      </div>
+      <div style="background:#fff;border:1px solid #e3ddd0;border-radius:13px;padding:15px;">
+        <div style="font-weight:600;font-size:13.5px;margin-bottom:9px;">zoom · overflow · 정합성</div>
+        <div style="font-size:12px;line-height:1.9;color:#4a453d;">
+          <div><span style="color:#116b3f;">✓ smoke</span> 390 overflow 0 · unnamed 0</div>
+          <div><span style="color:#b45309;">◐ 계측</span> 1024/1440 overflow (F-06)</div>
+          <div><span style="color:#116b3f;">✓ source</span> My Flow/Calendar/export effective 일치</div>
+          <div><span style="color:#116b3f;">✓ source</span> source/personal/run/occurrence/export 분리</div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:14px;font-size:12px;color:#9a9182;line-height:1.5;"><span style="font-family:'IBM Plex Mono',monospace;">✓ source</span> = current source/smoke로 확인 · <span style="font-family:'IBM Plex Mono',monospace;">◐</span> = 실제 screen reader/live 계측 관찰 필요(자동화로 대체 불가) · <span style="font-family:'IBM Plex Mono',monospace;">⚠</span> = B 제안 항목. UI 대안이 별도 임시 ID/count/state를 만들면 탈락.</div>
+  </section>
+
+  <!-- ===================== 11. DATA CONTRACT ===================== -->
+  <section id="contract" style="padding:56px 0 8px;scroll-margin-top:64px;">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#9a9182;letter-spacing:0.06em;">11 · DATA CONTRACT IMPACT</div>
+    <h2 style="font-size:28px;letter-spacing:-0.02em;font-weight:700;margin:10px 0 16px;">UI만 재배치한다 · 계약은 그대로</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
+      <div style="background:#eef8f2;border:1px solid #bfe4cf;border-radius:14px;padding:16px 18px;">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#116b3f;font-weight:600;margin-bottom:10px;">유지 · 근거 없이 불변</div>
+        <div style="font-size:13px;line-height:2;color:#2f5a44;">source definition / version<br>personal title·date·memo·structure overlay<br>execution run + completion/reopen<br>recurrence series / revision / occurrence<br>export stable identity + receipt<br>4-tab IA · 홈 / Flow 찾기 / 캘린더 / 내 Flow</div>
+      </div>
+      <div style="background:#fff;border:1px solid #e3ddd0;border-radius:14px;padding:16px 18px;">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#2456d6;font-weight:600;margin-bottom:10px;">B가 바꾸는 것 · UI 역할뿐</div>
+        <div style="font-size:13px;line-height:1.65;color:#4a453d;">'지금' 탭 제거 → focused workspace가 next-action 소유 · '완료'를 run 상태의 cross-Flow <b>필터 뷰</b>로 · library를 search-first로 · body renderer로 콘텐츠 형태 표현.</div>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid #eee5d6;font-size:13px;line-height:1.6;color:#4a453d;"><b style="color:#116b3f;">migration 불필요.</b> B는 기존 <b>effective projection</b>을 그대로 소비한다. 새 Item ID·별도 completion state·중복 count를 만드는 대안은 <b>탈락</b>.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 12. ROLLOUT ===================== -->
+  <section id="rollout" style="padding:56px 0 8px;scroll-margin-top:64px;">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#9a9182;letter-spacing:0.06em;">12 · SELECTED ALTERNATIVE · STAGED ROLLOUT</div>
+    <h2 style="font-size:28px;letter-spacing:-0.02em;font-weight:700;margin:10px 0 6px;">B를 4단계로 · 각 단계 독립 rollback</h2>
+    <p style="font-size:14px;color:#6b655c;margin:0 0 22px;max-width:76ch;text-wrap:pretty;">각 stage는 feature flag로 분리. 게이트 미달 시 해당 stage만 off — 데이터 계약이 불변이라 저장된 Flow는 언제나 P31 UI로 안전 복귀. 전체는 <a href="next-program.md">next-program.md</a> · <a href="decision-matrix.json">decision-matrix.json</a>.</p>
+
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div style="display:flex;gap:14px;background:#fff;border:1px solid #e3ddd0;border-left:4px solid #2456d6;border-radius:12px;padding:15px 17px;flex-wrap:wrap;">
+        <div style="flex:0 0 auto;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:#2456d6;width:42px;">S1</div>
+        <div style="flex:1;min-width:220px;"><div style="font-weight:600;font-size:14.5px;">완료 단일 소유 + 완료/기록 의미 정리</div><div style="font-size:12.5px;color:#6b655c;margin-top:3px;line-height:1.5;">workspace가 완료 단독 소유, Home/'지금'은 deep-link(복제 금지). '완료'=run 상태 cross-Flow 필터. <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9a9182;">risk low</span></div></div>
+        <div style="flex:0 0 auto;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8a8272;line-height:1.6;">flag · myflow_single_completion_owner<br>accept · actionableDuplicateCount=0<br>rollback · flag off → P31</div>
+      </div>
+      <div style="display:flex;gap:14px;background:#fff;border:1px solid #e3ddd0;border-left:4px solid #2456d6;border-radius:12px;padding:15px 17px;flex-wrap:wrap;">
+        <div style="flex:0 0 auto;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:#2456d6;width:42px;">S2</div>
+        <div style="flex:1;min-width:220px;"><div style="font-weight:600;font-size:14.5px;">Library → Focused Workspace shell</div><div style="font-size:12.5px;color:#6b655c;margin-top:3px;line-height:1.5;">첫 화면=이어서 strip+compact library. Flow open=focused workspace(global 숨김) + 다음행동→계획→기록 progressive disclosure. <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9a9182;">risk medium</span></div></div>
+        <div style="flex:0 0 auto;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8a8272;line-height:1.6;">flag · myflow_focused_workspace<br>accept · cardType≤2/≤3 · firstAct≤2<br>rollback · flag off → P31 탭</div>
+      </div>
+      <div style="display:flex;gap:14px;background:#fff;border:1px solid #e3ddd0;border-left:4px solid #2456d6;border-radius:12px;padding:15px 17px;flex-wrap:wrap;">
+        <div style="flex:0 0 auto;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:#2456d6;width:42px;">S3</div>
+        <div style="flex:1;min-width:220px;"><div style="font-weight:600;font-size:14.5px;">Scale + wide + context restore</div><div style="font-size:12.5px;color:#6b655c;margin-top:3px;line-height:1.5;">20/60 search-first+section · wide library/canvas/inspector 채움 + <b>1024/1440 overflow 재계측</b> · back이 filter/scroll 복원. <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9a9182;">risk medium</span></div></div>
+        <div style="flex:0 0 auto;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8a8272;line-height:1.6;">flag · myflow_scale_restore<br>accept · flowOpen@20≤3 · contextLoss=0 · overflow=0<br>rollback · flag off</div>
+      </div>
+      <div style="display:flex;gap:14px;background:#fff;border:1px solid #e3ddd0;border-left:4px solid #2456d6;border-radius:12px;padding:15px 17px;flex-wrap:wrap;">
+        <div style="flex:0 0 auto;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:#2456d6;width:42px;">S4</div>
+        <div style="flex:1;min-width:220px;"><div style="font-weight:600;font-size:14.5px;">Content-shape body renderers</div><div style="font-size:12.5px;color:#6b655c;margin-top:3px;line-height:1.5;">6 body(timeline/checklist/routine/artifact/mixed/draft). routine·long-timeline에 definition/run 분리(C 차용). 공통 header/action grammar 유지. <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9a9182;">risk medium</span></div></div>
+        <div style="flex:0 0 auto;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8a8272;line-height:1.6;">flag · myflow_shape_bodies<br>accept · explanationDep=0 · reopen≤2<br>rollback · flag off → generic body</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:22px;">
+      <div style="background:#1c1a17;color:#e7e0d2;border-radius:14px;padding:16px 18px;">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#c9a86a;font-weight:600;margin-bottom:9px;">ACCEPTANCE MARKERS</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;line-height:1.95;color:#d9d2c4;">actionableDuplicateCount = 0<br>contextLossCount = 0 (Calendar 왕복)<br>flowOpenDepth@20 ≤ 3<br>firstViewportDistinctCardTypeCount ≤ 2 (library)<br>reopenDepth ≤ 2<br>horizontalOverflowPx = 0 @390/1024/1440<br>unnamedFocusableCount = 0<br>완료 ↔ 기록 = 단일 run 상태 참조</div>
+      </div>
+      <div style="background:#fff;border:1px solid #e3ddd0;border-radius:14px;padding:16px 18px;">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#b42318;font-weight:600;margin-bottom:9px;">REJECTED</div>
+        <div style="font-size:12.5px;line-height:1.6;color:#4a453d;">
+          <div style="margin-bottom:7px;"><b>A</b> — 복잡도 −18.4% (20% 게이트 실패) + collision 미해결.</div>
+          <div style="margin-bottom:7px;"><b>C</b> — 우수하나 단순 콘텐츠 과설계. 강점(definition/run)은 B의 body에 흡수.</div>
+          <div><b>cross_tab_ia_reopen</b> — F-08은 공유 hub 중복이며 지속 competing 아님. B로 해소 → 4탭 재설계 게이트 미충족.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 13. QUESTIONS ===================== -->
+  <section id="questions" style="padding:56px 0 8px;scroll-margin-top:64px;">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#9a9182;letter-spacing:0.06em;">13 · 실제 사용자에게만 확인할 질문 · observed-user count 0</div>
+    <h2 style="font-size:28px;letter-spacing:-0.02em;font-weight:700;margin:10px 0 6px;">자동화로 답할 수 없는 것</h2>
+    <p style="font-size:14px;color:#6b655c;margin:0 0 20px;max-width:76ch;text-wrap:pretty;">이 검토는 설계 가설이다. 아래는 heuristic으로 <b>답하면 안 되는</b>, 실제 관찰이 필요한 질문이다.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;">
+      <div style="background:#fff;border:1px solid #e3ddd0;border-radius:12px;padding:13px 15px;font-size:13.5px;line-height:1.5;color:#33302b;"><span style="font-family:'IBM Plex Mono',monospace;color:#2456d6;font-weight:600;">Q1</span> '지금'과 '실행'을 실제로 다른 목적으로 예측하는가, 라벨만으로 충분한가?</div>
+      <div style="background:#fff;border:1px solid #e3ddd0;border-radius:12px;padding:13px 15px;font-size:13.5px;line-height:1.5;color:#33302b;"><span style="font-family:'IBM Plex Mono',monospace;color:#2456d6;font-weight:600;">Q2</span> 이어하기를 Home · 지금 · 실행 중 어디에서 시도하는가?</div>
+      <div style="background:#fff;border:1px solid #e3ddd0;border-radius:12px;padding:13px 15px;font-size:13.5px;line-height:1.5;color:#33302b;"><span style="font-family:'IBM Plex Mono',monospace;color:#2456d6;font-weight:600;">Q3</span> '완료'(cross-Flow)와 '기록'(per-Flow)을 별개로 기대하는가, 중복으로 느끼는가?</div>
+      <div style="background:#fff;border:1px solid #e3ddd0;border-radius:12px;padding:13px 15px;font-size:13.5px;line-height:1.5;color:#33302b;"><span style="font-family:'IBM Plex Mono',monospace;color:#2456d6;font-weight:600;">Q4</span> 20/60개 규모에 실제 도달하는가? 도달 시 검색 vs 그룹 중 무엇을 먼저 쓰는가?</div>
+      <div style="background:#fff;border:1px solid #e3ddd0;border-radius:12px;padding:13px 15px;font-size:13.5px;line-height:1.5;color:#33302b;"><span style="font-family:'IBM Plex Mono',monospace;color:#2456d6;font-weight:600;">Q5</span> Calendar 왕복 후 scroll/filter 초기화가 실제 좌절을 유발하는가?</div>
+      <div style="background:#fff;border:1px solid #e3ddd0;border-radius:12px;padding:13px 15px;font-size:13.5px;line-height:1.5;color:#33302b;"><span style="font-family:'IBM Plex Mono',monospace;color:#2456d6;font-weight:600;">Q6</span> 'continue strip'이 이어하기 멘탈모델과 맞는가, 캘린더식 'today'를 찾는가?</div>
+      <div style="background:#fff;border:1px solid #e3ddd0;border-radius:12px;padding:13px 15px;font-size:13.5px;line-height:1.5;color:#33302b;"><span style="font-family:'IBM Plex Mono',monospace;color:#2456d6;font-weight:600;">Q7</span> SR 사용자가 '열기/완료/⋯'의 대상 Flow를 이름만으로 아는가?</div>
+      <div style="background:#fff;border:1px solid #e3ddd0;border-radius:12px;padding:13px 15px;font-size:13.5px;line-height:1.5;color:#33302b;"><span style="font-family:'IBM Plex Mono',monospace;color:#2456d6;font-weight:600;">Q8</span> 완료 직후 가장 먼저 하려는 행동은 회고 · 재사용 · export 중 무엇인가?</div>
+    </div>
+  </section>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer style="margin-top:56px;padding-top:28px;border-top:1px solid #ded7c8;">
+    <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:24px;">
+      <div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#9a9182;letter-spacing:0.06em;">FINAL JUDGMENT</div>
+        <div style="font-size:18px;font-weight:700;letter-spacing:-0.01em;margin:8px 0 10px;">verdict · <span style="color:#183a97;">my_flow_structural_reopen</span> → 대안 B</div>
+        <div style="font-size:13.5px;line-height:1.65;color:#4a453d;max-width:60ch;text-wrap:pretty;">전면 재구성 기준 8개 중 3개 재현 + A의 복잡도 감소 18.4%(20% 게이트 실패). B가 collision·scale·context 복구를 동시에 해결(−47%)하며 4-tab IA와 데이터 계약을 유지한다. C의 definition/run 분리는 B의 routine·long-timeline body에 차용. cross_tab_ia_reopen은 게이트 미충족.</div>
+      </div>
+      <div style="background:#1c1a17;color:#e7e0d2;border-radius:14px;padding:16px 18px;">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#c9a86a;font-weight:600;margin-bottom:8px;">GUARDRAILS</div>
+        <div style="font-size:12.5px;line-height:1.85;color:#d9d2c4;">app code 변경 · <b style="color:#fff;">없음</b><br>observed-user count · <b style="color:#fff;">0</b><br>가짜 사용자 수 / 리뷰 / 검증 · <b style="color:#fff;">없음</b><br>위치 실험 표시 · <b style="color:#fff;">가상 데이터 - production 금지</b><br>evidence · screenshot + source + heuristic</div>
+      </div>
+    </div>
+    <div style="margin-top:24px;padding:16px 18px;background:#fff;border:1px solid #e3ddd0;border-radius:14px;">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9a9182;margin-bottom:10px;">REVIEW PACKAGE · result contract</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;font-family:'IBM Plex Mono',monospace;font-size:11px;">
+        <a href="README.md" style="padding:5px 10px;background:#f4f1ea;border:1px solid #e3ddd0;border-radius:7px;">README.md</a>
+        <a href="audit.md" style="padding:5px 10px;background:#f4f1ea;border:1px solid #e3ddd0;border-radius:7px;">audit.md</a>
+        <span style="padding:5px 10px;background:#eaf0fd;border:1px solid #cfe0fb;color:#2456d6;border-radius:7px;">review.dc.html ← review.html</span>
+        <a href="persona-journey-scorecard.json" style="padding:5px 10px;background:#f4f1ea;border:1px solid #e3ddd0;border-radius:7px;">persona-journey-scorecard.json</a>
+        <a href="my-flow-complexity-metrics.json" style="padding:5px 10px;background:#f4f1ea;border:1px solid #e3ddd0;border-radius:7px;">my-flow-complexity-metrics.json</a>
+        <a href="journey-discontinuity-matrix.json" style="padding:5px 10px;background:#f4f1ea;border:1px solid #e3ddd0;border-radius:7px;">journey-discontinuity-matrix.json</a>
+        <a href="reference-pattern-matrix.md" style="padding:5px 10px;background:#f4f1ea;border:1px solid #e3ddd0;border-radius:7px;">reference-pattern-matrix.md</a>
+        <a href="decision-matrix.json" style="padding:5px 10px;background:#f4f1ea;border:1px solid #e3ddd0;border-radius:7px;">decision-matrix.json</a>
+        <a href="next-program.md" style="padding:5px 10px;background:#f4f1ea;border:1px solid #e3ddd0;border-radius:7px;">next-program.md</a>
+        <a href="route-evidence.json" style="padding:5px 10px;background:#f4f1ea;border:1px solid #e3ddd0;border-radius:7px;">route-evidence.json</a>
+        <span style="padding:5px 10px;background:#f4f1ea;border:1px solid #e3ddd0;border-radius:7px;">screenshots/</span>
+      </div>
+    </div>
+    <div style="margin-top:20px;font-size:11px;color:#9a9182;line-height:1.6;">FlowMe P31 Independent My Flow Review · REVIEWER_ROLE claude_design · reviewedAt 2026-07-24 KST · origin/main 555da4e · 이 문서는 설계 검토이며 실제 사용자 검증이 아니다.</div>
+  </footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;1180&quot;,&quot;height&quot;:&quot;900&quot;},&quot;showAnnotations&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;검토 렌즈&quot;,&quot;label&quot;:&quot;주석·문제 태그 표시&quot;},&quot;highlightRole&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;none&quot;,&quot;options&quot;:[&quot;none&quot;,&quot;next-action&quot;,&quot;whole-plan&quot;,&quot;record&quot;,&quot;management&quot;,&quot;problem&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;검토 렌즈&quot;,&quot;label&quot;:&quot;역할 하이라이트 (와이어프레임에서 한 역할만 강조)&quot;}}">
+class Component extends DCLogic {
+  componentDidMount(){ this.applyLens(); }
+  componentDidUpdate(){ this.applyLens(); }
+  applyLens(){
+    const root = document.getElementById('flowme-review-root');
+    if(!root) return;
+    const show = this.props.showAnnotations !== false;
+    root.querySelectorAll('[data-annotation]').forEach(el=>{ el.style.display = show ? '' : 'none'; });
+    const role = this.props.highlightRole || 'none';
+    root.querySelectorAll('[data-role]').forEach(el=>{
+      const match = (role === 'none') || (el.getAttribute('data-role') === role);
+      el.style.opacity = match ? '1' : '0.14';
+      el.style.filter = match ? 'none' : 'grayscale(0.7)';
+      el.style.transition = 'opacity .18s ease, filter .18s ease';
+    });
+  }
+}
+</script>
+</body>
+</html>

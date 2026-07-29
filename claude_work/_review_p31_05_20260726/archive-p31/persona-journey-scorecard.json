@@ -1,0 +1,893 @@
+{
+  "schemaVersion": 1,
+  "packageId": "2026-07-24-flowme-p31-independent-my-flow-review-handoff",
+  "reviewerRole": "claude_design",
+  "reviewedAt": "2026-07-24T14:00:00+09:00",
+  "reviewedOriginMain": "555da4e013cc9090b76b78cc81619057409772dc",
+  "production": "https://flowme2605.vercel.app",
+  "observedUserCount": 0,
+  "evidenceDisclaimer": "모든 cell은 current production screenshot + current source + heuristic simulation으로 판정. 실제 사용자 관찰 아님. observed-user count 0.",
+  "requiredCellCount": 24,
+  "submittedCellCount": 24,
+  "statusCounts": {
+    "supported": 8,
+    "partial": 16
+  },
+  "cells": [
+    {
+      "personaId": "P1",
+      "sessionId": "S1",
+      "route": "/f/moving-d30-basic -> /my",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "zoom": 1
+      },
+      "initialState": "cold, 0 saved Flow, moving anchor unset",
+      "steps": [
+        "public Flow 미리보기 관찰",
+        "캘린더 24개 결과 확인(저장 전)",
+        "이사일 입력",
+        "날짜 없이 시작 또는 이 날짜로 저장",
+        "receipt",
+        "/my 착지"
+      ],
+      "stepCount": 6,
+      "status": "supported",
+      "mentalModelPrediction": "저장 전에 24개 날짜 결과가 먼저 보이고, 저장하면 같은 Flow가 My Flow에 남는다.",
+      "actualResult": "save-before가 artifact-first다(캘린더 24개 preview + 캘린더/체크리스트 toggle). receipt가 동일 identity 유지.",
+      "explanationFree": true,
+      "crossSurfaceParity": "receipt/My Flow/Calendar가 같은 effective Flow를 읽음",
+      "recoveryPath": "저장 취소/undo 해당 없음",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_production_screenshot",
+        "current_source"
+      ],
+      "evidenceRefs": [
+        "screenshots/current-public-moving-390.png",
+        "screenshots/current-my-flow-saved-receipt-390.png",
+        "STATUS.md P26-06/P26-07"
+      ],
+      "observedUserQuestion": "사용자가 '먼저 확인할 결과' 문구 없이도 저장 전 전체 결과를 신뢰하는가?"
+    },
+    {
+      "personaId": "P1",
+      "sessionId": "S2",
+      "route": "/my (Flow 목록 -> workspace)",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "zoom": 1
+      },
+      "initialState": "1 saved moving Flow, 0/5 완료",
+      "steps": [
+        "/my 진입(지금 탭)",
+        "Flow 목록 탭",
+        "이사 Flow row 열기",
+        "실행 sub-tab",
+        "이사일 변경 / 개별 날짜 고정",
+        "오늘 항목 완료",
+        "undo 또는 다시 열기"
+      ],
+      "stepCount": 7,
+      "status": "partial",
+      "mentalModelPrediction": "'지금'과 workspace '실행'이 같은 '오늘 할 일'을 뜻해 어느 쪽이 다음 행동인지 예측 어려움.",
+      "actualResult": "같은 stable Item이 '지금' queue와 workspace '실행' 양쪽에서 primary 완료 가능 → 이중 완료 컨트롤. 기준일 변경 vs 개별 고정 구분은 라벨 의존.",
+      "explanationFree": false,
+      "crossSurfaceParity": "완료 상태는 동일 run에 반영(source)",
+      "recoveryPath": "즉시 undo + 완료 탭 다시 열기(source P26-12)",
+      "actionableDuplicateCount": 2,
+      "contextLossCount": 1,
+      "evidenceKinds": [
+        "current_production_screenshot",
+        "current_source",
+        "heuristic_simulation"
+      ],
+      "evidenceRefs": [
+        "screenshots/current-my-flow-workspace-390.png",
+        "framework Q1/Q2",
+        "STATUS.md P26-08/P26-12"
+      ],
+      "observedUserQuestion": "'지금'과 '실행'을 실제 사용자가 서로 다른 목적으로 예측하는가, 라벨만으로 충분한가?"
+    },
+    {
+      "personaId": "P1",
+      "sessionId": "S3",
+      "route": "/my workspace -> export/lifecycle",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "zoom": 1
+      },
+      "initialState": "moving Flow 일부 완료",
+      "steps": [
+        "가져가기(export)",
+        "scope 선택",
+        "보관",
+        "reload",
+        "archived filter",
+        "복구",
+        "전체 완료",
+        "새 이사일로 다시 쓰기"
+      ],
+      "stepCount": 8,
+      "status": "partial",
+      "mentalModelPrediction": "export와 보관·복구·재사용이 실행과 같은 화면에서 경쟁할 것.",
+      "actualResult": "기능 존재(export scope, 보관/복구, 새 이사일로 다시 쓰기=P26-13). 다만 archiveRestore depth가 길고 재사용 진입점 discoverability 낮음(hidden 경향).",
+      "explanationFree": false,
+      "crossSurfaceParity": "새 run은 별도 run ID, 과거 데이터 archive(source)",
+      "recoveryPath": "복구/영구삭제 취소",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 1,
+      "evidenceKinds": [
+        "current_source",
+        "heuristic_simulation"
+      ],
+      "evidenceRefs": [
+        "STATUS.md P26-13/P26-16/P31",
+        "framework 규모 fixture"
+      ],
+      "observedUserQuestion": "'새 이사일로 다시 쓰기'를 사용자가 완료 후 스스로 찾는가?"
+    },
+    {
+      "personaId": "P2",
+      "sessionId": "S1",
+      "route": "/f/vehicle-inspection-prep -> /my",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "zoom": 1
+      },
+      "initialState": "cold, 0 saved",
+      "steps": [
+        "public preview check 확인",
+        "전체 체크리스트 구조 확인",
+        "저장",
+        "/my 진입",
+        "날짜 없는 상태 이해"
+      ],
+      "stepCount": 5,
+      "status": "supported",
+      "mentalModelPrediction": "날짜 없이도 체크리스트로 바로 실행 가능해야 한다.",
+      "actualResult": "preview check와 completion check가 구분(source). 날짜 없는 Item을 실패/숨김으로 표시하지 않음.",
+      "explanationFree": true,
+      "crossSurfaceParity": "undated Item은 list export 포함, Calendar 제외",
+      "recoveryPath": "n/a",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_source",
+        "current_production_screenshot"
+      ],
+      "evidenceRefs": [
+        "STATUS.md P25-05A/P26-16",
+        "screenshots/current-my-flow-workspace-1024.png (자동차검사 체크리스트)"
+      ],
+      "observedUserQuestion": "날짜 없는 체크리스트가 '미완성 캘린더'가 아니라 '바로 실행 가능'으로 읽히는가?"
+    },
+    {
+      "personaId": "P2",
+      "sessionId": "S2",
+      "route": "/my item -> /calendar tray",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "zoom": 1
+      },
+      "initialState": "undated checklist saved",
+      "steps": [
+        "My Flow에서 Item 열기",
+        "날짜 지정",
+        "Calendar 확인",
+        "Calendar 날짜 없는 tray에서 다른 Item 배치",
+        "배치 undo",
+        "완료",
+        "완료 취소"
+      ],
+      "stepCount": 7,
+      "status": "partial",
+      "mentalModelPrediction": "날짜를 어디서 정하는지(My Flow인지 Calendar tray인지) 설명 없이 찾기 어려움.",
+      "actualResult": "두 경로 모두 존재(My Flow item date + Calendar 날짜 없는 tray, source P26-14). 진입점 이원화로 예측성 저하.",
+      "explanationFree": false,
+      "crossSurfaceParity": "stable Item identity 유지(source P26-05)",
+      "recoveryPath": "배치 undo, 완료 취소 지원",
+      "actionableDuplicateCount": 1,
+      "contextLossCount": 1,
+      "evidenceKinds": [
+        "current_source",
+        "heuristic_simulation"
+      ],
+      "evidenceRefs": [
+        "STATUS.md P26-14/P26-15",
+        "screenshots/current-calendar-390.png"
+      ],
+      "observedUserQuestion": "사용자가 '날짜 정하기'를 My Flow와 Calendar 중 어디에서 먼저 시도하는가?"
+    },
+    {
+      "personaId": "P2",
+      "sessionId": "S3",
+      "route": "/my export scope",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "zoom": 1
+      },
+      "initialState": "undated checklist, 일부 날짜 지정",
+      "steps": [
+        "일부 Item 선택",
+        "선택 범위 export",
+        "전체 Flow export",
+        "날짜 제거",
+        "My Flow/Calendar 재확인"
+      ],
+      "stepCount": 5,
+      "status": "supported",
+      "mentalModelPrediction": "전체/선택/현재 범위와 결과 수가 행동 전에 보여야 한다.",
+      "actualResult": "export scope(전체/직접 선택/현재 항목)와 예측 count 제공(source P25-05B/P26-16). 날짜 제거 Item은 list엔 남고 Calendar/ICS만 빠짐.",
+      "explanationFree": true,
+      "crossSurfaceParity": "canonical export plan이 동일 effective Item 사용",
+      "recoveryPath": "날짜 제거 후 tray 복귀",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_source"
+      ],
+      "evidenceRefs": [
+        "STATUS.md P25-05B/P26-16"
+      ],
+      "observedUserQuestion": "export 전 예측 count가 사용자의 신뢰를 실제로 높이는가?"
+    },
+    {
+      "personaId": "P3",
+      "sessionId": "S1",
+      "route": "/f/curated-allblanc-morning-workout -> /my",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "zoom": 1
+      },
+      "initialState": "cold",
+      "steps": [
+        "루틴 전체 구조 확인",
+        "요일/시간/소요/종료조건 조정",
+        "다음 occurrence preview",
+        "저장",
+        "/my routine 확인"
+      ],
+      "stepCount": 5,
+      "status": "supported",
+      "mentalModelPrediction": "advanced field 펼치기 전 compact summary로 설정 이해.",
+      "actualResult": "summary-first recurrence + 종료정책(none/until/count) 존재(source P25-01A/P28). 4주 고정 같은 임의 정책 없음.",
+      "explanationFree": true,
+      "crossSurfaceParity": "series 정의는 Calendar undated tray에 들어가지 않음(source P26-03)",
+      "recoveryPath": "n/a",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_source"
+      ],
+      "evidenceRefs": [
+        "STATUS.md P25-01A/P26-03/P28"
+      ],
+      "observedUserQuestion": "운동 영상/공식 안내가 실행 Item과 resource로 구분돼 읽히는가?"
+    },
+    {
+      "personaId": "P3",
+      "sessionId": "S2",
+      "route": "/my routine occurrence",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "zoom": 1
+      },
+      "initialState": "routine saved, MWF",
+      "steps": [
+        "이번 occurrence 열기",
+        "자료 확인",
+        "일부 Item 완료",
+        "occurrence 완료",
+        "다시 열기",
+        "Calendar 동일 occurrence 확인"
+      ],
+      "stepCount": 6,
+      "status": "partial",
+      "mentalModelPrediction": "'이번 실행'과 '전체 루틴'을 workspace 탭(실행/전체 계획)만으로 구분하기 애매.",
+      "actualResult": "occurrence vs series는 데이터상 구분(source P26-03)되나, generic workspace 탭 문법이 definition/run 경계를 시각적으로 약하게 표현.",
+      "explanationFree": false,
+      "crossSurfaceParity": "occurrence 완료가 series 전체를 완료시키지 않음(source)",
+      "recoveryPath": "occurrence 다시 열기",
+      "actionableDuplicateCount": 1,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_source",
+        "heuristic_simulation"
+      ],
+      "evidenceRefs": [
+        "STATUS.md P26-03/P26-12",
+        "reference: Hevy routine vs workout"
+      ],
+      "observedUserQuestion": "사용자가 occurrence 완료를 series 완료로 오해하는 사례가 있는가?"
+    },
+    {
+      "personaId": "P3",
+      "sessionId": "S3",
+      "route": "/my routine history + /calendar",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "zoom": 1
+      },
+      "initialState": "1 occurrence 완료",
+      "steps": [
+        "run history 확인",
+        "다음 occurrence 확인",
+        "시간 변경",
+        "Calendar/ICS 비교",
+        "루틴 보관·복구"
+      ],
+      "stepCount": 5,
+      "status": "partial",
+      "mentalModelPrediction": "기록이 현재 실행을 밀어내지 않아야 한다.",
+      "actualResult": "workspace '기록'과 top-level '완료'가 두 개의 완료 모델처럼 중복. ICS UID/RRULE는 안정(source).",
+      "explanationFree": false,
+      "crossSurfaceParity": "recurrence identity/Calendar row/ICS UID 안정(source)",
+      "recoveryPath": "보관/복구",
+      "actionableDuplicateCount": 1,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_source",
+        "heuristic_simulation"
+      ],
+      "evidenceRefs": [
+        "STATUS.md P26-03/P25-01A",
+        "reference: Strava training log"
+      ],
+      "observedUserQuestion": "'기록'(this Flow)과 '완료'(cross-Flow)를 사용자가 별개로 기대하는가, 중복으로 느끼는가?"
+    },
+    {
+      "personaId": "P4",
+      "sessionId": "S1",
+      "route": "/f/curated-wedding-naver-timeline",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "zoom": 1
+      },
+      "initialState": "cold",
+      "steps": [
+        "전체 구조 확인",
+        "primary/secondary artifact 비교",
+        "한 형태 선택",
+        "최소 입력",
+        "결과 preflight",
+        "저장"
+      ],
+      "stepCount": 6,
+      "status": "partial",
+      "mentalModelPrediction": "다섯 형태가 긴 카드 stack으로 한 번에 펼쳐질까 우려.",
+      "actualResult": "artifact는 primary 1 + toggle(캘린더/체크리스트)로 노출(screenshot=moving). wedding 5-shape의 선택 전 count/loss 예측 가시성은 route별 확인 필요.",
+      "explanationFree": false,
+      "crossSurfaceParity": "선택 artifact가 다음 단계 화면 문법 결정",
+      "recoveryPath": "n/a",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_production_screenshot",
+        "current_source",
+        "heuristic_simulation"
+      ],
+      "evidenceRefs": [
+        "screenshots/current-public-moving-390.png",
+        "STATUS.md P26-16 (recommend 1 primary + <=2 secondary)"
+      ],
+      "observedUserQuestion": "선택 전에 title/row 수/날짜 여부/손실 정보를 사용자가 예측하는가?"
+    },
+    {
+      "personaId": "P4",
+      "sessionId": "S2",
+      "route": "/my mixed plan (/f/real-mofa-overseas-travel-prep)",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "zoom": 1
+      },
+      "initialState": "artifact 선택 후 저장됨",
+      "steps": [
+        "phase/date group 확인",
+        "Item 제목·날짜·메모 수정",
+        "단계 메모 남기기",
+        "완료·다시 열기"
+      ],
+      "stepCount": 4,
+      "status": "partial",
+      "mentalModelPrediction": "공통 shell 안에서 timeline/checklist/resource가 시각적으로 구분돼야 함.",
+      "actualResult": "공통 shell은 있으나 mobile에서 date/check/resource 분리가 약하게 드러남. 실행 중 메모가 완료 회고에만 갇힐 위험(framework Q).",
+      "explanationFree": false,
+      "crossSurfaceParity": "personal overlay가 source와 분리(source)",
+      "recoveryPath": "완료 다시 열기",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 1,
+      "evidenceKinds": [
+        "current_source",
+        "heuristic_simulation"
+      ],
+      "evidenceRefs": [
+        "STATUS.md P26-09/P26-10",
+        "reference: Wanderlog day-by-day"
+      ],
+      "observedUserQuestion": "resource(안내/링크)와 action Item을 사용자가 혼동하지 않는가?"
+    },
+    {
+      "personaId": "P4",
+      "sessionId": "S3",
+      "route": "/my export + source",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "zoom": 1
+      },
+      "initialState": "개인 수정 있는 mixed plan",
+      "steps": [
+        "전체/선택 export",
+        "원문 열기",
+        "source update 표시 확인",
+        "개인 수정 유지 확인"
+      ],
+      "stepCount": 4,
+      "status": "partial",
+      "mentalModelPrediction": "source link가 실제 링크로 동작하고 source 변경과 개인 수정이 섞이지 않아야 함.",
+      "actualResult": "source/personal 분리는 데이터 계약(source). 'source update 표시' UI 가시성은 라우트별 미확정 → heuristic.",
+      "explanationFree": false,
+      "crossSurfaceParity": "source version vs personal overlay 분리(source)",
+      "recoveryPath": "n/a",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_source",
+        "heuristic_simulation",
+        "inaccessible"
+      ],
+      "evidenceRefs": [
+        "STATUS.md P26-05",
+        "framework 데이터 계약"
+      ],
+      "observedUserQuestion": "source가 업데이트됐을 때 사용자가 자기 수정이 사라질까 불안해하는가?"
+    },
+    {
+      "personaId": "P5",
+      "sessionId": "S1",
+      "route": "/flows miss/memo -> /my",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "zoom": 1
+      },
+      "initialState": "cold, 미등록 URL/memo",
+      "steps": [
+        "URL/memo 입력",
+        "miss/source import 필요 상태",
+        "실제 확보 내용 확인",
+        "빈 입력 저장 차단",
+        "여러 Item 초안 저장",
+        "/my 착지"
+      ],
+      "stepCount": 6,
+      "status": "supported",
+      "mentalModelPrediction": "원문이 없으면 가짜 Flow/Item을 만들지 않아야 함.",
+      "actualResult": "filler 금지, 사용자 문구만 매핑(source P25-01B). 저장 Item 전체가 My Flow 노출.",
+      "explanationFree": true,
+      "crossSurfaceParity": "저장 직후/재방문 문법 동일",
+      "recoveryPath": "n/a",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_source"
+      ],
+      "evidenceRefs": [
+        "STATUS.md P25-01B/P26-04"
+      ],
+      "observedUserQuestion": "import miss 상태에서 사용자가 다음에 무엇을 해야 할지 아는가?"
+    },
+    {
+      "personaId": "P5",
+      "sessionId": "S2",
+      "route": "/my draft edit",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "zoom": 1
+      },
+      "initialState": "personal draft, 여러 Item",
+      "steps": [
+        "Item 추가",
+        "삭제",
+        "즉시 undo",
+        "reload 후 복구",
+        "순서 변경",
+        "날짜/시간/반복",
+        "제목·메모 수정"
+      ],
+      "stepCount": 7,
+      "status": "partial",
+      "mentalModelPrediction": "완료/수정/삭제/이동 컨트롤이 한 row에서 경쟁하지 않아야 함.",
+      "actualResult": "add/delete/undo/reorder/구성 편집 존재(source P26-11), progressive editor 존재(P26-10). 단 normal row에 실행+관리 컨트롤이 함께 보여 경쟁 가능.",
+      "explanationFree": false,
+      "crossSurfaceParity": "stable ID/개인 값 유지(source)",
+      "recoveryPath": "즉시 undo + reload 복구",
+      "actionableDuplicateCount": 1,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_source",
+        "heuristic_simulation"
+      ],
+      "evidenceRefs": [
+        "STATUS.md P26-10/P26-11"
+      ],
+      "observedUserQuestion": "한 row에서 완료와 재정렬/삭제를 사용자가 잘못 눌러 되돌리는 빈도는?"
+    },
+    {
+      "personaId": "P5",
+      "sessionId": "S3",
+      "route": "/my -> /calendar/export/lifecycle",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "zoom": 1
+      },
+      "initialState": "draft 구조/일정 완료",
+      "steps": [
+        "Calendar 확인",
+        "checklist/sheet/memo/ICS export",
+        "reload",
+        "보관·복구",
+        "영구 삭제 확인"
+      ],
+      "stepCount": 5,
+      "status": "supported",
+      "mentalModelPrediction": "destination별 포함·제외가 같은 effective Item을 읽어야 함.",
+      "actualResult": "canonical projection으로 parity 확보(source P26-05), 영구삭제 경계 tested(P31).",
+      "explanationFree": true,
+      "crossSurfaceParity": "My Flow/Calendar/export effective Item 일치(source)",
+      "recoveryPath": "복구/영구삭제 취소",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_source"
+      ],
+      "evidenceRefs": [
+        "STATUS.md P26-05/P31"
+      ],
+      "observedUserQuestion": "'이 기기에서 영구 삭제' 범위(공개 source 보존 여부)를 사용자가 이해하는가?"
+    },
+    {
+      "personaId": "P6",
+      "sessionId": "S1",
+      "route": "/my find/open @ 1/5/20/60",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "zoom": 1
+      },
+      "initialState": "20~60 saved Flow (fixture_only)",
+      "steps": [
+        "/my 진입",
+        "검색 또는 filter",
+        "compact row 비교",
+        "Flow workspace 열기"
+      ],
+      "stepCount": 4,
+      "status": "partial",
+      "mentalModelPrediction": "1개에서 편한 flat list가 20/60개에서도 유지될지 의문.",
+      "actualResult": "mobile은 flat compact library(screenshot). wide는 20+에서 grouped inventory(source P26-08). mobile search-first가 상시 노출되지 않아 20/60 flowOpenDepth>3 위험. 20/60은 fixture_only.",
+      "explanationFree": false,
+      "crossSurfaceParity": "n/a",
+      "recoveryPath": "n/a",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_production_screenshot",
+        "current_source",
+        "heuristic_simulation"
+      ],
+      "evidenceRefs": [
+        "screenshots/current-my-flow-workspace-390.png",
+        "STATUS.md P26-08",
+        "framework 규모 fixture"
+      ],
+      "observedUserQuestion": "실제 사용자가 20/60개 규모에 도달하는가? 도달 시 검색과 그룹 중 무엇을 먼저 쓰는가?"
+    },
+    {
+      "personaId": "P6",
+      "sessionId": "S2",
+      "route": "/my <-> /calendar restore",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "zoom": 1
+      },
+      "initialState": "5+ Flow, 하나 선택+스크롤",
+      "steps": [
+        "Flow A 실행",
+        "Flow B 전환",
+        "Calendar 이동",
+        "My Flow 복귀",
+        "search/filter/scroll/selected 복구 확인"
+      ],
+      "stepCount": 5,
+      "status": "partial",
+      "mentalModelPrediction": "탭을 오가도 위치/선택/스크롤이 유지돼야 함.",
+      "actualResult": "selected Flow는 URL query로 보존(source P26-08). scroll/filter/expanded-phase 복구는 미입증 → context loss 위험.",
+      "explanationFree": false,
+      "crossSurfaceParity": "mobile/wide capability parity(source P25-02B)",
+      "recoveryPath": "URL 기반 selection 복원",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 2,
+      "evidenceKinds": [
+        "current_source",
+        "heuristic_simulation",
+        "inaccessible"
+      ],
+      "evidenceRefs": [
+        "STATUS.md P26-08/P25-02B",
+        "framework Q4"
+      ],
+      "observedUserQuestion": "Calendar 왕복 후 스크롤/필터가 초기화되면 사용자가 좌절하는가?"
+    },
+    {
+      "personaId": "P6",
+      "sessionId": "S3",
+      "route": "/my lifecycle @ scale",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "zoom": 1
+      },
+      "initialState": "20 Flow, 일부 archived",
+      "steps": [
+        "보관",
+        "archived filter",
+        "복구",
+        "영구 삭제",
+        "source-backed 재발견·재저장"
+      ],
+      "stepCount": 5,
+      "status": "partial",
+      "mentalModelPrediction": "lifecycle command가 실행 command와 분리돼야 함.",
+      "actualResult": "mobile/wide parity 있음(P31). archived filter/direct restore discoverability와 ghost row 부재는 관찰 필요.",
+      "explanationFree": false,
+      "crossSurfaceParity": "tombstone/excluded/restore 결과 일치(source)",
+      "recoveryPath": "복구/영구삭제 취소",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 1,
+      "evidenceKinds": [
+        "current_source",
+        "heuristic_simulation"
+      ],
+      "evidenceRefs": [
+        "STATUS.md P27/P31"
+      ],
+      "observedUserQuestion": "archived Flow를 사용자가 어디서 다시 찾는지 아는가?"
+    },
+    {
+      "personaId": "P7",
+      "sessionId": "S1",
+      "route": "/ -> /my resume",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "zoom": 1
+      },
+      "initialState": "진행 중 Flow 다수",
+      "steps": [
+        "Home 재방문",
+        "이어할 Flow 선택",
+        "My Flow workspace",
+        "다음 action 실행"
+      ],
+      "stepCount": 4,
+      "status": "partial",
+      "mentalModelPrediction": "이어하기 진입점이 하나일 것으로 기대.",
+      "actualResult": "Home 이어하기 + My Flow '지금' + workspace '실행'이 같은 Item의 resume/완료를 세 곳에서 노출 → 중복 primary.",
+      "explanationFree": false,
+      "crossSurfaceParity": "동일 run 상태 공유(source)",
+      "recoveryPath": "undo/다시 열기",
+      "actionableDuplicateCount": 2,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_source",
+        "current_production_screenshot",
+        "heuristic_simulation"
+      ],
+      "evidenceRefs": [
+        "screenshots/current-my-flow-workspace-390.png",
+        "framework reopen 기준 #1/#2"
+      ],
+      "observedUserQuestion": "사용자가 '이어하기'를 Home, My Flow 지금, workspace 중 어디서 하는가?"
+    },
+    {
+      "personaId": "P7",
+      "sessionId": "S2",
+      "route": "/my complete/undo/reopen",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "zoom": 1
+      },
+      "initialState": "여러 Item 진행",
+      "steps": [
+        "여러 Item 완료",
+        "일부 즉시 undo",
+        "하루 뒤 완료 목록",
+        "다시 열기",
+        "기록 확인"
+      ],
+      "stepCount": 5,
+      "status": "partial",
+      "mentalModelPrediction": "즉시 undo와 장기 reopen이 하나의 상태 모델로 읽혀야 함.",
+      "actualResult": "즉시 undo(source P26-12)+장기 reopen 존재하나 top-level '완료'와 workspace '기록' 두 모델로 분산.",
+      "explanationFree": false,
+      "crossSurfaceParity": "완료 Item 복구 경로 유지(source)",
+      "recoveryPath": "undo + 완료 탭 다시 열기",
+      "actionableDuplicateCount": 1,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_source",
+        "heuristic_simulation"
+      ],
+      "evidenceRefs": [
+        "STATUS.md P26-12/P26-08",
+        "reference: Things Logbook"
+      ],
+      "observedUserQuestion": "완료된 Item이 사라진 것처럼 느껴져 복구를 포기하는가?"
+    },
+    {
+      "personaId": "P7",
+      "sessionId": "S3",
+      "route": "/my reflect/new run",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "zoom": 1
+      },
+      "initialState": "Flow 전체 완료",
+      "steps": [
+        "단계 메모·회고 확인",
+        "source 수정 요청 vs 개인 회고 구분",
+        "새 run 시작",
+        "이전 history 확인"
+      ],
+      "stepCount": 4,
+      "status": "partial",
+      "mentalModelPrediction": "reflection/correction/export/reuse가 동시에 펼쳐지지 않아야 함.",
+      "actualResult": "새 run 분리(source P26-13). 다만 회고/수정/export/재사용이 한 화면에서 경쟁할 위험.",
+      "explanationFree": false,
+      "crossSurfaceParity": "새 run vs 과거 run identity 분리(source)",
+      "recoveryPath": "n/a",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 1,
+      "evidenceKinds": [
+        "current_source",
+        "heuristic_simulation"
+      ],
+      "evidenceRefs": [
+        "STATUS.md P26-13",
+        "reference: Strava"
+      ],
+      "observedUserQuestion": "완료 직후 사용자가 가장 먼저 하려는 행동은 회고인가 재사용인가 export인가?"
+    },
+    {
+      "personaId": "P8",
+      "sessionId": "S1",
+      "route": "keyboard core / -> /flows -> /f -> /my",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "zoom": 1
+      },
+      "initialState": "keyboard only",
+      "steps": [
+        "Home tab 순회",
+        "Flow 찾기",
+        "public Flow 저장",
+        "My Flow",
+        "Item 완료·다시 열기"
+      ],
+      "stepCount": 5,
+      "status": "partial",
+      "mentalModelPrediction": "DOM focus 순서가 visual 순서와 일치하고 모든 action에 맥락 있는 이름이 있어야 함.",
+      "actualResult": "focus 순서 header->workspace->persistent tabs 고정(source P30). icon button(⋯, 스튜디오, 데이터 관리) accessible name의 Flow/Item 맥락은 라이브 SR 미검증.",
+      "explanationFree": false,
+      "crossSurfaceParity": "n/a",
+      "recoveryPath": "n/a",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_source",
+        "current_production_screenshot",
+        "inaccessible"
+      ],
+      "evidenceRefs": [
+        "screenshots/current-my-flow-workspace-390.png",
+        "STATUS.md P30",
+        "handoff-preparation-smoke (unnamedFocusable 0)"
+      ],
+      "observedUserQuestion": "screen reader 사용자가 '열기/완료/⋯'의 대상 Flow를 이름만으로 아는가?"
+    },
+    {
+      "personaId": "P8",
+      "sessionId": "S2",
+      "route": "overlay focus return",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "zoom": 1
+      },
+      "initialState": "Calendar sheet/menu/dialog",
+      "steps": [
+        "Calendar selected-day sheet",
+        "날짜 없는 tray",
+        "My Flow menu",
+        "archive dialog",
+        "cancel/Escape",
+        "focus return 확인"
+      ],
+      "stepCount": 6,
+      "status": "supported",
+      "mentalModelPrediction": "sheet/dialog가 focus를 가두고 닫으면 trigger로 복귀해야 함.",
+      "actualResult": "sheet/dialog focus trap + Escape + focus return 구현(source P26-18/P31). bottom nav는 main 뒤 focus(P30).",
+      "explanationFree": true,
+      "crossSurfaceParity": "n/a",
+      "recoveryPath": "Escape/cancel + focus return",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_source",
+        "inaccessible"
+      ],
+      "evidenceRefs": [
+        "STATUS.md P26-18/P30/P31"
+      ],
+      "observedUserQuestion": "실제 보조기기에서 focus 복귀가 매끄럽게 announce 되는가?"
+    },
+    {
+      "personaId": "P8",
+      "sessionId": "S3",
+      "route": "error/destructive cancel",
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "zoom": 1
+      },
+      "initialState": "invalid input / export fail / delete",
+      "steps": [
+        "빈 입력",
+        "invalid date/time",
+        "export 실패",
+        "archive",
+        "permanent delete confirm",
+        "cancel",
+        "200% zoom/긴 제목 확인"
+      ],
+      "stepCount": 7,
+      "status": "supported",
+      "mentalModelPrediction": "오류가 Item/입력을 삭제하지 않고, 파괴적 행동 범위·복구가 보여야 함.",
+      "actualResult": "오류가 Item 미삭제, destructive scope/복구 표시, cancel 동작(source). 200% zoom/긴 제목 overflow 0(smoke).",
+      "explanationFree": true,
+      "crossSurfaceParity": "n/a",
+      "recoveryPath": "cancel + 복구",
+      "actionableDuplicateCount": 0,
+      "contextLossCount": 0,
+      "evidenceKinds": [
+        "current_source",
+        "current_structured_evidence"
+      ],
+      "evidenceRefs": [
+        "STATUS.md P31",
+        "handoff-preparation-smoke (overflow 0)"
+      ],
+      "observedUserQuestion": "export 실패 시 사용자가 다음에 무엇을 해야 하는지 아는가?"
+    }
+  ]
+}

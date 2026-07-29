@@ -1,0 +1,850 @@
+{
+  "schemaVersion": 1,
+  "program": "P30 independent design review",
+  "reviewerRole": "claude_design",
+  "capturedAt": "2026-07-23",
+  "baselineSha": "4c5bbb34f5c8633d4b4b48fb8070e523ec5def6b",
+  "productionMergeSha": "b3c8500be3b6aa673e2078d02a986f7cae6fe8bf",
+  "canonicalUrl": "https://flowme2605.vercel.app",
+  "observedUserCount": 0,
+  "statusVocabulary": [
+    "supported",
+    "fixture",
+    "partial",
+    "not_tested",
+    "blocked",
+    "missing",
+    "hidden"
+  ],
+  "note": "화면·위계 판정은 current_package_screenshot/current_source, 실행 결과·persistence는 inaccessible이라 not_tested. blocked=gated 플랫폼 기능(범위 밖).",
+  "tally": {
+    "supported": 3,
+    "fixture": 3,
+    "partial": 7,
+    "not_tested": 9,
+    "blocked": 2,
+    "missing": 0,
+    "hidden": 0
+  },
+  "cells": [
+    {
+      "personaId": "P1",
+      "sessionId": "S1",
+      "userGoal": "마감일(이사일)을 역산해 실행 artifact를 받고 저장",
+      "route": "/ -> /flows -> /f/moving-d30-basic",
+      "viewport": [
+        "390x844",
+        "1024x768",
+        "1440x900"
+      ],
+      "fixtureOrStart": "fresh browser, public share entry",
+      "steps": [
+        "결과(캘린더/체크리스트) 확인",
+        "이사일 입력",
+        "날짜 intent 선택",
+        "조정",
+        "저장"
+      ],
+      "expectedMentalModel": "이 콘텐츠가 어떤 실행 결과가 되는지 먼저 보고 저장",
+      "actualUiFeedback": "artifact-first 결과가 상단, 하단에 입력+intent 3버튼+조정+primary 시작",
+      "nextAction": "날짜 없이 시작 / 날짜 정하기",
+      "visibleReachable": true,
+      "reloadRevisitPersistence": "not_tested",
+      "parity": "저장 결과=캘린더24/체크24 라벨 일치(화면상)",
+      "failureRecovery": "예시만 보기로 미리보기, 취소 경로 미확인",
+      "understandableWithoutExplanation": "부분(결정영역 밀도·동사)",
+      "status": "partial",
+      "severity": "Medium",
+      "relatedFindings": [
+        "H-1",
+        "M-1",
+        "L-1"
+      ],
+      "evidenceKind": [
+        "current_package_screenshot",
+        "heuristic_simulation"
+      ],
+      "observedUserOnlyAssumption": "결과→저장 순서가 설명 없이 읽히는지(Q1)"
+    },
+    {
+      "personaId": "P1",
+      "sessionId": "S2",
+      "userGoal": "완료/취소, 기준일 변경, 개인 고정 날짜 확인",
+      "route": "/my -> /calendar",
+      "viewport": [
+        "390x844",
+        "1024x768",
+        "1440x900"
+      ],
+      "fixtureOrStart": "저장된 이사 Flow (from S1)",
+      "steps": [
+        "My Flow에서 Flow 열기",
+        "완료/취소",
+        "기준일 변경",
+        "개인 고정 날짜 확인"
+      ],
+      "expectedMentalModel": "저장한 Flow를 이어 실행",
+      "actualUiFeedback": "My Flow 다음 할 일 카드+열기 확인, 완료/기준일변경 라이브 미수행",
+      "nextAction": "열기 / 완료 체크",
+      "visibleReachable": true,
+      "reloadRevisitPersistence": "not_tested",
+      "parity": "title/date/count parity 화면상 일치",
+      "failureRecovery": "not_tested",
+      "understandableWithoutExplanation": "not_tested",
+      "status": "not_tested",
+      "severity": "n/a",
+      "relatedFindings": [
+        "L-1"
+      ],
+      "evidenceKind": [
+        "current_source",
+        "inaccessible"
+      ],
+      "observedUserOnlyAssumption": "기준일 변경이 과거 run을 보존하며 이해되는지"
+    },
+    {
+      "personaId": "P1",
+      "sessionId": "S3",
+      "userGoal": "전체 Calendar export, 새 이사일 재사용, 과거 run 보존",
+      "route": "/calendar + /my",
+      "viewport": [
+        "390x844",
+        "1024x768",
+        "1440x900"
+      ],
+      "fixtureOrStart": "실행 진행된 이사 Flow",
+      "steps": [
+        "Calendar export",
+        "새 이사일로 재사용",
+        "과거 run 확인"
+      ],
+      "expectedMentalModel": "새 run은 새로, 과거는 보존",
+      "actualUiFeedback": "run registry/재사용은 source·doc 근거, 라이브 미수행",
+      "nextAction": "가져가기 / 다시 쓰기",
+      "visibleReachable": true,
+      "reloadRevisitPersistence": "not_tested",
+      "parity": "export count parity 미검(라이브)",
+      "failureRecovery": "not_tested",
+      "understandableWithoutExplanation": "not_tested",
+      "status": "not_tested",
+      "severity": "n/a",
+      "relatedFindings": [],
+      "evidenceKind": [
+        "current_source",
+        "inaccessible"
+      ],
+      "observedUserOnlyAssumption": "재사용/과거 run 구분이 자연스러운지"
+    },
+    {
+      "personaId": "P2",
+      "sessionId": "S1",
+      "userGoal": "날짜 없이 차량 점검 저장, preview·completion 경계 확인",
+      "route": "/f/vehicle-inspection-prep",
+      "viewport": [
+        "390x844",
+        "1024x768",
+        "1440x900"
+      ],
+      "fixtureOrStart": "fresh, undated checklist content",
+      "steps": [
+        "결과 확인",
+        "날짜 없이 저장",
+        "preview/completion 경계 인지"
+      ],
+      "expectedMentalModel": "날짜 없어도 실행 목록을 받는다",
+      "actualUiFeedback": "vehicle route 미캡처 → moving artifact-first로 유추",
+      "nextAction": "날짜 없이 시작",
+      "visibleReachable": true,
+      "reloadRevisitPersistence": "not_tested",
+      "parity": "undated count parity 화면상",
+      "failureRecovery": "heuristic",
+      "understandableWithoutExplanation": "부분",
+      "status": "partial",
+      "severity": "Low",
+      "relatedFindings": [
+        "M-1"
+      ],
+      "evidenceKind": [
+        "heuristic_simulation",
+        "current_source"
+      ],
+      "observedUserOnlyAssumption": "preview와 완료 경계가 구분되는지"
+    },
+    {
+      "personaId": "P2",
+      "sessionId": "S2",
+      "userGoal": "undated 일부를 Calendar 배치, undo, 완료/재개",
+      "route": "/calendar",
+      "viewport": [
+        "390x844"
+      ],
+      "fixtureOrStart": "deterministic undated fixture 10개",
+      "steps": [
+        "날짜 없는 일 열기",
+        "2개 선택",
+        "날짜 배치",
+        "undo"
+      ],
+      "expectedMentalModel": "날짜 없는 일을 골라 달력에 놓는다",
+      "actualUiFeedback": "bottom sheet 10개, 오늘/날짜 선택, 10→8→undo10 stable ID",
+      "nextAction": "오늘에 놓기 / 이 날짜에 놓기",
+      "visibleReachable": true,
+      "reloadRevisitPersistence": "fixture",
+      "parity": "stable ID 복구 true, page scroll 불변",
+      "failureRecovery": "undo 확인(fixture)",
+      "understandableWithoutExplanation": "부분(실데이터 미관측)",
+      "status": "fixture",
+      "severity": "Medium",
+      "relatedFindings": [
+        "M-4"
+      ],
+      "evidenceKind": [
+        "fixture_only",
+        "current_package_screenshot"
+      ],
+      "observedUserOnlyAssumption": "실데이터에서 배치가 자연스러운지(Q5)"
+    },
+    {
+      "personaId": "P2",
+      "sessionId": "S3",
+      "userGoal": "whole/selected/current export, 날짜 제거 후 tray 복귀",
+      "route": "/my + /calendar",
+      "viewport": [
+        "390x844",
+        "1024x768",
+        "1440x900"
+      ],
+      "fixtureOrStart": "배치된 undated Flow",
+      "steps": [
+        "export scope 선택",
+        "날짜 제거",
+        "tray 복귀 확인"
+      ],
+      "expectedMentalModel": "날짜를 빼면 다시 미배치로",
+      "actualUiFeedback": "export scope 화면 확인, tray 복귀 라이브 미수행",
+      "nextAction": "가져가기 / 날짜 제거",
+      "visibleReachable": true,
+      "reloadRevisitPersistence": "not_tested",
+      "parity": "scope별 count parity 미검(라이브)",
+      "failureRecovery": "not_tested",
+      "understandableWithoutExplanation": "not_tested",
+      "status": "not_tested",
+      "severity": "n/a",
+      "relatedFindings": [],
+      "evidenceKind": [
+        "current_source",
+        "inaccessible"
+      ],
+      "observedUserOnlyAssumption": "날짜 제거→tray 복귀가 예측되는지"
+    },
+    {
+      "personaId": "P3",
+      "sessionId": "S1",
+      "userGoal": "홈트 루틴 요일·시간·duration·종료 조건 설정",
+      "route": "/f/curated-allblanc-morning-workout",
+      "viewport": [
+        "390x844",
+        "1024x768",
+        "1440x900"
+      ],
+      "fixtureOrStart": "fresh, routine content",
+      "steps": [
+        "요약 1줄 확인",
+        "다음 3회 확인",
+        "고급 열기",
+        "요일/시간/duration/종료 설정"
+      ],
+      "expectedMentalModel": "반복 계획을 요약으로 보고 필요시 조정",
+      "actualUiFeedback": "월·수·금·시간 미정·계속 반복 1줄 + 다음 3회 chip + 고급(언제/언제 끝)",
+      "nextAction": "이 날짜로 시작 / 조정",
+      "visibleReachable": true,
+      "reloadRevisitPersistence": "not_tested",
+      "parity": "요약=정의 파생 일치",
+      "failureRecovery": "반복 설정 닫기",
+      "understandableWithoutExplanation": "대체로 yes(요약 우선)",
+      "status": "supported",
+      "severity": "Low",
+      "relatedFindings": [
+        "L-2"
+      ],
+      "evidenceKind": [
+        "current_package_screenshot",
+        "current_source"
+      ],
+      "observedUserOnlyAssumption": "미리보기 창↔종료 횟수 이해(Q6)"
+    },
+    {
+      "personaId": "P3",
+      "sessionId": "S2",
+      "userGoal": "이번 회차 완료/재개, series↔occurrence 분리 확인",
+      "route": "/my (지금/캘린더)",
+      "viewport": [
+        "390x844",
+        "1024x768",
+        "1440x900"
+      ],
+      "fixtureOrStart": "저장된 루틴 Flow",
+      "steps": [
+        "이번 회차 완료",
+        "재개",
+        "series 정의와 분리 확인"
+      ],
+      "expectedMentalModel": "이번 회차만 완료, 정의는 불변",
+      "actualUiFeedback": "분리 계약 source 확인, 완료/재개 라이브 미수행",
+      "nextAction": "이번 회차 완료 체크",
+      "visibleReachable": true,
+      "reloadRevisitPersistence": "not_tested",
+      "parity": "series mutated by occurrence: false(source)",
+      "failureRecovery": "not_tested",
+      "understandableWithoutExplanation": "not_tested",
+      "status": "not_tested",
+      "severity": "n/a",
+      "relatedFindings": [],
+      "evidenceKind": [
+        "current_source",
+        "inaccessible"
+      ],
+      "observedUserOnlyAssumption": "series/occurrence 분리가 사용자에게 읽히는지"
+    },
+    {
+      "personaId": "P3",
+      "sessionId": "S3",
+      "userGoal": "Calendar/ICS export, 과거 기록, resource↔execution 구분",
+      "route": "/calendar + export",
+      "viewport": [
+        "390x844",
+        "1024x768",
+        "1440x900"
+      ],
+      "fixtureOrStart": "실행 진행된 루틴",
+      "steps": [
+        "ICS export",
+        "과거 기록 확인",
+        "resource와 execution item 구분"
+      ],
+      "expectedMentalModel": "자료와 실행 항목은 다른 층",
+      "actualUiFeedback": "ICS/RRULE identity source 확인, export 라이브 미수행",
+      "nextAction": "가져가기(ICS)",
+      "visibleReachable": true,
+      "reloadRevisitPersistence": "not_tested",
+      "parity": "UID/RRULE 공유(source)",
+      "failureRecovery": "not_tested",
+      "understandableWithoutExplanation": "not_tested",
+      "status": "not_tested",
+      "severity": "n/a",
+      "relatedFindings": [],
+      "evidenceKind": [
+        "current_source",
+        "inaccessible"
+      ],
+      "observedUserOnlyAssumption": "resource/execution 구분이 이해되는지"
+    },
+    {
+      "personaId": "P4",
+      "sessionId": "S1",
+      "userGoal": "많은 Flow 중 검색·2 Flow 선택해 Calendar에서 보기",
+      "route": "/calendar?demo=ux20, /calendar?demo=ux50",
+      "viewport": [
+        "390x844",
+        "1440x900"
+      ],
+      "fixtureOrStart": "query fixture 27/62 options",
+      "steps": [
+        "범위 열기",
+        "검색",
+        "2개 선택",
+        "적용"
+      ],
+      "expectedMentalModel": "많아도 원하는 Flow만 골라 본다",
+      "actualUiFeedback": "scope picker 검색+이번 달 그룹+색점, inactive 접힘, 5 interactions",
+      "nextAction": "전체 Flow 보기 / 선택",
+      "visibleReachable": true,
+      "reloadRevisitPersistence": "fixture",
+      "parity": "optionCount 62, 선택 반영(fixture)",
+      "failureRecovery": "닫기/검색 초기화",
+      "understandableWithoutExplanation": "부분(동명 fixture)",
+      "status": "fixture",
+      "severity": "Medium",
+      "relatedFindings": [
+        "M-4"
+      ],
+      "evidenceKind": [
+        "fixture_only",
+        "current_package_screenshot"
+      ],
+      "observedUserOnlyAssumption": "varied-name에서 검색 전 스캔(Q4)"
+    },
+    {
+      "personaId": "P4",
+      "sessionId": "S2",
+      "userGoal": "같은 날짜 5 Flow compact/full identity와 실행",
+      "route": "/calendar?demo=ux50",
+      "viewport": [
+        "1024x768"
+      ],
+      "fixtureOrStart": "same-date 5 Flow fixture",
+      "steps": [
+        "같은 날 cell 확인",
+        "selected-day에서 5 Flow 구분",
+        "실행"
+      ],
+      "expectedMentalModel": "겹친 날도 무엇이 있는지 안다",
+      "actualUiFeedback": "grid 축약 벽(M2), selected-day full identity 5개 확인",
+      "nextAction": "날짜 선택 → agenda",
+      "visibleReachable": true,
+      "reloadRevisitPersistence": "fixture",
+      "parity": "selected-day full identity 5(확인)",
+      "failureRecovery": "agenda로 유도",
+      "understandableWithoutExplanation": "부분(grid 시각 구분 약함)",
+      "status": "partial",
+      "severity": "Medium",
+      "relatedFindings": [
+        "M-2"
+      ],
+      "evidenceKind": [
+        "current_package_screenshot",
+        "fixture_only"
+      ],
+      "observedUserOnlyAssumption": "cell 축약으로 구분되는지(Q4)"
+    },
+    {
+      "personaId": "P4",
+      "sessionId": "S3",
+      "userGoal": "undated 2개 batch 배치, undo, focus/scroll/stable ID",
+      "route": "/calendar?demo=ux50",
+      "viewport": [
+        "390x844"
+      ],
+      "fixtureOrStart": "undated fixture",
+      "steps": [
+        "batch 선택",
+        "배치",
+        "undo",
+        "focus/scroll 확인"
+      ],
+      "expectedMentalModel": "여러 개를 한 번에 놓고 되돌린다",
+      "actualUiFeedback": "10→8→undo10 stable ID, page scroll 불변(fixture)",
+      "nextAction": "이 날짜에 놓기",
+      "visibleReachable": true,
+      "reloadRevisitPersistence": "fixture",
+      "parity": "stable ID 복구 true",
+      "failureRecovery": "undo 확인(fixture)",
+      "understandableWithoutExplanation": "부분",
+      "status": "fixture",
+      "severity": "Low",
+      "relatedFindings": [
+        "M-4"
+      ],
+      "evidenceKind": [
+        "fixture_only",
+        "current_package_screenshot"
+      ],
+      "observedUserOnlyAssumption": "batch 배치가 실데이터에서 자연스러운지"
+    },
+    {
+      "personaId": "P5",
+      "sessionId": "S1",
+      "userGoal": "primary/secondary artifact, scope/count/loss 예측",
+      "route": "/f/moving-d30-basic (가져가기)",
+      "viewport": [
+        "390x844",
+        "1024x768",
+        "1440x900"
+      ],
+      "fixtureOrStart": "public save-before export panel",
+      "steps": [
+        "가져가기 열기",
+        "범위 확인",
+        "개수/손실 확인",
+        "추천 확인"
+      ],
+      "expectedMentalModel": "무엇이 몇 개로, 무엇을 잃는지 먼저",
+      "actualUiFeedback": "범위 segmented→개수→날짜 있음/없음/제외→추천(primary1+secondary)",
+      "nextAction": "캘린더 파일 받기 / 메모로 복사",
+      "visibleReachable": true,
+      "reloadRevisitPersistence": "not_tested",
+      "parity": "scope 라벨에 count 포함(화면)",
+      "failureRecovery": "접기/범위 변경",
+      "understandableWithoutExplanation": "대체로 yes",
+      "status": "supported",
+      "severity": "Low",
+      "relatedFindings": [],
+      "evidenceKind": [
+        "current_package_screenshot"
+      ],
+      "observedUserOnlyAssumption": "예측 개수=실제 개수 신뢰"
+    },
+    {
+      "personaId": "P5",
+      "sessionId": "S2",
+      "userGoal": "My Flow whole/selected/current export와 receipt",
+      "route": "/my?demo=ux20&view=flows",
+      "viewport": [
+        "390x844",
+        "1024x768",
+        "1440x900"
+      ],
+      "fixtureOrStart": "저장된 Flow 27개",
+      "steps": [
+        "Flow 열기",
+        "가져가기",
+        "scope 선택",
+        "receipt 확인"
+      ],
+      "expectedMentalModel": "범위를 고르면 그만큼 나온다",
+      "actualUiFeedback": "Flow 전체·직접 선택·현재 항목 scope 확인, receipt count parity 라이브 미수행",
+      "nextAction": "가져가기 실행",
+      "visibleReachable": true,
+      "reloadRevisitPersistence": "not_tested",
+      "parity": "output-count==predicted 라이브 미검",
+      "failureRecovery": "닫기(focus return 확인)",
+      "understandableWithoutExplanation": "부분",
+      "status": "partial",
+      "severity": "Low",
+      "relatedFindings": [],
+      "evidenceKind": [
+        "current_package_screenshot",
+        "inaccessible"
+      ],
+      "observedUserOnlyAssumption": "receipt가 실제 결과로 신뢰되는지"
+    },
+    {
+      "personaId": "P5",
+      "sessionId": "S3",
+      "userGoal": "Calendar/checklist/sheet/memo parity, duplicate import/cross-device",
+      "route": "외부 도구",
+      "viewport": [
+        "390x844",
+        "1024x768",
+        "1440x900"
+      ],
+      "fixtureOrStart": "export 산출물",
+      "steps": [
+        "4형식 parity 확인",
+        "같은 ICS 2회 import",
+        "cross-device 복원"
+      ],
+      "expectedMentalModel": "어느 도구로 가도 같은 내용",
+      "actualUiFeedback": "duplicate import/cross-device는 실제 도구·계정 필요",
+      "nextAction": "n/a (외부)",
+      "visibleReachable": false,
+      "reloadRevisitPersistence": "blocked",
+      "parity": "human gate",
+      "failureRecovery": "n/a",
+      "understandableWithoutExplanation": "n/a",
+      "status": "blocked",
+      "severity": "deferred_gate",
+      "relatedFindings": [],
+      "evidenceKind": [
+        "inaccessible"
+      ],
+      "observedUserOnlyAssumption": "실제 Calendar app import·중복 동작(human gate)"
+    },
+    {
+      "personaId": "P6",
+      "sessionId": "S1",
+      "userGoal": "/flows hit/miss/source-import-required와 draft 저장",
+      "route": "/flows -> draft",
+      "viewport": [
+        "390x844",
+        "1024x768",
+        "1440x900"
+      ],
+      "fixtureOrStart": "fresh, URL/memo intake",
+      "steps": [
+        "검색 hit/miss",
+        "source-import 경로",
+        "draft 저장"
+      ],
+      "expectedMentalModel": "내 URL/메모로 초안을 만든다",
+      "actualUiFeedback": "source-import 경로가 /flow-maps legacy와 얽힘(H1), draft 저장 라이브 미수행",
+      "nextAction": "draft 저장",
+      "visibleReachable": true,
+      "reloadRevisitPersistence": "not_tested",
+      "parity": "draft title/date parity 미검(라이브)",
+      "failureRecovery": "heuristic",
+      "understandableWithoutExplanation": "부분(진입 문법 이원화)",
+      "status": "partial",
+      "severity": "High",
+      "relatedFindings": [
+        "H-1"
+      ],
+      "evidenceKind": [
+        "current_package_screenshot",
+        "heuristic_simulation"
+      ],
+      "observedUserOnlyAssumption": "두 진입이 같은 Flow로 인지되는지(Q2)"
+    },
+    {
+      "personaId": "P6",
+      "sessionId": "S2",
+      "userGoal": "add/delete/restore/reorder/title/date/time/memo/completion",
+      "route": "/my draft detail",
+      "viewport": [
+        "390x844",
+        "1024x768",
+        "1440x900"
+      ],
+      "fixtureOrStart": "저장된 draft",
+      "steps": [
+        "항목 추가/삭제/복원",
+        "reorder",
+        "title/date/time/memo",
+        "완료"
+      ],
+      "expectedMentalModel": "내 초안을 자유롭게 편집",
+      "actualUiFeedback": "구조 편집 모드 source 근거, 라이브 미수행",
+      "nextAction": "구성 편집 / 완료",
+      "visibleReachable": true,
+      "reloadRevisitPersistence": "not_tested",
+      "parity": "order 유지·export order 미검(라이브)",
+      "failureRecovery": "restore/undo(source)",
+      "understandableWithoutExplanation": "not_tested",
+      "status": "not_tested",
+      "severity": "n/a",
+      "relatedFindings": [],
+      "evidenceKind": [
+        "current_source",
+        "inaccessible"
+      ],
+      "observedUserOnlyAssumption": "편집 후 순서가 유지된다고 신뢰하는지"
+    },
+    {
+      "personaId": "P6",
+      "sessionId": "S3",
+      "userGoal": "Calendar/list export parity, reload persistence, draft↔공유 경계",
+      "route": "/my + /calendar",
+      "viewport": [
+        "390x844",
+        "1024x768",
+        "1440x900"
+      ],
+      "fixtureOrStart": "편집된 draft",
+      "steps": [
+        "export parity",
+        "reload",
+        "draft와 공유 Flow 경계 확인"
+      ],
+      "expectedMentalModel": "내 초안은 내 것, 공유와 안 섞임",
+      "actualUiFeedback": "persistence·경계 라이브 미수행",
+      "nextAction": "가져가기",
+      "visibleReachable": true,
+      "reloadRevisitPersistence": "not_tested",
+      "parity": "list/calendar parity 미검(라이브)",
+      "failureRecovery": "not_tested",
+      "understandableWithoutExplanation": "not_tested",
+      "status": "not_tested",
+      "severity": "n/a",
+      "relatedFindings": [],
+      "evidenceKind": [
+        "current_source",
+        "inaccessible"
+      ],
+      "observedUserOnlyAssumption": "reload 후 draft 보존 신뢰"
+    },
+    {
+      "personaId": "P7",
+      "sessionId": "S1",
+      "userGoal": "저장 receipt·전체 Flow·첫 실행·단계 메모",
+      "route": "/my detail",
+      "viewport": [
+        "390x844",
+        "1024x768",
+        "1440x900"
+      ],
+      "fixtureOrStart": "저장된 Flow",
+      "steps": [
+        "receipt 확인",
+        "전체 Flow 보기",
+        "첫 실행",
+        "단계 메모"
+      ],
+      "expectedMentalModel": "저장했고 지금 뭘 할지 안다",
+      "actualUiFeedback": "다음 할 일 카드 + 열기(primary) + 메모, 전체 Flow 그룹",
+      "nextAction": "열기 / 메모",
+      "visibleReachable": true,
+      "reloadRevisitPersistence": "not_tested",
+      "parity": "title/date/count parity(화면)",
+      "failureRecovery": "heuristic",
+      "understandableWithoutExplanation": "부분",
+      "status": "partial",
+      "severity": "Low",
+      "relatedFindings": [],
+      "evidenceKind": [
+        "current_package_screenshot"
+      ],
+      "observedUserOnlyAssumption": "receipt→다음 행동이 자연스러운지(Q3)"
+    },
+    {
+      "personaId": "P7",
+      "sessionId": "S2",
+      "userGoal": "일부 완료·reopen·개인 수정·source correction 구분",
+      "route": "/my detail + 완료",
+      "viewport": [
+        "390x844",
+        "1024x768",
+        "1440x900"
+      ],
+      "fixtureOrStart": "실행 진행 Flow",
+      "steps": [
+        "일부 완료",
+        "reopen",
+        "개인 수정",
+        "source correction 시도"
+      ],
+      "expectedMentalModel": "내 수정과 원문 정정은 다르다",
+      "actualUiFeedback": "완료/reopen 라이브 미수행, correction 전송은 미구현(gated)",
+      "nextAction": "완료 / 다시 열기 (correction 없음)",
+      "visibleReachable": false,
+      "reloadRevisitPersistence": "not_tested",
+      "parity": "개인 overlay vs source 분리(source)",
+      "failureRecovery": "reopen(source)",
+      "understandableWithoutExplanation": "n/a",
+      "status": "blocked",
+      "severity": "deferred_gate",
+      "relatedFindings": [],
+      "evidenceKind": [
+        "current_source",
+        "inaccessible"
+      ],
+      "observedUserOnlyAssumption": "source 오류 정정 욕구가 있는지(Q7)"
+    },
+    {
+      "personaId": "P7",
+      "sessionId": "S3",
+      "userGoal": "전체 완료·회고·새 run·과거 실행 기록 보존",
+      "route": "/my 완료 + 재사용",
+      "viewport": [
+        "390x844",
+        "1024x768",
+        "1440x900"
+      ],
+      "fixtureOrStart": "완료된 Flow",
+      "steps": [
+        "전체 완료",
+        "회고",
+        "새 run",
+        "과거 기록 확인"
+      ],
+      "expectedMentalModel": "다시 쓰되 과거는 남는다",
+      "actualUiFeedback": "run registry·회고 source 근거, 라이브 미수행",
+      "nextAction": "다시 쓰기",
+      "visibleReachable": true,
+      "reloadRevisitPersistence": "not_tested",
+      "parity": "과거 run 보존(source)",
+      "failureRecovery": "not_tested",
+      "understandableWithoutExplanation": "not_tested",
+      "status": "not_tested",
+      "severity": "n/a",
+      "relatedFindings": [],
+      "evidenceKind": [
+        "current_source",
+        "inaccessible"
+      ],
+      "observedUserOnlyAssumption": "재방문 이유가 존재하는지(chain 2)"
+    },
+    {
+      "personaId": "P8",
+      "sessionId": "S1",
+      "userGoal": "header->workspace->tabs, save-before keyboard 조정",
+      "route": "전 route (초점)",
+      "viewport": [
+        "390x844",
+        "1024x768",
+        "1440x900"
+      ],
+      "fixtureOrStart": "keyboard/AT",
+      "steps": [
+        "Tab으로 header→workspace→tabs",
+        "save-before 키보드 조정"
+      ],
+      "expectedMentalModel": "본문을 먼저 조작, tabs는 뒤",
+      "actualUiFeedback": "/my workspaceIndex4/tabs19, /calendar workspaceIndex3/tabs76 (ordered)",
+      "nextAction": "Tab / Enter",
+      "visibleReachable": true,
+      "reloadRevisitPersistence": "not_tested",
+      "parity": "accessible name 전부 존재",
+      "failureRecovery": "heuristic",
+      "understandableWithoutExplanation": "부분(Calendar 깊이 ~76)",
+      "status": "partial",
+      "severity": "Medium",
+      "relatedFindings": [
+        "M-3"
+      ],
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_source"
+      ],
+      "observedUserOnlyAssumption": "grid 깊이가 실제 AT 사용자에게 부담인지"
+    },
+    {
+      "personaId": "P8",
+      "sessionId": "S2",
+      "userGoal": "sheet/dialog/menu focus trap, Escape, focus return, accessible name",
+      "route": "scope picker/undated sheet/menu",
+      "viewport": [
+        "390x844",
+        "1024x768",
+        "1440x900"
+      ],
+      "fixtureOrStart": "keyboard/AT",
+      "steps": [
+        "sheet 열기",
+        "focus trap",
+        "Escape",
+        "focus return"
+      ],
+      "expectedMentalModel": "열면 갇히고, 닫으면 원위치",
+      "actualUiFeedback": "trap·Escape·return 구조 확인(source/trace), 라이브 AT 미수행",
+      "nextAction": "Escape",
+      "visibleReachable": true,
+      "reloadRevisitPersistence": "not_tested",
+      "parity": "unnamedFocusable 0(source)",
+      "failureRecovery": "focus return(구조)",
+      "understandableWithoutExplanation": "구조 green",
+      "status": "supported",
+      "severity": "Low",
+      "relatedFindings": [],
+      "evidenceKind": [
+        "current_source",
+        "current_production_interaction"
+      ],
+      "observedUserOnlyAssumption": "실제 스크린리더 낭독 순서 적절성"
+    },
+    {
+      "personaId": "P8",
+      "sessionId": "S3",
+      "userGoal": "완료/reopen·배치/undo·export keyboard-only와 확대/overflow",
+      "route": "전 route",
+      "viewport": [
+        "390x844",
+        "1024x768",
+        "1440x900"
+      ],
+      "fixtureOrStart": "keyboard/AT + zoom",
+      "steps": [
+        "keyboard-only 완료/배치/export",
+        "200% 확대",
+        "overflow 확인"
+      ],
+      "expectedMentalModel": "마우스 없이 다 되고, 확대해도 안 깨진다",
+      "actualUiFeedback": "overflow 0(390/1024/1440) 확인, keyboard-only 실행·zoom reflow 라이브 미수행",
+      "nextAction": "키보드 조작",
+      "visibleReachable": true,
+      "reloadRevisitPersistence": "not_tested",
+      "parity": "horizontalOverflow 0(source)",
+      "failureRecovery": "not_tested",
+      "understandableWithoutExplanation": "not_tested",
+      "status": "not_tested",
+      "severity": "n/a",
+      "relatedFindings": [
+        "M-3"
+      ],
+      "evidenceKind": [
+        "current_source",
+        "inaccessible"
+      ],
+      "observedUserOnlyAssumption": "200% 확대 reflow·keyboard-only 완주 가능성"
+    }
+  ]
+}

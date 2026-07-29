@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "1.0",
+  "packageId": "2026-07-26-flowme-mece-ux-reset-claude-design-proposal",
+  "metadata": {
+    "reviewerRole": "claude_design",
+    "reviewDate": "2026-07-26",
+    "localHead": "inaccessible",
+    "originMain": "inaccessible",
+    "branchInspected": "codex/flowme-mece-ux-reset-design-handoff",
+    "resolvedTreeRef": "319f379a918f (tree hash, not a commit sha)",
+    "productionCheckedAt": "2026-07-26T00:33Z",
+    "observedUserCount": 0,
+    "appCodeChanged": false,
+    "publishActionsPerformed": false
+  },
+  "verdict": {
+    "overall": "bounded_revision",
+    "summary": "Codex의 소유권 방향(찾기 → 공개 Flow → 저장 결과 → 개인 Flow, My Flow는 목록, Calendar는 날짜 렌즈)은 유지한다. production의 실제 결함은 탭 수가 아니라 한 화면이 여러 질문에 동시에 답하는 composition이며, 그 문제는 Codex 안으로 대부분 닫힌다. 다만 재방문 진입(결정 1)과 가장 잦은 단일 동작인 완료(결정 3)에서 Codex 안은 덜어냄을 사용자 비용으로 지불한다. 두 surface만 수정하면 MECE를 유지한 채 비용을 회수할 수 있으므로 구조 재개봉이 아니라 bounded revision이다. 데이터 계약은 변경하지 않는다.",
+    "recommended": "A_prime = A_subtractive_ownership + C 수정 2건(entry router, calendar completion primitive)",
+    "homeDecision": {
+      "verdict": "revise",
+      "structure": "홈 route와 활용 예시 카드는 제거하고 primary navigation은 Flow 찾기 / Calendar / My Flow 3개. `/`는 고정 alias가 아니라 entry router로, 저장 Flow가 있으면 /my, 없으면 /flows.",
+      "cost": "진입 화면이 상태에 따라 달라진다. localStorage 판정 전 skeleton 한 프레임이 필요하고, 진입 규칙을 QA/E2E에서 두 경로로 검증해야 한다.",
+      "evidenceKinds": ["current_production_interaction", "heuristic_simulation"],
+      "rollback": "flag로 고정 /flows 리다이렉트 복귀. 새 surface를 만들지 않았으므로 rollback 표면이 0개."
+    },
+    "myFlowDecision": {
+      "verdict": "keep",
+      "structure": "/my는 저장 Flow 목록·검색·필터·lifecycle 진입만 소유. 행은 하나의 목적지(Flow 열기)만 갖고, 다음 예정은 읽기 전용 한 줄로만 표시한다. Today 실행 mode는 제거.",
+      "cost": "재방문 사용자가 오늘 할 일을 보려면 Flow를 열거나 Calendar로 1탭 이동해야 한다. 날짜 없는 Flow는 Calendar에 나타나지 않으므로 목록 행의 한 줄이 유일한 요약이다.",
+      "evidenceKinds": ["current_package_screenshot", "current_production_interaction"],
+      "rollback": "카드 composition prop 복원."
+    },
+    "calendarDecision": {
+      "verdict": "revise",
+      "structure": "날짜 lens로 한정하되 완료/다시 열기 토글 1개만 행에 남긴다. 메모·날짜 옮기기·제목 수정·날짜 없는 tray는 개인 Flow로 이동. 월 cell은 색 dot + 개수, 전체 제목은 선택일 agenda에서만.",
+      "cost": "‘Calendar는 아무것도 바꾸지 않는다’는 단순한 규칙을 잃는다. 대신 완료를 소유 기능이 아니라 row primitive로 문법에 명시해야 하고, 두 표면의 라벨·피드백·undo가 어긋나면 MECE가 무너진다.",
+      "evidenceKinds": ["current_package_screenshot", "reference_pattern"],
+      "rollback": "완료 토글만 숨기면 순수 A(lens-only)와 동일해진다 — rollback 비용이 가장 낮은 결정."
+    }
+  },
+  "alternatives": [
+    {
+      "id": "A_subtractive_ownership",
+      "description": "Home 제거, /my는 library-only, Calendar는 lens-only. 개인 Flow가 실행·수정·완료·메모·export를 유일하게 소유.",
+      "userValue": "한 화면 한 질문이 가장 선명하다. 학습해야 할 규칙이 가장 적다.",
+      "mobileLoad": "가장 낮음. 390 첫 viewport 결정 표면 2개.",
+      "actionOwnership": "중복 0. 단 완료까지의 경로가 Calendar에서 3탭(열기 → 항목 찾기 → 완료).",
+      "dataContractRisk": "없음. 화면 소유권 계층만 변경.",
+      "implementationRisk": "중. Calendar 편집 제거와 /my 분리가 동시에 필요하다.",
+      "tradeoffs": "재방문 사용자가 발견 화면으로 떨어진다. 가장 잦은 동작인 완료의 비용이 올라간다.",
+      "verdict": "base로 채택 (두 지점만 수정)"
+    },
+    {
+      "id": "B_current_model_tightened",
+      "description": "홈의 비중복 역할 하나 유지, /my에 최소 Today 유지, Calendar에 최소 inline action 유지.",
+      "userValue": "변화가 적어 기존 사용자의 학습 비용이 가장 낮다.",
+      "mobileLoad": "현재와 유사. 카드 종류 3+가 유지된다.",
+      "actionOwnership": "중복 3 (My Flow Today · Calendar inline · 개인 Flow). 어느 화면이 진짜 소유자인지 학습되지 않는다.",
+      "dataContractRisk": "없음.",
+      "implementationRisk": "하.",
+      "tradeoffs": "이번 지시의 핵심(‘MECE한 기능 소유권’)을 사실상 달성하지 못한다. 홈은 여전히 소유 job이 없다.",
+      "verdict": "탈락 — 소유권 중복이 남아 목표를 충족하지 못함"
+    },
+    {
+      "id": "C_claude_independent",
+      "description": "A를 기반으로 두 surface만 수정: (1) `/`를 상태 기반 entry router로, (2) Calendar에 완료 토글 1개를 row primitive로 유지. 새 전역 tab·dashboard·설명 카드 없음.",
+      "userValue": "A의 선명함을 유지하면서 재방문 진입과 완료 비용을 회복한다.",
+      "mobileLoad": "A와 동일. 추가된 것은 행의 완료 토글 1개와 목록 행의 읽기 전용 한 줄.",
+      "actionOwnership": "중복 0. 완료를 ‘소유 기능’이 아니라 ‘표시된 run row의 상태 토글’로 정의하고, 편집(제목·날짜·메모·순서)의 소유자는 개인 Flow 하나로 고정.",
+      "dataContractRisk": "없음.",
+      "implementationRisk": "중. A와 동일하며 완료 토글은 기존 컴포넌트 재사용.",
+      "tradeoffs": "규칙이 한 줄 늘어난다(‘완료는 row primitive’). 이 조항을 문서화하지 않으면 다음 라운드에 Calendar 편집이 다시 들어올 위험이 있다.",
+      "verdict": "채택 — 최종 권장(A′)"
+    }
+  ],
+  "criteriaMatrix": [
+    { "criterion": "사용자 가치", "A": "가장 선명", "B": "학습 비용 최소", "C": "A의 선명함 + 비용 회복" },
+    { "criterion": "첫 viewport 명확성", "A": "높음", "B": "중간 — 홈이 두 역할", "C": "높음" },
+    { "criterion": "저장 전 예측 가능성", "A": "높음", "B": "높음", "C": "높음" },
+    { "criterion": "session 연속성", "A": "재방문이 찾기로 떨어짐", "B": "홈이 잇지만 소유 흐림", "C": "`/`가 저장 여부로 목적지 결정" },
+    { "criterion": "action owner 중복", "A": "0", "B": "3", "C": "0 (완료는 row primitive)" },
+    { "criterion": "모바일 밀도", "A": "가장 가벼움", "B": "현재와 유사", "C": "A와 동일" },
+    { "criterion": "20개 Flow 확장성", "A": "검색+필터로 충분", "B": "Today가 목록을 밀어냄", "C": "A + 다음 예정 한 줄로 스캔 근거" },
+    { "criterion": "data-contract 위험", "A": "없음", "B": "없음", "C": "없음" },
+    { "criterion": "구현 난이도", "A": "중", "B": "하", "C": "중" },
+    { "criterion": "rollback 가능성", "A": "composition prop", "B": "해당 없음", "C": "slice별 flag, 각 rollback 독립" }
+  ],
+  "complexityMetrics": [
+    { "surfaceId": "flow_find", "version": "current", "messageCount": 3, "primaryActionCount": 2, "visibleCommandCount": 9, "cardOrBlockCount": 12, "explanationBlockCount": 2, "firstUsefulResultDepth": 1, "scrollDepth": "카드 10개 · 약 5화면" },
+    { "surfaceId": "flow_find", "version": "proposed", "messageCount": 2, "primaryActionCount": 1, "visibleCommandCount": 3, "cardOrBlockCount": 5, "explanationBlockCount": 0, "firstUsefulResultDepth": 0, "scrollDepth": "카드 4개 · 약 2화면" },
+    { "surfaceId": "public_flow", "version": "current", "messageCount": 4, "primaryActionCount": 2, "visibleCommandCount": 13, "cardOrBlockCount": 8, "explanationBlockCount": 3, "firstUsefulResultDepth": 1, "scrollDepth": "약 4화면" },
+    { "surfaceId": "public_flow", "version": "proposed", "messageCount": 2, "primaryActionCount": 1, "visibleCommandCount": 4, "cardOrBlockCount": 3, "explanationBlockCount": 1, "firstUsefulResultDepth": 0, "scrollDepth": "약 3화면(결과 길이만큼)" },
+    { "surfaceId": "saved_receipt", "version": "current", "messageCount": 2, "primaryActionCount": 1, "visibleCommandCount": 4, "cardOrBlockCount": 3, "explanationBlockCount": 1, "firstUsefulResultDepth": 0, "scrollDepth": "1화면" },
+    { "surfaceId": "saved_receipt", "version": "proposed", "messageCount": 2, "primaryActionCount": 1, "visibleCommandCount": 2, "cardOrBlockCount": 2, "explanationBlockCount": 0, "firstUsefulResultDepth": 0, "scrollDepth": "1화면" },
+    { "surfaceId": "my_flow", "version": "current", "messageCount": 3, "primaryActionCount": 4, "visibleCommandCount": 11, "cardOrBlockCount": 6, "explanationBlockCount": 1, "firstUsefulResultDepth": 1, "scrollDepth": "저장 1개에서도 약 3화면" },
+    { "surfaceId": "my_flow", "version": "proposed", "messageCount": 2, "primaryActionCount": 1, "visibleCommandCount": 5, "cardOrBlockCount": 1, "explanationBlockCount": 0, "firstUsefulResultDepth": 0, "scrollDepth": "20개에서 약 3화면" },
+    { "surfaceId": "personal_flow", "version": "current", "messageCount": 3, "primaryActionCount": 3, "visibleCommandCount": 12, "cardOrBlockCount": 5, "explanationBlockCount": 1, "firstUsefulResultDepth": 2, "scrollDepth": "약 4화면" },
+    { "surfaceId": "personal_flow", "version": "proposed", "messageCount": 2, "primaryActionCount": 1, "visibleCommandCount": 6, "cardOrBlockCount": 3, "explanationBlockCount": 0, "firstUsefulResultDepth": 0, "scrollDepth": "약 3화면" },
+    { "surfaceId": "calendar", "version": "current", "messageCount": 3, "primaryActionCount": 3, "visibleCommandCount": "행당 3 + 상단 2", "cardOrBlockCount": 4, "explanationBlockCount": 0, "firstUsefulResultDepth": 1, "scrollDepth": "grid 아래 agenda까지 약 3화면" },
+    { "surfaceId": "calendar", "version": "proposed", "messageCount": 2, "primaryActionCount": 1, "visibleCommandCount": "행당 1 + 그룹당 1", "cardOrBlockCount": 2, "explanationBlockCount": 1, "firstUsefulResultDepth": 0, "scrollDepth": "약 2화면 (1024 이상은 1화면)" },
+    { "surfaceId": "export", "version": "current", "messageCount": 2, "primaryActionCount": 4, "visibleCommandCount": 6, "cardOrBlockCount": 2, "explanationBlockCount": 1, "firstUsefulResultDepth": 1, "scrollDepth": "1~2화면" },
+    { "surfaceId": "export", "version": "proposed", "messageCount": 2, "primaryActionCount": 1, "visibleCommandCount": 8, "cardOrBlockCount": 3, "explanationBlockCount": 1, "firstUsefulResultDepth": 0, "scrollDepth": "1~2화면" }
+  ],
+  "notes": [
+    "current 수치는 production screenshot과 라이브 DOM에서 센 값이다. proposed 수치는 이 패키지의 review.html 화면에서 센 값이며 구현 결과가 아니다.",
+    "export의 proposed visibleCommandCount가 current보다 큰 이유는 범위 3개를 명시적으로 노출했기 때문이다. 경쟁 primary는 4 → 1로 줄었다."
+  ]
+}

@@ -1,0 +1,376 @@
+{
+  "schemaVersion": 1,
+  "reviewerRole": "claude_design",
+  "reviewedAt": "2026-07-24T14:00:00+09:00",
+  "reviewedOriginMain": "555da4e013cc9090b76b78cc81619057409772dc",
+  "production": "https://flowme2605.vercel.app",
+  "observedUserCount": 0,
+  "accessNote": "claude_design 검토는 handoff의 current_production_screenshot 6장 + current_source(GitHub main) 기반. 실시간 production interaction/console은 직접 수행하지 않아 해당 항목은 inaccessible로 표기하고 handoff smoke(overflow/unnamed/console 0)를 current_structured_evidence로 인용.",
+  "requiredViewports": [
+    {
+      "width": 390,
+      "height": 844
+    },
+    {
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "width": 1440,
+      "height": 900
+    }
+  ],
+  "routes": [
+    {
+      "route": "/",
+      "viewports": [
+        {
+          "width": 390,
+          "height": 844
+        },
+        {
+          "width": 1024,
+          "height": 768
+        },
+        {
+          "width": 1440,
+          "height": 900
+        }
+      ],
+      "checks": {
+        "hardNavigation": "inaccessible(live interaction 미수행)",
+        "reload": "inaccessible(live 미수행)",
+        "clientNavigation": "inaccessible(live 미수행)",
+        "horizontalOverflowPx": "unknown",
+        "fixedOverlap": "unknown",
+        "consoleError": "inaccessible(live 미수행) / smoke=0",
+        "pageError": "inaccessible(live 미수행) / smoke=0"
+      },
+      "evidenceKinds": [
+        "current_source",
+        "inaccessible"
+      ],
+      "evidenceRefs": [
+        "STATUS.md",
+        "components/flow/AppClient.tsx (source-manifest)"
+      ],
+      "note": "handoff에 screenshot 없음. 라우트 존재/구성은 current_source로 확인, live 렌더는 미검증."
+    },
+    {
+      "route": "/flows",
+      "viewports": [
+        {
+          "width": 390,
+          "height": 844
+        },
+        {
+          "width": 1024,
+          "height": 768
+        },
+        {
+          "width": 1440,
+          "height": 900
+        }
+      ],
+      "checks": {
+        "hardNavigation": "inaccessible(live interaction 미수행)",
+        "reload": "inaccessible(live 미수행)",
+        "clientNavigation": "inaccessible(live 미수행)",
+        "horizontalOverflowPx": "unknown",
+        "fixedOverlap": "unknown",
+        "consoleError": "inaccessible(live 미수행) / smoke=0",
+        "pageError": "inaccessible(live 미수행) / smoke=0"
+      },
+      "evidenceKinds": [
+        "current_source",
+        "inaccessible"
+      ],
+      "evidenceRefs": [
+        "STATUS.md",
+        "components/flow/AppClient.tsx (source-manifest)"
+      ],
+      "note": "handoff에 screenshot 없음. 라우트 존재/구성은 current_source로 확인, live 렌더는 미검증."
+    },
+    {
+      "route": "/my",
+      "viewports": [
+        {
+          "width": 390,
+          "height": 844
+        },
+        {
+          "width": 1024,
+          "height": 768
+        },
+        {
+          "width": 1440,
+          "height": 900
+        }
+      ],
+      "checks": {
+        "hardNavigation": "render_ok(screenshot)",
+        "reload": "inaccessible(live 미수행)",
+        "clientNavigation": "inaccessible(live 미수행)",
+        "horizontalOverflowPx": "0 (390 screenshot/smoke)",
+        "fixedOverlap": "none observed(390)",
+        "consoleError": "inaccessible(live 미수행) / smoke=0",
+        "pageError": "inaccessible(live 미수행) / smoke=0"
+      },
+      "evidenceKinds": [
+        "current_production_screenshot",
+        "current_structured_evidence"
+      ],
+      "evidenceRefs": [
+        "screenshots/current-my-flow-workspace-390.png + current-my-flow-workspace-1024.png + current-my-flow-saved-receipt-390.png",
+        "handoff-preparation-smoke.json"
+      ],
+      "note": "handoff screenshot 기준. 1024 My Flow는 canvas 여백/상단 nav 우측 잘림이 관찰되어 live overflow 재확인 필요."
+    },
+    {
+      "route": "/calendar",
+      "viewports": [
+        {
+          "width": 390,
+          "height": 844
+        },
+        {
+          "width": 1024,
+          "height": 768
+        },
+        {
+          "width": 1440,
+          "height": 900
+        }
+      ],
+      "checks": {
+        "hardNavigation": "render_ok(screenshot)",
+        "reload": "inaccessible(live 미수행)",
+        "clientNavigation": "inaccessible(live 미수행)",
+        "horizontalOverflowPx": "0 (390 screenshot/smoke)",
+        "fixedOverlap": "none observed(390)",
+        "consoleError": "inaccessible(live 미수행) / smoke=0",
+        "pageError": "inaccessible(live 미수행) / smoke=0"
+      },
+      "evidenceKinds": [
+        "current_production_screenshot",
+        "current_structured_evidence"
+      ],
+      "evidenceRefs": [
+        "screenshots/current-calendar-390.png + current-calendar-normal-390.png",
+        "handoff-preparation-smoke.json"
+      ],
+      "note": "handoff screenshot 기준. 1024 My Flow는 canvas 여백/상단 nav 우측 잘림이 관찰되어 live overflow 재확인 필요."
+    },
+    {
+      "route": "/f/moving-d30-basic",
+      "viewports": [
+        {
+          "width": 390,
+          "height": 844
+        },
+        {
+          "width": 1024,
+          "height": 768
+        },
+        {
+          "width": 1440,
+          "height": 900
+        }
+      ],
+      "checks": {
+        "hardNavigation": "render_ok(screenshot)",
+        "reload": "inaccessible(live 미수행)",
+        "clientNavigation": "inaccessible(live 미수행)",
+        "horizontalOverflowPx": "0 (390 screenshot/smoke)",
+        "fixedOverlap": "none observed(390)",
+        "consoleError": "inaccessible(live 미수행) / smoke=0",
+        "pageError": "inaccessible(live 미수행) / smoke=0"
+      },
+      "evidenceKinds": [
+        "current_production_screenshot",
+        "current_structured_evidence"
+      ],
+      "evidenceRefs": [
+        "screenshots/current-public-moving-390.png",
+        "handoff-preparation-smoke.json"
+      ],
+      "note": "handoff screenshot 기준. 1024 My Flow는 canvas 여백/상단 nav 우측 잘림이 관찰되어 live overflow 재확인 필요."
+    },
+    {
+      "route": "/f/vehicle-inspection-prep",
+      "viewports": [
+        {
+          "width": 390,
+          "height": 844
+        },
+        {
+          "width": 1024,
+          "height": 768
+        },
+        {
+          "width": 1440,
+          "height": 900
+        }
+      ],
+      "checks": {
+        "hardNavigation": "inaccessible(live interaction 미수행)",
+        "reload": "inaccessible(live 미수행)",
+        "clientNavigation": "inaccessible(live 미수행)",
+        "horizontalOverflowPx": "unknown",
+        "fixedOverlap": "unknown",
+        "consoleError": "inaccessible(live 미수행) / smoke=0",
+        "pageError": "inaccessible(live 미수행) / smoke=0"
+      },
+      "evidenceKinds": [
+        "current_source",
+        "inaccessible"
+      ],
+      "evidenceRefs": [
+        "STATUS.md",
+        "components/flow/AppClient.tsx (source-manifest)"
+      ],
+      "note": "handoff에 screenshot 없음. 라우트 존재/구성은 current_source로 확인, live 렌더는 미검증."
+    },
+    {
+      "route": "/f/curated-allblanc-morning-workout",
+      "viewports": [
+        {
+          "width": 390,
+          "height": 844
+        },
+        {
+          "width": 1024,
+          "height": 768
+        },
+        {
+          "width": 1440,
+          "height": 900
+        }
+      ],
+      "checks": {
+        "hardNavigation": "inaccessible(live interaction 미수행)",
+        "reload": "inaccessible(live 미수행)",
+        "clientNavigation": "inaccessible(live 미수행)",
+        "horizontalOverflowPx": "unknown",
+        "fixedOverlap": "unknown",
+        "consoleError": "inaccessible(live 미수행) / smoke=0",
+        "pageError": "inaccessible(live 미수행) / smoke=0"
+      },
+      "evidenceKinds": [
+        "current_source",
+        "inaccessible"
+      ],
+      "evidenceRefs": [
+        "STATUS.md",
+        "components/flow/AppClient.tsx (source-manifest)"
+      ],
+      "note": "handoff에 screenshot 없음. 라우트 존재/구성은 current_source로 확인, live 렌더는 미검증."
+    },
+    {
+      "route": "/f/curated-wedding-naver-timeline",
+      "viewports": [
+        {
+          "width": 390,
+          "height": 844
+        },
+        {
+          "width": 1024,
+          "height": 768
+        },
+        {
+          "width": 1440,
+          "height": 900
+        }
+      ],
+      "checks": {
+        "hardNavigation": "inaccessible(live interaction 미수행)",
+        "reload": "inaccessible(live 미수행)",
+        "clientNavigation": "inaccessible(live 미수행)",
+        "horizontalOverflowPx": "unknown",
+        "fixedOverlap": "unknown",
+        "consoleError": "inaccessible(live 미수행) / smoke=0",
+        "pageError": "inaccessible(live 미수행) / smoke=0"
+      },
+      "evidenceKinds": [
+        "current_source",
+        "inaccessible"
+      ],
+      "evidenceRefs": [
+        "STATUS.md",
+        "components/flow/AppClient.tsx (source-manifest)"
+      ],
+      "note": "handoff에 screenshot 없음. 라우트 존재/구성은 current_source로 확인, live 렌더는 미검증."
+    },
+    {
+      "route": "/f/real-mofa-overseas-travel-prep",
+      "viewports": [
+        {
+          "width": 390,
+          "height": 844
+        },
+        {
+          "width": 1024,
+          "height": 768
+        },
+        {
+          "width": 1440,
+          "height": 900
+        }
+      ],
+      "checks": {
+        "hardNavigation": "inaccessible(live interaction 미수행)",
+        "reload": "inaccessible(live 미수행)",
+        "clientNavigation": "inaccessible(live 미수행)",
+        "horizontalOverflowPx": "unknown",
+        "fixedOverlap": "unknown",
+        "consoleError": "inaccessible(live 미수행) / smoke=0",
+        "pageError": "inaccessible(live 미수행) / smoke=0"
+      },
+      "evidenceKinds": [
+        "current_source",
+        "inaccessible"
+      ],
+      "evidenceRefs": [
+        "STATUS.md",
+        "components/flow/AppClient.tsx (source-manifest)"
+      ],
+      "note": "handoff에 screenshot 없음. 라우트 존재/구성은 current_source로 확인, live 렌더는 미검증."
+    },
+    {
+      "route": "/u/my-flow-studio",
+      "viewports": [
+        {
+          "width": 390,
+          "height": 844
+        },
+        {
+          "width": 1024,
+          "height": 768
+        },
+        {
+          "width": 1440,
+          "height": 900
+        }
+      ],
+      "checks": {
+        "hardNavigation": "inaccessible(live interaction 미수행)",
+        "reload": "inaccessible(live 미수행)",
+        "clientNavigation": "inaccessible(live 미수행)",
+        "horizontalOverflowPx": "unknown",
+        "fixedOverlap": "unknown",
+        "consoleError": "inaccessible(live 미수행) / smoke=0",
+        "pageError": "inaccessible(live 미수행) / smoke=0"
+      },
+      "evidenceKinds": [
+        "current_source",
+        "inaccessible"
+      ],
+      "evidenceRefs": [
+        "STATUS.md",
+        "components/flow/AppClient.tsx (source-manifest)"
+      ],
+      "note": "handoff에 screenshot 없음. 라우트 존재/구성은 current_source로 확인, live 렌더는 미검증."
+    }
+  ],
+  "overflowDiscrepancy": "current-my-flow-workspace-1024.png에서 상단 nav('내 Flow')와 canvas 버튼('여러 흐름')이 우측에서 잘림. handoff smoke는 overflow 0으로 보고 → 실제 1024/1440 live 계측으로 확정 필요(F-06)."
+}

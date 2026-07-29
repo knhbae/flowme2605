@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>FlowMe UX/UI — P9 마감 판정 · P10 백로그 (증거 파이프라인 + 워크벤치 저장 경로)</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <style>
+    html, body { margin: 0; padding: 0; background: #F2F1EC; }
+    * { box-sizing: border-box; }
+    code { font-family: 'SF Mono', ui-monospace, Menlo, monospace; }
+  </style>
+</helmet>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#1F6A3E"></rect><text x="50" y="59" font-family="sans-serif" font-size="15" font-weight="800" fill="#FFFFFF" text-anchor="middle">P9✓</text></svg></template>
+<div style="font-family: 'Pretendard Variable', Pretendard, -apple-system, 'Segoe UI', sans-serif; color: #1B1A17; line-height: 1.6; letter-spacing: -0.01em;">
+
+  <header data-screen-label="헤더" style="background: #1B1A17; color: #F5F4EF; padding: 52px 28px 44px;">
+    <div style="max-width: 1120px; margin: 0 auto;">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px;">
+        <span style="display: inline-flex; align-items: center; border: 1px solid rgba(159,240,184,0.4); background: rgba(31,106,62,0.35); border-radius: 999px; padding: 4px 12px; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; color: #C6F4D4;">FLOWME · P9 마감 판정</span>
+        <span style="font-size: 12px; font-weight: 600; color: rgba(245,244,239,0.6);">codex/flowme-uxui-second-loop · UI 기준 @decd1a8 · PNG 26장(픽셀 확인 12장) · 390×844 · clock 2026-05-28 고정</span>
+      </div>
+      <h1 style="margin: 18px 0 0; font-size: 40px; line-height: 1.2; font-weight: 800; letter-spacing: -0.02em; max-width: 1000px; text-wrap: balance;">P9-01~07은 코드·테스트·픽셀에서 전부 닫혔다.<br>P10의 일은 <em>증거 파이프라인</em>과 <em>워크벤치 저장 경로</em>다.</h1>
+      <p style="margin: 16px 0 0; max-width: 940px; font-size: 16px; line-height: 1.7; color: rgba(245,244,239,0.78); text-wrap: pretty;">이번엔 <strong>유닛 테스트 소재지</strong>까지 확인했습니다 — P9-01·04·05·07의 테스트는 <code>display-title.test.ts</code>에 실재하고 <code>npm test</code> 목록에 포함돼 실제로 돕니다. 특히 <strong>P9-01</strong>은 요구한 그대로: <code>seedBundles + homepage + curated seed</code> 전체를 <code>scanUserSurfaceGuardrails</code>에 넣어 <strong>route 등록 없이</strong> hit 0을 단언합니다. <strong>P9-03</strong> 시트 eyebrow는 "<strong>놓친 항목 정리</strong>"(<code>s17</code>), <strong>P9-06</strong> full schedule엔 "<strong>D-30 마일스톤 3개</strong>" 그룹 헤더(<code>s24</code>)가 픽셀로 보입니다. <strong>그런데 둘이 남았습니다.</strong> ① <strong>P9-04는 lib에서만 닫혔습니다</strong> — 증거를 만드는 capture 스크립트의 in-page slug 검사는 여전히 <strong>구식 lookahead</strong>(<code>(?=$|\s|[가-힣]|D-)</code>)를 하드코딩하고 있어, 이 패키지의 "slug hit 0"은 <strong>새 규칙이 아니라 옛 규칙으로 잰 0</strong>입니다. 같은 규칙의 구현이 두 벌이 된 순간부터 드리프트는 반복됩니다. ② 공개 <code>/f</code> 워크벤치 shell에서 <strong>new-car는 "바로 저장됩니다"라고 말하면서 focusable한 저장 컨트롤이 증거상 0개</strong>(<code>primaryIdx: -1</code>)이고, fridge·washer는 저장 경로가 있는데 <strong>testid가 없어 측정·E2E가 못 봅니다</strong>. E2E의 primary 단언은 6개 route 중 2개에만 걸려 있습니다.</p>
+    </div>
+  </header>
+
+  <nav style="position: sticky; top: 0; z-index: 50; background: rgba(242,241,236,0.92); backdrop-filter: blur(8px); border-bottom: 1px solid #DDD9D0;">
+    <div style="max-width: 1120px; margin: 0 auto; padding: 10px 28px; display: flex; flex-wrap: wrap; gap: 6px;">
+      <a href="#verdict" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">1 P9 판정</a>
+      <a href="#routes" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">2 Route</a>
+      <a href="#open" style="text-decoration: none; color: #F5F4EF; background: #C0341D; border: 1px solid #C0341D; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">3 남은 구멍</a>
+      <a href="#prio" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">4 우선순위</a>
+      <a href="#backlog" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">5 P10 백로그</a>
+      <a href="#split" style="text-decoration: none; color: #F5F4EF; background: #3654FF; border: 1px solid #3654FF; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">6 닫기/재개</a>
+      <a href="#hold" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">7 유지 기준선</a>
+      <a href="#fix" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">8 화면별 수정</a>
+      <a href="#gaps" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">9 추가 캡처</a>
+      <a href="#goal" style="text-decoration: none; color: #F5F4EF; background: #1F6A3E; border: 1px solid #1F6A3E; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">10 /goal 초안</a>
+    </div>
+  </nav>
+
+  <section style="max-width: 1120px; margin: 0 auto; padding: 24px 28px 4px;">
+    <div style="background: #EDF3EC; border: 1px solid #CADFC9; border-radius: 14px; padding: 16px 18px;">
+      <p style="margin: 0; font-size: 13px; font-weight: 800; color: #1F6A3E;">이번 검토 근거</p>
+      <p style="margin: 8px 0 0; font-size: 13.5px; line-height: 1.7; color: #35563A;">Vercel 실행 화면은 보지 않았습니다. <code>@decd1a8</code> 기준 P9 package(<code>README·audit.md·route-evidence.json·prompt-ko.md</code>)와 screenshots 26장 중 <strong>12장을 픽셀로</strong>(01·06·09·11·13·14·15·16·17·21·22·24), 그리고 소스를 줄 단위로 — <code>lib/flow/user-surface-guardrails.ts</code>, <code>lib/flow/display-title.test.ts</code>(P9 유닛 테스트 소재지), <code>tests/e2e/public-share-cta-order.spec.ts</code>, <code>workbench-source-density.spec.ts</code>, 그리고 이번에 처음으로 <strong>증거 생성기 자체</strong>인 <code>scripts/content-audit/capture-claude-p7-final-review-package.mjs</code>(62KB)를 읽었습니다. <code>package.json</code>의 <code>npm test</code> 목록에 <code>display-title.test.ts</code>가 포함된 것도 확인 — P9 유닛 테스트는 <strong>실제로 실행되는</strong> 테스트입니다. 판단 기준은 ①P9가 닫았다고 선언한 게 코드·픽셀에서 닫혔는가(전부 예) ②<strong>증거의 0이 무엇으로 잰 0인가</strong>(여기서 구멍 발견) ③다음 회귀를 막을 수 있는가입니다.</p>
+    </div>
+  </section>
+
+  <section id="verdict" data-screen-label="1 P9 판정" style="max-width: 1120px; margin: 0 auto; padding: 26px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 1</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">P9-01 ~ P9-07 — 닫힘 판정</h2>
+    </div>
+    <p style="margin: 10px 0 0; max-width: 900px; font-size: 14.5px; color: #6E6B64;">7개 중 <strong>6개 완전 닫힘</strong>, <strong>1개 조건부</strong>(P9-04 — lib은 닫힘, 증거 스캐너는 미반영). 각 항목을 코드/픽셀 어디서 확인했는지:</p>
+
+    <div style="display: grid; gap: 12px; margin-top: 18px;">
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #1F6A3E; border-radius: 16px; padding: 20px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <span style="font-size: 13px; font-weight: 800; background: #EDF3EC; color: #1F6A3E; border-radius: 6px; padding: 2px 9px;">P9-01</span>
+          <h3 style="margin: 0; font-size: 17px; font-weight: 800;">가드레일 커버리지 — seed 데이터 전수 자동 검사</h3>
+          <span style="font-size: 12px; font-weight: 800; color: #1F6A3E; background: #EDF3EC; border-radius: 999px; padding: 2px 10px;">닫힘 ✓</span>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 14px; line-height: 1.65; color: #44413B;"><strong>요구한 그대로 구현됨</strong> · <code>display-title.test.ts</code>의 "canonical seed and source-backed user-facing text pass display guardrails <strong>without route registration</strong>" 테스트가 <code>[...seedBundles, ...homepage, ...curatedSourceAppSeed]</code> 전체를 순회하며 <code>collectSourceSlugSignals</code>로 사전을 파생하고 subject별 <code>scanUserSurfaceGuardrails</code> 실패를 0으로 단언합니다. <strong>새 seed는 추가되는 순간 자동 검사 대상</strong> — P8의 "프로즌 커버리지" 문제가 데이터 레벨에서 닫혔습니다. 잔여: 이 테스트는 seed <strong>텍스트</strong>를 검사하고, <strong>렌더된 route</strong> 커버리지는 여전히 capture의 고정 목록입니다(수용 가능 — 렌더 주변 문구는 공용 컴포넌트라 기존 26장이 대표함).</p>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #1F6A3E; border-radius: 16px; padding: 20px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <span style="font-size: 13px; font-weight: 800; background: #EDF3EC; color: #1F6A3E; border-radius: 6px; padding: 2px 9px;">P9-02</span>
+          <h3 style="margin: 0; font-size: 17px; font-weight: 800;">공개 /f 브라우즈 링크 — 접근 가능 + 저장 뒤 순서</h3>
+          <span style="font-size: 12px; font-weight: 800; color: #1F6A3E; background: #EDF3EC; border-radius: 999px; padding: 2px 10px;">닫힘 ✓ (경계는 P10-02)</span>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 14px; line-height: 1.65; color: #44413B;"><strong>P8-10의 접근성 문제 해소</strong> · E2E가 이제 <code>not.toHaveAttribute('tabindex','-1')</code> + <code>not.toHaveAttribute('aria-hidden','true')</code>를 단언 — 정확히 반대 방향으로 뒤집혔습니다. 증거: 9개 share 캡처 전부 browse <strong>focusable</strong>, primary가 있는 5개 캡처 전부 browse가 primary <strong>뒤</strong>(before-primary 0). <code>s06</code>에서 "내 Flow에 저장"이 focusable <strong>0번째</strong>, browse는 18번째. <strong>단</strong> primary가 측정에 안 잡히는 워크벤치 4캡처가 남는데, 이건 P9-02의 실패가 아니라 <strong>측정·표기 공백</strong>입니다 → <a href="#open" style="color:#C0341D;">구멍 ②</a>.</p>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #1F6A3E; border-radius: 16px; padding: 20px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <span style="font-size: 13px; font-weight: 800; background: #EDF3EC; color: #1F6A3E; border-radius: 6px; padding: 2px 9px;">P9-03</span>
+          <h3 style="margin: 0; font-size: 17px; font-weight: 800;">"Flow 상태판" 구조어 제거</h3>
+          <span style="font-size: 12px; font-weight: 800; color: #1F6A3E; background: #EDF3EC; border-radius: 999px; padding: 2px 10px;">닫힘 ✓</span>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 14px; line-height: 1.65; color: #44413B;"><strong>픽셀 확인</strong> · <code>s17</code> 시트 eyebrow가 "<strong>놓친 항목 정리</strong>"(P8 리뷰 제안 문구 그대로), 제목 "지난 할 일" 유지. 스캔 쪽도 <code>STRUCTURAL_DISPLAY_PATTERNS</code>에 <code>상태판 · Flow 보드 · Flow 패널 · 실행 큐 · 트레이스</code> 클래스가 lib과 capture 스크립트 <strong>양쪽에</strong> 추가됐고, 유닛 테스트가 구조어 양성 케이스를 잠갔습니다.</p>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #C0341D; border-radius: 16px; padding: 20px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <span style="font-size: 13px; font-weight: 800; background: #FBEAE5; color: #C0341D; border-radius: 6px; padding: 2px 9px;">P9-04</span>
+          <h3 style="margin: 0; font-size: 17px; font-weight: 800;">slug 문장부호 스캔 — lib은 닫힘, 증거 스캐너는 구버전</h3>
+          <span style="font-size: 12px; font-weight: 800; color: #C0341D; background: #FBEAE5; border-radius: 999px; padding: 2px 10px;">조건부 (파이프라인 드리프트)</span>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 14px; line-height: 1.65; color: #44413B;"><strong>lib은 진짜 닫힘</strong> · <code>findSourceSlugHits</code> lookahead가 <code>(?=$|\s|\p{Script=Hangul}|D-|\.(?!단어)|문장부호)</code>로 확장됐고 "DeskLab·"·"DeskLab." 양성 유닛 테스트 존재. <strong>그러나</strong> 증거를 만드는 capture 스크립트는 다른 패턴들(프로토타입 게이트·ISO·구조어)은 스크립트 상단 상수를 <code>.source</code>로 페이지에 넘기면서, <strong>slug lookahead만 page.evaluate 안에 옛 버전으로 하드코딩</strong>돼 있습니다: <code>(?=$|\s|[가-힣]|D-)</code>. 즉 이 패키지의 <code>sourceSlugHits: 0</code>은 <strong>P9-04 이전 규칙으로 잰 0</strong>입니다. 지금 seed가 깨끗해서 실질 leak은 없지만(유닛 테스트가 신규칙으로 seed 전수를 커버), <strong>같은 규칙의 사본이 두 벌</strong>이 된 게 문제의 본질 → P10-01.</p>
+      </article>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px;">
+        <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #1F6A3E; border-radius: 16px; padding: 18px 20px;">
+          <div style="display: flex; align-items: baseline; gap: 8px;"><span style="font-size: 12.5px; font-weight: 800; background: #EDF3EC; color: #1F6A3E; border-radius: 6px; padding: 2px 8px;">P9-05</span><span style="font-size: 12px; font-weight: 800; color: #1F6A3E;">닫힘 ✓</span></div>
+          <p style="margin: 8px 0 0; font-size: 13.5px; line-height: 1.6; color: #44413B;"><strong>프로토타입 영어 게이트 확장</strong> · <code>download|copy|sync|import</code> UI 동사 + <code>Jan–Dec</code>·<code>AM/PM</code> 클래스가 lib·capture 양쪽에 동일하게 존재(이쪽은 드리프트 없음). 양성/음성 유닛 테스트 확인. 증거 전 버킷 hit 0.</p>
+        </article>
+        <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #1F6A3E; border-radius: 16px; padding: 18px 20px;">
+          <div style="display: flex; align-items: baseline; gap: 8px;"><span style="font-size: 12.5px; font-weight: 800; background: #EDF3EC; color: #1F6A3E; border-radius: 6px; padding: 2px 8px;">P9-06</span><span style="font-size: 12px; font-weight: 800; color: #1F6A3E;">닫힘 ✓</span></div>
+          <p style="margin: 8px 0 0; font-size: 13.5px; line-height: 1.6; color: #44413B;"><strong>D-30 마일스톤 그룹 헤더</strong> · <code>s24</code>에 "<strong>D-30 마일스톤 3개</strong> ── 5월 28일 (목)" 헤더가 픽셀로 보이고, D-10·D-1 그룹도 같은 패턴. 증거는 <code>moving-schedule-date-group-heading</code> testid에서 동적으로 읽음 — 고유 날짜 5개 유지.</p>
+        </article>
+        <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #1F6A3E; border-radius: 16px; padding: 18px 20px;">
+          <div style="display: flex; align-items: baseline; gap: 8px;"><span style="font-size: 12.5px; font-weight: 800; background: #EDF3EC; color: #1F6A3E; border-radius: 6px; padding: 2px 8px;">P9-07</span><span style="font-size: 12px; font-weight: 800; color: #1F6A3E;">닫힘 ✓</span></div>
+          <p style="margin: 8px 0 0; font-size: 13.5px; line-height: 1.6; color: #44413B;"><strong>가드레일 헬퍼 유닛 테스트</strong> · <code>display-title.test.ts</code>에 함수별 양성+음성 케이스("helpers lock positive and negative display cases" 외), ISO "원문 줄 면제 없음" 테스트 포함. <code>npm test</code> 목록에 포함 확인 — <strong>도는 테스트</strong>입니다. 별도 파일이 아닌 건 감점 아님.</p>
+        </article>
+      </div>
+
+      <div style="background: #1B1A17; color: #F5F4EF; border-radius: 16px; padding: 18px 22px;">
+        <p style="margin: 0; font-size: 14.5px; line-height: 1.7;"><strong style="color:#9FF0B8;">요약</strong> — P9는 선언 대비 실제 닫힘률이 높습니다. 화면(P9-03·06)과 규칙+테스트(P9-01·05·07)는 완결. 유일한 잔여는 <strong>P9-04의 반쪽 적용</strong>: 규칙의 정본은 lib인데, <strong>증거를 만드는 쪽이 정본을 안 씁니다.</strong> P10은 기능이 아니라 이 <strong>단일화</strong>가 1순위입니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="routes" data-screen-label="2 Route별 상태" style="max-width: 1120px; margin: 0 auto; padding: 34px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 2</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">Route별 UX/UI 상태</h2>
+    </div>
+    <p style="margin: 10px 0 0; max-width: 900px; font-size: 14.5px; color: #6E6B64;">스캔은 26장 전부 green. 아래 "문제"는 스캔 밖에서 픽셀·증거 JSON으로 찾은 것들입니다. ●=픽셀 확인 화면.</p>
+
+    <div style="margin-top: 18px; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; overflow-x: auto;">
+      <div style="min-width: 980px;">
+        <div style="display: grid; grid-template-columns: 1.1fr 0.8fr 2.1fr 0.7fr; gap: 0 14px; padding: 12px 20px; border-bottom: 1px solid #E7E4DD; font-size: 12px; font-weight: 800; color: #8A857B;">
+          <span>Route</span><span>스크린샷</span><span>발견 사항</span><span>판정</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 1.1fr 0.8fr 2.1fr 0.7fr; gap: 0 14px; padding: 11px 20px; border-bottom: 1px solid #F1F0EC; font-size: 13px; line-height: 1.55;">
+          <span><code>/</code> 홈</span><span>s01 ●</span><span>히어로 + "콘텐츠 고르러 가기" + 추천 2장 큐레이션. 내부어·slug·ISO 0. 문제 없음.</span><span style="font-weight:800;color:#1F6A3E;">깨끗</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 1.1fr 0.8fr 2.1fr 0.7fr; gap: 0 14px; padding: 11px 20px; border-bottom: 1px solid #F1F0EC; font-size: 13px; line-height: 1.55;">
+          <span><code>/flows</code> · <code>/flow-maps/*</code></span><span>s02–05</span><span>스캔 전 버킷 0, overflow 0, sticky clearance 증거 유지. 픽셀 재확인은 P8과 동일 기준선.</span><span style="font-weight:800;color:#1F6A3E;">깨끗</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 1.1fr 0.8fr 2.1fr 0.7fr; gap: 0 14px; padding: 11px 20px; border-bottom: 1px solid #F1F0EC; font-size: 13px; line-height: 1.55;">
+          <span><code>/f/vehicle</code> · <code>/f/moving</code></span><span>s06–08 ●</span><span>setup(검사일 입력)이 focusable 최상단, "내 Flow에 저장" sticky, browse는 18·21번째. <strong>모범 사례</strong> — 이 구조가 워크벤치 shell의 기준이 돼야 함.</span><span style="font-weight:800;color:#1F6A3E;">깨끗</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 1.1fr 0.8fr 2.1fr 0.7fr; gap: 0 14px; padding: 11px 20px; border-bottom: 1px solid #F1F0EC; font-size: 13px; line-height: 1.55; background: #FBEAE5;">
+          <span><code>/f/new-car</code></span><span>s11·25 ●</span><span>"<strong>바로 저장됩니다: 시트</strong>"라고 말하는데 증거상 focusable 저장 컨트롤 <strong>0개</strong>(<code>primaryIdx: -1</code>, DOM엔 저장 요소 존재 — 숨김 또는 tab 불가 추정). 키보드/SR은 저장 못 하고 "콘텐츠 더 보기"(19번째)엔 도달함.</span><span style="font-weight:800;color:#C0341D;">High</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 1.1fr 0.8fr 2.1fr 0.7fr; gap: 0 14px; padding: 11px 20px; border-bottom: 1px solid #F1F0EC; font-size: 13px; line-height: 1.55; background: #FCF3E4;">
+          <span><code>/f/fridge</code> · <code>/f/washer</code></span><span>s09·10 ●</span><span>화면엔 "시작일만 넣으면 저장됩니다" setup이 분명히 있는데 <code>public-flow-primary-setup</code> testid가 없어 <strong>측정상 primary 부재</strong>(-1). E2E primary 단언도 이 route들엔 안 걸림 — 회귀해도 못 잡음.</span><span style="font-weight:800;color:#B95000;">측정 공백</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 1.1fr 0.8fr 2.1fr 0.7fr; gap: 0 14px; padding: 11px 20px; border-bottom: 1px solid #F1F0EC; font-size: 13px; line-height: 1.55;">
+          <span><code>/f/used-car</code></span><span>s12·26</span><span>저장 경로 focusable(27번째) + browse 28번째 — 순서 규칙은 지켜짐. 저장이 27번째인 건 sticky 하단 CTA의 DOM 위치상 자연스러움.</span><span style="font-weight:800;color:#1F6A3E;">통과</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 1.1fr 0.8fr 2.1fr 0.7fr; gap: 0 14px; padding: 11px 20px; border-bottom: 1px solid #F1F0EC; font-size: 13px; line-height: 1.55; background: #FCF3E4;">
+          <span><code>/my</code> (post-save·허브)</span><span>s13·15·16 ●</span><span>큐 라벨·dedupe·"지난 할 일" 전부 기준선 유지 ✓. 단 "<strong>지금 이어하기 → 오늘 할 일</strong>" 카드가 세 화면 모두 <strong>실행 항목 없이 설명문만</strong> 담고 있음("오늘 일정은 없고, 저장한 콘텐츠의 첫 할 일을 보여줍니다") — 보여준다고 말만 하고 안 보여줌.</span><span style="font-weight:800;color:#B95000;">Medium</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 1.1fr 0.8fr 2.1fr 0.7fr; gap: 0 14px; padding: 11px 20px; border-bottom: 1px solid #F1F0EC; font-size: 13px; line-height: 1.55;">
+          <span><code>/my</code> 시트·긴 목록</span><span>s17–20 ●</span><span>eyebrow "놓친 항목 정리" ✓. 시트 4행 모두 파란 primary "항목 열기" 버튼 — 같은 위계 버튼 4연발은 과함(Low).</span><span style="font-weight:800;color:#3654FF;">Low</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 1.1fr 0.8fr 2.1fr 0.7fr; gap: 0 14px; padding: 11px 20px; border-bottom: 1px solid #F1F0EC; font-size: 13px; line-height: 1.55; background: #FCF3E4;">
+          <span><code>/calendar</code></span><span>s14 ●</span><span>agenda-first ✓. 단 한 날짜 그룹의 4행이 <strong>전부 동일한 "기준 D-30 · 큰 준비" 칩</strong>을 반복 — 공통 맥락이 행마다 복제돼 신호가 죽음. "4개 · 4개 남음"도 중복 표기.</span><span style="font-weight:800;color:#B95000;">Medium</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 1.1fr 0.8fr 2.1fr 0.7fr; gap: 0 14px; padding: 11px 20px; font-size: 13px; line-height: 1.55;">
+          <span><code>/restart/moving-d30</code></span><span>s21–24 ●</span><span>eyebrow·한글 요일·단일 export·프레임 분리·마일스톤 헤더 전부 ✓. 잔여 둘 다 Low: ① 행마다 "<strong>[전체 제목] 편집</strong>" 버튼이 제목을 통째로 복제 ② 날짜 input에 raw "2026-06-27" 노출(네이티브 컨트롤·locale 의존, 스캔은 input value를 못 봄).</span><span style="font-weight:800;color:#3654FF;">Low</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="open" data-screen-label="3 남은 구멍" style="max-width: 1120px; margin: 0 auto; padding: 34px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #C0341D;">SECTION 3</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">남은 구멍 — P10이 다룰 것</h2>
+    </div>
+    <div style="display: grid; gap: 12px; margin-top: 18px;">
+      <article style="background: #FFFFFF; border: 1px solid #F2C6BB; border-left: 4px solid #C0341D; border-radius: 16px; padding: 20px 22px;">
+        <p style="margin: 0; font-size: 16px; font-weight: 800;">① 증거 파이프라인 드리프트 — 규칙 정본과 측정기가 다른 코드 <span style="font-size:12px;font-weight:800;color:#C0341D;background:#FBEAE5;border-radius:999px;padding:2px 10px;">High</span></p>
+        <p style="margin: 10px 0 0; font-size: 14px; line-height: 1.7; color: #44413B;">capture 스크립트는 ISO·구조어·프로토타입 게이트 패턴을 상단 상수에서 <code>.source</code>로 페이지에 주입하는데, <strong>slug 매칭 정규식만 <code>page.evaluate</code> 안에 문자열로 하드코딩</strong>돼 있고 그게 P9-04 이전 버전입니다. 이번 한 번은 무해하지만(유닛 테스트가 seed 전수를 신규칙으로 커버), <strong>규칙이 바뀔 때마다 측정기가 조용히 낡는 구조</strong>가 남았습니다. 첫 3행 반복 검사(<code>findRepeatedTitleHits</code>)도 페이지 안에 사본이 있습니다. 해법은 기능 추가가 아니라 <strong>단일화</strong>: lib이 정규식 소스를 export하고, 스크립트는 그걸 주입만. 또는 페이지에서 라인만 추출하고 hit 계산은 Node에서 lib 함수로.</p>
+      </article>
+      <article style="background: #FFFFFF; border: 1px solid #F2C6BB; border-left: 4px solid #C0341D; border-radius: 16px; padding: 20px 22px;">
+        <p style="margin: 0; font-size: 16px; font-weight: 800;">② 워크벤치 share shell의 저장 경로 — 실제 구멍 1 + 측정 구멍 2 <span style="font-size:12px;font-weight:800;color:#C0341D;background:#FBEAE5;border-radius:999px;padding:2px 10px;">High</span></p>
+        <p style="margin: 10px 0 0; font-size: 14px; line-height: 1.7; color: #44413B;">공개 <code>/f</code> 6개 slug 중 vehicle·moving·used-car만 저장 경로가 focusable로 증거에 잡힙니다. <strong>new-car</strong>(s11·25)는 "바로 저장됩니다: 시트"라고 말하면서 저장 요소가 DOM엔 있는데 <strong>focusable 목록에 없음</strong> — 키보드/SR 사용자는 저장 못 하는데 "콘텐츠 더 보기"에는 도달합니다. P8-10에서 "보이는 컨트롤을 a11y에서 지우지 말 것"과 같은 계열의 문제입니다. <strong>fridge·washer</strong>는 화면상 setup이 있으니 실사용 문제는 아닐 가능성이 높지만, primary testid가 없어 <strong>측정이 -1로 찍히고 E2E 단언이 안 걸립니다</strong>(spec의 primary 단언은 6개 중 2개 route만). "저장이 primary"라는 기준선이 워크벤치 계열에선 <strong>검증되지 않는 선언</strong>인 상태.</p>
+      </article>
+      <article style="background: #FFFFFF; border: 1px solid #F0D9B5; border-left: 4px solid #B95000; border-radius: 16px; padding: 20px 22px;">
+        <p style="margin: 0; font-size: 16px; font-weight: 800;">③ "지금 이어하기" 빈 설명 카드 + 캘린더 칩 반복 <span style="font-size:12px;font-weight:800;color:#B95000;background:#FCF3E4;border-radius:999px;padding:2px 10px;">Medium ×2</span></p>
+        <p style="margin: 10px 0 0; font-size: 14px; line-height: 1.7; color: #44413B;"><code>/my</code>의 "지금 이어하기 → 오늘 할 일" 카드가 s13·15·16 세 화면 모두 <strong>행동 없는 설명문</strong>입니다 — "저장한 콘텐츠의 첫 할 일을 보여줍니다"라고 쓰고 정작 그 할 일은 위 카드에 있습니다. 이 프로젝트의 원칙("설명 문장 추가로 문제 해결 금지")에 정면으로 걸리는 잔여물. <code>/calendar</code>(s14)는 한 날짜의 4행이 동일 칩 2개씩을 복제 — 공통 맥락은 그룹 헤더로 올리면 행은 제목+체크만 남아 가벼워집니다.</p>
+      </article>
+      <article style="background: #FFFFFF; border: 1px solid #DDD9D0; border-left: 4px solid #3654FF; border-radius: 16px; padding: 20px 22px;">
+        <p style="margin: 0; font-size: 16px; font-weight: 800;">④ Low 묶음 — 라벨 중복 · 깨진 문서 링크 · input value 사각 <span style="font-size:12px;font-weight:800;color:#3654FF;background:#EEF1FF;border-radius:999px;padding:2px 10px;">Low ×3</span></p>
+        <p style="margin: 10px 0 0; font-size: 14px; line-height: 1.7; color: #44413B;">① restart 행마다 "[전체 제목] 편집" 버튼(s22·24)과 <code>/my</code> 시트의 파란 "항목 열기" 4연발(s17) — 반복 컨트롤은 라벨을 줄이고 위계를 낮출 것. ② README의 GitHub 링크가 전부 <code>…/flow-mvp/…</code> 경로라 <strong>이 브랜치에서 404</strong> — capture 스크립트의 <code>githubBase</code>가 flow-mvp를 하드코딩. 리뷰어가 링크로 검증 못 하는 건 evidence 패키지의 자기모순. ③ restart 날짜 input이 raw "2026-06-27"을 표시(locale 의존)하는데 스캔은 <code>innerText</code>만 봐서 <strong>input value가 영구 사각</strong>.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="prio" data-screen-label="4 우선순위" style="max-width: 1120px; margin: 0 auto; padding: 34px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 4</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">우선순위 분류</h2>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 18px;">
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-top: 4px solid #8A857B; border-radius: 16px; padding: 18px 20px;">
+        <p style="margin: 0; font-size: 13px; font-weight: 800; color: #8A857B;">BLOCKING</p>
+        <p style="margin: 8px 0 0; font-size: 14px; line-height: 1.65; color: #44413B;"><strong>없음.</strong> 정상 사용자 화면은 P9 기준선에서 출시 가능. 4탭 IA·저장 허브·share shell 전부 유지.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-top: 4px solid #C0341D; border-radius: 16px; padding: 18px 20px;">
+        <p style="margin: 0; font-size: 13px; font-weight: 800; color: #C0341D;">HIGH</p>
+        <p style="margin: 8px 0 0; font-size: 14px; line-height: 1.65; color: #44413B;"><strong>P10-01</strong> 가드레일 정규식 단일화(스캐너가 lib 정본 사용)<br><strong>P10-02</strong> 워크벤치 shell 저장 경로 — new-car focusable 저장 + primary testid + E2E 6/6 확장</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-top: 4px solid #B95000; border-radius: 16px; padding: 18px 20px;">
+        <p style="margin: 0; font-size: 13px; font-weight: 800; color: #B95000;">MEDIUM</p>
+        <p style="margin: 8px 0 0; font-size: 14px; line-height: 1.65; color: #44413B;"><strong>P10-03</strong> "지금 이어하기" 카드 — 빈 설명이면 실제 첫 할 일 렌더 or 축소<br><strong>P10-04</strong> 캘린더 같은 날 그룹 — 공통 칩을 헤더로 승격</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-top: 4px solid #3654FF; border-radius: 16px; padding: 18px 20px;">
+        <p style="margin: 0; font-size: 13px; font-weight: 800; color: #3654FF;">LOW</p>
+        <p style="margin: 8px 0 0; font-size: 14px; line-height: 1.65; color: #44413B;"><strong>P10-05</strong> 반복 컨트롤 라벨 축소("편집"·"열기")<br><strong>P10-06</strong> <code>githubBase</code> flow-mvp 제거(링크 404)<br><strong>P10-07</strong> input value 스캔 + restart 날짜 표기 결정</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="backlog" data-screen-label="5 P10 백로그" style="max-width: 1120px; margin: 0 auto; padding: 34px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 5</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">P10 백로그 — 바로 개발 가능</h2>
+    </div>
+    <p style="margin: 10px 0 0; max-width: 900px; font-size: 14.5px; color: #6E6B64;">전부 스키마·IA·seed 구조 불변. 표시·문구·testid·테스트·스크립트만 건드립니다.</p>
+
+    <div style="margin-top: 18px; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; overflow-x: auto;">
+      <div style="min-width: 1040px;">
+        <div style="display: grid; grid-template-columns: 66px 0.85fr 1.1fr 1.8fr 1fr 0.9fr; gap: 0 14px; padding: 12px 20px; border-bottom: 1px solid #E7E4DD; font-size: 12px; font-weight: 800; color: #8A857B;">
+          <span>ID</span><span>우선순위</span><span>목표 (화면/영역)</span><span>핵심 문제 → 수정 지시</span><span>구현 원칙</span><span>검증 기준</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 66px 0.85fr 1.1fr 1.8fr 1fr 0.9fr; gap: 0 14px; padding: 12px 20px; border-bottom: 1px solid #F1F0EC; font-size: 13px; line-height: 1.5;">
+          <span style="font-weight: 800; color: #C0341D;">P10-01</span><span><span style="background:#FBEAE5;color:#C0341D;border-radius:5px;padding:1px 6px;font-size:11px;font-weight:800;">High · 증거</span></span>
+          <span>가드레일 정규식 단일화 (capture 스크립트)</span>
+          <span>in-page slug 검사가 P9-04 이전 lookahead를 하드코딩 → <code>user-surface-guardrails.ts</code>가 <strong>slug lookahead·반복 검사 정규식 소스를 export</strong>하고 capture는 다른 패턴들처럼 <code>.source</code> 주입만. 페이지 내 규칙 사본 0개.</span>
+          <span>규칙 정본은 lib 하나. 스크립트는 라인 추출 + 주입만. 기존 green을 red로 만들지 말 것.</span>
+          <span>capture 재실행 시 hit 0 유지 + "DeskLab·" 픽스처 심으면 route 스캔도 red. grep으로 evaluate 내 정규식 리터럴 0.</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 66px 0.85fr 1.1fr 1.8fr 1fr 0.9fr; gap: 0 14px; padding: 12px 20px; border-bottom: 1px solid #F1F0EC; font-size: 13px; line-height: 1.5;">
+          <span style="font-weight: 800; color: #C0341D;">P10-02</span><span><span style="background:#FBEAE5;color:#C0341D;border-radius:5px;padding:1px 6px;font-size:11px;font-weight:800;">High · a11y</span></span>
+          <span>워크벤치 share shell 저장 경로 (<code>/f/new-car·fridge·washer</code>)</span>
+          <span>new-car: 저장 요소가 focusable 아님 → <strong>키보드 도달 가능한 저장/가져가기 컨트롤</strong> 보장. fridge·washer: setup 영역에 <code>public-flow-primary-setup</code> testid 부여. <code>primarySaveActionVisible</code>을 querySelector 존재가 아닌 <strong>가시성 검사</strong>로.</span>
+          <span>vehicle(s06) 구조가 기준: setup이 focus 선두, 저장 CTA sticky, browse는 뒤. 새 카피 추가 금지.</span>
+          <span>E2E primary 단언을 6/6 route로 확장 green. 증거 <code>primaryPathFocusableCount = 9/9</code>(캡처 기준), before-primary 0 유지.</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 66px 0.85fr 1.1fr 1.8fr 1fr 0.9fr; gap: 0 14px; padding: 12px 20px; border-bottom: 1px solid #F1F0EC; font-size: 13px; line-height: 1.5;">
+          <span style="font-weight: 800; color: #B95000;">P10-03</span><span><span style="background:#FCF3E4;color:#B95000;border-radius:5px;padding:1px 6px;font-size:11px;font-weight:800;">Med · 허브</span></span>
+          <span><code>/my</code> "지금 이어하기" 카드</span>
+          <span>오늘 일정이 없을 때 카드가 설명문만 렌더 → ① 실제 "저장 콘텐츠의 첫 할 일"을 <strong>행으로 렌더</strong>(제목+열기, 위 큐와 중복이면 카드 자체 생략) 또는 ② 카드 제거하고 한 줄 보조 텍스트로 축소. "보여줍니다"라고 말하고 안 보여주는 상태 금지.</span>
+          <span>첫 할 일 반복 가드레일(제목 1회) 위반 금지 — 중복될 거면 생략이 정답.</span>
+          <span>s13·15·16 재캡처: 행동 없는 설명 카드 0. <code>firstTaskRepetitionHits</code> 0 유지.</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 66px 0.85fr 1.1fr 1.8fr 1fr 0.9fr; gap: 0 14px; padding: 12px 20px; border-bottom: 1px solid #F1F0EC; font-size: 13px; line-height: 1.5;">
+          <span style="font-weight: 800; color: #B95000;">P10-04</span><span><span style="background:#FCF3E4;color:#B95000;border-radius:5px;padding:1px 6px;font-size:11px;font-weight:800;">Med · 캘린더</span></span>
+          <span><code>/calendar</code> agenda 날짜 그룹</span>
+          <span>같은 날 4행이 동일 "기준 D-30 · 큰 준비" 칩을 복제 → 그룹 내 <strong>모든 행이 공유하는 칩은 날짜 헤더로 승격</strong>, 행에는 다른 값만 남김. "4개 · 4개 남음"은 "4개 남음" 하나로.</span>
+          <span>restart s24의 마일스톤 그룹 헤더와 같은 패턴 재사용 — 새 컴포넌트 발명 금지.</span>
+          <span>s14 재캡처: 행 칩은 그룹 내 상이값만. 남음 카운트 표기 1회.</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 66px 0.85fr 1.1fr 1.8fr 1fr 0.9fr; gap: 0 14px; padding: 12px 20px; border-bottom: 1px solid #F1F0EC; font-size: 13px; line-height: 1.5;">
+          <span style="font-weight: 800; color: #3654FF;">P10-05</span><span><span style="background:#EEF1FF;color:#3654FF;border-radius:5px;padding:1px 6px;font-size:11px;font-weight:800;">Low · 밀도</span></span>
+          <span>반복 행 컨트롤 라벨 (restart 일정 · <code>/my</code> 시트)</span>
+          <span>행마다 "[전체 제목] 편집"(s22·24)·파란 "항목 열기" 4연발(s17) → 보이는 라벨은 "<strong>편집</strong>"·"<strong>열기</strong>"로 축소(접근 가능한 이름에만 제목 유지), 반복 버튼은 secondary 위계로.</span>
+          <span>터치 타깃 44px 유지. aria-label로 제목 보존 — SR 정보 손실 금지.</span>
+          <span>s17·22·24 재캡처: 행 내 제목 텍스트 1회. 반복 primary 버튼 0.</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 66px 0.85fr 1.1fr 1.8fr 1fr 0.9fr; gap: 0 14px; padding: 12px 20px; border-bottom: 1px solid #F1F0EC; font-size: 13px; line-height: 1.5;">
+          <span style="font-weight: 800; color: #3654FF;">P10-06</span><span><span style="background:#EEF1FF;color:#3654FF;border-radius:5px;padding:1px 6px;font-size:11px;font-weight:800;">Low · 문서</span></span>
+          <span>evidence 패키지 GitHub 링크</span>
+          <span><code>githubBase</code>가 <code>…/flow-mvp</code>를 하드코딩해 README·audit의 모든 소스 링크가 404 → 리포 실제 루트로 수정(또는 git 루트 상대 경로 계산).</span>
+          <span>링크는 리뷰어의 검증 경로 — 패키지 재생성으로만 고칠 것(손 편집 금지).</span>
+          <span>다음 패키지 README 링크 전수 200 OK.</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 66px 0.85fr 1.1fr 1.8fr 1fr 0.9fr; gap: 0 14px; padding: 12px 20px; font-size: 13px; line-height: 1.5;">
+          <span style="font-weight: 800; color: #3654FF;">P10-07</span><span><span style="background:#EEF1FF;color:#3654FF;border-radius:5px;padding:1px 6px;font-size:11px;font-weight:800;">Low · 스캔</span></span>
+          <span>input value 스캔 사각 (restart 날짜 입력)</span>
+          <span>스캔이 <code>innerText</code>만 읽어 <code>input[type=date]</code>의 raw "2026-06-27"(s21, headless locale)이 영구 사각 → 스캐너에 <strong>보이는 input value 수집</strong> 추가하고, restart 날짜 입력은 한글 보조 라벨("이사일 · 6월 27일 (토)")을 곁들일지 결정.</span>
+          <span>네이티브 date 컨트롤 자체는 유지(커스텀 datepicker 발명 금지).</span>
+          <span>ISO 버킷이 input value 포함으로 확장돼도 hit 0(또는 명시 면제 결정 기록).</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 14px; background: #1B1A17; color: #F5F4EF; border-radius: 16px; padding: 20px 22px;">
+      <p style="margin: 0; font-size: 14px; font-weight: 800; color: #9FF0B8;">착수 순서 — P10-01(증거 단일화) → P10-02(워크벤치 저장 경로) → P10-03·04(허브·캘린더 표시) → P10-05·06·07</p>
+      <p style="margin: 8px 0 0; font-size: 14.5px; line-height: 1.7;">P10-01이 먼저인 이유: 이후 모든 항목의 "검증 기준"이 재생성된 evidence에 의존하는데, <strong>측정기가 정본 규칙을 쓰기 전까지는 그 숫자를 신뢰 근거로 못 씁니다.</strong> P10-02는 유일하게 실사용자(키보드/SR)에 닿는 항목이라 그다음.</p>
+    </div>
+  </section>
+
+  <section id="split" data-screen-label="6 닫기/재개" style="max-width: 1120px; margin: 0 auto; padding: 34px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 6</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">P9에서 닫을 항목 vs P10으로 여는 항목</h2>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px; margin-top: 18px;">
+      <div style="background: #EDF3EC; border: 1px solid #CADFC9; border-radius: 16px; padding: 20px;">
+        <p style="margin: 0; font-size: 14px; font-weight: 800; color: #1F6A3E;">✓ P9에서 닫아도 되는 항목</p>
+        <ul style="margin: 10px 0 0; padding-left: 18px; font-size: 13.5px; line-height: 1.8; color: #35563A;">
+          <li><strong>P9-01</strong> seed 전수 자동 커버리지 (유닛 테스트 실재·실행 확인)</li>
+          <li><strong>P9-02</strong> browse 링크 접근성 + 순서 (E2E 방향 반전 확인)</li>
+          <li><strong>P9-03</strong> "놓친 항목 정리" 교체 + 구조어 패턴 클래스 (픽셀+코드)</li>
+          <li><strong>P9-05</strong> 프로토타입 영어 게이트 클래스 확장</li>
+          <li><strong>P9-06</strong> D-30 마일스톤 그룹 헤더 (s24 픽셀)</li>
+          <li><strong>P9-07</strong> 헬퍼 양성/음성 유닛 테스트 (npm test에 포함)</li>
+        </ul>
+      </div>
+      <div style="background: #FCF3E4; border: 1px solid #F0D9B5; border-radius: 16px; padding: 20px;">
+        <p style="margin: 0; font-size: 14px; font-weight: 800; color: #B95000;">↺ P10으로 다시 여는 항목 (부분 닫힘)</p>
+        <ul style="margin: 10px 0 0; padding-left: 18px; font-size: 13.5px; line-height: 1.8; color: #7A4A12;">
+          <li><strong>P9-04 → P10-01</strong> · lib 규칙은 닫힘, <strong>증거 스캐너 단일화</strong> 재개</li>
+          <li><strong>P9-02 경계 → P10-02</strong> · 순서 규칙은 닫힘, <strong>워크벤치 primary 도달성·측정</strong> 재개</li>
+        </ul>
+      </div>
+      <div style="background: #FBEAE5; border: 1px solid #F2C6BB; border-radius: 16px; padding: 20px;">
+        <p style="margin: 0; font-size: 14px; font-weight: 800; color: #C0341D;">＋ P10에서 새로 여는 항목</p>
+        <ul style="margin: 10px 0 0; padding-left: 18px; font-size: 13.5px; line-height: 1.8; color: #7A2417;">
+          <li><strong>P10-03</strong> · "지금 이어하기" 빈 설명 카드 (s13·15·16)</li>
+          <li><strong>P10-04</strong> · 캘린더 그룹 칩 반복 (s14)</li>
+          <li><strong>P10-05·06·07</strong> · 라벨 축소 · 링크 404 · input value 사각</li>
+        </ul>
+        <p style="margin: 10px 0 0; font-size: 12.5px; line-height: 1.6; color: #A85C4C;">전부 이전 스캔의 사각에서 나온 것 — 스캔이 못 보는 층(빈 상태 카피, 칩 반복, input value, 문서 링크)이 이번 회차의 발견 지점.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="hold" data-screen-label="7 유지 기준선" style="max-width: 1120px; margin: 0 auto; padding: 34px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 7</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">유지해야 할 기준선</h2>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 12px; margin-top: 18px;">
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-top: 4px solid #1F6A3E; border-radius: 16px; padding: 20px;">
+        <p style="margin: 0; font-size: 14px; font-weight: 800; color: #1F6A3E;">픽셀·코드로 확인돼 잠긴 것 — 깨지 말 것</p>
+        <ul style="margin: 10px 0 0; padding-left: 18px; font-size: 14px; line-height: 1.8; color: #44413B;">
+          <li>4탭 IA (홈 · Flow 찾기 · 캘린더 · 내 Flow)</li>
+          <li>공개 <code>/f</code> = 공유 shell, 저장/입력이 primary · browse는 <strong>focusable 보조</strong>(aria-hidden 금지)</li>
+          <li>저장 후 → My Flow 실행 허브 (오늘/다음/지난 큐 + dedupe)</li>
+          <li>"지난 할 일" 단일 라벨 · 시트 eyebrow "놓친 항목 정리"</li>
+          <li>친화 날짜 "5월 28일 (목) · D-30" · raw ISO/slug/영문 요일 0</li>
+          <li>restart 마일스톤 그룹 헤더("D-30 마일스톤 3개") + 고유 날짜 5</li>
+          <li>워크벤치 행별 출처 0 · 출처는 출처 카드 1회</li>
+          <li>홈 추천 소수 큐레이션 · 모바일 390px overflow 0</li>
+          <li>seed 전수 가드레일 유닛 테스트 — <strong>npm test 목록에서 빼지 말 것</strong></li>
+        </ul>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-top: 4px solid #C0341D; border-radius: 16px; padding: 20px;">
+        <p style="margin: 0; font-size: 14px; font-weight: 800; color: #C0341D;">건드리면 위험한 파일/개념</p>
+        <ul style="margin: 10px 0 0; padding-left: 18px; font-size: 14px; line-height: 1.8; color: #44413B;">
+          <li>seed/source-backed 데이터 구조 · 저장/실행/export 스키마 (P10 전 항목이 <strong>표시·testid·스크립트·테스트</strong>만)</li>
+          <li><code>sourceUrl · sourceTrace · detail · memo</code> 필드</li>
+          <li><code>collectSourceSlugSignals</code>의 content-title 오탐 방지 로직</li>
+          <li>기존 <code>data-testid</code> — P10-02는 <strong>추가</strong>만, 개명 금지</li>
+          <li>P10-01은 커버리지를 넓히되 <strong>기존 green을 red로 만들지 말 것</strong></li>
+        </ul>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-top: 4px solid #B95000; border-radius: 16px; padding: 20px;">
+        <p style="margin: 0; font-size: 14px; font-weight: 800; color: #B95000;">지금은 하지 말 것</p>
+        <ul style="margin: 10px 0 0; padding-left: 18px; font-size: 14px; line-height: 1.8; color: #44413B;">
+          <li>설명 문장 추가로 문제 해결 (P10-03의 정답은 <strong>렌더 또는 삭제</strong>)</li>
+          <li>새 기능 · 새 탭 · IA 변경 · 커스텀 datepicker 발명</li>
+          <li>보이는 컨트롤을 <code>aria-hidden</code>/<code>tabindex=-1</code>로 감추기</li>
+          <li><code>/restart</code> 정상 노출·승격 (프로토타입 버킷 유지)</li>
+          <li>가드레일 규칙을 페이지/스크립트에 <strong>복사해 넣기</strong> (P10-01의 반대 방향)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="fix" data-screen-label="8 화면별 수정" style="max-width: 1120px; margin: 0 auto; padding: 34px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 8</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">화면별 구체 수정 지시</h2>
+    </div>
+    <div style="display: grid; gap: 12px; margin-top: 18px;">
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 20px;">
+        <p style="margin: 0; font-size: 16px; font-weight: 800;">/f/new-car-delivery-check <span style="font-size: 12.5px; font-weight: 700; color: #8A857B;">저장 경로 도달성 (P10-02 · High · s11/s25)</span></p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px;">
+          <div style="background: #FBEAE5; border-radius: 10px; padding: 12px 14px;"><p style="margin:0;font-size:11.5px;font-weight:800;color:#C0341D;">현재</p><p style="margin:6px 0 0;font-size:13px;line-height:1.55;color:#44413B;">setup 카드: "바로 저장됩니다: 시트 · 입력 없이 바로 확인합니다" — 그런데 focusable 목록에 저장/가져가기 <strong>0개</strong>(DOM엔 존재). browse는 19번째로 도달 가능.</p></div>
+          <div style="background: #EDF3EC; border-radius: 10px; padding: 12px 14px;"><p style="margin:6px 0 0;font-size:11.5px;font-weight:800;color:#1F6A3E;">지시</p><p style="margin:6px 0 0;font-size:13px;line-height:1.55;color:#44413B;">"입력 없음" 콘텐츠도 <strong>명시적 저장 버튼 1개</strong>를 focusable로(예: 기존 "내 Flow에 저장" sticky를 이 shell에도). 숨김/tabindex=-1이면 해제. testid는 기존 <code>public-flow-mobile-save-cta</code> 재사용.</p></div>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 13px; color: #6E6B64;">함께: <code>primarySaveActionVisible</code>을 가시성 검사로 바꾸고(현재 querySelector 존재만 확인), E2E primary 단언을 6개 route 전부로 확장.</p>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 20px;">
+        <p style="margin: 0; font-size: 16px; font-weight: 800;">/f/fridge · /f/washer <span style="font-size: 12.5px; font-weight: 700; color: #8A857B;">primary 표기 (P10-02 · s09/s10)</span></p>
+        <p style="margin: 10px 0 0; font-size: 13.5px; line-height: 1.65; color: #44413B;">화면엔 "시작일만 넣으면 저장됩니다: 시트" setup이 이미 vehicle(s06)과 같은 위치에 있음 — UI 변경 불필요. <strong>setup 컨테이너에 <code>public-flow-primary-setup</code> testid만 부여</strong>해 측정·E2E가 primary를 인식하게. 증거 목표: <code>publicSharePrimaryPathFocusableCount</code> 5→9(전 캡처).</p>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 20px;">
+        <p style="margin: 0; font-size: 16px; font-weight: 800;">/my "지금 이어하기" 카드 <span style="font-size: 12.5px; font-weight: 700; color: #8A857B;">빈 설명 카드 (P10-03 · Med · s13/s15/s16)</span></p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px;">
+          <div style="background: #FBEAE5; border-radius: 10px; padding: 12px 14px;"><p style="margin:0;font-size:11.5px;font-weight:800;color:#C0341D;">현재</p><p style="margin:6px 0 0;font-size:13px;line-height:1.55;color:#44413B;">"지금 이어하기 / <strong>오늘 할 일</strong> / 5월 28일 (목) / 오늘 일정은 없고, 저장한 콘텐츠의 첫 할 일을 보여줍니다." — 카드 전체가 설명문, 행동 0. 정작 첫 할 일은 위 "다음 할 일" 카드에 있음.</p></div>
+          <div style="background: #EDF3EC; border-radius: 10px; padding: 12px 14px;"><p style="margin:0;font-size:11.5px;font-weight:800;color:#1F6A3E;">지시</p><p style="margin:6px 0 0;font-size:13px;line-height:1.55;color:#44413B;">오늘 일정 0이고 첫 할 일이 이미 다른 큐 카드에 보이면 이 카드는 <strong>렌더하지 않음</strong>. 어느 카드에도 안 보일 때만 실제 행(제목+열기)으로 렌더. 설명문 단독 카드 금지.</p></div>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 13px; color: #6E6B64;">주의: 첫 할 일 제목 반복 가드레일(1회) 위반하지 않도록 — "중복이면 생략"이 기본값.</p>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 20px;">
+        <p style="margin: 0; font-size: 16px; font-weight: 800;">/calendar agenda 그룹 <span style="font-size: 12.5px; font-weight: 700; color: #8A857B;">칩 반복 (P10-04 · Med · s14)</span></p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px;">
+          <div style="background: #FBEAE5; border-radius: 10px; padding: 12px 14px;"><p style="margin:0;font-size:11.5px;font-weight:800;color:#C0341D;">현재</p><p style="margin:6px 0 0;font-size:13px;line-height:1.55;color:#44413B;">"6월 22일 (월)" 아래 4행 전부 "기준 D-30" + "큰 준비" 칩 복제(8개). 헤더엔 "4개 · 4개 남음".</p></div>
+          <div style="background: #EDF3EC; border-radius: 10px; padding: 12px 14px;"><p style="margin:0;font-size:11.5px;font-weight:800;color:#1F6A3E;">지시</p><p style="margin:6px 0 0;font-size:13px;line-height:1.55;color:#44413B;">그룹 내 전 행이 공유하는 칩은 날짜 헤더로 1회 승격("6월 22일 (월) · 기준 D-30 · 큰 준비"), 행은 제목+체크만. 카운트는 "4개 남음" 1회. restart s24 그룹 헤더 패턴 재사용.</p></div>
+        </div>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 20px;">
+        <p style="margin: 0; font-size: 16px; font-weight: 800;">/restart 일정 행 + /my 시트 행 <span style="font-size: 12.5px; font-weight: 700; color: #8A857B;">컨트롤 라벨 (P10-05 · Low · s17/s22/s24)</span></p>
+        <p style="margin: 10px 0 0; font-size: 13.5px; line-height: 1.65; color: #44413B;">"버릴 물건과 대형폐기물 정리 <strong>편집</strong>"처럼 버튼이 제목을 통째로 복제 → 보이는 라벨 "<strong>편집</strong>"(aria-label에 전체 제목 유지). <code>/my</code> 시트의 파란 "항목 열기" 4연발은 secondary(외곽선) 위계로 낮추고 행 전체 탭 영역화 검토. 터치 타깃 44px 유지.</p>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 20px;">
+        <p style="margin: 0; font-size: 16px; font-weight: 800;">capture 스크립트 · 패키지 문서 <span style="font-size: 12.5px; font-weight: 700; color: #8A857B;">(P10-01 · 06 · 07)</span></p>
+        <p style="margin: 10px 0 0; font-size: 13.5px; line-height: 1.65; color: #44413B;">① slug lookahead·반복 검사 정규식을 lib export로 단일화(<code>page.evaluate</code> 안 규칙 리터럴 0). ② <code>githubBase</code>의 <code>/flow-mvp</code> 제거 — 현재 README·audit 링크 전부 404. ③ 스캐너에 보이는 <code>input value</code> 수집 추가(ISO 버킷 확장) + 스크립트 파일명도 <code>capture-claude-p7-…</code>에 묶여 있으니 사이클 중립 이름(<code>capture-claude-final-review-package.mjs</code>) 검토 — env로 P9를 만드는 구조는 동작하지만 이름이 오해를 만듦.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="gaps" data-screen-label="9 추가 캡처 필요" style="max-width: 1120px; margin: 0 auto; padding: 34px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 9</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">evidence가 부족한 시나리오 — 추가 캡처 필요</h2>
+    </div>
+    <p style="margin: 10px 0 0; max-width: 900px; font-size: 14.5px; color: #6E6B64;">P10 백로그 판단엔 26장으로 충분합니다. 아래는 <strong>P10 검증</strong>과 다음 회차를 위해 패키지에 추가할 캡처:</p>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px; margin-top: 18px;">
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 18px 20px;">
+        <p style="margin: 0; font-size: 14px; font-weight: 800;">① 워크벤치 저장 실행 흐름 (P10-02 검증용)</p>
+        <p style="margin: 8px 0 0; font-size: 13.5px; line-height: 1.65; color: #44413B;"><code>/f/new-car</code>에서 저장 실행 <strong>직후</strong> 프레임 + 저장 후 <code>/my</code> 도착 프레임. 지금은 "바로 저장됩니다"가 어떤 인터랙션으로 저장되는지 증거가 없음 — new-car의 High 판정을 확정/기각할 캡처.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 18px 20px;">
+        <p style="margin: 0; font-size: 14px; font-weight: 800;">② /my 완전 빈 상태 (저장 0개)</p>
+        <p style="margin: 8px 0 0; font-size: 13.5px; line-height: 1.65; color: #44413B;">모든 <code>/my</code> 캡처가 저장 1개 이상 상태. 첫 방문(저장 0) 빈 상태의 카피·CTA는 한 번도 증거에 없음 — P10-03(빈 설명 카드) 계열 문제가 여기서도 있을 확률 높음.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 18px 20px;">
+        <p style="margin: 0; font-size: 14px; font-weight: 800;">③ 키보드 포커스 가시화 프레임</p>
+        <p style="margin: 8px 0 0; font-size: 13.5px; line-height: 1.65; color: #44413B;">P9-02·P10-02가 전부 focus <strong>순서</strong> 증거인데 focus <strong>표시</strong>(ring 가시성) 증거는 0장. 공개 <code>/f</code>에서 Tab 3~4회 후 프레임 1장씩 — 순서가 맞아도 링이 안 보이면 같은 문제.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 18px 20px;">
+        <p style="margin: 0; font-size: 14px; font-weight: 800;">④ ko locale의 restart 날짜 입력</p>
+        <p style="margin: 8px 0 0; font-size: 13.5px; line-height: 1.65; color: #44413B;">s21의 "2026-06-27"이 headless 기본 locale 렌더인지 실제 한국 기기 표기인지 미확정 — capture 컨텍스트에 <code>locale: 'ko-KR'</code> 지정 프레임 1장이면 P10-07의 범위가 정해짐.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="goal" data-screen-label="10 /goal 초안" style="max-width: 1120px; margin: 0 auto; padding: 34px 28px 60px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #1F6A3E;">SECTION 10</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">다음 Codex 작업 — /goal 초안 (P10-01)</h2>
+    </div>
+    <div style="margin-top: 18px; background: #1B1A17; color: #E8F5EC; border-radius: 16px; padding: 24px 26px; font-family: 'SF Mono', ui-monospace, Menlo, monospace; font-size: 13px; line-height: 1.75; white-space: pre-wrap;">/goal FlowMe P10-01: 가드레일 규칙 정본을 lib 하나로 단일화하고, evidence capture 스크립트가 그 정본을 그대로 쓰게 만든다.
+
+배경:
+- P9-04에서 lib/flow/user-surface-guardrails.ts의 findSourceSlugHits lookahead는 문장부호까지 잡게 확장됐고 유닛 테스트도 있다.
+- 그러나 scripts/content-audit/capture-claude-p7-final-review-package.mjs의 page.evaluate 안에는 P9-04 이전 lookahead `(?=$|\s|[가-힣]|D-)`가 하드코딩돼 있다.
+- 즉 route-evidence.json의 sourceSlugHits 0은 옛 규칙으로 잰 0이다. 첫 할 일 반복 검사도 페이지 안에 사본이 있다.
+
+할 일:
+1. user-surface-guardrails.ts에서 slug 매칭 정규식(신호별 빌더)과 반복 검사 로직의 패턴 소스를 export한다. 기존 함수 시그니처·동작은 그대로.
+2. capture 스크립트는 ISO/구조어/프로토타입 패턴처럼 이 소스를 page.evaluate 페이로드로 주입한다. evaluate 본문에 규칙 정규식 리터럴이 남지 않게 한다. (대안: 페이지에서는 라인만 추출하고 hit 계산은 Node 쪽 lib 함수로.)
+3. 검증: (a) npm test green 유지, (b) 임시 픽스처로 seed 제목에 "DeskLab·" 형태를 심으면 유닛 테스트와 재생성 evidence가 둘 다 red가 되는지 확인 후 되돌리기, (c) P10 패키지 재생성 시 전 버킷 hit 0 유지.
+4. 같은 커밋에서 githubBase의 '/flow-mvp' 하드코딩을 제거해 README/audit 링크가 이 브랜치에서 200이 되게 한다 (P10-06).
+
+금지:
+- 스키마/seed/IA/testid 변경, 가드레일 규칙 완화, 기존 green 테스트를 red로 만드는 변경, 규칙을 스크립트에 복사해 넣는 방향.</div>
+    <p style="margin: 14px 0 0; font-size: 13px; color: #6E6B64;">이 문서: P9 패키지(@decd1a8, PNG 26장) + <code>user-surface-guardrails.ts</code> · <code>display-title.test.ts</code> · E2E 2종 · capture 스크립트 62KB 직접 확인 기준. 작성 2026-07-06.</p>
+  </section>
+
+</div>
+</x-dc>
+</body>
+</html>

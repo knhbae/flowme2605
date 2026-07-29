@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>FlowMe UX/UI — P15 마감 판정 · P16 백로그 (문은 열었다, 방은 비어 있었다)</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <style>
+    html, body { margin: 0; padding: 0; background: #F2F1EC; }
+    * { box-sizing: border-box; }
+    code { font-family: 'SF Mono', ui-monospace, Menlo, monospace; }
+    a { color: #3654FF; }
+    a:hover { color: #1F3BD6; }
+  </style>
+</helmet>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#1B3A6B"></rect><text x="50" y="59" font-family="sans-serif" font-size="15" font-weight="800" fill="#FFFFFF" text-anchor="middle">P15✓</text></svg></template>
+<div style="font-family: 'Pretendard Variable', Pretendard, -apple-system, 'Segoe UI', sans-serif; color: #1B1A17; line-height: 1.6; letter-spacing: -0.01em;">
+
+  <header data-screen-label="헤더" style="background: #1B1A17; color: #F5F4EF; padding: 52px 28px 44px;">
+    <div style="max-width: 1120px; margin: 0 auto;">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px;">
+        <span style="display: inline-flex; align-items: center; border: 1px solid rgba(150,190,255,0.45); background: rgba(31,60,120,0.4); border-radius: 999px; padding: 4px 12px; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; color: #BBD4FF;">FLOWME · P15 마감 판정</span>
+        <span style="font-size: 12px; font-weight: 600; color: rgba(245,244,239,0.6);">codex/flowme-uxui-second-loop · package @61cea08 · UI baseline @faf99af · PNG 40장(모바일 32 + wide 8) · 생성 2026-07-08</span>
+      </div>
+      <h1 style="margin: 18px 0 0; font-size: 40px; line-height: 1.2; font-weight: 800; letter-spacing: -0.02em; max-width: 1020px; text-wrap: balance;">P15는 마침내 "스튜디오"의 <em>문을 열었다</em> — creator-profile를 두 폭으로 캡처하고 candidate 상태어까지 사용자어로 닫았다.<br>그런데 문을 열자 보인 방은 <em>공개 0 · 실행 0 · 복사 0</em>. 우리가 잰 건 방이 아니라 <em>빈 방</em>이었다.</h1>
+      <p style="margin: 16px 0 0; max-width: 980px; font-size: 16px; line-height: 1.7; color: rgba(245,244,239,0.78); text-wrap: pretty;">이번 패키지는 P14에서 지적한 "열지 않은 문"을 정면으로 열었습니다. <code>/u/my-flow-studio</code>가 <strong>390·1024 두 폭으로 캡처</strong>되고(s39·s40), 사용자 표면 버킷이 <strong>creator-profile 2 route 전부 0</strong>, candidate resolved 카드의 상태기계 문구가 사라지고(<code>legacy status 0 · 카드 본문 스캔 true</code>) "이미 준비된 Flow가 있어요"라는 가치 문구로 닫혔습니다. <strong>정상 4탭 기준 출시 가능은 P13~P14에 이어 유지</strong>됩니다. 그런데 P15가 문을 연 방식이 새 사각지대를 만듭니다: 캡처된 creator-profile은 <strong>공개 콘텐츠 0 · 총 실행 0 · 총 복사 0, "0개 표시 / 전체 0개"의 빈 상태</strong>였습니다. 즉 <strong>버킷 0은 "샐 콘텐츠가 없어서 0"</strong>입니다. 게다가 이 페이지는 <code>app/u/[creator]</code> <strong>동적·색인 가능(noindex false)</strong> 공개 라우트인데, <strong>내용이 있는 실제 채널은 스캔되지 않았습니다.</strong> 그 위에 "내 스튜디오"와 "채널 콘텐츠" 브라우저가 <strong>한 화면에 뒤섞여</strong> "내 Flow(실행)"과 "내 Flow 스튜디오(제작자)"의 이름까지 붙어 있습니다.</p>
+    </div>
+  </header>
+
+  <nav style="position: sticky; top: 0; z-index: 50; background: rgba(242,241,236,0.92); backdrop-filter: blur(8px); border-bottom: 1px solid #DDD9D0;">
+    <div style="max-width: 1120px; margin: 0 auto; padding: 10px 28px; display: flex; flex-wrap: wrap; gap: 6px;">
+      <a href="#verdict" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">1 판정</a>
+      <a href="#closed" style="text-decoration: none; color: #F5F4EF; background: #1F6A3E; border: 1px solid #1F6A3E; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">2 P15 닫힘</a>
+      <a href="#routes" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">3 Route</a>
+      <a href="#gap" style="text-decoration: none; color: #F5F4EF; background: #C0341D; border: 1px solid #C0341D; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">4 빈 방</a>
+      <a href="#prio" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">5 우선순위</a>
+      <a href="#backlog" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">6 P16 백로그</a>
+      <a href="#hold" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">7 유지 기준선</a>
+      <a href="#fix" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">8 화면별</a>
+      <a href="#gaps" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">9 증거 공백</a>
+      <a href="#nogo" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">10 건드리지 말 것</a>
+      <a href="#goal" style="text-decoration: none; color: #F5F4EF; background: #3654FF; border: 1px solid #3654FF; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">11 /goal</a>
+    </div>
+  </nav>
+
+  <section style="max-width: 1120px; margin: 0 auto; padding: 24px 28px 4px;">
+    <div style="background: #EDF3EC; border: 1px solid #CADFC9; border-radius: 14px; padding: 16px 18px;">
+      <p style="margin: 0; font-size: 13px; font-weight: 800; color: #1F6A3E;">이번 검토 근거</p>
+      <p style="margin: 8px 0 0; font-size: 13.5px; line-height: 1.7; color: #35563A;">Vercel 실행 화면은 보지 않았습니다. <code>@61cea08</code> P15 final package(<code>README·audit.md 42KB·route-evidence.json·screenshots 40장</code>, UI baseline <code>@faf99af</code>)와 <code>audit.md</code> summary JSON·scenario matrix만 근거로 판단했습니다. <strong>40장 전수 확인</strong>: creator-profile 신규 2장(s39·s40)·스튜디오 진입 3장(s13·14·16)·candidate 4상태(s27~30)·candidate wide(s38)·wide save(s34·35)·wide nav(s32·33·36)를 픽셀로 대조했고, "스튜디오" 목적지·채널 콘텐츠·candidate 문구는 <code>audit.md</code>의 marker와 <code>app/u/[creator]/page.tsx</code>(→<code>CreatorProfile</code>)로 재확인했습니다. 판정 기준은 P11~P14와 동일: ①선언된 P15 닫힘이 증거에서 실제로 닫혔는가 ②0이 <strong>무엇으로·어느 폭에서·어떤 상태(빈/채워진)로</strong> 잰 0인가 ③이번엔 스캔이 <strong>연 문 뒤에서 무엇을 못 봤는가.</strong></p>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 1 : Overall Judgment ===== -->
+  <section id="verdict" data-screen-label="1 판정" style="max-width: 1120px; margin: 0 auto; padding: 26px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 1</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">Overall Judgment — P15 출시 가능 유지, 리스크는 "빈 방을 잰 0"</h2>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; margin-top: 18px;">
+      <div style="background: #EDF3EC; border: 1px solid #CADFC9; border-radius: 16px; padding: 18px 20px;">
+        <p style="margin: 0; font-size: 14px; font-weight: 800; color: #1F6A3E;">현 상태 — P15 백로그 3 닫힘 · 2 부분 · 1 미해결</p>
+        <p style="margin: 8px 0 0; font-size: 13.5px; line-height: 1.7; color: #35563A;">P14의 최대 리스크였던 <strong>"열지 않은 문"이 열렸습니다.</strong> <code>/u/my-flow-studio</code>가 390·1024로 캡처되고 사용자 표면 버킷 <strong>creator-profile 2 route 전부 0</strong>(P15-01), 모바일에 "스튜디오" 진입 버튼이 생겨 <strong>진입 parity 확보</strong>(P15-02), candidate resolved 카드가 <strong>"이미 준비된 Flow가 있어요"</strong> 가치 문구로 바뀌고 <strong>카드 본문이 스캔 범위에 편입</strong>(P15-03, <code>legacy status 0</code>). URL-first 4상태·export 3모드·public /f 저장 primary·restart/flow-lab 티어 분리 모두 유지. <strong>정상 4탭·URL-first 사용자 표면에 Blocking·High 없음.</strong></p>
+      </div>
+      <div style="background: #FBEAE5; border: 1px solid #EFC5B9; border-radius: 16px; padding: 18px 20px;">
+        <p style="margin: 0; font-size: 14px; font-weight: 800; color: #C0341D;">P16에서 가장 먼저 볼 리스크</p>
+        <p style="margin: 8px 0 0; font-size: 13.5px; line-height: 1.7; color: #7A2917;"><strong>연 방이 비어 있었다.</strong> 캡처된 creator-profile은 <strong>공개 콘텐츠 0 · 총 실행 0 · 총 복사 0 · "0개 표시 / 전체 0개"</strong>의 빈 상태입니다(s39·s40). 버킷 0은 <strong>"샐 것이 없어서 0"</strong>이고, 이 라우트는 <code>app/u/[creator]</code> <strong>동적·색인 가능(noindex false)</strong> 공개 표면인데 <strong>내용 있는 실제 채널은 스캔되지 않았습니다.</strong> 그 위에 "내 스튜디오"와 <strong>"채널 콘텐츠" 브라우저가 한 화면에 뒤섞이고</strong>, "내 Flow"와 "내 Flow 스튜디오" <strong>이름이 붙어</strong> 실행/제작자 표면이 헷갈립니다. "스튜디오" 버튼은 정책상 "My Flow 액션"인데 <strong>캘린더에도 나옵니다</strong>(s14).</p>
+      </div>
+    </div>
+    <div style="margin-top: 14px; background: #1B1A17; color: #F5F4EF; border-radius: 16px; padding: 18px 22px;">
+      <p style="margin: 0; font-size: 14.5px; line-height: 1.7;"><strong style="color:#9FF0B8;">한 줄 판정</strong> — Post-P15는 <strong>정상 4탭 기준 출시 가능</strong>(Blocking 0). P16의 1번은 기능이 아니라 <strong>연 방을 채워서 다시 재는 것</strong>: ①creator-profile을 <strong>내용이 있는 실제 채널</strong>로 캡처·스캔해 "빈 방의 0"을 "채워진 방의 0"으로 승격 → ②그 페이지의 <strong>"내 스튜디오 vs 채널 콘텐츠" IA와 "내 Flow" 이름 충돌</strong> 정리 → ③"스튜디오" 진입점 <strong>노출 정책과 실제 배치(캘린더 포함)</strong> 일치. 지난 루프의 축이 폭(P13)→목적지 이름(P14)→<strong>목적지 내부(P15→P16)</strong>로 한 칸 더 들어왔을 뿐입니다 — <em>문을 열어도 방이 비어 있으면, 잰 0은 아직 방을 잰 게 아니다.</em></p>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 2 : P15 closure confirmation ===== -->
+  <section id="closed" data-screen-label="2 P15 닫힘 확인" style="max-width: 1120px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #1F6A3E;">SECTION 2</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">지난 P15 백로그 6개 — 3 닫힘 · 2 부분 · 1 미해결</h2>
+    </div>
+    <p style="margin: 10px 0 0; max-width: 940px; font-size: 14.5px; color: #6E6B64;">P14 마감 때 내가 낸 <code>P15-01~06</code>을 evidence·픽셀로 하나씩 대조했습니다. 3개는 <span style="font-weight:800;color:#1F6A3E;">닫힘</span>(다만 P15-01·02는 닫히면서 더 깊은 리스크를 드러냄), 2개는 <span style="font-weight:800;color:#8A6D1B;">부분</span>, 1개는 <span style="font-weight:800;color:#C0341D;">미해결</span>입니다. 닫힘에서 파생된 리스크는 새 ID(<code>P16-01·02·03</code>)로 승계합니다.</p>
+    <div style="margin-top: 16px; overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; font-size: 13px;">
+        <thead>
+          <tr style="background: #EDF3EC; text-align: left;">
+            <th style="padding: 10px 12px; border-bottom: 1px solid #CADFC9; white-space: nowrap;">항목</th>
+            <th style="padding: 10px 12px; border-bottom: 1px solid #CADFC9;">P15 요청(내 백로그)</th>
+            <th style="padding: 10px 12px; border-bottom: 1px solid #CADFC9;">판정 근거</th>
+            <th style="padding: 10px 12px; border-bottom: 1px solid #CADFC9; white-space: nowrap;">판정</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; font-weight:800; white-space:nowrap;">P15-01</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;"><code>/u/my-flow-studio</code>(creator-profile) 캡처·스캔 + IA 정책 명문화</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">390·1024 캡처(s39·s40) · <code>creatorProfileGuardrailHitCount 0 · routeCount 2</code> · 정책 기록("4탭 밖 보조 표면, 5번째 탭 아님"). <strong>단 캡처가 공개 0·실행 0·복사 0 빈 상태 · <code>noindex false</code> 동적 라우트인데 채워진 채널 미스캔</strong></td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; color:#1F6A3E; font-weight:800;">닫힘→P16-01·02</td>
+          </tr>
+          <tr>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; font-weight:800; white-space:nowrap;">P15-02</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">스튜디오 진입점 모바일/wide parity 확정</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">모바일 "스튜디오" 버튼 신설(s13·16) · <code>studioEntryReachableByViewport {390:7,1024:1}</code>. <strong>단 정책은 "My Flow 액션"인데 캘린더에도 노출(s14)</strong> · 390:7 vs 1024:1 비대칭</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; color:#1F6A3E; font-weight:800;">닫힘→P16-03</td>
+          </tr>
+          <tr>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; font-weight:800; white-space:nowrap;">P15-03</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">candidate 상태어 정리 + 카드 본문 문구 스캔 편입</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;"><code>urlFirstCandidateCardTextScanned true · legacyStatusHitCount 0</code> · "후보/닫힌 상태" 제거, "이미 준비된 Flow가 있어요 · 이제 실행 가능"으로 교체(s30·s38)</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; color:#1F6A3E; font-weight:800;">완전 닫힘</td>
+          </tr>
+          <tr>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; font-weight:800; white-space:nowrap;">P15-04</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">wide save 우측 preview 열 공백 해소 + fill marker</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">flow-map wide는 우측에 제목+설명 preview 생김(s34, 개선). <strong>단 공개 /f wide는 여전히 라벨+제목만·태반 공백(s35)</strong> · <code>fill-ratio marker 없음</code></td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; color:#8A6D1B; font-weight:800;">부분→P16-04</td>
+          </tr>
+          <tr>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; font-weight:800; white-space:nowrap;">P15-06</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">wide 캡처 커버리지 확대(custom-start·miss·캘린더·롱리스트)</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">creator wide 추가로 wide <code>7→8</code>. <strong>단 <code>wideViewportUrlFirstStatesCaptured ["hit","candidate"]</code> 그대로</strong> — custom-start·miss·캘린더·My Flow 롱리스트 wide 여전히 미캡처</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; color:#8A6D1B; font-weight:800;">부분→P16-08</td>
+          </tr>
+          <tr>
+            <td style="padding: 9px 12px; font-weight:800; white-space:nowrap;">P15-05</td>
+            <td style="padding: 9px 12px;">wide 헤더 pill nav + 햄버거 중복 정리</td>
+            <td style="padding: 9px 12px;">변화 없음 · s32·33·34·36·40 모두 4탭 pill + "메뉴 ☰" 햄버거 공존 지속 · 중복 marker 없음</td>
+            <td style="padding: 9px 12px; color:#C0341D; font-weight:800;">미해결→P16-06</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin: 10px 2px 0; font-size: 12px; color: #8A6D1B;">P15-01·02는 "닫혔지만 닫는 과정에서 더 깊은 곳을 드러낸" 형태입니다 — 문을 열었더니 방이 비어 있었고(§4·<a href="#gaps" style="color:#8A6D1B;">9</a>), 진입 버튼이 정책보다 넓게 배치돼 있었습니다. 그래서 판정은 "닫힘"이되 새 리스크를 P16으로 승계합니다.</p>
+  </section>
+
+  <!-- ===== SECTION 3 : Route Findings ===== -->
+  <section id="routes" data-screen-label="3 Route별 문제" style="max-width: 1120px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 3</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">Route Findings</h2>
+    </div>
+    <p style="margin: 10px 0 0; max-width: 940px; font-size: 14.5px; color: #6E6B64;">정상 모바일 32·wide 8 캡처의 선언된 버킷은 전부 통과. 아래는 <strong>0이 빈 상태에서 잰 0이거나, 화면에 잔여·불일치가 있는</strong> 판단입니다. <span style="font-weight:800;color:#C0341D;">H</span>=High · <span style="font-weight:800;color:#8A6D1B;">M</span>=Medium · <span style="font-weight:800;color:#6E6B64;">L</span>=Low · <span style="font-weight:800;color:#1F6A3E;">✓</span>=문제 없음. Blocking 없음.</p>
+    <div style="margin-top: 16px; overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; font-size: 13px;">
+        <thead>
+          <tr style="background: #F7F6F2; text-align: left;">
+            <th style="padding: 10px 12px; border-bottom: 1px solid #E7E4DD; white-space: nowrap;">우선순위</th>
+            <th style="padding: 10px 12px; border-bottom: 1px solid #E7E4DD; white-space: nowrap;">Route · 캡처</th>
+            <th style="padding: 10px 12px; border-bottom: 1px solid #E7E4DD;">문제 · 사용자 영향</th>
+            <th style="padding: 10px 12px; border-bottom: 1px solid #E7E4DD;">근거</th>
+            <th style="padding: 10px 12px; border-bottom: 1px solid #E7E4DD;">수정 방향</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; color:#C0341D; font-weight:800;">H</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; white-space: nowrap;"><code>/u/[creator]</code><br>s39·s40</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">creator-profile 버킷 0이 <strong>빈 상태(공개 0·실행 0·복사 0)에서 잰 0</strong>. 동적·색인 가능 공개 라우트인데 <strong>내용 있는 실제 채널은 미스캔</strong> — 복사 콘텐츠의 출처 slug·raw ISO·내부어가 채워진 채널에서 새는지 알 수 없음.</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">s39·s40 "0개 표시 / 전체 0개" · <code>creatorProfileNoindex false</code> · <code>app/u/[creator]/page.tsx</code> 동적</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">채워진 채널 캡처+스캔, noindex 정책 결정 <a href="#backlog" style="color:#C0341D;">P16-01</a></td>
+          </tr>
+          <tr>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; color:#C0341D; font-weight:800;">H</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; white-space: nowrap;"><code>/u/my-flow-studio</code><br>s39·s40</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">한 화면에 <strong>"내 스튜디오(제작자 프로필)"과 "채널 콘텐츠(공개 브라우저)"가 뒤섞임</strong>. "공개 콘텐츠"가 stat·섹션 헤더로 중복, "전체" 칩 2개, "채널 콘텐츠"는 새 구조어. "내 Flow"와 "내 Flow 스튜디오" 이름 충돌.</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">s39·s40 픽셀 · stat "공개 콘텐츠 0" + 섹션 "공개 콘텐츠/채널 콘텐츠" · "전체" 칩 중복</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">섹션 분리·이름 차별화·"채널 콘텐츠" 교체 <a href="#backlog" style="color:#C0341D;">P16-02</a></td>
+          </tr>
+          <tr>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; color:#8A6D1B; font-weight:800;">M</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; white-space: nowrap;"><code>/my</code>·<code>/calendar</code><br>s13·s14·s16</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">"스튜디오" 진입 버튼이 정책상 "My Flow 액션"인데 <strong>캘린더 헤더에도 노출</strong>. 노출 규칙과 실제 배치 불일치 · 390:7 vs 1024:1 비대칭.</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;"><code>studioEntryPolicy "My Flow page action"</code> · 근거에 <code>14-calendar</code> record 포함 · <code>{390:7,1024:1}</code></td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">정책=배치 일치, 폭별 marker 정합 <a href="#backlog" style="color:#8A6D1B;">P16-03</a></td>
+          </tr>
+          <tr>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; color:#8A6D1B; font-weight:800;">M</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; white-space: nowrap;"><code>/f</code>·<code>/flow-maps</code> @1024<br>s35·s34</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">2열 save에서 <strong>우측 "먼저 할 일" 열이 공개 /f는 라벨+제목만·태반 공백</strong>(s35). flow-map은 설명 한 줄 추가로 개선됐으나 여전히 여백 큼(s34).</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">s35·s34 픽셀 · 열 채움 marker 없음</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">우측 preview 보강 or 재균형 + fill marker <a href="#backlog" style="color:#8A6D1B;">P16-04</a></td>
+          </tr>
+          <tr>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; color:#8A6D1B; font-weight:800;">M</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; white-space: nowrap;"><code>/my</code> @1024<br>s36</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">홈·Flow 찾기·flow-map은 진짜 2열인데 <strong>My Flow wide는 단일 컬럼을 늘린 형태</strong> — 전폭 바 + CTA 우측 플로트, 우측 여백 큼. 저장 직후 착지 화면이 데스크톱에서 가장 미완성처럼 보임.</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">s36 vs s32·s33·s34 픽셀</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">My Flow wide 다열/리스트+상세 레이아웃 <a href="#backlog" style="color:#8A6D1B;">P16-05</a></td>
+          </tr>
+          <tr>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; color:#6E6B64; font-weight:800;">L</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; white-space: nowrap;">전 route @wide<br>s32·33·34·36·40</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">wide 헤더에 4탭 pill nav + "메뉴 ☰" 햄버거 <strong>동시 노출 지속</strong>(P15-05 미해결). nav가 이미 다 보이는데 햄버거 목적 불명.</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">s32·33·34·36·40 픽셀(pill + 햄버거 공존)</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">wide 햄버거 제거 or 내용 차별화 <a href="#backlog" style="color:#6E6B64;">P16-06</a></td>
+          </tr>
+          <tr>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; color:#6E6B64; font-weight:800;">L</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; white-space: nowrap;"><code>/flows</code> miss<br>s29</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">hit·candidate는 사용자어로 닫혔는데 <strong>miss만 운영어 잔존</strong> — "아직 Flow화되지 않은 URL", "저장 대기", "요청 대기". 문구 스캔이 miss 카드 본문을 안 봐서 0으로 통과.</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">s29 픽셀 · mechanism value hit는 hit/custom/miss 공통 1줄만 · miss 카드 본문 미스캔</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">miss 문구 사용자어화 + 본문 스캔 편입 <a href="#backlog" style="color:#6E6B64;">P16-07</a></td>
+          </tr>
+          <tr>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; color:#6E6B64; font-weight:800;">L</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; white-space: nowrap;">wide 커버리지<br>8 route</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">URL-first wide는 <strong>hit·candidate만</strong>(custom-start·miss 미캡처). 캘린더·My Flow 롱리스트 wide 미캡처 — 폭 reflow 여전히 spot check(P15-06 부분).</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;"><code>wideViewportUrlFirstStatesCaptured ["hit","candidate"]</code></td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">wide 캡처 대상 확대 <a href="#backlog" style="color:#6E6B64;">P16-08</a></td>
+          </tr>
+          <tr>
+            <td style="padding: 9px 12px; color:#1F6A3E; font-weight:800;">✓</td>
+            <td style="padding: 9px 12px; white-space: nowrap;">정상 4탭·URL-first·프로토타입<br>s01~31·32~38</td>
+            <td style="padding: 9px 12px;">홈·Flow 찾기·캘린더·내 Flow·공개 /f·워크벤치·restart·flow-lab 격리 전부 marker·픽셀 통과. candidate 상태어·export 3모드·저장 primary·티어 분리 유지.</td>
+            <td style="padding: 9px 12px;"><code>정상·wide 전 버킷 0 · nav-leak 3폭 0 · public 10/10 · release-preview 0 · internal-console 허용 7</code></td>
+            <td style="padding: 9px 12px;">유지 — <a href="#hold" style="color:#1F6A3E;">§7</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 4 : the empty room ===== -->
+  <section id="gap" data-screen-label="4 빈 방" style="max-width: 1120px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #C0341D;">SECTION 4</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">열린 문, 빈 방 — 목적지는 열었지만 안이 비어 있었다</h2>
+    </div>
+    <p style="margin: 10px 0 0; max-width: 940px; font-size: 14.5px; color: #6E6B64;">P15는 P14의 "열지 않은 문"을 정확히 열었습니다(캡처 2폭, 버킷 0, 정책 기록). 그런데 문을 열자 보인 방은 <strong>모든 수치가 0인 빈 상태</strong>였고, 그 방은 <strong>누구나 URL로 들어올 수 있는(<code>/u/[creator]</code> 동적·색인) 공개 표면</strong>이었습니다. "0으로 잰 것"과 "잴 게 없어서 0"은 다릅니다.</p>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin-top: 18px;">
+      <figure style="margin: 0; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; overflow: hidden;">
+        <div style="border-bottom: 1px solid #F0EEE8; padding: 14px 18px;">
+          <p style="margin: 0; font-size: 13px; font-weight: 800; color: #C0341D;">① s40 · <code>/u/my-flow-studio</code> @1024 — 방은 비었고 IA는 뒤섞였다</p>
+          <p style="margin: 6px 0 0; font-size: 13px; line-height: 1.6; color: #6E6B64;">위: "내 Flow 스튜디오 · 실행 콘텐츠 제작자 / 공개 콘텐츠 <strong>0</strong> · 총 실행 <strong>0</strong> · 총 복사 <strong>0</strong>". 아래: "공개 콘텐츠 / <strong>채널 콘텐츠</strong> / 0개 표시 · 전체 0개" 공개 브라우저. 제작자 프로필과 채널 브라우저가 <strong>한 화면</strong>, "전체" 칩은 <strong>둘</strong>.</p>
+        </div>
+        <img src="p15-screenshots/40-creator-profile-my-flow-studio-wide.png" alt="creator profile 1024px — 빈 상태 + 채널 콘텐츠" style="display: block; width: 100%; height: auto;">
+      </figure>
+      <figure style="margin: 0; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; overflow: hidden;">
+        <div style="border-bottom: 1px solid #F0EEE8; padding: 14px 18px;">
+          <p style="margin: 0; font-size: 13px; font-weight: 800; color: #C0341D;">비교 · s39 · 같은 페이지 @390 — 동일한 빈 방</p>
+          <p style="margin: 6px 0 0; font-size: 13px; line-height: 1.6; color: #6E6B64;">모바일에서도 0·0·0. 사용자 표면 버킷이 전부 0으로 통과하지만, <strong>스캔이 대조할 사용자 콘텐츠(제목·출처·날짜)가 화면에 없습니다.</strong> 이 0은 품질 증거가 아니라 <strong>"빈 화면 증거"</strong>입니다.</p>
+        </div>
+        <img src="p15-screenshots/39-creator-profile-my-flow-studio-mobile.png" alt="creator profile 390px — 빈 상태" style="display: block; width: 100%; height: auto;">
+      </figure>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin-top: 14px;">
+      <figure style="margin: 0; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; overflow: hidden;">
+        <div style="border-bottom: 1px solid #F0EEE8; padding: 14px 18px;">
+          <p style="margin: 0; font-size: 13px; font-weight: 800; color: #8A6D1B;">② s13 · My Flow @390 — 문(진입)은 이제 모바일에도 있다</p>
+          <p style="margin: 6px 0 0; font-size: 13px; line-height: 1.6; color: #6E6B64;">"내 Flow" 제목 옆 우상단 "<strong>스튜디오</strong>" 버튼. P14의 wide-only가 <strong>모바일에도 생겨 parity 확보</strong>(P15-02 닫힘). 명확한 보조 outline 버튼이라 5번째 탭으로는 안 보임 — 좋음.</p>
+        </div>
+        <img src="p15-screenshots/13-post-save-my-moving-mobile.png" alt="My Flow 390px — 스튜디오 버튼" style="display: block; width: 100%; height: auto;">
+      </figure>
+      <figure style="margin: 0; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; overflow: hidden;">
+        <div style="border-bottom: 1px solid #F0EEE8; padding: 14px 18px;">
+          <p style="margin: 0; font-size: 13px; font-weight: 800; color: #8A6D1B;">그런데 · s14 · Calendar @390 — 같은 버튼이 여기에도</p>
+          <p style="margin: 6px 0 0; font-size: 13px; line-height: 1.6; color: #6E6B64;">"캘린더" 제목 옆에도 동일한 "<strong>스튜디오</strong>" 버튼. 정책은 <code>studioEntryPolicy "My Flow page action"</code>이라고 적었는데 <strong>evidence record에 <code>14-calendar</code>가 들어 있습니다.</strong> 배치가 정책보다 넓습니다(P16-03).</p>
+        </div>
+        <img src="p15-screenshots/14-calendar-after-moving-save-mobile.png" alt="Calendar 390px — 스튜디오 버튼" style="display: block; width: 100%; height: auto;">
+      </figure>
+    </div>
+
+    <div style="margin-top: 14px; background: #1B1A17; color: #E8E6DF; border-radius: 14px; padding: 16px 20px; font-family: 'SF Mono', ui-monospace, Menlo, monospace; font-size: 12.6px; line-height: 1.75; white-space: pre-wrap;">// audit.md — creator-profile은 잡혔지만, "빈 방"으로 잡혔다
+"creatorProfileGuardrailHitCount": 0,
+"creatorProfileEvidence": [{ "recordId":"39-...-mobile", "surfaceVisible":true,
+  "internalHitCount":0, "sourceSlugHitCount":0, "rawIsoHitCount":0, "visibleMarkdownHitCount":0 }, …]
+"creatorProfileNoindex": [{ "route":"/u/my-flow-studio", "noindex": false }, …]   // ← 색인 가능 공개 표면
+// 화면(s39·s40): 공개 콘텐츠 0 · 총 실행 0 · 총 복사 0 · "0개 표시 / 전체 0개"  ← 잴 콘텐츠가 없음
+// app/u/[creator]/page.tsx → &lt;CreatorProfile slug={creator} /&gt;   ← /u/* 어떤 slug든 렌더되는 동적 라우트
+
+// 진입 버튼: 정책은 "My Flow", 그런데 캘린더에도
+"studioEntryPolicy": "visible as a My Flow page action when saved content exists; …outside the 4-tab IA"
+"studioEntryVisibleByViewport": { "390": 7, "1024": 1 }
+"studioNavDestinationEvidence": [ …, { "recordId": "14-calendar-after-moving-save-mobile", "route": "/calendar", … } ]</div>
+
+    <div style="margin-top: 14px; background: #FBEAE5; border: 1px solid #EFC5B9; border-radius: 14px; padding: 16px 18px;">
+      <p style="margin: 0; font-size: 14px; line-height: 1.7; color: #7A2917;"><strong>핵심.</strong> 이건 "P15가 틀렸다"가 아니라 <strong>"측정이 방 안에 들어갔지만, 그 방이 아직 비어 있었다"</strong>는 신호입니다. P13은 다른 폭을, P14는 목적지 이름을, P15는 <em>목적지 자체</em>를 처음 열었습니다. 남은 한 걸음은 <strong>그 방에 실제 콘텐츠를 놓고 다시 재는 것</strong>(P16-01), 그 방의 <strong>가구 배치(내 스튜디오 vs 채널 콘텐츠 IA·이름)를 정리하는 것</strong>(P16-02), 그리고 <strong>문 손잡이를 정책대로 다는 것</strong>(P16-03·진입점)입니다. 지금의 0은 참이지만, <strong>0이 잰 것은 빈 방</strong>입니다.</p>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 5 : priorities ===== -->
+  <section id="prio" data-screen-label="5 우선순위" style="max-width: 1120px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 5</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">우선순위 — Blocking / High / Medium / Low</h2>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 18px;">
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-top: 4px solid #1B1A17; border-radius: 14px; padding: 16px 18px;">
+        <p style="margin: 0; font-size: 13px; font-weight: 800;">Blocking · 0건</p>
+        <p style="margin: 8px 0 0; font-size: 13.5px; line-height: 1.6; color: #44413B;">정상 4탭·URL-first 사용자 표면·wide 8 route 모두 hit 0. <strong>출시를 막는 항목 없음.</strong></p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-top: 4px solid #C0341D; border-radius: 14px; padding: 16px 18px;">
+        <p style="margin: 0; font-size: 13px; font-weight: 800; color: #C0341D;">High · 2건</p>
+        <p style="margin: 8px 0 0; font-size: 13.5px; line-height: 1.6; color: #44413B;"><strong>P16-01</strong> creator-profile 채워진 채널 캡처·스캔 + noindex 정책 · <strong>P16-02</strong> creator-profile IA(내 스튜디오 vs 채널 콘텐츠)·이름 충돌 정리.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-top: 4px solid #C7A128; border-radius: 14px; padding: 16px 18px;">
+        <p style="margin: 0; font-size: 13px; font-weight: 800; color: #8A6D1B;">Medium · 3건</p>
+        <p style="margin: 8px 0 0; font-size: 13.5px; line-height: 1.6; color: #44413B;"><strong>P16-03</strong> 스튜디오 진입 정책=배치 일치 · <strong>P16-04</strong> wide save 우측 열 공백(공개 /f) · <strong>P16-05</strong> My Flow wide 다열 레이아웃.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-top: 4px solid #B7B2A6; border-radius: 14px; padding: 16px 18px;">
+        <p style="margin: 0; font-size: 13px; font-weight: 800; color: #6E6B64;">Low · 3건</p>
+        <p style="margin: 8px 0 0; font-size: 13.5px; line-height: 1.6; color: #44413B;"><strong>P16-06</strong> wide 헤더 pill+햄버거 중복 · <strong>P16-07</strong> miss 문구 사용자어화·스캔 · <strong>P16-08</strong> wide 캡처 커버리지(evidence).</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 6 : P16 backlog ===== -->
+  <section id="backlog" data-screen-label="6 P16 백로그" style="max-width: 1120px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 6</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">P16 Backlog — 바로 개발 가능한 단위</h2>
+    </div>
+    <p style="margin: 10px 0 0; max-width: 940px; font-size: 14.5px; color: #6E6B64;">전부 <strong>4탭 IA·공유 shell·저장/실행/export 스키마·source 접근을 건드리지 않는</strong> 캡처/스캔/표시/레이아웃 레벨 작업입니다. 항목마다 <strong>Route·Problem·Why·Evidence·Expected·Implementation·Guardrail/E2E·Do not break·Done when</strong>을 붙였습니다.</p>
+    <div style="display: grid; gap: 12px; margin-top: 18px;">
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #C0341D; border-radius: 16px; padding: 18px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <span style="font-size: 13px; font-weight: 800; background: #FBEAE5; color: #C0341D; border-radius: 6px; padding: 2px 9px;">P16-01 · High · capture/guardrail · evidence gap</span>
+          <h3 style="margin: 0; font-size: 16.5px; font-weight: 800;">creator-profile을 <code>내용이 있는 실제 채널</code>로 캡처·스캔하고 noindex 정책을 결정</h3>
+        </div>
+        <div style="margin: 10px 0 0; font-size: 13.5px; line-height: 1.7; color: #44413B;">
+          <p style="margin:0;"><strong>Route / Scenario</strong> · <code>/u/[creator]</code> (현재는 빈 <code>/u/my-flow-studio</code>만 캡처, s39·s40)</p>
+          <p style="margin:6px 0 0;"><strong>Problem</strong> · 캡처된 creator-profile은 공개 콘텐츠 0·총 실행 0·총 복사 0·"0개 표시 / 전체 0개"의 빈 상태다. 사용자 표면 버킷 0은 <em>대조할 콘텐츠가 없어서</em> 0이다. <code>app/u/[creator]/page.tsx</code>는 어떤 slug든 <code>&lt;CreatorProfile&gt;</code>를 렌더하는 동적 공개 라우트이고 <code>noindex false</code>인데, 제목·출처·날짜·복사 콘텐츠가 채워진 실제 채널은 스캔된 적이 없다.</p>
+          <p style="margin:6px 0 0;"><strong>Why it matters</strong> · creator-profile은 이번에 사용자 표면으로 편입된 새 화면이다. 채워진 채널이 출처 slug(예 <code>Mathbang</code>)·raw ISO·내부어를 노출하면 지금 스캔은 못 잡는다. 색인 가능 + 채워질 때 미검증 = 실질 유출 리스크.</p>
+          <p style="margin:6px 0 0;"><strong>Evidence</strong> · <code>creatorProfileEvidence</code> 두 record 모두 buckets 0·surfaceVisible true인데 화면 콘텐츠 "0개" · <code>creatorProfileNoindex false</code>(2건) · <code>app/u/[creator]/page.tsx</code> 동적</p>
+          <p style="margin:6px 0 0;"><strong>Expected UX</strong> · 공개 콘텐츠 ≥3·복사본 ≥1·초안 ≥1이 있는 대표 채널이 두 폭에서 캡처되고, 그 상태에서도 사용자 표면 버킷 0.</p>
+          <p style="margin:6px 0 0;"><strong>Implementation direction</strong> · seed에 콘텐츠 있는 creator 픽스처 1개 추가 → <code>/u/&lt;그 slug&gt;</code>를 390·1024로 캡처해 scenario matrix에 2행 추가 → 복사 콘텐츠의 제목/출처/날짜까지 포함해 <code>internal·sourceSlug·rawISO(visible)·visibleMarkdown·structural</code> 버킷 실행 → "내 스튜디오(현재 사용자)"와 "공개 채널(타인)"의 noindex 정책을 각각 명문화.</p>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 13px; line-height: 1.65; color: #35563A; background:#EDF3EC; border-radius:8px; padding:10px 12px;"><strong>Guardrail / E2E</strong> · 채워진 creator 픽스처에 대해 buckets=0 assert · noindex 정책 assert(내 스튜디오 vs 공개 채널). <strong>Do not break</strong> · 4탭 IA·creator-profile은 4탭 밖(5번째 탭 승격 금지)·"스튜디오" 링크. <strong>Done when</strong> · 채워진 <code>/u/[creator]</code>가 390·1024 캡처로 패키지에 존재 · 전 버킷 0 · noindex 정책이 audit에 기록.</p>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #C0341D; border-radius: 16px; padding: 18px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <span style="font-size: 13px; font-weight: 800; background: #FBEAE5; color: #C0341D; border-radius: 6px; padding: 2px 9px;">P16-02 · High · IA/copy</span>
+          <h3 style="margin: 0; font-size: 16.5px; font-weight: 800;">creator-profile의 "내 스튜디오 vs 채널 콘텐츠" 뒤섞임과 "내 Flow" 이름 충돌 정리</h3>
+        </div>
+        <div style="margin: 10px 0 0; font-size: 13.5px; line-height: 1.7; color: #44413B;">
+          <p style="margin:0;"><strong>Route / Scenario</strong> · <code>/u/my-flow-studio</code> (s39·s40)</p>
+          <p style="margin:6px 0 0;"><strong>Problem</strong> · 한 페이지가 두 모델을 겹쳐 놓는다 — 상단은 제작자 프로필("내 스튜디오 / 내 Flow 스튜디오 / 실행 콘텐츠 제작자", stat 공개 콘텐츠·총 실행·총 복사, 필터 내 콘텐츠·복사본·초안), 하단은 공개 콘텐츠 브라우저("공개 콘텐츠 / <strong>채널 콘텐츠</strong>", 제목·카테고리·태그·출처 검색, 필터 전체·원문 확인·샘플 + <strong>중복 전체</strong>). "공개 콘텐츠"가 stat과 섹션 헤더에 중복, "채널 콘텐츠"는 새 구조어, "내 Flow 스튜디오"는 실행 허브 "내 Flow"와 이름이 붙는다.</p>
+          <p style="margin:6px 0 0;"><strong>Why it matters</strong> · 이번 리뷰의 핵심 질문 — 사용자가 "내 Flow 실행"과 "creator-profile/스튜디오"를 헷갈리면 안 된다. 페이지 자체가 제작자 프로필과 채널 브라우저를 섞고 이름까지 붙여, 혼동을 화면에서 직접 유발한다.</p>
+          <p style="margin:6px 0 0;"><strong>Evidence</strong> · s39·s40 — "공개 콘텐츠 0" stat + "공개 콘텐츠/채널 콘텐츠" 섹션 · "전체" 칩 2개 · "채널 콘텐츠" 라벨.</p>
+          <p style="margin:6px 0 0;"><strong>Expected UX</strong> · 한 섹션 = 한 목적. "내가 만든/복사한 콘텐츠"(제작자)와 공개 탐색을 분리하거나 공개 탐색을 이 페이지에서 빼고, "채널 콘텐츠"는 사용자어로 교체, 중복 "전체" 칩 제거, 목적지 이름을 실행 허브와 구분.</p>
+          <p style="margin:6px 0 0;"><strong>Implementation direction</strong> · stat "공개 콘텐츠"와 섹션 "공개 콘텐츠" 중 하나만 유지 → "채널 콘텐츠" → "내가 올린 콘텐츠" 등으로 교체 → 필터 기본값 칩 1개로 정리 → 페이지 타이틀을 "내 Flow 스튜디오"에서 실행 허브와 안 겹치게 조정("내 제작 스튜디오" 등, 팀 결정).</p>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 13px; line-height: 1.65; color: #35563A; background:#EDF3EC; border-radius:8px; padding:10px 12px;"><strong>Guardrail / E2E</strong> · creator-profile structural-display 스캔에 "채널 콘텐츠" 등 구조어 추가 · 기본 필터 칩 중복 0 assert · "공개 콘텐츠" 라벨 중복 0. <strong>Do not break</strong> · stat·필터 기능·복사/초안 상태. <strong>Done when</strong> · "공개 콘텐츠"/"전체" 중복 제거 · "채널 콘텐츠" 사용자어 교체 · 목적지 이름이 "내 Flow"와 구분됨.</p>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #C7A128; border-radius: 16px; padding: 18px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <span style="font-size: 13px; font-weight: 800; background: #F7F0DC; color: #8A6D1B; border-radius: 6px; padding: 2px 9px;">P16-03 · Medium · parity/policy</span>
+          <h3 style="margin: 0; font-size: 16.5px; font-weight: 800;">"스튜디오" 진입점의 노출 정책과 실제 배치를 일치시키기(캘린더 포함)</h3>
+        </div>
+        <div style="margin: 10px 0 0; font-size: 13.5px; line-height: 1.7; color: #44413B;">
+          <p style="margin:0;"><strong>Route / Scenario</strong> · <code>/my</code>·<code>/calendar</code> 헤더 액션 (s13·s14·s16)</p>
+          <p style="margin:6px 0 0;"><strong>Problem</strong> · <code>studioEntryPolicy</code>는 "My Flow page action when saved content exists"인데, evidence record에 <code>14-calendar</code>가 들어 있고 화면상 캘린더 헤더에도 "스튜디오" 버튼이 있다. 또 <code>{390:7, 1024:1}</code>로 모바일 7 표면 vs wide 1 표면 비대칭.</p>
+          <p style="margin:6px 0 0;"><strong>Why it matters</strong> · 진입점 규칙이 문서와 화면에서 어긋나면 다음 회귀를 못 잡고, "이게 My Flow 전용인가 전역인가"가 불명확해진다.</p>
+          <p style="margin:6px 0 0;"><strong>Evidence</strong> · <code>studioNavDestinationEvidence</code>에 <code>14-calendar-after-moving-save-mobile /calendar</code> 포함 · <code>studioEntryVisibleByViewport {390:7,1024:1}</code>.</p>
+          <p style="margin:6px 0 0;"><strong>Expected UX</strong> · 진입점이 명시된 규칙과 일치("My Flow + Calendar 전역 헤더 액션"이든 "My Flow 전용"이든 택일) · 모바일/wide 노출이 규칙대로 일관.</p>
+          <p style="margin:6px 0 0;"><strong>Implementation direction</strong> · 정책 문장을 실제 배치에 맞게 갱신하거나 캘린더 노출을 제거 → 폭별 marker(<code>studioEntryVisibleByViewport</code>)가 노출 allowlist와 일치하도록 정합 → wide에서도 동일 표면에 노출(또는 wide 1만인 근거 기록).</p>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 13px; line-height: 1.65; color: #35563A; background:#EDF3EC; border-radius:8px; padding:10px 12px;"><strong>Guardrail / E2E</strong> · studioEntry marker가 렌더되는 surface+viewport를 열거하고 written allowlist와 대조 assert. <strong>Do not break</strong> · "스튜디오"는 보조 버튼(탭 아님) · creator-profile 4탭 밖 유지. <strong>Done when</strong> · 정책 문구 == 캡처된 배치 · marker allowlist 통과.</p>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #C7A128; border-radius: 16px; padding: 18px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <span style="font-size: 13px; font-weight: 800; background: #F7F0DC; color: #8A6D1B; border-radius: 6px; padding: 2px 9px;">P16-04 · Medium · layout</span>
+          <h3 style="margin: 0; font-size: 16.5px; font-weight: 800;">wide save 우측 preview 열 공백 해소(공개 /f 잔여) + fill marker</h3>
+        </div>
+        <div style="margin: 10px 0 0; font-size: 13.5px; line-height: 1.7; color: #44413B;">
+          <p style="margin:0;"><strong>Route / Scenario</strong> · <code>/f/[slug]</code>·<code>/flow-maps/*</code> @1024 (s35·s34)</p>
+          <p style="margin:6px 0 0;"><strong>Problem</strong> · P15-04로 flow-map wide(s34)는 우측에 제목+설명 preview가 생겨 개선됐으나, 공개 /f wide(s35)는 여전히 라벨+제목만 있고 아래 태반이 공백이다. 열 채움을 재는 marker가 없어 회귀 감지 불가.</p>
+          <p style="margin:6px 0 0;"><strong>Why it matters</strong> · 2열 save에서 우측이 거의 비면 데스크톱에서 미완성처럼 보인다(폭 품질). 공개 /f는 첫 방문 저장 화면이라 특히.</p>
+          <p style="margin:6px 0 0;"><strong>Evidence</strong> · s35 우측 라벨+제목만(~55% 공백) · s34 3줄이나 하단 여백 · audit에 <code>wideSavePreviewColumnFillRatio</code> 부재.</p>
+          <p style="margin:6px 0 0;"><strong>Expected UX</strong> · 우측 열에 유용한 preview(먼저 할 일 2~3개, 일정 미리보기, 소요/항목 요약) 또는 좌/우 비율 재조정으로 우측이 태반 공백이 되지 않게.</p>
+          <p style="margin:6px 0 0;"><strong>Implementation direction</strong> · 우측 preview 콘텐츠 보강 or 컬럼 비율 재균형 → 채움 비율 marker(<code>wideSavePreviewColumnFillRatio</code>) 추가 → s34·s35 재캡처.</p>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 13px; line-height: 1.65; color: #35563A; background:#EDF3EC; border-radius:8px; padding:10px 12px;"><strong>Guardrail / E2E</strong> · s34·s35에서 <code>wideSavePreviewColumnFillRatio</code> ≥ 기준 · overflow 0. <strong>Do not break</strong> · 공개 /f 공유 shell·저장 primary·browse 2차 순서. <strong>Done when</strong> · 두 화면 우측 열 채움 통과 · marker 존재.</p>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #C7A128; border-radius: 16px; padding: 18px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <span style="font-size: 13px; font-weight: 800; background: #F7F0DC; color: #8A6D1B; border-radius: 6px; padding: 2px 9px;">P16-05 · Medium · layout</span>
+          <h3 style="margin: 0; font-size: 16.5px; font-weight: 800;">My Flow wide를 "모바일 확대"에서 실제 데스크톱 레이아웃으로</h3>
+        </div>
+        <div style="margin: 10px 0 0; font-size: 13.5px; line-height: 1.7; color: #44413B;">
+          <p style="margin:0;"><strong>Route / Scenario</strong> · <code>/my?savedMap=…</code> @1024 (s36)</p>
+          <p style="margin:6px 0 0;"><strong>Problem</strong> · 홈(s32)·Flow 찾기(s33)·flow-map(s34)은 진짜 2열인데, My Flow wide는 단일 컬럼을 늘려 전폭 바 + CTA를 우측에 플로트한 형태다. 저장 직후 착지 화면이 데스크톱에서 가장 미완성처럼 보인다.</p>
+          <p style="margin:6px 0 0;"><strong>Why it matters</strong> · 이번 리뷰 질문 — "wide가 모바일 단순 확대로 남는가". My Flow가 그 대표 사례다. 폭 품질 parity가 탭마다 달라선 안 된다.</p>
+          <p style="margin:6px 0 0;"><strong>Evidence</strong> · s36(전폭 바·우측 여백 큼) vs s32·s33·s34(2열).</p>
+          <p style="margin:6px 0 0;"><strong>Expected UX</strong> · wide에서 폭을 쓰는 배치(오늘/다음/지난 큐 나란히, 또는 리스트+상세/preview 2열) — 전폭 스택 바 대신.</p>
+          <p style="margin:6px 0 0;"><strong>Implementation direction</strong> · My Flow에 wide breakpoint 레이아웃 추가(4탭 shell·저장 confirmation·continuation actionable 유지) → wide 레이아웃 marker(컬럼 수/콘텐츠 폭 비율).</p>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 13px; line-height: 1.65; color: #35563A; background:#EDF3EC; border-radius:8px; padding:10px 12px;"><strong>Guardrail / E2E</strong> · My Flow wide 레이아웃 marker(다열/콘텐츠 폭 비율) · overflow 0. <strong>Do not break</strong> · post-save "내 Flow에 저장됨"·첫 할 일 반복 0·continuation actionable 5·"스튜디오" 버튼·중복 "Flow 찾기" max 1. <strong>Done when</strong> · My Flow wide가 다영역 데스크톱 배치 · marker 통과.</p>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #B7B2A6; border-radius: 16px; padding: 18px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <span style="font-size: 13px; font-weight: 800; background: #F0EEE8; color: #6E6B64; border-radius: 6px; padding: 2px 9px;">P16-06 · Low · layout</span>
+          <h3 style="margin: 0; font-size: 16.5px; font-weight: 800;">wide 헤더의 pill nav + 햄버거 중복 정리(P15-05 미해결 이월)</h3>
+        </div>
+        <div style="margin: 10px 0 0; font-size: 13.5px; line-height: 1.7; color: #44413B;">
+          <p style="margin:0;"><strong>Route / Scenario</strong> · 전 app-shell route @1024 (s32·33·34·36·40)</p>
+          <p style="margin:6px 0 0;"><strong>Problem</strong> · 4탭 pill nav가 다 보이는 폭에서 우측 "메뉴 ☰" 햄버거가 동시에 있다. P15에서 손대지 않았고 marker도 없다.</p>
+          <p style="margin:6px 0 0;"><strong>Why it matters</strong> · nav가 이미 보이는데 햄버거가 있으면 중복 진입점/숨은 항목인지 불명. 저순위지만 데스크톱 완성도 저하.</p>
+          <p style="margin:6px 0 0;"><strong>Evidence</strong> · s32·33·34·36·40 픽셀(pill + 햄버거 공존).</p>
+          <p style="margin:6px 0 0;"><strong>Expected UX</strong> · nav가 보이는 폭에서 햄버거 숨김, 또는 햄버거를 pill과 다른 항목(스튜디오·설정·계정)으로 한정하고 문서화.</p>
+          <p style="margin:6px 0 0;"><strong>Implementation direction</strong> · wide breakpoint에서 햄버거 hide 또는 내용 차별화.</p>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 13px; line-height: 1.65; color: #35563A; background:#EDF3EC; border-radius:8px; padding:10px 12px;"><strong>Guardrail / E2E</strong> · wide nav 중복 항목 count 0(pill과 햄버거가 같은 4탭 중복 제공 안 함). <strong>Do not break</strong> · 4탭 IA. <strong>Done when</strong> · wide 동일 라벨 nav 중복 없음 · 햄버거 유지 시 내용이 pill과 다름을 evidence로 확인.</p>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #B7B2A6; border-radius: 16px; padding: 18px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <span style="font-size: 13px; font-weight: 800; background: #F0EEE8; color: #6E6B64; border-radius: 6px; padding: 2px 9px;">P16-07 · Low · copy/scan</span>
+          <h3 style="margin: 0; font-size: 16.5px; font-weight: 800;">URL-first miss 상태의 운영어를 사용자어로 + miss 카드 본문 스캔 편입</h3>
+        </div>
+        <div style="margin: 10px 0 0; font-size: 13.5px; line-height: 1.7; color: #44413B;">
+          <p style="margin:0;"><strong>Route / Scenario</strong> · <code>/flows</code> miss (s29)</p>
+          <p style="margin:6px 0 0;"><strong>Problem</strong> · hit·candidate는 P14-06/P15-03으로 사용자어로 닫혔는데 miss만 운영어가 남는다 — "아직 Flow화되지 않은 URL입니다", 칩 "저장 대기", 버튼 "요청 대기". mechanism-copy 스캔은 공통 1줄만 봐서 이 문구들은 0으로 통과(P15-03 이전 candidate와 같은 "스캔이 못 본 0" 모양).</p>
+          <p style="margin:6px 0 0;"><strong>Why it matters</strong> · 톤 일관성. hit/candidate만 부드럽고 miss만 시스템어면 사용자에게 상태기계처럼 읽힌다.</p>
+          <p style="margin:6px 0 0;"><strong>Evidence</strong> · s29 픽셀 · <code>urlFirstMechanismCopyValueHits</code>는 "이미 만든 준비가 있는지 먼저 찾아봤어요" 1줄만 · miss 카드 headline/badge/칩/버튼 미스캔.</p>
+          <p style="margin:6px 0 0;"><strong>Expected UX</strong> · miss가 가치 문구로("아직 준비된 Flow가 없어요 — URL과 메모를 남겨두면 다음에 이어서 만들 수 있어요") · "Flow화·대기" 운영어 제거.</p>
+          <p style="margin:6px 0 0;"><strong>Implementation direction</strong> · miss 문구 교체 → candidate/mechanism 톤 스캔을 miss 카드 본문(headline·badge·칩·버튼)까지 확장 → 금칙에 "Flow화","저장 대기","요청 대기" 추가.</p>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 13px; line-height: 1.65; color: #35563A; background:#EDF3EC; border-radius:8px; padding:10px 12px;"><strong>Guardrail / E2E</strong> · miss 카드 본문을 톤 스캔에 포함 · 운영어 forbidden hits 0. <strong>Do not break</strong> · miss는 URL+메모만 비실행 저장 · "같은 원문이면 기존 요청을 다시 보여줍니다" 동작. <strong>Done when</strong> · miss 카드 스캔됨 · 운영어 0.</p>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #B7B2A6; border-radius: 16px; padding: 18px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <span style="font-size: 13px; font-weight: 800; background: #F0EEE8; color: #6E6B64; border-radius: 6px; padding: 2px 9px;">P16-08 · Low · evidence</span>
+          <h3 style="margin: 0; font-size: 16.5px; font-weight: 800;">wide 캡처 커버리지 확대(P15-06 부분 이월)</h3>
+        </div>
+        <div style="margin: 10px 0 0; font-size: 13.5px; line-height: 1.7; color: #44413B;">
+          <p style="margin:0;"><strong>Route / Scenario</strong> · <code>/flows</code> custom-start·miss @wide · <code>/calendar</code>·<code>/my</code> 롱리스트 @wide</p>
+          <p style="margin:6px 0 0;"><strong>Problem</strong> · creator wide 추가로 wide 7→8이 됐지만 URL-first wide는 여전히 hit·candidate만이다. custom-start·miss, 캘린더·My Flow 롱리스트 wide는 미캡처 — 폭 reflow가 spot check로 남는다.</p>
+          <p style="margin:6px 0 0;"><strong>Why it matters</strong> · agenda 그룹·인벤토리·URL-first 폼이 폭에서 어떻게 reflow되는지 증거 공백. UI 문제라기보다 <em>evidence gap</em>.</p>
+          <p style="margin:6px 0 0;"><strong>Evidence</strong> · <code>wideViewportUrlFirstStatesCaptured ["hit","candidate"]</code> · wide route 목록에 캘린더·롱리스트 없음.</p>
+          <p style="margin:6px 0 0;"><strong>Expected UX</strong> · custom-start·miss wide + 캘린더·My Flow 롱리스트 wide 각 1장 이상 · 추가분도 버킷 0.</p>
+          <p style="margin:6px 0 0;"><strong>Implementation direction</strong> · 캡처 스크립트에 4캡처 추가 → wide 사용자 표면 버킷 실행. restart·flow-lab wide는 프로토타입이라 선택.</p>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 13px; line-height: 1.65; color: #35563A; background:#EDF3EC; border-radius:8px; padding:10px 12px;"><strong>Guardrail / E2E</strong> · <code>wideViewportUrlFirstStatesCaptured</code>에 custom-start·miss 포함 · 캘린더·My Flow 롱리스트 wide 캡처 존재 · 추가분 버킷 0. <strong>Do not break</strong> · 기존 wide 8 route. <strong>Done when</strong> · scenario matrix wide 행 증가 · 추가 route overflow 0·internal 0.</p>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ===== SECTION 7 : baselines to preserve ===== -->
+  <section id="hold" data-screen-label="7 유지 기준선" style="max-width: 1120px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 7</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">Baselines To Preserve — P4~P15에서 닫힌 것</h2>
+    </div>
+    <p style="margin: 10px 0 0; max-width: 940px; font-size: 14.5px; color: #6E6B64;">아래는 <strong>P16 어떤 작업도 깨면 안 되는</strong> 기준선입니다. 특히 P16-01·02의 creator-profile 작업과 P16-05·06 wide 정리는 <strong>4탭 IA·공유 shell·저장 primary·candidate 사용자어를 폭이 바뀌어도 그대로</strong> 유지합니다. ✅ 표시는 이번 검토에서 <strong>사용자가 물은 항목 중 충분히 닫혀 유지 기준선으로 내린 것</strong>입니다.</p>
+    <div style="margin-top: 16px; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 18px 22px;">
+      <ul style="margin: 0; padding-left: 18px; font-size: 14px; line-height: 1.85; color: #44413B; columns: 2; column-gap: 36px;">
+        <li><strong>✅ candidate resolved 카드</strong>: "이미 준비된 Flow가 있어요 · 이제 실행 가능 · Flow 결과로 이동해 바로 시작" 가치 문구 · "후보/닫힌 상태" 상태기계 서술 재도입 금지 · 카드 본문 스캔(<code>legacyStatus 0</code>) 유지</li>
+        <li><strong>✅ URL-first 4상태·export 3모드</strong>: hit·custom-start·miss·candidate + calendar/메모 문서/체크리스트 · trigger URL·control matrix evidence · "메모 문서" 라벨(Markdown 금지) 유지</li>
+        <li><strong>✅ 공개 /f</strong>: 공유 shell("공유 화면") · 저장/셋업 primary(sticky 9/9, before-primary 0, public 10/10) · "콘텐츠 더 보기" 2차 순서 유지</li>
+        <li><strong>✅ restart = release-preview</strong>: display gate 0 · D-30 마일스톤 그룹 헤더 · native date ISO는 면제 버킷(4)만</li>
+        <li><strong>✅ flow-lab = internal-console</strong>: <code>noindex</code>·사용자 nav 링크 0·허용 display-gate hit 7·"내부 실험 콘솔" context 유지 시에만 lab 라벨 허용 · unexpected 0</li>
+        <li><strong>4탭 IA</strong>: 홈 / Flow 찾기 / 캘린더 / 내 Flow — creator-profile/스튜디오를 5번째 탭으로 승격 금지</li>
+        <li>seed/source-backed 데이터 구조, 저장/실행/export 스키마 불변</li>
+        <li><code>sourceUrl · sourceTrace · detail · memo · export</code> 접근 삭제 금지(사용자 표면 노출만 금지, 접근은 유지)</li>
+        <li>guardrail 정본은 <code>lib/flow/user-surface-guardrails.ts</code> — capture·E2E·유닛 전부 lib 경유</li>
+        <li>정상 route 스캔 0: internal · slug · 구조어 · raw ISO(visible) · 첫 할 일 반복 · overflow</li>
+        <li><strong>wide 8 route 측정 0</strong>(internal/slug/rawISO/visibleMarkdown/candidate) · <strong>nav-leak 18 route × 3폭 0</strong> — 되돌리지 말 것</li>
+        <li>URL-first canonical lookup 우선 — hit는 source-backed 재사용(executable), miss/needs_review는 non-executable 보류</li>
+        <li>mechanism 문구 가치 중심("이미 만든 준비가 있는지 먼저 찾아봤어요") · candidate 톤("내가 쓴 제목·메모"·"마지막 확인") 유지</li>
+        <li>native date input ISO는 <strong>면제 버킷에만</strong>(testid) · label/help/card 승격 금지</li>
+        <li>agenda/status 그룹: 공통 timing/date 메타 헤더 1회(<code>repeatedTimingMetaRow 0 · repeatedDateMetaRow 0</code>) · 행은 제목 중심</li>
+        <li>My Flow: continuation actionable 5 · post-save "<code>내 Flow에 저장됨</code>" 첫 할 일 반복 0 · 중복 "Flow 찾기" max 1 · 인벤토리 중복 진척 0 · 큰 잔여 카운트 헤더 0</li>
+        <li>워크벤치: 행 상세 source 링크 0 · source 접근 영역 유지(5) · 반복 상세 문장 0 · 공통 주의 1회 · 중복 export 라벨 0</li>
+        <li>홈 wide: 진짜 2열(좌 히어로+CTA, 우 추천 2카드) · <code>recoWidthRatioMin 1</code> 유지</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 8 : screen-specific ===== -->
+  <section id="fix" data-screen-label="8 화면별 수정" style="max-width: 1120px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 8</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">Screen-Specific Instructions</h2>
+    </div>
+    <div style="display: grid; gap: 10px; margin-top: 16px;">
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 14px 18px; display: grid; grid-template-columns: 190px 1fr; gap: 14px; align-items: start;">
+        <p style="margin: 0; font-size: 13px; font-weight: 800; color: #C0341D;"><code>/u/[creator]</code> · s39·s40</p>
+        <p style="margin: 0; font-size: 13.5px; line-height: 1.65; color: #44413B;"><strong>최우선.</strong> 빈 <code>/u/my-flow-studio</code> 대신 <strong>내용 있는 채널</strong>을 캡처·스캔(P16-01) + noindex 정책. "내 스튜디오"와 "채널 콘텐츠" 브라우저 분리, "채널 콘텐츠"·중복 "전체"·"공개 콘텐츠" 중복 정리, "내 Flow"와 이름 구분(P16-02). 4탭으로 승격하지 말 것.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 14px 18px; display: grid; grid-template-columns: 190px 1fr; gap: 14px; align-items: start;">
+        <p style="margin: 0; font-size: 13px; font-weight: 800; color: #8A6D1B;"><code>/my</code> · s13·s16·s36</p>
+        <p style="margin: 0; font-size: 13.5px; line-height: 1.65; color: #44413B;">모바일 진입 parity 확보(스튜디오 버튼) — 유지. <strong>진입 정책=배치 일치</strong>(캘린더 포함, P16-03) · <strong>My Flow wide 다열화</strong>(P16-05) · wide 헤더 햄버거(P16-06). post-save 문구·continuation·중복 Flow 찾기 max 1 불변.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 14px 18px; display: grid; grid-template-columns: 190px 1fr; gap: 14px; align-items: start;">
+        <p style="margin: 0; font-size: 13px; font-weight: 800; color: #8A6D1B;"><code>/calendar</code> · s14</p>
+        <p style="margin: 0; font-size: 13.5px; line-height: 1.65; color: #44413B;">agenda 그룹 헤더·저장 일정 표시 통과 — 유지. "스튜디오" 버튼이 여기 노출되는 게 <strong>의도인지 결정</strong>(P16-03). 캘린더 wide 캡처 추가 권장(P16-08).</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 14px 18px; display: grid; grid-template-columns: 190px 1fr; gap: 14px; align-items: start;">
+        <p style="margin: 0; font-size: 13px; font-weight: 800; color: #8A6D1B;"><code>/f</code>·<code>/flow-maps</code> @wide · s34·s35</p>
+        <p style="margin: 0; font-size: 13.5px; line-height: 1.65; color: #44413B;">flow-map wide 우측 preview 개선됨 — 유지. 공개 <code>/f</code> wide 우측 열 <strong>공백 해소</strong>(P16-04). 공유 shell·저장 primary·browse 2차 순서 불변.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 14px 18px; display: grid; grid-template-columns: 190px 1fr; gap: 14px; align-items: start;">
+        <p style="margin: 0; font-size: 13px; font-weight: 800; color: #6E6B64;"><code>/flows</code> URL-first · s27~30·37·38</p>
+        <p style="margin: 0; font-size: 13.5px; line-height: 1.65; color: #44413B;">4상태·export 3모드·candidate 상태어·resolved 카드 전부 통과 — 유지. 남은 것: <strong>miss 운영어("Flow화·저장 대기·요청 대기") 사용자어화 + 스캔</strong>(P16-07) · custom-start·miss wide 캡처(P16-08). candidate 2-상태 동시 노출은 데모 예시로 판단(§9).</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 14px 18px; display: grid; grid-template-columns: 190px 1fr; gap: 14px; align-items: start;">
+        <p style="margin: 0; font-size: 13px; font-weight: 800; color: #1F6A3E;"><code>/</code> @wide · s32</p>
+        <p style="margin: 0; font-size: 13.5px; line-height: 1.65; color: #44413B;">진짜 2열 데스크톱(좌 히어로+CTA, 우 추천 2카드) 유지 — <strong>수정 없음.</strong> 하단 여백은 저순위(선택). wide 헤더 햄버거만 P16-06 대상.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 14px 18px; display: grid; grid-template-columns: 190px 1fr; gap: 14px; align-items: start;">
+        <p style="margin: 0; font-size: 13px; font-weight: 800; color: #1F6A3E;"><code>/restart</code> · <code>/flow-lab</code> · s21~24·31</p>
+        <p style="margin: 0; font-size: 13.5px; line-height: 1.65; color: #44413B;">release-preview·internal-console 티어 분리 유지(게이트 0·noindex·nav 0·허용 7·unexpected 0). <strong>수정 없음.</strong> 정상 nav로 승격 금지.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 9 : evidence gaps ===== -->
+  <section id="gaps" data-screen-label="9 증거 공백" style="max-width: 1120px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 9</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">Evidence Gaps — 판단 유보 / 픽셀에만 의존</h2>
+    </div>
+    <p style="margin: 10px 0 0; max-width: 940px; font-size: 14.5px; color: #6E6B64;">아래는 <strong>UI 문제와 구분되는 "증거만 부족한" 항목</strong>입니다. UI 결함이 아니라, 다음 개발자가 <strong>측정 범위를 넓혀야 확정</strong>되는 것들입니다.</p>
+    <div style="margin-top: 16px; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 18px 22px;">
+      <ol style="margin: 0; padding-left: 20px; font-size: 14px; line-height: 1.85; color: #44413B;">
+        <li><strong>creator-profile "빈 방" 0</strong> — s39·s40이 공개 0·실행 0·복사 0. 버킷 0이 품질 증거가 아니라 콘텐츠 부재의 결과 → 채워진 채널 스캔 전까지 <strong>High로 보류</strong>(P16-01이 해소).</li>
+        <li><strong><code>/u/[creator]</code> noindex 정책 미결</strong> — <code>my-flow-studio</code>는 <code>noindex false</code>(색인 가능). "내 스튜디오(현재 사용자)"와 "공개 채널(타인)"에 각각 어떤 색인 정책이 맞는지 결정·기록 필요(P16-01).</li>
+        <li><strong>모바일 햄버거 열린 상태 미캡처</strong> — 헤더 "☰" 안에 무엇이 있는지(스튜디오·설정 등) 여전히 미확인. 진입점 전수 판단이 닫힌 헤더 픽셀에만 의존(P13부터 이월).</li>
+        <li><strong>candidate 2-상태 동시 노출 의미</strong> — s30(모바일 스택)·s38(wide 2열)에 "준비 중"과 "이제 실행 가능" 카드가 함께 보임. 문구는 이제 카드별로 명확하나, <strong>데모용 2개 예시인지 한 사용자의 두 요청인지</strong> 실사용 맥락은 여전히 evidence로 미확정(P14부터 완화 이월).</li>
+        <li><strong>post-save confirmation 지속성</strong> — "내 Flow에 저장됨"이 영구 배지인지 자동 소멸 토스트인지 evidence에 시간축 없음(P13부터 이월). 소멸형이면 스크린샷 타이밍 의존.</li>
+        <li><strong>wide 커버리지 얕음</strong> — 8 route spot check. URL-first custom-start·miss, 캘린더·My Flow 롱리스트 wide 미캡처(P16-08이 해소).</li>
+        <li><strong>실기기 미검토</strong> — 스크린샷·marker 근거. 실제 터치 타깃·스크롤·키보드·햄버거 상호작용은 별도.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 10 : do-not-touch ===== -->
+  <section id="nogo" data-screen-label="10 건드리지 말 것" style="max-width: 1120px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #C0341D;">SECTION 10</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">P16에서 건드리면 안 되는 영역</h2>
+    </div>
+    <p style="margin: 10px 0 0; max-width: 940px; font-size: 14.5px; color: #6E6B64;">아래는 P12~P15에서 <strong>측정된 0으로 닫힌</strong> 영역입니다. P16 작업 중 되돌리면 회귀입니다.</p>
+    <div style="margin-top: 16px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px;">
+      <div style="background: #FBEAE5; border: 1px solid #EFC5B9; border-radius: 14px; padding: 16px 18px;">
+        <p style="margin: 0; font-size: 13.5px; font-weight: 800; color: #C0341D;">문구·표시</p>
+        <ul style="margin: 8px 0 0; padding-left: 18px; font-size: 13px; line-height: 1.75; color: #7A2917;">
+          <li>사용자 화면에 <code>P0·대기열·파이프라인·Canonical URL·handoff·source-backed·Step·Item·Markdown</code> 재노출 금지</li>
+          <li>candidate resolved 카드에 "후보가 …로 닫힌 상태"·"실행 가능한 … 후보" 상태기계 서술 재도입 금지(<code>legacyStatus 0</code> 유지)</li>
+          <li>export mode 라벨을 "메모 문서"→"Markdown"류로 되돌리지 말 것</li>
+          <li>mechanism 문구를 "AI 자동 생성 없이"류 구현 서술로 되돌리지 말 것</li>
+          <li>native date input ISO를 label/help/card로 승격하지 말 것(면제 버킷 유지)</li>
+          <li>visible raw ISO·slug 재노출 금지</li>
+        </ul>
+      </div>
+      <div style="background: #FBEAE5; border: 1px solid #EFC5B9; border-radius: 14px; padding: 16px 18px;">
+        <p style="margin: 0; font-size: 13.5px; font-weight: 800; color: #C0341D;">구조·IA</p>
+        <ul style="margin: 8px 0 0; padding-left: 18px; font-size: 13px; line-height: 1.75; color: #7A2917;">
+          <li>4탭 IA·공개 <code>/f</code> 공유 shell·저장/실행/export 스키마 변경 금지</li>
+          <li>creator-profile/스튜디오를 5번째 탭으로 승격하지 말 것(P16-01·02는 정리·측정일 뿐)</li>
+          <li><code>/restart</code>·<code>/flow-lab</code>을 정상 nav로 승격하지 말 것 · flow-lab을 사용자 nav에 재링크하지 말 것</li>
+          <li>공개 <code>/f</code>를 4탭 app shell로 강제 편입하지 말 것</li>
+          <li>중복 "Flow 찾기" 진입점을 다시 만들지 말 것(max 1 유지)</li>
+          <li>agenda/status 행에 공통 timing/date 메타를 다시 반복하지 말 것</li>
+          <li>홈 wide 2열·restart D-30 마일스톤 그룹 헤더를 되돌리지 말 것</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 11 : /goal drafts ===== -->
+  <section id="goal" data-screen-label="11 /goal 초안" style="max-width: 1120px; margin: 0 auto; padding: 30px 28px 56px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #1F6A3E;">SECTION 11</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">/goal 초안 — 복사해서 그대로 실행</h2>
+    </div>
+    <div style="margin-top: 8px; background: #EDF3EC; border: 1px solid #CADFC9; border-radius: 12px; padding: 12px 16px;">
+      <p style="margin: 0; font-size: 13.5px; line-height: 1.7; color: #35563A;"><strong>P16에서 먼저 처리할 1~3.</strong> ① <strong>P16-01</strong> — 빈 creator-profile을 <em>채워진 실제 채널</em>로 캡처·스캔(색인 정책 포함). "빈 방의 0"을 "채워진 방의 0"으로 승격해야 이번 루프의 핵심 리스크가 닫힙니다. ② <strong>P16-02</strong> — 그 페이지의 "내 스튜디오 vs 채널 콘텐츠" IA·이름 충돌을 정리(사용자가 실행/제작자를 헷갈리지 않게). ③ <strong>P16-03</strong> — "스튜디오" 진입점의 정책과 실제 배치(캘린더 포함)를 일치. 셋 다 이번에 새로 편입된 <strong>creator 표면</strong>에 관한 것 — 문을 열었으니, 이제 방을 채우고 정리할 차례입니다.</p>
+    </div>
+    <div style="margin-top: 14px; display: grid; gap: 10px;">
+      <div style="background: #1B1A17; color: #E8E6DF; border-radius: 14px; padding: 16px 20px; font-family: 'SF Mono', ui-monospace, Menlo, monospace; font-size: 12.8px; line-height: 1.8; white-space: pre-wrap;">/goal P16-01: creator-profile을 "빈 방"이 아니라 "내용이 있는 실제 채널"로 캡처·스캔해줘. 지금 패키지의 /u/my-flow-studio는 공개 콘텐츠 0·총 실행 0·총 복사 0·"0개 표시/전체 0개"의 빈 상태라, creatorProfileGuardrailHitCount 0은 샐 콘텐츠가 없어서 나온 0이다. app/u/[creator]는 어떤 slug든 CreatorProfile을 렌더하는 동적 공개 라우트이고 noindex false(색인 가능)인데, 제목·출처·날짜·복사 콘텐츠가 채워진 채널은 스캔된 적이 없다. seed에 공개 콘텐츠 3개+복사본 1개+초안 1개가 있는 creator 픽스처를 추가하고, /u/<그 slug>를 390과 1024로 캡처해 scenario matrix에 2행을 추가해. 그 채워진 상태에서 internal·sourceSlug·visible raw ISO·visible Markdown·structural-title 버킷을 실행해 전부 0인지 확인하고, "내 스튜디오(현재 사용자)"와 "공개 채널(타인)" 각각에 맞는 noindex 정책을 audit에 명문화해. 4탭 IA는 그대로 두고 5번째 탭으로 승격하지 마. 완료 기준: 채워진 /u/[creator]가 390·1024 캡처로 존재, 전 버킷 0, noindex 정책 기록.</div>
+      <div style="background: #1B1A17; color: #E8E6DF; border-radius: 14px; padding: 16px 20px; font-family: 'SF Mono', ui-monospace, Menlo, monospace; font-size: 12.8px; line-height: 1.8; white-space: pre-wrap;">/goal P16-02: /u/my-flow-studio의 IA를 정리해줘. 지금 한 화면에 "내 스튜디오(제작자 프로필: 내 Flow 스튜디오·실행 콘텐츠 제작자·공개 콘텐츠/총 실행/총 복사·내 콘텐츠/복사본/초안)"와 "채널 콘텐츠(공개 브라우저: 제목·카테고리·태그·출처 검색·전체/원문 확인/샘플)"가 뒤섞여 있다. 문제: "공개 콘텐츠"가 stat과 섹션 헤더에 중복, "전체" 칩이 2개, "채널 콘텐츠"는 새 구조어, "내 Flow 스튜디오"가 실행 허브 "내 Flow"와 이름이 붙는다. "내가 만든/복사한 콘텐츠"와 공개 탐색을 분리하거나 공개 탐색을 이 페이지에서 빼고, "채널 콘텐츠"를 사용자어로 바꾸고, 중복 "전체" 칩과 중복 "공개 콘텐츠" 라벨을 제거하고, 목적지 이름을 "내 Flow"와 구분되게 조정해. structural-display 스캔에 "채널 콘텐츠" 같은 구조어를 추가해. stat·필터 기능과 복사/초안 상태는 그대로. 완료 기준: "공개 콘텐츠"/"전체" 중복 제거, "채널 콘텐츠" 사용자어 교체, 이름이 "내 Flow"와 구분됨.</div>
+      <div style="background: #1B1A17; color: #E8E6DF; border-radius: 14px; padding: 16px 20px; font-family: 'SF Mono', ui-monospace, Menlo, monospace; font-size: 12.8px; line-height: 1.8; white-space: pre-wrap;">/goal P16-03: "스튜디오" 진입점의 노출 정책과 실제 배치를 일치시켜줘. studioEntryPolicy는 "My Flow page action when saved content exists"라고 적혀 있는데, studioNavDestinationEvidence에 14-calendar record가 있고 화면상 캘린더 헤더에도 "스튜디오" 버튼이 있다. 또 studioEntryVisibleByViewport가 {390:7, 1024:1}로 모바일 7 표면 vs wide 1 표면 비대칭이다. 진입점을 "My Flow + Calendar 전역 헤더 액션"으로 할지 "My Flow 전용"으로 할지 택일해서 정책 문장을 실제 배치와 맞추고(캘린더 노출을 남기면 정책에 명시, 빼면 제거), 폭별 marker가 노출 allowlist와 일치하도록 정합해. wide에서도 규칙대로 노출하거나 wide 1만인 근거를 기록해. "스튜디오"는 보조 버튼(탭 아님)이고 creator-profile은 4탭 밖 유지. 완료 기준: 정책 문구 == 캡처된 배치, marker allowlist 통과.</div>
+      <div style="background: #1B1A17; color: #E8E6DF; border-radius: 14px; padding: 16px 20px; font-family: 'SF Mono', ui-monospace, Menlo, monospace; font-size: 12.8px; line-height: 1.8; white-space: pre-wrap;">/goal P16-04: wide save 화면 우측 preview 열의 공백을 해소해줘. P15-04로 flow-map wide(s34)는 우측에 제목+설명이 생겼는데, 공개 /f wide(s35)는 여전히 "먼저 할 일" 라벨+제목만 있고 아래가 절반 넘게 빈다. 우측 열에 유용한 preview(먼저 할 일 2~3개, 일정 미리보기, 소요/항목 요약)를 보강하거나 좌/우 비율을 재조정해 우측이 태반 공백이 되지 않게 해. "우측 preview 열 채움"을 재는 marker(wideSavePreviewColumnFillRatio 등)를 추가하고 s34·s35를 재캡처해. 공개 /f의 공유 shell과 저장 primary는 그대로. 완료 기준: 두 화면 우측 열 채움 비율이 기준 통과, overflow 0·저장 primary·공유 shell 유지.</div>
+      <div style="background: #1B1A17; color: #E8E6DF; border-radius: 14px; padding: 16px 20px; font-family: 'SF Mono', ui-monospace, Menlo, monospace; font-size: 12.8px; line-height: 1.8; white-space: pre-wrap;">/goal P16-05: My Flow의 wide 레이아웃을 "모바일 확대"에서 실제 데스크톱 배치로 바꿔줘. 홈(s32)·Flow 찾기(s33)·flow-map(s34)은 진짜 2열인데, My Flow wide(s36)는 단일 컬럼을 늘려 전폭 바 + CTA 우측 플로트라 우측 여백이 크고 저장 직후 착지 화면이 데스크톱에서 가장 미완성처럼 보인다. wide에서 폭을 쓰는 배치(오늘/다음/지난 큐를 나란히, 또는 리스트+상세/preview 2열)로 만들고 wide 레이아웃 marker(컬럼 수/콘텐츠 폭 비율)를 추가해. 4탭 shell·post-save "내 Flow에 저장됨"·첫 할 일 반복 0·continuation actionable 5·"스튜디오" 버튼·중복 "Flow 찾기" max 1은 그대로. 완료 기준: My Flow wide가 다영역 데스크톱 배치, marker 통과, overflow 0.</div>
+      <div style="background: #1B1A17; color: #E8E6DF; border-radius: 14px; padding: 16px 20px; font-family: 'SF Mono', ui-monospace, Menlo, monospace; font-size: 12.8px; line-height: 1.8; white-space: pre-wrap;">/goal P16-06: wide 헤더의 4탭 pill nav와 우측 햄버거 중복을 정리해줘. s32·33·34·36·40 wide에서 4탭 pill이 다 보이는데 우측에 "메뉴 ☰" 햄버거가 또 있다. nav가 보이는 폭에서는 햄버거를 숨기거나, 햄버거 내용을 pill과 명확히 다른 항목(스튜디오·설정·계정 등)으로 한정하고 문서화해. 동일 행동 중복 진입점을 만들지 마. 완료 기준: wide에서 nav 항목 중복 0, 햄버거 유지 시 내용이 pill과 다름을 evidence로 확인.</div>
+      <div style="background: #1B1A17; color: #E8E6DF; border-radius: 14px; padding: 16px 20px; font-family: 'SF Mono', ui-monospace, Menlo, monospace; font-size: 12.8px; line-height: 1.8; white-space: pre-wrap;">/goal P16-07: URL-first miss 상태의 운영어를 사용자어로 바꾸고 miss 카드 본문을 문구 스캔에 편입해줘. hit·candidate는 사용자어로 닫혔는데 miss(s29)만 "아직 Flow화되지 않은 URL입니다", 칩 "저장 대기", 버튼 "요청 대기" 같은 시스템어가 남는다. mechanism-copy 스캔이 공통 1줄만 보고 miss 카드 본문(headline·badge·칩·버튼)은 안 봐서 0으로 통과한다. miss 문구를 가치 중심으로("아직 준비된 Flow가 없어요 — URL과 메모를 남겨두면 다음에 이어서 만들 수 있어요") 바꾸고, 톤 스캔을 miss 카드 본문까지 확장하고, 금칙에 "Flow화"·"저장 대기"·"요청 대기"를 추가해. miss가 URL+메모만 비실행 저장하는 동작과 "같은 원문이면 기존 요청을 다시 보여줍니다"는 그대로. 완료 기준: miss 카드 스캔됨, 운영어 forbidden hits 0.</div>
+      <div style="background: #1B1A17; color: #E8E6DF; border-radius: 14px; padding: 16px 20px; font-family: 'SF Mono', ui-monospace, Menlo, monospace; font-size: 12.8px; line-height: 1.8; white-space: pre-wrap;">/goal P16-08: wide 캡처 커버리지를 넓혀줘. creator wide 추가로 wide가 7→8이 됐지만 URL-first wide는 여전히 hit·candidate만이다. custom-start와 miss의 wide 캡처를 추가하고, 캘린더와 My Flow 롱리스트도 각각 최소 1장 wide로 찍어 agenda 그룹·인벤토리가 폭에서 어떻게 reflow되는지 확인해. 추가분도 wide 사용자 표면 버킷(internal·slug·rawISO·visibleMarkdown)을 통과시켜. restart·flow-lab wide는 프로토타입이라 선택. 완료 기준: wideViewportUrlFirstStatesCaptured에 custom-start·miss 포함, 캘린더·My Flow 롱리스트 wide 캡처 존재, 추가분 버킷 0.</div>
+    </div>
+    <p style="margin: 18px 0 0; font-size: 13px; color: #6E6B64;">P16 마감 시 이 문서 기준으로 재검토합니다 — 패키지에 <strong>채워진 creator-profile 캡처·스캔</strong>과 <strong>정리된 스튜디오 IA/진입 정책</strong>이 담겨 오면, 이번의 "문은 열었지만 방은 비었다"가 "채워진 방까지 측정된 0"으로 승격됩니다. 그 전까지 <strong>creator-profile의 0은 빈 방을 잰 0</strong>입니다.</p>
+  </section>
+
+</div>
+</x-dc>
+</body>
+</html>

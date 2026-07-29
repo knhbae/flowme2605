@@ -1,0 +1,183 @@
+{
+  "schemaVersion": 1,
+  "reviewerRole": "claude_design",
+  "reviewedAt": "2026-07-24T14:00:00+09:00",
+  "observedUserCount": 0,
+  "measurementBasis": "heuristic_simulation over current_production_screenshot + current_source. 실제 계측이 아닌 설계 검토 추정치.",
+  "requiredAlternatives": [
+    "A_keep_and_tighten",
+    "B_library_to_focused_workspace",
+    "C_run_first_workspace"
+  ],
+  "requiredFlowScales": [
+    1,
+    5,
+    20,
+    60
+  ],
+  "requiredContentShapes": [
+    "anchor_timeline",
+    "undated_checklist",
+    "recurrence_routine",
+    "artifact_choice",
+    "mixed_travel",
+    "personal_draft"
+  ],
+  "requiredViewports": [
+    {
+      "width": 390,
+      "height": 844
+    },
+    {
+      "width": 1024,
+      "height": 768
+    }
+  ],
+  "metricTable": [
+    {
+      "metric": "firstViewportDistinctCardTypeCount",
+      "current": 4,
+      "A_keep_and_tighten": 3,
+      "B_library_to_focused_workspace": 2,
+      "C_run_first_workspace": 3,
+      "note": "opened-Flow state, 390, 5 Flow"
+    },
+    {
+      "metric": "firstViewportHeadingCount",
+      "current": 5,
+      "A_keep_and_tighten": 3,
+      "B_library_to_focused_workspace": 2,
+      "C_run_first_workspace": 3,
+      "note": "390"
+    },
+    {
+      "metric": "firstViewportVisibleCommandCount",
+      "current": 11,
+      "A_keep_and_tighten": 8,
+      "B_library_to_focused_workspace": 6,
+      "C_run_first_workspace": 7,
+      "note": "primary+secondary+menu"
+    },
+    {
+      "metric": "firstActionDepth",
+      "current": 3,
+      "A_keep_and_tighten": 3,
+      "B_library_to_focused_workspace": 2,
+      "C_run_first_workspace": 2,
+      "note": "진입->선택 Flow의 Item 실행"
+    },
+    {
+      "metric": "flowOpenDepth@5",
+      "current": 2,
+      "A_keep_and_tighten": 2,
+      "B_library_to_focused_workspace": 2,
+      "C_run_first_workspace": 2,
+      "note": "5 Flow"
+    },
+    {
+      "metric": "flowOpenDepth@20",
+      "current": 4,
+      "A_keep_and_tighten": 4,
+      "B_library_to_focused_workspace": 3,
+      "C_run_first_workspace": 3,
+      "note": "20 Flow fixture_only"
+    },
+    {
+      "metric": "reopenDepth",
+      "current": 3,
+      "A_keep_and_tighten": 3,
+      "B_library_to_focused_workspace": 2,
+      "C_run_first_workspace": 3,
+      "note": "완료 Item 다시 열기"
+    },
+    {
+      "metric": "itemEditDepth",
+      "current": 4,
+      "A_keep_and_tighten": 4,
+      "B_library_to_focused_workspace": 3,
+      "C_run_first_workspace": 3,
+      "note": "제목/날짜/메모"
+    },
+    {
+      "metric": "wholeExportDepth",
+      "current": 4,
+      "A_keep_and_tighten": 4,
+      "B_library_to_focused_workspace": 3,
+      "C_run_first_workspace": 3,
+      "note": "전체 Flow export 결과"
+    },
+    {
+      "metric": "archiveRestoreDepth",
+      "current": 5,
+      "A_keep_and_tighten": 4,
+      "B_library_to_focused_workspace": 3,
+      "C_run_first_workspace": 3,
+      "note": "보관->reload->archived->복구"
+    },
+    {
+      "metric": "actionableDuplicateCount",
+      "current": 2,
+      "A_keep_and_tighten": 2,
+      "B_library_to_focused_workspace": 0,
+      "C_run_first_workspace": 1,
+      "note": "동일 stable Item 동시 실행 컨트롤"
+    },
+    {
+      "metric": "contextLossCount",
+      "current": 2,
+      "A_keep_and_tighten": 1,
+      "B_library_to_focused_workspace": 0,
+      "C_run_first_workspace": 1,
+      "note": "Calendar 왕복 selection/scroll/filter"
+    },
+    {
+      "metric": "horizontalOverflowPx",
+      "current": 0,
+      "A_keep_and_tighten": 0,
+      "B_library_to_focused_workspace": 0,
+      "C_run_first_workspace": 0,
+      "note": "390 mobile"
+    },
+    {
+      "metric": "unnamedFocusableCount",
+      "current": 0,
+      "A_keep_and_tighten": 0,
+      "B_library_to_focused_workspace": 0,
+      "C_run_first_workspace": 0,
+      "note": "smoke=0"
+    },
+    {
+      "metric": "explanationDependencyCount",
+      "current": 2,
+      "A_keep_and_tighten": 1,
+      "B_library_to_focused_workspace": 0,
+      "C_run_first_workspace": 1,
+      "note": "다음 행동 찾기까지 설명 의존"
+    }
+  ],
+  "compositeComplexity": {
+    "current": 49,
+    "A": 40,
+    "B": 26,
+    "C": 33
+  },
+  "compositeReductionVsCurrentPct": {
+    "A": 18.4,
+    "B": 46.9,
+    "C": 32.7
+  },
+  "gate_A_reduces_20pct": false,
+  "gateNote": "framework 기준 #8: A안이 B/C 대비 복잡도를 20% 이상 줄이지 못하면 my_flow_structural_reopen. A=18.4% (<20) → 실패.",
+  "flowScaleNotes": {
+    "1": "저장 직후 receipt->My Flow. current: 첫 viewport에 4 card type. B: continue strip + 단일 workspace로 즉시 첫 행동.",
+    "5": "current flat list OK. B/C 모두 open<=2.",
+    "20": "current flowOpen 4(스크롤 의존). B/C search-first+status/next-date group으로 <=3. fixture_only.",
+    "60": "current flat list 스크롤 부담. B: search-first 기본 전환 + section. rendering/nav 안정성 관찰 필요. fixture_only."
+  },
+  "wideViewportNotes": {
+    "1024_current": "library rail + plan canvas + inspector. 스크린샷상 canvas 하단 여백 과다 + 상단 nav/버튼 우측 잘림(관찰 필요; smoke overflow=0과 상충 -> observed check).",
+    "1024_B": "library(고정 폭) / focused workspace canvas / inspector(선택 Item detail). canvas가 다음행동->계획->기록으로 채워짐.",
+    "1024_C": "active run pane / definition pane / history. routine·timeline에 강함."
+  },
+  "disqualifiers": "어떤 대안도 별도 임시 Item ID, 별도 completion 상태, 중복 count를 만들지 않음. 모두 기존 effective projection 소비."
+}

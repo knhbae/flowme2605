@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>FlowMe P19 마감 · P20 백로그 (부엌도 손잡이도 맞췄다, 이제 닫힌 문 하나를 연다)</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <style>
+    html, body { margin: 0; padding: 0; background: #F2F1EC; }
+    * { box-sizing: border-box; }
+    code { font-family: 'SF Mono', ui-monospace, Menlo, monospace; }
+    a { color: #3654FF; }
+    a:hover { color: #1F3BD6; }
+  </style>
+</helmet>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#14432B"></rect><text x="50" y="43" font-family="sans-serif" font-size="30" font-weight="800" fill="#FFFFFF" text-anchor="middle">P20</text><text x="50" y="72" font-family="sans-serif" font-size="13" font-weight="700" fill="#9FF0B8" text-anchor="middle">백로그</text></svg></template>
+<div style="font-family: 'Pretendard Variable', Pretendard, -apple-system, 'Segoe UI', sans-serif; color: #1B1A17; line-height: 1.6; letter-spacing: -0.01em;">
+
+  <header data-screen-label="헤더" style="background: #1B1A17; color: #F5F4EF; padding: 52px 28px 44px;">
+    <div style="max-width: 1120px; margin: 0 auto;">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px;">
+        <span style="display: inline-flex; align-items: center; border: 1px solid rgba(150,240,184,0.4); background: rgba(20,67,43,0.5); border-radius: 999px; padding: 4px 12px; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; color: #9FF0B8;">FLOWME · P19 마감 판단</span>
+        <span style="font-size: 12px; font-weight: 600; color: rgba(245,244,239,0.6);">final review package · main · UI baseline 1943a9b · PNG 47장(모바일 390 + wide 1024) · 시나리오 8 + 프로토타입 게이트 · 생성 2026-07-10</span>
+      </div>
+      <h1 style="margin: 18px 0 0; font-size: 40px; line-height: 1.2; font-weight: 800; letter-spacing: -0.02em; max-width: 1040px; text-wrap: balance;">P19는 <em>손잡이를 다 맞췄다</em> — 완료는 어디서나 체크박스 1종, 캘린더 라벨은 안 잘리고, 진행 숫자는 맥락을 얻고, 홈 URL 입구·저장 후 수정入口까지 발견된다. P19-01~08 <em>전부 닫힘.</em><br>이제 남은 건 폴리시가 아니다 — 핵심 흐름에서 <em>아직 닫혀 있는 문 하나.</em> 준비된 Flow가 없을 때 miss는 여전히 "메모 복사"로 끝나고, <em>초안은 앱 밖에서 만들어야 한다.</em></h1>
+      <p style="margin: 16px 0 0; max-width: 1000px; font-size: 16px; line-height: 1.7; color: rgba(245,244,239,0.78); text-wrap: pretty;">이번에도 UI polish 요청이 아니라 <strong>P20 제품/UX 백로그</strong> 산출 요청입니다. 결론부터: FlowMe는 <strong>개인 실행 도구</strong>가 맞고, <strong>P19는 백로그 8개를 전부 닫았습니다</strong> — 완료 컨트롤 통일(<code>checkbox 23 · button 0 · mixed 0</code>), 진행 숫자 맥락화(<code>ambiguous 0 · contextual 23 · row-level Flow chip 0</code>), 캘린더 모바일 밀도(<code>dense row 0</code>)·wide 헤더 중복(<code>heading duplicate 0</code>), 공개 <code>/f</code> 저장 전 preview(<code>completion-like 0 · preview 89</code>), 홈 URL/메모 입구(<code>/flows · above fold</code>), 저장 후 수정入口(<code>anchor·item edit visible</code>), miss 정직 gate(<code>implies live AI false</code>). <strong>P18이 방을 짓고, P19가 손잡이를 맞췄습니다 — 화면들이 이제 "하나의 도구"로 읽힙니다.</strong> 그래서 P20의 축은 또 다른 마감이 아니라, <strong>핵심 흐름에서 유일하게 아직 막힌 지점</strong>입니다: URL/메모로 들어왔는데 준비된 Flow가 없을 때, 지금은 "초안 요청 정리본"을 <strong>복사해 앱 밖으로 나가야</strong> 합니다. 그 초안을 <strong>앱 안에서 만들어 손보고 내 Flow로 잇는 첫 slice</strong> — 그리고 초안이 도착할 <strong>내 Flow 수정 모델</strong> — 이 P20의 등뼈입니다. Calendar·public export·Studio는 이미 충분하거나 이 slice의 결과로만 움직입니다.</p>
+    </div>
+  </header>
+
+  <nav style="position: sticky; top: 0; z-index: 50; background: rgba(242,241,236,0.92); backdrop-filter: blur(8px); border-bottom: 1px solid #DDD9D0;">
+    <div style="max-width: 1120px; margin: 0 auto; padding: 10px 28px; display: flex; flex-wrap: wrap; gap: 6px;">
+      <a href="#verdict" style="text-decoration: none; color: #F5F4EF; background: #1F6A3E; border: 1px solid #1F6A3E; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">1 P19 마감 총평</a>
+      <a href="#scenarios" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">2 시나리오 8</a>
+      <a href="#prio" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">3 우선순위·백로그</a>
+      <a href="#decision" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">4 무엇을 먼저</a>
+      <a href="#gaps" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">5 증거 공백</a>
+      <a href="#reco" style="text-decoration: none; color: #F5F4EF; background: #3654FF; border: 1px solid #3654FF; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">6 P20 첫 /goal</a>
+      <a href="#hold" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">A 유지 기준선</a>
+      <a href="#goal" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">B /goal</a>
+    </div>
+  </nav>
+
+  <section style="max-width: 1120px; margin: 0 auto; padding: 24px 28px 4px;">
+    <div style="background: #EDF3EC; border: 1px solid #CADFC9; border-radius: 14px; padding: 16px 18px;">
+      <p style="margin: 0; font-size: 13px; font-weight: 800; color: #1F6A3E;">이번 검토 근거</p>
+      <p style="margin: 8px 0 0; font-size: 13.5px; line-height: 1.7; color: #35563A;">Vercel 실행 화면은 보지 않았습니다. GitHub <code>main</code>의 <strong>P19 final review package</strong>(<code>README·audit.md·route-evidence.json·screenshots 47장</code>, UI baseline <code>1943a9b</code>), <strong>P19 번호 정합성 감사</strong>·<strong>P19-08 AI draft gate 감사</strong>, 그리고 4개 E2E 스펙(<code>flow-mvp·url-first-user-surface·public-share-cta-order·workbench-source-density</code>)만 근거로 판단했습니다. 핵심 시나리오 프레임 — 홈(01·32)·URL-first hit/miss/candidate(27·29·30)·저장 후 내 Flow(16·36)·개인 overlay(13b·13c)·캘린더 다중 Flow(43·44)·공개 <code>/f</code>(06·워크벤치 25)·스튜디오(39) — 을 픽셀로 대조하고, <strong>E2E가 실제로 잠근 기준선</strong>(완료=체크박스, 저장 전=preview, export=Flow 단위 1개, miss=비-live-AI)을 코드로 재확인했습니다. 판정 기준 3가지: ①P19 8개가 <strong>evidence로 실제 닫혔는가</strong> ②핵심 흐름 5단계 중 <strong>아직 막힌 지점은 어디인가</strong> ③사용자가 물은 "무엇을 먼저"(AI draft·수정 모델·Calendar·public export·Studio)에 <strong>제품 흐름 기준으로 답할 수 있는가.</strong> 사용자 화면 금칙어(<code>P0·대기열·파이프라인·Canonical URL·handoff·source-backed·Step·Item·Markdown</code>) 재노출 제안은 넣지 않았고, 4탭 IA·<code>/flow-lab</code>=internal-console·<code>/restart</code>=release-preview·<code>/u/*</code>=creator-profile 분리는 전제로 유지합니다.</p>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 1 : Executive summary ===== -->
+  <section id="verdict" data-screen-label="1 P19 마감 총평" style="max-width: 1120px; margin: 0 auto; padding: 26px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #1F6A3E;">SECTION 1</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">P19 마감 총평 — 손잡이는 맞았다, 이제 문을 연다</h2>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; margin-top: 18px;">
+      <div style="background: #EDF3EC; border: 1px solid #CADFC9; border-radius: 16px; padding: 18px 20px;">
+        <p style="margin: 0; font-size: 14px; font-weight: 800; color: #1F6A3E;">P19는 8개를 전부 닫았다 (evidence 확인)</p>
+        <p style="margin: 8px 0 0; font-size: 13.5px; line-height: 1.7; color: #35563A;">P18이 남긴 "손잡이가 화면마다 다르다"가 실제로 통일됐다 — 완료=행 왼쪽 <strong>체크박스 1종</strong>(<code>checkbox 23·button 0·mixed 0</code>, 16·43·44), 진행 숫자 <strong>맥락화</strong>(<code>ambiguous 0·contextual 23·row-level Flow chip 0</code>), 캘린더 <strong>모바일 밀도·wide 헤더 중복</strong> 해소(<code>dense row 0·heading duplicate 0</code>), 공개 <code>/f</code> 저장 전 <strong>preview 톤</strong>(<code>completion-like 0·preview 89</code>), 홈 <strong>URL/메모 입구</strong>(<code>/flows·above fold</code>), 저장 후 <strong>수정入口</strong>("이사일·이름 바꾸기"·"제목·날짜·메모 수정"). E2E가 이 선들을 코드로 잠갔다.</p>
+      </div>
+      <div style="background: #FBEAE5; border: 1px solid #EFC5B9; border-radius: 16px; padding: 18px 20px;">
+        <p style="margin: 0; font-size: 14px; font-weight: 800; color: #C0341D;">그런데 핵심 흐름에 아직 닫힌 문이 하나 있다</p>
+        <p style="margin: 8px 0 0; font-size: 13.5px; line-height: 1.7; color: #7A2917;">핵심 흐름 2단계는 "준비된 Flow를 찾거나, <strong>없으면 초안 요청으로 보관</strong>"이다. 앞 절반(hit→저장→실행→캘린더)은 이제 매끄럽지만, <strong>miss의 종착이 "메모 복사"</strong>다 — miss는 <code>초안 요청 저장</code> 후 <strong>"# 초안 요청 정리본"을 클립보드로 복사</strong>해 주고, 카드는 <strong>"초안이 준비되면…"</strong>이라 말하지만 그 초안을 <strong>앱 안에서 만들어 손보는 경로가 없다</strong>(29·30, E2E 확인). 나중에 기존 Flow와 매칭되는 가지("이미 Flow로 준비됨")는 작동하지만, <strong>끝내 매칭 안 되는 URL/메모는 아무 실행물도 못 얻는다.</strong></p>
+      </div>
+    </div>
+
+    <div style="margin-top: 14px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px;">
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 15px 17px;">
+        <p style="margin: 0; font-size: 12.5px; font-weight: 800; color: #6E6B64;">중심축(재확인)</p>
+        <p style="margin: 7px 0 0; font-size: 13.5px; line-height: 1.65; color: #44413B;"><strong style="color:#1F6A3E;">개인 실행 도구로 확정 유지.</strong> "URL/메모 → 실행 Flow → 내 Flow/캘린더/export"의 <strong>앞 절반과 실행 종착지가 모두 작동하고 일관</strong>된다(01·27·16·43). 방향을 바꿀 이유가 없다 — P20은 방향이 아니라 <strong>유일하게 빈 칸(초안 생성)</strong>을 채우는 백로그.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 15px 17px;">
+        <p style="margin: 0; font-size: 12.5px; font-weight: 800; color: #6E6B64;">P20의 성격</p>
+        <p style="margin: 7px 0 0; font-size: 13.5px; line-height: 1.65; color: #44413B;">P18=방을 짓기, P19=손잡이 맞추기. <strong>P20=닫힌 문 하나를 열기</strong> — miss를 "보관"에서 <strong>"초안을 만들어 손보고 내 Flow로 잇기"</strong>로. 이건 폴리시가 아니라 <strong>핵심 흐름 완성</strong>이고, 필요한 그릇(13c 편집 overlay·스튜디오 초안 탭)은 P18·P19가 이미 지어뒀다.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 15px 17px;">
+        <p style="margin: 0; font-size: 12.5px; font-weight: 800; color: #6E6B64;">정직성은 지킨다</p>
+        <p style="margin: 7px 0 0; font-size: 13.5px; line-height: 1.65; color: #44413B;">첫 slice는 <strong>"초안 = 사용자가 손보는 것"</strong>으로 열되, <code>implies live AI false</code> 기준선을 깨지 않는다 — 실제 LLM 자동생성은 <strong>별도 gate(P20-06)</strong>로 뒤에. 먼저 <strong>초안→편집→저장 배관</strong>을 정직하게 세우고, 생성은 그 위에 얹는다.</p>
+      </div>
+    </div>
+
+    <div style="margin-top: 14px; background: #1B1A17; color: #F5F4EF; border-radius: 16px; padding: 18px 22px;">
+      <p style="margin: 0; font-size: 14.5px; line-height: 1.7;"><strong style="color:#9FF0B8;">한 줄 판정</strong> — FlowMe는 <strong>개인 실행 도구</strong>가 맞고, P19가 <strong>매일 쓰는 화면을 하나의 도구로 맞췄다.</strong> Blocking은 0. 이제 문제는 어긋난 손잡이가 아니라 <strong>핵심 흐름에서 딱 한 곳, "초안"이 앱 밖에 있다는 것</strong>이다. P20은 새 표면을 늘리지 말고 <strong>그 문을 연다</strong> — <em>준비된 Flow가 없어도, 사용자가 앱 안에서 초안을 손봐 내 Flow로 잇는다.</em> <span style="color:rgba(245,244,239,0.6);">부엌도 손잡이도 맞췄다. 이제 닫힌 문을 열 차례다.</span></p>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 2 : Scenario findings ===== -->
+  <section id="scenarios" data-screen-label="2 시나리오별 findings" style="max-width: 1120px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #1F6A3E;">SECTION 2</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">시나리오별 UX/UI 문제 — 핵심 흐름 5단계 + 보조 3</h2>
+    </div>
+    <p style="margin: 10px 0 0; max-width: 960px; font-size: 14.5px; color: #6E6B64;">핵심 흐름(①입력 → ②찾기/보관 → ③저장 후 실행 → ④캘린더 → ⑤공개 <code>/f</code>) 순서로, 각 시나리오에 <strong>P19가 닫은 것 · 남은 문제 · 사용자 영향 · screenshot/E2E 근거</strong>를 붙였습니다. 판정 chip: <span style="font-weight:800;color:#1F6A3E;">양호</span> · <span style="font-weight:800;color:#8A6D1B;">부분 문제</span> · <span style="font-weight:800;color:#C0341D;">핵심 문제</span>. 각 문제는 §3 백로그 ID로 연결됩니다.</p>
+
+    <!-- Scenario 1 -->
+    <div style="margin-top: 20px; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 20px 22px;">
+      <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+        <span style="font-size: 12px; font-weight: 800; background: #EEF1FF; color: #3654FF; border-radius: 6px; padding: 2px 9px;">시나리오 1 · 진입</span>
+        <h3 style="margin: 0; font-size: 18px; font-weight: 800;">홈에서 URL/메모 입구가 보이고 <code>/flows</code>로 이어지는가</h3>
+        <span style="font-size: 12px; font-weight: 800; background: #EDF3EC; color: #1F6A3E; border-radius: 999px; padding: 3px 10px;">양호 · P19-06 닫힘</span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 14px;">
+        <figure style="margin: 0; background: #F7F6F2; border: 1px solid #E7E4DD; border-radius: 12px; overflow: hidden;">
+          <img src="p19-screenshots/01-home-mobile.png" alt="홈 390px" style="display: block; width: 100%; height: auto;">
+          <figcaption style="padding: 8px 12px; font-size: 11.5px; color: #6E6B64;">01 · <code>/</code> @390 — "URL이나 메모로 Flow 찾기" 입구 above fold + 추천 2</figcaption>
+        </figure>
+        <figure style="margin: 0; background: #F7F6F2; border: 1px solid #E7E4DD; border-radius: 12px; overflow: hidden;">
+          <img src="p19-screenshots/32-home-wide.png" alt="홈 1024px" style="display: block; width: 100%; height: auto;">
+          <figcaption style="padding: 8px 12px; font-size: 11.5px; color: #6E6B64;">32 · <code>/</code> @1024 — 같은 입구가 wide에서도 above fold · 추천과 경쟁 안 함</figcaption>
+        </figure>
+      </div>
+      <div style="font-size: 13.5px; line-height: 1.7; color: #44413B; margin-top: 12px;">
+        <p style="margin: 0;"><strong>P19가 닫은 것</strong> · P18에서 남았던 "홈에 URL 입력 입구가 약하다"가 해소됐다 — 홈 primary 아래에 <strong>"URL이나 메모로 Flow 찾기 · 링크 붙여넣기 · 요청 메모 · 준비된 Flow 확인"</strong> 입구가 <strong>모바일·wide 모두 above fold</strong>로 노출되고 <code>/flows</code>로 이어진다(<code>homeUrlFirstEntryVisible true · destination /flows · aboveFold true · competesWithRecommendations false</code>, 01·32). 새 lookup 구현을 늘리지 않고 발견성만 올린 게 맞다.</p>
+        <p style="margin: 10px 0 0;"><strong>남은 문제</strong> · 없음(방향/발견성 모두 충족). <span style="color:#1F6A3E;">→ 근거: 01·32, README <code>home URL-first entry</code>. P20에서 유지 기준선(부록 A).</span></p>
+      </div>
+    </div>
+
+    <!-- Scenario 2 -->
+    <div style="margin-top: 14px; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 20px 22px;">
+      <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+        <span style="font-size: 12px; font-weight: 800; background: #EEF1FF; color: #3654FF; border-radius: 6px; padding: 2px 9px;">시나리오 2 · 찾기(hit)</span>
+        <h3 style="margin: 0; font-size: 18px; font-weight: 800;">URL-first hit / custom-start — 찾아 가볍게 고쳐 시작</h3>
+        <span style="font-size: 12px; font-weight: 800; background: #EDF3EC; color: #1F6A3E; border-radius: 999px; padding: 3px 10px;">양호</span>
+      </div>
+      <div style="display: grid; grid-template-columns: 260px 1fr; gap: 18px; margin-top: 14px; align-items: start;">
+        <figure style="margin: 0; background: #F7F6F2; border: 1px solid #E7E4DD; border-radius: 12px; overflow: hidden;">
+          <img src="p19-screenshots/27-url-first-hit-mobile.png" alt="URL-first hit 390px" style="display: block; width: 100%; height: auto;">
+          <figcaption style="padding: 8px 12px; font-size: 11.5px; color: #6E6B64;">27 · hit — "이미 만들어진 Flow가 있어요 · 이미 만든 준비가 있는지 먼저 찾아봤어요" + 학습 시작일 + export 3모드</figcaption>
+        </figure>
+        <div style="font-size: 13.5px; line-height: 1.7; color: #44413B;">
+          <p style="margin: 0;"><strong>양호</strong> · hit은 "그대로 시작 / 조금 고쳐 시작" 토글 + <strong>기준일(학습 시작일)</strong> + export 3모드로 정리돼 있고, E2E가 카피를 잠갔다 — <strong>"이미 만든 준비가 있는지 먼저 찾아봤어요"</strong>는 보이고 <strong>"AI 자동 생성 없이 먼저 찾아봤어요"·"Mathbang"·"Markdown"은 안 보인다.</strong> export 모드를 calendar/markdown/checklist로 돌려도 항상 <strong>"메모 문서 받기"</strong>로 뜨고 "Markdown"이 새지 않는다(<code>url-first-user-surface.spec</code>).</p>
+          <p style="margin: 10px 0 0;"><strong>판단</strong> · 저장 <em>전</em>은 <strong>Step 포함/제외 + 기준일</strong>까지 가볍게, 개별 항목의 날짜·문구는 저장 후로 — 이 분업이 유지된다. hit 시나리오는 P20에서 손대지 않는다. <span style="color:#1F6A3E;">→ 근거: 27, <code>url-first-user-surface.spec</code>. 유지 기준선.</span></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scenario 3 : the dead-end -->
+    <div style="margin-top: 14px; background: #FFFFFF; border: 2px solid #EFC5B9; border-radius: 16px; padding: 20px 22px;">
+      <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+        <span style="font-size: 12px; font-weight: 800; background: #FBEAE5; color: #C0341D; border-radius: 6px; padding: 2px 9px;">시나리오 3 · 보관(miss)</span>
+        <h3 style="margin: 0; font-size: 18px; font-weight: 800;">URL-first miss / candidate — 준비된 Flow가 없을 때 무엇이 남는가</h3>
+        <span style="font-size: 12px; font-weight: 800; background: #FBEAE5; color: #C0341D; border-radius: 999px; padding: 3px 10px;">핵심 문제 · P20 1순위</span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 14px;">
+        <figure style="margin: 0; background: #F7F6F2; border: 1px solid #E7E4DD; border-radius: 12px; overflow: hidden;">
+          <img src="p19-screenshots/29-url-first-miss-candidate-form-mobile.png" alt="miss 390px" style="display: block; width: 100%; height: auto;">
+          <figcaption style="padding: 8px 12px; font-size: 11.5px; color: #6E6B64;">29 · miss — "아직 Flow화되지 않은 URL입니다 · 지금 바로 Flow를 만들지는 않습니다" + <strong>초안 요청 저장</strong></figcaption>
+        </figure>
+        <figure style="margin: 0; background: #F7F6F2; border: 1px solid #E7E4DD; border-radius: 12px; overflow: hidden;">
+          <img src="p19-screenshots/30-url-first-candidate-detail-mobile.png" alt="candidate 390px" style="display: block; width: 100%; height: auto;">
+          <figcaption style="padding: 8px 12px; font-size: 11.5px; color: #6E6B64;">30 · candidate — "요청 내용 보기" · <strong>"초안 요청 정리본 복사됨"</strong> (앱 밖으로 나가는 종착)</figcaption>
+        </figure>
+      </div>
+      <div style="font-size: 13.5px; line-height: 1.7; color: #44413B; margin-top: 12px;">
+        <p style="margin: 0;"><strong>양호(정직성) · P19-08 닫힘</strong> · miss는 <strong>"지금 바로 Flow를 만들지는 않습니다"</strong>로 정직하고, E2E가 <code>/AI가|자동 생성|바로 생성|생성 중/</code> 노출을 금지로 잠갔다(<code>implies live AI false</code>). 나중에 기존 Flow와 매칭되면 카드가 <strong>"이미 Flow로 준비됨 · Flow 결과로 이동해 바로 시작할 수 있어요"</strong>로 승격된다 — 이 <em>매칭되는</em> 가지는 이미 작동한다(30, <code>url-first-user-surface.spec</code>).</p>
+        <p style="margin: 10px 0 0;"><strong>핵심 문제 — 끝내 매칭 안 되는 URL/메모는 실행물이 0이다</strong> · miss의 종착이 <strong>"메모 복사"</strong>다. <code>초안 요청 저장</code> → <strong>"초안 요청 정리본 복사됨"</strong> → 클립보드에 <strong>"# 초안 요청 정리본"</strong> 텍스트가 담긴다(E2E 확인). 카드는 <strong>"초안이 준비되면 제목, 날짜, 메모를 손본 뒤 내 Flow와 캘린더로 이어갈 수 있어요"</strong>라고 약속하지만 — <strong>그 초안을 앱 안에서 만드는 경로가 없다.</strong> 사용자는 정리본을 들고 <strong>앱 밖(다른 도구)으로 나가</strong> 초안을 만들어야 한다.</p>
+        <p style="margin: 10px 0 0;"><strong>사용자 영향</strong> · 제품 가설의 절반("URL/메모 → 실행")이 <strong>miss에서만 끊긴다.</strong> "찾으면 훌륭, 없으면 복사 후 이탈" — 준비된 콘텐츠 밖의 URL을 가진 사용자는 <strong>FlowMe를 "카탈로그"로만 경험</strong>하고, 자기 URL이 실행물이 되는 경험을 못 한다. 이게 P20이 열어야 할 유일한 문. <span style="color:#C0341D;">→ 근거: 29·30, <code>url-first-user-surface.spec</code>(정리본 복사 흐름). §3 <a href="#prio" style="color:#C0341D;">P20-01</a>, 결정 §4-1.</span></p>
+      </div>
+    </div>
+
+    <!-- Scenario 4 -->
+    <div style="margin-top: 14px; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 20px 22px;">
+      <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+        <span style="font-size: 12px; font-weight: 800; background: #EEF1FF; color: #3654FF; border-radius: 6px; padding: 2px 9px;">시나리오 4 · 저장 후 실행</span>
+        <h3 style="margin: 0; font-size: 18px; font-weight: 800;">저장 후 내 Flow 오늘 — 완료가 어디서나 같은 모양인가</h3>
+        <span style="font-size: 12px; font-weight: 800; background: #EDF3EC; color: #1F6A3E; border-radius: 999px; padding: 3px 10px;">양호 · P19-02/03 닫힘</span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 14px;">
+        <figure style="margin: 0; background: #F7F6F2; border: 1px solid #E7E4DD; border-radius: 12px; overflow: hidden;">
+          <img src="p19-screenshots/16-my-multi-queue-mobile.png" alt="오늘 탭 390px" style="display: block; width: 100%; height: auto;">
+          <figcaption style="padding: 8px 12px; font-size: 11.5px; color: #6E6B64;">16 · 오늘 @390 — "오늘 2개 남음" 단일 프레임 · 완료=<strong>행 왼쪽 체크박스</strong> · Flow 진행 분수는 행에서 빠짐</figcaption>
+        </figure>
+        <figure style="margin: 0; background: #F7F6F2; border: 1px solid #E7E4DD; border-radius: 12px; overflow: hidden;">
+          <img src="p19-screenshots/36-post-save-my-moving-wide.png" alt="저장 후 내 Flow 1024px" style="display: block; width: 100%; height: auto;">
+          <figcaption style="padding: 8px 12px; font-size: 11.5px; color: #6E6B64;">36 · <code>/my?savedMap=moving-d30</code> @1024 — "내 Flow에 저장됨" 확인 + 완료=체크박스 · 1개 예정</figcaption>
+        </figure>
+      </div>
+      <div style="font-size: 13.5px; line-height: 1.7; color: #44413B; margin-top: 12px;">
+        <p style="margin: 0;"><strong>양호 · P18 문제가 통일됐다</strong> · 오늘이 <strong>단일 프레임·단일 카운트</strong>(<code>frame 1·count source 1</code>)로 정리되고, P18에서 버튼/체크박스로 갈리던 완료가 <strong>행 왼쪽 체크박스 1종</strong>으로 수렴했다(<code>taskCompleteCheckboxCount 23·buttonCount 0·mixedControlCount 0</code>, 16·36). 오늘 카드에 붙던 Flow 전체 분수("0/9")도 빠져, 진행 숫자가 <strong>맥락 라벨</strong>만 남았다(<code>progress ambiguous 0·contextual 23·row-level Flow chip 0</code>). 저장 직후 <strong>"내 Flow에 저장됨"</strong> 확인이 첫 할 일 제목을 반복하지 않는다.</p>
+        <p style="margin: 10px 0 0;"><strong>남은 문제</strong> · 실행 자체는 양호. 단 <strong>완료 "후" 상태</strong>(취소선·잔여 감소)는 캡처가 없어 검증 공백으로 남는다(§5-5). <span style="color:#1F6A3E;">→ 근거: 16·36, README <code>task complete·progress</code>. 유지 기준선.</span></p>
+      </div>
+    </div>
+
+    <!-- Scenario 5 : edit model -->
+    <div style="margin-top: 14px; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 20px 22px;">
+      <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+        <span style="font-size: 12px; font-weight: 800; background: #EEF1FF; color: #3654FF; border-radius: 6px; padding: 2px 9px;">시나리오 5 · 수정 모델</span>
+        <h3 style="margin: 0; font-size: 18px; font-weight: 800;">저장 후 기준일·항목 수정 — 발견되지만, wide에서 한 입구가 사라진다</h3>
+        <span style="font-size: 12px; font-weight: 800; background: #F7F0DC; color: #8A6D1B; border-radius: 999px; padding: 3px 10px;">부분 문제 · 초안이 도착할 곳</span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 14px;">
+        <figure style="margin: 0; background: #F7F6F2; border: 1px solid #E7E4DD; border-radius: 12px; overflow: hidden;">
+          <img src="p19-screenshots/13b-my-moving-personal-anchor-settings-mobile.png" alt="이사일 수정 390px" style="display: block; width: 100%; height: auto;">
+          <figcaption style="padding: 8px 12px; font-size: 11.5px; color: #6E6B64;">13b · 개인 사본 → <strong>"이사일·이름 바꾸기"</strong> · "바꾸면 전체 일정 다시 맞춰짐 · 따로 바꾼 날짜는 유지" (기준일 수정入口)</figcaption>
+        </figure>
+        <figure style="margin: 0; background: #F7F6F2; border: 1px solid #E7E4DD; border-radius: 12px; overflow: hidden;">
+          <img src="p19-screenshots/13c-my-moving-personal-step-date-override-mobile.png" alt="항목 날짜 override 390px" style="display: block; width: 100%; height: auto;">
+          <figcaption style="padding: 8px 12px; font-size: 11.5px; color: #6E6B64;">13c · 항목 상세 — <strong>"제목·날짜·메모 수정"</strong> · "이 할 일 날짜" override + 시간/장소/반복/메모 (초안 편집 overlay)</figcaption>
+        </figure>
+      </div>
+      <div style="font-size: 13.5px; line-height: 1.7; color: #44413B; margin-top: 12px;">
+        <p style="margin: 0;"><strong>양호 · P19-07 닫힘</strong> · 저장 후 수정入口가 <strong>발견 가능</strong>해졌다 — Flow 전체는 <strong>"이사일·이름 바꾸기"</strong>(<code>myFlowAnchorEditEntryVisible true</code>, accessible name "이사 준비 이사일·이름 바꾸기"), 개별 항목은 <strong>"제목·날짜·메모 수정"</strong>(<code>myFlowItemEditEntryVisible true</code>), "이 할 일 날짜" override까지(13b·13c). 기준일 vs 개별 항목 날짜 구분 카피("바꾸면 전체 다시 맞춰짐 / 따로 바꾼 날짜는 유지")가 URL-first(27)와 동일 문장으로 일관된다.</p>
+        <p style="margin: 10px 0 0;"><strong>문제 ① wide에서 기준일 입구가 사라진다</strong> · evidence의 <code>Edit entry visible by viewport</code>가 <strong><code>{"390":{anchor:2,item:1}, "1024":{anchor:0,item:1}}</code></strong>다 — 모바일에선 "이사일·이름 바꾸기" 입구가 2개 보이는데 <strong>wide(1024)에선 anchor 입구가 0</strong>이다. 즉 <strong>큰 화면 사용자는 "이사일 바꾸기"에 도달하지 못한다.</strong> P19-07이 모바일만 닫고 wide를 흘렸다.</p>
+        <p style="margin: 8px 0 0;"><strong>문제 ② 초안이 도착할 곳인데, 초안 상태를 아직 안 받는다</strong> · 이 13c overlay는 P20-01 초안이 <strong>착지해 편집될 바로 그 화면</strong>이다. 하지만 지금은 <strong>source-backed 개인 사본</strong>만 편집 대상이고, "초안 상태(draft)" Flow를 여기서 열어 채우는 경로가 없다. 초안을 열려면 이 overlay가 <strong>draft 원본도 받아야</strong> 한다.</p>
+        <p style="margin: 8px 0 0;"><strong>문제 ③ 기준일↔항목 충돌·되돌리기 미검증</strong> · "따로 바꾼 날짜는 유지"(13b)는 카피로만 있고, 기준일 변경이 개별 override와 <strong>부딪칠 때의 실제 동작·되돌리기 UI</strong>가 캡처에 없다(§5-3).</p>
+        <p style="margin: 10px 0 0;"><strong>사용자 영향</strong> · 수정 모델은 <strong>정직하고 정확</strong>하지만, wide 사용자는 기준일을 못 고치고, 초안은 아직 이 방에 들어오지 못한다. <span style="color:#8A6D1B;">→ 근거: 13b·13c, README <code>Edit entry visible by viewport {1024 anchor:0}</code>. §3 <a href="#prio" style="color:#C0341D;">P20-02</a>, 결정 §4-2.</span></p>
+      </div>
+    </div>
+
+    <!-- Scenario 6 : calendar -->
+    <div style="margin-top: 14px; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 20px 22px;">
+      <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+        <span style="font-size: 12px; font-weight: 800; background: #EEF1FF; color: #3654FF; border-radius: 6px; padding: 2px 9px;">시나리오 6 · 캘린더</span>
+        <h3 style="margin: 0; font-size: 18px; font-weight: 800;">Calendar 같은 날짜 다중 Flow — 밀도·헤더는 닫혔고, 그리드 라벨만 잔여</h3>
+        <span style="font-size: 12px; font-weight: 800; background: #EDF3EC; color: #1F6A3E; border-radius: 999px; padding: 3px 10px;">양호 · 잔여 폴리시 Low</span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 14px;">
+        <figure style="margin: 0; background: #F7F6F2; border: 1px solid #E7E4DD; border-radius: 12px; overflow: hidden;">
+          <img src="p19-screenshots/43-calendar-same-date-multi-flow-mobile.png" alt="같은 날짜 다중 Flow 390px" style="display: block; width: 100%; height: auto;">
+          <figcaption style="padding: 8px 12px; font-size: 11.5px; color: #6E6B64;">43 · @390 — agenda 저밀도(<code>dense row 0</code>), 완료=체크박스. 단 그리드 라벨은 아직 "컴퓨터활용능력…" 잘림 + "이사 준비"×2</figcaption>
+        </figure>
+        <figure style="margin: 0; background: #F7F6F2; border: 1px solid #E7E4DD; border-radius: 12px; overflow: hidden;">
+          <img src="p19-screenshots/44-calendar-same-date-multi-flow-wide.png" alt="같은 날짜 다중 Flow 1024px" style="display: block; width: 100%; height: auto;">
+          <figcaption style="padding: 8px 12px; font-size: 11.5px; color: #6E6B64;">44 · @1024 — 헤더 중복 해소(<code>heading duplicate 0</code>), Flow 색·그룹 구별, 완료=체크박스(<code>button 0</code>)</figcaption>
+        </figure>
+      </div>
+      <div style="font-size: 13.5px; line-height: 1.7; color: #44413B; margin-top: 12px;">
+        <p style="margin: 0;"><strong>양호 · P19-01/03/04 닫힘</strong> · 모바일 agenda 밀도(<code>dense row 0 · row date/timing/Flow/progress meta 0 · open-label 4</code>), wide 헤더 중복(<code>calendarHeadingDuplicateCount 0</code>), Flow 구별(<code>same-date distinct Flow 2 · agenda grouped by Flow true</code>), 완료 체크박스(<code>taskCompleteButtonCount 0</code>) 모두 닫혔다. 날짜 화면에서 Flow 완료 분수도 빠졌다(<code>row-level Flow progress chip 0</code>). 캘린더는 이제 <strong>날짜 우선 실행 화면</strong>으로 읽힌다.</p>
+        <p style="margin: 10px 0 0;"><strong>남은 문제(Low, 폴리시)</strong> · <strong>월 그리드 셀 라벨</strong>은 여전히 긴 Flow명을 <strong>"컴퓨터활용능력…"으로 자르고</strong>, 같은 Flow가 <strong>"이사 준비" 라벨 2개로</strong> 그리드에 뜬다(<code>selectedDateGridFlowLabels: ["컴퓨터활용능력...","이사 준비","이사 준비"]</code>, 43). agenda는 그룹으로 정리됐지만 <strong>그리드 셀 레벨의 이름 잘림·같은 Flow 중복</strong>은 distinct-group 지표(2)가 잡지 못한 사각지대로 남는다.</p>
+        <p style="margin: 10px 0 0;"><strong>사용자 영향</strong> · 실사용엔 지장 적음(agenda가 정리돼 있어). 다만 3~5 Flow로 늘면 그리드가 다시 붐빌 수 있다(§5-6). <span style="color:#8A6D1B;">→ 근거: 43·44, README <code>selectedDateGridFlowLabels</code>. §3 <a href="#prio" style="color:#8A6D1B;">P20-05</a>, 결정 §4-3.</span></p>
+      </div>
+    </div>
+
+    <!-- Scenario 7 : public /f -->
+    <div style="margin-top: 14px; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 20px 22px;">
+      <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+        <span style="font-size: 12px; font-weight: 800; background: #EEF1FF; color: #3654FF; border-radius: 6px; padding: 2px 9px;">시나리오 7 · 공개 /f</span>
+        <h3 style="margin: 0; font-size: 18px; font-weight: 800;">공개 /f — Flow 단위 저장·내보내기, 저장 전 preview는 정직하다</h3>
+        <span style="font-size: 12px; font-weight: 800; background: #EDF3EC; color: #1F6A3E; border-radius: 999px; padding: 3px 10px;">양호 · P19-05 닫힘 · post-save 미검증</span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 14px;">
+        <figure style="margin: 0; background: #F7F6F2; border: 1px solid #E7E4DD; border-radius: 12px; overflow: hidden;">
+          <img src="p19-screenshots/06-public-vehicle-mobile.png" alt="공개 /f 390px" style="display: block; width: 100%; height: auto;">
+          <figcaption style="padding: 8px 12px; font-size: 11.5px; color: #6E6B64;">06 · <code>/f/vehicle</code> — 셋업 + sticky <strong>"내 Flow에 저장"</strong>(Flow 단위 primary), 내보내기는 Flow 단위 secondary 1개</figcaption>
+        </figure>
+        <figure style="margin: 0; background: #F7F6F2; border: 1px solid #E7E4DD; border-radius: 12px; overflow: hidden;">
+          <img src="p19-screenshots/25-workbench-new-car-open-details-mobile.png" alt="워크벤치 상세 390px" style="display: block; width: 100%; height: auto;">
+          <figcaption style="padding: 8px 12px; font-size: 11.5px; color: #6E6B64;">25 · 워크벤치 상세 — 저장 전 항목 체크가 <strong>preview/선택</strong>(<code>completion-like 0</code>), 완료로 안 읽힘</figcaption>
+        </figure>
+      </div>
+      <div style="font-size: 13.5px; line-height: 1.7; color: #44413B; margin-top: 12px;">
+        <p style="margin: 0;"><strong>양호 · P19-05 닫힘, E2E가 잠금</strong> · sticky primary가 <strong>"내 Flow에 저장/내 Flow에서 보기"</strong>로 고정(도구/파일/받기/복사/시트/캘린더 라벨 금지), 내보내기는 <strong>Flow 단위 secondary 1개</strong> + 포맷 옵션 ≥2 + <strong>항목 단위 export-like 라벨 0</strong>, 저장 전 항목 체크는 <strong>완료가 아니라 preview/선택</strong>(<code>preSaveCheckboxCompletionLikeLabelCount 0</code>, 89개 전부 preview 라벨)로 잠겼다(<code>public-share-cta-order.spec</code>). 워크벤치 반복 행에서 <strong>source 링크도 빠지고</strong> 공통 노트 1개로 정리(<code>workbench-source-density.spec</code>).</p>
+        <p style="margin: 10px 0 0;"><strong>남은 문제(Medium, 증거)</strong> · <strong>저장 "후" 상태</strong> — preview 체크가 저장 후 실제 완료 컨트롤로 활성화되는 화면이 캡처에 없다(§5-4). "Flow 단위 export 보강"은 <strong>새 항목 단위 모델을 만드는 게 아니라</strong>, 이 저장 전↔후 경계를 evidence로 닫는 것이 맞다(결정 §4-4). <span style="color:#8A6D1B;">→ 근거: 06·25, <code>public-share-cta-order.spec</code>. §3 <a href="#prio" style="color:#8A6D1B;">P20-04</a>.</span></p>
+      </div>
+    </div>
+
+    <!-- Scenario 8 : studio -->
+    <div style="margin-top: 14px; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 20px 22px;">
+      <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+        <span style="font-size: 12px; font-weight: 800; background: #EEF1FF; color: #3654FF; border-radius: 6px; padding: 2px 9px;">시나리오 8 · Studio(보조)</span>
+        <h3 style="margin: 0; font-size: 18px; font-weight: 800;">Creator / Studio — 확장할 축인가, 초안이 살 그릇인가</h3>
+        <span style="font-size: 12px; font-weight: 800; background: #EDF3EC; color: #1F6A3E; border-radius: 999px; padding: 3px 10px;">양호 → 보조 유지 · 초안 탭 재사용</span>
+      </div>
+      <div style="display: grid; grid-template-columns: 260px 1fr; gap: 18px; margin-top: 14px; align-items: start;">
+        <figure style="margin: 0; background: #F7F6F2; border: 1px solid #E7E4DD; border-radius: 12px; overflow: hidden;">
+          <img src="p19-screenshots/39-creator-profile-my-flow-studio-mobile.png" alt="내 스튜디오 390px" style="display: block; width: 100%; height: auto;">
+          <figcaption style="padding: 8px 12px; font-size: 11.5px; color: #6E6B64;">39 · <code>/u/my-flow-studio</code> — 콘텐츠 5(초안 1 포함), 탭 "내가 만든·복사본·<strong>초안</strong>"(noindex, 4탭 밖)</figcaption>
+        </figure>
+        <div style="font-size: 13.5px; line-height: 1.7; color: #44413B;">
+          <p style="margin: 0;"><strong>양호(그리고 그게 핵심)</strong> · creator-profile는 잘 분리된 <strong>보조 표면</strong>이다 — 현재 사용자 스튜디오는 noindex, 공개 채널만 indexable, <code>/my·/calendar</code> 헤더의 보조 버튼으로만 진입(<code>studioEntryDestinationTier creator-profile · unexpectedRoute 0</code>), E2E가 <code>/flow-lab</code>·수동등록 QA가 <strong>정상 nav에 0</strong>임을 잠갔다.</p>
+          <p style="margin: 10px 0 0;"><strong>판단</strong> · <strong>보조 유지 — 5번째 탭 승격·publishing 확대 아님.</strong> 이건 daily loop가 아니라 supply다. 다만 스튜디오에 이미 <strong>"초안" 탭</strong>이 있다(<code>draftContentCardCount 2</code>, 39) — 이건 <strong>P20-01 초안이 저장 전 머무를 선반(shelf)</strong>이 이미 마련됐다는 뜻이다. Studio는 "키우는" 게 아니라 <strong>초안 흐름의 보관함으로 재사용</strong>한다. <span style="color:#1F6A3E;">→ 근거: 39, README <code>creatorProfile draft 2 · studio entry policy</code>. §3 <a href="#prio" style="color:#8A6D1B;">P20-03</a>, 결정 §4-5.</span></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Prototype gate -->
+    <div style="margin-top: 14px; background: #F7F6F2; border: 1px dashed #C9C4B8; border-radius: 16px; padding: 18px 22px;">
+      <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+        <span style="font-size: 12px; font-weight: 800; background: #E7E4DD; color: #6E6B64; border-radius: 6px; padding: 2px 9px;">프로토타입 게이트</span>
+        <h3 style="margin: 0; font-size: 16px; font-weight: 800;">/restart = release-preview · /flow-lab = internal-console (정상 IA로 안 샘)</h3>
+        <span style="font-size: 12px; font-weight: 800; background: #EDF3EC; color: #1F6A3E; border-radius: 999px; padding: 3px 10px;">양호 · 분리 유지</span>
+      </div>
+      <p style="margin: 10px 0 0; font-size: 13.5px; line-height: 1.7; color: #44413B;"><code>/restart/moving-d30</code>와 <code>/flow-lab/url-first-p0</code>는 4탭 밖에 유지된다. E2E가 3개 뷰포트(390/768/1024)에서 <strong>사용자 nav에 <code>/flow-lab</code> 링크 0·수동등록 QA 링크 0</strong>, flow-lab은 <strong>"내부 실험 콘솔 · 정상 사용자 메뉴에 연결하지 않는"</strong> 컨텍스트 + noindex, restart는 영어 요일/동사/월-시간·혼합 export 언어 hit 0으로 잠갔다(<code>url-first-user-surface.spec</code>). <strong>이번에도 통과 — P20에서 손대지 않는다</strong>(부록 A).</p>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 3 : Priority + backlog ===== -->
+  <section id="prio" data-screen-label="3 우선순위·백로그" style="max-width: 1120px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #1F6A3E;">SECTION 3</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">P20 Priority Backlog — Blocking / High / Medium / Low</h2>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 18px;">
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-top: 4px solid #1B1A17; border-radius: 14px; padding: 16px 18px;">
+        <p style="margin: 0; font-size: 13px; font-weight: 800;">Blocking · 0건</p>
+        <p style="margin: 8px 0 0; font-size: 13.5px; line-height: 1.6; color: #44413B;">정상 4탭·URL-first·wide 버킷·nav-leak·티어 분리·miss 정직성 모두 hit 0, P19-01~08 닫힘. <strong>출시/방향을 막는 항목 없음.</strong> P20은 "빈 칸을 채우고 문을 여는" 제품 작업.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-top: 4px solid #C0341D; border-radius: 14px; padding: 16px 18px;">
+        <p style="margin: 0; font-size: 13px; font-weight: 800; color: #C0341D;">High · 2건</p>
+        <p style="margin: 8px 0 0; font-size: 13.5px; line-height: 1.6; color: #44413B;"><strong>P20-01</strong> URL-first 초안 첫 slice(miss→편집 가능한 초안→내 Flow) · <strong>P20-02</strong> 내 Flow 수정 모델 강화(초안 착지 + wide 기준일 입구 + 충돌/되돌리기).</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-top: 4px solid #C7A128; border-radius: 14px; padding: 16px 18px;">
+        <p style="margin: 0; font-size: 13px; font-weight: 800; color: #8A6D1B;">Medium · 2건</p>
+        <p style="margin: 8px 0 0; font-size: 13.5px; line-height: 1.6; color: #44413B;"><strong>P20-03</strong> 스튜디오 "초안" 탭을 초안 선반으로 연결 · <strong>P20-04</strong> 공개 /f 저장 전↔후 경계 evidence + Flow 단위 유지.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-top: 4px solid #B7B2A6; border-radius: 14px; padding: 16px 18px;">
+        <p style="margin: 0; font-size: 13px; font-weight: 800; color: #6E6B64;">Low · 2건</p>
+        <p style="margin: 8px 0 0; font-size: 13.5px; line-height: 1.6; color: #44413B;"><strong>P20-05</strong> 캘린더 그리드 라벨 잔여 폴리시(잘림·같은 Flow 중복·3~5 Flow) · <strong>P20-06</strong> 실제 AI 생성 slice(spec·gate, 뒤로).</p>
+      </div>
+    </div>
+
+    <p style="margin: 18px 0 0; max-width: 960px; font-size: 14.5px; color: #6E6B64;">각 항목은 <strong>바로 개발 가능한 목표</strong>로 썼고, <strong>왜 지금(또는 나중에) 해야 하는지</strong>와 <strong>건드리면 안 되는 기준선</strong>을 붙였습니다. P20-01은 새 <em>기능</em>이지만 그릇(13c overlay·스튜디오 초안 탭)은 이미 있으므로, 4탭 IA·공유 shell·저장/실행/내보내기 스키마·티어 분리·<code>implies live AI false</code>를 안 건드리고 <strong>비어 있는 흐름 하나</strong>만 잇습니다.</p>
+
+    <div style="display: grid; gap: 12px; margin-top: 16px;">
+
+      <!-- P20-01 -->
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #C0341D; border-radius: 16px; padding: 18px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <span style="font-size: 13px; font-weight: 800; background: #FBEAE5; color: #C0341D; border-radius: 6px; padding: 2px 9px;">P20-01 · High · url-first/my-flow</span>
+          <h3 style="margin: 0; font-size: 16.5px; font-weight: 800;">URL-first 초안 첫 slice — miss를 "편집 가능한 초안 → 내 Flow"로 잇는다</h3>
+        </div>
+        <div style="margin: 10px 0 0; font-size: 13.5px; line-height: 1.7; color: #44413B;">
+          <p style="margin:0;"><strong>Route</strong> · <code>/flows</code> miss/candidate(29·30) → <code>/my</code> 초안 편집 overlay(13c) → 저장</p>
+          <p style="margin:6px 0 0;"><strong>Problem</strong> · 준비된 Flow가 없을 때 miss의 종착이 <strong>"초안 요청 정리본 복사"</strong>다(30). 카드는 "초안이 준비되면 손본 뒤 내 Flow로 이어갈 수 있어요"라 약속하지만, <strong>그 초안을 앱 안에서 만드는 경로가 없다</strong> — 사용자는 정리본을 들고 앱 밖으로 나간다.</p>
+          <p style="margin:6px 0 0;"><strong>Why now</strong> · 이건 폴리시가 아니라 <strong>핵심 흐름 2단계의 빈 칸</strong>이다. 앞 절반(hit→저장→실행→캘린더)이 P18·P19로 매끄러워진 지금, <strong>유일하게 막힌 문</strong>이 여기다. 그릇(13c 편집 overlay·스튜디오 초안 탭)도 이미 있어 <strong>새 표면 없이</strong> 흐름만 잇는다.</p>
+          <p style="margin:6px 0 0;"><strong>Evidence</strong> · <code>url-first-user-surface.spec</code>: <code>초안 요청 저장</code> → "초안 요청 정리본 복사됨" → 클립보드 "# 초안 요청 정리본". 승격 가지("이미 Flow로 준비됨")는 존재 → <strong>미매칭 가지만 비어 있음.</strong></p>
+          <p style="margin:6px 0 0;"><strong>Expected(정직한 첫 slice)</strong> · miss/candidate에 <strong>"초안으로 시작" 액션</strong>을 추가 → 사용자의 URL·메모 + 선택한 골격(날짜 앵커·항목 틀)을 <strong>draft 상태 Flow로 승격</strong> → 그 초안이 <strong>13c overlay에서 열려 제목·날짜·메모·항목을 사용자가 손봄</strong> → <strong>"내 Flow에 저장"으로 실행 Flow가 됨</strong>(그때부터 캘린더/오늘/export에 반영). <strong>첫 slice의 초안 내용은 결정론적 골격</strong>(사용자 입력 + 템플릿)으로 채우고, <strong>실제 LLM 자동생성은 P20-06으로 분리</strong> — 이렇게 하면 배관을 먼저 검증하고 <code>implies live AI false</code>를 안 깬다.</p>
+          <p style="margin:6px 0 0;"><strong>Implementation</strong> · miss 저장 시 supply-candidate에 <code>status: draft</code>로 승격 옵션 → 스튜디오 초안 탭/candidate 카드에서 "초안 편집" → 기존 13c overlay를 draft 원본으로 재사용(P20-02 선행) → 저장 시 개인 사본 스키마로 전환.</p>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 13px; line-height: 1.65; color: #35563A; background:#EDF3EC; border-radius:8px; padding:10px 12px;"><strong>건드리면 안 되는 기준선</strong> · <code>implies live AI false</code>(초안은 "제안", 자동 실행/생성 과장 금지) · miss 정직 카피("지금 바로 만들지 않습니다") · candidate 사용자어(<code>internal hit 0</code>) · 저장/실행/export 스키마 · "메모 문서"(Markdown 금지). <strong>Done when</strong> · miss에서 초안을 만들어 13c에서 편집 후 내 Flow로 저장하는 경로가 닫힘 · 사용자어 hit 0 · live-AI 카피 0 · overflow 0.</p>
+      </article>
+
+      <!-- P20-02 -->
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #C0341D; border-radius: 16px; padding: 18px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <span style="font-size: 13px; font-weight: 800; background: #FBEAE5; color: #C0341D; border-radius: 6px; padding: 2px 9px;">P20-02 · High · my-flow</span>
+          <h3 style="margin: 0; font-size: 16.5px; font-weight: 800;">내 Flow 수정 모델 강화 — 초안 착지 + wide 기준일 입구 + 충돌/되돌리기</h3>
+        </div>
+        <div style="margin: 10px 0 0; font-size: 13.5px; line-height: 1.7; color: #44413B;">
+          <p style="margin:0;"><strong>Route</strong> · <code>/my</code> 개인 사본 → "이사일·이름 바꾸기"(13b) · 항목 "제목·날짜·메모 수정"(13c) · @1024(36)</p>
+          <p style="margin:6px 0 0;"><strong>Problem</strong> · ① <strong>wide(1024)에서 기준일 입구가 사라진다</strong>(<code>Edit entry visible by viewport {"1024":{anchor:0}}</code>) — 큰 화면 사용자는 "이사일 바꾸기"에 도달 못 함. ② 13c overlay가 <strong>source-backed 사본만</strong> 편집 대상이라 <strong>draft 초안을 못 받는다</strong>(P20-01 선행 조건). ③ 기준일↔항목 override <strong>충돌·되돌리기</strong> 동작이 미검증.</p>
+          <p style="margin:6px 0 0;"><strong>Why now</strong> · P20-01 초안이 <strong>착지·편집될 바로 그 방</strong>이다. 초안이 도착하기 전에 이 방이 (a) 초안 원본을 받고 (b) 모든 뷰포트에서 기준일을 고칠 수 있어야 한다. <strong>P20-01과 한 묶음</strong>이다.</p>
+          <p style="margin:6px 0 0;"><strong>Evidence</strong> · README <code>Edit entry visible by viewport {"390":{anchor:2,item:1},"1024":{anchor:0,item:1}}</code> · 13b 기준일 카피 "따로 바꾼 날짜는 유지"는 있으나 충돌 캡처 없음(§5-3).</p>
+          <p style="margin:6px 0 0;"><strong>Expected</strong> · "이사일·이름 바꾸기" 입구를 <strong>wide에서도 Flow 헤더에 노출</strong>(<code>anchor ≥1 at 1024</code>) → 13c overlay가 <strong>draft 원본도 편집 대상으로 수용</strong> → 기준일 변경 시 <strong>개별 override 유지 규칙을 실제 동작 + 되돌리기</strong>로 확정(카피와 동작 일치).</p>
+          <p style="margin:6px 0 0;"><strong>Implementation</strong> · anchor edit entry의 wide 브레이크포인트 렌더 복구 → overlay 편집 대상에 draft kind 추가 → anchor 재계산 시 override 항목 skip + undo 스택.</p>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 13px; line-height: 1.65; color: #35563A; background:#EDF3EC; border-radius:8px; padding:10px 12px;"><strong>건드리면 안 되는 기준선</strong> · 기준일=전체 일정 / 항목 날짜=개별 구분 카피(13b, URL-first 27과 동일 문장) 유지 · 저장 후 편집 모델 유지(저장 전으로 당기지 않음) · 완료=체크박스 1종 · 개인 사본 overlay 스키마. <strong>Done when</strong> · <code>anchor edit entry visible ≥1 at 1024</code> · overlay가 draft 편집 지원 · 기준일↔override 충돌/되돌리기 캡처로 확인.</p>
+      </article>
+
+      <!-- P20-03 -->
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #C7A128; border-radius: 16px; padding: 18px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <span style="font-size: 13px; font-weight: 800; background: #F7F0DC; color: #8A6D1B; border-radius: 6px; padding: 2px 9px;">P20-03 · Medium · studio</span>
+          <h3 style="margin: 0; font-size: 16.5px; font-weight: 800;">스튜디오 "초안" 탭을 초안 선반으로 연결 (확장 아님, 재사용)</h3>
+        </div>
+        <div style="margin: 10px 0 0; font-size: 13.5px; line-height: 1.7; color: #44413B;">
+          <p style="margin:0;"><strong>Route</strong> · <code>/u/my-flow-studio</code> "초안" 탭(39) ↔ <code>/flows</code> candidate(30)</p>
+          <p style="margin:6px 0 0;"><strong>Problem</strong> · 스튜디오에 이미 "초안" 탭이 있고 draft 카드도 있지만(<code>draftContentCardCount 2</code>), <strong>URL-first 초안 흐름(P20-01)과 연결되어 있지 않다.</strong> 초안이 <em>어디에 쌓이고</em> 어디서 다시 열리는지가 흩어져 있다.</p>
+          <p style="margin:6px 0 0;"><strong>Why now</strong> · P20-01의 초안이 <strong>저장 전 머무를 보관함</strong>이 필요하다. 새 표면을 만들 필요 없이 <strong>기존 초안 탭을 그 선반으로 지정</strong>하면 된다 — Studio를 키우는 게 아니라 <strong>흐름에 편입</strong>.</p>
+          <p style="margin:6px 0 0;"><strong>Expected</strong> · URL-first에서 만든 draft가 <strong>스튜디오 초안 탭에 모이고</strong>, 카드에서 "초안 편집"(13c) → "내 Flow에 저장"으로 이어짐 → 초안/게시/복사본이 한 곳에서 구분됨. <strong>5번째 탭 승격·publishing/monetization 확대는 하지 않는다.</strong></p>
+          <p style="margin:6px 0 0;"><strong>Implementation</strong> · draft status Flow를 스튜디오 초안 탭 쿼리에 포함 → 카드 액션을 P20-01 편집 진입과 공유 → noindex·보조 진입 정책 유지.</p>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 13px; line-height: 1.65; color: #35563A; background:#EDF3EC; border-radius:8px; padding:10px 12px;"><strong>건드리면 안 되는 기준선</strong> · creator-profile 보조 표면·noindex(현재 사용자 스튜디오) · 4탭 밖 유지 · <code>studioEntryUnexpectedRouteCount 0</code> · 사용자 화면 금칙어 재노출 금지. <strong>Done when</strong> · URL-first draft가 스튜디오 초안 탭에 나타나 편집→저장으로 이어짐 · 스튜디오는 여전히 보조 진입.</p>
+      </article>
+
+      <!-- P20-04 -->
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #C7A128; border-radius: 16px; padding: 18px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <span style="font-size: 13px; font-weight: 800; background: #F7F0DC; color: #8A6D1B; border-radius: 6px; padding: 2px 9px;">P20-04 · Medium · public /f</span>
+          <h3 style="margin: 0; font-size: 16.5px; font-weight: 800;">공개 /f 저장 전↔후 경계 확정 — Flow 단위 유지, 항목 단위 신설 금지</h3>
+        </div>
+        <div style="margin: 10px 0 0; font-size: 13.5px; line-height: 1.7; color: #44413B;">
+          <p style="margin:0;"><strong>Route</strong> · <code>/f/[slug]</code> 워크벤치 저장 전(25) → 저장 후 <code>/my</code></p>
+          <p style="margin:6px 0 0;"><strong>Problem</strong> · 저장 <em>전</em> preview는 정직하게 닫혔지만(<code>completion-like 0</code>), <strong>저장 "후"</strong> 그 preview 체크가 실제 완료 컨트롤로 바뀌는 화면이 <strong>캡처에 없다</strong>. "Flow 단위 export/save 보강" 요청의 실제 답은 <strong>새 항목 단위 모델이 아니라</strong> 이 저장 전↔후 전환을 evidence로 닫는 것.</p>
+          <p style="margin:6px 0 0;"><strong>Why now</strong> · 공유 진입은 <strong>신규 유입의 첫 저장 화면</strong>이라 전환 경계가 명확해야 한다. P20-01 저장 후 착지와 <strong>같은 "저장 후" 화면</strong>이라 함께 검증하면 값이 크다.</p>
+          <p style="margin:6px 0 0;"><strong>Evidence</strong> · <code>public-share-cta-order.spec</code>: export=Flow 단위 secondary 1개·포맷 ≥2·항목 export-like 0, preview 체크 89개 전부 preview 라벨. 저장 후 상태는 미캡처(§5-4).</p>
+          <p style="margin:6px 0 0;"><strong>Expected</strong> · 저장 후 화면에서 preview 체크가 <strong>실제 완료 체크박스(P19-02 형태)로 활성화</strong>됨을 캡처·E2E로 확정 → 저장/내보내기 <strong>단위는 Flow 하나로 유지</strong>(항목 단위 개별 저장/내보내기 신설 금지) → 내보내기는 Flow 단위 secondary 그대로.</p>
+          <p style="margin:6px 0 0;"><strong>Implementation</strong> · 저장 후 <code>/my</code> 착지에서 해당 Flow 완료 컨트롤 활성 캡처 추가 → preview→completion 전환 E2E 1건 → 기존 Flow 단위 export 유지.</p>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 13px; line-height: 1.65; color: #35563A; background:#EDF3EC; border-radius:8px; padding:10px 12px;"><strong>건드리면 안 되는 기준선</strong> · 공유 shell · 저장/셋업 primary(<code>sticky save/setup 9 · before-primary 0</code>) · "콘텐츠 더 보기" 2차 · export Flow 단위 1개(<code>itemLevelExportLike 0</code>) · "메모 문서"(Markdown 금지) · 저장 전 preview 정직성. <strong>Done when</strong> · 저장 후 완료 컨트롤 활성이 캡처/E2E로 확인 · 항목 단위 신설 0 · Flow 단위 유지.</p>
+      </article>
+
+      <!-- P20-05 -->
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #B7B2A6; border-radius: 16px; padding: 18px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <span style="font-size: 13px; font-weight: 800; background: #F0EEE8; color: #6E6B64; border-radius: 6px; padding: 2px 9px;">P20-05 · Low · calendar(폴리시)</span>
+          <h3 style="margin: 0; font-size: 16.5px; font-weight: 800;">캘린더 월 그리드 셀 라벨 잔여 — 잘림·같은 Flow 중복·3~5 Flow</h3>
+        </div>
+        <div style="margin: 10px 0 0; font-size: 13.5px; line-height: 1.7; color: #44413B;">
+          <p style="margin:0;"><strong>Route</strong> · <code>/calendar</code> 월 그리드 셀(43)</p>
+          <p style="margin:6px 0 0;"><strong>Problem</strong> · agenda 밀도·헤더 중복은 닫혔지만(P19-01/04), <strong>월 그리드 셀 라벨</strong>은 여전히 긴 Flow명을 "컴퓨터활용능력…"으로 자르고 같은 Flow를 "이사 준비" 라벨 2개로 표시한다(<code>selectedDateGridFlowLabels: ["컴퓨터활용능력...","이사 준비","이사 준비"]</code>). distinct-group 지표(2)가 잡지 못한 그리드 레벨 사각지대.</p>
+          <p style="margin:6px 0 0;"><strong>Why now = 낮음</strong> · agenda가 정리돼 있어 <strong>실사용 지장이 작다.</strong> 핵심 흐름(P20-01/02)이 우선이고, 이건 그 뒤 폴리시. 다만 3~5 Flow로 늘면 재발할 수 있어 <strong>fixture 확장과 함께</strong> 잡는 게 효율적.</p>
+          <p style="margin:6px 0 0;"><strong>Expected</strong> · 그리드 셀을 <strong>Flow당 점 1개 + "+N"</strong>로 축약(같은 Flow 중복 라벨 제거) → 잘리는 이름 대신 <strong>안정적 초성/약칭 배지</strong> → 3~5 Flow fixture로 색·대비 검증.</p>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 13px; line-height: 1.65; color: #35563A; background:#EDF3EC; border-radius:8px; padding:10px 12px;"><strong>건드리면 안 되는 기준선</strong> · <code>same-date distinct Flow 2 · agenda grouped by Flow true · heading duplicate 0</code> 유지 · 완료 체크박스 1종 · 색약 대비. <strong>Done when</strong> · 그리드 같은 Flow 중복 라벨 0 · 이름 잘림 0(배지 토큰) · 3~5 Flow 캡처.</p>
+      </article>
+
+      <!-- P20-06 -->
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #B7B2A6; border-radius: 16px; padding: 18px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <span style="font-size: 13px; font-weight: 800; background: #F0EEE8; color: #6E6B64; border-radius: 6px; padding: 2px 9px;">P20-06 · Low · url-first/studio · spec·게이트</span>
+          <h3 style="margin: 0; font-size: 16.5px; font-weight: 800;">실제 AI 생성 slice — 지금은 spec만 (P20-01 배관 뒤에)</h3>
+        </div>
+        <div style="margin: 10px 0 0; font-size: 13.5px; line-height: 1.7; color: #44413B;">
+          <p style="margin:0;"><strong>Route</strong> · <code>/flows</code> 초안 생성 · <code>/u/*</code> 초안 탭(P20-01 위)</p>
+          <p style="margin:6px 0 0;"><strong>Problem</strong> · P20-01은 초안을 <strong>결정론적 골격</strong>으로 채운다. 진짜 가치는 <strong>URL/메모에서 초안 항목을 자동 제안</strong>하는 것이지만, 지금 열면 정직성 기준선을 위협한다.</p>
+          <p style="margin:6px 0 0;"><strong>Why now = 아직 아니다</strong> · <strong>초안→편집→저장 배관(P20-01)과 착지 방(P20-02)이 먼저</strong>다. 그게 정직하게 서기 전에 LLM을 얹으면 "실시간 생성"으로 과장될 위험 + 편집/저장이 안 받쳐준 채 생성물만 쌓인다.</p>
+          <p style="margin:6px 0 0;"><strong>Expected(이번 산출물 = spec)</strong> · 생성 slice를 <strong>"AI가 초안 항목을 제안 → 사용자가 13c overlay에서 반드시 확인/수정 → 내 Flow 저장"</strong>으로 정의 → 생성물은 항상 <strong>"초안(제안)" 라벨</strong>, 자동 실행 없음, 저장 전 사용자 편집 필수 → <strong>개방 조건: P20-01/02 완료 + 정직성 카피 재검증.</strong></p>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 13px; line-height: 1.65; color: #35563A; background:#EDF3EC; border-radius:8px; padding:10px 12px;"><strong>건드리면 안 되는 기준선</strong> · <code>implies live AI false</code>는 생성이 실재하기 전까지 유지 · 저장 전 full editor 없이 시작(초안=편집 대상) · candidate 사용자어(<code>internal hit 0</code>) · Studio 보조 표면. <strong>Done when</strong> · 생성 slice·개방 조건·정직성 규칙이 문서화 · 사용자 표면 변화 0.</p>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ===== SECTION 4 : what first ===== -->
+  <section id="decision" data-screen-label="4 무엇을 먼저" style="max-width: 1120px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #1F6A3E;">SECTION 4</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">무엇을 먼저 — 다섯 후보에 대한 판단</h2>
+    </div>
+    <p style="margin: 10px 0 0; max-width: 960px; font-size: 14.5px; color: #6E6B64;">질문에 준 다섯 후보를 <strong>핵심 흐름 기준</strong>으로 순서 매깁니다. 결론: <strong>①과 ②를 한 묶음으로 먼저</strong>(초안 배관 + 착지 방), 그다음 <strong>③④</strong>(초안 선반·저장 후 경계), <strong>⑤는 뒤로</strong>(폴리시), <strong>Studio 확장은 하지 않음</strong>(보조 유지).</p>
+
+    <div style="display: grid; gap: 12px; margin-top: 16px;">
+
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 16px 20px; border-left: 4px solid #C0341D;">
+        <div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 12px;">
+          <span style="font-size: 12.5px; font-weight: 800; background:#FBEAE5; color:#C0341D; border-radius:6px; padding:2px 9px;">1순위 (묶음)</span>
+          <h3 style="margin:0; font-size:16px; font-weight:800;">URL-first AI draft 첫 slice + My Flow 수정/편집 모델 강화</h3>
+        </div>
+        <p style="margin:8px 0 0; font-size:13.5px; line-height:1.7; color:#44413B;">둘은 <strong>같은 작업의 앞·뒤</strong>다. 초안(P20-01)이 착지·편집될 방이 13c overlay(P20-02)이고, 그 방은 지금 <strong>wide 기준일 입구가 없고 draft 원본을 못 받는다.</strong> 따로 하면 초안이 갈 곳이 없고, 방만 고치면 채울 게 없다. <strong>핵심 흐름 2단계의 유일한 빈 칸</strong>이라 P20의 등뼈. <span style="color:#C0341D;">→ <a href="#prio" style="color:#C0341D;">P20-01</a> + <a href="#prio" style="color:#C0341D;">P20-02</a></span></p>
+      </div>
+
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 16px 20px; border-left: 4px solid #C7A128;">
+        <div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 12px;">
+          <span style="font-size: 12.5px; font-weight: 800; background:#F7F0DC; color:#8A6D1B; border-radius:6px; padding:2px 9px;">2순위</span>
+          <h3 style="margin:0; font-size:16px; font-weight:800;">public /f Flow 단위 export/save 보강</h3>
+        </div>
+        <p style="margin:8px 0 0; font-size:13.5px; line-height:1.7; color:#44413B;">"보강"의 실제 답은 <strong>새 항목 단위 모델이 아니라</strong> 저장 전↔후 경계를 evidence로 닫는 것(<a href="#prio" style="color:#8A6D1B;">P20-04</a>). P20-01 "저장 후 착지"와 <strong>같은 화면</strong>이라 함께 하면 값이 크다. Flow 단위 export는 이미 정직하게 닫혀 있으니 <strong>유지가 우선.</strong></p>
+      </div>
+
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 16px 20px; border-left: 4px solid #C7A128;">
+        <div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 12px;">
+          <span style="font-size: 12.5px; font-weight: 800; background:#F7F0DC; color:#8A6D1B; border-radius:6px; padding:2px 9px;">3순위</span>
+          <h3 style="margin:0; font-size:16px; font-weight:800;">Calendar 실행 화면 추가 단순화</h3>
+        </div>
+        <p style="margin:8px 0 0; font-size:13.5px; line-height:1.7; color:#44413B;">P19-01/04로 <strong>이미 크게 단순화됐다.</strong> 남은 건 그리드 셀 라벨 폴리시(<a href="#prio" style="color:#6E6B64;">P20-05</a>)로 실사용 지장이 작아 <strong>Low</strong>. 초안 흐름이 캘린더에 실행을 늘리므로, 3~5 Flow fixture와 함께 그 <em>뒤에</em> 잡는 게 순서상 맞다.</p>
+      </div>
+
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 16px 20px; border-left: 4px solid #B7B2A6;">
+        <div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 12px;">
+          <span style="font-size: 12.5px; font-weight: 800; background:#F0EEE8; color:#6E6B64; border-radius:6px; padding:2px 9px;">하지 않음</span>
+          <h3 style="margin:0; font-size:16px; font-weight:800;">Studio/Creator 보조 표면 확장</h3>
+        </div>
+        <p style="margin:8px 0 0; font-size:13.5px; line-height:1.7; color:#44413B;"><strong>확장하지 않는다.</strong> Studio는 daily loop가 아니라 supply이고, 지금 분리·noindex가 건강하다(39). 필요한 건 확장이 아니라 <strong>기존 "초안" 탭을 P20-01 초안의 보관함으로 재사용</strong>(<a href="#prio" style="color:#8A6D1B;">P20-03</a>). 5번째 탭 승격·publishing 확대는 흐름을 흐린다.</p>
+      </div>
+
+    </div>
+
+    <div style="margin-top: 14px; background: #14432B; color: #EAF7EE; border-radius: 16px; padding: 18px 22px;">
+      <p style="margin: 0; font-size: 14px; line-height: 1.7;"><strong style="color:#9FF0B8;">순서 한 줄</strong> — <strong>① 초안 배관 + 착지 방(P20-01·02)을 한 사이클에</strong> → ② 저장 후 경계(P20-04) → ③ 초안 선반(P20-03) → ④ 캘린더 라벨 폴리시(P20-05) → ⑤ 실제 생성은 spec만(P20-06). <strong>My Flow 편집 모델은 별도 최우선이 아니라 ①의 절반</strong>이고, <strong>Studio는 키우지 않는다.</strong></p>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 5 : evidence gaps ===== -->
+  <section id="gaps" data-screen-label="5 증거 공백" style="max-width: 1120px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #1F6A3E;">SECTION 5</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">evidence가 부족한 시나리오</h2>
+    </div>
+    <p style="margin: 10px 0 0; max-width: 960px; font-size: 14.5px; color: #6E6B64;">아래는 <strong>제공된 산출물만으로는 판단할 수 없어</strong> P20 evidence 패키지에서 함께 채워야 할 공백입니다. 정상 라우트 지표는 깨끗하지만, <strong>"상태 전환"과 "실패·경계"</strong> 캡처가 얇습니다.</p>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin-top: 16px;">
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:14px; padding:15px 17px;">
+        <p style="margin:0; font-size:13px; font-weight:800; color:#C0341D;">1 · miss "미매칭" 종착</p>
+        <p style="margin:7px 0 0; font-size:13px; line-height:1.65; color:#44413B;">30은 <strong>매칭되어 승격된</strong> candidate("이미 Flow로 준비됨")를 보여준다. <strong>끝내 매칭 안 되는</strong> URL/메모가 정리본 복사 뒤 무엇으로 남는지의 캡처가 없다 — P20-01이 여는 바로 그 지점.</p>
+      </div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:14px; padding:15px 17px;">
+        <p style="margin:0; font-size:13px; font-weight:800; color:#8A6D1B;">2 · My Flow wide 기준일</p>
+        <p style="margin:7px 0 0; font-size:13px; line-height:1.65; color:#44413B;"><code>{"1024":{anchor:0}}</code>가 "wide엔 기준일 입구 없음"을 뜻하는지, 다른 곳으로 옮긴 것인지 <strong>@1024 anchor 편집 캡처가 없어</strong> 확정 불가(P20-02).</p>
+      </div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:14px; padding:15px 17px;">
+        <p style="margin:0; font-size:13px; font-weight:800; color:#8A6D1B;">3 · 기준일↔항목 충돌</p>
+        <p style="margin:7px 0 0; font-size:13px; line-height:1.65; color:#44413B;">"따로 바꾼 날짜는 유지"(13b)의 <strong>실제 충돌 동작·되돌리기</strong> 캡처 없음. 카피만으로는 동작 확정 불가.</p>
+      </div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:14px; padding:15px 17px;">
+        <p style="margin:0; font-size:13px; font-weight:800; color:#8A6D1B;">4 · 저장 후 완료 활성</p>
+        <p style="margin:7px 0 0; font-size:13px; line-height:1.65; color:#44413B;">공개 /f 저장 전 preview(25)는 있으나, <strong>저장 후 그 체크가 완료 컨트롤로 바뀌는</strong> 화면이 없음(P20-04).</p>
+      </div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:14px; padding:15px 17px;">
+        <p style="margin:0; font-size:13px; font-weight:800; color:#6E6B64;">5 · "완료 후" 상태</p>
+        <p style="margin:7px 0 0; font-size:13px; line-height:1.65; color:#44413B;">체크박스 통일은 확인됐지만(16·43), <strong>체크한 뒤</strong> 취소선·잔여 카운트 감소·"오늘 0개 남음" 상태 캡처가 없음.</p>
+      </div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:14px; padding:15px 17px;">
+        <p style="margin:0; font-size:13px; font-weight:800; color:#6E6B64;">6 · 캘린더 3~5 Flow</p>
+        <p style="margin:7px 0 0; font-size:13px; line-height:1.65; color:#44413B;">같은 날짜는 <strong>2 Flow까지만</strong> 캡처(43·44). 3~5로 늘 때 agenda 그룹·그리드 라벨이 견디는지 미검증(P20-05).</p>
+      </div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:14px; padding:15px 17px;">
+        <p style="margin:0; font-size:13px; font-weight:800; color:#6E6B64;">7 · 빈/에러/오프라인</p>
+        <p style="margin:7px 0 0; font-size:13px; line-height:1.65; color:#44413B;">내 Flow/캘린더 <strong>0개</strong> 상태, 저장 실패·잘못된 URL·네트워크 에러 등 <strong>비정상 경로</strong> 캡처가 전무.</p>
+      </div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:14px; padding:15px 17px;">
+        <p style="margin:0; font-size:13px; font-weight:800; color:#6E6B64;">8 · 접근성/키보드</p>
+        <p style="margin:7px 0 0; font-size:13px; line-height:1.65; color:#44413B;">체크박스·overlay·sticky CTA의 <strong>키보드 포커스·대비·스크린리더 라벨</strong> 근거 없음. 편집 모델이 커지는 P20에서 필요.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 6 : recommendation ===== -->
+  <section id="reco" data-screen-label="6 P20 첫 goal" style="max-width: 1120px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 6</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">P20 첫 번째 <code>/goal</code> 후보</h2>
+    </div>
+    <div style="margin-top: 16px; background: #EEF1FF; border: 1px solid #C7CFFF; border-radius: 16px; padding: 20px 22px;">
+      <p style="margin: 0; font-size: 14.5px; font-weight: 800; color: #2536C0;">추천 — P20-01 + P20-02를 한 사이클로: "miss에서 편집 가능한 초안을 만들어 내 Flow로 잇는다"</p>
+      <p style="margin: 10px 0 0; font-size: 13.5px; line-height: 1.7; color: #2A3570;">다섯 후보 중 <strong>핵심 흐름의 유일한 빈 칸</strong>이 여기다. hit→저장→실행→캘린더는 P18·P19로 매끄럽지만, <strong>준비된 Flow가 없을 때 miss가 "메모 복사"로 끝나</strong>는 지점만 남았다. 초안(P20-01)이 착지할 방(13c overlay, P20-02)이 이미 있으니 <strong>새 표면 없이</strong> 흐름만 잇는다 — 그래서 첫 <code>/goal</code>로 실행 가능하고, 값이 가장 크다. 정직성(<code>implies live AI false</code>)은 <strong>결정론적 골격으로 초안을 채우고 실제 생성은 P20-06으로 미뤄</strong> 유지한다.</p>
+      <p style="margin: 12px 0 0; font-size: 13px; line-height: 1.65; color: #2A3570;"><strong>이 <code>/goal</code>이 닫으면</strong> · 임의의 URL/메모를 가진 사용자가 <strong>앱을 떠나지 않고</strong> 초안을 손봐 실행 Flow로 만든다 → FlowMe가 "카탈로그"에서 <strong>"내 URL을 실행물로 바꾸는 도구"</strong>가 된다. 동시에 wide 기준일 입구·초안 착지·저장 후 상태 evidence 공백이 함께 닫힌다.</p>
+    </div>
+  </section>
+
+  <!-- ===== Appendix A : baselines to hold ===== -->
+  <section id="hold" data-screen-label="A 유지 기준선" style="max-width: 1120px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #1F6A3E;">APPENDIX A</span>
+      <h2 style="margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.02em;">P20에서 건드리면 안 되는 기준선</h2>
+    </div>
+    <p style="margin: 10px 0 0; max-width: 960px; font-size: 14px; color: #6E6B64;">P19가 닫은 선들. P20 작업은 이 밖에서만 움직입니다 — regression이 나면 P20 실패로 간주합니다.</p>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; margin-top: 14px;">
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:13px 16px;"><p style="margin:0; font-size:13px; line-height:1.6; color:#44413B;"><strong>IA</strong> · 4탭(홈·Flow 찾기·캘린더·내 Flow) 유지. <code>/restart</code>=release-preview, <code>/flow-lab</code>=internal-console, <code>/u/*</code>=creator-profile로 <strong>4탭 밖·noindex</strong>. nav-leak 0.</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:13px 16px;"><p style="margin:0; font-size:13px; line-height:1.6; color:#44413B;"><strong>완료</strong> · 행 왼쪽 <strong>체크박스 1종</strong>(<code>button 0·mixed 0</code>). 진행 숫자는 항상 맥락 라벨(<code>ambiguous 0</code>), 행 레벨 Flow 분수 0.</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:13px 16px;"><p style="margin:0; font-size:13px; line-height:1.6; color:#44413B;"><strong>miss 정직</strong> · "지금 바로 Flow를 만들지 않습니다" 유지, <code>implies live AI false</code>. 초안은 "제안 · 사용자가 손보는 것"으로만.</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:13px 16px;"><p style="margin:0; font-size:13px; line-height:1.6; color:#44413B;"><strong>공개 /f</strong> · 공유 shell · 저장/셋업 primary · 저장 전=preview(<code>completion-like 0</code>) · export Flow 단위 1개(<code>item-level 0</code>).</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:13px 16px;"><p style="margin:0; font-size:13px; line-height:1.6; color:#44413B;"><strong>캘린더</strong> · 날짜 우선 실행 · agenda Flow별 그룹 · 헤더 중복 0 · 모바일 저밀도.</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:13px 16px;"><p style="margin:0; font-size:13px; line-height:1.6; color:#44413B;"><strong>수정 카피</strong> · 기준일=전체 일정 재계산 / 항목 날짜=개별 유지 구분(13b, URL-first와 동일 문장). 편집은 저장 후 모델.</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:13px 16px;"><p style="margin:0; font-size:13px; line-height:1.6; color:#44413B;"><strong>금칙어</strong> · <code>P0·대기열·파이프라인·Canonical URL·handoff·source-backed·Step·Item·Markdown</code> 사용자 화면 재노출 0. export=<strong>"메모 문서"</strong>.</p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:13px 16px;"><p style="margin:0; font-size:13px; line-height:1.6; color:#44413B;"><strong>Studio</strong> · 보조 표면·noindex·보조 진입 유지. <strong>5번째 탭 승격·publishing 확대 금지.</strong></p></div>
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:12px; padding:13px 16px;"><p style="margin:0; font-size:13px; line-height:1.6; color:#44413B;"><strong>구조</strong> · 스키마(저장/실행/export)·source-backed 원본 vs 개인 사본 경계 유지 · 1024px overflow 0 · 정상 라우트 guardrail 0.</p></div>
+    </div>
+  </section>
+
+  <!-- ===== Appendix B : /goal drafts ===== -->
+  <section id="goal" data-screen-label="B goal 초안" style="max-width: 1120px; margin: 0 auto; padding: 30px 28px 56px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #1F6A3E;">APPENDIX B</span>
+      <h2 style="margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.02em;">복사용 <code>/goal</code> 초안 — P20 첫 사이클</h2>
+    </div>
+    <p style="margin: 10px 0 0; max-width: 960px; font-size: 14px; color: #6E6B64;">아래를 그대로 붙이면 P20-01+02를 한 사이클로 착수합니다. 유지 기준선과 evidence 공백 보완을 포함합니다.</p>
+    <pre style="margin: 14px 0 0; background: #1B1A17; color: #EDEAE2; border-radius: 14px; padding: 20px 22px; font-family: 'SF Mono', ui-monospace, Menlo, monospace; font-size: 12.5px; line-height: 1.75; white-space: pre-wrap; overflow-x: auto;">/goal
+D:\flowme2605\flow-mvp 기준으로 진행해줘.
+
+목표:
+Claude Design P20 첫 사이클 — URL-first 초안을 실제 실행 흐름으로 잇는다.
+/flows miss에서 준비된 Flow가 없을 때, 지금은 "초안 요청 정리본"을 복사해
+앱 밖으로 나가야 한다. 이 문을 연다:
+"miss/candidate에서 '초안으로 시작' -> 사용자의 URL·메모 + 골격을 draft로 승격
+ -> 기존 내 Flow 편집 overlay(제목·이사일/기준일·항목 날짜·메모·항목 포함/제외)에서
+    사용자가 확인·수정 -> '내 Flow에 저장'으로 실행 Flow가 됨 -> 캘린더/오늘/내보내기 반영".
+
+범위(P20-01 + P20-02 한 묶음):
+- 초안 내용은 이번 slice에서 결정론적 골격(사용자 입력 + 템플릿)으로 채운다.
+  실제 LLM 자동생성은 이번에 넣지 않는다(P20-06 spec으로 분리).
+- 새 편집 화면을 만들지 않고 기존 13c overlay를 재사용하되,
+  (a) draft 원본도 편집 대상으로 받고
+  (b) wide(1024)에서도 "이사일·이름 바꾸기" 기준일 입구를 노출한다(현재 anchor:0).
+- 기준일 변경 시 개별 항목 override 유지 규칙을 실제 동작 + 되돌리기로 확정한다.
+
+유지 기준선(regression 금지):
+- 4탭 IA / 공개 /f 공유 shell·저장 전 preview·export Flow 단위 1개
+- 완료=행 왼쪽 체크박스 1종, 진행 숫자 맥락 라벨
+- miss 정직: "지금 바로 만들지 않습니다", implies live AI = false
+- 저장/실행/export 스키마, source-backed 원본 vs 개인 사본 경계
+- 사용자 화면 금칙어(P0/대기열/파이프라인/Canonical/handoff/source-backed/Step/Item/Markdown) 재노출 0
+- Studio 5번째 탭 승격 금지, 1024px overflow 0, 정상 라우트 guardrail 0
+
+산출물(evidence 공백 보완 포함):
+- P20 evidence package: miss "미매칭" 초안 생성 -> 편집 -> 저장 경로 캡처(390/768/1024)
+- @1024 기준일 편집 입구 캡처, 기준일↔항목 override 충돌/되돌리기 캡처
+- 완료 "후" 상태(취소선·잔여 감소), 공개 /f 저장 후 완료 활성 캡처
+- markers: draftEditableBeforeSave, anchorEditVisibleAt1024, urlFirstMissDraftImpliesLiveAi:false</pre>
+    <p style="margin: 16px 0 0; font-size: 12.5px; color: #9A968C; text-wrap: pretty;">FlowMe P19 마감 판단 · P20 백로그 — GitHub main final review package(README·audit·route-evidence·screenshots 47) + 번호/AI-gate 감사 + E2E 4종(flow-mvp·url-first-user-surface·public-share-cta-order·workbench-source-density) 근거. Vercel 실행 미열람. 참조 screenshot은 <code>p19-screenshots/</code>로 복사됨.</p>
+  </section>
+</div>
+</div>
+</x-dc>
+</body>
+</html>

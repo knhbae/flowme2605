@@ -1,0 +1,85 @@
+{
+  "packageId": "2026-07-20-p25-production-review-claude-design",
+  "method": "independent_static_simulation_over_production_fetch_and_repo_evidence",
+  "observedUserSessions": 0,
+  "statuses": ["supported", "partial", "hidden", "missing", "blocked"],
+  "journeys": [
+    {
+      "id": "A", "name": "이사 준비 (역산형)", "entry": "/f/moving-d30-basic",
+      "overall": "partial",
+      "steps": {
+        "entryRoute": {"status": "missing", "note": "/f/moving-d30-basic 미검증(smoke 미포함, 홈은 /flow-maps/moving-d30 연결) — F-10"},
+        "savePrediction": {"status": "partial", "note": "scope/count는 선표시되나 경쟁 CTA 다수(F-02)"},
+        "save": {"status": "supported", "basis": "repo_evidence P25-08"},
+        "wholeFlowConfirm": {"status": "supported", "basis": "repo_evidence P25-02A"},
+        "anchorDateChange": {"status": "supported", "basis": "repo_evidence"},
+        "pinSomeDates": {"status": "supported", "basis": "repo_evidence P25-03B (override 유지 정책 카피 존재)"},
+        "completeReopen": {"status": "supported", "basis": "repo_evidence P25-05A"},
+        "exportWholeSelected": {"status": "supported", "basis": "repo_evidence P25-05B"},
+        "reuseNewAnchor": {"status": "partial", "note": "reuse는 P24 evidence, P25 재게이트 명시 없음"}
+      }
+    },
+    {
+      "id": "B", "name": "날짜 없는 차량 점검", "entry": "/f/vehicle-inspection-prep",
+      "overall": "partial",
+      "steps": {
+        "saveBefore": {"status": "partial", "note": "예시 미리보기 과거 날짜(F-01)로 예측 훼손"},
+        "undatedVisible": {"status": "supported", "basis": "repo_evidence P25-04 (내 Flow '날짜 없는 할 일' 섹션)"},
+        "myFlowExecute": {"status": "supported", "basis": "repo_evidence"},
+        "calendarPlace": {"status": "supported", "basis": "repo_evidence (선택형 '날짜 정하기' 큐)"},
+        "dateRemove": {"status": "supported", "basis": "repo_evidence (큐 복귀)"},
+        "completeReopen": {"status": "supported", "basis": "repo_evidence"},
+        "checklistVsIcs": {"status": "supported", "basis": "repo_evidence (list 포함 / ICS 제외 계약)"},
+        "whyUndatedConcept": {"status": "hidden", "note": "개념 설명 부재 — P26-05"}
+      }
+    },
+    {
+      "id": "C", "name": "월간 반복 루틴", "entry": "/f/washer-tub-clean-monthly",
+      "overall": "partial",
+      "steps": {
+        "recurrencePrediction": {"status": "supported", "basis": "repo_evidence P25-01A (canonical projection)"},
+        "save": {"status": "supported", "basis": "repo_evidence"},
+        "occurrenceList": {"status": "supported", "basis": "repo_evidence (7/8/9/10월 20일)"},
+        "occurrenceCompleteResume": {"status": "supported", "basis": "repo_evidence P25-05A (이번 회차 완료 체크 1개)"},
+        "nextOccurrence": {"status": "partial", "note": "기본 관리일 KST 어제 표시 의심(F-04, 재현 필요)"},
+        "calendarIcsParity": {"status": "supported", "basis": "repo_evidence"}
+      }
+    },
+    {
+      "id": "D", "name": "개인 메모 draft", "entry": "/flows",
+      "overall": "partial",
+      "steps": {
+        "memoSplitReview": {"status": "supported", "basis": "repo_evidence P25-01B (filler 0, 사전 include/title 검토)"},
+        "save": {"status": "supported", "basis": "repo_evidence"},
+        "addDeleteRestore": {"status": "partial", "note": "기능 존재는 자동화 증명, 발견성 미확인(F-11)"},
+        "reorder": {"status": "partial", "note": "order-rank fallback 수정 evidence만 존재, reorder UI 발견성 미확인"},
+        "dateTimeRepeat": {"status": "supported", "basis": "repo_evidence P25-03A (세부 일정)"},
+        "myFlowCalendarExport": {"status": "supported", "basis": "repo_evidence"}
+      }
+    },
+    {
+      "id": "E", "name": "다중 Flow 반복 사용자", "entry": "/my",
+      "overall": "partial",
+      "steps": {
+        "multiSave": {"status": "supported", "basis": "repo_evidence"},
+        "nowMyDoneTabs": {"status": "supported", "basis": "repo_evidence (지금/내 Flow/완료)"},
+        "wholeFlowOfOne": {"status": "supported", "basis": "repo_evidence P25-02B (rail/outline/detail)"},
+        "sameDayMultiFlowCalendar": {"status": "partial", "note": "그리드 압축은 P20 evidence, P25 밀도 Medium(F-07)"},
+        "editEntry": {"status": "partial", "note": "경로 길이 Medium(F-08)"},
+        "reopen": {"status": "supported", "basis": "repo_evidence"},
+        "selectedExport": {"status": "supported", "basis": "repo_evidence (배치 선택 → export 프리셀렉션)"}
+      }
+    },
+    {
+      "id": "F", "name": "public 첫 방문자", "entry": "/f/vehicle-inspection-prep",
+      "overall": "partial",
+      "steps": {
+        "artifactPrediction": {"status": "partial", "note": "artifact 1개 원칙은 성립, F-01 예시 날짜가 예측 훼손"},
+        "saveUnitPrediction": {"status": "partial", "note": "경쟁 CTA(F-02)로 저장 단위 혼동 여지"},
+        "exportUnitPrediction": {"status": "partial", "note": "저장 전 산출물 진입이 저장과 경쟁"},
+        "preVsPostSave": {"status": "supported", "basis": "repo_evidence (저장 전 완료 컨트롤 0)"},
+        "tabRolesAfterSave": {"status": "hidden", "note": "빈 상태 동일(F-03)"}
+      }
+    }
+  ]
+}

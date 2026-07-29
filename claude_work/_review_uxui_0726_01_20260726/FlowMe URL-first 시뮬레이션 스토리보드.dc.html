@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>FlowMe URL-first 사용자 시뮬레이션 — 실제 컨텐츠 기반 스토리보드</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <style>
+    html, body { margin: 0; padding: 0; background: #F2F1EC; }
+    * { box-sizing: border-box; }
+    .mono { font-family: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, monospace; }
+    .rail { display: flex; gap: 0; align-items: stretch; overflow-x: auto; padding-bottom: 10px; }
+    .rail::-webkit-scrollbar { height: 8px; }
+    .rail::-webkit-scrollbar-thumb { background: #D8D4CB; border-radius: 4px; }
+  </style>
+</helmet>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#1B1A17"></rect><rect x="16" y="30" width="20" height="34" rx="3" fill="none" stroke="#3654FF" stroke-width="2"></rect><rect x="40" y="30" width="20" height="34" rx="3" fill="none" stroke="#3654FF" stroke-width="2"></rect><rect x="64" y="30" width="20" height="34" rx="3" fill="none" stroke="#3654FF" stroke-width="2"></rect><text x="50" y="80" font-family="sans-serif" font-size="9" font-weight="700" fill="#F5F4EF" text-anchor="middle">storyboard</text></svg></template>
+<div style="font-family: 'Pretendard Variable', Pretendard, -apple-system, 'Segoe UI', sans-serif; color: #1B1A17; line-height: 1.6; letter-spacing: -0.01em;">
+
+  <header style="background: #1B1A17; color: #F5F4EF; padding: 52px 28px 44px;">
+    <div style="max-width: 1240px; margin: 0 auto;">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px;">
+        <span class="mono" style="display: inline-flex; align-items: center; border: 1px solid rgba(245,244,239,0.3); border-radius: 6px; padding: 4px 10px; font-size: 12px; font-weight: 700;">codex/flowme-uxui-second-loop</span>
+        <span style="font-size: 12px; font-weight: 600; color: rgba(245,244,239,0.6);">실제 seed 컨텐츠로 채운 연속 스토리보드 · 빈 와이어프레임 아님 · 코드 구현 아님</span>
+      </div>
+      <h1 style="margin: 18px 0 0; font-size: 38px; line-height: 1.2; font-weight: 800; letter-spacing: -0.02em; max-width: 960px; text-wrap: balance;">실제 컨텐츠를 넣고 장면을 이어 붙인<br>URL-first 사용자 시뮬레이션</h1>
+      <p style="margin: 16px 0 0; max-width: 840px; font-size: 15.5px; line-height: 1.7; color: rgba(245,244,239,0.78); text-wrap: pretty;">이 문서는 새 화면을 상상하지 않습니다. <span class="mono" style="font-size:13px;">lib/flow/seed-flows.ts</span> · <span class="mono" style="font-size:13px;">source-backed-my-flow.ts</span> · <span class="mono" style="font-size:13px;">curated-source-app-seed</span>의 <strong>실제 Flow·Step·출처</strong>를 패널 안에 넣고, 사용자가 URL을 붙이거나 메모를 적은 뒤 기존 Flow를 찾고·옵션을 바꾸고·export하고·My Flow/캘린더에서 실행하는 장면을 <strong>연속 스토리보드</strong>로 그립니다.</p>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px;">
+        <span style="font-size: 12.5px; font-weight: 700; background: rgba(31,106,62,0.22); color:#B8E6C6; border-radius: 999px; padding: 5px 12px;">기준선 = 캘린더/투두 앱 수준 복잡도</span>
+        <span style="font-size: 12.5px; font-weight: 700; background: rgba(54,84,255,0.24); color:#B9C4FF; border-radius: 999px; padding: 5px 12px;">4탭 IA 유지 · 홈 / Flow 찾기 / 캘린더 / 내 Flow</span>
+        <span style="font-size: 12.5px; font-weight: 700; background: rgba(185,80,0,0.22); color:#F4C48A; border-radius: 999px; padding: 5px 12px;">lookup 먼저 · AI는 miss/저품질/재생성 때만</span>
+      </div>
+    </div>
+  </header>
+
+  <nav style="position: sticky; top: 0; z-index: 50; background: rgba(242,241,236,0.92); backdrop-filter: blur(8px); border-bottom: 1px solid #DDD9D0;">
+    <div style="max-width: 1240px; margin: 0 auto; padding: 10px 28px; display: flex; flex-wrap: wrap; gap: 6px;">
+      <a href="#inv" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">컨텐츠 인벤토리</a>
+      <a href="#sa" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">A 이사 hit·중복</a>
+      <a href="#sb" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">B 자동차검사 공유</a>
+      <a href="#sc" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">C 수학 진도표</a>
+      <a href="#sd" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">D 특수 workbench</a>
+      <a href="#se" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">E memo-to-Flow</a>
+      <a href="#sf" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">F 저품질·miss</a>
+      <a href="#sg" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">G 수정·fork</a>
+      <a href="#si" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">I 옵션 전체</a>
+      <a href="#cross" style="text-decoration: none; color: #FFFFFF; background: #3654FF; border: 1px solid #3654FF; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">경계·정리</a>
+    </div>
+  </nav>
+
+  <!-- 컨텐츠 인벤토리 -->
+  <section id="inv" style="max-width: 1240px; margin: 0 auto; padding: 32px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">INVENTORY</span>
+      <h2 style="margin: 0; font-size: 27px; font-weight: 800; letter-spacing: -0.02em;">시뮬레이션에 쓰는 대표 컨텐츠 15개</h2>
+    </div>
+    <p style="margin: 10px 0 0; max-width: 900px; font-size: 14.5px; color: #6E6B64; text-wrap: pretty;">생활·이사·자동차·육아·공부·운동·행정을 섞었습니다. <span style="color:#1F6A3E; font-weight:700;">공개(routed)</span>는 실제 route로, <span style="color:#B95000; font-weight:700;">후보·검토 큐</span>는 사용자 화면에 바로 노출하지 말아야 할 이유를 함께 적었습니다. 모든 slug·출처는 repo 실데이터입니다.</p>
+
+    <div style="margin-top:18px; overflow-x:auto; border:1px solid #E7E4DD; border-radius:14px;">
+      <table style="width:100%; min-width:940px; border-collapse:collapse; font-size:12.5px; background:#fff;">
+        <thead>
+          <tr style="background:#F5F4EF; text-align:left;">
+            <th style="padding:10px 12px; font-weight:800; border-bottom:1px solid #E7E4DD;">컨텐츠</th>
+            <th style="padding:10px 12px; font-weight:800; border-bottom:1px solid #E7E4DD;">route</th>
+            <th style="padding:10px 12px; font-weight:800; border-bottom:1px solid #E7E4DD;">유형 · 목적지</th>
+            <th style="padding:10px 12px; font-weight:800; border-bottom:1px solid #E7E4DD;">노출</th>
+            <th style="padding:10px 12px; font-weight:800; border-bottom:1px solid #E7E4DD;">검증하는 화면 패턴</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid #EFEDE7; background:#FBFDFB;"><td colspan="5" style="padding:6px 12px; font-size:11px; font-weight:800; color:#1F6A3E; letter-spacing:0.03em;">공개 · 대표 (routed)</td></tr>
+          <tr style="border-bottom:1px solid #EFEDE7;"><td style="padding:9px 12px; font-weight:700;">원룸 이사 D-30 일정 지도 <span style="color:#8A857B; font-weight:500;">[필수1]</span></td><td class="mono" style="padding:9px 12px; color:#3654FF;">/flow-maps/moving-d30</td><td style="padding:9px 12px;">타임라인 · 캘린더+체크</td><td style="padding:9px 12px;"><span style="color:#1F6A3E; font-weight:700;">공개</span></td><td style="padding:9px 12px;">URL hit · 중복 재사용 · 시작일 옵션 · .ics · 얇은 수정</td></tr>
+          <tr style="border-bottom:1px solid #EFEDE7;"><td style="padding:9px 12px; font-weight:700;">중1 수학 목차 진도표 <span style="color:#8A857B; font-weight:500;">[필수3]</span></td><td class="mono" style="padding:9px 12px; color:#3654FF;">/flow-maps/middle-school-math-1</td><td style="padding:9px 12px;">진도/시트 · 날짜 없음</td><td style="padding:9px 12px;"><span style="color:#1F6A3E; font-weight:700;">공개</span></td><td style="padding:9px 12px;">캘린더 없이 쓸모 · Markdown/Sheet export 우선</td></tr>
+          <tr style="border-bottom:1px solid #EFEDE7;"><td style="padding:9px 12px; font-weight:700;">영유아 건강검진·접종 지도</td><td class="mono" style="padding:9px 12px; color:#3654FF;">/flow-maps/baby-health-schedule</td><td style="padding:9px 12px;">공식 일정 · 캘린더</td><td style="padding:9px 12px;"><span style="color:#1F6A3E; font-weight:700;">공개</span></td><td style="padding:9px 12px;">범위형 Step 1개 유지 · 의료 주의 톤</td></tr>
+          <tr style="border-bottom:1px solid #EFEDE7;"><td style="padding:9px 12px; font-weight:700;">전세 계약 사전점검</td><td class="mono" style="padding:9px 12px; color:#3654FF;">/f/jeonse-contract-precheck-docs</td><td style="padding:9px 12px;">단일 Flow · 캘린더(D-3~D+1)</td><td style="padding:9px 12px;"><span style="color:#1F6A3E; font-weight:700;">공개</span></td><td style="padding:9px 12px;">한 개짜리 baseline · 재정 주의</td></tr>
+          <tr style="border-bottom:1px solid #EFEDE7;"><td style="padding:9px 12px; font-weight:700;">오픽 2주 모의고사</td><td class="mono" style="padding:9px 12px; color:#3654FF;">/flow-maps/opic-plan-map</td><td style="padding:9px 12px;">학습 캘린더 · 반복</td><td style="padding:9px 12px;"><span style="color:#1F6A3E; font-weight:700;">공개</span></td><td style="padding:9px 12px;">XLSX 원본 → 캘린더 체크 변환 (ready_draft)</td></tr>
+
+          <tr style="border-bottom:1px solid #EFEDE7; background:#FBFDFB;"><td colspan="5" style="padding:6px 12px; font-size:11px; font-weight:800; color:#1F6A3E; letter-spacing:0.03em;">공개 · 단일 Flow (/f/[slug])</td></tr>
+          <tr style="border-bottom:1px solid #EFEDE7;"><td style="padding:9px 12px; font-weight:700;">냉장고 파먹기 주간 계획 <span style="color:#8A857B; font-weight:500;">[필수4]</span></td><td class="mono" style="padding:9px 12px; color:#3654FF;">/f/fridge-cleanout-weekly-plan</td><td style="padding:9px 12px;">시트/메모 · D-Day~D+7</td><td style="padding:9px 12px;"><span style="color:#1F6A3E; font-weight:700;">공개</span></td><td style="padding:9px 12px;">특수 workbench가 일반 detail과 같은 앱처럼 보이는지</td></tr>
+          <tr style="border-bottom:1px solid #EFEDE7;"><td style="padding:9px 12px; font-weight:700;">이유식 식단·레시피 <span style="color:#8A857B; font-weight:500;">[필수4 대안]</span></td><td class="mono" style="padding:9px 12px; color:#3654FF;">/f/baby-food-menu-recipe</td><td style="padding:9px 12px;">식단표(meal_plan) · 시트+캘린더</td><td style="padding:9px 12px;"><span style="color:#1F6A3E; font-weight:700;">공개</span></td><td style="padding:9px 12px;">시작일 → 식단표/레시피, 의료 주의</td></tr>
+          <tr style="border-bottom:1px solid #EFEDE7;"><td style="padding:9px 12px; font-weight:700;">초등학교 입학 D-30</td><td class="mono" style="padding:9px 12px; color:#3654FF;">/f/elementary-school-entry-d30</td><td style="padding:9px 12px;">타임라인 · 캘린더</td><td style="padding:9px 12px;"><span style="color:#1F6A3E; font-weight:700;">공개</span></td><td style="padding:9px 12px;">공식 확인/준비물 분리, 역산 일정</td></tr>
+          <tr style="border-bottom:1px solid #EFEDE7;"><td style="padding:9px 12px; font-weight:700;">일본 eSIM 설치</td><td class="mono" style="padding:9px 12px; color:#3654FF;">/f/japan-esim-setup</td><td style="padding:9px 12px;">체크리스트 · 메모(D-3~D-Day)</td><td style="padding:9px 12px;"><span style="color:#1F6A3E; font-weight:700;">공개</span></td><td style="padding:9px 12px;">짧은 여행 준비, 투두 복사 중심</td></tr>
+
+          <tr style="border-bottom:1px solid #EFEDE7; background:#FEFBF7;"><td colspan="5" style="padding:6px 12px; font-size:11px; font-weight:800; color:#B95000; letter-spacing:0.03em;">후보 · 검토 큐 (사용자 화면 바로 노출 금지)</td></tr>
+          <tr style="border-bottom:1px solid #EFEDE7;"><td style="padding:9px 12px; font-weight:700;">자동차검사 D-14 준비 <span style="color:#8A857B; font-weight:500;">[필수2]</span></td><td class="mono" style="padding:9px 12px; color:#B95000;">/f/vehicle-inspection-prep</td><td style="padding:9px 12px;">hybrid · 캘린더+체크</td><td style="padding:9px 12px;"><span style="color:#B95000; font-weight:700;">needs_review</span></td><td style="padding:9px 12px;">공유/앱 shell 경계 · <b>노출 전</b> 예약↔결과 gap 검토 필요</td></tr>
+          <tr style="border-bottom:1px solid #EFEDE7;"><td style="padding:9px 12px; font-weight:700;">연말정산 서류 준비</td><td class="mono" style="padding:9px 12px; color:#B95000;">/f/year-end-tax-docs</td><td style="padding:9px 12px;">시트 · 재정 민감</td><td style="padding:9px 12px;"><span style="color:#B95000; font-weight:700;">needs_review</span></td><td style="padding:9px 12px;">회사 제출 기준↔개인 공제 판단 분리 전 보류</td></tr>
+          <tr style="border-bottom:1px solid #EFEDE7;"><td style="padding:9px 12px; font-weight:700;">30일 플랭크 챌린지</td><td class="mono" style="padding:9px 12px; color:#B95000;">/f/plank-30-day-challenge</td><td style="padding:9px 12px;">타임라인 · 캘린더(30일)</td><td style="padding:9px 12px;"><span style="color:#B95000; font-weight:700;">needs_review</span></td><td style="padding:9px 12px;">효과 "보장" 표현 제거·의료 주의 확인 전 보류</td></tr>
+          <tr style="border-bottom:1px solid #EFEDE7;"><td style="padding:9px 12px; font-weight:700;">국가 건강검진 D-7</td><td class="mono" style="padding:9px 12px; color:#B95000;">/f/national-health-checkup-d7</td><td style="padding:9px 12px;">캘린더 · 의료 민감</td><td style="padding:9px 12px;"><span style="color:#B95000; font-weight:700;">needs_review</span></td><td style="padding:9px 12px;">민감 영역 수동 검토 전 대표 노출 금지</td></tr>
+          <tr style="border-bottom:1px solid #EFEDE7;"><td style="padding:9px 12px; font-weight:700;">중고차 구매 현장 체크</td><td class="mono" style="padding:9px 12px; color:#B95000;">/f/used-car-buying-check</td><td style="padding:9px 12px;">decision · 후보 비교+현장</td><td style="padding:9px 12px;"><span style="color:#B95000; font-weight:700;">검토</span></td><td style="padding:9px 12px;">돈 걸린 결정형 UX, 출처 신뢰 확인 필요</td></tr>
+          <tr><td style="padding:9px 12px; font-weight:700;">펀맘 공부 루틴(한글·미로·수학)</td><td class="mono" style="padding:9px 12px; color:#B95000;">flow-map 후보</td><td style="padding:9px 12px;">자료 루틴 · 캘린더+체크</td><td style="padding:9px 12px;"><span style="color:#B95000; font-weight:700;">import 큐</span></td><td style="padding:9px 12px;"><span class="mono" style="font-size:11px;">source_import_required</span> · 자료 보강 후 시작(park)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin:12px 0 0; font-size:12.5px; color:#8A857B; line-height:1.6;">※ <b>노출</b>은 seed 데이터의 <span class="mono" style="font-size:11px;">source_status</span> / curated <span class="mono" style="font-size:11px;">appExposure</span> 기준입니다. 후보·검토 큐 컨텐츠는 스토리보드에서 "저장 전 preview까지는 열람 가능하되 대표 카드로 승격 전"으로 다룹니다.</p>
+  </section>
+
+  <!-- SCENE A -->
+  <section id="sa" style="max-width: 1240px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:10px 12px;">
+      <span style="font-size:13px; font-weight:800; color:#1F6A3E; background:#EDF3EC; border-radius:8px; padding:3px 10px;">SCENE A</span>
+      <h2 style="margin:0; font-size:24px; font-weight:800; letter-spacing:-0.02em;">이사 — URL hit → 중복 재사용 → 저장 → 캘린더</h2>
+    </div>
+    <p style="margin:9px 0 0; max-width:900px; font-size:13.5px; color:#6E6B64; line-height:1.6;">사용자가 <b>AJD 이사 준비 체크리스트</b> 블로그 URL을 붙여넣음 → 같은 콘텐츠의 기존 Flow가 이미 있음 → 재사용. 검증: <span style="color:#1F6A3E; font-weight:700;">"AI 안 돌리고 바로"</span> 인지, 시작일 옵션, .ics, 저장 후 실행 연결.</p>
+
+    <div class="rail" style="margin-top:14px;">
+
+      <!-- A1 -->
+      <div style="flex:0 0 234px; border:2px solid #C9C6BE; border-radius:16px; background:#FBFAF7; overflow:hidden;">
+        <div style="background:#EDEBE4; padding:6px 11px; display:flex; justify-content:space-between; align-items:center;">
+          <span class="mono" style="font-size:9.5px; font-weight:700; color:#6E6B64;">/ · 홈</span>
+          <span class="mono" style="font-size:9px; font-weight:700; color:#3654FF; background:#EEF1FF; border-radius:999px; padding:1px 7px;">A1</span>
+        </div>
+        <div style="padding:11px 11px 13px;">
+          <div style="height:11px; width:78%; border-radius:3px; background:#D8D4CB;"></div>
+          <div style="margin-top:11px; border:2px dashed #3654FF; border-radius:10px; background:#EEF1FF; padding:10px;">
+            <p class="mono" style="margin:0 0 6px; font-size:9px; font-weight:700; color:#3654FF;">URL 붙여넣기</p>
+            <div style="height:28px; border-radius:7px; background:#fff; border:1px solid #C4CCF5; display:flex; align-items:center; padding:0 8px;">
+              <span class="mono" style="font-size:8.5px; color:#5A62A0; word-break:break-all; line-height:1.2;">ajd-blog.tistory.com/이사준비체크</span>
+            </div>
+            <div style="margin-top:7px; height:26px; border-radius:7px; background:#3654FF; color:#fff; font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center;">Flow로 만들기</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="flex:0 0 46px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+        <span style="font-size:17px; color:#3654FF;">→</span>
+        <span style="font-size:8.5px; font-weight:700; color:#8A857B; text-align:center; line-height:1.2;">정규화<br>+lookup</span>
+      </div>
+
+      <!-- A2 -->
+      <div style="flex:0 0 250px; border:2px solid #1F6A3E; border-radius:16px; background:#FBFAF7; overflow:hidden;">
+        <div style="background:#EDF3EC; padding:6px 11px; display:flex; justify-content:space-between; align-items:center;">
+          <span class="mono" style="font-size:9.5px; font-weight:700; color:#1F6A3E;">lookup · 중복 후보</span>
+          <span class="mono" style="font-size:9px; font-weight:700; color:#1F6A3E; background:#DCEEDF; border-radius:999px; padding:1px 7px;">A2</span>
+        </div>
+        <div style="padding:11px 11px 13px;">
+          <div style="border:1px solid #C9DFCE; border-radius:8px; background:#EDF3EC; padding:8px 9px;">
+            <p style="margin:0; font-size:9.5px; font-weight:800; color:#1F6A3E;">✓ 이미 변환된 Flow가 있어요</p>
+            <p class="mono" style="margin:4px 0 0; font-size:8px; color:#5E7A66;">같은 콘텐츠 · AI 재실행 안 함</p>
+          </div>
+          <!-- 추천 -->
+          <div style="margin-top:9px; border:1.5px solid #1F6A3E; border-radius:8px; background:#fff; padding:9px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;"><span style="font-size:8px; font-weight:800; color:#1F6A3E; background:#EDF3EC; border-radius:999px; padding:1px 6px;">추천</span><span class="mono" style="font-size:7.5px; color:#9A958B;">124명 저장</span></div>
+            <p style="margin:6px 0 0; font-size:11px; font-weight:800; line-height:1.3;">원룸 이사 D-30 일정 지도</p>
+            <p class="mono" style="margin:3px 0 0; font-size:7.5px; color:#3654FF;">/flow-maps/moving-d30</p>
+            <p style="margin:4px 0 0; font-size:8.5px; color:#8A857B;">6단계 · 캘린더+체크</p>
+          </div>
+          <!-- 다른 후보 -->
+          <div style="margin-top:6px; border:1px solid #E1DED6; border-radius:8px; background:#fff; padding:8px;">
+            <p style="margin:0; font-size:10px; font-weight:700; line-height:1.3;">이사 준비 체크리스트(단일)</p>
+            <p style="margin:3px 0 0; font-size:8px; color:#9A958B;">다른 사용자 fork · 체크리스트형</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="flex:0 0 46px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+        <span style="font-size:17px; color:#3654FF;">→</span>
+        <span style="font-size:8.5px; font-weight:700; color:#8A857B; text-align:center; line-height:1.2;">추천 선택<br>이사일 입력</span>
+      </div>
+
+      <!-- A3 -->
+      <div style="flex:0 0 246px; border:2px solid #C9C6BE; border-radius:16px; background:#FBFAF7; overflow:hidden;">
+        <div style="background:#EDEBE4; padding:6px 11px; display:flex; justify-content:space-between; align-items:center;">
+          <span class="mono" style="font-size:9.5px; font-weight:700; color:#6E6B64;">/flow-maps/moving-d30</span>
+          <span class="mono" style="font-size:9px; font-weight:700; color:#3654FF; background:#EEF1FF; border-radius:999px; padding:1px 7px;">A3</span>
+        </div>
+        <div style="padding:11px 11px 13px;">
+          <p style="margin:0; font-size:11px; font-weight:800;">원룸 이사 D-30 일정 지도</p>
+          <!-- 옵션바 -->
+          <div style="margin-top:8px; border:1px dashed #3654FF; border-radius:8px; background:#F5F7FF; padding:7px 8px;">
+            <p class="mono" style="margin:0 0 5px; font-size:8px; font-weight:700; color:#3654FF;">옵션 · 이사일</p>
+            <div style="height:22px; border-radius:6px; background:#fff; border:1px solid #C4CCF5; display:flex; align-items:center; padding:0 8px;"><span class="mono" style="font-size:9px; font-weight:700; color:#1B1A17;">2026-08-24</span></div>
+          </div>
+          <!-- steps preview -->
+          <div style="margin-top:8px; display:grid; gap:4px;">
+            <div style="display:flex; justify-content:space-between; border:1px solid #EDEBE4; border-radius:6px; background:#fff; padding:5px 7px;"><span style="font-size:8.5px; font-weight:700;">이사 방식·하자·견적</span><span class="mono" style="font-size:7.5px; color:#B95000;">D-30</span></div>
+            <div style="display:flex; justify-content:space-between; border:1px solid #EDEBE4; border-radius:6px; background:#fff; padding:5px 7px;"><span style="font-size:8.5px; font-weight:700;">주소 변경·이전 설치</span><span class="mono" style="font-size:7.5px; color:#B95000;">D-10</span></div>
+            <div style="display:flex; justify-content:space-between; border:1px solid #EDEBE4; border-radius:6px; background:#fff; padding:5px 7px;"><span style="font-size:8.5px; font-weight:700;">도시가스·최종 포장</span><span class="mono" style="font-size:7.5px; color:#B95000;">D-3</span></div>
+            <div style="display:flex; justify-content:space-between; border:1px solid #EDEBE4; border-radius:6px; background:#fff; padding:5px 7px;"><span style="font-size:8.5px; font-weight:700;">정산·전입신고</span><span class="mono" style="font-size:7.5px; color:#B95000;">D-Day</span></div>
+          </div>
+          <div style="display:flex; gap:5px; margin-top:9px;">
+            <div style="flex:1.4; height:28px; border-radius:7px; background:#3654FF; color:#fff; font-size:9.5px; font-weight:800; display:flex; align-items:center; justify-content:center;">내 Flow 저장</div>
+            <div style="flex:1; height:28px; border-radius:7px; background:#fff; border:1px solid #C9C6BE; font-size:9px; font-weight:800; color:#4A473F; display:flex; align-items:center; justify-content:center;">.ics</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="flex:0 0 46px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+        <span style="font-size:17px; color:#3654FF;">→</span>
+        <span style="font-size:8.5px; font-weight:700; color:#8A857B; text-align:center; line-height:1.2;">저장<br>(로그인)</span>
+      </div>
+
+      <!-- A4 -->
+      <div style="flex:0 0 234px; border:2px solid #C9C6BE; border-radius:16px; background:#FBFAF7; overflow:hidden;">
+        <div style="background:#EDEBE4; padding:6px 11px; display:flex; justify-content:space-between; align-items:center;">
+          <span class="mono" style="font-size:9.5px; font-weight:700; color:#6E6B64;">/my?savedMap</span>
+          <span class="mono" style="font-size:9px; font-weight:700; color:#3654FF; background:#EEF1FF; border-radius:999px; padding:1px 7px;">A4</span>
+        </div>
+        <div style="padding:11px 11px 13px;">
+          <div style="border:1px solid #C9DFCE; border-radius:8px; background:#EDF3EC; padding:8px 9px;">
+            <p style="margin:0; font-size:9.5px; font-weight:800; color:#1F6A3E;">저장했어요 · 6단계</p>
+          </div>
+          <div style="margin-top:9px; border:1px solid #E1DED6; border-radius:8px; background:#fff; padding:9px;">
+            <p style="margin:0; font-size:8.5px; font-weight:800; color:#3654FF;">다음 할 일 · 7/25 (D-30)</p>
+            <p style="margin:5px 0 0; font-size:10.5px; font-weight:700; line-height:1.3;">이사 방식 정하기 · 하자 점검</p>
+            <div style="margin-top:7px; height:22px; border-radius:6px; background:#EDEBE4; font-size:8.5px; font-weight:800; color:#4A473F; display:flex; align-items:center; justify-content:center; width:60%;">지금 할 일 열기</div>
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:2px; border-top:1px solid #E1DED6; padding:5px;">
+          <div style="text-align:center; font-size:7.5px; font-weight:700; color:#8A857B; padding:3px 0;">홈</div>
+          <div style="text-align:center; font-size:7.5px; font-weight:700; color:#8A857B; padding:3px 0;">Flow</div>
+          <div style="text-align:center; font-size:7.5px; font-weight:700; color:#8A857B; padding:3px 0;">캘린더</div>
+          <div style="text-align:center; font-size:7.5px; font-weight:800; color:#fff; background:#1B1A17; border-radius:5px; padding:3px 0;">내 Flow</div>
+        </div>
+      </div>
+
+      <div style="flex:0 0 46px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+        <span style="font-size:17px; color:#3654FF;">→</span>
+        <span style="font-size:8.5px; font-weight:700; color:#8A857B; text-align:center; line-height:1.2;">캘린더<br>탭</span>
+      </div>
+
+      <!-- A5 -->
+      <div style="flex:0 0 234px; border:2px solid #C9C6BE; border-radius:16px; background:#FBFAF7; overflow:hidden;">
+        <div style="background:#EDEBE4; padding:6px 11px; display:flex; justify-content:space-between; align-items:center;">
+          <span class="mono" style="font-size:9.5px; font-weight:700; color:#6E6B64;">/calendar</span>
+          <span class="mono" style="font-size:9px; font-weight:700; color:#3654FF; background:#EEF1FF; border-radius:999px; padding:1px 7px;">A5</span>
+        </div>
+        <div style="padding:11px 11px 13px;">
+          <p style="margin:0 0 8px; font-size:9.5px; font-weight:800;">2026년 8월</p>
+          <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:2px;">
+            <div style="height:17px; border-radius:3px; background:#F2F1EC;"></div><div style="height:17px; border-radius:3px; background:#EEF1FF; border:1px solid #C4CCF5; display:flex; align-items:center; justify-content:center;"><span class="mono" style="font-size:6px; color:#3654FF;">25</span></div><div style="height:17px; border-radius:3px; background:#F2F1EC;"></div><div style="height:17px; border-radius:3px; background:#F2F1EC;"></div><div style="height:17px; border-radius:3px; background:#EEF1FF; border:1px solid #C4CCF5;"></div><div style="height:17px; border-radius:3px; background:#F2F1EC;"></div><div style="height:17px; border-radius:3px; background:#F2F1EC;"></div>
+            <div style="height:17px; border-radius:3px; background:#F2F1EC;"></div><div style="height:17px; border-radius:3px; background:#F2F1EC;"></div><div style="height:17px; border-radius:3px; background:#EEF1FF; border:1px solid #C4CCF5;"></div><div style="height:17px; border-radius:3px; background:#F2F1EC;"></div><div style="height:17px; border-radius:3px; background:#F2F1EC;"></div><div style="height:17px; border-radius:3px; background:#F2F1EC;"></div><div style="height:17px; border-radius:3px; background:#1B1A17; display:flex; align-items:center; justify-content:center;"><span class="mono" style="font-size:6px; color:#fff;">24</span></div>
+          </div>
+          <div style="margin-top:9px; border-left:3px solid #3654FF; padding-left:8px;">
+            <p class="mono" style="margin:0; font-size:8px; color:#8A857B;">8/24 · D-Day</p>
+            <p style="margin:3px 0 0; font-size:9.5px; font-weight:700;">정산·전입신고·사진</p>
+          </div>
+          <p style="margin:9px 0 0; font-size:8px; color:#9A958B;">Google/Outlook엔 .ics로 그대로 복사</p>
+        </div>
+      </div>
+
+    </div>
+
+    <p style="margin:12px 0 0; font-size:12.5px; color:#4A473F; line-height:1.7; background:#EDF3EC; border:1px solid #C9DFCE; border-radius:10px; padding:12px 14px;"><b>이 장면이 검증하는 것.</b> ① 붙여넣기 직후 "이미 있음"이 보여 <b>AI를 안 돌린다</b>는 확신 → ② 중복 후보 중 추천 1개를 고르는 UX → ③ 이사일 하나만 넣어 D-30~D-Day 자동 배치 → ④ 저장 후 빈 화면이 아니라 "다음 할 일"(D-30) → ⑤ 같은 데이터가 캘린더/.ics로 흘러감. <span class="mono" style="font-size:11px;">source-backed-moving-d30</span>의 실제 Step 구조를 그대로 씀.</p>
+  </section>
+
+  <!-- SCENE B -->
+  <section id="sb" style="max-width: 1240px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:10px 12px;">
+      <span style="font-size:13px; font-weight:800; color:#B95000; background:#FCF3E4; border-radius:8px; padding:3px 10px;">SCENE B</span>
+      <h2 style="margin:0; font-size:24px; font-weight:800; letter-spacing:-0.02em;">자동차검사 — 공유 링크 진입 → 공유 shell ↔ 앱 shell 경계</h2>
+    </div>
+    <p style="margin:9px 0 0; max-width:900px; font-size:13.5px; color:#6E6B64; line-height:1.6;">다른 사용자가 만든 <b>자동차검사 D-14 준비</b> Flow 링크를 카톡으로 받아 진입. 검증: <span style="color:#B95000; font-weight:700;">공유 shell(하단 탭 없음)</span>과 저장 후 <span style="color:#3654FF; font-weight:700;">앱 shell(4탭)</span>의 경계, 저장 전 preview, 저장 후 첫 항목.</p>
+
+    <div style="margin-top:12px; background:#FCF3E4; border:1px solid #F0D9B4; border-radius:11px; padding:12px 15px;">
+      <p style="margin:0; font-size:12.5px; line-height:1.6; color:#8A4A12;"><b>후보 취급 주의.</b> <span class="mono" style="font-size:11px;">vehicle-inspection-prep</span>은 현재 <span class="mono" style="font-size:11px;">source_status: needs_review</span>(TS 자동차검사 기반, 예약↔결과 gap 검토 전). 그래서 <b>대표 카드로는 안 띄우되</b> 공유/직접 링크로는 저장 전 preview까지 열람 가능 — 이 경계를 화면에서 보여줍니다.</p>
+    </div>
+
+    <div class="rail" style="margin-top:14px;">
+
+      <!-- B1 -->
+      <div style="flex:0 0 250px; border:2px solid #B95000; border-radius:16px; background:#FBFAF7; overflow:hidden;">
+        <div style="background:#FCF3E4; padding:6px 11px; display:flex; justify-content:space-between; align-items:center;">
+          <span class="mono" style="font-size:9.5px; font-weight:700; color:#B95000;">공유 shell · 하단 탭 없음</span>
+          <span class="mono" style="font-size:9px; font-weight:700; color:#B95000; background:#F6E3C6; border-radius:999px; padding:1px 7px;">B1</span>
+        </div>
+        <div style="padding:11px 11px 15px;">
+          <div style="display:flex; align-items:center; gap:5px; margin-bottom:8px;"><span style="font-size:10px; font-weight:800;">FLOW</span><span class="mono" style="font-size:7.5px; color:#9A958B;">· 공유받은 계획</span></div>
+          <p style="margin:0; font-size:11px; font-weight:800; line-height:1.3;">자동차검사 D-14 준비</p>
+          <p class="mono" style="margin:3px 0 0; font-size:7.5px; color:#9A958B;">출처: TS 한국교통안전공단</p>
+          <div style="margin-top:8px; border:1px dashed #B95000; border-radius:8px; background:#FEF8EF; padding:7px 8px;">
+            <p class="mono" style="margin:0 0 5px; font-size:8px; font-weight:700; color:#B95000;">검사 예정일</p>
+            <div style="height:22px; border-radius:6px; background:#fff; border:1px solid #E7CDA0; display:flex; align-items:center; padding:0 8px;"><span class="mono" style="font-size:9px; font-weight:700;">2026-07-30</span></div>
+          </div>
+          <div style="margin-top:8px; display:grid; gap:4px;">
+            <div style="display:flex; justify-content:space-between; border:1px solid #EDEBE4; border-radius:6px; background:#fff; padding:5px 7px;"><span style="font-size:8.5px; font-weight:700;">검사 예약·준비 서류</span><span class="mono" style="font-size:7.5px; color:#B95000;">D-14</span></div>
+            <div style="display:flex; justify-content:space-between; border:1px solid #EDEBE4; border-radius:6px; background:#fff; padding:5px 7px;"><span style="font-size:8.5px; font-weight:700;">검사 당일 방문</span><span class="mono" style="font-size:7.5px; color:#B95000;">D-Day</span></div>
+            <div style="display:flex; justify-content:space-between; border:1px solid #EDEBE4; border-radius:6px; background:#fff; padding:5px 7px;"><span style="font-size:8.5px; font-weight:700;">결과표·후속 정비 메모</span><span class="mono" style="font-size:7.5px; color:#B95000;">D+1</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="flex:0 0 52px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+        <span style="font-size:17px; color:#3654FF;">→</span>
+        <span style="font-size:8.5px; font-weight:700; color:#8A857B; text-align:center; line-height:1.2;">저장하려면<br>로그인</span>
+      </div>
+
+      <!-- B2 -->
+      <div style="flex:0 0 226px; border:2px solid #C9C6BE; border-radius:16px; background:#FBFAF7; overflow:hidden;">
+        <div style="background:#EDEBE4; padding:6px 11px; display:flex; justify-content:space-between; align-items:center;">
+          <span class="mono" style="font-size:9.5px; font-weight:700; color:#6E6B64;">저장 경계</span>
+          <span class="mono" style="font-size:9px; font-weight:700; color:#3654FF; background:#EEF1FF; border-radius:999px; padding:1px 7px;">B2</span>
+        </div>
+        <div style="padding:14px 12px;">
+          <div style="border:1px solid #E1DED6; border-radius:9px; background:#fff; padding:12px;">
+            <p style="margin:0; font-size:11px; font-weight:800; line-height:1.35;">이 계획을 계속 쓰려면 저장할까요?</p>
+            <p style="margin:7px 0 0; font-size:9px; color:#6E6B64; line-height:1.5;">저장하면 캘린더·체크로 이어지고, <b>내 Flow</b>에서 계속 실행할 수 있어요.</p>
+            <div style="margin-top:11px; height:30px; border-radius:7px; background:#3654FF; color:#fff; font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center;">로그인하고 저장</div>
+            <div style="margin-top:6px; height:28px; border-radius:7px; background:#fff; border:1px solid #C9C6BE; font-size:9.5px; font-weight:800; color:#4A473F; display:flex; align-items:center; justify-content:center;">먼저 .ics만 받기</div>
+            <p style="margin:8px 0 0; font-size:8px; color:#9A958B; text-align:center; line-height:1.4;">비로그인도 .ics 다운로드·복사는 가능</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="flex:0 0 52px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+        <span style="font-size:17px; color:#3654FF;">→</span>
+        <span style="font-size:8.5px; font-weight:700; color:#8A857B; text-align:center; line-height:1.2;">저장 →<br>앱 shell</span>
+      </div>
+
+      <!-- B3 -->
+      <div style="flex:0 0 234px; border:2px solid #C9C6BE; border-radius:16px; background:#FBFAF7; overflow:hidden;">
+        <div style="background:#EDEBE4; padding:6px 11px; display:flex; justify-content:space-between; align-items:center;">
+          <span class="mono" style="font-size:9.5px; font-weight:700; color:#6E6B64;">/my · 앱 shell(4탭)</span>
+          <span class="mono" style="font-size:9px; font-weight:700; color:#3654FF; background:#EEF1FF; border-radius:999px; padding:1px 7px;">B3</span>
+        </div>
+        <div style="padding:11px 11px 13px;">
+          <div style="border:1px solid #C9DFCE; border-radius:8px; background:#EDF3EC; padding:8px 9px;">
+            <p style="margin:0; font-size:9.5px; font-weight:800; color:#1F6A3E;">저장 완료 · 내 계획으로</p>
+          </div>
+          <div style="margin-top:9px; border:1px solid #E1DED6; border-radius:8px; background:#fff; padding:9px;">
+            <p style="margin:0; font-size:8.5px; font-weight:800; color:#3654FF;">첫 항목 · 7/16 (D-14)</p>
+            <p style="margin:5px 0 0; font-size:10.5px; font-weight:700; line-height:1.3;">검사 예약하고 준비 서류 챙기기</p>
+            <div style="margin-top:7px; display:flex; gap:5px; align-items:center;"><span style="font-size:8px; color:#B7B2A8;">□</span><span style="font-size:8px; color:#8A857B;">자동차등록증·보험 확인</span></div>
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:2px; border-top:1px solid #E1DED6; padding:5px;">
+          <div style="text-align:center; font-size:7.5px; font-weight:700; color:#8A857B; padding:3px 0;">홈</div>
+          <div style="text-align:center; font-size:7.5px; font-weight:700; color:#8A857B; padding:3px 0;">Flow</div>
+          <div style="text-align:center; font-size:7.5px; font-weight:700; color:#8A857B; padding:3px 0;">캘린더</div>
+          <div style="text-align:center; font-size:7.5px; font-weight:800; color:#fff; background:#1B1A17; border-radius:5px; padding:3px 0;">내 Flow</div>
+        </div>
+      </div>
+
+    </div>
+
+    <p style="margin:12px 0 0; font-size:12.5px; color:#4A473F; line-height:1.7; background:#FCF3E4; border:1px solid #F0D9B4; border-radius:10px; padding:12px 14px;"><b>이 장면이 검증하는 것.</b> 공유 링크는 <b>탭이 없는 가벼운 공유 shell</b>로 열려 "저장 전 preview + .ics 받기"까지 비로그인으로 가능 → 저장 순간에만 로그인 → 저장 후 <b>4탭 앱 shell(/my)</b>로 들어와 첫 항목(D-14)부터 실행. 후보(needs_review)라 대표 카드엔 안 뜨지만 공유 경로는 살아 있음.</p>
+  </section>
+
+  <!-- SCENE C -->
+  <section id="sc" style="max-width: 1240px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:10px 12px;">
+      <span style="font-size:13px; font-weight:800; color:#1F6A3E; background:#EDF3EC; border-radius:8px; padding:3px 10px;">SCENE C</span>
+      <h2 style="margin:0; font-size:24px; font-weight:800; letter-spacing:-0.02em;">중1 수학 진도표 — 날짜 없이 저장 → 진도/Markdown·Sheet</h2>
+    </div>
+    <p style="margin:9px 0 0; max-width:900px; font-size:13.5px; color:#6E6B64; line-height:1.6;">사용자가 날짜 없이 저장해 단원별 진도표로 씀. 검증: <span style="color:#1F6A3E; font-weight:700;">캘린더가 없어도 Flow가 쓸모 있는 구조</span>인지, Markdown/Sheet export 우선순위. 원문 목차 row를 <b>Step=단원, Item=하위 개념</b>으로 보존(코칭 과제 지어내지 않음).</p>
+
+    <div class="rail" style="margin-top:14px;">
+
+      <!-- C1 -->
+      <div style="flex:0 0 246px; border:2px solid #C9C6BE; border-radius:16px; background:#FBFAF7; overflow:hidden;">
+        <div style="background:#EDEBE4; padding:6px 11px; display:flex; justify-content:space-between; align-items:center;">
+          <span class="mono" style="font-size:9px; font-weight:700; color:#6E6B64;">/flow-maps/middle-school-math-1</span>
+          <span class="mono" style="font-size:9px; font-weight:700; color:#3654FF; background:#EEF1FF; border-radius:999px; padding:1px 6px;">C1</span>
+        </div>
+        <div style="padding:11px 11px 13px;">
+          <div style="display:flex; align-items:center; gap:5px;"><p style="margin:0; font-size:11px; font-weight:800;">중1 수학 목차 진도표</p></div>
+          <span style="display:inline-block; margin-top:6px; font-size:8px; font-weight:800; color:#4A473F; background:#EDEBE4; border-radius:999px; padding:2px 8px;">날짜 입력 없음</span>
+          <div style="margin-top:8px; display:grid; gap:4px;">
+            <div style="border:1px solid #EDEBE4; border-radius:6px; background:#fff; padding:6px 7px;"><p style="margin:0; font-size:9px; font-weight:800;">1. 소인수분해</p><p style="margin:2px 0 0; font-size:7.5px; color:#8A857B;">거듭제곱 · 소인수분해 · 최대공약수</p></div>
+            <div style="border:1px solid #EDEBE4; border-radius:6px; background:#fff; padding:6px 7px;"><p style="margin:0; font-size:9px; font-weight:800;">2. 정수와 유리수</p><p style="margin:2px 0 0; font-size:7.5px; color:#8A857B;">절댓값 · 대소 · 사칙계산</p></div>
+            <div style="border:1px solid #EDEBE4; border-radius:6px; background:#fff; padding:6px 7px;"><p style="margin:0; font-size:9px; font-weight:800;">3. 문자와 식</p><p style="margin:2px 0 0; font-size:7.5px; color:#8A857B;">문자 사용 · 일차식 계산</p></div>
+            <div style="border:1px dashed #D8D4CB; border-radius:6px; background:#FAFAF8; padding:5px 7px; text-align:center;"><p style="margin:0; font-size:7.5px; color:#9A958B;">… 8단원까지</p></div>
+          </div>
+          <div style="margin-top:9px; height:28px; border-radius:7px; background:#3654FF; color:#fff; font-size:9.5px; font-weight:800; display:flex; align-items:center; justify-content:center;">날짜 없이 저장</div>
+        </div>
+      </div>
+
+      <div style="flex:0 0 48px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+        <span style="font-size:17px; color:#3654FF;">→</span>
+        <span style="font-size:8.5px; font-weight:700; color:#8A857B; text-align:center; line-height:1.2;">저장<br>(날짜X)</span>
+      </div>
+
+      <!-- C2 -->
+      <div style="flex:0 0 234px; border:2px solid #C9C6BE; border-radius:16px; background:#FBFAF7; overflow:hidden;">
+        <div style="background:#EDEBE4; padding:6px 11px; display:flex; justify-content:space-between; align-items:center;">
+          <span class="mono" style="font-size:9.5px; font-weight:700; color:#6E6B64;">/my · Flow 탭</span>
+          <span class="mono" style="font-size:9px; font-weight:700; color:#3654FF; background:#EEF1FF; border-radius:999px; padding:1px 6px;">C2</span>
+        </div>
+        <div style="padding:11px 11px 13px;">
+          <div style="display:inline-flex; gap:3px; background:#EDEBE4; border-radius:7px; padding:2px;">
+            <div style="font-size:8.5px; font-weight:700; color:#8A857B; padding:3px 10px;">오늘</div>
+            <div style="font-size:8.5px; font-weight:800; color:#fff; background:#1B1A17; border-radius:5px; padding:3px 10px;">Flow</div>
+          </div>
+          <div style="margin-top:9px; border:1px solid #E1DED6; border-radius:8px; background:#fff; padding:9px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;"><p style="margin:0; font-size:10px; font-weight:800;">중1 수학 진도표</p><span class="mono" style="font-size:8px; color:#9A958B;">0/8</span></div>
+            <div style="height:5px; border-radius:3px; background:#E4E1D9; margin-top:6px;"><div style="height:5px; width:6%; border-radius:3px; background:#3654FF;"></div></div>
+            <div style="margin-top:8px; border-top:1px solid #F0EEE8; padding-top:7px;">
+              <p style="margin:0; font-size:8.5px; font-weight:800; color:#3654FF;">다음 학습</p>
+              <p style="margin:3px 0 0; font-size:9.5px; font-weight:700;">1. 소인수분해</p>
+              <div style="margin-top:5px; display:grid; gap:3px;">
+                <div style="display:flex; gap:5px; align-items:center;"><span style="font-size:8px; color:#B7B2A8;">□</span><span style="font-size:8px; color:#6E6B64;">거듭제곱 확인</span></div>
+                <div style="display:flex; gap:5px; align-items:center;"><span style="font-size:8px; color:#B7B2A8;">□</span><span style="font-size:8px; color:#6E6B64;">소인수분해 연습</span></div>
+              </div>
+            </div>
+          </div>
+          <p style="margin:8px 0 0; font-size:8px; color:#9A958B;">캘린더 탭엔 아무 것도 안 뜸 — 정상(날짜 없음)</p>
+        </div>
+      </div>
+
+      <div style="flex:0 0 48px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+        <span style="font-size:17px; color:#3654FF;">→</span>
+        <span style="font-size:8.5px; font-weight:700; color:#8A857B; text-align:center; line-height:1.2;">내 도구로<br>옮기기</span>
+      </div>
+
+      <!-- C3 -->
+      <div style="flex:0 0 238px; border:2px solid #C9C6BE; border-radius:16px; background:#FBFAF7; overflow:hidden;">
+        <div style="background:#EDEBE4; padding:6px 11px; display:flex; justify-content:space-between; align-items:center;">
+          <span class="mono" style="font-size:9.5px; font-weight:700; color:#6E6B64;">export · 진도표</span>
+          <span class="mono" style="font-size:9px; font-weight:700; color:#3654FF; background:#EEF1FF; border-radius:999px; padding:1px 6px;">C3</span>
+        </div>
+        <div style="padding:11px 11px 13px;">
+          <p style="margin:0; font-size:9.5px; font-weight:800;">이 진도표에 맞는 목적지</p>
+          <div style="margin-top:8px; display:grid; gap:5px;">
+            <div style="display:flex; align-items:center; gap:8px; border:1.5px solid #3654FF; border-radius:8px; background:#EEF1FF; padding:7px 9px;"><span style="font-size:11px;">📝</span><span style="flex:1; font-size:9.5px; font-weight:800;">마크다운·옵시디안</span><span style="font-size:8px; font-weight:800; color:#3654FF;">복사</span></div>
+            <div style="display:flex; align-items:center; gap:8px; border:1.5px solid #3654FF; border-radius:8px; background:#EEF1FF; padding:7px 9px;"><span style="font-size:11px;">▦</span><span style="flex:1; font-size:9.5px; font-weight:800;">시트·CSV</span><span style="font-size:8px; font-weight:800; color:#3654FF;">다운로드</span></div>
+            <div style="display:flex; align-items:center; gap:8px; border:1px solid #E1DED6; border-radius:8px; background:#F7F6F2; padding:7px 9px; opacity:0.55;"><span style="font-size:11px;">📅</span><span style="flex:1; font-size:9.5px; font-weight:700; color:#8A857B;">캘린더(.ics)</span><span style="font-size:7.5px; color:#9A958B;">날짜 없음</span></div>
+          </div>
+          <div style="margin-top:9px; border:1px solid #EDEBE4; border-radius:7px; background:#fff; padding:7px 8px;">
+            <p class="mono" style="margin:0; font-size:7.5px; color:#8A857B;">## 1. 소인수분해</p>
+            <p class="mono" style="margin:2px 0 0; font-size:7.5px; color:#8A857B;">- [ ] 거듭제곱 확인</p>
+            <p class="mono" style="margin:1px 0 0; font-size:7.5px; color:#8A857B;">- [ ] 소인수분해 연습</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <p style="margin:12px 0 0; font-size:12.5px; color:#4A473F; line-height:1.7; background:#EDF3EC; border:1px solid #C9DFCE; border-radius:10px; padding:12px 14px;"><b>이 장면이 검증하는 것.</b> 날짜가 없어도 <b>진행률 있는 진도표</b>로 바로 쓸모가 있고, 캘린더 탭이 비어 있는 게 오류가 아니라 정상임을 보여줌. export 패널이 <b>목적지를 콘텐츠에 맞게 정렬</b>(마크다운·시트 강조, 캘린더 비활성) — 같은 export UI가 콘텐츠 유형에 따라 다르게 안내됨.</p>
+  </section>
+
+  <!-- SCENE D -->
+  <section id="sd" style="max-width: 1240px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:10px 12px;">
+      <span style="font-size:13px; font-weight:800; color:#1F6A3E; background:#EDF3EC; border-radius:8px; padding:3px 10px;">SCENE D</span>
+      <h2 style="margin:0; font-size:24px; font-weight:800; letter-spacing:-0.02em;">특수 workbench — 냉장고 파먹기, 시트형 산출물이 같은 앱처럼</h2>
+    </div>
+    <p style="margin:9px 0 0; max-width:900px; font-size:13.5px; color:#6E6B64; line-height:1.6;">시작일을 넣고 <b>냉장고 파먹기 주간 계획</b>의 재고 소진 시트를 확인. 검증: <span style="color:#1F6A3E; font-weight:700;">일반 Flow detail과 특수 workbench가 같은 앱처럼 보이는지</span>, Sheet/CSV 중심 export. 실제 Step: D-Day 냉장고 지도 → D+1/D+3/D+5 소진 → D+7 장보기 전.</p>
+
+    <div class="rail" style="margin-top:14px;">
+
+      <!-- D1 -->
+      <div style="flex:0 0 240px; border:2px solid #C9C6BE; border-radius:16px; background:#FBFAF7; overflow:hidden;">
+        <div style="background:#EDEBE4; padding:6px 11px; display:flex; justify-content:space-between; align-items:center;">
+          <span class="mono" style="font-size:8.5px; font-weight:700; color:#6E6B64;">/f/fridge-cleanout-weekly-plan</span>
+          <span class="mono" style="font-size:9px; font-weight:700; color:#3654FF; background:#EEF1FF; border-radius:999px; padding:1px 6px;">D1</span>
+        </div>
+        <div style="padding:11px 11px 13px;">
+          <p style="margin:0; font-size:11px; font-weight:800;">냉장고 파먹기 주간 계획</p>
+          <div style="margin-top:8px; border:1px dashed #3654FF; border-radius:8px; background:#F5F7FF; padding:7px 8px;">
+            <p class="mono" style="margin:0 0 5px; font-size:8px; font-weight:700; color:#3654FF;">시작일</p>
+            <div style="height:22px; border-radius:6px; background:#fff; border:1px solid #C4CCF5; display:flex; align-items:center; padding:0 8px;"><span class="mono" style="font-size:9px; font-weight:700;">2026-07-06 (월)</span></div>
+          </div>
+          <div style="margin-top:8px; border:1px solid #EDEBE4; border-radius:7px; background:#fff; padding:8px;">
+            <p style="margin:0; font-size:8.5px; font-weight:800; color:#3654FF;">D-Day · 냉장고 지도</p>
+            <div style="margin-top:5px; display:grid; gap:3px;">
+              <div style="display:flex; gap:5px; align-items:center;"><span style="font-size:8px; color:#B7B2A8;">□</span><span style="font-size:8px; color:#6E6B64;">우선 소진 재료 3개 고르기</span></div>
+              <div style="display:flex; gap:5px; align-items:center;"><span style="font-size:8px; color:#B7B2A8;">□</span><span style="font-size:8px; color:#6E6B64;">메인 재료·메뉴 묶기</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="flex:0 0 48px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+        <span style="font-size:17px; color:#3654FF;">→</span>
+        <span style="font-size:8.5px; font-weight:700; color:#8A857B; text-align:center; line-height:1.2;">시작일<br>입력</span>
+      </div>
+
+      <!-- D2 -->
+      <div style="flex:0 0 252px; border:2px solid #C9C6BE; border-radius:16px; background:#FBFAF7; overflow:hidden;">
+        <div style="background:#EDEBE4; padding:6px 11px; display:flex; justify-content:space-between; align-items:center;">
+          <span class="mono" style="font-size:9.5px; font-weight:700; color:#6E6B64;">workbench = 일반 detail 톤</span>
+          <span class="mono" style="font-size:9px; font-weight:700; color:#3654FF; background:#EEF1FF; border-radius:999px; padding:1px 6px;">D2</span>
+        </div>
+        <div style="padding:11px 11px 13px;">
+          <p style="margin:0; font-size:9.5px; font-weight:800;">이번 주 재고 소진표</p>
+          <div style="margin-top:7px; border:1px solid #EDEBE4; border-radius:7px; overflow:hidden;">
+            <div style="display:grid; grid-template-columns:38px 1fr 38px; background:#F5F4EF; border-bottom:1px solid #EDEBE4;"><span class="mono" style="font-size:7px; font-weight:800; color:#8A857B; padding:4px 6px;">일자</span><span class="mono" style="font-size:7px; font-weight:800; color:#8A857B; padding:4px 6px;">할 일</span><span class="mono" style="font-size:7px; font-weight:800; color:#8A857B; padding:4px 6px;">상태</span></div>
+            <div style="display:grid; grid-template-columns:38px 1fr 38px; border-bottom:1px solid #F0EEE8;"><span class="mono" style="font-size:7px; color:#B95000; padding:4px 6px;">D+1</span><span style="font-size:8px; padding:4px 6px;">신선 재료 먼저</span><span style="font-size:8px; color:#B7B2A8; padding:4px 6px;">□</span></div>
+            <div style="display:grid; grid-template-columns:38px 1fr 38px; border-bottom:1px solid #F0EEE8;"><span class="mono" style="font-size:7px; color:#B95000; padding:4px 6px;">D+3</span><span style="font-size:8px; padding:4px 6px;">남은 요리 변형</span><span style="font-size:8px; color:#B7B2A8; padding:4px 6px;">□</span></div>
+            <div style="display:grid; grid-template-columns:38px 1fr 38px; border-bottom:1px solid #F0EEE8;"><span class="mono" style="font-size:7px; color:#B95000; padding:4px 6px;">D+5</span><span style="font-size:8px; padding:4px 6px;">냉동실·기본 재료</span><span style="font-size:8px; color:#B7B2A8; padding:4px 6px;">□</span></div>
+            <div style="display:grid; grid-template-columns:38px 1fr 38px;"><span class="mono" style="font-size:7px; color:#B95000; padding:4px 6px;">D+7</span><span style="font-size:8px; padding:4px 6px;">장보기 전 처리</span><span style="font-size:8px; color:#B7B2A8; padding:4px 6px;">□</span></div>
+          </div>
+          <p style="margin:8px 0 0; font-size:8px; color:#9A958B;">특수 산출물이지만 카드·체크·앱 프레임은 동일</p>
+        </div>
+      </div>
+
+      <div style="flex:0 0 48px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+        <span style="font-size:17px; color:#3654FF;">→</span>
+        <span style="font-size:8.5px; font-weight:700; color:#8A857B; text-align:center; line-height:1.2;">내 도구로<br>옮기기</span>
+      </div>
+
+      <!-- D3 -->
+      <div style="flex:0 0 232px; border:2px solid #C9C6BE; border-radius:16px; background:#FBFAF7; overflow:hidden;">
+        <div style="background:#EDEBE4; padding:6px 11px; display:flex; justify-content:space-between; align-items:center;">
+          <span class="mono" style="font-size:9.5px; font-weight:700; color:#6E6B64;">export · 시트 우선</span>
+          <span class="mono" style="font-size:9px; font-weight:700; color:#3654FF; background:#EEF1FF; border-radius:999px; padding:1px 6px;">D3</span>
+        </div>
+        <div style="padding:11px 11px 13px;">
+          <div style="display:grid; gap:5px;">
+            <div style="display:flex; align-items:center; gap:8px; border:1.5px solid #3654FF; border-radius:8px; background:#EEF1FF; padding:7px 9px;"><span style="font-size:11px;">▦</span><span style="flex:1; font-size:9.5px; font-weight:800;">시트·CSV / 엑셀</span><span style="font-size:8px; font-weight:800; color:#3654FF;">다운로드</span></div>
+            <div style="display:flex; align-items:center; gap:8px; border:1px solid #E1DED6; border-radius:8px; background:#fff; padding:7px 9px;"><span style="font-size:11px;">📝</span><span style="flex:1; font-size:9.5px; font-weight:700;">마크다운</span><span style="font-size:8px; font-weight:800; color:#3654FF;">복사</span></div>
+            <div style="display:flex; align-items:center; gap:8px; border:1px solid #E1DED6; border-radius:8px; background:#fff; padding:7px 9px;"><span style="font-size:11px;">✓</span><span style="flex:1; font-size:9.5px; font-weight:700;">투두 복사</span><span style="font-size:8px; font-weight:800; color:#3654FF;">복사</span></div>
+          </div>
+          <div style="margin-top:9px; border:1px solid #EDEBE4; border-radius:7px; background:#fff; padding:7px 8px;">
+            <p class="mono" style="margin:0; font-size:7px; color:#8A857B;">일자,할 일,상태</p>
+            <p class="mono" style="margin:2px 0 0; font-size:7px; color:#8A857B;">D+1,신선 재료 먼저,</p>
+            <p class="mono" style="margin:1px 0 0; font-size:7px; color:#8A857B;">D+3,남은 요리 변형,</p>
+          </div>
+          <p style="margin:7px 0 0; font-size:8px; color:#9A958B;">Excel/Sheets 사용자가 "복사해 쓸 만" 기준</p>
+        </div>
+      </div>
+
+    </div>
+
+    <p style="margin:12px 0 0; font-size:12.5px; color:#4A473F; line-height:1.7; background:#EDF3EC; border:1px solid #C9DFCE; border-radius:10px; padding:12px 14px;"><b>이 장면이 검증하는 것.</b> 시트형 특수 산출물도 <b>같은 카드·체크·앱 프레임</b>을 써서 "다른 앱에 들어온 느낌"을 주지 않음. export는 시트/CSV를 맨 위로 올려 Excel·Sheets 사용자가 <b>그대로 복사해 쓸 품질</b>인지 확인. (이유식 <span class="mono" style="font-size:11px;">baby-food-menu-recipe</span>도 같은 패턴 — 식단표+레시피 시트.)</p>
+  </section>
+
+  <!-- SCENE E -->
+  <section id="se" style="max-width: 1240px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:10px 12px;">
+      <span style="font-size:13px; font-weight:800; color:#3654FF; background:#EEF1FF; border-radius:8px; padding:3px 10px;">SCENE E</span>
+      <h2 style="margin:0; font-size:24px; font-weight:800; letter-spacing:-0.02em;">memo-to-Flow — 메모장에서 온 계획, 같은 모델로 수렴</h2>
+    </div>
+    <p style="margin:9px 0 0; max-width:900px; font-size:13.5px; color:#6E6B64; line-height:1.6;">URL이 없는 <b>secondary 진입</b>. 사용자가 메모장처럼 적으면 초안으로 정리. 검증: <span style="color:#3654FF; font-weight:700;">private draft</span>, "원문 URL 없음" trust 표시, 기존 이사 Flow 추천, 그리고 URL 경로와 <b>같은 export/My Flow 구조로 수렴</b>.</p>
+
+    <div class="rail" style="margin-top:14px;">
+
+      <!-- E1 -->
+      <div style="flex:0 0 250px; border:2px solid #C9C6BE; border-radius:16px; background:#FBFAF7; overflow:hidden;">
+        <div style="background:#EDEBE4; padding:6px 11px; display:flex; justify-content:space-between; align-items:center;">
+          <span class="mono" style="font-size:9.5px; font-weight:700; color:#6E6B64;">/flows/new · 직접 쓰기</span>
+          <span class="mono" style="font-size:9px; font-weight:700; color:#3654FF; background:#EEF1FF; border-radius:999px; padding:1px 6px;">E1</span>
+        </div>
+        <div style="padding:11px 11px 13px;">
+          <div style="display:flex; gap:3px; background:#EDEBE4; border-radius:7px; padding:2px; margin-bottom:9px;">
+            <div style="flex:1; text-align:center; font-size:8.5px; font-weight:700; color:#8A857B; padding:3px 0;">링크</div>
+            <div style="flex:1; text-align:center; font-size:8.5px; font-weight:800; color:#fff; background:#1B1A17; border-radius:5px; padding:3px 0;">직접 쓰기</div>
+          </div>
+          <div style="border:2px dashed #3654FF; border-radius:9px; background:#F5F7FF; padding:9px; min-height:118px;">
+            <p style="margin:0; font-size:8.5px; color:#3A3A6A; line-height:1.55;">8월 말 이사 예정. 이번 주에는 집 하자 점검, 이사업체 견적, 관리사무소 연락. 다음 주에는 전입신고 준비랑 주소 변경. 체크리스트랑 캘린더로 정리하고 싶음.</p>
+          </div>
+          <div style="display:flex; gap:5px; margin-top:9px;">
+            <div style="flex:1.3; height:28px; border-radius:7px; background:#3654FF; color:#fff; font-size:9.5px; font-weight:800; display:flex; align-items:center; justify-content:center;">정리하기</div>
+            <div style="flex:1; height:28px; border-radius:7px; background:#fff; border:1px solid #C9C6BE; font-size:8.5px; font-weight:800; color:#8A857B; display:flex; align-items:center; justify-content:center;">그대로 저장</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="flex:0 0 48px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+        <span style="font-size:17px; color:#3654FF;">→</span>
+        <span style="font-size:8.5px; font-weight:700; color:#8A857B; text-align:center; line-height:1.2;">정리<br>(선택 AI)</span>
+      </div>
+
+      <!-- E2 -->
+      <div style="flex:0 0 252px; border:2px solid #C9C6BE; border-radius:16px; background:#FBFAF7; overflow:hidden;">
+        <div style="background:#EDEBE4; padding:6px 11px; display:flex; justify-content:space-between; align-items:center;">
+          <span class="mono" style="font-size:9.5px; font-weight:700; color:#6E6B64;">private draft</span>
+          <span class="mono" style="font-size:9px; font-weight:700; color:#3654FF; background:#EEF1FF; border-radius:999px; padding:1px 6px;">E2</span>
+        </div>
+        <div style="padding:11px 11px 13px;">
+          <div style="display:flex; gap:4px; flex-wrap:wrap; margin-bottom:8px;">
+            <span style="font-size:7.5px; font-weight:800; color:#6E6B64; background:#EDEBE4; border-radius:999px; padding:2px 7px;">비공개 초안</span>
+            <span style="font-size:7.5px; font-weight:800; color:#B95000; background:#FCF3E4; border-radius:999px; padding:2px 7px;">원문 URL 없음</span>
+          </div>
+          <div style="border:1px solid #EDEBE4; border-radius:7px; background:#fff; padding:8px;">
+            <p style="margin:0; font-size:8.5px; font-weight:800; color:#3654FF;">이번 주</p>
+            <div style="margin-top:4px; display:grid; gap:3px;">
+              <div style="display:flex; gap:5px;"><span style="font-size:8px; color:#B7B2A8;">□</span><span style="font-size:8.5px;">집 하자 점검</span></div>
+              <div style="display:flex; gap:5px;"><span style="font-size:8px; color:#B7B2A8;">□</span><span style="font-size:8.5px;">이사업체 견적</span></div>
+              <div style="display:flex; gap:5px;"><span style="font-size:8px; color:#B7B2A8;">□</span><span style="font-size:8.5px;">관리사무소 연락</span></div>
+            </div>
+            <p style="margin:7px 0 0; font-size:8.5px; font-weight:800; color:#3654FF;">다음 주</p>
+            <div style="margin-top:4px; display:grid; gap:3px;">
+              <div style="display:flex; gap:5px;"><span style="font-size:8px; color:#B7B2A8;">□</span><span style="font-size:8.5px;">전입신고 준비</span></div>
+              <div style="display:flex; gap:5px;"><span style="font-size:8px; color:#B7B2A8;">□</span><span style="font-size:8.5px;">주소 변경</span></div>
+            </div>
+          </div>
+          <div style="margin-top:8px; border:1px solid #C9DFCE; border-radius:7px; background:#EDF3EC; padding:7px 8px;">
+            <p style="margin:0; font-size:8px; font-weight:800; color:#1F6A3E;">관련 Flow 추천</p>
+            <p style="margin:3px 0 0; font-size:9px; font-weight:700;">원룸 이사 D-30 일정 지도</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="flex:0 0 48px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+        <span style="font-size:17px; color:#3654FF;">→</span>
+        <span style="font-size:8.5px; font-weight:700; color:#8A857B; text-align:center; line-height:1.2;">export /<br>저장</span>
+      </div>
+
+      <!-- E3 -->
+      <div style="flex:0 0 232px; border:2px solid #C9C6BE; border-radius:16px; background:#FBFAF7; overflow:hidden;">
+        <div style="background:#EDEBE4; padding:6px 11px; display:flex; justify-content:space-between; align-items:center;">
+          <span class="mono" style="font-size:9.5px; font-weight:700; color:#6E6B64;">같은 모델로 수렴</span>
+          <span class="mono" style="font-size:9px; font-weight:700; color:#3654FF; background:#EEF1FF; border-radius:999px; padding:1px 6px;">E3</span>
+        </div>
+        <div style="padding:11px 11px 13px;">
+          <p style="margin:0; font-size:9px; color:#6E6B64; line-height:1.5;">URL로 만든 Flow와 <b>완전히 같은</b> 출구를 씀:</p>
+          <div style="margin-top:8px; display:grid; gap:5px;">
+            <div style="display:flex; align-items:center; gap:8px; border:1px solid #E1DED6; border-radius:8px; background:#fff; padding:7px 9px;"><span style="font-size:10px;">📅</span><span style="flex:1; font-size:9px; font-weight:700;">캘린더 .ics</span></div>
+            <div style="display:flex; align-items:center; gap:8px; border:1px solid #E1DED6; border-radius:8px; background:#fff; padding:7px 9px;"><span style="font-size:10px;">✓</span><span style="flex:1; font-size:9px; font-weight:700;">투두 복사</span></div>
+            <div style="display:flex; align-items:center; gap:8px; border:1px solid #E1DED6; border-radius:8px; background:#fff; padding:7px 9px;"><span style="font-size:10px;">📝</span><span style="flex:1; font-size:9px; font-weight:700;">마크다운</span></div>
+            <div style="display:flex; align-items:center; gap:8px; border:1.5px solid #3654FF; border-radius:8px; background:#EEF1FF; padding:7px 9px;"><span style="font-size:10px;">📥</span><span style="flex:1; font-size:9px; font-weight:800;">My Flow 저장(비공개)</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <p style="margin:12px 0 0; font-size:12.5px; color:#4A473F; line-height:1.7; background:#EEF1FF; border:1px solid #D6DCFF; border-radius:10px; padding:12px 14px;"><b>이 장면이 검증하는 것.</b> 메모 입구는 URL과 <b>같은 입력구의 두 번째 탭</b>이고, 결과는 <span class="mono" style="font-size:11px;">Flow/Step/Item/Memo/Source/Export</span> 같은 모델로 수렴. 원문 URL이 없으므로 "개인 메모·비공개 초안" trust를 명시하고, 관련 기존 Flow(이사 D-30)를 추천해 <b>재사용 루프로 연결</b>. AI "정리"는 선택이라 안 쓰면 비용 0.</p>
+  </section>
+
+  <!-- SCENE F -->
+  <section id="sf" style="max-width: 1240px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:10px 12px;">
+      <span style="font-size:13px; font-weight:800; color:#B95000; background:#FCF3E4; border-radius:8px; padding:3px 10px;">SCENE F</span>
+      <h2 style="margin:0; font-size:24px; font-weight:800; letter-spacing:-0.02em;">저품질 hit / lookup miss — AI는 여기서만 fallback</h2>
+    </div>
+    <p style="margin:9px 0 0; max-width:900px; font-size:13.5px; color:#6E6B64; line-height:1.6;">사용자가 얇은 "이사 꿀팁 5가지" listicle URL을 붙여넣음. 검증: <span style="color:#B95000; font-weight:700;">기존 Flow가 없거나(품질 낮으면)</span> AI 생성을 <b>의식적 선택</b>으로 유도, 원문에 구조 row가 없으면 억지 생성 대신 Park, 생성 결과는 canonical에 축적.</p>
+
+    <div class="rail" style="margin-top:14px;">
+
+      <!-- F1 -->
+      <div style="flex:0 0 226px; border:2px solid #C9C6BE; border-radius:16px; background:#FBFAF7; overflow:hidden;">
+        <div style="background:#EDEBE4; padding:6px 11px; display:flex; justify-content:space-between; align-items:center;">
+          <span class="mono" style="font-size:9.5px; font-weight:700; color:#6E6B64;">URL 입력</span>
+          <span class="mono" style="font-size:9px; font-weight:700; color:#3654FF; background:#EEF1FF; border-radius:999px; padding:1px 6px;">F1</span>
+        </div>
+        <div style="padding:11px 11px 13px;">
+          <div style="border:2px dashed #3654FF; border-radius:9px; background:#EEF1FF; padding:9px;">
+            <div style="height:26px; border-radius:7px; background:#fff; border:1px solid #C4CCF5; display:flex; align-items:center; padding:0 8px;"><span class="mono" style="font-size:8px; color:#5A62A0; word-break:break-all;">blog.co/이사꿀팁-5가지</span></div>
+          </div>
+          <p style="margin:9px 0 0; font-size:8.5px; color:#9A958B; line-height:1.5;">짧은 나열형 글 · 날짜/단계 구조가 약함</p>
+        </div>
+      </div>
+
+      <div style="flex:0 0 52px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+        <span style="font-size:17px; color:#3654FF;">→</span>
+        <span style="font-size:8.5px; font-weight:700; color:#8A857B; text-align:center; line-height:1.2;">lookup<br>판정</span>
+      </div>
+
+      <!-- F2 저품질 -->
+      <div style="flex:0 0 236px; border:2px dashed #B95000; border-radius:16px; background:#FBFAF7; overflow:hidden;">
+        <div style="background:#FCF3E4; padding:6px 11px; display:flex; justify-content:space-between; align-items:center;">
+          <span class="mono" style="font-size:9.5px; font-weight:700; color:#B95000;">판정 ① 저품질 hit</span>
+          <span class="mono" style="font-size:9px; font-weight:700; color:#B95000; background:#F6E3C6; border-radius:999px; padding:1px 6px;">F2</span>
+        </div>
+        <div style="padding:11px 11px 13px;">
+          <div style="border:1px solid #F0D9B4; border-radius:8px; background:#FEF8EF; padding:8px 9px;">
+            <p style="margin:0; font-size:9px; font-weight:800; color:#B95000;">기존 Flow가 있지만 품질이 낮아요</p>
+            <p style="margin:4px 0 0; font-size:8px; color:#8A4A12; line-height:1.5;">단계가 엉성하고 원문 근거가 약함</p>
+          </div>
+          <div style="margin-top:8px; display:grid; gap:5px;">
+            <div style="height:26px; border-radius:7px; background:#fff; border:1px solid #C9C6BE; font-size:8.5px; font-weight:800; color:#4A473F; display:flex; align-items:center; justify-content:center;">그래도 그대로 쓰기</div>
+            <div style="height:28px; border-radius:7px; background:#B95000; color:#fff; font-size:9px; font-weight:800; display:flex; align-items:center; justify-content:center;">다시 만들기 (AI)</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="flex:0 0 40px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;">
+        <span style="font-size:11px; font-weight:800; color:#8A857B;">또는</span>
+      </div>
+
+      <!-- F3 miss -->
+      <div style="flex:0 0 236px; border:2px dashed #B95000; border-radius:16px; background:#FBFAF7; overflow:hidden;">
+        <div style="background:#FCF3E4; padding:6px 11px; display:flex; justify-content:space-between; align-items:center;">
+          <span class="mono" style="font-size:9.5px; font-weight:700; color:#B95000;">판정 ② lookup miss</span>
+          <span class="mono" style="font-size:9px; font-weight:700; color:#B95000; background:#F6E3C6; border-radius:999px; padding:1px 6px;">F3</span>
+        </div>
+        <div style="padding:11px 11px 13px;">
+          <div style="border:1px solid #F0D9B4; border-radius:8px; background:#FEF8EF; padding:8px 9px;">
+            <p style="margin:0; font-size:9px; font-weight:800; color:#B95000;">아직 이 링크의 Flow가 없어요</p>
+          </div>
+          <div style="margin-top:8px; border:1px solid #EDEBE4; border-radius:7px; background:#fff; padding:7px 8px;">
+            <p style="margin:0; font-size:8px; font-weight:800; color:#8A857B;">원문 row 미리보기</p>
+            <p style="margin:4px 0 0; font-size:8px; color:#6E6B64; line-height:1.5;">"미리 알아보기 / 짐 줄이기 / 청소 …" — 날짜·순서 없는 나열</p>
+          </div>
+          <div style="margin-top:8px; display:grid; gap:5px;">
+            <div style="height:28px; border-radius:7px; background:#B95000; color:#fff; font-size:9px; font-weight:800; display:flex; align-items:center; justify-content:center;">AI로 Flow 만들기</div>
+            <div style="height:24px; border-radius:7px; background:#fff; border:1px dashed #C9C6BE; font-size:8px; font-weight:800; color:#8A857B; display:flex; align-items:center; justify-content:center;">구조 부족 → 보류(Park)</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="flex:0 0 52px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+        <span style="font-size:17px; color:#B95000;">→</span>
+        <span style="font-size:8.5px; font-weight:700; color:#8A857B; text-align:center; line-height:1.2;">AI<br>생성</span>
+      </div>
+
+      <!-- F4 결과 -->
+      <div style="flex:0 0 238px; border:2px solid #C9C6BE; border-radius:16px; background:#FBFAF7; overflow:hidden;">
+        <div style="background:#EDEBE4; padding:6px 11px; display:flex; justify-content:space-between; align-items:center;">
+          <span class="mono" style="font-size:9.5px; font-weight:700; color:#6E6B64;">생성 결과 확인 → 축적</span>
+          <span class="mono" style="font-size:9px; font-weight:700; color:#3654FF; background:#EEF1FF; border-radius:999px; padding:1px 6px;">F4</span>
+        </div>
+        <div style="padding:11px 11px 13px;">
+          <div style="display:grid; gap:4px;">
+            <div style="display:flex; justify-content:space-between; border:1px solid #EDEBE4; border-radius:6px; background:#fff; padding:5px 7px;"><span style="font-size:8.5px; font-weight:700;">미리 알아보기</span><span class="mono" style="font-size:7px; color:#1F6A3E;">근거✓</span></div>
+            <div style="display:flex; justify-content:space-between; border:1px solid #EDEBE4; border-radius:6px; background:#fff; padding:5px 7px;"><span style="font-size:8.5px; font-weight:700;">짐 줄이기</span><span class="mono" style="font-size:7px; color:#1F6A3E;">근거✓</span></div>
+            <div style="display:flex; justify-content:space-between; border:1px solid #EDEBE4; border-radius:6px; background:#fff; padding:5px 7px;"><span style="font-size:8.5px; font-weight:700;">청소·정리</span><span class="mono" style="font-size:7px; color:#1F6A3E;">근거✓</span></div>
+          </div>
+          <div style="margin-top:8px; border:1px solid #C9DFCE; border-radius:7px; background:#EDF3EC; padding:7px 8px;">
+            <p style="margin:0; font-size:8px; font-weight:800; color:#1F6A3E;">저장하면 이 URL의 첫 버전으로 축적</p>
+            <p style="margin:3px 0 0; font-size:7.5px; color:#5E7A66;">다음 사람은 SCENE A처럼 hit(비용 0)</p>
+          </div>
+          <div style="margin-top:8px; height:28px; border-radius:7px; background:#3654FF; color:#fff; font-size:9.5px; font-weight:800; display:flex; align-items:center; justify-content:center;">저장</div>
+        </div>
+      </div>
+
+    </div>
+
+    <p style="margin:12px 0 0; font-size:12.5px; color:#4A473F; line-height:1.7; background:#FCF3E4; border:1px solid #F0D9B4; border-radius:10px; padding:12px 14px;"><b>이 장면이 검증하는 것.</b> AI는 <b>세 경우에만</b> 등장 — 저품질 hit에서 "다시 만들기", miss, 사용자의 명시적 재생성 요청. 원문에 구조 row가 없으면 억지 생성 대신 <b>보류(Park)</b>. 생성 결과는 단계별 근거를 보여주고, 저장 시 canonical에 축적돼 <b>다음 사용자는 다시 재사용 경로</b>로 돌아감(비용 절감 루프).</p>
+  </section>
+
+  <!-- SCENE G -->
+  <section id="sg" style="max-width: 1240px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:10px 12px;">
+      <span style="font-size:13px; font-weight:800; color:#3654FF; background:#EEF1FF; border-radius:8px; padding:3px 10px;">SCENE G</span>
+      <h2 style="margin:0; font-size:24px; font-weight:800; letter-spacing:-0.02em;">얇은 수정 → fork — 편집기 안 열고 내 버전 만들기</h2>
+    </div>
+    <p style="margin:9px 0 0; max-width:900px; font-size:13.5px; color:#6E6B64; line-height:1.6;">SCENE A에서 저장한 이사 Flow가 대체로 맞지만 내 상황과 다른 Step이 있음. 검증: <span style="color:#3654FF; font-weight:700;">캘린더/투두 상세 수준의 얇은 수정</span>(원본 불변) → 구조까지 바꾸고 싶으면 <span class="mono" style="font-size:11px;">cloneBundleForEditing</span>로 fork(파생 관계 유지). 제작자 도구처럼 무겁지 않게.</p>
+
+    <div class="rail" style="margin-top:14px;">
+
+      <!-- G1 -->
+      <div style="flex:0 0 236px; border:2px solid #C9C6BE; border-radius:16px; background:#FBFAF7; overflow:hidden;">
+        <div style="background:#EDEBE4; padding:6px 11px; display:flex; justify-content:space-between; align-items:center;">
+          <span class="mono" style="font-size:9.5px; font-weight:700; color:#6E6B64;">/my · Step 상세(읽기)</span>
+          <span class="mono" style="font-size:9px; font-weight:700; color:#3654FF; background:#EEF1FF; border-radius:999px; padding:1px 6px;">G1</span>
+        </div>
+        <div style="padding:11px 11px 13px;">
+          <div style="border:1px solid #E1DED6; border-radius:8px; background:#fff; padding:9px;">
+            <p class="mono" style="margin:0; font-size:8px; color:#8A857B;">8/24 · D-Day</p>
+            <p style="margin:4px 0 0; font-size:10.5px; font-weight:800;">정산·전입신고·사진</p>
+            <div style="margin-top:7px; display:grid; gap:3px;">
+              <div style="display:flex; gap:5px; align-items:center;"><span style="font-size:8px; color:#B7B2A8;">□</span><span style="font-size:8.5px; color:#6E6B64;">전기·가스·수도 정산</span></div>
+              <div style="display:flex; gap:5px; align-items:center;"><span style="font-size:8px; color:#B7B2A8;">□</span><span style="font-size:8.5px; color:#6E6B64;">계량기·집 상태 사진</span></div>
+            </div>
+            <div style="margin-top:8px; border-top:1px solid #F0EEE8; padding-top:6px; display:flex; gap:5px;">
+              <span style="font-size:8px; font-weight:800; color:#3654FF; background:#EEF1FF; border-radius:5px; padding:3px 8px;">수정</span>
+              <span style="font-size:8px; color:#8A857B; padding:3px 0;">메모 · 원문 · 옮기기 …</span>
+            </div>
+          </div>
+          <p style="margin:8px 0 0; font-size:8px; color:#9A958B;">기본은 읽기 우선 — 입력 컨트롤은 접혀 있음</p>
+        </div>
+      </div>
+
+      <div style="flex:0 0 46px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+        <span style="font-size:17px; color:#3654FF;">→</span>
+        <span style="font-size:8.5px; font-weight:700; color:#8A857B; text-align:center; line-height:1.2;">수정<br>열기</span>
+      </div>
+
+      <!-- G2 -->
+      <div style="flex:0 0 244px; border:2px solid #C9C6BE; border-radius:16px; background:#FBFAF7; overflow:hidden;">
+        <div style="background:#EDEBE4; padding:6px 11px; display:flex; justify-content:space-between; align-items:center;">
+          <span class="mono" style="font-size:9.5px; font-weight:700; color:#6E6B64;">얇은 수정 (인라인)</span>
+          <span class="mono" style="font-size:9px; font-weight:700; color:#3654FF; background:#EEF1FF; border-radius:999px; padding:1px 6px;">G2</span>
+        </div>
+        <div style="padding:11px 11px 13px;">
+          <div style="border:1px dashed #3654FF; border-radius:8px; background:#F5F7FF; padding:8px 9px;">
+            <p class="mono" style="margin:0 0 6px; font-size:8px; font-weight:700; color:#3654FF;">제목</p>
+            <div style="height:20px; border-radius:6px; background:#fff; border:1px solid #C4CCF5; display:flex; align-items:center; padding:0 8px;"><span style="font-size:8.5px;">정산·전입신고·사진</span></div>
+            <div style="display:flex; gap:5px; margin-top:6px;">
+              <div style="flex:1;"><p class="mono" style="margin:0 0 4px; font-size:8px; font-weight:700; color:#3654FF;">날짜</p><div style="height:20px; border-radius:6px; background:#fff; border:1px solid #C4CCF5; display:flex; align-items:center; padding:0 6px;"><span class="mono" style="font-size:8px;">8/24</span></div></div>
+              <div style="flex:1;"><p class="mono" style="margin:0 0 4px; font-size:8px; font-weight:700; color:#3654FF;">체크 추가</p><div style="height:20px; border-radius:6px; background:#fff; border:1px dashed #C4CCF5; display:flex; align-items:center; justify-content:center;"><span style="font-size:10px; color:#3654FF;">＋</span></div></div>
+            </div>
+          </div>
+          <div style="margin-top:8px; background:#EDF3EC; border:1px solid #C9DFCE; border-radius:7px; padding:6px 8px;">
+            <p style="margin:0; font-size:8px; font-weight:700; color:#1F6A3E;">내 사본에만 적용 · 원본 Flow 불변</p>
+          </div>
+          <div style="margin-top:8px; height:26px; border-radius:7px; background:#3654FF; color:#fff; font-size:9px; font-weight:800; display:flex; align-items:center; justify-content:center;">저장</div>
+        </div>
+      </div>
+
+      <div style="flex:0 0 52px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+        <span style="font-size:17px; color:#3654FF;">→</span>
+        <span style="font-size:8.5px; font-weight:700; color:#8A857B; text-align:center; line-height:1.2;">구조까지<br>바꾸려면</span>
+      </div>
+
+      <!-- G3 -->
+      <div style="flex:0 0 236px; border:2px solid #C9C6BE; border-radius:16px; background:#FBFAF7; overflow:hidden;">
+        <div style="background:#EDEBE4; padding:6px 11px; display:flex; justify-content:space-between; align-items:center;">
+          <span class="mono" style="font-size:9.5px; font-weight:700; color:#6E6B64;">fork · 내 버전</span>
+          <span class="mono" style="font-size:9px; font-weight:700; color:#3654FF; background:#EEF1FF; border-radius:999px; padding:1px 6px;">G3</span>
+        </div>
+        <div style="padding:11px 11px 13px;">
+          <div style="border:1px solid #E0D5F0; border-radius:8px; background:#F1ECF9; padding:8px 9px;">
+            <p style="margin:0; font-size:9px; font-weight:800; color:#6D4AB6;">내 사본으로 편집합니다</p>
+            <p style="margin:4px 0 0; font-size:8px; color:#4A3A66; line-height:1.5;">원본과 파생 관계는 유지 · 상태 draft</p>
+          </div>
+          <div style="margin-top:8px; display:grid; gap:4px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; border:1px solid #EDEBE4; border-radius:6px; background:#fff; padding:5px 7px;"><span style="font-size:8.5px;">단계 재정렬</span><span class="mono" style="font-size:9px; color:#8A857B;">⇅</span></div>
+            <div style="display:flex; justify-content:space-between; align-items:center; border:1px solid #EDEBE4; border-radius:6px; background:#fff; padding:5px 7px;"><span style="font-size:8.5px;">원문에 없는 Step 삭제</span><span class="mono" style="font-size:9px; color:#B95000;">×</span></div>
+            <div style="display:flex; justify-content:space-between; align-items:center; border:1px dashed #C4CCF5; border-radius:6px; background:#F5F7FF; padding:5px 7px;"><span style="font-size:8.5px; color:#3654FF;">내 Step 추가</span><span style="font-size:10px; color:#3654FF;">＋</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="flex:0 0 46px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+        <span style="font-size:17px; color:#3654FF;">→</span>
+        <span style="font-size:8.5px; font-weight:700; color:#8A857B; text-align:center; line-height:1.2;">내 Flow로<br>저장</span>
+      </div>
+
+      <!-- G4 -->
+      <div style="flex:0 0 224px; border:2px solid #C9C6BE; border-radius:16px; background:#FBFAF7; overflow:hidden;">
+        <div style="background:#EDEBE4; padding:6px 11px; display:flex; justify-content:space-between; align-items:center;">
+          <span class="mono" style="font-size:9.5px; font-weight:700; color:#6E6B64;">/my · Flow 탭</span>
+          <span class="mono" style="font-size:9px; font-weight:700; color:#3654FF; background:#EEF1FF; border-radius:999px; padding:1px 6px;">G4</span>
+        </div>
+        <div style="padding:11px 11px 13px;">
+          <div style="border:1px solid #E1DED6; border-radius:8px; background:#fff; padding:9px;">
+            <p style="margin:0; font-size:10px; font-weight:800; line-height:1.3;">원룸 이사 D-30 (내 버전)</p>
+            <div style="display:flex; gap:4px; margin-top:6px; flex-wrap:wrap;">
+              <span style="font-size:7.5px; font-weight:800; color:#6D4AB6; background:#F1ECF9; border-radius:999px; padding:2px 7px;">원본 기반 · 내가 수정</span>
+            </div>
+            <p class="mono" style="margin:6px 0 0; font-size:7.5px; color:#9A958B;">파생: moving-d30</p>
+          </div>
+          <p style="margin:8px 0 0; font-size:8px; color:#9A958B;">공유 전이라 비공개 draft로 보관</p>
+        </div>
+      </div>
+
+    </div>
+
+    <p style="margin:12px 0 0; font-size:12.5px; color:#4A473F; line-height:1.7; background:#EEF1FF; border:1px solid #D6DCFF; border-radius:10px; padding:12px 14px;"><b>이 장면이 검증하는 것.</b> 두 단계의 수정 깊이를 분리: ① <b>얇은 수정</b>은 Step 상세 안에서 제목·날짜·체크만 고치고 원본은 안 건드림 → ② 구조까지 바꾸려면 <b>fork(내 버전)</b>로 넘어가 파생 관계·<span class="mono" style="font-size:11px;">draft</span> 상태를 유지. "원본 기반·내가 수정" 배지로 출처가 이어짐 → SCENE E의 공유 승격 게이트로 연결.</p>
+  </section>
+
+  <!-- SCENE I -->
+  <section id="si" style="max-width: 1240px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:10px 12px;">
+      <span style="font-size:13px; font-weight:800; color:#1F6A3E; background:#EDF3EC; border-radius:8px; padding:3px 10px;">SCENE I</span>
+      <h2 style="margin:0; font-size:24px; font-weight:800; letter-spacing:-0.02em;">옵션 전체 — 강도·기간·반복·목적지까지 바꿔 재사용</h2>
+    </div>
+    <p style="margin:9px 0 0; max-width:900px; font-size:13.5px; color:#6E6B64; line-height:1.6;">시작일만이 아니라 나머지 옵션으로 <b>내 상황에 맞춤</b>. <span class="mono" style="font-size:11px;">running-5k-routine</span>(주 3회·4주 완주)을 예로, 강도를 낮추고 반복 요일과 목적지를 바꿔도 <span style="color:#1F6A3E; font-weight:700;">원본 불변·내 인스턴스만</span> 갱신되는지 검증.</p>
+
+    <div class="rail" style="margin-top:14px;">
+
+      <!-- I1 -->
+      <div style="flex:0 0 244px; border:2px solid #C9C6BE; border-radius:16px; background:#FBFAF7; overflow:hidden;">
+        <div style="background:#EDEBE4; padding:6px 11px; display:flex; justify-content:space-between; align-items:center;">
+          <span class="mono" style="font-size:8.5px; font-weight:700; color:#6E6B64;">/f/running-5k-routine · 옵션</span>
+          <span class="mono" style="font-size:9px; font-weight:700; color:#3654FF; background:#EEF1FF; border-radius:999px; padding:1px 6px;">I1</span>
+        </div>
+        <div style="padding:11px 11px 13px;">
+          <p style="margin:0; font-size:10.5px; font-weight:800;">5km 완주 4주 루틴</p>
+          <div style="margin-top:8px; border:1px dashed #3654FF; border-radius:8px; background:#F5F7FF; padding:8px 9px; display:grid; gap:7px;">
+            <div><p class="mono" style="margin:0 0 3px; font-size:8px; font-weight:700; color:#3654FF;">시작일</p><div style="height:18px; border-radius:5px; background:#fff; border:1px solid #C4CCF5; display:flex; align-items:center; padding:0 6px;"><span class="mono" style="font-size:8px;">2026-07-07</span></div></div>
+            <div><p class="mono" style="margin:0 0 3px; font-size:8px; font-weight:700; color:#3654FF;">강도</p><div style="display:flex; gap:3px;"><span style="flex:1; text-align:center; font-size:7.5px; font-weight:800; color:#fff; background:#1B1A17; border-radius:5px; padding:3px 0;">느슨</span><span style="flex:1; text-align:center; font-size:7.5px; font-weight:700; color:#8A857B; background:#EDEBE4; border-radius:5px; padding:3px 0;">보통</span><span style="flex:1; text-align:center; font-size:7.5px; font-weight:700; color:#8A857B; background:#EDEBE4; border-radius:5px; padding:3px 0;">집중</span></div></div>
+            <div><p class="mono" style="margin:0 0 3px; font-size:8px; font-weight:700; color:#3654FF;">반복 요일</p><div style="display:flex; gap:2px;"><span style="flex:1; text-align:center; font-size:7px; font-weight:800; color:#fff; background:#3654FF; border-radius:4px; padding:3px 0;">월</span><span style="flex:1; text-align:center; font-size:7px; color:#B7B2A8; padding:3px 0;">화</span><span style="flex:1; text-align:center; font-size:7px; color:#B7B2A8; padding:3px 0;">수</span><span style="flex:1; text-align:center; font-size:7px; font-weight:800; color:#fff; background:#3654FF; border-radius:4px; padding:3px 0;">목</span><span style="flex:1; text-align:center; font-size:7px; color:#B7B2A8; padding:3px 0;">금</span></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="flex:0 0 52px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+        <span style="font-size:17px; color:#3654FF;">→</span>
+        <span style="font-size:8.5px; font-weight:700; color:#8A857B; text-align:center; line-height:1.2;">강도 낮춤<br>요일 변경</span>
+      </div>
+
+      <!-- I2 -->
+      <div style="flex:0 0 240px; border:2px solid #C9C6BE; border-radius:16px; background:#FBFAF7; overflow:hidden;">
+        <div style="background:#EDEBE4; padding:6px 11px; display:flex; justify-content:space-between; align-items:center;">
+          <span class="mono" style="font-size:9.5px; font-weight:700; color:#6E6B64;">미리보기 즉시 갱신</span>
+          <span class="mono" style="font-size:9px; font-weight:700; color:#3654FF; background:#EEF1FF; border-radius:999px; padding:1px 6px;">I2</span>
+        </div>
+        <div style="padding:11px 11px 13px;">
+          <div style="display:flex; gap:5px; margin-bottom:8px; flex-wrap:wrap;">
+            <span style="font-size:7.5px; font-weight:800; color:#1F6A3E; background:#EDF3EC; border-radius:999px; padding:2px 7px;">주 2회</span>
+            <span style="font-size:7.5px; font-weight:800; color:#1F6A3E; background:#EDF3EC; border-radius:999px; padding:2px 7px;">월·목</span>
+            <span style="font-size:7.5px; font-weight:800; color:#B95000; background:#FCF3E4; border-radius:999px; padding:2px 7px;">4주 → 6주</span>
+          </div>
+          <div style="display:grid; gap:4px;">
+            <div style="display:flex; justify-content:space-between; border:1px solid #EDEBE4; border-radius:6px; background:#fff; padding:5px 7px;"><span style="font-size:8.5px; font-weight:700;">1주차 걷기·짧은 조깅</span><span class="mono" style="font-size:7.5px; color:#3654FF;">7/7 월</span></div>
+            <div style="display:flex; justify-content:space-between; border:1px solid #EDEBE4; border-radius:6px; background:#fff; padding:5px 7px;"><span style="font-size:8.5px; font-weight:700;">1주차 반복</span><span class="mono" style="font-size:7.5px; color:#3654FF;">7/10 목</span></div>
+            <div style="display:flex; justify-content:space-between; border:1px solid #EDEBE4; border-radius:6px; background:#fff; padding:5px 7px;"><span style="font-size:8.5px; font-weight:700;">2주차 조깅 늘리기</span><span class="mono" style="font-size:7.5px; color:#3654FF;">7/14 월</span></div>
+          </div>
+          <p style="margin:8px 0 0; font-size:8px; color:#9A958B;">강도 '느슨' → 세션 밀도↓, 기간이 자동으로 늘어남</p>
+        </div>
+      </div>
+
+      <div style="flex:0 0 52px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;">
+        <span style="font-size:17px; color:#3654FF;">→</span>
+        <span style="font-size:8.5px; font-weight:700; color:#8A857B; text-align:center; line-height:1.2;">목적지<br>전환</span>
+      </div>
+
+      <!-- I3 -->
+      <div style="flex:0 0 234px; border:2px solid #C9C6BE; border-radius:16px; background:#FBFAF7; overflow:hidden;">
+        <div style="background:#EDEBE4; padding:6px 11px; display:flex; justify-content:space-between; align-items:center;">
+          <span class="mono" style="font-size:9.5px; font-weight:700; color:#6E6B64;">목적지 = 투두</span>
+          <span class="mono" style="font-size:9px; font-weight:700; color:#3654FF; background:#EEF1FF; border-radius:999px; padding:1px 6px;">I3</span>
+        </div>
+        <div style="padding:11px 11px 13px;">
+          <div style="display:flex; gap:5px; margin-bottom:8px;">
+            <span style="flex:1; text-align:center; font-size:8px; font-weight:700; color:#8A857B; background:#EDEBE4; border-radius:6px; padding:4px 0;">📅 캘린더</span>
+            <span style="flex:1; text-align:center; font-size:8px; font-weight:800; color:#fff; background:#1B1A17; border-radius:6px; padding:4px 0;">✓ 투두</span>
+          </div>
+          <div style="border:1px solid #EDEBE4; border-radius:7px; background:#fff; padding:8px;">
+            <div style="display:grid; gap:4px;">
+              <div style="display:flex; gap:5px; align-items:center;"><span style="font-size:8px; color:#B7B2A8;">□</span><span style="font-size:8.5px;">1주차 걷기·짧은 조깅</span></div>
+              <div style="display:flex; gap:5px; align-items:center;"><span style="font-size:8px; color:#B7B2A8;">□</span><span style="font-size:8.5px;">1주차 반복</span></div>
+              <div style="display:flex; gap:5px; align-items:center;"><span style="font-size:8px; color:#B7B2A8;">□</span><span style="font-size:8.5px;">2주차 조깅 늘리기</span></div>
+            </div>
+          </div>
+          <div style="margin-top:8px; background:#EDF3EC; border:1px solid #C9DFCE; border-radius:7px; padding:6px 8px;">
+            <p style="margin:0; font-size:8px; font-weight:700; color:#1F6A3E;">원본 불변 · 내 인스턴스만 이렇게 저장</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <p style="margin:12px 0 0; font-size:12.5px; color:#4A473F; line-height:1.7; background:#EDF3EC; border:1px solid #C9DFCE; border-radius:10px; padding:12px 14px;"><b>이 장면이 검증하는 것.</b> "옵션으로 재사용"이 시작일에 그치지 않고 <b>강도·기간·반복·목적지</b>까지 커버됨을 보여줌. 강도를 낮추면 세션 밀도가 줄고 기간이 늘어나는 등 <b>미리보기가 즉시 반영</b>되며, 목적지를 캘린더↔투두로 바꿔도 <b>원본 Flow는 불변</b>이고 내 인스턴스에만 저장됨(SCENE G의 얇은 수정과 같은 원칙). 무리한 자동 스케줄러가 아니라 사용자가 고르는 옵션 수준.</p>
+  </section>
+
+  <!-- CROSS-CUTTING -->
+  <section id="cross" style="max-width: 1240px; margin: 0 auto; padding: 34px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">경계 · 정리</span>
+      <h2 style="margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -0.02em;">장면을 가로지르는 4개의 경계</h2>
+    </div>
+
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap:12px; margin-top:18px;">
+
+      <!-- export 매트릭스 -->
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:14px; padding:18px 20px;">
+        <p style="margin:0; font-size:14.5px; font-weight:800;">① Export 우선순위는 콘텐츠가 정한다</p>
+        <p style="margin:6px 0 0; font-size:12.5px; color:#6E6B64; line-height:1.6;">같은 export 패널이라도 맨 위에 올라오는 목적지가 콘텐츠 유형마다 다름(FUB-02).</p>
+        <div style="margin-top:11px; display:grid; gap:5px; font-size:12px;">
+          <div style="display:flex; gap:8px; align-items:baseline;"><span style="flex:0 0 96px; font-weight:800;">이사·검사</span><span style="color:#4A473F;">📅 캘린더 → ✓ 투두 → 📝 md</span></div>
+          <div style="display:flex; gap:8px; align-items:baseline;"><span style="flex:0 0 96px; font-weight:800;">수학 진도표</span><span style="color:#4A473F;">📝 md → ▦ 시트 <span class="mono" style="font-size:10px; color:#9A958B;">(캘린더 off)</span></span></div>
+          <div style="display:flex; gap:8px; align-items:baseline;"><span style="flex:0 0 96px; font-weight:800;">냉장고·이유식</span><span style="color:#4A473F;">▦ 시트/CSV → 📝 md → ✓ 투두</span></div>
+          <div style="display:flex; gap:8px; align-items:baseline;"><span style="flex:0 0 96px; font-weight:800;">eSIM·여행</span><span style="color:#4A473F;">✓ 투두 복사 → 📅 캘린더</span></div>
+        </div>
+      </div>
+
+      <!-- 로그인 경계 -->
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:14px; padding:18px 20px;">
+        <p style="margin:0; font-size:14.5px; font-weight:800;">② 비로그인 = 가져가기, 로그인 = 쌓기</p>
+        <div style="margin-top:11px; display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+          <div style="background:#EDF3EC; border:1px solid #C9DFCE; border-radius:9px; padding:10px;">
+            <p style="margin:0; font-size:11px; font-weight:800; color:#1F6A3E;">비로그인</p>
+            <ul style="margin:6px 0 0; padding-left:15px; font-size:11px; line-height:1.6; color:#3D5A46;"><li>lookup·preview</li><li>옵션 미리보기</li><li>.ics·md·csv 복사/다운로드</li></ul>
+          </div>
+          <div style="background:#EEF1FF; border:1px solid #D6DCFF; border-radius:9px; padding:10px;">
+            <p style="margin:0; font-size:11px; font-weight:800; color:#3654FF;">로그인</p>
+            <ul style="margin:6px 0 0; padding-left:15px; font-size:11px; line-height:1.6; color:#2A3AA8;"><li>My Flow 저장</li><li>수정 이력·fork</li><li>재-export·공유 관리</li></ul>
+          </div>
+        </div>
+        <p style="margin:9px 0 0; font-size:11px; color:#8A857B; line-height:1.5;">SCENE B에서 저장 순간에만 로그인을 요구하는 경계로 확인됨.</p>
+      </div>
+
+      <!-- draft vs shareable -->
+      <div style="background:#FFFFFF; border:1px solid #E7E4DD; border-radius:14px; padding:18px 20px;">
+        <p style="margin:0; font-size:14.5px; font-weight:800;">③ 개인 draft ↔ 공유 Flow 경계</p>
+        <div style="margin-top:11px; display:flex; align-items:stretch; gap:6px;">
+          <div style="flex:1; border:1.5px solid #C9C6BE; background:#FBFAF7; border-radius:9px; padding:9px;"><p style="margin:0; font-size:10.5px; font-weight:800;">개인 draft</p><p style="margin:4px 0 0; font-size:9.5px; color:#6E6B64; line-height:1.5;">비공개 · 자유 수정 · 출처만 보관</p></div>
+          <div style="flex:0 0 18px; display:flex; align-items:center; justify-content:center; color:#6D4AB6; font-weight:800;">→</div>
+          <div style="flex:1; border:1.5px solid #6D4AB6; background:#F1ECF9; border-radius:9px; padding:9px;"><p style="margin:0; font-size:10.5px; font-weight:800; color:#6D4AB6;">공유 Flow</p><p style="margin:4px 0 0; font-size:9.5px; color:#4A3A66; line-height:1.5;">게이트: 출처·주의·완료기준·원문없는 Step 제거</p></div>
+        </div>
+        <p style="margin:9px 0 0; font-size:11px; color:#8A857B; line-height:1.5;">SCENE E의 메모 초안이 바로 여기 개인 draft. 승격은 의식적 선택.</p>
+      </div>
+
+      <!-- adoption loop -->
+      <div style="background:#F1ECF9; border:1px solid #E0D5F0; border-radius:14px; padding:18px 20px;">
+        <p style="margin:0; font-size:14.5px; font-weight:800; color:#4A3A66;">④ 공유 → comment → adoption 루프</p>
+        <div style="margin-top:11px; display:flex; align-items:center; gap:5px; flex-wrap:wrap;">
+          <span style="font-size:10.5px; font-weight:700; background:#fff; border:1px solid #E0D5F0; border-radius:999px; padding:4px 9px;">내 Flow 링크</span>
+          <span style="color:#6D4AB6;">→</span>
+          <span style="font-size:10.5px; font-weight:700; background:#fff; border:1px solid #E0D5F0; border-radius:999px; padding:4px 9px;">원문 댓글·커뮤니티</span>
+          <span style="color:#6D4AB6;">→</span>
+          <span style="font-size:10.5px; font-weight:700; background:#fff; border:1px solid #E0D5F0; border-radius:999px; padding:4px 9px;">다른 사용자 재사용</span>
+          <span style="color:#6D4AB6;">→</span>
+          <span style="font-size:10.5px; font-weight:700; background:#fff; border:1px solid #E0D5F0; border-radius:999px; padding:4px 9px;">원작자 발견·채택</span>
+        </div>
+        <p style="margin:9px 0 0; font-size:11px; color:#6D4AB6; line-height:1.5;">P2 후행. 원문에 FlowMe 링크가 미리 붙어 있다고 가정하지 않고, 사용자가 만든 링크가 되돌아가며 자연 발생.</p>
+      </div>
+
+    </div>
+
+    <!-- 종합 -->
+    <div style="background:#1B1A17; color:#F5F4EF; border-radius:18px; padding:26px 26px; margin-top:16px;">
+      <p style="margin:0; font-size:13px; font-weight:800; color:#B9C4FF; letter-spacing:0.03em;">이 시뮬레이션이 종합적으로 검증하는 것</p>
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(230px,1fr)); gap:14px; margin-top:14px;">
+        <div><p style="margin:0; font-size:13.5px; font-weight:800;">기존 도구 사용자가 "복사해 쓸 만"</p><p style="margin:5px 0 0; font-size:12px; color:rgba(245,244,239,0.72); line-height:1.55;">캘린더·투두·시트·마크다운 export가 콘텐츠 유형에 맞게 정렬돼, Google/Todoist/Sheets/Obsidian 사용자가 그대로 옮길 수 있는지.</p></div>
+        <div><p style="margin:0; font-size:13.5px; font-weight:800;">4탭 IA를 안 깨고 얹힘</p><p style="margin:5px 0 0; font-size:12px; color:rgba(245,244,239,0.72); line-height:1.55;">URL·lookup·메모가 새 탭이 아니라 홈/Flow 찾기의 상태로, 저장 후는 기존 /my·/calendar로 흘러감.</p></div>
+        <div><p style="margin:0; font-size:13.5px; font-weight:800;">재사용이 기본, AI는 예외</p><p style="margin:5px 0 0; font-size:12px; color:rgba(245,244,239,0.72); line-height:1.55;">6개 장면 중 5개가 재사용/기존 콘텐츠 경로. AI(SCENE F)는 miss·저품질·재생성일 때만, 결과는 축적.</p></div>
+        <div><p style="margin:0; font-size:13.5px; font-weight:800;">후보와 대표의 분리</p><p style="margin:5px 0 0; font-size:12px; color:rgba(245,244,239,0.72); line-height:1.55;">needs_review·import 큐 콘텐츠는 공유/직접 링크로만 열람, 대표 카드 승격 전까지 사용자 화면에서 분리.</p></div>
+      </div>
+      <div style="margin-top:18px; border-top:1px solid rgba(255,255,255,0.15); padding-top:15px; display:flex; flex-wrap:wrap; gap:8px 16px; align-items:center;">
+        <span class="mono" style="font-size:11px; font-weight:700; color:rgba(245,244,239,0.55);">다음 단계 제안</span>
+        <span style="font-size:12.5px; color:rgba(245,244,239,0.72);">SCENE A(이사)를 얇은 URL-first PoC로 먼저 구현 → 재사용률·AI 호출 수를 계측 → SCENE C/D로 진도표·시트 export 품질 검증.</span>
+      </div>
+    </div>
+    <p style="margin:16px 4px 40px; font-size:12px; color:#8A857B; line-height:1.6;">근거: <span class="mono" style="font-size:11px;">codex/flowme-uxui-second-loop</span> 브랜치의 <span class="mono" style="font-size:11px;">lib/flow/seed-flows.ts</span>, <span class="mono" style="font-size:11px;">curated-source-app-seed-v1.json</span>, <span class="mono" style="font-size:11px;">source-backed-my-flow.ts</span>, <span class="mono" style="font-size:11px;">SERVICE_STRUCTURE.md</span>, <span class="mono" style="font-size:11px;">DECISIONS.md</span>, FUB 백로그. 모든 slug·출처·Step은 repo 실데이터이며, 구조/스토리보드 중심 · 코드 구현 없음. (참고 SVG <span class="mono" style="font-size:11px;">2026-07-05-url-first-simulation-wireflow-ko.svg</span>는 이 브랜치에 아직 커밋되지 않아 확인하지 못함.)</p>
+  </section>
+
+</div>
+</x-dc>
+</body>
+</html>

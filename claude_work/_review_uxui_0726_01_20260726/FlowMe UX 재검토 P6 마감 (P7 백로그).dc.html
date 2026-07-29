@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>FlowMe UX/UI — P6 마감 판정 · P7 백로그 (실제 스크린샷 기준)</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <style>
+    html, body { margin: 0; padding: 0; background: #F2F1EC; }
+    * { box-sizing: border-box; }
+    code { font-family: 'SF Mono', ui-monospace, Menlo, monospace; }
+  </style>
+</helmet>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#1F6A3E"></rect><text x="50" y="59" font-family="sans-serif" font-size="15" font-weight="800" fill="#FFFFFF" text-anchor="middle">P6✓</text></svg></template>
+<div style="font-family: 'Pretendard Variable', Pretendard, -apple-system, 'Segoe UI', sans-serif; color: #1B1A17; line-height: 1.6; letter-spacing: -0.01em;">
+
+  <header style="background: #1B1A17; color: #F5F4EF; padding: 52px 28px 44px;">
+    <div style="max-width: 1120px; margin: 0 auto;">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px;">
+        <span style="display: inline-flex; align-items: center; border: 1px solid rgba(159,240,184,0.4); background: rgba(31,106,62,0.35); border-radius: 999px; padding: 4px 12px; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; color: #C6F4D4;">FLOWME · P6 마감 판정</span>
+        <span style="font-size: 12px; font-weight: 600; color: rgba(245,244,239,0.6);">codex/flowme-uxui-second-loop · 리뷰 패키지 @228d94a · UI 기준 커밋 @05a951a · 실제 PNG 50장(route 14 · scenario 36) 픽셀 검토 · 390×844</span>
+      </div>
+      <h1 style="margin: 18px 0 0; font-size: 40px; line-height: 1.2; font-weight: 800; letter-spacing: -0.02em; max-width: 960px; text-wrap: balance;">P6는 닫혔다.<br>지난 라운드의 두 <em>High</em>가 실제 화면에서 <em>둘 다</em> 해소됐고, 남은 건 <em>/restart</em> 프로토타입 잔여뿐이다.</h1>
+      <p style="margin: 16px 0 0; max-width: 860px; font-size: 16px; line-height: 1.7; color: rgba(245,244,239,0.78); text-wrap: pretty;">이번에도 50장을 <strong>픽셀로 직접</strong> 확인했습니다. P5에서 재오픈했던 <strong>제목 반복(P6-01)</strong>은 저장 직후·오늘 탭이 전체 탭 카드 패턴으로 바뀌어 <strong>첫 할 일 제목이 정확히 1회</strong>만 나오고(<code>s02-03·s03-02·s06-01</code>), P5에서 evidence가 없던 <strong>하단 clearance(P6-02)</strong>는 새로 추가된 <strong>s07 최하단 5장</strong>으로 <strong>/f 단일 sticky·/flow-maps 2단 바 아래 마지막 카드가 완전히 노출</strong>됨을 확증했습니다(<code>s07-01·s07-03</code>). 문구도 세 진입점 모두 "<strong>열어보기</strong>"로 통일(P6-04), 홈 보조 링크 중복 제거(P6-06), 워크벤치 중복 시작 CTA 제거(P6-07), "확인 항목" 라벨 단일화(P6-05)까지 화면에서 확인됐습니다. <strong>그래서 P6-01~08 전부 close.</strong> <strong>정상 라우트 기준 Blocking·High·Medium = 0.</strong> 유일한 잔여는 <code>/restart/moving-d30</code>의 raw ISO "2026-05-28" 16건인데, 4탭 IA 밖 <strong>프로토타입 route</strong>라 <strong>P6 blocker가 아니라 P7 게이트 후보</strong>입니다.</p>
+    </div>
+  </header>
+
+  <nav style="position: sticky; top: 0; z-index: 50; background: rgba(242,241,236,0.92); backdrop-filter: blur(8px); border-bottom: 1px solid #DDD9D0;">
+    <div style="max-width: 1120px; margin: 0 auto; padding: 10px 28px; display: flex; flex-wrap: wrap; gap: 6px;">
+      <a href="#verdict" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">1 P6 판정</a>
+      <a href="#routes" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">2 Route</a>
+      <a href="#scen" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">3 Scenario</a>
+      <a href="#prio" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">4 우선순위</a>
+      <a href="#backlog" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">5 P7 백로그</a>
+      <a href="#hold" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">6 유지 기준선</a>
+      <a href="#fix" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">7 화면별 수정</a>
+      <a href="#q" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">8 질문 답</a>
+      <a href="#gap" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">9 추가 evidence</a>
+      <a href="#goal" style="text-decoration: none; color: #F5F4EF; background: #1F6A3E; border: 1px solid #1F6A3E; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">10 /goal 초안</a>
+    </div>
+  </nav>
+
+  <!-- evidence note -->
+  <section style="max-width: 1120px; margin: 0 auto; padding: 24px 28px 4px;">
+    <div style="background: #EDF3EC; border: 1px solid #CADFC9; border-radius: 14px; padding: 16px 18px;">
+      <p style="margin: 0; font-size: 13px; font-weight: 800; color: #1F6A3E;">이번 검토 근거</p>
+      <p style="margin: 8px 0 0; font-size: 13.5px; line-height: 1.7; color: #35563A;">Vercel 실행 화면은 보지 않았습니다. GitHub의 P6 review package(<code>audit.md</code>·<code>route-evidence.json</code>)와 <strong>screenshots 50장을 레포에서 픽셀로 직접</strong> 확인했고, <code>SERVICE_STRUCTURE.md</code>의 IA v3 기준선과 대조했습니다. audit 자동 스캔은 P6-01~08 전부 "유지 확인 · hit 0"으로 보고하지만, <strong>지난 라운드들처럼 최종 판단은 스크린샷의 사용자 이해도·시선 흐름·행동 명확성 기준</strong>입니다. 특히 P5에서 스캔이 못 잡던 <strong>제목 반복</strong>과 evidence가 없던 <strong>최하단 clearance</strong>를 이번엔 실제 화면(<code>s02-03·s02-04·s03-02·s06-02·s07-01~05</code>)으로 눈으로 다시 확인했고, 아래 판정은 전부 그 근거입니다.</p>
+    </div>
+  </section>
+
+  <!-- 1. P6 verdict -->
+  <section id="verdict" style="max-width: 1120px; margin: 0 auto; padding: 26px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 1</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">P6-01 ~ P6-08 — Close / Reopen / Follow-up</h2>
+    </div>
+    <p style="margin: 10px 0 0; max-width: 860px; font-size: 14.5px; color: #6E6B64;">지난 라운드에서 정의한 P6 백로그 기준. <strong>8개 전부 close</strong> — 그중 2개는 감시 스캔을 계속 켜두는 조건부 close.</p>
+
+    <div style="display: grid; gap: 12px; margin-top: 18px;">
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #1F6A3E; border-radius: 16px; padding: 20px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <span style="font-size: 13px; font-weight: 800; background: #EDF3EC; color: #1F6A3E; border-radius: 6px; padding: 2px 9px;">P6-01</span>
+          <h3 style="margin: 0; font-size: 17px; font-weight: 800;">My Flow 첫 할 일 제목/상태 라벨 반복 제거</h3>
+          <span style="font-size: 12px; font-weight: 800; color: #1F6A3E; background: #EDF3EC; border-radius: 999px; padding: 2px 10px;">CLOSE ✓ (P5-03 재오픈 해소)</span>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 14px; line-height: 1.65; color: #44413B;"><strong>해소 확인</strong> · 저장 직후·오늘 탭이 <strong>전체 탭 카드 패턴</strong>으로 통일됐습니다. 섹션 헤더가 이제 "<strong>밀린 할 일 · 1개 밀림</strong>"(라벨+개수)이고 그 아래 카드에 제목 "<em>이사 방식과 견적 후보 정하기</em>"가 <strong>딱 1회</strong>만 나옵니다(<code>s02-03</code>). 날짜 없는 콘텐츠도 "<strong>먼저 할 일 · 1개 대기</strong>" + [날짜 없음] 배지 + "1. 소인수분해" 1회(<code>s03-02·s06-01</code>). 확장 상세도 카드 상단 제목 1회 후 본문은 "필요한 항목만 체크…" 안내로 이어져 제목 재노출 없음(<code>s02-04</code>). 히어로 배너는 첫 할 일 제목이 아니라 <strong>콘텐츠명</strong>("원룸 이사 D-30 일정")만 칩으로 노출. <strong>P5가 지목한 2~3중 세로 반복이 픽셀에서 사라졌습니다.</strong></p>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #1F6A3E; border-radius: 16px; padding: 20px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <span style="font-size: 13px; font-weight: 800; background: #EDF3EC; color: #1F6A3E; border-radius: 6px; padding: 2px 9px;">P6-02</span>
+          <h3 style="margin: 0; font-size: 17px; font-weight: 800;">/f · /flow-maps 하단 sticky clearance</h3>
+          <span style="font-size: 12px; font-weight: 800; color: #1F6A3E; background: #EDF3EC; border-radius: 999px; padding: 2px 10px;">CLOSE ✓ (evidence 확보)</span>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 14px; line-height: 1.65; color: #44413B;"><strong>확증됨</strong> · P5에서 "최하단 evidence 없음"으로 남았던 두 화면을 위해 <strong>s07 최하단 5장</strong>이 새로 추가됐고, 픽셀에서 clearance가 확인됩니다. <strong>/f 저장형</strong>: 단일 저장 sticky 위로 마지막 면책 카드가 여백까지 두고 완전 노출(<code>s07-01</code>). <strong>/flow-maps 상세</strong>: 마지막 카드 "정산과 전입신고 확인"이 "저장하고 시작" sticky + 4탭 <strong>2단 바 위로 완전히</strong> 노출(<code>s07-03</code>). 수학 flow-map·캘린더 최하단도 동일(<code>s07-04·s07-05</code>). <strong>지난 라운드 최상위 High(가려서 못 누름)의 잔여가 닫혔습니다.</strong></p>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #1F6A3E; border-radius: 16px; padding: 20px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <span style="font-size: 13px; font-weight: 800; background: #EDF3EC; color: #1F6A3E; border-radius: 6px; padding: 2px 9px;">P6-03</span>
+          <h3 style="margin: 0; font-size: 17px; font-weight: 800;">/flow-maps 저장 CTA + 4탭 하단 조작 영역 통합감</h3>
+          <span style="font-size: 12px; font-weight: 800; color: #1F6A3E; background: #EDF3EC; border-radius: 999px; padding: 2px 10px;">CLOSE ✓ (의도된 패턴)</span>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 14px; line-height: 1.65; color: #44413B;"><strong>수용</strong> · "이사일 입력됨 · 저장하고 시작" 액션 sticky가 4탭 바 <strong>바로 위에 시각적 구분선을 두고</strong> 앉아, 두 줄이지만 정렬·간격이 하나의 하단 조작 영역으로 읽힙니다(<code>s07-03·03-flow-map-moving</code>). 이는 <code>SERVICE_STRUCTURE.md</code>가 명시한 기준선 — "Flow Map sticky save sits <strong>above the tabs with visible separation</strong>" — 그대로라 <strong>결함이 아니라 문서화된 의도</strong>입니다. clearance도 P6-02로 확증. <strong>남은 것</strong> · 2단이 ~130px를 점유하므로, 더 짧은 뷰포트(360px·짧은 높이)에서 오탭·콘텐츠 가림이 없는지는 <strong>실사용 테스트로만</strong> 확정 가능 → P7-02 감시 항목(코드 수정 아님).</p>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #1F6A3E; border-radius: 16px; padding: 20px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <span style="font-size: 13px; font-weight: 800; background: #EDF3EC; color: #1F6A3E; border-radius: 6px; padding: 2px 9px;">P6-04</span>
+          <h3 style="margin: 0; font-size: 17px; font-weight: 800;">`열어보기` CTA 문구 통일</h3>
+          <span style="font-size: 12px; font-weight: 800; color: #1F6A3E; background: #EDF3EC; border-radius: 999px; padding: 2px 10px;">CLOSE ✓</span>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 14px; line-height: 1.65; color: #44413B;"><strong>확인</strong> · P5에서 "저장 전 보기"(홈·flow-map)와 "열어보기 ›"(/flows)로 갈렸던 진입 CTA가 <strong>세 곳 모두 "열어보기"</strong>로 통일됐습니다. 홈 추천 카드 = "열어보기"(<code>01-home</code>), /flow-maps eyebrow = "열어보기"(<code>03-flow-map-moving</code>), /flows 카드 = "열어보기 ›"(<code>02-flows</code>). 같은 "저장 전 미리보기" 행동에 두 문구가 공존하던 불일치가 사라졌습니다.</p>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #1F6A3E; border-radius: 16px; padding: 20px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <span style="font-size: 13px; font-weight: 800; background: #EDF3EC; color: #1F6A3E; border-radius: 6px; padding: 2px 9px;">P6-05</span>
+          <h3 style="margin: 0; font-size: 17px; font-weight: 800;">`확인할 항목`/`확인 항목` 중복 라벨 정리</h3>
+          <span style="font-size: 12px; font-weight: 800; color: #1F6A3E; background: #EDF3EC; border-radius: 999px; padding: 2px 10px;">CLOSE ✓</span>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 14px; line-height: 1.65; color: #44413B;"><strong>확인</strong> · 할 일 확장 상세에서 근접 중복이던 두 라벨이 <strong>"확인 항목" 하나</strong>로 정리됐습니다(<code>s02-04</code>). P5에서 지적한 "확인할 항목 · [제목]" 상세 헤더(제목 재노출 포함)가 사라지고, 대신 "필요한 항목만 체크하고 완료로 표시하세요." 안내 + 체크리스트 헤더 "확인 항목 · 0/3"만 남았습니다. P6-01의 제목 정리와 함께 처리됐습니다.</p>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #1F6A3E; border-radius: 16px; padding: 20px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <span style="font-size: 13px; font-weight: 800; background: #EDF3EC; color: #1F6A3E; border-radius: 6px; padding: 2px 9px;">P6-06</span>
+          <h3 style="margin: 0; font-size: 17px; font-weight: 800;">홈 보조 링크 중복 완화</h3>
+          <span style="font-size: 12px; font-weight: 800; color: #1F6A3E; background: #EDF3EC; border-radius: 999px; padding: 2px 10px;">CLOSE ✓</span>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 14px; line-height: 1.65; color: #44413B;"><strong>확인</strong> · P5에서 4탭(내 Flow·캘린더)과 기능 중복이던 홈 primary 아래 "저장한 콘텐츠 보기 · 캘린더 보기" 텍스트 링크가 <strong>제거</strong>됐습니다. 이제 홈 첫 뷰포트는 <strong>단일 primary "콘텐츠 고르러 가기" + 추천 카드 1장("열어보기")</strong>뿐이라 주행동 하나가 분명합니다(<code>01-home</code>). <code>SERVICE_STRUCTURE</code>의 "홈은 두 번째 카탈로그가 되면 안 된다" 원칙에 부합.</p>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #1F6A3E; border-radius: 16px; padding: 20px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <span style="font-size: 13px; font-weight: 800; background: #EDF3EC; color: #1F6A3E; border-radius: 6px; padding: 2px 9px;">P6-07</span>
+          <h3 style="margin: 0; font-size: 17px; font-weight: 800;">workbench 중복 시작 CTA 제거</h3>
+          <span style="font-size: 12px; font-weight: 800; color: #1F6A3E; background: #EDF3EC; border-radius: 999px; padding: 2px 10px;">CLOSE ✓</span>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 14px; line-height: 1.65; color: #44413B;"><strong>확인</strong> · P5에서 상단 입력과 같은 행동을 2번 노출하던 본문 인라인 "…으로 시작" 버튼이 사라졌습니다. 냉장고 워크벤치는 이제 <strong>단일 구조화 카드</strong> — "시작일만 넣으면 저장됩니다: 시트" 안에 [입력 · 시작일 입력] / [저장 결과 · 시트] / [먼저 할 일]로 정리(<code>s05-01</code>). 신차·중고차·세탁기도 동일 톤(<code>s05-06·s05-07·s05-04</code>). 주행동이 입력 카드 1개로 단일화됐습니다.</p>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #1F6A3E; border-radius: 16px; padding: 20px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <span style="font-size: 13px; font-weight: 800; background: #EDF3EC; color: #1F6A3E; border-radius: 6px; padding: 2px 9px;">P6-08</span>
+          <h3 style="margin: 0; font-size: 17px; font-weight: 800;">source brand/slug 표시 정리 (AJD · Mathbang)</h3>
+          <span style="font-size: 12px; font-weight: 800; color: #1F6A3E; background: #EDF3EC; border-radius: 999px; padding: 2px 10px;">CLOSE ✓ (스캔 유지)</span>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 14px; line-height: 1.65; color: #44413B;"><strong>확인</strong> · "AJD"·"Mathbang" prefix 스캔 0건, 픽셀에서도 브랜드 slug가 <strong>제목·부제로 새지 않음</strong>. 출처는 "<strong>원문과 근거</strong>"/"by 제작자" 인용부에만 등장 — 예: "by 차근차근 모빌리티", "원문과 근거 · TS한국교통안전공단 자동차검사 절차 안내 · main.kotsa.or.kr"(<code>s07-01</code>). 이는 정당한 출처 표기입니다. <strong>조건</strong> · 새 seed가 들어올 때 slug가 제목·부제로 누출되지 않도록 <strong>브랜드 slug 금지 스캔은 상시 유지</strong>(P7-06 guardrail).</p>
+      </article>
+
+      <div style="background: #1B1A17; color: #F5F4EF; border-radius: 16px; padding: 18px 22px;">
+        <p style="margin: 0; font-size: 14px; font-weight: 800; color: #9FF0B8;">종합 판정</p>
+        <p style="margin: 8px 0 0; font-size: 14.5px; line-height: 1.7;"><strong>P6-01 ~ P6-08 = 전부 close(8/8).</strong> 그중 <strong style="color:#9FF0B8;">P6-03·P6-08은 감시 조건부 close</strong>(2단 바 실사용 관찰 + 브랜드 slug 스캔 유지). <strong>정상 사용자 라우트 기준 Blocking·High·Medium = 0, 되돌린 회귀 = 0.</strong> 이번 루프는 P5에서 남긴 <strong>두 High(제목 반복·하단 확증)를 정확히 겨냥해 둘 다 닫은 성공적 정리 루프</strong>입니다. 유일한 잔여는 4탭 IA 밖 <code>/restart</code> 프로토타입의 raw ISO 16건 — <strong>다음은 close가 아니라 P7 게이트 설계</strong>입니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Route -->
+  <section id="routes" style="max-width: 1120px; margin: 0 auto; padding: 34px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 2</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">Route별 UX/UI 상태</h2>
+    </div>
+    <p style="margin: 10px 0 0; max-width: 820px; font-size: 14.5px; color: #6E6B64;">근거는 스크린샷 파일명. 배지는 이번 픽셀 판정. 정상 라우트는 전부 통과 — 잔여는 <code>/restart</code> 프로토타입 하나.</p>
+
+    <div style="display: grid; gap: 12px; margin-top: 18px;">
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #1F6A3E; border-radius: 16px; padding: 20px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <code style="font-size: 13.5px; font-weight: 800; background: #EEF1FF; color: #3654FF; border-radius: 6px; padding: 2px 8px;">/</code>
+          <h3 style="margin: 0; font-size: 17px; font-weight: 800;">홈</h3>
+          <span style="font-size: 12px; font-weight: 700; color: #1F6A3E; background: #EDF3EC; border-radius: 999px; padding: 2px 9px;">정리 완료</span>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 14px; line-height: 1.65; color: #44413B;">headline + 단일 primary "콘텐츠 고르러 가기" + 추천 카드 1장("열어보기")로 가벼움(<code>01-home</code>). P5의 <strong>보조 링크 중복(P6-06)·CTA 문구 불일치(P6-04) 모두 해소</strong>. 신규 문제 없음. <strong>P7 관찰</strong> · 추천 카드가 늘 "원룸 이사 D-30" 1개 고정 — 카탈로그가 커질 때 "small number of secondary starts" 노출 규칙만 정의(P7-04, 제품 판단).</p>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #1F6A3E; border-radius: 16px; padding: 20px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <code style="font-size: 13.5px; font-weight: 800; background: #EEF1FF; color: #3654FF; border-radius: 6px; padding: 2px 8px;">/flows</code>
+          <h3 style="margin: 0; font-size: 17px; font-weight: 800;">Flow 찾기</h3>
+          <span style="font-size: 12px; font-weight: 700; color: #1F6A3E; background: #EDF3EC; border-radius: 999px; padding: 2px 9px;">양호</span>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 14px; line-height: 1.65; color: #44413B;">"무엇을 저장할까요?" 헤더 + 검색 + 상황 칩 + 결정 우선 카드(결과 약속 · 먼저 할 일 · "열어보기 ›")(<code>02-flows</code>). CTA 문구가 이제 다른 진입점과 통일. route 신규 문제 없음.</p>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #1F6A3E; border-radius: 16px; padding: 20px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <code style="font-size: 13.5px; font-weight: 800; background: #EEF1FF; color: #3654FF; border-radius: 6px; padding: 2px 8px;">/flow-maps/[map]</code>
+          <h3 style="margin: 0; font-size: 17px; font-weight: 800;">Flow Map 상세 (저장 전)</h3>
+          <span style="font-size: 12px; font-weight: 700; color: #1F6A3E; background: #EDF3EC; border-radius: 999px; padding: 2px 9px;">하단 확증 ✓</span>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 14px; line-height: 1.65; color: #44413B;">제목 "지도" 접미 없음, eyebrow "열어보기", 결과 약속·칩·"먼저 할 일" 좋음(<code>03·04-flow-map</code>). P5의 이중 하단 바 clearance가 <strong>s07-03·04로 확증</strong> — 마지막 카드가 2단 바 위로 완전 노출. 2단 배치는 문서화된 의도(P6-03). 정상 통과.</p>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #1F6A3E; border-radius: 16px; padding: 20px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <code style="font-size: 13.5px; font-weight: 800; background: #EEF1FF; color: #3654FF; border-radius: 6px; padding: 2px 8px;">/f/[slug]</code>
+          <h3 style="margin: 0; font-size: 17px; font-weight: 800;">공개 상세 · 저장형 + workbench (공유 shell)</h3>
+          <span style="font-size: 12px; font-weight: 700; color: #1F6A3E; background: #EDF3EC; border-radius: 999px; padding: 2px 9px;">단일 sticky + 전환 ✓</span>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 14px; line-height: 1.65; color: #44413B;">4탭 없는 단일 저장 sticky, 저장 후 헤더·sticky 동시에 "내 Flow에서 보기"로 전환, 친화 날짜 "7월 17일 (금) (D-13)"(<code>s04-01~03</code>). 최하단 clearance 확증(<code>s07-01</code>). 워크벤치도 톤 통일 + 중복 시작 CTA 제거(<code>s05-01·06·07</code>). <strong>P7 관찰</strong> · 저장 전 워크벤치 우측 상단 "콘텐츠 더 보기"가 공유 첫 행동(저장)과 경쟁하지 않는지만 확인(P7-05, 작음).</p>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #1F6A3E; border-radius: 16px; padding: 20px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <code style="font-size: 13.5px; font-weight: 800; background: #EEF1FF; color: #3654FF; border-radius: 6px; padding: 2px 8px;">/my (오늘 · 저장 직후)</code>
+          <h3 style="margin: 0; font-size: 17px; font-weight: 800;">내 Flow — 오늘 / 저장 직후</h3>
+          <span style="font-size: 12px; font-weight: 700; color: #1F6A3E; background: #EDF3EC; border-radius: 999px; padding: 2px 9px;">제목 반복 해소 ✓</span>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 14px; line-height: 1.65; color: #44413B;">"저장됨"(콘텐츠명) 히어로 + [오늘/전체] + "밀린/먼저 할 일 · N개"(라벨+개수) 섹션 + 카드(제목 1회) + "지금 이어하기"로 실행형(<code>s02-03·s03-02·s06-01</code>). <strong>P5 High(제목 2~3중) 완전 해소.</strong> <strong>P7 evidence</strong> · 지금 샷은 늘 큐 1개만 채워짐 — 오늘·밀린·다음이 <strong>동시에</strong> 찬 상태에서 같은 항목이 두 섹션에 겹치지 않는지 재캡처(P7-02).</p>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #1F6A3E; border-radius: 16px; padding: 20px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <code style="font-size: 13.5px; font-weight: 800; background: #EEF1FF; color: #3654FF; border-radius: 6px; padding: 2px 8px;">/my (전체) · /calendar</code>
+          <h3 style="margin: 0; font-size: 17px; font-weight: 800;">내 Flow 전체 · 캘린더</h3>
+          <span style="font-size: 12px; font-weight: 700; color: #1F6A3E; background: #EDF3EC; border-radius: 999px; padding: 2px 9px;">기준 패턴 유지</span>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 14px; line-height: 1.65; color: #44413B;">전체 탭은 카드당 "n/n 완료 + 진행바 + 다음 할 일 · [제목]" 1줄(<code>s06-02</code>) — P6-01의 참조 구현. 캘린더는 선택일 "7월 8일 (수)" agenda가 월 그리드 <strong>위에 먼저</strong>, 그리드는 숫자+점 지시자(<code>s02-05</code>). 친화 날짜·결과 중심 export 라벨 유지. <strong>P7 evidence</strong> · 저장 5개+ 긴 목록 최하단 clearance는 아직 미확인(현재 2개만)(P7-03).</p>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #B95000; border-radius: 16px; padding: 20px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <code style="font-size: 13.5px; font-weight: 800; background: #FCF3E4; color: #B95000; border-radius: 6px; padding: 2px 8px;">/restart/moving-d30</code>
+          <h3 style="margin: 0; font-size: 17px; font-weight: 800;">이사 restart (프로토타입 · 4탭 IA 밖)</h3>
+          <span style="font-size: 12px; font-weight: 700; color: #B95000; background: #FCF3E4; border-radius: 999px; padding: 2px 9px;">raw ISO 16건 · P7 게이트</span>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 14px; line-height: 1.65; color: #44413B;">할 일 행마다 "<strong>D-30 · 2026-05-28</strong>" <strong>raw ISO 날짜</strong>가 렌더 텍스트로 노출(<code>s05-08·09·10</code>, 총 16건). 네이티브 input이 아니라 실제 표시 텍스트라 친화 날짜 기준선(P5-05) 위반. <strong>단, </strong><code>SERVICE_STRUCTURE</code>가 <code>/restart</code>를 "Do Not Expose As Primary Nav Yet"로 명시 — 4탭 밖, 정상 discovery에서 도달 불가. 정상 라우트 ISO=0. <strong>따라서 P6 blocker 아님 → P7 게이트</strong>(승격 전 정리). 부차 · 하단 export sticky가 본문 "내 도구로 가져가기"와 3버튼 중복(<code>s05-10</code>) — 같이 정리.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- 3. Scenario -->
+  <section id="scen" style="max-width: 1120px; margin: 0 auto; padding: 34px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 3</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">Scenario별 UX/UI 상태 (s01–s07)</h2>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 12px; margin-top: 18px;">
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 16px 18px;">
+        <p style="margin: 0; font-size: 14px; font-weight: 800; color: #1F6A3E;">s01 첫 진입 · Flow 찾기 스캔 — 통과</p>
+        <p style="margin: 7px 0 0; font-size: 13.5px; line-height: 1.6; color: #44413B;">홈("콘텐츠 고르러 가기") → Flow 찾기("무엇을 저장할까요?") → 첫 카드까지 정보량 낮고 첫 행동 하나 분명. CTA 문구도 "열어보기"로 통일돼 스캔 마찰 없음.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 16px 18px;">
+        <p style="margin: 0; font-size: 14px; font-weight: 800; color: #1F6A3E;">s02 이사 저장 → My Flow → 캘린더 — 통과</p>
+        <p style="margin: 7px 0 0; font-size: 13.5px; line-height: 1.6; color: #44413B;">저장하고 시작 → "저장됨"(콘텐츠명) 히어로 → "밀린 할 일 · 1개 밀림" + 카드 제목 1회 → 캘린더 agenda-first 전부 동작. <strong>P5 걸림돌(제목 3중) 해소</strong>(<code>s02-03·05</code>).</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 16px 18px;">
+        <p style="margin: 0; font-size: 14px; font-weight: 800; color: #1F6A3E;">s03 날짜 없는 콘텐츠(중1 수학) — 통과</p>
+        <p style="margin: 7px 0 0; font-size: 13.5px; line-height: 1.6; color: #44413B;">저장 후 "먼저 할 일 · 1개 대기" + [날짜 없음] 배지 + "1. 소인수분해" 1회, 열면 8개 개념 체크(<code>s03-02·03</code>). fallback 첫 항목·제목 1회 모두 성립. "Mathbang" 없음.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 16px 18px;">
+        <p style="margin: 0; font-size: 14px; font-weight: 800; color: #1F6A3E;">s04 공유 /f 저장 전/후 — 통과</p>
+        <p style="margin: 7px 0 0; font-size: 13.5px; line-height: 1.6; color: #44413B;">단일 저장 CTA·"다른 방법" 접기·친화 날짜·저장 후 "내 Flow에서 보기" 전환·/my 이어짐 매끄러움(<code>s04-01~04</code>). P5 걸림돌(최하단 미확증)이 <code>s07-01</code>로 닫힘.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 16px 18px;">
+        <p style="margin: 0; font-size: 14px; font-weight: 800; color: #B95000;">s05 특수 workbench + restart — 혼합</p>
+        <p style="margin: 7px 0 0; font-size: 13.5px; line-height: 1.6; color: #44413B;">냉장고·세탁기·신차·중고차 톤 통일 + 중복 시작 CTA 제거 ✓(<code>s05-01·04·06·07</code>). 반면 <strong>restart는 raw ISO "2026-05-28" 노출</strong>(<code>s05-08~10</code>) — 프로토타입이라 P7 게이트로 분리.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 16px 18px;">
+        <p style="margin: 0; font-size: 14px; font-weight: 800; color: #1F6A3E;">s06 여러 Flow 저장 반복 사용 — 통과</p>
+        <p style="margin: 7px 0 0; font-size: 13.5px; line-height: 1.6; color: #44413B;">저장 직후(오늘)와 전체 탭 목록 <strong>둘 다 제목 1회</strong>로 일관(<code>s06-01/02</code>). P5의 "같은 데이터 두 표시 위계" 불일치 해소. 하단도 4탭 위 노출(<code>s06-03</code>).</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 16px 18px; grid-column: 1 / -1;">
+        <p style="margin: 0; font-size: 14px; font-weight: 800; color: #1F6A3E;">s07 하단 sticky/fixed layer 최하단 — 통과 (이번 라운드 핵심 신규 evidence)</p>
+        <p style="margin: 7px 0 0; font-size: 13.5px; line-height: 1.6; color: #44413B;">P5 evidence 공백을 정확히 메운 5장. /f 저장형 단일 sticky(<code>s07-01</code>)·공유 이사(<code>s07-02</code>)·/flow-maps 2단 바(<code>s07-03</code>)·수학 flow-map(<code>s07-04</code>)·캘린더(<code>s07-05</code>) 모두 <strong>최하단 마지막 카드/버튼이 고정 UI 위로 완전 노출</strong>. "가려서 못 누름"이 픽셀에서 부재. <strong>지난 라운드 최상위 High를 닫은 결정적 evidence.</strong></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. priority -->
+  <section id="prio" style="max-width: 1120px; margin: 0 auto; padding: 34px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 4</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">Blocking / High / Medium / Low</h2>
+    </div>
+
+    <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px;">
+      <div style="background: #EDF3EC; border: 1px solid #CADFC9; border-radius: 14px; padding: 16px 18px;">
+        <p style="margin: 0; font-size: 15px; font-weight: 800; color: #1F6A3E;">Blocking — 없음</p>
+        <p style="margin: 6px 0 0; font-size: 13px; line-height: 1.55; color: #35563A;">찾기→저장→실행→캘린더/공유→앱 전환을 끊는 문제 0.</p>
+      </div>
+      <div style="background: #EDF3EC; border: 1px solid #CADFC9; border-radius: 14px; padding: 16px 18px;">
+        <p style="margin: 0; font-size: 15px; font-weight: 800; color: #1F6A3E;">High — 없음</p>
+        <p style="margin: 6px 0 0; font-size: 13px; line-height: 1.55; color: #35563A;">P5의 두 High(제목 반복·하단 확증) 모두 close. 신규 High 0.</p>
+      </div>
+      <div style="background: #EDF3EC; border: 1px solid #CADFC9; border-radius: 14px; padding: 16px 18px;">
+        <p style="margin: 0; font-size: 15px; font-weight: 800; color: #1F6A3E;">Medium (정상 라우트) — 없음</p>
+        <p style="margin: 6px 0 0; font-size: 13px; line-height: 1.55; color: #35563A;">정상 사용자 화면에 흐름·완성도를 깎는 Medium 0.</p>
+      </div>
+    </div>
+    <p style="margin: 14px 0 0; max-width: 820px; font-size: 13.5px; color: #6E6B64;">아래는 전부 <strong>P7 항목</strong>입니다 — 흐름을 막지 않고, 대부분 프로토타입 게이트·evidence 보강·guardrail·제품 판단입니다.</p>
+
+    <div style="display: flex; align-items: center; gap: 8px; margin-top: 22px;">
+      <span style="width: 10px; height: 10px; border-radius: 999px; background: #B95000;"></span>
+      <h3 style="margin: 0; font-size: 18px; font-weight: 800;">Medium — 프로토타입 게이트 (승격 전 필수)</h3>
+    </div>
+    <div style="display: grid; gap: 10px; margin-top: 12px;">
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #B95000; border-radius: 14px; padding: 16px 18px;">
+        <p style="margin: 0; font-size: 15.5px; font-weight: 800;"><span style="background:#FCF3E4;color:#B95000;border-radius:6px;padding:1px 7px;font-size:11.5px;margin-right:8px;">P7-01</span><code>/restart/moving-d30</code> raw ISO 16건 + 하단 export 중복</p>
+        <p style="margin: 8px 0 0; font-size: 14px; line-height: 1.6; color: #44413B;">할 일 행 "D-30 · <strong>2026-05-28</strong>"를 친화 포맷("5월 28일 (목)")으로, 본문 "내 도구로 가져가기"와 하단 sticky의 3버튼 중복 정리(<code>s05-08~10</code>). <strong>프로토타입 route 한정</strong>이라 정상 라우트 P6 blocker는 아니지만, <code>/restart</code>를 어떤 형태로든 정상 노출·승격하려면 <strong>사전 필수 게이트</strong>. 지금은 "prototype-only ISO 버킷"으로 분리 추적.</p>
+      </article>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 8px; margin-top: 24px;">
+      <span style="width: 10px; height: 10px; border-radius: 999px; background: #3654FF;"></span>
+      <h3 style="margin: 0; font-size: 18px; font-weight: 800;">Low — evidence 보강 / 제품 판단</h3>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 10px; margin-top: 12px;">
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 15px 17px;">
+        <p style="margin: 0; font-size: 14px; line-height: 1.6;"><span style="background:#EEF1FF;color:#3654FF;border-radius:6px;padding:1px 7px;font-size:11px;font-weight:800;margin-right:6px;">P7-02</span><strong>오늘 탭 다중 큐 상태 evidence</strong> — 오늘·밀린·다음이 동시에 찬 저장 상태를 캡처해 같은 항목이 두 섹션에 겹치지 않는지, 라벨+개수 패턴이 밀도에서도 유지되는지 확인. (P6-01 후속)</p>
+      </article>
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 15px 17px;">
+        <p style="margin: 0; font-size: 14px; line-height: 1.6;"><span style="background:#EEF1FF;color:#3654FF;border-radius:6px;padding:1px 7px;font-size:11px;font-weight:800;margin-right:6px;">P7-03</span><strong>긴 저장 목록 최하단 clearance</strong> — 현재 2개 저장만 확인. 5개+ 저장 시 전체 탭 마지막 카드가 4탭 위로 노출되는지 재캡처. (P6-02 확장)</p>
+      </article>
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 15px 17px;">
+        <p style="margin: 0; font-size: 14px; line-height: 1.6;"><span style="background:#EEF1FF;color:#3654FF;border-radius:6px;padding:1px 7px;font-size:11px;font-weight:800;margin-right:6px;">P7-04</span><strong>홈 추천 카드 큐레이션 규칙</strong> — 늘 1개 고정. "small number of secondary starts" 개수/선정 규칙을 제품에서 정의(현재는 문제 아님, 확장 대비). </p>
+      </article>
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 15px 17px;">
+        <p style="margin: 0; font-size: 14px; line-height: 1.6;"><span style="background:#EEF1FF;color:#3654FF;border-radius:6px;padding:1px 7px;font-size:11px;font-weight:800;margin-right:6px;">P7-05</span><strong>/f 워크벤치 저장 전 상단 링크</strong> — 우측 상단 "콘텐츠 더 보기"가 공유 첫 행동(저장)과 경쟁하지 않는지 확인. 저장 전엔 저장이 주행동. </p>
+      </article>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 8px; margin-top: 26px;">
+      <span style="width: 10px; height: 10px; border-radius: 999px; background: #8A857B;"></span>
+      <h3 style="margin: 0; font-size: 18px; font-weight: 800;">Guardrail — 상시 green 유지</h3>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 10px; margin-top: 12px;">
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 15px 17px;">
+        <p style="margin: 0; font-size: 14px; line-height: 1.6;"><span style="background:#F1F0EC;color:#6E6B64;border-radius:6px;padding:1px 7px;font-size:11px;font-weight:800;margin-right:6px;">P7-06</span>회귀 스캔 상시 0 유지: 브랜드 slug(AJD·Mathbang) 제목·부제 누출 · trailing "Flow"/"지도" 접미 · 정상 라우트 raw ISO · 좌우 overflow · 첫 할 일 제목 반복. <code>/restart</code> ISO는 <strong>별도 버킷</strong>으로 추적(게이트).</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- 5. P7 backlog -->
+  <section id="backlog" style="max-width: 1120px; margin: 0 auto; padding: 34px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 5</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">바로 개발 가능한 P7 백로그</h2>
+    </div>
+    <p style="margin: 10px 0 0; max-width: 820px; font-size: 14.5px; color: #6E6B64;">위→아래가 착수 순서. 전부 <strong>표시·레이아웃·문구·evidence</strong>이며 데이터/저장/실행/export 스키마는 건드리지 않음. <strong>정상 라우트는 이미 통과</strong>이므로 P7은 프로토타입 게이트 + 확증 보강이 중심.</p>
+
+    <div style="margin-top: 16px; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; overflow-x: auto;">
+      <div style="min-width: 1040px;">
+        <div style="display: grid; grid-template-columns: 66px 0.8fr 1.25fr 1.7fr 1fr 0.9fr; gap: 0 14px; padding: 12px 20px; border-bottom: 1px solid #E7E4DD; font-size: 12px; font-weight: 800; color: #8A857B;">
+          <span>ID</span><span>우선순위</span><span>화면/영역</span><span>수정 지시</span><span>완료 기준</span><span>검증</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 66px 0.8fr 1.25fr 1.7fr 1fr 0.9fr; gap: 0 14px; padding: 12px 20px; border-bottom: 1px solid #F1F0EC; font-size: 13px; line-height: 1.5;">
+          <span style="font-weight: 800; color: #B95000;">P7-01</span><span><span style="background:#FCF3E4;color:#B95000;border-radius:5px;padding:1px 6px;font-size:11px;font-weight:800;">Med · 게이트</span></span>
+          <span><code>/restart/moving-d30</code></span>
+          <span>할 일 행 "D-30 · <code>2026-05-28</code>" raw ISO를 <strong>친화 포맷</strong>("5월 28일 (목) · D-30")으로. 본문 "내 도구로 가져가기"와 하단 export sticky 3버튼 중복은 <strong>하단을 요약/단일 진입</strong>으로 정리. 정상 route 로직·스키마 불변, <strong>표시만</strong>.</span>
+          <span>restart 렌더 텍스트 raw ISO hit 0. 하단 고정 export 중복 0.</span>
+          <span>s05-08·09·10 재캡처 + prototype ISO 버킷 0.</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 66px 0.8fr 1.25fr 1.7fr 1fr 0.9fr; gap: 0 14px; padding: 12px 20px; border-bottom: 1px solid #F1F0EC; font-size: 13px; line-height: 1.5;">
+          <span style="font-weight: 800; color: #3654FF;">P7-02</span><span><span style="background:#EEF1FF;color:#3654FF;border-radius:5px;padding:1px 6px;font-size:11px;font-weight:800;">Low · evidence</span></span>
+          <span>My Flow 오늘 (다중 큐)</span>
+          <span>오늘 할 일 + 밀린 할 일 + 다음 할 일이 <strong>동시에 채워진</strong> 저장 상태를 만들어 캡처. 같은 항목이 두 섹션에 <strong>중복 노출되지 않고</strong>, 라벨+개수 섹션 패턴이 밀도에서도 읽히는지 확인. 필요 시 큐 우선순위(오늘&gt;밀린&gt;다음&gt;먼저) 중복 제거 규칙 명문화.</span>
+          <span>다중 큐에서 동일 항목 2섹션 노출 0. 제목 반복 0.</span>
+          <span>다중 저장 /my?savedMap= 풀스크롤 신규 샷.</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 66px 0.8fr 1.25fr 1.7fr 1fr 0.9fr; gap: 0 14px; padding: 12px 20px; border-bottom: 1px solid #F1F0EC; font-size: 13px; line-height: 1.5;">
+          <span style="font-weight: 800; color: #3654FF;">P7-03</span><span><span style="background:#EEF1FF;color:#3654FF;border-radius:5px;padding:1px 6px;font-size:11px;font-weight:800;">Low · evidence</span></span>
+          <span>My Flow 전체 (긴 목록)</span>
+          <span>저장 <strong>5개+</strong> 쌓인 전체 탭 하단 캡처. 목록이 길어도 마지막 카드가 4탭 위로 완전 노출되는지 확인(현재 2개만 evidence).</span>
+          <span>긴 목록 최하단 마지막 카드 완전 노출.</span>
+          <span>저장 5+ /my 전체 최하단 신규 샷.</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 66px 0.8fr 1.25fr 1.7fr 1fr 0.9fr; gap: 0 14px; padding: 12px 20px; border-bottom: 1px solid #F1F0EC; font-size: 13px; line-height: 1.5;">
+          <span style="font-weight: 800; color: #3654FF;">P7-04</span><span><span style="background:#EEF1FF;color:#3654FF;border-radius:5px;padding:1px 6px;font-size:11px;font-weight:800;">Low · 제품</span></span>
+          <span>홈 추천 카드</span>
+          <span>추천 카드가 늘 "원룸 이사 D-30" 1개 고정. <code>SERVICE_STRUCTURE</code>의 "small number of secondary starts" 개수·선정 규칙 정의(예: 상황 기반 1~3장). 지금은 결함 아님 — 카탈로그 확장 대비.</span>
+          <span>추천 노출 규칙 문서화 + 홈 밀도 유지.</span>
+          <span>01-home 규칙 반영 후 샷.</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 66px 0.8fr 1.25fr 1.7fr 1fr 0.9fr; gap: 0 14px; padding: 12px 20px; border-bottom: 1px solid #F1F0EC; font-size: 13px; line-height: 1.5;">
+          <span style="font-weight: 800; color: #3654FF;">P7-05</span><span><span style="background:#EEF1FF;color:#3654FF;border-radius:5px;padding:1px 6px;font-size:11px;font-weight:800;">Low</span></span>
+          <span>/f 워크벤치 상단 링크</span>
+          <span>저장 전 워크벤치 우측 상단 "콘텐츠 더 보기"가 공유 첫 행동(저장)과 경쟁하지 않게 위계 확인/완화. 저장 후엔 이미 "내 Flow에서 보기"로 올바르게 전환됨.</span>
+          <span>저장 전 주행동 = 저장 1개.</span>
+          <span>s05-01 전/후 샷.</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 66px 0.8fr 1.25fr 1.7fr 1fr 0.9fr; gap: 0 14px; padding: 12px 20px; font-size: 13px; line-height: 1.5;">
+          <span style="font-weight: 800; color: #8A857B;">P7-06</span><span><span style="background:#F1F0EC;color:#6E6B64;border-radius:5px;padding:1px 6px;font-size:11px;font-weight:800;">Guardrail</span></span>
+          <span>회귀 스캔</span>
+          <span>브랜드 slug(제목·부제) · trailing Flow/지도 접미 · 정상 라우트 raw ISO · 좌우 overflow · 첫 할 일 제목 반복 = 상시 0. <code>/restart</code> ISO는 별도 버킷으로 추적하고 승격 게이트에 연결.</span>
+          <span>정상 라우트 스캔 전부 0 유지.</span>
+          <span>route-evidence.json 재생성.</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 14px; background: #1B1A17; color: #F5F4EF; border-radius: 16px; padding: 20px 22px;">
+      <p style="margin: 0; font-size: 14px; font-weight: 800; color: #9FF0B8;">착수 순서 — P7-01 (프로토타입 게이트) → P7-02·03 (evidence 보강)</p>
+      <p style="margin: 8px 0 0; font-size: 14.5px; line-height: 1.7;">정상 라우트는 <strong>이미 출시 가능한 수준</strong>입니다. P7은 회귀 방지 성격이 큽니다. <strong>P7-01</strong>은 <code>/restart</code>를 어떤 형태로든 노출하기 전 반드시 닫을 유일한 표시 결함이고, 나머지 P7-02·03은 지금 못 본 다중 큐·긴 목록 상태를 <strong>재캡처로 확증</strong>해 P6 close를 완전히 봉인하는 작업입니다. 스키마·IA·기능 변경은 없습니다.</p>
+    </div>
+  </section>
+
+  <!-- 6. hold -->
+  <section id="hold" style="max-width: 1120px; margin: 0 auto; padding: 34px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 6</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">유지해야 할 기준선</h2>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 12px; margin-top: 18px;">
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-top: 4px solid #1F6A3E; border-radius: 16px; padding: 20px;">
+        <p style="margin: 0; font-size: 14px; font-weight: 800; color: #1F6A3E;">이번에 검증돼 잠긴 것 — 깨지 말 것</p>
+        <ul style="margin: 10px 0 0; padding-left: 18px; font-size: 14px; line-height: 1.8; color: #44413B;">
+          <li>4탭 IA (홈 · Flow 찾기 · 캘린더 · 내 Flow)</li>
+          <li>오늘 탭 = <strong>라벨+개수 섹션 헤더 + 카드 제목 1회</strong> (P6-01)</li>
+          <li>전체 탭 = 행당 카운트 1종 + 다음 할 일 1줄 (참조 패턴)</li>
+          <li>날짜 없는 콘텐츠 <strong>"먼저 할 일" fallback + [날짜 없음]</strong> 배지</li>
+          <li>진입 CTA 문구 <strong>"열어보기" 단일</strong> (P6-04)</li>
+          <li>할 일 상세 <strong>"확인 항목" 단일 라벨</strong> (P6-05)</li>
+          <li>공개 /f/ <strong>4탭 없는 공유 shell</strong> + 저장 후 "내 Flow에서 보기" 전환</li>
+          <li>하단 sticky clearance + Flow Map "sticky above tabs, visible separation"</li>
+          <li>친화 날짜 "7월 6일 (월)"·"(D-13)" · 캘린더 agenda-first</li>
+          <li>workbench warm 톤 · 단일 입력 카드 (P6-07)</li>
+        </ul>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-top: 4px solid #C0341D; border-radius: 16px; padding: 20px;">
+        <p style="margin: 0; font-size: 14px; font-weight: 800; color: #C0341D;">건드리면 위험한 파일/개념</p>
+        <ul style="margin: 10px 0 0; padding-left: 18px; font-size: 14px; line-height: 1.8; color: #44413B;">
+          <li><code>storage</code> 키·스냅샷 (P7은 <strong>표시·레이아웃</strong>만)</li>
+          <li>source-backed My Flow 병합/dedupe·fallback 큐</li>
+          <li><code>sourceTrace · sourceUrl · source_title</code> 원본 — 삭제·가공 금지(P6-08은 표시만)</li>
+          <li><code>export</code>·workbench 파일 생성 · <code>data-testid</code> · 캡처 하네스</li>
+          <li>seed 제목 원본 (표시 스트립만, 원본 일괄 치환 금지)</li>
+        </ul>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-top: 4px solid #B95000; border-radius: 16px; padding: 20px;">
+        <p style="margin: 0; font-size: 14px; font-weight: 800; color: #B95000;">지금은 하지 말 것</p>
+        <ul style="margin: 10px 0 0; padding-left: 18px; font-size: 14px; line-height: 1.8; color: #44413B;">
+          <li>설명 문장 추가로 문제 해결 (위계·표시·패딩으로)</li>
+          <li>새 기능 · 새 탭 · IA 변경</li>
+          <li>공개 /f/에 4탭 강제 편입</li>
+          <li><code>/restart</code>를 정리 없이 정상 노출·승격 (P7-01 게이트 먼저)</li>
+          <li>오늘 탭 섹션을 늘리는 방향 (줄이는 방향 유지)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. screen fixes -->
+  <section id="fix" style="max-width: 1120px; margin: 0 auto; padding: 34px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 7</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">화면별 구체 수정 지시</h2>
+    </div>
+    <div style="display: grid; gap: 12px; margin-top: 18px;">
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 20px;">
+        <p style="margin: 0; font-size: 16px; font-weight: 800;">/restart/moving-d30 할 일 행 <span style="font-size: 12.5px; font-weight: 700; color: #8A857B;">MovingD30Restart (P7-01 · 최우선 게이트)</span></p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px;">
+          <div style="background: #FBEAE5; border-radius: 10px; padding: 12px 14px;"><p style="margin:0;font-size:11.5px;font-weight:800;color:#C0341D;">현재 (s05-08)</p><p style="margin:6px 0 0;font-size:13px;line-height:1.55;color:#44413B;"><strong style="color:#C0341D;">D-30 · 2026-05-28</strong><br>버릴 물건과 대형폐기물 정리 [수정]<br><strong style="color:#C0341D;">D-30 · 2026-05-28</strong><br>이사 방식과 업체 후보 정하기 [수정]</p></div>
+          <div style="background: #EDF3EC; border-radius: 10px; padding: 12px 14px;"><p style="margin:0;font-size:11.5px;font-weight:800;color:#1F6A3E;">제안 (친화 포맷)</p><p style="margin:6px 0 0;font-size:13px;line-height:1.55;color:#44413B;"><strong style="color:#1F6A3E;">5월 28일 (목) · D-30</strong><br>버릴 물건과 대형폐기물 정리 [수정]<br><strong style="color:#1F6A3E;">5월 28일 (목) · D-30</strong><br>이사 방식과 업체 후보 정하기 [수정]</p></div>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 13px; color: #6E6B64;">지시: 정상 라우트와 같은 날짜 포맷터를 <code>/restart</code> 렌더에도 적용(내부 값·정렬은 ISO 유지, 표시만 친화 포맷). 하단 "내 도구로 가져가기" 3버튼과 하단 sticky 3버튼 중복은 sticky를 요약 1버튼(또는 시트 오픈)으로. <strong>프로토타입 한정 · 승격 전 필수.</strong></p>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 20px;">
+        <p style="margin: 0; font-size: 16px; font-weight: 800;">저장 직후 · 오늘 탭 다중 큐 <span style="font-size: 12.5px; font-weight: 700; color: #8A857B;">now-section (P7-02 · evidence + 규칙)</span></p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px;">
+          <div style="background: #EDF3EC; border-radius: 10px; padding: 12px 14px;"><p style="margin:0;font-size:11.5px;font-weight:800;color:#1F6A3E;">지금 확인된 것 (s02-03)</p><p style="margin:6px 0 0;font-size:13px;line-height:1.55;color:#44413B;">밀린 할 일 · 1개 밀림<br>└ 이사 방식과 견적 후보 정하기 (제목 1회)<br>= 단일 큐에서 제목 반복 0 ✓</p></div>
+          <div style="background: #FCF3E4; border-radius: 10px; padding: 12px 14px;"><p style="margin:0;font-size:11.5px;font-weight:800;color:#B95000;">아직 못 본 상태</p><p style="margin:6px 0 0;font-size:13px;line-height:1.55;color:#44413B;">오늘 할 일 + 밀린 할 일 + 다음 할 일이<br><strong>동시에</strong> 채워졌을 때<br>같은 항목이 두 섹션에 겹치는가?<br>→ 재캡처 + 큐 dedupe 규칙 확인</p></div>
+        </div>
+        <p style="margin: 10px 0 0; font-size: 13px; color: #6E6B64;">지시: 큐 우선순위(오늘&gt;밀린&gt;다음&gt;먼저)에서 한 항목은 <strong>가장 높은 큐 1곳</strong>에만. 다중 큐 풀스크롤 샷으로 확증하면 P6-01이 완전히 봉인됨.</p>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 20px;">
+        <p style="margin: 0; font-size: 16px; font-weight: 800;">/flow-maps 하단 2단 바 <span style="font-size: 12.5px; font-weight: 700; color: #8A857B;">FlowMapDetail (P6-03 · 감시)</span></p>
+        <p style="margin: 8px 0 0; font-size: 13.5px; line-height: 1.6; color: #44413B;">현재 "저장하고 시작" sticky + 4탭이 시각 구분선을 두고 2단 — <strong>문서화된 의도이고 clearance도 확증(s07-03)</strong>이라 <strong>코드 수정 대상 아님</strong>. 다만 360px·짧은 뷰포트에서 ~130px 하단 점유가 오탭/가림을 만들지 않는지는 실사용 관찰로만 확정. 관찰에서 문제 없으면 영구 close, 문제 있으면 그때 "스크롤 시 4탭 자동 숨김" 등으로 1단화 검토.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- 8. answers -->
+  <section id="q" style="max-width: 1120px; margin: 0 auto; padding: 34px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 8</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">audit.md 확인 질문 — 답</h2>
+    </div>
+    <div style="display: grid; gap: 10px; margin-top: 18px;">
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 16px 18px;">
+        <p style="margin: 0; font-size: 14.5px; font-weight: 800;">Q1. P6-01~P6-08을 닫힌 기준선으로 봐도 되는가?</p>
+        <p style="margin: 7px 0 0; font-size: 13.5px; line-height: 1.65; color: #44413B;"><strong style="color:#1F6A3E;">예 — 8개 전부 close.</strong> 그중 P6-03(2단 바)·P6-08(브랜드 slug)은 <strong>감시 조건부</strong>: 전자는 실사용 관찰로 영구 확정, 후자는 새 seed 대비 스캔 상시 유지. 정상 라우트 회귀·Blocking·High 없음.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 16px 18px;">
+        <p style="margin: 0; font-size: 14.5px; font-weight: 800;">Q2. 저장 후 My Flow·Calendar가 충분히 실행형 앱처럼 보이는가?</p>
+        <p style="margin: 7px 0 0; font-size: 13.5px; line-height: 1.65; color: #44413B;"><strong style="color:#1F6A3E;">예.</strong> My Flow는 히어로(콘텐츠명)→라벨+개수 섹션→제목 1회 카드→"지금 이어하기"로 실행형(<code>s02-03·s03-02</code>), 캘린더는 선택일 agenda가 그리드 위에 먼저(<code>s02-05</code>). P5의 제목 반복이 사라져 "지금 할 일"이 바로 읽힙니다. 남은 건 다중 큐 상태 재캡처(P7-02)뿐.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 16px 18px;">
+        <p style="margin: 0; font-size: 14.5px; font-weight: 800;">Q3. /flow-maps 하단 CTA와 4탭이 아직 2단 fixed UI처럼 보이는가?</p>
+        <p style="margin: 7px 0 0; font-size: 13.5px; line-height: 1.65; color: #44413B;"><strong style="color:#B95000;">2단인 것은 맞습니다 — 그러나 결함이 아니라 문서화된 의도</strong>입니다(<code>SERVICE_STRUCTURE</code>: sticky above tabs, visible separation). 정렬·구분으로 하나의 조작 영역처럼 읽히고 clearance도 확증(<code>s07-03</code>). 코드 수정 없이 <strong>close</strong>, 단 짧은 뷰포트 실사용 관찰만 P7 감시로 남깁니다.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 16px 18px;">
+        <p style="margin: 0; font-size: 14.5px; font-weight: 800;">Q4. 공유 /f/ shell은 계속 공유 진입 예외로 유지해도 되는가?</p>
+        <p style="margin: 7px 0 0; font-size: 13.5px; line-height: 1.65; color: #44413B;"><strong style="color:#1F6A3E;">예, 유지.</strong> 4탭 없는 단일 저장 화면 → 저장 후 "내 Flow에서 보기" 전환이 공유 링크 첫 인상으로 적절하고, 저장형·워크벤치 모두 성립(<code>s04·s05·s07-01</code>). 4탭 강제 편입 금지.</p>
+      </div>
+      <div style="background: #1B1A17; color: #F5F4EF; border-radius: 14px; padding: 16px 18px;">
+        <p style="margin: 0; font-size: 14.5px; font-weight: 800; color: #9FF0B8;">Q5. 다음 루프가 필요하면 P7 backlog를 Blocking/High/Medium/Low로.</p>
+        <p style="margin: 7px 0 0; font-size: 13.5px; line-height: 1.65;"><strong>Blocking·High = 없음.</strong> <strong style="color:#F4C879;">Medium(게이트)</strong> = P7-01 <code>/restart</code> raw ISO + export 중복(승격 전 필수). <strong style="color:#9FB4FF;">Low</strong> = P7-02 다중 큐 evidence · P7-03 긴 목록 clearance · P7-04 홈 추천 규칙 · P7-05 워크벤치 상단 링크 · P7-06 회귀 스캔 guardrail. <strong>정상 라우트는 출시 가능 수준 — P7은 회귀 방지·확증 루프.</strong></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. evidence gaps -->
+  <section id="gap" style="max-width: 1120px; margin: 0 auto; padding: 34px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 9</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">추가로 필요한 screenshot / evidence</h2>
+    </div>
+    <p style="margin: 10px 0 0; max-width: 820px; font-size: 14.5px; color: #6E6B64;">50장으로 정상 라우트 P6는 확증됐습니다. 아래는 P6 close를 <strong>완전히 봉인</strong>하고 P7을 여는 데 필요한 나머지.</p>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 12px; margin-top: 18px;">
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #B95000; border-radius: 14px; padding: 16px 18px;">
+        <p style="margin: 0; font-size: 14px; font-weight: 800; color: #B95000;">1 · restart 친화 날짜 적용 후</p>
+        <p style="margin: 6px 0 0; font-size: 13px; line-height: 1.6; color: #44413B;"><code>/restart/moving-d30</code> 상단·출처·하단(<code>s05-08~10</code> 대응) 재캡처. "D-30 · 2026-05-28"이 "5월 28일 (목) · D-30"으로 바뀌고 하단 export 중복이 사라졌는지.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #3654FF; border-radius: 14px; padding: 16px 18px;">
+        <p style="margin: 0; font-size: 14px; font-weight: 800; color: #3654FF;">2 · 오늘 탭 다중 큐 풀스크롤</p>
+        <p style="margin: 6px 0 0; font-size: 13px; line-height: 1.6; color: #44413B;">오늘·밀린·다음이 동시에 찬 저장 상태를 히어로→각 섹션→다음 항목 끝까지 스크롤한 연속 샷. 같은 항목이 두 섹션에 겹치지 않는지(P7-02 확증).</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #3654FF; border-radius: 14px; padding: 16px 18px;">
+        <p style="margin: 0; font-size: 14px; font-weight: 800; color: #3654FF;">3 · 저장 5개+ 전체 탭 최하단</p>
+        <p style="margin: 6px 0 0; font-size: 13px; line-height: 1.6; color: #44413B;">저장 5~6개 쌓인 전체 탭 하단. 목록이 길 때도 마지막 카드가 4탭 위로 노출되는지(현재 2개 저장만 evidence).</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #8A857B; border-radius: 14px; padding: 16px 18px;">
+        <p style="margin: 0; font-size: 14px; font-weight: 800; color: #6E6B64;">4 · 짧은 뷰포트 하단 조작 영역</p>
+        <p style="margin: 6px 0 0; font-size: 13px; line-height: 1.6; color: #44413B;">360px·낮은 높이 기기에서 /flow-maps 2단 바가 마지막 카드를 가리지 않는지(P6-03 감시). 실기기/에뮬 스크린샷 1~2장.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10. /goal draft -->
+  <section id="goal" style="max-width: 1120px; margin: 0 auto; padding: 34px 28px 64px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 10</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">다음 Codex <code>/goal</code> 초안 (복붙용)</h2>
+    </div>
+    <p style="margin: 10px 0 0; max-width: 820px; font-size: 14.5px; color: #6E6B64;">그대로 붙여넣어 P7 루프를 시작할 수 있게 작성. 표시·레이아웃·문구·evidence만, 스키마 불변.</p>
+    <div style="margin-top: 16px; background: #14130F; color: #E8E6DF; border-radius: 14px; padding: 22px 22px; overflow-x: auto;">
+      <pre style="margin: 0; font-family: 'SF Mono', ui-monospace, Menlo, monospace; font-size: 12.5px; line-height: 1.75; white-space: pre-wrap; word-break: break-word;">/goal FlowMe P7 정리·확증 루프 — 표시·evidence만, 스키마 불변
+
+판정: P6-01~08 전부 close. 정상 라우트 Blocking/High/Medium = 0. 유일 잔여는 /restart 프로토타입 raw ISO.
+기준: codex/flowme-uxui-second-loop · UI 기준 @05a951a · 리뷰 패키지 @228d94a · 모바일 390px · 4탭 IA 유지 · /f 공유 shell 예외 유지
+원칙: 새 기능/새 탭 없음. seed·source-backed·저장/실행/export 스키마 불변. 설명 추가가 아니라 위계·문구·레이아웃·패딩으로 해결.
+
+[P7-01 · Med · 게이트] /restart/moving-d30 표시 정리 (프로토타입 한정, 승격 전 필수)
+- 할 일 행 "D-30 · 2026-05-28" raw ISO를 친화 포맷("5월 28일 (목) · D-30")으로. 내부 값·정렬은 ISO 유지, 표시만.
+- 본문 "내 도구로 가져가기" 3버튼과 하단 export sticky 3버튼 중복 → 하단을 요약 1버튼(또는 시트 오픈)으로.
+- 완료: restart 렌더 텍스트 raw ISO hit 0 · 하단 export 중복 0. 검증: s05-08/09/10 재캡처 + prototype ISO 버킷 0.
+
+[P7-02 · Low · evidence] My Flow 오늘 다중 큐 상태
+- 오늘 할 일 + 밀린 할 일 + 다음 할 일이 동시에 찬 저장 상태를 만들어 풀스크롤 캡처.
+- 한 항목은 큐 우선순위(오늘>밀린>다음>먼저)에서 가장 높은 1곳에만 노출(dedupe 규칙 확인/명문화).
+- 완료: 다중 큐에서 동일 항목 2섹션 노출 0 · 제목 반복 0.
+
+[P7-03 · Low · evidence] My Flow 전체 긴 목록 최하단
+- 저장 5개+ 상태에서 전체 탭 하단 캡처, 마지막 카드가 4탭 위로 완전 노출되는지.
+
+[P7-04 · Low · 제품] 홈 추천 카드 큐레이션 규칙
+- 현재 1개 고정. "small number of secondary starts" 개수·선정 규칙 정의(상황 기반 1~3장). 홈 밀도 유지.
+
+[P7-05 · Low] /f 워크벤치 저장 전 상단 "콘텐츠 더 보기"가 공유 첫 행동(저장)과 경쟁하지 않게 위계 확인/완화.
+
+[P7-06 · Guardrail] 회귀 스캔 상시 0: 브랜드 slug(제목·부제)·trailing Flow/지도·정상 라우트 ISO·좌우 overflow·첫 할 일 제목 반복. /restart ISO는 별도 버킷으로 추적하고 승격 게이트에 연결.
+
+산출: P7 적용 후 동일 50장 + restart/다중 큐/긴 목록 신규 샷 재캡처, route-evidence.json 재생성, 회귀 스캔 0 유지.
+유지 기준선: 4탭 IA · /f 공유 shell · 오늘 탭 라벨+개수+제목 1회 · 전체 탭 1줄 패턴 · fallback 첫 항목 · "열어보기"/"확인 항목" 단일 문구 · 친화 날짜 · 캘린더 agenda-first · workbench warm 톤 · Flow Map sticky-above-tabs.</pre>
+    </div>
+
+    <p style="margin: 26px 0 0; text-align: center; font-size: 12.5px; font-weight: 600; color: #8A857B;">FlowMe UX/UI — P6 마감 판정 · P7 백로그 · codex/flowme-uxui-second-loop · UI 기준 @05a951a · 리뷰 패키지 @228d94a · 근거: 실제 PNG 50장(route 14 · scenario 36) 390×844 픽셀 검토</p>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 1,
+  "reviewerRole": "claude_design",
+  "reviewedAt": "2026-07-24 KST",
+  "production": "https://flowme2605.vercel.app",
+  "appCodeChanged": false,
+  "observedUserCount": 0,
+  "overallVerdict": {
+    "selected": "bounded_cross_entry_alignment",
+    "rationale": "6/6 가설 재현되어 audit_not_reproduced는 기각. 그러나 P26(2026-07-20)이 이미 '모든 표면=하나의 Flow object, Flow Map=내부 bundle'을 확정했으므로 계약을 재오픈할 필요가 없다(canonical_flow_contract_reopen 불필요). 필요한 것은 그 계약을 구현하는 bounded alignment이며, 유일한 신규 데이터 결정은 moving의 24/5 canonical 정본 + 중복 reconciliation 규칙이다. Home/Find 역할 분리와 4탭 IA는 P31에서 확정되어 broader_discovery_experience_reopen은 과범위로 기각.",
+    "rejected": {
+      "audit_not_reproduced": "6/6 confirmed (H6은 경미).",
+      "canonical_flow_contract_reopen": "계약은 이미 존재 · 미구현일 뿐.",
+      "broader_discovery_experience_reopen": "Home/Find·4탭 IA를 근거 없이 흔듦."
+    }
+  },
+  "alternatives": [
+    {
+      "id": "A", "name": "canonical /f route + legacy alias/handoff",
+      "scope": "/f를 canonical로 확정, /flow-maps는 alias/redirect handoff, 저장 identity 통합. Home/Find shell 대체로 유지.",
+      "solves": ["identity 분기(H1)", "중복(H2 대부분)"],
+      "leaves": ["catalog 이중 세대(H3)", "artifact 죽은 버튼(H4)", "기존 중복 reconciliation", "Home 약속/재발견(H5,M1)"],
+      "risk": "low", "rollback": "easy (redirect/alias 제거)", "migrationUi": "redirect only",
+      "score": 6
+    },
+    {
+      "id": "B", "name": "canonical registry + role-specific shell + one save identity",
+      "scope": "source·flow-map·slug·saved slug를 registry로 canonical Flow ID에 매핑. Home(사용 예)·Find(탐색) 역할 유지, 상세/저장 identity는 하나. artifact eligibility parity, 비파괴 reconciliation UI, copy projection 포함.",
+      "solves": ["H1", "H2", "H3", "H4", "H5", "M1", "M3", "기존 중복 화해"],
+      "leaves": ["24/5 canonical 정본은 observed-user 확정 필요"],
+      "risk": "medium", "rollback": "stage별 feature flag off -> legacy route (persistence fork 금지)", "migrationUi": "alias graph + 비파괴 reconciliation (스키마 무변경)",
+      "score": 9, "recommended": true
+    },
+    {
+      "id": "C", "name": "broader discovery/detail consolidation",
+      "scope": "Home 예시 + Find catalog + 상세를 하나의 discovery 경험으로 통합.",
+      "solves": ["H1", "H2", "H3", "H4", "H5"],
+      "leaves": ["과설계 위험 · Home/Find 역할 분리(P31)·4탭 IA 재오픈"],
+      "risk": "high", "rollback": "hard (표면 광범위)", "migrationUi": "broad",
+      "score": 4
+    }
+  ],
+  "recommendation": "B",
+  "recommendationReason": "A는 근본(catalog·artifact·reconciliation·promise)을 남기고, C는 확정된 IA/역할 분리를 재오픈한다. B만이 P26 계약을 구현하면서 P31/P32 positive control(Home/Find 역할, focused workspace, 4탭 IA, /f shell, identity/persistence)을 보존하고 stage별 rollback을 제공한다.",
+  "preservedContracts": ["4탭 IA", "public /f shell", "source/personal/run/occurrence/export identity", "기존 localStorage schema", "P32 focused My Flow workspace", "Calendar engine"],
+  "p33Candidates": [
+    {
+      "id": "P33-00", "title": "canonical inventory + reconciliation 계약",
+      "problem": "같은 source가 다중 route/slug/key로 갈리고 기존 중복 저장본을 안전히 정리할 규칙이 없다.",
+      "evidence": "route-evidence.sameMovingSourceUserFacingRouteCount=4, sameMovingSourceSavedMyFlowObjectCount=2; INV-1~3 fail; DECISIONS 2026-07-20(P26).",
+      "dependency": "없음 (선행 단계)",
+      "scope": "alias graph(source·flow-map·slug·saved slug -> canonical), representative canonical Flow table, moving 24/5 판정 입력, 중복 fixture, 비파괴 보존·병합·충돌 규칙, rollback plan. 앱 UI 무변경.",
+      "nonGoals": ["slug 삭제", "localStorage merge 실행", "redirect 구현"],
+      "dataImpact": "정의만 — 런타임 데이터 무변경",
+      "migration": "없음 (계약/테이블만)",
+      "rollback": "문서/테이블 제거",
+      "acceptanceScreenshots": ["review.dc.html ⑥ reconciliation (제안)"],
+      "testMarkers": ["canonical source->Flow table 존재", "alias->canonical route table", "duplicate saved data fixture", "no destructive migration"]
+    },
+    {
+      "id": "P33-01", "title": "moving vertical slice",
+      "problem": "이사 원문이 Home 24 / Find 5 / URL 5로 갈리고 저장 시 중복.",
+      "evidence": "screenshots 03/04/05; INV-1~3,7; persona P1S3·P2S3·P3S3·P4 all missing.",
+      "dependency": "P33-00",
+      "scope": "Home·Find·URL을 canonical Flow로 연결, /flow-maps/moving-d30을 내부 bundle/handoff로 강등, 24/5 정본 확정, title·source·artifact·adjust·receipt 통일, 두 alias 연속 저장 시 My Flow 1개, 개인 날짜/메모/완료/run 보존.",
+      "nonGoals": ["persistence function fork", "P32 workspace 변경"],
+      "dataImpact": "canonical 매핑 소비 — 기존 record 보존",
+      "migration": "비파괴 alias 매핑 (스키마 무변경)",
+      "rollback": "route alias registry 또는 feature flag 제거 -> legacy route 복귀",
+      "acceptanceScreenshots": ["screenshots/proposed-B-canonical-save-before-390.png", "screenshots/proposed-B-receipt-myflow-390.png", "screenshots/proposed-B-detail-1024.png"],
+      "testMarkers": ["sameSourceUserFacingRouteCount 1(effective)", "sameMovingSourceSavedMyFlowObjectCount 1", "displayTitle/itemCount parity", "personal/run/export 보존"]
+    },
+    {
+      "id": "P33-02", "title": "catalog rollout",
+      "problem": "Find catalog 9개 중 5개 legacy Flow Map, 4개 artifact-first가 혼재하고 Home 예시가 Find에서 재발견되지 않는다.",
+      "evidence": "route-evidence.findCatalog(5 hybrid/4 artifact-first); homeVehicleFindSearchResultCount=0; INV-5.",
+      "dependency": "P33-01",
+      "scope": "나머지 4개 /flow-maps를 canonical /f에 연결, hydrated catalog↔server fallback inventory 일치, Home example=Find 동일 identity 재발견, Flow Map은 내부 source bundle.",
+      "nonGoals": ["4탭 IA 변경", "새 discovery 표면 신설"],
+      "dataImpact": "inventory 정합 — 데이터 무변경",
+      "migration": "없음",
+      "rollback": "flag off -> legacy catalog",
+      "acceptanceScreenshots": ["screenshots/proposed-B-find-card-390.png", "screenshots/proposed-B-home-card-390.png"],
+      "testMarkers": ["catalog 단일 anatomy", "hydrated==fallback inventory", "Home example rediscoverable in Find >=1"]
+    },
+    {
+      "id": "P33-03", "title": "artifact parity + promise/copy",
+      "problem": "moving/vehicle artifact 버튼이 죽어 있고(false affordance), vehicle 약속≠target, workout raw RRULE 노출.",
+      "evidence": "screenshots 03/06/07/08; INV-4,6; movingArtifactChoiceChangesProjection=false; workoutUndatedRawRecurrenceRuleVisible=true.",
+      "dependency": "P33-01",
+      "scope": "모든 eligible shape가 실제 projection/CTA/save 변경, ineligible shape는 버튼 미렌더, vehicle Home 약속=target 정합(하나의 job), raw RRULE->사용자 문구. category hardcode 대신 eligibility 기반 projection contract.",
+      "nonGoals": ["긴 설명 추가로 문제 은폐", "가짜 데이터"],
+      "dataImpact": "projection/표시 — 데이터 무변경",
+      "migration": "없음",
+      "rollback": "flag off -> 공통 generic body",
+      "acceptanceScreenshots": ["screenshots/proposed-B-result-choice-390.png", "screenshots/proposed-B-content-shape-fixes-390.png"],
+      "testMarkers": ["visible artifact choice -> projection change 100%", "false affordance 0", "raw RRULE visible false", "home vehicle promise==target"]
+    },
+    {
+      "id": "P33-04", "title": "cross-entry regression gate",
+      "problem": "cross-entry invariant를 고정하는 E2E가 없다(기존 테스트는 route 내부만 검증).",
+      "evidence": "audit.md §4 test gap.",
+      "dependency": "P33-01~03",
+      "scope": "Home/Find/URL -> detail -> save -> My Flow -> Calendar 세 경로 + 같은 source 연속 실행. duplicate 0, count/result mismatch 0, false affordance 0, 390/1024/1440 overflow·focus·console/page error 0.",
+      "nonGoals": [],
+      "dataImpact": "테스트 — 무변경",
+      "migration": "없음",
+      "rollback": "테스트 제거",
+      "acceptanceScreenshots": [],
+      "testMarkers": ["same source resolves to one canonical Flow", "aliases share title/count/primary artifact", "saving aliases -> one My Flow object", "every visible artifact shape changes projection", "one receipt/one storage identity", "legacy alias preserves personal/run data"]
+    },
+    {
+      "id": "P33-05", "title": "production closeout",
+      "problem": "release 정합 및 observed-user 기록 필요.",
+      "evidence": "P32 closeout 관행.",
+      "dependency": "P33-04",
+      "scope": "clean origin/main, unit/docs/build/E2E, deploy smoke, route 재캡처, observed-user count 별도 기록.",
+      "nonGoals": ["automation을 observed-user로 표기"],
+      "dataImpact": "없음",
+      "migration": "없음",
+      "rollback": "deploy revert",
+      "acceptanceScreenshots": [],
+      "testMarkers": ["production smoke pass", "overflow/console 0 @390/1024/1440", "observedUserCount 별도 기록"]
+    }
+  ],
+  "acceptanceMarkers": {
+    "sameSourceUserFacingRouteCount": "4 -> 1(effective)",
+    "sameMovingSourceSavedMyFlowObjectCount": "2 -> 1",
+    "movingArtifactChoiceChangesProjection": "false -> true",
+    "homeVehicleFindSearchResultCount": "0 -> >=1",
+    "workoutUndatedRawRecurrenceRuleVisible": "true -> false",
+    "duplicateReconciliationReachable": "false -> true",
+    "personalRunExportPreserved": true,
+    "horizontalOverflowPx": "0 @390/1024/1440"
+  },
+  "observedUserQuestions": [
+    "서로 다른 24/5 이사 Flow를 같은 원문으로 인식하는가? canonical 정본은 24(전체)인가 5(핵심)인가?",
+    "예시 Calendar와 '날짜 없이 시작'을 동시에 볼 때 저장 결과를 예측하는가?",
+    "Home 차량 카드를 보고 법정검사 D-14를 기대하는가, 상시 체크리스트를 기대하는가?",
+    "중복 발생 시 이어서/합치기/따로를 판단할 수 있고 '합치기'를 안전하다고 느끼는가?",
+    "Home과 Find 역할 차이가 유용한가, 중복으로 느끼는가?",
+    "'Home 예시와 동일 Flow' 연결 문구가 재발견을 돕는가?"
+  ],
+  "integrity": "app code 변경 없음 · observed-user 0 · 자동 simulation/screenshot/heuristic은 검증 아님 · 가짜 usage/review/rating 없음 · 위치 실험 프로토타입은 '가상 데이터 - production 금지' 표시"
+}

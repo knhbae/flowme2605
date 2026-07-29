@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>FlowMe UX/UI — P11 마감 판정 · P12 백로그 (가드레일을 URL-first 표면으로)</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <style>
+    html, body { margin: 0; padding: 0; background: #F2F1EC; }
+    * { box-sizing: border-box; }
+    code { font-family: 'SF Mono', ui-monospace, Menlo, monospace; }
+    a { color: #3654FF; }
+    a:hover { color: #1F3BD6; }
+  </style>
+</helmet>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#1F6A3E"></rect><text x="50" y="59" font-family="sans-serif" font-size="15" font-weight="800" fill="#FFFFFF" text-anchor="middle">P11✓</text></svg></template>
+<div style="font-family: 'Pretendard Variable', Pretendard, -apple-system, 'Segoe UI', sans-serif; color: #1B1A17; line-height: 1.6; letter-spacing: -0.01em;">
+
+  <header data-screen-label="헤더" style="background: #1B1A17; color: #F5F4EF; padding: 52px 28px 44px;">
+    <div style="max-width: 1120px; margin: 0 auto;">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px;">
+        <span style="display: inline-flex; align-items: center; border: 1px solid rgba(159,240,184,0.4); background: rgba(31,106,62,0.35); border-radius: 999px; padding: 4px 12px; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; color: #C6F4D4;">FLOWME · P11 마감 판정</span>
+        <span style="font-size: 12px; font-weight: 600; color: rgba(245,244,239,0.6);">codex/flowme-uxui-second-loop · UI 기준 @fcd96e4 · PNG 32장(정상 26 + URL-first 6) · 390×844 · clock 2026-05-28 고정</span>
+      </div>
+      <h1 style="margin: 18px 0 0; font-size: 40px; line-height: 1.2; font-weight: 800; letter-spacing: -0.02em; max-width: 1020px; text-wrap: balance;">P11-01~11은 코드와 증거에서 닫혔다.<br>P12의 일은 <em>같은 가드레일을 URL-first 표면으로</em> 넓히는 것 — 스캔이 안 닿는 곳에서 <em>기준선이 이미 새고 있다.</em></h1>
+      <p style="margin: 16px 0 0; max-width: 980px; font-size: 16px; line-height: 1.7; color: rgba(245,244,239,0.78); text-wrap: pretty;">P10에서 지적한 구멍이 정확히 닫혔습니다. 이어하기 actionable(<code>continuationActionable 4</code>), agenda/시트 그룹 헤더(<code>agendaGroupMeta 2 · statusSheetGroupMeta 1 · 반복 행 0</code>), 인벤토리 3중 지표(<code>duplicateProgressMetric 0 · largeRemaining 0</code>), 행 컨트롤 aria 맥락(<code>context 4/4</code>) — <strong>P10-03·04·05가 이제 스크린샷 없이 JSON marker만으로 판정됩니다.</strong> 정상 26캡처의 모든 버킷이 0(면제 제외). <strong>그런데 이번 패키지에 처음 들어온 URL-first 표면 6장(27~32)에는 marker가 하나도 없습니다</strong> — bytes·hash·scrollHeight뿐. 그리고 그 미스캔 영역에서, 4탭이 0으로 지켜온 것들이 눈에 보입니다: <code>s27</code>은 "<strong>Mathbang</strong> …" source slug을, <code>s30</code>은 raw ISO "<strong>2026-07-07</strong>"과 "<strong>Canonical URL · handoff · Claude review용</strong>" 제작 전문어를, <code>s29</code>는 내부 단계어 "<strong>P0</strong>"를 사용자 화면(<code>/flows</code>)에 노출합니다. P12는 새 기능이 아니라 <strong>이미 닫은 가드레일을 새 진입 표면까지 확장</strong>하는 회귀 봉합입니다.</p>
+    </div>
+  </header>
+
+  <nav style="position: sticky; top: 0; z-index: 50; background: rgba(242,241,236,0.92); backdrop-filter: blur(8px); border-bottom: 1px solid #DDD9D0;">
+    <div style="max-width: 1120px; margin: 0 auto; padding: 10px 28px; display: flex; flex-wrap: wrap; gap: 6px;">
+      <a href="#verdict" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">1 P11 판정</a>
+      <a href="#routes" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">2 Route</a>
+      <a href="#open" style="text-decoration: none; color: #F5F4EF; background: #C0341D; border: 1px solid #C0341D; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">3 남은 구멍</a>
+      <a href="#prio" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">4 우선순위</a>
+      <a href="#backlog" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">5 P12 백로그</a>
+      <a href="#split" style="text-decoration: none; color: #F5F4EF; background: #3654FF; border: 1px solid #3654FF; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">6 닫기/재개</a>
+      <a href="#hold" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">7 유지 기준선</a>
+      <a href="#fix" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">8 화면별 수정</a>
+      <a href="#gaps" style="text-decoration: none; color: #1B1A17; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">9 증거 공백</a>
+      <a href="#goal" style="text-decoration: none; color: #F5F4EF; background: #1F6A3E; border: 1px solid #1F6A3E; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 700;">10 /goal 초안</a>
+    </div>
+  </nav>
+
+  <section style="max-width: 1120px; margin: 0 auto; padding: 24px 28px 4px;">
+    <div style="background: #EDF3EC; border: 1px solid #CADFC9; border-radius: 14px; padding: 16px 18px;">
+      <p style="margin: 0; font-size: 13px; font-weight: 800; color: #1F6A3E;">이번 검토 근거</p>
+      <p style="margin: 8px 0 0; font-size: 13.5px; line-height: 1.7; color: #35563A;">Vercel 실행 화면은 보지 않았습니다. <code>@fcd96e4</code> 기준 Post-P11 package(<code>README·review-brief-ko·audit.md·route-evidence.json·url-first-supplement-evidence.json</code>)와 screenshots 32장을 근거로 판단했습니다. 정상 26장은 <code>route-evidence.json</code>의 marker를 항목 단위로 대조(continuationActionable·agendaGroupMeta·statusSheetGroupMeta·inventoryProgressMetrics·rowControlAccessibleNames)했고, URL-first 6장(27~32)은 <strong>픽셀로 전수 확인</strong>했습니다 — 이 6장은 supplement evidence에 marker가 없어 픽셀 외 근거가 없기 때문입니다. 판단 기준은 P9~P11과 동일: ①선언된 P11 닫힘이 증거에서 실제로 닫혔는가 ②0이 <strong>무엇으로 잰</strong> 0인가 — 그리고 이번엔 특히 ③가드레일이 <strong>닿지 않는</strong> 표면은 어디인가.</p>
+    </div>
+  </section>
+
+  <!-- ===================== SECTION 1 : Overall Judgment / P11 verdict ===================== -->
+  <section id="verdict" data-screen-label="1 P11 판정" style="max-width: 1120px; margin: 0 auto; padding: 26px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 1</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">Overall Judgment — P11 닫힘, 리스크는 스캔 밖으로 이동</h2>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; margin-top: 18px;">
+      <div style="background: #EDF3EC; border: 1px solid #CADFC9; border-radius: 16px; padding: 18px 20px;">
+        <p style="margin: 0; font-size: 14px; font-weight: 800; color: #1F6A3E;">현 상태 판단 — 정상 4탭은 견고</p>
+        <p style="margin: 8px 0 0; font-size: 13.5px; line-height: 1.7; color: #35563A;">P11이 목표한 두 가지가 모두 닫혔습니다. ① <strong>밀도 규칙 확산</strong> — 지난 할 일 시트(s17)가 그룹 헤더 1회 구조로 바뀌고(<code>statusSheetGroupMeta 1 · ungroupedRow 0</code>), 인벤토리 3중 지표가 1개로(<code>duplicateProgressMetric 0</code>). ② <strong>주장의 측정화</strong> — 이어하기·agenda·aria가 이제 JSON marker로 판정됩니다(<code>continuationActionable 4 · explanationOnly 0 · rowControlAccessibleName context 4/4</code>). 정상 26캡처 전 버킷 0, overflow 0, 공개 저장경로 9/9. <strong>정상 IA에는 Blocking·High가 없습니다.</strong></p>
+      </div>
+      <div style="background: #FBEAE5; border: 1px solid #EFC5B9; border-radius: 16px; padding: 18px 20px;">
+        <p style="margin: 0; font-size: 14px; font-weight: 800; color: #C0341D;">P12에서 가장 먼저 볼 사용자 리스크</p>
+        <p style="margin: 8px 0 0; font-size: 13.5px; line-height: 1.7; color: #7A2917;"><strong>URL-first 진입 표면이 가드레일 밖에 있습니다.</strong> 27~32는 supplement evidence에 marker가 0개 — 스크린샷 메타(bytes·hash·scrollHeight)만 담겨 있습니다. 그리고 그 미스캔 영역이 정상 라우트(<code>/flows</code>)의 상태인데도, 4탭이 0으로 지켜온 것을 그대로 노출합니다: source slug(<code>Mathbang</code>·s27), raw ISO(<code>2026-07-07</code>·s30), 내부 단계어(<code>P0</code>·s29), 제작 전문어(<code>Canonical URL·handoff·Claude review용·제작용 정보</code>·s30). <strong>스캔이 닿지 않으면 기준선은 조용히 되돌아갑니다 — P9→P11이 증명한 그 교훈이 새 표면에서 반복됩니다.</strong></p>
+      </div>
+    </div>
+
+    <div style="margin-top: 14px; background: #1B1A17; color: #F5F4EF; border-radius: 16px; padding: 18px 22px;">
+      <p style="margin: 0; font-size: 14.5px; line-height: 1.7;"><strong style="color:#9FF0B8;">한 줄 판정</strong> — Post-P11은 <strong>정상 4탭 기준으로 출시 가능</strong>합니다(Blocking 0). 단, URL-first는 아직 <strong>실험 표면인데 정상 라우트 위에 렌더</strong>되고 스캔도 안 됩니다. P12의 1번은 기능 추가가 아니라 <strong>①URL-first 사용자 상태(hit/miss/candidate)를 정상 스캔에 편입 → ②거기서 드러나는 slug·ISO·내부어 회귀를 봉합 → ③/flow-lab 프로토타입 게이트를 /restart와 동급으로</strong>. 순서가 곧 우선순위입니다.</p>
+    </div>
+  </section>
+
+  <!-- ===================== SECTION 2 : Route Findings ===================== -->
+  <section id="routes" data-screen-label="2 Route별 문제" style="max-width: 1120px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 2</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">Route Findings</h2>
+    </div>
+    <p style="margin: 10px 0 0; max-width: 940px; font-size: 14.5px; color: #6E6B64;">정상 26캡처는 스캔·marker 전부 통과(면제 제외). 아래 표는 스캔이 못 재거나 <strong>못 닿는</strong> 화면 판단입니다. 심각도: <span style="font-weight:800;color:#111;">B</span>=Blocking · <span style="font-weight:800;color:#C0341D;">H</span>=High · <span style="font-weight:800;color:#8A6D1B;">M</span>=Medium · <span style="font-weight:800;color:#6E6B64;">L</span>=Low · <span style="font-weight:800;color:#1F6A3E;">✓</span>=문제 없음</p>
+
+    <div style="margin-top: 16px; overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; font-size: 13px;">
+        <thead>
+          <tr style="background: #F7F6F2; text-align: left;">
+            <th style="padding: 10px 12px; border-bottom: 1px solid #E7E4DD; white-space: nowrap;">우선순위</th>
+            <th style="padding: 10px 12px; border-bottom: 1px solid #E7E4DD; white-space: nowrap;">Route · 캡처</th>
+            <th style="padding: 10px 12px; border-bottom: 1px solid #E7E4DD;">문제 · 사용자 영향</th>
+            <th style="padding: 10px 12px; border-bottom: 1px solid #E7E4DD;">근거</th>
+            <th style="padding: 10px 12px; border-bottom: 1px solid #E7E4DD;">수정 방향</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; color:#111; font-weight:800;">B</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; white-space: nowrap;"><code>/flows</code> URL-first<br>s27·29·30</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">URL-first hit/miss/candidate 상태가 <strong>가드레일 스캔 밖</strong>. 정상 라우트인데 slug·ISO·내부어가 무검증 통과. 회귀가 조용히 출시됨.</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;"><code>url-first-supplement-evidence.json</code> — marker 0개(bytes/hash만)</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">27/29/30 상태 렌더 후 <code>scanUserSurfaceGuardrails</code> 실행, marker 편입 <a href="#backlog" style="color:#C0341D;">P12-01</a></td>
+          </tr>
+          <tr>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; color:#C0341D; font-weight:800;">H</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; white-space: nowrap;"><code>/flows</code> hit<br>s27</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">hit 결과 본문에 <strong>source slug "Mathbang"</strong> 노출("Mathbang 중1 수학 목차 기준으로…"). "source slug 0" 기준선 회귀.</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">s27 픽셀 · baseline "source slug 노출 0"</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">큐레이션 표시명으로 치환, canonical 재사용 카피에서 brand slug 제거 <a href="#backlog" style="color:#C0341D;">P12-02</a></td>
+          </tr>
+          <tr>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; color:#C0341D; font-weight:800;">H</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; white-space: nowrap;"><code>/flows</code> candidate<br>s30</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">"내가 요청한 후보"에 <strong>raw ISO "2026-07-07"</strong> + 제작 전문어("<strong>Canonical URL·handoff·Claude review용·제작용 정보</strong>"). 사용자에게 내부 운영 화면이 노출.</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">s30 픽셀 · baseline "raw ISO·내부 구조어 0"</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">ISO→한국어 날짜/D-day, 제작 메타는 내부 뷰 분리 또는 사용자어로 <a href="#backlog" style="color:#C0341D;">P12-03</a></td>
+          </tr>
+          <tr>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; color:#C0341D; font-weight:800;">H</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; white-space: nowrap;"><code>/flows</code> miss<br>s29</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">miss 카피에 내부 단계어 "<strong>P0</strong>"("P0에서는 AI 생성 대신…") + 파이프라인 서술("URL 수집과 사람 검토 대기열"). 로드맵 용어가 사용자에게.</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">s29 픽셀 · baseline "내부 구조어 0"</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">사용자 상태어로("아직 준비된 Flow가 없어요…") <a href="#backlog" style="color:#C0341D;">P12-04</a></td>
+          </tr>
+          <tr>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; color:#8A6D1B; font-weight:800;">M</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; white-space: nowrap;"><code>/flow-lab/url-first-p0</code><br>s31</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">두 번째 프로토타입 버킷인데 <strong>display gate가 없음</strong>. raw route slug·영어 상태어(HIT·needs_review·disabled) 노출. /restart는 게이트 있고 이건 없음.</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">s31 픽셀("내부 실험 route /flow-lab/url-first-p0")</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">/restart와 동일 게이트 + primary IA 비노출·noindex <a href="#backlog" style="color:#8A6D1B;">P12-05</a></td>
+          </tr>
+          <tr>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; color:#8A6D1B; font-weight:800;">M</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; white-space: nowrap;"><code>/f/*</code> sticky<br>s06·07·09·10</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">공개 sticky 1차 CTA 라벨 불일치 — s06 "내 Flow에 저장" · s07 "<strong>내 도구로 가져가기</strong>" · s09/10 "<strong>캘린더 파일 받기</strong>". 저장이 primary인데 sticky가 export가 되어 위계 역전.</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;"><code>publicWorkbenchExportLabels.samples</code> · s06/07/09/10 픽셀</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">/f sticky 1차는 저장/입력 계열로 통일, export는 부차 <a href="#backlog" style="color:#8A6D1B;">P12-06</a></td>
+          </tr>
+          <tr>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; color:#8A6D1B; font-weight:800;">M</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; white-space: nowrap;"><code>/flows</code> hit<br>s27</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">"옮길 수 있는 형태" 칩에 기술어 "<strong>Markdown</strong>". 일반 사용자 대상어로는 어색.</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">s27 픽셀(칩: 캘린더·Markdown·체크리스트·My Flow)</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">"메모/문서" 등 사용자어로 <a href="#backlog" style="color:#8A6D1B;">P12-07</a></td>
+          </tr>
+          <tr>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; color:#6E6B64; font-weight:800;">L</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; white-space: nowrap;"><code>/flows</code> custom<br>s28</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">"조금 고쳐 시작" custom-start 패널 evidence가 <strong>scrollHeight 수치만</strong> — 핵심 hit→custom 경로가 marker로 미검증.</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">supplement JSON(28: scrollHeight 3946만)</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">P12-01 스캔에 28도 포함 <a href="#backlog" style="color:#6E6B64;">P12-08</a></td>
+          </tr>
+          <tr>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; color:#6E6B64; font-weight:800;">L</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8; white-space: nowrap;"><code>/flows</code> hit<br>s27</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">hit 시작일 input(<code>yyyy-mm-dd</code>)이 flow-map 이사일처럼 native date input — 면제 버킷·testid 미추적.</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">s27 픽셀 · P11-06 면제 패턴</td>
+            <td style="padding: 9px 12px; border-bottom: 1px solid #F0EEE8;">testid 부여 + raw ISO 면제 버킷 편입 <a href="#backlog" style="color:#6E6B64;">P12-09</a></td>
+          </tr>
+          <tr>
+            <td style="padding: 9px 12px; color:#1F6A3E; font-weight:800;">✓</td>
+            <td style="padding: 9px 12px; white-space: nowrap;">정상 4탭 전부<br>s01~s26</td>
+            <td style="padding: 9px 12px;">홈·flows·flow-maps·/f 저장·워크벤치·내 Flow·캘린더·restart — 스캔 0, marker 통과. P11 항목 회귀 없음.</td>
+            <td style="padding: 9px 12px;"><code>route-evidence.json</code> summary 전 버킷 0</td>
+            <td style="padding: 9px 12px;">유지 — <a href="#hold" style="color:#1F6A3E;">§7</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ===================== SECTION 3 : the gap, with figures ===================== -->
+  <section id="open" data-screen-label="3 남은 구멍" style="max-width: 1120px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #C0341D;">SECTION 3</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">남은 구멍 — 스캔이 닿지 않는 표면에서 세 개의 기준선이 샌다</h2>
+    </div>
+    <p style="margin: 10px 0 0; max-width: 940px; font-size: 14.5px; color: #6E6B64;">아래 셋은 전부 <strong>정상 라우트 <code>/flows</code>의 상태</strong>입니다(4탭 nav 노출, h1 "무엇을 저장할까요?"). 그런데 정상 스캔(s02)은 URL을 입력하기 <strong>전</strong>의 빈 상태만 찍었고, 아래 결과 상태는 supplement로만 캡처돼 marker가 없습니다.</p>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin-top: 18px;">
+      <figure style="margin: 0; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; overflow: hidden;">
+        <div style="border-bottom: 1px solid #F0EEE8; padding: 14px 18px;">
+          <p style="margin: 0; font-size: 13px; font-weight: 800; color: #C0341D;">구멍 ① — s27 · hit 결과의 source slug</p>
+          <p style="margin: 6px 0 0; font-size: 13px; line-height: 1.6; color: #6E6B64;">"<strong>Mathbang</strong> 중1 수학 목차 기준으로…" — canonical 재사용 카피가 원본 brand slug을 그대로 노출합니다. 정상 스캔(s02)이 0으로 지켜온 <code>sourceSlugHits</code>가 여기선 무검증.</p>
+        </div>
+        <img src="p12-screenshots/27-url-first-hit-mobile.png" alt="URL-first hit — Mathbang source slug 노출" style="display: block; width: 100%; height: auto;">
+      </figure>
+      <figure style="margin: 0; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; overflow: hidden;">
+        <div style="border-bottom: 1px solid #F0EEE8; padding: 14px 18px;">
+          <p style="margin: 0; font-size: 13px; font-weight: 800; color: #C0341D;">구멍 ② — s30 · candidate의 raw ISO + 제작 전문어</p>
+          <p style="margin: 6px 0 0; font-size: 13px; line-height: 1.6; color: #6E6B64;">"제작 대기 · <strong>2026-07-07</strong>"(raw ISO) · "<strong>Canonical URL</strong>" · "<strong>handoff</strong>" · "Claude review용" · "<strong>제작용 정보</strong>". 운영/제작 화면이 사용자 /flows에 그대로 렌더됩니다.</p>
+        </div>
+        <img src="p12-screenshots/30-url-first-candidate-handoff-mobile.png" alt="URL-first candidate — raw ISO와 제작 전문어 노출" style="display: block; width: 100%; height: auto;">
+      </figure>
+      <figure style="margin: 0; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; overflow: hidden;">
+        <div style="border-bottom: 1px solid #F0EEE8; padding: 14px 18px;">
+          <p style="margin: 0; font-size: 13px; font-weight: 800; color: #C0341D;">구멍 ③ — s29 · miss 카피의 내부 단계어</p>
+          <p style="margin: 6px 0 0; font-size: 13px; line-height: 1.6; color: #6E6B64;">"<strong>P0</strong>에서는 AI 생성 대신 URL 수집과 사람 검토 대기열로 넘깁니다." — 로드맵 단계 코드와 내부 파이프라인 서술이 사용자 안내 문구가 됐습니다. non-executable 처리("아직 실행 가능한 Flow 아님") 자체는 baseline과 맞습니다.</p>
+        </div>
+        <img src="p12-screenshots/29-url-first-miss-candidate-form-mobile.png" alt="URL-first miss — P0 내부 단계어 노출" style="display: block; width: 100%; height: auto;">
+      </figure>
+    </div>
+
+    <div style="margin-top: 14px; background: #FBEAE5; border: 1px solid #EFC5B9; border-radius: 14px; padding: 16px 18px;">
+      <p style="margin: 0; font-size: 14px; line-height: 1.7; color: #7A2917;"><strong>구멍 ④ — 증거 형태 자체.</strong> <code>url-first-supplement-evidence.json</code>은 6개 시나리오에 <code>screenshotBytes·screenshotHash·scrollHeight·bodyTextLength</code>만 담습니다. <code>internalHits·sourceSlugHits·rawIsoLines·structuralDisplayHits</code> 같은 <strong>판정 필드가 하나도 없습니다</strong>. 즉 ①~③은 지금 이 문서의 육안 검토로만 잡혔고, capture는 이 상태들을 "찍기만" 하고 "재지" 않습니다. 정상 26장에는 있는 marker 계층이 URL-first 6장에는 통째로 빠져 있는 것 — P12-01이 이 구조적 공백을 메웁니다.</p>
+    </div>
+  </section>
+
+  <!-- ===================== SECTION 4 : priorities ===================== -->
+  <section id="prio" data-screen-label="4 우선순위" style="max-width: 1120px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 4</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">우선순위 — Blocking / High / Medium / Low</h2>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 18px;">
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-top: 4px solid #1B1A17; border-radius: 14px; padding: 16px 18px;">
+        <p style="margin: 0; font-size: 13px; font-weight: 800;">Blocking · 1건</p>
+        <p style="margin: 8px 0 0; font-size: 13.5px; line-height: 1.6; color: #44413B;"><strong>P12-01</strong> URL-first 사용자 상태(27~30)를 정상 가드레일 스캔에 편입. 이게 없으면 아래 회귀들이 무검증 출시.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-top: 4px solid #C0341D; border-radius: 14px; padding: 16px 18px;">
+        <p style="margin: 0; font-size: 13px; font-weight: 800; color: #C0341D;">High · 3건</p>
+        <p style="margin: 8px 0 0; font-size: 13.5px; line-height: 1.6; color: #44413B;"><strong>P12-02</strong> hit source slug(Mathbang) · <strong>P12-03</strong> candidate raw ISO + 제작 전문어 · <strong>P12-04</strong> miss 내부 단계어(P0).</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-top: 4px solid #C7A128; border-radius: 14px; padding: 16px 18px;">
+        <p style="margin: 0; font-size: 13px; font-weight: 800; color: #8A6D1B;">Medium · 3건</p>
+        <p style="margin: 8px 0 0; font-size: 13.5px; line-height: 1.6; color: #44413B;"><strong>P12-05</strong> /flow-lab 프로토타입 게이트 · <strong>P12-06</strong> 공개 sticky CTA 라벨 통일 · <strong>P12-07</strong> "Markdown" 칩 사용자어.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-top: 4px solid #B7B2A6; border-radius: 14px; padding: 16px 18px;">
+        <p style="margin: 0; font-size: 13px; font-weight: 800; color: #6E6B64;">Low · 3건</p>
+        <p style="margin: 8px 0 0; font-size: 13.5px; line-height: 1.6; color: #44413B;"><strong>P12-08</strong> custom-start(28) 스캔 편입 · <strong>P12-09</strong> hit 시작일 input testid+면제 · <strong>P12-10</strong> QA 리포트 내부 링크만 확인.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SECTION 5 : P12 backlog ===================== -->
+  <section id="backlog" data-screen-label="5 P12 백로그" style="max-width: 1120px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 5</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">P12 Backlog — 바로 개발 가능한 단위</h2>
+    </div>
+    <p style="margin: 10px 0 0; max-width: 940px; font-size: 14.5px; color: #6E6B64;">전부 <strong>4탭 IA·공유 shell·저장/실행/export 스키마·source 접근을 건드리지 않는</strong> 표시/증거/게이트 레벨 작업입니다. 항목마다 완료 판정(AC)을 붙였습니다.</p>
+
+    <div style="display: grid; gap: 12px; margin-top: 18px;">
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #1B1A17; border-radius: 16px; padding: 18px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <span style="font-size: 13px; font-weight: 800; background: #ECEAE4; color: #1B1A17; border-radius: 6px; padding: 2px 9px;">P12-01 · Blocking · guardrail/test/evidence</span>
+          <h3 style="margin: 0; font-size: 16.5px; font-weight: 800;">URL-first 사용자 상태를 정상 가드레일 스캔에 편입</h3>
+        </div>
+        <p style="margin: 8px 0 0; font-size: 14px; line-height: 1.65; color: #44413B;"><strong>무엇을</strong> · capture가 <code>/flows</code>에서 URL을 입력해 <strong>hit(27) · custom-start(28) · miss(29) · candidate(30)</strong> 상태를 렌더한 뒤, 정상 라우트와 동일하게 <code>scanUserSurfaceGuardrails · scanRawIsoInputValues · findFirstTaskRepetitionHits</code>를 돌려 각 상태의 <code>internalHits·sourceSlugHits·structuralDisplayHits·rawIsoLines</code>를 기록. supplement evidence를 스크린샷 메타에서 <strong>정상 scenario 스키마</strong>로 승격, summary에 <code>urlFirstInternalHitCount</code> 등 카운트 노출. <strong>AC</strong> · ① 27~30 각각에 정상 marker 전 필드 존재 ② 전 버킷 0(수정 P12-02~04 완료 후) ③ 회귀 시 E2E 실패 — <code>url-first-user-surface.spec.ts</code> 신규.</p>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #C0341D; border-radius: 16px; padding: 18px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <span style="font-size: 13px; font-weight: 800; background: #FBEAE5; color: #C0341D; border-radius: 6px; padding: 2px 9px;">P12-02 · High</span>
+          <h3 style="margin: 0; font-size: 16.5px; font-weight: 800;">hit 결과의 source slug(Mathbang) 제거</h3>
+        </div>
+        <p style="margin: 8px 0 0; font-size: 14px; line-height: 1.65; color: #44413B;"><strong>무엇을</strong> · s27 "Mathbang 중1 수학 목차 기준으로 중1 수학 목차 진도표를 재사용합니다" 에서 brand slug을 <strong>큐레이션 표시명</strong>으로. 정상 라우트가 이미 쓰는 표시명 매핑(<code>collectSourceSlugSignals</code>의 반대편)을 hit 카피에도 적용 — canonical lookup은 slug로 하되 <strong>노출은 표시명으로</strong>. <strong>AC</strong> · P12-01 스캔에서 s27 <code>sourceSlugHits 0</code> · hit 재사용 대상은 여전히 source-backed Flow(baseline 유지).</p>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #C0341D; border-radius: 16px; padding: 18px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <span style="font-size: 13px; font-weight: 800; background: #FBEAE5; color: #C0341D; border-radius: 6px; padding: 2px 9px;">P12-03 · High</span>
+          <h3 style="margin: 0; font-size: 16.5px; font-weight: 800;">candidate 카드 — raw ISO + 제작 전문어 정리</h3>
+        </div>
+        <p style="margin: 8px 0 0; font-size: 14px; line-height: 1.65; color: #44413B;"><strong>무엇을</strong> · s30 "내가 요청한 후보"에서 ① <code>2026-07-07</code>(raw ISO)를 한국어 날짜/상대표현("오늘 요청")으로 ② "<strong>Canonical URL·handoff·Claude review용·제작용 정보</strong>" 등 제작/운영 전문어를 사용자어로 바꾸거나 <strong>제작 메타 블록을 내부 뷰로 분리</strong>(사용자 카드에는 "원 URL 열기·다시 조회·삭제·제목/메모 수정"만). non-executable 배지("아직 실행 가능한 Flow 아님")는 유지. <strong>AC</strong> · P12-01 스캔에서 s30 <code>rawIsoLines 0 · internalHits 0</code> · 후보의 재조회/삭제/수정 컨트롤 유지.</p>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #C0341D; border-radius: 16px; padding: 18px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <span style="font-size: 13px; font-weight: 800; background: #FBEAE5; color: #C0341D; border-radius: 6px; padding: 2px 9px;">P12-04 · High · guardrail</span>
+          <h3 style="margin: 0; font-size: 16.5px; font-weight: 800;">miss 카피의 내부 단계어(P0) 제거 + 가드레일 잠금</h3>
+        </div>
+        <p style="margin: 8px 0 0; font-size: 14px; line-height: 1.65; color: #44413B;"><strong>무엇을</strong> · s29 "P0에서는 AI 생성 대신 URL 수집과 사람 검토 대기열로 넘깁니다" → 사용자 상태어로: "아직 준비된 Flow가 없어요. 요청으로 남겨두면 준비되는 대로 알려드릴게요." <code>user-surface-guardrails.ts</code>의 <code>forbiddenInternalTerms</code>에 <strong>로드맵 단계 코드 패턴</strong>(<code>P0·P1·…·Pn / P0에서는 / 대기열 / 파이프라인</code>)을 구조어 클래스로 추가하고 양성/음성 유닛 테스트로 잠금. <strong>AC</strong> · s29 <code>internalHits 0</code> · lib 유닛 테스트가 "P0" 계열을 hit로 잡음.</p>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #C7A128; border-radius: 16px; padding: 18px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <span style="font-size: 13px; font-weight: 800; background: #F7F0DC; color: #8A6D1B; border-radius: 6px; padding: 2px 9px;">P12-05 · Medium · guardrail</span>
+          <h3 style="margin: 0; font-size: 16.5px; font-weight: 800;">/flow-lab/url-first-p0 — 프로토타입 게이트를 /restart와 동급으로</h3>
+        </div>
+        <p style="margin: 8px 0 0; font-size: 14px; line-height: 1.65; color: #44413B;"><strong>무엇을</strong> · s31은 "내부 실험 route"라고 <strong>스스로 밝히지만</strong> /restart가 가진 display gate·접근 게이트가 없습니다. ① <code>/flow-lab/*</code>를 <code>prototypeBucket:true</code>로 표시하고 primary 4탭 IA·홈 추천·flows 카탈로그에서 링크 0 ② <code>noindex</code> ③ restart와 동일한 <code>scanPrototypeRouteGuardrails</code> 적용(영어 상태어는 내부 라벨로 허용하되 raw route slug의 사용자 승격만 게이트). <strong>AC</strong> · <code>/flow-lab</code>가 정상 nav/카탈로그에서 도달 불가 · evidence에 <code>prototypeBucket:true</code> 기록 · restart와 같은 게이트 통과.</p>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #C7A128; border-radius: 16px; padding: 18px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <span style="font-size: 13px; font-weight: 800; background: #F7F0DC; color: #8A6D1B; border-radius: 6px; padding: 2px 9px;">P12-06 · Medium</span>
+          <h3 style="margin: 0; font-size: 16.5px; font-weight: 800;">공개 워크벤치 sticky 1차 CTA 라벨 통일</h3>
+        </div>
+        <p style="margin: 8px 0 0; font-size: 14px; line-height: 1.65; color: #44413B;"><strong>무엇을</strong> · <code>mobileExportBar</code> 1차 라벨이 화면마다 다릅니다 — s06 "내 Flow에 저장" · s07 "내 도구로 가져가기" · s09/10 "캘린더 파일 받기". 저장이 primary인 공개 shell에서 sticky가 export 동사가 되면 <strong>primary=저장 원칙</strong>이 시각적으로 뒤집힙니다. sticky 1차 CTA는 <strong>저장/입력 계열 단일 라벨</strong>로 통일하고, 개별 export(캘린더/시트/메모)는 본문 export 영역에만. <strong>AC</strong> · <code>publicWorkbenchExportLabels.samples</code>의 sticky 1차가 9/9 저장·입력 계열 · <code>publicPrimaryPathVisible 9/9</code> 유지 · public-share-cta-order E2E 통과.</p>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #C7A128; border-radius: 16px; padding: 18px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <span style="font-size: 13px; font-weight: 800; background: #F7F0DC; color: #8A6D1B; border-radius: 6px; padding: 2px 9px;">P12-07 · Medium</span>
+          <h3 style="margin: 0; font-size: 16.5px; font-weight: 800;">"옮길 수 있는 형태" 칩 — 기술어(Markdown) 사용자어로</h3>
+        </div>
+        <p style="margin: 8px 0 0; font-size: 14px; line-height: 1.65; color: #44413B;"><strong>무엇을</strong> · s27 hit·s29 miss의 "옮길 수 있는 형태" 칩에 "Markdown"이 그대로 노출됩니다. 정상 export 표면이 쓰는 사용자어("메모로 복사"·"체크리스트")와 어긋납니다 → "메모"/"문서"로. <strong>AC</strong> · URL-first 칩에서 "Markdown" 등 파일포맷 기술어 0 · export 기능 자체 불변.</p>
+      </article>
+
+      <article style="background: #FFFFFF; border: 1px solid #E7E4DD; border-left: 4px solid #B7B2A6; border-radius: 16px; padding: 18px 22px;">
+        <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px;">
+          <span style="font-size: 13px; font-weight: 800; background: #F0EEE8; color: #6E6B64; border-radius: 6px; padding: 2px 9px;">P12-08 ~ 10 · Low</span>
+          <h3 style="margin: 0; font-size: 16.5px; font-weight: 800;">소품 3건</h3>
+        </div>
+        <p style="margin: 8px 0 0; font-size: 14px; line-height: 1.65; color: #44413B;"><strong>P12-08</strong> · custom-start(s28)를 P12-01 스캔 대상에 포함 — hit→"조금 고쳐 시작" 경로가 marker로 검증되게(현재 scrollHeight만). <strong>P12-09</strong> · hit 시작일 date input(<code>yyyy-mm-dd</code>)에 <code>data-testid</code> 부여, flow-map 이사일과 동일하게 <code>rawIsoInputValueExemptions</code> 면제 버킷에 route·testId 기록. <strong>P12-10</strong> · 수동 등록 QA 리포트(s32)는 <code>docs/content-audit/</code> 내부 문서로 유지 — 사용자 라우트/nav에서 링크되지 않는지 확인만(수정 아님).</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ===================== SECTION 6 : close/reopen ===================== -->
+  <section id="split" data-screen-label="6 닫기/재개" style="max-width: 1120px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 6</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">이미 충분히 닫힌 것 / 다시 열어야 할 것</h2>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px; margin-top: 18px;">
+      <div style="background: #EDF3EC; border: 1px solid #CADFC9; border-radius: 16px; padding: 18px 20px;">
+        <p style="margin: 0; font-size: 14px; font-weight: 800; color: #1F6A3E;">충분히 닫힘 — 재검토 불필요</p>
+        <ul style="margin: 10px 0 0; padding-left: 18px; font-size: 13.5px; line-height: 1.75; color: #35563A;">
+          <li><strong>P11-01</strong> 지난 할 일 시트 그룹 헤더 — <code>statusSheetGroupMeta 1 · ungroupedRow 0 · 반복 date/timing 행 0</code>, s17 픽셀 확인</li>
+          <li><strong>P11-02</strong> evidence marker — <code>continuationActionable 4 · explanationOnly 0 · agendaGroupMeta 2 · rowControlAccessibleName context 4/4</code>. P10-03/04/05가 JSON만으로 판정 가능</li>
+          <li><strong>P11-04/09</strong> 인벤토리 밀도 — <code>duplicateProgressMetric 0 · largeRemaining 0</code>, s18·20 픽셀 확인</li>
+          <li><strong>P11-07/10</strong> fridge/washer setup — <code>publicPrimarySetupVisible</code> 유지 + 첫 할 일 2줄 클램프(s09)</li>
+          <li><strong>P11-08/11</strong> 워크벤치 반복 카피 → 공통 안내 1회(<code>repeatedDetailSentence 0</code>) · 중복 export 라벨 0</li>
+          <li><strong>P11-05/06</strong> guardrail 정본 단일화 · ko-KR/Asia-Seoul locale · date input testid</li>
+          <li><strong>P8-07/P9-06</strong> D-30 마일스톤 그룹 — s24 픽셀 재확인, <code>intentional-d30-milestone-group</code> 판정 유지</li>
+          <li>정상 26캡처 스캔 기준선 — internal·slug·구조어·raw ISO·반복·overflow 전부 0</li>
+        </ul>
+      </div>
+      <div style="background: #FBEAE5; border: 1px solid #EFC5B9; border-radius: 16px; padding: 18px 20px;">
+        <p style="margin: 0; font-size: 14px; font-weight: 800; color: #C0341D;">다시 열어야 함 — P12에서 (근거 캡처/evidence)</p>
+        <ul style="margin: 10px 0 0; padding-left: 18px; font-size: 13.5px; line-height: 1.75; color: #7A2917;">
+          <li><strong>가드레일 커버리지</strong> — 정상 라우트에 지킨 slug/ISO/구조어 0 기준이 URL-first 사용자 상태에는 미적용. 근거: <code>url-first-supplement-evidence.json</code>에 판정 marker 0 → P12-01</li>
+          <li><strong>source slug 0 기준선</strong> — s27 hit에서 "Mathbang" 노출 → P12-02</li>
+          <li><strong>raw ISO·내부 구조어 0 기준선</strong> — s30 "2026-07-07"·"Canonical URL/handoff/제작용 정보", s29 "P0" → P12-03·04</li>
+          <li><strong>프로토타입 게이트</strong> — /restart는 게이트 있으나 <code>/flow-lab/url-first-p0</code>(s31)는 없음. 두 번째 프로토타입 버킷이 미게이트 → P12-05</li>
+          <li><strong>공개 primary 위계</strong> — P10-02는 "focusable/visible"까지 닫았으나, sticky 1차 <strong>라벨</strong>이 화면마다 저장/export로 갈림(s06 vs 07 vs 09/10) → P12-06</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SECTION 7 : baselines to preserve ===================== -->
+  <section id="hold" data-screen-label="7 유지 기준선" style="max-width: 1120px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 7</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">Baselines To Preserve — P4~P11에서 닫힌 것</h2>
+    </div>
+    <p style="margin: 10px 0 0; max-width: 940px; font-size: 14.5px; color: #6E6B64;">아래는 <strong>P12 어떤 작업도 깨면 안 되는</strong> 기준선입니다. 특히 URL-first 수정(P12-02~04)은 노출 카피만 손대고 <strong>canonical lookup·source-backed 재사용 구조는 그대로</strong> 둡니다.</p>
+    <div style="margin-top: 16px; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 18px 22px;">
+      <ul style="margin: 0; padding-left: 18px; font-size: 14px; line-height: 1.85; color: #44413B; columns: 2; column-gap: 36px;">
+        <li><strong>4탭 IA</strong>: 홈 / Flow 찾기 / 캘린더 / 내 Flow — 변경 금지</li>
+        <li>공개 <code>/f/[slug]</code>는 <strong>공유 shell</strong> 유지, 4탭 app shell로 강제 편입 금지</li>
+        <li>primary는 <strong>내 Flow에 저장 또는 입력/setup</strong>, <code>콘텐츠 더 보기</code>는 뒤·focusable(before-primary 0 유지)</li>
+        <li>seed/source-backed 데이터 구조, 저장/실행/export 스키마 불변</li>
+        <li><code>sourceUrl · sourceTrace · detail · memo · export</code> 접근 삭제 금지</li>
+        <li>guardrail 판정 정본은 <code>lib/flow/user-surface-guardrails.ts</code> — capture·E2E·유닛 전부 lib 경유</li>
+        <li>정상 route 스캔 0 유지: internal · slug · 구조어(<code>...지도</code>·trailing <code>Flow</code>) · raw ISO(visible+input) · 첫 할 일 반복 · overflow</li>
+        <li>native date input ISO 값은 <strong>면제 버킷에만 기록</strong>, label/help/card로 승격 금지</li>
+        <li><strong>URL-first는 canonical lookup 우선</strong> — hit는 기존 source-backed Flow로 연결, miss/needs_review는 <strong>non-executable local candidate</strong>로 보류</li>
+        <li>내 Flow continuation은 실제 <code>열기</code> 가능한 행/컨트롤(<code>continuationActionable</code> · explanationOnly 0)</li>
+        <li>지난 할 일 시트 · 캘린더 agenda: 공통 메타 <strong>그룹 헤더 1회</strong>, 행은 제목+컨트롤만</li>
+        <li>인벤토리 행 진행 지표 <strong>중복 0</strong> · 전체 탭 헤더 대형 잔여 총계 0</li>
+        <li>행 컨트롤 visible 라벨 짧게(열기·수정·완료), <strong>aria에 행 맥락 유지</strong>(context 4/4)</li>
+        <li><code>/restart/moving-d30</code> 프로토타입 버킷 분리 + display 게이트 승격 전 필수 · D-30 마일스톤 그룹 헤더</li>
+        <li>워크벤치: 행 상세 source 링크 0 · source 접근 영역 ≥1 · 반복 상세 문장 0</li>
+        <li>패키지 메타: UI baseline commit ≠ package commit 표기 분리</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===================== SECTION 8 : screen-specific instructions ===================== -->
+  <section id="fix" data-screen-label="8 화면별 수정" style="max-width: 1120px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 8</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">Screen-Specific Instructions</h2>
+    </div>
+    <div style="display: grid; gap: 10px; margin-top: 16px;">
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 14px 18px; display: grid; grid-template-columns: 172px 1fr; gap: 14px; align-items: start;">
+        <p style="margin: 0; font-size: 13px; font-weight: 800; color: #1F6A3E;"><code>/</code> · s01</p>
+        <p style="margin: 0; font-size: 13.5px; line-height: 1.65; color: #44413B;">수정 없음. 2개 큐레이션 유지(P7-04), "콘텐츠 고르러 가기" 1차 CTA 위계 안정. P12에서 URL-first 진입을 홈에 노출한다면 <strong>/flow-lab로 연결 금지</strong>(P12-05).</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 14px 18px; display: grid; grid-template-columns: 172px 1fr; gap: 14px; align-items: start;">
+        <p style="margin: 0; font-size: 13px; font-weight: 800; color: #C0341D;"><code>/flows</code> · s02·27·28·29·30</p>
+        <p style="margin: 0; font-size: 13.5px; line-height: 1.65; color: #44413B;">빈 상태(s02)는 통과. <strong>URL 입력 후 상태가 P12의 핵심</strong>: hit(27) "Mathbang" slug→표시명(P12-02) · candidate(30) "2026-07-07"·"Canonical URL/handoff/Claude review용/제작용 정보"→한국어 날짜+사용자어 또는 내부 뷰 분리(P12-03) · miss(29) "P0…대기열"→상태어(P12-04) · 칩 "Markdown"→"메모/문서"(P12-07). 그리고 이 4상태를 capture가 렌더+스캔(P12-01).</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 14px 18px; display: grid; grid-template-columns: 172px 1fr; gap: 14px; align-items: start;">
+        <p style="margin: 0; font-size: 13px; font-weight: 800; color: #1F6A3E;"><code>/flow-maps/[map]</code> · s03·04·05</p>
+        <p style="margin: 0; font-size: 13.5px; line-height: 1.65; color: #44413B;">수정 없음. 이사일 date input 면제 1건(P11-06 testid 부여됨), sticky clearance 검증, 스캔 0. URL-first hit가 이 맵으로 재사용 연결되므로(baseline) 맵 자체 구조 불변.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 14px 18px; display: grid; grid-template-columns: 172px 1fr; gap: 14px; align-items: start;">
+        <p style="margin: 0; font-size: 13px; font-weight: 800; color: #8A6D1B;"><code>/f/[slug]</code> · s06~12·25·26</p>
+        <p style="margin: 0; font-size: 13.5px; line-height: 1.65; color: #44413B;">스캔·marker 통과. 남은 것은 <strong>sticky 1차 CTA 라벨 통일</strong>(P12-06): s06 "내 Flow에 저장" 기준으로 s07 "내 도구로 가져가기"·s09/10 "캘린더 파일 받기"를 저장/입력 계열로. 개별 export는 본문 영역에만 유지. 공유 shell·source 접근·콘텐츠 더 보기 순서 불변.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 14px 18px; display: grid; grid-template-columns: 172px 1fr; gap: 14px; align-items: start;">
+        <p style="margin: 0; font-size: 13px; font-weight: 800; color: #1F6A3E;"><code>/my</code> · s13·15·16·17·18·19·20</p>
+        <p style="margin: 0; font-size: 13.5px; line-height: 1.65; color: #44413B;">수정 없음 — P11-01/02/03/04/09가 전부 닫힘. 이어하기 actionable·시트 그룹 헤더·인벤토리 단일 지표·상태 카피 확인. 회귀 방지 marker 유지가 곧 보존.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 14px 18px; display: grid; grid-template-columns: 172px 1fr; gap: 14px; align-items: start;">
+        <p style="margin: 0; font-size: 13px; font-weight: 800; color: #1F6A3E;"><code>/calendar</code> · s14</p>
+        <p style="margin: 0; font-size: 13.5px; line-height: 1.65; color: #44413B;">수정 없음. 그룹 헤더 1회(<code>agendaGroupMeta 2 · 반복 행 0</code>), 행은 제목+체크박스. P10-04 유지.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 14px 18px; display: grid; grid-template-columns: 172px 1fr; gap: 14px; align-items: start;">
+        <p style="margin: 0; font-size: 13px; font-weight: 800; color: #6E6B64;"><code>/restart/moving-d30</code> · s21~24</p>
+        <p style="margin: 0; font-size: 13.5px; line-height: 1.65; color: #44413B;">수정 없음 — display 게이트·D-30 그룹 헤더·단일 export 진입·면제 4건(testid 有) 유지. <strong>주의</strong>: s21 화면에 "다시 시작" 외 <strong>프로토타입임을 알리는 사용자 배지가 안 보임</strong> — 4탭 nav도 없어 진입 시 맥락 부재. P12-05와 함께 프로토타입 라우트 공통 배지 정책을 검토(신규 요구 아님, 관찰).</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 14px; padding: 14px 18px; display: grid; grid-template-columns: 172px 1fr; gap: 14px; align-items: start;">
+        <p style="margin: 0; font-size: 13px; font-weight: 800; color: #8A6D1B;">URL-first / manual registration · s31·32</p>
+        <p style="margin: 0; font-size: 13.5px; line-height: 1.65; color: #44413B;"><code>/flow-lab/url-first-p0</code>(s31): /restart와 동일 게이트 + primary IA 비노출·noindex(P12-05). 영어 상태어(HIT/needs_review/disabled)는 <strong>내부 라벨로 허용</strong>하되 라우트 자체를 게이트. 수동 등록 QA 리포트(s32)는 <code>docs/content-audit/</code> 내부 문서 — 사용자 nav 링크 없음 확인만(P12-10).</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SECTION 9 : evidence gaps ===================== -->
+  <section id="gaps" data-screen-label="9 증거 공백" style="max-width: 1120px; margin: 0 auto; padding: 30px 28px 12px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #3654FF;">SECTION 9</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">Evidence Gaps — 판단을 유보하거나 픽셀에만 의존한 것</h2>
+    </div>
+    <div style="margin-top: 16px; background: #FFFFFF; border: 1px solid #E7E4DD; border-radius: 16px; padding: 18px 22px;">
+      <ol style="margin: 0; padding-left: 20px; font-size: 14px; line-height: 1.85; color: #44413B;">
+        <li><strong>URL-first supplement의 판정 marker 전무</strong> — 27~32는 <code>bytes·hash·scrollHeight·bodyTextLength</code>만. 이 문서의 ①~③ 발견은 <strong>육안 검토뿐</strong>이고 스캔 카운트가 없습니다. 가장 큰 공백 → P12-01이 해소.</li>
+        <li><strong>URL-first 상태 재현 조건 미기록</strong> — 27/28/29/30이 모두 <code>/flows</code>에서 찍혔지만 <strong>어떤 URL이 hit/miss/candidate를 유발했는지</strong> evidence에 없습니다(입력값·트리거 부재). 회귀 재현이 어렵습니다.</li>
+        <li><strong>넓은 뷰포트 부재</strong> — 32장 전부 390×844. ≥768px 레이아웃은 이번에도 판단 유보(의도된 한계로 유지하되 P12 마감 시 2~3장 스팟 권장).</li>
+        <li><strong>공개 저장 완료 상태 스크린샷 여전히 없음</strong> — E2E는 "내 Flow에서 보기" 도달을 통과시키지만, 저장 직후 화면 캡처가 32장에 없음(P11에서도 지적). 1장 추가 권장.</li>
+        <li><strong>/flow-lab 게이트 여부 미증빙</strong> — s31이 nav에 있는지, noindex인지 package로 확인 불가 → P12-05가 명시적 evidence(<code>prototypeBucket:true</code> + nav 링크 0)로 확정.</li>
+        <li><strong>s30 raw ISO의 형태 구분 필요</strong> — "2026-07-07"이 visible 텍스트인지 native date input 값인지 marker로 구분돼야 면제/hit 판정 가능. 픽셀상 <strong>visible 텍스트</strong>로 보이나(제작 대기 배지 옆), P12-01 스캔으로 확정.</li>
+        <li><strong>URL-first hit의 재사용 대상 검증 부재</strong> — s27이 실제 source-backed Flow로 연결되는지(baseline)는 픽셀상 맞아 보이나, hit→map 연결의 route-evidence가 supplement엔 없음.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ===================== SECTION 10 : /goal drafts ===================== -->
+  <section id="goal" data-screen-label="10 /goal 초안" style="max-width: 1120px; margin: 0 auto; padding: 30px 28px 56px;">
+    <div style="display: flex; align-items: baseline; gap: 12px;">
+      <span style="font-size: 13px; font-weight: 800; color: #1F6A3E;">SECTION 10</span>
+      <h2 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">/goal 초안 — 복사해서 그대로 실행</h2>
+    </div>
+    <div style="margin-top: 16px; display: grid; gap: 10px;">
+      <div style="background: #1B1A17; color: #E8E6DF; border-radius: 14px; padding: 16px 20px; font-family: 'SF Mono', ui-monospace, Menlo, monospace; font-size: 12.8px; line-height: 1.8; white-space: pre-wrap;">/goal P12-01: capture 스크립트에 URL-first 사용자 상태 스캔을 추가해줘. /flows에서 URL을 입력해 hit(27)·custom-start(28)·miss(29)·candidate(30) 4상태를 각각 렌더한 뒤, 정상 라우트와 동일하게 scanUserSurfaceGuardrails·scanRawIsoInputValues·findFirstTaskRepetitionHits를 실행해서 internalHits·sourceSlugHits·structuralDisplayHits·rawIsoLines를 기록해. url-first-supplement-evidence.json을 스크린샷 메타에서 정상 scenario 스키마로 승격하고, summary에 urlFirst 카운트를 노출해. url-first-user-surface.spec.ts 신규로 4상태 전 버킷 0을 잠가줘. canonical lookup·source-backed 재사용 구조는 바꾸지 마.</div>
+      <div style="background: #1B1A17; color: #E8E6DF; border-radius: 14px; padding: 16px 20px; font-family: 'SF Mono', ui-monospace, Menlo, monospace; font-size: 12.8px; line-height: 1.8; white-space: pre-wrap;">/goal P12-02: URL-first hit 결과 카피에서 source brand slug 노출을 없애줘. "Mathbang 중1 수학 목차 기준으로…"의 Mathbang을 큐레이션 표시명으로 치환 — canonical lookup은 slug로 하되 사용자 노출은 정상 라우트가 쓰는 표시명 매핑을 재사용해. hit가 재사용하는 대상은 여전히 기존 source-backed Flow여야 해. 완료 기준: P12-01 스캔에서 hit(27) sourceSlugHits 0.</div>
+      <div style="background: #1B1A17; color: #E8E6DF; border-radius: 14px; padding: 16px 20px; font-family: 'SF Mono', ui-monospace, Menlo, monospace; font-size: 12.8px; line-height: 1.8; white-space: pre-wrap;">/goal P12-03: URL-first candidate 카드("내가 요청한 후보")를 사용자 표면 기준으로 정리해줘. raw ISO "2026-07-07"을 한국어 날짜나 "오늘 요청" 상대표현으로 바꾸고, "Canonical URL·handoff·Claude review용·제작용 정보" 같은 제작/운영 전문어는 사용자어로 바꾸거나 제작 메타 블록을 내부 뷰로 분리해. 사용자 카드에는 원 URL 열기·다시 조회·삭제·제목/메모 수정과 "아직 실행 가능한 Flow 아님" 배지만 남겨. 완료 기준: P12-01 스캔에서 candidate(30) rawIsoLines 0, internalHits 0.</div>
+      <div style="background: #1B1A17; color: #E8E6DF; border-radius: 14px; padding: 16px 20px; font-family: 'SF Mono', ui-monospace, Menlo, monospace; font-size: 12.8px; line-height: 1.8; white-space: pre-wrap;">/goal P12-04: URL-first miss 카피의 내부 단계어를 없애고 가드레일로 잠가줘. "P0에서는 AI 생성 대신 URL 수집과 사람 검토 대기열로 넘깁니다"를 "아직 준비된 Flow가 없어요. 요청으로 남겨두면 준비되는 대로 알려드릴게요." 수준의 상태어로 바꿔. user-surface-guardrails.ts forbiddenInternalTerms에 로드맵 단계 코드 패턴(P0·P1·…·Pn, "P0에서는", 대기열, 파이프라인)을 구조어 클래스로 추가하고 양성/음성 유닛 테스트로 잠가줘. 완료 기준: miss(29) internalHits 0.</div>
+      <div style="background: #1B1A17; color: #E8E6DF; border-radius: 14px; padding: 16px 20px; font-family: 'SF Mono', ui-monospace, Menlo, monospace; font-size: 12.8px; line-height: 1.8; white-space: pre-wrap;">/goal P12-05: /flow-lab/url-first-p0를 /restart와 동급 프로토타입 버킷으로 게이트해줘. prototypeBucket:true로 표시하고 primary 4탭 IA·홈·flows 카탈로그에서 링크를 0으로, noindex 적용, scanPrototypeRouteGuardrails를 restart와 동일하게 적용(영어 상태어는 내부 라벨 허용, raw route slug의 사용자 승격만 게이트). 완료 기준: /flow-lab가 정상 nav/카탈로그에서 도달 불가, evidence에 prototypeBucket:true 기록, restart와 같은 게이트 통과.</div>
+      <div style="background: #1B1A17; color: #E8E6DF; border-radius: 14px; padding: 16px 20px; font-family: 'SF Mono', ui-monospace, Menlo, monospace; font-size: 12.8px; line-height: 1.8; white-space: pre-wrap;">/goal P12-06: 공개 /f 워크벤치의 sticky 1차 CTA 라벨을 통일해줘. 지금 s06 "내 Flow에 저장", s07 "내 도구로 가져가기", s09/10 "캘린더 파일 받기"로 갈려 있어. sticky 1차는 전부 저장/입력 계열 단일 라벨로 맞추고, 캘린더/시트/메모 개별 export는 본문 export 영역에만 둬. 공유 shell·source 접근·콘텐츠 더 보기 순서는 그대로. 완료 기준: publicWorkbenchExportLabels sticky 1차가 9/9 저장·입력 계열, publicPrimaryPathVisible 9/9 유지, public-share-cta-order E2E 통과.</div>
+      <div style="background: #1B1A17; color: #E8E6DF; border-radius: 14px; padding: 16px 20px; font-family: 'SF Mono', ui-monospace, Menlo, monospace; font-size: 12.8px; line-height: 1.8; white-space: pre-wrap;">/goal P12-07+09: ① URL-first "옮길 수 있는 형태" 칩의 "Markdown"을 "메모/문서" 등 사용자어로 바꿔줘(export 기능 자체는 그대로). ② URL-first hit 시작일 date input(yyyy-mm-dd)에 data-testid를 부여하고 flow-map 이사일과 동일하게 rawIsoInputValueExemptions 면제 버킷에 route·testId·reason을 기록해.</div>
+    </div>
+    <p style="margin: 18px 0 0; font-size: 13px; color: #6E6B64;">P12 마감 시 이 문서 기준으로 재검토합니다 — 패키지에 P12-01의 URL-first marker가 담겨 오면, s27·29·30의 기준선 회귀는 그때 "픽셀 관찰"에서 "측정된 0"으로 승격됩니다. 그 전까지 URL-first는 <strong>정상 라우트지만 무검증 표면</strong>입니다.</p>
+  </section>
+
+</div>
+</x-dc>
+</body>
+</html>

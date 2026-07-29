@@ -1,0 +1,199 @@
+{
+  "schemaVersion": 1,
+  "reviewerRole": "claude_design",
+  "reviewedAt": "2026-07-24T14:00:00+09:00",
+  "observedUserCount": 0,
+  "description": "persona/session transition이 current production에서 끊기는 지점과 A/B/C 해결 여부. 실제 사용자 관찰 아님.",
+  "reopenCriteriaTriggered": [
+    "#1 '지금' vs workspace '실행' 혼동이 2+ persona(P1,P3,P6,P7)에서 재현 (D2)",
+    "#2 동일 stable Item이 2+ 위치에서 primary completion (D1) — 지금/실행/(Home 이어하기)",
+    "#7 첫 viewport card type 4+, competing primary 2+ (D4)"
+  ],
+  "reopenCriteriaMet": 3,
+  "reopenThreshold": 2,
+  "crossTabReopenAssessed": {
+    "triggered": false,
+    "reason": "D7은 공유 post-save hub 중복이며 지속적 competing primary가 아님. My Flow B안으로 해소 가능 → cross_tab_ia_reopen 게이트(실패한 My Flow 대안 + 지속 교차탭 중복) 미충족."
+  },
+  "discontinuities": [
+    {
+      "id": "D1",
+      "fromState": "저장/이어하기 진입",
+      "toState": "실제 다음 행동 실행",
+      "breakType": "triple_resume_entry",
+      "title": "이어하기 진입점 3중화 (Home 이어하기 / My Flow 지금 / workspace 실행)",
+      "personasAffected": [
+        "P1",
+        "P7"
+      ],
+      "metric": "actionableDuplicateCount=2",
+      "severity": "High",
+      "evidenceKinds": [
+        "current_production_screenshot",
+        "current_source",
+        "heuristic_simulation"
+      ],
+      "fixedBy": {
+        "A": "미해결(두 탭 유지)",
+        "B": "continue strip 단일화 + workspace가 완료 소유",
+        "C": "active run 단일화(단, run/continue 중복 잔존 가능)"
+      }
+    },
+    {
+      "id": "D2",
+      "fromState": "'지금' cross-Flow queue",
+      "toState": "workspace '실행'",
+      "breakType": "role_collision_now_vs_run",
+      "title": "'지금'과 '실행'이 같은 오늘 할 일을 두 문법으로 표현",
+      "personasAffected": [
+        "P1",
+        "P3",
+        "P6",
+        "P7"
+      ],
+      "metric": "explanationDependencyCount=2",
+      "severity": "High",
+      "evidenceKinds": [
+        "current_production_screenshot",
+        "heuristic_simulation"
+      ],
+      "fixedBy": {
+        "A": "copy만 정리(구조 유지)",
+        "B": "'지금' 탭 제거, workspace가 next-action 소유",
+        "C": "active run이 '지금' 대체"
+      }
+    },
+    {
+      "id": "D3",
+      "fromState": "top-level '완료'",
+      "toState": "workspace '기록'",
+      "breakType": "duplicate_completion_model",
+      "title": "cross-Flow 완료와 per-Flow 기록이 두 완료 모델처럼 중복",
+      "personasAffected": [
+        "P3",
+        "P7"
+      ],
+      "metric": "reopenDepth=3",
+      "severity": "High",
+      "evidenceKinds": [
+        "current_source",
+        "heuristic_simulation"
+      ],
+      "fixedBy": {
+        "A": "라벨 구분만",
+        "B": "'기록'은 workspace 섹션, '완료'는 동일 run 상태의 cross-Flow 필터 뷰",
+        "C": "history를 secondary destination으로 명시"
+      }
+    },
+    {
+      "id": "D4",
+      "fromState": "opened Flow 첫 viewport",
+      "toState": "첫 행동",
+      "breakType": "first_viewport_overload",
+      "title": "열린 Flow 첫 화면에 4 card type/5 heading/중첩 탭",
+      "personasAffected": [
+        "P1",
+        "P4",
+        "P6"
+      ],
+      "metric": "firstViewportDistinctCardTypeCount=4",
+      "severity": "Medium",
+      "evidenceKinds": [
+        "current_production_screenshot"
+      ],
+      "fixedBy": {
+        "A": "density 정리(부분)",
+        "B": "progressive disclosure(다음행동->계획->기록), card type 2",
+        "C": "active run 우선, definition 접힘"
+      }
+    },
+    {
+      "id": "D5",
+      "fromState": "20/60 Flow library",
+      "toState": "target Flow open",
+      "breakType": "library_scale_break",
+      "title": "mobile flat list가 20/60에서 search-first/group 없이 스크롤 의존",
+      "personasAffected": [
+        "P6"
+      ],
+      "metric": "flowOpenDepth@20=4",
+      "severity": "Medium",
+      "evidenceKinds": [
+        "current_production_screenshot",
+        "current_source",
+        "heuristic_simulation"
+      ],
+      "fixedBy": {
+        "A": "미해결",
+        "B": "search-first + status/next-date group -> <=3",
+        "C": "library secondary이나 동일 검색 적용"
+      }
+    },
+    {
+      "id": "D6",
+      "fromState": "workspace -> Calendar",
+      "toState": "My Flow 복귀",
+      "breakType": "context_restore_gap",
+      "title": "Calendar 왕복 후 scroll/filter/expanded-phase 복구 미입증",
+      "personasAffected": [
+        "P2",
+        "P6"
+      ],
+      "metric": "contextLossCount=2",
+      "severity": "Medium",
+      "evidenceKinds": [
+        "current_source",
+        "heuristic_simulation",
+        "inaccessible"
+      ],
+      "fixedBy": {
+        "A": "부분(선택은 URL 보존)",
+        "B": "back이 filter/scroll 명시 복원",
+        "C": "동일"
+      }
+    },
+    {
+      "id": "D7",
+      "fromState": "/my 저장 receipt hub",
+      "toState": "/calendar hub",
+      "breakType": "cross_surface_hub_duplication",
+      "title": "동일 green banner + '첫 할 일 시작' primary가 /my와 /calendar 양쪽에 등장",
+      "personasAffected": [
+        "P1",
+        "P7"
+      ],
+      "metric": "actionableDuplicateCount(cross-surface)=1",
+      "severity": "Medium",
+      "evidenceKinds": [
+        "current_production_screenshot"
+      ],
+      "fixedBy": {
+        "A": "미해결",
+        "B": "canonical hub 1개, Calendar는 날짜 배치 우선",
+        "C": "동일"
+      },
+      "note": "cross_tab_ia_reopen 게이트에는 미달(공유 post-save hub, 지속 competing 아님). de-dup 권고."
+    },
+    {
+      "id": "D8",
+      "fromState": "artifact 선택",
+      "toState": "선택형/혼합 plan 조정",
+      "breakType": "content_shape_flattening",
+      "title": "공통 shell에서 timeline/checklist/resource 구분 약화(mobile)",
+      "personasAffected": [
+        "P4"
+      ],
+      "metric": "—(정성)",
+      "severity": "Medium",
+      "evidenceKinds": [
+        "current_source",
+        "heuristic_simulation"
+      ],
+      "fixedBy": {
+        "A": "미해결",
+        "B": "content-shape body renderer(공통 header/action 유지)",
+        "C": "동일 + routine/timeline definition/run 분리"
+      }
+    }
+  ]
+}

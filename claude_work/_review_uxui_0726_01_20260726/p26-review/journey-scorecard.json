@@ -1,0 +1,150 @@
+{
+  "reviewCycle": "P26 -> P27",
+  "generated": "2026-07-21 KST",
+  "evidence": "production_ssr_fetch(5 routes) + repo_evidence + heuristic",
+  "observedUsers": "0/15",
+  "legend": [
+    "supported",
+    "partial",
+    "hidden",
+    "missing",
+    "blocked"
+  ],
+  "stages": [
+    "발견",
+    "전체 Flow 이해",
+    "시작/조정 선택",
+    "저장 결과 확인",
+    "전체 열람",
+    "수정",
+    "실행",
+    "완료 취소",
+    "Calendar",
+    "export",
+    "회고",
+    "재사용"
+  ],
+  "personas": [
+    {
+      "id": "A",
+      "name": "이사(역산형)",
+      "overall": "partial",
+      "steps": {
+        "발견": "supported",
+        "전체 Flow 이해": "supported",
+        "시작/조정 선택": "partial",
+        "저장 결과 확인": "partial",
+        "전체 열람": "supported",
+        "수정": "supported",
+        "실행": "supported",
+        "완료 취소": "supported",
+        "Calendar": "supported",
+        "export": "supported",
+        "회고": "supported",
+        "재사용": "supported"
+      },
+      "notes": "save decision surface duplicated (F-03); returning /my server shell is studio (F-01)"
+    },
+    {
+      "id": "B",
+      "name": "차량 점검(날짜 없음)",
+      "overall": "partial",
+      "steps": {
+        "발견": "supported",
+        "전체 Flow 이해": "supported",
+        "시작/조정 선택": "partial",
+        "저장 결과 확인": "supported",
+        "전체 열람": "supported",
+        "수정": "supported",
+        "실행": "supported",
+        "완료 취소": "supported",
+        "Calendar": "partial",
+        "export": "supported",
+        "회고": "supported",
+        "재사용": "supported"
+      },
+      "notes": "Calendar empty-state doesn't teach placement (F-04); 'why undated' hidden"
+    },
+    {
+      "id": "C",
+      "name": "운동/청소 반복",
+      "overall": "partial",
+      "steps": {
+        "발견": "supported",
+        "전체 Flow 이해": "supported",
+        "시작/조정 선택": "supported",
+        "저장 결과 확인": "supported",
+        "전체 열람": "supported",
+        "수정": "supported",
+        "실행": "supported",
+        "완료 취소": "supported",
+        "Calendar": "supported",
+        "export": "supported",
+        "회고": "supported",
+        "재사용": "supported"
+      },
+      "notes": "series/occurrence split supported (P26-03); occurrence detail density (F-09) -> prototype"
+    },
+    {
+      "id": "D",
+      "name": "여행/프로젝트 혼합",
+      "overall": "partial",
+      "steps": {
+        "발견": "supported",
+        "전체 Flow 이해": "supported",
+        "시작/조정 선택": "supported",
+        "저장 결과 확인": "supported",
+        "전체 열람": "supported",
+        "수정": "partial",
+        "실행": "supported",
+        "완료 취소": "supported",
+        "Calendar": "supported",
+        "export": "supported",
+        "회고": "supported",
+        "재사용": "supported"
+      },
+      "notes": "reorder/move/export supported (P26-15/16); mobile batch density (F-06), wide move scan (F-07) -> prototype"
+    },
+    {
+      "id": "E",
+      "name": "생활 기록(메모)",
+      "overall": "partial",
+      "steps": {
+        "발견": "supported",
+        "전체 Flow 이해": "supported",
+        "시작/조정 선택": "supported",
+        "저장 결과 확인": "partial",
+        "전체 열람": "supported",
+        "수정": "supported",
+        "실행": "supported",
+        "완료 취소": "supported",
+        "Calendar": "supported",
+        "export": "supported",
+        "회고": "supported",
+        "재사용": "supported"
+      },
+      "notes": "memo split + reflection + reuse supported (P26-04/13); add/delete/restore discoverability unverified (observed); returning shell (F-01)"
+    },
+    {
+      "id": "F",
+      "name": "개인 초안(URL miss/메모)",
+      "overall": "partial-",
+      "steps": {
+        "발견": "partial",
+        "전체 Flow 이해": "supported",
+        "시작/조정 선택": "supported",
+        "저장 결과 확인": "partial",
+        "전체 열람": "supported",
+        "수정": "supported",
+        "실행": "supported",
+        "완료 취소": "supported",
+        "Calendar": "supported",
+        "export": "supported",
+        "회고": "supported",
+        "재사용": "supported"
+      },
+      "notes": "weakest: this journey lives in /flows (discovery) and /my (work), both SSR-defective (F-02, F-01)"
+    }
+  ],
+  "blockedCount": 0
+}

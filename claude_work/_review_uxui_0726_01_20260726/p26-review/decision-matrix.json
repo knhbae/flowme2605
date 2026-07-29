@@ -1,0 +1,122 @@
+{
+  "reviewCycle": "P26 -> P27",
+  "note": "All change/remove are display/shell/route/copy layer. source/personal/run/occurrence/export data ownership contracts unchanged (P26-05 preserved).",
+  "screens": [
+    {
+      "screen": "Home /",
+      "keep": [
+        "SSR card grammar",
+        "URL/memo entry"
+      ],
+      "change": [
+        "card links -> canonical Flow route"
+      ],
+      "remove": [],
+      "defer": [],
+      "contractImpact": "none"
+    },
+    {
+      "screen": "Flow 찾기 /flows",
+      "keep": [
+        "shared card grammar",
+        "compare"
+      ],
+      "change": [
+        "SSR render cards (F-02)"
+      ],
+      "remove": [
+        "loading-only shell exposure"
+      ],
+      "defer": [],
+      "contractImpact": "none (catalog uses existing static data)"
+    },
+    {
+      "screen": "저장 전 (save-before)",
+      "keep": [
+        "whole-Flow preview",
+        "collapsed explanation"
+      ],
+      "change": [
+        "single save surface (F-03)",
+        "body length (F-10)"
+      ],
+      "remove": [
+        "duplicate save/adjust block",
+        "pre-save output entry",
+        "dual route"
+      ],
+      "defer": [],
+      "contractImpact": "P27-05 additive URL alias map"
+    },
+    {
+      "screen": "저장 후 My Flow /my",
+      "keep": [
+        "지금/Flow 목록/완료",
+        "undated execution section"
+      ],
+      "change": [
+        "SSR canonical 4-tab shell (F-01)",
+        "empty-state role language"
+      ],
+      "remove": [
+        "studio chrome + 5-tab nav on /my"
+      ],
+      "defer": [],
+      "contractImpact": "none (shell/route)"
+    },
+    {
+      "screen": "캘린더 /calendar",
+      "keep": [
+        "date-first execution",
+        "날짜 정하기 tray",
+        "Flow filter"
+      ],
+      "change": [
+        "empty-state placement language (F-04)",
+        "mobile length (F-08)"
+      ],
+      "remove": [
+        "subtitle-repeat copy"
+      ],
+      "defer": [],
+      "contractImpact": "none"
+    },
+    {
+      "screen": "export / 편집",
+      "keep": [
+        "scope->count->format->receipt",
+        "quick/advanced/batch"
+      ],
+      "change": [
+        "batch density (F-06)",
+        "undated rail titles (F-07)",
+        "occurrence density (F-09)"
+      ],
+      "remove": [],
+      "defer": [],
+      "contractImpact": "none"
+    },
+    {
+      "screen": "전역 nav",
+      "keep": [
+        "4-tab primary"
+      ],
+      "change": [
+        "single nav contract (F-05)"
+      ],
+      "remove": [
+        "5-tab studio nav as parallel primary",
+        "dev/compare routes from production"
+      ],
+      "defer": [],
+      "contractImpact": "none"
+    }
+  ],
+  "defer": [
+    "계정/DB/cloud sync",
+    "real AI intake",
+    "외부 캘린더/Notion/Todo OAuth",
+    "창작자/업데이트 파이프라인·마켓",
+    "관찰 세션 15회 실행 자체"
+  ]
+}
