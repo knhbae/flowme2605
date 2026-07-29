@@ -1,0 +1,56 @@
+{
+  "generatedAt": "2026-07-28T23:40:00+09:00",
+  "observedUserCount": 0,
+  "method": "automated_browser_and_heuristic_simulation",
+  "sessions": [
+    {
+      "persona": "기준일 역산형",
+      "flow": "moving-d30-basic",
+      "journey": "public preview -> anchor setup -> save -> focused execution -> complete/reopen -> Calendar/export",
+      "status": "supported",
+      "remainingRisk": "모바일 전체 계획 기본 접힘 여부는 owner 결정 필요"
+    },
+    {
+      "persona": "날짜 없는 체크리스트형",
+      "flow": "vehicle-inspection-prep",
+      "journey": "save -> undated Todo -> date set -> Calendar -> date remove -> undated",
+      "status": "supported",
+      "remainingRisk": "R12 Todo는 opt-in 실험"
+    },
+    {
+      "persona": "반복 Routine형",
+      "flow": "curated-allblanc-morning-workout",
+      "journey": "series setup -> first occurrence -> complete/reopen -> next occurrence -> ICS",
+      "status": "supported",
+      "remainingRisk": "실제 장기 사용 관찰 0명"
+    },
+    {
+      "persona": "순서 중심 Sheet형",
+      "flow": "source-backed-middle-school-math-1",
+      "journey": "preview -> save -> current/next row -> whole table -> export",
+      "status": "supported",
+      "remainingRisk": "cross-flow Todo에는 current row만 노출"
+    },
+    {
+      "persona": "기록 중심 Memo형",
+      "flow": "personal memo draft",
+      "journey": "memo -> proposal -> save -> record workspace -> list export",
+      "status": "supported",
+      "remainingRisk": "Memo 기록은 Todo completion 대상에서 의도적으로 제외"
+    },
+    {
+      "persona": "다수 Flow 사용자",
+      "flow": "20/60 fixture",
+      "journey": "library search -> focused Flow -> current execution -> contextual inspector",
+      "status": "supported",
+      "remainingRisk": "B안 채택 여부에 따라 cross-flow 실행 진입 확정 필요"
+    },
+    {
+      "persona": "키보드 사용자",
+      "flow": "representative five shapes",
+      "journey": "row open -> edit -> completion/reopen -> dialog close/focus return",
+      "status": "supported",
+      "remainingRisk": "실제 screen reader 관찰은 수행하지 않음"
+    }
+  ]
+}

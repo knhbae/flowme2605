@@ -1,0 +1,2451 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>FlowMe MECE UX Reset - Interactive Wireflow</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #171717;
+      --muted: #62666d;
+      --line: #d9dde3;
+      --soft-line: #eceef1;
+      --paper: #ffffff;
+      --canvas: #f4f6f8;
+      --accent: #2457d6;
+      --accent-soft: #edf3ff;
+      --green: #087f5b;
+      --green-soft: #eaf7f1;
+      --red: #b42318;
+      --red-soft: #fff0ee;
+      --amber: #8a5700;
+      --amber-soft: #fff7df;
+      --radius: 6px;
+      --shadow: 0 12px 30px rgba(20, 24, 32, 0.09);
+    }
+
+    * {
+      box-sizing: border-box;
+      letter-spacing: 0;
+    }
+
+    html {
+      background: var(--canvas);
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--canvas);
+      font-family: Inter, Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", "Segoe UI", sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      color: inherit;
+      font: inherit;
+    }
+
+    button,
+    select,
+    input {
+      min-height: 44px;
+    }
+
+    button,
+    a,
+    select,
+    input {
+      outline-offset: 3px;
+    }
+
+    button:focus-visible,
+    a:focus-visible,
+    select:focus-visible,
+    input:focus-visible,
+    textarea:focus-visible {
+      outline: 3px solid rgba(36, 87, 214, 0.34);
+    }
+
+    button {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      cursor: pointer;
+    }
+
+    a {
+      color: var(--accent);
+    }
+
+    .review-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: grid;
+      grid-template-columns: minmax(230px, 1fr) auto;
+      gap: 16px;
+      align-items: center;
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.97);
+      backdrop-filter: blur(12px);
+    }
+
+    .review-title {
+      min-width: 0;
+    }
+
+    .review-title strong {
+      display: block;
+      font-size: 16px;
+      line-height: 1.25;
+    }
+
+    .review-title span {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .review-controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .review-controls label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .review-controls select,
+    .review-controls button {
+      min-height: 38px;
+      padding: 0 11px;
+      background: #fff;
+      font-size: 13px;
+    }
+
+    .review-controls button[aria-pressed="true"] {
+      border-color: var(--ink);
+      color: #fff;
+      background: var(--ink);
+    }
+
+    .stage-rail {
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+      padding: 10px 20px;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+      scrollbar-width: thin;
+    }
+
+    .stage-rail button {
+      flex: 0 0 auto;
+      min-height: 36px;
+      padding: 0 11px;
+      border-color: transparent;
+      color: var(--muted);
+      background: transparent;
+      font-size: 13px;
+    }
+
+    .stage-rail button[aria-current="step"] {
+      color: #fff;
+      background: var(--accent);
+    }
+
+    .review-layout {
+      display: grid;
+      grid-template-columns: minmax(230px, 300px) minmax(260px, 340px) minmax(390px, 1fr);
+      gap: 18px;
+      max-width: 1760px;
+      margin: 0 auto;
+      padding: 22px;
+      align-items: start;
+    }
+
+    .review-panel {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+    }
+
+    .panel-head {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel-head h2 {
+      margin: 0;
+      font-size: 15px;
+    }
+
+    .panel-head p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .decision-body {
+      padding: 16px;
+    }
+
+    .decision-body dl {
+      margin: 0;
+    }
+
+    .decision-body dt {
+      margin-top: 17px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .decision-body dt:first-child {
+      margin-top: 0;
+    }
+
+    .decision-body dd {
+      margin: 5px 0 0;
+      font-size: 14px;
+    }
+
+    .cut-list {
+      margin: 6px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .cut-list li {
+      padding: 7px 0;
+      border-bottom: 1px solid var(--soft-line);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .cut-list li:last-child {
+      border-bottom: 0;
+    }
+
+    .evidence-kind {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 3px 6px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      color: var(--muted);
+      font-family: Consolas, monospace;
+      font-size: 10px;
+    }
+
+    .current-shot {
+      display: block;
+      width: 100%;
+      max-height: 700px;
+      object-fit: contain;
+      object-position: top;
+      background: #f0f1f3;
+    }
+
+    .current-caption {
+      padding: 12px 14px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .prototype-panel {
+      min-width: 0;
+      background: transparent;
+    }
+
+    .prototype-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .prototype-toolbar strong {
+      font-size: 14px;
+    }
+
+    .prototype-toolbar span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .device-wrap {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      min-height: 680px;
+    }
+
+    .device {
+      position: relative;
+      width: min(390px, 100%);
+      min-width: 0;
+      min-height: 844px;
+      overflow: hidden;
+      border: 1px solid #bfc4ca;
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+
+    .device[data-viewport="wide"] {
+      width: min(1024px, 100%);
+      min-height: 768px;
+      border-radius: 10px;
+    }
+
+    .app-screen {
+      min-height: 844px;
+      padding-bottom: 78px;
+      background: #fff;
+    }
+
+    .device[data-viewport="wide"] .app-screen {
+      min-height: 768px;
+      padding-bottom: 0;
+    }
+
+    .app-topbar {
+      display: flex;
+      min-height: 58px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .app-brand {
+      color: var(--ink);
+      font-size: 15px;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .back-button,
+    .quiet-button,
+    .icon-button {
+      min-height: 40px;
+      padding: 0 10px;
+      border-color: transparent;
+      background: transparent;
+      font-size: 13px;
+    }
+
+    .icon-button {
+      min-width: 44px;
+      padding: 0;
+      font-size: 20px;
+    }
+
+    .app-nav {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 12;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      min-height: 64px;
+      border-top: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.98);
+    }
+
+    .app-nav button {
+      min-height: 64px;
+      border: 0;
+      border-radius: 0;
+      color: var(--muted);
+      background: transparent;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .app-nav button[aria-current="page"] {
+      color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .device[data-viewport="wide"] .app-topbar {
+      min-height: 64px;
+      padding: 0 24px;
+    }
+
+    .device[data-viewport="wide"] .app-nav {
+      position: static;
+      display: flex;
+      width: auto;
+      min-height: 0;
+      border: 0;
+      background: transparent;
+    }
+
+    .device[data-viewport="wide"] .app-nav button {
+      min-height: 40px;
+      padding: 0 14px;
+      border-radius: var(--radius);
+    }
+
+    .page {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 20px 16px 96px;
+    }
+
+    .device[data-viewport="wide"] .page {
+      max-width: none;
+      padding: 28px 34px 40px;
+    }
+
+    .eyebrow {
+      margin: 0 0 6px;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .page-title {
+      margin: 0;
+      font-size: 25px;
+      line-height: 1.24;
+    }
+
+    .page-summary {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .source-link {
+      display: inline-block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .composer {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .composer input,
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .composer input,
+    .field input,
+    .field select {
+      padding: 0 12px;
+    }
+
+    .field textarea {
+      min-height: 90px;
+      padding: 10px 12px;
+      resize: vertical;
+    }
+
+    .primary {
+      border-color: var(--ink);
+      color: #fff;
+      background: var(--ink);
+      font-weight: 750;
+    }
+
+    .primary.blue {
+      border-color: var(--accent);
+      background: var(--accent);
+    }
+
+    .composer .primary {
+      min-width: 92px;
+      padding: 0 14px;
+    }
+
+    .section {
+      margin-top: 24px;
+      border-top: 1px solid var(--line);
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 0 10px;
+    }
+
+    .section-head h2,
+    .section-head h3 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .section-head span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .flow-list,
+    .item-list,
+    .agenda-list,
+    .progress-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .flow-row,
+    .item-row,
+    .agenda-row,
+    .progress-row {
+      border-bottom: 1px solid var(--soft-line);
+    }
+
+    .flow-row:last-child,
+    .item-row:last-child,
+    .agenda-row:last-child,
+    .progress-row:last-child {
+      border-bottom: 0;
+    }
+
+    .flow-row button,
+    .item-row button,
+    .agenda-row button,
+    .progress-row button {
+      width: 100%;
+      min-height: 64px;
+      padding: 10px 2px;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      text-align: left;
+    }
+
+    .row-main {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .row-title {
+      display: block;
+      font-size: 14px;
+      font-weight: 740;
+    }
+
+    .row-meta {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .row-action {
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .artifact-summary {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
+      margin-top: 18px;
+      padding: 14px 0;
+      border-top: 2px solid var(--ink);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .artifact-summary strong {
+      display: block;
+      font-size: 17px;
+    }
+
+    .artifact-summary span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .artifact-count {
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .anchor-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      margin-top: 14px;
+      align-items: end;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .anchor-row button {
+      padding: 0 14px;
+    }
+
+    .timeline {
+      margin-top: 18px;
+      border-top: 1px solid var(--line);
+    }
+
+    .timeline-group {
+      display: grid;
+      grid-template-columns: 78px minmax(0, 1fr);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .timeline-date {
+      padding: 13px 10px 13px 0;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .timeline-items {
+      min-width: 0;
+      border-left: 1px solid var(--line);
+    }
+
+    .timeline-item {
+      padding: 11px 12px;
+      border-bottom: 1px solid var(--soft-line);
+    }
+
+    .timeline-item:last-child {
+      border-bottom: 0;
+    }
+
+    .timeline-item strong {
+      display: block;
+      font-size: 13px;
+    }
+
+    .timeline-item span {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .sticky-command {
+      position: sticky;
+      right: 0;
+      bottom: 72px;
+      left: 0;
+      z-index: 10;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 8px;
+      margin: 24px -16px -18px;
+      padding: 10px 16px;
+      border-top: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.98);
+    }
+
+    .sticky-command button {
+      padding: 0 14px;
+    }
+
+    .device[data-viewport="wide"] .sticky-command {
+      position: static;
+      max-width: 560px;
+      margin: 22px 0 0 auto;
+      padding: 0;
+      border: 0;
+      background: transparent;
+    }
+
+    .receipt {
+      margin-top: 24px;
+      padding: 18px 0;
+      border-top: 3px solid var(--green);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .receipt h2 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .receipt p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .receipt-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 16px;
+      border-top: 1px solid var(--line);
+      border-left: 1px solid var(--line);
+    }
+
+    .receipt-grid div {
+      min-width: 0;
+      padding: 10px;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .receipt-grid dt {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .receipt-grid dd {
+      margin: 3px 0 0;
+      overflow-wrap: anywhere;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .receipt-actions {
+      display: grid;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .receipt-actions button {
+      width: 100%;
+    }
+
+    .text-link-button {
+      border: 0;
+      color: var(--accent);
+      background: transparent;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .filter-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 16px;
+    }
+
+    .filter-row button {
+      min-height: 38px;
+      padding: 0 11px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .filter-row button[aria-pressed="true"] {
+      border-color: var(--ink);
+      color: #fff;
+      background: var(--ink);
+    }
+
+    .workspace-head {
+      margin-top: 12px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .workspace-head-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .progress-track {
+      height: 6px;
+      margin-top: 12px;
+      overflow: hidden;
+      border-radius: 3px;
+      background: #e7e9ed;
+    }
+
+    .progress-track span {
+      display: block;
+      height: 100%;
+      background: var(--accent);
+    }
+
+    .next-action {
+      margin-top: 18px;
+      padding: 16px;
+      border-left: 4px solid var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .next-action .label {
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .next-action h2 {
+      margin: 5px 0 0;
+      font-size: 18px;
+    }
+
+    .next-action p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .next-action button {
+      width: 100%;
+      margin-top: 13px;
+    }
+
+    .workspace-tools {
+      display: flex;
+      gap: 4px;
+      justify-content: flex-end;
+      margin-top: 10px;
+    }
+
+    .workspace-tools button {
+      min-height: 38px;
+      padding: 0 9px;
+      border-color: transparent;
+      color: var(--muted);
+      background: transparent;
+      font-size: 12px;
+    }
+
+    .calendar-head {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 8px;
+      align-items: center;
+      margin-top: 18px;
+    }
+
+    .calendar-head h2 {
+      margin: 0;
+      text-align: center;
+      font-size: 18px;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      margin-top: 12px;
+      border-top: 1px solid var(--line);
+      border-left: 1px solid var(--line);
+    }
+
+    .calendar-grid span,
+    .calendar-grid button {
+      min-width: 0;
+      min-height: 42px;
+      padding: 5px 2px;
+      border: 0;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      border-radius: 0;
+      background: #fff;
+      font-size: 11px;
+      text-align: center;
+    }
+
+    .calendar-grid .weekday {
+      min-height: 30px;
+      color: var(--muted);
+      background: #f7f8fa;
+      font-weight: 700;
+    }
+
+    .calendar-grid button.has-event {
+      color: var(--accent);
+      background: var(--accent-soft);
+      font-weight: 800;
+    }
+
+    .calendar-grid button.selected {
+      box-shadow: inset 0 0 0 2px var(--accent);
+    }
+
+    .empty-note {
+      margin-top: 18px;
+      padding: 18px 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .empty-note strong {
+      display: block;
+    }
+
+    .empty-note p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .scope-options {
+      display: grid;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .scope-option {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 10px;
+      align-items: center;
+      min-height: 58px;
+      padding: 9px 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      text-align: left;
+    }
+
+    .scope-option[aria-pressed="true"] {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .scope-option .radio {
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--line);
+      border-radius: 50%;
+      background: #fff;
+    }
+
+    .scope-option[aria-pressed="true"] .radio {
+      border: 5px solid var(--accent);
+    }
+
+    .scope-option strong {
+      display: block;
+      font-size: 14px;
+    }
+
+    .scope-option span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .destination {
+      margin-top: 20px;
+      padding: 16px 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .destination strong {
+      display: block;
+      font-size: 16px;
+    }
+
+    .destination p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .destination button {
+      width: 100%;
+      margin-top: 13px;
+    }
+
+    .adjust-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+      margin-top: 16px;
+      padding: 4px;
+      border-radius: var(--radius);
+      background: #eef0f3;
+    }
+
+    .adjust-tabs button {
+      min-height: 38px;
+      border: 0;
+      background: transparent;
+      font-size: 12px;
+    }
+
+    .adjust-tabs button[aria-pressed="true"] {
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(20, 24, 32, 0.12);
+    }
+
+    .adjust-row {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 9px;
+      align-items: center;
+      min-height: 58px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--soft-line);
+    }
+
+    .adjust-row input[type="checkbox"] {
+      width: 20px;
+      min-height: 20px;
+      height: 20px;
+    }
+
+    .adjust-row strong {
+      display: block;
+      font-size: 13px;
+    }
+
+    .adjust-row span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .move-controls {
+      display: flex;
+      gap: 3px;
+    }
+
+    .move-controls button {
+      min-width: 36px;
+      min-height: 36px;
+      padding: 0;
+    }
+
+    .sheet {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 30;
+      max-height: 78%;
+      overflow-y: auto;
+      padding: 18px 16px calc(18px + env(safe-area-inset-bottom));
+      border-top: 1px solid var(--line);
+      background: #fff;
+      box-shadow: 0 -18px 40px rgba(20, 24, 32, 0.16);
+    }
+
+    .sheet h2 {
+      margin: 0;
+      font-size: 19px;
+    }
+
+    .sheet p {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .sheet .field {
+      margin-top: 14px;
+    }
+
+    .sheet-actions {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .device[data-viewport="wide"] .sheet {
+      top: 64px;
+      right: 0;
+      bottom: 0;
+      left: auto;
+      width: 360px;
+      max-height: none;
+      border-top: 0;
+      border-left: 1px solid var(--line);
+      box-shadow: -18px 0 40px rgba(20, 24, 32, 0.13);
+    }
+
+    .wide-columns {
+      display: block;
+    }
+
+    .device[data-viewport="wide"] .wide-columns {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
+      gap: 32px;
+      align-items: start;
+    }
+
+    .device[data-viewport="wide"] .wide-library {
+      display: grid;
+      grid-template-columns: minmax(240px, 0.7fr) minmax(0, 1.3fr);
+      gap: 28px;
+    }
+
+    .device[data-viewport="wide"] .library-intro {
+      position: sticky;
+      top: 88px;
+    }
+
+    .device[data-viewport="wide"] .timeline-group {
+      grid-template-columns: 110px minmax(0, 1fr);
+    }
+
+    .device[data-viewport="wide"] .calendar-workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(300px, 0.7fr);
+      gap: 28px;
+    }
+
+    .status-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 12px;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .toast {
+      position: absolute;
+      right: 12px;
+      bottom: 78px;
+      left: 12px;
+      z-index: 40;
+      padding: 11px 13px;
+      border-radius: var(--radius);
+      color: #fff;
+      background: rgba(23, 23, 23, 0.94);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .device[data-viewport="wide"] .toast {
+      right: 24px;
+      bottom: 24px;
+      left: auto;
+      min-width: 280px;
+    }
+
+    .review-footer {
+      max-width: 1760px;
+      margin: 0 auto;
+      padding: 0 22px 40px;
+    }
+
+    .decision-gate {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .decision-gate article {
+      padding: 18px;
+      border-right: 1px solid var(--line);
+    }
+
+    .decision-gate article:last-child {
+      border-right: 0;
+    }
+
+    .decision-gate h2 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .decision-gate p {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 1180px) {
+      .review-layout {
+        grid-template-columns: 260px minmax(390px, 1fr);
+      }
+
+      .current-panel {
+        display: none;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .review-header {
+        position: static;
+        grid-template-columns: 1fr;
+        padding: 12px;
+      }
+
+      .review-controls {
+        justify-content: flex-start;
+      }
+
+      .review-controls label {
+        flex: 1 0 100%;
+        white-space: nowrap;
+      }
+
+      .review-controls select {
+        min-width: 0;
+        width: 100%;
+      }
+
+      .stage-rail {
+        padding: 8px 12px;
+      }
+
+      .review-layout {
+        grid-template-columns: 1fr;
+        padding: 12px;
+      }
+
+      .decision-panel {
+        order: 2;
+      }
+
+      .prototype-panel {
+        order: 1;
+      }
+
+      .device-wrap {
+        min-height: 0;
+      }
+
+      .device {
+        border-radius: 10px;
+      }
+
+      .decision-gate {
+        grid-template-columns: 1fr;
+      }
+
+      .decision-gate article {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .decision-gate article:last-child {
+        border-bottom: 0;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition: none !important;
+        animation: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="review-header">
+    <div class="review-title">
+      <strong>FlowMe MECE UX Reset</strong>
+      <span>UXR-06 interactive wireflow · 설계 제안이며 앱 구현이 아닙니다</span>
+    </div>
+    <div class="review-controls" aria-label="Wireflow 설정">
+      <label>
+        사례
+        <select id="scenario-select" aria-label="검토할 콘텐츠 사례">
+          <option value="moving">이사 D-30</option>
+          <option value="vehicle">날짜 없는 차량 점검</option>
+          <option value="workout">반복 홈트</option>
+          <option value="study">장기 학습 진도</option>
+          <option value="draft">개인 메모 초안</option>
+        </select>
+      </label>
+      <button type="button" data-viewport="mobile" aria-pressed="true">390px</button>
+      <button type="button" data-viewport="wide" aria-pressed="false">1024px</button>
+    </div>
+  </header>
+
+  <nav class="stage-rail" id="stage-rail" aria-label="사용자 여정 단계"></nav>
+
+  <main class="review-layout">
+    <aside class="review-panel decision-panel">
+      <div class="panel-head">
+        <h2>화면 계약</h2>
+        <p>annotation은 제품 화면 밖에만 표시됩니다.</p>
+      </div>
+      <div class="decision-body" id="decision-body"></div>
+    </aside>
+
+    <section class="review-panel current-panel" aria-labelledby="current-heading">
+      <div class="panel-head">
+        <h2 id="current-heading">현재 production</h2>
+        <p>같은 단계에서 관찰한 현재 화면 근거</p>
+      </div>
+      <img id="current-shot" class="current-shot" alt="">
+      <div class="current-caption" id="current-caption"></div>
+    </section>
+
+    <section class="prototype-panel" aria-labelledby="prototype-heading">
+      <div class="prototype-toolbar">
+        <div>
+          <strong id="prototype-heading">제안 화면</strong>
+          <span id="prototype-route"></span>
+        </div>
+        <span id="prototype-status">개인 데이터는 브라우저 안에서만 시뮬레이션</span>
+      </div>
+      <div class="device-wrap">
+        <div class="device" id="device" data-viewport="mobile"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="review-footer">
+    <section class="decision-gate" aria-label="다음 승인 항목">
+      <article>
+        <h2>1. Home</h2>
+        <p>별도 Home을 제거하고 `/`를 Flow 찾기로 연결할지 판단합니다.</p>
+      </article>
+      <article>
+        <h2>2. My Flow</h2>
+        <p>`지금` 실행 목록을 제거하고 저장 Flow library로 한정할지 판단합니다.</p>
+      </article>
+      <article>
+        <h2>3. Calendar</h2>
+        <p>완료·메모·날짜 이동을 개인 Flow로 보내고 날짜 렌즈로 한정할지 판단합니다.</p>
+      </article>
+    </section>
+  </footer>
+
+  <script>
+    const STAGES = [
+      { id: "discover", label: "1. 찾기", route: "/flows" },
+      { id: "preview", label: "2. 저장 전", route: "/f/[slug]" },
+      { id: "adjust", label: "3. 조정", route: "/f/[slug] · adjust" },
+      { id: "receipt", label: "4. 저장 결과", route: "/f/[slug] · saved" },
+      { id: "library", label: "5. My Flow", route: "/my" },
+      { id: "personal", label: "6. 개인 Flow", route: "/my?savedFlow=[id]" },
+      { id: "calendar", label: "7. Calendar", route: "/calendar" },
+      { id: "export", label: "8. 가져가기", route: "/my?savedFlow=[id] · export" }
+    ];
+
+    const MOVING_ITEMS = [
+      ["이사 방식 정하기", -30, "큰 준비"],
+      ["이사할 집 하자 점검하기", -30, "큰 준비"],
+      ["필요 없는 물건 정리하기", -30, "큰 준비"],
+      ["이사/청소 업체 견적 받고 예약하기", -30, "큰 준비"],
+      ["우편물/카드/은행 주소 변경하기", -10, "생활 이전 준비"],
+      ["정기 배달 서비스 중지 요청하기", -10, "생활 이전 준비"],
+      ["대형폐기물 배출 신고와 수거일 확인하기", -10, "생활 이전 준비"],
+      ["엘리베이터 또는 사다리차 사용 예약하기", -10, "생활 이전 준비"],
+      ["인터넷/정수기 이전 설치 예약하기", -10, "생활 이전 준비"],
+      ["도시가스 철거/설치 예약하기", -3, "필수 예약 확인"],
+      ["자동이체 해지 또는 변경 확인하기", -3, "필수 예약 확인"],
+      ["이사 당일 사용할 물건 따로 포장하기", -3, "필수 예약 확인"],
+      ["관리사무소에 이사 시간과 차량 동선 공유하기", -3, "필수 예약 확인"],
+      ["이사 업체와 일정 최종 확인하기", -1, "최종 점검"],
+      ["이체 한도 증액 확인하기", -1, "최종 점검"],
+      ["귀중품과 중요 서류 별도 보관하기", -1, "최종 점검"],
+      ["냉장고 음식과 쓰레기 최종 정리하기", -1, "최종 점검"],
+      ["전기/가스/수도/관리비 정산하기", 0, "이사 당일"],
+      ["이삿짐 분실/파손 확인하기", 0, "이사 당일"],
+      ["계량기와 집 상태 사진 남기기", 0, "이사 당일"],
+      ["열쇠, 출입카드, 주차등록 인수인계하기", 0, "이사 당일"],
+      ["전입신고와 확정일자 확인하기", 0, "이사 당일"],
+      ["정부24 전입신고 처리 결과 확인하기", 1, "행정 마무리"],
+      ["임대차 계약 확정일자 부여 여부 확인하기", 1, "행정 마무리"]
+    ];
+
+    const VEHICLE_ITEMS = [
+      "자동차검사 기간과 예약 가능일 확인하기",
+      "차량번호와 예약 정보 확인하기",
+      "가까운 검사소와 수수료 확인하기",
+      "번호판과 차대번호 식별 상태 확인하기",
+      "등화장치와 경음기 작동 확인하기",
+      "타이어 마모와 공기압 확인하기",
+      "오일 누유와 경고등 여부 기록하기",
+      "예약 시간보다 여유 있게 검사소 도착하기",
+      "접수와 수수료 결제 진행하기",
+      "검사 결과와 재검사 필요 항목 기록하기"
+    ];
+
+    const STUDY_ITEMS = [
+      "1. 소인수분해",
+      "2. 정수와 유리수",
+      "3. 문자와 식",
+      "4. 좌표평면과 그래프",
+      "5. 기본도형",
+      "6. 평면도형의 성질",
+      "7. 입체도형의 성질",
+      "8. 자료의 정리와 해석"
+    ];
+
+    const DRAFT_ITEMS = [
+      "항공권 확인",
+      "숙소 예약번호 정리",
+      "렌터카 예약",
+      "준비물 체크",
+      "출발 전날 온라인 체크인"
+    ];
+
+    const SCENARIOS = {
+      moving: {
+        slug: "moving-d30-basic",
+        category: "이사",
+        title: "이사 D-30 준비",
+        savedName: "8월 이사 준비",
+        source: "이사 체크리스트 참고",
+        sourceUrl: "https://www.ajd.co.kr/contents/basic-tip/detail/이사_준비_체크리스트_완벽정리!_엑셀_Xls_PDF_노션_notion_첨부-23363",
+        artifact: "캘린더 일정",
+        count: 24,
+        anchorLabel: "이사일",
+        anchor: "2026-08-24",
+        primary: "24개 일정으로 시작",
+        exportLabel: "캘린더 파일 24개 받기",
+        exportDestination: "Calendar",
+        description: "이사일을 기준으로 D-30부터 행정 마무리까지 날짜가 계산됩니다.",
+        items: MOVING_ITEMS
+      },
+      vehicle: {
+        slug: "vehicle-inspection-prep",
+        category: "자동차",
+        title: "자동차검사 준비",
+        savedName: "자동차검사 준비",
+        source: "TS한국교통안전공단 정기검사 안내",
+        sourceUrl: "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+        artifact: "체크리스트",
+        count: 10,
+        anchorLabel: "",
+        anchor: "",
+        primary: "10개 체크리스트로 시작",
+        exportLabel: "체크리스트 10개 복사",
+        exportDestination: "Checklist",
+        description: "날짜 없이 저장하고, 필요한 항목에만 나중에 날짜를 넣습니다.",
+        items: VEHICLE_ITEMS.map((title) => [title, null, "점검"])
+      },
+      workout: {
+        slug: "curated-allblanc-morning-workout",
+        category: "운동",
+        title: "Allblanc 아침 5분 홈트",
+        savedName: "월수금 아침 홈트",
+        source: "Allblanc 매일 아침 5분 전신 운동 영상",
+        sourceUrl: "https://www.youtube.com/watch?v=fLLScgWQcHc",
+        artifact: "반복 실행",
+        count: 8,
+        anchorLabel: "첫 시작일",
+        anchor: "2026-08-03",
+        primary: "8회 루틴으로 시작",
+        exportLabel: "반복 일정 1개 받기",
+        exportDestination: "Calendar",
+        description: "월·수·금 오전 7:30, 5분씩 8회 실행하는 예시입니다.",
+        items: [
+          ["1회차 · 아침 5분 전신 운동", "2026-08-03", "월"],
+          ["2회차 · 아침 5분 전신 운동", "2026-08-05", "수"],
+          ["3회차 · 아침 5분 전신 운동", "2026-08-07", "금"],
+          ["4회차 · 아침 5분 전신 운동", "2026-08-10", "월"],
+          ["5회차 · 아침 5분 전신 운동", "2026-08-12", "수"],
+          ["6회차 · 아침 5분 전신 운동", "2026-08-14", "금"],
+          ["7회차 · 아침 5분 전신 운동", "2026-08-17", "월"],
+          ["8회차 · 아침 5분 전신 운동", "2026-08-19", "수"]
+        ]
+      },
+      study: {
+        slug: "source-backed-middle-school-math-1",
+        category: "학습",
+        title: "중1 수학 목차 진도",
+        savedName: "중1 수학 진도",
+        source: "Mathbang 중1 수학 목차",
+        sourceUrl: "https://mathbang.net/13",
+        artifact: "진도표",
+        count: 8,
+        anchorLabel: "",
+        anchor: "",
+        primary: "8개 단원 진도로 시작",
+        exportLabel: "진도표 8행 받기",
+        exportDestination: "Sheet",
+        description: "날짜가 아니라 8개 단원의 순서와 현재 위치를 관리합니다.",
+        items: STUDY_ITEMS.map((title, index) => [title, null, `${index + 1}/8`])
+      },
+      draft: {
+        slug: "personal-jeju-draft",
+        category: "개인 초안",
+        title: "8월 제주 여행 준비",
+        savedName: "8월 제주 여행 준비",
+        source: "내 메모",
+        sourceUrl: "",
+        artifact: "체크리스트",
+        count: 5,
+        anchorLabel: "",
+        anchor: "",
+        primary: "5개 할 일로 저장",
+        exportLabel: "체크리스트 5개 복사",
+        exportDestination: "Checklist",
+        description: "사용자가 적은 다섯 문장만 Item으로 나눕니다.",
+        memo: "8월 제주 여행 준비. 항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인",
+        items: DRAFT_ITEMS.map((title) => [title, null, "날짜 없음"])
+      }
+    };
+
+    const ANNOTATIONS = {
+      discover: {
+        question: "무엇을 실행할까?",
+        messages: "URL·메모 입력 / 준비된 Flow와 출처",
+        primary: "Flow 찾기",
+        cut: ["별도 Home의 같은 예시", "가짜 사용량·리뷰", "카드마다 반복되는 결과형 chip"],
+        current: "Home과 Flow 찾기가 같은 URL 진입과 대표 콘텐츠를 반복합니다.",
+        evidence: "current_production_interaction"
+      },
+      preview: {
+        question: "무엇이 만들어질까?",
+        messages: "실제 전체 결과 / 필요한 최소값",
+        primary: "콘텐츠별 N개 결과로 시작",
+        cut: ["결과 형태 선택 tab", "날짜 정하기·날짜 없이·예시 보기 3-way 경쟁", "저장 전 export 펼침"],
+        current: "artifact, 날짜 mode, Flow 조정, 전체 구조, 가져가기가 한 화면에서 경쟁합니다.",
+        evidence: "current_production_interaction"
+      },
+      adjust: {
+        question: "무엇만 바꿀까?",
+        messages: "한 종류의 조정 / 변경 후 count",
+        primary: "변경 적용",
+        cut: ["모든 필드 동시 노출", "저장과 편집의 동시 경쟁", "내부 ownership 용어"],
+        current: "현재도 progressive editor가 있으나 전체 화면 문법과 분리돼 보입니다.",
+        evidence: "current_source"
+      },
+      receipt: {
+        question: "무엇이 저장됐나?",
+        messages: "저장 이름·count / 날짜 범위 또는 날짜 없음",
+        primary: "내 Flow 열기",
+        cut: ["receipt 안의 실행 controls", "source·export의 재확장", "동급 CTA 두 개"],
+        current: "현재 receipt는 방향이 맞습니다. Calendar 링크만 secondary로 낮춥니다.",
+        evidence: "current_production_interaction"
+      },
+      library: {
+        question: "무엇을 저장했나?",
+        messages: "Flow 목록 / 진행·다음 예정 요약",
+        primary: "Flow 열기",
+        cut: ["지금 execution tab", "모든 행의 export·관리", "Studio·데이터 관리의 상단 경쟁"],
+        current: "현재 `/my`는 지금·목록·완료와 selected workspace를 함께 소유합니다.",
+        evidence: "current_production_interaction"
+      },
+      personal: {
+        question: "지금 이 Flow에서 무엇을 할까?",
+        messages: "다음 Item / 전체 진행",
+        primary: "다음 Item 열기",
+        cut: ["Calendar와 중복 실행", "행마다 완료·수정·메모·export 동시 노출", "다른 Flow 목록"],
+        current: "현재 focused workspace에는 receipt, 첫 행동, 전체 보기, Calendar, export, 전체 구조가 동시에 보입니다.",
+        evidence: "current_production_interaction"
+      },
+      calendar: {
+        question: "날짜별로 무엇이 있나?",
+        messages: "월 일정 / 선택일의 Flow",
+        primary: "개인 Flow 열기",
+        cut: ["checkbox 완료", "행별 메모", "날짜 없는 tray", "inline 날짜 이동"],
+        current: "현재 Calendar가 날짜 조회와 execution Item control을 동시에 소유합니다.",
+        evidence: "current_production_interaction"
+      },
+      export: {
+        question: "무엇이 나가나?",
+        messages: "scope·count / 빠지는 정보",
+        primary: "destination-specific 생성·복사",
+        cut: ["format 먼저 고르기", "예측 없는 export", "모든 destination 동급 노출"],
+        current: "P34의 scope/count 계약은 유지하고 진입점을 개인 Flow로 한정합니다.",
+        evidence: "current_source"
+      }
+    };
+
+    const CURRENT_SHOTS = {
+      discover: {
+        mobile: "screenshots/current-flows-390.png",
+        wide: "screenshots/current-home-390.png",
+        alt: "현재 Flow 찾기 모바일 화면"
+      },
+      preview: {
+        mobile: "screenshots/current-public-moving-390.png",
+        wide: "screenshots/current-public-moving-1024.png",
+        alt: "현재 이사 Flow 저장 전 화면"
+      },
+      adjust: {
+        mobile: "screenshots/current-public-moving-390.png",
+        wide: "screenshots/current-public-moving-1024.png",
+        alt: "현재 이사 Flow 조정 진입 전 화면"
+      },
+      receipt: {
+        mobile: "screenshots/current-receipt-moving-390.png",
+        wide: "screenshots/current-receipt-moving-390.png",
+        alt: "현재 저장 결과 화면"
+      },
+      library: {
+        mobile: "screenshots/current-my-flow-workspace-390.png",
+        wide: "screenshots/current-my-flow-1024.png",
+        alt: "현재 My Flow 화면"
+      },
+      personal: {
+        mobile: "screenshots/current-my-flow-workspace-390.png",
+        wide: "screenshots/current-my-flow-1024.png",
+        alt: "현재 focused My Flow 화면"
+      },
+      calendar: {
+        mobile: "screenshots/current-calendar-390.png",
+        wide: "screenshots/current-calendar-1024.png",
+        alt: "현재 Calendar 화면"
+      },
+      export: {
+        mobile: "screenshots/current-my-flow-workspace-390.png",
+        wide: "screenshots/current-my-flow-1024.png",
+        alt: "현재 My Flow의 가져가기 진입 화면"
+      }
+    };
+
+    const state = {
+      scenarioId: "moving",
+      stage: 0,
+      viewport: "mobile",
+      anchor: SCENARIOS.moving.anchor,
+      savedName: SCENARIOS.moving.savedName,
+      included: new Set(Array.from({ length: SCENARIOS.moving.count }, (_, index) => index)),
+      completed: new Set(),
+      personalDates: new Map(),
+      personalMemos: new Map(),
+      adjustMode: "items",
+      detailIndex: null,
+      exportScope: "whole",
+      calendarDate: null,
+      toast: ""
+    };
+
+    const device = document.getElementById("device");
+    const stageRail = document.getElementById("stage-rail");
+    const scenarioSelect = document.getElementById("scenario-select");
+    const decisionBody = document.getElementById("decision-body");
+    const currentShot = document.getElementById("current-shot");
+    const currentCaption = document.getElementById("current-caption");
+    const prototypeRoute = document.getElementById("prototype-route");
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function parseLocalDate(value) {
+      const [year, month, day] = value.split("-").map(Number);
+      return new Date(year, month - 1, day, 12, 0, 0);
+    }
+
+    function addDays(value, offset) {
+      const date = parseLocalDate(value);
+      date.setDate(date.getDate() + offset);
+      return [
+        date.getFullYear(),
+        String(date.getMonth() + 1).padStart(2, "0"),
+        String(date.getDate()).padStart(2, "0")
+      ].join("-");
+    }
+
+    function formatDate(value, short = false) {
+      if (!value) return "날짜 없음";
+      const date = parseLocalDate(value);
+      const weekday = ["일", "월", "화", "수", "목", "금", "토"][date.getDay()];
+      if (short) return `${date.getMonth() + 1}월 ${date.getDate()}일`;
+      return `${date.getMonth() + 1}월 ${date.getDate()}일 (${weekday})`;
+    }
+
+    function resetScenario(id) {
+      const scenario = SCENARIOS[id];
+      state.scenarioId = id;
+      state.stage = 0;
+      state.anchor = scenario.anchor;
+      state.savedName = scenario.savedName;
+      state.included = new Set(Array.from({ length: scenario.count }, (_, index) => index));
+      state.completed = new Set();
+      state.personalDates = new Map();
+      state.personalMemos = new Map();
+      state.adjustMode = id === "draft" ? "order" : "items";
+      state.detailIndex = null;
+      state.exportScope = "whole";
+      state.calendarDate = null;
+      state.toast = "";
+      render();
+    }
+
+    function applyPersonalValues(row) {
+      return {
+        ...row,
+        date: state.personalDates.has(row.index) ? state.personalDates.get(row.index) : row.date,
+        memo: state.personalMemos.get(row.index) || ""
+      };
+    }
+
+    function scenarioRows() {
+      const scenario = SCENARIOS[state.scenarioId];
+      if (state.scenarioId === "moving") {
+        return scenario.items.map(([title, offset, phase], index) => ({
+          index,
+          title,
+          phase,
+          date: state.anchor ? addDays(state.anchor, offset) : "",
+          relative: offset === 0 ? "D-Day" : offset > 0 ? `D+${offset}` : `D${offset}`
+        })).map(applyPersonalValues);
+      }
+      if (state.scenarioId === "workout") {
+        return scenario.items.map(([title, date, weekday], index) => ({
+          index,
+          title,
+          phase: `${weekday} · 오전 7:30 · 5분`,
+          date,
+          relative: `${index + 1}회차`
+        })).map(applyPersonalValues);
+      }
+      return scenario.items.map(([title, date, phase], index) => ({
+        index,
+        title,
+        phase,
+        date: date || "",
+        relative: date ? formatDate(date, true) : "날짜 없음"
+      })).map(applyPersonalValues);
+    }
+
+    function activeRows() {
+      return scenarioRows().filter((row) => state.included.has(row.index));
+    }
+
+    function dateRange() {
+      const dates = activeRows().map((row) => row.date).filter(Boolean).sort();
+      if (!dates.length) return "날짜 없음";
+      return `${formatDate(dates[0], true)} - ${formatDate(dates[dates.length - 1], true)}`;
+    }
+
+    function appNav(active) {
+      return `
+        <nav class="app-nav" aria-label="주요 화면">
+          <button type="button" data-stage="0" ${active === "find" ? 'aria-current="page"' : ""}>Flow 찾기</button>
+          <button type="button" data-stage="6" ${active === "calendar" ? 'aria-current="page"' : ""}>Calendar</button>
+          <button type="button" data-stage="4" ${active === "my" ? 'aria-current="page"' : ""}>My Flow</button>
+        </nav>
+      `;
+    }
+
+    function appTopbar(active, share = false, back = false) {
+      return `
+        <header class="app-topbar">
+          ${back ? '<button type="button" class="back-button" data-stage="4" aria-label="My Flow 목록으로 돌아가기">← My Flow</button>' : '<span class="app-brand">FLOW</span>'}
+          ${share ? '<span class="row-meta">공유 Flow</span>' : state.viewport === "wide" ? appNav(active) : '<button type="button" class="icon-button" aria-label="보조 메뉴 열기">⋯</button>'}
+        </header>
+      `;
+    }
+
+    function renderDiscover() {
+      const selected = SCENARIOS[state.scenarioId];
+      const cards = [selected, SCENARIOS.moving, SCENARIOS.vehicle, SCENARIOS.workout]
+        .filter((scenario, index, array) => array.findIndex((entry) => entry.slug === scenario.slug) === index)
+        .slice(0, 3);
+      return `
+        <div class="app-screen">
+          ${appTopbar("find")}
+          <div class="page">
+            <p class="eyebrow">Flow 찾기</p>
+            <h1 class="page-title">무엇을 실행할까요?</h1>
+            <p class="page-summary">URL이나 메모를 넣거나, 준비된 Flow를 고르세요.</p>
+            <div class="composer">
+              <input aria-label="URL 또는 메모" value="${state.scenarioId === "draft" ? escapeHtml(selected.memo) : ""}" placeholder="링크 또는 하려는 일을 입력">
+              <button type="button" class="primary blue" data-stage="1">Flow 찾기</button>
+            </div>
+            <section class="section">
+              <div class="section-head">
+                <h2>준비된 Flow</h2>
+                <span>출처와 실제 결과</span>
+              </div>
+              <ul class="flow-list">
+                ${cards.map((scenario) => `
+                  <li class="flow-row">
+                    <button type="button" data-open-scenario="${scenario.slug}">
+                      <span class="row-main">
+                        <span>
+                          <span class="row-title">${escapeHtml(scenario.title)}</span>
+                          <span class="row-meta">${escapeHtml(scenario.source)} · ${scenario.artifact} ${scenario.count}개</span>
+                        </span>
+                        <span class="row-action">열기</span>
+                      </span>
+                    </button>
+                  </li>
+                `).join("")}
+              </ul>
+            </section>
+          </div>
+          ${state.viewport === "mobile" ? appNav("find") : ""}
+        </div>
+      `;
+    }
+
+    function groupedTimeline(rows, limit = 8) {
+      const visible = rows.slice(0, limit);
+      const groups = new Map();
+      visible.forEach((row) => {
+        const key = row.date || row.phase || "날짜 없음";
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key).push(row);
+      });
+      return `
+        <div class="timeline">
+          ${Array.from(groups.entries()).map(([key, groupRows]) => `
+            <div class="timeline-group">
+              <div class="timeline-date">${groupRows[0].date ? formatDate(groupRows[0].date, true) : escapeHtml(key)}</div>
+              <div class="timeline-items">
+                ${groupRows.map((row) => `
+                  <div class="timeline-item">
+                    <strong>${escapeHtml(row.title)}</strong>
+                    <span>${escapeHtml(row.relative)}${row.phase ? ` · ${escapeHtml(row.phase)}` : ""}</span>
+                  </div>
+                `).join("")}
+              </div>
+            </div>
+          `).join("")}
+        </div>
+        ${rows.length > visible.length ? `<button type="button" class="text-link-button" data-stage="2">나머지 ${rows.length - visible.length}개 포함 · 전체 조정</button>` : ""}
+      `;
+    }
+
+    function renderPreview() {
+      const scenario = SCENARIOS[state.scenarioId];
+      const rows = activeRows();
+      const anchorControl = scenario.anchorLabel ? `
+        <div class="anchor-row">
+          <div class="field">
+            <label for="anchor-input">${escapeHtml(scenario.anchorLabel)}</label>
+            <input id="anchor-input" type="date" value="${escapeHtml(state.anchor)}" data-anchor-input>
+          </div>
+          <button type="button" data-apply-anchor>날짜 적용</button>
+        </div>
+      ` : "";
+      const routineSummary = state.scenarioId === "workout"
+        ? '<div class="status-strip"><strong>월·수·금</strong><span>오전 7:30</span><span>5분</span><span>8회 후 종료</span></div>'
+        : "";
+      return `
+        <div class="app-screen">
+          ${appTopbar("", true)}
+          <div class="page">
+            <div class="wide-columns">
+              <div>
+                <p class="eyebrow">${escapeHtml(scenario.category)}</p>
+                <h1 class="page-title">${escapeHtml(scenario.title)}</h1>
+                <a class="source-link" href="${escapeHtml(scenario.sourceUrl || "#")}" ${scenario.sourceUrl ? 'target="_blank" rel="noreferrer"' : ""}>원문 · ${escapeHtml(scenario.source)}</a>
+                <div class="artifact-summary">
+                  <div>
+                    <strong>${escapeHtml(scenario.artifact)} ${rows.length}개</strong>
+                    <span>${escapeHtml(scenario.description)}</span>
+                  </div>
+                  <div class="artifact-count">${rows.length}</div>
+                </div>
+                ${anchorControl}
+                ${routineSummary}
+              </div>
+              <div>
+                ${groupedTimeline(rows, state.viewport === "wide" ? 12 : 7)}
+              </div>
+            </div>
+            <div class="sticky-command">
+              <button type="button" data-stage="2">조정</button>
+              <button type="button" class="primary" data-stage="3">${escapeHtml(scenario.primary.replace(String(scenario.count), String(rows.length)))}</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAdjust() {
+      const scenario = SCENARIOS[state.scenarioId];
+      const rows = scenarioRows();
+      const modes = state.scenarioId === "draft"
+        ? [["items", "포함"], ["title", "이름"], ["order", "순서"]]
+        : [["items", "포함"], ["title", "이름"], ["dates", "날짜"]];
+      let content = "";
+      if (state.adjustMode === "title") {
+        content = `
+          <div class="field" style="margin-top:16px">
+            <label for="saved-name">내 Flow 이름</label>
+            <input id="saved-name" value="${escapeHtml(state.savedName)}" data-saved-name>
+          </div>
+        `;
+      } else {
+        content = rows.slice(0, state.viewport === "wide" ? 12 : 7).map((row) => `
+          <div class="adjust-row">
+            <input type="checkbox" aria-label="${escapeHtml(row.title)} 포함" data-include="${row.index}" ${state.included.has(row.index) ? "checked" : ""}>
+            <div>
+              <strong>${escapeHtml(row.title)}</strong>
+              <span>${state.adjustMode === "dates" ? escapeHtml(row.date ? formatDate(row.date) : "날짜 없음") : escapeHtml(row.phase || row.relative)}</span>
+            </div>
+            ${state.adjustMode === "order" ? `
+              <div class="move-controls">
+                <button type="button" aria-label="${escapeHtml(row.title)} 위로 이동">↑</button>
+                <button type="button" aria-label="${escapeHtml(row.title)} 아래로 이동">↓</button>
+              </div>
+            ` : ""}
+          </div>
+        `).join("");
+      }
+      return `
+        <div class="app-screen">
+          ${appTopbar("", true)}
+          <div class="page">
+            <p class="eyebrow">Flow 조정</p>
+            <h1 class="page-title">필요한 것만 바꾸세요</h1>
+            <p class="page-summary">${activeRows().length}/${scenario.count}개가 저장될 예정입니다.</p>
+            <div class="adjust-tabs" role="group" aria-label="조정할 항목">
+              ${modes.map(([id, label]) => `<button type="button" data-adjust-mode="${id}" aria-pressed="${state.adjustMode === id}">${label}</button>`).join("")}
+            </div>
+            ${content}
+            ${rows.length > (state.viewport === "wide" ? 12 : 7) ? `<p class="row-meta">나머지 ${rows.length - (state.viewport === "wide" ? 12 : 7)}개는 그대로 유지됩니다.</p>` : ""}
+            <div class="sticky-command">
+              <button type="button" data-stage="1">취소</button>
+              <button type="button" class="primary" data-stage="1">변경 적용</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderReceipt() {
+      const scenario = SCENARIOS[state.scenarioId];
+      const count = activeRows().length;
+      return `
+        <div class="app-screen">
+          ${appTopbar("", true)}
+          <div class="page">
+            <div class="receipt">
+              <p class="eyebrow">저장 완료</p>
+              <h2>${escapeHtml(state.savedName)}</h2>
+              <p>${count}개가 내 Flow에 저장됐습니다.</p>
+              <dl class="receipt-grid">
+                <div><dt>결과</dt><dd>${escapeHtml(scenario.artifact)}</dd></div>
+                <div><dt>전체</dt><dd>${count}개</dd></div>
+                <div><dt>범위</dt><dd>${escapeHtml(dateRange())}</dd></div>
+                <div><dt>출처</dt><dd>${escapeHtml(scenario.source)}</dd></div>
+              </dl>
+              <div class="receipt-actions">
+                <button type="button" class="primary" data-stage="5">내 Flow 열기</button>
+                ${activeRows().some((row) => row.date) ? '<button type="button" class="text-link-button" data-stage="6">Calendar에서 날짜만 확인</button>' : ""}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function libraryRows() {
+      const selected = SCENARIOS[state.scenarioId];
+      return [
+        { title: state.savedName, meta: `${state.completed.size}/${activeRows().length} 완료 · ${activeRows()[0]?.date ? formatDate(activeRows()[0].date, true) : "날짜 없음"}`, selected: true },
+        { title: "자동차검사 준비", meta: "2/10 완료 · 날짜 없음" },
+        { title: "월수금 아침 홈트", meta: "1/8회 완료 · 다음 월요일" },
+        { title: "중1 수학 진도", meta: "2/8 단원 완료 · 이어서 하기" },
+        { title: "8월 제주 여행 준비", meta: "0/5 완료 · 날짜 없음" }
+      ].filter((row, index, array) => array.findIndex((entry) => entry.title === row.title) === index);
+    }
+
+    function renderLibrary() {
+      return `
+        <div class="app-screen">
+          ${appTopbar("my")}
+          <div class="page wide-library">
+            <div class="library-intro">
+              <p class="eyebrow">My Flow</p>
+              <h1 class="page-title">저장한 Flow</h1>
+              <p class="page-summary">실행할 Flow를 열거나 보관 상태를 확인하세요.</p>
+              <div class="composer">
+                <input aria-label="저장한 Flow 검색" placeholder="Flow 검색">
+                <button type="button">검색</button>
+              </div>
+              <div class="filter-row" role="group" aria-label="Flow 상태 필터">
+                <button type="button" aria-pressed="true">진행 중</button>
+                <button type="button" aria-pressed="false">완료</button>
+                <button type="button" aria-pressed="false">보관</button>
+              </div>
+            </div>
+            <section class="section">
+              <div class="section-head">
+                <h2>진행 중 ${libraryRows().length}개</h2>
+                <span>최근 사용 순</span>
+              </div>
+              <ul class="flow-list">
+                ${libraryRows().map((row) => `
+                  <li class="flow-row">
+                    <button type="button" data-stage="5">
+                      <span class="row-main">
+                        <span>
+                          <span class="row-title">${escapeHtml(row.title)}</span>
+                          <span class="row-meta">${escapeHtml(row.meta)}</span>
+                        </span>
+                        <span class="row-action">열기</span>
+                      </span>
+                    </button>
+                  </li>
+                `).join("")}
+              </ul>
+            </section>
+          </div>
+          ${state.viewport === "mobile" ? appNav("my") : ""}
+        </div>
+      `;
+    }
+
+    function renderPersonal() {
+      const scenario = SCENARIOS[state.scenarioId];
+      const rows = activeRows();
+      const next = rows.find((row) => !state.completed.has(row.index)) || rows[0];
+      const completedCount = rows.filter((row) => state.completed.has(row.index)).length;
+      const percent = rows.length ? Math.round((completedCount / rows.length) * 100) : 0;
+      return `
+        <div class="app-screen">
+          ${appTopbar("my", false, true)}
+          <div class="page">
+            <div class="workspace-head">
+              <div class="workspace-head-row">
+                <div>
+                  <p class="eyebrow">${escapeHtml(scenario.category)}</p>
+                  <h1 class="page-title">${escapeHtml(state.savedName)}</h1>
+                  <div class="status-strip">
+                    <strong>${completedCount}/${rows.length} 완료</strong>
+                    <span>${escapeHtml(dateRange())}</span>
+                  </div>
+                </div>
+                <button type="button" class="icon-button" aria-label="Flow 관리 열기">⋯</button>
+              </div>
+              <div class="progress-track" aria-label="${percent}% 완료"><span style="width:${percent}%"></span></div>
+            </div>
+            ${next ? `
+              <section class="next-action">
+                <span class="label">${state.scenarioId === "workout" ? "이번 회차" : state.scenarioId === "study" ? "현재 단원" : "다음 할 일"}</span>
+                <h2>${escapeHtml(next.title)}</h2>
+                <p>${escapeHtml(next.date ? formatDate(next.date) : next.phase || "날짜 없이 실행")}</p>
+                <button type="button" class="primary" data-open-detail="${next.index}">열기</button>
+              </section>
+            ` : ""}
+            <div class="workspace-tools">
+              <button type="button" data-stage="2">조정</button>
+              <button type="button" data-stage="7">가져가기</button>
+            </div>
+            <section class="section">
+              <div class="section-head">
+                <h2>전체 계획</h2>
+                <span>${rows.length}개</span>
+              </div>
+              <ul class="item-list">
+                ${rows.slice(0, state.viewport === "wide" ? 16 : 8).map((row) => `
+                  <li class="item-row">
+                    <button type="button" data-open-detail="${row.index}">
+                      <span class="row-main">
+                        <span>
+                          <span class="row-title">${state.completed.has(row.index) ? "✓ " : ""}${escapeHtml(row.title)}</span>
+                          <span class="row-meta">${escapeHtml(row.date ? formatDate(row.date) : row.phase || "날짜 없음")}</span>
+                        </span>
+                        <span class="row-action">열기</span>
+                      </span>
+                    </button>
+                  </li>
+                `).join("")}
+              </ul>
+            </section>
+          </div>
+          ${state.detailIndex !== null ? renderItemSheet() : ""}
+        </div>
+      `;
+    }
+
+    function renderItemSheet() {
+      const row = scenarioRows().find((entry) => entry.index === state.detailIndex);
+      if (!row) return "";
+      const completed = state.completed.has(row.index);
+      return `
+        <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="item-sheet-title">
+          <h2 id="item-sheet-title">${escapeHtml(row.title)}</h2>
+          <p>${escapeHtml(row.phase || "이 항목에 필요한 내용을 확인하고 실행합니다.")}</p>
+          <div class="field">
+            <label for="item-date">날짜</label>
+            <input id="item-date" type="date" value="${escapeHtml(row.date)}" data-item-date="${row.index}">
+          </div>
+          <div class="field">
+            <label for="item-memo">개인 메모</label>
+            <textarea id="item-memo" placeholder="실행에 필요한 메모" data-item-memo="${row.index}">${escapeHtml(row.memo)}</textarea>
+          </div>
+          <div class="sheet-actions">
+            <button type="button" data-close-detail>닫기</button>
+            <button type="button" class="primary" data-toggle-complete="${row.index}">${completed ? "다시 열기" : "완료"}</button>
+          </div>
+        </section>
+      `;
+    }
+
+    function calendarDays() {
+      const days = [];
+      for (let index = 0; index < 35; index += 1) {
+        const date = new Date(2026, 7, index + 1);
+        days.push({
+          day: index + 1,
+          date: `2026-08-${String(index + 1).padStart(2, "0")}`,
+          valid: index < 31
+        });
+      }
+      return days;
+    }
+
+    function renderCalendar() {
+      const scenario = SCENARIOS[state.scenarioId];
+      const datedRows = activeRows().filter((row) => row.date);
+      const eventDates = new Set(datedRows.map((row) => row.date));
+      const firstAugustDate = datedRows.find((row) => row.date.startsWith("2026-08"))?.date;
+      const selectedDate = state.calendarDate && eventDates.has(state.calendarDate)
+        ? state.calendarDate
+        : firstAugustDate || "2026-08-14";
+      const agenda = datedRows.filter((row) => row.date === selectedDate);
+      return `
+        <div class="app-screen">
+          ${appTopbar("calendar")}
+          <div class="page">
+            <p class="eyebrow">Calendar</p>
+            <h1 class="page-title">날짜가 있는 Flow</h1>
+            <p class="page-summary">날짜를 고르고 해당 Flow를 여세요.</p>
+            <div class="calendar-workspace">
+              <div>
+                <div class="calendar-head">
+                  <button type="button" class="quiet-button" aria-label="이전 달">이전</button>
+                  <h2>2026년 8월</h2>
+                  <button type="button" class="quiet-button" aria-label="다음 달">다음</button>
+                </div>
+                <div class="calendar-grid" role="grid" aria-label="2026년 8월">
+                  ${["일", "월", "화", "수", "목", "금", "토"].map((day) => `<span class="weekday">${day}</span>`).join("")}
+                  ${calendarDays().map((day) => day.valid ? `
+                    <button type="button" data-calendar-date="${day.date}" class="${eventDates.has(day.date) ? "has-event" : ""} ${day.date === selectedDate ? "selected" : ""}" aria-label="8월 ${day.day}일${eventDates.has(day.date) ? " 일정 있음" : ""}">${day.day}${eventDates.has(day.date) ? " ·" : ""}</button>
+                  ` : "<span></span>").join("")}
+                </div>
+              </div>
+              <div>
+                ${agenda.length ? `
+                  <section class="section">
+                    <div class="section-head">
+                      <h2>${formatDate(selectedDate)}</h2>
+                      <span>${agenda.length}개</span>
+                    </div>
+                    <ul class="agenda-list">
+                      ${agenda.map((row) => `
+                        <li class="agenda-row">
+                          <button type="button" data-calendar-open="${row.index}">
+                            <span class="row-main">
+                              <span>
+                                <span class="row-title">${escapeHtml(row.title)}</span>
+                                <span class="row-meta">${escapeHtml(state.savedName)}</span>
+                              </span>
+                              <span class="row-action">Flow 열기</span>
+                            </span>
+                          </button>
+                        </li>
+                      `).join("")}
+                    </ul>
+                  </section>
+                ` : `
+                  <div class="empty-note">
+                    <strong>이 Flow에는 날짜가 없습니다</strong>
+                    <p>날짜 없는 항목은 My Flow에서 실행하고, 필요한 항목에만 날짜를 넣습니다.</p>
+                    <button type="button" class="text-link-button" data-stage="5">개인 Flow 열기</button>
+                  </div>
+                `}
+              </div>
+            </div>
+          </div>
+          ${state.viewport === "mobile" ? appNav("calendar") : ""}
+        </div>
+      `;
+    }
+
+    function scopeCount(scope) {
+      const rows = activeRows();
+      if (scope === "selected") return Math.min(3, rows.length);
+      if (scope === "current") return rows.length ? 1 : 0;
+      return rows.length;
+    }
+
+    function renderExport() {
+      const scenario = SCENARIOS[state.scenarioId];
+      const count = scopeCount(state.exportScope);
+      const scopeLabel = state.exportScope === "whole" ? "Flow 전체" : state.exportScope === "selected" ? "선택한 항목" : "현재 항목";
+      return `
+        <div class="app-screen">
+          ${appTopbar("my", false, true)}
+          <div class="page">
+            <p class="eyebrow">가져가기</p>
+            <h1 class="page-title">무엇을 가져갈까요?</h1>
+            <p class="page-summary">범위와 실제 결과 개수를 먼저 확인하세요.</p>
+            <div class="scope-options" role="group" aria-label="가져갈 범위">
+              ${[
+                ["whole", "Flow 전체", activeRows().length],
+                ["selected", "선택한 항목", Math.min(3, activeRows().length)],
+                ["current", "현재 항목", activeRows().length ? 1 : 0]
+              ].map(([id, label, value]) => `
+                <button type="button" class="scope-option" data-export-scope="${id}" aria-label="${label} ${value}개" aria-pressed="${state.exportScope === id}">
+                  <span class="radio" aria-hidden="true"></span>
+                  <span><strong>${label}</strong><span>${value}개가 포함됩니다</span></span>
+                  <strong>${value}</strong>
+                </button>
+              `).join("")}
+            </div>
+            <div class="destination">
+              <strong>${escapeHtml(scenario.exportDestination)} · ${count}개</strong>
+              <p>${scopeLabel} 기준입니다. 완료 상태는 결과 형식에 맞게 표시되고 source 원문은 유지됩니다.</p>
+              <button type="button" class="primary" data-export>${escapeHtml(scenario.exportLabel.replace(String(scenario.count), String(count)))}</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderScreen() {
+      const id = STAGES[state.stage].id;
+      if (id === "discover") return renderDiscover();
+      if (id === "preview") return renderPreview();
+      if (id === "adjust") return renderAdjust();
+      if (id === "receipt") return renderReceipt();
+      if (id === "library") return renderLibrary();
+      if (id === "personal") return renderPersonal();
+      if (id === "calendar") return renderCalendar();
+      return renderExport();
+    }
+
+    function renderAnnotation() {
+      const id = STAGES[state.stage].id;
+      const annotation = ANNOTATIONS[id];
+      decisionBody.innerHTML = `
+        <dl>
+          <dt>사용자 질문</dt>
+          <dd>${escapeHtml(annotation.question)}</dd>
+          <dt>기본 메시지</dt>
+          <dd>${escapeHtml(annotation.messages)}</dd>
+          <dt>Primary action</dt>
+          <dd>${escapeHtml(annotation.primary)}</dd>
+          <dt>이번 화면에서 제거</dt>
+          <dd>
+            <ul class="cut-list">${annotation.cut.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+          </dd>
+          <dt>현재와의 차이</dt>
+          <dd>${escapeHtml(annotation.current)}</dd>
+        </dl>
+        <span class="evidence-kind">${escapeHtml(annotation.evidence)}</span>
+      `;
+      const shot = CURRENT_SHOTS[id];
+      currentShot.src = shot[state.viewport];
+      currentShot.alt = shot.alt;
+      currentCaption.textContent = annotation.current;
+    }
+
+    function renderStages() {
+      stageRail.innerHTML = STAGES.map((stage, index) => `
+        <button type="button" data-stage="${index}" ${state.stage === index ? 'aria-current="step"' : ""}>${stage.label}</button>
+      `).join("");
+    }
+
+    function render() {
+      device.dataset.viewport = state.viewport;
+      device.innerHTML = renderScreen() + (state.toast ? `<div class="toast" role="status">${escapeHtml(state.toast)}</div>` : "");
+      renderStages();
+      renderAnnotation();
+      prototypeRoute.textContent = STAGES[state.stage].route;
+      document.querySelectorAll("[data-viewport]").forEach((button) => {
+        button.setAttribute("aria-pressed", String(button.dataset.viewport === state.viewport));
+      });
+    }
+
+    function restoreItemTrigger(index) {
+      requestAnimationFrame(() => {
+        const trigger = [...device.querySelectorAll("[data-open-detail]")]
+          .find((entry) => Number(entry.dataset.openDetail) === index);
+        trigger?.focus();
+      });
+    }
+
+    document.addEventListener("click", (event) => {
+      const target = event.target.closest("button");
+      if (!target) return;
+
+      if (target.dataset.viewport) {
+        state.viewport = target.dataset.viewport;
+        render();
+        return;
+      }
+
+      if (target.dataset.stage !== undefined) {
+        state.stage = Number(target.dataset.stage);
+        state.detailIndex = null;
+        state.toast = "";
+        render();
+        return;
+      }
+
+      if (target.dataset.openScenario) {
+        const entry = Object.entries(SCENARIOS).find(([, scenario]) => scenario.slug === target.dataset.openScenario);
+        if (entry) {
+          resetScenario(entry[0]);
+          state.stage = 1;
+          render();
+        }
+        return;
+      }
+
+      if (target.dataset.adjustMode) {
+        state.adjustMode = target.dataset.adjustMode;
+        render();
+        return;
+      }
+
+      if (target.dataset.openDetail !== undefined) {
+        state.detailIndex = Number(target.dataset.openDetail);
+        render();
+        requestAnimationFrame(() => device.querySelector(".sheet button")?.focus());
+        return;
+      }
+
+      if (target.hasAttribute("data-close-detail")) {
+        const index = state.detailIndex;
+        state.detailIndex = null;
+        render();
+        restoreItemTrigger(index);
+        return;
+      }
+
+      if (target.dataset.toggleComplete !== undefined) {
+        const index = Number(target.dataset.toggleComplete);
+        if (state.completed.has(index)) state.completed.delete(index);
+        else state.completed.add(index);
+        state.detailIndex = null;
+        state.toast = state.completed.has(index) ? "완료했습니다. 같은 Item에서 다시 열 수 있습니다." : "다시 진행할 항목으로 돌렸습니다.";
+        render();
+        restoreItemTrigger(index);
+        return;
+      }
+
+      if (target.dataset.calendarOpen !== undefined) {
+        state.detailIndex = Number(target.dataset.calendarOpen);
+        state.stage = 5;
+        state.toast = "Calendar에서 같은 개인 Flow를 열었습니다.";
+        render();
+        return;
+      }
+
+      if (target.dataset.calendarDate) {
+        state.calendarDate = target.dataset.calendarDate;
+        render();
+        return;
+      }
+
+      if (target.dataset.exportScope) {
+        state.exportScope = target.dataset.exportScope;
+        render();
+        return;
+      }
+
+      if (target.hasAttribute("data-export")) {
+        state.toast = `${scopeCount(state.exportScope)}개 결과를 만들었습니다.`;
+        render();
+      }
+    });
+
+    document.addEventListener("change", (event) => {
+      const target = event.target;
+      if (target === scenarioSelect) {
+        resetScenario(target.value);
+        return;
+      }
+
+      if (target.matches("[data-anchor-input]")) {
+        state.anchor = target.value;
+        render();
+        return;
+      }
+
+      if (target.matches("[data-saved-name]")) {
+        state.savedName = target.value || SCENARIOS[state.scenarioId].title;
+        render();
+        return;
+      }
+
+      if (target.matches("[data-include]")) {
+        const index = Number(target.dataset.include);
+        if (target.checked) state.included.add(index);
+        else state.included.delete(index);
+        render();
+        return;
+      }
+
+      if (target.matches("[data-item-date]")) {
+        state.personalDates.set(Number(target.dataset.itemDate), target.value);
+        return;
+      }
+
+      if (target.matches("[data-item-memo]")) {
+        state.personalMemos.set(Number(target.dataset.itemMemo), target.value);
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      const sheet = device.querySelector(".sheet");
+      if (!sheet) return;
+
+      if (event.key === "Escape") {
+        event.preventDefault();
+        const index = state.detailIndex;
+        state.detailIndex = null;
+        render();
+        restoreItemTrigger(index);
+        return;
+      }
+
+      if (event.key !== "Tab") return;
+      const controls = [...sheet.querySelectorAll("button, input, textarea")]
+        .filter((entry) => !entry.disabled && entry.tabIndex !== -1);
+      if (!controls.length) return;
+      const first = controls[0];
+      const last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>

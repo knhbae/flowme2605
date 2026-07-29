@@ -19,6 +19,34 @@ export type EffectiveRoutineProjectionResult<TRow extends SavedRoutineOccurrence
   warnings: string[];
 };
 
+export type EffectiveRoutineProjectionOptions<TRow extends SavedRoutineOccurrenceRow> = {
+  bundle: FlowBundle;
+  identityNamespace?: string;
+  rows: TRow[];
+  startDate: string;
+  selectedWeekdays?: string[];
+  endDate?: string;
+  occurrenceCount?: number;
+  seriesEndMode?: 'source' | 'none' | 'until' | 'count';
+  time?: string;
+  durationMinutes?: number;
+  range: { start: string; end: string };
+  executionRecords?: PersonalStructuralOccurrenceExecutionRecord[];
+  resolveOccurrenceDate?: (input: {
+    itemId: string;
+    originalDate: string;
+  }) => SavedRoutineOccurrenceDateResolution;
+};
+
+export type EffectiveRoutineNextOccurrenceResult<TRow extends SavedRoutineOccurrenceRow> = {
+  nextRow?: TRow;
+  projection: EffectiveRoutineProjectionResult<TRow>;
+  seriesState: 'active' | 'ended' | 'paused' | 'unresolved';
+  searchRange: { start: string; end: string };
+};
+
+const NEXT_OCCURRENCE_SEARCH_WINDOWS_DAYS = [31, 366, 3_653, 36_525] as const;
+
 function isPlainDate(value: unknown): value is string {
   if (typeof value !== 'string') return false;
   const match = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
@@ -80,24 +108,9 @@ function getFirstResolvableGlobalRule(options: {
   return undefined;
 }
 
-export function buildEffectiveRoutineProjection<TRow extends SavedRoutineOccurrenceRow>(options: {
-  bundle: FlowBundle;
-  identityNamespace?: string;
-  rows: TRow[];
-  startDate: string;
-  selectedWeekdays?: string[];
-  endDate?: string;
-  occurrenceCount?: number;
-  seriesEndMode?: 'source' | 'none' | 'until' | 'count';
-  time?: string;
-  durationMinutes?: number;
-  range: { start: string; end: string };
-  executionRecords?: PersonalStructuralOccurrenceExecutionRecord[];
-  resolveOccurrenceDate?: (input: {
-    itemId: string;
-    originalDate: string;
-  }) => SavedRoutineOccurrenceDateResolution;
-}): EffectiveRoutineProjectionResult<TRow> {
+export function buildEffectiveRoutineProjection<TRow extends SavedRoutineOccurrenceRow>(
+  options: EffectiveRoutineProjectionOptions<TRow>,
+): EffectiveRoutineProjectionResult<TRow> {
   const identityNamespace = options.identityNamespace?.trim() || options.bundle.flow.slug;
   const unchanged = (warnings: string[] = []): EffectiveRoutineProjectionResult<TRow> => ({
     connected: false,
@@ -215,5 +228,87 @@ export function buildEffectiveRoutineProjection<TRow extends SavedRoutineOccurre
     seriesByItemId,
     semanticOccurrenceCount: new Set(occurrenceRows.map((row) => row.structuralOccurrenceId)).size,
     warnings: Array.from(new Set(warnings)),
+  };
+}
+
+function isOpenOccurrence(row: SavedRoutineOccurrenceRow): boolean {
+  return (
+    row.structuralOccurrenceExecutionState === undefined ||
+    row.structuralOccurrenceExecutionState === 'pending' ||
+    row.structuralOccurrenceExecutionState === 'reopened'
+  );
+}
+
+function compareRoutineRows(left: SavedRoutineOccurrenceRow, right: SavedRoutineOccurrenceRow): number {
+  const dateOrder = (left.date ?? '').localeCompare(right.date ?? '');
+  if (dateOrder !== 0) return dateOrder;
+  return (left.structuralOccurrenceId ?? left.id).localeCompare(
+    right.structuralOccurrenceId ?? right.id,
+  );
+}
+
+function getSeriesState<TRow extends SavedRoutineOccurrenceRow>(
+  projection: EffectiveRoutineProjectionResult<TRow>,
+): EffectiveRoutineNextOccurrenceResult<TRow>['seriesState'] {
+  const series = Object.values(projection.seriesByItemId);
+  if (series.length === 0) return 'unresolved';
+  if (series.some((entry) => entry.status === 'active')) {
+    const hasOpenEndedRevision = series.some((entry) =>
+      entry.status === 'active' &&
+      entry.revisions.some((revision) => revision.rule.end === undefined),
+    );
+    return hasOpenEndedRevision ? 'unresolved' : 'ended';
+  }
+  return series.some((entry) => entry.status === 'paused') ? 'paused' : 'ended';
+}
+
+export function buildEffectiveRoutineNextOccurrence<
+  TRow extends SavedRoutineOccurrenceRow,
+>(
+  options: Omit<EffectiveRoutineProjectionOptions<TRow>, 'range'> & {
+    fromDate: string;
+  },
+): EffectiveRoutineNextOccurrenceResult<TRow> {
+  const unchanged = buildEffectiveRoutineProjection({
+    ...options,
+    range: { start: options.fromDate, end: options.fromDate },
+  });
+  if (!isPlainDate(options.fromDate)) {
+    return {
+      projection: unchanged,
+      seriesState: 'unresolved',
+      searchRange: { start: options.fromDate, end: options.fromDate },
+    };
+  }
+
+  let projection = unchanged;
+  let searchRange = { start: options.fromDate, end: options.fromDate };
+  for (const windowDays of NEXT_OCCURRENCE_SEARCH_WINDOWS_DAYS) {
+    const end = addPlainDateDays(options.fromDate, windowDays);
+    if (!end) break;
+    searchRange = { start: options.fromDate, end };
+    projection = buildEffectiveRoutineProjection({
+      ...options,
+      range: searchRange,
+    });
+    const nextRow = projection.rows
+      .filter((row) => Boolean(row.structuralOccurrenceId))
+      .filter((row) => row.date && row.date >= options.fromDate)
+      .filter(isOpenOccurrence)
+      .sort(compareRoutineRows)[0];
+    if (nextRow) {
+      return {
+        nextRow,
+        projection,
+        seriesState: 'active',
+        searchRange,
+      };
+    }
+  }
+
+  return {
+    projection,
+    seriesState: getSeriesState(projection),
+    searchRange,
   };
 }

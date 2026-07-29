@@ -1,0 +1,122 @@
+{
+  "url": "http://127.0.0.1:3104/f/moving-d30-basic",
+  "title": "이사 D-30 준비 | FlowMe",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "quality": {
+    "horizontalOverflow": 0,
+    "unnamedInteractiveCount": 0,
+    "brokenImageCount": 0
+  },
+  "headings": [
+    {
+      "level": 1,
+      "text": "이사 D-30 준비"
+    },
+    {
+      "level": 2,
+      "text": "캘린더 · 24개"
+    },
+    {
+      "level": 2,
+      "text": "이사 체크리스트 참고"
+    }
+  ],
+  "actions": [
+    {
+      "tag": "a",
+      "name": "FLOW",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "a",
+      "name": "이사 체크리스트 참고",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "summary",
+      "name": "나머지 21개 보기⌄",
+      "testId": "public-flow-artifact-preview-expand",
+      "disabled": false
+    },
+    {
+      "tag": "input",
+      "name": "이사일 이사일 2026-08-24",
+      "testId": "public-flow-anchor-input",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "Flow 조정",
+      "testId": "public-flow-adjust-entry-mobile",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "캘린더 24개로 시작",
+      "testId": "public-flow-save-primary-mobile",
+      "disabled": false
+    },
+    {
+      "tag": "summary",
+      "name": "Flow 가져가기필요할 때 열기",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "summary",
+      "name": "이 Flow 통째로 가져가기캘린더·시트·메모 중 필요한 형식을 고릅니다.형식 보기접기",
+      "testId": "public-flow-export-secondary-toggle",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "내 버전: 이사 D-30 준비 내 버전",
+      "testId": "public-flow-editable-draft-action",
+      "disabled": false
+    },
+    {
+      "tag": "summary",
+      "name": "출처와 주의",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "summary",
+      "name": "원문과 근거이사 체크리스트 참고ajd.co.kr · 7월 11일 원문 확인 기록 · 5월 20일 Flow 정리 · 개별 원문 페이지열기",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "a",
+      "name": "원문 보기",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "캘린더 24개로 시작",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "a",
+      "name": "콘텐츠 더 보기",
+      "testId": "flow-public-secondary-browse-link",
+      "disabled": false
+    }
+  ],
+  "visibleText": "FLOW\n공유 화면\n\nFlow 미리보기\n이사\n\n이사 D-30 준비\n\n원문 · 이사 체크리스트 참고\n\n먼저 확인할 결과\n\n캘린더 · 24개\n\n7월 25일 - 8월 25일\n\n25\n(토)\n이사 방식 정하기\nD-30 큰 준비\n이사할 집 하자 점검하기\nD-30 큰 준비\n필요 없는 물건 정리하기\nD-30 큰 준비\n나머지 21개 보기\n⌄\n이사일\n이사일: 8월 24일 (월) · 가까운 일정부터 시작합니다.\nFlow 조정\n캘린더 24개로 시작\nFlow 가져가기\n필요할 때 열기\n출처와 주의\n\nFlow 전체 · 24개 항목\n\n이사 D-30 준비\n\n캘린더 24개로 시작\n콘텐츠 더 보기",
+  "consoleAndPageErrors": [],
+  "label": "이사 Flow 저장 전 전체 결과",
+  "state": "public_result_ready",
+  "route": "/f/moving-d30-basic",
+  "reviewQuestions": [
+    "전체 결과가 먼저 읽히는가",
+    "저장과 외부 가져가기의 차이가 보이는가"
+  ]
+}

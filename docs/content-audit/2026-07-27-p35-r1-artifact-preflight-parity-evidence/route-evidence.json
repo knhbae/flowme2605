@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-27",
+  "baseline": {
+    "branch": "codex/p35-mece-ux-reset",
+    "originMainSha": "2c951633d13adb0aab3ddd9d3cdddf506d9e97cd",
+    "candidateState": "local_uncommitted"
+  },
+  "markers": {
+    "P35-R1-PUBLIC-ARTIFACT-PREFLIGHT": true,
+    "P35-R1-PUBLIC-PREFLIGHT-MOVING-390": true,
+    "P35-R1-PUBLIC-PREFLIGHT-SHAPES-1024": true,
+    "publicPreviewAndPreflightUseSharedPlan": true,
+    "publicPrimaryArtifactCount": 1,
+    "publicSecondaryArtifactMaximumCount": 2,
+    "publicVisibleUnsupportedControlCount": 0,
+    "publicVisibleDisabledExportControlCount": 0
+  },
+  "routes": [
+    {
+      "route": "/f/moving-d30-basic",
+      "viewport": "390x844",
+      "previewShape": "calendar",
+      "previewCount": 24,
+      "preflightPrimaryDestination": "calendar",
+      "preflightPrimaryCount": 24,
+      "preflightDestinationCount": 2,
+      "scheduleState": "committed"
+    },
+    {
+      "route": "/f/vehicle-inspection-prep",
+      "viewport": "1024x768",
+      "previewShape": "checklist",
+      "previewCount": 10,
+      "preflightPrimaryDestination": "checklist",
+      "preflightPrimaryCount": 10,
+      "preflightDestinationCount": 1,
+      "scheduleState": "not_applicable"
+    },
+    {
+      "route": "/f/source-backed-middle-school-math-1",
+      "viewport": "1024x768",
+      "previewShape": "sheet",
+      "previewCount": 8,
+      "preflightPrimaryDestination": "sheet",
+      "preflightPrimaryCount": 8,
+      "preflightDestinationCount": 2,
+      "scheduleState": "not_applicable"
+    },
+    {
+      "route": "/f/overseas-safety-register",
+      "viewport": "1024x768",
+      "previewShape": "memo",
+      "previewCount": 4,
+      "preflightPrimaryDestination": "memo",
+      "preflightPrimaryCount": 4,
+      "preflightDestinationCount": 2,
+      "scheduleState": "not_applicable"
+    },
+    {
+      "route": "/f/curated-allblanc-morning-workout",
+      "viewport": "1024x768",
+      "previewShape": "flow_execution",
+      "sourceItemCount": 1,
+      "provisionalScheduleState": "provisional",
+      "committedScheduleState": "committed",
+      "recurrenceSeriesEventCount": 1,
+      "visibleOccurrenceCount": 12,
+      "preflightDestinationCount": 3,
+      "calendarActionVisibleBeforeCommit": false
+    }
+  ],
+  "quality": {
+    "horizontalOverflowCount": 0,
+    "unnamedVisibleInteractiveCount": 0,
+    "fixedOverlapCount": 0,
+    "consoleErrorCount": 0,
+    "pageErrorCount": 0
+  },
+  "contracts": {
+    "sourceMutationCount": 0,
+    "personalOverlayWriteChanged": false,
+    "executionRunChanged": false,
+    "occurrenceIdentityChanged": false,
+    "exportIdentityChanged": false,
+    "storageSchemaChanged": false,
+    "migrationRequired": false
+  },
+  "verification": {
+    "pretest": {
+      "passed": 81,
+      "failed": 0
+    },
+    "unit": {
+      "passed": 590,
+      "failed": 0
+    },
+    "r1TargetedE2e": {
+      "passed": 3,
+      "failed": 0
+    },
+    "p35PublicExportRegressionE2e": {
+      "passed": 8,
+      "failed": 0
+    },
+    "build": "passed",
+    "docsCheck": "passed",
+    "fullE2e": "deferred_to_p35_r7"
+  },
+  "publish": {
+    "commit": false,
+    "push": false,
+    "pullRequest": false,
+    "merge": false,
+    "previewDeploy": false,
+    "productionDeploy": false
+  },
+  "observedUserCount": 0
+}

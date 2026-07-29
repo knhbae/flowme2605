@@ -1,0 +1,176 @@
+{
+  "url": "http://127.0.0.1:3104/f/vehicle-inspection-prep",
+  "title": "자동차검사 D-14 준비 | FlowMe",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "quality": {
+    "horizontalOverflow": 0,
+    "unnamedInteractiveCount": 0,
+    "brokenImageCount": 0
+  },
+  "headings": [
+    {
+      "level": 1,
+      "text": "자동차검사 D-14 준비"
+    },
+    {
+      "level": 2,
+      "text": "체크리스트 · 10개"
+    },
+    {
+      "level": 2,
+      "text": "TS한국교통안전공단 정기검사 대상·기준·유효기간 안내"
+    }
+  ],
+  "actions": [
+    {
+      "tag": "a",
+      "name": "FLOW",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "a",
+      "name": "TS한국교통안전공단 정기검사 대상·기준·유효기간 안내",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "자동차검사 기간과 예약 가능일 확인하기 내용과 날짜 수정 수정",
+      "testId": "public-flow-artifact-preview-row-edit",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "차량번호와 예약 정보 확인하기 내용과 날짜 수정 수정",
+      "testId": "public-flow-artifact-preview-row-edit",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "가까운 검사소와 수수료 확인하기 내용과 날짜 수정 수정",
+      "testId": "public-flow-artifact-preview-row-edit",
+      "disabled": false
+    },
+    {
+      "tag": "summary",
+      "name": "나머지 7개 보기⌄",
+      "testId": "public-flow-artifact-preview-expand",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "번호판과 차대번호 식별 상태 확인하기 내용과 날짜 수정 수정",
+      "testId": "public-flow-artifact-preview-row-edit",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "등화장치와 경음기 작동 확인하기 내용과 날짜 수정 수정",
+      "testId": "public-flow-artifact-preview-row-edit",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "타이어 마모와 공기압 확인하기 내용과 날짜 수정 수정",
+      "testId": "public-flow-artifact-preview-row-edit",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "오일 누유와 경고등 여부 기록하기 내용과 날짜 수정 수정",
+      "testId": "public-flow-artifact-preview-row-edit",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "예약 시간보다 여유 있게 검사소 도착하기 내용과 날짜 수정 수정",
+      "testId": "public-flow-artifact-preview-row-edit",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "접수와 수수료 결제 진행하기 내용과 날짜 수정 수정",
+      "testId": "public-flow-artifact-preview-row-edit",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "검사 결과와 재검사 필요 항목 기록하기 내용과 날짜 수정 수정",
+      "testId": "public-flow-artifact-preview-row-edit",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "Flow 조정",
+      "testId": "public-flow-adjust-entry-mobile",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "체크리스트 10개로 시작",
+      "testId": "public-flow-save-primary-mobile",
+      "disabled": false
+    },
+    {
+      "tag": "summary",
+      "name": "Flow 가져가기필요할 때 열기",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "summary",
+      "name": "이 Flow 통째로 가져가기체크리스트 · 10개형식 보기접기",
+      "testId": "public-flow-export-secondary-toggle",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "내 버전: 자동차검사 D-14 준비 내 버전",
+      "testId": "public-flow-editable-draft-action",
+      "disabled": false
+    },
+    {
+      "tag": "summary",
+      "name": "출처와 주의",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "summary",
+      "name": "원문과 근거TS한국교통안전공단 정기검사 대상·기준·유효기간 안내main.kotsa.or.kr · 7월 12일 원문 확인 기록 · 7월 12일 Flow 정리 · 개별 원문 페이지열기",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "a",
+      "name": "원문 보기",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "체크리스트 10개로 시작",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "a",
+      "name": "콘텐츠 더 보기",
+      "testId": "flow-public-secondary-browse-link",
+      "disabled": false
+    }
+  ],
+  "visibleText": "FLOW\n공유 화면\n\nFlow 미리보기\n자동차/검사\n\n자동차검사 D-14 준비\n\n원문 · TS한국교통안전공단 정기검사 대상·기준·유효기간 안내\n\n먼저 확인할 결과\n\n체크리스트 · 10개\n\n날짜 없음\n\n자동차검사 기간과 예약 가능일 확인하기\nD-14 검사 기간 확인\n수정\n차량번호와 예약 정보 확인하기\nD-14 검사 기간 확인\n수정\n가까운 검사소와 수수료 확인하기\nD-14 검사 기간 확인\n수정\n나머지 7개 보기\n⌄\nFlow 조정\n체크리스트 10개로 시작\nFlow 가져가기\n필요할 때 열기\n출처와 주의\n\nFlow 전체 · 10개 항목\n\n자동차검사 D-14 준비\n\n체크리스트 10개로 시작\n콘텐츠 더 보기",
+  "consoleAndPageErrors": [],
+  "label": "날짜 없는 차량 점검 결과",
+  "state": "undated_checklist_result",
+  "route": "/f/vehicle-inspection-prep",
+  "reviewQuestions": [
+    "날짜 없는 Flow를 어떻게 실행하는가",
+    "Checklist와 Todo 추천이 명확한가"
+  ]
+}

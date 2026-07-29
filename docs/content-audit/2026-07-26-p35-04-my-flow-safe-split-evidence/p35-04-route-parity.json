@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-07-26",
+  "baselineSha": "2c951633d13adb0aab3ddd9d3cdddf506d9e97cd",
+  "verdict": "pass",
+  "routes": [
+    {
+      "route": "/my?demo=ux12&view=flows",
+      "viewport": "390x844",
+      "surface": "my_flow",
+      "marker": "P35-DEAD-VIEW-REMOVAL",
+      "calendarSurfaceMounted": false,
+      "localViews": [
+        "today",
+        "flow",
+        "completed"
+      ],
+      "flowRowCount": 16,
+      "focusedWorkspaceReachable": true,
+      "savedRecordCountBefore": 0,
+      "savedRecordCountAfter": 0,
+      "horizontalOverflowCount": 0,
+      "consolePageErrorCount": 0,
+      "screenshot": "screenshots/p35-04-my-390.png"
+    },
+    {
+      "route": "/calendar?demo=ux12",
+      "viewport": "1024x768",
+      "surface": "calendar",
+      "marker": "P35-MYFLOW-SAFE-SPLIT",
+      "myFlowLibraryMounted": false,
+      "visibleMonth": "2026-05",
+      "selectedDate": "2026-05-28",
+      "monthNavigationPreserved": true,
+      "selectedDayPreserved": true,
+      "completionReopenCompletionPreserved": true,
+      "rowIdentityChangeCount": 0,
+      "savedRecordCountBefore": 0,
+      "savedRecordCountAfter": 0,
+      "horizontalOverflowCount": 0,
+      "consolePageErrorCount": 0,
+      "screenshot": "screenshots/p35-04-calendar-1024.png"
+    }
+  ],
+  "sourceParity": {
+    "calendarRouteUsesMyFlowInitialViewProp": false,
+    "calendarRouteUsesDedicatedEntry": true,
+    "deadChecklistViewReferenceCount": 0,
+    "deadRoutineViewReferenceCount": 0,
+    "deadViewAssertionCount": 0,
+    "storageFileChangedBySlice": false,
+    "serializationChangedBySlice": false,
+    "migrationAddedBySlice": false,
+    "newUserFacingLabelCount": 0
+  },
+  "identityParity": {
+    "sourceIdentityChanged": false,
+    "personalOverlayIdentityChanged": false,
+    "executionRunIdentityChanged": false,
+    "recurrenceOccurrenceIdentityChanged": false,
+    "exportIdentityChanged": false
+  },
+  "evidenceKind": [
+    "current_source",
+    "current_command",
+    "current_browser",
+    "current_package_screenshot"
+  ],
+  "observedUserCount": 0
+}

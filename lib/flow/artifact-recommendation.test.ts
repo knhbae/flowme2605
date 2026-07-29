@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
+  buildArtifactPreflightVM,
   buildArtifactExportRecommendationVM,
   buildArtifactRecommendationVM,
   getPreferredArtifactExportDestination,
@@ -23,7 +24,7 @@ test('five representative shapes expose one primary and at most two secondary re
     ['moving-d30-basic', 'calendar', '2030-08-15'],
     ['used-car-buying-check', 'checklist', undefined],
     ['source-backed-middle-school-math-1', 'sheet', undefined],
-    ['overseas-safety-register', 'memo', undefined],
+    ['overseas-safety-register', 'checklist', undefined],
   ] as const;
 
   for (const [slug, expectedShape, anchor] of representatives) {
@@ -85,5 +86,49 @@ test('bundle preference reuses the canonical artifact contract', () => {
   assert.equal(getPreferredArtifactExportDestination(bySlug('moving-d30-basic')), 'calendar');
   assert.equal(getPreferredArtifactExportDestination(bySlug('used-car-buying-check')), 'checklist');
   assert.equal(getPreferredArtifactExportDestination(bySlug('source-backed-middle-school-math-1')), 'sheet');
-  assert.equal(getPreferredArtifactExportDestination(bySlug('overseas-safety-register')), 'memo');
+  assert.equal(getPreferredArtifactExportDestination(bySlug('overseas-safety-register')), 'checklist');
+});
+
+test('public artifact preflight derives destinations from the same visible shape plan', () => {
+  const fixtures = [
+    ['moving-d30-basic', '2030-08-15', ['calendar', 'checklist']],
+    ['vehicle-inspection-prep', undefined, ['checklist']],
+    ['source-backed-middle-school-math-1', undefined, ['sheet', 'checklist']],
+    ['overseas-safety-register', undefined, ['checklist', 'memo']],
+  ] as const;
+
+  for (const [slug, anchor, expectedDestinations] of fixtures) {
+    const bundle = bySlug(slug);
+    const projection = buildFlowExperienceProjection(bundle, anchor ? { anchor } : {});
+    const preflight = buildArtifactPreflightVM({
+      projection,
+      preferredDestination: getPreferredArtifactExportDestination(bundle),
+    });
+    assert.deepEqual(preflight.destinations, expectedDestinations, slug);
+    assert.equal(preflight.primary?.count, projection.shapes[projection.primaryShape].count, slug);
+    assert.ok(preflight.summary.includes(preflight.primary?.label ?? ''), slug);
+  }
+});
+
+test('routine preflight distinguishes provisional and committed Calendar occurrences', () => {
+  const bundle = bySlug('curated-allblanc-morning-workout');
+  const projection = buildFlowExperienceProjection(bundle, { anchor: '2030-08-15' });
+  const provisional = buildArtifactPreflightVM({
+    projection,
+    preferredDestination: 'calendar',
+    scheduleState: 'provisional',
+    scheduledEventCount: 8,
+  });
+  const committed = buildArtifactPreflightVM({
+    projection,
+    preferredDestination: 'calendar',
+    scheduleState: 'committed',
+    scheduledEventCount: 8,
+  });
+
+  assert.equal(provisional.primary?.shape, 'flow_execution');
+  assert.deepEqual(provisional.destinations, ['checklist', 'calendar', 'memo']);
+  assert.match(provisional.summary, /날짜를 정하면 캘린더 8개/u);
+  assert.match(committed.summary, /캘린더 8개/u);
+  assert.doesNotMatch(committed.summary, /날짜를 정하면/u);
 });

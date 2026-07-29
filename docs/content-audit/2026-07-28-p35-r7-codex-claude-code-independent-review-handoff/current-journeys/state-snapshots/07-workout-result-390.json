@@ -1,0 +1,144 @@
+{
+  "url": "http://127.0.0.1:3104/f/curated-allblanc-morning-workout",
+  "title": "Allblanc 아침 5분 홈트 | FlowMe",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "quality": {
+    "horizontalOverflow": 0,
+    "unnamedInteractiveCount": 0,
+    "brokenImageCount": 0
+  },
+  "headings": [
+    {
+      "level": 1,
+      "text": "Allblanc 아침 5분 홈트"
+    },
+    {
+      "level": 2,
+      "text": "Flow 실행 · 1개"
+    },
+    {
+      "level": 3,
+      "text": "Allblanc 매일 아침 5분 전신 운동 영상"
+    },
+    {
+      "level": 2,
+      "text": "Allblanc 매일 아침 5분 전신 운동 영상"
+    }
+  ],
+  "actions": [
+    {
+      "tag": "a",
+      "name": "FLOW",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "a",
+      "name": "Allblanc 매일 아침 5분 전신 운동 영상",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "아침 5분 전신 운동 영상 열기 내용과 날짜 수정 수정",
+      "testId": "public-flow-artifact-preview-row-edit",
+      "disabled": false
+    },
+    {
+      "tag": "input",
+      "name": "시작일 시작일 2026-07-27",
+      "testId": "public-flow-anchor-input",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "반복 일정 조정",
+      "testId": "public-routine-schedule-summary-toggle",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "Flow 조정",
+      "testId": "public-flow-adjust-entry-mobile",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "Flow 실행 1개로 시작",
+      "testId": "public-flow-save-primary-mobile",
+      "disabled": false
+    },
+    {
+      "tag": "summary",
+      "name": "Flow 가져가기필요할 때 열기",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "a",
+      "name": "원문 열기",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "a",
+      "name": "운동 시작 전 공식 안내",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "summary",
+      "name": "이 Flow 통째로 가져가기Flow 실행 · 1개 · 캘린더 1개형식 보기접기",
+      "testId": "public-flow-export-secondary-toggle",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "내 버전: Allblanc 아침 5분 홈트 내 버전",
+      "testId": "public-flow-editable-draft-action",
+      "disabled": false
+    },
+    {
+      "tag": "summary",
+      "name": "출처와 주의",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "summary",
+      "name": "원문과 근거Allblanc 매일 아침 5분 전신 운동 영상youtube.com · 2020년 3월 26일 원문 게시 · 7월 12일 원문 확인 기록 · 7월 12일 Flow 정리 · 개별 원문 페이지열기",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "a",
+      "name": "원문 보기",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "Flow 실행 1개로 시작",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "a",
+      "name": "콘텐츠 더 보기",
+      "testId": "flow-public-secondary-browse-link",
+      "disabled": false
+    }
+  ],
+  "visibleText": "FLOW\n공유 화면\n\nFlow 미리보기\n운동/홈트\n\nAllblanc 아침 5분 홈트\n\n원문 · Allblanc 매일 아침 5분 전신 운동 영상\n\n먼저 확인할 결과\n\nFlow 실행 · 1개\n\n7월 27일 (월) · 반복 일정 · 월·수·금 · 시간 미정 · 계속 반복\n\n1\n아침 5분 전신 운동 영상 열기\n7월 27일 (월) · 반복 실행\n수정\n시작일\n시작일이 이미 지났어요.\n\n반복 일정\n\n월·수·금 · 시간 미정 · 계속 반복\n\n반복 일정 조정\n\n다음 일정\n\n7월 27일 (월)\n7월 29일 (수)\n7월 31일 (금)\nFlow 조정\nFlow 실행 1개로 시작\nFlow 가져가기\n필요할 때 열기\n출처와 주의\n\nFlow 전체 · 1개 항목\n\nAllblanc 아침 5분 홈트\n\nFlow 실행 1개로 시작\n콘텐츠 더 보기",
+  "consoleAndPageErrors": [],
+  "label": "홈트 반복 Flow 결과",
+  "state": "routine_result",
+  "route": "/f/curated-allblanc-morning-workout",
+  "reviewQuestions": [
+    "series와 occurrence가 구분되는가",
+    "resource가 실행 Item과 구분되는가"
+  ]
+}

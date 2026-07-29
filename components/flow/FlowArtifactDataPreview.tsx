@@ -9,6 +9,7 @@ import type {
   FlowExperienceProjectionRow,
   FlowExperienceShape,
 } from '@/lib/flow/flow-experience-projection';
+import { FlowDateRailGroup } from './FlowExecutionPrimitives';
 
 const EMPTY_MESSAGE: Record<FlowExperienceShape, string> = {
   flow_execution: '저장할 실행 항목이 없습니다.',
@@ -32,32 +33,75 @@ function getRowMeta(row: FlowExperienceProjectionRow): string[] {
   ].filter(Boolean);
 }
 
-function FlowExecutionRows({ rows, remainder = false }: { rows: FlowExperienceProjectionRow[]; remainder?: boolean }) {
+type ShapeRowProps = {
+  rows: FlowExperienceProjectionRow[];
+  remainder?: boolean;
+  rowTestId?: string;
+  onRowEdit?: (row: FlowExperienceProjectionRow, returnFocusSelector: string) => void;
+};
+
+function getRowTestId(remainder: boolean, rowTestId?: string): string {
+  return rowTestId ?? (remainder ? 'flow-artifact-preview-remainder-row' : 'flow-artifact-preview-row');
+}
+
+function getRowEditReturnFocusSelector(rowId: string): string {
+  return `[data-testid="public-flow-artifact-preview-row-edit"][data-item-id="${CSS.escape(rowId)}"]`;
+}
+
+function RowEditButton({
+  row,
+  onRowEdit,
+}: {
+  row: FlowExperienceProjectionRow;
+  onRowEdit?: ShapeRowProps['onRowEdit'];
+}) {
+  if (!onRowEdit) return null;
+  return (
+    <button
+      type="button"
+      data-flow-row-slot="secondary-action"
+      data-testid="public-flow-artifact-preview-row-edit"
+      data-item-id={row.id}
+      className="min-h-[var(--flowme-control-height)] shrink-0 rounded-[var(--flowme-radius-control)] px-2 text-xs font-semibold text-[var(--flowme-text-secondary)] transition hover:bg-[var(--flowme-soft)] hover:text-[var(--flowme-text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)]"
+      aria-label={`${row.title} 내용과 날짜 수정`}
+      onClick={() => onRowEdit(row, getRowEditReturnFocusSelector(row.id))}
+    >
+      수정
+    </button>
+  );
+}
+
+function FlowExecutionRows({ rows, remainder = false, rowTestId, onRowEdit }: ShapeRowProps) {
   return (
     <ol data-testid="flow-artifact-execution-preview">
       {rows.map((row, index) => (
         <li
           key={row.id}
-          data-testid={remainder ? 'flow-artifact-preview-remainder-row' : 'flow-artifact-preview-row'}
+          data-testid={getRowTestId(remainder, rowTestId)}
           data-item-id={row.id}
-          className="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] gap-2.5 border-t border-[var(--flowme-border)] px-2 py-3"
+          data-flow-row-mode="preview"
+          data-completion-control="false"
+          data-p35-r9-marker="P35-R9-SHARED-EXECUTION-ROW"
+          data-p35-r9-preview-marker="P35-R9-PREVIEW-NOT-COMPLETION"
+          className="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)_auto] items-center gap-2.5 border-t border-[var(--flowme-border)] px-2 py-3"
         >
-          <span aria-hidden="true" className="flex h-7 w-7 items-center justify-center rounded-md bg-[var(--flowme-action-soft)] text-[10px] font-bold text-[var(--flowme-action-strong)]">
+          <span data-flow-row-slot="marker" aria-hidden="true" className="flex h-7 w-7 items-center justify-center rounded-md bg-[var(--flowme-action-soft)] text-[10px] font-bold text-[var(--flowme-action-strong)]">
             {index + 1}
           </span>
-          <span className="min-w-0">
-            <span className="block break-keep text-sm font-semibold leading-5 text-[var(--flowme-text)]">{row.title}</span>
+          <span className="min-w-0" data-flow-row-slot="content">
+            <span data-flow-row-slot="title" className="block break-words text-sm font-semibold leading-5 text-[var(--flowme-text)]">{row.title}</span>
             {getRowMeta(row).length > 0 ? (
-              <span className="mt-1 block text-[11px] font-medium text-[var(--flowme-text-secondary)]">{getRowMeta(row).join(' · ')}</span>
+              <span data-flow-row-slot="meta" className="mt-1 block text-[11px] font-medium text-[var(--flowme-text-secondary)]">{getRowMeta(row).join(' · ')}</span>
             ) : null}
           </span>
+          <RowEditButton row={row} onRowEdit={onRowEdit} />
         </li>
       ))}
     </ol>
   );
 }
 
-function CalendarRows({ rows, remainder = false }: { rows: FlowExperienceProjectionRow[]; remainder?: boolean }) {
+function CalendarRows({ rows, remainder = false, rowTestId, onRowEdit }: ShapeRowProps) {
   const dateGroups = Array.from(rows.reduce((groups, row) => {
     const date = row.schedule.date ?? '날짜 없음';
     groups.set(date, [...(groups.get(date) ?? []), row]);
@@ -66,74 +110,95 @@ function CalendarRows({ rows, remainder = false }: { rows: FlowExperienceProject
   return (
     <div data-testid="flow-artifact-calendar-preview" className="border-t border-[var(--flowme-border)]">
       {dateGroups.map(([date, groupRows]) => (
-        <section key={date} className="grid grid-cols-[4.25rem_minmax(0,1fr)] border-b border-[var(--flowme-border)] last:border-b-0">
-          <div className="bg-[var(--flowme-surface-subtle)] px-2 py-3 text-center">
-            <span className="block text-lg font-semibold text-[var(--flowme-text)]">{date === '날짜 없음' ? '-' : date.slice(8)}</span>
-            <span className="mt-0.5 block text-[10px] font-semibold text-[var(--flowme-text-tertiary)]">
-              {date === '날짜 없음' ? date : formatKoreanShortDate(date, { includeWeekday: true }).replace(/^\d+월 \d+일\s*/u, '')}
-            </span>
-          </div>
+        <FlowDateRailGroup
+          key={date}
+          date={date === '날짜 없음' ? undefined : date}
+          undatedLabel="날짜 없음"
+        >
           <ol className="min-w-0">
             {groupRows.map((row) => (
               <li
                 key={row.id}
-                data-testid={remainder ? 'flow-artifact-preview-remainder-row' : 'flow-artifact-preview-row'}
+                data-testid={getRowTestId(remainder, rowTestId)}
                 data-item-id={row.id}
-                className="border-b border-[var(--flowme-border)] px-3 py-2.5 last:border-b-0"
+                data-flow-row-mode="preview"
+                data-completion-control="false"
+                data-p35-r9-marker="P35-R9-SHARED-EXECUTION-ROW"
+                data-p35-r9-preview-marker="P35-R9-PREVIEW-NOT-COMPLETION"
+                className="flex min-w-0 items-center justify-between gap-2 border-b border-[var(--flowme-border)] px-3 py-2.5 last:border-b-0"
               >
-                <span className="block break-keep text-sm font-semibold leading-5 text-[var(--flowme-text)]">{row.title}</span>
-                {row.section ? <span className="mt-0.5 block text-[11px] text-[var(--flowme-text-secondary)]">{row.section}</span> : null}
+                <span className="min-w-0" data-flow-row-slot="content">
+                  <span data-flow-row-slot="title" className="block break-words text-sm font-semibold leading-5 text-[var(--flowme-text)]">{row.title}</span>
+                  {row.section ? <span data-flow-row-slot="meta" className="mt-0.5 block text-[11px] text-[var(--flowme-text-secondary)]">{row.section}</span> : null}
+                </span>
+                <RowEditButton row={row} onRowEdit={onRowEdit} />
               </li>
             ))}
           </ol>
-        </section>
+        </FlowDateRailGroup>
       ))}
     </div>
   );
 }
 
-function ChecklistRows({ rows, remainder = false }: { rows: FlowExperienceProjectionRow[]; remainder?: boolean }) {
+function ChecklistRows({ rows, remainder = false, rowTestId, onRowEdit }: ShapeRowProps) {
   return (
     <ul data-testid="flow-artifact-checklist-preview">
       {rows.map((row) => (
         <li
           key={row.id}
-          data-testid={remainder ? 'flow-artifact-preview-remainder-row' : 'flow-artifact-preview-row'}
+          data-testid={getRowTestId(remainder, rowTestId)}
           data-item-id={row.id}
+          data-flow-row-mode="preview"
+          data-completion-control="false"
+          data-p35-r9-marker="P35-R9-SHARED-EXECUTION-ROW"
+          data-p35-r9-preview-marker="P35-R9-PREVIEW-NOT-COMPLETION"
           className="flex min-w-0 items-start gap-3 border-t border-[var(--flowme-border)] px-2 py-3"
         >
-          <span aria-hidden="true" className="mt-0.5 h-5 w-5 shrink-0 rounded-[4px] border-2 border-[var(--flowme-border-strong)] bg-white" />
-          <span className="min-w-0 flex-1">
-            <span className="block break-keep text-sm font-semibold leading-5 text-[var(--flowme-text)]">{row.title}</span>
-            {getRowMeta(row).length > 0 ? <span className="mt-0.5 block text-[11px] text-[var(--flowme-text-secondary)]">{getRowMeta(row).join(' · ')}</span> : null}
+          <span data-flow-row-slot="marker" aria-hidden="true" className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-[4px] bg-[var(--flowme-soft)] text-[10px] font-semibold text-[var(--flowme-text-tertiary)]">·</span>
+          <span className="min-w-0 flex-1" data-flow-row-slot="content">
+            <span data-flow-row-slot="title" className="block break-words text-sm font-semibold leading-5 text-[var(--flowme-text)]">{row.title}</span>
+            {getRowMeta(row).length > 0 ? <span data-flow-row-slot="meta" className="mt-0.5 block text-[11px] text-[var(--flowme-text-secondary)]">{getRowMeta(row).join(' · ')}</span> : null}
           </span>
+          <RowEditButton row={row} onRowEdit={onRowEdit} />
         </li>
       ))}
     </ul>
   );
 }
 
-function SheetRows({ rows, remainder = false }: { rows: FlowExperienceProjectionRow[]; remainder?: boolean }) {
+function SheetRows({ rows, remainder = false, rowTestId, onRowEdit }: ShapeRowProps) {
   return (
     <div data-testid="flow-artifact-sheet-preview" className="border-t border-[var(--flowme-border)]">
-      <div className="hidden grid-cols-[2.5rem_minmax(0,1fr)_7rem] bg-[var(--flowme-surface-subtle)] px-2 py-2 text-[10px] font-semibold text-[var(--flowme-text-tertiary)] sm:grid">
-        <span>순서</span><span>항목</span><span>날짜</span>
+      <div className={`hidden bg-[var(--flowme-surface-subtle)] px-2 py-2 text-[10px] font-semibold text-[var(--flowme-text-tertiary)] sm:grid ${
+        onRowEdit ? 'grid-cols-[2.5rem_minmax(0,1fr)_7rem_auto]' : 'grid-cols-[2.5rem_minmax(0,1fr)_7rem]'
+      }`}>
+        <span>순서</span><span>항목</span><span>날짜</span>{onRowEdit ? <span className="sr-only">수정</span> : null}
       </div>
       <ol>
         {rows.map((row, index) => (
           <li
             key={row.id}
-            data-testid={remainder ? 'flow-artifact-preview-remainder-row' : 'flow-artifact-preview-row'}
+            data-testid={getRowTestId(remainder, rowTestId)}
             data-item-id={row.id}
-            className="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] gap-2 border-t border-[var(--flowme-border)] px-2 py-2.5 first:border-t-0 sm:grid-cols-[2.5rem_minmax(0,1fr)_7rem]"
+            data-flow-row-mode="preview"
+            data-completion-control="false"
+            data-p35-r9-marker="P35-R9-SHARED-EXECUTION-ROW"
+            data-p35-r9-preview-marker="P35-R9-PREVIEW-NOT-COMPLETION"
+            className={`grid min-w-0 items-center gap-2 border-t border-[var(--flowme-border)] px-2 py-2.5 first:border-t-0 ${
+              onRowEdit
+                ? 'grid-cols-[2rem_minmax(0,1fr)_auto] sm:grid-cols-[2.5rem_minmax(0,1fr)_7rem_auto]'
+                : 'grid-cols-[2rem_minmax(0,1fr)] sm:grid-cols-[2.5rem_minmax(0,1fr)_7rem]'
+            }`}
           >
-            <span className="text-xs font-semibold text-[var(--flowme-text-tertiary)]">{index + 1}</span>
-            <span className="min-w-0">
-              <span className="block break-keep text-sm font-semibold text-[var(--flowme-text)]">{row.title}</span>
-              {row.memo ? <span className="mt-0.5 line-clamp-1 block text-[11px] text-[var(--flowme-text-secondary)]">{row.memo}</span> : null}
-              <span className="mt-0.5 block text-[11px] text-[var(--flowme-text-secondary)] sm:hidden">{row.schedule.date ? getDateLabel(row) : '날짜 없음'}</span>
+            <span data-flow-row-slot="marker" className="text-xs font-semibold text-[var(--flowme-text-tertiary)]">{index + 1}</span>
+            <span className="min-w-0" data-flow-row-slot="content">
+              <span data-flow-row-slot="title" className="block break-words text-sm font-semibold text-[var(--flowme-text)]">{row.title}</span>
+              {row.memo ? <span data-flow-row-slot="meta" className="mt-0.5 line-clamp-1 block text-[11px] text-[var(--flowme-text-secondary)]">{row.memo}</span> : null}
+              <span data-flow-row-slot="meta" className="mt-0.5 block text-[11px] text-[var(--flowme-text-secondary)] sm:hidden">{row.schedule.date ? getDateLabel(row) : '날짜 없음'}</span>
             </span>
             <span className="hidden text-xs text-[var(--flowme-text-secondary)] sm:block">{row.schedule.date ? getDateLabel(row) : '날짜 없음'}</span>
+            <RowEditButton row={row} onRowEdit={onRowEdit} />
           </li>
         ))}
       </ol>
@@ -141,23 +206,30 @@ function SheetRows({ rows, remainder = false }: { rows: FlowExperienceProjection
   );
 }
 
-function MemoRows({ rows, remainder = false }: { rows: FlowExperienceProjectionRow[]; remainder?: boolean }) {
+function MemoRows({ rows, remainder = false, rowTestId, onRowEdit }: ShapeRowProps) {
   return (
     <div data-testid="flow-artifact-memo-preview" className="border-t border-[var(--flowme-border)] px-2 py-1">
       {rows.map((row) => (
         <section
           key={row.id}
-          data-testid={remainder ? 'flow-artifact-preview-remainder-row' : 'flow-artifact-preview-row'}
+          data-testid={getRowTestId(remainder, rowTestId)}
           data-item-id={row.id}
+          data-flow-row-mode="preview"
+          data-completion-control="false"
+          data-p35-r9-marker="P35-R9-SHARED-EXECUTION-ROW"
+          data-p35-r9-preview-marker="P35-R9-PREVIEW-NOT-COMPLETION"
           className="border-b border-[var(--flowme-border)] px-1 py-3 last:border-b-0"
         >
           <div className="flex items-start justify-between gap-3">
-            <h3 className="break-keep text-sm font-semibold leading-5 text-[var(--flowme-text)]">{row.title}</h3>
-            {row.role === 'resource' || row.role === 'reference' ? <span className="shrink-0 text-[10px] font-semibold text-[var(--flowme-action)]">자료</span> : null}
-            {row.role === 'warning' ? <span className="shrink-0 text-[10px] font-semibold text-[var(--flowme-danger-strong)]">주의</span> : null}
+            <h3 data-flow-row-slot="title" className="break-words text-sm font-semibold leading-5 text-[var(--flowme-text)]">{row.title}</h3>
+            <span className="flex shrink-0 items-center gap-1">
+              {row.role === 'resource' || row.role === 'reference' ? <span className="text-[10px] font-semibold text-[var(--flowme-action)]">자료</span> : null}
+              {row.role === 'warning' ? <span className="text-[10px] font-semibold text-[var(--flowme-danger-strong)]">주의</span> : null}
+              <RowEditButton row={row} onRowEdit={onRowEdit} />
+            </span>
           </div>
           {row.memo || row.description ? (
-            <p className="mt-1 line-clamp-3 text-xs leading-5 text-[var(--flowme-text-secondary)]">{row.memo || row.description}</p>
+            <p data-flow-row-slot="meta" className="mt-1 line-clamp-3 text-xs leading-5 text-[var(--flowme-text-secondary)]">{row.memo || row.description}</p>
           ) : null}
           {getRowMeta(row).length > 0 ? <p className="mt-1 text-[11px] text-[var(--flowme-text-tertiary)]">{getRowMeta(row).join(' · ')}</p> : null}
         </section>
@@ -166,15 +238,35 @@ function MemoRows({ rows, remainder = false }: { rows: FlowExperienceProjectionR
   );
 }
 
-function renderShapeRows(shape: FlowExperienceShape, rows: FlowExperienceProjectionRow[], remainder = false) {
-  if (shape === 'calendar') return <CalendarRows rows={rows} remainder={remainder} />;
-  if (shape === 'checklist') return <ChecklistRows rows={rows} remainder={remainder} />;
-  if (shape === 'sheet') return <SheetRows rows={rows} remainder={remainder} />;
-  if (shape === 'memo') return <MemoRows rows={rows} remainder={remainder} />;
-  return <FlowExecutionRows rows={rows} remainder={remainder} />;
+function renderShapeRows(
+  shape: FlowExperienceShape,
+  rows: FlowExperienceProjectionRow[],
+  remainder = false,
+  rowTestId?: string,
+  onRowEdit?: ShapeRowProps['onRowEdit'],
+) {
+  if (shape === 'calendar') return <CalendarRows rows={rows} remainder={remainder} rowTestId={rowTestId} onRowEdit={onRowEdit} />;
+  if (shape === 'checklist') return <ChecklistRows rows={rows} remainder={remainder} rowTestId={rowTestId} onRowEdit={onRowEdit} />;
+  if (shape === 'sheet') return <SheetRows rows={rows} remainder={remainder} rowTestId={rowTestId} onRowEdit={onRowEdit} />;
+  if (shape === 'memo') return <MemoRows rows={rows} remainder={remainder} rowTestId={rowTestId} onRowEdit={onRowEdit} />;
+  return <FlowExecutionRows rows={rows} remainder={remainder} rowTestId={rowTestId} onRowEdit={onRowEdit} />;
 }
 
-function ShapeRows({ shape, rows }: { shape: FlowExperienceShape; rows: FlowExperienceProjectionRow[] }) {
+function ShapeRows({
+  shape,
+  rows,
+  previewRowLimit,
+  rowTestId,
+  expandTestId,
+  onRowEdit,
+}: {
+  shape: FlowExperienceShape;
+  rows: FlowExperienceProjectionRow[];
+  previewRowLimit: number;
+  rowTestId?: string;
+  expandTestId?: string;
+  onRowEdit?: ShapeRowProps['onRowEdit'];
+}) {
   if (rows.length === 0) {
     return (
       <p data-testid="flow-artifact-empty" className="border-t border-[var(--flowme-border)] px-3 py-5 text-sm leading-6 text-[var(--flowme-text-secondary)]">
@@ -183,32 +275,68 @@ function ShapeRows({ shape, rows }: { shape: FlowExperienceShape; rows: FlowExpe
     );
   }
 
-  const visibleRows = rows.slice(0, 6);
-  const remainingRows = rows.slice(6);
+  const visibleRows = rows.slice(0, previewRowLimit);
+  const remainingRows = rows.slice(previewRowLimit);
   return (
     <>
-      {renderShapeRows(shape, visibleRows)}
+      {renderShapeRows(shape, visibleRows, false, rowTestId, onRowEdit)}
       {remainingRows.length > 0 ? (
         <details className="border-t border-[var(--flowme-border)]">
-          <summary className="flex min-h-[var(--flowme-control-height)] cursor-pointer list-none items-center justify-between gap-3 px-2 text-xs font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]">
+          <summary
+            data-testid={expandTestId}
+            className="flex min-h-[var(--flowme-control-height)] cursor-pointer list-none items-center justify-between gap-3 px-2 text-xs font-semibold text-[var(--flowme-action)] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]"
+          >
             <span>나머지 {remainingRows.length}개 보기</span>
             <span aria-hidden="true">⌄</span>
           </summary>
-          {renderShapeRows(shape, remainingRows, true)}
+          {renderShapeRows(shape, remainingRows, true, rowTestId, onRowEdit)}
         </details>
       ) : null}
     </>
   );
 }
 
+export function getFlowArtifactResultSummary(rows: FlowExperienceProjectionRow[]): string {
+  const dates = Array.from(new Set(rows.flatMap((row) => row.schedule.date ? [row.schedule.date] : []))).sort();
+  const undatedCount = rows.filter((row) => !row.schedule.date).length;
+  const hasRecurrence = rows.some((row) => row.schedule.state === 'recurring');
+  const dateLabel = dates.length === 0
+    ? '날짜 없음'
+    : dates.length === 1
+      ? formatKoreanShortDate(dates[0], { includeWeekday: true })
+      : `${formatKoreanShortDate(dates[0])} - ${formatKoreanShortDate(dates[dates.length - 1])}`;
+  const parts = [
+    dateLabel,
+    dates.length > 0 && undatedCount > 0 ? `날짜 없음 ${undatedCount}개` : '',
+    hasRecurrence ? '반복 일정' : '',
+  ].filter(Boolean);
+  return parts.join(' · ');
+}
+
 export function FlowArtifactDataPreview({
   projection,
   selectedShape: controlledSelectedShape,
   onSelectedShapeChange,
+  showShapeChoices = true,
+  showRecommendationReason = true,
+  previewRowLimit = 6,
+  testId = 'flow-artifact-data-preview',
+  rowTestId,
+  expandTestId,
+  resultSummary,
+  onRowEdit,
 }: {
   projection: FlowExperienceProjection;
   selectedShape?: FlowExperienceShape;
   onSelectedShapeChange?: (shape: FlowExperienceShape) => void;
+  showShapeChoices?: boolean;
+  showRecommendationReason?: boolean;
+  previewRowLimit?: number;
+  testId?: string;
+  rowTestId?: string;
+  expandTestId?: string;
+  resultSummary?: string;
+  onRowEdit?: (row: FlowExperienceProjectionRow, returnFocusSelector: string) => void;
 }) {
   const recommendation = buildArtifactRecommendationVM(projection);
   const availableShapes = recommendation.visible.map((candidate) => candidate.shape);
@@ -234,10 +362,11 @@ export function FlowArtifactDataPreview({
 
   return (
     <section
-      data-testid="flow-artifact-data-preview"
+      data-testid={testId}
       data-primary-shape={projection.primaryShape}
       data-selected-shape={selectedShape}
       data-p29-marker="P29-ARTIFACT-RECOMMENDATION"
+      data-p35-marker="P35-PUBLIC-RESULT-FIRST"
       data-flow-anatomy="artifact-result"
       className="min-w-0 border-y border-[var(--flowme-border)] bg-[var(--flowme-surface)]"
       aria-labelledby="flow-artifact-data-preview-title"
@@ -248,13 +377,19 @@ export function FlowArtifactDataPreview({
           <h2 id="flow-artifact-data-preview-title" className="mt-0.5 text-sm font-semibold text-[var(--flowme-text)]">
             {selected.label} · {selected.count}개
           </h2>
-          {selectedRecommendation ? (
+          <p
+            data-testid="flow-artifact-result-summary"
+            className="mt-1 text-[11px] font-medium text-[var(--flowme-text-secondary)]"
+          >
+            {resultSummary ?? getFlowArtifactResultSummary(selected.rows)}
+          </p>
+          {showRecommendationReason && selectedRecommendation ? (
             <p data-testid="flow-artifact-recommendation-reason" className="mt-1 text-[11px] font-medium text-[var(--flowme-text-secondary)]">
               {selectedRecommendation.reason} · {selectedRecommendation.lossSummary}
             </p>
           ) : null}
         </div>
-        {availableShapes.length > 1 ? (
+        {showShapeChoices && availableShapes.length > 1 ? (
           <div role="group" aria-label="결과 형태" className="flex max-w-full flex-wrap gap-1">
             {availableShapes.map((shape) => {
               const candidate = projection.shapes[shape];
@@ -286,7 +421,14 @@ export function FlowArtifactDataPreview({
           </div>
         ) : null}
       </header>
-      <ShapeRows shape={selectedShape} rows={selected.rows} />
+      <ShapeRows
+        shape={selectedShape}
+        rows={selected.rows}
+        previewRowLimit={previewRowLimit}
+        rowTestId={rowTestId}
+        expandTestId={expandTestId}
+        onRowEdit={onRowEdit}
+      />
     </section>
   );
 }

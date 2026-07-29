@@ -1,30 +1,18 @@
 'use client';
 
-import Link from 'next/link';
-import { useEffect, useRef, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 import type { PostSaveDecisionMetric } from '@/lib/flow/post-save-decision-hub';
-import { FLOW_EXECUTION_ACTIONS } from '@/lib/flow/execution-ui-contract';
 import { FlowReceipt } from './FlowExecutionPrimitives';
-import {
-  FLOW_UI_PRIMARY_ACTION_CLASS,
-  FLOW_UI_SECONDARY_ACTION_CLASS,
-  FLOW_UI_TERTIARY_ACTION_CLASS,
-} from './flow-ui';
+import { FLOW_UI_PRIMARY_ACTION_CLASS } from './flow-ui';
 
 type PostSaveDecisionHubProps = {
   title: string;
   receiptSummary: string;
   metrics: PostSaveDecisionMetric[];
   held: boolean;
-  canStart: boolean;
-  exportLabel: string;
-  exportExpanded: boolean;
-  onStart: () => void;
   onViewFlow: () => void;
-  onOpenExport: () => void;
   children: ReactNode;
-  exportContent?: ReactNode;
 };
 
 export function PostSaveDecisionHub({
@@ -32,30 +20,14 @@ export function PostSaveDecisionHub({
   receiptSummary,
   metrics,
   held,
-  canStart,
-  exportLabel,
-  exportExpanded,
-  onStart,
   onViewFlow,
-  onOpenExport,
   children,
-  exportContent,
 }: PostSaveDecisionHubProps) {
-  const exportButtonRef = useRef<HTMLButtonElement | null>(null);
-  const exportRegionRef = useRef<HTMLDivElement | null>(null);
-  const previousExportExpandedRef = useRef(false);
-
-  useEffect(() => {
-    if (exportExpanded) {
-      exportRegionRef.current?.focus({ preventScroll: false });
-    } else if (previousExportExpandedRef.current) {
-      exportButtonRef.current?.focus({ preventScroll: true });
-    }
-    previousExportExpandedRef.current = exportExpanded;
-  }, [exportExpanded]);
-
   return (
-    <section className="mb-5 overflow-hidden rounded-lg border border-[var(--flowme-border)] bg-[var(--flowme-surface)] shadow-[0_1px_0_rgba(27,26,23,0.03)]">
+    <section
+      data-p35-marker="P35-R3-LEGACY-HANDOFF-SINGLE-ACTION"
+      className="mb-5 overflow-hidden rounded-lg border border-[var(--flowme-border)] bg-[var(--flowme-surface)] shadow-[0_1px_0_rgba(27,26,23,0.03)]"
+    >
       <FlowReceipt
         data-testid="my-flow-post-save-receipt"
         role="status"
@@ -107,45 +79,15 @@ export function PostSaveDecisionHub({
           className="border-b border-[var(--flowme-border)] px-4 py-3 sm:px-5"
         >
           <p className="sr-only">다음 행동</p>
-          <div className="grid gap-2 sm:grid-cols-2">
-            {canStart ? (
-              <button
-                type="button"
-                data-testid="my-flow-post-save-open-first"
-                data-action-priority="primary"
-                className={`${FLOW_UI_PRIMARY_ACTION_CLASS} w-full`}
-                onClick={onStart}
-              >
-                {FLOW_EXECUTION_ACTIONS.startFirstItem.label}
-              </button>
-            ) : null}
+          <div className="sm:max-w-md">
             <button
               type="button"
               data-testid="my-flow-post-save-view-flow"
-              data-action-priority="secondary"
-              className={`${FLOW_UI_SECONDARY_ACTION_CLASS} w-full`}
+              data-action-priority="primary"
+              className={`${FLOW_UI_PRIMARY_ACTION_CLASS} w-full`}
               onClick={onViewFlow}
             >
-              {FLOW_EXECUTION_ACTIONS.viewWholeFlow.label}
-            </button>
-          </div>
-          <div className="mt-2 grid grid-cols-2 gap-1 border-t border-[var(--flowme-border)] pt-2">
-            <Link
-              data-testid="my-flow-post-save-open-calendar"
-              className={`${FLOW_UI_TERTIARY_ACTION_CLASS} w-full`}
-              href="/calendar"
-            >
-              {FLOW_EXECUTION_ACTIONS.openCalendar.label}
-            </Link>
-            <button
-              ref={exportButtonRef}
-              type="button"
-              data-testid="my-flow-post-save-open-export"
-              aria-expanded={exportExpanded}
-              className={`${FLOW_UI_TERTIARY_ACTION_CLASS} w-full`}
-              onClick={onOpenExport}
-            >
-              {exportLabel}
+              저장한 전체 Flow 보기
             </button>
           </div>
         </div>
@@ -158,16 +100,6 @@ export function PostSaveDecisionHub({
         </div>
         {children}
       </div>
-      {exportContent ? (
-        <div
-          ref={exportRegionRef}
-          data-testid="my-flow-post-save-export-region"
-          tabIndex={-1}
-          className="border-t border-[var(--flowme-border)] px-4 pb-4 outline-none sm:px-5"
-        >
-          {exportContent}
-        </div>
-      ) : null}
     </section>
   );
 }

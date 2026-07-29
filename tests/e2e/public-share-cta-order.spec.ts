@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
 import { openPublicDetailWorkspaceForDeepInspection } from './helpers/open-public-detail-workspace';
 import { openSavedPublicFlow, savePublicFlow } from './helpers/public-flow-save';
 
@@ -264,16 +265,25 @@ test.describe('public share shell secondary browse order', () => {
   }
 
   for (const route of APPROVED_PUBLIC_SHARE_ROUTES) {
-    test(`${route} keeps export as a flow-level secondary action`, async ({ page }) => {
+    test(`${route} keeps eligible export as an optional flow-level secondary action`, async ({ page }) => {
       await page.setViewportSize({ width: 390, height: 844 });
       await page.goto(route);
-      await page.getByTestId('public-flow-export-secondary-toggle').click();
-      await expect(page.getByTestId('public-flow-export-format-option').first()).toBeVisible();
+      const exportEntry = page.getByTestId('public-flow-export-secondary-entry');
+      const exportEntryCount = await exportEntry.count();
+      expect(exportEntryCount).toBeLessThanOrEqual(1);
+      if (exportEntryCount === 1) {
+        await exportEntry.getByTestId('public-flow-export-secondary-toggle').click();
+        await expect(page.getByTestId('public-flow-export-format-option').first()).toBeVisible();
+      }
 
       const hierarchy = await collectPublicFlowUnitHierarchy(page);
-      expect(hierarchy.exportSecondaryEntryCount).toBe(1);
-      expect(hierarchy.exportSecondaryEntryLabels[0]).toMatch(/Flow|파일|가져가기/);
-      expect(hierarchy.exportFormatOptionCount).toBeGreaterThanOrEqual(2);
+      expect(hierarchy.exportSecondaryEntryCount).toBe(exportEntryCount);
+      if (exportEntryCount === 1) {
+        expect(hierarchy.exportSecondaryEntryLabels[0]).toMatch(/Flow|파일|가져가기/);
+        expect(hierarchy.exportFormatOptionCount).toBeGreaterThanOrEqual(1);
+      } else {
+        expect(hierarchy.exportFormatOptionCount).toBe(0);
+      }
       expect(hierarchy.itemLevelExportLikeLabelCount).toBe(0);
       expect(hierarchy.preSavePreviewRowCount).toBeGreaterThan(0);
     });
@@ -317,7 +327,7 @@ test.describe('public share shell secondary browse order', () => {
     await page.reload();
 
     await expect(page.getByTestId('public-flow-primary-setup')).toHaveCount(0);
-    await expect(page.getByTestId('flow-artifact-data-preview')).toBeVisible();
+    await expect(page.getByTestId('public-flow-artifact-preview')).toBeVisible();
 
     const mobileSave = page.getByTestId('public-flow-mobile-save-cta');
     const saveButton = mobileSave.getByRole('button', { name: PUBLIC_START_ACTION_PATTERN });
@@ -326,20 +336,20 @@ test.describe('public share shell secondary browse order', () => {
     await expect(saveButton).toBeFocused();
     const receipt = await savePublicFlow(page, saveButton);
     await openSavedPublicFlow(page, receipt);
-    await expect(page.getByTestId('my-flow-post-save-panel')).toBeVisible();
-    await expect(page.getByTestId('my-flow-workspace')).toHaveCount(0);
-    await page.getByTestId('my-flow-post-save-open-first').click();
-    await expect(page.getByTestId('my-flow-workspace')).toBeVisible();
+    await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
+    const workspace = await openMyFlowLibraryFlow(page, 'new-car-delivery-check', 'execute');
 
-    const nowSection = page.getByTestId('my-flow-anytime-section');
-    await expect(nowSection).toBeVisible();
-    await expect(nowSection).toContainText('날짜 없는 할 일');
+    const execution = workspace.getByTestId('my-flow-workspace-execute');
+    await expect(execution).toBeVisible();
+    await expect(execution).toContainText('이어서 기록할 행');
+    await expect(execution).toContainText('현재 행');
+    await expect(execution).toContainText('다음 행');
 
-    const postSaveComplete = nowSection.getByTestId('my-flow-task-complete-control').first();
+    const postSaveComplete = execution.getByTestId('my-flow-task-complete-control').first();
     await expect(postSaveComplete).toBeVisible();
     await expect(postSaveComplete).toHaveAttribute('type', 'checkbox');
     await expect(postSaveComplete).toHaveAttribute('aria-label', /완료/);
-    await expect(nowSection.getByRole('button', { name: /^완료$/ })).toHaveCount(0);
+    await expect(execution.getByRole('button', { name: /^완료$/ })).toHaveCount(0);
 
     await postSaveComplete.click();
     await expect.poll(() => page.evaluate(() =>

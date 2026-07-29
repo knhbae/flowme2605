@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-07-26",
+  "baselineSha": "2c951633d13adb0aab3ddd9d3cdddf506d9e97cd",
+  "branch": "codex/p35-mece-ux-reset",
+  "acceptanceMarker": "P35-ENTRY-ROUTER-3TAB",
+  "verdict": "pass",
+  "observedUserCount": 0,
+  "routes": [
+    {
+      "route": "/",
+      "fixture": "empty_storage",
+      "viewport": "390x844",
+      "expectedDestination": "/flows",
+      "actualDestination": "/flows",
+      "redirectMethod": "replace",
+      "homeSurfaceVisibleCount": 0,
+      "evidenceKind": "current_browser"
+    },
+    {
+      "route": "/",
+      "fixture": "one_valid_saved_flow",
+      "viewport": "390x844",
+      "expectedDestination": "/my",
+      "actualDestination": "/my",
+      "redirectMethod": "replace",
+      "savedRecordMutated": false,
+      "evidenceKind": "current_browser"
+    },
+    {
+      "route": "/flows",
+      "fixture": "direct",
+      "viewport": "1024x768",
+      "ariaCurrentLabel": "Flow 찾기",
+      "evidenceKind": "current_browser"
+    },
+    {
+      "route": "/calendar",
+      "fixture": "direct",
+      "viewport": "1024x768",
+      "ariaCurrentLabel": "캘린더",
+      "evidenceKind": "current_browser"
+    },
+    {
+      "route": "/my",
+      "fixture": "direct",
+      "viewport": "1024x768",
+      "ariaCurrentLabel": "내 Flow",
+      "evidenceKind": "current_browser"
+    }
+  ],
+  "markers": {
+    "primaryNavigationItemCount": 3,
+    "homeNavigationItemCount": 0,
+    "entryRouterInteractiveControlCount": 0,
+    "entryRouterStorageWriteCount": 0,
+    "newStorageKeyCount": 0,
+    "migrationCount": 0,
+    "horizontalOverflowCount": 0,
+    "fixedNavigationOverlapCount": 0,
+    "consoleErrorCount": 0,
+    "pageErrorCount": 0,
+    "redirectLoopCount": 0,
+    "keyboardNavigationOrder": [
+      "Flow 찾기",
+      "캘린더",
+      "내 Flow"
+    ]
+  },
+  "screenshots": [
+    "screenshots/p35-01-entry-empty-390.png",
+    "screenshots/p35-01-entry-saved-390.png",
+    "screenshots/p35-01-nav-1024.png",
+    "screenshots/p35-01-nav-1440.png"
+  ],
+  "verification": {
+    "docsCheck": "pass",
+    "unit": {
+      "passed": 589,
+      "failed": 0
+    },
+    "build": "pass",
+    "buildIdPresent": true,
+    "p35TargetedE2e": {
+      "passed": 4,
+      "failed": 0
+    },
+    "relatedRegressionE2e": {
+      "passed": 45,
+      "failed": 0
+    },
+    "diffCheck": "pass"
+  },
+  "publishState": {
+    "committed": false,
+    "pushed": false,
+    "pullRequest": false,
+    "merged": false,
+    "deployed": false
+  }
+}

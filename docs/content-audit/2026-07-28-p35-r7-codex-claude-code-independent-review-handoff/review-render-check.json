@@ -1,0 +1,46 @@
+{
+  "generatedAt": "2026-07-27T23:51:21.950Z",
+  "document": "review.html",
+  "browser": "Microsoft Edge via Playwright",
+  "results": [
+    {
+      "viewport": "390x844",
+      "horizontalOverflow": 0,
+      "imageCount": 34,
+      "brokenImageCount": 0,
+      "anchorCount": 57,
+      "unnamedInteractiveCount": 0,
+      "mainCount": 1,
+      "h1Count": 1,
+      "consolePageErrorCount": 0
+    },
+    {
+      "viewport": "1024x768",
+      "horizontalOverflow": 0,
+      "imageCount": 34,
+      "brokenImageCount": 0,
+      "anchorCount": 57,
+      "unnamedInteractiveCount": 0,
+      "mainCount": 1,
+      "h1Count": 1,
+      "consolePageErrorCount": 0
+    },
+    {
+      "viewport": "1440x900",
+      "horizontalOverflow": 0,
+      "imageCount": 34,
+      "brokenImageCount": 0,
+      "anchorCount": 57,
+      "unnamedInteractiveCount": 0,
+      "mainCount": 1,
+      "h1Count": 1,
+      "consolePageErrorCount": 0
+    }
+  ],
+  "screenshots": [
+    "output/playwright/p35-r7-independent-review-handoff-390.png",
+    "output/playwright/p35-r7-independent-review-handoff-1024.png",
+    "output/playwright/p35-r7-independent-review-handoff-1440.png"
+  ],
+  "observedUserCount": 0
+}

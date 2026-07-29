@@ -1,0 +1,3392 @@
+{
+  "generatedAt": "2026-07-28T02:10:38.651Z",
+  "branch": "codex/p35-mece-ux-reset",
+  "head": "2c951633d13adb0aab3ddd9d3cdddf506d9e97cd",
+  "originMain": "2c951633d13adb0aab3ddd9d3cdddf506d9e97cd",
+  "entries": [
+    {
+      "status": " M",
+      "path": "app/calendar/page.tsx",
+      "size": 303,
+      "sha256": "c7d392184858aecda0530be5fb29399e5e443484c83f279df34b910bed20ed5d"
+    },
+    {
+      "status": " M",
+      "path": "app/page.tsx",
+      "size": 123,
+      "sha256": "369bfdcb5a4b7c678e25c1c0abd693044891f6b6988d6911958bb6c2bb22d317"
+    },
+    {
+      "status": " M",
+      "path": "components/flow/AppClient.tsx",
+      "size": 980393,
+      "sha256": "54fef9d00c35eb307efda718ced7ae253c461700f14bedae63eb3101c4099e4d"
+    },
+    {
+      "status": " M",
+      "path": "components/flow/ArtifactWorkbench.tsx",
+      "size": 155928,
+      "sha256": "9e845e4aab754db2434905d34014d1752bb65df6dff6bb9cb8aeb10db18ac778"
+    },
+    {
+      "status": " M",
+      "path": "components/flow/FlowArtifactDataPreview.tsx",
+      "size": 18455,
+      "sha256": "eddaec153b43e7890021e62e5b2c6367b1d5b7165ab1141f4c63d1ab4d99a35b"
+    },
+    {
+      "status": " M",
+      "path": "components/flow/FlowExecutionPrimitives.tsx",
+      "size": 15066,
+      "sha256": "d380fd12ae48226933fd8ccd76069185eb246087c848fef70758b56679a94885"
+    },
+    {
+      "status": " M",
+      "path": "components/flow/FlowExportPanel.tsx",
+      "size": 21695,
+      "sha256": "b83521f14f7e851a86cdc273c7bc3efdf36b2e95f19036a330d0738fc147f7ed"
+    },
+    {
+      "status": " M",
+      "path": "components/flow/FlowExportReceipt.tsx",
+      "size": 2411,
+      "sha256": "669974bf6fd96b191e287d4634291a5013c1d4eabe16f767ea20d6c698ff8558"
+    },
+    {
+      "status": " M",
+      "path": "components/flow/FlowSaveBeforeFrame.tsx",
+      "size": 9175,
+      "sha256": "ce6d47dcc7c30a7fcf3a0b0a3f3d4b6c78979730140d770394dfc8e6cef435ce"
+    },
+    {
+      "status": " M",
+      "path": "components/flow/PlatformNav.tsx",
+      "size": 5548,
+      "sha256": "458be29cdaaa4f7d64e1d0eb21094f2b70fc6d1e0d682968588d7a867bccb115"
+    },
+    {
+      "status": " M",
+      "path": "components/flow/PostSaveDecisionHub.tsx",
+      "size": 3998,
+      "sha256": "593f29adf934ba6233a63c3dca8fd419223a68407a8070c095c89c4dc8b96650"
+    },
+    {
+      "status": " M",
+      "path": "components/flow/SavedFlowReceiptFrame.tsx",
+      "size": 2754,
+      "sha256": "3fea2258cf4d65c23412efdf3a25f3f0b337d5d77be57731c88652741e7c472d"
+    },
+    {
+      "status": " M",
+      "path": "lib/flow/artifact-plan.test.ts",
+      "size": 11784,
+      "sha256": "dc269522ee1297e8be8bbb13de92c6224ffb6548fa906938edc0dfd80e4fe1ab"
+    },
+    {
+      "status": " M",
+      "path": "lib/flow/artifact-plan.ts",
+      "size": 12158,
+      "sha256": "2cc5de555edcaee9650269e0e0fab39fbd758a604571e2ebf745b66a19e10e94"
+    },
+    {
+      "status": " M",
+      "path": "lib/flow/artifact-recommendation.test.ts",
+      "size": 6173,
+      "sha256": "43940d5c2ca2e2829f64a8a38cb6d5cbda843943f795e0b8c9c6045650a93073"
+    },
+    {
+      "status": " M",
+      "path": "lib/flow/artifact-recommendation.ts",
+      "size": 11507,
+      "sha256": "3ecc081d5279d7c76a644936ade6ab7833f517bbc4d2b0efbac94b61162e004f"
+    },
+    {
+      "status": " M",
+      "path": "lib/flow/flow-experience-projection.test.ts",
+      "size": 7938,
+      "sha256": "0c3f48ea54479394d92b3d17c9164c6288ae7674bc427e4aa554f0095fb31116"
+    },
+    {
+      "status": " M",
+      "path": "lib/flow/my-flow-local-ia.test.ts",
+      "size": 3816,
+      "sha256": "19c2296b3657e0331c6b40ed00d374eb032f0ef5e736085469ba0995a757d169"
+    },
+    {
+      "status": " M",
+      "path": "lib/flow/my-flow-local-ia.ts",
+      "size": 3459,
+      "sha256": "1743a0434fedc36cc6f209c5f40360964cd1bb5604745e26015b879ab8e7f127"
+    },
+    {
+      "status": " M",
+      "path": "lib/flow/my-flow-workspace-presentation.test.ts",
+      "size": 4698,
+      "sha256": "c5a2a47bbc5c96917887a301fccd309f65e40094151a426182f5ba1ad6e3fe10"
+    },
+    {
+      "status": " M",
+      "path": "lib/flow/my-flow-workspace-presentation.ts",
+      "size": 4613,
+      "sha256": "41e6f8a64a48fbc90509a57a2ed7fd3b575c492efb25613b5d19e90dc7234c55"
+    },
+    {
+      "status": " M",
+      "path": "lib/flow/storage.test.ts",
+      "size": 162493,
+      "sha256": "21aeafddde7720a410c3f14405765d2e12aa5e706ef20d7e7ff9eeb7aae50f57"
+    },
+    {
+      "status": " M",
+      "path": "lib/flow/storage.ts",
+      "size": 76598,
+      "sha256": "d919194dcea8f33c1e7739a2ce6b7b2b24c469c3ae5ffc1f964f246a2ba589ae"
+    },
+    {
+      "status": " M",
+      "path": "package.json",
+      "size": 4503,
+      "sha256": "ad5f1f8b3499011b3313177aef22a7c335ab8c5220fc971635ceb574676b3a24"
+    },
+    {
+      "status": " M",
+      "path": "tests/e2e/flow-mvp.spec.ts",
+      "size": 313879,
+      "sha256": "f4611da6bbe8d05eb0899f51eb7740eed369c7b6352120766945390a607e8b5d"
+    },
+    {
+      "status": " M",
+      "path": "tests/e2e/helpers/my-flow-library.ts",
+      "size": 6254,
+      "sha256": "6fbb62ea028c4978080c15762ef162a951aa24c992cc3ac458902011f4a04d19"
+    },
+    {
+      "status": " M",
+      "path": "tests/e2e/helpers/public-flow-save.ts",
+      "size": 763,
+      "sha256": "955b7fc5111ac1a6e7fec0c9e08b30b9f4d3261a909cab676ee43323a94bfbc1"
+    },
+    {
+      "status": " M",
+      "path": "tests/e2e/local-data-backup.spec.ts",
+      "size": 5485,
+      "sha256": "90ad5fb95328a636fc2256417207c2b8c17720d9552890a98901c0cf1033aa60"
+    },
+    {
+      "status": " M",
+      "path": "tests/e2e/p24-execution-trust.spec.ts",
+      "size": 79371,
+      "sha256": "076dd89e4a516d9029d29359639611a223c48e33e993b2637af8fae76e7358ca"
+    },
+    {
+      "status": " M",
+      "path": "tests/e2e/p24-journey-frame-reset.spec.ts",
+      "size": 12933,
+      "sha256": "cb41e904a4d1193ececb9e99a043cbc3200800b7b29ea28fe561197647951151"
+    },
+    {
+      "status": " M",
+      "path": "tests/e2e/p25-whole-flow-workspace.spec.ts",
+      "size": 10310,
+      "sha256": "cc441996086a3db39de341af401b24341a3987453255d2f9f84bbe48d30e3aca"
+    },
+    {
+      "status": " M",
+      "path": "tests/e2e/p26-calendar-flow-filter-date-move.spec.ts",
+      "size": 6550,
+      "sha256": "d27d49eb00e3203c80766b2518040f827173cb9005ace829c19ad5df71aa2da9"
+    },
+    {
+      "status": " M",
+      "path": "tests/e2e/p26-date-intent.spec.ts",
+      "size": 7411,
+      "sha256": "daab6e1fa2ad9bfee1adb4015b0fff528440e1114288aa349e8be9e8682c4af4"
+    },
+    {
+      "status": " M",
+      "path": "tests/e2e/p26-discovery-save-before.spec.ts",
+      "size": 7977,
+      "sha256": "175ef6034d65ae34a4aa0c2139f0609521052f2939c230a165496d79f90068e4"
+    },
+    {
+      "status": " M",
+      "path": "tests/e2e/p26-execution-component-system.spec.ts",
+      "size": 6093,
+      "sha256": "c3b2de0c24e6897c8c4f180eb703a825f80368d72d304c589635b23a8fa2aea0"
+    },
+    {
+      "status": " M",
+      "path": "tests/e2e/p26-memo-segmentation.spec.ts",
+      "size": 8757,
+      "sha256": "3125c565a22d8bc1d3923c9e5e47ded13e5555abe20be89e82092d25a42084a3"
+    },
+    {
+      "status": " M",
+      "path": "tests/e2e/p26-my-flow-local-ia.spec.ts",
+      "size": 7340,
+      "sha256": "4ed19eb8d5d61d69b1090d5bffe72259b06280bc50d36c7f10a72080583396b8"
+    },
+    {
+      "status": " M",
+      "path": "tests/e2e/p26-post-save-decision-hub.spec.ts",
+      "size": 6432,
+      "sha256": "94e92c9a3b5704529e5a9be8abfeb374dfbe4ffc5b1f18b9fd6883c89763eba3"
+    },
+    {
+      "status": " M",
+      "path": "tests/e2e/p26-projection-identity.spec.ts",
+      "size": 7579,
+      "sha256": "caa236dbf46f8125c261dd96b2c1e6ca2b28b4e3bac17b59668a557886724897"
+    },
+    {
+      "status": " M",
+      "path": "tests/e2e/p26-quick-advanced-editor.spec.ts",
+      "size": 11944,
+      "sha256": "75b5fc1d6172bc296230dc6fd161804a06e54a7e9542c0adcbcb2ed10b862b37"
+    },
+    {
+      "status": " M",
+      "path": "tests/e2e/p26-responsive-workspace.spec.ts",
+      "size": 9582,
+      "sha256": "218b69833937ee3f34738ff69aacc8c695b52bee75fff5c5fe0c0f593cda6111"
+    },
+    {
+      "status": " M",
+      "path": "tests/e2e/p26-save-receipt.spec.ts",
+      "size": 7482,
+      "sha256": "46dc7bc3ade19af98ae2d09f2b925f525eb47fdc621e892b67a061f5afe8c1fb"
+    },
+    {
+      "status": " M",
+      "path": "tests/e2e/p26-structural-edit-mode.spec.ts",
+      "size": 11521,
+      "sha256": "c40cc8c7592c75b4561dc9ffaf4772342fc28fb0a56ddb7aedd2d1d28adc88bc"
+    },
+    {
+      "status": " M",
+      "path": "tests/e2e/p26-undated-batch-scheduling.spec.ts",
+      "size": 6205,
+      "sha256": "3e904856b64a4725cc9e8b33eee817d39b9509b376c80ce9ae4f4338c8fe8be4"
+    },
+    {
+      "status": " M",
+      "path": "tests/e2e/p26-unified-export.spec.ts",
+      "size": 12133,
+      "sha256": "dc052c12b9a19728fe748eb4c8435106053077b6a94724d48898a0aa0e1056fa"
+    },
+    {
+      "status": " M",
+      "path": "tests/e2e/p26-whole-flow-reading.spec.ts",
+      "size": 8298,
+      "sha256": "a93f23f9e1e5c80d8bf6277e17456a51787a7cfd1e2364d79bd4eb80edf32311"
+    },
+    {
+      "status": " M",
+      "path": "tests/e2e/p27-foundation.spec.ts",
+      "size": 26035,
+      "sha256": "be776ec8eb6e1ffc58ab1d2e54eb378ee1d664d9b69ba9ea638168b3cf74c30a"
+    },
+    {
+      "status": " M",
+      "path": "tests/e2e/p28-experience-reconstruction.spec.ts",
+      "size": 15526,
+      "sha256": "85ee546ba1e205ae0b92af1543ecad413111b30b8b4149057be8485e64b50083"
+    },
+    {
+      "status": " M",
+      "path": "tests/e2e/p29-coordinated-surface-reset.spec.ts",
+      "size": 28704,
+      "sha256": "08693f4c674566c8dbc1fa67880d8b988634fbab0be8d2c0491d0233e3697efd"
+    },
+    {
+      "status": " M",
+      "path": "tests/e2e/p30-evidence-gap-closure.spec.ts",
+      "size": 29177,
+      "sha256": "66df90a752a27322ef238aae1375bd86e5a4700d1998edcaba7e603a9843eecf"
+    },
+    {
+      "status": " M",
+      "path": "tests/e2e/p31-evidence-surfaces.spec.ts",
+      "size": 5540,
+      "sha256": "737c545c5e129a8023139746692e18ed2b5dfb2b646d61e0e89bcecd020ea405"
+    },
+    {
+      "status": " M",
+      "path": "tests/e2e/p31-mobile-journey-reconstruction.spec.ts",
+      "size": 15540,
+      "sha256": "e58db7c437f5f8262f6e2b428ad674b443e90ae5e0695ffb6bf3abc6611c2348"
+    },
+    {
+      "status": " M",
+      "path": "tests/e2e/p32-focused-workspace.spec.ts",
+      "size": 14055,
+      "sha256": "5784286ee15f9dfc5749afeee7c75043e8119cc243133362e1d486f94965b430"
+    },
+    {
+      "status": " M",
+      "path": "tests/e2e/p33-cross-entry-canonical.spec.ts",
+      "size": 12455,
+      "sha256": "5ea1246146b4978bc6ac70b38ff75704dc053218545ecc446632d08e6ba0b337"
+    },
+    {
+      "status": " M",
+      "path": "tests/e2e/p34-execution-crud.spec.ts",
+      "size": 14352,
+      "sha256": "4eb93aea77ceae5e5b909c128d183baa7005ba643178f5dc0402801426bffcbf"
+    },
+    {
+      "status": " M",
+      "path": "tests/e2e/public-share-cta-order.spec.ts",
+      "size": 16637,
+      "sha256": "730a600cc36344289b9081c2b0f86e5560c7473e39c72bbf8fb88a1201eac843"
+    },
+    {
+      "status": " M",
+      "path": "tests/e2e/url-first-user-surface.spec.ts",
+      "size": 159119,
+      "sha256": "3b271a047544a45adf0ca15f75f8805bdc0bd34584676b41e03f414a147e53b0"
+    },
+    {
+      "status": " M",
+      "path": "tests/e2e/workbench-source-density.spec.ts",
+      "size": 9437,
+      "sha256": "037023bbd1ebca51c9a4391aa4fd49129bb7ffc13547a07157328199d073d81d"
+    },
+    {
+      "status": "??",
+      "path": "claude_work/FlowMe P35 Codex Claude Design 통합 검토 프롬프트.txt",
+      "size": 8539,
+      "sha256": "e12fcff2dee1e6300eeca34230f277c6bae1606aa0617713994e2d9cd0968c90"
+    },
+    {
+      "status": "??",
+      "path": "components/flow/EntryRouter.tsx",
+      "size": 637,
+      "sha256": "7270460ce823d561114f1bb04c9b408bb81c28acf4724ac43316c4e11d5fc612"
+    },
+    {
+      "status": "??",
+      "path": "components/flow/MyFlowCalendarSurface.tsx",
+      "size": 6023,
+      "sha256": "07c5d59558d0bce68fbce3e0e35a1d65f51447bcd2806b22442e205eb272a0a6"
+    },
+    {
+      "status": "??",
+      "path": "components/flow/PublicFlowAdjustmentPanel.tsx",
+      "size": 13822,
+      "sha256": "c484034c7c2db8f14d2074094e41d532c772623a6ad713d0c7117d8eec65cbe2"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-flowme-mece-ux-reset/README.md",
+      "size": 3418,
+      "sha256": "60fb0348f7d709b10499d496b34b8999aeef9acb588811f742bbc7b075e8a73a"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-flowme-mece-ux-reset/journey-scorecard.json",
+      "size": 13773,
+      "sha256": "f9339bb059b61058412d72f593e68f66778b98b82fdbc99863cbe2aa64368816"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-flowme-mece-ux-reset/review.html",
+      "size": 75443,
+      "sha256": "11e8c8b5c8214cbc1e9399c2f87df202c3cad97013e6ab01ded3ecebb8eb240b"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-flowme-mece-ux-reset/screenshots/current-calendar-1024.png",
+      "size": 41630,
+      "sha256": "0ad75f223b7a73b88c0e2a76f131906077b3f63558bf951f89e31c21da4119e6"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-flowme-mece-ux-reset/screenshots/current-calendar-390.png",
+      "size": 52761,
+      "sha256": "6c89c37a852f4f2dba72bdd6f3fc67c164bc3ed489d781a92e7ab2e24544beb5"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-flowme-mece-ux-reset/screenshots/current-flows-390.png",
+      "size": 96372,
+      "sha256": "8d62eaaf656629fb6b31996faab0b8f07f0bcb632569d4c3374dcdd0867cd1ed"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-flowme-mece-ux-reset/screenshots/current-home-390.png",
+      "size": 33953,
+      "sha256": "6a566d47079c9022cd0a9a2866e003ee269fe2a68a67b73e4aff9b54884dccbf"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-flowme-mece-ux-reset/screenshots/current-my-flow-1024.png",
+      "size": 35298,
+      "sha256": "531c6be65a8916dec3d59d47037e8c63f1d86520772b10b816edafbee78d7904"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-flowme-mece-ux-reset/screenshots/current-my-flow-workspace-390.png",
+      "size": 48257,
+      "sha256": "787a35557cd2b5bf504500ce42a8c8112e33a86b8ef04bbbde5894b0fd42a9cf"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-flowme-mece-ux-reset/screenshots/current-public-moving-1024.png",
+      "size": 44079,
+      "sha256": "e4eb1997a7ee3077e6e9a0f3589e8e3f410e5edbdd583392d09bedda2d3e4974"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-flowme-mece-ux-reset/screenshots/current-public-moving-390.png",
+      "size": 47216,
+      "sha256": "aecb6af4123accf3b73355c3d84925ad937be058519d3b3c86f45df2dda07114"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-flowme-mece-ux-reset/screenshots/current-receipt-moving-390.png",
+      "size": 25483,
+      "sha256": "4fbdf3e35a2dac854f0c37b64010af01769546fa4978c4cd85afaa9253aefb65"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-flowme-mece-ux-reset/screenshots/proposed-calendar-1024.png",
+      "size": 175661,
+      "sha256": "3efc08e0715ede6666fca6ef11def088e053404452ff959748e82b4832b5a3ab"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-flowme-mece-ux-reset/screenshots/proposed-calendar-390.png",
+      "size": 49564,
+      "sha256": "8f020d0c85b7d18297d3c983d36031c077eb531acb4a3245fece1b318759ac48"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-flowme-mece-ux-reset/screenshots/proposed-discover-1024.png",
+      "size": 189692,
+      "sha256": "8ac54334a3c7a7b6f1f244bdfd3fd550666cad6c51f0079f64033ce8c1f9f684"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-flowme-mece-ux-reset/screenshots/proposed-discover-390.png",
+      "size": 59004,
+      "sha256": "088eaa4a8c373672acb65f6319985b6912ee47b90051ff6c04f81c8a63643a2e"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-flowme-mece-ux-reset/screenshots/proposed-my-flow-library-390.png",
+      "size": 53784,
+      "sha256": "dbdd9dee318ada58b3900d4bc5b02ff7766c878f6eab9228dbcf1670f64bf097"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-flowme-mece-ux-reset/screenshots/proposed-personal-flow-390.png",
+      "size": 43330,
+      "sha256": "e4b596c2e4cc4a85c5bf5631ff274742b4ca387f325863cc64dde397048e82b9"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-flowme-mece-ux-reset/screenshots/proposed-receipt-390.png",
+      "size": 45496,
+      "sha256": "57e702d2f908819ca37ba5f9ca2095100bfb27bfe48720510f481fcb013f1003"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-flowme-mece-ux-reset/screenshots/proposed-vehicle-calendar-390.png",
+      "size": 52574,
+      "sha256": "f043c938e4d55dc11b2dbbe4011dd34fe4a0c29e8090ba000c174563875cca9c"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-flowme-mece-ux-reset/screenshots/proposed-workout-preview-390.png",
+      "size": 63887,
+      "sha256": "236830e048191fe1ddf324e8ed45351d1cf7466aedecef63ee29b9e6e1517104"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-flowme-user-feedback-product-direction-master-ko.txt",
+      "size": 26171,
+      "sha256": "14ef4ea21a8979bab6637badb4ac2d2c89e35db597235d3379d7d52de10c3b8c"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-01-entry-router-evidence/README.md",
+      "size": 1602,
+      "sha256": "935903df659f7919fc5678f4e4b723875f856beb04ea2115700365f201ec5d6b"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-01-entry-router-evidence/audit.md",
+      "size": 3300,
+      "sha256": "a6e233dd28def99690bb1416758af8e0c5b52e048faba354c618bbcb1735d345"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-01-entry-router-evidence/route-evidence.json",
+      "size": 2492,
+      "sha256": "36f0ad9fbe9fbbc15e31cefac231c9a9ba46ac5e72a55f2b61769394e39ef89a"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-01-entry-router-evidence/screenshots/p35-01-entry-empty-390.png",
+      "size": 37104,
+      "sha256": "4989e92e8211faad8028f2a73a294cbc58955d824304980501181908159d5de6"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-01-entry-router-evidence/screenshots/p35-01-entry-saved-390.png",
+      "size": 24364,
+      "sha256": "8f978be0b5b9ad880594ded7f5e243db26569fb3bb22553d69a1e601d9739ab1"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-01-entry-router-evidence/screenshots/p35-01-nav-1024.png",
+      "size": 46335,
+      "sha256": "3679fefaa04fd6b6df6289e2656d5fc75a4845d5a96574031e7e1a82448b0702"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-01-entry-router-evidence/screenshots/p35-01-nav-1440.png",
+      "size": 62368,
+      "sha256": "a0ddd12df0286e3979b391ccb0ba51c5e10377449d6dec4f57770df053fc017e"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-02-public-result-first-evidence/README.md",
+      "size": 2634,
+      "sha256": "878289ff46ea8ab8bdd1b78d25f7b081c5d4c2411ccd7e7f9bd1a3b970cfd0a5"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-02-public-result-first-evidence/audit.md",
+      "size": 4957,
+      "sha256": "d5cf4e6793947c26b4cf44f598ade3b6f006f98a325d6880637984b3c03cb273"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-02-public-result-first-evidence/route-evidence.json",
+      "size": 3975,
+      "sha256": "69a3c3c4658f263dd95f7c571f129bf868c6a6b918fee6e04f7d550f2efe1258"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-02-public-result-first-evidence/screenshots/p35-02-learning-save-before-1440.png",
+      "size": 26104,
+      "sha256": "7c632e0cc0d445cc25ae62db81b00c54a43b906d1d1de952f0e9bd8d4ecaf7a3"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-02-public-result-first-evidence/screenshots/p35-02-moving-receipt-390.png",
+      "size": 25107,
+      "sha256": "e41542c202bc0b2ea09047a96be439477de609c33a2e580fe615615874109537"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-02-public-result-first-evidence/screenshots/p35-02-moving-save-before-390.png",
+      "size": 24043,
+      "sha256": "517b974f673ba5cd05390c4aaa014dc0df6c58f4d12927d9702135adcd32bdca"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-02-public-result-first-evidence/screenshots/p35-02-routine-save-before-1024.png",
+      "size": 32644,
+      "sha256": "f769d6e6707d66329c6cb0894e466e73531af1629c2ed86a773710943569b0f0"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-02-public-result-first-evidence/screenshots/p35-02-undated-save-before-390.png",
+      "size": 24689,
+      "sha256": "aa52a9a87398f81c1b3f38d0cbdff7ea784991307d079b3f228f18baa198d7cb"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-03-adjust-one-kind-evidence/README.md",
+      "size": 2349,
+      "sha256": "8f4b233bfab9797ae69ff326385c966e533f014937d20472b3a7a775e436ef18"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-03-adjust-one-kind-evidence/audit.md",
+      "size": 4442,
+      "sha256": "b0b2b55d6782367aea2bf6a6c5e97bfbd0976e8ff55ac0365e32cfc0116e4fa3"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-03-adjust-one-kind-evidence/route-evidence.json",
+      "size": 3616,
+      "sha256": "945ccdf5169bf9a2c44a268acf87833cf249e102a5cd7fb64a492e3c236890b4"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-03-adjust-one-kind-evidence/screenshots/p35-03-adjust-anchor-390.png",
+      "size": 21598,
+      "sha256": "3312f20bf9a6b21f2758a019168f54fbb3b4a6469cf54757d1e2a13c3ebd7723"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-03-adjust-one-kind-evidence/screenshots/p35-03-adjust-items-1024.png",
+      "size": 37028,
+      "sha256": "b516b50f1cbac9b84ffdfcf3e1febd96e5b6f8d11bb67957b444f14083eb841d"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-03-adjust-one-kind-evidence/screenshots/p35-03-adjust-name-390.png",
+      "size": 21525,
+      "sha256": "c7d522cde8fe44e02a4df9c93d0ad4f8dafd0ec013c41e8d97019b56c918818c"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-03-adjust-one-kind-evidence/screenshots/p35-03-adjust-routine-1440.png",
+      "size": 42994,
+      "sha256": "cdee89de2b158743fae33e362a09cdd31a17dffed22fa14baca3303ffc0bb07a"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-04-my-flow-safe-split-evidence/README.md",
+      "size": 2386,
+      "sha256": "2113f33f325b6490586fe08371a3e13e54680d2df7ff0083338061a08c18719d"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-04-my-flow-safe-split-evidence/audit.md",
+      "size": 2380,
+      "sha256": "2da0c8f7bf385dc55f5a6c2627381510bad5c30f14953d1a2c87367b4be754a0"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-04-my-flow-safe-split-evidence/p35-04-complexity-before-after.json",
+      "size": 1870,
+      "sha256": "83196f1b110462c6a6d81ac3e8b997bd57c5567b555d671a0f096950b95a0322"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-04-my-flow-safe-split-evidence/p35-04-route-parity.json",
+      "size": 2083,
+      "sha256": "2da071164c87ca1d1998a48347c820a5e0a6a809be47a4156058ec9073ca2fd1"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-04-my-flow-safe-split-evidence/screenshots/p35-04-calendar-1024.png",
+      "size": 49078,
+      "sha256": "1f6a678ed7e380117ef0d79b3a54437ce434f2eab293914c774215b6bce6594f"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-04-my-flow-safe-split-evidence/screenshots/p35-04-my-390.png",
+      "size": 31710,
+      "sha256": "dbfe107548dc447d63e56cf480668db73c175402ff56d2c905ae7b68ee332cfe"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-05-my-flow-library-workspace-evidence/README.md",
+      "size": 2290,
+      "sha256": "b05b7f4a21f75d3d01bb4f86dc0bd53baed0b175c95eeda7e49de454087d1997"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-05-my-flow-library-workspace-evidence/audit.md",
+      "size": 2931,
+      "sha256": "22b8f1fb3af00f00d95c5e5ab87cd1222901bf978035fbc21fd3b093204162fa"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-05-my-flow-library-workspace-evidence/route-evidence.json",
+      "size": 2716,
+      "sha256": "848f34322f34ac44c348d6d56f372c023458fcabeef396abe4ee5525bdeffbf5"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-05-my-flow-library-workspace-evidence/screenshots/p35-05-my-library-1-390.png",
+      "size": 20593,
+      "sha256": "28d223af25180c98e3a286609dc0928c2209d1ee520abcf631595726d150f225"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-05-my-flow-library-workspace-evidence/screenshots/p35-05-my-library-20-390.png",
+      "size": 41224,
+      "sha256": "b059bfa2783d6b94b79a9126a3b6bad4cd69a4c94660b600505c3021321b4732"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-05-my-flow-library-workspace-evidence/screenshots/p35-05-my-library-60-1440.png",
+      "size": 43165,
+      "sha256": "f39cecfadd6c643deef115b53d19b596c9a34e520537db500c99dea282f5a41c"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-05-my-flow-library-workspace-evidence/screenshots/p35-05-my-library-workspace-1024.png",
+      "size": 53077,
+      "sha256": "fdbbab40ca9fa45018577f4f5e04f94be2c4dd01b29887b710dcffa1625655e8"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-05-my-flow-library-workspace-evidence/screenshots/p35-05-personal-flow-390.png",
+      "size": 20046,
+      "sha256": "d359e8529aa00cae136cc5d03902ea63a5747c032770902224cfbc3bcaf7bfdd"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-06-calendar-lens-evidence/README.md",
+      "size": 2025,
+      "sha256": "d165c265eeb7dc9f6603bfe17cf67f843a5451dd623486010d4bd4634ab6b9e7"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-06-calendar-lens-evidence/audit.md",
+      "size": 2879,
+      "sha256": "f39c4aa23dd220d9c27ab873ad21dcb75e477828112b70cc7c9c859357e44be9"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-06-calendar-lens-evidence/route-evidence.json",
+      "size": 2247,
+      "sha256": "e12a9e3ec23025bc75970d9118feab90abd9f687440c77eb395a618cab25076a"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-06-calendar-lens-evidence/screenshots/p35-06-calendar-60-flow-1440.png",
+      "size": 94829,
+      "sha256": "ce5e700040dfc993073302e23e2d9ed581c1fefd9cb1770fa4f60a32c586a39f"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-06-calendar-lens-evidence/screenshots/p35-06-calendar-agenda-390.png",
+      "size": 32817,
+      "sha256": "3bf444e252df40fc5743da911a7cc1d4e10c6317502ee38ac2a44ce3b17fff3f"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-06-calendar-lens-evidence/screenshots/p35-06-calendar-month-390.png",
+      "size": 30523,
+      "sha256": "b7cb06e5b6610fb73a6025dfa167014e9716036da891a188bc333b021fde3798"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-06-calendar-lens-evidence/screenshots/p35-06-calendar-multi-flow-1024.png",
+      "size": 45324,
+      "sha256": "a29b6e4fddce5d894a44c03270bc725cf6fbd43811ecb36ab35c94d6f1519127"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-07-export-scope-first-evidence/README.md",
+      "size": 2058,
+      "sha256": "4bbe7a848f708a2b59c26c50c3aa863d6ce3ad4739e4b012dd2ff4922f566196"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-07-export-scope-first-evidence/audit.md",
+      "size": 2705,
+      "sha256": "4e9b0b3919641d6872044e49ba09e892d5eeecae145e6dacc725375d0ea9bd5a"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-07-export-scope-first-evidence/route-evidence.json",
+      "size": 2663,
+      "sha256": "4aa54de70b027b57a300cdb30cd3a9b489202b75885f3163ab8ec37ed31a3f76"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-07-export-scope-first-evidence/screenshots/p35-07-export-current-1024.png",
+      "size": 44510,
+      "sha256": "6e0fe43cc13ace0915a07491e39a82a37ae86ced49facbed8599a189b732d832"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-07-export-scope-first-evidence/screenshots/p35-07-export-receipt-1440.png",
+      "size": 53387,
+      "sha256": "edb4ae951daa4e51297dad16f36ac236b6b7622648ccff1d00c8b3304d9d2095"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-07-export-scope-first-evidence/screenshots/p35-07-export-selected-390.png",
+      "size": 38630,
+      "sha256": "c0aee87dbe66a3c5e2a0ed82c72615e5f9dc4fbb55791f09a74fc926d1145315"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-07-export-scope-first-evidence/screenshots/p35-07-export-whole-390.png",
+      "size": 34045,
+      "sha256": "f4876f55f92ebcac16acbe3aec701123caf1772430f39ad7610321c058e3aef7"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-08-final-mece-gate/README.md",
+      "size": 2663,
+      "sha256": "0fa2bb539b0f59b5f5fa25bd2653b703f5d904c41f7ff39ee7c5c41409b63acc"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-08-final-mece-gate/audit.md",
+      "size": 5438,
+      "sha256": "b2221c14df9b4d0550479ec9f6cb9042400ef0cc34422d9b06c654df1d7538e6"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-08-final-mece-gate/complexity-before-after.json",
+      "size": 3388,
+      "sha256": "1b3b40555f083462ec7402328ea98aa7260931f1cf706e5326cdb98ba0de1221"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-08-final-mece-gate/journey-results.json",
+      "size": 4326,
+      "sha256": "76be495bee82e9c26f6ffbea8684caa81bba6efbc9906d7191eb5acbaa26ebee"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-08-final-mece-gate/route-evidence.json",
+      "size": 5588,
+      "sha256": "83bedc8cd1748f408f14f22400440b81bad02f2f8a3f69f7ee4923e6ecdeb0b0"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-08-final-mece-gate/screenshots/p35-08-calendar-selected-day-1024.png",
+      "size": 40740,
+      "sha256": "e90f6e37fae3ebbb109596999e40ca43dac07f3f4290a3521a0394d08eec762f"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-08-final-mece-gate/screenshots/p35-08-memo-result-390.png",
+      "size": 26867,
+      "sha256": "ba4aa1b0c3138efe82c991e81dc5efccd48f6388530eb48c16a8108ccdfd9731"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-08-final-mece-gate/screenshots/p35-08-moving-result-390.png",
+      "size": 24254,
+      "sha256": "f141495cf3961c3e4989bdeb48f043661b9f39f13434f1a77116059a3607d8e4"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-08-final-mece-gate/screenshots/p35-08-my-flow-focused-390.png",
+      "size": 22194,
+      "sha256": "9e1ff0d936980813a32a6a6a3c2fd2d9914397bc8fe4e0099008a3402b4a99ce"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-08-final-mece-gate/screenshots/p35-08-my-flow-library-20-390.png",
+      "size": 41224,
+      "sha256": "b059bfa2783d6b94b79a9126a3b6bad4cd69a4c94660b600505c3021321b4732"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-08-final-mece-gate/screenshots/p35-08-my-flow-library-60-1440.png",
+      "size": 61650,
+      "sha256": "b237ae5420a5bcf802eec4532a27779ec5b3d992235d6dcf4bb1b82b89bad444"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-08-final-mece-gate/screenshots/p35-08-study-result-390.png",
+      "size": 18057,
+      "sha256": "3c9f04b694889618ef7805f5be37b2447b6f64de0be44929df01e04ec4188e01"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-08-final-mece-gate/screenshots/p35-08-vehicle-result-390.png",
+      "size": 24689,
+      "sha256": "aa52a9a87398f81c1b3f38d0cbdff7ea784991307d079b3f228f18baa198d7cb"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-26-p35-08-final-mece-gate/screenshots/p35-08-workout-result-390.png",
+      "size": 27799,
+      "sha256": "cb9e1e9cd7051790d7179fc2d4b8d5c41ccfe864548a9d874d7ecd64331143ab"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-flowme-calendar-todo-simplification/FlowMe Calendar Todo 단순화 UX 비교안.html",
+      "size": 127389,
+      "sha256": "96ec0ca0f3fde899a2f85299f3d5297e6f51639772fae833ff155e77ea8b19e5"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-mece-codex-reviewed-development-summary-ko.md",
+      "size": 20225,
+      "sha256": "55032e9a308923973124244c35f7498984196359dc07f98abbeabe3338918409"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-mece-reviewed-work-planning-handoff-ko.txt",
+      "size": 19904,
+      "sha256": "63c85fbd966e692e081fb1a8ba4d07a73bd1915445cdf2b4fad13937855c2496"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/README.md",
+      "size": 3885,
+      "sha256": "a32cb2486591cdc0dee82ae75700f6be91be6b8dc7e3875ac7ca95b3c42ba51c"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/audit.md",
+      "size": 19834,
+      "sha256": "ee0114e81c88f4e7b2f45505685ab2f894951fd3f5eee7c0ec71909cb7ddc96c"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/completion-audit.md",
+      "size": 3989,
+      "sha256": "c55f3db0d64fcfdc316c77b910980efa1718c8a167ae1b4ab34e1db42b4cabbe"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/decision-matrix.json",
+      "size": 8369,
+      "sha256": "4c4dc7c86a1fe9e8429f0ff79833f01f5d49150a031950167714d870ed49224e"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/journey-direct-evidence.json",
+      "size": 9368,
+      "sha256": "f0902db2ebfde31ba916b2c3b0cd750542db640764b714b14019b049a483c532"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/keep-move-remove-command-matrix.json",
+      "size": 5133,
+      "sha256": "a6cb570f99636d1d1c83cf1032e8cc2c6f3c68e3429898b996900354dfe4a011"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/next-program.md",
+      "size": 10403,
+      "sha256": "d23903aa98523d661d069fedffe882fc3eec59b7193bd2c38d997fd1f428e365"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/persona-journey-scorecard.json",
+      "size": 12711,
+      "sha256": "8c7214d6c80de3d0c8c28b9811d8cfbcbbaa25e0db112909f6493f5eb38477d0"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/review.html",
+      "size": 62828,
+      "sha256": "5b9bc5338c977e52d0e3703a5ad78d10ed9cf47f03d43a935ca39ccb0514a744"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/01-flows-local-390.png",
+      "size": 38368,
+      "sha256": "aa603ce2945037741b3b879e9efc8c0177f786c6f49be98f262cc9dc85a8717f"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/02-moving-public-local-390.png",
+      "size": 26190,
+      "sha256": "badd0729fcf60fc5508a80a205b8304c5a984fc61be88511037c57ac7e875f02"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/03-moving-adjust-local-390.png",
+      "size": 22725,
+      "sha256": "cd7699a30b7321be47328bc8622d4205fc26a2059e39d817d6879bcf1b83935d"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/04-moving-receipt-local-390.png",
+      "size": 25937,
+      "sha256": "efc8561a717c7d2920c8f2002d6eda3a795da72ac29192bf5c6f5e9ac0205433"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/05-moving-my-flow-first-local-390.png",
+      "size": 34474,
+      "sha256": "39456259846a039ce2d4fc31cc5058760c1648961ed299de155c6eb69fe62be4"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/06-moving-item-detail-local-390.png",
+      "size": 28848,
+      "sha256": "0f8b284630efb6c2d16b535284fab0ce2d8ab58a06fd5f18ba835c981c00c3a0"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/07-moving-d30-basic-local-390.png",
+      "size": 20821,
+      "sha256": "394b71e1918b299ac3b774589969f1698b9ca7d07448d0877e121311422b1173"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/08-vehicle-inspection-prep-local-390.png",
+      "size": 24689,
+      "sha256": "aa52a9a87398f81c1b3f38d0cbdff7ea784991307d079b3f228f18baa198d7cb"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/09-curated-allblanc-morning-workout-local-390.png",
+      "size": 29801,
+      "sha256": "62d727101f5fc945cb69b8e76843176cad87a1e4cf3ab4d2cba9de5f63223f48"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/10-source-backed-middle-school-math-1-local-390.png",
+      "size": 18057,
+      "sha256": "3c9f04b694889618ef7805f5be37b2447b6f64de0be44929df01e04ec4188e01"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/11-overseas-safety-register-local-390.png",
+      "size": 26867,
+      "sha256": "ba4aa1b0c3138efe82c991e81dc5efccd48f6388530eb48c16a8108ccdfd9731"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/12-moving-public-export-open-local-390.png",
+      "size": 21240,
+      "sha256": "4854116e93e78d7dca90abfc43ea2548777a75cdcfbf4d8f5efe9048337e9c31"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/13-moving-public-export-formats-local-390.png",
+      "size": 26836,
+      "sha256": "e7f4c6d6bb0e9fcb2eed81b9ac2d39980a630ec0fd422cd8019b614464c8bc3f"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/14-moving-d30-basic-local-1024.png",
+      "size": 26151,
+      "sha256": "4bf38199a0c0c419879a08546b7985137550344f572b9a7850f6bbad7fc0ca60"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/15-curated-allblanc-morning-workout-local-1024.png",
+      "size": 29280,
+      "sha256": "3d540693e1f30896721516ffdcd12ee38ea0ef7308765add5687bd111cc0bacc"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/16-source-backed-middle-school-math-1-local-1024.png",
+      "size": 24063,
+      "sha256": "f5440c2a99d522a73e26eba22344f41c3141e0ea9f3a03c280ad44233c66ca35"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/17-production--flows-390.png",
+      "size": 37014,
+      "sha256": "3169f5f065869e338bec5384be1c20c3b176845d29c3d25508a2a42818cf2a1a"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/18-production--f-moving-d30-basic-390.png",
+      "size": 33759,
+      "sha256": "8a8001107fe3a1150fb45085a394c00ee628cb373b0a631b030fe25230e3395b"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/19-production--my-390.png",
+      "size": 21762,
+      "sha256": "0cda57db6fe1f53dc5ef4634d5d38c37cf63df08a9116b59a827198c7d2acf6a"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/20-production--calendar-390.png",
+      "size": 16947,
+      "sha256": "a91c67627f74a32072d4e950d1b1cceda069750ac05825ab4d2ea024605936e4"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/21-my-library-20-local-390.png",
+      "size": 45350,
+      "sha256": "437e940ec21896ef5fa34d3efd2eb636f295694441a74a1949e0271adeffcd5f"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/22-calendar-demo20-local-390.png",
+      "size": 48254,
+      "sha256": "778d379330e557226333b634d0d6e57d76fe74fb2853d96c31a31994d7287774"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/23-calendar-demo20-local-1024.png",
+      "size": 62703,
+      "sha256": "b2c2c992c8f816564d517e3c12307ee0093a2b53a4fe9f38b779756b39940fb2"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/24-my-library-demo20-local-1024.png",
+      "size": 47867,
+      "sha256": "245366dea45e85eb131962a507faa487d7c2b387a936b49bd85929f692cf7165"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/25-routine-workspace-local-1024.png",
+      "size": 60952,
+      "sha256": "1ae2947f1db443b6112429e00a1f352e79f90d8bb0b589a3dbffa2f3fb651a2e"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/26-routine-workspace-local-390.png",
+      "size": 21963,
+      "sha256": "e43452566d1dec7e219bda3815fa44a696cf36431a00f7ca1aca3a7c8882733d"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/27-memo-draft-local-390.png",
+      "size": 60889,
+      "sha256": "877add7068df9a6204302a3b96dbe596c521769ec6879980dd4e3900baed494c"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/28-memo-post-save-local-390.png",
+      "size": 41910,
+      "sha256": "1ed95c2a12f22a077a7bc22dbef00b9f8ad89093afe3e1761434f80f7d5cf44e"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/29-completion-undo-local-390.png",
+      "size": 24643,
+      "sha256": "3a35f485dba89b7b981a7547fa71e2cfa175160164607f493b6394cf1c877811"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/30-review-html-1440.png",
+      "size": 121798,
+      "sha256": "2350181272d8d7befa2c76a54a1d6db37ebe031536e344414c485036cc09c889"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/31-review-html-390.png",
+      "size": 56593,
+      "sha256": "e3431ffba0bf2ae3ae0c31b82d737626be2f4c336dcc1da1de81cce3c3488f14"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/32-review-wireframe-preflight-390.png",
+      "size": 43453,
+      "sha256": "ad96f03ef5de37038b317c01e7dca33625404b6759de4bb3fe8e61f172c50b52"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/33-guide-public-local-1024.png",
+      "size": 33466,
+      "sha256": "18fe81a4d45b19f2eed5c6fd71d031ec92f33920d9baa817ca53a1f69dc81379"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/33-guide-public-local-390.png",
+      "size": 31531,
+      "sha256": "5f86bc5c1e7863dc8c8b96b38ae8442997c4586a513d4c6a7eb927b0312dfbe8"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/33-moving-public-local-1024.png",
+      "size": 30122,
+      "sha256": "5fb54b6a9ce9c569c98618b7d0f25124f6e94f2f9f8e3d8dd608c547549095e4"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/33-moving-public-local-390.png",
+      "size": 28875,
+      "sha256": "afcf88b3d1b4b560aadfb5b2ff15e6c4f81723d8211eb34ad374ff3629c37f94"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/33-study-public-local-1024.png",
+      "size": 24105,
+      "sha256": "6573987581ef9bbf44b0591394c927bc2246aa903728fb8f583fe746a81e79bf"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/33-study-public-local-390.png",
+      "size": 22599,
+      "sha256": "530fda964dcffb94f8fca43f736a3b184d4ebe2cd735b7fd0309d7db21c0c30a"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/33-vehicle-public-local-1024.png",
+      "size": 30571,
+      "sha256": "b91375c66be8b7786bb285bb29338a2ade04935dca0e1d4c18a76e4882d14d34"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/33-vehicle-public-local-390.png",
+      "size": 29301,
+      "sha256": "edba178208fc287d6122e99e7bc07a12d80497a58ff23181547ed9df8188d013"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/33-workout-public-local-1024.png",
+      "size": 35930,
+      "sha256": "a6377f1357b9ee4044812ea4f0988237a6a7491d75ddd2bcca9e6f098308c973"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/33-workout-public-local-390.png",
+      "size": 32491,
+      "sha256": "d63b1671c6bde206b06fc3a4128cebcd6efd2da38f3ab0dd369c1bf96ef95651"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/34-vehicle-receipt-local-390.png",
+      "size": 25811,
+      "sha256": "4a09401a2c890e46ef38a14839781c9ad65b55e35065c23db32f27019fe19c58"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/35-vehicle-post-save-local-390.png",
+      "size": 35071,
+      "sha256": "e556eb8cd38925d4ce1c3acb0e86237c69bda7812c71b49356bdecdd8ebcd261"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/36-vehicle-workspace-local-390.png",
+      "size": 20390,
+      "sha256": "b6854b3ba9927538ebdf33ba1b18cf617d2d476cf1a8d3adf7dad7c70cd30c38"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/37-vehicle-complete-undo-local-390.png",
+      "size": 24254,
+      "sha256": "6452435331e99f8dff17563509a739c4d8559e95458af8f0da16a8e4c0dad248"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/38-vehicle-item-detail-local-390.png",
+      "size": 31137,
+      "sha256": "9f3dcada685c4ed3b9ed3cd2702c07fb0a2746aa39921a6a6e36ae013f23adfe"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/39-vehicle-item-edited-local-390.png",
+      "size": 33482,
+      "sha256": "5914ebe19333444af792e271655f948c703f70c1424724d9cc6e630be0852b15"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/40-vehicle-calendar-local-390.png",
+      "size": 30014,
+      "sha256": "ed6c21f86720a6a6a127065e96324a069bd3f753d7871caf591ed9dd16975a5f"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/41-vehicle-export-whole-local-390.png",
+      "size": 32250,
+      "sha256": "1d54f05f6fa49b4cfd209beed5ae7602e20276aa7427e43ca9059fbe5d3b81ac"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/42-vehicle-export-selected-local-390.png",
+      "size": 35864,
+      "sha256": "3b5da2704677b31075af7e29732b6ed4e8dba725b2504b5a6484dabc683b3f1d"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/43-workout-adjust-local-390.png",
+      "size": 24110,
+      "sha256": "38eeb3b6b9761f44595ff7c232daace88e824a58cfae5d113b15cf97c16d4619"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/44-workout-receipt-local-390.png",
+      "size": 26768,
+      "sha256": "20d68eb5531ad48a357bcd7d5100b089c8e18706d310e58d4aedff709c6c708a"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/45-workout-post-save-local-390.png",
+      "size": 28331,
+      "sha256": "ae4f7a9226ea3f64426166ca83c1196a0281c36ccef90ebe2efd0fc301daa300"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/46-workout-workspace-local-390.png",
+      "size": 22182,
+      "sha256": "8fea97bae2bb9b625d1e0fcd5f26a7e0607c3c70fdb862403fee36f2984b4486"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/47-workout-calendar-local-390.png",
+      "size": 28227,
+      "sha256": "f5d2ba447ee49bb6abe5c09e52c09d6ad89eeb32cfa4dcfe441322f50b970274"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/49-study-receipt-local-390.png",
+      "size": 22796,
+      "sha256": "8727fdb27802006d5514720496172bc6bb55f387f6b3ecb1a0eebba6774a2d27"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/50-study-post-save-local-390.png",
+      "size": 30121,
+      "sha256": "cd96b26e9159881edc0f01598f99eea83b3aaa94d67e781eaf09386e60b165e7"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/51-study-workspace-local-390.png",
+      "size": 18278,
+      "sha256": "b7f53f390fb371255019cbf50fc1474207858312ba97271d812b985b41869bcb"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/52-study-plan-local-390.png",
+      "size": 26851,
+      "sha256": "a8ed2512f1330d3c1b24ecbcabd82c575c709aae69908b7da1a7e39fd048b73f"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/53-study-export-local-390.png",
+      "size": 36834,
+      "sha256": "3e4eb2b777623246b80fb74b64111779abd0ca6f3db1c0a7db4f2412b9edafa5"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/54-guide-receipt-local-390.png",
+      "size": 28427,
+      "sha256": "34872067a49a6027653ee07a83ef00dba8321e304df30b9a4201462aaa7fec49"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/55-guide-post-save-local-390.png",
+      "size": 35280,
+      "sha256": "33701d521dba8fd86cc7264834df01fd94351fcef9473c4dde374621c3fb0ee6"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/56-guide-workspace-local-390.png",
+      "size": 19834,
+      "sha256": "18fc26acd3a4fe0d973a7d84784b4d5cb5b8f6d8ee84ec6c7cd32f31f63804a4"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/57-guide-plan-local-390.png",
+      "size": 31768,
+      "sha256": "f7b10317228b82767822773f8c15716e503f9d4f5777192b65748cb6505f52e5"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/58-guide-export-local-390.png",
+      "size": 37582,
+      "sha256": "4cc05e3956aa4638f5198eb0ce124ff8342c6891b7c4a192134ae3316b97b976"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/59-workout-default-receipt-local-390.png",
+      "size": 25540,
+      "sha256": "4131b024bbe4532d6b43118ab0e064a6e8e48f803abb4b04c91d6ed188d6b00d"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/60-workout-default-post-save-local-390.png",
+      "size": 28898,
+      "sha256": "c61d7f673144025aa46787d5fab6699015103c25ef7f6f1fca79d6e075b5d733"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/61-workout-default-workspace-local-390.png",
+      "size": 21357,
+      "sha256": "9ac13b1566199f338dfccef9e65e0fbb27e5abd44f4612897a00619ee53a9700"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/62-workout-default-plan-local-390.png",
+      "size": 22902,
+      "sha256": "2a6808f287fb4e90ed8652f2b870b59eda5d0bd5a3e006ee2c2fc9b4c8cfa465"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/63-workout-default-export-local-390.png",
+      "size": 34355,
+      "sha256": "b58bc9aeda20e13991f472c874366758310812255be198ca10e9cab4964fb6bc"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/64-moving-workspace-local-1024.png",
+      "size": 39410,
+      "sha256": "896f393f81045575bd70f93d39f8fc11cdd742fa8d9fde367b346ec572b3242f"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/65-vehicle-workspace-local-1024.png",
+      "size": 42281,
+      "sha256": "88dd39fd7b42ac03c23f5e085aece7844695f33ad7bab75779ed1d77b9760e50"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/66-workout-workspace-local-1024.png",
+      "size": 38313,
+      "sha256": "5fec2f07a0d452f6fe8b8d843069dafde0916bbc51e8efc82d874d4b4625bec5"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/67-study-workspace-local-1024.png",
+      "size": 34835,
+      "sha256": "c8b5014df76ed116eab1a53ba8e1580fffb90410488b406d1d9dc736ee2f5064"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/68-guide-workspace-local-1024.png",
+      "size": 44637,
+      "sha256": "6cdcb5398bc22e3bc3ca49aafa71037592b82a86dc16121d35a1dcbf037e9e8f"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/69-moving-preflight-local-1024.png",
+      "size": 31808,
+      "sha256": "bc1a40eed5bec1c108365150406d7c0888489b657b6f2d4e0cf07a999b3164df"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/70-moving-receipt-local-1024.png",
+      "size": 30832,
+      "sha256": "1f28383fffc06e827da4819f1d0316082a8fa7e77af01e4f42d74e3a412bf271"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/71-moving-workspace-local-1024.png",
+      "size": 41398,
+      "sha256": "dba2bc83dcf87fe883a2294e87af193f2c50e6b997f2b3fbf12295c185debac6"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/72-review-html-1024-final.png",
+      "size": 57301,
+      "sha256": "62d1de76cd3286ca971f29f5aedbec642152fd3cce2d71246746088be1a5f236"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/72-review-html-1440-final.png",
+      "size": 102394,
+      "sha256": "0e1eea1ebc2c824ef6f23e4bdb13d8b3b7ea4ef950deedbc7735d091f8de1994"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/72-review-html-390-final.png",
+      "size": 53431,
+      "sha256": "308d8c5f17ba4cc65f9c2a975bcacc770bdbfdbfd7ff172306cfd1a279bee8ab"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/73-proposed-wide-calendar-1024.png",
+      "size": 28412,
+      "sha256": "c6d78d4ebb322adcbd211b9d15134b3e628ce3662975053f59c9bd098285152e"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/73-proposed-wide-public-1024.png",
+      "size": 28599,
+      "sha256": "08d67a2f0b49c50d80b5c50ad8df5e51c187e9be07c10ae8a644c218ee09431c"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/screenshots/73-proposed-wide-routine-1024.png",
+      "size": 31253,
+      "sha256": "1853cf36db9a8d838f9fbf4751e785d19789b6d2a35644586e6b6a17729b8718"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-codex/surface-ownership.json",
+      "size": 5589,
+      "sha256": "198784a1f4dabae9e1afa7cca944871e87e8da1b840022b552af0ae2054e0a31"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/README.md",
+      "size": 6605,
+      "sha256": "3b80ab8bfa64ec1981081f0cce4b6534f1f2d634fd9e36355eafca86a59d7111"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/claude-design-review-prompt-ko.txt",
+      "size": 12381,
+      "sha256": "cca02bd9b07da0b91d68283346cbe26a77bf8a71d4f8d93c25766c1778652a2d"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/codex-review-prompt-ko.txt",
+      "size": 12043,
+      "sha256": "dbe7ef0b7225bc6fa3a28c6ad2e10eebb40cb645c7f02b8fa751e11d89829758"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/evaluation-matrix.json",
+      "size": 14195,
+      "sha256": "18bab204f7deaa89cd863bcee13aefac1b1a966d9092de75f7122adb30e3caab"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/README.md",
+      "size": 1279,
+      "sha256": "fe7794d7518781ade230d71022cc1154590b6af54567be71da9e35bda3193f84"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/calendar.html",
+      "size": 9492,
+      "sha256": "58907aa4b75dfbc1022853d86aadcfba2aaed52202115d08b833ffde2933ef89"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/export.html",
+      "size": 10386,
+      "sha256": "944d36f56f3f2e09080d5372232f2f0d81dc8b37d72231a0bbf9e6611681e59b"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/index.html",
+      "size": 10385,
+      "sha256": "c0fa81f3f1b57e75baa4b349a944248bfe2248ba17fb7bc83a08bd93e4fb2143"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/my-flow.html",
+      "size": 13101,
+      "sha256": "502efd4a8cb37797845e4d8604c42fa83c70d2f4a35bdc6a2597dedab72dc362"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/preview-manifest.json",
+      "size": 10966,
+      "sha256": "9d02f14d3d1f552e82016d3d027020c0b94cc198ce8d9ddb966e5b2a1219423c"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/public-flow.html",
+      "size": 14107,
+      "sha256": "1febb9746223c132fa7500761f6c0bef5343cc09b307400ada1d77c2187f2e5a"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-gallery.html",
+      "size": 29601,
+      "sha256": "ec13247b619b729c8c17a6adc727887f06a7cc24999e6e1f028f7ae5833cf4a5"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-manifest.json",
+      "size": 15484,
+      "sha256": "01fe69f3fda5ff6df4d66a327441a33f808649efa57ea6e7b75c165555456bde"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-screenshots/2026-07-26-p35-01-entry-router-evidence/p35-01-entry-empty-390.png",
+      "size": 37104,
+      "sha256": "4989e92e8211faad8028f2a73a294cbc58955d824304980501181908159d5de6"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-screenshots/2026-07-26-p35-01-entry-router-evidence/p35-01-entry-saved-390.png",
+      "size": 24364,
+      "sha256": "8f978be0b5b9ad880594ded7f5e243db26569fb3bb22553d69a1e601d9739ab1"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-screenshots/2026-07-26-p35-01-entry-router-evidence/p35-01-nav-1024.png",
+      "size": 46335,
+      "sha256": "3679fefaa04fd6b6df6289e2656d5fc75a4845d5a96574031e7e1a82448b0702"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-screenshots/2026-07-26-p35-01-entry-router-evidence/p35-01-nav-1440.png",
+      "size": 62368,
+      "sha256": "a0ddd12df0286e3979b391ccb0ba51c5e10377449d6dec4f57770df053fc017e"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-screenshots/2026-07-26-p35-02-public-result-first-evidence/p35-02-learning-save-before-1440.png",
+      "size": 26104,
+      "sha256": "7c632e0cc0d445cc25ae62db81b00c54a43b906d1d1de952f0e9bd8d4ecaf7a3"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-screenshots/2026-07-26-p35-02-public-result-first-evidence/p35-02-moving-receipt-390.png",
+      "size": 25107,
+      "sha256": "e41542c202bc0b2ea09047a96be439477de609c33a2e580fe615615874109537"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-screenshots/2026-07-26-p35-02-public-result-first-evidence/p35-02-moving-save-before-390.png",
+      "size": 24043,
+      "sha256": "517b974f673ba5cd05390c4aaa014dc0df6c58f4d12927d9702135adcd32bdca"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-screenshots/2026-07-26-p35-02-public-result-first-evidence/p35-02-routine-save-before-1024.png",
+      "size": 32644,
+      "sha256": "f769d6e6707d66329c6cb0894e466e73531af1629c2ed86a773710943569b0f0"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-screenshots/2026-07-26-p35-02-public-result-first-evidence/p35-02-undated-save-before-390.png",
+      "size": 24689,
+      "sha256": "aa52a9a87398f81c1b3f38d0cbdff7ea784991307d079b3f228f18baa198d7cb"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-screenshots/2026-07-26-p35-03-adjust-one-kind-evidence/p35-03-adjust-anchor-390.png",
+      "size": 21598,
+      "sha256": "3312f20bf9a6b21f2758a019168f54fbb3b4a6469cf54757d1e2a13c3ebd7723"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-screenshots/2026-07-26-p35-03-adjust-one-kind-evidence/p35-03-adjust-items-1024.png",
+      "size": 37028,
+      "sha256": "b516b50f1cbac9b84ffdfcf3e1febd96e5b6f8d11bb67957b444f14083eb841d"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-screenshots/2026-07-26-p35-03-adjust-one-kind-evidence/p35-03-adjust-name-390.png",
+      "size": 21525,
+      "sha256": "c7d522cde8fe44e02a4df9c93d0ad4f8dafd0ec013c41e8d97019b56c918818c"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-screenshots/2026-07-26-p35-03-adjust-one-kind-evidence/p35-03-adjust-routine-1440.png",
+      "size": 42994,
+      "sha256": "cdee89de2b158743fae33e362a09cdd31a17dffed22fa14baca3303ffc0bb07a"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-screenshots/2026-07-26-p35-04-my-flow-safe-split-evidence/p35-04-calendar-1024.png",
+      "size": 49078,
+      "sha256": "1f6a678ed7e380117ef0d79b3a54437ce434f2eab293914c774215b6bce6594f"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-screenshots/2026-07-26-p35-04-my-flow-safe-split-evidence/p35-04-my-390.png",
+      "size": 31710,
+      "sha256": "dbfe107548dc447d63e56cf480668db73c175402ff56d2c905ae7b68ee332cfe"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-screenshots/2026-07-26-p35-05-my-flow-library-workspace-evidence/p35-05-my-library-1-390.png",
+      "size": 20593,
+      "sha256": "28d223af25180c98e3a286609dc0928c2209d1ee520abcf631595726d150f225"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-screenshots/2026-07-26-p35-05-my-flow-library-workspace-evidence/p35-05-my-library-20-390.png",
+      "size": 41224,
+      "sha256": "b059bfa2783d6b94b79a9126a3b6bad4cd69a4c94660b600505c3021321b4732"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-screenshots/2026-07-26-p35-05-my-flow-library-workspace-evidence/p35-05-my-library-60-1440.png",
+      "size": 43165,
+      "sha256": "f39cecfadd6c643deef115b53d19b596c9a34e520537db500c99dea282f5a41c"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-screenshots/2026-07-26-p35-05-my-flow-library-workspace-evidence/p35-05-my-library-workspace-1024.png",
+      "size": 53077,
+      "sha256": "fdbbab40ca9fa45018577f4f5e04f94be2c4dd01b29887b710dcffa1625655e8"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-screenshots/2026-07-26-p35-05-my-flow-library-workspace-evidence/p35-05-personal-flow-390.png",
+      "size": 20046,
+      "sha256": "d359e8529aa00cae136cc5d03902ea63a5747c032770902224cfbc3bcaf7bfdd"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-screenshots/2026-07-26-p35-06-calendar-lens-evidence/p35-06-calendar-60-flow-1440.png",
+      "size": 94829,
+      "sha256": "ce5e700040dfc993073302e23e2d9ed581c1fefd9cb1770fa4f60a32c586a39f"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-screenshots/2026-07-26-p35-06-calendar-lens-evidence/p35-06-calendar-agenda-390.png",
+      "size": 32817,
+      "sha256": "3bf444e252df40fc5743da911a7cc1d4e10c6317502ee38ac2a44ce3b17fff3f"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-screenshots/2026-07-26-p35-06-calendar-lens-evidence/p35-06-calendar-month-390.png",
+      "size": 30523,
+      "sha256": "b7cb06e5b6610fb73a6025dfa167014e9716036da891a188bc333b021fde3798"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-screenshots/2026-07-26-p35-06-calendar-lens-evidence/p35-06-calendar-multi-flow-1024.png",
+      "size": 45324,
+      "sha256": "a29b6e4fddce5d894a44c03270bc725cf6fbd43811ecb36ab35c94d6f1519127"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-screenshots/2026-07-26-p35-07-export-scope-first-evidence/p35-07-export-current-1024.png",
+      "size": 44510,
+      "sha256": "6e0fe43cc13ace0915a07491e39a82a37ae86ced49facbed8599a189b732d832"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-screenshots/2026-07-26-p35-07-export-scope-first-evidence/p35-07-export-receipt-1440.png",
+      "size": 53387,
+      "sha256": "edb4ae951daa4e51297dad16f36ac236b6b7622648ccff1d00c8b3304d9d2095"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-screenshots/2026-07-26-p35-07-export-scope-first-evidence/p35-07-export-selected-390.png",
+      "size": 38630,
+      "sha256": "c0aee87dbe66a3c5e2a0ed82c72615e5f9dc4fbb55791f09a74fc926d1145315"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-screenshots/2026-07-26-p35-07-export-scope-first-evidence/p35-07-export-whole-390.png",
+      "size": 34045,
+      "sha256": "f4876f55f92ebcac16acbe3aec701123caf1772430f39ad7610321c058e3aef7"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-screenshots/2026-07-26-p35-08-final-mece-gate/p35-08-calendar-selected-day-1024.png",
+      "size": 40740,
+      "sha256": "e90f6e37fae3ebbb109596999e40ca43dac07f3f4290a3521a0394d08eec762f"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-screenshots/2026-07-26-p35-08-final-mece-gate/p35-08-memo-result-390.png",
+      "size": 26867,
+      "sha256": "ba4aa1b0c3138efe82c991e81dc5efccd48f6388530eb48c16a8108ccdfd9731"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-screenshots/2026-07-26-p35-08-final-mece-gate/p35-08-moving-result-390.png",
+      "size": 24254,
+      "sha256": "f141495cf3961c3e4989bdeb48f043661b9f39f13434f1a77116059a3607d8e4"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-screenshots/2026-07-26-p35-08-final-mece-gate/p35-08-my-flow-focused-390.png",
+      "size": 22194,
+      "sha256": "9e1ff0d936980813a32a6a6a3c2fd2d9914397bc8fe4e0099008a3402b4a99ce"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-screenshots/2026-07-26-p35-08-final-mece-gate/p35-08-my-flow-library-20-390.png",
+      "size": 41224,
+      "sha256": "b059bfa2783d6b94b79a9126a3b6bad4cd69a4c94660b600505c3021321b4732"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-screenshots/2026-07-26-p35-08-final-mece-gate/p35-08-my-flow-library-60-1440.png",
+      "size": 61650,
+      "sha256": "b237ae5420a5bcf802eec4532a27779ec5b3d992235d6dcf4bb1b82b89bad444"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-screenshots/2026-07-26-p35-08-final-mece-gate/p35-08-study-result-390.png",
+      "size": 18057,
+      "sha256": "3c9f04b694889618ef7805f5be37b2447b6f64de0be44929df01e04ec4188e01"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-screenshots/2026-07-26-p35-08-final-mece-gate/p35-08-vehicle-result-390.png",
+      "size": 24689,
+      "sha256": "aa52a9a87398f81c1b3f38d0cbdff7ea784991307d079b3f228f18baa198d7cb"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/reference-screenshots/2026-07-26-p35-08-final-mece-gate/p35-08-workout-result-390.png",
+      "size": 27799,
+      "sha256": "cb9e1e9cd7051790d7179fc2d4b8d5c41ccfe864548a9d874d7ecd64331143ab"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/render-check.json",
+      "size": 4090,
+      "sha256": "fd543d95789fbb8c0b8d465a463f6983e94a8d05256f72beec0f64ad40cbfbf3"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/screenshots/01-moving-result-390.png",
+      "size": 26321,
+      "sha256": "2a44f6dc76437b6d3934c75c67b6311c8f8de9b8e189372afa9a5ca94781fda1"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/screenshots/02-moving-adjust-items-390.png",
+      "size": 33981,
+      "sha256": "cb7bb896143954bc8406c0c0a48dcbffdf8dba0019ef8bddb141db4e34f08d91"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/screenshots/03-moving-public-export-390.png",
+      "size": 24305,
+      "sha256": "75a88339a696a960eb177a04622fff83fe2aca04851c8da1fa7feea04d190591"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/screenshots/04-moving-saved-receipt-390.png",
+      "size": 25038,
+      "sha256": "c214d37ea3daa277baf5f9ae14efc723dfc7026193c1945cb05878cebc33f66d"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/screenshots/05-vehicle-result-390.png",
+      "size": 24689,
+      "sha256": "aa52a9a87398f81c1b3f38d0cbdff7ea784991307d079b3f228f18baa198d7cb"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/screenshots/06-vehicle-adjust-items-390.png",
+      "size": 36265,
+      "sha256": "e876cbb0876ed8130742e61fec15a9cb3fa5dea29f7eca0e714bb832f9419847"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/screenshots/07-workout-result-390.png",
+      "size": 29130,
+      "sha256": "8f7aab5b6df2a7c79791c57f3d498c7d7b171bdfbe18798c96426d61072ba1ad"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/screenshots/08-workout-routine-adjust-390.png",
+      "size": 27319,
+      "sha256": "53577f8ffd12464bc0a6af1f93ec26d438a2c973b35752882650cb7dc38bd99f"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/screenshots/09-my-flow-next-action-390.png",
+      "size": 21267,
+      "sha256": "bf5e91075f6e094200693c248d24bc0939e053cc12bc1f8586123413865cdddd"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/screenshots/10-my-flow-item-detail-390.png",
+      "size": 26809,
+      "sha256": "4f09b4f66d3860338d94978b6c0d728566988ecf876dda7120c3b93069260472"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/screenshots/11-my-flow-item-edit-390.png",
+      "size": 21985,
+      "sha256": "0a18587ac75492fc2e5aa4a0392dac3b04ef276164699a01e9fdbee8f4594c73"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/screenshots/12-my-flow-full-plan-390.png",
+      "size": 31539,
+      "sha256": "aeabb0340f93d0084315734ffb8551f424d449903a8f635b345b191ce8bf6cbd"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/screenshots/13-my-flow-record-390.png",
+      "size": 18427,
+      "sha256": "632ee4b6efdeaadaebc4640eed29bc279992ec69c6da2af92867ab018051b589"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/screenshots/14-my-flow-completion-undo-390.png",
+      "size": 24863,
+      "sha256": "f70fdf3a6aa5cef9bb2d0e7899ac2eb0f4e17e05c748715a34dcc35fd408ccde"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/screenshots/15-my-flow-workspace-1024.png",
+      "size": 61626,
+      "sha256": "809ad4964e97c14fd4e57cebe8dfeaa3fd0ae7e5969c1968237ed9df09cd5f4a"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/screenshots/16-calendar-month-390.png",
+      "size": 30523,
+      "sha256": "b7cb06e5b6610fb73a6025dfa167014e9716036da891a188bc333b021fde3798"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/screenshots/17-calendar-selected-day-390.png",
+      "size": 32817,
+      "sha256": "3bf444e252df40fc5743da911a7cc1d4e10c6317502ee38ac2a44ce3b17fff3f"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/screenshots/18-calendar-selected-day-1024.png",
+      "size": 40740,
+      "sha256": "e90f6e37fae3ebbb109596999e40ca43dac07f3f4290a3521a0394d08eec762f"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/state-snapshots/01-moving-result-390.json",
+      "size": 3608,
+      "sha256": "de7ac34319c47783699b7ee334c9513f51784e6be588dfb3a506010f87fb6025"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/state-snapshots/02-moving-adjust-items-390.json",
+      "size": 10818,
+      "sha256": "6c674e3d8326077157da10309410542243abfde0e4cfd8430a80713a868c31d4"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/state-snapshots/03-moving-public-export-390.json",
+      "size": 4907,
+      "sha256": "da8f03bf68695876b88c7638563ccdbb0f4a31394ffaea02ed931def88b7ca30"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/state-snapshots/04-moving-saved-receipt-390.json",
+      "size": 2936,
+      "sha256": "47d708ecfe04aa923d83501f90395f4b018692c7a3f367794b5947a20a872803"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/state-snapshots/05-vehicle-result-390.json",
+      "size": 3729,
+      "sha256": "b0414f92da7cc707664165c3dc2365b3d53456cf4212965e5970eb93035237ac"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/state-snapshots/06-vehicle-adjust-items-390.json",
+      "size": 7291,
+      "sha256": "aa5f509115457f733bb552b62d9b2a0d5c0172043225bf9d9795d49d94276eb6"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/state-snapshots/07-workout-result-390.json",
+      "size": 4188,
+      "sha256": "195d8401fce1008a763858373d33d7744d45a8f8ad947038363d19c8bbd33bf8"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/state-snapshots/08-workout-routine-adjust-390.json",
+      "size": 6618,
+      "sha256": "0fec8f71797536173470da731b8b25605a7bde2a2e581f65786ea4d03a2707bc"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/state-snapshots/09-my-flow-next-action-390.json",
+      "size": 3782,
+      "sha256": "92a94e24ccf58844d2bca7c88f776206206120e632ac5d494f3cfa85b8d68745"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/state-snapshots/10-my-flow-item-detail-390.json",
+      "size": 6445,
+      "sha256": "92e790643035a1b45d0f41e7e7df39985746b5d05192c16bd59f0841e685df8b"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/state-snapshots/11-my-flow-item-edit-390.json",
+      "size": 6782,
+      "sha256": "93fd9d936b360f1d643ed27975386b0c4a12f348c724f8d9fac102af5bc4b215"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/state-snapshots/12-my-flow-full-plan-390.json",
+      "size": 6866,
+      "sha256": "3aeb12424e800d64ef0dded09a08d6f809f451c67a618afe2585a8376528d9be"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/state-snapshots/13-my-flow-record-390.json",
+      "size": 3239,
+      "sha256": "21e904131b8fc90a971765f8461409a8c61599ce98558c11e0bb227372e8dbfd"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/state-snapshots/14-my-flow-completion-undo-390.json",
+      "size": 4036,
+      "sha256": "84a8db7a325434f780ff63a7fbb352aae0e58f9157dae408c01bcca443d22508"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/state-snapshots/15-my-flow-workspace-1024.json",
+      "size": 15897,
+      "sha256": "1e059f2d99cc59494992b31bbe4d789b004451c0a14b6fa12b5a2526d365e87d"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/state-snapshots/16-calendar-month-390.json",
+      "size": 12254,
+      "sha256": "8060b88e53e02150d75e14b83c19ddf4cbf30259fc55d647c241220fd248fb4e"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/state-snapshots/17-calendar-selected-day-390.json",
+      "size": 12324,
+      "sha256": "9e81047a28e0c65229ba83c4aca605da09f48aa64b931155db26d3a11fbcca83"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/offline-preview/state-snapshots/18-calendar-selected-day-1024.json",
+      "size": 13205,
+      "sha256": "a27863b1c5c5e41dbee0760e870f591af410be4abf2627368146cce177d80019"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/reference-patterns.md",
+      "size": 5141,
+      "sha256": "1caa26ef0d7ced875dd542f38aa70ca710c4b48d5c384dd3933f6b31f847f42e"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/review-brief-ko.md",
+      "size": 12112,
+      "sha256": "5b95fa56334dbe6aa45394aa1eb7fa566dd822eff987474b8b6661a955776793"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/review-render-check.json",
+      "size": 870,
+      "sha256": "84912f1bf71563e9eaa01091517f371d2849741cb5a5a37f364ade70c9e53050"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/review-response-template-ko.md",
+      "size": 4608,
+      "sha256": "643c4c4d15ba604eff3afd9d3eb9ceedea1caab3de3aa915a5fa99decd804a36"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/review-scenarios.json",
+      "size": 11038,
+      "sha256": "d832e5070f885d6073ee54d22964f02a59467db66d789c09216f5694605da24c"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/review.html",
+      "size": 21005,
+      "sha256": "aba05747b4e5445556a300d37569d640c3519965b04e493c2c3d4369a51b8efe"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/screenshot-manifest.json",
+      "size": 4570,
+      "sha256": "b0e77fbeca7af94aefcd9dd9f4ae3db728ec833298adf412c49f43e709db8d08"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/screenshots/01-moving-save-before-390.png",
+      "size": 24043,
+      "sha256": "517b974f673ba5cd05390c4aaa014dc0df6c58f4d12927d9702135adcd32bdca"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/screenshots/02-moving-receipt-390.png",
+      "size": 25107,
+      "sha256": "e41542c202bc0b2ea09047a96be439477de609c33a2e580fe615615874109537"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/screenshots/03-adjust-anchor-390.png",
+      "size": 21598,
+      "sha256": "3312f20bf9a6b21f2758a019168f54fbb3b4a6469cf54757d1e2a13c3ebd7723"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/screenshots/04-adjust-items-1024.png",
+      "size": 37028,
+      "sha256": "b516b50f1cbac9b84ffdfcf3e1febd96e5b6f8d11bb67957b444f14083eb841d"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/screenshots/05-vehicle-result-390.png",
+      "size": 24689,
+      "sha256": "aa52a9a87398f81c1b3f38d0cbdff7ea784991307d079b3f228f18baa198d7cb"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/screenshots/06-workout-result-390.png",
+      "size": 27799,
+      "sha256": "cb9e1e9cd7051790d7179fc2d4b8d5c41ccfe864548a9d874d7ecd64331143ab"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/screenshots/07-study-result-390.png",
+      "size": 18057,
+      "sha256": "3c9f04b694889618ef7805f5be37b2447b6f64de0be44929df01e04ec4188e01"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/screenshots/08-memo-result-390.png",
+      "size": 26867,
+      "sha256": "ba4aa1b0c3138efe82c991e81dc5efccd48f6388530eb48c16a8108ccdfd9731"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/screenshots/09-my-flow-focused-390.png",
+      "size": 22194,
+      "sha256": "9e1ff0d936980813a32a6a6a3c2fd2d9914397bc8fe4e0099008a3402b4a99ce"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/screenshots/10-my-flow-library-20-390.png",
+      "size": 41224,
+      "sha256": "b059bfa2783d6b94b79a9126a3b6bad4cd69a4c94660b600505c3021321b4732"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/screenshots/11-calendar-selected-day-1024.png",
+      "size": 40740,
+      "sha256": "e90f6e37fae3ebbb109596999e40ca43dac07f3f4290a3521a0394d08eec762f"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/screenshots/12-export-whole-390.png",
+      "size": 34045,
+      "sha256": "f4876f55f92ebcac16acbe3aec701123caf1772430f39ad7610321c058e3aef7"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/screenshots/13-export-selected-390.png",
+      "size": 38630,
+      "sha256": "c0aee87dbe66a3c5e2a0ed82c72615e5f9dc4fbb55791f09a74fc926d1145315"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/screenshots/14-export-current-1024.png",
+      "size": 44510,
+      "sha256": "6e0fe43cc13ace0915a07491e39a82a37ae86ced49facbed8599a189b732d832"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-owner-feedback-independent-review-handoff/unified-review-prompt-ko.txt",
+      "size": 8539,
+      "sha256": "e12fcff2dee1e6300eeca34230f277c6bae1606aa0617713994e2d9cd0968c90"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r0-temporal-first-group-evidence/README.md",
+      "size": 4445,
+      "sha256": "b7dbef0d9d1e37ddbe5f61cb311987671510596d572e529dc31902668ece42cc"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r0-temporal-first-group-evidence/audit.md",
+      "size": 5364,
+      "sha256": "9e9087cf05fe042ac3c64b80733fc13b09d2f3e5146329f1d4fbe2ec7a33b550"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r0-temporal-first-group-evidence/route-evidence.json",
+      "size": 4085,
+      "sha256": "0ba7d8698c60e406c7b09ef0e1b32567bcf236da1c2ceb863ba084fa1b3e1d2e"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r0-temporal-first-group-evidence/screenshots/p35-r0-next-date-group-1024.png",
+      "size": 49258,
+      "sha256": "0092fa25fb61c2516b00fd703586ea644d8961f1b84bd2223cc6e664d356dc44"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r0-temporal-first-group-evidence/screenshots/p35-r0-next-date-group-390.png",
+      "size": 30264,
+      "sha256": "11b657a3d4fb380b6188bca01e2ff9743baaefa25cef64bd0a460f8b76045ba0"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r0-temporal-first-group-evidence/screenshots/p35-r0-past-date-warning-390.png",
+      "size": 28188,
+      "sha256": "e160deda06f3ea69fc7db678c3ffdcedb6eb97dfcd4365b029001a28692c9c08"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r1-artifact-preflight-parity-evidence/README.md",
+      "size": 2812,
+      "sha256": "335cfa55cc2462f7718dcd846781ab192a6ee90be012a65ae678842f08539bbb"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r1-artifact-preflight-parity-evidence/audit.md",
+      "size": 3607,
+      "sha256": "411c06e13951863e52fb44472ac183c0846adc7707d502c9d4f1ffee3b156949"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r1-artifact-preflight-parity-evidence/route-evidence.json",
+      "size": 3298,
+      "sha256": "22fafe4e9eec148a043c410f405813962309cda09df376b62eed0171ba5b442d"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r1-artifact-preflight-parity-evidence/screenshots/p35-r1-public-preflight-moving-390.png",
+      "size": 22871,
+      "sha256": "78e0dcef14b0aea27e7897b53550b98ba00cfc56658d34f95145afd5fc1a232b"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r1-artifact-preflight-parity-evidence/screenshots/p35-r1-public-preflight-routine-1024.png",
+      "size": 36055,
+      "sha256": "594232a8a1b2f5a8f5b2a0b02dfe2d9b157eacb8338796142e80f02d6ccc4fef"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r1-artifact-preflight-parity-evidence/screenshots/p35-r1-public-preflight-shapes-1024.png",
+      "size": 25241,
+      "sha256": "7ba3fc30c24b6127f092c3ad5781e7617e4731d3ea990db2055da8bcdbbcf7dc"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r2-contextual-item-personalization-evidence/README.md",
+      "size": 2634,
+      "sha256": "cf58d871d4d397b8cf599f221de0dcc58e1eefad1d101a16b9b78b7634e03afe"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r2-contextual-item-personalization-evidence/audit.md",
+      "size": 4634,
+      "sha256": "2677cf1f53ad17f17b7d1e3abde8eaeaf022b491682f49355d523a569787ca4d"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r2-contextual-item-personalization-evidence/route-evidence.json",
+      "size": 3071,
+      "sha256": "15d1de1e2c70423df051007dcb2138e81c8162b7a8acf5e3f76e62e0a2048f68"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r2-contextual-item-personalization-evidence/screenshots/p35-r2-item-editor-390.png",
+      "size": 27069,
+      "sha256": "e40c2091742895d78a5a81814819bf82d62d98f426f791d0f9d45c89c8debf9f"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r2-contextual-item-personalization-evidence/screenshots/p35-r2-item-inspector-1024.png",
+      "size": 43161,
+      "sha256": "df094e5045742b180b6c99a1e2b813222224c75af2a20dec71c46fd3278152b8"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r2-contextual-item-personalization-evidence/screenshots/p35-r2-my-flow-personalized-390.png",
+      "size": 33501,
+      "sha256": "3b3b213e0fe0055dfe0be280e72b992f332d74aeb36485769ad251fb198ae402"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r3-receipt-workspace-continuity-evidence/README.md",
+      "size": 1726,
+      "sha256": "1404e5f848a0aa21e744480197d4e0239522ea4cf328914264e41ce00c37fcce"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r3-receipt-workspace-continuity-evidence/audit.md",
+      "size": 1925,
+      "sha256": "1ed9991287e9a1a223af52a523fd662f9d932661e15855fa07527672155e77d2"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r3-receipt-workspace-continuity-evidence/route-evidence.json",
+      "size": 1057,
+      "sha256": "1faccd6513bae9dabb04b946071e0386cc09c985577ef31c070a2cdb653c67c5"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r3-receipt-workspace-continuity-evidence/screenshots/p35-r3-focused-workspace-1024.png",
+      "size": 46724,
+      "sha256": "e9b859093d283c67370dba32e78006650deadf87fca30211468d3a190862e69e"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r3-receipt-workspace-continuity-evidence/screenshots/p35-r3-focused-workspace-390.png",
+      "size": 26201,
+      "sha256": "a1282b088da33939406a6dd5ca0fdf4289ff038ed9559a4543b0bf0a5b459afc"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r3-receipt-workspace-continuity-evidence/screenshots/p35-r3-saved-receipt-1024.png",
+      "size": 27444,
+      "sha256": "6890ce096e502d46617fb3be624116a12d0c175ed43e5a79b8a81c650f7d2437"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r3-receipt-workspace-continuity-evidence/screenshots/p35-r3-saved-receipt-390.png",
+      "size": 24080,
+      "sha256": "911e94cddcea0c1f63309ad8d848cadea52f79f7d017eb3fc13a2ab157a94ca2"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r4-shape-aware-workspace-evidence/README.md",
+      "size": 1789,
+      "sha256": "f54fb3637dec81bc3309437209a2763cd286d1532f2bfba159b035619d994fd6"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r4-shape-aware-workspace-evidence/audit.md",
+      "size": 1882,
+      "sha256": "7cdfab6381043cfec556e40fcd38839cd5a251657f01fc45d9f466a6896a484c"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r4-shape-aware-workspace-evidence/route-evidence.json",
+      "size": 1198,
+      "sha256": "d9891ede60595f7e16556b4bcfbb6e5531f4a75ff79b31aba2d5c28b29adfe08"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r4-shape-aware-workspace-evidence/screenshots/p35-r4-dated-next-group-390.png",
+      "size": 27933,
+      "sha256": "f4159702a27db6edea488f95571034b94b5782d14703bc15f121621fbcd8def8"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r4-shape-aware-workspace-evidence/screenshots/p35-r4-routine-occurrence-390.png",
+      "size": 29512,
+      "sha256": "7ab64b7a69c8aa63fac6caab0499136506b3501e4e7a9a92979b3a7d5f6d7f32"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r4-shape-aware-workspace-evidence/screenshots/p35-r4-sheet-current-1024.png",
+      "size": 37965,
+      "sha256": "0cf8c0855d7c48eebcc49f53a44356fdcb8211b6bc0b4c031cf5bde679f34b39"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r5-memo-result-grammar-evidence/README.md",
+      "size": 1854,
+      "sha256": "2af725dbd7d8bff5b52af672ded1b26d28df9c6fd78f74b795f1ad348fe5f56e"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r5-memo-result-grammar-evidence/audit.md",
+      "size": 1921,
+      "sha256": "7e697b745de1f53e7862edbb80bfdc5a30617413c1abaf2b3a338681676920ba"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r5-memo-result-grammar-evidence/route-evidence.json",
+      "size": 1207,
+      "sha256": "d96ea792186fa4eb28c429ca24359afc1c3a51bedc4a2c322fe270acd0e14f3a"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r5-memo-result-grammar-evidence/screenshots/p35-r5-memo-proposal-390.png",
+      "size": 33618,
+      "sha256": "93196de54ae65387cc701f704f0b6fe86659316901486144d5126d973c62f23e"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r6-calendar-day-sheet-evidence/README.md",
+      "size": 1834,
+      "sha256": "b4f9d801992eaa33d238bfb8b1751824ec8d4a88e9d58f04bdc9f79f7802f08e"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r6-calendar-day-sheet-evidence/audit.md",
+      "size": 1762,
+      "sha256": "b2b1e49dc488cadced0b621ad76a1ddd7e6c62480f78d3f087bea10e3359a6ec"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r6-calendar-day-sheet-evidence/route-evidence.json",
+      "size": 1349,
+      "sha256": "a04bf8d96b8585e4e37f1e9e4372b49c00d3491eb5650682bf12d7828a9ae308"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r6-calendar-day-sheet-evidence/screenshots/p35-r6-calendar-day-sheet-390.png",
+      "size": 27936,
+      "sha256": "961d93b9674a72003afb99426e7dfc6d66a12bcdfb1bb283134e463ecf904e8a"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r6-calendar-day-sheet-evidence/screenshots/p35-r6-calendar-side-agenda-1024.png",
+      "size": 45324,
+      "sha256": "a29b6e4fddce5d894a44c03270bc725cf6fbd43811ecb36ab35c94d6f1519127"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r7-bounded-revision-final-gate/README.md",
+      "size": 3010,
+      "sha256": "7bc1282bac3017e87ec879233f4bd461ed0496313d5a07873395516166e7d60e"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r7-bounded-revision-final-gate/audit.md",
+      "size": 4107,
+      "sha256": "97bd5d4ad0f680b683ef5180a27462a2b22b0cf4a973c0b740c2882506e7c574"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r7-bounded-revision-final-gate/completion-audit.json",
+      "size": 2177,
+      "sha256": "d369ec84baf66dd24bf568d44d661efc7b889f6de83668041db9b8f61172d28e"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r7-bounded-revision-final-gate/journey-scorecard.json",
+      "size": 3850,
+      "sha256": "1f2906940c76c663489f27ec13500528cbbf5c9a6a22c77d6d3df98c596b9d83"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r7-bounded-revision-final-gate/route-evidence.json",
+      "size": 3840,
+      "sha256": "e91e4aaf6ff8071dc2a3260b25110a94dc48c8f4c3bee7e800b80d42fecaa8e6"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r7-bounded-revision-final-gate/screenshots/p35-r7-calendar-session1-preview-390.png",
+      "size": 25037,
+      "sha256": "2d7f1a717272e4ee084e0fbc4fbb71d6a2bc77ea356c4ae1b356c5fb486047db"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r7-bounded-revision-final-gate/screenshots/p35-r7-calendar-session2-preflight-1024.png",
+      "size": 28394,
+      "sha256": "5d9927399a92b60a081cf46c4379d64078d1887c8ad15b55b5c2a588574da811"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r7-bounded-revision-final-gate/screenshots/p35-r7-calendar-session3-workspace-390.png",
+      "size": 28052,
+      "sha256": "758330668e3705c04c8cbc464ffd7daa36ff0d397b1c0714de4b8b87bf06ee41"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r7-bounded-revision-final-gate/screenshots/p35-r7-checklist-session1-preview-390.png",
+      "size": 25448,
+      "sha256": "cbe80ec81062c60a4cfa1f04dd8898e708e450848c5bcac3f44a60ec2f5e8a1d"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r7-bounded-revision-final-gate/screenshots/p35-r7-checklist-session2-preflight-1024.png",
+      "size": 23709,
+      "sha256": "5246e3287ccdadb812251e6f53b6eef95ed6f71315a331b30c25a90072395681"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r7-bounded-revision-final-gate/screenshots/p35-r7-checklist-session3-workspace-390.png",
+      "size": 32137,
+      "sha256": "58dbff0e45003653989a3e943a94e41722e0867e03de5791cb1769e9d4dbf1bb"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r7-bounded-revision-final-gate/screenshots/p35-r7-library-60-1440.png",
+      "size": 69415,
+      "sha256": "ca5a166247b7ea3d852f38b00bd77d086038d1c0a8b25f2ae36c2b852466e83a"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r7-bounded-revision-final-gate/screenshots/p35-r7-memo-session1-preview-390.png",
+      "size": 27634,
+      "sha256": "de928d89c8da8538eef499fab4739fa47bc4c0c8748493f46b9bc01442b552cb"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r7-bounded-revision-final-gate/screenshots/p35-r7-memo-session2-preflight-1024.png",
+      "size": 25207,
+      "sha256": "dde4eacaee22e12d10f9b9ada67a8871fd3bd79924a816830c6c9637f65947f5"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r7-bounded-revision-final-gate/screenshots/p35-r7-memo-session3-workspace-390.png",
+      "size": 31320,
+      "sha256": "915ae3c4696b78fb73ffd46debd8c7a1ae8b40ca695b1a77fe7ab35d46650eca"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r7-bounded-revision-final-gate/screenshots/p35-r7-routine-session1-preview-390.png",
+      "size": 28029,
+      "sha256": "1a90931c029530f7cdf92020054dfd85907c33df0d5438ded3f899cdc3c80545"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r7-bounded-revision-final-gate/screenshots/p35-r7-routine-session2-preflight-1024.png",
+      "size": 36055,
+      "sha256": "594232a8a1b2f5a8f5b2a0b02dfe2d9b157eacb8338796142e80f02d6ccc4fef"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r7-bounded-revision-final-gate/screenshots/p35-r7-routine-session3-workspace-390.png",
+      "size": 29442,
+      "sha256": "9efb14de49d1db69a9cecae1a6f2c625d64faec21f6a282f22f6a0e547e6e965"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r7-bounded-revision-final-gate/screenshots/p35-r7-sheet-session1-preview-390.png",
+      "size": 18812,
+      "sha256": "3e33558b39685b1f082b3287e606cbc838f4878bddd8c968eb2a851fac71f86d"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r7-bounded-revision-final-gate/screenshots/p35-r7-sheet-session2-preflight-1024.png",
+      "size": 26886,
+      "sha256": "6451384c75a5709553cdaadebdbc060569aab9ae0682d5bf4ece223e631df303"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-27-p35-r7-bounded-revision-final-gate/screenshots/p35-r7-sheet-session3-workspace-390.png",
+      "size": 28110,
+      "sha256": "47f6a96ac635a4ce8764295619cf08f44e15fe72ae0495a2d1e8e407afa78d26"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/README.md",
+      "size": 7216,
+      "sha256": "9f2b6f0d3c651953a32548752078c3264e555677b78a5dfeff8b4c07afc50dde"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/claude-code-review-prompt-ko.txt",
+      "size": 759,
+      "sha256": "ea9d2443b6795d5e90e782f3ba1725578260368658717eee6cb2482c3bfdf5d0"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/claude-design-review-prompt-ko.txt",
+      "size": 7261,
+      "sha256": "bb2f9199a6c33167aeaca4757a988ff350854d9c0a240ca0bee29acd0f2ab354"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/codex-review-prompt-ko.txt",
+      "size": 584,
+      "sha256": "51c83470fade03d0b5162cb6a98db0528f1bf03faaa1bbeab292e87ed9f27353"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/preview-manifest.json",
+      "size": 10969,
+      "sha256": "58e47d45c48ff4fea6ad97ed54f2045911ae9bdde4849cdfd4a9fc814f38ca98"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/screenshots/01-moving-result-390.png",
+      "size": 28905,
+      "sha256": "4e4e4877b78035e239b1147ef001b40a8a30bcf0333bf3478882fb20c0cecc54"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/screenshots/02-moving-adjust-items-390.png",
+      "size": 29594,
+      "sha256": "aabe7445855cd10d65445a3a6a39e79fd01a7895ebdcd3aacaa6706f04d24321"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/screenshots/03-moving-public-export-390.png",
+      "size": 25368,
+      "sha256": "18d630ac825ca528b81e6ceaea8e8b026cfb5ffde1e41820b507e099377a3a7e"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/screenshots/04-moving-saved-receipt-390.png",
+      "size": 24008,
+      "sha256": "4ea1e45fda8fbb5d6568e1b47fd82df7bb1cec43b404e713807e1161f8ade89b"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/screenshots/05-vehicle-result-390.png",
+      "size": 25448,
+      "sha256": "cbe80ec81062c60a4cfa1f04dd8898e708e450848c5bcac3f44a60ec2f5e8a1d"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/screenshots/06-vehicle-adjust-items-390.png",
+      "size": 32365,
+      "sha256": "2b07ff524f845600f13a75381b18512bc5117183da6d4a75101a234867f2311e"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/screenshots/07-workout-result-390.png",
+      "size": 29345,
+      "sha256": "1a902e4231c79c64daf809522ff170b5766a654c12a25328e5dc64ca57c386a5"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/screenshots/08-workout-routine-adjust-390.png",
+      "size": 27319,
+      "sha256": "53577f8ffd12464bc0a6af1f93ec26d438a2c973b35752882650cb7dc38bd99f"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/screenshots/09-my-flow-next-action-390.png",
+      "size": 31193,
+      "sha256": "1f10dd224760bf275ef4236c4ea2c093e0e586083874d812bc16546bf4896658"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/screenshots/10-my-flow-item-detail-390.png",
+      "size": 29412,
+      "sha256": "17113346e3ca3ea8531255765efe56d549b4065ee5a8d0cabea1a0e78c71fb41"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/screenshots/11-my-flow-item-edit-390.png",
+      "size": 22065,
+      "sha256": "967f09e2c1b074facac78de36fde376550612036e31bffe722201a66b1f72c1d"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/screenshots/12-my-flow-full-plan-390.png",
+      "size": 33589,
+      "sha256": "1058a0630cffd41ec97f4f7009d85f9f8172b4022d7717e4954788c694bceb8b"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/screenshots/13-my-flow-record-390.png",
+      "size": 32631,
+      "sha256": "88f7f2667ebda9a61fc2d4ca7b97d0bd6b19146fd632748a2ece1ab75180123d"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/screenshots/14-my-flow-completion-undo-390.png",
+      "size": 33503,
+      "sha256": "c94c08fe14127529611883d9f4c2dcbbc4eaaa3700972f3f59b19f04afe29205"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/screenshots/15-my-flow-workspace-1024.png",
+      "size": 57485,
+      "sha256": "c4fdc1cd80271fa377cf56875fbf7bf22875e443f04728b9badc1d27c8217172"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/screenshots/16-calendar-month-390.png",
+      "size": 30523,
+      "sha256": "b7cb06e5b6610fb73a6025dfa167014e9716036da891a188bc333b021fde3798"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/screenshots/17-calendar-selected-day-390.png",
+      "size": 27936,
+      "sha256": "961d93b9674a72003afb99426e7dfc6d66a12bcdfb1bb283134e463ecf904e8a"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/screenshots/18-calendar-selected-day-1024.png",
+      "size": 40740,
+      "sha256": "e90f6e37fae3ebbb109596999e40ca43dac07f3f4290a3521a0394d08eec762f"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/state-snapshots/01-moving-result-390.json",
+      "size": 8715,
+      "sha256": "93408751bbcfe4b9363efb022abc29286acef77c8d2c7c51b96c9a5de17ebd3f"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/state-snapshots/02-moving-adjust-items-390.json",
+      "size": 24673,
+      "sha256": "6a7b1eb7b901f8799ae0c285a8eea54a95d83a63e17ec636474e1bd64f1b945a"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/state-snapshots/03-moving-public-export-390.json",
+      "size": 9617,
+      "sha256": "c8e67ed00d17fcb48163abf1c98824223c0e05a81e3f25142d707e5ae6132f51"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/state-snapshots/04-moving-saved-receipt-390.json",
+      "size": 2756,
+      "sha256": "388773c10cfaceac8a4c650e5abdd2f48cf72dda5cb6660a84bf2b199da22553"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/state-snapshots/05-vehicle-result-390.json",
+      "size": 5849,
+      "sha256": "b241254ae6c62ac8a201facbcc844e92903b892e7bfd40bc1b3b8657eb98c985"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/state-snapshots/06-vehicle-adjust-items-390.json",
+      "size": 13121,
+      "sha256": "5dd5aab11a4e083ec48c5a14342e4e7b8f942a8568b4879198f2f875f3dd28fd"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/state-snapshots/07-workout-result-390.json",
+      "size": 4381,
+      "sha256": "c3d575bf8cead4ec883185fb11d1429f839d5acf7b6d8170032a700c50186475"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/state-snapshots/08-workout-routine-adjust-390.json",
+      "size": 6805,
+      "sha256": "a3b4325e40f69881b0f100c0f79536f83270d8af798c93c334e1665fedc51b2c"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/state-snapshots/09-my-flow-next-action-390.json",
+      "size": 10931,
+      "sha256": "9454e6fcb5aec1775e9336b63b3ea800c5567b74254e8b10df5637210978cce0"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/state-snapshots/10-my-flow-item-detail-390.json",
+      "size": 13570,
+      "sha256": "221519485b20467e4ce4910257d35bf1a2c26ba0111488af634612e5bf811e2e"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/state-snapshots/11-my-flow-item-edit-390.json",
+      "size": 14054,
+      "sha256": "95506494c9c3d429b9718c2f0bae6b435093a3ce4c2dc84f895d80a7f4f084e2"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/state-snapshots/12-my-flow-full-plan-390.json",
+      "size": 10955,
+      "sha256": "69dcd15e7c61f7632d065a3fb7e507d45ace65430f9cdef9cfb4dc88cb8f1bd0"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/state-snapshots/13-my-flow-record-390.json",
+      "size": 10740,
+      "sha256": "401d908309fdcef3ed6d0e7f4c687ce4cf1bbaf9559145fca4426954f7eafc4c"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/state-snapshots/14-my-flow-completion-undo-390.json",
+      "size": 10775,
+      "sha256": "9cce0022e2d3defcd97024339c051ec5f9df4b61c994ef9b3b0aa545a7f072bf"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/state-snapshots/15-my-flow-workspace-1024.json",
+      "size": 15608,
+      "sha256": "4e5c2b5ce132ecdd77aa33b7b96855feeef3c1b5e99853cf1114bf4601051fe3"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/state-snapshots/16-calendar-month-390.json",
+      "size": 10780,
+      "sha256": "efa92acd7705cabf4e29128a74374e3caca25b2c9a3f7a6ea8103c5669a48ced"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/state-snapshots/17-calendar-selected-day-390.json",
+      "size": 12695,
+      "sha256": "630b5a971f235cee0b862454f3ddb5c94d1405a88bffef3ef098e08052235de7"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/current-journeys/state-snapshots/18-calendar-selected-day-1024.json",
+      "size": 13205,
+      "sha256": "a27863b1c5c5e41dbee0760e870f591af410be4abf2627368146cce177d80019"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/review-brief-ko.md",
+      "size": 5059,
+      "sha256": "d9fde30f5808c93e675a1bd0273497406f6c5755910746261289d2be8c40f8e2"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/review-checklist-ko.md",
+      "size": 5733,
+      "sha256": "9783953ff6e340d8b91d4fa74dbdd5d3011ef2a5c2a7583183c933002d37ad15"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/review-context.json",
+      "size": 3597,
+      "sha256": "7e56f585ac10341d609f94743649b26b0106fa5e3932c4585f45adce0b9bc417"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/review-render-check.json",
+      "size": 1182,
+      "sha256": "11edf1376027aa6d63f3de2f215cfe5bf76fbbdabb2b6a9ce1e5e66ec26e9e7c"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/review-response-template-ko.md",
+      "size": 2479,
+      "sha256": "6247abcd2b6e8c7febb325406116aeb117c2b6446e915c2905d11c5e61f40d21"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/review-scenarios.json",
+      "size": 4996,
+      "sha256": "befda0939875ded8728479ec42d95b92f768e63171b759b352577fd2d4279989"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/review.html",
+      "size": 28219,
+      "sha256": "5cef267273c47859e8a8f9af10a165f9ccb3835413c6d38c3898203d6da93fb8"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/screenshot-catalog.json",
+      "size": 918,
+      "sha256": "c3d146e661dfb88b340def3ea27884bc64626ab92ade41b11fc4ef5f2a8fa13b"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/screenshot-index.md",
+      "size": 23363,
+      "sha256": "72901d9377a8e895b5600b3760863818444621bece8664cb92df4b17416fb001"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/screenshot-manifest.json",
+      "size": 4038,
+      "sha256": "ead73d7db754170662d3e76d1237bbe5e1e153a902fbe402b2283f394a7288ff"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/screenshots/p35-r7-calendar-session1-preview-390.png",
+      "size": 25037,
+      "sha256": "2d7f1a717272e4ee084e0fbc4fbb71d6a2bc77ea356c4ae1b356c5fb486047db"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/screenshots/p35-r7-calendar-session2-preflight-1024.png",
+      "size": 28394,
+      "sha256": "5d9927399a92b60a081cf46c4379d64078d1887c8ad15b55b5c2a588574da811"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/screenshots/p35-r7-calendar-session3-workspace-390.png",
+      "size": 28052,
+      "sha256": "758330668e3705c04c8cbc464ffd7daa36ff0d397b1c0714de4b8b87bf06ee41"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/screenshots/p35-r7-checklist-session1-preview-390.png",
+      "size": 25448,
+      "sha256": "cbe80ec81062c60a4cfa1f04dd8898e708e450848c5bcac3f44a60ec2f5e8a1d"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/screenshots/p35-r7-checklist-session2-preflight-1024.png",
+      "size": 23709,
+      "sha256": "5246e3287ccdadb812251e6f53b6eef95ed6f71315a331b30c25a90072395681"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/screenshots/p35-r7-checklist-session3-workspace-390.png",
+      "size": 32137,
+      "sha256": "58dbff0e45003653989a3e943a94e41722e0867e03de5791cb1769e9d4dbf1bb"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/screenshots/p35-r7-library-60-1440.png",
+      "size": 69415,
+      "sha256": "ca5a166247b7ea3d852f38b00bd77d086038d1c0a8b25f2ae36c2b852466e83a"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/screenshots/p35-r7-memo-session1-preview-390.png",
+      "size": 27634,
+      "sha256": "de928d89c8da8538eef499fab4739fa47bc4c0c8748493f46b9bc01442b552cb"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/screenshots/p35-r7-memo-session2-preflight-1024.png",
+      "size": 25207,
+      "sha256": "dde4eacaee22e12d10f9b9ada67a8871fd3bd79924a816830c6c9637f65947f5"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/screenshots/p35-r7-memo-session3-workspace-390.png",
+      "size": 31320,
+      "sha256": "915ae3c4696b78fb73ffd46debd8c7a1ae8b40ca695b1a77fe7ab35d46650eca"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/screenshots/p35-r7-routine-session1-preview-390.png",
+      "size": 28029,
+      "sha256": "1a90931c029530f7cdf92020054dfd85907c33df0d5438ded3f899cdc3c80545"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/screenshots/p35-r7-routine-session2-preflight-1024.png",
+      "size": 36055,
+      "sha256": "594232a8a1b2f5a8f5b2a0b02dfe2d9b157eacb8338796142e80f02d6ccc4fef"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/screenshots/p35-r7-routine-session3-workspace-390.png",
+      "size": 29442,
+      "sha256": "9efb14de49d1db69a9cecae1a6f2c625d64faec21f6a282f22f6a0e547e6e965"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/screenshots/p35-r7-sheet-session1-preview-390.png",
+      "size": 18812,
+      "sha256": "3e33558b39685b1f082b3287e606cbc838f4878bddd8c968eb2a851fac71f86d"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/screenshots/p35-r7-sheet-session2-preflight-1024.png",
+      "size": 26886,
+      "sha256": "6451384c75a5709553cdaadebdbc060569aab9ae0682d5bf4ece223e631df303"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/screenshots/p35-r7-sheet-session3-workspace-390.png",
+      "size": 28110,
+      "sha256": "47f6a96ac635a4ce8764295619cf08f44e15fe72ae0495a2d1e8e407afa78d26"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/slice-reference-manifest.json",
+      "size": 16174,
+      "sha256": "7c224a7f925bd3b77e7b8f9d0569247cdf6059a82a23ac8decb655e41514ec68"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/slice-reference-screenshots/2026-07-26-p35-01-entry-router-evidence/p35-01-entry-empty-390.png",
+      "size": 37104,
+      "sha256": "4989e92e8211faad8028f2a73a294cbc58955d824304980501181908159d5de6"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/slice-reference-screenshots/2026-07-26-p35-01-entry-router-evidence/p35-01-entry-saved-390.png",
+      "size": 24364,
+      "sha256": "8f978be0b5b9ad880594ded7f5e243db26569fb3bb22553d69a1e601d9739ab1"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/slice-reference-screenshots/2026-07-26-p35-01-entry-router-evidence/p35-01-nav-1024.png",
+      "size": 46335,
+      "sha256": "3679fefaa04fd6b6df6289e2656d5fc75a4845d5a96574031e7e1a82448b0702"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/slice-reference-screenshots/2026-07-26-p35-01-entry-router-evidence/p35-01-nav-1440.png",
+      "size": 62368,
+      "sha256": "a0ddd12df0286e3979b391ccb0ba51c5e10377449d6dec4f57770df053fc017e"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/slice-reference-screenshots/2026-07-26-p35-02-public-result-first-evidence/p35-02-learning-save-before-1440.png",
+      "size": 26104,
+      "sha256": "7c632e0cc0d445cc25ae62db81b00c54a43b906d1d1de952f0e9bd8d4ecaf7a3"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/slice-reference-screenshots/2026-07-26-p35-02-public-result-first-evidence/p35-02-moving-receipt-390.png",
+      "size": 25107,
+      "sha256": "e41542c202bc0b2ea09047a96be439477de609c33a2e580fe615615874109537"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/slice-reference-screenshots/2026-07-26-p35-02-public-result-first-evidence/p35-02-moving-save-before-390.png",
+      "size": 24043,
+      "sha256": "517b974f673ba5cd05390c4aaa014dc0df6c58f4d12927d9702135adcd32bdca"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/slice-reference-screenshots/2026-07-26-p35-02-public-result-first-evidence/p35-02-routine-save-before-1024.png",
+      "size": 32644,
+      "sha256": "f769d6e6707d66329c6cb0894e466e73531af1629c2ed86a773710943569b0f0"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/slice-reference-screenshots/2026-07-26-p35-02-public-result-first-evidence/p35-02-undated-save-before-390.png",
+      "size": 24689,
+      "sha256": "aa52a9a87398f81c1b3f38d0cbdff7ea784991307d079b3f228f18baa198d7cb"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/slice-reference-screenshots/2026-07-26-p35-03-adjust-one-kind-evidence/p35-03-adjust-anchor-390.png",
+      "size": 21598,
+      "sha256": "3312f20bf9a6b21f2758a019168f54fbb3b4a6469cf54757d1e2a13c3ebd7723"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/slice-reference-screenshots/2026-07-26-p35-03-adjust-one-kind-evidence/p35-03-adjust-items-1024.png",
+      "size": 37028,
+      "sha256": "b516b50f1cbac9b84ffdfcf3e1febd96e5b6f8d11bb67957b444f14083eb841d"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/slice-reference-screenshots/2026-07-26-p35-03-adjust-one-kind-evidence/p35-03-adjust-name-390.png",
+      "size": 21525,
+      "sha256": "c7d522cde8fe44e02a4df9c93d0ad4f8dafd0ec013c41e8d97019b56c918818c"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/slice-reference-screenshots/2026-07-26-p35-03-adjust-one-kind-evidence/p35-03-adjust-routine-1440.png",
+      "size": 42994,
+      "sha256": "cdee89de2b158743fae33e362a09cdd31a17dffed22fa14baca3303ffc0bb07a"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/slice-reference-screenshots/2026-07-26-p35-04-my-flow-safe-split-evidence/p35-04-calendar-1024.png",
+      "size": 49078,
+      "sha256": "1f6a678ed7e380117ef0d79b3a54437ce434f2eab293914c774215b6bce6594f"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/slice-reference-screenshots/2026-07-26-p35-04-my-flow-safe-split-evidence/p35-04-my-390.png",
+      "size": 31710,
+      "sha256": "dbfe107548dc447d63e56cf480668db73c175402ff56d2c905ae7b68ee332cfe"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/slice-reference-screenshots/2026-07-26-p35-05-my-flow-library-workspace-evidence/p35-05-my-library-1-390.png",
+      "size": 20593,
+      "sha256": "28d223af25180c98e3a286609dc0928c2209d1ee520abcf631595726d150f225"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/slice-reference-screenshots/2026-07-26-p35-05-my-flow-library-workspace-evidence/p35-05-my-library-20-390.png",
+      "size": 41224,
+      "sha256": "b059bfa2783d6b94b79a9126a3b6bad4cd69a4c94660b600505c3021321b4732"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/slice-reference-screenshots/2026-07-26-p35-05-my-flow-library-workspace-evidence/p35-05-my-library-60-1440.png",
+      "size": 43165,
+      "sha256": "f39cecfadd6c643deef115b53d19b596c9a34e520537db500c99dea282f5a41c"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/slice-reference-screenshots/2026-07-26-p35-05-my-flow-library-workspace-evidence/p35-05-my-library-workspace-1024.png",
+      "size": 53077,
+      "sha256": "fdbbab40ca9fa45018577f4f5e04f94be2c4dd01b29887b710dcffa1625655e8"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/slice-reference-screenshots/2026-07-26-p35-05-my-flow-library-workspace-evidence/p35-05-personal-flow-390.png",
+      "size": 20046,
+      "sha256": "d359e8529aa00cae136cc5d03902ea63a5747c032770902224cfbc3bcaf7bfdd"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/slice-reference-screenshots/2026-07-26-p35-06-calendar-lens-evidence/p35-06-calendar-60-flow-1440.png",
+      "size": 94829,
+      "sha256": "ce5e700040dfc993073302e23e2d9ed581c1fefd9cb1770fa4f60a32c586a39f"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/slice-reference-screenshots/2026-07-26-p35-06-calendar-lens-evidence/p35-06-calendar-agenda-390.png",
+      "size": 32817,
+      "sha256": "3bf444e252df40fc5743da911a7cc1d4e10c6317502ee38ac2a44ce3b17fff3f"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/slice-reference-screenshots/2026-07-26-p35-06-calendar-lens-evidence/p35-06-calendar-month-390.png",
+      "size": 30523,
+      "sha256": "b7cb06e5b6610fb73a6025dfa167014e9716036da891a188bc333b021fde3798"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/slice-reference-screenshots/2026-07-26-p35-06-calendar-lens-evidence/p35-06-calendar-multi-flow-1024.png",
+      "size": 45324,
+      "sha256": "a29b6e4fddce5d894a44c03270bc725cf6fbd43811ecb36ab35c94d6f1519127"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/slice-reference-screenshots/2026-07-26-p35-07-export-scope-first-evidence/p35-07-export-current-1024.png",
+      "size": 44510,
+      "sha256": "6e0fe43cc13ace0915a07491e39a82a37ae86ced49facbed8599a189b732d832"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/slice-reference-screenshots/2026-07-26-p35-07-export-scope-first-evidence/p35-07-export-receipt-1440.png",
+      "size": 53387,
+      "sha256": "edb4ae951daa4e51297dad16f36ac236b6b7622648ccff1d00c8b3304d9d2095"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/slice-reference-screenshots/2026-07-26-p35-07-export-scope-first-evidence/p35-07-export-selected-390.png",
+      "size": 38630,
+      "sha256": "c0aee87dbe66a3c5e2a0ed82c72615e5f9dc4fbb55791f09a74fc926d1145315"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/slice-reference-screenshots/2026-07-26-p35-07-export-scope-first-evidence/p35-07-export-whole-390.png",
+      "size": 34045,
+      "sha256": "f4876f55f92ebcac16acbe3aec701123caf1772430f39ad7610321c058e3aef7"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/slice-reference-screenshots/2026-07-26-p35-08-final-mece-gate/p35-08-calendar-selected-day-1024.png",
+      "size": 40740,
+      "sha256": "e90f6e37fae3ebbb109596999e40ca43dac07f3f4290a3521a0394d08eec762f"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/slice-reference-screenshots/2026-07-26-p35-08-final-mece-gate/p35-08-memo-result-390.png",
+      "size": 26867,
+      "sha256": "ba4aa1b0c3138efe82c991e81dc5efccd48f6388530eb48c16a8108ccdfd9731"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/slice-reference-screenshots/2026-07-26-p35-08-final-mece-gate/p35-08-moving-result-390.png",
+      "size": 24254,
+      "sha256": "f141495cf3961c3e4989bdeb48f043661b9f39f13434f1a77116059a3607d8e4"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/slice-reference-screenshots/2026-07-26-p35-08-final-mece-gate/p35-08-my-flow-focused-390.png",
+      "size": 22194,
+      "sha256": "9e1ff0d936980813a32a6a6a3c2fd2d9914397bc8fe4e0099008a3402b4a99ce"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/slice-reference-screenshots/2026-07-26-p35-08-final-mece-gate/p35-08-my-flow-library-20-390.png",
+      "size": 41224,
+      "sha256": "b059bfa2783d6b94b79a9126a3b6bad4cd69a4c94660b600505c3021321b4732"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/slice-reference-screenshots/2026-07-26-p35-08-final-mece-gate/p35-08-my-flow-library-60-1440.png",
+      "size": 61650,
+      "sha256": "b237ae5420a5bcf802eec4532a27779ec5b3d992235d6dcf4bb1b82b89bad444"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/slice-reference-screenshots/2026-07-26-p35-08-final-mece-gate/p35-08-study-result-390.png",
+      "size": 18057,
+      "sha256": "3c9f04b694889618ef7805f5be37b2447b6f64de0be44929df01e04ec4188e01"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/slice-reference-screenshots/2026-07-26-p35-08-final-mece-gate/p35-08-vehicle-result-390.png",
+      "size": 24689,
+      "sha256": "aa52a9a87398f81c1b3f38d0cbdff7ea784991307d079b3f228f18baa198d7cb"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/slice-reference-screenshots/2026-07-26-p35-08-final-mece-gate/p35-08-workout-result-390.png",
+      "size": 27799,
+      "sha256": "cb9e1e9cd7051790d7179fc2d4b8d5c41ccfe864548a9d874d7ecd64331143ab"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-codex-claude-code-independent-review-handoff/unified-review-prompt-ko.txt",
+      "size": 12366,
+      "sha256": "b2fe37ba28f240a113f6bc98ad5dea761aacbdf0734ee0df1031ec00cb63bcbc"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-independent-review-codex/README.md",
+      "size": 24587,
+      "sha256": "65e4cf7512de5e7f1cebd2f156dfdd7da26893a90abdd7d1ec439cc5dabc2a54"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-independent-review-codex/current-proposed-wireframes.md",
+      "size": 9196,
+      "sha256": "9a1d9c01a6c786cbeeb875ad92fdb1ca6b5e4ac9a0aeaa4c550bdf94b58278bd"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-independent-review-codex/journey-scorecard.json",
+      "size": 5421,
+      "sha256": "79c6117ed64df0ed731997809b6d033ad54695e43499435dd80c45f34f462490"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-independent-review-codex/next-program.md",
+      "size": 6645,
+      "sha256": "18dcff281593ebcc4f9a1e08fd16a9364caf3de49800413eee8e8b85717b2ee8"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r7-independent-review-codex/owner-feedback-matrix.json",
+      "size": 3796,
+      "sha256": "9c3a54d8576f6326dca18b593756e94577257a3a3af8079514aa509f6f6dda7f"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r8-r12-continuous-execution/README.md",
+      "size": 2798,
+      "sha256": "c1540f5cbe67e8d1ec0cd4567e055ab54147a47d8439374bc0b02541f22c63a2"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r8-r12-continuous-execution/decision-log.md",
+      "size": 1241,
+      "sha256": "843addc3eaa69575cba37eead1d96e74e4722a2b2414a12110a8e02b28a69acf"
+    },
+    {
+      "status": "??",
+      "path": "docs/content-audit/2026-07-28-p35-r8-r12-continuous-execution/execution-log.md",
+      "size": 1435,
+      "sha256": "1297e111767a46f35fd2014a490b4a6f2d2a2fca0bfd024a9cda6443e97c8adb"
+    },
+    {
+      "status": "??",
+      "path": "docs/specs/2026-07-26-flowme-mece-ux-reset/design-package.md",
+      "size": 24609,
+      "sha256": "4387617fc1a7b525fbe49d3638051b4b9ce3ea3bd1c666b9bb8138abaa17bcb7"
+    },
+    {
+      "status": "??",
+      "path": "docs/specs/2026-07-26-flowme-mece-ux-reset/developer-handoff-a-prime-ko.md",
+      "size": 40473,
+      "sha256": "6739a079e0661a5c16acbe17b80a74539769e0c6836fbceae1ca20121d698ece"
+    },
+    {
+      "status": "??",
+      "path": "docs/specs/2026-07-26-flowme-mece-ux-reset/p35-bounded-revision-developer-handoff-ko.md",
+      "size": 30087,
+      "sha256": "9a3df897648076e258a259b33cf0792819a5d87d4345249275eec198fd64ab6a"
+    },
+    {
+      "status": "??",
+      "path": "docs/specs/2026-07-26-flowme-mece-ux-reset/p35-goal-prompts-ko.md",
+      "size": 9821,
+      "sha256": "d9dbf5b5f74134f6f4caf593f7afb36c3e65e4cd84034356d5acdc4b61205555"
+    },
+    {
+      "status": "??",
+      "path": "docs/specs/2026-07-26-flowme-mece-ux-reset/p35-r8-claude-design-adoption-plan-ko.md",
+      "size": 22464,
+      "sha256": "23a572b3f3a9a07d8676095cb09d48cba88e8662faee1c29453e163756b3c7e4"
+    },
+    {
+      "status": "??",
+      "path": "docs/specs/2026-07-26-flowme-mece-ux-reset/p35-r8-r12-continuous-execution-goal-ko.md",
+      "size": 29601,
+      "sha256": "e15aaad5ce72ace5d81632310ae2d29f8ff6c1ed13d60a6219f860edb55949fb"
+    },
+    {
+      "status": "??",
+      "path": "docs/specs/2026-07-26-flowme-mece-ux-reset/plan.md",
+      "size": 16945,
+      "sha256": "17af18119f51997089634efcdb80512bad5b528af078ce6fae6cb93839d06edb"
+    },
+    {
+      "status": "??",
+      "path": "docs/specs/2026-07-26-flowme-mece-ux-reset/simulation.md",
+      "size": 7396,
+      "sha256": "8d433474494f193f804aa2770d2731de70511e1f77c02e5bc9a466f6e4a9a4dd"
+    },
+    {
+      "status": "??",
+      "path": "lib/flow/memo-draft-proposal.test.ts",
+      "size": 2037,
+      "sha256": "afd7a09da5901d37efed4c89895d5637ea9de8e53ac5d011b392e5ce294de22a"
+    },
+    {
+      "status": "??",
+      "path": "lib/flow/memo-draft-proposal.ts",
+      "size": 3360,
+      "sha256": "9da4e2d46ec097c82785801381f94c6640ff7947271fc7ed283763a10d48bb5c"
+    },
+    {
+      "status": "??",
+      "path": "lib/flow/my-flow-shape-aware-workspace.test.ts",
+      "size": 2233,
+      "sha256": "42ee99255d5bff412dd911df090338fe57fe42a506f53c365f135071ec40b357"
+    },
+    {
+      "status": "??",
+      "path": "lib/flow/my-flow-shape-aware-workspace.ts",
+      "size": 2219,
+      "sha256": "96ec78062b4784a3e08e8dd357025e28e58136959dd08dae0e787149ac77d2be"
+    },
+    {
+      "status": "??",
+      "path": "lib/flow/public-item-personalization.test.ts",
+      "size": 3351,
+      "sha256": "d594418f8727ba6ebb393fbad3dad0fb4aabf7dcd5235185ff979edb0143754e"
+    },
+    {
+      "status": "??",
+      "path": "lib/flow/public-item-personalization.ts",
+      "size": 4877,
+      "sha256": "43b267d24d5aff7013c9f7016ee059bc67c0db0d2281cf2e5e052b195aba327e"
+    },
+    {
+      "status": "??",
+      "path": "scripts/content-audit/build-p35-owner-feedback-offline-preview.mjs",
+      "size": 23464,
+      "sha256": "980f77806f565e04c0021a203ec94207979d5c99ca14495af92ed00c7eff157d"
+    },
+    {
+      "status": "??",
+      "path": "scripts/content-audit/capture-p35-owner-feedback-offline-preview.mjs",
+      "size": 18086,
+      "sha256": "f5fdb3a108fa66fc6e9b3ee83dcf23f910ef4a0c7da095f4c83229dd9b126fe1"
+    },
+    {
+      "status": "??",
+      "path": "scripts/content-audit/capture-p35-r7-independent-review-handoff.mjs",
+      "size": 18443,
+      "sha256": "09fb5fc334690f4ae93d074691afaf0012a2aeadabdfeb8b66e450c4d6cbb971"
+    },
+    {
+      "status": "??",
+      "path": "scripts/content-audit/verify-p35-owner-feedback-offline-preview.mjs",
+      "size": 4501,
+      "sha256": "ed3ba305dae73f212b9e48fd00f36b2f553b42744dd918a7472cebda8f9ba14a"
+    },
+    {
+      "status": "??",
+      "path": "tests/e2e/p35-adjust-one-kind.spec.ts",
+      "size": 11489,
+      "sha256": "7eaa94e532eb36a87bf3c9c7799b51ecda9d11f1fb2eb5cd49f87f25ef8ac3d8"
+    },
+    {
+      "status": "??",
+      "path": "tests/e2e/p35-calendar-lens.spec.ts",
+      "size": 7822,
+      "sha256": "6dcf36eb7e6a7958daa1043ffb66835c6a46f5653e7edbec98e9fe456a2e15ae"
+    },
+    {
+      "status": "??",
+      "path": "tests/e2e/p35-entry-router.spec.ts",
+      "size": 6451,
+      "sha256": "0c5ef88ed2d59fda54a9ea30519d04f32b0976825d2faa8acee4780b28f6ad1d"
+    },
+    {
+      "status": "??",
+      "path": "tests/e2e/p35-export-scope-first.spec.ts",
+      "size": 9242,
+      "sha256": "fe6aa4e36364dfc46303e8aecc29a10c417447b006b8d1ee9c0cc3c13069e7f0"
+    },
+    {
+      "status": "??",
+      "path": "tests/e2e/p35-final-mece-gate.spec.ts",
+      "size": 10713,
+      "sha256": "1eb456eae3991b53df386670c96478b96f3e136b89b59fd976ddd1de30d42663"
+    },
+    {
+      "status": "??",
+      "path": "tests/e2e/p35-my-flow-library-workspace.spec.ts",
+      "size": 11701,
+      "sha256": "a4f7212cf7b084776dead07ef100322a577a3de1cc0480e2f0e6ed1743da7967"
+    },
+    {
+      "status": "??",
+      "path": "tests/e2e/p35-my-flow-safe-split.spec.ts",
+      "size": 4749,
+      "sha256": "91ec6f6c52fec2c8add39ece2a564ae9b0b38f89d6371d5e758523d544373664"
+    },
+    {
+      "status": "??",
+      "path": "tests/e2e/p35-public-result-first.spec.ts",
+      "size": 11170,
+      "sha256": "81d313a49bb7836aeb5ac7012c811af4536a50d6e2bc5afa3db7fcc02ce36174"
+    },
+    {
+      "status": "??",
+      "path": "tests/e2e/p35-r0-temporal-first-group.spec.ts",
+      "size": 14684,
+      "sha256": "01c97e9f46ae47bc857e28424221310507cf1f5fa7d3a13421f8638876d4bc79"
+    },
+    {
+      "status": "??",
+      "path": "tests/e2e/p35-r1-artifact-preflight-parity.spec.ts",
+      "size": 9024,
+      "sha256": "075abe467a27e137b60851503b633911665e40d9b433d89f4dfd9cd4ad1a7563"
+    },
+    {
+      "status": "??",
+      "path": "tests/e2e/p35-r2-contextual-item-personalization.spec.ts",
+      "size": 8674,
+      "sha256": "b1924acd9cee9e53a94b01b79645abc30a0ee3dfa21c2fca6219ddb2ddf5a93a"
+    },
+    {
+      "status": "??",
+      "path": "tests/e2e/p35-r3-receipt-workspace-continuity.spec.ts",
+      "size": 6460,
+      "sha256": "268d5051c4899c536827ce2bb1c974deffad19ee9b45a9daddb3a8729f861b4d"
+    },
+    {
+      "status": "??",
+      "path": "tests/e2e/p35-r4-shape-aware-workspace.spec.ts",
+      "size": 8224,
+      "sha256": "705839b5941a307b8e3b416dffd177d83412c79caf7457aab6e3c8b1f9800c69"
+    },
+    {
+      "status": "??",
+      "path": "tests/e2e/p35-r5-memo-result-grammar.spec.ts",
+      "size": 7071,
+      "sha256": "6f09e094b9e2bcf8b4e916570e3bd828a7ca88f8753727a553d3278d1621528b"
+    },
+    {
+      "status": "??",
+      "path": "tests/e2e/p35-r6-calendar-day-sheet.spec.ts",
+      "size": 4167,
+      "sha256": "ced64935f1d80b2f3ef9a624a0c152375ab2262066a10dbe92945c1cbe1e18ce"
+    },
+    {
+      "status": "??",
+      "path": "tests/e2e/p35-r7-bounded-revision-final-gate.spec.ts",
+      "size": 13093,
+      "sha256": "f8ac4b4a55e4cd2316537bc3d961e9f9910d9bba488cfb8732ed8ccdd544b258"
+    }
+  ]
+}

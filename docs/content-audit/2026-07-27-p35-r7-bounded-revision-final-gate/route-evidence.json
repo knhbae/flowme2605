@@ -1,0 +1,121 @@
+{
+  "generatedAt": "2026-07-27",
+  "baselineSha": "2c951633d13adb0aab3ddd9d3cdddf506d9e97cd",
+  "branch": "codex/p35-mece-ux-reset",
+  "verdict": "pass_local_final_gate",
+  "evidenceKind": [
+    "current_source",
+    "current_local_production_build",
+    "current_browser_automation",
+    "current_package_screenshot"
+  ],
+  "observedUserCount": 0,
+  "routes": [
+    {
+      "shape": "calendar",
+      "route": "/f/moving-d30-basic",
+      "publicShape": "calendar",
+      "previewRowCount": 24,
+      "preflightOutputCount": 24,
+      "workspaceExecutionKind": "nearest_date_group"
+    },
+    {
+      "shape": "checklist",
+      "route": "/f/vehicle-inspection-prep",
+      "publicShape": "checklist",
+      "previewRowCount": 10,
+      "preflightOutputCount": 10,
+      "workspaceExecutionKind": "next_items"
+    },
+    {
+      "shape": "routine",
+      "route": "/f/curated-allblanc-morning-workout",
+      "publicShape": "flow_execution",
+      "previewRowCount": 1,
+      "preflightOutputCount": 1,
+      "workspaceExecutionKind": "current_occurrence"
+    },
+    {
+      "shape": "sheet",
+      "route": "/f/source-backed-middle-school-math-1",
+      "publicShape": "sheet",
+      "previewRowCount": 8,
+      "preflightOutputCount": 8,
+      "workspaceExecutionKind": "current_and_next_row"
+    },
+    {
+      "shape": "memo",
+      "route": "/f/overseas-safety-register",
+      "publicShape": "memo",
+      "previewRowCount": 4,
+      "preflightOutputCount": 4,
+      "workspaceExecutionKind": "none"
+    }
+  ],
+  "markers": {
+    "p35R0TemporalFirstGroupPreserved": true,
+    "p35R1ArtifactPreflightParityPreserved": true,
+    "p35R2ContextualItemPersonalizationPreserved": true,
+    "p35R3ReceiptWorkspaceContinuityPreserved": true,
+    "p35R4ShapeAwareWorkspacePreserved": true,
+    "p35R5MemoResultGrammarPreserved": true,
+    "p35R6CalendarDaySheetPreserved": true,
+    "fiveShapeThreeSessionCellCount": 15,
+    "supportedJourneyCellCount": 15,
+    "previewPreflightCountMismatchCount": 0,
+    "sourceMutationCount": 0,
+    "structuralMembershipChangeAfterCompletionCount": 0,
+    "localStorageSchemaChanged": false,
+    "migrationAdded": false,
+    "horizontalOverflowCount": 0,
+    "fixedNavigationOverlapCount": 0,
+    "unnamedVisibleInteractiveCount": 0,
+    "consolePageErrorCount": 0,
+    "highFindingCountWithinBoundedScope": 0,
+    "currentPreviewDeploymentVerified": false,
+    "productionDeploymentChanged": false
+  },
+  "tests": {
+    "docsCheck": {
+      "requiredFiles": 14,
+      "localLinks": 3294,
+      "status": "passed"
+    },
+    "pretest": {
+      "passed": 91,
+      "failed": 0
+    },
+    "unit": {
+      "passed": 590,
+      "failed": 0
+    },
+    "r7TargetedE2e": {
+      "passed": 6,
+      "failed": 0
+    },
+    "fullE2e": {
+      "passed": 381,
+      "failed": 0,
+      "workers": 1
+    },
+    "productionBuild": "passed"
+  },
+  "screenshots": [
+    "screenshots/p35-r7-calendar-session1-preview-390.png",
+    "screenshots/p35-r7-calendar-session2-preflight-1024.png",
+    "screenshots/p35-r7-calendar-session3-workspace-390.png",
+    "screenshots/p35-r7-checklist-session1-preview-390.png",
+    "screenshots/p35-r7-checklist-session2-preflight-1024.png",
+    "screenshots/p35-r7-checklist-session3-workspace-390.png",
+    "screenshots/p35-r7-routine-session1-preview-390.png",
+    "screenshots/p35-r7-routine-session2-preflight-1024.png",
+    "screenshots/p35-r7-routine-session3-workspace-390.png",
+    "screenshots/p35-r7-sheet-session1-preview-390.png",
+    "screenshots/p35-r7-sheet-session2-preflight-1024.png",
+    "screenshots/p35-r7-sheet-session3-workspace-390.png",
+    "screenshots/p35-r7-memo-session1-preview-390.png",
+    "screenshots/p35-r7-memo-session2-preflight-1024.png",
+    "screenshots/p35-r7-memo-session3-workspace-390.png",
+    "screenshots/p35-r7-library-60-1440.png"
+  ]
+}

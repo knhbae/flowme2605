@@ -30,11 +30,15 @@ test.describe('P32 focused My Flow workspace', () => {
   test('mobile separates cross-Flow library navigation from one Flow workspace', async ({ page }) => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/my?demo=ux20&view=flows');
+    await page.goto('/my?demo=ux20&view=flows&mode=flow');
 
-    await expect(page.getByRole('tablist', { name: 'My Flow 보기' })).toBeVisible();
+    await expect(page.locator('main')).toHaveAttribute('data-p35-my-flow-marker', 'P35-MY-LIBRARY-ONLY');
+    await expect(page.getByRole('tablist', { name: 'My Flow 보기' })).toHaveCount(1);
     await page.getByTestId('my-flow-search').fill('이사');
-    await page.locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug="moving-d30-basic"]').click();
+    await page
+      .locator('[data-testid="my-flow-mobile-structure-row"][data-flow-slug="moving-d30-basic"]')
+      .getByTestId('my-flow-mobile-structure-open')
+      .click();
 
     const workspace = page.locator(
       '[data-testid="my-flow-mobile-workspace"][data-flow-slug="moving-d30-basic"]',
@@ -43,9 +47,13 @@ test.describe('P32 focused My Flow workspace', () => {
       'data-p32-marker',
       'P32-02-FOCUSED-MY-FLOW-WORKSPACE',
     );
-    await expect(page.getByRole('tablist', { name: 'My Flow 보기' })).toHaveCount(0);
+    await expect(page.getByRole('tablist', { name: 'My Flow 보기' })).toHaveCount(1);
     await expect(page.locator('main')).toHaveAttribute('data-p32-workspace-state', 'focused');
-    await expect(workspace.getByTestId('my-flow-workspace-tab-execute')).toHaveText('다음 행동');
+    await expect(workspace.locator('[data-testid^="my-flow-workspace-tab-"]')).toHaveCount(0);
+    const planToggle = workspace.getByTestId('my-flow-workspace-plan-toggle');
+    await expect(planToggle).toBeVisible();
+    await planToggle.click();
+    await expect(workspace.getByTestId('my-flow-workspace-plan')).toBeVisible();
     await expect(workspace.getByTestId('my-flow-workspace-commands')).toBeVisible();
     await expect(workspace.locator(':scope > header')).toContainText('이사 D-30 준비');
     expect(
@@ -99,7 +107,6 @@ test.describe('P32 focused My Flow workspace', () => {
     await capture(page, 'p32-02-focused-moving-export-viewport-390.png', false);
     await exportSurface.getByRole('button', { name: /가져가기 닫기/ }).click();
 
-    await workspace.getByTestId('my-flow-workspace-tab-plan').click();
     const firstRow = workspace.getByTestId('my-flow-execution-row-shell').first();
     await firstRow.getByRole('button', { name: /열기/ }).click();
     const detail = getOpenMyFlowItemDetail(page);
@@ -112,7 +119,8 @@ test.describe('P32 focused My Flow workspace', () => {
     await closeOpenMyFlowItemDetail(page);
 
     await workspace.getByTestId('my-flow-mobile-library-back').click();
-    await expect(page.getByRole('tablist', { name: 'My Flow 보기' })).toBeVisible();
+    await expect(page.getByTestId('my-flow-mobile-flow-hub')).toBeVisible();
+    await expect(page.getByRole('tablist', { name: 'My Flow 보기' })).toHaveCount(1);
     await expect(page.getByTestId('my-flow-search')).toHaveValue('이사');
     await expect(page.locator('main')).toHaveAttribute('data-p32-workspace-state', 'library');
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
@@ -178,7 +186,7 @@ test.describe('P32 focused My Flow workspace', () => {
     test.setTimeout(60_000);
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/my?demo=ux20&view=flows');
+    await page.goto('/my?demo=ux20&view=flows&mode=flow');
 
     const cases = [
       ['moving-d30-basic', '이사'],
@@ -186,7 +194,7 @@ test.describe('P32 focused My Flow workspace', () => {
       ['washer-tub-clean-monthly', '세탁기'],
       ['wedding-d180-basic', '결혼'],
       ['used-car-buying-check', '중고차'],
-      ['weekly-meal-plan', '식단'],
+      ['english-study-30day-routine', '영어'],
     ] as const;
 
     for (const [slug, query] of cases) {
@@ -203,14 +211,15 @@ test.describe('P32 focused My Flow workspace', () => {
         'P32-06-SHARED-FOCUSED-WORKSPACE',
       );
       await expect(workspace).toHaveAttribute('data-p32-flow-shape', /.+/);
-      await expect(page.getByRole('tablist', { name: 'My Flow 보기' })).toHaveCount(0);
+      await expect(page.getByRole('tablist', { name: 'My Flow 보기' })).toHaveCount(1);
       await expect(workspace.locator(':scope > header')).toBeInViewport();
       expect(await page.evaluate(() => window.scrollY)).toBeLessThanOrEqual(1);
       if (slug === 'washer-tub-clean-monthly') {
         await capture(page, 'p32-06-routine-shared-workspace-viewport-390.png', false);
       }
       await workspace.getByTestId('my-flow-mobile-library-back').click();
-      await expect(page.getByRole('tablist', { name: 'My Flow 보기' })).toBeVisible();
+      await expect(page.getByTestId('my-flow-mobile-flow-hub')).toBeVisible();
+      await expect(page.getByRole('tablist', { name: 'My Flow 보기' })).toHaveCount(1);
     }
 
     expect(
@@ -224,18 +233,19 @@ test.describe('P32 focused My Flow workspace', () => {
   test('wide shared workspace keeps six representative content shapes in one shell', async ({ page }) => {
     const errors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 1024, height: 768 });
-    await page.goto('/my?demo=ux20&view=flows');
+    await page.goto('/my?demo=ux20&view=flows&mode=flow');
 
     const library = page.getByTestId('my-flow-library-workspace');
-    const slugs = [
-      'moving-d30-basic',
-      'travel-packing-list',
-      'washer-tub-clean-monthly',
-      'wedding-d180-basic',
-      'used-car-buying-check',
-      'weekly-meal-plan',
-    ];
-    for (const slug of slugs) {
+    const cases = [
+      ['moving-d30-basic', '이사'],
+      ['travel-packing-list', '여행'],
+      ['washer-tub-clean-monthly', '세탁기'],
+      ['wedding-d180-basic', '결혼'],
+      ['used-car-buying-check', '중고차'],
+      ['english-study-30day-routine', '영어'],
+    ] as const;
+    for (const [slug, query] of cases) {
+      await library.getByTestId('my-flow-library-rail-search').fill(query);
       await library.locator(`[data-testid="my-flow-library-row"][data-flow-slug="${slug}"]`).click();
       const flow = library.locator(`[data-testid="my-flow-overview-card"][data-flow-slug="${slug}"]`);
       await expect(flow).toHaveAttribute(
@@ -245,7 +255,7 @@ test.describe('P32 focused My Flow workspace', () => {
       await expect(flow.getByTestId('my-flow-whole-flow-outline')).toBeVisible();
       await expect(flow.getByTestId('my-flow-workspace-detail-pane')).toBeVisible();
     }
-    await expect(page.getByRole('tablist', { name: 'My Flow 보기' })).toHaveCount(0);
+    await expect(page.getByRole('tablist', { name: 'My Flow 보기' })).toHaveCount(1);
     await expect(library).toHaveAttribute('data-p32-marker', 'P32-02-FOCUSED-MY-FLOW-WORKSPACE');
     await expect(page.getByTestId('my-flow-library-back')).toBeVisible();
     await capture(page, 'p32-06-six-shape-shared-workspace-1024.png');
@@ -255,7 +265,8 @@ test.describe('P32 focused My Flow workspace', () => {
     await capture(page, 'p32-07-focused-workspace-1440.png');
     await capture(page, 'p32-07-focused-workspace-viewport-1440.png', false);
     await page.getByTestId('my-flow-library-back').click();
-    await expect(page.getByRole('tablist', { name: 'My Flow 보기' })).toBeVisible();
+    await expect(library.getByTestId('my-flow-library-detail').getByTestId('my-flow-overview-card')).toHaveCount(0);
+    await expect(page.getByRole('tablist', { name: 'My Flow 보기' })).toHaveCount(1);
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
     expect(errors).toEqual([]);
   });

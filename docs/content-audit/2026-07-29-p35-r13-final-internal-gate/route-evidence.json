@@ -1,0 +1,80 @@
+{
+  "generatedAt": "2026-07-29T11:00:00+09:00",
+  "evidenceScope": "current_local_p35_r13",
+  "verdict": "publish_ready_for_internal_review",
+  "observedUserCount": 0,
+  "baseline": {
+    "branch": "codex/p35-mece-ux-reset",
+    "head": "2c951633d13adb0aab3ddd9d3cdddf506d9e97cd",
+    "originMain": "2c951633d13adb0aab3ddd9d3cdddf506d9e97cd"
+  },
+  "markers": {
+    "P35-R13-B-INTERNAL-TODO": true,
+    "P35-R13-DATE-GROUPED-LOW-COMMAND-ROW": true,
+    "P35-R13-FIRST-ENTRY-WHOLE-PLAN": true
+  },
+  "routes": [
+    {
+      "id": "default-cross-flow-todo",
+      "route": "/my?demo=ux12",
+      "fixture": "ux12",
+      "userReachableWithoutFixture": true,
+      "viewports": ["390x844", "1024x768", "1440x900"],
+      "defaultView": "todo",
+      "exactDateGrouping": true,
+      "visibleRowTextCommandCount": 0,
+      "visibleCompletionControlPerExecutableRow": 1,
+      "result": "supported",
+      "evidenceKind": ["current_source", "current_browser_automation", "current_package_screenshot"]
+    },
+    {
+      "id": "first-post-save-entry",
+      "route": "/f/moving-d30-basic -> /my?view=flows&flow=moving-d30-basic",
+      "fixture": null,
+      "userReachableWithoutFixture": true,
+      "viewports": ["390x844"],
+      "firstEntryPlanOpen": true,
+      "reloadPlanOpen": false,
+      "libraryReentryPlanOpen": false,
+      "result": "supported",
+      "evidenceKind": ["current_browser_automation", "current_package_screenshot"]
+    },
+    {
+      "id": "rollback-boundary",
+      "route": "/my?experiment=off",
+      "fixture": null,
+      "rollbackChangesStoredData": false,
+      "result": "supported",
+      "evidenceKind": ["current_source", "current_browser_automation"]
+    }
+  ],
+  "quality": {
+    "horizontalOverflowCount": 0,
+    "outOfViewportFixedCount": 0,
+    "consoleErrorCount": 0,
+    "pageErrorCount": 0
+  },
+  "verification": {
+    "focusedUnit": "13/13 pass",
+    "allUnit": "694/694 pass",
+    "r13E2e": "3/3 pass",
+    "p35E2e": "79/79 pass",
+    "fullE2e": "405/405 pass (workers=1, sequential shards 129/129 + 80/80 + 97/97 + 99/99)",
+    "docsCheck": "pass",
+    "build": "pass"
+  },
+  "stabilityFixes": {
+    "editorFocusPreservesActiveMemoInput": true,
+    "editorMemoFocusRepeatE2e": "10/10 pass",
+    "scaleDemoUsesRequestedBundleOnFirstInitialization": true,
+    "p30ScaleCalendarE2e": "12/12 pass"
+  },
+  "publishState": {
+    "commit": false,
+    "push": false,
+    "pullRequest": false,
+    "merge": false,
+    "previewDeploy": false,
+    "productionDeploy": false
+  }
+}

@@ -27,6 +27,19 @@ test('timeline projection uses one ordered row set for outline and artifact shap
   assert.equal(JSON.stringify(bundle), sourceSnapshot);
 });
 
+test('vehicle inspection keeps ten undated items in its natural checklist result', () => {
+  const bundle = bySlug('vehicle-inspection-prep');
+  const sourceSnapshot = JSON.stringify(bundle);
+  const projection = buildFlowExperienceProjection(bundle);
+
+  assert.equal(projection.primaryShape, 'checklist');
+  assert.equal(projection.outlineRows.length, 10);
+  assert.equal(projection.shapes.checklist.count, 10);
+  assert.equal(projection.shapes.calendar.count, 0);
+  assert.equal(projection.outlineRows.every((row) => row.schedule.state === 'unscheduled'), true);
+  assert.equal(JSON.stringify(bundle), sourceSnapshot);
+});
+
 test('personal value and order overrides are reflected without changing stable identity', () => {
   const bundle = bySlug('moving-d30-basic');
   const [first, second] = bundle.items;
@@ -102,13 +115,15 @@ test('routine projection selects Flow execution and keeps completion outside mem
 
 test('explicit content-native destinations win over legacy visual surface fallbacks', () => {
   const course = buildFlowExperienceProjection(bySlug('source-backed-middle-school-math-1'));
-  const memo = buildFlowExperienceProjection(bySlug('overseas-safety-register'));
+  const safetyChecklist = buildFlowExperienceProjection(bySlug('overseas-safety-register'));
 
   assert.equal(course.primaryShape, 'sheet');
   assert.deepEqual(course.secondaryShapes, ['checklist']);
   assert.equal(course.shapes.sheet.count, 8);
-  assert.equal(memo.primaryShape, 'memo');
-  assert.equal(memo.shapes.memo.count, 4);
+  assert.equal(safetyChecklist.primaryShape, 'checklist');
+  assert.deepEqual(safetyChecklist.secondaryShapes, ['memo']);
+  assert.equal(safetyChecklist.shapes.checklist.count, 4);
+  assert.equal(safetyChecklist.shapes.memo.count, 4);
 });
 
 test('five content-native shapes are backed by real representative Flow rows', () => {
@@ -117,7 +132,7 @@ test('five content-native shapes are backed by real representative Flow rows', (
     ['moving-d30-basic', 'calendar', '2030-08-15'],
     ['used-car-buying-check', 'checklist', undefined],
     ['source-backed-middle-school-math-1', 'sheet', undefined],
-    ['overseas-safety-register', 'memo', undefined],
+    ['overseas-safety-register', 'checklist', undefined],
   ] as const;
 
   for (const [slug, expectedShape, anchor] of representatives) {

@@ -1,0 +1,69 @@
+{
+  "generatedAt": "2026-07-28T23:45:00+09:00",
+  "verdict": "owner_decision_required",
+  "recommendation": "B",
+  "observedUserCount": 0,
+  "globalIaChanged": false,
+  "storageMigrationCount": 0,
+  "alternatives": [
+    {
+      "id": "A",
+      "label": "현재 My Flow 유지",
+      "implementationState": "current_app",
+      "crossFlowTodo": false,
+      "globalIaChange": false,
+      "rollback": "not_required"
+    },
+    {
+      "id": "B",
+      "label": "My Flow 내부 할 일 보기",
+      "implementationState": "bounded_opt_in_experiment",
+      "route": "/my?experiment=todo",
+      "crossFlowTodo": true,
+      "globalIaChange": false,
+      "rollback": "remove_experiment_opt_in"
+    },
+    {
+      "id": "C",
+      "label": "전역 할 일 탭",
+      "implementationState": "static_proposal_only",
+      "crossFlowTodo": true,
+      "globalIaChange": true,
+      "appCodeChanged": false,
+      "rollback": "not_applicable"
+    }
+  ],
+  "markers": {
+    "P35-R8A-ROUTINE-NEXT-OCCURRENCE": true,
+    "P35-R8A-SERIES-OCCURRENCE-COUNT": true,
+    "P35-R8A-ROUTINE-STABLE-IDENTITY": true,
+    "P35-R8B-ARTIFACT-SEMANTIC-CONTINUITY": true,
+    "P35-R8B-RESOURCE-NOT-EXECUTION": true,
+    "P35-R8C-SINGLE-COMPLETION-OWNER": true,
+    "P35-R8C-UNDO-ONLY-WHEN-HIDDEN": true,
+    "P35-R9-SHARED-EXECUTION-ROW": true,
+    "P35-R9-PREVIEW-NOT-COMPLETION": true,
+    "P35-R9-DETAIL-SINGLE-CLOSE": true,
+    "P35-R10-SHAPE-HONESTY": true,
+    "P35-R11-WIDE-EXECUTION-WORKSPACE": true,
+    "P35-R12-CROSS-FLOW-TODO-EXPERIMENT": true,
+    "P35-R12-TODO-CALENDAR-SAME-ITEM": true,
+    "P35-R12-DATE-REMOVE-RETURNS-UNDATED": true,
+    "P35-R12-EXPERIMENT-ROLLBACK": true
+  },
+  "quality": {
+    "viewports": ["390x844", "1024x768", "1440x900"],
+    "horizontalOverflowCount": 0,
+    "fixedOverlapCount": 0,
+    "consoleErrorCount": 0,
+    "pageErrorCount": 0
+  },
+  "verification": {
+    "p35TargetedE2E": "76/76_pass",
+    "unit": "692/692_pass",
+    "docsCheck": "14_required_3457_links_pass",
+    "build": "pass",
+    "fullE2E": "402/402_pass_single_worker",
+    "gitDiffCheck": "pass"
+  }
+}

@@ -7,13 +7,13 @@ test.beforeEach(async ({ page }) => {
 
 async function openArtifactFirstOutline(page: import('@playwright/test').Page) {
   const hero = page.getByTestId('public-flow-hero');
-  await expect(hero).toHaveAttribute('data-experience-architecture', 'p29-artifact-first');
-  await expect(hero.getByTestId('flow-artifact-data-preview')).toBeVisible();
+  await expect(hero).toHaveAttribute('data-experience-architecture', 'p35-result-first');
 
   const outline = hero.getByTestId('public-flow-artifact-preview');
   await expect(outline).toBeVisible();
-  if ((await outline.getAttribute('open')) === null) await outline.locator('summary').click();
-  await expect(outline.locator('[data-flow-outline-row]').first()).toBeVisible();
+  const expand = outline.getByTestId('public-flow-artifact-preview-expand');
+  if (await expand.isVisible().catch(() => false)) await expand.click();
+  await expect(outline.getByTestId('public-flow-artifact-preview-row').first()).toBeVisible();
 
   return { hero, outline };
 }
@@ -47,8 +47,8 @@ test.describe('field checklist workbench source density', () => {
       const { hero, outline } = await openArtifactFirstOutline(page);
       await openPublicReferenceDetailsIfPresent(page);
 
-      await expect(hero.getByTestId('flow-artifact-data-preview').locator('a[href]')).toHaveCount(0);
-      await expect(outline.locator('[data-flow-outline-row] a[href]')).toHaveCount(0);
+      await expect(hero.getByTestId('public-flow-artifact-preview').locator('a[href]')).toHaveCount(0);
+      await expect(outline.getByTestId('public-flow-artifact-preview-row').locator('a[href]')).toHaveCount(0);
       const sourceCard = getVisiblePublicSourceCard(page);
       await expect(sourceCard).toHaveCount(1);
       await expect(sourceCard.locator('a[href]').first()).toHaveCount(1);
@@ -63,7 +63,7 @@ test.describe('field checklist workbench source density', () => {
     await openPublicReferenceDetailsIfPresent(page);
     await expect(page.getByTestId('public-flow-reference-details')).toHaveCount(1);
     await expect(page.getByTestId('public-flow-reference-details').locator(':scope > summary')).toHaveText('출처와 주의');
-    await expect(outline.locator('[data-flow-outline-row]').filter({ hasText: '공통 주의' })).toHaveCount(0);
+    await expect(outline.getByTestId('public-flow-artifact-preview-row').filter({ hasText: '공통 주의' })).toHaveCount(0);
   });
 
   test('/f/fridge-cleanout-weekly-plan keeps export at the flow level on mobile', async ({ page }) => {

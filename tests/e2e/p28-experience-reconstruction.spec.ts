@@ -37,39 +37,36 @@ async function expectNoHorizontalOverflow(page: Page) {
 }
 
 test.describe('P28 shared save-before experience', () => {
-  test('public Flow exposes a whole outline, actual-data shapes, and contextual item editing', async ({ page }) => {
+  test('public Flow exposes one actual-data shape and single-kind pre-save adjustment', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/f/moving-d30-basic');
     await clearLocalState(page);
 
     const hero = page.getByTestId('public-flow-hero');
-    await expect(hero).toHaveAttribute('data-experience-architecture', 'p29-artifact-first');
+    await expect(hero).toHaveAttribute('data-experience-architecture', 'p35-result-first');
     await expect(hero.getByTestId('public-flow-artifact-preview-row')).toHaveCount(24);
     await expect(hero.getByTestId('public-flow-artifact-preview')).not.toHaveAttribute('open', '');
-    await expect(hero.getByTestId('public-flow-artifact-preview-expand')).toHaveAccessibleName('전체 Flow 구조 24개 보기');
+    await expect(hero.getByTestId('public-flow-artifact-preview-expand')).toHaveAccessibleName('나머지 21개 보기');
     await capture(page, '00-mobile-save-before-moving-compact.png');
     await hero.getByTestId('public-flow-artifact-preview-expand').click();
     await expect(hero.getByTestId('public-flow-artifact-preview-row').last()).toBeVisible();
 
-    const artifactPreview = hero.getByTestId('flow-artifact-data-preview');
+    const artifactPreview = hero.getByTestId('public-flow-artifact-preview');
     await expect(artifactPreview).toHaveAttribute('data-primary-shape', 'calendar');
-    await expect(artifactPreview.getByRole('button', { name: /캘린더.*24/ })).toBeVisible();
-    await expect(artifactPreview.getByRole('button', { name: /체크리스트.*24/ })).toBeVisible();
+    await expect(artifactPreview.getByTestId('flow-artifact-shape-choice')).toHaveCount(0);
 
     await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
-    await expect(artifactPreview.getByRole('button', { name: /캘린더.*24/ })).toBeVisible();
+    await expect(artifactPreview.getByRole('heading', { name: '캘린더 · 24개' })).toBeVisible();
 
     await expect(hero.getByRole('button', { name: /제목·날짜·메모 수정/ })).toHaveCount(0);
     await page.getByTestId('public-flow-adjust-entry-mobile').click();
     const adjustment = page.getByTestId('public-flow-personal-adjustment');
-    await expect(adjustment).toHaveAttribute('data-adjustment-mode', 'include');
-    await adjustment.getByTestId('public-flow-adjustment-mode-content').click();
-    await expect(adjustment.getByTestId('public-flow-adjustment-row')).toHaveCount(1);
-    await adjustment.getByTestId('public-flow-adjustment-flow-title').fill('우리 집 이사 준비');
-    await adjustment.getByTestId('public-flow-adjustment-title').fill('우리 집 이사 방식 확정');
-    await adjustment.getByTestId('public-flow-adjustment-mode-schedule').click();
-    await adjustment.getByTestId('public-flow-adjustment-date').fill('2030-08-01');
-    await adjustment.getByTestId('public-flow-adjustment-save').click();
+    await expect(adjustment).toHaveAttribute('data-adjustment-kind', 'name');
+    await adjustment.getByTestId('public-flow-adjustment-name-input').fill('우리 집 이사 준비');
+    await expect(adjustment.locator('[data-testid="public-flow-adjustment-title"]')).toHaveCount(0);
+    await expect(adjustment.locator('[data-testid="public-flow-adjustment-date"]')).toHaveCount(0);
+    await adjustment.getByTestId('public-flow-adjustment-apply').click();
+    await page.getByTestId('public-flow-save-primary-mobile').click();
 
     const saved = await page.evaluate(() => JSON.parse(window.localStorage.getItem('flow:saved:moving-d30-basic') || 'null'));
     expect(saved.personalTitle).toBe('우리 집 이사 준비');
@@ -95,7 +92,7 @@ test.describe('P28 shared save-before experience', () => {
     await expect(result.getByTestId('flow-url-quick-start')).not.toHaveAttribute('open', '');
     await sharedWorkspaceLink.click();
     await expect(page).toHaveURL('/f/moving-d30-basic');
-    await expect(page.getByTestId('public-flow-hero')).toHaveAttribute('data-experience-architecture', 'p29-artifact-first');
+    await expect(page.getByTestId('public-flow-hero')).toHaveAttribute('data-experience-architecture', 'p35-result-first');
     await expectNoHorizontalOverflow(page);
   });
 
@@ -105,7 +102,7 @@ test.describe('P28 shared save-before experience', () => {
     await clearLocalState(page);
 
     const decision = page.getByTestId('flow-save-before-decision');
-    await expect(page.getByTestId('flow-save-before-primary-result').getByTestId('flow-artifact-data-preview')).toBeVisible();
+    await expect(page.getByTestId('flow-save-before-primary-result').getByTestId('public-flow-artifact-preview')).toBeVisible();
     await expect(page.getByTestId('public-flow-detail-workspace')).not.toHaveAttribute('open', '');
     await expect(page.getByTestId('public-flow-artifact-preview')).toBeVisible();
     await capture(page, '02-wide-save-before-moving.png');
@@ -163,7 +160,7 @@ test.describe('P28 shared save-before experience', () => {
     await expectNoHorizontalOverflow(page);
   });
 
-  test('My Flow uses mobile drill-in and a wide library rail without a duplicate selector', async ({ page }) => {
+  test('My Flow uses mobile drill-in and a wide library rail with explicit selection', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/my?demo=ux20&view=flows');
     await expect(page.getByTestId('my-flow-mobile-flow-hub')).toBeVisible();
@@ -186,7 +183,9 @@ test.describe('P28 shared save-before experience', () => {
     await expect(library).toBeVisible();
     expect(await library.getByTestId('my-flow-library-row').count()).toBeGreaterThanOrEqual(20);
     await expect(page.getByTestId('my-flow-scope-select')).toHaveCount(0);
-    await expect(library.getByTestId('my-flow-library-detail').getByTestId('my-flow-overview-card')).toHaveCount(1);
+    await expect(
+      library.getByTestId('my-flow-library-detail').getByTestId('my-flow-overview-card'),
+    ).toHaveCount(0);
     const second = library.getByTestId('my-flow-library-row').nth(1);
     const secondSlug = await second.getAttribute('data-flow-slug');
     await second.click();
@@ -253,16 +252,16 @@ test.describe('P28 shared save-before experience', () => {
       { slug: 'moving-d30-basic', shape: 'calendar', renderer: 'flow-artifact-calendar-preview' },
       { slug: 'used-car-buying-check', shape: 'checklist', renderer: 'flow-artifact-checklist-preview' },
       { slug: 'source-backed-middle-school-math-1', shape: 'sheet', renderer: 'flow-artifact-sheet-preview' },
-      { slug: 'overseas-safety-register', shape: 'memo', renderer: 'flow-artifact-memo-preview' },
+      { slug: 'overseas-safety-register', shape: 'checklist', renderer: 'flow-artifact-checklist-preview' },
     ];
 
     for (const candidate of cases) {
       await page.goto(`/f/${candidate.slug}`);
-      const preview = page.getByTestId('flow-artifact-data-preview');
+      const preview = page.getByTestId('public-flow-artifact-preview');
       await expect(preview).toHaveAttribute('data-primary-shape', candidate.shape);
       await expect(preview.getByTestId(candidate.renderer).first()).toBeVisible();
-      expect(await preview.getByTestId('flow-artifact-preview-row').count()).toBeGreaterThan(0);
-      expect(await preview.getByRole('group', { name: '결과 형태' }).getByRole('button').count()).toBeLessThanOrEqual(3);
+      expect(await preview.getByTestId('public-flow-artifact-preview-row').count()).toBeGreaterThan(0);
+      await expect(preview.getByRole('group', { name: '결과 형태' })).toHaveCount(0);
       await capture(page, `10-mobile-shape-${candidate.shape}.png`);
       await expectNoHorizontalOverflow(page);
     }

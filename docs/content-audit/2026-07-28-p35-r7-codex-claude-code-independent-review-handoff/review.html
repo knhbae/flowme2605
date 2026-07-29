@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe P35-R7 독립 검토 보드</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #121714;
+      --muted: #5c665f;
+      --line: #d9dfdb;
+      --paper: #ffffff;
+      --canvas: #f3f6f4;
+      --green: #0f6b4f;
+      --blue: #2358a5;
+      --coral: #b6462f;
+      --yellow: #f2c94c;
+      --radius: 8px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: Arial, "Noto Sans KR", sans-serif;
+      line-height: 1.55;
+      letter-spacing: 0;
+    }
+    a { color: var(--blue); }
+    img { display: block; max-width: 100%; }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,.96);
+      backdrop-filter: blur(10px);
+    }
+    .topbar-inner {
+      width: min(1200px, calc(100% - 32px));
+      min-height: 56px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .brand { font-weight: 800; }
+    .topnav {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    .topnav a {
+      color: var(--muted);
+      font-size: 14px;
+      text-decoration: none;
+    }
+    main { padding-bottom: 72px; }
+    .band { border-bottom: 1px solid var(--line); background: var(--paper); }
+    .band.alt { background: var(--canvas); }
+    .inner {
+      width: min(1200px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 48px 0;
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(280px, .55fr);
+      gap: 48px;
+      align-items: end;
+    }
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--green);
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 16px; font-size: clamp(32px, 5vw, 56px); line-height: 1.08; }
+    h2 { margin-bottom: 24px; font-size: 28px; }
+    h3 { margin-bottom: 8px; font-size: 17px; }
+    .lead { max-width: 760px; color: var(--muted); font-size: 18px; }
+    .status {
+      border-left: 4px solid var(--green);
+      padding: 4px 0 4px 20px;
+    }
+    .status strong { display: block; font-size: 20px; }
+    .status span { color: var(--muted); font-size: 14px; }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--paper);
+    }
+    .metric {
+      min-height: 92px;
+      padding: 18px;
+      border-right: 1px solid var(--line);
+    }
+    .metric:last-child { border-right: 0; }
+    .metric strong { display: block; font-size: 23px; }
+    .metric span { color: var(--muted); font-size: 13px; }
+    .flowline {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 1px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--line);
+    }
+    .flowline div { min-height: 112px; padding: 18px; background: var(--paper); }
+    .flowline b { display: block; margin-bottom: 8px; color: var(--green); }
+    .questions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--line);
+    }
+    .question { min-height: 150px; padding: 22px; background: var(--paper); }
+    .question .id { color: var(--coral); font-size: 12px; font-weight: 800; }
+    .question p { margin-bottom: 0; color: var(--muted); }
+    .shape {
+      margin-top: 40px;
+      padding-top: 28px;
+      border-top: 1px solid var(--line);
+    }
+    .shape:first-of-type { margin-top: 0; }
+    .shape-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .shape-head p { margin-bottom: 0; color: var(--muted); }
+    .gallery {
+      display: grid;
+      grid-template-columns: .8fr 1.45fr .8fr;
+      gap: 16px;
+      align-items: start;
+    }
+    figure {
+      margin: 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--paper);
+    }
+    figure a { display: block; background: #edf1ee; }
+    figure img { width: 100%; height: 520px; object-fit: contain; object-position: top center; }
+    figcaption { min-height: 82px; padding: 14px 16px; color: var(--muted); font-size: 13px; }
+    figcaption strong { display: block; margin-bottom: 3px; color: var(--ink); font-size: 14px; }
+    .scale figure img { height: auto; }
+    .decision {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .decision section {
+      border-top: 4px solid var(--blue);
+      padding-top: 18px;
+    }
+    .decision section:last-child { border-color: var(--coral); }
+    .decision ul { margin: 0; padding-left: 20px; }
+    .files {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .file {
+      min-height: 68px;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+    }
+    .file a { font-weight: 700; }
+    .file span { display: block; color: var(--muted); font-size: 13px; }
+    .warning {
+      border: 1px solid #e3b8ad;
+      border-left: 4px solid var(--coral);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      background: #fff7f4;
+    }
+    footer {
+      width: min(1200px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 56px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    @media (max-width: 880px) {
+      .hero { grid-template-columns: 1fr; gap: 24px; }
+      .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .metric { border-bottom: 1px solid var(--line); }
+      .flowline { grid-template-columns: 1fr 1fr; }
+      .questions, .decision, .files { grid-template-columns: 1fr; }
+      .gallery { grid-template-columns: 1fr; }
+      figure img { height: auto; max-height: 720px; }
+    }
+    @media (max-width: 560px) {
+      .topbar-inner { width: min(100% - 24px, 1200px); }
+      .topnav { max-width: 62vw; }
+      .inner { width: min(100% - 24px, 1200px); padding: 36px 0; }
+      h1 { font-size: 36px; }
+      h2 { font-size: 24px; }
+      .lead { font-size: 16px; }
+      .metrics, .flowline { grid-template-columns: 1fr; }
+      .metric { border-right: 0; }
+      .shape-head { display: block; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">FLOW · P35-R7 Review</div>
+      <nav class="topnav" aria-label="검토 보드 바로가기">
+        <a href="#direction">방향</a>
+        <a href="#questions">질문</a>
+        <a href="#evidence">화면</a>
+        <a href="#journeys">상세 여정</a>
+        <a href="#decision">판정</a>
+        <a href="#files">자료</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="band">
+      <div class="inner hero">
+        <div>
+          <p class="eyebrow">Independent review handoff · 2026-07-28</p>
+          <h1>테스트 통과와<br>좋은 UX는 다르다</h1>
+          <p class="lead">P35-R7 로컬 candidate가 실제로 쉽고 일관된 portable
+            execution layer인지 Codex와 Claude Code가 독립적으로 반박하는 보드다.</p>
+        </div>
+        <div class="status">
+          <strong>review requested</strong>
+          <span>local final gate pass · current Preview 없음 · observed users 0</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="band alt">
+      <div class="inner">
+        <div class="metrics" aria-label="현재 자동 검증 수치">
+          <div class="metric"><strong>381/381</strong><span>full E2E</span></div>
+          <div class="metric"><strong>590/590</strong><span>unit</span></div>
+          <div class="metric"><strong>15/15</strong><span>shape-session cells</span></div>
+          <div class="metric"><strong>71</strong><span>screenshots</span></div>
+          <div class="metric"><strong>0</strong><span>overflow / errors</span></div>
+          <div class="metric"><strong>0</strong><span>observed users</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="direction">
+      <div class="inner">
+        <p class="eyebrow">Product direction</p>
+        <h2>한 Flow가 이동하는 여정</h2>
+        <div class="flowline">
+          <div><b>1</b>URL·메모·준비된 Flow</div>
+          <div><b>2</b>실제 결과 미리보기</div>
+          <div><b>3</b>필요한 값만 최소 조정</div>
+          <div><b>4</b>FlowMe 저장 또는 외부 가져가기</div>
+          <div><b>5</b>실행·완료·다시 열기</div>
+          <div><b>6</b>수정·기록·재사용</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band alt" id="questions">
+      <div class="inner">
+        <p class="eyebrow">Owner questions</p>
+        <h2>독립 검토가 답해야 할 문제</h2>
+        <div class="questions">
+          <article class="question"><span class="id">F01</span><h3>같은 Flow처럼 보이는가</h3><p>public preview와 저장 후 날짜 묶음이 같은 row anatomy와 hierarchy를 쓰는가.</p></article>
+          <article class="question"><span class="id">F02</span><h3>저장 직후 어디로 가야 하는가</h3><p>Today 중간 화면보다 전체 결과와 가장 가까운 실행 묶음을 한 workspace에서 보여줘야 하는가.</p></article>
+          <article class="question"><span class="id">F03</span><h3>다음 할 일의 단위</h3><p>날짜형 Flow는 한 항목이 아니라 같은 날짜의 미완료 항목 묶음이 자연스러운가.</p></article>
+          <article class="question"><span class="id">F04</span><h3>저장 전 조정 깊이</h3><p>제목·상세·날짜의 bounded edit가 충분한가, full editor가 필요한가.</p></article>
+          <article class="question"><span class="id">F05</span><h3>가져가기 위치</h3><p>public 결과에서 primary artifact와 외부 export를 함께 예측할 수 있는가.</p></article>
+          <article class="question"><span class="id">F06</span><h3>되돌리기 조건</h3><p>완료 후 행이 사라질 때만 즉시 undo가 필요하고, 남아 있으면 다시 열기로 충분한가.</p></article>
+          <article class="question"><span class="id">F07</span><h3>실행과 기록</h3><p>shape-aware 실행 단위와 기록 영역이 설명 없이 이해되는가.</p></article>
+          <article class="question"><span class="id">F08</span><h3>60개 Flow 규모</h3><p>찾기·열기·돌아가기·export·관리가 여전히 스캔 가능한가.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="evidence">
+      <div class="inner">
+        <p class="eyebrow">Current package screenshots</p>
+        <h2>5개 형태 × 3개 세션</h2>
+
+        <section class="shape">
+          <div class="shape-head"><h3>Calendar · 이사 D-30</h3><p>24 rows → 24 events → nearest date group</p></div>
+          <div class="gallery">
+            <figure><a href="screenshots/p35-r7-calendar-session1-preview-390.png"><img src="screenshots/p35-r7-calendar-session1-preview-390.png" alt="이사 Flow 모바일 저장 전 미리보기"></a><figcaption><strong>Session 1 · 390</strong>실제 일정, 이사일, row 조정, primary action</figcaption></figure>
+            <figure><a href="screenshots/p35-r7-calendar-session2-preflight-1024.png"><img src="screenshots/p35-r7-calendar-session2-preflight-1024.png" alt="이사 Flow 와이드 export preflight"></a><figcaption><strong>Session 2 · 1024</strong>24-event 범위와 결과 예측</figcaption></figure>
+            <figure><a href="screenshots/p35-r7-calendar-session3-workspace-390.png"><img src="screenshots/p35-r7-calendar-session3-workspace-390.png" alt="이사 Flow 모바일 개인 workspace"></a><figcaption><strong>Session 3 · 390</strong>날짜 묶음, checkbox, 전체 계획</figcaption></figure>
+          </div>
+        </section>
+
+        <section class="shape">
+          <div class="shape-head"><h3>Checklist · 차량 점검</h3><p>10 rows → 10 items → next items</p></div>
+          <div class="gallery">
+            <figure><a href="screenshots/p35-r7-checklist-session1-preview-390.png"><img src="screenshots/p35-r7-checklist-session1-preview-390.png" alt="차량 점검 모바일 저장 전 미리보기"></a><figcaption><strong>Session 1 · 390</strong>날짜 없는 결과와 최소 조정</figcaption></figure>
+            <figure><a href="screenshots/p35-r7-checklist-session2-preflight-1024.png"><img src="screenshots/p35-r7-checklist-session2-preflight-1024.png" alt="차량 점검 와이드 export preflight"></a><figcaption><strong>Session 2 · 1024</strong>Checklist primary와 실제 count</figcaption></figure>
+            <figure><a href="screenshots/p35-r7-checklist-session3-workspace-390.png"><img src="screenshots/p35-r7-checklist-session3-workspace-390.png" alt="차량 점검 모바일 개인 workspace"></a><figcaption><strong>Session 3 · 390</strong>다음 미완료 항목과 전체 목록</figcaption></figure>
+          </div>
+        </section>
+
+        <section class="shape">
+          <div class="shape-head"><h3>Routine · 아침 홈트</h3><p>1 source item → 1 series → current occurrence</p></div>
+          <div class="gallery">
+            <figure><a href="screenshots/p35-r7-routine-session1-preview-390.png"><img src="screenshots/p35-r7-routine-session1-preview-390.png" alt="홈트 모바일 저장 전 미리보기"></a><figcaption><strong>Session 1 · 390</strong>반복 summary와 설정 깊이</figcaption></figure>
+            <figure><a href="screenshots/p35-r7-routine-session2-preflight-1024.png"><img src="screenshots/p35-r7-routine-session2-preflight-1024.png" alt="홈트 와이드 export preflight"></a><figcaption><strong>Session 2 · 1024</strong>series event preflight</figcaption></figure>
+            <figure><a href="screenshots/p35-r7-routine-session3-workspace-390.png"><img src="screenshots/p35-r7-routine-session3-workspace-390.png" alt="홈트 모바일 개인 workspace"></a><figcaption><strong>Session 3 · 390</strong>현재 회차, 전체 계획, 반복 설정</figcaption></figure>
+          </div>
+        </section>
+
+        <section class="shape">
+          <div class="shape-head"><h3>Sheet · 중학 수학</h3><p>8 rows → 8 rows → current and next</p></div>
+          <div class="gallery">
+            <figure><a href="screenshots/p35-r7-sheet-session1-preview-390.png"><img src="screenshots/p35-r7-sheet-session1-preview-390.png" alt="학습 Sheet 모바일 저장 전 미리보기"></a><figcaption><strong>Session 1 · 390</strong>순서형 source rows</figcaption></figure>
+            <figure><a href="screenshots/p35-r7-sheet-session2-preflight-1024.png"><img src="screenshots/p35-r7-sheet-session2-preflight-1024.png" alt="학습 Sheet 와이드 export preflight"></a><figcaption><strong>Session 2 · 1024</strong>Sheet primary와 checklist secondary</figcaption></figure>
+            <figure><a href="screenshots/p35-r7-sheet-session3-workspace-390.png"><img src="screenshots/p35-r7-sheet-session3-workspace-390.png" alt="학습 Sheet 모바일 개인 workspace"></a><figcaption><strong>Session 3 · 390</strong>현재 행과 다음 행</figcaption></figure>
+          </div>
+        </section>
+
+        <section class="shape">
+          <div class="shape-head"><h3>Memo · 해외 안전 등록</h3><p>4 records → 4 records → no synthetic unit</p></div>
+          <div class="gallery">
+            <figure><a href="screenshots/p35-r7-memo-session1-preview-390.png"><img src="screenshots/p35-r7-memo-session1-preview-390.png" alt="해외 안전 메모 모바일 저장 전 미리보기"></a><figcaption><strong>Session 1 · 390</strong>기록 결과와 합성 action 제거</figcaption></figure>
+            <figure><a href="screenshots/p35-r7-memo-session2-preflight-1024.png"><img src="screenshots/p35-r7-memo-session2-preflight-1024.png" alt="해외 안전 메모 와이드 export preflight"></a><figcaption><strong>Session 2 · 1024</strong>Memo scope와 record count</figcaption></figure>
+            <figure><a href="screenshots/p35-r7-memo-session3-workspace-390.png"><img src="screenshots/p35-r7-memo-session3-workspace-390.png" alt="해외 안전 메모 모바일 개인 workspace"></a><figcaption><strong>Session 3 · 390</strong>가짜 next unit 없는 workspace</figcaption></figure>
+          </div>
+        </section>
+
+        <section class="shape scale">
+          <div class="shape-head"><h3>Scale · 60개 Flow</h3><p>1440x900 library and focused workspace</p></div>
+          <figure><a href="screenshots/p35-r7-library-60-1440.png"><img src="screenshots/p35-r7-library-60-1440.png" alt="60개 Flow가 있는 데스크톱 My Flow"></a><figcaption><strong>Scale check · 1440</strong>검색, rail density, 선택된 Flow identity, command hierarchy</figcaption></figure>
+        </section>
+      </div>
+    </section>
+
+    <section class="band alt" id="journeys">
+      <div class="inner">
+        <p class="eyebrow">Current detailed journeys</p>
+        <h2>행동 순서로 다시 본 18개 상태</h2>
+        <p class="lead">
+          아래 화면은 같은 current local production build에서 저장 전부터 My Flow와
+          Calendar까지 순서대로 재현했다. 전체 71장은
+          <a href="screenshot-index.md">GitHub 렌더링용 screenshot index</a>에서
+          원본 크기로 볼 수 있다.
+        </p>
+
+        <section class="shape">
+          <div class="shape-head"><h3>저장 전 · 조정 · 가져가기 · receipt</h3><p>Calendar, Checklist, Routine</p></div>
+          <div class="gallery">
+            <figure><a href="current-journeys/screenshots/01-moving-result-390.png"><img src="current-journeys/screenshots/01-moving-result-390.png" alt="이사 Flow 저장 전 전체 결과"></a><figcaption><strong>01 · 이사 결과</strong>24개 일정과 primary result</figcaption></figure>
+            <figure><a href="current-journeys/screenshots/02-moving-adjust-items-390.png"><img src="current-journeys/screenshots/02-moving-adjust-items-390.png" alt="이사 Flow 항목 조정"></a><figcaption><strong>02 · 이사 조정</strong>제목·상세·날짜 편집 진입</figcaption></figure>
+            <figure><a href="current-journeys/screenshots/03-moving-public-export-390.png"><img src="current-journeys/screenshots/03-moving-public-export-390.png" alt="이사 Flow 외부 가져가기"></a><figcaption><strong>03 · 가져가기</strong>public 결과 안 secondary export</figcaption></figure>
+            <figure><a href="current-journeys/screenshots/04-moving-saved-receipt-390.png"><img src="current-journeys/screenshots/04-moving-saved-receipt-390.png" alt="이사 Flow 저장 완료"></a><figcaption><strong>04 · 저장 완료</strong>receipt와 다음 행동</figcaption></figure>
+            <figure><a href="current-journeys/screenshots/05-vehicle-result-390.png"><img src="current-journeys/screenshots/05-vehicle-result-390.png" alt="날짜 없는 차량 점검 결과"></a><figcaption><strong>05 · 날짜 없음</strong>Checklist 결과의 사용 단서</figcaption></figure>
+            <figure><a href="current-journeys/screenshots/06-vehicle-adjust-items-390.png"><img src="current-journeys/screenshots/06-vehicle-adjust-items-390.png" alt="차량 점검 항목 조정"></a><figcaption><strong>06 · Checklist 조정</strong>개별 일정과 상세 편집</figcaption></figure>
+            <figure><a href="current-journeys/screenshots/07-workout-result-390.png"><img src="current-journeys/screenshots/07-workout-result-390.png" alt="홈트 반복 Flow 결과"></a><figcaption><strong>07 · Routine 결과</strong>series와 resource 위계</figcaption></figure>
+            <figure><a href="current-journeys/screenshots/08-workout-routine-adjust-390.png"><img src="current-journeys/screenshots/08-workout-routine-adjust-390.png" alt="홈트 반복 설정"></a><figcaption><strong>08 · 반복 설정</strong>횟수·시간·종료 조건의 밀도</figcaption></figure>
+          </div>
+        </section>
+
+        <section class="shape">
+          <div class="shape-head"><h3>My Flow · 실행 · 상세 · 편집 · 기록</h3><p>같은 개인 Flow의 연속 상태</p></div>
+          <div class="gallery">
+            <figure><a href="current-journeys/screenshots/09-my-flow-next-action-390.png"><img src="current-journeys/screenshots/09-my-flow-next-action-390.png" alt="내 Flow 다음 행동"></a><figcaption><strong>09 · 다음 행동</strong>첫 실행 단위와 날짜 묶음</figcaption></figure>
+            <figure><a href="current-journeys/screenshots/10-my-flow-item-detail-390.png"><img src="current-journeys/screenshots/10-my-flow-item-detail-390.png" alt="내 Flow 항목 상세"></a><figcaption><strong>10 · 항목 상세</strong>완료·정보·편집의 문맥</figcaption></figure>
+            <figure><a href="current-journeys/screenshots/11-my-flow-item-edit-390.png"><img src="current-journeys/screenshots/11-my-flow-item-edit-390.png" alt="내 Flow 항목 편집"></a><figcaption><strong>11 · 항목 편집</strong>제목·날짜·메모 수정</figcaption></figure>
+            <figure><a href="current-journeys/screenshots/12-my-flow-full-plan-390.png"><img src="current-journeys/screenshots/12-my-flow-full-plan-390.png" alt="내 Flow 전체 계획"></a><figcaption><strong>12 · 전체 계획</strong>저장 결과와 구조 확인</figcaption></figure>
+            <figure><a href="current-journeys/screenshots/14-my-flow-completion-undo-390.png"><img src="current-journeys/screenshots/14-my-flow-completion-undo-390.png" alt="내 Flow 완료 후 되돌리기"></a><figcaption><strong>14 · 완료 되돌리기</strong>행이 사라질 때의 feedback</figcaption></figure>
+            <figure><a href="current-journeys/screenshots/13-my-flow-record-390.png"><img src="current-journeys/screenshots/13-my-flow-record-390.png" alt="내 Flow 기록"></a><figcaption><strong>13 · 기록</strong>진행 history와 재사용</figcaption></figure>
+            <figure><a href="current-journeys/screenshots/15-my-flow-workspace-1024.png"><img src="current-journeys/screenshots/15-my-flow-workspace-1024.png" alt="내 Flow 와이드 workspace"></a><figcaption><strong>15 · Wide workspace</strong>library rail과 focused canvas</figcaption></figure>
+          </div>
+        </section>
+
+        <section class="shape">
+          <div class="shape-head"><h3>Calendar · 월간 · 선택일</h3><p>cross-Flow lens와 detail surface</p></div>
+          <div class="gallery">
+            <figure><a href="current-journeys/screenshots/16-calendar-month-390.png"><img src="current-journeys/screenshots/16-calendar-month-390.png" alt="모바일 Calendar 월간 화면"></a><figcaption><strong>16 · 월간</strong>Flow scope와 compact marker</figcaption></figure>
+            <figure><a href="current-journeys/screenshots/17-calendar-selected-day-390.png"><img src="current-journeys/screenshots/17-calendar-selected-day-390.png" alt="모바일 Calendar 선택일"></a><figcaption><strong>17 · 선택일 390</strong>날짜 묶음과 detail sheet</figcaption></figure>
+            <figure><a href="current-journeys/screenshots/18-calendar-selected-day-1024.png"><img src="current-journeys/screenshots/18-calendar-selected-day-1024.png" alt="와이드 Calendar 선택일"></a><figcaption><strong>18 · 선택일 1024</strong>월간 grid와 agenda 위계</figcaption></figure>
+          </div>
+        </section>
+
+        <div class="warning">
+          <strong>이전 단계 화면 37장</strong><br>
+          P35-01~P35-08의 acceptance 화면은
+          <a href="slice-reference-manifest.json">별도 manifest</a>와
+          <a href="screenshot-index.md">전체 index</a>에 있다. 현재 화면 판정보다
+          변화 과정과 보존할 계약 확인에 사용한다.
+        </div>
+      </div>
+    </section>
+
+    <section class="band alt" id="decision">
+      <div class="inner">
+        <p class="eyebrow">Required conclusion</p>
+        <h2>유지할 것과 다시 열 것을 분리한다</h2>
+        <div class="decision">
+          <section>
+            <h3>기본적으로 유지할 계약</h3>
+            <ul>
+              <li>source / published Flow</li>
+              <li>personal overlay</li>
+              <li>execution run</li>
+              <li>series / occurrence</li>
+              <li>export identity</li>
+              <li>기존 localStorage schema</li>
+            </ul>
+          </section>
+          <section>
+            <h3>독립 검토가 다시 열 수 있는 UX</h3>
+            <ul>
+              <li>public과 saved row anatomy</li>
+              <li>저장 직후 목적지</li>
+              <li>날짜 묶음과 첫 실행 단위</li>
+              <li>조정·export·관리 command hierarchy</li>
+              <li>기록과 undo 조건</li>
+              <li>60 Flow 규모의 library composition</li>
+            </ul>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="files">
+      <div class="inner">
+        <p class="eyebrow">Review files</p>
+        <h2>검토자가 사용할 자료</h2>
+        <div class="files">
+          <div class="file"><a href="README.md">README</a><span>범위, 정본, publish 상태</span></div>
+          <div class="file"><a href="review-brief-ko.md">검토 브리프</a><span>변경 내용과 owner 질문</span></div>
+          <div class="file"><a href="review-checklist-ko.md">체크리스트</a><span>UX, 접근성, 데이터 경계</span></div>
+          <div class="file"><a href="review-context.json">현재 상태 JSON</a><span>SHA, 검증, route, 계약</span></div>
+          <div class="file"><a href="review-scenarios.json">시나리오 JSON</a><span>7 persona와 3 session</span></div>
+          <div class="file"><a href="review-response-template-ko.md">응답 템플릿</a><span>finding과 next program 형식</span></div>
+          <div class="file"><a href="unified-review-prompt-ko.txt">공용 복붙용 프롬프트</a><span>Codex와 Claude Code 공용</span></div>
+          <div class="file"><a href="claude-design-review-prompt-ko.txt">Claude Design 프롬프트</a><span>GitHub 자료와 screenshot만으로 검토</span></div>
+          <div class="file"><a href="screenshot-index.md">71장 screenshot index</a><span>GitHub에서 모든 화면을 바로 비교</span></div>
+          <div class="file"><a href="screenshot-catalog.json">Screenshot catalog</a><span>세 묶음의 수량과 evidenceKind</span></div>
+          <div class="file"><a href="screenshot-manifest.json">R7 final gate manifest</a><span>16개 현재 형태·세션 화면</span></div>
+          <div class="file"><a href="current-journeys/preview-manifest.json">상세 여정 manifest</a><span>18개 current browser 상태와 측정값</span></div>
+          <div class="file"><a href="slice-reference-manifest.json">P35 slice manifest</a><span>37개 이전 acceptance 참고 화면</span></div>
+          <div class="file"><a href="review-render-check.json">렌더 확인</a><span>390·1024·1440 overflow와 broken image</span></div>
+        </div>
+        <div class="warning" style="margin-top:24px">
+          <strong>Publish 주의</strong><br>
+          현재 P35-R7은 commit, push, PR, Preview, production에 반영되지 않았다.
+          과거 Vercel URL을 current candidate evidence로 사용하지 않는다.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Automated QA and agent simulation are not observed-user validation.
+    Observed-user count: 0.
+  </footer>
+</body>
+</html>

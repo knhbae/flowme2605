@@ -115,6 +115,8 @@ export type SavedFlowRecord = {
   routineDefinition?: SavedFlowRoutineDefinition;
 };
 
+export type SavedFlowReadStorage = Pick<Storage, 'length' | 'key' | 'getItem'>;
+
 export type SavedFlowMapSnapshot = {
   mapId: string;
   title: string;
@@ -521,6 +523,33 @@ export function getSavedFlowRecord(slug: string): SavedFlowRecord | undefined {
   } catch {
     return undefined;
   }
+}
+
+export function hasSavedFlowEntry(storage?: SavedFlowReadStorage): boolean {
+  const target = storage ?? (canUseStorage() ? localStorage : undefined);
+  if (!target) return false;
+
+  let keys: string[];
+  try {
+    keys = Array.from({ length: target.length }, (_, index) => target.key(index))
+      .filter((key): key is string => Boolean(key));
+  } catch {
+    return false;
+  }
+
+  return keys.some((key) => {
+    try {
+      if (key.startsWith(SAVED_FLOW_KEY_PREFIX)) {
+        return Boolean(normalizeSavedFlowRecord(JSON.parse(target.getItem(key) || 'null')));
+      }
+      if (key.startsWith(SAVED_FLOW_MAP_KEY_PREFIX)) {
+        return Boolean(normalizeSavedFlowMapSnapshot(JSON.parse(target.getItem(key) || 'null')));
+      }
+    } catch {
+      return false;
+    }
+    return false;
+  });
 }
 
 export function saveFlowRecord(

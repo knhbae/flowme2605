@@ -1,0 +1,200 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-27",
+  "reviewerRole": "codex_independent",
+  "observedUserCount": 0,
+  "target": {
+    "previewUrl": "https://flowme2605-n5o0dw81h-flowme.vercel.app",
+    "previewInteraction": "inaccessible",
+    "productionUrl": "https://flowme2605.vercel.app",
+    "branch": "codex/p35-mece-ux-reset",
+    "baselineSha": "2c951633d13adb0aab3ddd9d3cdddf506d9e97cd",
+    "candidateState": "uncommitted_local_changes"
+  },
+  "overall": {
+    "directionVerdict": "revise",
+    "finalRecommendation": "bounded_composition_revision",
+    "selectedAlternative": "C",
+    "selectedAlternativeLabel": "Artifact preflight + contextual personalization",
+    "reason": "P35의 3탭, result-first, library/workspace, date lens는 Production보다 명확하다. 부족한 부분은 artifact-export 약속, 저장 receipt, shape-aware execution, memo composer의 composition이며 안정된 데이터 계약을 다시 쓸 근거는 없다."
+  },
+  "newDirectEvidence": {
+    "routineSaveContinuity": {
+      "status": "gap_confirmed",
+      "route": "/f/curated-allblanc-morning-workout",
+      "finding": "시작일을 확정하지 않은 기본 미리보기는 날짜가 있는 반복 결과를 보여 주지만 저장 후에는 날짜 없는 1개 항목과 Calendar 0개로 바뀐다.",
+      "decisionImpact": "Structure C must distinguish provisional values from committed personalization and request confirmation only when the selected artifact depends on them.",
+      "evidenceKinds": [
+        "current_automated_test",
+        "current_package_screenshot",
+        "current_source"
+      ]
+    }
+  },
+  "structureAlternatives": [
+    {
+      "id": "A",
+      "label": "현재 P35",
+      "score": 3.2,
+      "strengths": [
+        "결과 우선 public frame",
+        "한 번에 한 종류 조정",
+        "My Flow library와 workspace 분리",
+        "3탭 entry router"
+      ],
+      "risks": [
+        "artifact/export 불일치",
+        "중복 post-save decision",
+        "shape-neutral next action",
+        "memo draft grammar 불일치"
+      ],
+      "decision": "revise"
+    },
+    {
+      "id": "B",
+      "label": "저장 전 full editor",
+      "score": 2.0,
+      "strengths": [
+        "저장 전 수정 범위 최대화"
+      ],
+      "risks": [
+        "첫 useful result 지연",
+        "모바일 폼 복잡도 증가",
+        "source와 personal write path 혼동",
+        "P35 one-kind adjustment 회귀"
+      ],
+      "decision": "rejected"
+    },
+    {
+      "id": "C",
+      "label": "Artifact preflight + contextual personalization",
+      "score": 4.5,
+      "strengths": [
+        "실제 결과를 먼저 유지",
+        "필요한 항목만 수정",
+        "FlowMe와 외부 destination을 저장 전 비교",
+        "콘텐츠별 primary artifact 유지",
+        "기존 personal overlay 계약 재사용"
+      ],
+      "risks": [
+        "artifact plan과 export eligibility 통합 필요",
+        "save-before personal proposal lifecycle 정의 필요"
+      ],
+      "decision": "selected"
+    }
+  ],
+  "p35Direction": [
+    {
+      "id": "D01",
+      "item": "3탭 entry router",
+      "verdict": "retain",
+      "reason": "Home 중복이 사라지고 Flow 찾기, 날짜 렌즈, 개인 library가 MECE하게 분리됐다.",
+      "changeNeeded": "없음"
+    },
+    {
+      "id": "D02",
+      "item": "public result-first",
+      "verdict": "retain",
+      "reason": "5개 대표 shape에서 실제 result와 count가 설명보다 먼저 나타났다.",
+      "changeNeeded": "artifact preflight와 동일 계약으로 연결"
+    },
+    {
+      "id": "D03",
+      "item": "한 번에 한 조정",
+      "verdict": "revise",
+      "reason": "기본 방향은 맞지만 include-only 항목 조정으로는 저장 전 확신이 부족하다.",
+      "changeNeeded": "title/detail/date contextual Item edit 추가"
+    },
+    {
+      "id": "D04",
+      "item": "My Flow library -> focused workspace",
+      "verdict": "revise",
+      "reason": "목록과 한 Flow 분리는 명확하지만 fixed mobile tabs와 post-save hub가 다시 복잡도를 만든다.",
+      "changeNeeded": "shape-aware execution unit과 중복 receipt 제거"
+    },
+    {
+      "id": "D05",
+      "item": "Calendar date lens",
+      "verdict": "retain",
+      "reason": "날짜 있는 항목만 소유하는 규칙과 wide side agenda가 명확하다.",
+      "changeNeeded": "390px selected-day bottom sheet만 보완"
+    },
+    {
+      "id": "D06",
+      "item": "scope-first export",
+      "verdict": "revise",
+      "reason": "저장 후 whole/selected/current 계약은 좋지만 저장 전 natural artifact와 export 형식이 일치하지 않는다.",
+      "changeNeeded": "public primary artifact parity와 disclosure 단축"
+    }
+  ],
+  "ownerFeedback": [
+    {
+      "id": "F01",
+      "verdict": "supported",
+      "currentProblem": "저장 전 item 조정은 포함 여부만 바꿀 수 있다.",
+      "selectedAlternative": "B_contextual_item_edit",
+      "reason": "저장 후 이미 존재하는 bounded Item editor를 title/detail/date만 personal proposal로 재사용할 수 있다.",
+      "sideEffect": "save-before proposal 상태와 focus return 테스트가 추가된다."
+    },
+    {
+      "id": "F02",
+      "verdict": "partly_supported",
+      "currentProblem": "전체 Flow는 보이지만 public receipt 뒤 My Flow가 다시 4개 행동을 요구한다.",
+      "selectedAlternative": "C_shape_aware_receipt_simplified",
+      "reason": "오늘 화면으로 바로 보내지는 말고 짧은 receipt 뒤 전체 personal workspace를 먼저 연다.",
+      "sideEffect": "legacy post-save decision hub assertion을 교체해야 한다."
+    },
+    {
+      "id": "F03",
+      "verdict": "supported",
+      "currentProblem": "dated Flow도 다음 row 한 건만 보여 준다.",
+      "selectedAlternative": "C_shape_aware_next_unit",
+      "reason": "날짜형은 same-date group, checklist는 next 1-3, routine은 occurrence, sheet는 current row가 자연스럽다.",
+      "sideEffect": "next-unit projection과 Calendar identity parity 테스트가 필요하다."
+    },
+    {
+      "id": "F04",
+      "verdict": "supported",
+      "currentProblem": "primary artifact preview와 외부 가져가기 형식이 다르고 memo draft에는 preflight가 없다.",
+      "selectedAlternative": "C_artifact_preflight_then_destination",
+      "reason": "고정 5탭 없이 primary 1개와 eligible secondary 최대 2개를 실제 결과로 비교할 수 있다.",
+      "sideEffect": "artifact plan과 export plan의 단일 계약이 필요하다."
+    },
+    {
+      "id": "F05",
+      "verdict": "partly_supported",
+      "currentProblem": "행이 남는지와 무관하게 복구 문법이 action별로 다르게 보인다.",
+      "selectedAlternative": "C_action_specific_recovery",
+      "reason": "행이 사라지는 completion은 즉시 undo, 남는 행은 direct toggle, delete/archive는 persistent restore가 맞다.",
+      "sideEffect": "action별 focus destination을 명시해야 한다."
+    },
+    {
+      "id": "F06",
+      "verdict": "supported",
+      "currentProblem": "모든 모바일 Flow가 추상적인 다음 행동 탭을 사용한다.",
+      "selectedAlternative": "C_remove_tab_integrate_shape_unit",
+      "reason": "다음 실행은 별도 view보다 전체 personal Flow 상단의 shape-aware section이다.",
+      "sideEffect": "mobile helper와 기존 tab E2E를 migration해야 한다."
+    },
+    {
+      "id": "F07",
+      "verdict": "supported",
+      "currentProblem": "기록 탭이 진행률 설명, history, feedback, reuse를 한 이름으로 묶는다.",
+      "selectedAlternative": "C_remove_tab_distribute_context",
+      "reason": "Item memo, execution history, run reflection, reuse는 각각 다른 object와 시점이 소유한다.",
+      "sideEffect": "기존 record section은 데이터가 아니라 presentation만 단계적으로 제거한다."
+    }
+  ],
+  "verification": {
+    "build": "passed",
+    "targetedE2E": {
+      "status": "passed",
+      "count": 30
+    },
+    "sampledOverflowX": 0,
+    "sampledUnnamedVisibleControls": 0,
+    "directJourneyEvidence": "journey-direct-evidence.json",
+    "keepMoveRemoveMatrix": "keep-move-remove-command-matrix.json",
+    "previewDirectInteraction": "not_verified"
+  }
+}

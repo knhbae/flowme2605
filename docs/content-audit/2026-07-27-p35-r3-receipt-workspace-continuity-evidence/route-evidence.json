@@ -1,0 +1,30 @@
+{
+  "generatedAt": "2026-07-27",
+  "evidenceKind": "current_browser_automation",
+  "observedUserCount": 0,
+  "markers": {
+    "p35R3SingleSavedReceipt": true,
+    "publicSavedReceiptPrimaryActionCount": 1,
+    "publicSavedReceiptCalendarActionCount": 0,
+    "publicSavedReceiptDirectWorkspaceHref": "/my?view=flows&flow=moving-d30-basic",
+    "myFlowDuplicateReceiptCountAfterDirectHandoff": 0,
+    "myFlowSelectedFlowPersistedAfterReload": true,
+    "legacyPostSavePrimaryActionCount": 1,
+    "legacyPostSaveFirstItemActionCount": 0,
+    "legacyPostSaveCalendarActionCount": 0,
+    "legacyPostSaveExportActionCount": 0,
+    "horizontalOverflowCountByViewport": {
+      "390x844": 0,
+      "1024x768": 0
+    },
+    "consolePageErrorCount": 0,
+    "localStorageSchemaChanged": false,
+    "stableIdentityContractChanged": false
+  },
+  "screenshots": [
+    "screenshots/p35-r3-saved-receipt-390.png",
+    "screenshots/p35-r3-focused-workspace-390.png",
+    "screenshots/p35-r3-saved-receipt-1024.png",
+    "screenshots/p35-r3-focused-workspace-1024.png"
+  ]
+}

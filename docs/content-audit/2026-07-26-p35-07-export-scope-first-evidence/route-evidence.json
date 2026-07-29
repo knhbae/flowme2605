@@ -1,0 +1,84 @@
+{
+  "generatedAt": "2026-07-26",
+  "baselineSha": "2c951633d13adb0aab3ddd9d3cdddf506d9e97cd",
+  "branch": "codex/p35-mece-ux-reset",
+  "verdict": "pass",
+  "observedUserCount": 0,
+  "markers": {
+    "P35-EXPORT-SCOPE-FIRST": true,
+    "P35-EXPORT-COUNT-PARITY": true
+  },
+  "routes": [
+    {
+      "route": "/my?demo=source-backed&view=flows",
+      "flowSlug": "source-backed-moving-d30",
+      "viewport": "390x844",
+      "wholeIncludedCount": 5,
+      "wholeCalendarPreviewCount": 5,
+      "wholeIcsVeventCount": 5,
+      "wholeReceiptCount": 5,
+      "selectedIncludedCount": 2,
+      "selectedChecklistPreviewCount": 2,
+      "selectedChecklistOutputCount": 2,
+      "selectedSheetPreviewRowCount": 2,
+      "selectedSheetOutputRowCount": 2,
+      "visibleDisabledFormatCount": 0,
+      "stableIdentityPresent": true,
+      "horizontalOverflowCount": 0,
+      "unnamedInteractiveCount": 0,
+      "consolePageErrorCount": 0,
+      "screenshots": [
+        "screenshots/p35-07-export-whole-390.png",
+        "screenshots/p35-07-export-selected-390.png"
+      ]
+    },
+    {
+      "route": "/my?demo=source-backed&view=flows",
+      "flowSlug": "source-backed-middle-school-math-1",
+      "viewport": "1024x768",
+      "scope": "item",
+      "currentIncludedCount": 1,
+      "currentCalendarCount": 0,
+      "calendarRecoveryVisible": true,
+      "visibleDisabledFormatCount": 0,
+      "currentMemoPreviewCount": 1,
+      "currentMemoOutputCount": 1,
+      "currentReceiptCount": 1,
+      "stableIdentityPresent": true,
+      "formatCardColumnCountInInspector": 1,
+      "horizontalOverflowCount": 0,
+      "unnamedInteractiveCount": 0,
+      "consolePageErrorCount": 0,
+      "screenshot": "screenshots/p35-07-export-current-1024.png"
+    },
+    {
+      "route": "/my?demo=source-backed&view=flows",
+      "flowSlug": "source-backed-middle-school-math-1",
+      "viewport": "1440x900",
+      "receiptScope": "item",
+      "receiptDestination": "memo",
+      "receiptOutputCount": 1,
+      "receiptNextActionVisible": true,
+      "stableIdentityPresent": true,
+      "horizontalOverflowCount": 0,
+      "unnamedInteractiveCount": 0,
+      "consolePageErrorCount": 0,
+      "screenshot": "screenshots/p35-07-export-receipt-1440.png"
+    }
+  ],
+  "dataContract": {
+    "newScopeEnumCount": 0,
+    "localStorageKeyChangeCount": 0,
+    "schemaChangeCount": 0,
+    "migrationCount": 0,
+    "sourceMutationCount": 0,
+    "exportDestinationChangeCount": 0
+  },
+  "verification": {
+    "p35TargetedE2e": "2/2 pass",
+    "p26UnifiedExportRegression": "1/1 pass",
+    "exportUnitTests": "13/13 pass",
+    "productionBuild": "pass",
+    "browserInspection": "pass"
+  }
+}

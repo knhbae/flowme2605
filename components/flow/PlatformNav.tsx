@@ -11,7 +11,6 @@ type NavItem = {
 };
 
 const primaryNavItems: NavItem[] = [
-  { href: '/', label: '홈', match: (path) => path === '/' },
   {
     href: '/flows',
     label: 'Flow 찾기',
@@ -50,11 +49,12 @@ export function PlatformMobileTabs() {
 
   return (
     <nav
-      className="fixed inset-x-3 bottom-[var(--flowme-mobile-tabs-offset)] z-40 grid grid-cols-4 gap-1 rounded-lg border border-[#E7E4DD] bg-white/95 p-1 shadow-[0_14px_36px_rgba(27,26,23,0.14)] backdrop-blur sm:hidden"
+      className="fixed inset-x-3 bottom-[var(--flowme-mobile-tabs-offset)] z-40 grid grid-cols-3 gap-1 rounded-lg border border-[#E7E4DD] bg-white/95 p-1 shadow-[0_14px_36px_rgba(27,26,23,0.14)] backdrop-blur sm:hidden"
       aria-label="주요 화면"
       data-testid="platform-mobile-tabs"
       data-layer-priority="navigation"
       data-p30-marker="P30-MOBILE-WORKSPACE-FOCUS-ORDER"
+      data-p35-marker="P35-ENTRY-ROUTER-3TAB"
     >
       {primaryNavItems.map((item) => {
         const active = item.match(pathname);
@@ -88,7 +88,12 @@ export function PlatformNav({ includeMobileTabs = true }: { includeMobileTabs?: 
             FLOW
           </Link>
 
-          <div className="hidden rounded-lg bg-[#F3F1EC] p-1 sm:flex" aria-label="주요 화면" data-testid="platform-primary-tabs">
+          <div
+            className="hidden rounded-lg bg-[#F3F1EC] p-1 sm:flex"
+            aria-label="주요 화면"
+            data-testid="platform-primary-tabs"
+            data-p35-marker="P35-ENTRY-ROUTER-3TAB"
+          >
             {primaryNavItems.map((item) => {
               const active = item.match(pathname);
               return (

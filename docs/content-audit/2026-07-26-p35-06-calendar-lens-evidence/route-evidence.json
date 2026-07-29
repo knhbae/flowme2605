@@ -1,0 +1,75 @@
+{
+  "generatedAt": "2026-07-26",
+  "baselineSha": "2c951633d13adb0aab3ddd9d3cdddf506d9e97cd",
+  "branch": "codex/p35-mece-ux-reset",
+  "verdict": "pass",
+  "observedUserCount": 0,
+  "markers": {
+    "P35-CALENDAR-LENS-ONE-TOGGLE": true
+  },
+  "routes": [
+    {
+      "route": "/calendar?demo=ux20",
+      "viewport": "390x844",
+      "calendarDirectEditKinds": [
+        "completion",
+        "reopen"
+      ],
+      "calendarUnscheduledTrayCount": 0,
+      "calendarDateMoveEntryCount": 0,
+      "calendarInlineNoteEntryCount": 0,
+      "calendarItemDetailSheetCount": 0,
+      "selectedDayGroupedByFlow": true,
+      "completionReversible": true,
+      "completionFocusReturn": true,
+      "myFlowStableItemDeepLink": true,
+      "horizontalOverflowCount": 0,
+      "unnamedInteractiveCount": 0,
+      "consolePageErrorCount": 0,
+      "screenshots": [
+        "screenshots/p35-06-calendar-month-390.png",
+        "screenshots/p35-06-calendar-agenda-390.png"
+      ]
+    },
+    {
+      "route": "/calendar?demo=ux20",
+      "viewport": "1024x768",
+      "scopePresentation": "picker",
+      "visibleScopeChipCount": 0,
+      "selectedDayGroupedByFlow": true,
+      "calendarDateMoveEntryCount": 0,
+      "calendarItemDetailSheetCount": 0,
+      "horizontalOverflowCount": 0,
+      "unnamedInteractiveCount": 0,
+      "consolePageErrorCount": 0,
+      "screenshot": "screenshots/p35-06-calendar-multi-flow-1024.png"
+    },
+    {
+      "route": "/calendar?demo=ux60",
+      "viewport": "1440x900",
+      "datedRowCount": 258,
+      "recurringSeriesCount": 1,
+      "closedScopeCommandCount": 1,
+      "searchableScopePicker": true,
+      "scopePickerEscapeCloses": true,
+      "scopePickerFocusReturns": true,
+      "gridUsesCompactOverflowSummary": true,
+      "horizontalOverflowCount": 0,
+      "unnamedInteractiveCount": 0,
+      "consolePageErrorCount": 0,
+      "screenshot": "screenshots/p35-06-calendar-60-flow-1440.png"
+    }
+  ],
+  "dataContract": {
+    "sourceMutationCount": 0,
+    "localStorageKeyChangeCount": 0,
+    "schemaChangeCount": 0,
+    "migrationCount": 0,
+    "completionIdentityChangeCount": 0,
+    "undatedItemLossCount": 0
+  },
+  "verification": {
+    "p35TargetedE2e": "3/3 pass",
+    "browserInspection": "pass"
+  }
+}
