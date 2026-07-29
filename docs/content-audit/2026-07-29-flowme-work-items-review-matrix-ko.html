@@ -373,6 +373,7 @@
         <span>정리 기준 2026-07-29 closeout</span>
         <span>P35 baseline 4a51b08</span>
         <span>PR #161 merged</span>
+        <span>Closeout PR #162 open</span>
         <span>Research archive a8d977b</span>
         <span>Production P35 확인</span>
         <span>Observed users 0</span>
@@ -535,6 +536,7 @@
             <tr><th>트랙</th><th>완료 범위</th><th>정확한 상태</th><th>Runtime 영향</th><th>검증·수치</th><th>다음 행동</th></tr>
           </thead>
           <tbody>
+            <tr><td data-label="트랙">P35 literal-route hardening</td><td data-label="완료 범위">실제 public Flow 저장본으로 literal <code>/my</code> 기본 할 일과 <code>?experiment=off</code> rollback·저장값 보존 회귀 보강</td><td data-label="상태"><span class="status pending">로컬 WIP</span></td><td data-label="Runtime">변경 없음</td><td data-label="검증">focused E2E 2/2 · dependency high 0 · build pass; 전체 suite 미완료</td><td data-label="다음 행동">겹치는 정본 문서 조정 → 전체 closeout → commit/push/PR 상태 분리 확인</td></tr>
             <tr><td data-label="트랙">Text Authoring v1/v1.1</td><td data-label="완료 범위">일반 텍스트 + 구조화 preview, 8개 사례, wireflow, prototype, state·ownership·data handoff</td><td data-label="상태"><span class="status design">설계·프로토타입 완료</span></td><td data-label="Runtime">변경 없음</td><td data-label="검증">390/1024/1440 browser·heuristic QA, observed 0</td><td data-label="다음 행동">오너가 한 slice만 승격</td></tr>
             <tr><td data-label="트랙">TA-01</td><td data-label="완료 범위">Deterministic document/block/mapping/issue/revision 계약 설계</td><td data-label="상태"><span class="status pending">미구현</span></td><td data-label="Runtime">없음</td><td data-label="검증">구현 검증 없음</td><td data-label="다음 행동">승격 시 parser·stable ID·undo 구현</td></tr>
             <tr><td data-label="트랙">TA-02</td><td data-label="완료 범위">390 stage, 1024 2-pane, 1440 3-pane shell 설계</td><td data-label="상태"><span class="status pending">미구현</span></td><td data-label="Runtime">없음</td><td data-label="검증">standalone prototype만</td><td data-label="다음 행동">TA-01 이후 구현</td></tr>
@@ -607,6 +609,11 @@
           </ul>
         </article>
       </div>
+      <p class="callout">
+        병행 비런타임 WIP: <code>agent/p35-release-hardening</code>은 fixture 중심이던 근거를
+        실제 저장본·literal route로 보강 중이다. 앱 동작 변경은 없으며, 전체 검증과
+        겹치는 정본 문서 정리, commit/push/PR closeout이 남았다.
+      </p>
       <div class="table-wrap" style="margin-top:14px">
         <table>
           <thead>
@@ -645,9 +652,10 @@
             <tr><td data-label="대상">P35 product baseline</td><td data-label="현재 상태"><code>4a51b08</code><br>PR #161 merge</td><td data-label="판정"><span class="status released">P35 포함</span></td><td data-label="취급">현재 제품 코드 기준선</td></tr>
             <tr><td data-label="대상">PR #161</td><td data-label="현재 상태">merged · 13 commits · 1,062 changed files</td><td data-label="판정"><span class="status released">완료</span></td><td data-label="취급">P35와 planning evidence 통합</td></tr>
             <tr><td data-label="대상">Production</td><td data-label="현재 상태"><code>https://flowme2605.vercel.app</code><br>Vercel success</td><td data-label="판정"><span class="status released">P35 동작 확인</span></td><td data-label="취급">자동/browser QA, observed UXR 아님</td></tr>
-            <tr><td data-label="대상">Closeout package</td><td data-label="현재 상태">canonical 상태 문서와 이 상세 재검토표</td><td data-label="판정"><span class="status done">문서 정합화</span></td><td data-label="취급">제품 runtime 변경 없이 별도 PR로 버전 관리</td></tr>
+            <tr><td data-label="대상">Closeout package</td><td data-label="현재 상태"><code>0d77fd3</code> · <a href="https://github.com/knhbae/flowme2605/pull/162">PR #162 open</a> · base <code>main</code></td><td data-label="판정"><span class="status pending">PR 진행 중</span></td><td data-label="취급">mergeable; Docs/Unit/Build·Vercel Preview 성공, Playwright E2E 진행 중. 이 표의 hardening 최신화 1건은 아직 PR 미포함</td></tr>
             <tr><td data-label="대상">flow-mvp</td><td data-label="현재 상태">clean <code>main</code> · P35 baseline에서 <code>origin/main</code>과 일치</td><td data-label="판정"><span class="status done">진입점 복구</span></td><td data-label="취급">기본 코드·테스트 작업 디렉터리</td></tr>
             <tr><td data-label="대상">Research archive</td><td data-label="현재 상태"><code>archive/research-planning-consolidation-20260729</code> @ <code>a8d977b</code></td><td data-label="판정"><span class="status research">원격 보존</span></td><td data-label="취급">final browser QA 포함, main/runtime과 분리</td></tr>
+            <tr><td data-label="대상">flow-p35-hardening</td><td data-label="현재 상태"><code>agent/p35-release-hardening</code> @ <code>4a51b08</code> · 8 modified + 2 untracked</td><td data-label="판정"><span class="status pending">test/docs WIP</span></td><td data-label="취급">focused 2/2만 기록; commit·push·PR·merge·deploy 없음</td></tr>
             <tr><td data-label="대상">P35 격리 브랜치</td><td data-label="현재 상태"><code>c880fbd</code>; 통합 commit <code>a8c4c19</code>과 tree 동일</td><td data-label="판정"><span class="status done">보존</span></td><td data-label="취급">과거 격리 리뷰 근거</td></tr>
           </tbody>
         </table>
