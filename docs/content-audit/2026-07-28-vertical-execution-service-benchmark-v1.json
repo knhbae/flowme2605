@@ -1,0 +1,5571 @@
+{
+  "meta": {
+    "schemaVersion": "flowme-vertical-execution-service-benchmark-v1",
+    "title": "Vertical 실행 서비스 벤치마크",
+    "generatedAt": "2026-07-28T00:00:00+09:00",
+    "checkedAt": "2026-07-28",
+    "scope": "공개 웹·공식 지원 문서·앱스토어에서 확인 가능한 실행 구조를 분석한다. 앱 로그인 안쪽 결과와 실제 사용자 관찰은 포함하지 않는다.",
+    "nonScope": [
+      "앱 코드 변경",
+      "seed 변경",
+      "canonical 규칙 변경",
+      "유료 결제",
+      "서비스 콘텐츠 복제"
+    ]
+  },
+  "summary": {
+    "discoveredCount": 36,
+    "verifiedCount": 24,
+    "deepDiveCount": 10,
+    "categoryCount": 9,
+    "opportunityCount": 8,
+    "evidenceUrlCount": 51,
+    "screenshotCount": 20,
+    "accessLimitedCount": 0,
+    "inAppVerifiedCount": 0,
+    "decisions": {
+      "go": 4,
+      "partner": 6,
+      "benchmark": 13,
+      "hold": 1
+    }
+  },
+  "evidenceBoundary": {
+    "allowedLevels": [
+      "public_web_verified",
+      "app_store_verified",
+      "support_doc_verified",
+      "access_limited",
+      "unknown"
+    ],
+    "excludedClaim": "in_app_verified",
+    "automationNote": "자동 캡처는 공개 화면 렌더링 증거이며 실제 사용자 검증이 아니다."
+  },
+  "categories": [
+    {
+      "id": "home_living",
+      "label": "집·살림"
+    },
+    {
+      "id": "family_parenting",
+      "label": "가족·육아"
+    },
+    {
+      "id": "study_learning",
+      "label": "공부·독서·학습"
+    },
+    {
+      "id": "money_admin_purchase",
+      "label": "돈·행정·구매"
+    },
+    {
+      "id": "health_fitness",
+      "label": "건강·운동"
+    },
+    {
+      "id": "travel_outings_events",
+      "label": "여행·외출·행사"
+    },
+    {
+      "id": "meals_grocery",
+      "label": "식사·장보기"
+    },
+    {
+      "id": "work_career",
+      "label": "일·커리어"
+    },
+    {
+      "id": "hobby_pet",
+      "label": "취미·반려"
+    }
+  ],
+  "executionPatterns": [
+    {
+      "id": "goal_to_plan",
+      "label": "목표 → 계획",
+      "description": "목표·수준·기간을 받아 전체 프로그램을 만든다."
+    },
+    {
+      "id": "anchor_date_to_timeline",
+      "label": "기준일 → 타임라인",
+      "description": "기준일 하나를 받아 D-day 일정을 역산한다."
+    },
+    {
+      "id": "profile_to_daily_plan",
+      "label": "프로필 → 오늘 계획",
+      "description": "대상·상태·환경을 받아 오늘 실행 목록을 만든다."
+    },
+    {
+      "id": "content_to_guided_session",
+      "label": "콘텐츠 → 안내 세션",
+      "description": "콘텐츠를 실행 순서와 현재 단계가 보이는 화면으로 제공한다."
+    },
+    {
+      "id": "environment_to_maintenance",
+      "label": "환경 → 유지관리",
+      "description": "공간·대상별 반복 관리 일정을 만든다."
+    },
+    {
+      "id": "progress_to_next_lesson",
+      "label": "진도 → 다음 학습",
+      "description": "완료·성취도에 따라 다음 회차를 제시한다."
+    },
+    {
+      "id": "state_to_follow_up",
+      "label": "상태 → 후속 행동",
+      "description": "진행 상태 변화에 맞춰 다음 행동과 기한을 제안한다."
+    },
+    {
+      "id": "collection_to_itinerary",
+      "label": "모음 → 일정",
+      "description": "장소·예약·자료 모음을 시간순 일정으로 바꾼다."
+    }
+  ],
+  "discoveredCandidates": [
+    {
+      "id": "sweepy",
+      "name": "Sweepy",
+      "category": "home_living",
+      "status": "verified",
+      "includedInVerified": true,
+      "reason": "공식 웹·지원 문서·앱스토어 중 2개 이상 근거로 핵심 실행 흐름을 확인했다."
+    },
+    {
+      "id": "tody",
+      "name": "Tody",
+      "category": "home_living",
+      "status": "verified",
+      "includedInVerified": true,
+      "reason": "공식 웹·지원 문서·앱스토어 중 2개 이상 근거로 핵심 실행 흐름을 확인했다."
+    },
+    {
+      "id": "kinedu",
+      "name": "Kinedu",
+      "category": "family_parenting",
+      "status": "verified",
+      "includedInVerified": true,
+      "reason": "공식 웹·지원 문서·앱스토어 중 2개 이상 근거로 핵심 실행 흐름을 확인했다."
+    },
+    {
+      "id": "babysparks",
+      "name": "BabySparks",
+      "category": "family_parenting",
+      "status": "verified",
+      "includedInVerified": true,
+      "reason": "공식 웹·지원 문서·앱스토어 중 2개 이상 근거로 핵심 실행 흐름을 확인했다."
+    },
+    {
+      "id": "duolingo",
+      "name": "Duolingo",
+      "category": "study_learning",
+      "status": "verified",
+      "includedInVerified": true,
+      "reason": "공식 웹·지원 문서·앱스토어 중 2개 이상 근거로 핵심 실행 흐름을 확인했다."
+    },
+    {
+      "id": "brilliant",
+      "name": "Brilliant",
+      "category": "study_learning",
+      "status": "verified",
+      "includedInVerified": true,
+      "reason": "공식 웹·지원 문서·앱스토어 중 2개 이상 근거로 핵심 실행 흐름을 확인했다."
+    },
+    {
+      "id": "yousician",
+      "name": "Yousician",
+      "category": "study_learning",
+      "status": "verified",
+      "includedInVerified": true,
+      "reason": "공식 웹·지원 문서·앱스토어 중 2개 이상 근거로 핵심 실행 흐름을 확인했다."
+    },
+    {
+      "id": "ynab",
+      "name": "YNAB",
+      "category": "money_admin_purchase",
+      "status": "verified",
+      "includedInVerified": true,
+      "reason": "공식 웹·지원 문서·앱스토어 중 2개 이상 근거로 핵심 실행 흐름을 확인했다."
+    },
+    {
+      "id": "turbotax",
+      "name": "TurboTax",
+      "category": "money_admin_purchase",
+      "status": "verified",
+      "includedInVerified": true,
+      "reason": "공식 웹·지원 문서·앱스토어 중 2개 이상 근거로 핵심 실행 흐름을 확인했다."
+    },
+    {
+      "id": "runna",
+      "name": "Runna",
+      "category": "health_fitness",
+      "status": "verified",
+      "includedInVerified": true,
+      "reason": "공식 웹·지원 문서·앱스토어 중 2개 이상 근거로 핵심 실행 흐름을 확인했다."
+    },
+    {
+      "id": "freeletics",
+      "name": "Freeletics",
+      "category": "health_fitness",
+      "status": "verified",
+      "includedInVerified": true,
+      "reason": "공식 웹·지원 문서·앱스토어 중 2개 이상 근거로 핵심 실행 흐름을 확인했다."
+    },
+    {
+      "id": "nike-training-club",
+      "name": "Nike Training Club",
+      "category": "health_fitness",
+      "status": "verified",
+      "includedInVerified": true,
+      "reason": "공식 웹·지원 문서·앱스토어 중 2개 이상 근거로 핵심 실행 흐름을 확인했다."
+    },
+    {
+      "id": "wanderlog",
+      "name": "Wanderlog",
+      "category": "travel_outings_events",
+      "status": "verified",
+      "includedInVerified": true,
+      "reason": "공식 웹·지원 문서·앱스토어 중 2개 이상 근거로 핵심 실행 흐름을 확인했다."
+    },
+    {
+      "id": "tripit",
+      "name": "TripIt",
+      "category": "travel_outings_events",
+      "status": "verified",
+      "includedInVerified": true,
+      "reason": "공식 웹·지원 문서·앱스토어 중 2개 이상 근거로 핵심 실행 흐름을 확인했다."
+    },
+    {
+      "id": "the-knot",
+      "name": "The Knot",
+      "category": "travel_outings_events",
+      "status": "verified",
+      "includedInVerified": true,
+      "reason": "공식 웹·지원 문서·앱스토어 중 2개 이상 근거로 핵심 실행 흐름을 확인했다."
+    },
+    {
+      "id": "sidechef",
+      "name": "SideChef",
+      "category": "meals_grocery",
+      "status": "verified",
+      "includedInVerified": true,
+      "reason": "공식 웹·지원 문서·앱스토어 중 2개 이상 근거로 핵심 실행 흐름을 확인했다."
+    },
+    {
+      "id": "samsung-food",
+      "name": "Samsung Food",
+      "category": "meals_grocery",
+      "status": "verified",
+      "includedInVerified": true,
+      "reason": "공식 웹·지원 문서·앱스토어 중 2개 이상 근거로 핵심 실행 흐름을 확인했다."
+    },
+    {
+      "id": "mealime",
+      "name": "Mealime",
+      "category": "meals_grocery",
+      "status": "verified",
+      "includedInVerified": true,
+      "reason": "공식 웹·지원 문서·앱스토어 중 2개 이상 근거로 핵심 실행 흐름을 확인했다."
+    },
+    {
+      "id": "teal",
+      "name": "Teal",
+      "category": "work_career",
+      "status": "verified",
+      "includedInVerified": true,
+      "reason": "공식 웹·지원 문서·앱스토어 중 2개 이상 근거로 핵심 실행 흐름을 확인했다."
+    },
+    {
+      "id": "huntr",
+      "name": "Huntr",
+      "category": "work_career",
+      "status": "verified",
+      "includedInVerified": true,
+      "reason": "공식 웹·지원 문서·앱스토어 중 2개 이상 근거로 핵심 실행 흐름을 확인했다."
+    },
+    {
+      "id": "planta",
+      "name": "Planta",
+      "category": "hobby_pet",
+      "status": "verified",
+      "includedInVerified": true,
+      "reason": "공식 웹·지원 문서·앱스토어 중 2개 이상 근거로 핵심 실행 흐름을 확인했다."
+    },
+    {
+      "id": "dogo",
+      "name": "Dogo",
+      "category": "hobby_pet",
+      "status": "verified",
+      "includedInVerified": true,
+      "reason": "공식 웹·지원 문서·앱스토어 중 2개 이상 근거로 핵심 실행 흐름을 확인했다."
+    },
+    {
+      "id": "hundeo",
+      "name": "Hundeo",
+      "category": "hobby_pet",
+      "status": "verified",
+      "includedInVerified": true,
+      "reason": "공식 웹·지원 문서·앱스토어 중 2개 이상 근거로 핵심 실행 흐름을 확인했다."
+    },
+    {
+      "id": "cricut-design-space",
+      "name": "Cricut Design Space",
+      "category": "hobby_pet",
+      "status": "verified",
+      "includedInVerified": true,
+      "reason": "공식 웹·지원 문서·앱스토어 중 2개 이상 근거로 핵심 실행 흐름을 확인했다."
+    },
+    {
+      "id": "flylady",
+      "name": "FlyLady",
+      "category": "home_living",
+      "status": "longlist",
+      "includedInVerified": false,
+      "reason": "강한 루틴 원형이지만 앱·공식 콘텐츠·커뮤니티 주체가 분산되어 이번 검증에서 제외했다."
+    },
+    {
+      "id": "babybilly",
+      "name": "베이비빌리",
+      "category": "family_parenting",
+      "status": "longlist",
+      "includedInVerified": false,
+      "reason": "한국형 임신·육아 실행 사례지만 기존 atlas와 중복되어 이번 심층 표본에서 제외했다."
+    },
+    {
+      "id": "fabulous",
+      "name": "Fabulous",
+      "category": "health_fitness",
+      "status": "longlist",
+      "includedInVerified": false,
+      "reason": "습관 코칭 구조는 강하지만 콘텐츠 발굴보다 직접 습관 제품 벤치마크 성격이 강하다."
+    },
+    {
+      "id": "nike-run-club",
+      "name": "Nike Run Club",
+      "category": "health_fitness",
+      "status": "longlist",
+      "includedInVerified": false,
+      "reason": "Runna·NTC와 패턴이 중복되어 보조 후보로 남겼다."
+    },
+    {
+      "id": "packpoint",
+      "name": "PackPoint",
+      "category": "travel_outings_events",
+      "status": "longlist",
+      "includedInVerified": false,
+      "reason": "프로필→짐 목록은 유용하지만 공개 콘텐츠 공급 기회가 얕다."
+    },
+    {
+      "id": "zola",
+      "name": "Zola",
+      "category": "travel_outings_events",
+      "status": "longlist",
+      "includedInVerified": false,
+      "reason": "The Knot과 실행·비즈니스 구조가 중복되어 비교 후보로 남겼다."
+    },
+    {
+      "id": "rocket-money",
+      "name": "Rocket Money",
+      "category": "money_admin_purchase",
+      "status": "longlist",
+      "includedInVerified": false,
+      "reason": "구독·계좌 데이터 중심이라 공개 콘텐츠 발굴과 거리가 있다."
+    },
+    {
+      "id": "notion-templates",
+      "name": "Notion Templates",
+      "category": "work_career",
+      "status": "longlist",
+      "includedInVerified": false,
+      "reason": "템플릿 마켓은 공급처 후보지만 오늘·다음 행동 엔진이 일관되지 않다."
+    },
+    {
+      "id": "alltrails",
+      "name": "AllTrails",
+      "category": "travel_outings_events",
+      "status": "longlist",
+      "includedInVerified": false,
+      "reason": "코스 실행은 강하지만 지도·위치 데이터 의존성이 높다."
+    },
+    {
+      "id": "fiton",
+      "name": "FitOn",
+      "category": "health_fitness",
+      "status": "longlist",
+      "includedInVerified": false,
+      "reason": "운동 영상 프로그램은 유효하나 이번 표본의 NTC·Freeletics와 중복된다."
+    },
+    {
+      "id": "paprika",
+      "name": "Paprika Recipe Manager",
+      "category": "meals_grocery",
+      "status": "longlist",
+      "includedInVerified": false,
+      "reason": "레시피 수집·식단 구조는 유효하나 Samsung Food와 패턴이 중복된다."
+    },
+    {
+      "id": "bring",
+      "name": "Bring!",
+      "category": "meals_grocery",
+      "status": "longlist",
+      "includedInVerified": false,
+      "reason": "장보기 협업은 강하지만 Flow형 콘텐츠 포트폴리오는 얕다."
+    }
+  ],
+  "verifiedServices": [
+    {
+      "id": "sweepy",
+      "name": "Sweepy",
+      "category": "home_living",
+      "deepDive": true,
+      "platforms": [
+        "iOS",
+        "Android"
+      ],
+      "executionPattern": "environment_to_maintenance",
+      "userMoment": "집안일을 누구부터 무엇을 해야 할지 정하기 어려울 때",
+      "coreLoop": [
+        "공간·빈도 설정",
+        "스마트 일정 생성",
+        "오늘 할 일",
+        "완료·가족 공유"
+      ],
+      "initialInputs": [
+        {
+          "name": "공간/방",
+          "required": true,
+          "reason": "관리 대상"
+        },
+        {
+          "name": "청소 빈도",
+          "required": true,
+          "reason": "반복 주기"
+        },
+        {
+          "name": "하루 가용량",
+          "required": false,
+          "reason": "일정 강도"
+        }
+      ],
+      "generatedArtifact": "공간별 반복 청소 일정과 오늘 할 일",
+      "nextAction": "오늘 배정된 청소 항목 완료",
+      "stage0Behavior": "공간 템플릿을 먼저 보여주고 선택한 공간만 일정화한다.",
+      "editBehavior": "빈도·가용량·가족 배정을 바꾸면 스마트 일정이 다시 조정된다.",
+      "portfolioDepth": "방·욕실·주방 등 공간별 작업과 계절 관리로 확장된다.",
+      "businessEvidence": "공식 사이트는 Premium과 가구 공유 기능을 안내한다.",
+      "portability": "앱 안 실행은 선명하지만 캘린더·시트로의 공개 내보내기 근거는 약하다.",
+      "flowmeDelta": "공개 청소표를 출처 링크와 함께 날짜 없는 Flow 또는 반복 일정으로 저장하고 외부 캘린더로 보낼 수 있다.",
+      "followabilityNote": "매일 무엇을 할지 계산해 주어 사용자의 재계획 부담이 낮다.",
+      "minimumInputNote": "초기 설정은 조금 길지만 집 전체 계획을 만드는 데 직접 쓰인다.",
+      "generatedPlanNote": "결과물과 오늘 목록의 관계가 분명하다.",
+      "nextActionNote": "오늘 목록 중심이라 시작 지점이 선명하다.",
+      "editNote": "재배치가 자동화되어 유지관리형 벤치마크로 강하다.",
+      "portfolioNote": "공개 제작자 콘텐츠를 공간·기간별 루틴으로 찾기 좋다.",
+      "businessNote": "서비스 자체 데이터는 제휴 없이는 콘텐츠 원천으로 쓰기 어렵다.",
+      "portabilityNote": "FlowMe는 일정·체크리스트 이식성에서 차이를 만들 수 있다.",
+      "flowmeDeltaNote": "자동 최적화 엔진은 만들지 않고 공개 원문의 실행 레이어만 제공해야 한다.",
+      "evidenceNote": "공식 기능 설명과 앱스토어 설명이 일치하지만 실제 자동 배치 결과는 미확인이다.",
+      "serviceRelationship": "ux_logic_benchmark_only",
+      "finalDecision": "go",
+      "opportunityId": "opp-home-routine",
+      "transferablePatterns": [
+        "공간 템플릿을 고른 뒤 최소 빈도로 일정 생성",
+        "오늘 목록을 첫 화면에 표시",
+        "완료 시 다음 반복일 계산"
+      ],
+      "doNotBuild": [
+        "가사량 최적화 점수 엔진",
+        "가족 간 경쟁·보상 시스템"
+      ],
+      "evidenceSources": [
+        {
+          "label": "Sweepy 공식 사이트",
+          "url": "https://sweepy.com/",
+          "type": "official_web",
+          "claim": "Smart Schedule, 가구 공유, 작업 제안을 안내한다.",
+          "checkedAt": "2026-07-28"
+        },
+        {
+          "label": "Sweepy App Store",
+          "url": "https://apps.apple.com/us/app/sweepy-home-cleaning-schedule/id1498897320",
+          "type": "app_store",
+          "claim": "방별 청결 상태와 자동 일정을 설명한다.",
+          "checkedAt": "2026-07-28"
+        }
+      ],
+      "screenshots": [
+        {
+          "id": "sweepy-01",
+          "title": "공식 서비스 화면",
+          "url": "https://sweepy.com/",
+          "evidenceType": "official_web",
+          "file": "2026-07-28-vertical-execution-service-assets/sweepy-01.png",
+          "verificationLevel": "public_web_verified"
+        },
+        {
+          "id": "sweepy-02",
+          "title": "앱스토어 기능 화면",
+          "url": "https://apps.apple.com/us/app/sweepy-home-cleaning-schedule/id1498897320",
+          "evidenceType": "app_store",
+          "file": "2026-07-28-vertical-execution-service-assets/sweepy-02.png",
+          "verificationLevel": "app_store_verified"
+        }
+      ],
+      "scoreValues": [
+        9,
+        7,
+        9,
+        9,
+        9,
+        8,
+        6,
+        8,
+        9,
+        8
+      ],
+      "scores": {
+        "followabilityScore": {
+          "score": 9,
+          "comment": "Sweepy은(는) '공간·빈도 설정 → 스마트 일정 생성 → 오늘 할 일 → 완료·가족 공유' 흐름으로 다음 행동을 이어 준다. 매일 무엇을 할지 계산해 주어 사용자의 재계획 부담이 낮다. (9/10)"
+        },
+        "minimumInputQuality": {
+          "score": 7,
+          "comment": "최초 입력은 공간/방, 청소 빈도, 하루 가용량이며 필수 2개다. 초기 설정은 조금 길지만 집 전체 계획을 만드는 데 직접 쓰인다. (7/10)"
+        },
+        "generatedPlanClarity": {
+          "score": 9,
+          "comment": "입력 뒤 '공간별 반복 청소 일정과 오늘 할 일'가 생성된다. 결과물과 오늘 목록의 관계가 분명하다. (9/10)"
+        },
+        "nextActionClarity": {
+          "score": 9,
+          "comment": "실행 화면의 다음 행동은 '오늘 배정된 청소 항목 완료'이다. 오늘 목록 중심이라 시작 지점이 선명하다. (9/10)"
+        },
+        "editRescheduleFlexibility": {
+          "score": 9,
+          "comment": "빈도·가용량·가족 배정을 바꾸면 스마트 일정이 다시 조정된다. 재배치가 자동화되어 유지관리형 벤치마크로 강하다. (9/10)"
+        },
+        "contentPortfolioDepth": {
+          "score": 8,
+          "comment": "방·욕실·주방 등 공간별 작업과 계절 관리로 확장된다. 공개 제작자 콘텐츠를 공간·기간별 루틴으로 찾기 좋다. (8/10)"
+        },
+        "creatorBusinessLoop": {
+          "score": 6,
+          "comment": "공식 사이트는 Premium과 가구 공유 기능을 안내한다. 서비스 자체 데이터는 제휴 없이는 콘텐츠 원천으로 쓰기 어렵다. (6/10)"
+        },
+        "portabilityGap": {
+          "score": 8,
+          "comment": "앱 안 실행은 선명하지만 캘린더·시트로의 공개 내보내기 근거는 약하다. FlowMe는 일정·체크리스트 이식성에서 차이를 만들 수 있다. 점수가 높을수록 외부 도구로 옮길 여지가 크다. (8/10)"
+        },
+        "flowmeValueDelta": {
+          "score": 9,
+          "comment": "공개 청소표를 출처 링크와 함께 날짜 없는 Flow 또는 반복 일정으로 저장하고 외부 캘린더로 보낼 수 있다. 자동 최적화 엔진은 만들지 않고 공개 원문의 실행 레이어만 제공해야 한다. (9/10)"
+        },
+        "evidenceConfidence": {
+          "score": 8,
+          "comment": "공식·지원·앱스토어 근거 2건을 2026-07-28 확인했다. 공식 기능 설명과 앱스토어 설명이 일치하지만 실제 자동 배치 결과는 미확인이다. (8/10)"
+        }
+      },
+      "evidenceLevels": [
+        "public_web_verified",
+        "app_store_verified"
+      ],
+      "userCommunicationEvidence": {
+        "status": "review_surface_verified",
+        "observed": "App Store의 공개 평점·리뷰 표면과 공식 후기 영역이 존재한다.",
+        "creatorResponse": "개별 리뷰에 대한 제작자 응답은 이번 공개 근거에서 확인하지 않았다.",
+        "sourceUrl": "https://apps.apple.com/us/app/sweepy-home-cleaning-schedule/id1498897320"
+      },
+      "businessEvidenceRecord": {
+        "observed": "공식 사이트는 Premium과 가구 공유 기능을 안내한다.",
+        "internalAssessment": "서비스 자체 데이터는 제휴 없이는 콘텐츠 원천으로 쓰기 어렵다.",
+        "unknown": "실제 제휴 의사·전환율·매출 기여는 확인하지 않았으며 사업 가설로 승격하지 않는다."
+      },
+      "observationInferenceBoundary": {
+        "observedFacts": [
+          "Smart Schedule, 가구 공유, 작업 제안을 안내한다.",
+          "방별 청결 상태와 자동 일정을 설명한다."
+        ],
+        "flowmeInference": "공개 청소표를 출처 링크와 함께 날짜 없는 Flow 또는 반복 일정으로 저장하고 외부 캘린더로 보낼 수 있다.",
+        "unknowns": [
+          "로그인 후 개인화 결과",
+          "실제 사용자의 장기 완주율",
+          "제작자·서비스의 제휴 의사"
+        ]
+      },
+      "verificationBoundary": "공개 웹·공식 지원 문서·앱스토어 설명만 확인했다. 로그인 후 개인화 결과는 in_app_verified가 아니다.",
+      "compression": {
+        "userMoment": "집안일을 누구부터 무엇을 해야 할지 정하기 어려울 때",
+        "naturalArtifact": "공간별 반복 청소 일정과 오늘 할 일",
+        "minimumAnchor": [
+          "공간/방",
+          "청소 빈도"
+        ],
+        "stage0Behavior": "공간 템플릿을 먼저 보여주고 선택한 공간만 일정화한다.",
+        "serviceRelationship": "ux_logic_benchmark_only",
+        "contentDiscoveryOpportunity": "opp-home-routine",
+        "doNotBuildBoundary": "가사량 최적화 점수 엔진 / 가족 간 경쟁·보상 시스템",
+        "finalDecision": "go"
+      }
+    },
+    {
+      "id": "tody",
+      "name": "Tody",
+      "category": "home_living",
+      "deepDive": false,
+      "platforms": [
+        "iOS",
+        "Android"
+      ],
+      "executionPattern": "environment_to_maintenance",
+      "userMoment": "고정된 청소 날짜보다 현재 상태에 따라 집을 관리하고 싶을 때",
+      "coreLoop": [
+        "공간 선택",
+        "맞춤 계획",
+        "상태 확인",
+        "가족과 완료"
+      ],
+      "initialInputs": [
+        {
+          "name": "공간/작업",
+          "required": true,
+          "reason": "관리 대상"
+        },
+        {
+          "name": "원하는 관리 강도",
+          "required": false,
+          "reason": "주기 조정"
+        }
+      ],
+      "generatedArtifact": "공간별 청소 계획과 현재 청결 상태",
+      "nextAction": "가장 시급한 공간 작업 완료",
+      "stage0Behavior": "약 5분 온보딩으로 기본 청소 계획을 만든다.",
+      "editBehavior": "작업 주기와 가족 담당을 바꿀 수 있다.",
+      "portfolioDepth": "가정 공간과 반복 청소 작업 포트폴리오가 깊다.",
+      "businessEvidence": "공식 사이트는 유료 기능과 가족 동기화 기능을 안내한다.",
+      "portability": "앱 내부 상태 기반 관리가 중심이며 외부 내보내기는 핵심으로 보이지 않는다.",
+      "flowmeDelta": "상태 점수 없이도 공개된 공간별 청소 루틴을 반복 체크와 캘린더로 이식할 수 있다.",
+      "followabilityNote": "시급도 중심으로 다음 작업을 줄여 준다.",
+      "minimumInputNote": "공간과 작업 설정은 계획 생성에 필요한 입력이다.",
+      "generatedPlanNote": "청소 계획과 상태가 한 화면에서 연결된다.",
+      "nextActionNote": "가장 시급한 작업을 고르기 쉽다.",
+      "editNote": "주기 수정은 가능하지만 상세 자동 재계산은 공개 자료로 제한적으로 확인된다.",
+      "portfolioNote": "가사 콘텐츠 발굴의 구조 벤치마크로 충분하다.",
+      "businessNote": "서비스 콘텐츠의 공개 재사용 근거는 없다.",
+      "portabilityNote": "외부 도구 이식성이 FlowMe의 차별점이 될 수 있다.",
+      "flowmeDeltaNote": "Tody의 상태 계산을 복제할 필요는 없다.",
+      "evidenceNote": "공식 사이트와 앱 소개를 확인했으나 로그인 내부는 미확인이다.",
+      "serviceRelationship": "ux_logic_benchmark_only",
+      "finalDecision": "benchmark",
+      "opportunityId": "opp-home-routine",
+      "transferablePatterns": [
+        "공간별 기본 작업 선택",
+        "시급한 작업 우선 표시"
+      ],
+      "doNotBuild": [
+        "독점적 청결 상태 계산",
+        "가족 경쟁 게임"
+      ],
+      "evidenceSources": [
+        {
+          "label": "Tody 공식 사이트",
+          "url": "https://todyapp.com/",
+          "type": "official_web",
+          "claim": "맞춤 청소 계획, 청결 상태, 가족 동기화를 설명한다.",
+          "checkedAt": "2026-07-28"
+        },
+        {
+          "label": "Tody App Store",
+          "url": "https://apps.apple.com/us/app/tody/id595339588",
+          "type": "app_store",
+          "claim": "고정 날짜가 아닌 필요 기반 청소 관리를 설명한다.",
+          "checkedAt": "2026-07-28"
+        }
+      ],
+      "screenshots": [],
+      "scoreValues": [
+        8,
+        7,
+        8,
+        8,
+        8,
+        8,
+        5,
+        8,
+        8,
+        8
+      ],
+      "scores": {
+        "followabilityScore": {
+          "score": 8,
+          "comment": "Tody은(는) '공간 선택 → 맞춤 계획 → 상태 확인 → 가족과 완료' 흐름으로 다음 행동을 이어 준다. 시급도 중심으로 다음 작업을 줄여 준다. (8/10)"
+        },
+        "minimumInputQuality": {
+          "score": 7,
+          "comment": "최초 입력은 공간/작업, 원하는 관리 강도이며 필수 1개다. 공간과 작업 설정은 계획 생성에 필요한 입력이다. (7/10)"
+        },
+        "generatedPlanClarity": {
+          "score": 8,
+          "comment": "입력 뒤 '공간별 청소 계획과 현재 청결 상태'가 생성된다. 청소 계획과 상태가 한 화면에서 연결된다. (8/10)"
+        },
+        "nextActionClarity": {
+          "score": 8,
+          "comment": "실행 화면의 다음 행동은 '가장 시급한 공간 작업 완료'이다. 가장 시급한 작업을 고르기 쉽다. (8/10)"
+        },
+        "editRescheduleFlexibility": {
+          "score": 8,
+          "comment": "작업 주기와 가족 담당을 바꿀 수 있다. 주기 수정은 가능하지만 상세 자동 재계산은 공개 자료로 제한적으로 확인된다. (8/10)"
+        },
+        "contentPortfolioDepth": {
+          "score": 8,
+          "comment": "가정 공간과 반복 청소 작업 포트폴리오가 깊다. 가사 콘텐츠 발굴의 구조 벤치마크로 충분하다. (8/10)"
+        },
+        "creatorBusinessLoop": {
+          "score": 5,
+          "comment": "공식 사이트는 유료 기능과 가족 동기화 기능을 안내한다. 서비스 콘텐츠의 공개 재사용 근거는 없다. (5/10)"
+        },
+        "portabilityGap": {
+          "score": 8,
+          "comment": "앱 내부 상태 기반 관리가 중심이며 외부 내보내기는 핵심으로 보이지 않는다. 외부 도구 이식성이 FlowMe의 차별점이 될 수 있다. 점수가 높을수록 외부 도구로 옮길 여지가 크다. (8/10)"
+        },
+        "flowmeValueDelta": {
+          "score": 8,
+          "comment": "상태 점수 없이도 공개된 공간별 청소 루틴을 반복 체크와 캘린더로 이식할 수 있다. Tody의 상태 계산을 복제할 필요는 없다. (8/10)"
+        },
+        "evidenceConfidence": {
+          "score": 8,
+          "comment": "공식·지원·앱스토어 근거 2건을 2026-07-28 확인했다. 공식 사이트와 앱 소개를 확인했으나 로그인 내부는 미확인이다. (8/10)"
+        }
+      },
+      "evidenceLevels": [
+        "public_web_verified",
+        "app_store_verified"
+      ],
+      "userCommunicationEvidence": {
+        "status": "review_surface_verified",
+        "observed": "App Store 공개 리뷰 표면은 확인 가능하다.",
+        "creatorResponse": "공식 사이트에서 질문·수정 요청을 공개적으로 처리하는 구조는 확인하지 못했다.",
+        "sourceUrl": "https://apps.apple.com/us/app/tody/id595339588"
+      },
+      "businessEvidenceRecord": {
+        "observed": "공식 사이트는 유료 기능과 가족 동기화 기능을 안내한다.",
+        "internalAssessment": "서비스 콘텐츠의 공개 재사용 근거는 없다.",
+        "unknown": "실제 제휴 의사·전환율·매출 기여는 확인하지 않았으며 사업 가설로 승격하지 않는다."
+      },
+      "observationInferenceBoundary": {
+        "observedFacts": [
+          "맞춤 청소 계획, 청결 상태, 가족 동기화를 설명한다.",
+          "고정 날짜가 아닌 필요 기반 청소 관리를 설명한다."
+        ],
+        "flowmeInference": "상태 점수 없이도 공개된 공간별 청소 루틴을 반복 체크와 캘린더로 이식할 수 있다.",
+        "unknowns": [
+          "로그인 후 개인화 결과",
+          "실제 사용자의 장기 완주율",
+          "제작자·서비스의 제휴 의사"
+        ]
+      },
+      "verificationBoundary": "공개 웹·공식 지원 문서·앱스토어 설명만 확인했다. 로그인 후 개인화 결과는 in_app_verified가 아니다.",
+      "compression": {
+        "userMoment": "고정된 청소 날짜보다 현재 상태에 따라 집을 관리하고 싶을 때",
+        "naturalArtifact": "공간별 청소 계획과 현재 청결 상태",
+        "minimumAnchor": [
+          "공간/작업"
+        ],
+        "stage0Behavior": "약 5분 온보딩으로 기본 청소 계획을 만든다.",
+        "serviceRelationship": "ux_logic_benchmark_only",
+        "contentDiscoveryOpportunity": "opp-home-routine",
+        "doNotBuildBoundary": "독점적 청결 상태 계산 / 가족 경쟁 게임",
+        "finalDecision": "benchmark"
+      }
+    },
+    {
+      "id": "kinedu",
+      "name": "Kinedu",
+      "category": "family_parenting",
+      "deepDive": true,
+      "platforms": [
+        "Web",
+        "iOS",
+        "Android"
+      ],
+      "executionPattern": "profile_to_daily_plan",
+      "userMoment": "아이 월령에 맞는 오늘 놀이를 바로 찾고 싶을 때",
+      "coreLoop": [
+        "아이 프로필",
+        "일일 계획",
+        "활동 영상",
+        "발달 진도"
+      ],
+      "initialInputs": [
+        {
+          "name": "생년월일/월령",
+          "required": true,
+          "reason": "발달 단계"
+        },
+        {
+          "name": "발달 관심 영역",
+          "required": false,
+          "reason": "추천 초점"
+        }
+      ],
+      "generatedArtifact": "월령·발달 단계에 맞춘 일일 놀이 계획",
+      "nextAction": "오늘 추천 활동 한 개 실행",
+      "stage0Behavior": "월령에 맞는 활동 예시를 먼저 보여주고 프로필 저장 후 일일 계획을 개인화한다.",
+      "editBehavior": "활동 완료와 발달 관찰에 따라 추천이 이어진다.",
+      "portfolioDepth": "0~6세 활동, 발달 마일스톤, 강의, 전문가 콘텐츠가 연결된다.",
+      "businessEvidence": "Premium 구독과 전문가 강의가 확인되며 공식 사이트는 1,100만 가족 이용을 주장한다.",
+      "portability": "활동 영상과 발달 추적은 앱에 묶여 있고 외부 실행표 이식은 제한적이다.",
+      "flowmeDelta": "공개 육아 활동 제작자의 월령·목표별 묶음을 2주 루틴으로 일정화하고 원문으로 돌려보낼 수 있다.",
+      "followabilityNote": "오늘 한 활동에 집중하게 해 부모의 선택 부담을 줄인다.",
+      "minimumInputNote": "생년월일 하나가 추천 정확도에 직접 연결된다.",
+      "generatedPlanNote": "일일 활동과 발달 목표의 관계가 명확하다.",
+      "nextActionNote": "영상 활동을 즉시 시작할 수 있다.",
+      "editNote": "진도 기반 적응은 강하지만 계산 규칙은 서비스 고유 영역이다.",
+      "portfolioNote": "활동 라이브러리와 전문가 콘텐츠가 매우 깊다.",
+      "businessNote": "제작자·전문가 파트너 가능성은 있으나 공개 전환 권리는 별도 협의가 필요하다.",
+      "portabilityNote": "FlowMe는 링크 중심 루틴·캘린더 이식에 기회가 있다.",
+      "flowmeDeltaNote": "발달 평가나 진단 기능은 범위 밖이다.",
+      "evidenceNote": "공식 서비스 기능과 공개 이용 규모를 확인했으나 개인화 결과는 직접 검증하지 않았다.",
+      "serviceRelationship": "creator_partner_candidate",
+      "finalDecision": "partner",
+      "opportunityId": "opp-age-play",
+      "transferablePatterns": [
+        "월령 하나로 오늘 활동 축소",
+        "활동 링크와 목표를 같은 카드에 표시",
+        "완료 후 다음 활동 제시"
+      ],
+      "doNotBuild": [
+        "발달 진단·평가 엔진",
+        "유료 활동 영상 복제"
+      ],
+      "evidenceSources": [
+        {
+          "label": "Kinedu 공식 사이트",
+          "url": "https://www.kinedu.com/",
+          "type": "official_web",
+          "claim": "월령별 개인화 일일 계획, 활동, 발달 진도, 전문가 안내를 설명한다.",
+          "checkedAt": "2026-07-28"
+        },
+        {
+          "label": "Kinedu Expert Classes",
+          "url": "https://learn.kinedu.com/",
+          "type": "official_web",
+          "claim": "연령·주제별 전문가 수업과 가족 커뮤니티 포트폴리오를 공개한다.",
+          "checkedAt": "2026-07-28"
+        }
+      ],
+      "screenshots": [
+        {
+          "id": "kinedu-01",
+          "title": "개인화 일일 활동 소개",
+          "url": "https://www.kinedu.com/",
+          "evidenceType": "official_web",
+          "file": "2026-07-28-vertical-execution-service-assets/kinedu-01.png",
+          "verificationLevel": "public_web_verified"
+        },
+        {
+          "id": "kinedu-02",
+          "title": "전문가 수업 포트폴리오",
+          "url": "https://learn.kinedu.com/",
+          "evidenceType": "official_web",
+          "file": "2026-07-28-vertical-execution-service-assets/kinedu-02.png",
+          "verificationLevel": "public_web_verified"
+        }
+      ],
+      "scoreValues": [
+        9,
+        9,
+        9,
+        9,
+        8,
+        10,
+        9,
+        7,
+        8,
+        8
+      ],
+      "scores": {
+        "followabilityScore": {
+          "score": 9,
+          "comment": "Kinedu은(는) '아이 프로필 → 일일 계획 → 활동 영상 → 발달 진도' 흐름으로 다음 행동을 이어 준다. 오늘 한 활동에 집중하게 해 부모의 선택 부담을 줄인다. (9/10)"
+        },
+        "minimumInputQuality": {
+          "score": 9,
+          "comment": "최초 입력은 생년월일/월령, 발달 관심 영역이며 필수 1개다. 생년월일 하나가 추천 정확도에 직접 연결된다. (9/10)"
+        },
+        "generatedPlanClarity": {
+          "score": 9,
+          "comment": "입력 뒤 '월령·발달 단계에 맞춘 일일 놀이 계획'가 생성된다. 일일 활동과 발달 목표의 관계가 명확하다. (9/10)"
+        },
+        "nextActionClarity": {
+          "score": 9,
+          "comment": "실행 화면의 다음 행동은 '오늘 추천 활동 한 개 실행'이다. 영상 활동을 즉시 시작할 수 있다. (9/10)"
+        },
+        "editRescheduleFlexibility": {
+          "score": 8,
+          "comment": "활동 완료와 발달 관찰에 따라 추천이 이어진다. 진도 기반 적응은 강하지만 계산 규칙은 서비스 고유 영역이다. (8/10)"
+        },
+        "contentPortfolioDepth": {
+          "score": 10,
+          "comment": "0~6세 활동, 발달 마일스톤, 강의, 전문가 콘텐츠가 연결된다. 활동 라이브러리와 전문가 콘텐츠가 매우 깊다. (10/10)"
+        },
+        "creatorBusinessLoop": {
+          "score": 9,
+          "comment": "Premium 구독과 전문가 강의가 확인되며 공식 사이트는 1,100만 가족 이용을 주장한다. 제작자·전문가 파트너 가능성은 있으나 공개 전환 권리는 별도 협의가 필요하다. (9/10)"
+        },
+        "portabilityGap": {
+          "score": 7,
+          "comment": "활동 영상과 발달 추적은 앱에 묶여 있고 외부 실행표 이식은 제한적이다. FlowMe는 링크 중심 루틴·캘린더 이식에 기회가 있다. 점수가 높을수록 외부 도구로 옮길 여지가 크다. (7/10)"
+        },
+        "flowmeValueDelta": {
+          "score": 8,
+          "comment": "공개 육아 활동 제작자의 월령·목표별 묶음을 2주 루틴으로 일정화하고 원문으로 돌려보낼 수 있다. 발달 평가나 진단 기능은 범위 밖이다. (8/10)"
+        },
+        "evidenceConfidence": {
+          "score": 8,
+          "comment": "공식·지원·앱스토어 근거 2건을 2026-07-28 확인했다. 공식 서비스 기능과 공개 이용 규모를 확인했으나 개인화 결과는 직접 검증하지 않았다. (8/10)"
+        }
+      },
+      "evidenceLevels": [
+        "public_web_verified"
+      ],
+      "userCommunicationEvidence": {
+        "status": "community_feature_verified",
+        "observed": "공식 수업 사이트가 포럼·채팅·라이브 세션과 가족 커뮤니티를 안내하고, 공식 사이트에 부모 후기가 노출된다.",
+        "creatorResponse": "전문가 라이브 세션은 확인되지만 개별 공개 답변 내역은 로그인 없이 확인하지 못했다.",
+        "sourceUrl": "https://learn.kinedu.com/"
+      },
+      "businessEvidenceRecord": {
+        "observed": "Premium 구독과 전문가 강의가 확인되며 공식 사이트는 1,100만 가족 이용을 주장한다.",
+        "internalAssessment": "제작자·전문가 파트너 가능성은 있으나 공개 전환 권리는 별도 협의가 필요하다.",
+        "unknown": "실제 제휴 의사·전환율·매출 기여는 확인하지 않았으며 사업 가설로 승격하지 않는다."
+      },
+      "observationInferenceBoundary": {
+        "observedFacts": [
+          "월령별 개인화 일일 계획, 활동, 발달 진도, 전문가 안내를 설명한다.",
+          "연령·주제별 전문가 수업과 가족 커뮤니티 포트폴리오를 공개한다."
+        ],
+        "flowmeInference": "공개 육아 활동 제작자의 월령·목표별 묶음을 2주 루틴으로 일정화하고 원문으로 돌려보낼 수 있다.",
+        "unknowns": [
+          "로그인 후 개인화 결과",
+          "실제 사용자의 장기 완주율",
+          "제작자·서비스의 제휴 의사"
+        ]
+      },
+      "verificationBoundary": "공개 웹·공식 지원 문서·앱스토어 설명만 확인했다. 로그인 후 개인화 결과는 in_app_verified가 아니다.",
+      "compression": {
+        "userMoment": "아이 월령에 맞는 오늘 놀이를 바로 찾고 싶을 때",
+        "naturalArtifact": "월령·발달 단계에 맞춘 일일 놀이 계획",
+        "minimumAnchor": [
+          "생년월일/월령"
+        ],
+        "stage0Behavior": "월령에 맞는 활동 예시를 먼저 보여주고 프로필 저장 후 일일 계획을 개인화한다.",
+        "serviceRelationship": "creator_partner_candidate",
+        "contentDiscoveryOpportunity": "opp-age-play",
+        "doNotBuildBoundary": "발달 진단·평가 엔진 / 유료 활동 영상 복제",
+        "finalDecision": "partner"
+      }
+    },
+    {
+      "id": "babysparks",
+      "name": "BabySparks",
+      "category": "family_parenting",
+      "deepDive": false,
+      "platforms": [
+        "iOS",
+        "Android"
+      ],
+      "executionPattern": "profile_to_daily_plan",
+      "userMoment": "0~3세 아이와 매일 짧게 할 발달 활동이 필요할 때",
+      "coreLoop": [
+        "아이 프로필",
+        "20분 일일 계획",
+        "활동 실행",
+        "난이도 피드백"
+      ],
+      "initialInputs": [
+        {
+          "name": "생년월일",
+          "required": true,
+          "reason": "연령 맞춤"
+        },
+        {
+          "name": "활동 난이도 평가",
+          "required": false,
+          "reason": "후속 추천 조정"
+        }
+      ],
+      "generatedArtifact": "연령별 20분 일일 발달 활동 계획",
+      "nextAction": "오늘 계획의 첫 활동 실행",
+      "stage0Behavior": "연령에 맞는 활동 범위를 설명한 뒤 프로필로 일일 계획을 만든다.",
+      "editBehavior": "활동 난이도 평가를 받아 이후 계획을 조정한다.",
+      "portfolioDepth": "0~3세 활동과 마일스톤 중심으로 범위가 선명하다.",
+      "businessEvidence": "구독형 프로그램과 전문가 활동 라이브러리가 확인된다.",
+      "portability": "영상·진도는 앱 중심이며 캘린더·체크리스트 이식은 제한적이다.",
+      "flowmeDelta": "공개 활동 자료를 짧은 일일 루틴으로 만들되 월령 안전 근거와 출처를 보존할 수 있다.",
+      "followabilityNote": "20분이라는 실행 범위와 오늘 계획이 명확하다.",
+      "minimumInputNote": "생년월일만으로 기본 계획이 가능하다.",
+      "generatedPlanNote": "일일 계획의 길이가 구체적이다.",
+      "nextActionNote": "첫 활동으로 바로 진입한다.",
+      "editNote": "난이도 피드백 기반 적응이 공개 도움말에 설명돼 있다.",
+      "portfolioNote": "연령 범위는 좁지만 활동 깊이는 충분하다.",
+      "businessNote": "유료 라이브러리 복제는 불가하며 제휴가 필요하다.",
+      "portabilityNote": "공개 링크형 활동 루틴에만 FlowMe 가치가 있다.",
+      "flowmeDeltaNote": "발달 추적 서비스로 확장하지 않는다.",
+      "evidenceNote": "공식 소개와 도움말을 확인했다.",
+      "serviceRelationship": "creator_partner_candidate",
+      "finalDecision": "benchmark",
+      "opportunityId": "opp-age-play",
+      "transferablePatterns": [
+        "하루 실행량 제한",
+        "난이도 피드백으로 다음 추천"
+      ],
+      "doNotBuild": [
+        "발달 평가",
+        "유료 영상 복제"
+      ],
+      "evidenceSources": [
+        {
+          "label": "BabySparks 공식 사이트",
+          "url": "https://babysparks.com/",
+          "type": "official_web",
+          "claim": "0~3세 맞춤 활동과 20분 일일 계획을 소개한다.",
+          "checkedAt": "2026-07-28"
+        },
+        {
+          "label": "BabySparks 도움말",
+          "url": "https://babysparks.zendesk.com/hc/en-us/articles/360042433313-What-is-BabySparks",
+          "type": "support_doc",
+          "claim": "프로필 기반 일일 계획과 난이도 피드백 적응을 설명한다.",
+          "checkedAt": "2026-07-28"
+        }
+      ],
+      "screenshots": [],
+      "scoreValues": [
+        9,
+        9,
+        9,
+        9,
+        8,
+        8,
+        8,
+        7,
+        8,
+        9
+      ],
+      "scores": {
+        "followabilityScore": {
+          "score": 9,
+          "comment": "BabySparks은(는) '아이 프로필 → 20분 일일 계획 → 활동 실행 → 난이도 피드백' 흐름으로 다음 행동을 이어 준다. 20분이라는 실행 범위와 오늘 계획이 명확하다. (9/10)"
+        },
+        "minimumInputQuality": {
+          "score": 9,
+          "comment": "최초 입력은 생년월일, 활동 난이도 평가이며 필수 1개다. 생년월일만으로 기본 계획이 가능하다. (9/10)"
+        },
+        "generatedPlanClarity": {
+          "score": 9,
+          "comment": "입력 뒤 '연령별 20분 일일 발달 활동 계획'가 생성된다. 일일 계획의 길이가 구체적이다. (9/10)"
+        },
+        "nextActionClarity": {
+          "score": 9,
+          "comment": "실행 화면의 다음 행동은 '오늘 계획의 첫 활동 실행'이다. 첫 활동으로 바로 진입한다. (9/10)"
+        },
+        "editRescheduleFlexibility": {
+          "score": 8,
+          "comment": "활동 난이도 평가를 받아 이후 계획을 조정한다. 난이도 피드백 기반 적응이 공개 도움말에 설명돼 있다. (8/10)"
+        },
+        "contentPortfolioDepth": {
+          "score": 8,
+          "comment": "0~3세 활동과 마일스톤 중심으로 범위가 선명하다. 연령 범위는 좁지만 활동 깊이는 충분하다. (8/10)"
+        },
+        "creatorBusinessLoop": {
+          "score": 8,
+          "comment": "구독형 프로그램과 전문가 활동 라이브러리가 확인된다. 유료 라이브러리 복제는 불가하며 제휴가 필요하다. (8/10)"
+        },
+        "portabilityGap": {
+          "score": 7,
+          "comment": "영상·진도는 앱 중심이며 캘린더·체크리스트 이식은 제한적이다. 공개 링크형 활동 루틴에만 FlowMe 가치가 있다. 점수가 높을수록 외부 도구로 옮길 여지가 크다. (7/10)"
+        },
+        "flowmeValueDelta": {
+          "score": 8,
+          "comment": "공개 활동 자료를 짧은 일일 루틴으로 만들되 월령 안전 근거와 출처를 보존할 수 있다. 발달 추적 서비스로 확장하지 않는다. (8/10)"
+        },
+        "evidenceConfidence": {
+          "score": 9,
+          "comment": "공식·지원·앱스토어 근거 2건을 2026-07-28 확인했다. 공식 소개와 도움말을 확인했다. (9/10)"
+        }
+      },
+      "evidenceLevels": [
+        "public_web_verified",
+        "support_doc_verified"
+      ],
+      "userCommunicationEvidence": {
+        "status": "review_surface_verified",
+        "observed": "공식 사이트에 사용자 후기가 노출되고 앱스토어 리뷰 표면이 존재한다.",
+        "creatorResponse": "공개 페이지에서 사용자 질문에 대한 제작자 답변 내역은 확인하지 못했다.",
+        "sourceUrl": "https://babysparks.com/"
+      },
+      "businessEvidenceRecord": {
+        "observed": "구독형 프로그램과 전문가 활동 라이브러리가 확인된다.",
+        "internalAssessment": "유료 라이브러리 복제는 불가하며 제휴가 필요하다.",
+        "unknown": "실제 제휴 의사·전환율·매출 기여는 확인하지 않았으며 사업 가설로 승격하지 않는다."
+      },
+      "observationInferenceBoundary": {
+        "observedFacts": [
+          "0~3세 맞춤 활동과 20분 일일 계획을 소개한다.",
+          "프로필 기반 일일 계획과 난이도 피드백 적응을 설명한다."
+        ],
+        "flowmeInference": "공개 활동 자료를 짧은 일일 루틴으로 만들되 월령 안전 근거와 출처를 보존할 수 있다.",
+        "unknowns": [
+          "로그인 후 개인화 결과",
+          "실제 사용자의 장기 완주율",
+          "제작자·서비스의 제휴 의사"
+        ]
+      },
+      "verificationBoundary": "공개 웹·공식 지원 문서·앱스토어 설명만 확인했다. 로그인 후 개인화 결과는 in_app_verified가 아니다.",
+      "compression": {
+        "userMoment": "0~3세 아이와 매일 짧게 할 발달 활동이 필요할 때",
+        "naturalArtifact": "연령별 20분 일일 발달 활동 계획",
+        "minimumAnchor": [
+          "생년월일"
+        ],
+        "stage0Behavior": "연령에 맞는 활동 범위를 설명한 뒤 프로필로 일일 계획을 만든다.",
+        "serviceRelationship": "creator_partner_candidate",
+        "contentDiscoveryOpportunity": "opp-age-play",
+        "doNotBuildBoundary": "발달 평가 / 유료 영상 복제",
+        "finalDecision": "benchmark"
+      }
+    },
+    {
+      "id": "duolingo",
+      "name": "Duolingo",
+      "category": "study_learning",
+      "deepDive": true,
+      "platforms": [
+        "Web",
+        "iOS",
+        "Android"
+      ],
+      "executionPattern": "progress_to_next_lesson",
+      "userMoment": "짧게라도 매일 언어 학습을 이어가고 싶을 때",
+      "coreLoop": [
+        "목표 언어 선택",
+        "학습 경로",
+        "짧은 레슨",
+        "진도·다음 레슨"
+      ],
+      "initialInputs": [
+        {
+          "name": "학습 언어",
+          "required": true,
+          "reason": "커리큘럼 선택"
+        },
+        {
+          "name": "현재 수준",
+          "required": false,
+          "reason": "시작 지점"
+        },
+        {
+          "name": "일일 목표",
+          "required": false,
+          "reason": "학습량"
+        }
+      ],
+      "generatedArtifact": "수준별 학습 경로와 다음 레슨",
+      "nextAction": "경로에 표시된 다음 레슨 시작",
+      "stage0Behavior": "언어를 선택하면 첫 레슨을 즉시 시작하고 이후 목표를 조정할 수 있다.",
+      "editBehavior": "진도와 정답 결과에 따라 다음 문제와 복습이 조정된다.",
+      "portfolioDepth": "언어별 방대한 레슨·스토리·연습 콘텐츠가 있다.",
+      "businessEvidence": "광고·구독·인증 시험 등 명확한 제품 수익 구조가 있다.",
+      "portability": "진도·문항·연속 학습은 폐쇄형이며 외부 내보내기 가치가 낮다.",
+      "flowmeDelta": "개별 강의·공개 학습 시리즈를 회차 큐와 오늘 학습으로 바꾸는 구조는 차용할 수 있다.",
+      "followabilityNote": "경로가 다음 레슨을 강하게 제한해 선택 부담이 매우 낮다.",
+      "minimumInputNote": "언어 하나로 시작할 수 있다.",
+      "generatedPlanNote": "경로와 현재 위치가 명확하다.",
+      "nextActionNote": "단일 레슨 CTA가 선명하다.",
+      "editNote": "적응형 문항은 고유 학습 엔진이므로 FlowMe 범위가 아니다.",
+      "portfolioNote": "서비스 자체 콘텐츠는 깊지만 외부 제작자 콘텐츠 공급망과는 다르다.",
+      "businessNote": "직접 경쟁 학습 제품이므로 파트너보다 로직 벤치마크에 가깝다.",
+      "portabilityNote": "이식성 간극은 있으나 원문 강의 큐에만 적용 가능하다.",
+      "flowmeDeltaNote": "학습 엔진을 복제하지 않고 공개 커리큘럼의 실행 껍질만 제공한다.",
+      "evidenceNote": "공식 학습 페이지와 방법론 문서를 확인했다. 개인 레슨 적응 결과는 미확인이다.",
+      "serviceRelationship": "direct_competitor_boundary",
+      "finalDecision": "benchmark",
+      "opportunityId": "opp-learning-series",
+      "transferablePatterns": [
+        "한 번에 다음 레슨 하나만 제시",
+        "진도 위치와 다음 행동 결합",
+        "짧은 회차 단위"
+      ],
+      "doNotBuild": [
+        "적응형 문제 출제 엔진",
+        "스트릭·게임 경제 복제"
+      ],
+      "evidenceSources": [
+        {
+          "label": "Duolingo Learn",
+          "url": "https://www.duolingo.com/learn",
+          "type": "official_web",
+          "claim": "언어 선택과 학습 경로 진입점을 제공한다.",
+          "checkedAt": "2026-07-28"
+        },
+        {
+          "label": "Duolingo Method Whitepaper",
+          "url": "https://duolingo-papers.s3.amazonaws.com/reports/duolingo-method-whitepaper.pdf",
+          "type": "official_web",
+          "claim": "개인화된 짧은 레슨과 학습 경로 원칙을 설명한다.",
+          "checkedAt": "2026-07-28"
+        }
+      ],
+      "screenshots": [
+        {
+          "id": "duolingo-01",
+          "title": "학습 시작 화면",
+          "url": "https://www.duolingo.com/learn",
+          "evidenceType": "official_web",
+          "file": "2026-07-28-vertical-execution-service-assets/duolingo-01.png",
+          "verificationLevel": "public_web_verified"
+        },
+        {
+          "id": "duolingo-02",
+          "title": "학습 방법론 근거",
+          "url": "https://blog.duolingo.com/duolingo-teaching-method/",
+          "evidenceType": "official_web",
+          "file": "2026-07-28-vertical-execution-service-assets/duolingo-02.png",
+          "verificationLevel": "public_web_verified"
+        }
+      ],
+      "scoreValues": [
+        10,
+        9,
+        9,
+        10,
+        8,
+        10,
+        8,
+        4,
+        6,
+        8
+      ],
+      "scores": {
+        "followabilityScore": {
+          "score": 10,
+          "comment": "Duolingo은(는) '목표 언어 선택 → 학습 경로 → 짧은 레슨 → 진도·다음 레슨' 흐름으로 다음 행동을 이어 준다. 경로가 다음 레슨을 강하게 제한해 선택 부담이 매우 낮다. (10/10)"
+        },
+        "minimumInputQuality": {
+          "score": 9,
+          "comment": "최초 입력은 학습 언어, 현재 수준, 일일 목표이며 필수 1개다. 언어 하나로 시작할 수 있다. (9/10)"
+        },
+        "generatedPlanClarity": {
+          "score": 9,
+          "comment": "입력 뒤 '수준별 학습 경로와 다음 레슨'가 생성된다. 경로와 현재 위치가 명확하다. (9/10)"
+        },
+        "nextActionClarity": {
+          "score": 10,
+          "comment": "실행 화면의 다음 행동은 '경로에 표시된 다음 레슨 시작'이다. 단일 레슨 CTA가 선명하다. (10/10)"
+        },
+        "editRescheduleFlexibility": {
+          "score": 8,
+          "comment": "진도와 정답 결과에 따라 다음 문제와 복습이 조정된다. 적응형 문항은 고유 학습 엔진이므로 FlowMe 범위가 아니다. (8/10)"
+        },
+        "contentPortfolioDepth": {
+          "score": 10,
+          "comment": "언어별 방대한 레슨·스토리·연습 콘텐츠가 있다. 서비스 자체 콘텐츠는 깊지만 외부 제작자 콘텐츠 공급망과는 다르다. (10/10)"
+        },
+        "creatorBusinessLoop": {
+          "score": 8,
+          "comment": "광고·구독·인증 시험 등 명확한 제품 수익 구조가 있다. 직접 경쟁 학습 제품이므로 파트너보다 로직 벤치마크에 가깝다. (8/10)"
+        },
+        "portabilityGap": {
+          "score": 4,
+          "comment": "진도·문항·연속 학습은 폐쇄형이며 외부 내보내기 가치가 낮다. 이식성 간극은 있으나 원문 강의 큐에만 적용 가능하다. 점수가 높을수록 외부 도구로 옮길 여지가 크다. (4/10)"
+        },
+        "flowmeValueDelta": {
+          "score": 6,
+          "comment": "개별 강의·공개 학습 시리즈를 회차 큐와 오늘 학습으로 바꾸는 구조는 차용할 수 있다. 학습 엔진을 복제하지 않고 공개 커리큘럼의 실행 껍질만 제공한다. (6/10)"
+        },
+        "evidenceConfidence": {
+          "score": 8,
+          "comment": "공식·지원·앱스토어 근거 2건을 2026-07-28 확인했다. 공식 학습 페이지와 방법론 문서를 확인했다. 개인 레슨 적응 결과는 미확인이다. (8/10)"
+        }
+      },
+      "evidenceLevels": [
+        "public_web_verified"
+      ],
+      "userCommunicationEvidence": {
+        "status": "research_feedback_loop_verified",
+        "observed": "공식 블로그가 설문·인터뷰·실험을 통해 학습자 피드백을 기능에 반영한다고 설명한다.",
+        "creatorResponse": "개별 제작자 답변보다 제품 연구·실험 루프에 가까운 구조다.",
+        "sourceUrl": "https://blog.duolingo.com/how-duolingo-works-with-learners/"
+      },
+      "businessEvidenceRecord": {
+        "observed": "광고·구독·인증 시험 등 명확한 제품 수익 구조가 있다.",
+        "internalAssessment": "직접 경쟁 학습 제품이므로 파트너보다 로직 벤치마크에 가깝다.",
+        "unknown": "실제 제휴 의사·전환율·매출 기여는 확인하지 않았으며 사업 가설로 승격하지 않는다."
+      },
+      "observationInferenceBoundary": {
+        "observedFacts": [
+          "언어 선택과 학습 경로 진입점을 제공한다.",
+          "개인화된 짧은 레슨과 학습 경로 원칙을 설명한다."
+        ],
+        "flowmeInference": "개별 강의·공개 학습 시리즈를 회차 큐와 오늘 학습으로 바꾸는 구조는 차용할 수 있다.",
+        "unknowns": [
+          "로그인 후 개인화 결과",
+          "실제 사용자의 장기 완주율",
+          "제작자·서비스의 제휴 의사"
+        ]
+      },
+      "verificationBoundary": "공개 웹·공식 지원 문서·앱스토어 설명만 확인했다. 로그인 후 개인화 결과는 in_app_verified가 아니다.",
+      "compression": {
+        "userMoment": "짧게라도 매일 언어 학습을 이어가고 싶을 때",
+        "naturalArtifact": "수준별 학습 경로와 다음 레슨",
+        "minimumAnchor": [
+          "학습 언어"
+        ],
+        "stage0Behavior": "언어를 선택하면 첫 레슨을 즉시 시작하고 이후 목표를 조정할 수 있다.",
+        "serviceRelationship": "direct_competitor_boundary",
+        "contentDiscoveryOpportunity": "opp-learning-series",
+        "doNotBuildBoundary": "적응형 문제 출제 엔진 / 스트릭·게임 경제 복제",
+        "finalDecision": "benchmark"
+      }
+    },
+    {
+      "id": "brilliant",
+      "name": "Brilliant",
+      "category": "study_learning",
+      "deepDive": false,
+      "platforms": [
+        "Web",
+        "iOS",
+        "Android"
+      ],
+      "executionPattern": "progress_to_next_lesson",
+      "userMoment": "수학·과학을 짧은 상호작용 문제로 꾸준히 배우고 싶을 때",
+      "coreLoop": [
+        "관심·수준",
+        "학습 경로",
+        "15분 레슨",
+        "추천 다음 과정"
+      ],
+      "initialInputs": [
+        {
+          "name": "관심 분야",
+          "required": true,
+          "reason": "경로 추천"
+        },
+        {
+          "name": "현재 수준",
+          "required": false,
+          "reason": "난이도"
+        }
+      ],
+      "generatedArtifact": "관심·수준 기반 학습 경로",
+      "nextAction": "추천 경로의 다음 상호작용 레슨",
+      "stage0Behavior": "관심 분야를 고르면 추천 경로를 보여준다.",
+      "editBehavior": "관심·기술·진도에 따라 추천이 바뀐다.",
+      "portfolioDepth": "수학·과학·컴퓨터과학 과정이 체계적으로 연결된다.",
+      "businessEvidence": "Premium 구독 중심의 교육 제품이다.",
+      "portability": "상호작용 문제와 진도는 서비스 내부 자산이다.",
+      "flowmeDelta": "공개 강좌나 튜토리얼 묶음에 15분 회차·다음 학습 패턴을 적용할 수 있다.",
+      "followabilityNote": "경로와 일일 학습량이 분명하다.",
+      "minimumInputNote": "관심 분야 하나로 추천을 시작한다.",
+      "generatedPlanNote": "경로는 선명하지만 개인화 상세는 로그인 안쪽이다.",
+      "nextActionNote": "다음 레슨을 바로 시작한다.",
+      "editNote": "적응 추천은 고유 엔진이다.",
+      "portfolioNote": "과목 포트폴리오가 깊다.",
+      "businessNote": "유료 교육 콘텐츠이므로 원문 공급원으로 사용할 수 없다.",
+      "portabilityNote": "공개 콘텐츠 큐의 이식성에만 기회가 있다.",
+      "flowmeDeltaNote": "문제·풀이 콘텐츠를 복제하지 않는다.",
+      "evidenceNote": "공식 FAQ와 학습 경로 도움말을 확인했다.",
+      "serviceRelationship": "direct_competitor_boundary",
+      "finalDecision": "benchmark",
+      "opportunityId": "opp-learning-series",
+      "transferablePatterns": [
+        "짧은 회차",
+        "경로의 현재 위치 표시"
+      ],
+      "doNotBuild": [
+        "상호작용 문제 엔진",
+        "유료 과정 복제"
+      ],
+      "evidenceSources": [
+        {
+          "label": "Brilliant FAQ",
+          "url": "https://brilliant.org/faq/",
+          "type": "official_web",
+          "claim": "15분 학습과 개인화 추천을 설명한다.",
+          "checkedAt": "2026-07-28"
+        },
+        {
+          "label": "Brilliant Learning Paths",
+          "url": "https://brilliant.org/help/features/what-are-learning-paths/",
+          "type": "support_doc",
+          "claim": "추천 학습 경로 구조를 설명한다.",
+          "checkedAt": "2026-07-28"
+        }
+      ],
+      "screenshots": [],
+      "scoreValues": [
+        9,
+        9,
+        9,
+        9,
+        7,
+        10,
+        8,
+        3,
+        5,
+        9
+      ],
+      "scores": {
+        "followabilityScore": {
+          "score": 9,
+          "comment": "Brilliant은(는) '관심·수준 → 학습 경로 → 15분 레슨 → 추천 다음 과정' 흐름으로 다음 행동을 이어 준다. 경로와 일일 학습량이 분명하다. (9/10)"
+        },
+        "minimumInputQuality": {
+          "score": 9,
+          "comment": "최초 입력은 관심 분야, 현재 수준이며 필수 1개다. 관심 분야 하나로 추천을 시작한다. (9/10)"
+        },
+        "generatedPlanClarity": {
+          "score": 9,
+          "comment": "입력 뒤 '관심·수준 기반 학습 경로'가 생성된다. 경로는 선명하지만 개인화 상세는 로그인 안쪽이다. (9/10)"
+        },
+        "nextActionClarity": {
+          "score": 9,
+          "comment": "실행 화면의 다음 행동은 '추천 경로의 다음 상호작용 레슨'이다. 다음 레슨을 바로 시작한다. (9/10)"
+        },
+        "editRescheduleFlexibility": {
+          "score": 7,
+          "comment": "관심·기술·진도에 따라 추천이 바뀐다. 적응 추천은 고유 엔진이다. (7/10)"
+        },
+        "contentPortfolioDepth": {
+          "score": 10,
+          "comment": "수학·과학·컴퓨터과학 과정이 체계적으로 연결된다. 과목 포트폴리오가 깊다. (10/10)"
+        },
+        "creatorBusinessLoop": {
+          "score": 8,
+          "comment": "Premium 구독 중심의 교육 제품이다. 유료 교육 콘텐츠이므로 원문 공급원으로 사용할 수 없다. (8/10)"
+        },
+        "portabilityGap": {
+          "score": 3,
+          "comment": "상호작용 문제와 진도는 서비스 내부 자산이다. 공개 콘텐츠 큐의 이식성에만 기회가 있다. 점수가 높을수록 외부 도구로 옮길 여지가 크다. (3/10)"
+        },
+        "flowmeValueDelta": {
+          "score": 5,
+          "comment": "공개 강좌나 튜토리얼 묶음에 15분 회차·다음 학습 패턴을 적용할 수 있다. 문제·풀이 콘텐츠를 복제하지 않는다. (5/10)"
+        },
+        "evidenceConfidence": {
+          "score": 9,
+          "comment": "공식·지원·앱스토어 근거 2건을 2026-07-28 확인했다. 공식 FAQ와 학습 경로 도움말을 확인했다. (9/10)"
+        }
+      },
+      "evidenceLevels": [
+        "public_web_verified",
+        "support_doc_verified"
+      ],
+      "userCommunicationEvidence": {
+        "status": "unknown",
+        "observed": "공개 FAQ와 지원 문서는 확인했지만 사용자 후기·질문과 제작자 응답이 연결된 공개 구조는 확인하지 못했다.",
+        "creatorResponse": "unknown",
+        "sourceUrl": "https://brilliant.org/faq/"
+      },
+      "businessEvidenceRecord": {
+        "observed": "Premium 구독 중심의 교육 제품이다.",
+        "internalAssessment": "유료 교육 콘텐츠이므로 원문 공급원으로 사용할 수 없다.",
+        "unknown": "실제 제휴 의사·전환율·매출 기여는 확인하지 않았으며 사업 가설로 승격하지 않는다."
+      },
+      "observationInferenceBoundary": {
+        "observedFacts": [
+          "15분 학습과 개인화 추천을 설명한다.",
+          "추천 학습 경로 구조를 설명한다."
+        ],
+        "flowmeInference": "공개 강좌나 튜토리얼 묶음에 15분 회차·다음 학습 패턴을 적용할 수 있다.",
+        "unknowns": [
+          "로그인 후 개인화 결과",
+          "실제 사용자의 장기 완주율",
+          "제작자·서비스의 제휴 의사"
+        ]
+      },
+      "verificationBoundary": "공개 웹·공식 지원 문서·앱스토어 설명만 확인했다. 로그인 후 개인화 결과는 in_app_verified가 아니다.",
+      "compression": {
+        "userMoment": "수학·과학을 짧은 상호작용 문제로 꾸준히 배우고 싶을 때",
+        "naturalArtifact": "관심·수준 기반 학습 경로",
+        "minimumAnchor": [
+          "관심 분야"
+        ],
+        "stage0Behavior": "관심 분야를 고르면 추천 경로를 보여준다.",
+        "serviceRelationship": "direct_competitor_boundary",
+        "contentDiscoveryOpportunity": "opp-learning-series",
+        "doNotBuildBoundary": "상호작용 문제 엔진 / 유료 과정 복제",
+        "finalDecision": "benchmark"
+      }
+    },
+    {
+      "id": "yousician",
+      "name": "Yousician",
+      "category": "study_learning",
+      "deepDive": false,
+      "platforms": [
+        "iOS",
+        "Android",
+        "Desktop"
+      ],
+      "executionPattern": "progress_to_next_lesson",
+      "userMoment": "악기를 혼자 연습하면서 즉시 피드백과 다음 과제가 필요할 때",
+      "coreLoop": [
+        "악기·수준",
+        "학습 경로",
+        "연주 피드백",
+        "진도·다음 레슨"
+      ],
+      "initialInputs": [
+        {
+          "name": "악기",
+          "required": true,
+          "reason": "과정 선택"
+        },
+        {
+          "name": "현재 수준",
+          "required": true,
+          "reason": "시작 지점"
+        }
+      ],
+      "generatedArtifact": "수준별 악기 학습 경로와 연습 과제",
+      "nextAction": "다음 곡·기술 레슨 연주",
+      "stage0Behavior": "악기와 수준을 고르면 체험 레슨을 제시한다.",
+      "editBehavior": "연주 결과와 진도에 따라 다음 레슨이 열린다.",
+      "portfolioDepth": "기타·피아노·베이스·우쿨렐레·보컬 과정과 곡 라이브러리가 있다.",
+      "businessEvidence": "구독형 강의와 라이선스 곡이 결합된 제품이다.",
+      "portability": "음원 인식·피드백·라이선스 곡은 외부로 옮길 수 없다.",
+      "flowmeDelta": "공개 악기 강좌 제작자의 회차·연습 요일·링크를 루틴으로 관리하는 기회가 있다.",
+      "followabilityNote": "연주와 다음 레슨이 직접 이어진다.",
+      "minimumInputNote": "악기와 수준 두 값이 계획에 직접 쓰인다.",
+      "generatedPlanNote": "전문 학습 경로가 분명하다.",
+      "nextActionNote": "다음 연주 과제가 선명하다.",
+      "editNote": "실시간 피드백은 전문 기능이다.",
+      "portfolioNote": "악기별 깊이가 높다.",
+      "businessNote": "유료 곡·강의 권리 때문에 벤치마크 전용이다.",
+      "portabilityNote": "공개 제작자 강좌에는 큰 이식성 기회가 있다.",
+      "flowmeDeltaNote": "오디오 판정 대신 루틴·진도·링크 관리만 차용한다.",
+      "evidenceNote": "공식 앱스토어 설명과 서비스 페이지를 확인했다.",
+      "serviceRelationship": "ux_logic_benchmark_only",
+      "finalDecision": "benchmark",
+      "opportunityId": "opp-learning-series",
+      "transferablePatterns": [
+        "다음 연습 하나",
+        "연주 결과 후 진도 이동"
+      ],
+      "doNotBuild": [
+        "음정·리듬 판정",
+        "라이선스 곡 복제"
+      ],
+      "evidenceSources": [
+        {
+          "label": "Yousician Google Play",
+          "url": "https://play.google.com/store/apps/details?id=com.yousician.yousician",
+          "type": "app_store",
+          "claim": "전문가 설계 경로, 즉시 피드백, 진도를 설명한다.",
+          "checkedAt": "2026-07-28"
+        },
+        {
+          "label": "Yousician 공식 사이트",
+          "url": "https://yousician.com/",
+          "type": "official_web",
+          "claim": "악기별 학습 경로와 곡 연습을 소개한다.",
+          "checkedAt": "2026-07-28"
+        }
+      ],
+      "screenshots": [],
+      "scoreValues": [
+        9,
+        8,
+        9,
+        9,
+        7,
+        10,
+        8,
+        5,
+        7,
+        8
+      ],
+      "scores": {
+        "followabilityScore": {
+          "score": 9,
+          "comment": "Yousician은(는) '악기·수준 → 학습 경로 → 연주 피드백 → 진도·다음 레슨' 흐름으로 다음 행동을 이어 준다. 연주와 다음 레슨이 직접 이어진다. (9/10)"
+        },
+        "minimumInputQuality": {
+          "score": 8,
+          "comment": "최초 입력은 악기, 현재 수준이며 필수 2개다. 악기와 수준 두 값이 계획에 직접 쓰인다. (8/10)"
+        },
+        "generatedPlanClarity": {
+          "score": 9,
+          "comment": "입력 뒤 '수준별 악기 학습 경로와 연습 과제'가 생성된다. 전문 학습 경로가 분명하다. (9/10)"
+        },
+        "nextActionClarity": {
+          "score": 9,
+          "comment": "실행 화면의 다음 행동은 '다음 곡·기술 레슨 연주'이다. 다음 연주 과제가 선명하다. (9/10)"
+        },
+        "editRescheduleFlexibility": {
+          "score": 7,
+          "comment": "연주 결과와 진도에 따라 다음 레슨이 열린다. 실시간 피드백은 전문 기능이다. (7/10)"
+        },
+        "contentPortfolioDepth": {
+          "score": 10,
+          "comment": "기타·피아노·베이스·우쿨렐레·보컬 과정과 곡 라이브러리가 있다. 악기별 깊이가 높다. (10/10)"
+        },
+        "creatorBusinessLoop": {
+          "score": 8,
+          "comment": "구독형 강의와 라이선스 곡이 결합된 제품이다. 유료 곡·강의 권리 때문에 벤치마크 전용이다. (8/10)"
+        },
+        "portabilityGap": {
+          "score": 5,
+          "comment": "음원 인식·피드백·라이선스 곡은 외부로 옮길 수 없다. 공개 제작자 강좌에는 큰 이식성 기회가 있다. 점수가 높을수록 외부 도구로 옮길 여지가 크다. (5/10)"
+        },
+        "flowmeValueDelta": {
+          "score": 7,
+          "comment": "공개 악기 강좌 제작자의 회차·연습 요일·링크를 루틴으로 관리하는 기회가 있다. 오디오 판정 대신 루틴·진도·링크 관리만 차용한다. (7/10)"
+        },
+        "evidenceConfidence": {
+          "score": 8,
+          "comment": "공식·지원·앱스토어 근거 2건을 2026-07-28 확인했다. 공식 앱스토어 설명과 서비스 페이지를 확인했다. (8/10)"
+        }
+      },
+      "evidenceLevels": [
+        "app_store_verified",
+        "public_web_verified"
+      ],
+      "userCommunicationEvidence": {
+        "status": "review_surface_verified",
+        "observed": "Google Play의 공개 평점·리뷰 표면이 존재한다.",
+        "creatorResponse": "개별 사용자 질문에 대한 강사·제작자 응답 구조는 확인하지 못했다.",
+        "sourceUrl": "https://play.google.com/store/apps/details?id=com.yousician.yousician"
+      },
+      "businessEvidenceRecord": {
+        "observed": "구독형 강의와 라이선스 곡이 결합된 제품이다.",
+        "internalAssessment": "유료 곡·강의 권리 때문에 벤치마크 전용이다.",
+        "unknown": "실제 제휴 의사·전환율·매출 기여는 확인하지 않았으며 사업 가설로 승격하지 않는다."
+      },
+      "observationInferenceBoundary": {
+        "observedFacts": [
+          "전문가 설계 경로, 즉시 피드백, 진도를 설명한다.",
+          "악기별 학습 경로와 곡 연습을 소개한다."
+        ],
+        "flowmeInference": "공개 악기 강좌 제작자의 회차·연습 요일·링크를 루틴으로 관리하는 기회가 있다.",
+        "unknowns": [
+          "로그인 후 개인화 결과",
+          "실제 사용자의 장기 완주율",
+          "제작자·서비스의 제휴 의사"
+        ]
+      },
+      "verificationBoundary": "공개 웹·공식 지원 문서·앱스토어 설명만 확인했다. 로그인 후 개인화 결과는 in_app_verified가 아니다.",
+      "compression": {
+        "userMoment": "악기를 혼자 연습하면서 즉시 피드백과 다음 과제가 필요할 때",
+        "naturalArtifact": "수준별 악기 학습 경로와 연습 과제",
+        "minimumAnchor": [
+          "악기",
+          "현재 수준"
+        ],
+        "stage0Behavior": "악기와 수준을 고르면 체험 레슨을 제시한다.",
+        "serviceRelationship": "ux_logic_benchmark_only",
+        "contentDiscoveryOpportunity": "opp-learning-series",
+        "doNotBuildBoundary": "음정·리듬 판정 / 라이선스 곡 복제",
+        "finalDecision": "benchmark"
+      }
+    },
+    {
+      "id": "ynab",
+      "name": "YNAB",
+      "category": "money_admin_purchase",
+      "deepDive": true,
+      "platforms": [
+        "Web",
+        "iOS",
+        "Android"
+      ],
+      "executionPattern": "goal_to_plan",
+      "userMoment": "목표 금액을 언제까지 모을지 월별 실행액으로 바꾸고 싶을 때",
+      "coreLoop": [
+        "목표 금액·기한",
+        "주기별 필요액",
+        "이번 달 배정",
+        "진도·다음 배정"
+      ],
+      "initialInputs": [
+        {
+          "name": "목표 금액",
+          "required": true,
+          "reason": "목표 크기"
+        },
+        {
+          "name": "목표일",
+          "required": true,
+          "reason": "필요액 계산"
+        }
+      ],
+      "generatedArtifact": "주·월·연 단위 필요 저축액과 진도",
+      "nextAction": "이번 달 목표 카테고리에 필요한 금액 배정",
+      "stage0Behavior": "목표와 기한을 넣는 즉시 필요한 주기별 금액을 미리 보여준다.",
+      "editBehavior": "목표일·금액을 바꾸거나 목표를 잠시 미룰 수 있다.",
+      "portfolioDepth": "예산, 지출, 목표, 리포트, 교육 콘텐츠가 연결된다.",
+      "businessEvidence": "구독형 예산 제품과 교육 콘텐츠가 강하게 연결된다.",
+      "portability": "금융 계좌·예산 데이터는 앱에 묶이지만 목표 계획은 시트·캘린더로 옮길 여지가 있다.",
+      "flowmeDelta": "재무 계정 연동 없이도 공개 저축 챌린지·구매 준비표를 목표일과 체크 일정으로 바꿀 수 있다.",
+      "followabilityNote": "목표를 이번 달 배정 행동으로 연결한다.",
+      "minimumInputNote": "금액과 날짜 두 값이 결과 계산에 직접 필요하다.",
+      "generatedPlanNote": "필요액이 즉시 계산되어 결과가 명확하다.",
+      "nextActionNote": "다음 배정 행동이 구체적이다.",
+      "editNote": "목표 변경과 보류가 자연스럽다.",
+      "portfolioNote": "재무 교육과 목표 유형이 깊다.",
+      "businessNote": "계좌·예산 제품은 직접 경쟁 경계이며 공개 교육 콘텐츠만 참고 가능하다.",
+      "portabilityNote": "목표 일정의 외부 이식성은 높다.",
+      "flowmeDeltaNote": "계좌 연결·예산 원장은 만들지 않는다.",
+      "evidenceNote": "공식 기능과 지원 문서를 확인했으며 계좌 연동은 직접 시험하지 않았다.",
+      "serviceRelationship": "ux_logic_benchmark_only",
+      "finalDecision": "benchmark",
+      "opportunityId": "opp-goal-saving",
+      "transferablePatterns": [
+        "목표일 하나로 주기별 필요액 미리보기",
+        "보류해도 목표 자체는 유지"
+      ],
+      "doNotBuild": [
+        "은행 계좌 연동",
+        "전체 예산 원장"
+      ],
+      "evidenceSources": [
+        {
+          "label": "YNAB Goal Tracking",
+          "url": "https://www.ynab.com/features/goal-tracking",
+          "type": "official_web",
+          "claim": "목표 금액·날짜로 주·월·연 필요액을 계산한다고 설명한다.",
+          "checkedAt": "2026-07-28"
+        },
+        {
+          "label": "YNAB Targets Help",
+          "url": "https://support.ynab.com/how-to-use-targets-rk5kkI9ks",
+          "type": "support_doc",
+          "claim": "목표 유형, 진행, snooze 동작을 설명한다.",
+          "checkedAt": "2026-07-28"
+        }
+      ],
+      "screenshots": [
+        {
+          "id": "ynab-01",
+          "title": "목표 추적 소개",
+          "url": "https://www.ynab.com/features/goal-tracking",
+          "evidenceType": "official_web",
+          "file": "2026-07-28-vertical-execution-service-assets/ynab-01.png",
+          "verificationLevel": "public_web_verified"
+        },
+        {
+          "id": "ynab-02",
+          "title": "목표 설정 도움말",
+          "url": "https://support.ynab.com/how-to-use-targets-rk5kkI9ks",
+          "evidenceType": "support_doc",
+          "file": "2026-07-28-vertical-execution-service-assets/ynab-02.png",
+          "verificationLevel": "support_doc_verified"
+        }
+      ],
+      "scoreValues": [
+        8,
+        8,
+        10,
+        8,
+        9,
+        9,
+        8,
+        7,
+        7,
+        9
+      ],
+      "scores": {
+        "followabilityScore": {
+          "score": 8,
+          "comment": "YNAB은(는) '목표 금액·기한 → 주기별 필요액 → 이번 달 배정 → 진도·다음 배정' 흐름으로 다음 행동을 이어 준다. 목표를 이번 달 배정 행동으로 연결한다. (8/10)"
+        },
+        "minimumInputQuality": {
+          "score": 8,
+          "comment": "최초 입력은 목표 금액, 목표일이며 필수 2개다. 금액과 날짜 두 값이 결과 계산에 직접 필요하다. (8/10)"
+        },
+        "generatedPlanClarity": {
+          "score": 10,
+          "comment": "입력 뒤 '주·월·연 단위 필요 저축액과 진도'가 생성된다. 필요액이 즉시 계산되어 결과가 명확하다. (10/10)"
+        },
+        "nextActionClarity": {
+          "score": 8,
+          "comment": "실행 화면의 다음 행동은 '이번 달 목표 카테고리에 필요한 금액 배정'이다. 다음 배정 행동이 구체적이다. (8/10)"
+        },
+        "editRescheduleFlexibility": {
+          "score": 9,
+          "comment": "목표일·금액을 바꾸거나 목표를 잠시 미룰 수 있다. 목표 변경과 보류가 자연스럽다. (9/10)"
+        },
+        "contentPortfolioDepth": {
+          "score": 9,
+          "comment": "예산, 지출, 목표, 리포트, 교육 콘텐츠가 연결된다. 재무 교육과 목표 유형이 깊다. (9/10)"
+        },
+        "creatorBusinessLoop": {
+          "score": 8,
+          "comment": "구독형 예산 제품과 교육 콘텐츠가 강하게 연결된다. 계좌·예산 제품은 직접 경쟁 경계이며 공개 교육 콘텐츠만 참고 가능하다. (8/10)"
+        },
+        "portabilityGap": {
+          "score": 7,
+          "comment": "금융 계좌·예산 데이터는 앱에 묶이지만 목표 계획은 시트·캘린더로 옮길 여지가 있다. 목표 일정의 외부 이식성은 높다. 점수가 높을수록 외부 도구로 옮길 여지가 크다. (7/10)"
+        },
+        "flowmeValueDelta": {
+          "score": 7,
+          "comment": "재무 계정 연동 없이도 공개 저축 챌린지·구매 준비표를 목표일과 체크 일정으로 바꿀 수 있다. 계좌 연결·예산 원장은 만들지 않는다. (7/10)"
+        },
+        "evidenceConfidence": {
+          "score": 9,
+          "comment": "공식·지원·앱스토어 근거 2건을 2026-07-28 확인했다. 공식 기능과 지원 문서를 확인했으며 계좌 연동은 직접 시험하지 않았다. (9/10)"
+        }
+      },
+      "evidenceLevels": [
+        "public_web_verified",
+        "support_doc_verified"
+      ],
+      "userCommunicationEvidence": {
+        "status": "support_content_verified",
+        "observed": "공식 지원 문서와 교육 콘텐츠가 깊지만 이번 근거에서는 공개 사용자 대화가 직접 연결되지 않았다.",
+        "creatorResponse": "지원·교육 응답은 존재하나 공개 댓글 기반 상호작용은 unknown이다.",
+        "sourceUrl": "https://support.ynab.com/how-to-use-targets-rk5kkI9ks"
+      },
+      "businessEvidenceRecord": {
+        "observed": "구독형 예산 제품과 교육 콘텐츠가 강하게 연결된다.",
+        "internalAssessment": "계좌·예산 제품은 직접 경쟁 경계이며 공개 교육 콘텐츠만 참고 가능하다.",
+        "unknown": "실제 제휴 의사·전환율·매출 기여는 확인하지 않았으며 사업 가설로 승격하지 않는다."
+      },
+      "observationInferenceBoundary": {
+        "observedFacts": [
+          "목표 금액·날짜로 주·월·연 필요액을 계산한다고 설명한다.",
+          "목표 유형, 진행, snooze 동작을 설명한다."
+        ],
+        "flowmeInference": "재무 계정 연동 없이도 공개 저축 챌린지·구매 준비표를 목표일과 체크 일정으로 바꿀 수 있다.",
+        "unknowns": [
+          "로그인 후 개인화 결과",
+          "실제 사용자의 장기 완주율",
+          "제작자·서비스의 제휴 의사"
+        ]
+      },
+      "verificationBoundary": "공개 웹·공식 지원 문서·앱스토어 설명만 확인했다. 로그인 후 개인화 결과는 in_app_verified가 아니다.",
+      "compression": {
+        "userMoment": "목표 금액을 언제까지 모을지 월별 실행액으로 바꾸고 싶을 때",
+        "naturalArtifact": "주·월·연 단위 필요 저축액과 진도",
+        "minimumAnchor": [
+          "목표 금액",
+          "목표일"
+        ],
+        "stage0Behavior": "목표와 기한을 넣는 즉시 필요한 주기별 금액을 미리 보여준다.",
+        "serviceRelationship": "ux_logic_benchmark_only",
+        "contentDiscoveryOpportunity": "opp-goal-saving",
+        "doNotBuildBoundary": "은행 계좌 연동 / 전체 예산 원장",
+        "finalDecision": "benchmark"
+      }
+    },
+    {
+      "id": "turbotax",
+      "name": "TurboTax",
+      "category": "money_admin_purchase",
+      "deepDive": false,
+      "platforms": [
+        "Web",
+        "iOS",
+        "Android"
+      ],
+      "executionPattern": "state_to_follow_up",
+      "userMoment": "미국 세금 신고 질문에 답하며 필요한 단계와 서류를 진행할 때",
+      "coreLoop": [
+        "신고 상황",
+        "질문형 인터뷰",
+        "검토",
+        "전자 신고"
+      ],
+      "initialInputs": [
+        {
+          "name": "세금 신고 프로필",
+          "required": true,
+          "reason": "분기 결정"
+        },
+        {
+          "name": "소득·공제 서류",
+          "required": true,
+          "reason": "신고 계산"
+        }
+      ],
+      "generatedArtifact": "개인 상황에 맞는 세금 신고 절차와 신고서",
+      "nextAction": "현재 인터뷰 질문에 답하거나 다음 서류 입력",
+      "stage0Behavior": "신고 유형과 지원 범위를 먼저 확인한다.",
+      "editBehavior": "답변과 서류를 수정하면 신고 계산이 갱신된다.",
+      "portfolioDepth": "세금 유형·주·사업자 상황별 절차가 매우 깊다.",
+      "businessEvidence": "신고 상품 가격과 전문가 지원 판매가 핵심이다.",
+      "portability": "민감한 세무 데이터와 계산은 전문 제품 안에 남아야 한다.",
+      "flowmeDelta": "공식 공개 서류 준비 체크리스트를 링크형 Quick Flow로 제공하는 범위만 유효하다.",
+      "followabilityNote": "질문형 안내는 강하지만 국가·세법 의존성이 높다.",
+      "minimumInputNote": "민감하고 많은 입력이 필요해 FlowMe 최소 입력과 맞지 않는다.",
+      "generatedPlanNote": "결과는 명확하지만 전문 계산 산출물이다.",
+      "nextActionNote": "현재 질문은 분명하다.",
+      "editNote": "수정 가능하나 세금 계산 엔진에 종속된다.",
+      "portfolioNote": "전문 범위는 깊지만 공개 콘텐츠 기회는 제한적이다.",
+      "businessNote": "직접 경쟁·규제·권리 경계가 강하다.",
+      "portabilityNote": "서류 준비 목록 외에는 이식하지 않는 것이 안전하다.",
+      "flowmeDeltaNote": "세금 계산·신고를 대체하지 않는다.",
+      "evidenceNote": "공식 앱 및 공개 가이드를 확인했다.",
+      "serviceRelationship": "direct_competitor_boundary",
+      "finalDecision": "hold",
+      "opportunityId": "opp-admin-document-pack",
+      "transferablePatterns": [
+        "상황 질문으로 관련 없는 단계 숨기기",
+        "필요 서류 선행 표시"
+      ],
+      "doNotBuild": [
+        "세금 계산",
+        "전자 신고·전문가 판단"
+      ],
+      "evidenceSources": [
+        {
+          "label": "TurboTax Mobile Apps",
+          "url": "https://turbotax.intuit.com/personal-taxes/mobile-apps/turbotax/",
+          "type": "official_web",
+          "claim": "단계별 세금 신고와 전문가 지원을 설명한다.",
+          "checkedAt": "2026-07-28"
+        },
+        {
+          "label": "TurboTax Step-by-Step Guide",
+          "url": "https://www.intuit.com/content/dam/intuit/intuitcom/partners/documents/education/icom-edu-pf-tt-how-to-guide.pdf",
+          "type": "official_web",
+          "claim": "신고 준비와 인터뷰 절차를 안내한다.",
+          "checkedAt": "2026-07-28"
+        }
+      ],
+      "screenshots": [],
+      "scoreValues": [
+        8,
+        3,
+        9,
+        8,
+        8,
+        9,
+        9,
+        2,
+        3,
+        9
+      ],
+      "scores": {
+        "followabilityScore": {
+          "score": 8,
+          "comment": "TurboTax은(는) '신고 상황 → 질문형 인터뷰 → 검토 → 전자 신고' 흐름으로 다음 행동을 이어 준다. 질문형 안내는 강하지만 국가·세법 의존성이 높다. (8/10)"
+        },
+        "minimumInputQuality": {
+          "score": 3,
+          "comment": "최초 입력은 세금 신고 프로필, 소득·공제 서류이며 필수 2개다. 민감하고 많은 입력이 필요해 FlowMe 최소 입력과 맞지 않는다. (3/10)"
+        },
+        "generatedPlanClarity": {
+          "score": 9,
+          "comment": "입력 뒤 '개인 상황에 맞는 세금 신고 절차와 신고서'가 생성된다. 결과는 명확하지만 전문 계산 산출물이다. (9/10)"
+        },
+        "nextActionClarity": {
+          "score": 8,
+          "comment": "실행 화면의 다음 행동은 '현재 인터뷰 질문에 답하거나 다음 서류 입력'이다. 현재 질문은 분명하다. (8/10)"
+        },
+        "editRescheduleFlexibility": {
+          "score": 8,
+          "comment": "답변과 서류를 수정하면 신고 계산이 갱신된다. 수정 가능하나 세금 계산 엔진에 종속된다. (8/10)"
+        },
+        "contentPortfolioDepth": {
+          "score": 9,
+          "comment": "세금 유형·주·사업자 상황별 절차가 매우 깊다. 전문 범위는 깊지만 공개 콘텐츠 기회는 제한적이다. (9/10)"
+        },
+        "creatorBusinessLoop": {
+          "score": 9,
+          "comment": "신고 상품 가격과 전문가 지원 판매가 핵심이다. 직접 경쟁·규제·권리 경계가 강하다. (9/10)"
+        },
+        "portabilityGap": {
+          "score": 2,
+          "comment": "민감한 세무 데이터와 계산은 전문 제품 안에 남아야 한다. 서류 준비 목록 외에는 이식하지 않는 것이 안전하다. 점수가 높을수록 외부 도구로 옮길 여지가 크다. (2/10)"
+        },
+        "flowmeValueDelta": {
+          "score": 3,
+          "comment": "공식 공개 서류 준비 체크리스트를 링크형 Quick Flow로 제공하는 범위만 유효하다. 세금 계산·신고를 대체하지 않는다. (3/10)"
+        },
+        "evidenceConfidence": {
+          "score": 9,
+          "comment": "공식·지원·앱스토어 근거 2건을 2026-07-28 확인했다. 공식 앱 및 공개 가이드를 확인했다. (9/10)"
+        }
+      },
+      "evidenceLevels": [
+        "public_web_verified"
+      ],
+      "userCommunicationEvidence": {
+        "status": "support_content_verified",
+        "observed": "전문가 도움과 지원 문서는 확인되지만 공개 커뮤니티 대화는 이번 범위에서 검증하지 않았다.",
+        "creatorResponse": "전문가 지원은 상품 기능이며 공개 creator response로 보지 않는다.",
+        "sourceUrl": "https://turbotax.intuit.com/personal-taxes/mobile-apps/turbotax/"
+      },
+      "businessEvidenceRecord": {
+        "observed": "신고 상품 가격과 전문가 지원 판매가 핵심이다.",
+        "internalAssessment": "직접 경쟁·규제·권리 경계가 강하다.",
+        "unknown": "실제 제휴 의사·전환율·매출 기여는 확인하지 않았으며 사업 가설로 승격하지 않는다."
+      },
+      "observationInferenceBoundary": {
+        "observedFacts": [
+          "단계별 세금 신고와 전문가 지원을 설명한다.",
+          "신고 준비와 인터뷰 절차를 안내한다."
+        ],
+        "flowmeInference": "공식 공개 서류 준비 체크리스트를 링크형 Quick Flow로 제공하는 범위만 유효하다.",
+        "unknowns": [
+          "로그인 후 개인화 결과",
+          "실제 사용자의 장기 완주율",
+          "제작자·서비스의 제휴 의사"
+        ]
+      },
+      "verificationBoundary": "공개 웹·공식 지원 문서·앱스토어 설명만 확인했다. 로그인 후 개인화 결과는 in_app_verified가 아니다.",
+      "compression": {
+        "userMoment": "미국 세금 신고 질문에 답하며 필요한 단계와 서류를 진행할 때",
+        "naturalArtifact": "개인 상황에 맞는 세금 신고 절차와 신고서",
+        "minimumAnchor": [
+          "세금 신고 프로필",
+          "소득·공제 서류"
+        ],
+        "stage0Behavior": "신고 유형과 지원 범위를 먼저 확인한다.",
+        "serviceRelationship": "direct_competitor_boundary",
+        "contentDiscoveryOpportunity": "opp-admin-document-pack",
+        "doNotBuildBoundary": "세금 계산 / 전자 신고·전문가 판단",
+        "finalDecision": "hold"
+      }
+    },
+    {
+      "id": "runna",
+      "name": "Runna",
+      "category": "health_fitness",
+      "deepDive": true,
+      "platforms": [
+        "iOS",
+        "Android",
+        "Watch"
+      ],
+      "executionPattern": "goal_to_plan",
+      "userMoment": "레이스·거리 목표에 맞춘 주간 러닝 계획이 필요할 때",
+      "coreLoop": [
+        "목표·수준·일정",
+        "훈련 계획 미리보기",
+        "오늘 운동",
+        "기록·계획 조정"
+      ],
+      "initialInputs": [
+        {
+          "name": "목표 유형/레이스",
+          "required": true,
+          "reason": "계획 유형"
+        },
+        {
+          "name": "현재 능력·주간 거리",
+          "required": true,
+          "reason": "강도"
+        },
+        {
+          "name": "주당 러닝 횟수",
+          "required": true,
+          "reason": "일정"
+        }
+      ],
+      "generatedArtifact": "목표일에 맞춘 주차별 러닝·근력 훈련 계획",
+      "nextAction": "오늘 배정된 러닝 세션 시작",
+      "stage0Behavior": "입력 뒤 전체 계획 미리보기를 보여주고 시작을 확정한다.",
+      "editBehavior": "일정·목표·운동 요일을 관리 화면에서 바꾸고 계획을 조정한다.",
+      "portfolioDepth": "5K부터 울트라, 재활 복귀, 근력 등 계획 유형이 깊다.",
+      "businessEvidence": "구독 코칭과 웨어러블 연동이 핵심 제품 가치다.",
+      "portability": "운동 세션은 캘린더·웨어러블과 연결되지만 코칭 계산은 앱에 묶인다.",
+      "flowmeDelta": "공개 코치의 기간형 프로그램을 목표일·요일만 받아 회차 일정과 원문 링크로 배치할 수 있다.",
+      "followabilityNote": "계획 미리보기와 오늘 운동이 자연스럽게 이어진다.",
+      "minimumInputNote": "입력은 3개 이상이지만 안전한 훈련 계획에 직접 필요하다.",
+      "generatedPlanNote": "주차·세션·목표일 관계가 매우 선명하다.",
+      "nextActionNote": "오늘 세션 시작이 명확하다.",
+      "editNote": "일정 변경과 재계획 UX가 강하다.",
+      "portfolioNote": "거리·수준·목표별 프로그램 변형이 매우 깊다.",
+      "businessNote": "전문 코칭·웨어러블 기능은 복제하지 않고 공개 코치 콘텐츠와 제휴 기회를 본다.",
+      "portabilityNote": "캘린더·체크리스트 이식성이 높아 FlowMe 차별점과 맞는다.",
+      "flowmeDeltaNote": "훈련 강도 계산·건강 판단은 원문 제작자에게 남긴다.",
+      "evidenceNote": "공식 계획 목록과 계획 생성 지원 문서를 확인했다.",
+      "serviceRelationship": "ux_logic_benchmark_only",
+      "finalDecision": "go",
+      "opportunityId": "opp-training-program",
+      "transferablePatterns": [
+        "기준 목표일 후 계획 미리보기",
+        "주차별 세션과 오늘 운동 연결",
+        "일정 변경 후 회차 유지"
+      ],
+      "doNotBuild": [
+        "훈련 부하·부상 위험 계산",
+        "GPS·웨어러블 코칭 엔진"
+      ],
+      "evidenceSources": [
+        {
+          "label": "Runna Training Plans",
+          "url": "https://www.runna.com/training/training-plans",
+          "type": "official_web",
+          "claim": "거리·레이스·근력 등 다양한 계획을 소개한다.",
+          "checkedAt": "2026-07-28"
+        },
+        {
+          "label": "Runna Plan Creation Help",
+          "url": "https://support.runna.com/en/articles/15443877-how-to-create-a-training-plan-in-runna",
+          "type": "support_doc",
+          "claim": "능력·거리·횟수·레이스 목표 입력과 미리보기·시작 절차를 설명한다.",
+          "checkedAt": "2026-07-28"
+        }
+      ],
+      "screenshots": [
+        {
+          "id": "runna-01",
+          "title": "훈련 계획 포트폴리오",
+          "url": "https://www.runna.com/training/training-plans",
+          "evidenceType": "official_web",
+          "file": "2026-07-28-vertical-execution-service-assets/runna-01.png",
+          "verificationLevel": "public_web_verified"
+        },
+        {
+          "id": "runna-02",
+          "title": "계획 생성 도움말",
+          "url": "https://support.runna.com/en/articles/15443877-how-to-create-a-training-plan-in-runna",
+          "evidenceType": "support_doc",
+          "file": "2026-07-28-vertical-execution-service-assets/runna-02.png",
+          "verificationLevel": "support_doc_verified"
+        }
+      ],
+      "scoreValues": [
+        10,
+        7,
+        10,
+        10,
+        9,
+        10,
+        8,
+        7,
+        9,
+        9
+      ],
+      "scores": {
+        "followabilityScore": {
+          "score": 10,
+          "comment": "Runna은(는) '목표·수준·일정 → 훈련 계획 미리보기 → 오늘 운동 → 기록·계획 조정' 흐름으로 다음 행동을 이어 준다. 계획 미리보기와 오늘 운동이 자연스럽게 이어진다. (10/10)"
+        },
+        "minimumInputQuality": {
+          "score": 7,
+          "comment": "최초 입력은 목표 유형/레이스, 현재 능력·주간 거리, 주당 러닝 횟수이며 필수 3개다. 입력은 3개 이상이지만 안전한 훈련 계획에 직접 필요하다. (7/10)"
+        },
+        "generatedPlanClarity": {
+          "score": 10,
+          "comment": "입력 뒤 '목표일에 맞춘 주차별 러닝·근력 훈련 계획'가 생성된다. 주차·세션·목표일 관계가 매우 선명하다. (10/10)"
+        },
+        "nextActionClarity": {
+          "score": 10,
+          "comment": "실행 화면의 다음 행동은 '오늘 배정된 러닝 세션 시작'이다. 오늘 세션 시작이 명확하다. (10/10)"
+        },
+        "editRescheduleFlexibility": {
+          "score": 9,
+          "comment": "일정·목표·운동 요일을 관리 화면에서 바꾸고 계획을 조정한다. 일정 변경과 재계획 UX가 강하다. (9/10)"
+        },
+        "contentPortfolioDepth": {
+          "score": 10,
+          "comment": "5K부터 울트라, 재활 복귀, 근력 등 계획 유형이 깊다. 거리·수준·목표별 프로그램 변형이 매우 깊다. (10/10)"
+        },
+        "creatorBusinessLoop": {
+          "score": 8,
+          "comment": "구독 코칭과 웨어러블 연동이 핵심 제품 가치다. 전문 코칭·웨어러블 기능은 복제하지 않고 공개 코치 콘텐츠와 제휴 기회를 본다. (8/10)"
+        },
+        "portabilityGap": {
+          "score": 7,
+          "comment": "운동 세션은 캘린더·웨어러블과 연결되지만 코칭 계산은 앱에 묶인다. 캘린더·체크리스트 이식성이 높아 FlowMe 차별점과 맞는다. 점수가 높을수록 외부 도구로 옮길 여지가 크다. (7/10)"
+        },
+        "flowmeValueDelta": {
+          "score": 9,
+          "comment": "공개 코치의 기간형 프로그램을 목표일·요일만 받아 회차 일정과 원문 링크로 배치할 수 있다. 훈련 강도 계산·건강 판단은 원문 제작자에게 남긴다. (9/10)"
+        },
+        "evidenceConfidence": {
+          "score": 9,
+          "comment": "공식·지원·앱스토어 근거 2건을 2026-07-28 확인했다. 공식 계획 목록과 계획 생성 지원 문서를 확인했다. (9/10)"
+        }
+      },
+      "evidenceLevels": [
+        "public_web_verified",
+        "support_doc_verified"
+      ],
+      "userCommunicationEvidence": {
+        "status": "support_content_verified",
+        "observed": "공식 도움말과 코칭 콘텐츠는 확인했지만 사용자 질문·코치 답변의 공개 표면은 확인하지 못했다.",
+        "creatorResponse": "앱 안 코칭 또는 지원 여부는 in-app 미검증이다.",
+        "sourceUrl": "https://support.runna.com/en/articles/15443877-how-to-create-a-training-plan-in-runna"
+      },
+      "businessEvidenceRecord": {
+        "observed": "구독 코칭과 웨어러블 연동이 핵심 제품 가치다.",
+        "internalAssessment": "전문 코칭·웨어러블 기능은 복제하지 않고 공개 코치 콘텐츠와 제휴 기회를 본다.",
+        "unknown": "실제 제휴 의사·전환율·매출 기여는 확인하지 않았으며 사업 가설로 승격하지 않는다."
+      },
+      "observationInferenceBoundary": {
+        "observedFacts": [
+          "거리·레이스·근력 등 다양한 계획을 소개한다.",
+          "능력·거리·횟수·레이스 목표 입력과 미리보기·시작 절차를 설명한다."
+        ],
+        "flowmeInference": "공개 코치의 기간형 프로그램을 목표일·요일만 받아 회차 일정과 원문 링크로 배치할 수 있다.",
+        "unknowns": [
+          "로그인 후 개인화 결과",
+          "실제 사용자의 장기 완주율",
+          "제작자·서비스의 제휴 의사"
+        ]
+      },
+      "verificationBoundary": "공개 웹·공식 지원 문서·앱스토어 설명만 확인했다. 로그인 후 개인화 결과는 in_app_verified가 아니다.",
+      "compression": {
+        "userMoment": "레이스·거리 목표에 맞춘 주간 러닝 계획이 필요할 때",
+        "naturalArtifact": "목표일에 맞춘 주차별 러닝·근력 훈련 계획",
+        "minimumAnchor": [
+          "목표 유형/레이스",
+          "현재 능력·주간 거리",
+          "주당 러닝 횟수"
+        ],
+        "stage0Behavior": "입력 뒤 전체 계획 미리보기를 보여주고 시작을 확정한다.",
+        "serviceRelationship": "ux_logic_benchmark_only",
+        "contentDiscoveryOpportunity": "opp-training-program",
+        "doNotBuildBoundary": "훈련 부하·부상 위험 계산 / GPS·웨어러블 코칭 엔진",
+        "finalDecision": "go"
+      }
+    },
+    {
+      "id": "freeletics",
+      "name": "Freeletics",
+      "category": "health_fitness",
+      "deepDive": false,
+      "platforms": [
+        "iOS",
+        "Android"
+      ],
+      "executionPattern": "profile_to_daily_plan",
+      "userMoment": "장비·시간·수준에 맞는 운동을 코치처럼 이어가고 싶을 때",
+      "coreLoop": [
+        "프로필·목표",
+        "Training Journey",
+        "오늘 운동",
+        "운동 후 피드백·적응"
+      ],
+      "initialInputs": [
+        {
+          "name": "목표",
+          "required": true,
+          "reason": "프로그램 선택"
+        },
+        {
+          "name": "수준·장비",
+          "required": true,
+          "reason": "세션 조정"
+        },
+        {
+          "name": "운동 후 피드백",
+          "required": false,
+          "reason": "다음 적응"
+        }
+      ],
+      "generatedArtifact": "개인화 Training Journey와 오늘 운동",
+      "nextAction": "오늘 Coach 세션 수행",
+      "stage0Behavior": "프로필에 맞는 Journey 선택지를 먼저 보여준다.",
+      "editBehavior": "성과·프로필·운동 후 피드백에 따라 계획이 계속 조정된다.",
+      "portfolioDepth": "바디웨이트·러닝·웨이트 등 Journey 포트폴리오가 깊다.",
+      "businessEvidence": "AI Coach 구독이 핵심이다.",
+      "portability": "개인화 계산과 운동 라이브러리는 폐쇄형이다.",
+      "flowmeDelta": "공개 트레이너의 프로그램을 일정·완료·원문 링크로 실행하게 하는 데만 적용한다.",
+      "followabilityNote": "오늘 운동과 피드백 루프가 강하다.",
+      "minimumInputNote": "안전한 개인화를 위해 여러 입력이 필요하다.",
+      "generatedPlanNote": "Journey와 오늘 운동이 명확하다.",
+      "nextActionNote": "Coach 세션이 선명하다.",
+      "editNote": "적응형 계획은 전문 기능이다.",
+      "portfolioNote": "프로그램 깊이가 높다.",
+      "businessNote": "유료 운동 콘텐츠는 제휴 없이 사용할 수 없다.",
+      "portabilityNote": "공개 운동 시리즈에는 이식성 기회가 있다.",
+      "flowmeDeltaNote": "AI 코치를 만들지 않는다.",
+      "evidenceNote": "공식 도움말과 서비스 설명을 확인했다.",
+      "serviceRelationship": "direct_competitor_boundary",
+      "finalDecision": "benchmark",
+      "opportunityId": "opp-training-program",
+      "transferablePatterns": [
+        "운동 후 간단한 난이도 피드백",
+        "다음 세션 자동 제시"
+      ],
+      "doNotBuild": [
+        "AI 코치",
+        "운동 자세·부상 판정"
+      ],
+      "evidenceSources": [
+        {
+          "label": "Freeletics Training Journey Help",
+          "url": "https://help.freeletics.com/hc/en-us/articles/360001805519-Choose-your-Freeletics-Training-Journey",
+          "type": "support_doc",
+          "claim": "프로필·성과·피드백 기반 적응 계획을 설명한다.",
+          "checkedAt": "2026-07-28"
+        },
+        {
+          "label": "Freeletics 공식 사이트",
+          "url": "https://www.freeletics.com/",
+          "type": "official_web",
+          "claim": "개인화 Coach와 Journey를 소개한다.",
+          "checkedAt": "2026-07-28"
+        }
+      ],
+      "screenshots": [],
+      "scoreValues": [
+        9,
+        6,
+        9,
+        9,
+        9,
+        10,
+        8,
+        5,
+        7,
+        9
+      ],
+      "scores": {
+        "followabilityScore": {
+          "score": 9,
+          "comment": "Freeletics은(는) '프로필·목표 → Training Journey → 오늘 운동 → 운동 후 피드백·적응' 흐름으로 다음 행동을 이어 준다. 오늘 운동과 피드백 루프가 강하다. (9/10)"
+        },
+        "minimumInputQuality": {
+          "score": 6,
+          "comment": "최초 입력은 목표, 수준·장비, 운동 후 피드백이며 필수 2개다. 안전한 개인화를 위해 여러 입력이 필요하다. (6/10)"
+        },
+        "generatedPlanClarity": {
+          "score": 9,
+          "comment": "입력 뒤 '개인화 Training Journey와 오늘 운동'가 생성된다. Journey와 오늘 운동이 명확하다. (9/10)"
+        },
+        "nextActionClarity": {
+          "score": 9,
+          "comment": "실행 화면의 다음 행동은 '오늘 Coach 세션 수행'이다. Coach 세션이 선명하다. (9/10)"
+        },
+        "editRescheduleFlexibility": {
+          "score": 9,
+          "comment": "성과·프로필·운동 후 피드백에 따라 계획이 계속 조정된다. 적응형 계획은 전문 기능이다. (9/10)"
+        },
+        "contentPortfolioDepth": {
+          "score": 10,
+          "comment": "바디웨이트·러닝·웨이트 등 Journey 포트폴리오가 깊다. 프로그램 깊이가 높다. (10/10)"
+        },
+        "creatorBusinessLoop": {
+          "score": 8,
+          "comment": "AI Coach 구독이 핵심이다. 유료 운동 콘텐츠는 제휴 없이 사용할 수 없다. (8/10)"
+        },
+        "portabilityGap": {
+          "score": 5,
+          "comment": "개인화 계산과 운동 라이브러리는 폐쇄형이다. 공개 운동 시리즈에는 이식성 기회가 있다. 점수가 높을수록 외부 도구로 옮길 여지가 크다. (5/10)"
+        },
+        "flowmeValueDelta": {
+          "score": 7,
+          "comment": "공개 트레이너의 프로그램을 일정·완료·원문 링크로 실행하게 하는 데만 적용한다. AI 코치를 만들지 않는다. (7/10)"
+        },
+        "evidenceConfidence": {
+          "score": 9,
+          "comment": "공식·지원·앱스토어 근거 2건을 2026-07-28 확인했다. 공식 도움말과 서비스 설명을 확인했다. (9/10)"
+        }
+      },
+      "evidenceLevels": [
+        "support_doc_verified",
+        "public_web_verified"
+      ],
+      "userCommunicationEvidence": {
+        "status": "support_content_verified",
+        "observed": "공식 도움말은 운동 후 피드백이 계획에 반영되는 제품 루프를 설명한다.",
+        "creatorResponse": "사용자 피드백은 알고리즘 입력이며 공개 제작자 대화로 보지 않는다.",
+        "sourceUrl": "https://help.freeletics.com/hc/en-us/articles/360001805519-Choose-your-Freeletics-Training-Journey"
+      },
+      "businessEvidenceRecord": {
+        "observed": "AI Coach 구독이 핵심이다.",
+        "internalAssessment": "유료 운동 콘텐츠는 제휴 없이 사용할 수 없다.",
+        "unknown": "실제 제휴 의사·전환율·매출 기여는 확인하지 않았으며 사업 가설로 승격하지 않는다."
+      },
+      "observationInferenceBoundary": {
+        "observedFacts": [
+          "프로필·성과·피드백 기반 적응 계획을 설명한다.",
+          "개인화 Coach와 Journey를 소개한다."
+        ],
+        "flowmeInference": "공개 트레이너의 프로그램을 일정·완료·원문 링크로 실행하게 하는 데만 적용한다.",
+        "unknowns": [
+          "로그인 후 개인화 결과",
+          "실제 사용자의 장기 완주율",
+          "제작자·서비스의 제휴 의사"
+        ]
+      },
+      "verificationBoundary": "공개 웹·공식 지원 문서·앱스토어 설명만 확인했다. 로그인 후 개인화 결과는 in_app_verified가 아니다.",
+      "compression": {
+        "userMoment": "장비·시간·수준에 맞는 운동을 코치처럼 이어가고 싶을 때",
+        "naturalArtifact": "개인화 Training Journey와 오늘 운동",
+        "minimumAnchor": [
+          "목표",
+          "수준·장비"
+        ],
+        "stage0Behavior": "프로필에 맞는 Journey 선택지를 먼저 보여준다.",
+        "serviceRelationship": "direct_competitor_boundary",
+        "contentDiscoveryOpportunity": "opp-training-program",
+        "doNotBuildBoundary": "AI 코치 / 운동 자세·부상 판정",
+        "finalDecision": "benchmark"
+      }
+    },
+    {
+      "id": "nike-training-club",
+      "name": "Nike Training Club",
+      "category": "health_fitness",
+      "deepDive": false,
+      "platforms": [
+        "iOS",
+        "Android"
+      ],
+      "executionPattern": "content_to_guided_session",
+      "userMoment": "신뢰할 수 있는 무료 운동 프로그램을 골라 따라 하고 싶을 때",
+      "coreLoop": [
+        "목표·프로그램 선택",
+        "주차별 운동",
+        "안내 세션",
+        "완료·다음 운동"
+      ],
+      "initialInputs": [
+        {
+          "name": "프로그램/목표",
+          "required": true,
+          "reason": "운동 묶음 선택"
+        }
+      ],
+      "generatedArtifact": "목표별 운동 프로그램과 다음 세션",
+      "nextAction": "프로그램의 다음 안내 운동 시작",
+      "stage0Behavior": "프로그램·개별 운동을 탐색한 뒤 바로 시작한다.",
+      "editBehavior": "개별 운동을 선택하거나 프로그램 진도를 이어간다.",
+      "portfolioDepth": "200개 이상 운동과 목표별 프로그램을 공식 사이트가 안내한다.",
+      "businessEvidence": "Nike 브랜드·상품·멤버십 생태계와 연결된다.",
+      "portability": "영상·트레이너 안내는 앱 중심이며 외부 내보내기는 제한적이다.",
+      "flowmeDelta": "공개 트레이너 영상 묶음을 영상 1개=세션 1개로 일정화하는 구조를 차용할 수 있다.",
+      "followabilityNote": "프로그램을 고르면 다음 세션이 분명하다.",
+      "minimumInputNote": "프로그램 선택 하나로 시작할 수 있다.",
+      "generatedPlanNote": "프로그램과 개별 운동 관계가 선명하다.",
+      "nextActionNote": "영상 세션 시작이 명확하다.",
+      "editNote": "개인화 재계획보다는 콘텐츠 진도형이다.",
+      "portfolioNote": "운동 포트폴리오가 매우 깊다.",
+      "businessNote": "브랜드 콘텐츠는 제휴·링크 연결 후보지만 복제할 수 없다.",
+      "portabilityNote": "영상 링크 루틴은 FlowMe로 옮기기 쉽다.",
+      "flowmeDeltaNote": "영상 자체가 아니라 일정·진도·외부 링크를 제공한다.",
+      "evidenceNote": "공식 앱 소개와 프로그램 도움말을 확인했다.",
+      "serviceRelationship": "creator_partner_candidate",
+      "finalDecision": "partner",
+      "opportunityId": "opp-training-program",
+      "transferablePatterns": [
+        "프로그램 선택 후 다음 세션",
+        "영상 1개를 하나의 실행 단위로"
+      ],
+      "doNotBuild": [
+        "운동 영상 복제",
+        "Nike 멤버십 기능"
+      ],
+      "evidenceSources": [
+        {
+          "label": "Nike Training Club",
+          "url": "https://www.nike.com/gb/ntc-app",
+          "type": "official_web",
+          "claim": "200개 이상 무료 운동과 목표별 프로그램을 소개한다.",
+          "checkedAt": "2026-07-28"
+        },
+        {
+          "label": "Nike Training Programs Help",
+          "url": "https://www.nike.com/help/a/ntc-programs",
+          "type": "support_doc",
+          "claim": "프로그램을 운동·영양·웰니스 세션의 시리즈로 설명한다.",
+          "checkedAt": "2026-07-28"
+        }
+      ],
+      "screenshots": [],
+      "scoreValues": [
+        9,
+        9,
+        9,
+        9,
+        6,
+        10,
+        9,
+        7,
+        8,
+        8
+      ],
+      "scores": {
+        "followabilityScore": {
+          "score": 9,
+          "comment": "Nike Training Club은(는) '목표·프로그램 선택 → 주차별 운동 → 안내 세션 → 완료·다음 운동' 흐름으로 다음 행동을 이어 준다. 프로그램을 고르면 다음 세션이 분명하다. (9/10)"
+        },
+        "minimumInputQuality": {
+          "score": 9,
+          "comment": "최초 입력은 프로그램/목표이며 필수 1개다. 프로그램 선택 하나로 시작할 수 있다. (9/10)"
+        },
+        "generatedPlanClarity": {
+          "score": 9,
+          "comment": "입력 뒤 '목표별 운동 프로그램과 다음 세션'가 생성된다. 프로그램과 개별 운동 관계가 선명하다. (9/10)"
+        },
+        "nextActionClarity": {
+          "score": 9,
+          "comment": "실행 화면의 다음 행동은 '프로그램의 다음 안내 운동 시작'이다. 영상 세션 시작이 명확하다. (9/10)"
+        },
+        "editRescheduleFlexibility": {
+          "score": 6,
+          "comment": "개별 운동을 선택하거나 프로그램 진도를 이어간다. 개인화 재계획보다는 콘텐츠 진도형이다. (6/10)"
+        },
+        "contentPortfolioDepth": {
+          "score": 10,
+          "comment": "200개 이상 운동과 목표별 프로그램을 공식 사이트가 안내한다. 운동 포트폴리오가 매우 깊다. (10/10)"
+        },
+        "creatorBusinessLoop": {
+          "score": 9,
+          "comment": "Nike 브랜드·상품·멤버십 생태계와 연결된다. 브랜드 콘텐츠는 제휴·링크 연결 후보지만 복제할 수 없다. (9/10)"
+        },
+        "portabilityGap": {
+          "score": 7,
+          "comment": "영상·트레이너 안내는 앱 중심이며 외부 내보내기는 제한적이다. 영상 링크 루틴은 FlowMe로 옮기기 쉽다. 점수가 높을수록 외부 도구로 옮길 여지가 크다. (7/10)"
+        },
+        "flowmeValueDelta": {
+          "score": 8,
+          "comment": "공개 트레이너 영상 묶음을 영상 1개=세션 1개로 일정화하는 구조를 차용할 수 있다. 영상 자체가 아니라 일정·진도·외부 링크를 제공한다. (8/10)"
+        },
+        "evidenceConfidence": {
+          "score": 8,
+          "comment": "공식·지원·앱스토어 근거 2건을 2026-07-28 확인했다. 공식 앱 소개와 프로그램 도움말을 확인했다. (8/10)"
+        }
+      },
+      "evidenceLevels": [
+        "public_web_verified",
+        "support_doc_verified"
+      ],
+      "userCommunicationEvidence": {
+        "status": "brand_content_verified",
+        "observed": "공식 트레이너 프로그램과 Nike 멤버십 콘텐츠는 확인했다.",
+        "creatorResponse": "개별 트레이너가 공개 질문에 답하는 구조는 이번 근거에서 확인하지 못했다.",
+        "sourceUrl": "https://www.nike.com/gb/ntc-app"
+      },
+      "businessEvidenceRecord": {
+        "observed": "Nike 브랜드·상품·멤버십 생태계와 연결된다.",
+        "internalAssessment": "브랜드 콘텐츠는 제휴·링크 연결 후보지만 복제할 수 없다.",
+        "unknown": "실제 제휴 의사·전환율·매출 기여는 확인하지 않았으며 사업 가설로 승격하지 않는다."
+      },
+      "observationInferenceBoundary": {
+        "observedFacts": [
+          "200개 이상 무료 운동과 목표별 프로그램을 소개한다.",
+          "프로그램을 운동·영양·웰니스 세션의 시리즈로 설명한다."
+        ],
+        "flowmeInference": "공개 트레이너 영상 묶음을 영상 1개=세션 1개로 일정화하는 구조를 차용할 수 있다.",
+        "unknowns": [
+          "로그인 후 개인화 결과",
+          "실제 사용자의 장기 완주율",
+          "제작자·서비스의 제휴 의사"
+        ]
+      },
+      "verificationBoundary": "공개 웹·공식 지원 문서·앱스토어 설명만 확인했다. 로그인 후 개인화 결과는 in_app_verified가 아니다.",
+      "compression": {
+        "userMoment": "신뢰할 수 있는 무료 운동 프로그램을 골라 따라 하고 싶을 때",
+        "naturalArtifact": "목표별 운동 프로그램과 다음 세션",
+        "minimumAnchor": [
+          "프로그램/목표"
+        ],
+        "stage0Behavior": "프로그램·개별 운동을 탐색한 뒤 바로 시작한다.",
+        "serviceRelationship": "creator_partner_candidate",
+        "contentDiscoveryOpportunity": "opp-training-program",
+        "doNotBuildBoundary": "운동 영상 복제 / Nike 멤버십 기능",
+        "finalDecision": "partner"
+      }
+    },
+    {
+      "id": "wanderlog",
+      "name": "Wanderlog",
+      "category": "travel_outings_events",
+      "deepDive": true,
+      "platforms": [
+        "Web",
+        "iOS",
+        "Android"
+      ],
+      "executionPattern": "collection_to_itinerary",
+      "userMoment": "저장한 장소와 예약을 한 일정으로 정리하고 싶을 때",
+      "coreLoop": [
+        "장소·예약 모으기",
+        "일정·지도 생성",
+        "날짜별 계획",
+        "현지 다음 장소"
+      ],
+      "initialInputs": [
+        {
+          "name": "여행지/여행 기간",
+          "required": true,
+          "reason": "일정 틀"
+        },
+        {
+          "name": "가고 싶은 장소",
+          "required": false,
+          "reason": "일정 항목"
+        }
+      ],
+      "generatedArtifact": "날짜별 여행 일정과 지도 동선",
+      "nextAction": "오늘 일정의 다음 장소 확인·이동",
+      "stage0Behavior": "여행지와 날짜를 정한 뒤 장소를 수집하면서 일정 결과를 계속 보여준다.",
+      "editBehavior": "장소를 드래그해 날짜·순서를 바꾸고 동선을 다시 본다.",
+      "portfolioDepth": "여행지 가이드·추천 장소·협업 일정·예약 정보로 확장된다.",
+      "businessEvidence": "Pro 구독과 여행 예약·추천 연결이 확인된다.",
+      "portability": "지도·협업은 앱 강점이지만 일정은 캘린더·시트로 이식 가능하다.",
+      "flowmeDelta": "공개 여행 코스·블로그 장소 목록을 기준일과 날짜별 실행 일정으로 바꾸고 원문 링크를 보존할 수 있다.",
+      "followabilityNote": "여행 중 다음 장소가 자연스럽게 드러난다.",
+      "minimumInputNote": "여행지와 기간은 일정 생성에 직접 필요하다.",
+      "generatedPlanNote": "일정과 지도라는 결과물이 선명하다.",
+      "nextActionNote": "다음 장소·예약 행동이 구체적이다.",
+      "editNote": "순서·날짜 수정이 직관적이다.",
+      "portfolioNote": "장소 콘텐츠는 깊지만 실제 코스 품질은 원문에 좌우된다.",
+      "businessNote": "예약 연결은 전문 플랫폼 영역이며 공개 creator 코스는 링크 기반 기회가 있다.",
+      "portabilityNote": "캘린더·시트 내보내기 가치가 높다.",
+      "flowmeDeltaNote": "지도 최적화·예약 엔진은 만들지 않는다.",
+      "evidenceNote": "공식 제품과 도움말을 확인했으나 실제 협업·AI 일정 품질은 미확인이다.",
+      "serviceRelationship": "external_execution_destination",
+      "finalDecision": "benchmark",
+      "opportunityId": "opp-travel-itinerary",
+      "transferablePatterns": [
+        "장소 모음과 날짜별 일정 분리",
+        "드래그 순서 변경",
+        "오늘의 다음 장소 표시"
+      ],
+      "doNotBuild": [
+        "지도 경로 최적화",
+        "숙박·항공 예약 엔진"
+      ],
+      "evidenceSources": [
+        {
+          "label": "Wanderlog Help Center",
+          "url": "https://wanderlog.com/pages/help-center",
+          "type": "official_web",
+          "claim": "일정·지도·맞춤 여행 계획 기능을 설명한다.",
+          "checkedAt": "2026-07-28"
+        },
+        {
+          "label": "Wanderlog Support",
+          "url": "https://help.wanderlog.com/hc/en-us",
+          "type": "support_doc",
+          "claim": "여행 생성·일정 편집 도움말을 제공한다.",
+          "checkedAt": "2026-07-28"
+        }
+      ],
+      "screenshots": [
+        {
+          "id": "wanderlog-01",
+          "title": "여행 일정·지도 소개",
+          "url": "https://wanderlog.com/pages/help-center",
+          "evidenceType": "official_web",
+          "file": "2026-07-28-vertical-execution-service-assets/wanderlog-01.png",
+          "verificationLevel": "public_web_verified"
+        },
+        {
+          "id": "wanderlog-02",
+          "title": "일정 편집 도움말",
+          "url": "https://help.wanderlog.com/hc/en-us",
+          "evidenceType": "support_doc",
+          "file": "2026-07-28-vertical-execution-service-assets/wanderlog-02.png",
+          "verificationLevel": "support_doc_verified"
+        }
+      ],
+      "scoreValues": [
+        9,
+        8,
+        9,
+        9,
+        10,
+        9,
+        8,
+        6,
+        8,
+        8
+      ],
+      "scores": {
+        "followabilityScore": {
+          "score": 9,
+          "comment": "Wanderlog은(는) '장소·예약 모으기 → 일정·지도 생성 → 날짜별 계획 → 현지 다음 장소' 흐름으로 다음 행동을 이어 준다. 여행 중 다음 장소가 자연스럽게 드러난다. (9/10)"
+        },
+        "minimumInputQuality": {
+          "score": 8,
+          "comment": "최초 입력은 여행지/여행 기간, 가고 싶은 장소이며 필수 1개다. 여행지와 기간은 일정 생성에 직접 필요하다. (8/10)"
+        },
+        "generatedPlanClarity": {
+          "score": 9,
+          "comment": "입력 뒤 '날짜별 여행 일정과 지도 동선'가 생성된다. 일정과 지도라는 결과물이 선명하다. (9/10)"
+        },
+        "nextActionClarity": {
+          "score": 9,
+          "comment": "실행 화면의 다음 행동은 '오늘 일정의 다음 장소 확인·이동'이다. 다음 장소·예약 행동이 구체적이다. (9/10)"
+        },
+        "editRescheduleFlexibility": {
+          "score": 10,
+          "comment": "장소를 드래그해 날짜·순서를 바꾸고 동선을 다시 본다. 순서·날짜 수정이 직관적이다. (10/10)"
+        },
+        "contentPortfolioDepth": {
+          "score": 9,
+          "comment": "여행지 가이드·추천 장소·협업 일정·예약 정보로 확장된다. 장소 콘텐츠는 깊지만 실제 코스 품질은 원문에 좌우된다. (9/10)"
+        },
+        "creatorBusinessLoop": {
+          "score": 8,
+          "comment": "Pro 구독과 여행 예약·추천 연결이 확인된다. 예약 연결은 전문 플랫폼 영역이며 공개 creator 코스는 링크 기반 기회가 있다. (8/10)"
+        },
+        "portabilityGap": {
+          "score": 6,
+          "comment": "지도·협업은 앱 강점이지만 일정은 캘린더·시트로 이식 가능하다. 캘린더·시트 내보내기 가치가 높다. 점수가 높을수록 외부 도구로 옮길 여지가 크다. (6/10)"
+        },
+        "flowmeValueDelta": {
+          "score": 8,
+          "comment": "공개 여행 코스·블로그 장소 목록을 기준일과 날짜별 실행 일정으로 바꾸고 원문 링크를 보존할 수 있다. 지도 최적화·예약 엔진은 만들지 않는다. (8/10)"
+        },
+        "evidenceConfidence": {
+          "score": 8,
+          "comment": "공식·지원·앱스토어 근거 2건을 2026-07-28 확인했다. 공식 제품과 도움말을 확인했으나 실제 협업·AI 일정 품질은 미확인이다. (8/10)"
+        }
+      },
+      "evidenceLevels": [
+        "public_web_verified",
+        "support_doc_verified"
+      ],
+      "userCommunicationEvidence": {
+        "status": "collaboration_feature_verified",
+        "observed": "공동 편집과 여행 계획 공유 기능이 공식 도움말에 존재한다.",
+        "creatorResponse": "여행 제작자와 사용자의 공개 질문·답변 구조는 확인하지 못했다.",
+        "sourceUrl": "https://help.wanderlog.com/hc/en-us"
+      },
+      "businessEvidenceRecord": {
+        "observed": "Pro 구독과 여행 예약·추천 연결이 확인된다.",
+        "internalAssessment": "예약 연결은 전문 플랫폼 영역이며 공개 creator 코스는 링크 기반 기회가 있다.",
+        "unknown": "실제 제휴 의사·전환율·매출 기여는 확인하지 않았으며 사업 가설로 승격하지 않는다."
+      },
+      "observationInferenceBoundary": {
+        "observedFacts": [
+          "일정·지도·맞춤 여행 계획 기능을 설명한다.",
+          "여행 생성·일정 편집 도움말을 제공한다."
+        ],
+        "flowmeInference": "공개 여행 코스·블로그 장소 목록을 기준일과 날짜별 실행 일정으로 바꾸고 원문 링크를 보존할 수 있다.",
+        "unknowns": [
+          "로그인 후 개인화 결과",
+          "실제 사용자의 장기 완주율",
+          "제작자·서비스의 제휴 의사"
+        ]
+      },
+      "verificationBoundary": "공개 웹·공식 지원 문서·앱스토어 설명만 확인했다. 로그인 후 개인화 결과는 in_app_verified가 아니다.",
+      "compression": {
+        "userMoment": "저장한 장소와 예약을 한 일정으로 정리하고 싶을 때",
+        "naturalArtifact": "날짜별 여행 일정과 지도 동선",
+        "minimumAnchor": [
+          "여행지/여행 기간"
+        ],
+        "stage0Behavior": "여행지와 날짜를 정한 뒤 장소를 수집하면서 일정 결과를 계속 보여준다.",
+        "serviceRelationship": "external_execution_destination",
+        "contentDiscoveryOpportunity": "opp-travel-itinerary",
+        "doNotBuildBoundary": "지도 경로 최적화 / 숙박·항공 예약 엔진",
+        "finalDecision": "benchmark"
+      }
+    },
+    {
+      "id": "tripit",
+      "name": "TripIt",
+      "category": "travel_outings_events",
+      "deepDive": false,
+      "platforms": [
+        "Web",
+        "iOS",
+        "Android"
+      ],
+      "executionPattern": "collection_to_itinerary",
+      "userMoment": "여러 예약 확인 메일을 하나의 여행 일정으로 모으고 싶을 때",
+      "coreLoop": [
+        "예약 메일 전달",
+        "통합 일정 생성",
+        "알림·다음 예약",
+        "변경 반영"
+      ],
+      "initialInputs": [
+        {
+          "name": "예약 확인 이메일",
+          "required": true,
+          "reason": "일정 데이터"
+        }
+      ],
+      "generatedArtifact": "항공·숙박·교통 예약이 합쳐진 여행 일정",
+      "nextAction": "다음 예약 시간·장소 확인",
+      "stage0Behavior": "예약 메일 하나를 전달하면 통합 일정 결과를 먼저 만든다.",
+      "editBehavior": "추가 예약을 보내거나 일정 항목을 수정한다.",
+      "portfolioDepth": "예약·여행 문서·알림·여행 통계가 연결된다.",
+      "businessEvidence": "Pro 구독과 기업 여행 솔루션이 확인된다.",
+      "portability": "캘린더 연동은 강하지만 이메일 파싱·실시간 알림은 전문 기능이다.",
+      "flowmeDelta": "공개 여행 준비 체크리스트와 일정표를 캘린더로 내보내는 데 집중할 수 있다.",
+      "followabilityNote": "다음 예약이 명확하다.",
+      "minimumInputNote": "예약 메일 한 건으로 시작하는 입력 품질이 높다.",
+      "generatedPlanNote": "통합 일정 결과가 즉시 이해된다.",
+      "nextActionNote": "다음 예약 확인이 선명하다.",
+      "editNote": "예약 추가와 변경 반영이 자연스럽다.",
+      "portfolioNote": "콘텐츠보다 예약 데이터 중심이다.",
+      "businessNote": "콘텐츠 공급처보다는 외부 실행 목적지·벤치마크에 가깝다.",
+      "portabilityNote": "캘린더 이식은 이미 강해 FlowMe와 일부 겹친다.",
+      "flowmeDeltaNote": "메일 파싱을 만들 필요는 없다.",
+      "evidenceNote": "공식 사이트와 앱스토어 설명을 확인했다.",
+      "serviceRelationship": "external_execution_destination",
+      "finalDecision": "benchmark",
+      "opportunityId": "opp-travel-itinerary",
+      "transferablePatterns": [
+        "하나의 원본으로 일정 자동 생성",
+        "다음 예약을 우선 표시"
+      ],
+      "doNotBuild": [
+        "이메일 예약 파싱",
+        "실시간 항공 알림"
+      ],
+      "evidenceSources": [
+        {
+          "label": "TripIt 공식 사이트",
+          "url": "https://www.tripit.com/web",
+          "type": "official_web",
+          "claim": "예약 이메일을 통합 일정으로 만드는 흐름을 설명한다.",
+          "checkedAt": "2026-07-28"
+        },
+        {
+          "label": "TripIt App Store",
+          "url": "https://apps.apple.com/us/app/tripit-travel-planner/id311035142",
+          "type": "app_store",
+          "claim": "예약 정리와 다음 일정 알림을 설명한다.",
+          "checkedAt": "2026-07-28"
+        }
+      ],
+      "screenshots": [],
+      "scoreValues": [
+        9,
+        10,
+        10,
+        9,
+        8,
+        6,
+        7,
+        3,
+        5,
+        9
+      ],
+      "scores": {
+        "followabilityScore": {
+          "score": 9,
+          "comment": "TripIt은(는) '예약 메일 전달 → 통합 일정 생성 → 알림·다음 예약 → 변경 반영' 흐름으로 다음 행동을 이어 준다. 다음 예약이 명확하다. (9/10)"
+        },
+        "minimumInputQuality": {
+          "score": 10,
+          "comment": "최초 입력은 예약 확인 이메일이며 필수 1개다. 예약 메일 한 건으로 시작하는 입력 품질이 높다. (10/10)"
+        },
+        "generatedPlanClarity": {
+          "score": 10,
+          "comment": "입력 뒤 '항공·숙박·교통 예약이 합쳐진 여행 일정'가 생성된다. 통합 일정 결과가 즉시 이해된다. (10/10)"
+        },
+        "nextActionClarity": {
+          "score": 9,
+          "comment": "실행 화면의 다음 행동은 '다음 예약 시간·장소 확인'이다. 다음 예약 확인이 선명하다. (9/10)"
+        },
+        "editRescheduleFlexibility": {
+          "score": 8,
+          "comment": "추가 예약을 보내거나 일정 항목을 수정한다. 예약 추가와 변경 반영이 자연스럽다. (8/10)"
+        },
+        "contentPortfolioDepth": {
+          "score": 6,
+          "comment": "예약·여행 문서·알림·여행 통계가 연결된다. 콘텐츠보다 예약 데이터 중심이다. (6/10)"
+        },
+        "creatorBusinessLoop": {
+          "score": 7,
+          "comment": "Pro 구독과 기업 여행 솔루션이 확인된다. 콘텐츠 공급처보다는 외부 실행 목적지·벤치마크에 가깝다. (7/10)"
+        },
+        "portabilityGap": {
+          "score": 3,
+          "comment": "캘린더 연동은 강하지만 이메일 파싱·실시간 알림은 전문 기능이다. 캘린더 이식은 이미 강해 FlowMe와 일부 겹친다. 점수가 높을수록 외부 도구로 옮길 여지가 크다. (3/10)"
+        },
+        "flowmeValueDelta": {
+          "score": 5,
+          "comment": "공개 여행 준비 체크리스트와 일정표를 캘린더로 내보내는 데 집중할 수 있다. 메일 파싱을 만들 필요는 없다. (5/10)"
+        },
+        "evidenceConfidence": {
+          "score": 9,
+          "comment": "공식·지원·앱스토어 근거 2건을 2026-07-28 확인했다. 공식 사이트와 앱스토어 설명을 확인했다. (9/10)"
+        }
+      },
+      "evidenceLevels": [
+        "public_web_verified",
+        "app_store_verified"
+      ],
+      "userCommunicationEvidence": {
+        "status": "review_surface_verified",
+        "observed": "App Store 공개 평점·리뷰 표면이 존재한다.",
+        "creatorResponse": "예약 일정 제품이며 creator response 구조는 unknown이다.",
+        "sourceUrl": "https://apps.apple.com/us/app/tripit-travel-planner/id311035142"
+      },
+      "businessEvidenceRecord": {
+        "observed": "Pro 구독과 기업 여행 솔루션이 확인된다.",
+        "internalAssessment": "콘텐츠 공급처보다는 외부 실행 목적지·벤치마크에 가깝다.",
+        "unknown": "실제 제휴 의사·전환율·매출 기여는 확인하지 않았으며 사업 가설로 승격하지 않는다."
+      },
+      "observationInferenceBoundary": {
+        "observedFacts": [
+          "예약 이메일을 통합 일정으로 만드는 흐름을 설명한다.",
+          "예약 정리와 다음 일정 알림을 설명한다."
+        ],
+        "flowmeInference": "공개 여행 준비 체크리스트와 일정표를 캘린더로 내보내는 데 집중할 수 있다.",
+        "unknowns": [
+          "로그인 후 개인화 결과",
+          "실제 사용자의 장기 완주율",
+          "제작자·서비스의 제휴 의사"
+        ]
+      },
+      "verificationBoundary": "공개 웹·공식 지원 문서·앱스토어 설명만 확인했다. 로그인 후 개인화 결과는 in_app_verified가 아니다.",
+      "compression": {
+        "userMoment": "여러 예약 확인 메일을 하나의 여행 일정으로 모으고 싶을 때",
+        "naturalArtifact": "항공·숙박·교통 예약이 합쳐진 여행 일정",
+        "minimumAnchor": [
+          "예약 확인 이메일"
+        ],
+        "stage0Behavior": "예약 메일 하나를 전달하면 통합 일정 결과를 먼저 만든다.",
+        "serviceRelationship": "external_execution_destination",
+        "contentDiscoveryOpportunity": "opp-travel-itinerary",
+        "doNotBuildBoundary": "이메일 예약 파싱 / 실시간 항공 알림",
+        "finalDecision": "benchmark"
+      }
+    },
+    {
+      "id": "the-knot",
+      "name": "The Knot",
+      "category": "travel_outings_events",
+      "deepDive": true,
+      "platforms": [
+        "Web",
+        "iOS",
+        "Android"
+      ],
+      "executionPattern": "anchor_date_to_timeline",
+      "userMoment": "결혼일까지 해야 할 준비를 빠짐없이 일정화하고 싶을 때",
+      "coreLoop": [
+        "결혼일·지역·예산",
+        "개인화 체크리스트",
+        "이번 주 할 일",
+        "완료·업체 연결"
+      ],
+      "initialInputs": [
+        {
+          "name": "결혼일",
+          "required": true,
+          "reason": "D-day 역산"
+        },
+        {
+          "name": "지역",
+          "required": false,
+          "reason": "업체 추천"
+        },
+        {
+          "name": "예산/하객 수",
+          "required": false,
+          "reason": "준비 범위"
+        }
+      ],
+      "generatedArtifact": "결혼일 기준 개인화 준비 체크리스트와 업체·예산 보드",
+      "nextAction": "마감이 가까운 결혼 준비 항목 처리",
+      "stage0Behavior": "결혼일을 넣으면 전체 타임라인을 먼저 보여주고 세부 프로필을 나중에 보완한다.",
+      "editBehavior": "결혼일이 바뀌면 체크리스트 기한이 자동 조정되고 항목을 추가·삭제할 수 있다.",
+      "portfolioDepth": "체크리스트, 업체, 예산, 하객, 청첩장, 레지스트리가 연결된다.",
+      "businessEvidence": "업체 추천·광고·레지스트리·브랜드 제휴가 실행 체크리스트와 직접 연결된다.",
+      "portability": "일정과 체크는 이식 가능하지만 업체 데이터·마켓플레이스는 플랫폼 안에 남는다.",
+      "flowmeDelta": "제작자 결혼 체크리스트를 기준일 하나로 일정화하고 원문·업체 링크를 보존하는 강한 콘텐츠 기회가 있다.",
+      "followabilityNote": "D-day와 임박 항목으로 선택 부담을 줄인다.",
+      "minimumInputNote": "결혼일 하나로 핵심 결과를 만들 수 있다.",
+      "generatedPlanNote": "타임라인과 준비 항목이 명확하다.",
+      "nextActionNote": "가까운 마감 항목이 첫 행동이 된다.",
+      "editNote": "기준일 변경 시 일괄 재계산이 강하다.",
+      "portfolioNote": "준비 전 과정과 업체 콘텐츠가 매우 깊다.",
+      "businessNote": "제작자·업체·플랫폼의 수익 연결이 가장 명확한 사례다.",
+      "portabilityNote": "캘린더·체크리스트 이식성에서 FlowMe 가치가 크다.",
+      "flowmeDeltaNote": "업체 마켓플레이스는 만들지 않고 출처 유입을 보존한다.",
+      "evidenceNote": "공식 앱 페이지와 체크리스트 도움말을 확인했다.",
+      "serviceRelationship": "creator_partner_candidate",
+      "finalDecision": "partner",
+      "opportunityId": "opp-event-dday",
+      "transferablePatterns": [
+        "기준일 하나로 전체 일정 미리보기",
+        "임박 항목 우선",
+        "업체·원문 링크를 상세에 유지"
+      ],
+      "doNotBuild": [
+        "웨딩 업체 마켓플레이스",
+        "레지스트리·결제 인프라"
+      ],
+      "evidenceSources": [
+        {
+          "label": "The Knot Wedding Planning App",
+          "url": "https://www.theknot.com/wedding-planning-app?vers=0",
+          "type": "official_web",
+          "claim": "결혼일·지역·예산·하객 수 기반 개인화 체크리스트와 업체·예산 기능을 설명한다.",
+          "checkedAt": "2026-07-28"
+        },
+        {
+          "label": "The Knot Checklist Timeframe",
+          "url": "https://helpcenter.theknot.com/hc/en-us/articles/20629464134036-What-is-the-timeframe-of-my-Checklist",
+          "type": "support_doc",
+          "claim": "결혼일 변경에 따라 체크리스트가 자동 갱신된다고 설명한다.",
+          "checkedAt": "2026-07-28"
+        }
+      ],
+      "screenshots": [
+        {
+          "id": "the-knot-01",
+          "title": "웨딩 플래너 소개",
+          "url": "https://www.theknot.com/wedding-planning",
+          "evidenceType": "official_web",
+          "file": "2026-07-28-vertical-execution-service-assets/the-knot-01.png",
+          "verificationLevel": "public_web_verified"
+        },
+        {
+          "id": "the-knot-02",
+          "title": "체크리스트 자동 일정 도움말",
+          "url": "https://helpcenter.theknot.com/hc/en-us/articles/20629464134036-What-is-the-timeframe-of-my-Checklist",
+          "evidenceType": "support_doc",
+          "file": "2026-07-28-vertical-execution-service-assets/the-knot-02.png",
+          "verificationLevel": "support_doc_verified"
+        }
+      ],
+      "scoreValues": [
+        10,
+        9,
+        10,
+        9,
+        10,
+        10,
+        10,
+        7,
+        10,
+        9
+      ],
+      "scores": {
+        "followabilityScore": {
+          "score": 10,
+          "comment": "The Knot은(는) '결혼일·지역·예산 → 개인화 체크리스트 → 이번 주 할 일 → 완료·업체 연결' 흐름으로 다음 행동을 이어 준다. D-day와 임박 항목으로 선택 부담을 줄인다. (10/10)"
+        },
+        "minimumInputQuality": {
+          "score": 9,
+          "comment": "최초 입력은 결혼일, 지역, 예산/하객 수이며 필수 1개다. 결혼일 하나로 핵심 결과를 만들 수 있다. (9/10)"
+        },
+        "generatedPlanClarity": {
+          "score": 10,
+          "comment": "입력 뒤 '결혼일 기준 개인화 준비 체크리스트와 업체·예산 보드'가 생성된다. 타임라인과 준비 항목이 명확하다. (10/10)"
+        },
+        "nextActionClarity": {
+          "score": 9,
+          "comment": "실행 화면의 다음 행동은 '마감이 가까운 결혼 준비 항목 처리'이다. 가까운 마감 항목이 첫 행동이 된다. (9/10)"
+        },
+        "editRescheduleFlexibility": {
+          "score": 10,
+          "comment": "결혼일이 바뀌면 체크리스트 기한이 자동 조정되고 항목을 추가·삭제할 수 있다. 기준일 변경 시 일괄 재계산이 강하다. (10/10)"
+        },
+        "contentPortfolioDepth": {
+          "score": 10,
+          "comment": "체크리스트, 업체, 예산, 하객, 청첩장, 레지스트리가 연결된다. 준비 전 과정과 업체 콘텐츠가 매우 깊다. (10/10)"
+        },
+        "creatorBusinessLoop": {
+          "score": 10,
+          "comment": "업체 추천·광고·레지스트리·브랜드 제휴가 실행 체크리스트와 직접 연결된다. 제작자·업체·플랫폼의 수익 연결이 가장 명확한 사례다. (10/10)"
+        },
+        "portabilityGap": {
+          "score": 7,
+          "comment": "일정과 체크는 이식 가능하지만 업체 데이터·마켓플레이스는 플랫폼 안에 남는다. 캘린더·체크리스트 이식성에서 FlowMe 가치가 크다. 점수가 높을수록 외부 도구로 옮길 여지가 크다. (7/10)"
+        },
+        "flowmeValueDelta": {
+          "score": 10,
+          "comment": "제작자 결혼 체크리스트를 기준일 하나로 일정화하고 원문·업체 링크를 보존하는 강한 콘텐츠 기회가 있다. 업체 마켓플레이스는 만들지 않고 출처 유입을 보존한다. (10/10)"
+        },
+        "evidenceConfidence": {
+          "score": 9,
+          "comment": "공식·지원·앱스토어 근거 2건을 2026-07-28 확인했다. 공식 앱 페이지와 체크리스트 도움말을 확인했다. (9/10)"
+        }
+      },
+      "evidenceLevels": [
+        "public_web_verified",
+        "support_doc_verified"
+      ],
+      "userCommunicationEvidence": {
+        "status": "testimonial_and_vendor_communication_verified",
+        "observed": "공식 앱 페이지에 커플 후기가 있고 앱이 업체 검색·메시지를 제공한다고 설명한다.",
+        "creatorResponse": "업체 메시지 경로는 확인되지만 실제 응답 품질과 공개성은 로그인 없이 검증하지 않았다.",
+        "sourceUrl": "https://www.theknot.com/wedding-planning-app?vers=0"
+      },
+      "businessEvidenceRecord": {
+        "observed": "업체 추천·광고·레지스트리·브랜드 제휴가 실행 체크리스트와 직접 연결된다.",
+        "internalAssessment": "제작자·업체·플랫폼의 수익 연결이 가장 명확한 사례다.",
+        "unknown": "실제 제휴 의사·전환율·매출 기여는 확인하지 않았으며 사업 가설로 승격하지 않는다."
+      },
+      "observationInferenceBoundary": {
+        "observedFacts": [
+          "결혼일·지역·예산·하객 수 기반 개인화 체크리스트와 업체·예산 기능을 설명한다.",
+          "결혼일 변경에 따라 체크리스트가 자동 갱신된다고 설명한다."
+        ],
+        "flowmeInference": "제작자 결혼 체크리스트를 기준일 하나로 일정화하고 원문·업체 링크를 보존하는 강한 콘텐츠 기회가 있다.",
+        "unknowns": [
+          "로그인 후 개인화 결과",
+          "실제 사용자의 장기 완주율",
+          "제작자·서비스의 제휴 의사"
+        ]
+      },
+      "verificationBoundary": "공개 웹·공식 지원 문서·앱스토어 설명만 확인했다. 로그인 후 개인화 결과는 in_app_verified가 아니다.",
+      "compression": {
+        "userMoment": "결혼일까지 해야 할 준비를 빠짐없이 일정화하고 싶을 때",
+        "naturalArtifact": "결혼일 기준 개인화 준비 체크리스트와 업체·예산 보드",
+        "minimumAnchor": [
+          "결혼일"
+        ],
+        "stage0Behavior": "결혼일을 넣으면 전체 타임라인을 먼저 보여주고 세부 프로필을 나중에 보완한다.",
+        "serviceRelationship": "creator_partner_candidate",
+        "contentDiscoveryOpportunity": "opp-event-dday",
+        "doNotBuildBoundary": "웨딩 업체 마켓플레이스 / 레지스트리·결제 인프라",
+        "finalDecision": "partner"
+      }
+    },
+    {
+      "id": "sidechef",
+      "name": "SideChef",
+      "category": "meals_grocery",
+      "deepDive": true,
+      "platforms": [
+        "Web",
+        "iOS",
+        "Android"
+      ],
+      "executionPattern": "content_to_guided_session",
+      "userMoment": "무엇을 먹을지 정하고 장보기부터 조리까지 한 번에 이어가고 싶을 때",
+      "coreLoop": [
+        "레시피 선택",
+        "주간 식단",
+        "장보기 목록",
+        "단계별 조리"
+      ],
+      "initialInputs": [
+        {
+          "name": "식단 기간/식사 수",
+          "required": true,
+          "reason": "계획 범위"
+        },
+        {
+          "name": "선호·제한",
+          "required": false,
+          "reason": "레시피 필터"
+        }
+      ],
+      "generatedArtifact": "개인화 식단, 통합 장보기 목록, 단계별 조리 세션",
+      "nextAction": "오늘 식사의 첫 조리 단계 시작",
+      "stage0Behavior": "레시피를 둘러보고 주간 식단에 담으면 장보기 결과를 바로 보여준다.",
+      "editBehavior": "식단에서 레시피를 교체하면 장보기 목록이 갱신된다.",
+      "portfolioDepth": "공식 사이트는 11,000개 이상 무료 레시피와 수업·기기 연동을 안내한다.",
+      "businessEvidence": "Premium 수업, 장보기 주문, 스마트 주방·브랜드 파트너 연결이 확인된다.",
+      "portability": "레시피 링크·식단·장보기는 이식 가능하지만 조리 모드와 주문은 서비스 안에 남는다.",
+      "flowmeDelta": "제작자 레시피 묶음을 식단→장보기→오늘 조리로 연결하면서 원문 방문을 늘릴 수 있다.",
+      "followabilityNote": "계획부터 조리까지 끊김이 적다.",
+      "minimumInputNote": "기간 하나로 시작하고 선호는 후속으로 받을 수 있다.",
+      "generatedPlanNote": "식단·장보기·조리 결과물이 서로 연결된다.",
+      "nextActionNote": "오늘 레시피의 첫 단계가 분명하다.",
+      "editNote": "레시피 교체와 장보기 갱신이 자연스럽다.",
+      "portfolioNote": "레시피·수업·브랜드 콘텐츠가 매우 깊다.",
+      "businessNote": "제작자와 식재료·기기 브랜드가 Flow를 홍보할 이유가 있다.",
+      "portabilityNote": "캘린더·체크리스트·시트로 옮길 가치가 높다.",
+      "flowmeDeltaNote": "레시피 전문을 복제하지 않고 실행 제목·링크·최소 재료 메타만 사용한다.",
+      "evidenceNote": "공식 서비스와 식단 플래너 페이지를 확인했다.",
+      "serviceRelationship": "creator_partner_candidate",
+      "finalDecision": "partner",
+      "opportunityId": "opp-meal-plan",
+      "transferablePatterns": [
+        "레시피 선택이 장보기와 오늘 조리로 이어짐",
+        "레시피 교체 시 파생 목록 갱신"
+      ],
+      "doNotBuild": [
+        "식료품 주문·재고 연동",
+        "유료 레시피·강의 복제"
+      ],
+      "evidenceSources": [
+        {
+          "label": "SideChef 공식 사이트",
+          "url": "https://www.sidechef.com/",
+          "type": "official_web",
+          "claim": "레시피·개인화 식단·장보기 주문·단계별 조리를 연결한다.",
+          "checkedAt": "2026-07-28"
+        },
+        {
+          "label": "SideChef Meal Planner",
+          "url": "https://www.sidechef.com/meal-planner/",
+          "type": "official_web",
+          "claim": "식단 계획과 장보기 목록 흐름을 소개한다.",
+          "checkedAt": "2026-07-28"
+        }
+      ],
+      "screenshots": [
+        {
+          "id": "sidechef-01",
+          "title": "레시피에서 조리까지",
+          "url": "https://www.sidechef.com/",
+          "evidenceType": "official_web",
+          "file": "2026-07-28-vertical-execution-service-assets/sidechef-01.png",
+          "verificationLevel": "public_web_verified"
+        },
+        {
+          "id": "sidechef-02",
+          "title": "식단 플래너",
+          "url": "https://www.sidechef.com/meal-planner/",
+          "evidenceType": "official_web",
+          "file": "2026-07-28-vertical-execution-service-assets/sidechef-02.png",
+          "verificationLevel": "public_web_verified"
+        }
+      ],
+      "scoreValues": [
+        10,
+        8,
+        10,
+        10,
+        9,
+        10,
+        10,
+        8,
+        10,
+        9
+      ],
+      "scores": {
+        "followabilityScore": {
+          "score": 10,
+          "comment": "SideChef은(는) '레시피 선택 → 주간 식단 → 장보기 목록 → 단계별 조리' 흐름으로 다음 행동을 이어 준다. 계획부터 조리까지 끊김이 적다. (10/10)"
+        },
+        "minimumInputQuality": {
+          "score": 8,
+          "comment": "최초 입력은 식단 기간/식사 수, 선호·제한이며 필수 1개다. 기간 하나로 시작하고 선호는 후속으로 받을 수 있다. (8/10)"
+        },
+        "generatedPlanClarity": {
+          "score": 10,
+          "comment": "입력 뒤 '개인화 식단, 통합 장보기 목록, 단계별 조리 세션'가 생성된다. 식단·장보기·조리 결과물이 서로 연결된다. (10/10)"
+        },
+        "nextActionClarity": {
+          "score": 10,
+          "comment": "실행 화면의 다음 행동은 '오늘 식사의 첫 조리 단계 시작'이다. 오늘 레시피의 첫 단계가 분명하다. (10/10)"
+        },
+        "editRescheduleFlexibility": {
+          "score": 9,
+          "comment": "식단에서 레시피를 교체하면 장보기 목록이 갱신된다. 레시피 교체와 장보기 갱신이 자연스럽다. (9/10)"
+        },
+        "contentPortfolioDepth": {
+          "score": 10,
+          "comment": "공식 사이트는 11,000개 이상 무료 레시피와 수업·기기 연동을 안내한다. 레시피·수업·브랜드 콘텐츠가 매우 깊다. (10/10)"
+        },
+        "creatorBusinessLoop": {
+          "score": 10,
+          "comment": "Premium 수업, 장보기 주문, 스마트 주방·브랜드 파트너 연결이 확인된다. 제작자와 식재료·기기 브랜드가 Flow를 홍보할 이유가 있다. (10/10)"
+        },
+        "portabilityGap": {
+          "score": 8,
+          "comment": "레시피 링크·식단·장보기는 이식 가능하지만 조리 모드와 주문은 서비스 안에 남는다. 캘린더·체크리스트·시트로 옮길 가치가 높다. 점수가 높을수록 외부 도구로 옮길 여지가 크다. (8/10)"
+        },
+        "flowmeValueDelta": {
+          "score": 10,
+          "comment": "제작자 레시피 묶음을 식단→장보기→오늘 조리로 연결하면서 원문 방문을 늘릴 수 있다. 레시피 전문을 복제하지 않고 실행 제목·링크·최소 재료 메타만 사용한다. (10/10)"
+        },
+        "evidenceConfidence": {
+          "score": 9,
+          "comment": "공식·지원·앱스토어 근거 2건을 2026-07-28 확인했다. 공식 서비스와 식단 플래너 페이지를 확인했다. (9/10)"
+        }
+      },
+      "evidenceLevels": [
+        "public_web_verified"
+      ],
+      "userCommunicationEvidence": {
+        "status": "creator_brand_surface_verified",
+        "observed": "레시피·수업·브랜드 콘텐츠와 비즈니스 파트너 진입점이 공개돼 있다.",
+        "creatorResponse": "레시피별 질문·답변 또는 제작자 응답 내역은 이번 공개 화면에서 검증하지 않았다.",
+        "sourceUrl": "https://www.sidechef.com/"
+      },
+      "businessEvidenceRecord": {
+        "observed": "Premium 수업, 장보기 주문, 스마트 주방·브랜드 파트너 연결이 확인된다.",
+        "internalAssessment": "제작자와 식재료·기기 브랜드가 Flow를 홍보할 이유가 있다.",
+        "unknown": "실제 제휴 의사·전환율·매출 기여는 확인하지 않았으며 사업 가설로 승격하지 않는다."
+      },
+      "observationInferenceBoundary": {
+        "observedFacts": [
+          "레시피·개인화 식단·장보기 주문·단계별 조리를 연결한다.",
+          "식단 계획과 장보기 목록 흐름을 소개한다."
+        ],
+        "flowmeInference": "제작자 레시피 묶음을 식단→장보기→오늘 조리로 연결하면서 원문 방문을 늘릴 수 있다.",
+        "unknowns": [
+          "로그인 후 개인화 결과",
+          "실제 사용자의 장기 완주율",
+          "제작자·서비스의 제휴 의사"
+        ]
+      },
+      "verificationBoundary": "공개 웹·공식 지원 문서·앱스토어 설명만 확인했다. 로그인 후 개인화 결과는 in_app_verified가 아니다.",
+      "compression": {
+        "userMoment": "무엇을 먹을지 정하고 장보기부터 조리까지 한 번에 이어가고 싶을 때",
+        "naturalArtifact": "개인화 식단, 통합 장보기 목록, 단계별 조리 세션",
+        "minimumAnchor": [
+          "식단 기간/식사 수"
+        ],
+        "stage0Behavior": "레시피를 둘러보고 주간 식단에 담으면 장보기 결과를 바로 보여준다.",
+        "serviceRelationship": "creator_partner_candidate",
+        "contentDiscoveryOpportunity": "opp-meal-plan",
+        "doNotBuildBoundary": "식료품 주문·재고 연동 / 유료 레시피·강의 복제",
+        "finalDecision": "partner"
+      }
+    },
+    {
+      "id": "samsung-food",
+      "name": "Samsung Food",
+      "category": "meals_grocery",
+      "deepDive": false,
+      "platforms": [
+        "Web",
+        "iOS",
+        "Android"
+      ],
+      "executionPattern": "collection_to_itinerary",
+      "userMoment": "여러 사이트 레시피를 저장해 주간 식단과 장보기로 정리하고 싶을 때",
+      "coreLoop": [
+        "레시피 저장",
+        "주간 식단 배치",
+        "스마트 장보기",
+        "조리·공유"
+      ],
+      "initialInputs": [
+        {
+          "name": "레시피 URL/저장",
+          "required": true,
+          "reason": "콘텐츠 원본"
+        },
+        {
+          "name": "주간 식단 배치",
+          "required": false,
+          "reason": "일정"
+        }
+      ],
+      "generatedArtifact": "저장 레시피 모음, 주간 식단, 통합 장보기 목록",
+      "nextAction": "오늘 식단의 레시피 열기",
+      "stage0Behavior": "레시피 하나를 저장하면 모음과 식단에 바로 쓸 수 있다.",
+      "editBehavior": "레시피를 드래그해 식단을 바꾸면 목록이 갱신된다.",
+      "portfolioDepth": "웹 레시피 저장, 커뮤니티, 식단, 쇼핑 목록이 연결된다.",
+      "businessEvidence": "Samsung 생태계와 식품·가전 연결 가능성이 보이나 개별 파트너 수익은 확인되지 않았다.",
+      "portability": "웹 URL 수집은 강하지만 커뮤니티·스마트 기능은 플랫폼 안에 남는다.",
+      "flowmeDelta": "원문 URL을 중심으로 개인 식단을 일정·시트·메모로 내보내는 데 가치가 있다.",
+      "followabilityNote": "저장한 레시피가 식단과 장보기로 이어진다.",
+      "minimumInputNote": "URL 하나로 시작 가능하다.",
+      "generatedPlanNote": "세 결과물이 명확히 연결된다.",
+      "nextActionNote": "오늘 레시피가 보인다.",
+      "editNote": "드래그 식단 수정이 자연스럽다.",
+      "portfolioNote": "공개 웹 레시피를 폭넓게 흡수한다.",
+      "businessNote": "플랫폼 전체와의 제휴 없이는 콘텐츠 공급 관계를 주장할 수 없다.",
+      "portabilityNote": "사용자 원문 링크를 외부 결과물로 옮기는 기회가 높다.",
+      "flowmeDeltaNote": "레시피 스크래핑·커뮤니티를 복제하지 않는다.",
+      "evidenceNote": "공식 사이트와 지원 문서를 확인했다.",
+      "serviceRelationship": "external_execution_destination",
+      "finalDecision": "benchmark",
+      "opportunityId": "opp-meal-plan",
+      "transferablePatterns": [
+        "URL 하나로 수집 시작",
+        "식단 변경이 장보기 목록에 반영"
+      ],
+      "doNotBuild": [
+        "레시피 전문 스크래핑",
+        "식품 커뮤니티"
+      ],
+      "evidenceSources": [
+        {
+          "label": "Samsung Food",
+          "url": "https://samsungfood.com/",
+          "type": "official_web",
+          "claim": "웹 레시피 저장, 주간 식단, 쇼핑 목록, 커뮤니티를 소개한다.",
+          "checkedAt": "2026-07-28"
+        },
+        {
+          "label": "Samsung Food Meal Planner Help",
+          "url": "https://support.samsungfood.com/hc/en-us/articles/35369657798548-Getting-Started-with-Meal-Planner",
+          "type": "support_doc",
+          "claim": "식단 플래너 시작 방법을 설명한다.",
+          "checkedAt": "2026-07-28"
+        }
+      ],
+      "screenshots": [],
+      "scoreValues": [
+        9,
+        10,
+        9,
+        9,
+        9,
+        10,
+        7,
+        6,
+        8,
+        9
+      ],
+      "scores": {
+        "followabilityScore": {
+          "score": 9,
+          "comment": "Samsung Food은(는) '레시피 저장 → 주간 식단 배치 → 스마트 장보기 → 조리·공유' 흐름으로 다음 행동을 이어 준다. 저장한 레시피가 식단과 장보기로 이어진다. (9/10)"
+        },
+        "minimumInputQuality": {
+          "score": 10,
+          "comment": "최초 입력은 레시피 URL/저장, 주간 식단 배치이며 필수 1개다. URL 하나로 시작 가능하다. (10/10)"
+        },
+        "generatedPlanClarity": {
+          "score": 9,
+          "comment": "입력 뒤 '저장 레시피 모음, 주간 식단, 통합 장보기 목록'가 생성된다. 세 결과물이 명확히 연결된다. (9/10)"
+        },
+        "nextActionClarity": {
+          "score": 9,
+          "comment": "실행 화면의 다음 행동은 '오늘 식단의 레시피 열기'이다. 오늘 레시피가 보인다. (9/10)"
+        },
+        "editRescheduleFlexibility": {
+          "score": 9,
+          "comment": "레시피를 드래그해 식단을 바꾸면 목록이 갱신된다. 드래그 식단 수정이 자연스럽다. (9/10)"
+        },
+        "contentPortfolioDepth": {
+          "score": 10,
+          "comment": "웹 레시피 저장, 커뮤니티, 식단, 쇼핑 목록이 연결된다. 공개 웹 레시피를 폭넓게 흡수한다. (10/10)"
+        },
+        "creatorBusinessLoop": {
+          "score": 7,
+          "comment": "Samsung 생태계와 식품·가전 연결 가능성이 보이나 개별 파트너 수익은 확인되지 않았다. 플랫폼 전체와의 제휴 없이는 콘텐츠 공급 관계를 주장할 수 없다. (7/10)"
+        },
+        "portabilityGap": {
+          "score": 6,
+          "comment": "웹 URL 수집은 강하지만 커뮤니티·스마트 기능은 플랫폼 안에 남는다. 사용자 원문 링크를 외부 결과물로 옮기는 기회가 높다. 점수가 높을수록 외부 도구로 옮길 여지가 크다. (6/10)"
+        },
+        "flowmeValueDelta": {
+          "score": 8,
+          "comment": "원문 URL을 중심으로 개인 식단을 일정·시트·메모로 내보내는 데 가치가 있다. 레시피 스크래핑·커뮤니티를 복제하지 않는다. (8/10)"
+        },
+        "evidenceConfidence": {
+          "score": 9,
+          "comment": "공식·지원·앱스토어 근거 2건을 2026-07-28 확인했다. 공식 사이트와 지원 문서를 확인했다. (9/10)"
+        }
+      },
+      "evidenceLevels": [
+        "public_web_verified",
+        "support_doc_verified"
+      ],
+      "userCommunicationEvidence": {
+        "status": "community_feature_verified",
+        "observed": "공식 사이트가 레시피 커뮤니티와 공유 기능을 안내한다.",
+        "creatorResponse": "개별 제작자 응답과 수정 반영은 로그인 없이 확인하지 못했다.",
+        "sourceUrl": "https://samsungfood.com/"
+      },
+      "businessEvidenceRecord": {
+        "observed": "Samsung 생태계와 식품·가전 연결 가능성이 보이나 개별 파트너 수익은 확인되지 않았다.",
+        "internalAssessment": "플랫폼 전체와의 제휴 없이는 콘텐츠 공급 관계를 주장할 수 없다.",
+        "unknown": "실제 제휴 의사·전환율·매출 기여는 확인하지 않았으며 사업 가설로 승격하지 않는다."
+      },
+      "observationInferenceBoundary": {
+        "observedFacts": [
+          "웹 레시피 저장, 주간 식단, 쇼핑 목록, 커뮤니티를 소개한다.",
+          "식단 플래너 시작 방법을 설명한다."
+        ],
+        "flowmeInference": "원문 URL을 중심으로 개인 식단을 일정·시트·메모로 내보내는 데 가치가 있다.",
+        "unknowns": [
+          "로그인 후 개인화 결과",
+          "실제 사용자의 장기 완주율",
+          "제작자·서비스의 제휴 의사"
+        ]
+      },
+      "verificationBoundary": "공개 웹·공식 지원 문서·앱스토어 설명만 확인했다. 로그인 후 개인화 결과는 in_app_verified가 아니다.",
+      "compression": {
+        "userMoment": "여러 사이트 레시피를 저장해 주간 식단과 장보기로 정리하고 싶을 때",
+        "naturalArtifact": "저장 레시피 모음, 주간 식단, 통합 장보기 목록",
+        "minimumAnchor": [
+          "레시피 URL/저장"
+        ],
+        "stage0Behavior": "레시피 하나를 저장하면 모음과 식단에 바로 쓸 수 있다.",
+        "serviceRelationship": "external_execution_destination",
+        "contentDiscoveryOpportunity": "opp-meal-plan",
+        "doNotBuildBoundary": "레시피 전문 스크래핑 / 식품 커뮤니티",
+        "finalDecision": "benchmark"
+      }
+    },
+    {
+      "id": "mealime",
+      "name": "Mealime",
+      "category": "meals_grocery",
+      "deepDive": false,
+      "platforms": [
+        "iOS",
+        "Android"
+      ],
+      "executionPattern": "content_to_guided_session",
+      "userMoment": "취향에 맞는 주간 식사를 빠르게 정하고 낭비 없이 장보고 싶을 때",
+      "coreLoop": [
+        "선호 설정",
+        "식단 선택",
+        "자동 장보기",
+        "단계별 조리"
+      ],
+      "initialInputs": [
+        {
+          "name": "식사 선호·제한",
+          "required": true,
+          "reason": "레시피 필터"
+        },
+        {
+          "name": "식사 수",
+          "required": true,
+          "reason": "식단 범위"
+        }
+      ],
+      "generatedArtifact": "주간 식단, 분류된 장보기 목록, 조리 안내",
+      "nextAction": "오늘 식사의 장보기 또는 조리 시작",
+      "stage0Behavior": "선호를 고른 뒤 추천 식단을 바로 확인한다.",
+      "editBehavior": "식사를 바꾸면 장보기 목록이 다시 계산된다.",
+      "portfolioDepth": "주간 식단과 레시피 중심으로 목적이 선명하다.",
+      "businessEvidence": "Pro 구독과 장보기 연동이 확인된다.",
+      "portability": "목록과 일정은 이식 가능하지만 레시피·추천은 앱 자산이다.",
+      "flowmeDelta": "공개 식단표를 링크·장보기 묶음·오늘 조리로 연결할 수 있다.",
+      "followabilityNote": "Plan→Shop→Cook 흐름이 단순하다.",
+      "minimumInputNote": "선호와 식사 수가 추천에 필요하다.",
+      "generatedPlanNote": "산출물 세 가지가 명확하다.",
+      "nextActionNote": "상황에 따라 장보기 또는 조리로 갈린다.",
+      "editNote": "식사 교체 후 목록 갱신이 좋다.",
+      "portfolioNote": "레시피 범위는 충분하지만 creator 공급망은 약하다.",
+      "businessNote": "유료 앱 콘텐츠는 공개 전환 대상이 아니다.",
+      "portabilityNote": "공개 식단 콘텐츠에는 이식성 기회가 있다.",
+      "flowmeDeltaNote": "추천 알고리즘 대신 원문 기반 식단만 다룬다.",
+      "evidenceNote": "공식 사이트와 시작 가이드를 확인했다.",
+      "serviceRelationship": "ux_logic_benchmark_only",
+      "finalDecision": "benchmark",
+      "opportunityId": "opp-meal-plan",
+      "transferablePatterns": [
+        "Plan→Shop→Cook 3단 구조",
+        "식사 교체 후 목록 재계산"
+      ],
+      "doNotBuild": [
+        "영양 추천 엔진",
+        "유료 레시피 복제"
+      ],
+      "evidenceSources": [
+        {
+          "label": "Mealime 공식 사이트",
+          "url": "https://www.mealime.com/",
+          "type": "official_web",
+          "claim": "개인화 식단, 자동 장보기, 단계별 조리를 설명한다.",
+          "checkedAt": "2026-07-28"
+        },
+        {
+          "label": "Mealime Getting Started",
+          "url": "https://support.mealime.com/article/151-getting-started-guide",
+          "type": "support_doc",
+          "claim": "식단 생성과 장보기·조리 흐름을 안내한다.",
+          "checkedAt": "2026-07-28"
+        }
+      ],
+      "screenshots": [],
+      "scoreValues": [
+        9,
+        8,
+        9,
+        8,
+        9,
+        8,
+        7,
+        7,
+        8,
+        9
+      ],
+      "scores": {
+        "followabilityScore": {
+          "score": 9,
+          "comment": "Mealime은(는) '선호 설정 → 식단 선택 → 자동 장보기 → 단계별 조리' 흐름으로 다음 행동을 이어 준다. Plan→Shop→Cook 흐름이 단순하다. (9/10)"
+        },
+        "minimumInputQuality": {
+          "score": 8,
+          "comment": "최초 입력은 식사 선호·제한, 식사 수이며 필수 2개다. 선호와 식사 수가 추천에 필요하다. (8/10)"
+        },
+        "generatedPlanClarity": {
+          "score": 9,
+          "comment": "입력 뒤 '주간 식단, 분류된 장보기 목록, 조리 안내'가 생성된다. 산출물 세 가지가 명확하다. (9/10)"
+        },
+        "nextActionClarity": {
+          "score": 8,
+          "comment": "실행 화면의 다음 행동은 '오늘 식사의 장보기 또는 조리 시작'이다. 상황에 따라 장보기 또는 조리로 갈린다. (8/10)"
+        },
+        "editRescheduleFlexibility": {
+          "score": 9,
+          "comment": "식사를 바꾸면 장보기 목록이 다시 계산된다. 식사 교체 후 목록 갱신이 좋다. (9/10)"
+        },
+        "contentPortfolioDepth": {
+          "score": 8,
+          "comment": "주간 식단과 레시피 중심으로 목적이 선명하다. 레시피 범위는 충분하지만 creator 공급망은 약하다. (8/10)"
+        },
+        "creatorBusinessLoop": {
+          "score": 7,
+          "comment": "Pro 구독과 장보기 연동이 확인된다. 유료 앱 콘텐츠는 공개 전환 대상이 아니다. (7/10)"
+        },
+        "portabilityGap": {
+          "score": 7,
+          "comment": "목록과 일정은 이식 가능하지만 레시피·추천은 앱 자산이다. 공개 식단 콘텐츠에는 이식성 기회가 있다. 점수가 높을수록 외부 도구로 옮길 여지가 크다. (7/10)"
+        },
+        "flowmeValueDelta": {
+          "score": 8,
+          "comment": "공개 식단표를 링크·장보기 묶음·오늘 조리로 연결할 수 있다. 추천 알고리즘 대신 원문 기반 식단만 다룬다. (8/10)"
+        },
+        "evidenceConfidence": {
+          "score": 9,
+          "comment": "공식·지원·앱스토어 근거 2건을 2026-07-28 확인했다. 공식 사이트와 시작 가이드를 확인했다. (9/10)"
+        }
+      },
+      "evidenceLevels": [
+        "public_web_verified",
+        "support_doc_verified"
+      ],
+      "userCommunicationEvidence": {
+        "status": "support_content_verified",
+        "observed": "공식 시작 가이드와 지원 문서는 확인했지만 공개 사용자 대화 구조는 확인하지 못했다.",
+        "creatorResponse": "unknown",
+        "sourceUrl": "https://support.mealime.com/article/151-getting-started-guide"
+      },
+      "businessEvidenceRecord": {
+        "observed": "Pro 구독과 장보기 연동이 확인된다.",
+        "internalAssessment": "유료 앱 콘텐츠는 공개 전환 대상이 아니다.",
+        "unknown": "실제 제휴 의사·전환율·매출 기여는 확인하지 않았으며 사업 가설로 승격하지 않는다."
+      },
+      "observationInferenceBoundary": {
+        "observedFacts": [
+          "개인화 식단, 자동 장보기, 단계별 조리를 설명한다.",
+          "식단 생성과 장보기·조리 흐름을 안내한다."
+        ],
+        "flowmeInference": "공개 식단표를 링크·장보기 묶음·오늘 조리로 연결할 수 있다.",
+        "unknowns": [
+          "로그인 후 개인화 결과",
+          "실제 사용자의 장기 완주율",
+          "제작자·서비스의 제휴 의사"
+        ]
+      },
+      "verificationBoundary": "공개 웹·공식 지원 문서·앱스토어 설명만 확인했다. 로그인 후 개인화 결과는 in_app_verified가 아니다.",
+      "compression": {
+        "userMoment": "취향에 맞는 주간 식사를 빠르게 정하고 낭비 없이 장보고 싶을 때",
+        "naturalArtifact": "주간 식단, 분류된 장보기 목록, 조리 안내",
+        "minimumAnchor": [
+          "식사 선호·제한",
+          "식사 수"
+        ],
+        "stage0Behavior": "선호를 고른 뒤 추천 식단을 바로 확인한다.",
+        "serviceRelationship": "ux_logic_benchmark_only",
+        "contentDiscoveryOpportunity": "opp-meal-plan",
+        "doNotBuildBoundary": "영양 추천 엔진 / 유료 레시피 복제",
+        "finalDecision": "benchmark"
+      }
+    },
+    {
+      "id": "teal",
+      "name": "Teal",
+      "category": "work_career",
+      "deepDive": true,
+      "platforms": [
+        "Web",
+        "Browser extension"
+      ],
+      "executionPattern": "state_to_follow_up",
+      "userMoment": "여러 채용 공고의 지원 상태와 다음 행동을 놓치지 않고 싶을 때",
+      "coreLoop": [
+        "공고 저장",
+        "지원 단계",
+        "후속 날짜·메모",
+        "오늘 다음 행동"
+      ],
+      "initialInputs": [
+        {
+          "name": "채용 공고 URL",
+          "required": true,
+          "reason": "지원 대상"
+        },
+        {
+          "name": "현재 지원 단계",
+          "required": false,
+          "reason": "다음 행동"
+        }
+      ],
+      "generatedArtifact": "지원 공고 보드, 단계, 후속 일정과 다음 행동",
+      "nextAction": "가장 가까운 후속 일정의 지원 행동 수행",
+      "stage0Behavior": "공고를 저장하면 보드에 카드가 생기고 상태·후속 날짜를 나중에 보완한다.",
+      "editBehavior": "상태를 이동하고 후속 날짜·메모를 수정한다.",
+      "portfolioDepth": "공고 추적, 이력서, 키워드 매칭, 연락처, 커리어 교육이 연결된다.",
+      "businessEvidence": "Teal+ 구독과 커리어 도구·교육 콘텐츠가 확인된다.",
+      "portability": "보드·일정은 이식 가능하지만 공고 분석·이력서 최적화는 전문 기능이다.",
+      "flowmeDelta": "공개 직무별 지원 체크리스트를 공고 URL·목표일만 받아 상태형 Flow로 실행할 수 있다.",
+      "followabilityNote": "지원 단계와 후속 날짜가 다음 행동을 만든다.",
+      "minimumInputNote": "공고 URL 하나로 시작한 뒤 상태를 보완할 수 있다.",
+      "generatedPlanNote": "지원 보드와 후속 일정이 명확하다.",
+      "nextActionNote": "기한이 있는 후속 행동이 선명하다.",
+      "editNote": "상태 이동과 보류가 자연스럽다.",
+      "portfolioNote": "지원 전 과정 콘텐츠와 도구가 깊다.",
+      "businessNote": "커리어 제작자·코치의 체크리스트와 제휴 가능성이 있으나 확인된 계약은 없다.",
+      "portabilityNote": "체크리스트·시트·캘린더 이식성이 높다.",
+      "flowmeDeltaNote": "이력서 AI 분석을 만들지 않고 실행 순서와 출처를 제공한다.",
+      "evidenceNote": "공식 지원 문서와 제품 페이지를 확인했다.",
+      "serviceRelationship": "ux_logic_benchmark_only",
+      "finalDecision": "go",
+      "opportunityId": "opp-career-application",
+      "transferablePatterns": [
+        "URL 하나로 카드 생성",
+        "상태가 바뀌면 다음 행동 전환",
+        "후속 날짜를 선택 입력으로"
+      ],
+      "doNotBuild": [
+        "이력서 ATS 점수 엔진",
+        "채용공고 데이터베이스 복제"
+      ],
+      "evidenceSources": [
+        {
+          "label": "Teal Job Tracker Help",
+          "url": "https://help.tealhq.com/en/articles/14435727-how-to-track-your-job-applications",
+          "type": "support_doc",
+          "claim": "공고 저장, 지원 단계, 후속 날짜, 메모와 다음 행동을 설명한다.",
+          "checkedAt": "2026-07-28"
+        },
+        {
+          "label": "Teal Job Application Tracker",
+          "url": "https://www.tealhq.com/tools/job-application-tracker",
+          "type": "official_web",
+          "claim": "지원 보드와 상태 추적 기능을 소개한다.",
+          "checkedAt": "2026-07-28"
+        }
+      ],
+      "screenshots": [
+        {
+          "id": "teal-01",
+          "title": "지원 추적 도움말",
+          "url": "https://help.tealhq.com/en/articles/14435727-how-to-track-your-job-applications",
+          "evidenceType": "support_doc",
+          "file": "2026-07-28-vertical-execution-service-assets/teal-01.png",
+          "verificationLevel": "support_doc_verified"
+        },
+        {
+          "id": "teal-02",
+          "title": "지원 보드 소개",
+          "url": "https://www.tealhq.com/how-it-works",
+          "evidenceType": "official_web",
+          "file": "2026-07-28-vertical-execution-service-assets/teal-02.png",
+          "verificationLevel": "public_web_verified"
+        }
+      ],
+      "scoreValues": [
+        9,
+        10,
+        9,
+        10,
+        10,
+        9,
+        8,
+        8,
+        9,
+        9
+      ],
+      "scores": {
+        "followabilityScore": {
+          "score": 9,
+          "comment": "Teal은(는) '공고 저장 → 지원 단계 → 후속 날짜·메모 → 오늘 다음 행동' 흐름으로 다음 행동을 이어 준다. 지원 단계와 후속 날짜가 다음 행동을 만든다. (9/10)"
+        },
+        "minimumInputQuality": {
+          "score": 10,
+          "comment": "최초 입력은 채용 공고 URL, 현재 지원 단계이며 필수 1개다. 공고 URL 하나로 시작한 뒤 상태를 보완할 수 있다. (10/10)"
+        },
+        "generatedPlanClarity": {
+          "score": 9,
+          "comment": "입력 뒤 '지원 공고 보드, 단계, 후속 일정과 다음 행동'가 생성된다. 지원 보드와 후속 일정이 명확하다. (9/10)"
+        },
+        "nextActionClarity": {
+          "score": 10,
+          "comment": "실행 화면의 다음 행동은 '가장 가까운 후속 일정의 지원 행동 수행'이다. 기한이 있는 후속 행동이 선명하다. (10/10)"
+        },
+        "editRescheduleFlexibility": {
+          "score": 10,
+          "comment": "상태를 이동하고 후속 날짜·메모를 수정한다. 상태 이동과 보류가 자연스럽다. (10/10)"
+        },
+        "contentPortfolioDepth": {
+          "score": 9,
+          "comment": "공고 추적, 이력서, 키워드 매칭, 연락처, 커리어 교육이 연결된다. 지원 전 과정 콘텐츠와 도구가 깊다. (9/10)"
+        },
+        "creatorBusinessLoop": {
+          "score": 8,
+          "comment": "Teal+ 구독과 커리어 도구·교육 콘텐츠가 확인된다. 커리어 제작자·코치의 체크리스트와 제휴 가능성이 있으나 확인된 계약은 없다. (8/10)"
+        },
+        "portabilityGap": {
+          "score": 8,
+          "comment": "보드·일정은 이식 가능하지만 공고 분석·이력서 최적화는 전문 기능이다. 체크리스트·시트·캘린더 이식성이 높다. 점수가 높을수록 외부 도구로 옮길 여지가 크다. (8/10)"
+        },
+        "flowmeValueDelta": {
+          "score": 9,
+          "comment": "공개 직무별 지원 체크리스트를 공고 URL·목표일만 받아 상태형 Flow로 실행할 수 있다. 이력서 AI 분석을 만들지 않고 실행 순서와 출처를 제공한다. (9/10)"
+        },
+        "evidenceConfidence": {
+          "score": 9,
+          "comment": "공식·지원·앱스토어 근거 2건을 2026-07-28 확인했다. 공식 지원 문서와 제품 페이지를 확인했다. (9/10)"
+        }
+      },
+      "evidenceLevels": [
+        "support_doc_verified",
+        "public_web_verified"
+      ],
+      "userCommunicationEvidence": {
+        "status": "testimonial_surface_verified",
+        "observed": "공식 How it works 페이지에 사용자 후기가 노출되고 지원 지식베이스가 최신 사용법을 제공한다.",
+        "creatorResponse": "개별 커리어 제작자와 사용자의 공개 답변 구조는 확인하지 못했다.",
+        "sourceUrl": "https://www.tealhq.com/how-it-works"
+      },
+      "businessEvidenceRecord": {
+        "observed": "Teal+ 구독과 커리어 도구·교육 콘텐츠가 확인된다.",
+        "internalAssessment": "커리어 제작자·코치의 체크리스트와 제휴 가능성이 있으나 확인된 계약은 없다.",
+        "unknown": "실제 제휴 의사·전환율·매출 기여는 확인하지 않았으며 사업 가설로 승격하지 않는다."
+      },
+      "observationInferenceBoundary": {
+        "observedFacts": [
+          "공고 저장, 지원 단계, 후속 날짜, 메모와 다음 행동을 설명한다.",
+          "지원 보드와 상태 추적 기능을 소개한다."
+        ],
+        "flowmeInference": "공개 직무별 지원 체크리스트를 공고 URL·목표일만 받아 상태형 Flow로 실행할 수 있다.",
+        "unknowns": [
+          "로그인 후 개인화 결과",
+          "실제 사용자의 장기 완주율",
+          "제작자·서비스의 제휴 의사"
+        ]
+      },
+      "verificationBoundary": "공개 웹·공식 지원 문서·앱스토어 설명만 확인했다. 로그인 후 개인화 결과는 in_app_verified가 아니다.",
+      "compression": {
+        "userMoment": "여러 채용 공고의 지원 상태와 다음 행동을 놓치지 않고 싶을 때",
+        "naturalArtifact": "지원 공고 보드, 단계, 후속 일정과 다음 행동",
+        "minimumAnchor": [
+          "채용 공고 URL"
+        ],
+        "stage0Behavior": "공고를 저장하면 보드에 카드가 생기고 상태·후속 날짜를 나중에 보완한다.",
+        "serviceRelationship": "ux_logic_benchmark_only",
+        "contentDiscoveryOpportunity": "opp-career-application",
+        "doNotBuildBoundary": "이력서 ATS 점수 엔진 / 채용공고 데이터베이스 복제",
+        "finalDecision": "go"
+      }
+    },
+    {
+      "id": "huntr",
+      "name": "Huntr",
+      "category": "work_career",
+      "deepDive": false,
+      "platforms": [
+        "Web",
+        "Browser extension"
+      ],
+      "executionPattern": "state_to_follow_up",
+      "userMoment": "구직 공고·활동·연락처·문서를 한 보드에서 관리하고 싶을 때",
+      "coreLoop": [
+        "공고 저장",
+        "단계 보드",
+        "활동 기록",
+        "분석·후속"
+      ],
+      "initialInputs": [
+        {
+          "name": "채용 공고",
+          "required": true,
+          "reason": "지원 대상"
+        }
+      ],
+      "generatedArtifact": "지원 보드, 활동, 연락처, 문서와 진행 지표",
+      "nextAction": "현재 단계의 다음 지원 활동 수행",
+      "stage0Behavior": "공고 카드부터 만들고 나머지 정보를 점진적으로 추가한다.",
+      "editBehavior": "카드를 단계별로 이동하고 활동·문서를 추가한다.",
+      "portfolioDepth": "지원 추적과 이력서 도구가 연결된다.",
+      "businessEvidence": "구직자 구독과 대학·조직용 솔루션이 확인된다.",
+      "portability": "보드와 시트는 이식 가능하지만 분석·문서 도구는 서비스 안에 남는다.",
+      "flowmeDelta": "지원 체크리스트를 특정 공고 카드와 결합해 캘린더·시트로 내보낼 수 있다.",
+      "followabilityNote": "단계는 선명하지만 다음 행동은 사용자가 일부 정해야 한다.",
+      "minimumInputNote": "공고 하나로 시작 가능하다.",
+      "generatedPlanNote": "보드 산출물은 명확하다.",
+      "nextActionNote": "상태만으로 자동 다음 행동이 완전히 정해지지는 않는다.",
+      "editNote": "칸반 이동과 활동 추가가 유연하다.",
+      "portfolioNote": "구직 관리 범위가 충분하다.",
+      "businessNote": "콘텐츠 파트너보다 실행 도구 벤치마크다.",
+      "portabilityNote": "시트·캘린더 이식 기회가 높다.",
+      "flowmeDeltaNote": "정형 지원 Flow를 결합할 때 가치가 생긴다.",
+      "evidenceNote": "공식 도움말과 제품 페이지를 확인했다.",
+      "serviceRelationship": "ux_logic_benchmark_only",
+      "finalDecision": "benchmark",
+      "opportunityId": "opp-career-application",
+      "transferablePatterns": [
+        "공고 카드부터 생성",
+        "단계 이동과 활동 로그 분리"
+      ],
+      "doNotBuild": [
+        "이력서 생성 엔진",
+        "조직용 채용 CRM"
+      ],
+      "evidenceSources": [
+        {
+          "label": "Huntr Job Tracker Help",
+          "url": "https://help.huntr.co/en/articles/9883324-job-tracker",
+          "type": "support_doc",
+          "claim": "보드, 공고 카드, 활동, 지표, 연락처·문서를 설명한다.",
+          "checkedAt": "2026-07-28"
+        },
+        {
+          "label": "Huntr 공식 사이트",
+          "url": "https://huntr.co/",
+          "type": "official_web",
+          "claim": "구직 추적과 이력서 도구를 소개한다.",
+          "checkedAt": "2026-07-28"
+        }
+      ],
+      "screenshots": [],
+      "scoreValues": [
+        8,
+        10,
+        9,
+        7,
+        10,
+        8,
+        7,
+        8,
+        8,
+        9
+      ],
+      "scores": {
+        "followabilityScore": {
+          "score": 8,
+          "comment": "Huntr은(는) '공고 저장 → 단계 보드 → 활동 기록 → 분석·후속' 흐름으로 다음 행동을 이어 준다. 단계는 선명하지만 다음 행동은 사용자가 일부 정해야 한다. (8/10)"
+        },
+        "minimumInputQuality": {
+          "score": 10,
+          "comment": "최초 입력은 채용 공고이며 필수 1개다. 공고 하나로 시작 가능하다. (10/10)"
+        },
+        "generatedPlanClarity": {
+          "score": 9,
+          "comment": "입력 뒤 '지원 보드, 활동, 연락처, 문서와 진행 지표'가 생성된다. 보드 산출물은 명확하다. (9/10)"
+        },
+        "nextActionClarity": {
+          "score": 7,
+          "comment": "실행 화면의 다음 행동은 '현재 단계의 다음 지원 활동 수행'이다. 상태만으로 자동 다음 행동이 완전히 정해지지는 않는다. (7/10)"
+        },
+        "editRescheduleFlexibility": {
+          "score": 10,
+          "comment": "카드를 단계별로 이동하고 활동·문서를 추가한다. 칸반 이동과 활동 추가가 유연하다. (10/10)"
+        },
+        "contentPortfolioDepth": {
+          "score": 8,
+          "comment": "지원 추적과 이력서 도구가 연결된다. 구직 관리 범위가 충분하다. (8/10)"
+        },
+        "creatorBusinessLoop": {
+          "score": 7,
+          "comment": "구직자 구독과 대학·조직용 솔루션이 확인된다. 콘텐츠 파트너보다 실행 도구 벤치마크다. (7/10)"
+        },
+        "portabilityGap": {
+          "score": 8,
+          "comment": "보드와 시트는 이식 가능하지만 분석·문서 도구는 서비스 안에 남는다. 시트·캘린더 이식 기회가 높다. 점수가 높을수록 외부 도구로 옮길 여지가 크다. (8/10)"
+        },
+        "flowmeValueDelta": {
+          "score": 8,
+          "comment": "지원 체크리스트를 특정 공고 카드와 결합해 캘린더·시트로 내보낼 수 있다. 정형 지원 Flow를 결합할 때 가치가 생긴다. (8/10)"
+        },
+        "evidenceConfidence": {
+          "score": 9,
+          "comment": "공식·지원·앱스토어 근거 2건을 2026-07-28 확인했다. 공식 도움말과 제품 페이지를 확인했다. (9/10)"
+        }
+      },
+      "evidenceLevels": [
+        "support_doc_verified",
+        "public_web_verified"
+      ],
+      "userCommunicationEvidence": {
+        "status": "support_content_verified",
+        "observed": "공식 도움말은 상세하지만 공개 사용자 후기·질문과 운영자 답변 연결은 확인하지 못했다.",
+        "creatorResponse": "unknown",
+        "sourceUrl": "https://help.huntr.co/en/articles/9883324-job-tracker"
+      },
+      "businessEvidenceRecord": {
+        "observed": "구직자 구독과 대학·조직용 솔루션이 확인된다.",
+        "internalAssessment": "콘텐츠 파트너보다 실행 도구 벤치마크다.",
+        "unknown": "실제 제휴 의사·전환율·매출 기여는 확인하지 않았으며 사업 가설로 승격하지 않는다."
+      },
+      "observationInferenceBoundary": {
+        "observedFacts": [
+          "보드, 공고 카드, 활동, 지표, 연락처·문서를 설명한다.",
+          "구직 추적과 이력서 도구를 소개한다."
+        ],
+        "flowmeInference": "지원 체크리스트를 특정 공고 카드와 결합해 캘린더·시트로 내보낼 수 있다.",
+        "unknowns": [
+          "로그인 후 개인화 결과",
+          "실제 사용자의 장기 완주율",
+          "제작자·서비스의 제휴 의사"
+        ]
+      },
+      "verificationBoundary": "공개 웹·공식 지원 문서·앱스토어 설명만 확인했다. 로그인 후 개인화 결과는 in_app_verified가 아니다.",
+      "compression": {
+        "userMoment": "구직 공고·활동·연락처·문서를 한 보드에서 관리하고 싶을 때",
+        "naturalArtifact": "지원 보드, 활동, 연락처, 문서와 진행 지표",
+        "minimumAnchor": [
+          "채용 공고"
+        ],
+        "stage0Behavior": "공고 카드부터 만들고 나머지 정보를 점진적으로 추가한다.",
+        "serviceRelationship": "ux_logic_benchmark_only",
+        "contentDiscoveryOpportunity": "opp-career-application",
+        "doNotBuildBoundary": "이력서 생성 엔진 / 조직용 채용 CRM",
+        "finalDecision": "benchmark"
+      }
+    },
+    {
+      "id": "planta",
+      "name": "Planta",
+      "category": "hobby_pet",
+      "deepDive": true,
+      "platforms": [
+        "iOS",
+        "Android"
+      ],
+      "executionPattern": "environment_to_maintenance",
+      "userMoment": "식물마다 다른 물주기·비료·분갈이 시점을 놓치지 않고 싶을 때",
+      "coreLoop": [
+        "식물 등록·환경",
+        "개별 관리 일정",
+        "오늘 관리",
+        "완료·다음 일정"
+      ],
+      "initialInputs": [
+        {
+          "name": "식물 종류",
+          "required": true,
+          "reason": "관리 기준"
+        },
+        {
+          "name": "위치·빛·화분 환경",
+          "required": true,
+          "reason": "주기 조정"
+        }
+      ],
+      "generatedArtifact": "식물별 물주기·비료·분무·분갈이 관리 일정",
+      "nextAction": "오늘 기한이 된 식물 관리 작업 완료",
+      "stage0Behavior": "식물을 등록하면 기본 관리 일정을 먼저 만들고 환경 정보를 보완한다.",
+      "editBehavior": "사용자 맞춤 일정을 만들거나 환경·작업 주기를 바꾼다.",
+      "portfolioDepth": "식물 데이터베이스, 진단, 관리 일정, 커뮤니티·Care Share가 연결된다.",
+      "businessEvidence": "Premium 구독과 식물 관리 콘텐츠가 확인되며 공식 사이트는 700만 사용자를 주장한다.",
+      "portability": "식물 일정은 캘린더로 옮길 수 있지만 진단·날씨 계산은 앱 고유다.",
+      "flowmeDelta": "전문가·식물 판매자의 공개 관리표를 식물 종류와 시작일만 받아 반복 Flow로 제공할 수 있다.",
+      "followabilityNote": "오늘 관리 작업이 식물별로 명확하다.",
+      "minimumInputNote": "식물과 환경 입력은 주기 정확도에 필요하다.",
+      "generatedPlanNote": "작업 종류와 다음 날짜가 선명하다.",
+      "nextActionNote": "오늘 물주기 등 한 행동이 보인다.",
+      "editNote": "맞춤 일정과 환경 수정이 가능하다.",
+      "portfolioNote": "식물별 콘텐츠와 관리 작업이 매우 깊다.",
+      "businessNote": "판매자·전문가가 구매 후 관리 Flow를 공유할 이유가 있다.",
+      "portabilityNote": "반복 캘린더·체크리스트 이식성이 높다.",
+      "flowmeDeltaNote": "식물 진단·날씨 계산은 만들지 않는다.",
+      "evidenceNote": "공식 사이트와 맞춤 일정 도움말을 확인했다.",
+      "serviceRelationship": "creator_partner_candidate",
+      "finalDecision": "go",
+      "opportunityId": "opp-care-routine",
+      "transferablePatterns": [
+        "대상 하나 등록 후 반복 일정 생성",
+        "오늘 관리와 다음 날짜 동시 표시",
+        "판매 후 관리 링크"
+      ],
+      "doNotBuild": [
+        "사진 기반 질병 진단",
+        "날씨·토양 계산 엔진"
+      ],
+      "evidenceSources": [
+        {
+          "label": "Planta 공식 사이트",
+          "url": "https://getplanta.com/?language=en",
+          "type": "official_web",
+          "claim": "식물별 관리 일정, 30개 이상 변수, 관리 작업, 커뮤니티를 소개한다.",
+          "checkedAt": "2026-07-28"
+        },
+        {
+          "label": "Planta Custom Schedule Help",
+          "url": "https://support.getplanta.com/how-do-i-create-a-custom-care-schedule-for-a-plant/",
+          "type": "support_doc",
+          "claim": "맞춤 관리 일정 생성 방법을 설명한다.",
+          "checkedAt": "2026-07-28"
+        }
+      ],
+      "screenshots": [
+        {
+          "id": "planta-01",
+          "title": "식물별 관리 일정 소개",
+          "url": "https://getplanta.com/?language=en",
+          "evidenceType": "official_web",
+          "file": "2026-07-28-vertical-execution-service-assets/planta-01.png",
+          "verificationLevel": "public_web_verified"
+        },
+        {
+          "id": "planta-02",
+          "title": "맞춤 일정 도움말",
+          "url": "https://support.getplanta.com/how-do-i-create-a-custom-care-schedule-for-a-plant/",
+          "evidenceType": "support_doc",
+          "file": "2026-07-28-vertical-execution-service-assets/planta-02.png",
+          "verificationLevel": "support_doc_verified"
+        }
+      ],
+      "scoreValues": [
+        9,
+        7,
+        9,
+        9,
+        9,
+        10,
+        9,
+        8,
+        9,
+        9
+      ],
+      "scores": {
+        "followabilityScore": {
+          "score": 9,
+          "comment": "Planta은(는) '식물 등록·환경 → 개별 관리 일정 → 오늘 관리 → 완료·다음 일정' 흐름으로 다음 행동을 이어 준다. 오늘 관리 작업이 식물별로 명확하다. (9/10)"
+        },
+        "minimumInputQuality": {
+          "score": 7,
+          "comment": "최초 입력은 식물 종류, 위치·빛·화분 환경이며 필수 2개다. 식물과 환경 입력은 주기 정확도에 필요하다. (7/10)"
+        },
+        "generatedPlanClarity": {
+          "score": 9,
+          "comment": "입력 뒤 '식물별 물주기·비료·분무·분갈이 관리 일정'가 생성된다. 작업 종류와 다음 날짜가 선명하다. (9/10)"
+        },
+        "nextActionClarity": {
+          "score": 9,
+          "comment": "실행 화면의 다음 행동은 '오늘 기한이 된 식물 관리 작업 완료'이다. 오늘 물주기 등 한 행동이 보인다. (9/10)"
+        },
+        "editRescheduleFlexibility": {
+          "score": 9,
+          "comment": "사용자 맞춤 일정을 만들거나 환경·작업 주기를 바꾼다. 맞춤 일정과 환경 수정이 가능하다. (9/10)"
+        },
+        "contentPortfolioDepth": {
+          "score": 10,
+          "comment": "식물 데이터베이스, 진단, 관리 일정, 커뮤니티·Care Share가 연결된다. 식물별 콘텐츠와 관리 작업이 매우 깊다. (10/10)"
+        },
+        "creatorBusinessLoop": {
+          "score": 9,
+          "comment": "Premium 구독과 식물 관리 콘텐츠가 확인되며 공식 사이트는 700만 사용자를 주장한다. 판매자·전문가가 구매 후 관리 Flow를 공유할 이유가 있다. (9/10)"
+        },
+        "portabilityGap": {
+          "score": 8,
+          "comment": "식물 일정은 캘린더로 옮길 수 있지만 진단·날씨 계산은 앱 고유다. 반복 캘린더·체크리스트 이식성이 높다. 점수가 높을수록 외부 도구로 옮길 여지가 크다. (8/10)"
+        },
+        "flowmeValueDelta": {
+          "score": 9,
+          "comment": "전문가·식물 판매자의 공개 관리표를 식물 종류와 시작일만 받아 반복 Flow로 제공할 수 있다. 식물 진단·날씨 계산은 만들지 않는다. (9/10)"
+        },
+        "evidenceConfidence": {
+          "score": 9,
+          "comment": "공식·지원·앱스토어 근거 2건을 2026-07-28 확인했다. 공식 사이트와 맞춤 일정 도움말을 확인했다. (9/10)"
+        }
+      },
+      "evidenceLevels": [
+        "public_web_verified",
+        "support_doc_verified"
+      ],
+      "userCommunicationEvidence": {
+        "status": "community_feature_verified",
+        "observed": "공식 사이트가 Community와 Care Share 기능을 안내한다.",
+        "creatorResponse": "전문가·판매자 응답 구조와 공개 대화 품질은 확인하지 못했다.",
+        "sourceUrl": "https://getplanta.com/?language=en"
+      },
+      "businessEvidenceRecord": {
+        "observed": "Premium 구독과 식물 관리 콘텐츠가 확인되며 공식 사이트는 700만 사용자를 주장한다.",
+        "internalAssessment": "판매자·전문가가 구매 후 관리 Flow를 공유할 이유가 있다.",
+        "unknown": "실제 제휴 의사·전환율·매출 기여는 확인하지 않았으며 사업 가설로 승격하지 않는다."
+      },
+      "observationInferenceBoundary": {
+        "observedFacts": [
+          "식물별 관리 일정, 30개 이상 변수, 관리 작업, 커뮤니티를 소개한다.",
+          "맞춤 관리 일정 생성 방법을 설명한다."
+        ],
+        "flowmeInference": "전문가·식물 판매자의 공개 관리표를 식물 종류와 시작일만 받아 반복 Flow로 제공할 수 있다.",
+        "unknowns": [
+          "로그인 후 개인화 결과",
+          "실제 사용자의 장기 완주율",
+          "제작자·서비스의 제휴 의사"
+        ]
+      },
+      "verificationBoundary": "공개 웹·공식 지원 문서·앱스토어 설명만 확인했다. 로그인 후 개인화 결과는 in_app_verified가 아니다.",
+      "compression": {
+        "userMoment": "식물마다 다른 물주기·비료·분갈이 시점을 놓치지 않고 싶을 때",
+        "naturalArtifact": "식물별 물주기·비료·분무·분갈이 관리 일정",
+        "minimumAnchor": [
+          "식물 종류",
+          "위치·빛·화분 환경"
+        ],
+        "stage0Behavior": "식물을 등록하면 기본 관리 일정을 먼저 만들고 환경 정보를 보완한다.",
+        "serviceRelationship": "creator_partner_candidate",
+        "contentDiscoveryOpportunity": "opp-care-routine",
+        "doNotBuildBoundary": "사진 기반 질병 진단 / 날씨·토양 계산 엔진",
+        "finalDecision": "go"
+      }
+    },
+    {
+      "id": "dogo",
+      "name": "Dogo",
+      "category": "hobby_pet",
+      "deepDive": false,
+      "platforms": [
+        "iOS",
+        "Android"
+      ],
+      "executionPattern": "profile_to_daily_plan",
+      "userMoment": "반려견 문제와 수준에 맞춰 매일 짧게 훈련하고 싶을 때",
+      "coreLoop": [
+        "반려견 프로필·목표",
+        "맞춤 프로그램",
+        "일일 훈련",
+        "진도·트레이너 피드백"
+      ],
+      "initialInputs": [
+        {
+          "name": "반려견 나이·수준",
+          "required": true,
+          "reason": "훈련 선택"
+        },
+        {
+          "name": "훈련 목표/문제",
+          "required": true,
+          "reason": "프로그램 추천"
+        }
+      ],
+      "generatedArtifact": "맞춤 훈련 프로그램과 일일 세션",
+      "nextAction": "오늘 추천 훈련 세션 실행",
+      "stage0Behavior": "퀴즈로 목표를 고른 뒤 계획을 보여준다.",
+      "editBehavior": "진도와 추천에 따라 다음 훈련을 이어간다.",
+      "portfolioDepth": "100개 이상 과정·트릭, 훈련사 피드백, 커뮤니티가 연결된다.",
+      "businessEvidence": "구독과 전문 훈련사 피드백이 확인된다.",
+      "portability": "영상·전문 피드백은 앱 안에 남고 일정은 이식 가능하다.",
+      "flowmeDelta": "공개 훈련사 콘텐츠를 목표별 짧은 루틴으로 일정화하고 원문 링크를 보존할 수 있다.",
+      "followabilityNote": "오늘 훈련과 다음 과정이 명확하다.",
+      "minimumInputNote": "프로필과 목표 두 입력이 계획에 직접 쓰인다.",
+      "generatedPlanNote": "프로그램 결과가 선명하다.",
+      "nextActionNote": "오늘 세션이 바로 보인다.",
+      "editNote": "개인화 세부는 공개 자료로 제한적으로 확인된다.",
+      "portfolioNote": "훈련 과정과 커뮤니티가 깊다.",
+      "businessNote": "훈련사 파트너 기회가 있으나 허가·안전 검토가 필요하다.",
+      "portabilityNote": "캘린더·루틴으로 옮길 여지가 있다.",
+      "flowmeDeltaNote": "행동 교정 진단이나 전문가 대체를 하지 않는다.",
+      "evidenceNote": "공식 사이트·앱스토어·온보딩을 확인했다.",
+      "serviceRelationship": "creator_partner_candidate",
+      "finalDecision": "partner",
+      "opportunityId": "opp-care-routine",
+      "transferablePatterns": [
+        "퀴즈 후 프로그램 미리보기",
+        "짧은 일일 세션"
+      ],
+      "doNotBuild": [
+        "행동 교정 진단",
+        "전문가 상담 대체"
+      ],
+      "evidenceSources": [
+        {
+          "label": "Dogo 공식 사이트",
+          "url": "https://dogo.app/",
+          "type": "official_web",
+          "claim": "맞춤 프로그램, 과정, 훈련사 피드백, 커뮤니티를 소개한다.",
+          "checkedAt": "2026-07-28"
+        },
+        {
+          "label": "Dogo App Store",
+          "url": "https://apps.apple.com/us/app/dogo-dog-training-clicker/id1153294767",
+          "type": "app_store",
+          "claim": "개인 추천, 알림, 진도를 설명한다.",
+          "checkedAt": "2026-07-28"
+        },
+        {
+          "label": "Dogo Plan Onboarding",
+          "url": "https://dogo.app/onboarding/plp/onboarding",
+          "type": "official_web",
+          "claim": "퀴즈 기반 계획 시작 흐름을 제공한다.",
+          "checkedAt": "2026-07-28"
+        }
+      ],
+      "screenshots": [],
+      "scoreValues": [
+        9,
+        8,
+        9,
+        9,
+        7,
+        9,
+        9,
+        7,
+        8,
+        8
+      ],
+      "scores": {
+        "followabilityScore": {
+          "score": 9,
+          "comment": "Dogo은(는) '반려견 프로필·목표 → 맞춤 프로그램 → 일일 훈련 → 진도·트레이너 피드백' 흐름으로 다음 행동을 이어 준다. 오늘 훈련과 다음 과정이 명확하다. (9/10)"
+        },
+        "minimumInputQuality": {
+          "score": 8,
+          "comment": "최초 입력은 반려견 나이·수준, 훈련 목표/문제이며 필수 2개다. 프로필과 목표 두 입력이 계획에 직접 쓰인다. (8/10)"
+        },
+        "generatedPlanClarity": {
+          "score": 9,
+          "comment": "입력 뒤 '맞춤 훈련 프로그램과 일일 세션'가 생성된다. 프로그램 결과가 선명하다. (9/10)"
+        },
+        "nextActionClarity": {
+          "score": 9,
+          "comment": "실행 화면의 다음 행동은 '오늘 추천 훈련 세션 실행'이다. 오늘 세션이 바로 보인다. (9/10)"
+        },
+        "editRescheduleFlexibility": {
+          "score": 7,
+          "comment": "진도와 추천에 따라 다음 훈련을 이어간다. 개인화 세부는 공개 자료로 제한적으로 확인된다. (7/10)"
+        },
+        "contentPortfolioDepth": {
+          "score": 9,
+          "comment": "100개 이상 과정·트릭, 훈련사 피드백, 커뮤니티가 연결된다. 훈련 과정과 커뮤니티가 깊다. (9/10)"
+        },
+        "creatorBusinessLoop": {
+          "score": 9,
+          "comment": "구독과 전문 훈련사 피드백이 확인된다. 훈련사 파트너 기회가 있으나 허가·안전 검토가 필요하다. (9/10)"
+        },
+        "portabilityGap": {
+          "score": 7,
+          "comment": "영상·전문 피드백은 앱 안에 남고 일정은 이식 가능하다. 캘린더·루틴으로 옮길 여지가 있다. 점수가 높을수록 외부 도구로 옮길 여지가 크다. (7/10)"
+        },
+        "flowmeValueDelta": {
+          "score": 8,
+          "comment": "공개 훈련사 콘텐츠를 목표별 짧은 루틴으로 일정화하고 원문 링크를 보존할 수 있다. 행동 교정 진단이나 전문가 대체를 하지 않는다. (8/10)"
+        },
+        "evidenceConfidence": {
+          "score": 8,
+          "comment": "공식·지원·앱스토어 근거 3건을 2026-07-28 확인했다. 공식 사이트·앱스토어·온보딩을 확인했다. (8/10)"
+        }
+      },
+      "evidenceLevels": [
+        "public_web_verified",
+        "app_store_verified"
+      ],
+      "userCommunicationEvidence": {
+        "status": "expert_feedback_and_community_verified",
+        "observed": "공식 사이트와 앱스토어가 전문 훈련사 피드백과 반려견 커뮤니티를 안내한다.",
+        "creatorResponse": "피드백 기능의 실제 응답 품질은 로그인 없이 검증하지 않았다.",
+        "sourceUrl": "https://dogo.app/"
+      },
+      "businessEvidenceRecord": {
+        "observed": "구독과 전문 훈련사 피드백이 확인된다.",
+        "internalAssessment": "훈련사 파트너 기회가 있으나 허가·안전 검토가 필요하다.",
+        "unknown": "실제 제휴 의사·전환율·매출 기여는 확인하지 않았으며 사업 가설로 승격하지 않는다."
+      },
+      "observationInferenceBoundary": {
+        "observedFacts": [
+          "맞춤 프로그램, 과정, 훈련사 피드백, 커뮤니티를 소개한다.",
+          "개인 추천, 알림, 진도를 설명한다.",
+          "퀴즈 기반 계획 시작 흐름을 제공한다."
+        ],
+        "flowmeInference": "공개 훈련사 콘텐츠를 목표별 짧은 루틴으로 일정화하고 원문 링크를 보존할 수 있다.",
+        "unknowns": [
+          "로그인 후 개인화 결과",
+          "실제 사용자의 장기 완주율",
+          "제작자·서비스의 제휴 의사"
+        ]
+      },
+      "verificationBoundary": "공개 웹·공식 지원 문서·앱스토어 설명만 확인했다. 로그인 후 개인화 결과는 in_app_verified가 아니다.",
+      "compression": {
+        "userMoment": "반려견 문제와 수준에 맞춰 매일 짧게 훈련하고 싶을 때",
+        "naturalArtifact": "맞춤 훈련 프로그램과 일일 세션",
+        "minimumAnchor": [
+          "반려견 나이·수준",
+          "훈련 목표/문제"
+        ],
+        "stage0Behavior": "퀴즈로 목표를 고른 뒤 계획을 보여준다.",
+        "serviceRelationship": "creator_partner_candidate",
+        "contentDiscoveryOpportunity": "opp-care-routine",
+        "doNotBuildBoundary": "행동 교정 진단 / 전문가 상담 대체",
+        "finalDecision": "partner"
+      }
+    },
+    {
+      "id": "hundeo",
+      "name": "Hundeo",
+      "category": "hobby_pet",
+      "deepDive": false,
+      "platforms": [
+        "iOS",
+        "Android"
+      ],
+      "executionPattern": "profile_to_daily_plan",
+      "userMoment": "견종·나이·문제에 맞는 반려견 교육을 매일 10~15분 따라 하고 싶을 때",
+      "coreLoop": [
+        "퀴즈",
+        "맞춤 계획",
+        "일일 영상",
+        "진도·계획 적응"
+      ],
+      "initialInputs": [
+        {
+          "name": "견종·나이",
+          "required": true,
+          "reason": "난이도"
+        },
+        {
+          "name": "행동 문제·목표",
+          "required": true,
+          "reason": "계획 추천"
+        }
+      ],
+      "generatedArtifact": "10~15분 일일 반려견 훈련 계획",
+      "nextAction": "오늘 추천 영상 훈련 실행",
+      "stage0Behavior": "퀴즈 뒤 추천 계획을 보여준다.",
+      "editBehavior": "사용자 속도와 진도에 맞춰 계획이 조정된다.",
+      "portfolioDepth": "훈련·건강·영양 콘텐츠가 연결된다.",
+      "businessEvidence": "구독과 전문가 콘텐츠가 확인되며 공식 사이트는 100만 다운로드를 주장한다.",
+      "portability": "영상·전문 콘텐츠는 서비스 안에 남는다.",
+      "flowmeDelta": "공개 훈련 시리즈를 10분 루틴과 원문 링크로 실행할 수 있다.",
+      "followabilityNote": "일일 시간과 영상 세션이 분명하다.",
+      "minimumInputNote": "프로필 두 축이 추천에 필요하다.",
+      "generatedPlanNote": "짧은 일일 계획이 명확하다.",
+      "nextActionNote": "오늘 영상이 선명하다.",
+      "editNote": "속도 적응은 고유 기능이다.",
+      "portfolioNote": "반려견 생활 전반으로 깊다.",
+      "businessNote": "전문가 콘텐츠 제휴 없이는 공개 전환할 수 없다.",
+      "portabilityNote": "일정만 이식 가능하다.",
+      "flowmeDeltaNote": "영상·전문 판단을 복제하지 않는다.",
+      "evidenceNote": "공식 사이트의 기능과 공개 이용 규모를 확인했다.",
+      "serviceRelationship": "creator_partner_candidate",
+      "finalDecision": "benchmark",
+      "opportunityId": "opp-care-routine",
+      "transferablePatterns": [
+        "10~15분 일일 세션",
+        "프로필 퀴즈 후 계획"
+      ],
+      "doNotBuild": [
+        "건강·영양 진단",
+        "유료 영상 복제"
+      ],
+      "evidenceSources": [
+        {
+          "label": "Hundeo 공식 사이트",
+          "url": "https://www.hundeo.com/en",
+          "type": "official_web",
+          "claim": "견종·나이·문제 퀴즈, 10~15분 일일 영상, 적응 계획을 설명한다.",
+          "checkedAt": "2026-07-28"
+        },
+        {
+          "label": "Hundeo App Store",
+          "url": "https://apps.apple.com/us/app/hundeo-dog-training/id1484373100",
+          "type": "app_store",
+          "claim": "훈련 프로그램과 진도 기능을 소개한다.",
+          "checkedAt": "2026-07-28"
+        }
+      ],
+      "screenshots": [],
+      "scoreValues": [
+        9,
+        8,
+        9,
+        9,
+        7,
+        9,
+        8,
+        7,
+        8,
+        8
+      ],
+      "scores": {
+        "followabilityScore": {
+          "score": 9,
+          "comment": "Hundeo은(는) '퀴즈 → 맞춤 계획 → 일일 영상 → 진도·계획 적응' 흐름으로 다음 행동을 이어 준다. 일일 시간과 영상 세션이 분명하다. (9/10)"
+        },
+        "minimumInputQuality": {
+          "score": 8,
+          "comment": "최초 입력은 견종·나이, 행동 문제·목표이며 필수 2개다. 프로필 두 축이 추천에 필요하다. (8/10)"
+        },
+        "generatedPlanClarity": {
+          "score": 9,
+          "comment": "입력 뒤 '10~15분 일일 반려견 훈련 계획'가 생성된다. 짧은 일일 계획이 명확하다. (9/10)"
+        },
+        "nextActionClarity": {
+          "score": 9,
+          "comment": "실행 화면의 다음 행동은 '오늘 추천 영상 훈련 실행'이다. 오늘 영상이 선명하다. (9/10)"
+        },
+        "editRescheduleFlexibility": {
+          "score": 7,
+          "comment": "사용자 속도와 진도에 맞춰 계획이 조정된다. 속도 적응은 고유 기능이다. (7/10)"
+        },
+        "contentPortfolioDepth": {
+          "score": 9,
+          "comment": "훈련·건강·영양 콘텐츠가 연결된다. 반려견 생활 전반으로 깊다. (9/10)"
+        },
+        "creatorBusinessLoop": {
+          "score": 8,
+          "comment": "구독과 전문가 콘텐츠가 확인되며 공식 사이트는 100만 다운로드를 주장한다. 전문가 콘텐츠 제휴 없이는 공개 전환할 수 없다. (8/10)"
+        },
+        "portabilityGap": {
+          "score": 7,
+          "comment": "영상·전문 콘텐츠는 서비스 안에 남는다. 일정만 이식 가능하다. 점수가 높을수록 외부 도구로 옮길 여지가 크다. (7/10)"
+        },
+        "flowmeValueDelta": {
+          "score": 8,
+          "comment": "공개 훈련 시리즈를 10분 루틴과 원문 링크로 실행할 수 있다. 영상·전문 판단을 복제하지 않는다. (8/10)"
+        },
+        "evidenceConfidence": {
+          "score": 8,
+          "comment": "공식·지원·앱스토어 근거 2건을 2026-07-28 확인했다. 공식 사이트의 기능과 공개 이용 규모를 확인했다. (8/10)"
+        }
+      },
+      "evidenceLevels": [
+        "public_web_verified",
+        "app_store_verified"
+      ],
+      "userCommunicationEvidence": {
+        "status": "review_surface_verified",
+        "observed": "공식 사이트의 이용 규모 주장과 App Store 공개 리뷰 표면이 존재한다.",
+        "creatorResponse": "전문가의 공개 질문 답변 구조는 확인하지 못했다.",
+        "sourceUrl": "https://www.hundeo.com/en"
+      },
+      "businessEvidenceRecord": {
+        "observed": "구독과 전문가 콘텐츠가 확인되며 공식 사이트는 100만 다운로드를 주장한다.",
+        "internalAssessment": "전문가 콘텐츠 제휴 없이는 공개 전환할 수 없다.",
+        "unknown": "실제 제휴 의사·전환율·매출 기여는 확인하지 않았으며 사업 가설로 승격하지 않는다."
+      },
+      "observationInferenceBoundary": {
+        "observedFacts": [
+          "견종·나이·문제 퀴즈, 10~15분 일일 영상, 적응 계획을 설명한다.",
+          "훈련 프로그램과 진도 기능을 소개한다."
+        ],
+        "flowmeInference": "공개 훈련 시리즈를 10분 루틴과 원문 링크로 실행할 수 있다.",
+        "unknowns": [
+          "로그인 후 개인화 결과",
+          "실제 사용자의 장기 완주율",
+          "제작자·서비스의 제휴 의사"
+        ]
+      },
+      "verificationBoundary": "공개 웹·공식 지원 문서·앱스토어 설명만 확인했다. 로그인 후 개인화 결과는 in_app_verified가 아니다.",
+      "compression": {
+        "userMoment": "견종·나이·문제에 맞는 반려견 교육을 매일 10~15분 따라 하고 싶을 때",
+        "naturalArtifact": "10~15분 일일 반려견 훈련 계획",
+        "minimumAnchor": [
+          "견종·나이",
+          "행동 문제·목표"
+        ],
+        "stage0Behavior": "퀴즈 뒤 추천 계획을 보여준다.",
+        "serviceRelationship": "creator_partner_candidate",
+        "contentDiscoveryOpportunity": "opp-care-routine",
+        "doNotBuildBoundary": "건강·영양 진단 / 유료 영상 복제",
+        "finalDecision": "benchmark"
+      }
+    },
+    {
+      "id": "cricut-design-space",
+      "name": "Cricut Design Space",
+      "category": "hobby_pet",
+      "deepDive": false,
+      "platforms": [
+        "Desktop",
+        "iOS",
+        "Android"
+      ],
+      "executionPattern": "content_to_guided_session",
+      "userMoment": "준비된 만들기 프로젝트를 골라 재료와 단계를 따라 완성하고 싶을 때",
+      "coreLoop": [
+        "프로젝트 선택",
+        "재료·미리보기",
+        "Make It",
+        "단계별 제작·완료"
+      ],
+      "initialInputs": [
+        {
+          "name": "Ready-to-Make 프로젝트",
+          "required": true,
+          "reason": "도안·단계 선택"
+        },
+        {
+          "name": "재료/기기",
+          "required": false,
+          "reason": "제작 조건"
+        }
+      ],
+      "generatedArtifact": "프로젝트 미리보기, 재료 정보, 기기별 제작 단계",
+      "nextAction": "Make It을 눌러 첫 제작 단계 시작",
+      "stage0Behavior": "완성 예시와 필요한 재료를 먼저 보고 시작한다.",
+      "editBehavior": "프로젝트를 개인화하거나 재료·크기를 조정한 뒤 제작한다.",
+      "portfolioDepth": "프로젝트·이미지·글꼴·커뮤니티 제작물 포트폴리오가 깊다.",
+      "businessEvidence": "기기·재료·Access 구독과 프로젝트가 직접 연결된다.",
+      "portability": "기기 제어·도안은 서비스 안에 남고 프로젝트 체크는 이식 가능하다.",
+      "flowmeDelta": "공개 DIY 제작자의 재료·단계·원문 링크를 날짜 없이 저장하고 나중에 일정화할 수 있다.",
+      "followabilityNote": "완성 예시에서 제작 단계로 이어진다.",
+      "minimumInputNote": "프로젝트 선택만으로 시작 가능하다.",
+      "generatedPlanNote": "재료와 단계가 분명하다.",
+      "nextActionNote": "첫 제작 단계가 선명하다.",
+      "editNote": "개인화는 가능하지만 기기 종속적이다.",
+      "portfolioNote": "프로젝트 공급망이 매우 깊다.",
+      "businessNote": "제작자·재료 판매 연결은 강하지만 도안 권리가 핵심 제약이다.",
+      "portabilityNote": "체크·메모는 옮길 수 있으나 도안은 불가하다.",
+      "flowmeDeltaNote": "도안을 복제하지 않고 준비·실행·원문 복귀만 지원한다.",
+      "evidenceNote": "공식 Ready-to-Make 도움말과 Design Space 안내를 확인했다.",
+      "serviceRelationship": "creator_partner_candidate",
+      "finalDecision": "partner",
+      "opportunityId": "opp-maker-project",
+      "transferablePatterns": [
+        "완성 예시와 재료를 먼저 표시",
+        "날짜 없는 저장 후 제작 일정화"
+      ],
+      "doNotBuild": [
+        "도안·이미지 라이브러리 복제",
+        "커팅 기기 제어"
+      ],
+      "evidenceSources": [
+        {
+          "label": "Cricut Ready-to-Make Help",
+          "url": "https://help.cricut.com/hc/en-us/articles/360009509593-Using-Ready-to-Make-Projects-in-Design-Space",
+          "type": "support_doc",
+          "claim": "준비된 프로젝트 선택, 미리보기, Make It 절차를 설명한다.",
+          "checkedAt": "2026-07-28"
+        },
+        {
+          "label": "Cricut Design Space",
+          "url": "https://cricut.com/en-us/apps",
+          "type": "official_web",
+          "claim": "Design Space 앱과 프로젝트 제작 흐름을 소개한다.",
+          "checkedAt": "2026-07-28"
+        }
+      ],
+      "screenshots": [],
+      "scoreValues": [
+        9,
+        9,
+        9,
+        9,
+        7,
+        10,
+        10,
+        6,
+        8,
+        9
+      ],
+      "scores": {
+        "followabilityScore": {
+          "score": 9,
+          "comment": "Cricut Design Space은(는) '프로젝트 선택 → 재료·미리보기 → Make It → 단계별 제작·완료' 흐름으로 다음 행동을 이어 준다. 완성 예시에서 제작 단계로 이어진다. (9/10)"
+        },
+        "minimumInputQuality": {
+          "score": 9,
+          "comment": "최초 입력은 Ready-to-Make 프로젝트, 재료/기기이며 필수 1개다. 프로젝트 선택만으로 시작 가능하다. (9/10)"
+        },
+        "generatedPlanClarity": {
+          "score": 9,
+          "comment": "입력 뒤 '프로젝트 미리보기, 재료 정보, 기기별 제작 단계'가 생성된다. 재료와 단계가 분명하다. (9/10)"
+        },
+        "nextActionClarity": {
+          "score": 9,
+          "comment": "실행 화면의 다음 행동은 'Make It을 눌러 첫 제작 단계 시작'이다. 첫 제작 단계가 선명하다. (9/10)"
+        },
+        "editRescheduleFlexibility": {
+          "score": 7,
+          "comment": "프로젝트를 개인화하거나 재료·크기를 조정한 뒤 제작한다. 개인화는 가능하지만 기기 종속적이다. (7/10)"
+        },
+        "contentPortfolioDepth": {
+          "score": 10,
+          "comment": "프로젝트·이미지·글꼴·커뮤니티 제작물 포트폴리오가 깊다. 프로젝트 공급망이 매우 깊다. (10/10)"
+        },
+        "creatorBusinessLoop": {
+          "score": 10,
+          "comment": "기기·재료·Access 구독과 프로젝트가 직접 연결된다. 제작자·재료 판매 연결은 강하지만 도안 권리가 핵심 제약이다. (10/10)"
+        },
+        "portabilityGap": {
+          "score": 6,
+          "comment": "기기 제어·도안은 서비스 안에 남고 프로젝트 체크는 이식 가능하다. 체크·메모는 옮길 수 있으나 도안은 불가하다. 점수가 높을수록 외부 도구로 옮길 여지가 크다. (6/10)"
+        },
+        "flowmeValueDelta": {
+          "score": 8,
+          "comment": "공개 DIY 제작자의 재료·단계·원문 링크를 날짜 없이 저장하고 나중에 일정화할 수 있다. 도안을 복제하지 않고 준비·실행·원문 복귀만 지원한다. (8/10)"
+        },
+        "evidenceConfidence": {
+          "score": 9,
+          "comment": "공식·지원·앱스토어 근거 2건을 2026-07-28 확인했다. 공식 Ready-to-Make 도움말과 Design Space 안내를 확인했다. (9/10)"
+        }
+      },
+      "evidenceLevels": [
+        "support_doc_verified",
+        "public_web_verified"
+      ],
+      "userCommunicationEvidence": {
+        "status": "creator_project_ecosystem_verified",
+        "observed": "공식 프로젝트 생태계와 커뮤니티 제작물 탐색 구조가 존재한다.",
+        "creatorResponse": "개별 프로젝트 제작자의 질문·수정 응답은 이번 공개 근거에서 확인하지 못했다.",
+        "sourceUrl": "https://cricut.com/en-us/apps"
+      },
+      "businessEvidenceRecord": {
+        "observed": "기기·재료·Access 구독과 프로젝트가 직접 연결된다.",
+        "internalAssessment": "제작자·재료 판매 연결은 강하지만 도안 권리가 핵심 제약이다.",
+        "unknown": "실제 제휴 의사·전환율·매출 기여는 확인하지 않았으며 사업 가설로 승격하지 않는다."
+      },
+      "observationInferenceBoundary": {
+        "observedFacts": [
+          "준비된 프로젝트 선택, 미리보기, Make It 절차를 설명한다.",
+          "Design Space 앱과 프로젝트 제작 흐름을 소개한다."
+        ],
+        "flowmeInference": "공개 DIY 제작자의 재료·단계·원문 링크를 날짜 없이 저장하고 나중에 일정화할 수 있다.",
+        "unknowns": [
+          "로그인 후 개인화 결과",
+          "실제 사용자의 장기 완주율",
+          "제작자·서비스의 제휴 의사"
+        ]
+      },
+      "verificationBoundary": "공개 웹·공식 지원 문서·앱스토어 설명만 확인했다. 로그인 후 개인화 결과는 in_app_verified가 아니다.",
+      "compression": {
+        "userMoment": "준비된 만들기 프로젝트를 골라 재료와 단계를 따라 완성하고 싶을 때",
+        "naturalArtifact": "프로젝트 미리보기, 재료 정보, 기기별 제작 단계",
+        "minimumAnchor": [
+          "Ready-to-Make 프로젝트"
+        ],
+        "stage0Behavior": "완성 예시와 필요한 재료를 먼저 보고 시작한다.",
+        "serviceRelationship": "creator_partner_candidate",
+        "contentDiscoveryOpportunity": "opp-maker-project",
+        "doNotBuildBoundary": "도안·이미지 라이브러리 복제 / 커팅 기기 제어",
+        "finalDecision": "partner"
+      }
+    }
+  ],
+  "deepDiveServiceIds": [
+    "sweepy",
+    "kinedu",
+    "duolingo",
+    "ynab",
+    "runna",
+    "wanderlog",
+    "the-knot",
+    "sidechef",
+    "teal",
+    "planta"
+  ],
+  "contentDiscoveryOpportunities": [
+    {
+      "id": "opp-home-routine",
+      "rank": 1,
+      "title": "공간·기간별 집 관리 루틴",
+      "category": "home_living",
+      "inspiredBy": [
+        "sweepy",
+        "tody"
+      ],
+      "sourceShape": "제작자 블로그·브랜드의 공간별 체크리스트, 주기표, 계절 관리표",
+      "creatorTypes": [
+        "살림 제작자",
+        "청소 서비스 브랜드",
+        "정리 전문가"
+      ],
+      "searchQueries": [
+        "주방 2주 청소 루틴 체크리스트",
+        "욕실 주간 청소표",
+        "계절별 집 관리 체크리스트"
+      ],
+      "requiredSourceRows": [
+        "공간",
+        "작업 제목",
+        "권장 주기 또는 원문 순서",
+        "원문 링크"
+      ],
+      "expectedInputs": [
+        "시작일 또는 반복 요일 0~1개"
+      ],
+      "naturalArtifact": "반복 체크리스트 + 캘린더",
+      "publicUseBoundary": "작업 제목·최소 주기·출처 링크만 사용하며 유료 표 전문과 자동 최적화 규칙은 복제하지 않는다.",
+      "decision": "go"
+    },
+    {
+      "id": "opp-age-play",
+      "rank": 2,
+      "title": "월령·목표별 2주 놀이 루틴",
+      "category": "family_parenting",
+      "inspiredBy": [
+        "kinedu",
+        "babysparks"
+      ],
+      "sourceShape": "공개 육아 활동 글·영상 시리즈와 월령·준비물·활동 목표",
+      "creatorTypes": [
+        "육아 활동 제작자",
+        "놀이 전문가",
+        "교구 브랜드"
+      ],
+      "searchQueries": [
+        "12개월 아기 놀이 2주",
+        "유아 소근육 놀이 영상 시리즈",
+        "집콕 놀이 월령별"
+      ],
+      "requiredSourceRows": [
+        "활동 제목",
+        "대상 월령",
+        "원문 URL",
+        "원문에 적힌 준비물/주의"
+      ],
+      "expectedInputs": [
+        "아이 월령 또는 시작일 1개"
+      ],
+      "naturalArtifact": "하루 한 활동 루틴 + 원문 링크",
+      "publicUseBoundary": "발달 진단을 하지 않고 공개 활동 메타데이터와 링크만 사용한다. 유료 영상은 제휴가 필요하다.",
+      "decision": "partner"
+    },
+    {
+      "id": "opp-learning-series",
+      "rank": 3,
+      "title": "제작자 강의·연습 시리즈 진도 Flow",
+      "category": "study_learning",
+      "inspiredBy": [
+        "duolingo",
+        "brilliant",
+        "yousician"
+      ],
+      "sourceShape": "공개 강의 재생목록, 회차형 튜토리얼, 악기·언어 연습 시리즈",
+      "creatorTypes": [
+        "교육 유튜버",
+        "강사",
+        "악기·언어 교육 브랜드"
+      ],
+      "searchQueries": [
+        "14일 영어 말하기 재생목록",
+        "기타 초보 10강 커리큘럼",
+        "무료 강의 주차별 계획"
+      ],
+      "requiredSourceRows": [
+        "회차 제목",
+        "순서",
+        "영상/글 URL",
+        "원문 학습 목표"
+      ],
+      "expectedInputs": [
+        "완료 목표일 또는 반복 요일 0~1개"
+      ],
+      "naturalArtifact": "회차 큐 + 오늘의 다음 학습",
+      "publicUseBoundary": "문항·자막·유료 강의 내용을 복제하지 않고 회차 제목·링크·진도만 제공한다.",
+      "decision": "go"
+    },
+    {
+      "id": "opp-training-program",
+      "rank": 4,
+      "title": "기간형 운동 프로그램 실행표",
+      "category": "health_fitness",
+      "inspiredBy": [
+        "runna",
+        "freeletics",
+        "nike-training-club"
+      ],
+      "sourceShape": "공개 코치 프로그램, 영상 재생목록, 주차·회차별 운동표",
+      "creatorTypes": [
+        "트레이너",
+        "러닝 코치",
+        "운동 채널·브랜드"
+      ],
+      "searchQueries": [
+        "5K 8주 훈련표 공식",
+        "홈트 4주 재생목록",
+        "초보 근력 2주 프로그램"
+      ],
+      "requiredSourceRows": [
+        "주차/회차",
+        "운동 제목",
+        "원문 URL",
+        "원문에 명시된 휴식·범위"
+      ],
+      "expectedInputs": [
+        "시작일 또는 목표일 1개"
+      ],
+      "naturalArtifact": "주차별 일정 + 오늘 세션",
+      "publicUseBoundary": "강도·부상 위험을 새로 계산하지 않고 원문 계획과 안전 안내를 그대로 추적한다.",
+      "decision": "go"
+    },
+    {
+      "id": "opp-event-dday",
+      "rank": 5,
+      "title": "제작자·브랜드 D-day 준비 타임라인",
+      "category": "travel_outings_events",
+      "inspiredBy": [
+        "the-knot"
+      ],
+      "sourceShape": "결혼·돌잔치·집들이·여행 준비 체크리스트와 원문 D-day 구간",
+      "creatorTypes": [
+        "행사 제작자",
+        "웨딩·여행 브랜드",
+        "지역 전문가"
+      ],
+      "searchQueries": [
+        "결혼 준비 체크리스트 D-180",
+        "돌잔치 준비 일정표",
+        "집들이 한달 전 체크리스트"
+      ],
+      "requiredSourceRows": [
+        "D-day 구간",
+        "체크 행동",
+        "업체/자료 링크",
+        "원문 조건"
+      ],
+      "expectedInputs": [
+        "행사일 1개"
+      ],
+      "naturalArtifact": "역산 캘린더 + 체크리스트",
+      "publicUseBoundary": "업체 마켓플레이스를 만들지 않고 제작자·업체 원문 유입을 보존한다.",
+      "decision": "partner"
+    },
+    {
+      "id": "opp-meal-plan",
+      "rank": 6,
+      "title": "레시피 묶음에서 식단·장보기·오늘 조리로",
+      "category": "meals_grocery",
+      "inspiredBy": [
+        "sidechef",
+        "samsung-food",
+        "mealime"
+      ],
+      "sourceShape": "제작자의 공개 레시피 시리즈, 식단표, 장보기표",
+      "creatorTypes": [
+        "요리 제작자",
+        "식품 브랜드",
+        "영양 전문가"
+      ],
+      "searchQueries": [
+        "일주일 식단표 장보기 리스트",
+        "이유식 2주 식단 재료표",
+        "한끼 레시피 재생목록"
+      ],
+      "requiredSourceRows": [
+        "식사/날짜",
+        "레시피 제목",
+        "원문 URL",
+        "원문 재료 묶음"
+      ],
+      "expectedInputs": [
+        "시작일 또는 식사 수 0~1개"
+      ],
+      "naturalArtifact": "식단 캘린더 + 통합 장보기 + 조리 링크",
+      "publicUseBoundary": "레시피 전문을 복제하지 않고 제목·링크·최소 재료 메타만 사용한다.",
+      "decision": "partner"
+    },
+    {
+      "id": "opp-career-application",
+      "rank": 7,
+      "title": "직무별 지원 준비·후속 Flow",
+      "category": "work_career",
+      "inspiredBy": [
+        "teal",
+        "huntr"
+      ],
+      "sourceShape": "커리어 코치의 지원 체크리스트, 면접 준비표, 직무별 포트폴리오 가이드",
+      "creatorTypes": [
+        "커리어 코치",
+        "채용 전문가",
+        "교육 브랜드"
+      ],
+      "searchQueries": [
+        "개발자 지원 체크리스트",
+        "면접 준비 7일 계획",
+        "신입 포트폴리오 제출 체크리스트"
+      ],
+      "requiredSourceRows": [
+        "지원 단계",
+        "체크 행동",
+        "후속 시점 또는 순서",
+        "원문 링크"
+      ],
+      "expectedInputs": [
+        "공고 URL 또는 면접일 0~1개"
+      ],
+      "naturalArtifact": "상태형 체크리스트 + 후속 캘린더",
+      "publicUseBoundary": "공고 데이터베이스·이력서 점수 엔진을 만들지 않고 실행 항목과 출처를 제공한다.",
+      "decision": "go"
+    },
+    {
+      "id": "opp-care-routine",
+      "rank": 8,
+      "title": "대상별 반복 관리 루틴",
+      "category": "hobby_pet",
+      "inspiredBy": [
+        "planta",
+        "dogo",
+        "hundeo"
+      ],
+      "sourceShape": "전문가·판매자의 식물 관리표 또는 반려 훈련 시리즈",
+      "creatorTypes": [
+        "식물 판매자·전문가",
+        "반려 훈련사",
+        "취미 브랜드"
+      ],
+      "searchQueries": [
+        "몬스테라 월별 관리표",
+        "강아지 14일 기본 훈련",
+        "식물 구매 후 관리 체크리스트"
+      ],
+      "requiredSourceRows": [
+        "대상",
+        "관리/훈련 행동",
+        "원문 주기·순서",
+        "원문 링크"
+      ],
+      "expectedInputs": [
+        "대상 이름과 시작일 1~2개"
+      ],
+      "naturalArtifact": "반복 관리 캘린더 또는 일일 훈련 루틴",
+      "publicUseBoundary": "진단·교정 판단을 하지 않고 공개 관리 주기·훈련 순서와 전문가 링크를 보존한다.",
+      "decision": "go"
+    }
+  ],
+  "captureEvidence": {
+    "file": "2026-07-28-vertical-execution-service-assets/capture-log.json",
+    "counts": {
+      "total": 20,
+      "filesPresent": 20,
+      "capturedPublicSurface": 20,
+      "accessLimited": 0
+    },
+    "results": [
+      {
+        "index": 1,
+        "workerId": 1,
+        "serviceId": "sweepy",
+        "serviceName": "Sweepy",
+        "screenshotId": "sweepy-01",
+        "requestedTitle": "공식 서비스 화면",
+        "requestedUrl": "https://sweepy.com/",
+        "finalUrl": "https://sweepy.com/",
+        "pageTitle": "Sweepy: Home Cleaning Schedule",
+        "evidenceType": "official_web",
+        "responseStatus": 200,
+        "bodyTextLength": 2683,
+        "screenshot": "2026-07-28-vertical-execution-service-assets/sweepy-01.png",
+        "screenshotBytes": 307353,
+        "status": "captured_public_surface",
+        "limitation": null,
+        "startedAt": "2026-07-28T01:48:23.479Z",
+        "capturedAt": "2026-07-28T01:48:29.709Z",
+        "verificationBoundary": "자동 캡처한 공개 화면이다. 로그인 안쪽 기능·개인화 결과·실제 사용자 행동을 검증하지 않는다."
+      },
+      {
+        "index": 2,
+        "workerId": 2,
+        "serviceId": "sweepy",
+        "serviceName": "Sweepy",
+        "screenshotId": "sweepy-02",
+        "requestedTitle": "앱스토어 기능 화면",
+        "requestedUrl": "https://apps.apple.com/us/app/sweepy-home-cleaning-schedule/id1498897320",
+        "finalUrl": "https://apps.apple.com/us/app/sweepy-home-cleaning-schedule/id1498897320",
+        "pageTitle": "‎Sweepy: Home Cleaning Schedule App - App Store",
+        "evidenceType": "app_store",
+        "responseStatus": 200,
+        "bodyTextLength": 10237,
+        "screenshot": "2026-07-28-vertical-execution-service-assets/sweepy-02.png",
+        "screenshotBytes": 577966,
+        "status": "captured_public_surface",
+        "limitation": null,
+        "startedAt": "2026-07-28T01:48:20.217Z",
+        "capturedAt": "2026-07-28T01:48:23.816Z",
+        "verificationBoundary": "자동 캡처한 공개 화면이다. 로그인 안쪽 기능·개인화 결과·실제 사용자 행동을 검증하지 않는다."
+      },
+      {
+        "index": 3,
+        "workerId": 2,
+        "serviceId": "kinedu",
+        "serviceName": "Kinedu",
+        "screenshotId": "kinedu-01",
+        "requestedTitle": "개인화 일일 활동 소개",
+        "requestedUrl": "https://www.kinedu.com/",
+        "finalUrl": "https://www.kinedu.com/",
+        "pageTitle": "Kinedu — Give your baby the best start",
+        "evidenceType": "official_web",
+        "responseStatus": 200,
+        "bodyTextLength": 7028,
+        "screenshot": "2026-07-28-vertical-execution-service-assets/kinedu-01.png",
+        "screenshotBytes": 296304,
+        "status": "captured_public_surface",
+        "limitation": null,
+        "startedAt": "2026-07-28T01:48:23.849Z",
+        "capturedAt": "2026-07-28T01:48:27.520Z",
+        "verificationBoundary": "자동 캡처한 공개 화면이다. 로그인 안쪽 기능·개인화 결과·실제 사용자 행동을 검증하지 않는다."
+      },
+      {
+        "index": 1,
+        "workerId": 1,
+        "serviceId": "kinedu",
+        "serviceName": "Kinedu",
+        "screenshotId": "kinedu-02",
+        "requestedTitle": "전문가 수업 포트폴리오",
+        "requestedUrl": "https://learn.kinedu.com/",
+        "finalUrl": "https://learn.kinedu.com/",
+        "pageTitle": "Home - Kinedu",
+        "evidenceType": "official_web",
+        "responseStatus": 200,
+        "bodyTextLength": 2034,
+        "screenshot": "2026-07-28-vertical-execution-service-assets/kinedu-02.png",
+        "screenshotBytes": 304502,
+        "status": "captured_public_surface",
+        "limitation": null,
+        "startedAt": "2026-07-28T01:54:33.922Z",
+        "capturedAt": "2026-07-28T01:54:42.850Z",
+        "verificationBoundary": "자동 캡처한 공개 화면이다. 로그인 안쪽 기능·개인화 결과·실제 사용자 행동을 검증하지 않는다."
+      },
+      {
+        "index": 5,
+        "workerId": 1,
+        "serviceId": "duolingo",
+        "serviceName": "Duolingo",
+        "screenshotId": "duolingo-01",
+        "requestedTitle": "학습 시작 화면",
+        "requestedUrl": "https://www.duolingo.com/learn",
+        "finalUrl": "https://www.duolingo.com/",
+        "pageTitle": "듀오링고 - 세계에서 가장 인기 있는 학습 방법",
+        "evidenceType": "official_web",
+        "responseStatus": 200,
+        "bodyTextLength": 1302,
+        "screenshot": "2026-07-28-vertical-execution-service-assets/duolingo-01.png",
+        "screenshotBytes": 89813,
+        "status": "captured_public_surface",
+        "limitation": null,
+        "startedAt": "2026-07-28T01:48:29.830Z",
+        "capturedAt": "2026-07-28T01:48:43.997Z",
+        "verificationBoundary": "자동 캡처한 공개 화면이다. 로그인 안쪽 기능·개인화 결과·실제 사용자 행동을 검증하지 않는다."
+      },
+      {
+        "index": 2,
+        "workerId": 2,
+        "serviceId": "duolingo",
+        "serviceName": "Duolingo",
+        "screenshotId": "duolingo-02",
+        "requestedTitle": "학습 방법론 근거",
+        "requestedUrl": "https://blog.duolingo.com/duolingo-teaching-method/",
+        "finalUrl": "https://blog.duolingo.com/duolingo-teaching-method/",
+        "pageTitle": "What Is the Duolingo Teaching Method?",
+        "evidenceType": "official_web",
+        "responseStatus": 200,
+        "bodyTextLength": 8000,
+        "screenshot": "2026-07-28-vertical-execution-service-assets/duolingo-02.png",
+        "screenshotBytes": 134547,
+        "status": "captured_public_surface",
+        "limitation": null,
+        "startedAt": "2026-07-28T01:54:25.612Z",
+        "capturedAt": "2026-07-28T01:54:30.421Z",
+        "verificationBoundary": "자동 캡처한 공개 화면이다. 로그인 안쪽 기능·개인화 결과·실제 사용자 행동을 검증하지 않는다."
+      },
+      {
+        "index": 7,
+        "workerId": 2,
+        "serviceId": "ynab",
+        "serviceName": "YNAB",
+        "screenshotId": "ynab-01",
+        "requestedTitle": "목표 추적 소개",
+        "requestedUrl": "https://www.ynab.com/features/goal-tracking",
+        "finalUrl": "https://www.ynab.com/features/goal-tracking",
+        "pageTitle": "Goal Tracking | YNAB",
+        "evidenceType": "official_web",
+        "responseStatus": 200,
+        "bodyTextLength": 2958,
+        "screenshot": "2026-07-28-vertical-execution-service-assets/ynab-01.png",
+        "screenshotBytes": 148371,
+        "status": "captured_public_surface",
+        "limitation": null,
+        "startedAt": "2026-07-28T01:48:34.025Z",
+        "capturedAt": "2026-07-28T01:48:38.385Z",
+        "verificationBoundary": "자동 캡처한 공개 화면이다. 로그인 안쪽 기능·개인화 결과·실제 사용자 행동을 검증하지 않는다."
+      },
+      {
+        "index": 8,
+        "workerId": 2,
+        "serviceId": "ynab",
+        "serviceName": "YNAB",
+        "screenshotId": "ynab-02",
+        "requestedTitle": "목표 설정 도움말",
+        "requestedUrl": "https://support.ynab.com/how-to-use-targets-rk5kkI9ks",
+        "finalUrl": "https://support.ynab.com/how-to-use-targets-rk5kkI9ks",
+        "pageTitle": "How to Use Targets in YNAB",
+        "evidenceType": "support_doc",
+        "responseStatus": 200,
+        "bodyTextLength": 8621,
+        "screenshot": "2026-07-28-vertical-execution-service-assets/ynab-02.png",
+        "screenshotBytes": 79701,
+        "status": "captured_public_surface",
+        "limitation": null,
+        "startedAt": "2026-07-28T01:48:38.531Z",
+        "capturedAt": "2026-07-28T01:48:50.924Z",
+        "verificationBoundary": "자동 캡처한 공개 화면이다. 로그인 안쪽 기능·개인화 결과·실제 사용자 행동을 검증하지 않는다."
+      },
+      {
+        "index": 9,
+        "workerId": 1,
+        "serviceId": "runna",
+        "serviceName": "Runna",
+        "screenshotId": "runna-01",
+        "requestedTitle": "훈련 계획 포트폴리오",
+        "requestedUrl": "https://www.runna.com/training/training-plans",
+        "finalUrl": "https://www.runna.com/training/training-plans",
+        "pageTitle": "Personalized training plans for runners | Runna",
+        "evidenceType": "official_web",
+        "responseStatus": 200,
+        "bodyTextLength": 15142,
+        "screenshot": "2026-07-28-vertical-execution-service-assets/runna-01.png",
+        "screenshotBytes": 512290,
+        "status": "captured_public_surface",
+        "limitation": null,
+        "startedAt": "2026-07-28T01:48:44.126Z",
+        "capturedAt": "2026-07-28T01:48:46.762Z",
+        "verificationBoundary": "자동 캡처한 공개 화면이다. 로그인 안쪽 기능·개인화 결과·실제 사용자 행동을 검증하지 않는다."
+      },
+      {
+        "index": 10,
+        "workerId": 1,
+        "serviceId": "runna",
+        "serviceName": "Runna",
+        "screenshotId": "runna-02",
+        "requestedTitle": "계획 생성 도움말",
+        "requestedUrl": "https://support.runna.com/en/articles/15443877-how-to-create-a-training-plan-in-runna",
+        "finalUrl": "https://support.runna.com/en/articles/15443877-how-to-create-a-training-plan-in-runna",
+        "pageTitle": "How to Create a Training Plan in Runna | Runna Support | #1 running coaching app & plans",
+        "evidenceType": "support_doc",
+        "responseStatus": 200,
+        "bodyTextLength": 11395,
+        "screenshot": "2026-07-28-vertical-execution-service-assets/runna-02.png",
+        "screenshotBytes": 106496,
+        "status": "captured_public_surface",
+        "limitation": null,
+        "startedAt": "2026-07-28T01:48:46.804Z",
+        "capturedAt": "2026-07-28T01:48:50.359Z",
+        "verificationBoundary": "자동 캡처한 공개 화면이다. 로그인 안쪽 기능·개인화 결과·실제 사용자 행동을 검증하지 않는다."
+      },
+      {
+        "index": 11,
+        "workerId": 1,
+        "serviceId": "wanderlog",
+        "serviceName": "Wanderlog",
+        "screenshotId": "wanderlog-01",
+        "requestedTitle": "여행 일정·지도 소개",
+        "requestedUrl": "https://wanderlog.com/pages/help-center",
+        "finalUrl": "https://wanderlog.com/pages/help-center",
+        "pageTitle": "Wanderlog: best free travel itinerary & road trip planner app",
+        "evidenceType": "official_web",
+        "responseStatus": 200,
+        "bodyTextLength": 3181,
+        "screenshot": "2026-07-28-vertical-execution-service-assets/wanderlog-01.png",
+        "screenshotBytes": 424871,
+        "status": "captured_public_surface",
+        "limitation": null,
+        "startedAt": "2026-07-28T01:48:50.400Z",
+        "capturedAt": "2026-07-28T01:48:58.635Z",
+        "verificationBoundary": "자동 캡처한 공개 화면이다. 로그인 안쪽 기능·개인화 결과·실제 사용자 행동을 검증하지 않는다."
+      },
+      {
+        "index": 12,
+        "workerId": 2,
+        "serviceId": "wanderlog",
+        "serviceName": "Wanderlog",
+        "screenshotId": "wanderlog-02",
+        "requestedTitle": "일정 편집 도움말",
+        "requestedUrl": "https://help.wanderlog.com/hc/en-us",
+        "finalUrl": "https://help.wanderlog.com/hc/en-us",
+        "pageTitle": "Wanderlog App Help Center",
+        "evidenceType": "support_doc",
+        "responseStatus": 200,
+        "bodyTextLength": 945,
+        "screenshot": "2026-07-28-vertical-execution-service-assets/wanderlog-02.png",
+        "screenshotBytes": 41119,
+        "status": "captured_public_surface",
+        "limitation": null,
+        "startedAt": "2026-07-28T01:48:50.957Z",
+        "capturedAt": "2026-07-28T01:48:53.986Z",
+        "verificationBoundary": "자동 캡처한 공개 화면이다. 로그인 안쪽 기능·개인화 결과·실제 사용자 행동을 검증하지 않는다."
+      },
+      {
+        "index": 3,
+        "workerId": 2,
+        "serviceId": "the-knot",
+        "serviceName": "The Knot",
+        "screenshotId": "the-knot-01",
+        "requestedTitle": "웨딩 플래너 소개",
+        "requestedUrl": "https://www.theknot.com/wedding-planning",
+        "finalUrl": "https://www.theknot.com/wedding-planning",
+        "pageTitle": "Wedding Planning - Free Online Wedding Planner - The Knot",
+        "evidenceType": "official_web",
+        "responseStatus": 200,
+        "bodyTextLength": 2611,
+        "screenshot": "2026-07-28-vertical-execution-service-assets/the-knot-01.png",
+        "screenshotBytes": 626336,
+        "status": "captured_public_surface",
+        "limitation": null,
+        "startedAt": "2026-07-28T01:54:30.526Z",
+        "capturedAt": "2026-07-28T01:54:36.833Z",
+        "verificationBoundary": "자동 캡처한 공개 화면이다. 로그인 안쪽 기능·개인화 결과·실제 사용자 행동을 검증하지 않는다."
+      },
+      {
+        "index": 14,
+        "workerId": 1,
+        "serviceId": "the-knot",
+        "serviceName": "The Knot",
+        "screenshotId": "the-knot-02",
+        "requestedTitle": "체크리스트 자동 일정 도움말",
+        "requestedUrl": "https://helpcenter.theknot.com/hc/en-us/articles/20629464134036-What-is-the-timeframe-of-my-Checklist",
+        "finalUrl": "https://helpcenter.theknot.com/hc/en-us/articles/20629464134036-What-is-the-timeframe-of-my-Checklist",
+        "pageTitle": "What is the timeframe of my Checklist? – The Knot",
+        "evidenceType": "support_doc",
+        "responseStatus": 200,
+        "bodyTextLength": 1327,
+        "screenshot": "2026-07-28-vertical-execution-service-assets/the-knot-02.png",
+        "screenshotBytes": 109801,
+        "status": "captured_public_surface",
+        "limitation": null,
+        "startedAt": "2026-07-28T01:48:58.726Z",
+        "capturedAt": "2026-07-28T01:49:02.022Z",
+        "verificationBoundary": "자동 캡처한 공개 화면이다. 로그인 안쪽 기능·개인화 결과·실제 사용자 행동을 검증하지 않는다."
+      },
+      {
+        "index": 15,
+        "workerId": 1,
+        "serviceId": "sidechef",
+        "serviceName": "SideChef",
+        "screenshotId": "sidechef-01",
+        "requestedTitle": "레시피에서 조리까지",
+        "requestedUrl": "https://www.sidechef.com/",
+        "finalUrl": "https://www.sidechef.com/",
+        "pageTitle": "SideChef: Shop and Cook Step-by-Step Recipes",
+        "evidenceType": "official_web",
+        "responseStatus": 200,
+        "bodyTextLength": 6259,
+        "screenshot": "2026-07-28-vertical-execution-service-assets/sidechef-01.png",
+        "screenshotBytes": 867518,
+        "status": "captured_public_surface",
+        "limitation": null,
+        "startedAt": "2026-07-28T01:49:02.061Z",
+        "capturedAt": "2026-07-28T01:49:05.948Z",
+        "verificationBoundary": "자동 캡처한 공개 화면이다. 로그인 안쪽 기능·개인화 결과·실제 사용자 행동을 검증하지 않는다."
+      },
+      {
+        "index": 16,
+        "workerId": 1,
+        "serviceId": "sidechef",
+        "serviceName": "SideChef",
+        "screenshotId": "sidechef-02",
+        "requestedTitle": "식단 플래너",
+        "requestedUrl": "https://www.sidechef.com/meal-planner/",
+        "finalUrl": "https://www.sidechef.com/meal-planner/",
+        "pageTitle": "Personalized Weekly Meal Planner (with Grocery Delivery) - SideChef - SideChef",
+        "evidenceType": "official_web",
+        "responseStatus": 200,
+        "bodyTextLength": 2417,
+        "screenshot": "2026-07-28-vertical-execution-service-assets/sidechef-02.png",
+        "screenshotBytes": 449807,
+        "status": "captured_public_surface",
+        "limitation": null,
+        "startedAt": "2026-07-28T01:49:09.961Z",
+        "capturedAt": "2026-07-28T01:49:29.748Z",
+        "verificationBoundary": "자동 캡처한 공개 화면이다. 로그인 안쪽 기능·개인화 결과·실제 사용자 행동을 검증하지 않는다."
+      },
+      {
+        "index": 17,
+        "workerId": 2,
+        "serviceId": "teal",
+        "serviceName": "Teal",
+        "screenshotId": "teal-01",
+        "requestedTitle": "지원 추적 도움말",
+        "requestedUrl": "https://help.tealhq.com/en/articles/14435727-how-to-track-your-job-applications",
+        "finalUrl": "https://help.tealhq.com/en/articles/14435727-how-to-track-your-job-applications",
+        "pageTitle": "How to Track Your Job Applications | Teal Knowledge Base",
+        "evidenceType": "support_doc",
+        "responseStatus": 200,
+        "bodyTextLength": 9400,
+        "screenshot": "2026-07-28-vertical-execution-service-assets/teal-01.png",
+        "screenshotBytes": 117577,
+        "status": "captured_public_surface",
+        "limitation": null,
+        "startedAt": "2026-07-28T01:49:10.906Z",
+        "capturedAt": "2026-07-28T01:49:14.699Z",
+        "verificationBoundary": "자동 캡처한 공개 화면이다. 로그인 안쪽 기능·개인화 결과·실제 사용자 행동을 검증하지 않는다."
+      },
+      {
+        "index": 4,
+        "workerId": 2,
+        "serviceId": "teal",
+        "serviceName": "Teal",
+        "screenshotId": "teal-02",
+        "requestedTitle": "지원 보드 소개",
+        "requestedUrl": "https://www.tealhq.com/how-it-works",
+        "finalUrl": "https://www.tealhq.com/how-it-works",
+        "pageTitle": "How it works | Teal",
+        "evidenceType": "official_web",
+        "responseStatus": 200,
+        "bodyTextLength": 3215,
+        "screenshot": "2026-07-28-vertical-execution-service-assets/teal-02.png",
+        "screenshotBytes": 314908,
+        "status": "captured_public_surface",
+        "limitation": null,
+        "startedAt": "2026-07-28T01:54:36.943Z",
+        "capturedAt": "2026-07-28T01:54:40.810Z",
+        "verificationBoundary": "자동 캡처한 공개 화면이다. 로그인 안쪽 기능·개인화 결과·실제 사용자 행동을 검증하지 않는다."
+      },
+      {
+        "index": 19,
+        "workerId": 2,
+        "serviceId": "planta",
+        "serviceName": "Planta",
+        "screenshotId": "planta-01",
+        "requestedTitle": "식물별 관리 일정 소개",
+        "requestedUrl": "https://getplanta.com/?language=en",
+        "finalUrl": "https://getplanta.com/?language=en",
+        "pageTitle": "Plant care app - Keep your plants alive | Planta",
+        "evidenceType": "official_web",
+        "responseStatus": 200,
+        "bodyTextLength": 2359,
+        "screenshot": "2026-07-28-vertical-execution-service-assets/planta-01.png",
+        "screenshotBytes": 292259,
+        "status": "captured_public_surface",
+        "limitation": null,
+        "startedAt": "2026-07-28T01:49:19.578Z",
+        "capturedAt": "2026-07-28T01:49:22.497Z",
+        "verificationBoundary": "자동 캡처한 공개 화면이다. 로그인 안쪽 기능·개인화 결과·실제 사용자 행동을 검증하지 않는다."
+      },
+      {
+        "index": 20,
+        "workerId": 2,
+        "serviceId": "planta",
+        "serviceName": "Planta",
+        "screenshotId": "planta-02",
+        "requestedTitle": "맞춤 일정 도움말",
+        "requestedUrl": "https://support.getplanta.com/how-do-i-create-a-custom-care-schedule-for-a-plant/",
+        "finalUrl": "https://support.getplanta.com/how-do-i-create-a-custom-care-schedule-for-a-plant/",
+        "pageTitle": "How do I create a custom care schedule for a plant? | Planta Help Center",
+        "evidenceType": "support_doc",
+        "responseStatus": 200,
+        "bodyTextLength": 777,
+        "screenshot": "2026-07-28-vertical-execution-service-assets/planta-02.png",
+        "screenshotBytes": 90424,
+        "status": "captured_public_surface",
+        "limitation": null,
+        "startedAt": "2026-07-28T01:49:22.789Z",
+        "capturedAt": "2026-07-28T01:49:26.950Z",
+        "verificationBoundary": "자동 캡처한 공개 화면이다. 로그인 안쪽 기능·개인화 결과·실제 사용자 행동을 검증하지 않는다."
+      }
+    ]
+  },
+  "finalCompression": [
+    {
+      "serviceId": "sweepy",
+      "serviceName": "Sweepy",
+      "userMoment": "집안일을 누구부터 무엇을 해야 할지 정하기 어려울 때",
+      "naturalArtifact": "공간별 반복 청소 일정과 오늘 할 일",
+      "minimumAnchor": [
+        "공간/방",
+        "청소 빈도"
+      ],
+      "stage0Behavior": "공간 템플릿을 먼저 보여주고 선택한 공간만 일정화한다.",
+      "serviceRelationship": "ux_logic_benchmark_only",
+      "contentDiscoveryOpportunity": "opp-home-routine",
+      "doNotBuildBoundary": "가사량 최적화 점수 엔진 / 가족 간 경쟁·보상 시스템",
+      "finalDecision": "go"
+    },
+    {
+      "serviceId": "kinedu",
+      "serviceName": "Kinedu",
+      "userMoment": "아이 월령에 맞는 오늘 놀이를 바로 찾고 싶을 때",
+      "naturalArtifact": "월령·발달 단계에 맞춘 일일 놀이 계획",
+      "minimumAnchor": [
+        "생년월일/월령"
+      ],
+      "stage0Behavior": "월령에 맞는 활동 예시를 먼저 보여주고 프로필 저장 후 일일 계획을 개인화한다.",
+      "serviceRelationship": "creator_partner_candidate",
+      "contentDiscoveryOpportunity": "opp-age-play",
+      "doNotBuildBoundary": "발달 진단·평가 엔진 / 유료 활동 영상 복제",
+      "finalDecision": "partner"
+    },
+    {
+      "serviceId": "duolingo",
+      "serviceName": "Duolingo",
+      "userMoment": "짧게라도 매일 언어 학습을 이어가고 싶을 때",
+      "naturalArtifact": "수준별 학습 경로와 다음 레슨",
+      "minimumAnchor": [
+        "학습 언어"
+      ],
+      "stage0Behavior": "언어를 선택하면 첫 레슨을 즉시 시작하고 이후 목표를 조정할 수 있다.",
+      "serviceRelationship": "direct_competitor_boundary",
+      "contentDiscoveryOpportunity": "opp-learning-series",
+      "doNotBuildBoundary": "적응형 문제 출제 엔진 / 스트릭·게임 경제 복제",
+      "finalDecision": "benchmark"
+    },
+    {
+      "serviceId": "ynab",
+      "serviceName": "YNAB",
+      "userMoment": "목표 금액을 언제까지 모을지 월별 실행액으로 바꾸고 싶을 때",
+      "naturalArtifact": "주·월·연 단위 필요 저축액과 진도",
+      "minimumAnchor": [
+        "목표 금액",
+        "목표일"
+      ],
+      "stage0Behavior": "목표와 기한을 넣는 즉시 필요한 주기별 금액을 미리 보여준다.",
+      "serviceRelationship": "ux_logic_benchmark_only",
+      "contentDiscoveryOpportunity": "opp-goal-saving",
+      "doNotBuildBoundary": "은행 계좌 연동 / 전체 예산 원장",
+      "finalDecision": "benchmark"
+    },
+    {
+      "serviceId": "runna",
+      "serviceName": "Runna",
+      "userMoment": "레이스·거리 목표에 맞춘 주간 러닝 계획이 필요할 때",
+      "naturalArtifact": "목표일에 맞춘 주차별 러닝·근력 훈련 계획",
+      "minimumAnchor": [
+        "목표 유형/레이스",
+        "현재 능력·주간 거리",
+        "주당 러닝 횟수"
+      ],
+      "stage0Behavior": "입력 뒤 전체 계획 미리보기를 보여주고 시작을 확정한다.",
+      "serviceRelationship": "ux_logic_benchmark_only",
+      "contentDiscoveryOpportunity": "opp-training-program",
+      "doNotBuildBoundary": "훈련 부하·부상 위험 계산 / GPS·웨어러블 코칭 엔진",
+      "finalDecision": "go"
+    },
+    {
+      "serviceId": "wanderlog",
+      "serviceName": "Wanderlog",
+      "userMoment": "저장한 장소와 예약을 한 일정으로 정리하고 싶을 때",
+      "naturalArtifact": "날짜별 여행 일정과 지도 동선",
+      "minimumAnchor": [
+        "여행지/여행 기간"
+      ],
+      "stage0Behavior": "여행지와 날짜를 정한 뒤 장소를 수집하면서 일정 결과를 계속 보여준다.",
+      "serviceRelationship": "external_execution_destination",
+      "contentDiscoveryOpportunity": "opp-travel-itinerary",
+      "doNotBuildBoundary": "지도 경로 최적화 / 숙박·항공 예약 엔진",
+      "finalDecision": "benchmark"
+    },
+    {
+      "serviceId": "the-knot",
+      "serviceName": "The Knot",
+      "userMoment": "결혼일까지 해야 할 준비를 빠짐없이 일정화하고 싶을 때",
+      "naturalArtifact": "결혼일 기준 개인화 준비 체크리스트와 업체·예산 보드",
+      "minimumAnchor": [
+        "결혼일"
+      ],
+      "stage0Behavior": "결혼일을 넣으면 전체 타임라인을 먼저 보여주고 세부 프로필을 나중에 보완한다.",
+      "serviceRelationship": "creator_partner_candidate",
+      "contentDiscoveryOpportunity": "opp-event-dday",
+      "doNotBuildBoundary": "웨딩 업체 마켓플레이스 / 레지스트리·결제 인프라",
+      "finalDecision": "partner"
+    },
+    {
+      "serviceId": "sidechef",
+      "serviceName": "SideChef",
+      "userMoment": "무엇을 먹을지 정하고 장보기부터 조리까지 한 번에 이어가고 싶을 때",
+      "naturalArtifact": "개인화 식단, 통합 장보기 목록, 단계별 조리 세션",
+      "minimumAnchor": [
+        "식단 기간/식사 수"
+      ],
+      "stage0Behavior": "레시피를 둘러보고 주간 식단에 담으면 장보기 결과를 바로 보여준다.",
+      "serviceRelationship": "creator_partner_candidate",
+      "contentDiscoveryOpportunity": "opp-meal-plan",
+      "doNotBuildBoundary": "식료품 주문·재고 연동 / 유료 레시피·강의 복제",
+      "finalDecision": "partner"
+    },
+    {
+      "serviceId": "teal",
+      "serviceName": "Teal",
+      "userMoment": "여러 채용 공고의 지원 상태와 다음 행동을 놓치지 않고 싶을 때",
+      "naturalArtifact": "지원 공고 보드, 단계, 후속 일정과 다음 행동",
+      "minimumAnchor": [
+        "채용 공고 URL"
+      ],
+      "stage0Behavior": "공고를 저장하면 보드에 카드가 생기고 상태·후속 날짜를 나중에 보완한다.",
+      "serviceRelationship": "ux_logic_benchmark_only",
+      "contentDiscoveryOpportunity": "opp-career-application",
+      "doNotBuildBoundary": "이력서 ATS 점수 엔진 / 채용공고 데이터베이스 복제",
+      "finalDecision": "go"
+    },
+    {
+      "serviceId": "planta",
+      "serviceName": "Planta",
+      "userMoment": "식물마다 다른 물주기·비료·분갈이 시점을 놓치지 않고 싶을 때",
+      "naturalArtifact": "식물별 물주기·비료·분무·분갈이 관리 일정",
+      "minimumAnchor": [
+        "식물 종류",
+        "위치·빛·화분 환경"
+      ],
+      "stage0Behavior": "식물을 등록하면 기본 관리 일정을 먼저 만들고 환경 정보를 보완한다.",
+      "serviceRelationship": "creator_partner_candidate",
+      "contentDiscoveryOpportunity": "opp-care-routine",
+      "doNotBuildBoundary": "사진 기반 질병 진단 / 날씨·토양 계산 엔진",
+      "finalDecision": "go"
+    }
+  ]
+}
