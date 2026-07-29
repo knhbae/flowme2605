@@ -1,0 +1,1055 @@
+{
+  "schemaVersion": "flowme-p34-persona-journey-v1",
+  "reviewDate": "2026-07-25",
+  "reviewerRole": "claude_design",
+  "observedUserCount": 0,
+  "surfaceBoundary": {
+    "production": "P32",
+    "p33Preview": "inaccessible",
+    "p33SourceSha": "8c54992ce5628ab2a3884a530a83d2c8226223dc"
+  },
+  "summary": {
+    "supported": 4,
+    "hidden": 2,
+    "partial": 18,
+    "missing": 0,
+    "blocked": 0
+  },
+  "cells": [
+    {
+      "personaId": "P1",
+      "persona": "이사 기준일 역산 사용자",
+      "sessionId": "A",
+      "userGoal": "전체 24개 일정을 확인하고 이사일 기준으로 저장한다.",
+      "route": [
+        "/flows",
+        "/f/moving-d30-basic"
+      ],
+      "viewport": [
+        "390x844",
+        "1024x768"
+      ],
+      "fixture": "none",
+      "startState": "fresh localStorage",
+      "steps": [
+        "Find card 확인",
+        "public 전체 범위 확인",
+        "이사일 입력",
+        "조정",
+        "저장",
+        "receipt 확인"
+      ],
+      "tapClickDepth": "5~7",
+      "expectedMentalModel": "같은 이사 Flow를 보고 날짜만 정하면 24개 일정이 저장된다.",
+      "actualFeedback": "P32 Find card는 5개, direct public은 24개다. public preview/receipt 자체는 count와 artifact를 보여준다. P33 source는 24개로 정렬된다.",
+      "nextAction": "P33 production gate 후 artifact-first adjustment",
+      "visibleReachable": "reachable_with_cross_entry_mismatch",
+      "reloadPersistence": "saved personal copy persists",
+      "parity": {
+        "myFlow": "count/title supported after direct save",
+        "calendar": "dated rows supported",
+        "export": "whole scope supported",
+        "stableIdentity": "P32 mismatch; P33 source aligned"
+      },
+      "failureRecovery": "adjust cancel, archive after save",
+      "status": "partial",
+      "severity": "blocking",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_source",
+        "inaccessible"
+      ],
+      "observedUserAssumption": "5개 card와 24개 상세를 같은 Flow로 받아들이는지는 실제 사용자만 확인 가능"
+    },
+    {
+      "personaId": "P1",
+      "persona": "이사 기준일 역산 사용자",
+      "sessionId": "B",
+      "userGoal": "제목·날짜·메모를 수정하고 완료/재개 후 Calendar를 확인한다.",
+      "route": [
+        "/my",
+        "/calendar"
+      ],
+      "viewport": [
+        "390x844",
+        "1024x768"
+      ],
+      "fixture": "saved moving personal copy",
+      "startState": "24 Item saved Flow",
+      "steps": [
+        "Flow 목록",
+        "focused workspace",
+        "Item 열기",
+        "수정",
+        "완료",
+        "다시 열기",
+        "Calendar 확인"
+      ],
+      "tapClickDepth": "6~10",
+      "expectedMentalModel": "같은 Item을 My Flow와 Calendar에서 같은 방식으로 수정하고 완료할 수 있다.",
+      "actualFeedback": "quick edit, completion/reopen, Calendar projection은 지원된다. Item detail과 Flow adjustment entry가 분산돼 있다.",
+      "nextAction": "shared Item sheet/command grammar",
+      "visibleReachable": "reachable",
+      "reloadPersistence": "yes",
+      "parity": {
+        "myFlow": "supported",
+        "calendar": "supported",
+        "export": "supported",
+        "stableIdentity": "supported by projection contract"
+      },
+      "failureRecovery": "edit cancel, completion same-control reopen",
+      "status": "supported",
+      "severity": "medium",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_source"
+      ],
+      "observedUserAssumption": "수정 entry를 설명 없이 발견하는지는 실제 사용자만 확인 가능"
+    },
+    {
+      "personaId": "P1",
+      "persona": "이사 기준일 역산 사용자",
+      "sessionId": "C",
+      "userGoal": "보관·복구·영구 삭제, export, 새 기준일 재사용을 수행한다.",
+      "route": [
+        "/my?view=flows"
+      ],
+      "viewport": [
+        "390x844",
+        "1024x768"
+      ],
+      "fixture": "saved moving personal copy",
+      "startState": "active Flow with one run",
+      "steps": [
+        "workspace ⋯",
+        "보관",
+        "undo 또는 보관됨",
+        "복구",
+        "다시 보관",
+        "archived ⋯",
+        "영구 삭제 dialog",
+        "새 실행 재사용"
+      ],
+      "tapClickDepth": "6~12",
+      "expectedMentalModel": "Flow 관리에서 전체 lifecycle을 예측하고 되돌릴 수 있다.",
+      "actualFeedback": "계약은 안전하고 backup/restore도 있으나 active 메뉴에서 delete path가 보이지 않는다.",
+      "nextAction": "Flow 관리 sheet에 lifecycle 전체 예고",
+      "visibleReachable": "reachable_but_hidden",
+      "reloadPersistence": "archive/restore/delete and run history persist",
+      "parity": {
+        "myFlow": "lifecycle supported",
+        "calendar": "archived Flow removed",
+        "export": "backup and Flow export supported",
+        "stableIdentity": "preserved until permanent delete"
+      },
+      "failureRecovery": "archive undo, restore, backup before irreversible delete",
+      "status": "hidden",
+      "severity": "high",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_source",
+        "current_package_screenshot"
+      ],
+      "observedUserAssumption": "보관을 삭제로 이해하는지는 실제 사용자만 확인 가능"
+    },
+    {
+      "personaId": "P2",
+      "persona": "날짜 없는 차량 점검 사용자",
+      "sessionId": "A",
+      "userGoal": "10개 항목을 날짜 없이 Checklist로 저장한다.",
+      "route": [
+        "/f/vehicle-inspection-prep"
+      ],
+      "viewport": [
+        "390x844",
+        "1024x768"
+      ],
+      "fixture": "none",
+      "startState": "fresh localStorage",
+      "steps": [
+        "Calendar/Checklist 비교",
+        "날짜 없이 선택",
+        "저장",
+        "receipt"
+      ],
+      "tapClickDepth": "3~5",
+      "expectedMentalModel": "날짜 없이 저장하면 Calendar가 아니라 실행 Checklist가 된다.",
+      "actualFeedback": "저장 후 primary가 Checklist로 바뀌고 10개 count가 맞다. 저장 전에는 두 artifact와 세 date intent가 동시에 경쟁한다.",
+      "nextAction": "primary artifact/date intent hierarchy 정리",
+      "visibleReachable": "reachable",
+      "reloadPersistence": "explicit undated intent persists",
+      "parity": {
+        "myFlow": "10 undated items",
+        "calendar": "undated queue",
+        "export": "Checklist yes, ICS no until dated",
+        "stableIdentity": "supported"
+      },
+      "failureRecovery": "date intent can be changed before save",
+      "status": "partial",
+      "severity": "medium",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_source"
+      ],
+      "observedUserAssumption": "날짜 없음이 유효한 시작 방식으로 읽히는지는 실제 사용자만 확인 가능"
+    },
+    {
+      "personaId": "P2",
+      "persona": "날짜 없는 차량 점검 사용자",
+      "sessionId": "B",
+      "userGoal": "일부 Item을 Calendar에 배치하고 undo, 완료, 다시 열기를 수행한다.",
+      "route": [
+        "/my",
+        "/calendar"
+      ],
+      "viewport": [
+        "390x844",
+        "1024x768"
+      ],
+      "fixture": "saved undated vehicle Flow",
+      "startState": "10 undated items",
+      "steps": [
+        "Calendar queue 열기",
+        "Item 선택",
+        "날짜 입력",
+        "배치",
+        "undo",
+        "재배치",
+        "완료",
+        "다시 열기"
+      ],
+      "tapClickDepth": "7~11",
+      "expectedMentalModel": "날짜 없는 목록에서 선택한 Item만 날짜로 옮기고 되돌릴 수 있다.",
+      "actualFeedback": "batch preview/count/undo와 stable identity가 지원된다. 모바일 sheet는 명확하다.",
+      "nextAction": "Calendar keyboard와 common date command 개선",
+      "visibleReachable": "reachable",
+      "reloadPersistence": "yes",
+      "parity": {
+        "myFlow": "manual date shown",
+        "calendar": "selected date shown",
+        "export": "ICS eligible after date",
+        "stableIdentity": "preserved across placement"
+      },
+      "failureRecovery": "undo and date removal",
+      "status": "supported",
+      "severity": "low",
+      "evidenceKind": [
+        "current_source",
+        "current_package_screenshot"
+      ],
+      "observedUserAssumption": "batch queue를 Calendar에서 먼저 찾는지는 실제 사용자만 확인 가능"
+    },
+    {
+      "personaId": "P2",
+      "persona": "날짜 없는 차량 점검 사용자",
+      "sessionId": "C",
+      "userGoal": "날짜를 제거해 tray로 돌리고 whole/selected/current export를 비교한다.",
+      "route": [
+        "/calendar",
+        "/my"
+      ],
+      "viewport": [
+        "390x844",
+        "1024x768"
+      ],
+      "fixture": "one scheduled and nine undated vehicle items",
+      "startState": "mixed date state",
+      "steps": [
+        "scheduled Item open",
+        "날짜 제거",
+        "tray count 확인",
+        "whole export",
+        "selected export",
+        "current export"
+      ],
+      "tapClickDepth": "8~13",
+      "expectedMentalModel": "date removal changes schedule only; Item and completion identity remain.",
+      "actualFeedback": "contract와 unit coverage는 맞지만 export entry labels와 receipt order가 surface별로 다르다.",
+      "nextAction": "scope-first export and date removal feedback",
+      "visibleReachable": "reachable_but_distributed",
+      "reloadPersistence": "yes",
+      "parity": {
+        "myFlow": "undated state returns",
+        "calendar": "event removed and tray count increases",
+        "export": "scope counts correct",
+        "stableIdentity": "preserved"
+      },
+      "failureRecovery": "reassign date or undo",
+      "status": "partial",
+      "severity": "medium",
+      "evidenceKind": [
+        "current_source",
+        "heuristic_simulation"
+      ],
+      "observedUserAssumption": "date removal을 Item deletion으로 오해하는지는 실제 사용자만 확인 가능"
+    },
+    {
+      "personaId": "P3",
+      "persona": "반복 홈트 사용자",
+      "sessionId": "A",
+      "userGoal": "요일·시간·종료 조건을 확인하고 8회 routine을 저장한다.",
+      "route": [
+        "/f/curated-allblanc-morning-workout"
+      ],
+      "viewport": [
+        "390x844",
+        "1024x768"
+      ],
+      "fixture": "none",
+      "startState": "fresh localStorage",
+      "steps": [
+        "artifact 선택",
+        "시작일",
+        "반복 설정",
+        "요일",
+        "시간",
+        "횟수",
+        "저장"
+      ],
+      "tapClickDepth": "6~10",
+      "expectedMentalModel": "한 줄 summary를 확인하고 필요할 때만 반복 규칙을 수정한다.",
+      "actualFeedback": "Flow/Calendar/Memo 3개, date intent, repeat fields가 긴 문서에 이어져 있다. next occurrences는 제공된다.",
+      "nextAction": "summary-first recurrence setup",
+      "visibleReachable": "reachable",
+      "reloadPersistence": "yes",
+      "parity": {
+        "myFlow": "routine saved",
+        "calendar": "occurrences projected",
+        "export": "ICS supported",
+        "stableIdentity": "series identity stable"
+      },
+      "failureRecovery": "cancel or edit recurrence",
+      "status": "partial",
+      "severity": "high",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_package_screenshot",
+        "current_source"
+      ],
+      "observedUserAssumption": "사용자가 Flow 실행과 Calendar 중 무엇을 primary로 선택하는지는 실제 사용자만 확인 가능"
+    },
+    {
+      "personaId": "P3",
+      "persona": "반복 홈트 사용자",
+      "sessionId": "B",
+      "userGoal": "이번 회차 완료/재개와 series/occurrence 수정을 구분한다.",
+      "route": [
+        "/my",
+        "/calendar"
+      ],
+      "viewport": [
+        "390x844",
+        "1024x768"
+      ],
+      "fixture": "saved 8-occurrence routine",
+      "startState": "first occurrence open",
+      "steps": [
+        "occurrence open",
+        "완료",
+        "다시 열기",
+        "반복 수정",
+        "this/future/all 선택"
+      ],
+      "tapClickDepth": "6~10",
+      "expectedMentalModel": "완료는 이번 회차, 반복 수정은 series scope에 적용된다.",
+      "actualFeedback": "데이터 계약은 분리되지만 scope UI가 Item detail 깊은 곳에 있다.",
+      "nextAction": "occurrence quick actions and series adjustment sheet",
+      "visibleReachable": "reachable_but_dense",
+      "reloadPersistence": "yes",
+      "parity": {
+        "myFlow": "occurrence state supported",
+        "calendar": "same occurrence state",
+        "export": "current vs series supported",
+        "stableIdentity": "supported"
+      },
+      "failureRecovery": "same control reopen, recurrence edit cancel",
+      "status": "partial",
+      "severity": "medium",
+      "evidenceKind": [
+        "current_source"
+      ],
+      "observedUserAssumption": "series와 occurrence 용어 없이 scope를 이해하는지는 실제 사용자만 확인 가능"
+    },
+    {
+      "personaId": "P3",
+      "persona": "반복 홈트 사용자",
+      "sessionId": "C",
+      "userGoal": "반복 종료, archive/restore, Calendar/ICS, 새 run을 확인한다.",
+      "route": [
+        "/my",
+        "/calendar"
+      ],
+      "viewport": [
+        "390x844",
+        "1024x768"
+      ],
+      "fixture": "partly completed routine",
+      "startState": "one completed occurrence",
+      "steps": [
+        "반복 종료",
+        "export",
+        "archive",
+        "restore",
+        "new run"
+      ],
+      "tapClickDepth": "8~13",
+      "expectedMentalModel": "반복 종료는 future generation만 멈추고 Flow archive/delete와 다르다.",
+      "actualFeedback": "contract는 구분되지만 lifecycle과 recurrence commands가 다른 menus에 흩어진다.",
+      "nextAction": "shared management grammar",
+      "visibleReachable": "reachable_but_distributed",
+      "reloadPersistence": "yes",
+      "parity": {
+        "myFlow": "supported",
+        "calendar": "future projection follows rule",
+        "export": "readable recurrence and stable UID",
+        "stableIdentity": "supported"
+      },
+      "failureRecovery": "restore Flow, edit recurrence",
+      "status": "partial",
+      "severity": "medium",
+      "evidenceKind": [
+        "current_source"
+      ],
+      "observedUserAssumption": "반복 종료와 Flow 완료를 구분하는지는 실제 사용자만 확인 가능"
+    },
+    {
+      "personaId": "P4",
+      "persona": "장기 학습·진도 사용자",
+      "sessionId": "A",
+      "userGoal": "중1 수학 8개 단원을 날짜 없이 진도 Flow로 저장한다.",
+      "route": [
+        "/f/source-backed-middle-school-math-1"
+      ],
+      "viewport": [
+        "390x844",
+        "1024x768"
+      ],
+      "fixture": "none",
+      "startState": "fresh localStorage",
+      "steps": [
+        "8 chapters 확인",
+        "progress destination 확인",
+        "저장"
+      ],
+      "tapClickDepth": "2~4",
+      "expectedMentalModel": "별도 목표 설정 없이 8개 단원을 순서대로 진행한다.",
+      "actualFeedback": "step progress와 source range가 잘 맞고 독립 Goal 객체가 필요하지 않다.",
+      "nextAction": "keep current goal-free progress model",
+      "visibleReachable": "reachable",
+      "reloadPersistence": "yes",
+      "parity": {
+        "myFlow": "progress supported",
+        "calendar": "only dated chapters appear",
+        "export": "sheet/checklist suitable",
+        "stableIdentity": "supported"
+      },
+      "failureRecovery": "archive or edit personal state",
+      "status": "supported",
+      "severity": "low",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_source"
+      ],
+      "observedUserAssumption": "진도만으로 목표 관리가 충분한지는 실제 사용자만 확인 가능"
+    },
+    {
+      "personaId": "P4",
+      "persona": "장기 학습·진도 사용자",
+      "sessionId": "B",
+      "userGoal": "chapter 완료/재개, 메모, 순서, 선택 날짜를 관리한다.",
+      "route": [
+        "/my",
+        "/calendar"
+      ],
+      "viewport": [
+        "390x844",
+        "1024x768"
+      ],
+      "fixture": "saved 8 chapter Flow",
+      "startState": "two chapters completed",
+      "steps": [
+        "Flow plan",
+        "chapter open",
+        "memo",
+        "complete/reopen",
+        "optional date"
+      ],
+      "tapClickDepth": "5~9",
+      "expectedMentalModel": "progress는 completion에서 나오고 날짜는 optional이다.",
+      "actualFeedback": "supported, but Item editor and progress view are separate tabs/sheets.",
+      "nextAction": "common Item sheet and progress summary",
+      "visibleReachable": "reachable",
+      "reloadPersistence": "yes",
+      "parity": {
+        "myFlow": "supported",
+        "calendar": "dated subset only",
+        "export": "whole and selected supported",
+        "stableIdentity": "supported"
+      },
+      "failureRecovery": "same control reopen, edit cancel",
+      "status": "partial",
+      "severity": "medium",
+      "evidenceKind": [
+        "current_source"
+      ],
+      "observedUserAssumption": "학습 사용자가 Calendar를 원하는지는 실제 사용자만 확인 가능"
+    },
+    {
+      "personaId": "P4",
+      "persona": "장기 학습·진도 사용자",
+      "sessionId": "C",
+      "userGoal": "완료 후 회고와 새 run을 시작하고 과거 진도를 보존한다.",
+      "route": [
+        "/my"
+      ],
+      "viewport": [
+        "390x844",
+        "1024x768"
+      ],
+      "fixture": "completed study Flow",
+      "startState": "8/8 completed",
+      "steps": [
+        "record tab",
+        "reflection",
+        "new run preview",
+        "start new run"
+      ],
+      "tapClickDepth": "4~7",
+      "expectedMentalModel": "과거 run은 기록으로 남고 새 진도는 0/8에서 시작한다.",
+      "actualFeedback": "run history contract supports it; record/reuse entry is less prominent than execution.",
+      "nextAction": "reuse command in Flow management and completion receipt",
+      "visibleReachable": "reachable_but_secondary",
+      "reloadPersistence": "yes",
+      "parity": {
+        "myFlow": "supported",
+        "calendar": "new run dates projected",
+        "export": "past snapshot supported",
+        "stableIdentity": "run identity separated"
+      },
+      "failureRecovery": "new run preview cancel",
+      "status": "partial",
+      "severity": "low",
+      "evidenceKind": [
+        "current_source"
+      ],
+      "observedUserAssumption": "과거 run을 얼마나 자주 다시 보는지는 실제 사용자만 확인 가능"
+    },
+    {
+      "personaId": "P5",
+      "persona": "URL 또는 메모 개인 draft 사용자",
+      "sessionId": "A",
+      "userGoal": "여행 메모를 5개 Item으로 나누고 개인 Flow로 저장한다.",
+      "route": [
+        "/flows"
+      ],
+      "viewport": [
+        "390x844",
+        "1024x768"
+      ],
+      "fixture": "none",
+      "startState": "fresh localStorage",
+      "steps": [
+        "memo 입력",
+        "Flow 찾기",
+        "5개 분할 확인",
+        "include/reorder/split controls 확인",
+        "저장"
+      ],
+      "tapClickDepth": "3 minimum, 10+ if editing",
+      "expectedMentalModel": "먼저 쓸 수 있는 5개 preview를 받고 필요한 Item만 고친다.",
+      "actualFeedback": "분할 fidelity는 좋지만 43 controls와 1,757px document가 즉시 나타난다.",
+      "nextAction": "preview-first, structure edit secondary",
+      "visibleReachable": "reachable_but_dense",
+      "reloadPersistence": "yes after save",
+      "parity": {
+        "myFlow": "5 undated items",
+        "calendar": "queue",
+        "export": "checklist/sheet/memo",
+        "stableIdentity": "personal IDs"
+      },
+      "failureRecovery": "uncheck, reorder, cancel, archive",
+      "status": "partial",
+      "severity": "high",
+      "evidenceKind": [
+        "current_production_interaction"
+      ],
+      "observedUserAssumption": "사전 구조 편집을 원하는 비율은 실제 사용자만 확인 가능"
+    },
+    {
+      "personaId": "P5",
+      "persona": "URL 또는 메모 개인 draft 사용자",
+      "sessionId": "B",
+      "userGoal": "Item add/delete/restore/reorder와 title/date/time/place/memo를 수정한다.",
+      "route": [
+        "/my?view=flows"
+      ],
+      "viewport": [
+        "390x844",
+        "1024x768"
+      ],
+      "fixture": "saved personal draft",
+      "startState": "5 undated personal items",
+      "steps": [
+        "전체 계획",
+        "구성 편집",
+        "add/delete/restore/reorder",
+        "Item detail",
+        "quick/advanced edit"
+      ],
+      "tapClickDepth": "8~15",
+      "expectedMentalModel": "구조 변경과 Item 값 수정이 다른 mode로 분리된다.",
+      "actualFeedback": "contract는 분리되지만 `구성 편집`, `할 일 수정`, `세부 일정` 세 단계가 필요하다.",
+      "nextAction": "unified Item sheet and bounded structure mode",
+      "visibleReachable": "reachable_but_deep",
+      "reloadPersistence": "yes",
+      "parity": {
+        "myFlow": "supported",
+        "calendar": "date/time parity supported",
+        "export": "personal fields exported",
+        "stableIdentity": "supported across reorder/delete restore"
+      },
+      "failureRecovery": "structural undo, tombstone restore, edit cancel",
+      "status": "partial",
+      "severity": "high",
+      "evidenceKind": [
+        "current_source",
+        "current_production_interaction"
+      ],
+      "observedUserAssumption": "사용자가 quick와 advanced 경계를 자연스럽게 이해하는지는 실제 사용자만 확인 가능"
+    },
+    {
+      "personaId": "P5",
+      "persona": "URL 또는 메모 개인 draft 사용자",
+      "sessionId": "C",
+      "userGoal": "reload, archive/restore/delete, export, 개인 draft와 public Flow 경계를 확인한다.",
+      "route": [
+        "/my",
+        "/flows"
+      ],
+      "viewport": [
+        "390x844",
+        "1024x768"
+      ],
+      "fixture": "edited personal draft",
+      "startState": "one dated, four undated, custom memo",
+      "steps": [
+        "reload",
+        "parity check",
+        "archive",
+        "restore",
+        "backup",
+        "permanent delete",
+        "public catalog return"
+      ],
+      "tapClickDepth": "8~14",
+      "expectedMentalModel": "개인 draft 삭제는 local private data를 지우고 public source와 무관하다.",
+      "actualFeedback": "storage contract는 안전하지만 permanent delete entry is hidden.",
+      "nextAction": "lifecycle surface and ownership copy",
+      "visibleReachable": "reachable_but_hidden",
+      "reloadPersistence": "yes",
+      "parity": {
+        "myFlow": "supported",
+        "calendar": "supported",
+        "export": "supported",
+        "stableIdentity": "removed only after permanent delete"
+      },
+      "failureRecovery": "archive restore; no restore after permanent delete unless backup",
+      "status": "partial",
+      "severity": "high",
+      "evidenceKind": [
+        "current_source"
+      ],
+      "observedUserAssumption": "local-only deletion consequence 이해는 실제 사용자만 확인 가능"
+    },
+    {
+      "personaId": "P6",
+      "persona": "여러 Flow를 관리하는 재방문 사용자",
+      "sessionId": "A",
+      "userGoal": "27개 중 원하는 Flow를 검색하고 전체 구조를 연다.",
+      "route": [
+        "/my?demo=ux20&view=flows"
+      ],
+      "viewport": [
+        "390x844",
+        "1024x768",
+        "1440x900"
+      ],
+      "fixture": "fixture_only: 27 Flow UX20",
+      "startState": "Flow list",
+      "steps": [
+        "search",
+        "filter",
+        "row open",
+        "focused workspace",
+        "plan"
+      ],
+      "tapClickDepth": "3~5",
+      "expectedMentalModel": "library에서 찾고 한 Flow workspace에 집중한다.",
+      "actualFeedback": "mobile list and wide rail/detail support this model. Fixture is not real-user state.",
+      "nextAction": "keep P31 library/focused workspace",
+      "visibleReachable": "reachable",
+      "reloadPersistence": "fixture resets by query",
+      "parity": {
+        "myFlow": "supported",
+        "calendar": "separate route",
+        "export": "workspace action",
+        "stableIdentity": "fixture IDs"
+      },
+      "failureRecovery": "back to library",
+      "status": "supported",
+      "severity": "low",
+      "evidenceKind": [
+        "fixture_only",
+        "current_production_interaction",
+        "current_package_screenshot"
+      ],
+      "observedUserAssumption": "실제 27개 personal data의 naming quality는 실제 사용자만 확인 가능"
+    },
+    {
+      "personaId": "P6",
+      "persona": "여러 Flow를 관리하는 재방문 사용자",
+      "sessionId": "B",
+      "userGoal": "한 Flow에서 next action, plan, record, edit, complete/reopen을 전환한다.",
+      "route": [
+        "/my?demo=ux20&view=flows"
+      ],
+      "viewport": [
+        "390x844",
+        "1024x768"
+      ],
+      "fixture": "fixture_only: 27 Flow UX20",
+      "startState": "focused Flow",
+      "steps": [
+        "다음 행동",
+        "전체 계획",
+        "기록",
+        "Item detail",
+        "complete/reopen",
+        "export"
+      ],
+      "tapClickDepth": "5~10",
+      "expectedMentalModel": "Flow-level tabs and Item-level actions have consistent hierarchy.",
+      "actualFeedback": "focused workspace is coherent, but Item/Flow management entries are distributed.",
+      "nextAction": "shared command grammar",
+      "visibleReachable": "reachable",
+      "reloadPersistence": "fixture only",
+      "parity": {
+        "myFlow": "supported",
+        "calendar": "linked by route",
+        "export": "supported",
+        "stableIdentity": "supported"
+      },
+      "failureRecovery": "same-control reopen and back",
+      "status": "partial",
+      "severity": "medium",
+      "evidenceKind": [
+        "fixture_only",
+        "current_package_screenshot",
+        "current_source"
+      ],
+      "observedUserAssumption": "세 tab 명칭이 실제 mental model과 맞는지는 실제 사용자만 확인 가능"
+    },
+    {
+      "personaId": "P6",
+      "persona": "여러 Flow를 관리하는 재방문 사용자",
+      "sessionId": "C",
+      "userGoal": "보관된 Flow를 찾고 복구/영구 삭제하며 reload한다.",
+      "route": [
+        "/my?view=flows"
+      ],
+      "viewport": [
+        "390x844",
+        "1024x768"
+      ],
+      "fixture": "saved Flow plus archived Flow",
+      "startState": "active filter",
+      "steps": [
+        "active management",
+        "archive",
+        "archived filter",
+        "restore",
+        "archive again",
+        "permanent delete"
+      ],
+      "tapClickDepth": "6~12",
+      "expectedMentalModel": "library의 한 관리 surface에서 lifecycle을 끝까지 다룬다.",
+      "actualFeedback": "archived direct restore는 좋지만 active에서 path가 hidden.",
+      "nextAction": "P34-01",
+      "visibleReachable": "hidden_from_active_state",
+      "reloadPersistence": "yes",
+      "parity": {
+        "myFlow": "supported",
+        "calendar": "archived excluded",
+        "export": "backup supported",
+        "stableIdentity": "restored identity preserved"
+      },
+      "failureRecovery": "undo, restore, backup",
+      "status": "hidden",
+      "severity": "high",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_source",
+        "current_package_screenshot"
+      ],
+      "observedUserAssumption": "사용자가 archived filter를 스스로 찾는지는 실제 사용자만 확인 가능"
+    },
+    {
+      "personaId": "P7",
+      "persona": "Calendar·Todo·Sheet export 중심 사용자",
+      "sessionId": "A",
+      "userGoal": "primary/secondary artifact와 저장될 count를 예측한다.",
+      "route": [
+        "/f/moving-d30-basic",
+        "/f/vehicle-inspection-prep"
+      ],
+      "viewport": [
+        "390x844",
+        "1024x768"
+      ],
+      "fixture": "none",
+      "startState": "fresh localStorage",
+      "steps": [
+        "artifact choice",
+        "date intent",
+        "preview rows",
+        "save"
+      ],
+      "tapClickDepth": "3~6",
+      "expectedMentalModel": "content마다 natural artifact 1개가 먼저이고 secondary는 제한된다.",
+      "actualFeedback": "moving/vehicle은 artifact count를 보여주지만 equal-looking choices와 date modes가 함께 경쟁한다.",
+      "nextAction": "artifact-first hierarchy",
+      "visibleReachable": "reachable",
+      "reloadPersistence": "save metadata persists",
+      "parity": {
+        "myFlow": "receipt count",
+        "calendar": "dated only",
+        "export": "eligibility follows date",
+        "stableIdentity": "supported"
+      },
+      "failureRecovery": "change choice before save",
+      "status": "partial",
+      "severity": "high",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_source"
+      ],
+      "observedUserAssumption": "추천 이유가 destination 선택에 실제로 도움이 되는지는 실제 사용자만 확인 가능"
+    },
+    {
+      "personaId": "P7",
+      "persona": "Calendar·Todo·Sheet export 중심 사용자",
+      "sessionId": "B",
+      "userGoal": "whole/selected/current scope와 output count를 비교한다.",
+      "route": [
+        "/my"
+      ],
+      "viewport": [
+        "390x844",
+        "1024x768"
+      ],
+      "fixture": "saved mixed-date Flow",
+      "startState": "one Flow, selected items available",
+      "steps": [
+        "whole export",
+        "batch select",
+        "selected export",
+        "Item detail current export",
+        "receipt compare"
+      ],
+      "tapClickDepth": "7~12",
+      "expectedMentalModel": "scope를 먼저 고르면 각 destination의 actual rows/events를 preview한다.",
+      "actualFeedback": "contract counts are correct in current unit tests; entry order and naming differ.",
+      "nextAction": "P34-07 scope-first export",
+      "visibleReachable": "reachable_but_distributed",
+      "reloadPersistence": "export identity stable",
+      "parity": {
+        "myFlow": "supported",
+        "calendar": "event count distinct",
+        "export": "whole/selected/current correct",
+        "stableIdentity": "canonical keys"
+      },
+      "failureRecovery": "cancel/retry; failed copy does not claim success",
+      "status": "partial",
+      "severity": "medium",
+      "evidenceKind": [
+        "current_source"
+      ],
+      "observedUserAssumption": "format보다 scope를 먼저 고르는 것이 맞는지는 실제 사용자만 확인 가능"
+    },
+    {
+      "personaId": "P7",
+      "persona": "Calendar·Todo·Sheet export 중심 사용자",
+      "sessionId": "C",
+      "userGoal": "Calendar/checklist/sheet/memo parity와 재생성을 확인한다.",
+      "route": [
+        "/my",
+        "/calendar"
+      ],
+      "viewport": [
+        "390x844",
+        "1024x768"
+      ],
+      "fixture": "edited Flow with excluded and undated items",
+      "startState": "mixed projection",
+      "steps": [
+        "exclude Item",
+        "date remove",
+        "four artifact outputs",
+        "restore Item",
+        "regenerate"
+      ],
+      "tapClickDepth": "10~15",
+      "expectedMentalModel": "same personal overlay drives all outputs; unsupported projections explain omissions.",
+      "actualFeedback": "projection contract supports parity, but UI preview does not always show losses before export.",
+      "nextAction": "loss/count preview in export shell",
+      "visibleReachable": "reachable",
+      "reloadPersistence": "yes",
+      "parity": {
+        "myFlow": "same overlay",
+        "calendar": "undated omitted",
+        "export": "destination-specific output",
+        "stableIdentity": "supported"
+      },
+      "failureRecovery": "restore Item/reassign date/regenerate",
+      "status": "partial",
+      "severity": "medium",
+      "evidenceKind": [
+        "current_source",
+        "heuristic_simulation"
+      ],
+      "observedUserAssumption": "loss warning의 적정 상세 수준은 실제 사용자만 확인 가능"
+    },
+    {
+      "personaId": "P8",
+      "persona": "키보드·저시력 보조 사용자",
+      "sessionId": "A",
+      "userGoal": "public save-before를 keyboard-only로 조정하고 저장한다.",
+      "route": [
+        "/f/moving-d30-basic"
+      ],
+      "viewport": [
+        "390x844",
+        "1024x768"
+      ],
+      "fixture": "none",
+      "startState": "fresh localStorage",
+      "steps": [
+        "Tab through source/artifact/date controls",
+        "date input",
+        "adjust",
+        "save"
+      ],
+      "tapClickDepth": "14+ Tab stops before adjustment",
+      "expectedMentalModel": "logical order follows visual artifact -> condition -> adjustment -> save.",
+      "actualFeedback": "accessible names and overflow are good; native date input yields repeated internal focus and multiple equal controls.",
+      "nextAction": "focus order and progressive controls",
+      "visibleReachable": "reachable",
+      "reloadPersistence": "yes",
+      "parity": {
+        "myFlow": "not reached in this cell",
+        "calendar": "not reached",
+        "export": "not reached",
+        "stableIdentity": "not applicable"
+      },
+      "failureRecovery": "cancel/back",
+      "status": "partial",
+      "severity": "medium",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_source"
+      ],
+      "observedUserAssumption": "screen reader announcement quality is not established by automated names alone"
+    },
+    {
+      "personaId": "P8",
+      "persona": "키보드·저시력 보조 사용자",
+      "sessionId": "B",
+      "userGoal": "My Flow와 Calendar의 dialog/sheet를 keyboard-only로 조작한다.",
+      "route": [
+        "/my?demo=ux20&view=flows",
+        "/calendar?demo=ux20"
+      ],
+      "viewport": [
+        "390x844",
+        "1024x768"
+      ],
+      "fixture": "fixture_only: UX20",
+      "startState": "library and calendar",
+      "steps": [
+        "search",
+        "Flow open",
+        "Item sheet",
+        "Escape/return",
+        "Calendar grid",
+        "selected-day sheet"
+      ],
+      "tapClickDepth": "Calendar grid requires 42 date Tab stops without pointer",
+      "expectedMentalModel": "one Tab into grid, arrows between dates, one Tab out to agenda.",
+      "actualFeedback": "dialog focus return markers exist, but every date is a Tab stop.",
+      "nextAction": "roving grid focus",
+      "visibleReachable": "technically_reachable_but_high_cost",
+      "reloadPersistence": "fixture only",
+      "parity": {
+        "myFlow": "named controls",
+        "calendar": "high keyboard depth",
+        "export": "not assessed here",
+        "stableIdentity": "supported"
+      },
+      "failureRecovery": "Escape and focus return supported by current test",
+      "status": "partial",
+      "severity": "high",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_package_screenshot",
+        "fixture_only"
+      ],
+      "observedUserAssumption": "actual screen reader grid comprehension requires later observed-user evidence"
+    },
+    {
+      "personaId": "P8",
+      "persona": "키보드·저시력 보조 사용자",
+      "sessionId": "C",
+      "userGoal": "archive/restore/delete confirmation, undo, export를 keyboard-only로 수행한다.",
+      "route": [
+        "/my?view=flows"
+      ],
+      "viewport": [
+        "390x844",
+        "1024x768"
+      ],
+      "fixture": "saved Flow",
+      "startState": "active Flow",
+      "steps": [
+        "management menu",
+        "archive",
+        "undo",
+        "archive",
+        "archived menu",
+        "delete dialog",
+        "Escape/focus return",
+        "backup"
+      ],
+      "tapClickDepth": "high due hidden lifecycle",
+      "expectedMentalModel": "destructive hierarchy and focus return are predictable.",
+      "actualFeedback": "dialog focus/escape/backup contract exists; discovery remains weak.",
+      "nextAction": "common lifecycle sheet with stable focus owner",
+      "visibleReachable": "reachable_but_hidden",
+      "reloadPersistence": "yes",
+      "parity": {
+        "myFlow": "supported",
+        "calendar": "archived removed",
+        "export": "backup supported",
+        "stableIdentity": "restored identity preserved"
+      },
+      "failureRecovery": "archive undo, restore, Escape, backup",
+      "status": "partial",
+      "severity": "high",
+      "evidenceKind": [
+        "current_source",
+        "current_package_screenshot",
+        "heuristic_simulation"
+      ],
+      "observedUserAssumption": "저시력 사용자의 destructive warning 가독성은 실제 사용자만 확인 가능"
+    }
+  ]
+}

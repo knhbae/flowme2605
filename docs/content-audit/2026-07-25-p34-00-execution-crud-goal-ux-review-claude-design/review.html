@@ -1,0 +1,807 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe P34-00 Execution CRUD / Goal UX Review</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17201d;
+      --muted: #607069;
+      --line: #d7ded9;
+      --soft: #f2f5f2;
+      --paper: #fbfcfa;
+      --white: #ffffff;
+      --green: #176b4c;
+      --green-soft: #e8f4ed;
+      --blue: #245f91;
+      --blue-soft: #eaf2f8;
+      --amber: #8a5a0a;
+      --amber-soft: #fff3d6;
+      --red: #a23531;
+      --red-soft: #fbeceb;
+      --black: #111715;
+      --shadow: 0 8px 22px rgba(31, 45, 39, .08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Inter, Pretendard, "Noto Sans KR", "Segoe UI", sans-serif;
+      letter-spacing: 0;
+      line-height: 1.55;
+    }
+    button, input, select, textarea { font: inherit; letter-spacing: 0; }
+    a { color: var(--blue); text-underline-offset: 3px; }
+    img { display: block; max-width: 100%; }
+    code { font-family: "SFMono-Regular", Consolas, monospace; font-size: .92em; }
+    strong { color: var(--black); }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 58px;
+      padding: 10px 22px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(251, 252, 250, .96);
+      backdrop-filter: blur(12px);
+    }
+    .brand { display: flex; align-items: baseline; gap: 10px; }
+    .brand b { font-size: 17px; white-space: nowrap; }
+    .brand span { color: var(--muted); font-size: 12px; }
+    .jump {
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .jump a {
+      flex: 0 0 auto;
+      padding: 7px 9px;
+      color: var(--muted);
+      font-size: 12px;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+    .jump a:hover, .jump a:focus-visible { background: var(--soft); color: var(--ink); }
+
+    main { overflow: hidden; }
+    .band { width: 100%; border-bottom: 1px solid var(--line); }
+    .band:nth-child(even) { background: var(--white); }
+    .inner { width: min(1180px, calc(100% - 40px)); margin: 0 auto; padding: 58px 0; }
+    .intro .inner { padding-top: 52px; padding-bottom: 48px; }
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    h1, h2, h3, p { overflow-wrap: anywhere; }
+    h1 { max-width: 880px; margin: 0; font-size: clamp(32px, 5vw, 58px); line-height: 1.05; }
+    h2 { margin: 0; font-size: clamp(25px, 3vw, 38px); line-height: 1.15; }
+    h3 { margin: 0; font-size: 18px; line-height: 1.3; }
+    p { margin: 0; }
+    .lead { max-width: 800px; margin-top: 18px; color: var(--muted); font-size: 18px; }
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(260px, 440px);
+      align-items: end;
+      gap: 28px;
+      margin-bottom: 26px;
+    }
+    .section-head p { color: var(--muted); font-size: 14px; }
+
+    .verdict-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) repeat(4, minmax(120px, .55fr));
+      margin-top: 34px;
+      border: 1px solid var(--line);
+      background: var(--white);
+      box-shadow: var(--shadow);
+    }
+    .verdict-main { padding: 24px; border-right: 1px solid var(--line); }
+    .verdict-main .state {
+      display: inline-flex;
+      padding: 6px 9px;
+      border-radius: 4px;
+      background: var(--amber-soft);
+      color: var(--amber);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .verdict-main h2 { margin-top: 15px; font-size: 27px; }
+    .verdict-main p { margin-top: 9px; color: var(--muted); font-size: 14px; }
+    .metric { display: flex; flex-direction: column; justify-content: center; min-height: 132px; padding: 18px; border-right: 1px solid var(--line); }
+    .metric:last-child { border-right: 0; }
+    .metric b { font-size: 29px; line-height: 1; }
+    .metric span { margin-top: 9px; color: var(--muted); font-size: 12px; }
+    .decision-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .decision {
+      padding: 14px 16px;
+      border-left: 3px solid var(--line);
+      background: var(--soft);
+      font-size: 14px;
+    }
+    .decision.keep { border-color: var(--green); }
+    .decision.change { border-color: var(--amber); }
+    .decision.no { border-color: var(--red); }
+    .decision span { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; }
+
+    .evidence-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      border: 1px solid var(--line);
+      background: var(--white);
+    }
+    .evidence {
+      min-height: 140px;
+      padding: 18px;
+      border-right: 1px solid var(--line);
+    }
+    .evidence:last-child { border-right: 0; }
+    .evidence .kind { color: var(--muted); font-family: Consolas, monospace; font-size: 11px; }
+    .evidence h3 { margin-top: 12px; font-size: 16px; }
+    .evidence p { margin-top: 7px; color: var(--muted); font-size: 13px; }
+    .notice {
+      margin-top: 14px;
+      padding: 13px 15px;
+      border: 1px solid #e9c474;
+      background: var(--amber-soft);
+      color: #704807;
+      font-size: 13px;
+    }
+
+    .finding-list { display: grid; gap: 12px; }
+    .finding {
+      display: grid;
+      grid-template-columns: 82px minmax(0, 1fr) 250px;
+      border: 1px solid var(--line);
+      background: var(--white);
+    }
+    .finding .severity {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 18px 8px;
+      border-right: 1px solid var(--line);
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+    .severity.blocking { background: var(--red-soft); color: var(--red); }
+    .severity.high { background: var(--amber-soft); color: var(--amber); }
+    .severity.medium { background: var(--blue-soft); color: var(--blue); }
+    .severity.low { background: var(--soft); color: var(--muted); }
+    .finding-main { padding: 17px 20px; }
+    .finding-main h3 { font-size: 17px; }
+    .finding-main p { margin-top: 7px; color: var(--muted); font-size: 13px; }
+    .finding-meta {
+      padding: 17px;
+      border-left: 1px solid var(--line);
+      background: #fafbf9;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .finding-meta b { display: block; margin-bottom: 5px; font-size: 12px; }
+    .finding-meta code { display: block; margin-top: 6px; color: var(--green); }
+
+    .table-wrap { overflow-x: auto; border: 1px solid var(--line); background: var(--white); }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 11px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: var(--soft); color: #405048; font-size: 11px; text-transform: uppercase; }
+    tr:last-child td { border-bottom: 0; }
+    .status {
+      display: inline-flex;
+      padding: 4px 7px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .status.supported { background: var(--green-soft); color: var(--green); }
+    .status.partial { background: var(--amber-soft); color: var(--amber); }
+    .status.hidden { background: var(--red-soft); color: var(--red); }
+    .status.missing { background: #eceeed; color: #47514d; }
+    .score-summary {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 0 0 14px;
+    }
+    .score-summary span { padding: 6px 9px; border: 1px solid var(--line); background: var(--white); font-size: 12px; }
+
+    .object-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .object {
+      border: 1px solid var(--line);
+      background: var(--white);
+      padding: 18px;
+    }
+    .object h3 { font-size: 16px; }
+    .object p { margin-top: 6px; color: var(--muted); font-size: 13px; }
+    .cap-row { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 13px; }
+    .cap {
+      padding: 4px 6px;
+      border-radius: 3px;
+      background: var(--soft);
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 800;
+    }
+    .cap.yes { background: var(--green-soft); color: var(--green); }
+    .cap.warn { background: var(--amber-soft); color: var(--amber); }
+    .cap.no { background: var(--red-soft); color: var(--red); }
+
+    .shot-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+    figure { margin: 0; min-width: 0; border: 1px solid var(--line); background: var(--white); }
+    figure img { width: 100%; aspect-ratio: 390 / 844; object-fit: cover; object-position: top; background: var(--soft); }
+    figure.wide img { aspect-ratio: 16 / 10; }
+    figcaption { padding: 11px 12px; color: var(--muted); font-size: 12px; }
+    figcaption strong { display: block; margin-bottom: 3px; }
+
+    .four-way {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border: 1px solid var(--line);
+      background: var(--white);
+    }
+    .four-way section { min-height: 200px; padding: 18px; border-right: 1px solid var(--line); }
+    .four-way section:last-child { border-right: 0; }
+    .four-way h3 { font-size: 15px; }
+    .four-way ul { margin: 12px 0 0; padding-left: 17px; color: var(--muted); font-size: 13px; }
+    .four-way li + li { margin-top: 7px; }
+
+    .grammar {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border: 1px solid var(--line);
+      background: var(--white);
+    }
+    .grammar > div { padding: 22px; }
+    .grammar > div + div { border-left: 1px solid var(--line); }
+    .grammar h3 { margin-bottom: 14px; }
+    .command-row {
+      display: grid;
+      grid-template-columns: minmax(120px, .7fr) 1fr;
+      gap: 16px;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--line);
+      font-size: 13px;
+    }
+    .command-row:last-child { border-bottom: 0; }
+    .command-row span { color: var(--muted); }
+    .path {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      margin-top: 18px;
+      overflow-x: auto;
+    }
+    .path-step {
+      flex: 1 0 150px;
+      min-height: 94px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      background: var(--white);
+    }
+    .path-step + .path-step { border-left: 0; }
+    .path-step b { display: block; font-size: 13px; }
+    .path-step span { display: block; margin-top: 6px; color: var(--muted); font-size: 11px; }
+
+    .goal-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .goal-option { padding: 20px; border: 1px solid var(--line); background: var(--white); }
+    .goal-option.recommended { border: 2px solid var(--green); }
+    .goal-option h3 { display: flex; justify-content: space-between; gap: 10px; font-size: 17px; }
+    .goal-option p { margin-top: 10px; color: var(--muted); font-size: 13px; }
+    .goal-option .label { padding: 4px 6px; border-radius: 3px; background: var(--green-soft); color: var(--green); font-size: 10px; white-space: nowrap; }
+
+    .reference-table td:first-child { min-width: 130px; font-weight: 750; color: var(--black); }
+    .reference-table td:nth-child(3) { min-width: 90px; }
+
+    .wireframe-callout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: 28px;
+      padding: 28px;
+      border: 1px solid var(--line);
+      background: var(--black);
+      color: var(--white);
+    }
+    .wireframe-callout h3 { color: var(--white); font-size: 26px; }
+    .wireframe-callout p { margin-top: 10px; color: #bdc7c1; font-size: 14px; }
+    .wireframe-callout a {
+      justify-self: end;
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+      padding: 0 16px;
+      border-radius: 4px;
+      background: var(--white);
+      color: var(--black);
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .backlog {
+      display: grid;
+      grid-template-columns: 210px minmax(0, 1fr) 170px;
+      border-top: 1px solid var(--line);
+    }
+    .backlog > div { padding: 15px 12px; border-bottom: 1px solid var(--line); }
+    .backlog .id { color: var(--green); font-weight: 900; }
+    .backlog .dep { color: var(--muted); font-size: 12px; }
+    .backlog .title strong { display: block; font-size: 14px; }
+    .backlog .title span { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; }
+
+    .questions { counter-reset: q; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .question {
+      position: relative;
+      min-height: 88px;
+      padding: 15px 15px 15px 50px;
+      border: 1px solid var(--line);
+      background: var(--white);
+      font-size: 13px;
+    }
+    .question::before {
+      counter-increment: q;
+      content: counter(q);
+      position: absolute;
+      left: 15px;
+      top: 15px;
+      display: grid;
+      place-items: center;
+      width: 23px;
+      height: 23px;
+      border-radius: 50%;
+      background: var(--black);
+      color: var(--white);
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .footnotes { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 22px; color: var(--muted); font-size: 12px; }
+    .file-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .file-links a { padding: 7px 9px; border: 1px solid var(--line); background: var(--white); color: var(--ink); font-size: 12px; text-decoration: none; }
+
+    @media (max-width: 900px) {
+      .topbar { align-items: flex-start; flex-direction: column; gap: 7px; padding: 9px 14px; }
+      .jump { width: 100%; }
+      .inner { width: min(100% - 28px, 720px); padding: 44px 0; }
+      .section-head { grid-template-columns: 1fr; gap: 10px; align-items: start; }
+      .verdict-row { grid-template-columns: 1fr 1fr; }
+      .verdict-main { grid-column: 1 / -1; border-right: 0; border-bottom: 1px solid var(--line); }
+      .metric:nth-child(odd) { border-right: 0; }
+      .metric { min-height: 100px; border-bottom: 1px solid var(--line); }
+      .decision-strip, .goal-grid { grid-template-columns: 1fr; }
+      .evidence-grid { grid-template-columns: 1fr 1fr; }
+      .evidence:nth-child(2) { border-right: 0; }
+      .evidence:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+      .finding { grid-template-columns: 62px minmax(0, 1fr); }
+      .finding-meta { grid-column: 1 / -1; border-left: 0; border-top: 1px solid var(--line); }
+      .object-grid, .shot-grid { grid-template-columns: 1fr 1fr; }
+      .four-way { grid-template-columns: 1fr 1fr; }
+      .four-way section:nth-child(2) { border-right: 0; }
+      .four-way section:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+      .grammar { grid-template-columns: 1fr; }
+      .grammar > div + div { border-left: 0; border-top: 1px solid var(--line); }
+      .wireframe-callout { grid-template-columns: 1fr; }
+      .wireframe-callout a { justify-self: start; }
+      .backlog { grid-template-columns: 120px minmax(0, 1fr); }
+      .backlog .dep { grid-column: 1 / -1; padding-top: 0; }
+    }
+
+    @media (max-width: 560px) {
+      .inner { width: calc(100% - 24px); padding: 38px 0; }
+      h1 { font-size: 35px; }
+      .lead { font-size: 16px; }
+      .verdict-main h2 { font-size: 22px; }
+      .verdict-row, .evidence-grid, .object-grid, .shot-grid, .four-way, .questions { grid-template-columns: 1fr; }
+      .metric, .evidence, .four-way section { border-right: 0; border-bottom: 1px solid var(--line); }
+      .metric:last-child, .evidence:last-child, .four-way section:last-child { border-bottom: 0; }
+      .finding { grid-template-columns: 1fr; }
+      .finding .severity { justify-content: flex-start; padding: 8px 13px; border-right: 0; border-bottom: 1px solid var(--line); }
+      .finding-meta { grid-column: auto; }
+      .wireframe-callout { padding: 20px; }
+      .backlog { grid-template-columns: 1fr; }
+      .backlog > div { padding: 10px 12px; }
+      .backlog .dep { grid-column: auto; padding-top: 10px; }
+      .footnotes { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><b>FlowMe P34-00</b><span>Claude Design lane · independent review</span></div>
+    <nav class="jump" aria-label="보고서 섹션">
+      <a href="#verdict">판정</a>
+      <a href="#findings">Findings</a>
+      <a href="#crud">CRUD</a>
+      <a href="#journeys">24 Journeys</a>
+      <a href="#grammar">조작 문법</a>
+      <a href="#wireframes">Wireframes</a>
+      <a href="#backlog">P34</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="band intro" id="verdict">
+      <div class="inner">
+        <p class="eyebrow">Execution CRUD / Goal UX Review · 2026-07-25</p>
+        <h1>기능은 대부분 있다.<br>사용자는 하나의 조작 체계로 배우지 못한다.</h1>
+        <p class="lead">FlowMe는 일정·Todo·체크리스트 실행에 필요한 핵심 계약을 이미 갖췄다. P34의 과제는 새 planner 기능을 더하는 것이 아니라, 보관·수정·완료·날짜 배치·반복·export가 모든 화면에서 같은 문법으로 보이게 만드는 것이다.</p>
+
+        <div class="verdict-row">
+          <div class="verdict-main">
+            <span class="state">OVERALL VERDICT</span>
+            <h2>bounded_crud_revision</h2>
+            <p>P33 canonical alignment를 먼저 production에 반영한 뒤, lifecycle 발견성과 공통 command composition을 제한적으로 재구성한다. 데이터 계약·4탭 IA·public shell의 전면 재작성은 근거가 없다.</p>
+          </div>
+          <div class="metric"><b>24</b><span>persona × session cells</span></div>
+          <div class="metric"><b>4</b><span>supported</span></div>
+          <div class="metric"><b>18</b><span>partial</span></div>
+          <div class="metric"><b>2</b><span>hidden</span></div>
+        </div>
+
+        <div class="decision-strip">
+          <div class="decision keep"><strong>Keep</strong><span>source / personal / run / occurrence / export 분리, receipt, undated queue</span></div>
+          <div class="decision change"><strong>Change</strong><span>Flow 관리, Item editor, 저장 전 조정, Calendar keyboard, export scope</span></div>
+          <div class="decision no"><strong>Do not build</strong><span>Goal dashboard, 습관·성과 tracker, full planner rewrite</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="evidence">
+      <div class="inner">
+        <div class="section-head">
+          <div><p class="eyebrow">Evidence boundary</p><h2>확인한 것과 확인하지 못한 것</h2></div>
+          <p>production interaction을 우선했고, P33은 인증된 Preview가 아니라 current source와 local render로만 판단했다.</p>
+        </div>
+        <div class="evidence-grid">
+          <article class="evidence">
+            <span class="kind">current_production_interaction</span>
+            <h3>P32 production</h3>
+            <p>8 routes × 390/1024, 핵심 1440. HTTP 200, overflow 0, unnamed focusable 0, console/page error 0.</p>
+          </article>
+          <article class="evidence">
+            <span class="kind">current_source</span>
+            <h3>P33 Draft PR #156</h3>
+            <p>SHA <code>8c54992c</code>. moving cross-entry 24개 정렬과 legacy 307 redirect를 source/local render로 확인.</p>
+          </article>
+          <article class="evidence">
+            <span class="kind">inaccessible</span>
+            <h3>P33 Preview</h3>
+            <p>Vercel 인증 화면으로 이동했다. 따라서 P33 preview interaction을 완료했다고 표현하지 않는다.</p>
+          </article>
+          <article class="evidence">
+            <span class="kind">current_source</span>
+            <h3>계약 회귀 확인</h3>
+            <p>lifecycle, Item state, undated, recurrence, run, export, identity, storage 관련 targeted unit 90/90.</p>
+          </article>
+        </div>
+        <div class="notice"><strong>실제 관찰 사용자 수는 0명이다.</strong> 자동 브라우저, screenshot, fixture, source inspection, heuristic simulation은 실제 사용자 관찰이 아니다.</div>
+      </div>
+    </section>
+
+    <section class="band" id="findings">
+      <div class="inner">
+        <div class="section-head">
+          <div><p class="eyebrow">Severity findings</p><h2>먼저 닫아야 할 단절</h2></div>
+          <p>Blocking 1, High 5, Medium 4, Low 2. 아래는 구현 순서를 바꾸는 항목만 요약했다. 재현 단계와 marker는 <a href="./audit.md">audit.md</a>에 있다.</p>
+        </div>
+        <div class="finding-list">
+          <article class="finding">
+            <div class="severity blocking">Blocking</div>
+            <div class="finding-main"><h3>P32에서 같은 moving Flow가 Find 5개, public 24개로 보인다</h3><p>저장 전 본 단위와 저장 결과가 다르다. P33 source는 정렬됐으므로 P34 redesign이 아니라 P33 production publish/smoke gate로 닫아야 한다.</p></div>
+            <div class="finding-meta"><b>/flows → /f/moving-d30-basic</b>390 · 1024<br><code>P33-PRODUCTION-CANONICAL-MOVING-24</code></div>
+          </article>
+          <article class="finding">
+            <div class="severity high">High</div>
+            <div class="finding-main"><h3>Flow 삭제는 안전하지만 active 상태에서 경로가 보이지 않는다</h3><p>`보관` 후 별도 보관함에서만 `복구`와 `이 기기에서 영구 삭제`가 나타난다. 첫 `Flow 관리`에서 lifecycle 전체를 예측시켜야 한다.</p></div>
+            <div class="finding-meta"><b>/my?view=flows</b>390 · 1024<br><code>P34-01-ACTIVE-LIFECYCLE-PREDICTABLE</code></div>
+          </article>
+          <article class="finding">
+            <div class="severity high">High</div>
+            <div class="finding-main"><h3>CRUD 의미는 분리됐지만 command 이름과 위치가 일관되지 않다</h3><p>조정/수정/구성 편집, 제외/삭제/건너뛰기, 가져가기/export가 surface마다 다르게 등장한다. shared command grammar가 필요하다.</p></div>
+            <div class="finding-meta"><b>public · receipt · My Flow · Calendar</b><code>P34-02-SHARED-COMMAND-GRAMMAR</code></div>
+          </article>
+          <article class="finding">
+            <div class="severity high">High</div>
+            <div class="finding-main"><h3>저장 전 조정이 artifact보다 설정 분류를 먼저 보여준다</h3><p>moving 24개는 4개 조정 모드, routine은 artifact/date/repeat form이 길게 이어진다. 결과 row를 직접 고친 뒤 diff를 확인하는 흐름이 필요하다.</p></div>
+            <div class="finding-meta"><b>/f/moving-d30-basic · workout</b><code>P34-03-ARTIFACT-FIRST-ADJUSTMENT</code></div>
+          </article>
+          <article class="finding">
+            <div class="severity high">High</div>
+            <div class="finding-main"><h3>Calendar 월 grid의 모든 날짜가 Tab stop이다</h3><p>agenda 또는 날짜 없는 queue에 도달하기 전에 약 42개 날짜를 지난다. 하나의 grid 진입점과 화살표 탐색이 필요하다.</p></div>
+            <div class="finding-meta"><b>/calendar?demo=ux20</b>390 · 1024<br><code>P34-05-CALENDAR-ROVING-GRID</code></div>
+          </article>
+          <article class="finding">
+            <div class="severity high">High</div>
+            <div class="finding-main"><h3>5개 개인 draft가 43개 조작과 1,757px 문서가 된다</h3><p>분할 결과는 유용하지만 split/merge/reorder를 모두 상시 노출한다. 기본은 include/title/date, 구조 편집은 별도 mode가 적절하다.</p></div>
+            <div class="finding-meta"><b>/flows</b>390<br><code>P34-04-DRAFT-PREVIEW-FIRST</code></div>
+          </article>
+          <article class="finding">
+            <div class="severity medium">Medium</div>
+            <div class="finding-main"><h3>Item detail의 완료·수정·메모·export가 여러 disclosure에 흩어진다</h3><p>bottom sheet 방향은 맞다. header action, quick fields, advanced fields, export의 순서만 공통 anatomy로 고정한다.</p></div>
+            <div class="finding-meta"><b>/my · /calendar</b>390<br><code>P34-04-ITEM-SHEET-ONE-GRAMMAR</code></div>
+          </article>
+          <article class="finding">
+            <div class="severity medium">Medium</div>
+            <div class="finding-main"><h3>반복 series와 이번 occurrence가 같은 설정 과업처럼 읽힌다</h3><p>`월·수·금 07:30 · 8회` summary와 next 3회를 먼저 보이고, series 조정과 이번 회차 조정을 분리한다.</p></div>
+            <div class="finding-meta"><b>workout public · My Flow</b><code>P34-06-SERIES-OCCURRENCE-HIERARCHY</code></div>
+          </article>
+          <article class="finding">
+            <div class="severity medium">Medium</div>
+            <div class="finding-main"><h3>export 계약은 정확하지만 scope 선택 순서가 다르다</h3><p>whole/selected/current와 실제 count를 먼저 정하고, destination과 손실 preview를 다음 단계에 둔다.</p></div>
+            <div class="finding-meta"><b>public · receipt · My Flow · Item</b><code>P34-07-SCOPE-FIRST-EXPORT</code></div>
+          </article>
+          <article class="finding">
+            <div class="severity low">Low</div>
+            <div class="finding-main"><h3>Home과 Flow 찾기의 역할은 여전히 일부 중첩된다</h3><p>이번 P34에서는 IA를 다시 열지 않는다. Home은 사용 맥락·재사용, Find는 검색·source lookup에 집중하는 가설만 보류한다.</p></div>
+            <div class="finding-meta"><b>/ · /flows</b><code>DEFER-HOME-FIND-IA</code></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="evidence-shots">
+      <div class="inner">
+        <div class="section-head">
+          <div><p class="eyebrow">Interaction evidence</p><h2>기능은 존재하지만 깊이가 다르다</h2></div>
+          <p>동일한 390px에서 저장 전, receipt, 저장 후 전체 Flow, 관리 메뉴를 비교했다.</p>
+        </div>
+        <div class="shot-grid">
+          <figure><img src="./screenshots/production/journey-p1-moving-adjustment-390.png" alt="이사 Flow 저장 전 조정 화면"><figcaption><strong>저장 전 조정</strong>24개 결과 옆에 4개 조정 mode가 경쟁한다.</figcaption></figure>
+          <figure><img src="./screenshots/production/journey-p1-moving-receipt-390.png" alt="이사 Flow 저장 완료 receipt"><figcaption><strong>저장 완료 receipt</strong>title, count, artifact, date range가 명확하다.</figcaption></figure>
+          <figure><img src="./screenshots/production/journey-p1-moving-post-save-390.png" alt="저장 후 전체 이사 Flow"><figcaption><strong>저장 후 전체 Flow</strong>전체 계획 확인은 충분하다.</figcaption></figure>
+          <figure><img src="./screenshots/production/journey-p1-moving-management-menu-390.png" alt="활성 Flow 관리 메뉴"><figcaption><strong>활성 Flow 관리</strong>보관 뒤 복구/영구 삭제 경로가 예고되지 않는다.</figcaption></figure>
+        </div>
+        <div class="shot-grid" style="margin-top:12px">
+          <figure><img src="./screenshots/production/journey-p2-vehicle-receipt-390.png" alt="차량 점검 날짜 없이 저장 receipt"><figcaption><strong>날짜 없는 Checklist</strong>저장 후 artifact와 10개 count는 자연스럽다.</figcaption></figure>
+          <figure><img src="./screenshots/production/journey-p5-draft-five-items-390.png" alt="개인 메모에서 분리된 5개 draft Item"><figcaption><strong>개인 draft</strong>결과는 좋지만 row별 조작이 과다하다.</figcaption></figure>
+          <figure><img src="./screenshots/production/journey-p5-item-detail-390.png" alt="저장된 개인 Flow Item detail"><figcaption><strong>Item detail</strong>sheet 구조는 좋지만 action anatomy가 분산된다.</figcaption></figure>
+          <figure><img src="./screenshots/p33-preview-access-390.png" alt="P33 Vercel Preview 인증 화면"><figcaption><strong>P33 Preview</strong>인증으로 interaction 불가. source/local render와 구분했다.</figcaption></figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="crud">
+      <div class="inner">
+        <div class="section-head">
+          <div><p class="eyebrow">CRUD capability</p><h2>결손보다 발견성과 일관성 문제가 크다</h2></div>
+          <p>상세 15개 객체 × Create/Read/Update/Delete/Restore/Reuse/Export 셀은 <a href="./crud-capability-matrix.json">JSON matrix</a>에 기록했다.</p>
+        </div>
+        <div class="object-grid">
+          <article class="object"><h3>Source-backed Flow</h3><p>source를 보존한 개인 사본 생성·조정·재사용·export가 가능하다. published source 삭제는 금지된다.</p><div class="cap-row"><span class="cap yes">C</span><span class="cap yes">R</span><span class="cap yes">U overlay</span><span class="cap no">D source</span><span class="cap yes">Reuse</span><span class="cap yes">Export</span></div></article>
+          <article class="object"><h3>개인 Flow / draft</h3><p>생성, 구조 수정, 보관, 복구, 영구 삭제, reload persistence가 있다. active lifecycle 진입이 hidden이다.</p><div class="cap-row"><span class="cap yes">C</span><span class="cap yes">R</span><span class="cap yes">U</span><span class="cap warn">D hidden</span><span class="cap yes">Restore</span><span class="cap yes">Reuse</span></div></article>
+          <article class="object"><h3>Item</h3><p>제목·날짜·시간·장소·메모·순서 수정과 personal delete/source exclude가 분리된다. command 위치는 inconsistent하다.</p><div class="cap-row"><span class="cap yes">C personal</span><span class="cap yes">R</span><span class="cap yes">U</span><span class="cap warn">D varies</span><span class="cap yes">Restore</span></div></article>
+          <article class="object"><h3>날짜 없는 Item</h3><p>유효한 실행 상태다. Calendar queue에서 batch 배치, undo, 날짜 제거 후 복귀가 가능하다.</p><div class="cap-row"><span class="cap yes">Undated</span><span class="cap yes">Schedule</span><span class="cap yes">Undo</span><span class="cap yes">Remove date</span><span class="cap warn">Discoverability</span></div></article>
+          <article class="object"><h3>반복 series / occurrence</h3><p>stable identity와 this/future/all scope는 있다. summary보다 설정 form이 먼저 읽힌다.</p><div class="cap-row"><span class="cap yes">Series</span><span class="cap yes">Occurrence</span><span class="cap yes">Complete</span><span class="cap yes">Reopen</span><span class="cap warn">Hierarchy</span></div></article>
+          <article class="object"><h3>Execution run</h3><p>완료·다시 열기, 새 실행, 과거 run history가 source/personal state와 분리된다.</p><div class="cap-row"><span class="cap yes">Complete</span><span class="cap yes">Reopen</span><span class="cap yes">New run</span><span class="cap yes">History</span></div></article>
+          <article class="object"><h3>Flow lifecycle</h3><p>archive undo, direct restore, backup, permanent delete 확인이 있다. 첫 active menu에서 전체 경로가 안 보인다.</p><div class="cap-row"><span class="cap yes">Archive</span><span class="cap yes">Undo</span><span class="cap yes">Restore</span><span class="cap warn">Delete hidden</span><span class="cap yes">Backup</span></div></article>
+          <article class="object"><h3>Export scope</h3><p>whole/selected/current identity와 count는 안정적이다. format보다 scope를 먼저 선택하는 공통 shell이 부족하다.</p><div class="cap-row"><span class="cap yes">Whole</span><span class="cap yes">Selected</span><span class="cap yes">Current</span><span class="cap warn">Entry order</span></div></article>
+          <article class="object"><h3>Goal / milestone</h3><p>독립 객체는 없다. 현재는 Flow 진행률·section·completion·run으로 충분하며 추가 근거 없이 만들지 않는다.</p><div class="cap-row"><span class="cap yes">Flow progress</span><span class="cap no">Goal object</span><span class="cap warn">B deferred</span></div></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="journeys">
+      <div class="inner">
+        <div class="section-head">
+          <div><p class="eyebrow">8 personas × 3 sessions</p><h2>지원 4, 숨김 2, 부분 지원 18</h2></div>
+          <p>같은 persona의 저장 상태를 세 session에 이어 붙였다. fixture는 scale 검토에만 쓰고 실제 사용자 도달 상태와 분리했다.</p>
+        </div>
+        <div class="score-summary">
+          <span><b>supported 4</b></span>
+          <span><b>hidden 2</b></span>
+          <span><b>partial 18</b></span>
+          <span>missing 0</span>
+          <span>blocked 0</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Persona</th><th>Session A · 저장</th><th>Session B · 수정/실행</th><th>Session C · 복구/재사용</th><th>핵심 단절</th></tr></thead>
+            <tbody>
+              <tr><td><strong>P1 이사 역산</strong></td><td><span class="status partial">partial</span></td><td><span class="status supported">supported</span></td><td><span class="status hidden">hidden</span></td><td>P32 5↔24 mismatch, lifecycle hidden</td></tr>
+              <tr><td><strong>P2 날짜 없는 차량</strong></td><td><span class="status partial">partial</span></td><td><span class="status supported">supported</span></td><td><span class="status partial">partial</span></td><td>artifact/date intent 경쟁, export entry 분산</td></tr>
+              <tr><td><strong>P3 반복 홈트</strong></td><td><span class="status partial">partial</span></td><td><span class="status partial">partial</span></td><td><span class="status partial">partial</span></td><td>series 설정과 occurrence 실행 hierarchy</td></tr>
+              <tr><td><strong>P4 장기 학습</strong></td><td><span class="status supported">supported</span></td><td><span class="status partial">partial</span></td><td><span class="status partial">partial</span></td><td>긴 Flow current position과 run reuse</td></tr>
+              <tr><td><strong>P5 URL/메모 draft</strong></td><td><span class="status partial">partial</span></td><td><span class="status partial">partial</span></td><td><span class="status partial">partial</span></td><td>5 Item에 43 controls, structural edit 과다</td></tr>
+              <tr><td><strong>P6 다중 Flow</strong></td><td><span class="status supported">supported</span></td><td><span class="status partial">partial</span></td><td><span class="status hidden">hidden</span></td><td>관리 action 분산, archived path 발견성</td></tr>
+              <tr><td><strong>P7 export 중심</strong></td><td><span class="status partial">partial</span></td><td><span class="status partial">partial</span></td><td><span class="status partial">partial</span></td><td>scope-first preview와 loss 예측</td></tr>
+              <tr><td><strong>P8 keyboard/저시력</strong></td><td><span class="status partial">partial</span></td><td><span class="status partial">partial</span></td><td><span class="status partial">partial</span></td><td>Calendar 42 Tab stops, hidden lifecycle</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top:12px;color:var(--muted);font-size:12px">각 cell의 route, viewport, start state, tap depth, parity, recovery, evidenceKind는 <a href="./persona-journey-scorecard.json">persona-journey-scorecard.json</a>에 있다.</p>
+      </div>
+    </section>
+
+    <section class="band" id="surface">
+      <div class="inner">
+        <div class="section-head">
+          <div><p class="eyebrow">Surface decision</p><h2>Keep / Change / Remove / Defer</h2></div>
+          <p>새 카드를 더 쌓지 않고 기존 frame의 역할을 선명하게 한다.</p>
+        </div>
+        <div class="four-way">
+          <section><h3>Keep</h3><ul><li>artifact preview와 count</li><li>별도 saved receipt</li><li>My Flow 집중 workspace</li><li>Calendar selected-day sheet</li><li>undated queue + undo</li><li>archive/restore 안전 계약</li></ul></section>
+          <section><h3>Change</h3><ul><li>artifact-first 저장 전 조정</li><li>Flow 관리 single entry</li><li>Item sheet anatomy</li><li>Calendar roving focus</li><li>routine summary-first</li><li>scope-first export</li></ul></section>
+          <section><h3>Remove</h3><ul><li>같은 사실을 반복하는 설명</li><li>equal-weight artifact/date controls</li><li>draft row의 상시 split/merge</li><li>모든 날짜의 Tab stop</li><li>scope 없는 `가져가기`</li><li>중첩 카드형 section</li></ul></section>
+          <section><h3>Defer</h3><ul><li>Home/Find IA reopen</li><li>bounded Goal overlay</li><li>cloud/account persistence</li><li>OAuth direct sync</li><li>creator marketplace</li><li>AI/crawler와 full planner</li></ul></section>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="grammar">
+      <div class="inner">
+        <div class="section-head">
+          <div><p class="eyebrow">Interaction grammar</p><h2>객체와 범위를 동사에 넣는다</h2></div>
+          <p>완료·제외·삭제·보관은 데이터상 다르다. 같은 단어로 합치지 않고, 어느 객체를 바꾸는지 명확히 표기한다.</p>
+        </div>
+        <div class="grammar">
+          <div>
+            <h3>Flow commands</h3>
+            <div class="command-row"><strong>Flow 조정</strong><span>이름, 기준일, 포함 Item, 반복 규칙</span></div>
+            <div class="command-row"><strong>Flow 관리</strong><span>원문, 새 실행, 보관 lifecycle</span></div>
+            <div class="command-row"><strong>새 실행으로 다시 쓰기</strong><span>과거 run 보존 + 새 기준일</span></div>
+            <div class="command-row"><strong>전체 24개 가져가기</strong><span>scope와 count 선명화</span></div>
+          </div>
+          <div>
+            <h3>Item / occurrence commands</h3>
+            <div class="command-row"><strong>항목 수정</strong><span>제목, 날짜, 시간, 장소, 메모</span></div>
+            <div class="command-row"><strong>완료 / 다시 열기</strong><span>같은 위치, reversible state</span></div>
+            <div class="command-row"><strong>Flow에서 제외 / 다시 포함</strong><span>source Item 구조 overlay</span></div>
+            <div class="command-row"><strong>항목 삭제 / 복구</strong><span>personal Item lifecycle</span></div>
+            <div class="command-row"><strong>이번 회차만 수정</strong><span>series definition과 분리</span></div>
+          </div>
+        </div>
+
+        <div class="path" aria-label="Flow 삭제와 복구 권장 경로">
+          <div class="path-step"><b>1. Flow 관리</b><span>active row와 focused workspace에서 동일 entry</span></div>
+          <div class="path-step"><b>2. 보관</b><span>Calendar/active 실행에서 제거 · snackbar 되돌리기</span></div>
+          <div class="path-step"><b>3. 보관됨</b><span>첫 viewport에 직접 복구</span></div>
+          <div class="path-step"><b>4. 영구 삭제</b><span>backup · personal data만 제거 · source 보존</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="goal">
+      <div class="inner">
+        <div class="section-head">
+          <div><p class="eyebrow">Goal boundary</p><h2>목표 대시보드는 지금 답이 아니다</h2></div>
+          <p>장기 학습과 반복 루틴의 불편을 새 Goal 객체로 덮지 않는다. 우선 현재 Flow 진행률과 run hierarchy를 읽기 쉽게 만든다.</p>
+        </div>
+        <div class="goal-grid">
+          <article class="goal-option recommended"><h3>A. Flow progress <span class="label">권장</span></h3><p>별도 Goal 객체 없이 전체/완료 수, section, next action, run history를 제공한다. 현재 계약으로 가능하며 portable execution layer 경계를 지킨다.</p></article>
+          <article class="goal-option"><h3>B. Bounded overlay <span class="label" style="background:var(--amber-soft);color:var(--amber)">보류</span></h3><p>goal title, milestone, review date만 personal overlay로 추가한다. 실제 반복 사용에서 Flow progress가 부족하다는 근거가 생길 때만 검토한다.</p></article>
+          <article class="goal-option"><h3>C. Full planner <span class="label" style="background:var(--red-soft);color:var(--red)">적용 금지</span></h3><p>목표 dashboard, streak, habit, 성과 추적은 FlowMe를 Notion/Todo/Calendar 대체 제품으로 확장한다. 현재 가치 사슬과 맞지 않는다.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="references">
+      <div class="inner">
+        <div class="section-head">
+          <div><p class="eyebrow">Official reference patterns</p><h2>외형이 아니라 복구 문법만 참고한다</h2></div>
+          <p>공식 도움말/제품 문서에서 확인한 pattern이다. FlowMe에 full planner 기능을 복제하지 않는다.</p>
+        </div>
+        <div class="table-wrap reference-table">
+          <table>
+            <thead><tr><th>제품</th><th>참고 pattern</th><th>FlowMe 판정</th><th>적용 방식</th></tr></thead>
+            <tbody>
+              <tr><td><a href="https://support.google.com/calendar/answer/9901136?hl=en-uk">Google Calendar</a></td><td>날짜 있는 task의 Calendar 노출, pending task, 반복 일정의 현재/전체 수정</td><td><span class="status partial">변형 필요</span></td><td>undated는 queue에 두고, series/occurrence scope만 차용한다.</td></tr>
+              <tr><td><a href="https://support.apple.com/en-us/102484">Apple Reminders</a></td><td>동일 위치 complete/reopen, completed 보기, Recently Deleted 복구</td><td><span class="status supported">적용</span></td><td>완료와 삭제를 분리하고 lifecycle 복구를 직접 노출한다.</td></tr>
+              <tr><td><a href="https://www.todoist.com/help/articles/introduction-to-tasks-080OAXric">Todoist</a></td><td>빠른 task 생성과 상세 view 분리, 반복 task 완료 문법</td><td><span class="status partial">변형 필요</span></td><td>Item quick fields와 advanced disclosure에만 적용한다.</td></tr>
+              <tr><td><a href="https://help.ticktick.com/articles/7358389904469917696">TickTick</a></td><td>task/list와 Calendar 분리, batch reschedule</td><td><span class="status supported">적용</span></td><td>My Flow 실행과 Calendar 날짜 배치를 분리하고 batch preview를 유지한다.</td></tr>
+              <tr><td><a href="https://culturedcode.com/things/support/articles/4001304/">Things</a></td><td>Anytime/Someday/Logbook, 반복 template과 생성된 task 분리</td><td><span class="status partial">변형 필요</span></td><td>undated와 run history, series/occurrence 구분에만 사용한다.</td></tr>
+              <tr><td><a href="https://support.microsoft.com/en-US/ToDo/create-edit-delete-and-restore-tasks">Microsoft To Do</a></td><td>detail view, delete confirmation, restore, step count</td><td><span class="status supported">적용</span></td><td>Item sheet anatomy와 Flow lifecycle confirmation에 적용한다.</td></tr>
+              <tr><td>Structured</td><td>timeline 중심의 낮은 정보 밀도와 빠른 reschedule</td><td><span class="status partial">변형 필요</span></td><td>Calendar visual density만 참고한다. day planner화는 금지한다.</td></tr>
+              <tr><td>Notion</td><td>archive와 delete/restore의 분리, database view</td><td><span class="status hidden">적용 금지</span></td><td>archive semantics만 참고하고 database/workspace 모델은 가져오지 않는다.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="wireframes">
+      <div class="inner">
+        <div class="section-head">
+          <div><p class="eyebrow">Current / proposed</p><h2>10개 필수 화면, 모바일·와이드 비교</h2></div>
+          <p>production 데이터 계약으로 가능한 composition만 우선 제안했다. Goal overlay처럼 선행 계약이 필요한 화면은 구현안에서 제외했다.</p>
+        </div>
+        <div class="wireframe-callout">
+          <div>
+            <h3>설명 카드를 줄이고<br>artifact와 command를 붙인다</h3>
+            <p>public save-before, receipt, My Flow 목록/집중 workspace, Item editor, Calendar detail, undated 배치, routine, lifecycle, export를 실제 콘텐츠로 비교한다.</p>
+          </div>
+          <a href="./current-proposed-wireframes.html">Interactive wireframes 열기 →</a>
+        </div>
+        <div class="shot-grid" style="margin-top:12px">
+          <figure class="wide"><img src="./screenshots/production/moving-1440.png" alt="Production 이사 public Flow 1440 화면"><figcaption><strong>Public 1440</strong>preview + side input은 강하다. hierarchy를 정리할 대상이다.</figcaption></figure>
+          <figure class="wide"><img src="./screenshots/production/my-demo-1440.png" alt="Production My Flow 1440 화면"><figcaption><strong>My Flow 1440</strong>rail/detail 구성이 있어 전면 재작성 근거가 없다.</figcaption></figure>
+          <figure class="wide"><img src="./screenshots/production/calendar-demo-1440.png" alt="Production Calendar 1440 화면"><figcaption><strong>Calendar 1440</strong>calendar/agenda split을 유지하고 keyboard model을 고친다.</figcaption></figure>
+          <figure class="wide"><img src="./screenshots/p33-local-source-moving-1024.png" alt="P33 source local render 이사 Flow 1024 화면"><figcaption><strong>P33 local source</strong>24개 CTA 정렬. 배포 interaction 증거는 아니다.</figcaption></figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="backlog">
+      <div class="inner">
+        <div class="section-head">
+          <div><p class="eyebrow">P34 implementation order</p><h2>새 기능보다 공통 조작 문법부터</h2></div>
+          <p>P33 production gate 이후 P34-01/02를 순차 실행하고, 03~07은 공통 command 계약 확정 뒤 병렬화할 수 있다.</p>
+        </div>
+        <div class="backlog">
+          <div class="id">P33 gate</div><div class="title"><strong>Canonical production parity</strong><span>moving 24개, legacy 사본 보존, receipt/My Flow/Calendar/export identity</span></div><div class="dep">선행 release gate</div>
+          <div class="id">P34-01</div><div class="title"><strong>Flow lifecycle command surface</strong><span>active → archive → restore/permanent delete 경로를 예측 가능하게</span></div><div class="dep">P33 gate</div>
+          <div class="id">P34-02</div><div class="title"><strong>Shared Flow / Item command grammar</strong><span>객체, 범위, destructive hierarchy, feedback/undo 명칭 고정</span></div><div class="dep">P34-01</div>
+          <div class="id">P34-03</div><div class="title"><strong>Artifact-first save-before adjustment</strong><span>row direct edit와 before/after diff, dynamic CTA</span></div><div class="dep">P34-02</div>
+          <div class="id">P34-04</div><div class="title"><strong>Personal draft & Item editor simplification</strong><span>기본 fields와 구조/고급 편집 분리</span></div><div class="dep">P34-02</div>
+          <div class="id">P34-05</div><div class="title"><strong>Calendar keyboard & undated orchestration</strong><span>roving grid, agenda focus, queue placement/remove-date feedback</span></div><div class="dep">P34-02, 04 sheet</div>
+          <div class="id">P34-06</div><div class="title"><strong>Series / occurrence hierarchy</strong><span>summary-first, next 3회, this/future/all scope</span></div><div class="dep">P34-02, 04</div>
+          <div class="id">P34-07</div><div class="title"><strong>Scope-first export & receipt</strong><span>whole/selected/current → count/loss → destination</span></div><div class="dep">P34-02</div>
+          <div class="id">Final gate</div><div class="title"><strong>Cross-surface CRUD regression</strong><span>390/1024/1440, keyboard, identity, lifecycle, recurrence, export</span></div><div class="dep">P34-03~07</div>
+        </div>
+        <p style="margin-top:14px;color:var(--muted);font-size:12px">각 slice의 범위, 비범위, 데이터 영향, acceptance screenshot, E2E marker, rollback은 <a href="./p34-backlog.md">p34-backlog.md</a>에 있다.</p>
+      </div>
+    </section>
+
+    <section class="band" id="questions">
+      <div class="inner">
+        <div class="section-head">
+          <div><p class="eyebrow">Observed-user only</p><h2>내부 검토로 답할 수 없는 질문</h2></div>
+          <p>이번 단계에서는 모집·관찰 계획을 작성하지 않는다. 아래는 실제 사용자가 있어야만 확인 가능한 가정이다.</p>
+        </div>
+        <div class="questions">
+          <div class="question">사용자는 `보관`을 삭제와 다르게 이해하고, 보관함에서 복구/영구 삭제를 예상하는가?</div>
+          <div class="question">날짜 없는 Item을 오류가 아니라 My Flow에서 바로 실행 가능한 상태로 이해하는가?</div>
+          <div class="question">이사 24개 전체판과 기존 5개 개인 사본을 삭제/병합 없이 구분할 수 있는가?</div>
+          <div class="question">artifact-first 조정에서 row 직접 수정이 4개 mode 방식보다 더 예측 가능한가?</div>
+          <div class="question">반복 summary와 `이번 회차만` 조정이 series/occurrence 차이를 충분히 설명하는가?</div>
+          <div class="question">export에서 format보다 whole/selected/current scope를 먼저 고르는 순서가 자연스러운가?</div>
+          <div class="question">장기 학습에서 Flow 진행률만으로 충분한가, milestone/review date overlay가 실제로 필요한가?</div>
+        </div>
+
+        <div class="footnotes">
+          <p><strong>검토 한계</strong><br>P33 Preview interaction은 인증 때문에 확인하지 못했다. local P33 render는 current source의 heuristic evidence이며 production 배포 증거가 아니다.</p>
+          <p><strong>변경 경계</strong><br>앱 코드, 저장 데이터, dependency, STATUS/ROADMAP, commit, push, PR, merge, deploy는 변경하지 않았다. Figma는 사용하지 않았고 HTML wireframe을 선택했다.</p>
+        </div>
+        <div class="file-links">
+          <a href="./README.md">README</a>
+          <a href="./audit.md">Audit</a>
+          <a href="./crud-capability-matrix.json">CRUD JSON</a>
+          <a href="./persona-journey-scorecard.json">Journey JSON</a>
+          <a href="./interaction-consistency-matrix.json">Interaction JSON</a>
+          <a href="./current-proposed-wireframes.html">Wireframes</a>
+          <a href="./p34-backlog.md">P34 backlog</a>
+          <a href="./production-route-audit.json">Route audit</a>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

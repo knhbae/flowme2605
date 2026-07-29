@@ -1,0 +1,1414 @@
+{
+  "schemaVersion": "flowme-p34-crud-capability-v1",
+  "reviewDate": "2026-07-25",
+  "reviewerRole": "claude_design",
+  "verdict": "bounded_crud_revision",
+  "surfaceVersions": {
+    "production": "P32",
+    "p33BranchSha": "8c54992ce5628ab2a3884a530a83d2c8226223dc",
+    "p33PreviewInteraction": "inaccessible",
+    "observedUserCount": 0
+  },
+  "statusVocabulary": [
+    "supported",
+    "hidden",
+    "partial",
+    "inconsistent",
+    "missing",
+    "blocked"
+  ],
+  "objects": [
+    {
+      "objectId": "source_backed_flow",
+      "label": "Source-backed Flow",
+      "operations": {
+        "create": {
+          "status": "missing",
+          "entry": "end-user surface 없음",
+          "label": "없음",
+          "depth": "not reachable",
+          "recovery": "not applicable",
+          "reloadPersistence": "source registry가 담당",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "사용자 CRUD로 추가하지 않는다. creator/source registration은 별도 product lane이다.",
+          "productDecision": "not_applicable_by_design"
+        },
+        "read": {
+          "status": "supported",
+          "entry": "/flows card -> /f detail -> 전체 Flow 구조",
+          "label": "더보기 / 전체 Flow 구조",
+          "depth": "1~2",
+          "recovery": "back 또는 public route 재진입",
+          "reloadPersistence": "yes",
+          "viewport": "mobile은 full outline이 길고 wide는 preview와 조건이 병렬",
+          "evidenceKind": [
+            "current_production_interaction",
+            "current_source"
+          ],
+          "improvement": "mobile에서는 first 6 + stage summary를 유지하고 contextual expand를 제공한다."
+        },
+        "update": {
+          "status": "partial",
+          "entry": "public 조정 또는 saved personal overlay",
+          "label": "조정 / Flow 조정",
+          "depth": "1~3",
+          "recovery": "cancel, original source retained",
+          "reloadPersistence": "personal changes only",
+          "viewport": "mobile adjustment가 길고 wide가 더 명확",
+          "evidenceKind": [
+            "current_source",
+            "current_production_interaction"
+          ],
+          "improvement": "source mutation과 personal adjustment를 UI에서 더 명확히 구분한다."
+        },
+        "delete": {
+          "status": "missing",
+          "entry": "end-user surface 없음",
+          "label": "없음",
+          "depth": "not reachable",
+          "recovery": "published source stays available",
+          "reloadPersistence": "yes",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "source 삭제를 개인 lifecycle에 넣지 않는다.",
+          "productDecision": "not_applicable_by_design"
+        },
+        "restore": {
+          "status": "supported",
+          "entry": "personal copy를 영구 삭제한 뒤 public source 재저장",
+          "label": "다시 시작",
+          "depth": "2~4",
+          "recovery": "new personal copy",
+          "reloadPersistence": "yes",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source",
+            "current_package_screenshot"
+          ],
+          "improvement": "personal restore와 public re-save를 서로 다른 copy action으로 명명한다."
+        },
+        "reuse": {
+          "status": "supported",
+          "entry": "completed Flow record 또는 public Flow",
+          "label": "새 기준일로 다시 쓰기",
+          "depth": "2~3",
+          "recovery": "previous run retained",
+          "reloadPersistence": "yes",
+          "viewport": "mobile은 record tab 안, wide는 detail pane",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "새 실행과 source 재저장을 같은 문법으로 연결한다."
+        },
+        "export": {
+          "status": "supported",
+          "entry": "public Flow 가져가기 또는 My Flow",
+          "label": "Flow 가져가기 / 가져가기",
+          "depth": "1~3",
+          "recovery": "copy/download retry",
+          "reloadPersistence": "export identity stable",
+          "viewport": "mobile disclosure, wide panel",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "scope/count를 format보다 먼저 보여준다."
+        }
+      }
+    },
+    {
+      "objectId": "personal_flow_copy",
+      "label": "개인 Flow 사본",
+      "operations": {
+        "create": {
+          "status": "supported",
+          "entry": "/f receipt",
+          "label": "캘린더 N개로 시작 / 체크리스트 N개로 시작",
+          "depth": "1 after preview",
+          "recovery": "archive or permanent delete",
+          "reloadPersistence": "yes, localStorage",
+          "viewport": "mobile sticky CTA, wide side command",
+          "evidenceKind": [
+            "current_production_interaction",
+            "current_source"
+          ],
+          "improvement": "CTA가 artifact/count/anchor intent를 정확히 말하게 유지한다."
+        },
+        "read": {
+          "status": "supported",
+          "entry": "receipt -> My Flow -> Flow 목록",
+          "label": "내 Flow에서 시작 / 전체 Flow 보기",
+          "depth": "1~3",
+          "recovery": "library back",
+          "reloadPersistence": "yes",
+          "viewport": "mobile focused workspace, wide rail/detail",
+          "evidenceKind": [
+            "current_production_interaction",
+            "current_package_screenshot"
+          ],
+          "improvement": "receipt와 returning workspace의 title/count 문법을 유지한다."
+        },
+        "update": {
+          "status": "supported",
+          "entry": "focused workspace",
+          "label": "Flow 조정 / 구성 편집 / 여러 할 일 조정",
+          "depth": "2~4",
+          "recovery": "cancel or undo",
+          "reloadPersistence": "yes",
+          "viewport": "mobile mode switching, wide contextual pane",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "세 개 entry를 Flow 조정과 구조 편집의 두 레벨로 정리한다."
+        },
+        "delete": {
+          "status": "hidden",
+          "entry": "Flow 목록 -> Flow open -> ⋯ -> 보관 -> 보관됨 -> ⋯",
+          "label": "이 기기에서 영구 삭제",
+          "depth": "6~8",
+          "recovery": "none after confirm; backup offered first",
+          "reloadPersistence": "yes",
+          "viewport": "mobile depth가 더 큼",
+          "evidenceKind": [
+            "current_production_interaction",
+            "current_source",
+            "current_package_screenshot"
+          ],
+          "improvement": "active Flow 관리 sheet에서 lifecycle 전체를 예고한다."
+        },
+        "restore": {
+          "status": "supported",
+          "entry": "보관됨 filter row",
+          "label": "복구",
+          "depth": "2~4 after archive",
+          "recovery": "archive again",
+          "reloadPersistence": "yes",
+          "viewport": "mobile direct restore visible, wide row/menu",
+          "evidenceKind": [
+            "current_source",
+            "current_package_screenshot"
+          ],
+          "improvement": "active management menu에서 restore destination을 예고한다."
+        },
+        "reuse": {
+          "status": "supported",
+          "entry": "record/completed Flow",
+          "label": "새 기준일로 다시 쓰기",
+          "depth": "2~3",
+          "recovery": "old run preserved",
+          "reloadPersistence": "yes",
+          "viewport": "mobile record tab, wide record pane",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "new run receipt에서 previous run 보존을 짧게 확인한다."
+        },
+        "export": {
+          "status": "supported",
+          "entry": "workspace command or Item detail",
+          "label": "가져가기",
+          "depth": "1~3",
+          "recovery": "retry",
+          "reloadPersistence": "identity stable",
+          "viewport": "mobile modal/disclosure, wide side panel",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "whole/selected/current 범위를 공통 first step으로 만든다."
+        }
+      }
+    },
+    {
+      "objectId": "personal_draft",
+      "label": "개인 draft",
+      "operations": {
+        "create": {
+          "status": "supported",
+          "entry": "/flows memo",
+          "label": "내 Flow에 초안 저장",
+          "depth": "2",
+          "recovery": "draft edit or archive",
+          "reloadPersistence": "yes",
+          "viewport": "mobile initial editor is long",
+          "evidenceKind": [
+            "current_production_interaction"
+          ],
+          "improvement": "preview-first and advanced structure mode로 control count를 낮춘다."
+        },
+        "read": {
+          "status": "supported",
+          "entry": "receipt -> My Flow",
+          "label": "전체 Flow 보기",
+          "depth": "1~2",
+          "recovery": "library back",
+          "reloadPersistence": "yes",
+          "viewport": "mobile focused workspace, wide detail",
+          "evidenceKind": [
+            "current_production_interaction"
+          ],
+          "improvement": "private draft badge를 조용히 유지한다."
+        },
+        "update": {
+          "status": "supported",
+          "entry": "전체 계획 -> 구성 편집 / Item detail",
+          "label": "구성 편집 / 할 일 수정",
+          "depth": "2~4",
+          "recovery": "undo and tombstone restore",
+          "reloadPersistence": "yes",
+          "viewport": "mobile controls are dense",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "quick values와 structure editing을 분리한다."
+        },
+        "delete": {
+          "status": "hidden",
+          "entry": "Flow archive -> permanent delete",
+          "label": "이 기기에서 영구 삭제",
+          "depth": "6~8",
+          "recovery": "none after confirm; backup offered",
+          "reloadPersistence": "yes",
+          "viewport": "same lifecycle issue as personal copy",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "personal draft 삭제 시 public source 보존 문구 대신 draft 전체 제거를 명확히 표시한다."
+        },
+        "restore": {
+          "status": "supported",
+          "entry": "보관됨 filter",
+          "label": "복구",
+          "depth": "2~4",
+          "recovery": "archive again",
+          "reloadPersistence": "yes",
+          "viewport": "mobile direct restore",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "library row lifecycle parity를 적용한다."
+        },
+        "reuse": {
+          "status": "supported",
+          "entry": "completed run",
+          "label": "새 실행으로 다시 쓰기",
+          "depth": "2~3",
+          "recovery": "past run retained",
+          "reloadPersistence": "yes",
+          "viewport": "record tab dependent",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "reuse command를 Flow management에 함께 둔다."
+        },
+        "export": {
+          "status": "supported",
+          "entry": "workspace / selected items / Item detail",
+          "label": "가져가기",
+          "depth": "1~3",
+          "recovery": "retry",
+          "reloadPersistence": "stable personal item IDs",
+          "viewport": "mobile disclosure, wide panel",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "scope-first flow를 적용한다."
+        }
+      }
+    },
+    {
+      "objectId": "item",
+      "label": "Item",
+      "operations": {
+        "create": {
+          "status": "partial",
+          "entry": "personal draft structure editor",
+          "label": "항목 추가",
+          "depth": "3~4",
+          "recovery": "delete/tombstone undo",
+          "reloadPersistence": "yes",
+          "viewport": "mobile structure mode only",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "source-backed copy에서는 source mutation이 아닌 personal Item 추가임을 표시한다."
+        },
+        "read": {
+          "status": "supported",
+          "entry": "My Flow row or Calendar selected-day",
+          "label": "열기",
+          "depth": "1",
+          "recovery": "close/Escape with focus return",
+          "reloadPersistence": "yes",
+          "viewport": "mobile bottom sheet, wide detail pane",
+          "evidenceKind": [
+            "current_package_screenshot",
+            "current_source"
+          ],
+          "improvement": "row 전체 click과 열기 label을 같은 accessible action으로 유지한다."
+        },
+        "update": {
+          "status": "supported",
+          "entry": "Item detail",
+          "label": "할 일 수정",
+          "depth": "2",
+          "recovery": "cancel or save",
+          "reloadPersistence": "yes",
+          "viewport": "mobile sheet disclosure is dense",
+          "evidenceKind": [
+            "current_source",
+            "current_production_interaction"
+          ],
+          "improvement": "quick fields와 advanced fields를 한 공통 anatomy로 정리한다."
+        },
+        "delete": {
+          "status": "inconsistent",
+          "entry": "edit mode or batch mode",
+          "label": "항목 삭제 / Flow에서 제외",
+          "depth": "3~5",
+          "recovery": "undo, tombstone restore, or 다시 포함",
+          "reloadPersistence": "yes",
+          "viewport": "mobile mode dependency",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "의미 차이는 유지하되 source/personal ownership badge와 recovery copy를 붙인다."
+        },
+        "restore": {
+          "status": "supported",
+          "entry": "structural undo or excluded section",
+          "label": "되돌리기 / 다시 포함 / 복구",
+          "depth": "1 immediate, 3 later",
+          "recovery": "can remove/exclude again",
+          "reloadPersistence": "yes",
+          "viewport": "later recovery is less visible on mobile",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "later recovery를 Plan tab의 제외됨 section에 고정한다."
+        },
+        "reuse": {
+          "status": "supported",
+          "entry": "new Flow run",
+          "label": "새 실행으로 다시 쓰기",
+          "depth": "Flow-level",
+          "recovery": "past run retained",
+          "reloadPersistence": "yes",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "Item 단독 reuse는 만들지 않고 Flow run에 종속한다."
+        },
+        "export": {
+          "status": "supported",
+          "entry": "Item detail",
+          "label": "현재 항목 가져가기 · 1개",
+          "depth": "2",
+          "recovery": "retry",
+          "reloadPersistence": "stable item identity",
+          "viewport": "mobile collapsed section",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "footer action으로 고정해 찾기 쉽게 한다."
+        }
+      }
+    },
+    {
+      "objectId": "schedule_fields",
+      "label": "날짜·시간·장소",
+      "operations": {
+        "create": {
+          "status": "supported",
+          "entry": "Item detail or Calendar queue",
+          "label": "날짜 배치 / 시간 / 장소",
+          "depth": "2~4",
+          "recovery": "날짜 제거 or edit",
+          "reloadPersistence": "yes",
+          "viewport": "mobile advanced disclosure for place/time",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "date first, time/place contextual disclosure."
+        },
+        "read": {
+          "status": "supported",
+          "entry": "Item row, detail, Calendar, export preview",
+          "label": "date/time/location chips",
+          "depth": "0~1",
+          "recovery": "not applicable",
+          "reloadPersistence": "yes",
+          "viewport": "compact rows truncate secondary fields",
+          "evidenceKind": [
+            "current_source",
+            "current_package_screenshot"
+          ],
+          "improvement": "title/date는 row, time/place는 detail에 기본 표시한다."
+        },
+        "update": {
+          "status": "supported",
+          "entry": "Item detail",
+          "label": "할 일 수정 / 세부 일정",
+          "depth": "2~3",
+          "recovery": "cancel or save",
+          "reloadPersistence": "yes",
+          "viewport": "mobile field grouping can be simplified",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "quick date/time and advanced location/duration grouping."
+        },
+        "delete": {
+          "status": "partial",
+          "entry": "Item detail or batch remove date",
+          "label": "날짜 제거",
+          "depth": "2~4",
+          "recovery": "undo or reassign",
+          "reloadPersistence": "yes",
+          "viewport": "place/time clear is field-level only",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "날짜 제거 후 Calendar queue 복귀 feedback를 통일한다."
+        },
+        "restore": {
+          "status": "supported",
+          "entry": "undo or date reassign",
+          "label": "되돌리기 / 날짜 배치",
+          "depth": "1 immediate, 2 later",
+          "recovery": "remove again",
+          "reloadPersistence": "yes",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "last date undo와 manual reassign을 구분한다."
+        },
+        "reuse": {
+          "status": "supported",
+          "entry": "new anchor flow reuse",
+          "label": "새 기준일로 다시 쓰기",
+          "depth": "Flow-level",
+          "recovery": "old run retained",
+          "reloadPersistence": "yes",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "fixed personal date가 어떻게 처리되는지 preview한다."
+        },
+        "export": {
+          "status": "supported",
+          "entry": "whole/selected/current export",
+          "label": "Calendar/checklist/sheet/memo",
+          "depth": "2~3",
+          "recovery": "retry",
+          "reloadPersistence": "stable",
+          "viewport": "same data, different presentation",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "ICS eligibility and omitted undated count를 preview한다."
+        }
+      }
+    },
+    {
+      "objectId": "undated_item",
+      "label": "날짜 없는 Item",
+      "operations": {
+        "create": {
+          "status": "supported",
+          "entry": "public date intent, personal draft, date removal",
+          "label": "날짜 없이",
+          "depth": "1~2",
+          "recovery": "Calendar 배치",
+          "reloadPersistence": "yes",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_production_interaction",
+            "current_source"
+          ],
+          "improvement": "실행 가능한 valid state임을 row와 receipt에서 유지한다."
+        },
+        "read": {
+          "status": "supported",
+          "entry": "My Flow now/plan, Calendar queue",
+          "label": "날짜 없음 / 날짜 없는 할 일 N개",
+          "depth": "0~2",
+          "recovery": "queue close",
+          "reloadPersistence": "yes",
+          "viewport": "mobile bottom sheet, wide side/inline panel",
+          "evidenceKind": [
+            "current_package_screenshot",
+            "current_source"
+          ],
+          "improvement": "My Flow execution과 Calendar placement 역할을 같은 copy로 연결한다."
+        },
+        "update": {
+          "status": "supported",
+          "entry": "Calendar undated queue",
+          "label": "선택한 N개를 이 날짜에 놓기",
+          "depth": "2~3",
+          "recovery": "undo",
+          "reloadPersistence": "yes",
+          "viewport": "mobile sheet, wide tray",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "selected Flow/date/count를 sticky action에 표시한다."
+        },
+        "delete": {
+          "status": "partial",
+          "entry": "Item ownership에 따라 삭제/제외",
+          "label": "항목 삭제 / Flow에서 제외",
+          "depth": "3~5",
+          "recovery": "undo/restore",
+          "reloadPersistence": "yes",
+          "viewport": "mobile mode hidden",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "schedule removal과 structural removal을 다른 section으로 둔다."
+        },
+        "restore": {
+          "status": "supported",
+          "entry": "placement undo or date remove",
+          "label": "되돌리기 / 날짜 제거",
+          "depth": "1~2",
+          "recovery": "schedule again",
+          "reloadPersistence": "yes",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "날짜 없는 queue로 돌아왔다는 status를 명확히 한다."
+        },
+        "reuse": {
+          "status": "supported",
+          "entry": "new run",
+          "label": "새 실행으로 다시 쓰기",
+          "depth": "Flow-level",
+          "recovery": "past state retained",
+          "reloadPersistence": "yes",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "previous manual date를 carry/reset할지 preview한다."
+        },
+        "export": {
+          "status": "partial",
+          "entry": "checklist/sheet/memo export",
+          "label": "가져가기",
+          "depth": "2~3",
+          "recovery": "retry",
+          "reloadPersistence": "stable",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "ICS에서 빠지는 N개와 alternative destination을 먼저 표시한다."
+        }
+      }
+    },
+    {
+      "objectId": "recurrence_series",
+      "label": "반복 series",
+      "operations": {
+        "create": {
+          "status": "supported",
+          "entry": "public routine setup or personal Item advanced editor",
+          "label": "반복 설정",
+          "depth": "2~4",
+          "recovery": "반복 종료 or remove",
+          "reloadPersistence": "yes",
+          "viewport": "mobile form is long",
+          "evidenceKind": [
+            "current_source",
+            "current_package_screenshot"
+          ],
+          "improvement": "summary-first and dedicated adjustment sheet."
+        },
+        "read": {
+          "status": "supported",
+          "entry": "public summary, My Flow routine rail, Calendar",
+          "label": "월·수·금 · 8회 / 다음 3회",
+          "depth": "0~1",
+          "recovery": "not applicable",
+          "reloadPersistence": "yes",
+          "viewport": "compact rail on wide, summary card mobile",
+          "evidenceKind": [
+            "current_source",
+            "current_package_screenshot"
+          ],
+          "improvement": "series label과 occurrence date를 시각적으로 분리한다."
+        },
+        "update": {
+          "status": "supported",
+          "entry": "routine detail",
+          "label": "반복 일정 조정",
+          "depth": "2~4",
+          "recovery": "cancel",
+          "reloadPersistence": "yes",
+          "viewport": "scope editor dense on mobile",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "future/all scope는 advanced, summary diff before apply."
+        },
+        "delete": {
+          "status": "partial",
+          "entry": "repeat end/stop, not destructive series delete",
+          "label": "반복 종료",
+          "depth": "3~4",
+          "recovery": "edit recurrence again",
+          "reloadPersistence": "yes",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "반복 종료와 Flow archive를 명확히 분리한다."
+        },
+        "restore": {
+          "status": "partial",
+          "entry": "edit recurrence",
+          "label": "반복 다시 설정",
+          "depth": "3~4",
+          "recovery": "stop again",
+          "reloadPersistence": "yes",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "paused/ended state가 필요할 때만 bounded state를 검토한다."
+        },
+        "reuse": {
+          "status": "supported",
+          "entry": "new run",
+          "label": "새 실행으로 다시 쓰기",
+          "depth": "2~3",
+          "recovery": "past occurrences retained",
+          "reloadPersistence": "yes",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "new series start date and rule preview."
+        },
+        "export": {
+          "status": "supported",
+          "entry": "Calendar/ICS",
+          "label": "캘린더 파일 받기",
+          "depth": "2~3",
+          "recovery": "retry",
+          "reloadPersistence": "stable series UID",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "RRULE 원문 대신 readable summary와 occurrence count."
+        }
+      }
+    },
+    {
+      "objectId": "recurrence_occurrence",
+      "label": "개별 occurrence",
+      "operations": {
+        "create": {
+          "status": "supported",
+          "entry": "series projection",
+          "label": "자동 생성된 다음 회차",
+          "depth": "automatic",
+          "recovery": "series edit",
+          "reloadPersistence": "yes, stable occurrence identity",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "사용자 생성 버튼으로 노출하지 않는다."
+        },
+        "read": {
+          "status": "supported",
+          "entry": "My Flow next action / Calendar date",
+          "label": "이번 회차",
+          "depth": "0~1",
+          "recovery": "close detail",
+          "reloadPersistence": "yes",
+          "viewport": "mobile sheet, wide agenda",
+          "evidenceKind": [
+            "current_source",
+            "current_package_screenshot"
+          ],
+          "improvement": "series summary와 occurrence title을 동시에 보여준다."
+        },
+        "update": {
+          "status": "supported",
+          "entry": "occurrence detail",
+          "label": "이번 회차만 / 이후 회차 / 모든 회차",
+          "depth": "2~3",
+          "recovery": "cancel or new edit",
+          "reloadPersistence": "yes",
+          "viewport": "mobile scope can feel heavy",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "이번 회차만을 default quick path로 둔다."
+        },
+        "delete": {
+          "status": "inconsistent",
+          "entry": "occurrence action group",
+          "label": "이번만 건너뛰기 / 잠시 보류",
+          "depth": "2~3",
+          "recovery": "재개",
+          "reloadPersistence": "yes",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "delete가 아니라 execution state임을 유지하고 destructive style을 쓰지 않는다."
+        },
+        "restore": {
+          "status": "supported",
+          "entry": "same occurrence detail",
+          "label": "이번 회차 다시 진행 / 재개",
+          "depth": "2",
+          "recovery": "skip/hold again",
+          "reloadPersistence": "yes",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "same location as skip/hold."
+        },
+        "reuse": {
+          "status": "supported",
+          "entry": "series produces next occurrence",
+          "label": "다음 회차",
+          "depth": "automatic",
+          "recovery": "series edit",
+          "reloadPersistence": "yes",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "manual duplicate command는 만들지 않는다."
+        },
+        "export": {
+          "status": "supported",
+          "entry": "current Item export or series ICS",
+          "label": "현재 항목 가져가기 · 1개",
+          "depth": "2~3",
+          "recovery": "retry",
+          "reloadPersistence": "stable UID",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "current occurrence와 whole series 범위를 먼저 고르게 한다."
+        }
+      }
+    },
+    {
+      "objectId": "completion_and_run",
+      "label": "완료 상태와 execution run",
+      "operations": {
+        "create": {
+          "status": "supported",
+          "entry": "Flow save/start",
+          "label": "내 Flow에서 시작",
+          "depth": "1 after receipt",
+          "recovery": "archive or complete run",
+          "reloadPersistence": "yes",
+          "viewport": "same state, different frame",
+          "evidenceKind": [
+            "current_production_interaction",
+            "current_source"
+          ],
+          "improvement": "receipt와 returning execution frame을 계속 분리한다."
+        },
+        "read": {
+          "status": "supported",
+          "entry": "My Flow now/plan/record",
+          "label": "전체 N/M 완료",
+          "depth": "0~1",
+          "recovery": "not applicable",
+          "reloadPersistence": "yes",
+          "viewport": "wide progress visible, mobile focused",
+          "evidenceKind": [
+            "current_package_screenshot",
+            "current_source"
+          ],
+          "improvement": "completion, exclusion, hold counts를 섞지 않는다."
+        },
+        "update": {
+          "status": "supported",
+          "entry": "Item completion control",
+          "label": "완료 / 다시 열기",
+          "depth": "1",
+          "recovery": "same control",
+          "reloadPersistence": "yes",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "same location across My Flow and Calendar 유지."
+        },
+        "delete": {
+          "status": "missing",
+          "entry": "run history delete 없음",
+          "label": "없음",
+          "depth": "not reachable",
+          "recovery": "not applicable",
+          "reloadPersistence": "history retained",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "P34에서 추가하지 않는다. data management backup/restore만 유지.",
+          "productDecision": "defer_without_user_value"
+        },
+        "restore": {
+          "status": "supported",
+          "entry": "same Item control",
+          "label": "다시 열기",
+          "depth": "1",
+          "recovery": "complete again",
+          "reloadPersistence": "yes",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "completed view에서도 same control을 노출한다."
+        },
+        "reuse": {
+          "status": "supported",
+          "entry": "completed Flow record",
+          "label": "새 실행으로 다시 쓰기",
+          "depth": "2~3",
+          "recovery": "old run preserved",
+          "reloadPersistence": "yes",
+          "viewport": "record tab is less discoverable mobile",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "completed receipt와 Flow management에 entry를 함께 둔다."
+        },
+        "export": {
+          "status": "partial",
+          "entry": "current/completed run export",
+          "label": "가져가기",
+          "depth": "2~3",
+          "recovery": "retry",
+          "reloadPersistence": "snapshot identity retained",
+          "viewport": "record export less visible mobile",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "current plan과 past run export label을 구분한다."
+        }
+      }
+    },
+    {
+      "objectId": "personal_note_and_resource",
+      "label": "개인 메모와 resource",
+      "operations": {
+        "create": {
+          "status": "supported",
+          "entry": "Item detail",
+          "label": "메모 / resource 추가",
+          "depth": "2~4",
+          "recovery": "clear/remove",
+          "reloadPersistence": "yes",
+          "viewport": "mobile disclosure, wide detail",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "execution memo와 source resource를 시각적으로 분리한다."
+        },
+        "read": {
+          "status": "supported",
+          "entry": "Item detail/record",
+          "label": "실행 메모 / 원문·도구",
+          "depth": "1~2",
+          "recovery": "close",
+          "reloadPersistence": "yes",
+          "viewport": "mobile may require disclosure",
+          "evidenceKind": [
+            "current_source",
+            "current_package_screenshot"
+          ],
+          "improvement": "개인 메모를 action 가까이, source resource를 secondary section에 둔다."
+        },
+        "update": {
+          "status": "supported",
+          "entry": "Item editor",
+          "label": "메모",
+          "depth": "2",
+          "recovery": "cancel/save",
+          "reloadPersistence": "yes",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "note autosave 여부와 save feedback을 한 문법으로 고정한다."
+        },
+        "delete": {
+          "status": "partial",
+          "entry": "field clear or resource remove",
+          "label": "삭제",
+          "depth": "2~4",
+          "recovery": "undo not universal",
+          "reloadPersistence": "yes",
+          "viewport": "resource action less visible mobile",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "resource remove에 immediate undo를 제공한다."
+        },
+        "restore": {
+          "status": "partial",
+          "entry": "cancel before save or recreate",
+          "label": "취소",
+          "depth": "1 immediate",
+          "recovery": "manual recreate later",
+          "reloadPersistence": "depends on committed state",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "saved resource removal의 undo contract를 통일한다."
+        },
+        "reuse": {
+          "status": "partial",
+          "entry": "new run preview",
+          "label": "새 실행으로 다시 쓰기",
+          "depth": "Flow-level",
+          "recovery": "past notes retained",
+          "reloadPersistence": "yes",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "carry/reset personal memo choice는 actual need 전까지 추가하지 않는다."
+        },
+        "export": {
+          "status": "supported",
+          "entry": "Item/Flow export",
+          "label": "메모/Markdown, sheet, ICS",
+          "depth": "2~3",
+          "recovery": "retry",
+          "reloadPersistence": "stable",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "private note 포함 여부를 scope preview에서 확인한다."
+        }
+      }
+    },
+    {
+      "objectId": "flow_lifecycle",
+      "label": "Flow 보관·복구·영구 삭제",
+      "operations": {
+        "create": {
+          "status": "supported",
+          "entry": "save Flow",
+          "label": "내 Flow에 저장",
+          "depth": "1",
+          "recovery": "archive/delete",
+          "reloadPersistence": "yes",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "lifecycle state는 existing contract 유지."
+        },
+        "read": {
+          "status": "hidden",
+          "entry": "Flow 목록 filters",
+          "label": "진행 중 / 완료 / 보관됨",
+          "depth": "1~3",
+          "recovery": "filter reset",
+          "reloadPersistence": "yes",
+          "viewport": "mobile archived entry appears after archive",
+          "evidenceKind": [
+            "current_production_interaction",
+            "current_package_screenshot"
+          ],
+          "improvement": "active management에서 downstream states를 예고한다."
+        },
+        "update": {
+          "status": "supported",
+          "entry": "active/archived management",
+          "label": "보관 / 복구",
+          "depth": "3~5",
+          "recovery": "undo or reverse action",
+          "reloadPersistence": "yes",
+          "viewport": "mobile deeper",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "same management surface/action order."
+        },
+        "delete": {
+          "status": "hidden",
+          "entry": "archived row overflow",
+          "label": "이 기기에서 영구 삭제",
+          "depth": "6~8 from active",
+          "recovery": "none after confirm; backup first",
+          "reloadPersistence": "yes",
+          "viewport": "mobile most hidden",
+          "evidenceKind": [
+            "current_production_interaction",
+            "current_source"
+          ],
+          "improvement": "active manage sheet에서 lifecycle path preview."
+        },
+        "restore": {
+          "status": "supported",
+          "entry": "archived row",
+          "label": "복구",
+          "depth": "2~4",
+          "recovery": "archive again",
+          "reloadPersistence": "yes",
+          "viewport": "mobile direct restore strong",
+          "evidenceKind": [
+            "current_package_screenshot",
+            "current_source"
+          ],
+          "improvement": "wide에도 direct restore를 같은 위치로."
+        },
+        "reuse": {
+          "status": "partial",
+          "entry": "restore then new run",
+          "label": "복구 / 새 실행으로 다시 쓰기",
+          "depth": "3~5",
+          "recovery": "archive",
+          "reloadPersistence": "yes",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "복구와 새 run을 하나의 action으로 합치지 않는다."
+        },
+        "export": {
+          "status": "supported",
+          "entry": "Data management or delete dialog",
+          "label": "백업 먼저 받기",
+          "depth": "2 global, 7 delete path",
+          "recovery": "local restore from backup",
+          "reloadPersistence": "backup file",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source",
+            "current_package_screenshot"
+          ],
+          "improvement": "global data backup과 single Flow export를 다른 label로 유지한다."
+        }
+      }
+    },
+    {
+      "objectId": "item_exclusion_restore_delete",
+      "label": "Item 제외·복구·삭제",
+      "operations": {
+        "create": {
+          "status": "supported",
+          "entry": "personal overlay state",
+          "label": "Flow에서 제외 / 항목 삭제",
+          "depth": "3~5",
+          "recovery": "undo/restore",
+          "reloadPersistence": "yes",
+          "viewport": "mode hidden mobile",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "ownership-specific action but shared recovery anatomy."
+        },
+        "read": {
+          "status": "partial",
+          "entry": "Plan tab excluded section or structural state",
+          "label": "제외됨",
+          "depth": "2~4",
+          "recovery": "다시 포함",
+          "reloadPersistence": "yes",
+          "viewport": "mobile section may be below long plan",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "plan summary에 excluded count와 link를 둔다."
+        },
+        "update": {
+          "status": "supported",
+          "entry": "edit/batch mode",
+          "label": "Flow에서 제외 / 다시 포함",
+          "depth": "3~5",
+          "recovery": "same section",
+          "reloadPersistence": "yes",
+          "viewport": "same semantics",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "exclude does not alter memo/completion을 feedback으로 확인."
+        },
+        "delete": {
+          "status": "supported",
+          "entry": "personal draft structural mode",
+          "label": "항목 삭제",
+          "depth": "3~5",
+          "recovery": "tombstone restore",
+          "reloadPersistence": "yes",
+          "viewport": "mobile mode only",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "source item action과 destructive style를 다르게 한다."
+        },
+        "restore": {
+          "status": "supported",
+          "entry": "undo or excluded/deleted section",
+          "label": "되돌리기 / 다시 포함 / 복구",
+          "depth": "1 immediate, 3 later",
+          "recovery": "remove again",
+          "reloadPersistence": "yes",
+          "viewport": "later recovery less visible mobile",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "later recovery location fixed in Plan tab."
+        },
+        "reuse": {
+          "status": "supported",
+          "entry": "new run",
+          "label": "새 실행으로 다시 쓰기",
+          "depth": "Flow-level",
+          "recovery": "previous overlay preserved by policy",
+          "reloadPersistence": "yes",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "reuse preview에서 excluded Item count를 보여준다."
+        },
+        "export": {
+          "status": "supported",
+          "entry": "whole/selected/current export",
+          "label": "가져가기",
+          "depth": "2~3",
+          "recovery": "retry",
+          "reloadPersistence": "stable",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "excluded/deleted Item이 export에서 빠지는 count를 명시한다."
+        }
+      }
+    },
+    {
+      "objectId": "export_scope",
+      "label": "export 범위 whole / selected / current",
+      "operations": {
+        "create": {
+          "status": "supported",
+          "entry": "Flow or Item export",
+          "label": "전체 / 선택 / 현재 항목 가져가기",
+          "depth": "1~3",
+          "recovery": "cancel",
+          "reloadPersistence": "selection is session state; identity stable",
+          "viewport": "mobile disclosure, wide panel",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "scope first step."
+        },
+        "read": {
+          "status": "partial",
+          "entry": "export panel/receipt",
+          "label": "N개",
+          "depth": "1~2",
+          "recovery": "back",
+          "reloadPersistence": "receipt state may be transient",
+          "viewport": "wide preview clearer",
+          "evidenceKind": [
+            "current_source",
+            "current_package_screenshot"
+          ],
+          "improvement": "count, excluded, date/event count를 destination 전에 보여준다."
+        },
+        "update": {
+          "status": "supported",
+          "entry": "batch selection/export scope",
+          "label": "전체 선택 / 선택 해제",
+          "depth": "2~3",
+          "recovery": "cancel",
+          "reloadPersistence": "not required across reload",
+          "viewport": "mobile toolbar can cover content",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "sticky selection bar with visible count."
+        },
+        "delete": {
+          "status": "missing",
+          "entry": "export history 없음",
+          "label": "없음",
+          "depth": "not reachable",
+          "recovery": "not applicable",
+          "reloadPersistence": "no export history",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "P34에서 export history를 추가하지 않는다.",
+          "productDecision": "not_applicable_by_design"
+        },
+        "restore": {
+          "status": "missing",
+          "entry": "export history 없음",
+          "label": "없음",
+          "depth": "not reachable",
+          "recovery": "regenerate export",
+          "reloadPersistence": "source state retained",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "재생성으로 충분하다.",
+          "productDecision": "not_applicable_by_design"
+        },
+        "reuse": {
+          "status": "supported",
+          "entry": "same Flow/Item export",
+          "label": "다시 복사 / 다시 받기",
+          "depth": "1~3",
+          "recovery": "retry",
+          "reloadPersistence": "identity stable",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "duplicate import warning은 external integration 전까지 보류."
+        },
+        "export": {
+          "status": "supported",
+          "entry": "scope -> destination",
+          "label": "Markdown/checklist/TSV/ICS",
+          "depth": "2~4",
+          "recovery": "retry",
+          "reloadPersistence": "stable projection identity",
+          "viewport": "same data",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "scope/count/loss receipt를 공통 적용."
+        }
+      }
+    },
+    {
+      "objectId": "optional_goal_milestone_progress",
+      "label": "선택적 Goal·milestone·progress",
+      "operations": {
+        "create": {
+          "status": "missing",
+          "entry": "독립 Goal 객체 없음",
+          "label": "없음",
+          "depth": "not reachable",
+          "recovery": "not applicable",
+          "reloadPersistence": "Flow progress only",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source",
+            "heuristic_simulation"
+          ],
+          "improvement": "A안을 유지한다. Goal 객체를 P34에 추가하지 않는다.",
+          "productDecision": "recommended_absence"
+        },
+        "read": {
+          "status": "supported",
+          "entry": "Flow progress, sections, next action, record",
+          "label": "전체 N/M 완료 / 진도 보기",
+          "depth": "0~2",
+          "recovery": "not applicable",
+          "reloadPersistence": "yes",
+          "viewport": "mobile focused, wide progress pane",
+          "evidenceKind": [
+            "current_source",
+            "current_package_screenshot"
+          ],
+          "improvement": "progress를 Goal dashboard로 확장하지 않는다."
+        },
+        "update": {
+          "status": "partial",
+          "entry": "Flow title/anchor/item completion",
+          "label": "Flow 조정",
+          "depth": "2~4",
+          "recovery": "cancel/undo",
+          "reloadPersistence": "yes",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "별도 Goal 목표치가 아니라 Flow execution values만 수정."
+        },
+        "delete": {
+          "status": "missing",
+          "entry": "Goal 객체 없음",
+          "label": "없음",
+          "depth": "not reachable",
+          "recovery": "not applicable",
+          "reloadPersistence": "not applicable",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "추가하지 않는다.",
+          "productDecision": "recommended_absence"
+        },
+        "restore": {
+          "status": "missing",
+          "entry": "Goal 객체 없음",
+          "label": "없음",
+          "depth": "not reachable",
+          "recovery": "not applicable",
+          "reloadPersistence": "not applicable",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "추가하지 않는다.",
+          "productDecision": "recommended_absence"
+        },
+        "reuse": {
+          "status": "supported",
+          "entry": "Flow run reuse",
+          "label": "새 실행으로 다시 쓰기",
+          "depth": "2~3",
+          "recovery": "past run retained",
+          "reloadPersistence": "yes",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "Goal clone 대신 Flow run reuse를 사용한다."
+        },
+        "export": {
+          "status": "partial",
+          "entry": "Flow export",
+          "label": "가져가기",
+          "depth": "2~3",
+          "recovery": "retry",
+          "reloadPersistence": "stable",
+          "viewport": "same",
+          "evidenceKind": [
+            "current_source"
+          ],
+          "improvement": "progress snapshot을 별도 Goal export로 만들지 않는다."
+        }
+      }
+    }
+  ]
+}

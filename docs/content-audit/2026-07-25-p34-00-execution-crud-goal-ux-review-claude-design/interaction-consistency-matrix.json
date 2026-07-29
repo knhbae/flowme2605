@@ -1,0 +1,482 @@
+{
+  "schemaVersion": "flowme-p34-interaction-consistency-v1",
+  "reviewDate": "2026-07-25",
+  "reviewerRole": "claude_design",
+  "observedUserCount": 0,
+  "commandRows": [
+    {
+      "object": "Flow",
+      "intent": "save",
+      "currentLabels": {
+        "public": "캘린더 N개로 시작 / 체크리스트 N개로 시작 / Flow 실행 N개로 시작",
+        "receipt": "내 Flow에서 시작",
+        "myFlow": "already saved",
+        "calendar": "not applicable",
+        "export": "not applicable"
+      },
+      "status": "supported",
+      "problem": "public CTA is concrete when artifact/count is correct; P32 moving date intent was misleading before P33 source adjustment.",
+      "proposedGrammar": "public: [artifact] [count]개로 시작; receipt: 내 Flow에서 시작",
+      "feedback": "distinct saved receipt with title/count/artifact",
+      "destructiveHierarchy": "not destructive",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_source"
+      ]
+    },
+    {
+      "object": "Flow",
+      "intent": "rename",
+      "currentLabels": {
+        "public": "조정 -> 제목·메모",
+        "receipt": "not available",
+        "myFlow": "Flow 조정",
+        "calendar": "Item detail only",
+        "export": "personal title used"
+      },
+      "status": "inconsistent",
+      "problem": "Flow-level rename is nested under different modes.",
+      "proposedGrammar": "Flow 조정 -> 이름",
+      "feedback": "저장됨 + title parity preview",
+      "destructiveHierarchy": "not destructive",
+      "evidenceKind": [
+        "current_source",
+        "heuristic_simulation"
+      ]
+    },
+    {
+      "object": "Flow",
+      "intent": "adjust",
+      "currentLabels": {
+        "public": "조정",
+        "receipt": "not available",
+        "myFlow": "Flow 조정 / 구성 편집 / 여러 할 일 조정",
+        "calendar": "Item-level only",
+        "export": "not applicable"
+      },
+      "status": "inconsistent",
+      "problem": "value adjustment, structural editing, and batch operations are not a clear two-level model.",
+      "proposedGrammar": "Flow 조정; secondary 여러 항목 조정",
+      "feedback": "before/after + affected count",
+      "destructiveHierarchy": "structural removal separated",
+      "evidenceKind": [
+        "current_source",
+        "current_production_interaction"
+      ]
+    },
+    {
+      "object": "Flow",
+      "intent": "view_whole",
+      "currentLabels": {
+        "public": "전체 Flow 구조 / N개 보기",
+        "receipt": "전체 Flow 보기",
+        "myFlow": "전체 계획 / 전체 Flow 보기",
+        "calendar": "Flow scope, no whole-plan command",
+        "export": "whole scope"
+      },
+      "status": "inconsistent",
+      "problem": "Flow, 계획, 구조 labels refer to the same whole-object reading job.",
+      "proposedGrammar": "전체 Flow",
+      "feedback": "N items, stages, date coverage",
+      "destructiveHierarchy": "not destructive",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_source"
+      ]
+    },
+    {
+      "object": "Flow",
+      "intent": "archive",
+      "currentLabels": {
+        "public": "not applicable",
+        "receipt": "not available",
+        "myFlow": "보관",
+        "calendar": "not available",
+        "export": "not applicable"
+      },
+      "status": "hidden",
+      "problem": "only visible in workspace overflow; downstream restore/delete path is not previewed.",
+      "proposedGrammar": "Flow 관리 -> 보관",
+      "feedback": "보관됨 + 되돌리기",
+      "destructiveHierarchy": "secondary lifecycle action, not red",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_source"
+      ]
+    },
+    {
+      "object": "Flow",
+      "intent": "restore",
+      "currentLabels": {
+        "public": "re-save source",
+        "receipt": "not available",
+        "myFlow": "복구",
+        "calendar": "not available",
+        "export": "backup restore is separate"
+      },
+      "status": "supported",
+      "problem": "direct restore is clear only after user reaches archived filter.",
+      "proposedGrammar": "보관됨 row -> 복구",
+      "feedback": "Flow 목록으로 복구됨 + 되돌리기 optional",
+      "destructiveHierarchy": "primary in archived state",
+      "evidenceKind": [
+        "current_package_screenshot",
+        "current_source"
+      ]
+    },
+    {
+      "object": "Flow",
+      "intent": "permanent_delete",
+      "currentLabels": {
+        "public": "not applicable",
+        "receipt": "not available",
+        "myFlow": "이 기기에서 영구 삭제",
+        "calendar": "not available",
+        "export": "백업 먼저 받기"
+      },
+      "status": "hidden",
+      "problem": "safe but 6~8 actions deep from active Flow.",
+      "proposedGrammar": "Flow 관리 lifecycle preview; archived state only: 이 기기에서 영구 삭제",
+      "feedback": "irreversible confirmation, source preservation, backup ready",
+      "destructiveHierarchy": "red, last action, confirmation required",
+      "evidenceKind": [
+        "current_package_screenshot",
+        "current_source",
+        "current_production_interaction"
+      ]
+    },
+    {
+      "object": "Flow",
+      "intent": "reuse",
+      "currentLabels": {
+        "public": "start again",
+        "receipt": "not available",
+        "myFlow": "새 기준일로 다시 쓰기",
+        "calendar": "not available",
+        "export": "new export after reuse"
+      },
+      "status": "partial",
+      "problem": "good run contract but entry is record/completion dependent and not in Flow management.",
+      "proposedGrammar": "새 실행으로 다시 쓰기",
+      "feedback": "new anchor/items + past run retained",
+      "destructiveHierarchy": "not destructive",
+      "evidenceKind": [
+        "current_source"
+      ]
+    },
+    {
+      "object": "Flow",
+      "intent": "export_whole",
+      "currentLabels": {
+        "public": "Flow 가져가기",
+        "receipt": "Flow 가져가기",
+        "myFlow": "가져가기",
+        "calendar": "not direct whole-plan command",
+        "export": "whole Flow"
+      },
+      "status": "inconsistent",
+      "problem": "scope is not in every entry label.",
+      "proposedGrammar": "전체 [count]개 가져가기",
+      "feedback": "scope/count/destination receipt",
+      "destructiveHierarchy": "not destructive",
+      "evidenceKind": [
+        "current_source"
+      ]
+    },
+    {
+      "object": "Item",
+      "intent": "add",
+      "currentLabels": {
+        "public": "not available",
+        "receipt": "not available",
+        "myFlow": "항목 추가",
+        "calendar": "not available",
+        "export": "updated count"
+      },
+      "status": "partial",
+      "problem": "available in personal structural editor, not a common focused-workspace command.",
+      "proposedGrammar": "Plan tab -> 항목 추가",
+      "feedback": "added row + undo",
+      "destructiveHierarchy": "not destructive",
+      "evidenceKind": [
+        "current_source"
+      ]
+    },
+    {
+      "object": "Item",
+      "intent": "open",
+      "currentLabels": {
+        "public": "preview row",
+        "receipt": "whole-plan row",
+        "myFlow": "열기",
+        "calendar": "열기",
+        "export": "not applicable"
+      },
+      "status": "supported",
+      "problem": "visible text sometimes concatenates title and 열기 in accessible output.",
+      "proposedGrammar": "row click, accessible name [title] 열기",
+      "feedback": "detail sheet/pane",
+      "destructiveHierarchy": "not destructive",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_source"
+      ]
+    },
+    {
+      "object": "Item",
+      "intent": "edit",
+      "currentLabels": {
+        "public": "adjustment row",
+        "receipt": "not available",
+        "myFlow": "할 일 수정 / 세부 일정",
+        "calendar": "Item detail -> 할 일 수정",
+        "export": "personal edit projected"
+      },
+      "status": "partial",
+      "problem": "quick and advanced edit exist but are spread across nested disclosure.",
+      "proposedGrammar": "항목 수정; secondary 세부 일정",
+      "feedback": "saved + next projections changed",
+      "destructiveHierarchy": "not destructive",
+      "evidenceKind": [
+        "current_production_interaction",
+        "current_source"
+      ]
+    },
+    {
+      "object": "Item",
+      "intent": "complete_reopen",
+      "currentLabels": {
+        "public": "preview only, no completion",
+        "receipt": "no completion",
+        "myFlow": "완료 / 다시 열기",
+        "calendar": "완료 / 다시 열기",
+        "export": "state included without changing membership"
+      },
+      "status": "supported",
+      "problem": "current contract is one of the strongest consistent interactions.",
+      "proposedGrammar": "완료 / 다시 열기",
+      "feedback": "same-location state change and status",
+      "destructiveHierarchy": "not destructive",
+      "evidenceKind": [
+        "current_source"
+      ]
+    },
+    {
+      "object": "Item",
+      "intent": "schedule_unschedule",
+      "currentLabels": {
+        "public": "날짜 정하기 / 날짜 없이",
+        "receipt": "date counts",
+        "myFlow": "날짜 / 날짜 제거",
+        "calendar": "이 날짜에 놓기 / 날짜 제거",
+        "export": "ICS eligible/unavailable"
+      },
+      "status": "inconsistent",
+      "problem": "same data change is expressed as intent, placement, and removal without a shared verb pair.",
+      "proposedGrammar": "날짜 배치 / 날짜 제거",
+      "feedback": "moved to [date] / 날짜 없는 할 일로 돌아감",
+      "destructiveHierarchy": "not destructive",
+      "evidenceKind": [
+        "current_source",
+        "current_package_screenshot"
+      ]
+    },
+    {
+      "object": "Item",
+      "intent": "exclude_delete",
+      "currentLabels": {
+        "public": "저장에서 제외",
+        "receipt": "included count",
+        "myFlow": "Flow에서 제외 / 항목 삭제",
+        "calendar": "not direct",
+        "export": "excluded/deleted omitted"
+      },
+      "status": "inconsistent",
+      "problem": "different labels are semantically correct but ownership and recovery are not visible enough.",
+      "proposedGrammar": "source: Flow에서 제외; personal: 항목 삭제",
+      "feedback": "excluded/deleted section + undo, memo preserved",
+      "destructiveHierarchy": "exclude neutral, personal delete warning",
+      "evidenceKind": [
+        "current_source"
+      ]
+    },
+    {
+      "object": "Item",
+      "intent": "restore",
+      "currentLabels": {
+        "public": "re-include before save",
+        "receipt": "not available",
+        "myFlow": "되돌리기 / 다시 포함 / 복구",
+        "calendar": "projection returns after restore",
+        "export": "membership returns"
+      },
+      "status": "inconsistent",
+      "problem": "immediate and later recovery use three labels.",
+      "proposedGrammar": "immediate: 되돌리기; later source: 다시 포함; later personal: 복구",
+      "feedback": "restored to original order and projections",
+      "destructiveHierarchy": "primary recovery",
+      "evidenceKind": [
+        "current_source"
+      ]
+    },
+    {
+      "object": "Item",
+      "intent": "export_current",
+      "currentLabels": {
+        "public": "not current-item scope",
+        "receipt": "not available",
+        "myFlow": "현재 항목 가져가기 · 1개",
+        "calendar": "detail sheet same",
+        "export": "item scope"
+      },
+      "status": "supported",
+      "problem": "correct label but hidden inside detail disclosure.",
+      "proposedGrammar": "이 항목 가져가기 · 1개",
+      "feedback": "scope/destination receipt",
+      "destructiveHierarchy": "not destructive",
+      "evidenceKind": [
+        "current_source"
+      ]
+    },
+    {
+      "object": "Recurrence",
+      "intent": "edit_series",
+      "currentLabels": {
+        "public": "반복 설정",
+        "receipt": "repeat summary",
+        "myFlow": "반복 변경 적용 범위",
+        "calendar": "routine detail",
+        "export": "readable recurrence"
+      },
+      "status": "partial",
+      "problem": "series summary and scope edit are technically correct but form-heavy.",
+      "proposedGrammar": "반복 일정 조정",
+      "feedback": "before/after summary + affected future count",
+      "destructiveHierarchy": "not destructive",
+      "evidenceKind": [
+        "current_source",
+        "current_package_screenshot"
+      ]
+    },
+    {
+      "object": "Occurrence",
+      "intent": "edit_this",
+      "currentLabels": {
+        "public": "not available",
+        "receipt": "not available",
+        "myFlow": "이번 회차만",
+        "calendar": "이번 회차만",
+        "export": "current occurrence"
+      },
+      "status": "supported",
+      "problem": "entry is nested under recurrence detail.",
+      "proposedGrammar": "이번 회차 수정",
+      "feedback": "only this date/time/place changed",
+      "destructiveHierarchy": "not destructive",
+      "evidenceKind": [
+        "current_source"
+      ]
+    },
+    {
+      "object": "Occurrence",
+      "intent": "skip_hold_resume",
+      "currentLabels": {
+        "public": "not available",
+        "receipt": "not available",
+        "myFlow": "이번만 건너뛰기 / 잠시 보류 / 다시 진행",
+        "calendar": "same detail",
+        "export": "execution state"
+      },
+      "status": "partial",
+      "problem": "states are distinct but action rail is not shared with complete/reopen.",
+      "proposedGrammar": "이번 회차 actions: 완료, 다시 열기, 건너뛰기, 보류, 재개",
+      "feedback": "state-specific status, series unchanged",
+      "destructiveHierarchy": "non-destructive execution states",
+      "evidenceKind": [
+        "current_source"
+      ]
+    },
+    {
+      "object": "Export",
+      "intent": "selected",
+      "currentLabels": {
+        "public": "not selected scope",
+        "receipt": "not available",
+        "myFlow": "선택 항목 가져가기",
+        "calendar": "not common",
+        "export": "selected count"
+      },
+      "status": "partial",
+      "problem": "selection toolbar and export panel do not use a single scope-first shell.",
+      "proposedGrammar": "선택 [count]개 가져가기",
+      "feedback": "actual output count and omitted reason",
+      "destructiveHierarchy": "not destructive",
+      "evidenceKind": [
+        "current_source"
+      ]
+    }
+  ],
+  "stateSeparation": [
+    {
+      "states": [
+        "completion",
+        "reopen"
+      ],
+      "current": "separate and reversible",
+      "verdict": "keep",
+      "evidenceKind": [
+        "current_source"
+      ]
+    },
+    {
+      "states": [
+        "skip",
+        "hold",
+        "resume"
+      ],
+      "current": "separate occurrence execution states",
+      "verdict": "keep_but_unify_action_rail",
+      "evidenceKind": [
+        "current_source"
+      ]
+    },
+    {
+      "states": [
+        "personal exclusion",
+        "personal item deletion"
+      ],
+      "current": "separate storage contracts; P33 preserves memo across exclusion",
+      "verdict": "keep_and_improve_ownership_copy",
+      "evidenceKind": [
+        "current_source"
+      ]
+    },
+    {
+      "states": [
+        "Flow archive",
+        "Flow completion",
+        "permanent delete"
+      ],
+      "current": "separate contracts but archive/delete discovery is hidden",
+      "verdict": "keep_contract_revise_surface",
+      "evidenceKind": [
+        "current_source",
+        "current_production_interaction"
+      ]
+    },
+    {
+      "states": [
+        "source",
+        "personal overlay",
+        "run",
+        "occurrence",
+        "export identity"
+      ],
+      "current": "separate and covered by stable projection tests",
+      "verdict": "keep_no_migration",
+      "evidenceKind": [
+        "current_source"
+      ]
+    }
+  ]
+}
