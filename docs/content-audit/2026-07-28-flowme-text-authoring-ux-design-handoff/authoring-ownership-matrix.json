@@ -37,6 +37,13 @@
       "canonicalImpact": "none"
     },
     {
+      "layer": "personal_structural_overlay",
+      "owner": "user",
+      "editableInAuthoringUx": true,
+      "writeActions": ["add", "remove_tombstone", "restore", "reorder", "split", "merge", "role_override"],
+      "canonicalImpact": "none"
+    },
+    {
       "layer": "execution_run",
       "owner": "user",
       "editableInAuthoringUx": false,
@@ -44,10 +51,24 @@
       "canonicalImpact": "none"
     },
     {
+      "layer": "recurrence_series",
+      "owner": "user_schedule",
+      "editableInAuthoringUx": true,
+      "writeActions": ["schedule_definition", "end_condition"],
+      "canonicalImpact": "none"
+    },
+    {
       "layer": "recurrence_occurrence",
       "owner": "user_run",
       "editableInAuthoringUx": false,
       "writeActions": ["occurrence_completion", "occurrence_note"],
+      "canonicalImpact": "none"
+    },
+    {
+      "layer": "export_identity_receipt",
+      "owner": "export_operation",
+      "editableInAuthoringUx": false,
+      "writeActions": ["scope", "format", "count", "loss_manifest", "result_identity"],
       "canonicalImpact": "none"
     },
     {

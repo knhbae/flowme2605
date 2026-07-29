@@ -5,6 +5,8 @@
 - Package type: design-planning evidence and prompt
 - App implementation: unchanged
 - Observed-user count: 0
+- Local completion state: design contract, prototype, wireflow, review, and implementation handoff
+- Remote branch state: completed design package preserved on this branch; not merged to `main`
 
 ## Start Here
 
@@ -16,6 +18,26 @@
 6. [제품 경계](./product-boundary.md)
 7. [용어](./terminology-ko.md)
 8. [응답 템플릿](./response-template-ko.md)
+9. [여덟 frozen authoring 사례](./eight-case-frozen-authoring-fixtures.md)
+10. [독립 UX 검토](./independent-ux-review.md)
+11. [콘텐츠 fidelity 검토](./content-fidelity-review.md)
+12. [접근성 검토](./accessibility-review.md)
+13. [브라우저 QA](./browser-qa.md)
+14. [완료 감사](./completion-audit.md)
+15. [v1.1 상세판 검토](../2026-07-29-flowme-text-authoring-ux-v1-1-detail-review.md)
+
+## Local Design Outputs
+
+- [Text Authoring UX interactive prototype](../2026-07-28-flowme-text-authoring-ux-v1-ko.html)
+- [Text Authoring UX v1.1 detailed simulation](../2026-07-29-flowme-text-authoring-ux-v1-1-detail-ko.html)
+- [v1.1 detail delta](../../specs/2026-07-28-flowme-text-authoring-ux-v1/prototype-detail-delta-v1-1.md)
+- [v1.1 QA screenshots](../2026-07-29-flowme-text-authoring-ux-v1-1-detail-assets/)
+- [A/B/C current/proposed wireflows](../2026-07-28-flowme-text-authoring-wireframes-ko.html)
+- [Offline prototype](./offline-preview/index.html)
+- [Offline wireflows](./offline-preview/wireframes.html)
+- [UX v1 spec](../../specs/2026-07-28-flowme-text-authoring-ux-v1/spec.md)
+- [Implementation goal prompts](../../specs/2026-07-28-flowme-text-authoring-ux-v1/implementation-goal-prompts.md)
+- [QA screenshots](./assets/)
 
 GitHub tree:
 
@@ -38,6 +60,9 @@ The package contains:
 - authoring ownership and current-capability matrices;
 - eight representative authoring cases;
 - a unified prompt and response contract.
+- a deterministic standalone prototype and A/B/C wireflow;
+- independent UX, content fidelity, accessibility, and browser QA records;
+- sequential TA-01 through TA-06 implementation prompts.
 
 ## Evidence Boundary
 
@@ -76,7 +101,10 @@ Automatic parsing, screenshots, fixtures, and agent simulation are not observed-
 
 ## Publish State
 
-This branch is a design handoff only. It does not imply:
+The completed design package is preserved on this branch as a reviewable checkpoint. It remains
+separate from `main`; no PR, merge, deployment, app implementation, or product approval is implied.
+
+This package is design-only. It does not imply:
 
 - implementation approval;
 - main merge;
