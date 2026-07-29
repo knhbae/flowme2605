@@ -1,0 +1,3765 @@
+{
+  "schemaVersion": "flow-content-ui-new-source-verification-v1",
+  "generatedAt": "2026-07-29T23:59:00+09:00",
+  "claimBoundary": "24 URLs were directly inspected. Rows below are source evidence, not observed-user validation.",
+  "counts": {
+    "reviewedUrls": 24,
+    "normal": 22,
+    "boundary": 1,
+    "historical": 1
+  },
+  "records": [
+    {
+      "researchId": "new-a01-seoul-wedding-110",
+      "title": "서울시 결혼 준비 추가금 체크 110선",
+      "source": {
+        "title": "예식업·결혼준비대행업 체크리스트 110선 및 소비자 유의사항",
+        "provider": "서울특별시",
+        "url": "https://opengov.seoul.go.kr/og/com/download.php?dname=%EC%98%88%EB%B9%84%EB%B6%80%EB%B6%80+%EC%8A%A4%C2%B7%EB%93%9C%C2%B7%EB%A9%94+%EC%B6%94%EA%B0%80%EA%B8%88+%ED%8F%AD%ED%83%84%E2%80%A6+%EC%84%9C%EC%9A%B8%EC%8B%9C+%EA%B2%B0%ED%98%BC+%EC%A4%80%EB%B9%84+%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8+%EC%A0%9C%EC%9E%91.pdf&dtype=basic&nid=31208121&rid=F0000105564892",
+        "canonicalUrl": "https://news.seoul.go.kr/economy/archives/562367",
+        "sourceFormat": "pdf",
+        "accessStatus": "public_full_text",
+        "locale": "ko-KR",
+        "observedAt": "2026-07-29"
+      },
+      "userJob": "예식장·스드메 견적을 비교하면서 누락된 추가금과 계약 조건을 기록한다.",
+      "corpusTier": "structure_probe",
+      "generationMode": "field_template",
+      "taxonomy": {
+        "primaryLifeArea": "money_admin_purchase",
+        "sourceShape": "table_rows",
+        "temporalIntent": "no_schedule",
+        "primaryExecutionPattern": "compare_decide",
+        "primaryProjection": "sheet",
+        "secondaryProjections": [
+          "checklist",
+          "memo"
+        ]
+      },
+      "minimumInputs": [
+        {
+          "key": "vendorName",
+          "label": "업체 또는 견적 이름",
+          "type": "text",
+          "required": false,
+          "purposes": [
+            "execution"
+          ],
+          "source": "user_overlay"
+        }
+      ],
+      "readiness": {
+        "architectureFit": "go",
+        "logicReadiness": "modify",
+        "publicReadiness": "modify",
+        "rightsStatus": "public_kogl_type_4_review_required",
+        "personalConversionAvailability": "available",
+        "sourceCompleteness": "representative_rows_12_of_110",
+        "safetyReview": "not_required",
+        "localeReview": "applicable",
+        "privacyReview": "private_overlay_required",
+        "promotionState": "research_only"
+      },
+      "confirmedSourceRowCount": 110,
+      "capturedSourceRowCount": 12,
+      "sourceRows": [
+        {
+          "sourceRowId": "wed-01",
+          "title": "예식장 기본 대관료 확인",
+          "group": "예식장"
+        },
+        {
+          "sourceRowId": "wed-02",
+          "title": "성수기·피크타임 추가 대관료 확인",
+          "group": "예식장"
+        },
+        {
+          "sourceRowId": "wed-03",
+          "title": "하객 주차비 확인",
+          "group": "예식장"
+        },
+        {
+          "sourceRowId": "wed-04",
+          "title": "식비와 최소 보증인원 확인",
+          "group": "예식장"
+        },
+        {
+          "sourceRowId": "wed-05",
+          "title": "본식 촬영 기본 비용 확인",
+          "group": "촬영"
+        },
+        {
+          "sourceRowId": "wed-06",
+          "title": "촬영 원판 제공 비용 확인",
+          "group": "촬영"
+        },
+        {
+          "sourceRowId": "wed-07",
+          "title": "사진 보정 비용 확인",
+          "group": "촬영"
+        },
+        {
+          "sourceRowId": "wed-08",
+          "title": "스튜디오 출장 추가비 확인",
+          "group": "촬영"
+        },
+        {
+          "sourceRowId": "wed-09",
+          "title": "드레스 피팅 비용 확인",
+          "group": "드레스·메이크업"
+        },
+        {
+          "sourceRowId": "wed-10",
+          "title": "새 드레스 지정 추가비 확인",
+          "group": "드레스·메이크업"
+        },
+        {
+          "sourceRowId": "wed-11",
+          "title": "메이크업 담당자 지정 비용 확인",
+          "group": "드레스·메이크업"
+        },
+        {
+          "sourceRowId": "wed-12",
+          "title": "이른 시간 시작 추가비 확인",
+          "group": "드레스·메이크업"
+        }
+      ],
+      "fieldContract": [
+        {
+          "key": "vendor",
+          "label": "업체",
+          "valueType": "text"
+        },
+        {
+          "key": "included",
+          "label": "포함 여부",
+          "valueType": "boolean"
+        },
+        {
+          "key": "quotedPrice",
+          "label": "견적 금액",
+          "valueType": "money",
+          "owner": "user_overlay"
+        },
+        {
+          "key": "evidence",
+          "label": "계약서 근거",
+          "valueType": "link",
+          "owner": "user_overlay"
+        }
+      ],
+      "evidenceNotes": [
+        "실제 PDF는 110개 행이지만 이 UI fixture는 필드 계약 검토용 대표 12행이다.",
+        "견적·계약서·연락처는 canonical source가 아니라 개인 overlay다."
+      ]
+    },
+    {
+      "researchId": "new-a02-seoul-museum-group",
+      "title": "서울상상나라 단체관람 준비와 당일 인솔",
+      "source": {
+        "title": "서울상상나라 단체관람 안내서",
+        "provider": "서울상상나라",
+        "url": "https://www.seoulchildrensmuseum.org/download.do?fn=%EC%82%AC%EC%A0%84%EB%8B%A8%EC%B2%B4%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8%2819.10%29.pdf&fnR=%2Ff00_files%2F20191003112143_492.pdf",
+        "canonicalUrl": "https://www.seoulchildrensmuseum.org/news/boardView.do?bbsCnum=300&id=935",
+        "sourceFormat": "pdf",
+        "accessStatus": "public_full_text",
+        "locale": "ko-KR",
+        "observedAt": "2026-07-29"
+      },
+      "userJob": "교사가 단체 견학을 빠뜨림 없이 준비하고 당일 인원·동선·퇴장을 관리한다.",
+      "corpusTier": "product_candidate",
+      "generationMode": "flow_items",
+      "taxonomy": {
+        "primaryLifeArea": "family_parenting",
+        "sourceShape": "procedure_rows",
+        "temporalIntent": "manually_selected_date",
+        "primaryExecutionPattern": "ordered_procedure",
+        "primaryProjection": "checklist",
+        "secondaryProjections": [
+          "calendar",
+          "sheet",
+          "memo"
+        ]
+      },
+      "minimumInputs": [
+        {
+          "key": "visitDate",
+          "label": "예약 날짜·회차",
+          "type": "datetime",
+          "required": true,
+          "purposes": [
+            "schedule"
+          ],
+          "source": "user_overlay"
+        },
+        {
+          "key": "childrenCount",
+          "label": "어린이 수",
+          "type": "number",
+          "required": false,
+          "purposes": [
+            "execution"
+          ],
+          "source": "user_overlay"
+        },
+        {
+          "key": "teacherCount",
+          "label": "인솔교사 수",
+          "type": "number",
+          "required": false,
+          "purposes": [
+            "execution"
+          ],
+          "source": "user_overlay"
+        }
+      ],
+      "readiness": {
+        "architectureFit": "go",
+        "logicReadiness": "modify",
+        "publicReadiness": "hold",
+        "rightsStatus": "permission_review_required",
+        "personalConversionAvailability": "available",
+        "sourceCompleteness": "execution_core_12_rows_from_current_guide",
+        "safetyReview": "child_supervision_caution_required",
+        "localeReview": "applicable",
+        "privacyReview": "no_child_pii_in_canonical",
+        "promotionState": "research_only"
+      },
+      "confirmedSourceRowCount": 30,
+      "capturedSourceRowCount": 12,
+      "sourceRows": [
+        {
+          "sourceRowId": "museum-01",
+          "title": "홈페이지에서 단체관람을 사전 예약",
+          "group": "방문 전"
+        },
+        {
+          "sourceRowId": "museum-02",
+          "title": "어린이 7명당 인솔교사 1명 비율 준비",
+          "group": "방문 전"
+        },
+        {
+          "sourceRowId": "museum-03",
+          "title": "예약 시각 15분 전 도착",
+          "group": "도착"
+        },
+        {
+          "sourceRowId": "museum-04",
+          "title": "운전기사에게 위치와 주차요금 전달",
+          "group": "도착"
+        },
+        {
+          "sourceRowId": "museum-05",
+          "title": "외투와 귀중품은 차량 보관 권장",
+          "group": "도착"
+        },
+        {
+          "sourceRowId": "museum-06",
+          "title": "도시락·가방을 지정 카트에 보관",
+          "group": "도착"
+        },
+        {
+          "sourceRowId": "museum-07",
+          "title": "인원을 확인한 뒤 매표소에서 결제",
+          "group": "도착"
+        },
+        {
+          "sourceRowId": "museum-08",
+          "title": "4개 전시영역을 각 30분씩 이동",
+          "group": "관람"
+        },
+        {
+          "sourceRowId": "museum-09",
+          "title": "인솔교사가 어린이와 계속 함께 활동",
+          "group": "관람"
+        },
+        {
+          "sourceRowId": "museum-10",
+          "title": "층 이동 전 전체 인원 확인",
+          "group": "관람"
+        },
+        {
+          "sourceRowId": "museum-11",
+          "title": "전시장 내 음식 섭취 금지",
+          "group": "관람"
+        },
+        {
+          "sourceRowId": "museum-12",
+          "title": "퇴장 10분 전 운전기사에게 연락",
+          "group": "퇴장"
+        }
+      ],
+      "evidenceNotes": [
+        "2019 파일은 superseded로 보존하고 2025-11-07 최신 공식 안내서를 canonical source로 사용한다."
+      ]
+    },
+    {
+      "researchId": "new-a03-kakaopay-jeonse",
+      "title": "전세 계약 단계별 체크 포인트",
+      "source": {
+        "title": "전세 계약할 때 ‘이것’ 꼭 확인하세요",
+        "provider": "카카오페이 페이어텐션",
+        "url": "https://contents.kakaopay.com/contents/2056",
+        "canonicalUrl": "https://contents.kakaopay.com/contents/2056",
+        "sourceFormat": "html",
+        "accessStatus": "public_full_text",
+        "locale": "ko-KR",
+        "observedAt": "2026-07-29"
+      },
+      "userJob": "전세 계약 단계별 위험 점검을 빠뜨리지 않고 증빙 상태를 관리한다.",
+      "corpusTier": "product_candidate",
+      "generationMode": "flow_items",
+      "taxonomy": {
+        "primaryLifeArea": "money_admin_purchase",
+        "sourceShape": "checklist_rows",
+        "temporalIntent": "no_schedule",
+        "primaryExecutionPattern": "compare_decide",
+        "primaryProjection": "checklist",
+        "secondaryProjections": [
+          "sheet",
+          "memo"
+        ]
+      },
+      "minimumInputs": [
+        {
+          "key": "contractStage",
+          "label": "현재 계약 단계",
+          "type": "choice",
+          "required": false,
+          "purposes": [
+            "execution"
+          ],
+          "source": "user_overlay"
+        }
+      ],
+      "readiness": {
+        "architectureFit": "go",
+        "logicReadiness": "go",
+        "publicReadiness": "hold",
+        "rightsStatus": "permission_required",
+        "personalConversionAvailability": "available",
+        "sourceCompleteness": "complete",
+        "safetyReview": "legal_financial_caution_required",
+        "localeReview": "applicable",
+        "privacyReview": "private_overlay_required",
+        "promotionState": "research_only"
+      },
+      "confirmedSourceRowCount": 8,
+      "capturedSourceRowCount": 8,
+      "sourceRows": [
+        {
+          "sourceRowId": "jeonse-01",
+          "title": "주변 시세와 비정상적으로 낮은 가격 비교",
+          "group": "계약 전"
+        },
+        {
+          "sourceRowId": "jeonse-02",
+          "title": "등기부의 소유자·근저당·압류 확인",
+          "group": "계약 전"
+        },
+        {
+          "sourceRowId": "jeonse-03",
+          "title": "전세보증보험 대상 여부 확인",
+          "group": "계약 전"
+        },
+        {
+          "sourceRowId": "jeonse-04",
+          "title": "중개업소 등록번호와 대표자 확인",
+          "group": "계약 시"
+        },
+        {
+          "sourceRowId": "jeonse-05",
+          "title": "공인된 표준 계약서 사용 여부 확인",
+          "group": "계약 시"
+        },
+        {
+          "sourceRowId": "jeonse-06",
+          "title": "주소·면적·보증금이 실제 매물과 일치하는지 확인",
+          "group": "계약 시"
+        },
+        {
+          "sourceRowId": "jeonse-07",
+          "title": "입주 후 확정일자와 임대차 신고 처리",
+          "group": "계약 후"
+        },
+        {
+          "sourceRowId": "jeonse-08",
+          "title": "주택 인도 후 전세보증보험 가입 여부 점검",
+          "group": "계약 후"
+        }
+      ],
+      "evidenceNotes": [
+        "체크 완료가 안전한 계약을 보장한다고 표현하지 않는다."
+      ]
+    },
+    {
+      "researchId": "new-a04-birth-registration",
+      "title": "출생신고 기한·신고자·서류 준비",
+      "source": {
+        "title": "출생신고방법",
+        "provider": "찾기쉬운 생활법령정보",
+        "url": "https://easylaw.go.kr/CSP/CnpClsMainBtr.laf?ccfNo=2&cciNo=1&cnpClsNo=1&csmSeq=707&popMenu=ov",
+        "canonicalUrl": "https://easylaw.go.kr/CSP/CnpClsMainBtr.laf?ccfNo=2&cciNo=1&cnpClsNo=1&csmSeq=707&popMenu=ov",
+        "sourceFormat": "html",
+        "accessStatus": "public_full_text",
+        "locale": "ko-KR",
+        "observedAt": "2026-07-29"
+      },
+      "userJob": "출생신고 기한과 자격을 확인하고 서류를 준비해 허용 기관에 제출한다.",
+      "corpusTier": "product_candidate",
+      "duplicateOf": "generalization:GB-01",
+      "generationMode": "flow_items",
+      "taxonomy": {
+        "primaryLifeArea": "family_parenting",
+        "sourceShape": "procedure_rows",
+        "temporalIntent": "anchor_offset",
+        "primaryExecutionPattern": "date_preparation",
+        "primaryProjection": "checklist",
+        "secondaryProjections": [
+          "todo",
+          "calendar",
+          "memo"
+        ]
+      },
+      "minimumInputs": [
+        {
+          "key": "birthDate",
+          "label": "출생일",
+          "type": "date",
+          "required": true,
+          "purposes": [
+            "schedule"
+          ],
+          "source": "user_overlay"
+        },
+        {
+          "key": "reporterContext",
+          "label": "신고인 관계",
+          "type": "choice",
+          "required": false,
+          "purposes": [
+            "execution"
+          ],
+          "source": "user_overlay"
+        }
+      ],
+      "readiness": {
+        "architectureFit": "go",
+        "logicReadiness": "modify",
+        "publicReadiness": "modify",
+        "rightsStatus": "review_required",
+        "personalConversionAvailability": "available",
+        "sourceCompleteness": "complete",
+        "safetyReview": "legal_caution_required",
+        "localeReview": "applicable",
+        "privacyReview": "do_not_store_identity_fields",
+        "promotionState": "research_only"
+      },
+      "confirmedSourceRowCount": 18,
+      "capturedSourceRowCount": 12,
+      "sourceRows": [
+        {
+          "sourceRowId": "birth-01",
+          "title": "혼인 중 출생자는 부 또는 모가 신고",
+          "group": null
+        },
+        {
+          "sourceRowId": "birth-02",
+          "title": "혼인 외 출생자는 원칙적으로 모가 신고",
+          "group": null
+        },
+        {
+          "sourceRowId": "birth-03",
+          "title": "부모가 신고할 수 없을 때 법정 순위의 제3자가 신고",
+          "group": null
+        },
+        {
+          "sourceRowId": "birth-04",
+          "title": "출생 후 1개월 이내 신고",
+          "group": null
+        },
+        {
+          "sourceRowId": "birth-05",
+          "title": "등록기준지·신고인 주소지 또는 현재지 관할 관서에서 신고",
+          "group": null
+        },
+        {
+          "sourceRowId": "birth-06",
+          "title": "신고서에 자녀 이름·본·성별·등록기준지 기재",
+          "group": null
+        },
+        {
+          "sourceRowId": "birth-07",
+          "title": "혼인 중/외 출생 구분 기재",
+          "group": null
+        },
+        {
+          "sourceRowId": "birth-08",
+          "title": "출생 일시와 장소 기재",
+          "group": null
+        },
+        {
+          "sourceRowId": "birth-09",
+          "title": "부모의 법정 식별정보 기재",
+          "group": null
+        },
+        {
+          "sourceRowId": "birth-10",
+          "title": "출생증명서 첨부",
+          "group": null
+        },
+        {
+          "sourceRowId": "birth-11",
+          "title": "신고인 신분증명서 준비",
+          "group": null
+        },
+        {
+          "sourceRowId": "birth-12",
+          "title": "필요한 경우 혼인관계증명서 확인",
+          "group": null
+        }
+      ],
+      "evidenceNotes": [
+        "자녀·부모 식별정보는 FlowMe가 저장하지 않고 공식 신고 화면에서만 입력한다."
+      ]
+    },
+    {
+      "researchId": "new-a05-nfa-home-fire",
+      "title": "집의 소방시설 설치·관리 상태 점검",
+      "source": {
+        "title": "주택용 소방시설",
+        "provider": "소방청",
+        "url": "https://nfa.go.kr/nfa/safetyinfo/residentialfire/residentialfire/",
+        "canonicalUrl": "https://nfa.go.kr/nfa/safetyinfo/residentialfire/residentialfire/",
+        "sourceFormat": "html",
+        "accessStatus": "public_full_text",
+        "locale": "ko-KR",
+        "observedAt": "2026-07-29"
+      },
+      "userJob": "집의 방·층별 소방시설 설치 수량과 설치·관리 상태를 점검한다.",
+      "corpusTier": "product_candidate",
+      "generationMode": "flow_items",
+      "taxonomy": {
+        "primaryLifeArea": "health_fitness",
+        "secondaryLifeAreas": [
+          "home_living"
+        ],
+        "sourceShape": "procedure_rows",
+        "temporalIntent": "no_schedule",
+        "primaryExecutionPattern": "ordered_procedure",
+        "primaryProjection": "checklist",
+        "secondaryProjections": [
+          "sheet",
+          "todo"
+        ]
+      },
+      "minimumInputs": [
+        {
+          "key": "roomCount",
+          "label": "구획된 방 수",
+          "type": "number",
+          "required": false,
+          "purposes": [
+            "execution"
+          ],
+          "source": "user_overlay"
+        },
+        {
+          "key": "floorCount",
+          "label": "층 수",
+          "type": "number",
+          "required": false,
+          "purposes": [
+            "execution"
+          ],
+          "source": "user_overlay"
+        },
+        {
+          "key": "installedAt",
+          "label": "설치일",
+          "type": "date",
+          "required": false,
+          "purposes": [
+            "schedule"
+          ],
+          "source": "user_overlay"
+        }
+      ],
+      "readiness": {
+        "architectureFit": "go",
+        "logicReadiness": "go",
+        "publicReadiness": "modify",
+        "rightsStatus": "review_required",
+        "personalConversionAvailability": "available",
+        "sourceCompleteness": "complete",
+        "safetyReview": "fire_safety_caution_required",
+        "localeReview": "applicable",
+        "privacyReview": "not_required",
+        "promotionState": "research_only"
+      },
+      "confirmedSourceRowCount": 11,
+      "capturedSourceRowCount": 11,
+      "sourceRows": [
+        {
+          "sourceRowId": "fire-01",
+          "title": "주택용 소방시설 설치 대상 범위 확인",
+          "group": "설치 기준"
+        },
+        {
+          "sourceRowId": "fire-02",
+          "title": "구획된 실마다 단독경보형 감지기 설치",
+          "group": "설치 기준"
+        },
+        {
+          "sourceRowId": "fire-03",
+          "title": "세대별·층별 소화기 1개 이상 설치",
+          "group": "설치 기준"
+        },
+        {
+          "sourceRowId": "fire-04",
+          "title": "감지기 베이스를 천장에 나사로 고정",
+          "group": "감지기 설치"
+        },
+        {
+          "sourceRowId": "fire-05",
+          "title": "배터리 단자를 본체에 연결",
+          "group": "감지기 설치"
+        },
+        {
+          "sourceRowId": "fire-06",
+          "title": "본체를 돌려 베이스에 고정",
+          "group": "감지기 설치"
+        },
+        {
+          "sourceRowId": "fire-07",
+          "title": "소화기 압력계가 녹색인지 확인",
+          "group": "관리"
+        },
+        {
+          "sourceRowId": "fire-08",
+          "title": "소화기 사용기한 10년 확인",
+          "group": "관리"
+        },
+        {
+          "sourceRowId": "fire-09",
+          "title": "감지기 오작동 시 리셋 버튼 사용",
+          "group": "관리"
+        },
+        {
+          "sourceRowId": "fire-10",
+          "title": "감지기 배터리를 주기적으로 점검",
+          "group": "관리"
+        },
+        {
+          "sourceRowId": "fire-11",
+          "title": "감지기 배터리 수명 약 10년 확인",
+          "group": "관리"
+        }
+      ],
+      "evidenceNotes": [
+        "원문에 없는 월간 점검 주기를 만들지 않는다."
+      ]
+    },
+    {
+      "researchId": "new-a06-elementary-entry-2026",
+      "title": "2026학년도 취학통지·예비소집",
+      "source": {
+        "title": "2026학년도 초등학교 취학통지 및 예비소집 실시",
+        "provider": "교육부",
+        "url": "https://www.moe.go.kr/boardCnts/viewRenew.do?boardID=294&boardSeq=104634&lev=0&m=020402&opType=N&page=1&s=moe&searchType=null&statusYN=W",
+        "canonicalUrl": "https://www.moe.go.kr/boardCnts/viewRenew.do?boardID=294&boardSeq=104634&lev=0&m=020402&opType=N&page=1&s=moe&searchType=null&statusYN=W",
+        "sourceFormat": "html_hwpx",
+        "accessStatus": "public_full_text",
+        "locale": "ko-KR",
+        "observedAt": "2026-07-29"
+      },
+      "userJob": "취학통지를 받고 학교별 예비소집 일정을 확인해 아동과 참석한다.",
+      "corpusTier": "historical_preview",
+      "generationMode": "event_source",
+      "taxonomy": {
+        "primaryLifeArea": "family_parenting",
+        "sourceShape": "date_offsets",
+        "temporalIntent": "application_window",
+        "primaryExecutionPattern": "date_preparation",
+        "primaryProjection": "calendar",
+        "secondaryProjections": [
+          "checklist",
+          "todo"
+        ]
+      },
+      "minimumInputs": [
+        {
+          "key": "schoolSession",
+          "label": "학교별 예비소집 일시",
+          "type": "datetime",
+          "required": true,
+          "purposes": [
+            "schedule"
+          ],
+          "source": "user_overlay"
+        }
+      ],
+      "readiness": {
+        "architectureFit": "go",
+        "logicReadiness": "hold",
+        "publicReadiness": "historical_only",
+        "rightsStatus": "kogl_attribution",
+        "personalConversionAvailability": "unavailable_for_current_use",
+        "sourceCompleteness": "complete_historical_edition",
+        "safetyReview": "not_required",
+        "localeReview": "applicable",
+        "privacyReview": "child_school_data_private",
+        "promotionState": "research_only"
+      },
+      "confirmedSourceRowCount": 8,
+      "capturedSourceRowCount": 8,
+      "sourceRows": [
+        {
+          "sourceRowId": "school-01",
+          "title": "2025-12-03부터 정부24 온라인 취학통지 발급",
+          "group": null
+        },
+        {
+          "sourceRowId": "school-02",
+          "title": "온라인 발급은 대상 아동과 같은 세대의 세대주만 가능",
+          "group": null
+        },
+        {
+          "sourceRowId": "school-03",
+          "title": "모바일 앱에서는 해당 발급 서비스가 제공되지 않음",
+          "group": null
+        },
+        {
+          "sourceRowId": "school-04",
+          "title": "2025-12-10~12-20 우편·인편 통지",
+          "group": null
+        },
+        {
+          "sourceRowId": "school-05",
+          "title": "학교별 예비소집은 2025년 12월~2026년 1월",
+          "group": null
+        },
+        {
+          "sourceRowId": "school-06",
+          "title": "취학통지서를 가지고 아동과 함께 대면 참석",
+          "group": null
+        },
+        {
+          "sourceRowId": "school-07",
+          "title": "조기입학·입학연기는 2025-12-31까지 신청",
+          "group": null
+        },
+        {
+          "sourceRowId": "school-08",
+          "title": "취학 유예·면제는 2026-01-01부터 입학 전날까지 학교에 신청",
+          "group": null
+        }
+      ],
+      "evidenceNotes": [
+        "모든 일정이 종료된 edition이며 다음 학년도 날짜나 yearly RRULE을 만들지 않는다."
+      ]
+    },
+    {
+      "researchId": "new-a07-seoul-bus-support",
+      "title": "서울시 장애인 버스요금 지원 신청",
+      "source": {
+        "title": "서울시 장애인 버스요금 지원 신청절차 안내",
+        "provider": "서울특별시",
+        "url": "https://news.seoul.go.kr/welfare/dsbus/ko/conts/view.do?menuId=K_USAGE_INFO",
+        "canonicalUrl": "https://news.seoul.go.kr/welfare/dsbus/ko/conts/view.do?menuId=K_USAGE_INFO",
+        "sourceFormat": "html",
+        "accessStatus": "public_full_text",
+        "locale": "ko-KR",
+        "observedAt": "2026-07-29"
+      },
+      "userJob": "자격과 준비물을 확인한 뒤 공식 사이트에서 버스요금 지원 신청을 완료한다.",
+      "corpusTier": "product_candidate",
+      "generationMode": "flow_items",
+      "taxonomy": {
+        "primaryLifeArea": "money_admin_purchase",
+        "sourceShape": "procedure_rows",
+        "temporalIntent": "no_schedule",
+        "primaryExecutionPattern": "ordered_procedure",
+        "primaryProjection": "checklist",
+        "secondaryProjections": [
+          "todo",
+          "memo"
+        ]
+      },
+      "minimumInputs": [
+        {
+          "key": "applicantType",
+          "label": "신청 유형",
+          "type": "choice",
+          "required": true,
+          "purposes": [
+            "execution"
+          ],
+          "source": "user_overlay"
+        }
+      ],
+      "readiness": {
+        "architectureFit": "go",
+        "logicReadiness": "go",
+        "publicReadiness": "modify",
+        "rightsStatus": "review_required",
+        "personalConversionAvailability": "available",
+        "sourceCompleteness": "complete",
+        "safetyReview": "not_required",
+        "localeReview": "applicable",
+        "privacyReview": "official_site_only_for_pii",
+        "promotionState": "research_only"
+      },
+      "confirmedSourceRowCount": 7,
+      "capturedSourceRowCount": 7,
+      "sourceRows": [
+        {
+          "sourceRowId": "bus-01",
+          "title": "신청자격 체크리스트 작성",
+          "group": "신청 절차"
+        },
+        {
+          "sourceRowId": "bus-02",
+          "title": "신청 유형 선택 후 자격 확인",
+          "group": "신청 절차"
+        },
+        {
+          "sourceRowId": "bus-03",
+          "title": "이용약관과 개인정보 수집·제공 동의",
+          "group": "신청 절차"
+        },
+        {
+          "sourceRowId": "bus-04",
+          "title": "선택한 유형에 맞춰 본인인증",
+          "group": "신청 절차"
+        },
+        {
+          "sourceRowId": "bus-05",
+          "title": "신청정보 입력",
+          "group": "신청 절차"
+        },
+        {
+          "sourceRowId": "bus-06",
+          "title": "사용할 교통카드와 신청인 계좌 확인",
+          "group": "신청 절차"
+        },
+        {
+          "sourceRowId": "bus-07",
+          "title": "신청 완료 상태 확인",
+          "group": "신청 절차"
+        }
+      ],
+      "evidenceNotes": [
+        "이름·주민번호·카드번호·계좌번호는 공식 사이트에서만 입력한다."
+      ]
+    },
+    {
+      "researchId": "new-a08-income-tax",
+      "title": "종합소득세 신고 여부·기한 관리",
+      "source": {
+        "title": "종합소득세 개요",
+        "provider": "국세청",
+        "url": "https://b.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7664&mi=2224",
+        "canonicalUrl": "https://b.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7664&mi=2224",
+        "sourceFormat": "html",
+        "accessStatus": "public_full_text",
+        "locale": "ko-KR",
+        "observedAt": "2026-07-29"
+      },
+      "userJob": "본인의 신고 필요 여부와 적용 기한을 확인하고 해당 신고·납부 deadline을 관리한다.",
+      "corpusTier": "structure_probe",
+      "generationMode": "flow_items",
+      "taxonomy": {
+        "primaryLifeArea": "money_admin_purchase",
+        "sourceShape": "table_rows",
+        "temporalIntent": "due_deadline",
+        "primaryExecutionPattern": "compare_decide",
+        "primaryProjection": "todo",
+        "secondaryProjections": [
+          "checklist",
+          "calendar",
+          "memo"
+        ]
+      },
+      "minimumInputs": [
+        {
+          "key": "taxYear",
+          "label": "귀속연도",
+          "type": "number",
+          "required": true,
+          "purposes": [
+            "execution"
+          ],
+          "source": "user_overlay"
+        },
+        {
+          "key": "taxpayerContext",
+          "label": "소득·연말정산·연장 대상 여부",
+          "type": "choice",
+          "required": true,
+          "purposes": [
+            "execution"
+          ],
+          "source": "user_overlay"
+        }
+      ],
+      "readiness": {
+        "architectureFit": "go",
+        "logicReadiness": "modify",
+        "publicReadiness": "modify",
+        "rightsStatus": "review_required",
+        "personalConversionAvailability": "available",
+        "sourceCompleteness": "representative_condition_rows_10_of_20_plus",
+        "safetyReview": "tax_financial_caution_required",
+        "localeReview": "applicable",
+        "privacyReview": "private_overlay_required",
+        "promotionState": "research_only"
+      },
+      "confirmedSourceRowCount": 20,
+      "capturedSourceRowCount": 10,
+      "sourceRows": [
+        {
+          "sourceRowId": "tax-01",
+          "title": "종합소득이 있으면 다음 해 5월 1일부터 5월 31일까지 신고·납부",
+          "group": null
+        },
+        {
+          "sourceRowId": "tax-02",
+          "title": "성실신고확인서 제출자는 6월 30일까지",
+          "group": null
+        },
+        {
+          "sourceRowId": "tax-03",
+          "title": "마감일이 공휴일·토요일이면 다음 날까지",
+          "group": null
+        },
+        {
+          "sourceRowId": "tax-04",
+          "title": "2025년 귀속 일반 신고기한은 2026-06-01",
+          "group": null
+        },
+        {
+          "sourceRowId": "tax-05",
+          "title": "특정 대상은 납부기한이 2026-08-31까지 연장",
+          "group": null
+        },
+        {
+          "sourceRowId": "tax-06",
+          "title": "직권연장 대상이 아니어도 별도 연장 신청 가능",
+          "group": null
+        },
+        {
+          "sourceRowId": "tax-07",
+          "title": "홈택스에서 신고분 납부기한 연장 신청 가능",
+          "group": null
+        },
+        {
+          "sourceRowId": "tax-08",
+          "title": "손택스에서도 납부기한 연장 신청 가능",
+          "group": null
+        },
+        {
+          "sourceRowId": "tax-09",
+          "title": "연말정산을 마친 근로소득만 있는 경우는 원칙적으로 확정신고 불필요",
+          "group": null
+        },
+        {
+          "sourceRowId": "tax-10",
+          "title": "홈택스 신고 후 위택스로 개인지방소득세 신고 이동 가능",
+          "group": null
+        }
+      ],
+      "evidenceNotes": [
+        "개인별 신고 의무를 자동 판정하지 않는다."
+      ]
+    },
+    {
+      "researchId": "new-b01-trip-domestic-packing",
+      "title": "국내 여행 조건별 준비물",
+      "source": {
+        "title": "국내 여행 준비물 체크리스트! 알차게 챙겨가는 법",
+        "provider": "트립닷컴 에디터 모이띵",
+        "url": "https://kr.trip.com/guide/info/%EA%B5%AD%EB%82%B4+%EC%97%AC%ED%96%89+%EC%A4%80%EB%B9%84%EB%AC%BC.html",
+        "canonicalUrl": "https://kr.trip.com/guide/info/%EA%B5%AD%EB%82%B4+%EC%97%AC%ED%96%89+%EC%A4%80%EB%B9%84%EB%AC%BC.html",
+        "sourceFormat": "html",
+        "accessStatus": "public_full_text",
+        "locale": "ko-KR",
+        "observedAt": "2026-07-29"
+      },
+      "userJob": "국내 여행 조건에 맞는 준비물만 골라 빠짐없이 챙긴다.",
+      "corpusTier": "product_candidate",
+      "duplicateOf": "canonical:live-c10",
+      "generationMode": "flow_items",
+      "taxonomy": {
+        "primaryLifeArea": "travel_outings",
+        "sourceShape": "checklist_rows_with_conditions",
+        "temporalIntent": "no_schedule",
+        "primaryExecutionPattern": "ordered_procedure",
+        "primaryProjection": "checklist",
+        "secondaryProjections": [
+          "todo"
+        ]
+      },
+      "minimumInputs": [
+        {
+          "key": "tripConditions",
+          "label": "계절·동반자·여행 스타일",
+          "type": "multi_choice",
+          "required": true,
+          "purposes": [
+            "execution"
+          ],
+          "source": "user_overlay"
+        }
+      ],
+      "readiness": {
+        "architectureFit": "go",
+        "logicReadiness": "modify",
+        "publicReadiness": "modify",
+        "rightsStatus": "permission_review_required",
+        "personalConversionAvailability": "available",
+        "sourceCompleteness": "representative_rows_12_of_48",
+        "safetyReview": "not_required",
+        "localeReview": "applicable",
+        "privacyReview": "trip_overlay_private",
+        "promotionState": "research_only"
+      },
+      "confirmedSourceRowCount": 48,
+      "capturedSourceRowCount": 12,
+      "sourceRows": [
+        {
+          "sourceRowId": "domestic-01",
+          "title": "신분증",
+          "group": null
+        },
+        {
+          "sourceRowId": "domestic-02",
+          "title": "현금 및 카드",
+          "group": null
+        },
+        {
+          "sourceRowId": "domestic-03",
+          "title": "휴대폰 및 충전기",
+          "group": null
+        },
+        {
+          "sourceRowId": "domestic-04",
+          "title": "보조 배터리",
+          "group": null
+        },
+        {
+          "sourceRowId": "domestic-05",
+          "title": "우산 또는 우비",
+          "group": null
+        },
+        {
+          "sourceRowId": "domestic-06",
+          "title": "계절별 옷·용품",
+          "group": null
+        },
+        {
+          "sourceRowId": "domestic-07",
+          "title": "아이 용품",
+          "group": null
+        },
+        {
+          "sourceRowId": "domestic-08",
+          "title": "반려동물 기본 용품",
+          "group": null
+        },
+        {
+          "sourceRowId": "domestic-09",
+          "title": "캠핑·트레킹 용품",
+          "group": null
+        },
+        {
+          "sourceRowId": "domestic-10",
+          "title": "손세정제·휴지 등 위생 용품",
+          "group": null
+        },
+        {
+          "sourceRowId": "domestic-11",
+          "title": "개인 수건·세면도구",
+          "group": null
+        },
+        {
+          "sourceRowId": "domestic-12",
+          "title": "카메라·여행일지",
+          "group": null
+        }
+      ],
+      "evidenceNotes": [
+        "48개를 모두 필수처럼 보이지 않게 조건 태그를 적용해야 한다."
+      ]
+    },
+    {
+      "researchId": "new-b02-kkday-packing",
+      "title": "2026 해외여행 준비물",
+      "source": {
+        "title": "2026 해외여행 준비물 체크리스트 (+ 짐싸는 팁)",
+        "provider": "KKday Korea 공식 블로그",
+        "url": "https://www.kkday.com/ko/blog/35618/world-overseatravel-checklist",
+        "canonicalUrl": "https://www.kkday.com/ko/blog/35618/world-overseatravel-checklist",
+        "sourceFormat": "html",
+        "accessStatus": "public_full_text",
+        "locale": "ko-KR",
+        "observedAt": "2026-07-29"
+      },
+      "userJob": "출국 전 필요한 짐을 원문 카테고리대로 빠뜨리지 않고 챙긴다.",
+      "corpusTier": "product_candidate",
+      "duplicateOf": "legacy:preapp:overseas-packing-check",
+      "generationMode": "flow_items",
+      "taxonomy": {
+        "primaryLifeArea": "travel_outings",
+        "sourceShape": "checklist_rows",
+        "temporalIntent": "no_schedule",
+        "primaryExecutionPattern": "ordered_procedure",
+        "primaryProjection": "checklist",
+        "secondaryProjections": [
+          "todo"
+        ]
+      },
+      "minimumInputs": [
+        {
+          "key": "tripProfile",
+          "label": "국가·기간·렌터카 여부",
+          "type": "multi_choice",
+          "required": false,
+          "purposes": [
+            "execution"
+          ],
+          "source": "user_overlay"
+        }
+      ],
+      "readiness": {
+        "architectureFit": "go",
+        "logicReadiness": "go",
+        "publicReadiness": "modify",
+        "rightsStatus": "permission_review_required",
+        "personalConversionAvailability": "available",
+        "sourceCompleteness": "complete",
+        "safetyReview": "travel_rule_caution_required",
+        "localeReview": "applicable",
+        "privacyReview": "passport_data_prohibited",
+        "promotionState": "research_only"
+      },
+      "confirmedSourceRowCount": 23,
+      "capturedSourceRowCount": 12,
+      "sourceRows": [
+        {
+          "sourceRowId": "kkday-01",
+          "title": "여권",
+          "group": null
+        },
+        {
+          "sourceRowId": "kkday-02",
+          "title": "데이터 eSIM",
+          "group": null
+        },
+        {
+          "sourceRowId": "kkday-03",
+          "title": "현금",
+          "group": null
+        },
+        {
+          "sourceRowId": "kkday-04",
+          "title": "항공권·바우처 사본",
+          "group": null
+        },
+        {
+          "sourceRowId": "kkday-05",
+          "title": "보조배터리",
+          "group": null
+        },
+        {
+          "sourceRowId": "kkday-06",
+          "title": "접이식 우산",
+          "group": null
+        },
+        {
+          "sourceRowId": "kkday-07",
+          "title": "상비약",
+          "group": null
+        },
+        {
+          "sourceRowId": "kkday-08",
+          "title": "목베개",
+          "group": null
+        },
+        {
+          "sourceRowId": "kkday-09",
+          "title": "트래블카드",
+          "group": null
+        },
+        {
+          "sourceRowId": "kkday-10",
+          "title": "필터 샤워기",
+          "group": null
+        },
+        {
+          "sourceRowId": "kkday-11",
+          "title": "국제 면허증",
+          "group": null
+        },
+        {
+          "sourceRowId": "kkday-12",
+          "title": "숙소 구비 물품 확인",
+          "group": null
+        }
+      ],
+      "evidenceNotes": [
+        "공개 전체 행은 July 11 preapp fixture에서 source variant로 연결한다."
+      ]
+    },
+    {
+      "researchId": "new-b03-fridge-week",
+      "title": "냉장고 파먹기 평일 5일 식단",
+      "source": {
+        "title": "냉장고 파먹기가 특기! 식비 확 절약하는 주간식단표",
+        "provider": "요리요정이팀장 / 오늘의집",
+        "url": "https://ohou.se/advices/8086",
+        "canonicalUrl": "https://ohou.se/advices/8086",
+        "sourceFormat": "html",
+        "accessStatus": "public_full_text",
+        "locale": "ko-KR",
+        "observedAt": "2026-07-29"
+      },
+      "userJob": "냉장고 재료를 활용해 평일 5일 메뉴를 순서대로 실행한다.",
+      "corpusTier": "product_candidate",
+      "generationMode": "flow_items",
+      "taxonomy": {
+        "primaryLifeArea": "meals_grocery",
+        "sourceShape": "table_rows_with_recipe_details",
+        "temporalIntent": "user_pacing_assignment",
+        "primaryExecutionPattern": "progress_tracking",
+        "primaryProjection": "sheet",
+        "secondaryProjections": [
+          "checklist",
+          "calendar"
+        ]
+      },
+      "minimumInputs": [
+        {
+          "key": "weekStart",
+          "label": "시작 주",
+          "type": "date",
+          "required": false,
+          "purposes": [
+            "schedule"
+          ],
+          "source": "user_overlay"
+        }
+      ],
+      "pacingEligible": true,
+      "readiness": {
+        "architectureFit": "go",
+        "logicReadiness": "go",
+        "publicReadiness": "modify",
+        "rightsStatus": "permission_review_required",
+        "personalConversionAvailability": "available",
+        "sourceCompleteness": "complete",
+        "safetyReview": "food_caution_required",
+        "localeReview": "applicable",
+        "privacyReview": "not_required",
+        "promotionState": "research_only"
+      },
+      "confirmedSourceRowCount": 5,
+      "capturedSourceRowCount": 5,
+      "sourceRows": [
+        {
+          "sourceRowId": "fridge-01",
+          "title": "월요일 — 두부조림, 가자미살 계란전",
+          "group": "월요일"
+        },
+        {
+          "sourceRowId": "fridge-02",
+          "title": "화요일 — 새우콩나물국밥, 무생채",
+          "group": "화요일"
+        },
+        {
+          "sourceRowId": "fridge-03",
+          "title": "수요일 — 소고기뭇국, 봄동겉절이",
+          "group": "수요일"
+        },
+        {
+          "sourceRowId": "fridge-04",
+          "title": "목요일 — 돼지고기김치볶음, 사과단감샐러드",
+          "group": "목요일"
+        },
+        {
+          "sourceRowId": "fridge-05",
+          "title": "금요일 — 새우계란볶음밥, 김치콩나물국",
+          "group": "금요일"
+        }
+      ],
+      "evidenceNotes": [
+        "요일 순서는 source fact이고 실제 날짜는 사용자 시작 주 overlay 뒤에만 생성한다."
+      ]
+    },
+    {
+      "researchId": "new-b04-organize-seven",
+      "title": "한 공간 정리정돈 7단계",
+      "source": {
+        "title": "정리정돈 7가지 기본 순서를 알아볼까요?",
+        "provider": "thelmaison / 오늘의집",
+        "url": "https://ohou.se/advices/28",
+        "canonicalUrl": "https://ohou.se/advices/28",
+        "sourceFormat": "html",
+        "accessStatus": "public_full_text",
+        "locale": "ko-KR",
+        "observedAt": "2026-07-29"
+      },
+      "userJob": "한 공간을 정해 정리 순서를 놓치지 않고 끝낸다.",
+      "corpusTier": "product_candidate",
+      "generationMode": "flow_items",
+      "taxonomy": {
+        "primaryLifeArea": "home_living",
+        "sourceShape": "procedure_rows",
+        "temporalIntent": "no_schedule",
+        "primaryExecutionPattern": "ordered_procedure",
+        "primaryProjection": "checklist",
+        "secondaryProjections": [
+          "memo"
+        ]
+      },
+      "minimumInputs": [
+        {
+          "key": "space",
+          "label": "정리할 공간",
+          "type": "text",
+          "required": true,
+          "purposes": [
+            "execution"
+          ],
+          "source": "user_overlay"
+        }
+      ],
+      "pacingEligible": true,
+      "readiness": {
+        "architectureFit": "go",
+        "logicReadiness": "go",
+        "publicReadiness": "modify",
+        "rightsStatus": "permission_review_required",
+        "personalConversionAvailability": "available",
+        "sourceCompleteness": "complete",
+        "safetyReview": "not_required",
+        "localeReview": "applicable",
+        "privacyReview": "not_required",
+        "promotionState": "research_only"
+      },
+      "confirmedSourceRowCount": 7,
+      "capturedSourceRowCount": 7,
+      "sourceRows": [
+        {
+          "sourceRowId": "organize-01",
+          "title": "어디부터 시작할지 정하기",
+          "group": "정리 순서"
+        },
+        {
+          "sourceRowId": "organize-02",
+          "title": "현재 정리 상태 살펴보기",
+          "group": "정리 순서"
+        },
+        {
+          "sourceRowId": "organize-03",
+          "title": "깨끗한 작업 공간 확보하기",
+          "group": "정리 순서"
+        },
+        {
+          "sourceRowId": "organize-04",
+          "title": "물건의 카테고리 분류하기",
+          "group": "정리 순서"
+        },
+        {
+          "sourceRowId": "organize-05",
+          "title": "공간의 구역 나누기",
+          "group": "정리 순서"
+        },
+        {
+          "sourceRowId": "organize-06",
+          "title": "구역별로 넣을 물건 정하기",
+          "group": "정리 순서"
+        },
+        {
+          "sourceRowId": "organize-07",
+          "title": "결정한 자리에 모든 물건 집어넣기",
+          "group": "정리 순서"
+        }
+      ],
+      "evidenceNotes": [
+        "순서를 잃는 flat Todo보다 bounded ordered Checklist가 자연스럽다."
+      ]
+    },
+    {
+      "researchId": "new-b05-storage-projects",
+      "title": "신박 수납 프로젝트 5개",
+      "source": {
+        "title": "스크랩 1000 이상! 삶의 질을 높여줄 신박 수납팁 5",
+        "provider": "1분생활꿀팁 / 오늘의집",
+        "url": "https://ohou.se/advices/9345",
+        "canonicalUrl": "https://ohou.se/advices/9345",
+        "sourceFormat": "html",
+        "accessStatus": "public_full_text",
+        "locale": "ko-KR",
+        "observedAt": "2026-07-29"
+      },
+      "userJob": "다섯 수납 프로젝트 중 하나를 골라 나중에 실행한다.",
+      "corpusTier": "structure_probe",
+      "generationMode": "flow_items",
+      "taxonomy": {
+        "primaryLifeArea": "home_living",
+        "sourceShape": "resource_collection_with_procedure_rows",
+        "temporalIntent": "no_schedule",
+        "primaryExecutionPattern": "resource_queue",
+        "primaryProjection": "todo",
+        "secondaryProjections": [
+          "checklist",
+          "memo"
+        ]
+      },
+      "minimumInputs": [
+        {
+          "key": "selectedProject",
+          "label": "실행할 프로젝트",
+          "type": "choice",
+          "required": true,
+          "purposes": [
+            "execution"
+          ],
+          "source": "user_overlay"
+        }
+      ],
+      "pacingEligible": true,
+      "readiness": {
+        "architectureFit": "go",
+        "logicReadiness": "modify",
+        "publicReadiness": "hold",
+        "rightsStatus": "image_and_creator_permission_required",
+        "personalConversionAvailability": "available",
+        "sourceCompleteness": "complete",
+        "safetyReview": "tool_caution_required",
+        "localeReview": "applicable",
+        "privacyReview": "not_required",
+        "promotionState": "research_only"
+      },
+      "confirmedSourceRowCount": 5,
+      "capturedSourceRowCount": 5,
+      "sourceRows": [
+        {
+          "sourceRowId": "storage-01",
+          "title": "쓰레기 봉투 수납",
+          "group": "프로젝트 선택"
+        },
+        {
+          "sourceRowId": "storage-02",
+          "title": "틈새 공중부양 수납",
+          "group": "프로젝트 선택"
+        },
+        {
+          "sourceRowId": "storage-03",
+          "title": "휴지심 책상 정리",
+          "group": "프로젝트 선택"
+        },
+        {
+          "sourceRowId": "storage-04",
+          "title": "빈 옷걸이 정리",
+          "group": "프로젝트 선택"
+        },
+        {
+          "sourceRowId": "storage-05",
+          "title": "북스탠드 활용 수납",
+          "group": "프로젝트 선택"
+        }
+      ],
+      "evidenceNotes": [
+        "5개 프로젝트 자체는 Todo queue이고 선택한 한 프로젝트의 child 절차만 Checklist다."
+      ]
+    },
+    {
+      "researchId": "new-b06-wtable-lemon-weekend",
+      "title": "레몬 위크엔드 베이킹 세션",
+      "source": {
+        "title": "레몬 위크엔드",
+        "provider": "우리의식탁",
+        "url": "https://wtable.co.kr/recipes/YVHyCaPf13UspJnCxQyBDroh",
+        "canonicalUrl": "https://wtable.co.kr/recipes/YVHyCaPf13UspJnCxQyBDroh",
+        "sourceFormat": "html",
+        "accessStatus": "public_full_text",
+        "locale": "ko-KR",
+        "observedAt": "2026-07-29"
+      },
+      "userJob": "50분 베이킹 세션에서 준비와 조리 단계를 순서대로 따른다.",
+      "corpusTier": "product_candidate",
+      "generationMode": "flow_items",
+      "taxonomy": {
+        "primaryLifeArea": "meals_grocery",
+        "sourceShape": "procedure_rows",
+        "temporalIntent": "no_schedule",
+        "primaryExecutionPattern": "ordered_procedure",
+        "primaryProjection": "checklist",
+        "secondaryProjections": [
+          "memo"
+        ]
+      },
+      "minimumInputs": [
+        {
+          "key": "startAt",
+          "label": "실행 날짜·시간",
+          "type": "datetime",
+          "required": false,
+          "purposes": [
+            "schedule"
+          ],
+          "source": "user_overlay"
+        }
+      ],
+      "readiness": {
+        "architectureFit": "go",
+        "logicReadiness": "go",
+        "publicReadiness": "modify",
+        "rightsStatus": "permission_review_required",
+        "personalConversionAvailability": "available",
+        "sourceCompleteness": "representative_12_of_19_verified_rows",
+        "safetyReview": "oven_heat_caution_required",
+        "localeReview": "applicable",
+        "privacyReview": "not_required",
+        "promotionState": "research_only"
+      },
+      "confirmedSourceRowCount": 19,
+      "capturedSourceRowCount": 12,
+      "sourceRows": [
+        {
+          "sourceRowId": "lemon-weekend-01",
+          "title": "달걀을 1시간 전 실온에 꺼내기",
+          "group": "사전 준비"
+        },
+        {
+          "sourceRowId": "lemon-weekend-02",
+          "title": "틀에 버터를 바르고 냉장 보관하기",
+          "group": "사전 준비"
+        },
+        {
+          "sourceRowId": "lemon-weekend-03",
+          "title": "레몬 씻기",
+          "group": "사전 준비"
+        },
+        {
+          "sourceRowId": "lemon-weekend-04",
+          "title": "뜨거운 물 준비하기",
+          "group": "사전 준비"
+        },
+        {
+          "sourceRowId": "lemon-weekend-05",
+          "title": "오븐을 170도로 20분 전 예열하기",
+          "group": "사전 준비"
+        },
+        {
+          "sourceRowId": "lemon-weekend-06",
+          "title": "레몬설탕 만들기",
+          "group": "조리"
+        },
+        {
+          "sourceRowId": "lemon-weekend-07",
+          "title": "달걀·물엿·레몬설탕 섞기",
+          "group": "조리"
+        },
+        {
+          "sourceRowId": "lemon-weekend-08",
+          "title": "중탕하며 40°C까지 섞기",
+          "group": "조리"
+        },
+        {
+          "sourceRowId": "lemon-weekend-09",
+          "title": "버터 중탕하기",
+          "group": "조리"
+        },
+        {
+          "sourceRowId": "lemon-weekend-10",
+          "title": "리본 상태까지 거품 올리기",
+          "group": "조리"
+        },
+        {
+          "sourceRowId": "lemon-weekend-11",
+          "title": "박력분을 체쳐 접듯 섞기",
+          "group": "조리"
+        },
+        {
+          "sourceRowId": "lemon-weekend-12",
+          "title": "반죽 일부와 버터를 섞어 본 반죽에 합치기",
+          "group": "조리"
+        }
+      ],
+      "evidenceNotes": [
+        "고정 날짜가 없어 사용자 시간이 정해지기 전에는 Calendar event를 만들지 않는다."
+      ]
+    },
+    {
+      "researchId": "new-b07-interior-consultation",
+      "title": "인테리어 상담·실측·견적 비교 준비",
+      "source": {
+        "title": "인테리어 견적 왜 다를까? 상담 준비 체크리스트",
+        "provider": "오늘의리모델링 / 오늘의집",
+        "url": "https://ohou.se/advices/12360",
+        "canonicalUrl": "https://ohou.se/advices/12360",
+        "sourceFormat": "html",
+        "accessStatus": "public_full_text",
+        "locale": "ko-KR",
+        "observedAt": "2026-07-29"
+      },
+      "userJob": "인테리어 상담·실측·견적 비교를 준비하고 업체를 결정한다.",
+      "corpusTier": "product_candidate",
+      "generationMode": "flow_items",
+      "taxonomy": {
+        "primaryLifeArea": "home_living",
+        "secondaryLifeAreas": [
+          "money_admin_purchase"
+        ],
+        "sourceShape": "procedure_rows_compare_decide",
+        "temporalIntent": "no_schedule",
+        "primaryExecutionPattern": "compare_decide",
+        "primaryProjection": "checklist",
+        "secondaryProjections": [
+          "sheet"
+        ]
+      },
+      "minimumInputs": [
+        {
+          "key": "vendorNames",
+          "label": "비교할 업체",
+          "type": "list",
+          "required": false,
+          "purposes": [
+            "execution"
+          ],
+          "source": "user_overlay"
+        }
+      ],
+      "readiness": {
+        "architectureFit": "go",
+        "logicReadiness": "modify",
+        "publicReadiness": "modify",
+        "rightsStatus": "permission_review_required",
+        "personalConversionAvailability": "available",
+        "sourceCompleteness": "complete",
+        "safetyReview": "not_required",
+        "localeReview": "applicable",
+        "privacyReview": "address_budget_quotes_private",
+        "promotionState": "research_only"
+      },
+      "confirmedSourceRowCount": 6,
+      "capturedSourceRowCount": 6,
+      "sourceRows": [
+        {
+          "sourceRowId": "interior-01",
+          "title": "전체 공사 흐름과 공사 방식 이해하기",
+          "group": null
+        },
+        {
+          "sourceRowId": "interior-02",
+          "title": "방문 상담 진행하기",
+          "group": null
+        },
+        {
+          "sourceRowId": "interior-03",
+          "title": "견적의 포함 항목과 구성 방식 비교하기",
+          "group": null
+        },
+        {
+          "sourceRowId": "interior-04",
+          "title": "최소 2곳 이상 현장 실측받기",
+          "group": null
+        },
+        {
+          "sourceRowId": "interior-05",
+          "title": "추가 상담으로 자재·범위·예산 조정하기",
+          "group": null
+        },
+        {
+          "sourceRowId": "interior-06",
+          "title": "설명·소통·요구 반영을 기준으로 업체 선택하기",
+          "group": null
+        }
+      ],
+      "evidenceNotes": [
+        "source action과 이후 사용자가 입력할 업체·견적 행을 분리한다."
+      ]
+    },
+    {
+      "researchId": "new-b08-banchan-ten",
+      "title": "밑반찬 10종 주간 비축",
+      "source": {
+        "title": "일주일 거뜬 쟁여두고 먹는 가성비 주간집밥식단표",
+        "provider": "요리요정이팀장 / 오늘의집",
+        "url": "https://ohou.se/advices/8563",
+        "canonicalUrl": "https://ohou.se/advices/8563",
+        "sourceFormat": "html",
+        "accessStatus": "public_full_text",
+        "locale": "ko-KR",
+        "observedAt": "2026-07-29"
+      },
+      "userJob": "오래 보관 가능한 밑반찬 10종을 요일 묶음으로 만들어 비축한다.",
+      "corpusTier": "product_candidate",
+      "generationMode": "flow_items",
+      "taxonomy": {
+        "primaryLifeArea": "meals_grocery",
+        "sourceShape": "table_rows_with_recipe_details",
+        "temporalIntent": "user_pacing_assignment",
+        "primaryExecutionPattern": "progress_tracking",
+        "primaryProjection": "checklist",
+        "secondaryProjections": [
+          "sheet",
+          "calendar"
+        ]
+      },
+      "minimumInputs": [
+        {
+          "key": "weekStart",
+          "label": "시작 주",
+          "type": "date",
+          "required": false,
+          "purposes": [
+            "schedule"
+          ],
+          "source": "user_overlay"
+        }
+      ],
+      "pacingEligible": true,
+      "readiness": {
+        "architectureFit": "go",
+        "logicReadiness": "go",
+        "publicReadiness": "modify",
+        "rightsStatus": "permission_review_required",
+        "personalConversionAvailability": "available",
+        "sourceCompleteness": "complete",
+        "safetyReview": "food_caution_required",
+        "localeReview": "applicable",
+        "privacyReview": "not_required",
+        "promotionState": "research_only"
+      },
+      "confirmedSourceRowCount": 5,
+      "capturedSourceRowCount": 5,
+      "sourceRows": [
+        {
+          "sourceRowId": "banchan-01",
+          "title": "월요일 — 멸치볶음, 콩나물무침",
+          "group": "월요일"
+        },
+        {
+          "sourceRowId": "banchan-02",
+          "title": "화요일 — 건새우볶음, 버섯볶음",
+          "group": "화요일"
+        },
+        {
+          "sourceRowId": "banchan-03",
+          "title": "수요일 — 진미채볶음, 애호박새우젓볶음",
+          "group": "수요일"
+        },
+        {
+          "sourceRowId": "banchan-04",
+          "title": "목요일 — 소고기장조림, 마늘쫑볶음",
+          "group": "목요일"
+        },
+        {
+          "sourceRowId": "banchan-05",
+          "title": "금요일 — 어묵볶음, 시래기된장조림",
+          "group": "금요일"
+        }
+      ],
+      "evidenceNotes": [
+        "원문 요일 순서와 사용자 실제 날짜를 섞지 않는다."
+      ]
+    },
+    {
+      "researchId": "new-c01-programmers-kit",
+      "title": "코딩테스트 고득점 Kit 47문제",
+      "source": {
+        "title": "코딩테스트 고득점 Kit",
+        "provider": "프로그래머스",
+        "url": "https://school.programmers.co.kr/learn/challenges?tab=algorithm_practice_kit",
+        "canonicalUrl": "https://school.programmers.co.kr/learn/challenges?tab=algorithm_practice_kit",
+        "sourceFormat": "html",
+        "accessStatus": "public_full_text",
+        "locale": "ko-KR",
+        "observedAt": "2026-07-29"
+      },
+      "userJob": "코딩테스트 유형별 47문제 풀이 진도를 관리한다.",
+      "corpusTier": "product_candidate",
+      "generationMode": "flow_items",
+      "taxonomy": {
+        "primaryLifeArea": "study_reading",
+        "sourceShape": "lesson_rows",
+        "temporalIntent": "no_schedule",
+        "primaryExecutionPattern": "progress_tracking",
+        "primaryProjection": "todo",
+        "secondaryProjections": [
+          "sheet",
+          "checklist",
+          "calendar"
+        ]
+      },
+      "minimumInputs": [
+        {
+          "key": "startDate",
+          "label": "시작일",
+          "type": "date",
+          "required": false,
+          "purposes": [
+            "schedule"
+          ],
+          "source": "user_overlay"
+        },
+        {
+          "key": "pacing",
+          "label": "하루·주 문제 수",
+          "type": "number",
+          "required": false,
+          "purposes": [
+            "schedule"
+          ],
+          "source": "user_overlay"
+        }
+      ],
+      "pacingEligible": true,
+      "readiness": {
+        "architectureFit": "go",
+        "logicReadiness": "go",
+        "publicReadiness": "modify",
+        "rightsStatus": "permission_review_required",
+        "personalConversionAvailability": "available",
+        "sourceCompleteness": "complete",
+        "safetyReview": "not_required",
+        "localeReview": "applicable",
+        "privacyReview": "account_progress_requires_separate_permission",
+        "promotionState": "research_only"
+      },
+      "confirmedSourceRowCount": 47,
+      "capturedSourceRowCount": 47,
+      "sourceRows": [
+        {
+          "sourceRowId": "programmers-01",
+          "title": "완주하지 못한 선수",
+          "group": "해시",
+          "detail": "Level 1"
+        },
+        {
+          "sourceRowId": "programmers-02",
+          "title": "폰켓몬",
+          "group": "해시",
+          "detail": "Level 1"
+        },
+        {
+          "sourceRowId": "programmers-03",
+          "title": "전화번호 목록",
+          "group": "해시",
+          "detail": "Level 2"
+        },
+        {
+          "sourceRowId": "programmers-04",
+          "title": "의상",
+          "group": "해시",
+          "detail": "Level 2"
+        },
+        {
+          "sourceRowId": "programmers-05",
+          "title": "베스트앨범",
+          "group": "해시",
+          "detail": "Level 3"
+        },
+        {
+          "sourceRowId": "programmers-06",
+          "title": "같은 숫자는 싫어",
+          "group": "스택/큐",
+          "detail": "Level 1"
+        },
+        {
+          "sourceRowId": "programmers-07",
+          "title": "기능개발",
+          "group": "스택/큐",
+          "detail": "Level 2"
+        },
+        {
+          "sourceRowId": "programmers-08",
+          "title": "올바른 괄호",
+          "group": "스택/큐",
+          "detail": "Level 2"
+        },
+        {
+          "sourceRowId": "programmers-09",
+          "title": "프로세스",
+          "group": "스택/큐",
+          "detail": "Level 2"
+        },
+        {
+          "sourceRowId": "programmers-10",
+          "title": "다리를 지나는 트럭",
+          "group": "스택/큐",
+          "detail": "Level 2"
+        },
+        {
+          "sourceRowId": "programmers-11",
+          "title": "주식가격",
+          "group": "스택/큐",
+          "detail": "Level 2"
+        },
+        {
+          "sourceRowId": "programmers-12",
+          "title": "더 맵게",
+          "group": "힙(Heap)",
+          "detail": "Level 2"
+        },
+        {
+          "sourceRowId": "programmers-13",
+          "title": "디스크 컨트롤러",
+          "group": "힙(Heap)",
+          "detail": "Level 3"
+        },
+        {
+          "sourceRowId": "programmers-14",
+          "title": "이중우선순위큐",
+          "group": "힙(Heap)",
+          "detail": "Level 3"
+        },
+        {
+          "sourceRowId": "programmers-15",
+          "title": "K번째수",
+          "group": "정렬",
+          "detail": "Level 1"
+        },
+        {
+          "sourceRowId": "programmers-16",
+          "title": "가장 큰 수",
+          "group": "정렬",
+          "detail": "Level 2"
+        },
+        {
+          "sourceRowId": "programmers-17",
+          "title": "H-Index",
+          "group": "정렬",
+          "detail": "Level 2"
+        },
+        {
+          "sourceRowId": "programmers-18",
+          "title": "최소직사각형",
+          "group": "완전탐색",
+          "detail": "Level 1"
+        },
+        {
+          "sourceRowId": "programmers-19",
+          "title": "모의고사",
+          "group": "완전탐색",
+          "detail": "Level 1"
+        },
+        {
+          "sourceRowId": "programmers-20",
+          "title": "소수 찾기",
+          "group": "완전탐색",
+          "detail": "Level 2"
+        },
+        {
+          "sourceRowId": "programmers-21",
+          "title": "카펫",
+          "group": "완전탐색",
+          "detail": "Level 2"
+        },
+        {
+          "sourceRowId": "programmers-22",
+          "title": "피로도",
+          "group": "완전탐색",
+          "detail": "Level 2"
+        },
+        {
+          "sourceRowId": "programmers-23",
+          "title": "전력망을 둘로 나누기",
+          "group": "완전탐색",
+          "detail": "Level 2"
+        },
+        {
+          "sourceRowId": "programmers-24",
+          "title": "모음사전",
+          "group": "완전탐색",
+          "detail": "Level 2"
+        },
+        {
+          "sourceRowId": "programmers-25",
+          "title": "체육복",
+          "group": "탐욕법(Greedy)",
+          "detail": "Level 1"
+        },
+        {
+          "sourceRowId": "programmers-26",
+          "title": "조이스틱",
+          "group": "탐욕법(Greedy)",
+          "detail": "Level 2"
+        },
+        {
+          "sourceRowId": "programmers-27",
+          "title": "큰 수 만들기",
+          "group": "탐욕법(Greedy)",
+          "detail": "Level 2"
+        },
+        {
+          "sourceRowId": "programmers-28",
+          "title": "구명보트",
+          "group": "탐욕법(Greedy)",
+          "detail": "Level 2"
+        },
+        {
+          "sourceRowId": "programmers-29",
+          "title": "섬 연결하기",
+          "group": "탐욕법(Greedy)",
+          "detail": "Level 3"
+        },
+        {
+          "sourceRowId": "programmers-30",
+          "title": "단속카메라",
+          "group": "탐욕법(Greedy)",
+          "detail": "Level 3"
+        },
+        {
+          "sourceRowId": "programmers-31",
+          "title": "N으로 표현",
+          "group": "동적계획법(Dynamic Programming)",
+          "detail": "Level 3"
+        },
+        {
+          "sourceRowId": "programmers-32",
+          "title": "정수 삼각형",
+          "group": "동적계획법(Dynamic Programming)",
+          "detail": "Level 3"
+        },
+        {
+          "sourceRowId": "programmers-33",
+          "title": "등굣길",
+          "group": "동적계획법(Dynamic Programming)",
+          "detail": "Level 3"
+        },
+        {
+          "sourceRowId": "programmers-34",
+          "title": "사칙연산",
+          "group": "동적계획법(Dynamic Programming)",
+          "detail": "Level 4"
+        },
+        {
+          "sourceRowId": "programmers-35",
+          "title": "도둑질",
+          "group": "동적계획법(Dynamic Programming)",
+          "detail": "Level 4"
+        },
+        {
+          "sourceRowId": "programmers-36",
+          "title": "타겟 넘버",
+          "group": "깊이/너비 우선 탐색(DFS/BFS)",
+          "detail": "Level 2"
+        },
+        {
+          "sourceRowId": "programmers-37",
+          "title": "네트워크",
+          "group": "깊이/너비 우선 탐색(DFS/BFS)",
+          "detail": "Level 3"
+        },
+        {
+          "sourceRowId": "programmers-38",
+          "title": "게임 맵 최단거리",
+          "group": "깊이/너비 우선 탐색(DFS/BFS)",
+          "detail": "Level 2"
+        },
+        {
+          "sourceRowId": "programmers-39",
+          "title": "단어 변환",
+          "group": "깊이/너비 우선 탐색(DFS/BFS)",
+          "detail": "Level 3"
+        },
+        {
+          "sourceRowId": "programmers-40",
+          "title": "아이템 줍기",
+          "group": "깊이/너비 우선 탐색(DFS/BFS)",
+          "detail": "Level 3"
+        },
+        {
+          "sourceRowId": "programmers-41",
+          "title": "여행경로",
+          "group": "깊이/너비 우선 탐색(DFS/BFS)",
+          "detail": "Level 3"
+        },
+        {
+          "sourceRowId": "programmers-42",
+          "title": "퍼즐 조각 채우기",
+          "group": "깊이/너비 우선 탐색(DFS/BFS)",
+          "detail": "Level 3"
+        },
+        {
+          "sourceRowId": "programmers-43",
+          "title": "입국심사",
+          "group": "이분탐색",
+          "detail": "Level 3"
+        },
+        {
+          "sourceRowId": "programmers-44",
+          "title": "징검다리",
+          "group": "이분탐색",
+          "detail": "Level 4"
+        },
+        {
+          "sourceRowId": "programmers-45",
+          "title": "가장 먼 노드",
+          "group": "그래프",
+          "detail": "Level 3"
+        },
+        {
+          "sourceRowId": "programmers-46",
+          "title": "순위",
+          "group": "그래프",
+          "detail": "Level 3"
+        },
+        {
+          "sourceRowId": "programmers-47",
+          "title": "방의 개수",
+          "group": "그래프",
+          "detail": "Level 5"
+        }
+      ],
+      "evidenceNotes": [
+        "원문에 없는 학습 순서·기간·주당 문제 수는 사용자 pacing 전에는 만들지 않는다."
+      ]
+    },
+    {
+      "researchId": "new-c02-ifixit-hose",
+      "title": "새는 정원 호스 커넥터 교체",
+      "source": {
+        "title": "How to Fix a Leaking Garden Hose Connector",
+        "provider": "iFixit · Rylee Walker",
+        "url": "https://www.ifixit.com/Guide/How+to+Fix+a+Leaking+Garden+Hose+Connector/189188",
+        "canonicalUrl": "https://www.ifixit.com/Guide/How+to+Fix+a+Leaking+Garden+Hose+Connector/189188",
+        "sourceFormat": "html",
+        "accessStatus": "public_full_text",
+        "locale": "en-US",
+        "observedAt": "2026-07-29"
+      },
+      "userJob": "누수 나는 5/8인치 수 호스 커넥터를 교체한다.",
+      "corpusTier": "product_candidate",
+      "generationMode": "flow_items",
+      "taxonomy": {
+        "primaryLifeArea": "home_living",
+        "sourceShape": "procedure_rows",
+        "temporalIntent": "no_schedule",
+        "primaryExecutionPattern": "ordered_procedure",
+        "primaryProjection": "checklist",
+        "secondaryProjections": [
+          "memo"
+        ]
+      },
+      "minimumInputs": [
+        {
+          "key": "partCompatibility",
+          "label": "5/8인치 부품 호환 확인",
+          "type": "check",
+          "required": false,
+          "purposes": [
+            "execution"
+          ],
+          "source": "user_overlay"
+        }
+      ],
+      "readiness": {
+        "architectureFit": "go",
+        "logicReadiness": "go",
+        "publicReadiness": "hold",
+        "rightsStatus": "cc_by_nc_sa_3_noncommercial",
+        "personalConversionAvailability": "available",
+        "sourceCompleteness": "complete",
+        "safetyReview": "knife_and_pliers_caution_required",
+        "localeReview": "part_standard_confirmation_required",
+        "privacyReview": "not_required",
+        "promotionState": "research_only"
+      },
+      "confirmedSourceRowCount": 6,
+      "capturedSourceRowCount": 6,
+      "sourceRows": [
+        {
+          "sourceRowId": "ifixit-01",
+          "group": "수리 절차",
+          "title": "호스를 분리해 안정된 작업면에 놓기",
+          "detail": "Disconnect the hose and place the end on a stable surface."
+        },
+        {
+          "sourceRowId": "ifixit-02",
+          "group": "수리 절차",
+          "title": "기존 커넥터에서 2~3인치 떨어진 지점을 절단하기",
+          "detail": "Hold the hose down against the surface and use the utility knife to cut the hose about two to three inches away from the old connector."
+        },
+        {
+          "sourceRowId": "ifixit-03",
+          "group": "수리 절차",
+          "title": "새 수 커넥터를 호스 끝까지 삽입하기",
+          "detail": "Insert the new male hose connector into the open end; use pliers if needed and fit it completely to the edge."
+        },
+        {
+          "sourceRowId": "ifixit-04",
+          "group": "수리 절차",
+          "title": "스테인리스 클램프를 호스에 들어갈 만큼 풀기",
+          "detail": "Loosen the clamp screw by hand or with pliers until it will slide around the hose."
+        },
+        {
+          "sourceRowId": "ifixit-05",
+          "group": "수리 절차",
+          "title": "커넥터 가까이에 클램프를 두고 조이기",
+          "detail": "Place the clamp close to the connector and tighten it; use pliers or a flathead screwdriver as described."
+        },
+        {
+          "sourceRowId": "ifixit-06",
+          "group": "수리 절차",
+          "title": "나사산에 테이프를 감고 연결한 뒤 누수 시험하기",
+          "detail": "Wrap Teflon tape 2-3 times, connect to the water source, turn water on and check for leaks."
+        }
+      ],
+      "evidenceNotes": [
+        "연결 상태·이물질·균열 사전 확인과 칼 사용 경고를 유지한다.",
+        "상업 서비스 공개 사용에는 iFixit 라이선스 검토가 필요하다."
+      ]
+    },
+    {
+      "researchId": "new-c03-nps-junior-ranger",
+      "title": "Ice Age Trail Junior Ranger 활동책",
+      "source": {
+        "title": "Ice Age Trail Junior Ranger",
+        "provider": "U.S. National Park Service",
+        "url": "https://www.nps.gov/iatr/learn/kidsyouth/junior-ranger.htm",
+        "canonicalUrl": "https://www.nps.gov/iatr/learn/kidsyouth/junior-ranger.htm",
+        "sourceFormat": "html_pdf",
+        "accessStatus": "public_full_text",
+        "locale": "en-US",
+        "observedAt": "2026-07-29"
+      },
+      "userJob": "9개 활동을 수행하고 서약·증서·배지를 완성한다.",
+      "corpusTier": "product_candidate",
+      "generationMode": "flow_items",
+      "taxonomy": {
+        "primaryLifeArea": "family_parenting",
+        "secondaryLifeAreas": [
+          "hobby_pet"
+        ],
+        "sourceShape": "lesson_rows",
+        "temporalIntent": "no_schedule",
+        "primaryExecutionPattern": "ordered_procedure",
+        "primaryProjection": "checklist",
+        "secondaryProjections": [
+          "memo"
+        ]
+      },
+      "minimumInputs": [
+        {
+          "key": "visitLocation",
+          "label": "현장 방문 장소",
+          "type": "text",
+          "required": false,
+          "purposes": [
+            "execution"
+          ],
+          "source": "user_overlay"
+        }
+      ],
+      "readiness": {
+        "architectureFit": "go",
+        "logicReadiness": "go",
+        "publicReadiness": "modify",
+        "rightsStatus": "us_government_text_with_asset_review",
+        "personalConversionAvailability": "available",
+        "sourceCompleteness": "complete",
+        "safetyReview": "guardian_and_outdoor_caution_required",
+        "localeReview": "wisconsin_specific",
+        "privacyReview": "certificate_name_private",
+        "promotionState": "research_only"
+      },
+      "confirmedSourceRowCount": 12,
+      "capturedSourceRowCount": 12,
+      "sourceRows": [
+        {
+          "sourceRowId": "nps-01",
+          "title": "FOOTSTEPS OF MAMMOTHS",
+          "detail": "Mark on the map where you live and color in the counties that the Ice Age Trail passes through.",
+          "group": "활동책"
+        },
+        {
+          "sourceRowId": "nps-02",
+          "title": "GLACIERS CARVED THIS LAND",
+          "detail": "Color and Match",
+          "group": "활동책"
+        },
+        {
+          "sourceRowId": "nps-03",
+          "title": "BLAZE YOUR OWN TRAIL",
+          "detail": "Design a Trail Marker!",
+          "group": "활동책"
+        },
+        {
+          "sourceRowId": "nps-04",
+          "title": "LET'S GO FOR A HIKE",
+          "detail": "Plan Like a Park Ranger",
+          "group": "활동책"
+        },
+        {
+          "sourceRowId": "nps-05",
+          "title": "Hike to the Overlook",
+          "detail": null,
+          "group": "활동책"
+        },
+        {
+          "sourceRowId": "nps-06",
+          "title": "YOUR TRAIL SKETCHBOOK",
+          "detail": "Draw Your Experiences",
+          "group": "활동책"
+        },
+        {
+          "sourceRowId": "nps-07",
+          "title": "ICE AGE IMPROV",
+          "detail": "Act It Out Outdoors",
+          "group": "활동책"
+        },
+        {
+          "sourceRowId": "nps-08",
+          "title": "NATURE JOURNAL",
+          "detail": "Fill in the Blanks",
+          "group": "활동책"
+        },
+        {
+          "sourceRowId": "nps-09",
+          "title": "BE A TRAIL STEWARD",
+          "detail": "Care for the Trail!",
+          "group": "활동책"
+        },
+        {
+          "sourceRowId": "nps-10",
+          "title": "Take the Pledge",
+          "detail": null,
+          "group": "완료"
+        },
+        {
+          "sourceRowId": "nps-11",
+          "title": "Sign the Certificate",
+          "detail": null,
+          "group": "완료"
+        },
+        {
+          "sourceRowId": "nps-12",
+          "title": "Create Your Badge",
+          "detail": null,
+          "group": "완료"
+        }
+      ],
+      "evidenceNotes": [
+        "정부 텍스트와 제3자 이미지·표장 권리를 분리한다."
+      ]
+    },
+    {
+      "researchId": "new-c04-instructables-origami",
+      "title": "Origami for Everyone 41개 프로젝트",
+      "source": {
+        "title": "Origami for Everyone",
+        "provider": "Instructables · scoochmaroo",
+        "url": "https://www.instructables.com/Origami-For-Everyone/",
+        "canonicalUrl": "https://www.instructables.com/Origami-For-Everyone/",
+        "sourceFormat": "html",
+        "accessStatus": "public_full_text",
+        "locale": "en-US",
+        "observedAt": "2026-07-29"
+      },
+      "userJob": "종이접기 프로젝트를 골라 완료 상태와 다음 작품을 관리한다.",
+      "corpusTier": "product_candidate",
+      "generationMode": "flow_items",
+      "taxonomy": {
+        "primaryLifeArea": "hobby_pet",
+        "sourceShape": "resource_collection",
+        "temporalIntent": "no_schedule",
+        "primaryExecutionPattern": "resource_queue",
+        "primaryProjection": "todo",
+        "secondaryProjections": [
+          "sheet",
+          "checklist"
+        ]
+      },
+      "minimumInputs": [
+        {
+          "key": "selectedProject",
+          "label": "시작할 작품",
+          "type": "choice",
+          "required": false,
+          "purposes": [
+            "execution"
+          ],
+          "source": "user_overlay"
+        }
+      ],
+      "pacingEligible": true,
+      "readiness": {
+        "architectureFit": "go",
+        "logicReadiness": "go",
+        "publicReadiness": "hold",
+        "rightsStatus": "per_project_creator_review_required",
+        "personalConversionAvailability": "available",
+        "sourceCompleteness": "complete",
+        "safetyReview": "not_required",
+        "localeReview": "english_material_units_review",
+        "privacyReview": "not_required",
+        "promotionState": "research_only"
+      },
+      "confirmedSourceRowCount": 41,
+      "capturedSourceRowCount": 41,
+      "sourceRows": [
+        {
+          "sourceRowId": "origami-01",
+          "title": "Open Cube Modular Origami",
+          "detail": "https://www.instructables.com/Open-Cube-Modular-Origami/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-02",
+          "title": "Post-It Origami Icosahedron",
+          "detail": "https://www.instructables.com/Post-It-Origami-Icosahedron/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-03",
+          "title": "Origami Post-it Box",
+          "detail": "https://www.instructables.com/Origami-Post-it-box/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-04",
+          "title": "How to Make a Paper Crane",
+          "detail": "https://www.instructables.com/How-to-make-a-Paper-Crane-1/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-05",
+          "title": "Origami Diamond",
+          "detail": "https://www.instructables.com/Origami-Diamond/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-06",
+          "title": "Origami Rabbit",
+          "detail": "https://www.instructables.com/Origami-Rabbit/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-07",
+          "title": "Origami Bracelet",
+          "detail": "https://www.instructables.com/Origami-bracelet/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-08",
+          "title": "Origami Paper Flowers",
+          "detail": "https://www.instructables.com/Origami-Paper-Flowers/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-09",
+          "title": "Origami Ball - Kusudame",
+          "detail": "https://www.instructables.com/Origami-Ball-Kusudame/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-10",
+          "title": "Origami Paper Bowtie",
+          "detail": "https://www.instructables.com/Origami-Paper-Bowtie/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-11",
+          "title": "Modular Origami Earrings",
+          "detail": "https://www.instructables.com/Modular-Origami-Earrings/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-12",
+          "title": "Origami for Beginners",
+          "detail": "https://www.instructables.com/Origami-for-Beginners/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-13",
+          "title": "How to Make a Paper Cube",
+          "detail": "https://www.instructables.com/How-to-make-a-paper-cube/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-14",
+          "title": "Origami Tall Samurai Helmit or Hat",
+          "detail": "https://www.instructables.com/origami-tall-samurai-helmit-or-hat/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-15",
+          "title": "Origami Sycee",
+          "detail": "https://www.instructables.com/Origami-Sycee/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-16",
+          "title": "How to Make Lucky Paper Stars",
+          "detail": "https://www.instructables.com/How-to-make-lucky-paper-stars/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-17",
+          "title": "Origami Dog",
+          "detail": "https://www.instructables.com/Origami-Dog/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-18",
+          "title": "Twelve Vaned Christmas Ornament",
+          "detail": "https://www.instructables.com/Twelve-Vaned-Christmas-Ornament/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-19",
+          "title": "Origami Dollar Flower",
+          "detail": "https://www.instructables.com/Origami-Dollar-Flower/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-20",
+          "title": "Dollar Shirt",
+          "detail": "https://www.instructables.com/Dollar-shirt/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-21",
+          "title": "Dollar Bill Ring Bling",
+          "detail": "https://www.instructables.com/Dollar-Bill-Ring-Bling/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-22",
+          "title": "Dollar Bill Shirt",
+          "detail": "https://www.instructables.com/Dollar-Bill-Shirt/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-23",
+          "title": "Dollar Bill Origami Heart",
+          "detail": "https://www.instructables.com/Dollar-Bill-Oragami-Heart/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-24",
+          "title": "Unit Origami",
+          "detail": "https://www.instructables.com/Unit-Origami/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-25",
+          "title": "Instant Party Paper Lanterns",
+          "detail": "https://www.instructables.com/party-paper-lanterns/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-26",
+          "title": "Make an Origami Tulip",
+          "detail": "https://www.instructables.com/Make-an-Origami-Tulip/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-27",
+          "title": "Origami Rose",
+          "detail": "https://www.instructables.com/Origami-rose-1/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-28",
+          "title": "A Dozen Red Origami Roses",
+          "detail": "https://www.instructables.com/A-Dozen-Red-Origami-Roses/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-29",
+          "title": "Flying Origami",
+          "detail": "https://www.instructables.com/Flying-Origami/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-30",
+          "title": "How to Make an Origami Crane",
+          "detail": "https://www.instructables.com/How-to-make-an-Origami-Crane/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-31",
+          "title": "How to Fold an Origami Dragon",
+          "detail": "https://www.instructables.com/How-to-fold-an-Origami-Dragon/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-32",
+          "title": "How to Make an Origami Dragon",
+          "detail": "https://www.instructables.com/How-to-make-an-Origami-Dragon/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-33",
+          "title": "Gryphon Origami",
+          "detail": "https://www.instructables.com/How-to-make-a-paper-Gryphon-origami/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-34",
+          "title": "Zero Origami",
+          "detail": "https://www.instructables.com/Zero-Origami/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-35",
+          "title": "Paper Ball Ornaments for Your Christmas Tree",
+          "detail": "https://www.instructables.com/Paper-ball-ornaments-for-your-Christmas-tree/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-36",
+          "title": "Decorative Origami Cube 2",
+          "detail": "https://www.instructables.com/Decorative-Origami-Cube-2/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-37",
+          "title": "Origami Egg",
+          "detail": "https://www.instructables.com/Origami-Egg/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-38",
+          "title": "Guy Fawkes Mask in Origami",
+          "detail": "https://www.instructables.com/Guy-Fawkes-Mask-in-Origami/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-39",
+          "title": "Origami Devil Mask",
+          "detail": "https://www.instructables.com/Origami-Devil-Mask/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-40",
+          "title": "Rubber Origami",
+          "detail": "https://www.instructables.com/Rubber-Origami/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        },
+        {
+          "sourceRowId": "origami-41",
+          "title": "How to Fold a Paper Flower",
+          "detail": "https://www.instructables.com/How-To-Fold-a-Paper-Flower/",
+          "group": "프로젝트 큐",
+          "intent": "consume"
+        }
+      ],
+      "evidenceNotes": [
+        "소개 문구 30개와 현재 public model 41개가 불일치한다.",
+        "collection row만 Item이며 개별 작품 절차는 선택 후 child source import가 필요하다."
+      ]
+    },
+    {
+      "researchId": "new-c05-foodsafety-storage",
+      "title": "Cold Food Storage Chart 53행",
+      "source": {
+        "title": "Cold Food Storage Chart",
+        "provider": "FoodSafety.gov",
+        "url": "https://www.foodsafety.gov/food-safety-charts/cold-food-storage-charts",
+        "canonicalUrl": "https://www.foodsafety.gov/food-safety-charts/cold-food-storage-charts",
+        "sourceFormat": "html_pdf",
+        "accessStatus": "public_full_text",
+        "locale": "en-US",
+        "observedAt": "2026-07-29"
+      },
+      "userJob": "보관 중인 식품의 종류와 보관 시작일을 기준으로 확인 시점을 관리한다.",
+      "corpusTier": "structure_probe",
+      "generationMode": "field_template",
+      "taxonomy": {
+        "primaryLifeArea": "health_fitness",
+        "secondaryLifeAreas": [
+          "meals_grocery"
+        ],
+        "sourceShape": "table_rows",
+        "temporalIntent": "source_duration_window",
+        "primaryExecutionPattern": "progress_tracking",
+        "primaryProjection": "sheet",
+        "secondaryProjections": [
+          "todo",
+          "calendar"
+        ]
+      },
+      "minimumInputs": [
+        {
+          "key": "foodType",
+          "label": "식품 유형",
+          "type": "choice",
+          "required": true,
+          "purposes": [
+            "execution"
+          ],
+          "source": "user_overlay"
+        },
+        {
+          "key": "storageState",
+          "label": "냉장·냉동 상태",
+          "type": "choice",
+          "required": true,
+          "purposes": [
+            "execution"
+          ],
+          "source": "user_overlay"
+        },
+        {
+          "key": "anchorDate",
+          "label": "보관·개봉·조리 기준일",
+          "type": "date",
+          "required": true,
+          "purposes": [
+            "schedule"
+          ],
+          "source": "user_overlay"
+        }
+      ],
+      "readiness": {
+        "architectureFit": "go",
+        "logicReadiness": "modify",
+        "publicReadiness": "modify",
+        "rightsStatus": "us_government_asset_review",
+        "personalConversionAvailability": "available",
+        "sourceCompleteness": "complete",
+        "safetyReview": "food_safety_caution_required",
+        "localeReview": "korea_applicability_unverified",
+        "privacyReview": "not_required",
+        "promotionState": "research_only"
+      },
+      "confirmedSourceRowCount": 53,
+      "capturedSourceRowCount": 53,
+      "sourceRows": [
+        {
+          "sourceRowId": "food-01",
+          "title": "Egg, chicken, ham, tuna, and macaroni salads",
+          "detail": "Refrigerator: 3 to 4 days · Freezer: Does not freeze well",
+          "group": "Salad",
+          "category": "Salad",
+          "refrigerator": "3 to 4 days",
+          "freezer": "Does not freeze well"
+        },
+        {
+          "sourceRowId": "food-02",
+          "title": "Opened package",
+          "detail": "Refrigerator: 1 week · Freezer: 1 to 2 months",
+          "group": "Hot dogs",
+          "category": "Hot dogs",
+          "refrigerator": "1 week",
+          "freezer": "1 to 2 months"
+        },
+        {
+          "sourceRowId": "food-03",
+          "title": "Unopened package",
+          "detail": "Refrigerator: 2 weeks · Freezer: 1 to 2 months",
+          "group": "Hot dogs",
+          "category": "Hot dogs",
+          "refrigerator": "2 weeks",
+          "freezer": "1 to 2 months"
+        },
+        {
+          "sourceRowId": "food-04",
+          "title": "Opened package or deli sliced",
+          "detail": "Refrigerator: 3 to 5 days · Freezer: 1 to 2 months",
+          "group": "Luncheon meat",
+          "category": "Luncheon meat",
+          "refrigerator": "3 to 5 days",
+          "freezer": "1 to 2 months"
+        },
+        {
+          "sourceRowId": "food-05",
+          "title": "Unopened package",
+          "detail": "Refrigerator: 2 weeks · Freezer: 1 to 2 months",
+          "group": "Luncheon meat",
+          "category": "Luncheon meat",
+          "refrigerator": "2 weeks",
+          "freezer": "1 to 2 months"
+        },
+        {
+          "sourceRowId": "food-06",
+          "title": "Bacon",
+          "detail": "Refrigerator: 1 week · Freezer: 1 month",
+          "group": "Bacon and sausage",
+          "category": "Bacon and sausage",
+          "refrigerator": "1 week",
+          "freezer": "1 month"
+        },
+        {
+          "sourceRowId": "food-07",
+          "title": "Sausage, raw, from chicken, turkey, pork, or beef",
+          "detail": "Refrigerator: 1 to 2 days · Freezer: 1 to 2 months",
+          "group": "Bacon and sausage",
+          "category": "Bacon and sausage",
+          "refrigerator": "1 to 2 days",
+          "freezer": "1 to 2 months"
+        },
+        {
+          "sourceRowId": "food-08",
+          "title": "Sausage, fully cooked, from chicken, turkey, pork, or beef",
+          "detail": "Refrigerator: 1 week · Freezer: 1 to 2 months",
+          "group": "Bacon and sausage",
+          "category": "Bacon and sausage",
+          "refrigerator": "1 week",
+          "freezer": "1 to 2 months"
+        },
+        {
+          "sourceRowId": "food-09",
+          "title": "Sausage, purchased frozen",
+          "detail": "Refrigerator: After cooking, 3-4 days · Freezer: 1-2 months from date of purchase",
+          "group": "Bacon and sausage",
+          "category": "Bacon and sausage",
+          "refrigerator": "After cooking, 3-4 days",
+          "freezer": "1-2 months from date of purchase"
+        },
+        {
+          "sourceRowId": "food-10",
+          "title": "Hamburger, ground beef, turkey, chicken, other poultry, veal, pork, lamb, and mixtures of them",
+          "detail": "Refrigerator: 1 to 2 days · Freezer: 3 to 4 months",
+          "group": "Hamburger, ground meats and ground poultry",
+          "category": "Hamburger, ground meats and ground poultry",
+          "refrigerator": "1 to 2 days",
+          "freezer": "3 to 4 months"
+        },
+        {
+          "sourceRowId": "food-11",
+          "title": "Steaks",
+          "detail": "Refrigerator: 3 to 5 days · Freezer: 4 to 12 months",
+          "group": "Fresh beef, veal, lamb, and pork",
+          "category": "Fresh beef, veal, lamb, and pork",
+          "refrigerator": "3 to 5 days",
+          "freezer": "4 to 12 months"
+        },
+        {
+          "sourceRowId": "food-12",
+          "title": "Chops",
+          "detail": "Refrigerator: 3 to 5 days · Freezer: 4 to 12 months",
+          "group": "Fresh beef, veal, lamb, and pork",
+          "category": "Fresh beef, veal, lamb, and pork",
+          "refrigerator": "3 to 5 days",
+          "freezer": "4 to 12 months"
+        },
+        {
+          "sourceRowId": "food-13",
+          "title": "Roasts",
+          "detail": "Refrigerator: 3 to 5 days · Freezer: 4 to 12 months",
+          "group": "Fresh beef, veal, lamb, and pork",
+          "category": "Fresh beef, veal, lamb, and pork",
+          "refrigerator": "3 to 5 days",
+          "freezer": "4 to 12 months"
+        },
+        {
+          "sourceRowId": "food-14",
+          "title": "Fresh, uncured, uncooked",
+          "detail": "Refrigerator: 3 to 5 days · Freezer: 6 months",
+          "group": "Ham",
+          "category": "Ham",
+          "refrigerator": "3 to 5 days",
+          "freezer": "6 months"
+        },
+        {
+          "sourceRowId": "food-15",
+          "title": "Fresh, uncured, cooked",
+          "detail": "Refrigerator: 3 to 4 days · Freezer: 3 to 4 months",
+          "group": "Ham",
+          "category": "Ham",
+          "refrigerator": "3 to 4 days",
+          "freezer": "3 to 4 months"
+        },
+        {
+          "sourceRowId": "food-16",
+          "title": "Cured, cook-before-eating, uncooked",
+          "detail": "Refrigerator: 5 to 7 days or use by date · Freezer: 3 to 4 months",
+          "group": "Ham",
+          "category": "Ham",
+          "refrigerator": "5 to 7 days or use by date",
+          "freezer": "3 to 4 months"
+        },
+        {
+          "sourceRowId": "food-17",
+          "title": "Fully-cooked, vacuum-sealed at plant, unopened",
+          "detail": "Refrigerator: 2 weeks or use by date · Freezer: 1 to 2 months",
+          "group": "Ham",
+          "category": "Ham",
+          "refrigerator": "2 weeks or use by date",
+          "freezer": "1 to 2 months"
+        },
+        {
+          "sourceRowId": "food-18",
+          "title": "Cooked, store-wrapped, whole",
+          "detail": "Refrigerator: 1 week · Freezer: 1 to 2 months",
+          "group": "Ham",
+          "category": "Ham",
+          "refrigerator": "1 week",
+          "freezer": "1 to 2 months"
+        },
+        {
+          "sourceRowId": "food-19",
+          "title": "Cooked, store-wrapped, slices, half, or spiral cut",
+          "detail": "Refrigerator: 3 to 5 days · Freezer: 1 to 2 months",
+          "group": "Ham",
+          "category": "Ham",
+          "refrigerator": "3 to 5 days",
+          "freezer": "1 to 2 months"
+        },
+        {
+          "sourceRowId": "food-20",
+          "title": "Country ham, cooked",
+          "detail": "Refrigerator: 1 week · Freezer: 1 month",
+          "group": "Ham",
+          "category": "Ham",
+          "refrigerator": "1 week",
+          "freezer": "1 month"
+        },
+        {
+          "sourceRowId": "food-21",
+          "title": "Canned, labeled Keep Refrigerated, unopened",
+          "detail": "Refrigerator: 6 to 9 months · Freezer: Do not freeze",
+          "group": "Ham",
+          "category": "Ham",
+          "refrigerator": "6 to 9 months",
+          "freezer": "Do not freeze"
+        },
+        {
+          "sourceRowId": "food-22",
+          "title": "Canned, shelf-stable, opened",
+          "detail": "Refrigerator: 3 to 4 days · Freezer: 1 to 2 months",
+          "group": "Ham",
+          "category": "Ham",
+          "refrigerator": "3 to 4 days",
+          "freezer": "1 to 2 months"
+        },
+        {
+          "sourceRowId": "food-23",
+          "title": "Prosciutto, Parma or Serrano ham, dry Italian or Spanish type, cut",
+          "detail": "Refrigerator: 2 to 3 months · Freezer: 1 month",
+          "group": "Ham",
+          "category": "Ham",
+          "refrigerator": "2 to 3 months",
+          "freezer": "1 month"
+        },
+        {
+          "sourceRowId": "food-24",
+          "title": "Chicken or turkey, whole",
+          "detail": "Refrigerator: 1 to 2 days · Freezer: 1 year",
+          "group": "Fresh poultry",
+          "category": "Fresh poultry",
+          "refrigerator": "1 to 2 days",
+          "freezer": "1 year"
+        },
+        {
+          "sourceRowId": "food-25",
+          "title": "Chicken or turkey, pieces",
+          "detail": "Refrigerator: 1 to 2 days · Freezer: 9 months",
+          "group": "Fresh poultry",
+          "category": "Fresh poultry",
+          "refrigerator": "1 to 2 days",
+          "freezer": "9 months"
+        },
+        {
+          "sourceRowId": "food-26",
+          "title": "Fatty Fish (bluefish, catfish, mackerel, mullet, salmon, tuna, etc.)",
+          "detail": "Refrigerator: 1 - 3 Days · Freezer: 2 - 3 Months",
+          "group": "Fin Fish",
+          "category": "Fin Fish",
+          "refrigerator": "1 - 3 Days",
+          "freezer": "2 - 3 Months"
+        },
+        {
+          "sourceRowId": "food-27",
+          "title": "Lean Fish (cod, flounder, haddock, halibut, sole, etc.)",
+          "detail": "Refrigerator: 1 - 3 Days · Freezer: 6 - 8 Months",
+          "group": "Fin Fish",
+          "category": "Fin Fish",
+          "refrigerator": "1 - 3 Days",
+          "freezer": "6 - 8 Months"
+        },
+        {
+          "sourceRowId": "food-28",
+          "title": "Lean Fish (pollock, ocean perch, rockfish, sea trout.)",
+          "detail": "Refrigerator: 1 - 3 Days · Freezer: 4 - 8 Months",
+          "group": "Fin Fish",
+          "category": "Fin Fish",
+          "refrigerator": "1 - 3 Days",
+          "freezer": "4 - 8 Months"
+        },
+        {
+          "sourceRowId": "food-29",
+          "title": "Fresh Crab Meat",
+          "detail": "Refrigerator: 2 - 4 Days · Freezer: 2 - 4 Months",
+          "group": "Shellfish",
+          "category": "Shellfish",
+          "refrigerator": "2 - 4 Days",
+          "freezer": "2 - 4 Months"
+        },
+        {
+          "sourceRowId": "food-30",
+          "title": "Fresh Lobster",
+          "detail": "Refrigerator: 2 - 4 Days · Freezer: 2 - 4 Months",
+          "group": "Shellfish",
+          "category": "Shellfish",
+          "refrigerator": "2 - 4 Days",
+          "freezer": "2 - 4 Months"
+        },
+        {
+          "sourceRowId": "food-31",
+          "title": "Live Crab, Lobster",
+          "detail": "Refrigerator: 1 day · Freezer: Not recommended",
+          "group": "Shellfish",
+          "category": "Shellfish",
+          "refrigerator": "1 day",
+          "freezer": "Not recommended"
+        },
+        {
+          "sourceRowId": "food-32",
+          "title": "Live Clams, Mussels, Oysters, and Scallops",
+          "detail": "Refrigerator: 5 - 10 Days · Freezer: Not recommended",
+          "group": "Shellfish",
+          "category": "Shellfish",
+          "refrigerator": "5 - 10 Days",
+          "freezer": "Not recommended"
+        },
+        {
+          "sourceRowId": "food-33",
+          "title": "Shrimp, Crayfish",
+          "detail": "Refrigerator: 3 - 5 Days · Freezer: 6 - 18 Months",
+          "group": "Shellfish",
+          "category": "Shellfish",
+          "refrigerator": "3 - 5 Days",
+          "freezer": "6 - 18 Months"
+        },
+        {
+          "sourceRowId": "food-34",
+          "title": "Shucked Clams, Mussels, Oysters, and Scallops",
+          "detail": "Refrigerator: 3 - 10 Days · Freezer: 3 - 4 Months",
+          "group": "Shellfish",
+          "category": "Shellfish",
+          "refrigerator": "3 - 10 Days",
+          "freezer": "3 - 4 Months"
+        },
+        {
+          "sourceRowId": "food-35",
+          "title": "Squid",
+          "detail": "Refrigerator: 1 - 3 Days · Freezer: 6 - 18 Months",
+          "group": "Shellfish",
+          "category": "Shellfish",
+          "refrigerator": "1 - 3 Days",
+          "freezer": "6 - 18 Months"
+        },
+        {
+          "sourceRowId": "food-36",
+          "title": "Raw eggs in shell",
+          "detail": "Refrigerator: 3 to 5 weeks · Freezer: Do not freeze in shell. Beat yolks and whites together, then freeze.",
+          "group": "Eggs",
+          "category": "Eggs",
+          "refrigerator": "3 to 5 weeks",
+          "freezer": "Do not freeze in shell. Beat yolks and whites together, then freeze."
+        },
+        {
+          "sourceRowId": "food-37",
+          "title": "Raw egg whites and yolks",
+          "detail": "Refrigerator: 2 to 4 days · Freezer: 12 months",
+          "group": "Eggs",
+          "category": "Eggs",
+          "refrigerator": "2 to 4 days",
+          "freezer": "12 months"
+        },
+        {
+          "sourceRowId": "food-38",
+          "title": "Raw egg accidentally frozen in shell",
+          "detail": "Refrigerator: Use immediately after thawing · Freezer: Keep frozen, then refrigerate to thaw",
+          "group": "Eggs",
+          "category": "Eggs",
+          "refrigerator": "Use immediately after thawing",
+          "freezer": "Keep frozen, then refrigerate to thaw"
+        },
+        {
+          "sourceRowId": "food-39",
+          "title": "Hard-cooked eggs",
+          "detail": "Refrigerator: 1 week · Freezer: Do not freeze",
+          "group": "Eggs",
+          "category": "Eggs",
+          "refrigerator": "1 week",
+          "freezer": "Do not freeze"
+        },
+        {
+          "sourceRowId": "food-40",
+          "title": "Egg substitutes, liquid, unopened",
+          "detail": "Refrigerator: 1 week · Freezer: Do not freeze",
+          "group": "Eggs",
+          "category": "Eggs",
+          "refrigerator": "1 week",
+          "freezer": "Do not freeze"
+        },
+        {
+          "sourceRowId": "food-41",
+          "title": "Egg substitutes, liquid, opened",
+          "detail": "Refrigerator: 3 days · Freezer: Do not freeze",
+          "group": "Eggs",
+          "category": "Eggs",
+          "refrigerator": "3 days",
+          "freezer": "Do not freeze"
+        },
+        {
+          "sourceRowId": "food-42",
+          "title": "Egg substitutes, frozen, unopened",
+          "detail": "Refrigerator: After thawing, 1 week or refer to use by date · Freezer: 12 months",
+          "group": "Eggs",
+          "category": "Eggs",
+          "refrigerator": "After thawing, 1 week or refer to use by date",
+          "freezer": "12 months"
+        },
+        {
+          "sourceRowId": "food-43",
+          "title": "Egg substitutes, frozen, opened",
+          "detail": "Refrigerator: After thawing, 3 to 4 days or refer to use by date · Freezer: Do not freeze",
+          "group": "Eggs",
+          "category": "Eggs",
+          "refrigerator": "After thawing, 3 to 4 days or refer to use by date",
+          "freezer": "Do not freeze"
+        },
+        {
+          "sourceRowId": "food-44",
+          "title": "Casseroles with eggs",
+          "detail": "Refrigerator: After baking, 3 to 4 days · Freezer: After baking, 2 to 3 months",
+          "group": "Eggs",
+          "category": "Eggs",
+          "refrigerator": "After baking, 3 to 4 days",
+          "freezer": "After baking, 2 to 3 months"
+        },
+        {
+          "sourceRowId": "food-45",
+          "title": "Eggnog, commercial",
+          "detail": "Refrigerator: 3 to 5 days · Freezer: 6 months",
+          "group": "Eggs",
+          "category": "Eggs",
+          "refrigerator": "3 to 5 days",
+          "freezer": "6 months"
+        },
+        {
+          "sourceRowId": "food-46",
+          "title": "Eggnog, homemade",
+          "detail": "Refrigerator: 2 to 4 days · Freezer: Do not freeze",
+          "group": "Eggs",
+          "category": "Eggs",
+          "refrigerator": "2 to 4 days",
+          "freezer": "Do not freeze"
+        },
+        {
+          "sourceRowId": "food-47",
+          "title": "Pies: Pumpkin or pecan",
+          "detail": "Refrigerator: After baking, 3 to 4 days · Freezer: After baking, 1 to 2 months",
+          "group": "Eggs",
+          "category": "Eggs",
+          "refrigerator": "After baking, 3 to 4 days",
+          "freezer": "After baking, 1 to 2 months"
+        },
+        {
+          "sourceRowId": "food-48",
+          "title": "Pies: Custard and chiffon",
+          "detail": "Refrigerator: After baking, 3 to 4 days · Freezer: Do not freeze",
+          "group": "Eggs",
+          "category": "Eggs",
+          "refrigerator": "After baking, 3 to 4 days",
+          "freezer": "Do not freeze"
+        },
+        {
+          "sourceRowId": "food-49",
+          "title": "Quiche with filling",
+          "detail": "Refrigerator: After baking, 3 to 5 days · Freezer: After baking, 2 to 3 months",
+          "group": "Eggs",
+          "category": "Eggs",
+          "refrigerator": "After baking, 3 to 5 days",
+          "freezer": "After baking, 2 to 3 months"
+        },
+        {
+          "sourceRowId": "food-50",
+          "title": "Vegetable or meat added",
+          "detail": "Refrigerator: 3 to 4 days · Freezer: 2 to 3 months",
+          "group": "Soups and stews",
+          "category": "Soups and stews",
+          "refrigerator": "3 to 4 days",
+          "freezer": "2 to 3 months"
+        },
+        {
+          "sourceRowId": "food-51",
+          "title": "Cooked meat or poultry",
+          "detail": "Refrigerator: 3 to 4 days · Freezer: 2 to 6 months",
+          "group": "Leftovers",
+          "category": "Leftovers",
+          "refrigerator": "3 to 4 days",
+          "freezer": "2 to 6 months"
+        },
+        {
+          "sourceRowId": "food-52",
+          "title": "Chicken nuggets or patties",
+          "detail": "Refrigerator: 3 to 4 days · Freezer: 1 to 3 months",
+          "group": "Leftovers",
+          "category": "Leftovers",
+          "refrigerator": "3 to 4 days",
+          "freezer": "1 to 3 months"
+        },
+        {
+          "sourceRowId": "food-53",
+          "title": "Pizza",
+          "detail": "Refrigerator: 3 to 4 days · Freezer: 1 to 2 months",
+          "group": "Leftovers",
+          "category": "Leftovers",
+          "refrigerator": "3 to 4 days",
+          "freezer": "1 to 2 months"
+        }
+      ],
+      "fieldContract": [
+        {
+          "key": "category",
+          "label": "식품 분류",
+          "valueType": "text",
+          "owner": "source"
+        },
+        {
+          "key": "food",
+          "label": "식품",
+          "valueType": "text",
+          "owner": "source"
+        },
+        {
+          "key": "refrigerator",
+          "label": "냉장 보관",
+          "valueType": "duration_text",
+          "owner": "source"
+        },
+        {
+          "key": "freezer",
+          "label": "냉동 보관",
+          "valueType": "duration_text",
+          "owner": "source"
+        },
+        {
+          "key": "anchorDate",
+          "label": "사용자 기준일",
+          "valueType": "date",
+          "owner": "user_overlay"
+        }
+      ],
+      "evidenceNotes": [
+        "53개 표 행을 곧바로 53개 Todo로 만들지 않는다.",
+        "식품 선택과 기준일 뒤에만 due Item을 활성화하며 time-block VEVENT는 만들지 않는다."
+      ]
+    },
+    {
+      "researchId": "new-c06-goodfood-lemon",
+      "title": "Lemon drizzle cake 8단계",
+      "source": {
+        "title": "Lemon drizzle cake",
+        "provider": "Good Food · Tana Ramsay",
+        "url": "https://www.bbcgoodfood.com/recipes/lemon-drizzle-cake",
+        "canonicalUrl": "https://www.bbcgoodfood.com/recipes/lemon-drizzle-cake",
+        "sourceFormat": "html",
+        "accessStatus": "public_full_text",
+        "locale": "en-GB",
+        "observedAt": "2026-07-29"
+      },
+      "userJob": "기본 10조각 분량의 레몬 케이크를 한 세션에 만든다.",
+      "corpusTier": "structure_probe",
+      "generationMode": "flow_items",
+      "taxonomy": {
+        "primaryLifeArea": "meals_grocery",
+        "sourceShape": "procedure_rows",
+        "temporalIntent": "no_schedule",
+        "primaryExecutionPattern": "ordered_procedure",
+        "primaryProjection": "checklist",
+        "secondaryProjections": [
+          "memo",
+          "sheet"
+        ]
+      },
+      "minimumInputs": [
+        {
+          "key": "startAt",
+          "label": "실행 시작 시각",
+          "type": "datetime",
+          "required": false,
+          "purposes": [
+            "schedule"
+          ],
+          "source": "user_overlay"
+        }
+      ],
+      "readiness": {
+        "architectureFit": "go",
+        "logicReadiness": "go",
+        "publicReadiness": "modify",
+        "rightsStatus": "permission_review_required",
+        "personalConversionAvailability": "available",
+        "sourceCompleteness": "complete",
+        "safetyReview": "oven_and_allergen_caution_required",
+        "localeReview": "uk_units_and_oven_context",
+        "privacyReview": "not_required",
+        "promotionState": "research_only"
+      },
+      "confirmedSourceRowCount": 8,
+      "capturedSourceRowCount": 8,
+      "sourceRows": [
+        {
+          "sourceRowId": "goodfood-01",
+          "title": "오븐 예열",
+          "detail": "Heat the oven to 180C/160C fan/gas 4.",
+          "group": "Method"
+        },
+        {
+          "sourceRowId": "goodfood-02",
+          "title": "버터·설탕을 섞고 달걀을 차례로 넣기",
+          "detail": "Beat together the butter and caster sugar until pale and creamy, then add the eggs, one at a time, slowly mixing through.",
+          "group": "Method"
+        },
+        {
+          "sourceRowId": "goodfood-03",
+          "title": "밀가루와 레몬 제스트 넣기",
+          "detail": "Sift in the self-raising flour, then add the lemon zest and mix until well combined.",
+          "group": "Method"
+        },
+        {
+          "sourceRowId": "goodfood-04",
+          "title": "틀을 준비하고 반죽 담기",
+          "detail": "Line a 2 lb loaf tin with greaseproof paper, then spoon in the mixture and level the top.",
+          "group": "Method"
+        },
+        {
+          "sourceRowId": "goodfood-05",
+          "title": "원문 기준 시간 동안 굽고 꼬치로 확인",
+          "detail": "Bake for 45-50 mins until a thin skewer inserted into the centre comes out clean.",
+          "group": "Method"
+        },
+        {
+          "sourceRowId": "goodfood-06",
+          "title": "식는 동안 드리즐 만들기",
+          "detail": "While the cake is cooling in its tin, mix lemon juice and caster sugar to make the drizzle.",
+          "group": "Method"
+        },
+        {
+          "sourceRowId": "goodfood-07",
+          "title": "따뜻한 케이크에 구멍을 내고 드리즐 붓기",
+          "detail": "Prick the warm cake all over, then pour over the drizzle.",
+          "group": "Method"
+        },
+        {
+          "sourceRowId": "goodfood-08",
+          "title": "완전히 식힌 뒤 꺼내어 제공하기",
+          "detail": "Leave in the tin until completely cool, then remove and serve.",
+          "group": "Method"
+        }
+      ],
+      "evidenceNotes": [
+        "15분 준비·45분 조리 정보는 source fact지만 자동 Calendar event로 확정하지 않는다."
+      ]
+    },
+    {
+      "researchId": "new-c07-roadmap-root",
+      "title": "roadmap.sh 루트 선택",
+      "source": {
+        "title": "roadmap.sh",
+        "provider": "roadmap.sh community",
+        "url": "https://roadmap.sh/",
+        "canonicalUrl": "https://roadmap.sh/",
+        "sourceFormat": "html",
+        "accessStatus": "public_full_text",
+        "locale": "en-US",
+        "observedAt": "2026-07-29"
+      },
+      "userJob": "관심 있는 하나의 로드맵을 선택한 뒤 child source를 가져온다.",
+      "corpusTier": "boundary_control",
+      "generationMode": "boundary",
+      "taxonomy": {
+        "primaryLifeArea": "study_reading",
+        "sourceShape": "resource_collection",
+        "temporalIntent": "no_schedule",
+        "primaryExecutionPattern": "resource_queue",
+        "primaryProjection": "memo",
+        "secondaryProjections": [
+          "sheet"
+        ]
+      },
+      "minimumInputs": [
+        {
+          "key": "selectedRoadmap",
+          "label": "특정 로드맵",
+          "type": "choice",
+          "required": true,
+          "purposes": [
+            "execution"
+          ],
+          "source": "user_overlay"
+        }
+      ],
+      "readiness": {
+        "architectureFit": "go",
+        "logicReadiness": "hold",
+        "publicReadiness": "hold",
+        "rightsStatus": "redistribution_prohibited",
+        "personalConversionAvailability": "source_import_required_after_selection",
+        "sourceCompleteness": "root_collection_only",
+        "safetyReview": "not_required",
+        "localeReview": "applicable",
+        "privacyReview": "not_required",
+        "promotionState": "research_only"
+      },
+      "confirmedSourceRowCount": 12,
+      "capturedSourceRowCount": 12,
+      "sourceRows": [
+        {
+          "sourceRowId": "roadmap-01",
+          "title": "Frontend",
+          "group": "루트 목록"
+        },
+        {
+          "sourceRowId": "roadmap-02",
+          "title": "Backend",
+          "group": "루트 목록"
+        },
+        {
+          "sourceRowId": "roadmap-03",
+          "title": "Full Stack",
+          "group": "루트 목록"
+        },
+        {
+          "sourceRowId": "roadmap-04",
+          "title": "Android",
+          "group": "루트 목록"
+        },
+        {
+          "sourceRowId": "roadmap-05",
+          "title": "DevOps",
+          "group": "루트 목록"
+        },
+        {
+          "sourceRowId": "roadmap-06",
+          "title": "Data Analyst",
+          "group": "루트 목록"
+        },
+        {
+          "sourceRowId": "roadmap-07",
+          "title": "AI Engineer",
+          "group": "루트 목록"
+        },
+        {
+          "sourceRowId": "roadmap-08",
+          "title": "Data Engineer",
+          "group": "루트 목록"
+        },
+        {
+          "sourceRowId": "roadmap-09",
+          "title": "Machine Learning",
+          "group": "루트 목록"
+        },
+        {
+          "sourceRowId": "roadmap-10",
+          "title": "QA",
+          "group": "루트 목록"
+        },
+        {
+          "sourceRowId": "roadmap-11",
+          "title": "Product Design",
+          "group": "루트 목록"
+        },
+        {
+          "sourceRowId": "roadmap-12",
+          "title": "UX Design",
+          "group": "루트 목록"
+        }
+      ],
+      "evidenceNotes": [
+        "루트는 여러 user job을 섞으므로 한 Flow로 만들지 않는다.",
+        "선택한 child roadmap 원문을 추가 확보한 뒤에만 Item을 만든다."
+      ]
+    },
+    {
+      "researchId": "new-c08-todoist-podcast",
+      "title": "Podcast Workflow 23개 작업",
+      "source": {
+        "title": "Podcast Workflow template",
+        "provider": "Todoist · Neil",
+        "url": "https://www.todoist.com/templates/podcast-workflow",
+        "canonicalUrl": "https://www.todoist.com/templates/podcast-workflow",
+        "sourceFormat": "html_csv",
+        "accessStatus": "public_full_text",
+        "locale": "en-US",
+        "observedAt": "2026-07-29"
+      },
+      "userJob": "팟캐스트 사전기획부터 배포까지 한 회차 제작 과정을 완료한다.",
+      "corpusTier": "product_candidate",
+      "generationMode": "flow_items",
+      "taxonomy": {
+        "primaryLifeArea": "work_career",
+        "sourceShape": "checklist_rows",
+        "temporalIntent": "no_schedule",
+        "primaryExecutionPattern": "phase_lifecycle",
+        "primaryProjection": "checklist",
+        "secondaryProjections": [
+          "todo",
+          "sheet"
+        ]
+      },
+      "minimumInputs": [
+        {
+          "key": "episodeName",
+          "label": "팟캐스트 또는 회차 이름",
+          "type": "text",
+          "required": true,
+          "purposes": [
+            "execution"
+          ],
+          "source": "user_overlay"
+        }
+      ],
+      "pacingEligible": true,
+      "readiness": {
+        "architectureFit": "go",
+        "logicReadiness": "modify",
+        "publicReadiness": "modify",
+        "rightsStatus": "template_redistribution_review_required",
+        "personalConversionAvailability": "available",
+        "sourceCompleteness": "complete",
+        "safetyReview": "not_required",
+        "localeReview": "applicable",
+        "privacyReview": "guest_and_sponsor_contacts_private",
+        "promotionState": "research_only"
+      },
+      "confirmedSourceRowCount": 23,
+      "capturedSourceRowCount": 23,
+      "sourceRows": [
+        {
+          "sourceRowId": "podcast-01",
+          "title": "Create 1-page overview with title, audience, content, frequency",
+          "detail": "indent 1",
+          "group": "Pre-production 📒",
+          "indent": 1,
+          "parent": null
+        },
+        {
+          "sourceRowId": "podcast-02",
+          "title": "Set content plan for first 4 episodes",
+          "detail": "indent 1",
+          "group": "Pre-production 📒",
+          "indent": 1,
+          "parent": null
+        },
+        {
+          "sourceRowId": "podcast-03",
+          "title": "Do some research",
+          "detail": "indent 1",
+          "group": "Pre-production 📒",
+          "indent": 1,
+          "parent": null
+        },
+        {
+          "sourceRowId": "podcast-04",
+          "title": "Buy/check equipment",
+          "detail": "indent 1",
+          "group": "Pre-production 📒",
+          "indent": 1,
+          "parent": null
+        },
+        {
+          "sourceRowId": "podcast-05",
+          "title": "Microphone",
+          "detail": "subtask of Buy/check equipment",
+          "group": "Pre-production 📒",
+          "indent": 2,
+          "parent": "Buy/check equipment"
+        },
+        {
+          "sourceRowId": "podcast-06",
+          "title": "Headphones",
+          "detail": "subtask of Buy/check equipment",
+          "group": "Pre-production 📒",
+          "indent": 2,
+          "parent": "Buy/check equipment"
+        },
+        {
+          "sourceRowId": "podcast-07",
+          "title": "Recording software",
+          "detail": "subtask of Buy/check equipment",
+          "group": "Pre-production 📒",
+          "indent": 2,
+          "parent": "Buy/check equipment"
+        },
+        {
+          "sourceRowId": "podcast-08",
+          "title": "Music/clips for intro/outro",
+          "detail": "subtask of Buy/check equipment",
+          "group": "Pre-production 📒",
+          "indent": 2,
+          "parent": "Buy/check equipment"
+        },
+        {
+          "sourceRowId": "podcast-09",
+          "title": "Contact guests",
+          "detail": "indent 1",
+          "group": "Pre-production 📒",
+          "indent": 1,
+          "parent": null
+        },
+        {
+          "sourceRowId": "podcast-10",
+          "title": "Contact potential sponsors",
+          "detail": "indent 1",
+          "group": "Pre-production 📒",
+          "indent": 1,
+          "parent": null
+        },
+        {
+          "sourceRowId": "podcast-11",
+          "title": "Schedule dates for production with guests",
+          "detail": "indent 1",
+          "group": "Pre-production 📒",
+          "indent": 1,
+          "parent": null
+        },
+        {
+          "sourceRowId": "podcast-12",
+          "title": "Test equipment with guest",
+          "detail": "indent 1",
+          "group": "Production 🎙",
+          "indent": 1,
+          "parent": null
+        },
+        {
+          "sourceRowId": "podcast-13",
+          "title": "Record session",
+          "detail": "indent 1",
+          "group": "Production 🎙",
+          "indent": 1,
+          "parent": null
+        },
+        {
+          "sourceRowId": "podcast-14",
+          "title": "Record ads",
+          "detail": "indent 1",
+          "group": "Production 🎙",
+          "indent": 1,
+          "parent": null
+        },
+        {
+          "sourceRowId": "podcast-15",
+          "title": "Record intro/outro",
+          "detail": "indent 1",
+          "group": "Production 🎙",
+          "indent": 1,
+          "parent": null
+        },
+        {
+          "sourceRowId": "podcast-16",
+          "title": "Edit session to cut out unneeded parts",
+          "detail": "indent 1",
+          "group": "Post-Production 🎧",
+          "indent": 1,
+          "parent": null
+        },
+        {
+          "sourceRowId": "podcast-17",
+          "title": "Assemble intro, session, ads and outro",
+          "detail": "indent 1",
+          "group": "Post-Production 🎧",
+          "indent": 1,
+          "parent": null
+        },
+        {
+          "sourceRowId": "podcast-18",
+          "title": "Add intro/outro music/clips",
+          "detail": "indent 1",
+          "group": "Post-Production 🎧",
+          "indent": 1,
+          "parent": null
+        },
+        {
+          "sourceRowId": "podcast-19",
+          "title": "Apply mixer to balance volume across clips",
+          "detail": "indent 1",
+          "group": "Post-Production 🎧",
+          "indent": 1,
+          "parent": null
+        },
+        {
+          "sourceRowId": "podcast-20",
+          "title": "Export",
+          "detail": "indent 1",
+          "group": "Post-Production 🎧",
+          "indent": 1,
+          "parent": null
+        },
+        {
+          "sourceRowId": "podcast-21",
+          "title": "Upload to podcast service",
+          "detail": "indent 1",
+          "group": "Distribution 🌎",
+          "indent": 1,
+          "parent": null
+        },
+        {
+          "sourceRowId": "podcast-22",
+          "title": "Post transcript with actionables on blog",
+          "detail": "indent 1",
+          "group": "Distribution 🌎",
+          "indent": 1,
+          "parent": null
+        },
+        {
+          "sourceRowId": "podcast-23",
+          "title": "Share on social media",
+          "detail": "indent 1",
+          "group": "Distribution 🌎",
+          "indent": 1,
+          "parent": null
+        }
+      ],
+      "evidenceNotes": [
+        "랜딩은 공개이고 참조 CSV는 200이지만 Copy importer endpoint는 410이다.",
+        "CSV DATE가 비어 있으므로 날짜·반복 회차를 만들지 않는다."
+      ]
+    }
+  ]
+}

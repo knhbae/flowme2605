@@ -1,0 +1,1119 @@
+{
+  "schemaVersion": "flow-content-ui-review-state-contract-v1",
+  "storageKey": "flowme-full-corpus-review-v1",
+  "corpusFingerprint": "sha256:d56b289fd301805fe1299b867497b0840f8d379d1459ec0148639f8b7d5dce32",
+  "initialState": {
+    "schemaVersion": 1,
+    "corpusFingerprint": "sha256:d56b289fd301805fe1299b867497b0840f8d379d1459ec0148639f8b7d5dce32",
+    "exportedAt": null,
+    "reviewsByContentId": {
+      "canonical:base-moving-d30": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "canonical:base-baby-food-174": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "canonical:base-opic-plan": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "canonical:base-opentutorials-web1-progress": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "canonical:base-new-car-comparison": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "canonical:base-allblanc-7day-abs": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "canonical:base-wtable-summer-banchan-five": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "canonical:base-andstudio-job-prep-videos": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "canonical:oq-oq-c02-kmooc-full": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "canonical:oq-oq-c03-librivox": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "canonical:oq-oq-c04-passport": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "canonical:oq-oq-c05-washer": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "canonical:oq-oq-c06-nasa": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "canonical:oq-oq-c07-fit100": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "canonical:oq-oq-c08-ac-decision": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "canonical:oq-oq-b01-heat": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "canonical:oq-oq-b03-remodel": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "canonical:oq-oq-p01-ossu": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "canonical:oq-oq-p02-packing": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "canonical:oq-oq-p03-vehicle": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "canonical:oq-oq-p04-portfolio": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "canonical:value-vq-01": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "canonical:value-vq-03": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "canonical:value-vq-04": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "canonical:value-vq-05": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "canonical:value-vq-06": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "canonical:value-vq-10": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "canonical:value-vq-11": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "canonical:value-vq-12": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "canonical:deep-ds06": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "canonical:deep-ds08": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "canonical:live-c01": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "canonical:live-c13": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "canonical:live-c16": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "canonical:live-r02": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "canonical:live-kr-stibee-01": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "canonical:live-live-mdn-core-01": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "canonical:live-live-dyson-filter-01": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "canonical:live-live-jotform-event-intake-01": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "events:new-nps-ten-essentials": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "events:new-apple-quick-start": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "events:new-github-account-onboarding": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "events:new-google-codelab-ai-agent": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "events:new-mdn-core-scripting": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "events:new-gutenberg-top-reading-queue": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "events:event-kr-single-performance": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "events:event-kr-multi-show-choir": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "events:event-kr-sokcho-summer": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "events:event-kr-sema-martin-parr": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "events:event-kr-ballet-ticket-show": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "events:event-kr-qnet-exam-lifecycle": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "events:event-kr-revised-musical": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "events:event-pattern-nps-all-day": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "events:event-pattern-online-foia": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "events:event-pattern-nps-weekly": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "events:event-pattern-chimac-edition": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "events:event-pattern-nps-rescheduled": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "events:event-pattern-fun-seoul-interest-list": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "events:event-pattern-boryeong-operations": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "legacy:preapp:airport-departure-order": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "legacy:preapp:busan-friends-2n3d-route": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "legacy:preapp:weekday-lunchbox-menu": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "legacy:preapp:interview-d1-check": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "legacy:preapp:license-class1-medical-check": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "legacy:preapp:license-class2-renewal": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "legacy:preapp:aircon-ultrafine-filter-routine": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "legacy:preapp:beginner-5k-8week-program": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "legacy:preapp:kitten-arrival-first-week": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "legacy:round2:kmooc-hundred-schools-fifteen-week": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "legacy:round2:kids-birthday-four-week": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "legacy:round2:dol-party-four-month": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "legacy:round2:canon-photo-thirty-day": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "legacy:round2:banchan-day-one": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "legacy:round2:banchan-day-two-three": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "legacy:round2:work24-jobseeker-start": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "legacy:round2:work24-midcareer-transition": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "legacy:round2:personal-business-registration-flow": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "legacy:round2:corporate-mail-order-registration-flow": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "legacy:round2:minor-passport-renewal": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "legacy:round2:social-content-thirty-day": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "generalization:GB-01": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "generalization:GB-02": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "generalization:GB-03": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "generalization:GB-04": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "generalization:GB-05": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "generalization:GB-06": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "generalization:GB-07": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "generalization:GB-08": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "generalization:GB-13": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "generalization:GB-15": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "generalization:GB-16": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "new:new-a01-seoul-wedding-110": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "new:new-a02-seoul-museum-group": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "new:new-a03-kakaopay-jeonse": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "new:new-a05-nfa-home-fire": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "new:new-a06-elementary-entry-2026": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "new:new-a07-seoul-bus-support": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "new:new-a08-income-tax": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "new:new-b03-fridge-week": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "new:new-b04-organize-seven": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "new:new-b05-storage-projects": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "new:new-b06-wtable-lemon-weekend": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "new:new-b07-interior-consultation": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "new:new-b08-banchan-ten": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "new:new-c01-programmers-kit": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "new:new-c02-ifixit-hose": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "new:new-c03-nps-junior-ranger": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "new:new-c04-instructables-origami": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "new:new-c05-foodsafety-storage": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "new:new-c06-goodfood-lemon": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "new:new-c07-roadmap-root": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "new:new-c08-todoist-podcast": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:national-scholarship-apply-html:1": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:housing-subscription-account-html:2": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:jeonse-guarantee-apply-html:3": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:welfare-benefit-finder-html:4": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:small-business-fund-check-html:5": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:unemployment-benefit-apply-html:6": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:job-seeker-allowance-apply-html:7": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:pension-estimate-check-html:8": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:health-insurance-dependent-html:9": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:infant-health-checkup-schedule-html:10": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:adult-vaccine-schedule-check-html:11": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:citizen-secretary-alerts-html:12": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:first-passport-issue-html:13": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:overseas-safety-register-html:14": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:customs-traveler-declare-html:15": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:used-car-ownership-transfer-html:16": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:ev-subsidy-apply-html:17": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:property-local-tax-pay-html:18": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:tax-refund-find-html:19": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:birth-registration-prep-html:20": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:safe-inheritance-onestop-html:21": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:seal-or-signature-certificate-html:22": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:childcare-fee-support-apply-html:23": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:military-exam-prep-html:24": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:recipe-video-execute-html:25": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:weekly-meal-plan-html:26": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:closet-organize-1day-html:27": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:kitchen-reset-organize-html:28": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:monthly-household-budget-html:29": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:payday-finance-routine-html:30": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:reading-habit-30day-html:31": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:book-finish-one-html:32": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:morning-skincare-routine-html:33": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:skin-weekly-check-html:34": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:domestic-trip-d7-html:35": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:travel-packing-list-html:36": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:home-cafe-daily-html:37": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:new-hobby-30day-html:38": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:portfolio-4week-html:39": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:blog-youtube-start-html:40": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:morning-routine-30day-html:41": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:digital-detox-weekly-html:42": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:dog-walk-routine-html:43": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      },
+      "historical:pet-health-observation-html:44": {
+        "userReviewStatus": "not_reviewed",
+        "verdict": null,
+        "answers": {},
+        "comment": "",
+        "updatedAt": null
+      }
+    },
+    "pacingByContentId": {},
+    "lastRoute": "#gallery"
+  },
+  "importModes": [
+    "merge",
+    "replace"
+  ],
+  "validations": [
+    "schemaVersion",
+    "corpusFingerprint",
+    "known contentId",
+    "unknown contentId reporting",
+    "pre-replace automatic backup",
+    "rollback on error"
+  ],
+  "userReviewStatusBoundary": "internal agent results never populate reviewsByContentId"
+}

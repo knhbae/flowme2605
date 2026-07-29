@@ -1,0 +1,613 @@
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const SPEC_DIR = path.dirname(fileURLToPath(import.meta.url));
+const PROJECTIONS = ["calendar", "checklist", "todo", "sheet", "memo"];
+const NORMAL_TIERS = new Set(["product_candidate", "structure_probe"]);
+
+function readJson(file) {
+  return JSON.parse(fs.readFileSync(path.join(SPEC_DIR, file), "utf8"));
+}
+
+function unique(values) {
+  return [...new Set(values)];
+}
+
+function ids(values, key) {
+  return values.map((value) => value?.[key]).filter(Boolean);
+}
+
+function canonicalItems(content) {
+  return content.canonical?.items ?? [];
+}
+
+function canonicalRows(content) {
+  return content.canonical?.sourceRows ?? [];
+}
+
+function projectionRecords(cell) {
+  if (cell.projection === "calendar") {
+    return cell.output?.records ?? cell.preview?.records ?? [];
+  }
+  if (cell.projection === "checklist") {
+    return (cell.output?.groups ?? []).flatMap((group) => group.entries ?? []);
+  }
+  if (cell.projection === "todo") {
+    return cell.output?.tasks ?? [];
+  }
+  if (cell.projection === "sheet") {
+    return cell.output?.rows ?? [];
+  }
+  return cell.output?.sections ?? [];
+}
+
+function verifyViewModelShape(viewModel) {
+  const errors = [];
+  const requiredRoot = [
+    "schemaVersion",
+    "generatedAt",
+    "corpusFingerprint",
+    "claimBoundary",
+    "counts",
+    "filters",
+    "contents",
+  ];
+  for (const key of requiredRoot) {
+    if (!(key in viewModel)) errors.push(`root.${key} is required`);
+  }
+  if (viewModel.schemaVersion !== "flow-content-ui-view-model-v1") {
+    errors.push("schemaVersion mismatch");
+  }
+  if (!/^sha256:[0-9a-f]{64}$/.test(viewModel.corpusFingerprint ?? "")) {
+    errors.push("corpusFingerprint must be sha256");
+  }
+  if (!Array.isArray(viewModel.contents) || viewModel.contents.length < 80) {
+    errors.push("contents must contain at least 80 records");
+  }
+  const contentModes = new Set([
+    "flow_content",
+    "field_template_probe",
+    "event_source_before_user_intent",
+    "boundary_control",
+    "historical_preview",
+  ]);
+  const tiers = new Set([
+    "product_candidate",
+    "structure_probe",
+    "boundary_control",
+    "historical_preview",
+  ]);
+  for (const [index, content] of (viewModel.contents ?? []).entries()) {
+    for (const key of [
+      "contentId",
+      "userJobId",
+      "displayTitle",
+      "saveReason",
+      "userJob",
+      "source",
+      "taxonomy",
+      "readiness",
+      "primaryProjection",
+      "secondaryProjections",
+      "projectionCells",
+      "dataGraph",
+    ]) {
+      if (content[key] == null) errors.push(`contents[${index}].${key} is required`);
+    }
+    if (!contentModes.has(content.contentMode)) {
+      errors.push(`${content.contentId}: invalid contentMode`);
+    }
+    if (!tiers.has(content.corpusTier)) {
+      errors.push(`${content.contentId}: invalid corpusTier`);
+    }
+    if (content.userReviewStatus !== "not_reviewed") {
+      errors.push(`${content.contentId}: initial user review must be not_reviewed`);
+    }
+    if (!PROJECTIONS.includes(content.primaryProjection)) {
+      errors.push(`${content.contentId}: invalid primaryProjection`);
+    }
+  }
+  return errors;
+}
+
+export function validateLab({ writeResult = false } = {}) {
+  const view = readJson("content-ui-view-model-v1.json");
+  const inventory = readJson("corpus-inventory-v1.json");
+  const inclusion = readJson("corpus-inclusion-exclusion-v1.json");
+  const coverage = readJson("corpus-coverage-matrix-v1.json");
+  const projections = readJson("projection-ui-results-v1.json");
+  const pacing = readJson("schedule-playground-results-v1.json");
+  const events = readJson("event-ui-results-v1.json");
+  const reviewContract = readJson("review-state-contract-v1.json");
+  const newSources = readJson("new-source-verification-v1.json");
+  const directLinks = readJson("direct-link-manifest-v1.json");
+  const valueReadjudication = readJson("content-value-readjudication-v1.json");
+  const planningHandoff = readJson("planning-decision-handoff-v1.json");
+  const independentReview = readJson("independent-ui-review-v1.json");
+  const gapRegister = readJson("content-and-logic-gap-register-v1.json");
+
+  const checks = [];
+  const check = (id, pass, evidence) => {
+    checks.push({ id, pass: Boolean(pass), evidence });
+  };
+
+  const contents = view.contents;
+  const normal = contents.filter((content) => NORMAL_TIERS.has(content.corpusTier));
+  const normalIds = new Set(ids(normal, "contentId"));
+  const contentIds = ids(contents, "contentId");
+  const normalProjectionCells = normal.flatMap((content) => content.projectionCells ?? []);
+
+  const schemaErrors = verifyViewModelShape(view);
+  check("schema.view_model_shape", schemaErrors.length === 0, schemaErrors);
+  check(
+    "corpus.gallery_count_matches",
+    view.counts.gallery === contents.length,
+    { declared: view.counts.gallery, actual: contents.length },
+  );
+  check(
+    "corpus.normal_minimum_80",
+    normal.length >= 80,
+    { normal: normal.length, target: 80 },
+  );
+  check(
+    "corpus.normal_target_100",
+    normal.length >= 100,
+    { normal: normal.length, target: 100 },
+  );
+  check(
+    "corpus.unique_content_ids",
+    unique(contentIds).length === contentIds.length,
+    { total: contentIds.length, unique: unique(contentIds).length },
+  );
+  check(
+    "corpus.normal_unique_user_jobs",
+    unique(ids(normal, "userJobId")).length === normal.length,
+    { normal: normal.length, uniqueUserJobs: unique(ids(normal, "userJobId")).length },
+  );
+  check(
+    "corpus.counts_recomputed",
+    view.counts.normal === normal.length &&
+      view.counts.productCandidate ===
+        contents.filter((content) => content.corpusTier === "product_candidate").length &&
+      view.counts.structureProbe ===
+        contents.filter((content) => content.corpusTier === "structure_probe").length &&
+      view.counts.boundary ===
+        contents.filter((content) => content.corpusTier === "boundary_control").length &&
+      view.counts.historical ===
+        contents.filter((content) => content.corpusTier === "historical_preview").length,
+    view.counts,
+  );
+  check(
+    "corpus.inclusion_counts_match",
+    inclusion.counts.normal === normal.length &&
+      inclusion.counts.includedSourceBacked ===
+        normal.length + newSources.counts.boundary + newSources.counts.historical,
+    inclusion.counts,
+  );
+  check(
+    "corpus.inventory_lineage_complete",
+    inventory.records.every(
+      (record) =>
+        record.contentId &&
+        (record.canonicalUrl || record.contentMode === "historical_preview") &&
+        record.userJob &&
+        record.inclusionStatus &&
+        record.inclusionReason,
+    ),
+    { records: inventory.records.length },
+  );
+  check(
+    "corpus.new_urls_reviewed_24",
+    newSources.counts.reviewedUrls >= 24,
+    newSources.counts,
+  );
+  check(
+    "corpus.new_normal_16",
+    newSources.counts.normal >= 16,
+    newSources.counts,
+  );
+  check(
+    "corpus.new_sources_have_direct_evidence",
+    newSources.records.every(
+      (record) =>
+        record.source?.url &&
+        record.source?.canonicalUrl &&
+        record.source?.observedAt &&
+        Array.isArray(record.sourceRows) &&
+        record.sourceRows.length > 0 &&
+        record.evidenceNotes?.length > 0,
+    ),
+    { records: newSources.records.length },
+  );
+  check(
+    "corpus.coverage_counts_are_machine_derived",
+    coverage.counts.normal === normal.length &&
+      Object.values(coverage.lifeArea).reduce((sum, count) => sum + count, 0) === normal.length &&
+      Object.values(coverage.primaryProjection).reduce((sum, count) => sum + count, 0) ===
+        normal.length,
+    coverage.counts,
+  );
+
+  check(
+    "projection.five_cells_per_normal_content",
+    normal.every(
+      (content) =>
+        content.projectionCells.length === 5 &&
+        PROJECTIONS.every((projection) =>
+          content.projectionCells.some((cell) => cell.projection === projection),
+        ),
+    ),
+    { content: normal.length, expectedCells: normal.length * 5 },
+  );
+  check(
+    "projection.result_count_matches",
+    projections.results.length === normal.length * 5 &&
+      view.counts.projectionCell === projections.results.length &&
+      normalProjectionCells.length === projections.results.length,
+    {
+      expected: normal.length * 5,
+      results: projections.results.length,
+      embedded: normalProjectionCells.length,
+    },
+  );
+  check(
+    "projection.unique_cells",
+    unique(ids(projections.results, "cellId")).length === projections.results.length,
+    { cells: projections.results.length },
+  );
+  const blankCells = projections.results.filter((cell) => {
+    if (!cell.fallback?.trim()) return true;
+    if (cell.generationState === "generated") return !cell.output;
+    if (cell.generationState === "preview_requires_overlay") return !cell.preview;
+    if (cell.generationState === "prohibited") return !cell.prohibitionReason?.trim();
+    return true;
+  });
+  check("projection.no_blank_or_unexplained_cells", blankCells.length === 0, {
+    blankCellIds: ids(blankCells, "cellId"),
+  });
+  check(
+    "projection.recommendation_availability_fidelity_present",
+    projections.results.every(
+      (cell) =>
+        ["primary", "secondary", "optional", "not_recommended"].includes(
+          cell.recommendation,
+        ) &&
+        ["available_now", "available_after_user_overlay", "unavailable"].includes(
+          cell.availability,
+        ) &&
+        [
+          "lossless_or_low_loss",
+          "bounded_loss",
+          "misleading_or_prohibited",
+        ].includes(cell.fidelity),
+    ),
+    { cells: projections.results.length },
+  );
+
+  const provenanceErrors = [];
+  for (const content of normal.filter((entry) => entry.canonical)) {
+    const rowIds = new Set(ids(canonicalRows(content), "sourceRowId"));
+    const refById = new Map(
+      (content.canonical.sourceRefs ?? []).map((ref) => [ref.sourceRefId, ref]),
+    );
+    for (const item of canonicalItems(content)) {
+      const traceRows = (item.sourceTrace ?? []).flatMap((trace) => trace.sourceRowIds ?? []);
+      const refRows = (item.sourceRefIds ?? []).flatMap(
+        (refId) => refById.get(refId)?.sourceRowIds ?? [],
+      );
+      const attachedRows = unique([
+        ...(item.sourceRowIds ?? []),
+        ...traceRows,
+        ...refRows,
+      ]);
+      if (!attachedRows.length || attachedRows.some((rowId) => !rowIds.has(rowId))) {
+        provenanceErrors.push({
+          contentId: content.contentId,
+          itemId: item.itemId,
+          attachedRows,
+        });
+      }
+    }
+  }
+  check("canonical.item_provenance_100_percent", provenanceErrors.length === 0, {
+    errors: provenanceErrors.slice(0, 25),
+  });
+
+  const undatedVevents = [];
+  const dueOnlyVevents = [];
+  const calendarSourceOwnerErrors = [];
+  const nestedComponents = [];
+  for (const content of normal) {
+    const itemById = new Map(canonicalItems(content).map((item) => [item.itemId, item]));
+    const calendar = content.projectionCells.find((cell) => cell.projection === "calendar");
+    for (const record of calendar?.output?.records ?? []) {
+      if (record.component !== "VEVENT") continue;
+      if (record.component === "VTODO" || record.nestedComponentCount > 0) {
+        nestedComponents.push(record.recordId);
+      }
+      if (record.sourceOwner !== "source") {
+        calendarSourceOwnerErrors.push(record.recordId);
+      }
+      for (const itemId of record.childItemIds ?? []) {
+        const item = itemById.get(itemId);
+        if (!item?.schedule) undatedVevents.push({ contentId: content.contentId, itemId });
+        if ((item.temporalIntent ?? item.schedule?.mode) === "due_deadline") {
+          dueOnlyVevents.push({ contentId: content.contentId, itemId });
+        }
+      }
+    }
+  }
+  check("calendar.undated_source_item_vevent_zero", undatedVevents.length === 0, {
+    records: undatedVevents,
+  });
+  check("calendar.due_only_auto_timeblock_zero", dueOnlyVevents.length === 0, {
+    records: dueOnlyVevents,
+  });
+  check(
+    "calendar.generated_source_owner_is_source",
+    calendarSourceOwnerErrors.length === 0,
+    { records: calendarSourceOwnerErrors },
+  );
+  check("icalendar.vevent_vtodo_nested_zero", nestedComponents.length === 0, {
+    records: nestedComponents,
+  });
+
+  const bundleLossErrors = projections.results.filter(
+    (cell) =>
+      cell.projection === "calendar" &&
+      (cell.output?.records ?? []).some((record) => record.childItemIds?.length > 1) &&
+      !cell.lossManifest.some((loss) =>
+        String(loss.reason ?? loss).toLowerCase().includes("child item"),
+      ),
+  );
+  check("calendar.bundle_child_ids_and_completion_loss_visible", bundleLossErrors.length === 0, {
+    cells: ids(bundleLossErrors, "cellId"),
+  });
+  const vtodoFallbackErrors = projections.results.filter(
+    (cell) =>
+      cell.projection === "todo" &&
+      cell.output &&
+      (!cell.output.destinationCapabilities ||
+        cell.output.destinationCapabilities.vtodo !== false ||
+        !cell.fallback?.trim()),
+  );
+  check("todo.vtodo_unsupported_fallback_present", vtodoFallbackErrors.length === 0, {
+    cells: ids(vtodoFallbackErrors, "cellId"),
+  });
+  const checklistTodoSameShape = normal.filter((content) => {
+    const checklist = content.projectionCells.find((cell) => cell.projection === "checklist");
+    const todo = content.projectionCells.find((cell) => cell.projection === "todo");
+    return checklist?.output && todo?.output && checklist.output.kind === todo.output.kind;
+  });
+  check("projection.checklist_todo_schema_distinct", checklistTodoSameShape.length === 0, {
+    contents: ids(checklistTodoSameShape, "contentId"),
+  });
+  const sheetColumnSets = projections.results
+    .filter((cell) => cell.projection === "sheet" && cell.output)
+    .map((cell) => JSON.stringify(cell.output.columns));
+  check(
+    "projection.sheet_columns_stable",
+    unique(sheetColumnSets).length === 1,
+    { columnContracts: unique(sheetColumnSets).length },
+  );
+  const rawMemos = projections.results.filter(
+    (cell) => cell.projection === "memo" && cell.output?.canonicalRawData !== false,
+  );
+  check("projection.memo_is_not_canonical_raw_json", rawMemos.length === 0, {
+    cells: ids(rawMemos, "cellId"),
+  });
+
+  const pacingErrors = [];
+  for (const experiment of pacing.results) {
+    const target = experiment.result.targetItemIds ?? [];
+    const assigned = (experiment.result.assignments ?? []).map((assignment) => assignment.itemId);
+    if (
+      unique(assigned).length !== assigned.length ||
+      target.length !== assigned.length ||
+      target.some((itemId) => !assigned.includes(itemId)) ||
+      !(experiment.result.assignments ?? []).every(
+        (assignment) =>
+          assignment.scheduleOwner === "user_overlay" &&
+          assignment.derivation === "pacing_policy" &&
+          assignment.suggestionStatus === "draft",
+      )
+    ) {
+      pacingErrors.push(experiment.contentId);
+    }
+  }
+  check("pacing.no_duplicate_or_missing_items", pacingErrors.length === 0, {
+    contents: pacingErrors,
+    targetItems: pacing.counts.targetItems,
+    assignments: pacing.counts.assignments,
+  });
+  check(
+    "pacing.source_and_overlay_are_separate",
+    pacing.results.every((experiment) =>
+      (experiment.result.assignments ?? []).every(
+        (assignment) => assignment.scheduleOwner === "user_overlay",
+      ),
+    ),
+    { experiments: pacing.results.length },
+  );
+
+  const eventErrors = [];
+  const falseYearlyRecurrence = [];
+  for (const experiment of events.results) {
+    const sourceRows = new Set(
+      (experiment.sourceState.occurrences ?? []).flatMap(
+        (occurrence) => occurrence.sourceRowIds ?? [],
+      ),
+    );
+    const preview = experiment.defaultPreview;
+    if (
+      preview?.ok &&
+      preview.item &&
+      (!preview.item.sourceRowIds?.length ||
+        preview.item.sourceRowIds.some((rowId) => !sourceRows.has(rowId)) ||
+        preview.projectionPlan?.nestedComponentCount !== 0)
+    ) {
+      eventErrors.push(experiment.contentId);
+    }
+    if (
+      experiment.sourceState.series?.dateVariesByEdition &&
+      experiment.sourceState.series?.rrule
+    ) {
+      falseYearlyRecurrence.push(experiment.contentId);
+    }
+  }
+  check("event.provenance_and_component_nesting_valid", eventErrors.length === 0, {
+    contents: eventErrors,
+  });
+  check("event.false_yearly_rrule_zero", falseYearlyRecurrence.length === 0, {
+    contents: falseYearlyRecurrence,
+  });
+
+  const directLinkIds = new Set(directLinks.links.map((link) => link.contentId));
+  check(
+    "ui.direct_links_cover_gallery",
+    contents.every((content) => directLinkIds.has(content.contentId)),
+    { gallery: contents.length, covered: directLinkIds.size },
+  );
+  check(
+    "review.user_state_initially_empty",
+    Object.keys(reviewContract.initialState.reviewsByContentId ?? {}).length ===
+      contents.length &&
+      Object.values(reviewContract.initialState.reviewsByContentId ?? {}).every(
+        (review) =>
+          review.userReviewStatus === "not_reviewed" &&
+          review.verdict == null &&
+          review.comment === "" &&
+          review.updatedAt == null,
+      ),
+    {
+      records: Object.keys(reviewContract.initialState.reviewsByContentId ?? {}).length,
+      expected: contents.length,
+    },
+  );
+  check(
+    "review.value_readjudication_keeps_user_not_reviewed",
+    valueReadjudication.records.length === normal.length &&
+      valueReadjudication.records.every(
+        (record) => record.userReviewStatus === "NOT_REVIEWED_BY_USER",
+      ),
+    { records: valueReadjudication.records.length },
+  );
+  check(
+    "review.two_independent_runs_cover_full_normal_corpus",
+    independentReview.runLineage.length === 2 &&
+      independentReview.runLineage.every(
+        (run) => run.peerOutputVisible === false && run.records === normal.length,
+      ) &&
+      independentReview.comparisons.length === normal.length,
+    {
+      runs: independentReview.runLineage,
+      comparisons: independentReview.comparisons.length,
+    },
+  );
+  check(
+    "review.disagreements_are_explicit",
+    independentReview.metrics.anyDisagreement ===
+      independentReview.disagreementContentIds.length &&
+      independentReview.comparisons.every(
+        (comparison) =>
+          comparison.exactAgreement === (comparison.disagreeingAxes.length === 0) &&
+          comparison.userReviewStatus === "NOT_REVIEWED_BY_USER",
+      ),
+    {
+      anyDisagreement: independentReview.metrics.anyDisagreement,
+      disagreementIds: independentReview.disagreementContentIds.length,
+    },
+  );
+  check(
+    "planning.handoff_is_draft_pending_user_review",
+    planningHandoff.status === "DRAFT_PENDING_USER_REVIEW" &&
+      planningHandoff.decisions.length >= 14 &&
+      planningHandoff.decisions.every(
+        (decision) =>
+          decision.userApprovalRequired === true &&
+          decision.recommendation &&
+          decision.alternative &&
+          Array.isArray(decision.evidenceContentIds),
+      ),
+    {
+      status: planningHandoff.status,
+      decisions: planningHandoff.decisions.length,
+    },
+  );
+  check(
+    "planning.gaps_have_counts_and_evidence",
+    gapRegister.gaps.length >= 7 &&
+      gapRegister.gaps.every(
+        (gap) =>
+          Number.isInteger(gap.repeatedProblemCount) &&
+          Array.isArray(gap.contentIds) &&
+          gap.proposedRule,
+      ),
+    { gaps: gapRegister.gaps.length },
+  );
+
+  const externalRoundTripStatus = "NOT_RUN";
+  const observedUserValidationStatus = "NOT_REVIEWED_BY_USER";
+  check("claim.external_calendar_round_trip_not_run", externalRoundTripStatus === "NOT_RUN", {
+    status: externalRoundTripStatus,
+  });
+  check(
+    "claim.observed_user_validation_not_claimed",
+    observedUserValidationStatus === "NOT_REVIEWED_BY_USER",
+    { status: observedUserValidationStatus },
+  );
+
+  const failed = checks.filter((entry) => !entry.pass);
+  const result = {
+    schemaVersion: "flow-content-ui-validation-results-v1",
+    generatedAt: "2026-07-29T23:59:00+09:00",
+    corpusFingerprint: view.corpusFingerprint,
+    summary: {
+      status: failed.length ? "FAIL" : "PASS",
+      checks: checks.length,
+      passed: checks.length - failed.length,
+      failed: failed.length,
+    },
+    corpus: {
+      gallery: contents.length,
+      normal: normal.length,
+      productCandidate: contents.filter(
+        (content) => content.corpusTier === "product_candidate",
+      ).length,
+      structureProbe: contents.filter(
+        (content) => content.corpusTier === "structure_probe",
+      ).length,
+      newUrlsReviewed: newSources.counts.reviewedUrls,
+      newNormal: newSources.counts.normal,
+      projectionCells: projections.results.length,
+      pacingTargets: pacing.counts.content,
+      eventTargets: events.counts.content,
+    },
+    claimBoundary: {
+      observedUserValidation: observedUserValidationStatus,
+      externalCalendarVtodoRoundTrip: externalRoundTripStatus,
+      browserQa: "PENDING",
+    },
+    checks,
+  };
+  if (writeResult) {
+    fs.writeFileSync(
+      path.join(SPEC_DIR, "validation-results-v1.json"),
+      `${JSON.stringify(result, null, 2)}\n`,
+      "utf8",
+    );
+  }
+  return result;
+}
+
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  const result = validateLab({ writeResult: true });
+  console.log(
+    `${result.summary.status}: ${result.summary.passed}/${result.summary.checks} checks passed`,
+  );
+  for (const failure of result.checks.filter((check) => !check.pass)) {
+    console.error(`- ${failure.id}`, JSON.stringify(failure.evidence));
+  }
+  process.exitCode = result.summary.failed ? 1 : 0;
+}

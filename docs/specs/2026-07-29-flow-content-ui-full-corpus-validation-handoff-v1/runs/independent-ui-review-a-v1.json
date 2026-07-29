@@ -1,0 +1,2469 @@
+{
+  "schemaVersion": "flow-content-ui-independent-review-v1",
+  "runId": "independent-ui-review-a-v1",
+  "reviewerRole": "internal_agent_semantics",
+  "peerOutputVisible": false,
+  "inputManifestPath": "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/content-ui-view-model-v1.json",
+  "inputManifestHash": "sha256:d56b289fd301805fe1299b867497b0840f8d379d1459ec0148639f8b7d5dce32",
+  "scope": {
+    "corpusTiers": [
+      "product_candidate",
+      "structure_probe"
+    ],
+    "reviewedContentCount": 110,
+    "contentEvidenceSource": "content-ui-view-model-v1.json canonical.sourceRows, canonical.items, source trace, schedule, and projectionCells only"
+  },
+  "counts": {
+    "itemGranularity": {
+      "appropriate": 78,
+      "mixed": 24,
+      "too_large": 4,
+      "too_small": 4
+    },
+    "primaryProjection": {
+      "calendar": 26,
+      "checklist": 41,
+      "memo": 4,
+      "sheet": 23,
+      "todo": 16
+    },
+    "checklistTodoDecision": {
+      "both_with_primary": 1,
+      "checklist": 70,
+      "neither": 20,
+      "todo": 19
+    },
+    "scheduleSuitability": {
+      "natural": 30,
+      "not_applicable": 48,
+      "overlay_only": 27,
+      "overloaded": 5
+    },
+    "contentValue": {
+      "go": 57,
+      "hold": 19,
+      "modify": 34
+    },
+    "uiUnderstandability": {
+      "clear": 50,
+      "confusing": 32,
+      "needs_explanation": 28
+    }
+  },
+  "reviews": [
+    {
+      "contentId": "canonical:base-moving-d30",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "base-moving-d30-flow-1-step-1-item-1"
+      ],
+      "primaryProjection": "calendar",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "natural",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=base-moving-d30--bundle-moving-d30-s1-i1-r1; title=포장이사·반포장이사·일반이사 중 방식 선택",
+        "canonical.sourceRows.length=52; canonical.items.length=27",
+        "itemId=base-moving-d30-flow-1-step-1-item-1; title=이사 방식과 이사업체 정하기; schedule.mode=anchor_offset",
+        "sourceRef entityId=base-moving-d30-flow-1-step-1-item-1; sourceRowIds=base-moving-d30--bundle-moving-d30-s1-i1-r1,base-moving-d30--bundle-moving-d30-s1-i1-r2,base-moving-d30--bundle-moving-d30-s1-i1-r3; supportLevel=direct",
+        "projectionCells.calendar.recommendation=primary; availability=available_after_user_overlay"
+      ]
+    },
+    {
+      "contentId": "canonical:base-baby-food-174",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "base-baby-food-174-flow-1-step-1-item-1"
+      ],
+      "primaryProjection": "calendar",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "natural",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=base-baby-food-174--bundle-baby-food-174-d174; title=D+174 식단",
+        "canonical.sourceRows.length=36; canonical.items.length=36",
+        "itemId=base-baby-food-174-flow-1-step-1-item-1; title=D+174 식단 제공; schedule.mode=anchor_offset",
+        "sourceRef entityId=base-baby-food-174-flow-1-step-1-item-1; sourceRowIds=base-baby-food-174--bundle-baby-food-174-d174; supportLevel=direct",
+        "projectionCells.calendar.recommendation=primary; availability=available_after_user_overlay"
+      ]
+    },
+    {
+      "contentId": "canonical:base-opic-plan",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "base-opic-plan-flow-1-step-1-item-1"
+      ],
+      "primaryProjection": "sheet",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "overlay_only",
+      "contentValue": "modify",
+      "uiUnderstandability": "needs_explanation",
+      "modifyReasons": [
+        "planVariant ?? ??? 2??1? ? Flow? 42? Item? ?? ???? ?? ??? ?? ??? ?? ??."
+      ],
+      "evidence": [
+        "sourceRowId=base-opic-plan--bundle-opic-plan-2w-w1; title=1회 모의고사 실전·녹음·보완·복습",
+        "canonical.sourceRows.length=52; canonical.items.length=42",
+        "itemId=base-opic-plan-flow-1-step-1-item-1; title=1회 모의고사 실전처럼 풀기; schedule.mode=anchor_offset",
+        "sourceRef entityId=base-opic-plan-flow-1-step-1-item-1; sourceRowIds=base-opic-plan--bundle-opic-plan-2w-w1,base-opic-plan--bundle-opic-plan-video-1; supportLevel=direct",
+        "projectionCells.sheet.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "canonical:base-opentutorials-web1-progress",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "base-opentutorials-web1-progress-flow-1-step-1-item-1"
+      ],
+      "primaryProjection": "sheet",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i1-r1; title=프로젝트의 동기",
+        "canonical.sourceRows.length=26; canonical.items.length=26",
+        "itemId=base-opentutorials-web1-progress-flow-1-step-1-item-1; title=「프로젝트의 동기」 학습하기; schedule.mode=absent",
+        "sourceRef entityId=base-opentutorials-web1-progress-flow-1-step-1-item-1; sourceRowIds=base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i1-r1; supportLevel=direct",
+        "projectionCells.sheet.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "canonical:base-new-car-comparison",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "base-new-car-comparison-flow-1-step-1-item-1"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=base-new-car-comparison--bundle-new-car-comparison-s1-i1-r1; title=차량 가격 외 취등록세·보험·유지비를 포함한 총예산 확인",
+        "canonical.sourceRows.length=29; canonical.items.length=14",
+        "itemId=base-new-car-comparison-flow-1-step-1-item-1; title=총예산과 월 납입 가능액 정하기; schedule.mode=absent",
+        "sourceRef entityId=base-new-car-comparison-flow-1-step-1-item-1; sourceRowIds=base-new-car-comparison--bundle-new-car-comparison-s1-i1-r1,base-new-car-comparison--bundle-new-car-comparison-s1-i1-r2; supportLevel=direct",
+        "projectionCells.checklist.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "canonical:base-allblanc-7day-abs",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "base-allblanc-7day-abs-flow-1-step-1-item-1"
+      ],
+      "primaryProjection": "calendar",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "natural",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=base-allblanc-7day-abs--bundle-allblanc-7day-abs-day-1; title=코어 + 복근 한방에! 20분 복근 운동",
+        "canonical.sourceRows.length=7; canonical.items.length=7",
+        "itemId=base-allblanc-7day-abs-flow-1-step-1-item-1; title=코어 + 복근 한방에! 20분 복근 운동; schedule.mode=anchor_offset",
+        "sourceRef entityId=base-allblanc-7day-abs-flow-1-step-1-item-1; sourceRowIds=base-allblanc-7day-abs--bundle-allblanc-7day-abs-day-1; supportLevel=direct",
+        "projectionCells.calendar.recommendation=primary; availability=available_after_user_overlay"
+      ]
+    },
+    {
+      "contentId": "canonical:base-wtable-summer-banchan-five",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "base-wtable-summer-banchan-five-flow-1-step-1-item-1"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=base-wtable-summer-banchan-five--wtable-summer-1; title=오이지무침",
+        "canonical.sourceRows.length=5; canonical.items.length=5",
+        "itemId=base-wtable-summer-banchan-five-flow-1-step-1-item-1; title=오이지무침 만들기; schedule.mode=absent",
+        "sourceRef entityId=base-wtable-summer-banchan-five-flow-1-step-1-item-1; sourceRowIds=base-wtable-summer-banchan-five--wtable-summer-1; supportLevel=direct",
+        "projectionCells.checklist.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "canonical:base-andstudio-job-prep-videos",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "base-andstudio-job-prep-videos-flow-1-step-1-item-1"
+      ],
+      "primaryProjection": "todo",
+      "checklistTodoDecision": "todo",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=base-andstudio-job-prep-videos--andstudio-job-1; title=자소서 지원동기 6단계",
+        "canonical.sourceRows.length=3; canonical.items.length=3",
+        "itemId=base-andstudio-job-prep-videos-flow-1-step-1-item-1; title=자소서 지원동기 6단계 영상으로 준비하기; schedule.mode=absent",
+        "sourceRef entityId=base-andstudio-job-prep-videos-flow-1-step-1-item-1; sourceRowIds=base-andstudio-job-prep-videos--andstudio-job-1; supportLevel=direct",
+        "projectionCells.todo.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "canonical:oq-oq-c02-kmooc-full",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "oq-oq-c02-kmooc-full-item-1"
+      ],
+      "primaryProjection": "sheet",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "overlay_only",
+      "contentValue": "go",
+      "uiUnderstandability": "needs_explanation",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=oq-oq-c02-kmooc-full--kmooc-m01; title=수강 신청·운영 기간",
+        "canonical.sourceRows.length=19; canonical.items.length=14",
+        "itemId=oq-oq-c02-kmooc-full-item-1; title=1주차 · 데이터 리터러시; schedule.mode=absent",
+        "sourceRef entityId=oq-oq-c02-kmooc-full-item-1; sourceRowIds=oq-oq-c02-kmooc-full--kmooc-w01; supportLevel=direct",
+        "projectionCells.sheet.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "canonical:oq-oq-c03-librivox",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "oq-oq-c03-librivox-item-1"
+      ],
+      "primaryProjection": "sheet",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=oq-oq-c03-librivox--librivox-c01; title=1. Mrs. Rachel Lynde Is Surprised",
+        "canonical.sourceRows.length=38; canonical.items.length=38",
+        "itemId=oq-oq-c03-librivox-item-1; title=1. Mrs. Rachel Lynde Is Surprised; schedule.mode=absent",
+        "sourceRef entityId=oq-oq-c03-librivox-item-1; sourceRowIds=oq-oq-c03-librivox--librivox-c01; supportLevel=direct",
+        "projectionCells.sheet.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "canonical:oq-oq-c04-passport",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "oq-oq-c04-passport-item-1"
+      ],
+      "primaryProjection": "todo",
+      "checklistTodoDecision": "todo",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=oq-oq-c04-passport--passport-r01; title=신청 경로 선택",
+        "canonical.sourceRows.length=7; canonical.items.length=5",
+        "itemId=oq-oq-c04-passport-item-1; title=신청 경로 선택; schedule.mode=absent",
+        "sourceRef entityId=oq-oq-c04-passport-item-1; sourceRowIds=oq-oq-c04-passport--passport-r01; supportLevel=direct",
+        "projectionCells.todo.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "canonical:oq-oq-c05-washer",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "oq-oq-c05-washer-item-1"
+      ],
+      "primaryProjection": "todo",
+      "checklistTodoDecision": "todo",
+      "scheduleSuitability": "overlay_only",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=oq-oq-c05-washer--washer-r01; title=실행 시점",
+        "canonical.sourceRows.length=7; canonical.items.length=4",
+        "itemId=oq-oq-c05-washer-item-1; title=드럼 비우기; schedule.mode=absent",
+        "sourceRef entityId=oq-oq-c05-washer-item-1; sourceRowIds=oq-oq-c05-washer--washer-r02; supportLevel=direct",
+        "projectionCells.todo.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "canonical:oq-oq-c06-nasa",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "oq-oq-c06-nasa-item-1"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=oq-oq-c06-nasa--ds12-r01; title=재료 준비",
+        "canonical.sourceRows.length=8; canonical.items.length=5",
+        "itemId=oq-oq-c06-nasa-item-1; title=팀·컵 준비; schedule.mode=absent",
+        "sourceRef entityId=oq-oq-c06-nasa-item-1; sourceRowIds=oq-oq-c06-nasa--ds12-r03; supportLevel=direct",
+        "projectionCells.checklist.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "canonical:oq-oq-c07-fit100",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "oq-oq-c07-fit100-item-1"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "overlay_only",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=oq-oq-c07-fit100--ds07-r01; title=온라인 회원가입",
+        "canonical.sourceRows.length=9; canonical.items.length=8",
+        "itemId=oq-oq-c07-fit100-item-1; title=온라인 회원가입; schedule.mode=absent",
+        "sourceRef entityId=oq-oq-c07-fit100-item-1; sourceRowIds=oq-oq-c07-fit100--ds07-r01; supportLevel=direct",
+        "projectionCells.checklist.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "canonical:oq-oq-c08-ac-decision",
+      "itemGranularity": "too_large",
+      "itemEvidenceIds": [
+        "oq-oq-c08-ac-decision-item-decision"
+      ],
+      "primaryProjection": "memo",
+      "checklistTodoDecision": "neither",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "modify",
+      "uiUnderstandability": "needs_explanation",
+      "modifyReasons": [
+        "세척 범위 비교와 최종 선택이 하나의 Item에 합쳐져 비교 기준을 UI에서 펼쳐 보여줘야 한다."
+      ],
+      "evidence": [
+        "sourceRowId=oq-oq-c08-ac-decision--ac-r01; title=전문세척 범위",
+        "canonical.sourceRows.length=5; canonical.items.length=1",
+        "itemId=oq-oq-c08-ac-decision-item-decision; title=필요한 세척 범위를 비교해 전문세척 또는 일반세척을 선택한다.; schedule.mode=absent",
+        "sourceRef entityId=oq-oq-c08-ac-decision-item-decision; sourceRowIds=oq-oq-c08-ac-decision--ac-r01,oq-oq-c08-ac-decision--ac-r02,oq-oq-c08-ac-decision--ac-r03,oq-oq-c08-ac-decision--ac-r04,oq-oq-c08-ac-decision--ac-r05; supportLevel=direct",
+        "projectionCells.memo.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "canonical:oq-oq-b01-heat",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "oq-oq-b01-heat-item-1"
+      ],
+      "primaryProjection": "memo",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=oq-oq-b01-heat--ds01-r01; title=폭염 단계 기준 확인",
+        "canonical.sourceRows.length=10; canonical.items.length=4",
+        "itemId=oq-oq-b01-heat-item-1; title=작업 전 체감온도 확인; schedule.mode=absent",
+        "sourceRef entityId=oq-oq-b01-heat-item-1; sourceRowIds=oq-oq-b01-heat--ds01-r02; supportLevel=direct",
+        "projectionCells.memo.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "canonical:oq-oq-b03-remodel",
+      "itemGranularity": "too_large",
+      "itemEvidenceIds": [
+        "oq-oq-b03-remodel-item-decision"
+      ],
+      "primaryProjection": "sheet",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "modify",
+      "uiUnderstandability": "confusing",
+      "modifyReasons": [
+        "10개 계약 기준과 보완 요청이 하나의 결정 Item으로 압축되어 기준별 확인·기록이 불가능하다."
+      ],
+      "evidence": [
+        "sourceRowId=oq-oq-b03-remodel--ds02-r01; title=업체 정보",
+        "canonical.sourceRows.length=10; canonical.items.length=1",
+        "itemId=oq-oq-b03-remodel-item-decision; title=리모델링 계약 전에 10개 계약 기준을 비교하고 보완 요청을 정한다.; schedule.mode=absent",
+        "sourceRef entityId=oq-oq-b03-remodel-item-decision; sourceRowIds=oq-oq-b03-remodel--ds02-r01,oq-oq-b03-remodel--ds02-r02,oq-oq-b03-remodel--ds02-r03,oq-oq-b03-remodel--ds02-r04,oq-oq-b03-remodel--ds02-r05,oq-oq-b03-remodel--ds02-r06,oq-oq-b03-remodel--ds02-r07,oq-oq-b03-remodel--ds02-r08,oq-oq-b03-remodel--ds02-r09,oq-oq-b03-remodel--ds02-r10; supportLevel=direct",
+        "projectionCells.sheet.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "canonical:oq-oq-p01-ossu",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "oq-oq-p01-ossu-item-1"
+      ],
+      "primaryProjection": "sheet",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=oq-oq-p01-ossu--ds10-r01; title=Introduction to Computer Science and Programming using Python",
+        "canonical.sourceRows.length=6; canonical.items.length=6",
+        "itemId=oq-oq-p01-ossu-item-1; title=Introduction to Computer Science and Programming using Python; schedule.mode=absent",
+        "sourceRef entityId=oq-oq-p01-ossu-item-1; sourceRowIds=oq-oq-p01-ossu--ds10-r01; supportLevel=direct",
+        "projectionCells.sheet.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "canonical:oq-oq-p02-packing",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "oq-oq-p02-packing-item-1"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=oq-oq-p02-packing--ds11-r01; title=신원 확인 수단",
+        "canonical.sourceRows.length=7; canonical.items.length=7",
+        "itemId=oq-oq-p02-packing-item-1; title=신원 확인 수단; schedule.mode=absent",
+        "sourceRef entityId=oq-oq-p02-packing-item-1; sourceRowIds=oq-oq-p02-packing--ds11-r01; supportLevel=direct",
+        "projectionCells.checklist.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "canonical:oq-oq-p03-vehicle",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "oq-oq-p03-vehicle-item-1"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "overlay_only",
+      "contentValue": "go",
+      "uiUnderstandability": "needs_explanation",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=oq-oq-p03-vehicle--vehicle-r01; title=자동차검사 유효기간",
+        "canonical.sourceRows.length=1; canonical.items.length=1",
+        "itemId=oq-oq-p03-vehicle-item-1; title=공식 검사 가능 기간을 조회하고 방문일 정하기; schedule.mode=absent",
+        "sourceRef entityId=oq-oq-p03-vehicle-item-1; sourceRowIds=oq-oq-p03-vehicle--vehicle-r01; supportLevel=direct",
+        "projectionCells.checklist.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "canonical:oq-oq-p04-portfolio",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "oq-oq-p04-portfolio-item-1"
+      ],
+      "primaryProjection": "sheet",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "overlay_only",
+      "contentValue": "go",
+      "uiUnderstandability": "needs_explanation",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=oq-oq-p04-portfolio--portfolio-r01; title=팀과 아이템·기술 선정",
+        "canonical.sourceRows.length=7; canonical.items.length=7",
+        "itemId=oq-oq-p04-portfolio-item-1; title=팀과 아이템·기술 선정; schedule.mode=absent",
+        "sourceRef entityId=oq-oq-p04-portfolio-item-1; sourceRowIds=oq-oq-p04-portfolio--portfolio-r01; supportLevel=direct",
+        "projectionCells.sheet.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "canonical:value-vq-01",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "value-vq-01-item-1"
+      ],
+      "primaryProjection": "todo",
+      "checklistTodoDecision": "todo",
+      "scheduleSuitability": "overlay_only",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=value-vq-01--vq01-r01; title=입소일과 현재 보육서비스 확인",
+        "canonical.sourceRows.length=4; canonical.items.length=4",
+        "itemId=value-vq-01-item-1; title=입소일과 현재 보육서비스 확인; schedule.mode=absent",
+        "sourceRef entityId=value-vq-01-item-1; sourceRowIds=value-vq-01--vq01-r01; supportLevel=direct",
+        "projectionCells.todo.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "canonical:value-vq-03",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "value-vq-03-item-1"
+      ],
+      "primaryProjection": "calendar",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "natural",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=value-vq-03--vq03-r01; title=월요일 양배추참치덮밥·단무지무침",
+        "canonical.sourceRows.length=5; canonical.items.length=5",
+        "itemId=value-vq-03-item-1; title=월요일 양배추참치덮밥·단무지무침; schedule.mode=anchor_offset",
+        "sourceRef entityId=value-vq-03-item-1; sourceRowIds=value-vq-03--vq03-r01; supportLevel=direct",
+        "projectionCells.calendar.recommendation=primary; availability=available_after_user_overlay"
+      ]
+    },
+    {
+      "contentId": "canonical:value-vq-04",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "value-vq-04-item-1"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=value-vq-04--vq04-r01; title=비움 기준과 유예 기준 정하기",
+        "canonical.sourceRows.length=6; canonical.items.length=6",
+        "itemId=value-vq-04-item-1; title=비움 기준과 유예 기준 정하기; schedule.mode=absent",
+        "sourceRef entityId=value-vq-04-item-1; sourceRowIds=value-vq-04--vq04-r01; supportLevel=direct",
+        "projectionCells.checklist.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "canonical:value-vq-05",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "value-vq-05-item-1"
+      ],
+      "primaryProjection": "sheet",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=value-vq-05--vq05-r01; title=오리엔테이션",
+        "canonical.sourceRows.length=10; canonical.items.length=10",
+        "itemId=value-vq-05-item-1; title=오리엔테이션; schedule.mode=absent",
+        "sourceRef entityId=value-vq-05-item-1; sourceRowIds=value-vq-05--vq05-r01; supportLevel=direct",
+        "projectionCells.sheet.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "canonical:value-vq-06",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "value-vq-06-item-1"
+      ],
+      "primaryProjection": "sheet",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=value-vq-06--vq06-r01; title=원재료 유형 비교",
+        "canonical.sourceRows.length=6; canonical.items.length=6",
+        "itemId=value-vq-06-item-1; title=원재료 유형 비교; schedule.mode=absent",
+        "sourceRef entityId=value-vq-06-item-1; sourceRowIds=value-vq-06--vq06-r01; supportLevel=direct",
+        "projectionCells.sheet.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "canonical:value-vq-10",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "value-vq-10-item-1"
+      ],
+      "primaryProjection": "sheet",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=value-vq-10--vq10-r01; title=설비",
+        "canonical.sourceRows.length=13; canonical.items.length=13",
+        "itemId=value-vq-10-item-1; title=설비; schedule.mode=absent",
+        "sourceRef entityId=value-vq-10-item-1; sourceRowIds=value-vq-10--vq10-r01; supportLevel=direct",
+        "projectionCells.sheet.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "canonical:value-vq-11",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "value-vq-11-item-1"
+      ],
+      "primaryProjection": "calendar",
+      "checklistTodoDecision": "todo",
+      "scheduleSuitability": "natural",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=value-vq-11--vq11-r01; title=소속 대학 2차 운영 확인",
+        "canonical.sourceRows.length=5; canonical.items.length=5",
+        "itemId=value-vq-11-item-1; title=소속 대학 2차 운영 확인; schedule.mode=absent",
+        "sourceRef entityId=value-vq-11-item-1; sourceRowIds=value-vq-11--vq11-r01; supportLevel=direct",
+        "projectionCells.calendar.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "canonical:value-vq-12",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "value-vq-12-item-1"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "overlay_only",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=value-vq-12--vq12-r01; title=반려동물 동반 대피 계획 세우기",
+        "canonical.sourceRows.length=6; canonical.items.length=6",
+        "itemId=value-vq-12-item-1; title=반려동물 동반 대피 계획 세우기; schedule.mode=absent",
+        "sourceRef entityId=value-vq-12-item-1; sourceRowIds=value-vq-12--vq12-r01; supportLevel=direct",
+        "projectionCells.checklist.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "canonical:deep-ds06",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "deep-ds06-item-1"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=deep-ds06--ds06-r01; title=낙상 안전",
+        "canonical.sourceRows.length=4; canonical.items.length=4",
+        "itemId=deep-ds06-item-1; title=낙상 안전 구간 점검; schedule.mode=absent",
+        "sourceRef entityId=deep-ds06-item-1; sourceRowIds=deep-ds06--ds06-r01; supportLevel=direct",
+        "projectionCells.checklist.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "canonical:deep-ds08",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "deep-ds08-item-1"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "overlay_only",
+      "contentValue": "modify",
+      "uiUnderstandability": "needs_explanation",
+      "modifyReasons": [
+        "방문지 Item에는 시간·이동 순서 schedule이 없어 일정화는 사용자 오버레이가 필요하다."
+      ],
+      "evidence": [
+        "sourceRowId=deep-ds08--ds08-r01; title=공주한옥마을",
+        "canonical.sourceRows.length=4; canonical.items.length=4",
+        "itemId=deep-ds08-item-1; title=공주한옥마을; schedule.mode=absent",
+        "sourceRef entityId=deep-ds08-item-1; sourceRowIds=deep-ds08--ds08-r01; supportLevel=direct",
+        "projectionCells.checklist.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "canonical:live-c01",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "live-c01-item-1"
+      ],
+      "primaryProjection": "sheet",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "overlay_only",
+      "contentValue": "modify",
+      "uiUnderstandability": "needs_explanation",
+      "modifyReasons": [
+        "검진 차수 Item에는 schedule이 비어 있어 실제 검진일 안내를 별도 오버레이로 설명해야 한다."
+      ],
+      "evidence": [
+        "sourceRowId=live-c01--c01-sr01; title=1차 건강검진",
+        "canonical.sourceRows.length=12; canonical.items.length=12",
+        "itemId=live-c01-item-1; title=1차 건강검진; schedule.mode=absent",
+        "sourceRef entityId=live-c01-item-1; sourceRowIds=live-c01--c01-sr01; supportLevel=direct",
+        "projectionCells.sheet.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "canonical:live-c13",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "live-c13-item-1"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=live-c13--c13-sr01; title=재료·도구",
+        "canonical.sourceRows.length=5; canonical.items.length=4",
+        "itemId=live-c13-item-1; title=용기에 바나나와 계란 넣기; schedule.mode=absent",
+        "sourceRef entityId=live-c13-item-1; sourceRowIds=live-c13--c13-sr02; supportLevel=direct",
+        "projectionCells.checklist.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "canonical:live-c16",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "live-c16-item-1"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=live-c16--c16-sr01; title=블로그 콘텐츠를 영상 스크립트로 활용",
+        "canonical.sourceRows.length=3; canonical.items.length=3",
+        "itemId=live-c16-item-1; title=블로그 콘텐츠를 영상 스크립트로 활용; schedule.mode=absent",
+        "sourceRef entityId=live-c16-item-1; sourceRowIds=live-c16--c16-sr01; supportLevel=direct",
+        "projectionCells.checklist.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "canonical:live-r02",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "live-r02-item-1"
+      ],
+      "primaryProjection": "sheet",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "overlay_only",
+      "contentValue": "go",
+      "uiUnderstandability": "needs_explanation",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=live-r02--r02-sr01; title=냉장고 지도 만들기",
+        "canonical.sourceRows.length=7; canonical.items.length=7",
+        "itemId=live-r02-item-1; title=냉장고 지도 만들기; schedule.mode=absent",
+        "sourceRef entityId=live-r02-item-1; sourceRowIds=live-r02--r02-sr01; supportLevel=direct",
+        "projectionCells.sheet.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "canonical:live-kr-stibee-01",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "live-kr-stibee-01-item-1"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=live-kr-stibee-01--kr-stibee-01-sr01; title=저작권 사용 허락 확인",
+        "canonical.sourceRows.length=4; canonical.items.length=4",
+        "itemId=live-kr-stibee-01-item-1; title=저작권 사용 허락 확인; schedule.mode=absent",
+        "sourceRef entityId=live-kr-stibee-01-item-1; sourceRowIds=live-kr-stibee-01--kr-stibee-01-sr01; supportLevel=direct",
+        "projectionCells.checklist.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "canonical:live-live-mdn-core-01",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "live-live-mdn-core-01-item-1"
+      ],
+      "primaryProjection": "sheet",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=live-live-mdn-core-01--live-mdn-core-01-sr01; title=Structuring content with HTML",
+        "canonical.sourceRows.length=9; canonical.items.length=9",
+        "itemId=live-live-mdn-core-01-item-1; title=Structuring content with HTML; schedule.mode=absent",
+        "sourceRef entityId=live-live-mdn-core-01-item-1; sourceRowIds=live-live-mdn-core-01--live-mdn-core-01-sr01; supportLevel=direct",
+        "projectionCells.sheet.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "canonical:live-live-dyson-filter-01",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "live-live-dyson-filter-01-item-1"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "overlay_only",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=live-live-dyson-filter-01--live-dyson-filter-01-sr01; title=최소 월 1회 필터 세척",
+        "canonical.sourceRows.length=6; canonical.items.length=5",
+        "itemId=live-live-dyson-filter-01-item-1; title=필터 제거하기; schedule.mode=anchor_offset",
+        "sourceRef entityId=live-live-dyson-filter-01-item-1; sourceRowIds=live-live-dyson-filter-01--live-dyson-filter-01-sr02,live-live-dyson-filter-01--live-dyson-filter-01-sr01; supportLevel=direct",
+        "projectionCells.checklist.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "canonical:live-live-jotform-event-intake-01",
+      "itemGranularity": "mixed",
+      "itemEvidenceIds": [],
+      "primaryProjection": "sheet",
+      "checklistTodoDecision": "neither",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "hold",
+      "uiUnderstandability": "confusing",
+      "modifyReasons": [
+        "11개 sourceRows가 있으나 canonical.items가 0개여서 실행 단위와 완료 상태가 없다."
+      ],
+      "evidence": [
+        "sourceRowId=live-live-jotform-event-intake-01--live-jotform-event-intake-01-sr01; title=Full Name",
+        "canonical.sourceRows.length=11; canonical.items.length=0",
+        "canonical.items=[]; no actual itemId exists for this content",
+        "projectionCells.sheet.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "events:new-nps-ten-essentials",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "events:new-nps-ten-essentials:new-nps-ten-essentials-item-01"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=events:new-nps-ten-essentials:new-nps-ten-essentials-row-01; title=Navigation",
+        "canonical.sourceRows.length=10; canonical.items.length=10",
+        "itemId=events:new-nps-ten-essentials:new-nps-ten-essentials-item-01; title=Navigation; schedule.mode=absent",
+        "projectionCells.checklist.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "events:new-apple-quick-start",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "events:new-apple-quick-start:new-apple-quick-start-item-01"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=events:new-apple-quick-start:new-apple-quick-start-row-01; title=Wi-Fi와 Bluetooth를 켜고 두 기기를 가까이 둔다",
+        "canonical.sourceRows.length=6; canonical.items.length=6",
+        "itemId=events:new-apple-quick-start:new-apple-quick-start-item-01; title=Wi-Fi와 Bluetooth를 켜고 두 기기를 가까이 둔다; schedule.mode=absent",
+        "projectionCells.checklist.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "events:new-github-account-onboarding",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "events:new-github-account-onboarding:new-github-account-onboarding-item-01"
+      ],
+      "primaryProjection": "todo",
+      "checklistTodoDecision": "todo",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=events:new-github-account-onboarding:new-github-account-onboarding-row-01; title=GitHub 계정 만들기",
+        "canonical.sourceRows.length=5; canonical.items.length=5",
+        "itemId=events:new-github-account-onboarding:new-github-account-onboarding-item-01; title=GitHub 계정 만들기; schedule.mode=absent",
+        "projectionCells.todo.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "events:new-google-codelab-ai-agent",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "events:new-google-codelab-ai-agent:new-google-codelab-ai-agent-item-01"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=events:new-google-codelab-ai-agent:new-google-codelab-ai-agent-row-01; title=Prerequisites 확인",
+        "canonical.sourceRows.length=5; canonical.items.length=5",
+        "itemId=events:new-google-codelab-ai-agent:new-google-codelab-ai-agent-item-01; title=Prerequisites 확인; schedule.mode=absent",
+        "projectionCells.checklist.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "events:new-mdn-core-scripting",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "events:new-mdn-core-scripting:new-mdn-core-scripting-item-01"
+      ],
+      "primaryProjection": "todo",
+      "checklistTodoDecision": "todo",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=events:new-mdn-core-scripting:new-mdn-core-scripting-row-01; title=What is JavaScript?",
+        "canonical.sourceRows.length=10; canonical.items.length=10",
+        "itemId=events:new-mdn-core-scripting:new-mdn-core-scripting-item-01; title=What is JavaScript?; schedule.mode=absent",
+        "projectionCells.todo.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "events:new-gutenberg-top-reading-queue",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "events:new-gutenberg-top-reading-queue:new-gutenberg-top-reading-queue-item-01"
+      ],
+      "primaryProjection": "todo",
+      "checklistTodoDecision": "todo",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=events:new-gutenberg-top-reading-queue:new-gutenberg-top-reading-queue-row-01; title=Pride and Prejudice",
+        "canonical.sourceRows.length=8; canonical.items.length=8",
+        "itemId=events:new-gutenberg-top-reading-queue:new-gutenberg-top-reading-queue-item-01; title=Pride and Prejudice; schedule.mode=absent",
+        "projectionCells.todo.recommendation=primary; availability=available_now"
+      ]
+    },
+    {
+      "contentId": "events:event-kr-single-performance",
+      "itemGranularity": "mixed",
+      "itemEvidenceIds": [],
+      "primaryProjection": "calendar",
+      "checklistTodoDecision": "neither",
+      "scheduleSuitability": "natural",
+      "contentValue": "hold",
+      "uiUnderstandability": "confusing",
+      "modifyReasons": [
+        "이벤트 sourceRows는 있으나 canonical.items가 0개여서 저장·완료의 canonical owner가 없다."
+      ],
+      "evidence": [
+        "sourceRowId=events:event-kr-single-performance:event-kr-single-performance-row-01; title=필묵으로 펼쳐지는 한국춤",
+        "canonical.sourceRows.length=4; canonical.items.length=0",
+        "canonical.items=[]; no actual itemId exists for this content",
+        "projectionCells.calendar.recommendation=primary; availability=available_after_user_overlay"
+      ]
+    },
+    {
+      "contentId": "events:event-kr-multi-show-choir",
+      "itemGranularity": "mixed",
+      "itemEvidenceIds": [],
+      "primaryProjection": "calendar",
+      "checklistTodoDecision": "neither",
+      "scheduleSuitability": "natural",
+      "contentValue": "hold",
+      "uiUnderstandability": "confusing",
+      "modifyReasons": [
+        "이벤트 sourceRows는 있으나 canonical.items가 0개여서 저장·완료의 canonical owner가 없다."
+      ],
+      "evidence": [
+        "sourceRowId=events:event-kr-multi-show-choir:event-kr-multi-show-choir-row-01; title=제46회 한국합창제",
+        "canonical.sourceRows.length=5; canonical.items.length=0",
+        "canonical.items=[]; no actual itemId exists for this content",
+        "projectionCells.calendar.recommendation=primary; availability=available_after_user_overlay"
+      ]
+    },
+    {
+      "contentId": "events:event-kr-sokcho-summer",
+      "itemGranularity": "mixed",
+      "itemEvidenceIds": [],
+      "primaryProjection": "calendar",
+      "checklistTodoDecision": "neither",
+      "scheduleSuitability": "natural",
+      "contentValue": "hold",
+      "uiUnderstandability": "confusing",
+      "modifyReasons": [
+        "이벤트 sourceRows는 있으나 canonical.items가 0개여서 저장·완료의 canonical owner가 없다."
+      ],
+      "evidence": [
+        "sourceRowId=events:event-kr-sokcho-summer:event-kr-sokcho-summer-row-01; title=속초 썸머페스티벌 2026",
+        "canonical.sourceRows.length=2; canonical.items.length=0",
+        "canonical.items=[]; no actual itemId exists for this content",
+        "projectionCells.calendar.recommendation=primary; availability=available_after_user_overlay"
+      ]
+    },
+    {
+      "contentId": "events:event-kr-sema-martin-parr",
+      "itemGranularity": "mixed",
+      "itemEvidenceIds": [],
+      "primaryProjection": "calendar",
+      "checklistTodoDecision": "neither",
+      "scheduleSuitability": "natural",
+      "contentValue": "hold",
+      "uiUnderstandability": "confusing",
+      "modifyReasons": [
+        "이벤트 sourceRows는 있으나 canonical.items가 0개여서 저장·완료의 canonical owner가 없다."
+      ],
+      "evidence": [
+        "sourceRowId=events:event-kr-sema-martin-parr:event-kr-sema-martin-parr-row-01; title=전시 기간",
+        "canonical.sourceRows.length=5; canonical.items.length=0",
+        "canonical.items=[]; no actual itemId exists for this content",
+        "projectionCells.calendar.recommendation=primary; availability=available_after_user_overlay"
+      ]
+    },
+    {
+      "contentId": "events:event-kr-ballet-ticket-show",
+      "itemGranularity": "mixed",
+      "itemEvidenceIds": [],
+      "primaryProjection": "calendar",
+      "checklistTodoDecision": "neither",
+      "scheduleSuitability": "natural",
+      "contentValue": "hold",
+      "uiUnderstandability": "confusing",
+      "modifyReasons": [
+        "이벤트 sourceRows는 있으나 canonical.items가 0개여서 저장·완료의 canonical owner가 없다."
+      ],
+      "evidence": [
+        "sourceRowId=events:event-kr-ballet-ticket-show:event-kr-ballet-ticket-show-row-01; title=티켓 오픈",
+        "canonical.sourceRows.length=6; canonical.items.length=0",
+        "canonical.items=[]; no actual itemId exists for this content",
+        "projectionCells.calendar.recommendation=primary; availability=available_after_user_overlay"
+      ]
+    },
+    {
+      "contentId": "events:event-kr-qnet-exam-lifecycle",
+      "itemGranularity": "mixed",
+      "itemEvidenceIds": [],
+      "primaryProjection": "calendar",
+      "checklistTodoDecision": "neither",
+      "scheduleSuitability": "natural",
+      "contentValue": "hold",
+      "uiUnderstandability": "confusing",
+      "modifyReasons": [
+        "이벤트 sourceRows는 있으나 canonical.items가 0개여서 일정 lifecycle의 canonical owner가 없다."
+      ],
+      "evidence": [
+        "sourceRowId=events:event-kr-qnet-exam-lifecycle:event-kr-qnet-exam-lifecycle-row-01; title=필기 정기 접수",
+        "canonical.sourceRows.length=7; canonical.items.length=0",
+        "canonical.items=[]; no actual itemId exists for this content",
+        "projectionCells.calendar.recommendation=not_recommended; availability=available_after_user_overlay"
+      ]
+    },
+    {
+      "contentId": "events:event-kr-revised-musical",
+      "itemGranularity": "mixed",
+      "itemEvidenceIds": [],
+      "primaryProjection": "calendar",
+      "checklistTodoDecision": "neither",
+      "scheduleSuitability": "natural",
+      "contentValue": "hold",
+      "uiUnderstandability": "confusing",
+      "modifyReasons": [
+        "이벤트 sourceRows는 있으나 canonical.items가 0개여서 변경된 일정의 canonical owner가 없다."
+      ],
+      "evidence": [
+        "sourceRowId=events:event-kr-revised-musical:event-kr-revised-musical-row-01; title=기존 공연 기간",
+        "canonical.sourceRows.length=5; canonical.items.length=0",
+        "canonical.items=[]; no actual itemId exists for this content",
+        "projectionCells.calendar.recommendation=primary; availability=unavailable"
+      ]
+    },
+    {
+      "contentId": "events:event-pattern-nps-all-day",
+      "itemGranularity": "mixed",
+      "itemEvidenceIds": [],
+      "primaryProjection": "calendar",
+      "checklistTodoDecision": "neither",
+      "scheduleSuitability": "natural",
+      "contentValue": "hold",
+      "uiUnderstandability": "confusing",
+      "modifyReasons": [
+        "이벤트 sourceRows는 있으나 canonical.items가 0개여서 all-day 이벤트를 저장할 canonical Item이 없다."
+      ],
+      "evidence": [
+        "sourceRowId=events:event-pattern-nps-all-day:event-pattern-nps-all-day-row-01; title=NPS Birthday Fee Free Day",
+        "canonical.sourceRows.length=2; canonical.items.length=0",
+        "canonical.items=[]; no actual itemId exists for this content",
+        "projectionCells.calendar.recommendation=primary; availability=available_after_user_overlay"
+      ]
+    },
+    {
+      "contentId": "events:event-pattern-online-foia",
+      "itemGranularity": "mixed",
+      "itemEvidenceIds": [],
+      "primaryProjection": "calendar",
+      "checklistTodoDecision": "neither",
+      "scheduleSuitability": "natural",
+      "contentValue": "hold",
+      "uiUnderstandability": "confusing",
+      "modifyReasons": [
+        "이벤트 sourceRows는 있으나 canonical.items가 0개여서 회의 이벤트의 canonical Item이 없다."
+      ],
+      "evidence": [
+        "sourceRowId=events:event-pattern-online-foia:event-pattern-online-foia-row-01; title=FOIA Advisory Committee Meeting",
+        "canonical.sourceRows.length=3; canonical.items.length=0",
+        "canonical.items=[]; no actual itemId exists for this content",
+        "projectionCells.calendar.recommendation=primary; availability=available_after_user_overlay"
+      ]
+    },
+    {
+      "contentId": "events:event-pattern-nps-weekly",
+      "itemGranularity": "mixed",
+      "itemEvidenceIds": [],
+      "primaryProjection": "calendar",
+      "checklistTodoDecision": "neither",
+      "scheduleSuitability": "natural",
+      "contentValue": "hold",
+      "uiUnderstandability": "confusing",
+      "modifyReasons": [
+        "이벤트 sourceRows는 있으나 canonical.items가 0개여서 반복 이벤트의 canonical Item이 없다."
+      ],
+      "evidence": [
+        "sourceRowId=events:event-pattern-nps-weekly:event-pattern-nps-weekly-row-01; title=Tuesday through Saturday",
+        "canonical.sourceRows.length=2; canonical.items.length=0",
+        "canonical.items=[]; no actual itemId exists for this content",
+        "projectionCells.calendar.recommendation=primary; availability=unavailable"
+      ]
+    },
+    {
+      "contentId": "events:event-pattern-chimac-edition",
+      "itemGranularity": "mixed",
+      "itemEvidenceIds": [],
+      "primaryProjection": "calendar",
+      "checklistTodoDecision": "neither",
+      "scheduleSuitability": "natural",
+      "contentValue": "hold",
+      "uiUnderstandability": "confusing",
+      "modifyReasons": [
+        "?? ???? ??? canonical Item? ?? ????? ??? ??? ?? ??? ??.",
+        "Calendar preview? source fact? ?? record? ??? ???."
+      ],
+      "evidence": [
+        "sourceRowId=events:event-pattern-chimac-edition:event-pattern-chimac-edition-row-01; title=2026 대구치맥페스티벌; detail=2026 대구치맥페스티벌",
+        "canonical.sourceRows.length=1; canonical.items.length=0; scheduledItemCount=0",
+        "projectionCells.calendar.recommendation=primary; availability=available_after_user_overlay; generationState=preview_requires_overlay; destinationRecordCount=0",
+        "sourceRow original.startDate=2026-07-01; endDate=2026-07-05; startTimeText=18:00~; locationName=?? ???? ??",
+        "projectionCells.calendar.preview.sourceFactCount=1; records.length=0"
+      ]
+    },
+    {
+      "contentId": "events:event-pattern-nps-rescheduled",
+      "itemGranularity": "mixed",
+      "itemEvidenceIds": [],
+      "primaryProjection": "memo",
+      "checklistTodoDecision": "neither",
+      "scheduleSuitability": "natural",
+      "contentValue": "hold",
+      "uiUnderstandability": "confusing",
+      "modifyReasons": [
+        "?? ??? ??? ??? ??? canonical Item? ?? ???? ????? ??? ??? ??? ??.",
+        "?? ??? ??? ?? ?????? ????? ?? Calendar ??? ???? ??."
+      ],
+      "evidence": [
+        "sourceRowId=events:event-pattern-nps-rescheduled:event-pattern-nps-rescheduled-row-01; title=기존 정화 활동; detail=기존 정화 활동",
+        "canonical.sourceRows.length=2; canonical.items.length=0; scheduledItemCount=0",
+        "projectionCells.memo.recommendation=primary; availability=available_now; generationState=generated; destinationRecordCount=1",
+        "row-01 original.status=cancelled; start=2026-02-28T09:00:00-05:00",
+        "row-02 original.startDate=2026-03-14; timeStatus=not_reconfirmed; locationStatus=not_reconfirmed"
+      ]
+    },
+    {
+      "contentId": "events:event-pattern-fun-seoul-interest-list",
+      "itemGranularity": "mixed",
+      "itemEvidenceIds": [],
+      "primaryProjection": "sheet",
+      "checklistTodoDecision": "neither",
+      "scheduleSuitability": "natural",
+      "contentValue": "hold",
+      "uiUnderstandability": "confusing",
+      "modifyReasons": [
+        "?????? ?? 5? ?? SourceRow? ??? intent Item? ??.",
+        "Primary Sheet? available_now?? ?? ??? ???? ?? ?? ??? ???? ???."
+      ],
+      "evidence": [
+        "sourceRowId=events:event-pattern-fun-seoul-interest-list:event-pattern-fun-seoul-interest-list-row-01; title=DDP 뮤직페스티벌; detail=DDP 뮤직페스티벌",
+        "canonical.sourceRows.length=5; canonical.items.length=0; scheduledItemCount=0",
+        "projectionCells.sheet.recommendation=primary; availability=available_now; generationState=generated; destinationRecordCount=0",
+        "sourceRows 5? ?? startDate/endDate/locationName? ????.",
+        "projectionCells.sheet.output.rows.length=0; calendar.prohibitionReason=?? SourceRow? ?? Calendar? ?? ? ????."
+      ]
+    },
+    {
+      "contentId": "events:event-pattern-boryeong-operations",
+      "itemGranularity": "mixed",
+      "itemEvidenceIds": [],
+      "primaryProjection": "sheet",
+      "checklistTodoDecision": "neither",
+      "scheduleSuitability": "natural",
+      "contentValue": "hold",
+      "uiUnderstandability": "confusing",
+      "modifyReasons": [
+        "?? ?????? ????????????? ??? ??? canonical Item? ??.",
+        "Primary Sheet? ?? ?? ??? ??? ???? ???."
+      ],
+      "evidence": [
+        "sourceRowId=events:event-pattern-boryeong-operations:event-pattern-boryeong-operations-row-01; title=2026 Boryeong Mud Festival; detail=2026 Boryeong Mud Festival",
+        "canonical.sourceRows.length=6; canonical.items.length=0; scheduledItemCount=0",
+        "projectionCells.sheet.recommendation=primary; availability=available_now; generationState=generated; destinationRecordCount=3",
+        "row-02 days=MO,TU,WE,TH; startTime=13:00; endTime=18:00",
+        "row-04 break_window=13:30~14:30; row-06 closure date=2026-08-05",
+        "projectionCells.sheet.output.rows.length=0"
+      ]
+    },
+    {
+      "contentId": "legacy:preapp:airport-departure-order",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "legacy:preapp:airport-departure-order:departure-item-1",
+        "legacy:preapp:airport-departure-order:departure-item-8"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "overlay_only",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=legacy:preapp:airport-departure-order:departure-airport; title=공항 도착; detail=항공기 탑승까지 충분한 시간을 두고 공항에 도착",
+        "canonical.sourceRows.length=8; canonical.items.length=8; scheduledItemCount=0",
+        "itemId=legacy:preapp:airport-departure-order:departure-item-1; title=공항 도착; schedule.mode=absent; sourceRowIds=legacy:preapp:airport-departure-order:departure-airport",
+        "itemId=legacy:preapp:airport-departure-order:departure-item-8; title=항공기 탑승; schedule.mode=absent; sourceRowIds=legacy:preapp:airport-departure-order:departure-board",
+        "projectionCells.checklist.recommendation=primary; availability=available_now; generationState=generated; destinationRecordCount=1",
+        "departure-airport?? departure-board?? 8? SourceRow? 8? Item? ?? ??? ????."
+      ]
+    },
+    {
+      "contentId": "legacy:preapp:busan-friends-2n3d-route",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "legacy:preapp:busan-friends-2n3d-route:busan-d1-1-item",
+        "legacy:preapp:busan-friends-2n3d-route:busan-d2-1-item"
+      ],
+      "primaryProjection": "calendar",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "natural",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=legacy:preapp:busan-friends-2n3d-route:busan-d1-1; title=부산역; detail=1일차 출발점",
+        "canonical.sourceRows.length=12; canonical.items.length=12; scheduledItemCount=12",
+        "itemId=legacy:preapp:busan-friends-2n3d-route:busan-d1-1-item; title=부산역; schedule.mode=anchor_offset; sourceRowIds=legacy:preapp:busan-friends-2n3d-route:busan-d1-1",
+        "itemId=legacy:preapp:busan-friends-2n3d-route:busan-d2-1-item; title=해리단길; schedule.mode=anchor_offset; sourceRowIds=legacy:preapp:busan-friends-2n3d-route:busan-d2-1",
+        "projectionCells.calendar.recommendation=primary; availability=available_after_user_overlay; generationState=preview_requires_overlay; destinationRecordCount=3",
+        "1?? Item dayOffset=0, 2?? Item dayOffset=1, 3?? Item dayOffset=2? ?? ?? ??? ????."
+      ]
+    },
+    {
+      "contentId": "legacy:preapp:weekday-lunchbox-menu",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "legacy:preapp:weekday-lunchbox-menu:lunchbox-mon-item",
+        "legacy:preapp:weekday-lunchbox-menu:lunchbox-fri-item"
+      ],
+      "primaryProjection": "calendar",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "overlay_only",
+      "contentValue": "modify",
+      "uiUnderstandability": "confusing",
+      "modifyReasons": [
+        "?~? SourceRow? ?? weekStartDate ??? ??? ?? Item schedule? null??.",
+        "Primary Calendar? overlay ??? ??? ?? ??? preview? ???? ???."
+      ],
+      "evidence": [
+        "sourceRowId=legacy:preapp:weekday-lunchbox-menu:lunchbox-mon; title=스팸볶음밥·딸기; detail=밥 반공기, 스팸 1/2캔, 달걀 1개, 대파, 굴소스, 후춧가루. 원문에 8단계 레시피가 있음",
+        "canonical.sourceRows.length=5; canonical.items.length=5; scheduledItemCount=0",
+        "itemId=legacy:preapp:weekday-lunchbox-menu:lunchbox-mon-item; title=스팸볶음밥·딸기 도시락 만들기; schedule.mode=absent; sourceRowIds=legacy:preapp:weekday-lunchbox-menu:lunchbox-mon",
+        "itemId=legacy:preapp:weekday-lunchbox-menu:lunchbox-fri-item; title=만두마요덮밥 도시락 만들기; schedule.mode=absent; sourceRowIds=legacy:preapp:weekday-lunchbox-menu:lunchbox-fri",
+        "projectionCells.calendar.recommendation=primary; availability=available_after_user_overlay; generationState=preview_requires_overlay; destinationRecordCount=0",
+        "minimumInputs.weekStartDate.required=true",
+        "projectionCells.calendar.destinationRecordCount=0; generationState=preview_requires_overlay"
+      ]
+    },
+    {
+      "contentId": "legacy:preapp:interview-d1-check",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "legacy:preapp:interview-d1-check:interview-place-step-item",
+        "legacy:preapp:interview-d1-check:interview-final-step-item"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "natural",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=legacy:preapp:interview-d1-check:interview-location; title=면접 장소와 시간; detail=주소·위치, 이동 소요시간, 면접 시간과 도착시간, 건물 층·호실 확인",
+        "canonical.sourceRows.length=7; canonical.items.length=6; scheduledItemCount=6",
+        "itemId=legacy:preapp:interview-d1-check:interview-place-step-item; title=면접 장소와 도착 시간을 확정하기; schedule.mode=anchor_offset; sourceRowIds=legacy:preapp:interview-d1-check:interview-location",
+        "itemId=legacy:preapp:interview-d1-check:interview-final-step-item; title=컨디션과 당일 준비물을 마치기; schedule.mode=anchor_offset; sourceRowIds=legacy:preapp:interview-d1-check:interview-condition,legacy:preapp:interview-d1-check:interview-bag",
+        "projectionCells.checklist.recommendation=primary; availability=available_now; generationState=generated; destinationRecordCount=6",
+        "?? Item ?? interviewDate dayOffset=-1?? ??? Item? ?????? ??? ? ?? ?? ? ?? ???? ???."
+      ]
+    },
+    {
+      "contentId": "legacy:preapp:license-class1-medical-check",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "legacy:preapp:license-class1-medical-check:license-class1-medical-check-period-item",
+        "legacy:preapp:license-class1-medical-check:license-class1-medical-check-materials-item"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "overlay_only",
+      "contentValue": "go",
+      "uiUnderstandability": "needs_explanation",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=legacy:preapp:license-class1-medical-check:license-period; title=정확한 갱신기간; detail=2026년부터 생일 전후 6개월 규칙이 적용될 수 있어 안전운전 통합민원 마이페이지 또는 교통민원24에서 개인 기간 확인",
+        "canonical.sourceRows.length=6; canonical.items.length=3; scheduledItemCount=0",
+        "itemId=legacy:preapp:license-class1-medical-check:license-class1-medical-check-period-item; title=공식 마이페이지에서 갱신기간 확인하기; schedule.mode=absent; sourceRowIds=legacy:preapp:license-class1-medical-check:license-period",
+        "itemId=legacy:preapp:license-class1-medical-check:license-class1-medical-check-materials-item; title=면허증·사진·필요 서류 준비하기; schedule.mode=absent; sourceRowIds=legacy:preapp:license-class1-medical-check:license-class1-materials,legacy:preapp:license-class1-medical-check:license-class1-fee",
+        "projectionCells.checklist.recommendation=primary; availability=available_now; generationState=generated; destinationRecordCount=3",
+        "?? Item? ?? ??? ???? ?? ?? ????? ??? ?? ???? ??.",
+        "flow memo? 2026? ?? ??? ?? ?? ??? ?? ?? ??? ????."
+      ]
+    },
+    {
+      "contentId": "legacy:preapp:license-class2-renewal",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "legacy:preapp:license-class2-renewal:license-class2-renewal-period-item",
+        "legacy:preapp:license-class2-renewal:license-class2-renewal-materials-item"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "overlay_only",
+      "contentValue": "go",
+      "uiUnderstandability": "needs_explanation",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=legacy:preapp:license-class2-renewal:license-period; title=정확한 갱신기간; detail=2026년부터 생일 전후 6개월 규칙이 적용될 수 있어 안전운전 통합민원 마이페이지 또는 교통민원24에서 개인 기간 확인",
+        "canonical.sourceRows.length=6; canonical.items.length=3; scheduledItemCount=0",
+        "itemId=legacy:preapp:license-class2-renewal:license-class2-renewal-period-item; title=공식 마이페이지에서 갱신기간 확인하기; schedule.mode=absent; sourceRowIds=legacy:preapp:license-class2-renewal:license-period",
+        "itemId=legacy:preapp:license-class2-renewal:license-class2-renewal-materials-item; title=면허증·사진·필요 서류 준비하기; schedule.mode=absent; sourceRowIds=legacy:preapp:license-class2-renewal:license-class2-materials,legacy:preapp:license-class2-renewal:license-class2-fee",
+        "projectionCells.checklist.recommendation=primary; availability=available_now; generationState=generated; destinationRecordCount=3",
+        "?? Item? ?? ????? ???? ??? Item? ?? 1?? ??? ?? ?? ????.",
+        "flow memo? ?? ????? FlowMe? ???? ???? ????."
+      ]
+    },
+    {
+      "contentId": "legacy:preapp:aircon-ultrafine-filter-routine",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "legacy:preapp:aircon-ultrafine-filter-routine:aircon-filter-clean-item"
+      ],
+      "primaryProjection": "calendar",
+      "checklistTodoDecision": "todo",
+      "scheduleSuitability": "natural",
+      "contentValue": "modify",
+      "uiUnderstandability": "confusing",
+      "modifyReasons": [
+        "??? 4? 1? ??? ????? Item schedule? null??.",
+        "?? startDate? ??? Primary Calendar? prohibited? ?? ??? ???? ???."
+      ],
+      "evidence": [
+        "sourceRowId=legacy:preapp:aircon-ultrafine-filter-routine:aircon-ultrafine-4w; title=극세 필터 4주 1회 청소; detail=먼지가 적으면 진공청소기로 제거하고, 많으면 중성세제를 푼 미지근한 물에 약 30분 담근 뒤 세척하여 그늘에서 충분히 건조",
+        "canonical.sourceRows.length=1; canonical.items.length=1; scheduledItemCount=0",
+        "itemId=legacy:preapp:aircon-ultrafine-filter-routine:aircon-filter-clean-item; title=에어컨 극세 필터 청소하기; schedule.mode=absent; sourceRowIds=legacy:preapp:aircon-ultrafine-filter-routine:aircon-ultrafine-4w",
+        "projectionCells.calendar.recommendation=not_recommended; availability=unavailable; generationState=prohibited; destinationRecordCount=0",
+        "sourceRow title=?? ?? 4? 1? ??",
+        "minimumInputs.startDate.required=true; projectionCells.calendar.prohibitionReason=?? ??? ??? ?? ??? ?? VEVENT? ??? ????."
+      ]
+    },
+    {
+      "contentId": "legacy:preapp:beginner-5k-8week-program",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "legacy:preapp:beginner-5k-8week-program:running-w1-monday-item",
+        "legacy:preapp:beginner-5k-8week-program:running-w1-wednesday-item"
+      ],
+      "primaryProjection": "calendar",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "overloaded",
+      "contentValue": "modify",
+      "uiUnderstandability": "confusing",
+      "modifyReasons": [
+        "step_bundle? ?? ?? ??? ??? ?? ?? VEVENT ??? ?? ?? ?? ??? ???."
+      ],
+      "evidence": [
+        "sourceRowId=legacy:preapp:beginner-5k-8week-program:running-w1-monday; title=1.5km 가볍게 걷기·달리기; detail=100m 걷기 + 100m 달리기 반복",
+        "canonical.sourceRows.length=29; canonical.items.length=29; scheduledItemCount=29",
+        "itemId=legacy:preapp:beginner-5k-8week-program:running-w1-monday-item; title=1.5km 가볍게 걷기·달리기; schedule.mode=anchor_offset; sourceRowIds=legacy:preapp:beginner-5k-8week-program:running-w1-monday",
+        "itemId=legacy:preapp:beginner-5k-8week-program:running-w1-wednesday-item; title=2km 가볍게 걷기·달리기; schedule.mode=anchor_offset; sourceRowIds=legacy:preapp:beginner-5k-8week-program:running-w1-wednesday",
+        "projectionCells.calendar.recommendation=primary; availability=available_after_user_overlay; generationState=preview_requires_overlay; destinationRecordCount=8",
+        "running-w1-monday-item dayOffset=0; running-w1-wednesday-item dayOffset=2",
+        "calendar preview bundle-1 schedule.dayOffset=0? ???????? childItemIds 4?? ?? ???."
+      ]
+    },
+    {
+      "contentId": "legacy:preapp:kitten-arrival-first-week",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "legacy:preapp:kitten-arrival-first-week:kitten-before-home-item-1",
+        "legacy:preapp:kitten-arrival-first-week:kitten-first-week-item-2"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "overloaded",
+      "contentValue": "modify",
+      "uiUnderstandability": "needs_explanation",
+      "modifyReasons": [
+        "?? ?? ??? ?? dayOffset=0? ?? Calendar record? ???? Checklist ?? ???? ????.",
+        "? ? date_window Item ? ?? startDayOffset? endDayOffset? ?? ?? ??? ??? ? ??."
+      ],
+      "evidence": [
+        "sourceRowId=legacy:preapp:kitten-arrival-first-week:kitten-safe-room; title=안전한 방 준비; detail=집 환경을 안전하게 만들고 새끼 고양이가 지낼 방을 준비",
+        "canonical.sourceRows.length=13; canonical.items.length=10; scheduledItemCount=8",
+        "itemId=legacy:preapp:kitten-arrival-first-week:kitten-before-home-item-1; title=안전한 방과 생활 공간 마련하기; schedule.mode=absent; sourceRowIds=legacy:preapp:kitten-arrival-first-week:kitten-safe-room,legacy:preapp:kitten-arrival-first-week:kitten-firstday-zones",
+        "itemId=legacy:preapp:kitten-arrival-first-week:kitten-first-week-item-2; title=며칠 적응한 뒤 수의사 검진 받기; schedule.mode=date_window; sourceRowIds=legacy:preapp:kitten-arrival-first-week:kitten-firstweek-vet",
+        "projectionCells.checklist.recommendation=primary; availability=available_now; generationState=generated; destinationRecordCount=5",
+        "calendar destinationRecordCount=8?? ?? record? 6??.",
+        "kitten-first-week-item-2 schedule.mode=date_window; startDayOffset=absent; endDayOffset=absent"
+      ]
+    },
+    {
+      "contentId": "legacy:round2:kmooc-hundred-schools-fifteen-week",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "legacy:round2:kmooc-hundred-schools-fifteen-week:kmooc-item-1",
+        "legacy:round2:kmooc-hundred-schools-fifteen-week:kmooc-item-15"
+      ],
+      "primaryProjection": "calendar",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "overlay_only",
+      "contentValue": "go",
+      "uiUnderstandability": "needs_explanation",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=legacy:round2:kmooc-hundred-schools-fifteen-week:kmooc-week-01; title=1주차 · 철학과 동아시아 철학; detail=철학이란 무엇인가? / 삶의 철학으로서의 동아시아 철학 / 퀴즈",
+        "canonical.sourceRows.length=15; canonical.items.length=15; scheduledItemCount=15",
+        "itemId=legacy:round2:kmooc-hundred-schools-fifteen-week:kmooc-item-1; title=1주차 강의와 퀴즈 완료하기; schedule.mode=anchor_offset; sourceRowIds=legacy:round2:kmooc-hundred-schools-fifteen-week:kmooc-week-01",
+        "itemId=legacy:round2:kmooc-hundred-schools-fifteen-week:kmooc-item-15; title=기말고사 응시하기; schedule.mode=anchor_offset; sourceRowIds=legacy:round2:kmooc-hundred-schools-fifteen-week:kmooc-week-15",
+        "projectionCells.calendar.recommendation=primary; availability=available_after_user_overlay; generationState=preview_requires_overlay; destinationRecordCount=15",
+        "1?? Item dayOffset=0, 8?? ???? dayOffset=49, 15?? ???? dayOffset=98? ?? ??? ????.",
+        "??? ?? startDate ??? overlay?? ????."
+      ]
+    },
+    {
+      "contentId": "legacy:round2:kids-birthday-four-week",
+      "itemGranularity": "too_large",
+      "itemEvidenceIds": [
+        "legacy:round2:kids-birthday-four-week:kids-birthday-item-1",
+        "legacy:round2:kids-birthday-four-week:kids-birthday-item-3"
+      ],
+      "primaryProjection": "calendar",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "natural",
+      "contentValue": "modify",
+      "uiUnderstandability": "needs_explanation",
+      "modifyReasons": [
+        "??? Item? ??????????? ?? ??????????? ?? ??? ??? ??? ? ?? ??? ???."
+      ],
+      "evidence": [
+        "sourceRowId=legacy:round2:kids-birthday-four-week:kids-birthday-01; title=3~4주 전; detail=날짜·장소 확정, 테마 선정, 초대 인원 결정",
+        "canonical.sourceRows.length=7; canonical.items.length=5; scheduledItemCount=5",
+        "itemId=legacy:round2:kids-birthday-four-week:kids-birthday-item-1; title=3~4주 전 준비 마치기; schedule.mode=date_window; sourceRowIds=legacy:round2:kids-birthday-four-week:kids-birthday-01,legacy:round2:kids-birthday-four-week:kids-birthday-06",
+        "itemId=legacy:round2:kids-birthday-four-week:kids-birthday-item-3; title=1주 전 준비 마치기; schedule.mode=anchor_offset; sourceRowIds=legacy:round2:kids-birthday-four-week:kids-birthday-03,legacy:round2:kids-birthday-four-week:kids-birthday-07",
+        "projectionCells.calendar.recommendation=primary; availability=available_after_user_overlay; generationState=preview_requires_overlay; destinationRecordCount=5",
+        "kids-birthday-item-1 sourceRowIds=kids-birthday-01,kids-birthday-06",
+        "kids-birthday-item-3 sourceRowIds=kids-birthday-03,kids-birthday-07"
+      ]
+    },
+    {
+      "contentId": "legacy:round2:dol-party-four-month",
+      "itemGranularity": "mixed",
+      "itemEvidenceIds": [
+        "legacy:round2:dol-party-four-month:dol-concept-venue",
+        "legacy:round2:dol-party-four-month:dol-makeup"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "natural",
+      "contentValue": "modify",
+      "uiUnderstandability": "needs_explanation",
+      "modifyReasons": [
+        "?? ??? ?? ??? ? Item?? ?? ?? ?? ??? ???.",
+        "eventDate? ??? 6? Item ? 4?? ??? ?? ??? ?? ?? ??? ????."
+      ],
+      "evidence": [
+        "sourceRowId=legacy:round2:dol-party-four-month:dol-party-01; title=컨셉 정하기; detail=전통·모던 등 돌잔치 분위기 결정",
+        "canonical.sourceRows.length=7; canonical.items.length=6; scheduledItemCount=2",
+        "itemId=legacy:round2:dol-party-four-month:dol-concept-venue; title=컨셉 정하고 베뉴 예약하기; schedule.mode=anchor_offset; sourceRowIds=legacy:round2:dol-party-four-month:dol-party-01,legacy:round2:dol-party-four-month:dol-party-02",
+        "itemId=legacy:round2:dol-party-four-month:dol-makeup; title=헤어·메이크업 예약하기; schedule.mode=absent; sourceRowIds=legacy:round2:dol-party-four-month:dol-party-03",
+        "projectionCells.checklist.recommendation=primary; availability=available_now; generationState=generated; destinationRecordCount=3",
+        "dol-concept-venue? dol-party-01? dol-party-02? ?? ????.",
+        "canonical.items.length=6; scheduledItemCount=2"
+      ]
+    },
+    {
+      "contentId": "legacy:round2:canon-photo-thirty-day",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "legacy:round2:canon-photo-thirty-day:photo-item-1",
+        "legacy:round2:canon-photo-thirty-day:photo-item-2"
+      ],
+      "primaryProjection": "calendar",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "overloaded",
+      "contentValue": "modify",
+      "uiUnderstandability": "confusing",
+      "modifyReasons": [
+        "step_bundle? ??? ?? 30? ?? ?? Item? 5? VEVENT? ??? Day? ??? ???."
+      ],
+      "evidence": [
+        "sourceRowId=legacy:round2:canon-photo-thirty-day:photo-day-01; title=Day 1 · 자화상; detail=원문 주제: Self-portrait",
+        "canonical.sourceRows.length=30; canonical.items.length=30; scheduledItemCount=30",
+        "itemId=legacy:round2:canon-photo-thirty-day:photo-item-1; title=자화상 찍기; schedule.mode=anchor_offset; sourceRowIds=legacy:round2:canon-photo-thirty-day:photo-day-01",
+        "itemId=legacy:round2:canon-photo-thirty-day:photo-item-2; title=흑백 사진 찍기; schedule.mode=anchor_offset; sourceRowIds=legacy:round2:canon-photo-thirty-day:photo-day-02",
+        "projectionCells.calendar.recommendation=primary; availability=available_after_user_overlay; generationState=preview_requires_overlay; destinationRecordCount=5",
+        "photo-item-1 dayOffset=0; photo-item-2 dayOffset=1",
+        "calendar destinationRecordCount=5; canonicalItemCount=30"
+      ]
+    },
+    {
+      "contentId": "legacy:round2:banchan-day-one",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "legacy:round2:banchan-day-one:banchan-shopping-item",
+        "legacy:round2:banchan-day-one:banchan-cook-one-item"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "natural",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=legacy:round2:banchan-day-one:banchan-one-01; title=장보기; detail=돼지고기 뒷다리살, 양배추, 깻잎, 콩나물, 팽이버섯, 달걀, 애호박, 브로콜리, 김, 순두부, 무",
+        "canonical.sourceRows.length=6; canonical.items.length=2; scheduledItemCount=2",
+        "itemId=legacy:round2:banchan-day-one:banchan-shopping-item; title=반찬 재료 장보기; schedule.mode=anchor_offset; sourceRowIds=legacy:round2:banchan-day-one:banchan-one-01",
+        "itemId=legacy:round2:banchan-day-one:banchan-cook-one-item; title=첫째 날 반찬 묶음 만들기; schedule.mode=anchor_offset; sourceRowIds=legacy:round2:banchan-day-one:banchan-one-02,legacy:round2:banchan-day-one:banchan-one-03,legacy:round2:banchan-day-one:banchan-one-04,legacy:round2:banchan-day-one:banchan-one-05,legacy:round2:banchan-day-one:banchan-one-06",
+        "projectionCells.checklist.recommendation=primary; availability=available_now; generationState=generated; destinationRecordCount=2",
+        "??? 1 Item? ?? ?? ?? ?? 1 Item?? ??? ?? Item? ?? 5? ?? ?? detail? ????."
+      ]
+    },
+    {
+      "contentId": "legacy:round2:banchan-day-two-three",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "legacy:round2:banchan-day-two-three:banchan-cook-two-item",
+        "legacy:round2:banchan-day-two-three:banchan-cook-three-item"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "natural",
+      "contentValue": "modify",
+      "uiUnderstandability": "confusing",
+      "modifyReasons": [
+        "?? ?? Item? ????? Item description? ?? ??? ??? ?? ? ?? ?? ?? ??? ????."
+      ],
+      "evidence": [
+        "sourceRowId=legacy:round2:banchan-day-two-three:banchan-later-01; title=콩나물무국; detail=둘째 날 국",
+        "canonical.sourceRows.length=8; canonical.items.length=2; scheduledItemCount=2",
+        "itemId=legacy:round2:banchan-day-two-three:banchan-cook-two-item; title=둘째 날 반찬 4가지 만들기; schedule.mode=anchor_offset; sourceRowIds=legacy:round2:banchan-day-two-three:banchan-later-01,legacy:round2:banchan-day-two-three:banchan-later-02,legacy:round2:banchan-day-two-three:banchan-later-03,legacy:round2:banchan-day-two-three:banchan-later-04",
+        "itemId=legacy:round2:banchan-day-two-three:banchan-cook-three-item; title=셋째 날 반찬 4가지 만들기; schedule.mode=anchor_offset; sourceRowIds=legacy:round2:banchan-day-two-three:banchan-later-05,legacy:round2:banchan-day-two-three:banchan-later-06,legacy:round2:banchan-day-two-three:banchan-later-07,legacy:round2:banchan-day-two-three:banchan-later-08",
+        "projectionCells.checklist.recommendation=primary; availability=available_now; generationState=generated; destinationRecordCount=2",
+        "sourceRows? ???????????????????? ??? ??.",
+        "banchan-cook-two-item description=?? ? ? / ?? ? ?? / ?? ? ?? / ?? ? ??"
+      ]
+    },
+    {
+      "contentId": "legacy:round2:work24-jobseeker-start",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "legacy:round2:work24-jobseeker-start:work24-job-apply",
+        "legacy:round2:work24-jobseeker-start:work24-result"
+      ],
+      "primaryProjection": "todo",
+      "checklistTodoDecision": "todo",
+      "scheduleSuitability": "overlay_only",
+      "contentValue": "modify",
+      "uiUnderstandability": "needs_explanation",
+      "modifyReasons": [
+        "??? ?? ??? ?? ??? ?? ?? ??? closed checklist? primary? ????."
+      ],
+      "evidence": [
+        "sourceRowId=legacy:round2:work24-jobseeker-start:work24-general-01; title=고용24 개인회원 가입; detail=온라인 구직신청을 위한 개인회원 가입",
+        "canonical.sourceRows.length=6; canonical.items.length=6; scheduledItemCount=0",
+        "itemId=legacy:round2:work24-jobseeker-start:work24-job-apply; title=추천 일자리 확인하고 지원하기; schedule.mode=absent; sourceRowIds=legacy:round2:work24-jobseeker-start:work24-general-04",
+        "itemId=legacy:round2:work24-jobseeker-start:work24-result; title=지원 결과 입력하기; schedule.mode=absent; sourceRowIds=legacy:round2:work24-jobseeker-start:work24-general-05",
+        "projectionCells.todo.recommendation=secondary; availability=available_now; generationState=generated; destinationRecordCount=8",
+        "work24-general-04? ?? ?? ?? ???? work24-general-05? ?? ? ?? ????.",
+        "projectionCells.todo.recommendation=secondary; checklist.recommendation=primary"
+      ]
+    },
+    {
+      "contentId": "legacy:round2:work24-midcareer-transition",
+      "itemGranularity": "mixed",
+      "itemEvidenceIds": [
+        "legacy:round2:work24-midcareer-transition:transition-apply-4",
+        "legacy:round2:work24-midcareer-transition:transition-support-6"
+      ],
+      "primaryProjection": "todo",
+      "checklistTodoDecision": "todo",
+      "scheduleSuitability": "overlay_only",
+      "contentValue": "modify",
+      "uiUnderstandability": "confusing",
+      "modifyReasons": [
+        "??? ??????? ?????? ???? ???? act? ??? ?? ??????? ?? ?? Item?? ????."
+      ],
+      "evidence": [
+        "sourceRowId=legacy:round2:work24-midcareer-transition:work24-transition-01; title=고용24 개인회원 가입; detail=전직지원 신청 전 개인회원 가입",
+        "canonical.sourceRows.length=13; canonical.items.length=13; scheduledItemCount=0",
+        "itemId=legacy:round2:work24-midcareer-transition:transition-apply-4; title=서비스 승인; schedule.mode=absent; sourceRowIds=legacy:round2:work24-midcareer-transition:work24-transition-04",
+        "itemId=legacy:round2:work24-midcareer-transition:transition-support-6; title=취업; schedule.mode=absent; sourceRowIds=legacy:round2:work24-midcareer-transition:work24-transition-12",
+        "projectionCells.todo.recommendation=secondary; availability=available_now; generationState=generated; destinationRecordCount=15",
+        "transition-apply-4 title=??? ??; intent=act",
+        "transition-support-6 title=??; intent=act"
+      ]
+    },
+    {
+      "contentId": "legacy:round2:personal-business-registration-flow",
+      "itemGranularity": "mixed",
+      "itemEvidenceIds": [
+        "legacy:round2:personal-business-registration-flow:business-doc-license",
+        "legacy:round2:personal-business-registration-flow:business-form-branch"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "modify",
+      "uiUnderstandability": "needs_explanation",
+      "modifyReasons": [
+        "??? ?? ??? ?? ?? ??? ?? ??? ? ?? ??? ?? ??? ??? ???? ???."
+      ],
+      "evidence": [
+        "sourceRowId=legacy:round2:personal-business-registration-flow:nts-business-01; title=사업자등록신청서; detail=개인 사업자등록 공통 준비 서류",
+        "canonical.sourceRows.length=12; canonical.items.length=5; scheduledItemCount=0",
+        "itemId=legacy:round2:personal-business-registration-flow:business-doc-license; title=인허가 업종 서류 챙기기; schedule.mode=absent; sourceRowIds=legacy:round2:personal-business-registration-flow:nts-business-05,legacy:round2:personal-business-registration-flow:nts-business-06",
+        "itemId=legacy:round2:personal-business-registration-flow:business-form-branch; title=해당 항목과 과세유형 표시하기; schedule.mode=absent; sourceRowIds=legacy:round2:personal-business-registration-flow:nts-business-10,legacy:round2:personal-business-registration-flow:nts-business-11,legacy:round2:personal-business-registration-flow:nts-business-12",
+        "projectionCells.checklist.recommendation=primary; availability=available_now; generationState=generated; destinationRecordCount=2",
+        "business-doc-license? ??? ??? ??? ?? ?? ???.",
+        "business-form-branch? ?? ?????????? ? ?? ?? ???."
+      ]
+    },
+    {
+      "contentId": "legacy:round2:corporate-mail-order-registration-flow",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "legacy:round2:corporate-mail-order-registration-flow:mail-order-purpose",
+        "legacy:round2:corporate-mail-order-registration-flow:mail-order-certificate"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=legacy:round2:corporate-mail-order-registration-flow:mail-order-01; title=법인 사업목적 확인; detail=법인 등기부등본 사업목적에 통신판매업이 기재되어 있는지 확인",
+        "canonical.sourceRows.length=15; canonical.items.length=10; scheduledItemCount=0",
+        "itemId=legacy:round2:corporate-mail-order-registration-flow:mail-order-purpose; title=법인 사업목적 확인하기; schedule.mode=absent; sourceRowIds=legacy:round2:corporate-mail-order-registration-flow:mail-order-01",
+        "itemId=legacy:round2:corporate-mail-order-registration-flow:mail-order-certificate; title=통신판매업 신고증 받기; schedule.mode=absent; sourceRowIds=legacy:round2:corporate-mail-order-registration-flow:mail-order-15",
+        "projectionCells.checklist.recommendation=primary; availability=available_now; generationState=generated; destinationRecordCount=4",
+        "?? ??????????24 ????? ?? ?? ??? 10? ?? Item?? ????."
+      ]
+    },
+    {
+      "contentId": "legacy:round2:minor-passport-renewal",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "legacy:round2:minor-passport-renewal:minor-passport-guardian",
+        "legacy:round2:minor-passport-renewal:minor-passport-route"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=legacy:round2:minor-passport-renewal:passport-06; title=미성년자 여권발급신청서; detail=18세 미만 기본 구비 서류",
+        "canonical.sourceRows.length=7; canonical.items.length=4; scheduledItemCount=0",
+        "itemId=legacy:round2:minor-passport-renewal:minor-passport-guardian; title=법정대리인 서류 준비하기; schedule.mode=absent; sourceRowIds=legacy:round2:minor-passport-renewal:passport-08,legacy:round2:minor-passport-renewal:passport-09,legacy:round2:minor-passport-renewal:passport-10",
+        "itemId=legacy:round2:minor-passport-renewal:minor-passport-route; title=법정대리인 경로로 신청하기; schedule.mode=absent; sourceRowIds=legacy:round2:minor-passport-renewal:passport-12",
+        "projectionCells.checklist.recommendation=primary; availability=available_now; generationState=generated; destinationRecordCount=2",
+        "????? ????????????? ? ??? ?? Item?? ?? ?? ??? ?? Item?? ??."
+      ]
+    },
+    {
+      "contentId": "legacy:round2:social-content-thirty-day",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "legacy:round2:social-content-thirty-day:social-item-1",
+        "legacy:round2:social-content-thirty-day:social-item-2"
+      ],
+      "primaryProjection": "calendar",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "overloaded",
+      "contentValue": "modify",
+      "uiUnderstandability": "confusing",
+      "modifyReasons": [
+        "step_bundle? ?? ?? ??? 30? ?? Item? 5? VEVENT? ?? Day? ???? ???."
+      ],
+      "evidence": [
+        "sourceRowId=legacy:round2:social-content-thirty-day:social-day-01; title=Day 1 · 브랜드나 채널 소개하기; detail=원문 주제: Introduce your brand",
+        "canonical.sourceRows.length=30; canonical.items.length=30; scheduledItemCount=30",
+        "itemId=legacy:round2:social-content-thirty-day:social-item-1; title=브랜드나 채널 소개하기; schedule.mode=anchor_offset; sourceRowIds=legacy:round2:social-content-thirty-day:social-day-01",
+        "itemId=legacy:round2:social-content-thirty-day:social-item-2; title=시작한 이유 이야기하기; schedule.mode=anchor_offset; sourceRowIds=legacy:round2:social-content-thirty-day:social-day-02",
+        "projectionCells.calendar.recommendation=primary; availability=available_after_user_overlay; generationState=preview_requires_overlay; destinationRecordCount=5",
+        "social-item-1 dayOffset=0; social-item-2 dayOffset=1",
+        "calendar destinationRecordCount=5; canonicalItemCount=30"
+      ]
+    },
+    {
+      "contentId": "generalization:GB-01",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "generalization:GB-01:item:meet-deadline",
+        "generalization:GB-01:item:prepare-documents"
+      ],
+      "primaryProjection": "todo",
+      "checklistTodoDecision": "both_with_primary",
+      "scheduleSuitability": "natural",
+      "contentValue": "modify",
+      "uiUnderstandability": "confusing",
+      "modifyReasons": [
+        "?? ? 1?? ??? ????? deadline Item schedule? Todo due? ?? null??.",
+        "?? birth_date? ??? Calendar? prohibited? ?? ??? ???? ???? ???."
+      ],
+      "evidence": [
+        "sourceRowId=generalization:GB-01:BIR-01; title=부모 신고 의무; detail=혼인 중 출생자의 출생신고 의무자는 아버지 또는 어머니다.",
+        "canonical.sourceRows.length=7; canonical.items.length=5; scheduledItemCount=0",
+        "itemId=generalization:GB-01:item:meet-deadline; title=출생 후 1개월 안에 신고; schedule.mode=absent; sourceRowIds=generalization:GB-01:BIR-03,generalization:GB-01:BIR-04",
+        "itemId=generalization:GB-01:item:prepare-documents; title=출생증명서·신분증과 조건부 서류 준비; schedule.mode=absent; sourceRowIds=generalization:GB-01:BIR-07",
+        "projectionCells.todo.recommendation=not_recommended; availability=available_now; generationState=generated; destinationRecordCount=6",
+        "BIR-03 detail=????? ??? ??? 1?? ??? ?? ??.",
+        "meet-deadline schedule=null; minimumInputs.birth_date.required=true"
+      ]
+    },
+    {
+      "contentId": "generalization:GB-02",
+      "itemGranularity": "too_small",
+      "itemEvidenceIds": [
+        "generalization:GB-02:item:open-account",
+        "generalization:GB-02:item:open-security"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "modify",
+      "uiUnderstandability": "needs_explanation",
+      "modifyReasons": [
+        "? ?? ???? ?? ??? ?? ?? ?? ? ??? ?? canonical ?? Item? ?? ???? ?? ???."
+      ],
+      "evidence": [
+        "sourceRowId=generalization:GB-02:G2F-01; title=계정 진입; detail=Google 계정을 연다.",
+        "canonical.sourceRows.length=4; canonical.items.length=4; scheduledItemCount=0",
+        "itemId=generalization:GB-02:item:open-account; title=Google 계정 열기; schedule.mode=absent; sourceRowIds=generalization:GB-02:G2F-01",
+        "itemId=generalization:GB-02:item:open-security; title=보안 및 로그인 열기; schedule.mode=absent; sourceRowIds=generalization:GB-02:G2F-02",
+        "projectionCells.checklist.recommendation=primary; availability=available_now; generationState=generated; destinationRecordCount=1",
+        "G2F-01~G2F-04? ?? ???? ?? ?? ???? ? ?? ????.",
+        "checklist groupCount=1; childEntryCount=4"
+      ]
+    },
+    {
+      "contentId": "generalization:GB-03",
+      "itemGranularity": "mixed",
+      "itemEvidenceIds": [
+        "generalization:GB-03:item:water-filter",
+        "generalization:GB-03:item:humidifying-filter"
+      ],
+      "primaryProjection": "calendar",
+      "checklistTodoDecision": "todo",
+      "scheduleSuitability": "overloaded",
+      "contentValue": "modify",
+      "uiUnderstandability": "confusing",
+      "modifyReasons": [
+        "??? Item? ??? ???? ?? ?? cadence? ?? ?? ?? schedule? ??? ? ??.",
+        "?? maintenance_start_date? ??? ?? Item schedule? null?? Calendar? prohibited?."
+      ],
+      "evidence": [
+        "sourceRowId=generalization:GB-03:HUM-01; title=워터 필터 주기; detail=워터 필터는 매주 청소하고 3~5개월마다 교체하며 교체 알림은 자동 초기화된다.",
+        "canonical.sourceRows.length=5; canonical.items.length=5; scheduledItemCount=0",
+        "itemId=generalization:GB-03:item:water-filter; title=워터 필터 청소·교체; schedule.mode=absent; sourceRowIds=generalization:GB-03:HUM-01",
+        "itemId=generalization:GB-03:item:humidifying-filter; title=가습 필터 교체 및 알림 초기화; schedule.mode=absent; sourceRowIds=generalization:GB-03:HUM-03",
+        "projectionCells.calendar.recommendation=not_recommended; availability=unavailable; generationState=prohibited; destinationRecordCount=0",
+        "HUM-01? ?? ??? 3~5?? ??? ?? ???.",
+        "HUM-03? ? 1? ??? ??? ???? ?? ???."
+      ]
+    },
+    {
+      "contentId": "generalization:GB-04",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "generalization:GB-04:item:prepare-empty",
+        "generalization:GB-04:item:filter-reassemble"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=generalization:GB-04:LGV-01; title=준비와 먼지 비우기; detail=00:05 청소를 준비하고 먼지통을 비운다.",
+        "canonical.sourceRows.length=3; canonical.items.length=3; scheduledItemCount=0",
+        "itemId=generalization:GB-04:item:prepare-empty; title=청소 준비 후 먼지통 비우기; schedule.mode=absent; sourceRowIds=generalization:GB-04:LGV-01",
+        "itemId=generalization:GB-04:item:filter-reassemble; title=필터 관리 후 재조립; schedule.mode=absent; sourceRowIds=generalization:GB-04:LGV-03",
+        "projectionCells.checklist.recommendation=primary; availability=available_now; generationState=generated; destinationRecordCount=1",
+        "?? ???? 00:05?01:09?02:17? ? ?? ?? ?? ??? ? checklist Item?? ????."
+      ]
+    },
+    {
+      "contentId": "generalization:GB-05",
+      "itemGranularity": "too_small",
+      "itemEvidenceIds": [
+        "generalization:GB-05:item:chop",
+        "generalization:GB-05:item:beat-eggs"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "modify",
+      "uiUnderstandability": "needs_explanation",
+      "modifyReasons": [
+        "? ?? ??? ?? ????? ?? ?? ?? ???? ?? canonical ?? Item?? ???."
+      ],
+      "evidence": [
+        "sourceRowId=generalization:GB-05:REC-01; title=채소 손질; detail=당근과 대파를 잘게 썬다.",
+        "canonical.sourceRows.length=6; canonical.items.length=6; scheduledItemCount=0",
+        "itemId=generalization:GB-05:item:chop; title=당근과 대파 썰기; schedule.mode=absent; sourceRowIds=generalization:GB-05:REC-01",
+        "itemId=generalization:GB-05:item:beat-eggs; title=달걀 6개 풀기; schedule.mode=absent; sourceRowIds=generalization:GB-05:REC-02",
+        "projectionCells.checklist.recommendation=primary; availability=available_now; generationState=generated; destinationRecordCount=1",
+        "REC-01~REC-06? 2?? ?? ? ?? ?? ?? ???.",
+        "canonical.steps.length=1; canonical.items.length=6"
+      ]
+    },
+    {
+      "contentId": "generalization:GB-06",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "generalization:GB-06:item:read-01",
+        "generalization:GB-06:item:read-10"
+      ],
+      "primaryProjection": "todo",
+      "checklistTodoDecision": "todo",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "modify",
+      "uiUnderstandability": "needs_explanation",
+      "modifyReasons": [
+        "?? ?????? user job?? ?????? ??? Todo? Sheet?? ?????."
+      ],
+      "evidence": [
+        "sourceRowId=generalization:GB-06:READ-01; title=읽기 후보 1; detail=Stormy — Guojing",
+        "canonical.sourceRows.length=10; canonical.items.length=10; scheduledItemCount=0",
+        "itemId=generalization:GB-06:item:read-01; title=Stormy 읽기; schedule.mode=absent; sourceRowIds=generalization:GB-06:READ-01",
+        "itemId=generalization:GB-06:item:read-10; title=A Children’s Literary Treasury 읽기; schedule.mode=absent; sourceRowIds=generalization:GB-06:READ-10",
+        "projectionCells.todo.recommendation=secondary; availability=available_now; generationState=generated; destinationRecordCount=11",
+        "10?? ?? ?? ?? ?? ?? Item??.",
+        "projectionCells.sheet.recommendation=primary; todo.recommendation=secondary"
+      ]
+    },
+    {
+      "contentId": "generalization:GB-07",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "generalization:GB-07:item:compare-methods"
+      ],
+      "primaryProjection": "memo",
+      "checklistTodoDecision": "neither",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=generalization:GB-07:BAK-01; title=iCloud 저장 위치; detail=iCloud 백업은 백업 데이터를 iCloud에 저장한다.",
+        "canonical.sourceRows.length=6; canonical.items.length=1; scheduledItemCount=0",
+        "itemId=generalization:GB-07:item:compare-methods; title=저장 위치·용량·암호화·접근 조건 비교; schedule.mode=absent; sourceRowIds=generalization:GB-07:BAK-01,generalization:GB-07:BAK-02,generalization:GB-07:BAK-03,generalization:GB-07:BAK-04,generalization:GB-07:BAK-05,generalization:GB-07:BAK-06",
+        "projectionCells.memo.recommendation=primary; availability=available_now; generationState=generated; destinationRecordCount=1",
+        "compare-methods Item ??? ?? ???????????? ?? ?? field SourceRow? ?? ??? ???.",
+        "projectionCells.memo.recommendation=primary"
+      ]
+    },
+    {
+      "contentId": "generalization:GB-08",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "generalization:GB-08:item:apply",
+        "generalization:GB-08:item:enter"
+      ],
+      "primaryProjection": "calendar",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "natural",
+      "contentValue": "modify",
+      "uiUnderstandability": "confusing",
+      "modifyReasons": [
+        "?? visit_date? visit_time_slot? ??? ? Item ?? schedule? null??.",
+        "?? ??? ???? ?? user job?? Primary Calendar? prohibited?."
+      ],
+      "evidence": [
+        "sourceRowId=generalization:GB-08:MMC-01; title=예약 가능일 범위; detail=오늘 기준 7일 이후부터 90일 이내 날짜로 예약한다.",
+        "canonical.sourceRows.length=8; canonical.items.length=4; scheduledItemCount=0",
+        "itemId=generalization:GB-08:item:apply; title=허용 기간과 회차를 확인해 신청; schedule.mode=absent; sourceRowIds=generalization:GB-08:MMC-01,generalization:GB-08:MMC-03,generalization:GB-08:MMC-04,generalization:GB-08:MMC-05,generalization:GB-08:MMC-08",
+        "itemId=generalization:GB-08:item:enter; title=안내 데스크부터 인솔 입장까지 진행; schedule.mode=absent; sourceRowIds=generalization:GB-08:MMC-07",
+        "projectionCells.calendar.recommendation=not_recommended; availability=unavailable; generationState=prohibited; destinationRecordCount=0",
+        "MMC-03~MMC-05? 10:00~11:10, 11:20~12:30, 13:30~14:40 ??? ??.",
+        "minimumInputs.visit_date.required=true; visit_time_slot.required=true; calendar destinationRecordCount=0"
+      ]
+    },
+    {
+      "contentId": "generalization:GB-13",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "generalization:GB-13:item:choose-route",
+        "generalization:GB-13:item:submit"
+      ],
+      "primaryProjection": "todo",
+      "checklistTodoDecision": "todo",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=generalization:GB-13:RID-01; title=신청 경로; detail=주민등록증 재발급은 인터넷 또는 방문으로 신청할 수 있다.",
+        "canonical.sourceRows.length=6; canonical.items.length=4; scheduledItemCount=0",
+        "itemId=generalization:GB-13:item:choose-route; title=인터넷 또는 방문 신청 경로 선택; schedule.mode=absent; sourceRowIds=generalization:GB-13:RID-01,generalization:GB-13:RID-04",
+        "itemId=generalization:GB-13:item:submit; title=재발급 신청 제출; schedule.mode=absent; sourceRowIds=generalization:GB-13:RID-01,generalization:GB-13:RID-04",
+        "projectionCells.todo.recommendation=primary; availability=available_now; generationState=generated; destinationRecordCount=5",
+        "?? ????? ????????? ? ?? ?? ?? ???? ???? Todo? primary?."
+      ]
+    },
+    {
+      "contentId": "generalization:GB-15",
+      "itemGranularity": "too_large",
+      "itemEvidenceIds": [
+        "generalization:GB-15:item:review-course"
+      ],
+      "primaryProjection": "sheet",
+      "checklistTodoDecision": "neither",
+      "scheduleSuitability": "natural",
+      "contentValue": "modify",
+      "uiUnderstandability": "confusing",
+      "modifyReasons": [
+        "????????? 11? ??? ??? ? Item? Sheet ? ??? ??? ? ??? ???.",
+        "2026-08-12~14? ?? ?? ??? schedule?? Calendar? ???? ???."
+      ],
+      "evidence": [
+        "sourceRowId=generalization:GB-15:NHI-01; title=교육 날짜·형식; detail=교육은 2026년 8월 12~14일, 3일간 집합교육으로 진행된다.",
+        "canonical.sourceRows.length=13; canonical.items.length=1; scheduledItemCount=0",
+        "itemId=generalization:GB-15:item:review-course; title=대상·정원·비용과 주제별 교육시간 검토; schedule.mode=absent; sourceRowIds=generalization:GB-15:NHI-01,generalization:GB-15:NHI-02,generalization:GB-15:NHI-03,generalization:GB-15:NHI-04,generalization:GB-15:NHI-05,generalization:GB-15:NHI-06,generalization:GB-15:NHI-07,generalization:GB-15:NHI-08,generalization:GB-15:NHI-09,generalization:GB-15:NHI-10,generalization:GB-15:NHI-11,generalization:GB-15:NHI-12,generalization:GB-15:NHI-13",
+        "projectionCells.sheet.recommendation=primary; availability=available_now; generationState=generated; destinationRecordCount=1",
+        "review-course Item sourceRowIds? NHI-01?? NHI-13?? 13??.",
+        "projectionCells.sheet.destinationRecordCount=1; calendar.destinationRecordCount=0"
+      ]
+    },
+    {
+      "contentId": "generalization:GB-16",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "generalization:GB-16:item:post-01",
+        "generalization:GB-16:item:post-02"
+      ],
+      "primaryProjection": "sheet",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "overlay_only",
+      "contentValue": "modify",
+      "uiUnderstandability": "needs_explanation",
+      "modifyReasons": [
+        "2?? ?? ??? ?? plan_start_date? ??? Item schedule? ?? null?? Calendar ?? ??? ?? ??."
+      ],
+      "evidence": [
+        "sourceRowId=generalization:GB-16:TPL-01; title=1주 월 Instagram 이미지; detail=1주 월요일: Instagram 이미지로 작업 공간과 주간 시작을 공유한다.",
+        "canonical.sourceRows.length=8; canonical.items.length=8; scheduledItemCount=0",
+        "itemId=generalization:GB-16:item:post-01; title=1주 월 Instagram 작업 공간 이미지; schedule.mode=absent; sourceRowIds=generalization:GB-16:TPL-01",
+        "itemId=generalization:GB-16:item:post-02; title=1주 수 Instagram/TikTok FAQ; schedule.mode=absent; sourceRowIds=generalization:GB-16:TPL-02",
+        "projectionCells.sheet.recommendation=primary; availability=available_now; generationState=generated; destinationRecordCount=8",
+        "TPL-01? 1? ???, TPL-02? 1? ?????.",
+        "calendar recommendation=secondary; destinationRecordCount=0"
+      ]
+    },
+    {
+      "contentId": "new:new-a01-seoul-wedding-110",
+      "itemGranularity": "mixed",
+      "itemEvidenceIds": [],
+      "primaryProjection": "sheet",
+      "checklistTodoDecision": "neither",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "hold",
+      "uiUnderstandability": "confusing",
+      "modifyReasons": [
+        "??? 110?? ????? view model?? 12? SourceRow? ??.",
+        "Primary Sheet? available_now?? ?? ?? 0?? ?? ??? ??? ? ??."
+      ],
+      "evidence": [
+        "sourceRowId=new:new-a01-seoul-wedding-110:wed-01; title=예식장 기본 대관료 확인; detail=예식장 기본 대관료 확인",
+        "canonical.sourceRows.length=12; canonical.items.length=0; scheduledItemCount=0",
+        "projectionCells.sheet.recommendation=primary; availability=available_now; generationState=generated; destinationRecordCount=0",
+        "canonical.sourceRows.length=12; canonical.items.length=0",
+        "projectionCells.sheet.destinationRecordCount=0; memo.destinationRecordCount=0"
+      ]
+    },
+    {
+      "contentId": "new:new-a02-seoul-museum-group",
+      "itemGranularity": "mixed",
+      "itemEvidenceIds": [
+        "new:new-a02-seoul-museum-group:item:museum-03",
+        "new:new-a02-seoul-museum-group:item:museum-11"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "overlay_only",
+      "contentValue": "modify",
+      "uiUnderstandability": "confusing",
+      "modifyReasons": [
+        "?? ?? ??? ?? ?? ?? ?? ????? ??? ?? Item?? ????.",
+        "?? visitDate? ??? ?? Item schedule? null?? Calendar? prohibited?."
+      ],
+      "evidence": [
+        "sourceRowId=new:new-a02-seoul-museum-group:museum-01; title=홈페이지에서 단체관람을 사전 예약; detail=홈페이지에서 단체관람을 사전 예약",
+        "canonical.sourceRows.length=12; canonical.items.length=12; scheduledItemCount=0",
+        "itemId=new:new-a02-seoul-museum-group:item:museum-03; title=예약 시각 15분 전 도착; schedule.mode=absent; sourceRowIds=new:new-a02-seoul-museum-group:museum-03",
+        "itemId=new:new-a02-seoul-museum-group:item:museum-11; title=전시장 내 음식 섭취 금지; schedule.mode=absent; sourceRowIds=new:new-a02-seoul-museum-group:museum-11",
+        "projectionCells.checklist.recommendation=primary; availability=available_now; generationState=generated; destinationRecordCount=4",
+        "museum-11 title=??? ? ?? ?? ??; intent=act",
+        "minimumInputs.visitDate.required=true; calendar destinationRecordCount=0"
+      ]
+    },
+    {
+      "contentId": "new:new-a03-kakaopay-jeonse",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "new:new-a03-kakaopay-jeonse:item:jeonse-02",
+        "new:new-a03-kakaopay-jeonse:item:jeonse-07"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=new:new-a03-kakaopay-jeonse:jeonse-01; title=주변 시세와 비정상적으로 낮은 가격 비교; detail=주변 시세와 비정상적으로 낮은 가격 비교",
+        "canonical.sourceRows.length=8; canonical.items.length=8; scheduledItemCount=0",
+        "itemId=new:new-a03-kakaopay-jeonse:item:jeonse-02; title=등기부의 소유자·근저당·압류 확인; schedule.mode=absent; sourceRowIds=new:new-a03-kakaopay-jeonse:jeonse-02",
+        "itemId=new:new-a03-kakaopay-jeonse:item:jeonse-07; title=입주 후 확정일자와 임대차 신고 처리; schedule.mode=absent; sourceRowIds=new:new-a03-kakaopay-jeonse:jeonse-07",
+        "projectionCells.checklist.recommendation=primary; availability=available_now; generationState=generated; destinationRecordCount=3",
+        "?? ???? ???? ?? 8? ?? ?? ?? ?? ??? 8? ?? checklist Item?? ????."
+      ]
+    },
+    {
+      "contentId": "new:new-a05-nfa-home-fire",
+      "itemGranularity": "mixed",
+      "itemEvidenceIds": [
+        "new:new-a05-nfa-home-fire:item:fire-08",
+        "new:new-a05-nfa-home-fire:item:fire-09",
+        "new:new-a05-nfa-home-fire:item:fire-10"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "overlay_only",
+      "contentValue": "modify",
+      "uiUnderstandability": "needs_explanation",
+      "modifyReasons": [
+        "??? ?? ??? ?? ??? ?? ?? Item?? ???.",
+        "installedAt ??? 10? ?? ?? ??? replacement schedule? ???? ???."
+      ],
+      "evidence": [
+        "sourceRowId=new:new-a05-nfa-home-fire:fire-01; title=주택용 소방시설 설치 대상 범위 확인; detail=주택용 소방시설 설치 대상 범위 확인",
+        "canonical.sourceRows.length=11; canonical.items.length=11; scheduledItemCount=0",
+        "itemId=new:new-a05-nfa-home-fire:item:fire-08; title=소화기 사용기한 10년 확인; schedule.mode=absent; sourceRowIds=new:new-a05-nfa-home-fire:fire-08",
+        "itemId=new:new-a05-nfa-home-fire:item:fire-09; title=감지기 오작동 시 리셋 버튼 사용; schedule.mode=absent; sourceRowIds=new:new-a05-nfa-home-fire:fire-09",
+        "itemId=new:new-a05-nfa-home-fire:item:fire-10; title=감지기 배터리를 주기적으로 점검; schedule.mode=absent; sourceRowIds=new:new-a05-nfa-home-fire:fire-10",
+        "projectionCells.checklist.recommendation=primary; availability=available_now; generationState=generated; destinationRecordCount=3",
+        "fire-09 title=??? ??? ? ?? ?? ??; intent=act",
+        "fire-08? fire-11? 10? ??? ??? ?? Item schedule=null"
+      ]
+    },
+    {
+      "contentId": "new:new-a07-seoul-bus-support",
+      "itemGranularity": "too_small",
+      "itemEvidenceIds": [
+        "new:new-a07-seoul-bus-support:item:bus-01",
+        "new:new-a07-seoul-bus-support:item:bus-03"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "modify",
+      "uiUnderstandability": "needs_explanation",
+      "modifyReasons": [
+        "? ??? ?? ??? ?? ?????????? ?? ?? ??? ?? ?? canonical ?? Item?? ?????."
+      ],
+      "evidence": [
+        "sourceRowId=new:new-a07-seoul-bus-support:bus-01; title=신청자격 체크리스트 작성; detail=신청자격 체크리스트 작성",
+        "canonical.sourceRows.length=7; canonical.items.length=7; scheduledItemCount=0",
+        "itemId=new:new-a07-seoul-bus-support:item:bus-01; title=신청자격 체크리스트 작성; schedule.mode=absent; sourceRowIds=new:new-a07-seoul-bus-support:bus-01",
+        "itemId=new:new-a07-seoul-bus-support:item:bus-03; title=이용약관과 개인정보 수집·제공 동의; schedule.mode=absent; sourceRowIds=new:new-a07-seoul-bus-support:bus-03",
+        "projectionCells.checklist.recommendation=primary; availability=available_now; generationState=generated; destinationRecordCount=1",
+        "bus-01~bus-07? ?? ?? ?? ?? Step? ??.",
+        "checklist groupCount=1; childEntryCount=7"
+      ]
+    },
+    {
+      "contentId": "new:new-a08-income-tax",
+      "itemGranularity": "mixed",
+      "itemEvidenceIds": [
+        "new:new-a08-income-tax:item:tax-01",
+        "new:new-a08-income-tax:item:tax-03",
+        "new:new-a08-income-tax:item:tax-09"
+      ],
+      "primaryProjection": "todo",
+      "checklistTodoDecision": "todo",
+      "scheduleSuitability": "natural",
+      "contentValue": "hold",
+      "uiUnderstandability": "confusing",
+      "modifyReasons": [
+        "?? ????????? ????? ?? ?? ??? ??? ?? act Item?? ???? ?? ??? ???? ???.",
+        "??? ????? deadline? Todo due? schedule? ??? ????? ???."
+      ],
+      "evidence": [
+        "sourceRowId=new:new-a08-income-tax:tax-01; title=종합소득이 있으면 다음 해 5월 1일부터 5월 31일까지 신고·납부; detail=종합소득이 있으면 다음 해 5월 1일부터 5월 31일까지 신고·납부",
+        "canonical.sourceRows.length=10; canonical.items.length=10; scheduledItemCount=0",
+        "itemId=new:new-a08-income-tax:item:tax-01; title=종합소득이 있으면 다음 해 5월 1일부터 5월 31일까지 신고·납부; schedule.mode=absent; sourceRowIds=new:new-a08-income-tax:tax-01",
+        "itemId=new:new-a08-income-tax:item:tax-03; title=마감일이 공휴일·토요일이면 다음 날까지; schedule.mode=absent; sourceRowIds=new:new-a08-income-tax:tax-03",
+        "itemId=new:new-a08-income-tax:item:tax-09; title=연말정산을 마친 근로소득만 있는 경우는 원칙적으로 확정신고 불필요; schedule.mode=absent; sourceRowIds=new:new-a08-income-tax:tax-09",
+        "projectionCells.todo.recommendation=primary; availability=available_now; generationState=generated; destinationRecordCount=11",
+        "tax-01? 5? 1~31?, tax-04? 2026-06-01, tax-05? ?? ?? 2026-08-31??.",
+        "canonical.items.length=10; scheduledItemCount=0; calendar destinationRecordCount=0"
+      ]
+    },
+    {
+      "contentId": "new:new-b03-fridge-week",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "new:new-b03-fridge-week:item:fridge-01",
+        "new:new-b03-fridge-week:item:fridge-02"
+      ],
+      "primaryProjection": "sheet",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "overlay_only",
+      "contentValue": "modify",
+      "uiUnderstandability": "needs_explanation",
+      "modifyReasons": [
+        "?~? ?? weekStart overlay? ??? Item schedule? null?? ??? Calendar? ???? ???."
+      ],
+      "evidence": [
+        "sourceRowId=new:new-b03-fridge-week:fridge-01; title=월요일 — 두부조림, 가자미살 계란전; detail=월요일 — 두부조림, 가자미살 계란전",
+        "canonical.sourceRows.length=5; canonical.items.length=5; scheduledItemCount=0",
+        "itemId=new:new-b03-fridge-week:item:fridge-01; title=월요일 — 두부조림, 가자미살 계란전; schedule.mode=absent; sourceRowIds=new:new-b03-fridge-week:fridge-01",
+        "itemId=new:new-b03-fridge-week:item:fridge-02; title=화요일 — 새우콩나물국밥, 무생채; schedule.mode=absent; sourceRowIds=new:new-b03-fridge-week:fridge-02",
+        "projectionCells.sheet.recommendation=primary; availability=available_now; generationState=generated; destinationRecordCount=5",
+        "fridge-01~05? ????? ????? ? ?? ????.",
+        "projectionCells.calendar.recommendation=secondary; destinationRecordCount=0"
+      ]
+    },
+    {
+      "contentId": "new:new-b04-organize-seven",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "new:new-b04-organize-seven:item:organize-01",
+        "new:new-b04-organize-seven:item:organize-07"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=new:new-b04-organize-seven:organize-01; title=어디부터 시작할지 정하기; detail=어디부터 시작할지 정하기",
+        "canonical.sourceRows.length=7; canonical.items.length=7; scheduledItemCount=0",
+        "itemId=new:new-b04-organize-seven:item:organize-01; title=어디부터 시작할지 정하기; schedule.mode=absent; sourceRowIds=new:new-b04-organize-seven:organize-01",
+        "itemId=new:new-b04-organize-seven:item:organize-07; title=결정한 자리에 모든 물건 집어넣기; schedule.mode=absent; sourceRowIds=new:new-b04-organize-seven:organize-07",
+        "projectionCells.checklist.recommendation=primary; availability=available_now; generationState=generated; destinationRecordCount=1",
+        "?? ?? ???? ?? ?? ???? 7? procedure SourceRow? 7? Item? 1:1 ??? ????."
+      ]
+    },
+    {
+      "contentId": "new:new-b05-storage-projects",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "new:new-b05-storage-projects:item:storage-01",
+        "new:new-b05-storage-projects:item:storage-05"
+      ],
+      "primaryProjection": "todo",
+      "checklistTodoDecision": "todo",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "modify",
+      "uiUnderstandability": "needs_explanation",
+      "modifyReasons": [
+        "?? selectedProject ??? ??? Todo? ??? ???? ?? ?? ????? ?? task? ????."
+      ],
+      "evidence": [
+        "sourceRowId=new:new-b05-storage-projects:storage-01; title=쓰레기 봉투 수납; detail=쓰레기 봉투 수납",
+        "canonical.sourceRows.length=5; canonical.items.length=5; scheduledItemCount=0",
+        "itemId=new:new-b05-storage-projects:item:storage-01; title=쓰레기 봉투 수납; schedule.mode=absent; sourceRowIds=new:new-b05-storage-projects:storage-01",
+        "itemId=new:new-b05-storage-projects:item:storage-05; title=북스탠드 활용 수납; schedule.mode=absent; sourceRowIds=new:new-b05-storage-projects:storage-05",
+        "projectionCells.todo.recommendation=primary; availability=available_now; generationState=generated; destinationRecordCount=6",
+        "minimumInputs.selectedProject.required=true",
+        "projectionCells.todo.destinationRecordCount=6; canonicalItemCount=5"
+      ]
+    },
+    {
+      "contentId": "new:new-b06-wtable-lemon-weekend",
+      "itemGranularity": "too_small",
+      "itemEvidenceIds": [
+        "new:new-b06-wtable-lemon-weekend:item:lemon-weekend-01",
+        "new:new-b06-wtable-lemon-weekend:item:lemon-weekend-12"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "overlay_only",
+      "contentValue": "hold",
+      "uiUnderstandability": "confusing",
+      "modifyReasons": [
+        "? ??? ??? ????? ?? ?? 12?? ?? canonical Item?? ?????.",
+        "user job? 50? ?? ???? SourceRow? Item? ?? ???? ?? ????? ??? ??."
+      ],
+      "evidence": [
+        "sourceRowId=new:new-b06-wtable-lemon-weekend:lemon-weekend-01; title=달걀을 1시간 전 실온에 꺼내기; detail=달걀을 1시간 전 실온에 꺼내기",
+        "canonical.sourceRows.length=12; canonical.items.length=12; scheduledItemCount=0",
+        "itemId=new:new-b06-wtable-lemon-weekend:item:lemon-weekend-01; title=달걀을 1시간 전 실온에 꺼내기; schedule.mode=absent; sourceRowIds=new:new-b06-wtable-lemon-weekend:lemon-weekend-01",
+        "itemId=new:new-b06-wtable-lemon-weekend:item:lemon-weekend-12; title=반죽 일부와 버터를 섞어 본 반죽에 합치기; schedule.mode=absent; sourceRowIds=new:new-b06-wtable-lemon-weekend:lemon-weekend-12",
+        "projectionCells.checklist.recommendation=primary; availability=available_now; generationState=generated; destinationRecordCount=2",
+        "lemon-weekend-05? ?? ???? ??? lemon-weekend-12? ?? ????.",
+        "minimumInputs.startAt? ??? ?? Item schedule=null; calendar prohibited"
+      ]
+    },
+    {
+      "contentId": "new:new-b07-interior-consultation",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "new:new-b07-interior-consultation:item:interior-03",
+        "new:new-b07-interior-consultation:item:interior-06"
+      ],
+      "primaryProjection": "sheet",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "modify",
+      "uiUnderstandability": "needs_explanation",
+      "modifyReasons": [
+        "?? ?? ?????? ???? checklist primary? ?? Item ???? ??? ????? ???? ???."
+      ],
+      "evidence": [
+        "sourceRowId=new:new-b07-interior-consultation:interior-01; title=전체 공사 흐름과 공사 방식 이해하기; detail=전체 공사 흐름과 공사 방식 이해하기",
+        "canonical.sourceRows.length=6; canonical.items.length=6; scheduledItemCount=0",
+        "itemId=new:new-b07-interior-consultation:item:interior-03; title=견적의 포함 항목과 구성 방식 비교하기; schedule.mode=absent; sourceRowIds=new:new-b07-interior-consultation:interior-03",
+        "itemId=new:new-b07-interior-consultation:item:interior-06; title=설명·소통·요구 반영을 기준으로 업체 선택하기; schedule.mode=absent; sourceRowIds=new:new-b07-interior-consultation:interior-06",
+        "projectionCells.sheet.recommendation=secondary; availability=available_now; generationState=generated; destinationRecordCount=6",
+        "minimumInputs.vendorNames.type=list",
+        "projectionCells.sheet.destinationRecordCount=6??? output columns?? ??? ?? ?? ??."
+      ]
+    },
+    {
+      "contentId": "new:new-b08-banchan-ten",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "new:new-b08-banchan-ten:item:banchan-01",
+        "new:new-b08-banchan-ten:item:banchan-05"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "overlay_only",
+      "contentValue": "modify",
+      "uiUnderstandability": "needs_explanation",
+      "modifyReasons": [
+        "?~? ?? ?? weekStart overlay? ??? Item schedule? null?? Calendar ?? ??? ?? ??."
+      ],
+      "evidence": [
+        "sourceRowId=new:new-b08-banchan-ten:banchan-01; title=월요일 — 멸치볶음, 콩나물무침; detail=월요일 — 멸치볶음, 콩나물무침",
+        "canonical.sourceRows.length=5; canonical.items.length=5; scheduledItemCount=0",
+        "itemId=new:new-b08-banchan-ten:item:banchan-01; title=월요일 — 멸치볶음, 콩나물무침; schedule.mode=absent; sourceRowIds=new:new-b08-banchan-ten:banchan-01",
+        "itemId=new:new-b08-banchan-ten:item:banchan-05; title=금요일 — 어묵볶음, 시래기된장조림; schedule.mode=absent; sourceRowIds=new:new-b08-banchan-ten:banchan-05",
+        "projectionCells.checklist.recommendation=primary; availability=available_now; generationState=generated; destinationRecordCount=5",
+        "? Item? ??? ?? ? ?? ? ?? ???? ????.",
+        "projectionCells.calendar.recommendation=secondary; destinationRecordCount=0"
+      ]
+    },
+    {
+      "contentId": "new:new-c01-programmers-kit",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "new:new-c01-programmers-kit:item:programmers-01",
+        "new:new-c01-programmers-kit:item:programmers-47"
+      ],
+      "primaryProjection": "sheet",
+      "checklistTodoDecision": "todo",
+      "scheduleSuitability": "overlay_only",
+      "contentValue": "modify",
+      "uiUnderstandability": "needs_explanation",
+      "modifyReasons": [
+        "47? ??? ???????? ???? 57? parent/subtask Todo?? ?? ??? Sheet? primary? ? ?????.",
+        "startDate? pacing overlay? ??? ?? preview? ???? ???."
+      ],
+      "evidence": [
+        "sourceRowId=new:new-c01-programmers-kit:programmers-01; title=완주하지 못한 선수; detail=Level 1",
+        "canonical.sourceRows.length=47; canonical.items.length=47; scheduledItemCount=0",
+        "itemId=new:new-c01-programmers-kit:item:programmers-01; title=완주하지 못한 선수; schedule.mode=absent; sourceRowIds=new:new-c01-programmers-kit:programmers-01",
+        "itemId=new:new-c01-programmers-kit:item:programmers-47; title=방의 개수; schedule.mode=absent; sourceRowIds=new:new-c01-programmers-kit:programmers-47",
+        "projectionCells.sheet.recommendation=secondary; availability=available_now; generationState=generated; destinationRecordCount=47",
+        "sourceRows? Items? 47?? 1:1?? Step? ???? ??? ????.",
+        "todo destinationRecordCount=57; sheet destinationRecordCount=47; calendar destinationRecordCount=0"
+      ]
+    },
+    {
+      "contentId": "new:new-c02-ifixit-hose",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "new:new-c02-ifixit-hose:item:ifixit-01",
+        "new:new-c02-ifixit-hose:item:ifixit-06"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=new:new-c02-ifixit-hose:ifixit-01; title=호스를 분리해 안정된 작업면에 놓기; detail=Disconnect the hose and place the end on a stable surface.",
+        "canonical.sourceRows.length=6; canonical.items.length=6; scheduledItemCount=0",
+        "itemId=new:new-c02-ifixit-hose:item:ifixit-01; title=호스를 분리해 안정된 작업면에 놓기; schedule.mode=absent; sourceRowIds=new:new-c02-ifixit-hose:ifixit-01",
+        "itemId=new:new-c02-ifixit-hose:item:ifixit-06; title=나사산에 테이프를 감고 연결한 뒤 누수 시험하기; schedule.mode=absent; sourceRowIds=new:new-c02-ifixit-hose:ifixit-06",
+        "projectionCells.checklist.recommendation=primary; availability=available_now; generationState=generated; destinationRecordCount=1",
+        "????????????????????? ?? ??? ?? ??? checklist Item?? 1:1 ????."
+      ]
+    },
+    {
+      "contentId": "new:new-c03-nps-junior-ranger",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "new:new-c03-nps-junior-ranger:item:nps-01",
+        "new:new-c03-nps-junior-ranger:item:nps-10"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=new:new-c03-nps-junior-ranger:nps-01; title=FOOTSTEPS OF MAMMOTHS; detail=Mark on the map where you live and color in the counties that the Ice Age Trail passes through.",
+        "canonical.sourceRows.length=12; canonical.items.length=12; scheduledItemCount=0",
+        "itemId=new:new-c03-nps-junior-ranger:item:nps-01; title=FOOTSTEPS OF MAMMOTHS; schedule.mode=absent; sourceRowIds=new:new-c03-nps-junior-ranger:nps-01",
+        "itemId=new:new-c03-nps-junior-ranger:item:nps-10; title=Take the Pledge; schedule.mode=absent; sourceRowIds=new:new-c03-nps-junior-ranger:nps-10",
+        "projectionCells.checklist.recommendation=primary; availability=available_now; generationState=generated; destinationRecordCount=2",
+        "9? ?? ? Pledge?Certificate?Badge ? ?? ??? 12? SourceRow? 12? Item? ??? ????."
+      ]
+    },
+    {
+      "contentId": "new:new-c04-instructables-origami",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "new:new-c04-instructables-origami:item:origami-01",
+        "new:new-c04-instructables-origami:item:origami-41"
+      ],
+      "primaryProjection": "todo",
+      "checklistTodoDecision": "todo",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=new:new-c04-instructables-origami:origami-01; title=Open Cube Modular Origami; detail=https://www.instructables.com/Open-Cube-Modular-Origami/",
+        "canonical.sourceRows.length=41; canonical.items.length=41; scheduledItemCount=0",
+        "itemId=new:new-c04-instructables-origami:item:origami-01; title=Open Cube Modular Origami; schedule.mode=absent; sourceRowIds=new:new-c04-instructables-origami:origami-01",
+        "itemId=new:new-c04-instructables-origami:item:origami-41; title=How to Fold a Paper Flower; schedule.mode=absent; sourceRowIds=new:new-c04-instructables-origami:origami-41",
+        "projectionCells.todo.recommendation=primary; availability=available_now; generationState=generated; destinationRecordCount=42",
+        "41? ????? ????? URL? ??? 41? ?? ?? Item?? 1:1 ????.",
+        "Todo destinationRecordCount=42? queue parent 1?? child task 41??."
+      ]
+    },
+    {
+      "contentId": "new:new-c05-foodsafety-storage",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [],
+      "primaryProjection": "sheet",
+      "checklistTodoDecision": "neither",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "hold",
+      "uiUnderstandability": "confusing",
+      "modifyReasons": [
+        "53? ???? SourceRow? checkable Item?? ??? ?? ?? ????? Primary Sheet? ?? ??? ???? ???.",
+        "????? ??? typed table ??? UI?? ????."
+      ],
+      "evidence": [
+        "sourceRowId=new:new-c05-foodsafety-storage:food-01; title=Egg, chicken, ham, tuna, and macaroni salads; detail=Refrigerator: 3 to 4 days · Freezer: Does not freeze well",
+        "canonical.sourceRows.length=53; canonical.items.length=0; scheduledItemCount=0",
+        "projectionCells.sheet.recommendation=primary; availability=available_now; generationState=generated; destinationRecordCount=0",
+        "canonical.sourceRows.length=53; canonical.items.length=0",
+        "food-01 detail=Refrigerator: 3 to 4 days ? Freezer: Does not freeze well",
+        "projectionCells.sheet.destinationRecordCount=0; memo.destinationRecordCount=0"
+      ]
+    },
+    {
+      "contentId": "new:new-c06-goodfood-lemon",
+      "itemGranularity": "appropriate",
+      "itemEvidenceIds": [
+        "new:new-c06-goodfood-lemon:item:goodfood-01",
+        "new:new-c06-goodfood-lemon:item:goodfood-05",
+        "new:new-c06-goodfood-lemon:item:goodfood-08"
+      ],
+      "primaryProjection": "checklist",
+      "checklistTodoDecision": "checklist",
+      "scheduleSuitability": "not_applicable",
+      "contentValue": "go",
+      "uiUnderstandability": "clear",
+      "modifyReasons": [],
+      "evidence": [
+        "sourceRowId=new:new-c06-goodfood-lemon:goodfood-01; title=오븐 예열; detail=Heat the oven to 180C/160C fan/gas 4.",
+        "canonical.sourceRows.length=8; canonical.items.length=8; scheduledItemCount=0",
+        "itemId=new:new-c06-goodfood-lemon:item:goodfood-01; title=오븐 예열; schedule.mode=absent; sourceRowIds=new:new-c06-goodfood-lemon:goodfood-01",
+        "itemId=new:new-c06-goodfood-lemon:item:goodfood-05; title=원문 기준 시간 동안 굽고 꼬치로 확인; schedule.mode=absent; sourceRowIds=new:new-c06-goodfood-lemon:goodfood-05",
+        "itemId=new:new-c06-goodfood-lemon:item:goodfood-08; title=완전히 식힌 뒤 꺼내어 제공하기; schedule.mode=absent; sourceRowIds=new:new-c06-goodfood-lemon:goodfood-08",
+        "projectionCells.checklist.recommendation=primary; availability=available_now; generationState=generated; destinationRecordCount=1",
+        "???????? 45~50???????? ???? 8? SourceRow? 8? Item? ?? ??? ????."
+      ]
+    },
+    {
+      "contentId": "new:new-c08-todoist-podcast",
+      "itemGranularity": "mixed",
+      "itemEvidenceIds": [
+        "new:new-c08-todoist-podcast:item:podcast-04",
+        "new:new-c08-todoist-podcast:item:podcast-05",
+        "new:new-c08-todoist-podcast:item:podcast-11"
+      ],
+      "primaryProjection": "todo",
+      "checklistTodoDecision": "todo",
+      "scheduleSuitability": "overlay_only",
+      "contentValue": "modify",
+      "uiUnderstandability": "needs_explanation",
+      "modifyReasons": [
+        "??? Buy/check equipment ?? ?? ??? canonical sibling Item?? ????? ?? ?? ??? ????.",
+        "??? ??? ?? SourceRow? ??? schedule overlay? due? ???? ???."
+      ],
+      "evidence": [
+        "sourceRowId=new:new-c08-todoist-podcast:podcast-01; title=Create 1-page overview with title, audience, content, frequency; detail=indent 1",
+        "canonical.sourceRows.length=23; canonical.items.length=23; scheduledItemCount=0",
+        "itemId=new:new-c08-todoist-podcast:item:podcast-04; title=Buy/check equipment; schedule.mode=absent; sourceRowIds=new:new-c08-todoist-podcast:podcast-04",
+        "itemId=new:new-c08-todoist-podcast:item:podcast-05; title=Microphone; schedule.mode=absent; sourceRowIds=new:new-c08-todoist-podcast:podcast-05",
+        "itemId=new:new-c08-todoist-podcast:item:podcast-11; title=Schedule dates for production with guests; schedule.mode=absent; sourceRowIds=new:new-c08-todoist-podcast:podcast-11",
+        "projectionCells.todo.recommendation=secondary; availability=available_now; generationState=generated; destinationRecordCount=27",
+        "podcast-05 original.indent=2; original.parent=Buy/check equipment",
+        "podcast-04? podcast-05? ?? stepId?? dependsOnItemIds? ?? ?? ??.",
+        "podcast-11 title=Schedule dates for production with guests; schedule=null"
+      ]
+    }
+  ]
+}

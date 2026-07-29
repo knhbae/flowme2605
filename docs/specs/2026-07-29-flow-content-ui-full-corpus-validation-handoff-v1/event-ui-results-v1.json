@@ -1,0 +1,1053 @@
+{
+  "schemaVersion": "flow-content-ui-event-results-v1",
+  "corpusFingerprint": "sha256:d56b289fd301805fe1299b867497b0840f8d379d1459ec0148639f8b7d5dce32",
+  "counts": {
+    "content": 14,
+    "occurrences": 18,
+    "windows": 6,
+    "milestones": 3
+  },
+  "results": [
+    {
+      "contentId": "events:event-kr-single-performance",
+      "title": "필묵으로 펼쳐지는 한국춤",
+      "sourceState": {
+        "series": null,
+        "edition": {
+          "editionId": "ntok-267132-2026",
+          "seriesId": null,
+          "title": "필묵으로 펼쳐지는 한국춤",
+          "recurrencePolicy": null,
+          "freshnessStatus": "observed_snapshot"
+        },
+        "occurrences": [
+          {
+            "occurrenceId": "ntok-267132-2026-06-11-1930",
+            "temporalIntent": "fixed_occurrence",
+            "start": "2026-06-11T19:30:00+09:00",
+            "end": "2026-06-11T21:30:00+09:00",
+            "endDerivation": "start_plus_source_duration",
+            "timezone": "Asia/Seoul",
+            "timezoneEvidence": "explicit_context",
+            "locationName": "해오름극장",
+            "status": "ended",
+            "salesStatus": "sold_out",
+            "sourceRowIds": [
+              "events:event-kr-single-performance:event-kr-single-performance-row-02"
+            ]
+          }
+        ],
+        "windows": [],
+        "milestones": []
+      },
+      "defaultPreview": {
+        "ok": true,
+        "errors": [],
+        "item": {
+          "itemId": "events:event-kr-single-performance-attend-ntok-267132-2026-06-11-1930",
+          "stepId": "events:event-kr-single-performance-event-intent",
+          "title": "필묵으로 펼쳐지는 한국춤 참석하기",
+          "description": "",
+          "intent": "act",
+          "order": 0,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "선택한 회차 참석 상태를 남겼다."
+          },
+          "schedule": {
+            "mode": "absolute",
+            "start": "2026-06-11T19:30:00+09:00",
+            "end": "2026-06-11T21:30:00+09:00",
+            "timezone": "Asia/Seoul",
+            "allDay": false
+          },
+          "sourceRowIds": [
+            "events:event-kr-single-performance:event-kr-single-performance-row-02"
+          ],
+          "occurrenceId": "ntok-267132-2026-06-11-1930",
+          "scheduleOwner": "source",
+          "derivation": "direct"
+        },
+        "projectionPlan": {
+          "primary": "calendar",
+          "vevent": {
+            "component": "VEVENT",
+            "uid": "events:event-kr-single-performance-attend-ntok-267132-2026-06-11-1930@flowme.local",
+            "title": "필묵으로 펼쳐지는 한국춤 참석하기",
+            "schedule": {
+              "mode": "absolute",
+              "start": "2026-06-11T19:30:00+09:00",
+              "end": "2026-06-11T21:30:00+09:00",
+              "timezone": "Asia/Seoul",
+              "allDay": false
+            },
+            "sourceRowIds": [
+              "events:event-kr-single-performance:event-kr-single-performance-row-02"
+            ],
+            "reminder": null
+          },
+          "vtodo": null,
+          "nestedComponentCount": 0
+        },
+        "resultHash": "sha256:d46f00593f11248ffee261fc8d0a38ec2a5f0bb1edff26d9e18d03a9603e2cad"
+      }
+    },
+    {
+      "contentId": "events:event-kr-multi-show-choir",
+      "title": "제46회 한국합창제",
+      "sourceState": {
+        "series": {
+          "seriesId": "korea-choir-festival",
+          "title": "제46회 한국합창제"
+        },
+        "edition": {
+          "editionId": "korea-choir-festival-46",
+          "seriesId": "korea-choir-festival",
+          "title": "제46회 한국합창제",
+          "recurrencePolicy": null,
+          "freshnessStatus": "observed_snapshot"
+        },
+        "occurrences": [
+          {
+            "occurrenceId": "choir-2026-05-08-1930",
+            "title": "경기합창제",
+            "temporalIntent": "fixed_occurrence",
+            "start": "2026-05-08T19:30:00+09:00",
+            "end": null,
+            "timezone": "Asia/Seoul",
+            "timezoneEvidence": "explicit_context",
+            "locationName": "해오름극장",
+            "status": "ended",
+            "sourceRowIds": [
+              "events:event-kr-multi-show-choir:event-kr-multi-show-choir-row-01",
+              "events:event-kr-multi-show-choir:event-kr-multi-show-choir-row-02"
+            ]
+          },
+          {
+            "occurrenceId": "choir-2026-05-09-1300",
+            "title": "한국소년소녀합창제",
+            "temporalIntent": "fixed_occurrence",
+            "start": "2026-05-09T13:00:00+09:00",
+            "end": null,
+            "timezone": "Asia/Seoul",
+            "timezoneEvidence": "explicit_context",
+            "locationName": "해오름극장",
+            "status": "ended",
+            "sourceRowIds": [
+              "events:event-kr-multi-show-choir:event-kr-multi-show-choir-row-01",
+              "events:event-kr-multi-show-choir:event-kr-multi-show-choir-row-03"
+            ]
+          },
+          {
+            "occurrenceId": "choir-2026-05-09-1930",
+            "title": "한국일반합창제",
+            "temporalIntent": "fixed_occurrence",
+            "start": "2026-05-09T19:30:00+09:00",
+            "end": null,
+            "timezone": "Asia/Seoul",
+            "timezoneEvidence": "explicit_context",
+            "locationName": "해오름극장",
+            "status": "ended",
+            "sourceRowIds": [
+              "events:event-kr-multi-show-choir:event-kr-multi-show-choir-row-01",
+              "events:event-kr-multi-show-choir:event-kr-multi-show-choir-row-04"
+            ]
+          },
+          {
+            "occurrenceId": "choir-2026-05-10-1900",
+            "title": "전국합창제",
+            "temporalIntent": "fixed_occurrence",
+            "start": "2026-05-10T19:00:00+09:00",
+            "end": null,
+            "timezone": "Asia/Seoul",
+            "timezoneEvidence": "explicit_context",
+            "locationName": "해오름극장",
+            "status": "ended",
+            "sourceRowIds": [
+              "events:event-kr-multi-show-choir:event-kr-multi-show-choir-row-01",
+              "events:event-kr-multi-show-choir:event-kr-multi-show-choir-row-05"
+            ]
+          }
+        ],
+        "windows": [],
+        "milestones": []
+      },
+      "defaultPreview": {
+        "ok": true,
+        "errors": [],
+        "item": {
+          "itemId": "events:event-kr-multi-show-choir-attend-choir-2026-05-08-1930",
+          "stepId": "events:event-kr-multi-show-choir-event-intent",
+          "title": "제46회 한국합창제 참석하기",
+          "description": "",
+          "intent": "act",
+          "order": 0,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "선택한 회차 참석 상태를 남겼다."
+          },
+          "schedule": {
+            "mode": "absolute",
+            "start": "2026-05-08T19:30:00+09:00",
+            "end": null,
+            "timezone": "Asia/Seoul",
+            "allDay": false
+          },
+          "sourceRowIds": [
+            "events:event-kr-multi-show-choir:event-kr-multi-show-choir-row-01",
+            "events:event-kr-multi-show-choir:event-kr-multi-show-choir-row-02"
+          ],
+          "occurrenceId": "choir-2026-05-08-1930",
+          "scheduleOwner": "source",
+          "derivation": "direct"
+        },
+        "projectionPlan": {
+          "primary": "calendar",
+          "vevent": {
+            "component": "VEVENT",
+            "uid": "events:event-kr-multi-show-choir-attend-choir-2026-05-08-1930@flowme.local",
+            "title": "제46회 한국합창제 참석하기",
+            "schedule": {
+              "mode": "absolute",
+              "start": "2026-05-08T19:30:00+09:00",
+              "end": null,
+              "timezone": "Asia/Seoul",
+              "allDay": false
+            },
+            "sourceRowIds": [
+              "events:event-kr-multi-show-choir:event-kr-multi-show-choir-row-01",
+              "events:event-kr-multi-show-choir:event-kr-multi-show-choir-row-02"
+            ],
+            "reminder": null
+          },
+          "vtodo": null,
+          "nestedComponentCount": 0
+        },
+        "resultHash": "sha256:0d4975f40a1b9c02c1aac69cd718e427cfe9dc0103b9b9455f258ea3f28635cf"
+      }
+    },
+    {
+      "contentId": "events:event-kr-sokcho-summer",
+      "title": "속초 썸머페스티벌",
+      "sourceState": {
+        "series": {
+          "seriesId": "sokcho-summer-festival",
+          "title": "속초 썸머페스티벌"
+        },
+        "edition": {
+          "editionId": "sokcho-summer-festival-2026",
+          "seriesId": "sokcho-summer-festival",
+          "title": "속초 썸머페스티벌",
+          "recurrencePolicy": "edition_occurrences_not_yearly_rrule",
+          "freshnessStatus": "observed_snapshot"
+        },
+        "occurrences": [
+          {
+            "occurrenceId": "sokcho-summer-2026-07-31",
+            "temporalIntent": "fixed_occurrence",
+            "start": "2026-07-31T16:00:00+09:00",
+            "end": "2026-07-31T21:00:00+09:00",
+            "derivation": "expand_daily_hours_within_source_date_range",
+            "timezone": "Asia/Seoul",
+            "timezoneEvidence": "explicit_context",
+            "locationName": "속초해수욕장 일원",
+            "status": "scheduled",
+            "sourceRowIds": [
+              "events:event-kr-sokcho-summer:event-kr-sokcho-summer-row-01"
+            ]
+          },
+          {
+            "occurrenceId": "sokcho-summer-2026-08-01",
+            "temporalIntent": "fixed_occurrence",
+            "start": "2026-08-01T16:00:00+09:00",
+            "end": "2026-08-01T21:00:00+09:00",
+            "derivation": "expand_daily_hours_within_source_date_range",
+            "timezone": "Asia/Seoul",
+            "timezoneEvidence": "explicit_context",
+            "locationName": "속초해수욕장 일원",
+            "status": "scheduled",
+            "sourceRowIds": [
+              "events:event-kr-sokcho-summer:event-kr-sokcho-summer-row-01"
+            ]
+          },
+          {
+            "occurrenceId": "sokcho-summer-2026-08-02",
+            "temporalIntent": "fixed_occurrence",
+            "start": "2026-08-02T16:00:00+09:00",
+            "end": "2026-08-02T21:00:00+09:00",
+            "derivation": "expand_daily_hours_within_source_date_range",
+            "timezone": "Asia/Seoul",
+            "timezoneEvidence": "explicit_context",
+            "locationName": "속초해수욕장 일원",
+            "status": "scheduled",
+            "sourceRowIds": [
+              "events:event-kr-sokcho-summer:event-kr-sokcho-summer-row-01"
+            ]
+          }
+        ],
+        "windows": [],
+        "milestones": []
+      },
+      "defaultPreview": {
+        "ok": true,
+        "errors": [],
+        "item": {
+          "itemId": "events:event-kr-sokcho-summer-attend-sokcho-summer-2026-07-31",
+          "stepId": "events:event-kr-sokcho-summer-event-intent",
+          "title": "속초 썸머페스티벌 참석하기",
+          "description": "",
+          "intent": "act",
+          "order": 0,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "선택한 회차 참석 상태를 남겼다."
+          },
+          "schedule": {
+            "mode": "absolute",
+            "start": "2026-07-31T16:00:00+09:00",
+            "end": "2026-07-31T21:00:00+09:00",
+            "timezone": "Asia/Seoul",
+            "allDay": false
+          },
+          "sourceRowIds": [
+            "events:event-kr-sokcho-summer:event-kr-sokcho-summer-row-01"
+          ],
+          "occurrenceId": "sokcho-summer-2026-07-31",
+          "scheduleOwner": "source",
+          "derivation": "direct"
+        },
+        "projectionPlan": {
+          "primary": "calendar",
+          "vevent": {
+            "component": "VEVENT",
+            "uid": "events:event-kr-sokcho-summer-attend-sokcho-summer-2026-07-31@flowme.local",
+            "title": "속초 썸머페스티벌 참석하기",
+            "schedule": {
+              "mode": "absolute",
+              "start": "2026-07-31T16:00:00+09:00",
+              "end": "2026-07-31T21:00:00+09:00",
+              "timezone": "Asia/Seoul",
+              "allDay": false
+            },
+            "sourceRowIds": [
+              "events:event-kr-sokcho-summer:event-kr-sokcho-summer-row-01"
+            ],
+            "reminder": null
+          },
+          "vtodo": null,
+          "nestedComponentCount": 0
+        },
+        "resultHash": "sha256:ce8caeaf93c86358c7cfadae6f9cac6c5085bcf6d377702cc6f64753f7af8988"
+      }
+    },
+    {
+      "contentId": "events:event-kr-sema-martin-parr",
+      "title": "마틴 파 : We Are Martin Parr",
+      "sourceState": {
+        "series": null,
+        "edition": {
+          "editionId": "sema-1553791",
+          "seriesId": null,
+          "title": "마틴 파 : We Are Martin Parr",
+          "recurrencePolicy": null,
+          "freshnessStatus": "observed_snapshot"
+        },
+        "occurrences": [],
+        "windows": [
+          {
+            "windowId": "sema-1553791-window",
+            "temporalIntent": "availability_window",
+            "startDate": "2026-07-16",
+            "endDate": "2026-10-18",
+            "timezone": "Asia/Seoul",
+            "locationName": "서울시립 사진미술관",
+            "sourceRowIds": []
+          }
+        ],
+        "milestones": []
+      },
+      "defaultPreview": {
+        "ok": false,
+        "errors": [
+          "NO_SELECTABLE_FIXED_OCCURRENCE"
+        ],
+        "item": null,
+        "projectionPlan": null
+      }
+    },
+    {
+      "contentId": "events:event-kr-ballet-ticket-show",
+      "title": "서울시발레단 더블 빌 〈죽음과 소녀〉",
+      "sourceState": {
+        "series": {
+          "seriesId": "seoul-metropolitan-ballet-double-bill",
+          "title": "서울시발레단 더블 빌 〈죽음과 소녀〉"
+        },
+        "edition": {
+          "editionId": "seoul-metropolitan-ballet-double-bill-2026",
+          "seriesId": "seoul-metropolitan-ballet-double-bill",
+          "title": "서울시발레단 더블 빌 〈죽음과 소녀〉",
+          "recurrencePolicy": null,
+          "freshnessStatus": "observed_snapshot"
+        },
+        "occurrences": [
+          {
+            "occurrenceId": "ballet-2026-show-1",
+            "temporalIntent": "fixed_occurrence",
+            "start": "2026-08-14T19:30:00+09:00",
+            "end": "2026-08-14T20:50:00+09:00",
+            "endDerivation": "start_plus_source_duration",
+            "timezone": "Asia/Seoul",
+            "timezoneEvidence": "explicit_context",
+            "locationName": "해오름극장",
+            "status": "scheduled",
+            "sourceRowIds": [
+              "events:event-kr-ballet-ticket-show:event-kr-ballet-ticket-show-row-02",
+              "events:event-kr-ballet-ticket-show:event-kr-ballet-ticket-show-row-03"
+            ]
+          },
+          {
+            "occurrenceId": "ballet-2026-show-2",
+            "temporalIntent": "fixed_occurrence",
+            "start": "2026-08-15T14:00:00+09:00",
+            "end": "2026-08-15T15:20:00+09:00",
+            "endDerivation": "start_plus_source_duration",
+            "timezone": "Asia/Seoul",
+            "timezoneEvidence": "explicit_context",
+            "locationName": "해오름극장",
+            "status": "scheduled",
+            "sourceRowIds": [
+              "events:event-kr-ballet-ticket-show:event-kr-ballet-ticket-show-row-02",
+              "events:event-kr-ballet-ticket-show:event-kr-ballet-ticket-show-row-04"
+            ]
+          },
+          {
+            "occurrenceId": "ballet-2026-show-3",
+            "temporalIntent": "fixed_occurrence",
+            "start": "2026-08-16T14:00:00+09:00",
+            "end": "2026-08-16T15:20:00+09:00",
+            "endDerivation": "start_plus_source_duration",
+            "timezone": "Asia/Seoul",
+            "timezoneEvidence": "explicit_context",
+            "locationName": "해오름극장",
+            "status": "scheduled",
+            "sourceRowIds": [
+              "events:event-kr-ballet-ticket-show:event-kr-ballet-ticket-show-row-02",
+              "events:event-kr-ballet-ticket-show:event-kr-ballet-ticket-show-row-05"
+            ]
+          }
+        ],
+        "windows": [],
+        "milestones": [
+          {
+            "milestoneId": "ballet-ticket-open",
+            "temporalIntent": "ticket_open",
+            "at": "2026-06-15T14:00:00+09:00",
+            "defaultProjection": "todo",
+            "sourceRowIds": []
+          }
+        ]
+      },
+      "defaultPreview": {
+        "ok": true,
+        "errors": [],
+        "item": {
+          "itemId": "events:event-kr-ballet-ticket-show-attend-ballet-2026-show-1",
+          "stepId": "events:event-kr-ballet-ticket-show-event-intent",
+          "title": "서울시발레단 더블 빌 〈죽음과 소녀〉 참석하기",
+          "description": "",
+          "intent": "act",
+          "order": 0,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "선택한 회차 참석 상태를 남겼다."
+          },
+          "schedule": {
+            "mode": "absolute",
+            "start": "2026-08-14T19:30:00+09:00",
+            "end": "2026-08-14T20:50:00+09:00",
+            "timezone": "Asia/Seoul",
+            "allDay": false
+          },
+          "sourceRowIds": [
+            "events:event-kr-ballet-ticket-show:event-kr-ballet-ticket-show-row-02",
+            "events:event-kr-ballet-ticket-show:event-kr-ballet-ticket-show-row-03"
+          ],
+          "occurrenceId": "ballet-2026-show-1",
+          "scheduleOwner": "source",
+          "derivation": "direct"
+        },
+        "projectionPlan": {
+          "primary": "calendar",
+          "vevent": {
+            "component": "VEVENT",
+            "uid": "events:event-kr-ballet-ticket-show-attend-ballet-2026-show-1@flowme.local",
+            "title": "서울시발레단 더블 빌 〈죽음과 소녀〉 참석하기",
+            "schedule": {
+              "mode": "absolute",
+              "start": "2026-08-14T19:30:00+09:00",
+              "end": "2026-08-14T20:50:00+09:00",
+              "timezone": "Asia/Seoul",
+              "allDay": false
+            },
+            "sourceRowIds": [
+              "events:event-kr-ballet-ticket-show:event-kr-ballet-ticket-show-row-02",
+              "events:event-kr-ballet-ticket-show:event-kr-ballet-ticket-show-row-03"
+            ],
+            "reminder": null
+          },
+          "vtodo": null,
+          "nestedComponentCount": 0
+        },
+        "resultHash": "sha256:2c1d3b92f645a4cbf4a2db73526d7d8f61f7e25757b4c6f5c3520e76c65300fd"
+      }
+    },
+    {
+      "contentId": "events:event-kr-qnet-exam-lifecycle",
+      "title": "수산양식기사 2026년 정기 기사 3회",
+      "sourceState": {
+        "series": {
+          "seriesId": "qnet-aquaculture-engineer",
+          "title": "수산양식기사 2026년 정기 기사 3회"
+        },
+        "edition": {
+          "editionId": "qnet-aquaculture-engineer-2026-r3",
+          "seriesId": "qnet-aquaculture-engineer",
+          "title": "수산양식기사 2026년 정기 기사 3회",
+          "recurrencePolicy": null,
+          "freshnessStatus": "observed_snapshot"
+        },
+        "occurrences": [],
+        "windows": [
+          {
+            "windowId": "qnet-written-regular",
+            "temporalIntent": "application_window",
+            "start": "2026-07-20T10:00:00+09:00",
+            "end": "2026-07-23T18:00:00+09:00",
+            "sourceRowIds": [
+              "events:event-kr-qnet-exam-lifecycle:event-kr-qnet-exam-lifecycle-row-01",
+              "events:event-kr-qnet-exam-lifecycle:event-kr-qnet-exam-lifecycle-row-02",
+              "events:event-kr-qnet-exam-lifecycle:event-kr-qnet-exam-lifecycle-row-05"
+            ]
+          },
+          {
+            "windowId": "qnet-written-vacancy",
+            "temporalIntent": "application_window",
+            "startDate": "2026-08-01",
+            "endDate": "2026-08-02",
+            "timePrecision": "date_only",
+            "sourceRowIds": [
+              "events:event-kr-qnet-exam-lifecycle:event-kr-qnet-exam-lifecycle-row-01",
+              "events:event-kr-qnet-exam-lifecycle:event-kr-qnet-exam-lifecycle-row-02",
+              "events:event-kr-qnet-exam-lifecycle:event-kr-qnet-exam-lifecycle-row-05"
+            ]
+          },
+          {
+            "windowId": "qnet-practical-application",
+            "temporalIntent": "application_window",
+            "startDate": "2026-09-21",
+            "endDate": "2026-09-28",
+            "timePrecision": "date_only",
+            "sourceRowIds": [
+              "events:event-kr-qnet-exam-lifecycle:event-kr-qnet-exam-lifecycle-row-01",
+              "events:event-kr-qnet-exam-lifecycle:event-kr-qnet-exam-lifecycle-row-02",
+              "events:event-kr-qnet-exam-lifecycle:event-kr-qnet-exam-lifecycle-row-05"
+            ]
+          }
+        ],
+        "milestones": [
+          {
+            "milestoneId": "qnet-written-result",
+            "temporalIntent": "due_deadline",
+            "at": "2026-09-09T09:00:00+09:00",
+            "action": "result_check",
+            "sourceRowIds": []
+          },
+          {
+            "milestoneId": "qnet-final-result",
+            "temporalIntent": "due_deadline",
+            "at": "2026-12-18T09:00:00+09:00",
+            "action": "result_check",
+            "sourceRowIds": []
+          }
+        ]
+      },
+      "defaultPreview": {
+        "ok": false,
+        "errors": [
+          "NO_SELECTABLE_FIXED_OCCURRENCE"
+        ],
+        "item": null,
+        "projectionPlan": null
+      }
+    },
+    {
+      "contentId": "events:event-kr-revised-musical",
+      "title": "뮤지컬 〈몽유도원〉 일정 변경",
+      "sourceState": {
+        "series": {
+          "seriesId": "musical-mongyudowon",
+          "title": "뮤지컬 〈몽유도원〉 일정 변경"
+        },
+        "edition": {
+          "editionId": "musical-mongyudowon-2026",
+          "seriesId": "musical-mongyudowon",
+          "title": "뮤지컬 〈몽유도원〉 일정 변경",
+          "recurrencePolicy": null,
+          "freshnessStatus": "schedule_revised"
+        },
+        "occurrences": [],
+        "windows": [],
+        "milestones": []
+      },
+      "defaultPreview": {
+        "ok": false,
+        "errors": [
+          "NO_SELECTABLE_FIXED_OCCURRENCE"
+        ],
+        "item": null,
+        "projectionPlan": null
+      }
+    },
+    {
+      "contentId": "events:event-pattern-nps-all-day",
+      "title": "Fee Free Day — NPS Birthday",
+      "sourceState": {
+        "series": {
+          "seriesId": "nps-fee-free-days",
+          "title": "Fee Free Day — NPS Birthday"
+        },
+        "edition": {
+          "editionId": "nps-birthday-110",
+          "seriesId": "nps-fee-free-days",
+          "title": "Fee Free Day — NPS Birthday",
+          "recurrencePolicy": null,
+          "freshnessStatus": "observed_snapshot"
+        },
+        "occurrences": [
+          {
+            "occurrenceId": "nps-birthday-2026-08-25",
+            "temporalIntent": "all_day_occurrence",
+            "startDate": "2026-08-25",
+            "endDateExclusive": "2026-08-26",
+            "allDay": true,
+            "timezone": "America/Los_Angeles",
+            "timezoneEvidence": "inferred_from_venue",
+            "locationName": "Mount Rainier National Park",
+            "status": "scheduled",
+            "sourceRowIds": [
+              "events:event-pattern-nps-all-day:event-pattern-nps-all-day-row-01"
+            ]
+          }
+        ],
+        "windows": [],
+        "milestones": []
+      },
+      "defaultPreview": {
+        "ok": true,
+        "errors": [],
+        "item": {
+          "itemId": "events:event-pattern-nps-all-day-attend-nps-birthday-2026-08-25",
+          "stepId": "events:event-pattern-nps-all-day-event-intent",
+          "title": "Fee Free Day — NPS Birthday 참석하기",
+          "description": "",
+          "intent": "act",
+          "order": 0,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "선택한 회차 참석 상태를 남겼다."
+          },
+          "schedule": {
+            "mode": "absolute",
+            "start": "2026-08-25",
+            "end": null,
+            "timezone": "America/Los_Angeles",
+            "allDay": true
+          },
+          "sourceRowIds": [
+            "events:event-pattern-nps-all-day:event-pattern-nps-all-day-row-01"
+          ],
+          "occurrenceId": "nps-birthday-2026-08-25",
+          "scheduleOwner": "source",
+          "derivation": "direct"
+        },
+        "projectionPlan": {
+          "primary": "calendar",
+          "vevent": {
+            "component": "VEVENT",
+            "uid": "events:event-pattern-nps-all-day-attend-nps-birthday-2026-08-25@flowme.local",
+            "title": "Fee Free Day — NPS Birthday 참석하기",
+            "schedule": {
+              "mode": "absolute",
+              "start": "2026-08-25",
+              "end": null,
+              "timezone": "America/Los_Angeles",
+              "allDay": true
+            },
+            "sourceRowIds": [
+              "events:event-pattern-nps-all-day:event-pattern-nps-all-day-row-01"
+            ],
+            "reminder": null
+          },
+          "vtodo": null,
+          "nestedComponentCount": 0
+        },
+        "resultHash": "sha256:1db41b869cd534f61cabd1d0096192e148c44599551ebf9420a7a626d06ca8b8"
+      }
+    },
+    {
+      "contentId": "events:event-pattern-online-foia",
+      "title": "FOIA Advisory Committee Meeting",
+      "sourceState": {
+        "series": {
+          "seriesId": "foia-advisory-committee-meetings",
+          "title": "FOIA Advisory Committee Meeting"
+        },
+        "edition": {
+          "editionId": "foia-advisory-2026-07-16",
+          "seriesId": "foia-advisory-committee-meetings",
+          "title": "FOIA Advisory Committee Meeting",
+          "recurrencePolicy": null,
+          "freshnessStatus": "observed_snapshot"
+        },
+        "occurrences": [
+          {
+            "occurrenceId": "foia-advisory-2026-07-16",
+            "temporalIntent": "fixed_occurrence",
+            "start": "2026-07-16T10:00:00-04:00",
+            "end": "2026-07-16T12:00:00-04:00",
+            "timezone": "America/New_York",
+            "timezoneEvidence": "source_label_EDT",
+            "locationName": "Online",
+            "onlineUrl": "https://youtube.com/live/pRVhm2fxabU?feature=share",
+            "registrationUrl": "https://www.zoomgov.com/webinar/register/WN_DVjl0DkwT96otgBjXQ9VTQ",
+            "status": "ended",
+            "sourceRowIds": [
+              "events:event-pattern-online-foia:event-pattern-online-foia-row-01"
+            ]
+          }
+        ],
+        "windows": [],
+        "milestones": []
+      },
+      "defaultPreview": {
+        "ok": true,
+        "errors": [],
+        "item": {
+          "itemId": "events:event-pattern-online-foia-attend-foia-advisory-2026-07-16",
+          "stepId": "events:event-pattern-online-foia-event-intent",
+          "title": "FOIA Advisory Committee Meeting 참석하기",
+          "description": "",
+          "intent": "act",
+          "order": 0,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "선택한 회차 참석 상태를 남겼다."
+          },
+          "schedule": {
+            "mode": "absolute",
+            "start": "2026-07-16T10:00:00-04:00",
+            "end": "2026-07-16T12:00:00-04:00",
+            "timezone": "America/New_York",
+            "allDay": false
+          },
+          "sourceRowIds": [
+            "events:event-pattern-online-foia:event-pattern-online-foia-row-01"
+          ],
+          "occurrenceId": "foia-advisory-2026-07-16",
+          "scheduleOwner": "source",
+          "derivation": "direct"
+        },
+        "projectionPlan": {
+          "primary": "calendar",
+          "vevent": {
+            "component": "VEVENT",
+            "uid": "events:event-pattern-online-foia-attend-foia-advisory-2026-07-16@flowme.local",
+            "title": "FOIA Advisory Committee Meeting 참석하기",
+            "schedule": {
+              "mode": "absolute",
+              "start": "2026-07-16T10:00:00-04:00",
+              "end": "2026-07-16T12:00:00-04:00",
+              "timezone": "America/New_York",
+              "allDay": false
+            },
+            "sourceRowIds": [
+              "events:event-pattern-online-foia:event-pattern-online-foia-row-01"
+            ],
+            "reminder": null
+          },
+          "vtodo": null,
+          "nestedComponentCount": 0
+        },
+        "resultHash": "sha256:2932e233e405fd55177b5ba8a8b556e93c7d9771456487eb454e58af0acaba21"
+      }
+    },
+    {
+      "contentId": "events:event-pattern-nps-weekly",
+      "title": "Declaration Reading",
+      "sourceState": {
+        "series": {
+          "seriesId": "nps-declaration-reading",
+          "title": "Declaration Reading"
+        },
+        "edition": {
+          "editionId": "nps-declaration-reading-summer-2026",
+          "seriesId": "nps-declaration-reading",
+          "title": "Declaration Reading",
+          "recurrencePolicy": null,
+          "freshnessStatus": "observed_snapshot"
+        },
+        "occurrences": [],
+        "windows": [],
+        "milestones": []
+      },
+      "defaultPreview": {
+        "ok": false,
+        "errors": [
+          "NO_SELECTABLE_FIXED_OCCURRENCE"
+        ],
+        "item": null,
+        "projectionPlan": null
+      }
+    },
+    {
+      "contentId": "events:event-pattern-chimac-edition",
+      "title": "2026 대구치맥페스티벌",
+      "sourceState": {
+        "series": {
+          "seriesId": "daegu-chimac-festival",
+          "title": "2026 대구치맥페스티벌"
+        },
+        "edition": {
+          "editionId": "daegu-chimac-festival-2026",
+          "seriesId": "daegu-chimac-festival",
+          "title": "2026 대구치맥페스티벌",
+          "recurrencePolicy": "edition_occurrences_not_yearly_rrule",
+          "freshnessStatus": "observed_snapshot"
+        },
+        "occurrences": [],
+        "windows": [
+          {
+            "windowId": "chimac-2026-window",
+            "temporalIntent": "availability_window",
+            "startDate": "2026-07-01",
+            "endDate": "2026-07-05",
+            "startTimeText": "18:00~",
+            "locationName": "대구 두류공원 일원",
+            "sourceRowIds": []
+          }
+        ],
+        "milestones": []
+      },
+      "defaultPreview": {
+        "ok": false,
+        "errors": [
+          "NO_SELECTABLE_FIXED_OCCURRENCE"
+        ],
+        "item": null,
+        "projectionPlan": null
+      }
+    },
+    {
+      "contentId": "events:event-pattern-nps-rescheduled",
+      "title": "Sandy Hook Park Cleanup",
+      "sourceState": {
+        "series": {
+          "seriesId": "sandy-hook-park-cleanup",
+          "title": "Sandy Hook Park Cleanup"
+        },
+        "edition": {
+          "editionId": "sandy-hook-park-cleanup-2026",
+          "seriesId": "sandy-hook-park-cleanup",
+          "title": "Sandy Hook Park Cleanup",
+          "recurrencePolicy": null,
+          "freshnessStatus": "observed_snapshot"
+        },
+        "occurrences": [
+          {
+            "occurrenceId": "sandy-hook-cleanup-2026-02-28",
+            "temporalIntent": "fixed_occurrence",
+            "start": "2026-02-28T09:00:00-05:00",
+            "end": "2026-02-28T12:00:00-05:00",
+            "locationName": "Fisherman's Trail, Parking Lot M",
+            "timezone": "America/New_York",
+            "timezoneEvidence": "inferred_from_venue",
+            "status": "cancelled",
+            "rescheduledToId": "sandy-hook-cleanup-2026-03-14",
+            "sourceRowIds": [
+              "events:event-pattern-nps-rescheduled:event-pattern-nps-rescheduled-row-01"
+            ]
+          },
+          {
+            "occurrenceId": "sandy-hook-cleanup-2026-03-14",
+            "temporalIntent": "fixed_occurrence",
+            "startDate": "2026-03-14",
+            "start": null,
+            "end": null,
+            "locationName": null,
+            "timezone": "America/New_York",
+            "timezoneEvidence": "inferred_from_venue_context",
+            "status": "rescheduled",
+            "rescheduledFromId": "sandy-hook-cleanup-2026-02-28",
+            "freshnessStatus": "needs_refresh",
+            "sourceRowIds": [
+              "events:event-pattern-nps-rescheduled:event-pattern-nps-rescheduled-row-02"
+            ]
+          }
+        ],
+        "windows": [],
+        "milestones": []
+      },
+      "defaultPreview": {
+        "ok": false,
+        "errors": [
+          "SOURCE_REFRESH_REQUIRED"
+        ],
+        "item": null,
+        "projectionPlan": null
+      }
+    },
+    {
+      "contentId": "events:event-pattern-fun-seoul-interest-list",
+      "title": "FUN SEOUL 행사 관심 목록",
+      "sourceState": {
+        "series": null,
+        "edition": {
+          "editionId": "fun-seoul-listing-2026-07-29",
+          "seriesId": null,
+          "title": "FUN SEOUL 행사 관심 목록",
+          "recurrencePolicy": null,
+          "freshnessStatus": "observed_snapshot"
+        },
+        "occurrences": [],
+        "windows": [],
+        "milestones": []
+      },
+      "defaultPreview": {
+        "ok": false,
+        "errors": [
+          "NO_SELECTABLE_FIXED_OCCURRENCE"
+        ],
+        "item": null,
+        "projectionPlan": null
+      }
+    },
+    {
+      "contentId": "events:event-pattern-boryeong-operations",
+      "title": "2026 보령머드축제 운영시간",
+      "sourceState": {
+        "series": {
+          "seriesId": "boryeong-mud-festival",
+          "title": "2026 보령머드축제 운영시간"
+        },
+        "edition": {
+          "editionId": "boryeong-mud-festival-2026",
+          "seriesId": "boryeong-mud-festival",
+          "title": "2026 보령머드축제 운영시간",
+          "recurrencePolicy": null,
+          "freshnessStatus": "observed_snapshot"
+        },
+        "occurrences": [
+          {
+            "occurrenceId": "boryeong-closing-ceremony",
+            "title": "폐막식",
+            "start": "2026-08-09T19:00:00+09:00",
+            "end": null,
+            "timezone": "Asia/Seoul",
+            "timezoneEvidence": "explicit_context",
+            "status": "scheduled",
+            "sourceRowIds": [
+              "events:event-pattern-boryeong-programs:event-pattern-boryeong-programs-row-03"
+            ]
+          },
+          {
+            "occurrenceId": "boryeong-closing-concert",
+            "title": "폐막 콘서트",
+            "start": "2026-08-09T19:20:00+09:00",
+            "end": null,
+            "timezone": "Asia/Seoul",
+            "timezoneEvidence": "explicit_context",
+            "status": "scheduled",
+            "sourceRowIds": [
+              "events:event-pattern-boryeong-programs:event-pattern-boryeong-programs-row-04"
+            ]
+          },
+          {
+            "occurrenceId": "boryeong-drone-show",
+            "title": "드론쇼",
+            "start": "2026-08-09T22:00:00+09:00",
+            "end": null,
+            "timezone": "Asia/Seoul",
+            "timezoneEvidence": "explicit_context",
+            "status": "scheduled",
+            "sourceRowIds": [
+              "events:event-pattern-boryeong-programs:event-pattern-boryeong-programs-row-05"
+            ]
+          }
+        ],
+        "windows": [
+          {
+            "windowId": "boryeong-mud-2026-window",
+            "temporalIntent": "availability_window",
+            "startDate": "2026-07-24",
+            "endDate": "2026-08-09",
+            "locationName": "Daecheon Beach",
+            "sourceRowIds": []
+          }
+        ],
+        "milestones": []
+      },
+      "defaultPreview": {
+        "ok": true,
+        "errors": [],
+        "item": {
+          "itemId": "events:event-pattern-boryeong-operations-attend-boryeong-closing-ceremony",
+          "stepId": "events:event-pattern-boryeong-operations-event-intent",
+          "title": "2026 보령머드축제 운영시간 참석하기",
+          "description": "",
+          "intent": "act",
+          "order": 0,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "선택한 회차 참석 상태를 남겼다."
+          },
+          "schedule": {
+            "mode": "absolute",
+            "start": "2026-08-09T19:00:00+09:00",
+            "end": null,
+            "timezone": "Asia/Seoul",
+            "allDay": false
+          },
+          "sourceRowIds": [
+            "events:event-pattern-boryeong-programs:event-pattern-boryeong-programs-row-03"
+          ],
+          "occurrenceId": "boryeong-closing-ceremony",
+          "scheduleOwner": "source",
+          "derivation": "direct"
+        },
+        "projectionPlan": {
+          "primary": "calendar",
+          "vevent": {
+            "component": "VEVENT",
+            "uid": "events:event-pattern-boryeong-operations-attend-boryeong-closing-ceremony@flowme.local",
+            "title": "2026 보령머드축제 운영시간 참석하기",
+            "schedule": {
+              "mode": "absolute",
+              "start": "2026-08-09T19:00:00+09:00",
+              "end": null,
+              "timezone": "Asia/Seoul",
+              "allDay": false
+            },
+            "sourceRowIds": [
+              "events:event-pattern-boryeong-programs:event-pattern-boryeong-programs-row-03"
+            ],
+            "reminder": null
+          },
+          "vtodo": null,
+          "nestedComponentCount": 0
+        },
+        "resultHash": "sha256:d1e63dadf5ce7181e66efc348cffd164e2db800fa08cb0182cbc274157376a82"
+      }
+    }
+  ]
+}

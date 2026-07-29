@@ -1,0 +1,1084 @@
+{
+  "schemaVersion": "flow-content-ui-inclusion-exclusion-v1",
+  "generatedAt": "2026-07-29T23:59:00+09:00",
+  "counts": {
+    "rawSourceBacked": 123,
+    "includedSourceBacked": 112,
+    "normal": 110,
+    "excludedVariantOrDuplicate": 11,
+    "historicalIncluded": 44
+  },
+  "duplicateKey": "normalizedCanonicalUrl + normalizedUserJob",
+  "relations": [
+    {
+      "incomingId": "legacy:round2:adult-passport-renewal",
+      "existingId": "canonical:oq-oq-c04-passport",
+      "relation": "duplicate_same_url_same_job",
+      "countAsNew": false
+    },
+    {
+      "incomingId": "legacy:round2:vehicle-regular-inspection-flow",
+      "existingId": "canonical:oq-oq-p03-vehicle",
+      "relation": "duplicate_same_anchor_url_same_job",
+      "countAsNew": false
+    },
+    {
+      "incomingId": "generalization:GB-14",
+      "existingId": "canonical:live-c01",
+      "relation": "duplicate_semantic_job_different_official_url",
+      "countAsNew": false
+    },
+    {
+      "incomingId": "legacy:preapp:overseas-packing-check",
+      "existingId": "canonical:oq-oq-p02-packing",
+      "relation": "source_variant_same_broad_job",
+      "countAsNew": false
+    },
+    {
+      "incomingId": "canonical:live-c10",
+      "existingId": "canonical:oq-oq-p02-packing",
+      "relation": "source_variant_same_broad_job",
+      "countAsNew": false
+    },
+    {
+      "incomingId": "canonical:oq-oq-c01-moving",
+      "existingId": "canonical:base-moving-d30",
+      "relation": "source_variant_same_job",
+      "countAsNew": false
+    },
+    {
+      "incomingId": "canonical:live-live-ifixit-washer-01",
+      "existingId": "canonical:oq-oq-c05-washer",
+      "relation": "source_variant_same_job",
+      "countAsNew": false
+    },
+    {
+      "incomingId": "events:event-pattern-boryeong-programs",
+      "existingId": "events:event-pattern-boryeong-operations",
+      "relation": "same_edition_section",
+      "countAsNew": false
+    },
+    {
+      "incomingId": "new:new-a04-birth-registration",
+      "existingId": "generalization:GB-01",
+      "relation": "reverified_source_variant",
+      "countAsNew": false
+    },
+    {
+      "incomingId": "new:new-b02-kkday-packing",
+      "existingId": "legacy:preapp:overseas-packing-check",
+      "relation": "reverified_same_source_job",
+      "countAsNew": false
+    },
+    {
+      "incomingId": "new:new-b01-trip-domestic-packing",
+      "existingId": "canonical:live-c10",
+      "relation": "reverified_same_source_job",
+      "countAsNew": false
+    }
+  ],
+  "records": [
+    {
+      "contentId": "canonical:base-moving-d30",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "canonical:base-baby-food-174",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "canonical:base-opic-plan",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "canonical:base-opentutorials-web1-progress",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "canonical:base-new-car-comparison",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "canonical:base-allblanc-7day-abs",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "canonical:base-wtable-summer-banchan-five",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "canonical:base-andstudio-job-prep-videos",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "canonical:oq-oq-c01-moving",
+      "inclusionStatus": "excluded_source_variant",
+      "inclusionReason": "source_variant_same_job",
+      "duplicateOf": "canonical:base-moving-d30"
+    },
+    {
+      "contentId": "canonical:oq-oq-c02-kmooc-full",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "canonical:oq-oq-c03-librivox",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "canonical:oq-oq-c04-passport",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "canonical:oq-oq-c05-washer",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "canonical:oq-oq-c06-nasa",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "canonical:oq-oq-c07-fit100",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "canonical:oq-oq-c08-ac-decision",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "canonical:oq-oq-b01-heat",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "canonical:oq-oq-b03-remodel",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "canonical:oq-oq-p01-ossu",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "canonical:oq-oq-p02-packing",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "canonical:oq-oq-p03-vehicle",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "canonical:oq-oq-p04-portfolio",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "canonical:value-vq-01",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "canonical:value-vq-03",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "canonical:value-vq-04",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "canonical:value-vq-05",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "canonical:value-vq-06",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "canonical:value-vq-10",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "canonical:value-vq-11",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "canonical:value-vq-12",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "canonical:deep-ds06",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "canonical:deep-ds08",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "canonical:live-c01",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "canonical:live-c10",
+      "inclusionStatus": "excluded_source_variant",
+      "inclusionReason": "source_variant_same_broad_job",
+      "duplicateOf": "canonical:oq-oq-p02-packing"
+    },
+    {
+      "contentId": "canonical:live-c13",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "canonical:live-c16",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "canonical:live-r02",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "canonical:live-live-ifixit-washer-01",
+      "inclusionStatus": "excluded_source_variant",
+      "inclusionReason": "source_variant_same_job",
+      "duplicateOf": "canonical:oq-oq-c05-washer"
+    },
+    {
+      "contentId": "canonical:live-kr-stibee-01",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "canonical:live-live-mdn-core-01",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "canonical:live-live-dyson-filter-01",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "canonical:live-live-jotform-event-intake-01",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "events:new-nps-ten-essentials",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "events:new-apple-quick-start",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "events:new-github-account-onboarding",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "events:new-google-codelab-ai-agent",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "events:new-mdn-core-scripting",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "events:new-gutenberg-top-reading-queue",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "events:event-kr-single-performance",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "events:event-kr-multi-show-choir",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "events:event-kr-sokcho-summer",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "events:event-kr-sema-martin-parr",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "events:event-kr-ballet-ticket-show",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "events:event-kr-qnet-exam-lifecycle",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "events:event-kr-revised-musical",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "events:event-pattern-nps-all-day",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "events:event-pattern-online-foia",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "events:event-pattern-nps-weekly",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "events:event-pattern-chimac-edition",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "events:event-pattern-nps-rescheduled",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "events:event-pattern-fun-seoul-interest-list",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "events:event-pattern-boryeong-operations",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "events:event-pattern-boryeong-programs",
+      "inclusionStatus": "excluded_source_variant",
+      "inclusionReason": "same_edition_section",
+      "duplicateOf": "events:event-pattern-boryeong-operations"
+    },
+    {
+      "contentId": "legacy:preapp:overseas-packing-check",
+      "inclusionStatus": "excluded_source_variant",
+      "inclusionReason": "source_variant_same_broad_job",
+      "duplicateOf": "canonical:oq-oq-p02-packing"
+    },
+    {
+      "contentId": "legacy:preapp:airport-departure-order",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "legacy:preapp:busan-friends-2n3d-route",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "legacy:preapp:weekday-lunchbox-menu",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "legacy:preapp:interview-d1-check",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "legacy:preapp:license-class1-medical-check",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "legacy:preapp:license-class2-renewal",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "legacy:preapp:aircon-ultrafine-filter-routine",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "legacy:preapp:beginner-5k-8week-program",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "legacy:preapp:kitten-arrival-first-week",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "legacy:round2:kmooc-hundred-schools-fifteen-week",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "legacy:round2:kids-birthday-four-week",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "legacy:round2:dol-party-four-month",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "legacy:round2:canon-photo-thirty-day",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "legacy:round2:banchan-day-one",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "legacy:round2:banchan-day-two-three",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "legacy:round2:work24-jobseeker-start",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "legacy:round2:work24-midcareer-transition",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "legacy:round2:personal-business-registration-flow",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "legacy:round2:corporate-mail-order-registration-flow",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "legacy:round2:adult-passport-renewal",
+      "inclusionStatus": "excluded_source_variant",
+      "inclusionReason": "duplicate_same_url_same_job",
+      "duplicateOf": "canonical:oq-oq-c04-passport"
+    },
+    {
+      "contentId": "legacy:round2:minor-passport-renewal",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "legacy:round2:social-content-thirty-day",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "legacy:round2:vehicle-regular-inspection-flow",
+      "inclusionStatus": "excluded_source_variant",
+      "inclusionReason": "duplicate_same_anchor_url_same_job",
+      "duplicateOf": "canonical:oq-oq-p03-vehicle"
+    },
+    {
+      "contentId": "generalization:GB-01",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "generalization:GB-02",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "generalization:GB-03",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "generalization:GB-04",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "generalization:GB-05",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "generalization:GB-06",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "generalization:GB-07",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "generalization:GB-08",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "generalization:GB-13",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "generalization:GB-14",
+      "inclusionStatus": "excluded_source_variant",
+      "inclusionReason": "duplicate_semantic_job_different_official_url",
+      "duplicateOf": "canonical:live-c01"
+    },
+    {
+      "contentId": "generalization:GB-15",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "generalization:GB-16",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "new:new-a01-seoul-wedding-110",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "new:new-a02-seoul-museum-group",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "new:new-a03-kakaopay-jeonse",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "new:new-a04-birth-registration",
+      "inclusionStatus": "excluded_source_variant",
+      "inclusionReason": "reverified_source_variant",
+      "duplicateOf": "generalization:GB-01"
+    },
+    {
+      "contentId": "new:new-a05-nfa-home-fire",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "new:new-a06-elementary-entry-2026",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "new:new-a07-seoul-bus-support",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "new:new-a08-income-tax",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "new:new-b01-trip-domestic-packing",
+      "inclusionStatus": "excluded_source_variant",
+      "inclusionReason": "reverified_same_source_job",
+      "duplicateOf": "canonical:live-c10"
+    },
+    {
+      "contentId": "new:new-b02-kkday-packing",
+      "inclusionStatus": "excluded_source_variant",
+      "inclusionReason": "reverified_same_source_job",
+      "duplicateOf": "legacy:preapp:overseas-packing-check"
+    },
+    {
+      "contentId": "new:new-b03-fridge-week",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "new:new-b04-organize-seven",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "new:new-b05-storage-projects",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "new:new-b06-wtable-lemon-weekend",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "new:new-b07-interior-consultation",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "new:new-b08-banchan-ten",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "new:new-c01-programmers-kit",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "new:new-c02-ifixit-hose",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "new:new-c03-nps-junior-ranger",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "new:new-c04-instructables-origami",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "new:new-c05-foodsafety-storage",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "new:new-c06-goodfood-lemon",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "new:new-c07-roadmap-root",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "new:new-c08-todoist-podcast",
+      "inclusionStatus": "included",
+      "inclusionReason": "source-backed record with a distinct user job",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:national-scholarship-apply-html:1",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:housing-subscription-account-html:2",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:jeonse-guarantee-apply-html:3",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:welfare-benefit-finder-html:4",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:small-business-fund-check-html:5",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:unemployment-benefit-apply-html:6",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:job-seeker-allowance-apply-html:7",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:pension-estimate-check-html:8",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:health-insurance-dependent-html:9",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:infant-health-checkup-schedule-html:10",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:adult-vaccine-schedule-check-html:11",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:citizen-secretary-alerts-html:12",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:first-passport-issue-html:13",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:overseas-safety-register-html:14",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:customs-traveler-declare-html:15",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:used-car-ownership-transfer-html:16",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:ev-subsidy-apply-html:17",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:property-local-tax-pay-html:18",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:tax-refund-find-html:19",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:birth-registration-prep-html:20",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:safe-inheritance-onestop-html:21",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:seal-or-signature-certificate-html:22",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:childcare-fee-support-apply-html:23",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:military-exam-prep-html:24",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:recipe-video-execute-html:25",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:weekly-meal-plan-html:26",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:closet-organize-1day-html:27",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:kitchen-reset-organize-html:28",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:monthly-household-budget-html:29",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:payday-finance-routine-html:30",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:reading-habit-30day-html:31",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:book-finish-one-html:32",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:morning-skincare-routine-html:33",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:skin-weekly-check-html:34",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:domestic-trip-d7-html:35",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:travel-packing-list-html:36",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:home-cafe-daily-html:37",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:new-hobby-30day-html:38",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:portfolio-4week-html:39",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:blog-youtube-start-html:40",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:morning-routine-30day-html:41",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:digital-detox-weekly-html:42",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:dog-walk-routine-html:43",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    },
+    {
+      "contentId": "historical:pet-health-observation-html:44",
+      "inclusionStatus": "included_historical_only",
+      "inclusionReason": "historical UI reference; excluded from normal count",
+      "duplicateOf": null
+    }
+  ]
+}
