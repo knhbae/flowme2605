@@ -6,9 +6,9 @@
 | --- | --- | --- |
 | 1. Freeze and inventory | `COMPLETE_FOR_CURRENT_SNAPSHOT` | 167 raw, 123 source-backed raw, 156 Gallery and 110 normal records; 24 new URLs yielded 19 distinct additions plus 3 existing-job reverifications |
 | 2. Derived data and engines | `COMPLETE_FOR_CURRENT_SNAPSHOT` | 893 Item, 1,172 SourceRow, 550 projection cells, 16 pacing and 14 event fixtures |
-| 3. Interactive Gallery | `IMPLEMENTED_FINAL_BROWSER_QA_PENDING` | Standalone Gallery and summary report exist; final responsive and interaction pass remains `PENDING` |
+| 3. Interactive Gallery | `COMPLETE_BROWSER_QA_PASS` | 156 detail, 550 normal projection, 53 pacing, 14 event, 156 review and 156 lineage routes passed on final Gallery SHA `021667d1…af56` |
 | 4. Independent review and planning handoff | `COMPLETE_INTERNAL_EVIDENCE_USER_REVIEW_PENDING` | Final A2/B2 runs cover 110/110 records; manual SourceRow adjudication covers 141/141 fields with 17 Modify keys across 11 contents; synthesis now links 10 gaps and 16 draft decisions |
-| 5. Validation and handoff | `IN_PROGRESS_BROWSER_QA_PENDING` | Manual semantic integration is complete; validator 54/54 and targeted tests 13/13 pass. Final docs rerun after the last Gallery/report build and browser QA remain |
+| 5. Validation and handoff | `COMPLETE_INTERNAL_QA` | Validator 61/61 and targeted tests 14/14 pass; 1440×900, 768×1024 and 390×844 browser QA has zero route failure, overflow, broken asset or console error |
 
 Observed-user validation and external Calendar/VTODO round-trip both remain
 `NOT_RUN`. Completing this plan must not change those states without the
@@ -104,3 +104,9 @@ Exit:
 5. Leave the Gallery open for direct user review.
 6. Keep every planning recommendation at `DRAFT_PENDING_USER_REVIEW` until the
    user submits review data.
+
+The final machine and browser evidence is recorded in
+`validation-results-v1.json`, `browser-qa-v1.json` and
+`design-fidelity-ledger-v1.md`. Independent A2/B2 judgments remain tied to
+their frozen pre-normalization hashes; final source-field, tier and display
+normalizations were not relabeled as an additional independent review.

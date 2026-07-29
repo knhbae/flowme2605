@@ -4,8 +4,8 @@
   "corpusFingerprint": "sha256:d56b289fd301805fe1299b867497b0840f8d379d1459ec0148639f8b7d5dce32",
   "summary": {
     "status": "PASS",
-    "checks": 54,
-    "passed": 54,
+    "checks": 61,
+    "passed": 61,
     "failed": 0
   },
   "corpus": {
@@ -69,9 +69,10 @@
     }
   },
   "claimBoundary": {
-    "observedUserValidation": "NOT_REVIEWED_BY_USER",
+    "userReviewStatus": "NOT_REVIEWED_BY_USER",
+    "observedUserValidation": "NOT_RUN",
     "externalCalendarVtodoRoundTrip": "NOT_RUN",
-    "browserQa": "PENDING",
+    "browserQa": "PASS",
     "zeroInventionClaim": "NOT_PROVEN"
   },
   "checks": [
@@ -486,14 +487,23 @@
       "id": "semantic.manual_adjudication_inputs_frozen",
       "pass": true,
       "evidence": {
-        "semantic-provenance-audit-v1.json": {
-          "fileSha256": "sha256:2d988143bbb8df3e15363094c862614c296e3d1e1d6b49a3e1a3215e4e8eb8c0",
-          "embeddedAuditHash": "sha256:f38c5890a13c8c3924cb9fd714ace39d1beab97e0e596c52be2cde3b053e20d1"
+        "reviewedInputArtifacts": {
+          "semantic-provenance-audit-v1.json": {
+            "fileSha256": "sha256:2d988143bbb8df3e15363094c862614c296e3d1e1d6b49a3e1a3215e4e8eb8c0",
+            "embeddedAuditHash": "sha256:f38c5890a13c8c3924cb9fd714ace39d1beab97e0e596c52be2cde3b053e20d1"
+          },
+          "content-ui-view-model-v1.json": {
+            "fileSha256": "sha256:25aacc34ad8b2062a6bf28dec683b14f3d989f407313af519284016d46ea05b9"
+          },
+          "corpusFingerprint": "sha256:d56b289fd301805fe1299b867497b0840f8d379d1459ec0148639f8b7d5dce32"
         },
-        "content-ui-view-model-v1.json": {
-          "fileSha256": "sha256:25aacc34ad8b2062a6bf28dec683b14f3d989f407313af519284016d46ea05b9"
+        "currentSemanticAuditHash": "sha256:f38c5890a13c8c3924cb9fd714ace39d1beab97e0e596c52be2cde3b053e20d1",
+        "currentCorpusFingerprint": "sha256:d56b289fd301805fe1299b867497b0840f8d379d1459ec0148639f8b7d5dce32",
+        "currentFileHashes": {
+          "semanticAudit": "sha256:375f0788cb90203bd9eab8164a97cd12f33f9ebf2b2dcb598b18af9ca1a5a6cf",
+          "viewModel": "sha256:f8e2e0d63cf05b3c2d6e809c41843820e60468c182ab2efec934bb755fc9ee31"
         },
-        "corpusFingerprint": "sha256:d56b289fd301805fe1299b867497b0840f8d379d1459ec0148639f8b7d5dce32"
+        "note": "Post-review UI/source-field metadata changed file hashes; embedded semantic audit hash, corpus fingerprint, and exact queue coverage remain the transfer boundary."
       }
     },
     {
@@ -1079,6 +1089,195 @@
       }
     },
     {
+      "id": "browser_qa.final_gallery_fingerprint_matches",
+      "pass": true,
+      "evidence": {
+        "declared": "021667d19d042a5dfd418f3dbcbf553fd871a08b0fd47703fe716538419aaf56",
+        "current": "021667d19d042a5dfd418f3dbcbf553fd871a08b0fd47703fe716538419aaf56"
+      }
+    },
+    {
+      "id": "browser_qa.final_report_fingerprint_matches",
+      "pass": true,
+      "evidence": {
+        "declared": "8f6582426a2acd17251fb959924317fd4974bf384ca39c81ed29dd15f1e85504",
+        "current": "8f6582426a2acd17251fb959924317fd4974bf384ca39c81ed29dd15f1e85504"
+      }
+    },
+    {
+      "id": "browser_qa.all_declared_routes_pass",
+      "pass": true,
+      "evidence": {
+        "expectedRouteCoverage": {
+          "normalContentDetail": 110,
+          "boundaryAndHistoricalDetail": 46,
+          "normalProjectionRoutes": 550,
+          "pacingRoutes": 53,
+          "eventRoutes": 14,
+          "reviewRoutes": 156,
+          "lineageRoutes": 156
+        },
+        "routeCoverage": {
+          "normalContentDetail": {
+            "expected": 110,
+            "tested": 110,
+            "failed": 0
+          },
+          "boundaryAndHistoricalDetail": {
+            "expected": 46,
+            "tested": 46,
+            "failed": 0
+          },
+          "normalProjectionRoutes": {
+            "expected": 550,
+            "tested": 550,
+            "failed": 0,
+            "requiredFields": [
+              "heading",
+              "recommendation",
+              "availability",
+              "fidelity"
+            ]
+          },
+          "pacingRoutes": {
+            "expected": 53,
+            "tested": 53,
+            "failed": 0
+          },
+          "eventRoutes": {
+            "expected": 14,
+            "tested": 14,
+            "failed": 0
+          },
+          "reviewRoutes": {
+            "expected": 156,
+            "tested": 156,
+            "failed": 0
+          },
+          "lineageRoutes": {
+            "expected": 156,
+            "tested": 156,
+            "failed": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "browser_qa.required_viewports_pass",
+      "pass": true,
+      "evidence": {
+        "summary": {
+          "status": "PASS",
+          "testedOrigin": "http://127.0.0.1:4181",
+          "galleryRouteFailures": 0,
+          "overflowFindings": 0,
+          "brokenAssets": 0,
+          "consoleErrors": 0,
+          "emptyDetailScreens": 0
+        },
+        "viewportResults": [
+          {
+            "name": "desktop_gallery",
+            "width": 1440,
+            "height": 900,
+            "horizontalOverflow": false,
+            "brokenAssets": 0,
+            "emptyDetailScreens": 0
+          },
+          {
+            "name": "tablet_gallery",
+            "width": 768,
+            "height": 1024,
+            "horizontalOverflow": false,
+            "brokenAssets": 0,
+            "emptyDetailScreens": 0
+          },
+          {
+            "name": "mobile_gallery",
+            "width": 390,
+            "height": 844,
+            "horizontalOverflow": false,
+            "brokenAssets": 0,
+            "emptyDetailScreens": 0
+          },
+          {
+            "name": "mobile_flow_detail",
+            "width": 390,
+            "height": 844,
+            "horizontalOverflow": false,
+            "brokenAssets": 0,
+            "emptyDetailScreens": 0,
+            "intentionalEmptyVisualControls": 27,
+            "intentionalEmptyVisualControlsReason": "이사 Flow의 aria-label이 있는 미완료 check-circle 버튼"
+          }
+        ]
+      }
+    },
+    {
+      "id": "browser_qa.final_report_pass",
+      "pass": true,
+      "evidence": {
+        "status": "PASS",
+        "representativeContentSections": 24,
+        "emptyRepresentativeSections": 0,
+        "viewports": [
+          {
+            "width": 1440,
+            "height": 900,
+            "horizontalOverflow": false,
+            "brokenAssets": 0
+          },
+          {
+            "width": 768,
+            "height": 1024,
+            "horizontalOverflow": false,
+            "brokenAssets": 0
+          },
+          {
+            "width": 390,
+            "height": 844,
+            "horizontalOverflow": false,
+            "brokenAssets": 0
+          }
+        ],
+        "horizontalOverflowFindings": 0,
+        "brokenAssets": 0,
+        "consoleErrors": 0,
+        "intentionalEmptyVisualElements": 9,
+        "intentionalEmptyVisualElementsReason": "독립 검토 일치율을 표시하는 aria 밖의 막대 i 요소"
+      }
+    },
+    {
+      "id": "browser_qa.screenshots_exist_and_match",
+      "pass": true,
+      "evidence": [
+        {
+          "path": "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/visual-evidence/gallery-desktop-1440x900-final.jpg",
+          "sha256": "fe90e12d3e861adc188d514ad802b1c364eb33c1315aced127b209fbcdb6e2d3"
+        },
+        {
+          "path": "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/visual-evidence/gallery-tablet-768x1024-final.jpg",
+          "sha256": "a5e97a91d73e56af1f1ca383cd3bf0d7e7f1cf682d66e5ee0d06d905a78dca32"
+        },
+        {
+          "path": "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/visual-evidence/gallery-mobile-390x844-final.jpg",
+          "sha256": "8f18ec2bbca4dc8508972b1661fa35bc96a6628026141b3b1a607f62f05896a2"
+        },
+        {
+          "path": "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/visual-evidence/gallery-mobile-detail-top-390x844-final.jpg",
+          "sha256": "2934c728f4f9a6db8422364ad51e9f7b64b346ddf9c7faa158d89fe47948bccc"
+        },
+        {
+          "path": "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/visual-evidence/review-report-desktop-1440x900-final.jpg",
+          "sha256": "d121a16f01efbc6f6ba88f6816ae91d20c49d6efdf5164d0a5e74595273aaef1"
+        },
+        {
+          "path": "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/visual-evidence/review-report-mobile-390x844-final.jpg",
+          "sha256": "aa6c3c90677a72040682ce3f9ff3b59667b5c6e393dfd0219a4f6514b2ea5292"
+        }
+      ]
+    },
+    {
       "id": "claim.external_calendar_round_trip_not_run",
       "pass": true,
       "evidence": {
@@ -1089,7 +1288,15 @@
       "id": "claim.observed_user_validation_not_claimed",
       "pass": true,
       "evidence": {
-        "status": "NOT_REVIEWED_BY_USER"
+        "status": "NOT_RUN"
+      }
+    },
+    {
+      "id": "claim.user_review_not_populated_by_internal_qa",
+      "pass": true,
+      "evidence": {
+        "userReviewStatus": "NOT_REVIEWED_BY_USER",
+        "browserQa": "NOT_REVIEWED_BY_USER"
       }
     }
   ]

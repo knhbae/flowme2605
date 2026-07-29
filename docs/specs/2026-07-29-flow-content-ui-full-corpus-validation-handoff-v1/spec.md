@@ -1,12 +1,11 @@
 # Flow Content UI Full-Corpus Validation & Planning Handoff Lab v1
 
-- Status: Active implementation — data/UI artifacts generated; final browser
-  QA and direct user review pending
+- Status: Internal implementation and QA complete — direct user review pending
 - Date: 2026-07-29
 - Scope: standalone docs harness, derived corpus/view model, projection and
   interaction previews, internal review, planning handoff
 - Production app/runtime/DB/API: unchanged
-- Final browser QA: `PENDING`
+- Final browser QA: `PASS`
 - Local user review state: `NOT_REVIEWED_BY_USER`
 - Observed-user validation: `NOT_RUN`
 - External Calendar/VTODO round-trip: `NOT_RUN`
@@ -220,13 +219,13 @@ exact match is retained as a planning signal rather than hidden by averaging.
 
 The independent reviews inspected Gallery SHA
 `9be4105dcf5a62a82dc31ddc3a6b37acaa87b9e886d70d27c9fc5f979c1d7d0b`.
-After synthesis, the Gallery was regenerated to show the combined internal
-verdicts; its current SHA is
-`9c6732991ac455d65d693550cf8e9de54f1cdf4d6906713633f94ea17117b86c`.
-The view-model and projection-result hashes did not change. Therefore the
-reviews remain valid for the frozen content/projection inputs, while the final
-post-synthesis rendered surface still requires its own browser QA and must not
-be described as independently reviewed byte-for-byte.
+After synthesis and source-field/tier/display normalization, the final Gallery
+SHA is
+`021667d19d042a5dfd418f3dbcbf553fd871a08b0fd47703fe716538419aaf56`.
+The independent review was not rerun and is not described as byte-identical
+review of this final surface. Its 110 content IDs and 550 projection judgments
+remain frozen internal evidence; the final normalization was instead checked
+through exact semantic-queue reconciliation and a new full browser pass.
 
 Every local user state begins as `NOT_REVIEWED_BY_USER`. Screenshots, browser
 QA, agent agreement and validator success are not observed-user validation.
@@ -291,9 +290,10 @@ Machine-readable planning evidence:
 - `validation-results-v1.json`
 
 All planning decisions remain `DRAFT_PENDING_USER_REVIEW`. Final browser QA is
-still `PENDING`. The final machine validator and targeted tests must include
-the manual semantic adjudication contract. Observed-user validation and external
-Calendar/VTODO round-trip remain `NOT_RUN`.
+`PASS`, the integrated validator is 61/61 and targeted tests are 14/14. These
+include the manual semantic adjudication and final fingerprint contracts.
+Observed-user validation and external Calendar/VTODO round-trip remain
+`NOT_RUN`.
 
 ## 11. Out of scope
 

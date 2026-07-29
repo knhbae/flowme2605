@@ -1,0 +1,244 @@
+{
+  "schemaVersion": "flow-content-ui-browser-qa-v1",
+  "generatedAt": "2026-07-29T15:22:05+09:00",
+  "summary": {
+    "status": "PASS",
+    "testedOrigin": "http://127.0.0.1:4181",
+    "galleryRouteFailures": 0,
+    "overflowFindings": 0,
+    "brokenAssets": 0,
+    "consoleErrors": 0,
+    "emptyDetailScreens": 0
+  },
+  "artifacts": {
+    "gallery": {
+      "path": "docs/content-audit/2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html",
+      "sha256": "021667d19d042a5dfd418f3dbcbf553fd871a08b0fd47703fe716538419aaf56"
+    },
+    "contentUiViewModel": {
+      "path": "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/content-ui-view-model-v1.json",
+      "sha256": "f8e2e0d63cf05b3c2d6e809c41843820e60468c182ab2efec934bb755fc9ee31"
+    },
+    "projectionResults": {
+      "path": "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/projection-ui-results-v1.json",
+      "sha256": "51d4db45d10d1cd4826a59f6d6e57a8f348646757fc643b897a24b7f0b2add45"
+    },
+    "reviewReport": {
+      "path": "docs/content-audit/2026-07-29-flow-content-ui-full-corpus-validation-review-v1-ko.html",
+      "sha256": "8f6582426a2acd17251fb959924317fd4974bf384ca39c81ed29dd15f1e85504"
+    }
+  },
+  "runLineage": {
+    "independentReviewGallerySha256": "9be4105d6b3d63203b39ff52205433542309347529176a3247dd5994ab26f6e2",
+    "synthesizedGallerySha256": "9c67f65d4c480a6f1fc304b744e4d7782ef9ca6288f2b32ea96bc7dedc17fdcd",
+    "finalBrowserQaGallerySha256": "021667d19d042a5dfd418f3dbcbf553fd871a08b0fd47703fe716538419aaf56",
+    "postReviewUiChanges": [
+      "행사 preview가 화면에 표시된 기본 intent를 첫 클릭부터 사용하도록 수정",
+      "date-only 접수·시험·발표 window가 startDate/endDate를 보존하도록 수정",
+      "sourceRows가 없는 event milestone은 projection blocked로 표시",
+      "원문에서 이미 확보한 20개 sourceProvidedField를 minimumInputs에서 분리",
+      "부분 원문 2건을 Product candidate에서 Structure probe로 하향",
+      "빈 historical source title을 display title로 보완"
+    ],
+    "independentReviewWasNotRerunAfterFinalDataNormalizations": true,
+    "transferBoundary": "독립 검토는 고정된 110개 contentId와 550개 projection 의미 판정에 사용하고, 최종 source-field·tier·표시 보강은 별도 browser QA와 semantic queue reconciliation으로 검증한다."
+  },
+  "routeCoverage": {
+    "normalContentDetail": {
+      "expected": 110,
+      "tested": 110,
+      "failed": 0
+    },
+    "boundaryAndHistoricalDetail": {
+      "expected": 46,
+      "tested": 46,
+      "failed": 0
+    },
+    "normalProjectionRoutes": {
+      "expected": 550,
+      "tested": 550,
+      "failed": 0,
+      "requiredFields": [
+        "heading",
+        "recommendation",
+        "availability",
+        "fidelity"
+      ]
+    },
+    "pacingRoutes": {
+      "expected": 53,
+      "tested": 53,
+      "failed": 0
+    },
+    "eventRoutes": {
+      "expected": 14,
+      "tested": 14,
+      "failed": 0
+    },
+    "reviewRoutes": {
+      "expected": 156,
+      "tested": 156,
+      "failed": 0
+    },
+    "lineageRoutes": {
+      "expected": 156,
+      "tested": 156,
+      "failed": 0
+    }
+  },
+  "viewportResults": [
+    {
+      "name": "desktop_gallery",
+      "width": 1440,
+      "height": 900,
+      "horizontalOverflow": false,
+      "brokenAssets": 0,
+      "emptyDetailScreens": 0
+    },
+    {
+      "name": "tablet_gallery",
+      "width": 768,
+      "height": 1024,
+      "horizontalOverflow": false,
+      "brokenAssets": 0,
+      "emptyDetailScreens": 0
+    },
+    {
+      "name": "mobile_gallery",
+      "width": 390,
+      "height": 844,
+      "horizontalOverflow": false,
+      "brokenAssets": 0,
+      "emptyDetailScreens": 0
+    },
+    {
+      "name": "mobile_flow_detail",
+      "width": 390,
+      "height": 844,
+      "horizontalOverflow": false,
+      "brokenAssets": 0,
+      "emptyDetailScreens": 0,
+      "intentionalEmptyVisualControls": 27,
+      "intentionalEmptyVisualControlsReason": "이사 Flow의 aria-label이 있는 미완료 check-circle 버튼"
+    }
+  ],
+  "interactionChecks": [
+    {
+      "id": "gallery-search-and-filter",
+      "status": "PASS",
+      "evidence": "WEB1 정확 검색 1건, Structure probe 69건, card/list와 정렬, 제외 11건 및 duplicate link 11건"
+    },
+    {
+      "id": "all-items-and-five-projections",
+      "status": "PASS",
+      "evidence": "WEB1 26개 Item과 이사 27개 Item 전체 및 다섯 projection 실제 결과 확인"
+    },
+    {
+      "id": "checklist-todo-distinction",
+      "status": "PASS",
+      "evidence": "이사 Checklist 6 bounded group/27 child와 Todo 6 parent+27 child 및 flat fallback을 별도로 확인"
+    },
+    {
+      "id": "calendar-bundle-loss",
+      "status": "PASS",
+      "evidence": "이사 Calendar 6 step bundle/27 child, child Item ID와 외부 완료 상태 손실 경고 확인"
+    },
+    {
+      "id": "pacing-deterministic-preview",
+      "status": "PASS",
+      "evidence": "WEB1 26개를 목표 종료일·허용 요일·쉬는 날·20:30 조건으로 13 session bundle에 중복·누락 없이 배치"
+    },
+    {
+      "id": "pacing-todo-due-not-event",
+      "status": "PASS",
+      "evidence": "WEB1 Todo due 결과는 parent 1+dated task 26이며 VEVENT 0"
+    },
+    {
+      "id": "event-intent-and-occurrence",
+      "status": "PASS",
+      "evidence": "선택 회차 attend는 VEVENT, book은 VTODO; 종료·취소·변경 회차는 차단"
+    },
+    {
+      "id": "event-date-only-lifecycle",
+      "status": "PASS",
+      "evidence": "Q-Net 접수·시험 date window와 milestone provenance block을 확인"
+    },
+    {
+      "id": "review-local-state",
+      "status": "PASS",
+      "evidence": "필수 응답 없는 저장은 미검토 유지, 별도 QA origin에서 저장·새로고침·export/import merge·replace 확인"
+    },
+    {
+      "id": "mobile-navigation-dialogs",
+      "status": "PASS",
+      "evidence": "drawer 검색·focus restore·Escape, 출처 dialog, 검토 dialog, mobile Sheet card fallback 확인"
+    },
+    {
+      "id": "data-lineage",
+      "status": "PASS",
+      "evidence": "WEB1 Source→26 SourceRow→26 Item→Step→Flow→Bundle→UserFlowCopy→26 Occurrence→5 Projection 확인"
+    }
+  ],
+  "reportQa": {
+    "status": "PASS",
+    "representativeContentSections": 24,
+    "emptyRepresentativeSections": 0,
+    "viewports": [
+      {
+        "width": 1440,
+        "height": 900,
+        "horizontalOverflow": false,
+        "brokenAssets": 0
+      },
+      {
+        "width": 768,
+        "height": 1024,
+        "horizontalOverflow": false,
+        "brokenAssets": 0
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "horizontalOverflow": false,
+        "brokenAssets": 0
+      }
+    ],
+    "horizontalOverflowFindings": 0,
+    "brokenAssets": 0,
+    "consoleErrors": 0,
+    "intentionalEmptyVisualElements": 9,
+    "intentionalEmptyVisualElementsReason": "독립 검토 일치율을 표시하는 aria 밖의 막대 i 요소"
+  },
+  "screenshots": [
+    {
+      "path": "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/visual-evidence/gallery-desktop-1440x900-final.jpg",
+      "sha256": "fe90e12d3e861adc188d514ad802b1c364eb33c1315aced127b209fbcdb6e2d3"
+    },
+    {
+      "path": "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/visual-evidence/gallery-tablet-768x1024-final.jpg",
+      "sha256": "a5e97a91d73e56af1f1ca383cd3bf0d7e7f1cf682d66e5ee0d06d905a78dca32"
+    },
+    {
+      "path": "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/visual-evidence/gallery-mobile-390x844-final.jpg",
+      "sha256": "8f18ec2bbca4dc8508972b1661fa35bc96a6628026141b3b1a607f62f05896a2"
+    },
+    {
+      "path": "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/visual-evidence/gallery-mobile-detail-top-390x844-final.jpg",
+      "sha256": "2934c728f4f9a6db8422364ad51e9f7b64b346ddf9c7faa158d89fe47948bccc"
+    },
+    {
+      "path": "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/visual-evidence/review-report-desktop-1440x900-final.jpg",
+      "sha256": "d121a16f01efbc6f6ba88f6816ae91d20c49d6efdf5164d0a5e74595273aaef1"
+    },
+    {
+      "path": "docs/specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/visual-evidence/review-report-mobile-390x844-final.jpg",
+      "sha256": "aa6c3c90677a72040682ce3f9ff3b59667b5c6e393dfd0219a4f6514b2ea5292"
+    }
+  ],
+  "claimBoundary": {
+    "cleanFinalOriginUserReviewState": "NOT_REVIEWED_BY_USER",
+    "observedUserValidation": "NOT_RUN",
+    "externalCalendarVtodoRoundTrip": "NOT_RUN",
+    "productionRuntimeChanged": false
+  }
+}

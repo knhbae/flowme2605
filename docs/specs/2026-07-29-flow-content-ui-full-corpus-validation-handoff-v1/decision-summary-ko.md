@@ -1,7 +1,7 @@
 # Flow Content UI Full-Corpus Lab v1 — 5분 결정 요약
 
 - 상태: `DRAFT_PENDING_USER_REVIEW`
-- 브라우저 QA: `PENDING`
+- 브라우저 QA: `PASS`
 - 실제 사용자 검토: `NOT_REVIEWED_BY_USER` / observed-user validation `NOT_RUN`
 - 외부 Calendar/VTODO 왕복: `NOT_RUN`
 - production app/runtime/DB/API 변경: 없음
@@ -80,7 +80,11 @@ Primary projection 선택 일치율은 86%, Checklist/Todo 일치율은 52%다.
 이는 규칙이 어디서 흔들리는지 찾는 내부 증거다. 실제 사용자가 저장·실행·재방문할지는 아직 검증하지 않았다.
 
 A2/B2가 직접 본 Gallery SHA는 `9be4105dcf5a…`이다.
-현재 Gallery SHA는 `9c6732991ac4…`이며 합성된 내부 판정 표시를 넣은 post-synthesis 화면이다. view model과 projection 입력은 그대로지만, 최종 렌더링 자체는 browser QA로 따로 확인해야 하며 byte-identical 독립 검토라고 표현하지 않는다.
+현재 Gallery SHA는 `021667d19d04…`이다. 합성 뒤 source 값 재입력 제거,
+partial-source tier 조정, 행사 date-window 보강이 추가되었으므로
+byte-identical 독립 검토라고 표현하지 않는다. 대신 최종 화면에서 상세
+156개, projection 550개, pacing 53개, 행사 14개, 검토 156개, lineage
+156개를 다시 열었고 실패 0으로 확인했다.
 
 ## 기획에서 확인할 순서
 

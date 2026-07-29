@@ -10,7 +10,7 @@
     .provenance{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:32px}.provenance article,.coverage-card{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:22px}.provenance b{display:block;font-size:34px;line-height:1.1}.provenance span,.provenance small{display:block;color:var(--muted)}.coverage-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:26px}.coverage-card h3{margin:0 0 14px}.coverage-card ul{list-style:none;margin:0;padding:0}.coverage-card li{display:flex;justify-content:space-between;gap:16px;padding:9px 0;border-top:1px solid var(--line)}.coverage-card li span{color:var(--muted)}.coverage-card li strong{font-variant-numeric:tabular-nums}.status-note{background:var(--yellowSoft);border:1px solid #ead385;border-radius:16px;padding:16px 18px;margin-top:20px}
     main,.hero,.section,.case,.trace-block,.projection-result>div,.gap-card,.decision,.status,.status>div{min-width:0;max-width:100%}.decision div{grid-template-columns:54px minmax(0,1fr)}.projection-result{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.claim,.decision,.projection-result b,.projection-result small,.status b,.status p,.status span{overflow-wrap:anywhere;word-break:break-word}
     @media(max-width:900px){.top{padding:0 16px}.top nav a:not(.primary){display:none}.hero,.section,.case{padding:54px 18px;min-height:auto;width:100%}.hero-grid,.two,.metrics,.gap-grid,.decision-grid,.status,.coverage-grid,.provenance{grid-template-columns:minmax(0,1fr)}.hero-card{min-height:190px}.pipeline{grid-template-columns:minmax(0,1fr)}.pipe-arrow{transform:rotate(90deg)}.trace{grid-template-columns:minmax(0,1fr)}.arrow{transform:rotate(90deg);height:30px}.judgment{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.metrics{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.bar-row{grid-template-columns:100px minmax(0,1fr) 30px}.case{padding-top:72px}.case h2{font-size:34px}.projection-result{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
-    @media(max-width:440px){.judgment,.projection-result{grid-template-columns:minmax(0,1fr)}.metric b{font-size:24px}.top{height:58px}.top .brand{font-size:18px;line-height:1.15}.top a.primary{padding:7px 9px;max-width:110px;text-align:center;line-height:1.15}.hero{padding-top:40px}h1{font-size:40px}}
+    @media(max-width:440px){.judgment,.projection-result{grid-template-columns:minmax(0,1fr)}.metric b{font-size:24px}.top{height:58px}.top .brand{font-size:18px;line-height:1.15}.top a.primary{padding:7px 9px;max-width:none;white-space:nowrap;text-align:center;font-size:13px;line-height:1.15}.hero{padding-top:40px}h1{font-size:40px}}
   </style>
 </head>
 <body>
@@ -28,7 +28,7 @@
       <div class="eyebrow">Flow Content UI Full-Corpus Validation & Planning Handoff Lab v1</div>
       <h1>아키텍처는 설명이 아니라<br>110개 source-backed 콘텐츠 화면으로 판단합니다.</h1>
       <p>기존·계승 91개와 이번에 직접 원문을 확인해 별도 user job으로 추가한 19개를 같은 canonical 구조에 넣었습니다. 신규 원문 중 정상 자격은 22개였고, 3개는 기존 user job 재확인으로 병합했습니다. 893개 Item과 Calendar·Checklist·Todo·Sheet·Memo 결과를 전체 Gallery에서 빠짐없이 열 수 있습니다.</p>
-      <span class="claim">브라우저 QA: PENDING · 사용자 검토: NOT_REVIEWED_BY_USER · observed-user validation: NOT_RUN · 외부 Calendar/VTODO 왕복: NOT_RUN</span>
+      <span class="claim">브라우저 QA: PASS · 사용자 검토: NOT_REVIEWED_BY_USER · observed-user validation: NOT_RUN · 외부 Calendar/VTODO 왕복: NOT_RUN</span>
       <div class="hero-grid"><a class="hero-card" href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/canonical%3Abase-opentutorials-web1-progress">
       <span>학습·독서 · Sheet</span>
       <strong>생활코딩 WEB1 진도표</strong>
@@ -110,7 +110,7 @@
             <dt>6축 verdict + 2개 선택 exact</dt><dd>6/110</dd>
           </dl>
           <div class="warning">두 내부 agent가 동결된 corpus와 review surface를 독립 판독했습니다. 6축 적합성 verdict와 실제 Primary·Checklist/Todo 선택까지 모두 같은 콘텐츠는 6개입니다. 이는 규칙 불일치 탐지용 내부 증거이며, 관찰 사용자 행동이나 기본값 승인이 아닙니다.</div>
-          <div class="status-note">A2/B2가 본 review surface Gallery SHA는 <code>9be4105dcf5a…</code>입니다. 현재 Gallery SHA는 <code>9c6732991ac4…</code>이며, 합성된 내부 판정 표시를 넣은 뒤 생성된 post-synthesis surface입니다. view model과 projection 입력은 그대로지만 최종 렌더링 자체는 독립 검토 대상과 byte-identical하지 않으므로 최종 browser QA에서 별도로 확인합니다.</div>
+          <div class="status-note">A2/B2가 본 review surface Gallery SHA는 <code>9be4105dcf5a…</code>입니다. 현재 Gallery SHA는 <code>021667d19d04…</code>이며, 합성된 내부 판정 표시를 넣은 뒤 생성된 post-synthesis surface입니다. view model과 projection 입력은 그대로지만 최종 렌더링 자체는 독립 검토 대상과 byte-identical하지 않으므로 최종 browser QA에서 별도로 확인합니다.</div>
         </div>
       </div>
       <div class="coverage-grid">
@@ -1492,8 +1492,8 @@
       <div class="eyebrow">QA boundary</div>
       <h2>자동 검증과 실제 사용자 검토를 분리했습니다.</h2>
       <div class="status">
-        <div><span>Machine validator</span><b>54/54 PASS</b><p>corpus·projection·provenance·pacing·event·review-state 계약</p></div>
-        <div><span>Final browser QA</span><b>PENDING</b><p>1440×900·768×1024·390×844 상호작용과 console·overflow·asset 검사는 최종 pass 전입니다.</p></div>
+        <div><span>Machine validator</span><b>61/61 PASS</b><p>corpus·projection·provenance·pacing·event·review-state 계약</p></div>
+        <div><span>Final browser QA</span><b>PASS</b><p>동결된 최종 Gallery에서 1440×900·768×1024·390×844 상호작용과 console·overflow·asset 검사를 기록했습니다.</p></div>
         <div><span>User review</span><b>NOT_REVIEWED_BY_USER</b><p>Gallery의 검토 패널에서 사용자가 직접 남긴 결과만 사용자 검토입니다. observed-user validation은 NOT_RUN입니다.</p></div>
         <div><span>External Calendar/VTODO round-trip</span><b>NOT_RUN</b><p>Google·Outlook·Apple Calendar 계정 왕복 호환성을 검증했다고 주장하지 않습니다.</p></div>
         <div><span>Production impact</span><b>NONE</b><p>app runtime·DB·crawler·production API·production UI를 변경하지 않았습니다.</p></div>

@@ -5,13 +5,13 @@
 | Evidence | Current state | Meaning |
 | --- | --- | --- |
 | Machine-readable corpus | `GENERATED` | 156 Gallery / 110 normal / 893 Item / 1,172 SourceRow / 550 projection cells |
-| Current integrated machine validator | `54/54 PASS` | Final A2/B2 synthesis, manual semantic adjudication, planning handoff and gap register satisfy the integrated machine contract |
-| Final schema, validator and targeted test rerun | `13/13 PASS` | `validate-v1.test.mjs` and `semantic-provenance-audit-v1.test.mjs` |
+| Current integrated machine validator | `61/61 PASS` | Corpus, projection, semantic/manual adjudication, planning handoff, final Gallery/report fingerprints and browser evidence satisfy the integrated machine contract |
+| Final schema, validator and targeted test rerun | `14/14 PASS` | `validate-v1.test.mjs` and `semantic-provenance-audit-v1.test.mjs` |
 | Manual semantic adjudication self-validation | `13/13 PASS` | Frozen 141-field queue and 37 / 87 / 17 / 0 distribution reconcile exactly |
-| Current integrated docs check | `PASS_CURRENT_SNAPSHOT` | `npm.cmd run docs:check`; 14 required files and 2,578 local links. Rerun after any later Gallery/report rebuild |
-| Independent review surface | `FROZEN_PRE_SYNTHESIS` | A2/B2 both inspected Gallery SHA `9be4105dcf5a62a82dc31ddc3a6b37acaa87b9e886d70d27c9fc5f979c1d7d0b`; view and projection SHA match the final machine inputs |
-| Current Gallery surface | `POST_SYNTHESIS_BROWSER_QA_PENDING` | Current SHA `9c6732991ac455d65d693550cf8e9de54f1cdf4d6906713633f94ea17117b86c`; the added combined internal verdict display requires a final browser pass |
-| Desktop/tablet/mobile browser QA | `PENDING` | Do not infer from screenshots already present |
+| Current integrated docs check | `PASS_FINAL_SNAPSHOT` | `npm.cmd run docs:check`; 14 required files and 2,578 local links after the stable Gallery/report fingerprints |
+| Independent review surface | `FROZEN_PRE_NORMALIZATION` | A2/B2 inspected Gallery SHA `9be4105d…c1d7d0b`, view SHA `25aacc34…05b9` and projection SHA `10a76006…74eb`; final source-field/tier/display normalization was not mislabeled as a rerun |
+| Current Gallery surface | `FINAL_BROWSER_QA_PASS` | Final SHA `021667d19d042a5dfd418f3dbcbf553fd871a08b0fd47703fe716538419aaf56`; all current routes were rechecked after the final normalization |
+| Desktop/tablet/mobile browser QA | `PASS` | 1440×900, 768×1024 and 390×844: horizontal overflow 0, broken asset 0, console error 0 |
 | Local user review | `NOT_REVIEWED_BY_USER` | No agent result may populate it |
 | Observed-user validation | `NOT_RUN` | Browser automation is not observed use |
 | External Calendar/VTODO round-trip | `NOT_RUN` | No Google/Outlook/Apple account round-trip evidence exists |
@@ -111,8 +111,19 @@ actually produced after the final rebuild.
 - The final screenshot is compared with the accepted design concept in the same
   visual QA pass.
 
-Until that pass exists, report and handoff files must render final browser QA
-as `PENDING`, not `PASS`.
+The final pass is recorded in `browser-qa-v1.json`. It covers:
+
+- normal detail 110/110;
+- boundary and historical detail 46/46;
+- normal projection 550/550;
+- pacing 53/53;
+- event 14/14;
+- review 156/156;
+- lineage 156/156;
+- report representative sections 24/24.
+
+All failed-route counts are zero. The clean final origin still contains zero
+user reviews.
 
 ## Required final command/evidence sequence
 

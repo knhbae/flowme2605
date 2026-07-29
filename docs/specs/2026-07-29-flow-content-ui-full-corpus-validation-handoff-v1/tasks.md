@@ -32,19 +32,19 @@ The strict schema is exercised by the final validator and targeted tests.
 
 ## UI
 
-- [ ] Gallery search, filters, sort and card/list mode.
-- [ ] Next unreviewed navigation.
-- [ ] Full Item detail.
-- [ ] Calendar renderer.
-- [ ] Checklist renderer.
-- [ ] Todo renderer with capability fallback.
-- [ ] Sheet renderer.
-- [ ] Memo renderer.
-- [ ] Pacing playground.
-- [ ] Event Series/Edition/Occurrence UI.
-- [ ] Actual data-lineage view.
-- [ ] Review localStorage, export, import, merge/replace and rollback.
-- [ ] Coverage and disagreement views.
+- [x] Gallery search, filters, sort and card/list mode.
+- [x] Next unreviewed navigation.
+- [x] Full Item detail.
+- [x] Calendar renderer.
+- [x] Checklist renderer.
+- [x] Todo renderer with capability fallback.
+- [x] Sheet renderer.
+- [x] Memo renderer.
+- [x] Pacing playground.
+- [x] Event Series/Edition/Occurrence UI.
+- [x] Actual data-lineage view.
+- [x] Review localStorage, export, import, merge/replace and rollback.
+- [x] Coverage and disagreement views.
 
 ## Review
 
@@ -73,18 +73,23 @@ intentionally not used as observed-user evidence.
 - [x] Projection, pacing, event and review-state unit tests.
 - [x] Mutation tests.
 - [x] Docs check.
-- [x] Integrated validator: 54/54.
-- [x] Targeted tests: 13/13.
-- [ ] 1440×900 browser QA.
-- [ ] 768×1024 browser QA.
-- [ ] 390×844 browser QA.
-- [ ] Console, overflow, broken asset and empty-state checks.
-- [ ] Visual fidelity ledger.
-- [ ] Scope and publish-state closeout.
+- [x] Integrated validator: 61/61.
+- [x] Targeted tests: 14/14.
+- [x] 1440×900 browser QA.
+- [x] 768×1024 browser QA.
+- [x] 390×844 browser QA.
+- [x] Console, overflow, broken asset and empty-state checks.
+- [x] Visual fidelity ledger.
+- [x] Scope and publish-state closeout.
 
 Current external evidence states:
 
-- final browser QA: `PENDING`;
+- final browser QA: `PASS`;
 - user review: `NOT_REVIEWED_BY_USER`;
 - observed-user validation: `NOT_RUN`;
 - external Calendar/VTODO round-trip: `NOT_RUN`.
+
+Final route evidence covers 156 detail routes, 550 normal projection routes,
+53 pacing routes, 14 event routes, 156 review routes and 156 lineage routes,
+with zero failed route. This is automated/internal evidence, not a user
+verdict.

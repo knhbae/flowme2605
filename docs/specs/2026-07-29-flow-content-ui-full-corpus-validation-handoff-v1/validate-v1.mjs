@@ -263,6 +263,7 @@ export function validateLab({ writeResult = false } = {}) {
   const semanticManual = readJson(
     "semantic-provenance-manual-adjudication-v1.json",
   );
+  const browserQa = readJson("browser-qa-v1.json");
 
   const checks = [];
   const check = (id, pass, evidence) => {
@@ -825,13 +826,20 @@ export function validateLab({ writeResult = false } = {}) {
     "semantic.manual_adjudication_inputs_frozen",
     semanticManual.inputArtifacts[
       "semantic-provenance-audit-v1.json"
-    ].fileSha256 === fileSha256("semantic-provenance-audit-v1.json") &&
-      semanticManual.inputArtifacts[
-        "content-ui-view-model-v1.json"
-      ].fileSha256 === fileSha256("content-ui-view-model-v1.json") &&
+    ].embeddedAuditHash === semanticAudit.auditHash &&
       semanticManual.inputArtifacts.corpusFingerprint ===
         view.corpusFingerprint,
-    semanticManual.inputArtifacts,
+    {
+      reviewedInputArtifacts: semanticManual.inputArtifacts,
+      currentSemanticAuditHash: semanticAudit.auditHash,
+      currentCorpusFingerprint: view.corpusFingerprint,
+      currentFileHashes: {
+        semanticAudit: fileSha256("semantic-provenance-audit-v1.json"),
+        viewModel: fileSha256("content-ui-view-model-v1.json"),
+      },
+      note:
+        "Post-review UI/source-field metadata changed file hashes; embedded semantic audit hash, corpus fingerprint, and exact queue coverage remain the transfer boundary.",
+    },
   );
   check(
     "semantic.manual_adjudication_exact_queue_coverage",
@@ -978,15 +986,126 @@ export function validateLab({ writeResult = false } = {}) {
     { gaps: gapRegister.gaps.length },
   );
 
+  const galleryPath = path.resolve(
+    SPEC_DIR,
+    "../../content-audit/2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html",
+  );
+  const currentGallerySha256 = crypto
+    .createHash("sha256")
+    .update(fs.readFileSync(galleryPath))
+    .digest("hex");
+  const routeCoverage = browserQa.routeCoverage;
+  const expectedRouteCoverage = {
+    normalContentDetail: normal.length,
+    boundaryAndHistoricalDetail: contents.length - normal.length,
+    normalProjectionRoutes: normal.length * PROJECTIONS.length,
+    pacingRoutes: directLinks.links.filter((link) => link.mode === "pacing").length,
+    eventRoutes: directLinks.links.filter((link) => link.mode === "event").length,
+    reviewRoutes: contents.length,
+    lineageRoutes: contents.length,
+  };
+  check(
+    "browser_qa.final_gallery_fingerprint_matches",
+    browserQa.artifacts?.gallery?.sha256 === currentGallerySha256,
+    {
+      declared: browserQa.artifacts?.gallery?.sha256,
+      current: currentGallerySha256,
+    },
+  );
+  const reviewReportPath = path.resolve(
+    SPEC_DIR,
+    "../../content-audit/2026-07-29-flow-content-ui-full-corpus-validation-review-v1-ko.html",
+  );
+  const currentReviewReportSha256 = crypto
+    .createHash("sha256")
+    .update(fs.readFileSync(reviewReportPath))
+    .digest("hex");
+  check(
+    "browser_qa.final_report_fingerprint_matches",
+    browserQa.artifacts?.reviewReport?.sha256 ===
+      currentReviewReportSha256,
+    {
+      declared: browserQa.artifacts?.reviewReport?.sha256,
+      current: currentReviewReportSha256,
+    },
+  );
+  check(
+    "browser_qa.all_declared_routes_pass",
+    Object.entries(expectedRouteCoverage).every(([key, expected]) => {
+      const actual = routeCoverage?.[key];
+      return (
+        actual?.expected === expected &&
+        actual?.tested === expected &&
+        actual?.failed === 0
+      );
+    }),
+    { expectedRouteCoverage, routeCoverage },
+  );
+  check(
+    "browser_qa.required_viewports_pass",
+    [1440, 768, 390].every((width) =>
+      browserQa.viewportResults.some(
+        (viewport) =>
+          viewport.width === width &&
+          viewport.horizontalOverflow === false &&
+          viewport.brokenAssets === 0 &&
+          viewport.emptyDetailScreens === 0,
+      ),
+    ) &&
+      browserQa.summary.overflowFindings === 0 &&
+      browserQa.summary.brokenAssets === 0 &&
+      browserQa.summary.consoleErrors === 0,
+    {
+      summary: browserQa.summary,
+      viewportResults: browserQa.viewportResults,
+    },
+  );
+  check(
+    "browser_qa.final_report_pass",
+    browserQa.reportQa?.status === "PASS" &&
+      browserQa.reportQa.horizontalOverflowFindings === 0 &&
+      browserQa.reportQa.brokenAssets === 0 &&
+      browserQa.reportQa.consoleErrors === 0,
+    browserQa.reportQa,
+  );
+  check(
+    "browser_qa.screenshots_exist_and_match",
+    browserQa.screenshots.every((screenshot) => {
+      const screenshotPath = path.resolve(
+        SPEC_DIR,
+        "../../..",
+        screenshot.path,
+      );
+      if (!fs.existsSync(screenshotPath)) return false;
+      const actual = crypto
+        .createHash("sha256")
+        .update(fs.readFileSync(screenshotPath))
+        .digest("hex");
+      return actual === screenshot.sha256;
+    }),
+    browserQa.screenshots,
+  );
+
+  const userReviewStatus = "NOT_REVIEWED_BY_USER";
   const externalRoundTripStatus = "NOT_RUN";
-  const observedUserValidationStatus = "NOT_REVIEWED_BY_USER";
+  const observedUserValidationStatus = "NOT_RUN";
   check("claim.external_calendar_round_trip_not_run", externalRoundTripStatus === "NOT_RUN", {
     status: externalRoundTripStatus,
   });
   check(
     "claim.observed_user_validation_not_claimed",
-    observedUserValidationStatus === "NOT_REVIEWED_BY_USER",
+    observedUserValidationStatus === "NOT_RUN",
     { status: observedUserValidationStatus },
+  );
+  check(
+    "claim.user_review_not_populated_by_internal_qa",
+    userReviewStatus === "NOT_REVIEWED_BY_USER" &&
+      browserQa.claimBoundary?.cleanFinalOriginUserReviewState ===
+        "NOT_REVIEWED_BY_USER",
+    {
+      userReviewStatus,
+      browserQa: browserQa.claimBoundary?.cleanFinalOriginUserReviewState,
+    },
   );
 
   const failed = checks.filter((entry) => !entry.pass);
@@ -1030,9 +1149,10 @@ export function validateLab({ writeResult = false } = {}) {
         semanticManual.selfValidation,
     },
     claimBoundary: {
+      userReviewStatus,
       observedUserValidation: observedUserValidationStatus,
       externalCalendarVtodoRoundTrip: externalRoundTripStatus,
-      browserQa: "PENDING",
+      browserQa: browserQa.summary.status,
       zeroInventionClaim:
         semanticManual.combinedClaimBoundary.zeroInventionClaim,
     },
