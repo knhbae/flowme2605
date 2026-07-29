@@ -1,9 +1,9 @@
 # FlowMe MECE UX Reset 실행 계획
 
 - 작성일: 2026-07-26
-- 문서 상태: First design bundle complete
-- 현재 목표: `UXR-08` 화면별 KEEP / CUT 승인 대기
-- 구현 상태: Locked
+- 문서 상태: A안 승인 및 개발 handoff 완료
+- 현재 목표: `P35-01` entry router와 3탭 navigation
+- 구현 상태: Ready
 - 실제 관찰 사용자 수: 0명
 
 ## 1. 이 문서의 역할
@@ -153,8 +153,8 @@ Calendar
 | `UXR-05` | 상태 전환과 데이터 보존 규칙 확정 | state transition contract | `completed` |
 | `UXR-06` | current/proposed interactive wireflow 제작 | 390px·1024px HTML wireflow | `completed` |
 | `UXR-07` | 대표 콘텐츠로 multi-session simulation | journey scorecard | `completed` |
-| `UXR-08` | 화면별 KEEP / CUT 승인 | 승인된 subtraction manifest | `pending` |
-| `UXR-09` | 구현 순서와 rollback 경계 확정 | staged implementation plan | `locked` |
+| `UXR-08` | 화면별 KEEP / CUT 승인 | 승인된 subtraction manifest | `approved` |
+| `UXR-09` | 구현 순서와 rollback 경계 확정 | staged implementation plan | `completed` |
 
 ### B. 구조 구현
 
@@ -180,6 +180,23 @@ Calendar
 | `UXQ-01` | 기능·identity·persistence 회귀 검증 | 각 구현 slice | `locked` |
 | `UXQ-02` | 접근성·overflow·focus 검증 | `UXV-02`, `UXV-03` | `locked` |
 | `UXQ-03` | 최종 journey simulation과 출시 gate | 전체 구현 완료 | `locked` |
+
+### D. 승인된 P35 구현 프로그램
+
+P35는 A′를 실제 앱에 적용하는 유일한 구현 순서다. 위 `UXD`, `UXV`, `UXQ` 목록은 설계 추적용으로 유지하고, 개발 에이전트는 아래 P35 slice를 실행 단위로 사용한다.
+
+| ID | 목표 | 선행 조건 | 상태 | Acceptance marker |
+| --- | --- | --- | --- | --- |
+| `P35-01` | `/` entry router와 3탭 navigation | 없음 | `ready` | `P35-ENTRY-ROUTER-3TAB` |
+| `P35-02` | Public Flow 결과 우선 첫 viewport | `P35-01` | `locked` | `P35-PUBLIC-RESULT-FIRST` |
+| `P35-03` | 저장 전 조정을 한 번에 한 종류로 정리 | `P35-02` | `locked` | `P35-ADJUST-ONE-KIND` |
+| `P35-04` | `MyFlows` 안전 분리와 dead branch 제거 | `P35-01` | `locked` | `P35-MYFLOW-SAFE-SPLIT`, `P35-DEAD-VIEW-REMOVAL` |
+| `P35-05` | My Flow library와 개인 Flow 집중 workspace | `P35-04` | `locked` | `P35-MY-LIBRARY-ONLY`, `P35-PERSONAL-SINGLE-FOCUS` |
+| `P35-06` | Calendar lens와 공유 완료 primitive | `P35-04`, `P35-05` | `locked` | `P35-CALENDAR-LENS-ONE-TOGGLE` |
+| `P35-07` | scope-first export | `P35-05` | `locked` | `P35-EXPORT-SCOPE-FIRST`, `P35-EXPORT-COUNT-PARITY` |
+| `P35-08` | visual·responsive·accessibility·final journey gate | `P35-02`~`P35-07` | `locked` | `P35-FINAL-MECE-GATE` |
+
+권장 실행 순서는 `P35-01 → 02 → 03 → 04 → 05 → 06 → 07 → 08`이다. 한 단계의 검증이 끝나기 전에 다음 단계를 시작하지 않는다. 상세 범위와 복붙용 요청은 [A′ 개발 handoff](./developer-handoff-a-prime-ko.md)와 [P35 goal prompts](./p35-goal-prompts-ko.md)를 정본으로 사용한다.
 
 ## 8. 목표별 승인 gate
 
@@ -293,16 +310,17 @@ P24~P34의 기능·데이터 근거와 새 MECE 단순화 방향을 대조해 �
 | 2026-07-26 | `UXR-01`~`UXR-05` | `completed` | 다섯 여정, 화면 메시지, 기능 소유권, route/UI tree, 상태·데이터 보존 계약을 하나의 설계 패키지로 확정. |
 | 2026-07-26 | `UXR-06` | `completed` | 실제 콘텐츠 5개와 8단계를 전환할 수 있는 390px·1024px interactive wireflow 제작. |
 | 2026-07-26 | `UXR-07` | `completed` | 15개 multi-session cell과 80개 화면 상태를 시뮬레이션하고 접근성·overflow·primary action을 검증. |
-| 2026-07-26 | `UXR-08` | `pending` | Home 제거, My Flow library 한정, Calendar 날짜 렌즈 한정의 사용자 승인 대기. |
+| 2026-07-26 | `UXR-08` | `approved` | `A_prime` 승인: Home 제거와 상태 기반 entry router, My Flow library 한정, Calendar 날짜 lens와 완료 primitive 하나. |
+| 2026-07-26 | `UXR-09` | `completed` | [개발 handoff](./developer-handoff-a-prime-ko.md)에 P35-01~08 순서, rollback, 첫 구현 slice를 확정. |
 
 ## 13. 바로 다음 행동
 
-현재는 `UXR-08` 승인 전이므로 앱 코드를 수정하지 않는다.
+`UXR-08`과 `UXR-09`는 완료됐다. P35 전체 범위와 단계별 acceptance는 [A안 개발 handoff](./developer-handoff-a-prime-ko.md)에 확정됐고, 각 단계에 그대로 전달할 요청은 [P35 goal prompts](./p35-goal-prompts-ko.md)에 있다. 다음 개발 에이전트는 우선 `P35-01`만 구현한다.
 
-사용자는 [interactive wireflow](../../content-audit/2026-07-26-flowme-mece-ux-reset/review.html)에서 아래 세 결정을 먼저 확인한다.
+승인된 결정:
 
-1. 별도 Home을 제거하고 `/`를 Flow 찾기로 연결한다.
+1. 별도 Home을 제거하고 `/`를 저장 상태 기반 entry router로 사용한다.
 2. My Flow에서 `지금` 실행 mode를 제거하고 저장 Flow library로 한정한다.
-3. Calendar의 완료·메모·날짜 이동을 제거하고 개인 Flow 열기만 남긴다.
+3. Calendar는 날짜 lens로 한정하되 동일 run 상태의 `완료 / 다시 열기` primitive 하나만 남긴다.
 
-승인되면 화면별 KEEP/CUT manifest를 작성하고 `UXR-09`에서 첫 구현 slice와 rollback 경계를 정한다.
+`P35-01`이 검증되기 전에는 다음 slice를 시작하지 않는다.

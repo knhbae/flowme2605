@@ -1,8 +1,8 @@
 # FlowMe MECE UX Reset 1차 설계 묶음
 
 - 작성일: 2026-07-26
-- 완료 범위: `UXR-00`~`UXR-07`
-- 다음 gate: `UXR-08` KEEP / CUT 승인
+- 완료 범위: `UXR-00`~`UXR-09`
+- 다음 목표: `P35-01` entry router와 3탭 navigation
 - 실제 관찰 사용자 수: 0명
 - 앱 코드 변경: 없음
 
@@ -13,24 +13,28 @@
 3. [15-cell 시뮬레이션 결과](../../specs/2026-07-26-flowme-mece-ux-reset/simulation.md)
 4. [구조화 scorecard](./journey-scorecard.json)
 5. [상위 실행 계획](../../specs/2026-07-26-flowme-mece-ux-reset/plan.md)
+6. [A′ P35 전체 개발 handoff](../../specs/2026-07-26-flowme-mece-ux-reset/developer-handoff-a-prime-ko.md)
+7. [P35-01~08 순차 개발 복붙 프롬프트](../../specs/2026-07-26-flowme-mece-ux-reset/p35-goal-prompts-ko.md)
 
 ## 먼저 판단할 세 가지
 
+아래 세 결정은 2026-07-26 사용자 승인으로 `A_prime`에 확정됐다.
+
 ### 1. Home
 
-별도 Home을 제거하고 `/`를 Flow 찾기로 연결할지 판단한다.
+별도 Home을 제거한다. `/`는 저장 Flow가 있으면 `/my`, 없으면 `/flows`로 연결한다.
 
 현재 실제 이용 후기, 이용량, 리뷰 데이터가 없으므로 가상의 사회적 증거를 Home의 역할로 만들지 않는다.
 
 ### 2. My Flow
 
-`지금` 실행 mode를 제거하고 저장한 Flow를 찾고 관리하는 library로 한정할지 판단한다.
+`지금` 실행 mode를 제거하고 저장한 Flow를 찾고 관리하는 library로 한정한다.
 
 Item 실행, 완료, 다시 열기, 날짜, 메모, 가져가기는 열린 개인 Flow가 소유한다.
 
 ### 3. Calendar
 
-Calendar의 inline 완료, 메모, 날짜 이동, 날짜 없는 tray를 제거하고 날짜가 있는 Flow를 보는 렌즈로 한정할지 판단한다.
+Calendar는 날짜 lens로 한정한다. inline 메모, 날짜 이동, 날짜 없는 tray는 제거하고 동일 run 상태의 `완료 / 다시 열기` primitive 하나만 남긴다.
 
 Calendar의 일정은 같은 개인 Flow를 여는 입구다.
 

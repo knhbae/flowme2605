@@ -130,12 +130,14 @@ My Flow의 완료·보관 상태는 별도 제품 영역이 아니라 같은 lib
 
 이 한계는 앱 구현 전에 해결할 기능 누락이 아니라 이번 설계 prototype의 경계다. 실제 구현에서는 현재 저장 계약과 기존 테스트를 재사용한다.
 
-## 8. 다음 gate
+## 8. 승인 결과
 
-`UXR-08`은 아래 세 결정을 사용자가 승인한 뒤 시작한다.
+2026-07-26 사용자 승인으로 `A_prime`을 채택했다.
 
-1. 별도 Home을 제거하고 `/`를 Flow 찾기로 연결한다.
+1. 별도 Home을 제거하고 `/`를 저장 상태 기반 entry router로 사용한다.
 2. My Flow에서 `지금` 실행 mode를 제거하고 저장 Flow library로 한정한다.
-3. Calendar의 완료·메모·날짜 이동을 제거하고 개인 Flow 열기만 남긴다.
+3. Calendar는 날짜 lens로 한정하되 동일 run 상태의 `완료 / 다시 열기` primitive 하나만 남긴다.
 
-승인 전에는 앱 코드의 KEEP/CUT 목록을 확정하거나 렌더 branch를 삭제하지 않는다.
+구현 순서와 rollback은 [A안 개발 handoff](./developer-handoff-a-prime-ko.md)를 따른다.
+
+이 승인 결과만으로 앱 코드를 한꺼번에 수정하지 않는다. P35 handoff의 한 slice씩 구현하고 검증한다.

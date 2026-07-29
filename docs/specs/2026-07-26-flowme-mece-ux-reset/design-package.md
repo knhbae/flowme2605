@@ -37,9 +37,9 @@ Calendar
 5. 개인 Flow workspace가 Item 실행·완료·수정·메모·가져가기를 유일하게 소유한다.
 6. `/calendar`는 날짜가 있는 여러 Flow를 보는 렌즈이며, 실행할 때 개인 Flow를 연다.
 7. Calendar, Checklist, Routine, Sheet, Memo는 Flow의 projection 또는 renderer이지 전역 화면이 아니다.
-8. Home은 별도 사용자 job을 증명하지 못했으므로 `/flows`와 합친다.
+8. Home은 별도 사용자 job을 증명하지 못했으므로 제거하고 `/`를 저장 상태 기반 entry router로 사용한다.
 
-이는 아직 구현 승인이 아니다. 이 패키지와 wireflow가 `UXR-08`에서 승인되면 KEEP/CUT manifest와 구현 계획을 확정한다.
+2026-07-26 사용자 승인으로 `A_prime`이 확정됐다. 구체적인 KEEP/CUT, 구현 순서, rollback은 [A안 개발 handoff](./developer-handoff-a-prime-ko.md)를 따른다.
 
 ## 2. Evidence boundary
 
@@ -451,15 +451,15 @@ HTML이 반드시 증명해야 하는 것:
 - 실제 24개 이사, 10개 차량 점검, 반복 홈트, 8단원 학습, 5개 개인 draft
 - public preview와 saved receipt의 시각적 구분
 - My Flow 목록과 개인 Flow 실행의 구분
-- Calendar에서 완료·메모를 직접 수행하지 않고 개인 Flow를 여는 흐름
+- Calendar는 공유 완료·다시 열기 primitive만 수행하고 다른 편집은 개인 Flow를 여는 흐름
 - 390×844과 1024×768에서 같은 소유권 문법
 
-## 11. 승인 전 남은 결정
+## 11. 승인된 결정
 
-wireflow 검토에서 다음 세 가지만 결정한다.
+wireflow 검토에서 다음 세 결정을 확정했다.
 
-1. Home을 실제로 제거하고 3-tab IA로 갈 것인가
-2. Calendar에서 완료·메모·날짜 이동을 제거하고 개인 Flow로 보낼 것인가
-3. `/my`의 `지금`을 제거하고 저장 Flow library로 한정할 것인가
+1. Home을 제거하고 3-tab IA와 상태 기반 entry router를 사용한다.
+2. Calendar는 공유 완료·다시 열기 primitive만 남기고 메모·날짜 이동 등 편집은 개인 Flow로 보낸다.
+3. `/my`의 `지금`을 제거하고 저장 Flow library로 한정한다.
 
-승인되면 `UXR-08`에서 구체적인 KEEP/CUT 목록을 만들고, 그 전에는 앱 코드를 수정하지 않는다.
+`UXR-08`은 `A_prime`으로 승인됐다. 앱 구현은 [A안 개발 handoff](./developer-handoff-a-prime-ko.md)의 한 slice씩 진행한다.
