@@ -1,0 +1,1030 @@
+{
+  "schemaVersion": "flowme-qualified-corpus-validation-results-v2",
+  "generatedAt": "2026-07-28T12:05:22.262Z",
+  "passed": true,
+  "checkCount": 202,
+  "passedCount": 202,
+  "failedCount": 0,
+  "expectedCounts": {
+    "bundles": 8,
+    "flows": 21,
+    "steps": 49,
+    "items": 160,
+    "sourceRows": 210,
+    "scheduledItems": 112,
+    "undatedItems": 48
+  },
+  "errors": [],
+  "checks": [
+    {
+      "name": "artifact:input-lineage-v2.json:exists_and_parses",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "artifact:baseline-delta-v2.json:exists_and_parses",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "artifact:qualified-corpus-fixture-v2.json:exists_and_parses",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "artifact:architecture-scorecard-v2.json:exists_and_parses",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "artifact:projection-matrix-v2.json:exists_and_parses",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "artifact:projection-loss-manifest-v2.json:exists_and_parses",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "artifact:round-trip-results-v2.json:exists_and_parses",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "artifact:rights-and-readiness-matrix-v2.json:exists_and_parses",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "artifact:vertical-opportunity-appendix-v1.json:exists_and_parses",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "artifact:final-adjudication-v2.json:exists_and_parses",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "artifact:qualified-revalidation-artifacts-v2.schema.json:exists_and_parses",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "schema:input-lineage-v2.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "schema:baseline-delta-v2.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "schema:qualified-corpus-fixture-v2.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "schema:architecture-scorecard-v2.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "schema:projection-matrix-v2.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "schema:projection-loss-manifest-v2.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "schema:round-trip-results-v2.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "schema:rights-and-readiness-matrix-v2.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "schema:vertical-opportunity-appendix-v1.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "schema:final-adjudication-v2.json",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "lineage:normal_creator_ids",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "lineage:boundary_creator_ids",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "lineage:qualified_selection_exact",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "lineage:qualifiedV2:exists",
+      "passed": true,
+      "detail": "docs/content-audit/2026-07-27-creator-portfolio-qualified-v2.json"
+    },
+    {
+      "name": "lineage:qualifiedV2:bytes",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "lineage:qualifiedV2:sha256",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "lineage:v1DiscoverySnapshot:exists",
+      "passed": true,
+      "detail": "docs/specs/2026-07-27-flow-item-map-architecture-creator-portfolio-category-fit-lab-v1/creator-discovery-corpus-snapshot-v1.json"
+    },
+    {
+      "name": "lineage:v1DiscoverySnapshot:bytes",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "lineage:v1DiscoverySnapshot:sha256",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "lineage:v1Gold:exists",
+      "passed": true,
+      "detail": "docs/specs/2026-07-27-flow-item-map-architecture-creator-portfolio-category-fit-lab-v1/gold-semantic-contract-v1.json"
+    },
+    {
+      "name": "lineage:v1Gold:bytes",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "lineage:v1Gold:sha256",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "lineage:v1CategoryFit:exists",
+      "passed": true,
+      "detail": "docs/specs/2026-07-27-flow-item-map-architecture-creator-portfolio-category-fit-lab-v1/category-fit-matrix-v1.json"
+    },
+    {
+      "name": "lineage:v1CategoryFit:bytes",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "lineage:v1CategoryFit:sha256",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "lineage:v1Scorecard:exists",
+      "passed": true,
+      "detail": "docs/specs/2026-07-27-flow-item-map-architecture-creator-portfolio-category-fit-lab-v1/architecture-scorecard-v1.json"
+    },
+    {
+      "name": "lineage:v1Scorecard:bytes",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "lineage:v1Scorecard:sha256",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "lineage:v1ProjectionLoss:exists",
+      "passed": true,
+      "detail": "docs/specs/2026-07-27-flow-item-map-architecture-creator-portfolio-category-fit-lab-v1/projection-loss-manifest-v1.json"
+    },
+    {
+      "name": "lineage:v1ProjectionLoss:bytes",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "lineage:v1ProjectionLoss:sha256",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "lineage:v1RoundTrip:exists",
+      "passed": true,
+      "detail": "docs/specs/2026-07-27-flow-item-map-architecture-creator-portfolio-category-fit-lab-v1/round-trip-results-v1.json"
+    },
+    {
+      "name": "lineage:v1RoundTrip:bytes",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "lineage:v1RoundTrip:sha256",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "lineage:v1Adjudication:exists",
+      "passed": true,
+      "detail": "docs/specs/2026-07-27-flow-item-map-architecture-creator-portfolio-category-fit-lab-v1/final-adjudication-v1.json"
+    },
+    {
+      "name": "lineage:v1Adjudication:bytes",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "lineage:v1Adjudication:sha256",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "lineage:v1Validation:exists",
+      "passed": true,
+      "detail": "docs/specs/2026-07-27-flow-item-map-architecture-creator-portfolio-category-fit-lab-v1/validation-results-v1.json"
+    },
+    {
+      "name": "lineage:v1Validation:bytes",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "lineage:v1Validation:sha256",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "lineage:verticalBenchmark:exists",
+      "passed": true,
+      "detail": "docs/content-audit/2026-07-28-vertical-execution-service-benchmark-v1.json"
+    },
+    {
+      "name": "lineage:verticalBenchmark:bytes",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "lineage:verticalBenchmark:sha256",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "lineage:taxonomyV11:exists",
+      "passed": true,
+      "detail": "docs/specs/2026-07-20-flowme-taxonomy-v1-1/taxonomy-v1.1.json"
+    },
+    {
+      "name": "lineage:taxonomyV11:bytes",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "lineage:taxonomyV11:sha256",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:stored_count:bundles",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:recomputed_count:bundles",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:stored_count:flows",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:recomputed_count:flows",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:stored_count:steps",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:recomputed_count:steps",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:stored_count:items",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:recomputed_count:items",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:stored_count:sourceRows",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:recomputed_count:sourceRows",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:stored_count:scheduledItems",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:recomputed_count:scheduledItems",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:stored_count:undatedItems",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:recomputed_count:undatedItems",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:normal_creator_ids",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle_ids_match_lineage",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:boundary_not_in_normal_corpus",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:item_ids_unique",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:source_row_ids_unique",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-moving-d30:stored_metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-moving-d30:item_source_refs",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-moving-d30:source_trace",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-moving-d30:taxonomy_life_area",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-moving-d30:taxonomy_source_shape",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-moving-d30:taxonomy_execution_pattern",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-moving-d30:taxonomy_artifacts",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-moving-d30:category_mapping",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-baby-food-174:stored_metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-baby-food-174:item_source_refs",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-baby-food-174:source_trace",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-baby-food-174:taxonomy_life_area",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-baby-food-174:taxonomy_source_shape",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-baby-food-174:taxonomy_execution_pattern",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-baby-food-174:taxonomy_artifacts",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-baby-food-174:category_mapping",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-opic-plan:stored_metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-opic-plan:item_source_refs",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-opic-plan:source_trace",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-opic-plan:taxonomy_life_area",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-opic-plan:taxonomy_source_shape",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-opic-plan:taxonomy_execution_pattern",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-opic-plan:taxonomy_artifacts",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-opic-plan:category_mapping",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-opentutorials-web1-progress:stored_metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-opentutorials-web1-progress:item_source_refs",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-opentutorials-web1-progress:source_trace",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-opentutorials-web1-progress:taxonomy_life_area",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-opentutorials-web1-progress:taxonomy_source_shape",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-opentutorials-web1-progress:taxonomy_execution_pattern",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-opentutorials-web1-progress:taxonomy_artifacts",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-opentutorials-web1-progress:category_mapping",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-new-car-comparison:stored_metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-new-car-comparison:item_source_refs",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-new-car-comparison:source_trace",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-new-car-comparison:taxonomy_life_area",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-new-car-comparison:taxonomy_source_shape",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-new-car-comparison:taxonomy_execution_pattern",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-new-car-comparison:taxonomy_artifacts",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-new-car-comparison:category_mapping",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-allblanc-7day-abs:stored_metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-allblanc-7day-abs:item_source_refs",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-allblanc-7day-abs:source_trace",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-allblanc-7day-abs:taxonomy_life_area",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-allblanc-7day-abs:taxonomy_source_shape",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-allblanc-7day-abs:taxonomy_execution_pattern",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-allblanc-7day-abs:taxonomy_artifacts",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-allblanc-7day-abs:category_mapping",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-wtable-summer-banchan-five:stored_metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-wtable-summer-banchan-five:item_source_refs",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-wtable-summer-banchan-five:source_trace",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-wtable-summer-banchan-five:taxonomy_life_area",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-wtable-summer-banchan-five:taxonomy_source_shape",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-wtable-summer-banchan-five:taxonomy_execution_pattern",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-wtable-summer-banchan-five:taxonomy_artifacts",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-wtable-summer-banchan-five:category_mapping",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-andstudio-job-prep-videos:stored_metrics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-andstudio-job-prep-videos:item_source_refs",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-andstudio-job-prep-videos:source_trace",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-andstudio-job-prep-videos:taxonomy_life_area",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-andstudio-job-prep-videos:taxonomy_source_shape",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-andstudio-job-prep-videos:taxonomy_execution_pattern",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-andstudio-job-prep-videos:taxonomy_artifacts",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:bundle-andstudio-job-prep-videos:category_mapping",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:public_readiness_counts",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "fixture:web1_public_go",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "baseline:current_counts",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "baseline:external_client_not_run",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "baseline:v1_scores_not_reused",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "baseline:triple_fitpet_removed",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "baseline:web1_added",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "rights:normal_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "rights:boundary_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "rights:axes_are_separate",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "rights:normal_ids",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "rights:normal_architecture_fit_finalized",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "rights:boundary_ids",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "rights:web1_public_go",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "rights:triple_boundary",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "rights:fitpet_boundary",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "rights:normal_public_counts",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "vertical:opportunity_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "vertical:zero_corpus_contribution",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "vertical:all_excluded",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "vertical:source_opportunities_exact",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "vertical:taxonomy_aliases",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "vertical:taxonomy_values_controlled",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "vertical:opportunity_ids_absent_from_corpus",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "projection:record_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "projection:bundle_results",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "projection:bundle_results_match_rights",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "projection:summary_counts",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "projection:vevent_count",
+      "passed": true,
+      "detail": "{\"VEVENT\":112,\"VTODO\":48}"
+    },
+    {
+      "name": "projection:vtodo_count",
+      "passed": true,
+      "detail": "{\"VEVENT\":112,\"VTODO\":48}"
+    },
+    {
+      "name": "projection:no_scheduleless_vevent",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "name": "projection:undated_count",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "projection:undated_non_calendar",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "projection:scheduled_calendar_only",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "projection:record_item_ids_unique",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "projection:every_record_resolves_to_item",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "projection:source_refs_resolve",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "projection:no_illegal_nested_components",
+      "passed": true,
+      "detail": "[]"
+    },
+    {
+      "name": "projection:no_scheduleless_vevent_in_ics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "scorecard:three_architectures",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "scorecard:architecture_ids",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "scorecard:weights_total_100",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "scorecard:scores_recomputed",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "scorecard:architectures_and_records_same",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "scorecard:corpus_counts",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "scorecard:ics_constraints",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "scorecard:external_and_user_validation_not_run",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "loss:records_present",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "loss:controlled_dispositions",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "loss:retention_ratios_recomputed",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "round_trip:records_cover_bundles",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "round_trip:normal_bundle_ids",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "round_trip:no_scheduleless_or_nested_components",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "round_trip:projection_counts",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "round_trip:vtodo_and_external_unproven",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "round_trip:source_refs_recovered",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "final:external_client_not_run",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "final:observed_user_not_run",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "final:counts",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "final:ics_constraints",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "final:no_invention_or_reasked_source_values",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "final:decision_and_boundaries",
+      "passed": true,
+      "detail": null
+    }
+  ]
+}

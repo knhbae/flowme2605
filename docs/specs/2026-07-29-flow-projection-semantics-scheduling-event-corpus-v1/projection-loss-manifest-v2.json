@@ -1,0 +1,3604 @@
+{
+  "schemaVersion": "flowme-projection-loss-manifest-v2",
+  "generatedAt": "2026-07-29T12:00:00+09:00",
+  "counts": {
+    "cellsWithLoss": 285,
+    "prohibitedCells": 44
+  },
+  "entries": [
+    {
+      "cellId": "base-moving-d30--calendar",
+      "fixtureId": "base-moving-d30",
+      "projection": "calendar",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": null,
+      "fallback": "todo_or_checklist_until_confirmed"
+    },
+    {
+      "cellId": "base-moving-d30--checklist",
+      "fixtureId": "base-moving-d30",
+      "projection": "checklist",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Rich typed fields may be flattened into entry detail."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "base-moving-d30--todo",
+      "fixtureId": "base-moving-d30",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Closed-set omission sensitivity may be weakened in an open task queue."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "base-moving-d30--sheet",
+      "fixtureId": "base-moving-d30",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "base-moving-d30--memo",
+      "fixtureId": "base-moving-d30",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "base-baby-food-174--calendar",
+      "fixtureId": "base-baby-food-174",
+      "projection": "calendar",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": null,
+      "fallback": "todo_or_checklist_until_confirmed"
+    },
+    {
+      "cellId": "base-baby-food-174--checklist",
+      "fixtureId": "base-baby-food-174",
+      "projection": "checklist",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Rich typed fields may be flattened into entry detail."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "base-baby-food-174--todo",
+      "fixtureId": "base-baby-food-174",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Closed-set omission sensitivity may be weakened in an open task queue."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "base-baby-food-174--sheet",
+      "fixtureId": "base-baby-food-174",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "base-baby-food-174--memo",
+      "fixtureId": "base-baby-food-174",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "base-opic-plan--calendar",
+      "fixtureId": "base-opic-plan",
+      "projection": "calendar",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": null,
+      "fallback": "todo_or_checklist_until_confirmed"
+    },
+    {
+      "cellId": "base-opic-plan--checklist",
+      "fixtureId": "base-opic-plan",
+      "projection": "checklist",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Queue reordering/defer semantics are not represented as first-class fields."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "base-opic-plan--todo",
+      "fixtureId": "base-opic-plan",
+      "projection": "todo",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Step layout depends on parent/subtask destination support."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "base-opic-plan--sheet",
+      "fixtureId": "base-opic-plan",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "base-opic-plan--memo",
+      "fixtureId": "base-opic-plan",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "base-opentutorials-web1-progress--calendar",
+      "fixtureId": "base-opentutorials-web1-progress",
+      "projection": "calendar",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": null,
+      "fallback": "todo_or_checklist_until_confirmed"
+    },
+    {
+      "cellId": "base-opentutorials-web1-progress--checklist",
+      "fixtureId": "base-opentutorials-web1-progress",
+      "projection": "checklist",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Queue reordering/defer semantics are not represented as first-class fields."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "base-opentutorials-web1-progress--todo",
+      "fixtureId": "base-opentutorials-web1-progress",
+      "projection": "todo",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Step layout depends on parent/subtask destination support."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "base-opentutorials-web1-progress--sheet",
+      "fixtureId": "base-opentutorials-web1-progress",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "base-opentutorials-web1-progress--memo",
+      "fixtureId": "base-opentutorials-web1-progress",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "base-new-car-comparison--calendar",
+      "fixtureId": "base-new-car-comparison",
+      "projection": "calendar",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": "원문 일정과 승인된 개인 일정화 정책이 없다.",
+      "fallback": "todo_or_checklist"
+    },
+    {
+      "cellId": "base-new-car-comparison--checklist",
+      "fixtureId": "base-new-car-comparison",
+      "projection": "checklist",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Rich typed fields may be flattened into entry detail."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "base-new-car-comparison--todo",
+      "fixtureId": "base-new-car-comparison",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Closed-set omission sensitivity may be weakened in an open task queue."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "base-new-car-comparison--sheet",
+      "fixtureId": "base-new-car-comparison",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "base-new-car-comparison--memo",
+      "fixtureId": "base-new-car-comparison",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "base-allblanc-7day-abs--calendar",
+      "fixtureId": "base-allblanc-7day-abs",
+      "projection": "calendar",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": null,
+      "fallback": "todo_or_checklist_until_confirmed"
+    },
+    {
+      "cellId": "base-allblanc-7day-abs--checklist",
+      "fixtureId": "base-allblanc-7day-abs",
+      "projection": "checklist",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Rich typed fields may be flattened into entry detail."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "base-allblanc-7day-abs--todo",
+      "fixtureId": "base-allblanc-7day-abs",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Closed-set omission sensitivity may be weakened in an open task queue."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "base-allblanc-7day-abs--sheet",
+      "fixtureId": "base-allblanc-7day-abs",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "base-allblanc-7day-abs--memo",
+      "fixtureId": "base-allblanc-7day-abs",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "base-wtable-summer-banchan-five--calendar",
+      "fixtureId": "base-wtable-summer-banchan-five",
+      "projection": "calendar",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": null,
+      "fallback": "todo_or_checklist_until_confirmed"
+    },
+    {
+      "cellId": "base-wtable-summer-banchan-five--checklist",
+      "fixtureId": "base-wtable-summer-banchan-five",
+      "projection": "checklist",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Queue reordering/defer semantics are not represented as first-class fields."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "base-wtable-summer-banchan-five--todo",
+      "fixtureId": "base-wtable-summer-banchan-five",
+      "projection": "todo",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Step layout depends on parent/subtask destination support."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "base-wtable-summer-banchan-five--sheet",
+      "fixtureId": "base-wtable-summer-banchan-five",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "base-wtable-summer-banchan-five--memo",
+      "fixtureId": "base-wtable-summer-banchan-five",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "base-andstudio-job-prep-videos--calendar",
+      "fixtureId": "base-andstudio-job-prep-videos",
+      "projection": "calendar",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": null,
+      "fallback": "todo_or_checklist_until_confirmed"
+    },
+    {
+      "cellId": "base-andstudio-job-prep-videos--checklist",
+      "fixtureId": "base-andstudio-job-prep-videos",
+      "projection": "checklist",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Queue reordering/defer semantics are not represented as first-class fields."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "base-andstudio-job-prep-videos--todo",
+      "fixtureId": "base-andstudio-job-prep-videos",
+      "projection": "todo",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Step layout depends on parent/subtask destination support."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "base-andstudio-job-prep-videos--sheet",
+      "fixtureId": "base-andstudio-job-prep-videos",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "base-andstudio-job-prep-videos--memo",
+      "fixtureId": "base-andstudio-job-prep-videos",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "oq-oq-c01-moving--calendar",
+      "fixtureId": "oq-oq-c01-moving",
+      "projection": "calendar",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": null,
+      "fallback": "todo_or_checklist_until_confirmed"
+    },
+    {
+      "cellId": "oq-oq-c01-moving--checklist",
+      "fixtureId": "oq-oq-c01-moving",
+      "projection": "checklist",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Rich typed fields may be flattened into entry detail."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "oq-oq-c01-moving--todo",
+      "fixtureId": "oq-oq-c01-moving",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Closed-set omission sensitivity may be weakened in an open task queue."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "oq-oq-c01-moving--sheet",
+      "fixtureId": "oq-oq-c01-moving",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "oq-oq-c01-moving--memo",
+      "fixtureId": "oq-oq-c01-moving",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "oq-oq-c02-kmooc-full--calendar",
+      "fixtureId": "oq-oq-c02-kmooc-full",
+      "projection": "calendar",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": null,
+      "fallback": "todo_or_checklist_until_confirmed"
+    },
+    {
+      "cellId": "oq-oq-c02-kmooc-full--checklist",
+      "fixtureId": "oq-oq-c02-kmooc-full",
+      "projection": "checklist",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Queue reordering/defer semantics are not represented as first-class fields."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "oq-oq-c02-kmooc-full--todo",
+      "fixtureId": "oq-oq-c02-kmooc-full",
+      "projection": "todo",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Step layout depends on parent/subtask destination support."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "oq-oq-c02-kmooc-full--sheet",
+      "fixtureId": "oq-oq-c02-kmooc-full",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "oq-oq-c02-kmooc-full--memo",
+      "fixtureId": "oq-oq-c02-kmooc-full",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "oq-oq-c03-librivox--calendar",
+      "fixtureId": "oq-oq-c03-librivox",
+      "projection": "calendar",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": null,
+      "fallback": "todo_or_checklist_until_confirmed"
+    },
+    {
+      "cellId": "oq-oq-c03-librivox--checklist",
+      "fixtureId": "oq-oq-c03-librivox",
+      "projection": "checklist",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Queue reordering/defer semantics are not represented as first-class fields."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "oq-oq-c03-librivox--todo",
+      "fixtureId": "oq-oq-c03-librivox",
+      "projection": "todo",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Step layout depends on parent/subtask destination support."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "oq-oq-c03-librivox--sheet",
+      "fixtureId": "oq-oq-c03-librivox",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "oq-oq-c03-librivox--memo",
+      "fixtureId": "oq-oq-c03-librivox",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "oq-oq-c04-passport--calendar",
+      "fixtureId": "oq-oq-c04-passport",
+      "projection": "calendar",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": "원문 일정과 승인된 개인 일정화 정책이 없다.",
+      "fallback": "todo_or_checklist"
+    },
+    {
+      "cellId": "oq-oq-c04-passport--checklist",
+      "fixtureId": "oq-oq-c04-passport",
+      "projection": "checklist",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Rich typed fields may be flattened into entry detail."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "oq-oq-c04-passport--todo",
+      "fixtureId": "oq-oq-c04-passport",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Closed-set omission sensitivity may be weakened in an open task queue."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "oq-oq-c04-passport--sheet",
+      "fixtureId": "oq-oq-c04-passport",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "oq-oq-c04-passport--memo",
+      "fixtureId": "oq-oq-c04-passport",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "oq-oq-c05-washer--calendar",
+      "fixtureId": "oq-oq-c05-washer",
+      "projection": "calendar",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": "원문 일정과 승인된 개인 일정화 정책이 없다.",
+      "fallback": "todo_or_checklist"
+    },
+    {
+      "cellId": "oq-oq-c05-washer--checklist",
+      "fixtureId": "oq-oq-c05-washer",
+      "projection": "checklist",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Rich typed fields may be flattened into entry detail."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "oq-oq-c05-washer--todo",
+      "fixtureId": "oq-oq-c05-washer",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Closed-set omission sensitivity may be weakened in an open task queue."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "oq-oq-c05-washer--sheet",
+      "fixtureId": "oq-oq-c05-washer",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "oq-oq-c05-washer--memo",
+      "fixtureId": "oq-oq-c05-washer",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "oq-oq-c06-nasa--calendar",
+      "fixtureId": "oq-oq-c06-nasa",
+      "projection": "calendar",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": "원문 일정과 승인된 개인 일정화 정책이 없다.",
+      "fallback": "todo_or_checklist"
+    },
+    {
+      "cellId": "oq-oq-c06-nasa--checklist",
+      "fixtureId": "oq-oq-c06-nasa",
+      "projection": "checklist",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Rich typed fields may be flattened into entry detail."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "oq-oq-c06-nasa--todo",
+      "fixtureId": "oq-oq-c06-nasa",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Closed-set omission sensitivity may be weakened in an open task queue."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "oq-oq-c06-nasa--sheet",
+      "fixtureId": "oq-oq-c06-nasa",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "oq-oq-c06-nasa--memo",
+      "fixtureId": "oq-oq-c06-nasa",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "oq-oq-c07-fit100--calendar",
+      "fixtureId": "oq-oq-c07-fit100",
+      "projection": "calendar",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": null,
+      "fallback": "todo_or_checklist_until_confirmed"
+    },
+    {
+      "cellId": "oq-oq-c07-fit100--checklist",
+      "fixtureId": "oq-oq-c07-fit100",
+      "projection": "checklist",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Rich typed fields may be flattened into entry detail."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "oq-oq-c07-fit100--todo",
+      "fixtureId": "oq-oq-c07-fit100",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Closed-set omission sensitivity may be weakened in an open task queue."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "oq-oq-c07-fit100--sheet",
+      "fixtureId": "oq-oq-c07-fit100",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "oq-oq-c07-fit100--memo",
+      "fixtureId": "oq-oq-c07-fit100",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "oq-oq-c08-ac-decision--calendar",
+      "fixtureId": "oq-oq-c08-ac-decision",
+      "projection": "calendar",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": "원문 일정과 승인된 개인 일정화 정책이 없다.",
+      "fallback": "todo_or_checklist"
+    },
+    {
+      "cellId": "oq-oq-c08-ac-decision--checklist",
+      "fixtureId": "oq-oq-c08-ac-decision",
+      "projection": "checklist",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Queue reordering/defer semantics are not represented as first-class fields."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "oq-oq-c08-ac-decision--todo",
+      "fixtureId": "oq-oq-c08-ac-decision",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Closed-set omission sensitivity may be weakened in an open task queue."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "oq-oq-c08-ac-decision--sheet",
+      "fixtureId": "oq-oq-c08-ac-decision",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "oq-oq-c08-ac-decision--memo",
+      "fixtureId": "oq-oq-c08-ac-decision",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "oq-oq-b01-heat--calendar",
+      "fixtureId": "oq-oq-b01-heat",
+      "projection": "calendar",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": null,
+      "fallback": "todo_or_checklist_until_confirmed"
+    },
+    {
+      "cellId": "oq-oq-b01-heat--checklist",
+      "fixtureId": "oq-oq-b01-heat",
+      "projection": "checklist",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Rich typed fields may be flattened into entry detail."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "oq-oq-b01-heat--todo",
+      "fixtureId": "oq-oq-b01-heat",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Closed-set omission sensitivity may be weakened in an open task queue."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "oq-oq-b01-heat--sheet",
+      "fixtureId": "oq-oq-b01-heat",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "oq-oq-b01-heat--memo",
+      "fixtureId": "oq-oq-b01-heat",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "oq-oq-b03-remodel--calendar",
+      "fixtureId": "oq-oq-b03-remodel",
+      "projection": "calendar",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": "원문 일정과 승인된 개인 일정화 정책이 없다.",
+      "fallback": "todo_or_checklist"
+    },
+    {
+      "cellId": "oq-oq-b03-remodel--checklist",
+      "fixtureId": "oq-oq-b03-remodel",
+      "projection": "checklist",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Queue reordering/defer semantics are not represented as first-class fields."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "oq-oq-b03-remodel--todo",
+      "fixtureId": "oq-oq-b03-remodel",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Closed-set omission sensitivity may be weakened in an open task queue."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "oq-oq-b03-remodel--sheet",
+      "fixtureId": "oq-oq-b03-remodel",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "oq-oq-b03-remodel--memo",
+      "fixtureId": "oq-oq-b03-remodel",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "oq-oq-p01-ossu--calendar",
+      "fixtureId": "oq-oq-p01-ossu",
+      "projection": "calendar",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": null,
+      "fallback": "todo_or_checklist_until_confirmed"
+    },
+    {
+      "cellId": "oq-oq-p01-ossu--checklist",
+      "fixtureId": "oq-oq-p01-ossu",
+      "projection": "checklist",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Queue reordering/defer semantics are not represented as first-class fields."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "oq-oq-p01-ossu--todo",
+      "fixtureId": "oq-oq-p01-ossu",
+      "projection": "todo",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Step layout depends on parent/subtask destination support."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "oq-oq-p01-ossu--sheet",
+      "fixtureId": "oq-oq-p01-ossu",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "oq-oq-p01-ossu--memo",
+      "fixtureId": "oq-oq-p01-ossu",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "oq-oq-p02-packing--calendar",
+      "fixtureId": "oq-oq-p02-packing",
+      "projection": "calendar",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": "원문 일정과 승인된 개인 일정화 정책이 없다.",
+      "fallback": "todo_or_checklist"
+    },
+    {
+      "cellId": "oq-oq-p02-packing--checklist",
+      "fixtureId": "oq-oq-p02-packing",
+      "projection": "checklist",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Rich typed fields may be flattened into entry detail."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "oq-oq-p02-packing--todo",
+      "fixtureId": "oq-oq-p02-packing",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Closed-set omission sensitivity may be weakened in an open task queue."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "oq-oq-p02-packing--sheet",
+      "fixtureId": "oq-oq-p02-packing",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "oq-oq-p02-packing--memo",
+      "fixtureId": "oq-oq-p02-packing",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "oq-oq-p03-vehicle--calendar",
+      "fixtureId": "oq-oq-p03-vehicle",
+      "projection": "calendar",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": "원문 일정과 승인된 개인 일정화 정책이 없다.",
+      "fallback": "todo_or_checklist"
+    },
+    {
+      "cellId": "oq-oq-p03-vehicle--checklist",
+      "fixtureId": "oq-oq-p03-vehicle",
+      "projection": "checklist",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Queue reordering/defer semantics are not represented as first-class fields."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "oq-oq-p03-vehicle--todo",
+      "fixtureId": "oq-oq-p03-vehicle",
+      "projection": "todo",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Step layout depends on parent/subtask destination support."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "oq-oq-p03-vehicle--sheet",
+      "fixtureId": "oq-oq-p03-vehicle",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "oq-oq-p03-vehicle--memo",
+      "fixtureId": "oq-oq-p03-vehicle",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "oq-oq-p04-portfolio--calendar",
+      "fixtureId": "oq-oq-p04-portfolio",
+      "projection": "calendar",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": null,
+      "fallback": "todo_or_checklist_until_confirmed"
+    },
+    {
+      "cellId": "oq-oq-p04-portfolio--checklist",
+      "fixtureId": "oq-oq-p04-portfolio",
+      "projection": "checklist",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Rich typed fields may be flattened into entry detail."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "oq-oq-p04-portfolio--todo",
+      "fixtureId": "oq-oq-p04-portfolio",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Closed-set omission sensitivity may be weakened in an open task queue."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "oq-oq-p04-portfolio--sheet",
+      "fixtureId": "oq-oq-p04-portfolio",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "oq-oq-p04-portfolio--memo",
+      "fixtureId": "oq-oq-p04-portfolio",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "value-vq-01--calendar",
+      "fixtureId": "value-vq-01",
+      "projection": "calendar",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": "원문 일정과 승인된 개인 일정화 정책이 없다.",
+      "fallback": "todo_or_checklist"
+    },
+    {
+      "cellId": "value-vq-01--checklist",
+      "fixtureId": "value-vq-01",
+      "projection": "checklist",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Rich typed fields may be flattened into entry detail."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "value-vq-01--todo",
+      "fixtureId": "value-vq-01",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Closed-set omission sensitivity may be weakened in an open task queue."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "value-vq-01--sheet",
+      "fixtureId": "value-vq-01",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "value-vq-01--memo",
+      "fixtureId": "value-vq-01",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "value-vq-03--calendar",
+      "fixtureId": "value-vq-03",
+      "projection": "calendar",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": null,
+      "fallback": "todo_or_checklist_until_confirmed"
+    },
+    {
+      "cellId": "value-vq-03--checklist",
+      "fixtureId": "value-vq-03",
+      "projection": "checklist",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Rich typed fields may be flattened into entry detail."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "value-vq-03--todo",
+      "fixtureId": "value-vq-03",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Closed-set omission sensitivity may be weakened in an open task queue."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "value-vq-03--sheet",
+      "fixtureId": "value-vq-03",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "value-vq-03--memo",
+      "fixtureId": "value-vq-03",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "value-vq-04--calendar",
+      "fixtureId": "value-vq-04",
+      "projection": "calendar",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": "원문 일정과 승인된 개인 일정화 정책이 없다.",
+      "fallback": "todo_or_checklist"
+    },
+    {
+      "cellId": "value-vq-04--checklist",
+      "fixtureId": "value-vq-04",
+      "projection": "checklist",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Rich typed fields may be flattened into entry detail."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "value-vq-04--todo",
+      "fixtureId": "value-vq-04",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Closed-set omission sensitivity may be weakened in an open task queue."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "value-vq-04--sheet",
+      "fixtureId": "value-vq-04",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "value-vq-04--memo",
+      "fixtureId": "value-vq-04",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "value-vq-05--calendar",
+      "fixtureId": "value-vq-05",
+      "projection": "calendar",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": null,
+      "fallback": "todo_or_checklist_until_confirmed"
+    },
+    {
+      "cellId": "value-vq-05--checklist",
+      "fixtureId": "value-vq-05",
+      "projection": "checklist",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Queue reordering/defer semantics are not represented as first-class fields."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "value-vq-05--todo",
+      "fixtureId": "value-vq-05",
+      "projection": "todo",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Step layout depends on parent/subtask destination support."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "value-vq-05--sheet",
+      "fixtureId": "value-vq-05",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "value-vq-05--memo",
+      "fixtureId": "value-vq-05",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "value-vq-06--calendar",
+      "fixtureId": "value-vq-06",
+      "projection": "calendar",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": "원문 일정과 승인된 개인 일정화 정책이 없다.",
+      "fallback": "todo_or_checklist"
+    },
+    {
+      "cellId": "value-vq-06--checklist",
+      "fixtureId": "value-vq-06",
+      "projection": "checklist",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Rich typed fields may be flattened into entry detail."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "value-vq-06--todo",
+      "fixtureId": "value-vq-06",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Closed-set omission sensitivity may be weakened in an open task queue."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "value-vq-06--sheet",
+      "fixtureId": "value-vq-06",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "value-vq-06--memo",
+      "fixtureId": "value-vq-06",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "value-vq-10--calendar",
+      "fixtureId": "value-vq-10",
+      "projection": "calendar",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": null,
+      "fallback": "todo_or_checklist_until_confirmed"
+    },
+    {
+      "cellId": "value-vq-10--checklist",
+      "fixtureId": "value-vq-10",
+      "projection": "checklist",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Rich typed fields may be flattened into entry detail."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "value-vq-10--todo",
+      "fixtureId": "value-vq-10",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Closed-set omission sensitivity may be weakened in an open task queue."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "value-vq-10--sheet",
+      "fixtureId": "value-vq-10",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "value-vq-10--memo",
+      "fixtureId": "value-vq-10",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "value-vq-11--calendar",
+      "fixtureId": "value-vq-11",
+      "projection": "calendar",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": null,
+      "fallback": "todo_or_checklist_until_confirmed"
+    },
+    {
+      "cellId": "value-vq-11--checklist",
+      "fixtureId": "value-vq-11",
+      "projection": "checklist",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Rich typed fields may be flattened into entry detail."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "value-vq-11--todo",
+      "fixtureId": "value-vq-11",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Closed-set omission sensitivity may be weakened in an open task queue."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "value-vq-11--sheet",
+      "fixtureId": "value-vq-11",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "value-vq-11--memo",
+      "fixtureId": "value-vq-11",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "value-vq-12--calendar",
+      "fixtureId": "value-vq-12",
+      "projection": "calendar",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": "원문 일정과 승인된 개인 일정화 정책이 없다.",
+      "fallback": "todo_or_checklist"
+    },
+    {
+      "cellId": "value-vq-12--checklist",
+      "fixtureId": "value-vq-12",
+      "projection": "checklist",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Rich typed fields may be flattened into entry detail."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "value-vq-12--todo",
+      "fixtureId": "value-vq-12",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Closed-set omission sensitivity may be weakened in an open task queue."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "value-vq-12--sheet",
+      "fixtureId": "value-vq-12",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "value-vq-12--memo",
+      "fixtureId": "value-vq-12",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "deep-ds06--calendar",
+      "fixtureId": "deep-ds06",
+      "projection": "calendar",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": null,
+      "fallback": "todo_or_checklist_until_confirmed"
+    },
+    {
+      "cellId": "deep-ds06--checklist",
+      "fixtureId": "deep-ds06",
+      "projection": "checklist",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Rich typed fields may be flattened into entry detail."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "deep-ds06--todo",
+      "fixtureId": "deep-ds06",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Closed-set omission sensitivity may be weakened in an open task queue."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "deep-ds06--sheet",
+      "fixtureId": "deep-ds06",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "deep-ds06--memo",
+      "fixtureId": "deep-ds06",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "deep-ds08--calendar",
+      "fixtureId": "deep-ds08",
+      "projection": "calendar",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": "원문 일정과 승인된 개인 일정화 정책이 없다.",
+      "fallback": "todo_or_checklist"
+    },
+    {
+      "cellId": "deep-ds08--checklist",
+      "fixtureId": "deep-ds08",
+      "projection": "checklist",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Rich typed fields may be flattened into entry detail."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "deep-ds08--todo",
+      "fixtureId": "deep-ds08",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Closed-set omission sensitivity may be weakened in an open task queue."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "deep-ds08--sheet",
+      "fixtureId": "deep-ds08",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "deep-ds08--memo",
+      "fixtureId": "deep-ds08",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "live-c01--calendar",
+      "fixtureId": "live-c01",
+      "projection": "calendar",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": "원문 일정과 승인된 개인 일정화 정책이 없다.",
+      "fallback": "todo_or_checklist"
+    },
+    {
+      "cellId": "live-c01--checklist",
+      "fixtureId": "live-c01",
+      "projection": "checklist",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Rich typed fields may be flattened into entry detail."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "live-c01--todo",
+      "fixtureId": "live-c01",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Closed-set omission sensitivity may be weakened in an open task queue."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "live-c01--sheet",
+      "fixtureId": "live-c01",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "live-c01--memo",
+      "fixtureId": "live-c01",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "live-c10--calendar",
+      "fixtureId": "live-c10",
+      "projection": "calendar",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": "원문 일정과 승인된 개인 일정화 정책이 없다.",
+      "fallback": "todo_or_checklist"
+    },
+    {
+      "cellId": "live-c10--checklist",
+      "fixtureId": "live-c10",
+      "projection": "checklist",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Rich typed fields may be flattened into entry detail."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "live-c10--todo",
+      "fixtureId": "live-c10",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Closed-set omission sensitivity may be weakened in an open task queue."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "live-c10--sheet",
+      "fixtureId": "live-c10",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "live-c10--memo",
+      "fixtureId": "live-c10",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "live-c13--calendar",
+      "fixtureId": "live-c13",
+      "projection": "calendar",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": "원문 일정과 승인된 개인 일정화 정책이 없다.",
+      "fallback": "todo_or_checklist"
+    },
+    {
+      "cellId": "live-c13--checklist",
+      "fixtureId": "live-c13",
+      "projection": "checklist",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Rich typed fields may be flattened into entry detail."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "live-c13--todo",
+      "fixtureId": "live-c13",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Closed-set omission sensitivity may be weakened in an open task queue."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "live-c13--sheet",
+      "fixtureId": "live-c13",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "live-c13--memo",
+      "fixtureId": "live-c13",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "live-c16--calendar",
+      "fixtureId": "live-c16",
+      "projection": "calendar",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": null,
+      "fallback": "todo_or_checklist_until_confirmed"
+    },
+    {
+      "cellId": "live-c16--checklist",
+      "fixtureId": "live-c16",
+      "projection": "checklist",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Queue reordering/defer semantics are not represented as first-class fields."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "live-c16--todo",
+      "fixtureId": "live-c16",
+      "projection": "todo",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Step layout depends on parent/subtask destination support."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "live-c16--sheet",
+      "fixtureId": "live-c16",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "live-c16--memo",
+      "fixtureId": "live-c16",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "live-r02--calendar",
+      "fixtureId": "live-r02",
+      "projection": "calendar",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": null,
+      "fallback": "todo_or_checklist_until_confirmed"
+    },
+    {
+      "cellId": "live-r02--checklist",
+      "fixtureId": "live-r02",
+      "projection": "checklist",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Rich typed fields may be flattened into entry detail."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "live-r02--todo",
+      "fixtureId": "live-r02",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Closed-set omission sensitivity may be weakened in an open task queue."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "live-r02--sheet",
+      "fixtureId": "live-r02",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "live-r02--memo",
+      "fixtureId": "live-r02",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "live-live-ifixit-washer-01--calendar",
+      "fixtureId": "live-live-ifixit-washer-01",
+      "projection": "calendar",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": "원문 일정과 승인된 개인 일정화 정책이 없다.",
+      "fallback": "todo_or_checklist"
+    },
+    {
+      "cellId": "live-live-ifixit-washer-01--checklist",
+      "fixtureId": "live-live-ifixit-washer-01",
+      "projection": "checklist",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Rich typed fields may be flattened into entry detail."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "live-live-ifixit-washer-01--todo",
+      "fixtureId": "live-live-ifixit-washer-01",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Closed-set omission sensitivity may be weakened in an open task queue."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "live-live-ifixit-washer-01--sheet",
+      "fixtureId": "live-live-ifixit-washer-01",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "live-live-ifixit-washer-01--memo",
+      "fixtureId": "live-live-ifixit-washer-01",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "live-kr-stibee-01--calendar",
+      "fixtureId": "live-kr-stibee-01",
+      "projection": "calendar",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": "원문 일정과 승인된 개인 일정화 정책이 없다.",
+      "fallback": "todo_or_checklist"
+    },
+    {
+      "cellId": "live-kr-stibee-01--checklist",
+      "fixtureId": "live-kr-stibee-01",
+      "projection": "checklist",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Rich typed fields may be flattened into entry detail."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "live-kr-stibee-01--todo",
+      "fixtureId": "live-kr-stibee-01",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Closed-set omission sensitivity may be weakened in an open task queue."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "live-kr-stibee-01--sheet",
+      "fixtureId": "live-kr-stibee-01",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "live-kr-stibee-01--memo",
+      "fixtureId": "live-kr-stibee-01",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "live-live-mdn-core-01--calendar",
+      "fixtureId": "live-live-mdn-core-01",
+      "projection": "calendar",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": null,
+      "fallback": "todo_or_checklist_until_confirmed"
+    },
+    {
+      "cellId": "live-live-mdn-core-01--checklist",
+      "fixtureId": "live-live-mdn-core-01",
+      "projection": "checklist",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Queue reordering/defer semantics are not represented as first-class fields."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "live-live-mdn-core-01--todo",
+      "fixtureId": "live-live-mdn-core-01",
+      "projection": "todo",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Step layout depends on parent/subtask destination support."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "live-live-mdn-core-01--sheet",
+      "fixtureId": "live-live-mdn-core-01",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "live-live-mdn-core-01--memo",
+      "fixtureId": "live-live-mdn-core-01",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "live-live-dyson-filter-01--calendar",
+      "fixtureId": "live-live-dyson-filter-01",
+      "projection": "calendar",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": null,
+      "fallback": "todo_or_checklist_until_confirmed"
+    },
+    {
+      "cellId": "live-live-dyson-filter-01--checklist",
+      "fixtureId": "live-live-dyson-filter-01",
+      "projection": "checklist",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Rich typed fields may be flattened into entry detail."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "live-live-dyson-filter-01--todo",
+      "fixtureId": "live-live-dyson-filter-01",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Closed-set omission sensitivity may be weakened in an open task queue."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "live-live-dyson-filter-01--sheet",
+      "fixtureId": "live-live-dyson-filter-01",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "live-live-dyson-filter-01--memo",
+      "fixtureId": "live-live-dyson-filter-01",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "live-live-jotform-event-intake-01--calendar",
+      "fixtureId": "live-live-jotform-event-intake-01",
+      "projection": "calendar",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": "원문 일정과 승인된 개인 일정화 정책이 없다.",
+      "fallback": "sheet_or_memo"
+    },
+    {
+      "cellId": "live-live-jotform-event-intake-01--checklist",
+      "fixtureId": "live-live-jotform-event-intake-01",
+      "projection": "checklist",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [],
+      "prohibitionReason": "행사 정보나 SourceOccurrence 자체는 완료 가능한 체크 항목이 아니다.",
+      "fallback": "calendar_after_selection_or_sheet_or_memo"
+    },
+    {
+      "cellId": "live-live-jotform-event-intake-01--todo",
+      "fixtureId": "live-live-jotform-event-intake-01",
+      "projection": "todo",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [],
+      "prohibitionReason": "독립적으로 완료할 source-backed action Item이 없다.",
+      "fallback": "sheet_or_memo"
+    },
+    {
+      "cellId": "live-live-jotform-event-intake-01--sheet",
+      "fixtureId": "live-live-jotform-event-intake-01",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "live-live-jotform-event-intake-01--memo",
+      "fixtureId": "live-live-jotform-event-intake-01",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "new-nps-ten-essentials--calendar",
+      "fixtureId": "new-nps-ten-essentials",
+      "projection": "calendar",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": "원문 일정과 승인된 개인 일정화 정책이 없다.",
+      "fallback": "todo_or_checklist"
+    },
+    {
+      "cellId": "new-nps-ten-essentials--checklist",
+      "fixtureId": "new-nps-ten-essentials",
+      "projection": "checklist",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Rich typed fields may be flattened into entry detail."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "new-nps-ten-essentials--todo",
+      "fixtureId": "new-nps-ten-essentials",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Closed-set omission sensitivity may be weakened in an open task queue."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "new-nps-ten-essentials--sheet",
+      "fixtureId": "new-nps-ten-essentials",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "new-nps-ten-essentials--memo",
+      "fixtureId": "new-nps-ten-essentials",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "new-apple-quick-start--calendar",
+      "fixtureId": "new-apple-quick-start",
+      "projection": "calendar",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": "원문 일정과 승인된 개인 일정화 정책이 없다.",
+      "fallback": "todo_or_checklist"
+    },
+    {
+      "cellId": "new-apple-quick-start--checklist",
+      "fixtureId": "new-apple-quick-start",
+      "projection": "checklist",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Rich typed fields may be flattened into entry detail."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "new-apple-quick-start--todo",
+      "fixtureId": "new-apple-quick-start",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Closed-set omission sensitivity may be weakened in an open task queue."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "new-apple-quick-start--sheet",
+      "fixtureId": "new-apple-quick-start",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "new-apple-quick-start--memo",
+      "fixtureId": "new-apple-quick-start",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "new-github-account-onboarding--calendar",
+      "fixtureId": "new-github-account-onboarding",
+      "projection": "calendar",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": "원문 일정과 승인된 개인 일정화 정책이 없다.",
+      "fallback": "todo_or_checklist"
+    },
+    {
+      "cellId": "new-github-account-onboarding--checklist",
+      "fixtureId": "new-github-account-onboarding",
+      "projection": "checklist",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Queue reordering/defer semantics are not represented as first-class fields."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "new-github-account-onboarding--todo",
+      "fixtureId": "new-github-account-onboarding",
+      "projection": "todo",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Step layout depends on parent/subtask destination support."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "new-github-account-onboarding--sheet",
+      "fixtureId": "new-github-account-onboarding",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "new-github-account-onboarding--memo",
+      "fixtureId": "new-github-account-onboarding",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "new-google-codelab-ai-agent--calendar",
+      "fixtureId": "new-google-codelab-ai-agent",
+      "projection": "calendar",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": null,
+      "fallback": "todo_or_checklist_until_confirmed"
+    },
+    {
+      "cellId": "new-google-codelab-ai-agent--checklist",
+      "fixtureId": "new-google-codelab-ai-agent",
+      "projection": "checklist",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Rich typed fields may be flattened into entry detail."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "new-google-codelab-ai-agent--todo",
+      "fixtureId": "new-google-codelab-ai-agent",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Closed-set omission sensitivity may be weakened in an open task queue."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "new-google-codelab-ai-agent--sheet",
+      "fixtureId": "new-google-codelab-ai-agent",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "new-google-codelab-ai-agent--memo",
+      "fixtureId": "new-google-codelab-ai-agent",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "new-mdn-core-scripting--calendar",
+      "fixtureId": "new-mdn-core-scripting",
+      "projection": "calendar",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": null,
+      "fallback": "todo_or_checklist_until_confirmed"
+    },
+    {
+      "cellId": "new-mdn-core-scripting--checklist",
+      "fixtureId": "new-mdn-core-scripting",
+      "projection": "checklist",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Queue reordering/defer semantics are not represented as first-class fields."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "new-mdn-core-scripting--todo",
+      "fixtureId": "new-mdn-core-scripting",
+      "projection": "todo",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Step layout depends on parent/subtask destination support."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "new-mdn-core-scripting--sheet",
+      "fixtureId": "new-mdn-core-scripting",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "new-mdn-core-scripting--memo",
+      "fixtureId": "new-mdn-core-scripting",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "new-gutenberg-top-reading-queue--calendar",
+      "fixtureId": "new-gutenberg-top-reading-queue",
+      "projection": "calendar",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": null,
+      "fallback": "todo_or_checklist_until_confirmed"
+    },
+    {
+      "cellId": "new-gutenberg-top-reading-queue--checklist",
+      "fixtureId": "new-gutenberg-top-reading-queue",
+      "projection": "checklist",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Queue reordering/defer semantics are not represented as first-class fields."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "new-gutenberg-top-reading-queue--todo",
+      "fixtureId": "new-gutenberg-top-reading-queue",
+      "projection": "todo",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Step layout depends on parent/subtask destination support."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "new-gutenberg-top-reading-queue--sheet",
+      "fixtureId": "new-gutenberg-top-reading-queue",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "new-gutenberg-top-reading-queue--memo",
+      "fixtureId": "new-gutenberg-top-reading-queue",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "event-kr-single-performance--calendar",
+      "fixtureId": "event-kr-single-performance",
+      "projection": "calendar",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "event-kr-single-performance--checklist",
+      "fixtureId": "event-kr-single-performance",
+      "projection": "checklist",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [],
+      "prohibitionReason": "행사 정보나 SourceOccurrence 자체는 완료 가능한 체크 항목이 아니다.",
+      "fallback": "calendar_after_selection_or_sheet_or_memo"
+    },
+    {
+      "cellId": "event-kr-single-performance--todo",
+      "fixtureId": "event-kr-single-performance",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [],
+      "prohibitionReason": null,
+      "fallback": "sheet_or_memo"
+    },
+    {
+      "cellId": "event-kr-single-performance--sheet",
+      "fixtureId": "event-kr-single-performance",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "event-kr-single-performance--memo",
+      "fixtureId": "event-kr-single-performance",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "event-kr-multi-show-choir--calendar",
+      "fixtureId": "event-kr-multi-show-choir",
+      "projection": "calendar",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": null,
+      "fallback": "sheet_or_memo_until_selected"
+    },
+    {
+      "cellId": "event-kr-multi-show-choir--checklist",
+      "fixtureId": "event-kr-multi-show-choir",
+      "projection": "checklist",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [],
+      "prohibitionReason": "행사 정보나 SourceOccurrence 자체는 완료 가능한 체크 항목이 아니다.",
+      "fallback": "calendar_after_selection_or_sheet_or_memo"
+    },
+    {
+      "cellId": "event-kr-multi-show-choir--todo",
+      "fixtureId": "event-kr-multi-show-choir",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [],
+      "prohibitionReason": null,
+      "fallback": "sheet_or_memo"
+    },
+    {
+      "cellId": "event-kr-multi-show-choir--sheet",
+      "fixtureId": "event-kr-multi-show-choir",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "event-kr-multi-show-choir--memo",
+      "fixtureId": "event-kr-multi-show-choir",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "event-kr-sokcho-summer--calendar",
+      "fixtureId": "event-kr-sokcho-summer",
+      "projection": "calendar",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": null,
+      "fallback": "sheet_or_memo_until_selected"
+    },
+    {
+      "cellId": "event-kr-sokcho-summer--checklist",
+      "fixtureId": "event-kr-sokcho-summer",
+      "projection": "checklist",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [],
+      "prohibitionReason": "행사 정보나 SourceOccurrence 자체는 완료 가능한 체크 항목이 아니다.",
+      "fallback": "calendar_after_selection_or_sheet_or_memo"
+    },
+    {
+      "cellId": "event-kr-sokcho-summer--todo",
+      "fixtureId": "event-kr-sokcho-summer",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [],
+      "prohibitionReason": null,
+      "fallback": "sheet_or_memo"
+    },
+    {
+      "cellId": "event-kr-sokcho-summer--sheet",
+      "fixtureId": "event-kr-sokcho-summer",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "event-kr-sokcho-summer--memo",
+      "fixtureId": "event-kr-sokcho-summer",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "event-kr-sema-martin-parr--calendar",
+      "fixtureId": "event-kr-sema-martin-parr",
+      "projection": "calendar",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": null,
+      "fallback": "sheet_or_memo_until_selected"
+    },
+    {
+      "cellId": "event-kr-sema-martin-parr--checklist",
+      "fixtureId": "event-kr-sema-martin-parr",
+      "projection": "checklist",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [],
+      "prohibitionReason": "행사 정보나 SourceOccurrence 자체는 완료 가능한 체크 항목이 아니다.",
+      "fallback": "calendar_after_selection_or_sheet_or_memo"
+    },
+    {
+      "cellId": "event-kr-sema-martin-parr--todo",
+      "fixtureId": "event-kr-sema-martin-parr",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [],
+      "prohibitionReason": null,
+      "fallback": "sheet_or_memo"
+    },
+    {
+      "cellId": "event-kr-sema-martin-parr--sheet",
+      "fixtureId": "event-kr-sema-martin-parr",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "event-kr-sema-martin-parr--memo",
+      "fixtureId": "event-kr-sema-martin-parr",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "event-kr-ballet-ticket-show--calendar",
+      "fixtureId": "event-kr-ballet-ticket-show",
+      "projection": "calendar",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": null,
+      "fallback": "sheet_or_memo_until_selected"
+    },
+    {
+      "cellId": "event-kr-ballet-ticket-show--checklist",
+      "fixtureId": "event-kr-ballet-ticket-show",
+      "projection": "checklist",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [],
+      "prohibitionReason": "행사 정보나 SourceOccurrence 자체는 완료 가능한 체크 항목이 아니다.",
+      "fallback": "calendar_after_selection_or_sheet_or_memo"
+    },
+    {
+      "cellId": "event-kr-ballet-ticket-show--todo",
+      "fixtureId": "event-kr-ballet-ticket-show",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Closed-set omission sensitivity may be weakened in an open task queue."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "event-kr-ballet-ticket-show--sheet",
+      "fixtureId": "event-kr-ballet-ticket-show",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "event-kr-ballet-ticket-show--memo",
+      "fixtureId": "event-kr-ballet-ticket-show",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "event-kr-qnet-exam-lifecycle--calendar",
+      "fixtureId": "event-kr-qnet-exam-lifecycle",
+      "projection": "calendar",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": "정확한 회차 시각이나 장소가 아직 확보되지 않았다.",
+      "fallback": "sheet_or_memo"
+    },
+    {
+      "cellId": "event-kr-qnet-exam-lifecycle--checklist",
+      "fixtureId": "event-kr-qnet-exam-lifecycle",
+      "projection": "checklist",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [],
+      "prohibitionReason": "행사 정보나 SourceOccurrence 자체는 완료 가능한 체크 항목이 아니다.",
+      "fallback": "calendar_after_selection_or_sheet_or_memo"
+    },
+    {
+      "cellId": "event-kr-qnet-exam-lifecycle--todo",
+      "fixtureId": "event-kr-qnet-exam-lifecycle",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Closed-set omission sensitivity may be weakened in an open task queue."
+      ],
+      "prohibitionReason": null,
+      "fallback": "flat_todo_with_step_prefix"
+    },
+    {
+      "cellId": "event-kr-qnet-exam-lifecycle--sheet",
+      "fixtureId": "event-kr-qnet-exam-lifecycle",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "event-kr-qnet-exam-lifecycle--memo",
+      "fixtureId": "event-kr-qnet-exam-lifecycle",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "event-kr-revised-musical--calendar",
+      "fixtureId": "event-kr-revised-musical",
+      "projection": "calendar",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": "정확한 회차 시각이나 장소가 아직 확보되지 않았다.",
+      "fallback": "sheet_or_memo"
+    },
+    {
+      "cellId": "event-kr-revised-musical--checklist",
+      "fixtureId": "event-kr-revised-musical",
+      "projection": "checklist",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [],
+      "prohibitionReason": "행사 정보나 SourceOccurrence 자체는 완료 가능한 체크 항목이 아니다.",
+      "fallback": "calendar_after_selection_or_sheet_or_memo"
+    },
+    {
+      "cellId": "event-kr-revised-musical--todo",
+      "fixtureId": "event-kr-revised-musical",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [],
+      "prohibitionReason": null,
+      "fallback": "sheet_or_memo"
+    },
+    {
+      "cellId": "event-kr-revised-musical--sheet",
+      "fixtureId": "event-kr-revised-musical",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "event-kr-revised-musical--memo",
+      "fixtureId": "event-kr-revised-musical",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "event-pattern-nps-all-day--calendar",
+      "fixtureId": "event-pattern-nps-all-day",
+      "projection": "calendar",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "event-pattern-nps-all-day--checklist",
+      "fixtureId": "event-pattern-nps-all-day",
+      "projection": "checklist",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [],
+      "prohibitionReason": "행사 정보나 SourceOccurrence 자체는 완료 가능한 체크 항목이 아니다.",
+      "fallback": "calendar_after_selection_or_sheet_or_memo"
+    },
+    {
+      "cellId": "event-pattern-nps-all-day--todo",
+      "fixtureId": "event-pattern-nps-all-day",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [],
+      "prohibitionReason": null,
+      "fallback": "sheet_or_memo"
+    },
+    {
+      "cellId": "event-pattern-nps-all-day--sheet",
+      "fixtureId": "event-pattern-nps-all-day",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "event-pattern-nps-all-day--memo",
+      "fixtureId": "event-pattern-nps-all-day",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "event-pattern-online-foia--calendar",
+      "fixtureId": "event-pattern-online-foia",
+      "projection": "calendar",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": null,
+      "fallback": null
+    },
+    {
+      "cellId": "event-pattern-online-foia--checklist",
+      "fixtureId": "event-pattern-online-foia",
+      "projection": "checklist",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [],
+      "prohibitionReason": "행사 정보나 SourceOccurrence 자체는 완료 가능한 체크 항목이 아니다.",
+      "fallback": "calendar_after_selection_or_sheet_or_memo"
+    },
+    {
+      "cellId": "event-pattern-online-foia--todo",
+      "fixtureId": "event-pattern-online-foia",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [],
+      "prohibitionReason": null,
+      "fallback": "sheet_or_memo"
+    },
+    {
+      "cellId": "event-pattern-online-foia--sheet",
+      "fixtureId": "event-pattern-online-foia",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "event-pattern-online-foia--memo",
+      "fixtureId": "event-pattern-online-foia",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "event-pattern-nps-weekly--calendar",
+      "fixtureId": "event-pattern-nps-weekly",
+      "projection": "calendar",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": null,
+      "fallback": "sheet_or_memo_until_selected"
+    },
+    {
+      "cellId": "event-pattern-nps-weekly--checklist",
+      "fixtureId": "event-pattern-nps-weekly",
+      "projection": "checklist",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [],
+      "prohibitionReason": "행사 정보나 SourceOccurrence 자체는 완료 가능한 체크 항목이 아니다.",
+      "fallback": "calendar_after_selection_or_sheet_or_memo"
+    },
+    {
+      "cellId": "event-pattern-nps-weekly--todo",
+      "fixtureId": "event-pattern-nps-weekly",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [],
+      "prohibitionReason": null,
+      "fallback": "sheet_or_memo"
+    },
+    {
+      "cellId": "event-pattern-nps-weekly--sheet",
+      "fixtureId": "event-pattern-nps-weekly",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "event-pattern-nps-weekly--memo",
+      "fixtureId": "event-pattern-nps-weekly",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "event-pattern-chimac-edition--calendar",
+      "fixtureId": "event-pattern-chimac-edition",
+      "projection": "calendar",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": null,
+      "fallback": "sheet_or_memo_until_selected"
+    },
+    {
+      "cellId": "event-pattern-chimac-edition--checklist",
+      "fixtureId": "event-pattern-chimac-edition",
+      "projection": "checklist",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [],
+      "prohibitionReason": "행사 정보나 SourceOccurrence 자체는 완료 가능한 체크 항목이 아니다.",
+      "fallback": "calendar_after_selection_or_sheet_or_memo"
+    },
+    {
+      "cellId": "event-pattern-chimac-edition--todo",
+      "fixtureId": "event-pattern-chimac-edition",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [],
+      "prohibitionReason": null,
+      "fallback": "sheet_or_memo"
+    },
+    {
+      "cellId": "event-pattern-chimac-edition--sheet",
+      "fixtureId": "event-pattern-chimac-edition",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "event-pattern-chimac-edition--memo",
+      "fixtureId": "event-pattern-chimac-edition",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "event-pattern-nps-rescheduled--calendar",
+      "fixtureId": "event-pattern-nps-rescheduled",
+      "projection": "calendar",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": "대체 회차의 시간·장소가 원문에서 다시 확인되지 않았다.",
+      "fallback": "sheet_or_memo"
+    },
+    {
+      "cellId": "event-pattern-nps-rescheduled--checklist",
+      "fixtureId": "event-pattern-nps-rescheduled",
+      "projection": "checklist",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [],
+      "prohibitionReason": "행사 정보나 SourceOccurrence 자체는 완료 가능한 체크 항목이 아니다.",
+      "fallback": "calendar_after_selection_or_sheet_or_memo"
+    },
+    {
+      "cellId": "event-pattern-nps-rescheduled--todo",
+      "fixtureId": "event-pattern-nps-rescheduled",
+      "projection": "todo",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [],
+      "prohibitionReason": "독립적으로 완료할 source-backed action Item이 없다.",
+      "fallback": "sheet_or_memo"
+    },
+    {
+      "cellId": "event-pattern-nps-rescheduled--sheet",
+      "fixtureId": "event-pattern-nps-rescheduled",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "event-pattern-nps-rescheduled--memo",
+      "fixtureId": "event-pattern-nps-rescheduled",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "event-pattern-fun-seoul-interest-list--calendar",
+      "fixtureId": "event-pattern-fun-seoul-interest-list",
+      "projection": "calendar",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": "정확한 회차 시각이나 장소가 아직 확보되지 않았다.",
+      "fallback": "sheet_or_memo"
+    },
+    {
+      "cellId": "event-pattern-fun-seoul-interest-list--checklist",
+      "fixtureId": "event-pattern-fun-seoul-interest-list",
+      "projection": "checklist",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [],
+      "prohibitionReason": "행사 정보나 SourceOccurrence 자체는 완료 가능한 체크 항목이 아니다.",
+      "fallback": "calendar_after_selection_or_sheet_or_memo"
+    },
+    {
+      "cellId": "event-pattern-fun-seoul-interest-list--todo",
+      "fixtureId": "event-pattern-fun-seoul-interest-list",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [],
+      "prohibitionReason": null,
+      "fallback": "sheet_or_memo"
+    },
+    {
+      "cellId": "event-pattern-fun-seoul-interest-list--sheet",
+      "fixtureId": "event-pattern-fun-seoul-interest-list",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "event-pattern-fun-seoul-interest-list--memo",
+      "fixtureId": "event-pattern-fun-seoul-interest-list",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "event-pattern-boryeong-operations--calendar",
+      "fixtureId": "event-pattern-boryeong-operations",
+      "projection": "calendar",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": null,
+      "fallback": "sheet_or_memo_until_selected"
+    },
+    {
+      "cellId": "event-pattern-boryeong-operations--checklist",
+      "fixtureId": "event-pattern-boryeong-operations",
+      "projection": "checklist",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [],
+      "prohibitionReason": "행사 정보나 SourceOccurrence 자체는 완료 가능한 체크 항목이 아니다.",
+      "fallback": "calendar_after_selection_or_sheet_or_memo"
+    },
+    {
+      "cellId": "event-pattern-boryeong-operations--todo",
+      "fixtureId": "event-pattern-boryeong-operations",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [],
+      "prohibitionReason": null,
+      "fallback": "sheet_or_memo"
+    },
+    {
+      "cellId": "event-pattern-boryeong-operations--sheet",
+      "fixtureId": "event-pattern-boryeong-operations",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "event-pattern-boryeong-operations--memo",
+      "fixtureId": "event-pattern-boryeong-operations",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    },
+    {
+      "cellId": "event-pattern-boryeong-programs--calendar",
+      "fixtureId": "event-pattern-boryeong-programs",
+      "projection": "calendar",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Calendar does not own Item completion.",
+        "Step/Flow hierarchy is retained only through embedded canonical IDs."
+      ],
+      "prohibitionReason": null,
+      "fallback": "sheet_or_memo_until_selected"
+    },
+    {
+      "cellId": "event-pattern-boryeong-programs--checklist",
+      "fixtureId": "event-pattern-boryeong-programs",
+      "projection": "checklist",
+      "fidelity": "misleading_or_prohibited",
+      "losses": [],
+      "prohibitionReason": "행사 정보나 SourceOccurrence 자체는 완료 가능한 체크 항목이 아니다.",
+      "fallback": "calendar_after_selection_or_sheet_or_memo"
+    },
+    {
+      "cellId": "event-pattern-boryeong-programs--todo",
+      "fixtureId": "event-pattern-boryeong-programs",
+      "projection": "todo",
+      "fidelity": "bounded_loss",
+      "losses": [],
+      "prohibitionReason": null,
+      "fallback": "sheet_or_memo"
+    },
+    {
+      "cellId": "event-pattern-boryeong-programs--sheet",
+      "fixtureId": "event-pattern-boryeong-programs",
+      "projection": "sheet",
+      "fidelity": "lossless_or_low_loss",
+      "losses": [
+        "Native reminders and attendance notifications are not represented.",
+        "Nested hierarchy is denormalized into ID columns."
+      ],
+      "prohibitionReason": null,
+      "fallback": "csv_or_tsv"
+    },
+    {
+      "cellId": "event-pattern-boryeong-programs--memo",
+      "fixtureId": "event-pattern-boryeong-programs",
+      "projection": "memo",
+      "fidelity": "bounded_loss",
+      "losses": [
+        "Typed completion, schedule, and relation fields are human-readable text only.",
+        "Memo is not canonical raw data and is not guaranteed to round-trip."
+      ],
+      "prohibitionReason": null,
+      "fallback": "canonical_json_for_machine_roundtrip"
+    }
+  ]
+}

@@ -32,65 +32,6 @@ type FlowSaveBeforeFrameProps = {
   composition: 'legacy' | 'artifact-first';
 };
 
-function FlowOutlineDisclosure({
-  previewTestId,
-  previewRowTestId,
-  itemCount,
-  previewRows,
-}: Pick<
-  FlowSaveBeforeFrameProps,
-  'previewTestId' | 'previewRowTestId' | 'itemCount' | 'previewRows'
->) {
-  return (
-    <details
-      data-testid={previewTestId}
-      className="border-y border-[var(--flowme-border)] bg-[var(--flowme-surface)]"
-    >
-      <summary
-        data-testid={`${previewTestId}-expand`}
-        className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 px-2 text-sm font-semibold text-[var(--flowme-text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--flowme-focus)]"
-      >
-        <span>전체 Flow 구조</span>
-        <span className="shrink-0 text-xs font-semibold text-[var(--flowme-text-secondary)]">
-          {itemCount}개 보기
-        </span>
-      </summary>
-      <ol className="border-t border-[var(--flowme-border)]">
-        {previewRows.map((row, index) => (
-          <li
-            key={row.id}
-            data-testid={previewRowTestId}
-            data-flow-outline-row="true"
-            className="grid min-w-0 grid-cols-[2rem_minmax(0,1fr)] gap-2.5 border-b border-[var(--flowme-border)] px-2 py-2.5 last:border-b-0"
-          >
-            <span
-              className="flex h-7 w-7 items-center justify-center rounded-md bg-[var(--flowme-action-soft)] text-[11px] font-semibold text-[var(--flowme-action)]"
-              aria-hidden="true"
-            >
-              {index + 1}
-            </span>
-            <span className="min-w-0">
-              {row.timing ? (
-                <span className="block text-[11px] font-semibold text-[var(--flowme-text-secondary)]">
-                  {row.timing}
-                </span>
-              ) : null}
-              <span className="block break-keep text-sm font-semibold leading-5 text-[var(--flowme-text)]">
-                {row.title}
-              </span>
-              {row.summary ? (
-                <span className="mt-0.5 line-clamp-1 block text-xs leading-5 text-[var(--flowme-text-secondary)]">
-                  {row.summary}
-                </span>
-              ) : null}
-            </span>
-          </li>
-        ))}
-      </ol>
-    </details>
-  );
-}
-
 export function FlowSaveBeforeFrame({
   rootTestId,
   previewTestId,
@@ -113,18 +54,21 @@ export function FlowSaveBeforeFrame({
   const rows = previewRows.slice(0, 5);
   const remainingRows = previewRows.slice(5);
   const remainingCount = Math.max(itemCount - rows.length, 0);
-  const hasDecisionPane = Boolean(artifactPreview || setup || actions);
+  const hasDecisionPane = composition === 'artifact-first'
+    ? Boolean(setup || actions)
+    : Boolean(artifactPreview || setup || actions);
 
   if (composition === 'artifact-first') {
     return (
       <section
       data-testid={rootTestId}
       data-visual-structure="artifact-first"
-      data-experience-architecture="p29-artifact-first"
+      data-experience-architecture="p35-result-first"
       data-p29-marker="P29-SAVE-BEFORE-PRIMARY-RESULT"
       data-p30-marker="P30-SAVE-BEFORE-SINGLE-DECISION"
+      data-p35-marker="P35-PUBLIC-RESULT-FIRST"
       data-flow-anatomy="save-before"
-        className="border-y border-[var(--flowme-border-strong)] py-5 sm:py-7"
+        className="min-h-[calc(100dvh-5rem)] border-y border-[var(--flowme-border-strong)] py-5 sm:min-h-0 sm:py-7"
       >
         <FlowArtifactSummary
           eyebrow={eyebrow}
@@ -133,33 +77,25 @@ export function FlowSaveBeforeFrame({
           sourceLabel={sourceLabel}
           sourceHref={sourceHref}
         />
-        <FlowScheduleIntent
-          inputLabel={inputLabel}
-          resultLabel={resultLabel}
-          itemCount={itemCount}
-        />
 
-        <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.42fr)] lg:items-start lg:gap-7">
-          <div data-testid="flow-save-before-primary-result" data-flow-identity-slot="primary-result" className="min-w-0">
+        <div className={`mt-4 grid gap-4 ${hasDecisionPane ? 'lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.42fr)] lg:items-start lg:gap-7' : ''}`}>
+          <div
+            data-testid="flow-save-before-primary-result"
+            data-flow-identity-slot="primary-result"
+            className="min-w-0"
+          >
             {artifactPreview}
           </div>
-          <aside
-            data-testid="flow-save-before-decision"
-            aria-label="저장 조건과 행동"
-            className="grid min-w-0 gap-4 border-t border-[var(--flowme-border)] pt-4 lg:border-l lg:border-t-0 lg:pl-7 lg:pt-0"
-          >
-            {setup}
-            {actions}
-          </aside>
-        </div>
-
-        <div className="mt-5">
-          <FlowOutlineDisclosure
-            previewTestId={previewTestId}
-            previewRowTestId={previewRowTestId}
-            itemCount={itemCount}
-            previewRows={previewRows}
-          />
+          {hasDecisionPane ? (
+            <aside
+              data-testid="flow-save-before-decision"
+              aria-label="저장 조건과 행동"
+              className="grid min-w-0 gap-3 border-t border-[var(--flowme-border)] pt-4 lg:border-l lg:border-t-0 lg:pl-7 lg:pt-0"
+            >
+              {setup}
+              {actions}
+            </aside>
+          ) : null}
         </div>
       </section>
     );

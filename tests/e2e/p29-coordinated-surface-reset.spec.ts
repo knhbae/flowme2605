@@ -4,6 +4,7 @@ import path from 'node:path';
 import { expect, test, type Page } from '@playwright/test';
 import {
   getOpenMyFlowItemDetail,
+  openMyFlowCalendarSelectedDay,
   openMyFlowLibraryFlow,
 } from './helpers/my-flow-library';
 
@@ -122,10 +123,9 @@ test.describe('P29-01 moving artifact-first save and receipt', () => {
 
     const hero = page.getByTestId('public-flow-hero');
     await expect(hero).toHaveAttribute('data-p29-marker', 'P29-SAVE-BEFORE-PRIMARY-RESULT');
-    await expect(hero).toHaveAttribute('data-experience-architecture', 'p29-artifact-first');
-    await expect(hero.getByTestId('flow-artifact-data-preview')).toHaveAttribute('data-primary-shape', 'calendar');
-    await expect(hero.locator('[data-recommendation-role="primary"]')).toContainText('캘린더');
-    await expect(hero.locator('[data-recommendation-role="primary"]')).toContainText('24');
+    await expect(hero).toHaveAttribute('data-experience-architecture', 'p35-result-first');
+    await expect(hero.getByTestId('public-flow-artifact-preview')).toHaveAttribute('data-primary-shape', 'calendar');
+    await expect(hero.getByTestId('public-flow-artifact-preview')).toContainText('캘린더 · 24개');
     await expect(hero.getByRole('button', { name: /제목·날짜·메모 수정/ })).toHaveCount(0);
     await expect(hero.getByTestId('public-flow-artifact-preview')).not.toHaveAttribute('open', '');
 
@@ -150,16 +150,17 @@ test.describe('P29-01 moving artifact-first save and receipt', () => {
     await page.getByTestId('public-flow-adjust-entry-mobile').click();
     const adjustment = page.getByTestId('public-flow-personal-adjustment');
     await expect(adjustment).toBeFocused();
-    await expect(adjustment).toHaveAttribute('data-adjustment-mode', 'include');
+    await expect(adjustment).toHaveAttribute('data-adjustment-kind', 'name');
     await capture(page, 'p29-01-moving-adjust-390.png');
 
-    await adjustment.getByTestId('public-flow-adjustment-flow-title').fill('우리 집 이사 준비');
-    await adjustment.getByTestId('public-flow-adjustment-save').click();
+    await adjustment.getByTestId('public-flow-adjustment-name-input').fill('우리 집 이사 준비');
+    await adjustment.getByTestId('public-flow-adjustment-apply').click();
+    await page.getByTestId('public-flow-save-primary-mobile').click();
 
     const receipt = page.getByTestId('public-flow-saved-receipt');
     await expect(receipt).toHaveAttribute('data-p29-marker', 'P29-SAVED-RECEIPT-DISTINCT');
     await expect(receipt.getByRole('heading', { name: '우리 집 이사 준비' })).toBeVisible();
-    await expect(receipt.getByTestId('public-flow-saved-receipt-primary')).toHaveAccessibleName('내 Flow에서 시작');
+    await expect(receipt.getByTestId('public-flow-saved-receipt-primary')).toHaveAccessibleName('저장한 전체 Flow 보기');
     await expect(receipt.locator('[data-action-priority="primary"]')).toHaveCount(1);
     await expect(page.getByTestId('public-flow-hero')).toHaveCount(0);
     await expect(page.getByTestId('public-flow-anchor-input')).toHaveCount(0);
@@ -175,7 +176,7 @@ test.describe('P29-01 moving artifact-first save and receipt', () => {
 
     const result = page.getByTestId('flow-save-before-primary-result');
     const inspector = page.getByTestId('flow-save-before-decision');
-    await expect(result.getByTestId('flow-artifact-data-preview')).toBeVisible();
+    await expect(result.getByTestId('public-flow-artifact-preview')).toBeVisible();
     await expect(inspector.getByTestId('public-flow-primary-setup')).toBeVisible();
     const positions = await Promise.all([result.boundingBox(), inspector.boundingBox()]);
     expect(positions[0]?.x).toBeLessThan(positions[1]?.x ?? 0);
@@ -202,7 +203,7 @@ test.describe('P29-01 moving artifact-first save and receipt', () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/f/vehicle-inspection-prep');
     await clearLocalState(page);
-    await expect(page.getByTestId('public-flow-hero')).toHaveAttribute('data-experience-architecture', 'p29-artifact-first');
+    await expect(page.getByTestId('public-flow-hero')).toHaveAttribute('data-experience-architecture', 'p35-result-first');
     await expect(page.getByTestId('public-flow-saved-receipt')).toHaveCount(0);
     await expect(page.getByTestId('public-flow-detail-workspace').locator('[data-presentation-mode="export-only"]')).toHaveCount(1);
     await expect(page.getByTestId('public-flow-detail-workspace').getByLabel('Flow artifact workbench')).toHaveCount(0);
@@ -264,7 +265,7 @@ test.describe('P29-04 My Flow action-first library', () => {
     await expectNoHorizontalOverflow(page);
   });
 
-  test('wide exposes a 280px library beside plan canvas and inspector', async ({ page }) => {
+  test('wide exposes a 280px library beside one explicitly selected Flow workspace', async ({ page }) => {
     await page.setViewportSize({ width: 1024, height: 768 });
     await page.goto('/my?demo=ux20&view=flows');
 
@@ -275,8 +276,14 @@ test.describe('P29-04 My Flow action-first library', () => {
     const railWidth = await workspace.getByTestId('my-flow-library-rail').evaluate((element) => element.getBoundingClientRect().width);
     expect(railWidth).toBeGreaterThanOrEqual(278);
     expect(railWidth).toBeLessThanOrEqual(282);
-    await expect(workspace.getByTestId('my-flow-workspace-outline-pane')).toBeVisible();
-    await expect(workspace.getByTestId('my-flow-workspace-detail-pane')).toBeVisible();
+    const detail = workspace.getByTestId('my-flow-library-detail');
+    await expect(detail.getByTestId('my-flow-overview-card')).toHaveCount(0);
+    await workspace.getByTestId('my-flow-library-row').first().click();
+    await expect(detail.getByTestId('my-flow-overview-card')).toHaveAttribute(
+      'data-p35-marker',
+      'P35-PERSONAL-SINGLE-FOCUS',
+    );
+    await expect(detail.getByTestId('my-flow-whole-flow-outline')).toBeVisible();
     await capture(page, 'p29-04-my-flow-workspace-1024.png');
     await expectNoHorizontalOverflow(page);
 
@@ -287,50 +294,24 @@ test.describe('P29-04 My Flow action-first library', () => {
 });
 
 test.describe('P29-05 Calendar scope and placement workspace', () => {
-  test('mobile undated placement uses a focus-returning sheet and keeps batch undo', async ({ page }) => {
+  test('mobile Calendar delegates undated placement to the focused Flow workspace', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await seedP29CalendarFlows(page);
     await page.goto('/calendar');
 
-    const tray = page.getByTestId('my-flow-calendar-unscheduled-tray');
-    await expect(tray).toHaveAttribute('data-p29-marker', 'P29-CALENDAR-UNDATED-SHEET');
-    const trigger = tray.getByTestId('my-flow-calendar-unscheduled-toggle');
-    const scrollBefore = await page.evaluate(() => window.scrollY);
-    await trigger.click();
-
-    const sheet = tray.getByTestId('my-flow-calendar-unscheduled-sheet');
-    await expect(sheet).toBeVisible();
-    await expect(sheet.getByRole('button', { name: '닫기' })).toBeFocused();
-    await capture(page, 'p29-05-calendar-undated-sheet-390.png');
-    expect(await page.evaluate(() => window.scrollY)).toBe(scrollBefore);
-    await page.keyboard.press('Escape');
-    await expect(sheet).toHaveCount(0);
-    await expect(trigger).toBeFocused();
-
-    await trigger.click();
-    const items = tray.getByTestId('my-flow-calendar-unscheduled-item');
-    await items.nth(0).getByRole('checkbox').check();
-    await items.nth(1).getByRole('checkbox').check();
-    await tray.getByTestId('my-flow-calendar-unscheduled-date').fill('2026-07-29');
-    await tray.getByTestId('my-flow-calendar-unscheduled-apply').click();
-    await expect(sheet).toHaveCount(0);
-    const undo = tray.getByTestId('my-flow-calendar-unscheduled-undo');
-    await expect(undo).toHaveAttribute('data-p29-marker', 'P29-CALENDAR-BATCH-UNDO');
-    await expect(page.getByTestId('my-flow-calendar-selected-day').locator('h3')).toContainText('7월 29일');
-    await undo.getByTestId('my-flow-calendar-unscheduled-undo-action').click();
-    await expect(tray.getByTestId('my-flow-calendar-unscheduled-count')).toHaveText('10');
-    await capture(page, 'p29-05-calendar-batch-undo-390.png');
+    await expect(page.getByTestId('my-flow-calendar-unscheduled-tray')).toHaveCount(0);
+    await expect(page.getByTestId('my-flow-calendar-date-move-entry')).toHaveCount(0);
+    await capture(page, 'p29-05-calendar-lens-390.png');
     await expectNoHorizontalOverflow(page);
 
     await page.setViewportSize({ width: 1024, height: 768 });
     const workspace = page.getByTestId('my-flow-calendar-workspace');
-    const wideWidths = await workspace.locator(':scope > *').evaluateAll((elements) => (
-      elements.map((element) => Math.round(element.getBoundingClientRect().width))
-    ));
-    expect(wideWidths).toHaveLength(3);
-    expect(wideWidths[0]).toBe(280);
-    expect(wideWidths.at(-1)).toBe(320);
-    await capture(page, 'p29-05-calendar-placement-workspace-1024.png');
+    await expect(workspace).toHaveAttribute(
+      'data-p35-calendar-marker',
+      'P35-CALENDAR-LENS-ONE-TOGGLE',
+    );
+    await expect(page.getByTestId('calendar-flow-scope-picker-trigger')).toHaveCount(0);
+    await capture(page, 'p29-05-calendar-lens-1024.png');
     await expectNoHorizontalOverflow(page);
   });
 
@@ -382,11 +363,11 @@ test.describe('P29-06 artifact recommendation and export scope', () => {
     await clearLocalState(page);
     await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
 
-    const preview = page.getByTestId('flow-artifact-data-preview');
+    const preview = page.getByTestId('public-flow-artifact-preview');
     await expect(preview).toHaveAttribute('data-p29-marker', 'P29-ARTIFACT-RECOMMENDATION');
-    await expect(preview.locator('[data-recommendation-role="primary"]')).toHaveCount(1);
-    expect(await preview.locator('[data-recommendation-role="secondary"]').count()).toBeLessThanOrEqual(2);
-    await expect(preview.getByTestId('flow-artifact-recommendation-reason')).toBeVisible();
+    await expect(preview).toHaveAttribute('data-selected-shape', 'calendar');
+    await expect(preview.getByTestId('flow-artifact-shape-choice')).toHaveCount(0);
+    await expect(preview.getByTestId('flow-artifact-recommendation-reason')).toHaveCount(0);
 
     const workspace = page.getByTestId('public-flow-detail-workspace');
     await workspace.locator('summary').first().click();
@@ -442,7 +423,9 @@ test.describe('P29-06 artifact recommendation and export scope', () => {
     const firstRow = flow.getByTestId('my-flow-execution-row-shell').first();
     await firstRow.getByRole('button', { name: /열기/ }).click();
     const itemExport = getOpenMyFlowItemDetail(page).getByTestId('my-flow-detail-portable-export');
-    if (await itemExport.locator('summary').count()) await itemExport.locator('summary').click();
+    if ((await itemExport.getAttribute('open')) === null) {
+      await itemExport.locator(':scope > summary').click();
+    }
     await expect(itemExport.getByTestId('my-flow-detail-copy-portable-text')).toContainText('현재 항목');
     await itemExport.getByTestId('my-flow-detail-copy-portable-text').click();
     await expect(itemExport.getByTestId('flow-export-result-receipt')).toContainText('현재 항목');
@@ -518,7 +501,8 @@ test.describe('P29-07 shared visual and accessibility contract', () => {
 
     await page.goto('/calendar?demo=ux20');
     await expect(page.getByTestId('my-flow-calendar-workspace')).toHaveAttribute('data-flow-anatomy', 'calendar-workspace');
-    await expect(page.getByTestId('my-flow-calendar-selected-day')).toHaveAttribute('data-flow-anatomy', 'selected-day');
+    const selectedDay = await openMyFlowCalendarSelectedDay(page);
+    await expect(selectedDay).toHaveAttribute('data-flow-anatomy', 'selected-day');
   });
 
   test('mobile public controls keep 44px targets and keyboard focus remains visible', async ({ page }) => {

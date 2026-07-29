@@ -1,0 +1,332 @@
+{
+  "url": "http://127.0.0.1:3104/my?demo=ux20&view=flows",
+  "title": "My Flow",
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "quality": {
+    "horizontalOverflow": 0,
+    "unnamedInteractiveCount": 0,
+    "brokenImageCount": 0
+  },
+  "headings": [
+    {
+      "level": 1,
+      "text": "강아지 건강검진 상담 준비"
+    },
+    {
+      "level": 3,
+      "text": "저장한 Flow"
+    },
+    {
+      "level": 3,
+      "text": "강아지 건강검진 상담 준비"
+    }
+  ],
+  "actions": [
+    {
+      "tag": "a",
+      "name": "FLOW",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "a",
+      "name": "Flow 찾기",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "a",
+      "name": "캘린더",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "a",
+      "name": "내 Flow",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "summary",
+      "name": "보조 메뉴 열기 메뉴≡",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "a",
+      "name": "Flow 만들기내 콘텐츠를 실행형 Flow로 정리",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "전체 My Flow 보기로 돌아가기 ‹전체 보기",
+      "testId": "my-flow-library-back",
+      "disabled": false
+    },
+    {
+      "tag": "input",
+      "name": "저장한 Flow 검색",
+      "testId": "my-flow-library-rail-search",
+      "disabled": false
+    },
+    {
+      "tag": "select",
+      "name": "상태전체진행 중루틴완료보관됨 전체진행 중루틴완료보관됨 all",
+      "testId": "my-flow-library-rail-filter",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "강아지 건강검진 상담 준비 열기 강아지 건강검진 상담 준비메모 · 날짜 없음전체 0/5 완료날짜 없음 · 식사·간식·목욕·산책·예방접종 정보 정리하기",
+      "testId": "my-flow-library-row",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "개발 프로젝트 포트폴리오 4주 열기 개발 프로젝트 포트폴리오 4주체크리스트 · 6월 3일 - 6월 30일전체 1/6 완료다음 할 일 · 핵심 기능과 3~5개 화면 범위 정하기",
+      "testId": "my-flow-library-row",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "결혼 준비 타임라인 열기 결혼 준비 타임라인일정 Flow · 1월 28일 - 11월 23일전체 5/12 완료다음 할 일 · 신혼여행 예산과 일정 후보 정리하기",
+      "testId": "my-flow-library-row",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "국세 미수령 환급금 확인 열기 국세 미수령 환급금 확인메모 · 날짜 없음전체 2/2 완료",
+      "testId": "my-flow-library-row",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "삼성 비스포크 AI 콤보 배수필터 청소 열기 삼성 비스포크 AI 콤보 배수필터 청소반복 Flow · 6월 3일 - 7월 1일전체 1/5 완료다음 할 일 · 잔수 제거 도구와 수건 준비",
+      "testId": "my-flow-library-row",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "삼성 에어컨 계절 전 점검 열기 삼성 에어컨 계절 전 점검체크리스트 · 날짜 없음전체 1/5 완료날짜 없음 · 리모컨 표시와 배터리 확인하기",
+      "testId": "my-flow-library-row",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "성인 예방접종 이력·상담 준비 열기 성인 예방접종 이력·상담 준비메모 · 날짜 없음전체 1/5 완료날짜 없음 · 누락된 과거 기록은 접종기관에 등록 가능 여부 문의하기",
+      "testId": "my-flow-library-row",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "세탁기 통세척 월간 관리 열기 세탁기 통세척 월간 관리반복 Flow · 날짜 없음전체 0/3 완료날짜 없음 · 통세척 코스 돌리고 문 열어 건조하기",
+      "testId": "my-flow-library-row",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "어린이집 보육료 지원 신청 열기 어린이집 보육료 지원 신청메모 · 날짜 없음전체 1/4 완료날짜 없음 · 신청 방법(복지로 온라인/주민센터) 확인하고 신청하기",
+      "testId": "my-flow-library-row",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "여권 신규 발급 준비 열기 여권 신규 발급 준비메모 · 날짜 없음전체 1/4 완료날짜 없음 · 신분증 등 필요 서류 확인하기",
+      "testId": "my-flow-library-row",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "여권 재발급 준비 열기 여권 재발급 준비메모 · 날짜 없음전체 2/6 완료날짜 없음 · 최근 6개월 이내 여권 사진 준비하기",
+      "testId": "my-flow-library-row",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "여행 짐 싸기 체크리스트 열기 여행 짐 싸기 체크리스트메모 · 날짜 없음전체 0/6 완료날짜 없음 · 신분증·여권(해외) 확인하기",
+      "testId": "my-flow-library-row",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "영유아 건강검진 일정 열기 영유아 건강검진 일정일정 Flow · 날짜 없음전체 1/8 완료날짜 없음 · 2차 검진 예약",
+      "testId": "my-flow-library-row",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "이사 D-30 준비 열기 이사 D-30 준비체크리스트 · 5월 27일 - 6월 27일전체 2/24 완료지난 할 일 · 필요 없는 물건 정리하기",
+      "testId": "my-flow-library-row",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "자동차검사 준비 열기 자동차검사 준비체크리스트 · 6월 3일 - 6월 17일전체 3/10 완료다음 할 일 · 번호판과 차대번호 식별 상태 확인하기",
+      "testId": "my-flow-library-row",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "중고차 구매 현장 점검 열기 중고차 구매 현장 점검체크리스트 · 날짜 없음전체 1/15 완료날짜 없음 · 원하는 차종의 연식·주행거리별 시세 확인하기",
+      "testId": "my-flow-library-row",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "직장인 영어공부 30일 루틴 열기 직장인 영어공부 30일 루틴반복 Flow · 날짜 없음전체 3/12 완료날짜 없음 · 저장한 표현으로 예문 3개 만들기",
+      "testId": "my-flow-library-row",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "컴퓨터활용능력 1급 학습 열기 컴퓨터활용능력 1급 학습체크리스트 · 5월 28일 - 6월 26일전체 2/9 완료다음 할 일 · 기출 회독 목표 정하기",
+      "testId": "my-flow-library-row",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "Allblanc 노점프 유산소 열기 Allblanc 노점프 유산소반복 Flow · 6월 3일전체 1/1 완료",
+      "testId": "my-flow-library-row",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "Allblanc 아침 5분 홈트 열기 Allblanc 아침 5분 홈트반복 Flow · 6월 3일전체 1/1 완료",
+      "testId": "my-flow-library-row",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "강아지 건강검진 상담 준비 전체 5개 가져가기 전체 5개 가져가기",
+      "testId": "my-flow-export-entry",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "여러 할 일 조정",
+      "testId": "my-flow-batch-mode-toggle",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "병원에 전달할 정보날짜 없음 · 2개 · 0/2 완료⌃",
+      "testId": "my-flow-whole-flow-section-toggle",
+      "disabled": false
+    },
+    {
+      "tag": "input",
+      "name": "식사·간식·목욕·산책·예방접종 정보 정리하기 완료 체크 on",
+      "testId": "my-flow-task-complete-control",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "식사·간식·목욕·산책·예방접종 정보 정리하기 열기 · 강아지 건강검진 상담 준비 식사·간식·목욕·산책·예방접종 정보 정리하기열기",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "input",
+      "name": "최근 달라진 점과 복용 중인 약 메모하기 완료 체크 on",
+      "testId": "my-flow-task-complete-control",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "최근 달라진 점과 복용 중인 약 메모하기 열기 · 강아지 건강검진 상담 준비 최근 달라진 점과 복용 중인 약 메모하기열기",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "검사 상담날짜 없음 · 2개 · 0/2 완료⌃",
+      "testId": "my-flow-whole-flow-section-toggle",
+      "disabled": false
+    },
+    {
+      "tag": "input",
+      "name": "우리 강아지에게 필요한 검사 항목과 이유 묻기 완료 체크 on",
+      "testId": "my-flow-task-complete-control",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "우리 강아지에게 필요한 검사 항목과 이유 묻기 열기 · 강아지 건강검진 상담 준비 우리 강아지에게 필요한 검사 항목과 이유 묻기열기",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "input",
+      "name": "금식·소변 채취 등 방문 전 준비 확인하기 완료 체크 on",
+      "testId": "my-flow-task-complete-control",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "금식·소변 채취 등 방문 전 준비 확인하기 열기 · 강아지 건강검진 상담 준비 금식·소변 채취 등 방문 전 준비 확인하기열기",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "검사 후날짜 없음 · 1개 · 0/1 완료⌃",
+      "testId": "my-flow-whole-flow-section-toggle",
+      "disabled": false
+    },
+    {
+      "tag": "input",
+      "name": "결과와 다음 방문·추적 확인 일정 기록하기 완료 체크 on",
+      "testId": "my-flow-task-complete-control",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "결과와 다음 방문·추적 확인 일정 기록하기 열기 · 강아지 건강검진 상담 준비 결과와 다음 방문·추적 확인 일정 기록하기열기",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "식사·간식·목욕·산책·예방접종 정보 정리하기 열기 열기",
+      "testId": "my-flow-workspace-next-open",
+      "disabled": false
+    },
+    {
+      "tag": "summary",
+      "name": "강아지 건강검진 상담 준비 Flow 관리 Flow 관리",
+      "testId": "my-flow-management-menu-trigger",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "Flow 조정",
+      "testId": "my-flow-management-adjust",
+      "disabled": false
+    },
+    {
+      "tag": "a",
+      "name": "원문 보기",
+      "testId": "my-flow-management-source",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "보관보관함에서 복구하거나 영구 삭제할 수 있어요.",
+      "testId": "my-flow-archive-toggle",
+      "disabled": false
+    }
+  ],
+  "visibleText": "FLOW\nFlow 찾기\n캘린더\n내 Flow\n메뉴\n≡\n강아지 건강검진 상담 준비\n‹\n전체 보기\n\n라이브러리\n\n저장한 Flow\n20개\n상태\n전체\n진행 중\n루틴\n완료\n보관됨\n강아지 건강검진 상담 준비\n메모 · 날짜 없음\n전체 0/5 완료\n날짜 없음 · 식사·간식·목욕·산책·예방접종 정보 정리하기\n개발 프로젝트 포트폴리오 4주\n체크리스트 · 6월 3일 - 6월 30일\n전체 1/6 완료\n다음 할 일 · 핵심 기능과 3~5개 화면 범위 정하기\n결혼 준비 타임라인\n일정 Flow · 1월 28일 - 11월 23일\n전체 5/12 완료\n다음 할 일 · 신혼여행 예산과 일정 후보 정리하기\n국세 미수령 환급금 확인\n메모 · 날짜 없음\n전체 2/2 완료\n삼성 비스포크 AI 콤보 배수필터 청소\n반복 Flow · 6월 3일 - 7월 1일\n전체 1/5 완료\n다음 할 일 · 잔수 제거 도구와 수건 준비\n삼성 에어컨 계절 전 점검\n체크리스트 · 날짜 없음\n전체 1/5 완료\n날짜 없음 · 리모컨 표시와 배터리 확인하기\n성인 예방접종 이력·상담 준비\n메모 · 날짜 없음\n전체 1/5 완료\n날짜 없음 · 누락된 과거 기록은 접종기관에 등록 가능 여부 문의하기\n세탁기 통세척 월간 관리\n반복 Flow · 날짜 없음\n전체 0/3 완료\n날짜 없음 · 통세척 코스 돌리고 문 열어 건조하기\n어린이집 보육료 지원 신청\n메모 · 날짜 없음\n전체 1/4 완료\n날짜 없음 · 신청 방법(복지로 온라인/주민센터) 확인하고 신청하기\n여권 신규 발급 준비\n메모 · 날짜 없음\n전체 1/4 완료\n날짜 없음 · 신분증 등 필요 서류 확인하기\n여권 재발급 준비\n메모 · 날짜 없음\n전체 2/6 완료\n날짜 없음 · 최근 6개월 이내 여권 사진 준비하기\n여행 짐 싸기 체크리스트\n메모 · 날짜 없음\n전체 0/6 완료\n날짜 없음 · 신분증·여권(해외) 확인하기\n영유아 건강검진 일정\n일정 Flow · 날짜 없음\n전체 1/8 완료\n날짜 없음 · 2차 검진 예약\n이사 D-30 준비\n체크리스트 · 5월 27일 - 6월 27일\n전체 2/24 완료\n지난 할 일 · 필요 없는 물건 정리하기\n자동차검사 준비\n체크리스트 · 6월 3일 - 6월 17일\n전체 3/10 완료\n다음 할 일 · 번호판과 차대번호 식별 상태 확인하기\n중고차 구매 현장 점검\n체크리스트 · 날짜 없음\n전체 1/15 완료\n날짜 없음 · 원하는 차종의 연식·주행거리별 시세 확인하기\n직장인 영어공부 30일 루틴\n반복 Flow · 날짜 없음\n전체 3/12 완료\n날짜 없음 · 저장한 표현으로 예문 3개 만들기\n컴퓨터활용능력 1급 학습\n체크리스트 · 5월 28일 - 6월 26일\n전체 2/9 완료\n다음 할 일 · 기출 회독 목표 정하기\nAllblanc 노점프 유산소\n반복 Flow · 6월 3일\n전체 1/1 완료\nAllblanc 아침 5분 홈트\n반복 Flow · 6월 3일\n전체 1/1 완료\n강아지 건강검진 상담 준비\n\n데모 기준일 6월 5일\n\n건강 상담\n\n메모 5\n전체 5개 가져가기\n전체 Flow\n5개\n여러 할 일 조정\n3묶음\n날짜 없음\n0/5 완료\n병원에 전달할 정보\n날짜 없음 · 2개 · 0/2 완료\n⌃\n식사·간식·목욕·산책·예방접종 정보 정리하기\n열기\n최근 달라진 점과 복용 중인 약 메모하기\n열기\n검사 상담\n날짜 없음 · 2개 · 0/2 완료\n⌃\n우리 강아지에게 필요한 검사 항목과 이유 묻기\n열기\n금식·소변 채취 등 방문 전 준비 확인하기\n열기\n검사 후\n날짜 없음 · 1개 · 0/1 완료\n⌃\n결과와 다음 방문·추적 확인 일정 기록하기\n열기\n\n날짜 없음\n\n식사·간식·목욕·산책·예방접종 정보 정리하기\n\n날짜 없음\n\n열기\n전체 진행\n전체 0/5 완료\nFlow 관리",
+  "consoleAndPageErrors": [],
+  "label": "내 Flow wide library와 workspace",
+  "state": "my_flow_wide_workspace",
+  "route": "/my?demo=ux20&view=flows",
+  "reviewQuestions": [
+    "rail과 canvas 역할이 명확한가",
+    "모바일 탭과 wide hierarchy가 일치하는가"
+  ]
+}

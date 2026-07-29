@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-27",
+  "baseline": {
+    "branch": "codex/p35-mece-ux-reset",
+    "originMainSha": "2c951633d13adb0aab3ddd9d3cdddf506d9e97cd",
+    "p35CandidateState": "local_uncommitted"
+  },
+  "routes": [
+    "/f/moving-d30-basic",
+    "/my",
+    "/calendar"
+  ],
+  "fixture": {
+    "today": "2026-07-27",
+    "anchor": "2026-08-03",
+    "pastCount": 9,
+    "pastRange": {
+      "start": "2026-07-04",
+      "end": "2026-07-24"
+    },
+    "nextGroup": {
+      "kind": "future",
+      "date": "2026-07-31",
+      "rowCount": 4
+    },
+    "allPast": {
+      "anchor": "2026-07-25",
+      "nextGroupKind": "past",
+      "nextGroupDate": "2026-07-26",
+      "nextGroupRowCount": 2,
+      "pastDisclosureCount": 22
+    }
+  },
+  "markers": {
+    "P35-R0-PAST-DATE-WARNING": true,
+    "P35-R0-NEXT-DATE-GROUP": true,
+    "P35-R0-PAST-ITEMS-DISCLOSURE": true,
+    "P35-R0-SHARED-TIMELINE-ROW": true,
+    "publicPastDateWarningVisible": true,
+    "publicPastDateWarningLineCount": 1,
+    "publicPastDateWarningPastCount": 9,
+    "myFlowNextTemporalKind": "future",
+    "myFlowNextTemporalDate": "2026-07-31",
+    "myFlowNextSameDateRowCount": 4,
+    "myFlowSharedDateRailCount": 1,
+    "myFlowTemporalCompletionControlPosition": "right",
+    "myFlowTemporalVisibleOpenLabelCount": 0,
+    "myFlowTemporalAccessibleOpenAction": true,
+    "myFlowPastItemDisclosureCount": 9,
+    "myFlowAllPastFallbackVisible": true,
+    "myFlowAllPastFallbackRowCount": 2,
+    "myFlowAllPastDisclosureCount": 22
+  },
+  "completion": {
+    "initialIncompleteCount": 4,
+    "afterCompletionIncompleteCount": 3,
+    "undoAvailableWhenRowDisappears": true,
+    "afterUndoIncompleteCount": 4,
+    "afterReloadIncompleteCount": 3,
+    "afterCalendarReopenIncompleteCount": 4,
+    "stableRowIdentityPreserved": true
+  },
+  "parity": {
+    "myFlowCalendarTitleParity": true,
+    "myFlowCalendarDateParity": true,
+    "myFlowCalendarTotalCountParity": true,
+    "myFlowCalendarStableIdentityParity": true,
+    "calendarSelectedDayTotalCount": 4,
+    "calendarSelectedDayRemainingAfterCompletion": 3
+  },
+  "regressions": {
+    "undatedChecklistTemporalGroupCount": 0,
+    "undatedChecklistExistingExecutionPreserved": true,
+    "routineTemporalGroupCount": 0,
+    "routineOccurrenceProjectionPreserved": true,
+    "wholeSelectedCurrentExportBehaviorChanged": false,
+    "sourceMutationCount": 0,
+    "storageWriteContractChanged": false,
+    "migrationRequired": false
+  },
+  "quality": {
+    "mobileViewport": "390x844",
+    "wideViewport": "1024x768",
+    "desktopViewport": "1440x900",
+    "horizontalOverflowCount": 0,
+    "fixedOverlapCount": 0,
+    "consoleErrorCount": 0,
+    "pageErrorCount": 0
+  },
+  "verification": {
+    "r0Unit": {
+      "passed": 7,
+      "failed": 0
+    },
+    "pretest": {
+      "passed": 79,
+      "failed": 0
+    },
+    "unit": {
+      "passed": 590,
+      "failed": 0
+    },
+    "r0TargetedE2e": {
+      "passed": 3,
+      "failed": 0
+    },
+    "affectedSelectorRerun": {
+      "passed": 6,
+      "failed": 0
+    },
+    "firstFullE2e": {
+      "passed": 358,
+      "failed": 1,
+      "failureKind": "long_run_timeout",
+      "isolatedRerunPassed": true
+    },
+    "finalFullE2e": {
+      "status": "passed",
+      "passed": 359,
+      "failed": 0,
+      "workers": 1
+    },
+    "docsCheck": "passed",
+    "build": "passed"
+  },
+  "ownerCheckpoint": {
+    "status": "approved_after_revision",
+    "feedback": "저장 후 날짜 묶음을 저장 전 미리보기와 같은 UI 문법으로 맞추고 checkbox를 오른쪽에 배치",
+    "questions": [
+      "지난 일정 경고가 불필요하게 길거나 불안감을 키우지 않는가?",
+      "같은 날짜 4개 항목이 모바일 한 화면에서 읽히는가?",
+      "지난 할 일 disclosure가 삭제나 누락이 아니라 보존으로 이해되는가?"
+    ],
+    "revisionApplied": true
+  },
+  "publish": {
+    "commit": false,
+    "push": false,
+    "pullRequest": false,
+    "merge": false,
+    "previewDeploy": false,
+    "productionDeploy": false
+  },
+  "observedUserCount": 0
+}

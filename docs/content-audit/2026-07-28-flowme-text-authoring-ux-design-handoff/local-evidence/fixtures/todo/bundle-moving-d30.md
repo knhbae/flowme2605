@@ -1,0 +1,29 @@
+# 이사 D-30 체크리스트 · Todo
+
+- 이사 방식과 이사업체 정하기 <!-- bundle-moving-d30-s1-i1 -->
+- 새집 상태 확인하고 필요한 수리 잡기 <!-- bundle-moving-d30-s1-i2 -->
+- 가져가지 않을 물건 처분 시작하기 <!-- bundle-moving-d30-s1-i3 -->
+- 학교 전학과 돌봄 계획 세우기 <!-- bundle-moving-d30-s1-i4 -->
+- 우편·배송·전출 주소 변경하기 <!-- bundle-moving-d30-s2-i1 -->
+- 엘리베이터·사다리차·주차 예약하기 <!-- bundle-moving-d30-s2-i2 -->
+- 폐기물과 남은 짐 처리하기 <!-- bundle-moving-d30-s2-i3 -->
+- 냉장고 비우고 새집 물품 배치 정하기 <!-- bundle-moving-d30-s2-i4 -->
+- 인터넷·정수기 등 이전 신청하기 <!-- bundle-moving-d30-s2-i5 -->
+- 도시가스 철거·설치 예약하기 <!-- bundle-moving-d30-s3-i1 -->
+- 기존 집 자동이체 해지하기 <!-- bundle-moving-d30-s3-i2 -->
+- 세탁기 배수하고 운반 상태 만들기 <!-- bundle-moving-d30-s3-i3 -->
+- 임대차 권리 서류 확인하기 <!-- bundle-moving-d30-s3-i4 -->
+- 당일 바로 쓸 짐을 따로 싸기 <!-- bundle-moving-d30-s3-i5 -->
+- 당일 일정·송금 한도·잔금 확인하기 <!-- bundle-moving-d30-s4-i1 -->
+- 출발지·도착지 주차 다시 확인하기 <!-- bundle-moving-d30-s4-i2 -->
+- 귀중품과 중요서류 직접 보관하기 <!-- bundle-moving-d30-s4-i3 -->
+- 열쇠·리모컨·비밀번호 인계 준비하기 <!-- bundle-moving-d30-s4-i4 -->
+- 가전·가구 상태 사진 남기기 <!-- bundle-moving-d30-s4-i5 -->
+- 전기·수도·가스·관리비 정산하기 <!-- bundle-moving-d30-s5-i1 -->
+- 장기수선충당금 환급 확인하기 <!-- bundle-moving-d30-s5-i2 -->
+- 남은 물건 확인하고 열쇠 반납하기 <!-- bundle-moving-d30-s5-i3 -->
+- 분실·파손 확인하고 이사업체 정산하기 <!-- bundle-moving-d30-s6-i1 -->
+- 인터넷·TV와 도어락 확인하기 <!-- bundle-moving-d30-s6-i2 -->
+- 잔금·관리비·열쇠 인수 마치기 <!-- bundle-moving-d30-s6-i3 -->
+- 전기·수도 명의와 가스 개통하기 <!-- bundle-moving-d30-s6-i4 -->
+- 전입신고와 확정일자 처리하기 <!-- bundle-moving-d30-s6-i5 -->

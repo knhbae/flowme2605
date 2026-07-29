@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "flowme-text-authoring-evidence-index-v1",
+  "branch": "codex/text-authoring-ux-design-handoff-20260728",
+  "baselineSha": "2c951633d13adb0aab3ddd9d3cdddf506d9e97cd",
+  "observedUserCount": 0,
+  "evidencePriority": [
+    "current_production_interaction",
+    "current_source",
+    "current_structured_evidence",
+    "local_uncommitted_snapshot",
+    "prior_design_artifact",
+    "reference_pattern",
+    "heuristic_simulation"
+  ],
+  "snapshotBoundary": {
+    "capturedOn": "2026-07-28",
+    "meaning": "read-only copy of local uncommitted planning evidence",
+    "doesNotProve": [
+      "runtime implementation",
+      "main merge",
+      "production deployment",
+      "observed-user validation"
+    ]
+  },
+  "primarySnapshots": [
+    {
+      "id": "qualified-corpus-v2",
+      "path": "local-evidence/qualified-corpus-v2/qualified-corpus-fixture-v2.json",
+      "sha256": "338648484e18c558ecb7c61a2e3002689c54af89ff55b5de6bcb2718a2778260"
+    },
+    {
+      "id": "projection-matrix-v2",
+      "path": "local-evidence/qualified-corpus-v2/projection-matrix-v2.json",
+      "sha256": "e7550b2e98b5c5f232ab3729c9a6aaa750c925a8d239a6c0ec7003b5e16b84aa"
+    },
+    {
+      "id": "projection-loss-v2",
+      "path": "local-evidence/qualified-corpus-v2/projection-loss-manifest-v2.json",
+      "sha256": "ab36c712a75bada17d7f48be48e6ecaa02ec796bb0311028b8c3bb3d078639fe"
+    },
+    {
+      "id": "input-lineage-v2",
+      "path": "local-evidence/qualified-corpus-v2/input-lineage-v2.json",
+      "sha256": "c381469d33c9eab9958868502ed011320ec3a59fc8aa7e2aa82c8a2bb6674924"
+    },
+    {
+      "id": "round-trip-v2",
+      "path": "local-evidence/qualified-corpus-v2/round-trip-results-v2.json",
+      "sha256": "dff133259342dfb7c5168eb7ba17766de1b45e0d66f2719635f62c07c6ba0220"
+    },
+    {
+      "id": "user-direction-synthesis",
+      "path": "local-evidence/flowme-user-feedback-synthesis-ko.txt",
+      "sha256": "e7344d6f96a37a7d27660327e822e712aece13bb4de2a91e3f80c974665027c4"
+    }
+  ]
+}

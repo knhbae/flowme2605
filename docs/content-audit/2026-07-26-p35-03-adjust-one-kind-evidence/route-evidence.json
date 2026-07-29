@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-07-26",
+  "baselineSha": "2c951633d13adb0aab3ddd9d3cdddf506d9e97cd",
+  "branch": "codex/p35-mece-ux-reset",
+  "acceptanceMarker": "P35-ADJUST-ONE-KIND",
+  "verdict": "pass",
+  "observedUserCount": 0,
+  "routes": [
+    {
+      "route": "/f/moving-d30-basic",
+      "viewport": "390x844",
+      "state": "name_adjustment",
+      "availableAdjustmentKinds": ["name", "anchor", "items"],
+      "openAdjustmentPanelCount": 1,
+      "currentAdjustedComparisonVisible": true,
+      "cancelPreservesAppliedValue": true,
+      "escapeReturnsFocus": true,
+      "evidenceKind": "current_browser"
+    },
+    {
+      "route": "/f/moving-d30-basic",
+      "viewport": "390x844",
+      "state": "anchor_adjustment",
+      "duplicateBaseAnchorInputCount": 0,
+      "cancelPreservesAppliedValue": true,
+      "applyDistinctFromSave": true,
+      "focusReturnedToTrigger": true,
+      "evidenceKind": "current_browser"
+    },
+    {
+      "route": "/f/moving-d30-basic",
+      "viewport": "1024x768",
+      "state": "item_inclusion_adjustment",
+      "sourceItemCount": 24,
+      "adjustedItemCount": 22,
+      "previewItemCount": 22,
+      "saveActionItemCount": 22,
+      "exportPreflightItemCount": 22,
+      "sourceMutationCount": 0,
+      "evidenceKind": "current_browser"
+    },
+    {
+      "route": "/f/curated-allblanc-morning-workout",
+      "viewport": "1440x900",
+      "state": "routine_adjustment",
+      "availableAdjustmentKinds": ["name", "anchor", "items", "routine"],
+      "simultaneousAdvancedPanelCount": 1,
+      "adjustedRoutineSummary": "월·화·수·금 · 07:30 · 45분 · 8회",
+      "occurrenceExecutionStateChanged": false,
+      "evidenceKind": "current_browser"
+    },
+    {
+      "route": "/f/vehicle-inspection-prep",
+      "viewport": "390x844",
+      "state": "undated_checklist_adjustment",
+      "availableAdjustmentKinds": ["name", "items"],
+      "anchorControlCount": 0,
+      "routineControlCount": 0,
+      "evidenceKind": "current_browser"
+    }
+  ],
+  "markers": {
+    "publicAdjustmentOneKindConnected": true,
+    "maximumSimultaneousAdjustmentPanelCount": 1,
+    "currentAdjustedComparisonVisible": true,
+    "applyDistinctFromSave": true,
+    "cancelMutationCount": 0,
+    "focusReturnPassed": true,
+    "publicAdvancedItemTitleControlCount": 0,
+    "publicAdvancedItemDateControlCount": 0,
+    "publicAdvancedItemMemoControlCount": 0,
+    "publicAdvancedItemOrderControlCount": 0,
+    "previewSaveExportMembershipMismatchCount": 0,
+    "sourceMutationCount": 0,
+    "newStorageKeyCount": 0,
+    "storageSchemaChanged": false,
+    "migrationCount": 0,
+    "horizontalOverflowCount": 0,
+    "fixedCommandOverlapCount": 0,
+    "consoleErrorCount": 0,
+    "pageErrorCount": 0
+  },
+  "screenshots": [
+    "screenshots/p35-03-adjust-name-390.png",
+    "screenshots/p35-03-adjust-anchor-390.png",
+    "screenshots/p35-03-adjust-items-1024.png",
+    "screenshots/p35-03-adjust-routine-1440.png"
+  ],
+  "verification": {
+    "p35TargetedE2e": {
+      "passed": 5,
+      "failed": 0
+    },
+    "updatedJourneyTargetedE2e": {
+      "passed": 10,
+      "failed": 0
+    },
+    "pretest": {
+      "passed": 73,
+      "failed": 0
+    },
+    "unit": {
+      "passed": 590,
+      "failed": 0
+    },
+    "docsCheck": {
+      "status": "pass",
+      "requiredFileCount": 14,
+      "localLinkCount": 3189
+    },
+    "build": "pass",
+    "buildIdPresent": true,
+    "diffCheck": "pass_with_line_ending_warnings"
+  },
+  "publishState": {
+    "committed": false,
+    "pushed": false,
+    "pullRequest": false,
+    "merged": false,
+    "deployed": false
+  }
+}

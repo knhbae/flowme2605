@@ -1,0 +1,11 @@
+아래 공용 프롬프트를 그대로 읽고 FlowMe P35-R7을 독립 검토해줘.
+
+D:\flowme2605\flow-p35-mece-ux-reset\docs\content-audit\2026-07-28-p35-r7-codex-claude-code-independent-review-handoff\unified-review-prompt-ko.txt
+
+Claude Code 추가 관점:
+- Vercel 접근이 안 돼도 검토를 중단하지 말고 local source, R7 screenshot,
+  route-evidence, 필요하면 local production build를 사용한다.
+- source/personal/run/occurrence/export 소유권과 state transition을 집중 감사한다.
+- 현재 E2E가 실제 UX 문제를 놓치거나 오래된 화면 가정을 고정하는지 검토한다.
+- 앱 코드를 수정하거나 commit/push/deploy하지 않는다.
+- 자동화를 실제 사용자 검증으로 표현하지 않는다.

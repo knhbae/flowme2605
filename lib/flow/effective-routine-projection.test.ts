@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { buildEffectiveRoutineProjection } from './effective-routine-projection';
+import {
+  buildEffectiveRoutineNextOccurrence,
+  buildEffectiveRoutineProjection,
+} from './effective-routine-projection';
 import { buildCalendarIcs } from './export';
 import { buildMyFlowStepIcs } from './my-flow-step-export';
 import { seedBundles } from './seed-flows';
@@ -123,6 +126,123 @@ test('an exact-video preview horizon does not become a saved series end', () => 
 
   assert.ok(projection.semanticOccurrenceCount > 12);
   assert.equal(projection.seriesByItemId[carrier.id]?.revisions[0]?.rule.end, undefined);
+});
+
+test('next open routine occurrence crosses the execution horizon without ending the series', () => {
+  const bundle = sourceBackedMyFlowBundles.find((entry) => entry.flow.slug === 'curated-allblanc-morning-workout');
+  assert.ok(bundle);
+  const carrier = bundle.items[0];
+  assert.ok(carrier);
+  const base = {
+    bundle,
+    rows: [{ id: carrier.id, date: '2026-08-03', title: carrier.title }],
+    startDate: '2026-08-03',
+    selectedWeekdays: ['월', '수', '금'],
+    seriesEndMode: 'none' as const,
+  };
+  const first = buildEffectiveRoutineNextOccurrence({
+    ...base,
+    fromDate: '2026-07-28',
+  });
+  assert.equal(first.nextRow?.date, '2026-08-03');
+  assert.ok(first.nextRow?.structuralOccurrenceId);
+  assert.ok(first.nextRow?.structuralOccurrenceSeriesId);
+  assert.ok(first.nextRow?.structuralOccurrenceRevisionId);
+
+  const completedAt = '2026-08-03T00:30:00.000Z';
+  const next = buildEffectiveRoutineNextOccurrence({
+    ...base,
+    fromDate: '2026-07-28',
+    executionRecords: [{
+      occurrenceId: first.nextRow.structuralOccurrenceId,
+      seriesId: first.nextRow.structuralOccurrenceSeriesId,
+      revisionId: first.nextRow.structuralOccurrenceRevisionId,
+      state: 'done',
+      updatedAt: completedAt,
+      completedAt,
+      history: [{ from: 'pending', to: 'done', at: completedAt }],
+    }],
+  });
+
+  assert.equal(next.seriesState, 'active');
+  assert.equal(next.nextRow?.date, '2026-08-05');
+  assert.notEqual(next.nextRow?.structuralOccurrenceId, first.nextRow.structuralOccurrenceId);
+});
+
+test('next occurrence selector restores the same identity for a reopened occurrence', () => {
+  const bundle = sourceBackedMyFlowBundles.find((entry) => entry.flow.slug === 'curated-allblanc-morning-workout');
+  assert.ok(bundle);
+  const carrier = bundle.items[0];
+  assert.ok(carrier);
+  const base = {
+    bundle,
+    rows: [{ id: carrier.id, date: '2026-08-03', title: carrier.title }],
+    startDate: '2026-08-03',
+    selectedWeekdays: ['월', '수', '금'],
+    seriesEndMode: 'none' as const,
+    fromDate: '2026-07-28',
+  };
+  const pending = buildEffectiveRoutineNextOccurrence(base);
+  assert.ok(pending.nextRow?.structuralOccurrenceId);
+  assert.ok(pending.nextRow?.structuralOccurrenceSeriesId);
+  assert.ok(pending.nextRow?.structuralOccurrenceRevisionId);
+
+  const reopened = buildEffectiveRoutineNextOccurrence({
+    ...base,
+    executionRecords: [{
+      occurrenceId: pending.nextRow.structuralOccurrenceId,
+      seriesId: pending.nextRow.structuralOccurrenceSeriesId,
+      revisionId: pending.nextRow.structuralOccurrenceRevisionId,
+      state: 'reopened',
+      updatedAt: '2026-08-03T00:40:00.000Z',
+      completedAt: '2026-08-03T00:30:00.000Z',
+      reopenedAt: '2026-08-03T00:40:00.000Z',
+      history: [
+        { from: 'pending', to: 'done', at: '2026-08-03T00:30:00.000Z' },
+        { from: 'done', to: 'reopened', at: '2026-08-03T00:40:00.000Z' },
+      ],
+    }],
+  });
+
+  assert.equal(reopened.nextRow?.structuralOccurrenceId, pending.nextRow.structuralOccurrenceId);
+  assert.equal(reopened.nextRow?.date, '2026-08-03');
+  assert.equal(reopened.nextRow?.structuralOccurrenceExecutionState, 'reopened');
+});
+
+test('finite completed routine reports ended instead of an active open series', () => {
+  const bundle = sourceBackedMyFlowBundles.find((entry) => entry.flow.slug === 'curated-allblanc-morning-workout');
+  assert.ok(bundle);
+  const carrier = bundle.items[0];
+  assert.ok(carrier);
+  const base = {
+    bundle,
+    rows: [{ id: carrier.id, date: '2026-08-03', title: carrier.title }],
+    startDate: '2026-08-03',
+    selectedWeekdays: ['월', '수', '금'],
+    seriesEndMode: 'count' as const,
+    occurrenceCount: 1,
+    fromDate: '2026-07-28',
+  };
+  const pending = buildEffectiveRoutineNextOccurrence(base);
+  assert.ok(pending.nextRow?.structuralOccurrenceId);
+  assert.ok(pending.nextRow?.structuralOccurrenceSeriesId);
+  assert.ok(pending.nextRow?.structuralOccurrenceRevisionId);
+  const completedAt = '2026-08-03T00:30:00.000Z';
+  const ended = buildEffectiveRoutineNextOccurrence({
+    ...base,
+    executionRecords: [{
+      occurrenceId: pending.nextRow.structuralOccurrenceId,
+      seriesId: pending.nextRow.structuralOccurrenceSeriesId,
+      revisionId: pending.nextRow.structuralOccurrenceRevisionId,
+      state: 'done',
+      updatedAt: completedAt,
+      completedAt,
+      history: [{ from: 'pending', to: 'done', at: completedAt }],
+    }],
+  });
+
+  assert.equal(ended.nextRow, undefined);
+  assert.equal(ended.seriesState, 'ended');
 });
 
 test('saved routine end-date override is carried by the canonical series', () => {

@@ -59,7 +59,10 @@ async function saveUndatedVehicleFlow(page: Page) {
   await page.goto('/f/vehicle-inspection-prep');
   await page.evaluate(() => window.localStorage.clear());
   await page.reload();
-  await page.getByTestId('public-flow-date-intent-undated').click();
+  await expect(page.getByTestId('public-flow-artifact-preview')).toHaveAttribute(
+    'data-selected-shape',
+    'checklist',
+  );
   const mobileSave = page.getByTestId('public-flow-save-primary-mobile');
   const saveButton = await mobileSave.isVisible().catch(() => false)
     ? mobileSave
@@ -218,12 +221,16 @@ test.describe('P34 execution CRUD', () => {
     const editor = page.getByTestId('flow-memo-draft-editor');
     await expect(editor.getByTestId('flow-memo-draft-item')).toHaveCount(5);
     await expect(editor.getByTestId('draft-structure-edit-controls')).toHaveCount(0);
-    const initialInteractiveCount = await editor
-      .locator('button, input, textarea, select, summary, a[href]')
-      .count();
-    expect(initialInteractiveCount).toBeLessThanOrEqual(20);
+    await expect(editor.getByRole('button', { name: /내용과 날짜 수정/ })).toHaveCount(5);
+    await expect(editor.getByTestId('personal-draft-move-up')).toHaveCount(0);
+    await expect(editor.getByTestId('personal-draft-move-down')).toHaveCount(0);
+    await expect(editor.getByTestId('personal-draft-delete-item')).toHaveCount(0);
     await capture(page, 'p34-04-draft-preview-390.png');
 
+    await editor
+      .getByTestId('flow-memo-draft-structure-disclosure')
+      .locator(':scope > summary')
+      .click();
     await editor.getByTestId('draft-structure-edit-toggle').click();
     await expect(editor.getByTestId('draft-structure-edit-controls')).toHaveCount(5);
     await expect(
@@ -232,26 +239,25 @@ test.describe('P34 execution CRUD', () => {
     await capture(page, 'p34-04-draft-structure-mode-390.png');
   });
 
-  test('public save-before keeps the artifact visible while editing one selected row', async ({ page }) => {
+  test('public save-before keeps the artifact visible while editing one adjustment kind', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/f/moving-d30-basic');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
 
     await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
-    await expect(page.getByTestId('flow-artifact-data-preview')).toBeVisible();
+    await expect(page.getByTestId('public-flow-artifact-preview')).toBeVisible();
     await page.getByTestId('public-flow-adjust-entry-mobile').click();
     const adjustment = page.getByTestId('public-flow-personal-adjustment');
     await expect(adjustment).toHaveAttribute(
-      'data-p34-marker',
-      'P34-03-INCLUDE-TITLE-DATE-RECEIPT-PARITY',
+      'data-p35-marker',
+      'P35-ADJUST-ONE-KIND',
     );
-    await expect(adjustment.getByTestId('public-flow-adjustment-summary')).toContainText(
-      /24\/24개 · 날짜 24개/,
-    );
-    await adjustment.getByTestId('public-flow-adjustment-mode-schedule').click();
-    await expect(adjustment.getByTestId('public-flow-adjustment-row')).toHaveCount(1);
-    await expect(page.getByTestId('flow-artifact-data-preview')).toBeVisible();
+    await expect(adjustment.getByTestId('public-flow-adjustment-result-before')).toContainText('24개');
+    await adjustment.getByTestId('public-flow-adjustment-kind-anchor').click();
+    await expect(adjustment.getByTestId('public-flow-adjustment-anchor-input')).toHaveValue('2030-08-15');
+    await expect(adjustment.getByTestId('public-flow-adjustment-item-row')).toHaveCount(0);
+    await expect(page.getByTestId('public-flow-artifact-preview')).toBeVisible();
     await capture(page, 'p34-03-moving-adjust-390.png');
   });
 

@@ -1,12 +1,35 @@
 # Roadmap
 
-**Last Updated:** 2026-07-25<br>
+**Last Updated:** 2026-07-29<br>
 **Current Version:** v0.1.0 (released product PoC)<br>
-**Current Validation Stage:** internal alpha / P33 + P34 production green / observed users 0<br>
+**Current Validation Stage:** internal alpha / P34 production baseline / P35 internal-review candidate / observed users 0<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** independently review released P34 production and select one bounded next slice
+**Next Milestone:** review the P35 candidate, complete publish verification if accepted, then promote at most one next product slice
 
-Human-facing control surface: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
+Human-facing control surface: [FlowMe current stage control board](./content-audit/2026-07-29-flowme-current-stage-control-board-ko.html).
+
+## Current Candidate: P35 MECE UX Reset
+
+P35 is a bounded presentation and navigation revision over the released P34 data
+contracts. It keeps the four-tab IA, public `/f` shell, canonical Flow and Item
+identity, source/personal/run/occurrence ownership, existing localStorage keys,
+completion/reopen, recurrence, lifecycle, and export scope.
+
+The approved internal candidate makes cross-Flow `할 일` the normal My Flow
+entry, keeps the Flow library beside it, groups execution rows by exact date,
+limits the default row to row-open plus one completion checkbox, and opens the
+whole plan automatically only on the first post-save entry. The internal verdict
+is `publish_ready_for_internal_review`: focused unit `13 / 13`, all unit
+`694 / 694`, P35 Playwright `79 / 79`, full Playwright `405 / 405`, and
+build/docs/diff checks green. Observed-user sessions remain `0`; this evidence
+does not by itself make P35 a production release. See the
+[P35 R13 evidence](./content-audit/2026-07-29-p35-r13-final-internal-gate/README.md).
+
+The text-authoring UX, projection/event corpus, full-corpus UI lab, vertical
+service benchmark, and research-to-product playbook are decision inputs. They
+do not create five parallel implementation programs. Text authoring remains a
+design-complete, implementation-unstarted candidate whose first possible slice
+is `TA-01`.
 
 ## Released Baseline
 
@@ -273,12 +296,15 @@ Detailed scope: [Save, Personalize, Execute Journey Reset](./specs/2026-07-18-sa
 
 ## Operating Queue
 
-There is no active external-user gate. P33 and P34 are the canonical production baseline. External user observation stays outside the queue until the owner explicitly reopens it.
+There is no active external-user gate. P34 is the canonical production baseline,
+and P35 is the single internal product candidate. External user observation stays
+outside the queue until the owner explicitly reopens it.
 
 | Lane | Owner | Work | Next checkpoint | Done when |
 | --- | --- | --- | --- | --- |
-| Active | AI + Owner | P34 production reassessment | Review current production and choose one bounded next slice without reopening stable data contracts | Reproducible current-production gap or keep decision is recorded |
-| Next | AI + independent reviewer | P34 independent production UX/code review | Re-run lifecycle, editing, Calendar keyboard, recurrence, and export scope on canonical production | Current evidence separates reproducible gaps from heuristic preference |
+| Active | Owner + AI | P35 internal review and publish closeout | Review the R13 My Flow/date-group/first-entry evidence, then choose keep, bounded fix, or block | Decision, exact remaining issue if any, PR/merge state, deployment state, rollback, and observed-user count are explicit |
+| Next, gated | Owner | Promote one post-P35 slice | Choose `TA-01`, one evidence-backed correction, or no new implementation | One bounded scope is promoted; research shelves do not become parallel programs |
+| Research shelf | AI | Text authoring, projection/event, full-corpus UI, vertical benchmark, research-to-product evidence | Keep source, inference, runtime impact, and unverified external evidence separate | Decision inputs stay reproducible without claiming runtime delivery |
 | Completed | AI | P34-00~08 implementation and release | Preserve P33 identities, storage, 24/5 no-auto-merge, and rollback boundary | PR #157, merge `98ede0f`, CI/Vercel green, audit `0`, full E2E `326 / 326`, production smoke green |
 | Completed | AI | P33-01~07 implementation, stabilization, and release | Preserve additive metadata, explicit duplicate choice, and stable identities | PR #156, merge `7948bc4`, CI/Vercel green, audit `0`, canonical production smoke green |
 | Completed | AI | P32-01~07 implementation and release | Preserve B1 and stable identities | PR #154, merge `30281a7`, CI green, production smoke `7 / 7` |
@@ -322,7 +348,13 @@ These gates cannot be closed by automated tests or simulated personas.
 
 ## Next Decision
 
-Review the released P30 production and [final package](./content-audit/2026-07-22-flowme-p30-final-review-package/README.md). Do not open a broad P31 program merely because automated gates are green. First identify one current-production gap with route, viewport, expected/actual behavior, and user impact; otherwise keep P30 and defer further implementation. Do not recruit participants yet. Account persistence, creator/update pilot, real AI/crawler, direct integrations, permanent delete, and observed-user recruitment remain gated.
+Review the [P35 R13 evidence](./content-audit/2026-07-29-p35-r13-final-internal-gate/README.md)
+and answer one question: keep the candidate, request one bounded correction with
+an exact route/viewport/expected-versus-actual gap, or block it. Do not promote
+text authoring, another broad UX reset, a real AI/crawler backend, account
+persistence, creator/update pilot, direct integrations, permanent delete, or
+observed-user recruitment merely because automated gates are green. After P35
+publish truth is explicit, promote at most one bounded next slice.
 
 ## Gated Backlog
 

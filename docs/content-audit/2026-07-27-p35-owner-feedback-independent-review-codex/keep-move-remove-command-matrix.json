@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-27",
+  "principle": "Each surface answers one question. A command has one canonical owner and is not duplicated as a competing primary action.",
+  "decisions": [
+    {
+      "surface": "public_result",
+      "command": "Flow 조정",
+      "decision": "keep",
+      "finalPlacement": "Secondary action below the actual artifact preview",
+      "reason": "Users need bounded personalization before save."
+    },
+    {
+      "surface": "public_result",
+      "command": "Item title/detail/date edit",
+      "decision": "move",
+      "from": "Post-save Item detail only",
+      "to": "Contextual sheet opened from a preview row",
+      "reason": "It changes only a personal proposal and does not require a full editor."
+    },
+    {
+      "surface": "public_result",
+      "command": "FlowMe 저장",
+      "decision": "move",
+      "from": "Immediate save CTA before destination certainty",
+      "to": "Artifact preflight primary action",
+      "reason": "The user should see artifact name, count, and losses first."
+    },
+    {
+      "surface": "public_result",
+      "command": "Flow 가져가기",
+      "decision": "move",
+      "from": "Nested generic workbench disclosures",
+      "to": "Artifact preflight secondary destination actions",
+      "reason": "Public export owns whole Flow only and must match the preview artifact."
+    },
+    {
+      "surface": "saved_receipt",
+      "command": "내 Flow에서 시작",
+      "decision": "rename",
+      "finalPlacement": "Single primary action: 저장한 전체 Flow 보기",
+      "reason": "The receipt confirms the saved object; it should not force an execution decision."
+    },
+    {
+      "surface": "post_save_hub",
+      "command": "첫 할 일 시작",
+      "decision": "remove",
+      "reason": "It competes with whole-plan verification and opens a detail sheet without completion."
+    },
+    {
+      "surface": "post_save_hub",
+      "command": "전체 Flow 보기",
+      "decision": "move",
+      "to": "Saved receipt single primary action",
+      "reason": "The duplicate post-save hub should not exist."
+    },
+    {
+      "surface": "post_save_hub",
+      "command": "캘린더",
+      "decision": "remove",
+      "reason": "Calendar remains a persistent top-level lens and does not need to compete in a second receipt."
+    },
+    {
+      "surface": "post_save_hub",
+      "command": "가져가기",
+      "decision": "remove",
+      "reason": "Export belongs to public preflight or the personal Flow workspace."
+    },
+    {
+      "surface": "my_flow_library",
+      "command": "Flow 열기",
+      "decision": "keep",
+      "finalPlacement": "One command per compact library row",
+      "reason": "The library owns selection, not execution."
+    },
+    {
+      "surface": "my_flow_library",
+      "command": "Routine result-shape filter",
+      "decision": "remove",
+      "reason": "Routine is a Flow property, not a lifecycle state."
+    },
+    {
+      "surface": "personal_flow_workspace",
+      "command": "다음 행동 tab",
+      "decision": "remove",
+      "reason": "Replace it with a shape-aware execution unit at the top of the same Flow."
+    },
+    {
+      "surface": "personal_flow_workspace",
+      "command": "전체 계획 tab",
+      "decision": "move",
+      "to": "Persistent whole-plan section below the shape-aware execution unit",
+      "reason": "Plan context should not disappear when the user executes."
+    },
+    {
+      "surface": "personal_flow_workspace",
+      "command": "기록 tab",
+      "decision": "remove",
+      "reason": "Empty current-run copy is not an independent object or destination."
+    },
+    {
+      "surface": "personal_flow_workspace",
+      "command": "Progress history",
+      "decision": "move",
+      "to": "Optional disclosure shown only when execution events exist",
+      "reason": "History owns completion, reopen, skip, and hold events only."
+    },
+    {
+      "surface": "item_detail",
+      "command": "완료/다시 열기",
+      "decision": "move",
+      "from": "Underlying row only",
+      "to": "Same completion primitive inside Item detail and row",
+      "reason": "Opening an Item must not remove the ability to execute it."
+    },
+    {
+      "surface": "item_detail",
+      "command": "현재 항목 가져가기",
+      "decision": "keep",
+      "reason": "Current scope belongs to the selected Item context."
+    },
+    {
+      "surface": "personal_flow_workspace",
+      "command": "전체/선택 가져가기",
+      "decision": "keep",
+      "reason": "Whole and selected scopes belong to the personal Flow object."
+    },
+    {
+      "surface": "calendar",
+      "command": "Flow 열기",
+      "decision": "keep",
+      "reason": "Calendar is a dated lens and routes execution back to the owning Flow."
+    },
+    {
+      "surface": "calendar",
+      "command": "Selected-day detail",
+      "decision": "move",
+      "from": "Below the complete month grid on mobile",
+      "to": "Mobile bottom sheet; retain wide side agenda",
+      "reason": "The selected day must remain spatially connected to the date tap."
+    }
+  ]
+}

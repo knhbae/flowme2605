@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>내 Flow: 실행, 전체 계획, 기록, 항목 수정 · FlowMe P35</title>
+  <style>
+  :root {
+    color-scheme: light;
+    --ink: #161616;
+    --muted: #5f625e;
+    --line: #d9ddd7;
+    --surface: #ffffff;
+    --soft: #f4f6f2;
+    --accent: #1e5b42;
+    --accent-soft: #e7f2ec;
+    --warning: #8a4f08;
+    --warning-soft: #fff4dc;
+    --nav: #20241f;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: #eef1ec;
+    color: var(--ink);
+    font-family: Arial, "Malgun Gothic", sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    letter-spacing: 0;
+  }
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible {
+    outline: 3px solid #d38515;
+    outline-offset: 3px;
+  }
+  .shell {
+    display: grid;
+    grid-template-columns: minmax(190px, 240px) minmax(0, 1fr);
+    min-height: 100vh;
+  }
+  nav {
+    position: sticky;
+    top: 0;
+    align-self: start;
+    min-height: 100vh;
+    padding: 24px 18px;
+    background: var(--nav);
+    color: #fff;
+  }
+  nav strong { display: block; font-size: 18px; margin-bottom: 4px; }
+  nav p { color: #cdd4cb; font-size: 13px; margin: 0 0 22px; }
+  nav a {
+    display: block;
+    padding: 10px 8px;
+    border-bottom: 1px solid #3b4139;
+    color: #f8faf7;
+    text-decoration: none;
+  }
+  nav a[aria-current="page"] {
+    background: #f5f7f3;
+    color: #131513;
+    font-weight: 700;
+  }
+  main { min-width: 0; padding: 36px clamp(18px, 4vw, 56px) 72px; }
+  .page-head {
+    max-width: 980px;
+    margin-bottom: 34px;
+  }
+  .eyebrow {
+    margin: 0 0 8px;
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  h1 { margin: 0 0 10px; font-size: 32px; line-height: 1.2; }
+  h2 { margin: 44px 0 14px; font-size: 23px; line-height: 1.3; }
+  h3 { margin: 0; font-size: 18px; line-height: 1.35; }
+  .lede { max-width: 780px; margin: 0; color: var(--muted); font-size: 17px; }
+  .notice {
+    max-width: 980px;
+    margin: 22px 0;
+    padding: 14px 16px;
+    border-left: 4px solid var(--warning);
+    background: var(--warning-soft);
+  }
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    max-width: 980px;
+    margin: 24px 0 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .fact { padding: 14px 12px; border-right: 1px solid var(--line); }
+  .fact:last-child { border-right: 0; }
+  .fact span { display: block; color: var(--muted); font-size: 12px; }
+  .fact strong { display: block; margin-top: 3px; font-size: 18px; }
+  .journey-links {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    max-width: 980px;
+    margin-top: 20px;
+  }
+  .journey-link {
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .journey-link strong { display: block; margin-bottom: 4px; }
+  .journey-link span { color: var(--muted); font-size: 13px; }
+  .capture-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+    max-width: 1120px;
+  }
+  figure {
+    margin: 0;
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--surface);
+  }
+  figure.wide { grid-column: 1 / -1; }
+  figure img {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    max-height: 780px;
+    margin: 14px auto;
+    border: 1px solid #e7e9e5;
+    background: #fff;
+    object-fit: contain;
+  }
+  .capture-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 8px 0 0;
+  }
+  .tag {
+    display: inline-block;
+    padding: 3px 7px;
+    border: 1px solid #cdd4cb;
+    border-radius: 4px;
+    background: var(--soft);
+    color: #3e443d;
+    font-size: 12px;
+  }
+  .questions { margin: 12px 0 0; padding-left: 20px; color: #424640; }
+  .state-link { display: inline-block; margin-top: 10px; font-size: 13px; }
+  .reference-groups { max-width: 1120px; }
+  .reference-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+  .reference-grid figure { padding: 10px; }
+  .reference-grid figure img { margin: 8px auto; max-height: 480px; }
+  .reference-grid figcaption { font-size: 12px; overflow-wrap: anywhere; }
+  .footer {
+    max-width: 980px;
+    margin-top: 54px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 13px;
+  }
+  @media (max-width: 760px) {
+    .shell { display: block; }
+    nav {
+      position: static;
+      min-height: 0;
+      padding: 14px 16px;
+    }
+    nav strong, nav p { display: none; }
+    nav .links { display: flex; gap: 4px; overflow-x: auto; }
+    nav a {
+      flex: 0 0 auto;
+      padding: 8px 10px;
+      border: 0;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+    main { padding: 24px 14px 52px; }
+    h1 { font-size: 26px; }
+    .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .fact:nth-child(2) { border-right: 0; }
+    .fact:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+    .journey-links, .capture-list, .reference-grid { grid-template-columns: 1fr; }
+    figure.wide { grid-column: auto; }
+  }
+</style>
+</head>
+<body>
+  <div class="shell">
+
+  <nav aria-label="오프라인 검토 화면">
+    <strong>FlowMe P35</strong>
+    <p>Vercel 없이 보는 독립 검토 자료</p>
+    <div class="links">
+      <a href="index.html">안내</a>
+      <a href="public-flow.html">공개 Flow</a>
+      <a href="my-flow.html" aria-current="page">내 Flow</a>
+      <a href="calendar.html">캘린더</a>
+      <a href="export.html">가져가기</a>
+      <a href="reference-gallery.html">전체 증거</a>
+    </div>
+  </nav>
+
+    <main>
+
+      <header class="page-head">
+        <p class="eyebrow">Current local browser capture</p>
+        <h1>내 Flow: 실행, 전체 계획, 기록, 항목 수정</h1>
+        <p class="lede">한 Flow를 연 뒤 다음 행동, 항목 상세와 빠른 수정, 전체 계획, 기록, 완료 후 되돌리기까지 이어서 본다. 탭의 정체성과 날짜 묶음, 수정 깊이, 복구 문법을 검토한다.</p>
+      </header>
+      <div class="notice">
+        이미지는 클릭하면 원본 크기로 열린다. 각 화면 아래 JSON에는 해당 상태에서
+        실제로 보인 제목, accessible action 이름, test id, 본문, 오류가 들어 있다.
+      </div>
+      <section class="capture-list">
+
+    <figure>
+      <h3>내 Flow 다음 행동</h3>
+      <div class="capture-meta">
+        <span class="tag">/my?view=flows</span>
+        <span class="tag">390x844</span>
+        <span class="tag">my_flow_next_action</span>
+        <span class="tag">오류 0</span>
+      </div>
+      <a
+        href="screenshots/09-my-flow-next-action-390.png"
+        aria-label="내 Flow 다음 행동 원본 이미지 열기"
+      >
+        <img src="screenshots/09-my-flow-next-action-390.png" alt="내 Flow 다음 행동 화면 캡처">
+      </a>
+      <ul class="questions">
+        <li>다음 행동 탭의 정체성이 명확한가</li><li>같은 날짜 묶음이 필요한가</li>
+      </ul>
+      <a class="state-link" href="state-snapshots/09-my-flow-next-action-390.json">
+        당시 보인 제목·조작·본문 JSON 열기
+      </a>
+    </figure>
+
+    <figure>
+      <h3>항목 상세</h3>
+      <div class="capture-meta">
+        <span class="tag">/my?view=flows</span>
+        <span class="tag">390x844</span>
+        <span class="tag">my_flow_item_detail</span>
+        <span class="tag">오류 0</span>
+      </div>
+      <a
+        href="screenshots/10-my-flow-item-detail-390.png"
+        aria-label="항목 상세 원본 이미지 열기"
+      >
+        <img src="screenshots/10-my-flow-item-detail-390.png" alt="항목 상세 화면 캡처">
+      </a>
+      <ul class="questions">
+        <li>상세와 완료가 같은 문맥에 있는가</li><li>저장 전 편집과 연결 가능한 구조인가</li>
+      </ul>
+      <a class="state-link" href="state-snapshots/10-my-flow-item-detail-390.json">
+        당시 보인 제목·조작·본문 JSON 열기
+      </a>
+    </figure>
+
+    <figure>
+      <h3>항목 제목·날짜·메모 편집</h3>
+      <div class="capture-meta">
+        <span class="tag">/my?view=flows</span>
+        <span class="tag">390x844</span>
+        <span class="tag">my_flow_item_edit</span>
+        <span class="tag">오류 0</span>
+      </div>
+      <a
+        href="screenshots/11-my-flow-item-edit-390.png"
+        aria-label="항목 제목·날짜·메모 편집 원본 이미지 열기"
+      >
+        <img src="screenshots/11-my-flow-item-edit-390.png" alt="항목 제목·날짜·메모 편집 화면 캡처">
+      </a>
+      <ul class="questions">
+        <li>현재 기능을 저장 전 contextual edit에 재사용할 수 있는가</li>
+      </ul>
+      <a class="state-link" href="state-snapshots/11-my-flow-item-edit-390.json">
+        당시 보인 제목·조작·본문 JSON 열기
+      </a>
+    </figure>
+
+    <figure>
+      <h3>내 Flow 전체 계획</h3>
+      <div class="capture-meta">
+        <span class="tag">/my?view=flows</span>
+        <span class="tag">390x844</span>
+        <span class="tag">my_flow_full_plan</span>
+        <span class="tag">오류 0</span>
+      </div>
+      <a
+        href="screenshots/12-my-flow-full-plan-390.png"
+        aria-label="내 Flow 전체 계획 원본 이미지 열기"
+      >
+        <img src="screenshots/12-my-flow-full-plan-390.png" alt="내 Flow 전체 계획 화면 캡처">
+      </a>
+      <ul class="questions">
+        <li>전체 저장 결과를 확인하기 쉬운가</li><li>다음 행동과 전체 계획이 과도하게 분리되는가</li>
+      </ul>
+      <a class="state-link" href="state-snapshots/12-my-flow-full-plan-390.json">
+        당시 보인 제목·조작·본문 JSON 열기
+      </a>
+    </figure>
+
+    <figure>
+      <h3>내 Flow 기록</h3>
+      <div class="capture-meta">
+        <span class="tag">/my?view=flows</span>
+        <span class="tag">390x844</span>
+        <span class="tag">my_flow_record</span>
+        <span class="tag">오류 0</span>
+      </div>
+      <a
+        href="screenshots/13-my-flow-record-390.png"
+        aria-label="내 Flow 기록 원본 이미지 열기"
+      >
+        <img src="screenshots/13-my-flow-record-390.png" alt="내 Flow 기록 화면 캡처">
+      </a>
+      <ul class="questions">
+        <li>기록 탭의 정체성이 명확한가</li><li>history·회고·재사용이 섞이는가</li>
+      </ul>
+      <a class="state-link" href="state-snapshots/13-my-flow-record-390.json">
+        당시 보인 제목·조작·본문 JSON 열기
+      </a>
+    </figure>
+
+    <figure>
+      <h3>완료 후 즉시 되돌리기</h3>
+      <div class="capture-meta">
+        <span class="tag">/my?view=flows</span>
+        <span class="tag">390x844</span>
+        <span class="tag">my_flow_completion_undo</span>
+        <span class="tag">오류 0</span>
+      </div>
+      <a
+        href="screenshots/14-my-flow-completion-undo-390.png"
+        aria-label="완료 후 즉시 되돌리기 원본 이미지 열기"
+      >
+        <img src="screenshots/14-my-flow-completion-undo-390.png" alt="완료 후 즉시 되돌리기 화면 캡처">
+      </a>
+      <ul class="questions">
+        <li>행이 사라질 때만 undo가 필요한가</li><li>직접 다시 열기와 snackbar가 중복되는가</li>
+      </ul>
+      <a class="state-link" href="state-snapshots/14-my-flow-completion-undo-390.json">
+        당시 보인 제목·조작·본문 JSON 열기
+      </a>
+    </figure>
+
+    <figure class="wide">
+      <h3>내 Flow wide library와 workspace</h3>
+      <div class="capture-meta">
+        <span class="tag">/my?demo=ux20&amp;view=flows</span>
+        <span class="tag">1024x768</span>
+        <span class="tag">my_flow_wide_workspace</span>
+        <span class="tag">오류 0</span>
+      </div>
+      <a
+        href="screenshots/15-my-flow-workspace-1024.png"
+        aria-label="내 Flow wide library와 workspace 원본 이미지 열기"
+      >
+        <img src="screenshots/15-my-flow-workspace-1024.png" alt="내 Flow wide library와 workspace 화면 캡처">
+      </a>
+      <ul class="questions">
+        <li>rail과 canvas 역할이 명확한가</li><li>모바일 탭과 wide hierarchy가 일치하는가</li>
+      </ul>
+      <a class="state-link" href="state-snapshots/15-my-flow-workspace-1024.json">
+        당시 보인 제목·조작·본문 JSON 열기
+      </a>
+    </figure>
+
+      </section>
+
+      <footer class="footer">
+        이 자료는 로컬 P35 빌드를 자동 브라우저로 캡처한 검토 근거다.
+        실제 사용자 관찰 수는 0이며, 캡처나 시뮬레이션을 사용자 검증으로 해석하면 안 된다.
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

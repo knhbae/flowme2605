@@ -1,0 +1,2754 @@
+{
+  "schemaVersion": "flowme-event-schedule-corpus-v1",
+  "generatedAt": "2026-07-29T12:00:00+09:00",
+  "claimBoundary": {
+    "sourceInspection": "direct_public_page",
+    "observedAt": "2026-07-29",
+    "structureValidationFixture": true,
+    "observedUserValidation": false,
+    "externalCalendarRoundTrip": "NOT_RUN"
+  },
+  "counts": {
+    "totalNewFixtures": 21,
+    "checklistTodoBoundary": 6,
+    "eventNative": 15,
+    "uniqueUrls": 21
+  },
+  "fixtures": [
+    {
+      "fixtureId": "new-nps-ten-essentials",
+      "fixtureGroup": "checklist_todo_boundary",
+      "fixtureKind": "bounded_single_context_checklist",
+      "title": "Ten Essentials",
+      "provider": "U.S. National Park Service",
+      "url": "https://www.nps.gov/articles/10essentials.htm?fs=e&s=cl",
+      "canonicalUrl": "https://www.nps.gov/articles/10essentials.htm?fs=e&s=cl",
+      "locale": "en-US",
+      "observedAt": "2026-07-29",
+      "accessStatus": "public_html_open",
+      "evidenceMethod": "direct_page_inspection",
+      "sourceShape": "checklist_rows",
+      "executionPattern": "ordered_procedure",
+      "primaryProjection": "checklist",
+      "userJob": "야외 활동 전 필수 준비물 범주를 빠뜨리지 않고 챙긴다.",
+      "sourceRows": [
+        {
+          "sourceRowId": "new-nps-ten-essentials-row-01",
+          "order": 0,
+          "kind": "checklist_row",
+          "title": "Navigation"
+        },
+        {
+          "sourceRowId": "new-nps-ten-essentials-row-02",
+          "order": 1,
+          "kind": "checklist_row",
+          "title": "Sun protection"
+        },
+        {
+          "sourceRowId": "new-nps-ten-essentials-row-03",
+          "order": 2,
+          "kind": "checklist_row",
+          "title": "Insulation"
+        },
+        {
+          "sourceRowId": "new-nps-ten-essentials-row-04",
+          "order": 3,
+          "kind": "checklist_row",
+          "title": "Illumination"
+        },
+        {
+          "sourceRowId": "new-nps-ten-essentials-row-05",
+          "order": 4,
+          "kind": "checklist_row",
+          "title": "First-aid supplies"
+        },
+        {
+          "sourceRowId": "new-nps-ten-essentials-row-06",
+          "order": 5,
+          "kind": "checklist_row",
+          "title": "Fire"
+        },
+        {
+          "sourceRowId": "new-nps-ten-essentials-row-07",
+          "order": 6,
+          "kind": "checklist_row",
+          "title": "Repair kit and tools"
+        },
+        {
+          "sourceRowId": "new-nps-ten-essentials-row-08",
+          "order": 7,
+          "kind": "checklist_row",
+          "title": "Nutrition"
+        },
+        {
+          "sourceRowId": "new-nps-ten-essentials-row-09",
+          "order": 8,
+          "kind": "checklist_row",
+          "title": "Hydration"
+        },
+        {
+          "sourceRowId": "new-nps-ten-essentials-row-10",
+          "order": 9,
+          "kind": "checklist_row",
+          "title": "Emergency shelter"
+        }
+      ],
+      "steps": [
+        {
+          "stepId": "new-nps-ten-essentials-step-1",
+          "title": "Ten Essentials",
+          "order": 0,
+          "itemIds": [
+            "new-nps-ten-essentials-item-01",
+            "new-nps-ten-essentials-item-02",
+            "new-nps-ten-essentials-item-03",
+            "new-nps-ten-essentials-item-04",
+            "new-nps-ten-essentials-item-05",
+            "new-nps-ten-essentials-item-06",
+            "new-nps-ten-essentials-item-07",
+            "new-nps-ten-essentials-item-08",
+            "new-nps-ten-essentials-item-09",
+            "new-nps-ten-essentials-item-10"
+          ]
+        }
+      ],
+      "items": [
+        {
+          "itemId": "new-nps-ten-essentials-item-01",
+          "stepId": "new-nps-ten-essentials-step-1",
+          "title": "Navigation",
+          "description": "",
+          "intent": "act",
+          "order": 0,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "Navigation 결과를 확인하고 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [],
+          "sourceRowIds": [
+            "new-nps-ten-essentials-row-01"
+          ]
+        },
+        {
+          "itemId": "new-nps-ten-essentials-item-02",
+          "stepId": "new-nps-ten-essentials-step-1",
+          "title": "Sun protection",
+          "description": "",
+          "intent": "act",
+          "order": 1,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "Sun protection 결과를 확인하고 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [],
+          "sourceRowIds": [
+            "new-nps-ten-essentials-row-02"
+          ]
+        },
+        {
+          "itemId": "new-nps-ten-essentials-item-03",
+          "stepId": "new-nps-ten-essentials-step-1",
+          "title": "Insulation",
+          "description": "",
+          "intent": "act",
+          "order": 2,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "Insulation 결과를 확인하고 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [],
+          "sourceRowIds": [
+            "new-nps-ten-essentials-row-03"
+          ]
+        },
+        {
+          "itemId": "new-nps-ten-essentials-item-04",
+          "stepId": "new-nps-ten-essentials-step-1",
+          "title": "Illumination",
+          "description": "",
+          "intent": "act",
+          "order": 3,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "Illumination 결과를 확인하고 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [],
+          "sourceRowIds": [
+            "new-nps-ten-essentials-row-04"
+          ]
+        },
+        {
+          "itemId": "new-nps-ten-essentials-item-05",
+          "stepId": "new-nps-ten-essentials-step-1",
+          "title": "First-aid supplies",
+          "description": "",
+          "intent": "act",
+          "order": 4,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "First-aid supplies 결과를 확인하고 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [],
+          "sourceRowIds": [
+            "new-nps-ten-essentials-row-05"
+          ]
+        },
+        {
+          "itemId": "new-nps-ten-essentials-item-06",
+          "stepId": "new-nps-ten-essentials-step-1",
+          "title": "Fire",
+          "description": "",
+          "intent": "act",
+          "order": 5,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "Fire 결과를 확인하고 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [],
+          "sourceRowIds": [
+            "new-nps-ten-essentials-row-06"
+          ]
+        },
+        {
+          "itemId": "new-nps-ten-essentials-item-07",
+          "stepId": "new-nps-ten-essentials-step-1",
+          "title": "Repair kit and tools",
+          "description": "",
+          "intent": "act",
+          "order": 6,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "Repair kit and tools 결과를 확인하고 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [],
+          "sourceRowIds": [
+            "new-nps-ten-essentials-row-07"
+          ]
+        },
+        {
+          "itemId": "new-nps-ten-essentials-item-08",
+          "stepId": "new-nps-ten-essentials-step-1",
+          "title": "Nutrition",
+          "description": "",
+          "intent": "act",
+          "order": 7,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "Nutrition 결과를 확인하고 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [],
+          "sourceRowIds": [
+            "new-nps-ten-essentials-row-08"
+          ]
+        },
+        {
+          "itemId": "new-nps-ten-essentials-item-09",
+          "stepId": "new-nps-ten-essentials-step-1",
+          "title": "Hydration",
+          "description": "",
+          "intent": "act",
+          "order": 8,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "Hydration 결과를 확인하고 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [],
+          "sourceRowIds": [
+            "new-nps-ten-essentials-row-09"
+          ]
+        },
+        {
+          "itemId": "new-nps-ten-essentials-item-10",
+          "stepId": "new-nps-ten-essentials-step-1",
+          "title": "Emergency shelter",
+          "description": "",
+          "intent": "act",
+          "order": 9,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "Emergency shelter 결과를 확인하고 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [],
+          "sourceRowIds": [
+            "new-nps-ten-essentials-row-10"
+          ]
+        }
+      ],
+      "eventModel": null,
+      "sourceSchedulePresent": false,
+      "pacingEligible": false,
+      "sourceNotes": [
+        "The page presents a bounded ten-category packing set.",
+        "Individual products and quantities remain user choices."
+      ],
+      "checklistTodoLabel": "checklist"
+    },
+    {
+      "fixtureId": "new-apple-quick-start",
+      "fixtureGroup": "checklist_todo_boundary",
+      "fixtureKind": "ordered_single_session_procedure",
+      "title": "Quick Start로 새 iPhone 또는 iPad 설정",
+      "provider": "Apple Support",
+      "url": "https://support.apple.com/en-us/102659",
+      "canonicalUrl": "https://support.apple.com/en-us/102659",
+      "locale": "ko-KR",
+      "observedAt": "2026-07-29",
+      "accessStatus": "public_html_open",
+      "evidenceMethod": "direct_page_inspection",
+      "sourceShape": "procedure_rows",
+      "executionPattern": "ordered_procedure",
+      "primaryProjection": "checklist",
+      "userJob": "한 세션에서 기존 기기의 데이터를 새 기기로 순서대로 옮긴다.",
+      "sourceRows": [
+        {
+          "sourceRowId": "new-apple-quick-start-row-01",
+          "order": 0,
+          "kind": "procedure_row",
+          "title": "Wi-Fi와 Bluetooth를 켜고 두 기기를 가까이 둔다"
+        },
+        {
+          "sourceRowId": "new-apple-quick-start-row-02",
+          "order": 1,
+          "kind": "procedure_row",
+          "title": "화면 지시에 따라 새 기기를 연결한다"
+        },
+        {
+          "sourceRowId": "new-apple-quick-start-row-03",
+          "order": 2,
+          "kind": "procedure_row",
+          "title": "요청되면 이동통신 서비스를 활성화한다"
+        },
+        {
+          "sourceRowId": "new-apple-quick-start-row-04",
+          "order": 3,
+          "kind": "procedure_row",
+          "title": "Face ID 또는 Touch ID를 설정한다"
+        },
+        {
+          "sourceRowId": "new-apple-quick-start-row-05",
+          "order": 4,
+          "kind": "procedure_row",
+          "title": "데이터 전송 방식을 선택한다"
+        },
+        {
+          "sourceRowId": "new-apple-quick-start-row-06",
+          "order": 5,
+          "kind": "procedure_row",
+          "title": "전송이 끝날 때까지 두 기기를 가까이 두고 전원에 연결한다"
+        }
+      ],
+      "steps": [
+        {
+          "stepId": "new-apple-quick-start-step-1",
+          "title": "Quick Start로 새 iPhone 또는 iPad 설정",
+          "order": 0,
+          "itemIds": [
+            "new-apple-quick-start-item-01",
+            "new-apple-quick-start-item-02",
+            "new-apple-quick-start-item-03",
+            "new-apple-quick-start-item-04",
+            "new-apple-quick-start-item-05",
+            "new-apple-quick-start-item-06"
+          ]
+        }
+      ],
+      "items": [
+        {
+          "itemId": "new-apple-quick-start-item-01",
+          "stepId": "new-apple-quick-start-step-1",
+          "title": "Wi-Fi와 Bluetooth를 켜고 두 기기를 가까이 둔다",
+          "description": "",
+          "intent": "act",
+          "order": 0,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "Wi-Fi와 Bluetooth를 켜고 두 기기를 가까이 둔다 결과를 확인하고 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [],
+          "sourceRowIds": [
+            "new-apple-quick-start-row-01"
+          ]
+        },
+        {
+          "itemId": "new-apple-quick-start-item-02",
+          "stepId": "new-apple-quick-start-step-1",
+          "title": "화면 지시에 따라 새 기기를 연결한다",
+          "description": "",
+          "intent": "act",
+          "order": 1,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "화면 지시에 따라 새 기기를 연결한다 결과를 확인하고 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [
+            "new-apple-quick-start-item-01"
+          ],
+          "sourceRowIds": [
+            "new-apple-quick-start-row-02"
+          ]
+        },
+        {
+          "itemId": "new-apple-quick-start-item-03",
+          "stepId": "new-apple-quick-start-step-1",
+          "title": "요청되면 이동통신 서비스를 활성화한다",
+          "description": "",
+          "intent": "act",
+          "order": 2,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "요청되면 이동통신 서비스를 활성화한다 결과를 확인하고 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [
+            "new-apple-quick-start-item-02"
+          ],
+          "sourceRowIds": [
+            "new-apple-quick-start-row-03"
+          ]
+        },
+        {
+          "itemId": "new-apple-quick-start-item-04",
+          "stepId": "new-apple-quick-start-step-1",
+          "title": "Face ID 또는 Touch ID를 설정한다",
+          "description": "",
+          "intent": "act",
+          "order": 3,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "Face ID 또는 Touch ID를 설정한다 결과를 확인하고 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [
+            "new-apple-quick-start-item-03"
+          ],
+          "sourceRowIds": [
+            "new-apple-quick-start-row-04"
+          ]
+        },
+        {
+          "itemId": "new-apple-quick-start-item-05",
+          "stepId": "new-apple-quick-start-step-1",
+          "title": "데이터 전송 방식을 선택한다",
+          "description": "",
+          "intent": "act",
+          "order": 4,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "데이터 전송 방식을 선택한다 결과를 확인하고 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [
+            "new-apple-quick-start-item-04"
+          ],
+          "sourceRowIds": [
+            "new-apple-quick-start-row-05"
+          ]
+        },
+        {
+          "itemId": "new-apple-quick-start-item-06",
+          "stepId": "new-apple-quick-start-step-1",
+          "title": "전송이 끝날 때까지 두 기기를 가까이 두고 전원에 연결한다",
+          "description": "",
+          "intent": "act",
+          "order": 5,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "전송이 끝날 때까지 두 기기를 가까이 두고 전원에 연결한다 결과를 확인하고 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [
+            "new-apple-quick-start-item-05"
+          ],
+          "sourceRowIds": [
+            "new-apple-quick-start-row-06"
+          ]
+        }
+      ],
+      "eventModel": null,
+      "sourceSchedulePresent": false,
+      "pacingEligible": false,
+      "sourceNotes": [
+        "Page publication date observed as 2026-07-20."
+      ],
+      "checklistTodoLabel": "checklist"
+    },
+    {
+      "fixtureId": "new-github-account-onboarding",
+      "fixtureGroup": "checklist_todo_boundary",
+      "fixtureKind": "parent_task_subtask_candidate",
+      "title": "GitHub 계정 시작하기",
+      "provider": "GitHub Docs",
+      "url": "https://docs.github.com/en/get-started/onboarding/getting-started-with-your-github-account",
+      "canonicalUrl": "https://docs.github.com/en/get-started/onboarding/getting-started-with-your-github-account",
+      "locale": "en-US",
+      "observedAt": "2026-07-29",
+      "accessStatus": "public_html_open",
+      "evidenceMethod": "direct_page_inspection",
+      "sourceShape": "procedure_rows",
+      "executionPattern": "phase_lifecycle",
+      "primaryProjection": "todo",
+      "userJob": "GitHub 계정의 초기 설정 작업을 각자 가능한 때에 완료한다.",
+      "sourceRows": [
+        {
+          "sourceRowId": "new-github-account-onboarding-row-01",
+          "order": 0,
+          "kind": "task_row",
+          "title": "GitHub 계정 만들기"
+        },
+        {
+          "sourceRowId": "new-github-account-onboarding-row-02",
+          "order": 1,
+          "kind": "task_row",
+          "title": "사용할 GitHub 제품 선택하기"
+        },
+        {
+          "sourceRowId": "new-github-account-onboarding-row-03",
+          "order": 2,
+          "kind": "task_row",
+          "title": "이메일 주소 확인하기"
+        },
+        {
+          "sourceRowId": "new-github-account-onboarding-row-04",
+          "order": 3,
+          "kind": "task_row",
+          "title": "2단계 인증 설정하기"
+        },
+        {
+          "sourceRowId": "new-github-account-onboarding-row-05",
+          "order": 4,
+          "kind": "task_row",
+          "title": "프로필 꾸미기"
+        }
+      ],
+      "steps": [
+        {
+          "stepId": "new-github-account-onboarding-step-1",
+          "title": "GitHub 계정 시작하기",
+          "order": 0,
+          "itemIds": [
+            "new-github-account-onboarding-item-01",
+            "new-github-account-onboarding-item-02",
+            "new-github-account-onboarding-item-03",
+            "new-github-account-onboarding-item-04",
+            "new-github-account-onboarding-item-05"
+          ]
+        }
+      ],
+      "items": [
+        {
+          "itemId": "new-github-account-onboarding-item-01",
+          "stepId": "new-github-account-onboarding-step-1",
+          "title": "GitHub 계정 만들기",
+          "description": "",
+          "intent": "act",
+          "order": 0,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "GitHub 계정 만들기 결과를 확인하고 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [],
+          "sourceRowIds": [
+            "new-github-account-onboarding-row-01"
+          ]
+        },
+        {
+          "itemId": "new-github-account-onboarding-item-02",
+          "stepId": "new-github-account-onboarding-step-1",
+          "title": "사용할 GitHub 제품 선택하기",
+          "description": "",
+          "intent": "act",
+          "order": 1,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "사용할 GitHub 제품 선택하기 결과를 확인하고 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [],
+          "sourceRowIds": [
+            "new-github-account-onboarding-row-02"
+          ]
+        },
+        {
+          "itemId": "new-github-account-onboarding-item-03",
+          "stepId": "new-github-account-onboarding-step-1",
+          "title": "이메일 주소 확인하기",
+          "description": "",
+          "intent": "act",
+          "order": 2,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "이메일 주소 확인하기 결과를 확인하고 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [],
+          "sourceRowIds": [
+            "new-github-account-onboarding-row-03"
+          ]
+        },
+        {
+          "itemId": "new-github-account-onboarding-item-04",
+          "stepId": "new-github-account-onboarding-step-1",
+          "title": "2단계 인증 설정하기",
+          "description": "",
+          "intent": "act",
+          "order": 3,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "2단계 인증 설정하기 결과를 확인하고 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [],
+          "sourceRowIds": [
+            "new-github-account-onboarding-row-04"
+          ]
+        },
+        {
+          "itemId": "new-github-account-onboarding-item-05",
+          "stepId": "new-github-account-onboarding-step-1",
+          "title": "프로필 꾸미기",
+          "description": "",
+          "intent": "act",
+          "order": 4,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "프로필 꾸미기 결과를 확인하고 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [],
+          "sourceRowIds": [
+            "new-github-account-onboarding-row-05"
+          ]
+        }
+      ],
+      "eventModel": null,
+      "sourceSchedulePresent": false,
+      "pacingEligible": false,
+      "sourceNotes": [
+        "The tasks remain independently meaningful and can be deferred.",
+        "An adapter may create one parent task with five subtasks."
+      ],
+      "checklistTodoLabel": "todo"
+    },
+    {
+      "fixtureId": "new-google-codelab-ai-agent",
+      "fixtureGroup": "checklist_todo_boundary",
+      "fixtureKind": "multi_session_ordered_project",
+      "title": "AI Agent End-to-End Codelab",
+      "provider": "Google for Developers",
+      "url": "https://codelabs.developers.google.com/sdlc/instructions?hl=en",
+      "canonicalUrl": "https://codelabs.developers.google.com/sdlc/instructions?hl=en",
+      "locale": "en-US",
+      "observedAt": "2026-07-29",
+      "accessStatus": "public_html_open",
+      "evidenceMethod": "direct_page_inspection",
+      "sourceShape": "lesson_rows",
+      "executionPattern": "phase_lifecycle",
+      "primaryProjection": "checklist",
+      "userJob": "선행 조건을 지키며 실습 프로젝트를 끝까지 진행한다.",
+      "sourceRows": [
+        {
+          "sourceRowId": "new-google-codelab-ai-agent-row-01",
+          "order": 0,
+          "kind": "lesson_row",
+          "title": "Prerequisites 확인"
+        },
+        {
+          "sourceRowId": "new-google-codelab-ai-agent-row-02",
+          "order": 1,
+          "kind": "lesson_row",
+          "title": "Billing 설정"
+        },
+        {
+          "sourceRowId": "new-google-codelab-ai-agent-row-03",
+          "order": 2,
+          "kind": "lesson_row",
+          "title": "Google Cloud project 생성 또는 선택"
+        },
+        {
+          "sourceRowId": "new-google-codelab-ai-agent-row-04",
+          "order": 3,
+          "kind": "lesson_row",
+          "title": "API key 생성"
+        },
+        {
+          "sourceRowId": "new-google-codelab-ai-agent-row-05",
+          "order": 4,
+          "kind": "lesson_row",
+          "title": "Codelab 구현 단계 진행"
+        }
+      ],
+      "steps": [
+        {
+          "stepId": "new-google-codelab-ai-agent-step-1",
+          "title": "AI Agent End-to-End Codelab",
+          "order": 0,
+          "itemIds": [
+            "new-google-codelab-ai-agent-item-01",
+            "new-google-codelab-ai-agent-item-02",
+            "new-google-codelab-ai-agent-item-03",
+            "new-google-codelab-ai-agent-item-04",
+            "new-google-codelab-ai-agent-item-05"
+          ]
+        }
+      ],
+      "items": [
+        {
+          "itemId": "new-google-codelab-ai-agent-item-01",
+          "stepId": "new-google-codelab-ai-agent-step-1",
+          "title": "Prerequisites 확인",
+          "description": "",
+          "intent": "decide",
+          "order": 0,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "Prerequisites 확인 결과를 확인하고 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [],
+          "sourceRowIds": [
+            "new-google-codelab-ai-agent-row-01"
+          ]
+        },
+        {
+          "itemId": "new-google-codelab-ai-agent-item-02",
+          "stepId": "new-google-codelab-ai-agent-step-1",
+          "title": "Billing 설정",
+          "description": "",
+          "intent": "act",
+          "order": 1,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "Billing 설정 결과를 확인하고 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [
+            "new-google-codelab-ai-agent-item-01"
+          ],
+          "sourceRowIds": [
+            "new-google-codelab-ai-agent-row-02"
+          ]
+        },
+        {
+          "itemId": "new-google-codelab-ai-agent-item-03",
+          "stepId": "new-google-codelab-ai-agent-step-1",
+          "title": "Google Cloud project 생성 또는 선택",
+          "description": "",
+          "intent": "act",
+          "order": 2,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "Google Cloud project 생성 또는 선택 결과를 확인하고 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [
+            "new-google-codelab-ai-agent-item-02"
+          ],
+          "sourceRowIds": [
+            "new-google-codelab-ai-agent-row-03"
+          ]
+        },
+        {
+          "itemId": "new-google-codelab-ai-agent-item-04",
+          "stepId": "new-google-codelab-ai-agent-step-1",
+          "title": "API key 생성",
+          "description": "",
+          "intent": "act",
+          "order": 3,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "API key 생성 결과를 확인하고 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [
+            "new-google-codelab-ai-agent-item-03"
+          ],
+          "sourceRowIds": [
+            "new-google-codelab-ai-agent-row-04"
+          ]
+        },
+        {
+          "itemId": "new-google-codelab-ai-agent-item-05",
+          "stepId": "new-google-codelab-ai-agent-step-1",
+          "title": "Codelab 구현 단계 진행",
+          "description": "",
+          "intent": "act",
+          "order": 4,
+          "completion": {
+            "mode": "check",
+            "doneWhen": "Codelab 구현 단계 진행 결과를 확인하고 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [
+            "new-google-codelab-ai-agent-item-04"
+          ],
+          "sourceRowIds": [
+            "new-google-codelab-ai-agent-row-05"
+          ]
+        }
+      ],
+      "eventModel": null,
+      "sourceSchedulePresent": false,
+      "pacingEligible": true,
+      "sourceNotes": [
+        "Billing and account prerequisites are source-backed setup requirements.",
+        "Pacing is user-owned because the source does not assign dates."
+      ],
+      "checklistTodoLabel": "checklist"
+    },
+    {
+      "fixtureId": "new-mdn-core-scripting",
+      "fixtureGroup": "checklist_todo_boundary",
+      "fixtureKind": "ordered_lesson_queue",
+      "title": "MDN Dynamic scripting with JavaScript",
+      "provider": "MDN Web Docs",
+      "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting",
+      "canonicalUrl": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting",
+      "locale": "en-US",
+      "observedAt": "2026-07-29",
+      "accessStatus": "public_html_open",
+      "evidenceMethod": "direct_page_inspection",
+      "sourceShape": "lesson_rows",
+      "executionPattern": "progress_tracking",
+      "primaryProjection": "todo",
+      "userJob": "학습 단원을 하나씩 꺼내 진행하고 완료 진도를 남긴다.",
+      "sourceRows": [
+        {
+          "sourceRowId": "new-mdn-core-scripting-row-01",
+          "order": 0,
+          "kind": "lesson_row",
+          "title": "What is JavaScript?"
+        },
+        {
+          "sourceRowId": "new-mdn-core-scripting-row-02",
+          "order": 1,
+          "kind": "lesson_row",
+          "title": "A first splash into JavaScript"
+        },
+        {
+          "sourceRowId": "new-mdn-core-scripting-row-03",
+          "order": 2,
+          "kind": "lesson_row",
+          "title": "What went wrong? Troubleshooting JavaScript"
+        },
+        {
+          "sourceRowId": "new-mdn-core-scripting-row-04",
+          "order": 3,
+          "kind": "lesson_row",
+          "title": "Storing the information you need — Variables"
+        },
+        {
+          "sourceRowId": "new-mdn-core-scripting-row-05",
+          "order": 4,
+          "kind": "lesson_row",
+          "title": "Basic math in JavaScript — Numbers and operators"
+        },
+        {
+          "sourceRowId": "new-mdn-core-scripting-row-06",
+          "order": 5,
+          "kind": "lesson_row",
+          "title": "Handling text — Strings in JavaScript"
+        },
+        {
+          "sourceRowId": "new-mdn-core-scripting-row-07",
+          "order": 6,
+          "kind": "lesson_row",
+          "title": "Useful string methods"
+        },
+        {
+          "sourceRowId": "new-mdn-core-scripting-row-08",
+          "order": 7,
+          "kind": "lesson_row",
+          "title": "Arrays"
+        },
+        {
+          "sourceRowId": "new-mdn-core-scripting-row-09",
+          "order": 8,
+          "kind": "lesson_row",
+          "title": "Silly story generator"
+        },
+        {
+          "sourceRowId": "new-mdn-core-scripting-row-10",
+          "order": 9,
+          "kind": "lesson_row",
+          "title": "Test your skills: JavaScript basics"
+        }
+      ],
+      "steps": [
+        {
+          "stepId": "new-mdn-core-scripting-step-1",
+          "title": "MDN Dynamic scripting with JavaScript",
+          "order": 0,
+          "itemIds": [
+            "new-mdn-core-scripting-item-01",
+            "new-mdn-core-scripting-item-02",
+            "new-mdn-core-scripting-item-03",
+            "new-mdn-core-scripting-item-04",
+            "new-mdn-core-scripting-item-05",
+            "new-mdn-core-scripting-item-06",
+            "new-mdn-core-scripting-item-07",
+            "new-mdn-core-scripting-item-08",
+            "new-mdn-core-scripting-item-09",
+            "new-mdn-core-scripting-item-10"
+          ]
+        }
+      ],
+      "items": [
+        {
+          "itemId": "new-mdn-core-scripting-item-01",
+          "stepId": "new-mdn-core-scripting-step-1",
+          "title": "What is JavaScript?",
+          "description": "",
+          "intent": "consume",
+          "order": 0,
+          "completion": {
+            "mode": "consume",
+            "doneWhen": "What is JavaScript? 자료를 확인하고 진도 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [],
+          "sourceRowIds": [
+            "new-mdn-core-scripting-row-01"
+          ]
+        },
+        {
+          "itemId": "new-mdn-core-scripting-item-02",
+          "stepId": "new-mdn-core-scripting-step-1",
+          "title": "A first splash into JavaScript",
+          "description": "",
+          "intent": "consume",
+          "order": 1,
+          "completion": {
+            "mode": "consume",
+            "doneWhen": "A first splash into JavaScript 자료를 확인하고 진도 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [
+            "new-mdn-core-scripting-item-01"
+          ],
+          "sourceRowIds": [
+            "new-mdn-core-scripting-row-02"
+          ]
+        },
+        {
+          "itemId": "new-mdn-core-scripting-item-03",
+          "stepId": "new-mdn-core-scripting-step-1",
+          "title": "What went wrong? Troubleshooting JavaScript",
+          "description": "",
+          "intent": "consume",
+          "order": 2,
+          "completion": {
+            "mode": "consume",
+            "doneWhen": "What went wrong? Troubleshooting JavaScript 자료를 확인하고 진도 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [
+            "new-mdn-core-scripting-item-02"
+          ],
+          "sourceRowIds": [
+            "new-mdn-core-scripting-row-03"
+          ]
+        },
+        {
+          "itemId": "new-mdn-core-scripting-item-04",
+          "stepId": "new-mdn-core-scripting-step-1",
+          "title": "Storing the information you need — Variables",
+          "description": "",
+          "intent": "consume",
+          "order": 3,
+          "completion": {
+            "mode": "consume",
+            "doneWhen": "Storing the information you need — Variables 자료를 확인하고 진도 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [
+            "new-mdn-core-scripting-item-03"
+          ],
+          "sourceRowIds": [
+            "new-mdn-core-scripting-row-04"
+          ]
+        },
+        {
+          "itemId": "new-mdn-core-scripting-item-05",
+          "stepId": "new-mdn-core-scripting-step-1",
+          "title": "Basic math in JavaScript — Numbers and operators",
+          "description": "",
+          "intent": "consume",
+          "order": 4,
+          "completion": {
+            "mode": "consume",
+            "doneWhen": "Basic math in JavaScript — Numbers and operators 자료를 확인하고 진도 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [
+            "new-mdn-core-scripting-item-04"
+          ],
+          "sourceRowIds": [
+            "new-mdn-core-scripting-row-05"
+          ]
+        },
+        {
+          "itemId": "new-mdn-core-scripting-item-06",
+          "stepId": "new-mdn-core-scripting-step-1",
+          "title": "Handling text — Strings in JavaScript",
+          "description": "",
+          "intent": "consume",
+          "order": 5,
+          "completion": {
+            "mode": "consume",
+            "doneWhen": "Handling text — Strings in JavaScript 자료를 확인하고 진도 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [
+            "new-mdn-core-scripting-item-05"
+          ],
+          "sourceRowIds": [
+            "new-mdn-core-scripting-row-06"
+          ]
+        },
+        {
+          "itemId": "new-mdn-core-scripting-item-07",
+          "stepId": "new-mdn-core-scripting-step-1",
+          "title": "Useful string methods",
+          "description": "",
+          "intent": "consume",
+          "order": 6,
+          "completion": {
+            "mode": "consume",
+            "doneWhen": "Useful string methods 자료를 확인하고 진도 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [
+            "new-mdn-core-scripting-item-06"
+          ],
+          "sourceRowIds": [
+            "new-mdn-core-scripting-row-07"
+          ]
+        },
+        {
+          "itemId": "new-mdn-core-scripting-item-08",
+          "stepId": "new-mdn-core-scripting-step-1",
+          "title": "Arrays",
+          "description": "",
+          "intent": "consume",
+          "order": 7,
+          "completion": {
+            "mode": "consume",
+            "doneWhen": "Arrays 자료를 확인하고 진도 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [
+            "new-mdn-core-scripting-item-07"
+          ],
+          "sourceRowIds": [
+            "new-mdn-core-scripting-row-08"
+          ]
+        },
+        {
+          "itemId": "new-mdn-core-scripting-item-09",
+          "stepId": "new-mdn-core-scripting-step-1",
+          "title": "Silly story generator",
+          "description": "",
+          "intent": "consume",
+          "order": 8,
+          "completion": {
+            "mode": "consume",
+            "doneWhen": "Silly story generator 자료를 확인하고 진도 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [
+            "new-mdn-core-scripting-item-08"
+          ],
+          "sourceRowIds": [
+            "new-mdn-core-scripting-row-09"
+          ]
+        },
+        {
+          "itemId": "new-mdn-core-scripting-item-10",
+          "stepId": "new-mdn-core-scripting-step-1",
+          "title": "Test your skills: JavaScript basics",
+          "description": "",
+          "intent": "consume",
+          "order": 9,
+          "completion": {
+            "mode": "consume",
+            "doneWhen": "Test your skills: JavaScript basics 자료를 확인하고 진도 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [
+            "new-mdn-core-scripting-item-09"
+          ],
+          "sourceRowIds": [
+            "new-mdn-core-scripting-row-10"
+          ]
+        }
+      ],
+      "eventModel": null,
+      "sourceSchedulePresent": false,
+      "pacingEligible": true,
+      "sourceNotes": [
+        "Source order is meaningful, but each lesson is an independently trackable progress unit."
+      ],
+      "checklistTodoLabel": "todo"
+    },
+    {
+      "fixtureId": "new-gutenberg-top-reading-queue",
+      "fixtureGroup": "checklist_todo_boundary",
+      "fixtureKind": "open_reorderable_resource_queue",
+      "title": "Project Gutenberg Top 100 reading queue snapshot",
+      "provider": "Project Gutenberg",
+      "url": "https://www.gutenberg.org/browse/scores/top",
+      "canonicalUrl": "https://www.gutenberg.org/browse/scores/top",
+      "locale": "en-US",
+      "observedAt": "2026-07-29",
+      "accessStatus": "public_html_open",
+      "evidenceMethod": "direct_page_inspection",
+      "sourceShape": "resource_collection",
+      "executionPattern": "resource_queue",
+      "primaryProjection": "todo",
+      "userJob": "관심 도서를 골라 읽기 대기열로 관리한다.",
+      "sourceRows": [
+        {
+          "sourceRowId": "new-gutenberg-top-reading-queue-row-01",
+          "order": 0,
+          "kind": "resource_row",
+          "title": "Pride and Prejudice"
+        },
+        {
+          "sourceRowId": "new-gutenberg-top-reading-queue-row-02",
+          "order": 1,
+          "kind": "resource_row",
+          "title": "The Odyssey"
+        },
+        {
+          "sourceRowId": "new-gutenberg-top-reading-queue-row-03",
+          "order": 2,
+          "kind": "resource_row",
+          "title": "Moby Dick; Or, The Whale"
+        },
+        {
+          "sourceRowId": "new-gutenberg-top-reading-queue-row-04",
+          "order": 3,
+          "kind": "resource_row",
+          "title": "The Mysteries of Udolpho"
+        },
+        {
+          "sourceRowId": "new-gutenberg-top-reading-queue-row-05",
+          "order": 4,
+          "kind": "resource_row",
+          "title": "The Secret of Chimneys"
+        },
+        {
+          "sourceRowId": "new-gutenberg-top-reading-queue-row-06",
+          "order": 5,
+          "kind": "resource_row",
+          "title": "A Room with a View"
+        },
+        {
+          "sourceRowId": "new-gutenberg-top-reading-queue-row-07",
+          "order": 6,
+          "kind": "resource_row",
+          "title": "Carmen"
+        },
+        {
+          "sourceRowId": "new-gutenberg-top-reading-queue-row-08",
+          "order": 7,
+          "kind": "resource_row",
+          "title": "Crime and Punishment"
+        }
+      ],
+      "steps": [
+        {
+          "stepId": "new-gutenberg-top-reading-queue-step-1",
+          "title": "Project Gutenberg Top 100 reading queue snapshot",
+          "order": 0,
+          "itemIds": [
+            "new-gutenberg-top-reading-queue-item-01",
+            "new-gutenberg-top-reading-queue-item-02",
+            "new-gutenberg-top-reading-queue-item-03",
+            "new-gutenberg-top-reading-queue-item-04",
+            "new-gutenberg-top-reading-queue-item-05",
+            "new-gutenberg-top-reading-queue-item-06",
+            "new-gutenberg-top-reading-queue-item-07",
+            "new-gutenberg-top-reading-queue-item-08"
+          ]
+        }
+      ],
+      "items": [
+        {
+          "itemId": "new-gutenberg-top-reading-queue-item-01",
+          "stepId": "new-gutenberg-top-reading-queue-step-1",
+          "title": "Pride and Prejudice",
+          "description": "",
+          "intent": "consume",
+          "order": 0,
+          "completion": {
+            "mode": "consume",
+            "doneWhen": "Pride and Prejudice 자료를 확인하고 진도 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [],
+          "sourceRowIds": [
+            "new-gutenberg-top-reading-queue-row-01"
+          ]
+        },
+        {
+          "itemId": "new-gutenberg-top-reading-queue-item-02",
+          "stepId": "new-gutenberg-top-reading-queue-step-1",
+          "title": "The Odyssey",
+          "description": "",
+          "intent": "consume",
+          "order": 1,
+          "completion": {
+            "mode": "consume",
+            "doneWhen": "The Odyssey 자료를 확인하고 진도 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [],
+          "sourceRowIds": [
+            "new-gutenberg-top-reading-queue-row-02"
+          ]
+        },
+        {
+          "itemId": "new-gutenberg-top-reading-queue-item-03",
+          "stepId": "new-gutenberg-top-reading-queue-step-1",
+          "title": "Moby Dick; Or, The Whale",
+          "description": "",
+          "intent": "consume",
+          "order": 2,
+          "completion": {
+            "mode": "consume",
+            "doneWhen": "Moby Dick; Or, The Whale 자료를 확인하고 진도 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [],
+          "sourceRowIds": [
+            "new-gutenberg-top-reading-queue-row-03"
+          ]
+        },
+        {
+          "itemId": "new-gutenberg-top-reading-queue-item-04",
+          "stepId": "new-gutenberg-top-reading-queue-step-1",
+          "title": "The Mysteries of Udolpho",
+          "description": "",
+          "intent": "consume",
+          "order": 3,
+          "completion": {
+            "mode": "consume",
+            "doneWhen": "The Mysteries of Udolpho 자료를 확인하고 진도 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [],
+          "sourceRowIds": [
+            "new-gutenberg-top-reading-queue-row-04"
+          ]
+        },
+        {
+          "itemId": "new-gutenberg-top-reading-queue-item-05",
+          "stepId": "new-gutenberg-top-reading-queue-step-1",
+          "title": "The Secret of Chimneys",
+          "description": "",
+          "intent": "consume",
+          "order": 4,
+          "completion": {
+            "mode": "consume",
+            "doneWhen": "The Secret of Chimneys 자료를 확인하고 진도 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [],
+          "sourceRowIds": [
+            "new-gutenberg-top-reading-queue-row-05"
+          ]
+        },
+        {
+          "itemId": "new-gutenberg-top-reading-queue-item-06",
+          "stepId": "new-gutenberg-top-reading-queue-step-1",
+          "title": "A Room with a View",
+          "description": "",
+          "intent": "consume",
+          "order": 5,
+          "completion": {
+            "mode": "consume",
+            "doneWhen": "A Room with a View 자료를 확인하고 진도 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [],
+          "sourceRowIds": [
+            "new-gutenberg-top-reading-queue-row-06"
+          ]
+        },
+        {
+          "itemId": "new-gutenberg-top-reading-queue-item-07",
+          "stepId": "new-gutenberg-top-reading-queue-step-1",
+          "title": "Carmen",
+          "description": "",
+          "intent": "consume",
+          "order": 6,
+          "completion": {
+            "mode": "consume",
+            "doneWhen": "Carmen 자료를 확인하고 진도 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [],
+          "sourceRowIds": [
+            "new-gutenberg-top-reading-queue-row-07"
+          ]
+        },
+        {
+          "itemId": "new-gutenberg-top-reading-queue-item-08",
+          "stepId": "new-gutenberg-top-reading-queue-step-1",
+          "title": "Crime and Punishment",
+          "description": "",
+          "intent": "consume",
+          "order": 7,
+          "completion": {
+            "mode": "consume",
+            "doneWhen": "Crime and Punishment 자료를 확인하고 진도 상태를 남겼다."
+          },
+          "temporalIntent": "no_schedule",
+          "schedule": null,
+          "dependsOnItemIds": [],
+          "sourceRowIds": [
+            "new-gutenberg-top-reading-queue-row-08"
+          ]
+        }
+      ],
+      "eventModel": null,
+      "sourceSchedulePresent": false,
+      "pacingEligible": true,
+      "sourceNotes": [
+        "Observed ranking snapshot was dated 2026-07-27.",
+        "Ranking freshness is source metadata; reading order is a user overlay."
+      ],
+      "checklistTodoLabel": "todo"
+    },
+    {
+      "fixtureId": "event-kr-single-performance",
+      "fixtureGroup": "event_native",
+      "fixtureKind": "single_fixed_performance_with_sales_status",
+      "title": "필묵으로 펼쳐지는 한국춤",
+      "provider": "국립극장",
+      "url": "https://www.ntok.go.kr/ntok/pm/prfmng/performanceDetail.do?mi=21008&perfId=267132",
+      "canonicalUrl": "https://www.ntok.go.kr/ntok/pm/prfmng/performanceDetail.do?mi=21008&perfId=267132",
+      "locale": "ko-KR",
+      "observedAt": "2026-07-29",
+      "accessStatus": "public_html_open",
+      "evidenceMethod": "direct_page_inspection",
+      "sourceShape": "event_occurrences",
+      "executionPattern": "date_preparation",
+      "primaryProjection": "calendar",
+      "userJob": "고정된 공연 일시와 장소를 저장하고 참석 의사를 관리한다.",
+      "sourceRows": [
+        {
+          "sourceRowId": "event-kr-single-performance-row-01",
+          "order": 0,
+          "kind": "event_identity",
+          "title": "필묵으로 펼쳐지는 한국춤",
+          "organizer": "순헌무용단"
+        },
+        {
+          "sourceRowId": "event-kr-single-performance-row-02",
+          "order": 1,
+          "kind": "fixed_occurrence",
+          "title": "공연 회차",
+          "start": "2026-06-11T19:30:00+09:00",
+          "durationMinutes": 120,
+          "locationName": "해오름극장"
+        },
+        {
+          "sourceRowId": "event-kr-single-performance-row-03",
+          "order": 2,
+          "kind": "ticket_open",
+          "title": "티켓 오픈",
+          "start": "2026-05-18T10:00:00+09:00",
+          "yearDerivation": "event_edition_context"
+        },
+        {
+          "sourceRowId": "event-kr-single-performance-row-04",
+          "order": 3,
+          "kind": "sales_status",
+          "title": "매진",
+          "status": "sold_out",
+          "onSiteSales": false
+        }
+      ],
+      "steps": [],
+      "items": [],
+      "eventModel": {
+        "seriesId": null,
+        "editionId": "ntok-267132-2026",
+        "occurrences": [
+          {
+            "occurrenceId": "ntok-267132-2026-06-11-1930",
+            "temporalIntent": "fixed_occurrence",
+            "start": "2026-06-11T19:30:00+09:00",
+            "end": "2026-06-11T21:30:00+09:00",
+            "endDerivation": "start_plus_source_duration",
+            "timezone": "Asia/Seoul",
+            "timezoneEvidence": "explicit_context",
+            "locationName": "해오름극장",
+            "status": "ended",
+            "salesStatus": "sold_out"
+          }
+        ],
+        "itemActivation": "attendance_intent"
+      },
+      "sourceSchedulePresent": true,
+      "pacingEligible": false,
+      "sourceNotes": [
+        "Historical status fixture; a current ticket-purchase Item is prohibited after sold out/ended."
+      ],
+      "checklistTodoLabel": "neither"
+    },
+    {
+      "fixtureId": "event-kr-multi-show-choir",
+      "fixtureGroup": "event_native",
+      "fixtureKind": "multi_show_performance_with_distinct_programs",
+      "title": "제46회 한국합창제",
+      "provider": "국립극장",
+      "url": "https://www.ntok.go.kr/ntok/pm/prfmng/performanceDetail.do?mi=21008&perfId=267115",
+      "canonicalUrl": "https://www.ntok.go.kr/ntok/pm/prfmng/performanceDetail.do?mi=21008&perfId=267115",
+      "locale": "ko-KR",
+      "observedAt": "2026-07-29",
+      "accessStatus": "public_html_open",
+      "evidenceMethod": "direct_page_inspection",
+      "sourceShape": "event_occurrences",
+      "executionPattern": "date_preparation",
+      "primaryProjection": "calendar",
+      "userJob": "프로그램과 관람 조건이 다른 회차 중 하나를 골라 저장한다.",
+      "sourceRows": [
+        {
+          "sourceRowId": "event-kr-multi-show-choir-row-01",
+          "order": 0,
+          "kind": "event_edition",
+          "title": "제46회 한국합창제",
+          "startDate": "2026-05-08",
+          "endDate": "2026-05-10",
+          "locationName": "해오름극장"
+        },
+        {
+          "sourceRowId": "event-kr-multi-show-choir-row-02",
+          "order": 1,
+          "kind": "showtime",
+          "title": "경기합창제",
+          "start": "2026-05-08T19:30:00+09:00",
+          "audienceRule": "초등학생 이상"
+        },
+        {
+          "sourceRowId": "event-kr-multi-show-choir-row-03",
+          "order": 2,
+          "kind": "showtime",
+          "title": "한국소년소녀합창제",
+          "start": "2026-05-09T13:00:00+09:00",
+          "audienceRule": "5세 이상"
+        },
+        {
+          "sourceRowId": "event-kr-multi-show-choir-row-04",
+          "order": 3,
+          "kind": "showtime",
+          "title": "한국일반합창제",
+          "start": "2026-05-09T19:30:00+09:00",
+          "audienceRule": "초등학생 이상"
+        },
+        {
+          "sourceRowId": "event-kr-multi-show-choir-row-05",
+          "order": 4,
+          "kind": "showtime",
+          "title": "전국합창제",
+          "start": "2026-05-10T19:00:00+09:00",
+          "audienceRule": "초등학생 이상"
+        }
+      ],
+      "steps": [],
+      "items": [],
+      "eventModel": {
+        "seriesId": "korea-choir-festival",
+        "editionId": "korea-choir-festival-46",
+        "occurrences": [
+          {
+            "occurrenceId": "choir-2026-05-08-1930",
+            "title": "경기합창제",
+            "temporalIntent": "fixed_occurrence",
+            "start": "2026-05-08T19:30:00+09:00",
+            "end": null,
+            "timezone": "Asia/Seoul",
+            "timezoneEvidence": "explicit_context",
+            "locationName": "해오름극장",
+            "status": "ended"
+          },
+          {
+            "occurrenceId": "choir-2026-05-09-1300",
+            "title": "한국소년소녀합창제",
+            "temporalIntent": "fixed_occurrence",
+            "start": "2026-05-09T13:00:00+09:00",
+            "end": null,
+            "timezone": "Asia/Seoul",
+            "timezoneEvidence": "explicit_context",
+            "locationName": "해오름극장",
+            "status": "ended"
+          },
+          {
+            "occurrenceId": "choir-2026-05-09-1930",
+            "title": "한국일반합창제",
+            "temporalIntent": "fixed_occurrence",
+            "start": "2026-05-09T19:30:00+09:00",
+            "end": null,
+            "timezone": "Asia/Seoul",
+            "timezoneEvidence": "explicit_context",
+            "locationName": "해오름극장",
+            "status": "ended"
+          },
+          {
+            "occurrenceId": "choir-2026-05-10-1900",
+            "title": "전국합창제",
+            "temporalIntent": "fixed_occurrence",
+            "start": "2026-05-10T19:00:00+09:00",
+            "end": null,
+            "timezone": "Asia/Seoul",
+            "timezoneEvidence": "explicit_context",
+            "locationName": "해오름극장",
+            "status": "ended"
+          }
+        ],
+        "itemActivation": "selected_showtime"
+      },
+      "sourceSchedulePresent": true,
+      "pacingEligible": false,
+      "sourceNotes": [
+        "The listed duration is variable; no shared end time is invented."
+      ],
+      "checklistTodoLabel": "neither"
+    },
+    {
+      "fixtureId": "event-kr-sokcho-summer",
+      "fixtureGroup": "event_native",
+      "fixtureKind": "multi_day_festival_daily_hours",
+      "title": "속초 썸머페스티벌",
+      "provider": "문화체육관광부",
+      "url": "https://www.mcst.go.kr/site/s_culture/festival/festivalView.jsp?pRo=12&pSeq=13468",
+      "canonicalUrl": "https://www.mcst.go.kr/site/s_culture/festival/festivalView.jsp?pRo=12&pSeq=13468",
+      "locale": "ko-KR",
+      "observedAt": "2026-07-29",
+      "accessStatus": "public_html_open",
+      "evidenceMethod": "direct_page_inspection",
+      "sourceShape": "event_occurrences",
+      "executionPattern": "date_preparation",
+      "primaryProjection": "calendar",
+      "userJob": "공식 2026 축제 일정 중 방문 날짜를 골라 저장한다.",
+      "sourceRows": [
+        {
+          "sourceRowId": "event-kr-sokcho-summer-row-01",
+          "order": 0,
+          "kind": "festival_edition",
+          "title": "속초 썸머페스티벌 2026",
+          "startDate": "2026-07-31",
+          "endDate": "2026-08-02",
+          "dailyStartTime": "16:00",
+          "dailyEndTime": "21:00",
+          "locationName": "속초해수욕장 일원",
+          "fee": "무료"
+        },
+        {
+          "sourceRowId": "event-kr-sokcho-summer-row-02",
+          "order": 1,
+          "kind": "freshness_caution",
+          "title": "주최기관 사정에 따라 변경될 수 있음"
+        }
+      ],
+      "steps": [],
+      "items": [],
+      "eventModel": {
+        "seriesId": "sokcho-summer-festival",
+        "editionId": "sokcho-summer-festival-2026",
+        "recurrencePolicy": "edition_occurrences_not_yearly_rrule",
+        "occurrences": [
+          {
+            "occurrenceId": "sokcho-summer-2026-07-31",
+            "temporalIntent": "fixed_occurrence",
+            "start": "2026-07-31T16:00:00+09:00",
+            "end": "2026-07-31T21:00:00+09:00",
+            "derivation": "expand_daily_hours_within_source_date_range",
+            "timezone": "Asia/Seoul",
+            "timezoneEvidence": "explicit_context",
+            "locationName": "속초해수욕장 일원",
+            "status": "scheduled"
+          },
+          {
+            "occurrenceId": "sokcho-summer-2026-08-01",
+            "temporalIntent": "fixed_occurrence",
+            "start": "2026-08-01T16:00:00+09:00",
+            "end": "2026-08-01T21:00:00+09:00",
+            "derivation": "expand_daily_hours_within_source_date_range",
+            "timezone": "Asia/Seoul",
+            "timezoneEvidence": "explicit_context",
+            "locationName": "속초해수욕장 일원",
+            "status": "scheduled"
+          },
+          {
+            "occurrenceId": "sokcho-summer-2026-08-02",
+            "temporalIntent": "fixed_occurrence",
+            "start": "2026-08-02T16:00:00+09:00",
+            "end": "2026-08-02T21:00:00+09:00",
+            "derivation": "expand_daily_hours_within_source_date_range",
+            "timezone": "Asia/Seoul",
+            "timezoneEvidence": "explicit_context",
+            "locationName": "속초해수욕장 일원",
+            "status": "scheduled"
+          }
+        ],
+        "itemActivation": "selected_dates_or_entire_edition"
+      },
+      "sourceSchedulePresent": true,
+      "pacingEligible": false,
+      "sourceNotes": [
+        "No yearly RRULE; a later year is a new edition.",
+        "Program-level occurrences are not created because this page does not provide them."
+      ],
+      "checklistTodoLabel": "neither"
+    },
+    {
+      "fixtureId": "event-kr-sema-martin-parr",
+      "fixtureGroup": "event_native",
+      "fixtureKind": "exhibition_availability_window",
+      "title": "마틴 파 : We Are Martin Parr",
+      "provider": "서울시립미술관",
+      "url": "https://sema.seoul.go.kr/kr/whatson/exhibition/detail?exNo=1553791",
+      "canonicalUrl": "https://sema.seoul.go.kr/kr/whatson/exhibition/detail?exNo=1553791",
+      "locale": "ko-KR",
+      "observedAt": "2026-07-29",
+      "accessStatus": "public_html_open",
+      "evidenceMethod": "direct_page_inspection",
+      "sourceShape": "availability_windows",
+      "executionPattern": "date_preparation",
+      "primaryProjection": "calendar",
+      "userJob": "전시 운영창 안에서 실제 방문 시간을 골라 저장한다.",
+      "sourceRows": [
+        {
+          "sourceRowId": "event-kr-sema-martin-parr-row-01",
+          "order": 0,
+          "kind": "exhibition_window",
+          "title": "전시 기간",
+          "startDate": "2026-07-16",
+          "endDate": "2026-10-18",
+          "locationName": "서울시립 사진미술관",
+          "fee": "무료"
+        },
+        {
+          "sourceRowId": "event-kr-sema-martin-parr-row-02",
+          "order": 1,
+          "kind": "opening_hours",
+          "title": "화~금 운영",
+          "days": [
+            "TU",
+            "WE",
+            "TH",
+            "FR"
+          ],
+          "startTime": "10:00",
+          "endTime": "20:00"
+        },
+        {
+          "sourceRowId": "event-kr-sema-martin-parr-row-03",
+          "order": 2,
+          "kind": "opening_hours",
+          "title": "토·일·공휴일 운영",
+          "days": [
+            "SA",
+            "SU",
+            "PUBLIC_HOLIDAY"
+          ],
+          "startTime": "10:00",
+          "endTime": "19:00"
+        },
+        {
+          "sourceRowId": "event-kr-sema-martin-parr-row-04",
+          "order": 3,
+          "kind": "closure_rule",
+          "title": "월요일 휴관",
+          "exception": "월요일이 공휴일이면 정상 개관"
+        },
+        {
+          "sourceRowId": "event-kr-sema-martin-parr-row-05",
+          "order": 4,
+          "kind": "last_admission",
+          "title": "마감 1시간 전 입장 종료",
+          "offsetBeforeCloseMinutes": 60
+        }
+      ],
+      "steps": [],
+      "items": [],
+      "eventModel": {
+        "seriesId": null,
+        "editionId": "sema-1553791",
+        "occurrences": [],
+        "availabilityWindows": [
+          {
+            "windowId": "sema-1553791-window",
+            "temporalIntent": "availability_window",
+            "startDate": "2026-07-16",
+            "endDate": "2026-10-18",
+            "timezone": "Asia/Seoul",
+            "locationName": "서울시립 사진미술관"
+          }
+        ],
+        "itemActivation": "selected_visit_start",
+        "requiredOverlayFields": [
+          "selectedVisitStart"
+        ]
+      },
+      "sourceSchedulePresent": true,
+      "pacingEligible": false,
+      "sourceNotes": [
+        "The exhibition window is not a 94-day personal VEVENT.",
+        "Booking requirement remains unknown."
+      ],
+      "checklistTodoLabel": "neither"
+    },
+    {
+      "fixtureId": "event-kr-ballet-ticket-show",
+      "fixtureGroup": "event_native",
+      "fixtureKind": "ticket_open_plus_multi_show",
+      "title": "서울시발레단 더블 빌 〈죽음과 소녀〉",
+      "provider": "국립극장",
+      "url": "https://www.ntok.go.kr/ntok/pm/prfmng/performanceDetail.do?mi=21008&perfId=267137",
+      "canonicalUrl": "https://www.ntok.go.kr/ntok/pm/prfmng/performanceDetail.do?mi=21008&perfId=267137",
+      "locale": "ko-KR",
+      "observedAt": "2026-07-29",
+      "accessStatus": "public_html_open",
+      "evidenceMethod": "direct_page_inspection",
+      "sourceShape": "event_lifecycle",
+      "executionPattern": "date_preparation",
+      "primaryProjection": "calendar",
+      "userJob": "티켓 오픈을 놓치지 않고 선택한 공연 회차에 참석한다.",
+      "sourceRows": [
+        {
+          "sourceRowId": "event-kr-ballet-ticket-show-row-01",
+          "order": 0,
+          "kind": "ticket_open",
+          "title": "티켓 오픈",
+          "start": "2026-06-15T14:00:00+09:00"
+        },
+        {
+          "sourceRowId": "event-kr-ballet-ticket-show-row-02",
+          "order": 1,
+          "kind": "event_edition",
+          "title": "공연 기간",
+          "startDate": "2026-08-14",
+          "endDate": "2026-08-16",
+          "locationName": "해오름극장",
+          "durationMinutes": 80
+        },
+        {
+          "sourceRowId": "event-kr-ballet-ticket-show-row-03",
+          "order": 2,
+          "kind": "showtime",
+          "title": "8월 14일 회차",
+          "start": "2026-08-14T19:30:00+09:00"
+        },
+        {
+          "sourceRowId": "event-kr-ballet-ticket-show-row-04",
+          "order": 3,
+          "kind": "showtime",
+          "title": "8월 15일 회차",
+          "start": "2026-08-15T14:00:00+09:00"
+        },
+        {
+          "sourceRowId": "event-kr-ballet-ticket-show-row-05",
+          "order": 4,
+          "kind": "showtime",
+          "title": "8월 16일 회차",
+          "start": "2026-08-16T14:00:00+09:00"
+        },
+        {
+          "sourceRowId": "event-kr-ballet-ticket-show-row-06",
+          "order": 5,
+          "kind": "prerequisite",
+          "title": "관람 연령",
+          "detail": "2019년 이전 출생자, 2019년생 포함"
+        }
+      ],
+      "steps": [],
+      "items": [],
+      "eventModel": {
+        "seriesId": "seoul-metropolitan-ballet-double-bill",
+        "editionId": "seoul-metropolitan-ballet-double-bill-2026",
+        "milestones": [
+          {
+            "milestoneId": "ballet-ticket-open",
+            "temporalIntent": "ticket_open",
+            "at": "2026-06-15T14:00:00+09:00",
+            "defaultProjection": "todo"
+          }
+        ],
+        "occurrences": [
+          {
+            "occurrenceId": "ballet-2026-show-1",
+            "temporalIntent": "fixed_occurrence",
+            "start": "2026-08-14T19:30:00+09:00",
+            "end": "2026-08-14T20:50:00+09:00",
+            "endDerivation": "start_plus_source_duration",
+            "timezone": "Asia/Seoul",
+            "timezoneEvidence": "explicit_context",
+            "locationName": "해오름극장",
+            "status": "scheduled"
+          },
+          {
+            "occurrenceId": "ballet-2026-show-2",
+            "temporalIntent": "fixed_occurrence",
+            "start": "2026-08-15T14:00:00+09:00",
+            "end": "2026-08-15T15:20:00+09:00",
+            "endDerivation": "start_plus_source_duration",
+            "timezone": "Asia/Seoul",
+            "timezoneEvidence": "explicit_context",
+            "locationName": "해오름극장",
+            "status": "scheduled"
+          },
+          {
+            "occurrenceId": "ballet-2026-show-3",
+            "temporalIntent": "fixed_occurrence",
+            "start": "2026-08-16T14:00:00+09:00",
+            "end": "2026-08-16T15:20:00+09:00",
+            "endDerivation": "start_plus_source_duration",
+            "timezone": "Asia/Seoul",
+            "timezoneEvidence": "explicit_context",
+            "locationName": "해오름극장",
+            "status": "scheduled"
+          }
+        ],
+        "itemActivation": "booking_intent_and_selected_showtime"
+      },
+      "sourceSchedulePresent": true,
+      "pacingEligible": false,
+      "sourceNotes": [
+        "Ticket opening is an actionable milestone; the selected showtime is a separate attendance occurrence."
+      ],
+      "checklistTodoLabel": "neither"
+    },
+    {
+      "fixtureId": "event-kr-qnet-exam-lifecycle",
+      "fixtureGroup": "event_native",
+      "fixtureKind": "exam_registration_test_result_lifecycle",
+      "title": "수산양식기사 2026년 정기 기사 3회",
+      "provider": "한국산업인력공단 Q-Net",
+      "url": "https://www.q-net.or.kr/crf005.do?gId=&gSite=Q&id=crf00503s02&jmCd=1625&jmInfoDivCcd=B0",
+      "canonicalUrl": "https://www.q-net.or.kr/crf005.do?gId=&gSite=Q&id=crf00503s02&jmCd=1625&jmInfoDivCcd=B0",
+      "locale": "ko-KR",
+      "observedAt": "2026-07-29",
+      "accessStatus": "public_html_open",
+      "evidenceMethod": "direct_page_inspection",
+      "sourceShape": "event_lifecycle",
+      "executionPattern": "phase_lifecycle",
+      "primaryProjection": "todo",
+      "userJob": "접수·시험 배정·발표 생애주기에서 내가 해야 할 행동을 놓치지 않는다.",
+      "sourceRows": [
+        {
+          "sourceRowId": "event-kr-qnet-exam-lifecycle-row-01",
+          "order": 0,
+          "kind": "application_window",
+          "title": "필기 정기 접수",
+          "start": "2026-07-20T10:00:00+09:00",
+          "end": "2026-07-23T18:00:00+09:00"
+        },
+        {
+          "sourceRowId": "event-kr-qnet-exam-lifecycle-row-02",
+          "order": 1,
+          "kind": "application_window",
+          "title": "필기 빈자리 접수",
+          "startDate": "2026-08-01",
+          "endDate": "2026-08-02"
+        },
+        {
+          "sourceRowId": "event-kr-qnet-exam-lifecycle-row-03",
+          "order": 2,
+          "kind": "exam_assignment_window",
+          "title": "필기 시험 시행 기간",
+          "startDate": "2026-08-07",
+          "endDate": "2026-09-01"
+        },
+        {
+          "sourceRowId": "event-kr-qnet-exam-lifecycle-row-04",
+          "order": 3,
+          "kind": "result_announcement",
+          "title": "필기 합격 발표",
+          "start": "2026-09-09T09:00:00+09:00"
+        },
+        {
+          "sourceRowId": "event-kr-qnet-exam-lifecycle-row-05",
+          "order": 4,
+          "kind": "application_window",
+          "title": "실기 접수",
+          "startDate": "2026-09-21",
+          "endDate": "2026-09-28"
+        },
+        {
+          "sourceRowId": "event-kr-qnet-exam-lifecycle-row-06",
+          "order": 5,
+          "kind": "exam_assignment_window",
+          "title": "실기 시험 시행 기간",
+          "startDate": "2026-10-24",
+          "endDate": "2026-11-13"
+        },
+        {
+          "sourceRowId": "event-kr-qnet-exam-lifecycle-row-07",
+          "order": 6,
+          "kind": "result_announcement",
+          "title": "최종 합격 발표",
+          "start": "2026-12-18T09:00:00+09:00"
+        }
+      ],
+      "steps": [],
+      "items": [],
+      "eventModel": {
+        "seriesId": "qnet-aquaculture-engineer",
+        "editionId": "qnet-aquaculture-engineer-2026-r3",
+        "occurrences": [],
+        "applicationWindows": [
+          {
+            "windowId": "qnet-written-regular",
+            "temporalIntent": "application_window",
+            "start": "2026-07-20T10:00:00+09:00",
+            "end": "2026-07-23T18:00:00+09:00"
+          },
+          {
+            "windowId": "qnet-written-vacancy",
+            "temporalIntent": "application_window",
+            "startDate": "2026-08-01",
+            "endDate": "2026-08-02",
+            "timePrecision": "date_only"
+          },
+          {
+            "windowId": "qnet-practical-application",
+            "temporalIntent": "application_window",
+            "startDate": "2026-09-21",
+            "endDate": "2026-09-28",
+            "timePrecision": "date_only"
+          }
+        ],
+        "milestones": [
+          {
+            "milestoneId": "qnet-written-result",
+            "temporalIntent": "due_deadline",
+            "at": "2026-09-09T09:00:00+09:00",
+            "action": "result_check"
+          },
+          {
+            "milestoneId": "qnet-final-result",
+            "temporalIntent": "due_deadline",
+            "at": "2026-12-18T09:00:00+09:00",
+            "action": "result_check"
+          }
+        ],
+        "itemActivation": "application_or_result_intent",
+        "requiredOverlayFieldsForAttendanceEvent": [
+          "examDateTime",
+          "examVenue"
+        ]
+      },
+      "sourceSchedulePresent": true,
+      "pacingEligible": false,
+      "sourceNotes": [
+        "Exam assignment windows are not personal exam VEVENTs.",
+        "A personal VEVENT requires the assigned date, time, and venue."
+      ],
+      "checklistTodoLabel": "neither"
+    },
+    {
+      "fixtureId": "event-kr-revised-musical",
+      "fixtureGroup": "event_native",
+      "fixtureKind": "schedule_version_change",
+      "title": "뮤지컬 〈몽유도원〉 일정 변경",
+      "provider": "국립극장",
+      "url": "https://www.ntok.go.kr/ntok/pm/prfmng/performanceDetail.do?mi=21008&perfId=267029",
+      "canonicalUrl": "https://www.ntok.go.kr/ntok/pm/prfmng/performanceDetail.do?mi=21008&perfId=267029",
+      "locale": "ko-KR",
+      "observedAt": "2026-07-29",
+      "accessStatus": "public_html_open",
+      "evidenceMethod": "direct_page_inspection",
+      "sourceShape": "event_schedule_versions",
+      "executionPattern": "date_preparation",
+      "primaryProjection": "calendar",
+      "userJob": "변경된 유효 공연 일정에서 회차를 다시 선택한다.",
+      "sourceRows": [
+        {
+          "sourceRowId": "event-kr-revised-musical-row-01",
+          "order": 0,
+          "kind": "superseded_event_window",
+          "title": "기존 공연 기간",
+          "startDate": "2026-01-20",
+          "endDate": "2026-02-22",
+          "status": "superseded"
+        },
+        {
+          "sourceRowId": "event-kr-revised-musical-row-02",
+          "order": 1,
+          "kind": "current_event_window",
+          "title": "변경 공연 기간",
+          "startDate": "2026-01-27",
+          "endDate": "2026-02-22"
+        },
+        {
+          "sourceRowId": "event-kr-revised-musical-row-03",
+          "order": 2,
+          "kind": "weekly_showtime_pattern",
+          "title": "요일별 회차",
+          "rules": [
+            {
+              "days": [
+                "TU",
+                "TH"
+              ],
+              "times": [
+                "19:30"
+              ]
+            },
+            {
+              "days": [
+                "WE",
+                "FR"
+              ],
+              "times": [
+                "14:30",
+                "19:30"
+              ]
+            },
+            {
+              "days": [
+                "SA",
+                "PUBLIC_HOLIDAY"
+              ],
+              "times": [
+                "14:00",
+                "19:00"
+              ]
+            },
+            {
+              "days": [
+                "SU"
+              ],
+              "times": [
+                "14:00"
+              ]
+            }
+          ]
+        },
+        {
+          "sourceRowId": "event-kr-revised-musical-row-04",
+          "order": 3,
+          "kind": "special_showtimes",
+          "title": "특별 회차",
+          "values": [
+            "2026-02-17T19:00:00+09:00",
+            "2026-02-18T14:00:00+09:00",
+            "2026-02-18T19:00:00+09:00"
+          ]
+        },
+        {
+          "sourceRowId": "event-kr-revised-musical-row-05",
+          "order": 4,
+          "kind": "location",
+          "title": "해오름극장",
+          "locationName": "해오름극장"
+        }
+      ],
+      "steps": [],
+      "items": [],
+      "eventModel": {
+        "seriesId": "musical-mongyudowon",
+        "editionId": "musical-mongyudowon-2026",
+        "scheduleVersion": 2,
+        "supersedes": "musical-mongyudowon-2026-schedule-v1",
+        "occurrences": [],
+        "itemActivation": "selected_current_showtime",
+        "freshnessStatus": "schedule_revised"
+      },
+      "sourceSchedulePresent": true,
+      "pacingEligible": false,
+      "sourceNotes": [
+        "Do not infer one-to-one reschedule links absent from the source.",
+        "Do not expand every weekly occurrence without a complete exception calendar."
+      ],
+      "checklistTodoLabel": "neither"
+    },
+    {
+      "fixtureId": "event-pattern-nps-all-day",
+      "fixtureGroup": "event_native",
+      "fixtureKind": "all_day_occurrence",
+      "title": "Fee Free Day — NPS Birthday",
+      "provider": "U.S. National Park Service",
+      "url": "https://www.nps.gov/planyourvisit/event-details.htm?id=FDC0A246-DB39-330A-5FCA803024259C76",
+      "canonicalUrl": "https://www.nps.gov/planyourvisit/event-details.htm?id=FDC0A246-DB39-330A-5FCA803024259C76",
+      "locale": "en-US",
+      "observedAt": "2026-07-29",
+      "accessStatus": "public_html_open",
+      "evidenceMethod": "direct_page_inspection",
+      "sourceShape": "event_occurrences",
+      "executionPattern": "date_preparation",
+      "primaryProjection": "calendar",
+      "userJob": "종일 행사 날짜와 적용 자격을 함께 저장한다.",
+      "sourceRows": [
+        {
+          "sourceRowId": "event-pattern-nps-all-day-row-01",
+          "order": 0,
+          "kind": "all_day_occurrence",
+          "title": "NPS Birthday Fee Free Day",
+          "startDate": "2026-08-25",
+          "allDay": true,
+          "locationName": "Mount Rainier National Park"
+        },
+        {
+          "sourceRowId": "event-pattern-nps-all-day-row-02",
+          "order": 1,
+          "kind": "eligibility",
+          "title": "입장료 면제 대상",
+          "detail": "미국 시민과 거주자"
+        }
+      ],
+      "steps": [],
+      "items": [],
+      "eventModel": {
+        "seriesId": "nps-fee-free-days",
+        "editionId": "nps-birthday-110",
+        "occurrences": [
+          {
+            "occurrenceId": "nps-birthday-2026-08-25",
+            "temporalIntent": "all_day_occurrence",
+            "startDate": "2026-08-25",
+            "endDateExclusive": "2026-08-26",
+            "allDay": true,
+            "timezone": "America/Los_Angeles",
+            "timezoneEvidence": "inferred_from_venue",
+            "locationName": "Mount Rainier National Park",
+            "status": "scheduled"
+          }
+        ],
+        "itemActivation": "interest_or_visit_intent"
+      },
+      "sourceSchedulePresent": true,
+      "pacingEligible": false,
+      "sourceNotes": [
+        "Explicit allDay=true outranks provider UI values 00:00 and 23h45."
+      ],
+      "checklistTodoLabel": "neither"
+    },
+    {
+      "fixtureId": "event-pattern-online-foia",
+      "fixtureGroup": "event_native",
+      "fixtureKind": "online_event_with_registration_and_watch_urls",
+      "title": "FOIA Advisory Committee Meeting",
+      "provider": "U.S. National Archives",
+      "url": "https://www.archives.gov/calendar/event/freedom-of-information-act-foia-advisory-committee-meeting-29",
+      "canonicalUrl": "https://www.archives.gov/calendar/event/freedom-of-information-act-foia-advisory-committee-meeting-29",
+      "locale": "en-US",
+      "observedAt": "2026-07-29",
+      "accessStatus": "public_html_open",
+      "evidenceMethod": "direct_page_inspection",
+      "sourceShape": "event_lifecycle",
+      "executionPattern": "date_preparation",
+      "primaryProjection": "calendar",
+      "userJob": "온라인 회의를 시청하거나 발언 참여를 위해 등록한다.",
+      "sourceRows": [
+        {
+          "sourceRowId": "event-pattern-online-foia-row-01",
+          "order": 0,
+          "kind": "fixed_occurrence",
+          "title": "FOIA Advisory Committee Meeting",
+          "start": "2026-07-16T10:00:00-04:00",
+          "end": "2026-07-16T12:00:00-04:00",
+          "timezoneLabel": "EDT",
+          "locationName": "Online"
+        },
+        {
+          "sourceRowId": "event-pattern-online-foia-row-02",
+          "order": 1,
+          "kind": "registration_url",
+          "title": "발언 참여용 Zoom 등록",
+          "url": "https://www.zoomgov.com/webinar/register/WN_DVjl0DkwT96otgBjXQ9VTQ"
+        },
+        {
+          "sourceRowId": "event-pattern-online-foia-row-03",
+          "order": 2,
+          "kind": "watch_url",
+          "title": "YouTube 직접 시청",
+          "url": "https://youtube.com/live/pRVhm2fxabU?feature=share"
+        }
+      ],
+      "steps": [],
+      "items": [],
+      "eventModel": {
+        "seriesId": "foia-advisory-committee-meetings",
+        "editionId": "foia-advisory-2026-07-16",
+        "occurrences": [
+          {
+            "occurrenceId": "foia-advisory-2026-07-16",
+            "temporalIntent": "fixed_occurrence",
+            "start": "2026-07-16T10:00:00-04:00",
+            "end": "2026-07-16T12:00:00-04:00",
+            "timezone": "America/New_York",
+            "timezoneEvidence": "source_label_EDT",
+            "locationName": "Online",
+            "onlineUrl": "https://youtube.com/live/pRVhm2fxabU?feature=share",
+            "registrationUrl": "https://www.zoomgov.com/webinar/register/WN_DVjl0DkwT96otgBjXQ9VTQ",
+            "status": "ended"
+          }
+        ],
+        "itemActivation": "watch_or_speak_intent"
+      },
+      "sourceSchedulePresent": true,
+      "pacingEligible": false,
+      "sourceNotes": [
+        "Registration URL and direct watch URL have different meanings."
+      ],
+      "checklistTodoLabel": "neither"
+    },
+    {
+      "fixtureId": "event-pattern-nps-weekly",
+      "fixtureGroup": "event_native",
+      "fixtureKind": "source_fixed_weekly_recurrence",
+      "title": "Declaration Reading",
+      "provider": "U.S. National Park Service",
+      "url": "https://www.nps.gov/planyourvisit/event-details.htm?id=C39ACEE7-BC95-AF7C-D441B5DFEEDB6F3E",
+      "canonicalUrl": "https://www.nps.gov/planyourvisit/event-details.htm?id=C39ACEE7-BC95-AF7C-D441B5DFEEDB6F3E",
+      "locale": "en-US",
+      "observedAt": "2026-07-29",
+      "accessStatus": "public_html_open",
+      "evidenceMethod": "direct_page_inspection",
+      "sourceShape": "recurrence_rule",
+      "executionPattern": "repeating_routine",
+      "primaryProjection": "calendar",
+      "userJob": "공식 반복 행사 전체 또는 선택 회차를 저장한다.",
+      "sourceRows": [
+        {
+          "sourceRowId": "event-pattern-nps-weekly-row-01",
+          "order": 0,
+          "kind": "source_recurrence",
+          "title": "Tuesday through Saturday",
+          "byDay": [
+            "TU",
+            "WE",
+            "TH",
+            "FR",
+            "SA"
+          ],
+          "startDate": "2026-06-30",
+          "endDate": "2026-09-07",
+          "startTime": "15:45",
+          "durationMinutes": 30
+        },
+        {
+          "sourceRowId": "event-pattern-nps-weekly-row-02",
+          "order": 1,
+          "kind": "location",
+          "title": "South side of Independence Hall",
+          "detail": "520 Chestnut Street"
+        }
+      ],
+      "steps": [],
+      "items": [],
+      "eventModel": {
+        "seriesId": "nps-declaration-reading",
+        "editionId": "nps-declaration-reading-summer-2026",
+        "recurrenceRule": "FREQ=WEEKLY;BYDAY=TU,WE,TH,FR,SA;UNTIL=20260907T235959Z",
+        "occurrences": [],
+        "timezone": "America/New_York",
+        "timezoneEvidence": "inferred_from_venue",
+        "itemActivation": "series_or_occurrence_selection"
+      },
+      "sourceSchedulePresent": true,
+      "pacingEligible": false,
+      "sourceNotes": [
+        "A source-fixed recurrence may use RRULE; it is not user pacing."
+      ],
+      "checklistTodoLabel": "neither"
+    },
+    {
+      "fixtureId": "event-pattern-chimac-edition",
+      "fixtureGroup": "event_native",
+      "fixtureKind": "annual_series_new_dates_each_edition",
+      "title": "2026 대구치맥페스티벌",
+      "provider": "대구치맥페스티벌 조직위원회",
+      "url": "https://www.chimacfestival.com/page/program_summary.php",
+      "canonicalUrl": "https://www.chimacfestival.com/page/program_summary.php",
+      "locale": "ko-KR",
+      "observedAt": "2026-07-29",
+      "accessStatus": "public_html_open",
+      "evidenceMethod": "direct_page_inspection",
+      "sourceShape": "event_edition",
+      "executionPattern": "date_preparation",
+      "primaryProjection": "calendar",
+      "userJob": "해당 연도의 공식 축제 기간을 저장하고 방문일을 고른다.",
+      "sourceRows": [
+        {
+          "sourceRowId": "event-pattern-chimac-edition-row-01",
+          "order": 0,
+          "kind": "festival_edition",
+          "title": "2026 대구치맥페스티벌",
+          "startDate": "2026-07-01",
+          "endDate": "2026-07-05",
+          "startTimeText": "18:00~",
+          "locationName": "대구 두류공원 일원"
+        }
+      ],
+      "steps": [],
+      "items": [],
+      "eventModel": {
+        "seriesId": "daegu-chimac-festival",
+        "editionId": "daegu-chimac-festival-2026",
+        "recurrencePolicy": "edition_occurrences_not_yearly_rrule",
+        "occurrences": [],
+        "availabilityWindows": [
+          {
+            "windowId": "chimac-2026-window",
+            "temporalIntent": "availability_window",
+            "startDate": "2026-07-01",
+            "endDate": "2026-07-05",
+            "startTimeText": "18:00~",
+            "locationName": "대구 두류공원 일원"
+          }
+        ],
+        "itemActivation": "selected_visit_date"
+      },
+      "sourceSchedulePresent": true,
+      "pacingEligible": false,
+      "sourceNotes": [
+        "No daily end time and no annual RRULE are invented."
+      ],
+      "checklistTodoLabel": "neither"
+    },
+    {
+      "fixtureId": "event-pattern-nps-rescheduled",
+      "fixtureGroup": "event_native",
+      "fixtureKind": "cancelled_and_incomplete_replacement",
+      "title": "Sandy Hook Park Cleanup",
+      "provider": "U.S. National Park Service",
+      "url": "https://www.nps.gov/planyourvisit/event-details.htm?id=9ABE4CB1-A7D5-4FD0-92B4731D670CC5C6",
+      "canonicalUrl": "https://www.nps.gov/planyourvisit/event-details.htm?id=9ABE4CB1-A7D5-4FD0-92B4731D670CC5C6",
+      "locale": "en-US",
+      "observedAt": "2026-07-29",
+      "accessStatus": "public_html_open",
+      "evidenceMethod": "direct_page_inspection",
+      "sourceShape": "event_schedule_versions",
+      "executionPattern": "date_preparation",
+      "primaryProjection": "memo",
+      "userJob": "취소된 기존 일정과 불완전한 대체 일정을 구분한다.",
+      "sourceRows": [
+        {
+          "sourceRowId": "event-pattern-nps-rescheduled-row-01",
+          "order": 0,
+          "kind": "cancelled_occurrence",
+          "title": "기존 정화 활동",
+          "start": "2026-02-28T09:00:00-05:00",
+          "durationMinutes": 180,
+          "locationName": "Fisherman's Trail, Parking Lot M",
+          "status": "cancelled"
+        },
+        {
+          "sourceRowId": "event-pattern-nps-rescheduled-row-02",
+          "order": 1,
+          "kind": "reschedule_notice",
+          "title": "March 14로 재일정",
+          "startDate": "2026-03-14",
+          "timeStatus": "not_reconfirmed",
+          "locationStatus": "not_reconfirmed"
+        }
+      ],
+      "steps": [],
+      "items": [],
+      "eventModel": {
+        "seriesId": "sandy-hook-park-cleanup",
+        "editionId": "sandy-hook-park-cleanup-2026",
+        "occurrences": [
+          {
+            "occurrenceId": "sandy-hook-cleanup-2026-02-28",
+            "temporalIntent": "fixed_occurrence",
+            "start": "2026-02-28T09:00:00-05:00",
+            "end": "2026-02-28T12:00:00-05:00",
+            "locationName": "Fisherman's Trail, Parking Lot M",
+            "timezone": "America/New_York",
+            "timezoneEvidence": "inferred_from_venue",
+            "status": "cancelled",
+            "rescheduledToId": "sandy-hook-cleanup-2026-03-14"
+          },
+          {
+            "occurrenceId": "sandy-hook-cleanup-2026-03-14",
+            "temporalIntent": "fixed_occurrence",
+            "startDate": "2026-03-14",
+            "start": null,
+            "end": null,
+            "locationName": null,
+            "timezone": "America/New_York",
+            "timezoneEvidence": "inferred_from_venue_context",
+            "status": "rescheduled",
+            "rescheduledFromId": "sandy-hook-cleanup-2026-02-28",
+            "freshnessStatus": "needs_refresh"
+          }
+        ],
+        "itemActivation": "none_until_replacement_details_confirmed"
+      },
+      "sourceSchedulePresent": true,
+      "pacingEligible": false,
+      "sourceNotes": [
+        "The old time and location are not copied to the replacement occurrence."
+      ],
+      "checklistTodoLabel": "neither"
+    },
+    {
+      "fixtureId": "event-pattern-fun-seoul-interest-list",
+      "fixtureGroup": "event_native",
+      "fixtureKind": "provider_listing_interest_map",
+      "title": "FUN SEOUL 행사 관심 목록",
+      "provider": "서울특별시",
+      "url": "https://festival.seoul.go.kr/festival/main/festivalMain.do",
+      "canonicalUrl": "https://festival.seoul.go.kr/festival/main/festivalMain.do",
+      "locale": "ko-KR",
+      "observedAt": "2026-07-29",
+      "accessStatus": "public_html_open",
+      "evidenceMethod": "direct_page_inspection",
+      "sourceShape": "resource_collection",
+      "executionPattern": "resource_queue",
+      "primaryProjection": "sheet",
+      "userJob": "여러 행사 중 관심 항목을 고르고 상세 일정이 확인된 것만 저장한다.",
+      "sourceRows": [
+        {
+          "sourceRowId": "event-pattern-fun-seoul-interest-list-row-01",
+          "order": 0,
+          "kind": "listing_row",
+          "title": "DDP 뮤직페스티벌",
+          "startDate": "2026-07-31",
+          "endDate": "2026-08-02",
+          "locationName": "DDP"
+        },
+        {
+          "sourceRowId": "event-pattern-fun-seoul-interest-list-row-02",
+          "order": 1,
+          "kind": "listing_row",
+          "title": "진로진학박람회",
+          "startDate": "2026-08-04",
+          "endDate": "2026-08-04",
+          "locationName": "강동아트센터"
+        },
+        {
+          "sourceRowId": "event-pattern-fun-seoul-interest-list-row-03",
+          "order": 2,
+          "kind": "listing_row",
+          "title": "한강 다리밑 영화제",
+          "startDate": "2026-08-08",
+          "endDate": "2026-08-22",
+          "locationName": "한강공원"
+        },
+        {
+          "sourceRowId": "event-pattern-fun-seoul-interest-list-row-04",
+          "order": 3,
+          "kind": "listing_row",
+          "title": "광복절 타종",
+          "startDate": "2026-08-15",
+          "endDate": "2026-08-15",
+          "locationName": "보신각"
+        },
+        {
+          "sourceRowId": "event-pattern-fun-seoul-interest-list-row-05",
+          "order": 4,
+          "kind": "listing_row",
+          "title": "서울아트위크",
+          "startDate": "2026-08-31",
+          "endDate": "2026-09-06",
+          "locationName": "서울 120여 곳"
+        }
+      ],
+      "steps": [],
+      "items": [],
+      "eventModel": {
+        "seriesId": null,
+        "editionId": "fun-seoul-listing-2026-07-29",
+        "occurrences": [],
+        "listingRowsRequireDetailRefresh": true,
+        "itemActivation": "interest_selection_then_detail_confirmation"
+      },
+      "sourceSchedulePresent": true,
+      "pacingEligible": false,
+      "sourceNotes": [
+        "Listing rows are OccurrenceRefs, not five automatic Todos.",
+        "Several rows lack time and exact venue, so Calendar generation is gated."
+      ],
+      "checklistTodoLabel": "neither"
+    },
+    {
+      "fixtureId": "event-pattern-boryeong-operations",
+      "fixtureGroup": "event_native",
+      "fixtureKind": "edition_operating_windows_with_exceptions",
+      "title": "2026 보령머드축제 운영시간",
+      "provider": "보령축제관광재단",
+      "url": "https://mudfestival.or.kr/en/festival/1_mud_festival/ticket_info.html",
+      "canonicalUrl": "https://mudfestival.or.kr/en/festival/1_mud_festival/ticket_info.html",
+      "locale": "en-US",
+      "observedAt": "2026-07-29",
+      "accessStatus": "public_html_open",
+      "evidenceMethod": "direct_page_inspection",
+      "sourceShape": "availability_windows",
+      "executionPattern": "date_preparation",
+      "primaryProjection": "sheet",
+      "userJob": "운영일·휴장·연장 예외를 확인한 뒤 방문일을 선택한다.",
+      "sourceRows": [
+        {
+          "sourceRowId": "event-pattern-boryeong-operations-row-01",
+          "order": 0,
+          "kind": "festival_edition",
+          "title": "2026 Boryeong Mud Festival",
+          "startDate": "2026-07-24",
+          "endDate": "2026-08-09",
+          "locationName": "Daecheon Beach"
+        },
+        {
+          "sourceRowId": "event-pattern-boryeong-operations-row-02",
+          "order": 1,
+          "kind": "opening_hours",
+          "title": "Monday through Thursday",
+          "days": [
+            "MO",
+            "TU",
+            "WE",
+            "TH"
+          ],
+          "startTime": "13:00",
+          "endTime": "18:00"
+        },
+        {
+          "sourceRowId": "event-pattern-boryeong-operations-row-03",
+          "order": 2,
+          "kind": "opening_hours",
+          "title": "Friday through Sunday",
+          "days": [
+            "FR",
+            "SA",
+            "SU"
+          ],
+          "startTime": "10:00",
+          "endTime": "18:00"
+        },
+        {
+          "sourceRowId": "event-pattern-boryeong-operations-row-04",
+          "order": 3,
+          "kind": "break_window",
+          "title": "Weekend break",
+          "days": [
+            "SA",
+            "SU"
+          ],
+          "startTime": "13:30",
+          "endTime": "14:30"
+        },
+        {
+          "sourceRowId": "event-pattern-boryeong-operations-row-05",
+          "order": 4,
+          "kind": "extended_hours",
+          "title": "Night extension",
+          "dates": [
+            "2026-07-24",
+            "2026-08-06"
+          ]
+        },
+        {
+          "sourceRowId": "event-pattern-boryeong-operations-row-06",
+          "order": 5,
+          "kind": "closure_exception",
+          "title": "Safety inspection closure",
+          "date": "2026-08-05"
+        }
+      ],
+      "steps": [],
+      "items": [],
+      "eventModel": {
+        "seriesId": "boryeong-mud-festival",
+        "editionId": "boryeong-mud-festival-2026",
+        "occurrences": [],
+        "availabilityWindows": [
+          {
+            "windowId": "boryeong-mud-2026-window",
+            "temporalIntent": "availability_window",
+            "startDate": "2026-07-24",
+            "endDate": "2026-08-09",
+            "locationName": "Daecheon Beach"
+          }
+        ],
+        "exceptionCount": 3,
+        "itemActivation": "selected_visit_date_and_zone"
+      },
+      "sourceSchedulePresent": true,
+      "pacingEligible": false,
+      "sourceNotes": [
+        "A flat daily RRULE would hide closures, breaks, and extended hours."
+      ],
+      "checklistTodoLabel": "neither"
+    },
+    {
+      "fixtureId": "event-pattern-boryeong-programs",
+      "fixtureGroup": "event_native",
+      "fixtureKind": "festival_program_occurrences_with_conflict",
+      "title": "2026 보령머드축제 행사일정표",
+      "provider": "보령축제관광재단",
+      "url": "https://mudfestival.or.kr/festival/schedule/view?level=2&menuNo=32",
+      "canonicalUrl": "https://mudfestival.or.kr/festival/schedule/view?level=2&menuNo=32",
+      "locale": "ko-KR",
+      "observedAt": "2026-07-29",
+      "accessStatus": "public_html_open",
+      "evidenceMethod": "direct_page_inspection",
+      "sourceShape": "event_occurrences",
+      "executionPattern": "resource_queue",
+      "primaryProjection": "sheet",
+      "userJob": "날짜별 프로그램을 비교하고 관심 회차만 저장한다.",
+      "sourceRows": [
+        {
+          "sourceRowId": "event-pattern-boryeong-programs-row-01",
+          "order": 0,
+          "kind": "program_series",
+          "title": "금~일 버스킹",
+          "days": [
+            "FR",
+            "SA",
+            "SU"
+          ],
+          "startTime": "18:00",
+          "endTime": "21:00"
+        },
+        {
+          "sourceRowId": "event-pattern-boryeong-programs-row-02",
+          "order": 1,
+          "kind": "program_series",
+          "title": "금~일 머드온더비치",
+          "days": [
+            "FR",
+            "SA",
+            "SU"
+          ],
+          "startTime": "20:00",
+          "endTime": "21:30"
+        },
+        {
+          "sourceRowId": "event-pattern-boryeong-programs-row-03",
+          "order": 2,
+          "kind": "program_occurrence",
+          "title": "폐막식",
+          "start": "2026-08-09T19:00:00+09:00"
+        },
+        {
+          "sourceRowId": "event-pattern-boryeong-programs-row-04",
+          "order": 3,
+          "kind": "program_occurrence",
+          "title": "폐막 콘서트",
+          "start": "2026-08-09T19:20:00+09:00"
+        },
+        {
+          "sourceRowId": "event-pattern-boryeong-programs-row-05",
+          "order": 4,
+          "kind": "program_occurrence",
+          "title": "드론쇼",
+          "start": "2026-08-09T22:00:00+09:00"
+        },
+        {
+          "sourceRowId": "event-pattern-boryeong-programs-row-06",
+          "order": 5,
+          "kind": "conflict_notice",
+          "title": "8월 5일 연계행사 미운영과 프로그램 행이 함께 표시됨",
+          "status": "needs_refresh"
+        }
+      ],
+      "steps": [],
+      "items": [],
+      "eventModel": {
+        "seriesId": "boryeong-mud-festival",
+        "editionId": "boryeong-mud-festival-2026",
+        "occurrences": [
+          {
+            "occurrenceId": "boryeong-closing-ceremony",
+            "title": "폐막식",
+            "start": "2026-08-09T19:00:00+09:00",
+            "end": null,
+            "timezone": "Asia/Seoul",
+            "timezoneEvidence": "explicit_context",
+            "status": "scheduled"
+          },
+          {
+            "occurrenceId": "boryeong-closing-concert",
+            "title": "폐막 콘서트",
+            "start": "2026-08-09T19:20:00+09:00",
+            "end": null,
+            "timezone": "Asia/Seoul",
+            "timezoneEvidence": "explicit_context",
+            "status": "scheduled"
+          },
+          {
+            "occurrenceId": "boryeong-drone-show",
+            "title": "드론쇼",
+            "start": "2026-08-09T22:00:00+09:00",
+            "end": null,
+            "timezone": "Asia/Seoul",
+            "timezoneEvidence": "explicit_context",
+            "status": "scheduled"
+          }
+        ],
+        "conflictStatus": "partial_needs_refresh",
+        "itemActivation": "selected_program_occurrence"
+      },
+      "sourceSchedulePresent": true,
+      "pacingEligible": false,
+      "sourceNotes": [
+        "Only conflict-free occurrence rows are eligible; the affected row stays gated."
+      ],
+      "checklistTodoLabel": "neither"
+    }
+  ]
+}

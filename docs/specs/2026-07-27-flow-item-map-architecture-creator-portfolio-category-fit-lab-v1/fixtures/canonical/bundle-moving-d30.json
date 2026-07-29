@@ -1,0 +1,1869 @@
+{
+  "schemaVersion": "flowme-current-canonical-v1",
+  "architecture": "current_canonical_v1",
+  "bundleId": "bundle-moving-d30",
+  "title": "이사 D-30 체크리스트",
+  "taxonomy": {
+    "primaryLifeArea": "home_living",
+    "secondaryLifeAreas": [],
+    "topicTags": [],
+    "sourceShape": "date_offsets",
+    "primaryExecutionPattern": "date_preparation",
+    "secondaryExecutionPatterns": [
+      "ordered_procedure"
+    ],
+    "primaryArtifact": "calendar",
+    "secondaryArtifacts": [
+      "checklist"
+    ]
+  },
+  "userJob": "이사일을 기준으로 준비 시점을 놓치지 않고, 같은 시점의 할 일을 함께 끝낸다.",
+  "setupFields": [
+    {
+      "key": "moveDate",
+      "label": "이사일",
+      "type": "date",
+      "required": false
+    }
+  ],
+  "sampleUserOverlay": {
+    "moveDate": "2026-09-01"
+  },
+  "map": {
+    "id": "bundle-moving-d30-map",
+    "title": "이사 D-30 체크리스트",
+    "type": "ordered",
+    "ordering": "source_defined",
+    "childFlowIds": [
+      "bundle-moving-d30-flow"
+    ],
+    "derivedProgressOnly": true
+  },
+  "sharedContexts": [],
+  "attribution": {
+    "creatorId": "home-ajd",
+    "providerId": "brand-site",
+    "sourceOwnerId": "home-ajd",
+    "curatorId": null,
+    "trustAnchorRefs": [],
+    "decisionBand": "Go",
+    "creatorVerdict": "creator_flow_map_candidate",
+    "publicationApproval": "not_implied"
+  },
+  "rights": {
+    "mode": "link_and_minimal_execution_metadata",
+    "publicReleaseAllowed": false,
+    "personalTransformAllowed": true,
+    "rationale": "Existing research allows link plus minimal execution metadata; public release remains a separate review."
+  },
+  "review": {
+    "sourceRowStatus": "complete_for_representative_example",
+    "promotionState": "internal_review_only",
+    "safetyReview": "not_required"
+  },
+  "sourceRows": [
+    {
+      "sourceRowId": "bundle-moving-d30-s1-i1-r1",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 D-30 행 · 포장이사·반포장이사·일반이사 중 방식 선택",
+      "label": "포장이사·반포장이사·일반이사 중 방식 선택",
+      "detail": "포장이사·반포장이사·일반이사 중 방식 선택",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s1-i1-r2",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 D-30 행 · 이사업체 견적 비교와 예약",
+      "label": "이사업체 견적 비교와 예약",
+      "detail": "이사업체 견적 비교와 예약",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s1-i1-r3",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 D-30 행 · 입주청소 업체 견적 비교와 예약",
+      "label": "입주청소 업체 견적 비교와 예약",
+      "detail": "입주청소 업체 견적 비교와 예약",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s1-i2-r1",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 D-30 행 · 새집 현장 점검",
+      "label": "새집 현장 점검",
+      "detail": "새집 현장 점검",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s1-i2-r2",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 D-30 행 · 도배·장판·수리 필요 항목 확인과 일정 잡기",
+      "label": "도배·장판·수리 필요 항목 확인과 일정 잡기",
+      "detail": "도배·장판·수리 필요 항목 확인과 일정 잡기",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s1-i3-r1",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 D-30 행 · 대형폐기물·중고판매·기부 등 처분 대상 정리",
+      "label": "대형폐기물·중고판매·기부 등 처분 대상 정리",
+      "detail": "대형폐기물·중고판매·기부 등 처분 대상 정리",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s1-i4-r1",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 D-30 행 · 자녀 학교 전학 절차 확인",
+      "label": "자녀 학교 전학 절차 확인",
+      "detail": "자녀 학교 전학 절차 확인",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s1-i4-r2",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 D-30 행 · 이사 당일 아이·어르신·반려동물 돌봄 계획",
+      "label": "이사 당일 아이·어르신·반려동물 돌봄 계획",
+      "detail": "이사 당일 아이·어르신·반려동물 돌봄 계획",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s2-i1-r1",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 D-10 행 · 우편물 주소 이전 신청",
+      "label": "우편물 주소 이전 신청",
+      "detail": "우편물 주소 이전 신청",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s2-i1-r2",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 D-10 행 · 정기배송 주소 변경 또는 중지",
+      "label": "정기배송 주소 변경 또는 중지",
+      "detail": "정기배송 주소 변경 또는 중지",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s2-i1-r3",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 D-10 행 · 관리사무소에 퇴거 일정 알리기",
+      "label": "관리사무소에 퇴거 일정 알리기",
+      "detail": "관리사무소에 퇴거 일정 알리기",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s2-i2-r1",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 D-10 행 · 출발지와 도착지 엘리베이터 예약",
+      "label": "출발지와 도착지 엘리베이터 예약",
+      "detail": "출발지와 도착지 엘리베이터 예약",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s2-i2-r2",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 D-10 행 · 사다리차 사용 여부와 주차 공간 확인",
+      "label": "사다리차 사용 여부와 주차 공간 확인",
+      "detail": "사다리차 사용 여부와 주차 공간 확인",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s2-i3-r1",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 D-10 행 · 종량제 봉투와 폐기물 스티커 준비",
+      "label": "종량제 봉투와 폐기물 스티커 준비",
+      "detail": "종량제 봉투와 폐기물 스티커 준비",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s2-i3-r2",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 D-10 행 · 대형폐기물 수거 신청",
+      "label": "대형폐기물 수거 신청",
+      "detail": "대형폐기물 수거 신청",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s2-i3-r3",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 D-10 행 · 열쇠·리모컨·설명서 한곳에 모으기",
+      "label": "열쇠·리모컨·설명서 한곳에 모으기",
+      "detail": "열쇠·리모컨·설명서 한곳에 모으기",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s2-i4-r1",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 D-10 행 · 냉장고 식재료 소진 시작",
+      "label": "냉장고 식재료 소진 시작",
+      "detail": "냉장고 식재료 소진 시작",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s2-i4-r2",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 D-10 행 · 새집에 필요한 물품 주문",
+      "label": "새집에 필요한 물품 주문",
+      "detail": "새집에 필요한 물품 주문",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s2-i4-r3",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 D-10 행 · 가구·가전 배치도 정리",
+      "label": "가구·가전 배치도 정리",
+      "detail": "가구·가전 배치도 정리",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s2-i5-r1",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 D-10 행 · 인터넷·TV 이전 설치 신청",
+      "label": "인터넷·TV 이전 설치 신청",
+      "detail": "인터넷·TV 이전 설치 신청",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s2-i5-r2",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 D-10 행 · 정수기 등 렌탈 기기 이전 신청",
+      "label": "정수기 등 렌탈 기기 이전 신청",
+      "detail": "정수기 등 렌탈 기기 이전 신청",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s3-i1-r1",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 D-3 행 · 출발지 도시가스 철거 예약",
+      "label": "출발지 도시가스 철거 예약",
+      "detail": "출발지 도시가스 철거 예약",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s3-i1-r2",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 D-3 행 · 도착지 도시가스 설치 예약",
+      "label": "도착지 도시가스 설치 예약",
+      "detail": "도착지 도시가스 설치 예약",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s3-i2-r1",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 D-3 행 · 전기·수도·가스·관리비 자동이체 해지 또는 변경",
+      "label": "전기·수도·가스·관리비 자동이체 해지 또는 변경",
+      "detail": "전기·수도·가스·관리비 자동이체 해지 또는 변경",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s3-i3-r1",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 D-3 행 · 세탁기 물 빼기와 운반 준비",
+      "label": "세탁기 물 빼기와 운반 준비",
+      "detail": "세탁기 물 빼기와 운반 준비",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s3-i4-r1",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 D-3 행 · 필요한 경우 임차권·보증금 관련 서류 확인",
+      "label": "필요한 경우 임차권·보증금 관련 서류 확인",
+      "detail": "필요한 경우 임차권·보증금 관련 서류 확인",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s3-i5-r1",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 D-3 행 · 신분증·충전기·세면도구·약·옷 등 당일 물품 분리",
+      "label": "신분증·충전기·세면도구·약·옷 등 당일 물품 분리",
+      "detail": "신분증·충전기·세면도구·약·옷 등 당일 물품 분리",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s4-i1-r1",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 D-1 행 · 이사업체와 최종 시간 확인",
+      "label": "이사업체와 최종 시간 확인",
+      "detail": "이사업체와 최종 시간 확인",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s4-i1-r2",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 D-1 행 · 은행 이체 한도 확인",
+      "label": "은행 이체 한도 확인",
+      "detail": "은행 이체 한도 확인",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s4-i1-r3",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 D-1 행 · 보증금·잔금 지급 계획 확인",
+      "label": "보증금·잔금 지급 계획 확인",
+      "detail": "보증금·잔금 지급 계획 확인",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s4-i2-r1",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 D-1 행 · 이삿짐 차량 주차 위치 최종 확인",
+      "label": "이삿짐 차량 주차 위치 최종 확인",
+      "detail": "이삿짐 차량 주차 위치 최종 확인",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s4-i3-r1",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 D-1 행 · 현금·귀중품·중요서류 별도 보관",
+      "label": "현금·귀중품·중요서류 별도 보관",
+      "detail": "현금·귀중품·중요서류 별도 보관",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s4-i4-r1",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 D-1 행 · 출발지 열쇠·리모컨 모으기",
+      "label": "출발지 열쇠·리모컨 모으기",
+      "detail": "출발지 열쇠·리모컨 모으기",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s4-i4-r2",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 D-1 행 · 도착지 공동현관·도어락 정보 확인",
+      "label": "도착지 공동현관·도어락 정보 확인",
+      "detail": "도착지 공동현관·도어락 정보 확인",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s4-i5-r1",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 D-1 행 · 운반 전 가전·가구 외관 사진 촬영",
+      "label": "운반 전 가전·가구 외관 사진 촬영",
+      "detail": "운반 전 가전·가구 외관 사진 촬영",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s4-i5-r2",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 D-1 행 · 어항이 있으면 이동 준비",
+      "label": "어항이 있으면 이동 준비",
+      "detail": "어항이 있으면 이동 준비",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s5-i1-r1",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 이사 당일 기존 집 행 · 출발지 전기·수도·가스 사용량 확인과 정산",
+      "label": "출발지 전기·수도·가스 사용량 확인과 정산",
+      "detail": "출발지 전기·수도·가스 사용량 확인과 정산",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s5-i1-r2",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 이사 당일 기존 집 행 · 관리비 정산",
+      "label": "관리비 정산",
+      "detail": "관리비 정산",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s5-i2-r1",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 이사 당일 기존 집 행 · 세입자인 경우 장기수선충당금 반환 요청",
+      "label": "세입자인 경우 장기수선충당금 반환 요청",
+      "detail": "세입자인 경우 장기수선충당금 반환 요청",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s5-i3-r1",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 이사 당일 기존 집 행 · 방·수납장·계량기 주변 남은 물건 확인",
+      "label": "방·수납장·계량기 주변 남은 물건 확인",
+      "detail": "방·수납장·계량기 주변 남은 물건 확인",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s5-i3-r2",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 이사 당일 기존 집 행 · 집주인 또는 관리실에 열쇠 반납",
+      "label": "집주인 또는 관리실에 열쇠 반납",
+      "detail": "집주인 또는 관리실에 열쇠 반납",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s6-i1-r1",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 이사 당일 새집 행 · 짐 분실·파손 여부 확인",
+      "label": "짐 분실·파손 여부 확인",
+      "detail": "짐 분실·파손 여부 확인",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s6-i1-r2",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 이사 당일 새집 행 · 이사업체 잔금 정산",
+      "label": "이사업체 잔금 정산",
+      "detail": "이사업체 잔금 정산",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s6-i2-r1",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 이사 당일 새집 행 · 인터넷·TV 연결 확인",
+      "label": "인터넷·TV 연결 확인",
+      "detail": "인터넷·TV 연결 확인",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s6-i2-r2",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 이사 당일 새집 행 · 도어락 비밀번호 변경",
+      "label": "도어락 비밀번호 변경",
+      "detail": "도어락 비밀번호 변경",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s6-i3-r1",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 이사 당일 새집 행 · 주택 잔금 또는 보증금 정산",
+      "label": "주택 잔금 또는 보증금 정산",
+      "detail": "주택 잔금 또는 보증금 정산",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s6-i3-r2",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 이사 당일 새집 행 · 관리비 확인",
+      "label": "관리비 확인",
+      "detail": "관리비 확인",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s6-i3-r3",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 이사 당일 새집 행 · 열쇠·리모컨 인수",
+      "label": "열쇠·리모컨 인수",
+      "detail": "열쇠·리모컨 인수",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s6-i4-r1",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 이사 당일 새집 행 · 전기·수도 명의 변경",
+      "label": "전기·수도 명의 변경",
+      "detail": "전기·수도 명의 변경",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s6-i4-r2",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 이사 당일 새집 행 · 도착지 도시가스 개통",
+      "label": "도착지 도시가스 개통",
+      "detail": "도착지 도시가스 개통",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s6-i5-r1",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 이사 당일 새집 행 · 전입신고",
+      "label": "전입신고",
+      "detail": "전입신고",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-moving-d30-s6-i5-r2",
+      "bundleId": "bundle-moving-d30",
+      "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "sourceLocator": "원문 이사 당일 새집 행 · 필요한 경우 확정일자 받기",
+      "label": "필요한 경우 확정일자 받기",
+      "detail": "필요한 경우 확정일자 받기",
+      "verifiedAt": "2026-07-22"
+    }
+  ],
+  "flows": [
+    {
+      "id": "bundle-moving-d30-flow",
+      "title": "이사 D-30 체크리스트",
+      "primarySourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+      "steps": [
+        {
+          "id": "bundle-moving-d30-s1",
+          "flowId": "bundle-moving-d30-flow",
+          "title": "D-30 · 큰 결정과 예약",
+          "order": 1,
+          "sourceScheduleGroup": {
+            "type": "relative_to_target",
+            "offsetDays": -30
+          },
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-moving-d30-s1-i1",
+              "flowId": "bundle-moving-d30-flow",
+              "stepId": "bundle-moving-d30-s1",
+              "title": "이사 방식과 이사업체 정하기",
+              "detail": "선택한 방식, 업체명, 견적 링크와 예약 내용을 같은 메모에 적는다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_to_target",
+                "offsetDays": -30
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "선택한 방식, 업체명, 견적 링크와 예약 내용을 같은 메모에 적는다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-moving-d30-s1-i1-r1",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 D-30 행 · 포장이사·반포장이사·일반이사 중 방식 선택"
+                },
+                {
+                  "sourceRowId": "bundle-moving-d30-s1-i1-r2",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 D-30 행 · 이사업체 견적 비교와 예약"
+                },
+                {
+                  "sourceRowId": "bundle-moving-d30-s1-i1-r3",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 D-30 행 · 입주청소 업체 견적 비교와 예약"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "step_bundle",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-moving-d30-s1-i2",
+              "flowId": "bundle-moving-d30-flow",
+              "stepId": "bundle-moving-d30-s1",
+              "title": "새집 상태 확인하고 필요한 수리 잡기",
+              "detail": "새집 현장 점검 · 도배·장판·수리 필요 항목 확인과 일정 잡기",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_to_target",
+                "offsetDays": -30
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "새집 현장 점검 · 도배·장판·수리 필요 항목 확인과 일정 잡기",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-moving-d30-s1-i2-r1",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 D-30 행 · 새집 현장 점검"
+                },
+                {
+                  "sourceRowId": "bundle-moving-d30-s1-i2-r2",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 D-30 행 · 도배·장판·수리 필요 항목 확인과 일정 잡기"
+                }
+              ],
+              "order": 2,
+              "projectionPolicy": {
+                "calendar": "step_bundle",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-moving-d30-s1-i3",
+              "flowId": "bundle-moving-d30-flow",
+              "stepId": "bundle-moving-d30-s1",
+              "title": "가져가지 않을 물건 처분 시작하기",
+              "detail": "대형폐기물·중고판매·기부 등 처분 대상 정리",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_to_target",
+                "offsetDays": -30
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "대형폐기물·중고판매·기부 등 처분 대상 정리",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-moving-d30-s1-i3-r1",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 D-30 행 · 대형폐기물·중고판매·기부 등 처분 대상 정리"
+                }
+              ],
+              "order": 3,
+              "projectionPolicy": {
+                "calendar": "step_bundle",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-moving-d30-s1-i4",
+              "flowId": "bundle-moving-d30-flow",
+              "stepId": "bundle-moving-d30-s1",
+              "title": "학교 전학과 돌봄 계획 세우기",
+              "detail": "자녀 학교 전학 절차 확인 · 이사 당일 아이·어르신·반려동물 돌봄 계획",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_to_target",
+                "offsetDays": -30
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "자녀 학교 전학 절차 확인 · 이사 당일 아이·어르신·반려동물 돌봄 계획",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-moving-d30-s1-i4-r1",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 D-30 행 · 자녀 학교 전학 절차 확인"
+                },
+                {
+                  "sourceRowId": "bundle-moving-d30-s1-i4-r2",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 D-30 행 · 이사 당일 아이·어르신·반려동물 돌봄 계획"
+                }
+              ],
+              "order": 4,
+              "projectionPolicy": {
+                "calendar": "step_bundle",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        },
+        {
+          "id": "bundle-moving-d30-s2",
+          "flowId": "bundle-moving-d30-flow",
+          "title": "D-10 · 주소·서비스·짐 줄이기",
+          "order": 2,
+          "sourceScheduleGroup": {
+            "type": "relative_to_target",
+            "offsetDays": -10
+          },
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-moving-d30-s2-i1",
+              "flowId": "bundle-moving-d30-flow",
+              "stepId": "bundle-moving-d30-s2",
+              "title": "우편·배송·전출 주소 변경하기",
+              "detail": "우편물 주소 이전 신청 · 정기배송 주소 변경 또는 중지 · 관리사무소에 퇴거 일정 알리기",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_to_target",
+                "offsetDays": -10
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "우편물 주소 이전 신청 · 정기배송 주소 변경 또는 중지 · 관리사무소에 퇴거 일정 알리기",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-moving-d30-s2-i1-r1",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 D-10 행 · 우편물 주소 이전 신청"
+                },
+                {
+                  "sourceRowId": "bundle-moving-d30-s2-i1-r2",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 D-10 행 · 정기배송 주소 변경 또는 중지"
+                },
+                {
+                  "sourceRowId": "bundle-moving-d30-s2-i1-r3",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 D-10 행 · 관리사무소에 퇴거 일정 알리기"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "step_bundle",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-moving-d30-s2-i2",
+              "flowId": "bundle-moving-d30-flow",
+              "stepId": "bundle-moving-d30-s2",
+              "title": "엘리베이터·사다리차·주차 예약하기",
+              "detail": "출발지와 도착지 엘리베이터 예약 · 사다리차 사용 여부와 주차 공간 확인",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_to_target",
+                "offsetDays": -10
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "출발지와 도착지 엘리베이터 예약 · 사다리차 사용 여부와 주차 공간 확인",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-moving-d30-s2-i2-r1",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 D-10 행 · 출발지와 도착지 엘리베이터 예약"
+                },
+                {
+                  "sourceRowId": "bundle-moving-d30-s2-i2-r2",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 D-10 행 · 사다리차 사용 여부와 주차 공간 확인"
+                }
+              ],
+              "order": 2,
+              "projectionPolicy": {
+                "calendar": "step_bundle",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-moving-d30-s2-i3",
+              "flowId": "bundle-moving-d30-flow",
+              "stepId": "bundle-moving-d30-s2",
+              "title": "폐기물과 남은 짐 처리하기",
+              "detail": "종량제 봉투와 폐기물 스티커 준비 · 대형폐기물 수거 신청 · 열쇠·리모컨·설명서 한곳에 모으기",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_to_target",
+                "offsetDays": -10
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "종량제 봉투와 폐기물 스티커 준비 · 대형폐기물 수거 신청 · 열쇠·리모컨·설명서 한곳에 모으기",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-moving-d30-s2-i3-r1",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 D-10 행 · 종량제 봉투와 폐기물 스티커 준비"
+                },
+                {
+                  "sourceRowId": "bundle-moving-d30-s2-i3-r2",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 D-10 행 · 대형폐기물 수거 신청"
+                },
+                {
+                  "sourceRowId": "bundle-moving-d30-s2-i3-r3",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 D-10 행 · 열쇠·리모컨·설명서 한곳에 모으기"
+                }
+              ],
+              "order": 3,
+              "projectionPolicy": {
+                "calendar": "step_bundle",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-moving-d30-s2-i4",
+              "flowId": "bundle-moving-d30-flow",
+              "stepId": "bundle-moving-d30-s2",
+              "title": "냉장고 비우고 새집 물품 배치 정하기",
+              "detail": "냉장고 식재료 소진 시작 · 새집에 필요한 물품 주문 · 가구·가전 배치도 정리",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_to_target",
+                "offsetDays": -10
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "냉장고 식재료 소진 시작 · 새집에 필요한 물품 주문 · 가구·가전 배치도 정리",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-moving-d30-s2-i4-r1",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 D-10 행 · 냉장고 식재료 소진 시작"
+                },
+                {
+                  "sourceRowId": "bundle-moving-d30-s2-i4-r2",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 D-10 행 · 새집에 필요한 물품 주문"
+                },
+                {
+                  "sourceRowId": "bundle-moving-d30-s2-i4-r3",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 D-10 행 · 가구·가전 배치도 정리"
+                }
+              ],
+              "order": 4,
+              "projectionPolicy": {
+                "calendar": "step_bundle",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-moving-d30-s2-i5",
+              "flowId": "bundle-moving-d30-flow",
+              "stepId": "bundle-moving-d30-s2",
+              "title": "인터넷·정수기 등 이전 신청하기",
+              "detail": "인터넷·TV 이전 설치 신청 · 정수기 등 렌탈 기기 이전 신청",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_to_target",
+                "offsetDays": -10
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "인터넷·TV 이전 설치 신청 · 정수기 등 렌탈 기기 이전 신청",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-moving-d30-s2-i5-r1",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 D-10 행 · 인터넷·TV 이전 설치 신청"
+                },
+                {
+                  "sourceRowId": "bundle-moving-d30-s2-i5-r2",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 D-10 행 · 정수기 등 렌탈 기기 이전 신청"
+                }
+              ],
+              "order": 5,
+              "projectionPolicy": {
+                "calendar": "step_bundle",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        },
+        {
+          "id": "bundle-moving-d30-s3",
+          "flowId": "bundle-moving-d30-flow",
+          "title": "D-3 · 해지와 당일 준비",
+          "order": 3,
+          "sourceScheduleGroup": {
+            "type": "relative_to_target",
+            "offsetDays": -3
+          },
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-moving-d30-s3-i1",
+              "flowId": "bundle-moving-d30-flow",
+              "stepId": "bundle-moving-d30-s3",
+              "title": "도시가스 철거·설치 예약하기",
+              "detail": "출발지 도시가스 철거 예약 · 도착지 도시가스 설치 예약",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_to_target",
+                "offsetDays": -3
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "출발지 도시가스 철거 예약 · 도착지 도시가스 설치 예약",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-moving-d30-s3-i1-r1",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 D-3 행 · 출발지 도시가스 철거 예약"
+                },
+                {
+                  "sourceRowId": "bundle-moving-d30-s3-i1-r2",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 D-3 행 · 도착지 도시가스 설치 예약"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "step_bundle",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-moving-d30-s3-i2",
+              "flowId": "bundle-moving-d30-flow",
+              "stepId": "bundle-moving-d30-s3",
+              "title": "기존 집 자동이체 해지하기",
+              "detail": "전기·수도·가스·관리비 자동이체 해지 또는 변경",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_to_target",
+                "offsetDays": -3
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "전기·수도·가스·관리비 자동이체 해지 또는 변경",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-moving-d30-s3-i2-r1",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 D-3 행 · 전기·수도·가스·관리비 자동이체 해지 또는 변경"
+                }
+              ],
+              "order": 2,
+              "projectionPolicy": {
+                "calendar": "step_bundle",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-moving-d30-s3-i3",
+              "flowId": "bundle-moving-d30-flow",
+              "stepId": "bundle-moving-d30-s3",
+              "title": "세탁기 배수하고 운반 상태 만들기",
+              "detail": "세탁기 물 빼기와 운반 준비",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_to_target",
+                "offsetDays": -3
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "세탁기 물 빼기와 운반 준비",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-moving-d30-s3-i3-r1",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 D-3 행 · 세탁기 물 빼기와 운반 준비"
+                }
+              ],
+              "order": 3,
+              "projectionPolicy": {
+                "calendar": "step_bundle",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-moving-d30-s3-i4",
+              "flowId": "bundle-moving-d30-flow",
+              "stepId": "bundle-moving-d30-s3",
+              "title": "임대차 권리 서류 확인하기",
+              "detail": "필요한 경우 임차권·보증금 관련 서류 확인",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_to_target",
+                "offsetDays": -3
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "필요한 경우 임차권·보증금 관련 서류 확인",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-moving-d30-s3-i4-r1",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 D-3 행 · 필요한 경우 임차권·보증금 관련 서류 확인"
+                }
+              ],
+              "order": 4,
+              "projectionPolicy": {
+                "calendar": "step_bundle",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-moving-d30-s3-i5",
+              "flowId": "bundle-moving-d30-flow",
+              "stepId": "bundle-moving-d30-s3",
+              "title": "당일 바로 쓸 짐을 따로 싸기",
+              "detail": "신분증·충전기·세면도구·약·옷 등 당일 물품 분리",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_to_target",
+                "offsetDays": -3
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "신분증·충전기·세면도구·약·옷 등 당일 물품 분리",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-moving-d30-s3-i5-r1",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 D-3 행 · 신분증·충전기·세면도구·약·옷 등 당일 물품 분리"
+                }
+              ],
+              "order": 5,
+              "projectionPolicy": {
+                "calendar": "step_bundle",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        },
+        {
+          "id": "bundle-moving-d30-s4",
+          "flowId": "bundle-moving-d30-flow",
+          "title": "D-1 · 돈·귀중품·인계 확인",
+          "order": 4,
+          "sourceScheduleGroup": {
+            "type": "relative_to_target",
+            "offsetDays": -1
+          },
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-moving-d30-s4-i1",
+              "flowId": "bundle-moving-d30-flow",
+              "stepId": "bundle-moving-d30-s4",
+              "title": "당일 일정·송금 한도·잔금 확인하기",
+              "detail": "이사업체와 최종 시간 확인 · 은행 이체 한도 확인 · 보증금·잔금 지급 계획 확인",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_to_target",
+                "offsetDays": -1
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "이사업체와 최종 시간 확인 · 은행 이체 한도 확인 · 보증금·잔금 지급 계획 확인",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-moving-d30-s4-i1-r1",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 D-1 행 · 이사업체와 최종 시간 확인"
+                },
+                {
+                  "sourceRowId": "bundle-moving-d30-s4-i1-r2",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 D-1 행 · 은행 이체 한도 확인"
+                },
+                {
+                  "sourceRowId": "bundle-moving-d30-s4-i1-r3",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 D-1 행 · 보증금·잔금 지급 계획 확인"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "step_bundle",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-moving-d30-s4-i2",
+              "flowId": "bundle-moving-d30-flow",
+              "stepId": "bundle-moving-d30-s4",
+              "title": "출발지·도착지 주차 다시 확인하기",
+              "detail": "이삿짐 차량 주차 위치 최종 확인",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_to_target",
+                "offsetDays": -1
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "이삿짐 차량 주차 위치 최종 확인",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-moving-d30-s4-i2-r1",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 D-1 행 · 이삿짐 차량 주차 위치 최종 확인"
+                }
+              ],
+              "order": 2,
+              "projectionPolicy": {
+                "calendar": "step_bundle",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-moving-d30-s4-i3",
+              "flowId": "bundle-moving-d30-flow",
+              "stepId": "bundle-moving-d30-s4",
+              "title": "귀중품과 중요서류 직접 보관하기",
+              "detail": "현금·귀중품·중요서류 별도 보관",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_to_target",
+                "offsetDays": -1
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "현금·귀중품·중요서류 별도 보관",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-moving-d30-s4-i3-r1",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 D-1 행 · 현금·귀중품·중요서류 별도 보관"
+                }
+              ],
+              "order": 3,
+              "projectionPolicy": {
+                "calendar": "step_bundle",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-moving-d30-s4-i4",
+              "flowId": "bundle-moving-d30-flow",
+              "stepId": "bundle-moving-d30-s4",
+              "title": "열쇠·리모컨·비밀번호 인계 준비하기",
+              "detail": "출발지 열쇠·리모컨 모으기 · 도착지 공동현관·도어락 정보 확인",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_to_target",
+                "offsetDays": -1
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "출발지 열쇠·리모컨 모으기 · 도착지 공동현관·도어락 정보 확인",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-moving-d30-s4-i4-r1",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 D-1 행 · 출발지 열쇠·리모컨 모으기"
+                },
+                {
+                  "sourceRowId": "bundle-moving-d30-s4-i4-r2",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 D-1 행 · 도착지 공동현관·도어락 정보 확인"
+                }
+              ],
+              "order": 4,
+              "projectionPolicy": {
+                "calendar": "step_bundle",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-moving-d30-s4-i5",
+              "flowId": "bundle-moving-d30-flow",
+              "stepId": "bundle-moving-d30-s4",
+              "title": "가전·가구 상태 사진 남기기",
+              "detail": "운반 전 가전·가구 외관 사진 촬영 · 어항이 있으면 이동 준비",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_to_target",
+                "offsetDays": -1
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "운반 전 가전·가구 외관 사진 촬영 · 어항이 있으면 이동 준비",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-moving-d30-s4-i5-r1",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 D-1 행 · 운반 전 가전·가구 외관 사진 촬영"
+                },
+                {
+                  "sourceRowId": "bundle-moving-d30-s4-i5-r2",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 D-1 행 · 어항이 있으면 이동 준비"
+                }
+              ],
+              "order": 5,
+              "projectionPolicy": {
+                "calendar": "step_bundle",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        },
+        {
+          "id": "bundle-moving-d30-s5",
+          "flowId": "bundle-moving-d30-flow",
+          "title": "이사 당일 · 출발지 마감",
+          "order": 5,
+          "sourceScheduleGroup": {
+            "type": "relative_to_target",
+            "offsetDays": 0,
+            "segment": "origin"
+          },
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-moving-d30-s5-i1",
+              "flowId": "bundle-moving-d30-flow",
+              "stepId": "bundle-moving-d30-s5",
+              "title": "전기·수도·가스·관리비 정산하기",
+              "detail": "출발지 전기·수도·가스 사용량 확인과 정산 · 관리비 정산",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_to_target",
+                "offsetDays": 0,
+                "segment": "origin"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "출발지 전기·수도·가스 사용량 확인과 정산 · 관리비 정산",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-moving-d30-s5-i1-r1",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 이사 당일 기존 집 행 · 출발지 전기·수도·가스 사용량 확인과 정산"
+                },
+                {
+                  "sourceRowId": "bundle-moving-d30-s5-i1-r2",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 이사 당일 기존 집 행 · 관리비 정산"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "step_bundle",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-moving-d30-s5-i2",
+              "flowId": "bundle-moving-d30-flow",
+              "stepId": "bundle-moving-d30-s5",
+              "title": "장기수선충당금 환급 확인하기",
+              "detail": "세입자인 경우 장기수선충당금 반환 요청",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_to_target",
+                "offsetDays": 0,
+                "segment": "origin"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "세입자인 경우 장기수선충당금 반환 요청",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-moving-d30-s5-i2-r1",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 이사 당일 기존 집 행 · 세입자인 경우 장기수선충당금 반환 요청"
+                }
+              ],
+              "order": 2,
+              "projectionPolicy": {
+                "calendar": "step_bundle",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-moving-d30-s5-i3",
+              "flowId": "bundle-moving-d30-flow",
+              "stepId": "bundle-moving-d30-s5",
+              "title": "남은 물건 확인하고 열쇠 반납하기",
+              "detail": "방·수납장·계량기 주변 남은 물건 확인 · 집주인 또는 관리실에 열쇠 반납",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_to_target",
+                "offsetDays": 0,
+                "segment": "origin"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "방·수납장·계량기 주변 남은 물건 확인 · 집주인 또는 관리실에 열쇠 반납",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-moving-d30-s5-i3-r1",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 이사 당일 기존 집 행 · 방·수납장·계량기 주변 남은 물건 확인"
+                },
+                {
+                  "sourceRowId": "bundle-moving-d30-s5-i3-r2",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 이사 당일 기존 집 행 · 집주인 또는 관리실에 열쇠 반납"
+                }
+              ],
+              "order": 3,
+              "projectionPolicy": {
+                "calendar": "step_bundle",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        },
+        {
+          "id": "bundle-moving-d30-s6",
+          "flowId": "bundle-moving-d30-flow",
+          "title": "이사 당일 · 도착지 시작",
+          "order": 6,
+          "sourceScheduleGroup": {
+            "type": "relative_to_target",
+            "offsetDays": 0,
+            "segment": "destination"
+          },
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-moving-d30-s6-i1",
+              "flowId": "bundle-moving-d30-flow",
+              "stepId": "bundle-moving-d30-s6",
+              "title": "분실·파손 확인하고 이사업체 정산하기",
+              "detail": "짐 분실·파손 여부 확인 · 이사업체 잔금 정산",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_to_target",
+                "offsetDays": 0,
+                "segment": "destination"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "짐 분실·파손 여부 확인 · 이사업체 잔금 정산",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-moving-d30-s6-i1-r1",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 이사 당일 새집 행 · 짐 분실·파손 여부 확인"
+                },
+                {
+                  "sourceRowId": "bundle-moving-d30-s6-i1-r2",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 이사 당일 새집 행 · 이사업체 잔금 정산"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "step_bundle",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-moving-d30-s6-i2",
+              "flowId": "bundle-moving-d30-flow",
+              "stepId": "bundle-moving-d30-s6",
+              "title": "인터넷·TV와 도어락 확인하기",
+              "detail": "인터넷·TV 연결 확인 · 도어락 비밀번호 변경",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_to_target",
+                "offsetDays": 0,
+                "segment": "destination"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "인터넷·TV 연결 확인 · 도어락 비밀번호 변경",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-moving-d30-s6-i2-r1",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 이사 당일 새집 행 · 인터넷·TV 연결 확인"
+                },
+                {
+                  "sourceRowId": "bundle-moving-d30-s6-i2-r2",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 이사 당일 새집 행 · 도어락 비밀번호 변경"
+                }
+              ],
+              "order": 2,
+              "projectionPolicy": {
+                "calendar": "step_bundle",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-moving-d30-s6-i3",
+              "flowId": "bundle-moving-d30-flow",
+              "stepId": "bundle-moving-d30-s6",
+              "title": "잔금·관리비·열쇠 인수 마치기",
+              "detail": "주택 잔금 또는 보증금 정산 · 관리비 확인 · 열쇠·리모컨 인수",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_to_target",
+                "offsetDays": 0,
+                "segment": "destination"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "주택 잔금 또는 보증금 정산 · 관리비 확인 · 열쇠·리모컨 인수",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-moving-d30-s6-i3-r1",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 이사 당일 새집 행 · 주택 잔금 또는 보증금 정산"
+                },
+                {
+                  "sourceRowId": "bundle-moving-d30-s6-i3-r2",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 이사 당일 새집 행 · 관리비 확인"
+                },
+                {
+                  "sourceRowId": "bundle-moving-d30-s6-i3-r3",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 이사 당일 새집 행 · 열쇠·리모컨 인수"
+                }
+              ],
+              "order": 3,
+              "projectionPolicy": {
+                "calendar": "step_bundle",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-moving-d30-s6-i4",
+              "flowId": "bundle-moving-d30-flow",
+              "stepId": "bundle-moving-d30-s6",
+              "title": "전기·수도 명의와 가스 개통하기",
+              "detail": "전기·수도 명의 변경 · 도착지 도시가스 개통",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_to_target",
+                "offsetDays": 0,
+                "segment": "destination"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "전기·수도 명의 변경 · 도착지 도시가스 개통",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-moving-d30-s6-i4-r1",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 이사 당일 새집 행 · 전기·수도 명의 변경"
+                },
+                {
+                  "sourceRowId": "bundle-moving-d30-s6-i4-r2",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 이사 당일 새집 행 · 도착지 도시가스 개통"
+                }
+              ],
+              "order": 4,
+              "projectionPolicy": {
+                "calendar": "step_bundle",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-moving-d30-s6-i5",
+              "flowId": "bundle-moving-d30-flow",
+              "stepId": "bundle-moving-d30-s6",
+              "title": "전입신고와 확정일자 처리하기",
+              "detail": "전입신고 · 필요한 경우 확정일자 받기",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "relative_to_target",
+                "offsetDays": 0,
+                "segment": "destination"
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "전입신고 · 필요한 경우 확정일자 받기",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-moving-d30-s6-i5-r1",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 이사 당일 새집 행 · 전입신고"
+                },
+                {
+                  "sourceRowId": "bundle-moving-d30-s6-i5-r2",
+                  "sourceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+                  "sourceLocator": "원문 이사 당일 새집 행 · 필요한 경우 확정일자 받기"
+                }
+              ],
+              "order": 5,
+              "projectionPolicy": {
+                "calendar": "step_bundle",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

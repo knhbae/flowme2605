@@ -1,0 +1,222 @@
+{
+  "schemaVersion": "flowme-report-storyboard-v1",
+  "generatedAt": "2026-07-28T23:59:00+09:00",
+  "mainDeckTargetScreens": 38,
+  "representativeCount": 12,
+  "representatives": [
+    {
+      "order": 1,
+      "fixtureId": "base-opentutorials-web1-progress",
+      "archetype": "lesson_rows → progress_tracking → sheet",
+      "claim": "날짜 없는 진도 Item도 완전한 Flow이며 Sheet·Checklist로 자연스럽게 실행된다.",
+      "sourceRowIds": [
+        "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i1-r1",
+        "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i2-r1",
+        "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i3-r1"
+      ],
+      "itemIds": [
+        "base-opentutorials-web1-progress-flow-1-step-1-item-1",
+        "base-opentutorials-web1-progress-flow-1-step-1-item-2",
+        "base-opentutorials-web1-progress-flow-1-step-1-item-3"
+      ],
+      "slideATitle": "생활코딩 WEB1 진도표 · 원문에서 SourceRow로",
+      "slideBTitle": "생활코딩 WEB1 진도표 · Item에서 projection으로"
+    },
+    {
+      "order": 2,
+      "fixtureId": "base-moving-d30",
+      "archetype": "date_offsets → date_preparation → calendar",
+      "claim": "이사 D-30 체크리스트은 원문 행을 27개 Item과 6개 Step으로 보존한다.",
+      "sourceRowIds": [
+        "base-moving-d30--bundle-moving-d30-s1-i1-r1",
+        "base-moving-d30--bundle-moving-d30-s1-i1-r2",
+        "base-moving-d30--bundle-moving-d30-s1-i1-r3"
+      ],
+      "itemIds": [
+        "base-moving-d30-flow-1-step-1-item-1",
+        "base-moving-d30-flow-1-step-1-item-2",
+        "base-moving-d30-flow-1-step-1-item-3"
+      ],
+      "slideATitle": "이사 D-30 체크리스트 · 원문에서 SourceRow로",
+      "slideBTitle": "이사 D-30 체크리스트 · Item에서 projection으로"
+    },
+    {
+      "order": 3,
+      "fixtureId": "oq-oq-c02-kmooc-full",
+      "archetype": "lesson_rows → progress_tracking → sheet",
+      "claim": "Introduction to Data Analysis은 원문 행을 14개 Item과 14개 Step으로 보존한다.",
+      "sourceRowIds": [
+        "oq-oq-c02-kmooc-full--kmooc-m01",
+        "oq-oq-c02-kmooc-full--kmooc-m02",
+        "oq-oq-c02-kmooc-full--kmooc-m03"
+      ],
+      "itemIds": [
+        "oq-oq-c02-kmooc-full-item-1",
+        "oq-oq-c02-kmooc-full-item-2",
+        "oq-oq-c02-kmooc-full-item-3"
+      ],
+      "slideATitle": "Introduction to Data Analysis · 원문에서 SourceRow로",
+      "slideBTitle": "Introduction to Data Analysis · Item에서 projection으로"
+    },
+    {
+      "order": 4,
+      "fixtureId": "oq-oq-c05-washer",
+      "archetype": "recurrence_rule → repeating_routine → todo",
+      "claim": "Washing Machine Maintenance: tips to keep your machine running smoothly은 원문 행을 4개 Item과 4개 Step으로 보존한다.",
+      "sourceRowIds": [
+        "oq-oq-c05-washer--washer-r01",
+        "oq-oq-c05-washer--washer-r02",
+        "oq-oq-c05-washer--washer-r03"
+      ],
+      "itemIds": [
+        "oq-oq-c05-washer-item-1",
+        "oq-oq-c05-washer-item-2",
+        "oq-oq-c05-washer-item-3"
+      ],
+      "slideATitle": "Washing Machine Maintenance: tips to keep your machine running smoothly · 원문에서 SourceRow로",
+      "slideBTitle": "Washing Machine Maintenance: tips to keep your machine running smoothly · Item에서 projection으로"
+    },
+    {
+      "order": 5,
+      "fixtureId": "oq-oq-c08-ac-decision",
+      "archetype": "decision_criteria → compare_decide → memo",
+      "claim": "시스템 에어컨 세척 서비스 안내은 원문 행을 1개 Item과 1개 Step으로 보존한다.",
+      "sourceRowIds": [
+        "oq-oq-c08-ac-decision--ac-r01",
+        "oq-oq-c08-ac-decision--ac-r02",
+        "oq-oq-c08-ac-decision--ac-r03"
+      ],
+      "itemIds": [
+        "oq-oq-c08-ac-decision-item-decision"
+      ],
+      "slideATitle": "시스템 에어컨 세척 서비스 안내 · 원문에서 SourceRow로",
+      "slideBTitle": "시스템 에어컨 세척 서비스 안내 · Item에서 projection으로"
+    },
+    {
+      "order": 6,
+      "fixtureId": "value-vq-01",
+      "archetype": "procedure_rows → ordered_procedure → todo",
+      "claim": "어린이집 보육료 지원 신청은 원문 행을 4개 Item과 3개 Step으로 보존한다.",
+      "sourceRowIds": [
+        "value-vq-01--vq01-r01",
+        "value-vq-01--vq01-r02",
+        "value-vq-01--vq01-r03"
+      ],
+      "itemIds": [
+        "value-vq-01-item-1",
+        "value-vq-01-item-2",
+        "value-vq-01-item-3"
+      ],
+      "slideATitle": "어린이집 보육료 지원 신청 · 원문에서 SourceRow로",
+      "slideBTitle": "어린이집 보육료 지원 신청 · Item에서 projection으로"
+    },
+    {
+      "order": 7,
+      "fixtureId": "value-vq-06",
+      "archetype": "decision_criteria → compare_decide → sheet",
+      "claim": "식물성 음료 품질비교은 원문 행을 6개 Item과 1개 Step으로 보존한다.",
+      "sourceRowIds": [
+        "value-vq-06--vq06-r01",
+        "value-vq-06--vq06-r02",
+        "value-vq-06--vq06-r03"
+      ],
+      "itemIds": [
+        "value-vq-06-item-1",
+        "value-vq-06-item-2",
+        "value-vq-06-item-3"
+      ],
+      "slideATitle": "식물성 음료 품질비교 · 원문에서 SourceRow로",
+      "slideBTitle": "식물성 음료 품질비교 · Item에서 projection으로"
+    },
+    {
+      "order": 8,
+      "fixtureId": "value-vq-10",
+      "archetype": "table_rows → progress_tracking → sheet",
+      "claim": "리모델링 공정별 하자 점검은 원문 행을 13개 Item과 2개 Step으로 보존한다.",
+      "sourceRowIds": [
+        "value-vq-10--vq10-r01",
+        "value-vq-10--vq10-r02",
+        "value-vq-10--vq10-r03"
+      ],
+      "itemIds": [
+        "value-vq-10-item-1",
+        "value-vq-10-item-2",
+        "value-vq-10-item-3"
+      ],
+      "slideATitle": "리모델링 공정별 하자 점검 · 원문에서 SourceRow로",
+      "slideBTitle": "리모델링 공정별 하자 점검 · Item에서 projection으로"
+    },
+    {
+      "order": 9,
+      "fixtureId": "value-vq-11",
+      "archetype": "date_window → date_preparation → calendar",
+      "claim": "2026년 2학기 국가근로장학금 신청은 원문 행을 5개 Item과 5개 Step으로 보존한다.",
+      "sourceRowIds": [
+        "value-vq-11--vq11-r01",
+        "value-vq-11--vq11-r02",
+        "value-vq-11--vq11-r03"
+      ],
+      "itemIds": [
+        "value-vq-11-item-1",
+        "value-vq-11-item-2",
+        "value-vq-11-item-3"
+      ],
+      "slideATitle": "2026년 2학기 국가근로장학금 신청 · 원문에서 SourceRow로",
+      "slideBTitle": "2026년 2학기 국가근로장학금 신청 · Item에서 projection으로"
+    },
+    {
+      "order": 10,
+      "fixtureId": "deep-ds08",
+      "archetype": "narrative_guidance → date_preparation → checklist",
+      "claim": "공주 부모님과 당일치기 힐링 여행코스은 원문 행을 4개 Item과 4개 Step으로 보존한다.",
+      "sourceRowIds": [
+        "deep-ds08--ds08-r01",
+        "deep-ds08--ds08-r02",
+        "deep-ds08--ds08-r03"
+      ],
+      "itemIds": [
+        "deep-ds08-item-1",
+        "deep-ds08-item-2",
+        "deep-ds08-item-3"
+      ],
+      "slideATitle": "공주 부모님과 당일치기 힐링 여행코스 · 원문에서 SourceRow로",
+      "slideBTitle": "공주 부모님과 당일치기 힐링 여행코스 · Item에서 projection으로"
+    },
+    {
+      "order": 11,
+      "fixtureId": "live-c01",
+      "archetype": "table_rows → date_preparation → sheet",
+      "claim": "영유아 건강검진 일정은 원문 행을 12개 Item과 12개 Step으로 보존한다.",
+      "sourceRowIds": [
+        "live-c01--c01-sr01",
+        "live-c01--c01-sr02",
+        "live-c01--c01-sr03"
+      ],
+      "itemIds": [
+        "live-c01-item-1",
+        "live-c01-item-2",
+        "live-c01-item-3"
+      ],
+      "slideATitle": "영유아 건강검진 일정 · 원문에서 SourceRow로",
+      "slideBTitle": "영유아 건강검진 일정 · Item에서 projection으로"
+    },
+    {
+      "order": 12,
+      "fixtureId": "live-c10",
+      "archetype": "checklist_rows → date_preparation → checklist",
+      "claim": "가족여행 짐 준비표은 원문 행을 7개 Item과 7개 Step으로 보존한다.",
+      "sourceRowIds": [
+        "live-c10--c10-sr01",
+        "live-c10--c10-sr02",
+        "live-c10--c10-sr03"
+      ],
+      "itemIds": [
+        "live-c10-item-1",
+        "live-c10-item-2",
+        "live-c10-item-3"
+      ],
+      "slideATitle": "가족여행 짐 준비표 · 원문에서 SourceRow로",
+      "slideBTitle": "가족여행 짐 준비표 · Item에서 projection으로"
+    }
+  ]
+}

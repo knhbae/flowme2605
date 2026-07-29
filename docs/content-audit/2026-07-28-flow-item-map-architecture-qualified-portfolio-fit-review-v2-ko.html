@@ -1,0 +1,3100 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe Item·Map Architecture Qualified Corpus Revalidation v2 — Expanded</title>
+  <meta name="description" content="실제 원문이 SourceRow, Item, Step, Flow, Map과 목적지별 projection으로 정리되는 과정을 8개 콘텐츠로 풀어 설명합니다.">
+  <style>
+  :root{
+    --deep:#08291f;--deep-2:#123b2e;--paper:#f5f8f4;--white:#fff;
+    --ink:#10231c;--muted:#66756e;--line:#d8e3dc;--lime:#d8f26a;
+    --source:#7653a6;--source-bg:#f0eafa;--canonical:#2f66b7;
+    --canonical-bg:#e9f0fb;--projection:#19714d;--projection-bg:#e5f3ea;
+    --overlay:#b77a0d;--overlay-bg:#fff3d2;--review:#b96b13;
+    --review-bg:#fff0da;--hold:#ae4d45;--hold-bg:#fbe8e5;
+    --shadow:0 22px 60px rgba(16,47,36,.09);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:Pretendard,"Noto Sans KR","Apple SD Gothic Neo",Arial,sans-serif;line-height:1.58;overflow-wrap:anywhere}
+  a{color:inherit}
+  button{font:inherit}
+  .wrap{width:min(1280px,calc(100% - 64px));margin:auto}
+  .slide{min-height:900px;padding:82px 0;border-bottom:1px solid var(--line);display:flex;align-items:center;position:relative;overflow:hidden}
+  .slide:nth-of-type(even):not(.hero):not(.final-slide){background:var(--white)}
+  .slide-label{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--lime);font-weight:900}
+  h1,h2,h3,p{margin-top:0}
+  h1{font-size:clamp(64px,7vw,104px);line-height:.96;letter-spacing:-.065em;margin:24px 0 28px}
+  h2{font-size:clamp(42px,4.2vw,66px);line-height:1.04;letter-spacing:-.05em;margin:5px 0 18px}
+  h3{font-size:25px;line-height:1.2;letter-spacing:-.025em}
+  .lead{font-size:21px;max-width:880px;color:var(--muted)}
+  .report-nav{position:sticky;top:0;z-index:40;background:rgba(8,41,31,.96);color:white;border-bottom:1px solid rgba(255,255,255,.12)}
+  .report-nav .wrap{display:flex;gap:10px;overflow:auto;padding:11px 0;scrollbar-width:none}
+  .report-nav .wrap::-webkit-scrollbar{display:none}
+  .report-nav a{white-space:nowrap;text-decoration:none;font-size:13px;padding:8px 11px;border-radius:99px;color:#cddbd4}
+  .report-nav a:hover,.report-nav a:focus{background:rgba(255,255,255,.1);color:white}
+  .hero{background:radial-gradient(circle at 83% 18%,#315d36 0,transparent 36%),linear-gradient(135deg,#05281f,#113d2f);color:white;align-items:flex-start}
+  .hero .wrap{padding-top:24px}
+  .hero-top{display:grid;grid-template-columns:1.15fr .85fr;gap:70px;align-items:end}
+  .hero h1{max-width:790px}
+  .hero-copy{font-size:22px;max-width:760px;color:#d9e8e0}
+  .hero-copy strong{color:var(--lime)}
+  .hero-stats{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid rgba(255,255,255,.2);border-bottom:1px solid rgba(255,255,255,.2)}
+  .hero-stats div{padding:26px 18px;border-right:1px solid rgba(255,255,255,.18)}
+  .hero-stats div:last-child{border-right:0}
+  .hero-stats strong{display:block;font-size:54px;line-height:1;color:var(--lime)}
+  .hero-stats span{display:block;margin-top:9px;font-size:16px}
+  .hero-stats small{color:#b8cbc1}
+  .hero-pipeline{display:grid;grid-template-columns:1fr auto 1fr auto 1.1fr auto 1.8fr;gap:18px;align-items:center;margin-top:62px}
+  .hero-node{border-top:1px solid rgba(255,255,255,.3);padding-top:18px;min-height:112px}
+  .hero-node span{display:block;color:var(--lime);font-size:14px;font-weight:900}
+  .hero-node strong{display:block;font-size:24px;margin:5px 0}
+  .hero-node small{color:#bbcec4;font-size:14px}
+  .hero-arrow{font-size:30px;color:var(--lime)}
+  .hero-outputs{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+  .hero-outputs span{border:1px solid rgba(255,255,255,.2);padding:13px;border-radius:10px;text-align:center;font-weight:800}
+  .section-heading{display:grid;grid-template-columns:82px 1fr;gap:22px;align-items:start;margin-bottom:46px}
+  .section-heading>span{width:64px;height:64px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;color:var(--projection);font-weight:900;font-size:15px}
+  .section-heading p{margin:1px 0 4px;color:var(--projection);font-weight:900;font-size:15px}
+  .section-heading h2{max-width:1000px}
+  .section-copy{font-size:19px;color:var(--muted);max-width:980px}
+  .evidence-levels{display:grid;gap:20px}
+  .evidence-level{display:grid;grid-template-columns:130px 1fr;gap:30px;align-items:center;padding:22px 0;border-bottom:1px solid var(--line)}
+  .evidence-level>strong{font-size:72px;line-height:1;color:var(--projection)}
+  .evidence-level h3{margin-bottom:5px}
+  .evidence-level p{margin:0;color:var(--muted);font-size:18px}
+  .evidence-level.boundary>strong{color:var(--review)}
+  .evidence-level.map>strong{color:var(--canonical)}
+  .evidence-level.future>strong{color:var(--source)}
+  .shape-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0 56px}
+  .shape-story{display:grid;grid-template-columns:54px 1fr;gap:16px;padding:20px 0;border-bottom:1px solid var(--line)}
+  .shape-story>span{color:var(--source);font-weight:900}
+  .shape-story h3{margin-bottom:6px}
+  .shape-story p{color:var(--muted);font-size:16px;margin-bottom:10px}
+  .shape-story div>span{display:inline-block;color:var(--canonical);font-weight:800;margin-right:16px}
+  .shape-story code{font-size:13px;color:var(--projection)}
+  .grammar-stage{display:grid;grid-template-columns:repeat(6,1fr);align-items:center;gap:12px;margin:50px 0}
+  .grammar-stage>div{min-height:170px;border-top:5px solid var(--line);padding:22px 14px;background:white}
+  .grammar-stage>div.source{border-color:var(--source)}
+  .grammar-stage>div.canonical{border-color:var(--canonical)}
+  .grammar-stage>div.projection{border-color:var(--projection)}
+  .grammar-stage strong{font-size:22px;display:block;margin-bottom:8px}
+  .grammar-stage span{font-size:40px;line-height:1;font-weight:900;display:block;color:var(--canonical)}
+  .grammar-stage small{display:block;color:var(--muted);margin-top:12px}
+  .grammar-note{display:grid;grid-template-columns:1fr 1fr;gap:40px}
+  .grammar-note article{border-left:3px solid var(--canonical);padding-left:22px}
+  .grammar-note article:last-child{border-color:var(--projection)}
+  .grammar-note p{font-size:18px;color:var(--muted)}
+  .anatomy-layout{display:grid;grid-template-columns:.75fr 1.25fr;gap:58px;align-items:start}
+  .anatomy-source{background:var(--source-bg);padding:34px;border-radius:22px}
+  .anatomy-source>span,.mini-label{font-size:13px;font-weight:900;color:var(--source);letter-spacing:.05em;text-transform:uppercase}
+  .anatomy-source h3{margin-top:12px}
+  .anatomy-source p{color:var(--muted)}
+  .field-table{border-top:1px solid var(--line)}
+  .field-table>div{display:grid;grid-template-columns:170px 1fr;gap:18px;padding:12px 0;border-bottom:1px solid var(--line);min-width:0}
+  .field-table code{font-size:13px;color:var(--canonical)}
+  .field-table strong{font-size:15px;font-weight:650;min-width:0}
+  .field-table .optional-off{opacity:.58}
+  .field-table .optional-on code{color:var(--overlay)}
+  .field-table>p{font-size:13px;color:var(--muted);margin-top:14px}
+  .field-table>p a{color:var(--source)}
+  .field-legend{display:flex;gap:20px;flex-wrap:wrap;margin-top:20px}
+  .field-legend span{font-size:14px}
+  .field-legend b{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;background:var(--canonical)}
+  .field-legend span:last-child b{background:var(--overlay)}
+  .branch-layout{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+  .branch{padding:38px;border-radius:24px;background:white;border:1px solid var(--line)}
+  .branch.scheduled{border-top:7px solid var(--projection)}
+  .branch.undated{border-top:7px solid var(--canonical)}
+  .branch h3{font-size:32px}
+  .branch>strong{display:block;font-size:25px;margin:24px 0}
+  .branch ol{padding-left:22px;color:var(--muted);font-size:17px}
+  .branch-result{margin-top:28px;display:flex;gap:9px;flex-wrap:wrap}
+  .branch-result span{background:var(--paper);padding:10px 13px;border-radius:8px;font-weight:800}
+  .case-slide{align-items:flex-start}
+  .source-layout{display:grid;grid-template-columns:42% 1fr;gap:58px;align-items:start}
+  .source-frame{margin:0;border:1px solid var(--line);background:white;box-shadow:var(--shadow);border-radius:18px;overflow:hidden}
+  .source-frame a{display:block;height:440px;background:#eef2ef}
+  .source-frame img{width:100%;height:100%;object-fit:contain;display:block}
+  .source-frame figcaption{display:flex;justify-content:space-between;padding:16px 18px}
+  .source-frame figcaption span{color:var(--source)}
+  .plain-fact{border-left:4px solid var(--source);padding-left:20px;margin-bottom:22px}
+  .plain-fact span{display:block;color:var(--source);font-size:13px;font-weight:900}
+  .plain-fact strong{font-size:22px;display:block;margin-top:7px}
+  .row-list,.item-list{list-style:none;margin:0;padding:0}
+  .row-list li,.item-list li{display:grid;grid-template-columns:42px 1fr;gap:14px;padding:13px 0;border-bottom:1px solid var(--line)}
+  .row-list li>span{color:var(--source);font-weight:900}
+  .item-list li>span{color:var(--canonical);font-weight:900}
+  .row-list strong,.item-list strong{display:block;font-size:17px}
+  .row-list small,.item-list small{display:block;color:var(--muted);font-size:13px;margin-top:3px}
+  .source-count-line{display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;gap:8px;align-items:center;margin:28px 0}
+  .source-count-line>div{text-align:center;border-top:2px solid var(--line);padding-top:12px}
+  .source-count-line strong{display:block;font-size:27px}
+  .source-count-line span{font-size:12px;color:var(--muted)}
+  .source-count-line i{font-style:normal;color:var(--projection);font-size:22px}
+  .overlay-panel{display:grid;grid-template-columns:.75fr 1.25fr;gap:18px;background:var(--overlay-bg);padding:18px;border-radius:16px}
+  .overlay-panel>div>span{color:var(--overlay);font-weight:900}
+  .overlay-panel p{font-size:13px;color:var(--muted);margin:5px 0 0}
+  .overlay-list{display:grid;gap:6px}
+  .overlay-list>div,.overlay-empty{background:rgba(255,255,255,.7);padding:9px 11px;border-radius:8px}
+  .overlay-list strong{font-size:14px}
+  .overlay-list span{display:block;color:var(--muted);font-size:11px}
+  .readiness-line{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px}
+  .status{display:inline-flex;gap:6px;align-items:center;border-radius:99px;background:#edf2ef;padding:7px 10px;font-size:12px}
+  .status b{font-weight:900}
+  .status.go{background:var(--projection-bg);color:var(--projection)}
+  .status.modify{background:var(--review-bg);color:var(--review)}
+  .status.hold{background:var(--hold-bg);color:var(--hold)}
+  .data-layout{display:grid;grid-template-columns:.9fr 1.1fr;gap:60px}
+  .data-flow-panel>.item-list{margin-top:10px}
+  .item-structure-layout{display:grid;grid-template-columns:1fr .92fr;gap:72px;align-items:start}
+  .structure-story{border:1px solid var(--line);border-radius:22px;background:white;padding:28px 32px}
+  .structure-stack{display:grid;grid-template-columns:1fr;gap:8px;margin-top:16px}
+  .structure-stack>div{display:grid;grid-template-columns:72px 110px 1fr;align-items:center;gap:12px;border-left:4px solid var(--line);padding:12px 16px;background:var(--paper);border-radius:0 12px 12px 0}
+  .structure-stack>div.source{border-color:var(--source);background:var(--source-bg)}
+  .structure-stack>div.canonical{border-color:var(--canonical);background:var(--canonical-bg)}
+  .structure-stack strong{font-size:28px;line-height:1;color:var(--canonical)}
+  .structure-stack .source strong{color:var(--source)}
+  .structure-stack span{font-weight:900}
+  .structure-stack small{color:var(--muted)}
+  .structure-stack>b{text-align:center;color:var(--canonical);line-height:1}
+  .structure-rule{margin:20px 0 0;padding-top:18px;border-top:1px solid var(--line);color:var(--muted)}
+  .hierarchy-lane{display:grid;grid-template-columns:repeat(9,auto);align-items:center;gap:8px;margin:30px 0}
+  .hierarchy-lane>div{min-width:80px;border-top:3px solid var(--line);padding-top:10px;text-align:center}
+  .hierarchy-lane .canonical{border-color:var(--canonical)}
+  .hierarchy-lane strong{display:block;font-size:24px}
+  .hierarchy-lane span{font-size:11px;color:var(--muted)}
+  .hierarchy-lane b{color:var(--canonical)}
+  .why-box{border-left:4px solid var(--projection);padding-left:18px}
+  .why-box span{font-size:13px;color:var(--projection);font-weight:900}
+  .why-box p{font-size:17px;margin-top:7px;color:var(--muted)}
+  .case-projection-layout{display:grid;grid-template-columns:1.02fr .98fr;gap:54px;align-items:start}
+  .projection-explain{min-width:0}
+  .item-anatomy{background:white;border:1px solid var(--line);padding:28px;border-radius:20px}
+  .item-anatomy h3{font-size:28px;margin:10px 0 18px}
+  .projection-band{margin-top:42px;border-top:1px solid var(--line);padding-top:24px}
+  .projection-band>div:first-child{display:flex;justify-content:space-between;align-items:end;margin-bottom:18px}
+  .projection-band>div:first-child span{color:var(--projection);font-weight:900}
+  .projection-band>div:first-child strong{font-size:22px}
+  .projection-cards{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+  .projection{padding:16px;border:1px solid var(--line);border-radius:12px;min-height:86px}
+  .projection strong{display:block;font-size:17px}
+  .projection span{display:block;color:var(--muted);font-size:12px;margin-top:6px}
+  .projection.primary{background:var(--projection);color:white;border-color:var(--projection)}
+  .projection.primary span{color:#d7e9df}
+  .projection.secondary{background:var(--projection-bg);border-color:#9ccdb1}
+  .projection.off{opacity:.48;text-decoration:none}
+  .projection-note{font-size:13px;color:var(--muted);margin:12px 0 0}
+  .case-projection-layout .projection-band{margin-top:30px}
+  .case-projection-layout .projection-cards{grid-template-columns:repeat(2,1fr)}
+  .state-foot{display:flex;gap:20px;flex-wrap:wrap;margin-top:22px;color:var(--muted);font-size:12px}
+  .state-foot b{color:var(--ink)}
+  .comparison-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:28px}
+  .comparison-grid.three{grid-template-columns:repeat(3,1fr)}
+  .comparison-case{padding:32px;background:white;border-top:7px solid var(--canonical);min-height:330px}
+  .comparison-case span{color:var(--source);font-weight:900}
+  .comparison-case h3{font-size:32px;margin-top:14px}
+  .comparison-case p{font-size:18px;color:var(--muted);min-height:60px}
+  .comparison-schedule{padding:13px;background:var(--paper);margin:26px 0;font-family:ui-monospace,Consolas,monospace}
+  .comparison-case>strong{font-size:24px;color:var(--projection)}
+  .projection-center{display:grid;grid-template-columns:.8fr 1.2fr;gap:56px;align-items:center}
+  .canonical-core{width:330px;height:330px;border:3px solid var(--canonical);border-radius:50%;display:grid;place-items:center;text-align:center;background:white}
+  .canonical-core strong{font-size:43px;display:block}
+  .canonical-core span{color:var(--muted)}
+  .projection-spokes{display:grid;gap:12px}
+  .projection-spokes div{display:grid;grid-template-columns:160px 1fr;gap:16px;padding:15px 0;border-bottom:1px solid var(--line)}
+  .projection-spokes strong{font-size:20px}
+  .projection-spokes span{color:var(--muted)}
+  .bundle-layout{display:grid;grid-template-columns:1fr 80px 1fr;gap:28px;align-items:center}
+  .bundle-items{display:grid;gap:10px}
+  .bundle-items div{background:white;border-left:4px solid var(--canonical);padding:16px 20px}
+  .bundle-items strong{display:block}
+  .bundle-items span{font-size:12px;color:var(--muted)}
+  .bundle-arrow{text-align:center;font-size:44px;color:var(--projection)}
+  .bundle-event{background:var(--projection);color:white;padding:38px;border-radius:22px}
+  .bundle-event span{color:var(--lime);font-weight:900}
+  .bundle-event h3{font-size:32px;margin-top:12px}
+  .bundle-event p{color:#d8e7df}
+  .bundle-event code{display:block;background:rgba(0,0,0,.14);padding:14px;margin-top:18px;overflow-wrap:anywhere}
+  .architecture-list{display:grid;gap:18px}
+  .architecture-summary{display:grid;grid-template-columns:56px 1fr 120px;gap:22px;align-items:center;background:white;padding:22px 26px;border-left:7px solid var(--line)}
+  .architecture-summary.go{border-color:var(--projection)}
+  .architecture-summary.modify{border-color:var(--review)}
+  .architecture-summary.hold{border-color:var(--hold)}
+  .architecture-summary>span{width:42px;height:42px;border-radius:50%;background:var(--paper);display:grid;place-items:center;font-weight:900}
+  .architecture-summary h3{margin:0 0 4px}
+  .architecture-summary p{margin:0;color:var(--muted)}
+  .architecture-summary>strong{font-size:48px;text-align:right}
+  .architecture-summary small{font-size:12px;display:block}
+  .readiness-examples{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .readiness-example{background:white;border:1px solid var(--line);padding:26px}
+  .readiness-example p{min-height:86px;color:var(--muted)}
+  .readiness-example>div{display:flex;gap:6px;flex-wrap:wrap}
+  .delta-list{display:grid;grid-template-columns:repeat(2,1fr);gap:0 60px}
+  .delta-row{display:grid;grid-template-columns:1fr 90px auto 90px 60px;gap:12px;align-items:center;padding:18px 0;border-bottom:1px solid var(--line)}
+  .delta-row span{color:var(--muted)}
+  .delta-row strong{font-size:28px}
+  .delta-row i{font-style:normal;color:var(--projection)}
+  .delta-row b{color:var(--review)}
+  .replacement-line{margin-top:35px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .replacement-line article{background:white;padding:22px;border-top:5px solid var(--line)}
+  .replacement-line article:first-child{border-color:var(--projection)}
+  .replacement-line article:not(:first-child){border-color:var(--review)}
+  .replacement-line span{font-size:12px;color:var(--muted)}
+  .replacement-line p{margin:8px 0 0;color:var(--muted)}
+  .boundary-layout{display:grid;grid-template-columns:1fr 1fr;gap:60px}
+  .stop-panel{background:var(--hold-bg);border-left:8px solid var(--hold);padding:38px}
+  .stop-panel>span{color:var(--hold);font-weight:900}
+  .stop-panel h3{font-size:31px;margin-top:14px}
+  .stop-panel>p{font-size:17px;color:#68443f}
+  .stop-panel>div{display:flex;gap:6px;flex-wrap:wrap;margin:22px 0}
+  .stop-panel>strong{display:block;margin-top:25px}
+  .stop-panel small{display:block;margin-top:24px;color:var(--hold);font-weight:900}
+  .portfolio-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .portfolio-card{background:white;border:1px solid var(--line);padding:20px;min-height:190px}
+  .portfolio-card>span{font-size:12px;color:var(--source);font-weight:900}
+  .portfolio-card h3{font-size:21px;margin:8px 0 13px}
+  .portfolio-card>div{display:flex;gap:5px;flex-wrap:wrap}
+  .portfolio-card p{font-size:13px;color:var(--muted);margin:15px 0 5px}
+  .portfolio-card small{color:var(--canonical)}
+  .portfolio-disclaimer{margin-top:24px;border-left:4px solid var(--review);padding-left:18px;color:var(--muted)}
+  .future-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:28px}
+  .future-contract{border:2px dashed #b8a7cf;background:white;padding:28px;min-height:470px}
+  .future-head{display:flex;justify-content:space-between}
+  .future-head span{color:var(--source);font-weight:900}
+  .future-head strong{color:var(--hold)}
+  .future-contract h3{font-size:31px;margin:16px 0 8px}
+  .future-contract>p{color:var(--muted);min-height:56px}
+  .future-contract dl{margin:22px 0}
+  .future-contract dl>div{display:grid;grid-template-columns:120px 1fr;gap:16px;border-top:1px solid var(--line);padding:10px 0}
+  .future-contract dt{color:var(--muted)}
+  .future-contract dd{margin:0}
+  .future-contract aside{background:var(--review-bg);padding:13px;color:#774c16}
+  .future-contract>small{display:block;color:var(--source);margin-top:18px;font-weight:900}
+  .gap-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px 50px}
+  .gap-item{border-top:2px solid var(--line);padding-top:18px}
+  .gap-item span{color:var(--hold);font-weight:900;font-size:13px}
+  .gap-item h3{margin:7px 0}
+  .gap-item p{color:var(--muted)}
+  .final-slide{background:var(--deep);color:white}
+  .final-layout{display:grid;grid-template-columns:.8fr 1.2fr;gap:70px}
+  .final-decision span{color:var(--lime);font-weight:900}
+  .final-decision strong{font-size:54px;line-height:1.08;display:block;margin:18px 0 24px}
+  .final-decision p{color:#ccddd4;font-size:18px}
+  .backend-rules{display:grid;gap:10px}
+  .backend-rules div{padding:15px 18px;border-bottom:1px solid rgba(255,255,255,.18);font-size:16px}
+  .backend-rules b{color:var(--lime);margin-right:12px}
+  .not-run{margin-top:25px;padding:18px;border:1px solid rgba(255,255,255,.18);color:#c9d8d0}
+  .appendix-intro{background:#e7eee9}
+  .appendix-intro h2{max-width:800px}
+  .filter-bar{position:sticky;top:58px;z-index:30;background:rgba(245,248,244,.96);border-bottom:1px solid var(--line)}
+  .filters{display:flex;gap:8px;overflow:auto;padding:12px 0}
+  .filter{appearance:none;border:1px solid var(--line);background:white;border-radius:99px;padding:9px 14px;white-space:nowrap;cursor:pointer;font-weight:800;color:var(--ink)}
+  .filter[aria-pressed=true]{background:var(--deep);color:white;border-color:var(--deep)}
+  .explorer-section{padding:60px 0}
+  .explorer-stack{display:grid;gap:22px}
+  .explorer-card{background:white;border:1px solid var(--line);padding:28px}
+  .explorer-card[hidden]{display:none}
+  .explorer-card header{display:flex;justify-content:space-between;gap:20px}
+  .explorer-card header span{color:var(--source);font-size:12px;font-weight:900}
+  .explorer-card header h3{font-size:27px;margin:5px 0}
+  .explorer-card header>strong{color:var(--canonical);font-size:25px}
+  .explorer-card>p{color:var(--muted)}
+  .explorer-summary{display:flex;gap:8px;flex-wrap:wrap;margin:15px 0}
+  .explorer-summary span{background:var(--paper);padding:8px 10px;font-size:12px}
+  details{border-top:1px solid var(--line);padding-top:14px;margin-top:14px}
+  summary{cursor:pointer;color:var(--projection);font-weight:900}
+  .appendix-list{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:14px;max-height:520px;overflow:auto}
+  .appendix-list>div{display:grid;grid-template-columns:30px 1fr;gap:5px 10px;background:var(--paper);padding:11px}
+  .appendix-list b{grid-row:1/4;color:var(--canonical)}
+  .appendix-list span,.appendix-list small{color:var(--muted);font-size:11px}
+  .empty-result{display:none;text-align:center;padding:50px;color:var(--muted)}
+  .footer{background:#071d17;color:#b9cbc2;padding:42px 0}
+  .footer .wrap{display:flex;justify-content:space-between;gap:30px}
+  .footer a{color:var(--lime)}
+  @media(max-width:980px){
+    .slide{min-height:auto;padding:58px 0}
+    .hero-top,.source-layout,.data-layout,.item-structure-layout,.case-projection-layout,.anatomy-layout,.projection-center,.boundary-layout,.final-layout{grid-template-columns:1fr}
+    .hero-pipeline{grid-template-columns:1fr}.hero-arrow{transform:rotate(90deg);text-align:center}
+    .source-frame a{height:430px}
+    .shape-grid,.grammar-note,.branch-layout,.comparison-grid,.comparison-grid.three,.readiness-examples,.delta-list,.future-grid,.gap-grid{grid-template-columns:1fr}
+    .grammar-stage{grid-template-columns:repeat(3,1fr)}
+    .projection-cards{grid-template-columns:repeat(3,1fr)}
+    .portfolio-grid{grid-template-columns:repeat(2,1fr)}
+    .bundle-layout{grid-template-columns:1fr}.bundle-arrow{transform:rotate(90deg)}
+    .final-layout{gap:35px}
+  }
+  @media(max-width:600px){
+    .wrap{width:calc(100% - 28px)}
+    .slide{padding:42px 0}
+    .report-nav .wrap{width:100%;padding-left:14px;padding-right:14px}
+    h1{font-size:52px}
+    h2{font-size:38px}
+    .hero-copy,.lead{font-size:17px}
+    .hero-stats{grid-template-columns:1fr}
+    .hero-stats div{border-right:0;border-bottom:1px solid rgba(255,255,255,.16)}
+    .hero-stats div:last-child{border-bottom:0}
+    .hero-stats strong{font-size:42px}
+    .section-heading{grid-template-columns:1fr;gap:12px;margin-bottom:30px}
+    .section-heading>span{width:48px;height:48px}
+    .section-copy{font-size:16px}
+    .evidence-level{grid-template-columns:80px 1fr;gap:18px}
+    .evidence-level>strong{font-size:50px}
+    .evidence-level p{font-size:15px}
+    .shape-grid{grid-template-columns:1fr}
+    .grammar-stage{grid-template-columns:1fr}
+    .grammar-stage>div{min-height:auto}
+    .source-frame a{height:245px}
+    .source-count-line{grid-template-columns:1fr}.source-count-line i{transform:rotate(90deg);text-align:center}
+    .overlay-panel{grid-template-columns:1fr}
+    .data-layout{gap:30px}
+    .item-structure-layout,.case-projection-layout{gap:30px}
+    .structure-story{padding:20px}
+    .structure-stack>div{grid-template-columns:58px 92px 1fr;padding:11px 12px}
+    .hierarchy-lane{grid-template-columns:1fr}.hierarchy-lane b{transform:rotate(90deg);text-align:center}
+    .item-anatomy{padding:18px}
+    .field-table>div{grid-template-columns:1fr;gap:4px}
+    .projection-band>div:first-child{display:block}
+    .projection-cards{grid-template-columns:1fr}
+    .state-foot{display:grid;gap:8px}
+    .comparison-case{min-height:auto}
+    .canonical-core{width:260px;height:260px;margin:auto}
+    .projection-spokes div{grid-template-columns:1fr}
+    .architecture-summary{grid-template-columns:44px 1fr}
+    .architecture-summary>strong{grid-column:2;text-align:left}
+    .portfolio-grid{grid-template-columns:1fr}
+    .future-contract{min-height:auto;padding:20px}
+    .future-contract dl>div{grid-template-columns:1fr;gap:4px}
+    .appendix-list{grid-template-columns:1fr}
+    .footer .wrap{display:block}
+  }
+</style>
+</head>
+<body>
+  <nav class="report-nav" aria-label="보고서 목차">
+    <div class="wrap">
+      <a href="#top">결론</a>
+      <a href="#evidence">증거 범위</a>
+      <a href="#shapes">데이터 형태</a>
+      <a href="#case-1-source">실제 8개</a>
+      <a href="#compare-lessons">형태 비교</a>
+      <a href="#architecture">아키텍처</a>
+      <a href="#boundaries">Boundary</a>
+      <a href="#portfolio-1">27개 지도</a>
+      <a href="#future-1">다음 8개</a>
+      <a href="#decision">Backend 결론</a>
+      <a href="#appendix">전체 데이터</a>
+    </div>
+  </nav>
+
+  <section class="slide hero" id="top">
+    <div class="wrap">
+      <div class="hero-top">
+        <div>
+          <span class="slide-label">2026-07-28 · Qualified corpus revalidation v2</span>
+          <h1>Item은 원본,<br>ICS는 전달물</h1>
+          <p class="hero-copy">원문에서 확보한 실행 의미는 <strong>canonical Item</strong>이 소유합니다. Calendar·Checklist·Todo·Sheet·Memo는 같은 Item을 목적지에 맞게 보여주는 projection입니다.</p>
+        </div>
+        <div class="hero-stats">
+          <div><strong>160</strong><span>Item</span><small>실행 상태의 원본</small></div>
+          <div><strong>210</strong><span>SourceRow</span><small>원문 근거 단위</small></div>
+          <div><strong>48</strong><span>날짜 없음</span><small>가짜 VEVENT 0</small></div>
+        </div>
+      </div>
+      <div class="hero-pipeline" aria-label="FlowMe 데이터 파이프라인">
+        <div class="hero-node"><span>01</span><strong>원문 콘텐츠</strong><small>웹·영상·표·파일</small></div>
+        <div class="hero-arrow">→</div>
+        <div class="hero-node"><span>02</span><strong>SourceRow</strong><small>출처 기반 최소 행</small></div>
+        <div class="hero-arrow">→</div>
+        <div class="hero-node"><span>03</span><strong>Item</strong><small>독립 완료 가능한 원본</small></div>
+        <div class="hero-arrow">→</div>
+        <div class="hero-outputs"><span>Calendar</span><span>Checklist</span><span>Todo</span><span>Sheet · Memo</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="evidence">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>01</span>
+    <div>
+      <p>이 보고서는 무엇을 실제로 보여주나</p>
+      <h2>콘텐츠 수가 아니라 증거 수준부터 구분</h2>
+      <div class="section-copy">완전 변환, historical boundary, 자격 판정 대상, 미래 데이터 계약은 서로 다른 상태입니다.</div>
+    </div>
+  </header>
+      <div class="evidence-levels">
+        <article class="evidence-level qualified">
+    <strong>8</strong>
+    <div><h3>Qualified canonical 변환</h3><p>SourceRow → Item → Step → Flow → Bundle/Map 전체 구조가 있고 이번 수치에 포함됩니다.</p></div>
+  </article>
+        <article class="evidence-level boundary">
+    <strong>2</strong>
+    <div><h3>Historical / boundary</h3><p>실제 구조는 있지만 최신 logic·rights·safety gate 때문에 정상 수치에서 제외했습니다.</p></div>
+  </article>
+        <article class="evidence-level map">
+    <strong>27</strong>
+    <div><h3>콘텐츠 자격 판정 지도</h3><p>9개 lifeArea의 조사 대상입니다. 27개 모두가 변환 완료 Flow라는 뜻은 아닙니다.</p></div>
+  </article>
+        <article class="evidence-level future">
+    <strong>8</strong>
+    <div><h3>다음 field contract</h3><p>Vertical 기회입니다. 필요한 행 구조를 정의했지만 SourceRow 0·Item 0입니다.</p></div>
+  </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="shapes">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>02</span>
+    <div>
+      <p>원문은 어떤 데이터 형태로 들어오나</p>
+      <h2>8개 콘텐츠에서 확인한 여섯 가지 변환 문법</h2>
+      <div class="section-copy">카테고리가 아니라 원문 행의 모양과 사용자 job이 projection을 결정합니다.</div>
+    </div>
+  </header>
+      <div class="shape-grid">
+        <article class="shape-story">
+              <span>01</span>
+              <div><h3>D-day 역산 행</h3><p>여러 원문 행을 같은 시점의 실행 Item으로 묶습니다.</p><span>이사 D-30</span><code>date_offsets → Calendar</code></div>
+            </article><article class="shape-story">
+              <span>02</span>
+              <div><h3>날짜·연령 표 행</h3><p>표의 한 행이 날짜 계산 가능한 Item 한 개가 됩니다.</p><span>초기 이유식</span><code>table_rows → Calendar + Sheet</code></div>
+            </article><article class="shape-story">
+              <span>03</span>
+              <div><h3>날짜 있는 lesson 행</h3><p>원본 계획표를 진도 Sheet로 보존하고 시작일이 있을 때만 일정화합니다.</p><span>OPIc 계획표</span><code>lesson_rows → Sheet + Calendar</code></div>
+            </article><article class="shape-story">
+              <span>04</span>
+              <div><h3>날짜 없는 lesson 행</h3><p>진도는 완전하지만 VEVENT는 만들지 않습니다.</p><span>생활코딩 WEB1</span><code>lesson_rows → Sheet + Checklist</code></div>
+            </article><article class="shape-story">
+              <span>05</span>
+              <div><h3>순서형 절차 행</h3><p>날짜가 아니라 결정 순서와 완료 상태를 보존합니다.</p><span>신차 구매 8단계</span><code>procedure_rows → Checklist + Sheet</code></div>
+            </article><article class="shape-story">
+              <span>06</span>
+              <div><h3>리소스 컬렉션</h3><p>같은 컬렉션이라도 원문 순서와 사용자 job에 따라 목적지가 달라집니다.</p><span>Allblanc · 여름 반찬 · AND 영상</span><code>collection → Calendar / Checklist / Todo</code></div>
+            </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="grammar">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>03</span>
+    <div>
+      <p>각 층은 무슨 일을 하나</p>
+      <h2>상태는 Item이 소유하고, 위층은 의미를 묶는다</h2>
+      <div class="section-copy">이사 사례의 실제 52 SourceRow와 27 Item을 같은 계층에 놓고 보면 관계가 선명해집니다.</div>
+    </div>
+  </header>
+      <div class="grammar-stage">
+        <div class="source"><strong>SourceRow</strong><span>52</span><small>원문 D-day·세부 체크 행</small></div>
+        <div class="canonical"><strong>Item</strong><span>27</span><small>독립 완료·결정 단위</small></div>
+        <div class="canonical"><strong>Step</strong><span>6</span><small>D-30·D-10·D-3 등</small></div>
+        <div class="canonical"><strong>Flow</strong><span>1</span><small>이사 준비라는 한 user job</small></div>
+        <div class="canonical"><strong>Bundle / Map</strong><span>1</span><small>Flow의 관계와 순서</small></div>
+        <div class="projection"><strong>Projection</strong><span>5</span><small>목적지마다 다른 표현</small></div>
+      </div>
+      <div class="grammar-note">
+        <article><h3>여러 SourceRow → Item 하나</h3><p>이사 방식, 업체 견적, 입주청소 견적처럼 사용자가 한 번에 결정하는 원문 행은 하나의 Item으로 묶을 수 있습니다.</p></article>
+        <article><h3>Item 하나 → 여러 Projection</h3><p>같은 Item이 Calendar에서는 일정, Checklist에서는 체크 행, Sheet에서는 상태 행으로 보이지만 완료 상태의 원본은 하나입니다.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="item-anatomy">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>04</span>
+    <div>
+      <p>Item 한 개에는 무엇이 들어가나</p>
+      <h2>할 일 + 상세 설명이 기본, 일정·장소·조건은 선택</h2>
+      <div class="section-copy">모든 콘텐츠를 VEVENT처럼 만들 필요가 없습니다. 필요한 필드만 켜집니다.</div>
+    </div>
+  </header>
+      <div class="anatomy-layout">
+        <div class="anatomy-source">
+          <span>실제 이사 Item</span>
+          <h3>이사 방식과 이사업체 정하기</h3>
+          <p>선택한 방식, 업체명, 견적 링크와 예약 내용을 같은 메모에 적는다.</p>
+          <ol class="row-list"><li>
+        <span>01</span>
+        <div><strong>포장이사·반포장이사·일반이사 중 방식 선택</strong><small>포장이사·반포장이사·일반이사 중 방식 선택</small></div>
+      </li><li>
+        <span>02</span>
+        <div><strong>이사업체 견적 비교와 예약</strong><small>이사업체 견적 비교와 예약</small></div>
+      </li><li>
+        <span>03</span>
+        <div><strong>입주청소 업체 견적 비교와 예약</strong><small>입주청소 업체 견적 비교와 예약</small></div>
+      </li></ol>
+        </div>
+        <div>
+          <div class="field-table"><div class="required">
+        <code>itemId</code>
+        <strong>bundle-moving-d30-s1-i1</strong>
+      </div><div class="required">
+        <code>itemTitle</code>
+        <strong>이사 방식과 이사업체 정하기</strong>
+      </div><div class="required">
+        <code>detail / memo</code>
+        <strong>선택한 방식, 업체명, 견적 링크와 예약 내용을 같은 메모에 적는다.</strong>
+      </div><div class="required">
+        <code>completionMode</code>
+        <strong>manual_check</strong>
+      </div><div class="required">
+        <code>optional</code>
+        <strong>false</strong>
+      </div><div class="optional-on">
+        <code>schedule</code>
+        <strong>relative_to_target · D-30</strong>
+      </div><div class="required">
+        <code>sourceRowIds</code>
+        <strong>bundle-moving-d30-s1-i1-r1, bundle-moving-d30-s1-i1-r2, bundle-moving-d30-s1-i1-r3</strong>
+      </div>
+    <p>이 Item의 근거: <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363">포장이사·반포장이사·일반이사 중 방식 선택</a> · <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363">이사업체 견적 비교와 예약</a> · <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363">입주청소 업체 견적 비교와 예약</a></p>
+  </div>
+          <div class="field-legend"><span><b></b>모든 Item이 갖는 실행·출처 필드</span><span><b></b>상황에 따라 켜지는 일정·조건 필드</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="schedule-branch">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>05</span>
+    <div>
+      <p>일정이 있느냐 없느냐가 무엇을 바꾸나</p>
+      <h2>Item은 같고 Calendar 경로만 갈라진다</h2>
+      <div class="section-copy">날짜가 없는 콘텐츠도 완전한 Flow가 될 수 있습니다.</div>
+    </div>
+  </header>
+      <div class="branch-layout">
+        <article class="branch scheduled">
+          <span>schedule 있음 · 112 Item</span>
+          <h3>Calendar 경로 활성</h3>
+          <strong>Item → VEVENT 또는 step_bundle</strong>
+          <ol><li>원문 날짜 또는 사용자 anchor가 있어야 함</li><li>원문에 없는 날짜·반복을 발명하지 않음</li><li>묶어도 완료 상태는 child Item이 소유</li></ol>
+          <div class="branch-result"><span>이사</span><span>초기 이유식</span><span>OPIc</span><span>Allblanc</span></div>
+        </article>
+        <article class="branch undated">
+          <span>schedule 없음 · 48 Item</span>
+          <h3>Calendar 없이 실행</h3>
+          <strong>Item → Sheet · Checklist · Todo · Memo</strong>
+          <ol><li>VEVENT 0</li><li>VTODO 후보는 destination 지원 시에만 사용</li><li>지원하지 않으면 비Calendar fallback 유지</li></ol>
+          <div class="branch-result"><span>WEB1</span><span>신차 구매</span><span>여름 반찬</span><span>AND 영상</span></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide case-slide source-slide" id="case-1-source">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>01A</span>
+    <div>
+      <p>원문이 SourceRow가 되는 방법</p>
+      <h2>이사 D-30 체크리스트</h2>
+      <div class="section-copy">이사일을 기준으로 원문 D-day 체크 행을 빠뜨리지 않고 실행한다.</div>
+    </div>
+  </header>
+      <div class="source-layout">
+        <figure class="source-frame">
+          <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363">
+            <img src="2026-07-27-creator-portfolio-qualified-assets/creator-home-ajd-source.png" alt="아정당 원문 근거 화면">
+          </a>
+          <figcaption>
+            <strong>아정당</strong>
+            <span>D-day 역산 행</span>
+          </figcaption>
+        </figure>
+        <div class="source-explain">
+          <div class="plain-fact">
+            <span>원문에서 한 줄로 보는 단위</span>
+            <strong>원문의 D-30·D-10·D-3·D-1·당일 체크 행</strong>
+          </div>
+          <ol class="row-list"><li>
+        <span>01</span>
+        <div><strong>포장이사·반포장이사·일반이사 중 방식 선택</strong><small>포장이사·반포장이사·일반이사 중 방식 선택</small></div>
+      </li><li>
+        <span>02</span>
+        <div><strong>이사업체 견적 비교와 예약</strong><small>이사업체 견적 비교와 예약</small></div>
+      </li><li>
+        <span>03</span>
+        <div><strong>입주청소 업체 견적 비교와 예약</strong><small>입주청소 업체 견적 비교와 예약</small></div>
+      </li></ol>
+          <div class="source-count-line">
+            <div><strong>52</strong><span>SourceRow</span></div>
+            <i>→</i>
+            <div><strong>27</strong><span>Item</span></div>
+            <i>→</i>
+            <div><strong>6</strong><span>Step</span></div>
+            <i>→</i>
+            <div><strong>1</strong><span>Flow</span></div>
+          </div>
+          <div class="overlay-panel">
+            <div>
+              <span>사용자가 입력하는 overlay</span>
+              <p>원문에 이미 있는 값은 다시 묻지 않습니다.</p>
+            </div>
+            <div class="overlay-list"><div><strong>이사일</strong><span>date · 선택</span></div></div>
+          </div>
+          <div class="readiness-line">
+            <span class="status go"><b>Logic</b>Go</span>
+            <span class="status modify"><b>Public</b>Modify</span>
+            <span class="status neutral"><b>Rights</b>permission_required</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section><section class="slide case-slide data-slide" id="case-1-data">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>01B</span>
+    <div>
+      <p>SourceRow를 canonical 구조로 묶는 방법</p>
+      <h2>27개 Item으로 정리</h2>
+      <div class="section-copy">같은 시점의 세부 원문 행을 사용자가 한 번에 완료할 수 있는 행동으로 묶습니다.</div>
+    </div>
+  </header>
+      <div class="item-structure-layout">
+        <div>
+          <div class="mini-label">실제 Item 예시</div>
+          <ol class="item-list"><li>
+        <span>01</span>
+        <div><strong>이사 방식과 이사업체 정하기</strong><small>relative_to_target · D-30 · SourceRow 3개</small></div>
+      </li><li>
+        <span>02</span>
+        <div><strong>새집 상태 확인하고 필요한 수리 잡기</strong><small>relative_to_target · D-30 · SourceRow 2개</small></div>
+      </li><li>
+        <span>03</span>
+        <div><strong>가져가지 않을 물건 처분 시작하기</strong><small>relative_to_target · D-30 · SourceRow 1개</small></div>
+      </li></ol>
+        </div>
+        <div class="structure-story">
+          <span class="mini-label">원문이 정리되는 계층</span>
+          <div class="structure-stack">
+            <div class="source"><strong>52</strong><span>SourceRow</span><small>원문의 최소 근거 행</small></div>
+            <b>↓</b>
+            <div class="canonical"><strong>27</strong><span>Item</span><small>독립 완료 가능한 실행 단위</small></div>
+            <b>↓</b>
+            <div class="canonical"><strong>6</strong><span>Step</span><small>같은 단계·시점의 Item 묶음</small></div>
+            <b>↓</b>
+            <div class="canonical"><strong>1</strong><span>Flow</span><small>한 가지 사용자 job</small></div>
+            <b>↓</b>
+            <div class="canonical"><strong>1</strong><span>Bundle / Map</span><small>Flow 사이의 순서와 관계</small></div>
+          </div>
+          <p class="structure-rule">각 층은 아래 데이터를 복제하지 않고 묶는 의미만 더합니다. 완료 상태와 출처 연결은 Item에 남습니다.</p>
+        </div>
+      </div>
+    </div>
+  </section><section class="slide case-slide projection-slide" id="case-1-projection">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>01C</span>
+    <div>
+      <p>canonical Item을 실제 도구에 보내는 방법</p>
+      <h2>Calendar 중심으로 projection</h2>
+      <div class="section-copy">같은 Item을 다시 만드는 것이 아니라 목적지에 필요한 필드만 직렬화합니다.</div>
+    </div>
+  </header>
+      <div class="case-projection-layout">
+        <div class="item-anatomy">
+          <div class="mini-label">대표 canonical Item</div>
+          <h3>이사 방식과 이사업체 정하기</h3>
+          <div class="field-table"><div class="required">
+        <code>itemId</code>
+        <strong>bundle-moving-d30-s1-i1</strong>
+      </div><div class="required">
+        <code>itemTitle</code>
+        <strong>이사 방식과 이사업체 정하기</strong>
+      </div><div class="required">
+        <code>detail / memo</code>
+        <strong>선택한 방식, 업체명, 견적 링크와 예약 내용을 같은 메모에 적는다.</strong>
+      </div><div class="required">
+        <code>completionMode</code>
+        <strong>manual_check</strong>
+      </div><div class="required">
+        <code>optional</code>
+        <strong>false</strong>
+      </div><div class="optional-on">
+        <code>schedule</code>
+        <strong>relative_to_target · D-30</strong>
+      </div><div class="required">
+        <code>sourceRowIds</code>
+        <strong>bundle-moving-d30-s1-i1-r1, bundle-moving-d30-s1-i1-r2, bundle-moving-d30-s1-i1-r3</strong>
+      </div>
+    <p>이 Item의 근거: <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363">포장이사·반포장이사·일반이사 중 방식 선택</a> · <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363">이사업체 견적 비교와 예약</a> · <a href="https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363">입주청소 업체 견적 비교와 예약</a></p>
+  </div>
+        </div>
+        <div class="projection-explain">
+          <div class="why-box">
+            <span>왜 이 결과물인가</span>
+            <p>이사일이라는 기준 날짜가 있으므로 Calendar가 주 결과물이고 Checklist가 완료 상태를 보조합니다.</p>
+          </div>
+          <div class="projection-band">
+            <div>
+              <span>내보낼 때만 목적지 형태로 변환</span>
+              <strong>Calendar 중심</strong>
+            </div>
+            <div class="projection-cards"><div class="projection primary">
+        <strong>Calendar</strong>
+        <span>VEVENT 27개 · step_bundle</span>
+      </div><div class="projection secondary">
+        <strong>Checklist</strong>
+        <span>보조 결과물</span>
+      </div><div class="projection available">
+        <strong>Todo</strong>
+        <span>adapter에서 선택 가능</span>
+      </div><div class="projection available">
+        <strong>Sheet</strong>
+        <span>adapter에서 선택 가능</span>
+      </div><div class="projection available">
+        <strong>Memo</strong>
+        <span>adapter에서 선택 가능</span>
+      </div></div>
+    
+          </div>
+          <div class="state-foot">
+            <span>Architecture fit <b>Go</b></span>
+            <span>Logic <b>Go</b></span>
+            <span>Public <b>Modify</b></span>
+            <span>Personal <b>not_confirmed</b></span>
+            <span>Source <b>row_set_ready_for_logic_revalidation</b></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section><section class="slide case-slide source-slide" id="case-2-source">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>02A</span>
+    <div>
+      <p>원문이 SourceRow가 되는 방법</p>
+      <h2>초기 이유식 D+174~209 식단</h2>
+      <div class="section-copy">원문 식단표의 D+n 순서대로 초기 이유식을 제공한다.</div>
+    </div>
+  </header>
+      <div class="source-layout">
+        <figure class="source-frame">
+          <a href="https://blog.naver.com/01695258757/222768860919">
+            <img src="2026-07-27-creator-portfolio-qualified-assets/creator-family-babyfood016-source.png" alt="뿐이토핑이유식 원문 근거 화면">
+          </a>
+          <figcaption>
+            <strong>뿐이토핑이유식</strong>
+            <span>날짜·연령 표 행</span>
+          </figcaption>
+        </figure>
+        <div class="source-explain">
+          <div class="plain-fact">
+            <span>원문에서 한 줄로 보는 단위</span>
+            <strong>PDF 표의 D+n 식단 한 행</strong>
+          </div>
+          <ol class="row-list"><li>
+        <span>01</span>
+        <div><strong>D+174 식단</strong><small>한 끼: 쌀미음</small></div>
+      </li><li>
+        <span>02</span>
+        <div><strong>D+175 식단</strong><small>한 끼: 쌀미음</small></div>
+      </li><li>
+        <span>03</span>
+        <div><strong>D+176 식단</strong><small>한 끼: 쌀미음</small></div>
+      </li></ol>
+          <div class="source-count-line">
+            <div><strong>36</strong><span>SourceRow</span></div>
+            <i>→</i>
+            <div><strong>36</strong><span>Item</span></div>
+            <i>→</i>
+            <div><strong>12</strong><span>Step</span></div>
+            <i>→</i>
+            <div><strong>1</strong><span>Flow</span></div>
+          </div>
+          <div class="overlay-panel">
+            <div>
+              <span>사용자가 입력하는 overlay</span>
+              <p>원문에 이미 있는 값은 다시 묻지 않습니다.</p>
+            </div>
+            <div class="overlay-list"><div><strong>현재 D+n</strong><span>number · 선택</span></div><div><strong>D+174 시작일</strong><span>date · 선택</span></div></div>
+          </div>
+          <div class="readiness-line">
+            <span class="status go"><b>Logic</b>Go</span>
+            <span class="status hold"><b>Public</b>Hold</span>
+            <span class="status neutral"><b>Rights</b>private_conversion_only</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section><section class="slide case-slide data-slide" id="case-2-data">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>02B</span>
+    <div>
+      <p>SourceRow를 canonical 구조로 묶는 방법</p>
+      <h2>36개 Item으로 정리</h2>
+      <div class="section-copy">원문 날짜·메뉴 한 행이 그대로 한 Item이 되고, 3일 범위가 하나의 Step이 됩니다.</div>
+    </div>
+  </header>
+      <div class="item-structure-layout">
+        <div>
+          <div class="mini-label">실제 Item 예시</div>
+          <ol class="item-list"><li>
+        <span>01</span>
+        <div><strong>D+174 식단 제공</strong><small>source_day_index · D+174 · SourceRow 1개</small></div>
+      </li><li>
+        <span>02</span>
+        <div><strong>D+175 식단 제공</strong><small>source_day_index · D+175 · SourceRow 1개</small></div>
+      </li><li>
+        <span>03</span>
+        <div><strong>D+176 식단 제공</strong><small>source_day_index · D+176 · SourceRow 1개</small></div>
+      </li></ol>
+        </div>
+        <div class="structure-story">
+          <span class="mini-label">원문이 정리되는 계층</span>
+          <div class="structure-stack">
+            <div class="source"><strong>36</strong><span>SourceRow</span><small>원문의 최소 근거 행</small></div>
+            <b>↓</b>
+            <div class="canonical"><strong>36</strong><span>Item</span><small>독립 완료 가능한 실행 단위</small></div>
+            <b>↓</b>
+            <div class="canonical"><strong>12</strong><span>Step</span><small>같은 단계·시점의 Item 묶음</small></div>
+            <b>↓</b>
+            <div class="canonical"><strong>1</strong><span>Flow</span><small>한 가지 사용자 job</small></div>
+            <b>↓</b>
+            <div class="canonical"><strong>1</strong><span>Bundle / Map</span><small>Flow 사이의 순서와 관계</small></div>
+          </div>
+          <p class="structure-rule">각 층은 아래 데이터를 복제하지 않고 묶는 의미만 더합니다. 완료 상태와 출처 연결은 Item에 남습니다.</p>
+        </div>
+      </div>
+    </div>
+  </section><section class="slide case-slide projection-slide" id="case-2-projection">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>02C</span>
+    <div>
+      <p>canonical Item을 실제 도구에 보내는 방법</p>
+      <h2>Calendar 중심으로 projection</h2>
+      <div class="section-copy">같은 Item을 다시 만드는 것이 아니라 목적지에 필요한 필드만 직렬화합니다.</div>
+    </div>
+  </header>
+      <div class="case-projection-layout">
+        <div class="item-anatomy">
+          <div class="mini-label">대표 canonical Item</div>
+          <h3>D+174 식단 제공</h3>
+          <div class="field-table"><div class="required">
+        <code>itemId</code>
+        <strong>bundle-baby-food-174-d174</strong>
+      </div><div class="required">
+        <code>itemTitle</code>
+        <strong>D+174 식단 제공</strong>
+      </div><div class="required">
+        <code>detail / memo</code>
+        <strong>한 끼: 쌀미음 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.</strong>
+      </div><div class="required">
+        <code>completionMode</code>
+        <strong>manual_check</strong>
+      </div><div class="required">
+        <code>optional</code>
+        <strong>false</strong>
+      </div><div class="optional-on">
+        <code>schedule</code>
+        <strong>source_day_index · D+174</strong>
+      </div><div class="required">
+        <code>sourceRowIds</code>
+        <strong>bundle-baby-food-174-d174</strong>
+      </div>
+    <p>이 Item의 근거: <a href="https://blog.naver.com/01695258757/222768860919">D+174 식단</a></p>
+  </div>
+        </div>
+        <div class="projection-explain">
+          <div class="why-box">
+            <span>왜 이 결과물인가</span>
+            <p>D+n을 실제 날짜로 계산할 수 있어 Calendar와 Sheet가 자연스럽지만 공개는 권리·안전 경계로 Hold입니다.</p>
+          </div>
+          <div class="projection-band">
+            <div>
+              <span>내보낼 때만 목적지 형태로 변환</span>
+              <strong>Calendar 중심</strong>
+            </div>
+            <div class="projection-cards"><div class="projection primary">
+        <strong>Calendar</strong>
+        <span>VEVENT 36개 · per_item</span>
+      </div><div class="projection secondary">
+        <strong>Checklist</strong>
+        <span>보조 결과물</span>
+      </div><div class="projection available">
+        <strong>Todo</strong>
+        <span>adapter에서 선택 가능</span>
+      </div><div class="projection secondary">
+        <strong>Sheet</strong>
+        <span>보조 결과물</span>
+      </div><div class="projection available">
+        <strong>Memo</strong>
+        <span>adapter에서 선택 가능</span>
+      </div></div>
+    
+          </div>
+          <div class="state-foot">
+            <span>Architecture fit <b>Go</b></span>
+            <span>Logic <b>Go</b></span>
+            <span>Public <b>Hold</b></span>
+            <span>Personal <b>allowed</b></span>
+            <span>Source <b>row_set_ready_for_logic_revalidation</b></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section><section class="slide case-slide source-slide" id="case-3-source">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>03A</span>
+    <div>
+      <p>원문이 SourceRow가 되는 방법</p>
+      <h2>오픽 모의고사 계획표</h2>
+      <div class="section-copy">2주 또는 1달 계획표를 따라 모의고사 영상 회차를 실행한다.</div>
+    </div>
+  </header>
+      <div class="source-layout">
+        <figure class="source-frame">
+          <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95">
+            <img src="2026-07-27-creator-portfolio-qualified-assets/creator-study-mansour-source.png" alt="오픽만수르 원문 근거 화면">
+          </a>
+          <figcaption>
+            <strong>오픽만수르</strong>
+            <span>강의·계획 행</span>
+          </figcaption>
+        </figure>
+        <div class="source-explain">
+          <div class="plain-fact">
+            <span>원문에서 한 줄로 보는 단위</span>
+            <strong>계획표의 연습 행과 연결 영상 행</strong>
+          </div>
+          <ol class="row-list"><li>
+        <span>01</span>
+        <div><strong>1회 모의고사 실전·녹음·보완·복습</strong><small>영상: https://www.youtube.com/watch?v=MZmrXlAc6k4 · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</small></div>
+      </li><li>
+        <span>02</span>
+        <div><strong>1회 모의고사 영상</strong><small>15문항 모의고사</small></div>
+      </li><li>
+        <span>03</span>
+        <div><strong>2회 모의고사 실전·녹음·보완·복습</strong><small>영상: https://www.youtube.com/watch?v=YOZADzoC22s · 범위: 은행·바·카페·MP3·걷기 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</small></div>
+      </li></ol>
+          <div class="source-count-line">
+            <div><strong>52</strong><span>SourceRow</span></div>
+            <i>→</i>
+            <div><strong>42</strong><span>Item</span></div>
+            <i>→</i>
+            <div><strong>7</strong><span>Step</span></div>
+            <i>→</i>
+            <div><strong>2</strong><span>Flow</span></div>
+          </div>
+          <div class="overlay-panel">
+            <div>
+              <span>사용자가 입력하는 overlay</span>
+              <p>원문에 이미 있는 값은 다시 묻지 않습니다.</p>
+            </div>
+            <div class="overlay-list"><div><strong>계획</strong><span>choice · 필수</span></div><div><strong>시작일</strong><span>date · 선택</span></div></div>
+          </div>
+          <div class="readiness-line">
+            <span class="status go"><b>Logic</b>Go</span>
+            <span class="status modify"><b>Public</b>Modify</span>
+            <span class="status neutral"><b>Rights</b>permission_required</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section><section class="slide case-slide data-slide" id="case-3-data">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>03B</span>
+    <div>
+      <p>SourceRow를 canonical 구조로 묶는 방법</p>
+      <h2>42개 Item으로 정리</h2>
+      <div class="section-copy">같은 모의고사 회차의 연습·녹음·보완 행과 영상 행을 하나의 실행 Item에 연결합니다.</div>
+    </div>
+  </header>
+      <div class="item-structure-layout">
+        <div>
+          <div class="mini-label">실제 Item 예시</div>
+          <ol class="item-list"><li>
+        <span>01</span>
+        <div><strong>1회 모의고사 실전처럼 풀기</strong><small>relative_weekday · 1주차 · 월 · SourceRow 2개</small></div>
+      </li><li>
+        <span>02</span>
+        <div><strong>2회 모의고사 실전처럼 풀기</strong><small>relative_weekday · 1주차 · 화 · SourceRow 2개</small></div>
+      </li><li>
+        <span>03</span>
+        <div><strong>3회 모의고사 실전처럼 풀기</strong><small>relative_weekday · 1주차 · 수 · SourceRow 2개</small></div>
+      </li></ol>
+        </div>
+        <div class="structure-story">
+          <span class="mini-label">원문이 정리되는 계층</span>
+          <div class="structure-stack">
+            <div class="source"><strong>52</strong><span>SourceRow</span><small>원문의 최소 근거 행</small></div>
+            <b>↓</b>
+            <div class="canonical"><strong>42</strong><span>Item</span><small>독립 완료 가능한 실행 단위</small></div>
+            <b>↓</b>
+            <div class="canonical"><strong>7</strong><span>Step</span><small>같은 단계·시점의 Item 묶음</small></div>
+            <b>↓</b>
+            <div class="canonical"><strong>2</strong><span>Flow</span><small>한 가지 사용자 job</small></div>
+            <b>↓</b>
+            <div class="canonical"><strong>1</strong><span>Bundle / Map</span><small>Flow 사이의 순서와 관계</small></div>
+          </div>
+          <p class="structure-rule">각 층은 아래 데이터를 복제하지 않고 묶는 의미만 더합니다. 완료 상태와 출처 연결은 Item에 남습니다.</p>
+        </div>
+      </div>
+    </div>
+  </section><section class="slide case-slide projection-slide" id="case-3-projection">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>03C</span>
+    <div>
+      <p>canonical Item을 실제 도구에 보내는 방법</p>
+      <h2>Sheet 중심으로 projection</h2>
+      <div class="section-copy">같은 Item을 다시 만드는 것이 아니라 목적지에 필요한 필드만 직렬화합니다.</div>
+    </div>
+  </header>
+      <div class="case-projection-layout">
+        <div class="item-anatomy">
+          <div class="mini-label">대표 canonical Item</div>
+          <h3>1회 모의고사 실전처럼 풀기</h3>
+          <div class="field-table"><div class="required">
+        <code>itemId</code>
+        <strong>bundle-opic-plan-2w-w1-월</strong>
+      </div><div class="required">
+        <code>itemTitle</code>
+        <strong>1회 모의고사 실전처럼 풀기</strong>
+      </div><div class="required">
+        <code>detail / memo</code>
+        <strong>영상: https://www.youtube.com/watch?v=MZmrXlAc6k4 · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</strong>
+      </div><div class="required">
+        <code>completionMode</code>
+        <strong>manual_check</strong>
+      </div><div class="required">
+        <code>optional</code>
+        <strong>false</strong>
+      </div><div class="optional-on">
+        <code>schedule</code>
+        <strong>relative_weekday · 1주차 · 월</strong>
+      </div><div class="required">
+        <code>sourceRowIds</code>
+        <strong>bundle-opic-plan-2w-w1-월, bundle-opic-plan-video-1</strong>
+      </div>
+    <p>이 Item의 근거: <a href="https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95">1회 모의고사 실전·녹음·보완·복습</a> · <a href="https://www.youtube.com/watch?v=MZmrXlAc6k4">1회 모의고사 영상</a></p>
+  </div>
+        </div>
+        <div class="projection-explain">
+          <div class="why-box">
+            <span>왜 이 결과물인가</span>
+            <p>원본 진도는 Sheet가 소유하고, 사용자가 시작일을 정한 경우에만 Calendar 일정이 생깁니다.</p>
+          </div>
+          <div class="projection-band">
+            <div>
+              <span>내보낼 때만 목적지 형태로 변환</span>
+              <strong>Sheet 중심</strong>
+            </div>
+            <div class="projection-cards"><div class="projection secondary">
+        <strong>Calendar</strong>
+        <span>VEVENT 42개 · optional_per_item</span>
+      </div><div class="projection secondary">
+        <strong>Checklist</strong>
+        <span>보조 결과물</span>
+      </div><div class="projection available">
+        <strong>Todo</strong>
+        <span>adapter에서 선택 가능</span>
+      </div><div class="projection primary">
+        <strong>Sheet</strong>
+        <span>주 결과물</span>
+      </div><div class="projection available">
+        <strong>Memo</strong>
+        <span>adapter에서 선택 가능</span>
+      </div></div>
+    
+          </div>
+          <div class="state-foot">
+            <span>Architecture fit <b>Go</b></span>
+            <span>Logic <b>Go</b></span>
+            <span>Public <b>Modify</b></span>
+            <span>Personal <b>not_confirmed</b></span>
+            <span>Source <b>row_set_ready_for_logic_revalidation</b></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section><section class="slide case-slide source-slide" id="case-4-source">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>04A</span>
+    <div>
+      <p>원문이 SourceRow가 되는 방법</p>
+      <h2>생활코딩 WEB1 진도표</h2>
+      <div class="section-copy">WEB1의 공개 토픽 목록을 순서대로 학습하고 진도를 체크한다.</div>
+    </div>
+  </header>
+      <div class="source-layout">
+        <figure class="source-frame">
+          <a href="https://opentutorials.org/course/3084">
+            <img src="2026-07-27-creator-portfolio-qualified-assets/creator-study-opentutorials-source.png" alt="생활코딩 원문 근거 화면">
+          </a>
+          <figcaption>
+            <strong>생활코딩</strong>
+            <span>강의·계획 행</span>
+          </figcaption>
+        </figure>
+        <div class="source-explain">
+          <div class="plain-fact">
+            <span>원문에서 한 줄로 보는 단위</span>
+            <strong>공개 토픽 목록의 lesson 한 행</strong>
+          </div>
+          <ol class="row-list"><li>
+        <span>01</span>
+        <div><strong>프로젝트의 동기</strong><small>https://opentutorials.org/course/3084/18438</small></div>
+      </li><li>
+        <span>02</span>
+        <div><strong>기획</strong><small>https://opentutorials.org/course/3084/18437</small></div>
+      </li><li>
+        <span>03</span>
+        <div><strong>코딩과 HTML</strong><small>https://opentutorials.org/course/3084/18445</small></div>
+      </li></ol>
+          <div class="source-count-line">
+            <div><strong>26</strong><span>SourceRow</span></div>
+            <i>→</i>
+            <div><strong>26</strong><span>Item</span></div>
+            <i>→</i>
+            <div><strong>1</strong><span>Step</span></div>
+            <i>→</i>
+            <div><strong>1</strong><span>Flow</span></div>
+          </div>
+          <div class="overlay-panel">
+            <div>
+              <span>사용자가 입력하는 overlay</span>
+              <p>원문에 이미 있는 값은 다시 묻지 않습니다.</p>
+            </div>
+            <div class="overlay-empty">사용자 입력 0개 · 원문 값 그대로 시작</div>
+          </div>
+          <div class="readiness-line">
+            <span class="status go"><b>Logic</b>Go</span>
+            <span class="status go"><b>Public</b>Go</span>
+            <span class="status neutral"><b>Rights</b>public_conversion_allowed</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section><section class="slide case-slide data-slide" id="case-4-data">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>04B</span>
+    <div>
+      <p>SourceRow를 canonical 구조로 묶는 방법</p>
+      <h2>26개 Item으로 정리</h2>
+      <div class="section-copy">원문 토픽 한 행이 날짜 없는 학습 Item 한 개가 됩니다. 사용자가 다시 강의 구조를 입력하지 않습니다.</div>
+    </div>
+  </header>
+      <div class="item-structure-layout">
+        <div>
+          <div class="mini-label">실제 Item 예시</div>
+          <ol class="item-list"><li>
+        <span>01</span>
+        <div><strong>「프로젝트의 동기」 학습하기</strong><small>날짜 없음 · SourceRow 1개</small></div>
+      </li><li>
+        <span>02</span>
+        <div><strong>「기획」 학습하기</strong><small>날짜 없음 · SourceRow 1개</small></div>
+      </li><li>
+        <span>03</span>
+        <div><strong>「코딩과 HTML」 학습하기</strong><small>날짜 없음 · SourceRow 1개</small></div>
+      </li></ol>
+        </div>
+        <div class="structure-story">
+          <span class="mini-label">원문이 정리되는 계층</span>
+          <div class="structure-stack">
+            <div class="source"><strong>26</strong><span>SourceRow</span><small>원문의 최소 근거 행</small></div>
+            <b>↓</b>
+            <div class="canonical"><strong>26</strong><span>Item</span><small>독립 완료 가능한 실행 단위</small></div>
+            <b>↓</b>
+            <div class="canonical"><strong>1</strong><span>Step</span><small>같은 단계·시점의 Item 묶음</small></div>
+            <b>↓</b>
+            <div class="canonical"><strong>1</strong><span>Flow</span><small>한 가지 사용자 job</small></div>
+            <b>↓</b>
+            <div class="canonical"><strong>1</strong><span>Bundle / Map</span><small>Flow 사이의 순서와 관계</small></div>
+          </div>
+          <p class="structure-rule">각 층은 아래 데이터를 복제하지 않고 묶는 의미만 더합니다. 완료 상태와 출처 연결은 Item에 남습니다.</p>
+        </div>
+      </div>
+    </div>
+  </section><section class="slide case-slide projection-slide" id="case-4-projection">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>04C</span>
+    <div>
+      <p>canonical Item을 실제 도구에 보내는 방법</p>
+      <h2>Sheet 중심으로 projection</h2>
+      <div class="section-copy">같은 Item을 다시 만드는 것이 아니라 목적지에 필요한 필드만 직렬화합니다.</div>
+    </div>
+  </header>
+      <div class="case-projection-layout">
+        <div class="item-anatomy">
+          <div class="mini-label">대표 canonical Item</div>
+          <h3>「프로젝트의 동기」 학습하기</h3>
+          <div class="field-table"><div class="required">
+        <code>itemId</code>
+        <strong>bundle-opentutorials-web1-progress-s1-i1</strong>
+      </div><div class="required">
+        <code>itemTitle</code>
+        <strong>「프로젝트의 동기」 학습하기</strong>
+      </div><div class="required">
+        <code>detail / memo</code>
+        <strong>생활코딩 WEB1 토픽 1. 원문 강의: https://opentutorials.org/course/3084/18438</strong>
+      </div><div class="required">
+        <code>completionMode</code>
+        <strong>manual_check</strong>
+      </div><div class="required">
+        <code>optional</code>
+        <strong>false</strong>
+      </div><div class="optional-off">
+        <code>schedule</code>
+        <strong>null</strong>
+      </div><div class="required">
+        <code>sourceRowIds</code>
+        <strong>bundle-opentutorials-web1-progress-s1-i1-r1</strong>
+      </div>
+    <p>이 Item의 근거: <a href="https://opentutorials.org/course/3084">프로젝트의 동기</a></p>
+  </div>
+        </div>
+        <div class="projection-explain">
+          <div class="why-box">
+            <span>왜 이 결과물인가</span>
+            <p>원문에 날짜가 없으므로 Sheet·Checklist가 주 결과물이고 VEVENT는 만들지 않습니다.</p>
+          </div>
+          <div class="projection-band">
+            <div>
+              <span>내보낼 때만 목적지 형태로 변환</span>
+              <strong>Sheet 중심</strong>
+            </div>
+            <div class="projection-cards"><div class="projection off">
+        <strong>Calendar</strong>
+        <span>날짜 없음 · VEVENT 0</span>
+      </div><div class="projection secondary">
+        <strong>Checklist</strong>
+        <span>보조 결과물</span>
+      </div><div class="projection available">
+        <strong>Todo</strong>
+        <span>adapter에서 선택 가능</span>
+      </div><div class="projection primary">
+        <strong>Sheet</strong>
+        <span>주 결과물</span>
+      </div><div class="projection available">
+        <strong>Memo</strong>
+        <span>adapter에서 선택 가능</span>
+      </div></div>
+    <p class="projection-note">VTODO는 지원 destination에서만 후보로 사용하며 기본값은 off입니다. Checklist·Todo·Sheet·Memo fallback을 유지합니다.</p>
+          </div>
+          <div class="state-foot">
+            <span>Architecture fit <b>Go</b></span>
+            <span>Logic <b>Go</b></span>
+            <span>Public <b>Go</b></span>
+            <span>Personal <b>allowed</b></span>
+            <span>Source <b>row_set_ready_for_logic_revalidation</b></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section><section class="slide case-slide source-slide" id="case-5-source">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>05A</span>
+    <div>
+      <p>원문이 SourceRow가 되는 방법</p>
+      <h2>신차 구매 8단계</h2>
+      <div class="section-copy">신차 구매의 원문 8단계를 순서대로 확인하고 계약·출고 누락을 줄인다.</div>
+    </div>
+  </header>
+      <div class="source-layout">
+        <figure class="source-frame">
+          <a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners">
+            <img src="2026-07-27-creator-portfolio-qualified-assets/creator-money-getcha-source.png" alt="겟차 원문 근거 화면">
+          </a>
+          <figcaption>
+            <strong>겟차</strong>
+            <span>순서형 절차 행</span>
+          </figcaption>
+        </figure>
+        <div class="source-explain">
+          <div class="plain-fact">
+            <span>원문에서 한 줄로 보는 단위</span>
+            <strong>구매 8단계 안의 세부 절차·판단 행</strong>
+          </div>
+          <ol class="row-list"><li>
+        <span>01</span>
+        <div><strong>차량 가격 외 취등록세·보험·유지비를 포함한 총예산 확인</strong><small>차량 가격 외 취등록세·보험·유지비를 포함한 총예산 확인</small></div>
+      </li><li>
+        <span>02</span>
+        <div><strong>현금·할부 시 월 납입 가능액 확인</strong><small>현금·할부 시 월 납입 가능액 확인</small></div>
+      </li><li>
+        <span>03</span>
+        <div><strong>용도와 탑승 인원에 맞는 차종 선택</strong><small>용도와 탑승 인원에 맞는 차종 선택</small></div>
+      </li></ol>
+          <div class="source-count-line">
+            <div><strong>29</strong><span>SourceRow</span></div>
+            <i>→</i>
+            <div><strong>14</strong><span>Item</span></div>
+            <i>→</i>
+            <div><strong>8</strong><span>Step</span></div>
+            <i>→</i>
+            <div><strong>1</strong><span>Flow</span></div>
+          </div>
+          <div class="overlay-panel">
+            <div>
+              <span>사용자가 입력하는 overlay</span>
+              <p>원문에 이미 있는 값은 다시 묻지 않습니다.</p>
+            </div>
+            <div class="overlay-list"><div><strong>차량 후보</strong><span>text · 선택</span></div></div>
+          </div>
+          <div class="readiness-line">
+            <span class="status go"><b>Logic</b>Go</span>
+            <span class="status modify"><b>Public</b>Modify</span>
+            <span class="status neutral"><b>Rights</b>permission_required</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section><section class="slide case-slide data-slide" id="case-5-data">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>05B</span>
+    <div>
+      <p>SourceRow를 canonical 구조로 묶는 방법</p>
+      <h2>14개 Item으로 정리</h2>
+      <div class="section-copy">예산처럼 함께 결정해야 하는 여러 원문 행은 하나의 결정 Item으로 묶고, 독립 확인은 별도 Item으로 둡니다.</div>
+    </div>
+  </header>
+      <div class="item-structure-layout">
+        <div>
+          <div class="mini-label">실제 Item 예시</div>
+          <ol class="item-list"><li>
+        <span>01</span>
+        <div><strong>총예산과 월 납입 가능액 정하기</strong><small>날짜 없음 · SourceRow 2개</small></div>
+      </li><li>
+        <span>02</span>
+        <div><strong>차종·트림·옵션 후보 좁히기</strong><small>날짜 없음 · SourceRow 2개</small></div>
+      </li><li>
+        <span>03</span>
+        <div><strong>현금·할부·리스·장기렌트 비교하기</strong><small>날짜 없음 · SourceRow 2개</small></div>
+      </li></ol>
+        </div>
+        <div class="structure-story">
+          <span class="mini-label">원문이 정리되는 계층</span>
+          <div class="structure-stack">
+            <div class="source"><strong>29</strong><span>SourceRow</span><small>원문의 최소 근거 행</small></div>
+            <b>↓</b>
+            <div class="canonical"><strong>14</strong><span>Item</span><small>독립 완료 가능한 실행 단위</small></div>
+            <b>↓</b>
+            <div class="canonical"><strong>8</strong><span>Step</span><small>같은 단계·시점의 Item 묶음</small></div>
+            <b>↓</b>
+            <div class="canonical"><strong>1</strong><span>Flow</span><small>한 가지 사용자 job</small></div>
+            <b>↓</b>
+            <div class="canonical"><strong>1</strong><span>Bundle / Map</span><small>Flow 사이의 순서와 관계</small></div>
+          </div>
+          <p class="structure-rule">각 층은 아래 데이터를 복제하지 않고 묶는 의미만 더합니다. 완료 상태와 출처 연결은 Item에 남습니다.</p>
+        </div>
+      </div>
+    </div>
+  </section><section class="slide case-slide projection-slide" id="case-5-projection">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>05C</span>
+    <div>
+      <p>canonical Item을 실제 도구에 보내는 방법</p>
+      <h2>Checklist 중심으로 projection</h2>
+      <div class="section-copy">같은 Item을 다시 만드는 것이 아니라 목적지에 필요한 필드만 직렬화합니다.</div>
+    </div>
+  </header>
+      <div class="case-projection-layout">
+        <div class="item-anatomy">
+          <div class="mini-label">대표 canonical Item</div>
+          <h3>총예산과 월 납입 가능액 정하기</h3>
+          <div class="field-table"><div class="required">
+        <code>itemId</code>
+        <strong>bundle-new-car-comparison-s1-i1</strong>
+      </div><div class="required">
+        <code>itemTitle</code>
+        <strong>총예산과 월 납입 가능액 정하기</strong>
+      </div><div class="required">
+        <code>detail / memo</code>
+        <strong>차량 가격 외 취등록세·보험·유지비를 포함한 총예산 확인 · 현금·할부 시 월 납입 가능액 확인</strong>
+      </div><div class="required">
+        <code>completionMode</code>
+        <strong>manual_check</strong>
+      </div><div class="required">
+        <code>optional</code>
+        <strong>false</strong>
+      </div><div class="optional-off">
+        <code>schedule</code>
+        <strong>null</strong>
+      </div><div class="required">
+        <code>sourceRowIds</code>
+        <strong>bundle-new-car-comparison-s1-i1-r1, bundle-new-car-comparison-s1-i1-r2</strong>
+      </div>
+    <p>이 Item의 근거: <a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners">차량 가격 외 취등록세·보험·유지비를 포함한 총예산 확인</a> · <a href="https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners">현금·할부 시 월 납입 가능액 확인</a></p>
+  </div>
+        </div>
+        <div class="projection-explain">
+          <div class="why-box">
+            <span>왜 이 결과물인가</span>
+            <p>순서는 있지만 원문 날짜가 없으므로 Checklist·Sheet·Memo가 자연스럽고 Calendar는 만들지 않습니다.</p>
+          </div>
+          <div class="projection-band">
+            <div>
+              <span>내보낼 때만 목적지 형태로 변환</span>
+              <strong>Checklist 중심</strong>
+            </div>
+            <div class="projection-cards"><div class="projection off">
+        <strong>Calendar</strong>
+        <span>날짜 없음 · VEVENT 0</span>
+      </div><div class="projection primary">
+        <strong>Checklist</strong>
+        <span>주 결과물</span>
+      </div><div class="projection available">
+        <strong>Todo</strong>
+        <span>adapter에서 선택 가능</span>
+      </div><div class="projection secondary">
+        <strong>Sheet</strong>
+        <span>보조 결과물</span>
+      </div><div class="projection secondary">
+        <strong>Memo</strong>
+        <span>보조 결과물</span>
+      </div></div>
+    <p class="projection-note">VTODO는 지원 destination에서만 후보로 사용하며 기본값은 off입니다. Checklist·Todo·Sheet·Memo fallback을 유지합니다.</p>
+          </div>
+          <div class="state-foot">
+            <span>Architecture fit <b>Go</b></span>
+            <span>Logic <b>Go</b></span>
+            <span>Public <b>Modify</b></span>
+            <span>Personal <b>not_confirmed</b></span>
+            <span>Source <b>row_set_ready_for_logic_revalidation</b></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section><section class="slide case-slide source-slide" id="case-6-source">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>06A</span>
+    <div>
+      <p>원문이 SourceRow가 되는 방법</p>
+      <h2>Allblanc 7일 복근 챌린지</h2>
+      <div class="section-copy">7일 재생목록의 영상을 하루 한 편씩 따라 한다.</div>
+    </div>
+  </header>
+      <div class="source-layout">
+        <figure class="source-frame">
+          <a href="https://www.youtube.com/watch?v=XwUKn-52ykk">
+            <img src="2026-07-27-creator-portfolio-qualified-assets/creator-health-allblanc-source.png" alt="Allblanc TV 원문 근거 화면">
+          </a>
+          <figcaption>
+            <strong>Allblanc TV</strong>
+            <span>리소스 컬렉션</span>
+          </figcaption>
+        </figure>
+        <div class="source-explain">
+          <div class="plain-fact">
+            <span>원문에서 한 줄로 보는 단위</span>
+            <strong>7일 챌린지의 날짜 순서가 있는 영상 한 편</strong>
+          </div>
+          <ol class="row-list"><li>
+        <span>01</span>
+        <div><strong>코어 + 복근 한방에! 20분 복근 운동</strong><small>영상 길이 21:25 · 확인 조회수 150,000</small></div>
+      </li><li>
+        <span>02</span>
+        <div><strong>허리 통증 없이 20분 복근 운동</strong><small>영상 길이 20:41 · 확인 조회수 78,000</small></div>
+      </li><li>
+        <span>03</span>
+        <div><strong>아랫 뱃살 집중 타격 20분 운동</strong><small>영상 길이 21:01 · 확인 조회수 73,000</small></div>
+      </li></ol>
+          <div class="source-count-line">
+            <div><strong>7</strong><span>SourceRow</span></div>
+            <i>→</i>
+            <div><strong>7</strong><span>Item</span></div>
+            <i>→</i>
+            <div><strong>7</strong><span>Step</span></div>
+            <i>→</i>
+            <div><strong>7</strong><span>Flow</span></div>
+          </div>
+          <div class="overlay-panel">
+            <div>
+              <span>사용자가 입력하는 overlay</span>
+              <p>원문에 이미 있는 값은 다시 묻지 않습니다.</p>
+            </div>
+            <div class="overlay-list"><div><strong>시작일</strong><span>date · 선택</span></div><div><strong>운동 요일</strong><span>weekday_multi · 선택</span></div></div>
+          </div>
+          <div class="readiness-line">
+            <span class="status go"><b>Logic</b>Go</span>
+            <span class="status modify"><b>Public</b>Modify</span>
+            <span class="status neutral"><b>Rights</b>link_metadata_only</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section><section class="slide case-slide data-slide" id="case-6-data">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>06B</span>
+    <div>
+      <p>SourceRow를 canonical 구조로 묶는 방법</p>
+      <h2>7개 Item으로 정리</h2>
+      <div class="section-copy">영상 한 편이 그날 실행할 Item 한 개이며 영상 안의 동작을 별도 체크 행으로 발명하지 않습니다.</div>
+    </div>
+  </header>
+      <div class="item-structure-layout">
+        <div>
+          <div class="mini-label">실제 Item 예시</div>
+          <ol class="item-list"><li>
+        <span>01</span>
+        <div><strong>코어 + 복근 한방에! 20분 복근 운동</strong><small>sequence_day · Day 1 · SourceRow 1개</small></div>
+      </li><li>
+        <span>02</span>
+        <div><strong>허리 통증 없이 20분 복근 운동</strong><small>sequence_day · Day 2 · SourceRow 1개</small></div>
+      </li><li>
+        <span>03</span>
+        <div><strong>아랫 뱃살 집중 타격 20분 운동</strong><small>sequence_day · Day 3 · SourceRow 1개</small></div>
+      </li></ol>
+        </div>
+        <div class="structure-story">
+          <span class="mini-label">원문이 정리되는 계층</span>
+          <div class="structure-stack">
+            <div class="source"><strong>7</strong><span>SourceRow</span><small>원문의 최소 근거 행</small></div>
+            <b>↓</b>
+            <div class="canonical"><strong>7</strong><span>Item</span><small>독립 완료 가능한 실행 단위</small></div>
+            <b>↓</b>
+            <div class="canonical"><strong>7</strong><span>Step</span><small>같은 단계·시점의 Item 묶음</small></div>
+            <b>↓</b>
+            <div class="canonical"><strong>7</strong><span>Flow</span><small>한 가지 사용자 job</small></div>
+            <b>↓</b>
+            <div class="canonical"><strong>1</strong><span>Bundle / Map</span><small>Flow 사이의 순서와 관계</small></div>
+          </div>
+          <p class="structure-rule">각 층은 아래 데이터를 복제하지 않고 묶는 의미만 더합니다. 완료 상태와 출처 연결은 Item에 남습니다.</p>
+        </div>
+      </div>
+    </div>
+  </section><section class="slide case-slide projection-slide" id="case-6-projection">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>06C</span>
+    <div>
+      <p>canonical Item을 실제 도구에 보내는 방법</p>
+      <h2>Calendar 중심으로 projection</h2>
+      <div class="section-copy">같은 Item을 다시 만드는 것이 아니라 목적지에 필요한 필드만 직렬화합니다.</div>
+    </div>
+  </header>
+      <div class="case-projection-layout">
+        <div class="item-anatomy">
+          <div class="mini-label">대표 canonical Item</div>
+          <h3>코어 + 복근 한방에! 20분 복근 운동</h3>
+          <div class="field-table"><div class="required">
+        <code>itemId</code>
+        <strong>bundle-allblanc-7day-abs-day-1-item</strong>
+      </div><div class="required">
+        <code>itemTitle</code>
+        <strong>코어 + 복근 한방에! 20분 복근 운동</strong>
+      </div><div class="required">
+        <code>detail / memo</code>
+        <strong>영상: https://www.youtube.com/watch?v=XwUKn-52ykk · 길이: 21:25 · 운동 후 남길 내용이 있으면 이 Item의 개인 메모를 사용한다.</strong>
+      </div><div class="required">
+        <code>completionMode</code>
+        <strong>manual_check</strong>
+      </div><div class="required">
+        <code>optional</code>
+        <strong>false</strong>
+      </div><div class="optional-on">
+        <code>schedule</code>
+        <strong>sequence_day · Day 1</strong>
+      </div><div class="required">
+        <code>sourceRowIds</code>
+        <strong>bundle-allblanc-7day-abs-day-1</strong>
+      </div>
+    <p>이 Item의 근거: <a href="https://www.youtube.com/watch?v=XwUKn-52ykk">코어 + 복근 한방에! 20분 복근 운동</a></p>
+  </div>
+        </div>
+        <div class="projection-explain">
+          <div class="why-box">
+            <span>왜 이 결과물인가</span>
+            <p>원문이 Day 1~7 순서를 명시하므로 시작일을 받으면 Calendar와 Checklist로 이어집니다.</p>
+          </div>
+          <div class="projection-band">
+            <div>
+              <span>내보낼 때만 목적지 형태로 변환</span>
+              <strong>Calendar 중심</strong>
+            </div>
+            <div class="projection-cards"><div class="projection primary">
+        <strong>Calendar</strong>
+        <span>VEVENT 7개 · per_item</span>
+      </div><div class="projection secondary">
+        <strong>Checklist</strong>
+        <span>보조 결과물</span>
+      </div><div class="projection available">
+        <strong>Todo</strong>
+        <span>adapter에서 선택 가능</span>
+      </div><div class="projection available">
+        <strong>Sheet</strong>
+        <span>adapter에서 선택 가능</span>
+      </div><div class="projection available">
+        <strong>Memo</strong>
+        <span>adapter에서 선택 가능</span>
+      </div></div>
+    
+          </div>
+          <div class="state-foot">
+            <span>Architecture fit <b>Go</b></span>
+            <span>Logic <b>Go</b></span>
+            <span>Public <b>Modify</b></span>
+            <span>Personal <b>allowed_with_limits</b></span>
+            <span>Source <b>row_set_ready_for_logic_revalidation</b></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section><section class="slide case-slide source-slide" id="case-7-source">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>07A</span>
+    <div>
+      <p>원문이 SourceRow가 되는 방법</p>
+      <h2>이번 주 여름 반찬 5가지</h2>
+      <div class="section-copy">큐레이션의 반찬 5개 중 만들 메뉴를 골라 원문 레시피를 연다.</div>
+    </div>
+  </header>
+      <div class="source-layout">
+        <figure class="source-frame">
+          <a href="https://wtable.co.kr/recipes/otoQ5JpRjgNPpuDtsYUwpRxC">
+            <img src="2026-07-27-creator-portfolio-qualified-assets/creator-meals-wtable-source.png" alt="우리의식탁 원문 근거 화면">
+          </a>
+          <figcaption>
+            <strong>우리의식탁</strong>
+            <span>리소스 컬렉션</span>
+          </figcaption>
+        </figure>
+        <div class="source-explain">
+          <div class="plain-fact">
+            <span>원문에서 한 줄로 보는 단위</span>
+            <strong>큐레이션에 포함된 레시피 한 개</strong>
+          </div>
+          <ol class="row-list"><li>
+        <span>01</span>
+        <div><strong>오이지무침</strong><small>초급 · 15분</small></div>
+      </li><li>
+        <span>02</span>
+        <div><strong>한치 초무침</strong><small>초급 · 30분</small></div>
+      </li><li>
+        <span>03</span>
+        <div><strong>브로콜리 참깨무침</strong><small>초급 · 20분</small></div>
+      </li></ol>
+          <div class="source-count-line">
+            <div><strong>5</strong><span>SourceRow</span></div>
+            <i>→</i>
+            <div><strong>5</strong><span>Item</span></div>
+            <i>→</i>
+            <div><strong>5</strong><span>Step</span></div>
+            <i>→</i>
+            <div><strong>5</strong><span>Flow</span></div>
+          </div>
+          <div class="overlay-panel">
+            <div>
+              <span>사용자가 입력하는 overlay</span>
+              <p>원문에 이미 있는 값은 다시 묻지 않습니다.</p>
+            </div>
+            <div class="overlay-empty">사용자 입력 0개 · 원문 값 그대로 시작</div>
+          </div>
+          <div class="readiness-line">
+            <span class="status go"><b>Logic</b>Go</span>
+            <span class="status modify"><b>Public</b>Modify</span>
+            <span class="status neutral"><b>Rights</b>permission_required</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section><section class="slide case-slide data-slide" id="case-7-data">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>07B</span>
+    <div>
+      <p>SourceRow를 canonical 구조로 묶는 방법</p>
+      <h2>5개 Item으로 정리</h2>
+      <div class="section-copy">레시피 한 행이 만들기 Item 한 개가 되고, 상세 조리법은 원문 링크와 Memo에 남깁니다.</div>
+    </div>
+  </header>
+      <div class="item-structure-layout">
+        <div>
+          <div class="mini-label">실제 Item 예시</div>
+          <ol class="item-list"><li>
+        <span>01</span>
+        <div><strong>오이지무침 만들기</strong><small>날짜 없음 · SourceRow 1개</small></div>
+      </li><li>
+        <span>02</span>
+        <div><strong>한치 초무침 만들기</strong><small>날짜 없음 · SourceRow 1개</small></div>
+      </li><li>
+        <span>03</span>
+        <div><strong>브로콜리 참깨무침 만들기</strong><small>날짜 없음 · SourceRow 1개</small></div>
+      </li></ol>
+        </div>
+        <div class="structure-story">
+          <span class="mini-label">원문이 정리되는 계층</span>
+          <div class="structure-stack">
+            <div class="source"><strong>5</strong><span>SourceRow</span><small>원문의 최소 근거 행</small></div>
+            <b>↓</b>
+            <div class="canonical"><strong>5</strong><span>Item</span><small>독립 완료 가능한 실행 단위</small></div>
+            <b>↓</b>
+            <div class="canonical"><strong>5</strong><span>Step</span><small>같은 단계·시점의 Item 묶음</small></div>
+            <b>↓</b>
+            <div class="canonical"><strong>5</strong><span>Flow</span><small>한 가지 사용자 job</small></div>
+            <b>↓</b>
+            <div class="canonical"><strong>1</strong><span>Bundle / Map</span><small>Flow 사이의 순서와 관계</small></div>
+          </div>
+          <p class="structure-rule">각 층은 아래 데이터를 복제하지 않고 묶는 의미만 더합니다. 완료 상태와 출처 연결은 Item에 남습니다.</p>
+        </div>
+      </div>
+    </div>
+  </section><section class="slide case-slide projection-slide" id="case-7-projection">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>07C</span>
+    <div>
+      <p>canonical Item을 실제 도구에 보내는 방법</p>
+      <h2>Checklist 중심으로 projection</h2>
+      <div class="section-copy">같은 Item을 다시 만드는 것이 아니라 목적지에 필요한 필드만 직렬화합니다.</div>
+    </div>
+  </header>
+      <div class="case-projection-layout">
+        <div class="item-anatomy">
+          <div class="mini-label">대표 canonical Item</div>
+          <h3>오이지무침 만들기</h3>
+          <div class="field-table"><div class="required">
+        <code>itemId</code>
+        <strong>wtable-summer-1-item</strong>
+      </div><div class="required">
+        <code>itemTitle</code>
+        <strong>오이지무침 만들기</strong>
+      </div><div class="required">
+        <code>detail / memo</code>
+        <strong>초급 · 15분 · 원문 레시피: https://wtable.co.kr/recipes/otoQ5JpRjgNPpuDtsYUwpRxC</strong>
+      </div><div class="required">
+        <code>completionMode</code>
+        <strong>manual_check</strong>
+      </div><div class="required">
+        <code>optional</code>
+        <strong>false</strong>
+      </div><div class="optional-off">
+        <code>schedule</code>
+        <strong>null</strong>
+      </div><div class="required">
+        <code>sourceRowIds</code>
+        <strong>wtable-summer-1</strong>
+      </div>
+    <p>이 Item의 근거: <a href="https://wtable.co.kr/recipes/otoQ5JpRjgNPpuDtsYUwpRxC">오이지무침</a></p>
+  </div>
+        </div>
+        <div class="projection-explain">
+          <div class="why-box">
+            <span>왜 이 결과물인가</span>
+            <p>원문에 조리 날짜가 없으므로 Checklist·Memo로 보며 사용자가 날짜를 선택하지 않은 상태에서 VEVENT를 만들지 않습니다.</p>
+          </div>
+          <div class="projection-band">
+            <div>
+              <span>내보낼 때만 목적지 형태로 변환</span>
+              <strong>Checklist 중심</strong>
+            </div>
+            <div class="projection-cards"><div class="projection off">
+        <strong>Calendar</strong>
+        <span>날짜 없음 · VEVENT 0</span>
+      </div><div class="projection primary">
+        <strong>Checklist</strong>
+        <span>주 결과물</span>
+      </div><div class="projection available">
+        <strong>Todo</strong>
+        <span>adapter에서 선택 가능</span>
+      </div><div class="projection available">
+        <strong>Sheet</strong>
+        <span>adapter에서 선택 가능</span>
+      </div><div class="projection secondary">
+        <strong>Memo</strong>
+        <span>보조 결과물</span>
+      </div></div>
+    <p class="projection-note">VTODO는 지원 destination에서만 후보로 사용하며 기본값은 off입니다. Checklist·Todo·Sheet·Memo fallback을 유지합니다.</p>
+          </div>
+          <div class="state-foot">
+            <span>Architecture fit <b>Go</b></span>
+            <span>Logic <b>Go</b></span>
+            <span>Public <b>Modify</b></span>
+            <span>Personal <b>not_confirmed</b></span>
+            <span>Source <b>row_set_ready_for_logic_revalidation</b></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section><section class="slide case-slide source-slide" id="case-8-source">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>08A</span>
+    <div>
+      <p>원문이 SourceRow가 되는 방법</p>
+      <h2>AND 취업 준비 영상 3편</h2>
+      <div class="section-copy">취업 준비 영상 3편을 필요한 순서로 보고 실행 메모를 남긴다.</div>
+    </div>
+  </header>
+      <div class="source-layout">
+        <figure class="source-frame">
+          <a href="https://www.youtube.com/watch?v=OIliv2jpDyM">
+            <img src="2026-07-27-creator-portfolio-qualified-assets/creator-work-andstudio-source.png" alt="AND Studio 원문 근거 화면">
+          </a>
+          <figcaption>
+            <strong>AND Studio</strong>
+            <span>리소스 컬렉션</span>
+          </figcaption>
+        </figure>
+        <div class="source-explain">
+          <div class="plain-fact">
+            <span>원문에서 한 줄로 보는 단위</span>
+            <strong>취업 준비 컬렉션의 영상 메타데이터 한 편</strong>
+          </div>
+          <ol class="row-list"><li>
+        <span>01</span>
+        <div><strong>자소서 지원동기 6단계</strong><small>조회 889,279 · 좋아요 17,011 · 댓글 201</small></div>
+      </li><li>
+        <span>02</span>
+        <div><strong>산업분석 방법</strong><small>조회 186,826 · 댓글 139</small></div>
+      </li><li>
+        <span>03</span>
+        <div><strong>면접 전 확인할 6가지</strong><small>조회 103,294 · 댓글 32</small></div>
+      </li></ol>
+          <div class="source-count-line">
+            <div><strong>3</strong><span>SourceRow</span></div>
+            <i>→</i>
+            <div><strong>3</strong><span>Item</span></div>
+            <i>→</i>
+            <div><strong>3</strong><span>Step</span></div>
+            <i>→</i>
+            <div><strong>3</strong><span>Flow</span></div>
+          </div>
+          <div class="overlay-panel">
+            <div>
+              <span>사용자가 입력하는 overlay</span>
+              <p>원문에 이미 있는 값은 다시 묻지 않습니다.</p>
+            </div>
+            <div class="overlay-empty">사용자 입력 0개 · 원문 값 그대로 시작</div>
+          </div>
+          <div class="readiness-line">
+            <span class="status go"><b>Logic</b>Go</span>
+            <span class="status modify"><b>Public</b>Modify</span>
+            <span class="status neutral"><b>Rights</b>link_metadata_only</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section><section class="slide case-slide data-slide" id="case-8-data">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>08B</span>
+    <div>
+      <p>SourceRow를 canonical 구조로 묶는 방법</p>
+      <h2>3개 Item으로 정리</h2>
+      <div class="section-copy">영상 한 편이 Todo 한 개입니다. 영상 자막이나 제작자의 설명을 임의 체크리스트로 복제하지 않습니다.</div>
+    </div>
+  </header>
+      <div class="item-structure-layout">
+        <div>
+          <div class="mini-label">실제 Item 예시</div>
+          <ol class="item-list"><li>
+        <span>01</span>
+        <div><strong>자소서 지원동기 6단계 영상으로 준비하기</strong><small>날짜 없음 · SourceRow 1개</small></div>
+      </li><li>
+        <span>02</span>
+        <div><strong>산업분석 방법 영상으로 준비하기</strong><small>날짜 없음 · SourceRow 1개</small></div>
+      </li><li>
+        <span>03</span>
+        <div><strong>면접 전 확인할 6가지 영상으로 준비하기</strong><small>날짜 없음 · SourceRow 1개</small></div>
+      </li></ol>
+        </div>
+        <div class="structure-story">
+          <span class="mini-label">원문이 정리되는 계층</span>
+          <div class="structure-stack">
+            <div class="source"><strong>3</strong><span>SourceRow</span><small>원문의 최소 근거 행</small></div>
+            <b>↓</b>
+            <div class="canonical"><strong>3</strong><span>Item</span><small>독립 완료 가능한 실행 단위</small></div>
+            <b>↓</b>
+            <div class="canonical"><strong>3</strong><span>Step</span><small>같은 단계·시점의 Item 묶음</small></div>
+            <b>↓</b>
+            <div class="canonical"><strong>3</strong><span>Flow</span><small>한 가지 사용자 job</small></div>
+            <b>↓</b>
+            <div class="canonical"><strong>1</strong><span>Bundle / Map</span><small>Flow 사이의 순서와 관계</small></div>
+          </div>
+          <p class="structure-rule">각 층은 아래 데이터를 복제하지 않고 묶는 의미만 더합니다. 완료 상태와 출처 연결은 Item에 남습니다.</p>
+        </div>
+      </div>
+    </div>
+  </section><section class="slide case-slide projection-slide" id="case-8-projection">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>08C</span>
+    <div>
+      <p>canonical Item을 실제 도구에 보내는 방법</p>
+      <h2>Todo 중심으로 projection</h2>
+      <div class="section-copy">같은 Item을 다시 만드는 것이 아니라 목적지에 필요한 필드만 직렬화합니다.</div>
+    </div>
+  </header>
+      <div class="case-projection-layout">
+        <div class="item-anatomy">
+          <div class="mini-label">대표 canonical Item</div>
+          <h3>자소서 지원동기 6단계 영상으로 준비하기</h3>
+          <div class="field-table"><div class="required">
+        <code>itemId</code>
+        <strong>andstudio-job-1-item</strong>
+      </div><div class="required">
+        <code>itemTitle</code>
+        <strong>자소서 지원동기 6단계 영상으로 준비하기</strong>
+      </div><div class="required">
+        <code>detail / memo</code>
+        <strong>조회 889,279 · 좋아요 17,011 · 댓글 201 · 영상: https://www.youtube.com/watch?v=OIliv2jpDyM</strong>
+      </div><div class="required">
+        <code>completionMode</code>
+        <strong>manual_check</strong>
+      </div><div class="required">
+        <code>optional</code>
+        <strong>false</strong>
+      </div><div class="optional-off">
+        <code>schedule</code>
+        <strong>null</strong>
+      </div><div class="required">
+        <code>sourceRowIds</code>
+        <strong>andstudio-job-1</strong>
+      </div>
+    <p>이 Item의 근거: <a href="https://www.youtube.com/watch?v=OIliv2jpDyM">자소서 지원동기 6단계</a></p>
+  </div>
+        </div>
+        <div class="projection-explain">
+          <div class="why-box">
+            <span>왜 이 결과물인가</span>
+            <p>세 영상은 날짜 없는 자료 큐이므로 Todo·Memo가 자연스럽고 제목·URL·순서만 공개 범위로 사용합니다.</p>
+          </div>
+          <div class="projection-band">
+            <div>
+              <span>내보낼 때만 목적지 형태로 변환</span>
+              <strong>Todo 중심</strong>
+            </div>
+            <div class="projection-cards"><div class="projection off">
+        <strong>Calendar</strong>
+        <span>날짜 없음 · VEVENT 0</span>
+      </div><div class="projection available">
+        <strong>Checklist</strong>
+        <span>adapter에서 선택 가능</span>
+      </div><div class="projection primary">
+        <strong>Todo</strong>
+        <span>주 결과물</span>
+      </div><div class="projection available">
+        <strong>Sheet</strong>
+        <span>adapter에서 선택 가능</span>
+      </div><div class="projection secondary">
+        <strong>Memo</strong>
+        <span>보조 결과물</span>
+      </div></div>
+    <p class="projection-note">VTODO는 지원 destination에서만 후보로 사용하며 기본값은 off입니다. Checklist·Todo·Sheet·Memo fallback을 유지합니다.</p>
+          </div>
+          <div class="state-foot">
+            <span>Architecture fit <b>Go</b></span>
+            <span>Logic <b>Go</b></span>
+            <span>Public <b>Modify</b></span>
+            <span>Personal <b>allowed_with_limits</b></span>
+            <span>Source <b>row_set_ready_for_logic_revalidation</b></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="compare-lessons">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>06</span>
+    <div>
+      <p>같은 lesson_rows인데 왜 결과가 다른가</p>
+      <h2>원문 날짜가 있으면 Calendar, 없으면 진도표</h2>
+      <div class="section-copy">콘텐츠 카테고리가 아니라 source row의 날짜 의미가 분기를 만듭니다.</div>
+    </div>
+  </header>
+      <div class="comparison-grid">
+        <article class="comparison-case dated">
+    <span>오픽 모의고사 계획표</span>
+    <h3>강의·계획 행</h3>
+    <p>1회 모의고사 실전처럼 풀기</p>
+    <div class="comparison-schedule">relative_weekday · 1주차 · 월</div>
+    <strong>Sheet</strong>
+  </article>
+        <article class="comparison-case undated">
+    <span>생활코딩 WEB1 진도표</span>
+    <h3>강의·계획 행</h3>
+    <p>「프로젝트의 동기」 학습하기</p>
+    <div class="comparison-schedule">날짜 없음</div>
+    <strong>Sheet</strong>
+  </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="compare-collections">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>07</span>
+    <div>
+      <p>같은 resource_collection인데 왜 목적지가 다른가</p>
+      <h2>순서·날짜·사용자 job이 Calendar·Checklist·Todo를 가른다</h2>
+      <div class="section-copy">컬렉션이라는 형태만 보고 결과물을 고정하지 않습니다.</div>
+    </div>
+  </header>
+      <div class="comparison-grid three">
+        <article class="comparison-case dated">
+    <span>Allblanc 7일 복근 챌린지</span>
+    <h3>리소스 컬렉션</h3>
+    <p>코어 + 복근 한방에! 20분 복근 운동</p>
+    <div class="comparison-schedule">sequence_day · Day 1</div>
+    <strong>Calendar</strong>
+  </article>
+        <article class="comparison-case undated">
+    <span>이번 주 여름 반찬 5가지</span>
+    <h3>리소스 컬렉션</h3>
+    <p>오이지무침 만들기</p>
+    <div class="comparison-schedule">날짜 없음</div>
+    <strong>Checklist</strong>
+  </article>
+        <article class="comparison-case undated">
+    <span>AND 취업 준비 영상 3편</span>
+    <h3>리소스 컬렉션</h3>
+    <p>자소서 지원동기 6단계 영상으로 준비하기</p>
+    <div class="comparison-schedule">날짜 없음</div>
+    <strong>Todo</strong>
+  </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="projection">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>08</span>
+    <div>
+      <p>Item 한 개는 여러 도구에서 어떻게 보이나</p>
+      <h2>원본 하나, 표현은 목적지마다 다르게</h2>
+      <div class="section-copy">ICS·Checklist·Todo·Sheet·Memo는 경쟁하는 저장 구조가 아닙니다.</div>
+    </div>
+  </header>
+      <div class="projection-center">
+        <div class="canonical-core"><div><strong>Item</strong><span>완료·결정·기록·출처의 원본</span></div></div>
+        <div class="projection-spokes">
+          <div><strong>VEVENT</strong><span>일정 있는 Item만 날짜·시간·설명으로 직렬화</span></div>
+          <div><strong>VTODO 후보</strong><span>날짜 없는 작업이지만 client 보존을 확인하지 않았으므로 기본 off</span></div>
+          <div><strong>Checklist / Todo</strong><span>제목·상세·완료 상태를 가볍게 사용</span></div>
+          <div><strong>Sheet</strong><span>행·순서·상태·진도·메모를 표로 관리</span></div>
+          <div><strong>Memo</strong><span>원문 링크·상세 설명·주의·개인 메모 보존</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="step-bundle">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>09</span>
+    <div>
+      <p>같은 날짜의 여러 Item은 어떻게 묶나</p>
+      <h2>Calendar에서는 한 일정, FlowMe에서는 여러 완료 상태</h2>
+      <div class="section-copy">묶기는 저장 구조가 아니라 export 정책입니다.</div>
+    </div>
+  </header>
+      <div class="bundle-layout">
+        <div class="bundle-items">
+          <div><strong>전기·수도·가스·관리비 정산하기</strong><span>bundle-moving-d30-s5-i1</span></div><div><strong>장기수선충당금 환급 확인하기</strong><span>bundle-moving-d30-s5-i2</span></div><div><strong>남은 물건 확인하고 열쇠 반납하기</strong><span>bundle-moving-d30-s5-i3</span></div><div><strong>분실·파손 확인하고 이사업체 정산하기</strong><span>bundle-moving-d30-s6-i1</span></div>
+        </div>
+        <div class="bundle-arrow">→</div>
+        <div class="bundle-event">
+          <span>Calendar step_bundle · relative_to_target · D+0</span>
+          <h3>같은 시점 Item을 한 VEVENT로 보기</h3>
+          <p>Calendar 화면은 간결해지지만 child Item ID는 모두 남고 각 체크의 완료 상태는 canonical Item에 저장됩니다.</p>
+          <code>completionOwner=canonical_item_state</code>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="architecture">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>10</span>
+    <div>
+      <p>세 저장 구조를 다시 계산하면</p>
+      <h2>Canonical Item 95 · ICS-first 46 · SharedContext 89</h2>
+      <div class="section-copy">상세 10개 평가축은 machine scorecard에 보존하고 여기서는 핵심 손실만 보여줍니다.</div>
+    </div>
+  </header>
+      <div class="architecture-list"><article class="architecture-summary go">
+    <span>A</span>
+    <div><h3>Canonical Item</h3><p>160 Item과 210 SourceRow를 원본으로 보존하고 일정 있는 112개만 VEVENT로 보냅니다.</p></div>
+    <strong>95<small>Go</small></strong>
+  </article><article class="architecture-summary hold">
+    <span>B</span>
+    <div><h3>Literal ICS-first</h3><p>날짜 없는 48개와 완료·출처 보존이 외부 VTODO·X-property 지원에 의존합니다.</p></div>
+    <strong>46<small>Hold</small></strong>
+  </article><article class="architecture-summary modify">
+    <span>C</span>
+    <div><h3>Item + SharedContext</h3><p>의미는 보존하지만 공유 일정 이점이 이사 1개뿐이라 새 canonical entity가 과합니다.</p></div>
+    <strong>89<small>Modify</small></strong>
+  </article></div>
+    </div>
+  </section>
+
+  <section class="slide" id="readiness">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>11</span>
+    <div>
+      <p>만들 수 있으면 바로 공개해도 되나</p>
+      <h2>Architecture·Logic·Public·Rights·Personal은 다른 축</h2>
+      <div class="section-copy">Logic Go를 Public Go로 표현하지 않습니다.</div>
+    </div>
+  </header>
+      <div class="readiness-examples">
+        <article class="readiness-example">
+    <h3>생활코딩 WEB1 진도표</h3>
+    <p>WEB1의 공개 토픽 목록을 순서대로 학습하고 진도를 체크한다.</p>
+    <div>
+      <span class="status go"><b>Architecture</b>Go</span>
+      <span class="status go"><b>Logic</b>Go</span>
+      <span class="status go"><b>Public</b>Go</span>
+      <span class="status neutral"><b>Rights</b>public_conversion_allowed</span>
+      <span class="status neutral"><b>Personal</b>allowed</span>
+    </div>
+  </article><article class="readiness-example">
+    <h3>이사 D-30 체크리스트</h3>
+    <p>이사일을 기준으로 원문 D-day 체크 행을 빠뜨리지 않고 실행한다.</p>
+    <div>
+      <span class="status go"><b>Architecture</b>Go</span>
+      <span class="status go"><b>Logic</b>Go</span>
+      <span class="status modify"><b>Public</b>Modify</span>
+      <span class="status neutral"><b>Rights</b>permission_required</span>
+      <span class="status neutral"><b>Personal</b>not_confirmed</span>
+    </div>
+  </article><article class="readiness-example">
+    <h3>초기 이유식 D+174~209 식단</h3>
+    <p>원문 식단표의 D+n 순서대로 초기 이유식을 제공한다.</p>
+    <div>
+      <span class="status go"><b>Architecture</b>Go</span>
+      <span class="status go"><b>Logic</b>Go</span>
+      <span class="status hold"><b>Public</b>Hold</span>
+      <span class="status neutral"><b>Rights</b>private_conversion_only</span>
+      <span class="status neutral"><b>Personal</b>allowed</span>
+    </div>
+  </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="delta">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>12</span>
+    <div>
+      <p>왜 같은 결론을 다시 실험했나</p>
+      <h2>구조가 틀린 게 아니라 시험지가 바뀌었다</h2>
+      <div class="section-copy">7월 23일 baseline은 보존하고 최신 Qualified v2 8개만 새 corpus로 계산했습니다.</div>
+    </div>
+  </header>
+      <div class="delta-list"><div class="delta-row"><span>Bundle</span><strong>9</strong><i>→</i><strong>8</strong><b>-1</b></div><div class="delta-row"><span>Flow</span><strong>22</strong><i>→</i><strong>21</strong><b>-1</b></div><div class="delta-row"><span>Step</span><strong>57</strong><i>→</i><strong>49</strong><b>-8</b></div><div class="delta-row"><span>Item</span><strong>148</strong><i>→</i><strong>160</strong><b>+12</b></div><div class="delta-row"><span>SourceRow</span><strong>198</strong><i>→</i><strong>210</strong><b>+12</b></div><div class="delta-row"><span>일정 Item</span><strong>118</strong><i>→</i><strong>112</strong><b>-6</b></div><div class="delta-row"><span>날짜 없는 Item</span><strong>30</strong><i>→</i><strong>48</strong><b>+18</b></div></div>
+      <div class="replacement-line">
+        <article><span>신규 정상 대표</span><h3>생활코딩 WEB1</h3><p>26개 날짜 없는 진도 Item · 현재 유일한 Public Go</p></article>
+        <article><span>Boundary 이동</span><h3>트리플 여행 체크</h3><p>Logic Modify · Public Modify · 최신성 책임 불명확</p></article>
+        <article><span>Boundary 이동</span><h3>핏펫 예방접종</h3><p>Logic Hold · Public Hold · 권리와 최신 공식 근거 필요</p></article>
+      </div>
+    </div>
+  </section>
+
+  <div id="boundaries"></div>
+  <section class="slide boundary-slide" id="boundary-1">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>B1</span>
+    <div>
+      <p>데이터로 만들 수 있어도 지금 공개하면 안 되는 사례</p>
+      <h2>카파도키아 출국 전 체크</h2>
+      <div class="section-copy">카파도키아 출국 전 원문 확인 항목을 날짜 입력 없이 빠르게 점검한다.</div>
+    </div>
+  </header>
+      <div class="boundary-layout">
+        <div>
+          <span class="mini-label">역사적 실제 구조</span>
+          <ol class="row-list"><li>
+        <span>01</span>
+        <div><strong>여권</strong><small>여권 유효기간 6개월 이상 확인</small></div>
+      </li><li>
+        <span>02</span>
+        <div><strong>항공권 일정</strong><small>출국·귀국 일정 다시 확인</small></div>
+      </li><li>
+        <span>03</span>
+        <div><strong>환전</strong><small>여행 예산에 맞게 환전</small></div>
+      </li></ol>
+          <div class="source-count-line">
+            <div><strong>8</strong><span>SourceRow</span></div>
+            <i>→</i>
+            <div><strong>8</strong><span>Item</span></div>
+            <i>→</i>
+            <div><strong>checklist</strong><span>후보 결과</span></div>
+          </div>
+        </div>
+        <div class="stop-panel">
+          <span>현재 gate에서 중지</span>
+          <h3>체크 행은 있으나 저장 15·리뷰 1 수준이고 목적지 정보 최신성 관리 주체가 불분명하다.</h3>
+          <p>내부 로직 검증은 가능하지만 공개 Flow 전환에는 권리자 확인 또는 제휴가 필요하다.</p>
+          <div>
+            <span class="status modify"><b>Logic</b>Modify</span>
+            <span class="status modify"><b>Public</b>Modify</span>
+            <span class="status neutral"><b>Rights</b>permission_required</span>
+            <span class="status neutral"><b>Safety</b>not_flagged_by_qualified_v2</span>
+          </div>
+          <strong>승격 조건</strong>
+          <p>최신 업데이트 책임과 목적지별 구조화 행을 확보한다.</p>
+          <small>Historical / boundary · 정상 8개 corpus 수치에 포함하지 않음</small>
+        </div>
+      </div>
+    </div>
+  </section><section class="slide boundary-slide" id="boundary-2">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>B2</span>
+    <div>
+      <p>데이터로 만들 수 있어도 지금 공개하면 안 되는 사례</p>
+      <h2>강아지 생후 6~16주 예방접종 일정</h2>
+      <div class="section-copy">원문 생후 주차를 참고 일정으로 보고 실제 일정은 담당 수의사와 확인한다.</div>
+    </div>
+  </header>
+      <div class="boundary-layout">
+        <div>
+          <span class="mini-label">역사적 실제 구조</span>
+          <ol class="row-list"><li>
+        <span>01</span>
+        <div><strong>생후 6주 1차 접종</strong><small>DHPPL 1차 + 코로나 장염 1차</small></div>
+      </li><li>
+        <span>02</span>
+        <div><strong>생후 8주 2차 접종</strong><small>DHPPL 2차 + 코로나 장염 2차</small></div>
+      </li><li>
+        <span>03</span>
+        <div><strong>생후 10주 3차 접종</strong><small>DHPPL 3차 + 켄넬 코프 1차</small></div>
+      </li></ol>
+          <div class="source-count-line">
+            <div><strong>6</strong><span>SourceRow</span></div>
+            <i>→</i>
+            <div><strong>6</strong><span>Item</span></div>
+            <i>→</i>
+            <div><strong>calendar</strong><span>후보 결과</span></div>
+          </div>
+        </div>
+        <div class="stop-panel">
+          <span>현재 gate에서 중지</span>
+          <h3>구조 가능성은 있으나 이번 8개와 중복되거나 권리·민감도·첫 행동 근거가 상대적으로 약하다.</h3>
+          <p>공개 보류: 브랜드의 예방접종 표를 공개 전환하려면 허가가 필요하며 최신 공식 수의학 근거도 별도로 확인해야 한다.</p>
+          <div>
+            <span class="status hold"><b>Logic</b>Hold</span>
+            <span class="status hold"><b>Public</b>Hold</span>
+            <span class="status neutral"><b>Rights</b>permission_required</span>
+            <span class="status neutral"><b>Safety</b>required_before_any_promotion</span>
+          </div>
+          <strong>승격 조건</strong>
+          <p>공개 보류: 브랜드의 예방접종 표를 공개 전환하려면 허가가 필요하며 최신 공식 수의학 근거도 별도로 확인해야 한다.</p>
+          <small>Historical / boundary · 정상 8개 corpus 수치에 포함하지 않음</small>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="portfolio-1">
+        <div class="wrap">
+          <header class="section-heading">
+    <span>P1</span>
+    <div>
+      <p>27개 발굴 대상은 어디까지 왔나</p>
+      <h2>집·살림</h2>
+      <div class="section-copy">각 대상의 자격 판정 상태를 보여주는 지도입니다. 8개 외의 항목을 canonical 변환 완료로 세지 않습니다.</div>
+    </div>
+  </header>
+          <div class="portfolio-grid"><article class="portfolio-card">
+    <span>집·살림</span>
+    <h3>아정당</h3>
+    <div>
+      <span class="status go"><b>Logic</b>Go</span>
+      <span class="status modify"><b>Public</b>Modify</span>
+    </div>
+    <p>Source rows 표시 있음</p>
+    <small>logic_handoff</small>
+  </article><article class="portfolio-card">
+    <span>집·살림</span>
+    <h3>오늘의집 고수 콘텐츠</h3>
+    <div>
+      <span class="status modify"><b>Logic</b>Modify</span>
+      <span class="status modify"><b>Public</b>Modify</span>
+    </div>
+    <p>Source rows 표시 있음</p>
+    <small>boundary_case</small>
+  </article><article class="portfolio-card">
+    <span>집·살림</span>
+    <h3>정리왕</h3>
+    <div>
+      <span class="status modify"><b>Logic</b>Modify</span>
+      <span class="status modify"><b>Public</b>Modify</span>
+    </div>
+    <p>Source rows 표시 있음</p>
+    <small>watchlist</small>
+  </article></div>
+          <p class="portfolio-disclaimer"><code>sourceRowsReady=true</code>는 자격 판정에 필요한 행 표시가 있다는 뜻이지, 완전한 Item·Step·Flow fixture가 있다는 뜻은 아닙니다.</p>
+        </div>
+      </section><section class="slide" id="portfolio-2">
+        <div class="wrap">
+          <header class="section-heading">
+    <span>P2</span>
+    <div>
+      <p>27개 발굴 대상은 어디까지 왔나</p>
+      <h2>가족·육아</h2>
+      <div class="section-copy">각 대상의 자격 판정 상태를 보여주는 지도입니다. 8개 외의 항목을 canonical 변환 완료로 세지 않습니다.</div>
+    </div>
+  </header>
+          <div class="portfolio-grid"><article class="portfolio-card">
+    <span>가족·육아</span>
+    <h3>펀맘</h3>
+    <div>
+      <span class="status hold"><b>Logic</b>Hold</span>
+      <span class="status hold"><b>Public</b>Hold</span>
+    </div>
+    <p>Source rows 표시 있음</p>
+    <small>hold</small>
+  </article><article class="portfolio-card">
+    <span>가족·육아</span>
+    <h3>뿐이토핑이유식</h3>
+    <div>
+      <span class="status go"><b>Logic</b>Go</span>
+      <span class="status hold"><b>Public</b>Hold</span>
+    </div>
+    <p>Source rows 표시 있음</p>
+    <small>logic_handoff</small>
+  </article><article class="portfolio-card">
+    <span>가족·육아</span>
+    <h3>베이비빌리</h3>
+    <div>
+      <span class="status modify"><b>Logic</b>Modify</span>
+      <span class="status modify"><b>Public</b>Modify</span>
+    </div>
+    <p>Source rows 표시 있음</p>
+    <small>boundary_case</small>
+  </article></div>
+          <p class="portfolio-disclaimer"><code>sourceRowsReady=true</code>는 자격 판정에 필요한 행 표시가 있다는 뜻이지, 완전한 Item·Step·Flow fixture가 있다는 뜻은 아닙니다.</p>
+        </div>
+      </section><section class="slide" id="portfolio-3">
+        <div class="wrap">
+          <header class="section-heading">
+    <span>P3</span>
+    <div>
+      <p>27개 발굴 대상은 어디까지 왔나</p>
+      <h2>공부·독서</h2>
+      <div class="section-copy">각 대상의 자격 판정 상태를 보여주는 지도입니다. 8개 외의 항목을 canonical 변환 완료로 세지 않습니다.</div>
+    </div>
+  </header>
+          <div class="portfolio-grid"><article class="portfolio-card">
+    <span>공부·독서</span>
+    <h3>오픽만수르</h3>
+    <div>
+      <span class="status go"><b>Logic</b>Go</span>
+      <span class="status modify"><b>Public</b>Modify</span>
+    </div>
+    <p>Source rows 표시 있음</p>
+    <small>logic_handoff</small>
+  </article><article class="portfolio-card">
+    <span>공부·독서</span>
+    <h3>생활코딩</h3>
+    <div>
+      <span class="status go"><b>Logic</b>Go</span>
+      <span class="status go"><b>Public</b>Go</span>
+    </div>
+    <p>Source rows 표시 있음</p>
+    <small>logic_handoff</small>
+  </article><article class="portfolio-card">
+    <span>공부·독서</span>
+    <h3>노마드 코더</h3>
+    <div>
+      <span class="status modify"><b>Logic</b>Modify</span>
+      <span class="status modify"><b>Public</b>Modify</span>
+    </div>
+    <p>Source rows 표시 있음</p>
+    <small>watchlist</small>
+  </article></div>
+          <p class="portfolio-disclaimer"><code>sourceRowsReady=true</code>는 자격 판정에 필요한 행 표시가 있다는 뜻이지, 완전한 Item·Step·Flow fixture가 있다는 뜻은 아닙니다.</p>
+        </div>
+      </section><section class="slide" id="portfolio-4">
+        <div class="wrap">
+          <header class="section-heading">
+    <span>P4</span>
+    <div>
+      <p>27개 발굴 대상은 어디까지 왔나</p>
+      <h2>돈·행정·구매</h2>
+      <div class="section-copy">각 대상의 자격 판정 상태를 보여주는 지도입니다. 8개 외의 항목을 canonical 변환 완료로 세지 않습니다.</div>
+    </div>
+  </header>
+          <div class="portfolio-grid"><article class="portfolio-card">
+    <span>돈·행정·구매</span>
+    <h3>겟차</h3>
+    <div>
+      <span class="status go"><b>Logic</b>Go</span>
+      <span class="status modify"><b>Public</b>Modify</span>
+    </div>
+    <p>Source rows 표시 있음</p>
+    <small>logic_handoff</small>
+  </article><article class="portfolio-card">
+    <span>돈·행정·구매</span>
+    <h3>김짠부 재테크</h3>
+    <div>
+      <span class="status modify"><b>Logic</b>Modify</span>
+      <span class="status modify"><b>Public</b>Modify</span>
+    </div>
+    <p>Source rows 표시 있음</p>
+    <small>watchlist</small>
+  </article><article class="portfolio-card">
+    <span>돈·행정·구매</span>
+    <h3>박곰희TV</h3>
+    <div>
+      <span class="status modify"><b>Logic</b>Modify</span>
+      <span class="status modify"><b>Public</b>Modify</span>
+    </div>
+    <p>Source rows 표시 있음</p>
+    <small>watchlist</small>
+  </article></div>
+          <p class="portfolio-disclaimer"><code>sourceRowsReady=true</code>는 자격 판정에 필요한 행 표시가 있다는 뜻이지, 완전한 Item·Step·Flow fixture가 있다는 뜻은 아닙니다.</p>
+        </div>
+      </section><section class="slide" id="portfolio-5">
+        <div class="wrap">
+          <header class="section-heading">
+    <span>P5</span>
+    <div>
+      <p>27개 발굴 대상은 어디까지 왔나</p>
+      <h2>건강·운동</h2>
+      <div class="section-copy">각 대상의 자격 판정 상태를 보여주는 지도입니다. 8개 외의 항목을 canonical 변환 완료로 세지 않습니다.</div>
+    </div>
+  </header>
+          <div class="portfolio-grid"><article class="portfolio-card">
+    <span>건강·운동</span>
+    <h3>Allblanc TV</h3>
+    <div>
+      <span class="status go"><b>Logic</b>Go</span>
+      <span class="status modify"><b>Public</b>Modify</span>
+    </div>
+    <p>Source rows 표시 있음</p>
+    <small>logic_handoff</small>
+  </article><article class="portfolio-card">
+    <span>건강·운동</span>
+    <h3>빅씨스 Bigsis</h3>
+    <div>
+      <span class="status modify"><b>Logic</b>Modify</span>
+      <span class="status modify"><b>Public</b>Modify</span>
+    </div>
+    <p>원문 행 추가 확보 필요</p>
+    <small>boundary_case</small>
+  </article><article class="portfolio-card">
+    <span>건강·운동</span>
+    <h3>Thankyou BUBU</h3>
+    <div>
+      <span class="status hold"><b>Logic</b>Hold</span>
+      <span class="status hold"><b>Public</b>Hold</span>
+    </div>
+    <p>원문 행 추가 확보 필요</p>
+    <small>hold</small>
+  </article></div>
+          <p class="portfolio-disclaimer"><code>sourceRowsReady=true</code>는 자격 판정에 필요한 행 표시가 있다는 뜻이지, 완전한 Item·Step·Flow fixture가 있다는 뜻은 아닙니다.</p>
+        </div>
+      </section><section class="slide" id="portfolio-6">
+        <div class="wrap">
+          <header class="section-heading">
+    <span>P6</span>
+    <div>
+      <p>27개 발굴 대상은 어디까지 왔나</p>
+      <h2>여행·외출</h2>
+      <div class="section-copy">각 대상의 자격 판정 상태를 보여주는 지도입니다. 8개 외의 항목을 canonical 변환 완료로 세지 않습니다.</div>
+    </div>
+  </header>
+          <div class="portfolio-grid"><article class="portfolio-card">
+    <span>여행·외출</span>
+    <h3>KKday Korea</h3>
+    <div>
+      <span class="status hold"><b>Logic</b>Hold</span>
+      <span class="status hold"><b>Public</b>Hold</span>
+    </div>
+    <p>Source rows 표시 있음</p>
+    <small>hold</small>
+  </article><article class="portfolio-card">
+    <span>여행·외출</span>
+    <h3>트리플</h3>
+    <div>
+      <span class="status modify"><b>Logic</b>Modify</span>
+      <span class="status modify"><b>Public</b>Modify</span>
+    </div>
+    <p>Source rows 표시 있음</p>
+    <small>boundary_case</small>
+  </article><article class="portfolio-card">
+    <span>여행·외출</span>
+    <h3>여행에미치다</h3>
+    <div>
+      <span class="status hold"><b>Logic</b>Hold</span>
+      <span class="status hold"><b>Public</b>Hold</span>
+    </div>
+    <p>Source rows 표시 있음</p>
+    <small>hold</small>
+  </article></div>
+          <p class="portfolio-disclaimer"><code>sourceRowsReady=true</code>는 자격 판정에 필요한 행 표시가 있다는 뜻이지, 완전한 Item·Step·Flow fixture가 있다는 뜻은 아닙니다.</p>
+        </div>
+      </section><section class="slide" id="portfolio-7">
+        <div class="wrap">
+          <header class="section-heading">
+    <span>P7</span>
+    <div>
+      <p>27개 발굴 대상은 어디까지 왔나</p>
+      <h2>식사·장보기</h2>
+      <div class="section-copy">각 대상의 자격 판정 상태를 보여주는 지도입니다. 8개 외의 항목을 canonical 변환 완료로 세지 않습니다.</div>
+    </div>
+  </header>
+          <div class="portfolio-grid"><article class="portfolio-card">
+    <span>식사·장보기</span>
+    <h3>우리의식탁</h3>
+    <div>
+      <span class="status go"><b>Logic</b>Go</span>
+      <span class="status modify"><b>Public</b>Modify</span>
+    </div>
+    <p>Source rows 표시 있음</p>
+    <small>logic_handoff</small>
+  </article><article class="portfolio-card">
+    <span>식사·장보기</span>
+    <h3>만개의레시피</h3>
+    <div>
+      <span class="status hold"><b>Logic</b>Hold</span>
+      <span class="status hold"><b>Public</b>Hold</span>
+    </div>
+    <p>원문 행 추가 확보 필요</p>
+    <small>hold</small>
+  </article><article class="portfolio-card">
+    <span>식사·장보기</span>
+    <h3>매일맛나</h3>
+    <div>
+      <span class="status hold"><b>Logic</b>Hold</span>
+      <span class="status hold"><b>Public</b>Hold</span>
+    </div>
+    <p>원문 행 추가 확보 필요</p>
+    <small>hold</small>
+  </article></div>
+          <p class="portfolio-disclaimer"><code>sourceRowsReady=true</code>는 자격 판정에 필요한 행 표시가 있다는 뜻이지, 완전한 Item·Step·Flow fixture가 있다는 뜻은 아닙니다.</p>
+        </div>
+      </section><section class="slide" id="portfolio-8">
+        <div class="wrap">
+          <header class="section-heading">
+    <span>P8</span>
+    <div>
+      <p>27개 발굴 대상은 어디까지 왔나</p>
+      <h2>일·커리어</h2>
+      <div class="section-copy">각 대상의 자격 판정 상태를 보여주는 지도입니다. 8개 외의 항목을 canonical 변환 완료로 세지 않습니다.</div>
+    </div>
+  </header>
+          <div class="portfolio-grid"><article class="portfolio-card">
+    <span>일·커리어</span>
+    <h3>면접왕 이형</h3>
+    <div>
+      <span class="status hold"><b>Logic</b>Hold</span>
+      <span class="status hold"><b>Public</b>Hold</span>
+    </div>
+    <p>원문 행 추가 확보 필요</p>
+    <small>hold</small>
+  </article><article class="portfolio-card">
+    <span>일·커리어</span>
+    <h3>AND Studio</h3>
+    <div>
+      <span class="status go"><b>Logic</b>Go</span>
+      <span class="status modify"><b>Public</b>Modify</span>
+    </div>
+    <p>Source rows 표시 있음</p>
+    <small>logic_handoff</small>
+  </article><article class="portfolio-card">
+    <span>일·커리어</span>
+    <h3>배민외식업광장</h3>
+    <div>
+      <span class="status hold"><b>Logic</b>Hold</span>
+      <span class="status hold"><b>Public</b>Hold</span>
+    </div>
+    <p>Source rows 표시 있음</p>
+    <small>hold</small>
+  </article></div>
+          <p class="portfolio-disclaimer"><code>sourceRowsReady=true</code>는 자격 판정에 필요한 행 표시가 있다는 뜻이지, 완전한 Item·Step·Flow fixture가 있다는 뜻은 아닙니다.</p>
+        </div>
+      </section><section class="slide" id="portfolio-9">
+        <div class="wrap">
+          <header class="section-heading">
+    <span>P9</span>
+    <div>
+      <p>27개 발굴 대상은 어디까지 왔나</p>
+      <h2>취미·반려</h2>
+      <div class="section-copy">각 대상의 자격 판정 상태를 보여주는 지도입니다. 8개 외의 항목을 canonical 변환 완료로 세지 않습니다.</div>
+    </div>
+  </header>
+          <div class="portfolio-grid"><article class="portfolio-card">
+    <span>취미·반려</span>
+    <h3>핏펫</h3>
+    <div>
+      <span class="status hold"><b>Logic</b>Hold</span>
+      <span class="status hold"><b>Public</b>Hold</span>
+    </div>
+    <p>Source rows 표시 있음</p>
+    <small>hold</small>
+  </article><article class="portfolio-card">
+    <span>취미·반려</span>
+    <h3>강형욱의 보듬TV</h3>
+    <div>
+      <span class="status modify"><b>Logic</b>Modify</span>
+      <span class="status modify"><b>Public</b>Modify</span>
+    </div>
+    <p>Source rows 표시 있음</p>
+    <small>boundary_case</small>
+  </article><article class="portfolio-card">
+    <span>취미·반려</span>
+    <h3>미야옹철의 냥냥펀치</h3>
+    <div>
+      <span class="status modify"><b>Logic</b>Modify</span>
+      <span class="status modify"><b>Public</b>Modify</span>
+    </div>
+    <p>Source rows 표시 있음</p>
+    <small>watchlist</small>
+  </article></div>
+          <p class="portfolio-disclaimer"><code>sourceRowsReady=true</code>는 자격 판정에 필요한 행 표시가 있다는 뜻이지, 완전한 Item·Step·Flow fixture가 있다는 뜻은 아닙니다.</p>
+        </div>
+      </section>
+
+  <section class="slide" id="future-1">
+        <div class="wrap">
+          <header class="section-heading">
+    <span>F1</span>
+    <div>
+      <p>다음 corpus는 어떤 원문 행을 확보해야 하나</p>
+      <h2>미래 데이터 계약 1–2</h2>
+      <div class="section-copy">Vertical 실험의 기회는 실제 변환 결과가 아니라 source acquisition을 위한 field contract입니다.</div>
+    </div>
+  </header>
+          <div class="future-grid"><article class="future-contract">
+    <div class="future-head">
+      <span>Go</span>
+      <strong>SourceRow 0 · Item 0</strong>
+    </div>
+    <h3>공간·기간별 집 관리 루틴</h3>
+    <p>집안일을 누구부터 무엇을 해야 할지 정하기 어려울 때</p>
+    <dl>
+      <div><dt>최소 입력</dt><dd>공간/방,청소 빈도</dd></div>
+      <div><dt>필요 원문 행</dt><dd>공간 · 작업 제목 · 권장 주기 또는 원문 순서 · 원문 링크</dd></div>
+      <div><dt>자연스러운 결과</dt><dd>반복 체크리스트 + 캘린더</dd></div>
+      <div><dt>canonical category</dt><dd>home_living</dd></div>
+    </dl>
+    <aside>가사량 최적화 점수 엔진 / 가족 간 경쟁·보상 시스템</aside>
+    <small>미래 field contract · 변환 완료 아님</small>
+  </article><article class="future-contract">
+    <div class="future-head">
+      <span>Partner</span>
+      <strong>SourceRow 0 · Item 0</strong>
+    </div>
+    <h3>월령·목표별 2주 놀이 루틴</h3>
+    <p>아이 월령에 맞는 오늘 놀이를 바로 찾고 싶을 때</p>
+    <dl>
+      <div><dt>최소 입력</dt><dd>생년월일/월령</dd></div>
+      <div><dt>필요 원문 행</dt><dd>활동 제목 · 대상 월령 · 원문 URL · 원문에 적힌 준비물/주의</dd></div>
+      <div><dt>자연스러운 결과</dt><dd>하루 한 활동 루틴 + 원문 링크</dd></div>
+      <div><dt>canonical category</dt><dd>family_parenting</dd></div>
+    </dl>
+    <aside>발달 진단·평가 엔진 / 유료 활동 영상 복제</aside>
+    <small>미래 field contract · 변환 완료 아님</small>
+  </article></div>
+        </div>
+      </section><section class="slide" id="future-2">
+        <div class="wrap">
+          <header class="section-heading">
+    <span>F2</span>
+    <div>
+      <p>다음 corpus는 어떤 원문 행을 확보해야 하나</p>
+      <h2>미래 데이터 계약 3–4</h2>
+      <div class="section-copy">Vertical 실험의 기회는 실제 변환 결과가 아니라 source acquisition을 위한 field contract입니다.</div>
+    </div>
+  </header>
+          <div class="future-grid"><article class="future-contract">
+    <div class="future-head">
+      <span>Go</span>
+      <strong>SourceRow 0 · Item 0</strong>
+    </div>
+    <h3>제작자 강의·연습 시리즈 진도 Flow</h3>
+    <p>짧게라도 매일 언어 학습을 이어가고 싶을 때</p>
+    <dl>
+      <div><dt>최소 입력</dt><dd>학습 언어</dd></div>
+      <div><dt>필요 원문 행</dt><dd>회차 제목 · 순서 · 영상/글 URL · 원문 학습 목표</dd></div>
+      <div><dt>자연스러운 결과</dt><dd>회차 큐 + 오늘의 다음 학습</dd></div>
+      <div><dt>canonical category</dt><dd>study_reading</dd></div>
+    </dl>
+    <aside>적응형 문제 출제 엔진 / 스트릭·게임 경제 복제</aside>
+    <small>미래 field contract · 변환 완료 아님</small>
+  </article><article class="future-contract">
+    <div class="future-head">
+      <span>Go</span>
+      <strong>SourceRow 0 · Item 0</strong>
+    </div>
+    <h3>기간형 운동 프로그램 실행표</h3>
+    <p>레이스·거리 목표에 맞춘 주간 러닝 계획이 필요할 때</p>
+    <dl>
+      <div><dt>최소 입력</dt><dd>목표 유형/레이스,현재 능력·주간 거리,주당 러닝 횟수</dd></div>
+      <div><dt>필요 원문 행</dt><dd>주차/회차 · 운동 제목 · 원문 URL · 원문에 명시된 휴식·범위</dd></div>
+      <div><dt>자연스러운 결과</dt><dd>주차별 일정 + 오늘 세션</dd></div>
+      <div><dt>canonical category</dt><dd>health_fitness</dd></div>
+    </dl>
+    <aside>훈련 부하·부상 위험 계산 / GPS·웨어러블 코칭 엔진</aside>
+    <small>미래 field contract · 변환 완료 아님</small>
+  </article></div>
+        </div>
+      </section><section class="slide" id="future-3">
+        <div class="wrap">
+          <header class="section-heading">
+    <span>F3</span>
+    <div>
+      <p>다음 corpus는 어떤 원문 행을 확보해야 하나</p>
+      <h2>미래 데이터 계약 5–6</h2>
+      <div class="section-copy">Vertical 실험의 기회는 실제 변환 결과가 아니라 source acquisition을 위한 field contract입니다.</div>
+    </div>
+  </header>
+          <div class="future-grid"><article class="future-contract">
+    <div class="future-head">
+      <span>Partner</span>
+      <strong>SourceRow 0 · Item 0</strong>
+    </div>
+    <h3>제작자·브랜드 D-day 준비 타임라인</h3>
+    <p>결혼일까지 해야 할 준비를 빠짐없이 일정화하고 싶을 때</p>
+    <dl>
+      <div><dt>최소 입력</dt><dd>결혼일</dd></div>
+      <div><dt>필요 원문 행</dt><dd>D-day 구간 · 체크 행동 · 업체/자료 링크 · 원문 조건</dd></div>
+      <div><dt>자연스러운 결과</dt><dd>역산 캘린더 + 체크리스트</dd></div>
+      <div><dt>canonical category</dt><dd>travel_outings</dd></div>
+    </dl>
+    <aside>웨딩 업체 마켓플레이스 / 레지스트리·결제 인프라</aside>
+    <small>미래 field contract · 변환 완료 아님</small>
+  </article><article class="future-contract">
+    <div class="future-head">
+      <span>Partner</span>
+      <strong>SourceRow 0 · Item 0</strong>
+    </div>
+    <h3>레시피 묶음에서 식단·장보기·오늘 조리로</h3>
+    <p>무엇을 먹을지 정하고 장보기부터 조리까지 한 번에 이어가고 싶을 때</p>
+    <dl>
+      <div><dt>최소 입력</dt><dd>식단 기간/식사 수</dd></div>
+      <div><dt>필요 원문 행</dt><dd>식사/날짜 · 레시피 제목 · 원문 URL · 원문 재료 묶음</dd></div>
+      <div><dt>자연스러운 결과</dt><dd>식단 캘린더 + 통합 장보기 + 조리 링크</dd></div>
+      <div><dt>canonical category</dt><dd>meals_grocery</dd></div>
+    </dl>
+    <aside>식료품 주문·재고 연동 / 유료 레시피·강의 복제</aside>
+    <small>미래 field contract · 변환 완료 아님</small>
+  </article></div>
+        </div>
+      </section><section class="slide" id="future-4">
+        <div class="wrap">
+          <header class="section-heading">
+    <span>F4</span>
+    <div>
+      <p>다음 corpus는 어떤 원문 행을 확보해야 하나</p>
+      <h2>미래 데이터 계약 7–8</h2>
+      <div class="section-copy">Vertical 실험의 기회는 실제 변환 결과가 아니라 source acquisition을 위한 field contract입니다.</div>
+    </div>
+  </header>
+          <div class="future-grid"><article class="future-contract">
+    <div class="future-head">
+      <span>Go</span>
+      <strong>SourceRow 0 · Item 0</strong>
+    </div>
+    <h3>직무별 지원 준비·후속 Flow</h3>
+    <p>여러 채용 공고의 지원 상태와 다음 행동을 놓치지 않고 싶을 때</p>
+    <dl>
+      <div><dt>최소 입력</dt><dd>채용 공고 URL</dd></div>
+      <div><dt>필요 원문 행</dt><dd>지원 단계 · 체크 행동 · 후속 시점 또는 순서 · 원문 링크</dd></div>
+      <div><dt>자연스러운 결과</dt><dd>상태형 체크리스트 + 후속 캘린더</dd></div>
+      <div><dt>canonical category</dt><dd>work_career</dd></div>
+    </dl>
+    <aside>이력서 ATS 점수 엔진 / 채용공고 데이터베이스 복제</aside>
+    <small>미래 field contract · 변환 완료 아님</small>
+  </article><article class="future-contract">
+    <div class="future-head">
+      <span>Go</span>
+      <strong>SourceRow 0 · Item 0</strong>
+    </div>
+    <h3>대상별 반복 관리 루틴</h3>
+    <p>식물마다 다른 물주기·비료·분갈이 시점을 놓치지 않고 싶을 때</p>
+    <dl>
+      <div><dt>최소 입력</dt><dd>식물 종류,위치·빛·화분 환경</dd></div>
+      <div><dt>필요 원문 행</dt><dd>대상 · 관리/훈련 행동 · 원문 주기·순서 · 원문 링크</dd></div>
+      <div><dt>자연스러운 결과</dt><dd>반복 관리 캘린더 또는 일일 훈련 루틴</dd></div>
+      <div><dt>canonical category</dt><dd>hobby_pet</dd></div>
+    </dl>
+    <aside>사진 기반 질병 진단 / 날씨·토양 계산 엔진</aside>
+    <small>미래 field contract · 변환 완료 아님</small>
+  </article></div>
+        </div>
+      </section>
+
+  <section class="slide" id="gaps">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>13</span>
+    <div>
+      <p>보고서가 아직 증명하지 못한 것은</p>
+      <h2>카테고리 2개와 실행 형태 4개가 실제 corpus로 비어 있다</h2>
+      <div class="section-copy">미래 계약을 그렸다고 실제 콘텐츠를 확보한 것은 아닙니다.</div>
+    </div>
+  </header>
+      <div class="gap-grid"><article class="gap-item"><span>GAP 1</span><h3>여행·외출 정상 사례</h3><p>트리플은 historical boundary입니다. 최신성 관리 책임과 권리 근거가 있는 실제 출국·예약 원문을 다시 확보해야 합니다.</p></article><article class="gap-item"><span>GAP 2</span><h3>취미·반려 정상 사례</h3><p>핏펫은 safety·rights Hold입니다. 공식 근거와 제작자 허가가 함께 있는 반복 관리 또는 일정 원문이 필요합니다.</p></article><article class="gap-item"><span>GAP 3</span><h3>반복 루틴</h3><p>실제 주기와 행동 행이 있는 가전·식물·반려 관리 원문을 확보해야 repeating_routine을 검증할 수 있습니다.</p></article><article class="gap-item"><span>GAP 4</span><h3>비교·결정</h3><p>신차 절차 안에 결정은 있지만 독립 compare_decide corpus는 아닙니다. 후보·기준·선택 결과가 있는 원문 표가 필요합니다.</p></article><article class="gap-item"><span>GAP 5</span><h3>단계형 lifecycle</h3><p>여러 phase와 전환 조건이 명시된 프로젝트 원문이 없어 phase_lifecycle은 아직 실제 corpus로 검증하지 못했습니다.</p></article><article class="gap-item"><span>GAP 6</span><h3>Primary Memo·공식 날짜창</h3><p>참고 기준 자체가 결과물인 Memo와 공식 단일 기한·날짜창 사례를 다음 source acquisition에서 우선 확보해야 합니다.</p></article></div>
+    </div>
+  </section>
+
+  <section class="slide final-slide" id="decision">
+    <div class="wrap">
+      <div class="final-layout">
+        <div class="final-decision">
+          <span>최종 재판정</span>
+          <strong>Canonical Item 유지 + 내보낼 때만 묶기</strong>
+          <p>날짜 없는 Item이 30개에서 48개로 늘어난 최신 corpus에서도 원문 의미·완료 상태·권리 검토를 가장 적게 잃는 구조입니다.</p>
+          <div class="not-run"><b>NOT RUN</b><br>Google·Outlook·Apple Calendar의 VTODO·RELATED-TO 실제 왕복과 실제 사용자 검증은 수행하지 않았습니다.</div>
+        </div>
+        <div class="backend-rules"><div><b>1</b>schedule이 null이면 VEVENT 생성을 거부한다.</div><div><b>2</b>VEVENT와 VTODO를 중첩하지 않고 VCALENDAR 안의 형제 component로 내보낸다.</div><div><b>3</b>안정적인 Item ID와 occurrence key를 projection 식별자로 유지한다.</div><div><b>4</b>step_bundle에는 모든 child Item ID를 넣고 완료 상태의 소유자를 canonical Item으로 선언한다.</div><div><b>5</b>VTODO·RELATED-TO·VALARM·VJOURNAL·X-property 보존은 가정하지 않고 destination capability로 다룬다.</div><div><b>6</b>권리·검토·개인 overlay는 canonical DTO에 보존하되 사용자 export에서는 제외한다.</div><div><b>7</b>실험용 anchor 날짜를 원문 사실로 승격하지 않는다.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide appendix-intro" id="appendix">
+    <div class="wrap">
+      <header class="section-heading">
+    <span>A</span>
+    <div>
+      <p>설명보다 원본 데이터를 직접 보고 싶다면</p>
+      <h2>8개 콘텐츠의 160 Item·210 SourceRow 전체 explorer</h2>
+      <div class="section-copy">본편은 사례당 대표 SourceRow·Item을 3개씩 보여주고, 전체 행은 여기에서 펼칩니다.</div>
+    </div>
+  </header>
+    </div>
+  </section>
+
+  <div class="filter-bar">
+    <div class="wrap filters" aria-label="전체 데이터 필터">
+      <button class="filter" data-filter="all" aria-pressed="true">전체 8개</button>
+      <button class="filter" data-filter="schedule:scheduled" aria-pressed="false">일정 있음</button>
+      <button class="filter" data-filter="schedule:undated" aria-pressed="false">날짜 없음</button>
+      <button class="filter" data-filter="public:go" aria-pressed="false">Public Go</button>
+      <button class="filter" data-filter="public:modify" aria-pressed="false">Public Modify</button>
+      <button class="filter" data-filter="public:hold" aria-pressed="false">Public Hold</button>
+    </div>
+  </div>
+
+  <section class="explorer-section">
+    <div class="wrap">
+      <div class="explorer-stack"><article class="explorer-card" data-card data-schedule="scheduled" data-public="modify">
+    <header>
+      <div><span>집·살림</span><h3>이사 D-30 체크리스트</h3></div>
+      <strong>27 Item</strong>
+    </header>
+    <p>이사일을 기준으로 원문 D-day 체크 행을 빠뜨리지 않고 실행한다.</p>
+    <div class="explorer-summary">
+      <span>52 SourceRow</span>
+      <span>6 Step</span>
+      <span>1 Flow</span>
+      <span>27 일정</span>
+      <span>0 날짜 없음</span>
+    </div>
+    <details>
+      <summary>전체 Item 27개 보기</summary>
+      <div class="appendix-list"><div><b>1</b><strong>이사 방식과 이사업체 정하기</strong><span>relative_to_target · D-30</span><small>bundle-moving-d30-s1-i1-r1, bundle-moving-d30-s1-i1-r2, bundle-moving-d30-s1-i1-r3</small></div><div><b>2</b><strong>새집 상태 확인하고 필요한 수리 잡기</strong><span>relative_to_target · D-30</span><small>bundle-moving-d30-s1-i2-r1, bundle-moving-d30-s1-i2-r2</small></div><div><b>3</b><strong>가져가지 않을 물건 처분 시작하기</strong><span>relative_to_target · D-30</span><small>bundle-moving-d30-s1-i3-r1</small></div><div><b>4</b><strong>학교 전학과 돌봄 계획 세우기</strong><span>relative_to_target · D-30</span><small>bundle-moving-d30-s1-i4-r1, bundle-moving-d30-s1-i4-r2</small></div><div><b>5</b><strong>우편·배송·전출 주소 변경하기</strong><span>relative_to_target · D-10</span><small>bundle-moving-d30-s2-i1-r1, bundle-moving-d30-s2-i1-r2, bundle-moving-d30-s2-i1-r3</small></div><div><b>6</b><strong>엘리베이터·사다리차·주차 예약하기</strong><span>relative_to_target · D-10</span><small>bundle-moving-d30-s2-i2-r1, bundle-moving-d30-s2-i2-r2</small></div><div><b>7</b><strong>폐기물과 남은 짐 처리하기</strong><span>relative_to_target · D-10</span><small>bundle-moving-d30-s2-i3-r1, bundle-moving-d30-s2-i3-r2, bundle-moving-d30-s2-i3-r3</small></div><div><b>8</b><strong>냉장고 비우고 새집 물품 배치 정하기</strong><span>relative_to_target · D-10</span><small>bundle-moving-d30-s2-i4-r1, bundle-moving-d30-s2-i4-r2, bundle-moving-d30-s2-i4-r3</small></div><div><b>9</b><strong>인터넷·정수기 등 이전 신청하기</strong><span>relative_to_target · D-10</span><small>bundle-moving-d30-s2-i5-r1, bundle-moving-d30-s2-i5-r2</small></div><div><b>10</b><strong>도시가스 철거·설치 예약하기</strong><span>relative_to_target · D-3</span><small>bundle-moving-d30-s3-i1-r1, bundle-moving-d30-s3-i1-r2</small></div><div><b>11</b><strong>기존 집 자동이체 해지하기</strong><span>relative_to_target · D-3</span><small>bundle-moving-d30-s3-i2-r1</small></div><div><b>12</b><strong>세탁기 배수하고 운반 상태 만들기</strong><span>relative_to_target · D-3</span><small>bundle-moving-d30-s3-i3-r1</small></div><div><b>13</b><strong>임대차 권리 서류 확인하기</strong><span>relative_to_target · D-3</span><small>bundle-moving-d30-s3-i4-r1</small></div><div><b>14</b><strong>당일 바로 쓸 짐을 따로 싸기</strong><span>relative_to_target · D-3</span><small>bundle-moving-d30-s3-i5-r1</small></div><div><b>15</b><strong>당일 일정·송금 한도·잔금 확인하기</strong><span>relative_to_target · D-1</span><small>bundle-moving-d30-s4-i1-r1, bundle-moving-d30-s4-i1-r2, bundle-moving-d30-s4-i1-r3</small></div><div><b>16</b><strong>출발지·도착지 주차 다시 확인하기</strong><span>relative_to_target · D-1</span><small>bundle-moving-d30-s4-i2-r1</small></div><div><b>17</b><strong>귀중품과 중요서류 직접 보관하기</strong><span>relative_to_target · D-1</span><small>bundle-moving-d30-s4-i3-r1</small></div><div><b>18</b><strong>열쇠·리모컨·비밀번호 인계 준비하기</strong><span>relative_to_target · D-1</span><small>bundle-moving-d30-s4-i4-r1, bundle-moving-d30-s4-i4-r2</small></div><div><b>19</b><strong>가전·가구 상태 사진 남기기</strong><span>relative_to_target · D-1</span><small>bundle-moving-d30-s4-i5-r1, bundle-moving-d30-s4-i5-r2</small></div><div><b>20</b><strong>전기·수도·가스·관리비 정산하기</strong><span>relative_to_target · D+0</span><small>bundle-moving-d30-s5-i1-r1, bundle-moving-d30-s5-i1-r2</small></div><div><b>21</b><strong>장기수선충당금 환급 확인하기</strong><span>relative_to_target · D+0</span><small>bundle-moving-d30-s5-i2-r1</small></div><div><b>22</b><strong>남은 물건 확인하고 열쇠 반납하기</strong><span>relative_to_target · D+0</span><small>bundle-moving-d30-s5-i3-r1, bundle-moving-d30-s5-i3-r2</small></div><div><b>23</b><strong>분실·파손 확인하고 이사업체 정산하기</strong><span>relative_to_target · D+0</span><small>bundle-moving-d30-s6-i1-r1, bundle-moving-d30-s6-i1-r2</small></div><div><b>24</b><strong>인터넷·TV와 도어락 확인하기</strong><span>relative_to_target · D+0</span><small>bundle-moving-d30-s6-i2-r1, bundle-moving-d30-s6-i2-r2</small></div><div><b>25</b><strong>잔금·관리비·열쇠 인수 마치기</strong><span>relative_to_target · D+0</span><small>bundle-moving-d30-s6-i3-r1, bundle-moving-d30-s6-i3-r2, bundle-moving-d30-s6-i3-r3</small></div><div><b>26</b><strong>전기·수도 명의와 가스 개통하기</strong><span>relative_to_target · D+0</span><small>bundle-moving-d30-s6-i4-r1, bundle-moving-d30-s6-i4-r2</small></div><div><b>27</b><strong>전입신고와 확정일자 처리하기</strong><span>relative_to_target · D+0</span><small>bundle-moving-d30-s6-i5-r1, bundle-moving-d30-s6-i5-r2</small></div></div>
+    </details>
+    <details>
+      <summary>전체 SourceRow 52개 보기</summary>
+      <div class="appendix-list"><div><b>1</b><strong>포장이사·반포장이사·일반이사 중 방식 선택</strong><span>포장이사·반포장이사·일반이사 중 방식 선택</span><small>bundle-moving-d30-s1-i1-r1</small></div><div><b>2</b><strong>이사업체 견적 비교와 예약</strong><span>이사업체 견적 비교와 예약</span><small>bundle-moving-d30-s1-i1-r2</small></div><div><b>3</b><strong>입주청소 업체 견적 비교와 예약</strong><span>입주청소 업체 견적 비교와 예약</span><small>bundle-moving-d30-s1-i1-r3</small></div><div><b>4</b><strong>새집 현장 점검</strong><span>새집 현장 점검</span><small>bundle-moving-d30-s1-i2-r1</small></div><div><b>5</b><strong>도배·장판·수리 필요 항목 확인과 일정 잡기</strong><span>도배·장판·수리 필요 항목 확인과 일정 잡기</span><small>bundle-moving-d30-s1-i2-r2</small></div><div><b>6</b><strong>대형폐기물·중고판매·기부 등 처분 대상 정리</strong><span>대형폐기물·중고판매·기부 등 처분 대상 정리</span><small>bundle-moving-d30-s1-i3-r1</small></div><div><b>7</b><strong>자녀 학교 전학 절차 확인</strong><span>자녀 학교 전학 절차 확인</span><small>bundle-moving-d30-s1-i4-r1</small></div><div><b>8</b><strong>이사 당일 아이·어르신·반려동물 돌봄 계획</strong><span>이사 당일 아이·어르신·반려동물 돌봄 계획</span><small>bundle-moving-d30-s1-i4-r2</small></div><div><b>9</b><strong>우편물 주소 이전 신청</strong><span>우편물 주소 이전 신청</span><small>bundle-moving-d30-s2-i1-r1</small></div><div><b>10</b><strong>정기배송 주소 변경 또는 중지</strong><span>정기배송 주소 변경 또는 중지</span><small>bundle-moving-d30-s2-i1-r2</small></div><div><b>11</b><strong>관리사무소에 퇴거 일정 알리기</strong><span>관리사무소에 퇴거 일정 알리기</span><small>bundle-moving-d30-s2-i1-r3</small></div><div><b>12</b><strong>출발지와 도착지 엘리베이터 예약</strong><span>출발지와 도착지 엘리베이터 예약</span><small>bundle-moving-d30-s2-i2-r1</small></div><div><b>13</b><strong>사다리차 사용 여부와 주차 공간 확인</strong><span>사다리차 사용 여부와 주차 공간 확인</span><small>bundle-moving-d30-s2-i2-r2</small></div><div><b>14</b><strong>종량제 봉투와 폐기물 스티커 준비</strong><span>종량제 봉투와 폐기물 스티커 준비</span><small>bundle-moving-d30-s2-i3-r1</small></div><div><b>15</b><strong>대형폐기물 수거 신청</strong><span>대형폐기물 수거 신청</span><small>bundle-moving-d30-s2-i3-r2</small></div><div><b>16</b><strong>열쇠·리모컨·설명서 한곳에 모으기</strong><span>열쇠·리모컨·설명서 한곳에 모으기</span><small>bundle-moving-d30-s2-i3-r3</small></div><div><b>17</b><strong>냉장고 식재료 소진 시작</strong><span>냉장고 식재료 소진 시작</span><small>bundle-moving-d30-s2-i4-r1</small></div><div><b>18</b><strong>새집에 필요한 물품 주문</strong><span>새집에 필요한 물품 주문</span><small>bundle-moving-d30-s2-i4-r2</small></div><div><b>19</b><strong>가구·가전 배치도 정리</strong><span>가구·가전 배치도 정리</span><small>bundle-moving-d30-s2-i4-r3</small></div><div><b>20</b><strong>인터넷·TV 이전 설치 신청</strong><span>인터넷·TV 이전 설치 신청</span><small>bundle-moving-d30-s2-i5-r1</small></div><div><b>21</b><strong>정수기 등 렌탈 기기 이전 신청</strong><span>정수기 등 렌탈 기기 이전 신청</span><small>bundle-moving-d30-s2-i5-r2</small></div><div><b>22</b><strong>출발지 도시가스 철거 예약</strong><span>출발지 도시가스 철거 예약</span><small>bundle-moving-d30-s3-i1-r1</small></div><div><b>23</b><strong>도착지 도시가스 설치 예약</strong><span>도착지 도시가스 설치 예약</span><small>bundle-moving-d30-s3-i1-r2</small></div><div><b>24</b><strong>전기·수도·가스·관리비 자동이체 해지 또는 변경</strong><span>전기·수도·가스·관리비 자동이체 해지 또는 변경</span><small>bundle-moving-d30-s3-i2-r1</small></div><div><b>25</b><strong>세탁기 물 빼기와 운반 준비</strong><span>세탁기 물 빼기와 운반 준비</span><small>bundle-moving-d30-s3-i3-r1</small></div><div><b>26</b><strong>필요한 경우 임차권·보증금 관련 서류 확인</strong><span>필요한 경우 임차권·보증금 관련 서류 확인</span><small>bundle-moving-d30-s3-i4-r1</small></div><div><b>27</b><strong>신분증·충전기·세면도구·약·옷 등 당일 물품 분리</strong><span>신분증·충전기·세면도구·약·옷 등 당일 물품 분리</span><small>bundle-moving-d30-s3-i5-r1</small></div><div><b>28</b><strong>이사업체와 최종 시간 확인</strong><span>이사업체와 최종 시간 확인</span><small>bundle-moving-d30-s4-i1-r1</small></div><div><b>29</b><strong>은행 이체 한도 확인</strong><span>은행 이체 한도 확인</span><small>bundle-moving-d30-s4-i1-r2</small></div><div><b>30</b><strong>보증금·잔금 지급 계획 확인</strong><span>보증금·잔금 지급 계획 확인</span><small>bundle-moving-d30-s4-i1-r3</small></div><div><b>31</b><strong>이삿짐 차량 주차 위치 최종 확인</strong><span>이삿짐 차량 주차 위치 최종 확인</span><small>bundle-moving-d30-s4-i2-r1</small></div><div><b>32</b><strong>현금·귀중품·중요서류 별도 보관</strong><span>현금·귀중품·중요서류 별도 보관</span><small>bundle-moving-d30-s4-i3-r1</small></div><div><b>33</b><strong>출발지 열쇠·리모컨 모으기</strong><span>출발지 열쇠·리모컨 모으기</span><small>bundle-moving-d30-s4-i4-r1</small></div><div><b>34</b><strong>도착지 공동현관·도어락 정보 확인</strong><span>도착지 공동현관·도어락 정보 확인</span><small>bundle-moving-d30-s4-i4-r2</small></div><div><b>35</b><strong>운반 전 가전·가구 외관 사진 촬영</strong><span>운반 전 가전·가구 외관 사진 촬영</span><small>bundle-moving-d30-s4-i5-r1</small></div><div><b>36</b><strong>어항이 있으면 이동 준비</strong><span>어항이 있으면 이동 준비</span><small>bundle-moving-d30-s4-i5-r2</small></div><div><b>37</b><strong>출발지 전기·수도·가스 사용량 확인과 정산</strong><span>출발지 전기·수도·가스 사용량 확인과 정산</span><small>bundle-moving-d30-s5-i1-r1</small></div><div><b>38</b><strong>관리비 정산</strong><span>관리비 정산</span><small>bundle-moving-d30-s5-i1-r2</small></div><div><b>39</b><strong>세입자인 경우 장기수선충당금 반환 요청</strong><span>세입자인 경우 장기수선충당금 반환 요청</span><small>bundle-moving-d30-s5-i2-r1</small></div><div><b>40</b><strong>방·수납장·계량기 주변 남은 물건 확인</strong><span>방·수납장·계량기 주변 남은 물건 확인</span><small>bundle-moving-d30-s5-i3-r1</small></div><div><b>41</b><strong>집주인 또는 관리실에 열쇠 반납</strong><span>집주인 또는 관리실에 열쇠 반납</span><small>bundle-moving-d30-s5-i3-r2</small></div><div><b>42</b><strong>짐 분실·파손 여부 확인</strong><span>짐 분실·파손 여부 확인</span><small>bundle-moving-d30-s6-i1-r1</small></div><div><b>43</b><strong>이사업체 잔금 정산</strong><span>이사업체 잔금 정산</span><small>bundle-moving-d30-s6-i1-r2</small></div><div><b>44</b><strong>인터넷·TV 연결 확인</strong><span>인터넷·TV 연결 확인</span><small>bundle-moving-d30-s6-i2-r1</small></div><div><b>45</b><strong>도어락 비밀번호 변경</strong><span>도어락 비밀번호 변경</span><small>bundle-moving-d30-s6-i2-r2</small></div><div><b>46</b><strong>주택 잔금 또는 보증금 정산</strong><span>주택 잔금 또는 보증금 정산</span><small>bundle-moving-d30-s6-i3-r1</small></div><div><b>47</b><strong>관리비 확인</strong><span>관리비 확인</span><small>bundle-moving-d30-s6-i3-r2</small></div><div><b>48</b><strong>열쇠·리모컨 인수</strong><span>열쇠·리모컨 인수</span><small>bundle-moving-d30-s6-i3-r3</small></div><div><b>49</b><strong>전기·수도 명의 변경</strong><span>전기·수도 명의 변경</span><small>bundle-moving-d30-s6-i4-r1</small></div><div><b>50</b><strong>도착지 도시가스 개통</strong><span>도착지 도시가스 개통</span><small>bundle-moving-d30-s6-i4-r2</small></div><div><b>51</b><strong>전입신고</strong><span>전입신고</span><small>bundle-moving-d30-s6-i5-r1</small></div><div><b>52</b><strong>필요한 경우 확정일자 받기</strong><span>필요한 경우 확정일자 받기</span><small>bundle-moving-d30-s6-i5-r2</small></div></div>
+    </details>
+  </article><article class="explorer-card" data-card data-schedule="scheduled" data-public="hold">
+    <header>
+      <div><span>가족·육아</span><h3>초기 이유식 D+174~209 식단</h3></div>
+      <strong>36 Item</strong>
+    </header>
+    <p>원문 식단표의 D+n 순서대로 초기 이유식을 제공한다.</p>
+    <div class="explorer-summary">
+      <span>36 SourceRow</span>
+      <span>12 Step</span>
+      <span>1 Flow</span>
+      <span>36 일정</span>
+      <span>0 날짜 없음</span>
+    </div>
+    <details>
+      <summary>전체 Item 36개 보기</summary>
+      <div class="appendix-list"><div><b>1</b><strong>D+174 식단 제공</strong><span>source_day_index · D+174</span><small>bundle-baby-food-174-d174</small></div><div><b>2</b><strong>D+175 식단 제공</strong><span>source_day_index · D+175</span><small>bundle-baby-food-174-d175</small></div><div><b>3</b><strong>D+176 식단 제공</strong><span>source_day_index · D+176</span><small>bundle-baby-food-174-d176</small></div><div><b>4</b><strong>D+177 식단 제공</strong><span>source_day_index · D+177</span><small>bundle-baby-food-174-d177</small></div><div><b>5</b><strong>D+178 식단 제공</strong><span>source_day_index · D+178</span><small>bundle-baby-food-174-d178</small></div><div><b>6</b><strong>D+179 식단 제공</strong><span>source_day_index · D+179</span><small>bundle-baby-food-174-d179</small></div><div><b>7</b><strong>D+180 식단 제공</strong><span>source_day_index · D+180</span><small>bundle-baby-food-174-d180</small></div><div><b>8</b><strong>D+181 식단 제공</strong><span>source_day_index · D+181</span><small>bundle-baby-food-174-d181</small></div><div><b>9</b><strong>D+182 식단 제공</strong><span>source_day_index · D+182</span><small>bundle-baby-food-174-d182</small></div><div><b>10</b><strong>D+183 식단 제공</strong><span>source_day_index · D+183</span><small>bundle-baby-food-174-d183</small></div><div><b>11</b><strong>D+184 식단 제공</strong><span>source_day_index · D+184</span><small>bundle-baby-food-174-d184</small></div><div><b>12</b><strong>D+185 식단 제공</strong><span>source_day_index · D+185</span><small>bundle-baby-food-174-d185</small></div><div><b>13</b><strong>D+186 식단 제공</strong><span>source_day_index · D+186</span><small>bundle-baby-food-174-d186</small></div><div><b>14</b><strong>D+187 식단 제공</strong><span>source_day_index · D+187</span><small>bundle-baby-food-174-d187</small></div><div><b>15</b><strong>D+188 식단 제공</strong><span>source_day_index · D+188</span><small>bundle-baby-food-174-d188</small></div><div><b>16</b><strong>D+189 식단 제공</strong><span>source_day_index · D+189</span><small>bundle-baby-food-174-d189</small></div><div><b>17</b><strong>D+190 식단 제공</strong><span>source_day_index · D+190</span><small>bundle-baby-food-174-d190</small></div><div><b>18</b><strong>D+191 식단 제공</strong><span>source_day_index · D+191</span><small>bundle-baby-food-174-d191</small></div><div><b>19</b><strong>D+192 식단 제공</strong><span>source_day_index · D+192</span><small>bundle-baby-food-174-d192</small></div><div><b>20</b><strong>D+193 식단 제공</strong><span>source_day_index · D+193</span><small>bundle-baby-food-174-d193</small></div><div><b>21</b><strong>D+194 식단 제공</strong><span>source_day_index · D+194</span><small>bundle-baby-food-174-d194</small></div><div><b>22</b><strong>D+195 식단 제공</strong><span>source_day_index · D+195</span><small>bundle-baby-food-174-d195</small></div><div><b>23</b><strong>D+196 식단 제공</strong><span>source_day_index · D+196</span><small>bundle-baby-food-174-d196</small></div><div><b>24</b><strong>D+197 식단 제공</strong><span>source_day_index · D+197</span><small>bundle-baby-food-174-d197</small></div><div><b>25</b><strong>D+198 식단 제공</strong><span>source_day_index · D+198</span><small>bundle-baby-food-174-d198</small></div><div><b>26</b><strong>D+199 식단 제공</strong><span>source_day_index · D+199</span><small>bundle-baby-food-174-d199</small></div><div><b>27</b><strong>D+200 식단 제공</strong><span>source_day_index · D+200</span><small>bundle-baby-food-174-d200</small></div><div><b>28</b><strong>D+201 식단 제공</strong><span>source_day_index · D+201</span><small>bundle-baby-food-174-d201</small></div><div><b>29</b><strong>D+202 식단 제공</strong><span>source_day_index · D+202</span><small>bundle-baby-food-174-d202</small></div><div><b>30</b><strong>D+203 식단 제공</strong><span>source_day_index · D+203</span><small>bundle-baby-food-174-d203</small></div><div><b>31</b><strong>D+204 식단 제공</strong><span>source_day_index · D+204</span><small>bundle-baby-food-174-d204</small></div><div><b>32</b><strong>D+205 식단 제공</strong><span>source_day_index · D+205</span><small>bundle-baby-food-174-d205</small></div><div><b>33</b><strong>D+206 식단 제공</strong><span>source_day_index · D+206</span><small>bundle-baby-food-174-d206</small></div><div><b>34</b><strong>D+207 식단 제공</strong><span>source_day_index · D+207</span><small>bundle-baby-food-174-d207</small></div><div><b>35</b><strong>D+208 식단 제공</strong><span>source_day_index · D+208</span><small>bundle-baby-food-174-d208</small></div><div><b>36</b><strong>D+209 식단 제공</strong><span>source_day_index · D+209</span><small>bundle-baby-food-174-d209</small></div></div>
+    </details>
+    <details>
+      <summary>전체 SourceRow 36개 보기</summary>
+      <div class="appendix-list"><div><b>1</b><strong>D+174 식단</strong><span>한 끼: 쌀미음</span><small>bundle-baby-food-174-d174</small></div><div><b>2</b><strong>D+175 식단</strong><span>한 끼: 쌀미음</span><small>bundle-baby-food-174-d175</small></div><div><b>3</b><strong>D+176 식단</strong><span>한 끼: 쌀미음</span><small>bundle-baby-food-174-d176</small></div><div><b>4</b><strong>D+177 식단</strong><span>한 끼: 쌀·오트밀 미음</span><small>bundle-baby-food-174-d177</small></div><div><b>5</b><strong>D+178 식단</strong><span>한 끼: 쌀·오트밀 미음</span><small>bundle-baby-food-174-d178</small></div><div><b>6</b><strong>D+179 식단</strong><span>한 끼: 쌀·오트밀 미음</span><small>bundle-baby-food-174-d179</small></div><div><b>7</b><strong>D+180 식단</strong><span>한 끼: 쌀·오트밀 미음 + 소고기</span><small>bundle-baby-food-174-d180</small></div><div><b>8</b><strong>D+181 식단</strong><span>한 끼: 쌀·오트밀 미음 + 소고기</span><small>bundle-baby-food-174-d181</small></div><div><b>9</b><strong>D+182 식단</strong><span>한 끼: 쌀·오트밀 미음 + 소고기</span><small>bundle-baby-food-174-d182</small></div><div><b>10</b><strong>D+183 식단</strong><span>한 끼: 쌀·오트밀 미음 + 소고기 + 애호박</span><small>bundle-baby-food-174-d183</small></div><div><b>11</b><strong>D+184 식단</strong><span>한 끼: 쌀·오트밀 미음 + 소고기 + 애호박</span><small>bundle-baby-food-174-d184</small></div><div><b>12</b><strong>D+185 식단</strong><span>한 끼: 쌀·오트밀 미음 + 소고기 + 애호박</span><small>bundle-baby-food-174-d185</small></div><div><b>13</b><strong>D+186 식단</strong><span>한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 청경채</span><small>bundle-baby-food-174-d186</small></div><div><b>14</b><strong>D+187 식단</strong><span>한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 청경채</span><small>bundle-baby-food-174-d187</small></div><div><b>15</b><strong>D+188 식단</strong><span>한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 청경채</span><small>bundle-baby-food-174-d188</small></div><div><b>16</b><strong>D+189 식단</strong><span>한 끼: 쌀·오트밀 미음 + 소고기 + 청경채 + 오이</span><small>bundle-baby-food-174-d189</small></div><div><b>17</b><strong>D+190 식단</strong><span>한 끼: 쌀·오트밀 미음 + 소고기 + 청경채 + 오이</span><small>bundle-baby-food-174-d190</small></div><div><b>18</b><strong>D+191 식단</strong><span>한 끼: 쌀·오트밀 미음 + 소고기 + 청경채 + 오이</span><small>bundle-baby-food-174-d191</small></div><div><b>19</b><strong>D+192 식단</strong><span>한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 브로콜리</span><small>bundle-baby-food-174-d192</small></div><div><b>20</b><strong>D+193 식단</strong><span>한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 브로콜리</span><small>bundle-baby-food-174-d193</small></div><div><b>21</b><strong>D+194 식단</strong><span>한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 브로콜리</span><small>bundle-baby-food-174-d194</small></div><div><b>22</b><strong>D+195 식단</strong><span>한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 양배추</span><small>bundle-baby-food-174-d195</small></div><div><b>23</b><strong>D+196 식단</strong><span>한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 양배추</span><small>bundle-baby-food-174-d196</small></div><div><b>24</b><strong>D+197 식단</strong><span>한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 양배추</span><small>bundle-baby-food-174-d197</small></div><div><b>25</b><strong>D+198 식단</strong><span>한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 청경채 + 당근</span><small>bundle-baby-food-174-d198</small></div><div><b>26</b><strong>D+199 식단</strong><span>한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 청경채 + 당근</span><small>bundle-baby-food-174-d199</small></div><div><b>27</b><strong>D+200 식단</strong><span>한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 청경채 + 당근</span><small>bundle-baby-food-174-d200</small></div><div><b>28</b><strong>D+201 식단</strong><span>한 끼: 쌀·오트밀 미음 + 소고기 + 양배추 + 브로콜리 + 단호박</span><small>bundle-baby-food-174-d201</small></div><div><b>29</b><strong>D+202 식단</strong><span>한 끼: 쌀·오트밀 미음 + 소고기 + 양배추 + 브로콜리 + 단호박</span><small>bundle-baby-food-174-d202</small></div><div><b>30</b><strong>D+203 식단</strong><span>한 끼: 쌀·오트밀 미음 + 소고기 + 양배추 + 브로콜리 + 단호박 · 간식: 사과</span><small>bundle-baby-food-174-d203</small></div><div><b>31</b><strong>D+204 식단</strong><span>아침: 쌀·오트밀 + 소고기 + 양배추 + 단호박 + 완두콩 · 점심: 쌀·오트밀 + 당근 + 사과 + 브로콜리 + 청경채</span><small>bundle-baby-food-174-d204</small></div><div><b>32</b><strong>D+205 식단</strong><span>아침: 쌀·오트밀 + 소고기 + 양배추 + 단호박 + 완두콩 · 점심: 쌀·오트밀 + 당근 + 사과 + 브로콜리 + 청경채</span><small>bundle-baby-food-174-d205</small></div><div><b>33</b><strong>D+206 식단</strong><span>아침: 쌀·오트밀 + 소고기 + 양배추 + 단호박 + 완두콩 · 점심: 쌀·오트밀 + 당근 + 사과 + 브로콜리 + 청경채 · 간식: 바나나</span><small>bundle-baby-food-174-d206</small></div><div><b>34</b><strong>D+207 식단</strong><span>아침: 쌀·오트밀 + 달걀 + 당근 + 완두콩 + 브로콜리 · 점심: 쌀·오트밀 + 소고기 + 단호박 + 양배추 + 청경채</span><small>bundle-baby-food-174-d207</small></div><div><b>35</b><strong>D+208 식단</strong><span>아침: 쌀·오트밀 + 달걀 + 당근 + 완두콩 + 브로콜리 · 점심: 쌀·오트밀 + 소고기 + 단호박 + 양배추 + 청경채</span><small>bundle-baby-food-174-d208</small></div><div><b>36</b><strong>D+209 식단</strong><span>아침: 쌀·오트밀 + 달걀 + 당근 + 완두콩 + 브로콜리 · 점심: 쌀·오트밀 + 소고기 + 단호박 + 양배추 + 청경채 · 간식: 바나나</span><small>bundle-baby-food-174-d209</small></div></div>
+    </details>
+  </article><article class="explorer-card" data-card data-schedule="scheduled" data-public="modify">
+    <header>
+      <div><span>공부·독서</span><h3>오픽 모의고사 계획표</h3></div>
+      <strong>42 Item</strong>
+    </header>
+    <p>2주 또는 1달 계획표를 따라 모의고사 영상 회차를 실행한다.</p>
+    <div class="explorer-summary">
+      <span>52 SourceRow</span>
+      <span>7 Step</span>
+      <span>2 Flow</span>
+      <span>42 일정</span>
+      <span>0 날짜 없음</span>
+    </div>
+    <details>
+      <summary>전체 Item 42개 보기</summary>
+      <div class="appendix-list"><div><b>1</b><strong>1회 모의고사 실전처럼 풀기</strong><span>relative_weekday · 1주차 · 월</span><small>bundle-opic-plan-2w-w1-월, bundle-opic-plan-video-1</small></div><div><b>2</b><strong>2회 모의고사 실전처럼 풀기</strong><span>relative_weekday · 1주차 · 화</span><small>bundle-opic-plan-2w-w1-화, bundle-opic-plan-video-2</small></div><div><b>3</b><strong>3회 모의고사 실전처럼 풀기</strong><span>relative_weekday · 1주차 · 수</span><small>bundle-opic-plan-2w-w1-수, bundle-opic-plan-video-3</small></div><div><b>4</b><strong>4회 모의고사 실전처럼 풀기</strong><span>relative_weekday · 1주차 · 목</span><small>bundle-opic-plan-2w-w1-목, bundle-opic-plan-video-4</small></div><div><b>5</b><strong>5회 모의고사 실전처럼 풀기</strong><span>relative_weekday · 1주차 · 금</span><small>bundle-opic-plan-2w-w1-금, bundle-opic-plan-video-5</small></div><div><b>6</b><strong>1~5회 답변 총복습</strong><span>relative_weekday · 1주차 · 토</span><small>bundle-opic-plan-2w-w1-토, bundle-opic-plan-video-1, bundle-opic-plan-video-2, bundle-opic-plan-video-3, bundle-opic-plan-video-4, bundle-opic-plan-video-5</small></div><div><b>7</b><strong>6회 모의고사 실전처럼 풀기</strong><span>relative_weekday · 2주차 · 월</span><small>bundle-opic-plan-2w-w2-월, bundle-opic-plan-video-6</small></div><div><b>8</b><strong>7회 모의고사 실전처럼 풀기</strong><span>relative_weekday · 2주차 · 화</span><small>bundle-opic-plan-2w-w2-화, bundle-opic-plan-video-7</small></div><div><b>9</b><strong>8회 모의고사 실전처럼 풀기</strong><span>relative_weekday · 2주차 · 수</span><small>bundle-opic-plan-2w-w2-수, bundle-opic-plan-video-8</small></div><div><b>10</b><strong>9회 모의고사 실전처럼 풀기</strong><span>relative_weekday · 2주차 · 목</span><small>bundle-opic-plan-2w-w2-목, bundle-opic-plan-video-9</small></div><div><b>11</b><strong>10회 모의고사 실전처럼 풀기</strong><span>relative_weekday · 2주차 · 금</span><small>bundle-opic-plan-2w-w2-금, bundle-opic-plan-video-10</small></div><div><b>12</b><strong>6~10회 답변 총복습</strong><span>relative_weekday · 2주차 · 토</span><small>bundle-opic-plan-2w-w2-토, bundle-opic-plan-video-6, bundle-opic-plan-video-7, bundle-opic-plan-video-8, bundle-opic-plan-video-9, bundle-opic-plan-video-10</small></div><div><b>13</b><strong>1회 실전처럼 풀기</strong><span>relative_weekday · 1주차 · 월</span><small>bundle-opic-plan-1m-w1-월, bundle-opic-plan-video-1</small></div><div><b>14</b><strong>1회 녹음 듣고 보완하기</strong><span>relative_weekday · 1주차 · 화</span><small>bundle-opic-plan-1m-w1-화, bundle-opic-plan-video-1</small></div><div><b>15</b><strong>1회 녹음 듣고 보완하기</strong><span>relative_weekday · 1주차 · 수</span><small>bundle-opic-plan-1m-w1-수, bundle-opic-plan-video-1</small></div><div><b>16</b><strong>2회 실전처럼 풀기</strong><span>relative_weekday · 1주차 · 목</span><small>bundle-opic-plan-1m-w1-목, bundle-opic-plan-video-2</small></div><div><b>17</b><strong>2회 녹음 듣고 보완하기</strong><span>relative_weekday · 1주차 · 금</span><small>bundle-opic-plan-1m-w1-금, bundle-opic-plan-video-2</small></div><div><b>18</b><strong>2회 녹음 듣고 보완하기</strong><span>relative_weekday · 1주차 · 토</span><small>bundle-opic-plan-1m-w1-토, bundle-opic-plan-video-2</small></div><div><b>19</b><strong>3회 실전처럼 풀기</strong><span>relative_weekday · 2주차 · 월</span><small>bundle-opic-plan-1m-w2-월, bundle-opic-plan-video-3</small></div><div><b>20</b><strong>3회 녹음 듣고 보완하기</strong><span>relative_weekday · 2주차 · 화</span><small>bundle-opic-plan-1m-w2-화, bundle-opic-plan-video-3</small></div><div><b>21</b><strong>3회 녹음 듣고 보완하기</strong><span>relative_weekday · 2주차 · 수</span><small>bundle-opic-plan-1m-w2-수, bundle-opic-plan-video-3</small></div><div><b>22</b><strong>4회 실전처럼 풀기</strong><span>relative_weekday · 2주차 · 목</span><small>bundle-opic-plan-1m-w2-목, bundle-opic-plan-video-4</small></div><div><b>23</b><strong>4회 녹음 듣고 보완하기</strong><span>relative_weekday · 2주차 · 금</span><small>bundle-opic-plan-1m-w2-금, bundle-opic-plan-video-4</small></div><div><b>24</b><strong>4회 녹음 듣고 보완하기</strong><span>relative_weekday · 2주차 · 토</span><small>bundle-opic-plan-1m-w2-토, bundle-opic-plan-video-4</small></div><div><b>25</b><strong>5회 실전처럼 풀기</strong><span>relative_weekday · 3주차 · 월</span><small>bundle-opic-plan-1m-w3-월, bundle-opic-plan-video-5</small></div><div><b>26</b><strong>5회 녹음 듣고 보완하기</strong><span>relative_weekday · 3주차 · 화</span><small>bundle-opic-plan-1m-w3-화, bundle-opic-plan-video-5</small></div><div><b>27</b><strong>5회 녹음 듣고 보완하기</strong><span>relative_weekday · 3주차 · 수</span><small>bundle-opic-plan-1m-w3-수, bundle-opic-plan-video-5</small></div><div><b>28</b><strong>6회 실전처럼 풀기</strong><span>relative_weekday · 3주차 · 목</span><small>bundle-opic-plan-1m-w3-목, bundle-opic-plan-video-6</small></div><div><b>29</b><strong>6회 녹음 듣고 보완하기</strong><span>relative_weekday · 3주차 · 금</span><small>bundle-opic-plan-1m-w3-금, bundle-opic-plan-video-6</small></div><div><b>30</b><strong>6회 녹음 듣고 보완하기</strong><span>relative_weekday · 3주차 · 토</span><small>bundle-opic-plan-1m-w3-토, bundle-opic-plan-video-6</small></div><div><b>31</b><strong>7회 실전처럼 풀기</strong><span>relative_weekday · 4주차 · 월</span><small>bundle-opic-plan-1m-w4-월, bundle-opic-plan-video-7</small></div><div><b>32</b><strong>7회 녹음 듣고 보완하기</strong><span>relative_weekday · 4주차 · 화</span><small>bundle-opic-plan-1m-w4-화, bundle-opic-plan-video-7</small></div><div><b>33</b><strong>7회 녹음 듣고 보완하기</strong><span>relative_weekday · 4주차 · 수</span><small>bundle-opic-plan-1m-w4-수, bundle-opic-plan-video-7</small></div><div><b>34</b><strong>8회 실전처럼 풀기</strong><span>relative_weekday · 4주차 · 목</span><small>bundle-opic-plan-1m-w4-목, bundle-opic-plan-video-8</small></div><div><b>35</b><strong>8회 녹음 듣고 보완하기</strong><span>relative_weekday · 4주차 · 금</span><small>bundle-opic-plan-1m-w4-금, bundle-opic-plan-video-8</small></div><div><b>36</b><strong>8회 녹음 듣고 보완하기</strong><span>relative_weekday · 4주차 · 토</span><small>bundle-opic-plan-1m-w4-토, bundle-opic-plan-video-8</small></div><div><b>37</b><strong>9회 실전처럼 풀기</strong><span>relative_weekday · 5주차 · 월</span><small>bundle-opic-plan-1m-w5-월, bundle-opic-plan-video-9</small></div><div><b>38</b><strong>9회 녹음 듣고 보완하기</strong><span>relative_weekday · 5주차 · 화</span><small>bundle-opic-plan-1m-w5-화, bundle-opic-plan-video-9</small></div><div><b>39</b><strong>9회 녹음 듣고 보완하기</strong><span>relative_weekday · 5주차 · 수</span><small>bundle-opic-plan-1m-w5-수, bundle-opic-plan-video-9</small></div><div><b>40</b><strong>10회 실전처럼 풀기</strong><span>relative_weekday · 5주차 · 목</span><small>bundle-opic-plan-1m-w5-목, bundle-opic-plan-video-10</small></div><div><b>41</b><strong>10회 녹음 듣고 보완하기</strong><span>relative_weekday · 5주차 · 금</span><small>bundle-opic-plan-1m-w5-금, bundle-opic-plan-video-10</small></div><div><b>42</b><strong>10회 녹음 듣고 보완하기</strong><span>relative_weekday · 5주차 · 토</span><small>bundle-opic-plan-1m-w5-토, bundle-opic-plan-video-10</small></div></div>
+    </details>
+    <details>
+      <summary>전체 SourceRow 52개 보기</summary>
+      <div class="appendix-list"><div><b>1</b><strong>1회 모의고사 실전·녹음·보완·복습</strong><span>영상: https://www.youtube.com/watch?v=MZmrXlAc6k4 · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</span><small>bundle-opic-plan-2w-w1-월</small></div><div><b>2</b><strong>1회 모의고사 영상</strong><span>15문항 모의고사</span><small>bundle-opic-plan-video-1</small></div><div><b>3</b><strong>2회 모의고사 실전·녹음·보완·복습</strong><span>영상: https://www.youtube.com/watch?v=YOZADzoC22s · 범위: 은행·바·카페·MP3·걷기 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</span><small>bundle-opic-plan-2w-w1-화</small></div><div><b>4</b><strong>2회 모의고사 영상</strong><span>은행·바·카페·MP3·걷기</span><small>bundle-opic-plan-video-2</small></div><div><b>5</b><strong>3회 모의고사 실전·녹음·보완·복습</strong><span>영상: https://www.youtube.com/watch?v=bRjvaQ380MU · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</span><small>bundle-opic-plan-2w-w1-수</small></div><div><b>6</b><strong>3회 모의고사 영상</strong><span>15문항 모의고사</span><small>bundle-opic-plan-video-3</small></div><div><b>7</b><strong>4회 모의고사 실전·녹음·보완·복습</strong><span>영상: https://www.youtube.com/watch?v=N2s5golewUI · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</span><small>bundle-opic-plan-2w-w1-목</small></div><div><b>8</b><strong>4회 모의고사 영상</strong><span>15문항 모의고사</span><small>bundle-opic-plan-video-4</small></div><div><b>9</b><strong>5회 모의고사 실전·녹음·보완·복습</strong><span>영상: https://www.youtube.com/watch?v=uCUiUlggGlE · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</span><small>bundle-opic-plan-2w-w1-금</small></div><div><b>10</b><strong>5회 모의고사 영상</strong><span>15문항 모의고사</span><small>bundle-opic-plan-video-5</small></div><div><b>11</b><strong>1~5회 총복습</strong><span>주중 녹음을 다시 듣고 반복해서 막힌 질문과 보완 표현을 정리한다.</span><small>bundle-opic-plan-2w-w1-토</small></div><div><b>12</b><strong>6회 모의고사 실전·녹음·보완·복습</strong><span>영상: https://www.youtube.com/watch?v=KddRF_nM9uI · 범위: 동네·건강·국내여행·은행·가족 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</span><small>bundle-opic-plan-2w-w2-월</small></div><div><b>13</b><strong>6회 모의고사 영상</strong><span>동네·건강·국내여행·은행·가족</span><small>bundle-opic-plan-video-6</small></div><div><b>14</b><strong>7회 모의고사 실전·녹음·보완·복습</strong><span>영상: https://www.youtube.com/watch?v=cAOaiJsT7ac · 범위: 집에서 보내는 휴가·지리·공휴일·집·음악 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</span><small>bundle-opic-plan-2w-w2-화</small></div><div><b>15</b><strong>7회 모의고사 영상</strong><span>집에서 보내는 휴가·지리·공휴일·집·음악</span><small>bundle-opic-plan-video-7</small></div><div><b>16</b><strong>8회 모의고사 실전·녹음·보완·복습</strong><span>영상: https://www.youtube.com/watch?v=VFWF-HUYggI · 범위: 기술·캠핑·패션·쇼핑·건강 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</span><small>bundle-opic-plan-2w-w2-수</small></div><div><b>17</b><strong>8회 모의고사 영상</strong><span>기술·캠핑·패션·쇼핑·건강</span><small>bundle-opic-plan-video-8</small></div><div><b>18</b><strong>9회 모의고사 실전·녹음·보완·복습</strong><span>영상: https://www.youtube.com/watch?v=y0Y1j7fEZj4 · 범위: 외식·영화·날씨·계절·콘서트·바 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</span><small>bundle-opic-plan-2w-w2-목</small></div><div><b>19</b><strong>9회 모의고사 영상</strong><span>외식·영화·날씨·계절·콘서트·바</span><small>bundle-opic-plan-video-9</small></div><div><b>20</b><strong>10회 모의고사 실전·녹음·보완·복습</strong><span>영상: https://www.youtube.com/watch?v=xh_zHNfAgQo · 범위: 해외여행·모임·공연·가족·친구·산업 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</span><small>bundle-opic-plan-2w-w2-금</small></div><div><b>21</b><strong>10회 모의고사 영상</strong><span>해외여행·모임·공연·가족·친구·산업</span><small>bundle-opic-plan-video-10</small></div><div><b>22</b><strong>6~10회 총복습</strong><span>주중 녹음을 다시 듣고 반복해서 막힌 질문과 보완 표현을 정리한다.</span><small>bundle-opic-plan-2w-w2-토</small></div><div><b>23</b><strong>1회 실전처럼 풀기</strong><span>영상: https://www.youtube.com/watch?v=MZmrXlAc6k4 · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</span><small>bundle-opic-plan-1m-w1-월</small></div><div><b>24</b><strong>1회 녹음 듣고 보완하기</strong><span>영상: https://www.youtube.com/watch?v=MZmrXlAc6k4 · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</span><small>bundle-opic-plan-1m-w1-화</small></div><div><b>25</b><strong>1회 녹음 듣고 보완하기</strong><span>영상: https://www.youtube.com/watch?v=MZmrXlAc6k4 · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</span><small>bundle-opic-plan-1m-w1-수</small></div><div><b>26</b><strong>2회 실전처럼 풀기</strong><span>영상: https://www.youtube.com/watch?v=YOZADzoC22s · 범위: 은행·바·카페·MP3·걷기 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</span><small>bundle-opic-plan-1m-w1-목</small></div><div><b>27</b><strong>2회 녹음 듣고 보완하기</strong><span>영상: https://www.youtube.com/watch?v=YOZADzoC22s · 범위: 은행·바·카페·MP3·걷기 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</span><small>bundle-opic-plan-1m-w1-금</small></div><div><b>28</b><strong>2회 녹음 듣고 보완하기</strong><span>영상: https://www.youtube.com/watch?v=YOZADzoC22s · 범위: 은행·바·카페·MP3·걷기 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</span><small>bundle-opic-plan-1m-w1-토</small></div><div><b>29</b><strong>3회 실전처럼 풀기</strong><span>영상: https://www.youtube.com/watch?v=bRjvaQ380MU · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</span><small>bundle-opic-plan-1m-w2-월</small></div><div><b>30</b><strong>3회 녹음 듣고 보완하기</strong><span>영상: https://www.youtube.com/watch?v=bRjvaQ380MU · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</span><small>bundle-opic-plan-1m-w2-화</small></div><div><b>31</b><strong>3회 녹음 듣고 보완하기</strong><span>영상: https://www.youtube.com/watch?v=bRjvaQ380MU · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</span><small>bundle-opic-plan-1m-w2-수</small></div><div><b>32</b><strong>4회 실전처럼 풀기</strong><span>영상: https://www.youtube.com/watch?v=N2s5golewUI · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</span><small>bundle-opic-plan-1m-w2-목</small></div><div><b>33</b><strong>4회 녹음 듣고 보완하기</strong><span>영상: https://www.youtube.com/watch?v=N2s5golewUI · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</span><small>bundle-opic-plan-1m-w2-금</small></div><div><b>34</b><strong>4회 녹음 듣고 보완하기</strong><span>영상: https://www.youtube.com/watch?v=N2s5golewUI · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</span><small>bundle-opic-plan-1m-w2-토</small></div><div><b>35</b><strong>5회 실전처럼 풀기</strong><span>영상: https://www.youtube.com/watch?v=uCUiUlggGlE · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</span><small>bundle-opic-plan-1m-w3-월</small></div><div><b>36</b><strong>5회 녹음 듣고 보완하기</strong><span>영상: https://www.youtube.com/watch?v=uCUiUlggGlE · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</span><small>bundle-opic-plan-1m-w3-화</small></div><div><b>37</b><strong>5회 녹음 듣고 보완하기</strong><span>영상: https://www.youtube.com/watch?v=uCUiUlggGlE · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</span><small>bundle-opic-plan-1m-w3-수</small></div><div><b>38</b><strong>6회 실전처럼 풀기</strong><span>영상: https://www.youtube.com/watch?v=KddRF_nM9uI · 범위: 동네·건강·국내여행·은행·가족 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</span><small>bundle-opic-plan-1m-w3-목</small></div><div><b>39</b><strong>6회 녹음 듣고 보완하기</strong><span>영상: https://www.youtube.com/watch?v=KddRF_nM9uI · 범위: 동네·건강·국내여행·은행·가족 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</span><small>bundle-opic-plan-1m-w3-금</small></div><div><b>40</b><strong>6회 녹음 듣고 보완하기</strong><span>영상: https://www.youtube.com/watch?v=KddRF_nM9uI · 범위: 동네·건강·국내여행·은행·가족 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</span><small>bundle-opic-plan-1m-w3-토</small></div><div><b>41</b><strong>7회 실전처럼 풀기</strong><span>영상: https://www.youtube.com/watch?v=cAOaiJsT7ac · 범위: 집에서 보내는 휴가·지리·공휴일·집·음악 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</span><small>bundle-opic-plan-1m-w4-월</small></div><div><b>42</b><strong>7회 녹음 듣고 보완하기</strong><span>영상: https://www.youtube.com/watch?v=cAOaiJsT7ac · 범위: 집에서 보내는 휴가·지리·공휴일·집·음악 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</span><small>bundle-opic-plan-1m-w4-화</small></div><div><b>43</b><strong>7회 녹음 듣고 보완하기</strong><span>영상: https://www.youtube.com/watch?v=cAOaiJsT7ac · 범위: 집에서 보내는 휴가·지리·공휴일·집·음악 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</span><small>bundle-opic-plan-1m-w4-수</small></div><div><b>44</b><strong>8회 실전처럼 풀기</strong><span>영상: https://www.youtube.com/watch?v=VFWF-HUYggI · 범위: 기술·캠핑·패션·쇼핑·건강 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</span><small>bundle-opic-plan-1m-w4-목</small></div><div><b>45</b><strong>8회 녹음 듣고 보완하기</strong><span>영상: https://www.youtube.com/watch?v=VFWF-HUYggI · 범위: 기술·캠핑·패션·쇼핑·건강 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</span><small>bundle-opic-plan-1m-w4-금</small></div><div><b>46</b><strong>8회 녹음 듣고 보완하기</strong><span>영상: https://www.youtube.com/watch?v=VFWF-HUYggI · 범위: 기술·캠핑·패션·쇼핑·건강 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</span><small>bundle-opic-plan-1m-w4-토</small></div><div><b>47</b><strong>9회 실전처럼 풀기</strong><span>영상: https://www.youtube.com/watch?v=y0Y1j7fEZj4 · 범위: 외식·영화·날씨·계절·콘서트·바 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</span><small>bundle-opic-plan-1m-w5-월</small></div><div><b>48</b><strong>9회 녹음 듣고 보완하기</strong><span>영상: https://www.youtube.com/watch?v=y0Y1j7fEZj4 · 범위: 외식·영화·날씨·계절·콘서트·바 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</span><small>bundle-opic-plan-1m-w5-화</small></div><div><b>49</b><strong>9회 녹음 듣고 보완하기</strong><span>영상: https://www.youtube.com/watch?v=y0Y1j7fEZj4 · 범위: 외식·영화·날씨·계절·콘서트·바 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</span><small>bundle-opic-plan-1m-w5-수</small></div><div><b>50</b><strong>10회 실전처럼 풀기</strong><span>영상: https://www.youtube.com/watch?v=xh_zHNfAgQo · 범위: 해외여행·모임·공연·가족·친구·산업 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</span><small>bundle-opic-plan-1m-w5-목</small></div><div><b>51</b><strong>10회 녹음 듣고 보완하기</strong><span>영상: https://www.youtube.com/watch?v=xh_zHNfAgQo · 범위: 해외여행·모임·공연·가족·친구·산업 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</span><small>bundle-opic-plan-1m-w5-금</small></div><div><b>52</b><strong>10회 녹음 듣고 보완하기</strong><span>영상: https://www.youtube.com/watch?v=xh_zHNfAgQo · 범위: 해외여행·모임·공연·가족·친구·산업 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.</span><small>bundle-opic-plan-1m-w5-토</small></div></div>
+    </details>
+  </article><article class="explorer-card" data-card data-schedule="undated" data-public="go">
+    <header>
+      <div><span>공부·독서</span><h3>생활코딩 WEB1 진도표</h3></div>
+      <strong>26 Item</strong>
+    </header>
+    <p>WEB1의 공개 토픽 목록을 순서대로 학습하고 진도를 체크한다.</p>
+    <div class="explorer-summary">
+      <span>26 SourceRow</span>
+      <span>1 Step</span>
+      <span>1 Flow</span>
+      <span>0 일정</span>
+      <span>26 날짜 없음</span>
+    </div>
+    <details>
+      <summary>전체 Item 26개 보기</summary>
+      <div class="appendix-list"><div><b>1</b><strong>「프로젝트의 동기」 학습하기</strong><span>날짜 없음</span><small>bundle-opentutorials-web1-progress-s1-i1-r1</small></div><div><b>2</b><strong>「기획」 학습하기</strong><span>날짜 없음</span><small>bundle-opentutorials-web1-progress-s1-i2-r1</small></div><div><b>3</b><strong>「코딩과 HTML」 학습하기</strong><span>날짜 없음</span><small>bundle-opentutorials-web1-progress-s1-i3-r1</small></div><div><b>4</b><strong>「HTML 코딩 실습 환경 준비」 학습하기</strong><span>날짜 없음</span><small>bundle-opentutorials-web1-progress-s1-i4-r1</small></div><div><b>5</b><strong>「기본 문법 - 태그」 학습하기</strong><span>날짜 없음</span><small>bundle-opentutorials-web1-progress-s1-i5-r1</small></div><div><b>6</b><strong>「혁명적인 변화」 학습하기</strong><span>날짜 없음</span><small>bundle-opentutorials-web1-progress-s1-i6-r1</small></div><div><b>7</b><strong>「통계에 기반한 학습」 학습하기</strong><span>날짜 없음</span><small>bundle-opentutorials-web1-progress-s1-i7-r1</small></div><div><b>8</b><strong>「줄바꿈」 학습하기</strong><span>날짜 없음</span><small>bundle-opentutorials-web1-progress-s1-i8-r1</small></div><div><b>9</b><strong>「HTML이 중요한 이유」 학습하기</strong><span>날짜 없음</span><small>bundle-opentutorials-web1-progress-s1-i9-r1</small></div><div><b>10</b><strong>「최후의 문법 속성과 img」 학습하기</strong><span>날짜 없음</span><small>bundle-opentutorials-web1-progress-s1-i10-r1</small></div><div><b>11</b><strong>「부모 자식과 목록」 학습하기</strong><span>날짜 없음</span><small>bundle-opentutorials-web1-progress-s1-i11-r1</small></div><div><b>12</b><strong>「문서의 구조와 슈퍼스타들」 학습하기</strong><span>날짜 없음</span><small>bundle-opentutorials-web1-progress-s1-i12-r1</small></div><div><b>13</b><strong>「HTML 태그의 제왕」 학습하기</strong><span>날짜 없음</span><small>bundle-opentutorials-web1-progress-s1-i13-r1</small></div><div><b>14</b><strong>「웹사이트 완성」 학습하기</strong><span>날짜 없음</span><small>bundle-opentutorials-web1-progress-s1-i14-r1</small></div><div><b>15</b><strong>「원시웹」 학습하기</strong><span>날짜 없음</span><small>bundle-opentutorials-web1-progress-s1-i15-r1</small></div><div><b>16</b><strong>「인터넷을 여는 열쇠 : 서버와 클라이언트」 학습하기</strong><span>날짜 없음</span><small>bundle-opentutorials-web1-progress-s1-i16-r1</small></div><div><b>17</b><strong>「웹호스팅 github pages」 학습하기</strong><span>날짜 없음</span><small>bundle-opentutorials-web1-progress-s1-i17-r1</small></div><div><b>18</b><strong>「웹서버 운영하기」 학습하기</strong><span>날짜 없음</span><small>bundle-opentutorials-web1-progress-s1-i18-r1</small></div><div><b>19</b><strong>「수업을 마치며 1」 학습하기</strong><span>날짜 없음</span><small>bundle-opentutorials-web1-progress-s1-i19-r1</small></div><div><b>20</b><strong>「수업을 마치며 2」 학습하기</strong><span>날짜 없음</span><small>bundle-opentutorials-web1-progress-s1-i20-r1</small></div><div><b>21</b><strong>「수업을 마치며 3」 학습하기</strong><span>날짜 없음</span><small>bundle-opentutorials-web1-progress-s1-i21-r1</small></div><div><b>22</b><strong>「부록 : 코드의 힘」 학습하기</strong><span>날짜 없음</span><small>bundle-opentutorials-web1-progress-s1-i22-r1</small></div><div><b>23</b><strong>「부록 : 코드의 힘 - 동영상 삽입」 학습하기</strong><span>날짜 없음</span><small>bundle-opentutorials-web1-progress-s1-i23-r1</small></div><div><b>24</b><strong>「부록 : 코드의 힘 - 댓글 기능 추가」 학습하기</strong><span>날짜 없음</span><small>bundle-opentutorials-web1-progress-s1-i24-r1</small></div><div><b>25</b><strong>「부록 : 코드의 힘 - 채팅 기능 추가」 학습하기</strong><span>날짜 없음</span><small>bundle-opentutorials-web1-progress-s1-i25-r1</small></div><div><b>26</b><strong>「부록 : 코드의 힘 - 방문자 분석기」 학습하기</strong><span>날짜 없음</span><small>bundle-opentutorials-web1-progress-s1-i26-r1</small></div></div>
+    </details>
+    <details>
+      <summary>전체 SourceRow 26개 보기</summary>
+      <div class="appendix-list"><div><b>1</b><strong>프로젝트의 동기</strong><span>https://opentutorials.org/course/3084/18438</span><small>bundle-opentutorials-web1-progress-s1-i1-r1</small></div><div><b>2</b><strong>기획</strong><span>https://opentutorials.org/course/3084/18437</span><small>bundle-opentutorials-web1-progress-s1-i2-r1</small></div><div><b>3</b><strong>코딩과 HTML</strong><span>https://opentutorials.org/course/3084/18445</span><small>bundle-opentutorials-web1-progress-s1-i3-r1</small></div><div><b>4</b><strong>HTML 코딩 실습 환경 준비</strong><span>https://opentutorials.org/course/3084/18448</span><small>bundle-opentutorials-web1-progress-s1-i4-r1</small></div><div><b>5</b><strong>기본 문법 - 태그</strong><span>https://opentutorials.org/course/3084/18392</span><small>bundle-opentutorials-web1-progress-s1-i5-r1</small></div><div><b>6</b><strong>혁명적인 변화</strong><span>https://opentutorials.org/course/3084/18400</span><small>bundle-opentutorials-web1-progress-s1-i6-r1</small></div><div><b>7</b><strong>통계에 기반한 학습</strong><span>https://opentutorials.org/course/3084/18452</span><small>bundle-opentutorials-web1-progress-s1-i7-r1</small></div><div><b>8</b><strong>줄바꿈</strong><span>https://opentutorials.org/course/3084/18403</span><small>bundle-opentutorials-web1-progress-s1-i8-r1</small></div><div><b>9</b><strong>HTML이 중요한 이유</strong><span>https://opentutorials.org/course/3084/18488</span><small>bundle-opentutorials-web1-progress-s1-i9-r1</small></div><div><b>10</b><strong>최후의 문법 속성과 img</strong><span>https://opentutorials.org/course/3084/18407</span><small>bundle-opentutorials-web1-progress-s1-i10-r1</small></div><div><b>11</b><strong>부모 자식과 목록</strong><span>https://opentutorials.org/course/3084/18408</span><small>bundle-opentutorials-web1-progress-s1-i11-r1</small></div><div><b>12</b><strong>문서의 구조와 슈퍼스타들</strong><span>https://opentutorials.org/course/3084/18409</span><small>bundle-opentutorials-web1-progress-s1-i12-r1</small></div><div><b>13</b><strong>HTML 태그의 제왕</strong><span>https://opentutorials.org/course/3084/18418</span><small>bundle-opentutorials-web1-progress-s1-i13-r1</small></div><div><b>14</b><strong>웹사이트 완성</strong><span>https://opentutorials.org/course/3084/18431</span><small>bundle-opentutorials-web1-progress-s1-i14-r1</small></div><div><b>15</b><strong>원시웹</strong><span>https://opentutorials.org/course/3084/18889</span><small>bundle-opentutorials-web1-progress-s1-i15-r1</small></div><div><b>16</b><strong>인터넷을 여는 열쇠 : 서버와 클라이언트</strong><span>https://opentutorials.org/course/3084/18890</span><small>bundle-opentutorials-web1-progress-s1-i16-r1</small></div><div><b>17</b><strong>웹호스팅 github pages</strong><span>https://opentutorials.org/course/3084/18891</span><small>bundle-opentutorials-web1-progress-s1-i17-r1</small></div><div><b>18</b><strong>웹서버 운영하기</strong><span>https://opentutorials.org/course/3084/31144</span><small>bundle-opentutorials-web1-progress-s1-i18-r1</small></div><div><b>19</b><strong>수업을 마치며 1</strong><span>https://opentutorials.org/course/3084/18896</span><small>bundle-opentutorials-web1-progress-s1-i19-r1</small></div><div><b>20</b><strong>수업을 마치며 2</strong><span>https://opentutorials.org/course/3084/18897</span><small>bundle-opentutorials-web1-progress-s1-i20-r1</small></div><div><b>21</b><strong>수업을 마치며 3</strong><span>https://opentutorials.org/course/3084/18898</span><small>bundle-opentutorials-web1-progress-s1-i21-r1</small></div><div><b>22</b><strong>부록 : 코드의 힘</strong><span>https://opentutorials.org/course/3084/18598</span><small>bundle-opentutorials-web1-progress-s1-i22-r1</small></div><div><b>23</b><strong>부록 : 코드의 힘 - 동영상 삽입</strong><span>https://opentutorials.org/course/3084/18453</span><small>bundle-opentutorials-web1-progress-s1-i23-r1</small></div><div><b>24</b><strong>부록 : 코드의 힘 - 댓글 기능 추가</strong><span>https://opentutorials.org/course/3084/18594</span><small>bundle-opentutorials-web1-progress-s1-i24-r1</small></div><div><b>25</b><strong>부록 : 코드의 힘 - 채팅 기능 추가</strong><span>https://opentutorials.org/course/3084/18597</span><small>bundle-opentutorials-web1-progress-s1-i25-r1</small></div><div><b>26</b><strong>부록 : 코드의 힘 - 방문자 분석기</strong><span>https://opentutorials.org/course/3084/18899</span><small>bundle-opentutorials-web1-progress-s1-i26-r1</small></div></div>
+    </details>
+  </article><article class="explorer-card" data-card data-schedule="undated" data-public="modify">
+    <header>
+      <div><span>돈·행정·구매</span><h3>신차 구매 8단계</h3></div>
+      <strong>14 Item</strong>
+    </header>
+    <p>신차 구매의 원문 8단계를 순서대로 확인하고 계약·출고 누락을 줄인다.</p>
+    <div class="explorer-summary">
+      <span>29 SourceRow</span>
+      <span>8 Step</span>
+      <span>1 Flow</span>
+      <span>0 일정</span>
+      <span>14 날짜 없음</span>
+    </div>
+    <details>
+      <summary>전체 Item 14개 보기</summary>
+      <div class="appendix-list"><div><b>1</b><strong>총예산과 월 납입 가능액 정하기</strong><span>날짜 없음</span><small>bundle-new-car-comparison-s1-i1-r1, bundle-new-car-comparison-s1-i1-r2</small></div><div><b>2</b><strong>차종·트림·옵션 후보 좁히기</strong><span>날짜 없음</span><small>bundle-new-car-comparison-s1-i2-r1, bundle-new-car-comparison-s1-i2-r2</small></div><div><b>3</b><strong>현금·할부·리스·장기렌트 비교하기</strong><span>날짜 없음</span><small>bundle-new-car-comparison-s2-i1-r1, bundle-new-car-comparison-s2-i1-r2</small></div><div><b>4</b><strong>여러 판매처 견적 비교하기</strong><span>날짜 없음</span><small>bundle-new-car-comparison-s3-i1-r1, bundle-new-car-comparison-s3-i1-r2</small></div><div><b>5</b><strong>할인과 서비스 조건 확정하기</strong><span>날짜 없음</span><small>bundle-new-car-comparison-s3-i2-r1, bundle-new-car-comparison-s3-i2-r2</small></div><div><b>6</b><strong>계약서 차량 사양과 금액 확인하기</strong><span>날짜 없음</span><small>bundle-new-car-comparison-s4-i1-r1, bundle-new-car-comparison-s4-i1-r2, bundle-new-car-comparison-s4-i1-r3</small></div><div><b>7</b><strong>계약금 납부하고 서류 보관하기</strong><span>날짜 없음</span><small>bundle-new-car-comparison-s4-i2-r1, bundle-new-car-comparison-s4-i2-r2</small></div><div><b>8</b><strong>차대번호와 출고 정보 확인하기</strong><span>날짜 없음</span><small>bundle-new-car-comparison-s5-i1-r1</small></div><div><b>9</b><strong>외관·내장·기능 검수하기</strong><span>날짜 없음</span><small>bundle-new-car-comparison-s5-i2-r1, bundle-new-car-comparison-s5-i2-r2, bundle-new-car-comparison-s5-i2-r3</small></div><div><b>10</b><strong>등록 서류와 비용 확인하기</strong><span>날짜 없음</span><small>bundle-new-car-comparison-s6-i1-r1, bundle-new-car-comparison-s6-i1-r2</small></div><div><b>11</b><strong>차량 등록과 번호판 발급 마치기</strong><span>날짜 없음</span><small>bundle-new-car-comparison-s6-i2-r1, bundle-new-car-comparison-s6-i2-r2</small></div><div><b>12</b><strong>자동차보험 조건 비교하고 가입하기</strong><span>날짜 없음</span><small>bundle-new-car-comparison-s7-i1-r1, bundle-new-car-comparison-s7-i1-r2</small></div><div><b>13</b><strong>차량 문서와 보증 조건 보관하기</strong><span>날짜 없음</span><small>bundle-new-car-comparison-s8-i1-r1, bundle-new-car-comparison-s8-i1-r2</small></div><div><b>14</b><strong>초기 점검과 소모품 일정 확인하기</strong><span>날짜 없음</span><small>bundle-new-car-comparison-s8-i2-r1, bundle-new-car-comparison-s8-i2-r2</small></div></div>
+    </details>
+    <details>
+      <summary>전체 SourceRow 29개 보기</summary>
+      <div class="appendix-list"><div><b>1</b><strong>차량 가격 외 취등록세·보험·유지비를 포함한 총예산 확인</strong><span>차량 가격 외 취등록세·보험·유지비를 포함한 총예산 확인</span><small>bundle-new-car-comparison-s1-i1-r1</small></div><div><b>2</b><strong>현금·할부 시 월 납입 가능액 확인</strong><span>현금·할부 시 월 납입 가능액 확인</span><small>bundle-new-car-comparison-s1-i1-r2</small></div><div><b>3</b><strong>용도와 탑승 인원에 맞는 차종 선택</strong><span>용도와 탑승 인원에 맞는 차종 선택</span><small>bundle-new-car-comparison-s1-i2-r1</small></div><div><b>4</b><strong>트림과 필수 옵션 후보 정리</strong><span>트림과 필수 옵션 후보 정리</span><small>bundle-new-car-comparison-s1-i2-r2</small></div><div><b>5</b><strong>소유권·월 납입액·세금·만기 조건 비교</strong><span>소유권·월 납입액·세금·만기 조건 비교</span><small>bundle-new-car-comparison-s2-i1-r1</small></div><div><b>6</b><strong>본인 상황에 맞는 구매 방식 선택</strong><span>본인 상황에 맞는 구매 방식 선택</span><small>bundle-new-car-comparison-s2-i1-r2</small></div><div><b>7</b><strong>동일 트림·옵션 기준으로 견적 받기</strong><span>동일 트림·옵션 기준으로 견적 받기</span><small>bundle-new-car-comparison-s3-i1-r1</small></div><div><b>8</b><strong>차량 가격·탁송료·등록비·서비스 품목 비교</strong><span>차량 가격·탁송료·등록비·서비스 품목 비교</span><small>bundle-new-car-comparison-s3-i1-r2</small></div><div><b>9</b><strong>제조사 할인과 딜러 할인 확인</strong><span>제조사 할인과 딜러 할인 확인</span><small>bundle-new-car-comparison-s3-i2-r1</small></div><div><b>10</b><strong>현금 지원·용품 등 서비스 조건 기록</strong><span>현금 지원·용품 등 서비스 조건 기록</span><small>bundle-new-car-comparison-s3-i2-r2</small></div><div><b>11</b><strong>차종·트림·색상·옵션 확인</strong><span>차종·트림·색상·옵션 확인</span><small>bundle-new-car-comparison-s4-i1-r1</small></div><div><b>12</b><strong>총액과 계약금 확인</strong><span>총액과 계약금 확인</span><small>bundle-new-car-comparison-s4-i1-r2</small></div><div><b>13</b><strong>출고 예정일과 취소·환불 조건 확인</strong><span>출고 예정일과 취소·환불 조건 확인</span><small>bundle-new-car-comparison-s4-i1-r3</small></div><div><b>14</b><strong>계약금 납부</strong><span>계약금 납부</span><small>bundle-new-car-comparison-s4-i2-r1</small></div><div><b>15</b><strong>계약서와 영수증 보관</strong><span>계약서와 영수증 보관</span><small>bundle-new-car-comparison-s4-i2-r2</small></div><div><b>16</b><strong>차대번호·생산연월·출고 일정 확인</strong><span>차대번호·생산연월·출고 일정 확인</span><small>bundle-new-car-comparison-s5-i1-r1</small></div><div><b>17</b><strong>도장·유리·타이어·휠 외관 확인</strong><span>도장·유리·타이어·휠 외관 확인</span><small>bundle-new-car-comparison-s5-i2-r1</small></div><div><b>18</b><strong>시트·내장재 확인</strong><span>시트·내장재 확인</span><small>bundle-new-car-comparison-s5-i2-r2</small></div><div><b>19</b><strong>등화·전자장비·옵션 작동 확인</strong><span>등화·전자장비·옵션 작동 확인</span><small>bundle-new-car-comparison-s5-i2-r3</small></div><div><b>20</b><strong>신분증·계약서·보험가입증명 등 필요 서류 확인</strong><span>신분증·계약서·보험가입증명 등 필요 서류 확인</span><small>bundle-new-car-comparison-s6-i1-r1</small></div><div><b>21</b><strong>취득세·공채·번호판 등 등록 비용 확인</strong><span>취득세·공채·번호판 등 등록 비용 확인</span><small>bundle-new-car-comparison-s6-i1-r2</small></div><div><b>22</b><strong>직접 등록 또는 등록 대행 선택</strong><span>직접 등록 또는 등록 대행 선택</span><small>bundle-new-car-comparison-s6-i2-r1</small></div><div><b>23</b><strong>자동차등록증과 번호판 수령</strong><span>자동차등록증과 번호판 수령</span><small>bundle-new-car-comparison-s6-i2-r2</small></div><div><b>24</b><strong>운전자 범위·보장 한도·자기부담금 비교</strong><span>운전자 범위·보장 한도·자기부담금 비교</span><small>bundle-new-car-comparison-s7-i1-r1</small></div><div><b>25</b><strong>차량 인수 전에 보험 효력 시작 확인</strong><span>차량 인수 전에 보험 효력 시작 확인</span><small>bundle-new-car-comparison-s7-i1-r2</small></div><div><b>26</b><strong>등록증·보험증권·보증서 보관</strong><span>등록증·보험증권·보증서 보관</span><small>bundle-new-car-comparison-s8-i1-r1</small></div><div><b>27</b><strong>보증 기간과 정기점검 조건 확인</strong><span>보증 기간과 정기점검 조건 확인</span><small>bundle-new-car-comparison-s8-i1-r2</small></div><div><b>28</b><strong>제조사 초기 점검 안내 확인</strong><span>제조사 초기 점검 안내 확인</span><small>bundle-new-car-comparison-s8-i2-r1</small></div><div><b>29</b><strong>소모품 교환 주기 확인</strong><span>소모품 교환 주기 확인</span><small>bundle-new-car-comparison-s8-i2-r2</small></div></div>
+    </details>
+  </article><article class="explorer-card" data-card data-schedule="scheduled" data-public="modify">
+    <header>
+      <div><span>건강·운동</span><h3>Allblanc 7일 복근 챌린지</h3></div>
+      <strong>7 Item</strong>
+    </header>
+    <p>7일 재생목록의 영상을 하루 한 편씩 따라 한다.</p>
+    <div class="explorer-summary">
+      <span>7 SourceRow</span>
+      <span>7 Step</span>
+      <span>7 Flow</span>
+      <span>7 일정</span>
+      <span>0 날짜 없음</span>
+    </div>
+    <details>
+      <summary>전체 Item 7개 보기</summary>
+      <div class="appendix-list"><div><b>1</b><strong>코어 + 복근 한방에! 20분 복근 운동</strong><span>sequence_day · Day 1</span><small>bundle-allblanc-7day-abs-day-1</small></div><div><b>2</b><strong>허리 통증 없이 20분 복근 운동</strong><span>sequence_day · Day 2</span><small>bundle-allblanc-7day-abs-day-2</small></div><div><b>3</b><strong>아랫 뱃살 집중 타격 20분 운동</strong><span>sequence_day · Day 3</span><small>bundle-allblanc-7day-abs-day-3</small></div><div><b>4</b><strong>서서하는 20분 복근 운동</strong><span>sequence_day · Day 4</span><small>bundle-allblanc-7day-abs-day-4</small></div><div><b>5</b><strong>집에서 옆구리살 빼기 20분 운동</strong><span>sequence_day · Day 5</span><small>bundle-allblanc-7day-abs-day-5</small></div><div><b>6</b><strong>허리 군살 제거 20분 복근 홈트</strong><span>sequence_day · Day 6</span><small>bundle-allblanc-7day-abs-day-6</small></div><div><b>7</b><strong>헤어질 결심: 복부지방 20분 운동</strong><span>sequence_day · Day 7</span><small>bundle-allblanc-7day-abs-day-7</small></div></div>
+    </details>
+    <details>
+      <summary>전체 SourceRow 7개 보기</summary>
+      <div class="appendix-list"><div><b>1</b><strong>코어 + 복근 한방에! 20분 복근 운동</strong><span>영상 길이 21:25 · 확인 조회수 150,000</span><small>bundle-allblanc-7day-abs-day-1</small></div><div><b>2</b><strong>허리 통증 없이 20분 복근 운동</strong><span>영상 길이 20:41 · 확인 조회수 78,000</span><small>bundle-allblanc-7day-abs-day-2</small></div><div><b>3</b><strong>아랫 뱃살 집중 타격 20분 운동</strong><span>영상 길이 21:01 · 확인 조회수 73,000</span><small>bundle-allblanc-7day-abs-day-3</small></div><div><b>4</b><strong>서서하는 20분 복근 운동</strong><span>영상 길이 20:49 · 확인 조회수 88,000</span><small>bundle-allblanc-7day-abs-day-4</small></div><div><b>5</b><strong>집에서 옆구리살 빼기 20분 운동</strong><span>영상 길이 20:40 · 확인 조회수 45,000</span><small>bundle-allblanc-7day-abs-day-5</small></div><div><b>6</b><strong>허리 군살 제거 20분 복근 홈트</strong><span>영상 길이 20:36 · 확인 조회수 42,000</span><small>bundle-allblanc-7day-abs-day-6</small></div><div><b>7</b><strong>헤어질 결심: 복부지방 20분 운동</strong><span>영상 길이 20:49 · 확인 조회수 63,000</span><small>bundle-allblanc-7day-abs-day-7</small></div></div>
+    </details>
+  </article><article class="explorer-card" data-card data-schedule="undated" data-public="modify">
+    <header>
+      <div><span>식사·장보기</span><h3>이번 주 여름 반찬 5가지</h3></div>
+      <strong>5 Item</strong>
+    </header>
+    <p>큐레이션의 반찬 5개 중 만들 메뉴를 골라 원문 레시피를 연다.</p>
+    <div class="explorer-summary">
+      <span>5 SourceRow</span>
+      <span>5 Step</span>
+      <span>5 Flow</span>
+      <span>0 일정</span>
+      <span>5 날짜 없음</span>
+    </div>
+    <details>
+      <summary>전체 Item 5개 보기</summary>
+      <div class="appendix-list"><div><b>1</b><strong>오이지무침 만들기</strong><span>날짜 없음</span><small>wtable-summer-1</small></div><div><b>2</b><strong>한치 초무침 만들기</strong><span>날짜 없음</span><small>wtable-summer-2</small></div><div><b>3</b><strong>브로콜리 참깨무침 만들기</strong><span>날짜 없음</span><small>wtable-summer-3</small></div><div><b>4</b><strong>오이고추 된장 무침 만들기</strong><span>날짜 없음</span><small>wtable-summer-4</small></div><div><b>5</b><strong>꽈리고추찜무침 만들기</strong><span>날짜 없음</span><small>wtable-summer-5</small></div></div>
+    </details>
+    <details>
+      <summary>전체 SourceRow 5개 보기</summary>
+      <div class="appendix-list"><div><b>1</b><strong>오이지무침</strong><span>초급 · 15분</span><small>wtable-summer-1</small></div><div><b>2</b><strong>한치 초무침</strong><span>초급 · 30분</span><small>wtable-summer-2</small></div><div><b>3</b><strong>브로콜리 참깨무침</strong><span>초급 · 20분</span><small>wtable-summer-3</small></div><div><b>4</b><strong>오이고추 된장 무침</strong><span>초급 · 15분</span><small>wtable-summer-4</small></div><div><b>5</b><strong>꽈리고추찜무침</strong><span>초급 · 20분</span><small>wtable-summer-5</small></div></div>
+    </details>
+  </article><article class="explorer-card" data-card data-schedule="undated" data-public="modify">
+    <header>
+      <div><span>일·커리어</span><h3>AND 취업 준비 영상 3편</h3></div>
+      <strong>3 Item</strong>
+    </header>
+    <p>취업 준비 영상 3편을 필요한 순서로 보고 실행 메모를 남긴다.</p>
+    <div class="explorer-summary">
+      <span>3 SourceRow</span>
+      <span>3 Step</span>
+      <span>3 Flow</span>
+      <span>0 일정</span>
+      <span>3 날짜 없음</span>
+    </div>
+    <details>
+      <summary>전체 Item 3개 보기</summary>
+      <div class="appendix-list"><div><b>1</b><strong>자소서 지원동기 6단계 영상으로 준비하기</strong><span>날짜 없음</span><small>andstudio-job-1</small></div><div><b>2</b><strong>산업분석 방법 영상으로 준비하기</strong><span>날짜 없음</span><small>andstudio-job-2</small></div><div><b>3</b><strong>면접 전 확인할 6가지 영상으로 준비하기</strong><span>날짜 없음</span><small>andstudio-job-3</small></div></div>
+    </details>
+    <details>
+      <summary>전체 SourceRow 3개 보기</summary>
+      <div class="appendix-list"><div><b>1</b><strong>자소서 지원동기 6단계</strong><span>조회 889,279 · 좋아요 17,011 · 댓글 201</span><small>andstudio-job-1</small></div><div><b>2</b><strong>산업분석 방법</strong><span>조회 186,826 · 댓글 139</span><small>andstudio-job-2</small></div><div><b>3</b><strong>면접 전 확인할 6가지</strong><span>조회 103,294 · 댓글 32</span><small>andstudio-job-3</small></div></div>
+    </details>
+  </article></div>
+      <p class="empty-result" id="emptyResult">조건에 맞는 콘텐츠가 없습니다.</p>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="wrap">
+      <div>Machine-readable source: <a href="../specs/2026-07-28-flow-item-map-architecture-qualified-corpus-revalidation-v2/qualified-corpus-fixture-v2.json">qualified-corpus-fixture-v2.json</a></div>
+      <div><a href="2026-07-28-icalendar-components-easy-explainer-ko.html">VEVENT·VTODO 설명</a> · <a href="2026-07-27-creator-portfolio-qualified-review-ko.html">Qualified v2 자격 판정</a></div>
+    </div>
+  </footer>
+
+  <script>
+    const buttons = [...document.querySelectorAll('[data-filter]')];
+    const cards = [...document.querySelectorAll('[data-card]')];
+    const empty = document.getElementById('emptyResult');
+    function applyFilter(value) {
+      const [axis, expected] = value.split(':');
+      let visible = 0;
+      for (const card of cards) {
+        const match = value === 'all' || card.dataset[axis] === expected;
+        card.hidden = !match;
+        if (match) visible += 1;
+      }
+      empty.style.display = visible ? 'none' : 'block';
+      for (const button of buttons) {
+        button.setAttribute('aria-pressed', String(button.dataset.filter === value));
+      }
+    }
+    for (const button of buttons) {
+      button.addEventListener('click', () => applyFilter(button.dataset.filter));
+    }
+  </script>
+</body>
+</html>

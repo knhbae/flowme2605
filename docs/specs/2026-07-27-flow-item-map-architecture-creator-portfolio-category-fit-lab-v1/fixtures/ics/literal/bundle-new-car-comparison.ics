@@ -1,0 +1,328 @@
+BEGIN:VCALENDAR
+PRODID:-//FlowMe//Literal ICS First Lab v1//KO
+VERSION:2.0
+CALSCALE:GREGORIAN
+BEGIN:VJOURNAL
+UID:bundle-new-car-comparison-map@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:신차 구매 8단계
+X-FLOWME-KIND:MAP
+END:VJOURNAL
+BEGIN:VJOURNAL
+UID:bundle-new-car-comparison-flow@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:신차 구매 8단계
+RELATED-TO;RELTYPE=PARENT:bundle-new-car-comparison-map@flowme.local
+X-FLOWME-KIND:FLOW
+END:VJOURNAL
+BEGIN:VJOURNAL
+UID:bundle-new-car-comparison-s1@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:1. 예산과 차량 선택
+RELATED-TO;RELTYPE=PARENT:bundle-new-car-comparison-flow@flowme.local
+X-FLOWME-KIND:STEP
+END:VJOURNAL
+BEGIN:VTODO
+UID:bundle-new-car-comparison-s1-i1@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:총예산과 월 납입 가능액 정하기
+DESCRIPTION:차량 가격 외 취등록세·보험·유지비를 포함한 
+ 총예산 확인 · 현금·할부 시 월 납입 가능액 확인\n1. 예
+ 산과 차량 선택 · 차량 가격 외 취등록세·보험·유지비
+ 를 포함한 총예산 확인 · https://web.getcha.kr/blog/complete-guid
+ e-new-car-purchase-procedure-for-beginners\n1. 예산과 차량 선택 · 
+ 현금·할부 시 월 납입 가능액 확인 · https://web.getcha.kr/bl
+ og/complete-guide-new-car-purchase-procedure-for-beginners
+STATUS:NEEDS-ACTION
+URL:https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-fo
+ r-beginners
+RELATED-TO;RELTYPE=PARENT:bundle-new-car-comparison-s1@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-new-car-comparison-s1-i1-r1\,bundle-new-car-com
+ parison-s1-i1-r2
+END:VTODO
+BEGIN:VTODO
+UID:bundle-new-car-comparison-s1-i2@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:차종·트림·옵션 후보 좁히기
+DESCRIPTION:용도와 탑승 인원에 맞는 차종 선택 · 트림과 
+ 필수 옵션 후보 정리\n1. 예산과 차량 선택 · 용도와 탑
+ 승 인원에 맞는 차종 선택 · https://web.getcha.kr/blog/complete-
+ guide-new-car-purchase-procedure-for-beginners\n1. 예산과 차량 선택
+  · 트림과 필수 옵션 후보 정리 · https://web.getcha.kr/blog/co
+ mplete-guide-new-car-purchase-procedure-for-beginners
+STATUS:NEEDS-ACTION
+URL:https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-fo
+ r-beginners
+RELATED-TO;RELTYPE=PARENT:bundle-new-car-comparison-s1@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-new-car-comparison-s1-i2-r1\,bundle-new-car-com
+ parison-s1-i2-r2
+END:VTODO
+BEGIN:VJOURNAL
+UID:bundle-new-car-comparison-s2@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:2. 구매 방식 선택
+RELATED-TO;RELTYPE=PARENT:bundle-new-car-comparison-flow@flowme.local
+X-FLOWME-KIND:STEP
+END:VJOURNAL
+BEGIN:VTODO
+UID:bundle-new-car-comparison-s2-i1@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:현금·할부·리스·장기렌트 비교하기
+DESCRIPTION:소유권·월 납입액·세금·만기 조건 비교 · 본
+ 인 상황에 맞는 구매 방식 선택\n2. 구매 방식 선택 · 소
+ 유권·월 납입액·세금·만기 조건 비교 · https://web.getcha.
+ kr/blog/complete-guide-new-car-purchase-procedure-for-beginners\n2. 구매
+  방식 선택 · 본인 상황에 맞는 구매 방식 선택 · https://
+ web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners
+STATUS:NEEDS-ACTION
+URL:https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-fo
+ r-beginners
+RELATED-TO;RELTYPE=PARENT:bundle-new-car-comparison-s2@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-new-car-comparison-s2-i1-r1\,bundle-new-car-com
+ parison-s2-i1-r2
+END:VTODO
+BEGIN:VJOURNAL
+UID:bundle-new-car-comparison-s3@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:3. 견적과 할인 협상
+RELATED-TO;RELTYPE=PARENT:bundle-new-car-comparison-flow@flowme.local
+X-FLOWME-KIND:STEP
+END:VJOURNAL
+BEGIN:VTODO
+UID:bundle-new-car-comparison-s3-i1@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:여러 판매처 견적 비교하기
+DESCRIPTION:동일 트림·옵션 기준으로 견적 받기 · 차량 가
+ 격·탁송료·등록비·서비스 품목 비교\n3. 견적과 할인 
+ 협상 · 동일 트림·옵션 기준으로 견적 받기 · https://web.
+ getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners\n3.
+  견적과 할인 협상 · 차량 가격·탁송료·등록비·서비스
+  품목 비교 · https://web.getcha.kr/blog/complete-guide-new-car-purcha
+ se-procedure-for-beginners
+STATUS:NEEDS-ACTION
+URL:https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-fo
+ r-beginners
+RELATED-TO;RELTYPE=PARENT:bundle-new-car-comparison-s3@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-new-car-comparison-s3-i1-r1\,bundle-new-car-com
+ parison-s3-i1-r2
+END:VTODO
+BEGIN:VTODO
+UID:bundle-new-car-comparison-s3-i2@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:할인과 서비스 조건 확정하기
+DESCRIPTION:제조사 할인과 딜러 할인 확인 · 현금 지원·용
+ 품 등 서비스 조건 기록\n3. 견적과 할인 협상 · 제조사 
+ 할인과 딜러 할인 확인 · https://web.getcha.kr/blog/complete-guid
+ e-new-car-purchase-procedure-for-beginners\n3. 견적과 할인 협상 · 
+ 현금 지원·용품 등 서비스 조건 기록 · https://web.getcha.kr
+ /blog/complete-guide-new-car-purchase-procedure-for-beginners
+STATUS:NEEDS-ACTION
+URL:https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-fo
+ r-beginners
+RELATED-TO;RELTYPE=PARENT:bundle-new-car-comparison-s3@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-new-car-comparison-s3-i2-r1\,bundle-new-car-com
+ parison-s3-i2-r2
+END:VTODO
+BEGIN:VJOURNAL
+UID:bundle-new-car-comparison-s4@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:4. 계약
+RELATED-TO;RELTYPE=PARENT:bundle-new-car-comparison-flow@flowme.local
+X-FLOWME-KIND:STEP
+END:VJOURNAL
+BEGIN:VTODO
+UID:bundle-new-car-comparison-s4-i1@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:계약서 차량 사양과 금액 확인하기
+DESCRIPTION:차종·트림·색상·옵션 확인 · 총액과 계약금 
+ 확인 · 출고 예정일과 취소·환불 조건 확인\n4. 계약 · 
+ 차종·트림·색상·옵션 확인 · https://web.getcha.kr/blog/comple
+ te-guide-new-car-purchase-procedure-for-beginners\n4. 계약 · 총액과 
+ 계약금 확인 · https://web.getcha.kr/blog/complete-guide-new-car-purc
+ hase-procedure-for-beginners\n4. 계약 · 출고 예정일과 취소·환
+ 불 조건 확인 · https://web.getcha.kr/blog/complete-guide-new-car-pur
+ chase-procedure-for-beginners
+STATUS:NEEDS-ACTION
+URL:https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-fo
+ r-beginners
+RELATED-TO;RELTYPE=PARENT:bundle-new-car-comparison-s4@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-new-car-comparison-s4-i1-r1\,bundle-new-car-com
+ parison-s4-i1-r2\,bundle-new-car-comparison-s4-i1-r3
+END:VTODO
+BEGIN:VTODO
+UID:bundle-new-car-comparison-s4-i2@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:계약금 납부하고 서류 보관하기
+DESCRIPTION:계약금 납부 · 계약서와 영수증 보관\n4. 계약 ·
+  계약금 납부 · https://web.getcha.kr/blog/complete-guide-new-car-pur
+ chase-procedure-for-beginners\n4. 계약 · 계약서와 영수증 보관 
+ · https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-fo
+ r-beginners
+STATUS:NEEDS-ACTION
+URL:https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-fo
+ r-beginners
+RELATED-TO;RELTYPE=PARENT:bundle-new-car-comparison-s4@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-new-car-comparison-s4-i2-r1\,bundle-new-car-com
+ parison-s4-i2-r2
+END:VTODO
+BEGIN:VJOURNAL
+UID:bundle-new-car-comparison-s5@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:5. 출고와 검수
+RELATED-TO;RELTYPE=PARENT:bundle-new-car-comparison-flow@flowme.local
+X-FLOWME-KIND:STEP
+END:VJOURNAL
+BEGIN:VTODO
+UID:bundle-new-car-comparison-s5-i1@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:차대번호와 출고 정보 확인하기
+DESCRIPTION:차대번호·생산연월·출고 일정 확인\n5. 출고와 
+ 검수 · 차대번호·생산연월·출고 일정 확인 · https://web.
+ getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners
+STATUS:NEEDS-ACTION
+URL:https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-fo
+ r-beginners
+RELATED-TO;RELTYPE=PARENT:bundle-new-car-comparison-s5@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-new-car-comparison-s5-i1-r1
+END:VTODO
+BEGIN:VTODO
+UID:bundle-new-car-comparison-s5-i2@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:외관·내장·기능 검수하기
+DESCRIPTION:도장·유리·타이어·휠 외관 확인 · 시트·내장
+ 재 확인 · 등화·전자장비·옵션 작동 확인\n5. 출고와 검
+ 수 · 도장·유리·타이어·휠 외관 확인 · https://web.getcha.
+ kr/blog/complete-guide-new-car-purchase-procedure-for-beginners\n5. 출고
+ 와 검수 · 시트·내장재 확인 · https://web.getcha.kr/blog/compl
+ ete-guide-new-car-purchase-procedure-for-beginners\n5. 출고와 검수 ·
+  등화·전자장비·옵션 작동 확인 · https://web.getcha.kr/blog/
+ complete-guide-new-car-purchase-procedure-for-beginners
+STATUS:NEEDS-ACTION
+URL:https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-fo
+ r-beginners
+RELATED-TO;RELTYPE=PARENT:bundle-new-car-comparison-s5@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-new-car-comparison-s5-i2-r1\,bundle-new-car-com
+ parison-s5-i2-r2\,bundle-new-car-comparison-s5-i2-r3
+END:VTODO
+BEGIN:VJOURNAL
+UID:bundle-new-car-comparison-s6@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:6. 등록
+RELATED-TO;RELTYPE=PARENT:bundle-new-car-comparison-flow@flowme.local
+X-FLOWME-KIND:STEP
+END:VJOURNAL
+BEGIN:VTODO
+UID:bundle-new-car-comparison-s6-i1@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:등록 서류와 비용 확인하기
+DESCRIPTION:신분증·계약서·보험가입증명 등 필요 서류 확
+ 인 · 취득세·공채·번호판 등 등록 비용 확인\n6. 등록 ·
+  신분증·계약서·보험가입증명 등 필요 서류 확인 · http
+ s://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-begin
+ ners\n6. 등록 · 취득세·공채·번호판 등 등록 비용 확인 
+ · https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-fo
+ r-beginners
+STATUS:NEEDS-ACTION
+URL:https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-fo
+ r-beginners
+RELATED-TO;RELTYPE=PARENT:bundle-new-car-comparison-s6@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-new-car-comparison-s6-i1-r1\,bundle-new-car-com
+ parison-s6-i1-r2
+END:VTODO
+BEGIN:VTODO
+UID:bundle-new-car-comparison-s6-i2@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:차량 등록과 번호판 발급 마치기
+DESCRIPTION:직접 등록 또는 등록 대행 선택 · 자동차등록증
+ 과 번호판 수령\n6. 등록 · 직접 등록 또는 등록 대행 선
+ 택 · https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedur
+ e-for-beginners\n6. 등록 · 자동차등록증과 번호판 수령 · ht
+ tps://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beg
+ inners
+STATUS:NEEDS-ACTION
+URL:https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-fo
+ r-beginners
+RELATED-TO;RELTYPE=PARENT:bundle-new-car-comparison-s6@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-new-car-comparison-s6-i2-r1\,bundle-new-car-com
+ parison-s6-i2-r2
+END:VTODO
+BEGIN:VJOURNAL
+UID:bundle-new-car-comparison-s7@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:7. 보험
+RELATED-TO;RELTYPE=PARENT:bundle-new-car-comparison-flow@flowme.local
+X-FLOWME-KIND:STEP
+END:VJOURNAL
+BEGIN:VTODO
+UID:bundle-new-car-comparison-s7-i1@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:자동차보험 조건 비교하고 가입하기
+DESCRIPTION:운전자 범위·보장 한도·자기부담금 비교 · 차
+ 량 인수 전에 보험 효력 시작 확인\n7. 보험 · 운전자 범
+ 위·보장 한도·자기부담금 비교 · https://web.getcha.kr/blog/c
+ omplete-guide-new-car-purchase-procedure-for-beginners\n7. 보험 · 차
+ 량 인수 전에 보험 효력 시작 확인 · https://web.getcha.kr/blo
+ g/complete-guide-new-car-purchase-procedure-for-beginners
+STATUS:NEEDS-ACTION
+URL:https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-fo
+ r-beginners
+RELATED-TO;RELTYPE=PARENT:bundle-new-car-comparison-s7@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-new-car-comparison-s7-i1-r1\,bundle-new-car-com
+ parison-s7-i1-r2
+END:VTODO
+BEGIN:VJOURNAL
+UID:bundle-new-car-comparison-s8@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:8. 출고 후 관리
+RELATED-TO;RELTYPE=PARENT:bundle-new-car-comparison-flow@flowme.local
+X-FLOWME-KIND:STEP
+END:VJOURNAL
+BEGIN:VTODO
+UID:bundle-new-car-comparison-s8-i1@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:차량 문서와 보증 조건 보관하기
+DESCRIPTION:등록증·보험증권·보증서 보관 · 보증 기간과 
+ 정기점검 조건 확인\n8. 출고 후 관리 · 등록증·보험증
+ 권·보증서 보관 · https://web.getcha.kr/blog/complete-guide-new-car
+ -purchase-procedure-for-beginners\n8. 출고 후 관리 · 보증 기간
+ 과 정기점검 조건 확인 · https://web.getcha.kr/blog/complete-guid
+ e-new-car-purchase-procedure-for-beginners
+STATUS:NEEDS-ACTION
+URL:https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-fo
+ r-beginners
+RELATED-TO;RELTYPE=PARENT:bundle-new-car-comparison-s8@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-new-car-comparison-s8-i1-r1\,bundle-new-car-com
+ parison-s8-i1-r2
+END:VTODO
+BEGIN:VTODO
+UID:bundle-new-car-comparison-s8-i2@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:초기 점검과 소모품 일정 확인하기
+DESCRIPTION:제조사 초기 점검 안내 확인 · 소모품 교환 주
+ 기 확인\n8. 출고 후 관리 · 제조사 초기 점검 안내 확인 
+ · https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-fo
+ r-beginners\n8. 출고 후 관리 · 소모품 교환 주기 확인 · htt
+ ps://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-begi
+ nners
+STATUS:NEEDS-ACTION
+URL:https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-fo
+ r-beginners
+RELATED-TO;RELTYPE=PARENT:bundle-new-car-comparison-s8@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-new-car-comparison-s8-i2-r1\,bundle-new-car-com
+ parison-s8-i2-r2
+END:VTODO
+END:VCALENDAR

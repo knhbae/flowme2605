@@ -1,0 +1,577 @@
+{
+  "schemaVersion": "flowme-current-canonical-v1",
+  "architecture": "current_canonical_v1",
+  "bundleId": "bundle-allblanc-7day-abs",
+  "title": "Allblanc 7일 복근 챌린지",
+  "taxonomy": {
+    "primaryLifeArea": "health_fitness",
+    "secondaryLifeAreas": [],
+    "topicTags": [],
+    "sourceShape": "resource_collection",
+    "primaryExecutionPattern": "progress_tracking",
+    "secondaryExecutionPatterns": [
+      "date_preparation"
+    ],
+    "primaryArtifact": "calendar",
+    "secondaryArtifacts": [
+      "checklist"
+    ]
+  },
+  "userJob": "제작자가 정한 7일 영상 순서를 따라가며 오늘 영상 완료 상태를 남긴다.",
+  "setupFields": [
+    {
+      "key": "startDate",
+      "label": "시작일",
+      "type": "date",
+      "required": false
+    },
+    {
+      "key": "repeatWeekdays",
+      "label": "운동 요일",
+      "type": "weekday_multi",
+      "required": false
+    }
+  ],
+  "sampleUserOverlay": {
+    "startDate": "2026-08-03"
+  },
+  "map": {
+    "id": "bundle-allblanc-7day-abs-map",
+    "title": "7 Days Abs Challenge",
+    "type": "ordered",
+    "ordering": "source_defined",
+    "childFlowIds": [
+      "bundle-allblanc-7day-abs-day-1",
+      "bundle-allblanc-7day-abs-day-2",
+      "bundle-allblanc-7day-abs-day-3",
+      "bundle-allblanc-7day-abs-day-4",
+      "bundle-allblanc-7day-abs-day-5",
+      "bundle-allblanc-7day-abs-day-6",
+      "bundle-allblanc-7day-abs-day-7"
+    ],
+    "derivedProgressOnly": true
+  },
+  "sharedContexts": [],
+  "attribution": {
+    "creatorId": "health-allblanc",
+    "providerId": "youtube",
+    "sourceOwnerId": "health-allblanc",
+    "curatorId": null,
+    "trustAnchorRefs": [],
+    "decisionBand": "Go",
+    "creatorVerdict": "creator_flow_map_candidate",
+    "publicationApproval": "not_implied"
+  },
+  "rights": {
+    "mode": "link_and_minimal_execution_metadata",
+    "publicReleaseAllowed": false,
+    "personalTransformAllowed": true,
+    "rationale": "Existing research allows link plus minimal execution metadata; public release remains a separate review."
+  },
+  "review": {
+    "sourceRowStatus": "complete_for_representative_example",
+    "promotionState": "internal_review_only",
+    "safetyReview": "not_required"
+  },
+  "sourceRows": [
+    {
+      "sourceRowId": "bundle-allblanc-7day-abs-day-1",
+      "bundleId": "bundle-allblanc-7day-abs",
+      "sourceUrl": "https://www.youtube.com/watch?v=XwUKn-52ykk",
+      "sourceLocator": "7 Days Abs Challenge · Day 1",
+      "label": "코어 + 복근 한방에! 20분 복근 운동",
+      "detail": "영상 길이 21:25 · 확인 조회수 150,000",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-allblanc-7day-abs-day-2",
+      "bundleId": "bundle-allblanc-7day-abs",
+      "sourceUrl": "https://www.youtube.com/watch?v=KzH8TcfyKFA",
+      "sourceLocator": "7 Days Abs Challenge · Day 2",
+      "label": "허리 통증 없이 20분 복근 운동",
+      "detail": "영상 길이 20:41 · 확인 조회수 78,000",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-allblanc-7day-abs-day-3",
+      "bundleId": "bundle-allblanc-7day-abs",
+      "sourceUrl": "https://www.youtube.com/watch?v=Ft5gNO-2Je4",
+      "sourceLocator": "7 Days Abs Challenge · Day 3",
+      "label": "아랫 뱃살 집중 타격 20분 운동",
+      "detail": "영상 길이 21:01 · 확인 조회수 73,000",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-allblanc-7day-abs-day-4",
+      "bundleId": "bundle-allblanc-7day-abs",
+      "sourceUrl": "https://www.youtube.com/watch?v=8RzHWcq6eq0",
+      "sourceLocator": "7 Days Abs Challenge · Day 4",
+      "label": "서서하는 20분 복근 운동",
+      "detail": "영상 길이 20:49 · 확인 조회수 88,000",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-allblanc-7day-abs-day-5",
+      "bundleId": "bundle-allblanc-7day-abs",
+      "sourceUrl": "https://www.youtube.com/watch?v=peQuipmDIuc",
+      "sourceLocator": "7 Days Abs Challenge · Day 5",
+      "label": "집에서 옆구리살 빼기 20분 운동",
+      "detail": "영상 길이 20:40 · 확인 조회수 45,000",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-allblanc-7day-abs-day-6",
+      "bundleId": "bundle-allblanc-7day-abs",
+      "sourceUrl": "https://www.youtube.com/watch?v=K3yO9oHgaIs",
+      "sourceLocator": "7 Days Abs Challenge · Day 6",
+      "label": "허리 군살 제거 20분 복근 홈트",
+      "detail": "영상 길이 20:36 · 확인 조회수 42,000",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-allblanc-7day-abs-day-7",
+      "bundleId": "bundle-allblanc-7day-abs",
+      "sourceUrl": "https://www.youtube.com/watch?v=W2fS4TqeWCc",
+      "sourceLocator": "7 Days Abs Challenge · Day 7",
+      "label": "헤어질 결심: 복부지방 20분 운동",
+      "detail": "영상 길이 20:49 · 확인 조회수 63,000",
+      "verifiedAt": "2026-07-22"
+    }
+  ],
+  "flows": [
+    {
+      "id": "bundle-allblanc-7day-abs-day-1",
+      "title": "Day 1 · 코어 + 복근 한방에! 20분 복근 운동",
+      "primarySourceUrl": "https://www.youtube.com/watch?v=XwUKn-52ykk",
+      "steps": [
+        {
+          "id": "bundle-allblanc-7day-abs-day-1-step",
+          "flowId": "bundle-allblanc-7day-abs-day-1",
+          "title": "영상 따라 하기",
+          "order": 1,
+          "sourceScheduleGroup": {
+            "type": "sequence_day",
+            "day": 1
+          },
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-allblanc-7day-abs-day-1-item",
+              "flowId": "bundle-allblanc-7day-abs-day-1",
+              "stepId": "bundle-allblanc-7day-abs-day-1-step",
+              "title": "코어 + 복근 한방에! 20분 복근 운동",
+              "detail": "영상: https://www.youtube.com/watch?v=XwUKn-52ykk · 길이: 21:25 · 운동 후 남길 내용이 있으면 이 Item의 개인 메모를 사용한다.",
+              "intent": "use_resource",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "sequence_day",
+                "day": 1
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=XwUKn-52ykk · 길이: 21:25 · 운동 후 남길 내용이 있으면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-allblanc-7day-abs-day-1",
+                  "sourceUrl": "https://www.youtube.com/watch?v=XwUKn-52ykk",
+                  "sourceLocator": "7 Days Abs Challenge · Day 1"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bundle-allblanc-7day-abs-day-2",
+      "title": "Day 2 · 허리 통증 없이 20분 복근 운동",
+      "primarySourceUrl": "https://www.youtube.com/watch?v=KzH8TcfyKFA",
+      "steps": [
+        {
+          "id": "bundle-allblanc-7day-abs-day-2-step",
+          "flowId": "bundle-allblanc-7day-abs-day-2",
+          "title": "영상 따라 하기",
+          "order": 1,
+          "sourceScheduleGroup": {
+            "type": "sequence_day",
+            "day": 2
+          },
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-allblanc-7day-abs-day-2-item",
+              "flowId": "bundle-allblanc-7day-abs-day-2",
+              "stepId": "bundle-allblanc-7day-abs-day-2-step",
+              "title": "허리 통증 없이 20분 복근 운동",
+              "detail": "영상: https://www.youtube.com/watch?v=KzH8TcfyKFA · 길이: 20:41 · 운동 후 남길 내용이 있으면 이 Item의 개인 메모를 사용한다.",
+              "intent": "use_resource",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "sequence_day",
+                "day": 2
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=KzH8TcfyKFA · 길이: 20:41 · 운동 후 남길 내용이 있으면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-allblanc-7day-abs-day-2",
+                  "sourceUrl": "https://www.youtube.com/watch?v=KzH8TcfyKFA",
+                  "sourceLocator": "7 Days Abs Challenge · Day 2"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bundle-allblanc-7day-abs-day-3",
+      "title": "Day 3 · 아랫 뱃살 집중 타격 20분 운동",
+      "primarySourceUrl": "https://www.youtube.com/watch?v=Ft5gNO-2Je4",
+      "steps": [
+        {
+          "id": "bundle-allblanc-7day-abs-day-3-step",
+          "flowId": "bundle-allblanc-7day-abs-day-3",
+          "title": "영상 따라 하기",
+          "order": 1,
+          "sourceScheduleGroup": {
+            "type": "sequence_day",
+            "day": 3
+          },
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-allblanc-7day-abs-day-3-item",
+              "flowId": "bundle-allblanc-7day-abs-day-3",
+              "stepId": "bundle-allblanc-7day-abs-day-3-step",
+              "title": "아랫 뱃살 집중 타격 20분 운동",
+              "detail": "영상: https://www.youtube.com/watch?v=Ft5gNO-2Je4 · 길이: 21:01 · 운동 후 남길 내용이 있으면 이 Item의 개인 메모를 사용한다.",
+              "intent": "use_resource",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "sequence_day",
+                "day": 3
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=Ft5gNO-2Je4 · 길이: 21:01 · 운동 후 남길 내용이 있으면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-allblanc-7day-abs-day-3",
+                  "sourceUrl": "https://www.youtube.com/watch?v=Ft5gNO-2Je4",
+                  "sourceLocator": "7 Days Abs Challenge · Day 3"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bundle-allblanc-7day-abs-day-4",
+      "title": "Day 4 · 서서하는 20분 복근 운동",
+      "primarySourceUrl": "https://www.youtube.com/watch?v=8RzHWcq6eq0",
+      "steps": [
+        {
+          "id": "bundle-allblanc-7day-abs-day-4-step",
+          "flowId": "bundle-allblanc-7day-abs-day-4",
+          "title": "영상 따라 하기",
+          "order": 1,
+          "sourceScheduleGroup": {
+            "type": "sequence_day",
+            "day": 4
+          },
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-allblanc-7day-abs-day-4-item",
+              "flowId": "bundle-allblanc-7day-abs-day-4",
+              "stepId": "bundle-allblanc-7day-abs-day-4-step",
+              "title": "서서하는 20분 복근 운동",
+              "detail": "영상: https://www.youtube.com/watch?v=8RzHWcq6eq0 · 길이: 20:49 · 운동 후 남길 내용이 있으면 이 Item의 개인 메모를 사용한다.",
+              "intent": "use_resource",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "sequence_day",
+                "day": 4
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=8RzHWcq6eq0 · 길이: 20:49 · 운동 후 남길 내용이 있으면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-allblanc-7day-abs-day-4",
+                  "sourceUrl": "https://www.youtube.com/watch?v=8RzHWcq6eq0",
+                  "sourceLocator": "7 Days Abs Challenge · Day 4"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bundle-allblanc-7day-abs-day-5",
+      "title": "Day 5 · 집에서 옆구리살 빼기 20분 운동",
+      "primarySourceUrl": "https://www.youtube.com/watch?v=peQuipmDIuc",
+      "steps": [
+        {
+          "id": "bundle-allblanc-7day-abs-day-5-step",
+          "flowId": "bundle-allblanc-7day-abs-day-5",
+          "title": "영상 따라 하기",
+          "order": 1,
+          "sourceScheduleGroup": {
+            "type": "sequence_day",
+            "day": 5
+          },
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-allblanc-7day-abs-day-5-item",
+              "flowId": "bundle-allblanc-7day-abs-day-5",
+              "stepId": "bundle-allblanc-7day-abs-day-5-step",
+              "title": "집에서 옆구리살 빼기 20분 운동",
+              "detail": "영상: https://www.youtube.com/watch?v=peQuipmDIuc · 길이: 20:40 · 운동 후 남길 내용이 있으면 이 Item의 개인 메모를 사용한다.",
+              "intent": "use_resource",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "sequence_day",
+                "day": 5
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=peQuipmDIuc · 길이: 20:40 · 운동 후 남길 내용이 있으면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-allblanc-7day-abs-day-5",
+                  "sourceUrl": "https://www.youtube.com/watch?v=peQuipmDIuc",
+                  "sourceLocator": "7 Days Abs Challenge · Day 5"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bundle-allblanc-7day-abs-day-6",
+      "title": "Day 6 · 허리 군살 제거 20분 복근 홈트",
+      "primarySourceUrl": "https://www.youtube.com/watch?v=K3yO9oHgaIs",
+      "steps": [
+        {
+          "id": "bundle-allblanc-7day-abs-day-6-step",
+          "flowId": "bundle-allblanc-7day-abs-day-6",
+          "title": "영상 따라 하기",
+          "order": 1,
+          "sourceScheduleGroup": {
+            "type": "sequence_day",
+            "day": 6
+          },
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-allblanc-7day-abs-day-6-item",
+              "flowId": "bundle-allblanc-7day-abs-day-6",
+              "stepId": "bundle-allblanc-7day-abs-day-6-step",
+              "title": "허리 군살 제거 20분 복근 홈트",
+              "detail": "영상: https://www.youtube.com/watch?v=K3yO9oHgaIs · 길이: 20:36 · 운동 후 남길 내용이 있으면 이 Item의 개인 메모를 사용한다.",
+              "intent": "use_resource",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "sequence_day",
+                "day": 6
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=K3yO9oHgaIs · 길이: 20:36 · 운동 후 남길 내용이 있으면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-allblanc-7day-abs-day-6",
+                  "sourceUrl": "https://www.youtube.com/watch?v=K3yO9oHgaIs",
+                  "sourceLocator": "7 Days Abs Challenge · Day 6"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bundle-allblanc-7day-abs-day-7",
+      "title": "Day 7 · 헤어질 결심: 복부지방 20분 운동",
+      "primarySourceUrl": "https://www.youtube.com/watch?v=W2fS4TqeWCc",
+      "steps": [
+        {
+          "id": "bundle-allblanc-7day-abs-day-7-step",
+          "flowId": "bundle-allblanc-7day-abs-day-7",
+          "title": "영상 따라 하기",
+          "order": 1,
+          "sourceScheduleGroup": {
+            "type": "sequence_day",
+            "day": 7
+          },
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-allblanc-7day-abs-day-7-item",
+              "flowId": "bundle-allblanc-7day-abs-day-7",
+              "stepId": "bundle-allblanc-7day-abs-day-7-step",
+              "title": "헤어질 결심: 복부지방 20분 운동",
+              "detail": "영상: https://www.youtube.com/watch?v=W2fS4TqeWCc · 길이: 20:49 · 운동 후 남길 내용이 있으면 이 Item의 개인 메모를 사용한다.",
+              "intent": "use_resource",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "sequence_day",
+                "day": 7
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "영상: https://www.youtube.com/watch?v=W2fS4TqeWCc · 길이: 20:49 · 운동 후 남길 내용이 있으면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-allblanc-7day-abs-day-7",
+                  "sourceUrl": "https://www.youtube.com/watch?v=W2fS4TqeWCc",
+                  "sourceLocator": "7 Days Abs Challenge · Day 7"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "flowme-icalendar-component-mapping-v2",
+  "generatedAt": "2026-07-29T12:00:00+09:00",
+  "container": {
+    "component": "VCALENDAR",
+    "role": "exchange container for sibling components"
+  },
+  "components": {
+    "VEVENT": {
+      "canonicalGranularity": "scheduled Item occurrence",
+      "useWhen": [
+        "fixed attendance or visit",
+        "all-day occurrence",
+        "confirmed user time block",
+        "confirmed user pacing when Calendar is chosen"
+      ],
+      "neverWhen": [
+        "due-only Item",
+        "undated Item",
+        "unselected availability window"
+      ],
+      "mayContain": [
+        "VALARM"
+      ],
+      "mayNotContain": [
+        "VTODO",
+        "Flow",
+        "Step",
+        "Map"
+      ]
+    },
+    "VTODO": {
+      "canonicalGranularity": "independently actionable Item",
+      "useWhen": [
+        "task with optional DUE",
+        "application action",
+        "ticket action"
+      ],
+      "neverWhen": [
+        "passive event listing",
+        "calendar attendance block"
+      ],
+      "mayContain": [
+        "VALARM"
+      ],
+      "mayNotContain": [
+        "VEVENT",
+        "Flow",
+        "Step",
+        "Map"
+      ],
+      "destinationSupport": "not assumed",
+      "fallback": [
+        "native Todo task",
+        "Checklist",
+        "Sheet",
+        "Memo"
+      ]
+    },
+    "VALARM": {
+      "canonicalGranularity": "explicit user reminder policy",
+      "useWhen": [
+        "user explicitly requests a reminder"
+      ],
+      "default": "omit"
+    }
+  },
+  "grouping": {
+    "policies": [
+      "none",
+      "per_item",
+      "session_or_step_bundle"
+    ],
+    "sessionBundleRequirements": [
+      "same date and time",
+      "same place or execution context",
+      "one user session",
+      "all child Item IDs retained",
+      "FlowMe owns individual completion",
+      "external completion loss disclosed"
+    ]
+  },
+  "externalRoundTrip": {
+    "googleCalendar": "NOT_RUN",
+    "outlookCalendar": "NOT_RUN",
+    "appleCalendar": "NOT_RUN",
+    "vtodoClients": "NOT_RUN"
+  }
+}

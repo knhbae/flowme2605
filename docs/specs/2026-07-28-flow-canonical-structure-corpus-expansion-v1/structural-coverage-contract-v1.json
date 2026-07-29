@@ -1,0 +1,216 @@
+{
+  "schemaVersion": "flowme-structural-coverage-contract-v1",
+  "generatedAt": "2026-07-28T23:59:00+09:00",
+  "controlledValues": {
+    "lifeAreas": [
+      "home_living",
+      "family_parenting",
+      "study_reading",
+      "money_admin_purchase",
+      "health_fitness",
+      "travel_outings",
+      "meals_grocery",
+      "work_career",
+      "hobby_pet"
+    ],
+    "sourceShapes": [
+      "single_action",
+      "checklist_rows",
+      "date_offsets",
+      "date_window",
+      "recurrence_rule",
+      "procedure_rows",
+      "table_rows",
+      "lesson_rows",
+      "resource_collection",
+      "decision_criteria",
+      "narrative_guidance",
+      "template_fields"
+    ],
+    "executionPatterns": [
+      "date_preparation",
+      "ordered_procedure",
+      "repeating_routine",
+      "progress_tracking",
+      "resource_queue",
+      "compare_decide",
+      "phase_lifecycle"
+    ],
+    "artifacts": [
+      "calendar",
+      "checklist",
+      "todo",
+      "sheet",
+      "memo"
+    ],
+    "intents": [
+      "act",
+      "inspect",
+      "decide",
+      "record",
+      "use_resource"
+    ],
+    "completionModes": [
+      "check",
+      "decision",
+      "record"
+    ],
+    "scheduleModes": [
+      "absolute",
+      "anchor_offset",
+      "date_window"
+    ],
+    "rowTargets": [
+      "item",
+      "field",
+      "memo",
+      "flow_context",
+      "step_context",
+      "omitted"
+    ],
+    "fieldValueTypes": [
+      "short_text",
+      "long_text",
+      "number",
+      "boolean",
+      "date",
+      "datetime",
+      "url",
+      "single_select",
+      "multi_select",
+      "file_ref"
+    ],
+    "fieldPurposes": [
+      "schedule",
+      "sort",
+      "filter",
+      "record",
+      "export",
+      "generation"
+    ]
+  },
+  "requiredCoverage": {
+    "completeFixturesAtLeast40": true,
+    "allSevenExecutionPatterns": true,
+    "eachExecutionPatternAtLeastTwo": true,
+    "allFiveArtifacts": true,
+    "allFiveIntents": true,
+    "allThreeCompletionModes": true,
+    "scheduleModesPresent": true,
+    "recurrencePresent": true,
+    "fieldsPresent": true,
+    "memosPresent": true,
+    "oneToManyPresent": true,
+    "manyToOnePresent": true,
+    "manyToManyPresent": true,
+    "omissionControlPresent": true,
+    "optionalItemPresent": true,
+    "conditionPresent": true,
+    "dependencyPresent": true,
+    "twoSetupInputPathPresent": true,
+    "duringExecutionFieldPresent": true,
+    "singleItemFixturePresent": true,
+    "templateFieldFixturePresent": true,
+    "zeroItemFieldOrMemoFixturePresent": true,
+    "selectedPrimaryProjectionHasOutput": true,
+    "calendarPrimaryHasScheduledItems": true,
+    "occurrenceIdentityExamplePresent": true,
+    "exactRelationClassification": true,
+    "sharedContextOrGroupingAtLeastThree": true,
+    "boundaryControlsAtMostFive": true
+  },
+  "allRequiredCoveragePassed": true,
+  "observed": {
+    "fixtureCount": 42,
+    "sourceRows": 484,
+    "items": 406,
+    "fields": 246,
+    "memos": 19,
+    "sourceShapes": {
+      "checklist_rows": 4,
+      "date_offsets": 2,
+      "date_window": 2,
+      "decision_criteria": 4,
+      "lesson_rows": 6,
+      "narrative_guidance": 3,
+      "procedure_rows": 9,
+      "recurrence_rule": 1,
+      "resource_collection": 4,
+      "table_rows": 6,
+      "template_fields": 1
+    },
+    "executionPatterns": {
+      "compare_decide": 4,
+      "date_preparation": 8,
+      "ordered_procedure": 9,
+      "phase_lifecycle": 4,
+      "progress_tracking": 12,
+      "repeating_routine": 2,
+      "resource_queue": 3
+    },
+    "primaryArtifacts": {
+      "calendar": 6,
+      "checklist": 16,
+      "memo": 2,
+      "sheet": 14,
+      "todo": 4
+    },
+    "intents": {
+      "act": 216,
+      "decide": 15,
+      "inspect": 60,
+      "record": 19,
+      "use_resource": 96
+    },
+    "completionModes": {
+      "check": 375,
+      "decision": 15,
+      "record": 16
+    },
+    "scheduleModes": {
+      "absolute": 1,
+      "anchor_offset": 137,
+      "date_window": 6,
+      "none": 262
+    },
+    "recurrenceItems": 5,
+    "relationTypes": {
+      "many_to_many": 10,
+      "many_to_one": 116,
+      "one_to_many": 6,
+      "one_to_one": 352
+    },
+    "manyToManyCases": [
+      "base-opic-plan"
+    ],
+    "boundaryOmissionRows": 15,
+    "optionalItems": 4,
+    "conditionedItems": 2,
+    "dependentItems": 9,
+    "zeroInputFixtures": 35,
+    "oneInputFixtures": 6,
+    "twoOrMoreInputFixtures": 1,
+    "twoOrMoreSetupInputFixtures": 8,
+    "duringExecutionFieldFixtures": 1,
+    "zeroItemFieldOrMemoFixtures": [
+      "live-live-jotform-event-intake-01"
+    ],
+    "occurrenceIdentityExampleCount": 5,
+    "sharedContextOrGroupingCases": [
+      "base-moving-d30",
+      "base-opic-plan",
+      "base-allblanc-7day-abs",
+      "base-wtable-summer-banchan-five",
+      "base-andstudio-job-prep-videos",
+      "oq-oq-c01-moving"
+    ]
+  },
+  "gaps": [
+    "조건식 DSL과 dependency relation 종류는 공통 반복 근거가 부족해 Open으로 유지한다.",
+    "외부 Calendar의 VTODO·RELATED-TO·X-property 왕복은 수행하지 않았다.",
+    "연간·업무일 recurrence는 실제 독립 사례가 부족하다.",
+    "single_action SourceShape는 실제 독립 SourceRow packet을 확보하지 못해 다음 source acquisition 목표로 남긴다.",
+    "조건 충족 후 due date와 location의 공통 저장 형태는 독립 사례가 부족하다.",
+    "공개 가능성과 전문 안전성은 이 구조 corpus의 판정 대상이 아니다."
+  ]
+}

@@ -1,7 +1,12 @@
 import fs from 'node:fs';
 
 import { expect, test, type Locator, type Page } from '@playwright/test';
-import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
+import {
+  expandMyFlowWholePlan,
+  getMyFlowVisibleExecutionRows,
+  openMyFlowCalendarSelectedDay,
+  openMyFlowLibraryFlow,
+} from './helpers/my-flow-library';
 import { openSavedPublicFlow, savePublicFlow } from './helpers/public-flow-save';
 
 const evidenceDir = process.env.FLOWME_P31_EVIDENCE_DIR;
@@ -32,7 +37,7 @@ async function openMyFlowDetailTools(detail: Locator) {
   const tools = detail.getByTestId('my-flow-detail-portable-export');
   await expect(tools).toBeVisible();
   if ((await tools.getAttribute('open')) === null) {
-    await tools.locator('summary').click();
+    await tools.locator(':scope > summary').click();
   }
   return tools;
 }
@@ -52,37 +57,17 @@ test.describe('P31 mobile journey reconstruction', () => {
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
 
-    const weddingPreview = page.getByTestId('flow-artifact-data-preview');
+    const weddingPreview = page.getByTestId('public-flow-artifact-preview');
     const weddingChoices = weddingPreview.getByTestId('flow-artifact-shape-choice');
-    const weddingChoice = (shape: string) => weddingPreview.locator(
-      `[data-testid="flow-artifact-shape-choice"][data-artifact-shape="${shape}"]`,
-    );
-    await expect(weddingChoices).toHaveCount(3);
+    await expect(weddingChoices).toHaveCount(0);
     await expect(weddingPreview).toHaveAttribute('data-selected-shape', 'calendar');
-    await expect(weddingChoice('calendar')).toHaveAttribute('aria-pressed', 'true');
     await expect(page.getByTestId('public-flow-primary-setup')).toBeVisible();
     await captureEvidence(page, 'p31-wedding-save-before-390.png');
 
-    await weddingChoice('checklist').click();
-    await expect(weddingPreview).toHaveAttribute('data-selected-shape', 'checklist');
-    await expect(page.getByTestId('public-flow-primary-setup')).toHaveCount(0);
-    await expect(page.getByTestId('public-flow-save-primary-mobile')).toContainText('6');
-
-    await weddingChoice('memo').click();
-    await expect(weddingPreview).toHaveAttribute('data-selected-shape', 'memo');
-    await expect(page.getByTestId('flow-artifact-memo-preview')).toBeVisible();
-
-    await weddingChoice('calendar').click();
-    await expect(weddingPreview).toHaveAttribute('data-selected-shape', 'calendar');
-    await expect(page.getByTestId('public-flow-primary-setup')).toBeVisible();
-
     await page.goto('/f/curated-allblanc-morning-workout');
-    const workoutPreview = page.getByTestId('flow-artifact-data-preview');
+    const workoutPreview = page.getByTestId('public-flow-artifact-preview');
     const workoutChoices = workoutPreview.getByTestId('flow-artifact-shape-choice');
-    const workoutChoice = (shape: string) => workoutPreview.locator(
-      `[data-testid="flow-artifact-shape-choice"][data-artifact-shape="${shape}"]`,
-    );
-    await expect(workoutChoices).toHaveCount(3);
+    await expect(workoutChoices).toHaveCount(0);
     await expect(workoutPreview).toHaveAttribute('data-selected-shape', 'flow_execution');
 
     await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
@@ -112,12 +97,8 @@ test.describe('P31 mobile journey reconstruction', () => {
       routineSummary.getByTestId('public-routine-schedule-summary-value'),
     ).toContainText('8회');
 
-    await workoutChoice('calendar').click();
-    await expect(workoutPreview).toHaveAttribute('data-selected-shape', 'calendar');
-    await workoutChoice('memo').click();
-    await expect(workoutPreview).toHaveAttribute('data-selected-shape', 'memo');
     await expect(page.getByTestId('public-flow-save-primary-mobile')).toContainText('1');
-    await expect(workoutPreview.getByTestId('flow-artifact-preview-row')).toHaveCount(1);
+    await expect(workoutPreview.getByTestId('public-flow-artifact-preview-row')).toHaveCount(1);
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth),
     ).toBeLessThanOrEqual(1);
@@ -138,36 +119,33 @@ test.describe('P31 mobile journey reconstruction', () => {
     await page.reload();
 
     await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
-    await page.getByTestId('public-flow-adjust-entry-mobile').click();
-    const adjustment = page.getByTestId('public-flow-personal-adjustment');
-    await adjustment.getByTestId('public-flow-adjustment-mode-schedule').click();
-    await adjustment
-      .getByTestId('public-flow-adjustment-row')
-      .first()
-      .getByTestId('public-flow-adjustment-date')
-      .fill('2030-08-01');
-    await adjustment.getByTestId('public-flow-adjustment-save').click();
+    await page.getByTestId('public-flow-save-primary-mobile').click();
 
     const receipt = page.getByTestId('public-flow-saved-receipt');
     await openSavedPublicFlow(page, receipt);
-    await expect(page).toHaveURL('/my?savedFlow=moving-d30-basic');
-    const postSaveView = page.getByTestId('my-flow-post-save-view-flow');
-    if (await postSaveView.isVisible().catch(() => false)) {
-      await postSaveView.click();
-    }
+    await expect(page).toHaveURL('/my?view=flows&flow=moving-d30-basic');
 
     let flow = await openMyFlowLibraryFlow(page, 'moving-d30-basic');
-    const expand = flow.getByRole('button', { name: '전체 펼치기' });
-    if (await expand.isVisible().catch(() => false)) await expand.click();
-    const firstRow = flow
-      .getByTestId('my-flow-whole-flow-outline')
-      .getByTestId('my-flow-execution-row-shell')
+    await expandMyFlowWholePlan(flow);
+    const firstRow = getMyFlowVisibleExecutionRows(flow)
       .filter({ hasText: '이사 방식 정하기' })
       .first();
-    await expect(firstRow).toContainText('8월 1일');
     await firstRow.getByRole('button', { name: /이사 방식 정하기 열기/ }).click();
 
     let detail = page.locator('[data-testid="my-flow-item-detail"]:visible').first();
+    await enterMyFlowDetailEditMode(detail);
+    await detail.getByTestId('my-flow-detail-date-input').fill('2030-08-01');
+    await detail.getByTestId('my-flow-detail-save-changes').click();
+
+    flow = await openMyFlowLibraryFlow(page, 'moving-d30-basic');
+    const firstOverrideRow = flow
+      .getByTestId('my-flow-execution-row-shell')
+      .filter({ hasText: '이사 방식 정하기' })
+      .first();
+    await expect(firstOverrideRow).toContainText('8월 1일');
+    await firstOverrideRow.getByRole('button', { name: /이사 방식 정하기 열기/ }).click();
+
+    detail = page.locator('[data-testid="my-flow-item-detail"]:visible').first();
     await enterMyFlowDetailEditMode(detail);
     await detail.getByTestId('my-flow-detail-date-input').fill('2030-08-03');
     await detail.getByTestId('my-flow-detail-save-changes').click();
@@ -195,30 +173,22 @@ test.describe('P31 mobile journey reconstruction', () => {
     await expect(page.locator('.fc-daygrid-day[data-date="2030-08-01"] .fc-event')).toHaveCount(0);
     await expect(page.locator('.fc-daygrid-day[data-date="2030-08-03"] .fc-event')).toHaveCount(1);
     await expect(page.locator('[data-p31-marker="P31-EFFECTIVE-DATE-PRECEDENCE"]')).toHaveCount(1);
-    await page
-      .locator('.fc-daygrid-day[data-date="2030-08-03"] .fc-daygrid-day-number')
-      .click();
-    const agendaOpen = page
-      .getByTestId('my-flow-calendar-selected-day')
-      .getByRole('button', { name: /이사 방식 정하기 열기/ });
+    const selectedDay = await openMyFlowCalendarSelectedDay(page, '2030-08-03');
+    const agendaOpen = selectedDay
+      .getByTestId('my-flow-execution-row-shell')
+      .filter({ hasText: '이사 방식 정하기' })
+      .first()
+      .getByRole('button', { name: /Flow에서 열기/ });
     await expect(agendaOpen).toBeVisible();
-    const selectedDateBeforeSheet = await page
-      .getByTestId('my-flow-selected-day-summary')
-      .innerText();
     await agendaOpen.click();
+    await expect(page).toHaveURL(/\/my\?view=flows&flow=moving-d30-basic&item=/);
     const calendarSheet = page.getByTestId('my-flow-item-detail-sheet');
     await expect(calendarSheet).toBeVisible();
-    await expect(calendarSheet).toHaveAttribute(
-      'data-p31-marker',
-      'P31-04-CALENDAR-ITEM-SHEET',
-    );
+    await expect(calendarSheet).toContainText('이사 방식 정하기');
     await captureEvidence(page, 'p31-calendar-item-sheet-390.png');
     await page.keyboard.press('Escape');
     await expect(calendarSheet).toHaveCount(0);
-    await expect(agendaOpen).toBeFocused();
-    await expect(page.getByTestId('my-flow-selected-day-summary')).toHaveText(
-      selectedDateBeforeSheet,
-    );
+    await expect(page.locator('main[data-p32-workspace-state="focused"]')).toBeVisible();
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth),
     ).toBeLessThanOrEqual(1);
@@ -232,38 +202,23 @@ test.describe('P31 mobile journey reconstruction', () => {
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
 
-    await page.getByTestId('public-flow-date-intent-undated').click();
     const receipt = await savePublicFlow(
       page,
       page.getByTestId('public-flow-save-primary-mobile'),
     );
     await openSavedPublicFlow(page, receipt);
-    const postSaveView = page.getByTestId('my-flow-post-save-view-flow');
-    await expect(postSaveView).toBeVisible();
-    await postSaveView.click();
 
     const libraryRow = page.locator(
       '[data-testid="my-flow-mobile-structure-row"][data-flow-slug="vehicle-inspection-prep"]',
     );
-    let workspace = page.locator(
-      '[data-testid="my-flow-mobile-workspace"][data-flow-slug="vehicle-inspection-prep"]',
-    );
-    if (!(await workspace.isVisible().catch(() => false))) {
-      await expect(libraryRow).toBeVisible();
-      await libraryRow.getByTestId('my-flow-mobile-structure-open').click();
-    }
-    await expect(workspace).toBeVisible();
+    let workspace = await openMyFlowLibraryFlow(page, 'vehicle-inspection-prep');
     await expect(workspace).toHaveAttribute(
       'data-p31-marker',
       'P31-03-DEDICATED-MOBILE-WORKSPACE',
     );
-    await expect(workspace).toHaveAttribute('data-workspace-section', 'execute');
-    await expect(workspace.getByTestId('my-flow-workspace-tab-execute')).toHaveAttribute(
-      'aria-pressed',
-      'true',
-    );
-    await expect(workspace.getByTestId('my-flow-workspace-tab-plan')).toBeVisible();
-    await expect(workspace.getByTestId('my-flow-workspace-tab-record')).toBeVisible();
+    await expect(workspace.locator('[data-testid^="my-flow-workspace-tab-"]')).toHaveCount(0);
+    await expect(workspace.getByTestId('my-flow-workspace-plan')).toBeVisible();
+    await expect(workspace.getByTestId('my-flow-workspace-commands')).toBeVisible();
     await captureEvidence(page, 'p31-my-flow-workspace-390.png');
 
     const management = workspace.getByTestId('my-flow-workspace-management-menu');
@@ -273,10 +228,7 @@ test.describe('P31 mobile journey reconstruction', () => {
     await page.getByTestId('my-flow-lifecycle-undo').click();
     await expect(libraryRow).toBeVisible();
 
-    await libraryRow.getByTestId('my-flow-mobile-structure-open').click();
-    workspace = page.locator(
-      '[data-testid="my-flow-mobile-workspace"][data-flow-slug="vehicle-inspection-prep"]',
-    );
+    workspace = await openMyFlowLibraryFlow(page, 'vehicle-inspection-prep');
     await workspace.getByTestId('my-flow-workspace-management-menu').locator('summary').click();
     await workspace
       .getByTestId('my-flow-workspace-management-menu')
@@ -300,12 +252,11 @@ test.describe('P31 mobile journey reconstruction', () => {
     );
     await captureEvidence(page, 'p31-archived-restore-390.png');
     await archivedRow.getByTestId('my-flow-archived-direct-restore').click();
-    await expect(libraryRow).toBeVisible();
-
-    await libraryRow.getByTestId('my-flow-mobile-structure-open').click();
     workspace = page.locator(
       '[data-testid="my-flow-mobile-workspace"][data-flow-slug="vehicle-inspection-prep"]',
     );
+    await expect(page.getByTestId('my-flow-lifecycle-snackbar')).toContainText('복구했습니다');
+    await expect(workspace).toBeVisible();
     await workspace.getByTestId('my-flow-workspace-management-menu').locator('summary').click();
     await workspace
       .getByTestId('my-flow-workspace-management-menu')

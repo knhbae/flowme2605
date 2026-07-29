@@ -1,0 +1,429 @@
+{
+  "url": "http://127.0.0.1:3104/my?view=flows",
+  "title": "My Flow",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "quality": {
+    "horizontalOverflow": 0,
+    "unnamedInteractiveCount": 0,
+    "brokenImageCount": 0
+  },
+  "headings": [
+    {
+      "level": 1,
+      "text": "이사 D-30 준비"
+    },
+    {
+      "level": 2,
+      "text": "이사 D-30 준비"
+    },
+    {
+      "level": 3,
+      "text": "전체 계획"
+    },
+    {
+      "level": 2,
+      "text": "우편물/카드/은행 주소 변경하기"
+    },
+    {
+      "level": 3,
+      "text": "할 일 수정"
+    }
+  ],
+  "actions": [
+    {
+      "tag": "a",
+      "name": "FLOW",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "summary",
+      "name": "보조 메뉴 열기 메뉴≡",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "a",
+      "name": "Flow 만들기내 콘텐츠를 실행형 Flow로 정리",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "저장한 Flow 목록으로 돌아가기 ‹",
+      "testId": "my-flow-mobile-library-back",
+      "disabled": false
+    },
+    {
+      "tag": "summary",
+      "name": "이사 D-30 준비 Flow 관리 Flow 관리",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "Flow 조정",
+      "testId": "my-flow-management-adjust",
+      "disabled": false
+    },
+    {
+      "tag": "a",
+      "name": "원문 보기",
+      "testId": "my-flow-management-source",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "보관보관함에서 복구하거나 영구 삭제할 수 있어요.",
+      "testId": "my-flow-archive-toggle",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "우편물/카드/은행 주소 변경하기 열기 · 이사 D-30 준비 · 8월 14일 우편물/카드/은행 주소 변경하기생활 이전 준비",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "input",
+      "name": "우편물/카드/은행 주소 변경하기 완료 체크 on",
+      "testId": "my-flow-task-complete-control",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "정기 배달 서비스 중지 요청하기 열기 · 이사 D-30 준비 · 8월 14일 정기 배달 서비스 중지 요청하기생활 이전 준비",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "input",
+      "name": "정기 배달 서비스 중지 요청하기 완료 체크 on",
+      "testId": "my-flow-task-complete-control",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "대형폐기물 배출 신고와 수거일 확인하기 열기 · 이사 D-30 준비 · 8월 14일 대형폐기물 배출 신고와 수거일 확인하기생활 이전 준비",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "input",
+      "name": "대형폐기물 배출 신고와 수거일 확인하기 완료 체크 on",
+      "testId": "my-flow-task-complete-control",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "엘리베이터 또는 사다리차 사용 예약하기 열기 · 이사 D-30 준비 · 8월 14일 엘리베이터 또는 사다리차 사용 예약하기생활 이전 준비",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "input",
+      "name": "엘리베이터 또는 사다리차 사용 예약하기 완료 체크 on",
+      "testId": "my-flow-task-complete-control",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "인터넷/정수기 이전 설치 예약하기 열기 · 이사 D-30 준비 · 8월 14일 인터넷/정수기 이전 설치 예약하기생활 이전 준비",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "input",
+      "name": "인터넷/정수기 이전 설치 예약하기 완료 체크 on",
+      "testId": "my-flow-task-complete-control",
+      "disabled": false
+    },
+    {
+      "tag": "summary",
+      "name": "저장된 지난 할 일 4개 보기",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "이사 방식 정하기 열기 · 이사 D-30 준비 · 7월 25일 이사 방식 정하기큰 준비",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "input",
+      "name": "이사 방식 정하기 완료 체크 on",
+      "testId": "my-flow-task-complete-control",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "이사할 집 하자 점검하기 열기 · 이사 D-30 준비 · 7월 25일 이사할 집 하자 점검하기큰 준비",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "input",
+      "name": "이사할 집 하자 점검하기 완료 체크 on",
+      "testId": "my-flow-task-complete-control",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "필요 없는 물건 정리하기 열기 · 이사 D-30 준비 · 7월 25일 필요 없는 물건 정리하기큰 준비",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "input",
+      "name": "필요 없는 물건 정리하기 완료 체크 on",
+      "testId": "my-flow-task-complete-control",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "이사/청소 업체 견적 받고 예약하기 열기 · 이사 D-30 준비 · 7월 25일 이사/청소 업체 견적 받고 예약하기큰 준비",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "input",
+      "name": "이사/청소 업체 견적 받고 예약하기 완료 체크 on",
+      "testId": "my-flow-task-complete-control",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "여러 할 일 조정",
+      "testId": "my-flow-batch-mode-toggle",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "전체 펼치기",
+      "testId": "my-flow-whole-flow-toggle-all-groups",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "큰 준비7월 25일 · 4개 · 0/4 완료⌃",
+      "testId": "my-flow-whole-flow-section-toggle",
+      "disabled": false
+    },
+    {
+      "tag": "input",
+      "name": "이사 방식 정하기 완료 체크 on",
+      "testId": "my-flow-task-complete-control",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "이사 방식 정하기 열기 · 이사 D-30 준비 · 7월 25일 이사 방식 정하기열기기준 D-30",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "input",
+      "name": "이사할 집 하자 점검하기 완료 체크 on",
+      "testId": "my-flow-task-complete-control",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "이사할 집 하자 점검하기 열기 · 이사 D-30 준비 · 7월 25일 이사할 집 하자 점검하기열기기준 D-30",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "input",
+      "name": "필요 없는 물건 정리하기 완료 체크 on",
+      "testId": "my-flow-task-complete-control",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "필요 없는 물건 정리하기 열기 · 이사 D-30 준비 · 7월 25일 필요 없는 물건 정리하기열기기준 D-30",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "input",
+      "name": "이사/청소 업체 견적 받고 예약하기 완료 체크 on",
+      "testId": "my-flow-task-complete-control",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "이사/청소 업체 견적 받고 예약하기 열기 · 이사 D-30 준비 · 7월 25일 이사/청소 업체 견적 받고 예약하기열기기준 D-30",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "생활 이전 준비8월 14일 · 5개 · 0/5 완료⌄",
+      "testId": "my-flow-whole-flow-section-toggle",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "필수 예약 확인8월 21일 · 4개 · 0/4 완료⌄",
+      "testId": "my-flow-whole-flow-section-toggle",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "최종 점검8월 23일 · 4개 · 0/4 완료⌄",
+      "testId": "my-flow-whole-flow-section-toggle",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "이사 당일8월 24일 · 5개 · 0/5 완료⌄",
+      "testId": "my-flow-whole-flow-section-toggle",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "행정 마무리8월 25일 · 2개 · 0/2 완료⌄",
+      "testId": "my-flow-whole-flow-section-toggle",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "이사 D-30 준비 이사일 바꾸기 이사일 바꾸기",
+      "testId": "my-flow-direct-anchor-settings-open",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "이사 D-30 준비 전체 24개 가져가기 전체 24개 가져가기",
+      "testId": "my-flow-export-entry",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "우편물/카드/은행 주소 변경하기 닫기",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "닫기",
+      "testId": "my-flow-item-detail-sheet-close",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "우편물/카드/은행 주소 변경하기 수정 취소 취소",
+      "testId": "my-flow-editor-cancel",
+      "disabled": false
+    },
+    {
+      "tag": "input",
+      "name": "제목 우편물/카드/은행 주소 변경하기",
+      "testId": "my-flow-detail-title-input",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "우편물/카드/은행 주소 변경하기 이 Flow에서 제외 이 Flow에서 제외",
+      "testId": "my-flow-remove-item",
+      "disabled": false
+    },
+    {
+      "tag": "input",
+      "name": "이 할 일 날짜 이 할 일 날짜 2026-08-14",
+      "testId": "my-flow-detail-date-input",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "세부 일정· 시간 · 장소 · 반복⌄",
+      "testId": "my-flow-editor-advanced-toggle",
+      "disabled": false
+    },
+    {
+      "tag": "textarea",
+      "name": "내 메모우편물/카드/은행 주소 변경하기 처리한 뒤 완료 체크합니다. 우편물/카드/은행 주소 변경하기 처리한 뒤 완료 체크합니다. 우편물/카드/은행 주소 변경하기 처리한 뒤 완료 체크합니다.",
+      "testId": "my-flow-detail-memo",
+      "disabled": false
+    },
+    {
+      "tag": "summary",
+      "name": "확인 항목 · 0개⌄",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "input",
+      "name": "우편물/카드/은행 주소 변경하기 확인 항목 추가 확인 항목 추가",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "추가",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "summary",
+      "name": "자료 · 0개⌄",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "input",
+      "name": "우편물/카드/은행 주소 변경하기 새 자료 이름 자료 이름",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "input",
+      "name": "우편물/카드/은행 주소 변경하기 새 자료 주소 주소",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "추가",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "변경 저장",
+      "testId": "my-flow-detail-save-changes",
+      "disabled": true
+    },
+    {
+      "tag": "a",
+      "name": "Flow 찾기",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "a",
+      "name": "캘린더",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "a",
+      "name": "내 Flow",
+      "testId": null,
+      "disabled": false
+    }
+  ],
+  "visibleText": "FLOW\n≡\n이사 D-30 준비\n‹\n이사 D-30 준비\n\n전체 0/24 완료\n\nFlow 관리\n\n다음 할 일\n\n5개 남음\n14\n(금)\n우편물/카드/은행 주소 변경하기\n생활 이전 준비\n정기 배달 서비스 중지 요청하기\n생활 이전 준비\n대형폐기물 배출 신고와 수거일 확인하기\n생활 이전 준비\n엘리베이터 또는 사다리차 사용 예약하기\n생활 이전 준비\n인터넷/정수기 이전 설치 예약하기\n생활 이전 준비\n저장된 지난 할 일 4개 보기\n전체 진행\n전체 0/24 완료\n전체 계획\n24개\n여러 할 일 조정\n6단계\n7월 25일 - 8월 25일\n0/24 완료\n전체 펼치기\n큰 준비\n7월 25일 · 4개 · 0/4 완료\n⌃\n7월 25일\n4개\n이사 방식 정하기\n열기\n기준 D-30\n이사할 집 하자 점검하기\n열기\n기준 D-30\n필요 없는 물건 정리하기\n열기\n기준 D-30\n이사/청소 업체 견적 받고 예약하기\n열기\n기준 D-30\n생활 이전 준비\n8월 14일 · 5개 · 0/5 완료\n⌄\n필수 예약 확인\n8월 21일 · 4개 · 0/4 완료\n⌄\n최종 점검\n8월 23일 · 4개 · 0/4 완료\n⌄\n이사 당일\n8월 24일 · 5개 · 0/5 완료\n⌄\n행정 마무리\n8월 25일 · 2개 · 0/2 완료\n⌄\n이사일 바꾸기\n전체 24개 가져가기\n\n이사 D-30 준비\n\n우편물/카드/은행 주소 변경하기\n닫기\n\n빠른 조정\n\n할 일 수정\n취소\n제목\n이 Flow에서 제외\n이 할 일 날짜\n세부 일정· 시간 · 장소 · 반복\n⌄\n내 메모\n확인 항목 · 0개\n⌄\n자료 · 0개\n⌄\n변경 저장\nFlow 찾기\n캘린더\n내 Flow",
+  "consoleAndPageErrors": [],
+  "label": "항목 제목·날짜·메모 편집",
+  "state": "my_flow_item_edit",
+  "route": "/my?view=flows",
+  "reviewQuestions": [
+    "현재 기능을 저장 전 contextual edit에 재사용할 수 있는가"
+  ]
+}

@@ -1,0 +1,3751 @@
+{
+  "schemaVersion": "flowme-literal-ics-first-run-v1",
+  "records": [
+    {
+      "schemaVersion": "flowme-literal-ics-graph-v1",
+      "architecture": "literal_ics_first",
+      "bundleId": "bundle-moving-d30",
+      "title": "이사 D-30 체크리스트",
+      "mapType": "ordered",
+      "sampleUserOverlay": {
+        "moveDate": "2026-09-01"
+      },
+      "attribution": {
+        "creatorId": "home-ajd",
+        "providerId": "brand-site",
+        "sourceOwnerId": "home-ajd",
+        "curatorId": null,
+        "trustAnchorRefs": [],
+        "decisionBand": "Go",
+        "creatorVerdict": "creator_flow_map_candidate",
+        "publicationApproval": "not_implied"
+      },
+      "calendar": {
+        "prodid": "-//FlowMe//Literal ICS First Lab v1//KO",
+        "version": "2.0",
+        "method": null,
+        "components": [
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-moving-d30-map@flowme.local",
+            "summary": "이사 D-30 체크리스트",
+            "xFlowmeKind": "MAP"
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-moving-d30-flow@flowme.local",
+            "summary": "이사 D-30 체크리스트",
+            "xFlowmeKind": "FLOW",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-moving-d30-map@flowme.local"
+            }
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-moving-d30-s1@flowme.local",
+            "summary": "D-30 · 큰 결정과 예약",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-moving-d30-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-moving-d30-s1-i1@flowme.local",
+            "summary": "이사 방식과 이사업체 정하기",
+            "description": "선택한 방식, 업체명, 견적 링크와 예약 내용을 같은 메모에 적는다.\n원문 D-30 행 · 포장이사·반포장이사·일반이사 중 방식 선택 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363\n원문 D-30 행 · 이사업체 견적 비교와 예약 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363\n원문 D-30 행 · 입주청소 업체 견적 비교와 예약 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "dtstart": "2026-08-02",
+            "status": null,
+            "url": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-moving-d30-s1@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-moving-d30-s1-i1-r1",
+              "bundle-moving-d30-s1-i1-r2",
+              "bundle-moving-d30-s1-i1-r3"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-moving-d30-s1-i2@flowme.local",
+            "summary": "새집 상태 확인하고 필요한 수리 잡기",
+            "description": "새집 현장 점검 · 도배·장판·수리 필요 항목 확인과 일정 잡기\n원문 D-30 행 · 새집 현장 점검 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363\n원문 D-30 행 · 도배·장판·수리 필요 항목 확인과 일정 잡기 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "dtstart": "2026-08-02",
+            "status": null,
+            "url": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-moving-d30-s1@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-moving-d30-s1-i2-r1",
+              "bundle-moving-d30-s1-i2-r2"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-moving-d30-s1-i3@flowme.local",
+            "summary": "가져가지 않을 물건 처분 시작하기",
+            "description": "대형폐기물·중고판매·기부 등 처분 대상 정리\n원문 D-30 행 · 대형폐기물·중고판매·기부 등 처분 대상 정리 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "dtstart": "2026-08-02",
+            "status": null,
+            "url": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-moving-d30-s1@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-moving-d30-s1-i3-r1"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-moving-d30-s1-i4@flowme.local",
+            "summary": "학교 전학과 돌봄 계획 세우기",
+            "description": "자녀 학교 전학 절차 확인 · 이사 당일 아이·어르신·반려동물 돌봄 계획\n원문 D-30 행 · 자녀 학교 전학 절차 확인 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363\n원문 D-30 행 · 이사 당일 아이·어르신·반려동물 돌봄 계획 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "dtstart": "2026-08-02",
+            "status": null,
+            "url": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-moving-d30-s1@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-moving-d30-s1-i4-r1",
+              "bundle-moving-d30-s1-i4-r2"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-moving-d30-s2@flowme.local",
+            "summary": "D-10 · 주소·서비스·짐 줄이기",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-moving-d30-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-moving-d30-s2-i1@flowme.local",
+            "summary": "우편·배송·전출 주소 변경하기",
+            "description": "우편물 주소 이전 신청 · 정기배송 주소 변경 또는 중지 · 관리사무소에 퇴거 일정 알리기\n원문 D-10 행 · 우편물 주소 이전 신청 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363\n원문 D-10 행 · 정기배송 주소 변경 또는 중지 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363\n원문 D-10 행 · 관리사무소에 퇴거 일정 알리기 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "dtstart": "2026-08-22",
+            "status": null,
+            "url": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-moving-d30-s2@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-moving-d30-s2-i1-r1",
+              "bundle-moving-d30-s2-i1-r2",
+              "bundle-moving-d30-s2-i1-r3"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-moving-d30-s2-i2@flowme.local",
+            "summary": "엘리베이터·사다리차·주차 예약하기",
+            "description": "출발지와 도착지 엘리베이터 예약 · 사다리차 사용 여부와 주차 공간 확인\n원문 D-10 행 · 출발지와 도착지 엘리베이터 예약 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363\n원문 D-10 행 · 사다리차 사용 여부와 주차 공간 확인 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "dtstart": "2026-08-22",
+            "status": null,
+            "url": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-moving-d30-s2@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-moving-d30-s2-i2-r1",
+              "bundle-moving-d30-s2-i2-r2"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-moving-d30-s2-i3@flowme.local",
+            "summary": "폐기물과 남은 짐 처리하기",
+            "description": "종량제 봉투와 폐기물 스티커 준비 · 대형폐기물 수거 신청 · 열쇠·리모컨·설명서 한곳에 모으기\n원문 D-10 행 · 종량제 봉투와 폐기물 스티커 준비 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363\n원문 D-10 행 · 대형폐기물 수거 신청 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363\n원문 D-10 행 · 열쇠·리모컨·설명서 한곳에 모으기 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "dtstart": "2026-08-22",
+            "status": null,
+            "url": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-moving-d30-s2@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-moving-d30-s2-i3-r1",
+              "bundle-moving-d30-s2-i3-r2",
+              "bundle-moving-d30-s2-i3-r3"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-moving-d30-s2-i4@flowme.local",
+            "summary": "냉장고 비우고 새집 물품 배치 정하기",
+            "description": "냉장고 식재료 소진 시작 · 새집에 필요한 물품 주문 · 가구·가전 배치도 정리\n원문 D-10 행 · 냉장고 식재료 소진 시작 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363\n원문 D-10 행 · 새집에 필요한 물품 주문 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363\n원문 D-10 행 · 가구·가전 배치도 정리 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "dtstart": "2026-08-22",
+            "status": null,
+            "url": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-moving-d30-s2@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-moving-d30-s2-i4-r1",
+              "bundle-moving-d30-s2-i4-r2",
+              "bundle-moving-d30-s2-i4-r3"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-moving-d30-s2-i5@flowme.local",
+            "summary": "인터넷·정수기 등 이전 신청하기",
+            "description": "인터넷·TV 이전 설치 신청 · 정수기 등 렌탈 기기 이전 신청\n원문 D-10 행 · 인터넷·TV 이전 설치 신청 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363\n원문 D-10 행 · 정수기 등 렌탈 기기 이전 신청 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "dtstart": "2026-08-22",
+            "status": null,
+            "url": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-moving-d30-s2@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-moving-d30-s2-i5-r1",
+              "bundle-moving-d30-s2-i5-r2"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-moving-d30-s3@flowme.local",
+            "summary": "D-3 · 해지와 당일 준비",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-moving-d30-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-moving-d30-s3-i1@flowme.local",
+            "summary": "도시가스 철거·설치 예약하기",
+            "description": "출발지 도시가스 철거 예약 · 도착지 도시가스 설치 예약\n원문 D-3 행 · 출발지 도시가스 철거 예약 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363\n원문 D-3 행 · 도착지 도시가스 설치 예약 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "dtstart": "2026-08-29",
+            "status": null,
+            "url": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-moving-d30-s3@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-moving-d30-s3-i1-r1",
+              "bundle-moving-d30-s3-i1-r2"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-moving-d30-s3-i2@flowme.local",
+            "summary": "기존 집 자동이체 해지하기",
+            "description": "전기·수도·가스·관리비 자동이체 해지 또는 변경\n원문 D-3 행 · 전기·수도·가스·관리비 자동이체 해지 또는 변경 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "dtstart": "2026-08-29",
+            "status": null,
+            "url": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-moving-d30-s3@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-moving-d30-s3-i2-r1"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-moving-d30-s3-i3@flowme.local",
+            "summary": "세탁기 배수하고 운반 상태 만들기",
+            "description": "세탁기 물 빼기와 운반 준비\n원문 D-3 행 · 세탁기 물 빼기와 운반 준비 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "dtstart": "2026-08-29",
+            "status": null,
+            "url": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-moving-d30-s3@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-moving-d30-s3-i3-r1"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-moving-d30-s3-i4@flowme.local",
+            "summary": "임대차 권리 서류 확인하기",
+            "description": "필요한 경우 임차권·보증금 관련 서류 확인\n원문 D-3 행 · 필요한 경우 임차권·보증금 관련 서류 확인 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "dtstart": "2026-08-29",
+            "status": null,
+            "url": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-moving-d30-s3@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-moving-d30-s3-i4-r1"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-moving-d30-s3-i5@flowme.local",
+            "summary": "당일 바로 쓸 짐을 따로 싸기",
+            "description": "신분증·충전기·세면도구·약·옷 등 당일 물품 분리\n원문 D-3 행 · 신분증·충전기·세면도구·약·옷 등 당일 물품 분리 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "dtstart": "2026-08-29",
+            "status": null,
+            "url": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-moving-d30-s3@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-moving-d30-s3-i5-r1"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-moving-d30-s4@flowme.local",
+            "summary": "D-1 · 돈·귀중품·인계 확인",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-moving-d30-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-moving-d30-s4-i1@flowme.local",
+            "summary": "당일 일정·송금 한도·잔금 확인하기",
+            "description": "이사업체와 최종 시간 확인 · 은행 이체 한도 확인 · 보증금·잔금 지급 계획 확인\n원문 D-1 행 · 이사업체와 최종 시간 확인 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363\n원문 D-1 행 · 은행 이체 한도 확인 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363\n원문 D-1 행 · 보증금·잔금 지급 계획 확인 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "dtstart": "2026-08-31",
+            "status": null,
+            "url": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-moving-d30-s4@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-moving-d30-s4-i1-r1",
+              "bundle-moving-d30-s4-i1-r2",
+              "bundle-moving-d30-s4-i1-r3"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-moving-d30-s4-i2@flowme.local",
+            "summary": "출발지·도착지 주차 다시 확인하기",
+            "description": "이삿짐 차량 주차 위치 최종 확인\n원문 D-1 행 · 이삿짐 차량 주차 위치 최종 확인 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "dtstart": "2026-08-31",
+            "status": null,
+            "url": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-moving-d30-s4@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-moving-d30-s4-i2-r1"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-moving-d30-s4-i3@flowme.local",
+            "summary": "귀중품과 중요서류 직접 보관하기",
+            "description": "현금·귀중품·중요서류 별도 보관\n원문 D-1 행 · 현금·귀중품·중요서류 별도 보관 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "dtstart": "2026-08-31",
+            "status": null,
+            "url": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-moving-d30-s4@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-moving-d30-s4-i3-r1"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-moving-d30-s4-i4@flowme.local",
+            "summary": "열쇠·리모컨·비밀번호 인계 준비하기",
+            "description": "출발지 열쇠·리모컨 모으기 · 도착지 공동현관·도어락 정보 확인\n원문 D-1 행 · 출발지 열쇠·리모컨 모으기 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363\n원문 D-1 행 · 도착지 공동현관·도어락 정보 확인 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "dtstart": "2026-08-31",
+            "status": null,
+            "url": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-moving-d30-s4@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-moving-d30-s4-i4-r1",
+              "bundle-moving-d30-s4-i4-r2"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-moving-d30-s4-i5@flowme.local",
+            "summary": "가전·가구 상태 사진 남기기",
+            "description": "운반 전 가전·가구 외관 사진 촬영 · 어항이 있으면 이동 준비\n원문 D-1 행 · 운반 전 가전·가구 외관 사진 촬영 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363\n원문 D-1 행 · 어항이 있으면 이동 준비 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "dtstart": "2026-08-31",
+            "status": null,
+            "url": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-moving-d30-s4@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-moving-d30-s4-i5-r1",
+              "bundle-moving-d30-s4-i5-r2"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-moving-d30-s5@flowme.local",
+            "summary": "이사 당일 · 출발지 마감",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-moving-d30-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-moving-d30-s5-i1@flowme.local",
+            "summary": "전기·수도·가스·관리비 정산하기",
+            "description": "출발지 전기·수도·가스 사용량 확인과 정산 · 관리비 정산\n원문 이사 당일 기존 집 행 · 출발지 전기·수도·가스 사용량 확인과 정산 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363\n원문 이사 당일 기존 집 행 · 관리비 정산 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "dtstart": "2026-09-01",
+            "status": null,
+            "url": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-moving-d30-s5@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-moving-d30-s5-i1-r1",
+              "bundle-moving-d30-s5-i1-r2"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-moving-d30-s5-i2@flowme.local",
+            "summary": "장기수선충당금 환급 확인하기",
+            "description": "세입자인 경우 장기수선충당금 반환 요청\n원문 이사 당일 기존 집 행 · 세입자인 경우 장기수선충당금 반환 요청 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "dtstart": "2026-09-01",
+            "status": null,
+            "url": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-moving-d30-s5@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-moving-d30-s5-i2-r1"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-moving-d30-s5-i3@flowme.local",
+            "summary": "남은 물건 확인하고 열쇠 반납하기",
+            "description": "방·수납장·계량기 주변 남은 물건 확인 · 집주인 또는 관리실에 열쇠 반납\n원문 이사 당일 기존 집 행 · 방·수납장·계량기 주변 남은 물건 확인 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363\n원문 이사 당일 기존 집 행 · 집주인 또는 관리실에 열쇠 반납 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "dtstart": "2026-09-01",
+            "status": null,
+            "url": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-moving-d30-s5@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-moving-d30-s5-i3-r1",
+              "bundle-moving-d30-s5-i3-r2"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-moving-d30-s6@flowme.local",
+            "summary": "이사 당일 · 도착지 시작",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-moving-d30-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-moving-d30-s6-i1@flowme.local",
+            "summary": "분실·파손 확인하고 이사업체 정산하기",
+            "description": "짐 분실·파손 여부 확인 · 이사업체 잔금 정산\n원문 이사 당일 새집 행 · 짐 분실·파손 여부 확인 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363\n원문 이사 당일 새집 행 · 이사업체 잔금 정산 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "dtstart": "2026-09-01",
+            "status": null,
+            "url": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-moving-d30-s6@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-moving-d30-s6-i1-r1",
+              "bundle-moving-d30-s6-i1-r2"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-moving-d30-s6-i2@flowme.local",
+            "summary": "인터넷·TV와 도어락 확인하기",
+            "description": "인터넷·TV 연결 확인 · 도어락 비밀번호 변경\n원문 이사 당일 새집 행 · 인터넷·TV 연결 확인 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363\n원문 이사 당일 새집 행 · 도어락 비밀번호 변경 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "dtstart": "2026-09-01",
+            "status": null,
+            "url": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-moving-d30-s6@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-moving-d30-s6-i2-r1",
+              "bundle-moving-d30-s6-i2-r2"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-moving-d30-s6-i3@flowme.local",
+            "summary": "잔금·관리비·열쇠 인수 마치기",
+            "description": "주택 잔금 또는 보증금 정산 · 관리비 확인 · 열쇠·리모컨 인수\n원문 이사 당일 새집 행 · 주택 잔금 또는 보증금 정산 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363\n원문 이사 당일 새집 행 · 관리비 확인 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363\n원문 이사 당일 새집 행 · 열쇠·리모컨 인수 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "dtstart": "2026-09-01",
+            "status": null,
+            "url": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-moving-d30-s6@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-moving-d30-s6-i3-r1",
+              "bundle-moving-d30-s6-i3-r2",
+              "bundle-moving-d30-s6-i3-r3"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-moving-d30-s6-i4@flowme.local",
+            "summary": "전기·수도 명의와 가스 개통하기",
+            "description": "전기·수도 명의 변경 · 도착지 도시가스 개통\n원문 이사 당일 새집 행 · 전기·수도 명의 변경 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363\n원문 이사 당일 새집 행 · 도착지 도시가스 개통 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "dtstart": "2026-09-01",
+            "status": null,
+            "url": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-moving-d30-s6@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-moving-d30-s6-i4-r1",
+              "bundle-moving-d30-s6-i4-r2"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-moving-d30-s6-i5@flowme.local",
+            "summary": "전입신고와 확정일자 처리하기",
+            "description": "전입신고 · 필요한 경우 확정일자 받기\n원문 이사 당일 새집 행 · 전입신고 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363\n원문 이사 당일 새집 행 · 필요한 경우 확정일자 받기 · https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "dtstart": "2026-09-01",
+            "status": null,
+            "url": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-moving-d30-s6@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-moving-d30-s6-i5-r1",
+              "bundle-moving-d30-s6-i5-r2"
+            ]
+          }
+        ]
+      },
+      "canonicalLimitations": [
+        "Hierarchy depends on VJOURNAL plus RELATED-TO client preservation.",
+        "Full SourceRow provenance depends on X-FLOWME-SOURCE-ROWS.",
+        "Scheduled VEVENT does not carry FlowMe manual completion semantics natively.",
+        "Rights, review, conditions, and typed Fields have no portable native representation."
+      ]
+    },
+    {
+      "schemaVersion": "flowme-literal-ics-graph-v1",
+      "architecture": "literal_ics_first",
+      "bundleId": "bundle-baby-food-174",
+      "title": "초기 이유식 D+174~209 식단",
+      "mapType": "ordered",
+      "sampleUserOverlay": {
+        "startDate": "2026-08-01",
+        "sourceDay": 174
+      },
+      "attribution": {
+        "creatorId": "family-babyfood016",
+        "providerId": "creator-blog",
+        "sourceOwnerId": "family-babyfood016",
+        "curatorId": null,
+        "trustAnchorRefs": [],
+        "decisionBand": "Go",
+        "creatorVerdict": "creator_flow_map_candidate",
+        "publicationApproval": "not_implied"
+      },
+      "calendar": {
+        "prodid": "-//FlowMe//Literal ICS First Lab v1//KO",
+        "version": "2.0",
+        "method": null,
+        "components": [
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-baby-food-174-map@flowme.local",
+            "summary": "초기 이유식 시작 식단",
+            "xFlowmeKind": "MAP"
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-baby-food-174-flow@flowme.local",
+            "summary": "D+174부터 36일 식단",
+            "xFlowmeKind": "FLOW",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-map@flowme.local"
+            }
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-baby-food-174-d174-176@flowme.local",
+            "summary": "D+174~176",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-baby-food-174-d174@flowme.local",
+            "summary": "D+174 식단 제공",
+            "description": "한 끼: 쌀미음 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.\n첨부 PDF D+174 행 · https://blog.naver.com/01695258757/222768860919",
+            "dtstart": "2026-08-01",
+            "status": null,
+            "url": "https://blog.naver.com/01695258757/222768860919",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-d174-176@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-baby-food-174-d174"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-baby-food-174-d175@flowme.local",
+            "summary": "D+175 식단 제공",
+            "description": "한 끼: 쌀미음 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.\n첨부 PDF D+175 행 · https://blog.naver.com/01695258757/222768860919",
+            "dtstart": "2026-08-02",
+            "status": null,
+            "url": "https://blog.naver.com/01695258757/222768860919",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-d174-176@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-baby-food-174-d175"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-baby-food-174-d176@flowme.local",
+            "summary": "D+176 식단 제공",
+            "description": "한 끼: 쌀미음 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.\n첨부 PDF D+176 행 · https://blog.naver.com/01695258757/222768860919",
+            "dtstart": "2026-08-03",
+            "status": null,
+            "url": "https://blog.naver.com/01695258757/222768860919",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-d174-176@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-baby-food-174-d176"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-baby-food-174-d177-179@flowme.local",
+            "summary": "D+177~179",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-baby-food-174-d177@flowme.local",
+            "summary": "D+177 식단 제공",
+            "description": "한 끼: 쌀·오트밀 미음 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.\n첨부 PDF D+177 행 · https://blog.naver.com/01695258757/222768860919",
+            "dtstart": "2026-08-04",
+            "status": null,
+            "url": "https://blog.naver.com/01695258757/222768860919",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-d177-179@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-baby-food-174-d177"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-baby-food-174-d178@flowme.local",
+            "summary": "D+178 식단 제공",
+            "description": "한 끼: 쌀·오트밀 미음 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.\n첨부 PDF D+178 행 · https://blog.naver.com/01695258757/222768860919",
+            "dtstart": "2026-08-05",
+            "status": null,
+            "url": "https://blog.naver.com/01695258757/222768860919",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-d177-179@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-baby-food-174-d178"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-baby-food-174-d179@flowme.local",
+            "summary": "D+179 식단 제공",
+            "description": "한 끼: 쌀·오트밀 미음 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.\n첨부 PDF D+179 행 · https://blog.naver.com/01695258757/222768860919",
+            "dtstart": "2026-08-06",
+            "status": null,
+            "url": "https://blog.naver.com/01695258757/222768860919",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-d177-179@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-baby-food-174-d179"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-baby-food-174-d180-182@flowme.local",
+            "summary": "D+180~182",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-baby-food-174-d180@flowme.local",
+            "summary": "D+180 식단 제공",
+            "description": "한 끼: 쌀·오트밀 미음 + 소고기 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.\n첨부 PDF D+180 행 · https://blog.naver.com/01695258757/222768860919",
+            "dtstart": "2026-08-07",
+            "status": null,
+            "url": "https://blog.naver.com/01695258757/222768860919",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-d180-182@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-baby-food-174-d180"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-baby-food-174-d181@flowme.local",
+            "summary": "D+181 식단 제공",
+            "description": "한 끼: 쌀·오트밀 미음 + 소고기 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.\n첨부 PDF D+181 행 · https://blog.naver.com/01695258757/222768860919",
+            "dtstart": "2026-08-08",
+            "status": null,
+            "url": "https://blog.naver.com/01695258757/222768860919",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-d180-182@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-baby-food-174-d181"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-baby-food-174-d182@flowme.local",
+            "summary": "D+182 식단 제공",
+            "description": "한 끼: 쌀·오트밀 미음 + 소고기 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.\n첨부 PDF D+182 행 · https://blog.naver.com/01695258757/222768860919",
+            "dtstart": "2026-08-09",
+            "status": null,
+            "url": "https://blog.naver.com/01695258757/222768860919",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-d180-182@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-baby-food-174-d182"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-baby-food-174-d183-185@flowme.local",
+            "summary": "D+183~185",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-baby-food-174-d183@flowme.local",
+            "summary": "D+183 식단 제공",
+            "description": "한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.\n첨부 PDF D+183 행 · https://blog.naver.com/01695258757/222768860919",
+            "dtstart": "2026-08-10",
+            "status": null,
+            "url": "https://blog.naver.com/01695258757/222768860919",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-d183-185@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-baby-food-174-d183"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-baby-food-174-d184@flowme.local",
+            "summary": "D+184 식단 제공",
+            "description": "한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.\n첨부 PDF D+184 행 · https://blog.naver.com/01695258757/222768860919",
+            "dtstart": "2026-08-11",
+            "status": null,
+            "url": "https://blog.naver.com/01695258757/222768860919",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-d183-185@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-baby-food-174-d184"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-baby-food-174-d185@flowme.local",
+            "summary": "D+185 식단 제공",
+            "description": "한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.\n첨부 PDF D+185 행 · https://blog.naver.com/01695258757/222768860919",
+            "dtstart": "2026-08-12",
+            "status": null,
+            "url": "https://blog.naver.com/01695258757/222768860919",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-d183-185@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-baby-food-174-d185"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-baby-food-174-d186-188@flowme.local",
+            "summary": "D+186~188",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-baby-food-174-d186@flowme.local",
+            "summary": "D+186 식단 제공",
+            "description": "한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 청경채 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.\n첨부 PDF D+186 행 · https://blog.naver.com/01695258757/222768860919",
+            "dtstart": "2026-08-13",
+            "status": null,
+            "url": "https://blog.naver.com/01695258757/222768860919",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-d186-188@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-baby-food-174-d186"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-baby-food-174-d187@flowme.local",
+            "summary": "D+187 식단 제공",
+            "description": "한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 청경채 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.\n첨부 PDF D+187 행 · https://blog.naver.com/01695258757/222768860919",
+            "dtstart": "2026-08-14",
+            "status": null,
+            "url": "https://blog.naver.com/01695258757/222768860919",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-d186-188@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-baby-food-174-d187"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-baby-food-174-d188@flowme.local",
+            "summary": "D+188 식단 제공",
+            "description": "한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 청경채 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.\n첨부 PDF D+188 행 · https://blog.naver.com/01695258757/222768860919",
+            "dtstart": "2026-08-15",
+            "status": null,
+            "url": "https://blog.naver.com/01695258757/222768860919",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-d186-188@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-baby-food-174-d188"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-baby-food-174-d189-191@flowme.local",
+            "summary": "D+189~191",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-baby-food-174-d189@flowme.local",
+            "summary": "D+189 식단 제공",
+            "description": "한 끼: 쌀·오트밀 미음 + 소고기 + 청경채 + 오이 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.\n첨부 PDF D+189 행 · https://blog.naver.com/01695258757/222768860919",
+            "dtstart": "2026-08-16",
+            "status": null,
+            "url": "https://blog.naver.com/01695258757/222768860919",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-d189-191@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-baby-food-174-d189"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-baby-food-174-d190@flowme.local",
+            "summary": "D+190 식단 제공",
+            "description": "한 끼: 쌀·오트밀 미음 + 소고기 + 청경채 + 오이 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.\n첨부 PDF D+190 행 · https://blog.naver.com/01695258757/222768860919",
+            "dtstart": "2026-08-17",
+            "status": null,
+            "url": "https://blog.naver.com/01695258757/222768860919",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-d189-191@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-baby-food-174-d190"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-baby-food-174-d191@flowme.local",
+            "summary": "D+191 식단 제공",
+            "description": "한 끼: 쌀·오트밀 미음 + 소고기 + 청경채 + 오이 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.\n첨부 PDF D+191 행 · https://blog.naver.com/01695258757/222768860919",
+            "dtstart": "2026-08-18",
+            "status": null,
+            "url": "https://blog.naver.com/01695258757/222768860919",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-d189-191@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-baby-food-174-d191"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-baby-food-174-d192-194@flowme.local",
+            "summary": "D+192~194",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-baby-food-174-d192@flowme.local",
+            "summary": "D+192 식단 제공",
+            "description": "한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 브로콜리 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.\n첨부 PDF D+192 행 · https://blog.naver.com/01695258757/222768860919",
+            "dtstart": "2026-08-19",
+            "status": null,
+            "url": "https://blog.naver.com/01695258757/222768860919",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-d192-194@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-baby-food-174-d192"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-baby-food-174-d193@flowme.local",
+            "summary": "D+193 식단 제공",
+            "description": "한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 브로콜리 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.\n첨부 PDF D+193 행 · https://blog.naver.com/01695258757/222768860919",
+            "dtstart": "2026-08-20",
+            "status": null,
+            "url": "https://blog.naver.com/01695258757/222768860919",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-d192-194@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-baby-food-174-d193"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-baby-food-174-d194@flowme.local",
+            "summary": "D+194 식단 제공",
+            "description": "한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 브로콜리 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.\n첨부 PDF D+194 행 · https://blog.naver.com/01695258757/222768860919",
+            "dtstart": "2026-08-21",
+            "status": null,
+            "url": "https://blog.naver.com/01695258757/222768860919",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-d192-194@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-baby-food-174-d194"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-baby-food-174-d195-197@flowme.local",
+            "summary": "D+195~197",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-baby-food-174-d195@flowme.local",
+            "summary": "D+195 식단 제공",
+            "description": "한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 양배추 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.\n첨부 PDF D+195 행 · https://blog.naver.com/01695258757/222768860919",
+            "dtstart": "2026-08-22",
+            "status": null,
+            "url": "https://blog.naver.com/01695258757/222768860919",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-d195-197@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-baby-food-174-d195"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-baby-food-174-d196@flowme.local",
+            "summary": "D+196 식단 제공",
+            "description": "한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 양배추 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.\n첨부 PDF D+196 행 · https://blog.naver.com/01695258757/222768860919",
+            "dtstart": "2026-08-23",
+            "status": null,
+            "url": "https://blog.naver.com/01695258757/222768860919",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-d195-197@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-baby-food-174-d196"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-baby-food-174-d197@flowme.local",
+            "summary": "D+197 식단 제공",
+            "description": "한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 양배추 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.\n첨부 PDF D+197 행 · https://blog.naver.com/01695258757/222768860919",
+            "dtstart": "2026-08-24",
+            "status": null,
+            "url": "https://blog.naver.com/01695258757/222768860919",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-d195-197@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-baby-food-174-d197"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-baby-food-174-d198-200@flowme.local",
+            "summary": "D+198~200",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-baby-food-174-d198@flowme.local",
+            "summary": "D+198 식단 제공",
+            "description": "한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 청경채 + 당근 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.\n첨부 PDF D+198 행 · https://blog.naver.com/01695258757/222768860919",
+            "dtstart": "2026-08-25",
+            "status": null,
+            "url": "https://blog.naver.com/01695258757/222768860919",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-d198-200@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-baby-food-174-d198"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-baby-food-174-d199@flowme.local",
+            "summary": "D+199 식단 제공",
+            "description": "한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 청경채 + 당근 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.\n첨부 PDF D+199 행 · https://blog.naver.com/01695258757/222768860919",
+            "dtstart": "2026-08-26",
+            "status": null,
+            "url": "https://blog.naver.com/01695258757/222768860919",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-d198-200@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-baby-food-174-d199"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-baby-food-174-d200@flowme.local",
+            "summary": "D+200 식단 제공",
+            "description": "한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 청경채 + 당근 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.\n첨부 PDF D+200 행 · https://blog.naver.com/01695258757/222768860919",
+            "dtstart": "2026-08-27",
+            "status": null,
+            "url": "https://blog.naver.com/01695258757/222768860919",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-d198-200@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-baby-food-174-d200"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-baby-food-174-d201-203@flowme.local",
+            "summary": "D+201~203",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-baby-food-174-d201@flowme.local",
+            "summary": "D+201 식단 제공",
+            "description": "한 끼: 쌀·오트밀 미음 + 소고기 + 양배추 + 브로콜리 + 단호박 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.\n첨부 PDF D+201 행 · https://blog.naver.com/01695258757/222768860919",
+            "dtstart": "2026-08-28",
+            "status": null,
+            "url": "https://blog.naver.com/01695258757/222768860919",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-d201-203@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-baby-food-174-d201"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-baby-food-174-d202@flowme.local",
+            "summary": "D+202 식단 제공",
+            "description": "한 끼: 쌀·오트밀 미음 + 소고기 + 양배추 + 브로콜리 + 단호박 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.\n첨부 PDF D+202 행 · https://blog.naver.com/01695258757/222768860919",
+            "dtstart": "2026-08-29",
+            "status": null,
+            "url": "https://blog.naver.com/01695258757/222768860919",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-d201-203@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-baby-food-174-d202"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-baby-food-174-d203@flowme.local",
+            "summary": "D+203 식단 제공",
+            "description": "한 끼: 쌀·오트밀 미음 + 소고기 + 양배추 + 브로콜리 + 단호박 · 간식: 사과 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.\n첨부 PDF D+203 행 · https://blog.naver.com/01695258757/222768860919",
+            "dtstart": "2026-08-30",
+            "status": null,
+            "url": "https://blog.naver.com/01695258757/222768860919",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-d201-203@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-baby-food-174-d203"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-baby-food-174-d204-206@flowme.local",
+            "summary": "D+204~206",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-baby-food-174-d204@flowme.local",
+            "summary": "D+204 식단 제공",
+            "description": "아침: 쌀·오트밀 + 소고기 + 양배추 + 단호박 + 완두콩 · 점심: 쌀·오트밀 + 당근 + 사과 + 브로콜리 + 청경채 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.\n첨부 PDF D+204 행 · https://blog.naver.com/01695258757/222768860919",
+            "dtstart": "2026-08-31",
+            "status": null,
+            "url": "https://blog.naver.com/01695258757/222768860919",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-d204-206@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-baby-food-174-d204"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-baby-food-174-d205@flowme.local",
+            "summary": "D+205 식단 제공",
+            "description": "아침: 쌀·오트밀 + 소고기 + 양배추 + 단호박 + 완두콩 · 점심: 쌀·오트밀 + 당근 + 사과 + 브로콜리 + 청경채 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.\n첨부 PDF D+205 행 · https://blog.naver.com/01695258757/222768860919",
+            "dtstart": "2026-09-01",
+            "status": null,
+            "url": "https://blog.naver.com/01695258757/222768860919",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-d204-206@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-baby-food-174-d205"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-baby-food-174-d206@flowme.local",
+            "summary": "D+206 식단 제공",
+            "description": "아침: 쌀·오트밀 + 소고기 + 양배추 + 단호박 + 완두콩 · 점심: 쌀·오트밀 + 당근 + 사과 + 브로콜리 + 청경채 · 간식: 바나나 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.\n첨부 PDF D+206 행 · https://blog.naver.com/01695258757/222768860919",
+            "dtstart": "2026-09-02",
+            "status": null,
+            "url": "https://blog.naver.com/01695258757/222768860919",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-d204-206@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-baby-food-174-d206"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-baby-food-174-d207-209@flowme.local",
+            "summary": "D+207~209",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-baby-food-174-d207@flowme.local",
+            "summary": "D+207 식단 제공",
+            "description": "아침: 쌀·오트밀 + 달걀 + 당근 + 완두콩 + 브로콜리 · 점심: 쌀·오트밀 + 소고기 + 단호박 + 양배추 + 청경채 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.\n첨부 PDF D+207 행 · https://blog.naver.com/01695258757/222768860919",
+            "dtstart": "2026-09-03",
+            "status": null,
+            "url": "https://blog.naver.com/01695258757/222768860919",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-d207-209@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-baby-food-174-d207"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-baby-food-174-d208@flowme.local",
+            "summary": "D+208 식단 제공",
+            "description": "아침: 쌀·오트밀 + 달걀 + 당근 + 완두콩 + 브로콜리 · 점심: 쌀·오트밀 + 소고기 + 단호박 + 양배추 + 청경채 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.\n첨부 PDF D+208 행 · https://blog.naver.com/01695258757/222768860919",
+            "dtstart": "2026-09-04",
+            "status": null,
+            "url": "https://blog.naver.com/01695258757/222768860919",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-d207-209@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-baby-food-174-d208"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-baby-food-174-d209@flowme.local",
+            "summary": "D+209 식단 제공",
+            "description": "아침: 쌀·오트밀 + 달걀 + 당근 + 완두콩 + 브로콜리 · 점심: 쌀·오트밀 + 소고기 + 단호박 + 양배추 + 청경채 · 간식: 바나나 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.\n첨부 PDF D+209 행 · https://blog.naver.com/01695258757/222768860919",
+            "dtstart": "2026-09-05",
+            "status": null,
+            "url": "https://blog.naver.com/01695258757/222768860919",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-baby-food-174-d207-209@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-baby-food-174-d209"
+            ]
+          }
+        ]
+      },
+      "canonicalLimitations": [
+        "Hierarchy depends on VJOURNAL plus RELATED-TO client preservation.",
+        "Full SourceRow provenance depends on X-FLOWME-SOURCE-ROWS.",
+        "Scheduled VEVENT does not carry FlowMe manual completion semantics natively.",
+        "Rights, review, conditions, and typed Fields have no portable native representation."
+      ]
+    },
+    {
+      "schemaVersion": "flowme-literal-ics-graph-v1",
+      "architecture": "literal_ics_first",
+      "bundleId": "bundle-opic-plan",
+      "title": "오픽 모의고사 계획표",
+      "mapType": "ordered",
+      "sampleUserOverlay": {
+        "planVariant": "2주",
+        "startDate": "2026-08-03"
+      },
+      "attribution": {
+        "creatorId": "study-mansour",
+        "providerId": "creator-business",
+        "sourceOwnerId": "study-mansour",
+        "curatorId": null,
+        "trustAnchorRefs": [],
+        "decisionBand": "Go",
+        "creatorVerdict": "creator_flow_map_candidate",
+        "publicationApproval": "not_implied"
+      },
+      "calendar": {
+        "prodid": "-//FlowMe//Literal ICS First Lab v1//KO",
+        "version": "2.0",
+        "method": null,
+        "components": [
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-opic-plan-map@flowme.local",
+            "summary": "오픽 모의고사 학습 플랜",
+            "xFlowmeKind": "MAP"
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-opic-plan-2week@flowme.local",
+            "summary": "오픽 모의고사 2주 플랜",
+            "xFlowmeKind": "FLOW",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-map@flowme.local"
+            }
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-opic-plan-2w-week-1@flowme.local",
+            "summary": "1주차 · 1~5회",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-2week@flowme.local"
+            }
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-2w-w1-월@flowme.local",
+            "summary": "1회 모의고사 실전처럼 풀기",
+            "description": "영상: https://www.youtube.com/watch?v=MZmrXlAc6k4 · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.\n2주 계획표 1주차 월요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 1회 영상 · https://www.youtube.com/watch?v=MZmrXlAc6k4",
+            "dtstart": "2026-08-03",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-2w-week-1@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-2w-w1-월",
+              "bundle-opic-plan-video-1"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-2w-w1-화@flowme.local",
+            "summary": "2회 모의고사 실전처럼 풀기",
+            "description": "영상: https://www.youtube.com/watch?v=YOZADzoC22s · 범위: 은행·바·카페·MP3·걷기 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.\n2주 계획표 1주차 화요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 2회 영상 · https://www.youtube.com/watch?v=YOZADzoC22s",
+            "dtstart": "2026-08-04",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-2w-week-1@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-2w-w1-화",
+              "bundle-opic-plan-video-2"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-2w-w1-수@flowme.local",
+            "summary": "3회 모의고사 실전처럼 풀기",
+            "description": "영상: https://www.youtube.com/watch?v=bRjvaQ380MU · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.\n2주 계획표 1주차 수요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 3회 영상 · https://www.youtube.com/watch?v=bRjvaQ380MU",
+            "dtstart": "2026-08-05",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-2w-week-1@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-2w-w1-수",
+              "bundle-opic-plan-video-3"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-2w-w1-목@flowme.local",
+            "summary": "4회 모의고사 실전처럼 풀기",
+            "description": "영상: https://www.youtube.com/watch?v=N2s5golewUI · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.\n2주 계획표 1주차 목요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 4회 영상 · https://www.youtube.com/watch?v=N2s5golewUI",
+            "dtstart": "2026-08-06",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-2w-week-1@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-2w-w1-목",
+              "bundle-opic-plan-video-4"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-2w-w1-금@flowme.local",
+            "summary": "5회 모의고사 실전처럼 풀기",
+            "description": "영상: https://www.youtube.com/watch?v=uCUiUlggGlE · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.\n2주 계획표 1주차 금요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 5회 영상 · https://www.youtube.com/watch?v=uCUiUlggGlE",
+            "dtstart": "2026-08-07",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-2w-week-1@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-2w-w1-금",
+              "bundle-opic-plan-video-5"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-2w-w1-토@flowme.local",
+            "summary": "1~5회 답변 총복습",
+            "description": "이번 주 녹음을 다시 듣고 반복해서 막힌 질문과 다음 주에 쓸 핵심 표현을 한 메모로 정리한다.\n2주 계획표 1주차 토요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 1회 영상 · https://www.youtube.com/watch?v=MZmrXlAc6k4\n오픽 모의고사 2회 영상 · https://www.youtube.com/watch?v=YOZADzoC22s\n오픽 모의고사 3회 영상 · https://www.youtube.com/watch?v=bRjvaQ380MU\n오픽 모의고사 4회 영상 · https://www.youtube.com/watch?v=N2s5golewUI\n오픽 모의고사 5회 영상 · https://www.youtube.com/watch?v=uCUiUlggGlE",
+            "dtstart": "2026-08-08",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-2w-week-1@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-2w-w1-토",
+              "bundle-opic-plan-video-1",
+              "bundle-opic-plan-video-2",
+              "bundle-opic-plan-video-3",
+              "bundle-opic-plan-video-4",
+              "bundle-opic-plan-video-5"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-opic-plan-2w-week-2@flowme.local",
+            "summary": "2주차 · 6~10회",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-2week@flowme.local"
+            }
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-2w-w2-월@flowme.local",
+            "summary": "6회 모의고사 실전처럼 풀기",
+            "description": "영상: https://www.youtube.com/watch?v=KddRF_nM9uI · 범위: 동네·건강·국내여행·은행·가족 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.\n2주 계획표 2주차 월요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 6회 영상 · https://www.youtube.com/watch?v=KddRF_nM9uI",
+            "dtstart": "2026-08-10",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-2w-week-2@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-2w-w2-월",
+              "bundle-opic-plan-video-6"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-2w-w2-화@flowme.local",
+            "summary": "7회 모의고사 실전처럼 풀기",
+            "description": "영상: https://www.youtube.com/watch?v=cAOaiJsT7ac · 범위: 집에서 보내는 휴가·지리·공휴일·집·음악 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.\n2주 계획표 2주차 화요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 7회 영상 · https://www.youtube.com/watch?v=cAOaiJsT7ac",
+            "dtstart": "2026-08-11",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-2w-week-2@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-2w-w2-화",
+              "bundle-opic-plan-video-7"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-2w-w2-수@flowme.local",
+            "summary": "8회 모의고사 실전처럼 풀기",
+            "description": "영상: https://www.youtube.com/watch?v=VFWF-HUYggI · 범위: 기술·캠핑·패션·쇼핑·건강 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.\n2주 계획표 2주차 수요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 8회 영상 · https://www.youtube.com/watch?v=VFWF-HUYggI",
+            "dtstart": "2026-08-12",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-2w-week-2@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-2w-w2-수",
+              "bundle-opic-plan-video-8"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-2w-w2-목@flowme.local",
+            "summary": "9회 모의고사 실전처럼 풀기",
+            "description": "영상: https://www.youtube.com/watch?v=y0Y1j7fEZj4 · 범위: 외식·영화·날씨·계절·콘서트·바 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.\n2주 계획표 2주차 목요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 9회 영상 · https://www.youtube.com/watch?v=y0Y1j7fEZj4",
+            "dtstart": "2026-08-13",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-2w-week-2@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-2w-w2-목",
+              "bundle-opic-plan-video-9"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-2w-w2-금@flowme.local",
+            "summary": "10회 모의고사 실전처럼 풀기",
+            "description": "영상: https://www.youtube.com/watch?v=xh_zHNfAgQo · 범위: 해외여행·모임·공연·가족·친구·산업 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.\n2주 계획표 2주차 금요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 10회 영상 · https://www.youtube.com/watch?v=xh_zHNfAgQo",
+            "dtstart": "2026-08-14",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-2w-week-2@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-2w-w2-금",
+              "bundle-opic-plan-video-10"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-2w-w2-토@flowme.local",
+            "summary": "6~10회 답변 총복습",
+            "description": "이번 주 녹음을 다시 듣고 반복해서 막힌 질문과 다음 주에 쓸 핵심 표현을 한 메모로 정리한다.\n2주 계획표 2주차 토요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 6회 영상 · https://www.youtube.com/watch?v=KddRF_nM9uI\n오픽 모의고사 7회 영상 · https://www.youtube.com/watch?v=cAOaiJsT7ac\n오픽 모의고사 8회 영상 · https://www.youtube.com/watch?v=VFWF-HUYggI\n오픽 모의고사 9회 영상 · https://www.youtube.com/watch?v=y0Y1j7fEZj4\n오픽 모의고사 10회 영상 · https://www.youtube.com/watch?v=xh_zHNfAgQo",
+            "dtstart": "2026-08-15",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-2w-week-2@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-2w-w2-토",
+              "bundle-opic-plan-video-6",
+              "bundle-opic-plan-video-7",
+              "bundle-opic-plan-video-8",
+              "bundle-opic-plan-video-9",
+              "bundle-opic-plan-video-10"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-opic-plan-1month@flowme.local",
+            "summary": "오픽 모의고사 1달 플랜",
+            "xFlowmeKind": "FLOW",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-map@flowme.local"
+            }
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-opic-plan-1m-week-1@flowme.local",
+            "summary": "1주차 · 1~2회",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-1month@flowme.local"
+            }
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-1m-w1-월@flowme.local",
+            "summary": "1회 실전처럼 풀기",
+            "description": "영상: https://www.youtube.com/watch?v=MZmrXlAc6k4 · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.\n1달 계획표 1주차 월요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 1회 영상 · https://www.youtube.com/watch?v=MZmrXlAc6k4",
+            "dtstart": "2026-08-03",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-1m-week-1@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-1m-w1-월",
+              "bundle-opic-plan-video-1"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-1m-w1-화@flowme.local",
+            "summary": "1회 녹음 듣고 보완하기",
+            "description": "영상: https://www.youtube.com/watch?v=MZmrXlAc6k4 · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.\n1달 계획표 1주차 화요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 1회 영상 · https://www.youtube.com/watch?v=MZmrXlAc6k4",
+            "dtstart": "2026-08-04",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-1m-week-1@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-1m-w1-화",
+              "bundle-opic-plan-video-1"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-1m-w1-수@flowme.local",
+            "summary": "1회 녹음 듣고 보완하기",
+            "description": "영상: https://www.youtube.com/watch?v=MZmrXlAc6k4 · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.\n1달 계획표 1주차 수요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 1회 영상 · https://www.youtube.com/watch?v=MZmrXlAc6k4",
+            "dtstart": "2026-08-05",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-1m-week-1@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-1m-w1-수",
+              "bundle-opic-plan-video-1"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-1m-w1-목@flowme.local",
+            "summary": "2회 실전처럼 풀기",
+            "description": "영상: https://www.youtube.com/watch?v=YOZADzoC22s · 범위: 은행·바·카페·MP3·걷기 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.\n1달 계획표 1주차 목요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 2회 영상 · https://www.youtube.com/watch?v=YOZADzoC22s",
+            "dtstart": "2026-08-06",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-1m-week-1@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-1m-w1-목",
+              "bundle-opic-plan-video-2"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-1m-w1-금@flowme.local",
+            "summary": "2회 녹음 듣고 보완하기",
+            "description": "영상: https://www.youtube.com/watch?v=YOZADzoC22s · 범위: 은행·바·카페·MP3·걷기 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.\n1달 계획표 1주차 금요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 2회 영상 · https://www.youtube.com/watch?v=YOZADzoC22s",
+            "dtstart": "2026-08-07",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-1m-week-1@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-1m-w1-금",
+              "bundle-opic-plan-video-2"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-1m-w1-토@flowme.local",
+            "summary": "2회 녹음 듣고 보완하기",
+            "description": "영상: https://www.youtube.com/watch?v=YOZADzoC22s · 범위: 은행·바·카페·MP3·걷기 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.\n1달 계획표 1주차 토요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 2회 영상 · https://www.youtube.com/watch?v=YOZADzoC22s",
+            "dtstart": "2026-08-08",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-1m-week-1@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-1m-w1-토",
+              "bundle-opic-plan-video-2"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-opic-plan-1m-week-2@flowme.local",
+            "summary": "2주차 · 3~4회",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-1month@flowme.local"
+            }
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-1m-w2-월@flowme.local",
+            "summary": "3회 실전처럼 풀기",
+            "description": "영상: https://www.youtube.com/watch?v=bRjvaQ380MU · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.\n1달 계획표 2주차 월요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 3회 영상 · https://www.youtube.com/watch?v=bRjvaQ380MU",
+            "dtstart": "2026-08-10",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-1m-week-2@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-1m-w2-월",
+              "bundle-opic-plan-video-3"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-1m-w2-화@flowme.local",
+            "summary": "3회 녹음 듣고 보완하기",
+            "description": "영상: https://www.youtube.com/watch?v=bRjvaQ380MU · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.\n1달 계획표 2주차 화요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 3회 영상 · https://www.youtube.com/watch?v=bRjvaQ380MU",
+            "dtstart": "2026-08-11",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-1m-week-2@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-1m-w2-화",
+              "bundle-opic-plan-video-3"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-1m-w2-수@flowme.local",
+            "summary": "3회 녹음 듣고 보완하기",
+            "description": "영상: https://www.youtube.com/watch?v=bRjvaQ380MU · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.\n1달 계획표 2주차 수요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 3회 영상 · https://www.youtube.com/watch?v=bRjvaQ380MU",
+            "dtstart": "2026-08-12",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-1m-week-2@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-1m-w2-수",
+              "bundle-opic-plan-video-3"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-1m-w2-목@flowme.local",
+            "summary": "4회 실전처럼 풀기",
+            "description": "영상: https://www.youtube.com/watch?v=N2s5golewUI · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.\n1달 계획표 2주차 목요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 4회 영상 · https://www.youtube.com/watch?v=N2s5golewUI",
+            "dtstart": "2026-08-13",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-1m-week-2@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-1m-w2-목",
+              "bundle-opic-plan-video-4"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-1m-w2-금@flowme.local",
+            "summary": "4회 녹음 듣고 보완하기",
+            "description": "영상: https://www.youtube.com/watch?v=N2s5golewUI · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.\n1달 계획표 2주차 금요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 4회 영상 · https://www.youtube.com/watch?v=N2s5golewUI",
+            "dtstart": "2026-08-14",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-1m-week-2@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-1m-w2-금",
+              "bundle-opic-plan-video-4"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-1m-w2-토@flowme.local",
+            "summary": "4회 녹음 듣고 보완하기",
+            "description": "영상: https://www.youtube.com/watch?v=N2s5golewUI · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.\n1달 계획표 2주차 토요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 4회 영상 · https://www.youtube.com/watch?v=N2s5golewUI",
+            "dtstart": "2026-08-15",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-1m-week-2@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-1m-w2-토",
+              "bundle-opic-plan-video-4"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-opic-plan-1m-week-3@flowme.local",
+            "summary": "3주차 · 5~6회",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-1month@flowme.local"
+            }
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-1m-w3-월@flowme.local",
+            "summary": "5회 실전처럼 풀기",
+            "description": "영상: https://www.youtube.com/watch?v=uCUiUlggGlE · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.\n1달 계획표 3주차 월요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 5회 영상 · https://www.youtube.com/watch?v=uCUiUlggGlE",
+            "dtstart": "2026-08-17",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-1m-week-3@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-1m-w3-월",
+              "bundle-opic-plan-video-5"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-1m-w3-화@flowme.local",
+            "summary": "5회 녹음 듣고 보완하기",
+            "description": "영상: https://www.youtube.com/watch?v=uCUiUlggGlE · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.\n1달 계획표 3주차 화요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 5회 영상 · https://www.youtube.com/watch?v=uCUiUlggGlE",
+            "dtstart": "2026-08-18",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-1m-week-3@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-1m-w3-화",
+              "bundle-opic-plan-video-5"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-1m-w3-수@flowme.local",
+            "summary": "5회 녹음 듣고 보완하기",
+            "description": "영상: https://www.youtube.com/watch?v=uCUiUlggGlE · 범위: 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.\n1달 계획표 3주차 수요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 5회 영상 · https://www.youtube.com/watch?v=uCUiUlggGlE",
+            "dtstart": "2026-08-19",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-1m-week-3@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-1m-w3-수",
+              "bundle-opic-plan-video-5"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-1m-w3-목@flowme.local",
+            "summary": "6회 실전처럼 풀기",
+            "description": "영상: https://www.youtube.com/watch?v=KddRF_nM9uI · 범위: 동네·건강·국내여행·은행·가족 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.\n1달 계획표 3주차 목요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 6회 영상 · https://www.youtube.com/watch?v=KddRF_nM9uI",
+            "dtstart": "2026-08-20",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-1m-week-3@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-1m-w3-목",
+              "bundle-opic-plan-video-6"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-1m-w3-금@flowme.local",
+            "summary": "6회 녹음 듣고 보완하기",
+            "description": "영상: https://www.youtube.com/watch?v=KddRF_nM9uI · 범위: 동네·건강·국내여행·은행·가족 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.\n1달 계획표 3주차 금요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 6회 영상 · https://www.youtube.com/watch?v=KddRF_nM9uI",
+            "dtstart": "2026-08-21",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-1m-week-3@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-1m-w3-금",
+              "bundle-opic-plan-video-6"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-1m-w3-토@flowme.local",
+            "summary": "6회 녹음 듣고 보완하기",
+            "description": "영상: https://www.youtube.com/watch?v=KddRF_nM9uI · 범위: 동네·건강·국내여행·은행·가족 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.\n1달 계획표 3주차 토요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 6회 영상 · https://www.youtube.com/watch?v=KddRF_nM9uI",
+            "dtstart": "2026-08-22",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-1m-week-3@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-1m-w3-토",
+              "bundle-opic-plan-video-6"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-opic-plan-1m-week-4@flowme.local",
+            "summary": "4주차 · 7~8회",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-1month@flowme.local"
+            }
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-1m-w4-월@flowme.local",
+            "summary": "7회 실전처럼 풀기",
+            "description": "영상: https://www.youtube.com/watch?v=cAOaiJsT7ac · 범위: 집에서 보내는 휴가·지리·공휴일·집·음악 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.\n1달 계획표 4주차 월요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 7회 영상 · https://www.youtube.com/watch?v=cAOaiJsT7ac",
+            "dtstart": "2026-08-24",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-1m-week-4@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-1m-w4-월",
+              "bundle-opic-plan-video-7"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-1m-w4-화@flowme.local",
+            "summary": "7회 녹음 듣고 보완하기",
+            "description": "영상: https://www.youtube.com/watch?v=cAOaiJsT7ac · 범위: 집에서 보내는 휴가·지리·공휴일·집·음악 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.\n1달 계획표 4주차 화요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 7회 영상 · https://www.youtube.com/watch?v=cAOaiJsT7ac",
+            "dtstart": "2026-08-25",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-1m-week-4@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-1m-w4-화",
+              "bundle-opic-plan-video-7"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-1m-w4-수@flowme.local",
+            "summary": "7회 녹음 듣고 보완하기",
+            "description": "영상: https://www.youtube.com/watch?v=cAOaiJsT7ac · 범위: 집에서 보내는 휴가·지리·공휴일·집·음악 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.\n1달 계획표 4주차 수요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 7회 영상 · https://www.youtube.com/watch?v=cAOaiJsT7ac",
+            "dtstart": "2026-08-26",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-1m-week-4@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-1m-w4-수",
+              "bundle-opic-plan-video-7"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-1m-w4-목@flowme.local",
+            "summary": "8회 실전처럼 풀기",
+            "description": "영상: https://www.youtube.com/watch?v=VFWF-HUYggI · 범위: 기술·캠핑·패션·쇼핑·건강 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.\n1달 계획표 4주차 목요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 8회 영상 · https://www.youtube.com/watch?v=VFWF-HUYggI",
+            "dtstart": "2026-08-27",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-1m-week-4@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-1m-w4-목",
+              "bundle-opic-plan-video-8"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-1m-w4-금@flowme.local",
+            "summary": "8회 녹음 듣고 보완하기",
+            "description": "영상: https://www.youtube.com/watch?v=VFWF-HUYggI · 범위: 기술·캠핑·패션·쇼핑·건강 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.\n1달 계획표 4주차 금요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 8회 영상 · https://www.youtube.com/watch?v=VFWF-HUYggI",
+            "dtstart": "2026-08-28",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-1m-week-4@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-1m-w4-금",
+              "bundle-opic-plan-video-8"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-1m-w4-토@flowme.local",
+            "summary": "8회 녹음 듣고 보완하기",
+            "description": "영상: https://www.youtube.com/watch?v=VFWF-HUYggI · 범위: 기술·캠핑·패션·쇼핑·건강 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.\n1달 계획표 4주차 토요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 8회 영상 · https://www.youtube.com/watch?v=VFWF-HUYggI",
+            "dtstart": "2026-08-29",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-1m-week-4@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-1m-w4-토",
+              "bundle-opic-plan-video-8"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-opic-plan-1m-week-5@flowme.local",
+            "summary": "5주차 · 9~10회",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-1month@flowme.local"
+            }
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-1m-w5-월@flowme.local",
+            "summary": "9회 실전처럼 풀기",
+            "description": "영상: https://www.youtube.com/watch?v=y0Y1j7fEZj4 · 범위: 외식·영화·날씨·계절·콘서트·바 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.\n1달 계획표 5주차 월요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 9회 영상 · https://www.youtube.com/watch?v=y0Y1j7fEZj4",
+            "dtstart": "2026-08-31",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-1m-week-5@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-1m-w5-월",
+              "bundle-opic-plan-video-9"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-1m-w5-화@flowme.local",
+            "summary": "9회 녹음 듣고 보완하기",
+            "description": "영상: https://www.youtube.com/watch?v=y0Y1j7fEZj4 · 범위: 외식·영화·날씨·계절·콘서트·바 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.\n1달 계획표 5주차 화요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 9회 영상 · https://www.youtube.com/watch?v=y0Y1j7fEZj4",
+            "dtstart": "2026-09-01",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-1m-week-5@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-1m-w5-화",
+              "bundle-opic-plan-video-9"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-1m-w5-수@flowme.local",
+            "summary": "9회 녹음 듣고 보완하기",
+            "description": "영상: https://www.youtube.com/watch?v=y0Y1j7fEZj4 · 범위: 외식·영화·날씨·계절·콘서트·바 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.\n1달 계획표 5주차 수요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 9회 영상 · https://www.youtube.com/watch?v=y0Y1j7fEZj4",
+            "dtstart": "2026-09-02",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-1m-week-5@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-1m-w5-수",
+              "bundle-opic-plan-video-9"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-1m-w5-목@flowme.local",
+            "summary": "10회 실전처럼 풀기",
+            "description": "영상: https://www.youtube.com/watch?v=xh_zHNfAgQo · 범위: 해외여행·모임·공연·가족·친구·산업 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.\n1달 계획표 5주차 목요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 10회 영상 · https://www.youtube.com/watch?v=xh_zHNfAgQo",
+            "dtstart": "2026-09-03",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-1m-week-5@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-1m-w5-목",
+              "bundle-opic-plan-video-10"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-1m-w5-금@flowme.local",
+            "summary": "10회 녹음 듣고 보완하기",
+            "description": "영상: https://www.youtube.com/watch?v=xh_zHNfAgQo · 범위: 해외여행·모임·공연·가족·친구·산업 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.\n1달 계획표 5주차 금요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 10회 영상 · https://www.youtube.com/watch?v=xh_zHNfAgQo",
+            "dtstart": "2026-09-04",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-1m-week-5@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-1m-w5-금",
+              "bundle-opic-plan-video-10"
+            ]
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-opic-plan-1m-w5-토@flowme.local",
+            "summary": "10회 녹음 듣고 보완하기",
+            "description": "영상: https://www.youtube.com/watch?v=xh_zHNfAgQo · 범위: 해외여행·모임·공연·가족·친구·산업 · 이전 녹음을 다시 듣고 답변을 보완한 뒤, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 남긴다.\n1달 계획표 5주차 토요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 10회 영상 · https://www.youtube.com/watch?v=xh_zHNfAgQo",
+            "dtstart": "2026-09-05",
+            "status": null,
+            "url": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-opic-plan-1m-week-5@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-opic-plan-1m-w5-토",
+              "bundle-opic-plan-video-10"
+            ]
+          }
+        ]
+      },
+      "canonicalLimitations": [
+        "Hierarchy depends on VJOURNAL plus RELATED-TO client preservation.",
+        "Full SourceRow provenance depends on X-FLOWME-SOURCE-ROWS.",
+        "Scheduled VEVENT does not carry FlowMe manual completion semantics natively.",
+        "Rights, review, conditions, and typed Fields have no portable native representation."
+      ]
+    },
+    {
+      "schemaVersion": "flowme-literal-ics-graph-v1",
+      "architecture": "literal_ics_first",
+      "bundleId": "bundle-new-car-comparison",
+      "title": "신차 구매 8단계",
+      "mapType": "ordered",
+      "sampleUserOverlay": {},
+      "attribution": {
+        "creatorId": "money-getcha",
+        "providerId": "creator-brand",
+        "sourceOwnerId": "money-getcha",
+        "curatorId": null,
+        "trustAnchorRefs": [],
+        "decisionBand": "Modify",
+        "creatorVerdict": "creator_content_partner_candidate",
+        "publicationApproval": "not_implied"
+      },
+      "calendar": {
+        "prodid": "-//FlowMe//Literal ICS First Lab v1//KO",
+        "version": "2.0",
+        "method": null,
+        "components": [
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-new-car-comparison-map@flowme.local",
+            "summary": "신차 구매 8단계",
+            "xFlowmeKind": "MAP"
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-new-car-comparison-flow@flowme.local",
+            "summary": "신차 구매 8단계",
+            "xFlowmeKind": "FLOW",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-new-car-comparison-map@flowme.local"
+            }
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-new-car-comparison-s1@flowme.local",
+            "summary": "1. 예산과 차량 선택",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-new-car-comparison-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VTODO",
+            "uid": "bundle-new-car-comparison-s1-i1@flowme.local",
+            "summary": "총예산과 월 납입 가능액 정하기",
+            "description": "차량 가격 외 취등록세·보험·유지비를 포함한 총예산 확인 · 현금·할부 시 월 납입 가능액 확인\n1. 예산과 차량 선택 · 차량 가격 외 취등록세·보험·유지비를 포함한 총예산 확인 · https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners\n1. 예산과 차량 선택 · 현금·할부 시 월 납입 가능액 확인 · https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+            "dtstart": null,
+            "status": "NEEDS-ACTION",
+            "url": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-new-car-comparison-s1@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-new-car-comparison-s1-i1-r1",
+              "bundle-new-car-comparison-s1-i1-r2"
+            ]
+          },
+          {
+            "kind": "VTODO",
+            "uid": "bundle-new-car-comparison-s1-i2@flowme.local",
+            "summary": "차종·트림·옵션 후보 좁히기",
+            "description": "용도와 탑승 인원에 맞는 차종 선택 · 트림과 필수 옵션 후보 정리\n1. 예산과 차량 선택 · 용도와 탑승 인원에 맞는 차종 선택 · https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners\n1. 예산과 차량 선택 · 트림과 필수 옵션 후보 정리 · https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+            "dtstart": null,
+            "status": "NEEDS-ACTION",
+            "url": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-new-car-comparison-s1@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-new-car-comparison-s1-i2-r1",
+              "bundle-new-car-comparison-s1-i2-r2"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-new-car-comparison-s2@flowme.local",
+            "summary": "2. 구매 방식 선택",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-new-car-comparison-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VTODO",
+            "uid": "bundle-new-car-comparison-s2-i1@flowme.local",
+            "summary": "현금·할부·리스·장기렌트 비교하기",
+            "description": "소유권·월 납입액·세금·만기 조건 비교 · 본인 상황에 맞는 구매 방식 선택\n2. 구매 방식 선택 · 소유권·월 납입액·세금·만기 조건 비교 · https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners\n2. 구매 방식 선택 · 본인 상황에 맞는 구매 방식 선택 · https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+            "dtstart": null,
+            "status": "NEEDS-ACTION",
+            "url": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-new-car-comparison-s2@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-new-car-comparison-s2-i1-r1",
+              "bundle-new-car-comparison-s2-i1-r2"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-new-car-comparison-s3@flowme.local",
+            "summary": "3. 견적과 할인 협상",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-new-car-comparison-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VTODO",
+            "uid": "bundle-new-car-comparison-s3-i1@flowme.local",
+            "summary": "여러 판매처 견적 비교하기",
+            "description": "동일 트림·옵션 기준으로 견적 받기 · 차량 가격·탁송료·등록비·서비스 품목 비교\n3. 견적과 할인 협상 · 동일 트림·옵션 기준으로 견적 받기 · https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners\n3. 견적과 할인 협상 · 차량 가격·탁송료·등록비·서비스 품목 비교 · https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+            "dtstart": null,
+            "status": "NEEDS-ACTION",
+            "url": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-new-car-comparison-s3@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-new-car-comparison-s3-i1-r1",
+              "bundle-new-car-comparison-s3-i1-r2"
+            ]
+          },
+          {
+            "kind": "VTODO",
+            "uid": "bundle-new-car-comparison-s3-i2@flowme.local",
+            "summary": "할인과 서비스 조건 확정하기",
+            "description": "제조사 할인과 딜러 할인 확인 · 현금 지원·용품 등 서비스 조건 기록\n3. 견적과 할인 협상 · 제조사 할인과 딜러 할인 확인 · https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners\n3. 견적과 할인 협상 · 현금 지원·용품 등 서비스 조건 기록 · https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+            "dtstart": null,
+            "status": "NEEDS-ACTION",
+            "url": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-new-car-comparison-s3@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-new-car-comparison-s3-i2-r1",
+              "bundle-new-car-comparison-s3-i2-r2"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-new-car-comparison-s4@flowme.local",
+            "summary": "4. 계약",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-new-car-comparison-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VTODO",
+            "uid": "bundle-new-car-comparison-s4-i1@flowme.local",
+            "summary": "계약서 차량 사양과 금액 확인하기",
+            "description": "차종·트림·색상·옵션 확인 · 총액과 계약금 확인 · 출고 예정일과 취소·환불 조건 확인\n4. 계약 · 차종·트림·색상·옵션 확인 · https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners\n4. 계약 · 총액과 계약금 확인 · https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners\n4. 계약 · 출고 예정일과 취소·환불 조건 확인 · https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+            "dtstart": null,
+            "status": "NEEDS-ACTION",
+            "url": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-new-car-comparison-s4@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-new-car-comparison-s4-i1-r1",
+              "bundle-new-car-comparison-s4-i1-r2",
+              "bundle-new-car-comparison-s4-i1-r3"
+            ]
+          },
+          {
+            "kind": "VTODO",
+            "uid": "bundle-new-car-comparison-s4-i2@flowme.local",
+            "summary": "계약금 납부하고 서류 보관하기",
+            "description": "계약금 납부 · 계약서와 영수증 보관\n4. 계약 · 계약금 납부 · https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners\n4. 계약 · 계약서와 영수증 보관 · https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+            "dtstart": null,
+            "status": "NEEDS-ACTION",
+            "url": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-new-car-comparison-s4@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-new-car-comparison-s4-i2-r1",
+              "bundle-new-car-comparison-s4-i2-r2"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-new-car-comparison-s5@flowme.local",
+            "summary": "5. 출고와 검수",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-new-car-comparison-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VTODO",
+            "uid": "bundle-new-car-comparison-s5-i1@flowme.local",
+            "summary": "차대번호와 출고 정보 확인하기",
+            "description": "차대번호·생산연월·출고 일정 확인\n5. 출고와 검수 · 차대번호·생산연월·출고 일정 확인 · https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+            "dtstart": null,
+            "status": "NEEDS-ACTION",
+            "url": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-new-car-comparison-s5@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-new-car-comparison-s5-i1-r1"
+            ]
+          },
+          {
+            "kind": "VTODO",
+            "uid": "bundle-new-car-comparison-s5-i2@flowme.local",
+            "summary": "외관·내장·기능 검수하기",
+            "description": "도장·유리·타이어·휠 외관 확인 · 시트·내장재 확인 · 등화·전자장비·옵션 작동 확인\n5. 출고와 검수 · 도장·유리·타이어·휠 외관 확인 · https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners\n5. 출고와 검수 · 시트·내장재 확인 · https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners\n5. 출고와 검수 · 등화·전자장비·옵션 작동 확인 · https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+            "dtstart": null,
+            "status": "NEEDS-ACTION",
+            "url": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-new-car-comparison-s5@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-new-car-comparison-s5-i2-r1",
+              "bundle-new-car-comparison-s5-i2-r2",
+              "bundle-new-car-comparison-s5-i2-r3"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-new-car-comparison-s6@flowme.local",
+            "summary": "6. 등록",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-new-car-comparison-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VTODO",
+            "uid": "bundle-new-car-comparison-s6-i1@flowme.local",
+            "summary": "등록 서류와 비용 확인하기",
+            "description": "신분증·계약서·보험가입증명 등 필요 서류 확인 · 취득세·공채·번호판 등 등록 비용 확인\n6. 등록 · 신분증·계약서·보험가입증명 등 필요 서류 확인 · https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners\n6. 등록 · 취득세·공채·번호판 등 등록 비용 확인 · https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+            "dtstart": null,
+            "status": "NEEDS-ACTION",
+            "url": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-new-car-comparison-s6@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-new-car-comparison-s6-i1-r1",
+              "bundle-new-car-comparison-s6-i1-r2"
+            ]
+          },
+          {
+            "kind": "VTODO",
+            "uid": "bundle-new-car-comparison-s6-i2@flowme.local",
+            "summary": "차량 등록과 번호판 발급 마치기",
+            "description": "직접 등록 또는 등록 대행 선택 · 자동차등록증과 번호판 수령\n6. 등록 · 직접 등록 또는 등록 대행 선택 · https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners\n6. 등록 · 자동차등록증과 번호판 수령 · https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+            "dtstart": null,
+            "status": "NEEDS-ACTION",
+            "url": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-new-car-comparison-s6@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-new-car-comparison-s6-i2-r1",
+              "bundle-new-car-comparison-s6-i2-r2"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-new-car-comparison-s7@flowme.local",
+            "summary": "7. 보험",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-new-car-comparison-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VTODO",
+            "uid": "bundle-new-car-comparison-s7-i1@flowme.local",
+            "summary": "자동차보험 조건 비교하고 가입하기",
+            "description": "운전자 범위·보장 한도·자기부담금 비교 · 차량 인수 전에 보험 효력 시작 확인\n7. 보험 · 운전자 범위·보장 한도·자기부담금 비교 · https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners\n7. 보험 · 차량 인수 전에 보험 효력 시작 확인 · https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+            "dtstart": null,
+            "status": "NEEDS-ACTION",
+            "url": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-new-car-comparison-s7@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-new-car-comparison-s7-i1-r1",
+              "bundle-new-car-comparison-s7-i1-r2"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-new-car-comparison-s8@flowme.local",
+            "summary": "8. 출고 후 관리",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-new-car-comparison-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VTODO",
+            "uid": "bundle-new-car-comparison-s8-i1@flowme.local",
+            "summary": "차량 문서와 보증 조건 보관하기",
+            "description": "등록증·보험증권·보증서 보관 · 보증 기간과 정기점검 조건 확인\n8. 출고 후 관리 · 등록증·보험증권·보증서 보관 · https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners\n8. 출고 후 관리 · 보증 기간과 정기점검 조건 확인 · https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+            "dtstart": null,
+            "status": "NEEDS-ACTION",
+            "url": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-new-car-comparison-s8@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-new-car-comparison-s8-i1-r1",
+              "bundle-new-car-comparison-s8-i1-r2"
+            ]
+          },
+          {
+            "kind": "VTODO",
+            "uid": "bundle-new-car-comparison-s8-i2@flowme.local",
+            "summary": "초기 점검과 소모품 일정 확인하기",
+            "description": "제조사 초기 점검 안내 확인 · 소모품 교환 주기 확인\n8. 출고 후 관리 · 제조사 초기 점검 안내 확인 · https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners\n8. 출고 후 관리 · 소모품 교환 주기 확인 · https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+            "dtstart": null,
+            "status": "NEEDS-ACTION",
+            "url": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-new-car-comparison-s8@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-new-car-comparison-s8-i2-r1",
+              "bundle-new-car-comparison-s8-i2-r2"
+            ]
+          }
+        ]
+      },
+      "canonicalLimitations": [
+        "Hierarchy depends on VJOURNAL plus RELATED-TO client preservation.",
+        "Full SourceRow provenance depends on X-FLOWME-SOURCE-ROWS.",
+        "Scheduled VEVENT does not carry FlowMe manual completion semantics natively.",
+        "Rights, review, conditions, and typed Fields have no portable native representation."
+      ]
+    },
+    {
+      "schemaVersion": "flowme-literal-ics-graph-v1",
+      "architecture": "literal_ics_first",
+      "bundleId": "bundle-allblanc-7day-abs",
+      "title": "Allblanc 7일 복근 챌린지",
+      "mapType": "ordered",
+      "sampleUserOverlay": {
+        "startDate": "2026-08-03"
+      },
+      "attribution": {
+        "creatorId": "health-allblanc",
+        "providerId": "youtube",
+        "sourceOwnerId": "health-allblanc",
+        "curatorId": null,
+        "trustAnchorRefs": [],
+        "decisionBand": "Go",
+        "creatorVerdict": "creator_flow_map_candidate",
+        "publicationApproval": "not_implied"
+      },
+      "calendar": {
+        "prodid": "-//FlowMe//Literal ICS First Lab v1//KO",
+        "version": "2.0",
+        "method": null,
+        "components": [
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-allblanc-7day-abs-map@flowme.local",
+            "summary": "7 Days Abs Challenge",
+            "xFlowmeKind": "MAP"
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-allblanc-7day-abs-day-1@flowme.local",
+            "summary": "Day 1 · 코어 + 복근 한방에! 20분 복근 운동",
+            "xFlowmeKind": "FLOW",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-allblanc-7day-abs-map@flowme.local"
+            }
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-allblanc-7day-abs-day-1-step@flowme.local",
+            "summary": "영상 따라 하기",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-allblanc-7day-abs-day-1@flowme.local"
+            }
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-allblanc-7day-abs-day-1-item@flowme.local",
+            "summary": "코어 + 복근 한방에! 20분 복근 운동",
+            "description": "영상: https://www.youtube.com/watch?v=XwUKn-52ykk · 길이: 21:25 · 운동 후 남길 내용이 있으면 이 Item의 개인 메모를 사용한다.\n7 Days Abs Challenge · Day 1 · https://www.youtube.com/watch?v=XwUKn-52ykk",
+            "dtstart": "2026-08-03",
+            "status": null,
+            "url": "https://www.youtube.com/watch?v=XwUKn-52ykk",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-allblanc-7day-abs-day-1-step@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-allblanc-7day-abs-day-1"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-allblanc-7day-abs-day-2@flowme.local",
+            "summary": "Day 2 · 허리 통증 없이 20분 복근 운동",
+            "xFlowmeKind": "FLOW",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-allblanc-7day-abs-map@flowme.local"
+            }
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-allblanc-7day-abs-day-2-step@flowme.local",
+            "summary": "영상 따라 하기",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-allblanc-7day-abs-day-2@flowme.local"
+            }
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-allblanc-7day-abs-day-2-item@flowme.local",
+            "summary": "허리 통증 없이 20분 복근 운동",
+            "description": "영상: https://www.youtube.com/watch?v=KzH8TcfyKFA · 길이: 20:41 · 운동 후 남길 내용이 있으면 이 Item의 개인 메모를 사용한다.\n7 Days Abs Challenge · Day 2 · https://www.youtube.com/watch?v=KzH8TcfyKFA",
+            "dtstart": "2026-08-04",
+            "status": null,
+            "url": "https://www.youtube.com/watch?v=KzH8TcfyKFA",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-allblanc-7day-abs-day-2-step@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-allblanc-7day-abs-day-2"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-allblanc-7day-abs-day-3@flowme.local",
+            "summary": "Day 3 · 아랫 뱃살 집중 타격 20분 운동",
+            "xFlowmeKind": "FLOW",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-allblanc-7day-abs-map@flowme.local"
+            }
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-allblanc-7day-abs-day-3-step@flowme.local",
+            "summary": "영상 따라 하기",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-allblanc-7day-abs-day-3@flowme.local"
+            }
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-allblanc-7day-abs-day-3-item@flowme.local",
+            "summary": "아랫 뱃살 집중 타격 20분 운동",
+            "description": "영상: https://www.youtube.com/watch?v=Ft5gNO-2Je4 · 길이: 21:01 · 운동 후 남길 내용이 있으면 이 Item의 개인 메모를 사용한다.\n7 Days Abs Challenge · Day 3 · https://www.youtube.com/watch?v=Ft5gNO-2Je4",
+            "dtstart": "2026-08-05",
+            "status": null,
+            "url": "https://www.youtube.com/watch?v=Ft5gNO-2Je4",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-allblanc-7day-abs-day-3-step@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-allblanc-7day-abs-day-3"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-allblanc-7day-abs-day-4@flowme.local",
+            "summary": "Day 4 · 서서하는 20분 복근 운동",
+            "xFlowmeKind": "FLOW",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-allblanc-7day-abs-map@flowme.local"
+            }
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-allblanc-7day-abs-day-4-step@flowme.local",
+            "summary": "영상 따라 하기",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-allblanc-7day-abs-day-4@flowme.local"
+            }
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-allblanc-7day-abs-day-4-item@flowme.local",
+            "summary": "서서하는 20분 복근 운동",
+            "description": "영상: https://www.youtube.com/watch?v=8RzHWcq6eq0 · 길이: 20:49 · 운동 후 남길 내용이 있으면 이 Item의 개인 메모를 사용한다.\n7 Days Abs Challenge · Day 4 · https://www.youtube.com/watch?v=8RzHWcq6eq0",
+            "dtstart": "2026-08-06",
+            "status": null,
+            "url": "https://www.youtube.com/watch?v=8RzHWcq6eq0",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-allblanc-7day-abs-day-4-step@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-allblanc-7day-abs-day-4"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-allblanc-7day-abs-day-5@flowme.local",
+            "summary": "Day 5 · 집에서 옆구리살 빼기 20분 운동",
+            "xFlowmeKind": "FLOW",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-allblanc-7day-abs-map@flowme.local"
+            }
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-allblanc-7day-abs-day-5-step@flowme.local",
+            "summary": "영상 따라 하기",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-allblanc-7day-abs-day-5@flowme.local"
+            }
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-allblanc-7day-abs-day-5-item@flowme.local",
+            "summary": "집에서 옆구리살 빼기 20분 운동",
+            "description": "영상: https://www.youtube.com/watch?v=peQuipmDIuc · 길이: 20:40 · 운동 후 남길 내용이 있으면 이 Item의 개인 메모를 사용한다.\n7 Days Abs Challenge · Day 5 · https://www.youtube.com/watch?v=peQuipmDIuc",
+            "dtstart": "2026-08-07",
+            "status": null,
+            "url": "https://www.youtube.com/watch?v=peQuipmDIuc",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-allblanc-7day-abs-day-5-step@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-allblanc-7day-abs-day-5"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-allblanc-7day-abs-day-6@flowme.local",
+            "summary": "Day 6 · 허리 군살 제거 20분 복근 홈트",
+            "xFlowmeKind": "FLOW",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-allblanc-7day-abs-map@flowme.local"
+            }
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-allblanc-7day-abs-day-6-step@flowme.local",
+            "summary": "영상 따라 하기",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-allblanc-7day-abs-day-6@flowme.local"
+            }
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-allblanc-7day-abs-day-6-item@flowme.local",
+            "summary": "허리 군살 제거 20분 복근 홈트",
+            "description": "영상: https://www.youtube.com/watch?v=K3yO9oHgaIs · 길이: 20:36 · 운동 후 남길 내용이 있으면 이 Item의 개인 메모를 사용한다.\n7 Days Abs Challenge · Day 6 · https://www.youtube.com/watch?v=K3yO9oHgaIs",
+            "dtstart": "2026-08-08",
+            "status": null,
+            "url": "https://www.youtube.com/watch?v=K3yO9oHgaIs",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-allblanc-7day-abs-day-6-step@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-allblanc-7day-abs-day-6"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-allblanc-7day-abs-day-7@flowme.local",
+            "summary": "Day 7 · 헤어질 결심: 복부지방 20분 운동",
+            "xFlowmeKind": "FLOW",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-allblanc-7day-abs-map@flowme.local"
+            }
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-allblanc-7day-abs-day-7-step@flowme.local",
+            "summary": "영상 따라 하기",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-allblanc-7day-abs-day-7@flowme.local"
+            }
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "bundle-allblanc-7day-abs-day-7-item@flowme.local",
+            "summary": "헤어질 결심: 복부지방 20분 운동",
+            "description": "영상: https://www.youtube.com/watch?v=W2fS4TqeWCc · 길이: 20:49 · 운동 후 남길 내용이 있으면 이 Item의 개인 메모를 사용한다.\n7 Days Abs Challenge · Day 7 · https://www.youtube.com/watch?v=W2fS4TqeWCc",
+            "dtstart": "2026-08-09",
+            "status": null,
+            "url": "https://www.youtube.com/watch?v=W2fS4TqeWCc",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-allblanc-7day-abs-day-7-step@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "bundle-allblanc-7day-abs-day-7"
+            ]
+          }
+        ]
+      },
+      "canonicalLimitations": [
+        "Hierarchy depends on VJOURNAL plus RELATED-TO client preservation.",
+        "Full SourceRow provenance depends on X-FLOWME-SOURCE-ROWS.",
+        "Scheduled VEVENT does not carry FlowMe manual completion semantics natively.",
+        "Rights, review, conditions, and typed Fields have no portable native representation."
+      ]
+    },
+    {
+      "schemaVersion": "flowme-literal-ics-graph-v1",
+      "architecture": "literal_ics_first",
+      "bundleId": "bundle-triple-cappadocia-departure",
+      "title": "카파도키아 출국 전 체크",
+      "mapType": "single_flow",
+      "sampleUserOverlay": {},
+      "attribution": {
+        "creatorId": "travel-triple",
+        "providerId": "brand-community",
+        "sourceOwnerId": "travel-triple",
+        "curatorId": null,
+        "trustAnchorRefs": [],
+        "decisionBand": "Modify",
+        "creatorVerdict": "creator_content_partner_candidate",
+        "publicationApproval": "not_implied"
+      },
+      "calendar": {
+        "prodid": "-//FlowMe//Literal ICS First Lab v1//KO",
+        "version": "2.0",
+        "method": null,
+        "components": [
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-triple-cappadocia-departure-map@flowme.local",
+            "summary": "카파도키아 출국 전 체크",
+            "xFlowmeKind": "MAP"
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-triple-cappadocia-departure-flow@flowme.local",
+            "summary": "카파도키아 출국 전 체크",
+            "xFlowmeKind": "FLOW",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-triple-cappadocia-departure-map@flowme.local"
+            }
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "travel-triple-step-core@flowme.local",
+            "summary": "출국 기본 확인",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-triple-cappadocia-departure-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VTODO",
+            "uid": "travel-triple-passport-item@flowme.local",
+            "summary": "여권 유효기간 6개월 이상 확인",
+            "description": "카파도키아 출국 전 체크 원문: https://triple.guide/articles/6bebeecc-83e2-4b03-8b22-04dccf80c729\n원문 25행: 여권 유효기간 6개월 이상 · https://triple.guide/articles/6bebeecc-83e2-4b03-8b22-04dccf80c729",
+            "dtstart": null,
+            "status": "NEEDS-ACTION",
+            "url": "https://triple.guide/articles/6bebeecc-83e2-4b03-8b22-04dccf80c729",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "travel-triple-step-core@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "travel-triple-passport"
+            ]
+          },
+          {
+            "kind": "VTODO",
+            "uid": "travel-triple-ticket-item@flowme.local",
+            "summary": "출국·귀국 일정 다시 확인",
+            "description": "카파도키아 출국 전 체크 원문: https://triple.guide/articles/6bebeecc-83e2-4b03-8b22-04dccf80c729\n원문 25행: 출국·귀국 일정 · https://triple.guide/articles/6bebeecc-83e2-4b03-8b22-04dccf80c729",
+            "dtstart": null,
+            "status": "NEEDS-ACTION",
+            "url": "https://triple.guide/articles/6bebeecc-83e2-4b03-8b22-04dccf80c729",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "travel-triple-step-core@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "travel-triple-ticket"
+            ]
+          },
+          {
+            "kind": "VTODO",
+            "uid": "travel-triple-exchange-item@flowme.local",
+            "summary": "여행 예산에 맞게 환전",
+            "description": "카파도키아 출국 전 체크 원문: https://triple.guide/articles/6bebeecc-83e2-4b03-8b22-04dccf80c729\n원문 25·42~47행: 환전 · https://triple.guide/articles/6bebeecc-83e2-4b03-8b22-04dccf80c729",
+            "dtstart": null,
+            "status": "NEEDS-ACTION",
+            "url": "https://triple.guide/articles/6bebeecc-83e2-4b03-8b22-04dccf80c729",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "travel-triple-step-core@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "travel-triple-exchange"
+            ]
+          },
+          {
+            "kind": "VTODO",
+            "uid": "travel-triple-insurance-item@flowme.local",
+            "summary": "여행자 보험 준비",
+            "description": "카파도키아 출국 전 체크 원문: https://triple.guide/articles/6bebeecc-83e2-4b03-8b22-04dccf80c729\n원문 25·55~60행: 여행자 보험 · https://triple.guide/articles/6bebeecc-83e2-4b03-8b22-04dccf80c729",
+            "dtstart": null,
+            "status": "NEEDS-ACTION",
+            "url": "https://triple.guide/articles/6bebeecc-83e2-4b03-8b22-04dccf80c729",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "travel-triple-step-core@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "travel-triple-insurance"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "travel-triple-step-documents@flowme.local",
+            "summary": "서류와 통신",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-triple-cappadocia-departure-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VTODO",
+            "uid": "travel-triple-documents-item@flowme.local",
+            "summary": "E-티켓·바우처·여권 사본 출력",
+            "description": "카파도키아 출국 전 체크 원문: https://triple.guide/articles/6bebeecc-83e2-4b03-8b22-04dccf80c729\n원문 29~30행: 출력 서류 · https://triple.guide/articles/6bebeecc-83e2-4b03-8b22-04dccf80c729",
+            "dtstart": null,
+            "status": "NEEDS-ACTION",
+            "url": "https://triple.guide/articles/6bebeecc-83e2-4b03-8b22-04dccf80c729",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "travel-triple-step-documents@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "travel-triple-documents"
+            ]
+          },
+          {
+            "kind": "VTODO",
+            "uid": "travel-triple-data-item@flowme.local",
+            "summary": "유심·eSIM·포켓와이파이·로밍 중 준비",
+            "description": "카파도키아 출국 전 체크 원문: https://triple.guide/articles/6bebeecc-83e2-4b03-8b22-04dccf80c729\n원문 34~40행: 데이터 이용법 · https://triple.guide/articles/6bebeecc-83e2-4b03-8b22-04dccf80c729",
+            "dtstart": null,
+            "status": "NEEDS-ACTION",
+            "url": "https://triple.guide/articles/6bebeecc-83e2-4b03-8b22-04dccf80c729",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "travel-triple-step-documents@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "travel-triple-data"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "travel-triple-step-packing@flowme.local",
+            "summary": "짐과 수하물",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-triple-cappadocia-departure-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VTODO",
+            "uid": "travel-triple-electronics-item@flowme.local",
+            "summary": "전자제품·복장·비상약 챙기기",
+            "description": "카파도키아 출국 전 체크 원문: https://triple.guide/articles/6bebeecc-83e2-4b03-8b22-04dccf80c729\n원문 62~69행: 전자제품·복장·비상약 · https://triple.guide/articles/6bebeecc-83e2-4b03-8b22-04dccf80c729",
+            "dtstart": null,
+            "status": "NEEDS-ACTION",
+            "url": "https://triple.guide/articles/6bebeecc-83e2-4b03-8b22-04dccf80c729",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "travel-triple-step-packing@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "travel-triple-electronics"
+            ]
+          },
+          {
+            "kind": "VTODO",
+            "uid": "travel-triple-baggage-item@flowme.local",
+            "summary": "무게와 기내·위탁 수하물 규정 확인",
+            "description": "카파도키아 출국 전 체크 원문: https://triple.guide/articles/6bebeecc-83e2-4b03-8b22-04dccf80c729\n원문 77~91행: 수하물 규정 · https://triple.guide/articles/6bebeecc-83e2-4b03-8b22-04dccf80c729",
+            "dtstart": null,
+            "status": "NEEDS-ACTION",
+            "url": "https://triple.guide/articles/6bebeecc-83e2-4b03-8b22-04dccf80c729",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "travel-triple-step-packing@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "travel-triple-baggage"
+            ]
+          }
+        ]
+      },
+      "canonicalLimitations": [
+        "Hierarchy depends on VJOURNAL plus RELATED-TO client preservation.",
+        "Full SourceRow provenance depends on X-FLOWME-SOURCE-ROWS.",
+        "Scheduled VEVENT does not carry FlowMe manual completion semantics natively.",
+        "Rights, review, conditions, and typed Fields have no portable native representation."
+      ]
+    },
+    {
+      "schemaVersion": "flowme-literal-ics-graph-v1",
+      "architecture": "literal_ics_first",
+      "bundleId": "bundle-wtable-summer-banchan-five",
+      "title": "이번 주 여름 반찬 5가지",
+      "mapType": "source_curation",
+      "sampleUserOverlay": {},
+      "attribution": {
+        "creatorId": "meals-wtable",
+        "providerId": "creator-brand",
+        "sourceOwnerId": "meals-wtable",
+        "curatorId": "meals-wtable",
+        "trustAnchorRefs": [],
+        "decisionBand": "Go",
+        "creatorVerdict": "creator_flow_map_candidate",
+        "publicationApproval": "not_implied"
+      },
+      "calendar": {
+        "prodid": "-//FlowMe//Literal ICS First Lab v1//KO",
+        "version": "2.0",
+        "method": null,
+        "components": [
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-wtable-summer-banchan-five-map@flowme.local",
+            "summary": "이번 주 여름 반찬 5가지",
+            "xFlowmeKind": "MAP"
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "wtable-summer-1-flow@flowme.local",
+            "summary": "오이지무침",
+            "xFlowmeKind": "FLOW",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-wtable-summer-banchan-five-map@flowme.local"
+            }
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "wtable-summer-1-step@flowme.local",
+            "summary": "레시피 실행",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "wtable-summer-1-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VTODO",
+            "uid": "wtable-summer-1-item@flowme.local",
+            "summary": "오이지무침 만들기",
+            "description": "초급 · 15분 · 원문 레시피: https://wtable.co.kr/recipes/otoQ5JpRjgNPpuDtsYUwpRxC\n원문 19·63·184행; 큐레이션 https://wtable.co.kr/curations/562 · https://wtable.co.kr/recipes/otoQ5JpRjgNPpuDtsYUwpRxC",
+            "dtstart": null,
+            "status": "NEEDS-ACTION",
+            "url": "https://wtable.co.kr/recipes/otoQ5JpRjgNPpuDtsYUwpRxC",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "wtable-summer-1-step@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "wtable-summer-1"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "wtable-summer-2-flow@flowme.local",
+            "summary": "한치 초무침",
+            "xFlowmeKind": "FLOW",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-wtable-summer-banchan-five-map@flowme.local"
+            }
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "wtable-summer-2-step@flowme.local",
+            "summary": "레시피 실행",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "wtable-summer-2-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VTODO",
+            "uid": "wtable-summer-2-item@flowme.local",
+            "summary": "한치 초무침 만들기",
+            "description": "초급 · 30분 · 원문 레시피: https://wtable.co.kr/recipes/ACxZbqBF1Vb3snHtZdTMwPDe\n원문 25·84·186행; 큐레이션 https://wtable.co.kr/curations/562 · https://wtable.co.kr/recipes/ACxZbqBF1Vb3snHtZdTMwPDe",
+            "dtstart": null,
+            "status": "NEEDS-ACTION",
+            "url": "https://wtable.co.kr/recipes/ACxZbqBF1Vb3snHtZdTMwPDe",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "wtable-summer-2-step@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "wtable-summer-2"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "wtable-summer-3-flow@flowme.local",
+            "summary": "브로콜리 참깨무침",
+            "xFlowmeKind": "FLOW",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-wtable-summer-banchan-five-map@flowme.local"
+            }
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "wtable-summer-3-step@flowme.local",
+            "summary": "레시피 실행",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "wtable-summer-3-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VTODO",
+            "uid": "wtable-summer-3-item@flowme.local",
+            "summary": "브로콜리 참깨무침 만들기",
+            "description": "초급 · 20분 · 원문 레시피: https://wtable.co.kr/recipes/Phq1srHvzgYtDueKGZFcBHS5\n원문 31·107·188행; 큐레이션 https://wtable.co.kr/curations/562 · https://wtable.co.kr/recipes/Phq1srHvzgYtDueKGZFcBHS5",
+            "dtstart": null,
+            "status": "NEEDS-ACTION",
+            "url": "https://wtable.co.kr/recipes/Phq1srHvzgYtDueKGZFcBHS5",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "wtable-summer-3-step@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "wtable-summer-3"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "wtable-summer-4-flow@flowme.local",
+            "summary": "오이고추 된장 무침",
+            "xFlowmeKind": "FLOW",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-wtable-summer-banchan-five-map@flowme.local"
+            }
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "wtable-summer-4-step@flowme.local",
+            "summary": "레시피 실행",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "wtable-summer-4-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VTODO",
+            "uid": "wtable-summer-4-item@flowme.local",
+            "summary": "오이고추 된장 무침 만들기",
+            "description": "초급 · 15분 · 원문 레시피: https://wtable.co.kr/recipes/cZvq4myCFaK4Es7uJzaUyUBn\n원문 37·130·190행; 큐레이션 https://wtable.co.kr/curations/562 · https://wtable.co.kr/recipes/cZvq4myCFaK4Es7uJzaUyUBn",
+            "dtstart": null,
+            "status": "NEEDS-ACTION",
+            "url": "https://wtable.co.kr/recipes/cZvq4myCFaK4Es7uJzaUyUBn",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "wtable-summer-4-step@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "wtable-summer-4"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "wtable-summer-5-flow@flowme.local",
+            "summary": "꽈리고추찜무침",
+            "xFlowmeKind": "FLOW",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-wtable-summer-banchan-five-map@flowme.local"
+            }
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "wtable-summer-5-step@flowme.local",
+            "summary": "레시피 실행",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "wtable-summer-5-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VTODO",
+            "uid": "wtable-summer-5-item@flowme.local",
+            "summary": "꽈리고추찜무침 만들기",
+            "description": "초급 · 20분 · 원문 레시피: https://wtable.co.kr/recipes/kPW41Sk1utYTteW8jzzzigvp\n원문 42·161·191행; 큐레이션 https://wtable.co.kr/curations/562 · https://wtable.co.kr/recipes/kPW41Sk1utYTteW8jzzzigvp",
+            "dtstart": null,
+            "status": "NEEDS-ACTION",
+            "url": "https://wtable.co.kr/recipes/kPW41Sk1utYTteW8jzzzigvp",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "wtable-summer-5-step@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "wtable-summer-5"
+            ]
+          }
+        ]
+      },
+      "canonicalLimitations": [
+        "Hierarchy depends on VJOURNAL plus RELATED-TO client preservation.",
+        "Full SourceRow provenance depends on X-FLOWME-SOURCE-ROWS.",
+        "Scheduled VEVENT does not carry FlowMe manual completion semantics natively.",
+        "Rights, review, conditions, and typed Fields have no portable native representation."
+      ]
+    },
+    {
+      "schemaVersion": "flowme-literal-ics-graph-v1",
+      "architecture": "literal_ics_first",
+      "bundleId": "bundle-andstudio-job-prep-videos",
+      "title": "AND 취업 준비 영상 3편",
+      "mapType": "unordered_collection",
+      "sampleUserOverlay": {},
+      "attribution": {
+        "creatorId": "work-andstudio",
+        "providerId": "youtube",
+        "sourceOwnerId": "work-andstudio",
+        "curatorId": null,
+        "trustAnchorRefs": [],
+        "decisionBand": "Go",
+        "creatorVerdict": "creator_flow_map_candidate",
+        "publicationApproval": "not_implied"
+      },
+      "calendar": {
+        "prodid": "-//FlowMe//Literal ICS First Lab v1//KO",
+        "version": "2.0",
+        "method": null,
+        "components": [
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-andstudio-job-prep-videos-map@flowme.local",
+            "summary": "AND 취업 준비 영상 3편",
+            "xFlowmeKind": "MAP"
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "andstudio-job-1-flow@flowme.local",
+            "summary": "자소서 지원동기 6단계",
+            "xFlowmeKind": "FLOW",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-andstudio-job-prep-videos-map@flowme.local"
+            }
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "andstudio-job-1-step@flowme.local",
+            "summary": "영상 1편",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "andstudio-job-1-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VTODO",
+            "uid": "andstudio-job-1-item@flowme.local",
+            "summary": "자소서 지원동기 6단계 영상으로 준비하기",
+            "description": "조회 889,279 · 좋아요 17,011 · 댓글 201 · 영상: https://www.youtube.com/watch?v=OIliv2jpDyM\n영상 제목·공개 설명 · https://www.youtube.com/watch?v=OIliv2jpDyM",
+            "dtstart": null,
+            "status": "NEEDS-ACTION",
+            "url": "https://www.youtube.com/watch?v=OIliv2jpDyM",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "andstudio-job-1-step@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "andstudio-job-1"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "andstudio-job-2-flow@flowme.local",
+            "summary": "산업분석 방법",
+            "xFlowmeKind": "FLOW",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-andstudio-job-prep-videos-map@flowme.local"
+            }
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "andstudio-job-2-step@flowme.local",
+            "summary": "영상 1편",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "andstudio-job-2-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VTODO",
+            "uid": "andstudio-job-2-item@flowme.local",
+            "summary": "산업분석 방법 영상으로 준비하기",
+            "description": "조회 186,826 · 댓글 139 · 영상: https://www.youtube.com/watch?v=qXRMV7TgsSg\n영상 제목·공개 설명 · https://www.youtube.com/watch?v=qXRMV7TgsSg",
+            "dtstart": null,
+            "status": "NEEDS-ACTION",
+            "url": "https://www.youtube.com/watch?v=qXRMV7TgsSg",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "andstudio-job-2-step@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "andstudio-job-2"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "andstudio-job-3-flow@flowme.local",
+            "summary": "면접 전 확인할 6가지",
+            "xFlowmeKind": "FLOW",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-andstudio-job-prep-videos-map@flowme.local"
+            }
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "andstudio-job-3-step@flowme.local",
+            "summary": "영상 1편",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "andstudio-job-3-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VTODO",
+            "uid": "andstudio-job-3-item@flowme.local",
+            "summary": "면접 전 확인할 6가지 영상으로 준비하기",
+            "description": "조회 103,294 · 댓글 32 · 영상: https://www.youtube.com/watch?v=Sd176kgo1Es\n영상 제목·공개 설명 · https://www.youtube.com/watch?v=Sd176kgo1Es",
+            "dtstart": null,
+            "status": "NEEDS-ACTION",
+            "url": "https://www.youtube.com/watch?v=Sd176kgo1Es",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "andstudio-job-3-step@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "andstudio-job-3"
+            ]
+          }
+        ]
+      },
+      "canonicalLimitations": [
+        "Hierarchy depends on VJOURNAL plus RELATED-TO client preservation.",
+        "Full SourceRow provenance depends on X-FLOWME-SOURCE-ROWS.",
+        "Scheduled VEVENT does not carry FlowMe manual completion semantics natively.",
+        "Rights, review, conditions, and typed Fields have no portable native representation."
+      ]
+    },
+    {
+      "schemaVersion": "flowme-literal-ics-graph-v1",
+      "architecture": "literal_ics_first",
+      "bundleId": "bundle-fitpet-puppy-vaccination",
+      "title": "강아지 생후 6~16주 예방접종 일정",
+      "mapType": "single_sensitive_schedule",
+      "sampleUserOverlay": {
+        "birthDate": "2026-05-01"
+      },
+      "attribution": {
+        "creatorId": "hobby-fitpet",
+        "providerId": "creator-brand",
+        "sourceOwnerId": "hobby-fitpet",
+        "curatorId": null,
+        "trustAnchorRefs": [
+          {
+            "status": "required_before_promotion",
+            "reason": "Creator-brand schedule requires current veterinarian or official confirmation."
+          }
+        ],
+        "decisionBand": "Single",
+        "creatorVerdict": "single_content_candidate",
+        "publicationApproval": "not_implied"
+      },
+      "calendar": {
+        "prodid": "-//FlowMe//Literal ICS First Lab v1//KO",
+        "version": "2.0",
+        "method": null,
+        "components": [
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-fitpet-puppy-vaccination-map@flowme.local",
+            "summary": "강아지 생후 6~16주 예방접종 일정",
+            "xFlowmeKind": "MAP"
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "bundle-fitpet-puppy-vaccination-flow@flowme.local",
+            "summary": "강아지 생후 6~16주 예방접종 일정",
+            "xFlowmeKind": "FLOW",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-fitpet-puppy-vaccination-map@flowme.local"
+            }
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "fitpet-vaccine-1-step@flowme.local",
+            "summary": "생후 6주",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-fitpet-puppy-vaccination-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "fitpet-vaccine-1-item@flowme.local",
+            "summary": "생후 6주 1차 접종",
+            "description": "DHPPL 1차 + 코로나 장염 1차 · 실제 접종 일정은 담당 수의사·동물병원에 확인하고 특이사항은 개인 메모에 기록하세요. · 원문: https://www.fitpetmall.com/blog/dog-vaccinations\n원문 93·174행 · https://www.fitpetmall.com/blog/dog-vaccinations",
+            "dtstart": "2026-06-12",
+            "status": null,
+            "url": "https://www.fitpetmall.com/blog/dog-vaccinations",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "fitpet-vaccine-1-step@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "fitpet-vaccine-1"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "fitpet-vaccine-2-step@flowme.local",
+            "summary": "생후 8주",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-fitpet-puppy-vaccination-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "fitpet-vaccine-2-item@flowme.local",
+            "summary": "생후 8주 2차 접종",
+            "description": "DHPPL 2차 + 코로나 장염 2차 · 실제 접종 일정은 담당 수의사·동물병원에 확인하고 특이사항은 개인 메모에 기록하세요. · 원문: https://www.fitpetmall.com/blog/dog-vaccinations\n원문 95·176행 · https://www.fitpetmall.com/blog/dog-vaccinations",
+            "dtstart": "2026-06-26",
+            "status": null,
+            "url": "https://www.fitpetmall.com/blog/dog-vaccinations",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "fitpet-vaccine-2-step@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "fitpet-vaccine-2"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "fitpet-vaccine-3-step@flowme.local",
+            "summary": "생후 10주",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-fitpet-puppy-vaccination-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "fitpet-vaccine-3-item@flowme.local",
+            "summary": "생후 10주 3차 접종",
+            "description": "DHPPL 3차 + 켄넬 코프 1차 · 실제 접종 일정은 담당 수의사·동물병원에 확인하고 특이사항은 개인 메모에 기록하세요. · 원문: https://www.fitpetmall.com/blog/dog-vaccinations\n원문 97·178행 · https://www.fitpetmall.com/blog/dog-vaccinations",
+            "dtstart": "2026-07-10",
+            "status": null,
+            "url": "https://www.fitpetmall.com/blog/dog-vaccinations",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "fitpet-vaccine-3-step@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "fitpet-vaccine-3"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "fitpet-vaccine-4-step@flowme.local",
+            "summary": "생후 12주",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-fitpet-puppy-vaccination-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "fitpet-vaccine-4-item@flowme.local",
+            "summary": "생후 12주 4차 접종",
+            "description": "DHPPL 4차 + 켄넬 코프 2차 · 실제 접종 일정은 담당 수의사·동물병원에 확인하고 특이사항은 개인 메모에 기록하세요. · 원문: https://www.fitpetmall.com/blog/dog-vaccinations\n원문 99·180행 · https://www.fitpetmall.com/blog/dog-vaccinations",
+            "dtstart": "2026-07-24",
+            "status": null,
+            "url": "https://www.fitpetmall.com/blog/dog-vaccinations",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "fitpet-vaccine-4-step@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "fitpet-vaccine-4"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "fitpet-vaccine-5-step@flowme.local",
+            "summary": "생후 14주",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-fitpet-puppy-vaccination-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "fitpet-vaccine-5-item@flowme.local",
+            "summary": "생후 14주 5차 접종",
+            "description": "DHPPL 5차 + 신종 플루 1차 · 실제 접종 일정은 담당 수의사·동물병원에 확인하고 특이사항은 개인 메모에 기록하세요. · 원문: https://www.fitpetmall.com/blog/dog-vaccinations\n원문 101·182행 · https://www.fitpetmall.com/blog/dog-vaccinations",
+            "dtstart": "2026-08-07",
+            "status": null,
+            "url": "https://www.fitpetmall.com/blog/dog-vaccinations",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "fitpet-vaccine-5-step@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "fitpet-vaccine-5"
+            ]
+          },
+          {
+            "kind": "VJOURNAL",
+            "uid": "fitpet-vaccine-6-step@flowme.local",
+            "summary": "생후 16주",
+            "xFlowmeKind": "STEP",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "bundle-fitpet-puppy-vaccination-flow@flowme.local"
+            }
+          },
+          {
+            "kind": "VEVENT",
+            "uid": "fitpet-vaccine-6-item@flowme.local",
+            "summary": "생후 16주 6차 접종",
+            "description": "신종 플루 2차 + 광견병 예방 접종 · 실제 접종 일정은 담당 수의사·동물병원에 확인하고 특이사항은 개인 메모에 기록하세요. · 원문: https://www.fitpetmall.com/blog/dog-vaccinations\n원문 103·184행 · https://www.fitpetmall.com/blog/dog-vaccinations",
+            "dtstart": "2026-08-21",
+            "status": null,
+            "url": "https://www.fitpetmall.com/blog/dog-vaccinations",
+            "relatedTo": {
+              "reltype": "PARENT",
+              "uid": "fitpet-vaccine-6-step@flowme.local"
+            },
+            "xFlowmeKind": "ITEM",
+            "sourceRowIds": [
+              "fitpet-vaccine-6"
+            ]
+          }
+        ]
+      },
+      "canonicalLimitations": [
+        "Hierarchy depends on VJOURNAL plus RELATED-TO client preservation.",
+        "Full SourceRow provenance depends on X-FLOWME-SOURCE-ROWS.",
+        "Scheduled VEVENT does not carry FlowMe manual completion semantics natively.",
+        "Rights, review, conditions, and typed Fields have no portable native representation."
+      ]
+    }
+  ]
+}

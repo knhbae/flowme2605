@@ -3,10 +3,8 @@
 import Link from 'next/link';
 
 import { FlowArtifactSummary, FlowReceipt } from './FlowExecutionPrimitives';
-import {
-  FLOW_UI_PRIMARY_ACTION_CLASS,
-  FLOW_UI_TERTIARY_ACTION_CLASS,
-} from './flow-ui';
+import { FLOW_UI_PRIMARY_ACTION_CLASS } from './flow-ui';
+import { markMyFlowFirstEntryPlan } from '@/lib/flow/my-flow-local-ia';
 
 type SavedFlowReceiptFrameProps = {
   title: string;
@@ -16,6 +14,9 @@ type SavedFlowReceiptFrameProps = {
   itemCount: number;
   resultLabel: string;
   dateRangeLabel?: string;
+  savedContentSummary?: string;
+  receiptTitle?: string;
+  receiptSummary?: string;
   primaryHref: string;
 };
 
@@ -27,11 +28,14 @@ export function SavedFlowReceiptFrame({
   itemCount,
   resultLabel,
   dateRangeLabel,
+  savedContentSummary,
+  receiptTitle,
+  receiptSummary,
   primaryHref,
 }: SavedFlowReceiptFrameProps) {
   const metrics = [
     { label: '저장 이름', value: title },
-    { label: '전체', value: `할 일 ${itemCount}개` },
+    { label: '전체', value: savedContentSummary ?? `할 일 ${itemCount}개` },
     { label: '주요 결과', value: resultLabel },
     dateRangeLabel ? { label: '일정 범위', value: dateRangeLabel } : null,
   ].filter((metric): metric is { label: string; value: string } => Boolean(metric));
@@ -40,6 +44,9 @@ export function SavedFlowReceiptFrame({
     <section
       data-testid="public-flow-saved-receipt"
       data-p29-marker="P29-SAVED-RECEIPT-DISTINCT"
+      data-p35-marker="P35-R3-SINGLE-SAVED-RECEIPT"
+      data-p35-r8-marker={savedContentSummary ? 'P35-R8A-SERIES-OCCURRENCE-COUNT' : undefined}
+      data-p35-state="saved-receipt"
       data-flow-anatomy="saved-receipt"
       className="border-y border-[var(--flowme-border-strong)] py-5 sm:py-7"
     >
@@ -56,8 +63,8 @@ export function SavedFlowReceiptFrame({
         aria-live="polite"
         tone="success"
         label="내 Flow에 저장됨"
-        title={`${itemCount}개 할 일을 저장했어요`}
-        summary="저장한 전체 계획을 확인하거나 첫 할 일부터 시작할 수 있습니다."
+        title={receiptTitle ?? `${itemCount}개 할 일을 저장했어요`}
+        summary={receiptSummary ?? '저장한 전체 계획을 확인할 수 있습니다.'}
         className="mt-5"
       />
       <dl className="mt-4 grid gap-px overflow-hidden rounded-md border border-[var(--flowme-border)] bg-[var(--flowme-border)] sm:grid-cols-2">
@@ -68,17 +75,20 @@ export function SavedFlowReceiptFrame({
           </div>
         ))}
       </dl>
-      <div className="mt-5 grid gap-2 sm:max-w-md sm:grid-cols-[minmax(0,1fr)_auto]">
+      <div className="mt-5 sm:max-w-md">
         <Link
           data-testid="public-flow-saved-receipt-primary"
           data-action-priority="primary"
           className={`${FLOW_UI_PRIMARY_ACTION_CLASS} w-full`}
           href={primaryHref}
+          onClick={() => {
+            if (typeof window === 'undefined') return;
+            const target = new URL(primaryHref, window.location.origin);
+            const flowSlug = target.searchParams.get('flow') ?? '';
+            markMyFlowFirstEntryPlan(window.sessionStorage, flowSlug);
+          }}
         >
-          내 Flow에서 시작
-        </Link>
-        <Link className={`${FLOW_UI_TERTIARY_ACTION_CLASS} w-full`} href="/calendar">
-          캘린더에서 보기
+          저장한 전체 Flow 보기
         </Link>
       </div>
     </section>

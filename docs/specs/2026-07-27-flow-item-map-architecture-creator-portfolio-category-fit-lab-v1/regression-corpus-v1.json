@@ -1,0 +1,2656 @@
+{
+  "schemaVersion": "flowme-architecture-regression-corpus-v1",
+  "generatedAt": "2026-07-27",
+  "sourceArtifacts": [
+    "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/selected-positive-set-v1.json",
+    "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/boundary-control-set-v1.json",
+    "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/gold-source-contract-v1.json",
+    "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/final-adjudication-v1.json"
+  ],
+  "roleBoundary": "These cases are regression evidence only. They do not replace the nine creator-portfolio primary cases and previous verdicts are not recalculated.",
+  "maxAllowed": 6,
+  "count": 6,
+  "positiveCount": 5,
+  "boundaryCount": 1,
+  "cases": [
+    {
+      "regressionCaseId": "RG-01",
+      "candidateId": "INT-C05",
+      "corpusRole": "positive_regression",
+      "testRole": "official_admin_procedure_without_forced_calendar",
+      "selectionReason": "Tests short official Todo state and conditional calendar omission.",
+      "originalCandidate": {
+        "candidateId": "INT-C05",
+        "title": "어린이집 보육료 지원 신청",
+        "canonicalUrl": "https://www.bokjiro.go.kr/ssis-tbu/twataa/wlfareInfo/moveTWAT52011M.do?wlfareInfoId=WLF00003250&wlfareInfoReldBztpCd=01",
+        "provider": "복지로",
+        "providerType": "official",
+        "locale": "ko-KR",
+        "sourceFormat": "official_service_guide",
+        "evidenceLane": "official_high_intent",
+        "priorUse": "P0_C05",
+        "userMoment": "benefit_application_followthrough",
+        "contentRole": "official_high_intent",
+        "actualRowCreatorTemplate": false,
+        "sourceStatus": "opened_complete",
+        "evidence": [
+          {
+            "id": "INT-C05-E1",
+            "type": "demand",
+            "claim": "대상 보호자에게 지원 시작월과 서비스 전환을 놓치지 않아야 하는 공식 신청 수요가 있다.",
+            "url": "https://www.bokjiro.go.kr/ssis-tbu/twataa/wlfareInfo/moveTWAT52011M.do?wlfareInfoId=WLF00003250&wlfareInfoReldBztpCd=01",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "INT-C05-E2",
+            "type": "interaction",
+            "claim": "댓글 수치 대신 신청 누락·서비스 변경 시 지원 공백이라는 공식 고의도 신호를 사용한다.",
+            "url": "https://www.bokjiro.go.kr/ssis-tbu/twataa/wlfareInfo/moveTWAT52011M.do?wlfareInfoId=WLF00003250&wlfareInfoReldBztpCd=01",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "INT-C05-E3",
+            "type": "source_rows",
+            "claim": "신청 조건 확인, 온라인·주민센터 신청, 결과와 지원 시작월 확인 행이 확보됐다.",
+            "url": "https://www.bokjiro.go.kr/ssis-tbu/twataa/wlfareInfo/moveTWAT52011M.do?wlfareInfoId=WLF00003250&wlfareInfoReldBztpCd=01",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "INT-C05-E4",
+            "type": "creator_business",
+            "claim": "공식 신청 경로와 결과 확인으로 되돌리는 trust anchor가 있다.",
+            "url": "https://www.bokjiro.go.kr/ssis-tbu/twataa/wlfareInfo/moveTWAT52011M.do?wlfareInfoId=WLF00003250&wlfareInfoReldBztpCd=01",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "INT-C05-E5",
+            "type": "value_delta",
+            "claim": "신청 전후 상태와 지원 시작월을 Todo로 유지해 링크만 저장하는 것보다 낫다.",
+            "url": "https://www.bokjiro.go.kr/ssis-tbu/twataa/wlfareInfo/moveTWAT52011M.do?wlfareInfoId=WLF00003250&wlfareInfoReldBztpCd=01",
+            "observedAt": "2026-07-22",
+            "evidenceClass": "internal_expert_judgment"
+          },
+          {
+            "id": "INT-C05-E6",
+            "type": "portfolio",
+            "claim": "가족 행정의 조건형 짧은 Todo를 대표한다.",
+            "url": "https://www.bokjiro.go.kr/ssis-tbu/twataa/wlfareInfo/moveTWAT52011M.do?wlfareInfoId=WLF00003250&wlfareInfoReldBztpCd=01",
+            "observedAt": "2026-07-22",
+            "evidenceClass": "internal_expert_judgment"
+          }
+        ],
+        "scores": {
+          "visibleDemand": {
+            "points": 18,
+            "max": 20,
+            "comment": "대상 보호자에게 지원 시작월과 서비스 전환을 놓치지 않아야 하는 공식 신청 수요가 있다.",
+            "evidenceRefs": [
+              "INT-C05-E1"
+            ]
+          },
+          "interaction": {
+            "points": 17,
+            "max": 20,
+            "comment": "댓글 수치 대신 신청 누락·서비스 변경 시 지원 공백이라는 공식 고의도 신호를 사용한다.",
+            "evidenceRefs": [
+              "INT-C05-E2"
+            ]
+          },
+          "sourceRowFeasibility": {
+            "points": 14,
+            "max": 15,
+            "comment": "신청 조건 확인, 온라인·주민센터 신청, 결과와 지원 시작월 확인 행이 확보됐다.",
+            "evidenceRefs": [
+              "INT-C05-E3"
+            ]
+          },
+          "creatorBusinessValue": {
+            "points": 17,
+            "max": 20,
+            "comment": "공식 신청 경로와 결과 확인으로 되돌리는 trust anchor가 있다.",
+            "evidenceRefs": [
+              "INT-C05-E4"
+            ]
+          },
+          "flowValueDelta": {
+            "points": 20,
+            "max": 20,
+            "comment": "신청 전후 상태와 지원 시작월을 Todo로 유지해 링크만 저장하는 것보다 낫다.",
+            "evidenceRefs": [
+              "INT-C05-E5"
+            ]
+          },
+          "portfolioExpansion": {
+            "points": 4,
+            "max": 5,
+            "comment": "가족 행정의 조건형 짧은 Todo를 대표한다.",
+            "evidenceRefs": [
+              "INT-C05-E6"
+            ]
+          }
+        },
+        "computedTotal": 90,
+        "hardGates": {
+          "source": "pass",
+          "rights": "pass_personal_link_based_public_separate",
+          "locale": "pass",
+          "safety": "pass_with_declared_boundary",
+          "oneJob": "pass",
+          "naturalArtifact": "pass"
+        },
+        "hardGateEvidence": {
+          "source": [
+            "INT-C05-E3"
+          ],
+          "rights": [
+            "INT-C05-E3"
+          ],
+          "locale": [
+            "INT-C05-E1"
+          ],
+          "safety": [
+            "INT-C05-E3"
+          ],
+          "oneJob": [
+            "INT-C05-E3",
+            "INT-C05-E5"
+          ],
+          "naturalArtifact": [
+            "INT-C05-E5"
+          ]
+        },
+        "interactionEvidenceType": "official_high_intent_substitute",
+        "rights": {
+          "personalConversion": "allowed_link_based",
+          "publicCatalog": "review_required"
+        },
+        "valueDelta": {
+          "sourceLinkOnlyLimit": "공식 설명을 다시 읽어도 신청 후 상태와 시작월이 남지 않는다.",
+          "persistentState": "eligibility_checked_application_submitted_support_start_confirmed",
+          "returnMoment": "지원 시작월 확인까지",
+          "naturalArtifact": "todo"
+        },
+        "qualified": true,
+        "selection": "selected_calibration",
+        "rejectionReason": null,
+        "duplicateEvidenceReuse": "Demand and interaction use separate evidence types; official high-intent substitution is explicitly labeled.",
+        "split": "calibration"
+      },
+      "frozenGoldContract": {
+        "caseId": "VQ-01",
+        "candidateId": "INT-C05",
+        "split": "calibration",
+        "goldClass": "positive",
+        "source": {
+          "canonicalUrl": "https://www.bokjiro.go.kr/ssis-tbu/twataa/wlfareInfo/moveTWAT52011M.do?wlfareInfoId=WLF00003250&wlfareInfoReldBztpCd=01",
+          "title": "어린이집 보육료 지원 신청",
+          "provider": "복지로",
+          "sourceFormat": "official_service_guide",
+          "accessStatus": "opened_complete",
+          "observedAt": "2026-07-22"
+        },
+        "flowPossible": true,
+        "reason": "원문 행을 보육서비스 조건을 확인하고 신청한 뒤 지원 시작월까지 확인한다.이라는 하나의 사용자 일과 todo 상태로 보존할 수 있다.",
+        "sourceShape": "official_procedure_rows",
+        "userJob": "보육서비스 조건을 확인하고 신청한 뒤 지원 시작월까지 확인한다.",
+        "sourceRows": [
+          {
+            "id": "VQ01-R01",
+            "order": 1,
+            "title": "입소일과 현재 보육서비스 확인",
+            "detail": "보육료 전환 조건과 현재 이용 서비스를 확인한다.",
+            "kind": "condition",
+            "locator": "지원대상·서비스 변경"
+          },
+          {
+            "id": "VQ01-R02",
+            "order": 2,
+            "title": "복지로 또는 주민센터에서 신청",
+            "detail": "공식 온라인 또는 방문 신청 경로를 이용한다.",
+            "kind": "action",
+            "locator": "신청방법"
+          },
+          {
+            "id": "VQ01-R03",
+            "order": 3,
+            "title": "신청 결과 확인",
+            "detail": "공식 처리 결과를 확인한다.",
+            "kind": "state",
+            "locator": "처리결과"
+          },
+          {
+            "id": "VQ01-R04",
+            "order": 4,
+            "title": "지원 시작월 확인",
+            "detail": "결과에서 보육료 지원 시작월을 확인한다.",
+            "kind": "state",
+            "locator": "지원시점"
+          }
+        ],
+        "allowedItems": [
+          {
+            "itemId": "VQ-01-I01",
+            "type": "decide",
+            "title": "입소일과 현재 보육서비스 확인",
+            "detail": "보육료 전환 조건과 현재 이용 서비스를 확인한다.",
+            "completion": "공식 조건을 확인하고 적용 여부를 기록했다.",
+            "schedule": null,
+            "location": null,
+            "fields": [
+              "status",
+              "note"
+            ],
+            "conditions": [
+              {
+                "statement": "보육료 전환 조건과 현재 이용 서비스를 확인한다.",
+                "provenance": "source"
+              }
+            ],
+            "sourceRefs": [
+              "VQ01-R01"
+            ]
+          },
+          {
+            "itemId": "VQ-01-I02",
+            "type": "action",
+            "title": "복지로 또는 주민센터에서 신청",
+            "detail": "공식 온라인 또는 방문 신청 경로를 이용한다.",
+            "completion": "“복지로 또는 주민센터에서 신청” 실행을 마치고 완료 상태를 기록했다.",
+            "schedule": null,
+            "location": null,
+            "fields": [
+              "status",
+              "note"
+            ],
+            "conditions": [],
+            "sourceRefs": [
+              "VQ01-R02"
+            ]
+          },
+          {
+            "itemId": "VQ-01-I03",
+            "type": "record",
+            "title": "신청 결과 확인",
+            "detail": "공식 처리 결과를 확인한다.",
+            "completion": "공식 결과를 확인하고 현재 상태를 기록했다.",
+            "schedule": null,
+            "location": null,
+            "fields": [
+              "status",
+              "note"
+            ],
+            "conditions": [],
+            "sourceRefs": [
+              "VQ01-R03"
+            ]
+          },
+          {
+            "itemId": "VQ-01-I04",
+            "type": "record",
+            "title": "지원 시작월 확인",
+            "detail": "결과에서 보육료 지원 시작월을 확인한다.",
+            "completion": "공식 결과를 확인하고 현재 상태를 기록했다.",
+            "schedule": null,
+            "location": null,
+            "fields": [
+              "status",
+              "note"
+            ],
+            "conditions": [],
+            "sourceRefs": [
+              "VQ01-R04"
+            ]
+          }
+        ],
+        "forbiddenItems": [
+          "지원 자격 확정",
+          "원문에 없는 추가 서류 요구",
+          "입소일을 임의 생성"
+        ],
+        "minimumInputs": [],
+        "optionalInputs": [
+          "입소일 또는 서비스 변경일"
+        ],
+        "autoFilledValues": [
+          "sourceTitle",
+          "sourceUrl",
+          "sourceRows"
+        ],
+        "valuesToConfirm": [
+          "입소일 또는 서비스 변경일"
+        ],
+        "primaryProjection": "todo",
+        "secondaryProjections": [
+          "calendar",
+          "memo"
+        ],
+        "forbiddenProjections": [
+          "원문이나 사용자 입력으로 확정되지 않은 일정의 Calendar/ICS"
+        ],
+        "omittedSourceRows": [],
+        "uncertainty": [],
+        "gates": {
+          "source": "pass",
+          "rights": "pass_private_public_review",
+          "locale": "pass",
+          "safety": "pass_benefit_not_determined",
+          "privacy": "pass_no_sensitive_documents"
+        },
+        "publicReleaseAllowed": false,
+        "privateConversionAllowed": true,
+        "status": "ready",
+        "projections": {
+          "calendar": {
+            "availability": "conditional",
+            "events": [],
+            "reason": "원문 확정 일시 또는 사용자가 정한 기준일이 생기기 전에는 ICS를 만들지 않는다."
+          },
+          "checklist": {
+            "availability": "omitted",
+            "entries": [],
+            "reason": "주 결과물 또는 보조 결과물로 선택되지 않았다."
+          },
+          "todo": {
+            "availability": "ready",
+            "entries": [
+              {
+                "itemId": "VQ-01-I01",
+                "title": "입소일과 현재 보육서비스 확인",
+                "status": "not_started",
+                "sourceRefs": [
+                  "VQ01-R01"
+                ],
+                "completion": "source-backed"
+              },
+              {
+                "itemId": "VQ-01-I02",
+                "title": "복지로 또는 주민센터에서 신청",
+                "status": "not_started",
+                "sourceRefs": [
+                  "VQ01-R02"
+                ],
+                "completion": "source-backed"
+              },
+              {
+                "itemId": "VQ-01-I03",
+                "title": "신청 결과 확인",
+                "status": "not_started",
+                "sourceRefs": [
+                  "VQ01-R03"
+                ],
+                "completion": "source-backed"
+              },
+              {
+                "itemId": "VQ-01-I04",
+                "title": "지원 시작월 확인",
+                "status": "not_started",
+                "sourceRefs": [
+                  "VQ01-R04"
+                ],
+                "completion": "source-backed"
+              }
+            ]
+          },
+          "sheet": {
+            "availability": "omitted",
+            "columns": [],
+            "rows": [],
+            "reason": "행 단위 비교·진도·상태표가 핵심이 아니다."
+          },
+          "memo": {
+            "availability": "ready",
+            "body": "어린이집 보육료 지원 신청 — 원문 링크와 개인 실행 메모를 분리해 보존한다."
+          }
+        },
+        "valueReview": {
+          "sourceLinkOnlyLimit": "공식 설명을 다시 읽어도 신청 후 상태와 시작월이 남지 않는다.",
+          "persistentState": "eligibility_checked_application_submitted_support_start_confirmed",
+          "returnMoment": "지원 시작월 확인까지",
+          "firstActionVisible": true,
+          "zeroToTwoRequiredInputs": true,
+          "creatorOrSourceLoop": "공식 신청 경로와 결과 확인으로 되돌리는 trust anchor가 있다.",
+          "internalExpertJudgmentOnly": true
+        }
+      },
+      "preservedFinalAdjudication": {
+        "caseId": "VQ-01",
+        "goldClass": "positive",
+        "split": "calibration",
+        "verdict": "Modify",
+        "reason": "가치는 통과했지만 변환 결과의 공통 수정이 필요함"
+      },
+      "mayAlterPriorVerdict": false
+    },
+    {
+      "regressionCaseId": "RG-02",
+      "candidateId": "INT-O02",
+      "corpusRole": "positive_regression",
+      "testRole": "official_due_window_calendar",
+      "selectionReason": "Tests a real official deadline/window and sparse lifecycle handling.",
+      "originalCandidate": {
+        "candidateId": "INT-O02",
+        "title": "자동차검사 D-14",
+        "canonicalUrl": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+        "provider": "TS한국교통안전공단",
+        "providerType": "official",
+        "locale": "ko-KR",
+        "sourceFormat": "official_periodic_service",
+        "evidenceLane": "official_high_intent",
+        "priorUse": "P0_O02_output_quality_lab_not_G18",
+        "userMoment": "periodic_legal_maintenance",
+        "contentRole": "repeat_progress_schedule",
+        "actualRowCreatorTemplate": false,
+        "sourceStatus": "opened_complete",
+        "evidence": [
+          {
+            "id": "INT-O02-E1",
+            "type": "demand",
+            "claim": "정기검사는 법정 반복 의무이며 미수검 과태료가 최대 60만원으로 안내된다.",
+            "url": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "INT-O02-E2",
+            "type": "interaction",
+            "claim": "댓글 대신 검사기간·재검사 10일·과태료라는 반복 손실 신호를 사용한다.",
+            "url": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "INT-O02-E3",
+            "type": "source_rows",
+            "claim": "검사대상, 공식 기간 확인, 검사소·예약, 검사결과·재검사 행을 확보했다.",
+            "url": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "INT-O02-E4",
+            "type": "creator_business",
+            "claim": "사이버검사소 예약과 검사기간 안내 서비스로 직접 연결된다.",
+            "url": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "INT-O02-E5",
+            "type": "value_delta",
+            "claim": "차량별 확인일·방문일·결과 상태를 유지하며 확정일만 Calendar로 보낸다.",
+            "url": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+            "observedAt": "2026-07-22",
+            "evidenceClass": "internal_expert_judgment"
+          },
+          {
+            "id": "INT-O02-E6",
+            "type": "portfolio",
+            "claim": "주기적 법정 관리의 기준 사례다.",
+            "url": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+            "observedAt": "2026-07-22",
+            "evidenceClass": "internal_expert_judgment"
+          }
+        ],
+        "scores": {
+          "visibleDemand": {
+            "points": 20,
+            "max": 20,
+            "comment": "정기검사는 법정 반복 의무이며 미수검 과태료가 최대 60만원으로 안내된다.",
+            "evidenceRefs": [
+              "INT-O02-E1"
+            ]
+          },
+          "interaction": {
+            "points": 20,
+            "max": 20,
+            "comment": "댓글 대신 검사기간·재검사 10일·과태료라는 반복 손실 신호를 사용한다.",
+            "evidenceRefs": [
+              "INT-O02-E2"
+            ]
+          },
+          "sourceRowFeasibility": {
+            "points": 15,
+            "max": 15,
+            "comment": "검사대상, 공식 기간 확인, 검사소·예약, 검사결과·재검사 행을 확보했다.",
+            "evidenceRefs": [
+              "INT-O02-E3"
+            ]
+          },
+          "creatorBusinessValue": {
+            "points": 19,
+            "max": 20,
+            "comment": "사이버검사소 예약과 검사기간 안내 서비스로 직접 연결된다.",
+            "evidenceRefs": [
+              "INT-O02-E4"
+            ]
+          },
+          "flowValueDelta": {
+            "points": 20,
+            "max": 20,
+            "comment": "차량별 확인일·방문일·결과 상태를 유지하며 확정일만 Calendar로 보낸다.",
+            "evidenceRefs": [
+              "INT-O02-E5"
+            ]
+          },
+          "portfolioExpansion": {
+            "points": 4,
+            "max": 5,
+            "comment": "주기적 법정 관리의 기준 사례다.",
+            "evidenceRefs": [
+              "INT-O02-E6"
+            ]
+          }
+        },
+        "computedTotal": 98,
+        "hardGates": {
+          "source": "pass",
+          "rights": "pass_personal_link_based_public_separate",
+          "locale": "pass",
+          "safety": "pass_with_declared_boundary",
+          "oneJob": "pass",
+          "naturalArtifact": "pass"
+        },
+        "hardGateEvidence": {
+          "source": [
+            "INT-O02-E3"
+          ],
+          "rights": [
+            "INT-O02-E3"
+          ],
+          "locale": [
+            "INT-O02-E1"
+          ],
+          "safety": [
+            "INT-O02-E3"
+          ],
+          "oneJob": [
+            "INT-O02-E3",
+            "INT-O02-E5"
+          ],
+          "naturalArtifact": [
+            "INT-O02-E5"
+          ]
+        },
+        "interactionEvidenceType": "official_high_intent_substitute",
+        "rights": {
+          "personalConversion": "allowed_link_based",
+          "publicCatalog": "review_required"
+        },
+        "valueDelta": {
+          "sourceLinkOnlyLimit": "일반 안내 링크에는 내 차량의 다음 행동과 결과 상태가 없다.",
+          "persistentState": "period_checked_visit_scheduled_result_recorded",
+          "returnMoment": "검사 완료 또는 재검사 완료까지",
+          "naturalArtifact": "todo"
+        },
+        "qualified": true,
+        "selection": "selected_calibration",
+        "rejectionReason": null,
+        "duplicateEvidenceReuse": "Demand and interaction use separate evidence types; official high-intent substitution is explicitly labeled.",
+        "split": "calibration"
+      },
+      "frozenGoldContract": {
+        "caseId": "VQ-02",
+        "candidateId": "INT-O02",
+        "split": "calibration",
+        "goldClass": "positive",
+        "source": {
+          "canonicalUrl": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+          "title": "자동차검사 D-14",
+          "provider": "TS한국교통안전공단",
+          "sourceFormat": "official_periodic_service",
+          "accessStatus": "opened_complete",
+          "observedAt": "2026-07-22"
+        },
+        "flowPossible": true,
+        "reason": "원문 행을 내 차량의 검사기간을 공식 조회하고 방문·결과 상태를 완료한다.이라는 하나의 사용자 일과 todo 상태로 보존할 수 있다.",
+        "sourceShape": "official_periodic_service",
+        "userJob": "내 차량의 검사기간을 공식 조회하고 방문·결과 상태를 완료한다.",
+        "sourceRows": [
+          {
+            "id": "VQ02-R01",
+            "order": 1,
+            "title": "정기검사 대상 확인",
+            "detail": "등록되어 운행 중인 자동차는 일정 기간마다 정기검사를 받는다.",
+            "kind": "condition",
+            "locator": "정기검사 정의·대상"
+          },
+          {
+            "id": "VQ02-R02",
+            "order": 2,
+            "title": "검사기간 공식 조회",
+            "detail": "차량별 검사 가능 기간은 공식 시스템에서 확인한다.",
+            "kind": "action",
+            "locator": "사이버검사소·기간 안내"
+          },
+          {
+            "id": "VQ02-R03",
+            "order": 3,
+            "title": "검사소와 방문일 결정",
+            "detail": "공식 검사소와 예약 가능일을 확인한다.",
+            "kind": "action",
+            "locator": "검사소·예약"
+          },
+          {
+            "id": "VQ02-R04",
+            "order": 4,
+            "title": "검사 결과 기록",
+            "detail": "검사 결과와 부적합 여부를 확인한다.",
+            "kind": "state",
+            "locator": "검사결과"
+          },
+          {
+            "id": "VQ02-R05",
+            "order": 5,
+            "title": "필요하면 재검사",
+            "detail": "부적합 시 원문에 명시된 재검사기간을 확인한다.",
+            "kind": "conditional",
+            "locator": "재검사기간"
+          }
+        ],
+        "allowedItems": [
+          {
+            "itemId": "VQ-02-I01",
+            "type": "decide",
+            "title": "정기검사 대상 확인",
+            "detail": "등록되어 운행 중인 자동차는 일정 기간마다 정기검사를 받는다.",
+            "completion": "공식 조건을 확인하고 적용 여부를 기록했다.",
+            "schedule": null,
+            "location": null,
+            "fields": [
+              "status",
+              "note"
+            ],
+            "conditions": [
+              {
+                "statement": "등록되어 운행 중인 자동차는 일정 기간마다 정기검사를 받는다.",
+                "provenance": "source"
+              }
+            ],
+            "sourceRefs": [
+              "VQ02-R01"
+            ]
+          },
+          {
+            "itemId": "VQ-02-I02",
+            "type": "action",
+            "title": "검사기간 공식 조회",
+            "detail": "차량별 검사 가능 기간은 공식 시스템에서 확인한다.",
+            "completion": "“검사기간 공식 조회” 실행을 마치고 완료 상태를 기록했다.",
+            "schedule": null,
+            "location": null,
+            "fields": [
+              "status",
+              "note"
+            ],
+            "conditions": [],
+            "sourceRefs": [
+              "VQ02-R02"
+            ]
+          },
+          {
+            "itemId": "VQ-02-I03",
+            "type": "action",
+            "title": "검사소와 방문일 결정",
+            "detail": "공식 검사소와 예약 가능일을 확인한다.",
+            "completion": "“검사소와 방문일 결정” 실행을 마치고 완료 상태를 기록했다.",
+            "schedule": null,
+            "location": null,
+            "fields": [
+              "status",
+              "note"
+            ],
+            "conditions": [],
+            "sourceRefs": [
+              "VQ02-R03"
+            ]
+          },
+          {
+            "itemId": "VQ-02-I04",
+            "type": "record",
+            "title": "검사 결과 기록",
+            "detail": "검사 결과와 부적합 여부를 확인한다.",
+            "completion": "공식 결과를 확인하고 현재 상태를 기록했다.",
+            "schedule": null,
+            "location": null,
+            "fields": [
+              "status",
+              "note"
+            ],
+            "conditions": [],
+            "sourceRefs": [
+              "VQ02-R04"
+            ]
+          },
+          {
+            "itemId": "VQ-02-I05",
+            "type": "action",
+            "title": "필요하면 재검사",
+            "detail": "부적합 시 원문에 명시된 재검사기간을 확인한다.",
+            "completion": "“필요하면 재검사” 실행을 마치고 완료 상태를 기록했다.",
+            "schedule": null,
+            "location": null,
+            "fields": [
+              "status",
+              "note"
+            ],
+            "conditions": [],
+            "sourceRefs": [
+              "VQ02-R05"
+            ]
+          }
+        ],
+        "forbiddenItems": [
+          "차량별 검사일 추정",
+          "검사 합격 보장",
+          "모든 부적합 항목을 사용자 사전점검 Item으로 강제"
+        ],
+        "minimumInputs": [],
+        "optionalInputs": [
+          "공식 조회에서 확인한 검사기간",
+          "확정 방문일"
+        ],
+        "autoFilledValues": [
+          "sourceTitle",
+          "sourceUrl",
+          "sourceRows"
+        ],
+        "valuesToConfirm": [
+          "공식 조회에서 확인한 검사기간",
+          "확정 방문일"
+        ],
+        "primaryProjection": "todo",
+        "secondaryProjections": [
+          "calendar",
+          "memo"
+        ],
+        "forbiddenProjections": [
+          "원문이나 사용자 입력으로 확정되지 않은 일정의 Calendar/ICS"
+        ],
+        "omittedSourceRows": [],
+        "uncertainty": [],
+        "gates": {
+          "source": "pass",
+          "rights": "pass_official_link",
+          "locale": "pass",
+          "safety": "pass_no_vehicle_diagnosis",
+          "privacy": "pass_vehicle_identifier_not_stored"
+        },
+        "publicReleaseAllowed": true,
+        "privateConversionAllowed": true,
+        "status": "needs_confirmation",
+        "projections": {
+          "calendar": {
+            "availability": "conditional",
+            "events": [],
+            "reason": "원문 확정 일시 또는 사용자가 정한 기준일이 생기기 전에는 ICS를 만들지 않는다."
+          },
+          "checklist": {
+            "availability": "omitted",
+            "entries": [],
+            "reason": "주 결과물 또는 보조 결과물로 선택되지 않았다."
+          },
+          "todo": {
+            "availability": "ready",
+            "entries": [
+              {
+                "itemId": "VQ-02-I01",
+                "title": "정기검사 대상 확인",
+                "status": "not_started",
+                "sourceRefs": [
+                  "VQ02-R01"
+                ],
+                "completion": "source-backed"
+              },
+              {
+                "itemId": "VQ-02-I02",
+                "title": "검사기간 공식 조회",
+                "status": "not_started",
+                "sourceRefs": [
+                  "VQ02-R02"
+                ],
+                "completion": "source-backed"
+              },
+              {
+                "itemId": "VQ-02-I03",
+                "title": "검사소와 방문일 결정",
+                "status": "not_started",
+                "sourceRefs": [
+                  "VQ02-R03"
+                ],
+                "completion": "source-backed"
+              },
+              {
+                "itemId": "VQ-02-I04",
+                "title": "검사 결과 기록",
+                "status": "not_started",
+                "sourceRefs": [
+                  "VQ02-R04"
+                ],
+                "completion": "source-backed"
+              },
+              {
+                "itemId": "VQ-02-I05",
+                "title": "필요하면 재검사",
+                "status": "not_started",
+                "sourceRefs": [
+                  "VQ02-R05"
+                ],
+                "completion": "source-backed"
+              }
+            ]
+          },
+          "sheet": {
+            "availability": "omitted",
+            "columns": [],
+            "rows": [],
+            "reason": "행 단위 비교·진도·상태표가 핵심이 아니다."
+          },
+          "memo": {
+            "availability": "ready",
+            "body": "자동차검사 기간 확인부터 결과 기록 — 원문 링크와 개인 실행 메모를 분리해 보존한다."
+          }
+        },
+        "valueReview": {
+          "sourceLinkOnlyLimit": "일반 안내 링크에는 내 차량의 다음 행동과 결과 상태가 없다.",
+          "persistentState": "period_checked_visit_scheduled_result_recorded",
+          "returnMoment": "검사 완료 또는 재검사 완료까지",
+          "firstActionVisible": true,
+          "zeroToTwoRequiredInputs": true,
+          "creatorOrSourceLoop": "사이버검사소 예약과 검사기간 안내 서비스로 직접 연결된다.",
+          "internalExpertJudgmentOnly": true
+        }
+      },
+      "preservedFinalAdjudication": {
+        "caseId": "VQ-02",
+        "goldClass": "positive",
+        "split": "calibration",
+        "verdict": "Go",
+        "reason": "세 방식 중 둘 이상이 provenance·artifact·gate 기준으로 바로 사용할 수 있음"
+      },
+      "mayAlterPriorVerdict": false
+    },
+    {
+      "regressionCaseId": "RG-03",
+      "candidateId": "INT-KCA",
+      "corpusRole": "positive_regression",
+      "testRole": "official_comparison_table_sheet",
+      "selectionReason": "Tests comparison fields and Sheet state not represented by creator calendar-heavy bundles.",
+      "originalCandidate": {
+        "candidateId": "INT-KCA",
+        "title": "식물성 음료 품질비교",
+        "canonicalUrl": "https://www.kca.go.kr/home/sub.do?menukey=4002&mode=view&no=1003995520",
+        "provider": "한국소비자원",
+        "providerType": "official",
+        "locale": "ko-KR",
+        "sourceFormat": "official_comparison_table",
+        "evidenceLane": "official_high_intent",
+        "priorUse": "source_seed_only",
+        "userMoment": "product_compare_decide",
+        "contentRole": "one_session_or_decision",
+        "actualRowCreatorTemplate": false,
+        "sourceStatus": "opened_complete",
+        "evidence": [
+          {
+            "id": "INT-KCA-E1",
+            "type": "demand",
+            "claim": "보도자료 조회 약 3천, 관련 카드뉴스 조회가 별도로 확인된다.",
+            "url": "https://www.kca.go.kr/home/sub.do?menukey=4002&mode=view&no=1003995520",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "INT-KCA-E2",
+            "type": "interaction",
+            "claim": "11개 제품을 시험하고 가격 최대 2.6배 차이·표시 개선 필요를 공개한 선택 고의도 신호다.",
+            "url": "https://www.kca.go.kr/home/sub.do?menukey=4002&mode=view&no=1003995520",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "INT-KCA-E3",
+            "type": "source_rows",
+            "claim": "원재료 유형, 영양, 당류·나트륨, 표시, 안전, 가격 비교 행이 있다.",
+            "url": "https://www.kca.go.kr/home/sub.do?menukey=4002&mode=view&no=1003995520",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "INT-KCA-E4",
+            "type": "creator_business",
+            "claim": "공공누리 제1유형과 소비자24 원자료로 연결되는 trust path가 있다.",
+            "url": "https://www.kca.go.kr/home/sub.do?menukey=4002&mode=view&no=1003995520",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "INT-KCA-E5",
+            "type": "value_delta",
+            "claim": "내 우선 기준과 후보별 유지·보류·제외 이유를 비교 Sheet에 남긴다.",
+            "url": "https://www.kca.go.kr/home/sub.do?menukey=4002&mode=view&no=1003995520",
+            "observedAt": "2026-07-22",
+            "evidenceClass": "internal_expert_judgment"
+          },
+          {
+            "id": "INT-KCA-E6",
+            "type": "portfolio",
+            "claim": "공식 제품 비교·결정 상태를 대표한다.",
+            "url": "https://www.kca.go.kr/home/sub.do?menukey=4002&mode=view&no=1003995520",
+            "observedAt": "2026-07-22",
+            "evidenceClass": "internal_expert_judgment"
+          }
+        ],
+        "scores": {
+          "visibleDemand": {
+            "points": 15,
+            "max": 20,
+            "comment": "보도자료 조회 약 3천, 관련 카드뉴스 조회가 별도로 확인된다.",
+            "evidenceRefs": [
+              "INT-KCA-E1"
+            ]
+          },
+          "interaction": {
+            "points": 14,
+            "max": 20,
+            "comment": "11개 제품을 시험하고 가격 최대 2.6배 차이·표시 개선 필요를 공개한 선택 고의도 신호다.",
+            "evidenceRefs": [
+              "INT-KCA-E2"
+            ]
+          },
+          "sourceRowFeasibility": {
+            "points": 15,
+            "max": 15,
+            "comment": "원재료 유형, 영양, 당류·나트륨, 표시, 안전, 가격 비교 행이 있다.",
+            "evidenceRefs": [
+              "INT-KCA-E3"
+            ]
+          },
+          "creatorBusinessValue": {
+            "points": 17,
+            "max": 20,
+            "comment": "공공누리 제1유형과 소비자24 원자료로 연결되는 trust path가 있다.",
+            "evidenceRefs": [
+              "INT-KCA-E4"
+            ]
+          },
+          "flowValueDelta": {
+            "points": 18,
+            "max": 20,
+            "comment": "내 우선 기준과 후보별 유지·보류·제외 이유를 비교 Sheet에 남긴다.",
+            "evidenceRefs": [
+              "INT-KCA-E5"
+            ]
+          },
+          "portfolioExpansion": {
+            "points": 4,
+            "max": 5,
+            "comment": "공식 제품 비교·결정 상태를 대표한다.",
+            "evidenceRefs": [
+              "INT-KCA-E6"
+            ]
+          }
+        },
+        "computedTotal": 83,
+        "hardGates": {
+          "source": "pass",
+          "rights": "pass_personal_link_based_public_separate",
+          "locale": "pass",
+          "safety": "pass_with_declared_boundary",
+          "oneJob": "pass",
+          "naturalArtifact": "pass"
+        },
+        "hardGateEvidence": {
+          "source": [
+            "INT-KCA-E3"
+          ],
+          "rights": [
+            "INT-KCA-E3"
+          ],
+          "locale": [
+            "INT-KCA-E1"
+          ],
+          "safety": [
+            "INT-KCA-E3"
+          ],
+          "oneJob": [
+            "INT-KCA-E3",
+            "INT-KCA-E5"
+          ],
+          "naturalArtifact": [
+            "INT-KCA-E5"
+          ]
+        },
+        "interactionEvidenceType": "official_high_intent_substitute",
+        "rights": {
+          "personalConversion": "allowed",
+          "publicCatalog": "allowed_with_attribution"
+        },
+        "valueDelta": {
+          "sourceLinkOnlyLimit": "비교표를 읽은 뒤 내가 어떤 기준으로 무엇을 보류했는지 남지 않는다.",
+          "persistentState": "criteria_shortlist_hold_reject",
+          "returnMoment": "구매 후보 결정까지",
+          "naturalArtifact": "sheet"
+        },
+        "qualified": true,
+        "selection": "selected_calibration",
+        "rejectionReason": null,
+        "duplicateEvidenceReuse": "Demand and interaction use separate evidence types; official high-intent substitution is explicitly labeled.",
+        "split": "calibration"
+      },
+      "frozenGoldContract": {
+        "caseId": "VQ-06",
+        "candidateId": "INT-KCA",
+        "split": "calibration",
+        "goldClass": "positive",
+        "source": {
+          "canonicalUrl": "https://www.kca.go.kr/home/sub.do?menukey=4002&mode=view&no=1003995520",
+          "title": "식물성 음료 품질비교",
+          "provider": "한국소비자원",
+          "sourceFormat": "official_comparison_table",
+          "accessStatus": "opened_complete",
+          "observedAt": "2026-07-22"
+        },
+        "flowPossible": true,
+        "reason": "원문 행을 공식 시험 기준을 사용해 내 구매 후보와 보류 이유를 정한다.이라는 하나의 사용자 일과 sheet 상태로 보존할 수 있다.",
+        "sourceShape": "comparison_rows",
+        "userJob": "공식 시험 기준을 사용해 내 구매 후보와 보류 이유를 정한다.",
+        "sourceRows": [
+          {
+            "id": "VQ06-R01",
+            "order": 1,
+            "title": "원재료 유형 비교",
+            "detail": "검은콩·오트·오트/아몬드 혼합·아몬드 유형.",
+            "kind": "criterion",
+            "locator": "원재료별 비교"
+          },
+          {
+            "id": "VQ06-R02",
+            "order": 2,
+            "title": "열량·탄수화물·단백질·지방 비교",
+            "detail": "1팩 기준 영양성분 범위.",
+            "kind": "criterion",
+            "locator": "영양성분"
+          },
+          {
+            "id": "VQ06-R03",
+            "order": 3,
+            "title": "당류·나트륨 확인",
+            "detail": "1일 기준치 대비 함량.",
+            "kind": "criterion",
+            "locator": "당류·나트륨"
+          },
+          {
+            "id": "VQ06-R04",
+            "order": 4,
+            "title": "표시사항 확인",
+            "detail": "칼슘·비타민류 표시 개선 필요 제품 확인.",
+            "kind": "criterion",
+            "locator": "표시사항"
+          },
+          {
+            "id": "VQ06-R05",
+            "order": 5,
+            "title": "안전성 시험 결과 확인",
+            "detail": "중금속·미생물·보존료와 빨대 안전성 시험.",
+            "kind": "criterion",
+            "locator": "안전성"
+          },
+          {
+            "id": "VQ06-R06",
+            "order": 6,
+            "title": "가격 비교",
+            "detail": "유형별 1팩 가격과 최대 2.6배 차이.",
+            "kind": "criterion",
+            "locator": "가격"
+          }
+        ],
+        "allowedItems": [
+          {
+            "itemId": "VQ-06-I01",
+            "type": "decide",
+            "title": "원재료 유형 비교",
+            "detail": "검은콩·오트·오트/아몬드 혼합·아몬드 유형.",
+            "completion": "이 기준을 후보에 적용하고 판단 근거를 기록했다.",
+            "schedule": null,
+            "location": null,
+            "fields": [
+              "priority",
+              "candidateEvidence",
+              "decision",
+              "reason"
+            ],
+            "conditions": [],
+            "sourceRefs": [
+              "VQ06-R01"
+            ]
+          },
+          {
+            "itemId": "VQ-06-I02",
+            "type": "decide",
+            "title": "열량·탄수화물·단백질·지방 비교",
+            "detail": "1팩 기준 영양성분 범위.",
+            "completion": "이 기준을 후보에 적용하고 판단 근거를 기록했다.",
+            "schedule": null,
+            "location": null,
+            "fields": [
+              "priority",
+              "candidateEvidence",
+              "decision",
+              "reason"
+            ],
+            "conditions": [],
+            "sourceRefs": [
+              "VQ06-R02"
+            ]
+          },
+          {
+            "itemId": "VQ-06-I03",
+            "type": "decide",
+            "title": "당류·나트륨 확인",
+            "detail": "1일 기준치 대비 함량.",
+            "completion": "이 기준을 후보에 적용하고 판단 근거를 기록했다.",
+            "schedule": null,
+            "location": null,
+            "fields": [
+              "priority",
+              "candidateEvidence",
+              "decision",
+              "reason"
+            ],
+            "conditions": [],
+            "sourceRefs": [
+              "VQ06-R03"
+            ]
+          },
+          {
+            "itemId": "VQ-06-I04",
+            "type": "decide",
+            "title": "표시사항 확인",
+            "detail": "칼슘·비타민류 표시 개선 필요 제품 확인.",
+            "completion": "이 기준을 후보에 적용하고 판단 근거를 기록했다.",
+            "schedule": null,
+            "location": null,
+            "fields": [
+              "priority",
+              "candidateEvidence",
+              "decision",
+              "reason"
+            ],
+            "conditions": [],
+            "sourceRefs": [
+              "VQ06-R04"
+            ]
+          },
+          {
+            "itemId": "VQ-06-I05",
+            "type": "decide",
+            "title": "안전성 시험 결과 확인",
+            "detail": "중금속·미생물·보존료와 빨대 안전성 시험.",
+            "completion": "이 기준을 후보에 적용하고 판단 근거를 기록했다.",
+            "schedule": null,
+            "location": null,
+            "fields": [
+              "priority",
+              "candidateEvidence",
+              "decision",
+              "reason"
+            ],
+            "conditions": [],
+            "sourceRefs": [
+              "VQ06-R05"
+            ]
+          },
+          {
+            "itemId": "VQ-06-I06",
+            "type": "decide",
+            "title": "가격 비교",
+            "detail": "유형별 1팩 가격과 최대 2.6배 차이.",
+            "completion": "이 기준을 후보에 적용하고 판단 근거를 기록했다.",
+            "schedule": null,
+            "location": null,
+            "fields": [
+              "priority",
+              "candidateEvidence",
+              "decision",
+              "reason"
+            ],
+            "conditions": [],
+            "sourceRefs": [
+              "VQ06-R06"
+            ]
+          }
+        ],
+        "forbiddenItems": [
+          "건강 효능 판단",
+          "현재 판매가격 보장",
+          "원문에 없는 최종 추천"
+        ],
+        "minimumInputs": [
+          "가장 중요한 선택 기준"
+        ],
+        "optionalInputs": [
+          "비교할 제품 후보"
+        ],
+        "autoFilledValues": [
+          "sourceTitle",
+          "sourceUrl",
+          "sourceRows"
+        ],
+        "valuesToConfirm": [
+          "비교할 제품 후보"
+        ],
+        "primaryProjection": "sheet",
+        "secondaryProjections": [
+          "memo"
+        ],
+        "forbiddenProjections": [
+          "원문이나 사용자 입력으로 확정되지 않은 일정의 Calendar/ICS"
+        ],
+        "omittedSourceRows": [],
+        "uncertainty": [],
+        "gates": {
+          "source": "pass",
+          "rights": "pass_kogl_attribution",
+          "locale": "pass",
+          "safety": "pass_no_health_recommendation",
+          "privacy": "pass"
+        },
+        "publicReleaseAllowed": true,
+        "privateConversionAllowed": true,
+        "status": "needs_confirmation",
+        "projections": {
+          "calendar": {
+            "availability": "omitted",
+            "events": [],
+            "reason": "이 콘텐츠의 자연스러운 실행 상태가 일정이 아니다."
+          },
+          "checklist": {
+            "availability": "omitted",
+            "entries": [],
+            "reason": "주 결과물 또는 보조 결과물로 선택되지 않았다."
+          },
+          "todo": {
+            "availability": "omitted",
+            "entries": [],
+            "reason": "주 결과물 또는 보조 결과물로 선택되지 않았다."
+          },
+          "sheet": {
+            "availability": "ready",
+            "columns": [
+              "priority",
+              "candidateEvidence",
+              "decision",
+              "reason"
+            ],
+            "rows": [
+              {
+                "itemId": "VQ-06-I01",
+                "title": "원재료 유형 비교",
+                "status": "not_started",
+                "sourceRefs": [
+                  "VQ06-R01"
+                ]
+              },
+              {
+                "itemId": "VQ-06-I02",
+                "title": "열량·탄수화물·단백질·지방 비교",
+                "status": "not_started",
+                "sourceRefs": [
+                  "VQ06-R02"
+                ]
+              },
+              {
+                "itemId": "VQ-06-I03",
+                "title": "당류·나트륨 확인",
+                "status": "not_started",
+                "sourceRefs": [
+                  "VQ06-R03"
+                ]
+              },
+              {
+                "itemId": "VQ-06-I04",
+                "title": "표시사항 확인",
+                "status": "not_started",
+                "sourceRefs": [
+                  "VQ06-R04"
+                ]
+              },
+              {
+                "itemId": "VQ-06-I05",
+                "title": "안전성 시험 결과 확인",
+                "status": "not_started",
+                "sourceRefs": [
+                  "VQ06-R05"
+                ]
+              },
+              {
+                "itemId": "VQ-06-I06",
+                "title": "가격 비교",
+                "status": "not_started",
+                "sourceRefs": [
+                  "VQ06-R06"
+                ]
+              }
+            ]
+          },
+          "memo": {
+            "availability": "ready",
+            "body": "식물성 음료 선택 기준표 — 원문 링크와 개인 실행 메모를 분리해 보존한다."
+          }
+        },
+        "valueReview": {
+          "sourceLinkOnlyLimit": "비교표를 읽은 뒤 내가 어떤 기준으로 무엇을 보류했는지 남지 않는다.",
+          "persistentState": "criteria_shortlist_hold_reject",
+          "returnMoment": "구매 후보 결정까지",
+          "firstActionVisible": true,
+          "zeroToTwoRequiredInputs": true,
+          "creatorOrSourceLoop": "공공누리 제1유형과 소비자24 원자료로 연결되는 trust path가 있다.",
+          "internalExpertJudgmentOnly": true
+        }
+      },
+      "preservedFinalAdjudication": {
+        "caseId": "VQ-06",
+        "goldClass": "positive",
+        "split": "calibration",
+        "verdict": "Go",
+        "reason": "세 방식 중 둘 이상이 provenance·artifact·gate 기준으로 바로 사용할 수 있음"
+      },
+      "mayAlterPriorVerdict": false
+    },
+    {
+      "regressionCaseId": "RG-04",
+      "candidateId": "NEW-KOSAF-WORK",
+      "corpusRole": "positive_regression",
+      "testRole": "official_date_window_with_conditions",
+      "selectionReason": "Tests authoritative date windows, eligibility conditions, and no invented extra stages.",
+      "originalCandidate": {
+        "candidateId": "NEW-KOSAF-WORK",
+        "title": "2026년 2학기 국가근로장학금 신청",
+        "canonicalUrl": "https://www.kosaf.go.kr/ko/scholar.do?pg=scholarship05_04_01&ttab1=3",
+        "provider": "한국장학재단",
+        "providerType": "official",
+        "locale": "ko-KR",
+        "sourceFormat": "official_date_windows_and_conditional_rows",
+        "evidenceLane": "official_high_intent",
+        "priorUse": "new_url_2026_07_22",
+        "userMoment": "application_date_window",
+        "contentRole": "repeat_progress_schedule",
+        "actualRowCreatorTemplate": false,
+        "sourceStatus": "opened_complete",
+        "evidence": [
+          {
+            "id": "NEW-KOSAF-WORK-E1",
+            "type": "demand",
+            "claim": "공식 장학 신청과 2학기 사업기간이 현재 페이지에 공개돼 있다.",
+            "url": "https://www.kosaf.go.kr/ko/scholar.do?pg=scholarship05_04_01&ttab1=3",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "NEW-KOSAF-WORK-E2",
+            "type": "interaction",
+            "claim": "신청창을 놓치면 해당 통합신청이 불가능하고 학교별 운영 확인이 필요한 고의도 신호다.",
+            "url": "https://www.kosaf.go.kr/ko/scholar.do?pg=scholarship05_04_01&ttab1=3",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "NEW-KOSAF-WORK-E3",
+            "type": "source_rows",
+            "claim": "8/12~9/9 신청, 9/16 서류·가구원 동의, 신청 1~3일 뒤 제출대상 확인 행이 있다.",
+            "url": "https://www.kosaf.go.kr/ko/scholar.do?pg=scholarship05_04_01&ttab1=3",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "NEW-KOSAF-WORK-E4",
+            "type": "creator_business",
+            "claim": "공식 신청·서류현황·출근부 서비스로 직접 연결된다.",
+            "url": "https://www.kosaf.go.kr/ko/scholar.do?pg=scholarship05_04_01&ttab1=3",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "NEW-KOSAF-WORK-E5",
+            "type": "value_delta",
+            "claim": "두 날짜창과 조건형 후속 확인을 Calendar+Checklist로 유지하되 민감서류는 저장하지 않는다.",
+            "url": "https://www.kosaf.go.kr/ko/scholar.do?pg=scholarship05_04_01&ttab1=3",
+            "observedAt": "2026-07-22",
+            "evidenceClass": "internal_expert_judgment"
+          },
+          {
+            "id": "NEW-KOSAF-WORK-E6",
+            "type": "portfolio",
+            "claim": "향후 날짜창이 살아 있는 학자금 행정 lifecycle을 보강한다.",
+            "url": "https://www.kosaf.go.kr/ko/scholar.do?pg=scholarship05_04_01&ttab1=3",
+            "observedAt": "2026-07-22",
+            "evidenceClass": "internal_expert_judgment"
+          }
+        ],
+        "scores": {
+          "visibleDemand": {
+            "points": 19,
+            "max": 20,
+            "comment": "공식 장학 신청과 2학기 사업기간이 현재 페이지에 공개돼 있다.",
+            "evidenceRefs": [
+              "NEW-KOSAF-WORK-E1"
+            ]
+          },
+          "interaction": {
+            "points": 20,
+            "max": 20,
+            "comment": "신청창을 놓치면 해당 통합신청이 불가능하고 학교별 운영 확인이 필요한 고의도 신호다.",
+            "evidenceRefs": [
+              "NEW-KOSAF-WORK-E2"
+            ]
+          },
+          "sourceRowFeasibility": {
+            "points": 15,
+            "max": 15,
+            "comment": "8/12~9/9 신청, 9/16 서류·가구원 동의, 신청 1~3일 뒤 제출대상 확인 행이 있다.",
+            "evidenceRefs": [
+              "NEW-KOSAF-WORK-E3"
+            ]
+          },
+          "creatorBusinessValue": {
+            "points": 19,
+            "max": 20,
+            "comment": "공식 신청·서류현황·출근부 서비스로 직접 연결된다.",
+            "evidenceRefs": [
+              "NEW-KOSAF-WORK-E4"
+            ]
+          },
+          "flowValueDelta": {
+            "points": 20,
+            "max": 20,
+            "comment": "두 날짜창과 조건형 후속 확인을 Calendar+Checklist로 유지하되 민감서류는 저장하지 않는다.",
+            "evidenceRefs": [
+              "NEW-KOSAF-WORK-E5"
+            ]
+          },
+          "portfolioExpansion": {
+            "points": 5,
+            "max": 5,
+            "comment": "향후 날짜창이 살아 있는 학자금 행정 lifecycle을 보강한다.",
+            "evidenceRefs": [
+              "NEW-KOSAF-WORK-E6"
+            ]
+          }
+        },
+        "computedTotal": 98,
+        "hardGates": {
+          "source": "pass",
+          "rights": "pass_personal_link_based_public_separate",
+          "locale": "pass",
+          "safety": "pass_with_declared_boundary",
+          "oneJob": "pass",
+          "naturalArtifact": "pass"
+        },
+        "hardGateEvidence": {
+          "source": [
+            "NEW-KOSAF-WORK-E3"
+          ],
+          "rights": [
+            "NEW-KOSAF-WORK-E3"
+          ],
+          "locale": [
+            "NEW-KOSAF-WORK-E1"
+          ],
+          "safety": [
+            "NEW-KOSAF-WORK-E3"
+          ],
+          "oneJob": [
+            "NEW-KOSAF-WORK-E3",
+            "NEW-KOSAF-WORK-E5"
+          ],
+          "naturalArtifact": [
+            "NEW-KOSAF-WORK-E5"
+          ]
+        },
+        "interactionEvidenceType": "official_high_intent_substitute",
+        "rights": {
+          "personalConversion": "allowed_link_based",
+          "publicCatalog": "official_metadata_only"
+        },
+        "valueDelta": {
+          "sourceLinkOnlyLimit": "원문을 다시 읽는 것만으로는 신청·서류·학교 확인의 완료 상태가 남지 않는다.",
+          "persistentState": "school_eligible_applied_document_status_confirmed",
+          "returnMoment": "제출대상과 신청완료 확인까지",
+          "naturalArtifact": "calendar"
+        },
+        "qualified": true,
+        "selection": "selected_final_holdout",
+        "rejectionReason": null,
+        "duplicateEvidenceReuse": "Demand and interaction use separate evidence types; official high-intent substitution is explicitly labeled.",
+        "split": "final_holdout"
+      },
+      "frozenGoldContract": {
+        "caseId": "VQ-11",
+        "candidateId": "NEW-KOSAF-WORK",
+        "split": "final_holdout",
+        "goldClass": "positive",
+        "source": {
+          "canonicalUrl": "https://www.kosaf.go.kr/ko/scholar.do?pg=scholarship05_04_01&ttab1=3",
+          "title": "2026년 2학기 국가근로장학금 신청",
+          "provider": "한국장학재단",
+          "sourceFormat": "official_date_windows_and_conditional_rows",
+          "accessStatus": "opened_complete",
+          "observedAt": "2026-07-22"
+        },
+        "flowPossible": true,
+        "reason": "원문 행을 소속 대학 운영 여부를 확인하고 2차 신청·제출대상 확인·필요한 후속 동의를 기한 안에 마친다.이라는 하나의 사용자 일과 calendar 상태로 보존할 수 있다.",
+        "sourceShape": "date_windows_with_conditional_followup",
+        "userJob": "소속 대학 운영 여부를 확인하고 2차 신청·제출대상 확인·필요한 후속 동의를 기한 안에 마친다.",
+        "sourceRows": [
+          {
+            "id": "VQ11-R01",
+            "order": 1,
+            "title": "소속 대학 2차 운영 확인",
+            "detail": "2차 학생 신청기간 운영 여부는 대학마다 다르다.",
+            "kind": "condition",
+            "locator": "2학기 2차 주의"
+          },
+          {
+            "id": "VQ11-R02",
+            "order": 2,
+            "title": "2차 신청",
+            "detail": "2026-08-12 09:00부터 2026-09-09 18:00까지.",
+            "kind": "date_window",
+            "locator": "2학기 2차 신청기간"
+          },
+          {
+            "id": "VQ11-R03",
+            "order": 3,
+            "title": "제출대상 여부 확인",
+            "detail": "신청 후 1~3일(휴일 제외) 뒤 서류제출현황에서 확인.",
+            "kind": "conditional",
+            "locator": "제출서류"
+          },
+          {
+            "id": "VQ11-R04",
+            "order": 4,
+            "title": "해당자만 서류 제출·가구원 동의",
+            "detail": "2026-09-16 18:00까지.",
+            "kind": "date_window",
+            "locator": "서류 제출 및 가구원 동의"
+          },
+          {
+            "id": "VQ11-R05",
+            "order": 5,
+            "title": "신청완료 상태 확인",
+            "detail": "공식 사이트에서 완료 상태를 확인한다.",
+            "kind": "state",
+            "locator": "공식 신청 상태"
+          }
+        ],
+        "allowedItems": [
+          {
+            "itemId": "VQ-11-I01",
+            "type": "decide",
+            "title": "소속 대학 2차 운영 확인",
+            "detail": "2차 학생 신청기간 운영 여부는 대학마다 다르다.",
+            "completion": "공식 조건을 확인하고 적용 여부를 기록했다.",
+            "schedule": null,
+            "location": null,
+            "fields": [
+              "status",
+              "note"
+            ],
+            "conditions": [
+              {
+                "statement": "2차 학생 신청기간 운영 여부는 대학마다 다르다.",
+                "provenance": "source"
+              }
+            ],
+            "sourceRefs": [
+              "VQ11-R01"
+            ]
+          },
+          {
+            "itemId": "VQ-11-I02",
+            "type": "action",
+            "title": "2차 신청",
+            "detail": "2026-08-12 09:00부터 2026-09-09 18:00까지.",
+            "completion": "“2차 신청” 실행을 마치고 완료 상태를 기록했다.",
+            "schedule": {
+              "kind": "date_window",
+              "startsAt": "2026-08-12T09:00:00+09:00",
+              "endsAt": "2026-09-09T18:00:00+09:00",
+              "timezone": "Asia/Seoul",
+              "provenance": "source"
+            },
+            "location": null,
+            "fields": [
+              "status",
+              "note"
+            ],
+            "conditions": [],
+            "sourceRefs": [
+              "VQ11-R02"
+            ]
+          },
+          {
+            "itemId": "VQ-11-I03",
+            "type": "action",
+            "title": "제출대상 여부 확인",
+            "detail": "신청 후 1~3일(휴일 제외) 뒤 서류제출현황에서 확인.",
+            "completion": "“제출대상 여부 확인” 실행을 마치고 완료 상태를 기록했다.",
+            "schedule": null,
+            "location": null,
+            "fields": [
+              "status",
+              "note"
+            ],
+            "conditions": [],
+            "sourceRefs": [
+              "VQ11-R03"
+            ]
+          },
+          {
+            "itemId": "VQ-11-I04",
+            "type": "action",
+            "title": "해당자만 서류 제출·가구원 동의",
+            "detail": "2026-09-16 18:00까지.",
+            "completion": "“해당자만 서류 제출·가구원 동의” 실행을 마치고 완료 상태를 기록했다.",
+            "schedule": {
+              "kind": "deadline",
+              "dueAt": "2026-09-16T18:00:00+09:00",
+              "timezone": "Asia/Seoul",
+              "provenance": "source"
+            },
+            "location": null,
+            "fields": [
+              "status",
+              "note"
+            ],
+            "conditions": [],
+            "sourceRefs": [
+              "VQ11-R04"
+            ]
+          },
+          {
+            "itemId": "VQ-11-I05",
+            "type": "record",
+            "title": "신청완료 상태 확인",
+            "detail": "공식 사이트에서 완료 상태를 확인한다.",
+            "completion": "공식 결과를 확인하고 현재 상태를 기록했다.",
+            "schedule": null,
+            "location": null,
+            "fields": [
+              "status",
+              "note"
+            ],
+            "conditions": [],
+            "sourceRefs": [
+              "VQ11-R05"
+            ]
+          }
+        ],
+        "forbiddenItems": [
+          "자격 확정",
+          "모든 가족관계 서류를 펼침",
+          "민감서류 저장",
+          "과거 1차 신청창을 활성 일정으로 생성"
+        ],
+        "minimumInputs": [
+          "소속 대학"
+        ],
+        "optionalInputs": [],
+        "autoFilledValues": [
+          "sourceTitle",
+          "sourceUrl",
+          "sourceRows",
+          "officialDateWindows"
+        ],
+        "valuesToConfirm": [],
+        "primaryProjection": "calendar",
+        "secondaryProjections": [
+          "checklist",
+          "memo"
+        ],
+        "forbiddenProjections": [
+          "원문이나 사용자 입력으로 확정되지 않은 일정의 Calendar/ICS"
+        ],
+        "omittedSourceRows": [],
+        "uncertainty": [],
+        "gates": {
+          "source": "pass",
+          "rights": "pass_official_metadata",
+          "locale": "pass",
+          "safety": "pass_eligibility_not_decided",
+          "privacy": "pass_no_documents_or_family_data"
+        },
+        "publicReleaseAllowed": true,
+        "privateConversionAllowed": true,
+        "status": "needs_confirmation",
+        "projections": {
+          "calendar": {
+            "availability": "ready",
+            "events": [
+              {
+                "title": "2차 신청",
+                "schedule": {
+                  "kind": "date_window",
+                  "startsAt": "2026-08-12T09:00:00+09:00",
+                  "endsAt": "2026-09-09T18:00:00+09:00",
+                  "timezone": "Asia/Seoul",
+                  "provenance": "source"
+                },
+                "sourceRefs": [
+                  "VQ11-R02"
+                ]
+              },
+              {
+                "title": "해당자만 서류 제출·가구원 동의",
+                "schedule": {
+                  "kind": "deadline",
+                  "dueAt": "2026-09-16T18:00:00+09:00",
+                  "timezone": "Asia/Seoul",
+                  "provenance": "source"
+                },
+                "sourceRefs": [
+                  "VQ11-R04"
+                ]
+              }
+            ]
+          },
+          "checklist": {
+            "availability": "ready",
+            "entries": [
+              {
+                "itemId": "VQ-11-I01",
+                "title": "소속 대학 2차 운영 확인",
+                "status": "not_started",
+                "sourceRefs": [
+                  "VQ11-R01"
+                ],
+                "checked": false
+              },
+              {
+                "itemId": "VQ-11-I02",
+                "title": "2차 신청",
+                "status": "not_started",
+                "sourceRefs": [
+                  "VQ11-R02"
+                ],
+                "checked": false
+              },
+              {
+                "itemId": "VQ-11-I03",
+                "title": "제출대상 여부 확인",
+                "status": "not_started",
+                "sourceRefs": [
+                  "VQ11-R03"
+                ],
+                "checked": false
+              },
+              {
+                "itemId": "VQ-11-I04",
+                "title": "해당자만 서류 제출·가구원 동의",
+                "status": "not_started",
+                "sourceRefs": [
+                  "VQ11-R04"
+                ],
+                "checked": false
+              },
+              {
+                "itemId": "VQ-11-I05",
+                "title": "신청완료 상태 확인",
+                "status": "not_started",
+                "sourceRefs": [
+                  "VQ11-R05"
+                ],
+                "checked": false
+              }
+            ]
+          },
+          "todo": {
+            "availability": "omitted",
+            "entries": [],
+            "reason": "주 결과물 또는 보조 결과물로 선택되지 않았다."
+          },
+          "sheet": {
+            "availability": "omitted",
+            "columns": [],
+            "rows": [],
+            "reason": "행 단위 비교·진도·상태표가 핵심이 아니다."
+          },
+          "memo": {
+            "availability": "ready",
+            "body": "2026년 2학기 국가근로장학금 신청 — 원문 링크와 개인 실행 메모를 분리해 보존한다."
+          }
+        },
+        "valueReview": {
+          "sourceLinkOnlyLimit": "원문을 다시 읽는 것만으로는 신청·서류·학교 확인의 완료 상태가 남지 않는다.",
+          "persistentState": "school_eligible_applied_document_status_confirmed",
+          "returnMoment": "제출대상과 신청완료 확인까지",
+          "firstActionVisible": true,
+          "zeroToTwoRequiredInputs": true,
+          "creatorOrSourceLoop": "공식 신청·서류현황·출근부 서비스로 직접 연결된다.",
+          "internalExpertJudgmentOnly": true
+        }
+      },
+      "preservedFinalAdjudication": {
+        "caseId": "VQ-11",
+        "goldClass": "positive",
+        "split": "final_holdout",
+        "verdict": "Go",
+        "reason": "세 방식 중 둘 이상이 provenance·artifact·gate 기준으로 바로 사용할 수 있음"
+      },
+      "mayAlterPriorVerdict": false
+    },
+    {
+      "regressionCaseId": "RG-05",
+      "candidateId": "NEW-INCHEON-PET",
+      "corpusRole": "positive_regression",
+      "testRole": "official_safety_checklist_without_schedule",
+      "selectionReason": "Tests a source-backed safety checklist and forbids scheduleless ICS.",
+      "originalCandidate": {
+        "candidateId": "NEW-INCHEON-PET",
+        "title": "반려동물 가족 재난 대응 준비",
+        "canonicalUrl": "https://www.incheon.go.kr/IC010101/view?cntPerPage=&curPage=311&nttNo=2041827&srchKey=srchSj&srchSiteRealmCode=&srchWord=",
+        "provider": "인천광역시",
+        "providerType": "official",
+        "locale": "ko-KR",
+        "sourceFormat": "official_pdf_preparedness_guide",
+        "evidenceLane": "official_high_intent",
+        "priorUse": "new_url_2026_07_22",
+        "userMoment": "emergency_preparedness",
+        "contentRole": "preparation",
+        "actualRowCreatorTemplate": false,
+        "sourceStatus": "opened_complete",
+        "evidence": [
+          {
+            "id": "NEW-INCHEON-PET-E1",
+            "type": "demand",
+            "claim": "직접 연 페이지의 조회 26,763과 재난·안전 목적이 확인된다.",
+            "url": "https://www.incheon.go.kr/IC010101/view?cntPerPage=&curPage=311&nttNo=2041827&srchKey=srchSj&srchSiteRealmCode=&srchWord=",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "NEW-INCHEON-PET-E2",
+            "type": "interaction",
+            "claim": "보호자와 동물 모두의 대피 지연 위험이라는 공식 손실·준비 고의도 신호다.",
+            "url": "https://www.incheon.go.kr/IC010101/view?cntPerPage=&curPage=311&nttNo=2041827&srchKey=srchSj&srchSiteRealmCode=&srchWord=",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "NEW-INCHEON-PET-E3",
+            "type": "source_rows",
+            "claim": "대피 계획, 이동장·재난키트, 연락처, 실제 대피 훈련 행을 PDF에서 확보했다.",
+            "url": "https://www.incheon.go.kr/IC010101/view?cntPerPage=&curPage=311&nttNo=2041827&srchKey=srchSj&srchSiteRealmCode=&srchWord=",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "NEW-INCHEON-PET-E4",
+            "type": "creator_business",
+            "claim": "공공누리 출처표시 자유이용과 공식 재난안전 source path가 있다.",
+            "url": "https://www.incheon.go.kr/IC010101/view?cntPerPage=&curPage=311&nttNo=2041827&srchKey=srchSj&srchSiteRealmCode=&srchWord=",
+            "observedAt": "2026-07-22"
+          },
+          {
+            "id": "NEW-INCHEON-PET-E5",
+            "type": "value_delta",
+            "claim": "준비물 보유·보충, 대피경로·연락처, 훈련 완료 상태를 유지한다.",
+            "url": "https://www.incheon.go.kr/IC010101/view?cntPerPage=&curPage=311&nttNo=2041827&srchKey=srchSj&srchSiteRealmCode=&srchWord=",
+            "observedAt": "2026-07-22",
+            "evidenceClass": "internal_expert_judgment"
+          },
+          {
+            "id": "NEW-INCHEON-PET-E6",
+            "type": "portfolio",
+            "claim": "반려동물·재난·인계가 만나는 새 user moment다.",
+            "url": "https://www.incheon.go.kr/IC010101/view?cntPerPage=&curPage=311&nttNo=2041827&srchKey=srchSj&srchSiteRealmCode=&srchWord=",
+            "observedAt": "2026-07-22",
+            "evidenceClass": "internal_expert_judgment"
+          }
+        ],
+        "scores": {
+          "visibleDemand": {
+            "points": 18,
+            "max": 20,
+            "comment": "직접 연 페이지의 조회 26,763과 재난·안전 목적이 확인된다.",
+            "evidenceRefs": [
+              "NEW-INCHEON-PET-E1"
+            ]
+          },
+          "interaction": {
+            "points": 20,
+            "max": 20,
+            "comment": "보호자와 동물 모두의 대피 지연 위험이라는 공식 손실·준비 고의도 신호다.",
+            "evidenceRefs": [
+              "NEW-INCHEON-PET-E2"
+            ]
+          },
+          "sourceRowFeasibility": {
+            "points": 15,
+            "max": 15,
+            "comment": "대피 계획, 이동장·재난키트, 연락처, 실제 대피 훈련 행을 PDF에서 확보했다.",
+            "evidenceRefs": [
+              "NEW-INCHEON-PET-E3"
+            ]
+          },
+          "creatorBusinessValue": {
+            "points": 19,
+            "max": 20,
+            "comment": "공공누리 출처표시 자유이용과 공식 재난안전 source path가 있다.",
+            "evidenceRefs": [
+              "NEW-INCHEON-PET-E4"
+            ]
+          },
+          "flowValueDelta": {
+            "points": 20,
+            "max": 20,
+            "comment": "준비물 보유·보충, 대피경로·연락처, 훈련 완료 상태를 유지한다.",
+            "evidenceRefs": [
+              "NEW-INCHEON-PET-E5"
+            ]
+          },
+          "portfolioExpansion": {
+            "points": 5,
+            "max": 5,
+            "comment": "반려동물·재난·인계가 만나는 새 user moment다.",
+            "evidenceRefs": [
+              "NEW-INCHEON-PET-E6"
+            ]
+          }
+        },
+        "computedTotal": 97,
+        "hardGates": {
+          "source": "pass",
+          "rights": "pass_personal_link_based_public_separate",
+          "locale": "pass",
+          "safety": "pass_with_declared_boundary",
+          "oneJob": "pass",
+          "naturalArtifact": "pass"
+        },
+        "hardGateEvidence": {
+          "source": [
+            "NEW-INCHEON-PET-E3"
+          ],
+          "rights": [
+            "NEW-INCHEON-PET-E3"
+          ],
+          "locale": [
+            "NEW-INCHEON-PET-E1"
+          ],
+          "safety": [
+            "NEW-INCHEON-PET-E3"
+          ],
+          "oneJob": [
+            "NEW-INCHEON-PET-E3",
+            "NEW-INCHEON-PET-E5"
+          ],
+          "naturalArtifact": [
+            "NEW-INCHEON-PET-E5"
+          ]
+        },
+        "interactionEvidenceType": "official_high_intent_substitute",
+        "rights": {
+          "personalConversion": "allowed",
+          "publicCatalog": "allowed_with_kogl_attribution"
+        },
+        "valueDelta": {
+          "sourceLinkOnlyLimit": "PDF를 읽은 뒤에도 우리 가족의 키트·연락처·훈련 상태는 남지 않는다.",
+          "persistentState": "kit_route_contacts_training",
+          "returnMoment": "준비와 1회 훈련 완료까지",
+          "naturalArtifact": "checklist"
+        },
+        "qualified": true,
+        "selection": "selected_final_holdout",
+        "rejectionReason": null,
+        "duplicateEvidenceReuse": "Demand and interaction use separate evidence types; official high-intent substitution is explicitly labeled.",
+        "split": "final_holdout"
+      },
+      "frozenGoldContract": {
+        "caseId": "VQ-12",
+        "candidateId": "NEW-INCHEON-PET",
+        "split": "final_holdout",
+        "goldClass": "positive",
+        "source": {
+          "canonicalUrl": "https://www.incheon.go.kr/IC010101/view?cntPerPage=&curPage=311&nttNo=2041827&srchKey=srchSj&srchSiteRealmCode=&srchWord=",
+          "title": "반려동물 가족 재난 대응 준비",
+          "provider": "인천광역시",
+          "sourceFormat": "official_pdf_preparedness_guide",
+          "accessStatus": "opened_complete",
+          "observedAt": "2026-07-22"
+        },
+        "flowPossible": true,
+        "reason": "원문 행을 반려동물과 함께 대피할 계획·키트·연락처를 준비하고 한 번 실제 훈련한다.이라는 하나의 사용자 일과 checklist 상태로 보존할 수 있다.",
+        "sourceShape": "preparedness_rows",
+        "userJob": "반려동물과 함께 대피할 계획·키트·연락처를 준비하고 한 번 실제 훈련한다.",
+        "sourceRows": [
+          {
+            "id": "VQ12-R01",
+            "order": 1,
+            "title": "반려동물 동반 대피 계획 세우기",
+            "detail": "대피 가능한 장소와 이동 경로를 계획한다.",
+            "kind": "plan",
+            "locator": "가이드 1단계"
+          },
+          {
+            "id": "VQ12-R02",
+            "order": 2,
+            "title": "이동장·목줄·하네스 준비",
+            "detail": "안전한 이동에 필요한 장비를 준비한다.",
+            "kind": "kit",
+            "locator": "재난 대비 물품"
+          },
+          {
+            "id": "VQ12-R03",
+            "order": 3,
+            "title": "배변·응급처치·담요·사료·물 준비",
+            "detail": "가이드에 명시된 재난키트 범주를 준비한다.",
+            "kind": "kit",
+            "locator": "재난 대비 물품"
+          },
+          {
+            "id": "VQ12-R04",
+            "order": 4,
+            "title": "처방약은 수의사와 확인",
+            "detail": "필요한 처방약과 복용 정보를 전문가와 확인한다.",
+            "kind": "caution",
+            "locator": "재난 대비 물품"
+          },
+          {
+            "id": "VQ12-R05",
+            "order": 5,
+            "title": "시설·동물병원·돌봄 연락처 계획",
+            "detail": "대피 중 연락할 곳을 정한다.",
+            "kind": "plan",
+            "locator": "연락 계획"
+          },
+          {
+            "id": "VQ12-R06",
+            "order": 6,
+            "title": "반려동물과 실제 대피 훈련",
+            "detail": "준비한 이동장과 경로로 한 번 연습한다.",
+            "kind": "action",
+            "locator": "대피 훈련"
+          }
+        ],
+        "allowedItems": [
+          {
+            "itemId": "VQ-12-I01",
+            "type": "action",
+            "title": "반려동물 동반 대피 계획 세우기",
+            "detail": "대피 가능한 장소와 이동 경로를 계획한다.",
+            "completion": "“반려동물 동반 대피 계획 세우기” 실행을 마치고 완료 상태를 기록했다.",
+            "schedule": null,
+            "location": null,
+            "fields": [
+              "owned",
+              "replenishBy",
+              "storageLocation",
+              "owner"
+            ],
+            "conditions": [],
+            "sourceRefs": [
+              "VQ12-R01"
+            ]
+          },
+          {
+            "itemId": "VQ-12-I02",
+            "type": "action",
+            "title": "이동장·목줄·하네스 준비",
+            "detail": "안전한 이동에 필요한 장비를 준비한다.",
+            "completion": "“이동장·목줄·하네스 준비” 실행을 마치고 완료 상태를 기록했다.",
+            "schedule": null,
+            "location": null,
+            "fields": [
+              "owned",
+              "replenishBy",
+              "storageLocation",
+              "owner"
+            ],
+            "conditions": [],
+            "sourceRefs": [
+              "VQ12-R02"
+            ]
+          },
+          {
+            "itemId": "VQ-12-I03",
+            "type": "action",
+            "title": "배변·응급처치·담요·사료·물 준비",
+            "detail": "가이드에 명시된 재난키트 범주를 준비한다.",
+            "completion": "“배변·응급처치·담요·사료·물 준비” 실행을 마치고 완료 상태를 기록했다.",
+            "schedule": null,
+            "location": null,
+            "fields": [
+              "owned",
+              "replenishBy",
+              "storageLocation",
+              "owner"
+            ],
+            "conditions": [],
+            "sourceRefs": [
+              "VQ12-R03"
+            ]
+          },
+          {
+            "itemId": "VQ-12-I04",
+            "type": "action",
+            "title": "처방약은 수의사와 확인",
+            "detail": "필요한 처방약과 복용 정보를 전문가와 확인한다.",
+            "completion": "“처방약은 수의사와 확인” 실행을 마치고 완료 상태를 기록했다.",
+            "schedule": null,
+            "location": null,
+            "fields": [
+              "owned",
+              "replenishBy",
+              "storageLocation",
+              "owner"
+            ],
+            "conditions": [],
+            "sourceRefs": [
+              "VQ12-R04"
+            ]
+          },
+          {
+            "itemId": "VQ-12-I05",
+            "type": "action",
+            "title": "시설·동물병원·돌봄 연락처 계획",
+            "detail": "대피 중 연락할 곳을 정한다.",
+            "completion": "“시설·동물병원·돌봄 연락처 계획” 실행을 마치고 완료 상태를 기록했다.",
+            "schedule": null,
+            "location": null,
+            "fields": [
+              "owned",
+              "replenishBy",
+              "storageLocation",
+              "owner"
+            ],
+            "conditions": [],
+            "sourceRefs": [
+              "VQ12-R05"
+            ]
+          },
+          {
+            "itemId": "VQ-12-I06",
+            "type": "action",
+            "title": "반려동물과 실제 대피 훈련",
+            "detail": "준비한 이동장과 경로로 한 번 연습한다.",
+            "completion": "“반려동물과 실제 대피 훈련” 실행을 마치고 완료 상태를 기록했다.",
+            "schedule": null,
+            "location": null,
+            "fields": [
+              "owned",
+              "replenishBy",
+              "storageLocation",
+              "owner"
+            ],
+            "conditions": [],
+            "sourceRefs": [
+              "VQ12-R06"
+            ]
+          }
+        ],
+        "forbiddenItems": [
+          "의약품 처방",
+          "대피시설 수용 보장",
+          "임의 반복주기 생성",
+          "연락처 공개"
+        ],
+        "minimumInputs": [],
+        "optionalInputs": [
+          "대피 장소",
+          "연락 담당자"
+        ],
+        "autoFilledValues": [
+          "sourceTitle",
+          "sourceUrl",
+          "sourceRows"
+        ],
+        "valuesToConfirm": [
+          "대피 장소",
+          "연락 담당자"
+        ],
+        "primaryProjection": "checklist",
+        "secondaryProjections": [
+          "sheet",
+          "memo"
+        ],
+        "forbiddenProjections": [
+          "원문이나 사용자 입력으로 확정되지 않은 일정의 Calendar/ICS"
+        ],
+        "omittedSourceRows": [],
+        "uncertainty": [],
+        "gates": {
+          "source": "pass",
+          "rights": "pass_kogl_attribution",
+          "locale": "pass",
+          "safety": "pass_with_emergency_caution",
+          "privacy": "pass_private_contacts"
+        },
+        "publicReleaseAllowed": true,
+        "privateConversionAllowed": true,
+        "status": "ready",
+        "projections": {
+          "calendar": {
+            "availability": "omitted",
+            "events": [],
+            "reason": "이 콘텐츠의 자연스러운 실행 상태가 일정이 아니다."
+          },
+          "checklist": {
+            "availability": "ready",
+            "entries": [
+              {
+                "itemId": "VQ-12-I01",
+                "title": "반려동물 동반 대피 계획 세우기",
+                "status": "not_started",
+                "sourceRefs": [
+                  "VQ12-R01"
+                ],
+                "checked": false
+              },
+              {
+                "itemId": "VQ-12-I02",
+                "title": "이동장·목줄·하네스 준비",
+                "status": "not_started",
+                "sourceRefs": [
+                  "VQ12-R02"
+                ],
+                "checked": false
+              },
+              {
+                "itemId": "VQ-12-I03",
+                "title": "배변·응급처치·담요·사료·물 준비",
+                "status": "not_started",
+                "sourceRefs": [
+                  "VQ12-R03"
+                ],
+                "checked": false
+              },
+              {
+                "itemId": "VQ-12-I04",
+                "title": "처방약은 수의사와 확인",
+                "status": "not_started",
+                "sourceRefs": [
+                  "VQ12-R04"
+                ],
+                "checked": false
+              },
+              {
+                "itemId": "VQ-12-I05",
+                "title": "시설·동물병원·돌봄 연락처 계획",
+                "status": "not_started",
+                "sourceRefs": [
+                  "VQ12-R05"
+                ],
+                "checked": false
+              },
+              {
+                "itemId": "VQ-12-I06",
+                "title": "반려동물과 실제 대피 훈련",
+                "status": "not_started",
+                "sourceRefs": [
+                  "VQ12-R06"
+                ],
+                "checked": false
+              }
+            ]
+          },
+          "todo": {
+            "availability": "omitted",
+            "entries": [],
+            "reason": "주 결과물 또는 보조 결과물로 선택되지 않았다."
+          },
+          "sheet": {
+            "availability": "ready",
+            "columns": [
+              "owned",
+              "replenishBy",
+              "storageLocation",
+              "owner"
+            ],
+            "rows": [
+              {
+                "itemId": "VQ-12-I01",
+                "title": "반려동물 동반 대피 계획 세우기",
+                "status": "not_started",
+                "sourceRefs": [
+                  "VQ12-R01"
+                ]
+              },
+              {
+                "itemId": "VQ-12-I02",
+                "title": "이동장·목줄·하네스 준비",
+                "status": "not_started",
+                "sourceRefs": [
+                  "VQ12-R02"
+                ]
+              },
+              {
+                "itemId": "VQ-12-I03",
+                "title": "배변·응급처치·담요·사료·물 준비",
+                "status": "not_started",
+                "sourceRefs": [
+                  "VQ12-R03"
+                ]
+              },
+              {
+                "itemId": "VQ-12-I04",
+                "title": "처방약은 수의사와 확인",
+                "status": "not_started",
+                "sourceRefs": [
+                  "VQ12-R04"
+                ]
+              },
+              {
+                "itemId": "VQ-12-I05",
+                "title": "시설·동물병원·돌봄 연락처 계획",
+                "status": "not_started",
+                "sourceRefs": [
+                  "VQ12-R05"
+                ]
+              },
+              {
+                "itemId": "VQ-12-I06",
+                "title": "반려동물과 실제 대피 훈련",
+                "status": "not_started",
+                "sourceRefs": [
+                  "VQ12-R06"
+                ]
+              }
+            ]
+          },
+          "memo": {
+            "availability": "ready",
+            "body": "반려동물 가족 재난 대응 준비 — 원문 링크와 개인 실행 메모를 분리해 보존한다."
+          }
+        },
+        "valueReview": {
+          "sourceLinkOnlyLimit": "PDF를 읽은 뒤에도 우리 가족의 키트·연락처·훈련 상태는 남지 않는다.",
+          "persistentState": "kit_route_contacts_training",
+          "returnMoment": "준비와 1회 훈련 완료까지",
+          "firstActionVisible": true,
+          "zeroToTwoRequiredInputs": true,
+          "creatorOrSourceLoop": "공공누리 출처표시 자유이용과 공식 재난안전 source path가 있다.",
+          "internalExpertJudgmentOnly": true
+        }
+      },
+      "preservedFinalAdjudication": {
+        "caseId": "VQ-12",
+        "goldClass": "positive",
+        "split": "final_holdout",
+        "verdict": "Go",
+        "reason": "세 방식 중 둘 이상이 provenance·artifact·gate 기준으로 바로 사용할 수 있음"
+      },
+      "mayAlterPriorVerdict": false
+    },
+    {
+      "regressionCaseId": "RG-06",
+      "candidateId": "INT-GUMROAD",
+      "corpusRole": "boundary_regression",
+      "testRole": "rights_and_paid_source_stop",
+      "selectionReason": "Tests source_import_required and rights separation for a paid template listing.",
+      "originalCandidate": {
+        "caseId": "BQ-05",
+        "candidateId": "INT-GUMROAD",
+        "split": "final_holdout",
+        "class": "boundary",
+        "title": "유료 Content Planner listing",
+        "sourceShape": "paid_template_listing",
+        "userJob": null,
+        "sourceRows": [],
+        "minimumInputs": [],
+        "optionalInputs": [],
+        "primaryArtifact": null,
+        "secondaryArtifacts": [],
+        "status": "source_import_required",
+        "publicReleaseAllowed": false,
+        "privateConversionAllowed": false,
+        "forbidden": [
+          "구매 전 실제 template 행 추정",
+          "권한 우회"
+        ],
+        "gates": {
+          "source": "fail_paid_rows_missing",
+          "rights": "fail_entitlement_required",
+          "locale": "pass_non_sensitive",
+          "safety": "pass",
+          "privacy": "pass"
+        },
+        "candidate": {
+          "candidateId": "INT-GUMROAD",
+          "title": "Gumroad Content Planner Template",
+          "canonicalUrl": "https://theorganizednotebook.gumroad.com/l/content-planner-template",
+          "provider": "Gumroad creator",
+          "providerType": "paid_creator_template",
+          "locale": "en",
+          "sourceFormat": "paid_template_listing",
+          "evidenceLane": "operator_template",
+          "priorUse": "source_seed",
+          "userMoment": "candidate_specific",
+          "contentRole": "candidate",
+          "actualRowCreatorTemplate": false,
+          "sourceStatus": "paid_gate",
+          "evidence": [
+            {
+              "id": "INT-GUMROAD-E1",
+              "type": "demand",
+              "claim": "821 sales가 공개 listing에 보인다.",
+              "url": "https://theorganizednotebook.gumroad.com/l/content-planner-template",
+              "observedAt": "2026-07-22"
+            },
+            {
+              "id": "INT-GUMROAD-E2",
+              "type": "interaction",
+              "claim": "판매는 수요 신호지만 파일 행은 구매 뒤에 있다.",
+              "url": "https://theorganizednotebook.gumroad.com/l/content-planner-template",
+              "observedAt": "2026-07-22"
+            },
+            {
+              "id": "INT-GUMROAD-E3",
+              "type": "source_rows",
+              "claim": "licensed file 또는 creator supply 없이는 actual rows가 없다.",
+              "url": "https://theorganizednotebook.gumroad.com/l/content-planner-template",
+              "observedAt": "2026-07-22"
+            },
+            {
+              "id": "INT-GUMROAD-E4",
+              "type": "creator_business",
+              "claim": "직접 판매·creator 공급·source-link 가치가 강하다.",
+              "url": "https://theorganizednotebook.gumroad.com/l/content-planner-template",
+              "observedAt": "2026-07-22"
+            },
+            {
+              "id": "INT-GUMROAD-E5",
+              "type": "value_delta",
+              "claim": "행을 확보하면 Sheet export가 유용하지만 현재는 만들 수 없다.",
+              "url": "https://theorganizednotebook.gumroad.com/l/content-planner-template",
+              "observedAt": "2026-07-22",
+              "evidenceClass": "internal_expert_judgment"
+            },
+            {
+              "id": "INT-GUMROAD-E6",
+              "type": "portfolio",
+              "claim": "paid source boundary다.",
+              "url": "https://theorganizednotebook.gumroad.com/l/content-planner-template",
+              "observedAt": "2026-07-22",
+              "evidenceClass": "internal_expert_judgment"
+            }
+          ],
+          "scores": {
+            "visibleDemand": {
+              "points": 18,
+              "max": 20,
+              "comment": "821 sales가 공개 listing에 보인다.",
+              "evidenceRefs": [
+                "INT-GUMROAD-E1"
+              ]
+            },
+            "interaction": {
+              "points": 16,
+              "max": 20,
+              "comment": "판매는 수요 신호지만 파일 행은 구매 뒤에 있다.",
+              "evidenceRefs": [
+                "INT-GUMROAD-E2"
+              ]
+            },
+            "sourceRowFeasibility": {
+              "points": 0,
+              "max": 15,
+              "comment": "licensed file 또는 creator supply 없이는 actual rows가 없다.",
+              "evidenceRefs": [
+                "INT-GUMROAD-E3"
+              ]
+            },
+            "creatorBusinessValue": {
+              "points": 20,
+              "max": 20,
+              "comment": "직접 판매·creator 공급·source-link 가치가 강하다.",
+              "evidenceRefs": [
+                "INT-GUMROAD-E4"
+              ]
+            },
+            "flowValueDelta": {
+              "points": 12,
+              "max": 20,
+              "comment": "행을 확보하면 Sheet export가 유용하지만 현재는 만들 수 없다.",
+              "evidenceRefs": [
+                "INT-GUMROAD-E5"
+              ]
+            },
+            "portfolioExpansion": {
+              "points": 4,
+              "max": 5,
+              "comment": "paid source boundary다.",
+              "evidenceRefs": [
+                "INT-GUMROAD-E6"
+              ]
+            }
+          },
+          "computedTotal": 70,
+          "hardGates": {
+            "source": "fail_paid_file_required",
+            "rights": "fail_entitlement_required",
+            "locale": "pass",
+            "safety": "pass_with_declared_boundary",
+            "oneJob": "pass",
+            "naturalArtifact": "pass"
+          },
+          "hardGateEvidence": {
+            "source": [
+              "INT-GUMROAD-E3"
+            ],
+            "rights": [
+              "INT-GUMROAD-E3"
+            ],
+            "locale": [
+              "INT-GUMROAD-E1"
+            ],
+            "safety": [
+              "INT-GUMROAD-E3"
+            ],
+            "oneJob": [
+              "INT-GUMROAD-E3",
+              "INT-GUMROAD-E5"
+            ],
+            "naturalArtifact": [
+              "INT-GUMROAD-E5"
+            ]
+          },
+          "interactionEvidenceType": "direct_visible_interaction_or_reuse_signal",
+          "rights": {
+            "personalConversion": "allowed_link_based",
+            "publicCatalog": "review_required"
+          },
+          "valueDelta": {
+            "sourceLinkOnlyLimit": "구매 listing만 저장 가능하다.",
+            "persistentState": "unknown",
+            "returnMoment": "unknown",
+            "naturalArtifact": "sheet"
+          },
+          "qualified": false,
+          "selection": "rejected",
+          "rejectionReason": "유료 파일 권한·행 미확보",
+          "duplicateEvidenceReuse": "Demand and interaction use separate evidence types; official high-intent substitution is explicitly labeled."
+        }
+      },
+      "frozenGoldContract": {
+        "caseId": "BQ-05",
+        "candidateId": "INT-GUMROAD",
+        "split": "final_holdout",
+        "goldClass": "boundary",
+        "source": {
+          "canonicalUrl": "https://theorganizednotebook.gumroad.com/l/content-planner-template",
+          "title": "Gumroad Content Planner Template",
+          "provider": "Gumroad creator",
+          "sourceFormat": "paid_template_listing",
+          "accessStatus": "paid_gate",
+          "observedAt": "2026-07-22"
+        },
+        "flowPossible": false,
+        "reason": "원문·권리·지역성·안전 gate 중 하나 이상이 실패해 실행행을 만들지 않는다.",
+        "sourceShape": "paid_template_listing",
+        "userJob": null,
+        "sourceRows": [],
+        "allowedItems": [],
+        "forbiddenItems": [
+          "구매 전 실제 template 행 추정",
+          "권한 우회"
+        ],
+        "minimumInputs": [],
+        "optionalInputs": [],
+        "autoFilledValues": [
+          "sourceTitle",
+          "sourceUrl",
+          "sourceRows"
+        ],
+        "valuesToConfirm": [],
+        "primaryProjection": null,
+        "secondaryProjections": [],
+        "forbiddenProjections": [
+          "모든 실행 projection"
+        ],
+        "omittedSourceRows": [],
+        "uncertainty": [
+          "gate 해소 전 실제 실행행을 알 수 없음"
+        ],
+        "gates": {
+          "source": "fail_paid_rows_missing",
+          "rights": "fail_entitlement_required",
+          "locale": "pass_non_sensitive",
+          "safety": "pass",
+          "privacy": "pass"
+        },
+        "publicReleaseAllowed": false,
+        "privateConversionAllowed": false,
+        "status": "source_import_required",
+        "projections": {
+          "calendar": {
+            "availability": "omitted",
+            "events": [],
+            "reason": "gate 통과 전 생성 금지"
+          },
+          "checklist": {
+            "availability": "omitted",
+            "entries": [],
+            "reason": "gate 통과 전 생성 금지"
+          },
+          "todo": {
+            "availability": "omitted",
+            "entries": [],
+            "reason": "gate 통과 전 생성 금지"
+          },
+          "sheet": {
+            "availability": "omitted",
+            "columns": [],
+            "rows": [],
+            "reason": "gate 통과 전 생성 금지"
+          },
+          "memo": {
+            "availability": "omitted",
+            "body": null,
+            "reason": "원문 확보 또는 검토가 우선"
+          }
+        },
+        "valueReview": {
+          "sourceLinkOnlyLimit": "구매 listing만 저장 가능하다.",
+          "persistentState": "unknown",
+          "returnMoment": "unknown",
+          "firstActionVisible": false,
+          "zeroToTwoRequiredInputs": true,
+          "creatorOrSourceLoop": "직접 판매·creator 공급·source-link 가치가 강하다.",
+          "internalExpertJudgmentOnly": true
+        }
+      },
+      "preservedFinalAdjudication": {
+        "caseId": "BQ-05",
+        "goldClass": "boundary",
+        "split": "final_holdout",
+        "verdict": "Hold",
+        "reason": "정확히 멈추는 것이 성공인 control 사례"
+      },
+      "mayAlterPriorVerdict": false
+    }
+  ]
+}

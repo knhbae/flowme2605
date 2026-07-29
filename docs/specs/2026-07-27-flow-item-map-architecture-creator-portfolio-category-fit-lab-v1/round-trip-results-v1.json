@@ -1,0 +1,378 @@
+{
+  "schemaVersion": "flowme-round-trip-results-v1",
+  "evidenceBoundary": {
+    "labParser": "run",
+    "externalGoogleOutlookApple": "not_run"
+  },
+  "records": [
+    {
+      "bundleId": "bundle-moving-d30",
+      "currentCanonical": {
+        "semanticEquality": true,
+        "itemIdsStable": true,
+        "sourceRowsStable": true
+      },
+      "itemSharedContext": {
+        "semanticEquality": true,
+        "itemIdsStable": true,
+        "sourceRowsStable": true
+      },
+      "literalIcs": {
+        "syntaxErrors": [],
+        "expectedComponents": 35,
+        "parsedComponents": 35,
+        "expectedItemComponents": 27,
+        "parsedItemComponents": 27,
+        "eventCount": 27,
+        "vtodoCount": 0,
+        "schedulelessVevents": 0,
+        "stableItemUids": true,
+        "relatedToPresent": true,
+        "sourceReferenceCountRecoveredByLabParser": 52,
+        "sourceReferenceCountExpected": 52,
+        "uniqueSourceRowsRecoveredByLabParser": 52,
+        "uniqueSourceRowsExpected": 52,
+        "scheduledCompletionSemanticsNative": 0,
+        "scheduledCompletionSemanticsExpected": 27,
+        "externalClientRoundTrip": "not_run",
+        "externalVtodoSupport": "not_proven",
+        "externalRelatedToSupport": "not_proven",
+        "externalXPropertySupport": "not_proven"
+      },
+      "projectionIcs": {
+        "compactComponents": 6,
+        "compactParserErrors": [],
+        "granularComponents": 27,
+        "granularParserErrors": []
+      }
+    },
+    {
+      "bundleId": "bundle-baby-food-174",
+      "currentCanonical": {
+        "semanticEquality": true,
+        "itemIdsStable": true,
+        "sourceRowsStable": true
+      },
+      "itemSharedContext": {
+        "semanticEquality": true,
+        "itemIdsStable": true,
+        "sourceRowsStable": true
+      },
+      "literalIcs": {
+        "syntaxErrors": [],
+        "expectedComponents": 50,
+        "parsedComponents": 50,
+        "expectedItemComponents": 36,
+        "parsedItemComponents": 36,
+        "eventCount": 36,
+        "vtodoCount": 0,
+        "schedulelessVevents": 0,
+        "stableItemUids": true,
+        "relatedToPresent": true,
+        "sourceReferenceCountRecoveredByLabParser": 36,
+        "sourceReferenceCountExpected": 36,
+        "uniqueSourceRowsRecoveredByLabParser": 36,
+        "uniqueSourceRowsExpected": 36,
+        "scheduledCompletionSemanticsNative": 0,
+        "scheduledCompletionSemanticsExpected": 36,
+        "externalClientRoundTrip": "not_run",
+        "externalVtodoSupport": "not_proven",
+        "externalRelatedToSupport": "not_proven",
+        "externalXPropertySupport": "not_proven"
+      },
+      "projectionIcs": {
+        "compactComponents": 36,
+        "compactParserErrors": [],
+        "granularComponents": 36,
+        "granularParserErrors": []
+      }
+    },
+    {
+      "bundleId": "bundle-opic-plan",
+      "currentCanonical": {
+        "semanticEquality": true,
+        "itemIdsStable": true,
+        "sourceRowsStable": true
+      },
+      "itemSharedContext": {
+        "semanticEquality": true,
+        "itemIdsStable": true,
+        "sourceRowsStable": true
+      },
+      "literalIcs": {
+        "syntaxErrors": [],
+        "expectedComponents": 52,
+        "parsedComponents": 52,
+        "expectedItemComponents": 42,
+        "parsedItemComponents": 42,
+        "eventCount": 42,
+        "vtodoCount": 0,
+        "schedulelessVevents": 0,
+        "stableItemUids": true,
+        "relatedToPresent": true,
+        "sourceReferenceCountRecoveredByLabParser": 92,
+        "sourceReferenceCountExpected": 92,
+        "uniqueSourceRowsRecoveredByLabParser": 52,
+        "uniqueSourceRowsExpected": 52,
+        "scheduledCompletionSemanticsNative": 0,
+        "scheduledCompletionSemanticsExpected": 42,
+        "externalClientRoundTrip": "not_run",
+        "externalVtodoSupport": "not_proven",
+        "externalRelatedToSupport": "not_proven",
+        "externalXPropertySupport": "not_proven"
+      },
+      "projectionIcs": {
+        "compactComponents": 42,
+        "compactParserErrors": [],
+        "granularComponents": 42,
+        "granularParserErrors": []
+      }
+    },
+    {
+      "bundleId": "bundle-new-car-comparison",
+      "currentCanonical": {
+        "semanticEquality": true,
+        "itemIdsStable": true,
+        "sourceRowsStable": true
+      },
+      "itemSharedContext": {
+        "semanticEquality": true,
+        "itemIdsStable": true,
+        "sourceRowsStable": true
+      },
+      "literalIcs": {
+        "syntaxErrors": [],
+        "expectedComponents": 24,
+        "parsedComponents": 24,
+        "expectedItemComponents": 14,
+        "parsedItemComponents": 14,
+        "eventCount": 0,
+        "vtodoCount": 14,
+        "schedulelessVevents": 0,
+        "stableItemUids": true,
+        "relatedToPresent": true,
+        "sourceReferenceCountRecoveredByLabParser": 29,
+        "sourceReferenceCountExpected": 29,
+        "uniqueSourceRowsRecoveredByLabParser": 29,
+        "uniqueSourceRowsExpected": 29,
+        "scheduledCompletionSemanticsNative": 0,
+        "scheduledCompletionSemanticsExpected": 0,
+        "externalClientRoundTrip": "not_run",
+        "externalVtodoSupport": "not_proven",
+        "externalRelatedToSupport": "not_proven",
+        "externalXPropertySupport": "not_proven"
+      },
+      "projectionIcs": {
+        "compactComponents": 0,
+        "compactParserErrors": [],
+        "granularComponents": 0,
+        "granularParserErrors": []
+      }
+    },
+    {
+      "bundleId": "bundle-allblanc-7day-abs",
+      "currentCanonical": {
+        "semanticEquality": true,
+        "itemIdsStable": true,
+        "sourceRowsStable": true
+      },
+      "itemSharedContext": {
+        "semanticEquality": true,
+        "itemIdsStable": true,
+        "sourceRowsStable": true
+      },
+      "literalIcs": {
+        "syntaxErrors": [],
+        "expectedComponents": 22,
+        "parsedComponents": 22,
+        "expectedItemComponents": 7,
+        "parsedItemComponents": 7,
+        "eventCount": 7,
+        "vtodoCount": 0,
+        "schedulelessVevents": 0,
+        "stableItemUids": true,
+        "relatedToPresent": true,
+        "sourceReferenceCountRecoveredByLabParser": 7,
+        "sourceReferenceCountExpected": 7,
+        "uniqueSourceRowsRecoveredByLabParser": 7,
+        "uniqueSourceRowsExpected": 7,
+        "scheduledCompletionSemanticsNative": 0,
+        "scheduledCompletionSemanticsExpected": 7,
+        "externalClientRoundTrip": "not_run",
+        "externalVtodoSupport": "not_proven",
+        "externalRelatedToSupport": "not_proven",
+        "externalXPropertySupport": "not_proven"
+      },
+      "projectionIcs": {
+        "compactComponents": 7,
+        "compactParserErrors": [],
+        "granularComponents": 7,
+        "granularParserErrors": []
+      }
+    },
+    {
+      "bundleId": "bundle-triple-cappadocia-departure",
+      "currentCanonical": {
+        "semanticEquality": true,
+        "itemIdsStable": true,
+        "sourceRowsStable": true
+      },
+      "itemSharedContext": {
+        "semanticEquality": true,
+        "itemIdsStable": true,
+        "sourceRowsStable": true
+      },
+      "literalIcs": {
+        "syntaxErrors": [],
+        "expectedComponents": 13,
+        "parsedComponents": 13,
+        "expectedItemComponents": 8,
+        "parsedItemComponents": 8,
+        "eventCount": 0,
+        "vtodoCount": 8,
+        "schedulelessVevents": 0,
+        "stableItemUids": true,
+        "relatedToPresent": true,
+        "sourceReferenceCountRecoveredByLabParser": 8,
+        "sourceReferenceCountExpected": 8,
+        "uniqueSourceRowsRecoveredByLabParser": 8,
+        "uniqueSourceRowsExpected": 8,
+        "scheduledCompletionSemanticsNative": 0,
+        "scheduledCompletionSemanticsExpected": 0,
+        "externalClientRoundTrip": "not_run",
+        "externalVtodoSupport": "not_proven",
+        "externalRelatedToSupport": "not_proven",
+        "externalXPropertySupport": "not_proven"
+      },
+      "projectionIcs": {
+        "compactComponents": 0,
+        "compactParserErrors": [],
+        "granularComponents": 0,
+        "granularParserErrors": []
+      }
+    },
+    {
+      "bundleId": "bundle-wtable-summer-banchan-five",
+      "currentCanonical": {
+        "semanticEquality": true,
+        "itemIdsStable": true,
+        "sourceRowsStable": true
+      },
+      "itemSharedContext": {
+        "semanticEquality": true,
+        "itemIdsStable": true,
+        "sourceRowsStable": true
+      },
+      "literalIcs": {
+        "syntaxErrors": [],
+        "expectedComponents": 16,
+        "parsedComponents": 16,
+        "expectedItemComponents": 5,
+        "parsedItemComponents": 5,
+        "eventCount": 0,
+        "vtodoCount": 5,
+        "schedulelessVevents": 0,
+        "stableItemUids": true,
+        "relatedToPresent": true,
+        "sourceReferenceCountRecoveredByLabParser": 5,
+        "sourceReferenceCountExpected": 5,
+        "uniqueSourceRowsRecoveredByLabParser": 5,
+        "uniqueSourceRowsExpected": 5,
+        "scheduledCompletionSemanticsNative": 0,
+        "scheduledCompletionSemanticsExpected": 0,
+        "externalClientRoundTrip": "not_run",
+        "externalVtodoSupport": "not_proven",
+        "externalRelatedToSupport": "not_proven",
+        "externalXPropertySupport": "not_proven"
+      },
+      "projectionIcs": {
+        "compactComponents": 0,
+        "compactParserErrors": [],
+        "granularComponents": 0,
+        "granularParserErrors": []
+      }
+    },
+    {
+      "bundleId": "bundle-andstudio-job-prep-videos",
+      "currentCanonical": {
+        "semanticEquality": true,
+        "itemIdsStable": true,
+        "sourceRowsStable": true
+      },
+      "itemSharedContext": {
+        "semanticEquality": true,
+        "itemIdsStable": true,
+        "sourceRowsStable": true
+      },
+      "literalIcs": {
+        "syntaxErrors": [],
+        "expectedComponents": 10,
+        "parsedComponents": 10,
+        "expectedItemComponents": 3,
+        "parsedItemComponents": 3,
+        "eventCount": 0,
+        "vtodoCount": 3,
+        "schedulelessVevents": 0,
+        "stableItemUids": true,
+        "relatedToPresent": true,
+        "sourceReferenceCountRecoveredByLabParser": 3,
+        "sourceReferenceCountExpected": 3,
+        "uniqueSourceRowsRecoveredByLabParser": 3,
+        "uniqueSourceRowsExpected": 3,
+        "scheduledCompletionSemanticsNative": 0,
+        "scheduledCompletionSemanticsExpected": 0,
+        "externalClientRoundTrip": "not_run",
+        "externalVtodoSupport": "not_proven",
+        "externalRelatedToSupport": "not_proven",
+        "externalXPropertySupport": "not_proven"
+      },
+      "projectionIcs": {
+        "compactComponents": 0,
+        "compactParserErrors": [],
+        "granularComponents": 0,
+        "granularParserErrors": []
+      }
+    },
+    {
+      "bundleId": "bundle-fitpet-puppy-vaccination",
+      "currentCanonical": {
+        "semanticEquality": true,
+        "itemIdsStable": true,
+        "sourceRowsStable": true
+      },
+      "itemSharedContext": {
+        "semanticEquality": true,
+        "itemIdsStable": true,
+        "sourceRowsStable": true
+      },
+      "literalIcs": {
+        "syntaxErrors": [],
+        "expectedComponents": 14,
+        "parsedComponents": 14,
+        "expectedItemComponents": 6,
+        "parsedItemComponents": 6,
+        "eventCount": 6,
+        "vtodoCount": 0,
+        "schedulelessVevents": 0,
+        "stableItemUids": true,
+        "relatedToPresent": true,
+        "sourceReferenceCountRecoveredByLabParser": 6,
+        "sourceReferenceCountExpected": 6,
+        "uniqueSourceRowsRecoveredByLabParser": 6,
+        "uniqueSourceRowsExpected": 6,
+        "scheduledCompletionSemanticsNative": 0,
+        "scheduledCompletionSemanticsExpected": 6,
+        "externalClientRoundTrip": "not_run",
+        "externalVtodoSupport": "not_proven",
+        "externalRelatedToSupport": "not_proven",
+        "externalXPropertySupport": "not_proven"
+      },
+      "projectionIcs": {
+        "compactComponents": 6,
+        "compactParserErrors": [],
+        "granularComponents": 6,
+        "granularParserErrors": []
+      }
+    }
+  ]
+}

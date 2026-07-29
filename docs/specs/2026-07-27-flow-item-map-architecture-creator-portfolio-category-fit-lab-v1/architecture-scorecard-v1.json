@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "flowme-architecture-scorecard-v1",
+  "evidenceType": "internal_expert_contract_score",
+  "observedUserValidation": "not_run",
+  "weights": {
+    "sourceMeaningAndProvenance": 20,
+    "executionCompletionState": 15,
+    "categoryAndMapGenerality": 15,
+    "projectionQuality": 15,
+    "inputEditSimplicity": 10,
+    "icsInteroperability": 10,
+    "progressDecisionConditional": 10,
+    "runtimeMigration": 5
+  },
+  "adoptionGate": {
+    "requiredDistinctSameDateMultiItemExamples": 3,
+    "observedDistinctPrimaryBundles": 1,
+    "sharedContextAdoptionPassed": false
+  },
+  "corpusTotals": {
+    "items": 148,
+    "scheduled": 118
+  },
+  "roundTripSummary": {
+    "allCanonicalSemanticRoundTripsPassed": true,
+    "allLiteralSyntaxPassed": true,
+    "externalClientRoundTrip": "not_run"
+  },
+  "records": [
+    {
+      "architecture": "current_canonical_v1",
+      "hardGate": "pass",
+      "dimensions": {
+        "sourceMeaningAndProvenance": 20,
+        "executionCompletionState": 15,
+        "categoryAndMapGenerality": 15,
+        "projectionQuality": 14,
+        "inputEditSimplicity": 9,
+        "icsInteroperability": 8,
+        "progressDecisionConditional": 10,
+        "runtimeMigration": 5
+      },
+      "total": 96,
+      "verdict": "Go",
+      "evidence": "148 Item and 198 SourceRow remain direct; unscheduled content stays outside VEVENT; existing setup fields already collect shared anchor dates once."
+    },
+    {
+      "architecture": "literal_ics_first",
+      "hardGate": "fail",
+      "dimensions": {
+        "sourceMeaningAndProvenance": 10,
+        "executionCompletionState": 6,
+        "categoryAndMapGenerality": 8,
+        "projectionQuality": 8,
+        "inputEditSimplicity": 8,
+        "icsInteroperability": 6,
+        "progressDecisionConditional": 4,
+        "runtimeMigration": 1
+      },
+      "total": 51,
+      "verdict": "Hold",
+      "evidence": "118 scheduled Items become VEVENT without native FlowMe completion; hierarchy/provenance rely on VJOURNAL, RELATED-TO and X-properties whose client round-trip is not proven."
+    },
+    {
+      "architecture": "item_first_shared_context",
+      "hardGate": "pass",
+      "dimensions": {
+        "sourceMeaningAndProvenance": 20,
+        "executionCompletionState": 15,
+        "categoryAndMapGenerality": 15,
+        "projectionQuality": 15,
+        "inputEditSimplicity": 9,
+        "icsInteroperability": 8,
+        "progressDecisionConditional": 10,
+        "runtimeMigration": 3
+      },
+      "total": 95,
+      "verdict": "Modify",
+      "evidence": "Semantics pass, but only 1 distinct primary bundle demonstrates repeated equal Item schedules and existing anchor fields already provide one-time date entry. Canonical persistence is not justified yet."
+    }
+  ],
+  "decision": "keep_current_canonical_v1_add_projection_time_grouping"
+}

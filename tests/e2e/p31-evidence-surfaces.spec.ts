@@ -32,11 +32,18 @@ test.describe('P31 final evidence surfaces', () => {
     await page.goto('/');
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
+    await expect(page).toHaveURL('/flows');
     await expect(
-      page.locator('[data-p31-marker="P31-HOME-FIND-ROLE-SEPARATION"]'),
+      page.getByTestId('platform-mobile-tabs'),
+    ).toHaveAttribute(
+      'data-p35-marker',
+      'P35-ENTRY-ROUTER-3TAB',
+    );
+    await expect(
+      page.getByTestId('platform-mobile-tabs').getByRole('link', { name: 'Flow 찾기' }),
     ).toBeVisible();
     await expectViewportStable(page);
-    await capture(page, 'p31-home-first-390.png');
+    await capture(page, 'p35-entry-find-first-390.png');
 
     await page.goto('/flows');
     await expect(page.getByTestId('flow-map-catalog-section')).toBeVisible();
@@ -44,8 +51,7 @@ test.describe('P31 final evidence surfaces', () => {
     await expectViewportStable(page);
     await capture(page, 'p31-find-catalog-390.png');
 
-    await page.goto('/my?demo=ux12');
-    await page.getByTestId('my-flow-view-flow').click();
+    await page.goto('/my?demo=ux12&view=flows&mode=flow');
     const library = page.getByTestId('my-flow-mobile-flow-hub');
     await expect(library).toBeVisible();
     await capture(page, 'p31-my-flow-library-390.png');
@@ -55,8 +61,8 @@ test.describe('P31 final evidence surfaces', () => {
       .first();
     await openRow.getByTestId('my-flow-mobile-structure-open').click();
     await expect(page.getByTestId('my-flow-mobile-workspace')).toHaveAttribute(
-      'data-p31-marker',
-      'P31-03-DEDICATED-MOBILE-WORKSPACE',
+      'data-p35-marker',
+      'P35-PERSONAL-SINGLE-FOCUS',
     );
     await expectViewportStable(page);
     await capture(page, 'p31-my-flow-workspace-demo-390.png');
@@ -67,16 +73,13 @@ test.describe('P31 final evidence surfaces', () => {
     await expectViewportStable(page);
     await capture(page, 'p31-calendar-default-390.png');
 
-    const calendarEvent = page
-      .locator('.fc-daygrid-day[data-date="2026-05-28"] .fc-event')
-      .first();
-    await calendarEvent.click();
-    await expect(page.getByTestId('my-flow-item-detail-sheet')).toHaveAttribute(
-      'data-p31-marker',
-      'P31-04-CALENDAR-ITEM-SHEET',
-    );
-    await capture(page, 'p31-calendar-sheet-demo-390.png');
-    await page.keyboard.press('Escape');
+    await page
+      .locator('.fc-daygrid-day[data-date="2026-05-28"]')
+      .getByTestId('my-flow-calendar-date-button')
+      .click();
+    await expect(page.getByTestId('my-flow-selected-date-groups')).toBeVisible();
+    await expect(page.getByTestId('my-flow-item-detail-sheet')).toHaveCount(0);
+    await capture(page, 'p35-calendar-selected-day-demo-390.png');
 
     await page.evaluate(() => {
       window.localStorage.clear();
@@ -91,12 +94,15 @@ test.describe('P31 final evidence surfaces', () => {
       );
     });
     await page.goto('/calendar');
-    const undatedTray = page.getByTestId('my-flow-calendar-unscheduled-tray');
-    await expect(undatedTray).toBeVisible();
-    await undatedTray.getByTestId('my-flow-calendar-unscheduled-toggle').click();
-    await expect(page.getByTestId('my-flow-calendar-unscheduled-sheet')).toBeVisible();
+    await expect(page.getByTestId('my-flow-calendar-unscheduled-tray')).toHaveCount(0);
+    await page.goto('/my?view=flows&mode=flow');
+    await expect(
+      page.locator(
+        '[data-testid="my-flow-mobile-structure-row"][data-flow-slug="vehicle-inspection-prep"]',
+      ),
+    ).toBeVisible();
     await expectViewportStable(page);
-    await capture(page, 'p31-calendar-undated-tray-390.png');
+    await capture(page, 'p35-undated-my-flow-390.png');
 
     expect(errors).toEqual([]);
   });
@@ -110,19 +116,23 @@ test.describe('P31 final evidence surfaces', () => {
     await page.setViewportSize({ width: 1024, height: 768 });
 
     await page.goto('/');
+    await expect(page).toHaveURL('/flows');
     await expectViewportStable(page);
-    await capture(page, 'p31-home-1024.png');
+    await capture(page, 'p35-entry-find-1024.png');
 
     await page.goto('/flows');
     await expect(page.getByTestId('flow-map-catalog-section')).toBeVisible();
     await expectViewportStable(page);
     await capture(page, 'p31-find-1024.png');
 
-    await page.goto('/my?demo=ux20');
-    await page.getByTestId('my-flow-view-flow').click();
+    await page.goto('/my?demo=ux20&view=flows&mode=flow');
     await expect(page.getByTestId('my-flow-library-workspace')).toHaveAttribute(
       'data-library-layout',
       'rail-canvas-inspector',
+    );
+    await expect(page.getByTestId('my-flow-library-workspace')).toHaveAttribute(
+      'data-p35-marker',
+      'P35-MY-LIBRARY-ONLY',
     );
     await expectViewportStable(page);
     await capture(page, 'p31-my-flow-1024.png');

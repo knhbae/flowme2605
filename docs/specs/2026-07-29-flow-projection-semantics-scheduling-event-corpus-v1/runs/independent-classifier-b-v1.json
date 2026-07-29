@@ -1,0 +1,254 @@
+[
+  {
+    "bundleId": "bundle-base-moving-d30",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "calendar",
+    "evidence": "The date_offsets/date_preparation shape places an ordered, omission-sensitive moving set into six D-day groups whose items carry anchor-offset schedules."
+  },
+  {
+    "bundleId": "bundle-base-baby-food-174",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "calendar",
+    "evidence": "The table_rows/progress_tracking structure preserves a bounded D+174~209 sequence, with every daily meal item assigned its own anchor-offset schedule."
+  },
+  {
+    "bundleId": "bundle-base-opic-plan",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "calendar",
+    "evidence": "The lesson_rows/progress_tracking plans order mock tests, review, and correction into week groups, and every item has a start-date offset."
+  },
+  {
+    "bundleId": "bundle-base-opentutorials-web1-progress",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "sheet",
+    "evidence": "The lesson_rows/progress_tracking fixture is one ordered 26-topic WEB1 sequence with no item schedules, making row-by-row progress the dominant projection."
+  },
+  {
+    "bundleId": "bundle-base-new-car-comparison",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The procedure_rows/ordered_procedure fixture has eight numbered purchase stages whose decisions and confirmations are undated but order-sensitive."
+  },
+  {
+    "bundleId": "bundle-base-allblanc-7day-abs",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "calendar",
+    "evidence": "The seven named workout flows form a bounded Day 1~7 challenge, and their single follow-along items carry consecutive start-date offsets."
+  },
+  {
+    "bundleId": "bundle-base-wtable-summer-banchan-five",
+    "checklistTodoLabel": "todo",
+    "primaryProjection": "todo",
+    "evidence": "The resource_collection/resource_queue fixture contains five undated, independent recipe actions that can be chosen, reordered, or deferred separately."
+  },
+  {
+    "bundleId": "bundle-base-andstudio-job-prep-videos",
+    "checklistTodoLabel": "todo",
+    "primaryProjection": "todo",
+    "evidence": "The resource_collection/resource_queue fixture contains three undated job-preparation videos that remain useful as independent, deferable next actions."
+  },
+  {
+    "bundleId": "bundle-oq-oq-c01-moving",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "calendar",
+    "evidence": "The date_offsets/date_preparation structure groups an omission-sensitive moving set by relative period, with most items carrying offsets or date windows."
+  },
+  {
+    "bundleId": "bundle-oq-oq-c02-kmooc-full",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "sheet",
+    "evidence": "The lesson_rows/progress_tracking fixture preserves fourteen numbered weekly lessons as undated ordered rows."
+  },
+  {
+    "bundleId": "bundle-oq-oq-c03-librivox",
+    "checklistTodoLabel": "ambiguous",
+    "primaryProjection": "sheet",
+    "evidence": "The resource_queue pattern suggests deferable resources, but the 38 numbered chapter titles form an omission-sensitive reading order, so progress rows are clearest."
+  },
+  {
+    "bundleId": "bundle-oq-oq-c04-passport",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The checklist_rows/ordered_procedure fixture groups an application-path choice with four bounded required-document items."
+  },
+  {
+    "bundleId": "bundle-oq-oq-c05-washer",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "calendar",
+    "evidence": "The recurrence_rule/repeating_routine shape repeats one maintenance session whose four undated items preserve the cleaning sequence."
+  },
+  {
+    "bundleId": "bundle-oq-oq-c06-nasa",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The procedure_rows/ordered_procedure fixture groups five undated crane-building stages whose sequence must be preserved within one activity."
+  },
+  {
+    "bundleId": "bundle-oq-oq-c07-fit100",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The procedure_rows/phase_lifecycle structure is an eight-step undated certification path from registration through ongoing fitness management."
+  },
+  {
+    "bundleId": "bundle-oq-oq-c08-ac-decision",
+    "checklistTodoLabel": "neither",
+    "primaryProjection": "memo",
+    "evidence": "The decision_criteria/compare_decide fixture contains one undated choice item rather than a multi-item completion set or action queue."
+  },
+  {
+    "bundleId": "bundle-oq-oq-b01-heat",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The pre-work and post-work groups form a bounded, omission-sensitive safety set for one farm-work situation, with no item schedules."
+  },
+  {
+    "bundleId": "bundle-oq-oq-b03-remodel",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The title identifies ten contract checkpoints and the decision_criteria/compare_decide structure applies them together before one remodeling contract decision."
+  },
+  {
+    "bundleId": "bundle-oq-oq-p01-ossu",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "sheet",
+    "evidence": "The lesson_rows/progress_tracking fixture preserves curriculum grouping and course order across six undated learning items."
+  },
+  {
+    "bundleId": "bundle-oq-oq-p02-packing",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The checklist_rows/ordered_procedure fixture groups seven undated packing items into carry-on essentials and documents for one trip."
+  },
+  {
+    "bundleId": "bundle-oq-oq-p03-vehicle",
+    "checklistTodoLabel": "todo",
+    "primaryProjection": "calendar",
+    "evidence": "The date_window/date_preparation fixture has one deferable next action to look up the official inspection window and choose a visit date."
+  },
+  {
+    "bundleId": "bundle-oq-oq-p04-portfolio",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The procedure_rows/phase_lifecycle fixture preserves seven undated stages from team and item selection through portfolio completion."
+  },
+  {
+    "bundleId": "bundle-value-vq-01",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The procedure_rows/ordered_procedure fixture groups eligibility confirmation, application, and result checks into one bounded support-application goal."
+  },
+  {
+    "bundleId": "bundle-value-vq-03",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "calendar",
+    "evidence": "The table_rows/date_preparation fixture is a bounded Monday-to-Friday dinner sequence whose five items have consecutive start-date offsets."
+  },
+  {
+    "bundleId": "bundle-value-vq-04",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The procedure_rows/ordered_procedure fixture contains a bounded one-day closet session with five ordered execution items and one follow-up state item."
+  },
+  {
+    "bundleId": "bundle-value-vq-05",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "sheet",
+    "evidence": "The lesson_rows/progress_tracking fixture groups nine undated learning rows with a separate assessment-and-summary action."
+  },
+  {
+    "bundleId": "bundle-value-vq-06",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "sheet",
+    "evidence": "The decision_criteria/compare_decide fixture applies six omission-sensitive comparison dimensions together to one plant-based drink decision."
+  },
+  {
+    "bundleId": "bundle-value-vq-10",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "sheet",
+    "evidence": "The table_rows/progress_tracking fixture tracks twelve trade-specific defect rows plus photo, repair-request, and recheck state."
+  },
+  {
+    "bundleId": "bundle-value-vq-11",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "calendar",
+    "evidence": "The date_window/date_preparation structure orders eligibility, a bounded application window, an absolute deadline, and final completion confirmation."
+  },
+  {
+    "bundleId": "bundle-value-vq-12",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The checklist_rows/ordered_procedure fixture is one omission-sensitive emergency-preparation set with six grouped household actions."
+  },
+  {
+    "bundleId": "bundle-deep-ds06",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The four table_rows/progress_tracking items are an omission-sensitive home safety inspection grouped by fall, burn, poisoning, and vehicle hazards."
+  },
+  {
+    "bundleId": "bundle-deep-ds08",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "calendar",
+    "evidence": "The narrative_guidance/date_preparation fixture preserves four numbered stops as one ordered same-day travel course."
+  },
+  {
+    "bundleId": "bundle-live-c01",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "calendar",
+    "evidence": "The table_rows/date_preparation fixture contains twelve ordered health-screening occurrences whose titles define successive age windows."
+  },
+  {
+    "bundleId": "bundle-live-c10",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The checklist_rows/date_preparation fixture groups seven packing categories into one bounded family-trip preparation set without item schedules."
+  },
+  {
+    "bundleId": "bundle-live-c13",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The procedure_rows/ordered_procedure fixture preserves four numbered, undated cooking actions within one recipe session."
+  },
+  {
+    "bundleId": "bundle-live-c16",
+    "checklistTodoLabel": "neither",
+    "primaryProjection": "memo",
+    "evidence": "The narrative_guidance/phase_lifecycle fixture presents three undated cross-channel reuse ideas rather than an omission-sensitive set or resource queue."
+  },
+  {
+    "bundleId": "bundle-live-r02",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "sheet",
+    "evidence": "The table_rows/progress_tracking fixture preserves three setup rows followed by four ordered day-range meal-plan rows."
+  },
+  {
+    "bundleId": "bundle-live-live-ifixit-washer-01",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The procedure_rows/ordered_procedure fixture is one seven-step washer-maintenance session whose numbered order must be preserved."
+  },
+  {
+    "bundleId": "bundle-live-kr-stibee-01",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The four decision_criteria/compare_decide items are omission-sensitive rights and privacy checks for one content-reuse decision."
+  },
+  {
+    "bundleId": "bundle-live-live-mdn-core-01",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "sheet",
+    "evidence": "The lesson_rows/progress_tracking fixture preserves nine undated core learning modules as ordered progress rows."
+  },
+  {
+    "bundleId": "bundle-live-live-dyson-filter-01",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "calendar",
+    "evidence": "The procedure_rows/repeating_routine fixture repeats one maintenance session whose five ordered filter-care items share the same scheduled day."
+  },
+  {
+    "bundleId": "bundle-live-live-jotform-event-intake-01",
+    "checklistTodoLabel": "neither",
+    "primaryProjection": "sheet",
+    "evidence": "The template_fields/progress_tracking fixture has an Event Registration Intake Form title but no steps, items, or schedules, indicating structured row capture rather than action completion."
+  }
+]

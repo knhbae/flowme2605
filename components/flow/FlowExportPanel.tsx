@@ -36,8 +36,10 @@ type FlowExportPanelProps = {
   flowTitle: string;
   items: FlowExportPanelItem[];
   open: boolean;
-  scope: Exclude<FlowExportScope, 'item'>;
+  scope: FlowExportScope;
   selectedKeys: string[];
+  currentItemKey?: string;
+  stableIdentity?: string;
   feedback?: string;
   legacyPersonalDraft?: boolean;
   showEntry?: boolean;
@@ -70,6 +72,8 @@ export function FlowExportPanel({
   open,
   scope,
   selectedKeys,
+  currentItemKey,
+  stableIdentity,
   feedback,
   legacyPersonalDraft = false,
   showEntry = true,
@@ -101,13 +105,27 @@ export function FlowExportPanel({
     selectedKeys,
     flowTitle,
   });
-  const plan = scope === 'flow' ? flowPlan : selectedPlan;
+  const currentItemPlan = buildFlowExportScopePlan({
+    scope: 'item',
+    items,
+    currentItemKey,
+    flowTitle,
+  });
+  const plan = scope === 'flow'
+    ? flowPlan
+    : scope === 'selected'
+      ? selectedPlan
+      : currentItemPlan;
   const selectableItems = items.filter(
     (item) => !item.excluded && !item.tombstoned && item.listEligible !== false,
   );
   const selectedCount = selectedPlan.includedCount;
-  const entryLabel = getExportScopeActionLabel('flow', flowPlan.includedCount);
-  const scopeLabel = scope === 'flow' ? 'Flow 전체' : '직접 선택';
+  const entryLabel = getExportScopeActionLabel(scope, plan.includedCount);
+  const scopeLabel = scope === 'flow'
+    ? 'Flow 전체'
+    : scope === 'selected'
+      ? '직접 선택'
+      : '현재 항목';
   const includedKeySet = new Set(plan.items.map((item) => item.key));
   const includedPanelItems = items.filter((item) => includedKeySet.has(item.key));
   const nestedSubcheckCount = includedPanelItems.reduce(
@@ -128,6 +146,9 @@ export function FlowExportPanel({
     [...exportRecommendation.visible, ...exportRecommendation.additional]
       .map((candidate) => [candidate.destination, candidate] as const),
   );
+  const calendarUnavailable = destinations.includes('calendar')
+    && plan.includedCount > 0
+    && plan.countByDestination.calendar === 0;
 
   useEffect(() => {
     setReceipt(null);
@@ -195,6 +216,7 @@ export function FlowExportPanel({
             : scopedActionLabel}
         title={disabled ? disabledReason : undefined}
         data-export-count={count}
+        data-export-destination={destination}
         data-export-state={pending ? 'pending' : disabled ? 'disabled' : 'ready'}
         data-recommendation-role={role}
         data-recommendation-visible={!hidden}
@@ -266,6 +288,8 @@ export function FlowExportPanel({
           data-default-expanded-secondary-count="0"
           data-flow-anatomy="export-preflight"
           data-p34-marker="P34-07-SCOPE-FIRST-EXPORT"
+          data-p35-marker="P35-EXPORT-SCOPE-FIRST"
+          data-p35-count-marker="P35-EXPORT-COUNT-PARITY"
           className={showEntry ? 'mt-3 border-t border-[var(--flowme-border)] pt-3' : ''}
         >
           <div className="flex items-center justify-between gap-3">
@@ -289,42 +313,50 @@ export function FlowExportPanel({
             ) : null}
           </div>
 
-          {fixedScope ? (
-            <div
-              data-testid="my-flow-export-scope-control"
-              className="mt-3 flex min-h-11 items-center justify-between border-y border-[var(--flowme-border)] py-2"
-              aria-label="가져갈 범위"
+          <section data-testid="my-flow-export-scope-step" aria-labelledby="my-flow-export-scope-heading">
+            <p
+              id="my-flow-export-scope-heading"
+              className="mt-3 text-xs font-semibold text-[var(--flowme-text-secondary)]"
             >
-              <span className="text-sm font-semibold text-[var(--flowme-text)]">Flow 전체</span>
-              <span className="text-xs font-semibold text-[var(--flowme-text-secondary)]">{flowPlan.includedCount}개</span>
-            </div>
-          ) : (
-            <div
-              data-testid="my-flow-export-scope-control"
-              className={`mt-3 grid-cols-2 ${FLOW_UI_SEGMENTED_CLASS}`}
-              role="group"
-              aria-label="가져갈 범위"
-            >
-              <button
-                type="button"
-                data-testid="my-flow-export-scope-flow"
-                aria-pressed={scope === 'flow'}
-                className={`min-h-11 rounded-md px-3 py-2 text-sm font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${scope === 'flow' ? FLOW_UI_SEGMENT_ACTIVE_CLASS : FLOW_UI_SEGMENT_IDLE_CLASS}`}
-                onClick={() => onScopeChange('flow')}
+              1 · 범위
+            </p>
+            {fixedScope ? (
+              <div
+                data-testid="my-flow-export-scope-control"
+                className="mt-1 flex min-h-11 items-center justify-between border-y border-[var(--flowme-border)] py-2"
+                aria-label="가져갈 범위"
               >
-                Flow 전체 · {flowPlan.includedCount}개
-              </button>
-              <button
-                type="button"
-                data-testid="my-flow-export-scope-selected"
-                aria-pressed={scope === 'selected'}
-                className={`min-h-11 rounded-md px-3 py-2 text-sm font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${scope === 'selected' ? FLOW_UI_SEGMENT_ACTIVE_CLASS : FLOW_UI_SEGMENT_IDLE_CLASS}`}
-                onClick={() => onScopeChange('selected')}
+                <span className="text-sm font-semibold text-[var(--flowme-text)]">{scopeLabel}</span>
+                <span className="sr-only"> · {plan.includedCount}개</span>
+              </div>
+            ) : (
+              <div
+                data-testid="my-flow-export-scope-control"
+                className={`mt-1 grid-cols-2 ${FLOW_UI_SEGMENTED_CLASS}`}
+                role="group"
+                aria-label="가져갈 범위"
               >
-                직접 선택 · {selectedCount}개
-              </button>
-            </div>
-          )}
+                <button
+                  type="button"
+                  data-testid="my-flow-export-scope-flow"
+                  aria-pressed={scope === 'flow'}
+                  className={`min-h-11 rounded-md px-3 py-2 text-sm font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${scope === 'flow' ? FLOW_UI_SEGMENT_ACTIVE_CLASS : FLOW_UI_SEGMENT_IDLE_CLASS}`}
+                  onClick={() => onScopeChange('flow')}
+                >
+                  Flow 전체<span className="sr-only"> · {flowPlan.includedCount}개</span>
+                </button>
+                <button
+                  type="button"
+                  data-testid="my-flow-export-scope-selected"
+                  aria-pressed={scope === 'selected'}
+                  className={`min-h-11 rounded-md px-3 py-2 text-sm font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--flowme-focus)] ${scope === 'selected' ? FLOW_UI_SEGMENT_ACTIVE_CLASS : FLOW_UI_SEGMENT_IDLE_CLASS}`}
+                  onClick={() => onScopeChange('selected')}
+                >
+                  직접 선택<span className="sr-only"> · {selectedCount}개</span>
+                </button>
+              </div>
+            )}
+          </section>
 
           {scope === 'selected' ? (
             <div data-testid="my-flow-export-selection" className="mt-3">
@@ -354,6 +386,7 @@ export function FlowExportPanel({
 
           <div
             data-testid="my-flow-export-preflight"
+            data-p35-r10-marker="P35-R10-EXPORT-SUMMARY-ONE-OWNER"
             className="mt-3 flex flex-wrap items-center justify-between gap-2 border-y border-[var(--flowme-border)] py-2"
           >
             <p data-testid="my-flow-export-scope-summary" className="text-sm font-semibold text-[var(--flowme-text)]">
@@ -361,7 +394,7 @@ export function FlowExportPanel({
             </p>
             <p data-testid="my-flow-export-calendar-summary" className="text-xs font-semibold text-[var(--flowme-text-secondary)]">
               {plan.metrics.recurringSeriesCount > 0
-                ? `반복 일정 ${plan.metrics.recurringSeriesCount}개 · 표시 회차 ${plan.metrics.visibleOccurrenceCount}개`
+                ? `반복 계획 ${plan.metrics.recurringSeriesCount}개 · 캘린더 파일 ${plan.countByDestination.calendar}개 · 화면 회차 ${plan.metrics.visibleOccurrenceCount}개`
                 : `캘린더 ${plan.countByDestination.calendar}개`}
             </p>
           </div>
@@ -381,14 +414,37 @@ export function FlowExportPanel({
             </p>
           ) : null}
 
-          <div
-            ref={recommendationContainerRef}
-            data-testid="my-flow-export-recommendations"
-            data-p29-marker="P29-ARTIFACT-EXPORT-PREFLIGHT"
+          <section
+            aria-labelledby="my-flow-export-format-heading"
             className="mt-3"
           >
+            <div className="flex items-end justify-between gap-3">
+              <p
+                id="my-flow-export-format-heading"
+                className="text-xs font-semibold text-[var(--flowme-text-secondary)]"
+              >
+                2 · 형식
+              </p>
+              <p className="text-[11px] font-medium text-[var(--flowme-text-tertiary)]">
+                이 범위에서 만들 수 있는 결과
+              </p>
+            </div>
+            {calendarUnavailable ? (
+              <p
+                data-testid="my-flow-export-calendar-recovery"
+                className="mt-2 border-l-2 border-[var(--flowme-border-strong)] pl-2 text-xs font-medium leading-5 text-[var(--flowme-text-secondary)]"
+              >
+                캘린더 파일은 날짜를 정한 항목만 만들 수 있어요. Flow로 돌아가 날짜를 정해 주세요.
+              </p>
+            ) : null}
+            <div
+              ref={recommendationContainerRef}
+              data-testid="my-flow-export-recommendations"
+              data-p29-marker="P29-ARTIFACT-EXPORT-PREFLIGHT"
+              className="mt-2"
+            >
             {exportRecommendation.visible.length > 0 ? (
-              <div className={`grid grid-cols-1 overflow-hidden border-y border-[var(--flowme-border)] ${exportRecommendation.visible.length > 1 ? 'sm:grid-cols-3' : ''}`}>
+              <div className={`grid overflow-hidden border-y border-[var(--flowme-border)] ${exportRecommendation.visible.length > 1 ? 'grid-cols-[repeat(auto-fit,minmax(14rem,1fr))]' : 'grid-cols-1'}`}>
                 {exportRecommendation.visible.map((candidate) => (
                   renderDestinationButton(candidate.destination, candidate)
                 ))}
@@ -405,7 +461,7 @@ export function FlowExportPanel({
                   <span>다른 형식 {exportRecommendation.additional.length}개</span>
                   <span aria-hidden="true">⌄</span>
                 </summary>
-                <div className="grid sm:grid-cols-2">
+                <div className="grid grid-cols-[repeat(auto-fit,minmax(14rem,1fr))]">
                   {exportRecommendation.additional.map((candidate) => (
                     renderDestinationButton(candidate.destination, candidate)
                   ))}
@@ -418,11 +474,18 @@ export function FlowExportPanel({
                 renderDestinationButton(destination, undefined, true)
               ))}
             </div>
-          </div>
+            </div>
+          </section>
 
           {receipt ? (
-            <div ref={receiptContainerRef}>
-              <FlowExportReceipt receipt={receipt} flowTitle={flowTitle} sourceLabel={sourceLabel} />
+            <div ref={receiptContainerRef} data-testid="my-flow-export-receipt-step">
+              <p className="mt-3 text-xs font-semibold text-[var(--flowme-text-secondary)]">3 · 결과</p>
+              <FlowExportReceipt
+                receipt={receipt}
+                flowTitle={flowTitle}
+                sourceLabel={sourceLabel}
+                stableIdentity={stableIdentity}
+              />
             </div>
           ) : null}
 

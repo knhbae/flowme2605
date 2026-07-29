@@ -1,0 +1,49 @@
+{
+  "generatedAt": "2026-07-27",
+  "route": "/calendar?demo=ux20",
+  "evidenceKind": [
+    "current_source",
+    "current_browser_automation",
+    "current_package_screenshot"
+  ],
+  "observedUserCount": 0,
+  "markers": {
+    "mobileSelectedDayBottomSheetConnected": true,
+    "mobileSelectedDayFirstAgendaRowWithinViewport": true,
+    "mobileSelectedDayBodyScrollLocked": true,
+    "mobileSelectedDayFocusContained": true,
+    "mobileSelectedDayEscapeCloses": true,
+    "mobileSelectedDayFocusReturnedToDate": true,
+    "wideSelectedDaySideAgendaRetained": true,
+    "completionPrimitiveReused": true,
+    "flowOpenUsesPersonalWorkspace": true,
+    "calendarRowStableIdentityChanged": false,
+    "calendarProjectionChanged": false,
+    "localStorageSchemaChanged": false,
+    "completionNoticeObscuredBySheetCount": 0,
+    "horizontalOverflowCountByViewport": {
+      "390x844": 0,
+      "1024x768": 0
+    },
+    "fixedBottomNavigationOverlapCount": 0,
+    "consolePageErrorCount": 0
+  },
+  "screenshots": [
+    "screenshots/p35-r6-calendar-day-sheet-390.png",
+    "screenshots/p35-r6-calendar-side-agenda-1024.png"
+  ],
+  "tests": {
+    "targetedE2e": {
+      "passed": 2,
+      "failed": 0
+    },
+    "calendarRegressionE2e": {
+      "passed": 3,
+      "failed": 0
+    },
+    "combinedR5R6E2e": {
+      "passed": 7,
+      "failed": 0
+    }
+  }
+}

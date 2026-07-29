@@ -1,0 +1,137 @@
+{
+  "generatedAt": "2026-07-28",
+  "purpose": "independent_review_handoff",
+  "repo": "D:\\flowme2605\\flow-p35-mece-ux-reset",
+  "branch": "codex/p35-mece-ux-reset",
+  "head": "2c951633d13adb0aab3ddd9d3cdddf506d9e97cd",
+  "upstream": "origin/main",
+  "candidate": {
+    "name": "P35-R0-R7 bounded MECE UX revision",
+    "verdictFromCurrentAutomation": "pass_local_final_gate",
+    "currentPreviewDeploymentVerified": false,
+    "productionDeploymentChanged": false,
+    "observedUserCount": 0
+  },
+  "publish": {
+    "localEdits": true,
+    "commit": false,
+    "push": false,
+    "pullRequest": false,
+    "merge": false,
+    "previewDeployment": false,
+    "productionDeployment": false
+  },
+  "validation": {
+    "docsCheck": {
+      "status": "passed",
+      "requiredFiles": 14,
+      "localLinks": 3453
+    },
+    "handoffPublicationDocsCheck": {
+      "status": "passed",
+      "requiredFiles": 14,
+      "localLinks": 3361
+    },
+    "pretest": {
+      "passed": 91,
+      "failed": 0
+    },
+    "unit": {
+      "passed": 590,
+      "failed": 0
+    },
+    "r7TargetedE2e": {
+      "passed": 6,
+      "failed": 0
+    },
+    "fullE2e": {
+      "passed": 381,
+      "failed": 0,
+      "workers": 1
+    },
+    "productionBuild": "passed",
+    "screenshots": {
+      "total": 71,
+      "r7FinalGate": 16,
+      "currentDetailedJourneys": 18,
+      "priorP35SliceReferences": 37
+    },
+    "horizontalOverflowCount": 0,
+    "fixedNavigationOverlapCount": 0,
+    "unnamedVisibleInteractiveCount": 0,
+    "consolePageErrorCount": 0
+  },
+  "globalEntry": [
+    {
+      "label": "Flow 찾기",
+      "route": "/flows",
+      "owner": "discovery_input_and_public_flow_entry"
+    },
+    {
+      "label": "캘린더",
+      "route": "/calendar",
+      "owner": "dated_cross_flow_lens"
+    },
+    {
+      "label": "내 Flow",
+      "route": "/my",
+      "owner": "saved_library_and_personal_flow_workspace"
+    }
+  ],
+  "representativeRoutes": [
+    {
+      "shape": "calendar",
+      "route": "/f/moving-d30-basic",
+      "previewCount": 24,
+      "preflightCount": 24,
+      "workspaceExecutionKind": "nearest_date_group"
+    },
+    {
+      "shape": "checklist",
+      "route": "/f/vehicle-inspection-prep",
+      "previewCount": 10,
+      "preflightCount": 10,
+      "workspaceExecutionKind": "next_items"
+    },
+    {
+      "shape": "routine",
+      "route": "/f/curated-allblanc-morning-workout",
+      "previewCount": 1,
+      "preflightCount": 1,
+      "workspaceExecutionKind": "current_occurrence"
+    },
+    {
+      "shape": "sheet",
+      "route": "/f/source-backed-middle-school-math-1",
+      "previewCount": 8,
+      "preflightCount": 8,
+      "workspaceExecutionKind": "current_and_next_row"
+    },
+    {
+      "shape": "memo",
+      "route": "/f/overseas-safety-register",
+      "previewCount": 4,
+      "preflightCount": 4,
+      "workspaceExecutionKind": "none"
+    }
+  ],
+  "scaleRoute": {
+    "route": "/my?demo=ux60&view=flows",
+    "flowCount": 60,
+    "viewport": "1440x900"
+  },
+  "stableContracts": [
+    "source_and_published_flow",
+    "personal_structural_and_value_overlay",
+    "execution_run",
+    "recurrence_series_and_occurrence",
+    "whole_selected_current_export_identity",
+    "existing_local_storage_schema"
+  ],
+  "knownEvidenceLimits": [
+    "No current R7 Vercel Preview exists.",
+    "Production does not represent this local dirty candidate.",
+    "Automated journeys and screenshots are not observed-user validation.",
+    "docs/STATUS.md and docs/SERVICE_STRUCTURE.md describe the released P34 baseline and may not describe the local P35 candidate."
+  ]
+}

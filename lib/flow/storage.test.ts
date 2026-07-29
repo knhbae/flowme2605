@@ -102,6 +102,7 @@ import {
   getChecks,
   getCompletedFlowRuns,
   getFlowRunRegistry,
+  hasSavedFlowEntry,
   getItemStates,
   migrateLegacyPublicExampleDateIntent,
   getMyFlowCompletionFeedback,
@@ -2994,6 +2995,46 @@ test('saved flow record normalization keeps explicit save metadata', () => {
       dateIntent: 'undated',
     },
   );
+});
+
+test('entry router detects only valid saved Flow records without mutating storage', () => {
+  const emptyStorage = memoryStorage();
+  assert.equal(hasSavedFlowEntry(emptyStorage), false);
+
+  const malformedStorage = memoryStorage({
+    'flow:saved:broken': '{not-json',
+    'flow:map:saved:broken': JSON.stringify({ mapId: '', savedAt: 123 }),
+    'flow:meta:last-visit': '2026-07-26T00:00:00.000Z',
+  });
+  assert.equal(hasSavedFlowEntry(malformedStorage), false);
+
+  const savedFlowStorage = memoryStorage({
+    'flow:saved:moving-d30-basic': JSON.stringify({
+      slug: 'moving-d30-basic',
+      savedAt: '2026-07-26T00:00:00.000Z',
+      selectedArtifactMode: 'calendar',
+      dateIntent: 'custom',
+      anchor: '2026-09-01',
+    }),
+  });
+  const savedFlowBefore = savedFlowStorage.getItem('flow:saved:moving-d30-basic');
+  assert.equal(hasSavedFlowEntry(savedFlowStorage), true);
+  assert.equal(savedFlowStorage.getItem('flow:saved:moving-d30-basic'), savedFlowBefore);
+  assert.equal(savedFlowStorage.length, 1);
+
+  const savedMapStorage = memoryStorage({
+    'flow:map:saved:moving-d30': JSON.stringify({
+      mapId: 'moving-d30',
+      title: '이사 준비',
+      version: '2026-07-26',
+      savedAt: '2026-07-26T00:00:00.000Z',
+      flowSlugs: ['moving-d30-basic'],
+    }),
+  });
+  const savedMapBefore = savedMapStorage.getItem('flow:map:saved:moving-d30');
+  assert.equal(hasSavedFlowEntry(savedMapStorage), true);
+  assert.equal(savedMapStorage.getItem('flow:map:saved:moving-d30'), savedMapBefore);
+  assert.equal(savedMapStorage.length, 1);
 });
 
 test('saved flow record normalization preserves a valid routine definition and drops malformed fields safely', () => {

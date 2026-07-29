@@ -14,6 +14,7 @@ import {
   FLOW_UI_SHEET_CLASS,
   FLOW_UI_SURFACE_CLASS,
 } from './flow-ui';
+import { formatKoreanShortDate } from '@/lib/flow/date';
 
 export function FlowArtifactSummary({
   eyebrow,
@@ -99,6 +100,53 @@ export function FlowScheduleIntent({
   );
 }
 
+type FlowDateRailGroupProps = Omit<ComponentPropsWithoutRef<'section'>, 'children'> & {
+  date?: string;
+  undatedLabel?: string;
+  showMonth?: boolean;
+  dateContextLabel?: string;
+  children: ReactNode;
+};
+
+export function FlowDateRailGroup({
+  date,
+  undatedLabel = '날짜 없음',
+  showMonth = false,
+  dateContextLabel,
+  className = '',
+  children,
+  ...sectionProps
+}: FlowDateRailGroupProps) {
+  const hasDate = Boolean(date);
+  const monthLabel = date ? `${Number(date.slice(5, 7))}월` : '';
+  const weekdayLabel = date
+    ? formatKoreanShortDate(date, { includeWeekday: true }).replace(/^\d+월 \d+일\s*/u, '')
+    : undatedLabel;
+
+  return (
+    <section
+      {...sectionProps}
+      data-flow-ui="date-rail-group"
+      className={`grid grid-cols-[4.25rem_minmax(0,1fr)] border-b border-[var(--flowme-border)] last:border-b-0 ${className}`}
+    >
+      <div
+        data-testid="flow-date-rail"
+        className="bg-[var(--flowme-surface-subtle)] px-2 py-3 text-center"
+      >
+        <span className="block text-lg font-semibold text-[var(--flowme-text)]">
+          {hasDate ? date?.slice(8) : '-'}
+        </span>
+        <span className="mt-0.5 block text-[10px] font-semibold text-[var(--flowme-text-tertiary)]">
+          {hasDate && showMonth
+            ? [monthLabel, dateContextLabel ?? weekdayLabel].filter(Boolean).join(' · ')
+            : dateContextLabel ?? weekdayLabel}
+        </span>
+      </div>
+      <div className="min-w-0">{children}</div>
+    </section>
+  );
+}
+
 type FlowOutlineRowProps = {
   label: string;
   meta: string;
@@ -175,20 +223,32 @@ export function FlowOutlineRow({
 type FlowExecutionRowProps = ComponentPropsWithoutRef<'article'> & {
   compact?: boolean;
   active?: boolean;
+  presentation?: 'default' | 'timeline';
 };
 
 export function FlowExecutionRow({
   compact = false,
   active = false,
+  presentation = 'default',
   className = '',
   children,
   ...articleProps
 }: FlowExecutionRowProps) {
+  const presentationClassName = presentation === 'timeline'
+    ? 'min-h-14 border-b border-[var(--flowme-border)] bg-[var(--flowme-surface)] text-sm transition last:border-b-0'
+    : compact
+      ? FLOW_UI_EXECUTION_ROW_CLASS
+      : 'min-h-14 border-b border-[var(--flowme-border)] bg-[var(--flowme-surface)] py-2.5 text-sm last:border-b-0';
+
   return (
     <article
       {...articleProps}
       data-flow-ui="execution-row"
-      className={`${compact ? FLOW_UI_EXECUTION_ROW_CLASS : 'min-h-14 border-b border-[var(--flowme-border)] bg-[var(--flowme-surface)] py-2.5 text-sm last:border-b-0'} ${active ? 'bg-[var(--flowme-surface-selected)]' : ''} ${className}`}
+      data-flow-presentation={presentation}
+      data-flow-row-mode="saved"
+      data-completion-position="trailing"
+      data-p35-r9-marker="P35-R9-SHARED-EXECUTION-ROW"
+      className={`${presentationClassName} ${active ? 'bg-[var(--flowme-surface-selected)]' : ''} ${className}`}
     >
       {children}
     </article>
@@ -268,6 +328,7 @@ export function FlowBottomSheet({
   testId,
   headingId,
   marker,
+  p35Marker,
   eyebrow,
   title,
   onClose,
@@ -279,6 +340,7 @@ export function FlowBottomSheet({
   testId: string;
   headingId: string;
   marker?: string;
+  p35Marker?: string;
   eyebrow?: string;
   title: string;
   onClose: () => void;
@@ -361,6 +423,7 @@ export function FlowBottomSheet({
         aria-labelledby={headingId}
         data-testid={testId}
         data-p31-marker={marker}
+        data-p35-marker={p35Marker}
         data-flow-ui="bottom-sheet"
         data-layer-priority="dialog"
         className={`${FLOW_UI_SHEET_CLASS} ${className}`}

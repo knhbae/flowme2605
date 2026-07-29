@@ -1,23 +1,30 @@
 # Project Status
 
-**Last Updated:** 2026-07-25 (P34 production release)
-**Status:** v0.1.0 RELEASED / P33 + P34 PRODUCTION GREEN
+**Last Updated:** 2026-07-29 (workspace consolidation and P35 internal candidate)
+**Status:** v0.1.0 RELEASED / P34 PRODUCTION GREEN / P35 INTERNAL REVIEW CANDIDATE
 **Current Version:** v0.1.0  
-**Primary Focus:** Review the released P34 lifecycle/edit/Calendar/export composition on [production](https://flowme2605.vercel.app) and decide the next bounded product slice. [P33 PR #156](https://github.com/knhbae/flowme2605/pull/156) merged as `7948bc4`, then [P34 PR #157](https://github.com/knhbae/flowme2605/pull/157) merged as `98ede0f`; both post-merge GitHub CI and Vercel Production deployments succeeded. P34 verification is pretest `73 / 73`, unit `588 / 588`, dedicated P34 Playwright `6 / 6`, affected regressions `58 / 58`, full Playwright `326 / 326`, build `18 / 18`, docs `3,150` links, dependency audit `0`, and production smoke green. Observed-user validation remains undone.
+**Primary Focus:** Review and publish-close the bounded P35 candidate before opening another product program. The current production baseline remains P34 at [production](https://flowme2605.vercel.app). P35 keeps the four-tab IA and stable data contracts while making cross-Flow `할 일` the normal My Flow entry, grouping work by exact date, reducing default row commands, and opening the whole plan only on the first post-save entry. Internal evidence is focused unit `13 / 13`, all unit `694 / 694`, P35 Playwright `79 / 79`, full Playwright `405 / 405`, and build/docs/diff checks green. The verdict is `publish_ready_for_internal_review`, not production release or observed-user validation; observed-user sessions remain `0`.
 
 ## Current Control Panel
 
-Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
+Human-facing summary: [FlowMe current stage control board](./content-audit/2026-07-29-flowme-current-stage-control-board-ko.html).
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P33/P34 are released; independently review current production before opening another broad UX program |
-| User action now | Compare the released P34 lifecycle/edit/Calendar/export behavior with the final evidence and choose one bounded next slice |
-| AI action now | Preserve the released identity and storage contracts; investigate only reproducible current-production gaps |
-| Blocked by evidence | Observed usability, real social proof/review data, account persistence choice, creator/update pilot, real AI backend, and external integrations |
-| Completed implementation | P33-01~07 plus stabilization and P34-00~08 are merged and deployed: shared lifecycle surface, object-specific command grammar, progressive adjustment/editing, Calendar roving focus, recurrence scope, export scope/count, full Playwright `326 / 326`, build `18 / 18` |
+| Active product gate | P35 internal review and publish closeout; P34 remains the verified production baseline until merge and deployment are confirmed |
+| User action now | Review the [P35 R13 evidence](./content-audit/2026-07-29-p35-r13-final-internal-gate/README.md) and choose keep, one bounded correction, or block |
+| AI action now | Consolidate P35 and selected research evidence, keep research separate from runtime delivery, run full verification, and report commit/PR/merge/deploy truth |
+| Design candidate, not active code | [Text authoring UX v1](./specs/2026-07-28-flowme-text-authoring-ux-v1/spec.md) is design-complete and implementation-unstarted; `TA-01` is the earliest possible promoted slice |
+| Blocked by evidence | Observed usability, real Calendar/VTODO round-trip, cross-device recovery, real social proof/review data, account persistence choice, creator/update pilot, real AI backend, and external integrations |
+| Verified baselines | P33/P34 are released; P35 is internally verified only; projection/event, full-corpus UI, vertical-service, and research-to-product packages are reproducible decision evidence rather than production features |
 
 ## Recent Direction Notes
+
+- 2026-07-29 P35 internal candidate: The owner-selected B composition is implemented over the existing P34 contracts. Plain `/my` opens cross-Flow `할 일`, the Flow library remains adjacent, work is grouped by exact date, default rows expose row-open plus one completion checkbox, and the whole plan auto-opens only on the first post-save entry. Focused unit is `13 / 13`, all unit is `694 / 694`, P35 Playwright is `79 / 79`, full Playwright is `405 / 405`, build/docs/diff checks pass, and observed-user sessions remain `0`. Current verdict is `publish_ready_for_internal_review`; merge, deployment, and production smoke must be recorded separately. See [P35 R13 evidence](./content-audit/2026-07-29-p35-r13-final-internal-gate/README.md).
+
+- 2026-07-29 planning and research consolidation: The hybrid text-authoring UX is a completed design handoff with app implementation explicitly unstarted. The canonical projection/event lab, vertical execution-service benchmark, research-to-product playbook, and full-corpus UI review snapshot are preserved as decision evidence. None changes the production runtime, proves external Calendar/VTODO interoperability, or counts as observed-user validation. Only one post-P35 slice may be promoted; current research packages do not form parallel implementation queues.
+
+- 2026-07-29 workspace consolidation: P35 implementation, text-authoring design, independent P30/P31/P33/P34 reviews, URL-to-Flow prompt research, and broader research/planning work were classified before cleanup and preserved on dedicated remote branches. Inactive worktrees were removed only after merge, upstream, byte-identity, or remote-archive verification. The final branch/worktree/merge state is tracked in the [workspace consolidation handoff](./content-audit/2026-07-29-flowme-workspace-consolidation-handoff-ko.md) and must be updated after publish closeout.
 
 - 2026-07-25 P34 production release: Alternative B, a bounded structural revision, was selected instead of copy-only cleanup or a planner rewrite. Active and archived Flows now share one `Flow 관리` surface with archive, immediate undo, direct restore, personal backup, and archived-only permanent deletion. Source exclusion, personal Item deletion, occurrence skip/hold, completion, and date removal use distinct object-specific verbs. Save-before adjustment keeps the actual artifact visible; draft structure controls remain progressive; Calendar uses one roving date Tab stop; routine and export actions name occurrence and output scope. P33 source/personal/run/occurrence/export identities, the 24/5 no-auto-merge policy, localStorage schema, 4-tab IA, and public shell remain unchanged. [PR #157](https://github.com/knhbae/flowme2605/pull/157) merged as `98ede0f848f8cd854c6a79e3a92f847012844704`; post-merge GitHub CI and Vercel Production succeeded. Production smoke confirmed public save receipt, mobile and wide `Flow 관리`, archive undo, Calendar 42-day grid, horizontal overflow `0`, and console/page errors `0`. Dependency audit is `0`, pretest is `73 / 73`, unit is `588 / 588`, dedicated P34 is `6 / 6`, affected regressions are `58 / 58`, full Playwright is `326 / 326`, build is `18 / 18`, and observed-user sessions are `0`. See [P34 final review package](./content-audit/2026-07-25-p34-final-review-package/README.md).
 

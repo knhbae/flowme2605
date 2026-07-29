@@ -1,0 +1,882 @@
+BEGIN:VCALENDAR
+PRODID:-//FlowMe//Literal ICS First Lab v1//KO
+VERSION:2.0
+CALSCALE:GREGORIAN
+BEGIN:VJOURNAL
+UID:bundle-opic-plan-map@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:오픽 모의고사 학습 플랜
+X-FLOWME-KIND:MAP
+END:VJOURNAL
+BEGIN:VJOURNAL
+UID:bundle-opic-plan-2week@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:오픽 모의고사 2주 플랜
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-map@flowme.local
+X-FLOWME-KIND:FLOW
+END:VJOURNAL
+BEGIN:VJOURNAL
+UID:bundle-opic-plan-2w-week-1@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:1주차 · 1~5회
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-2week@flowme.local
+X-FLOWME-KIND:STEP
+END:VJOURNAL
+BEGIN:VEVENT
+UID:bundle-opic-plan-2w-w1-월@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:1회 모의고사 실전처럼 풀기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=MZmrXlAc6k4 · 범위: 
+ 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고\, 막
+ 힌 질문과 고칠 표현을 같은 메모에 적는다.\n2주 계획표
+  1주차 월요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD
+ -%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%9
+ 5\n오픽 모의고사 1회 영상 · https://www.youtube.com/watch?v=MZmr
+ XlAc6k4
+DTSTART;VALUE=DATE:20260803
+DTEND;VALUE=DATE:20260804
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-2w-week-1@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-2w-w1-월\,bundle-opic-plan-video-1
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-opic-plan-2w-w1-화@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:2회 모의고사 실전처럼 풀기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=YOZADzoC22s · 범위: 
+ 은행·바·카페·MP3·걷기 · 실제 시험처럼 답변을 녹음
+ 하고\, 막힌 질문과 고칠 표현을 같은 메모에 적는다.\n2
+ 주 계획표 1주차 화요일 · https://mansour.tistory.com/entry/%EC%9
+ 8%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%
+ B0%A9%EB%B2%95\n오픽 모의고사 2회 영상 · https://www.youtube.com
+ /watch?v=YOZADzoC22s
+DTSTART;VALUE=DATE:20260804
+DTEND;VALUE=DATE:20260805
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-2w-week-1@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-2w-w1-화\,bundle-opic-plan-video-2
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-opic-plan-2w-w1-수@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:3회 모의고사 실전처럼 풀기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=bRjvaQ380MU · 범위: 
+ 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고\, 막
+ 힌 질문과 고칠 표현을 같은 메모에 적는다.\n2주 계획표
+  1주차 수요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD
+ -%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%9
+ 5\n오픽 모의고사 3회 영상 · https://www.youtube.com/watch?v=bRjv
+ aQ380MU
+DTSTART;VALUE=DATE:20260805
+DTEND;VALUE=DATE:20260806
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-2w-week-1@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-2w-w1-수\,bundle-opic-plan-video-3
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-opic-plan-2w-w1-목@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:4회 모의고사 실전처럼 풀기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=N2s5golewUI · 범위: 
+ 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고\, 막
+ 힌 질문과 고칠 표현을 같은 메모에 적는다.\n2주 계획표
+  1주차 목요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD
+ -%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%9
+ 5\n오픽 모의고사 4회 영상 · https://www.youtube.com/watch?v=N2s5
+ golewUI
+DTSTART;VALUE=DATE:20260806
+DTEND;VALUE=DATE:20260807
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-2w-week-1@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-2w-w1-목\,bundle-opic-plan-video-4
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-opic-plan-2w-w1-금@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:5회 모의고사 실전처럼 풀기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=uCUiUlggGlE · 범위: 
+ 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고\, 막
+ 힌 질문과 고칠 표현을 같은 메모에 적는다.\n2주 계획표
+  1주차 금요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD
+ -%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%9
+ 5\n오픽 모의고사 5회 영상 · https://www.youtube.com/watch?v=uCUi
+ UlggGlE
+DTSTART;VALUE=DATE:20260807
+DTEND;VALUE=DATE:20260808
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-2w-week-1@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-2w-w1-금\,bundle-opic-plan-video-5
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-opic-plan-2w-w1-토@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:1~5회 답변 총복습
+DESCRIPTION:이번 주 녹음을 다시 듣고 반복해서 막힌 질문
+ 과 다음 주에 쓸 핵심 표현을 한 메모로 정리한다.\n2주 
+ 계획표 1주차 토요일 · https://mansour.tistory.com/entry/%EC%98%A4
+ %ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A
+ 9%EB%B2%95\n오픽 모의고사 1회 영상 · https://www.youtube.com/wat
+ ch?v=MZmrXlAc6k4\n오픽 모의고사 2회 영상 · https://www.youtube.c
+ om/watch?v=YOZADzoC22s\n오픽 모의고사 3회 영상 · https://www.you
+ tube.com/watch?v=bRjvaQ380MU\n오픽 모의고사 4회 영상 · https://w
+ ww.youtube.com/watch?v=N2s5golewUI\n오픽 모의고사 5회 영상 · htt
+ ps://www.youtube.com/watch?v=uCUiUlggGlE
+DTSTART;VALUE=DATE:20260808
+DTEND;VALUE=DATE:20260809
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-2w-week-1@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-2w-w1-토\,bundle-opic-plan-video-1\,
+ bundle-opic-plan-video-2\,bundle-opic-plan-video-3\,bundle-opic-plan-video
+ -4\,bundle-opic-plan-video-5
+END:VEVENT
+BEGIN:VJOURNAL
+UID:bundle-opic-plan-2w-week-2@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:2주차 · 6~10회
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-2week@flowme.local
+X-FLOWME-KIND:STEP
+END:VJOURNAL
+BEGIN:VEVENT
+UID:bundle-opic-plan-2w-w2-월@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:6회 모의고사 실전처럼 풀기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=KddRF_nM9uI · 범위: 
+ 동네·건강·국내여행·은행·가족 · 실제 시험처럼 답변
+ 을 녹음하고\, 막힌 질문과 고칠 표현을 같은 메모에 적
+ 는다.\n2주 계획표 2주차 월요일 · https://mansour.tistory.com/e
+ ntry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%
+ B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 6회 영상 · https://www.y
+ outube.com/watch?v=KddRF_nM9uI
+DTSTART;VALUE=DATE:20260810
+DTEND;VALUE=DATE:20260811
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-2w-week-2@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-2w-w2-월\,bundle-opic-plan-video-6
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-opic-plan-2w-w2-화@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:7회 모의고사 실전처럼 풀기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=cAOaiJsT7ac · 범위: 
+ 집에서 보내는 휴가·지리·공휴일·집·음악 · 실제 시
+ 험처럼 답변을 녹음하고\, 막힌 질문과 고칠 표현을 같
+ 은 메모에 적는다.\n2주 계획표 2주차 화요일 · https://mans
+ our.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82
+ %AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 7회 영상
+  · https://www.youtube.com/watch?v=cAOaiJsT7ac
+DTSTART;VALUE=DATE:20260811
+DTEND;VALUE=DATE:20260812
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-2w-week-2@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-2w-w2-화\,bundle-opic-plan-video-7
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-opic-plan-2w-w2-수@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:8회 모의고사 실전처럼 풀기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=VFWF-HUYggI · 범위: 
+ 기술·캠핑·패션·쇼핑·건강 · 실제 시험처럼 답변을 
+ 녹음하고\, 막힌 질문과 고칠 표현을 같은 메모에 적는
+ 다.\n2주 계획표 2주차 수요일 · https://mansour.tistory.com/entr
+ y/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%
+ 80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 8회 영상 · https://www.yout
+ ube.com/watch?v=VFWF-HUYggI
+DTSTART;VALUE=DATE:20260812
+DTEND;VALUE=DATE:20260813
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-2w-week-2@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-2w-w2-수\,bundle-opic-plan-video-8
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-opic-plan-2w-w2-목@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:9회 모의고사 실전처럼 풀기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=y0Y1j7fEZj4 · 범위: 
+ 외식·영화·날씨·계절·콘서트·바 · 실제 시험처럼 답
+ 변을 녹음하고\, 막힌 질문과 고칠 표현을 같은 메모에 
+ 적는다.\n2주 계획표 2주차 목요일 · https://mansour.tistory.co
+ m/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%
+ EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 9회 영상 · https://ww
+ w.youtube.com/watch?v=y0Y1j7fEZj4
+DTSTART;VALUE=DATE:20260813
+DTEND;VALUE=DATE:20260814
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-2w-week-2@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-2w-w2-목\,bundle-opic-plan-video-9
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-opic-plan-2w-w2-금@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:10회 모의고사 실전처럼 풀기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=xh_zHNfAgQo · 범위: 
+ 해외여행·모임·공연·가족·친구·산업 · 실제 시험처
+ 럼 답변을 녹음하고\, 막힌 질문과 고칠 표현을 같은 메
+ 모에 적는다.\n2주 계획표 2주차 금요일 · https://mansour.tis
+ tory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA
+ %B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 10회 영상 · ht
+ tps://www.youtube.com/watch?v=xh_zHNfAgQo
+DTSTART;VALUE=DATE:20260814
+DTEND;VALUE=DATE:20260815
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-2w-week-2@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-2w-w2-금\,bundle-opic-plan-video-10
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-opic-plan-2w-w2-토@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:6~10회 답변 총복습
+DESCRIPTION:이번 주 녹음을 다시 듣고 반복해서 막힌 질문
+ 과 다음 주에 쓸 핵심 표현을 한 메모로 정리한다.\n2주 
+ 계획표 2주차 토요일 · https://mansour.tistory.com/entry/%EC%98%A4
+ %ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A
+ 9%EB%B2%95\n오픽 모의고사 6회 영상 · https://www.youtube.com/wat
+ ch?v=KddRF_nM9uI\n오픽 모의고사 7회 영상 · https://www.youtube.c
+ om/watch?v=cAOaiJsT7ac\n오픽 모의고사 8회 영상 · https://www.you
+ tube.com/watch?v=VFWF-HUYggI\n오픽 모의고사 9회 영상 · https://w
+ ww.youtube.com/watch?v=y0Y1j7fEZj4\n오픽 모의고사 10회 영상 · ht
+ tps://www.youtube.com/watch?v=xh_zHNfAgQo
+DTSTART;VALUE=DATE:20260815
+DTEND;VALUE=DATE:20260816
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-2w-week-2@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-2w-w2-토\,bundle-opic-plan-video-6\,
+ bundle-opic-plan-video-7\,bundle-opic-plan-video-8\,bundle-opic-plan-video
+ -9\,bundle-opic-plan-video-10
+END:VEVENT
+BEGIN:VJOURNAL
+UID:bundle-opic-plan-1month@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:오픽 모의고사 1달 플랜
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-map@flowme.local
+X-FLOWME-KIND:FLOW
+END:VJOURNAL
+BEGIN:VJOURNAL
+UID:bundle-opic-plan-1m-week-1@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:1주차 · 1~2회
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-1month@flowme.local
+X-FLOWME-KIND:STEP
+END:VJOURNAL
+BEGIN:VEVENT
+UID:bundle-opic-plan-1m-w1-월@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:1회 실전처럼 풀기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=MZmrXlAc6k4 · 범위: 
+ 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고\, 막
+ 힌 질문과 고칠 표현을 같은 메모에 적는다.\n1달 계획표
+  1주차 월요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD
+ -%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%9
+ 5\n오픽 모의고사 1회 영상 · https://www.youtube.com/watch?v=MZmr
+ XlAc6k4
+DTSTART;VALUE=DATE:20260803
+DTEND;VALUE=DATE:20260804
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-1m-week-1@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-1m-w1-월\,bundle-opic-plan-video-1
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-opic-plan-1m-w1-화@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:1회 녹음 듣고 보완하기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=MZmrXlAc6k4 · 범위: 
+ 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완
+ 한 뒤\, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 
+ 남긴다.\n1달 계획표 1주차 화요일 · https://mansour.tistory.co
+ m/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%
+ EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 1회 영상 · https://ww
+ w.youtube.com/watch?v=MZmrXlAc6k4
+DTSTART;VALUE=DATE:20260804
+DTEND;VALUE=DATE:20260805
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-1m-week-1@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-1m-w1-화\,bundle-opic-plan-video-1
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-opic-plan-1m-w1-수@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:1회 녹음 듣고 보완하기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=MZmrXlAc6k4 · 범위: 
+ 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완
+ 한 뒤\, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 
+ 남긴다.\n1달 계획표 1주차 수요일 · https://mansour.tistory.co
+ m/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%
+ EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 1회 영상 · https://ww
+ w.youtube.com/watch?v=MZmrXlAc6k4
+DTSTART;VALUE=DATE:20260805
+DTEND;VALUE=DATE:20260806
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-1m-week-1@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-1m-w1-수\,bundle-opic-plan-video-1
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-opic-plan-1m-w1-목@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:2회 실전처럼 풀기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=YOZADzoC22s · 범위: 
+ 은행·바·카페·MP3·걷기 · 실제 시험처럼 답변을 녹음
+ 하고\, 막힌 질문과 고칠 표현을 같은 메모에 적는다.\n1
+ 달 계획표 1주차 목요일 · https://mansour.tistory.com/entry/%EC%9
+ 8%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%
+ B0%A9%EB%B2%95\n오픽 모의고사 2회 영상 · https://www.youtube.com
+ /watch?v=YOZADzoC22s
+DTSTART;VALUE=DATE:20260806
+DTEND;VALUE=DATE:20260807
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-1m-week-1@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-1m-w1-목\,bundle-opic-plan-video-2
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-opic-plan-1m-w1-금@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:2회 녹음 듣고 보완하기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=YOZADzoC22s · 범위: 
+ 은행·바·카페·MP3·걷기 · 이전 녹음을 다시 듣고 답변
+ 을 보완한 뒤\, 다음 회차에 다시 쓸 핵심 표현을 같은 
+ 메모에 남긴다.\n1달 계획표 1주차 금요일 · https://mansour.
+ tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-
+ %EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 2회 영상 · 
+ https://www.youtube.com/watch?v=YOZADzoC22s
+DTSTART;VALUE=DATE:20260807
+DTEND;VALUE=DATE:20260808
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-1m-week-1@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-1m-w1-금\,bundle-opic-plan-video-2
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-opic-plan-1m-w1-토@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:2회 녹음 듣고 보완하기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=YOZADzoC22s · 범위: 
+ 은행·바·카페·MP3·걷기 · 이전 녹음을 다시 듣고 답변
+ 을 보완한 뒤\, 다음 회차에 다시 쓸 핵심 표현을 같은 
+ 메모에 남긴다.\n1달 계획표 1주차 토요일 · https://mansour.
+ tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-
+ %EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 2회 영상 · 
+ https://www.youtube.com/watch?v=YOZADzoC22s
+DTSTART;VALUE=DATE:20260808
+DTEND;VALUE=DATE:20260809
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-1m-week-1@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-1m-w1-토\,bundle-opic-plan-video-2
+END:VEVENT
+BEGIN:VJOURNAL
+UID:bundle-opic-plan-1m-week-2@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:2주차 · 3~4회
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-1month@flowme.local
+X-FLOWME-KIND:STEP
+END:VJOURNAL
+BEGIN:VEVENT
+UID:bundle-opic-plan-1m-w2-월@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:3회 실전처럼 풀기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=bRjvaQ380MU · 범위: 
+ 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고\, 막
+ 힌 질문과 고칠 표현을 같은 메모에 적는다.\n1달 계획표
+  2주차 월요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD
+ -%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%9
+ 5\n오픽 모의고사 3회 영상 · https://www.youtube.com/watch?v=bRjv
+ aQ380MU
+DTSTART;VALUE=DATE:20260810
+DTEND;VALUE=DATE:20260811
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-1m-week-2@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-1m-w2-월\,bundle-opic-plan-video-3
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-opic-plan-1m-w2-화@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:3회 녹음 듣고 보완하기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=bRjvaQ380MU · 범위: 
+ 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완
+ 한 뒤\, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 
+ 남긴다.\n1달 계획표 2주차 화요일 · https://mansour.tistory.co
+ m/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%
+ EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 3회 영상 · https://ww
+ w.youtube.com/watch?v=bRjvaQ380MU
+DTSTART;VALUE=DATE:20260811
+DTEND;VALUE=DATE:20260812
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-1m-week-2@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-1m-w2-화\,bundle-opic-plan-video-3
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-opic-plan-1m-w2-수@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:3회 녹음 듣고 보완하기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=bRjvaQ380MU · 범위: 
+ 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완
+ 한 뒤\, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 
+ 남긴다.\n1달 계획표 2주차 수요일 · https://mansour.tistory.co
+ m/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%
+ EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 3회 영상 · https://ww
+ w.youtube.com/watch?v=bRjvaQ380MU
+DTSTART;VALUE=DATE:20260812
+DTEND;VALUE=DATE:20260813
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-1m-week-2@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-1m-w2-수\,bundle-opic-plan-video-3
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-opic-plan-1m-w2-목@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:4회 실전처럼 풀기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=N2s5golewUI · 범위: 
+ 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고\, 막
+ 힌 질문과 고칠 표현을 같은 메모에 적는다.\n1달 계획표
+  2주차 목요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD
+ -%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%9
+ 5\n오픽 모의고사 4회 영상 · https://www.youtube.com/watch?v=N2s5
+ golewUI
+DTSTART;VALUE=DATE:20260813
+DTEND;VALUE=DATE:20260814
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-1m-week-2@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-1m-w2-목\,bundle-opic-plan-video-4
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-opic-plan-1m-w2-금@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:4회 녹음 듣고 보완하기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=N2s5golewUI · 범위: 
+ 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완
+ 한 뒤\, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 
+ 남긴다.\n1달 계획표 2주차 금요일 · https://mansour.tistory.co
+ m/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%
+ EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 4회 영상 · https://ww
+ w.youtube.com/watch?v=N2s5golewUI
+DTSTART;VALUE=DATE:20260814
+DTEND;VALUE=DATE:20260815
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-1m-week-2@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-1m-w2-금\,bundle-opic-plan-video-4
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-opic-plan-1m-w2-토@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:4회 녹음 듣고 보완하기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=N2s5golewUI · 범위: 
+ 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완
+ 한 뒤\, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 
+ 남긴다.\n1달 계획표 2주차 토요일 · https://mansour.tistory.co
+ m/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%
+ EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 4회 영상 · https://ww
+ w.youtube.com/watch?v=N2s5golewUI
+DTSTART;VALUE=DATE:20260815
+DTEND;VALUE=DATE:20260816
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-1m-week-2@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-1m-w2-토\,bundle-opic-plan-video-4
+END:VEVENT
+BEGIN:VJOURNAL
+UID:bundle-opic-plan-1m-week-3@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:3주차 · 5~6회
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-1month@flowme.local
+X-FLOWME-KIND:STEP
+END:VJOURNAL
+BEGIN:VEVENT
+UID:bundle-opic-plan-1m-w3-월@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:5회 실전처럼 풀기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=uCUiUlggGlE · 범위: 
+ 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고\, 막
+ 힌 질문과 고칠 표현을 같은 메모에 적는다.\n1달 계획표
+  3주차 월요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD
+ -%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%9
+ 5\n오픽 모의고사 5회 영상 · https://www.youtube.com/watch?v=uCUi
+ UlggGlE
+DTSTART;VALUE=DATE:20260817
+DTEND;VALUE=DATE:20260818
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-1m-week-3@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-1m-w3-월\,bundle-opic-plan-video-5
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-opic-plan-1m-w3-화@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:5회 녹음 듣고 보완하기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=uCUiUlggGlE · 범위: 
+ 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완
+ 한 뒤\, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 
+ 남긴다.\n1달 계획표 3주차 화요일 · https://mansour.tistory.co
+ m/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%
+ EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 5회 영상 · https://ww
+ w.youtube.com/watch?v=uCUiUlggGlE
+DTSTART;VALUE=DATE:20260818
+DTEND;VALUE=DATE:20260819
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-1m-week-3@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-1m-w3-화\,bundle-opic-plan-video-5
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-opic-plan-1m-w3-수@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:5회 녹음 듣고 보완하기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=uCUiUlggGlE · 범위: 
+ 15문항 모의고사 · 이전 녹음을 다시 듣고 답변을 보완
+ 한 뒤\, 다음 회차에 다시 쓸 핵심 표현을 같은 메모에 
+ 남긴다.\n1달 계획표 3주차 수요일 · https://mansour.tistory.co
+ m/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%
+ EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 5회 영상 · https://ww
+ w.youtube.com/watch?v=uCUiUlggGlE
+DTSTART;VALUE=DATE:20260819
+DTEND;VALUE=DATE:20260820
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-1m-week-3@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-1m-w3-수\,bundle-opic-plan-video-5
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-opic-plan-1m-w3-목@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:6회 실전처럼 풀기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=KddRF_nM9uI · 범위: 
+ 동네·건강·국내여행·은행·가족 · 실제 시험처럼 답변
+ 을 녹음하고\, 막힌 질문과 고칠 표현을 같은 메모에 적
+ 는다.\n1달 계획표 3주차 목요일 · https://mansour.tistory.com/e
+ ntry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%
+ B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 6회 영상 · https://www.y
+ outube.com/watch?v=KddRF_nM9uI
+DTSTART;VALUE=DATE:20260820
+DTEND;VALUE=DATE:20260821
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-1m-week-3@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-1m-w3-목\,bundle-opic-plan-video-6
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-opic-plan-1m-w3-금@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:6회 녹음 듣고 보완하기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=KddRF_nM9uI · 범위: 
+ 동네·건강·국내여행·은행·가족 · 이전 녹음을 다시 
+ 듣고 답변을 보완한 뒤\, 다음 회차에 다시 쓸 핵심 표현
+ 을 같은 메모에 남긴다.\n1달 계획표 3주차 금요일 · https
+ ://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A
+ 0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 6회
+  영상 · https://www.youtube.com/watch?v=KddRF_nM9uI
+DTSTART;VALUE=DATE:20260821
+DTEND;VALUE=DATE:20260822
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-1m-week-3@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-1m-w3-금\,bundle-opic-plan-video-6
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-opic-plan-1m-w3-토@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:6회 녹음 듣고 보완하기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=KddRF_nM9uI · 범위: 
+ 동네·건강·국내여행·은행·가족 · 이전 녹음을 다시 
+ 듣고 답변을 보완한 뒤\, 다음 회차에 다시 쓸 핵심 표현
+ 을 같은 메모에 남긴다.\n1달 계획표 3주차 토요일 · https
+ ://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A
+ 0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 6회
+  영상 · https://www.youtube.com/watch?v=KddRF_nM9uI
+DTSTART;VALUE=DATE:20260822
+DTEND;VALUE=DATE:20260823
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-1m-week-3@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-1m-w3-토\,bundle-opic-plan-video-6
+END:VEVENT
+BEGIN:VJOURNAL
+UID:bundle-opic-plan-1m-week-4@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:4주차 · 7~8회
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-1month@flowme.local
+X-FLOWME-KIND:STEP
+END:VJOURNAL
+BEGIN:VEVENT
+UID:bundle-opic-plan-1m-w4-월@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:7회 실전처럼 풀기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=cAOaiJsT7ac · 범위: 
+ 집에서 보내는 휴가·지리·공휴일·집·음악 · 실제 시
+ 험처럼 답변을 녹음하고\, 막힌 질문과 고칠 표현을 같
+ 은 메모에 적는다.\n1달 계획표 4주차 월요일 · https://mans
+ our.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82
+ %AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 7회 영상
+  · https://www.youtube.com/watch?v=cAOaiJsT7ac
+DTSTART;VALUE=DATE:20260824
+DTEND;VALUE=DATE:20260825
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-1m-week-4@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-1m-w4-월\,bundle-opic-plan-video-7
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-opic-plan-1m-w4-화@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:7회 녹음 듣고 보완하기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=cAOaiJsT7ac · 범위: 
+ 집에서 보내는 휴가·지리·공휴일·집·음악 · 이전 녹
+ 음을 다시 듣고 답변을 보완한 뒤\, 다음 회차에 다시 쓸
+  핵심 표현을 같은 메모에 남긴다.\n1달 계획표 4주차 화
+ 요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%E
+ C%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 
+ 모의고사 7회 영상 · https://www.youtube.com/watch?v=cAOaiJsT7ac
+DTSTART;VALUE=DATE:20260825
+DTEND;VALUE=DATE:20260826
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-1m-week-4@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-1m-w4-화\,bundle-opic-plan-video-7
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-opic-plan-1m-w4-수@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:7회 녹음 듣고 보완하기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=cAOaiJsT7ac · 범위: 
+ 집에서 보내는 휴가·지리·공휴일·집·음악 · 이전 녹
+ 음을 다시 듣고 답변을 보완한 뒤\, 다음 회차에 다시 쓸
+  핵심 표현을 같은 메모에 남긴다.\n1달 계획표 4주차 수
+ 요일 · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%E
+ C%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 
+ 모의고사 7회 영상 · https://www.youtube.com/watch?v=cAOaiJsT7ac
+DTSTART;VALUE=DATE:20260826
+DTEND;VALUE=DATE:20260827
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-1m-week-4@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-1m-w4-수\,bundle-opic-plan-video-7
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-opic-plan-1m-w4-목@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:8회 실전처럼 풀기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=VFWF-HUYggI · 범위: 
+ 기술·캠핑·패션·쇼핑·건강 · 실제 시험처럼 답변을 
+ 녹음하고\, 막힌 질문과 고칠 표현을 같은 메모에 적는
+ 다.\n1달 계획표 4주차 목요일 · https://mansour.tistory.com/entr
+ y/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%
+ 80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 8회 영상 · https://www.yout
+ ube.com/watch?v=VFWF-HUYggI
+DTSTART;VALUE=DATE:20260827
+DTEND;VALUE=DATE:20260828
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-1m-week-4@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-1m-w4-목\,bundle-opic-plan-video-8
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-opic-plan-1m-w4-금@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:8회 녹음 듣고 보완하기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=VFWF-HUYggI · 범위: 
+ 기술·캠핑·패션·쇼핑·건강 · 이전 녹음을 다시 듣고 
+ 답변을 보완한 뒤\, 다음 회차에 다시 쓸 핵심 표현을 같
+ 은 메모에 남긴다.\n1달 계획표 4주차 금요일 · https://mans
+ our.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82
+ %AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 8회 영상
+  · https://www.youtube.com/watch?v=VFWF-HUYggI
+DTSTART;VALUE=DATE:20260828
+DTEND;VALUE=DATE:20260829
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-1m-week-4@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-1m-w4-금\,bundle-opic-plan-video-8
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-opic-plan-1m-w4-토@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:8회 녹음 듣고 보완하기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=VFWF-HUYggI · 범위: 
+ 기술·캠핑·패션·쇼핑·건강 · 이전 녹음을 다시 듣고 
+ 답변을 보완한 뒤\, 다음 회차에 다시 쓸 핵심 표현을 같
+ 은 메모에 남긴다.\n1달 계획표 4주차 토요일 · https://mans
+ our.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82
+ %AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 8회 영상
+  · https://www.youtube.com/watch?v=VFWF-HUYggI
+DTSTART;VALUE=DATE:20260829
+DTEND;VALUE=DATE:20260830
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-1m-week-4@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-1m-w4-토\,bundle-opic-plan-video-8
+END:VEVENT
+BEGIN:VJOURNAL
+UID:bundle-opic-plan-1m-week-5@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:5주차 · 9~10회
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-1month@flowme.local
+X-FLOWME-KIND:STEP
+END:VJOURNAL
+BEGIN:VEVENT
+UID:bundle-opic-plan-1m-w5-월@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:9회 실전처럼 풀기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=y0Y1j7fEZj4 · 범위: 
+ 외식·영화·날씨·계절·콘서트·바 · 실제 시험처럼 답
+ 변을 녹음하고\, 막힌 질문과 고칠 표현을 같은 메모에 
+ 적는다.\n1달 계획표 5주차 월요일 · https://mansour.tistory.co
+ m/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%
+ EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 9회 영상 · https://ww
+ w.youtube.com/watch?v=y0Y1j7fEZj4
+DTSTART;VALUE=DATE:20260831
+DTEND;VALUE=DATE:20260901
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-1m-week-5@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-1m-w5-월\,bundle-opic-plan-video-9
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-opic-plan-1m-w5-화@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:9회 녹음 듣고 보완하기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=y0Y1j7fEZj4 · 범위: 
+ 외식·영화·날씨·계절·콘서트·바 · 이전 녹음을 다시 
+ 듣고 답변을 보완한 뒤\, 다음 회차에 다시 쓸 핵심 표현
+ 을 같은 메모에 남긴다.\n1달 계획표 5주차 화요일 · https
+ ://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A
+ 0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 9회
+  영상 · https://www.youtube.com/watch?v=y0Y1j7fEZj4
+DTSTART;VALUE=DATE:20260901
+DTEND;VALUE=DATE:20260902
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-1m-week-5@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-1m-w5-화\,bundle-opic-plan-video-9
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-opic-plan-1m-w5-수@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:9회 녹음 듣고 보완하기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=y0Y1j7fEZj4 · 범위: 
+ 외식·영화·날씨·계절·콘서트·바 · 이전 녹음을 다시 
+ 듣고 답변을 보완한 뒤\, 다음 회차에 다시 쓸 핵심 표현
+ 을 같은 메모에 남긴다.\n1달 계획표 5주차 수요일 · https
+ ://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A
+ 0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 9회
+  영상 · https://www.youtube.com/watch?v=y0Y1j7fEZj4
+DTSTART;VALUE=DATE:20260902
+DTEND;VALUE=DATE:20260903
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-1m-week-5@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-1m-w5-수\,bundle-opic-plan-video-9
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-opic-plan-1m-w5-목@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:10회 실전처럼 풀기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=xh_zHNfAgQo · 범위: 
+ 해외여행·모임·공연·가족·친구·산업 · 실제 시험처
+ 럼 답변을 녹음하고\, 막힌 질문과 고칠 표현을 같은 메
+ 모에 적는다.\n1달 계획표 5주차 목요일 · https://mansour.tis
+ tory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA
+ %B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고사 10회 영상 · ht
+ tps://www.youtube.com/watch?v=xh_zHNfAgQo
+DTSTART;VALUE=DATE:20260903
+DTEND;VALUE=DATE:20260904
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-1m-week-5@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-1m-w5-목\,bundle-opic-plan-video-10
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-opic-plan-1m-w5-금@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:10회 녹음 듣고 보완하기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=xh_zHNfAgQo · 범위: 
+ 해외여행·모임·공연·가족·친구·산업 · 이전 녹음을 
+ 다시 듣고 답변을 보완한 뒤\, 다음 회차에 다시 쓸 핵심
+  표현을 같은 메모에 남긴다.\n1달 계획표 5주차 금요일 
+ · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고
+ 사 10회 영상 · https://www.youtube.com/watch?v=xh_zHNfAgQo
+DTSTART;VALUE=DATE:20260904
+DTEND;VALUE=DATE:20260905
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-1m-week-5@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-1m-w5-금\,bundle-opic-plan-video-10
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-opic-plan-1m-w5-토@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:10회 녹음 듣고 보완하기
+DESCRIPTION:영상: https://www.youtube.com/watch?v=xh_zHNfAgQo · 범위: 
+ 해외여행·모임·공연·가족·친구·산업 · 이전 녹음을 
+ 다시 듣고 답변을 보완한 뒤\, 다음 회차에 다시 쓸 핵심
+  표현을 같은 메모에 남긴다.\n1달 계획표 5주차 토요일 
+ · https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95\n오픽 모의고
+ 사 10회 영상 · https://www.youtube.com/watch?v=xh_zHNfAgQo
+DTSTART;VALUE=DATE:20260905
+DTEND;VALUE=DATE:20260906
+URL:https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98
+ %EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95
+RELATED-TO;RELTYPE=PARENT:bundle-opic-plan-1m-week-5@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:bundle-opic-plan-1m-w5-토\,bundle-opic-plan-video-10
+END:VEVENT
+END:VCALENDAR

@@ -1,0 +1,797 @@
+{
+  "schemaVersion": "flowme-projection-loss-manifest-v2",
+  "generatedAt": "2026-07-28T00:00:00.000Z",
+  "input": {
+    "path": "docs/content-audit/2026-07-27-creator-portfolio-qualified-v2.json",
+    "sha256": "aa85b1da3b4403694895cc0647e462daefaec47930a7f43611a489c29db5a16f",
+    "schemaVersion": "flowme-creator-portfolio-qualified-v2",
+    "logicHandoffBundleIds": [
+      "bundle-moving-d30",
+      "bundle-baby-food-174",
+      "bundle-opic-plan",
+      "bundle-opentutorials-web1-progress",
+      "bundle-new-car-comparison",
+      "bundle-allblanc-7day-abs",
+      "bundle-wtable-summer-banchan-five",
+      "bundle-andstudio-job-prep-videos"
+    ]
+  },
+  "evidenceBoundary": {
+    "scoring": "deterministic contract scoring; not observed-user evidence",
+    "externalCalendarAccountRoundTrip": "NOT_RUN"
+  },
+  "controlledDispositions": {
+    "retained": 1,
+    "grouped_declared": 0.8,
+    "description_fallback": 0.65,
+    "sidecar_authoritative": 0.75,
+    "unproven_client": 0.35,
+    "unsupported": 0,
+    "forbidden_by_design": 1,
+    "not_applicable": 1
+  },
+  "architectureRetention": {
+    "current_canonical_v1": 0.8857142857142858,
+    "literal_ics_first": 0.5785714285714286,
+    "item_first_shared_context": 0.8857142857142858
+  },
+  "stepBundleLossRule": "step_bundle keeps canonical child Item IDs but declares loss of independent completion in the exported calendar event.",
+  "records": [
+    {
+      "architecture": "current_canonical_v1",
+      "target": "calendar_ics",
+      "paths": [
+        {
+          "pathId": "identity",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "title_detail",
+          "disposition": "description_fallback",
+          "points": 0.65
+        },
+        {
+          "pathId": "completion_state",
+          "disposition": "sidecar_authoritative",
+          "points": 0.75
+        },
+        {
+          "pathId": "schedule",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "source_provenance",
+          "disposition": "description_fallback",
+          "points": 0.65
+        },
+        {
+          "pathId": "hierarchy_order",
+          "disposition": "grouped_declared",
+          "points": 0.8
+        },
+        {
+          "pathId": "rights_review_private_overlay",
+          "disposition": "forbidden_by_design",
+          "points": 1
+        }
+      ],
+      "retentionRatio": 0.8357142857142856
+    },
+    {
+      "architecture": "current_canonical_v1",
+      "target": "task_ics_vtodo",
+      "paths": [
+        {
+          "pathId": "identity",
+          "disposition": "unproven_client",
+          "points": 0.35
+        },
+        {
+          "pathId": "title_detail",
+          "disposition": "description_fallback",
+          "points": 0.65
+        },
+        {
+          "pathId": "completion_state",
+          "disposition": "sidecar_authoritative",
+          "points": 0.75
+        },
+        {
+          "pathId": "schedule",
+          "disposition": "not_applicable",
+          "points": 1
+        },
+        {
+          "pathId": "source_provenance",
+          "disposition": "description_fallback",
+          "points": 0.65
+        },
+        {
+          "pathId": "hierarchy_order",
+          "disposition": "unproven_client",
+          "points": 0.35
+        },
+        {
+          "pathId": "rights_review_private_overlay",
+          "disposition": "forbidden_by_design",
+          "points": 1
+        }
+      ],
+      "retentionRatio": 0.6785714285714286
+    },
+    {
+      "architecture": "current_canonical_v1",
+      "target": "checklist",
+      "paths": [
+        {
+          "pathId": "identity",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "title_detail",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "completion_state",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "schedule",
+          "disposition": "grouped_declared",
+          "points": 0.8
+        },
+        {
+          "pathId": "source_provenance",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "hierarchy_order",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "rights_review_private_overlay",
+          "disposition": "forbidden_by_design",
+          "points": 1
+        }
+      ],
+      "retentionRatio": 0.9714285714285714
+    },
+    {
+      "architecture": "current_canonical_v1",
+      "target": "todo",
+      "paths": [
+        {
+          "pathId": "identity",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "title_detail",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "completion_state",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "schedule",
+          "disposition": "grouped_declared",
+          "points": 0.8
+        },
+        {
+          "pathId": "source_provenance",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "hierarchy_order",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "rights_review_private_overlay",
+          "disposition": "forbidden_by_design",
+          "points": 1
+        }
+      ],
+      "retentionRatio": 0.9714285714285714
+    },
+    {
+      "architecture": "current_canonical_v1",
+      "target": "sheet",
+      "paths": [
+        {
+          "pathId": "identity",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "title_detail",
+          "disposition": "grouped_declared",
+          "points": 0.8
+        },
+        {
+          "pathId": "completion_state",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "schedule",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "source_provenance",
+          "disposition": "grouped_declared",
+          "points": 0.8
+        },
+        {
+          "pathId": "hierarchy_order",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "rights_review_private_overlay",
+          "disposition": "forbidden_by_design",
+          "points": 1
+        }
+      ],
+      "retentionRatio": 0.9428571428571428
+    },
+    {
+      "architecture": "current_canonical_v1",
+      "target": "memo",
+      "paths": [
+        {
+          "pathId": "identity",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "title_detail",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "completion_state",
+          "disposition": "sidecar_authoritative",
+          "points": 0.75
+        },
+        {
+          "pathId": "schedule",
+          "disposition": "description_fallback",
+          "points": 0.65
+        },
+        {
+          "pathId": "source_provenance",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "hierarchy_order",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "rights_review_private_overlay",
+          "disposition": "forbidden_by_design",
+          "points": 1
+        }
+      ],
+      "retentionRatio": 0.9142857142857144
+    },
+    {
+      "architecture": "literal_ics_first",
+      "target": "calendar_ics",
+      "paths": [
+        {
+          "pathId": "identity",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "title_detail",
+          "disposition": "description_fallback",
+          "points": 0.65
+        },
+        {
+          "pathId": "completion_state",
+          "disposition": "unsupported",
+          "points": 0
+        },
+        {
+          "pathId": "schedule",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "source_provenance",
+          "disposition": "unproven_client",
+          "points": 0.35
+        },
+        {
+          "pathId": "hierarchy_order",
+          "disposition": "unproven_client",
+          "points": 0.35
+        },
+        {
+          "pathId": "rights_review_private_overlay",
+          "disposition": "sidecar_authoritative",
+          "points": 0.75
+        }
+      ],
+      "retentionRatio": 0.5857142857142856
+    },
+    {
+      "architecture": "literal_ics_first",
+      "target": "task_ics_vtodo",
+      "paths": [
+        {
+          "pathId": "identity",
+          "disposition": "unproven_client",
+          "points": 0.35
+        },
+        {
+          "pathId": "title_detail",
+          "disposition": "description_fallback",
+          "points": 0.65
+        },
+        {
+          "pathId": "completion_state",
+          "disposition": "unproven_client",
+          "points": 0.35
+        },
+        {
+          "pathId": "schedule",
+          "disposition": "not_applicable",
+          "points": 1
+        },
+        {
+          "pathId": "source_provenance",
+          "disposition": "unproven_client",
+          "points": 0.35
+        },
+        {
+          "pathId": "hierarchy_order",
+          "disposition": "unproven_client",
+          "points": 0.35
+        },
+        {
+          "pathId": "rights_review_private_overlay",
+          "disposition": "sidecar_authoritative",
+          "points": 0.75
+        }
+      ],
+      "retentionRatio": 0.5428571428571429
+    },
+    {
+      "architecture": "literal_ics_first",
+      "target": "checklist",
+      "paths": [
+        {
+          "pathId": "identity",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "title_detail",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "completion_state",
+          "disposition": "unproven_client",
+          "points": 0.35
+        },
+        {
+          "pathId": "schedule",
+          "disposition": "unproven_client",
+          "points": 0.35
+        },
+        {
+          "pathId": "source_provenance",
+          "disposition": "unproven_client",
+          "points": 0.35
+        },
+        {
+          "pathId": "hierarchy_order",
+          "disposition": "unproven_client",
+          "points": 0.35
+        },
+        {
+          "pathId": "rights_review_private_overlay",
+          "disposition": "sidecar_authoritative",
+          "points": 0.75
+        }
+      ],
+      "retentionRatio": 0.5928571428571429
+    },
+    {
+      "architecture": "literal_ics_first",
+      "target": "todo",
+      "paths": [
+        {
+          "pathId": "identity",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "title_detail",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "completion_state",
+          "disposition": "unproven_client",
+          "points": 0.35
+        },
+        {
+          "pathId": "schedule",
+          "disposition": "unproven_client",
+          "points": 0.35
+        },
+        {
+          "pathId": "source_provenance",
+          "disposition": "unproven_client",
+          "points": 0.35
+        },
+        {
+          "pathId": "hierarchy_order",
+          "disposition": "unproven_client",
+          "points": 0.35
+        },
+        {
+          "pathId": "rights_review_private_overlay",
+          "disposition": "sidecar_authoritative",
+          "points": 0.75
+        }
+      ],
+      "retentionRatio": 0.5928571428571429
+    },
+    {
+      "architecture": "literal_ics_first",
+      "target": "sheet",
+      "paths": [
+        {
+          "pathId": "identity",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "title_detail",
+          "disposition": "grouped_declared",
+          "points": 0.8
+        },
+        {
+          "pathId": "completion_state",
+          "disposition": "unproven_client",
+          "points": 0.35
+        },
+        {
+          "pathId": "schedule",
+          "disposition": "unproven_client",
+          "points": 0.35
+        },
+        {
+          "pathId": "source_provenance",
+          "disposition": "unproven_client",
+          "points": 0.35
+        },
+        {
+          "pathId": "hierarchy_order",
+          "disposition": "unproven_client",
+          "points": 0.35
+        },
+        {
+          "pathId": "rights_review_private_overlay",
+          "disposition": "sidecar_authoritative",
+          "points": 0.75
+        }
+      ],
+      "retentionRatio": 0.5642857142857143
+    },
+    {
+      "architecture": "literal_ics_first",
+      "target": "memo",
+      "paths": [
+        {
+          "pathId": "identity",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "title_detail",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "completion_state",
+          "disposition": "unproven_client",
+          "points": 0.35
+        },
+        {
+          "pathId": "schedule",
+          "disposition": "unproven_client",
+          "points": 0.35
+        },
+        {
+          "pathId": "source_provenance",
+          "disposition": "unproven_client",
+          "points": 0.35
+        },
+        {
+          "pathId": "hierarchy_order",
+          "disposition": "unproven_client",
+          "points": 0.35
+        },
+        {
+          "pathId": "rights_review_private_overlay",
+          "disposition": "sidecar_authoritative",
+          "points": 0.75
+        }
+      ],
+      "retentionRatio": 0.5928571428571429
+    },
+    {
+      "architecture": "item_first_shared_context",
+      "target": "calendar_ics",
+      "paths": [
+        {
+          "pathId": "identity",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "title_detail",
+          "disposition": "description_fallback",
+          "points": 0.65
+        },
+        {
+          "pathId": "completion_state",
+          "disposition": "sidecar_authoritative",
+          "points": 0.75
+        },
+        {
+          "pathId": "schedule",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "source_provenance",
+          "disposition": "description_fallback",
+          "points": 0.65
+        },
+        {
+          "pathId": "hierarchy_order",
+          "disposition": "grouped_declared",
+          "points": 0.8
+        },
+        {
+          "pathId": "rights_review_private_overlay",
+          "disposition": "forbidden_by_design",
+          "points": 1
+        }
+      ],
+      "retentionRatio": 0.8357142857142856
+    },
+    {
+      "architecture": "item_first_shared_context",
+      "target": "task_ics_vtodo",
+      "paths": [
+        {
+          "pathId": "identity",
+          "disposition": "unproven_client",
+          "points": 0.35
+        },
+        {
+          "pathId": "title_detail",
+          "disposition": "description_fallback",
+          "points": 0.65
+        },
+        {
+          "pathId": "completion_state",
+          "disposition": "sidecar_authoritative",
+          "points": 0.75
+        },
+        {
+          "pathId": "schedule",
+          "disposition": "not_applicable",
+          "points": 1
+        },
+        {
+          "pathId": "source_provenance",
+          "disposition": "description_fallback",
+          "points": 0.65
+        },
+        {
+          "pathId": "hierarchy_order",
+          "disposition": "unproven_client",
+          "points": 0.35
+        },
+        {
+          "pathId": "rights_review_private_overlay",
+          "disposition": "forbidden_by_design",
+          "points": 1
+        }
+      ],
+      "retentionRatio": 0.6785714285714286
+    },
+    {
+      "architecture": "item_first_shared_context",
+      "target": "checklist",
+      "paths": [
+        {
+          "pathId": "identity",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "title_detail",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "completion_state",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "schedule",
+          "disposition": "grouped_declared",
+          "points": 0.8
+        },
+        {
+          "pathId": "source_provenance",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "hierarchy_order",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "rights_review_private_overlay",
+          "disposition": "forbidden_by_design",
+          "points": 1
+        }
+      ],
+      "retentionRatio": 0.9714285714285714
+    },
+    {
+      "architecture": "item_first_shared_context",
+      "target": "todo",
+      "paths": [
+        {
+          "pathId": "identity",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "title_detail",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "completion_state",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "schedule",
+          "disposition": "grouped_declared",
+          "points": 0.8
+        },
+        {
+          "pathId": "source_provenance",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "hierarchy_order",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "rights_review_private_overlay",
+          "disposition": "forbidden_by_design",
+          "points": 1
+        }
+      ],
+      "retentionRatio": 0.9714285714285714
+    },
+    {
+      "architecture": "item_first_shared_context",
+      "target": "sheet",
+      "paths": [
+        {
+          "pathId": "identity",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "title_detail",
+          "disposition": "grouped_declared",
+          "points": 0.8
+        },
+        {
+          "pathId": "completion_state",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "schedule",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "source_provenance",
+          "disposition": "grouped_declared",
+          "points": 0.8
+        },
+        {
+          "pathId": "hierarchy_order",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "rights_review_private_overlay",
+          "disposition": "forbidden_by_design",
+          "points": 1
+        }
+      ],
+      "retentionRatio": 0.9428571428571428
+    },
+    {
+      "architecture": "item_first_shared_context",
+      "target": "memo",
+      "paths": [
+        {
+          "pathId": "identity",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "title_detail",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "completion_state",
+          "disposition": "sidecar_authoritative",
+          "points": 0.75
+        },
+        {
+          "pathId": "schedule",
+          "disposition": "description_fallback",
+          "points": 0.65
+        },
+        {
+          "pathId": "source_provenance",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "hierarchy_order",
+          "disposition": "retained",
+          "points": 1
+        },
+        {
+          "pathId": "rights_review_private_overlay",
+          "disposition": "forbidden_by_design",
+          "points": 1
+        }
+      ],
+      "retentionRatio": 0.9142857142857144
+    }
+  ]
+}

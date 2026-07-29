@@ -1,0 +1,35 @@
+{
+  "generatedAt": "2026-07-27",
+  "evidenceKind": "current_browser_automation",
+  "observedUserCount": 0,
+  "markers": {
+    "shapeAwareWorkspaceModelConnected": true,
+    "mobileFixedWorkspaceTabCount": 0,
+    "datedExecutionUnitKind": "nearest_date_group",
+    "datedNextGroupRowCount": 4,
+    "datedCalendarStableIdentityContractReused": true,
+    "routineExecutionUnitKind": "current_occurrence",
+    "routineSeriesAndOccurrenceDistinct": true,
+    "routineOccurrenceStableIdVisible": true,
+    "sheetExecutionUnitKind": "current_and_next_row",
+    "sheetCurrentRowCount": 1,
+    "sheetNextRowCount": 1,
+    "memoSyntheticNextCount": 0,
+    "freshFlowFixedHistoryCount": 0,
+    "historyVisibleAfterCompletionEvent": true,
+    "itemMemoRenderedInHistoryCount": 0,
+    "mobileWideSemanticOrderParity": true,
+    "horizontalOverflowCountByViewport": {
+      "390x844": 0,
+      "1024x768": 0
+    },
+    "consolePageErrorCount": 0,
+    "localStorageSchemaChanged": false,
+    "stableIdentityContractChanged": false
+  },
+  "screenshots": [
+    "screenshots/p35-r4-dated-next-group-390.png",
+    "screenshots/p35-r4-routine-occurrence-390.png",
+    "screenshots/p35-r4-sheet-current-1024.png"
+  ]
+}

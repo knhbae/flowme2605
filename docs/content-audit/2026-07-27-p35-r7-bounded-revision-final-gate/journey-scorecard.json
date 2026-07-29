@@ -1,0 +1,141 @@
+{
+  "generatedAt": "2026-07-27",
+  "observedUserCount": 0,
+  "method": "automated_simulated_journey",
+  "summary": {
+    "totalCells": 15,
+    "supported": 15,
+    "partial": 0,
+    "missing": 0,
+    "blocked": 0
+  },
+  "cells": [
+    {
+      "shape": "calendar",
+      "session": 1,
+      "viewport": "390x844",
+      "state": "public_preview",
+      "status": "supported",
+      "screenshot": "screenshots/p35-r7-calendar-session1-preview-390.png"
+    },
+    {
+      "shape": "calendar",
+      "session": 2,
+      "viewport": "1024x768",
+      "state": "export_preflight",
+      "status": "supported",
+      "screenshot": "screenshots/p35-r7-calendar-session2-preflight-1024.png"
+    },
+    {
+      "shape": "calendar",
+      "session": 3,
+      "viewport": "390x844",
+      "state": "personal_workspace",
+      "status": "supported",
+      "screenshot": "screenshots/p35-r7-calendar-session3-workspace-390.png"
+    },
+    {
+      "shape": "checklist",
+      "session": 1,
+      "viewport": "390x844",
+      "state": "public_preview",
+      "status": "supported",
+      "screenshot": "screenshots/p35-r7-checklist-session1-preview-390.png"
+    },
+    {
+      "shape": "checklist",
+      "session": 2,
+      "viewport": "1024x768",
+      "state": "export_preflight",
+      "status": "supported",
+      "screenshot": "screenshots/p35-r7-checklist-session2-preflight-1024.png"
+    },
+    {
+      "shape": "checklist",
+      "session": 3,
+      "viewport": "390x844",
+      "state": "personal_workspace",
+      "status": "supported",
+      "screenshot": "screenshots/p35-r7-checklist-session3-workspace-390.png"
+    },
+    {
+      "shape": "routine",
+      "session": 1,
+      "viewport": "390x844",
+      "state": "public_preview",
+      "status": "supported",
+      "screenshot": "screenshots/p35-r7-routine-session1-preview-390.png"
+    },
+    {
+      "shape": "routine",
+      "session": 2,
+      "viewport": "1024x768",
+      "state": "export_preflight",
+      "status": "supported",
+      "screenshot": "screenshots/p35-r7-routine-session2-preflight-1024.png"
+    },
+    {
+      "shape": "routine",
+      "session": 3,
+      "viewport": "390x844",
+      "state": "personal_workspace",
+      "status": "supported",
+      "screenshot": "screenshots/p35-r7-routine-session3-workspace-390.png"
+    },
+    {
+      "shape": "sheet",
+      "session": 1,
+      "viewport": "390x844",
+      "state": "public_preview",
+      "status": "supported",
+      "screenshot": "screenshots/p35-r7-sheet-session1-preview-390.png"
+    },
+    {
+      "shape": "sheet",
+      "session": 2,
+      "viewport": "1024x768",
+      "state": "export_preflight",
+      "status": "supported",
+      "screenshot": "screenshots/p35-r7-sheet-session2-preflight-1024.png"
+    },
+    {
+      "shape": "sheet",
+      "session": 3,
+      "viewport": "390x844",
+      "state": "personal_workspace",
+      "status": "supported",
+      "screenshot": "screenshots/p35-r7-sheet-session3-workspace-390.png"
+    },
+    {
+      "shape": "memo",
+      "session": 1,
+      "viewport": "390x844",
+      "state": "public_preview",
+      "status": "supported",
+      "screenshot": "screenshots/p35-r7-memo-session1-preview-390.png"
+    },
+    {
+      "shape": "memo",
+      "session": 2,
+      "viewport": "1024x768",
+      "state": "export_preflight",
+      "status": "supported",
+      "screenshot": "screenshots/p35-r7-memo-session2-preflight-1024.png"
+    },
+    {
+      "shape": "memo",
+      "session": 3,
+      "viewport": "390x844",
+      "state": "personal_workspace",
+      "status": "supported",
+      "screenshot": "screenshots/p35-r7-memo-session3-workspace-390.png"
+    }
+  ],
+  "desktopScaleCheck": {
+    "route": "/my?demo=ux60&view=flows",
+    "viewport": "1440x900",
+    "flowCount": 60,
+    "status": "supported",
+    "screenshot": "screenshots/p35-r7-library-60-1440.png"
+  }
+}

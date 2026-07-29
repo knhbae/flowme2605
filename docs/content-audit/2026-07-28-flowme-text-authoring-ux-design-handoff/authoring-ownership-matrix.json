@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "flowme-authoring-ownership-matrix-v1",
+  "layers": [
+    {
+      "layer": "source_snapshot",
+      "owner": "source_owner",
+      "editableInAuthoringUx": false,
+      "writeActions": [],
+      "canonicalImpact": "evidence_only"
+    },
+    {
+      "layer": "creator_draft",
+      "owner": "creator_or_editor",
+      "editableInAuthoringUx": true,
+      "writeActions": ["structure", "detail", "completion", "source_trace", "artifact_policy"],
+      "canonicalImpact": "none_until_approved"
+    },
+    {
+      "layer": "published_flow",
+      "owner": "versioned_publisher",
+      "editableInAuthoringUx": false,
+      "writeActions": [],
+      "canonicalImpact": "approved_release_only"
+    },
+    {
+      "layer": "personal_draft",
+      "owner": "user",
+      "editableInAuthoringUx": true,
+      "writeActions": ["structure", "title", "detail", "date", "place", "memo", "order"],
+      "canonicalImpact": "none"
+    },
+    {
+      "layer": "personal_overlay",
+      "owner": "user",
+      "editableInAuthoringUx": true,
+      "writeActions": ["title", "date", "place", "memo", "include_exclude"],
+      "canonicalImpact": "none"
+    },
+    {
+      "layer": "personal_structural_overlay",
+      "owner": "user",
+      "editableInAuthoringUx": true,
+      "writeActions": ["add", "remove_tombstone", "restore", "reorder", "split", "merge", "role_override"],
+      "canonicalImpact": "none"
+    },
+    {
+      "layer": "execution_run",
+      "owner": "user",
+      "editableInAuthoringUx": false,
+      "writeActions": ["completion", "reopen", "run_note"],
+      "canonicalImpact": "none"
+    },
+    {
+      "layer": "recurrence_series",
+      "owner": "user_schedule",
+      "editableInAuthoringUx": true,
+      "writeActions": ["schedule_definition", "end_condition"],
+      "canonicalImpact": "none"
+    },
+    {
+      "layer": "recurrence_occurrence",
+      "owner": "user_run",
+      "editableInAuthoringUx": false,
+      "writeActions": ["occurrence_completion", "occurrence_note"],
+      "canonicalImpact": "none"
+    },
+    {
+      "layer": "export_identity_receipt",
+      "owner": "export_operation",
+      "editableInAuthoringUx": false,
+      "writeActions": ["scope", "format", "count", "loss_manifest", "result_identity"],
+      "canonicalImpact": "none"
+    },
+    {
+      "layer": "correction_suggestion",
+      "owner": "proposer",
+      "editableInAuthoringUx": true,
+      "writeActions": ["proposal_body", "source_evidence"],
+      "canonicalImpact": "none_until_reviewed"
+    }
+  ]
+}

@@ -1,0 +1,600 @@
+{
+  "schemaVersion": "flowme-reused-vs-new-bundle-field-diff-v1",
+  "generatedAt": "2026-07-27",
+  "sourceArtifact": "docs/content-audit/2026-07-23-creator-flow-portfolio-data-v1.json",
+  "comparisonBoundary": "This structural diff does not declare new-only fields canonical and does not normalize source values in place.",
+  "groups": {
+    "reused_source_backed_bundle": {
+      "exampleCount": 5,
+      "creatorIds": [
+        "home-ajd",
+        "family-babyfood016",
+        "study-mansour",
+        "money-getcha",
+        "health-allblanc"
+      ],
+      "representativeExampleFields": {
+        "categoryId": 5,
+        "counts": 5,
+        "creatorId": 5,
+        "provenance": 5,
+        "sourceRows": 5,
+        "userContentBundle": 5
+      },
+      "provenanceFields": {
+        "reviewedAt": 5,
+        "sourceArtifact": 5,
+        "type": 5
+      },
+      "bundleFields": {
+        "bundleId": 5,
+        "category": 5,
+        "cautions": 5,
+        "defaultArtifact": 5,
+        "firstAction": 5,
+        "map": 5,
+        "rightsMode": 5,
+        "setupFields": 5,
+        "sourceType": 5,
+        "sourceUrls": 5,
+        "status": 5,
+        "title": 5,
+        "userPromise": 5
+      },
+      "mapFields": {
+        "flows": 5,
+        "mapId": 5,
+        "title": 5
+      },
+      "flowFields": {
+        "expectedItemCount": 12,
+        "flowId": 12,
+        "sourceVideoUrl": 12,
+        "steps": 12,
+        "title": 12
+      },
+      "stepFields": {
+        "items": 40,
+        "prerequisite": 40,
+        "schedule": 40,
+        "stepId": 40,
+        "title": 40
+      },
+      "itemFields": {
+        "completionMode": 126,
+        "itemId": 126,
+        "itemTitle": 126,
+        "memo": 126,
+        "optional": 126,
+        "schedule": 126,
+        "sourceRowIds": 126,
+        "sourceTrace": 126
+      },
+      "setupFieldFields": {
+        "key": 8,
+        "label": 8,
+        "options": 1,
+        "required": 8,
+        "type": 8
+      },
+      "sourceRowFields": {
+        "bundleId": 176,
+        "detail": 176,
+        "label": 176,
+        "sourceAsset": 36,
+        "sourceLocator": 176,
+        "sourceRowId": 176,
+        "sourceUrl": 176,
+        "verifiedAt": 176
+      },
+      "statusValues": [
+        "representative",
+        "promising_after_fix"
+      ],
+      "categoryValues": [
+        "집·살림",
+        "가족·육아",
+        "공부·학습",
+        "돈·행정·구매",
+        "건강·운동"
+      ],
+      "artifactValues": [
+        "calendar_checklist",
+        "checklist_sheet"
+      ],
+      "rightsModeValues": [
+        "link_and_minimal_execution_metadata"
+      ]
+    },
+    "new_source_backed_examples": {
+      "exampleCount": 4,
+      "creatorIds": [
+        "travel-triple",
+        "meals-wtable",
+        "work-andstudio",
+        "hobby-fitpet"
+      ],
+      "representativeExampleFields": {
+        "categoryId": 4,
+        "counts": 4,
+        "creatorId": 4,
+        "provenance": 4,
+        "sourceRows": 4,
+        "userContentBundle": 4
+      },
+      "provenanceFields": {
+        "reviewedAt": 4,
+        "type": 4
+      },
+      "bundleFields": {
+        "bundleId": 4,
+        "category": 4,
+        "cautions": 4,
+        "defaultArtifact": 4,
+        "firstAction": 4,
+        "map": 4,
+        "rightsMode": 4,
+        "setupFields": 4,
+        "sourceType": 4,
+        "sourceUrls": 4,
+        "status": 4,
+        "title": 4,
+        "userPromise": 4
+      },
+      "mapFields": {
+        "flows": 4,
+        "mapId": 4,
+        "mapType": 4,
+        "ordering": 2,
+        "title": 4
+      },
+      "flowFields": {
+        "expectedItemCount": 10,
+        "flowId": 10,
+        "sourceOrder": 5,
+        "sourceVideoUrl": 8,
+        "steps": 10,
+        "title": 10
+      },
+      "stepFields": {
+        "items": 17,
+        "prerequisite": 17,
+        "schedule": 17,
+        "stepId": 17,
+        "title": 17
+      },
+      "itemFields": {
+        "completionMode": 22,
+        "itemId": 22,
+        "itemTitle": 22,
+        "memo": 22,
+        "optional": 22,
+        "schedule": 22,
+        "sourceRowIds": 22,
+        "sourceTrace": 22
+      },
+      "setupFieldFields": {
+        "key": 1,
+        "label": 1,
+        "purpose": 1,
+        "required": 1,
+        "type": 1
+      },
+      "sourceRowFields": {
+        "bundleId": 22,
+        "detail": 22,
+        "label": 22,
+        "sourceAgeWeeks": 6,
+        "sourceLocator": 22,
+        "sourceRowId": 22,
+        "sourceUrl": 22,
+        "verifiedAt": 22
+      },
+      "statusValues": [
+        "representative_example",
+        "representative_example_sensitive"
+      ],
+      "categoryValues": [
+        "여행·외출",
+        "식사·장보기",
+        "일·커리어",
+        "취미·반려"
+      ],
+      "artifactValues": [
+        "checklist",
+        "checklist_memo",
+        "resource_queue",
+        "calendar_checklist"
+      ],
+      "rightsModeValues": [
+        "link_and_minimal_execution_metadata"
+      ]
+    }
+  },
+  "perExampleManifest": [
+    {
+      "creatorId": "home-ajd",
+      "categoryId": "home_living",
+      "provenanceType": "reused_source_backed_bundle",
+      "bundleStatus": "representative",
+      "bundleCategory": "집·살림",
+      "defaultArtifact": "calendar_checklist",
+      "rightsMode": "link_and_minimal_execution_metadata",
+      "setupFields": [
+        {
+          "key": "moveDate",
+          "label": "이사일",
+          "type": "date",
+          "required": false
+        }
+      ],
+      "mapTypePresent": false,
+      "mapType": null,
+      "orderingPresent": false,
+      "ordering": null,
+      "sourceTraceShapeSha256": "fa3fed22c5f7e4413c8340a1018d1f27901fc2a02cf5a214406c0aff7cb9b577",
+      "sourceRowFieldSet": [
+        "bundleId",
+        "detail",
+        "label",
+        "sourceLocator",
+        "sourceRowId",
+        "sourceUrl",
+        "verifiedAt"
+      ]
+    },
+    {
+      "creatorId": "family-babyfood016",
+      "categoryId": "family_parenting",
+      "provenanceType": "reused_source_backed_bundle",
+      "bundleStatus": "representative",
+      "bundleCategory": "가족·육아",
+      "defaultArtifact": "calendar_checklist",
+      "rightsMode": "link_and_minimal_execution_metadata",
+      "setupFields": [
+        {
+          "key": "sourceDay",
+          "label": "현재 D+n",
+          "type": "number",
+          "required": false
+        },
+        {
+          "key": "startDate",
+          "label": "D+174 시작일",
+          "type": "date",
+          "required": false
+        }
+      ],
+      "mapTypePresent": false,
+      "mapType": null,
+      "orderingPresent": false,
+      "ordering": null,
+      "sourceTraceShapeSha256": "79109c17b739dd0ab28f78787f5e581abf403841c3d7c18e08c7a90658770a9d",
+      "sourceRowFieldSet": [
+        "bundleId",
+        "detail",
+        "label",
+        "sourceAsset",
+        "sourceLocator",
+        "sourceRowId",
+        "sourceUrl",
+        "verifiedAt"
+      ]
+    },
+    {
+      "creatorId": "study-mansour",
+      "categoryId": "study_reading",
+      "provenanceType": "reused_source_backed_bundle",
+      "bundleStatus": "representative",
+      "bundleCategory": "공부·학습",
+      "defaultArtifact": "calendar_checklist",
+      "rightsMode": "link_and_minimal_execution_metadata",
+      "setupFields": [
+        {
+          "key": "planVariant",
+          "label": "계획",
+          "type": "choice",
+          "options": [
+            "2주",
+            "1달"
+          ],
+          "required": true
+        },
+        {
+          "key": "startDate",
+          "label": "시작일",
+          "type": "date",
+          "required": false
+        }
+      ],
+      "mapTypePresent": false,
+      "mapType": null,
+      "orderingPresent": false,
+      "ordering": null,
+      "sourceTraceShapeSha256": "a101e46d908642ffcfd111e7e7bc0101a501a4b5cce6ddcec153ac0e056d70ff",
+      "sourceRowFieldSet": [
+        "bundleId",
+        "detail",
+        "label",
+        "sourceLocator",
+        "sourceRowId",
+        "sourceUrl",
+        "verifiedAt"
+      ]
+    },
+    {
+      "creatorId": "money-getcha",
+      "categoryId": "money_admin_purchase",
+      "provenanceType": "reused_source_backed_bundle",
+      "bundleStatus": "promising_after_fix",
+      "bundleCategory": "돈·행정·구매",
+      "defaultArtifact": "checklist_sheet",
+      "rightsMode": "link_and_minimal_execution_metadata",
+      "setupFields": [
+        {
+          "key": "vehicleName",
+          "label": "차량 후보",
+          "type": "text",
+          "required": false
+        }
+      ],
+      "mapTypePresent": false,
+      "mapType": null,
+      "orderingPresent": false,
+      "ordering": null,
+      "sourceTraceShapeSha256": "75f19ddeb3c66020b64356c091ecb138a6c028c75ccc8ad686e6e4bb8e187eba",
+      "sourceRowFieldSet": [
+        "bundleId",
+        "detail",
+        "label",
+        "sourceLocator",
+        "sourceRowId",
+        "sourceUrl",
+        "verifiedAt"
+      ]
+    },
+    {
+      "creatorId": "health-allblanc",
+      "categoryId": "health_fitness",
+      "provenanceType": "reused_source_backed_bundle",
+      "bundleStatus": "representative",
+      "bundleCategory": "건강·운동",
+      "defaultArtifact": "calendar_checklist",
+      "rightsMode": "link_and_minimal_execution_metadata",
+      "setupFields": [
+        {
+          "key": "startDate",
+          "label": "시작일",
+          "type": "date",
+          "required": false
+        },
+        {
+          "key": "repeatWeekdays",
+          "label": "운동 요일",
+          "type": "weekday_multi",
+          "required": false
+        }
+      ],
+      "mapTypePresent": false,
+      "mapType": null,
+      "orderingPresent": false,
+      "ordering": null,
+      "sourceTraceShapeSha256": "5e014b5f5c4fc9a083cb568538ca5d8ab5d35895d28c9d4edc0b2eebffaae963",
+      "sourceRowFieldSet": [
+        "bundleId",
+        "detail",
+        "label",
+        "sourceLocator",
+        "sourceRowId",
+        "sourceUrl",
+        "verifiedAt"
+      ]
+    },
+    {
+      "creatorId": "travel-triple",
+      "categoryId": "travel_outings",
+      "provenanceType": "new_source_backed_example",
+      "bundleStatus": "representative_example",
+      "bundleCategory": "여행·외출",
+      "defaultArtifact": "checklist",
+      "rightsMode": "link_and_minimal_execution_metadata",
+      "setupFields": [],
+      "mapTypePresent": true,
+      "mapType": "single_flow",
+      "orderingPresent": false,
+      "ordering": null,
+      "sourceTraceShapeSha256": "111d61680819baa6c28e95cbafcd92cf152c2a1270572eb622c32a45b8a44de0",
+      "sourceRowFieldSet": [
+        "bundleId",
+        "detail",
+        "label",
+        "sourceLocator",
+        "sourceRowId",
+        "sourceUrl",
+        "verifiedAt"
+      ]
+    },
+    {
+      "creatorId": "meals-wtable",
+      "categoryId": "meals_grocery",
+      "provenanceType": "new_source_backed_example",
+      "bundleStatus": "representative_example",
+      "bundleCategory": "식사·장보기",
+      "defaultArtifact": "checklist_memo",
+      "rightsMode": "link_and_minimal_execution_metadata",
+      "setupFields": [],
+      "mapTypePresent": true,
+      "mapType": "source_curation",
+      "orderingPresent": true,
+      "ordering": "source_display_order_not_calendar_order",
+      "sourceTraceShapeSha256": "f7ba945576dbe673aa230f9e6c46e72c9c45f6b9187f2e7f43255e1ec10e080c",
+      "sourceRowFieldSet": [
+        "bundleId",
+        "detail",
+        "label",
+        "sourceLocator",
+        "sourceRowId",
+        "sourceUrl",
+        "verifiedAt"
+      ]
+    },
+    {
+      "creatorId": "work-andstudio",
+      "categoryId": "work_career",
+      "provenanceType": "new_source_backed_example",
+      "bundleStatus": "representative_example",
+      "bundleCategory": "일·커리어",
+      "defaultArtifact": "resource_queue",
+      "rightsMode": "link_and_minimal_execution_metadata",
+      "setupFields": [],
+      "mapTypePresent": true,
+      "mapType": "unordered_collection",
+      "orderingPresent": true,
+      "ordering": "none",
+      "sourceTraceShapeSha256": "5884c99e80f1f3ac1555defa71b50d0d665635a4c5c01f4953d76ea8a5ebe12e",
+      "sourceRowFieldSet": [
+        "bundleId",
+        "detail",
+        "label",
+        "sourceLocator",
+        "sourceRowId",
+        "sourceUrl",
+        "verifiedAt"
+      ]
+    },
+    {
+      "creatorId": "hobby-fitpet",
+      "categoryId": "hobby_pet",
+      "provenanceType": "new_source_backed_sensitive_example",
+      "bundleStatus": "representative_example_sensitive",
+      "bundleCategory": "취미·반려",
+      "defaultArtifact": "calendar_checklist",
+      "rightsMode": "link_and_minimal_execution_metadata",
+      "setupFields": [
+        {
+          "key": "birthDate",
+          "label": "생년월일",
+          "type": "date",
+          "required": false,
+          "purpose": "입력한 경우에만 생후 주차를 실제 날짜로 계산한다."
+        }
+      ],
+      "mapTypePresent": true,
+      "mapType": "single_sensitive_schedule",
+      "orderingPresent": false,
+      "ordering": null,
+      "sourceTraceShapeSha256": "c23f674b2d534a2aaed6d16b50445c0279fb293ba187fe052a4e6bb3590ee04d",
+      "sourceRowFieldSet": [
+        "bundleId",
+        "detail",
+        "label",
+        "sourceAgeWeeks",
+        "sourceLocator",
+        "sourceRowId",
+        "sourceUrl",
+        "verifiedAt"
+      ]
+    }
+  ],
+  "adjudicatedDifferences": [
+    {
+      "field": "map.mapType",
+      "reused": "absent in all 5 reused bundles",
+      "new": "present in all 4 newly authored examples",
+      "canonicalHandling": "Preserve legacy absence; derive a candidate map type from source order and require a normalization decision before canonical write.",
+      "autoMapping": "conditional",
+      "humanReview": true
+    },
+    {
+      "field": "map.ordering",
+      "reused": "absent",
+      "new": "explicit only where collection semantics need it",
+      "canonicalHandling": "Do not default every Map to ordered. Use explicit none, source-display, or source-defined ordering.",
+      "autoMapping": "conditional",
+      "humanReview": true
+    },
+    {
+      "field": "userContentBundle.category",
+      "reused": "localized category labels",
+      "new": "localized category labels",
+      "canonicalHandling": "Map categoryId to primaryLifeArea; retain localized label as display metadata only.",
+      "autoMapping": "yes_via_example_categoryId",
+      "humanReview": false
+    },
+    {
+      "field": "defaultArtifact",
+      "reused": "calendar_checklist or checklist_sheet",
+      "new": "checklist, checklist_memo, resource_queue, or calendar_checklist",
+      "canonicalHandling": "Split compound values into primaryArtifact and secondaryArtifacts; resource_queue remains an execution pattern.",
+      "autoMapping": "partial",
+      "humanReview": true
+    },
+    {
+      "field": "item.sourceRowIds and item.sourceTrace",
+      "reused": "same structural shape",
+      "new": "same structural shape",
+      "canonicalHandling": "Copy without rewriting; every sourceRowId must resolve inside the frozen example.",
+      "autoMapping": "yes_lossless",
+      "humanReview": false
+    },
+    {
+      "field": "setupFields",
+      "reused": "key, label, type, required; options for choice",
+      "new": "same base fields; purpose only on the sensitive birthDate example",
+      "canonicalHandling": "Preserve purpose as optional explanatory metadata, not a global requirement.",
+      "autoMapping": "yes_lossless",
+      "humanReview": false
+    },
+    {
+      "field": "sourceRows.sourceAsset",
+      "reused": "present only in the earlier baby-food source",
+      "new": "absent",
+      "canonicalHandling": "Optional source-acquisition metadata.",
+      "autoMapping": "yes_optional",
+      "humanReview": false
+    },
+    {
+      "field": "sourceRows.sourceAgeWeeks",
+      "reused": "absent",
+      "new": "present only in the sensitive vaccination schedule",
+      "canonicalHandling": "Optional age-relative source fact; never generalize to every source.",
+      "autoMapping": "yes_optional",
+      "humanReview": true
+    },
+    {
+      "field": "rightsMode",
+      "reused": "link_and_minimal_execution_metadata",
+      "new": "link_and_minimal_execution_metadata",
+      "canonicalHandling": "Preserve it, but do not interpret it as public rights approval.",
+      "autoMapping": "yes",
+      "humanReview": true
+    },
+    {
+      "field": "status",
+      "reused": "representative or promising_after_fix",
+      "new": "representative_example or representative_example_sensitive",
+      "canonicalHandling": "Treat as historical labels and map to separate conversion, review, and promotion states.",
+      "autoMapping": "no_direct_status_equivalence",
+      "humanReview": true
+    }
+  ],
+  "summary": {
+    "reusedCount": 5,
+    "newCount": 4,
+    "sharedItemTraceShape": true,
+    "mainStructuralGap": "Legacy reused Maps lack explicit mapType/ordering while new examples encode collection semantics.",
+    "safeAutomaticAreas": [
+      "categoryId to lifeArea",
+      "sourceRowIds/sourceTrace copy",
+      "setupFields copy",
+      "rightsMode copy as non-approval metadata"
+    ],
+    "reviewRequiredAreas": [
+      "mapType",
+      "ordering",
+      "primary versus secondary artifact",
+      "legacy status semantics",
+      "sensitive age scheduling"
+    ]
+  }
+}

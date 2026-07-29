@@ -1,0 +1,727 @@
+{
+  "schemaVersion": "flowme-creator-expansion-selection-v1",
+  "generatedAt": "2026-07-27",
+  "sourceArtifacts": [
+    "docs/content-audit/2026-07-23-creator-flow-portfolio-data-v1.json",
+    "docs/content-audit/2026-07-23-creator-flow-portfolio-assets/opened-creator-url-ledger-v1.json",
+    "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/gold-source-contract-v1.json"
+  ],
+  "selectionBoundary": [
+    "This is a challenge-selection file, not a public-content queue.",
+    "Creator Go/Modify status is preserved but does not override SourceRow readiness.",
+    "Only CE-03 has a complete external gold SourceRow contract. Single-content-only cases permit one source-link Item, not an inferred sequence."
+  ],
+  "maxAllowed": 9,
+  "count": 9,
+  "readinessCounts": {
+    "source_import_required": 5,
+    "source_ready_challenge": 1,
+    "single_content_only": 3
+  },
+  "cases": [
+    {
+      "expansionCaseId": "CE-01",
+      "creatorId": "home-jungriking",
+      "creatorName": "정리왕",
+      "categoryId": "home_living",
+      "creatorReadiness": {
+        "decisionBand": "Modify",
+        "verdict": "creator_content_partner_candidate",
+        "totalScore": 82,
+        "representativeFlowOwner": false,
+        "hardGatesAsOriginallyRecorded": {
+          "profileOpened": true,
+          "atLeastThreeContentsOpened": true,
+          "sourceRowsForRepresentativeExample": true,
+          "noInventedActionsRequired": true,
+          "publicRightsReady": true,
+          "sensitiveBoundaryRequired": false
+        },
+        "interpretationBoundary": "Creator readiness is an internal portfolio judgment. It does not prove complete SourceRows, public-catalog approval, rights permission, partnership, or current sensitive-source verification."
+      },
+      "contentSourceReadiness": "source_import_required",
+      "testRole": "repeating_routine_from_creator_video",
+      "selectionReason": "Visible challenge metadata is promising, but complete source-defined routine and preparation rows are not frozen as SourceRows.",
+      "selectedSource": {
+        "title": "매일 청소 없이도 일주일 깔끔한 정리왕 비법#정리왕",
+        "url": "https://www.youtube.com/watch?v=nCdgzBNPjyE",
+        "sourceOpened": true,
+        "sourceShape": "day_or_challenge_rows",
+        "userJob": "집안일·이사·정리의 다음 행동을 놓치지 않기",
+        "naturalArtifact": "calendar_checklist",
+        "sourceRowReadiness": "visible_rows_or_metadata",
+        "flowVerdict": "flow_candidate",
+        "flowMapRole": "candidate_child_flow",
+        "demandEvidence": "조회 96,619 · 댓글 105개",
+        "communicationEvidence": "댓글 105개",
+        "sourceTrace": {
+          "sourceUrl": "https://www.youtube.com/watch?v=nCdgzBNPjyE",
+          "sourceTitle": "매일 청소 없이도 일주일 깔끔한 정리왕 비법#정리왕",
+          "observedAt": "2026-07-23",
+          "evidenceLedger": "2026-07-23-creator-flow-portfolio-assets/opened-creator-url-ledger-v1.json"
+        }
+      },
+      "openedUrlEvidence": {
+        "requestedUrl": "https://www.youtube.com/watch?v=nCdgzBNPjyE",
+        "finalUrl": "https://www.youtube.com/watch?v=nCdgzBNPjyE",
+        "status": 200,
+        "opened": true,
+        "title": "매일 청소 없이도 일주일 깔끔한 정리왕 비법#정리왕"
+      },
+      "sourceContractRef": null,
+      "frozenSourceRows": [],
+      "sourceRowCount": 0,
+      "conversionBoundary": "Must stop before Item generation until the complete row set is imported.",
+      "publicReleaseApproved": false
+    },
+    {
+      "expansionCaseId": "CE-02",
+      "creatorId": "family-babybilly",
+      "creatorName": "베이비빌리",
+      "categoryId": "family_parenting",
+      "creatorReadiness": {
+        "decisionBand": "Go",
+        "verdict": "creator_flow_map_candidate",
+        "totalScore": 95,
+        "representativeFlowOwner": false,
+        "hardGatesAsOriginallyRecorded": {
+          "profileOpened": true,
+          "atLeastThreeContentsOpened": true,
+          "sourceRowsForRepresentativeExample": true,
+          "noInventedActionsRequired": true,
+          "publicRightsReady": true,
+          "sensitiveBoundaryRequired": false
+        },
+        "interpretationBoundary": "Creator readiness is an internal portfolio judgment. It does not prove complete SourceRows, public-catalog approval, rights permission, partnership, or current sensitive-source verification."
+      },
+      "contentSourceReadiness": "source_import_required",
+      "testRole": "creator_template_and_stage_preparation",
+      "selectionReason": "A real downloadable/template source is open, but its complete reusable row set has not been imported.",
+      "selectedSource": {
+        "title": "출산&육아 준비물 리스트, 여기서 PDF로 받으세요!",
+        "url": "https://babybilly.co/post/1927",
+        "sourceOpened": true,
+        "sourceShape": "download_or_template",
+        "userJob": "아이 단계에 맞는 준비·식단·자료를 바로 실행하기",
+        "naturalArtifact": "checklist_or_source_table",
+        "sourceRowReadiness": "visible_rows_or_metadata",
+        "flowVerdict": "flow_candidate",
+        "flowMapRole": "candidate_child_flow",
+        "demandEvidence": "조회 239,768",
+        "communicationEvidence": "후기",
+        "sourceTrace": {
+          "sourceUrl": "https://babybilly.co/post/1927",
+          "sourceTitle": "출산&육아 준비물 리스트, 여기서 PDF로 받으세요!",
+          "observedAt": "2026-07-23",
+          "evidenceLedger": "2026-07-23-creator-flow-portfolio-assets/opened-creator-url-ledger-v1.json"
+        }
+      },
+      "openedUrlEvidence": {
+        "requestedUrl": "https://babybilly.co/post/1927",
+        "finalUrl": "https://babybilly.co/ko/post/1927",
+        "status": 200,
+        "opened": true,
+        "title": "출산&육아 준비물 리스트, 여기서 PDF로 받으세요!"
+      },
+      "sourceContractRef": null,
+      "frozenSourceRows": [],
+      "sourceRowCount": 0,
+      "conversionBoundary": "Must stop before Item generation until the complete row set is imported.",
+      "publicReleaseApproved": false
+    },
+    {
+      "expansionCaseId": "CE-03",
+      "creatorId": "study-opentutorials",
+      "creatorName": "생활코딩",
+      "categoryId": "study_reading",
+      "creatorReadiness": {
+        "decisionBand": "Go",
+        "verdict": "creator_flow_map_candidate",
+        "totalScore": 94,
+        "representativeFlowOwner": false,
+        "hardGatesAsOriginallyRecorded": {
+          "profileOpened": true,
+          "atLeastThreeContentsOpened": true,
+          "sourceRowsForRepresentativeExample": true,
+          "noInventedActionsRequired": true,
+          "publicRightsReady": true,
+          "sensitiveBoundaryRequired": false
+        },
+        "interpretationBoundary": "Creator readiness is an internal portfolio judgment. It does not prove complete SourceRows, public-catalog approval, rights permission, partnership, or current sensitive-source verification."
+      },
+      "contentSourceReadiness": "source_ready_challenge",
+      "testRole": "progress_sheet_and_ordered_curriculum",
+      "selectionReason": "The value-qualified benchmark independently froze 26 public topic rows and a sheet-oriented gold contract.",
+      "selectedSource": {
+        "title": "WEB1 - HTML & Internet - 생활코딩",
+        "url": "https://opentutorials.org/course/3084",
+        "sourceOpened": true,
+        "sourceShape": "download_or_template",
+        "userJob": "정해진 강의·회차·자료의 다음 진도를 이어가기",
+        "naturalArtifact": "progress_checklist",
+        "sourceRowReadiness": "visible_rows_or_metadata",
+        "flowVerdict": "flow_candidate",
+        "flowMapRole": "candidate_child_flow",
+        "demandEvidence": "visible demand unknown",
+        "communicationEvidence": "댓글 · 질문만",
+        "sourceTrace": {
+          "sourceUrl": "https://opentutorials.org/course/3084",
+          "sourceTitle": "WEB1 - HTML & Internet - 생활코딩",
+          "observedAt": "2026-07-23",
+          "evidenceLedger": "2026-07-23-creator-flow-portfolio-assets/opened-creator-url-ledger-v1.json"
+        }
+      },
+      "openedUrlEvidence": {
+        "requestedUrl": "https://opentutorials.org/course/3084",
+        "finalUrl": "https://opentutorials.org/course/3084",
+        "status": 200,
+        "opened": true,
+        "title": "WEB1 - HTML & Internet - 생활코딩"
+      },
+      "sourceContractRef": "docs/specs/2026-07-22-flow-content-value-qualified-benchmark-v1/gold-source-contract-v1.json#/cases[candidateId=NEW-WEB1]",
+      "frozenSourceRows": [
+        {
+          "id": "VQ09-R01",
+          "order": 1,
+          "title": "프로젝트의 동기",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R02",
+          "order": 2,
+          "title": "기획",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R03",
+          "order": 3,
+          "title": "코딩과 HTML",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R04",
+          "order": 4,
+          "title": "HTML 코딩 실습 환경 준비",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R05",
+          "order": 5,
+          "title": "기본 문법 - 태그",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R06",
+          "order": 6,
+          "title": "혁명적인 변화",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R07",
+          "order": 7,
+          "title": "통계에 기반한 학습",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R08",
+          "order": 8,
+          "title": "줄바꿈",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R09",
+          "order": 9,
+          "title": "HTML이 중요한 이유",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R10",
+          "order": 10,
+          "title": "최후의 문법 속성과 img",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R11",
+          "order": 11,
+          "title": "부모 자식과 목록",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R12",
+          "order": 12,
+          "title": "문서의 구조와 슈퍼스타들",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R13",
+          "order": 13,
+          "title": "HTML 태그의 제왕",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R14",
+          "order": 14,
+          "title": "웹사이트 완성",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R15",
+          "order": 15,
+          "title": "원시웹",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R16",
+          "order": 16,
+          "title": "인터넷을 여는 열쇠: 서버와 클라이언트",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R17",
+          "order": 17,
+          "title": "웹호스팅 GitHub Pages",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R18",
+          "order": 18,
+          "title": "웹서버 운영하기",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R19",
+          "order": 19,
+          "title": "수업을 마치며 1",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R20",
+          "order": 20,
+          "title": "수업을 마치며 2",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R21",
+          "order": 21,
+          "title": "수업을 마치며 3",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R22",
+          "order": 22,
+          "title": "부록: 코드의 힘",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R23",
+          "order": 23,
+          "title": "부록: 동영상 삽입",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R24",
+          "order": 24,
+          "title": "부록: 댓글 기능 추가",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R25",
+          "order": 25,
+          "title": "부록: 채팅 기능 추가",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        },
+        {
+          "id": "VQ09-R26",
+          "order": 26,
+          "title": "부록: 방문자 분석기",
+          "detail": "생활코딩 WEB1 공개 토픽.",
+          "kind": "lesson",
+          "locator": "토픽 목록"
+        }
+      ],
+      "sourceRowCount": 26,
+      "conversionBoundary": "May enter architecture comparison using the referenced frozen gold rows.",
+      "publicReleaseApproved": false
+    },
+    {
+      "expansionCaseId": "CE-04",
+      "creatorId": "study-nomadcoders",
+      "creatorName": "노마드 코더",
+      "categoryId": "study_reading",
+      "creatorReadiness": {
+        "decisionBand": "Go",
+        "verdict": "creator_flow_map_candidate",
+        "totalScore": 94,
+        "representativeFlowOwner": false,
+        "hardGatesAsOriginallyRecorded": {
+          "profileOpened": true,
+          "atLeastThreeContentsOpened": true,
+          "sourceRowsForRepresentativeExample": true,
+          "noInventedActionsRequired": true,
+          "publicRightsReady": true,
+          "sensitiveBoundaryRequired": false
+        },
+        "interpretationBoundary": "Creator readiness is an internal portfolio judgment. It does not prove complete SourceRows, public-catalog approval, rights permission, partnership, or current sensitive-source verification."
+      },
+      "contentSourceReadiness": "source_import_required",
+      "testRole": "course_progress_with_entitlement_boundary",
+      "selectionReason": "The public page is open, while challenge schedules and assignment rows behind login are not available to this corpus.",
+      "selectedSource": {
+        "title": "JavaScript 무료 강의 - 웹 서비스 만들기",
+        "url": "https://nomadcoders.co/javascript-for-beginners",
+        "sourceOpened": true,
+        "sourceShape": "series_or_curriculum",
+        "userJob": "정해진 강의·회차·자료의 다음 진도를 이어가기",
+        "naturalArtifact": "progress_checklist",
+        "sourceRowReadiness": "visible_rows_or_metadata",
+        "flowVerdict": "flow_candidate",
+        "flowMapRole": "candidate_child_flow",
+        "demandEvidence": "visible demand unknown",
+        "communicationEvidence": "후기 · 질문",
+        "sourceTrace": {
+          "sourceUrl": "https://nomadcoders.co/javascript-for-beginners",
+          "sourceTitle": "JavaScript 무료 강의 - 웹 서비스 만들기",
+          "observedAt": "2026-07-23",
+          "evidenceLedger": "2026-07-23-creator-flow-portfolio-assets/opened-creator-url-ledger-v1.json"
+        }
+      },
+      "openedUrlEvidence": {
+        "requestedUrl": "https://nomadcoders.co/javascript-for-beginners",
+        "finalUrl": "https://nomadcoders.co/javascript-for-beginners",
+        "status": 200,
+        "opened": true,
+        "title": "JavaScript 무료 강의 - 웹 서비스 만들기"
+      },
+      "sourceContractRef": null,
+      "frozenSourceRows": [],
+      "sourceRowCount": 0,
+      "conversionBoundary": "Must stop before Item generation until the complete row set is imported.",
+      "publicReleaseApproved": false
+    },
+    {
+      "expansionCaseId": "CE-05",
+      "creatorId": "money-zzanboo",
+      "creatorName": "김짠부 재테크",
+      "categoryId": "money_admin_purchase",
+      "creatorReadiness": {
+        "decisionBand": "Go",
+        "verdict": "creator_flow_map_candidate",
+        "totalScore": 93,
+        "representativeFlowOwner": false,
+        "hardGatesAsOriginallyRecorded": {
+          "profileOpened": true,
+          "atLeastThreeContentsOpened": true,
+          "sourceRowsForRepresentativeExample": true,
+          "noInventedActionsRequired": true,
+          "publicRightsReady": true,
+          "sensitiveBoundaryRequired": true
+        },
+        "interpretationBoundary": "Creator readiness is an internal portfolio judgment. It does not prove complete SourceRows, public-catalog approval, rights permission, partnership, or current sensitive-source verification."
+      },
+      "contentSourceReadiness": "source_import_required",
+      "testRole": "financial_roadmap_sheet",
+      "selectionReason": "Visible roadmap metadata is not a complete reusable spreadsheet row set, and financial-safety separation remains required.",
+      "selectedSource": {
+        "title": "\"2026년이 부자되는 기회라고?\" 1억을 가장 빠르게 모으는 10가지 방법 (+재무목표 로드맵 엑셀표 무료 공유)",
+        "url": "https://www.youtube.com/watch?v=CkB5XjZH_OQ",
+        "sourceOpened": true,
+        "sourceShape": "day_or_challenge_rows",
+        "userJob": "구매·재무 학습의 비교 항목과 순서를 빠뜨리지 않기",
+        "naturalArtifact": "sheet_or_learning_queue",
+        "sourceRowReadiness": "visible_rows_or_metadata",
+        "flowVerdict": "flow_candidate",
+        "flowMapRole": "candidate_child_flow",
+        "demandEvidence": "조회 385,341 · 댓글 1,079개",
+        "communicationEvidence": "댓글 1,079개",
+        "sourceTrace": {
+          "sourceUrl": "https://www.youtube.com/watch?v=CkB5XjZH_OQ",
+          "sourceTitle": "\"2026년이 부자되는 기회라고?\" 1억을 가장 빠르게 모으는 10가지 방법 (+재무목표 로드맵 엑셀표 무료 공유)",
+          "observedAt": "2026-07-23",
+          "evidenceLedger": "2026-07-23-creator-flow-portfolio-assets/opened-creator-url-ledger-v1.json"
+        }
+      },
+      "openedUrlEvidence": {
+        "requestedUrl": "https://www.youtube.com/watch?v=CkB5XjZH_OQ",
+        "finalUrl": "https://www.youtube.com/watch?v=CkB5XjZH_OQ",
+        "status": 200,
+        "opened": true,
+        "title": "\"2026년이 부자되는 기회라고?\" 1억을 가장 빠르게 모으는 10가지 방법 (+재무목표 로드맵 엑셀표 무료 공유)"
+      },
+      "sourceContractRef": null,
+      "frozenSourceRows": [],
+      "sourceRowCount": 0,
+      "conversionBoundary": "Must stop before Item generation until the complete row set is imported.",
+      "publicReleaseApproved": false
+    },
+    {
+      "expansionCaseId": "CE-06",
+      "creatorId": "money-gomhee",
+      "creatorName": "박곰희TV",
+      "categoryId": "money_admin_purchase",
+      "creatorReadiness": {
+        "decisionBand": "Modify",
+        "verdict": "creator_content_partner_candidate",
+        "totalScore": 71,
+        "representativeFlowOwner": false,
+        "hardGatesAsOriginallyRecorded": {
+          "profileOpened": true,
+          "atLeastThreeContentsOpened": true,
+          "sourceRowsForRepresentativeExample": true,
+          "noInventedActionsRequired": true,
+          "publicRightsReady": true,
+          "sensitiveBoundaryRequired": true
+        },
+        "interpretationBoundary": "Creator readiness is an internal portfolio judgment. It does not prove complete SourceRows, public-catalog approval, rights permission, partnership, or current sensitive-source verification."
+      },
+      "contentSourceReadiness": "source_import_required",
+      "testRole": "compare_decide_financial_explainer",
+      "selectionReason": "Chapters are visible, but source-defined comparison rows and the current official financial boundary are not frozen.",
+      "selectedSource": {
+        "title": "🦾 ISA는 누구나 가지게 될 비과세만능계좌입니다ㅣ개인종합자산관리계좌ㅣ2026년리뉴얼",
+        "url": "https://www.youtube.com/watch?v=wLwnTSJqF7k",
+        "sourceOpened": true,
+        "sourceShape": "chapter_rows",
+        "userJob": "구매·재무 학습의 비교 항목과 순서를 빠뜨리지 않기",
+        "naturalArtifact": "sheet_or_learning_queue",
+        "sourceRowReadiness": "visible_rows_or_metadata",
+        "flowVerdict": "flow_candidate",
+        "flowMapRole": "candidate_child_flow",
+        "demandEvidence": "조회 25,210 · 댓글 84개",
+        "communicationEvidence": "댓글 84개",
+        "sourceTrace": {
+          "sourceUrl": "https://www.youtube.com/watch?v=wLwnTSJqF7k",
+          "sourceTitle": "🦾 ISA는 누구나 가지게 될 비과세만능계좌입니다ㅣ개인종합자산관리계좌ㅣ2026년리뉴얼",
+          "observedAt": "2026-07-23",
+          "evidenceLedger": "2026-07-23-creator-flow-portfolio-assets/opened-creator-url-ledger-v1.json"
+        }
+      },
+      "openedUrlEvidence": {
+        "requestedUrl": "https://www.youtube.com/watch?v=wLwnTSJqF7k",
+        "finalUrl": "https://www.youtube.com/watch?v=wLwnTSJqF7k",
+        "status": 200,
+        "opened": true,
+        "title": "🦾 ISA는 누구나 가지게 될 비과세만능계좌입니다ㅣ개인종합자산관리계좌ㅣ2026년리뉴얼"
+      },
+      "sourceContractRef": null,
+      "frozenSourceRows": [],
+      "sourceRowCount": 0,
+      "conversionBoundary": "Must stop before Item generation until the complete row set is imported.",
+      "publicReleaseApproved": false
+    },
+    {
+      "expansionCaseId": "CE-07",
+      "creatorId": "health-bigsis",
+      "creatorName": "빅씨스 Bigsis",
+      "categoryId": "health_fitness",
+      "creatorReadiness": {
+        "decisionBand": "Go",
+        "verdict": "creator_flow_map_candidate",
+        "totalScore": 94,
+        "representativeFlowOwner": false,
+        "hardGatesAsOriginallyRecorded": {
+          "profileOpened": true,
+          "atLeastThreeContentsOpened": true,
+          "sourceRowsForRepresentativeExample": false,
+          "noInventedActionsRequired": true,
+          "publicRightsReady": true,
+          "sensitiveBoundaryRequired": true
+        },
+        "interpretationBoundary": "Creator readiness is an internal portfolio judgment. It does not prove complete SourceRows, public-catalog approval, rights permission, partnership, or current sensitive-source verification."
+      },
+      "contentSourceReadiness": "single_content_only",
+      "testRole": "single_follow_along_video_optional_schedule",
+      "selectionReason": "The single video can remain one source-link execution Item; it does not justify a creator-wide ordered Map or invented movement rows.",
+      "selectedSource": {
+        "title": "운동 전 빼먹지 마세요👍 웜업 스트레칭 - 부상방지 동적 스트레칭 홈트 8분",
+        "url": "https://www.youtube.com/watch?v=4hl-L8RX5_s",
+        "sourceOpened": true,
+        "sourceShape": "follow_along_video_or_playlist",
+        "userJob": "영상 루틴을 골라 바로 따라 하고 반복하기",
+        "naturalArtifact": "repeating_video_routine",
+        "sourceRowReadiness": "needs_deeper_row_import",
+        "flowVerdict": "single_content_or_bucket_only",
+        "flowMapRole": "not_a_map_row_yet",
+        "demandEvidence": "조회 12,286 · 댓글 59개",
+        "communicationEvidence": "댓글 59개",
+        "sourceTrace": {
+          "sourceUrl": "https://www.youtube.com/watch?v=4hl-L8RX5_s",
+          "sourceTitle": "운동 전 빼먹지 마세요👍 웜업 스트레칭 - 부상방지 동적 스트레칭 홈트 8분",
+          "observedAt": "2026-07-23",
+          "evidenceLedger": "2026-07-23-creator-flow-portfolio-assets/opened-creator-url-ledger-v1.json"
+        }
+      },
+      "openedUrlEvidence": {
+        "requestedUrl": "https://www.youtube.com/watch?v=4hl-L8RX5_s",
+        "finalUrl": "https://www.youtube.com/watch?v=4hl-L8RX5_s",
+        "status": 200,
+        "opened": true,
+        "title": "운동 전 빼먹지 마세요👍 웜업 스트레칭 - 부상방지 동적 스트레칭 홈트 8분"
+      },
+      "sourceContractRef": null,
+      "frozenSourceRows": [],
+      "sourceRowCount": 0,
+      "conversionBoundary": "May test one source-link Item only; must not promote to creator Map or invent internal rows.",
+      "publicReleaseApproved": false
+    },
+    {
+      "expansionCaseId": "CE-08",
+      "creatorId": "health-thankyoububu",
+      "creatorName": "Thankyou BUBU",
+      "categoryId": "health_fitness",
+      "creatorReadiness": {
+        "decisionBand": "Go",
+        "verdict": "creator_flow_map_candidate",
+        "totalScore": 93,
+        "representativeFlowOwner": false,
+        "hardGatesAsOriginallyRecorded": {
+          "profileOpened": true,
+          "atLeastThreeContentsOpened": true,
+          "sourceRowsForRepresentativeExample": false,
+          "noInventedActionsRequired": true,
+          "publicRightsReady": true,
+          "sensitiveBoundaryRequired": true
+        },
+        "interpretationBoundary": "Creator readiness is an internal portfolio judgment. It does not prove complete SourceRows, public-catalog approval, rights permission, partnership, or current sensitive-source verification."
+      },
+      "contentSourceReadiness": "single_content_only",
+      "testRole": "single_follow_along_video_repeat_choice",
+      "selectionReason": "The video title and URL support one follow-along Item, but not a multi-Item program without imported source rows.",
+      "selectedSource": {
+        "title": "하루 9분! 전신 스트레칭 BEST (운동전후⭕)",
+        "url": "https://www.youtube.com/watch?v=aob4Lh1Vebk",
+        "sourceOpened": true,
+        "sourceShape": "follow_along_video_or_playlist",
+        "userJob": "영상 루틴을 골라 바로 따라 하고 반복하기",
+        "naturalArtifact": "repeating_video_routine",
+        "sourceRowReadiness": "needs_deeper_row_import",
+        "flowVerdict": "single_content_or_bucket_only",
+        "flowMapRole": "not_a_map_row_yet",
+        "demandEvidence": "조회 494,258 · 댓글 375개",
+        "communicationEvidence": "댓글 375개",
+        "sourceTrace": {
+          "sourceUrl": "https://www.youtube.com/watch?v=aob4Lh1Vebk",
+          "sourceTitle": "하루 9분! 전신 스트레칭 BEST (운동전후⭕)",
+          "observedAt": "2026-07-23",
+          "evidenceLedger": "2026-07-23-creator-flow-portfolio-assets/opened-creator-url-ledger-v1.json"
+        }
+      },
+      "openedUrlEvidence": {
+        "requestedUrl": "https://www.youtube.com/watch?v=aob4Lh1Vebk",
+        "finalUrl": "https://www.youtube.com/watch?v=aob4Lh1Vebk",
+        "status": 200,
+        "opened": true,
+        "title": "하루 9분! 전신 스트레칭 BEST (운동전후⭕)"
+      },
+      "sourceContractRef": null,
+      "frozenSourceRows": [],
+      "sourceRowCount": 0,
+      "conversionBoundary": "May test one source-link Item only; must not promote to creator Map or invent internal rows.",
+      "publicReleaseApproved": false
+    },
+    {
+      "expansionCaseId": "CE-09",
+      "creatorId": "meals-deliciousday",
+      "creatorName": "매일맛나",
+      "categoryId": "meals_grocery",
+      "creatorReadiness": {
+        "decisionBand": "Modify",
+        "verdict": "creator_content_partner_candidate",
+        "totalScore": 76,
+        "representativeFlowOwner": false,
+        "hardGatesAsOriginallyRecorded": {
+          "profileOpened": true,
+          "atLeastThreeContentsOpened": true,
+          "sourceRowsForRepresentativeExample": false,
+          "noInventedActionsRequired": true,
+          "publicRightsReady": true,
+          "sensitiveBoundaryRequired": false
+        },
+        "interpretationBoundary": "Creator readiness is an internal portfolio judgment. It does not prove complete SourceRows, public-catalog approval, rights permission, partnership, or current sensitive-source verification."
+      },
+      "contentSourceReadiness": "single_content_only",
+      "testRole": "video_recipe_resource_without_forced_map",
+      "selectionReason": "The video can be saved as one recipe/resource execution Item; its six recipes require deeper row import before expansion.",
+      "selectedSource": {
+        "title": "쉬운데 맛있는 계란요리 6가지, 이건 꼭 해봐야돼요!",
+        "url": "https://www.youtube.com/watch?v=AJjXKVdA_Fw",
+        "sourceOpened": true,
+        "sourceShape": "recipe_or_source_curation",
+        "userJob": "메뉴를 정하고 원문 레시피로 바로 조리하기",
+        "naturalArtifact": "recipe_queue_or_checklist",
+        "sourceRowReadiness": "needs_deeper_row_import",
+        "flowVerdict": "single_content_or_bucket_only",
+        "flowMapRole": "not_a_map_row_yet",
+        "demandEvidence": "조회 741 · 댓글 8개",
+        "communicationEvidence": "댓글 8개",
+        "sourceTrace": {
+          "sourceUrl": "https://www.youtube.com/watch?v=AJjXKVdA_Fw",
+          "sourceTitle": "쉬운데 맛있는 계란요리 6가지, 이건 꼭 해봐야돼요!",
+          "observedAt": "2026-07-23",
+          "evidenceLedger": "2026-07-23-creator-flow-portfolio-assets/opened-creator-url-ledger-v1.json"
+        }
+      },
+      "openedUrlEvidence": {
+        "requestedUrl": "https://www.youtube.com/watch?v=AJjXKVdA_Fw",
+        "finalUrl": "https://www.youtube.com/watch?v=AJjXKVdA_Fw",
+        "status": 200,
+        "opened": true,
+        "title": "쉬운데 맛있는 계란요리 6가지, 이건 꼭 해봐야돼요!"
+      },
+      "sourceContractRef": null,
+      "frozenSourceRows": [],
+      "sourceRowCount": 0,
+      "conversionBoundary": "May test one source-link Item only; must not promote to creator Map or invent internal rows.",
+      "publicReleaseApproved": false
+    }
+  ]
+}

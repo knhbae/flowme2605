@@ -1,5 +1,14 @@
 import { readFile } from 'node:fs/promises';
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
+
+async function openDataManager(page: Page) {
+  const auxiliaryMenu = page.getByTestId('my-flow-auxiliary-menu');
+  await expect(auxiliaryMenu).toBeVisible();
+  if ((await auxiliaryMenu.getAttribute('open')) === null) {
+    await auxiliaryMenu.locator(':scope > summary').click();
+  }
+  await page.getByTestId('my-flow-data-manager-open').click();
+}
 
 test('My Flow downloads a versioned backup without internal browser state', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
@@ -18,7 +27,7 @@ test('My Flow downloads a versioned backup without internal browser state', asyn
   });
 
   await page.goto('/my');
-  await page.getByTestId('my-flow-data-manager-open').click();
+  await openDataManager(page);
   const dialog = page.getByTestId('my-flow-data-manager-dialog');
   await expect(dialog).toContainText('현재 브라우저에만 보관됩니다');
   await expect(dialog).toContainText('자동으로 맞춰지지는 않습니다');
@@ -56,7 +65,7 @@ test('an empty My Flow can restore a backup while preserving unrelated browser s
 
   await page.goto('/my');
   await expect(page.getByTestId('my-flow-empty-state')).toBeVisible();
-  await page.getByTestId('my-flow-data-manager-open').click();
+  await openDataManager(page);
 
   const backup = {
     format: 'flowme-local-backup',
@@ -96,7 +105,7 @@ test('My Flow data management remains reachable without overflow on wide screens
   await page.setViewportSize({ width: 1024, height: 900 });
   await page.addInitScript(() => window.localStorage.clear());
   await page.goto('/my');
-  await page.getByTestId('my-flow-data-manager-open').click();
+  await openDataManager(page);
   await expect(page.getByTestId('my-flow-data-manager-dialog')).toBeVisible();
   const dimensions = await page.evaluate(() => ({
     clientWidth: document.documentElement.clientWidth,

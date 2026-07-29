@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "flowme-creator-portfolio-qualified-verification-v2",
+  "generatedAt": "2026-07-28T08:31:24.916Z",
+  "passed": true,
+  "failures": [],
+  "dataChecks": {
+    "entityRecords27": true,
+    "rightsRecords27": true,
+    "evidenceRecords27": true,
+    "logicHandoffCount6To9": true,
+    "allItemsTraceable": true,
+    "allSetupFieldsAtMost2": true,
+    "explicitEvidenceForPublicAllowed": true,
+    "userContentSeparated": true
+  },
+  "browserResults": [
+    {
+      "viewport": {
+        "name": "desktop",
+        "width": 1280,
+        "height": 900
+      },
+      "initial": {
+        "viewportWidth": 1280,
+        "documentWidth": 1280,
+        "selectedCards": 8,
+        "boundaryCards": 5,
+        "auditCards": 27,
+        "brokenImages": []
+      },
+      "selectedFilterResult": {
+        "visibleSelected": 8,
+        "visibleBoundary": 0
+      },
+      "consoleErrors": [],
+      "topScreenshotPath": null,
+      "screenshotPath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-27-creator-portfolio-qualified-assets\\qa-qualified-report-desktop.png"
+    },
+    {
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "initial": {
+        "viewportWidth": 390,
+        "documentWidth": 390,
+        "selectedCards": 8,
+        "boundaryCards": 5,
+        "auditCards": 27,
+        "brokenImages": []
+      },
+      "selectedFilterResult": {
+        "visibleSelected": 8,
+        "visibleBoundary": 0
+      },
+      "consoleErrors": [],
+      "topScreenshotPath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-27-creator-portfolio-qualified-assets\\qa-qualified-report-mobile-top.png",
+      "screenshotPath": "D:\\flowme2605\\flow-mvp\\docs\\content-audit\\2026-07-27-creator-portfolio-qualified-assets\\qa-qualified-report-mobile.png"
+    }
+  ]
+}

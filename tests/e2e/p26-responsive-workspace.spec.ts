@@ -69,7 +69,7 @@ async function seedWorkspace(page: Page, options: { multiple?: boolean } = {}) {
 
 test.use({ timezoneId: 'Asia/Seoul' });
 
-test('mobile drill-in keeps modal focus and fixed feedback above the navigation', async ({ page }) => {
+test('mobile focused drill-in keeps feedback and the editor above persistent navigation', async ({ page }) => {
   test.setTimeout(60_000);
   const browserErrors = collectBrowserErrors(page);
   await page.setViewportSize({ width: 390, height: 844 });
@@ -81,7 +81,12 @@ test('mobile drill-in keeps modal focus and fixed feedback above the navigation'
   await expect(navigation).toHaveAttribute('data-layer-priority', 'navigation');
   for (const tab of await navigation.getByRole('link').all()) await expectMinimumTarget(tab);
 
-  const completion = page.getByTestId('my-flow-task-complete-control').first();
+  const flow = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'execute');
+  const execution = flow
+    .getByTestId('my-flow-temporal-next-group')
+    .getByTestId('my-flow-execution-row-shell')
+    .first();
+  const completion = execution.getByTestId('my-flow-task-complete-control');
   await completion.click();
   const notice = page.getByTestId('my-flow-completion-snackbar');
   await expect(notice).toHaveAttribute('data-layer-priority', 'notice');
@@ -91,29 +96,14 @@ test('mobile drill-in keeps modal focus and fixed feedback above the navigation'
   expect((noticeBox?.y ?? 0) + (noticeBox?.height ?? 0)).toBeLessThanOrEqual((navigationBox?.y ?? 0) - 4);
   await expectMinimumTarget(notice.getByRole('button'));
   await capture(page, '01-mobile-fixed-layer-stack.png');
+  await notice.getByTestId('my-flow-completion-undo').click();
 
-  const overdueOpen = page.getByTestId('my-flow-overdue-open-sheet');
-  await expectMinimumTarget(overdueOpen);
-  await overdueOpen.click();
-  const sheet = page.getByTestId('my-flow-status-sheet');
-  await expect(sheet).toHaveAttribute('data-flow-ui', 'bottom-sheet');
-  await expect(sheet).toHaveAttribute('aria-modal', 'true');
-  const close = sheet.getByRole('button', { name: '닫기', exact: true });
-  await expect(close).toBeFocused();
-  await expect.poll(() => page.evaluate(() => document.body.style.overflow)).toBe('hidden');
-  await close.press('Shift+Tab');
-  expect(await sheet.evaluate((node) => node.contains(document.activeElement))).toBe(true);
-  await capture(page, '02-mobile-focus-trapped-sheet.png');
-  await page.keyboard.press('Escape');
-  await expect(sheet).toHaveCount(0);
-  await expect(overdueOpen).toBeFocused();
-  await expect.poll(() => page.evaluate(() => document.body.style.overflow)).toBe('');
-
-  await page.getByTestId('my-flow-view-flow').click();
-  const flow = await openMyFlowLibraryFlow(page, 'moving-d30-basic');
-  const firstRow = flow.getByTestId('my-flow-execution-row-shell').first();
-  await firstRow.getByRole('button', { name: /열기/ }).click();
+  const open = execution.getByRole('button', { name: /열기/ });
+  await expectMinimumTarget(open);
+  await open.click();
   const detail = getOpenMyFlowItemDetail(page);
+  await expect(detail).toBeVisible();
+  await capture(page, '02-mobile-focused-item-detail.png');
   const quickEdit = detail.getByTestId('my-flow-quick-item-edit');
   if (await quickEdit.isVisible().catch(() => false)) {
     await quickEdit.click();
@@ -138,10 +128,10 @@ test('wide workspaces keep the active detail and selected-day agenda inside the 
   await page.setViewportSize({ width: 1024, height: 768 });
   await seedWorkspace(page, { multiple: true });
   await page.goto('/my?view=flows');
-  const flow = await openMyFlowLibraryFlow(page, 'moving-d30-basic');
-  const workspace = flow.getByTestId('my-flow-whole-flow-workspace');
-  await expect(workspace).toHaveAttribute('data-workspace-layout', 'wide-outline-detail');
-  const detailPane = workspace.getByTestId('my-flow-workspace-detail-pane');
+  const flow = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'plan');
+  await expect(flow).toHaveAttribute('data-p35-marker', 'P35-PERSONAL-SINGLE-FOCUS');
+  await expect(flow.getByTestId('my-flow-whole-flow-outline')).toBeVisible();
+  const detailPane = flow.getByTestId('my-flow-workspace-detail-pane');
   const detailPaneBox = await detailPane.boundingBox();
   expect(detailPaneBox).not.toBeNull();
   expect(detailPaneBox?.height ?? 0).toBeLessThanOrEqual(736);
@@ -151,21 +141,20 @@ test('wide workspaces keep the active detail and selected-day agenda inside the 
 
   await page.goto('/calendar');
   await page.getByTestId('my-flow-month-picker').fill('2026-08');
-  const tray = page.getByTestId('my-flow-calendar-unscheduled-tray');
   const calendar = page.getByTestId('my-flow-calendar-card');
+  const eventDay = page.locator('.fc-daygrid-day').filter({ has: page.locator('.fc-event') }).first();
+  await eventDay.getByTestId('my-flow-calendar-date-button').click();
   const agenda = page.getByTestId('my-flow-calendar-selected-day');
-  const [trayBox, calendarBox, agendaBox] = await Promise.all([
-    tray.boundingBox(),
+  await expect(page.getByTestId('my-flow-calendar-unscheduled-tray')).toHaveCount(0);
+  const [calendarBox, agendaBox] = await Promise.all([
     calendar.boundingBox(),
     agenda.boundingBox(),
   ]);
-  expect(trayBox).not.toBeNull();
   expect(calendarBox).not.toBeNull();
   expect(agendaBox).not.toBeNull();
-  expect(trayBox?.x ?? 0).toBeLessThan(calendarBox?.x ?? 0);
   expect(calendarBox?.x ?? 0).toBeLessThan(agendaBox?.x ?? 0);
   expect(agendaBox?.height ?? 0).toBeLessThanOrEqual(736);
-  await capture(page, '05-wide-tray-grid-agenda.png', true);
+  await capture(page, '05-wide-calendar-and-agenda.png', true);
   expect(browserErrors).toEqual([]);
 });
 

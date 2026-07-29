@@ -56,8 +56,7 @@ test('memo intake preserves source fragments through review, save, reload, and w
   await expect(editor).toContainText('5/5개 선택');
   const sourceGroup = editor.getByTestId('draft-source-group');
   await expect(sourceGroup).toHaveCount(1);
-  await expect(sourceGroup.getByTestId('draft-item-source-disclosure')).toBeVisible();
-  await sourceGroup.getByTestId('draft-item-source-disclosure').locator('summary').click();
+  await expect(sourceGroup.getByTestId('draft-item-source-disclosure')).toBeHidden();
   await expect(sourceGroup).toContainText('항공권 확인, 숙소 예약번호 정리');
   const sourceFragmentIds = await rows.evaluateAll((elements) =>
     elements.map((element) => element.getAttribute('data-source-fragment-ids')),
@@ -66,10 +65,14 @@ test('memo intake preserves source fragments through review, save, reload, and w
   await capture(page, editor, '01-memo-five-actions-review-mobile.png');
 
   await page.setViewportSize({ width: 1024, height: 768 });
-  await expect(sourceGroup.getByTestId('draft-item-source-fragment')).toBeVisible();
+  await expect(sourceGroup.getByTestId('draft-item-source-fragment')).toHaveCount(1);
   await expectNoHorizontalOverflow(page);
   await capture(page, editor, '02-memo-source-result-review-wide.png');
 
+  await editor
+    .getByTestId('flow-memo-draft-structure-disclosure')
+    .locator(':scope > summary')
+    .click();
   await expect(editor.getByTestId('draft-structure-edit-controls')).toHaveCount(0);
   await editor.getByTestId('draft-structure-edit-toggle').click();
   await expect(editor.getByTestId('draft-structure-edit-controls')).toHaveCount(5);
@@ -100,7 +103,7 @@ test('memo intake preserves source fragments through review, save, reload, and w
     .map((element) => element.getAttribute('data-draft-item-id')));
   expect(new Set(acceptedDraftIds).size).toBe(4);
 
-  await editor.getByRole('button', { name: '내 Flow에 초안 저장' }).click();
+  await editor.getByTestId('flow-memo-draft-save').click();
   await expect(page).toHaveURL(/\/my\?savedFlow=url-draft-/);
   const receipt = page.getByTestId('my-flow-post-save-panel');
   await expect(receipt).toHaveAttribute('data-receipt-total-count', '4');

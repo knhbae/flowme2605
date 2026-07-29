@@ -1,0 +1,723 @@
+{
+  "schemaVersion": "flowme-projection-lab-validation-results-v1",
+  "generatedAt": "2026-07-29T01:42:34.695Z",
+  "pass": true,
+  "counts": {
+    "checks": 32,
+    "passed": 32,
+    "failed": 0
+  },
+  "checks": [
+    {
+      "id": "baseline-counts-frozen",
+      "pass": true,
+      "evidence": {
+        "completeFixtures": 42,
+        "boundaryControls": 4,
+        "bundles": 42,
+        "maps": 42,
+        "sourceRows": 484,
+        "flows": 55,
+        "steps": 225,
+        "items": 406,
+        "fields": 246,
+        "memos": 19,
+        "scheduledItems": 144,
+        "undatedItems": 262
+      }
+    },
+    {
+      "id": "baseline-lineage-frozen",
+      "pass": true,
+      "evidence": {
+        "path": "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json",
+        "hash": "sha256:63fc62cb2e26750f4c7834de6017864c197e791e9a0d55a7b99f72a1d856ac72",
+        "counts": {
+          "completeFixtures": 42,
+          "boundaryControls": 4,
+          "bundles": 42,
+          "maps": 42,
+          "sourceRows": 484,
+          "flows": 55,
+          "steps": 225,
+          "items": 406,
+          "fields": 246,
+          "memos": 19,
+          "scheduledItems": 144,
+          "undatedItems": 262
+        },
+        "frozen": true
+      }
+    },
+    {
+      "id": "baseline-source-row-reference-integrity",
+      "pass": true,
+      "evidence": {
+        "sourceRows": 484,
+        "referencedRows": 484,
+        "unreferenced": []
+      }
+    },
+    {
+      "id": "new-fixture-count",
+      "pass": true,
+      "evidence": {
+        "totalNewFixtures": 21,
+        "checklistTodoBoundary": 6,
+        "eventNative": 15,
+        "uniqueUrls": 21
+      }
+    },
+    {
+      "id": "event-native-count",
+      "pass": true,
+      "evidence": {
+        "totalNewFixtures": 21,
+        "checklistTodoBoundary": 6,
+        "eventNative": 15,
+        "uniqueUrls": 21
+      }
+    },
+    {
+      "id": "new-url-count-and-uniqueness",
+      "pass": true,
+      "evidence": {
+        "unique": 21,
+        "baselineDuplicates": []
+      }
+    },
+    {
+      "id": "direct-source-evidence",
+      "pass": true,
+      "evidence": {
+        "directCount": 21
+      }
+    },
+    {
+      "id": "new-fixture-source-row-reference-integrity",
+      "pass": true,
+      "evidence": []
+    },
+    {
+      "id": "baseline-42x5-matrix",
+      "pass": true,
+      "evidence": {
+        "cells": 210
+      }
+    },
+    {
+      "id": "all-projection-cell-count",
+      "pass": true,
+      "evidence": {
+        "baselineFixtures": 42,
+        "newFixtures": 21,
+        "totalFixtures": 63,
+        "projectionsPerFixture": 5,
+        "baselineCells": 210,
+        "totalCells": 315,
+        "generatedCells": 225,
+        "eventNativeFixtures": 15,
+        "checklistTodoBoundaryFixtures": 6,
+        "newCanonicalUrls": 21
+      }
+    },
+    {
+      "id": "projection-cell-schema-and-state",
+      "pass": true,
+      "evidence": []
+    },
+    {
+      "id": "checklist-todo-distinct-schema",
+      "pass": true,
+      "evidence": {
+        "checklistOutputs": 47,
+        "todoOutputs": 49
+      }
+    },
+    {
+      "id": "no-source-vevent-for-undated-item",
+      "pass": true,
+      "evidence": []
+    },
+    {
+      "id": "no-due-only-auto-timeblock",
+      "pass": true,
+      "evidence": []
+    },
+    {
+      "id": "calendar-schedule-provenance-100-percent",
+      "pass": true,
+      "evidence": {
+        "events": 3,
+        "missing": []
+      }
+    },
+    {
+      "id": "generated-item-provenance",
+      "pass": true,
+      "evidence": []
+    },
+    {
+      "id": "no-action-date-recurrence-completion-invention",
+      "pass": true,
+      "evidence": {
+        "schemaVersion": "flowme-semantic-invention-audit-v1",
+        "generatedAt": "2026-07-29T01:42:34.693Z",
+        "counts": {
+          "actionWithoutSourceProvenance": 0,
+          "sourceDateWithoutDirectMatch": 0,
+          "falseSourceRecurrence": 0,
+          "completionCriteriaWithoutProvenance": 0
+        },
+        "details": {
+          "actionWithoutSourceProvenance": [],
+          "sourceDateWithoutDirectMatch": [],
+          "falseSourceRecurrence": [],
+          "completionCriteriaWithoutProvenance": []
+        },
+        "pass": true
+      }
+    },
+    {
+      "id": "pacing-invariants",
+      "pass": true,
+      "evidence": []
+    },
+    {
+      "id": "pacing-future-only-revision",
+      "pass": true,
+      "evidence": {
+        "scenarioId": "web1-policy-revision-future-only",
+        "fixtureId": "base-opentutorials-web1-progress",
+        "completedPastAssignment": {
+          "assignmentId": "pacing-web1-two-per-day-base-opentutorials-web1-progress-flow-1-step-1-item-1",
+          "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-1",
+          "start": "2026-08-03",
+          "end": null,
+          "allDay": true,
+          "timezone": "Asia/Seoul",
+          "scheduleOwner": "user_overlay",
+          "derivation": "pacing_policy",
+          "suggestionStatus": "confirmed",
+          "completionStatus": "completed",
+          "lockedPast": true
+        },
+        "revisedAssignments": [
+          {
+            "assignmentId": "pacing-web1-two-per-day-base-opentutorials-web1-progress-flow-1-step-1-item-1",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-1",
+            "start": "2026-08-03",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "completionStatus": "completed",
+            "lockedPast": true
+          },
+          {
+            "assignmentId": "pacing-web1-three-per-day-revision-base-opentutorials-web1-progress-flow-1-step-1-item-2",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-2",
+            "start": "2026-08-04",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "completionStatus": "not_started",
+            "lockedPast": false
+          },
+          {
+            "assignmentId": "pacing-web1-three-per-day-revision-base-opentutorials-web1-progress-flow-1-step-1-item-3",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-3",
+            "start": "2026-08-04",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "completionStatus": "not_started",
+            "lockedPast": false
+          },
+          {
+            "assignmentId": "pacing-web1-three-per-day-revision-base-opentutorials-web1-progress-flow-1-step-1-item-4",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-4",
+            "start": "2026-08-04",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "completionStatus": "not_started",
+            "lockedPast": false
+          },
+          {
+            "assignmentId": "pacing-web1-three-per-day-revision-base-opentutorials-web1-progress-flow-1-step-1-item-5",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-5",
+            "start": "2026-08-05",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "completionStatus": "not_started",
+            "lockedPast": false
+          },
+          {
+            "assignmentId": "pacing-web1-three-per-day-revision-base-opentutorials-web1-progress-flow-1-step-1-item-6",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-6",
+            "start": "2026-08-05",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "completionStatus": "not_started",
+            "lockedPast": false
+          },
+          {
+            "assignmentId": "pacing-web1-three-per-day-revision-base-opentutorials-web1-progress-flow-1-step-1-item-7",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-7",
+            "start": "2026-08-05",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "completionStatus": "not_started",
+            "lockedPast": false
+          },
+          {
+            "assignmentId": "pacing-web1-three-per-day-revision-base-opentutorials-web1-progress-flow-1-step-1-item-8",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-8",
+            "start": "2026-08-06",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "completionStatus": "not_started",
+            "lockedPast": false
+          },
+          {
+            "assignmentId": "pacing-web1-three-per-day-revision-base-opentutorials-web1-progress-flow-1-step-1-item-9",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-9",
+            "start": "2026-08-06",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "completionStatus": "not_started",
+            "lockedPast": false
+          },
+          {
+            "assignmentId": "pacing-web1-three-per-day-revision-base-opentutorials-web1-progress-flow-1-step-1-item-10",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-10",
+            "start": "2026-08-06",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "completionStatus": "not_started",
+            "lockedPast": false
+          },
+          {
+            "assignmentId": "pacing-web1-three-per-day-revision-base-opentutorials-web1-progress-flow-1-step-1-item-11",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-11",
+            "start": "2026-08-07",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "completionStatus": "not_started",
+            "lockedPast": false
+          },
+          {
+            "assignmentId": "pacing-web1-three-per-day-revision-base-opentutorials-web1-progress-flow-1-step-1-item-12",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-12",
+            "start": "2026-08-07",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "completionStatus": "not_started",
+            "lockedPast": false
+          },
+          {
+            "assignmentId": "pacing-web1-three-per-day-revision-base-opentutorials-web1-progress-flow-1-step-1-item-13",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-13",
+            "start": "2026-08-07",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "completionStatus": "not_started",
+            "lockedPast": false
+          },
+          {
+            "assignmentId": "pacing-web1-three-per-day-revision-base-opentutorials-web1-progress-flow-1-step-1-item-14",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-14",
+            "start": "2026-08-10",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "completionStatus": "not_started",
+            "lockedPast": false
+          },
+          {
+            "assignmentId": "pacing-web1-three-per-day-revision-base-opentutorials-web1-progress-flow-1-step-1-item-15",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-15",
+            "start": "2026-08-10",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "completionStatus": "not_started",
+            "lockedPast": false
+          },
+          {
+            "assignmentId": "pacing-web1-three-per-day-revision-base-opentutorials-web1-progress-flow-1-step-1-item-16",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-16",
+            "start": "2026-08-10",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "completionStatus": "not_started",
+            "lockedPast": false
+          },
+          {
+            "assignmentId": "pacing-web1-three-per-day-revision-base-opentutorials-web1-progress-flow-1-step-1-item-17",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-17",
+            "start": "2026-08-11",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "completionStatus": "not_started",
+            "lockedPast": false
+          },
+          {
+            "assignmentId": "pacing-web1-three-per-day-revision-base-opentutorials-web1-progress-flow-1-step-1-item-18",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-18",
+            "start": "2026-08-11",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "completionStatus": "not_started",
+            "lockedPast": false
+          },
+          {
+            "assignmentId": "pacing-web1-three-per-day-revision-base-opentutorials-web1-progress-flow-1-step-1-item-19",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-19",
+            "start": "2026-08-11",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "completionStatus": "not_started",
+            "lockedPast": false
+          },
+          {
+            "assignmentId": "pacing-web1-three-per-day-revision-base-opentutorials-web1-progress-flow-1-step-1-item-20",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-20",
+            "start": "2026-08-12",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "completionStatus": "not_started",
+            "lockedPast": false
+          },
+          {
+            "assignmentId": "pacing-web1-three-per-day-revision-base-opentutorials-web1-progress-flow-1-step-1-item-21",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-21",
+            "start": "2026-08-12",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "completionStatus": "not_started",
+            "lockedPast": false
+          },
+          {
+            "assignmentId": "pacing-web1-three-per-day-revision-base-opentutorials-web1-progress-flow-1-step-1-item-22",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-22",
+            "start": "2026-08-12",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "completionStatus": "not_started",
+            "lockedPast": false
+          },
+          {
+            "assignmentId": "pacing-web1-three-per-day-revision-base-opentutorials-web1-progress-flow-1-step-1-item-23",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-23",
+            "start": "2026-08-13",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "completionStatus": "not_started",
+            "lockedPast": false
+          },
+          {
+            "assignmentId": "pacing-web1-three-per-day-revision-base-opentutorials-web1-progress-flow-1-step-1-item-24",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-24",
+            "start": "2026-08-13",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "completionStatus": "not_started",
+            "lockedPast": false
+          },
+          {
+            "assignmentId": "pacing-web1-three-per-day-revision-base-opentutorials-web1-progress-flow-1-step-1-item-25",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-25",
+            "start": "2026-08-13",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "completionStatus": "not_started",
+            "lockedPast": false
+          },
+          {
+            "assignmentId": "pacing-web1-three-per-day-revision-base-opentutorials-web1-progress-flow-1-step-1-item-26",
+            "itemId": "base-opentutorials-web1-progress-flow-1-step-1-item-26",
+            "start": "2026-08-17",
+            "end": null,
+            "allDay": true,
+            "timezone": "Asia/Seoul",
+            "scheduleOwner": "user_overlay",
+            "derivation": "pacing_policy",
+            "suggestionStatus": "confirmed",
+            "completionStatus": "not_started",
+            "lockedPast": false
+          }
+        ],
+        "completedPastUnchanged": true
+      }
+    },
+    {
+      "id": "no-vevent-vtodo-nesting",
+      "pass": true,
+      "evidence": {
+        "nested": [],
+        "declaredNestedCount": 0
+      }
+    },
+    {
+      "id": "vtodo-item-granularity-and-sibling-plan",
+      "pass": true,
+      "evidence": {
+        "vtodoComponents": 73,
+        "invalid": []
+      }
+    },
+    {
+      "id": "vtodo-fallback-covered",
+      "pass": true,
+      "evidence": {
+        "mappingFallback": [
+          "native Todo task",
+          "Checklist",
+          "Sheet",
+          "Memo"
+        ]
+      }
+    },
+    {
+      "id": "no-false-yearly-rrule",
+      "pass": true,
+      "evidence": []
+    },
+    {
+      "id": "calendar-bundle-child-ids-and-loss",
+      "pass": true,
+      "evidence": {
+        "bundleEvents": 19,
+        "errors": [],
+        "movingPerItem": 27,
+        "movingBundled": 6,
+        "web1PerItem": 26,
+        "web1Bundled": 13
+      }
+    },
+    {
+      "id": "memo-not-canonical-raw",
+      "pass": true,
+      "evidence": {
+        "memoOutputs": 63
+      }
+    },
+    {
+      "id": "five-representative-all-format-dtos",
+      "pass": true,
+      "evidence": {
+        "dtoCount": 5
+      }
+    },
+    {
+      "id": "independent-checklist-todo-agreement",
+      "pass": true,
+      "evidence": {
+        "matches": 39,
+        "disagreements": 3,
+        "agreementPercent": 92.86,
+        "thresholdPercent": 90,
+        "pass": true
+      }
+    },
+    {
+      "id": "independent-primary-projection-agreement",
+      "pass": true,
+      "evidence": {
+        "matches": 41,
+        "disagreements": 1,
+        "agreementPercent": 97.62,
+        "thresholdPercent": 90,
+        "pass": true
+      }
+    },
+    {
+      "id": "disagreement-adjudication",
+      "pass": true,
+      "evidence": {
+        "disagreements": 3
+      }
+    },
+    {
+      "id": "external-validation-boundary",
+      "pass": true,
+      "evidence": {
+        "externalRoundTrip": {
+          "googleCalendar": "NOT_RUN",
+          "outlookCalendar": "NOT_RUN",
+          "appleCalendar": "NOT_RUN",
+          "vtodoClients": "NOT_RUN"
+        },
+        "observedUserValidation": false
+      }
+    },
+    {
+      "id": "runtime-read-only",
+      "pass": true,
+      "evidence": [
+        {
+          "contract": "Todo is a sibling projection with task/queue semantics.",
+          "runtimeChanged": false
+        },
+        {
+          "contract": "Execution meaning and destination are separate.",
+          "runtimeChanged": false
+        },
+        {
+          "contract": "Checklist and Todo have distinct output schemas.",
+          "runtimeChanged": false
+        },
+        {
+          "contract": "Timed/location-aware events and VTODO are explicit.",
+          "runtimeChanged": false
+        },
+        {
+          "contract": "Memo is a human-readable projection, not canonical raw JSON.",
+          "runtimeChanged": false
+        }
+      ]
+    },
+    {
+      "id": "desktop-mobile-browser-qa",
+      "pass": true,
+      "evidence": {
+        "schemaVersion": "flowme-browser-qa-v1",
+        "checkedAt": "2026-07-29T10:42:00+09:00",
+        "tool": "Playwright CLI real Chromium session",
+        "report": "docs/content-audit/2026-07-29-flow-projection-semantics-scheduling-event-review-ko.html",
+        "viewports": [
+          {
+            "width": 1440,
+            "height": 900,
+            "horizontalOverflowPx": 0,
+            "brokenImages": 0,
+            "consoleErrors": 0,
+            "consoleWarnings": 0,
+            "slideCount": 16,
+            "coverHeadingLines": 2,
+            "screenshot": "output/playwright/projection-lab-final-desktop-1440x900.png",
+            "pass": true
+          },
+          {
+            "width": 390,
+            "height": 844,
+            "horizontalOverflowPx": 0,
+            "brokenImages": 0,
+            "consoleErrors": 0,
+            "consoleWarnings": 0,
+            "screenshotCover": "output/playwright/projection-lab-final-mobile-cover-390x844.png",
+            "screenshotCase": "output/playwright/projection-lab-final-mobile-case-390x844.png",
+            "pass": true
+          }
+        ],
+        "interaction": {
+          "test": "projection=calendar and availability=unavailable",
+          "visibleRows": 27,
+          "invalidVisibleRows": 0,
+          "pass": true
+        },
+        "claimBoundary": {
+          "observedUserValidation": "NOT_RUN",
+          "externalCalendarRoundTrip": "NOT_RUN",
+          "vtodoClientRoundTrip": "NOT_RUN"
+        },
+        "pass": true
+      }
+    }
+  ]
+}

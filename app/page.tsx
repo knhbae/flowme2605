@@ -1,5 +1,5 @@
-import { HomeLanding } from '@/components/flow/AppClient';
+import { EntryRouter } from '@/components/flow/EntryRouter';
 
 export default function Home() {
-  return <HomeLanding />;
+  return <EntryRouter />;
 }

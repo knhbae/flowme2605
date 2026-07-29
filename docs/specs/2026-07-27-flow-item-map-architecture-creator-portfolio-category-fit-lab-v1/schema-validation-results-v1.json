@@ -1,0 +1,492 @@
+{
+  "schemaVersion": "flowme-item-map-schema-validation-results-v1",
+  "generatedAt": "2026-07-27T15:32:49.468Z",
+  "validator": {
+    "name": "ajv",
+    "version": "8.17.1",
+    "draft": "2020-12",
+    "strict": true
+  },
+  "compile": {
+    "passed": 3,
+    "total": 3,
+    "schemaIds": [
+      "https://flowme.local/schemas/current-canonical-v1.schema.json",
+      "https://flowme.local/schemas/item-shared-context-v1.schema.json",
+      "https://flowme.local/schemas/literal-ics-graph-v1.schema.json"
+    ]
+  },
+  "positive": {
+    "passed": 27,
+    "total": 27,
+    "suites": [
+      {
+        "architecture": "current",
+        "runPath": "runs/current-canonical/results-v1.json",
+        "passed": 9,
+        "total": 9,
+        "failures": []
+      },
+      {
+        "architecture": "shared",
+        "runPath": "runs/item-shared-context/results-v1.json",
+        "passed": 9,
+        "total": 9,
+        "failures": []
+      },
+      {
+        "architecture": "literal",
+        "runPath": "runs/literal-ics-first/results-v1.json",
+        "passed": 9,
+        "total": 9,
+        "failures": []
+      }
+    ]
+  },
+  "negative": {
+    "passed": 6,
+    "total": 6,
+    "cases": [
+      {
+        "id": "reject_primary_artifact_hybrid",
+        "passed": true,
+        "accepted": false,
+        "errors": [
+          {
+            "instancePath": "/taxonomy/primaryArtifact",
+            "schemaPath": "#/$defs/artifact/enum",
+            "keyword": "enum",
+            "params": {
+              "allowedValues": [
+                "calendar",
+                "checklist",
+                "todo",
+                "sheet",
+                "memo"
+              ]
+            },
+            "message": "must be equal to one of the allowed values"
+          }
+        ]
+      },
+      {
+        "id": "reject_missing_item_provenance",
+        "passed": true,
+        "accepted": false,
+        "errors": [
+          {
+            "instancePath": "/flows/0/steps/0/items/0",
+            "schemaPath": "#/required",
+            "keyword": "required",
+            "params": {
+              "missingProperty": "sourceRefs"
+            },
+            "message": "must have required property 'sourceRefs'"
+          }
+        ]
+      },
+      {
+        "id": "reject_calendar_projection_without_schedule",
+        "passed": true,
+        "accepted": false,
+        "errors": [
+          {
+            "instancePath": "/flows/0/steps/0/items/0/projectionPolicy/calendar",
+            "schemaPath": "#/allOf/0/then/properties/projectionPolicy/properties/calendar/const",
+            "keyword": "const",
+            "params": {
+              "allowedValue": "none"
+            },
+            "message": "must be equal to constant"
+          },
+          {
+            "instancePath": "/flows/0/steps/0/items/0",
+            "schemaPath": "#/allOf/0/if",
+            "keyword": "if",
+            "params": {
+              "failingKeyword": "then"
+            },
+            "message": "must match \"then\" schema"
+          }
+        ]
+      },
+      {
+        "id": "reject_invalid_effective_schedule",
+        "passed": true,
+        "accepted": false,
+        "errors": [
+          {
+            "instancePath": "/flows/0/steps/0/items/0/scheduleBinding/effectiveSchedule/kind",
+            "schemaPath": "#/$defs/resolvedDate/properties/kind/const",
+            "keyword": "const",
+            "params": {
+              "allowedValue": "date"
+            },
+            "message": "must be equal to constant"
+          },
+          {
+            "instancePath": "/flows/0/steps/0/items/0/scheduleBinding/effectiveSchedule",
+            "schemaPath": "#/required",
+            "keyword": "required",
+            "params": {
+              "missingProperty": "sourceSchedule"
+            },
+            "message": "must have required property 'sourceSchedule'"
+          },
+          {
+            "instancePath": "/flows/0/steps/0/items/0/scheduleBinding/effectiveSchedule",
+            "schemaPath": "#/required",
+            "keyword": "required",
+            "params": {
+              "missingProperty": "missingInputs"
+            },
+            "message": "must have required property 'missingInputs'"
+          },
+          {
+            "instancePath": "/flows/0/steps/0/items/0/scheduleBinding/effectiveSchedule",
+            "schemaPath": "#/additionalProperties",
+            "keyword": "additionalProperties",
+            "params": {
+              "additionalProperty": "date"
+            },
+            "message": "must NOT have additional properties"
+          },
+          {
+            "instancePath": "/flows/0/steps/0/items/0/scheduleBinding/effectiveSchedule/kind",
+            "schemaPath": "#/properties/kind/const",
+            "keyword": "const",
+            "params": {
+              "allowedValue": "unresolved_source_schedule"
+            },
+            "message": "must be equal to constant"
+          },
+          {
+            "instancePath": "/flows/0/steps/0/items/0/scheduleBinding/effectiveSchedule",
+            "schemaPath": "#/oneOf",
+            "keyword": "oneOf",
+            "params": {
+              "passingSchemas": null
+            },
+            "message": "must match exactly one schema in oneOf"
+          },
+          {
+            "instancePath": "/flows/0/steps/0/items/0/scheduleBinding/effectiveSchedule",
+            "schemaPath": "#/properties/effectiveSchedule/oneOf/1/type",
+            "keyword": "type",
+            "params": {
+              "type": "null"
+            },
+            "message": "must be null"
+          },
+          {
+            "instancePath": "/flows/0/steps/0/items/0/scheduleBinding/effectiveSchedule",
+            "schemaPath": "#/properties/effectiveSchedule/oneOf",
+            "keyword": "oneOf",
+            "params": {
+              "passingSchemas": null
+            },
+            "message": "must match exactly one schema in oneOf"
+          }
+        ]
+      },
+      {
+        "id": "reject_scheduleless_vevent",
+        "passed": true,
+        "accepted": false,
+        "errors": [
+          {
+            "instancePath": "/calendar/components/3",
+            "schemaPath": "#/additionalProperties",
+            "keyword": "additionalProperties",
+            "params": {
+              "additionalProperty": "description"
+            },
+            "message": "must NOT have additional properties"
+          },
+          {
+            "instancePath": "/calendar/components/3",
+            "schemaPath": "#/additionalProperties",
+            "keyword": "additionalProperties",
+            "params": {
+              "additionalProperty": "status"
+            },
+            "message": "must NOT have additional properties"
+          },
+          {
+            "instancePath": "/calendar/components/3",
+            "schemaPath": "#/additionalProperties",
+            "keyword": "additionalProperties",
+            "params": {
+              "additionalProperty": "url"
+            },
+            "message": "must NOT have additional properties"
+          },
+          {
+            "instancePath": "/calendar/components/3",
+            "schemaPath": "#/additionalProperties",
+            "keyword": "additionalProperties",
+            "params": {
+              "additionalProperty": "sourceRowIds"
+            },
+            "message": "must NOT have additional properties"
+          },
+          {
+            "instancePath": "/calendar/components/3/kind",
+            "schemaPath": "#/properties/kind/const",
+            "keyword": "const",
+            "params": {
+              "allowedValue": "VJOURNAL"
+            },
+            "message": "must be equal to constant"
+          },
+          {
+            "instancePath": "/calendar/components/3/xFlowmeKind",
+            "schemaPath": "#/properties/xFlowmeKind/enum",
+            "keyword": "enum",
+            "params": {
+              "allowedValues": [
+                "MAP",
+                "FLOW",
+                "STEP"
+              ]
+            },
+            "message": "must be equal to one of the allowed values"
+          },
+          {
+            "instancePath": "/calendar/components/3",
+            "schemaPath": "#/required",
+            "keyword": "required",
+            "params": {
+              "missingProperty": "dtstart"
+            },
+            "message": "must have required property 'dtstart'"
+          },
+          {
+            "instancePath": "/calendar/components/3",
+            "schemaPath": "#/required",
+            "keyword": "required",
+            "params": {
+              "missingProperty": "dtstart"
+            },
+            "message": "must have required property 'dtstart'"
+          },
+          {
+            "instancePath": "/calendar/components/3/kind",
+            "schemaPath": "#/properties/kind/const",
+            "keyword": "const",
+            "params": {
+              "allowedValue": "VTODO"
+            },
+            "message": "must be equal to constant"
+          },
+          {
+            "instancePath": "/calendar/components/3/status",
+            "schemaPath": "#/properties/status/const",
+            "keyword": "const",
+            "params": {
+              "allowedValue": "NEEDS-ACTION"
+            },
+            "message": "must be equal to constant"
+          },
+          {
+            "instancePath": "/calendar/components/3",
+            "schemaPath": "#/properties/components/items/oneOf",
+            "keyword": "oneOf",
+            "params": {
+              "passingSchemas": null
+            },
+            "message": "must match exactly one schema in oneOf"
+          }
+        ]
+      },
+      {
+        "id": "reject_nested_ics_component",
+        "passed": true,
+        "accepted": false,
+        "errors": [
+          {
+            "instancePath": "/calendar/components/0",
+            "schemaPath": "#/additionalProperties",
+            "keyword": "additionalProperties",
+            "params": {
+              "additionalProperty": "children"
+            },
+            "message": "must NOT have additional properties"
+          },
+          {
+            "instancePath": "/calendar/components/0",
+            "schemaPath": "#/required",
+            "keyword": "required",
+            "params": {
+              "missingProperty": "description"
+            },
+            "message": "must have required property 'description'"
+          },
+          {
+            "instancePath": "/calendar/components/0",
+            "schemaPath": "#/required",
+            "keyword": "required",
+            "params": {
+              "missingProperty": "dtstart"
+            },
+            "message": "must have required property 'dtstart'"
+          },
+          {
+            "instancePath": "/calendar/components/0",
+            "schemaPath": "#/required",
+            "keyword": "required",
+            "params": {
+              "missingProperty": "status"
+            },
+            "message": "must have required property 'status'"
+          },
+          {
+            "instancePath": "/calendar/components/0",
+            "schemaPath": "#/required",
+            "keyword": "required",
+            "params": {
+              "missingProperty": "url"
+            },
+            "message": "must have required property 'url'"
+          },
+          {
+            "instancePath": "/calendar/components/0",
+            "schemaPath": "#/required",
+            "keyword": "required",
+            "params": {
+              "missingProperty": "relatedTo"
+            },
+            "message": "must have required property 'relatedTo'"
+          },
+          {
+            "instancePath": "/calendar/components/0",
+            "schemaPath": "#/required",
+            "keyword": "required",
+            "params": {
+              "missingProperty": "sourceRowIds"
+            },
+            "message": "must have required property 'sourceRowIds'"
+          },
+          {
+            "instancePath": "/calendar/components/0",
+            "schemaPath": "#/additionalProperties",
+            "keyword": "additionalProperties",
+            "params": {
+              "additionalProperty": "children"
+            },
+            "message": "must NOT have additional properties"
+          },
+          {
+            "instancePath": "/calendar/components/0/kind",
+            "schemaPath": "#/properties/kind/const",
+            "keyword": "const",
+            "params": {
+              "allowedValue": "VEVENT"
+            },
+            "message": "must be equal to constant"
+          },
+          {
+            "instancePath": "/calendar/components/0/xFlowmeKind",
+            "schemaPath": "#/properties/xFlowmeKind/const",
+            "keyword": "const",
+            "params": {
+              "allowedValue": "ITEM"
+            },
+            "message": "must be equal to constant"
+          },
+          {
+            "instancePath": "/calendar/components/0",
+            "schemaPath": "#/required",
+            "keyword": "required",
+            "params": {
+              "missingProperty": "description"
+            },
+            "message": "must have required property 'description'"
+          },
+          {
+            "instancePath": "/calendar/components/0",
+            "schemaPath": "#/required",
+            "keyword": "required",
+            "params": {
+              "missingProperty": "dtstart"
+            },
+            "message": "must have required property 'dtstart'"
+          },
+          {
+            "instancePath": "/calendar/components/0",
+            "schemaPath": "#/required",
+            "keyword": "required",
+            "params": {
+              "missingProperty": "status"
+            },
+            "message": "must have required property 'status'"
+          },
+          {
+            "instancePath": "/calendar/components/0",
+            "schemaPath": "#/required",
+            "keyword": "required",
+            "params": {
+              "missingProperty": "url"
+            },
+            "message": "must have required property 'url'"
+          },
+          {
+            "instancePath": "/calendar/components/0",
+            "schemaPath": "#/required",
+            "keyword": "required",
+            "params": {
+              "missingProperty": "relatedTo"
+            },
+            "message": "must have required property 'relatedTo'"
+          },
+          {
+            "instancePath": "/calendar/components/0",
+            "schemaPath": "#/required",
+            "keyword": "required",
+            "params": {
+              "missingProperty": "sourceRowIds"
+            },
+            "message": "must have required property 'sourceRowIds'"
+          },
+          {
+            "instancePath": "/calendar/components/0",
+            "schemaPath": "#/additionalProperties",
+            "keyword": "additionalProperties",
+            "params": {
+              "additionalProperty": "children"
+            },
+            "message": "must NOT have additional properties"
+          },
+          {
+            "instancePath": "/calendar/components/0/kind",
+            "schemaPath": "#/properties/kind/const",
+            "keyword": "const",
+            "params": {
+              "allowedValue": "VTODO"
+            },
+            "message": "must be equal to constant"
+          },
+          {
+            "instancePath": "/calendar/components/0/xFlowmeKind",
+            "schemaPath": "#/properties/xFlowmeKind/const",
+            "keyword": "const",
+            "params": {
+              "allowedValue": "ITEM"
+            },
+            "message": "must be equal to constant"
+          },
+          {
+            "instancePath": "/calendar/components/0",
+            "schemaPath": "#/properties/components/items/oneOf",
+            "keyword": "oneOf",
+            "params": {
+              "passingSchemas": null
+            },
+            "message": "must match exactly one schema in oneOf"
+          }
+        ]
+      }
+    ]
+  },
+  "passed": true
+}

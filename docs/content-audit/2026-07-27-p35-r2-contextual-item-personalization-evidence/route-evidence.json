@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-27",
+  "baseline": {
+    "branch": "codex/p35-mece-ux-reset",
+    "originMainSha": "2c951633d13adb0aab3ddd9d3cdddf506d9e97cd",
+    "candidateState": "local_uncommitted"
+  },
+  "markers": {
+    "P35-R2-CONTEXTUAL-ITEM-EDIT-390": true,
+    "P35-R2-ITEM-INSPECTOR-1024": true,
+    "publicPreviewItemEditTapDepth": 1,
+    "publicItemEditorMaximumOpenCount": 1,
+    "publicItemEditorFieldCount": 3,
+    "publicItemEditorAdvancedControlCount": 0,
+    "publicAdjustmentCheckboxOnRowEnd": true,
+    "publicItemPersonalizationPersistedOnFlowSave": true,
+    "publicItemPersonalizationMyFlowProjectionUpdated": true,
+    "publicItemPersonalizationCalendarProjectionUpdated": true
+  },
+  "routes": [
+    {
+      "route": "/f/moving-d30-basic",
+      "viewport": "390x844",
+      "entry": "public artifact preview row",
+      "editorPresentation": "bottom_sheet",
+      "editTapDepth": 1,
+      "fields": [
+        "title",
+        "detail",
+        "date"
+      ],
+      "escapeSupported": true,
+      "focusReturn": true,
+      "previewUpdated": true,
+      "savedToMyFlow": true
+    },
+    {
+      "route": "/f/moving-d30-basic",
+      "viewport": "1024x768",
+      "entry": "public artifact preview or included item row",
+      "editorPresentation": "right_inspector",
+      "editTapDepth": 1,
+      "maximumEditorWidth": 470,
+      "checkboxPosition": "row_end",
+      "escapeSupported": true,
+      "focusReturn": true
+    },
+    {
+      "route": "/my?savedFlow=moving-d30-basic",
+      "viewport": "390x844",
+      "personalizedTitle": "이사 방식 최종 결정",
+      "personalizedDate": "2030-08-15",
+      "personalizedDetailPersisted": true
+    },
+    {
+      "route": "/calendar",
+      "viewport": "390x844",
+      "selectedDate": "2030-08-15",
+      "personalizedTitleVisible": true,
+      "eventCount": 1
+    }
+  ],
+  "quality": {
+    "horizontalOverflowCount": 0,
+    "maximumConcurrentEditorCount": 1,
+    "consoleErrorCount": 0,
+    "pageErrorCount": 0
+  },
+  "contracts": {
+    "sourceMutationCount": 0,
+    "personalOverlayWriteChanged": true,
+    "personalOverlayUsesExistingSchema": true,
+    "executionRunChanged": false,
+    "occurrenceIdentityChanged": false,
+    "exportIdentityChanged": false,
+    "storageSchemaChanged": false,
+    "migrationRequired": false
+  },
+  "verification": {
+    "pretest": {
+      "passed": 84,
+      "failed": 0
+    },
+    "unit": {
+      "passed": 590,
+      "failed": 0
+    },
+    "r2TargetedE2e": {
+      "passed": 2,
+      "failed": 0
+    },
+    "p35AdjustmentRegressionE2e": {
+      "passed": 5,
+      "failed": 0
+    },
+    "movingProjectionExportRegressionE2e": {
+      "passed": 1,
+      "failed": 0
+    },
+    "r0TemporalRegressionE2e": {
+      "passed": 1,
+      "failed": 0
+    },
+    "build": "passed",
+    "docsCheck": "passed",
+    "fullE2e": "deferred_to_p35_r7"
+  },
+  "publish": {
+    "commit": false,
+    "push": false,
+    "pullRequest": false,
+    "merge": false,
+    "previewDeploy": false,
+    "productionDeploy": false
+  },
+  "observedUserCount": 0
+}

@@ -1,0 +1,1245 @@
+{
+  "schemaVersion": "flowme-creator-portfolio-targeted-revalidation-v2",
+  "generatedAt": "2026-07-27T14:51:56.030Z",
+  "observedAt": "2026-07-27",
+  "purpose": "2026-07-23 제작자 포트폴리오의 상위 12명과 경계 3명을 표적 재열람한 증거 원장",
+  "evidenceBoundary": [
+    "opened=true는 조사 시점에 해당 URL의 응답 본문을 실제 수신했다는 뜻이다.",
+    "visible metric이 보이지 않으면 null 또는 빈 배열로 남기며 추정하지 않는다.",
+    "기존 2026-07-23 증거와 새 관측값은 observationWindow로 구분한다.",
+    "댓글 존재는 audience activity이며 제작자 응답을 뜻하지 않는다.",
+    "권리 상태는 페이지 접근 가능 여부와 별도로 판정한다."
+  ],
+  "summary": {
+    "targetedCreators": 15,
+    "topRechecks": 12,
+    "boundaryRechecks": 3,
+    "profileUrlsOpened": 15,
+    "representativeSourceUrlsOpened": 15
+  },
+  "records": [
+    {
+      "creatorId": "home-ajd",
+      "creatorName": "아정당",
+      "categoryId": "home_living",
+      "categoryLabel": "집·살림",
+      "reviewRole": "logic_handoff_candidate",
+      "observationWindow": {
+        "from": "2026-07-23",
+        "to": "2026-07-27"
+      },
+      "profile": {
+        "requestedUrl": "https://www.ajd.co.kr/contents",
+        "fetchUrl": "https://www.ajd.co.kr/contents",
+        "finalUrl": "https://www.ajd.co.kr/contents",
+        "status": 200,
+        "opened": true,
+        "title": "아정당 - 인터넷 가입 사은품 많이 주는 곳 비교사이트 현금 지원 티비 설치 당일 지급 SKT SK KT LG 유플러스",
+        "description": "인터넷가입사은품많이주는곳, 인터넷tv 현금사은품 설치 당일 현금지원! 365일 24시간 최저 요금 설계 상담. 인터넷티비 결합상품 가격 비교사이트",
+        "demandSignals": [],
+        "communicationSignals": [
+          "질문",
+          "후기"
+        ],
+        "shapeSignals": [],
+        "businessSignals": [
+          "consultation_or_booking",
+          "commerce",
+          "partnership"
+        ],
+        "textExcerpt": "아정당 - 인터넷 가입 사은품 많이 주는 곳 비교사이트 현금 지원 티비 설치 당일 지급 SKT SK KT LG 유플러스 마이페이지  질문/답변 꿀팁게시판 후기 이벤트 불편접수 로그인/회원가입 인터넷 가전렌탈 휴대폰 카드 이사 청소 부동산 인테리어 상조 매장패키지 사업자 쇼핑적립 인터넷 가전렌탈 휴대폰 이사 청소 카드 부동산 인테리어 상조 매장패키지 쇼핑적립 혜택 룰렛 캐시상점 게시판 후기 질문/답변 꿀팁게시판 이벤트 불편접수 공지사항 1/2 인터넷 가전렌탈 휴대폰 이사 청소 카드 부동산 인테리어 상조 매장패키지 쇼핑적립 정당하게 받을 수 있는 최대 132만원의 혜택 , 모르고 계셨나요? 가만히 있으면 지원금은 0원이에요. 약정 끝난 인터넷 TV, 정수기에 가구당 최대 82만원 숨어있어요. 넘치는 선택지에 이미 많은 시간을 낭비해요. 인터넷 하나만 해도 상품도 요금제도 다양한걸요. 믿을만 한 곳인지 걱정돼요. 약속한 혜택은 언제쯤 받을 수 있을까요? 이 모든 고민을 한번에 해결할 생활솔루션 '아정당' 을 만나보세요! 놓치고 있는 법정지원금 아정당은 빠짐없이 챙겨드려요 최대현금 보장 (차액 120% 보장) 제도로, 기본요금 그대로 혜택은 항상 최대로 드려요 365일 24시간 대응으로, 58만 고객의 신뢰를 쌓았어요. 아정당은 전화, 카카오톡, 어플 등 고객이 원하는 채널로 빠르게 이용할 수 있어요. 고민할 필요없이 고객 맞춤형 서비스 추천해드려요 특허받은 고객관리 시스템으로 전문상담사가 1:1 맞춤 서비스를 찾아드려요 한 번의 클릭, 최대한의 혜택 인터넷 / TV 알뜰한 당신을 위해 최소 요금, 최대 사은품을 소개해요 최대지원금 52만원 최대지원금 52만원 확인하기 가전렌탈 최대 혜택, 저렴한 요금 보장해드려요! 고객 평균 31만원 혜택 지급 최대지원금 30만원 최대지원금 30만원 휴대폰 / 알뜰폰 최대 50만원 기기값 할인 최대 50만원 기기값 할인받기 이사 손 까닥하기도 귀찮을 땐 전문가의 컨설팅으로 해결하세요 추가금 0원 무료견적 추가금 0원! 무료 견적 받기 청소 전국 어디든지 100% 만족할 때까지 완벽 청소 추가금 0원 무료견적 추가금 0원! 무료 견적 받기 카드 혜택 많은 카드 찾고, 신규 발급 캐시백 혜택까지! 최대 월 2만원 추가 할인 아정당X하나카드 출시 최대 월 2만원 추가 할인 서비스 전체보기 후기 전체보기 인터넷 아정당 아니었으면 혜택금 존재도 몰랐을 거예요. 또 알아서 맞춤 요금 찾아주니까 너무 간편했어요 @stu*****님 후기 중 정수기 상담사분이 정말 친절하셨어요. 다른 곳보다 혜택도 훨씬 좋고 설치도 바로 다음날 와주셨네요! @par*****님 후기 중 TV 여기저기 비교해봤는데 여기가 제일 많이 챙겨주시는 것 같아요. 왜 1등인지 알겠습니다. 감사합니다. @kim*****님 후기 중 인터넷 3년 약정 끝날 때마다 여기서 바꿀 생각입니다. 설치 당일 입금 바로 확인했어요. 신뢰가 갑니다. @lee*****님 후기 중 알뜰폰 요금이 반으로 줄었어요! 통화 품질도 똑같고 데이터도 넉넉해서 너무 만족하며 쓰고 있습니다. @cho*****님 후기 중 365일, 24시간 언제나 열려있어요 1833-3504 문의하기 바로 상담하기 바로 상담하기 회사소개 공지사항 이벤트 사은품 지급 명단 사이트명 아정당 대표자 김민기 사업자명 아정네트웍스 사업자등록번호 329-88-02173 통신판매업 제2021-부산북구-0914호 대표번호 1833-3504 팩스 02-6944-8126 주소 부산광역시 북구 금곡대로8번길 33, 아남프라자 3층 개인정보 책임관리자 김환수 ( zeus@ajd.co.kr ) 광고제휴문의 contact@ajd.co.kr CS 고객센터",
+        "htmlBytes": 500196,
+        "error": null
+      },
+      "representativeSource": {
+        "requestedUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+        "fetchUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+        "finalUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+        "status": 200,
+        "opened": true,
+        "title": "이사 준비 체크리스트 완벽정리! (엑셀 Xls, PDF, 노션 notion 첨부)",
+        "description": "포장이사, 반포장이사 전까지 꼭 확인해야 할 체크리스트 총정리! 폐가전, 헌 옷 수거 방법부터 이사 꿀팁까지 D-30부터 알려드립니다.",
+        "demandSignals": [
+          "조회 98,874",
+          "스크랩 20"
+        ],
+        "communicationSignals": [
+          "질문",
+          "후기",
+          "비밀번호",
+          "후기만"
+        ],
+        "shapeSignals": [
+          "html_table",
+          "checklist",
+          "ordered_or_timed_rows",
+          "download_or_template"
+        ],
+        "businessSignals": [
+          "consultation_or_booking",
+          "commerce",
+          "partnership"
+        ],
+        "textExcerpt": "이사 준비 체크리스트 완벽정리! (엑셀 Xls, PDF, 노션 notion 첨부) 마이페이지  질문/답변 꿀팁게시판 후기 이벤트 불편접수 로그인/회원가입 인터넷 가전렌탈 휴대폰 카드 이사 청소 부동산 인테리어 상조 매장패키지 사업자 쇼핑적립 인터넷 가전렌탈 휴대폰 이사 청소 카드 부동산 인테리어 상조 매장패키지 쇼핑적립 혜택 룰렛 캐시상점 게시판 후기 질문/답변 꿀팁게시판 이벤트 불편접수 공지사항 꿀팁게시판  이사 이사 준비 체크리스트 완벽정리! (엑셀 Xls, PDF, 노션 notion 첨부)   URL 복사 스크랩 아정당 2026.06.30 업데이트 조회 98,874 스크랩 20 이사할 때 어떤 점을 신경 써야 할까요? 10년 이상의 전문가들의 노하우로 정리한 체크리스트를 통해 이사 30일 전부터 당일에 확인해야 하는 점을 정리하여 놓치는 부분 없이 이사할 수 있도록 도와드립니다. 이사 체크리스트를 엑셀, PDF 파일, 노션으로 함께 확인하세요 아정당이사 체크리스트(2025).pdf 아정당이사 체크리스트.xlsx ➡️아정당이사 체크리스트 notion 바로가기 [이사 체크 리스트] 일정 항목 관할기관 D-30 이사 방식 확인 (포장이사, 반포장이사) 이사할 집 점검 및 하자 수리 의뢰 인테리어 업체, 수리업체, 관리사무소 필요 없는 물건 정리 전학 수속 학교 이사 당일 유아, 노약자, 반려동물 위탁시설 예약 친지 혹은 위탁시설 이사, 청소 견적 확인 및 예약 이사, 청소 업체 D-10 통장/카드/우편물 주소 변경 금융기관 / 우체국 신문, 우유 등 정기 배달 중지 요청 각 보급소 전출 신고 엘리베이터 사전 예약 사다리차 주차공간 예약 관리 사무소 평수별 쓰레기봉투 준비 집 열쇠, 리모컨 찾아두기 냉장고 천천히 비우기 폐가전 / 대형폐기물 수거예약 및 신고 주민센터 이사할 집에서 사용할 물건 주문 및 확인 (도배, 장판 포함) 인테리어 업체 가구 배치도 작성 인테리어 업체 인터넷, 정수기 이전 설치 예약 인터넷, 정수기 업체 D-3 도시가스 철거, 설치 예약 한국 도시가스 협회 자동이체 해지 신청 각 영업소 세탁기 물 빼기 전세권 설정에 필요한 서류 준비 등기소 이사 당일 사용할 물건 따로 포장 D-1 이사 일정 최종 확인 이사 업체 이체 한도 증액 은행 주차공간 확보 확인 관리사무소 귀중품, 귀금속 별도 보관 잔금 결제 확인 부동산 입주 아파트일 경우 입주증 발급 관리사무소 어항, 수조관 처리 이사 시작 전 가전 가구 사진 촬영 D-Day 출발지 전기, 가스요금, 관리비 정산 관리사무소 장기수선충당금 환급 요청 관리사무소 / 집주인 이삿짐 반출 후 잔여 이삿짐 체크 문단속 및 열쇠 반납 부동산 도착지 이삿짐 분실, 파손 확인 후 비용 정산 이사업체 전화, 인터넷 TV 설치 후 개통 통신사, 대리점 도어락 비밀번호 변경 잔금지급, 관리비, 중개료 정산 부동산 열쇠 받기 전기, 수도 명의 변경 한전 고객센터 가스 설치 한국 도시가스협 전입신고 및 확정일자 받기 주민센터 빠르게 이사 무료 견적 받고싶다면? 이사 체크 리스트 : D-30 이사 방식 선택하기 포장 범위에 따라 일반 이사, 반포장이사, 포장이사로 나뉩니다. 일반이사 반포장이사 포장이사 포장 X 가전 가구만 O 정리 X O 운반 O O O 비용 상대적으로 낮음 보통 상대적으로 높음 아파트나 주택 이사처럼 짐이 많다면 모든 과정을 담당하는 포장이사를 추천드립니다. 짐량이 적거나 직접 포장이 가능한 경우에는 약 15~20만 원 (작업자 한 명 정도) 더 저렴한 반포장 이사를 추천드립니다. 이사 방식에 대한 특징과 차이점에 대해 궁금하시다면 일반 이사, 반포장이사, 포장이사 차이 : 가격, 비용, 견적, ",
+        "htmlBytes": 596030,
+        "error": null
+      },
+      "priorEvidence": {
+        "observedAt": "2026-07-23",
+        "openedContentCount": 3,
+        "demandSummary": "이사 체크리스트 조회 98,499·스크랩 20, 같은 생활정보 포트폴리오의 추가 조회 수치가 직접 보인다",
+        "communicationSummary": "비교 원문 댓글 26·공유 4,182와 견적 상담·후기 경로가 이전 원문 검증에서 확인됐다",
+        "sourceRowSummary": "이사, 청소, 렌탈 비교처럼 체크 행과 견적 행이 있는 서로 다른 원문 3개를 열었다."
+      }
+    },
+    {
+      "creatorId": "home-ohouse",
+      "creatorName": "오늘의집 고수 콘텐츠",
+      "categoryId": "home_living",
+      "categoryLabel": "집·살림",
+      "reviewRole": "top_recheck",
+      "observationWindow": {
+        "from": "2026-07-23",
+        "to": "2026-07-27"
+      },
+      "profile": {
+        "requestedUrl": "https://ohou.se/advices",
+        "fetchUrl": "https://ohou.se/advices",
+        "finalUrl": "https://contents.ohou.se/topics/recommend",
+        "status": 200,
+        "opened": true,
+        "title": "오늘의 추천 | 라이프스타일 슈퍼앱, 오늘의집",
+        "description": "내 취향에 맞는 라이프스타일 콘텐츠를 발견하고 나다운 일상을 채워보세요.",
+        "demandSignals": [],
+        "communicationSignals": [],
+        "shapeSignals": [],
+        "businessSignals": [
+          "commerce"
+        ],
+        "textExcerpt": "오늘의 추천 | 라이프스타일 슈퍼앱, 오늘의집 앱에서는 1초만에! 간편하게 로그인하기 앱으로 보기 집구경 쇼핑 인테리어/생활 로그인 회원가입 고객센터 글쓰기 홈 추천 집들이 집사진 커뮤니티 3D인테리어 1 라면그릇 1 라면그릇 맞춤 피드를 불러오고 있어요",
+        "htmlBytes": 144110,
+        "error": null
+      },
+      "representativeSource": {
+        "requestedUrl": "https://ohou.se/advices/9345",
+        "fetchUrl": "https://ohou.se/advices/9345",
+        "finalUrl": "https://ohou.se/advices/9345",
+        "status": 200,
+        "opened": true,
+        "title": "스크랩 1000 이상! 삶의질을 높여줄 신박 수납팁 5, 오늘의집 고수들의 꿀팁 | 라이프스타일 슈퍼앱, 오늘의집",
+        "description": "삶의 질을 높여 줄 가장 빠른 방법, 1분 생활 꿀팁! 스크랩 1,000이 넘은 역대 인기 콘텐츠 중, 가장 신박한 수납 팁 5가지 를 엄선했어요. 쉽고 간단하게 수납 고수가 되고 싶다면 스크랩 해두고 꼭 활용해 보세요🔖 🏆 역대 스크랩 1위! 1. 쓰레기 봉투 수납 신박팁 서랍에서 굴러다니는 쓰레기 봉투, 가장 쉽고 깔끔하게 정리하는 방법 알려드릴게요! L자 파일의 옆 부분(트인 부분)에 테이프를 붙여 막아주세요 펜으로 표시한 부분만큼 아래로 봉지를 빼낼 수 있게 잘라주세요 자른 곳...",
+        "demandSignals": [
+          "조회 684,815",
+          "스크랩 1000",
+          "스크랩 1,000",
+          "스크랩 1",
+          "좋아요 12,989",
+          "스크랩 53,124"
+        ],
+        "communicationSignals": [
+          "댓글 398"
+        ],
+        "shapeSignals": [],
+        "businessSignals": [
+          "consultation_or_booking",
+          "commerce",
+          "partnership"
+        ],
+        "textExcerpt": "스크랩 1000 이상! 삶의질을 높여줄 신박 수납팁 5, 오늘의집 고수들의 꿀팁 | 라이프스타일 슈퍼앱, 오늘의집 앱에서 1초만에! 간편하게 로그인하기 앱으로 보기 집구경 쇼핑 인테리어/생활 로그인 회원가입 고객센터 글쓰기 더 편하게 앱으로 보기 스크랩 1000 이상! 삶의질을 높여줄 신박 수납팁 5 1분생활꿀팁 2023.06.16 팔로우 삶의 질을 높여 줄 가장 빠른 방법, 1분 생활 꿀팁! 스크랩 1,000이 넘은 역대 인기 콘텐츠 중, 가장 신박한 수납 팁 5가지 를 엄선했어요. 쉽고 간단하게 수납 고수가 되고 싶다면 스크랩 해두고 꼭 활용해 보세요🔖 🏆 역대 스크랩 1위! 1. 쓰레기 봉투 수납 신박팁 서랍에서 굴러다니는 쓰레기 봉투, 가장 쉽고 깔끔하게 정리하는 방법 알려드릴게요! 비슷한 비슷한 비슷한 L자 파일의 옆 부분(트인 부분)에 테이프를 붙여 막아주세요 비슷한 펜으로 표시한 부분만큼 비슷한 아래로 봉지를 빼낼 수 있게 잘라주세요 비슷한 비슷한 비슷한 자른 곳 반대편에는 양면테이프를 붙여주세요 양면테이프는 양쪽 끝까지 붙이기보다 중간 부분만 붙여주는 게 더 좋아요 비슷한 비슷한 싱크대 하부장 안쪽에 잘 눌러 부착해 줍니다 비슷한 종량제 봉투를 반으로 접어주세요 비슷한 그리고 한 번 더 반으로 접어주세요 비슷한 비슷한 비슷한 붙여놓은 L자 파일에 비닐봉투를 넣어주시면 아래로 한 장씩 쏙쏙 뽑아 쓸 수 있어요! 훨씬 더 깔끔한 서랍 완성😉 🏆 수납 고수의 알짜배기 노하우 2. 틈새 공중부양 수납 팁 항상 부족한 서랍장&냉장고 공간, 공간 효율 확 올려주는 수납법 공개할게요! 줄톱 또는 가위를 사용해 전선 보호관을 원하는 길이로 잘라주세요 비슷한 비슷한 윗면에 양면 폼 테이프를 붙여줍니다 비슷한 비슷한 💡 무게감이 있는 물건을 수납하려면 양면 테이프를 전체적으로 부착해 주세요 비슷한 비슷한 두꺼운 종이에 수납할 물건(ex. 컵라면)을 올려 지름을 표시한 다음 똑같은 크기로 잘라 2개를 준비합니다 테이프를 이용하여 나중에 떼기 쉽도록 전선 보호관에 살짝만 고정해 주세요 비슷한 비슷한 비슷한 비슷한 전선 보호관을 똑같은 너비로 부착하기 위한 간격재로 사용할 예정입니다 비슷한 비슷한 원하는 곳에 부착한 뒤 간격재 종이를 떼주세요 부착 후 24시간이 지나면 컵라면 혹은 컵밥을 하나씩 넣어주세요 비슷한 비슷한 이 방법을 활용하면 어디든, 어느 사이즈든 정리대를 만들 수 있어요 비슷한 비슷한 전선 보호관으로 공중부양 수납 도전해보세요! 🏆 1분컷 가능한 초간단 노하우 3. 휴지심을 이용한 책상 정리 팁 안 쓰는 컵과 휴지심으로 세상 편한 연필 꽂이 만들 수 있어요! 비슷한 비슷한 비슷한 비슷한 비슷한 휴지심을 머그컵보다 조금 더 낮은 높이로 잘라주세요 자른 휴지심을 머그컵 안에 딱 맞게 끼워주세요 💡 휴지심이 구겨\u0000\u0000져도 괜찮아요! 휴지심 2~3개를 최대한 타이트하게 넣어야 흔들리지 않고 안정적으로 펜을 꽂을 수 있어요 이렇게 휴지심으로 공간을 분리해 주면 머그컵에 펜이 조금만 있을 때에도 흐트러지지 않고 독립적으로 수납이 되어 깔끔하게 정리가 가능해요! 🏆 왜 여태 안 했을까 싶은 4. 굴러다니는 옷걸이 정리 팁 비슷한 비슷한 비슷한 비슷한 안 쓰는 옷걸이, 옷장에 그냥 걸어두셨나요? 이제는 깔끔하게 정리해 보세요! 비슷한 비슷한 비슷한 비슷한 비슷한 옷걸이를 파일 꽂이에 넣어두면 비슷한 비슷한 비슷한 비슷한 하나씩 뽑을 때도 엉키지 않아서 좋아요! 비슷한 비슷한 비슷한 비슷한 튼튼한 박스가 있다면 더 깔끔한 정리함을 만들 수 있어요 비슷한 비슷한 비슷한 박스를 파일 꽂이 모양으로 잘라주세요 비슷한 비슷한 비슷한 비슷한 정리함에 옷걸이 머리 부분을",
+        "htmlBytes": 583595,
+        "error": null
+      },
+      "priorEvidence": {
+        "observedAt": "2026-07-23",
+        "openedContentCount": 4,
+        "demandSummary": "대표 수납 글 조회 68만+, 좋아요 1.2만+, 스크랩 5.3만+가 이전 원문 검증에서 확인됐다",
+        "communicationSummary": "대표 수납 글 댓글 398과 제작자 팔로우·스크랩·공유 구조가 확인됐다",
+        "sourceRowSummary": "조회·스크랩이 큰 원문 4개에서 체크 행, 미니 프로젝트, 식단 행을 확인했다."
+      }
+    },
+    {
+      "creatorId": "family-babyfood016",
+      "creatorName": "뿐이토핑이유식",
+      "categoryId": "family_parenting",
+      "categoryLabel": "가족·육아",
+      "reviewRole": "logic_handoff_candidate",
+      "observationWindow": {
+        "from": "2026-07-23",
+        "to": "2026-07-27"
+      },
+      "profile": {
+        "requestedUrl": "https://blog.naver.com/01695258757",
+        "fetchUrl": "https://blog.naver.com/01695258757",
+        "finalUrl": "https://blog.naver.com/01695258757",
+        "status": 200,
+        "opened": true,
+        "title": "희야라이프 : 네이버 블로그",
+        "description": null,
+        "demandSignals": [],
+        "communicationSignals": [],
+        "shapeSignals": [],
+        "businessSignals": [],
+        "textExcerpt": "희야라이프 : 네이버 블로그",
+        "htmlBytes": 2834,
+        "error": null
+      },
+      "representativeSource": {
+        "requestedUrl": "https://blog.naver.com/01695258757/222768860919",
+        "fetchUrl": "https://blog.naver.com/PostView.naver?blogId=01695258757&logNo=222768860919",
+        "finalUrl": "https://blog.naver.com/PostView.naver?blogId=01695258757&logNo=222768860919",
+        "status": 200,
+        "opened": true,
+        "title": "초기이유식 식단표 (5개월/6개월 시작시기별 식단표, 이유식재료 스케줄 완벽정리)",
+        "description": "식단표 파일 비번 : 2 1 1 1 1 1 본문 하단에 파일 첨부해두었습니다. <뿐이토핑이유식> 책 출간!! ...",
+        "demandSignals": [
+          "좋아요."
+        ],
+        "communicationSignals": [
+          "댓글 9,999+",
+          "댓글",
+          "리뷰",
+          "후기",
+          "후기 3",
+          "후기1",
+          "질문",
+          "비밀번호"
+        ],
+        "shapeSignals": [
+          "html_table",
+          "plan_or_table",
+          "ordered_or_timed_rows",
+          "download_or_template"
+        ],
+        "businessSignals": [
+          "commerce"
+        ],
+        "textExcerpt": "초기이유식 식단표 (5개월/6개월 시작시기별 식단표, 이유식재료 스케줄 완벽정리) : 네이버 블로그 NAVER 블로그 희야라이프 블로그 검색 이 블로그에서 검색 공감 0 칭찬 0 감사 0 웃김 0 놀람 0 슬픔 0 span.u_likeit_button) 공감 face 3개 (전체)) --> 공감 0 공감 0 칭찬 0 감사 0 웃김 0 놀람 0 슬픔 0 댓글 9,999+ 새 댓글 공유하기 블로그 주소 변경 불가 안내 블로그 마켓 판매자의 이력 관리를 위해 블로그 주소 변경이 불가합니다. 자세히 보기 레이어 닫기 블로그 아이디가 필요해요! 블로그에서 진짜 나를 기록하고 다양한 이웃과 소식을 만나보세요. 지금 시작해볼까요? 블로그 아이디 만들기 블로그 아이디 만들기 레이어 닫기 blog.naver.com/ 입력 내용 삭제 설정한 아이디는 나중에 변경할 수 없으니 신중하게 입력해주세요. 변경 전 공유된 블로그/글/클립 링크는 연결이 끊길 수 있습니다. 네이버 아이디 또는 개인정보가 포함된 문자 사용 은 피해주세요. 블로그 도움말에서 아이디 변경 유의사항을 확인해보세요. 나중에 할게요 1. 이전 주소로 공유된 글은 3개월간 새로운 주소로 연결을 지원하며 이후 언제든 연결이 끊길 수 있습니다. 2. 블로그 아이디는 한번 변경하면 다시 변경이 불가능 합니다. 변경하시겠습니까? 취소 확인 블로그 아이디는 한번 정하면 다시 변경이 불가능합니다. 이 아이디로 블로그를 만들까요? 취소 확인 환영합니다! 블로그 아이디가 만들어졌어요. blog.naver.com/ 바로 시작하기 추가정보 입력하기 기본정보를 입력해주세요. 나중에 언제든지 변경할 수 있어요. 프로필 이미지 설정 지우기 사진 업로드 취소 적용 별명 블로그명 블로그 주제 주제 없음 엔터테인먼트·예술 문학·책 영화 미술·디자인 공연·전시 음악 드라마 스타·연예인 만화·애니 방송 생활·노하우·쇼핑 일상·생각 육아·결혼 반려동물 좋은글·이미지 패션·미용 인테리어·DIY 요리·레시피 상품리뷰 원예·재배 취미·여가·여행 게임 스포츠 사진 자동차 취미 국내여행 세계여행 맛집 지식·동향 IT·컴퓨터 사회·정치 건강·의학 비즈니스·경제 어학·외국어 교육·학문 주제없음 주제 선택 보류 나중에 할게요 기본정보 입력 주제 선택 이웃 맺기 뒤로가기 버튼 주제를 선택해 주세요. 선택한 주제의 글과 이웃을 추천받을 수 있어요. 나중에 할게요 기본정보 입력 주제 선택 이웃 맺기 뒤로가기 버튼 인기블로거와 이웃을 맺으세요. 이웃을 맺으면 이웃새글에서 글을 받아볼 수 있어요. 블로그 시작하기 기본정보 입력 주제 선택 이웃 맺기 뒤로가기 버튼 확인 확인 이웃추가 이웃 메뉴 바로가기 본문 바로가기 내 블로그 이웃블로그 블로그 홈 로그인 검색어 켜기 --> 희야라이프 블로그 메뉴 프롤로그 블로그 희야이야기 튼이뿐이이야기 여행이야기 태그 안부 블로그 글쓰기 가벼운 글쓰기툴 퀵에디터가 오픈했어요! 공지 목록 공지글 글 제목 작성일 (1) 공지 아기 주스 여름간식으로 추천하는 꿀꺽이 공구 오픈 13시간 전 (7,412) 공지 후기이유식 식단표(후기 3단계 스케줄, 11개월아기 토핑이유식 양, 이유식거부) 2023. 9. 13. (9,999+) 공지 후기이유식 식단표(토핑이유식, 이유식재료, 후기1단계 2단계) 2022. 10. 19. (9,999+) 공지 중기이유식 식단표(토핑이유식 이유식재료 스케줄 완벽정리) 2022. 7. 29. (9,999+) 공지 초기이유식 식단표 (5개월/6개월 시작시기별 식단표, 이유식재료 스케줄 완벽정리) 2022. 6. 11. 전체보기 1,686개의 글 전체보기 목록열기 이유식 레시피 [공지] 초기이유식 식단표 (5개월/6개월 시작시기",
+        "htmlBytes": 780868,
+        "error": null
+      },
+      "priorEvidence": {
+        "observedAt": "2026-07-23",
+        "openedContentCount": 4,
+        "demandSummary": "대표 식단표 댓글 9,999+와 초기·중기·후기 파일 요청이 반복된다",
+        "communicationSummary": "파일 비밀번호·사용 시기·재료 질문에 제작자가 반복 답변한 장면을 확인했다",
+        "sourceRowSummary": "초기 식단표를 포함한 이유식 시리즈 4개와 실제 PDF 행을 확인했다."
+      }
+    },
+    {
+      "creatorId": "family-babybilly",
+      "creatorName": "베이비빌리",
+      "categoryId": "family_parenting",
+      "categoryLabel": "가족·육아",
+      "reviewRole": "top_recheck",
+      "observationWindow": {
+        "from": "2026-07-23",
+        "to": "2026-07-27"
+      },
+      "profile": {
+        "requestedUrl": "https://babybilly.co/ko",
+        "fetchUrl": "https://babybilly.co/ko",
+        "finalUrl": "https://babybilly.co/ko",
+        "status": 200,
+        "opened": true,
+        "title": "임신준비부터 출산 육아까지",
+        "description": "베이비빌리와 함께해요!",
+        "demandSignals": [],
+        "communicationSignals": [],
+        "shapeSignals": [],
+        "businessSignals": [
+          "commerce"
+        ],
+        "textExcerpt": "베이비빌리 | 200만 엄빠의 임신·출산·육아 앱 임신 준비 임신 준비 임신 임신 육아 육아 베동 모임 베동 모임 입점/광고 문의 입점/광고 문의 베이비빌리 | 200만 엄빠의 임신·출산·육아 앱 편안한 임신 육아도 빌리와 함께 200만 엄빠의 임신&출산&육아 어플 앱 설치하기 편안한 임신 육아도 빌리와 함께 200만 엄빠의 임신&출산&육아 어플 모든게 새롭고 어려운 임신&육아 빌리와 함께라면 쉽고 편할거예요 귀여운 일러스트와 시기별 정보 매일 조금씩 자라는 아기를 귀여운 이미지로 확인하고 시기별 정보도 확인해 보세요! 모든게 새롭고 어려운 임신&육아 빌리와 함께라면 쉽고 편할거예요 귀여운 일러스트와 시기별 정보 매일 조금씩 자라는 아기를 귀여운 이미지로 확인하고 시기별 정보도 확인해 보세요! 육아맘 에디터의 근거 기반 콘텐츠 이제 맘카페 검색은 그만! 빌리에는 다 있어요. 임신, 출산, 육아를 경험하며 알아야 하는, 궁금한 정보 모두 한 곳에서 확인하세요. 병원 검사 불면증 아빠의 역할 초음파 검사 튼살 관리 약 복용 추천 음식 분만법 임신 초기 아기 이름 짓기 태교 출산 세탁 병원 검사 불면증 아빠의 역할 초음파 검사 튼살 관리 약 복용 추천 음식 분만법 임신 초기 육아맘 에디터의 근거 기반 콘텐츠 이제 맘카페 검색은 그만! 빌리에는 다 있어요. 임신, 출산, 육아를 경험하며 알아야 하는, 궁금한 정보 모두 한 곳에서 확인하세요. 같은 시기 엄빠들과 소통할 수 있는 베동 같은 시기의 엄빠들이 모인 커뮤니티에서 고민&꿀팁 등을 공유하고 소통할 수 있어요. 이제 ‘조리원 동기&#x27;보다 더 든든한 ‘베이비빌리 동기’ 모임을 만나보세요. 같은 시기 엄빠들과 소통할 수 있는 베동 같은 시기의 엄빠들이 모인 커뮤니티에서 고민&꿀팁 등을 공유하고 소통할 수 있어요. 이제 ‘조리원 동기&#x27;보다 더 든든한 ‘베이비빌리 동기’ 모임을 만나보세요. 아기와 엄마 건강을 기록하고 관리 우리 아기가 잘 자라고 있는지 궁금하다면? 건강 기록에서 체중, 복부둘레, 머리둘레 등을 기록하여 평균 범위를 확인해 볼 수 있어요. 더불어 엄마의 건강 관리를 위한 몸무게까지 기록하고, 시기별 적정 증가량을 확인해 보세요! 아기와 엄마 건강을 기록하고 관리 우리 아기가 잘 자라고 있는지 궁금하다면? 건강 기록에서 체중, 복부둘레, 머리둘레 등을 기록하여 평균 범위를 확인해 볼 수 있어요. 더불어 엄마의 건강 관리를 위한 몸무게까지 기록하고, 시기별 적정 증가량을 확인해 보세요! 빌리가 미리 다 고민하고 비교했어요 하나하나 비교하고 고민하지 않아도 돼요 시기별로 구매해야하는 아이템 추천 하나만 사도 무조건 무료배송 최저가에 구매할 수 있는 깜짝 특가딜 임신&출산&육아도 베이비빌리와 함께해요! 베이비빌리 앱에서 더 많은 정보를 쉽고 편하게 확인하세요! 베이비빌리 앱에서 더 많은 정보를 쉽고 편하게 확인하세요! 주식회사 빌리지베이비 대표이사 이정윤 통신판매업신고번호 2025-서울영등포-0160 | 사업자등록번호 581-88-01277 | 서울특별시 영등포구 의사당대로 83, 오투타워 4층 입점/광고 문의 이용약관 | 개인정보처리방침 | 커뮤니티 이용약관 Language 한국어 日本語 English Tiếng Việt ภาษาไทย Bahasa Indonesia Copyright Baby Billy. All rights reserved. 주식회사 빌리지베이비 대표이사 이정윤 통신판매업신고번호 2025-서울영등포-0160 사업자등록번호 581-88-01277 서울특별시 영등포구 의사당대로 83, 오투타워 4층 입점/광고 문의 이용약관 | 개인정보처리방침 | 커뮤니티 이용약관 Language 한국어",
+        "htmlBytes": 216828,
+        "error": null
+      },
+      "representativeSource": {
+        "requestedUrl": "https://babybilly.co/post/1927",
+        "fetchUrl": "https://babybilly.co/post/1927",
+        "finalUrl": "https://babybilly.co/ko/post/1927",
+        "status": 200,
+        "opened": true,
+        "title": "출산&육아 준비물 리스트, 여기서 PDF로 받으세요!",
+        "description": "맘카페에 여기저기 떠돌아다니는 출산준비물 리스트, 형식도 파일도 다 제각각이죠. 예쁘고 깔끔한 리스트 찾고 계셨다면?💡 여기 베이비빌리 출산준비물 리스트가 있어요. 따로 다운받아 프린트까지 할 수 있는 우주최강 리스트🧾 만나볼까요?",
+        "demandSignals": [
+          "조회 239,977"
+        ],
+        "communicationSignals": [
+          "후기"
+        ],
+        "shapeSignals": [
+          "download_or_template"
+        ],
+        "businessSignals": [
+          "commerce"
+        ],
+        "textExcerpt": "출산&육아 준비물 리스트, 여기서 PDF로 받으세요! 임신 준비 임신 준비 임신 임신 육아 육아 베동 모임 베동 모임 입점/광고 문의 입점/광고 문의 베이비빌리 앱에서 더 많은 콘텐츠를 볼 수 있어요! 베이비빌리 앱 다운받기 베이비빌리 앱에서 더 많은 콘텐츠를 볼 수 있어요! 베이비빌리 앱 다운받기 출산&육아 준비물 리스트, 여기서 PDF로 받으세요! 조회 239,977 맘카페에 여기저기 떠돌아다니는 출산준비물 리스트, 형식도 파일도 다 제각각이죠. 예쁘고 깔끔한 리스트 찾고 계셨다면?💡 여기 베이비빌리 출산준비물 리스트가 있어요. 따로 다운받아 프린트까지 할 수 있는 우주최강 리스트🧾 만나볼까요? 베이비빌리 출산준비물 리스트 구경할래요? 출산준비물리스트 편 앱 내 출산준비리스트 기능을 리뉴얼했어요! 그동안 빌리쇼핑에서만 만날 수 있었던 출산준비물 리스트📝 따로 다운받아서 쓰고 싶다는 엄빠님들의 의견을 바로 반영하여 준비했어요.😎 엄빠들이 더 쓰기 편하게 리뉴얼된 출산준비물 리스트를 간단하게 소개해 드릴게요! 편리하게 나눠진 4개의 리스트 베이비빌리 출산준비물 리스트는 총 4개로 구성되어 있어요.💌 1️⃣출산가방 2️⃣출산준비물(엄마) 3️⃣출산준비물(아기) 4️⃣미리안사도돼요 각 상황에 따라 체크할 수 있으니 편리하겠죠?👏 깔끔하고 이해가 쉬운 리스트 무조건 챙기라고 하니까 챙긴다구요?🙅&zwj;♀️ 베이비빌리 리스트는 편리함은 물론, 왜 필요한지 이해까지 돕고 있어요! 맨 앞에는 빈 네모표기가 있어 자유롭게 체크가 가능해요. 또한, 물품 아래에는 작은 글씨로 왜 필요한지에 대한 간략한 설명으로 엄마의 이해를 도와주고 있어요.🌟 여기서 받으세요! 출산준비물 리스트으!!!!! 아래 버튼을 누르면 각 리스트를 PDF로 받을 수 있어요. 유용한 리스트가 되길 바라며, 베이비빌리는 언제 어디서나 엄빠를 응원할게요.🌞 출산준비물 리스트 받기 # 출산가방 # 출산준비물 # 임신중기 # 임신후기 # 출산준비 # 임신극후기 베이비빌리 앱 다운로드받고 더 다양한 콘텐츠 글을 구경해보세요 베이비빌리 앱 다운받기 주식회사 빌리지베이비 대표이사 이정윤 통신판매업신고번호 2025-서울영등포-0160 | 사업자등록번호 581-88-01277 | 서울특별시 영등포구 의사당대로 83, 오투타워 4층 입점/광고 문의 이용약관 | 개인정보처리방침 | 커뮤니티 이용약관 Language 한국어 日本語 English Tiếng Việt ภาษาไทย Bahasa Indonesia Copyright Baby Billy. All rights reserved. 주식회사 빌리지베이비 대표이사 이정윤 통신판매업신고번호 2025-서울영등포-0160 사업자등록번호 581-88-01277 서울특별시 영등포구 의사당대로 83, 오투타워 4층 입점/광고 문의 이용약관 | 개인정보처리방침 | 커뮤니티 이용약관 Language 한국어 日本語 English Tiếng Việt ภาษาไทย Bahasa Indonesia Copyright Baby Billy. All rights reserved.",
+        "htmlBytes": 171591,
+        "error": null
+      },
+      "priorEvidence": {
+        "observedAt": "2026-07-23",
+        "openedContentCount": 5,
+        "demandSummary": "출산준비물 글 조회 23만~28만대, 겨울 출산 가이드 조회 8만대가 직접 보인다",
+        "communicationSummary": "부모 의견을 반영해 PDF 리스트와 앱 기능을 고쳤다고 원문에 명시하고 선배 부모 코멘트를 함께 싣는다",
+        "sourceRowSummary": "출산가방·엄마·아기·나중 구매 목록과 계절·세탁·수유 준비 글 5개를 확인했다."
+      }
+    },
+    {
+      "creatorId": "study-mansour",
+      "creatorName": "오픽만수르",
+      "categoryId": "study_reading",
+      "categoryLabel": "공부·독서",
+      "reviewRole": "logic_handoff_candidate",
+      "observationWindow": {
+        "from": "2026-07-23",
+        "to": "2026-07-27"
+      },
+      "profile": {
+        "requestedUrl": "https://mansour.tistory.com/",
+        "fetchUrl": "https://mansour.tistory.com/",
+        "finalUrl": "https://mansour.tistory.com/",
+        "status": 200,
+        "opened": true,
+        "title": "오픽만수르",
+        "description": "NH 부터 AL 까지 독학으로 받으며 쌓은 노하우를 공유합니다. 시간 없는 직장인, 취준생, 졸업 예정자 등 모두에게 도움 되길 바랍니다.",
+        "demandSignals": [],
+        "communicationSignals": [
+          "질문",
+          "질문,"
+        ],
+        "shapeSignals": [
+          "download_or_template"
+        ],
+        "businessSignals": [
+          "subscription_or_membership"
+        ],
+        "textExcerpt": "오픽만수르 오픽만수르 OPIc 시험 정보와 답변 스크립트 공유 NH 부터 AL 까지 오픽 독학 이야기 ★스크립트 다운로드★ [오픽 단톡방] [유튜브 영상자료] 오픽만수르2 첨삭받기 NH 부터 AL 까지 독학으로 받으며 쌓은 노하우를 공유합니다. 시간 없는 직장인, 취준생, 졸업 예정자 등 모두에게 도움 되길 바랍니다. 전체 글 263 오픽만수르 파일 다운로드 과정 및 문제 해결 방법 안내 오픽만수르 파일 다운로드 방법과 자주 발생하는 문제들에 대한 해결 방법을 안내드립니다. 모든 과정을 차례대로 진행하시면 자료를 정상적으로 받으시고 사용하실 수 있습니다. 항상 오픽 시험 준비를 응원드립니다! 도움이 필요하시거나 아래의 방법을 따라 해도 문제가 생긴다면 언제든 연락 부탁드립니다. 본 안내는 아래 파일들을 대상으로 합니다. - 오픽만수르 스크립트 IL-IM2 / IM2-IH / IH-AL - 오픽만수르 오디오북 IL-IM2 / IM2-IH / IH-AL - 오픽 독학 가이드북 - 문제모음집 난이도 3, 4 / 난이도 5, 6 - 오픽 모의고사 20회 파일 - 그 외 메일로 추가 전송 받으신 파일들 기본 다운로드 순서는 다음과 같습니다.1. 네이버 이메일 확인하기2. 다운로드 버튼 클릭하기3.. 오픽 스크립트 파일 업데이트 2026.06.07 오픽 영어 발음, 왜 등급이 안 나올까요? 발음의 핵심 3가지는 꼭 기억해주세요! 오픽 영어 발음 중요성은 가끔 낮게 여겨지곤 합니다. 그러나 발음은 상당히 중요한 요소입니다. 단순히 생각해 봐도 발음이 좋지 않으면 채점자가 내용을 이해할 수 없고, 제대로 된 평가를 할 수 없게 됩니다. 그러면 등급도 당연히 낮게 매겨지겠죠. 기초 발음 연습 게시판에서는 가장 기초적인 영어 발음과 한국인들이 어려워하는 부분들을 교정해 드리겠습니다. 오픽 발음 중요성은 굉장히, 상당히, 엄청나게 중요하다고 해도 과언이 아니라고 생각합니다. 왜 그럴까요? 혹시 원하는 등급이 나오지 않아서 힘드신가요?아니면 같은 등급만 계속 나와서 돈과 시간이 아까우신가요? 그렇다면 발음이 문제일 수도 있습니다. ▶ 오픽 영어 발음 중요성 높은 이유1. 내 답변을 채점자가 이해할 수 있느냐 없느냐의 문제가장 중요한 부분.. 오픽만수르 유튜브/기초 발음 연습 2025.06.27 6 서울시 관악구 오픽 응시료 지원 안내 (2025년 4월부터) 지자체 오픽 응시료 지원 사업이 많아지고 있네요. 이번에는 서울시 관악구 오픽 응시료 지원 정보를 공유드립니다. 다음 달인 2025년 4월부터 시작된다고 합니다. 관악구에 거주하시는 분들께서는 미리 정보를 확인하신 후 지원 혜택을 챙겨보시기 바랍니다. 관악구 오픽 응시료 지원 정보지원기간2025년 4월 ~ 12월예산소진시 조기종료 예정지원대상관악구 거주 19~39세 미취업 청년 600명 (1985~2006년생)2025년 1월 1일 이후 실시한 자격 시험응시자합격 여부와 무관함시험 접수 후 미응시자는 지원 제외2025년도 서울시 청년수당, 국민취업제도, 타 지자체 응시료 지원사업 중복지원시 지원대상 제외신청방법1. 지원 신청/접수: 매월 1~10일 2. 서류심사 및 대상자 선정: 매월 11~20일3. 선정.. 오픽 공부/오픽 할인 정보 2025.03.21 오픽 대학연합 재학증명서 변경 기준 (24.07.01 업데이트) 오픽 대학연합 재학증명서 인정 기준이 변경되어 공유드립니다. 2024년 7월 1일부터 변경되어 적용되는 기준입니다. 대학연합으로 응시료 할인을 받고 접수하시는 분들은 기준 정보를 꼭 확인하시어 시험장에서 불편을 겪지 않도록 준비하시기 바랍니다. 대학연합 접수는 재학생은 물론이고, 휴학생과 대학원생을 포함하여 신청할 수 ",
+        "htmlBytes": 68728,
+        "error": null
+      },
+      "representativeSource": {
+        "requestedUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+        "fetchUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+        "finalUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+        "status": 200,
+        "opened": true,
+        "title": "오픽 모의고사 공부 방법 7가지 공유, 계획표 다운로드",
+        "description": "제가 직접 공부할 때 했던 방법들로 작성했습니다. 오픽 모의고사 공부 방법 7가지 내용 공유드립니다. 생각보다 이 내용들을 모르고 그냥 영상 보면서 무작정 공부하시는 분들이 많았습니다. 이 글을 통해 이제는 더 효율적으로 공부해 보세요. 실제로 제가 아래 방법들을 통해 공부를 했었고, 성적 향상이 매우 빨랐습니다. 주변 분들이 어떻게 하면 그렇게 빨리 등급을 올리냐고 했었습니다. 지금 생각해 보면 아마 이런 공부 방법들이 효과가 좋았던 것 같습니다. 오픽 모의고사 공부 방법 설명 영상 영상으로도 설명을 올려놨습니다. 오픽 모의고사 공부 방법 영상 ▶ 등급별 오픽 스크립트 모음 원본 파일 보기 시험이 급하시거나, 어떤 답변을 어떻게 해야 할지 고민이신 분들께 추천드립니다. 1. 모의고사가 중요한 이유 저는..",
+        "demandSignals": [],
+        "communicationSignals": [
+          "질문",
+          "댓글",
+          "댓글 0",
+          "질문,"
+        ],
+        "shapeSignals": [
+          "html_table",
+          "plan_or_table",
+          "download_or_template"
+        ],
+        "businessSignals": [
+          "subscription_or_membership"
+        ],
+        "textExcerpt": "오픽 모의고사 공부 방법 7가지 공유, 계획표 다운로드 오픽만수르 OPIc 시험 정보와 답변 스크립트 공유 NH 부터 AL 까지 오픽 독학 이야기 ★스크립트 다운로드★ [오픽 단톡방] [유튜브 영상자료] 오픽만수르2 첨삭받기 오픽 공부/오픽 전략 오픽 모의고사 공부 방법 7가지 공유, 계획표 다운로드 오픽만수르M 2023. 8. 8. 20:20 제가 직접 공부할 때 했던 방법들로 작성했습니다. 오픽 모의고사 공부 방법 7가지 내용 공유드립니다. 생각보다 이 내용들을 모르고 그냥 영상 보면서 무작정 공부하시는 분들이 많았습니다. 이 글을 통해 이제는 더 효율적으로 공부해 보세요. 실제로 제가 아래 방법들을 통해 공부를 했었고, 성적 향상이 매우 빨랐습니다. 주변 분들이 어떻게 하면 그렇게 빨리 등급을 올리냐고 했었습니다. 지금 생각해 보면 아마 이런 공부 방법들이 효과가 좋았던 것 같습니다. 오픽 모의고사 공부 방법 설명 영상 영상으로도 설명을 올려놨습니다. 오픽 모의고사 공부 방법 영상 ▶ 등급별 오픽 스크립트 모음 원본 파일 보기 시험이 급하시거나, 어떤 답변을 어떻게 해야 할지 고민이신 분들께 추천드립니다. 1. 모의고사가 중요한 이유 저는 항상 무엇을 하든 그것을 왜 해야 하는 지를 따져봅니다. 왜 해야 하는지, 그리고 그것이 무슨 가치가 있는지 알면 실행력이 생깁니다. 모의고사는 왜 해야 할까요? 저는 이것이 필수라고 생각합니다. - 시험장을 간접적으로 경험할 수 있습니다. - 실전 같은 연습을 할 수 있습니다. 그리고 4가지 큰 장점이 있습니다. ① 긴장감 적응 - 시험장에서 느낄 수 있는 압박감, 질문에 대한 두려움, 틀리면 안 된다는 떨림 - 이러한 긴장을 집에서도 느껴 볼 수 있고, 미리 적응할 수 있습니다. - 이 연습이 많이 된 사람은 시험을 더 편하게 치릅니다. ② 문제 예측력 - 다음 문제가 무엇이 나올지 예측하는 능력이 향상됩니다. - 반복 연습을 통해 문제 예측력을 높이면 시험이 더 쉬워집니다. ③ 내 수준 파악 - 지금 내가 얼마나 준비가 되었는지 정확하게 체크가 가능합니다. - 무엇이 부족한 지, 어떤 실수를 하는지, 무엇이 어려운 지를 알 수 있습니다. ④ 사전 보완 - 자연스럽게 시험 전 부족한 부분을 보완할 수 있게 됩니다. 최종적으로 필요한 등급 취득 확률이 상승 됩니다. 2. 영상과 실제 시험 차이 아무래도 모의고사는 실제 시험 화면과 차이가 있습니다. 어떤 차이가 있는지 미리 아셔야 합니다. 시험을 몇 번 쳐보신 분들은 이미 이 내용을 아실 겁니다. 잘 모르시는 분들만 봐주시면 되겠습니다! 오픽 모의고사 영상과 실제 시험 화면 차이1 본 내용은 영상을 보시면 더 이해가 쉽습니다. 실제 시험장에서는 아래와 같은 차이가 있습니다. ① <난이도 5, 6 모의고사 #10>과 같은 표시는 나타나지 않고, 현재 문제 수가 표시됨 ② <오픽만수르> 같은 채널 로고는 표시되지 않음 ③ 시험 캐릭터 이미지가 다름 ④ 캐릭터 이미지 아래에 있는 플레이 버튼을 클릭해야 문제가 재생됨. 첫 번째 재생이 끝나면 리플레이 버튼으로 바뀌며, 이 것을 클릭해야 2차 재생이 진행됨. 3~5초 안에 누르지 않으면 1차 재생으로만 끝나버리고 리플레이 기회가 사라지니 주의해야 함. ⑤ 플레이 버튼 아래에 있는 글자가 표시되는 부분은 문재 재생 중 / 녹음 중 / 다음으로 넘어가기를 추천하는 메시지가 상황에 맞게 각각 표시됨 ⑥ 답변 시간표시는 나타나지 않음 ⑦ Next 버튼을 눌러야 답변이 저장되고, 다음 문제 화면으로 넘어감. 다음 문제 화면에서도 플레이 버튼을 눌러야 문제가 재생됨. 오픽 모의고사 영상과 실제 시험 화면 차이2 ⑧ [오픽만수르 모의고사 세트",
+        "htmlBytes": 93756,
+        "error": null
+      },
+      "priorEvidence": {
+        "observedAt": "2026-07-23",
+        "openedContentCount": 4,
+        "demandSummary": "연결 모의고사 영상 조회 11,861·좋아요 56과 채널 구독자 6.09천명이 이전 검증에서 확인됐다",
+        "communicationSummary": "카카오 오픈채팅·Discord·YouTube·1:1 문의가 실제로 연결되지만 채널별 활동량은 공개 수치가 부족하다",
+        "sourceRowSummary": "계획표, 난이도별 유형, 롤플레이 패턴, 기업 등급 정보 글 4개를 열었다."
+      }
+    },
+    {
+      "creatorId": "study-opentutorials",
+      "creatorName": "생활코딩",
+      "categoryId": "study_reading",
+      "categoryLabel": "공부·독서",
+      "reviewRole": "top_recheck",
+      "observationWindow": {
+        "from": "2026-07-23",
+        "to": "2026-07-27"
+      },
+      "profile": {
+        "requestedUrl": "https://opentutorials.org/course/1",
+        "fetchUrl": "https://opentutorials.org/course/1",
+        "finalUrl": "https://opentutorials.org/course/1",
+        "status": 200,
+        "opened": true,
+        "title": "생활코딩",
+        "description": null,
+        "demandSignals": [],
+        "communicationSignals": [
+          "비밀번호",
+          "질문",
+          "댓글",
+          "질문만",
+          "댓글 0"
+        ],
+        "shapeSignals": [],
+        "businessSignals": [
+          "course_or_challenge",
+          "partnership",
+          "subscription_or_membership"
+        ],
+        "textExcerpt": "생활코딩 생활코딩 Coding Everybody Open tutorials.org 코스 전체목록 도움말 로그인 로그인 닫기 아이디 비밀번호 로그인 유지 로그인 비밀번호 찾기 | 회원가입 후원 코스 전체목록 닫기 WEB WEB1 - HTML & Internet 프론트 엔드 단편수업 WEB2 - CSS WEB2 - JavaScript React Next.js 13 Redux Ajax Facebook Login Google Login p5.js WEB2 - Node.js Node.js - MySQL Node.js - Express Node.js - 쿠키와 인증 세션과 인증 Passport.js 다중 사용자 Google Login Facebook Login WEB2 - Python Django Web Framework Flask Web Framework WEB2 - PHP WEB3 - PHP & MySQL WEB2 - Home server WEB2 - Domain Name System WEB2 - HTTP WEB2 - OAuth 2.0 웹 애플리케이션 만들기 DATABASE DATABASE1 MySQL Oracle SQLite lowdb SQL Join 관계형 데이터 모델링 언어 Python 입문 수업 파이썬 제어문 JAVA 입문 수업 JAVA - 제어문 JAVA - method JAVA 객체 지향 프로그래밍 Java 상속 Java JavaScript 입문 수업 TypeScript PHP Python & Ruby 정규표현식 스크래치 클라이언트 겁나 빠른 웹 레시피 HTML HTML 수업 HTML 사전 CSS CSS 수업 CSS 사전 JavaScript 웹브라우저 자바스크립트 JavaScript 사전 jQuery UI 라이브러리 Semantic UI jQuery Mobile Twitter Bootstrap 모바일 텍스트큐브 & 티스토리 스킨 서버 HTTP JavaScript (nodejs) - 폐지예정 PHP PHP 기본 수업 CodeIgniter PHP 고급 수업 MySQL 인프라 리눅스 인터넷 아마존 웹서비스 (AWS) 아마존 웹서비스 (폐지예정) 데이터 과학 머신러닝1 Orange3 Orange3 지도학습 Tensorflow (python) Tensorflow (JavaScript) TensorFlow.js Classification (분류 작업 시키기) Tensorflow.js Classification Teachable machine & WEB 개발도구 개발도구들 크롬 개발자도구 가상머신 (virtualbox) 프로젝트 관리 GITn Visual Studio Code에서 git으로 협업하기 GIT1 Git CLI - 버전관리 GIT CLI - Branch & Conflict GIT CLI - Backup GIT CLI - 협업 GIT CLI - Cherry-pick & rebase GIT - CLI - github.com Pull reqeust Visual Studio Code 로 다루는 Git 버전관리 시스템 지옥에서 온 Git (새 수업으로 대체) GIT-SourceTree (새수업으로 대체) Subversion 프로젝트 관리도구 생활코딩 Docker 입구 수업 Gitlab github Redmine 기타 프로그래밍 오리엔테이션 보편적이지 않은 코딩 독서모임 CODE Hello world processing.js mongodb python 알고리즘 개발문서 생활코딩 생활코딩 2023-01-03 17:39:57 hello world 생활코딩의 세계에 오신 것을 환영합니다. 생활코딩은 일반인들에게 프로그래밍을 알려주는 무료 온라인, 오프라인 수업입니다. 어떻게 공",
+        "htmlBytes": 95411,
+        "error": null
+      },
+      "representativeSource": {
+        "requestedUrl": "https://opentutorials.org/course/3084",
+        "fetchUrl": "https://opentutorials.org/course/3084",
+        "finalUrl": "https://opentutorials.org/course/3084",
+        "status": 200,
+        "opened": true,
+        "title": "WEB1 - HTML & Internet - 생활코딩",
+        "description": null,
+        "demandSignals": [],
+        "communicationSignals": [
+          "비밀번호",
+          "댓글",
+          "질문만",
+          "질문",
+          "댓글 0"
+        ],
+        "shapeSignals": [
+          "download_or_template",
+          "series_or_curriculum"
+        ],
+        "businessSignals": [
+          "course_or_challenge",
+          "partnership",
+          "subscription_or_membership"
+        ],
+        "textExcerpt": "WEB1 - HTML & Internet - 생활코딩 생활코딩 Coding Everybody Open tutorials.org 코스 전체목록 도움말 로그인 로그인 닫기 아이디 비밀번호 로그인 유지 로그인 비밀번호 찾기 | 회원가입 후원 코스 전체목록 닫기 WEB WEB1 - HTML & Internet 프론트 엔드 단편수업 WEB2 - CSS WEB2 - JavaScript React Next.js 13 Redux Ajax Facebook Login Google Login p5.js WEB2 - Node.js Node.js - MySQL Node.js - Express Node.js - 쿠키와 인증 세션과 인증 Passport.js 다중 사용자 Google Login Facebook Login WEB2 - Python Django Web Framework Flask Web Framework WEB2 - PHP WEB3 - PHP & MySQL WEB2 - Home server WEB2 - Domain Name System WEB2 - HTTP WEB2 - OAuth 2.0 웹 애플리케이션 만들기 DATABASE DATABASE1 MySQL Oracle SQLite lowdb SQL Join 관계형 데이터 모델링 언어 Python 입문 수업 파이썬 제어문 JAVA 입문 수업 JAVA - 제어문 JAVA - method JAVA 객체 지향 프로그래밍 Java 상속 Java JavaScript 입문 수업 TypeScript PHP Python & Ruby 정규표현식 스크래치 클라이언트 겁나 빠른 웹 레시피 HTML HTML 수업 HTML 사전 CSS CSS 수업 CSS 사전 JavaScript 웹브라우저 자바스크립트 JavaScript 사전 jQuery UI 라이브러리 Semantic UI jQuery Mobile Twitter Bootstrap 모바일 텍스트큐브 & 티스토리 스킨 서버 HTTP JavaScript (nodejs) - 폐지예정 PHP PHP 기본 수업 CodeIgniter PHP 고급 수업 MySQL 인프라 리눅스 인터넷 아마존 웹서비스 (AWS) 아마존 웹서비스 (폐지예정) 데이터 과학 머신러닝1 Orange3 Orange3 지도학습 Tensorflow (python) Tensorflow (JavaScript) TensorFlow.js Classification (분류 작업 시키기) Tensorflow.js Classification Teachable machine & WEB 개발도구 개발도구들 크롬 개발자도구 가상머신 (virtualbox) 프로젝트 관리 GITn Visual Studio Code에서 git으로 협업하기 GIT1 Git CLI - 버전관리 GIT CLI - Branch & Conflict GIT CLI - Backup GIT CLI - 협업 GIT CLI - Cherry-pick & rebase GIT - CLI - github.com Pull reqeust Visual Studio Code 로 다루는 Git 버전관리 시스템 지옥에서 온 Git (새 수업으로 대체) GIT-SourceTree (새수업으로 대체) Subversion 프로젝트 관리도구 생활코딩 Docker 입구 수업 Gitlab github Redmine 기타 프로그래밍 오리엔테이션 보편적이지 않은 코딩 독서모임 CODE Hello world processing.js mongodb python 알고리즘 개발문서 생활코딩 > WEB > WEB1 - HTML & Internet 공동공부 ( 9199 명) 커버 페이지 토픽 목록 프로젝트의 동기 기획 코딩과 HTML HTML ",
+        "htmlBytes": 92324,
+        "error": null
+      },
+      "priorEvidence": {
+        "observedAt": "2026-07-23",
+        "openedContentCount": 4,
+        "demandSummary": "WEB1 공동공부 참여 9,199와 장기 운영된 다수 코스가 확인된다",
+        "communicationSummary": "코스별 댓글과 공동공부 참여 구조가 있어 질문·진도·후속 학습 대화가 원문 안에 남는다",
+        "sourceRowSummary": "WEB1, JavaScript, Python 계열 코스와 메인 커리큘럼 4개를 열었다."
+      }
+    },
+    {
+      "creatorId": "money-getcha",
+      "creatorName": "겟차",
+      "categoryId": "money_admin_purchase",
+      "categoryLabel": "돈·행정·구매",
+      "reviewRole": "logic_handoff_candidate",
+      "observationWindow": {
+        "from": "2026-07-23",
+        "to": "2026-07-27"
+      },
+      "profile": {
+        "requestedUrl": "https://web.getcha.kr/blog/",
+        "fetchUrl": "https://web.getcha.kr/blog/",
+        "finalUrl": "https://web.getcha.kr/blog",
+        "status": 200,
+        "opened": true,
+        "title": "겟차피디아 | 자동차 리스, 장기렌트, 신차 정보",
+        "description": "자동차 리스, 장기렌트, 신차 소식, 오토캐시백 등 자동차에 관한 모든 정보를 겟차피디아에서 확인하세요.",
+        "demandSignals": [],
+        "communicationSignals": [
+          "리뷰"
+        ],
+        "shapeSignals": [
+          "series_or_curriculum"
+        ],
+        "businessSignals": [
+          "consultation_or_booking",
+          "commerce"
+        ],
+        "textExcerpt": "겟차피디아 | 자동차 리스, 장기렌트, 신차 정보 겟차피디아 Q BMW 2시리즈 액티브 투어러 220i 럭셔리 P1 할인가, 최대 1천 100만원 할인 (2026년 7월) 겟차 AI 리포터 · 2026.07.27 A 👀 오늘의 글 핵심 요약 BMW 2시리즈 액티브 투어러 220i 럭셔리 P1의 최근 4개월 딜러 제안 기준 평균 할인은 778만원(정가 대비 약 15.1%)이에요. 가장 많이 빠졌을 때는 최대 1천 100만원까지, 이때 실구매가는 약 4천 40만원이에요. 정가 5천 140만원 기준, 평균 할인을 받으면 실구매가는 약 4천 362만원 수준이에요. 매달 꾸준히 일정 폭의 할인 제안이 이뤄지고 있는 모델이에요. 2시리즈 액티브 투어러 220i 럭셔리 P1 할인가, 지금 얼마나 빠지나요? 신차할인 딜러할인 할인가 실구매가 Q 미니 3도어 해치 JCW 할인가, 최대 700만원 할인 (2026년 7월) 겟차 AI 리포터 · 2026.07.27 A 👀 오늘의 글 핵심 요약 미니 3도어 해치 JCW의 최근 6개월 딜러 제안 기준 평균 할인은 229만원(정가 대비 약 4.1%)이에요. 가장 많이 빠졌을 때는 최대 700만원까지, 이때 실구매가는 약 4천 890만원이에요. 정가 5천 590만원 기준, 평균 할인을 받으면 실구매가는 약 5천 361만원 수준이에요. 할인 여지가 크지 않아, 정가에 가깝게 구매하게 되는 모델이에요. 3도어 해치 JCW 할인가, 지금 얼마나 빠지나요? 3도어 해치 JCW(2026)의 정가는 5천 590 신차할인 딜러할인 할인가 실구매가 Q BMW 3시리즈 M340i 프로 P2 할인가, 최대 950만원 할인 (2026년 7월) 겟차 AI 리포터 · 2026.07.27 A 👀 오늘의 글 핵심 요약 BMW 3시리즈 M340i 프로 P2의 최근 3개월 딜러 제안 기준 평균 할인은 679만원(정가 대비 약 7.9%)이에요. 가장 많이 빠졌을 때는 최대 950만원까지, 이때 실구매가는 약 7천 680만원이에요. 정가 8천 630만원 기준, 평균 할인을 받으면 실구매가는 약 7천 951만원 수준이에요. 매달 꾸준히 일정 폭의 할인 제안이 이뤄지고 있는 모델이에요. 3시리즈 M340i 프로 P2 할인가, 지금 얼마나 빠지나요? 3시리즈 M340i 프로 P2( 신차할인 딜러할인 할인가 실구매가 Q BMW i4 M60 xDrive 프로 P1 할인가, 최대 1천 300만원 할인 (2026년 7월) 겟차 AI 리포터 · 2026.07.27 A 👀 오늘의 글 핵심 요약 BMW i4 M60 xDrive 프로 P1의 최근 5개월 딜러 제안 기준 평균 할인은 983만원(정가 대비 약 10.7%)이에요. 가장 많이 빠졌을 때는 최대 1천 300만원까지, 이때 실구매가는 약 7천 890만원이에요. 정가 9천 190만원 기준, 평균 할인을 받으면 실구매가는 약 8천 208만원 수준이에요. 매달 꾸준히 일정 폭의 할인 제안이 이뤄지고 있는 모델이에요. 전기차라 유지비 부담이 낮은 편이고, 할인과 별개로 보조금까지 고려하면 실부담은 더 신차할인 딜러할인 할인가 실구매가 Q BMW 5시리즈 550e xDrive M 스포츠 프로 P1 할인가, 최대 1천 50만원 할인 (2026년 7월) 겟차 AI 리포터 · 2026.07.27 A 👀 오늘의 글 핵심 요약 BMW 5시리즈 550e xDrive M 스포츠 프로 P1의 최근 5개월 딜러 제안 기준 평균 할인은 842만원(정가 대비 약 7.2%)이에요. 가장 많이 빠졌을 때는 최대 1천 50만원까지, 이때 실구매가는 약 1억 620만원이에요. 정가 1억 1천 670만원 기준, 평균 할인을 받으면 실구매가는 약 1억 828만원 수준",
+        "htmlBytes": 69004,
+        "error": null
+      },
+      "representativeSource": {
+        "requestedUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+        "fetchUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+        "finalUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+        "status": 200,
+        "opened": true,
+        "title": "초보자를 위한 신차 구매 전체 절차 완벽 정리 | 처음부터 끝까지",
+        "description": "처음 신차를 구매하시나요? 예산 설정부터 차량 선택, 계약, 출고, 등록, 보험까지 초보자가 꼭 알아야 할 신차 구매 절차를 단계별로 상세히 안내합니다. 실수 없는 똑똑한 구매를 위한 필수 가이드!",
+        "demandSignals": [],
+        "communicationSignals": [
+          "질문",
+          "리뷰"
+        ],
+        "shapeSignals": [
+          "checklist",
+          "ordered_or_timed_rows"
+        ],
+        "businessSignals": [
+          "consultation_or_booking",
+          "commerce"
+        ],
+        "textExcerpt": "초보자를 위한 신차 구매 전체 절차 완벽 정리 | 처음부터 끝까지 겟차피디아 게시글 초보자를 위한 신차 구매 전체 절차 완벽 정리: 처음부터 끝까지 한 번에 겟차 AI 리포터 | 마지막 수정일 2026.01.01 소요시간 약 9 분 👀 오늘의 글 핵심 요약 신차 구매의 모든 절차를 단계별로 상세히 안내하여 초보자도 쉽게 따라할 수 있습니다. 예산 설정부터 출고, 등록, 보험까지 실제 구매자 경험을 바탕으로 한 실용적인 가이드를 제공합니다. 계약 체결 시 주의사항과 할인 협상 팁으로 시간과 비용을 절약하는 방법을 알려드립니다. 신차 구매, 어디서부터 시작해야 할까? 처음 신차를 구매하시는 분들은 복잡한 절차 때문에 어디서부터 손을 대야 할지 막막하실 겁니다. 차량 선택부터 계약, 출고, 등록까지 생각보다 많은 단계를 거쳐야 하죠. 하지만 걱정하지 마세요. 이 글에서는 초보자도 쉽게 따라할 수 있도록 신차 구매의 모든 절차를 단계별로 상세히 안내해드리겠습니다. 신차 구매는 인생에서 큰 결정 중 하나입니다. 평균적으로 수천만 원의 비용이 들어가는 만큼, 각 단계를 정확히 이해하고 준비한다면 시간과 비용을 절약할 수 있습니다. 지금부터 실제 구매자들의 경험을 바탕으로 한 실용적인 가이드를 제공해드리겠습니다. 1단계: 예산 설정 및 차량 선택 현실적인 예산 계획 세우기 신차 구매의 첫 번째 단계는 예산을 명확히 설정하는 것입니다. 단순히 차량 가격만 고려해서는 안 됩니다. 다음 항목들을 모두 포함한 총 비용을 계산해야 합니다: 차량 본체 가격 : 기본 모델 가격 옵션 비용 : 선택 사양 추가 시 약 200만~500만원 추가 등록 비용 : 취득세, 등록세, 공채 매입 등 차량 가격의 약 7~8% 보험료 : 연간 약 100만~200만원 (운전 경력에 따라 차이) 유지비 : 월 주유비, 주차비, 정비비 등 용도에 맞는 차량 선택 예산이 정해졌다면 본인의 라이프스타일에 맞는 차종을 선택해야 합니다. 출퇴근용인지, 가족용인지, 레저용인지에 따라 적합한 차량이 달라집니다. 경차, 준중형, 중형, SUV 등 각 차종별 장단점을 비교해보세요. 시승을 통해 직접 운전감을 확인하는 것도 매우 중요합니다. 2단계: 구매 방법 결정 현금 vs 할부 vs 리스/렌트 차량 구매 방법은 크게 세 가지로 나뉩니다: 현금 구매 : 이자 부담 없이 차량 소유권을 즉시 획득. 목돈이 있다면 가장 경제적 할부 구매 : 월 납입금으로 분할 상환. 금리는 약 3~7% 수준 장기렌트/리스 : 초기 비용 부담이 적고 세금 혜택 가능. 사업자에게 유리 각 방법마다 장단점이 있으므로, 본인의 재정 상황과 세금 혜택 등을 종합적으로 고려하여 결정해야 합니다. 특히 할부를 선택할 경우 금융사별 금리를 꼼꼼히 비교하는 것이 중요합니다. 3단계: 견적 받기 및 할인 협상 복수 견적 비교는 필수 차량과 구매 방법을 결정했다면 이제 견적을 받을 차례입니다. 반드시 여러 딜러로부터 견적을 받아 비교하세요. 같은 차량이라도 딜러에 따라 할인폭이 다를 수 있습니다. 온라인 견적 서비스를 활용하면 더욱 편리합니다. 효과적인 할인 협상 팁 월말이나 분기말에 방문하면 할인폭이 큰 경우가 많습니다 경쟁 브랜드 견적서를 함께 제시하면 협상에 유리합니다 옵션을 순정 대신 외부 업체에서 장착하면 비용을 절감할 수 있습니다 현금 구매 시 추가 할인을 요청할 수 있습니다 할인 협상 시에는 차량 본체 가격뿐만 아니라 무상 옵션, 사은품, 출고 기간 등도 함께 논의하세요. 종합적으로 가장 유리한 조건을 제시하는 딜러를 선택하는 것이 현명합니다. 4단계: 계약 체결 계약서 꼼꼼히 확인하기 견적이 확정되면 계약서를 작성합니다. 이때 다음 사항들을 반드시 ",
+        "htmlBytes": 107320,
+        "error": null
+      },
+      "priorEvidence": {
+        "observedAt": "2026-07-23",
+        "openedContentCount": 4,
+        "demandSummary": "플랫폼 원문에서 누적 구매·견적 성과를 공개하지만 개별 가이드의 조회·댓글 수는 보이지 않는다",
+        "communicationSummary": "구매 상담 경로는 분명하나 글 단위 댓글·질문 증거는 약해 구조 강점과 수요 강점을 분리해야 한다",
+        "sourceRowSummary": "초보 구매 절차, 2026 체크리스트, 흐름도, 판단 포인트 글 4개를 열었다."
+      }
+    },
+    {
+      "creatorId": "money-zzanboo",
+      "creatorName": "김짠부 재테크",
+      "categoryId": "money_admin_purchase",
+      "categoryLabel": "돈·행정·구매",
+      "reviewRole": "top_recheck",
+      "observationWindow": {
+        "from": "2026-07-23",
+        "to": "2026-07-27"
+      },
+      "profile": {
+        "requestedUrl": "https://www.youtube.com/channel/UCiHCmazdsMM9j3Jbqx3p7Ig",
+        "fetchUrl": "https://www.youtube.com/channel/UCiHCmazdsMM9j3Jbqx3p7Ig",
+        "finalUrl": "https://www.youtube.com/channel/UCiHCmazdsMM9j3Jbqx3p7Ig",
+        "status": 200,
+        "opened": true,
+        "title": "김짠부",
+        "description": "이 시대에 필요한 벌고 쓰고 모으는 모~든 금융 정보, 같이 공부해요🤓❤️ 비즈니스 문의 👉🏻 support@trusgroup.co.kr",
+        "demandSignals": [],
+        "communicationSignals": [],
+        "shapeSignals": [],
+        "businessSignals": [
+          "commerce"
+        ],
+        "textExcerpt": "정보 보도자료 저작권 문의하기 크리에이터 광고 개발자 약관 개인정보처리방침 정책 및 안전 YouTube 작동의 원리 새로운 기능 테스트하기 &copy; 2026 Google LLC, Sundar Pichai, 1600 Amphitheatre Parkway, Mountain View CA 94043, USA, 0807-882-594 (무료), yt-support-solutions-kr@google.com, 호스팅: Google LLC, 사업자정보 , 불법촬영물 신고 크리에이터들이 유튜브 상에 게시, 태그 또는 추천한 상품들은 판매자들의 약관에 따라 판매됩니다. 유튜브는 이러한 제품들을 판매하지 않으며, 그에 대한 책임을 지지 않습니다. 김짠부 - YouTube",
+        "htmlBytes": 1099788,
+        "error": null,
+        "platform": "youtube",
+        "channelId": "UCiHCmazdsMM9j3Jbqx3p7Ig",
+        "subscriberText": null,
+        "viewCount": null,
+        "commentCountText": null,
+        "publishDate": null,
+        "chapters": [],
+        "initialVideoIds": [
+          "e3jtSgqxSHo",
+          "t6qV5XaCy2o",
+          "X1hjv2dEyC8",
+          "nB3aK74tfzY",
+          "1n_3x3W4pNo",
+          "SAryO5z3Qh8",
+          "UlvnlCRJhcM",
+          "toFnNeH95-4",
+          "xOxwk-xYps0",
+          "PxrIUmgxXmQ",
+          "RH7Sd47I1K4",
+          "V1NE7th1ugU",
+          "OcoD56xWzOw",
+          "jK90UUwASm4",
+          "h1WK2vcch5A",
+          "ARFereUwn0A",
+          "Ht1PA2bAnhE",
+          "s7KLxyb_tSw",
+          "TSvyUlJ5UbM",
+          "5f8EtDUXgoQ"
+        ],
+        "descriptionExcerpt": "이 시대에 필요한 벌고 쓰고 모으는 모~든 금융 정보, 같이 공부해요🤓❤️\n\n비즈니스 문의\n👉🏻 support@trusgroup.co.kr"
+      },
+      "representativeSource": {
+        "requestedUrl": "https://www.youtube.com/watch?v=CkB5XjZH_OQ",
+        "fetchUrl": "https://www.youtube.com/watch?v=CkB5XjZH_OQ",
+        "finalUrl": "https://www.youtube.com/watch?v=CkB5XjZH_OQ",
+        "status": 200,
+        "opened": true,
+        "title": "\"2026년이 부자되는 기회라고?\" 1억을 가장 빠르게 모으는 10가지 방법 (+재무목표 로드맵 엑셀표 무료 공유)",
+        "description": "찐짠이들! 2026년에는 진짜 꼭 같이 돈 모으자요!!!🥹오늘 영상 보고 댓글 남겨주는 찐짠이들 중 5명 추첨해서 네이버페이 1만원 권 보내줄게요❤️(당첨자 발표 : 2월 13일 유튜브 커뮤니티)재무목표 로드맵 2026ver(⚠여러분!! 수정 권환 요청 누르면 안되구용!!!!아래...",
+        "demandSignals": [],
+        "communicationSignals": [],
+        "shapeSignals": [
+          "download_or_template"
+        ],
+        "businessSignals": [
+          "commerce"
+        ],
+        "textExcerpt": "\"2026년이 부자되는 기회라고?\" 1억을 가장 빠르게 모으는 10가지 방법 (+재무목표 로드맵 엑셀표 무료 공유) - YouTube 정보 보도자료 저작권 문의하기 크리에이터 광고 개발자 약관 개인정보처리방침 정책 및 안전 YouTube 작동의 원리 새로운 기능 테스트하기 &copy; 2026 Google LLC, Sundar Pichai, 1600 Amphitheatre Parkway, Mountain View CA 94043, USA, 0807-882-594 (무료), yt-support-solutions-kr@google.com, 호스팅: Google LLC, 사업자정보 , 불법촬영물 신고 크리에이터들이 유튜브 상에 게시, 태그 또는 추천한 상품들은 판매자들의 약관에 따라 판매됩니다. 유튜브는 이러한 제품들을 판매하지 않으며, 그에 대한 책임을 지지 않습니다.",
+        "htmlBytes": 1205054,
+        "error": null,
+        "platform": "youtube",
+        "channelId": "UCiHCmazdsMM9j3Jbqx3p7Ig",
+        "subscriberText": "구독자 114만명",
+        "viewCount": 385667,
+        "commentCountText": "댓글",
+        "publishDate": "2026-01-13T02:00:19-08:00",
+        "chapters": [],
+        "initialVideoIds": [
+          "CkB5XjZH_OQ",
+          "t6qV5XaCy2o",
+          "toFnNeH95-4",
+          "_e0IR5opL8M",
+          "1n_3x3W4pNo",
+          "g3KAQPQi51U",
+          "haqnRTzYUc4",
+          "AfrjZuzKT3g",
+          "_N4sHRK3gmY",
+          "56MQkUuS_dc",
+          "4a5RzOiW-Fo",
+          "aHMoy938f-o",
+          "emCE-p5fDc0",
+          "UQPIG2rBlh0",
+          "EYeZCRQZrdo",
+          "L_g1h2oVZv0",
+          "5f8EtDUXgoQ",
+          "Q37zejlXl6A",
+          "mcuClILHVx4",
+          "1AFnKX2-rt0"
+        ],
+        "descriptionExcerpt": "찐짠이들! 2026년에는 진짜 꼭 같이 돈 모으자요!!!🥹\n오늘 영상 보고 댓글 남겨주는 찐짠이들 중 5명 추첨해서 네이버페이 1만원 권 보내줄게요❤️\n(당첨자 발표 : 2월 13일 유튜브 커뮤니티)\n\n재무목표 로드맵 2026ver\n(⚠여러분!! 수정 권환 요청 누르면 안되구용!!!!\n아래 링크 눌러서 👉🏻 구글 시트 들어간 다음에 👉🏻 왼쪽 상단에 '파일' 클릭 👉🏻 '사본 만들기' 클릭 👉🏻  드라이브 지정 후 사본 만들기 클릭 👉🏻 양식에 맞게 나의 숫자 적기)\nhttps://docs.google.com/spreadsheets/d/11AaR5EPf938Ct7O14sZH_Qj7FQuDxf0FfS6UsIwPo5Q/edit?usp=sharing\n\n부자되는 복리 계산기 👉🏻 https://arcway.co.kr/\n\n\n인스타그램 👉🏻 https://www.instagram.com/zzan.boo\n문의 👉🏻 support@trusgroup.co.kr"
+      },
+      "priorEvidence": {
+        "observedAt": "2026-07-23",
+        "openedContentCount": 4,
+        "demandSummary": "검토 영상 최고 조회 385,341, 4개 영상 조회 수치를 직접 확인했다",
+        "communicationSummary": "검토 영상 최고 댓글 1,211개, 4개 영상의 댓글 수를 직접 확인했다",
+        "sourceRowSummary": "1억 로드맵, 초보 5단계, 통장 가이드 등 4개 영상을 열었다."
+      }
+    },
+    {
+      "creatorId": "health-allblanc",
+      "creatorName": "Allblanc TV",
+      "categoryId": "health_fitness",
+      "categoryLabel": "건강·운동",
+      "reviewRole": "logic_handoff_candidate",
+      "observationWindow": {
+        "from": "2026-07-23",
+        "to": "2026-07-27"
+      },
+      "profile": {
+        "requestedUrl": "https://www.youtube.com/channel/UCq7bR6RxqqOx8cptc1-0AVQ",
+        "fetchUrl": "https://www.youtube.com/channel/UCq7bR6RxqqOx8cptc1-0AVQ",
+        "finalUrl": "https://www.youtube.com/channel/UCq7bR6RxqqOx8cptc1-0AVQ",
+        "status": 200,
+        "opened": true,
+        "title": "Allblanc TV",
+        "description": "👟#HomeWorkout🏡#홈트레이닝 🌇 #BeautifulBackground \"To make whole human lives shine.\" \"온 인류의 삶이 빛나도록.\" • 올블랑 타바타, 챌린지, VLOG (Allblanc Tabata / Challenge / VLOG) • Youtube membership - 1star member : 1 exclusive workout video in a month, badge - 2star member : 2 exclusive workout video in a month, private vlog, badge workout video includes real-time exercise routine and explanation subscribe at http://bit.ly/allblancmembership • 광고·강연·오프라인 행사 등 비지니스 문의(business inquiry) : all_blanc@naver.com • 멤버 인스타그램(Members' Instagram) - Ryo @coolguy_no.5",
+        "demandSignals": [],
+        "communicationSignals": [],
+        "shapeSignals": [],
+        "businessSignals": [
+          "commerce"
+        ],
+        "textExcerpt": "정보 보도자료 저작권 문의하기 크리에이터 광고 개발자 약관 개인정보처리방침 정책 및 안전 YouTube 작동의 원리 새로운 기능 테스트하기 &copy; 2026 Google LLC, Sundar Pichai, 1600 Amphitheatre Parkway, Mountain View CA 94043, USA, 0807-882-594 (무료), yt-support-solutions-kr@google.com, 호스팅: Google LLC, 사업자정보 , 불법촬영물 신고 크리에이터들이 유튜브 상에 게시, 태그 또는 추천한 상품들은 판매자들의 약관에 따라 판매됩니다. 유튜브는 이러한 제품들을 판매하지 않으며, 그에 대한 책임을 지지 않습니다. Allblanc TV - YouTube",
+        "htmlBytes": 2387340,
+        "error": null,
+        "platform": "youtube",
+        "channelId": "UCq7bR6RxqqOx8cptc1-0AVQ",
+        "subscriberText": null,
+        "viewCount": null,
+        "commentCountText": null,
+        "publishDate": null,
+        "chapters": [],
+        "initialVideoIds": [
+          "4dH528sDhGA",
+          "Tz9d7By2ytQ",
+          "Fg6N_9f-9qY",
+          "4bNgubTjYXY",
+          "N-15wUPnqpc",
+          "A8FhYFw5RAg",
+          "tjZm34Kfpmg",
+          "n9-s2bz9R1Y",
+          "fLLScgWQcHc",
+          "RuBfFpMCWV4",
+          "6LVoW7Bkw1c",
+          "8eEsOTLKUKg",
+          "ITLZuG01RwY",
+          "dgU7q73N-F4",
+          "OD-3aotK6fQ",
+          "epU-FZFV9Kc",
+          "T712H22iVdE",
+          "XgXBkXu6hII",
+          "_oX5rhz0H3E",
+          "joKIkK67SHU"
+        ],
+        "descriptionExcerpt": "👟#HomeWorkout🏡#홈트레이닝 🌇 #BeautifulBackground\n\n\"To make whole human lives shine.\"\n\"온 인류의 삶이 빛나도록.\"\n\n• 올블랑 타바타, 챌린지, VLOG\n(Allblanc Tabata / Challenge / VLOG)\n\n• Youtube membership\n - 1star member : 1 exclusive workout video in a month, badge\n - 2star member : 2 exclusive workout video in a month, private vlog, badge\nworkout video includes real-time exercise routine and explanation\nsubscribe at http://bit.ly/allblancmembership\n\n• 광고·강연·오프라인 행사 등 비지니스 문의(business inquiry) : all_blanc@naver.com\n\n• 멤버 인스타그램(Members' Instagram)\n- Ryo       @coolguy_no.5\n"
+      },
+      "representativeSource": {
+        "requestedUrl": "https://www.youtube.com/playlist?list=PLhWr-n-L9kWj5NFTs11Yb8CpZeKC-edMq",
+        "fetchUrl": "https://www.youtube.com/playlist?list=PLhWr-n-L9kWj5NFTs11Yb8CpZeKC-edMq",
+        "finalUrl": "https://www.youtube.com/playlist?list=PLhWr-n-L9kWj5NFTs11Yb8CpZeKC-edMq",
+        "status": 200,
+        "opened": true,
+        "title": "7 Days Abs Challenge (2022)",
+        "description": null,
+        "demandSignals": [],
+        "communicationSignals": [],
+        "shapeSignals": [],
+        "businessSignals": [
+          "commerce"
+        ],
+        "textExcerpt": "정보 보도자료 저작권 문의하기 크리에이터 광고 개발자 약관 개인정보처리방침 정책 및 안전 YouTube 작동의 원리 새로운 기능 테스트하기 &copy; 2026 Google LLC, Sundar Pichai, 1600 Amphitheatre Parkway, Mountain View CA 94043, USA, 0807-882-594 (무료), yt-support-solutions-kr@google.com, 호스팅: Google LLC, 사업자정보 , 불법촬영물 신고 크리에이터들이 유튜브 상에 게시, 태그 또는 추천한 상품들은 판매자들의 약관에 따라 판매됩니다. 유튜브는 이러한 제품들을 판매하지 않으며, 그에 대한 책임을 지지 않습니다. 7 Days Abs Challenge (2022) - YouTube",
+        "htmlBytes": 864543,
+        "error": null,
+        "platform": "youtube",
+        "channelId": null,
+        "subscriberText": null,
+        "viewCount": null,
+        "commentCountText": null,
+        "publishDate": null,
+        "chapters": [],
+        "initialVideoIds": [
+          "XwUKn-52ykk",
+          "KzH8TcfyKFA",
+          "Ft5gNO-2Je4",
+          "8RzHWcq6eq0",
+          "peQuipmDIuc",
+          "K3yO9oHgaIs",
+          "W2fS4TqeWCc"
+        ],
+        "descriptionExcerpt": null
+      },
+      "priorEvidence": {
+        "observedAt": "2026-07-23",
+        "openedContentCount": 4,
+        "demandSummary": "7일 복근 챌린지 7개 영상 합산 약 53.9만 조회, 개별 최고 약 15만 조회가 이전 검증에서 확인됐다",
+        "communicationSummary": "첫 챌린지 영상 댓글 154개와 Day별 후속 영상 참여가 확인됐다",
+        "sourceRowSummary": "7일 챌린지와 최근 루틴 영상 4개 이상을 확인했다."
+      }
+    },
+    {
+      "creatorId": "health-bigsis",
+      "creatorName": "빅씨스 Bigsis",
+      "categoryId": "health_fitness",
+      "categoryLabel": "건강·운동",
+      "reviewRole": "top_recheck",
+      "observationWindow": {
+        "from": "2026-07-23",
+        "to": "2026-07-27"
+      },
+      "profile": {
+        "requestedUrl": "https://www.youtube.com/channel/UCfDkQiPchwM0F2SkHWl5JYQ",
+        "fetchUrl": "https://www.youtube.com/channel/UCfDkQiPchwM0F2SkHWl5JYQ",
+        "finalUrl": "https://www.youtube.com/channel/UCfDkQiPchwM0F2SkHWl5JYQ",
+        "status": 200,
+        "opened": true,
+        "title": "빅씨스 Bigsis",
+        "description": "📗 빅씨스 책이 드디어 나왔습니다! https://tinyurl.com/48p35yb6 삼십대 후반부터 검도에 빠져서 검도(4단)를 잘하고 싶어서 운동을 이것저것 찾아보다가 운동에 푹 빠지게 되었어요. 제 채널에서 제가 즐겨하는 홈트 운동 루틴과 뉴욕 라이프 그리고 사는 이야기 해볼까해요. 우리 함께 건강해져보아요! 영상 보시고 도움 되셨으면 구독 부탁드릴게요! 인스타그램 @bigsislife 제휴 문의 (Collab Korea 콜렙 코리아 소속) https://www.collabkorea.com/ bigsis.biz@gmail.com #빅씨스",
+        "demandSignals": [],
+        "communicationSignals": [],
+        "shapeSignals": [],
+        "businessSignals": [
+          "commerce"
+        ],
+        "textExcerpt": "정보 보도자료 저작권 문의하기 크리에이터 광고 개발자 약관 개인정보처리방침 정책 및 안전 YouTube 작동의 원리 새로운 기능 테스트하기 &copy; 2026 Google LLC, Sundar Pichai, 1600 Amphitheatre Parkway, Mountain View CA 94043, USA, 0807-882-594 (무료), yt-support-solutions-kr@google.com, 호스팅: Google LLC, 사업자정보 , 불법촬영물 신고 크리에이터들이 유튜브 상에 게시, 태그 또는 추천한 상품들은 판매자들의 약관에 따라 판매됩니다. 유튜브는 이러한 제품들을 판매하지 않으며, 그에 대한 책임을 지지 않습니다. 빅씨스 Bigsis - YouTube",
+        "htmlBytes": 2161994,
+        "error": null,
+        "platform": "youtube",
+        "channelId": "UCfDkQiPchwM0F2SkHWl5JYQ",
+        "subscriberText": null,
+        "viewCount": null,
+        "commentCountText": null,
+        "publishDate": null,
+        "chapters": [],
+        "initialVideoIds": [
+          "Q8PEJPnQ42k",
+          "4hl-L8RX5_s",
+          "WcA0N7eb0cQ",
+          "V6BRHk0Cajs",
+          "I0ZQ5XC0uRk",
+          "3d2_0R8vEAU",
+          "-U88syMdrgw",
+          "L1WdzSo6XhI",
+          "Lw8500fEQAM",
+          "QY2SysbkaBM",
+          "K9j-X6GfY_M",
+          "_yjAaOBaGh8",
+          "sqQpL1wKW6M",
+          "Nhgx_qkXinM",
+          "0IWibGOf1jU",
+          "myNjmnvI6x0",
+          "w_tLTaY3lxc",
+          "xB15pwnpQm0",
+          "JxCvhEPm0hg",
+          "W4SpM2gxGdE"
+        ],
+        "descriptionExcerpt": "📗 빅씨스 책이 드디어 나왔습니다!\nhttps://tinyurl.com/48p35yb6\n\n삼십대 후반부터 검도에 빠져서 검도(4단)를 잘하고 싶어서 운동을 이것저것 찾아보다가 운동에 푹 빠지게 되었어요.\n제 채널에서 제가 즐겨하는 홈트 운동 루틴과 뉴욕 라이프 그리고 사는 이야기 해볼까해요.\n우리 함께 건강해져보아요! 영상 보시고 도움 되셨으면 구독 부탁드릴게요!\n\n인스타그램\n@bigsislife\n\n제휴 문의 (Collab Korea 콜렙 코리아 소속)\nhttps://www.collabkorea.com/\nbigsis.biz@gmail.com\n\n#빅씨스"
+      },
+      "representativeSource": {
+        "requestedUrl": "https://www.youtube.com/watch?v=4hl-L8RX5_s",
+        "fetchUrl": "https://www.youtube.com/watch?v=4hl-L8RX5_s",
+        "finalUrl": "https://www.youtube.com/watch?v=4hl-L8RX5_s",
+        "status": 200,
+        "opened": true,
+        "title": "운동 전 빼먹지 마세요👍 웜업 스트레칭 - 부상방지 동적 스트레칭 홈트 8분",
+        "description": "⭐️멤버십 가입 - https://tinyurl.com/2p82daxr아주 오랜만에 운동전에 하는 웜업 스트레칭(동적 스트레칭) 업로드했습니다! 운동 전에 스트레칭을 꼭 해야한다는 건 아이들도 다 아는 얘기죠?😊 운동 전 동적 스트레칭은 굳어있는 몸을 깨워주고, 관절과 근육에 유...",
+        "demandSignals": [],
+        "communicationSignals": [],
+        "shapeSignals": [],
+        "businessSignals": [
+          "commerce"
+        ],
+        "textExcerpt": "운동 전 빼먹지 마세요👍 웜업 스트레칭 - 부상방지 동적 스트레칭 홈트 8분 - YouTube 정보 보도자료 저작권 문의하기 크리에이터 광고 개발자 약관 개인정보처리방침 정책 및 안전 YouTube 작동의 원리 새로운 기능 테스트하기 &copy; 2026 Google LLC, Sundar Pichai, 1600 Amphitheatre Parkway, Mountain View CA 94043, USA, 0807-882-594 (무료), yt-support-solutions-kr@google.com, 호스팅: Google LLC, 사업자정보 , 불법촬영물 신고 크리에이터들이 유튜브 상에 게시, 태그 또는 추천한 상품들은 판매자들의 약관에 따라 판매됩니다. 유튜브는 이러한 제품들을 판매하지 않으며, 그에 대한 책임을 지지 않습니다.",
+        "htmlBytes": 1298165,
+        "error": null,
+        "platform": "youtube",
+        "channelId": "UCfDkQiPchwM0F2SkHWl5JYQ",
+        "subscriberText": "구독자 107만명",
+        "viewCount": 17140,
+        "commentCountText": "댓글",
+        "publishDate": "2026-07-19T23:13:28-07:00",
+        "chapters": [],
+        "initialVideoIds": [
+          "4hl-L8RX5_s",
+          "Q8PEJPnQ42k",
+          "_yjAaOBaGh8",
+          "V6BRHk0Cajs",
+          "WcA0N7eb0cQ",
+          "keXSGkjLkqw",
+          "A8zFRS59aVE",
+          "L1WdzSo6XhI",
+          "I0ZQ5XC0uRk",
+          "g3KAQPQi51U",
+          "adY7jtS-lzA",
+          "Dsl2zIC8BzQ",
+          "lhZTsY7tAgw",
+          "QRVxLJUZ26g",
+          "77JW8_zt2Rc",
+          "Lw8500fEQAM",
+          "c-5YPszpgA0",
+          "_N4sHRK3gmY",
+          "VFyBl2hYKH8",
+          "S3KJj3OReKc"
+        ],
+        "descriptionExcerpt": "⭐️멤버십 가입 - https://tinyurl.com/2p82daxr\n\n아주 오랜만에 운동전에 하는 웜업 스트레칭(동적 스트레칭) 업로드했습니다! \n운동 전에 스트레칭을 꼭 해야한다는 건 아이들도 다 아는 얘기죠?😊 운동 전 동적 스트레칭은 굳어있는 몸을 깨워주고, 관절과 근육에 유연성을 더해주고 가동범위도 넓혀서 운동 효과도 극대화 해줍니다. \n그리고 무엇보다도 부상 예방을 위해 꼭 필요합니다. \n\n제가 지난 달에 검도하다가 햄스트링에 살짝 부상이 왔었는데요😅 사범님이 보시더니 너 오늘 왠일로 스트레칭 빼먹고 하더라니… 하고 말씀해주시더라고요. 그 때 깨달았어요 늦게와서 깜박하고 웜업을 안했구나 하고요 ㅎㅎ\n여러분들은 운동 전 잊지말고 웜업 스트레칭 해주시고 부상없이 즐겁게 운동하는 생활 이어가시길 바랍니다. \n\n#빅씨스 #홈트 #스트레칭\n\n\n빅씨스 인스타♥\nhttps://www.instagram.com/bigsisLife/\n\n\n\n주의사항\n부상을 예방하고 안전하게 운동하기 위해, 빅씨스 운동 루틴을 시작하기 전에 반드시 의사와 상담하시길 권장드립니다. 이 채널의 운동 루틴을 따라 하는 것은 전적으로 본인의 책임 하에 이루어집니다. 빅씨스 유튜브 채널에서 제공하는 피트니스 프로그램, 온라인 운동 비디오, 또는 유튜브를 통해 공유된 정보로 인해 발생한 부상이나 손해에 대해 본 채널은 어떠한 책임도 지지 않습니다. 여기에는 이메일, 비디오, 텍스트를 포함한 모든 콘텐츠가 해당됩니다. 이해해 주셔서 감사합니다.\n\nDisclaimer:\nBefore starting any fitness routine or workout from this channel, please consult your doctor or a healthcare professional to ensure it’s safe for you. Participating in any workouts or following advice provided through this channel is done at your own risk. This channel is not responsible for any injuries or health issues resulting from using its fitness routines, programs, or information provided through videos, emails, or text. You acknowledge and accept full responsibility for your health and safety by engaging with the content. Thank you for your understanding and support!"
+      },
+      "priorEvidence": {
+        "observedAt": "2026-07-23",
+        "openedContentCount": 4,
+        "demandSummary": "검토 영상 최고 조회 126,599, 4개 영상 조회 수치를 직접 확인했다",
+        "communicationSummary": "검토 영상 최고 댓글 214개, 4개 영상의 댓글 수를 직접 확인했다",
+        "sourceRowSummary": "최근 루틴 4개와 채널의 다수 재생목록·시리즈 구조를 확인했다."
+      }
+    },
+    {
+      "creatorId": "meals-wtable",
+      "creatorName": "우리의식탁",
+      "categoryId": "meals_grocery",
+      "categoryLabel": "식사·장보기",
+      "reviewRole": "logic_handoff_candidate",
+      "observationWindow": {
+        "from": "2026-07-23",
+        "to": "2026-07-27"
+      },
+      "profile": {
+        "requestedUrl": "https://wtable.co.kr/",
+        "fetchUrl": "https://wtable.co.kr/",
+        "finalUrl": "https://wtable.co.kr/",
+        "status": 200,
+        "opened": true,
+        "title": "우리의식탁 | 요리를 스타일하다",
+        "description": "요리를 스타일하다. 다양한 레시피부터 요리를 완성시켜주는 스타일리쉬한 상품들까지 모두 우리의식탁에서 만나보세요.",
+        "demandSignals": [],
+        "communicationSignals": [],
+        "shapeSignals": [],
+        "businessSignals": [
+          "commerce"
+        ],
+        "textExcerpt": "우리의식탁 | 요리를 스타일하다 EDITOR&#x27;S CHOICE 더보기 2일 남음 [공동구매] 김치는 더욱 맛있게! 담치락 진공 밀폐용기 (단품/세트) 125,000 28 % 89,800 원 New 단독최저가 3일 남음 [단독특가] 명란이 톡톡! 매콤달콤 밥도둑 ‘김서방’ 명란김 (20봉) 11,500 23 % 8,900 원 특가 무료배송 3일 남음 [미슐랭 셰프 Pick] 쿠자 316Ti 라인티탄 스킬렛•스퀘어 소테 5종 140,000 44 % 79,000 원 단독최저가 특가 2일 남음 [공동구매] 알텐바흐 엑스쿠첸 316Ti 통 5중 저압 냄비 358,000 49 % 183,000 원 단독최저가 특가 [한정특가] 품질보장! 최현석의 한돈한우 함박스테이크 10팩 (오리지널/더블치즈) 90,000 61 % 34,900 원 특가 무료배송 2일 남음 [단독특가] 실속형 신규 출시! 72시간 저온숙성 ‘온정 백명란젓‘ 3종 43,780 41 % 25,900 원 특가 무료배송 2일 남음 [공동구매] 김치는 더욱 맛있게! 담치락 진공 밀폐용기 (단품/세트) 125,000 28 % 89,800 원 New 단독최저가 3일 남음 [단독특가] 명란이 톡톡! 매콤달콤 밥도둑 ‘김서방’ 명란김 (20봉) 11,500 23 % 8,900 원 특가 무료배송 3일 남음 [미슐랭 셰프 Pick] 쿠자 316Ti 라인티탄 스킬렛•스퀘어 소테 5종 140,000 44 % 79,000 원 단독최저가 특가 2일 남음 [공동구매] 알텐바흐 엑스쿠첸 316Ti 통 5중 저압 냄비 358,000 49 % 183,000 원 단독최저가 특가 [한정특가] 품질보장! 최현석의 한돈한우 함박스테이크 10팩 (오리지널/더블치즈) 90,000 61 % 34,900 원 특가 무료배송 2일 남음 [단독특가] 실속형 신규 출시! 72시간 저온숙성 ‘온정 백명란젓‘ 3종 43,780 41 % 25,900 원 특가 무료배송 2일 남음 [공동구매] 김치는 더욱 맛있게! 담치락 진공 밀폐용기 (단품/세트) 125,000 28 % 89,800 원 New 단독최저가 3일 남음 [단독특가] 명란이 톡톡! 매콤달콤 밥도둑 ‘김서방’ 명란김 (20봉) 11,500 23 % 8,900 원 특가 무료배송 3일 남음 [미슐랭 셰프 Pick] 쿠자 316Ti 라인티탄 스킬렛•스퀘어 소테 5종 140,000 44 % 79,000 원 단독최저가 특가 2일 남음 [공동구매] 알텐바흐 엑스쿠첸 316Ti 통 5중 저압 냄비 358,000 49 % 183,000 원 단독최저가 특가 [한정특가] 품질보장! 최현석의 한돈한우 함박스테이크 10팩 (오리지널/더블치즈) 90,000 61 % 34,900 원 특가 무료배송 2일 남음 [단독특가] 실속형 신규 출시! 72시간 저온숙성 ‘온정 백명란젓‘ 3종 43,780 41 % 25,900 원 특가 무료배송 2일 남음 [공동구매] 김치는 더욱 맛있게! 담치락 진공 밀폐용기 (단품/세트) 125,000 28 % 89,800 원 New 단독최저가 3일 남음 [단독특가] 명란이 톡톡! 매콤달콤 밥도둑 ‘김서방’ 명란김 (20봉) 11,500 23 % 8,900 원 특가 무료배송 3일 남음 [미슐랭 셰프 Pick] 쿠자 316Ti 라인티탄 스킬렛•스퀘어 소테 5종 140,000 44 % 79,000 원 단독최저가 특가 TIME LIMITED 더보기 1일 남음 5분 완성! 순수 국산 우거지 된장볼 3인분 15,000 30 % 10,500 원 특가 무료배송 1일 남음 [두둑] 포천식 이동구이 양념 돼지목살 1.4kg(700gx2팩) 44,000 55 % 19,900 원 특가 1일 남음 [그리닷] 잘담근 대파김치 (1k",
+        "htmlBytes": 350370,
+        "error": null
+      },
+      "representativeSource": {
+        "requestedUrl": "https://wtable.co.kr/curations/562",
+        "fetchUrl": "https://wtable.co.kr/curations/562",
+        "finalUrl": "https://wtable.co.kr/curations/562",
+        "status": 200,
+        "opened": true,
+        "title": "이번주 일주일 반찬 이렇게 종결(여름 반찬ver.) - 우리의식탁 | 큐레이션",
+        "description": "아삭아삭 꼬들꼬들! 식감이 매력인 여름 제철 채소들. 새콤달콤한 양념에 묻혀 다채롭게 즐기다 보면 어느새 여름을 즐기고 있는 나를 발견할 거예요. 만들어두면 몸도 마음도 든든한 여름철 효자 반찬 알려드릴게요. *유저의 소중한 의견으로 만들어진 콘텐츠입니다.♥",
+        "demandSignals": [
+          "좋아요."
+        ],
+        "communicationSignals": [],
+        "shapeSignals": [
+          "series_or_curriculum"
+        ],
+        "businessSignals": [],
+        "textExcerpt": "이번주 일주일 반찬 이렇게 종결(여름 반찬ver.) - 우리의식탁 | 큐레이션 공유 이번주 일주일 반찬 이렇게 종결(여름 반찬ver.) 주요 재료 #오이지 #한치 #오이고추 #꽈리고추 #무침 오이지무침 한치 초무침 브로콜리 참깨무침 오이고추 된장 무침 꽈리고추찜무침 오이지무침 🥒오이는 꼬들꼬들해야 제 맛! 꼬들꼬들 씹는 맛이 좋은 오이지무침! 한번 빠지면 계속 만들어 먹게 될걸요? 따뜻한 밥 한 숟갈에 오이지무침 한 개 딱 올려 먹으면 그렇게 맛있을 수가 없답니다. 올여름에는 자주 먹는 김치 대신 오이지를 조물조물 무쳐 식탁에 올려보세요. 📝TIP 1. 손목에 힘들이지 않고 오이지 물기 쫙 빼는 방법! 썬 오이지 위에 무거운 것을 올려두고 2시간 정도 기다려주면 돼요. 오이지무침 # 간단요리 초급 15분 한치 초무침 🦑입안에서 사르르 녹는 새콤한 한치! 부드러운 한치는 어떻게 먹어도 맛있지만 향긋한 미나리와 새콤한 소스에 무쳐먹는 것이 가장 맛있어요. 간단하게 소면 하나 삶아서 같이 먹으면 든든한 한 끼 완성이랍니다. 📝TIP 1. 한치를 짧게 데친 후 바로 얼음물에 담가서 빠르게 식히면 한치의 쫀득한 식감을 살릴 수 있어요. 🍻무더운 여름 밤, 차가운 술 한 잔과 함께 안주로 먹어도 만족스러운 하루의 마무리가 될 거예요. 한치 초무침 # 한식 초급 30분 브로콜리 참깨무침 🥦건강을 더하는 꼬소한 무침 반찬 매번 초고추장에 찍어 먹었던 브로콜리를 참깨 특제 소스에 무쳤더니 이렇게나 잘 어울린다고요? 부드럽게 쪄낸 브로콜리와 포슬포슬한 감자 사이사이 고소한 참깨가 씹혀, 먹는 내내 질릴 틈이 없어요. 📝TIP 1. 통깨를 으깨어 넣으면 고소함이 배가 돼요. 절구가 없다면 손바닥으로 부숴 넣어주세요. 매콤한 반찬들도 입맛을 돋아줘서 좋지만, 가끔은 속 편한 재료들로만 만들어 담백한 반찬을 즐겨보세요. 브로콜리 참깨무침 # 간단요리 초급 20분 이 요리를 더욱 즐겁게 해주는 옻칠 우드 수저 세트 6,000원 오이고추 된장 무침 🫑온 가족이 다함께 아삭! 아삭! 오이고추는 수분이 많고 상큼해 인기 있는 여름 채소예요. 시원한 오이고추를 된장과 함께 무쳐보세요. 식사 중간에 개운하게 곁들이기 좋답니다. 맵지 않고 아삭아삭해서 아이들도 함께 맛있게 즐길 수 있어요. 📝TIP 1. 집된장을 사용하실 경우, 단맛이 부족할 수 있어요. 입맛에 맞게 올리고당을 가감해주셔도 좋아요. 📝TIP 2. 물이 생길 수 있어 두고두고 먹기 보다는 먹을만큼만 후딱 만들어 드시는 것이 가장 좋아요. 오이고추 된장 무침 # 채식 초급 15분 이 요리를 더욱 즐겁게 해주는 아카시아 시리즈 24종 모음(옵션선택) 1,800원 꽈리고추찜무침 🌶어렸을 땐 몰랐던 꽈리고추의 매력 여름에 특히나 더 맛있는 꽈리고추, 사시사철 만나볼 수 있지만 제철 계절의 맛을 무시못해요. 특유의 향을 풍부하게 살리기 위해 쪄낸 후 감칠맛 나는 양념에 무쳐서 드셔보세요. 어릴 때는 이해하지 못했던 꽈리고추의 매력을 느끼실 수 있을거예요! 📝TIP 1. 쪄낸 꽈리고추를 한 김 식힌 후 양념에 버무려야 밀가루 옷이 벗겨지지 않아요. 📝TIP 2. 밀가루 대신 쌀가루나 찹쌀가루를 묻혀 만드셔도 충분히 맛있답니다. 꽈리고추찜무침 # 밑반찬 초급 20분 뭐 해먹지? 다른 사람들이 많이 보는 큐레이션 🧊뼛속까지 시원해지는 냉국 황금레시피 ☔️비 오는 날 뭐 먹지?싶을 땐 이 메뉴! I can do it! 아이들도 할 수 있는 간단 레시피 건강한 하루를 위한 냉장고 속 쉬운 채식 레시피 더 많은 큐레이션 보러가기 오늘의 주제, 어떠셨나요? 소개받고 싶은 내용이 있다면? 의견 보내기 소개된 콘텐츠 모아보기 레시피 ",
+        "htmlBytes": 165098,
+        "error": null
+      },
+      "priorEvidence": {
+        "observedAt": "2026-07-23",
+        "openedContentCount": 5,
+        "demandSummary": "대표 밑반찬 영상 조회 260만+, 각 레시피 노트·질문 30개 안팎과 큐레이션 재방문 구조가 확인된다",
+        "communicationSummary": "레시피별 질문·후기와 큐레이션의 의견 보내기 경로가 모두 있다",
+        "sourceRowSummary": "일주일 반찬 큐레이션과 개별 레시피 5개를 실제로 열었다."
+      }
+    },
+    {
+      "creatorId": "work-andstudio",
+      "creatorName": "AND Studio",
+      "categoryId": "work_career",
+      "categoryLabel": "일·커리어",
+      "reviewRole": "logic_handoff_candidate",
+      "observationWindow": {
+        "from": "2026-07-23",
+        "to": "2026-07-27"
+      },
+      "profile": {
+        "requestedUrl": "https://www.youtube.com/channel/UCq4lfIcWF7NAP5TcMsyRXXQ",
+        "fetchUrl": "https://www.youtube.com/channel/UCq4lfIcWF7NAP5TcMsyRXXQ",
+        "finalUrl": "https://www.youtube.com/channel/UCq4lfIcWF7NAP5TcMsyRXXQ",
+        "status": 200,
+        "opened": true,
+        "title": "앤드 스튜디오 - AND STUDIO",
+        "description": "'일잘러' 스타터들을 위한 콘텐츠를 만듭니다 출연/비즈니스 문의 👉 and@d3company.co.kr works 👉 andstudio.kr",
+        "demandSignals": [],
+        "communicationSignals": [],
+        "shapeSignals": [],
+        "businessSignals": [
+          "commerce"
+        ],
+        "textExcerpt": "정보 보도자료 저작권 문의하기 크리에이터 광고 개발자 약관 개인정보처리방침 정책 및 안전 YouTube 작동의 원리 새로운 기능 테스트하기 &copy; 2026 Google LLC, Sundar Pichai, 1600 Amphitheatre Parkway, Mountain View CA 94043, USA, 0807-882-594 (무료), yt-support-solutions-kr@google.com, 호스팅: Google LLC, 사업자정보 , 불법촬영물 신고 크리에이터들이 유튜브 상에 게시, 태그 또는 추천한 상품들은 판매자들의 약관에 따라 판매됩니다. 유튜브는 이러한 제품들을 판매하지 않으며, 그에 대한 책임을 지지 않습니다. 앤드 스튜디오 - AND STUDIO - YouTube",
+        "htmlBytes": 1787500,
+        "error": null,
+        "platform": "youtube",
+        "channelId": "UC5V26n47BrTWwPO1f2vKu_w",
+        "subscriberText": "구독자 2.23천명",
+        "viewCount": null,
+        "commentCountText": null,
+        "publishDate": null,
+        "chapters": [],
+        "initialVideoIds": [
+          "D3aWp8C6kek",
+          "KiHTpH95ZT4",
+          "RDmWtOpRy2g",
+          "jcpoUrcY0qI",
+          "zu4UhXXMPKI",
+          "x09hEwrTW08",
+          "8HRPIXujIz0",
+          "FrqadvCUKpo",
+          "oNtWFANmCfc",
+          "PdQgKl8GxIQ",
+          "22rwVfKjc5E",
+          "X-NgX6-BbNU",
+          "HGRgkOwnSd0",
+          "aksTtTW31Js",
+          "A9UemGP6EkA",
+          "cP6OvYpFgfY",
+          "1V6PJZlSBGc",
+          "-xaHDMk-xuo",
+          "i8hNY49LzPs",
+          "QrKU94xiJbY"
+        ],
+        "descriptionExcerpt": "'일잘러' 스타터들을 위한 콘텐츠를 만듭니다\n출연/비즈니스 문의 👉  and@d3company.co.kr\nworks 👉  andstudio.kr\n"
+      },
+      "representativeSource": {
+        "requestedUrl": "https://www.youtube.com/watch?v=OIliv2jpDyM",
+        "fetchUrl": "https://www.youtube.com/watch?v=OIliv2jpDyM",
+        "finalUrl": "https://www.youtube.com/watch?v=OIliv2jpDyM",
+        "status": 200,
+        "opened": true,
+        "title": "자소서 지원동기 6단계만 따라 쓰면 합격합니다 [마스터 자소서 I EP 04. 지원동기]",
+        "description": "비즈니스 문의 👉 and@d3company.co.kr취준 정보를 가장 빠르게 공유받는 취준생 공식 커뮤니티 ✨HIINT✨실시간 직무별 정보 공유&취업 정보를 오픈카톡방에서 만나보세요.HIINT 커뮤니티 입장하기 👉 http://hiint.co.kr/HIINT 커뮤니티 플러스 친...",
+        "demandSignals": [],
+        "communicationSignals": [],
+        "shapeSignals": [
+          "ordered_or_timed_rows"
+        ],
+        "businessSignals": [
+          "commerce"
+        ],
+        "textExcerpt": "자소서 지원동기 6단계만 따라 쓰면 합격합니다 [마스터 자소서 I EP 04. 지원동기] - YouTube 정보 보도자료 저작권 문의하기 크리에이터 광고 개발자 약관 개인정보처리방침 정책 및 안전 YouTube 작동의 원리 새로운 기능 테스트하기 &copy; 2026 Google LLC, Sundar Pichai, 1600 Amphitheatre Parkway, Mountain View CA 94043, USA, 0807-882-594 (무료), yt-support-solutions-kr@google.com, 호스팅: Google LLC, 사업자정보 , 불법촬영물 신고 크리에이터들이 유튜브 상에 게시, 태그 또는 추천한 상품들은 판매자들의 약관에 따라 판매됩니다. 유튜브는 이러한 제품들을 판매하지 않으며, 그에 대한 책임을 지지 않습니다.",
+        "htmlBytes": 1201395,
+        "error": null,
+        "platform": "youtube",
+        "channelId": "UCq4lfIcWF7NAP5TcMsyRXXQ",
+        "subscriberText": "구독자 39.3만명",
+        "viewCount": 889644,
+        "commentCountText": "댓글",
+        "publishDate": "2022-03-25T07:03:32-07:00",
+        "chapters": [],
+        "initialVideoIds": [
+          "OIliv2jpDyM",
+          "PjZ2NEWxnVA",
+          "D3aWp8C6kek",
+          "s2gfSOdMp-0",
+          "FGXgJndaVNA",
+          "rp9WE6yuZ1c",
+          "DSBJXuDyDOY",
+          "BBMDhXCUye4",
+          "qxrIPiTF1u8",
+          "bYgphDEWwvs",
+          "PS93IYAAs48",
+          "EYeZCRQZrdo",
+          "hkJCccNCYos",
+          "keXSGkjLkqw",
+          "ssvbabijwIw",
+          "j9TpINLdT0g",
+          "nPGVrRuIob4",
+          "2hJSE5qUA4o",
+          "6UBm3aaOql8",
+          "cKPYjr3aNCM"
+        ],
+        "descriptionExcerpt": "비즈니스 문의 👉 and@d3company.co.kr\n\n취준 정보를 가장 빠르게 공유받는 취준생 공식 커뮤니티 ✨HIINT✨\n실시간 직무별 정보 공유&취업 정보를 오픈카톡방에서 만나보세요.\nHIINT 커뮤니티 입장하기 👉 http://hiint.co.kr/\nHIINT 커뮤니티 플러스 친구 👉 https://pf.kakao.com/_sIfMxj\n🔑카톡플친 hiint추가하면 참여코드 확인가능🔑\n------------------------------------------------------------------------\n🎥 제휴/협업 문의 👉 https://bit.ly/3P7U6Li\n📞 문의 메일 👉 hwave@d3company.co.kr\n------------------------------------------------------------------------\n'취업에는 정답이 없습니다'\n\n나를 만들어가는 과정, 어쩌면 고단하고 외로울 수 있는 그 길이\n새로운 시작점으로 이어질 수 있도록\nAND(feat.인싸담당자)가 함께 하겠습니다.\n다양한 선배들의 방법과 이야기를 듣고\n자신에게 꼭 맞는 취업의 길을 찾으시길 바랍니다.\n\n📚 자소서가 안 써지나요? 읽고 따라하기만 하면 됩니다\n'너는 생각보다 자소서를 잘 쓴다' 목차 확인하기👉 https://bit.ly/3ZQasN4\n------------------------------------------------------------------------\n#지원동기 #지원동기쓰는법 #마스터자소서"
+      },
+      "priorEvidence": {
+        "observedAt": "2026-07-23",
+        "openedContentCount": 4,
+        "demandSummary": "검토 영상 최고 조회 889,279, 4개 영상 조회 수치를 직접 확인했다",
+        "communicationSummary": "검토 영상 최고 댓글 201개, 4개 영상의 댓글 수를 직접 확인했다",
+        "sourceRowSummary": "지원동기 6단계, 산업분석, 면접 준비 영상 등 4개를 열었다."
+      }
+    },
+    {
+      "creatorId": "travel-triple",
+      "creatorName": "트리플",
+      "categoryId": "travel_outings",
+      "categoryLabel": "여행·외출",
+      "reviewRole": "boundary_recheck",
+      "observationWindow": {
+        "from": "2026-07-23",
+        "to": "2026-07-27"
+      },
+      "profile": {
+        "requestedUrl": "https://triple.guide/",
+        "fetchUrl": "https://triple.guide/",
+        "finalUrl": "https://triple.guide/intro",
+        "status": 200,
+        "opened": true,
+        "title": "나를 아는 여행 앱, 트리플",
+        "description": "예약부터 일정까지 나에게 꼭 맞춰주니까 여행이 더 쉬워집니다. 트리플로 동행과 함께 일정을 짜고 최적의 동선을 안내받으세요. 전 세계 최신 여행 정보와 리얼한 리뷰를 마음껏 활용하세요.",
+        "demandSignals": [],
+        "communicationSignals": [],
+        "shapeSignals": [
+          "download_or_template"
+        ],
+        "businessSignals": [
+          "consultation_or_booking",
+          "commerce"
+        ],
+        "textExcerpt": "내 예약 계획부터 예약까지, 여행이 쉬워지는 나를 아는 여행 앱 트리플 App Store Google Play 앱 다운로드 일정 생성 ・ 관리 나만의 여행 일정, 트리플로 간편해졌어요 여행을 한눈에, 그리고 한 번에! 다른 곳에서는 할 수 없었던 일이 트리플에서는 가능해요. 여행 전이든 여행 중이든 내가 계획한 일정을 간편하게 수정하고 꺼내보세요. 1 현지인 맛집 탐방 2 도쿄의 신상 핫플 3 후지산 힐링 코스 4 여유로운 소도시 여행 현지인 맛집 탐방 도쿄의 신상 핫플 후지산 힐링 코스 여유로운 소도시 여행 일정 살펴보기 어떤 취향이든, 다 맞춰주니까 어떤 여행 취향이든 트리플에게 간단히 알려만 주세요. 트리플 AI는 여러분의 취향에 꼭 맞는 일정을 추천해 드립니다. 자연과 함께 여유롭게 힐링 체험・액티비티 유명 관광지 필수 관광보다 먹방 AI일정 만들어보기 일정 계획 ・ 할인 우리가 함께 만드는 여행이 가능할까요? 함께 일정 만들어보기 함께 할수록, 더 풍성해지는 여행 혼자서 하는 여행도 좋지만, 함께 할 때 여행의 즐거움은 배가 됩니다. 언제 어디서든 쉽고 간편하게 일정을 같이 계획하고 수정해 보세요. 함께 받을 수 있는 할인, 셀프패키지 함께 일정을 짠다면 동행자나 내가 구매해도 계속 할인받을 수 있어요. 계획한 일정에 어울리는 항공 ・ 숙소 ・ 투어 티켓도 함께 추천받아보세요. 일정 계획 ・ 할인 우리가 함께 만드는 여행이 가능할까요? 함께 일정 만들어보기 함께 할수록, 더 풍성해지는 여행 혼자서 하는 여행도 좋지만, 함께 할 때 여행의 즐거움은 배가 됩니다. 언제 어디서든 쉽고 간편하게 일정을 같이 계획하고 수정해 보세요. 함께 받을 수 있는 할인, 셀프패키지 함께 일정을 짠다면 동행자나 내가 구매해도 계속 할인받을 수 있어요. 계획한 일정에 어울리는 항공 ・ 숙소 ・ 투어 티켓도 함께 추천받아보세요. 여행지 정보 내가 가려는 그곳, 지금 상황 어떤가요? 여행 중에도 내가 여행하는 곳의 유용한 정보와 현지 상황을 다른 여행자들과 공유해 보세요. 여행 정보 ・ 상품 나의 여행 취향 어디까지 알고 있나요? 내 성향에 따라 추천해 주는 여행 정보, 항공, 투어, 숙소 정보를 확인해 보세요 랜드마크를 사랑한 여행자 유명한 곳은 일단 다 가봐야 해! 랜드마크 러버 다양한 경험을 즐기는 모험가 여행의 묘미는 체험이지! 즐기는 모험가 구매가 목적인 쇼핑족 구경은 빨리, 쇼핑은 항상! 여행 쇼핑족 오사카에 왔다면 꼭 가야 하는 곳 가이드 ・ 오사카 # 참고할 만한 가이드 유니버셜 스튜디오 재팬 1일권 한국인들이 사랑하는 관광지 테마파크 ・ 어트렉션 ・ 오사카 # 일정에 담은 상품과 연관된 상품 소테츠 그랜드 프레사 오사카 3성급 ・ 난바 # 도톤보리와 함께 많이 찾는 곳 다낭 바나힐 입장권 & 케이블카 다낭 최고의 관광명소에서의 하루! 테마파크 ・ 다낭 # 자연과 함께 여행할 때 연관된 상품 바나힐 반나절 코스 가이드 가이드 ・ 다낭 # 일정에 담은 바나힐이 포함된 가이드 윙크 호텔 다낭 센터 4성급 ・ 다낭 # 저장한 다른 호텔과 함께 많이 찾는 곳 커낼 시티 하카타 쇼핑 ・ 하카타(후쿠오카) # 쇼핑은 열정적으로 여행할 때 담는 장소 커낼 시티 후쿠오카 워싱턴 호텔 3성급 ・ 하카타(후쿠오카) # 커낼 시티 하카타와 함께 많이 찾는 곳 100엔으로 즐기는 후쿠오카 여행 가이드 ・ 하카타(후쿠오카) # 후쿠오카 추천 가이드 오사카에 왔다면 꼭 가야 하는 곳 가이드 ・ 오사카 # 참고할 만한 가이드 유니버셜 스튜디오 재팬 1일권 한국인들이 사랑하는 관광지 테마파크 ・ 어트렉션 ・ 오사카 # 일정에 담은 상품과 연관된 상품 소테츠 그랜드 프레사 오사카 3성급 ・ 난바 ",
+        "htmlBytes": 94406,
+        "error": null
+      },
+      "representativeSource": {
+        "requestedUrl": "https://triple.guide/articles/6bebeecc-83e2-4b03-8b22-04dccf80c729",
+        "fetchUrl": "https://triple.guide/articles/6bebeecc-83e2-4b03-8b22-04dccf80c729",
+        "finalUrl": "https://triple.guide/articles/6bebeecc-83e2-4b03-8b22-04dccf80c729",
+        "status": 200,
+        "opened": true,
+        "title": "출국 전 체크사항",
+        "description": "카파도키아 여행을 떠나기 전, 반드시 챙겨야 할 체크리스트",
+        "demandSignals": [
+          "리뷰 1",
+          "저장 15"
+        ],
+        "communicationSignals": [
+          "리뷰 1"
+        ],
+        "shapeSignals": [
+          "checklist"
+        ],
+        "businessSignals": [
+          "commerce"
+        ],
+        "textExcerpt": "출국 전 체크사항 로그인 카파도키아 가이드 출국 전 체크사항 리뷰 1 저장 15 목차 출처 shutterstock.com 출처 shutterstock.com 설레는 해외여행의 시작, 급한 마음에 짐을 꾸렸다가 정작 중요한 것들을 놓칠 수 있다. 현지에 도착해 당황하기 전에 미리 확인하면 좋을 체크리스트. 여행 전 필수 체크 항목! 1. 여권 유효기간이 6개월 이상 남았는지 확인할 것 2. 항공권의 출국, 귀국 일정 다시 한번 체크하기 3. 예산에 맞게 미리 환전해 두기 4. 만약의 상황에 대비하여 여행자 보험 들어두기 해외여행 준비물 체크 리스트 E-티켓, 바우처, 여권 사본 등 출력하기 튀르키예는 90일까지 무비자 방문이 가능한 국가. 하지만 입국 시에 리턴 티켓이 확인되지 않으면 입국이 거절될 수도 있다. E-티켓은 반드시 출력하여 소지하고, 호텔 바우처 등도 출력해 놓으면 체크인할 때 편리하다. 여행 중 여권 분실에 대비하여 여권 사본과 여권 사진 4매도 챙기는 것이 좋다. 출처 shutterstock.com 유심카드 또는 포켓와이파이 데이터 이용법은 크게 유심카드, E심, 포켓와이파이, 데이터 로밍이 있다. 각각의 장단점이 달라 여행의 기간과 인원을 고려하여 미리 준비해두는 것이 좋다. 출처 shutterstock.com 현명한 데이터 이용법 환전하기 여행지에서 쇼핑과 먹방을 즐기려면 환전은 필수! 현재 국내 은행에서 보유하고 있는 리라 물량이 많지 않으니, 한국에서 바로 리라로 환전을 원한다면 방문 예정 은행에 연락해 환전 가능 여부를 물어보자. 그 외의 방법으로는 유로로 먼저 환전해 현지에서 리라로 환전하는 법, 현지 ATM에서 바로 현금을 인출하는 법 등이 있다. 알아두면 좋아요! 현지에서 환전 시 우체국(PTT)을 제외하면 괴레메 시내에 합법적으로 환전할 수 있는 장소가 없다. 시내의 호텔이나 상점에서 환전을 해주기도 하지만 수수료가 5% 정도로 비싸고, 엄연한 불법이다. 그러니 미리 한국에서 가져온 유로를 튀르키예의 다른 도시에서 환전하거나, ATM 기기를 통해 바로 인출하는 것이 편하다. 출처 shutterstock.com 출처 shutterstock.com 여행 전 똑똑하게 환전하기 여행자 보험 여행 중에는 어떠한 일이 일어날지 모른다. 무사히 다녀오면 좋겠지만 혹시나 일어날 사고, 분실을 대비해 여행자 보험을 들어두자. 보험사에 미리 연락하거나 홈페이지를 통해 가입할 수도 있고, 출국 당일 공항에 있는 여행자 보험 부스에서 신청할 수도 있다. 출처 shutterstock.com 여행자 보험 준비하기 전자제품과 어댑터 여행을 제대로 기록하기 위해 성능 좋은 카메라를 챙겨가자. 만일의 상황을 대비해 보조배터리는 필수! 충전 케이블은 별도의 파우치에 잘 정리해 넣어두자. 튀르키예의 전압은 220V. 플러그는 한국과 동일해 큰 문제는 없다. 다른 국가와 함께 들린다면 멀티 어댑터를 반드시 준비해야 한다. 출처 shutterstock.com 기타 물품들 · 옷차림 : 우리나라와 같이 사계절이 뚜렷하다. 여름에는 여름옷, 겨울에는 겨울옷, 각 계절에 맞는 옷과 소품을 챙기는 것이 중요하다. · 운동화 : 카파도키아는 암석으로 이루어져 있어 슬리퍼나 샌들을 신으면 미끄러질 수 있다. · 자외선 대비 : 카파도키아의 여름은 건조한 편이며, 자외선이 강한 편이다. 자외선 차단제와 모자, 선글라스를 챙기는 것이 좋다. · 기타 : 소화제, 진통제, 감기약 등의 비상약, 화장품과 세면도구, 이어폰 등 출처 shutterstock.com 출처 shutterstock.com 출처 shutterstock.com 수하물 규정 확인하기 무게 확인하기 항공사에 따라 수하물",
+        "htmlBytes": 82146,
+        "error": null
+      },
+      "priorEvidence": {
+        "observedAt": "2026-07-23",
+        "openedContentCount": 4,
+        "demandSummary": "공개 원문에서 리뷰 1 · 저장 15 · 리뷰 4 신호를 확인했다",
+        "communicationSummary": "공개 원문에서 리뷰 1 · 리뷰 4 · 후기 신호를 확인했다",
+        "sourceRowSummary": "출국 준비, 울릉도 준비, 해외여행 아이템, 앱 체크리스트 글 4개를 열었다."
+      }
+    },
+    {
+      "creatorId": "hobby-bodeum",
+      "creatorName": "강형욱의 보듬TV",
+      "categoryId": "hobby_pet",
+      "categoryLabel": "취미·반려",
+      "reviewRole": "boundary_recheck",
+      "observationWindow": {
+        "from": "2026-07-23",
+        "to": "2026-07-27"
+      },
+      "profile": {
+        "requestedUrl": "https://www.youtube.com/channel/UCee1MvXr6E8qC_d2WEYTU5g",
+        "fetchUrl": "https://www.youtube.com/channel/UCee1MvXr6E8qC_d2WEYTU5g",
+        "finalUrl": "https://www.youtube.com/channel/UCee1MvXr6E8qC_d2WEYTU5g",
+        "status": 200,
+        "opened": true,
+        "title": "강형욱의 보듬TV",
+        "description": "저희 채널과 함께 강아지 키워봅시다🐶 📌 퍼피즈 https://ppz.kr/ 🐾인스타그램 : @hunter.kang 🐾비즈니스 문의 : bodeum@episodegroup.kr 🐾반려견 출연 문의 [견종백과] : https://forms.gle/cRHG1NfRMJXPZr3PA [퍼피교육] : https://forms.gle/YcmWoCruDkgPAyh4A",
+        "demandSignals": [],
+        "communicationSignals": [],
+        "shapeSignals": [],
+        "businessSignals": [
+          "commerce"
+        ],
+        "textExcerpt": "정보 보도자료 저작권 문의하기 크리에이터 광고 개발자 약관 개인정보처리방침 정책 및 안전 YouTube 작동의 원리 새로운 기능 테스트하기 &copy; 2026 Google LLC, Sundar Pichai, 1600 Amphitheatre Parkway, Mountain View CA 94043, USA, 0807-882-594 (무료), yt-support-solutions-kr@google.com, 호스팅: Google LLC, 사업자정보 , 불법촬영물 신고 크리에이터들이 유튜브 상에 게시, 태그 또는 추천한 상품들은 판매자들의 약관에 따라 판매됩니다. 유튜브는 이러한 제품들을 판매하지 않으며, 그에 대한 책임을 지지 않습니다. 강형욱의 보듬TV - YouTube",
+        "htmlBytes": 2290615,
+        "error": null,
+        "platform": "youtube",
+        "channelId": "UCee1MvXr6E8qC_d2WEYTU5g",
+        "subscriberText": null,
+        "viewCount": null,
+        "commentCountText": null,
+        "publishDate": null,
+        "chapters": [],
+        "initialVideoIds": [
+          "qglffq44cbc",
+          "WRfEbE8sjS0",
+          "Ry3NnrbVjAM",
+          "KAv1onTT8m0",
+          "FuNfwR84vaA",
+          "e0KsyKxZzGE",
+          "JozcQCCFiFk",
+          "dhd9eRtIm5s",
+          "tqUaFVB7WY8",
+          "uT1YHHhs0ts",
+          "BDkaIZU9pWs",
+          "4PMFHT_xbU4",
+          "kWP6Ij1U2Sg",
+          "uXLh6C6iccM",
+          "3pp-RUaUhvY",
+          "vftVEbbgHZE",
+          "3dkQJpO8eYI",
+          "LvrhaYhEb4c",
+          "Iw0ElufMEsU",
+          "e5N9eXLcfag"
+        ],
+        "descriptionExcerpt": "저희 채널과 함께 강아지 키워봅시다🐶\n📌 퍼피즈 https://ppz.kr/\n\n🐾인스타그램 : @hunter.kang \n🐾비즈니스 문의 : bodeum@episodegroup.kr \n🐾반려견 출연 문의\n[견종백과] : https://forms.gle/cRHG1NfRMJXPZr3PA\n[퍼피교육] : https://forms.gle/YcmWoCruDkgPAyh4A \n\n\n"
+      },
+      "representativeSource": {
+        "requestedUrl": "https://www.youtube.com/watch?v=Ry3NnrbVjAM",
+        "fetchUrl": "https://www.youtube.com/watch?v=Ry3NnrbVjAM",
+        "finalUrl": "https://www.youtube.com/watch?v=Ry3NnrbVjAM",
+        "status": 200,
+        "opened": true,
+        "title": "\"내 몸 만지지마!!\" 개통령 손길도 피하는 예민쓰 파피용 [퍼피교육]",
+        "description": "🐕 견생 5개월 새봄이와 함께했습니다(CC 버튼을 누르시면 한국어 자막이 있습니다!)📝교육 내용1. 피부 민감도가 높은 강아지의 둔감화 훈련새봄이의 경우 피부 민감도가 높은 강아지에요이런 성격의 강아지에게 둔감화 훈련을 하려고 무작정 터치를 한다면 스트레스를 많이 받을 거예요*...",
+        "demandSignals": [],
+        "communicationSignals": [],
+        "shapeSignals": [],
+        "businessSignals": [
+          "commerce"
+        ],
+        "textExcerpt": "\"내 몸 만지지마!!\" 개통령 손길도 피하는 예민쓰 파피용 [퍼피교육] - YouTube 정보 보도자료 저작권 문의하기 크리에이터 광고 개발자 약관 개인정보처리방침 정책 및 안전 YouTube 작동의 원리 새로운 기능 테스트하기 &copy; 2026 Google LLC, Sundar Pichai, 1600 Amphitheatre Parkway, Mountain View CA 94043, USA, 0807-882-594 (무료), yt-support-solutions-kr@google.com, 호스팅: Google LLC, 사업자정보 , 불법촬영물 신고 크리에이터들이 유튜브 상에 게시, 태그 또는 추천한 상품들은 판매자들의 약관에 따라 판매됩니다. 유튜브는 이러한 제품들을 판매하지 않으며, 그에 대한 책임을 지지 않습니다.",
+        "htmlBytes": 1341704,
+        "error": null,
+        "platform": "youtube",
+        "channelId": "UCee1MvXr6E8qC_d2WEYTU5g",
+        "subscriberText": "구독자 222만명",
+        "viewCount": 240800,
+        "commentCountText": "댓글",
+        "publishDate": "2026-07-17T20:00:34-07:00",
+        "chapters": [
+          "00:00 하이라이트",
+          "00:12 오프닝 (새봄이 소개)",
+          "00:37 예민한 성격이라며 약 처방 받은 강아지",
+          "01:15 문제견(?) 새봄이 성격 파악하기",
+          "03:43 피부 민감도 높은 강아지 둔감화 훈련하기",
+          "05:08 산책을 싫어하는데 산책 시키는 방법",
+          "08:13 엔딩"
+        ],
+        "initialVideoIds": [
+          "Ry3NnrbVjAM",
+          "KAv1onTT8m0",
+          "JozcQCCFiFk",
+          "NHGkLb5ifu4",
+          "covQLV3If8o",
+          "u2xBEYZD6ok",
+          "wi9uSGrRC9o",
+          "pV2f1USIZrg",
+          "CWJn75PgBbQ",
+          "g3KAQPQi51U",
+          "_N4sHRK3gmY",
+          "HolFvZCP3sY",
+          "YCef4a_ZojA",
+          "tqUaFVB7WY8",
+          "mEOlKJb5EmQ",
+          "QPH02Qr-zN4",
+          "ou1ZkytFIUg",
+          "DEmu-FFQS6s",
+          "IVjh142gBz4",
+          "Kejs6DP_LjQ"
+        ],
+        "descriptionExcerpt": "🐕 견생 5개월 새봄이와 함께했습니다\n(CC 버튼을 누르시면 한국어 자막이 있습니다!)\n\n📝교육 내용\n1. 피부 민감도가 높은 강아지의 둔감화 훈련\n새봄이의 경우 피부 민감도가 높은 강아지에요\n이런 성격의 강아지에게 둔감화 훈련을 하려고 \n무작정 터치를 한다면 스트레스를 많이 받을 거예요\n*포인트 [ 놀아주되 잡거나 최대한 스킨쉽을 줄이는 보호자가 되어주세요 ]\n\n2. 산책 싫어하는 강아지?\n그냥 산책 나가는 거에 만족하는 강아지도 있지만,\n내 집이 눈에 안 보이면 불안해 하는 강아지도 있어요\n집이 보이는 곳까지 나가서 돌아오는 산책을 해보세요\n*포인트 [ 다른 보호자님과 아파트 앞에서 만나서 집에 돌아온다면 만족도가 더 높을 거예요 ]\n\n또 봐요👋\n\n00:00 하이라이트\n00:12 오프닝 (새봄이 소개)\n00:37 예민한 성격이라며 약 처방 받은 강아지\n01:15 문제견(?) 새봄이 성격 파악하기\n03:43 피부 민감도 높은 강아지 둔감화 훈련하기\n05:08 산책을 싫어하는데 산책 시키는 방법\n08:13 엔딩\n\n🐶강아지 키우기 어려우신가요!?\n앞으로 저희 채널과 함께 키워봅시다!\n\n👀 [퍼피교육] 출연 모집처\n👉 https://forms.gle/YcmWoCruDkgPAyh4A\n\n🎁 보듬숍 : https://ppz.kr\n📬 보듬TV 공식 인스타그램 : @bodeum_official\n✨ 인스타그램 :  @hunter.kang\n🐾 비즈니스 문의 : bodeum@episodegroup.kr\n\n영상 내 번역 자막은 유튜브 번역 No.1, 자메이크에서 제작하였습니다. \n유튜브 채널 성장의 시작은 자메이크(https://bit.ly/Bodeumofficial)\n\n#강형욱 #강아지 #puppy #퍼피교육 #파피용\nCopyright ⓒ 2026 Studio Episode - All Rights Reserved"
+      },
+      "priorEvidence": {
+        "observedAt": "2026-07-23",
+        "openedContentCount": 4,
+        "demandSummary": "검토 영상 최고 조회 928,240, 4개 영상 조회 수치를 직접 확인했다",
+        "communicationSummary": "검토 영상 최고 댓글 468개, 4개 영상의 댓글 수를 직접 확인했다",
+        "sourceRowSummary": "검토 영상 4개가 15만~92만 조회, 댓글 213~468개를 보였다."
+      }
+    },
+    {
+      "creatorId": "hobby-fitpet",
+      "creatorName": "핏펫",
+      "categoryId": "hobby_pet",
+      "categoryLabel": "취미·반려",
+      "reviewRole": "boundary_recheck",
+      "observationWindow": {
+        "from": "2026-07-23",
+        "to": "2026-07-27"
+      },
+      "profile": {
+        "requestedUrl": "https://www.fitpetmall.com/blog/",
+        "fetchUrl": "https://www.fitpetmall.com/blog/",
+        "finalUrl": "https://www.fitpetmall.com/blog",
+        "status": 200,
+        "opened": true,
+        "title": "핏펫 블로그",
+        "description": "건강한 반려생활의 시작, 핏펫의 블로그입니다.",
+        "demandSignals": [],
+        "communicationSignals": [],
+        "shapeSignals": [],
+        "businessSignals": [
+          "commerce",
+          "partnership",
+          "subscription_or_membership"
+        ],
+        "textExcerpt": "핏펫 블로그 Skip to main content Close Search 쇼핑하기 search Menu 강아지 강아지 전체 강아지 건강 강아지 생활 강아지 식품 & 영양 강아지 용품 고양이 고양이 전체 고양이 건강 고양이 생활 고양이 식품 & 영양 고양이 용품 수의사 칼럼 건강관리 동물병원 이벤트 회사소개 쇼 핑 하 기 검색: 검색 버튼 search [ivory-search id=\"5434\" title=\"Custom Search Form\"] 강아지 강아지 전체 강아지 건강 강아지 생활 강아지 식품 & 영양 강아지 용품 고양이 고양이 전체 고양이 건강 고양이 생활 고양이 식품 & 영양 고양이 용품 수의사 칼럼 건강관리 동물병원 이벤트 회사소개 mtop 강아지 정확한 강아지 나이 계산법 Date 2025 7월 25일 사랑하는 반려견과 오래 오래 함께 하고 싶은 건 모두의 바람이지요. 그래서일까요? 지금 우리 강아지가 사람 나이로 몇 살에 해당하는지, 강아지 나이 계산법 을 궁금해 하는 반려인들이 참 많습니다. 사실 품종, 양육 환경에 따라 노화의 속도가 다르기 때문에강아지 나이를 정확하게 사람... mtop 강아지 강아지 필수 예방 접종의 시기와 종류, 순서까지 Date 2025 7월 25일 강아지의 성장 단계에 맞춰 꼭 실시해야 하는 강아지 필수 예방 접종! 반려견을 처음 가족으로 맞이하는 초보 반려인이라면 반드시 정확히 알고 있어야 합니다. 이번 글에서는 강아지 필수 예방 접종 시기, 종류, 순서, 비용을 알려드릴게요. 강아지 필수 예방 접종 시기 강아지 필수... mtop 고양이 “고양이가 계속 울어요” | 고양이 우는 이유 총정리 Date 2025 7월 25일 고양이가 계속 울 때, 정말 당황스럽죠. 무언가 원하는 게 있는 것 같은데, 원인은 알 수 없어 답답할 거예요. 대부분 늦은 밤에 우는 경우가 많아 이웃집에 피해가 갈까봐 난감할 때도 많아요. 이번 글에서는 고양이 우는 이유 총정리를 준비했습니다. 우리 고양이가 우는... mtop 고양이 고양이 깨물기: 고양이가 깨무는 이유 6가지와 대처 방법 Date 2025 7월 25일 집사라면 한 번쯤 고양이에게 갑자기 물려 당황스러운 경우가 있죠. 분명 기분이 좋아 보였는데... 왜 무는 건지 이유를 알기가 힘들 때도 많아요. 이번 글에서는 고양이가 깨무는 이유 총 여섯 가지를 정리해 봤어요. 우리 고양이가 자주 깨물어서 고민이라면 꼭 확인해 주세요! 정확한... ms 강아지 강아지 발바닥 보습제 추천 인기 순위 TOP5 ms 고양이 고양이 주식캔 추천 인기 순위 TOP5 ms 강아지 강아지 시니어 사료 추천 인기 순위 TOP 5 ms 고양이 고양이 시니어 사료 추천 인기 순위 TOP5 ms 고양이 고양이 사료 추천 인기 순위 TOP 5 ms 강아지 강아지 사료 추천 인기 순위 TOP 10 ms 강아지 피부병 앓는 강아지 약용 샴푸 추천 TOP 5 ms 고양이 고양이 습식사료 추천 인기 순위 TOP 5 ms 고양이 고양이 두부모래 추천 인기 순위 TOP 5 최근글 강아지 강아지 식품 & 영양 강아지 땅콩 먹어도 될까? 강아지가 먹을 수 있는 견과류는 일반적으로 많이 제한됩니다. 견과류 중 일부는 강아지에게 해로울 수 있는&hellip; 핏펫 고양이 고양이 용품 고양이 모래 추천 인기 순위 TOP 5 고양이 모래 상품은 무궁무진해요. 기본적으로 재질에 따라 벤토나이트, 두부모래, 우드펠릿, 카사바, 크리스탈 등으로 나뉘는데요. 같은&hellip; 핏펫 강아지 강아지 식품 & 영양 강아지 복숭아 먹어도 되나요? 네, 강아지 복숭아 먹어도 됩니다! 복숭아는 비타민, 칼륨, 식이섬유 등 다양한 영양소를 풍부하게 함유하고",
+        "htmlBytes": 269215,
+        "error": null
+      },
+      "representativeSource": {
+        "requestedUrl": "https://www.fitpetmall.com/blog/dog-vaccinations",
+        "fetchUrl": "https://www.fitpetmall.com/blog/dog-vaccinations",
+        "finalUrl": "https://www.fitpetmall.com/blog/dog-vaccinations",
+        "status": 200,
+        "opened": true,
+        "title": "강아지 필수 예방 접종 시기와 종류, 순서까지! - 핏펫",
+        "description": "강아지 필수 예방 접종은 생후 6주부터 16주까지 2주 간격으로 총 6회 실시해요. 이후 심장 사상충와 외부 기생충 예방 접종을 월 1회 진행하는 것을 권장하고 있어요. 강아지 필수 예방 접종 시기, 종류, 순서, 비용을 알려드릴게요.",
+        "demandSignals": [],
+        "communicationSignals": [],
+        "shapeSignals": [
+          "html_table"
+        ],
+        "businessSignals": [
+          "commerce",
+          "partnership",
+          "subscription_or_membership"
+        ],
+        "textExcerpt": "강아지 필수 예방 접종 시기와 종류, 순서까지! - 핏펫 Skip to main content Close Search 쇼핑하기 search Menu 강아지 강아지 전체 강아지 건강 강아지 생활 강아지 식품 & 영양 강아지 용품 고양이 고양이 전체 고양이 건강 고양이 생활 고양이 식품 & 영양 고양이 용품 수의사 칼럼 건강관리 동물병원 이벤트 회사소개 쇼 핑 하 기 검색: 검색 버튼 search [ivory-search id=\"5434\" title=\"Custom Search Form\"] 강아지 강아지 전체 강아지 건강 강아지 생활 강아지 식품 & 영양 강아지 용품 고양이 고양이 전체 고양이 건강 고양이 생활 고양이 식품 & 영양 고양이 용품 수의사 칼럼 건강관리 동물병원 이벤트 회사소개 mtop 강아지 강아지 건강 강아지 필수 예방 접종의 시기와 종류, 순서까지 강아지 > mtop 강아지 필수 예방 접종의 시기와 종류, 순서까지 강아지의 성장 단계에 맞춰 꼭 실시해야 하는 강아지 필수 예방 접종! 반려견을 처음 가족으로 맞이하는 초보 반려인이라면 반드시 정확히 알고 있어야 합니다. 이번 글에서는 강아지 필수 예방 접종 시기, 종류, 순서, 비용을 알려드릴게요. 강아지 필수 예방 접종 시기 강아지 필수 예방 접종은 생후 6주부터 16주까지 2주 간격으로 총 6회 실시 합니다. 이후 심장 사상충과 외부 기생충 예방 접종은 1달씩 기간을 두고 진행하는 것을 권장합니다. 강아지 예방 접종 종류 DHPPL(종합 백신) : 홍역, 바이러스성 간염, 파보 장염 등 강아지에게 자주 발생하고 사망률이 높은 질환을 종합적으로 예방 코로나 장염 백신 : 코로나 바이러스에 의해 유발되는 장염, 구토, 발열, 설사 등을 예방 켄넬 코프 백신 : 전염성이 강한 기관지염으로 기침, 발열, 콧물 등의 증상을 예방 신종 플루 백신 : 전염성이 강한 신종 플루 바이러스(H3N2)에 의해 유발되는 호흡기 질환을 예방 광견병 백신 : 중추신경계에 침입하여 죽음에 이르게 하는 전염병을 예방 심장 사상충 백신 : 기생충의 일종인 심장 사상충이 '모기'에 의해 감염되어 심장에 기생하며 혈관을 막는 질환 예방 외부 기생충 백신 : 진드기, 벼룩 등의 외부 기생충에 의한 감염을 예방 강아지 예방 접종 순서 1차 접종 (생후 6주) : DHPPL 1차 + 코로나 장염 1차 2차 접종 (생후 8주) : DHPPL 2차 + 코로나 장염 2차 3차 접종 (생후 10주) : DHPPL 3차 + 켄넬 코프 1차 4차 접종 (생후 12주) : DHPPL 4차 + 켄넬 코프 2차 5차 접종 (생후 14주) : DHPPL 5차 + 신종 플루 1차 6차 접종 (생후 16주) : 신종 플루 2차 + 광견병 예방 접종 강아지 예방 접종 비용 병원마다 차이가 있을 수 있으나, 일반적인 강아지 필수 예방 접종 비용은 1회 기준 아래와 같습니다. 백신 종류 예방 접종 비용(1회당) DHPPL 종합 백신 25,000원 코로나 장염 백신 15,000원 켄넬 코프 백신 15,000원 신종 플루 백신 30,000원 광견병 백신 20,000원 이번 글에서는 강아지 예방 접종에 꼭 필요한 정보인 접종 시기부터 비용까지 확인해 봤어요. 반려인이 예방 접종과 질환에 대해 정확하게 알아야 우리 아이의 건강을 지킬 수 있다는 점 잊지 마세요! 지금까지 여러분의 건강한 반려 생활을 응원하는 핏펫이었습니다. 인기글 강아지 사료 추천 인기 순위 TOP 10 고양이 깨물기: 고양이가 깨무는 이유 6가지와 대처 방법 강아지 필수 예방 접종의 시기와 종류, 순서까지 “고양이가 계속 울어요” | 고양이 우는 이유 총정리 강아지가 사람을 핥는 이유, 부위별 의미 고양",
+        "htmlBytes": 231570,
+        "error": null
+      },
+      "priorEvidence": {
+        "observedAt": "2026-07-23",
+        "openedContentCount": 4,
+        "demandSummary": "예방접종 글은 인기글 목록에 반복 노출되지만 글 단위 조회·댓글 수는 공개되지 않아 수요 수치는 unknown이다",
+        "communicationSummary": "블로그 자체 댓글·질문 증거는 약하고 쇼핑·동물병원·건강관리 서비스 연결이 더 강하게 보인다",
+        "sourceRowSummary": "예방접종 일정과 강아지·고양이 건강 카테고리 4개를 열었다."
+      }
+    }
+  ]
+}

@@ -1,6 +1,11 @@
 export type MyFlowLocalView = 'now' | 'flows' | 'completed';
 
-export type MyFlowWorkspaceView = 'today' | 'flow' | 'completed';
+export type MyFlowWorkspaceView = 'flow';
+
+export type MyFlowWorkspaceTarget = {
+  flowSlug: string;
+  itemKey?: string;
+};
 
 export type MyFlowLocalSummaryInput = {
   id: string;
@@ -29,31 +34,61 @@ export type MyFlowLibraryControlVisibility = {
 };
 
 export const MY_FLOW_SEARCH_THRESHOLD = 5;
+export const MY_FLOW_FIRST_ENTRY_PLAN_SESSION_KEY =
+  'flowme:my-flow:first-entry-plan';
 
-const QUERY_TO_WORKSPACE_VIEW: Record<MyFlowLocalView, MyFlowWorkspaceView> = {
-  now: 'today',
-  flows: 'flow',
-  completed: 'completed',
-};
-
-const WORKSPACE_TO_QUERY_VIEW: Record<MyFlowWorkspaceView, MyFlowLocalView> = {
-  today: 'now',
-  flow: 'flows',
-  completed: 'completed',
-};
+type MyFlowSessionStorage = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>;
 
 export function parseMyFlowViewQuery(search: string): MyFlowWorkspaceView | null {
   const query = search.startsWith('?') ? search.slice(1) : search;
   const view = new URLSearchParams(query).get('view');
-  return view === 'now' || view === 'flows' || view === 'completed'
-    ? QUERY_TO_WORKSPACE_VIEW[view]
-    : null;
+  return view === 'now' || view === 'flows' || view === 'completed' ? 'flow' : null;
 }
 
-export function getMyFlowViewHref(currentHref: string, view: MyFlowWorkspaceView): string {
+export function getMyFlowViewHref(currentHref: string, _view: MyFlowWorkspaceView): string {
   const url = new URL(currentHref, 'https://flowme.local');
-  url.searchParams.set('view', WORKSPACE_TO_QUERY_VIEW[view]);
+  url.searchParams.set('view', 'flows');
   return `${url.pathname}${url.search}${url.hash}`;
+}
+
+export function getMyFlowWorkspaceHref(target: MyFlowWorkspaceTarget): string {
+  const params = new URLSearchParams({ view: 'flows', flow: target.flowSlug.trim() });
+  const itemKey = target.itemKey?.trim();
+  if (itemKey) params.set('item', itemKey);
+  return `/my?${params.toString()}`;
+}
+
+export function parseMyFlowWorkspaceTarget(search: string): MyFlowWorkspaceTarget | null {
+  const query = search.startsWith('?') ? search.slice(1) : search;
+  const params = new URLSearchParams(query);
+  const flowSlug = params.get('flow')?.trim() ?? '';
+  if (!flowSlug) return null;
+  const itemKey = params.get('item')?.trim() ?? '';
+  return {
+    flowSlug,
+    ...(itemKey ? { itemKey } : {}),
+  };
+}
+
+export function markMyFlowFirstEntryPlan(
+  storage: MyFlowSessionStorage,
+  flowSlug: string,
+): void {
+  const normalized = flowSlug.trim();
+  if (!normalized) return;
+  storage.setItem(MY_FLOW_FIRST_ENTRY_PLAN_SESSION_KEY, normalized);
+}
+
+export function consumeMyFlowFirstEntryPlan(
+  storage: MyFlowSessionStorage,
+  flowSlug: string,
+): boolean {
+  const normalized = flowSlug.trim();
+  if (!normalized || storage.getItem(MY_FLOW_FIRST_ENTRY_PLAN_SESSION_KEY) !== normalized) {
+    return false;
+  }
+  storage.removeItem(MY_FLOW_FIRST_ENTRY_PLAN_SESSION_KEY);
+  return true;
 }
 
 export function summarizeMyFlowLocalIa(flows: MyFlowLocalSummaryInput[]): MyFlowLocalSummary {

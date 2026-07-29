@@ -11,6 +11,6 @@ export async function savePublicFlow(page: Page, button: Locator): Promise<Locat
 export async function openSavedPublicFlow(page: Page, receipt?: Locator): Promise<void> {
   const activeReceipt = receipt ?? page.getByTestId('public-flow-saved-receipt');
   const primary = activeReceipt.getByTestId('public-flow-saved-receipt-primary');
-  await expect(primary).toHaveAccessibleName('내 Flow에서 시작');
+  await expect(primary).toHaveAccessibleName('저장한 전체 Flow 보기');
   await primary.click();
 }

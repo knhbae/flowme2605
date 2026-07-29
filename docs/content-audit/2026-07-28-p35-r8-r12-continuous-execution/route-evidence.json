@@ -1,0 +1,105 @@
+{
+  "generatedAt": "2026-07-28T23:40:00+09:00",
+  "evidenceScope": "current_local_p35_r8_r12",
+  "observedUserCount": 0,
+  "storageMigrationCount": 0,
+  "globalIaChangeCount": 0,
+  "routes": [
+    {
+      "id": "r8a-routine-continuity",
+      "routes": ["/f/curated-allblanc-morning-workout", "/my", "/calendar"],
+      "viewports": ["390x844", "1024x768"],
+      "markers": [
+        "P35-R8A-ROUTINE-NEXT-OCCURRENCE",
+        "P35-R8A-SERIES-OCCURRENCE-COUNT",
+        "P35-R8A-ROUTINE-STABLE-IDENTITY"
+      ],
+      "result": "supported",
+      "evidenceKind": ["current_source", "current_browser_automation", "current_package_screenshot"]
+    },
+    {
+      "id": "r8b-artifact-semantic-continuity",
+      "routes": ["/f/overseas-safety-register", "/my"],
+      "viewports": ["390x844", "1024x768"],
+      "markers": [
+        "P35-R8B-ARTIFACT-SEMANTIC-CONTINUITY",
+        "P35-R8B-RESOURCE-NOT-EXECUTION"
+      ],
+      "primaryArtifact": "checklist",
+      "publicPreviewCompletionControlCount": 0,
+      "result": "supported",
+      "evidenceKind": ["current_source", "current_browser_automation", "current_package_screenshot"]
+    },
+    {
+      "id": "r8c-single-completion-owner",
+      "routes": ["/my", "/calendar"],
+      "viewports": ["390x844", "1024x768"],
+      "markers": [
+        "P35-R8C-SINGLE-COMPLETION-OWNER",
+        "P35-R8C-UNDO-ONLY-WHEN-HIDDEN"
+      ],
+      "duplicateVisibleCompletionControlCount": 0,
+      "hiddenCompletedRowUndoVisible": true,
+      "visibleCompletedRowUndoVisible": false,
+      "result": "supported",
+      "evidenceKind": ["current_source", "current_browser_automation"]
+    },
+    {
+      "id": "r9-shared-row",
+      "routes": ["/f/[slug]", "/my"],
+      "viewports": ["390x844", "1024x768"],
+      "markers": [
+        "P35-R9-SHARED-EXECUTION-ROW",
+        "P35-R9-PREVIEW-NOT-COMPLETION",
+        "P35-R9-DETAIL-SINGLE-CLOSE"
+      ],
+      "previewCompletionControlCount": 0,
+      "savedExecutableCompletionControlPerRow": 1,
+      "result": "supported",
+      "evidenceKind": ["current_source", "current_browser_automation"]
+    },
+    {
+      "id": "r10-shape-honesty",
+      "routes": ["/my"],
+      "viewports": ["390x844", "1024x768"],
+      "markers": ["P35-R10-SHAPE-HONESTY"],
+      "memoSyntheticProgressCount": 0,
+      "routineFakeOneItemProgressCount": 0,
+      "visibleExportSummaryOwnerCount": 1,
+      "result": "supported",
+      "evidenceKind": ["current_source", "current_browser_automation", "current_package_screenshot"]
+    },
+    {
+      "id": "r11-wide-workspace",
+      "routes": ["/my"],
+      "viewports": ["390x844", "1024x768", "1440x900"],
+      "markers": ["P35-R11-WIDE-EXECUTION-WORKSPACE"],
+      "wideRegions": ["library", "execution", "inspector"],
+      "horizontalOverflowCount": 0,
+      "result": "supported",
+      "evidenceKind": ["current_source", "current_browser_automation", "current_package_screenshot"]
+    },
+    {
+      "id": "r12-cross-flow-todo",
+      "routes": ["/my?experiment=todo", "/calendar"],
+      "viewports": ["390x844", "1024x768", "1440x900"],
+      "markers": [
+        "P35-R12-CROSS-FLOW-TODO-EXPERIMENT",
+        "P35-R12-TODO-CALENDAR-SAME-ITEM",
+        "P35-R12-DATE-REMOVE-RETURNS-UNDATED",
+        "P35-R12-EXPERIMENT-ROLLBACK"
+      ],
+      "experimentDefaultEnabled": false,
+      "stableItemIdentityPreserved": true,
+      "rollbackChangesStoredData": false,
+      "result": "supported",
+      "evidenceKind": ["current_source", "current_browser_automation", "current_package_screenshot"]
+    }
+  ],
+  "quality": {
+    "horizontalOverflowCount": 0,
+    "fixedOverlapCount": 0,
+    "consoleErrorCount": 0,
+    "pageErrorCount": 0
+  }
+}

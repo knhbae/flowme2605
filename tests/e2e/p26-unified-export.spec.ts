@@ -3,10 +3,12 @@ import path from 'node:path';
 
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import {
+  closeOpenMyFlowItemDetail,
   getOpenMyFlowItemDetail,
   openMyFlowLibraryFlow,
 } from './helpers/my-flow-library';
 import { openPublicDetailWorkspaceForDeepInspection } from './helpers/open-public-detail-workspace';
+import { openSavedPublicFlow, savePublicFlow } from './helpers/public-flow-save';
 
 test.beforeEach(async ({ page }) => {
   await openPublicDetailWorkspaceForDeepInspection(page);
@@ -78,34 +80,50 @@ test('public whole Flow export predicts dates, output count, and result receipt'
   await page.goto('/f/vehicle-inspection-prep');
   const undatedEntry = page.getByTestId('public-flow-export-secondary-entry');
   await undatedEntry.getByTestId('public-flow-export-secondary-toggle').click();
-  const undatedCalendar = undatedEntry
-    .getByTestId('public-flow-export-format-option')
-    .filter({ hasText: '캘린더 파일' });
-  await expect(undatedCalendar).toBeDisabled();
-  await expect(undatedCalendar).toBeHidden();
-  await expect(undatedCalendar).toHaveAttribute('data-export-state', 'disabled');
-  await expect(undatedCalendar).toContainText('날짜 있는 항목이 없어요');
+  const undatedCalendar = undatedEntry.getByTestId('my-flow-export-calendar');
+  await expect(undatedCalendar).toHaveCount(0);
   await expect(
     undatedEntry.locator('[data-recommendation-visible="true"][data-export-state="disabled"]'),
   ).toHaveCount(0);
   await undatedEntry.getByTestId('public-flow-export-secondary-toggle').click();
 
-  await page.getByTestId('public-flow-date-intent-undated').click();
+  await expect(page.getByTestId('public-flow-artifact-preview')).toHaveAttribute(
+    'data-selected-shape',
+    'checklist',
+  );
   await page.getByTestId('public-flow-save-primary-mobile').click();
-  await page.goto('/calendar');
-  const tray = page.getByTestId('my-flow-calendar-unscheduled-tray');
-  const trayToggle = tray.getByTestId('my-flow-calendar-unscheduled-toggle');
-  if ((await trayToggle.getAttribute('aria-expanded')) !== 'true') await trayToggle.click();
-  await tray.getByTestId('my-flow-calendar-unscheduled-item').first().getByRole('checkbox').check();
-  await tray.getByTestId('my-flow-calendar-unscheduled-date').fill('2026-07-28');
-  await tray.getByTestId('my-flow-calendar-unscheduled-apply').click();
-
   await page.goto('/my?view=flows');
-  const vehicleFlow = await openMyFlowLibraryFlow(page, 'vehicle-inspection-prep', 'record');
+  let vehicleFlow = await openMyFlowLibraryFlow(page, 'vehicle-inspection-prep', 'plan');
+  const firstVehicleRow = vehicleFlow.getByTestId('my-flow-execution-row-shell').first();
+  await firstVehicleRow.getByRole('button', { name: /열기/ }).click();
+  const vehicleDetail = getOpenMyFlowItemDetail(page);
+  const quickEdit = vehicleDetail.getByTestId('my-flow-quick-item-edit');
+  if (await quickEdit.isVisible().catch(() => false)) {
+    await quickEdit.click();
+  } else {
+    const readSummary = vehicleDetail.getByTestId('my-flow-detail-read-summary');
+    if ((await readSummary.getAttribute('open')) === null) {
+      await readSummary.locator(':scope > summary').click();
+    }
+    await readSummary.getByTestId('my-flow-detail-edit-toggle').click();
+  }
+  await vehicleDetail.getByTestId('my-flow-detail-date-input').fill('2026-07-28');
+  await vehicleDetail.getByTestId('my-flow-detail-save-changes').click();
+  await closeOpenMyFlowItemDetail(page);
+
+  vehicleFlow = await openMyFlowLibraryFlow(page, 'vehicle-inspection-prep', 'record');
   const vehicleExport = vehicleFlow.getByTestId('my-flow-export-surface');
   await vehicleExport.getByTestId('my-flow-export-entry').click();
   const scheduledCalendar = vehicleExport.getByTestId('my-flow-export-calendar');
   await expect(scheduledCalendar).toHaveAttribute('data-export-count', '1');
+  const moreFormats = vehicleExport.getByTestId('my-flow-export-more-formats');
+  if (
+    (await moreFormats.isVisible().catch(() => false)) &&
+    (await moreFormats.getAttribute('open')) === null
+  ) {
+    await moreFormats.locator('summary').click();
+  }
+  await expect(scheduledCalendar).toBeVisible();
   const scheduledDownloadPromise = page.waitForEvent('download');
   await scheduledCalendar.click();
   const scheduledDownload = await scheduledDownloadPromise;
@@ -125,8 +143,7 @@ test('whole, selected, and current item exports share scope language and actual 
   const errors = collectErrors(page);
   await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/my?demo=source-backed');
-  await page.getByTestId('my-flow-view-flow').click();
+  await page.goto('/my?demo=source-backed&view=flows');
 
   let flow = await openMyFlowLibraryFlow(page, 'source-backed-moving-d30', 'record');
   const exportSurface = flow.getByTestId('my-flow-export-surface');
@@ -153,13 +170,16 @@ test('whole, selected, and current item exports share scope language and actual 
   await firstRow.getByRole('button', { name: /열기/ }).click();
   const detail = getOpenMyFlowItemDetail(page);
   const currentExport = detail.getByTestId('my-flow-detail-portable-export');
-  if (await currentExport.locator('summary').count()) await currentExport.locator('summary').click();
+  if (await currentExport.locator(':scope > summary').count()) {
+    await currentExport.locator(':scope > summary').click();
+  }
   await currentExport.getByTestId('my-flow-detail-copy-portable-text').click();
   const currentReceipt = currentExport.getByTestId('flow-export-result-receipt');
   await expect(currentReceipt).toHaveAttribute('data-export-scope', 'item');
   await expect(currentReceipt).toHaveAttribute('data-export-output-count', '1');
   await expect(currentReceipt).toContainText('현재 항목');
 
+  await closeOpenMyFlowItemDetail(page);
   await page.setViewportSize({ width: 1024, height: 768 });
   const library = page.getByTestId('my-flow-library-workspace');
   await expect(library).toBeVisible();
@@ -167,11 +187,13 @@ test('whole, selected, and current item exports share scope language and actual 
     .getByTestId('my-flow-library-detail')
     .getByTestId('my-flow-overview-card');
   await expect(wideFlow).toBeVisible();
-  if (!(await wideFlow.getByTestId('my-flow-export-panel').isVisible().catch(() => false))) {
-    await wideFlow.getByTestId('my-flow-export-entry').click();
+  let widePanel = wideFlow.locator('[data-testid="my-flow-export-panel"]:visible');
+  if ((await widePanel.count()) === 0) {
+    await wideFlow.locator('[data-testid="my-flow-export-entry"]:visible').click();
+    widePanel = wideFlow.locator('[data-testid="my-flow-export-panel"]:visible');
   }
-  await expect(wideFlow.getByTestId('my-flow-export-panel')).toBeVisible();
-  await capture(page, wideFlow.getByTestId('my-flow-export-panel'), '04-whole-flow-wide.png');
+  await expect(widePanel).toBeVisible();
+  await capture(page, widePanel, '04-whole-flow-wide.png');
   expect(
     await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth),
   ).toBeLessThanOrEqual(1);
@@ -187,12 +209,24 @@ test('routine export reports one series event and keeps the canonical RRULE', as
   await page.reload();
   await page.getByTestId('public-flow-anchor-input').fill('2026-07-20');
 
-  const entry = page.getByTestId('public-flow-export-secondary-entry');
-  await entry.getByTestId('public-flow-export-secondary-toggle').click();
+  const receipt = await savePublicFlow(page, page.getByTestId('public-flow-save-primary-mobile'));
+  await openSavedPublicFlow(page, receipt);
+  const flow = await openMyFlowLibraryFlow(page, 'washer-tub-clean-monthly', 'record');
+  const entry = flow.getByTestId('my-flow-export-surface');
+  await entry.getByTestId('my-flow-export-entry').click();
   const panel = entry.getByTestId('my-flow-export-panel');
-  await expect(panel.getByTestId('my-flow-export-calendar-summary')).toContainText('반복 일정 1개');
+  const moreFormats = panel.getByTestId('my-flow-export-more-formats');
+  if (
+    (await moreFormats.isVisible().catch(() => false))
+    && (await moreFormats.getAttribute('open')) === null
+  ) {
+    await moreFormats.locator(':scope > summary').click();
+  }
+  await expect(panel.getByTestId('my-flow-export-calendar-summary')).toContainText('반복 계획 1개');
+  const calendar = panel.getByTestId('my-flow-export-calendar');
+  await expect(calendar).toBeVisible();
   const downloadPromise = page.waitForEvent('download');
-  await panel.getByRole('button', { name: /캘린더 파일 받기 1개/ }).click();
+  await calendar.click();
   const download = await downloadPromise;
   const downloadPath = await download.path();
   expect(downloadPath).toBeTruthy();

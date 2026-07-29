@@ -1,0 +1,130 @@
+{
+  "schemaVersion": "flowme-syntax-alternative-comparison-v1",
+  "claimBoundary": "Heuristic comparison using eight frozen cases; not observed-user data.",
+  "alternatives": [
+    {
+      "id": "A_MARKDOWN_FIRST",
+      "label": "Markdown-first split editor",
+      "decision": "secondary_mode",
+      "strengths": ["portability", "raw_text_ownership", "round_trip"],
+      "risks": ["syntax_learning", "metadata_noise", "mobile_symbol_entry"],
+      "scores": {
+        "firstPreview": 3,
+        "structureCorrection": 3,
+        "mobileLoad": 3,
+        "sourceLineage": 4,
+        "roundTrip": 5,
+        "workspaceExpansionRisk": 3
+      }
+    },
+    {
+      "id": "B_BLOCK_OUTLINE",
+      "label": "Block / outline editor",
+      "decision": "contextual_correction_mode",
+      "strengths": ["direct_structure_edit", "role_visibility", "reorder"],
+      "risks": ["general_editor_scope", "mobile_weight", "raw_text_distance"],
+      "scores": {
+        "firstPreview": 2,
+        "structureCorrection": 5,
+        "mobileLoad": 4,
+        "sourceLineage": 3,
+        "roundTrip": 2,
+        "workspaceExpansionRisk": 5
+      }
+    },
+    {
+      "id": "C_HYBRID_TEXT_PREVIEW",
+      "label": "Text composer + structured preview",
+      "decision": "recommended_default",
+      "strengths": ["no_required_syntax", "fast_preview", "lineage", "progressive_correction"],
+      "risks": ["automation_trust", "mapping_explainability", "parser_contract_required"],
+      "scores": {
+        "firstPreview": 5,
+        "structureCorrection": 5,
+        "mobileLoad": 2,
+        "sourceLineage": 5,
+        "roundTrip": 5,
+        "workspaceExpansionRisk": 2
+      }
+    }
+  ],
+  "measurementContract": {
+    "evidenceKind": "heuristic_simulation",
+    "valueOrder": [
+      "inputsBeforePreview",
+      "actionsBeforePreview",
+      "learnedSyntaxCount",
+      "requiredConfirmationCount",
+      "incorrectMappingRisk1to5",
+      "correctionActionCount",
+      "sourceValuesReasked",
+      "provenanceVisibility1to5",
+      "artifactPredictability1to5",
+      "visibleLossFieldCount",
+      "mobileScrollScreens",
+      "competingPrimaryActions",
+      "undoRecovery0to2",
+      "keyboardCompletionBoolean",
+      "horizontalOverflowRisk1to5",
+      "trustBoundaryClarity1to5"
+    ],
+    "note": "Lower is better for counts and risks; higher is better for visibility, predictability, undo/recovery, and trust."
+  },
+  "caseMeasurements": [
+    {
+      "caseId": "TA-C01-MOVING",
+      "A_MARKDOWN_FIRST": [1,4,3,2,2,3,0,4,4,3,5,1,1,true,2,4],
+      "B_BLOCK_OUTLINE": [1,6,2,2,1,2,0,3,5,3,7,2,2,true,4,4],
+      "C_HYBRID_TEXT_PREVIEW": [0,3,0,1,1,1,0,5,5,4,3,1,2,true,1,5]
+    },
+    {
+      "caseId": "TA-C02-VEHICLE",
+      "A_MARKDOWN_FIRST": [0,3,2,1,2,2,0,4,3,2,4,1,1,true,2,4],
+      "B_BLOCK_OUTLINE": [0,5,2,1,1,2,0,3,4,2,6,2,2,true,3,4],
+      "C_HYBRID_TEXT_PREVIEW": [0,2,0,1,1,1,0,5,5,3,3,1,2,true,1,5]
+    },
+    {
+      "caseId": "TA-C03-ALLBLANC-SEQUENCE",
+      "A_MARKDOWN_FIRST": [0,4,3,2,3,3,0,4,3,2,5,1,1,true,2,3],
+      "B_BLOCK_OUTLINE": [0,6,2,2,1,2,0,3,4,2,8,2,2,true,4,4],
+      "C_HYBRID_TEXT_PREVIEW": [0,3,0,1,1,1,0,5,5,4,3,1,2,true,1,5]
+    },
+    {
+      "caseId": "TA-C04-KMOOC",
+      "A_MARKDOWN_FIRST": [0,4,2,1,2,3,0,4,4,3,8,1,1,true,3,4],
+      "B_BLOCK_OUTLINE": [0,8,2,1,1,2,0,3,4,3,12,2,2,true,5,4],
+      "C_HYBRID_TEXT_PREVIEW": [0,3,0,1,1,1,0,5,5,4,4,1,2,true,1,5]
+    },
+    {
+      "caseId": "TA-C05-LIBRIVOX",
+      "A_MARKDOWN_FIRST": [0,4,2,1,3,4,0,4,3,3,12,1,1,true,3,3],
+      "B_BLOCK_OUTLINE": [0,10,2,1,1,2,0,3,4,3,20,2,2,true,5,4],
+      "C_HYBRID_TEXT_PREVIEW": [0,3,0,1,1,1,0,5,5,4,5,1,2,true,1,5]
+    },
+    {
+      "caseId": "TA-C06-NEW-CAR",
+      "A_MARKDOWN_FIRST": [0,4,3,2,4,5,0,4,3,2,7,1,1,true,3,3],
+      "B_BLOCK_OUTLINE": [0,7,2,2,1,3,0,3,4,3,10,2,2,true,4,4],
+      "C_HYBRID_TEXT_PREVIEW": [0,3,0,2,2,2,0,5,5,4,4,1,2,true,1,5]
+    },
+    {
+      "caseId": "TA-C07-SAFETY",
+      "A_MARKDOWN_FIRST": [0,3,3,2,4,4,0,4,3,2,5,1,1,true,2,3],
+      "B_BLOCK_OUTLINE": [0,6,2,2,2,3,0,3,4,2,7,2,2,true,4,4],
+      "C_HYBRID_TEXT_PREVIEW": [0,3,0,1,1,1,0,5,5,4,3,1,2,true,1,5]
+    },
+    {
+      "caseId": "TA-C08-JEJU",
+      "A_MARKDOWN_FIRST": [0,3,2,1,2,2,0,4,4,2,4,1,1,true,2,4],
+      "B_BLOCK_OUTLINE": [0,5,2,1,1,2,0,3,4,2,6,2,2,true,3,4],
+      "C_HYBRID_TEXT_PREVIEW": [0,2,0,1,1,1,0,5,5,3,2,1,2,true,1,5]
+    }
+  ],
+  "recommendation": {
+    "decision": "adopt_hybrid_text_preview",
+    "markdownRole": "portable_input_and_round_trip_view",
+    "outlineRole": "contextual_structure_correction",
+    "propertyRole": "advanced_values_in_inspector",
+    "reason": "The hybrid model gets all eight cases to a useful preview without requiring FlowMe syntax while preserving source text and allowing bounded correction."
+  }
+}

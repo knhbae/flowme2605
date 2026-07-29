@@ -1,0 +1,626 @@
+{
+  "schemaVersion": "flowme-round-trip-results-v2",
+  "generatedAt": "2026-07-28T00:00:00.000Z",
+  "input": {
+    "path": "docs/content-audit/2026-07-27-creator-portfolio-qualified-v2.json",
+    "sha256": "aa85b1da3b4403694895cc0647e462daefaec47930a7f43611a489c29db5a16f",
+    "schemaVersion": "flowme-creator-portfolio-qualified-v2",
+    "logicHandoffBundleIds": [
+      "bundle-moving-d30",
+      "bundle-baby-food-174",
+      "bundle-opic-plan",
+      "bundle-opentutorials-web1-progress",
+      "bundle-new-car-comparison",
+      "bundle-allblanc-7day-abs",
+      "bundle-wtable-summer-banchan-five",
+      "bundle-andstudio-job-prep-videos"
+    ]
+  },
+  "evidenceBoundary": {
+    "canonicalJson": "RUN",
+    "sharedContextRehydration": "RUN",
+    "literalIcsLabParser": "RUN",
+    "externalGoogleOutlookApple": "NOT_RUN",
+    "observedUserValidation": "NOT_RUN"
+  },
+  "testOverlay": {
+    "anchorDate": "2030-01-07",
+    "purpose": "relative schedule serializer test only",
+    "sourceEvidence": false,
+    "publishable": false
+  },
+  "summary": {
+    "canonicalSemanticRoundTripsPassed": 8,
+    "sharedContextSemanticRoundTripsPassed": 8,
+    "literalSyntaxPasses": 8,
+    "totalRecords": 8,
+    "schedulelessVevents": 0,
+    "nestedVeventOrVtodo": 0,
+    "vevents": 112,
+    "vtodos": 48,
+    "sourceRowReferencesRecoveredByLabParser": 250,
+    "uniqueSourceRowsRecoveredByLabParser": 210,
+    "externalClientRoundTrip": "NOT_RUN",
+    "observedUserValidation": "NOT_RUN"
+  },
+  "records": [
+    {
+      "bundleId": "bundle-moving-d30",
+      "input": {
+        "items": 27,
+        "sourceRows": 52,
+        "scheduledItems": 27,
+        "undatedItems": 0
+      },
+      "currentCanonical": {
+        "semanticJsonRoundTrip": true,
+        "stableItemIds": true,
+        "sourceRowsStable": true
+      },
+      "itemFirstSharedContext": {
+        "contextCount": 6,
+        "boundItemCount": 27,
+        "semanticRehydration": true,
+        "independentCompletionOwner": "Item"
+      },
+      "literalIcsFirst": {
+        "parserErrors": [],
+        "itemComponents": 27,
+        "veventCount": 27,
+        "vtodoCount": 0,
+        "schedulelessVevents": 0,
+        "nestedVeventOrVtodo": 0,
+        "sourceRowReferencesRecoveredByLabParser": 52,
+        "sourceRowIdsRecoveredByLabParser": [
+          "bundle-moving-d30-s1-i1-r1",
+          "bundle-moving-d30-s1-i1-r2",
+          "bundle-moving-d30-s1-i1-r3",
+          "bundle-moving-d30-s1-i2-r1",
+          "bundle-moving-d30-s1-i2-r2",
+          "bundle-moving-d30-s1-i3-r1",
+          "bundle-moving-d30-s1-i4-r1",
+          "bundle-moving-d30-s1-i4-r2",
+          "bundle-moving-d30-s2-i1-r1",
+          "bundle-moving-d30-s2-i1-r2",
+          "bundle-moving-d30-s2-i1-r3",
+          "bundle-moving-d30-s2-i2-r1",
+          "bundle-moving-d30-s2-i2-r2",
+          "bundle-moving-d30-s2-i3-r1",
+          "bundle-moving-d30-s2-i3-r2",
+          "bundle-moving-d30-s2-i3-r3",
+          "bundle-moving-d30-s2-i4-r1",
+          "bundle-moving-d30-s2-i4-r2",
+          "bundle-moving-d30-s2-i4-r3",
+          "bundle-moving-d30-s2-i5-r1",
+          "bundle-moving-d30-s2-i5-r2",
+          "bundle-moving-d30-s3-i1-r1",
+          "bundle-moving-d30-s3-i1-r2",
+          "bundle-moving-d30-s3-i2-r1",
+          "bundle-moving-d30-s3-i3-r1",
+          "bundle-moving-d30-s3-i4-r1",
+          "bundle-moving-d30-s3-i5-r1",
+          "bundle-moving-d30-s4-i1-r1",
+          "bundle-moving-d30-s4-i1-r2",
+          "bundle-moving-d30-s4-i1-r3",
+          "bundle-moving-d30-s4-i2-r1",
+          "bundle-moving-d30-s4-i3-r1",
+          "bundle-moving-d30-s4-i4-r1",
+          "bundle-moving-d30-s4-i4-r2",
+          "bundle-moving-d30-s4-i5-r1",
+          "bundle-moving-d30-s4-i5-r2",
+          "bundle-moving-d30-s5-i1-r1",
+          "bundle-moving-d30-s5-i1-r2",
+          "bundle-moving-d30-s5-i2-r1",
+          "bundle-moving-d30-s5-i3-r1",
+          "bundle-moving-d30-s5-i3-r2",
+          "bundle-moving-d30-s6-i1-r1",
+          "bundle-moving-d30-s6-i1-r2",
+          "bundle-moving-d30-s6-i2-r1",
+          "bundle-moving-d30-s6-i2-r2",
+          "bundle-moving-d30-s6-i3-r1",
+          "bundle-moving-d30-s6-i3-r2",
+          "bundle-moving-d30-s6-i3-r3",
+          "bundle-moving-d30-s6-i4-r1",
+          "bundle-moving-d30-s6-i4-r2",
+          "bundle-moving-d30-s6-i5-r1",
+          "bundle-moving-d30-s6-i5-r2"
+        ],
+        "sourceRowReferencesExpected": 52,
+        "completionSemanticsNative": {
+          "vevent": 0,
+          "vtodo": 0,
+          "note": "VTODO status is standard syntax, but external client import/re-export preservation is NOT_RUN."
+        },
+        "externalClientRoundTrip": "NOT_RUN",
+        "vtodoSupport": "NOT_PROVEN",
+        "relatedToSupport": "NOT_PROVEN",
+        "xPropertySupport": "NOT_PROVEN"
+      }
+    },
+    {
+      "bundleId": "bundle-baby-food-174",
+      "input": {
+        "items": 36,
+        "sourceRows": 36,
+        "scheduledItems": 36,
+        "undatedItems": 0
+      },
+      "currentCanonical": {
+        "semanticJsonRoundTrip": true,
+        "stableItemIds": true,
+        "sourceRowsStable": true
+      },
+      "itemFirstSharedContext": {
+        "contextCount": 0,
+        "boundItemCount": 0,
+        "semanticRehydration": true,
+        "independentCompletionOwner": "Item"
+      },
+      "literalIcsFirst": {
+        "parserErrors": [],
+        "itemComponents": 36,
+        "veventCount": 36,
+        "vtodoCount": 0,
+        "schedulelessVevents": 0,
+        "nestedVeventOrVtodo": 0,
+        "sourceRowReferencesRecoveredByLabParser": 36,
+        "sourceRowIdsRecoveredByLabParser": [
+          "bundle-baby-food-174-d174",
+          "bundle-baby-food-174-d175",
+          "bundle-baby-food-174-d176",
+          "bundle-baby-food-174-d177",
+          "bundle-baby-food-174-d178",
+          "bundle-baby-food-174-d179",
+          "bundle-baby-food-174-d180",
+          "bundle-baby-food-174-d181",
+          "bundle-baby-food-174-d182",
+          "bundle-baby-food-174-d183",
+          "bundle-baby-food-174-d184",
+          "bundle-baby-food-174-d185",
+          "bundle-baby-food-174-d186",
+          "bundle-baby-food-174-d187",
+          "bundle-baby-food-174-d188",
+          "bundle-baby-food-174-d189",
+          "bundle-baby-food-174-d190",
+          "bundle-baby-food-174-d191",
+          "bundle-baby-food-174-d192",
+          "bundle-baby-food-174-d193",
+          "bundle-baby-food-174-d194",
+          "bundle-baby-food-174-d195",
+          "bundle-baby-food-174-d196",
+          "bundle-baby-food-174-d197",
+          "bundle-baby-food-174-d198",
+          "bundle-baby-food-174-d199",
+          "bundle-baby-food-174-d200",
+          "bundle-baby-food-174-d201",
+          "bundle-baby-food-174-d202",
+          "bundle-baby-food-174-d203",
+          "bundle-baby-food-174-d204",
+          "bundle-baby-food-174-d205",
+          "bundle-baby-food-174-d206",
+          "bundle-baby-food-174-d207",
+          "bundle-baby-food-174-d208",
+          "bundle-baby-food-174-d209"
+        ],
+        "sourceRowReferencesExpected": 36,
+        "completionSemanticsNative": {
+          "vevent": 0,
+          "vtodo": 0,
+          "note": "VTODO status is standard syntax, but external client import/re-export preservation is NOT_RUN."
+        },
+        "externalClientRoundTrip": "NOT_RUN",
+        "vtodoSupport": "NOT_PROVEN",
+        "relatedToSupport": "NOT_PROVEN",
+        "xPropertySupport": "NOT_PROVEN"
+      }
+    },
+    {
+      "bundleId": "bundle-opic-plan",
+      "input": {
+        "items": 42,
+        "sourceRows": 52,
+        "scheduledItems": 42,
+        "undatedItems": 0
+      },
+      "currentCanonical": {
+        "semanticJsonRoundTrip": true,
+        "stableItemIds": true,
+        "sourceRowsStable": true
+      },
+      "itemFirstSharedContext": {
+        "contextCount": 0,
+        "boundItemCount": 0,
+        "semanticRehydration": true,
+        "independentCompletionOwner": "Item"
+      },
+      "literalIcsFirst": {
+        "parserErrors": [],
+        "itemComponents": 42,
+        "veventCount": 42,
+        "vtodoCount": 0,
+        "schedulelessVevents": 0,
+        "nestedVeventOrVtodo": 0,
+        "sourceRowReferencesRecoveredByLabParser": 92,
+        "sourceRowIdsRecoveredByLabParser": [
+          "bundle-opic-plan-2w-w1-월",
+          "bundle-opic-plan-video-1",
+          "bundle-opic-plan-2w-w1-화",
+          "bundle-opic-plan-video-2",
+          "bundle-opic-plan-2w-w1-수",
+          "bundle-opic-plan-video-3",
+          "bundle-opic-plan-2w-w1-목",
+          "bundle-opic-plan-video-4",
+          "bundle-opic-plan-2w-w1-금",
+          "bundle-opic-plan-video-5",
+          "bundle-opic-plan-2w-w1-토",
+          "bundle-opic-plan-video-1",
+          "bundle-opic-plan-video-2",
+          "bundle-opic-plan-video-3",
+          "bundle-opic-plan-video-4",
+          "bundle-opic-plan-video-5",
+          "bundle-opic-plan-2w-w2-월",
+          "bundle-opic-plan-video-6",
+          "bundle-opic-plan-2w-w2-화",
+          "bundle-opic-plan-video-7",
+          "bundle-opic-plan-2w-w2-수",
+          "bundle-opic-plan-video-8",
+          "bundle-opic-plan-2w-w2-목",
+          "bundle-opic-plan-video-9",
+          "bundle-opic-plan-2w-w2-금",
+          "bundle-opic-plan-video-10",
+          "bundle-opic-plan-2w-w2-토",
+          "bundle-opic-plan-video-6",
+          "bundle-opic-plan-video-7",
+          "bundle-opic-plan-video-8",
+          "bundle-opic-plan-video-9",
+          "bundle-opic-plan-video-10",
+          "bundle-opic-plan-1m-w1-월",
+          "bundle-opic-plan-video-1",
+          "bundle-opic-plan-1m-w1-화",
+          "bundle-opic-plan-video-1",
+          "bundle-opic-plan-1m-w1-수",
+          "bundle-opic-plan-video-1",
+          "bundle-opic-plan-1m-w1-목",
+          "bundle-opic-plan-video-2",
+          "bundle-opic-plan-1m-w1-금",
+          "bundle-opic-plan-video-2",
+          "bundle-opic-plan-1m-w1-토",
+          "bundle-opic-plan-video-2",
+          "bundle-opic-plan-1m-w2-월",
+          "bundle-opic-plan-video-3",
+          "bundle-opic-plan-1m-w2-화",
+          "bundle-opic-plan-video-3",
+          "bundle-opic-plan-1m-w2-수",
+          "bundle-opic-plan-video-3",
+          "bundle-opic-plan-1m-w2-목",
+          "bundle-opic-plan-video-4",
+          "bundle-opic-plan-1m-w2-금",
+          "bundle-opic-plan-video-4",
+          "bundle-opic-plan-1m-w2-토",
+          "bundle-opic-plan-video-4",
+          "bundle-opic-plan-1m-w3-월",
+          "bundle-opic-plan-video-5",
+          "bundle-opic-plan-1m-w3-화",
+          "bundle-opic-plan-video-5",
+          "bundle-opic-plan-1m-w3-수",
+          "bundle-opic-plan-video-5",
+          "bundle-opic-plan-1m-w3-목",
+          "bundle-opic-plan-video-6",
+          "bundle-opic-plan-1m-w3-금",
+          "bundle-opic-plan-video-6",
+          "bundle-opic-plan-1m-w3-토",
+          "bundle-opic-plan-video-6",
+          "bundle-opic-plan-1m-w4-월",
+          "bundle-opic-plan-video-7",
+          "bundle-opic-plan-1m-w4-화",
+          "bundle-opic-plan-video-7",
+          "bundle-opic-plan-1m-w4-수",
+          "bundle-opic-plan-video-7",
+          "bundle-opic-plan-1m-w4-목",
+          "bundle-opic-plan-video-8",
+          "bundle-opic-plan-1m-w4-금",
+          "bundle-opic-plan-video-8",
+          "bundle-opic-plan-1m-w4-토",
+          "bundle-opic-plan-video-8",
+          "bundle-opic-plan-1m-w5-월",
+          "bundle-opic-plan-video-9",
+          "bundle-opic-plan-1m-w5-화",
+          "bundle-opic-plan-video-9",
+          "bundle-opic-plan-1m-w5-수",
+          "bundle-opic-plan-video-9",
+          "bundle-opic-plan-1m-w5-목",
+          "bundle-opic-plan-video-10",
+          "bundle-opic-plan-1m-w5-금",
+          "bundle-opic-plan-video-10",
+          "bundle-opic-plan-1m-w5-토",
+          "bundle-opic-plan-video-10"
+        ],
+        "sourceRowReferencesExpected": 92,
+        "completionSemanticsNative": {
+          "vevent": 0,
+          "vtodo": 0,
+          "note": "VTODO status is standard syntax, but external client import/re-export preservation is NOT_RUN."
+        },
+        "externalClientRoundTrip": "NOT_RUN",
+        "vtodoSupport": "NOT_PROVEN",
+        "relatedToSupport": "NOT_PROVEN",
+        "xPropertySupport": "NOT_PROVEN"
+      }
+    },
+    {
+      "bundleId": "bundle-opentutorials-web1-progress",
+      "input": {
+        "items": 26,
+        "sourceRows": 26,
+        "scheduledItems": 0,
+        "undatedItems": 26
+      },
+      "currentCanonical": {
+        "semanticJsonRoundTrip": true,
+        "stableItemIds": true,
+        "sourceRowsStable": true
+      },
+      "itemFirstSharedContext": {
+        "contextCount": 0,
+        "boundItemCount": 0,
+        "semanticRehydration": true,
+        "independentCompletionOwner": "Item"
+      },
+      "literalIcsFirst": {
+        "parserErrors": [],
+        "itemComponents": 26,
+        "veventCount": 0,
+        "vtodoCount": 26,
+        "schedulelessVevents": 0,
+        "nestedVeventOrVtodo": 0,
+        "sourceRowReferencesRecoveredByLabParser": 26,
+        "sourceRowIdsRecoveredByLabParser": [
+          "bundle-opentutorials-web1-progress-s1-i1-r1",
+          "bundle-opentutorials-web1-progress-s1-i2-r1",
+          "bundle-opentutorials-web1-progress-s1-i3-r1",
+          "bundle-opentutorials-web1-progress-s1-i4-r1",
+          "bundle-opentutorials-web1-progress-s1-i5-r1",
+          "bundle-opentutorials-web1-progress-s1-i6-r1",
+          "bundle-opentutorials-web1-progress-s1-i7-r1",
+          "bundle-opentutorials-web1-progress-s1-i8-r1",
+          "bundle-opentutorials-web1-progress-s1-i9-r1",
+          "bundle-opentutorials-web1-progress-s1-i10-r1",
+          "bundle-opentutorials-web1-progress-s1-i11-r1",
+          "bundle-opentutorials-web1-progress-s1-i12-r1",
+          "bundle-opentutorials-web1-progress-s1-i13-r1",
+          "bundle-opentutorials-web1-progress-s1-i14-r1",
+          "bundle-opentutorials-web1-progress-s1-i15-r1",
+          "bundle-opentutorials-web1-progress-s1-i16-r1",
+          "bundle-opentutorials-web1-progress-s1-i17-r1",
+          "bundle-opentutorials-web1-progress-s1-i18-r1",
+          "bundle-opentutorials-web1-progress-s1-i19-r1",
+          "bundle-opentutorials-web1-progress-s1-i20-r1",
+          "bundle-opentutorials-web1-progress-s1-i21-r1",
+          "bundle-opentutorials-web1-progress-s1-i22-r1",
+          "bundle-opentutorials-web1-progress-s1-i23-r1",
+          "bundle-opentutorials-web1-progress-s1-i24-r1",
+          "bundle-opentutorials-web1-progress-s1-i25-r1",
+          "bundle-opentutorials-web1-progress-s1-i26-r1"
+        ],
+        "sourceRowReferencesExpected": 26,
+        "completionSemanticsNative": {
+          "vevent": 0,
+          "vtodo": 26,
+          "note": "VTODO status is standard syntax, but external client import/re-export preservation is NOT_RUN."
+        },
+        "externalClientRoundTrip": "NOT_RUN",
+        "vtodoSupport": "NOT_PROVEN",
+        "relatedToSupport": "NOT_PROVEN",
+        "xPropertySupport": "NOT_PROVEN"
+      }
+    },
+    {
+      "bundleId": "bundle-new-car-comparison",
+      "input": {
+        "items": 14,
+        "sourceRows": 29,
+        "scheduledItems": 0,
+        "undatedItems": 14
+      },
+      "currentCanonical": {
+        "semanticJsonRoundTrip": true,
+        "stableItemIds": true,
+        "sourceRowsStable": true
+      },
+      "itemFirstSharedContext": {
+        "contextCount": 0,
+        "boundItemCount": 0,
+        "semanticRehydration": true,
+        "independentCompletionOwner": "Item"
+      },
+      "literalIcsFirst": {
+        "parserErrors": [],
+        "itemComponents": 14,
+        "veventCount": 0,
+        "vtodoCount": 14,
+        "schedulelessVevents": 0,
+        "nestedVeventOrVtodo": 0,
+        "sourceRowReferencesRecoveredByLabParser": 29,
+        "sourceRowIdsRecoveredByLabParser": [
+          "bundle-new-car-comparison-s1-i1-r1",
+          "bundle-new-car-comparison-s1-i1-r2",
+          "bundle-new-car-comparison-s1-i2-r1",
+          "bundle-new-car-comparison-s1-i2-r2",
+          "bundle-new-car-comparison-s2-i1-r1",
+          "bundle-new-car-comparison-s2-i1-r2",
+          "bundle-new-car-comparison-s3-i1-r1",
+          "bundle-new-car-comparison-s3-i1-r2",
+          "bundle-new-car-comparison-s3-i2-r1",
+          "bundle-new-car-comparison-s3-i2-r2",
+          "bundle-new-car-comparison-s4-i1-r1",
+          "bundle-new-car-comparison-s4-i1-r2",
+          "bundle-new-car-comparison-s4-i1-r3",
+          "bundle-new-car-comparison-s4-i2-r1",
+          "bundle-new-car-comparison-s4-i2-r2",
+          "bundle-new-car-comparison-s5-i1-r1",
+          "bundle-new-car-comparison-s5-i2-r1",
+          "bundle-new-car-comparison-s5-i2-r2",
+          "bundle-new-car-comparison-s5-i2-r3",
+          "bundle-new-car-comparison-s6-i1-r1",
+          "bundle-new-car-comparison-s6-i1-r2",
+          "bundle-new-car-comparison-s6-i2-r1",
+          "bundle-new-car-comparison-s6-i2-r2",
+          "bundle-new-car-comparison-s7-i1-r1",
+          "bundle-new-car-comparison-s7-i1-r2",
+          "bundle-new-car-comparison-s8-i1-r1",
+          "bundle-new-car-comparison-s8-i1-r2",
+          "bundle-new-car-comparison-s8-i2-r1",
+          "bundle-new-car-comparison-s8-i2-r2"
+        ],
+        "sourceRowReferencesExpected": 29,
+        "completionSemanticsNative": {
+          "vevent": 0,
+          "vtodo": 14,
+          "note": "VTODO status is standard syntax, but external client import/re-export preservation is NOT_RUN."
+        },
+        "externalClientRoundTrip": "NOT_RUN",
+        "vtodoSupport": "NOT_PROVEN",
+        "relatedToSupport": "NOT_PROVEN",
+        "xPropertySupport": "NOT_PROVEN"
+      }
+    },
+    {
+      "bundleId": "bundle-allblanc-7day-abs",
+      "input": {
+        "items": 7,
+        "sourceRows": 7,
+        "scheduledItems": 7,
+        "undatedItems": 0
+      },
+      "currentCanonical": {
+        "semanticJsonRoundTrip": true,
+        "stableItemIds": true,
+        "sourceRowsStable": true
+      },
+      "itemFirstSharedContext": {
+        "contextCount": 0,
+        "boundItemCount": 0,
+        "semanticRehydration": true,
+        "independentCompletionOwner": "Item"
+      },
+      "literalIcsFirst": {
+        "parserErrors": [],
+        "itemComponents": 7,
+        "veventCount": 7,
+        "vtodoCount": 0,
+        "schedulelessVevents": 0,
+        "nestedVeventOrVtodo": 0,
+        "sourceRowReferencesRecoveredByLabParser": 7,
+        "sourceRowIdsRecoveredByLabParser": [
+          "bundle-allblanc-7day-abs-day-1",
+          "bundle-allblanc-7day-abs-day-2",
+          "bundle-allblanc-7day-abs-day-3",
+          "bundle-allblanc-7day-abs-day-4",
+          "bundle-allblanc-7day-abs-day-5",
+          "bundle-allblanc-7day-abs-day-6",
+          "bundle-allblanc-7day-abs-day-7"
+        ],
+        "sourceRowReferencesExpected": 7,
+        "completionSemanticsNative": {
+          "vevent": 0,
+          "vtodo": 0,
+          "note": "VTODO status is standard syntax, but external client import/re-export preservation is NOT_RUN."
+        },
+        "externalClientRoundTrip": "NOT_RUN",
+        "vtodoSupport": "NOT_PROVEN",
+        "relatedToSupport": "NOT_PROVEN",
+        "xPropertySupport": "NOT_PROVEN"
+      }
+    },
+    {
+      "bundleId": "bundle-wtable-summer-banchan-five",
+      "input": {
+        "items": 5,
+        "sourceRows": 5,
+        "scheduledItems": 0,
+        "undatedItems": 5
+      },
+      "currentCanonical": {
+        "semanticJsonRoundTrip": true,
+        "stableItemIds": true,
+        "sourceRowsStable": true
+      },
+      "itemFirstSharedContext": {
+        "contextCount": 0,
+        "boundItemCount": 0,
+        "semanticRehydration": true,
+        "independentCompletionOwner": "Item"
+      },
+      "literalIcsFirst": {
+        "parserErrors": [],
+        "itemComponents": 5,
+        "veventCount": 0,
+        "vtodoCount": 5,
+        "schedulelessVevents": 0,
+        "nestedVeventOrVtodo": 0,
+        "sourceRowReferencesRecoveredByLabParser": 5,
+        "sourceRowIdsRecoveredByLabParser": [
+          "wtable-summer-1",
+          "wtable-summer-2",
+          "wtable-summer-3",
+          "wtable-summer-4",
+          "wtable-summer-5"
+        ],
+        "sourceRowReferencesExpected": 5,
+        "completionSemanticsNative": {
+          "vevent": 0,
+          "vtodo": 5,
+          "note": "VTODO status is standard syntax, but external client import/re-export preservation is NOT_RUN."
+        },
+        "externalClientRoundTrip": "NOT_RUN",
+        "vtodoSupport": "NOT_PROVEN",
+        "relatedToSupport": "NOT_PROVEN",
+        "xPropertySupport": "NOT_PROVEN"
+      }
+    },
+    {
+      "bundleId": "bundle-andstudio-job-prep-videos",
+      "input": {
+        "items": 3,
+        "sourceRows": 3,
+        "scheduledItems": 0,
+        "undatedItems": 3
+      },
+      "currentCanonical": {
+        "semanticJsonRoundTrip": true,
+        "stableItemIds": true,
+        "sourceRowsStable": true
+      },
+      "itemFirstSharedContext": {
+        "contextCount": 0,
+        "boundItemCount": 0,
+        "semanticRehydration": true,
+        "independentCompletionOwner": "Item"
+      },
+      "literalIcsFirst": {
+        "parserErrors": [],
+        "itemComponents": 3,
+        "veventCount": 0,
+        "vtodoCount": 3,
+        "schedulelessVevents": 0,
+        "nestedVeventOrVtodo": 0,
+        "sourceRowReferencesRecoveredByLabParser": 3,
+        "sourceRowIdsRecoveredByLabParser": [
+          "andstudio-job-1",
+          "andstudio-job-2",
+          "andstudio-job-3"
+        ],
+        "sourceRowReferencesExpected": 3,
+        "completionSemanticsNative": {
+          "vevent": 0,
+          "vtodo": 3,
+          "note": "VTODO status is standard syntax, but external client import/re-export preservation is NOT_RUN."
+        },
+        "externalClientRoundTrip": "NOT_RUN",
+        "vtodoSupport": "NOT_PROVEN",
+        "relatedToSupport": "NOT_PROVEN",
+        "xPropertySupport": "NOT_PROVEN"
+      }
+    }
+  ]
+}

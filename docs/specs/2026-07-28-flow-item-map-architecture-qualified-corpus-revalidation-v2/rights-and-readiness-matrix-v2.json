@@ -1,0 +1,385 @@
+{
+  "schemaVersion": "flowme-rights-and-readiness-matrix-v2",
+  "generatedAt": "2026-07-28T00:00:00.000Z",
+  "axisContract": {
+    "architectureFit": "Outcome of the v2 architecture run; currently pending.",
+    "logicReadiness": "Whether the frozen source rows can drive conversion logic.",
+    "publicReadiness": "Whether a result is ready for public catalog use.",
+    "rightsStatus": "Rights basis or restriction recorded by Qualified v2.",
+    "personalConversionAvailability": "Separate personal/internal conversion boundary; never inferred as public redistribution permission.",
+    "sourceCompleteness": "Whether rows exist for logic revalidation.",
+    "reviewAxes": "Locale, safety, and privacy remain independent and unknown when Qualified v2 did not record them."
+  },
+  "normalCorpusSummary": {
+    "records": 8,
+    "architectureFit": {
+      "Go": 8
+    },
+    "logicReadiness": {
+      "Go": 8
+    },
+    "publicReadiness": {
+      "Go": 1,
+      "Hold": 1,
+      "Modify": 6
+    },
+    "rightsStatus": {
+      "link_metadata_only": 2,
+      "permission_required": 4,
+      "private_conversion_only": 1,
+      "public_conversion_allowed": 1
+    }
+  },
+  "historicalBoundarySummary": {
+    "records": 2,
+    "excludedFromNormalCorpusTotals": 2,
+    "creatorIds": [
+      "travel-triple",
+      "hobby-fitpet"
+    ]
+  },
+  "records": [
+    {
+      "creatorId": "home-ajd",
+      "creatorName": "아정당",
+      "bundleId": "bundle-moving-d30",
+      "title": "이사 D-30 체크리스트",
+      "corpusRole": "normal_qualified",
+      "includedInNormalCorpusTotals": true,
+      "architectureFit": "Go",
+      "logicReadiness": "Go",
+      "publicReadiness": "Modify",
+      "rightsStatus": "permission_required",
+      "personalConversionAvailability": {
+        "status": "not_confirmed",
+        "scope": "internal_revalidation_allowed_public_redistribution_requires_permission"
+      },
+      "sourceCompleteness": "row_set_ready_for_logic_revalidation",
+      "localeReview": "not_separately_recorded_in_qualified_v2",
+      "safetyReview": "not_flagged_by_qualified_v2",
+      "privacyReview": "not_separately_recorded_in_qualified_v2",
+      "promotionState": "requires_rights_or_scope_modification",
+      "sourceRowCount": 52,
+      "qualificationReason": "이사일을 기준으로 D-30·D-10·D-3·D-1·당일 할 일이 생긴다. 실제 source row와 Item 대응이 준비됐다.",
+      "publicReason": "내부 로직 검증은 가능하지만 공개 Flow 전환에는 권리자 확인 또는 제휴가 필요하다.",
+      "rightsEvidence": {
+        "evidenceClass": "conservative_policy_default",
+        "evidenceUrl": "https://www.ajd.co.kr/contents/basic-tip/detail/%EC%9D%B4%EC%82%AC_%EC%A4%80%EB%B9%84_%EC%B2%B4%ED%81%AC%EB%A6%AC%EC%8A%A4%ED%8A%B8_2024_%EC%99%84%EB%B2%BD%EC%A0%95%EB%A6%AC!-23363",
+        "evidenceLocator": null,
+        "reason": "공개 페이지의 제목·링크는 표시할 수 있지만, D-day 체크 행 전체를 공개 Flow로 재배포하려면 권리자 확인이 필요하다.",
+        "publicUseBoundary": "내부 로직 검증은 가능하지만 공개 Flow 전환에는 권리자 확인 또는 제휴가 필요하다.",
+        "attributionRequired": true,
+        "observedAt": "2026-07-27"
+      },
+      "architectureFitReason": "27개 scheduled Item만 VEVENT 대상이며 0개 undated Item에는 날짜를 발명하지 않는다. Item completion과 SourceRow는 canonical에 남는다."
+    },
+    {
+      "creatorId": "family-babyfood016",
+      "creatorName": "뿐이토핑이유식",
+      "bundleId": "bundle-baby-food-174",
+      "title": "초기 이유식 D+174~209 식단",
+      "corpusRole": "normal_qualified",
+      "includedInNormalCorpusTotals": true,
+      "architectureFit": "Go",
+      "logicReadiness": "Go",
+      "publicReadiness": "Hold",
+      "rightsStatus": "private_conversion_only",
+      "personalConversionAvailability": {
+        "status": "allowed",
+        "scope": "private_execution_only_no_catalog_or_shared_flow"
+      },
+      "sourceCompleteness": "row_set_ready_for_logic_revalidation",
+      "localeReview": "not_separately_recorded_in_qualified_v2",
+      "safetyReview": "not_flagged_by_qualified_v2",
+      "privacyReview": "private_source_boundary_present",
+      "promotionState": "public_hold",
+      "sourceRowCount": 36,
+      "qualificationReason": "시작일과 시작 구간에 맞춰 D+174~209 식단 행이 일정으로 생긴다. 실제 source row와 Item 대응이 준비됐다.",
+      "publicReason": "공개 보류: 비밀번호가 있는 식단 파일 행은 내부 검토와 개인 실행 변환에만 사용하며 공개 카탈로그에는 제작자 허가가 필요하다.",
+      "rightsEvidence": {
+        "evidenceClass": "conservative_policy_default",
+        "evidenceUrl": "https://blog.naver.com/01695258757/222768860919",
+        "evidenceLocator": null,
+        "reason": "비밀번호가 있는 식단 파일 행은 내부 검토와 개인 실행 변환에만 사용하며 공개 카탈로그에는 제작자 허가가 필요하다.",
+        "publicUseBoundary": "내부 검토와 개인 실행용 변환만 허용한다. 공개 카탈로그·공유 Flow에는 넣지 않는다.",
+        "attributionRequired": true,
+        "observedAt": "2026-07-27"
+      },
+      "architectureFitReason": "36개 scheduled Item만 VEVENT 대상이며 0개 undated Item에는 날짜를 발명하지 않는다. Item completion과 SourceRow는 canonical에 남는다."
+    },
+    {
+      "creatorId": "study-mansour",
+      "creatorName": "오픽만수르",
+      "bundleId": "bundle-opic-plan",
+      "title": "오픽 모의고사 계획표",
+      "corpusRole": "normal_qualified",
+      "includedInNormalCorpusTotals": true,
+      "architectureFit": "Go",
+      "logicReadiness": "Go",
+      "publicReadiness": "Modify",
+      "rightsStatus": "permission_required",
+      "personalConversionAvailability": {
+        "status": "not_confirmed",
+        "scope": "internal_revalidation_allowed_public_redistribution_requires_permission"
+      },
+      "sourceCompleteness": "row_set_ready_for_logic_revalidation",
+      "localeReview": "not_separately_recorded_in_qualified_v2",
+      "safetyReview": "not_flagged_by_qualified_v2",
+      "privacyReview": "not_separately_recorded_in_qualified_v2",
+      "promotionState": "requires_rights_or_scope_modification",
+      "sourceRowCount": 52,
+      "qualificationReason": "선택한 2주·1달 계획과 시작일에 맞춰 회차별 영상 링크가 배치된다. 실제 source row와 Item 대응이 준비됐다.",
+      "publicReason": "내부 로직 검증은 가능하지만 공개 Flow 전환에는 권리자 확인 또는 제휴가 필요하다.",
+      "rightsEvidence": {
+        "evidenceClass": "conservative_policy_default",
+        "evidenceUrl": "https://mansour.tistory.com/entry/%EC%98%A4%ED%94%BD-%EB%AA%A8%EC%9D%98%EA%B3%A0%EC%82%AC-%EA%B3%B5%EB%B6%80-%EB%B0%A9%EB%B2%95",
+        "evidenceLocator": null,
+        "reason": "공개 글·영상 링크는 표시할 수 있으나 계획표 파일과 회차 구조를 공개 Flow로 배포하려면 제작자 확인이 필요하다.",
+        "publicUseBoundary": "내부 로직 검증은 가능하지만 공개 Flow 전환에는 권리자 확인 또는 제휴가 필요하다.",
+        "attributionRequired": true,
+        "observedAt": "2026-07-27"
+      },
+      "architectureFitReason": "42개 scheduled Item만 VEVENT 대상이며 0개 undated Item에는 날짜를 발명하지 않는다. Item completion과 SourceRow는 canonical에 남는다."
+    },
+    {
+      "creatorId": "study-opentutorials",
+      "creatorName": "생활코딩",
+      "bundleId": "bundle-opentutorials-web1-progress",
+      "title": "생활코딩 WEB1 진도표",
+      "corpusRole": "normal_qualified",
+      "includedInNormalCorpusTotals": true,
+      "architectureFit": "Go",
+      "logicReadiness": "Go",
+      "publicReadiness": "Go",
+      "rightsStatus": "public_conversion_allowed",
+      "personalConversionAvailability": {
+        "status": "allowed",
+        "scope": "public_and_personal_with_attribution"
+      },
+      "sourceCompleteness": "row_set_ready_for_logic_revalidation",
+      "localeReview": "not_separately_recorded_in_qualified_v2",
+      "safetyReview": "not_flagged_by_qualified_v2",
+      "privacyReview": "not_separately_recorded_in_qualified_v2",
+      "promotionState": "public_candidate_with_recorded_attribution",
+      "sourceRowCount": 26,
+      "qualificationReason": "WEB1 토픽 26개가 원문 순서대로 진도 체크 목록에 생긴다. 실제 source row와 Item 대응이 준비됐다.",
+      "publicReason": "직접 확인한 공개 활용 근거가 있으며 source row와 출처 표시가 준비됐다.",
+      "rightsEvidence": {
+        "evidenceClass": "observed_explicit_permission",
+        "evidenceUrl": "https://opentutorials.org/course/3084",
+        "evidenceLocator": "수업의 저작권 정책",
+        "reason": "WEB1 원문이 모든 내용과 이미지의 자유로운 수정·배포 가능성을 명시한다. 이 판정은 WEB1 해당 코스에만 적용한다.",
+        "publicUseBoundary": "명시된 공개 범위 안에서 원문 출처와 링크를 유지해 Flow로 전환할 수 있다.",
+        "attributionRequired": true,
+        "observedAt": "2026-07-27"
+      },
+      "architectureFitReason": "26개 undated Item을 VEVENT로 만들지 않고 sheet를 primary 비Calendar projection으로 유지한다."
+    },
+    {
+      "creatorId": "money-getcha",
+      "creatorName": "겟차",
+      "bundleId": "bundle-new-car-comparison",
+      "title": "신차 구매 8단계",
+      "corpusRole": "normal_qualified",
+      "includedInNormalCorpusTotals": true,
+      "architectureFit": "Go",
+      "logicReadiness": "Go",
+      "publicReadiness": "Modify",
+      "rightsStatus": "permission_required",
+      "personalConversionAvailability": {
+        "status": "not_confirmed",
+        "scope": "internal_revalidation_allowed_public_redistribution_requires_permission"
+      },
+      "sourceCompleteness": "row_set_ready_for_logic_revalidation",
+      "localeReview": "not_separately_recorded_in_qualified_v2",
+      "safetyReview": "required_for_projection_and_publication",
+      "privacyReview": "not_separately_recorded_in_qualified_v2",
+      "promotionState": "requires_rights_or_scope_modification",
+      "sourceRowCount": 29,
+      "qualificationReason": "예산 설정부터 차량 등록까지 8단계 체크리스트가 생긴다. 실제 source row와 Item 대응이 준비됐다.",
+      "publicReason": "내부 로직 검증은 가능하지만 공개 Flow 전환에는 권리자 확인 또는 제휴가 필요하다.",
+      "rightsEvidence": {
+        "evidenceClass": "conservative_policy_default",
+        "evidenceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+        "evidenceLocator": null,
+        "reason": "구매 절차 제목·원문 링크는 표시할 수 있지만 상세 체크 행을 공개 재배포하려면 브랜드 허가가 필요하다.",
+        "publicUseBoundary": "내부 로직 검증은 가능하지만 공개 Flow 전환에는 권리자 확인 또는 제휴가 필요하다.",
+        "attributionRequired": true,
+        "observedAt": "2026-07-27"
+      },
+      "architectureFitReason": "14개 undated Item을 VEVENT로 만들지 않고 checklist를 primary 비Calendar projection으로 유지한다."
+    },
+    {
+      "creatorId": "health-allblanc",
+      "creatorName": "Allblanc TV",
+      "bundleId": "bundle-allblanc-7day-abs",
+      "title": "Allblanc 7일 복근 챌린지",
+      "corpusRole": "normal_qualified",
+      "includedInNormalCorpusTotals": true,
+      "architectureFit": "Go",
+      "logicReadiness": "Go",
+      "publicReadiness": "Modify",
+      "rightsStatus": "link_metadata_only",
+      "personalConversionAvailability": {
+        "status": "allowed_with_limits",
+        "scope": "title_url_public_order_and_private_overlay_only"
+      },
+      "sourceCompleteness": "row_set_ready_for_logic_revalidation",
+      "localeReview": "not_separately_recorded_in_qualified_v2",
+      "safetyReview": "required_for_projection_and_publication",
+      "privacyReview": "not_separately_recorded_in_qualified_v2",
+      "promotionState": "requires_rights_or_scope_modification",
+      "sourceRowCount": 7,
+      "qualificationReason": "7일 동안 하루 한 편의 영상 제목과 링크가 일정에 생긴다. 실제 source row와 Item 대응이 준비됐다.",
+      "publicReason": "제목·URL·공개 순서 같은 최소 메타데이터만 노출한다. 본문·자막·방법은 원문으로 돌려보낸다.",
+      "rightsEvidence": {
+        "evidenceClass": "conservative_policy_default",
+        "evidenceUrl": "https://www.youtube.com/playlist?list=PLhWr-n-L9kWj5NFTs11Yb8CpZeKC-edMq",
+        "evidenceLocator": null,
+        "reason": "공개 재생목록의 영상 제목·URL·순서만 사용하며 운동 설명이나 자막을 복제하지 않는다.",
+        "publicUseBoundary": "제목·URL·공개 순서 같은 최소 메타데이터만 노출한다. 본문·자막·방법은 원문으로 돌려보낸다.",
+        "attributionRequired": true,
+        "observedAt": "2026-07-27"
+      },
+      "architectureFitReason": "7개 scheduled Item만 VEVENT 대상이며 0개 undated Item에는 날짜를 발명하지 않는다. Item completion과 SourceRow는 canonical에 남는다."
+    },
+    {
+      "creatorId": "meals-wtable",
+      "creatorName": "우리의식탁",
+      "bundleId": "bundle-wtable-summer-banchan-five",
+      "title": "이번 주 여름 반찬 5가지",
+      "corpusRole": "normal_qualified",
+      "includedInNormalCorpusTotals": true,
+      "architectureFit": "Go",
+      "logicReadiness": "Go",
+      "publicReadiness": "Modify",
+      "rightsStatus": "permission_required",
+      "personalConversionAvailability": {
+        "status": "not_confirmed",
+        "scope": "internal_revalidation_allowed_public_redistribution_requires_permission"
+      },
+      "sourceCompleteness": "row_set_ready_for_logic_revalidation",
+      "localeReview": "not_separately_recorded_in_qualified_v2",
+      "safetyReview": "not_flagged_by_qualified_v2",
+      "privacyReview": "not_separately_recorded_in_qualified_v2",
+      "promotionState": "requires_rights_or_scope_modification",
+      "sourceRowCount": 5,
+      "qualificationReason": "반찬 5개의 제목과 레시피 링크가 선택 가능한 목록으로 생긴다. 실제 source row와 Item 대응이 준비됐다.",
+      "publicReason": "내부 로직 검증은 가능하지만 공개 Flow 전환에는 권리자 확인 또는 제휴가 필요하다.",
+      "rightsEvidence": {
+        "evidenceClass": "conservative_policy_default",
+        "evidenceUrl": "https://wtable.co.kr/curations/562",
+        "evidenceLocator": null,
+        "reason": "큐레이션 제목·레시피 링크는 표시할 수 있지만 메뉴 묶음과 조리 상세를 공개 Flow로 배포하려면 브랜드 허가가 필요하다.",
+        "publicUseBoundary": "내부 로직 검증은 가능하지만 공개 Flow 전환에는 권리자 확인 또는 제휴가 필요하다.",
+        "attributionRequired": true,
+        "observedAt": "2026-07-27"
+      },
+      "architectureFitReason": "5개 undated Item을 VEVENT로 만들지 않고 checklist를 primary 비Calendar projection으로 유지한다."
+    },
+    {
+      "creatorId": "work-andstudio",
+      "creatorName": "AND Studio",
+      "bundleId": "bundle-andstudio-job-prep-videos",
+      "title": "AND 취업 준비 영상 3편",
+      "corpusRole": "normal_qualified",
+      "includedInNormalCorpusTotals": true,
+      "architectureFit": "Go",
+      "logicReadiness": "Go",
+      "publicReadiness": "Modify",
+      "rightsStatus": "link_metadata_only",
+      "personalConversionAvailability": {
+        "status": "allowed_with_limits",
+        "scope": "title_url_public_order_and_private_overlay_only"
+      },
+      "sourceCompleteness": "row_set_ready_for_logic_revalidation",
+      "localeReview": "not_separately_recorded_in_qualified_v2",
+      "safetyReview": "not_flagged_by_qualified_v2",
+      "privacyReview": "not_separately_recorded_in_qualified_v2",
+      "promotionState": "requires_rights_or_scope_modification",
+      "sourceRowCount": 3,
+      "qualificationReason": "지원동기·산업분석·면접 영상 3편이 링크 큐로 생긴다. 실제 source row와 Item 대응이 준비됐다.",
+      "publicReason": "제목·URL·공개 순서 같은 최소 메타데이터만 노출한다. 본문·자막·방법은 원문으로 돌려보낸다.",
+      "rightsEvidence": {
+        "evidenceClass": "conservative_policy_default",
+        "evidenceUrl": "https://www.youtube.com/watch?v=OIliv2jpDyM",
+        "evidenceLocator": null,
+        "reason": "영상 제목·URL을 학습 큐로 제공할 수 있지만 영상의 6단계 내용과 자막은 허가 없이 복제하지 않는다.",
+        "publicUseBoundary": "제목·URL·공개 순서 같은 최소 메타데이터만 노출한다. 본문·자막·방법은 원문으로 돌려보낸다.",
+        "attributionRequired": true,
+        "observedAt": "2026-07-27"
+      },
+      "architectureFitReason": "3개 undated Item을 VEVENT로 만들지 않고 todo를 primary 비Calendar projection으로 유지한다."
+    },
+    {
+      "creatorId": "travel-triple",
+      "creatorName": "트리플",
+      "bundleId": "bundle-triple-cappadocia-departure",
+      "title": "카파도키아 출국 전 체크",
+      "corpusRole": "historical_boundary",
+      "includedInNormalCorpusTotals": false,
+      "architectureFit": "not_rerun_in_normal_corpus",
+      "logicReadiness": "Modify",
+      "publicReadiness": "Modify",
+      "rightsStatus": "permission_required",
+      "personalConversionAvailability": {
+        "status": "not_confirmed",
+        "scope": "internal_revalidation_allowed_public_redistribution_requires_permission"
+      },
+      "sourceCompleteness": "historical_rows_exist_but_not_admitted_to_normal_corpus",
+      "localeReview": "not_separately_recorded_in_qualified_v2",
+      "safetyReview": "not_flagged_by_qualified_v2",
+      "privacyReview": "not_separately_recorded_in_qualified_v2",
+      "promotionState": "boundary_appendix_only",
+      "sourceRowCount": 8,
+      "qualificationReason": "체크 행은 있으나 저장 15·리뷰 1 수준이고 목적지 정보 최신성 관리 주체가 불분명하다.",
+      "publicReason": "내부 로직 검증은 가능하지만 공개 Flow 전환에는 권리자 확인 또는 제휴가 필요하다.",
+      "boundaryReason": "체크 행은 있으나 저장 15·리뷰 1 수준이고 목적지 정보 최신성 관리 주체가 불분명하다.",
+      "promotionCondition": "최신 업데이트 책임과 목적지별 구조화 행을 확보한다.",
+      "rightsEvidence": {
+        "evidenceClass": "conservative_policy_default",
+        "evidenceUrl": "https://triple.guide/articles/6bebeecc-83e2-4b03-8b22-04dccf80c729",
+        "evidenceLocator": null,
+        "reason": "플랫폼 가이드의 출국 체크 행과 목적지 정보를 공개 재구성하려면 플랫폼 허가와 최신성 확인이 필요하다.",
+        "publicUseBoundary": "내부 로직 검증은 가능하지만 공개 Flow 전환에는 권리자 확인 또는 제휴가 필요하다.",
+        "attributionRequired": true,
+        "observedAt": "2026-07-27"
+      }
+    },
+    {
+      "creatorId": "hobby-fitpet",
+      "creatorName": "핏펫",
+      "bundleId": "bundle-fitpet-puppy-vaccination",
+      "title": "강아지 생후 6~16주 예방접종 일정",
+      "corpusRole": "historical_boundary",
+      "includedInNormalCorpusTotals": false,
+      "architectureFit": "not_rerun_in_normal_corpus",
+      "logicReadiness": "Hold",
+      "publicReadiness": "Hold",
+      "rightsStatus": "permission_required",
+      "personalConversionAvailability": {
+        "status": "not_confirmed",
+        "scope": "internal_revalidation_allowed_public_redistribution_requires_permission"
+      },
+      "sourceCompleteness": "historical_rows_exist_but_not_admitted_to_normal_corpus",
+      "localeReview": "not_separately_recorded_in_qualified_v2",
+      "safetyReview": "required_before_any_promotion",
+      "privacyReview": "not_separately_recorded_in_qualified_v2",
+      "promotionState": "boundary_appendix_only",
+      "sourceRowCount": 6,
+      "qualificationReason": "구조 가능성은 있으나 이번 8개와 중복되거나 권리·민감도·첫 행동 근거가 상대적으로 약하다.",
+      "publicReason": "공개 보류: 브랜드의 예방접종 표를 공개 전환하려면 허가가 필요하며 최신 공식 수의학 근거도 별도로 확인해야 한다.",
+      "boundaryReason": "구조 가능성은 있으나 이번 8개와 중복되거나 권리·민감도·첫 행동 근거가 상대적으로 약하다.",
+      "promotionCondition": "공개 보류: 브랜드의 예방접종 표를 공개 전환하려면 허가가 필요하며 최신 공식 수의학 근거도 별도로 확인해야 한다.",
+      "rightsEvidence": {
+        "evidenceClass": "conservative_policy_default",
+        "evidenceUrl": "https://www.fitpetmall.com/blog/dog-vaccinations",
+        "evidenceLocator": null,
+        "reason": "브랜드의 예방접종 표를 공개 전환하려면 허가가 필요하며 최신 공식 수의학 근거도 별도로 확인해야 한다.",
+        "publicUseBoundary": "내부 로직 검증은 가능하지만 공개 Flow 전환에는 권리자 확인 또는 제휴가 필요하다.",
+        "attributionRequired": true,
+        "observedAt": "2026-07-27"
+      }
+    }
+  ]
+}

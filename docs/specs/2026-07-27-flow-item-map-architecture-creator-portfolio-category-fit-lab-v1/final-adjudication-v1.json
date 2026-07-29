@@ -1,0 +1,93 @@
+{
+  "schemaVersion": "flowme-final-architecture-adjudication-v1",
+  "decision": "keep_current_canonical_v1_add_projection_time_grouping",
+  "decisionStatus": "provisional_architecture_recommendation_user_review_pending",
+  "canonicalDecision": "keep_current_canonical_v1",
+  "acceptedAmendments": [
+    "Add explicit projection policy none/per_item/step_bundle at adapter or export request level.",
+    "Derive a scheduleGroupKey for compact projection when source-equal Item schedules share a Step.",
+    "Keep stable Item IDs in grouped projection descriptions and loss manifests.",
+    "Export one VCALENDAR containing sibling VEVENT components only for scheduled effective Items."
+  ],
+  "heldProposals": [
+    {
+      "proposal": "persist SharedContext as a new canonical entity",
+      "reason": "Only one distinct primary bundle proves repeated equal Item schedules, below the frozen three-bundle adoption gate; existing anchor setup already asks for the date once."
+    },
+    {
+      "proposal": "use literal ICS-first as canonical storage",
+      "reason": "Scheduled completion, Map semantics, provenance, rights and review cannot be portably preserved without non-native or unproven client behavior."
+    }
+  ],
+  "verifiedMetrics": {
+    "primaryBundles": 9,
+    "lifeAreas": 9,
+    "items": 148,
+    "sourceRows": 198,
+    "sourceProvenanceResolved": true,
+    "inventedActions": 0,
+    "inventedSourceDates": 0,
+    "schedulelessVevents": 0,
+    "nestedIcsComponents": 0,
+    "externalClientRoundTrip": "not_run",
+    "observedUserValidation": "not_run"
+  },
+  "categoryExceptions": [
+    {
+      "bundleId": "bundle-moving-d30",
+      "primaryArtifact": "calendar",
+      "calendarPolicy": "step_bundle",
+      "note": "Calendar projection is natural when its anchor input is supplied."
+    },
+    {
+      "bundleId": "bundle-baby-food-174",
+      "primaryArtifact": "calendar",
+      "calendarPolicy": "per_item",
+      "note": "Calendar projection is natural when its anchor input is supplied."
+    },
+    {
+      "bundleId": "bundle-opic-plan",
+      "primaryArtifact": "sheet",
+      "calendarPolicy": "optional_per_item",
+      "note": "Progress Sheet is primary; Calendar is an optional user projection."
+    },
+    {
+      "bundleId": "bundle-new-car-comparison",
+      "primaryArtifact": "checklist",
+      "calendarPolicy": "none",
+      "note": "Do not create ICS until the user explicitly schedules an Item."
+    },
+    {
+      "bundleId": "bundle-allblanc-7day-abs",
+      "primaryArtifact": "calendar",
+      "calendarPolicy": "per_item",
+      "note": "Calendar projection is natural when its anchor input is supplied."
+    },
+    {
+      "bundleId": "bundle-triple-cappadocia-departure",
+      "primaryArtifact": "checklist",
+      "calendarPolicy": "none",
+      "note": "Do not create ICS until the user explicitly schedules an Item."
+    },
+    {
+      "bundleId": "bundle-wtable-summer-banchan-five",
+      "primaryArtifact": "checklist",
+      "calendarPolicy": "none",
+      "note": "Do not create ICS until the user explicitly schedules an Item."
+    },
+    {
+      "bundleId": "bundle-andstudio-job-prep-videos",
+      "primaryArtifact": "todo",
+      "calendarPolicy": "none",
+      "note": "Do not create ICS until the user explicitly schedules an Item."
+    },
+    {
+      "bundleId": "bundle-fitpet-puppy-vaccination",
+      "primaryArtifact": "calendar",
+      "calendarPolicy": "per_item",
+      "note": "Calendar projection is natural when its anchor input is supplied."
+    }
+  ],
+  "publicationState": "not_published",
+  "runtimeState": "not_changed"
+}

@@ -1,0 +1,254 @@
+[
+  {
+    "bundleId": "bundle-base-moving-d30",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "calendar",
+    "evidence": "The 27 omission-sensitive moving actions form six ordered stages, and their D-30 through moving-day anchor offsets truly place execution relative to the selected move date."
+  },
+  {
+    "bundleId": "bundle-base-baby-food-174",
+    "checklistTodoLabel": "todo",
+    "primaryProjection": "sheet",
+    "evidence": "The 36 D+174–209 meal rows form a long progress table whose cross-day overview matters, while each anchor-placed meal remains an individual execution task."
+  },
+  {
+    "bundleId": "bundle-base-opic-plan",
+    "checklistTodoLabel": "todo",
+    "primaryProjection": "sheet",
+    "evidence": "The 42 mock-test and review rows span two multiweek progress plans, so plan-wide status belongs in a Sheet while the anchor-placed sessions execute as individual tasks."
+  },
+  {
+    "bundleId": "bundle-base-opentutorials-web1-progress",
+    "checklistTodoLabel": "todo",
+    "primaryProjection": "sheet",
+    "evidence": "The unscheduled 26-topic WEB1 lesson list is progress-oriented row data whose overall completion view matters and whose topics execute one at a time."
+  },
+  {
+    "bundleId": "bundle-base-new-car-comparison",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The 14 actions are an unscheduled but bounded eight-stage purchase procedure whose order and omission coverage must be preserved."
+  },
+  {
+    "bundleId": "bundle-base-allblanc-7day-abs",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "calendar",
+    "evidence": "The seven-video challenge is a bounded sequence, and one workout is truly placed on each Day 1–7 anchor offset after a start date is chosen."
+  },
+  {
+    "bundleId": "bundle-base-wtable-summer-banchan-five",
+    "checklistTodoLabel": "todo",
+    "primaryProjection": "todo",
+    "evidence": "The five unscheduled recipes are independent resource-queue actions that can be deferred, selected, or reordered without breaking a procedure."
+  },
+  {
+    "bundleId": "bundle-base-andstudio-job-prep-videos",
+    "checklistTodoLabel": "todo",
+    "primaryProjection": "todo",
+    "evidence": "The three unscheduled job-preparation videos are independent resources that can be watched or deferred in any order."
+  },
+  {
+    "bundleId": "bundle-oq-oq-c01-moving",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "calendar",
+    "evidence": "The 24 moving checks form six omission-sensitive stages, with 15 anchor-offset executions and five relative execution windows tied to the selected move date."
+  },
+  {
+    "bundleId": "bundle-oq-oq-c02-kmooc-full",
+    "checklistTodoLabel": "todo",
+    "primaryProjection": "sheet",
+    "evidence": "The unscheduled 14-week lesson-row curriculum needs a course-wide progress overview, while each week remains an individual learning task."
+  },
+  {
+    "bundleId": "bundle-oq-oq-c03-librivox",
+    "checklistTodoLabel": "todo",
+    "primaryProjection": "sheet",
+    "evidence": "The 38 numbered audiobook sections are unscheduled progress rows whose book-wide completion overview matters, with each section executed as a separate listening task."
+  },
+  {
+    "bundleId": "bundle-oq-oq-c04-passport",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The application route and four required-document rows are one bounded, omission-sensitive passport-renewal procedure."
+  },
+  {
+    "bundleId": "bundle-oq-oq-c05-washer",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The four washer-cleaning actions are an ordered maintenance session, but no item has an actual recurrence or execution schedule yet."
+  },
+  {
+    "bundleId": "bundle-oq-oq-c06-nasa",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The five unscheduled crane-building actions align to preparation and successive procedure stages whose order must be preserved."
+  },
+  {
+    "bundleId": "bundle-oq-oq-c07-fit100",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The eight unscheduled STEP-labelled actions form one bounded certification lifecycle from signup through measurement, issuance, and management."
+  },
+  {
+    "bundleId": "bundle-oq-oq-c08-ac-decision",
+    "checklistTodoLabel": "neither",
+    "primaryProjection": "sheet",
+    "evidence": "One composite compare-and-select Item holds three typed comparison Fields for professional scope, general scope, and time-cost difference, rather than independently completable checks."
+  },
+  {
+    "bundleId": "bundle-oq-oq-b01-heat",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The four heat-safety actions are a bounded omission-sensitive work session grouped into before-work and after-work stages."
+  },
+  {
+    "bundleId": "bundle-oq-oq-b03-remodel",
+    "checklistTodoLabel": "neither",
+    "primaryProjection": "sheet",
+    "evidence": "One composite contract decision Item carries ten typed agreement Fields, so comparison coverage is tabular rather than ten independently completable checklist entries."
+  },
+  {
+    "bundleId": "bundle-oq-oq-p01-ossu",
+    "checklistTodoLabel": "todo",
+    "primaryProjection": "sheet",
+    "evidence": "The six unscheduled curriculum rows across two course tables need an overall learning-progress view, while courses execute as individual tasks."
+  },
+  {
+    "bundleId": "bundle-oq-oq-p02-packing",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The seven travel essentials form one bounded omission-sensitive packing set grouped into carry-on and document sections."
+  },
+  {
+    "bundleId": "bundle-oq-oq-p03-vehicle",
+    "checklistTodoLabel": "todo",
+    "primaryProjection": "todo",
+    "evidence": "The sole action is to look up the inspection window and choose a visit date, so it remains a Todo until an actual visit occurrence is selected."
+  },
+  {
+    "bundleId": "bundle-oq-oq-p04-portfolio",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The seven unscheduled actions form a bounded portfolio procedure from selection and planning through development, deployment, and completion."
+  },
+  {
+    "bundleId": "bundle-value-vq-01",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The four unscheduled childcare-support actions form an ordered application procedure across confirmation, submission, and result stages."
+  },
+  {
+    "bundleId": "bundle-value-vq-03",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "calendar",
+    "evidence": "The five weekday dinner items are a bounded meal set, and the chosen week-start anchor truly places one dinner on each Monday-through-Friday offset."
+  },
+  {
+    "bundleId": "bundle-value-vq-04",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The six unscheduled one-day closet actions preserve a bounded preparation, classification, storage, disposal, and follow-up order."
+  },
+  {
+    "bundleId": "bundle-value-vq-05",
+    "checklistTodoLabel": "todo",
+    "primaryProjection": "sheet",
+    "evidence": "The ten unscheduled lesson rows include per-row status, completion time, and notes, making the overall progress table primary and each lesson a Todo execution."
+  },
+  {
+    "bundleId": "bundle-value-vq-06",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "sheet",
+    "evidence": "The six omission-sensitive comparison Items each carry evidence, decision, reason, and priority Fields, so the decision matrix is Sheet-first."
+  },
+  {
+    "bundleId": "bundle-value-vq-10",
+    "checklistTodoLabel": "todo",
+    "primaryProjection": "sheet",
+    "evidence": "The 13 defect rows carry photo, repair-request, and recheck status Fields whose cross-row overview is primary, while each inspection or follow-up executes separately."
+  },
+  {
+    "bundleId": "bundle-value-vq-11",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The five scholarship actions form an ordered application checklist, while the application window and document deadline are due boundaries rather than selected execution occurrences."
+  },
+  {
+    "bundleId": "bundle-value-vq-12",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The six unscheduled pet-disaster actions form one bounded readiness set whose supplies, contacts, plan, and drill are omission-sensitive."
+  },
+  {
+    "bundleId": "bundle-deep-ds06",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The four unscheduled fall, burn, poisoning, and vehicle checks are one bounded child-safety assessment where omitted hazard areas matter."
+  },
+  {
+    "bundleId": "bundle-deep-ds08",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The four Course 1–4 destinations form an ordered day-trip itinerary, but no actual visit date or time exists for Calendar placement."
+  },
+  {
+    "bundleId": "bundle-live-c01",
+    "checklistTodoLabel": "todo",
+    "primaryProjection": "sheet",
+    "evidence": "The 12 infant screening rows are age-window reference and progress data with no selected visit dates, so overview is primary and each screening remains a Todo until booked."
+  },
+  {
+    "bundleId": "bundle-live-c10",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The seven unscheduled family-trip packing categories form one bounded omission-sensitive preparation set."
+  },
+  {
+    "bundleId": "bundle-live-c13",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The four unscheduled recipe actions are explicitly labelled Step 1/4 through Step 4/4 and must preserve cooking order."
+  },
+  {
+    "bundleId": "bundle-live-c16",
+    "checklistTodoLabel": "todo",
+    "primaryProjection": "todo",
+    "evidence": "The three unscheduled blog-video reuse actions have no schedule or ordering dependency and can be adopted or deferred independently."
+  },
+  {
+    "bundleId": "bundle-live-r02",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "sheet",
+    "evidence": "The seven unscheduled setup and Day 1–7 meal-plan rows require a plan-wide overview, while Calendar placement must wait for a personal start-date overlay."
+  },
+  {
+    "bundleId": "bundle-live-live-ifixit-washer-01",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The seven unscheduled maintenance actions are explicitly ordered Step 1 through Step 7 within one washer-care session."
+  },
+  {
+    "bundleId": "bundle-live-kr-stibee-01",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "checklist",
+    "evidence": "The four unscheduled rights and privacy checks form one bounded omission-sensitive clearance set for secondary content use."
+  },
+  {
+    "bundleId": "bundle-live-live-mdn-core-01",
+    "checklistTodoLabel": "todo",
+    "primaryProjection": "sheet",
+    "evidence": "The nine unscheduled MDN module rows need a curriculum-wide progress overview, with each module executed as an individual learning Todo."
+  },
+  {
+    "bundleId": "bundle-live-live-dyson-filter-01",
+    "checklistTodoLabel": "checklist",
+    "primaryProjection": "calendar",
+    "evidence": "The five ordered filter-care actions share a source-defined monthly recurrence and a first-execution anchor that truly places the maintenance session."
+  },
+  {
+    "bundleId": "bundle-live-live-jotform-event-intake-01",
+    "checklistTodoLabel": "neither",
+    "primaryProjection": "sheet",
+    "evidence": "The intake template contains eleven typed registration Fields but no Items, Steps, or schedules, so it is structured row data rather than a checklist or Todo queue."
+  }
+]

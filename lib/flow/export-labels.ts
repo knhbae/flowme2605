@@ -3,8 +3,8 @@ export const FLOW_EXPORT_LABELS = {
   sheetFile: '시트로 받기',
   memoCopy: '메모로 복사',
   checklistCopy: '체크리스트 복사',
-  editableDraft: '내 버전',
-  editMyVersion: '내 버전으로 편집',
+  editableDraft: '개인 사본',
+  editMyVersion: '개인 사본으로 편집',
 } as const;
 
 export const FLOW_EXPORT_FEEDBACK = {

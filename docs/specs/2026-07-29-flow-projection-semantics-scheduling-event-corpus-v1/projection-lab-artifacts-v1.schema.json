@@ -1,0 +1,344 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flowme.local/schema/projection-lab-artifacts-v1.schema.json",
+  "title": "FlowMe Projection Lab Artifacts v1",
+  "type": "object",
+  "$defs": {
+    "recommendation": {
+      "enum": [
+        "primary",
+        "secondary",
+        "optional",
+        "not_recommended"
+      ]
+    },
+    "availability": {
+      "enum": [
+        "available_now",
+        "available_after_user_overlay",
+        "unavailable"
+      ]
+    },
+    "fidelity": {
+      "enum": [
+        "lossless_or_low_loss",
+        "bounded_loss",
+        "misleading_or_prohibited"
+      ]
+    },
+    "projectionCell": {
+      "type": "object",
+      "required": [
+        "cellId",
+        "fixtureId",
+        "projection",
+        "recommendation",
+        "availability",
+        "fidelity",
+        "generated",
+        "recordCount",
+        "minimumUserInputs",
+        "destinationCapabilityNeeded",
+        "lossManifest",
+        "prohibitionReason",
+        "fallback"
+      ],
+      "properties": {
+        "cellId": {
+          "type": "string"
+        },
+        "fixtureId": {
+          "type": "string"
+        },
+        "projection": {
+          "enum": [
+            "calendar",
+            "checklist",
+            "todo",
+            "sheet",
+            "memo"
+          ]
+        },
+        "recommendation": {
+          "$ref": "#/$defs/recommendation"
+        },
+        "availability": {
+          "$ref": "#/$defs/availability"
+        },
+        "fidelity": {
+          "$ref": "#/$defs/fidelity"
+        },
+        "generated": {
+          "type": "boolean"
+        },
+        "recordCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "minimumUserInputs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "destinationCapabilityNeeded": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "lossManifest": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "prohibitionReason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "fallback": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "checklistProjection": {
+      "type": "object",
+      "required": [
+        "projectionType",
+        "schemaVersion",
+        "groups"
+      ],
+      "properties": {
+        "projectionType": {
+          "const": "checklist"
+        },
+        "schemaVersion": {
+          "const": "flowme-checklist-projection-v1"
+        },
+        "groups": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "groupId",
+              "canonicalStepId",
+              "bounded",
+              "orderLocked",
+              "orderedEntries"
+            ],
+            "properties": {
+              "groupId": {
+                "type": "string"
+              },
+              "canonicalStepId": {
+                "type": "string"
+              },
+              "bounded": {
+                "const": true
+              },
+              "orderLocked": {
+                "type": "boolean"
+              },
+              "orderedEntries": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "entryId",
+                    "canonicalItemId",
+                    "title",
+                    "sourceOrder",
+                    "sourceRowIds"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "todoProjection": {
+      "type": "object",
+      "required": [
+        "projectionType",
+        "schemaVersion",
+        "groupingStrategy",
+        "tasks"
+      ],
+      "properties": {
+        "projectionType": {
+          "const": "todo"
+        },
+        "schemaVersion": {
+          "const": "flowme-todo-projection-v1"
+        },
+        "groupingStrategy": {
+          "type": "string"
+        },
+        "tasks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "taskId",
+              "recordKind",
+              "title",
+              "queuePosition",
+              "canReorder",
+              "canDefer"
+            ]
+          }
+        }
+      }
+    },
+    "calendarProjection": {
+      "type": "object",
+      "required": [
+        "projectionType",
+        "schemaVersion",
+        "container",
+        "groupingPolicy",
+        "events"
+      ],
+      "properties": {
+        "projectionType": {
+          "const": "calendar"
+        },
+        "schemaVersion": {
+          "const": "flowme-calendar-projection-v2"
+        },
+        "container": {
+          "const": "VCALENDAR"
+        },
+        "groupingPolicy": {
+          "enum": [
+            "none",
+            "per_item",
+            "session_or_step_bundle"
+          ]
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "component",
+              "uid",
+              "temporalIntent",
+              "start",
+              "scheduleOwner",
+              "derivation",
+              "suggestionStatus",
+              "childItemIds",
+              "sourceRowIds"
+            ],
+            "properties": {
+              "component": {
+                "const": "VEVENT"
+              },
+              "scheduleOwner": {
+                "enum": [
+                  "source",
+                  "user_overlay"
+                ]
+              },
+              "derivation": {
+                "enum": [
+                  "direct",
+                  "anchor_resolution",
+                  "pacing_policy",
+                  "manual",
+                  "expand_daily_hours_within_source_date_range"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "sourceOccurrence": {
+      "type": "object",
+      "required": [
+        "occurrenceId",
+        "temporalIntent",
+        "timezoneEvidence",
+        "status"
+      ],
+      "properties": {
+        "occurrenceId": {
+          "type": "string"
+        },
+        "seriesId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "editionId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "temporalIntent": {
+          "enum": [
+            "fixed_occurrence",
+            "all_day_occurrence",
+            "availability_window"
+          ]
+        },
+        "timezoneEvidence": {
+          "enum": [
+            "explicit",
+            "explicit_context",
+            "source_label_EDT",
+            "inferred_from_venue",
+            "inferred_from_venue_context",
+            "unknown"
+          ]
+        },
+        "status": {
+          "enum": [
+            "scheduled",
+            "tentative",
+            "cancelled",
+            "postponed",
+            "rescheduled",
+            "ended"
+          ]
+        }
+      }
+    },
+    "pacingAssignment": {
+      "type": "object",
+      "required": [
+        "assignmentId",
+        "itemId",
+        "start",
+        "allDay",
+        "timezone",
+        "scheduleOwner",
+        "derivation",
+        "suggestionStatus"
+      ],
+      "properties": {
+        "scheduleOwner": {
+          "const": "user_overlay"
+        },
+        "derivation": {
+          "const": "pacing_policy"
+        },
+        "suggestionStatus": {
+          "const": "confirmed"
+        }
+      }
+    }
+  }
+}

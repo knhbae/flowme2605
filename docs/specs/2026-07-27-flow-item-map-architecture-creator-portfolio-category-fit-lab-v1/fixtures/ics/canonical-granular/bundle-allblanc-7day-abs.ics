@@ -1,0 +1,96 @@
+BEGIN:VCALENDAR
+PRODID:-//FlowMe//Canonical Projection Lab v1//KO
+VERSION:2.0
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:bundle-allblanc-7day-abs-day-1-item@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:코어 + 복근 한방에! 20분 복근 운동
+DESCRIPTION:영상: https://www.youtube.com/watch?v=XwUKn-52ykk · 길이: 
+ 21:25 · 운동 후 남길 내용이 있으면 이 Item의 개인 메모
+ 를 사용한다.\nhttps://www.youtube.com/watch?v=XwUKn-52ykk
+DTSTART;VALUE=DATE:20260803
+DTEND;VALUE=DATE:20260804
+URL:https://www.youtube.com/watch?v=XwUKn-52ykk
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-allblanc-7day-abs-day-1-item
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-allblanc-7day-abs-day-2-item@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:허리 통증 없이 20분 복근 운동
+DESCRIPTION:영상: https://www.youtube.com/watch?v=KzH8TcfyKFA · 길이: 
+ 20:41 · 운동 후 남길 내용이 있으면 이 Item의 개인 메모
+ 를 사용한다.\nhttps://www.youtube.com/watch?v=KzH8TcfyKFA
+DTSTART;VALUE=DATE:20260804
+DTEND;VALUE=DATE:20260805
+URL:https://www.youtube.com/watch?v=KzH8TcfyKFA
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-allblanc-7day-abs-day-2-item
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-allblanc-7day-abs-day-3-item@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:아랫 뱃살 집중 타격 20분 운동
+DESCRIPTION:영상: https://www.youtube.com/watch?v=Ft5gNO-2Je4 · 길이: 
+ 21:01 · 운동 후 남길 내용이 있으면 이 Item의 개인 메모
+ 를 사용한다.\nhttps://www.youtube.com/watch?v=Ft5gNO-2Je4
+DTSTART;VALUE=DATE:20260805
+DTEND;VALUE=DATE:20260806
+URL:https://www.youtube.com/watch?v=Ft5gNO-2Je4
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-allblanc-7day-abs-day-3-item
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-allblanc-7day-abs-day-4-item@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:서서하는 20분 복근 운동
+DESCRIPTION:영상: https://www.youtube.com/watch?v=8RzHWcq6eq0 · 길이: 
+ 20:49 · 운동 후 남길 내용이 있으면 이 Item의 개인 메모
+ 를 사용한다.\nhttps://www.youtube.com/watch?v=8RzHWcq6eq0
+DTSTART;VALUE=DATE:20260806
+DTEND;VALUE=DATE:20260807
+URL:https://www.youtube.com/watch?v=8RzHWcq6eq0
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-allblanc-7day-abs-day-4-item
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-allblanc-7day-abs-day-5-item@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:집에서 옆구리살 빼기 20분 운동
+DESCRIPTION:영상: https://www.youtube.com/watch?v=peQuipmDIuc · 길이: 
+ 20:40 · 운동 후 남길 내용이 있으면 이 Item의 개인 메모
+ 를 사용한다.\nhttps://www.youtube.com/watch?v=peQuipmDIuc
+DTSTART;VALUE=DATE:20260807
+DTEND;VALUE=DATE:20260808
+URL:https://www.youtube.com/watch?v=peQuipmDIuc
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-allblanc-7day-abs-day-5-item
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-allblanc-7day-abs-day-6-item@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:허리 군살 제거 20분 복근 홈트
+DESCRIPTION:영상: https://www.youtube.com/watch?v=K3yO9oHgaIs · 길이: 
+ 20:36 · 운동 후 남길 내용이 있으면 이 Item의 개인 메모
+ 를 사용한다.\nhttps://www.youtube.com/watch?v=K3yO9oHgaIs
+DTSTART;VALUE=DATE:20260808
+DTEND;VALUE=DATE:20260809
+URL:https://www.youtube.com/watch?v=K3yO9oHgaIs
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-allblanc-7day-abs-day-6-item
+END:VEVENT
+BEGIN:VEVENT
+UID:bundle-allblanc-7day-abs-day-7-item@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:헤어질 결심: 복부지방 20분 운동
+DESCRIPTION:영상: https://www.youtube.com/watch?v=W2fS4TqeWCc · 길이: 
+ 20:49 · 운동 후 남길 내용이 있으면 이 Item의 개인 메모
+ 를 사용한다.\nhttps://www.youtube.com/watch?v=W2fS4TqeWCc
+DTSTART;VALUE=DATE:20260809
+DTEND;VALUE=DATE:20260810
+URL:https://www.youtube.com/watch?v=W2fS4TqeWCc
+X-FLOWME-KIND:ITEM_PROJECTION
+X-FLOWME-ITEM-IDS:bundle-allblanc-7day-abs-day-7-item
+END:VEVENT
+END:VCALENDAR

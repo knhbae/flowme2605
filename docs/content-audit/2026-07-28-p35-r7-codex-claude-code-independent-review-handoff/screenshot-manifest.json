@@ -1,0 +1,119 @@
+{
+  "generatedAt": "2026-07-28",
+  "sourcePackage": "../2026-07-27-p35-r7-bounded-revision-final-gate/screenshots",
+  "copiedIntoPackage": true,
+  "screenshots": [
+    {
+      "file": "screenshots/p35-r7-calendar-session1-preview-390.png",
+      "shape": "calendar",
+      "session": "public_preview",
+      "viewport": "390x844",
+      "reviewFocus": "실제 24개 일정, 이사일 입력, row 수정, primary action"
+    },
+    {
+      "file": "screenshots/p35-r7-calendar-session2-preflight-1024.png",
+      "shape": "calendar",
+      "session": "export_preflight",
+      "viewport": "1024x768",
+      "reviewFocus": "24-event scope, format, output prediction"
+    },
+    {
+      "file": "screenshots/p35-r7-calendar-session3-workspace-390.png",
+      "shape": "calendar",
+      "session": "personal_workspace",
+      "viewport": "390x844",
+      "reviewFocus": "같은 날짜 묶음, checkbox 위치, 전체 계획과 중복"
+    },
+    {
+      "file": "screenshots/p35-r7-checklist-session1-preview-390.png",
+      "shape": "checklist",
+      "session": "public_preview",
+      "viewport": "390x844",
+      "reviewFocus": "날짜 없는 10개 항목의 결과-first 구성"
+    },
+    {
+      "file": "screenshots/p35-r7-checklist-session2-preflight-1024.png",
+      "shape": "checklist",
+      "session": "export_preflight",
+      "viewport": "1024x768",
+      "reviewFocus": "Checklist primary와 secondary artifact"
+    },
+    {
+      "file": "screenshots/p35-r7-checklist-session3-workspace-390.png",
+      "shape": "checklist",
+      "session": "personal_workspace",
+      "viewport": "390x844",
+      "reviewFocus": "다음 미완료 항목과 전체 목록 위계"
+    },
+    {
+      "file": "screenshots/p35-r7-routine-session1-preview-390.png",
+      "shape": "routine",
+      "session": "public_preview",
+      "viewport": "390x844",
+      "reviewFocus": "series summary와 반복 설정 밀도"
+    },
+    {
+      "file": "screenshots/p35-r7-routine-session2-preflight-1024.png",
+      "shape": "routine",
+      "session": "export_preflight",
+      "viewport": "1024x768",
+      "reviewFocus": "series event preflight와 실제 count"
+    },
+    {
+      "file": "screenshots/p35-r7-routine-session3-workspace-390.png",
+      "shape": "routine",
+      "session": "personal_workspace",
+      "viewport": "390x844",
+      "reviewFocus": "현재 회차, 전체 계획, 반복 설정의 역할"
+    },
+    {
+      "file": "screenshots/p35-r7-sheet-session1-preview-390.png",
+      "shape": "sheet",
+      "session": "public_preview",
+      "viewport": "390x844",
+      "reviewFocus": "순서형 행과 source-backed preview"
+    },
+    {
+      "file": "screenshots/p35-r7-sheet-session2-preflight-1024.png",
+      "shape": "sheet",
+      "session": "export_preflight",
+      "viewport": "1024x768",
+      "reviewFocus": "8-row sheet와 checklist secondary"
+    },
+    {
+      "file": "screenshots/p35-r7-sheet-session3-workspace-390.png",
+      "shape": "sheet",
+      "session": "personal_workspace",
+      "viewport": "390x844",
+      "reviewFocus": "현재 행과 다음 행의 실행 문법"
+    },
+    {
+      "file": "screenshots/p35-r7-memo-session1-preview-390.png",
+      "shape": "memo",
+      "session": "public_preview",
+      "viewport": "390x844",
+      "reviewFocus": "4개 기록과 합성 action 제거"
+    },
+    {
+      "file": "screenshots/p35-r7-memo-session2-preflight-1024.png",
+      "shape": "memo",
+      "session": "export_preflight",
+      "viewport": "1024x768",
+      "reviewFocus": "memo result scope와 record count"
+    },
+    {
+      "file": "screenshots/p35-r7-memo-session3-workspace-390.png",
+      "shape": "memo",
+      "session": "personal_workspace",
+      "viewport": "390x844",
+      "reviewFocus": "가짜 next unit 없는 기록 workspace"
+    },
+    {
+      "file": "screenshots/p35-r7-library-60-1440.png",
+      "shape": "scale",
+      "session": "library_workspace",
+      "viewport": "1440x900",
+      "reviewFocus": "60개 Flow 검색, rail, selected workspace"
+    }
+  ]
+}

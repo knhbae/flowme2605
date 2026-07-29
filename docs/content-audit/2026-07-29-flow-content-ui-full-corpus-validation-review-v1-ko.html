@@ -1,0 +1,1340 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>FlowMe Full-Corpus Validation Review v1</title>
+  <style>
+    :root{--bg:#f7f7f4;--paper:#fff;--ink:#171713;--muted:#66665e;--line:#deded7;--blue:#3157f3;--blueSoft:#eef2ff;--purple:#7555d9;--purpleSoft:#f2edff;--green:#16795a;--greenSoft:#e9f7f1;--yellow:#9c6500;--yellowSoft:#fff7db;--red:#b33434;--redSoft:#fff0ed}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:Pretendard,"Noto Sans KR",Arial,sans-serif;line-height:1.6}a{color:inherit}.top{position:sticky;top:0;z-index:10;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;background:rgba(255,255,255,.94);border-bottom:1px solid var(--line);backdrop-filter:blur(12px)}.brand{font-weight:900;font-size:20px}.brand i{font-style:normal;color:var(--blue)}.top nav{display:flex;gap:10px}.top a,.open{display:inline-flex;text-decoration:none;border:1px solid var(--line);padding:9px 14px;border-radius:10px;font-weight:750;background:#fff}.top a.primary,.open{background:var(--blue);border-color:var(--blue);color:#fff}.hero{min-height:calc(100vh - 64px);display:flex;flex-direction:column;justify-content:center;max-width:1240px;margin:auto;padding:64px 32px}.eyebrow{text-transform:uppercase;letter-spacing:.12em;font-weight:850;font-size:12px;color:var(--blue)}h1{font-size:clamp(38px,5vw,72px);line-height:1.08;letter-spacing:-.05em;margin:16px 0 20px;max-width:1000px}.hero>p{font-size:20px;color:var(--muted);max-width:850px}.claim{display:inline-block;background:var(--yellowSoft);color:var(--yellow);border:1px solid #ecd894;border-radius:999px;padding:8px 14px;font-weight:800;margin-top:18px}.hero-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:38px}.hero-card{min-height:240px;text-decoration:none;background:var(--paper);border:1px solid var(--line);border-radius:22px;padding:26px;display:flex;flex-direction:column;box-shadow:0 14px 35px rgba(35,35,25,.05);transition:.2s}.hero-card:hover{transform:translateY(-3px);border-color:#aab7ff}.hero-card span,.hero-card small{font-size:12px;color:var(--blue);font-weight:800}.hero-card strong{font-size:24px;line-height:1.25;margin-top:22px}.hero-card p{color:var(--muted);flex:1}.section{min-height:calc(100vh - 64px);max-width:1240px;margin:auto;padding:86px 32px;display:flex;flex-direction:column;justify-content:center}.section h2{font-size:clamp(32px,4vw,54px);line-height:1.15;letter-spacing:-.04em;margin:12px 0 18px}.section-lead{font-size:19px;color:var(--muted);max-width:800px}.metrics{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-top:40px}.metric{background:var(--paper);border:1px solid var(--line);padding:22px;border-radius:18px}.metric b{display:block;font-size:32px;line-height:1.1}.metric span{font-size:12px;color:var(--muted)}.pipeline{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin-top:42px;align-items:center}.node{min-height:126px;border-radius:18px;padding:18px;background:var(--paper);border:1px solid var(--line)}.node b{display:block}.node small{color:var(--muted)}.node.source{border-top:5px solid var(--purple)}.node.canonical{border-top:5px solid var(--blue)}.node.overlay{border-top:5px solid #d29a16}.node.output{border-top:5px solid var(--green)}.pipe-arrow{text-align:center;font-size:24px;color:#999}.two{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:36px}.bars,.review-metrics{background:var(--paper);border:1px solid var(--line);border-radius:22px;padding:28px}.bar-row{display:grid;grid-template-columns:150px 1fr 36px;gap:12px;align-items:center;margin:13px 0}.bar-row div{height:9px;background:#ecece6;border-radius:9px;overflow:hidden}.bar-row i{display:block;height:100%;background:var(--blue)}.review-metrics dl{display:grid;grid-template-columns:1fr auto;gap:14px;margin:0}.review-metrics dt{color:var(--muted)}.review-metrics dd{margin:0;font-weight:850}.warning{background:var(--yellowSoft);border:1px solid #ead385;border-radius:18px;padding:20px;margin-top:24px}.case{min-height:calc(100vh - 64px);max-width:1320px;margin:auto;padding:76px 32px;display:flex;flex-direction:column;justify-content:center;border-top:1px solid var(--line)}.case-title{max-width:920px}.case-no{font-size:13px;font-weight:900;color:var(--blue);margin-right:10px}.chip{display:inline-block;padding:5px 10px;border-radius:999px;background:var(--blueSoft);color:var(--blue);font-size:11px;font-weight:800;margin-right:5px}.case h2{font-size:clamp(32px,4vw,54px);line-height:1.12;letter-spacing:-.04em;margin:14px 0}.case-title>p{font-size:18px;color:var(--muted)}.trace{display:grid;grid-template-columns:1fr 36px 1fr 36px 1fr;align-items:stretch;gap:12px;margin-top:36px}.trace-block{background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:24px;min-width:0}.trace-block.source{border-top:5px solid var(--purple)}.trace-block.canonical{border-top:5px solid var(--blue)}.trace-block.output{border-top:5px solid var(--green)}.trace-label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;font-weight:900}.trace-block.source .trace-label{color:var(--purple)}.trace-block.canonical .trace-label{color:var(--blue)}.trace-block.output .trace-label{color:var(--green)}.trace-block h3{margin:10px 0 0}.trace-block>p{color:var(--muted);font-size:13px}.trace-block ol{list-style:none;margin:20px 0 0;padding:0}.trace-block li{padding:13px 0;border-top:1px solid var(--line)}.trace-block li span{display:block;color:var(--muted);font:10px ui-monospace,monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.trace-block li strong{display:block;font-size:14px}.trace-block li small{display:block;color:var(--muted)}.arrow{display:flex;align-items:center;justify-content:center;color:#aaa;font-size:24px}.projection-result{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:22px 0}.projection-result div{background:var(--greenSoft);border-radius:12px;padding:12px}.projection-result b,.projection-result small{display:block}.projection-result small{font-size:10px;color:var(--muted)}.loss{min-height:58px}.trace-block.output a{color:var(--green);font-weight:800}.judgment{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px}.judgment>div{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:15px}.judgment span,.judgment strong,.judgment small{display:block}.judgment span{font-size:10px;text-transform:uppercase;color:var(--muted);font-weight:800}.judgment strong{font-size:18px}.judgment small{color:var(--muted)}.judgment .synthesis{background:var(--blueSoft);border-color:#cbd4ff}.gap-grid,.decision-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:34px}.gap-card,.decision{background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:26px}.gap-card>span,.decision>span{font-size:11px;font-weight:850;color:var(--blue)}.gap-card strong{display:block;font-size:26px}.gap-card small{color:var(--muted)}.decision div{display:grid;grid-template-columns:54px 1fr;gap:10px}.decision div p{margin:0 0 14px}.decision small{color:var(--red);font-weight:800}.status{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:34px}.status>div{background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:26px}.status b{display:block;font-size:28px}.foot{padding:64px 32px;text-align:center;background:#191a1e;color:#fff}.foot h2{font-size:36px}.foot a{display:inline-flex;padding:14px 18px;border-radius:12px;background:#fff;color:#111;text-decoration:none;font-weight:850}
+    main,.hero,.section,.case,.trace-block,.projection-result>div,.gap-card,.decision,.status,.status>div{min-width:0;max-width:100%}.decision div{grid-template-columns:54px minmax(0,1fr)}.projection-result{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.claim,.decision,.projection-result b,.projection-result small,.status b,.status p,.status span{overflow-wrap:anywhere;word-break:break-word}
+    @media(max-width:900px){.top{padding:0 16px}.top nav a:not(.primary){display:none}.hero,.section,.case{padding:54px 18px;min-height:auto;width:100%}.hero-grid,.two,.metrics,.gap-grid,.decision-grid,.status{grid-template-columns:minmax(0,1fr)}.hero-card{min-height:190px}.pipeline{grid-template-columns:minmax(0,1fr)}.pipe-arrow{transform:rotate(90deg)}.trace{grid-template-columns:minmax(0,1fr)}.arrow{transform:rotate(90deg);height:30px}.judgment{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.metrics{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.bar-row{grid-template-columns:100px minmax(0,1fr) 30px}.case{padding-top:72px}.case h2{font-size:34px}.projection-result{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+    @media(max-width:440px){.judgment,.projection-result{grid-template-columns:minmax(0,1fr)}.metric b{font-size:24px}.top{height:58px}.top .brand{font-size:18px;line-height:1.15}.top a.primary{padding:7px 9px;max-width:110px;text-align:center;line-height:1.15}.hero{padding-top:40px}h1{font-size:40px}}
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="brand">FLOW<i>Me</i> · Full-Corpus Review</div>
+    <nav>
+      <a href="#results">핵심 결과</a>
+      <a href="#cases">24개 사례</a>
+      <a class="primary" href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html">전체 Gallery 열기</a>
+    </nav>
+  </header>
+  <main>
+    <section class="hero">
+      <div class="eyebrow">Flow Content UI Full-Corpus Validation & Planning Handoff Lab v1</div>
+      <h1>아키텍처는 설명이 아니라<br>110개 실제 Flow 화면으로 판단합니다.</h1>
+      <p>기존·신규 원문을 같은 canonical 구조에 넣고, 모든 Item과 Calendar·Checklist·Todo·Sheet·Memo를 실제 UI로 열어볼 수 있게 만들었습니다.</p>
+      <span class="claim">실제 사용자 검토: NOT_REVIEWED_BY_USER · 외부 Calendar/VTODO 왕복: NOT_RUN</span>
+      <div class="hero-grid"><a class="hero-card" href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/canonical%3Abase-opentutorials-web1-progress">
+      <span>학습·독서 · Sheet</span>
+      <strong>생활코딩 WEB1 진도표</strong>
+      <p>WEB1의 공개 토픽 목록을 순서대로 학습하고 진도를 체크한다.</p>
+      <small>26 SourceRow → 26 Item</small>
+    </a><a class="hero-card" href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/canonical%3Abase-moving-d30">
+      <span>집·생활 · Calendar</span>
+      <strong>이사 D-30 체크리스트</strong>
+      <p>이사일을 기준으로 원문 D-day 체크 행을 빠뜨리지 않고 실행한다.</p>
+      <small>52 SourceRow → 27 Item</small>
+    </a><a class="hero-card" href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/new%3Anew-a03-kakaopay-jeonse">
+      <span>돈·행정·구매 · Checklist</span>
+      <strong>전세 계약 단계별 체크 포인트</strong>
+      <p>전세 계약 단계별 위험 점검을 빠뜨리지 않고 증빙 상태를 관리한다.</p>
+      <small>8 SourceRow → 8 Item</small>
+    </a></div>
+    </section>
+
+    <section class="section" id="results">
+      <div class="eyebrow">Measured corpus</div>
+      <h2>110개 정상·구조 콘텐츠, 893 Item, 550 projection 조합</h2>
+      <p class="section-lead">Boundary 1개와 Historical 45개는 별도입니다. 숫자를 채우는 데 사용하지 않았습니다.</p>
+      <div class="metrics">
+        <div class="metric"><b>110</b><span>서로 다른 user job</span></div>
+        <div class="metric"><b>43</b><span>Product candidate</span></div>
+        <div class="metric"><b>67</b><span>Structure probe</span></div>
+        <div class="metric"><b>893</b><span>canonical Item</span></div>
+        <div class="metric"><b>1172</b><span>SourceRow</span></div>
+        <div class="metric"><b>550</b><span>5-format cells</span></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="eyebrow">Canonical grammar</div>
+      <h2>ICS를 원본으로 삼지 않아도 되는 이유</h2>
+      <p class="section-lead">날짜 없는 70개 콘텐츠와 event-native 원문을 함께 다루려면 실행 상태와 원문 사실, 개인 일정을 분리해야 합니다.</p>
+      <div class="pipeline">
+        <div class="node source"><b>SourceRow</b><small>원문 행·회차·조건</small></div><div class="pipe-arrow">→</div>
+        <div class="node canonical"><b>Item</b><small>독립 완료·결정·기록</small></div><div class="pipe-arrow">→</div>
+        <div class="node canonical"><b>Step · Flow</b><small>세션·사용자 job</small></div><div class="pipe-arrow">→</div>
+        <div class="node overlay"><b>UserFlowCopy</b><small>개인 입력·pacing</small></div>
+      </div>
+      <div class="pipeline">
+        <div class="node source"><b>Series · Edition</b><small>원문 행사 정체성</small></div><div class="pipe-arrow">→</div>
+        <div class="node source"><b>Occurrence</b><small>회차·창·마일스톤</small></div><div class="pipe-arrow">→</div>
+        <div class="node canonical"><b>선택 후 Item</b><small>저장·예약·참석</small></div><div class="pipe-arrow">→</div>
+        <div class="node output"><b>Projection</b><small>Calendar·Todo·Sheet…</small></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="eyebrow">Coverage and disagreement</div>
+      <h2>구조 포괄성은 넓어졌지만, 기획 판단은 아직 끝나지 않았습니다.</h2>
+      <div class="two">
+        <div class="bars"><h3>lifeArea coverage</h3><div class="bar-row"><span>집·생활</span><div><i style="width:100%"></i></div><strong>20</strong></div><div class="bar-row"><span>취미·반려</span><div><i style="width:90%"></i></div><strong>18</strong></div><div class="bar-row"><span>돈·행정·구매</span><div><i style="width:80%"></i></div><strong>16</strong></div><div class="bar-row"><span>여행·외출</span><div><i style="width:65%"></i></div><strong>13</strong></div><div class="bar-row"><span>식사·장보기</span><div><i style="width:50%"></i></div><strong>10</strong></div><div class="bar-row"><span>학습·독서</span><div><i style="width:50%"></i></div><strong>10</strong></div><div class="bar-row"><span>가족·육아</span><div><i style="width:45%"></i></div><strong>9</strong></div><div class="bar-row"><span>일·커리어</span><div><i style="width:45%"></i></div><strong>9</strong></div><div class="bar-row"><span>건강·운동</span><div><i style="width:25%"></i></div><strong>5</strong></div></div>
+        <div class="review-metrics">
+          <h3>독립 내부 검토 일치율</h3>
+          <dl>
+            <dt>Item granularity</dt><dd>69%</dd>
+            <dt>Primary projection</dt><dd>81%</dd>
+            <dt>Checklist / Todo</dt><dd>82%</dd>
+            <dt>Schedule suitability</dt><dd>58%</dd>
+            <dt>Content value</dt><dd>56%</dd>
+            <dt>UI understandability</dt><dd>55%</dd>
+            <dt>6축 exact match</dt><dd>19/110</dd>
+          </dl>
+          <div class="warning">두 agent가 같은 데이터를 독립 검토했지만 전체 6축 일치는 19개뿐입니다. 구조를 기획에 넘길 수는 있어도, 사용자 기본값을 최종 승인했다고 볼 수 없습니다.</div>
+        </div>
+      </div>
+    </section>
+
+    <div id="cases"></div>
+    <article class="case" id="case-1">
+    <header class="case-title">
+      <div>
+        <span class="case-no">01</span>
+        <span class="chip">집·생활</span>
+        <span class="chip">date_offsets</span>
+      </div>
+      <h2>이사 D-30 체크리스트</h2>
+      <p>이사일을 기준으로 원문 D-day 체크 행을 빠뜨리지 않고 실행한다.</p>
+      <a class="open" href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/canonical%3Abase-moving-d30">전체 Item을 Gallery에서 열기 →</a>
+    </header>
+    <div class="trace">
+      <section class="trace-block source">
+        <div class="trace-label">1 · 원문 → SourceRow</div>
+        <h3>아정당</h3>
+        <p>52 SourceRow · html · captured_in_internal_research_artifact</p>
+        <ol><li><span>base-moving-d30--bundle-moving-d30-s1-i1-r1</span><strong>포장이사·반포장이사·일반이사 중 방식 선택</strong><small>포장이사·반포장이사·일반이사 중 방식 선택</small></li><li><span>base-moving-d30--bundle-moving-d30-s1-i1-r2</span><strong>이사업체 견적 비교와 예약</strong><small>이사업체 견적 비교와 예약</small></li><li><span>base-moving-d30--bundle-moving-d30-s1-i1-r3</span><strong>입주청소 업체 견적 비교와 예약</strong><small>입주청소 업체 견적 비교와 예약</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block canonical">
+        <div class="trace-label">2 · canonical Item</div>
+        <h3>27 Item · 6 Step</h3>
+        <p>date_preparation · anchor_offset</p>
+        <ol><li><span>base-moving-d30-flow-1-step-1-item-1</span><strong>이사 방식과 이사업체 정하기</strong><small>anchor_offset · 근거 3행</small></li><li><span>base-moving-d30-flow-1-step-1-item-2</span><strong>새집 상태 확인하고 필요한 수리 잡기</strong><small>anchor_offset · 근거 2행</small></li><li><span>base-moving-d30-flow-1-step-1-item-3</span><strong>가져가지 않을 물건 처분 시작하기</strong><small>anchor_offset · 근거 1행</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block output">
+        <div class="trace-label">3 · 기본 projection</div>
+        <div class="projection-result">
+    <div><b>Calendar</b><small>primary</small></div>
+    <div><b>6</b><small>destination record</small></div>
+    <div><b>available_after_user_overlay</b><small>생성 가능</small></div>
+    <div><b>bounded_loss</b><small>정보 보존</small></div>
+  </div>
+  <p class="loss">하나의 Calendar bundle은 외부 도구에서 child Item별 완료 상태를 직접 보존하지 못할 수 있습니다.</p>
+        <a href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/canonical%3Abase-moving-d30/projection/calendar">실제 Calendar 결과 보기 →</a>
+      </section>
+    </div>
+    <div class="judgment">
+      <div><span>Reviewer A</span><strong>go</strong><small>appropriate · clear</small></div>
+      <div><span>Reviewer B</span><strong>modify</strong><small>mixed · needs_explanation</small></div>
+      <div class="synthesis"><span>내부 종합</span><strong>modify</strong><small>불일치: itemGranularity, contentValue, uiUnderstandability</small></div>
+      <div><span>사용자 검토</span><strong>NOT REVIEWED</strong><small>Gallery에서 직접 판단 필요</small></div>
+    </div>
+  </article>
+<article class="case" id="case-2">
+    <header class="case-title">
+      <div>
+        <span class="case-no">02</span>
+        <span class="chip">학습·독서</span>
+        <span class="chip">lesson_rows</span>
+      </div>
+      <h2>생활코딩 WEB1 진도표</h2>
+      <p>WEB1의 공개 토픽 목록을 순서대로 학습하고 진도를 체크한다.</p>
+      <a class="open" href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/canonical%3Abase-opentutorials-web1-progress">전체 Item을 Gallery에서 열기 →</a>
+    </header>
+    <div class="trace">
+      <section class="trace-block source">
+        <div class="trace-label">1 · 원문 → SourceRow</div>
+        <h3>생활코딩</h3>
+        <p>26 SourceRow · html · captured_in_internal_research_artifact</p>
+        <ol><li><span>base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i1-r1</span><strong>프로젝트의 동기</strong><small>https://opentutorials.org/course/3084/18438</small></li><li><span>base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i2-r1</span><strong>기획</strong><small>https://opentutorials.org/course/3084/18437</small></li><li><span>base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i3-r1</span><strong>코딩과 HTML</strong><small>https://opentutorials.org/course/3084/18445</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block canonical">
+        <div class="trace-label">2 · canonical Item</div>
+        <h3>26 Item · 1 Step</h3>
+        <p>progress_tracking · no_schedule</p>
+        <ol><li><span>base-opentutorials-web1-progress-flow-1-step-1-item-1</span><strong>「프로젝트의 동기」 학습하기</strong><small>날짜 없음 · 근거 1행</small></li><li><span>base-opentutorials-web1-progress-flow-1-step-1-item-2</span><strong>「기획」 학습하기</strong><small>날짜 없음 · 근거 1행</small></li><li><span>base-opentutorials-web1-progress-flow-1-step-1-item-3</span><strong>「코딩과 HTML」 학습하기</strong><small>날짜 없음 · 근거 1행</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block output">
+        <div class="trace-label">3 · 기본 projection</div>
+        <div class="projection-result">
+    <div><b>Sheet</b><small>primary</small></div>
+    <div><b>26</b><small>destination record</small></div>
+    <div><b>available_now</b><small>생성 가능</small></div>
+    <div><b>lossless_or_low_loss</b><small>정보 보존</small></div>
+  </div>
+  <p class="loss">행/열 표현은 관계를 ID 열로 평탄화합니다.</p>
+        <a href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/canonical%3Abase-opentutorials-web1-progress/projection/sheet">실제 Sheet 결과 보기 →</a>
+      </section>
+    </div>
+    <div class="judgment">
+      <div><span>Reviewer A</span><strong>go</strong><small>appropriate · clear</small></div>
+      <div><span>Reviewer B</span><strong>go</strong><small>appropriate · clear</small></div>
+      <div class="synthesis"><span>내부 종합</span><strong>go</strong><small>불일치: scheduleSuitability</small></div>
+      <div><span>사용자 검토</span><strong>NOT REVIEWED</strong><small>Gallery에서 직접 판단 필요</small></div>
+    </div>
+  </article>
+<article class="case" id="case-3">
+    <header class="case-title">
+      <div>
+        <span class="case-no">03</span>
+        <span class="chip">가족·육아</span>
+        <span class="chip">table_rows</span>
+      </div>
+      <h2>초기 이유식 D+174~209 식단</h2>
+      <p>원문 식단표의 D+n 순서대로 초기 이유식을 제공한다.</p>
+      <a class="open" href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/canonical%3Abase-baby-food-174">전체 Item을 Gallery에서 열기 →</a>
+    </header>
+    <div class="trace">
+      <section class="trace-block source">
+        <div class="trace-label">1 · 원문 → SourceRow</div>
+        <h3>뿐이토핑이유식</h3>
+        <p>36 SourceRow · html · captured_in_internal_research_artifact</p>
+        <ol><li><span>base-baby-food-174--bundle-baby-food-174-d174</span><strong>D+174 식단</strong><small>한 끼: 쌀미음</small></li><li><span>base-baby-food-174--bundle-baby-food-174-d175</span><strong>D+175 식단</strong><small>한 끼: 쌀미음</small></li><li><span>base-baby-food-174--bundle-baby-food-174-d176</span><strong>D+176 식단</strong><small>한 끼: 쌀미음</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block canonical">
+        <div class="trace-label">2 · canonical Item</div>
+        <h3>36 Item · 12 Step</h3>
+        <p>progress_tracking · anchor_offset</p>
+        <ol><li><span>base-baby-food-174-flow-1-step-1-item-1</span><strong>D+174 식단 제공</strong><small>anchor_offset · 근거 1행</small></li><li><span>base-baby-food-174-flow-1-step-1-item-2</span><strong>D+175 식단 제공</strong><small>anchor_offset · 근거 1행</small></li><li><span>base-baby-food-174-flow-1-step-1-item-3</span><strong>D+176 식단 제공</strong><small>anchor_offset · 근거 1행</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block output">
+        <div class="trace-label">3 · 기본 projection</div>
+        <div class="projection-result">
+    <div><b>Calendar</b><small>primary</small></div>
+    <div><b>36</b><small>destination record</small></div>
+    <div><b>available_after_user_overlay</b><small>생성 가능</small></div>
+    <div><b>lossless_or_low_loss</b><small>정보 보존</small></div>
+  </div>
+  <p class="loss">명시된 property-level 손실 없음</p>
+        <a href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/canonical%3Abase-baby-food-174/projection/calendar">실제 Calendar 결과 보기 →</a>
+      </section>
+    </div>
+    <div class="judgment">
+      <div><span>Reviewer A</span><strong>go</strong><small>appropriate · clear</small></div>
+      <div><span>Reviewer B</span><strong>go</strong><small>appropriate · clear</small></div>
+      <div class="synthesis"><span>내부 종합</span><strong>go</strong><small>6축 일치</small></div>
+      <div><span>사용자 검토</span><strong>NOT REVIEWED</strong><small>Gallery에서 직접 판단 필요</small></div>
+    </div>
+  </article>
+<article class="case" id="case-4">
+    <header class="case-title">
+      <div>
+        <span class="case-no">04</span>
+        <span class="chip">학습·독서</span>
+        <span class="chip">lesson_rows</span>
+      </div>
+      <h2>오픽 모의고사 계획표</h2>
+      <p>2주 또는 1달 계획표를 따라 모의고사 영상 회차를 실행한다.</p>
+      <a class="open" href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/canonical%3Abase-opic-plan">전체 Item을 Gallery에서 열기 →</a>
+    </header>
+    <div class="trace">
+      <section class="trace-block source">
+        <div class="trace-label">1 · 원문 → SourceRow</div>
+        <h3>오픽만수르</h3>
+        <p>52 SourceRow · html · captured_in_internal_research_artifact</p>
+        <ol><li><span>base-opic-plan--bundle-opic-plan-2w-w1</span><strong>1회 모의고사 실전·녹음·보완·복습</strong><small>영상: https://www.youtube.com/watch?v=MZmrXlAc6k4 · 범위: 15문항 모의고사 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</small></li><li><span>base-opic-plan--bundle-opic-plan-video-1</span><strong>1회 모의고사 영상</strong><small>15문항 모의고사</small></li><li><span>base-opic-plan--bundle-opic-plan-2w-w1-3</span><strong>2회 모의고사 실전·녹음·보완·복습</strong><small>영상: https://www.youtube.com/watch?v=YOZADzoC22s · 범위: 은행·바·카페·MP3·걷기 · 실제 시험처럼 답변을 녹음하고, 막힌 질문과 고칠 표현을 같은 메모에 적는다.</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block canonical">
+        <div class="trace-label">2 · canonical Item</div>
+        <h3>42 Item · 7 Step</h3>
+        <p>progress_tracking · anchor_offset</p>
+        <ol><li><span>base-opic-plan-flow-1-step-1-item-1</span><strong>1회 모의고사 실전처럼 풀기</strong><small>anchor_offset · 근거 2행</small></li><li><span>base-opic-plan-flow-1-step-1-item-2</span><strong>2회 모의고사 실전처럼 풀기</strong><small>anchor_offset · 근거 2행</small></li><li><span>base-opic-plan-flow-1-step-1-item-3</span><strong>3회 모의고사 실전처럼 풀기</strong><small>anchor_offset · 근거 2행</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block output">
+        <div class="trace-label">3 · 기본 projection</div>
+        <div class="projection-result">
+    <div><b>Sheet</b><small>primary</small></div>
+    <div><b>42</b><small>destination record</small></div>
+    <div><b>available_now</b><small>생성 가능</small></div>
+    <div><b>lossless_or_low_loss</b><small>정보 보존</small></div>
+  </div>
+  <p class="loss">행/열 표현은 관계를 ID 열로 평탄화합니다.</p>
+        <a href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/canonical%3Abase-opic-plan/projection/sheet">실제 Sheet 결과 보기 →</a>
+      </section>
+    </div>
+    <div class="judgment">
+      <div><span>Reviewer A</span><strong>modify</strong><small>appropriate · needs_explanation</small></div>
+      <div><span>Reviewer B</span><strong>modify</strong><small>mixed · confusing</small></div>
+      <div class="synthesis"><span>내부 종합</span><strong>modify</strong><small>불일치: itemGranularity, scheduleSuitability, uiUnderstandability</small></div>
+      <div><span>사용자 검토</span><strong>NOT REVIEWED</strong><small>Gallery에서 직접 판단 필요</small></div>
+    </div>
+  </article>
+<article class="case" id="case-5">
+    <header class="case-title">
+      <div>
+        <span class="case-no">05</span>
+        <span class="chip">돈·행정·구매</span>
+        <span class="chip">procedure_rows</span>
+      </div>
+      <h2>신차 구매 8단계</h2>
+      <p>신차 구매의 원문 8단계를 순서대로 확인하고 계약·출고 누락을 줄인다.</p>
+      <a class="open" href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/canonical%3Abase-new-car-comparison">전체 Item을 Gallery에서 열기 →</a>
+    </header>
+    <div class="trace">
+      <section class="trace-block source">
+        <div class="trace-label">1 · 원문 → SourceRow</div>
+        <h3>겟차</h3>
+        <p>29 SourceRow · html · captured_in_internal_research_artifact</p>
+        <ol><li><span>base-new-car-comparison--bundle-new-car-comparison-s1-i1-r1</span><strong>차량 가격 외 취등록세·보험·유지비를 포함한 총예산 확인</strong><small>차량 가격 외 취등록세·보험·유지비를 포함한 총예산 확인</small></li><li><span>base-new-car-comparison--bundle-new-car-comparison-s1-i1-r2</span><strong>현금·할부 시 월 납입 가능액 확인</strong><small>현금·할부 시 월 납입 가능액 확인</small></li><li><span>base-new-car-comparison--bundle-new-car-comparison-s1-i2-r1</span><strong>용도와 탑승 인원에 맞는 차종 선택</strong><small>용도와 탑승 인원에 맞는 차종 선택</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block canonical">
+        <div class="trace-label">2 · canonical Item</div>
+        <h3>14 Item · 8 Step</h3>
+        <p>ordered_procedure · no_schedule</p>
+        <ol><li><span>base-new-car-comparison-flow-1-step-1-item-1</span><strong>총예산과 월 납입 가능액 정하기</strong><small>날짜 없음 · 근거 2행</small></li><li><span>base-new-car-comparison-flow-1-step-1-item-2</span><strong>차종·트림·옵션 후보 좁히기</strong><small>날짜 없음 · 근거 2행</small></li><li><span>base-new-car-comparison-flow-1-step-2-item-1</span><strong>현금·할부·리스·장기렌트 비교하기</strong><small>날짜 없음 · 근거 2행</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block output">
+        <div class="trace-label">3 · 기본 projection</div>
+        <div class="projection-result">
+    <div><b>Checklist</b><small>primary</small></div>
+    <div><b>8</b><small>destination record</small></div>
+    <div><b>available_now</b><small>생성 가능</small></div>
+    <div><b>lossless_or_low_loss</b><small>정보 보존</small></div>
+  </div>
+  <p class="loss">명시된 property-level 손실 없음</p>
+        <a href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/canonical%3Abase-new-car-comparison/projection/checklist">실제 Checklist 결과 보기 →</a>
+      </section>
+    </div>
+    <div class="judgment">
+      <div><span>Reviewer A</span><strong>go</strong><small>appropriate · clear</small></div>
+      <div><span>Reviewer B</span><strong>go</strong><small>appropriate · clear</small></div>
+      <div class="synthesis"><span>내부 종합</span><strong>go</strong><small>불일치: scheduleSuitability</small></div>
+      <div><span>사용자 검토</span><strong>NOT REVIEWED</strong><small>Gallery에서 직접 판단 필요</small></div>
+    </div>
+  </article>
+<article class="case" id="case-6">
+    <header class="case-title">
+      <div>
+        <span class="case-no">06</span>
+        <span class="chip">건강·운동</span>
+        <span class="chip">resource_collection</span>
+      </div>
+      <h2>Allblanc 7일 복근 챌린지</h2>
+      <p>7일 재생목록의 영상을 하루 한 편씩 따라 한다.</p>
+      <a class="open" href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/canonical%3Abase-allblanc-7day-abs">전체 Item을 Gallery에서 열기 →</a>
+    </header>
+    <div class="trace">
+      <section class="trace-block source">
+        <div class="trace-label">1 · 원문 → SourceRow</div>
+        <h3>Allblanc TV</h3>
+        <p>7 SourceRow · video · captured_in_internal_research_artifact</p>
+        <ol><li><span>base-allblanc-7day-abs--bundle-allblanc-7day-abs-day-1</span><strong>코어 + 복근 한방에! 20분 복근 운동</strong><small>영상 길이 21:25 · 확인 조회수 150,000</small></li><li><span>base-allblanc-7day-abs--bundle-allblanc-7day-abs-day-2</span><strong>허리 통증 없이 20분 복근 운동</strong><small>영상 길이 20:41 · 확인 조회수 78,000</small></li><li><span>base-allblanc-7day-abs--bundle-allblanc-7day-abs-day-3</span><strong>아랫 뱃살 집중 타격 20분 운동</strong><small>영상 길이 21:01 · 확인 조회수 73,000</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block canonical">
+        <div class="trace-label">2 · canonical Item</div>
+        <h3>7 Item · 7 Step</h3>
+        <p>progress_tracking · anchor_offset</p>
+        <ol><li><span>base-allblanc-7day-abs-flow-1-step-1-item-1</span><strong>코어 + 복근 한방에! 20분 복근 운동</strong><small>anchor_offset · 근거 1행</small></li><li><span>base-allblanc-7day-abs-flow-2-step-1-item-1</span><strong>허리 통증 없이 20분 복근 운동</strong><small>anchor_offset · 근거 1행</small></li><li><span>base-allblanc-7day-abs-flow-3-step-1-item-1</span><strong>아랫 뱃살 집중 타격 20분 운동</strong><small>anchor_offset · 근거 1행</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block output">
+        <div class="trace-label">3 · 기본 projection</div>
+        <div class="projection-result">
+    <div><b>Calendar</b><small>primary</small></div>
+    <div><b>7</b><small>destination record</small></div>
+    <div><b>available_after_user_overlay</b><small>생성 가능</small></div>
+    <div><b>lossless_or_low_loss</b><small>정보 보존</small></div>
+  </div>
+  <p class="loss">명시된 property-level 손실 없음</p>
+        <a href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/canonical%3Abase-allblanc-7day-abs/projection/calendar">실제 Calendar 결과 보기 →</a>
+      </section>
+    </div>
+    <div class="judgment">
+      <div><span>Reviewer A</span><strong>go</strong><small>appropriate · clear</small></div>
+      <div><span>Reviewer B</span><strong>go</strong><small>appropriate · clear</small></div>
+      <div class="synthesis"><span>내부 종합</span><strong>go</strong><small>6축 일치</small></div>
+      <div><span>사용자 검토</span><strong>NOT REVIEWED</strong><small>Gallery에서 직접 판단 필요</small></div>
+    </div>
+  </article>
+<article class="case" id="case-7">
+    <header class="case-title">
+      <div>
+        <span class="case-no">07</span>
+        <span class="chip">식사·장보기</span>
+        <span class="chip">resource_collection</span>
+      </div>
+      <h2>이번 주 여름 반찬 5가지</h2>
+      <p>큐레이션의 반찬 5개 중 만들 메뉴를 골라 원문 레시피를 연다.</p>
+      <a class="open" href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/canonical%3Abase-wtable-summer-banchan-five">전체 Item을 Gallery에서 열기 →</a>
+    </header>
+    <div class="trace">
+      <section class="trace-block source">
+        <div class="trace-label">1 · 원문 → SourceRow</div>
+        <h3>우리의식탁</h3>
+        <p>5 SourceRow · html · captured_in_internal_research_artifact</p>
+        <ol><li><span>base-wtable-summer-banchan-five--wtable-summer-1</span><strong>오이지무침</strong><small>초급 · 15분</small></li><li><span>base-wtable-summer-banchan-five--wtable-summer-2</span><strong>한치 초무침</strong><small>초급 · 30분</small></li><li><span>base-wtable-summer-banchan-five--wtable-summer-3</span><strong>브로콜리 참깨무침</strong><small>초급 · 20분</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block canonical">
+        <div class="trace-label">2 · canonical Item</div>
+        <h3>5 Item · 5 Step</h3>
+        <p>resource_queue · no_schedule</p>
+        <ol><li><span>base-wtable-summer-banchan-five-flow-1-step-1-item-1</span><strong>오이지무침 만들기</strong><small>날짜 없음 · 근거 1행</small></li><li><span>base-wtable-summer-banchan-five-flow-2-step-1-item-1</span><strong>한치 초무침 만들기</strong><small>날짜 없음 · 근거 1행</small></li><li><span>base-wtable-summer-banchan-five-flow-3-step-1-item-1</span><strong>브로콜리 참깨무침 만들기</strong><small>날짜 없음 · 근거 1행</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block output">
+        <div class="trace-label">3 · 기본 projection</div>
+        <div class="projection-result">
+    <div><b>Checklist</b><small>primary</small></div>
+    <div><b>5</b><small>destination record</small></div>
+    <div><b>available_now</b><small>생성 가능</small></div>
+    <div><b>lossless_or_low_loss</b><small>정보 보존</small></div>
+  </div>
+  <p class="loss">명시된 property-level 손실 없음</p>
+        <a href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/canonical%3Abase-wtable-summer-banchan-five/projection/checklist">실제 Checklist 결과 보기 →</a>
+      </section>
+    </div>
+    <div class="judgment">
+      <div><span>Reviewer A</span><strong>go</strong><small>appropriate · clear</small></div>
+      <div><span>Reviewer B</span><strong>go</strong><small>appropriate · clear</small></div>
+      <div class="synthesis"><span>내부 종합</span><strong>go</strong><small>불일치: scheduleSuitability</small></div>
+      <div><span>사용자 검토</span><strong>NOT REVIEWED</strong><small>Gallery에서 직접 판단 필요</small></div>
+    </div>
+  </article>
+<article class="case" id="case-8">
+    <header class="case-title">
+      <div>
+        <span class="case-no">08</span>
+        <span class="chip">일·커리어</span>
+        <span class="chip">resource_collection</span>
+      </div>
+      <h2>AND 취업 준비 영상 3편</h2>
+      <p>취업 준비 영상 3편을 필요한 순서로 보고 실행 메모를 남긴다.</p>
+      <a class="open" href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/canonical%3Abase-andstudio-job-prep-videos">전체 Item을 Gallery에서 열기 →</a>
+    </header>
+    <div class="trace">
+      <section class="trace-block source">
+        <div class="trace-label">1 · 원문 → SourceRow</div>
+        <h3>AND Studio</h3>
+        <p>3 SourceRow · video · captured_in_internal_research_artifact</p>
+        <ol><li><span>base-andstudio-job-prep-videos--andstudio-job-1</span><strong>자소서 지원동기 6단계</strong><small>조회 889,279 · 좋아요 17,011 · 댓글 201</small></li><li><span>base-andstudio-job-prep-videos--andstudio-job-2</span><strong>산업분석 방법</strong><small>조회 186,826 · 댓글 139</small></li><li><span>base-andstudio-job-prep-videos--andstudio-job-3</span><strong>면접 전 확인할 6가지</strong><small>조회 103,294 · 댓글 32</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block canonical">
+        <div class="trace-label">2 · canonical Item</div>
+        <h3>3 Item · 3 Step</h3>
+        <p>resource_queue · no_schedule</p>
+        <ol><li><span>base-andstudio-job-prep-videos-flow-1-step-1-item-1</span><strong>자소서 지원동기 6단계 영상으로 준비하기</strong><small>날짜 없음 · 근거 1행</small></li><li><span>base-andstudio-job-prep-videos-flow-2-step-1-item-1</span><strong>산업분석 방법 영상으로 준비하기</strong><small>날짜 없음 · 근거 1행</small></li><li><span>base-andstudio-job-prep-videos-flow-3-step-1-item-1</span><strong>면접 전 확인할 6가지 영상으로 준비하기</strong><small>날짜 없음 · 근거 1행</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block output">
+        <div class="trace-label">3 · 기본 projection</div>
+        <div class="projection-result">
+    <div><b>Todo</b><small>primary</small></div>
+    <div><b>6</b><small>destination record</small></div>
+    <div><b>available_now</b><small>생성 가능</small></div>
+    <div><b>lossless_or_low_loss</b><small>정보 보존</small></div>
+  </div>
+  <p class="loss">명시된 property-level 손실 없음</p>
+        <a href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/canonical%3Abase-andstudio-job-prep-videos/projection/todo">실제 Todo 결과 보기 →</a>
+      </section>
+    </div>
+    <div class="judgment">
+      <div><span>Reviewer A</span><strong>go</strong><small>appropriate · clear</small></div>
+      <div><span>Reviewer B</span><strong>go</strong><small>appropriate · clear</small></div>
+      <div class="synthesis"><span>내부 종합</span><strong>go</strong><small>불일치: scheduleSuitability</small></div>
+      <div><span>사용자 검토</span><strong>NOT REVIEWED</strong><small>Gallery에서 직접 판단 필요</small></div>
+    </div>
+  </article>
+<article class="case" id="case-9">
+    <header class="case-title">
+      <div>
+        <span class="case-no">09</span>
+        <span class="chip">학습·독서</span>
+        <span class="chip">lesson_rows</span>
+      </div>
+      <h2>Introduction to Data Analysis</h2>
+      <p>14개 주차를 펼쳐 놓고 수강·활동 진도를 기록한다.</p>
+      <a class="open" href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/canonical%3Aoq-oq-c02-kmooc-full">전체 Item을 Gallery에서 열기 →</a>
+    </header>
+    <div class="trace">
+      <section class="trace-block source">
+        <div class="trace-label">1 · 원문 → SourceRow</div>
+        <h3>K-MOOC</h3>
+        <p>19 SourceRow · html · captured_in_internal_research_artifact</p>
+        <ol><li><span>oq-oq-c02-kmooc-full--kmooc-m01</span><strong>수강 신청·운영 기간</strong><small>2026-07-01부터 2026-08-31까지</small></li><li><span>oq-oq-c02-kmooc-full--kmooc-m02</span><strong>과정 분량</strong><small>14주, 총 40시간, VOD 26시간 15분</small></li><li><span>oq-oq-c02-kmooc-full--kmooc-m03</span><strong>난이도와 수료증</strong><small>초급 수준이며 수료증 제공</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block canonical">
+        <div class="trace-label">2 · canonical Item</div>
+        <h3>14 Item · 14 Step</h3>
+        <p>progress_tracking · no_schedule</p>
+        <ol><li><span>oq-oq-c02-kmooc-full-item-1</span><strong>1주차 · 데이터 리터러시</strong><small>날짜 없음 · 근거 1행</small></li><li><span>oq-oq-c02-kmooc-full-item-2</span><strong>2주차 · 생성형 AI 활용 데이터 분석</strong><small>날짜 없음 · 근거 1행</small></li><li><span>oq-oq-c02-kmooc-full-item-3</span><strong>3주차 · 데이터 분석</strong><small>날짜 없음 · 근거 1행</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block output">
+        <div class="trace-label">3 · 기본 projection</div>
+        <div class="projection-result">
+    <div><b>Sheet</b><small>primary</small></div>
+    <div><b>14</b><small>destination record</small></div>
+    <div><b>available_now</b><small>생성 가능</small></div>
+    <div><b>lossless_or_low_loss</b><small>정보 보존</small></div>
+  </div>
+  <p class="loss">행/열 표현은 관계를 ID 열로 평탄화합니다.</p>
+        <a href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/canonical%3Aoq-oq-c02-kmooc-full/projection/sheet">실제 Sheet 결과 보기 →</a>
+      </section>
+    </div>
+    <div class="judgment">
+      <div><span>Reviewer A</span><strong>go</strong><small>appropriate · needs_explanation</small></div>
+      <div><span>Reviewer B</span><strong>modify</strong><small>appropriate · needs_explanation</small></div>
+      <div class="synthesis"><span>내부 종합</span><strong>modify</strong><small>불일치: contentValue</small></div>
+      <div><span>사용자 검토</span><strong>NOT REVIEWED</strong><small>Gallery에서 직접 판단 필요</small></div>
+    </div>
+  </article>
+<article class="case" id="case-10">
+    <header class="case-title">
+      <div>
+        <span class="case-no">10</span>
+        <span class="chip">학습·독서</span>
+        <span class="chip">resource_collection</span>
+      </div>
+      <h2>Anne of Green Gables, Version 5</h2>
+      <p>38개 장을 순서대로 듣고 마지막 위치와 완료 상태를 관리한다.</p>
+      <a class="open" href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/canonical%3Aoq-oq-c03-librivox">전체 Item을 Gallery에서 열기 →</a>
+    </header>
+    <div class="trace">
+      <section class="trace-block source">
+        <div class="trace-label">1 · 원문 → SourceRow</div>
+        <h3>LibriVox</h3>
+        <p>38 SourceRow · html · captured_in_internal_research_artifact</p>
+        <ol><li><span>oq-oq-c03-librivox--librivox-c01</span><strong>1. Mrs. Rachel Lynde Is Surprised</strong><small>재생시간 00:14:35</small></li><li><span>oq-oq-c03-librivox--librivox-c02</span><strong>2. Matthew Cuthbert Is Surprised</strong><small>재생시간 00:26:09</small></li><li><span>oq-oq-c03-librivox--librivox-c03</span><strong>3. Marilla Cuthbert Is Surprised</strong><small>재생시간 00:12:47</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block canonical">
+        <div class="trace-label">2 · canonical Item</div>
+        <h3>38 Item · 38 Step</h3>
+        <p>resource_queue · no_schedule</p>
+        <ol><li><span>oq-oq-c03-librivox-item-1</span><strong>1. Mrs. Rachel Lynde Is Surprised</strong><small>날짜 없음 · 근거 1행</small></li><li><span>oq-oq-c03-librivox-item-2</span><strong>2. Matthew Cuthbert Is Surprised</strong><small>날짜 없음 · 근거 1행</small></li><li><span>oq-oq-c03-librivox-item-3</span><strong>3. Marilla Cuthbert Is Surprised</strong><small>날짜 없음 · 근거 1행</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block output">
+        <div class="trace-label">3 · 기본 projection</div>
+        <div class="projection-result">
+    <div><b>Sheet</b><small>primary</small></div>
+    <div><b>38</b><small>destination record</small></div>
+    <div><b>available_now</b><small>생성 가능</small></div>
+    <div><b>lossless_or_low_loss</b><small>정보 보존</small></div>
+  </div>
+  <p class="loss">행/열 표현은 관계를 ID 열로 평탄화합니다.</p>
+        <a href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/canonical%3Aoq-oq-c03-librivox/projection/sheet">실제 Sheet 결과 보기 →</a>
+      </section>
+    </div>
+    <div class="judgment">
+      <div><span>Reviewer A</span><strong>go</strong><small>appropriate · clear</small></div>
+      <div><span>Reviewer B</span><strong>go</strong><small>appropriate · clear</small></div>
+      <div class="synthesis"><span>내부 종합</span><strong>go</strong><small>불일치: checklistTodoDecision, scheduleSuitability</small></div>
+      <div><span>사용자 검토</span><strong>NOT REVIEWED</strong><small>Gallery에서 직접 판단 필요</small></div>
+    </div>
+  </article>
+<article class="case" id="case-11">
+    <header class="case-title">
+      <div>
+        <span class="case-no">11</span>
+        <span class="chip">돈·행정·구매</span>
+        <span class="chip">checklist_rows</span>
+      </div>
+      <h2>유효기간 만료에 따른 재발급</h2>
+      <p>성인 본인이 여권 만료 재발급에 필요한 준비를 마치고 신청한다.</p>
+      <a class="open" href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/canonical%3Aoq-oq-c04-passport">전체 Item을 Gallery에서 열기 →</a>
+    </header>
+    <div class="trace">
+      <section class="trace-block source">
+        <div class="trace-label">1 · 원문 → SourceRow</div>
+        <h3>외교부 여권안내</h3>
+        <p>7 SourceRow · html · captured_in_internal_research_artifact</p>
+        <ol><li><span>oq-oq-c04-passport--passport-r01</span><strong>신청 경로 선택</strong><small>방문 신청 또는 온라인 신청</small></li><li><span>oq-oq-c04-passport--passport-r02</span><strong>여권발급신청서</strong><small>여권발급신청서 작성 예시</small></li><li><span>oq-oq-c04-passport--passport-r03</span><strong>여권용 사진 1매</strong><small>6개월 이내 촬영한 사진</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block canonical">
+        <div class="trace-label">2 · canonical Item</div>
+        <h3>5 Item · 2 Step</h3>
+        <p>ordered_procedure · no_schedule</p>
+        <ol><li><span>oq-oq-c04-passport-item-1</span><strong>신청 경로 선택</strong><small>날짜 없음 · 근거 1행</small></li><li><span>oq-oq-c04-passport-item-2</span><strong>여권발급신청서</strong><small>날짜 없음 · 근거 1행</small></li><li><span>oq-oq-c04-passport-item-3</span><strong>여권용 사진 1매</strong><small>날짜 없음 · 근거 1행</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block output">
+        <div class="trace-label">3 · 기본 projection</div>
+        <div class="projection-result">
+    <div><b>Todo</b><small>primary</small></div>
+    <div><b>7</b><small>destination record</small></div>
+    <div><b>available_now</b><small>생성 가능</small></div>
+    <div><b>lossless_or_low_loss</b><small>정보 보존</small></div>
+  </div>
+  <p class="loss">명시된 property-level 손실 없음</p>
+        <a href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/canonical%3Aoq-oq-c04-passport/projection/todo">실제 Todo 결과 보기 →</a>
+      </section>
+    </div>
+    <div class="judgment">
+      <div><span>Reviewer A</span><strong>go</strong><small>appropriate · clear</small></div>
+      <div><span>Reviewer B</span><strong>modify</strong><small>appropriate · needs_explanation</small></div>
+      <div class="synthesis"><span>내부 종합</span><strong>modify</strong><small>불일치: primaryProjection, checklistTodoDecision, contentValue, uiUnderstandability</small></div>
+      <div><span>사용자 검토</span><strong>NOT REVIEWED</strong><small>Gallery에서 직접 판단 필요</small></div>
+    </div>
+  </article>
+<article class="case" id="case-12">
+    <header class="case-title">
+      <div>
+        <span class="case-no">12</span>
+        <span class="chip">집·생활</span>
+        <span class="chip">recurrence_rule</span>
+      </div>
+      <h2>Washing Machine Maintenance: tips to keep your machine running smoothly</h2>
+      <p>40회 세탁 또는 기기 알림 때 안전한 세탁조 청소 task를 실행한다.</p>
+      <a class="open" href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/canonical%3Aoq-oq-c05-washer">전체 Item을 Gallery에서 열기 →</a>
+    </header>
+    <div class="trace">
+      <section class="trace-block source">
+        <div class="trace-label">1 · 원문 → SourceRow</div>
+        <h3>Samsung UK Support</h3>
+        <p>7 SourceRow · html · captured_in_internal_research_artifact</p>
+        <ol><li><span>oq-oq-c05-washer--washer-r01</span><strong>실행 시점</strong><small>40회 세탁마다 또는 세탁기가 필요 알림을 표시하면 더 일찍 실행</small></li><li><span>oq-oq-c05-washer--washer-r02</span><strong>드럼 비우기</strong><small>세탁물을 넣지 않고 드럼을 비운다</small></li><li><span>oq-oq-c05-washer--washer-r03</span><strong>세제·표백제 금지</strong><small>세제나 표백제를 사용하지 않는다</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block canonical">
+        <div class="trace-label">2 · canonical Item</div>
+        <h3>4 Item · 4 Step</h3>
+        <p>repeating_routine · no_schedule</p>
+        <ol><li><span>oq-oq-c05-washer-item-1</span><strong>드럼 비우기</strong><small>날짜 없음 · 근거 1행</small></li><li><span>oq-oq-c05-washer-item-2</span><strong>전원 켜기</strong><small>날짜 없음 · 근거 1행</small></li><li><span>oq-oq-c05-washer-item-3</span><strong>Eco Drum Clean 선택</strong><small>날짜 없음 · 근거 1행</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block output">
+        <div class="trace-label">3 · 기본 projection</div>
+        <div class="projection-result">
+    <div><b>Todo</b><small>primary</small></div>
+    <div><b>8</b><small>destination record</small></div>
+    <div><b>available_now</b><small>생성 가능</small></div>
+    <div><b>lossless_or_low_loss</b><small>정보 보존</small></div>
+  </div>
+  <p class="loss">명시된 property-level 손실 없음</p>
+        <a href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/canonical%3Aoq-oq-c05-washer/projection/todo">실제 Todo 결과 보기 →</a>
+      </section>
+    </div>
+    <div class="judgment">
+      <div><span>Reviewer A</span><strong>go</strong><small>appropriate · clear</small></div>
+      <div><span>Reviewer B</span><strong>modify</strong><small>too_small · needs_explanation</small></div>
+      <div class="synthesis"><span>내부 종합</span><strong>modify</strong><small>불일치: itemGranularity, checklistTodoDecision, scheduleSuitability, contentValue, uiUnderstandability</small></div>
+      <div><span>사용자 검토</span><strong>NOT REVIEWED</strong><small>Gallery에서 직접 판단 필요</small></div>
+    </div>
+  </article>
+<article class="case" id="case-13">
+    <header class="case-title">
+      <div>
+        <span class="case-no">13</span>
+        <span class="chip">일·커리어</span>
+        <span class="chip">narrative_guidance</span>
+      </div>
+      <h2>2026년 농업인 온열질환 예방가이드 및 체크리스트</h2>
+      <p>폭염 농작업 때 사전 준비와 중지·응급 조건을 놓치지 않는다.</p>
+      <a class="open" href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/canonical%3Aoq-oq-b01-heat">전체 Item을 Gallery에서 열기 →</a>
+    </header>
+    <div class="trace">
+      <section class="trace-block source">
+        <div class="trace-label">1 · 원문 → SourceRow</div>
+        <h3>농촌진흥청 농사로</h3>
+        <p>10 SourceRow · html · captured_in_internal_research_artifact</p>
+        <ol><li><span>oq-oq-b01-heat--ds01-r01</span><strong>폭염 단계 기준 확인</strong><small>체감온도 기준 관심 33°C, 주의 35°C, 경고 38°C, 위험 39°C 및 열대야 25°C 기준</small></li><li><span>oq-oq-b01-heat--ds01-r02</span><strong>작업 전 체감온도 확인</strong><small>작업 시작 전에 체감온도와 경보 단계를 확인</small></li><li><span>oq-oq-b01-heat--ds01-r03</span><strong>작업 시간 조정</strong><small>정오부터 17시 사이 작업 조정 또는 중지 계획 공유</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block canonical">
+        <div class="trace-label">2 · canonical Item</div>
+        <h3>4 Item · 2 Step</h3>
+        <p>phase_lifecycle · no_schedule</p>
+        <ol><li><span>oq-oq-b01-heat-item-1</span><strong>작업 전 체감온도 확인</strong><small>날짜 없음 · 근거 1행</small></li><li><span>oq-oq-b01-heat-item-2</span><strong>작업 시간 조정</strong><small>날짜 없음 · 근거 1행</small></li><li><span>oq-oq-b01-heat-item-3</span><strong>물·그늘·보호구 준비</strong><small>날짜 없음 · 근거 1행</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block output">
+        <div class="trace-label">3 · 기본 projection</div>
+        <div class="projection-result">
+    <div><b>Memo</b><small>primary</small></div>
+    <div><b>2</b><small>destination record</small></div>
+    <div><b>available_now</b><small>생성 가능</small></div>
+    <div><b>bounded_loss</b><small>정보 보존</small></div>
+  </div>
+  <p class="loss">Memo는 사람이 읽는 문서이며 canonical JSON이 아닙니다.</p>
+        <a href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/canonical%3Aoq-oq-b01-heat/projection/memo">실제 Memo 결과 보기 →</a>
+      </section>
+    </div>
+    <div class="judgment">
+      <div><span>Reviewer A</span><strong>go</strong><small>appropriate · clear</small></div>
+      <div><span>Reviewer B</span><strong>hold</strong><small>mixed · confusing</small></div>
+      <div class="synthesis"><span>내부 종합</span><strong>modify</strong><small>불일치: itemGranularity, primaryProjection, scheduleSuitability, contentValue, uiUnderstandability</small></div>
+      <div><span>사용자 검토</span><strong>NOT REVIEWED</strong><small>Gallery에서 직접 판단 필요</small></div>
+    </div>
+  </article>
+<article class="case" id="case-14">
+    <header class="case-title">
+      <div>
+        <span class="case-no">14</span>
+        <span class="chip">식사·장보기</span>
+        <span class="chip">table_rows</span>
+      </div>
+      <h2>평일 5일 저녁 식단</h2>
+      <p>원문의 월~금 메뉴 중 사용할 메뉴를 정하고 한 주의 식사 실행 상태를 관리한다.</p>
+      <a class="open" href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/canonical%3Avalue-vq-03">전체 Item을 Gallery에서 열기 →</a>
+    </header>
+    <div class="trace">
+      <section class="trace-block source">
+        <div class="trace-label">1 · 원문 → SourceRow</div>
+        <h3>오늘의집 · 요리요정이팀장</h3>
+        <p>5 SourceRow · html · captured_in_internal_research_artifact</p>
+        <ol><li><span>value-vq-03--vq03-r01</span><strong>월요일 양배추참치덮밥·단무지무침</strong><small>월요일 메뉴와 원문 재료·조리법.</small></li><li><span>value-vq-03--vq03-r02</span><strong>화요일 버섯샐러드</strong><small>화요일 메뉴와 원문 재료·조리법.</small></li><li><span>value-vq-03--vq03-r03</span><strong>수요일 토마토 야채수프</strong><small>수요일 메뉴와 원문 재료·조리법.</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block canonical">
+        <div class="trace-label">2 · canonical Item</div>
+        <h3>5 Item · 1 Step</h3>
+        <p>date_preparation · anchor_offset</p>
+        <ol><li><span>value-vq-03-item-1</span><strong>월요일 양배추참치덮밥·단무지무침</strong><small>anchor_offset · 근거 1행</small></li><li><span>value-vq-03-item-2</span><strong>화요일 버섯샐러드</strong><small>anchor_offset · 근거 1행</small></li><li><span>value-vq-03-item-3</span><strong>수요일 토마토 야채수프</strong><small>anchor_offset · 근거 1행</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block output">
+        <div class="trace-label">3 · 기본 projection</div>
+        <div class="projection-result">
+    <div><b>Calendar</b><small>primary</small></div>
+    <div><b>5</b><small>destination record</small></div>
+    <div><b>available_after_user_overlay</b><small>생성 가능</small></div>
+    <div><b>lossless_or_low_loss</b><small>정보 보존</small></div>
+  </div>
+  <p class="loss">명시된 property-level 손실 없음</p>
+        <a href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/canonical%3Avalue-vq-03/projection/calendar">실제 Calendar 결과 보기 →</a>
+      </section>
+    </div>
+    <div class="judgment">
+      <div><span>Reviewer A</span><strong>go</strong><small>appropriate · clear</small></div>
+      <div><span>Reviewer B</span><strong>go</strong><small>appropriate · clear</small></div>
+      <div class="synthesis"><span>내부 종합</span><strong>go</strong><small>6축 일치</small></div>
+      <div><span>사용자 검토</span><strong>NOT REVIEWED</strong><small>Gallery에서 직접 판단 필요</small></div>
+    </div>
+  </article>
+<article class="case" id="case-15">
+    <header class="case-title">
+      <div>
+        <span class="case-no">15</span>
+        <span class="chip">돈·행정·구매</span>
+        <span class="chip">date_window</span>
+      </div>
+      <h2>2026년 2학기 국가근로장학금 신청</h2>
+      <p>소속 대학 운영 여부를 확인하고 2차 신청·제출대상 확인·필요한 후속 동의를 기한 안에 마친다.</p>
+      <a class="open" href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/canonical%3Avalue-vq-11">전체 Item을 Gallery에서 열기 →</a>
+    </header>
+    <div class="trace">
+      <section class="trace-block source">
+        <div class="trace-label">1 · 원문 → SourceRow</div>
+        <h3>한국장학재단</h3>
+        <p>5 SourceRow · html · captured_in_internal_research_artifact</p>
+        <ol><li><span>value-vq-11--vq11-r01</span><strong>소속 대학 2차 운영 확인</strong><small>2차 학생 신청기간 운영 여부는 대학마다 다르다.</small></li><li><span>value-vq-11--vq11-r02</span><strong>2차 신청</strong><small>2026-08-12 09:00부터 2026-09-09 18:00까지.</small></li><li><span>value-vq-11--vq11-r03</span><strong>제출대상 여부 확인</strong><small>신청 후 1~3일(휴일 제외) 뒤 서류제출현황에서 확인.</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block canonical">
+        <div class="trace-label">2 · canonical Item</div>
+        <h3>5 Item · 5 Step</h3>
+        <p>date_preparation · anchor_offset</p>
+        <ol><li><span>value-vq-11-item-1</span><strong>소속 대학 2차 운영 확인</strong><small>날짜 없음 · 근거 1행</small></li><li><span>value-vq-11-item-2</span><strong>2차 신청</strong><small>date_window · 근거 1행</small></li><li><span>value-vq-11-item-3</span><strong>제출대상 여부 확인</strong><small>날짜 없음 · 근거 1행</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block output">
+        <div class="trace-label">3 · 기본 projection</div>
+        <div class="projection-result">
+    <div><b>Calendar</b><small>primary</small></div>
+    <div><b>2</b><small>destination record</small></div>
+    <div><b>available_now</b><small>생성 가능</small></div>
+    <div><b>lossless_or_low_loss</b><small>정보 보존</small></div>
+  </div>
+  <p class="loss">명시된 property-level 손실 없음</p>
+        <a href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/canonical%3Avalue-vq-11/projection/calendar">실제 Calendar 결과 보기 →</a>
+      </section>
+    </div>
+    <div class="judgment">
+      <div><span>Reviewer A</span><strong>go</strong><small>appropriate · clear</small></div>
+      <div><span>Reviewer B</span><strong>go</strong><small>appropriate · clear</small></div>
+      <div class="synthesis"><span>내부 종합</span><strong>go</strong><small>불일치: checklistTodoDecision</small></div>
+      <div><span>사용자 검토</span><strong>NOT REVIEWED</strong><small>Gallery에서 직접 판단 필요</small></div>
+    </div>
+  </article>
+<article class="case" id="case-16">
+    <header class="case-title">
+      <div>
+        <span class="case-no">16</span>
+        <span class="chip">집·생활</span>
+        <span class="chip">table_rows</span>
+      </div>
+      <h2>영유아 건강검진 일정</h2>
+      <p>영유아 건강검진 일정의 원문 행을 실행 상태로 관리한다.</p>
+      <a class="open" href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/canonical%3Alive-c01">전체 Item을 Gallery에서 열기 →</a>
+    </header>
+    <div class="trace">
+      <section class="trace-block source">
+        <div class="trace-label">1 · 원문 → SourceRow</div>
+        <h3>국민건강보험공단</h3>
+        <p>12 SourceRow · html · captured_in_internal_research_artifact</p>
+        <ol><li><span>live-c01--c01-sr01</span><strong>1차 건강검진</strong><small>생후 14~35일</small></li><li><span>live-c01--c01-sr02</span><strong>2차 건강검진</strong><small>생후 4~6개월</small></li><li><span>live-c01--c01-sr03</span><strong>3차 건강검진</strong><small>생후 9~12개월</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block canonical">
+        <div class="trace-label">2 · canonical Item</div>
+        <h3>12 Item · 12 Step</h3>
+        <p>date_preparation · no_schedule</p>
+        <ol><li><span>live-c01-item-1</span><strong>1차 건강검진</strong><small>날짜 없음 · 근거 1행</small></li><li><span>live-c01-item-2</span><strong>2차 건강검진</strong><small>날짜 없음 · 근거 1행</small></li><li><span>live-c01-item-3</span><strong>3차 건강검진</strong><small>날짜 없음 · 근거 1행</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block output">
+        <div class="trace-label">3 · 기본 projection</div>
+        <div class="projection-result">
+    <div><b>Sheet</b><small>primary</small></div>
+    <div><b>12</b><small>destination record</small></div>
+    <div><b>available_now</b><small>생성 가능</small></div>
+    <div><b>lossless_or_low_loss</b><small>정보 보존</small></div>
+  </div>
+  <p class="loss">행/열 표현은 관계를 ID 열로 평탄화합니다.</p>
+        <a href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/canonical%3Alive-c01/projection/sheet">실제 Sheet 결과 보기 →</a>
+      </section>
+    </div>
+    <div class="judgment">
+      <div><span>Reviewer A</span><strong>modify</strong><small>appropriate · needs_explanation</small></div>
+      <div><span>Reviewer B</span><strong>modify</strong><small>appropriate · needs_explanation</small></div>
+      <div class="synthesis"><span>내부 종합</span><strong>modify</strong><small>불일치: primaryProjection, checklistTodoDecision, scheduleSuitability</small></div>
+      <div><span>사용자 검토</span><strong>NOT REVIEWED</strong><small>Gallery에서 직접 판단 필요</small></div>
+    </div>
+  </article>
+<article class="case" id="case-17">
+    <header class="case-title">
+      <div>
+        <span class="case-no">17</span>
+        <span class="chip">가족·육아</span>
+        <span class="chip">procedure_rows</span>
+      </div>
+      <h2>서울상상나라 단체관람 준비와 당일 인솔</h2>
+      <p>교사가 단체 견학을 빠뜨림 없이 준비하고 당일 인원·동선·퇴장을 관리한다.</p>
+      <a class="open" href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/new%3Anew-a02-seoul-museum-group">전체 Item을 Gallery에서 열기 →</a>
+    </header>
+    <div class="trace">
+      <section class="trace-block source">
+        <div class="trace-label">1 · 원문 → SourceRow</div>
+        <h3>서울상상나라</h3>
+        <p>12 SourceRow · pdf · public_full_text</p>
+        <ol><li><span>new:new-a02-seoul-museum-group:museum-01</span><strong>홈페이지에서 단체관람을 사전 예약</strong><small>홈페이지에서 단체관람을 사전 예약</small></li><li><span>new:new-a02-seoul-museum-group:museum-02</span><strong>어린이 7명당 인솔교사 1명 비율 준비</strong><small>어린이 7명당 인솔교사 1명 비율 준비</small></li><li><span>new:new-a02-seoul-museum-group:museum-03</span><strong>예약 시각 15분 전 도착</strong><small>예약 시각 15분 전 도착</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block canonical">
+        <div class="trace-label">2 · canonical Item</div>
+        <h3>12 Item · 4 Step</h3>
+        <p>ordered_procedure · manually_selected_date</p>
+        <ol><li><span>new:new-a02-seoul-museum-group:item:museum-01</span><strong>홈페이지에서 단체관람을 사전 예약</strong><small>날짜 없음 · 근거 1행</small></li><li><span>new:new-a02-seoul-museum-group:item:museum-02</span><strong>어린이 7명당 인솔교사 1명 비율 준비</strong><small>날짜 없음 · 근거 1행</small></li><li><span>new:new-a02-seoul-museum-group:item:museum-03</span><strong>예약 시각 15분 전 도착</strong><small>날짜 없음 · 근거 1행</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block output">
+        <div class="trace-label">3 · 기본 projection</div>
+        <div class="projection-result">
+    <div><b>Checklist</b><small>primary</small></div>
+    <div><b>4</b><small>destination record</small></div>
+    <div><b>available_now</b><small>생성 가능</small></div>
+    <div><b>lossless_or_low_loss</b><small>정보 보존</small></div>
+  </div>
+  <p class="loss">명시된 property-level 손실 없음</p>
+        <a href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/new%3Anew-a02-seoul-museum-group/projection/checklist">실제 Checklist 결과 보기 →</a>
+      </section>
+    </div>
+    <div class="judgment">
+      <div><span>Reviewer A</span><strong>modify</strong><small>mixed · confusing</small></div>
+      <div><span>Reviewer B</span><strong>hold</strong><small>appropriate · needs_explanation</small></div>
+      <div class="synthesis"><span>내부 종합</span><strong>modify</strong><small>불일치: itemGranularity, contentValue, uiUnderstandability</small></div>
+      <div><span>사용자 검토</span><strong>NOT REVIEWED</strong><small>Gallery에서 직접 판단 필요</small></div>
+    </div>
+  </article>
+<article class="case" id="case-18">
+    <header class="case-title">
+      <div>
+        <span class="case-no">18</span>
+        <span class="chip">돈·행정·구매</span>
+        <span class="chip">checklist_rows</span>
+      </div>
+      <h2>전세 계약 단계별 체크 포인트</h2>
+      <p>전세 계약 단계별 위험 점검을 빠뜨리지 않고 증빙 상태를 관리한다.</p>
+      <a class="open" href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/new%3Anew-a03-kakaopay-jeonse">전체 Item을 Gallery에서 열기 →</a>
+    </header>
+    <div class="trace">
+      <section class="trace-block source">
+        <div class="trace-label">1 · 원문 → SourceRow</div>
+        <h3>카카오페이 페이어텐션</h3>
+        <p>8 SourceRow · html · public_full_text</p>
+        <ol><li><span>new:new-a03-kakaopay-jeonse:jeonse-01</span><strong>주변 시세와 비정상적으로 낮은 가격 비교</strong><small>주변 시세와 비정상적으로 낮은 가격 비교</small></li><li><span>new:new-a03-kakaopay-jeonse:jeonse-02</span><strong>등기부의 소유자·근저당·압류 확인</strong><small>등기부의 소유자·근저당·압류 확인</small></li><li><span>new:new-a03-kakaopay-jeonse:jeonse-03</span><strong>전세보증보험 대상 여부 확인</strong><small>전세보증보험 대상 여부 확인</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block canonical">
+        <div class="trace-label">2 · canonical Item</div>
+        <h3>8 Item · 3 Step</h3>
+        <p>compare_decide · no_schedule</p>
+        <ol><li><span>new:new-a03-kakaopay-jeonse:item:jeonse-01</span><strong>주변 시세와 비정상적으로 낮은 가격 비교</strong><small>날짜 없음 · 근거 1행</small></li><li><span>new:new-a03-kakaopay-jeonse:item:jeonse-02</span><strong>등기부의 소유자·근저당·압류 확인</strong><small>날짜 없음 · 근거 1행</small></li><li><span>new:new-a03-kakaopay-jeonse:item:jeonse-03</span><strong>전세보증보험 대상 여부 확인</strong><small>날짜 없음 · 근거 1행</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block output">
+        <div class="trace-label">3 · 기본 projection</div>
+        <div class="projection-result">
+    <div><b>Checklist</b><small>primary</small></div>
+    <div><b>3</b><small>destination record</small></div>
+    <div><b>available_now</b><small>생성 가능</small></div>
+    <div><b>lossless_or_low_loss</b><small>정보 보존</small></div>
+  </div>
+  <p class="loss">명시된 property-level 손실 없음</p>
+        <a href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/new%3Anew-a03-kakaopay-jeonse/projection/checklist">실제 Checklist 결과 보기 →</a>
+      </section>
+    </div>
+    <div class="judgment">
+      <div><span>Reviewer A</span><strong>go</strong><small>appropriate · clear</small></div>
+      <div><span>Reviewer B</span><strong>hold</strong><small>appropriate · clear</small></div>
+      <div class="synthesis"><span>내부 종합</span><strong>modify</strong><small>불일치: contentValue</small></div>
+      <div><span>사용자 검토</span><strong>NOT REVIEWED</strong><small>Gallery에서 직접 판단 필요</small></div>
+    </div>
+  </article>
+<article class="case" id="case-19">
+    <header class="case-title">
+      <div>
+        <span class="case-no">19</span>
+        <span class="chip">식사·장보기</span>
+        <span class="chip">table_rows</span>
+      </div>
+      <h2>냉장고 파먹기 평일 5일 식단</h2>
+      <p>냉장고 재료를 활용해 평일 5일 메뉴를 순서대로 실행한다.</p>
+      <a class="open" href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/new%3Anew-b03-fridge-week">전체 Item을 Gallery에서 열기 →</a>
+    </header>
+    <div class="trace">
+      <section class="trace-block source">
+        <div class="trace-label">1 · 원문 → SourceRow</div>
+        <h3>요리요정이팀장 / 오늘의집</h3>
+        <p>5 SourceRow · html · public_full_text</p>
+        <ol><li><span>new:new-b03-fridge-week:fridge-01</span><strong>월요일 — 두부조림, 가자미살 계란전</strong><small>월요일 — 두부조림, 가자미살 계란전</small></li><li><span>new:new-b03-fridge-week:fridge-02</span><strong>화요일 — 새우콩나물국밥, 무생채</strong><small>화요일 — 새우콩나물국밥, 무생채</small></li><li><span>new:new-b03-fridge-week:fridge-03</span><strong>수요일 — 소고기뭇국, 봄동겉절이</strong><small>수요일 — 소고기뭇국, 봄동겉절이</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block canonical">
+        <div class="trace-label">2 · canonical Item</div>
+        <h3>5 Item · 5 Step</h3>
+        <p>progress_tracking · user_pacing_assignment</p>
+        <ol><li><span>new:new-b03-fridge-week:item:fridge-01</span><strong>월요일 — 두부조림, 가자미살 계란전</strong><small>날짜 없음 · 근거 1행</small></li><li><span>new:new-b03-fridge-week:item:fridge-02</span><strong>화요일 — 새우콩나물국밥, 무생채</strong><small>날짜 없음 · 근거 1행</small></li><li><span>new:new-b03-fridge-week:item:fridge-03</span><strong>수요일 — 소고기뭇국, 봄동겉절이</strong><small>날짜 없음 · 근거 1행</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block output">
+        <div class="trace-label">3 · 기본 projection</div>
+        <div class="projection-result">
+    <div><b>Sheet</b><small>primary</small></div>
+    <div><b>5</b><small>destination record</small></div>
+    <div><b>available_now</b><small>생성 가능</small></div>
+    <div><b>lossless_or_low_loss</b><small>정보 보존</small></div>
+  </div>
+  <p class="loss">행/열 표현은 관계를 ID 열로 평탄화합니다.</p>
+        <a href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/new%3Anew-b03-fridge-week/projection/sheet">실제 Sheet 결과 보기 →</a>
+      </section>
+    </div>
+    <div class="judgment">
+      <div><span>Reviewer A</span><strong>modify</strong><small>appropriate · needs_explanation</small></div>
+      <div><span>Reviewer B</span><strong>go</strong><small>appropriate · clear</small></div>
+      <div class="synthesis"><span>내부 종합</span><strong>modify</strong><small>불일치: contentValue, uiUnderstandability</small></div>
+      <div><span>사용자 검토</span><strong>NOT REVIEWED</strong><small>Gallery에서 직접 판단 필요</small></div>
+    </div>
+  </article>
+<article class="case" id="case-20">
+    <header class="case-title">
+      <div>
+        <span class="case-no">20</span>
+        <span class="chip">학습·독서</span>
+        <span class="chip">lesson_rows</span>
+      </div>
+      <h2>코딩테스트 고득점 Kit 47문제</h2>
+      <p>코딩테스트 유형별 47문제 풀이 진도를 관리한다.</p>
+      <a class="open" href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/new%3Anew-c01-programmers-kit">전체 Item을 Gallery에서 열기 →</a>
+    </header>
+    <div class="trace">
+      <section class="trace-block source">
+        <div class="trace-label">1 · 원문 → SourceRow</div>
+        <h3>프로그래머스</h3>
+        <p>47 SourceRow · html · public_full_text</p>
+        <ol><li><span>new:new-c01-programmers-kit:programmers-01</span><strong>완주하지 못한 선수</strong><small>Level 1</small></li><li><span>new:new-c01-programmers-kit:programmers-02</span><strong>폰켓몬</strong><small>Level 1</small></li><li><span>new:new-c01-programmers-kit:programmers-03</span><strong>전화번호 목록</strong><small>Level 2</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block canonical">
+        <div class="trace-label">2 · canonical Item</div>
+        <h3>47 Item · 10 Step</h3>
+        <p>progress_tracking · no_schedule</p>
+        <ol><li><span>new:new-c01-programmers-kit:item:programmers-01</span><strong>완주하지 못한 선수</strong><small>날짜 없음 · 근거 1행</small></li><li><span>new:new-c01-programmers-kit:item:programmers-02</span><strong>폰켓몬</strong><small>날짜 없음 · 근거 1행</small></li><li><span>new:new-c01-programmers-kit:item:programmers-03</span><strong>전화번호 목록</strong><small>날짜 없음 · 근거 1행</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block output">
+        <div class="trace-label">3 · 기본 projection</div>
+        <div class="projection-result">
+    <div><b>Todo</b><small>primary</small></div>
+    <div><b>57</b><small>destination record</small></div>
+    <div><b>available_now</b><small>생성 가능</small></div>
+    <div><b>lossless_or_low_loss</b><small>정보 보존</small></div>
+  </div>
+  <p class="loss">명시된 property-level 손실 없음</p>
+        <a href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/new%3Anew-c01-programmers-kit/projection/todo">실제 Todo 결과 보기 →</a>
+      </section>
+    </div>
+    <div class="judgment">
+      <div><span>Reviewer A</span><strong>modify</strong><small>appropriate · needs_explanation</small></div>
+      <div><span>Reviewer B</span><strong>modify</strong><small>appropriate · needs_explanation</small></div>
+      <div class="synthesis"><span>내부 종합</span><strong>modify</strong><small>6축 일치</small></div>
+      <div><span>사용자 검토</span><strong>NOT REVIEWED</strong><small>Gallery에서 직접 판단 필요</small></div>
+    </div>
+  </article>
+<article class="case" id="case-21">
+    <header class="case-title">
+      <div>
+        <span class="case-no">21</span>
+        <span class="chip">일·커리어</span>
+        <span class="chip">checklist_rows</span>
+      </div>
+      <h2>Podcast Workflow 23개 작업</h2>
+      <p>팟캐스트 사전기획부터 배포까지 한 회차 제작 과정을 완료한다.</p>
+      <a class="open" href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/new%3Anew-c08-todoist-podcast">전체 Item을 Gallery에서 열기 →</a>
+    </header>
+    <div class="trace">
+      <section class="trace-block source">
+        <div class="trace-label">1 · 원문 → SourceRow</div>
+        <h3>Todoist · Neil</h3>
+        <p>23 SourceRow · html_csv · public_full_text</p>
+        <ol><li><span>new:new-c08-todoist-podcast:podcast-01</span><strong>Create 1-page overview with title, audience, content, frequency</strong><small>indent 1</small></li><li><span>new:new-c08-todoist-podcast:podcast-02</span><strong>Set content plan for first 4 episodes</strong><small>indent 1</small></li><li><span>new:new-c08-todoist-podcast:podcast-03</span><strong>Do some research</strong><small>indent 1</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block canonical">
+        <div class="trace-label">2 · canonical Item</div>
+        <h3>23 Item · 4 Step</h3>
+        <p>phase_lifecycle · no_schedule</p>
+        <ol><li><span>new:new-c08-todoist-podcast:item:podcast-01</span><strong>Create 1-page overview with title, audience, content, frequency</strong><small>날짜 없음 · 근거 1행</small></li><li><span>new:new-c08-todoist-podcast:item:podcast-02</span><strong>Set content plan for first 4 episodes</strong><small>날짜 없음 · 근거 1행</small></li><li><span>new:new-c08-todoist-podcast:item:podcast-03</span><strong>Do some research</strong><small>날짜 없음 · 근거 1행</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block output">
+        <div class="trace-label">3 · 기본 projection</div>
+        <div class="projection-result">
+    <div><b>Checklist</b><small>primary</small></div>
+    <div><b>4</b><small>destination record</small></div>
+    <div><b>available_now</b><small>생성 가능</small></div>
+    <div><b>lossless_or_low_loss</b><small>정보 보존</small></div>
+  </div>
+  <p class="loss">명시된 property-level 손실 없음</p>
+        <a href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/new%3Anew-c08-todoist-podcast/projection/checklist">실제 Checklist 결과 보기 →</a>
+      </section>
+    </div>
+    <div class="judgment">
+      <div><span>Reviewer A</span><strong>modify</strong><small>mixed · needs_explanation</small></div>
+      <div><span>Reviewer B</span><strong>modify</strong><small>mixed · needs_explanation</small></div>
+      <div class="synthesis"><span>내부 종합</span><strong>modify</strong><small>6축 일치</small></div>
+      <div><span>사용자 검토</span><strong>NOT REVIEWED</strong><small>Gallery에서 직접 판단 필요</small></div>
+    </div>
+  </article>
+<article class="case" id="case-22">
+    <header class="case-title">
+      <div>
+        <span class="case-no">22</span>
+        <span class="chip">여행·외출</span>
+        <span class="chip">table_rows</span>
+      </div>
+      <h2>제46회 한국합창제</h2>
+      <p>프로그램과 관람 조건이 다른 회차 중 하나를 골라 저장한다.</p>
+      <a class="open" href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/events%3Aevent-kr-multi-show-choir">전체 Item을 Gallery에서 열기 →</a>
+    </header>
+    <div class="trace">
+      <section class="trace-block source">
+        <div class="trace-label">1 · 원문 → SourceRow</div>
+        <h3>국립극장</h3>
+        <p>5 SourceRow · html · public_html_open</p>
+        <ol><li><span>events:event-kr-multi-show-choir:event-kr-multi-show-choir-row-01</span><strong>제46회 한국합창제</strong><small>제46회 한국합창제</small></li><li><span>events:event-kr-multi-show-choir:event-kr-multi-show-choir-row-02</span><strong>경기합창제</strong><small>경기합창제</small></li><li><span>events:event-kr-multi-show-choir:event-kr-multi-show-choir-row-03</span><strong>한국소년소녀합창제</strong><small>한국소년소녀합창제</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block canonical">
+        <div class="trace-label">2 · canonical Item</div>
+        <h3>0 Item · 0 Step</h3>
+        <p>date_preparation · fixed_occurrence</p>
+        <ol><li><span>choir-2026-05-08-1930</span><strong>Occurrence를 먼저 보존</strong><small>2026-05-08T19:30:00+09:00 · 사용자 의도 뒤 Item 활성화</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block output">
+        <div class="trace-label">3 · 기본 projection</div>
+        <div class="projection-result">
+    <div><b>Calendar</b><small>primary</small></div>
+    <div><b>4</b><small>destination record</small></div>
+    <div><b>available_after_user_overlay</b><small>생성 가능</small></div>
+    <div><b>lossless_or_low_loss</b><small>정보 보존</small></div>
+  </div>
+  <p class="loss">명시된 property-level 손실 없음</p>
+        <a href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/events%3Aevent-kr-multi-show-choir/projection/calendar">실제 Calendar 결과 보기 →</a>
+      </section>
+    </div>
+    <div class="judgment">
+      <div><span>Reviewer A</span><strong>hold</strong><small>mixed · confusing</small></div>
+      <div><span>Reviewer B</span><strong>hold</strong><small>appropriate · clear</small></div>
+      <div class="synthesis"><span>내부 종합</span><strong>hold</strong><small>불일치: itemGranularity, uiUnderstandability</small></div>
+      <div><span>사용자 검토</span><strong>NOT REVIEWED</strong><small>Gallery에서 직접 판단 필요</small></div>
+    </div>
+  </article>
+<article class="case" id="case-23">
+    <header class="case-title">
+      <div>
+        <span class="case-no">23</span>
+        <span class="chip">취미·반려</span>
+        <span class="chip">table_rows</span>
+      </div>
+      <h2>수산양식기사 2026년 정기 기사 3회</h2>
+      <p>접수·시험 배정·발표 생애주기에서 내가 해야 할 행동을 놓치지 않는다.</p>
+      <a class="open" href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/events%3Aevent-kr-qnet-exam-lifecycle">전체 Item을 Gallery에서 열기 →</a>
+    </header>
+    <div class="trace">
+      <section class="trace-block source">
+        <div class="trace-label">1 · 원문 → SourceRow</div>
+        <h3>한국산업인력공단 Q-Net</h3>
+        <p>7 SourceRow · html · public_html_open</p>
+        <ol><li><span>events:event-kr-qnet-exam-lifecycle:event-kr-qnet-exam-lifecycle-row-01</span><strong>필기 정기 접수</strong><small>필기 정기 접수</small></li><li><span>events:event-kr-qnet-exam-lifecycle:event-kr-qnet-exam-lifecycle-row-02</span><strong>필기 빈자리 접수</strong><small>필기 빈자리 접수</small></li><li><span>events:event-kr-qnet-exam-lifecycle:event-kr-qnet-exam-lifecycle-row-03</span><strong>필기 시험 시행 기간</strong><small>필기 시험 시행 기간</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block canonical">
+        <div class="trace-label">2 · canonical Item</div>
+        <h3>0 Item · 0 Step</h3>
+        <p>date_preparation · date_window</p>
+        <ol><li><strong>Item 없음</strong><small>구조 확인 전 또는 멈춤 상태</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block output">
+        <div class="trace-label">3 · 기본 projection</div>
+        <div class="projection-result">
+    <div><b>Todo</b><small>not_recommended</small></div>
+    <div><b>0</b><small>destination record</small></div>
+    <div><b>unavailable</b><small>생성 가능</small></div>
+    <div><b>misleading_or_prohibited</b><small>정보 보존</small></div>
+  </div>
+  <p class="loss">명시된 property-level 손실 없음</p>
+        <a href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/events%3Aevent-kr-qnet-exam-lifecycle/projection/todo">실제 Todo 결과 보기 →</a>
+      </section>
+    </div>
+    <div class="judgment">
+      <div><span>Reviewer A</span><strong>hold</strong><small>mixed · confusing</small></div>
+      <div><span>Reviewer B</span><strong>modify</strong><small>appropriate · confusing</small></div>
+      <div class="synthesis"><span>내부 종합</span><strong>modify</strong><small>불일치: itemGranularity, primaryProjection, checklistTodoDecision, scheduleSuitability, contentValue</small></div>
+      <div><span>사용자 검토</span><strong>NOT REVIEWED</strong><small>Gallery에서 직접 판단 필요</small></div>
+    </div>
+  </article>
+<article class="case" id="case-24">
+    <header class="case-title">
+      <div>
+        <span class="case-no">24</span>
+        <span class="chip">취미·반려</span>
+        <span class="chip">table_rows</span>
+      </div>
+      <h2>Sandy Hook Park Cleanup</h2>
+      <p>취소된 기존 일정과 불완전한 대체 일정을 구분한다.</p>
+      <a class="open" href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/events%3Aevent-pattern-nps-rescheduled">전체 Item을 Gallery에서 열기 →</a>
+    </header>
+    <div class="trace">
+      <section class="trace-block source">
+        <div class="trace-label">1 · 원문 → SourceRow</div>
+        <h3>U.S. National Park Service</h3>
+        <p>2 SourceRow · html · public_html_open</p>
+        <ol><li><span>events:event-pattern-nps-rescheduled:event-pattern-nps-rescheduled-row-01</span><strong>기존 정화 활동</strong><small>기존 정화 활동</small></li><li><span>events:event-pattern-nps-rescheduled:event-pattern-nps-rescheduled-row-02</span><strong>March 14로 재일정</strong><small>March 14로 재일정</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block canonical">
+        <div class="trace-label">2 · canonical Item</div>
+        <h3>0 Item · 0 Step</h3>
+        <p>date_preparation · fixed_occurrence</p>
+        <ol><li><span>sandy-hook-cleanup-2026-02-28</span><strong>Occurrence를 먼저 보존</strong><small>2026-02-28T09:00:00-05:00 · 사용자 의도 뒤 Item 활성화</small></li></ol>
+      </section>
+      <div class="arrow">→</div>
+      <section class="trace-block output">
+        <div class="trace-label">3 · 기본 projection</div>
+        <div class="projection-result">
+    <div><b>Memo</b><small>primary</small></div>
+    <div><b>1</b><small>destination record</small></div>
+    <div><b>available_now</b><small>생성 가능</small></div>
+    <div><b>bounded_loss</b><small>정보 보존</small></div>
+  </div>
+  <p class="loss">Memo는 사람이 읽는 문서이며 canonical JSON이 아닙니다.</p>
+        <a href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html#content/events%3Aevent-pattern-nps-rescheduled/projection/memo">실제 Memo 결과 보기 →</a>
+      </section>
+    </div>
+    <div class="judgment">
+      <div><span>Reviewer A</span><strong>hold</strong><small>mixed · confusing</small></div>
+      <div><span>Reviewer B</span><strong>hold</strong><small>appropriate · needs_explanation</small></div>
+      <div class="synthesis"><span>내부 종합</span><strong>hold</strong><small>불일치: itemGranularity, scheduleSuitability, uiUnderstandability</small></div>
+      <div><span>사용자 검토</span><strong>NOT REVIEWED</strong><small>Gallery에서 직접 판단 필요</small></div>
+    </div>
+  </article>
+
+    <section class="section">
+      <div class="eyebrow">Repeated gaps</div>
+      <h2>UI로 봐야 드러난 7개 공통 문제</h2>
+      <p class="section-lead">좋지 않은 결과도 숨기지 않았습니다. 아래 count와 콘텐츠 ID는 독립 검토에서 자동 집계했습니다.</p>
+      <div class="gap-grid"><article class="gap-card">
+      <span>GAP-01-composite-item-boundary · high</span>
+      <h3>서로 다른 완료 판단이 한 Item에 합쳐진 사례</h3>
+      <strong>41개 콘텐츠</strong>
+      <p>한 Item 안의 행동들이 독립적으로 미룰 수 있거나 완료 시점이 다르면 분리하고, 단일 완료 판단의 설명 행이면 함께 둔다.</p>
+      <small>canonical:base-moving-d30 · canonical:base-opic-plan · canonical:oq-oq-c05-washer · canonical:oq-oq-c08-ac-decision · canonical:oq-oq-b01-heat</small>
+    </article><article class="gap-card">
+      <span>GAP-02-primary-projection-disagreement · high</span>
+      <h3>기본 projection 독립 판정 불일치</h3>
+      <strong>21개 콘텐츠</strong>
+      <p>natural artifact, availability, fidelity, user job을 분리 채점하고 primary는 하나만 선택한다.</p>
+      <small>canonical:oq-oq-c04-passport · canonical:oq-oq-c07-fit100 · canonical:oq-oq-b01-heat · canonical:oq-oq-p03-vehicle · canonical:deep-ds06</small>
+    </article><article class="gap-card">
+      <span>GAP-03-checklist-todo-disagreement · high</span>
+      <h3>Checklist와 Todo 경계 불일치</h3>
+      <strong>20개 콘텐츠</strong>
+      <p>closed bounded session과 independent reorderable queue를 tie-breaker로 고정한다.</p>
+      <small>canonical:oq-oq-c03-librivox · canonical:oq-oq-c04-passport · canonical:oq-oq-c05-washer · canonical:oq-oq-c07-fit100 · canonical:oq-oq-p01-ossu</small>
+    </article><article class="gap-card">
+      <span>GAP-04-calendar-overload · high</span>
+      <h3>개인 overlay 없이 Calendar가 과도하거나 불완전한 사례</h3>
+      <strong>46개 콘텐츠</strong>
+      <p>due-only, undated, incomplete-reschedule은 source VEVENT를 금지하고 user-confirmed pacing만 허용한다.</p>
+      <small>canonical:base-opic-plan · canonical:base-opentutorials-web1-progress · canonical:base-new-car-comparison · canonical:base-wtable-summer-banchan-five · canonical:base-andstudio-job-prep-videos</small>
+    </article><article class="gap-card">
+      <span>GAP-05-event-intent-activation · high</span>
+      <h3>원문 행사 사실과 사용자 참석 Item 사이의 activation 공백</h3>
+      <strong>14개 콘텐츠</strong>
+      <p>Series/Edition/Occurrence를 먼저 보존하고 유효 회차 선택 뒤에만 attend/book/save Item을 만든다.</p>
+      <small>events:event-kr-single-performance · events:event-kr-multi-show-choir · events:event-kr-sokcho-summer · events:event-kr-sema-martin-parr · events:event-kr-ballet-ticket-show</small>
+    </article><article class="gap-card">
+      <span>GAP-06-ui-explanation-load · medium</span>
+      <h3>실제 사용 UI에서 추가 설명이 필요한 콘텐츠</h3>
+      <strong>76개 콘텐츠</strong>
+      <p>첫 행동·현재 Step·primary projection을 먼저 보이고 provenance와 나머지 포맷은 보조 패널로 둔다.</p>
+      <small>canonical:base-moving-d30 · canonical:base-opic-plan · canonical:oq-oq-c02-kmooc-full · canonical:oq-oq-c04-passport · canonical:oq-oq-c05-washer</small>
+    </article><article class="gap-card">
+      <span>GAP-07-agent-value-disagreement · medium</span>
+      <h3>링크 저장 대비 Flow 가치 독립 판정 불일치</h3>
+      <strong>48개 콘텐츠</strong>
+      <p>실제 사용자 검토 전에는 internal Modify로 보수적으로 유지하고 save reason과 return state를 직접 확인한다.</p>
+      <small>canonical:base-moving-d30 · canonical:oq-oq-c02-kmooc-full · canonical:oq-oq-c04-passport · canonical:oq-oq-c05-washer · canonical:oq-oq-c07-fit100</small>
+    </article></div>
+    </section>
+
+    <section class="section">
+      <div class="eyebrow">Planning handoff</div>
+      <h2>기획에서 승인해야 할 14개 기본값</h2>
+      <p class="section-lead">추천안은 마련했지만 현재 상태는 모두 DRAFT_PENDING_USER_REVIEW입니다.</p>
+      <div class="decision-grid"><article class="decision">
+      <span>PD-01-item-minimum-unit</span>
+      <h3>Item의 최소 단위를 무엇으로 고정할 것인가?</h3>
+      <div><b>추천</b><p>원문 근거가 있고 독립 완료·결정·기록 상태를 저장할 가치가 있는 최소 단위로 유지한다. micro action 자동 분해는 금지한다.</p></div>
+      <div><b>대안</b><p>원문 문장 또는 화면 행마다 Item을 하나씩 만든다.</p></div>
+      <small>41회 반복 · 사용자 승인 필요</small>
+    </article><article class="decision">
+      <span>PD-02-step-grouping</span>
+      <h3>Step의 기본 grouping은 무엇인가?</h3>
+      <div><b>추천</b><p>같은 사용자 순간·세션·원문 구간을 묶되 Item별 완료 상태는 유지한다. Step을 Todo나 Calendar의 canonical 부모로 만들지 않는다.</p></div>
+      <div><b>대안</b><p>모든 Item을 한 Step에 두거나 projection마다 새 hierarchy를 만든다.</p></div>
+      <small>41회 반복 · 사용자 승인 필요</small>
+    </article><article class="decision">
+      <span>PD-03-checklist-versus-todo</span>
+      <h3>Checklist와 Todo를 어떤 규칙으로 나눌 것인가?</h3>
+      <div><b>추천</b><p>끝이 정해진 한 상황의 누락 방지 묶음은 Checklist, 독립적으로 재정렬·연기·추가하는 queue는 Todo로 둔다.</p></div>
+      <div><b>대안</b><p>Checklist를 Todo의 하위 canonical entity로 둔다.</p></div>
+      <small>20회 반복 · 사용자 승인 필요</small>
+    </article><article class="decision">
+      <span>PD-04-primary-projection</span>
+      <h3>기본 projection은 어떻게 정할 것인가?</h3>
+      <div><b>추천</b><p>사용자 job을 가장 적은 입력과 손실로 실행시키는 하나를 primary로 정하고, availability와 fidelity를 별도 판정한다.</p></div>
+      <div><b>대안</b><p>생성 가능한 모든 포맷을 동등하게 노출한다.</p></div>
+      <small>21회 반복 · 사용자 승인 필요</small>
+    </article><article class="decision">
+      <span>PD-05-secondary-projection-exposure</span>
+      <h3>보조 포맷을 어디까지 첫 화면에 보일 것인가?</h3>
+      <div><b>추천</b><p>primary와 최대 한 개의 자연스러운 secondary만 앞에 두고, optional·not_recommended는 포맷 비교 화면에서 손실과 함께 보여준다.</p></div>
+      <div><b>대안</b><p>다섯 포맷 버튼을 항상 같은 중요도로 노출한다.</p></div>
+      <small>21회 반복 · 사용자 승인 필요</small>
+    </article><article class="decision">
+      <span>PD-06-undated-start</span>
+      <h3>날짜 없는 콘텐츠를 처음 어떻게 시작하게 할 것인가?</h3>
+      <div><b>추천</b><p>기본은 날짜 없는 Checklist·Todo·Sheet로 바로 시작하고, 사용자가 일정화를 선택할 때만 pacing preview를 연다.</p></div>
+      <div><b>대안</b><p>저장 시 시작일과 cadence를 필수로 묻는다.</p></div>
+      <small>54회 반복 · 사용자 승인 필요</small>
+    </article><article class="decision">
+      <span>PD-07-pacing-default</span>
+      <h3>하루 N개·주 N개의 기본값을 둘 것인가?</h3>
+      <div><b>추천</b><p>전역 자동 확정값은 두지 않는다. 콘텐츠 길이에 맞춘 draft 예시만 보여주고 시작일·cadence 확인 후 미래 미완료 Item에만 적용한다.</p></div>
+      <div><b>대안</b><p>모든 날짜 없는 콘텐츠를 하루 1개로 자동 배치한다.</p></div>
+      <small>46회 반복 · 사용자 승인 필요</small>
+    </article><article class="decision">
+      <span>PD-08-due-versus-calendar</span>
+      <h3>Todo due와 Calendar time을 어떻게 구분할 것인가?</h3>
+      <div><b>추천</b><p>마감일까지 끝내면 Todo/VTODO DUE, 실제 참석·예약·수업·시간 점유는 VEVENT로 보낸다. due만으로 time block을 만들지 않는다.</p></div>
+      <div><b>대안</b><p>날짜가 있는 모든 Item을 VEVENT로 만든다.</p></div>
+      <small>46회 반복 · 사용자 승인 필요</small>
+    </article><article class="decision">
+      <span>PD-09-calendar-grouping</span>
+      <h3>Calendar per-item과 session bundle 중 무엇을 기본으로 할 것인가?</h3>
+      <div><b>추천</b><p>기본 per-item, 같은 날짜·시간·장소·세션일 때만 Step bundle을 허용하고 child Item ID와 완료 손실을 표시한다.</p></div>
+      <div><b>대안</b><p>같은 날짜의 모든 Item을 하나의 event로 묶는다.</p></div>
+      <small>7회 반복 · 사용자 승인 필요</small>
+    </article><article class="decision">
+      <span>PD-10-event-contract</span>
+      <h3>축제·공연·시험의 Series·Edition·Occurrence를 어떻게 저장할 것인가?</h3>
+      <div><b>추천</b><p>원문 일정은 Series/Edition/Occurrence·Window·Milestone으로 보존하고, 사용자의 저장·예약·참석 선택 뒤 Item을 만든다. 미확정 변경 일정은 멈춘다.</p></div>
+      <div><b>대안</b><p>원문 event row를 바로 완료 Item 또는 yearly RRULE로 만든다.</p></div>
+      <small>14회 반복 · 사용자 승인 필요</small>
+    </article><article class="decision">
+      <span>PD-11-source-overlay-display</span>
+      <h3>원문 일정과 개인 일정화를 어떻게 구분해 보여줄 것인가?</h3>
+      <div><b>추천</b><p>source는 보라색·고정 라벨, user overlay는 노란색·draft/confirmed 라벨로 표시하고 서로 다른 필드에 저장한다.</p></div>
+      <div><b>대안</b><p>화면에서는 합쳐 보이고 provenance만 내부에 둔다.</p></div>
+      <small>46회 반복 · 사용자 승인 필요</small>
+    </article><article class="decision">
+      <span>PD-12-readiness-state-display</span>
+      <h3>Logic·Public·Rights·Personal 상태를 어디까지 노출할 것인가?</h3>
+      <div><b>추천</b><p>내부 검토 UI에서는 네 축을 독립 표시하고, 사용자 제품 화면에서는 실행 가능성과 출처·주의만 이해 가능한 문장으로 축약한다.</p></div>
+      <div><b>대안</b><p>하나의 Go/Modify/Hold 상태로 합친다.</p></div>
+      <small>76회 반복 · 사용자 승인 필요</small>
+    </article><article class="decision">
+      <span>PD-13-memo-sheet-position</span>
+      <h3>Memo와 Sheet를 제품에서 어떤 위치에 둘 것인가?</h3>
+      <div><b>추천</b><p>Sheet는 안정적인 행·열 상태/비교·진도 projection, Memo는 사람이 읽고 복사하는 문서 projection으로 둔다. 둘 다 canonical JSON이 아니다.</p></div>
+      <div><b>대안</b><p>Memo를 raw dump, Sheet를 단순 CSV 다운로드로만 취급한다.</p></div>
+      <small>21회 반복 · 사용자 승인 필요</small>
+    </article><article class="decision">
+      <span>PD-14-backend-required-fields</span>
+      <h3>backend DTO에서 반드시 보존할 필드는 무엇인가?</h3>
+      <div><b>추천</b><p>Item/Step/Flow ID, sourceRowIds, completion, temporalIntent, schedule owner·derivation·status, location, fields, event identity, projection eligibility·loss, readiness 축을 필수 계약으로 넘긴다.</p></div>
+      <div><b>대안</b><p>title·memo·start/end 중심의 ICS형 DTO로 단순화한다.</p></div>
+      <small>110회 반복 · 사용자 승인 필요</small>
+    </article></div>
+    </section>
+
+    <section class="section">
+      <div class="eyebrow">QA boundary</div>
+      <h2>자동 검증과 실제 사용자 검토를 분리했습니다.</h2>
+      <div class="status">
+        <div><span>Machine validator</span><b>41/41 PASS</b><p>corpus·projection·provenance·pacing·event·review-state 계약</p></div>
+        <div><span>Observed user review</span><b>NOT_REVIEWED_BY_USER</b><p>Gallery의 검토 패널에서 사용자가 직접 남긴 결과만 사용자 검토입니다.</p></div>
+        <div><span>External Calendar/VTODO round-trip</span><b>NOT_RUN</b><p>Google·Outlook·Apple Calendar 계정 왕복 호환성을 검증했다고 주장하지 않습니다.</p></div>
+        <div><span>Production impact</span><b>NONE</b><p>app runtime·DB·crawler·production API·production UI를 변경하지 않았습니다.</p></div>
+      </div>
+    </section>
+  </main>
+  <footer class="foot">
+    <h2>이제 숫자가 아니라 실제 콘텐츠를 검토할 차례입니다.</h2>
+    <p>전체 156개 화면, 110개 정상·구조 콘텐츠, 모든 Item과 다섯 projection을 확인할 수 있습니다.</p>
+    <a href="./2026-07-29-flow-content-ui-full-corpus-gallery-v1-ko.html">Full-Corpus Gallery 열기 →</a>
+  </footer>
+</body>
+</html>

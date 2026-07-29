@@ -1,0 +1,45 @@
+{
+  "generatedAt": "2026-07-29T11:00:00+09:00",
+  "screenshots": [
+    {
+      "file": "screenshots/p35-r13-b-date-groups-390.png",
+      "viewport": "390x844",
+      "route": "/my?demo=ux12",
+      "state": "B default, exact date groups, low-command rows",
+      "evidenceKind": "current_package_screenshot",
+      "fixtureBased": true
+    },
+    {
+      "file": "screenshots/p35-r13-b-date-groups-1024.png",
+      "viewport": "1024x768",
+      "route": "/my?demo=ux12",
+      "state": "date-grouped list and contextual inspector",
+      "evidenceKind": "current_package_screenshot",
+      "fixtureBased": true
+    },
+    {
+      "file": "screenshots/p35-r13-b-date-groups-1440.png",
+      "viewport": "1440x900",
+      "route": "/my?demo=ux12",
+      "state": "wide date-grouped list and contextual inspector",
+      "evidenceKind": "current_package_screenshot",
+      "fixtureBased": true
+    },
+    {
+      "file": "screenshots/p35-r13-first-entry-plan-open-390.png",
+      "viewport": "390x844",
+      "route": "/f/moving-d30-basic -> /my?view=flows&flow=moving-d30-basic",
+      "state": "first post-save entry with whole plan expanded",
+      "evidenceKind": "current_package_screenshot",
+      "fixtureBased": false
+    },
+    {
+      "file": "screenshots/p35-r13-return-plan-collapsed-390.png",
+      "viewport": "390x844",
+      "route": "/my?view=flows&flow=moving-d30-basic",
+      "state": "reload/library re-entry with whole plan collapsed",
+      "evidenceKind": "current_package_screenshot",
+      "fixtureBased": false
+    }
+  ]
+}

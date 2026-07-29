@@ -1,0 +1,1030 @@
+{
+  "schemaVersion": "flowme-current-canonical-v1",
+  "architecture": "current_canonical_v1",
+  "bundleId": "bundle-new-car-comparison",
+  "title": "신차 구매 8단계",
+  "taxonomy": {
+    "primaryLifeArea": "money_admin_purchase",
+    "secondaryLifeAreas": [],
+    "topicTags": [],
+    "sourceShape": "procedure_rows",
+    "primaryExecutionPattern": "ordered_procedure",
+    "secondaryExecutionPatterns": [
+      "compare_decide"
+    ],
+    "primaryArtifact": "checklist",
+    "secondaryArtifacts": [
+      "sheet",
+      "memo"
+    ]
+  },
+  "userJob": "신차 구매 과정의 확인·비교·결정 단계를 빠뜨리지 않고 기록한다.",
+  "setupFields": [
+    {
+      "key": "vehicleName",
+      "label": "차량 후보",
+      "type": "text",
+      "required": false
+    }
+  ],
+  "sampleUserOverlay": {},
+  "map": {
+    "id": "bundle-new-car-comparison-map",
+    "title": "신차 구매 8단계",
+    "type": "ordered",
+    "ordering": "source_defined",
+    "childFlowIds": [
+      "bundle-new-car-comparison-flow"
+    ],
+    "derivedProgressOnly": true
+  },
+  "sharedContexts": [],
+  "attribution": {
+    "creatorId": "money-getcha",
+    "providerId": "creator-brand",
+    "sourceOwnerId": "money-getcha",
+    "curatorId": null,
+    "trustAnchorRefs": [],
+    "decisionBand": "Modify",
+    "creatorVerdict": "creator_content_partner_candidate",
+    "publicationApproval": "not_implied"
+  },
+  "rights": {
+    "mode": "link_and_minimal_execution_metadata",
+    "publicReleaseAllowed": false,
+    "personalTransformAllowed": true,
+    "rationale": "Existing research allows link plus minimal execution metadata; public release remains a separate review."
+  },
+  "review": {
+    "sourceRowStatus": "complete_for_representative_example",
+    "promotionState": "internal_review_only",
+    "safetyReview": "not_required"
+  },
+  "sourceRows": [
+    {
+      "sourceRowId": "bundle-new-car-comparison-s1-i1-r1",
+      "bundleId": "bundle-new-car-comparison",
+      "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "sourceLocator": "1. 예산과 차량 선택 · 차량 가격 외 취등록세·보험·유지비를 포함한 총예산 확인",
+      "label": "차량 가격 외 취등록세·보험·유지비를 포함한 총예산 확인",
+      "detail": "차량 가격 외 취등록세·보험·유지비를 포함한 총예산 확인",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-new-car-comparison-s1-i1-r2",
+      "bundleId": "bundle-new-car-comparison",
+      "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "sourceLocator": "1. 예산과 차량 선택 · 현금·할부 시 월 납입 가능액 확인",
+      "label": "현금·할부 시 월 납입 가능액 확인",
+      "detail": "현금·할부 시 월 납입 가능액 확인",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-new-car-comparison-s1-i2-r1",
+      "bundleId": "bundle-new-car-comparison",
+      "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "sourceLocator": "1. 예산과 차량 선택 · 용도와 탑승 인원에 맞는 차종 선택",
+      "label": "용도와 탑승 인원에 맞는 차종 선택",
+      "detail": "용도와 탑승 인원에 맞는 차종 선택",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-new-car-comparison-s1-i2-r2",
+      "bundleId": "bundle-new-car-comparison",
+      "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "sourceLocator": "1. 예산과 차량 선택 · 트림과 필수 옵션 후보 정리",
+      "label": "트림과 필수 옵션 후보 정리",
+      "detail": "트림과 필수 옵션 후보 정리",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-new-car-comparison-s2-i1-r1",
+      "bundleId": "bundle-new-car-comparison",
+      "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "sourceLocator": "2. 구매 방식 선택 · 소유권·월 납입액·세금·만기 조건 비교",
+      "label": "소유권·월 납입액·세금·만기 조건 비교",
+      "detail": "소유권·월 납입액·세금·만기 조건 비교",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-new-car-comparison-s2-i1-r2",
+      "bundleId": "bundle-new-car-comparison",
+      "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "sourceLocator": "2. 구매 방식 선택 · 본인 상황에 맞는 구매 방식 선택",
+      "label": "본인 상황에 맞는 구매 방식 선택",
+      "detail": "본인 상황에 맞는 구매 방식 선택",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-new-car-comparison-s3-i1-r1",
+      "bundleId": "bundle-new-car-comparison",
+      "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "sourceLocator": "3. 견적과 할인 협상 · 동일 트림·옵션 기준으로 견적 받기",
+      "label": "동일 트림·옵션 기준으로 견적 받기",
+      "detail": "동일 트림·옵션 기준으로 견적 받기",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-new-car-comparison-s3-i1-r2",
+      "bundleId": "bundle-new-car-comparison",
+      "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "sourceLocator": "3. 견적과 할인 협상 · 차량 가격·탁송료·등록비·서비스 품목 비교",
+      "label": "차량 가격·탁송료·등록비·서비스 품목 비교",
+      "detail": "차량 가격·탁송료·등록비·서비스 품목 비교",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-new-car-comparison-s3-i2-r1",
+      "bundleId": "bundle-new-car-comparison",
+      "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "sourceLocator": "3. 견적과 할인 협상 · 제조사 할인과 딜러 할인 확인",
+      "label": "제조사 할인과 딜러 할인 확인",
+      "detail": "제조사 할인과 딜러 할인 확인",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-new-car-comparison-s3-i2-r2",
+      "bundleId": "bundle-new-car-comparison",
+      "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "sourceLocator": "3. 견적과 할인 협상 · 현금 지원·용품 등 서비스 조건 기록",
+      "label": "현금 지원·용품 등 서비스 조건 기록",
+      "detail": "현금 지원·용품 등 서비스 조건 기록",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-new-car-comparison-s4-i1-r1",
+      "bundleId": "bundle-new-car-comparison",
+      "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "sourceLocator": "4. 계약 · 차종·트림·색상·옵션 확인",
+      "label": "차종·트림·색상·옵션 확인",
+      "detail": "차종·트림·색상·옵션 확인",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-new-car-comparison-s4-i1-r2",
+      "bundleId": "bundle-new-car-comparison",
+      "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "sourceLocator": "4. 계약 · 총액과 계약금 확인",
+      "label": "총액과 계약금 확인",
+      "detail": "총액과 계약금 확인",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-new-car-comparison-s4-i1-r3",
+      "bundleId": "bundle-new-car-comparison",
+      "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "sourceLocator": "4. 계약 · 출고 예정일과 취소·환불 조건 확인",
+      "label": "출고 예정일과 취소·환불 조건 확인",
+      "detail": "출고 예정일과 취소·환불 조건 확인",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-new-car-comparison-s4-i2-r1",
+      "bundleId": "bundle-new-car-comparison",
+      "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "sourceLocator": "4. 계약 · 계약금 납부",
+      "label": "계약금 납부",
+      "detail": "계약금 납부",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-new-car-comparison-s4-i2-r2",
+      "bundleId": "bundle-new-car-comparison",
+      "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "sourceLocator": "4. 계약 · 계약서와 영수증 보관",
+      "label": "계약서와 영수증 보관",
+      "detail": "계약서와 영수증 보관",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-new-car-comparison-s5-i1-r1",
+      "bundleId": "bundle-new-car-comparison",
+      "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "sourceLocator": "5. 출고와 검수 · 차대번호·생산연월·출고 일정 확인",
+      "label": "차대번호·생산연월·출고 일정 확인",
+      "detail": "차대번호·생산연월·출고 일정 확인",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-new-car-comparison-s5-i2-r1",
+      "bundleId": "bundle-new-car-comparison",
+      "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "sourceLocator": "5. 출고와 검수 · 도장·유리·타이어·휠 외관 확인",
+      "label": "도장·유리·타이어·휠 외관 확인",
+      "detail": "도장·유리·타이어·휠 외관 확인",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-new-car-comparison-s5-i2-r2",
+      "bundleId": "bundle-new-car-comparison",
+      "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "sourceLocator": "5. 출고와 검수 · 시트·내장재 확인",
+      "label": "시트·내장재 확인",
+      "detail": "시트·내장재 확인",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-new-car-comparison-s5-i2-r3",
+      "bundleId": "bundle-new-car-comparison",
+      "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "sourceLocator": "5. 출고와 검수 · 등화·전자장비·옵션 작동 확인",
+      "label": "등화·전자장비·옵션 작동 확인",
+      "detail": "등화·전자장비·옵션 작동 확인",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-new-car-comparison-s6-i1-r1",
+      "bundleId": "bundle-new-car-comparison",
+      "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "sourceLocator": "6. 등록 · 신분증·계약서·보험가입증명 등 필요 서류 확인",
+      "label": "신분증·계약서·보험가입증명 등 필요 서류 확인",
+      "detail": "신분증·계약서·보험가입증명 등 필요 서류 확인",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-new-car-comparison-s6-i1-r2",
+      "bundleId": "bundle-new-car-comparison",
+      "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "sourceLocator": "6. 등록 · 취득세·공채·번호판 등 등록 비용 확인",
+      "label": "취득세·공채·번호판 등 등록 비용 확인",
+      "detail": "취득세·공채·번호판 등 등록 비용 확인",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-new-car-comparison-s6-i2-r1",
+      "bundleId": "bundle-new-car-comparison",
+      "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "sourceLocator": "6. 등록 · 직접 등록 또는 등록 대행 선택",
+      "label": "직접 등록 또는 등록 대행 선택",
+      "detail": "직접 등록 또는 등록 대행 선택",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-new-car-comparison-s6-i2-r2",
+      "bundleId": "bundle-new-car-comparison",
+      "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "sourceLocator": "6. 등록 · 자동차등록증과 번호판 수령",
+      "label": "자동차등록증과 번호판 수령",
+      "detail": "자동차등록증과 번호판 수령",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-new-car-comparison-s7-i1-r1",
+      "bundleId": "bundle-new-car-comparison",
+      "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "sourceLocator": "7. 보험 · 운전자 범위·보장 한도·자기부담금 비교",
+      "label": "운전자 범위·보장 한도·자기부담금 비교",
+      "detail": "운전자 범위·보장 한도·자기부담금 비교",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-new-car-comparison-s7-i1-r2",
+      "bundleId": "bundle-new-car-comparison",
+      "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "sourceLocator": "7. 보험 · 차량 인수 전에 보험 효력 시작 확인",
+      "label": "차량 인수 전에 보험 효력 시작 확인",
+      "detail": "차량 인수 전에 보험 효력 시작 확인",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-new-car-comparison-s8-i1-r1",
+      "bundleId": "bundle-new-car-comparison",
+      "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "sourceLocator": "8. 출고 후 관리 · 등록증·보험증권·보증서 보관",
+      "label": "등록증·보험증권·보증서 보관",
+      "detail": "등록증·보험증권·보증서 보관",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-new-car-comparison-s8-i1-r2",
+      "bundleId": "bundle-new-car-comparison",
+      "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "sourceLocator": "8. 출고 후 관리 · 보증 기간과 정기점검 조건 확인",
+      "label": "보증 기간과 정기점검 조건 확인",
+      "detail": "보증 기간과 정기점검 조건 확인",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-new-car-comparison-s8-i2-r1",
+      "bundleId": "bundle-new-car-comparison",
+      "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "sourceLocator": "8. 출고 후 관리 · 제조사 초기 점검 안내 확인",
+      "label": "제조사 초기 점검 안내 확인",
+      "detail": "제조사 초기 점검 안내 확인",
+      "verifiedAt": "2026-07-22"
+    },
+    {
+      "sourceRowId": "bundle-new-car-comparison-s8-i2-r2",
+      "bundleId": "bundle-new-car-comparison",
+      "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "sourceLocator": "8. 출고 후 관리 · 소모품 교환 주기 확인",
+      "label": "소모품 교환 주기 확인",
+      "detail": "소모품 교환 주기 확인",
+      "verifiedAt": "2026-07-22"
+    }
+  ],
+  "flows": [
+    {
+      "id": "bundle-new-car-comparison-flow",
+      "title": "신차 구매 8단계",
+      "primarySourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+      "steps": [
+        {
+          "id": "bundle-new-car-comparison-s1",
+          "flowId": "bundle-new-car-comparison-flow",
+          "title": "1. 예산과 차량 선택",
+          "order": 1,
+          "sourceScheduleGroup": null,
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-new-car-comparison-s1-i1",
+              "flowId": "bundle-new-car-comparison-flow",
+              "stepId": "bundle-new-car-comparison-s1",
+              "title": "총예산과 월 납입 가능액 정하기",
+              "detail": "차량 가격 외 취등록세·보험·유지비를 포함한 총예산 확인 · 현금·할부 시 월 납입 가능액 확인",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": null,
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "차량 가격 외 취등록세·보험·유지비를 포함한 총예산 확인 · 현금·할부 시 월 납입 가능액 확인",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-new-car-comparison-s1-i1-r1",
+                  "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+                  "sourceLocator": "1. 예산과 차량 선택 · 차량 가격 외 취등록세·보험·유지비를 포함한 총예산 확인"
+                },
+                {
+                  "sourceRowId": "bundle-new-car-comparison-s1-i1-r2",
+                  "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+                  "sourceLocator": "1. 예산과 차량 선택 · 현금·할부 시 월 납입 가능액 확인"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-new-car-comparison-s1-i2",
+              "flowId": "bundle-new-car-comparison-flow",
+              "stepId": "bundle-new-car-comparison-s1",
+              "title": "차종·트림·옵션 후보 좁히기",
+              "detail": "용도와 탑승 인원에 맞는 차종 선택 · 트림과 필수 옵션 후보 정리",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": null,
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "용도와 탑승 인원에 맞는 차종 선택 · 트림과 필수 옵션 후보 정리",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-new-car-comparison-s1-i2-r1",
+                  "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+                  "sourceLocator": "1. 예산과 차량 선택 · 용도와 탑승 인원에 맞는 차종 선택"
+                },
+                {
+                  "sourceRowId": "bundle-new-car-comparison-s1-i2-r2",
+                  "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+                  "sourceLocator": "1. 예산과 차량 선택 · 트림과 필수 옵션 후보 정리"
+                }
+              ],
+              "order": 2,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        },
+        {
+          "id": "bundle-new-car-comparison-s2",
+          "flowId": "bundle-new-car-comparison-flow",
+          "title": "2. 구매 방식 선택",
+          "order": 2,
+          "sourceScheduleGroup": null,
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-new-car-comparison-s2-i1",
+              "flowId": "bundle-new-car-comparison-flow",
+              "stepId": "bundle-new-car-comparison-s2",
+              "title": "현금·할부·리스·장기렌트 비교하기",
+              "detail": "소유권·월 납입액·세금·만기 조건 비교 · 본인 상황에 맞는 구매 방식 선택",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": null,
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "소유권·월 납입액·세금·만기 조건 비교 · 본인 상황에 맞는 구매 방식 선택",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-new-car-comparison-s2-i1-r1",
+                  "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+                  "sourceLocator": "2. 구매 방식 선택 · 소유권·월 납입액·세금·만기 조건 비교"
+                },
+                {
+                  "sourceRowId": "bundle-new-car-comparison-s2-i1-r2",
+                  "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+                  "sourceLocator": "2. 구매 방식 선택 · 본인 상황에 맞는 구매 방식 선택"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        },
+        {
+          "id": "bundle-new-car-comparison-s3",
+          "flowId": "bundle-new-car-comparison-flow",
+          "title": "3. 견적과 할인 협상",
+          "order": 3,
+          "sourceScheduleGroup": null,
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-new-car-comparison-s3-i1",
+              "flowId": "bundle-new-car-comparison-flow",
+              "stepId": "bundle-new-car-comparison-s3",
+              "title": "여러 판매처 견적 비교하기",
+              "detail": "동일 트림·옵션 기준으로 견적 받기 · 차량 가격·탁송료·등록비·서비스 품목 비교",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": null,
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "동일 트림·옵션 기준으로 견적 받기 · 차량 가격·탁송료·등록비·서비스 품목 비교",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-new-car-comparison-s3-i1-r1",
+                  "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+                  "sourceLocator": "3. 견적과 할인 협상 · 동일 트림·옵션 기준으로 견적 받기"
+                },
+                {
+                  "sourceRowId": "bundle-new-car-comparison-s3-i1-r2",
+                  "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+                  "sourceLocator": "3. 견적과 할인 협상 · 차량 가격·탁송료·등록비·서비스 품목 비교"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-new-car-comparison-s3-i2",
+              "flowId": "bundle-new-car-comparison-flow",
+              "stepId": "bundle-new-car-comparison-s3",
+              "title": "할인과 서비스 조건 확정하기",
+              "detail": "제조사 할인과 딜러 할인 확인 · 현금 지원·용품 등 서비스 조건 기록",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": null,
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "제조사 할인과 딜러 할인 확인 · 현금 지원·용품 등 서비스 조건 기록",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-new-car-comparison-s3-i2-r1",
+                  "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+                  "sourceLocator": "3. 견적과 할인 협상 · 제조사 할인과 딜러 할인 확인"
+                },
+                {
+                  "sourceRowId": "bundle-new-car-comparison-s3-i2-r2",
+                  "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+                  "sourceLocator": "3. 견적과 할인 협상 · 현금 지원·용품 등 서비스 조건 기록"
+                }
+              ],
+              "order": 2,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        },
+        {
+          "id": "bundle-new-car-comparison-s4",
+          "flowId": "bundle-new-car-comparison-flow",
+          "title": "4. 계약",
+          "order": 4,
+          "sourceScheduleGroup": null,
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-new-car-comparison-s4-i1",
+              "flowId": "bundle-new-car-comparison-flow",
+              "stepId": "bundle-new-car-comparison-s4",
+              "title": "계약서 차량 사양과 금액 확인하기",
+              "detail": "차종·트림·색상·옵션 확인 · 총액과 계약금 확인 · 출고 예정일과 취소·환불 조건 확인",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": null,
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "차종·트림·색상·옵션 확인 · 총액과 계약금 확인 · 출고 예정일과 취소·환불 조건 확인",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-new-car-comparison-s4-i1-r1",
+                  "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+                  "sourceLocator": "4. 계약 · 차종·트림·색상·옵션 확인"
+                },
+                {
+                  "sourceRowId": "bundle-new-car-comparison-s4-i1-r2",
+                  "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+                  "sourceLocator": "4. 계약 · 총액과 계약금 확인"
+                },
+                {
+                  "sourceRowId": "bundle-new-car-comparison-s4-i1-r3",
+                  "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+                  "sourceLocator": "4. 계약 · 출고 예정일과 취소·환불 조건 확인"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-new-car-comparison-s4-i2",
+              "flowId": "bundle-new-car-comparison-flow",
+              "stepId": "bundle-new-car-comparison-s4",
+              "title": "계약금 납부하고 서류 보관하기",
+              "detail": "계약금 납부 · 계약서와 영수증 보관",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": null,
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "계약금 납부 · 계약서와 영수증 보관",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-new-car-comparison-s4-i2-r1",
+                  "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+                  "sourceLocator": "4. 계약 · 계약금 납부"
+                },
+                {
+                  "sourceRowId": "bundle-new-car-comparison-s4-i2-r2",
+                  "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+                  "sourceLocator": "4. 계약 · 계약서와 영수증 보관"
+                }
+              ],
+              "order": 2,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        },
+        {
+          "id": "bundle-new-car-comparison-s5",
+          "flowId": "bundle-new-car-comparison-flow",
+          "title": "5. 출고와 검수",
+          "order": 5,
+          "sourceScheduleGroup": null,
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-new-car-comparison-s5-i1",
+              "flowId": "bundle-new-car-comparison-flow",
+              "stepId": "bundle-new-car-comparison-s5",
+              "title": "차대번호와 출고 정보 확인하기",
+              "detail": "차대번호·생산연월·출고 일정 확인",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": null,
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "차대번호·생산연월·출고 일정 확인",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-new-car-comparison-s5-i1-r1",
+                  "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+                  "sourceLocator": "5. 출고와 검수 · 차대번호·생산연월·출고 일정 확인"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-new-car-comparison-s5-i2",
+              "flowId": "bundle-new-car-comparison-flow",
+              "stepId": "bundle-new-car-comparison-s5",
+              "title": "외관·내장·기능 검수하기",
+              "detail": "도장·유리·타이어·휠 외관 확인 · 시트·내장재 확인 · 등화·전자장비·옵션 작동 확인",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": null,
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "도장·유리·타이어·휠 외관 확인 · 시트·내장재 확인 · 등화·전자장비·옵션 작동 확인",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-new-car-comparison-s5-i2-r1",
+                  "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+                  "sourceLocator": "5. 출고와 검수 · 도장·유리·타이어·휠 외관 확인"
+                },
+                {
+                  "sourceRowId": "bundle-new-car-comparison-s5-i2-r2",
+                  "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+                  "sourceLocator": "5. 출고와 검수 · 시트·내장재 확인"
+                },
+                {
+                  "sourceRowId": "bundle-new-car-comparison-s5-i2-r3",
+                  "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+                  "sourceLocator": "5. 출고와 검수 · 등화·전자장비·옵션 작동 확인"
+                }
+              ],
+              "order": 2,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        },
+        {
+          "id": "bundle-new-car-comparison-s6",
+          "flowId": "bundle-new-car-comparison-flow",
+          "title": "6. 등록",
+          "order": 6,
+          "sourceScheduleGroup": null,
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-new-car-comparison-s6-i1",
+              "flowId": "bundle-new-car-comparison-flow",
+              "stepId": "bundle-new-car-comparison-s6",
+              "title": "등록 서류와 비용 확인하기",
+              "detail": "신분증·계약서·보험가입증명 등 필요 서류 확인 · 취득세·공채·번호판 등 등록 비용 확인",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": null,
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "신분증·계약서·보험가입증명 등 필요 서류 확인 · 취득세·공채·번호판 등 등록 비용 확인",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-new-car-comparison-s6-i1-r1",
+                  "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+                  "sourceLocator": "6. 등록 · 신분증·계약서·보험가입증명 등 필요 서류 확인"
+                },
+                {
+                  "sourceRowId": "bundle-new-car-comparison-s6-i1-r2",
+                  "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+                  "sourceLocator": "6. 등록 · 취득세·공채·번호판 등 등록 비용 확인"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-new-car-comparison-s6-i2",
+              "flowId": "bundle-new-car-comparison-flow",
+              "stepId": "bundle-new-car-comparison-s6",
+              "title": "차량 등록과 번호판 발급 마치기",
+              "detail": "직접 등록 또는 등록 대행 선택 · 자동차등록증과 번호판 수령",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": null,
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "직접 등록 또는 등록 대행 선택 · 자동차등록증과 번호판 수령",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-new-car-comparison-s6-i2-r1",
+                  "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+                  "sourceLocator": "6. 등록 · 직접 등록 또는 등록 대행 선택"
+                },
+                {
+                  "sourceRowId": "bundle-new-car-comparison-s6-i2-r2",
+                  "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+                  "sourceLocator": "6. 등록 · 자동차등록증과 번호판 수령"
+                }
+              ],
+              "order": 2,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        },
+        {
+          "id": "bundle-new-car-comparison-s7",
+          "flowId": "bundle-new-car-comparison-flow",
+          "title": "7. 보험",
+          "order": 7,
+          "sourceScheduleGroup": null,
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-new-car-comparison-s7-i1",
+              "flowId": "bundle-new-car-comparison-flow",
+              "stepId": "bundle-new-car-comparison-s7",
+              "title": "자동차보험 조건 비교하고 가입하기",
+              "detail": "운전자 범위·보장 한도·자기부담금 비교 · 차량 인수 전에 보험 효력 시작 확인",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": null,
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "운전자 범위·보장 한도·자기부담금 비교 · 차량 인수 전에 보험 효력 시작 확인",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-new-car-comparison-s7-i1-r1",
+                  "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+                  "sourceLocator": "7. 보험 · 운전자 범위·보장 한도·자기부담금 비교"
+                },
+                {
+                  "sourceRowId": "bundle-new-car-comparison-s7-i1-r2",
+                  "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+                  "sourceLocator": "7. 보험 · 차량 인수 전에 보험 효력 시작 확인"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        },
+        {
+          "id": "bundle-new-car-comparison-s8",
+          "flowId": "bundle-new-car-comparison-flow",
+          "title": "8. 출고 후 관리",
+          "order": 8,
+          "sourceScheduleGroup": null,
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-new-car-comparison-s8-i1",
+              "flowId": "bundle-new-car-comparison-flow",
+              "stepId": "bundle-new-car-comparison-s8",
+              "title": "차량 문서와 보증 조건 보관하기",
+              "detail": "등록증·보험증권·보증서 보관 · 보증 기간과 정기점검 조건 확인",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": null,
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "등록증·보험증권·보증서 보관 · 보증 기간과 정기점검 조건 확인",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-new-car-comparison-s8-i1-r1",
+                  "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+                  "sourceLocator": "8. 출고 후 관리 · 등록증·보험증권·보증서 보관"
+                },
+                {
+                  "sourceRowId": "bundle-new-car-comparison-s8-i1-r2",
+                  "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+                  "sourceLocator": "8. 출고 후 관리 · 보증 기간과 정기점검 조건 확인"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-new-car-comparison-s8-i2",
+              "flowId": "bundle-new-car-comparison-flow",
+              "stepId": "bundle-new-car-comparison-s8",
+              "title": "초기 점검과 소모품 일정 확인하기",
+              "detail": "제조사 초기 점검 안내 확인 · 소모품 교환 주기 확인",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": null,
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "제조사 초기 점검 안내 확인 · 소모품 교환 주기 확인",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-new-car-comparison-s8-i2-r1",
+                  "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+                  "sourceLocator": "8. 출고 후 관리 · 제조사 초기 점검 안내 확인"
+                },
+                {
+                  "sourceRowId": "bundle-new-car-comparison-s8-i2-r2",
+                  "sourceUrl": "https://web.getcha.kr/blog/complete-guide-new-car-purchase-procedure-for-beginners",
+                  "sourceLocator": "8. 출고 후 관리 · 소모품 교환 주기 확인"
+                }
+              ],
+              "order": 2,
+              "projectionPolicy": {
+                "calendar": "none",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

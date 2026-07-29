@@ -1,0 +1,311 @@
+{
+  "schemaVersion": "flowme-content-supply-evidence-ledger-v1",
+  "generatedAt": "2026-07-27T20:30:00+09:00",
+  "checkedAt": "2026-07-27",
+  "evidenceLevels": {
+    "A": "공식 자료 또는 현재 저장소 명령 결과",
+    "B": "공식 자료지만 기준일이 오래됐거나 목적형 표본",
+    "C": "관찰 근거를 이용한 전략 가설·미측정"
+  },
+  "claims": [
+    {
+      "id": "R01",
+      "claimKo": "현재 runtime seed는 153개 Flow 묶음, 847개 Item, 341개 Section이다.",
+      "value": {
+        "bundles": 153,
+        "items": 847,
+        "sections": 341
+      },
+      "asOf": "2026-07-27",
+      "sourceType": "repository_command",
+      "sourcePath": "../../lib/flow/seed-flows.ts",
+      "verification": "npx.cmd tsx로 seedBundles와 getContentLabSummary를 실행",
+      "evidenceLevel": "A",
+      "notesKo": "현재 작업 트리의 실제 재집계다."
+    },
+    {
+      "id": "R02",
+      "claimKo": "153개 중 대표 유지 판정은 44개이며 105개는 보강이 필요하다.",
+      "value": {
+        "keep": 44,
+        "fix": 105,
+        "previewOnly": 2,
+        "hide": 2
+      },
+      "asOf": "2026-07-27",
+      "sourceType": "repository_command",
+      "sourcePath": "../../lib/flow/content-lifecycle.ts",
+      "verification": "getContentLabSummary(seedBundles).lifecycleBucketCounts",
+      "evidenceLevel": "A",
+      "notesKo": "44개는 실제 사용자 성과가 아니라 저장소의 대표 유지 판정이다."
+    },
+    {
+      "id": "R03",
+      "claimKo": "현재 재고에는 90개의 서로 다른 카테고리 문자열과 기본 목적지가 비어 있는 24개 Flow가 있다.",
+      "value": {
+        "distinctCategoryStrings": 90,
+        "primaryDestinationMissing": 24
+      },
+      "asOf": "2026-07-27",
+      "sourceType": "repository_command",
+      "sourcePath": "../../lib/flow/seed-flows.ts",
+      "evidenceLevel": "A",
+      "notesKo": "카테고리 규모 비교 전에 분류 정규화가 필요하다는 근거다."
+    },
+    {
+      "id": "R04",
+      "claimKo": "버티컬 서비스 도감은 9개 카테고리, 27개 서비스, 54개 공개 콘텐츠 사례를 분석했고 P0-now 후보 16개를 남겼다.",
+      "value": {
+        "categories": 9,
+        "services": 27,
+        "publicContentSamples": 54,
+        "p0Now": 16,
+        "p1Review": 8
+      },
+      "asOf": "2026-07-22",
+      "sourceType": "local_evidence",
+      "sourcePath": "2026-07-22-flowme-vertical-service-content-coverage-atlas-ceo-ko-evidence-ledger.json",
+      "evidenceLevel": "A",
+      "notesKo": "대표 서비스를 의도적으로 고른 목적형 표본이다."
+    },
+    {
+      "id": "R05",
+      "claimKo": "수요·사업성 조사에서는 230개 URL을 시도해 205개를 열었고, 94개에서 실행 행 단서를 관찰했다.",
+      "value": {
+        "attemptedUrls": 230,
+        "openedUrls": 205,
+        "sourceRowHintUrls": 94,
+        "numericDemandEvidenceUrls": 48,
+        "selectedBundles": 9
+      },
+      "asOf": "2026-07-22",
+      "sourceType": "local_evidence",
+      "sourcePath": "2026-07-22-flow-content-demand-business-assets/opened-url-scan-v1.json",
+      "evidenceLevel": "A",
+      "notesKo": "무작위 표본이 아니며 최종 9개는 포트폴리오 균형을 위해 제한한 값이다."
+    },
+    {
+      "id": "R06",
+      "claimKo": "제작자 조사에서는 110개 콘텐츠 URL을 열었고 53개에서 표·순서·체크 등 실행 구조를 확인했다.",
+      "value": {
+        "openedContentUrls": 110,
+        "communicationEvidenceUrls": 99,
+        "rowStructureEvidenceUrls": 53,
+        "deepCreators": 27
+      },
+      "asOf": "2026-07-23",
+      "sourceType": "local_evidence",
+      "sourcePath": "2026-07-23-creator-flow-portfolio-assets/opened-creator-url-ledger-v1.json",
+      "evidenceLevel": "A",
+      "notesKo": "실행 가능성이 있는 제작자 후보를 선별한 표본이다."
+    },
+    {
+      "id": "R07",
+      "claimKo": "세 기존 조사 세트에서 실제로 열린 고유 URL은 합집합 기준 314개다.",
+      "value": {
+        "combinedUniqueOpenedUrls": 314,
+        "rawOpenedAcrossSets": 369,
+        "overlap": 55
+      },
+      "asOf": "2026-07-27",
+      "sourceType": "repository_analysis",
+      "sourcePaths": [
+        "2026-07-22-flow-content-demand-business-assets/opened-url-scan-v1.json",
+        "2026-07-23-creator-flow-portfolio-assets/opened-creator-url-ledger-v1.json",
+        "2026-07-22-flowme-vertical-service-content-coverage-atlas-ceo-ko-evidence-ledger.json"
+      ],
+      "evidenceLevel": "A",
+      "notesKo": "프로필·플랫폼·개별 콘텐츠가 섞여 있으므로 314개를 모두 Flow 후보로 간주하지 않는다."
+    },
+    {
+      "id": "E01",
+      "claimKo": "YouTube는 2025년 4월 기준 누적 200억 개 이상의 영상과 하루 평균 2천만 개 이상의 신규 업로드를 공개했다.",
+      "value": {
+        "uploadedVideos": "20B+",
+        "dailyUploads": "20M+"
+      },
+      "asOf": "2025-04-23",
+      "sourceType": "official_blog",
+      "sourceUrl": "https://blog.youtube/news-and-events/happy-birthday-youtube-20/",
+      "sourceTitle": "20 ways we’re celebrating two decades of YouTube",
+      "evidenceLevel": "A",
+      "notesKo": "원본 공급이 매우 크다는 근거일 뿐 실행 가능한 Flow 수가 아니다."
+    },
+    {
+      "id": "E02",
+      "claimKo": "iFixit 홈페이지는 171,327개의 무료 수리 안내서와 246,545개의 커뮤니티 해결책을 표시한다.",
+      "value": {
+        "freeGuides": 171327,
+        "communitySolutions": 246545
+      },
+      "asOf": "2026-07-27",
+      "sourceType": "official_product_page",
+      "sourceUrl": "https://www.ifixit.com/",
+      "sourceTitle": "iFixit: The Free Repair Manual",
+      "evidenceLevel": "A",
+      "notesKo": "수리 전문 서비스의 기준 콘텐츠 규모다."
+    },
+    {
+      "id": "E03",
+      "claimKo": "iFixit은 같은 수리에 여러 안내서를 올리지 않고 수리 하나당 가장 최신의 안내서 하나를 유지하도록 규정한다.",
+      "asOf": "2026-07-27",
+      "sourceType": "official_policy",
+      "sourceUrl": "https://about.ifixit.com/Wiki/Community_Guidelines",
+      "sourceTitle": "iFixit Community Guidelines",
+      "evidenceLevel": "A",
+      "notesKo": "FlowMe의 중복 기준본 통합 원칙에 참고할 수 있다."
+    },
+    {
+      "id": "E04",
+      "claimKo": "Udemy는 2025년 말 29만 개 이상의 강좌, 9만 명 이상의 강사, 월평균 6,300개 이상의 신규 강좌를 보고했다.",
+      "value": {
+        "courses": "290K+",
+        "instructors": "90K+",
+        "newCoursesPerMonth": "6.3K+",
+        "instructorEarnings2025Usd": 168000000
+      },
+      "asOf": "2025-12-31",
+      "sourceType": "official_filing",
+      "sourceUrl": "https://investors.udemy.com/static-files/68867703-a746-4b03-9bce-668e759d77ca",
+      "sourceTitle": "Udemy 2025 Form 10-K",
+      "evidenceLevel": "A",
+      "notesKo": "Flow와 강좌는 다른 단위다. 제작자 공급과 업데이트 부담의 참고 사례로만 사용한다."
+    },
+    {
+      "id": "E05",
+      "claimKo": "Udemy는 상위 강사의 강좌가 2025년에 평균 5회 업데이트됐으며 낮은 평점이나 참여가 적은 강좌를 정기적으로 제거한다고 밝혔다.",
+      "value": {
+        "topCourseUpdatesPerYear": 5
+      },
+      "asOf": "2025-12-31",
+      "sourceType": "official_filing",
+      "sourceUrl": "https://investors.udemy.com/static-files/68867703-a746-4b03-9bce-668e759d77ca",
+      "sourceTitle": "Udemy 2025 Form 10-K",
+      "evidenceLevel": "A",
+      "notesKo": "콘텐츠 수보다 업데이트와 퇴역 운영이 중요하다는 근거다."
+    },
+    {
+      "id": "E06",
+      "claimKo": "Coursera와 Udemy는 2026년 5월 통합 완료 시점에 31만5천 개 이상의 강좌와 9만5천 명의 콘텐츠 제작자를 공개했다.",
+      "value": {
+        "combinedCourses": "315K+",
+        "contentCreators": "95K",
+        "learners": "290M+"
+      },
+      "asOf": "2026-05-11",
+      "sourceType": "official_announcement",
+      "sourceUrl": "https://about.udemy.com/udemy-news/coursera-udemy-merger-skills-platform/",
+      "sourceTitle": "Coursera and Udemy are now one company",
+      "evidenceLevel": "A",
+      "notesKo": "대형 교육 플랫폼도 콘텐츠 카탈로그를 현실 성과와 연결하는 단계로 이동하고 있다."
+    },
+    {
+      "id": "E07",
+      "claimKo": "AllTrails는 45만 개 이상의 트레일, 8천만 명 이상의 이용자, 21억 km 이상의 기록을 공개한다.",
+      "value": {
+        "trails": "450K+",
+        "explorers": "80M+",
+        "loggedKilometers": "2.1B+"
+      },
+      "asOf": "2026-07-27",
+      "sourceType": "official_press_page",
+      "sourceUrl": "https://www.alltrails.com/en-gb/press?section=press-page-leadership",
+      "sourceTitle": "AllTrails Press",
+      "evidenceLevel": "A",
+      "notesKo": "트레일 카탈로그와 개인 활동 기록을 분리해 관리하는 사례다."
+    },
+    {
+      "id": "E08",
+      "claimKo": "만개의레시피는 2021년 4월 기준 약 18만 개 레시피와 월 방문자 약 462만 명을 공개했다.",
+      "value": {
+        "registeredRecipes": "180K",
+        "monthlyVisitors": "4.62M"
+      },
+      "asOf": "2021-04",
+      "sourceType": "official_company_page",
+      "sourceUrl": "https://www.10000recipe.com/company/intro.html",
+      "sourceTitle": "만개의레시피 회사소개",
+      "evidenceLevel": "B",
+      "notesKo": "공식 수치지만 오래됐다. 레시피 공급 깊이의 과거 기준으로만 사용한다."
+    },
+    {
+      "id": "E09",
+      "claimKo": "Wikipedia는 2026년 1월 300개 이상의 언어에서 약 6,500만 개 문서와 월 약 150억 회 조회를 공개했다.",
+      "value": {
+        "articles": "65M",
+        "monthlyViews": "15B",
+        "languages": "300+"
+      },
+      "asOf": "2026-01-15",
+      "sourceType": "official_foundation",
+      "sourceUrl": "https://wikimediafoundation.org/news/2026/01/15/wikipedia-celebrates-25years/",
+      "sourceTitle": "Wikipedia celebrates 25 years of knowledge at its best",
+      "evidenceLevel": "A",
+      "notesKo": "참여형 지식 규모의 사례지만 대부분은 실행 가능한 Flow가 아니다."
+    },
+    {
+      "id": "E10",
+      "claimKo": "Instructables는 공식 소개에서 수십만 개의 프로젝트를 보유한 제작자 커뮤니티라고 설명한다.",
+      "value": {
+        "projects": "hundreds of thousands"
+      },
+      "asOf": "2026-07-27",
+      "sourceType": "official_about",
+      "sourceUrl": "https://www.instructables.com/about/",
+      "sourceTitle": "About Instructables",
+      "evidenceLevel": "A",
+      "notesKo": "정확한 숫자 대신 공식 표현을 그대로 사용한다."
+    },
+    {
+      "id": "H01",
+      "claimKo": "9개 카테고리의 장기 공개 기준 Flow 잠재량은 약 1,500~7,200개다.",
+      "value": {
+        "low": 1460,
+        "high": 7200
+      },
+      "asOf": "2026-07-27",
+      "sourceType": "strategic_model",
+      "sourcePath": "2026-07-27-flowme-content-supply-estimation-model.json",
+      "evidenceLevel": "C",
+      "notesKo": "전수조사가 아니라 사용자 상황과 의미 있는 변형을 카테고리별로 가정한 범위다."
+    },
+    {
+      "id": "H02",
+      "claimKo": "36개월 활성 재고는 내부 편집 중심 약 200개, 기준 시나리오 약 700개, 제작자 확장 시 약 2,100개로 추정한다.",
+      "value": {
+        "conservative": 197,
+        "base": 713,
+        "expansion": 2098
+      },
+      "asOf": "2026-07-27",
+      "sourceType": "strategic_model",
+      "sourcePath": "2026-07-27-flowme-content-supply-estimation-model.json",
+      "evidenceLevel": "C",
+      "notesKo": "생산 시간, 제작자 참여율, 퇴역률이 미측정인 운영 가설이다."
+    },
+    {
+      "id": "H03",
+      "claimKo": "P0 활성 기준 Flow 목표는 60~90개이며 현재 대표 유지 44개에서 16~46개를 더 완성해야 한다.",
+      "value": {
+        "targetLow": 60,
+        "targetHigh": 90,
+        "currentEligible": 44,
+        "gapLow": 16,
+        "gapHigh": 46
+      },
+      "asOf": "2026-07-27",
+      "sourceType": "strategic_recommendation",
+      "sourcePath": "2026-07-27-flowme-content-supply-estimation-model.json",
+      "evidenceLevel": "C",
+      "notesKo": "3개 초기 카테고리의 24~36개 핵심 상황을 1~2개의 좋은 기준본으로 커버한다는 가정이다."
+    }
+  ],
+  "reportingRules": [
+    "플랫폼 게시물 수를 FlowMe 콘텐츠 수로 직접 환산하지 않는다.",
+    "공식 수치와 목적형 표본, 전략 가설을 같은 수준으로 표시하지 않는다.",
+    "개인 실행본과 공개 기준 Flow를 합산하지 않는다.",
+    "오래된 공식 수치는 기준일을 크게 표시한다.",
+    "FlowMe 사용자·제작자 성과는 현재 미측정이다.",
+    "자동 QA와 저장소 재집계는 실제 사용자 검증이 아니다."
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "flow-content-ui-coverage-v1",
+  "generatedAt": "2026-07-29T23:59:00+09:00",
+  "counts": {
+    "gallery": 156,
+    "normal": 110,
+    "productCandidate": 43,
+    "structureProbe": 67,
+    "boundary": 1,
+    "historical": 45,
+    "item": 893,
+    "sourceRow": 1172,
+    "projectionCell": 550
+  },
+  "lifeArea": {
+    "family_parenting": 9,
+    "health_fitness": 5,
+    "hobby_pet": 18,
+    "home_living": 20,
+    "meals_grocery": 10,
+    "money_admin_purchase": 16,
+    "study_reading": 10,
+    "travel_outings": 13,
+    "work_career": 9
+  },
+  "executionPattern": {
+    "compare_decide": 8,
+    "date_preparation": 34,
+    "ordered_procedure": 33,
+    "phase_lifecycle": 5,
+    "progress_tracking": 21,
+    "repeating_routine": 2,
+    "resource_queue": 7
+  },
+  "sourceShape": {
+    "checklist_rows": 29,
+    "date_offsets": 1,
+    "date_window": 2,
+    "decision_criteria": 4,
+    "lesson_rows": 10,
+    "narrative_guidance": 3,
+    "procedure_rows": 21,
+    "recurrence_rule": 1,
+    "resource_collection": 7,
+    "table_rows": 31,
+    "template_fields": 1
+  },
+  "temporalIntent": {
+    "anchor_offset": 21,
+    "date_window": 4,
+    "due_deadline": 1,
+    "fixed_occurrence": 10,
+    "manually_selected_date": 1,
+    "no_schedule": 70,
+    "source_duration_window": 1,
+    "user_pacing_assignment": 2
+  },
+  "primaryProjection": {
+    "calendar": 26,
+    "checklist": 45,
+    "memo": 4,
+    "sheet": 22,
+    "todo": 13
+  },
+  "sourceFormat": {
+    "csv": 2,
+    "html": 96,
+    "html_csv": 1,
+    "html_pdf": 2,
+    "pdf": 3,
+    "table": 3,
+    "video": 3
+  },
+  "contentMode": {
+    "event_source_before_user_intent": 14,
+    "field_template_probe": 3,
+    "flow_content": 93
+  }
+}
