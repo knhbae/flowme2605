@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "preparedAt": "2026-07-23",
+  "reviewTarget": "FlowMe P30 current production and origin/main",
+  "currentMainSha": "4c5bbb34f5c8633d4b4b48fb8070e523ec5def6b",
+  "appImplementation": {
+    "pullRequest": 148,
+    "mergeSha": "b3c8500be3b6aa673e2078d02a986f7cae6fe8bf"
+  },
+  "closeout": {
+    "pullRequest": 149,
+    "mergeSha": "4c5bbb34f5c8633d4b4b48fb8070e523ec5def6b",
+    "appRuntimeChanged": false
+  },
+  "production": {
+    "canonicalUrl": "https://flowme2605.vercel.app",
+    "deploymentId": 5557873756,
+    "deploymentUrl": "https://flowme2605-diq3fgv3b-flowme.vercel.app",
+    "status": "success"
+  },
+  "observedUserCount": 0,
+  "sources": [
+    {
+      "kind": "current_production_interaction",
+      "url": "https://flowme2605.vercel.app"
+    },
+    {
+      "kind": "current_package_screenshot",
+      "url": "https://github.com/knhbae/flowme2605/tree/main/docs/content-audit/2026-07-22-flowme-p30-final-review-package/production-smoke/screenshots"
+    },
+    {
+      "kind": "current_structured_evidence",
+      "url": "https://github.com/knhbae/flowme2605/blob/main/docs/content-audit/2026-07-22-flowme-p30-final-review-package/route-evidence.json"
+    },
+    {
+      "kind": "current_source",
+      "url": "https://github.com/knhbae/flowme2605/tree/main/components/flow"
+    },
+    {
+      "kind": "prior_design_artifact",
+      "url": "https://github.com/knhbae/flowme2605/blob/main/claude_work/FlowMe%20P29%20%EB%8F%85%EB%A6%BD%EA%B2%80%ED%86%A0%20(standalone).html"
+    }
+  ],
+  "requiredViewports": [
+    "390x844",
+    "1024x768",
+    "1440x900"
+  ],
+  "verdictOptions": [
+    "keep_p30",
+    "bounded_revision",
+    "structural_reopen"
+  ],
+  "p31CandidateLimit": 5,
+  "personaSimulation": {
+    "personaCount": 8,
+    "sessionsPerPersona": 3,
+    "totalCells": 24,
+    "statuses": [
+      "supported",
+      "hidden",
+      "partial",
+      "missing",
+      "blocked"
+    ],
+    "isObservedUserEvidence": false
+  },
+  "reviewOnly": true,
+  "appCodeChangeAllowed": false
+}

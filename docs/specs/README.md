@@ -40,9 +40,11 @@ Only **Active Gate** is the current execution backlog. Unchecked boxes inside ga
 
 ### Active Gate
 
-- [2026-07-22 P30 Evidence Gap Closure](./2026-07-22-p30-evidence-gap-closure/README.md) - independent Codex production interaction and Claude Design screenshot/source review were reconciled into a correctness-first program. P30-01 mobile export layer collision is the only immediate implementation slice; P30-02 focus order and P30-03~08 remain dependency-gated. P29 source/personal/run/occurrence/export contracts stay frozen.
+- [2026-07-23 P31 Mobile Journey Reconstruction](./2026-07-23-p31-mobile-journey-reconstruction/README.md) - owner mobile feedback, Claude Design, and Codex multi-session evidence are reconciled into a no-app-code comparison gate followed by date correctness, discovery/save-before, My Flow, Calendar, lifecycle, and complexity slices. P30 source/personal/run/occurrence/export contracts stay frozen unless an explicit structural-reopen gate is approved.
 
 ### Completed Or Closed
+
+- [2026-07-22 P30 Evidence Gap Closure](./2026-07-22-p30-evidence-gap-closure/README.md) - released through PR #148 and merge `b3c8500`; current production smoke is green, while owner and independent mobile review promoted coordinated interaction simplification and one date-precedence Blocking into P31.
 
 - [2026-07-22 P29 Coordinated Surface Reset](./2026-07-22-p29-coordinated-surface-reset/plan.md) - released through PR #146 and merge `10e6e515`; independent review promoted two mobile correctness findings and bounded composition/evidence gaps into P30 without reopening P29 data contracts.
 

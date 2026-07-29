@@ -1,9 +1,9 @@
 # Project Status
 
-**Last Updated:** 2026-07-22 (P30 released)
-**Status:** v0.1.0 RELEASED / P30 PRODUCTION GREEN
+**Last Updated:** 2026-07-23 (P31 planning gate)
+**Status:** v0.1.0 RELEASED / P30 PRODUCTION GREEN / P31 PROTOTYPE GATE ACTIVE
 **Current Version:** v0.1.0  
-**Primary Focus:** Review the released [P30 final package](./content-audit/2026-07-22-flowme-p30-final-review-package/README.md) and decide whether the next gate is owner/independent design review or a bounded P31 slice. P29 source/personal/run/occurrence/export contracts remain frozen. Observed-user sessions remain `0`; automated and production smoke evidence is not a usability claim.
+**Primary Focus:** Run the no-app-code [P31 mobile journey reconstruction](./specs/2026-07-23-p31-mobile-journey-reconstruction/README.md) comparison gate, then close effective-date correctness before any broad discovery, My Flow, or Calendar rollout. P30 source/personal/run/occurrence/export contracts remain frozen. Observed-user sessions remain `0`; automated, simulation, screenshot, and production smoke evidence are not usability claims.
 
 ## Current Control Panel
 
@@ -11,13 +11,15 @@ Human-facing summary: [FlowMe backlog control board](./content-audit/2026-07-15-
 
 | Lane | Current truth |
 | --- | --- |
-| Active product gate | P30 production closeout complete; owner/independent review determines the next bounded product slice |
-| User action now | Review the P30 final package and production, then classify remaining UX as keep, revise, or defer |
-| AI action now | Preserve P30 production and prepare P31 only from current evidence; do not infer observed usability |
-| Blocked by evidence | Observed usability, account persistence choice, creator/update pilot, real AI backend, and external integrations |
+| Active product gate | P31-00A/B/C: current/reference inventory, 390/1024 comparison prototypes, 24-cell heuristic simulation, owner decision |
+| User action now | Compare Home/Find, common save-before, dedicated My Flow, Calendar sheet, and lifecycle vocabulary alternatives |
+| AI action now | Preserve P30 production; prepare P31 prototypes and close P31-01 date correctness before broad UI rollout |
+| Blocked by evidence | Observed usability, real social proof/review data, account persistence choice, creator/update pilot, real AI backend, and external integrations |
 | Completed implementation | P30-00~08: PR #148, merge `b3c8500`, CI green, production smoke `13/13`, screenshots `17 + 13` |
 
 ## Recent Direction Notes
+
+- 2026-07-23 P31 mobile journey planning gate: owner mobile feedback, Claude Design's bounded revision, and Codex's 24-cell independent review were reconciled without changing app code. P31 starts with three Home/Find alternatives, common wedding/workout save-before alternatives, dedicated My Flow and Calendar detail-layer alternatives, and an 8-persona x 3-session heuristic simulation. Broad UI implementation waits for owner approval; effective-date projection precedence remains the first implementation Blocking. P31 may extract large components or reopen the global IA only if explicit comparison gates fail, while P30 source/personal/run/occurrence/export identity remains frozen. See [P31 Mobile Journey Reconstruction](./specs/2026-07-23-p31-mobile-journey-reconstruction/README.md).
 
 - 2026-07-22 P30 production release: mobile export fixed-layer intersections are `0`; `/my` and `/calendar` focus order is header -> workspace -> persistent tabs; long-Flow adjustment is contextual; My Flow keeps one visible primary; Calendar has deterministic undated, 50+ scope, and compact identity evidence; routine settings are summary-first. Dead public composition code was removed while the live `/flow-maps` legacy consumer remains explicit. Local verification is unit `584 / 584`, P30 Playwright `12 / 12`, affected P28/P29 `20 / 20`, full Playwright `304 / 304`, build `18 / 18`. [PR #148](https://github.com/knhbae/flowme2605/pull/148) merged as `b3c8500`; deployment `5557201045` is live at <https://flowme2605.vercel.app>; canonical smoke is `13 / 13` with HTTP/navigation/assertion/overflow/unnamed-focusable/console-page-error failures `0`. Observed-user sessions remain `0`. See the [P30 final package](./content-audit/2026-07-22-flowme-p30-final-review-package/README.md).
 

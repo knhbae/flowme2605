@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "reviewVerdicts": [
+    "keep_p30",
+    "bounded_revision",
+    "structural_reopen"
+  ],
+  "journeyStatuses": [
+    "supported",
+    "hidden",
+    "partial",
+    "missing",
+    "blocked"
+  ],
+  "reviewerRoles": [
+    "claude_design",
+    "codex_independent"
+  ],
+  "personas": [
+    "P1_anchor_deadline_mover",
+    "P2_undated_vehicle_checklist",
+    "P3_recurring_home_workout",
+    "P4_calendar_heavy_multi_flow",
+    "P5_existing_tool_export_first",
+    "P6_url_memo_personal_draft",
+    "P7_return_reflect_reuse",
+    "P8_keyboard_low_vision"
+  ],
+  "sessionsPerPersona": 3,
+  "requiredJourneyCellCount": 24,
+  "journeyCellRequiredFields": [
+    "personaId",
+    "sessionId",
+    "userGoal",
+    "route",
+    "viewport",
+    "fixture",
+    "startingState",
+    "steps",
+    "interactionDepth",
+    "expectedMentalModel",
+    "actualFeedback",
+    "nextAction",
+    "visible",
+    "reachable",
+    "reloadPersistence",
+    "projectionParity",
+    "stableIdentityPreserved",
+    "recovery",
+    "dataPreservedOnFailure",
+    "status",
+    "severity",
+    "evidenceKinds",
+    "observedUserQuestion"
+  ],
+  "projectionParityFields": [
+    "title",
+    "date",
+    "count",
+    "stableItemIdentity",
+    "flowIdentity",
+    "executionState",
+    "exportScope"
+  ],
+  "servicePlatformDimensions": [
+    "value_proposition_clarity",
+    "source_trust_and_provenance",
+    "artifact_destination_fit",
+    "personalization_complexity_balance",
+    "execution_completion_recovery",
+    "projection_consistency",
+    "return_and_reuse_reason",
+    "creator_source_correction_loop",
+    "accessibility_responsive_operability",
+    "multi_flow_scale"
+  ],
+  "evidenceKinds": [
+    "current_production_interaction",
+    "current_browser_automation",
+    "current_command",
+    "current_package_screenshot",
+    "current_source",
+    "prior_design_artifact",
+    "reference_pattern",
+    "heuristic_simulation",
+    "fixture_only",
+    "inaccessible",
+    "observed_user"
+  ],
+  "maxP31Candidates": 5,
+  "automationIsObservedUserEvidence": false,
+  "appCodeChangeAllowed": false
+}

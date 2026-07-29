@@ -1,10 +1,10 @@
 # Roadmap
 
-**Last Updated:** 2026-07-22<br>
+**Last Updated:** 2026-07-23<br>
 **Current Version:** v0.1.0 (released product PoC)<br>
-**Current Validation Stage:** internal alpha / P30 production released<br>
+**Current Validation Stage:** internal alpha / P31 comparison prototype gate<br>
 **Next Version:** v0.2.0 (coherent personal execution workspace)<br>
-**Next Milestone:** owner/independent review of P30 production, then one evidence-bounded P31 slice
+**Next Milestone:** approve P31 mobile journey composition, then close effective-date correctness before bounded rollout
 
 Human-facing control surface: [FlowMe backlog control board](./content-audit/2026-07-15-flowme-backlog-control-board-ko.html).
 
@@ -20,6 +20,25 @@ URL or memo -> prepared Flow or draft -> save -> personal edit
 ```
 
 This is a functioning product PoC with automated and browser QA. It is not evidence that repeated users understand, trust, or retain the product.
+
+## P31 Mobile Journey Reconstruction
+
+Owner mobile feedback, Claude Design, and Codex's multi-session independent review agree that P30's architecture should remain, but mobile Home/Find, content-shape save-before, My Flow, Calendar, and lifecycle controls require one coordinated simplification program. P31 begins with a no-app-code comparison gate rather than another immediate implementation pass.
+
+Detailed scope: [P31 Mobile Journey Reconstruction](./specs/2026-07-23-p31-mobile-journey-reconstruction/README.md).
+
+| Slice | Purpose | State |
+| --- | --- | --- |
+| P31-00A | Reconcile current production/source, official references, and mobile complexity evidence | Planned |
+| P31-00B | Compare Home/Find, save-before, My Flow, and Calendar alternatives at 390/1024 and simulate 8 personas x 3 sessions | Planned |
+| P31-00C | Owner approval, bounded revision versus structural reopen, and plan revision | Gated by P31-00A/B |
+| P31-01 | Fix effective-date precedence across My Flow, Calendar, ICS, and list export | First implementation Blocking |
+| P31-02 | Separate Home/Find roles and simplify card/public save-before across moving, wedding, and workout | Gated by P31-00C and P31-01 |
+| P31-03 | Build a dedicated mobile My Flow workspace with one operation grammar and archive/restore parity | Gated by P31-00C and P31-01 |
+| P31-04 | Move Calendar Item detail to a sheet, separate placement mode, and reduce grid keyboard depth | Gated by P31-01 |
+| P31-05 | Fix permanent-delete contract, advanced/export disclosure, accessibility, and the 24-cell complexity gate | Gated by P31-01~04 |
+
+P31 may extract large UI components or reopen Home/Find IA only after an explicit comparison gate fails. It does not add fake social proof, account/cloud sync, AI/crawler, OAuth, a new export format, or a heavy planner. Observed-user sessions remain `0`.
 
 ## P30 Interaction Correctness And Evidence Closure
 
@@ -197,12 +216,13 @@ Detailed scope: [Save, Personalize, Execute Journey Reset](./specs/2026-07-18-sa
 
 ## Operating Queue
 
-There is no active external-user gate. P30 is canonical production and the next work is an owner/independent review decision, not an automatically inferred P31 feature program. External user observation stays outside the queue until the owner explicitly reopens it.
+There is no active external-user gate. P30 remains canonical production, while P31 is an approved planning and comparison program. Broad app rollout is not yet approved: P31-00A/B/C must establish the composition decision, and P31-01 must close date correctness first. External user observation stays outside the queue until the owner explicitly reopens it.
 
 | Lane | Owner | Work | Next checkpoint | Done when |
 | --- | --- | --- | --- | --- |
-| Active | Owner + independent reviewers | P30 production review | Compare current production, final package, and remaining risks | Classify the next decision as keep, revise, defer, or one bounded P31 slice |
-| Planned | AI | P31 planning only after a concrete evidence gap | Reconcile owner, Claude Design, and current production evidence | One scoped goal with explicit non-goals and rollback exists |
+| Active | AI + Owner | P31-00A/B/C comparison gate | Compare Home/Find, common save-before, dedicated My Flow, Calendar sheet, and lifecycle vocabulary at 390/1024 | One approved composition and explicit replan/rollback decision exists |
+| Next | AI | P31-01 effective-date correctness | Reproduce and fix My Flow/Calendar/ICS stale-date precedence | All projections read one effective date with regression tests |
+| Planned | AI | P31-02~05 bounded implementation | Implement only the approved surface slices in dependency order | 24-cell complexity target and P30 identity regressions 0 |
 | Completed | AI | P30 evidence-gap closure and release | Preserve PR #148, merge `b3c8500`, and production evidence | CI green, canonical smoke `13 / 13`, observed users explicitly `0` |
 | Completed | AI | P25-06/P25-07 public artifact and visual integration | Preserve one public artifact and shared responsive action vocabulary | Current browser evidence stays green; observed users remain 0 |
 | Completed | AI | P25-01~P25-05 correctness, whole-Flow workspace, personal adjustment, Anytime placement, completion, and export | Preserve canonical projection, source/personal/run ownership, and browser evidence | Current unit/browser evidence stays green; observed users remain 0 |
