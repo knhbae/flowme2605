@@ -1,0 +1,934 @@
+{
+  "qaVersion": "flowme-prompt-lab-browser-qa-v1",
+  "report": "../report.html",
+  "checkedAt": "2026-07-18",
+  "inventory": [
+    "Korean 16-slide deck opens",
+    "cover communicates incomplete/No-Go result",
+    "next and previous controls work by click and keyboard",
+    "desktop/tablet/mobile have no document horizontal overflow",
+    "slide content is not clipped by its slide",
+    "control targets are at least 44x44",
+    "10-preview index and first preview open"
+  ],
+  "results": [
+    {
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 1000,
+        "isMobile": false
+      },
+      "initial": {
+        "title": "URL-to-FLOW Prompt Lab v1 · SourceRow-only 결과",
+        "lang": "ko",
+        "slides": 16,
+        "headings": [
+          "그럴듯한 Flow는 나왔다.아직 믿고 자동화할 수는 없다.",
+          "값이 행에 있으면 강하다",
+          "행이 짧으면 분류가 흔들린다",
+          "이전 10/10은 품질 증거가 아니었다",
+          "규칙과 모델의 경계를 먼저 잘랐다",
+          "최소 provenance는 SourceRow,최소 실행 상태는 Item",
+          "주제보다 source shape를 섞었다",
+          "의미보다 JSON 계약에서 먼저 무너졌다",
+          "기계 유효성은 통과,semantic grounding은 미달",
+          "‘쓸 만함’과 ‘근거 있음’은 다르다",
+          "같은 입력·같은 prompt도핵심 결정은 41.7%만 동일했다",
+          "재사용 가능한 실험 장치는 남았다",
+          "이번 세션에서 비용 결론은 낼 수 없다",
+          "무엇이 통과했고, 무엇이 막혔나",
+          "지금 구현해야 할 것은 LLM API가 아니다",
+          "v1은 미완료.하지만 다음 실험 질문은 명확해졌다."
+        ],
+        "counter": "1 / 16",
+        "innerWidth": 1440,
+        "innerHeight": 1000,
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "canScrollX": false,
+        "nav": [
+          {
+            "w": 44,
+            "h": 44,
+            "label": "이전 슬라이드"
+          },
+          {
+            "w": 44,
+            "h": 44,
+            "label": "다음 슬라이드"
+          }
+        ],
+        "slideFit": [
+          {
+            "index": 1,
+            "height": 1016.109375,
+            "scrollHeight": 1015,
+            "scrollWidth": 1440,
+            "clientWidth": 1440,
+            "bad": []
+          },
+          {
+            "index": 2,
+            "height": 1000,
+            "scrollHeight": 999,
+            "scrollWidth": 1440,
+            "clientWidth": 1440,
+            "bad": []
+          },
+          {
+            "index": 3,
+            "height": 1000,
+            "scrollHeight": 999,
+            "scrollWidth": 1440,
+            "clientWidth": 1440,
+            "bad": []
+          },
+          {
+            "index": 4,
+            "height": 1000,
+            "scrollHeight": 999,
+            "scrollWidth": 1440,
+            "clientWidth": 1440,
+            "bad": []
+          },
+          {
+            "index": 5,
+            "height": 1000,
+            "scrollHeight": 999,
+            "scrollWidth": 1440,
+            "clientWidth": 1440,
+            "bad": []
+          },
+          {
+            "index": 6,
+            "height": 1000,
+            "scrollHeight": 999,
+            "scrollWidth": 1440,
+            "clientWidth": 1440,
+            "bad": []
+          },
+          {
+            "index": 7,
+            "height": 1000,
+            "scrollHeight": 999,
+            "scrollWidth": 1440,
+            "clientWidth": 1440,
+            "bad": []
+          },
+          {
+            "index": 8,
+            "height": 1000,
+            "scrollHeight": 999,
+            "scrollWidth": 1440,
+            "clientWidth": 1440,
+            "bad": []
+          },
+          {
+            "index": 9,
+            "height": 1000,
+            "scrollHeight": 999,
+            "scrollWidth": 1440,
+            "clientWidth": 1440,
+            "bad": []
+          },
+          {
+            "index": 10,
+            "height": 1000,
+            "scrollHeight": 999,
+            "scrollWidth": 1440,
+            "clientWidth": 1440,
+            "bad": []
+          },
+          {
+            "index": 11,
+            "height": 1000,
+            "scrollHeight": 999,
+            "scrollWidth": 1440,
+            "clientWidth": 1440,
+            "bad": []
+          },
+          {
+            "index": 12,
+            "height": 1000,
+            "scrollHeight": 999,
+            "scrollWidth": 1440,
+            "clientWidth": 1440,
+            "bad": []
+          },
+          {
+            "index": 13,
+            "height": 1000,
+            "scrollHeight": 999,
+            "scrollWidth": 1440,
+            "clientWidth": 1440,
+            "bad": []
+          },
+          {
+            "index": 14,
+            "height": 1243.296875,
+            "scrollHeight": 1242,
+            "scrollWidth": 1440,
+            "clientWidth": 1440,
+            "bad": []
+          },
+          {
+            "index": 15,
+            "height": 1000,
+            "scrollHeight": 999,
+            "scrollWidth": 1440,
+            "clientWidth": 1440,
+            "bad": []
+          },
+          {
+            "index": 16,
+            "height": 1000,
+            "scrollHeight": 999,
+            "scrollWidth": 1440,
+            "clientWidth": 1440,
+            "bad": []
+          }
+        ]
+      },
+      "controls": {
+        "afterNext": "2 / 16",
+        "afterBack": "1 / 16"
+      },
+      "densestSlide": 14,
+      "consoleErrors": []
+    },
+    {
+      "viewport": {
+        "name": "tablet",
+        "width": 1024,
+        "height": 768,
+        "isMobile": false
+      },
+      "initial": {
+        "title": "URL-to-FLOW Prompt Lab v1 · SourceRow-only 결과",
+        "lang": "ko",
+        "slides": 16,
+        "headings": [
+          "그럴듯한 Flow는 나왔다.아직 믿고 자동화할 수는 없다.",
+          "값이 행에 있으면 강하다",
+          "행이 짧으면 분류가 흔들린다",
+          "이전 10/10은 품질 증거가 아니었다",
+          "규칙과 모델의 경계를 먼저 잘랐다",
+          "최소 provenance는 SourceRow,최소 실행 상태는 Item",
+          "주제보다 source shape를 섞었다",
+          "의미보다 JSON 계약에서 먼저 무너졌다",
+          "기계 유효성은 통과,semantic grounding은 미달",
+          "‘쓸 만함’과 ‘근거 있음’은 다르다",
+          "같은 입력·같은 prompt도핵심 결정은 41.7%만 동일했다",
+          "재사용 가능한 실험 장치는 남았다",
+          "이번 세션에서 비용 결론은 낼 수 없다",
+          "무엇이 통과했고, 무엇이 막혔나",
+          "지금 구현해야 할 것은 LLM API가 아니다",
+          "v1은 미완료.하지만 다음 실험 질문은 명확해졌다."
+        ],
+        "counter": "1 / 16",
+        "innerWidth": 1024,
+        "innerHeight": 768,
+        "clientWidth": 1024,
+        "scrollWidth": 1024,
+        "canScrollX": false,
+        "nav": [
+          {
+            "w": 44,
+            "h": 44,
+            "label": "이전 슬라이드"
+          },
+          {
+            "w": 44,
+            "h": 44,
+            "label": "다음 슬라이드"
+          }
+        ],
+        "slideFit": [
+          {
+            "index": 1,
+            "height": 855.65625,
+            "scrollHeight": 855,
+            "scrollWidth": 1024,
+            "clientWidth": 1024,
+            "bad": []
+          },
+          {
+            "index": 2,
+            "height": 768,
+            "scrollHeight": 767,
+            "scrollWidth": 1024,
+            "clientWidth": 1024,
+            "bad": []
+          },
+          {
+            "index": 3,
+            "height": 867.78125,
+            "scrollHeight": 867,
+            "scrollWidth": 1024,
+            "clientWidth": 1024,
+            "bad": []
+          },
+          {
+            "index": 4,
+            "height": 768,
+            "scrollHeight": 767,
+            "scrollWidth": 1024,
+            "clientWidth": 1024,
+            "bad": []
+          },
+          {
+            "index": 5,
+            "height": 768,
+            "scrollHeight": 767,
+            "scrollWidth": 1024,
+            "clientWidth": 1024,
+            "bad": []
+          },
+          {
+            "index": 6,
+            "height": 768,
+            "scrollHeight": 767,
+            "scrollWidth": 1024,
+            "clientWidth": 1024,
+            "bad": []
+          },
+          {
+            "index": 7,
+            "height": 875.703125,
+            "scrollHeight": 875,
+            "scrollWidth": 1024,
+            "clientWidth": 1024,
+            "bad": []
+          },
+          {
+            "index": 8,
+            "height": 768,
+            "scrollHeight": 767,
+            "scrollWidth": 1024,
+            "clientWidth": 1024,
+            "bad": []
+          },
+          {
+            "index": 9,
+            "height": 768,
+            "scrollHeight": 767,
+            "scrollWidth": 1024,
+            "clientWidth": 1024,
+            "bad": []
+          },
+          {
+            "index": 10,
+            "height": 806.5,
+            "scrollHeight": 806,
+            "scrollWidth": 1024,
+            "clientWidth": 1024,
+            "bad": []
+          },
+          {
+            "index": 11,
+            "height": 768,
+            "scrollHeight": 767,
+            "scrollWidth": 1024,
+            "clientWidth": 1024,
+            "bad": []
+          },
+          {
+            "index": 12,
+            "height": 768,
+            "scrollHeight": 767,
+            "scrollWidth": 1024,
+            "clientWidth": 1024,
+            "bad": []
+          },
+          {
+            "index": 13,
+            "height": 768,
+            "scrollHeight": 767,
+            "scrollWidth": 1024,
+            "clientWidth": 1024,
+            "bad": []
+          },
+          {
+            "index": 14,
+            "height": 1160.5625,
+            "scrollHeight": 1160,
+            "scrollWidth": 1024,
+            "clientWidth": 1024,
+            "bad": []
+          },
+          {
+            "index": 15,
+            "height": 768,
+            "scrollHeight": 767,
+            "scrollWidth": 1024,
+            "clientWidth": 1024,
+            "bad": []
+          },
+          {
+            "index": 16,
+            "height": 768,
+            "scrollHeight": 767,
+            "scrollWidth": 1024,
+            "clientWidth": 1024,
+            "bad": []
+          }
+        ]
+      },
+      "controls": {
+        "afterNext": "2 / 16",
+        "afterBack": "1 / 16"
+      },
+      "densestSlide": 14,
+      "consoleErrors": []
+    },
+    {
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844,
+        "isMobile": true
+      },
+      "initial": {
+        "title": "URL-to-FLOW Prompt Lab v1 · SourceRow-only 결과",
+        "lang": "ko",
+        "slides": 16,
+        "headings": [
+          "그럴듯한 Flow는 나왔다.아직 믿고 자동화할 수는 없다.",
+          "값이 행에 있으면 강하다",
+          "행이 짧으면 분류가 흔들린다",
+          "이전 10/10은 품질 증거가 아니었다",
+          "규칙과 모델의 경계를 먼저 잘랐다",
+          "최소 provenance는 SourceRow,최소 실행 상태는 Item",
+          "주제보다 source shape를 섞었다",
+          "의미보다 JSON 계약에서 먼저 무너졌다",
+          "기계 유효성은 통과,semantic grounding은 미달",
+          "‘쓸 만함’과 ‘근거 있음’은 다르다",
+          "같은 입력·같은 prompt도핵심 결정은 41.7%만 동일했다",
+          "재사용 가능한 실험 장치는 남았다",
+          "이번 세션에서 비용 결론은 낼 수 없다",
+          "무엇이 통과했고, 무엇이 막혔나",
+          "지금 구현해야 할 것은 LLM API가 아니다",
+          "v1은 미완료.하지만 다음 실험 질문은 명확해졌다."
+        ],
+        "counter": "1 / 16",
+        "innerWidth": 390,
+        "innerHeight": 844,
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "canScrollX": false,
+        "nav": [
+          {
+            "w": 44,
+            "h": 44,
+            "label": "이전 슬라이드"
+          },
+          {
+            "w": 44,
+            "h": 44,
+            "label": "다음 슬라이드"
+          }
+        ],
+        "slideFit": [
+          {
+            "index": 1,
+            "height": 1130.625,
+            "scrollHeight": 1130,
+            "scrollWidth": 390,
+            "clientWidth": 390,
+            "bad": []
+          },
+          {
+            "index": 2,
+            "height": 813.0625,
+            "scrollHeight": 812,
+            "scrollWidth": 390,
+            "clientWidth": 390,
+            "bad": []
+          },
+          {
+            "index": 3,
+            "height": 1003.296875,
+            "scrollHeight": 1002,
+            "scrollWidth": 390,
+            "clientWidth": 390,
+            "bad": []
+          },
+          {
+            "index": 4,
+            "height": 882.109375,
+            "scrollHeight": 881,
+            "scrollWidth": 390,
+            "clientWidth": 390,
+            "bad": []
+          },
+          {
+            "index": 5,
+            "height": 931.875,
+            "scrollHeight": 931,
+            "scrollWidth": 390,
+            "clientWidth": 390,
+            "bad": []
+          },
+          {
+            "index": 6,
+            "height": 869.140625,
+            "scrollHeight": 868,
+            "scrollWidth": 390,
+            "clientWidth": 390,
+            "bad": []
+          },
+          {
+            "index": 7,
+            "height": 1231.734375,
+            "scrollHeight": 1231,
+            "scrollWidth": 390,
+            "clientWidth": 390,
+            "bad": []
+          },
+          {
+            "index": 8,
+            "height": 843.3125,
+            "scrollHeight": 842,
+            "scrollWidth": 390,
+            "clientWidth": 390,
+            "bad": []
+          },
+          {
+            "index": 9,
+            "height": 1074.328125,
+            "scrollHeight": 1073,
+            "scrollWidth": 390,
+            "clientWidth": 390,
+            "bad": []
+          },
+          {
+            "index": 10,
+            "height": 1034.40625,
+            "scrollHeight": 1033,
+            "scrollWidth": 390,
+            "clientWidth": 390,
+            "bad": []
+          },
+          {
+            "index": 11,
+            "height": 806.609375,
+            "scrollHeight": 806,
+            "scrollWidth": 390,
+            "clientWidth": 390,
+            "bad": []
+          },
+          {
+            "index": 12,
+            "height": 920.1875,
+            "scrollHeight": 919,
+            "scrollWidth": 390,
+            "clientWidth": 390,
+            "bad": []
+          },
+          {
+            "index": 13,
+            "height": 943.40625,
+            "scrollHeight": 942,
+            "scrollWidth": 390,
+            "clientWidth": 390,
+            "bad": []
+          },
+          {
+            "index": 14,
+            "height": 1199.6875,
+            "scrollHeight": 1199,
+            "scrollWidth": 390,
+            "clientWidth": 390,
+            "bad": []
+          },
+          {
+            "index": 15,
+            "height": 663.828125,
+            "scrollHeight": 663,
+            "scrollWidth": 390,
+            "clientWidth": 390,
+            "bad": []
+          },
+          {
+            "index": 16,
+            "height": 813.265625,
+            "scrollHeight": 812,
+            "scrollWidth": 390,
+            "clientWidth": 390,
+            "bad": []
+          }
+        ]
+      },
+      "controls": {
+        "afterNext": "2 / 16",
+        "afterBack": "1 / 16"
+      },
+      "densestSlide": 7,
+      "consoleErrors": []
+    }
+  ],
+  "previewResults": [
+    {
+      "viewport": "desktop",
+      "index": {
+        "title": "FLOW previews",
+        "heading": "FLOW 초안 10건",
+        "links": 10,
+        "canScrollX": false
+      },
+      "first": {
+        "title": "검진 확인 및 방문 · FLOW preview",
+        "heading": "검진 확인 및 방문",
+        "items": 0,
+        "sourceLink": "https://www.nhis.or.kr/nhis/healthin/wbhaca04500m01.do",
+        "notice": "Prompt Lab 검토용 초안입니다. 저장·발행·외부 도구 쓰기는 수행되지 않았습니다.",
+        "canScrollX": false
+      },
+      "consoleErrors": []
+    },
+    {
+      "viewport": "mobile",
+      "index": {
+        "title": "FLOW previews",
+        "heading": "FLOW 초안 10건",
+        "links": 10,
+        "canScrollX": false
+      },
+      "first": {
+        "title": "검진 확인 및 방문 · FLOW preview",
+        "heading": "검진 확인 및 방문",
+        "items": 0,
+        "sourceLink": "https://www.nhis.or.kr/nhis/healthin/wbhaca04500m01.do",
+        "notice": "Prompt Lab 검토용 초안입니다. 저장·발행·외부 도구 쓰기는 수행되지 않았습니다.",
+        "canScrollX": false
+      },
+      "consoleErrors": []
+    }
+  ],
+  "previewLinkFixVerified": true,
+  "previewItemCounts": [
+    {
+      "viewport": "desktop",
+      "items": 2,
+      "labels": [
+        "검진 대상 및 예약 확인",
+        "검진기관 방문"
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "items": 2,
+      "labels": [
+        "검진 대상 및 예약 확인",
+        "검진기관 방문"
+      ]
+    }
+  ],
+  "finalRegenerationRegression": {
+    "results": [
+      {
+        "viewport": "desktop",
+        "slides": 16,
+        "counter": "1 / 16",
+        "canScrollX": false,
+        "badSlides": [],
+        "verificationMention": true,
+        "next": "2 / 16",
+        "back": "1 / 16",
+        "consoleErrors": []
+      },
+      {
+        "viewport": "tablet",
+        "slides": 16,
+        "counter": "1 / 16",
+        "canScrollX": false,
+        "badSlides": [],
+        "verificationMention": true,
+        "next": "2 / 16",
+        "back": "1 / 16",
+        "consoleErrors": []
+      },
+      {
+        "viewport": "mobile",
+        "slides": 16,
+        "counter": "1 / 16",
+        "canScrollX": false,
+        "badSlides": [],
+        "verificationMention": true,
+        "next": "2 / 16",
+        "back": "1 / 16",
+        "consoleErrors": []
+      }
+    ],
+    "preview": {
+      "linkCount": 10,
+      "title": "검진 확인 및 방문 · FLOW preview",
+      "items": 2,
+      "notice": "Prompt Lab 검토용 초안입니다. 저장·발행·외부 도구 쓰기는 수행되지 않았습니다."
+    },
+    "passed": true
+  },
+  "independentAuditCorrectionRegression": {
+    "results": [
+      {
+        "viewport": "desktop",
+        "title": "URL-to-FLOW Prompt Lab v1 · SourceRow-only 결과",
+        "slides": 16,
+        "counter": "1 / 16",
+        "canScrollX": false,
+        "nav": [
+          {
+            "w": 44,
+            "h": 44
+          },
+          {
+            "w": 44,
+            "h": 44
+          }
+        ],
+        "badSlides": [],
+        "claims": {
+          "positiveStability": true,
+          "inputProtocol": true,
+          "noGo": true
+        },
+        "next": "2 / 16",
+        "back": "1 / 16",
+        "consoleErrors": []
+      },
+      {
+        "viewport": "tablet",
+        "title": "URL-to-FLOW Prompt Lab v1 · SourceRow-only 결과",
+        "slides": 16,
+        "counter": "1 / 16",
+        "canScrollX": false,
+        "nav": [
+          {
+            "w": 44,
+            "h": 44
+          },
+          {
+            "w": 44,
+            "h": 44
+          }
+        ],
+        "badSlides": [],
+        "claims": {
+          "positiveStability": true,
+          "inputProtocol": true,
+          "noGo": true
+        },
+        "next": "2 / 16",
+        "back": "1 / 16",
+        "consoleErrors": []
+      },
+      {
+        "viewport": "mobile",
+        "title": "URL-to-FLOW Prompt Lab v1 · SourceRow-only 결과",
+        "slides": 16,
+        "counter": "1 / 16",
+        "canScrollX": false,
+        "nav": [
+          {
+            "w": 44,
+            "h": 44
+          },
+          {
+            "w": 44,
+            "h": 44
+          }
+        ],
+        "badSlides": [],
+        "claims": {
+          "positiveStability": true,
+          "inputProtocol": true,
+          "noGo": true
+        },
+        "next": "2 / 16",
+        "back": "1 / 16",
+        "consoleErrors": []
+      }
+    ],
+    "passed": true
+  },
+  "finalSignoff": {
+    "results": [
+      {
+        "viewport": "desktop",
+        "title": "URL-to-FLOW Prompt Lab v1 · SourceRow-only 결과",
+        "slides": 16,
+        "counter": "1 / 16",
+        "canScrollX": false,
+        "nav": [
+          {
+            "w": 44,
+            "h": 44,
+            "label": "이전 슬라이드"
+          },
+          {
+            "w": 44,
+            "h": 44,
+            "label": "다음 슬라이드"
+          }
+        ],
+        "claims": {
+          "noGo": true,
+          "positive3of10": true,
+          "protocol": true,
+          "costBoundary": true
+        },
+        "startControlOverlaps": [
+          14
+        ],
+        "next": "2 / 16",
+        "back": "1 / 16",
+        "consoleErrors": []
+      },
+      {
+        "viewport": "tablet",
+        "title": "URL-to-FLOW Prompt Lab v1 · SourceRow-only 결과",
+        "slides": 16,
+        "counter": "1 / 16",
+        "canScrollX": false,
+        "nav": [
+          {
+            "w": 44,
+            "h": 44,
+            "label": "이전 슬라이드"
+          },
+          {
+            "w": 44,
+            "h": 44,
+            "label": "다음 슬라이드"
+          }
+        ],
+        "claims": {
+          "noGo": true,
+          "positive3of10": true,
+          "protocol": true,
+          "costBoundary": true
+        },
+        "startControlOverlaps": [
+          1,
+          3,
+          7,
+          10,
+          14
+        ],
+        "next": "2 / 16",
+        "back": "1 / 16",
+        "consoleErrors": []
+      },
+      {
+        "viewport": "mobile",
+        "title": "URL-to-FLOW Prompt Lab v1 · SourceRow-only 결과",
+        "slides": 16,
+        "counter": "1 / 16",
+        "canScrollX": false,
+        "nav": [
+          {
+            "w": 44,
+            "h": 44,
+            "label": "이전 슬라이드"
+          },
+          {
+            "w": 44,
+            "h": 44,
+            "label": "다음 슬라이드"
+          }
+        ],
+        "claims": {
+          "noGo": true,
+          "positive3of10": true,
+          "protocol": true,
+          "costBoundary": true
+        },
+        "startControlOverlaps": [],
+        "next": "2 / 16",
+        "back": "1 / 16",
+        "consoleErrors": []
+      }
+    ],
+    "preview": {
+      "links": 10,
+      "title": "검진 확인 및 방문 · FLOW preview",
+      "items": 2,
+      "notice": "Prompt Lab 검토용 초안입니다. 저장·발행·외부 도구 쓰기는 수행되지 않았습니다.",
+      "canScrollX": false
+    },
+    "passed": false
+  },
+  "finalSignoffV2": {
+    "results": [
+      {
+        "viewport": "desktop",
+        "slides": 16,
+        "counter": "1 / 16",
+        "canScrollX": false,
+        "nav": [
+          {
+            "w": 44,
+            "h": 44
+          },
+          {
+            "w": 44,
+            "h": 44
+          }
+        ],
+        "startControlOverlaps": [],
+        "next": "2 / 16",
+        "back": "1 / 16",
+        "consoleErrors": []
+      },
+      {
+        "viewport": "tablet",
+        "slides": 16,
+        "counter": "1 / 16",
+        "canScrollX": false,
+        "nav": [
+          {
+            "w": 44,
+            "h": 44
+          },
+          {
+            "w": 44,
+            "h": 44
+          }
+        ],
+        "startControlOverlaps": [],
+        "next": "2 / 16",
+        "back": "1 / 16",
+        "consoleErrors": []
+      },
+      {
+        "viewport": "mobile",
+        "slides": 16,
+        "counter": "1 / 16",
+        "canScrollX": false,
+        "nav": [
+          {
+            "w": 44,
+            "h": 44
+          },
+          {
+            "w": 44,
+            "h": 44
+          }
+        ],
+        "startControlOverlaps": [],
+        "next": "2 / 16",
+        "back": "1 / 16",
+        "consoleErrors": []
+      }
+    ],
+    "preview": {
+      "links": 10,
+      "title": "검진 확인 및 방문 · FLOW preview",
+      "items": 2,
+      "notice": "Prompt Lab 검토용 초안입니다. 저장·발행·외부 도구 쓰기는 수행되지 않았습니다.",
+      "canScrollX": false
+    },
+    "passed": true
+  }
+}

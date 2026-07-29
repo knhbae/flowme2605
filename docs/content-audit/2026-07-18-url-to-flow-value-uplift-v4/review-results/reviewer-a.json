@@ -1,0 +1,22 @@
+{
+  "reviewerId": "reviewer-a",
+  "reviewProxy": {
+    "model": "gpt-5.6-terra",
+    "reasoningEffort": "low",
+    "role": "lower-cost reviewer proxy",
+    "actualTokensLatencyCost": null
+  },
+  "judgments": [
+    {"questionId": "q1", "choice": "A", "reasonCode": "immediate_start"},
+    {"questionId": "q2", "choice": "B", "reasonCode": "explicit_state_and_criteria"},
+    {"questionId": "q3", "choice": "B", "reasonCode": "multi_artifact_projection"},
+    {"questionId": "q4", "choice": "B", "reasonCode": "source_trace_and_cautions"},
+    {"questionId": "q5", "choice": "B", "reasonCode": "recurrence_and_return_state"},
+    {"questionId": "q6", "choice": "B", "reasonCode": "more_task_specific_copy"},
+    {"questionId": "q7", "choice": "B", "reasonCode": "higher_reuse_value"}
+  ],
+  "unsupportedOrUnsafeFindings": [],
+  "overallChoice": "B",
+  "note": "B is more observable, source-grounded, and reusable, while A starts faster."
+}
+

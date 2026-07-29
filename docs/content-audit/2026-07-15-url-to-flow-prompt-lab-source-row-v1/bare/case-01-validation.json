@@ -1,0 +1,47 @@
+{
+  "validationSchemaVersion": "flowme-source-row-validation-v1",
+  "inputKind": "bare_proposal",
+  "laneId": "url-to-flow-source-row-v1",
+  "roundFilter": null,
+  "passed": true,
+  "summary": {
+    "documentCount": 1,
+    "outputCount": 1,
+    "passedOutputCount": 1,
+    "failedOutputCount": 0,
+    "errorCount": 0,
+    "warningCount": 0,
+    "receivedSourceRows": 2,
+    "exactlyOnceSourceRows": 2,
+    "sourceRowAccountingRate": 1
+  },
+  "documents": [
+    {
+      "file": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/bare/case-01.json",
+      "inputKind": "bare_proposal",
+      "runId": null,
+      "round": null,
+      "promptVersion": "url-to-flow-prompt-v1.1",
+      "passed": true,
+      "results": [
+        {
+          "caseId": "case-01",
+          "passed": true,
+          "errors": [],
+          "warnings": [],
+          "metrics": {
+            "receivedRows": 2,
+            "exactlyOnceRows": 2,
+            "itemCount": 2,
+            "omittedRowCount": 0,
+            "scheduleCandidateCount": 0,
+            "positiveProposal": true,
+            "deterministicNegative": false
+          },
+          "proposalFingerprint": "3f1625501d30068b3a257847cbbf805fa78c5d9403f6dde1582204825dd4e4c4",
+          "proposalDiagnosticsSha256": "c56f86b7cc3a8ced920c440b018c2e64914a49b5ae4c46222088f2f9d491df79"
+        }
+      ]
+    }
+  ]
+}

@@ -21,7 +21,7 @@ CASE_INPUT_JSON
   "targetLocale": "ko-KR",
   "userJob": "source-defined 사진 prompt를 하루 하나씩 실행하고 완료 여부를 남긴다.",
   "maxItems": 7,
-  "claimedScope": "Canonical shape contract sample. Only the extracted Day 1-2 rows are in fixture scope; this does not claim that all 30 source rows were imported.",
+  "claimedScope": "제공된 2개 SourceRow 범위만 변환한다.",
   "source": {
     "primary": {
       "sourceId": "source-canon-photo-30",
@@ -58,7 +58,7 @@ CASE_INPUT_JSON
     }
   ],
   "inputEvidenceRefs": [
-    "golden-fixtures-v1.json#gf-pos-09-resource-queue:source-only"
+    "prompt-lab-source:case-09"
   ]
 }
 ```

@@ -1,0 +1,251 @@
+{
+  "validationVersion": "flowme-url-to-flow-strict-validation-v2",
+  "laneId": "url-to-flow-source-row-v2-strict",
+  "inputKind": "round_envelopes",
+  "round": "round-2",
+  "passed": false,
+  "assemblyIssues": [],
+  "summary": {
+    "assemblyIssueCount": 0,
+    "documentCount": 3,
+    "expectedDocumentCount": 3,
+    "outputCount": 12,
+    "passedOutputCount": 11,
+    "failedOutputCount": 1,
+    "envelopeErrorCount": 0,
+    "proposalErrorCount": 2,
+    "receivedSourceRows": 16,
+    "exactlyOnceSourceRows": 16,
+    "sourceRowAccountingRate": 1,
+    "eligibleSourceRows": 15,
+    "eligibleRowsMappedToItems": 15,
+    "eligibleRowItemizationRate": 1,
+    "deterministicNegativeCount": 2
+  },
+  "documents": [
+    {
+      "file": "docs/content-audit/2026-07-18-url-to-flow-prompt-lab-v2-strict/runs/round-2/batch-a.json",
+      "round": "round-2",
+      "batchRef": "batch-a",
+      "passed": true,
+      "envelopeErrors": [],
+      "results": [
+        {
+          "sampleRef": "smp-34e345a01a86a243",
+          "auditCaseId": "case-01",
+          "passed": true,
+          "errors": [],
+          "metrics": {
+            "receivedRows": 2,
+            "exactlyOnceRows": 2,
+            "eligibleRows": 2,
+            "eligibleRowsMappedToItems": 2,
+            "itemCount": 2,
+            "deterministicNegative": false
+          },
+          "proposalFingerprint": "a7b2d681e25e174c76d78116c47a08a38c93ae9ad92f77e19d1ded1b056e1864"
+        },
+        {
+          "sampleRef": "smp-f88067b21f8d8327",
+          "auditCaseId": "case-02",
+          "passed": true,
+          "errors": [],
+          "metrics": {
+            "receivedRows": 1,
+            "exactlyOnceRows": 1,
+            "eligibleRows": 1,
+            "eligibleRowsMappedToItems": 1,
+            "itemCount": 1,
+            "deterministicNegative": false
+          },
+          "proposalFingerprint": "0113658b5a085a39d79bf6b7cf65fe9cfa32b5eaa5e0fade3c33aa1c7350fc1b"
+        },
+        {
+          "sampleRef": "smp-64c0dc556a3ed163",
+          "auditCaseId": "case-03",
+          "passed": true,
+          "errors": [],
+          "metrics": {
+            "receivedRows": 2,
+            "exactlyOnceRows": 2,
+            "eligibleRows": 2,
+            "eligibleRowsMappedToItems": 2,
+            "itemCount": 2,
+            "deterministicNegative": false
+          },
+          "proposalFingerprint": "2ec9d3d10c145993ebcbf79a81f8e3a7e3df17c93eca4c03c2636720ca7c49c3"
+        },
+        {
+          "sampleRef": "smp-0b82f73ebd2cd478",
+          "auditCaseId": "case-04",
+          "passed": true,
+          "errors": [],
+          "metrics": {
+            "receivedRows": 2,
+            "exactlyOnceRows": 2,
+            "eligibleRows": 2,
+            "eligibleRowsMappedToItems": 2,
+            "itemCount": 2,
+            "deterministicNegative": false
+          },
+          "proposalFingerprint": "44b31248abb45bde9e8dd7867aed506942ae1d7af032bf940ed3cb5c3a79b532"
+        }
+      ]
+    },
+    {
+      "file": "docs/content-audit/2026-07-18-url-to-flow-prompt-lab-v2-strict/runs/round-2/batch-b.json",
+      "round": "round-2",
+      "batchRef": "batch-b",
+      "passed": false,
+      "envelopeErrors": [],
+      "results": [
+        {
+          "sampleRef": "smp-14c0f7b074b9994e",
+          "auditCaseId": "case-05",
+          "passed": true,
+          "errors": [],
+          "metrics": {
+            "receivedRows": 2,
+            "exactlyOnceRows": 2,
+            "eligibleRows": 2,
+            "eligibleRowsMappedToItems": 2,
+            "itemCount": 2,
+            "deterministicNegative": false
+          },
+          "proposalFingerprint": "68a92c60153a119904602b8c407b83fcbd085096baa1ab241784fc5c5b583d81"
+        },
+        {
+          "sampleRef": "smp-01f56183ee916318",
+          "auditCaseId": "case-06",
+          "passed": true,
+          "errors": [],
+          "metrics": {
+            "receivedRows": 1,
+            "exactlyOnceRows": 1,
+            "eligibleRows": 1,
+            "eligibleRowsMappedToItems": 1,
+            "itemCount": 1,
+            "deterministicNegative": false
+          },
+          "proposalFingerprint": "4d857ec353499c24bc0a8a06cc98f98178a493eece27bbebe81f82e187c471ae"
+        },
+        {
+          "sampleRef": "smp-af9bcc8d0a19f8f2",
+          "auditCaseId": "case-07",
+          "passed": true,
+          "errors": [],
+          "metrics": {
+            "receivedRows": 1,
+            "exactlyOnceRows": 1,
+            "eligibleRows": 1,
+            "eligibleRowsMappedToItems": 1,
+            "itemCount": 1,
+            "deterministicNegative": false
+          },
+          "proposalFingerprint": "b4de6afa3a80e712d193a7ee7bac8260b7da10b8b449f29696d912fd4fdf0be2"
+        },
+        {
+          "sampleRef": "smp-a236951a509318e0",
+          "auditCaseId": "case-08",
+          "passed": false,
+          "errors": [
+            {
+              "code": "item_title_outside_row_license",
+              "path": "$.items[0].title",
+              "detail": {
+                "sourceTitle": "예약과 문진표 준비",
+                "actual": "예약과 문진표 준비 확인하기"
+              }
+            },
+            {
+              "code": "row_type_intent_completion_mismatch",
+              "path": "$.items[0]",
+              "detail": {
+                "rowType": "check",
+                "pair": "inspect|check"
+              }
+            }
+          ],
+          "metrics": {
+            "receivedRows": 1,
+            "exactlyOnceRows": 1,
+            "eligibleRows": 1,
+            "eligibleRowsMappedToItems": 1,
+            "itemCount": 1,
+            "deterministicNegative": false
+          },
+          "proposalFingerprint": "e8020099e6eb6fd7674cb56bef537a6afb0847748d34caceff859e75aa688e7a"
+        }
+      ]
+    },
+    {
+      "file": "docs/content-audit/2026-07-18-url-to-flow-prompt-lab-v2-strict/runs/round-2/batch-c.json",
+      "round": "round-2",
+      "batchRef": "batch-c",
+      "passed": true,
+      "envelopeErrors": [],
+      "results": [
+        {
+          "sampleRef": "smp-5f8cdade595023d8",
+          "auditCaseId": "case-09",
+          "passed": true,
+          "errors": [],
+          "metrics": {
+            "receivedRows": 2,
+            "exactlyOnceRows": 2,
+            "eligibleRows": 2,
+            "eligibleRowsMappedToItems": 2,
+            "itemCount": 2,
+            "deterministicNegative": false
+          },
+          "proposalFingerprint": "ff334830c9b5cb05b4500159d3035f28db4dfbd1a8dc223ec19791cce54fffe0"
+        },
+        {
+          "sampleRef": "smp-cca0262a42e836c9",
+          "auditCaseId": "case-10",
+          "passed": true,
+          "errors": [],
+          "metrics": {
+            "receivedRows": 2,
+            "exactlyOnceRows": 2,
+            "eligibleRows": 1,
+            "eligibleRowsMappedToItems": 1,
+            "itemCount": 1,
+            "deterministicNegative": false
+          },
+          "proposalFingerprint": "3e0d56ff60c815ef794b8556e2a9b008a49744a24e075bdec18e664d7819fe58"
+        },
+        {
+          "sampleRef": "smp-be187768e7d35239",
+          "auditCaseId": "case-11",
+          "passed": true,
+          "errors": [],
+          "metrics": {
+            "receivedRows": 0,
+            "exactlyOnceRows": 0,
+            "eligibleRows": 0,
+            "eligibleRowsMappedToItems": 0,
+            "itemCount": 0,
+            "deterministicNegative": true
+          },
+          "proposalFingerprint": "8eb0736acb3a848beb07a91b8640377ce3496966bd3ec1b23b511b5d1a43016c"
+        },
+        {
+          "sampleRef": "smp-e7fca6ff311df9c8",
+          "auditCaseId": "case-12",
+          "passed": true,
+          "errors": [],
+          "metrics": {
+            "receivedRows": 0,
+            "exactlyOnceRows": 0,
+            "eligibleRows": 0,
+            "eligibleRowsMappedToItems": 0,
+            "itemCount": 0,
+            "deterministicNegative": true
+          },
+          "proposalFingerprint": "7c68c9d9189b061f0722ecbcff8a456ca173a023638a69fd001ec485a100c4d4"
+        }
+      ]
+    }
+  ]
+}

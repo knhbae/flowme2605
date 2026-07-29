@@ -1,16 +1,20 @@
 {
-  "reviewInputSchemaVersion": "flowme-url-to-flow-blind-review-input-v1",
+  "reviewInputSchemaVersion": "flowme-url-to-flow-blind-review-input-v2",
   "round": "round-2",
   "caseId": "case-11",
-  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
-  "expectationSetVersion": "flowme-url-to-flow-prompt-lab-expected-v1",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1.1",
   "promptVersion": "url-to-flow-prompt-v0.2",
   "proposalSchemaVersion": "flowme-semantic-proposal-v1",
   "rubric": {
-    "version": "flowme-url-to-flow-prompt-lab-review-rubric-v1",
+    "version": "flowme-url-to-flow-prompt-lab-review-rubric-v2",
     "reference": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-rubric.md"
   },
   "reviewResultTemplate": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-result-template.json",
+  "rawRun": {
+    "runFile": "docs/content-audit/2026-07-14-url-to-flow-prompt-lab/runs/round-2/batch-c.json",
+    "runId": "round-2-neutral-batch-c"
+  },
+  "proposalFingerprint": "sha256:b174f36b55dae90a090aee6312a7ffdd3c2d6e165a847a18caec342214e07b27",
   "sourcePacket": {
     "caseId": "case-11",
     "requestId": "prompt-lab-v1-case-11",
@@ -38,43 +42,8 @@
     },
     "sourceRows": [],
     "inputEvidenceRefs": [
-      "golden-fixtures-v1.json#gf-neg-01-missing-source-rows"
+      "prompt-lab-source:case-11"
     ]
-  },
-  "hiddenExpectation": {
-    "caseId": "case-11",
-    "fixtureId": "gf-neg-01-missing-source-rows",
-    "fixtureKind": "negative",
-    "fixtureShape": "missing_source_rows",
-    "name": "원문 row가 없는 파일 후보",
-    "expectedStatus": {
-      "generationState": "failed",
-      "outcome": "no_proposal",
-      "readiness": null,
-      "errorCode": "missing_source_rows",
-      "recommendedDisposition": "source_import_required"
-    },
-    "expectedConversion": null,
-    "expectedItems": [],
-    "expectedOmittedRows": [],
-    "accountingSourceRowIds": [],
-    "expectedProjections": [],
-    "forbiddenProjections": [
-      "calendar:ics",
-      "checklist:markdown",
-      "todo:markdown",
-      "sheet:csv",
-      "memo:markdown"
-    ],
-    "referenceReview": {
-      "readiness": "source_import_required",
-      "hardFails": [
-        "missing_source_rows",
-        "source_file_not_imported"
-      ],
-      "rightsDecision": "원본 파일을 읽고 사용할 권리를 확인하기 전에는 변환하지 않는다.",
-      "riskDecision": "일반 지식으로 학습 row를 채우지 않는다."
-    }
   },
   "proposal": {
     "proposalSchemaVersion": "flowme-semantic-proposal-v1",
@@ -100,22 +69,25 @@
       "proposalTitle": null,
       "items": [],
       "omittedRows": [],
-      "incompleteReason": null
+      "incompleteReason": "파일 본문, 목차, 주차, 과제 행이 제공되지 않아 변환할 SourceRow가 없다."
     },
     "projectionPlan": [],
     "reviewHints": {
       "recommendedDisposition": "source_import_required",
       "uncertainties": [
-        "원본 파일 본문과 학습 행이 확보되지 않았다."
+        "원본 학습 파일의 구조와 행 내용을 확인할 수 없다."
       ],
       "hardFailCodes": [
         "missing_source_rows"
       ],
-      "humanReviewRequired": []
+      "humanReviewRequired": [
+        "원본 PDF 본문 또는 행 단위 SourceRow 가져오기"
+      ]
     }
   },
   "validator": {
-    "passed": null,
-    "hardFailCodes": []
+    "validatorVersion": "flowme-url-to-flow-prompt-lab-validator-v1",
+    "passed": true,
+    "codes": []
   }
 }

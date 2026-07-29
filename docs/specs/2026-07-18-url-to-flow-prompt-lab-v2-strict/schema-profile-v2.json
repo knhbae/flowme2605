@@ -1,0 +1,31 @@
+{
+  "profileVersion": "flowme-semantic-proposal-schema-profile-v2",
+  "schemaVersion": "flowme-semantic-proposal-v2",
+  "schemaSha256": "afbf04b27450c0beca79b1f402cc42dab451551f068cf50b46d27d12152fa957",
+  "limits": {
+    "objectSchemas": {
+      "actual": 7,
+      "max": 10,
+      "passed": true
+    },
+    "declaredProperties": {
+      "actual": 29,
+      "max": 45,
+      "passed": true
+    },
+    "serializedBytes": {
+      "actual": 6762,
+      "max": 12288,
+      "passed": true
+    },
+    "strictObjects": {
+      "failures": [],
+      "passed": true
+    },
+    "allPropertiesRequired": {
+      "failures": [],
+      "passed": true
+    }
+  },
+  "passed": true
+}

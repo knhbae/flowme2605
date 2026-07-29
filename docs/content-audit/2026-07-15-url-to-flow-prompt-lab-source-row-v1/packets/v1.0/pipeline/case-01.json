@@ -1,0 +1,55 @@
+{
+  "laneId": "url-to-flow-source-row-v1",
+  "caseSetVersion": "flowme-url-to-flow-source-row-cases-v1",
+  "promptVersion": "url-to-flow-prompt-v1.0",
+  "caseId": "case-01",
+  "requestId": "rq-7a31d8c4f205",
+  "preflightInput": {
+    "targetLocale": "ko-KR",
+    "primary": {
+      "countryContext": "KR",
+      "riskClass": "sensitive",
+      "accessStatus": "fetched",
+      "rightsStatus": "allowed"
+    },
+    "sourceRowCount": 2
+  },
+  "preflightResult": {
+    "passed": true,
+    "modelInvoked": true,
+    "generationState": null,
+    "outcome": null,
+    "errorCode": null,
+    "recommendedDisposition": null,
+    "reasonCode": "preflight_passed"
+  },
+  "generatorInput": {
+    "requestId": "rq-7a31d8c4f205",
+    "caseId": "case-01",
+    "maxItems": 7,
+    "sourceOwnership": {
+      "primarySourceId": "src-a61d7c3e902f",
+      "supportingSourceIds": []
+    },
+    "sourceRows": [
+      {
+        "sourceRowId": "row-1c7a52e9b304",
+        "sourceId": "src-a61d7c3e902f",
+        "rowType": "check",
+        "title": "검진 대상 및 예약 확인",
+        "detail": null,
+        "order": 0
+      },
+      {
+        "sourceRowId": "row-a48e103d6f92",
+        "sourceId": "src-a61d7c3e902f",
+        "rowType": "date",
+        "title": "검진기관 방문",
+        "detail": null,
+        "order": 1
+      }
+    ]
+  },
+  "deterministicProposal": null,
+  "evidenceBoundary": "Only generatorInput is model-visible. preflightInput and hidden oracle are excluded."
+}

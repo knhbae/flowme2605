@@ -1,0 +1,829 @@
+{
+  "validationSchemaVersion": "flowme-source-row-validation-v1",
+  "inputKind": "all_run_envelopes",
+  "laneId": "url-to-flow-source-row-v1",
+  "passed": false,
+  "summary": {
+    "documentCount": 4,
+    "outputCount": 12,
+    "passedOutputCount": 2,
+    "failedOutputCount": 10,
+    "errorCount": 112,
+    "warningCount": 0,
+    "receivedSourceRows": 16,
+    "exactlyOnceSourceRows": 16,
+    "sourceRowAccountingRate": 1
+  },
+  "documents": [
+    {
+      "file": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/runs/round-1/batch-a.json",
+      "inputKind": "run_envelope",
+      "runId": "source-row-round-1-batch-a",
+      "round": "round-1",
+      "promptVersion": "url-to-flow-prompt-v1.0",
+      "passed": false,
+      "results": [
+        {
+          "caseId": "case-01",
+          "passed": false,
+          "errors": [
+            {
+              "code": "schema_required",
+              "path": "$.status.generationState"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.status.outcome"
+            },
+            {
+              "code": "schema_additional_property",
+              "path": "$.status.proposal"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[0].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[1].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[2].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[3].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[4].reason"
+            },
+            {
+              "code": "schema_type",
+              "path": "$.reviewHints.humanReviewRequired",
+              "expected": [
+                "array"
+              ],
+              "actual": "boolean"
+            },
+            {
+              "code": "invalid_status_pair",
+              "path": "$.status",
+              "detail": {
+                "proposal": "complete",
+                "readiness": null,
+                "errorCode": null
+              }
+            },
+            {
+              "code": "calendar_projection_without_literal_schedule",
+              "path": "$.projectionPlan"
+            }
+          ],
+          "warnings": [],
+          "metrics": {
+            "receivedRows": 2,
+            "exactlyOnceRows": 2,
+            "itemCount": 2,
+            "omittedRowCount": 0,
+            "scheduleCandidateCount": 0,
+            "positiveProposal": false,
+            "deterministicNegative": false
+          },
+          "proposalFingerprint": "f5e60dc04eef3cc4490cb401ce0a66da52bd69b78057f52eefb4b0c36f5d09aa",
+          "proposalDiagnosticsSha256": "dbf7400df34c1b683bcaa4ed5049a2373b5e1186693e1d3ea96646d7e290eb18"
+        },
+        {
+          "caseId": "case-02",
+          "passed": false,
+          "errors": [
+            {
+              "code": "schema_required",
+              "path": "$.status.generationState"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.status.outcome"
+            },
+            {
+              "code": "schema_additional_property",
+              "path": "$.status.proposal"
+            },
+            {
+              "code": "schema_one_of",
+              "path": "$.proposal.items[0].scheduleCandidate",
+              "alternatives": [
+                [
+                  {
+                    "code": "schema_type",
+                    "path": "$.proposal.items[0].scheduleCandidate",
+                    "expected": [
+                      "null"
+                    ],
+                    "actual": "object"
+                  }
+                ],
+                [
+                  {
+                    "code": "schema_required",
+                    "path": "$.proposal.items[0].scheduleCandidate.sourceRowIds"
+                  }
+                ]
+              ]
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[0].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[1].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[2].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[3].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[4].reason"
+            },
+            {
+              "code": "schema_type",
+              "path": "$.reviewHints.humanReviewRequired",
+              "expected": [
+                "array"
+              ],
+              "actual": "boolean"
+            },
+            {
+              "code": "invalid_status_pair",
+              "path": "$.status",
+              "detail": {
+                "proposal": "complete",
+                "readiness": null,
+                "errorCode": null
+              }
+            },
+            {
+              "code": "schedule_without_source_rows",
+              "path": "$.proposal.items[0].scheduleCandidate"
+            },
+            {
+              "code": "schedule_source_text_not_literal",
+              "path": "$.proposal.items[0].scheduleCandidate.sourceText"
+            }
+          ],
+          "warnings": [],
+          "metrics": {
+            "receivedRows": 1,
+            "exactlyOnceRows": 1,
+            "itemCount": 1,
+            "omittedRowCount": 0,
+            "scheduleCandidateCount": 1,
+            "positiveProposal": false,
+            "deterministicNegative": false
+          },
+          "proposalFingerprint": "5e668a19319e58ff3ee35964ef245bf2d24e8c45c0f494e275c99a48a499594e",
+          "proposalDiagnosticsSha256": "4f0daf5d8d2acb18e6ae19c229d3111bd5886976e22192ec3368f9f473914a18"
+        },
+        {
+          "caseId": "case-03",
+          "passed": false,
+          "errors": [
+            {
+              "code": "schema_required",
+              "path": "$.status.generationState"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.status.outcome"
+            },
+            {
+              "code": "schema_additional_property",
+              "path": "$.status.proposal"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[0].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[1].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[2].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[3].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[4].reason"
+            },
+            {
+              "code": "schema_type",
+              "path": "$.reviewHints.humanReviewRequired",
+              "expected": [
+                "array"
+              ],
+              "actual": "boolean"
+            },
+            {
+              "code": "invalid_status_pair",
+              "path": "$.status",
+              "detail": {
+                "proposal": "complete",
+                "readiness": null,
+                "errorCode": null
+              }
+            },
+            {
+              "code": "calendar_projection_without_literal_schedule",
+              "path": "$.projectionPlan"
+            }
+          ],
+          "warnings": [],
+          "metrics": {
+            "receivedRows": 2,
+            "exactlyOnceRows": 2,
+            "itemCount": 2,
+            "omittedRowCount": 0,
+            "scheduleCandidateCount": 0,
+            "positiveProposal": false,
+            "deterministicNegative": false
+          },
+          "proposalFingerprint": "077b0ef849e4a616931af470d78afb5b045bda65a549e6a874e8e8491a1fdf96",
+          "proposalDiagnosticsSha256": "dbf7400df34c1b683bcaa4ed5049a2373b5e1186693e1d3ea96646d7e290eb18"
+        },
+        {
+          "caseId": "case-04",
+          "passed": false,
+          "errors": [
+            {
+              "code": "schema_required",
+              "path": "$.status.generationState"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.status.outcome"
+            },
+            {
+              "code": "schema_additional_property",
+              "path": "$.status.proposal"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[0].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[1].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[2].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[3].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[4].reason"
+            },
+            {
+              "code": "schema_type",
+              "path": "$.reviewHints.humanReviewRequired",
+              "expected": [
+                "array"
+              ],
+              "actual": "boolean"
+            },
+            {
+              "code": "invalid_status_pair",
+              "path": "$.status",
+              "detail": {
+                "proposal": "complete",
+                "readiness": null,
+                "errorCode": null
+              }
+            },
+            {
+              "code": "calendar_projection_without_literal_schedule",
+              "path": "$.projectionPlan"
+            }
+          ],
+          "warnings": [],
+          "metrics": {
+            "receivedRows": 2,
+            "exactlyOnceRows": 2,
+            "itemCount": 2,
+            "omittedRowCount": 0,
+            "scheduleCandidateCount": 0,
+            "positiveProposal": false,
+            "deterministicNegative": false
+          },
+          "proposalFingerprint": "5df5cf75f204cfd6eb62bc51816e2a9baffca5f2e458122af96ee59228985353",
+          "proposalDiagnosticsSha256": "dbf7400df34c1b683bcaa4ed5049a2373b5e1186693e1d3ea96646d7e290eb18"
+        }
+      ]
+    },
+    {
+      "file": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/runs/round-1/batch-b.json",
+      "inputKind": "run_envelope",
+      "runId": "source-row-round-1-batch-b",
+      "round": "round-1",
+      "promptVersion": "url-to-flow-prompt-v1.0",
+      "passed": false,
+      "results": [
+        {
+          "caseId": "case-05",
+          "passed": false,
+          "errors": [
+            {
+              "code": "schema_required",
+              "path": "$.status.generationState"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.status.outcome"
+            },
+            {
+              "code": "schema_additional_property",
+              "path": "$.status.proposal"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[0].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[1].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[2].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[3].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[4].reason"
+            },
+            {
+              "code": "schema_type",
+              "path": "$.reviewHints.humanReviewRequired",
+              "expected": [
+                "array"
+              ],
+              "actual": "boolean"
+            },
+            {
+              "code": "invalid_status_pair",
+              "path": "$.status",
+              "detail": {
+                "proposal": "complete",
+                "readiness": null,
+                "errorCode": null
+              }
+            },
+            {
+              "code": "calendar_projection_without_literal_schedule",
+              "path": "$.projectionPlan"
+            }
+          ],
+          "warnings": [],
+          "metrics": {
+            "receivedRows": 2,
+            "exactlyOnceRows": 2,
+            "itemCount": 2,
+            "omittedRowCount": 0,
+            "scheduleCandidateCount": 0,
+            "positiveProposal": false,
+            "deterministicNegative": false
+          },
+          "proposalFingerprint": "275a1b4f0c66409e2ab5b36bd2e61847015e96e9575198bae34120cb37085785",
+          "proposalDiagnosticsSha256": "dbf7400df34c1b683bcaa4ed5049a2373b5e1186693e1d3ea96646d7e290eb18"
+        },
+        {
+          "caseId": "case-06",
+          "passed": false,
+          "errors": [
+            {
+              "code": "schema_required",
+              "path": "$.status.generationState"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.status.outcome"
+            },
+            {
+              "code": "schema_additional_property",
+              "path": "$.status.proposal"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[0].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[1].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[2].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[3].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[4].reason"
+            },
+            {
+              "code": "schema_type",
+              "path": "$.reviewHints.humanReviewRequired",
+              "expected": [
+                "array"
+              ],
+              "actual": "boolean"
+            },
+            {
+              "code": "invalid_status_pair",
+              "path": "$.status",
+              "detail": {
+                "proposal": "complete",
+                "readiness": null,
+                "errorCode": null
+              }
+            },
+            {
+              "code": "calendar_projection_without_literal_schedule",
+              "path": "$.projectionPlan"
+            }
+          ],
+          "warnings": [],
+          "metrics": {
+            "receivedRows": 1,
+            "exactlyOnceRows": 1,
+            "itemCount": 1,
+            "omittedRowCount": 0,
+            "scheduleCandidateCount": 0,
+            "positiveProposal": false,
+            "deterministicNegative": false
+          },
+          "proposalFingerprint": "4ead2de03b4e0386c2a20249e1fc71528071f6b92d00affe55af96aab4a4c590",
+          "proposalDiagnosticsSha256": "2270a38d6b4d2b67873f3f5b7ccfef5fbb3a5f7bd995574587c47eb1ae7d4a25"
+        },
+        {
+          "caseId": "case-07",
+          "passed": false,
+          "errors": [
+            {
+              "code": "schema_required",
+              "path": "$.status.generationState"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.status.outcome"
+            },
+            {
+              "code": "schema_additional_property",
+              "path": "$.status.proposal"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[0].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[1].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[2].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[3].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[4].reason"
+            },
+            {
+              "code": "schema_type",
+              "path": "$.reviewHints.humanReviewRequired",
+              "expected": [
+                "array"
+              ],
+              "actual": "boolean"
+            },
+            {
+              "code": "invalid_status_pair",
+              "path": "$.status",
+              "detail": {
+                "proposal": "complete",
+                "readiness": null,
+                "errorCode": null
+              }
+            },
+            {
+              "code": "calendar_projection_without_literal_schedule",
+              "path": "$.projectionPlan"
+            }
+          ],
+          "warnings": [],
+          "metrics": {
+            "receivedRows": 1,
+            "exactlyOnceRows": 1,
+            "itemCount": 1,
+            "omittedRowCount": 0,
+            "scheduleCandidateCount": 0,
+            "positiveProposal": false,
+            "deterministicNegative": false
+          },
+          "proposalFingerprint": "2086fc315cbae22b9e0304759c3728a573bffe95be089a49019265c42298fe75",
+          "proposalDiagnosticsSha256": "2270a38d6b4d2b67873f3f5b7ccfef5fbb3a5f7bd995574587c47eb1ae7d4a25"
+        },
+        {
+          "caseId": "case-08",
+          "passed": false,
+          "errors": [
+            {
+              "code": "schema_required",
+              "path": "$.status.generationState"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.status.outcome"
+            },
+            {
+              "code": "schema_additional_property",
+              "path": "$.status.proposal"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[0].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[1].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[2].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[3].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[4].reason"
+            },
+            {
+              "code": "schema_type",
+              "path": "$.reviewHints.humanReviewRequired",
+              "expected": [
+                "array"
+              ],
+              "actual": "boolean"
+            },
+            {
+              "code": "invalid_status_pair",
+              "path": "$.status",
+              "detail": {
+                "proposal": "complete",
+                "readiness": null,
+                "errorCode": null
+              }
+            },
+            {
+              "code": "calendar_projection_without_literal_schedule",
+              "path": "$.projectionPlan"
+            }
+          ],
+          "warnings": [],
+          "metrics": {
+            "receivedRows": 1,
+            "exactlyOnceRows": 1,
+            "itemCount": 1,
+            "omittedRowCount": 0,
+            "scheduleCandidateCount": 0,
+            "positiveProposal": false,
+            "deterministicNegative": false
+          },
+          "proposalFingerprint": "cd45029e730fca0f5f687f8b3885ae236ef28837a5f32ccab0848d8224d7f7f8",
+          "proposalDiagnosticsSha256": "2270a38d6b4d2b67873f3f5b7ccfef5fbb3a5f7bd995574587c47eb1ae7d4a25"
+        }
+      ]
+    },
+    {
+      "file": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/runs/round-1/batch-c-positive.json",
+      "inputKind": "run_envelope",
+      "runId": "source-row-round-1-batch-c-positive",
+      "round": "round-1",
+      "promptVersion": "url-to-flow-prompt-v1.0",
+      "passed": false,
+      "results": [
+        {
+          "caseId": "case-09",
+          "passed": false,
+          "errors": [
+            {
+              "code": "schema_required",
+              "path": "$.status.generationState"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.status.outcome"
+            },
+            {
+              "code": "schema_additional_property",
+              "path": "$.status.proposal"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[0].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[1].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[2].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[3].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[4].reason"
+            },
+            {
+              "code": "schema_type",
+              "path": "$.reviewHints.humanReviewRequired",
+              "expected": [
+                "array"
+              ],
+              "actual": "boolean"
+            },
+            {
+              "code": "invalid_status_pair",
+              "path": "$.status",
+              "detail": {
+                "proposal": "complete",
+                "readiness": null,
+                "errorCode": null
+              }
+            },
+            {
+              "code": "calendar_projection_without_literal_schedule",
+              "path": "$.projectionPlan"
+            }
+          ],
+          "warnings": [],
+          "metrics": {
+            "receivedRows": 2,
+            "exactlyOnceRows": 2,
+            "itemCount": 2,
+            "omittedRowCount": 0,
+            "scheduleCandidateCount": 0,
+            "positiveProposal": false,
+            "deterministicNegative": false
+          },
+          "proposalFingerprint": "2937811aac5403a1bcfc7513db033c0e3e148d975e1c4fdc3abf077e4f4d44b6",
+          "proposalDiagnosticsSha256": "dbf7400df34c1b683bcaa4ed5049a2373b5e1186693e1d3ea96646d7e290eb18"
+        },
+        {
+          "caseId": "case-10",
+          "passed": false,
+          "errors": [
+            {
+              "code": "schema_required",
+              "path": "$.status.generationState"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.status.outcome"
+            },
+            {
+              "code": "schema_additional_property",
+              "path": "$.status.proposal"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[0].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[1].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[2].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[3].reason"
+            },
+            {
+              "code": "schema_required",
+              "path": "$.projectionPlan[4].reason"
+            },
+            {
+              "code": "schema_type",
+              "path": "$.reviewHints.humanReviewRequired",
+              "expected": [
+                "array"
+              ],
+              "actual": "boolean"
+            },
+            {
+              "code": "invalid_status_pair",
+              "path": "$.status",
+              "detail": {
+                "proposal": "complete",
+                "readiness": null,
+                "errorCode": null
+              }
+            },
+            {
+              "code": "calendar_projection_without_literal_schedule",
+              "path": "$.projectionPlan"
+            }
+          ],
+          "warnings": [],
+          "metrics": {
+            "receivedRows": 2,
+            "exactlyOnceRows": 2,
+            "itemCount": 1,
+            "omittedRowCount": 1,
+            "scheduleCandidateCount": 0,
+            "positiveProposal": false,
+            "deterministicNegative": false
+          },
+          "proposalFingerprint": "8802b3d5cb9a0d6173fc048203ccd5201ad83b23704bc4775884491604a44ec3",
+          "proposalDiagnosticsSha256": "447590fb36bfbed0baabfd85ffa821c4ea172f48406ee7d3b643a620ebd67d12"
+        }
+      ]
+    },
+    {
+      "file": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/runs/round-1/batch-d-negative.json",
+      "inputKind": "run_envelope",
+      "runId": "source-row-round-1-batch-d-negative",
+      "round": "round-1",
+      "promptVersion": "url-to-flow-prompt-v1.0",
+      "passed": true,
+      "results": [
+        {
+          "caseId": "case-11",
+          "passed": true,
+          "errors": [],
+          "warnings": [],
+          "metrics": {
+            "receivedRows": 0,
+            "exactlyOnceRows": 0,
+            "itemCount": 0,
+            "omittedRowCount": 0,
+            "scheduleCandidateCount": 0,
+            "positiveProposal": false,
+            "deterministicNegative": true
+          },
+          "proposalFingerprint": "b2ebba55101f1c7eb8b6f1b15fb7b2635541f8948248852382f565531f3fbf42",
+          "proposalDiagnosticsSha256": "610e08e0c76e6966d31c2025eda8bc4644d940269618f456172d15b8213335c5"
+        },
+        {
+          "caseId": "case-12",
+          "passed": true,
+          "errors": [],
+          "warnings": [],
+          "metrics": {
+            "receivedRows": 0,
+            "exactlyOnceRows": 0,
+            "itemCount": 0,
+            "omittedRowCount": 0,
+            "scheduleCandidateCount": 0,
+            "positiveProposal": false,
+            "deterministicNegative": true
+          },
+          "proposalFingerprint": "c4e8ad534ddc8248d25f873ebee8529693607f79967a8d69614a5377ba8414a4",
+          "proposalDiagnosticsSha256": "610e08e0c76e6966d31c2025eda8bc4644d940269618f456172d15b8213335c5"
+        }
+      ]
+    }
+  ]
+}

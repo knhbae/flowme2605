@@ -1,0 +1,70 @@
+{
+  "rulesVersion": "flowme-row-license-ko-v3.0",
+  "ownership": {
+    "sourceRowExtraction": "upstream_extractor_or_llm",
+    "memoAndScheduleCandidates": "parser_or_llm",
+    "titleIntentCompletion": "deterministic_row_license_compiler",
+    "artifactProjection": "deterministic_row_license_compiler",
+    "requiredReviewMarkers": "deterministic_row_license_compiler",
+    "savePublish": "human_only"
+  },
+  "checkLexicon": {
+    "priority": ["decision", "explicit_action", "inspection", "noun_label"],
+    "decisionTerms": ["판단", "결정", "선택", "보류"],
+    "explicitActionTerms": ["준비", "신청", "등록", "방문", "청소", "제출", "수령", "갱신"],
+    "inspectionTerms": ["확인", "점검", "검토"]
+  },
+  "dateLexicon": {
+    "explicitActionTerms": ["방문", "신청", "제출", "예약", "참석", "수령", "갱신", "검사하기", "진행"]
+  },
+  "rowTypeRules": {
+    "check": {
+      "decision": { "titleOp": "keep", "intent": "decide", "completionMode": "decision" },
+      "explicit_action": { "titleOp": "keep", "intent": "act", "completionMode": "check" },
+      "inspection": { "titleOp": "keep", "intent": "inspect", "completionMode": "check" },
+      "noun_label": { "titleOp": "append_confirm", "intent": "inspect", "completionMode": "check" }
+    },
+    "procedure": { "titleOp": "keep", "intent": "act", "completionMode": "check" },
+    "table_row": { "titleOp": "append_complete", "intent": "act", "completionMode": "check" },
+    "resource": { "titleOp": "append_open", "intent": "open_resource", "completionMode": "check" },
+    "date": {
+      "explicit_action": { "titleOp": "keep", "intent": "act", "completionMode": "check" },
+      "value_label": { "titleOp": "append_confirm", "intent": "inspect", "completionMode": "check" }
+    },
+    "reference": { "titleOp": null, "intent": null, "completionMode": null }
+  },
+  "titleOperations": {
+    "keep": { "kind": "copy", "suffix": "" },
+    "append_confirm": { "kind": "append", "suffix": " 확인하기" },
+    "append_complete": { "kind": "append", "suffix": " 완료하기" },
+    "append_open": { "kind": "append", "suffix": " 열어보기" }
+  },
+  "schedulePatterns": [
+    {
+      "kind": "recurrence",
+      "pattern": "(?:\\d+\\s*(?:일|주|개월|달|년)\\s*(?:에\\s*)?(?:한\\s*번|마다|간격|주기|회)|매일|매주|매월|매년|격주|격월)"
+    },
+    {
+      "kind": "offset",
+      "pattern": "D[+-]\\d+"
+    },
+    {
+      "kind": "date",
+      "pattern": "(?:20\\d{2}[./-]\\d{1,2}[./-]\\d{1,2}|\\d{1,2}월\\s*\\d{1,2}일)"
+    }
+  ],
+  "artifactPolicy": {
+    "literalSchedule": "calendar",
+    "allTableRows": "sheet",
+    "oneResource": "memo",
+    "multipleResources": "checklist",
+    "oneOther": "todo",
+    "multipleOther": "checklist"
+  },
+  "reviewMarkerPolicy": {
+    "resource": "resource_contents_unseen",
+    "dateWithoutValue": "missing_date_value",
+    "supportingSource": "supporting_source_not_structural"
+  },
+  "unknownRuleDisposition": "hold_review_required"
+}

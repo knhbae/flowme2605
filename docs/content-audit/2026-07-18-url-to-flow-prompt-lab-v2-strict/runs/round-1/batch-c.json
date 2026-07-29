@@ -1,0 +1,229 @@
+{
+  "runEnvelopeVersion": "flowme-url-to-flow-strict-run-v2",
+  "laneId": "url-to-flow-source-row-v2-strict",
+  "runId": "strict-v2-round-1-batch-c",
+  "round": "round-1",
+  "batchRef": "batch-c",
+  "promptVersion": "url-to-flow-prompt-v2.0",
+  "evidenceClass": "current_session_model_proxy",
+  "protocolState": {
+    "revisionClass": null,
+    "outputEditedByController": false,
+    "externalApiUsed": false,
+    "humanReview": false,
+    "assemblyPassed": true
+  },
+  "assemblyIssues": [],
+  "bindings": {
+    "baseFreezeSha256": "edf50cd86d642cc12c7221bcde518b7b627593524b72f37d239cc4588b6baa92",
+    "revisionFreezeSha256": null,
+    "protocolSha256": "5de1de52e326cec98cb6f4f948326b9fb23b103035a9c7f9ccf6325821ddc610",
+    "caseSetSha256": "3b02e4fbcaf8ee0d79d0fa5937b9e30204dabecdeff5f6c3a4bce67804cc0984",
+    "caseSetSemanticSha256": "f36b4f733e83be8d1f3a2aea029e17b0168f20f0d0cbb70b7318238d5528cfac",
+    "opaqueMapSha256": "751465ef81750a97e609b7fdbd669c261907b2a855a4b287a8af13a4bbbce5aa",
+    "promptTemplateSha256": "0cc3d79b55b693f3e33e136f538e5a050f324fe4d7655ef64a76e4f05a11b185",
+    "schemaSha256": "afbf04b27450c0beca79b1f402cc42dab451551f068cf50b46d27d12152fa957",
+    "rubricSha256": "9cfd2d94247ac176528d3d0fa9d9aeb0d0d885770e6e73f53b9454780677c83a",
+    "packetManifestSha256": "05fe774668056a0068c3e564e696ac4f3bf330a40c3dea9edc2e9d0d9861d870",
+    "taskPayloadManifestSha256": "13dcb53f705452941ad29b197a78552662b525967418b05aa86011f5ea1e20a5",
+    "exactTaskPayloadSha256": "a834d504fbb9a9fe1a029b4d109fc73bdbcb4a224d9c7ea90302649621a857fc",
+    "defectSelectionSha256": null,
+    "round2ReviewValidationSha256": null
+  },
+  "executor": {
+    "agentTaskId": "/root/strict_r1_gen_c",
+    "taskName": "strict_r1_gen_c",
+    "forkTurns": "none",
+    "freshContextMethod": "spawn_agent_fork_none"
+  },
+  "measurement": {
+    "provider": null,
+    "model": null,
+    "tier": null,
+    "sampling": null,
+    "inputTokens": null,
+    "outputTokens": null,
+    "latencyMs": null,
+    "cost": null,
+    "currency": null
+  },
+  "counts": {
+    "pipelineCaseCount": 4,
+    "modelInputCaseCount": 2,
+    "modelResultCount": 2,
+    "deterministicCaseCount": 2,
+    "outputCount": 4
+  },
+  "rawResponseSource": "docs/content-audit/2026-07-18-url-to-flow-prompt-lab-v2-strict/raw/round-1/batch-c.txt",
+  "rawResponse": "[{\"schemaVersion\":\"flowme-semantic-proposal-v2\",\"promptVersion\":\"url-to-flow-prompt-v2.0\",\"requestRef\":\"req-73bbb3f0f9790d57\",\"sampleRef\":\"smp-5f8cdade595023d8\",\"result\":{\"state\":\"proposal\",\"reasonCode\":null,\"disposition\":\"review\",\"primaryArtifact\":\"checklist\"},\"items\":[{\"itemRef\":\"item-01\",\"sourceRowRefs\":[\"row-35118ebced071604\"],\"title\":\"Day 1 prompt 열어보기\",\"intent\":\"open_resource\",\"completionMode\":\"check\",\"memo\":null,\"scheduleEvidence\":null},{\"itemRef\":\"item-02\",\"sourceRowRefs\":[\"row-98d93b3c2b98b887\"],\"title\":\"Day 2 prompt 열어보기\",\"intent\":\"open_resource\",\"completionMode\":\"check\",\"memo\":null,\"scheduleEvidence\":null}],\"omittedRows\":[],\"projections\":[{\"target\":\"checklist\",\"itemRefs\":[\"item-01\",\"item-02\"]}],\"review\":{\"uncertaintyCodes\":[\"resource_contents_unseen\"],\"humanCheckRowRefs\":[\"row-35118ebced071604\",\"row-98d93b3c2b98b887\"]}},{\"schemaVersion\":\"flowme-semantic-proposal-v2\",\"promptVersion\":\"url-to-flow-prompt-v2.0\",\"requestRef\":\"req-f39c29affaac26db\",\"sampleRef\":\"smp-cca0262a42e836c9\",\"result\":{\"state\":\"proposal\",\"reasonCode\":null,\"disposition\":\"review\",\"primaryArtifact\":\"todo\"},\"items\":[{\"itemRef\":\"item-01\",\"sourceRowRefs\":[\"row-4132ffef2e290ce3\"],\"title\":\"정기검사 유효기간 확인하기\",\"intent\":\"inspect\",\"completionMode\":\"check\",\"memo\":null,\"scheduleEvidence\":null}],\"omittedRows\":[{\"sourceRowRef\":\"row-fc5caae6258cde3c\",\"reasonCode\":\"supporting_source_boundary\"}],\"projections\":[{\"target\":\"todo\",\"itemRefs\":[\"item-01\"]}],\"review\":{\"uncertaintyCodes\":[\"missing_date_value\",\"supporting_source_not_structural\"],\"humanCheckRowRefs\":[\"row-4132ffef2e290ce3\",\"row-fc5caae6258cde3c\"]}}]\n",
+  "rawResponseSha256": "fd5767444f4f75678602e1991cc587c29e2eb1e3a418857e046f2c1d6b586a8d",
+  "parsedModelResultsSha256": "991c902d7c8c3fc5210626effe7b9846c4c8d64c27dbf899883de6b581a929dc",
+  "outputs": [
+    {
+      "auditCaseId": "case-09",
+      "sampleRef": "smp-5f8cdade595023d8",
+      "modelInvoked": true,
+      "packetSha256": "290f4461f10dc2a0b7c75954d735123fb8e9853750d7bc0ae3133f8e2bec6428",
+      "proposal": {
+        "schemaVersion": "flowme-semantic-proposal-v2",
+        "promptVersion": "url-to-flow-prompt-v2.0",
+        "requestRef": "req-73bbb3f0f9790d57",
+        "sampleRef": "smp-5f8cdade595023d8",
+        "result": {
+          "state": "proposal",
+          "reasonCode": null,
+          "disposition": "review",
+          "primaryArtifact": "checklist"
+        },
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRefs": [
+              "row-35118ebced071604"
+            ],
+            "title": "Day 1 prompt 열어보기",
+            "intent": "open_resource",
+            "completionMode": "check",
+            "memo": null,
+            "scheduleEvidence": null
+          },
+          {
+            "itemRef": "item-02",
+            "sourceRowRefs": [
+              "row-98d93b3c2b98b887"
+            ],
+            "title": "Day 2 prompt 열어보기",
+            "intent": "open_resource",
+            "completionMode": "check",
+            "memo": null,
+            "scheduleEvidence": null
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "checklist",
+            "itemRefs": [
+              "item-01",
+              "item-02"
+            ]
+          }
+        ],
+        "review": {
+          "uncertaintyCodes": [
+            "resource_contents_unseen"
+          ],
+          "humanCheckRowRefs": [
+            "row-35118ebced071604",
+            "row-98d93b3c2b98b887"
+          ]
+        }
+      }
+    },
+    {
+      "auditCaseId": "case-10",
+      "sampleRef": "smp-cca0262a42e836c9",
+      "modelInvoked": true,
+      "packetSha256": "8a465a779bc7b15bb1ec0d5eae1eed6a189b0b657c5701a695d25ba3e0e6aa27",
+      "proposal": {
+        "schemaVersion": "flowme-semantic-proposal-v2",
+        "promptVersion": "url-to-flow-prompt-v2.0",
+        "requestRef": "req-f39c29affaac26db",
+        "sampleRef": "smp-cca0262a42e836c9",
+        "result": {
+          "state": "proposal",
+          "reasonCode": null,
+          "disposition": "review",
+          "primaryArtifact": "todo"
+        },
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRefs": [
+              "row-4132ffef2e290ce3"
+            ],
+            "title": "정기검사 유효기간 확인하기",
+            "intent": "inspect",
+            "completionMode": "check",
+            "memo": null,
+            "scheduleEvidence": null
+          }
+        ],
+        "omittedRows": [
+          {
+            "sourceRowRef": "row-fc5caae6258cde3c",
+            "reasonCode": "supporting_source_boundary"
+          }
+        ],
+        "projections": [
+          {
+            "target": "todo",
+            "itemRefs": [
+              "item-01"
+            ]
+          }
+        ],
+        "review": {
+          "uncertaintyCodes": [
+            "missing_date_value",
+            "supporting_source_not_structural"
+          ],
+          "humanCheckRowRefs": [
+            "row-4132ffef2e290ce3",
+            "row-fc5caae6258cde3c"
+          ]
+        }
+      }
+    },
+    {
+      "auditCaseId": "case-11",
+      "sampleRef": "smp-be187768e7d35239",
+      "modelInvoked": false,
+      "packetSha256": null,
+      "proposal": {
+        "schemaVersion": "flowme-semantic-proposal-v2",
+        "promptVersion": "deterministic-preflight-v2",
+        "requestRef": "req-935cdab44d068d22",
+        "sampleRef": "smp-be187768e7d35239",
+        "result": {
+          "state": "blocked",
+          "reasonCode": "missing_source_rows",
+          "disposition": "source_import_required",
+          "primaryArtifact": null
+        },
+        "items": [],
+        "omittedRows": [],
+        "projections": [],
+        "review": {
+          "uncertaintyCodes": [],
+          "humanCheckRowRefs": []
+        }
+      }
+    },
+    {
+      "auditCaseId": "case-12",
+      "sampleRef": "smp-e7fca6ff311df9c8",
+      "modelInvoked": false,
+      "packetSha256": null,
+      "proposal": {
+        "schemaVersion": "flowme-semantic-proposal-v2",
+        "promptVersion": "deterministic-preflight-v2",
+        "requestRef": "req-3a6ff75d3d3cabf6",
+        "sampleRef": "smp-e7fca6ff311df9c8",
+        "result": {
+          "state": "blocked",
+          "reasonCode": "locale_applicability_unverified",
+          "disposition": "hold",
+          "primaryArtifact": null
+        },
+        "items": [],
+        "omittedRows": [],
+        "projections": [],
+        "review": {
+          "uncertaintyCodes": [],
+          "humanCheckRowRefs": []
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "laneId": "url-to-flow-source-row-v1",
+  "caseSetVersion": "flowme-url-to-flow-source-row-cases-v1",
+  "promptVersion": "url-to-flow-prompt-v1.1",
+  "caseId": "case-03",
+  "requestId": "rq-c52f09e17b64",
+  "preflightInput": {
+    "targetLocale": "ko-KR",
+    "primary": {
+      "countryContext": "KR",
+      "riskClass": "low",
+      "accessStatus": "fetched",
+      "rightsStatus": "needs_review"
+    },
+    "sourceRowCount": 2
+  },
+  "preflightResult": {
+    "passed": true,
+    "modelInvoked": true,
+    "generationState": null,
+    "outcome": null,
+    "errorCode": null,
+    "recommendedDisposition": null,
+    "reasonCode": "preflight_passed"
+  },
+  "generatorInput": {
+    "requestId": "rq-c52f09e17b64",
+    "caseId": "case-03",
+    "maxItems": 7,
+    "sourceOwnership": {
+      "primarySourceId": "src-3e7a10c5b942",
+      "supportingSourceIds": []
+    },
+    "sourceRows": [
+      {
+        "sourceRowId": "row-d3018c5e74a2",
+        "sourceId": "src-3e7a10c5b942",
+        "rowType": "check",
+        "title": "여권",
+        "detail": null,
+        "order": 0
+      },
+      {
+        "sourceRowId": "row-8f25a6b19c40",
+        "sourceId": "src-3e7a10c5b942",
+        "rowType": "check",
+        "title": "데이터 유심",
+        "detail": null,
+        "order": 1
+      }
+    ]
+  },
+  "deterministicProposal": null,
+  "evidenceBoundary": "Only generatorInput is model-visible. preflightInput and hidden oracle are excluded."
+}

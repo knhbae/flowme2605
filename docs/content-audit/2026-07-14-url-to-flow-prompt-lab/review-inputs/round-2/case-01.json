@@ -1,16 +1,20 @@
 {
-  "reviewInputSchemaVersion": "flowme-url-to-flow-blind-review-input-v1",
+  "reviewInputSchemaVersion": "flowme-url-to-flow-blind-review-input-v2",
   "round": "round-2",
   "caseId": "case-01",
-  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
-  "expectationSetVersion": "flowme-url-to-flow-prompt-lab-expected-v1",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1.1",
   "promptVersion": "url-to-flow-prompt-v0.2",
   "proposalSchemaVersion": "flowme-semantic-proposal-v1",
   "rubric": {
-    "version": "flowme-url-to-flow-prompt-lab-review-rubric-v1",
+    "version": "flowme-url-to-flow-prompt-lab-review-rubric-v2",
     "reference": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-rubric.md"
   },
   "reviewResultTemplate": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-result-template.json",
+  "rawRun": {
+    "runFile": "docs/content-audit/2026-07-14-url-to-flow-prompt-lab/runs/round-2/batch-a.json",
+    "runId": "round-2-neutral-batch-a"
+  },
+  "proposalFingerprint": "sha256:d849c241cd7582606ac0ed231dba892b2e608504bbc91945208b0e296c62e8bc",
   "sourcePacket": {
     "caseId": "case-01",
     "requestId": "prompt-lab-v1-case-01",
@@ -54,84 +58,8 @@
       }
     ],
     "inputEvidenceRefs": [
-      "golden-fixtures-v1.json#gf-pos-01-d-day-timeline:source-only"
+      "prompt-lab-source:case-01"
     ]
-  },
-  "hiddenExpectation": {
-    "caseId": "case-01",
-    "fixtureId": "gf-pos-01-d-day-timeline",
-    "fixtureKind": "positive",
-    "fixtureShape": "d_day_timeline",
-    "name": "건강검진 D-7 타임라인",
-    "expectedStatus": {
-      "generationState": "proposal",
-      "outcome": "complete",
-      "readiness": null,
-      "errorCode": null,
-      "recommendedDisposition": "review"
-    },
-    "expectedConversion": {
-      "userNeed": "검진일 전에 필요한 확인을 끝내고 당일 방문을 놓치지 않는다.",
-      "planningPattern": "date_preparation",
-      "primaryArtifact": "hybrid",
-      "riskLevel": "medical_sensitive"
-    },
-    "expectedItems": [
-      {
-        "referenceItemId": "item-checkup-booking",
-        "title": "검진 대상과 예약 상태 확인하기",
-        "intent": "inspect",
-        "sourceRowIds": [
-          "row-checkup-booking"
-        ],
-        "completionMode": "check",
-        "doneWhen": "공식 조회에서 검진 대상과 예약 상태를 확인했다.",
-        "hasSchedule": true,
-        "canonicalSchedule": {
-          "mode": "anchor_offset",
-          "anchorFieldId": "field-checkup-date",
-          "dayOffset": -7,
-          "allDay": true
-        }
-      },
-      {
-        "referenceItemId": "item-checkup-visit",
-        "title": "검진기관 방문하기",
-        "intent": "act",
-        "sourceRowIds": [
-          "row-checkup-visit"
-        ],
-        "completionMode": "check",
-        "doneWhen": "예약한 검진기관 방문을 마쳤다.",
-        "hasSchedule": true,
-        "canonicalSchedule": {
-          "mode": "anchor_offset",
-          "anchorFieldId": "field-checkup-date",
-          "dayOffset": 0,
-          "allDay": true
-        }
-      }
-    ],
-    "expectedOmittedRows": [],
-    "accountingSourceRowIds": [
-      "row-checkup-booking",
-      "row-checkup-visit"
-    ],
-    "expectedProjections": [
-      "calendar:ics",
-      "checklist:markdown",
-      "memo:markdown"
-    ],
-    "forbiddenProjections": [
-      "sheet:xlsx",
-      "todo:markdown"
-    ],
-    "referenceReview": {
-      "readiness": "ready_second_wave",
-      "hardFails": [],
-      "rightsDecision": "공식 안내의 행위·일정 요약과 링크만 사용한다.",
-      "riskDecision": "medical_sensitive이며 결과 해석과 진료 판단은 export에도 포함하지 않는다."
-    }
   },
   "proposal": {
     "proposalSchemaVersion": "flowme-semantic-proposal-v1",
@@ -156,11 +84,11 @@
       "untrustedInstructionDetected": false
     },
     "conversionDecision": {
-      "userNeed": "검진 대상 및 예약을 확인하고 검진기관 방문을 마친다.",
+      "userNeed": "검진 대상과 예약을 확인하고 검진기관 방문을 마친다.",
       "lifeArea": "health_fitness",
       "planningPattern": "date_preparation",
-      "primaryArtifact": "checklist",
-      "contentShape": "검진 확인과 방문 체크리스트"
+      "primaryArtifact": "hybrid",
+      "contentShape": "검진 전 확인과 당일 방문을 잇는 2단계 준비"
     },
     "proposal": {
       "proposalTitle": "건강검진 확인과 방문",
@@ -174,7 +102,7 @@
           ],
           "completion": {
             "mode": "check",
-            "doneWhen": "검진 대상 및 예약 확인을 마친 상태"
+            "doneWhen": "검진 대상 및 예약 확인을 마쳤다."
           },
           "memoCandidate": null,
           "groupingCandidate": null,
@@ -189,7 +117,7 @@
           ],
           "completion": {
             "mode": "check",
-            "doneWhen": "검진기관 방문을 마친 상태"
+            "doneWhen": "검진기관 방문을 마쳤다."
           },
           "memoCandidate": null,
           "groupingCandidate": null,
@@ -203,25 +131,28 @@
       {
         "target": "checklist",
         "applicability": "applicable",
-        "reason": "두 SourceRow를 각각 확인 가능한 항목으로 유지한다."
+        "reason": "두 SourceRow를 독립적으로 확인 가능한 항목으로 유지한다."
       },
       {
         "target": "calendar",
         "applicability": "blocked",
-        "reason": "SourceRow에 실제 날짜 표현이 없어 일정으로 배치할 수 없다."
+        "reason": "검진기관 방문 날짜가 SourceRow에 없어 일정을 만들 수 없다."
       }
     ],
     "reviewHints": {
       "recommendedDisposition": "review",
-      "uncertainties": [],
+      "uncertainties": [
+        "검진기관 방문 날짜가 SourceRow에 제공되지 않음"
+      ],
       "hardFailCodes": [],
       "humanReviewRequired": [
-        "의료 민감 정보가 포함된 Flow이므로 사람 검토가 필요하다."
+        "의료 민감 정보의 적용 범위 검토"
       ]
     }
   },
   "validator": {
-    "passed": null,
-    "hardFailCodes": []
+    "validatorVersion": "flowme-url-to-flow-prompt-lab-validator-v1",
+    "passed": true,
+    "codes": []
   }
 }

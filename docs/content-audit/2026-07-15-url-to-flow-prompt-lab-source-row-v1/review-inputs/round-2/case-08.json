@@ -1,0 +1,114 @@
+{
+  "reviewInputVersion": "flowme-source-row-blind-review-input-v1",
+  "laneId": "url-to-flow-source-row-v1",
+  "round": "round-2",
+  "caseId": "case-08",
+  "positiveCase": true,
+  "sourcePacket": {
+    "requestId": "rq-e68c25a094b7",
+    "caseId": "case-08",
+    "maxItems": 7,
+    "sourceOwnership": {
+      "primarySourceId": "src-e1096c3a75b4",
+      "supportingSourceIds": []
+    },
+    "sourceRows": [
+      {
+        "sourceRowId": "row-f51d309b7c24",
+        "sourceId": "src-e1096c3a75b4",
+        "rowType": "check",
+        "title": "예약과 문진표 준비",
+        "detail": null,
+        "order": 0
+      }
+    ]
+  },
+  "deterministicNegativeBoundary": null,
+  "proposal": {
+    "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+    "promptVersion": "url-to-flow-prompt-v1.1",
+    "requestId": "rq-e68c25a094b7",
+    "caseId": "case-08",
+    "status": {
+      "generationState": "proposal",
+      "outcome": "complete",
+      "readiness": null,
+      "errorCode": null
+    },
+    "sourceAssessment": {
+      "access": "readable",
+      "sourceShape": "date_preparation",
+      "primarySourceId": "src-e1096c3a75b4",
+      "supportingSourceIds": [],
+      "receivedSourceRowIds": [
+        "row-f51d309b7c24"
+      ],
+      "untrustedInstructionDetected": false
+    },
+    "conversionDecision": {
+      "userNeed": "예약과 문진표를 준비한다.",
+      "lifeArea": "health_fitness",
+      "planningPattern": "date_preparation",
+      "primaryArtifact": "checklist",
+      "contentShape": "예약과 문진표 준비 항목 1개"
+    },
+    "proposal": {
+      "proposalTitle": "예약과 문진표 준비",
+      "items": [
+        {
+          "proposalId": "proposal-case-08-01",
+          "title": "예약과 문진표 준비",
+          "intent": "act",
+          "sourceRowIds": [
+            "row-f51d309b7c24"
+          ],
+          "completion": {
+            "mode": "check",
+            "doneWhen": "예약과 문진표 준비를 마쳤을 때"
+          },
+          "memoCandidate": null,
+          "groupingCandidate": null,
+          "scheduleCandidate": null
+        }
+      ],
+      "omittedRows": [],
+      "incompleteReason": null
+    },
+    "projectionPlan": [
+      {
+        "target": "checklist",
+        "applicability": "applicable",
+        "reason": "예약과 문진표 준비 항목을 체크 형태로 실행한다."
+      }
+    ],
+    "reviewHints": {
+      "recommendedDisposition": "review",
+      "uncertainties": [],
+      "hardFailCodes": [],
+      "humanReviewRequired": []
+    }
+  },
+  "proposalFingerprint": "5e2f8f61189a4f0350cdb5b400b918570df4a481e2962119c4e208dab5c9e4f0",
+  "deterministicValidation": {
+    "passed": true,
+    "codes": [],
+    "sourceRowAccounting": true
+  },
+  "rubricPath": "docs/specs/2026-07-15-url-to-flow-prompt-lab-source-row-v1/review-rubric.md",
+  "evidenceBoundary": {
+    "allowed": [
+      "this sourcePacket",
+      "this proposal",
+      "this proposalFingerprint",
+      "this deterministicValidation",
+      "the linked blind rubric"
+    ],
+    "forbidden": [
+      "canonical expectation or opaque ID mapping",
+      "source title URL publisher or preflight metadata",
+      "legacy or prior-round output and review",
+      "provider model tier timing token or cost",
+      "other reviewer conclusions"
+    ]
+  }
+}

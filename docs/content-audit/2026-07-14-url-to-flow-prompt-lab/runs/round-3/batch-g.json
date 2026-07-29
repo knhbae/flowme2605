@@ -1,14 +1,14 @@
 {
   "runSchemaVersion": "flowme-url-to-flow-prompt-lab-run-v1",
-  "runId": "round-3-batch-g",
+  "runId": "round-3-neutral-batch-g",
   "promptVersion": "url-to-flow-prompt-v0.2",
-  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1.1",
   "proposalSchemaVersion": "flowme-semantic-proposal-v1",
   "modelEvidence": {
-    "provider": "codex-subagent-runtime",
-    "model": "codex-subagent-runtime",
+    "provider": "provider-neutral",
+    "model": "not_available",
     "modelTier": "unclassified",
-    "evidenceKind": "in_session_same_model"
+    "evidenceKind": "independent_rerun"
   },
   "timing": {
     "startedAt": null,
@@ -51,14 +51,14 @@
         "untrustedInstructionDetected": false
       },
       "conversionDecision": {
-        "userNeed": "검진 대상과 예약을 확인하고 검진기관 방문을 완료한다.",
+        "userNeed": "검진일 전에 필요한 확인을 끝내고 당일 방문을 놓치지 않는다.",
         "lifeArea": "health_fitness",
         "planningPattern": "date_preparation",
         "primaryArtifact": "checklist",
         "contentShape": "검진 전 확인과 방문 체크리스트"
       },
       "proposal": {
-        "proposalTitle": "건강검진 확인 및 방문",
+        "proposalTitle": "건강검진 확인과 방문",
         "items": [
           {
             "proposalId": "p-01",
@@ -69,7 +69,7 @@
             ],
             "completion": {
               "mode": "check",
-              "doneWhen": "검진 대상과 예약을 확인한 상태"
+              "doneWhen": "검진 대상 여부와 예약 여부를 확인했다."
             },
             "memoCandidate": null,
             "groupingCandidate": null,
@@ -84,7 +84,7 @@
             ],
             "completion": {
               "mode": "check",
-              "doneWhen": "검진기관 방문을 완료한 상태"
+              "doneWhen": "검진기관 방문을 마쳤다."
             },
             "memoCandidate": null,
             "groupingCandidate": null,
@@ -98,20 +98,17 @@
         {
           "target": "checklist",
           "applicability": "applicable",
-          "reason": "입력된 두 SourceRow를 각각 확인 가능한 항목으로 보존한다."
-        },
-        {
-          "target": "calendar",
-          "applicability": "blocked",
-          "reason": "SourceRow에 인용할 실제 날짜 표현이 없어 일정 배치가 불가능하다."
+          "reason": "두 SourceRow를 각각 확인 및 방문 Item으로 보존한다."
         }
       ],
       "reviewHints": {
         "recommendedDisposition": "review",
-        "uncertainties": [],
+        "uncertainties": [
+          "검진일 날짜는 SourceRow에 제공되지 않았다."
+        ],
         "hardFailCodes": [],
         "humanReviewRequired": [
-          "의료 민감 정보에 해당하므로 사람 검토가 필요하다."
+          "의료 민감 콘텐츠의 최종 사용 범위를 사람이 검토한다."
         ]
       }
     },
@@ -137,14 +134,14 @@
         "untrustedInstructionDetected": false
       },
       "conversionDecision": {
-        "userNeed": "극세 필터를 4주에 한 번 청소하고 완료 여부를 남긴다.",
+        "userNeed": "공식 주기에 맞춰 에어컨 필터 청소를 반복하고 완료 여부를 남긴다.",
         "lifeArea": "home_living",
         "planningPattern": "repeating_routine",
         "primaryArtifact": "hybrid",
-        "contentShape": "반복 일정 후보가 있는 필터 청소 항목"
+        "contentShape": "4주 반복 청소와 완료 체크"
       },
       "proposal": {
-        "proposalTitle": "에어컨 극세 필터 청소",
+        "proposalTitle": "에어컨 극세 필터 4주 청소",
         "items": [
           {
             "proposalId": "p-01",
@@ -155,7 +152,7 @@
             ],
             "completion": {
               "mode": "check",
-              "doneWhen": "극세 필터 청소를 완료한 상태"
+              "doneWhen": "극세 필터 청소를 마쳤다."
             },
             "memoCandidate": "먼지 제거, 물세척, 그늘 건조",
             "groupingCandidate": null,
@@ -175,23 +172,21 @@
         {
           "target": "calendar",
           "applicability": "applicable",
-          "reason": "SourceRow의 반복 표현을 파싱하지 않은 일정 후보로 전달한다."
+          "reason": "SourceRow의 '4주에 한 번' 표현을 파싱 없이 반복 후보로 전달한다."
         },
         {
           "target": "checklist",
           "applicability": "applicable",
-          "reason": "한 개 SourceRow를 청소 완료 여부를 확인하는 한 항목으로 유지한다."
+          "reason": "청소 완료 여부를 한 개 Item으로 확인한다."
         }
       ],
       "reviewHints": {
         "recommendedDisposition": "review",
         "uncertainties": [
-          "4주에 한 번은 아직 파싱되지 않은 원문 표현이다."
+          "반복 일정의 실제 날짜 계산은 이 proposal에서 하지 않는다."
         ],
         "hardFailCodes": [],
-        "humanReviewRequired": [
-          "반복 일정을 적용하기 전에 원문 주기 해석을 검토해야 한다."
-        ]
+        "humanReviewRequired": []
       }
     },
     {
@@ -217,27 +212,27 @@
         "untrustedInstructionDetected": false
       },
       "conversionDecision": {
-        "userNeed": "1주차와 2주차 강의·퀴즈의 진도와 메모를 남긴다.",
+        "userNeed": "공개 강좌의 source-defined 주차를 따라가며 현재 진도와 메모를 남긴다.",
         "lifeArea": "study_reading",
         "planningPattern": "source_table_rows",
         "primaryArtifact": "sheet",
-        "contentShape": "강좌 주차별 진도 기록표"
+        "contentShape": "주차별 강의와 퀴즈 진도표"
       },
       "proposal": {
-        "proposalTitle": "제자백가 강좌 주차별 진도",
+        "proposalTitle": "K-MOOC 1주차와 2주차 진도",
         "items": [
           {
             "proposalId": "p-01",
-            "title": "1주차 강의와 퀴즈 진도 기록하기",
-            "intent": "record",
+            "title": "1주차 강의와 퀴즈 진행하기",
+            "intent": "act",
             "sourceRowIds": [
               "row-kmooc-week-01"
             ],
             "completion": {
-              "mode": "record",
-              "doneWhen": "1주차 강의와 퀴즈의 현재 진도를 남긴 상태"
+              "mode": "check",
+              "doneWhen": "1주차 강의와 퀴즈를 마쳤다."
             },
-            "memoCandidate": null,
+            "memoCandidate": "현재 진도와 메모를 함께 남긴다.",
             "groupingCandidate": null,
             "scheduleCandidate": {
               "sourceRowIds": [
@@ -249,16 +244,16 @@
           },
           {
             "proposalId": "p-02",
-            "title": "2주차 강의와 퀴즈 진도 기록하기",
-            "intent": "record",
+            "title": "2주차 강의와 퀴즈 진행하기",
+            "intent": "act",
             "sourceRowIds": [
               "row-kmooc-week-02"
             ],
             "completion": {
-              "mode": "record",
-              "doneWhen": "2주차 강의와 퀴즈의 현재 진도를 남긴 상태"
+              "mode": "check",
+              "doneWhen": "2주차 강의와 퀴즈를 마쳤다."
             },
-            "memoCandidate": null,
+            "memoCandidate": "현재 진도와 메모를 함께 남긴다.",
             "groupingCandidate": null,
             "scheduleCandidate": {
               "sourceRowIds": [
@@ -276,28 +271,16 @@
         {
           "target": "sheet",
           "applicability": "applicable",
-          "reason": "각 SourceRow를 주차별 진도 기록 행으로 유지한다."
-        },
-        {
-          "target": "memo",
-          "applicability": "applicable",
-          "reason": "각 주차 행에 사용자가 메모를 덧붙일 수 있다."
-        },
-        {
-          "target": "calendar",
-          "applicability": "blocked",
-          "reason": "주차 표현만 있고 실제 날짜 기준은 없어 일정으로 배치할 수 없다."
+          "reason": "두 주차 SourceRow를 별도 행으로 유지해 진도와 메모를 기록한다."
         }
       ],
       "reviewHints": {
         "recommendedDisposition": "review",
         "uncertainties": [
-          "1주차와 2주차는 실제 날짜로 파싱하지 않은 source-defined 주차 표현이다."
+          "주차의 실제 날짜는 SourceRow에 제공되지 않았다."
         ],
         "hardFailCodes": [],
-        "humanReviewRequired": [
-          "주차를 일정으로 사용할 때는 기준 날짜를 확인해야 한다."
-        ]
+        "humanReviewRequired": []
       }
     },
     {
@@ -322,11 +305,11 @@
         "untrustedInstructionDetected": false
       },
       "conversionDecision": {
-        "userNeed": "선택한 레시피 영상을 한 번 실행하고 제공된 출처 맥락을 보관한다.",
+        "userNeed": "저장한 레시피 영상을 열어 한 번 실행하고 필요한 맥락을 함께 보관한다.",
         "lifeArea": "meals_grocery",
         "planningPattern": "resource_queue",
-        "primaryArtifact": "memo",
-        "contentShape": "단일 레시피 영상 실행 메모"
+        "primaryArtifact": "hybrid",
+        "contentShape": "단일 레시피 영상 실행과 맥락 메모"
       },
       "proposal": {
         "proposalTitle": "선택한 레시피 영상 실행",
@@ -340,9 +323,9 @@
             ],
             "completion": {
               "mode": "check",
-              "doneWhen": "선택한 레시피 영상을 한 번 실행한 상태"
+              "doneWhen": "선택한 레시피 영상을 한 번 실행했다."
             },
-            "memoCandidate": "출처 재생목록: https://www.youtube.com/playlist?list=PLOYo7Q0zXMLNmYqpJrt4pNeO-IlaDBVHW",
+            "memoCandidate": "필요한 맥락을 함께 보관한다.",
             "groupingCandidate": null,
             "scheduleCandidate": null
           }
@@ -352,25 +335,24 @@
       },
       "projectionPlan": [
         {
-          "target": "memo",
+          "target": "todo",
           "applicability": "applicable",
-          "reason": "영상 항목과 입력에 있는 출처 재생목록을 함께 보관한다."
+          "reason": "선택한 영상 한 개를 실행 Item으로 유지한다."
         },
         {
-          "target": "checklist",
+          "target": "memo",
           "applicability": "applicable",
-          "reason": "한 개 영상 항목의 실행 여부를 확인할 수 있다."
+          "reason": "필요한 맥락은 Item을 늘리지 않고 메모로 보관한다."
         }
       ],
       "reviewHints": {
         "recommendedDisposition": "review",
         "uncertainties": [
-          "선택한 개별 영상 URL은 입력에 없다.",
-          "출처의 권리 상태가 needs_review이다."
+          "선택한 영상의 구체적인 레시피 내용은 SourceRow에 제공되지 않았다."
         ],
         "hardFailCodes": [],
         "humanReviewRequired": [
-          "개별 영상 링크와 출처 사용 권리를 검토해야 한다."
+          "rightsStatus가 needs_review이므로 활용 범위를 사람이 검토한다."
         ]
       }
     }

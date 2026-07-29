@@ -1,12 +1,12 @@
 {
   "runSchemaVersion": "flowme-url-to-flow-prompt-lab-run-v1",
-  "runId": "round-1-batch-a",
+  "runId": "round-1-neutral-batch-a",
   "promptVersion": "url-to-flow-prompt-v0.1",
-  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1.1",
   "proposalSchemaVersion": "flowme-semantic-proposal-v1",
   "modelEvidence": {
-    "provider": "codex-subagent-runtime",
-    "model": "codex-subagent-runtime",
+    "provider": "not_available",
+    "model": "not_available",
     "modelTier": "unclassified",
     "evidenceKind": "in_session_same_model"
   },
@@ -41,7 +41,7 @@
       },
       "sourceAssessment": {
         "access": "readable",
-        "sourceShape": "d_day_timeline",
+        "sourceShape": "checklist",
         "primarySourceId": "source-nhis-health-checkup",
         "supportingSourceIds": [],
         "receivedSourceRowIds": [
@@ -51,14 +51,14 @@
         "untrustedInstructionDetected": false
       },
       "conversionDecision": {
-        "userNeed": "건강검진을 앞둔 사용자가 검진 대상과 예약을 확인하고 검진 당일 기관 방문을 마친다.",
+        "userNeed": "건강검진을 받는 사람으로서 검진 대상과 예약을 확인하고 검진기관을 방문해 당일 일정을 놓치지 않는다.",
         "lifeArea": "health",
-        "planningPattern": "d_day_timeline",
+        "planningPattern": "appointment_preparation",
         "primaryArtifact": "checklist",
-        "contentShape": "검진 전 확인과 당일 방문으로 이어지는 2단계 흐름"
+        "contentShape": "검진 전 확인과 당일 방문 체크리스트"
       },
       "proposal": {
-        "proposalTitle": "건강검진 준비와 방문",
+        "proposalTitle": "건강검진 확인 및 방문",
         "items": [
           {
             "proposalId": "p-01",
@@ -72,9 +72,7 @@
               "doneWhen": "검진 대상 여부와 예약 여부를 확인했다."
             },
             "memoCandidate": null,
-            "groupingCandidate": {
-              "label": "검진 전"
-            },
+            "groupingCandidate": null,
             "scheduleCandidate": null
           },
           {
@@ -89,9 +87,7 @@
               "doneWhen": "검진기관 방문을 마쳤다."
             },
             "memoCandidate": null,
-            "groupingCandidate": {
-              "label": "검진 당일"
-            },
+            "groupingCandidate": null,
             "scheduleCandidate": null
           }
         ],
@@ -100,40 +96,24 @@
       },
       "projectionPlan": [
         {
-          "target": "calendar",
-          "applicability": "blocked",
-          "reason": "검진기관 방문 행은 있지만 실제 날짜 표현이 없어 일정을 만들 수 없다."
-        },
-        {
           "target": "checklist",
           "applicability": "applicable",
-          "reason": "두 SourceRow를 순서대로 확인하고 완료 표시할 수 있다."
+          "reason": "두 SourceRow가 각각 확인하거나 완료할 수 있는 행동을 제공한다."
         },
         {
-          "target": "todo",
-          "applicability": "applicable",
-          "reason": "확인과 방문을 각각 독립적인 할 일로 둘 수 있다."
-        },
-        {
-          "target": "sheet",
-          "applicability": "not_applicable",
-          "reason": "제공된 두 행에는 표 형태로 관리할 속성이 없다."
-        },
-        {
-          "target": "memo",
-          "applicability": "not_applicable",
-          "reason": "별도로 보존할 설명이나 방법이 제공되지 않았다."
+          "target": "calendar",
+          "applicability": "blocked",
+          "reason": "검진기관 방문 행에 실제 날짜 또는 기간 표현이 없어 일정을 만들 수 없다."
         }
       ],
       "reviewHints": {
         "recommendedDisposition": "review",
         "uncertainties": [
-          "검진일의 실제 날짜는 제공되지 않았다."
+          "검진기관 방문 날짜가 SourceRow에 제공되지 않았다."
         ],
         "hardFailCodes": [],
         "humanReviewRequired": [
-          "검진 대상과 예약 상태 및 실제 방문일은 사용자가 확인해야 한다.",
-          "의료 민감 콘텐츠이므로 제안이 의료 판단으로 해석되지 않는지 확인해야 한다."
+          "의료 민감 정보이므로 검진 대상 및 예약 확인 문구의 정확성을 검토해야 한다."
         ]
       }
     },
@@ -150,7 +130,7 @@
       },
       "sourceAssessment": {
         "access": "readable",
-        "sourceShape": "fixed_routine",
+        "sourceShape": "procedure",
         "primarySourceId": "source-samsung-aircon-filter",
         "supportingSourceIds": [],
         "receivedSourceRowIds": [
@@ -159,14 +139,14 @@
         "untrustedInstructionDetected": false
       },
       "conversionDecision": {
-        "userNeed": "에어컨을 관리하는 사용자가 극세 필터를 공식 주기에 맞춰 청소하고 완료 여부를 남긴다.",
-        "lifeArea": "home_maintenance",
-        "planningPattern": "fixed_routine",
+        "userNeed": "에어컨을 관리하는 사람으로서 극세 필터를 4주에 한 번 청소하고 완료 여부를 남긴다.",
+        "lifeArea": "home",
+        "planningPattern": "recurring_maintenance",
         "primaryArtifact": "hybrid",
-        "contentShape": "반복 주기와 청소 방법이 있는 단일 관리 절차"
+        "contentShape": "반복 주기가 있는 필터 청소 항목"
       },
       "proposal": {
-        "proposalTitle": "에어컨 극세 필터 정기 청소",
+        "proposalTitle": "극세 필터 4주 청소",
         "items": [
           {
             "proposalId": "p-01",
@@ -177,14 +157,12 @@
             ],
             "completion": {
               "mode": "check",
-              "doneWhen": "극세 필터 청소를 마쳤다."
+              "doneWhen": "극세 필터 청소를 마치고 완료 여부를 남겼다."
             },
-            "memoCandidate": {
-              "text": "먼지 제거, 물세척, 그늘 건조"
-            },
+            "memoCandidate": "먼지 제거, 물세척, 그늘 건조",
             "groupingCandidate": null,
             "scheduleCandidate": {
-              "rawExpression": "4주에 한 번",
+              "sourceText": "4주에 한 번",
               "parsedByRule": false
             }
           }
@@ -196,37 +174,22 @@
         {
           "target": "calendar",
           "applicability": "applicable",
-          "reason": "SourceRow의 반복 표현 '4주에 한 번'을 그대로 보존해 검토 후보로 둘 수 있다."
+          "reason": "SourceRow에 '4주에 한 번'이라는 반복 표현이 있어 검토용 일정 후보로 보존할 수 있다."
         },
         {
           "target": "checklist",
           "applicability": "applicable",
-          "reason": "청소 완료 여부를 체크할 수 있다."
-        },
-        {
-          "target": "todo",
-          "applicability": "applicable",
-          "reason": "극세 필터 청소를 반복 할 일 후보로 둘 수 있다."
-        },
-        {
-          "target": "sheet",
-          "applicability": "not_applicable",
-          "reason": "한 개의 절차만 제공되어 표 관리가 필요하지 않다."
-        },
-        {
-          "target": "memo",
-          "applicability": "applicable",
-          "reason": "먼지 제거, 물세척, 그늘 건조 방법을 Item과 분리해 보존할 수 있다."
+          "reason": "필터 청소 완료 여부를 확인할 수 있는 단일 항목이다."
         }
       ],
       "reviewHints": {
         "recommendedDisposition": "review",
         "uncertainties": [
-          "반복을 시작할 기준일은 제공되지 않았다."
+          "'4주에 한 번'은 파싱되지 않은 원문 반복 표현이다."
         ],
         "hardFailCodes": [],
         "humanReviewRequired": [
-          "'4주에 한 번' 반복을 일정에 반영하기 전에 시작일을 확인해야 한다."
+          "반복 일정으로 반영하기 전에 원문 주기 해석을 확인해야 한다."
         ]
       }
     },
@@ -243,7 +206,7 @@
       },
       "sourceAssessment": {
         "access": "readable",
-        "sourceShape": "source_checklist",
+        "sourceShape": "checklist",
         "primarySourceId": "source-kkday-overseas-packing",
         "supportingSourceIds": [],
         "receivedSourceRowIds": [
@@ -253,11 +216,11 @@
         "untrustedInstructionDetected": false
       },
       "conversionDecision": {
-        "userNeed": "해외여행을 준비하는 사용자가 제공된 필수 준비물 두 가지를 빠뜨리지 않고 챙긴다.",
+        "userNeed": "해외여행을 준비하는 사람으로서 여권과 데이터 유심을 빠뜨리지 않고 챙긴다.",
         "lifeArea": "travel",
-        "planningPattern": "source_checklist",
+        "planningPattern": "packing_checklist",
         "primaryArtifact": "checklist",
-        "contentShape": "해외여행 준비물 2개 체크리스트"
+        "contentShape": "해외여행 준비물 체크리스트"
       },
       "proposal": {
         "proposalTitle": "해외여행 필수 준비물 챙기기",
@@ -298,39 +261,19 @@
       },
       "projectionPlan": [
         {
-          "target": "calendar",
-          "applicability": "not_applicable",
-          "reason": "날짜, 기간, 반복 표현이 제공되지 않았다."
-        },
-        {
           "target": "checklist",
           "applicability": "applicable",
-          "reason": "각 준비물의 챙김 여부를 독립적으로 확인할 수 있다."
-        },
-        {
-          "target": "todo",
-          "applicability": "applicable",
-          "reason": "여권과 데이터 유심을 각각 할 일로 둘 수 있다."
-        },
-        {
-          "target": "sheet",
-          "applicability": "not_applicable",
-          "reason": "두 준비물 외에 표로 관리할 속성이 제공되지 않았다."
-        },
-        {
-          "target": "memo",
-          "applicability": "not_applicable",
-          "reason": "별도로 보존할 설명이나 방법이 제공되지 않았다."
+          "reason": "두 SourceRow가 각각 독립적으로 챙김 여부를 확인할 수 있는 준비물이다."
         }
       ],
       "reviewHints": {
         "recommendedDisposition": "review",
         "uncertainties": [
-          "제공된 두 행이 전체 필수 준비물 목록인지는 확인할 수 없다."
+          "원문 권리 상태가 needs_review로 표시되어 있다."
         ],
         "hardFailCodes": [],
         "humanReviewRequired": [
-          "source의 rightsStatus가 needs_review이므로 사용 범위를 검토해야 한다."
+          "creator 경험 출처의 사용 권리와 표현 범위를 검토해야 한다."
         ]
       }
     },
@@ -347,7 +290,7 @@
       },
       "sourceAssessment": {
         "access": "readable",
-        "sourceShape": "ordered_phase_procedure",
+        "sourceShape": "procedure",
         "primarySourceId": "source-work24-jobseeker-support",
         "supportingSourceIds": [],
         "receivedSourceRowIds": [
@@ -357,14 +300,14 @@
         "untrustedInstructionDetected": false
       },
       "conversionDecision": {
-        "userNeed": "취업지원을 시작하는 사용자가 고용24의 구직 신청 등록과 취업지원 서비스 신청을 순서대로 마친다.",
-        "lifeArea": "career",
-        "planningPattern": "ordered_phase_procedure",
+        "userNeed": "취업지원을 시작하는 구직자로서 구직 신청을 등록한 뒤 취업지원 서비스를 신청한다.",
+        "lifeArea": "work",
+        "planningPattern": "ordered_procedure",
         "primaryArtifact": "checklist",
-        "contentShape": "순서가 있는 2단계 신청 절차"
+        "contentShape": "순서가 있는 취업지원 시작 절차"
       },
       "proposal": {
-        "proposalTitle": "고용24 취업지원 시작 절차",
+        "proposalTitle": "고용24 취업지원 시작하기",
         "items": [
           {
             "proposalId": "p-01",
@@ -378,7 +321,7 @@
               "doneWhen": "구직 신청 등록을 마쳤다."
             },
             "memoCandidate": null,
-            "groupingCandidate": null,
+            "groupingCandidate": "취업지원 시작 절차",
             "scheduleCandidate": null
           },
           {
@@ -393,7 +336,7 @@
               "doneWhen": "취업지원 서비스 신청을 마쳤다."
             },
             "memoCandidate": null,
-            "groupingCandidate": null,
+            "groupingCandidate": "취업지원 시작 절차",
             "scheduleCandidate": null
           }
         ],
@@ -402,39 +345,19 @@
       },
       "projectionPlan": [
         {
-          "target": "calendar",
-          "applicability": "not_applicable",
-          "reason": "날짜, 기간, 반복 표현이 제공되지 않았다."
-        },
-        {
           "target": "checklist",
           "applicability": "applicable",
-          "reason": "두 신청 절차를 제공된 순서대로 확인할 수 있다."
-        },
-        {
-          "target": "todo",
-          "applicability": "applicable",
-          "reason": "각 신청을 독립적인 할 일로 둘 수 있다."
-        },
-        {
-          "target": "sheet",
-          "applicability": "not_applicable",
-          "reason": "신청 절차 외에 표로 관리할 속성이 제공되지 않았다."
-        },
-        {
-          "target": "memo",
-          "applicability": "not_applicable",
-          "reason": "별도로 보존할 설명이나 준비 정보가 제공되지 않았다."
+          "reason": "두 SourceRow의 순서를 유지하면서 각 절차의 완료 여부를 확인할 수 있다."
         }
       ],
       "reviewHints": {
         "recommendedDisposition": "review",
         "uncertainties": [
-          "각 신청의 세부 입력 항목과 완료 화면은 제공되지 않았다."
+          "각 절차의 상세 입력 요건은 SourceRow에 제공되지 않았다."
         ],
         "hardFailCodes": [],
         "humanReviewRequired": [
-          "개인정보를 제출하기 전에 사용자가 신청 내용을 확인해야 한다."
+          "개인정보가 관련될 수 있는 세부 입력 단계는 공식 원문 범위에서 확인해야 한다."
         ]
       }
     }

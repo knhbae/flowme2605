@@ -1,8 +1,8 @@
 {
-  "reviewSetSchemaVersion": "flowme-url-to-flow-review-set-v1",
+  "reviewSetSchemaVersion": "flowme-url-to-flow-review-set-v2",
   "round": "round-1",
   "blindRunLabel": "R1-A",
-  "rubricVersion": "flowme-url-to-flow-prompt-lab-review-rubric-v1",
+  "rubricVersion": "flowme-url-to-flow-prompt-lab-review-rubric-v2",
   "results": [
     {
       "caseId": "case-01",
@@ -10,16 +10,21 @@
       "reviewMethod": {
         "reviewerKind": "in_session_model_proxy",
         "modelIdentityBlinded": true,
-        "humanReviewer": false
+        "humanReviewer": false,
+        "contextIsolation": "fresh_subagent_no_expected_answers"
       },
       "validator": {
         "passed": false,
         "hardFailCodes": [
-          "conversion_schema",
-          "item_schema",
-          "silent_source_omission",
-          "source_assessment_schema"
+          "json_schema"
         ]
+      },
+      "groundingAudit": {
+        "proposalFingerprint": "sha256:8ed74b29319f5cfaa2c9a59f98718cf7316398a2b6de05308e380fb054ad1b24",
+        "items": null,
+        "projectionGrounded": null,
+        "projectionComment": null,
+        "unsupportedContentFindings": null
       },
       "reviewHardFailCodes": null,
       "scores": {
@@ -32,13 +37,13 @@
         "sourceAndSafetySeparation": null
       },
       "scoreComments": {
-        "userNeedFit": "해당 없음: schema hard fail로 저장 가능한 제안이 아니어서 사용자 적합도를 채점하지 않았다.",
-        "executionClarity": "해당 없음: Item 계약 오류로 실행 명확성을 신뢰할 수 없어 채점하지 않았다.",
-        "contentFidelityAndCoverage": "해당 없음: 유효한 Item 매핑으로 인정되지 않아 원문 충실도를 채점하지 않았다.",
-        "portabilityAndNaturalArtifact": "해당 없음: conversion 계약 오류가 있어 목적지 적합도를 채점하지 않았다.",
-        "cognitiveLoad": "해당 없음: invalid run은 구조 전체 재생성이 필요해 인지 부하를 채점하지 않았다.",
-        "copySpecificity": "해당 없음: 계약을 통과하지 못한 원시 문구는 품질 점수 대상이 아니다.",
-        "sourceAndSafetySeparation": "해당 없음: 의료 민감 source의 경계를 포함해 유효한 계약으로 재생성해야 한다."
+        "userNeedFit": "N/A: invalid run??? userNeedFit ?? ??? ???? ???.",
+        "executionClarity": "N/A: invalid run??? executionClarity ?? ??? ???? ???.",
+        "contentFidelityAndCoverage": "N/A: invalid run??? contentFidelityAndCoverage ?? ??? ???? ???.",
+        "portabilityAndNaturalArtifact": "N/A: invalid run??? portabilityAndNaturalArtifact ?? ??? ???? ???.",
+        "cognitiveLoad": "N/A: invalid run??? cognitiveLoad ?? ??? ???? ???.",
+        "copySpecificity": "N/A: invalid run??? copySpecificity ?? ??? ???? ???.",
+        "sourceAndSafetySeparation": "N/A: invalid run??? sourceAndSafetySeparation ?? ??? ???? ???."
       },
       "qualityAverage": null,
       "sourceRowAccounting": {
@@ -53,7 +58,7 @@
         "originalItemCount": 2,
         "keptOriginalItems": 0,
         "itemKeepRate": 0,
-        "deletedItems": 0,
+        "deletedItems": 2,
         "mergedItems": 0,
         "splitItems": 0,
         "titleRewrites": 0,
@@ -71,15 +76,13 @@
       "fullUsabilityVerified": false,
       "decision": "invalid_run",
       "topFixes": [
-        "sourceAssessment와 conversionDecision을 허용된 shape와 enum으로 다시 생성한다.",
-        "두 Item의 nested shape를 계약에 맞추고 유효한 sourceRowIds 매핑을 복구한다.",
-        "두 SourceRow가 Item 또는 승인된 omission으로 100% accounting되게 한다."
+        "validator ??(json_schema)? ?? ? ?? SourceRow? ?? ????."
       ],
       "correctedPreview": {
         "title": null,
         "items": [],
         "destinations": [],
-        "reviewNote": "계약 오류가 있는 원시 결과는 교정하지 않았으며 품질 검토 전에 전체 재생성이 필요하다."
+        "reviewNote": "deterministic validator ??? semantic ??? ???? ?? ?? ???? ????."
       }
     },
     {
@@ -88,16 +91,21 @@
       "reviewMethod": {
         "reviewerKind": "in_session_model_proxy",
         "modelIdentityBlinded": true,
-        "humanReviewer": false
+        "humanReviewer": false,
+        "contextIsolation": "fresh_subagent_no_expected_answers"
       },
       "validator": {
         "passed": false,
         "hardFailCodes": [
-          "conversion_schema",
-          "item_schema",
-          "silent_source_omission",
-          "source_assessment_schema"
+          "json_schema"
         ]
+      },
+      "groundingAudit": {
+        "proposalFingerprint": "sha256:30e5c79229e8083b86fc1e96fb9190d2738a782ff9c8b70606bf9b6421940d21",
+        "items": null,
+        "projectionGrounded": null,
+        "projectionComment": null,
+        "unsupportedContentFindings": null
       },
       "reviewHardFailCodes": null,
       "scores": {
@@ -110,13 +118,13 @@
         "sourceAndSafetySeparation": null
       },
       "scoreComments": {
-        "userNeedFit": "해당 없음: schema hard fail로 저장 가능한 제안이 아니어서 사용자 적합도를 채점하지 않았다.",
-        "executionClarity": "해당 없음: Item 계약 오류로 반복 청소 행동의 실행 명확성을 채점하지 않았다.",
-        "contentFidelityAndCoverage": "해당 없음: SourceRow가 유효한 Item에 매핑되지 않아 충실도 점수를 매기지 않았다.",
-        "portabilityAndNaturalArtifact": "해당 없음: conversion 계약 오류가 있어 Calendar와 checklist 적합도를 채점하지 않았다.",
-        "cognitiveLoad": "해당 없음: invalid run은 구조 전체 재생성이 필요해 인지 부하를 채점하지 않았다.",
-        "copySpecificity": "해당 없음: 계약을 통과하지 못한 원시 문구는 품질 점수 대상이 아니다.",
-        "sourceAndSafetySeparation": "해당 없음: 유효한 source와 반복 표현 계약으로 다시 생성한 뒤 평가해야 한다."
+        "userNeedFit": "N/A: invalid run??? userNeedFit ?? ??? ???? ???.",
+        "executionClarity": "N/A: invalid run??? executionClarity ?? ??? ???? ???.",
+        "contentFidelityAndCoverage": "N/A: invalid run??? contentFidelityAndCoverage ?? ??? ???? ???.",
+        "portabilityAndNaturalArtifact": "N/A: invalid run??? portabilityAndNaturalArtifact ?? ??? ???? ???.",
+        "cognitiveLoad": "N/A: invalid run??? cognitiveLoad ?? ??? ???? ???.",
+        "copySpecificity": "N/A: invalid run??? copySpecificity ?? ??? ???? ???.",
+        "sourceAndSafetySeparation": "N/A: invalid run??? sourceAndSafetySeparation ?? ??? ???? ???."
       },
       "qualityAverage": null,
       "sourceRowAccounting": {
@@ -131,7 +139,7 @@
         "originalItemCount": 1,
         "keptOriginalItems": 0,
         "itemKeepRate": 0,
-        "deletedItems": 0,
+        "deletedItems": 1,
         "mergedItems": 0,
         "splitItems": 0,
         "titleRewrites": 0,
@@ -149,15 +157,13 @@
       "fullUsabilityVerified": false,
       "decision": "invalid_run",
       "topFixes": [
-        "sourceAssessment와 conversionDecision을 허용된 shape와 enum으로 다시 생성한다.",
-        "memoCandidate와 scheduleCandidate를 포함한 Item nested shape를 정확한 계약으로 다시 만든다.",
-        "유효한 Item에서 필터 청소 SourceRow를 참조해 accounting을 복구한다."
+        "validator ??(json_schema)? ?? ? ?? SourceRow? ?? ????."
       ],
       "correctedPreview": {
         "title": null,
         "items": [],
         "destinations": [],
-        "reviewNote": "계약 오류가 있는 원시 결과는 교정하지 않았으며 품질 검토 전에 전체 재생성이 필요하다."
+        "reviewNote": "deterministic validator ??? semantic ??? ???? ?? ?? ???? ????."
       }
     },
     {
@@ -166,14 +172,21 @@
       "reviewMethod": {
         "reviewerKind": "in_session_model_proxy",
         "modelIdentityBlinded": true,
-        "humanReviewer": false
+        "humanReviewer": false,
+        "contextIsolation": "fresh_subagent_no_expected_answers"
       },
       "validator": {
         "passed": false,
         "hardFailCodes": [
-          "conversion_schema",
-          "source_assessment_schema"
+          "json_schema"
         ]
+      },
+      "groundingAudit": {
+        "proposalFingerprint": "sha256:a731d789fd90222591bc3b0f7fa61e6d470ebf9206efe9e6d7639595c7827a7c",
+        "items": null,
+        "projectionGrounded": null,
+        "projectionComment": null,
+        "unsupportedContentFindings": null
       },
       "reviewHardFailCodes": null,
       "scores": {
@@ -186,13 +199,13 @@
         "sourceAndSafetySeparation": null
       },
       "scoreComments": {
-        "userNeedFit": "해당 없음: source와 conversion schema hard fail로 콘텐츠 품질 채점을 시작하지 않았다.",
-        "executionClarity": "해당 없음: invalid run의 Item 실행성은 저장 후보 품질로 채점하지 않았다.",
-        "contentFidelityAndCoverage": "해당 없음: raw accounting은 완전하지만 계약 오류가 있어 원문 충실도 점수를 부여하지 않았다.",
-        "portabilityAndNaturalArtifact": "해당 없음: conversion 계약이 유효하지 않아 checklist 목적지 품질을 채점하지 않았다.",
-        "cognitiveLoad": "해당 없음: 계약 오류가 해결되지 않은 구조는 인지 부하 점수 대상이 아니다.",
-        "copySpecificity": "해당 없음: invalid run의 원시 문구는 교정 또는 품질 점수 대상이 아니다.",
-        "sourceAndSafetySeparation": "해당 없음: sourceAssessment를 유효한 계약으로 다시 생성한 뒤 권리 경계를 평가해야 한다."
+        "userNeedFit": "N/A: invalid run??? userNeedFit ?? ??? ???? ???.",
+        "executionClarity": "N/A: invalid run??? executionClarity ?? ??? ???? ???.",
+        "contentFidelityAndCoverage": "N/A: invalid run??? contentFidelityAndCoverage ?? ??? ???? ???.",
+        "portabilityAndNaturalArtifact": "N/A: invalid run??? portabilityAndNaturalArtifact ?? ??? ???? ???.",
+        "cognitiveLoad": "N/A: invalid run??? cognitiveLoad ?? ??? ???? ???.",
+        "copySpecificity": "N/A: invalid run??? copySpecificity ?? ??? ???? ???.",
+        "sourceAndSafetySeparation": "N/A: invalid run??? sourceAndSafetySeparation ?? ??? ???? ???."
       },
       "qualityAverage": null,
       "sourceRowAccounting": {
@@ -207,7 +220,7 @@
         "originalItemCount": 2,
         "keptOriginalItems": 0,
         "itemKeepRate": 0,
-        "deletedItems": 0,
+        "deletedItems": 2,
         "mergedItems": 0,
         "splitItems": 0,
         "titleRewrites": 0,
@@ -225,14 +238,13 @@
       "fullUsabilityVerified": false,
       "decision": "invalid_run",
       "topFixes": [
-        "sourceAssessment.sourceShape를 허용 enum으로 다시 생성한다.",
-        "conversionDecision의 lifeArea와 planningPattern을 허용 enum과 정확한 shape로 다시 생성한다."
+        "validator ??(json_schema)? ?? ? ?? SourceRow? ?? ????."
       ],
       "correctedPreview": {
         "title": null,
         "items": [],
         "destinations": [],
-        "reviewNote": "SourceRow accounting은 raw 결과에서 완전하지만 계약 오류 때문에 교정하지 않았으며 전체 재생성이 필요하다."
+        "reviewNote": "deterministic validator ??? semantic ??? ???? ?? ?? ???? ????."
       }
     },
     {
@@ -241,14 +253,21 @@
       "reviewMethod": {
         "reviewerKind": "in_session_model_proxy",
         "modelIdentityBlinded": true,
-        "humanReviewer": false
+        "humanReviewer": false,
+        "contextIsolation": "fresh_subagent_no_expected_answers"
       },
       "validator": {
         "passed": false,
         "hardFailCodes": [
-          "conversion_schema",
-          "source_assessment_schema"
+          "json_schema"
         ]
+      },
+      "groundingAudit": {
+        "proposalFingerprint": "sha256:deb61e11aeb59087a24f231ede09fbea5f05191a5e4491edc4feb80d531a818c",
+        "items": null,
+        "projectionGrounded": null,
+        "projectionComment": null,
+        "unsupportedContentFindings": null
       },
       "reviewHardFailCodes": null,
       "scores": {
@@ -261,13 +280,13 @@
         "sourceAndSafetySeparation": null
       },
       "scoreComments": {
-        "userNeedFit": "해당 없음: source와 conversion schema hard fail로 콘텐츠 품질 채점을 시작하지 않았다.",
-        "executionClarity": "해당 없음: invalid run의 절차 Item은 저장 후보 실행성으로 채점하지 않았다.",
-        "contentFidelityAndCoverage": "해당 없음: raw accounting은 완전하지만 계약 오류가 있어 원문 충실도 점수를 부여하지 않았다.",
-        "portabilityAndNaturalArtifact": "해당 없음: conversion 계약이 유효하지 않아 checklist와 todo 목적지를 채점하지 않았다.",
-        "cognitiveLoad": "해당 없음: 계약 오류가 해결되지 않은 구조는 인지 부하 점수 대상이 아니다.",
-        "copySpecificity": "해당 없음: invalid run의 원시 문구는 교정 또는 품질 점수 대상이 아니다.",
-        "sourceAndSafetySeparation": "해당 없음: 개인정보 민감 경계를 유효한 계약으로 다시 생성한 뒤 평가해야 한다."
+        "userNeedFit": "N/A: invalid run??? userNeedFit ?? ??? ???? ???.",
+        "executionClarity": "N/A: invalid run??? executionClarity ?? ??? ???? ???.",
+        "contentFidelityAndCoverage": "N/A: invalid run??? contentFidelityAndCoverage ?? ??? ???? ???.",
+        "portabilityAndNaturalArtifact": "N/A: invalid run??? portabilityAndNaturalArtifact ?? ??? ???? ???.",
+        "cognitiveLoad": "N/A: invalid run??? cognitiveLoad ?? ??? ???? ???.",
+        "copySpecificity": "N/A: invalid run??? copySpecificity ?? ??? ???? ???.",
+        "sourceAndSafetySeparation": "N/A: invalid run??? sourceAndSafetySeparation ?? ??? ???? ???."
       },
       "qualityAverage": null,
       "sourceRowAccounting": {
@@ -282,7 +301,7 @@
         "originalItemCount": 2,
         "keptOriginalItems": 0,
         "itemKeepRate": 0,
-        "deletedItems": 0,
+        "deletedItems": 2,
         "mergedItems": 0,
         "splitItems": 0,
         "titleRewrites": 0,
@@ -300,14 +319,13 @@
       "fullUsabilityVerified": false,
       "decision": "invalid_run",
       "topFixes": [
-        "sourceAssessment.sourceShape를 허용 enum으로 다시 생성한다.",
-        "conversionDecision의 lifeArea와 planningPattern을 허용 enum과 정확한 shape로 다시 생성한다."
+        "validator ??(json_schema)? ?? ? ?? SourceRow? ?? ????."
       ],
       "correctedPreview": {
         "title": null,
         "items": [],
         "destinations": [],
-        "reviewNote": "SourceRow accounting은 raw 결과에서 완전하지만 계약 오류 때문에 교정하지 않았으며 전체 재생성이 필요하다."
+        "reviewNote": "deterministic validator ??? semantic ??? ???? ?? ?? ???? ????."
       }
     }
   ]

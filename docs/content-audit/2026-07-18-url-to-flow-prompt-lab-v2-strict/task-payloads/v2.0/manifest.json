@@ -1,0 +1,83 @@
+{
+  "manifestVersion": "flowme-strict-generator-task-manifest-v2",
+  "laneId": "url-to-flow-source-row-v2-strict",
+  "promptVersion": "url-to-flow-prompt-v2.0",
+  "taskPayloads": [
+    {
+      "batchRef": "batch-a",
+      "file": "docs/content-audit/2026-07-18-url-to-flow-prompt-lab-v2-strict/task-payloads/v2.0/batch-a.txt",
+      "taskPayloadSha256": "5789ed6edd3a484928d2ab191e11dfc42b88b9d31c55ba410a1efd57ed926f30",
+      "pipelineCaseCount": 4,
+      "modelInputCaseCount": 4,
+      "deterministicCaseCount": 0,
+      "auditCaseIds": [
+        "case-01",
+        "case-02",
+        "case-03",
+        "case-04"
+      ],
+      "sampleRefs": [
+        "smp-34e345a01a86a243",
+        "smp-f88067b21f8d8327",
+        "smp-64c0dc556a3ed163",
+        "smp-0b82f73ebd2cd478"
+      ],
+      "packetSha256BySampleRef": {
+        "smp-34e345a01a86a243": "46d8ae002ae9c25ec12e383c48e79942f2352ba7fc1da187013df881ce89993d",
+        "smp-f88067b21f8d8327": "c414500d2681373cde56b5c06ecf69b108c405640fa3fd97eddf708409a7f765",
+        "smp-64c0dc556a3ed163": "7f9ab6d1b7d7a53e3e2ce0a7089424f4cb0cb5221fac2ebfb5d44b7e3f394b7b",
+        "smp-0b82f73ebd2cd478": "c9899e2484eaa3b07dde1a3c76ca8006f6e5e4f8b9908658e4721b74a380238c"
+      }
+    },
+    {
+      "batchRef": "batch-b",
+      "file": "docs/content-audit/2026-07-18-url-to-flow-prompt-lab-v2-strict/task-payloads/v2.0/batch-b.txt",
+      "taskPayloadSha256": "84f20b1a8d1e16993dca2fa6d3adc2bfb41ba1db962431770a632e9c039740ec",
+      "pipelineCaseCount": 4,
+      "modelInputCaseCount": 4,
+      "deterministicCaseCount": 0,
+      "auditCaseIds": [
+        "case-05",
+        "case-06",
+        "case-07",
+        "case-08"
+      ],
+      "sampleRefs": [
+        "smp-14c0f7b074b9994e",
+        "smp-01f56183ee916318",
+        "smp-af9bcc8d0a19f8f2",
+        "smp-a236951a509318e0"
+      ],
+      "packetSha256BySampleRef": {
+        "smp-14c0f7b074b9994e": "a801aabd47e3e567457775e763afc9b740ef2570e3d0db26e10630cba39fa914",
+        "smp-01f56183ee916318": "811841f0183e0faa587008ddc88a68be9f7e0641c3a5a5cca48c97a20947f23c",
+        "smp-af9bcc8d0a19f8f2": "d309d37b7ca520fd229fdb0a9493a2254e7693c9a0cdf297ef336ade72019ad4",
+        "smp-a236951a509318e0": "1e12aa32ff9d3899f64ceafdcecc08540ae20768c5314ec487abe402dedabb05"
+      }
+    },
+    {
+      "batchRef": "batch-c",
+      "file": "docs/content-audit/2026-07-18-url-to-flow-prompt-lab-v2-strict/task-payloads/v2.0/batch-c.txt",
+      "taskPayloadSha256": "a834d504fbb9a9fe1a029b4d109fc73bdbcb4a224d9c7ea90302649621a857fc",
+      "pipelineCaseCount": 4,
+      "modelInputCaseCount": 2,
+      "deterministicCaseCount": 2,
+      "auditCaseIds": [
+        "case-09",
+        "case-10",
+        "case-11",
+        "case-12"
+      ],
+      "sampleRefs": [
+        "smp-5f8cdade595023d8",
+        "smp-cca0262a42e836c9",
+        "smp-be187768e7d35239",
+        "smp-e7fca6ff311df9c8"
+      ],
+      "packetSha256BySampleRef": {
+        "smp-5f8cdade595023d8": "290f4461f10dc2a0b7c75954d735123fb8e9853750d7bc0ae3133f8e2bec6428",
+        "smp-cca0262a42e836c9": "8a465a779bc7b15bb1ec0d5eae1eed6a189b0b657c5701a695d25ba3e0e6aa27"
+      }
+    }
+  ]
+}

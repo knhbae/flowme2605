@@ -1,0 +1,70 @@
+{
+  "protocolVersion": "flowme-url-to-flow-hybrid-protocol-v3",
+  "laneId": "url-to-flow-source-row-v3-hybrid-controller",
+  "evidenceClass": "deterministic_controller_replay",
+  "inputBinding": {
+    "sourceLane": "url-to-flow-source-row-v2-strict",
+    "sourceCaseCount": 12,
+    "positiveCount": 10,
+    "negativeCount": 2,
+    "eligiblePrimaryRows": 15,
+    "supportingOrReferenceRows": 1
+  },
+  "batchAssignment": {
+    "batch-a": ["case-01", "case-02", "case-03", "case-04"],
+    "batch-b": ["case-05", "case-06", "case-07", "case-08"],
+    "batch-c": ["case-09", "case-10", "case-11", "case-12"]
+  },
+  "strictArtifactPolicy": {
+    "literalSchedulePresent": "calendar",
+    "allTableRows": "sheet",
+    "oneResource": "memo",
+    "multipleResources": "checklist",
+    "oneOtherEligibleRow": "todo",
+    "multipleOtherEligibleRows": "checklist"
+  },
+  "execution": {
+    "runs": ["round-1", "round-2"],
+    "modelInvocation": false,
+    "round2Policy": "unchanged_deterministic_confirmation",
+    "round3Policy": "not_applicable_deterministic_compiler",
+    "rawModelEvidence": "preserve_v2_round_1_and_round_2_unchanged"
+  },
+  "gates": {
+    "schemaValidRate": 1,
+    "sourceRowAccountingRate": 1,
+    "compilerFieldOwnershipRate": 1,
+    "compilerTraceIntegrityRate": 1,
+    "literalMemoScheduleRate": 1,
+    "unsupportedActionDateRepeatFactCount": 0,
+    "negativeExactCount": 2,
+    "positiveItemCount": 15,
+    "crossRunProposalStabilityRate": 1,
+    "itemKeepRateMinimum": 0.8,
+    "sevenAxisAverageMinimum": 3.5,
+    "executionClarityMinimum": 4,
+    "contentFidelityCoverageMinimum": 4,
+    "sourceSafetySeparationMinimum": 4,
+    "reviewFailedCaseCount": 0,
+    "reviewRemoveVerdictCount": 0
+  },
+  "review": {
+    "batches": ["batch-a", "batch-b", "batch-c"],
+    "positiveOnlyAssignment": {
+      "batch-a": ["case-01", "case-02", "case-03", "case-04"],
+      "batch-b": ["case-05", "case-06", "case-07", "case-08"],
+      "batch-c": ["case-09", "case-10"]
+    },
+    "freshContextRequired": true,
+    "reviewerCannotSee": ["auditCaseId", "compilerRuleId", "v2_failure_case", "expectedScores"],
+    "reviewerCanSee": ["opaqueSourceOwnership", "opaqueSourceRows", "compiledProposal", "rubric", "reviewSchema"]
+  },
+  "scopeExclusions": [
+    "production_url_fetch",
+    "external_llm_api",
+    "database",
+    "app_runtime",
+    "automatic_save_or_publish",
+    "real_provider_model_price_or_latency_claim"
+  ]
+}

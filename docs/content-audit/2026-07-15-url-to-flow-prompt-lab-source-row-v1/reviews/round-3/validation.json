@@ -1,0 +1,517 @@
+{
+  "validationVersion": "flowme-source-row-review-validation-v1",
+  "laneId": "url-to-flow-source-row-v1",
+  "round": "round-3",
+  "passed": false,
+  "integrityPassed": true,
+  "errors": [],
+  "metrics": {
+    "reviewedCaseCount": 12,
+    "positiveCaseCount": 10,
+    "deterministicNegativeCount": 2,
+    "negativeExact": 2,
+    "decisionCounts": {
+      "keep": 13,
+      "edit": 3,
+      "delete": 0
+    },
+    "itemKeepRate": 0.8125,
+    "unsupportedSignalCount": 7,
+    "unsupportedCounts": {
+      "action": 0,
+      "date": 0,
+      "repeat": 0,
+      "fact": 7
+    },
+    "axisAverages": {
+      "userNeedFit": 4.3,
+      "executionClarity": 4.4,
+      "contentFidelityCoverage": 4.2,
+      "portability": 4.6,
+      "cognitiveLoad": 4.6,
+      "copySpecificity": 4.3,
+      "sourceSafetySeparation": 4.1
+    },
+    "sevenAxisAverage": 4.357142857142857
+  },
+  "gates": {
+    "reviewIntegrity": true,
+    "reviewedCases": true,
+    "positiveCoverage": true,
+    "negativeDisposition": true,
+    "itemKeepRate": true,
+    "unsupportedContent": false,
+    "sevenAxisAverage": true,
+    "executionClarity": true,
+    "contentFidelityCoverage": true,
+    "sourceSafetySeparation": true
+  },
+  "cases": [
+    {
+      "caseId": "case-01",
+      "proposalFingerprint": "bc68acfa016cd9ffe0538fd30b80f04c8bb50049ff125327be32c2f6b2c81153",
+      "validatorPassed": true,
+      "validatorCodes": [],
+      "positiveCase": true,
+      "itemReviews": [
+        {
+          "proposalId": "p-01",
+          "decision": "keep",
+          "comment": "check 행의 제목을 그대로 확인 행동과 완료 기준으로 옮겨, 항목 경계와 표현이 모두 근거 안에 있다."
+        },
+        {
+          "proposalId": "p-02",
+          "decision": "keep",
+          "comment": "제목에 명시된 검진기관 방문을 독립 행동으로 보존했고, 실제 날짜나 시간을 덧붙이지 않았다."
+        }
+      ],
+      "unsupportedSignals": [],
+      "scores": {
+        "userNeedFit": 5,
+        "executionClarity": 5,
+        "contentFidelityCoverage": 5,
+        "portability": 5,
+        "cognitiveLoad": 5,
+        "copySpecificity": 5,
+        "sourceSafetySeparation": 5
+      },
+      "scoreComments": {
+        "userNeedFit": "확인 후 방문한다는 두 행의 최소 작업이 순서대로 명확하다.",
+        "executionClarity": "각 항목이 확인 또는 방문이라는 구체적 행동과 관찰 가능한 완료 상태를 제시한다.",
+        "contentFidelityCoverage": "두 행을 한 번씩 매핑하고 date 행에 없는 날짜값은 만들지 않았다.",
+        "portability": "일정값이 없는 방문을 달력으로 강제하지 않고 두 단계 체크리스트로 옮긴 선택이 자연스럽다.",
+        "cognitiveLoad": "서로 다른 두 행을 두 항목으로만 나눠 불필요한 설명이나 목적지를 추가하지 않았다.",
+        "copySpecificity": "행의 핵심 명사와 행동만 사용한 짧은 행동형 문구다.",
+        "sourceSafetySeparation": "건강 관련 권위, 주의사항, 일정 또는 결과를 추정하지 않고 행 안의 내용에 머문다."
+      },
+      "topFix": "없음. 현재 제안은 두 행을 일정값 없이 정확히 보존한다.",
+      "verdict": "keep",
+      "reviewFile": "reviewer-a-cases-01-04.json"
+    },
+    {
+      "caseId": "case-02",
+      "proposalFingerprint": "c7252d2e51811aeefb556e5bda6de835dc9a98c98d533991e93abc620067530c",
+      "validatorPassed": true,
+      "validatorCodes": [],
+      "positiveCase": true,
+      "itemReviews": [
+        {
+          "proposalId": "p-01",
+          "decision": "keep",
+          "comment": "청소 행동, 세부 절차 메모, 4주에 한 번이라는 반복값이 모두 같은 procedure 행의 제목과 detail에 직접 근거한다."
+        }
+      ],
+      "unsupportedSignals": [
+        {
+          "class": "fact",
+          "field": "conversionDecision.lifeArea",
+          "quote": "home_living",
+          "comment": "극세 필터 청소가 가정·생활 영역에서 이뤄진다는 맥락은 행에 없으며, 업무·차량·기타 설비일 가능성을 배제할 수 없다."
+        }
+      ],
+      "scores": {
+        "userNeedFit": 5,
+        "executionClarity": 5,
+        "contentFidelityCoverage": 4,
+        "portability": 5,
+        "cognitiveLoad": 5,
+        "copySpecificity": 4,
+        "sourceSafetySeparation": 4
+      },
+      "scoreComments": {
+        "userNeedFit": "한 행의 청소 작업과 반복 주기를 가장 작은 실행 단위로 정확히 잡았다.",
+        "executionClarity": "행동 제목과 세 단계 메모가 무엇을 해야 하는지 보여 주고 완료 경계도 분명하다.",
+        "contentFidelityCoverage": "제목, detail, 반복값은 모두 보존했지만 행에 없는 home_living 영역 분류를 추가했다.",
+        "portability": "문자 그대로 제공된 4주 주기를 달력 후보로 옮겨 별도 일시를 발명하지 않았다.",
+        "cognitiveLoad": "한 번의 청소 루틴을 한 항목과 한 목적지로 유지해 최소 구성이 됐다.",
+        "copySpecificity": "항목과 메모는 구체적이지만 제안 제목의 ‘4주 청소’는 ‘4주에 한 번’보다 반복 의미가 덜 선명하다.",
+        "sourceSafetySeparation": "위험하거나 권위적인 주장은 없으나 생활 영역을 행 밖에서 단정했다."
+      },
+      "topFix": "lifeArea를 행에서 확인 가능한 중립 범주로 바꾸거나 미정으로 남긴다.",
+      "verdict": "edit",
+      "reviewFile": "reviewer-a-cases-01-04.json"
+    },
+    {
+      "caseId": "case-03",
+      "proposalFingerprint": "f1698e85a56c1f50bc694a11909982b7f81033a4c41000ec6c10a34317ff6a87",
+      "validatorPassed": true,
+      "validatorCodes": [],
+      "positiveCase": true,
+      "itemReviews": [
+        {
+          "proposalId": "p-01",
+          "decision": "keep",
+          "comment": "check rowType과 ‘여권’ 제목을 결합한 확인 항목으로, 원문이 제공하는 범위를 넘지 않는다."
+        },
+        {
+          "proposalId": "p-02",
+          "decision": "keep",
+          "comment": "check rowType과 ‘데이터 유심’ 제목을 그대로 실행 가능한 확인 항목으로 옮겼다."
+        }
+      ],
+      "unsupportedSignals": [
+        {
+          "class": "fact",
+          "field": "conversionDecision.lifeArea",
+          "quote": "travel_outings",
+          "comment": "여권과 데이터 유심이 여행에 흔히 쓰이더라도, 두 행에는 여행이나 외출 맥락이 명시돼 있지 않다."
+        }
+      ],
+      "scores": {
+        "userNeedFit": 5,
+        "executionClarity": 5,
+        "contentFidelityCoverage": 4,
+        "portability": 5,
+        "cognitiveLoad": 5,
+        "copySpecificity": 5,
+        "sourceSafetySeparation": 4
+      },
+      "scoreComments": {
+        "userNeedFit": "두 check 행을 각각 확인하는 가장 좁고 유용한 작업이 드러난다.",
+        "executionClarity": "각 객체별 확인 행동과 완료 상태가 구분되어 사용자가 체크할 수 있다.",
+        "contentFidelityCoverage": "두 행은 빠짐없이 한 번씩 보존했지만 travel_outings라는 주제 분류는 행이 직접 말하지 않는다.",
+        "portability": "별도 일정이나 절차를 만들지 않은 두 항목 체크리스트가 자연스러운 표현이다.",
+        "cognitiveLoad": "두 객체를 두 체크 항목으로만 제시해 불필요한 묶음이나 설명이 없다.",
+        "copySpecificity": "행의 객체명과 check 의미만 사용해 짧고 구체적이다.",
+        "sourceSafetySeparation": "권위·주의·일정 추정은 없지만 여행이라는 주제 맥락을 행 밖에서 부여했다."
+      },
+      "topFix": "travel_outings 분류를 제거하거나 행만으로 확정할 수 없는 중립 상태로 둔다.",
+      "verdict": "edit",
+      "reviewFile": "reviewer-a-cases-01-04.json"
+    },
+    {
+      "caseId": "case-04",
+      "proposalFingerprint": "e867302dcf11b7713576059da0d86378abdbc66aa42d80d92d4c6a96f6ab2531",
+      "validatorPassed": true,
+      "validatorCodes": [],
+      "positiveCase": true,
+      "itemReviews": [
+        {
+          "proposalId": "p-01",
+          "decision": "keep",
+          "comment": "첫 procedure 행의 구직 신청 등록을 그대로 독립 행동과 완료 기준으로 옮겼다."
+        },
+        {
+          "proposalId": "p-02",
+          "decision": "keep",
+          "comment": "두 번째 procedure 행의 취업지원 서비스 신청을 원문 순서와 표현 안에서 보존했다."
+        }
+      ],
+      "unsupportedSignals": [],
+      "scores": {
+        "userNeedFit": 5,
+        "executionClarity": 5,
+        "contentFidelityCoverage": 5,
+        "portability": 5,
+        "cognitiveLoad": 5,
+        "copySpecificity": 5,
+        "sourceSafetySeparation": 5
+      },
+      "scoreComments": {
+        "userNeedFit": "등록과 신청이라는 두 절차를 행 순서대로 수행하는 최소 작업이 명확하다.",
+        "executionClarity": "각 단계가 독립 행동이며 완료 기준도 해당 신청을 마친 상태로 관찰 가능하다.",
+        "contentFidelityCoverage": "두 procedure 행을 한 번씩 매핑하고 행 밖의 요건이나 결과를 추가하지 않았다.",
+        "portability": "순서가 있는 두 절차를 체크리스트로 보존해 일정 추정 없이 바로 사용할 수 있다.",
+        "cognitiveLoad": "두 원문 절차에 대응하는 두 항목만 있어 최소한의 구성이다.",
+        "copySpecificity": "구직 신청 등록과 취업지원 서비스 신청이라는 원문 객체와 행동을 그대로 쓴다.",
+        "sourceSafetySeparation": "자격, 기관 권위, 법적 효과, 마감 또는 신청 결과를 단정하지 않는다."
+      },
+      "topFix": "없음. 현재 제안이 두 절차와 순서를 근거 안에서 정확히 보존한다.",
+      "verdict": "keep",
+      "reviewFile": "reviewer-a-cases-01-04.json"
+    },
+    {
+      "caseId": "case-05",
+      "proposalFingerprint": "5e8413b933738a78bd00a32305a9e88c30a2ca0407f6ac33c2099a1d6fce4c42",
+      "validatorPassed": true,
+      "validatorCodes": [],
+      "positiveCase": true,
+      "itemReviews": [
+        {
+          "proposalId": "p-01",
+          "decision": "keep",
+          "comment": "1주차 강의와 퀴즈라는 한 행을 날짜 추정 없이 독립 체크 항목으로 정확히 옮겼고, 완료 조건도 같은 범위에 머문다."
+        },
+        {
+          "proposalId": "p-02",
+          "decision": "keep",
+          "comment": "2주차 강의와 퀴즈라는 한 행을 날짜 추정 없이 독립 체크 항목으로 정확히 옮겼고, 완료 조건도 같은 범위에 머문다."
+        }
+      ],
+      "unsupportedSignals": [],
+      "scores": {
+        "userNeedFit": 5,
+        "executionClarity": 5,
+        "contentFidelityCoverage": 5,
+        "portability": 5,
+        "cognitiveLoad": 5,
+        "copySpecificity": 5,
+        "sourceSafetySeparation": 5
+      },
+      "scoreComments": {
+        "userNeedFit": "두 주차의 강의와 퀴즈를 각각 진행한다는 최소 작업이 두 행에서 선명하게 드러난다.",
+        "executionClarity": "각 항목이 무엇을 마치면 되는지 주차별 강의와 퀴즈 범위로 관찰 가능하게 닫힌다.",
+        "contentFidelityCoverage": "두 행이 각각 한 Item에 정확히 한 번 매핑되고 누락, 중복, 외부 내용 추가가 없다.",
+        "portability": "실제 날짜를 만들지 않고 두 행을 그대로 체크리스트로 옮긴 표현이 가장 자연스럽다.",
+        "cognitiveLoad": "두 원문 행에 대응하는 두 체크 항목과 한 목적지만 사용해 구조가 최소다.",
+        "copySpecificity": "제목과 완료 조건이 각 주차의 강의와 퀴즈만 명시하며 불필요한 일반 문구가 없다.",
+        "sourceSafetySeparation": "실제 날짜나 강의 내용, 출처 권위 같은 관찰 불가능한 정보를 주장하지 않는다."
+      },
+      "topFix": "수정 필요 없음. 실제 날짜를 추정하지 않는 현재의 주차별 체크리스트 표현을 유지한다.",
+      "verdict": "keep",
+      "reviewFile": "reviewer-b-cases-05-08.json"
+    },
+    {
+      "caseId": "case-06",
+      "proposalFingerprint": "0e68704072e450ef785bc4db6f198724f1cab42ad65e78f6982c45df1b0d3445",
+      "validatorPassed": true,
+      "validatorCodes": [],
+      "positiveCase": true,
+      "itemReviews": [
+        {
+          "proposalId": "p-01",
+          "decision": "edit",
+          "comment": "선택한 레시피 영상이라는 리소스 경계와 메모 후보는 근거가 있지만, '사용하기'와 '사용한 상태'만으로는 어떤 사용이 완료인지 알 수 없어 완료형 작업 표현을 고쳐야 한다."
+        }
+      ],
+      "unsupportedSignals": [],
+      "scores": {
+        "userNeedFit": 3,
+        "executionClarity": 3,
+        "contentFidelityCoverage": 5,
+        "portability": 5,
+        "cognitiveLoad": 5,
+        "copySpecificity": 3,
+        "sourceSafetySeparation": 5
+      },
+      "scoreComments": {
+        "userNeedFit": "선택된 단일 리소스를 다룬다는 좁은 필요는 보이지만, 영상으로 무엇을 할지는 행에 없어 실행 목적이 모호하다.",
+        "executionClarity": "'사용하기'는 가능한 리소스 경계이지만 구체 행동과 완료 관찰 기준이 없어 문구와 완료 모드를 편집해야 한다.",
+        "contentFidelityCoverage": "단일 resource 행을 한 Item에 정확히 한 번 연결하고 영상 내부 내용이나 레시피 단계를 추가하지 않았다.",
+        "portability": "행 제목을 그대로 memoCandidate로 두고 일정 없이 메모 한 곳에 보존하는 투영은 자연스럽고 명시적이다.",
+        "cognitiveLoad": "한 리소스에 한 Item과 한 메모 목적지만 두어 불필요한 분해나 투영이 없다.",
+        "copySpecificity": "리소스 이름은 정확하지만 '사용하기'와 '사용한 상태'가 같은 말을 되풀이해 완료 의미가 구체적이지 않다.",
+        "sourceSafetySeparation": "영상 내용, 조리 단계, 출처 권위나 안전 정보를 추정하지 않고 제공된 리소스 경계 안에 머문다."
+      },
+      "topFix": "이 행은 메모 리소스 표현으로 한정하고, 구체적인 사용 목적을 확인하기 전에는 '사용 완료' 체크 작업으로 만들지 않는다.",
+      "verdict": "edit",
+      "reviewFile": "reviewer-b-cases-05-08.json"
+    },
+    {
+      "caseId": "case-07",
+      "proposalFingerprint": "07299735f55e65c7cd50fcbc41e26bc55a1d03e8f5ee7bea36345738c503065d",
+      "validatorPassed": false,
+      "validatorCodes": [
+        "source_row_accounting_not_exactly_once"
+      ],
+      "positiveCase": true,
+      "itemReviews": [
+        {
+          "proposalId": "p-01",
+          "decision": "edit",
+          "comment": "차량 이력과 상태 확인 단계 자체는 행에 근거하지만, 같은 SourceRow를 다음 Item과 중복 연결해 정확히 한 번 회계 규칙을 어기므로 구조 편집이 필요하다."
+        },
+        {
+          "proposalId": "p-02",
+          "decision": "edit",
+          "comment": "구매 판단 단계 자체는 행에 근거하지만, 같은 SourceRow를 앞 Item과 중복 연결해 정확히 한 번 회계 규칙을 어기므로 구조 편집이 필요하다."
+        }
+      ],
+      "unsupportedSignals": [],
+      "scores": {
+        "userNeedFit": 1,
+        "executionClarity": 1,
+        "contentFidelityCoverage": 1,
+        "portability": 1,
+        "cognitiveLoad": 1,
+        "copySpecificity": 1,
+        "sourceSafetySeparation": 1
+      },
+      "scoreComments": {
+        "userNeedFit": "확인 뒤 구매 판단이라는 필요는 행에서 보이지만, validatorPassed=false인 positive case이므로 하드 규칙에 따라 1점이다.",
+        "executionClarity": "두 단계 문구는 읽히지만 한 행을 두 Item에 중복 매핑한 invalid positive output이므로 하드 규칙에 따라 1점이다.",
+        "contentFidelityCoverage": "동일한 SourceRow가 두 Item에 매핑되어 정확히 한 번 회계 조건을 직접 위반했으며, invalid positive 규칙에 따라 1점이다.",
+        "portability": "체크리스트 목적지는 가능해도 현재 proposal이 deterministic validation을 통과하지 못했으므로 하드 규칙에 따라 1점이다.",
+        "cognitiveLoad": "두 단계 분리는 이해 가능하지만 중복 행 매핑으로 invalid인 positive output이므로 하드 규칙에 따라 1점이다.",
+        "copySpecificity": "제목 문구는 행에 근거해도 invalid positive output의 일곱 축 강제 규칙에 따라 1점이다.",
+        "sourceSafetySeparation": "외부 안전 주장은 없지만 proposal이 validator를 통과하지 못한 positive case이므로 하드 규칙에 따라 1점이다."
+      },
+      "topFix": "두 Item을 '차량 이력과 상태를 확인한 뒤 구매 판단하기' 한 항목으로 합쳐 해당 SourceRow를 정확히 한 번만 연결한다.",
+      "verdict": "reject",
+      "reviewFile": "reviewer-b-cases-05-08.json"
+    },
+    {
+      "caseId": "case-08",
+      "proposalFingerprint": "1e7c98b2fb02ea600f72777fcab6c9016cb4df01af12d3b80d39a30445ab4ae9",
+      "validatorPassed": true,
+      "validatorCodes": [],
+      "positiveCase": true,
+      "itemReviews": [
+        {
+          "proposalId": "p-01",
+          "decision": "keep",
+          "comment": "예약과 문진표 준비라는 한 행을 한 todo로 정확히 옮겼고, 날짜나 기한을 추가하지 않은 완료 조건도 같은 범위에 머문다."
+        }
+      ],
+      "unsupportedSignals": [],
+      "scores": {
+        "userNeedFit": 5,
+        "executionClarity": 5,
+        "contentFidelityCoverage": 5,
+        "portability": 5,
+        "cognitiveLoad": 5,
+        "copySpecificity": 5,
+        "sourceSafetySeparation": 5
+      },
+      "scoreComments": {
+        "userNeedFit": "예약과 문진표를 준비한다는 최소 실행 필요가 단일 check 행에서 그대로 드러난다.",
+        "executionClarity": "무엇을 준비하고 언제 완료인지 같은 행 범위로 명확하며 별도 날짜가 없어도 체크 가능한 작업이다.",
+        "contentFidelityCoverage": "단일 행을 한 Item에 정확히 한 번 연결하고 두 준비 대상을 함께 보존했으며 추가 내용이 없다.",
+        "portability": "한 번 완료하는 준비 작업을 일정 추정 없이 단일 todo로 옮긴 표현이 가장 자연스럽다.",
+        "cognitiveLoad": "한 행을 한 Item과 한 목적지로 유지해 분해나 설명을 더하지 않았다.",
+        "copySpecificity": "제목과 완료 조건이 예약과 문진표 준비만 직접 명시해 간결하고 구체적이다.",
+        "sourceSafetySeparation": "예약 날짜, 준비 기한, 의료 지침이나 출처 권위를 추정하지 않아 행의 경계를 지킨다."
+      },
+      "topFix": "수정 필요 없음. 날짜나 준비 기한을 추정하지 않는 현재의 단일 todo 표현을 유지한다.",
+      "verdict": "keep",
+      "reviewFile": "reviewer-b-cases-05-08.json"
+    },
+    {
+      "caseId": "case-09",
+      "proposalFingerprint": "356a913796f0c1c78b14539a9931deac5aa1e64fb03bfc355e601e890e6f8f58",
+      "validatorPassed": true,
+      "validatorCodes": [],
+      "positiveCase": true,
+      "itemReviews": [
+        {
+          "proposalId": "p-01",
+          "decision": "keep",
+          "comment": "resource 행의 Day 1 prompt를 사용하는 독립 항목으로서 행 제목과 경계가 일치하고 일정 값을 덧붙이지 않았다."
+        },
+        {
+          "proposalId": "p-02",
+          "decision": "keep",
+          "comment": "resource 행의 Day 2 prompt를 사용하는 독립 항목으로서 행 제목과 경계가 일치하고 일정 값을 덧붙이지 않았다."
+        }
+      ],
+      "unsupportedSignals": [
+        {
+          "class": "fact",
+          "field": "conversionDecision.lifeArea",
+          "quote": "study_reading",
+          "comment": "두 행은 prompt라는 리소스 이름만 제공하며 학습 또는 독서 용도는 말하지 않는다."
+        }
+      ],
+      "scores": {
+        "userNeedFit": 5,
+        "executionClarity": 5,
+        "contentFidelityCoverage": 4,
+        "portability": 5,
+        "cognitiveLoad": 5,
+        "copySpecificity": 5,
+        "sourceSafetySeparation": 4
+      },
+      "scoreComments": {
+        "userNeedFit": "두 resource 행을 각각 사용하는 가장 작은 유용한 작업이 명확하다.",
+        "executionClarity": "각 prompt를 사용하고 확인하는 경계가 한 항목씩 분리되어 있으며 실제 날짜나 주기를 만들지 않았다.",
+        "contentFidelityCoverage": "두 행을 정확히 한 번씩 매핑했지만 study_reading 생활 영역은 행에 없는 분류다.",
+        "portability": "실제 날짜가 없는 두 resource를 checklist로 제시해 자연스럽고 일정으로 과잉 확장하지 않았다.",
+        "cognitiveLoad": "두 행에 두 항목과 한 checklist 목적지만 두어 최소 구조를 유지했다.",
+        "copySpecificity": "항목 제목과 완료 문구가 Day 1 prompt와 Day 2 prompt만을 명시하며 추가 주제나 결과를 만들지 않았다.",
+        "sourceSafetySeparation": "날짜와 주제의 부재를 불확실성으로 남겼지만 study_reading 분류 한 건은 행 밖의 의미를 부여한다."
+      },
+      "topFix": "conversionDecision.lifeArea의 study_reading을 제거하거나 미분류 상태로 두어 prompt의 주제를 행 밖에서 추정하지 않는다.",
+      "verdict": "edit",
+      "reviewFile": "reviewer-c-cases-09-12.json"
+    },
+    {
+      "caseId": "case-10",
+      "proposalFingerprint": "32dff1ca62c39c2c609410adc92d15a6307fd40555a61912cc179381d30ff8a1",
+      "validatorPassed": true,
+      "validatorCodes": [],
+      "positiveCase": true,
+      "itemReviews": [
+        {
+          "proposalId": "p-01",
+          "decision": "keep",
+          "comment": "date 행에 적힌 정기검사 유효기간을 확인하는 단일 항목이며 실제 날짜나 기간 값을 발명하지 않았다."
+        }
+      ],
+      "unsupportedSignals": [
+        {
+          "class": "fact",
+          "field": "conversionDecision.lifeArea",
+          "quote": "money_admin_purchase",
+          "comment": "정기검사의 대상이 없어 금전·행정·구매 영역이라는 분류를 행만으로 확정할 수 없다."
+        },
+        {
+          "class": "fact",
+          "field": "proposal.omittedRows[0].reasonCode",
+          "quote": "supporting_source_boundary",
+          "comment": "허용된 rowType, title, detail, order만으로는 출처 위계를 생략 근거로 삼을 수 없다."
+        },
+        {
+          "class": "fact",
+          "field": "proposal.omittedRows[0].reason",
+          "quote": "지원 출처의 검사기관 내부 검사 단계는 primary SourceRow가 아니며 사용자 행동으로 확장할 세부 근거가 없음",
+          "comment": "실제 단계 세부정보가 없다는 판단은 행에서 확인되지만 지원 출처 및 primary 여부를 의미 근거로 사용한 부분은 허용된 행 필드에 없다."
+        },
+        {
+          "class": "fact",
+          "field": "proposal.incompleteReason",
+          "quote": "지원 출처의 검사기관 내부 검사 단계는 Flow 구조를 통제하지 않아 사용자 Item에서 제외함",
+          "comment": "reference 행에 실제 단계가 없다는 이유로는 생략할 수 있으나 출처 위계가 Flow 구조를 통제하지 않는다는 규칙은 행에 제시되지 않았다."
+        }
+      ],
+      "scores": {
+        "userNeedFit": 4,
+        "executionClarity": 5,
+        "contentFidelityCoverage": 4,
+        "portability": 5,
+        "cognitiveLoad": 5,
+        "copySpecificity": 5,
+        "sourceSafetySeparation": 3
+      },
+      "scoreComments": {
+        "userNeedFit": "정기검사 유효기간 확인이라는 좁은 작업은 분명하지만 검사 대상과 생활 영역은 알 수 없다.",
+        "executionClarity": "실제 기간 값이 없는 상태에서 확인 행동과 완료 경계를 단일 todo로 명확히 제시했다.",
+        "contentFidelityCoverage": "date 행은 한 항목으로 매핑하고 세부 단계가 없는 reference 행은 한 번 생략했지만 생략 설명 일부와 생활 영역이 행 밖 근거에 의존한다.",
+        "portability": "날짜 값을 발명하지 않고 유효기간 확인을 todo로 둔 것이 가장 작은 자연스러운 표현이다.",
+        "cognitiveLoad": "행 두 개를 단일 실행 항목과 한 생략 기록으로 정리해 불필요한 단계나 목적지를 만들지 않았다.",
+        "copySpecificity": "실행 항목은 정기검사 유효기간이라는 행 제목에만 기대고 확인하기로 간결하게 표현했다.",
+        "sourceSafetySeparation": "실제 날짜와 검사 대상의 불확실성은 남겼지만 허용된 행 필드가 아닌 출처 위계를 생략 및 구조 근거로 사용했다."
+      },
+      "topFix": "lifeArea 추정을 제거하고 reference 행의 생략 이유를 실제 검사 단계 세부정보가 행에 없다는 사실만으로 다시 쓴다.",
+      "verdict": "edit",
+      "reviewFile": "reviewer-c-cases-09-12.json"
+    },
+    {
+      "caseId": "case-11",
+      "proposalFingerprint": "972fdd606415e273f1d227755256f0a13b804a9ccc60e6f66ae559afa55e5c94",
+      "validatorPassed": true,
+      "validatorCodes": [],
+      "positiveCase": false,
+      "itemReviews": [],
+      "unsupportedSignals": [],
+      "scores": null,
+      "scoreComments": null,
+      "topFix": null,
+      "verdict": "keep",
+      "reviewFile": "reviewer-c-cases-09-12.json"
+    },
+    {
+      "caseId": "case-12",
+      "proposalFingerprint": "ef206b70ef5cefcfe07c15228c1879fa231d4a86ee0b15769dbd4aa0ded6679b",
+      "validatorPassed": true,
+      "validatorCodes": [],
+      "positiveCase": false,
+      "itemReviews": [],
+      "unsupportedSignals": [],
+      "scores": null,
+      "scoreComments": null,
+      "topFix": null,
+      "verdict": "keep",
+      "reviewFile": "reviewer-c-cases-09-12.json"
+    }
+  ]
+}

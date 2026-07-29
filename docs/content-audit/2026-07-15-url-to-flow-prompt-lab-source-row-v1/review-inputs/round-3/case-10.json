@@ -1,0 +1,138 @@
+{
+  "reviewInputVersion": "flowme-source-row-blind-review-input-v1",
+  "laneId": "url-to-flow-source-row-v1",
+  "round": "round-3",
+  "caseId": "case-10",
+  "positiveCase": true,
+  "sourcePacket": {
+    "requestId": "rq-a47e19d260bf",
+    "caseId": "case-10",
+    "maxItems": 7,
+    "sourceOwnership": {
+      "primarySourceId": "src-b6720d4e91a5",
+      "supportingSourceIds": [
+        "src-40c9a71e2f86"
+      ]
+    },
+    "sourceRows": [
+      {
+        "sourceRowId": "row-58a7d0c31e94",
+        "sourceId": "src-b6720d4e91a5",
+        "rowType": "date",
+        "title": "정기검사 유효기간",
+        "detail": null,
+        "order": 0
+      },
+      {
+        "sourceRowId": "row-a20e6b9f4731",
+        "sourceId": "src-40c9a71e2f86",
+        "rowType": "reference",
+        "title": "검사기관 내부 검사 단계",
+        "detail": null,
+        "order": 0
+      }
+    ]
+  },
+  "deterministicNegativeBoundary": null,
+  "proposal": {
+    "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+    "promptVersion": "url-to-flow-prompt-v1.1",
+    "requestId": "rq-a47e19d260bf",
+    "caseId": "case-10",
+    "status": {
+      "generationState": "partial",
+      "outcome": "partial",
+      "readiness": null,
+      "errorCode": null
+    },
+    "sourceAssessment": {
+      "access": "readable",
+      "sourceShape": "date_preparation",
+      "primarySourceId": "src-b6720d4e91a5",
+      "supportingSourceIds": [
+        "src-40c9a71e2f86"
+      ],
+      "receivedSourceRowIds": [
+        "row-58a7d0c31e94",
+        "row-a20e6b9f4731"
+      ],
+      "untrustedInstructionDetected": false
+    },
+    "conversionDecision": {
+      "userNeed": "정기검사 유효기간 확인하기",
+      "lifeArea": "money_admin_purchase",
+      "planningPattern": "date_preparation",
+      "primaryArtifact": "todo",
+      "contentShape": "정기검사 유효기간을 확인하는 단일 항목"
+    },
+    "proposal": {
+      "proposalTitle": "정기검사 유효기간 확인",
+      "items": [
+        {
+          "proposalId": "p-01",
+          "title": "정기검사 유효기간 확인하기",
+          "intent": "inspect",
+          "sourceRowIds": [
+            "row-58a7d0c31e94"
+          ],
+          "completion": {
+            "mode": "check",
+            "doneWhen": "정기검사 유효기간을 확인했다"
+          },
+          "memoCandidate": null,
+          "groupingCandidate": null,
+          "scheduleCandidate": null
+        }
+      ],
+      "omittedRows": [
+        {
+          "sourceRowId": "row-a20e6b9f4731",
+          "reasonCode": "supporting_source_boundary",
+          "reason": "지원 출처의 검사기관 내부 검사 단계는 primary SourceRow가 아니며 사용자 행동으로 확장할 세부 근거가 없음"
+        }
+      ],
+      "incompleteReason": "지원 출처의 검사기관 내부 검사 단계는 Flow 구조를 통제하지 않아 사용자 Item에서 제외함"
+    },
+    "projectionPlan": [
+      {
+        "target": "todo",
+        "applicability": "applicable",
+        "reason": "유효기간 확인은 독립 단일 행동이며 실제 날짜나 기간 값이 없어 Calendar 후보로 확장하지 않음"
+      }
+    ],
+    "reviewHints": {
+      "recommendedDisposition": "review",
+      "uncertainties": [
+        "정기검사 유효기간의 실제 날짜나 기간 값이 제공되지 않음",
+        "정기검사의 대상이 제공되지 않아 생활 영역 분류 확인이 필요함"
+      ],
+      "hardFailCodes": [],
+      "humanReviewRequired": [
+        "정기검사 대상과 실제 유효기간 확인"
+      ]
+    }
+  },
+  "proposalFingerprint": "32dff1ca62c39c2c609410adc92d15a6307fd40555a61912cc179381d30ff8a1",
+  "deterministicValidation": {
+    "passed": true,
+    "codes": [],
+    "sourceRowAccounting": true
+  },
+  "rubricPath": "docs/specs/2026-07-15-url-to-flow-prompt-lab-source-row-v1/review-rubric.md",
+  "evidenceBoundary": {
+    "allowed": [
+      "this sourcePacket",
+      "this proposal",
+      "this proposalFingerprint",
+      "this deterministicValidation",
+      "the linked blind rubric"
+    ],
+    "forbidden": [
+      "canonical expectation or opaque ID mapping",
+      "source title URL publisher or preflight metadata",
+      "legacy or prior-round output and review",
+      "provider model tier timing token or cost",
+      "other reviewer conclusions"
+    ]
+  }
+}

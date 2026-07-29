@@ -1,0 +1,27 @@
+{
+  "requestRef": "req-666d09c063252eb7",
+  "sampleRef": "smp-0b82f73ebd2cd478",
+  "maxItems": 7,
+  "sourceOwnership": {
+    "primarySourceRef": "src-a7bf212a28dcb613",
+    "supportingSourceRefs": []
+  },
+  "sourceRows": [
+    {
+      "sourceRowRef": "row-ee4a91296e11ea28",
+      "sourceRef": "src-a7bf212a28dcb613",
+      "rowType": "procedure",
+      "title": "구직 신청 등록",
+      "detail": null,
+      "order": 0
+    },
+    {
+      "sourceRowRef": "row-2873fc5802dd3a6e",
+      "sourceRef": "src-a7bf212a28dcb613",
+      "rowType": "procedure",
+      "title": "취업지원 서비스 신청",
+      "detail": null,
+      "order": 1
+    }
+  ]
+}

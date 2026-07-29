@@ -1,0 +1,143 @@
+{
+  "reviewInputVersion": "flowme-source-row-blind-review-input-v1",
+  "laneId": "url-to-flow-source-row-v1",
+  "round": "round-3",
+  "caseId": "case-09",
+  "positiveCase": true,
+  "sourcePacket": {
+    "requestId": "rq-05f3be71c8a4",
+    "caseId": "case-09",
+    "maxItems": 7,
+    "sourceOwnership": {
+      "primarySourceId": "src-29f4b8d160ce",
+      "supportingSourceIds": []
+    },
+    "sourceRows": [
+      {
+        "sourceRowId": "row-7c20e4a91b68",
+        "sourceId": "src-29f4b8d160ce",
+        "rowType": "resource",
+        "title": "Day 1 prompt",
+        "detail": null,
+        "order": 0
+      },
+      {
+        "sourceRowId": "row-e3168f2c50a7",
+        "sourceId": "src-29f4b8d160ce",
+        "rowType": "resource",
+        "title": "Day 2 prompt",
+        "detail": null,
+        "order": 1
+      }
+    ]
+  },
+  "deterministicNegativeBoundary": null,
+  "proposal": {
+    "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+    "promptVersion": "url-to-flow-prompt-v1.1",
+    "requestId": "rq-05f3be71c8a4",
+    "caseId": "case-09",
+    "status": {
+      "generationState": "proposal",
+      "outcome": "complete",
+      "readiness": null,
+      "errorCode": null
+    },
+    "sourceAssessment": {
+      "access": "readable",
+      "sourceShape": "resource_queue",
+      "primarySourceId": "src-29f4b8d160ce",
+      "supportingSourceIds": [],
+      "receivedSourceRowIds": [
+        "row-7c20e4a91b68",
+        "row-e3168f2c50a7"
+      ],
+      "untrustedInstructionDetected": false
+    },
+    "conversionDecision": {
+      "userNeed": "Day 1 prompt와 Day 2 prompt 사용하기",
+      "lifeArea": "study_reading",
+      "planningPattern": "resource_queue",
+      "primaryArtifact": "checklist",
+      "contentShape": "두 개의 Day별 prompt 리소스 큐"
+    },
+    "proposal": {
+      "proposalTitle": "Day 1·2 prompt 사용",
+      "items": [
+        {
+          "proposalId": "p-01",
+          "title": "Day 1 prompt 사용하기",
+          "intent": "use_resource",
+          "sourceRowIds": [
+            "row-7c20e4a91b68"
+          ],
+          "completion": {
+            "mode": "check",
+            "doneWhen": "Day 1 prompt를 사용했다"
+          },
+          "memoCandidate": null,
+          "groupingCandidate": null,
+          "scheduleCandidate": null
+        },
+        {
+          "proposalId": "p-02",
+          "title": "Day 2 prompt 사용하기",
+          "intent": "use_resource",
+          "sourceRowIds": [
+            "row-e3168f2c50a7"
+          ],
+          "completion": {
+            "mode": "check",
+            "doneWhen": "Day 2 prompt를 사용했다"
+          },
+          "memoCandidate": null,
+          "groupingCandidate": null,
+          "scheduleCandidate": null
+        }
+      ],
+      "omittedRows": [],
+      "incompleteReason": null
+    },
+    "projectionPlan": [
+      {
+        "target": "checklist",
+        "applicability": "applicable",
+        "reason": "두 prompt를 각각 사용 완료로 확인할 수 있고 실제 날짜 값은 없어 일정으로 확장하지 않음"
+      }
+    ],
+    "reviewHints": {
+      "recommendedDisposition": "review",
+      "uncertainties": [
+        "Day 1과 Day 2에 대응하는 실제 날짜나 주기가 제공되지 않음",
+        "prompt의 주제와 용도가 제공되지 않아 생활 영역 분류 확인이 필요함"
+      ],
+      "hardFailCodes": [],
+      "humanReviewRequired": [
+        "prompt의 주제와 생활 영역 확인"
+      ]
+    }
+  },
+  "proposalFingerprint": "356a913796f0c1c78b14539a9931deac5aa1e64fb03bfc355e601e890e6f8f58",
+  "deterministicValidation": {
+    "passed": true,
+    "codes": [],
+    "sourceRowAccounting": true
+  },
+  "rubricPath": "docs/specs/2026-07-15-url-to-flow-prompt-lab-source-row-v1/review-rubric.md",
+  "evidenceBoundary": {
+    "allowed": [
+      "this sourcePacket",
+      "this proposal",
+      "this proposalFingerprint",
+      "this deterministicValidation",
+      "the linked blind rubric"
+    ],
+    "forbidden": [
+      "canonical expectation or opaque ID mapping",
+      "source title URL publisher or preflight metadata",
+      "legacy or prior-round output and review",
+      "provider model tier timing token or cost",
+      "other reviewer conclusions"
+    ]
+  }
+}

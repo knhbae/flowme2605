@@ -1,7 +1,7 @@
 {
   "packetSetVersion": "flowme-url-to-flow-prompt-lab-packets-v0.2",
   "promptVersion": "url-to-flow-prompt-v0.2",
-  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1.1",
   "proposalSchemaVersion": "flowme-semantic-proposal-v1",
   "generator": "scripts/content-audit/build-url-to-flow-prompt-lab-packets.mjs",
   "disclosure": "Each packet contains one source-only case. expected-v1.json and canonical answers are intentionally excluded.",

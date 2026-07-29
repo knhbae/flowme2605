@@ -1,0 +1,47 @@
+{
+  "laneId": "url-to-flow-source-row-v1",
+  "caseSetVersion": "flowme-url-to-flow-source-row-cases-v1",
+  "promptVersion": "url-to-flow-prompt-v1.0",
+  "caseId": "case-08",
+  "requestId": "rq-e68c25a094b7",
+  "preflightInput": {
+    "targetLocale": "ko-KR",
+    "primary": {
+      "countryContext": "KR",
+      "riskClass": "sensitive",
+      "accessStatus": "fetched",
+      "rightsStatus": "allowed"
+    },
+    "sourceRowCount": 1
+  },
+  "preflightResult": {
+    "passed": true,
+    "modelInvoked": true,
+    "generationState": null,
+    "outcome": null,
+    "errorCode": null,
+    "recommendedDisposition": null,
+    "reasonCode": "preflight_passed"
+  },
+  "generatorInput": {
+    "requestId": "rq-e68c25a094b7",
+    "caseId": "case-08",
+    "maxItems": 7,
+    "sourceOwnership": {
+      "primarySourceId": "src-e1096c3a75b4",
+      "supportingSourceIds": []
+    },
+    "sourceRows": [
+      {
+        "sourceRowId": "row-f51d309b7c24",
+        "sourceId": "src-e1096c3a75b4",
+        "rowType": "check",
+        "title": "예약과 문진표 준비",
+        "detail": null,
+        "order": 0
+      }
+    ]
+  },
+  "deterministicProposal": null,
+  "evidenceBoundary": "Only generatorInput is model-visible. preflightInput and hidden oracle are excluded."
+}

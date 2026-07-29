@@ -1,0 +1,158 @@
+{
+  "manifestVersion": "flowme-source-row-packet-manifest-v1",
+  "laneId": "url-to-flow-source-row-v1",
+  "caseSetVersion": "flowme-url-to-flow-source-row-cases-v1",
+  "promptVersion": "url-to-flow-prompt-v1.0",
+  "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+  "promptTemplate": {
+    "path": "docs/specs/2026-07-15-url-to-flow-prompt-lab-source-row-v1/prompt-v1.0.md",
+    "sha256": "fecb17398769a1ec96e8b900a8004caeb1fc7ff6491e1741fc131d72e4a97acf"
+  },
+  "schema": {
+    "path": "docs/specs/2026-07-14-url-to-flow-prompt-lab/proposal-schema-v1.json",
+    "sha256": "d001767b277f387a38ea52f88392c5eb9afe6d9b9af85bfd24e6f4ef37ef4536"
+  },
+  "cases": {
+    "path": "docs/specs/2026-07-15-url-to-flow-prompt-lab-source-row-v1/cases-v1.json",
+    "sha256": "9223c9824a6a5471621bec35be4b92f987da669ce22902f94810949aa6e2279f"
+  },
+  "pipelinePacketCount": 12,
+  "generatorPromptCount": 10,
+  "deterministicNegativeCount": 2,
+  "pipelinePackets": [
+    {
+      "caseId": "case-01",
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/packets/v1.0/pipeline/case-01.json",
+      "sha256": "7894b4810c4796e98cb1d4bb8db4069acac74e6bda8deb02b32e0d5a2791dc87",
+      "modelInvoked": true
+    },
+    {
+      "caseId": "case-02",
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/packets/v1.0/pipeline/case-02.json",
+      "sha256": "51b2a568791eee561150573fcc03478dcac2e9861888d4271a3cd7e9a3accee9",
+      "modelInvoked": true
+    },
+    {
+      "caseId": "case-03",
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/packets/v1.0/pipeline/case-03.json",
+      "sha256": "d88f162a7c730befc8ce54acfc639deddc4b976e5822442eb262cb0b8bcd39ba",
+      "modelInvoked": true
+    },
+    {
+      "caseId": "case-04",
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/packets/v1.0/pipeline/case-04.json",
+      "sha256": "abf8b0270f5a267cb9ac1c806d6ca883dc4b6aebc4c218f305645fe9783b3fe2",
+      "modelInvoked": true
+    },
+    {
+      "caseId": "case-05",
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/packets/v1.0/pipeline/case-05.json",
+      "sha256": "2cd86c7088fbff53c0b6ab685c237c47f788927ed77877a33335173c67a9b96f",
+      "modelInvoked": true
+    },
+    {
+      "caseId": "case-06",
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/packets/v1.0/pipeline/case-06.json",
+      "sha256": "3b4f495ed15324b5c282af5fe63e6e8f4b96be5da9be2e171805cba9211e2270",
+      "modelInvoked": true
+    },
+    {
+      "caseId": "case-07",
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/packets/v1.0/pipeline/case-07.json",
+      "sha256": "500fd72f648df8fa17f9df18106b160ff6a230886598d592c4f54fa49fafa7d0",
+      "modelInvoked": true
+    },
+    {
+      "caseId": "case-08",
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/packets/v1.0/pipeline/case-08.json",
+      "sha256": "f5ea5420483f7a8cd81fd34edf2e71324a8a2bbd0e162695acde14d77428c26a",
+      "modelInvoked": true
+    },
+    {
+      "caseId": "case-09",
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/packets/v1.0/pipeline/case-09.json",
+      "sha256": "84f9bf51a8e4e750c15208f890a90dbb586b88ceabb4f52cdb7cff0255c17db6",
+      "modelInvoked": true
+    },
+    {
+      "caseId": "case-10",
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/packets/v1.0/pipeline/case-10.json",
+      "sha256": "41f87ca72f18578f764b56b9c5f580971bc1e46628130ed7ca95049b5f46e564",
+      "modelInvoked": true
+    },
+    {
+      "caseId": "case-11",
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/packets/v1.0/pipeline/case-11.json",
+      "sha256": "c644cad6c787ff88cc04a7f4eb1fc5c4f01286cbb84c25746c83e74725af6497",
+      "modelInvoked": false
+    },
+    {
+      "caseId": "case-12",
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/packets/v1.0/pipeline/case-12.json",
+      "sha256": "86d782441f008d8ecaf69119be54c4bc9d407170ed7c23ecbcffcfc11a40d65f",
+      "modelInvoked": false
+    }
+  ],
+  "generatorPrompts": [
+    {
+      "caseId": "case-01",
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/packets/v1.0/generator-prompts/case-01.md",
+      "sha256": "6e7dcdc55ed43ba70b66d8335def8becb00556a3ff138e1459d95daf744bdc92",
+      "semanticPayloadSha256": "4b107934d791a7e69e425a10fdb5853541fc06976c2182466cd58126899c2c2a"
+    },
+    {
+      "caseId": "case-02",
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/packets/v1.0/generator-prompts/case-02.md",
+      "sha256": "6e9edc3307fc13da81c51d282fd1b44a3380d796f6f4791f1abf1609ea56cf33",
+      "semanticPayloadSha256": "ae5662225e256d92b4e470dd536f7016106839a6e3aed5c5904a3e72bae29c7e"
+    },
+    {
+      "caseId": "case-03",
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/packets/v1.0/generator-prompts/case-03.md",
+      "sha256": "97dd6f0098f33e24db5e62b3f59fe77343568328de04fc30e3edbeaf168eb465",
+      "semanticPayloadSha256": "e33f21d9a092fbdce2536c6927704298582b93e8c3e95b2ecce5489c13815b4e"
+    },
+    {
+      "caseId": "case-04",
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/packets/v1.0/generator-prompts/case-04.md",
+      "sha256": "fe6cd5c91cf3ca83fbdb767a2f3ea908bfcdeab4a86d0dc7e690bf3ff9584003",
+      "semanticPayloadSha256": "5f6321ae665fc3aac58f85b44c50cae9e062e343476f889703235929e913109d"
+    },
+    {
+      "caseId": "case-05",
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/packets/v1.0/generator-prompts/case-05.md",
+      "sha256": "99414d4e20114851194fb200caa750383d8b387365e20aecc223a4d455c31c1a",
+      "semanticPayloadSha256": "2ec7b544e76d5a238a3650d5b7fcbe3dc44559f4f5e470f53c91980424159b9d"
+    },
+    {
+      "caseId": "case-06",
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/packets/v1.0/generator-prompts/case-06.md",
+      "sha256": "1de93091ba86fc61f759516a9a9bf290661857a4cf0b0b8840ce5ffbd4032501",
+      "semanticPayloadSha256": "9731865d90c2816b66758537cc3bd60f8b87672008d991186d536f6de9f2e10b"
+    },
+    {
+      "caseId": "case-07",
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/packets/v1.0/generator-prompts/case-07.md",
+      "sha256": "5082e455461481bf4091b994e76fbadd364f0e14629261e15f25341fdc804624",
+      "semanticPayloadSha256": "2b9f3ecae04305565979e481f3de1d1cb81a3aa08c8b63ee982cb7df88246f6c"
+    },
+    {
+      "caseId": "case-08",
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/packets/v1.0/generator-prompts/case-08.md",
+      "sha256": "0b8bc676fb3d4e28d9396e53c26b0c328664088e015d190e4e72767170d36218",
+      "semanticPayloadSha256": "b38cb601692515bef16f66ac0b51748233f6105134dd15a4b8202ccf008b684a"
+    },
+    {
+      "caseId": "case-09",
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/packets/v1.0/generator-prompts/case-09.md",
+      "sha256": "a1b12df35b84b5664752e16c810a3de465cefc0dcb58dece3edc23d86bbf8d0d",
+      "semanticPayloadSha256": "ef9d5236e7c3b51e60a5aeaa042ae0e7963fe1574b19f25d61769e06e7c8fab4"
+    },
+    {
+      "caseId": "case-10",
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/packets/v1.0/generator-prompts/case-10.md",
+      "sha256": "29f348e883e31482eb68c3664b9f5414cf41bf42bdb9e0a231146f10e78262a6",
+      "semanticPayloadSha256": "3f3718a0eb1abacb030d46fff675d010fdd9af1df881dab095a89011a714a4f5"
+    }
+  ]
+}

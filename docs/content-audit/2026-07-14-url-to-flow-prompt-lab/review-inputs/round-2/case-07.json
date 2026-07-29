@@ -1,16 +1,20 @@
 {
-  "reviewInputSchemaVersion": "flowme-url-to-flow-blind-review-input-v1",
+  "reviewInputSchemaVersion": "flowme-url-to-flow-blind-review-input-v2",
   "round": "round-2",
   "caseId": "case-07",
-  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
-  "expectationSetVersion": "flowme-url-to-flow-prompt-lab-expected-v1",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1.1",
   "promptVersion": "url-to-flow-prompt-v0.2",
   "proposalSchemaVersion": "flowme-semantic-proposal-v1",
   "rubric": {
-    "version": "flowme-url-to-flow-prompt-lab-review-rubric-v1",
+    "version": "flowme-url-to-flow-prompt-lab-review-rubric-v2",
     "reference": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-rubric.md"
   },
   "reviewResultTemplate": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-result-template.json",
+  "rawRun": {
+    "runFile": "docs/content-audit/2026-07-14-url-to-flow-prompt-lab/runs/round-2/batch-b.json",
+    "runId": "round-2-neutral-batch-b"
+  },
+  "proposalFingerprint": "sha256:c77a5f16b737bc8b83c7019eacdd6e563def9b4055faecfeab1343daba34d779",
   "sourcePacket": {
     "caseId": "case-07",
     "requestId": "prompt-lab-v1-case-07",
@@ -46,61 +50,8 @@
       }
     ],
     "inputEvidenceRefs": [
-      "golden-fixtures-v1.json#gf-pos-07-decision-hold:source-only"
+      "prompt-lab-source:case-07"
     ]
-  },
-  "hiddenExpectation": {
-    "caseId": "case-07",
-    "fixtureId": "gf-pos-07-decision-hold",
-    "fixtureKind": "positive",
-    "fixtureShape": "decision_hold",
-    "name": "중고차 후보 결정·보류",
-    "expectedStatus": {
-      "generationState": "proposal",
-      "outcome": "complete",
-      "readiness": null,
-      "errorCode": null,
-      "recommendedDisposition": "review"
-    },
-    "expectedConversion": {
-      "userNeed": "중고차 점검 기준으로 후보를 선택하거나 보류하고 그 이유를 남긴다.",
-      "planningPattern": "compare_decide",
-      "primaryArtifact": "hybrid",
-      "riskLevel": "financial_sensitive"
-    },
-    "expectedItems": [
-      {
-        "referenceItemId": "item-used-car-decide",
-        "title": "후보 차량 구매·보류·제외 결정하기",
-        "intent": "decide",
-        "sourceRowIds": [
-          "row-used-car-decision"
-        ],
-        "completionMode": "decision",
-        "doneWhen": "결정 상태와 이유를 남겼다.",
-        "hasSchedule": false,
-        "canonicalSchedule": null
-      }
-    ],
-    "expectedOmittedRows": [],
-    "accountingSourceRowIds": [
-      "row-used-car-decision"
-    ],
-    "expectedProjections": [
-      "checklist:markdown",
-      "sheet:csv",
-      "memo:markdown"
-    ],
-    "forbiddenProjections": [
-      "calendar:ics",
-      "todo:plain_text"
-    ],
-    "referenceReview": {
-      "readiness": "ready_second_wave",
-      "hardFails": [],
-      "rightsDecision": "공식 판단 기준과 링크만 사용한다.",
-      "riskDecision": "FlowMe는 구매 추천이나 차량 안전 판정을 제공하지 않는다."
-    }
   },
   "proposal": {
     "proposalSchemaVersion": "flowme-semantic-proposal-v1",
@@ -124,27 +75,27 @@
       "untrustedInstructionDetected": false
     },
     "conversionDecision": {
-      "userNeed": "차량 이력과 상태를 확인한 뒤 후보의 구매 여부를 판단하고 이유를 남긴다.",
+      "userNeed": "차량 이력과 상태를 확인한 뒤 중고차 후보를 선택하거나 보류하고 그 이유를 남긴다.",
       "lifeArea": "money_admin_purchase",
       "planningPattern": "compare_decide",
       "primaryArtifact": "sheet",
-      "contentShape": "구매 또는 보류 결정 기록"
+      "contentShape": "중고차 후보 확인과 구매 판단 기록"
     },
     "proposal": {
-      "proposalTitle": "중고차 후보 구매 판단 기록",
+      "proposalTitle": "중고차 후보 구매 판단",
       "items": [
         {
           "proposalId": "p-01",
-          "title": "차량 이력과 상태를 확인한 뒤 구매 판단하기",
+          "title": "차량 이력과 상태를 확인해 구매 판단하기",
           "intent": "decide",
           "sourceRowIds": [
             "row-used-car-decision"
           ],
           "completion": {
             "mode": "decision",
-            "doneWhen": "구매 또는 보류 결정과 그 이유가 기록됨"
+            "doneWhen": "후보를 선택하거나 보류하고 판단 이유를 남겼다."
           },
-          "memoCandidate": "구매 또는 보류 판단의 이유를 함께 남긴다.",
+          "memoCandidate": "선택 또는 보류의 이유를 남긴다.",
           "groupingCandidate": null,
           "scheduleCandidate": null
         }
@@ -156,20 +107,23 @@
       {
         "target": "sheet",
         "applicability": "applicable",
-        "reason": "차량 이력과 상태를 근거로 한 결정과 이유를 구조화해 남긴다."
+        "reason": "차량 후보의 선택 또는 보류 결과와 그 이유를 함께 기록할 수 있다."
       }
     ],
     "reviewHints": {
       "recommendedDisposition": "review",
-      "uncertainties": [],
+      "uncertainties": [
+        "차량 이력과 상태의 세부 점검 기준은 SourceRow에 없다."
+      ],
       "hardFailCodes": [],
       "humanReviewRequired": [
-        "재무적으로 민감한 구매 판단은 공식 안내와 사람 검토에 맡김"
+        "구매 판단은 공식 안내와 대상 차량 정보를 확인해 사람이 최종 검토한다."
       ]
     }
   },
   "validator": {
-    "passed": null,
-    "hardFailCodes": []
+    "validatorVersion": "flowme-url-to-flow-prompt-lab-validator-v1",
+    "passed": true,
+    "codes": []
   }
 }

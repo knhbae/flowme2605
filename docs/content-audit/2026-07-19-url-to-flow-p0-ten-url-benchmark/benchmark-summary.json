@@ -1,0 +1,135 @@
+{
+  "schemaVersion": "flowme-url-to-flow-p0-ten-url-benchmark-summary-v1.0",
+  "createdAt": "2026-07-29T04:21:50.153Z",
+  "strategyBaseline": {
+    "status": "version_locked_untracked_strategy_input",
+    "ceoReport": {
+      "path": "D:/flowme2605/flow-mvp/docs/content-audit/2026-07-18-flowme-flow-content-model-category-playbook-ceo-ko.html",
+      "sha256": "DA2FF7AB3282A12F6804E7BF758CD6A49EB43416E4621150B6452E632CD852CD"
+    },
+    "contentContract": {
+      "path": "D:/flowme2605/flow-mvp/docs/content-audit/2026-07-18-flowme-flow-content-contract-v1.json",
+      "sha256": "EEBAB701014C723924E03259282A7E762E7638481ABCB628F7D26B0042BA3066"
+    },
+    "categoryLedger": {
+      "path": "D:/flowme2605/flow-mvp/docs/content-audit/2026-07-18-flowme-flow-content-category-examples.json",
+      "sha256": "930813E20BFC8D7F77A8386F8D3A884C0911BBF115170B4BF0DC33D2839D2C70"
+    }
+  },
+  "sourceCapture": {
+    "totalCases": 10,
+    "readableCases": 10,
+    "browserOrStaticFallbackCases": 2,
+    "elapsedTotalMs": 27693,
+    "elapsedMedianMs": 2738.5,
+    "elapsedMinimumMs": 2253,
+    "elapsedMaximumMs": 3275,
+    "rightsReviewCases": 3,
+    "sensitiveCases": 5
+  },
+  "rawLanes": [
+    {
+      "lane": "lower_cost",
+      "modelProxy": "gpt-5.6-terra",
+      "reasoningEffort": "high",
+      "rawOutputChars": 36420,
+      "estimatedOutputTokens": 9105,
+      "strictPassedCases": 7,
+      "compileCandidatesProposed": 7,
+      "hardGateAcceptedCompileCandidates": 4,
+      "exactEvidenceFailureCount": 8,
+      "tokenProxyPerStrictPass": 1301,
+      "actualProviderCost": null,
+      "actualApiLatency": null
+    },
+    {
+      "lane": "higher_capability",
+      "modelProxy": "gpt-5.6-sol",
+      "reasoningEffort": "xhigh",
+      "rawOutputChars": 99530,
+      "estimatedOutputTokens": 24883,
+      "strictPassedCases": 3,
+      "compileCandidatesProposed": 9,
+      "hardGateAcceptedCompileCandidates": 3,
+      "exactEvidenceFailureCount": 36,
+      "tokenProxyPerStrictPass": 8294,
+      "actualProviderCost": null,
+      "actualApiLatency": null
+    }
+  ],
+  "blindReview": {
+    "kind": "two_blind_model_proxies_not_human_review",
+    "reviewerCount": 2,
+    "totalOverallVotes": 20,
+    "laneVotes": {
+      "lower_cost": 4,
+      "higher_capability": 13,
+      "tie": 3
+    },
+    "actualHumanReviewCount": 0
+  },
+  "selected": {
+    "hardGatePassedCases": 10,
+    "generatedFlowCases": 9,
+    "correctHoldCases": 1,
+    "compileCandidateCases": 8,
+    "draftOnlyCases": 1,
+    "rawSelectedCases": 7,
+    "repairSelectedCases": 3,
+    "lowerLaneCases": 9,
+    "higherLaneCases": 1,
+    "planningPatterns": [
+      "phase_lifecycle",
+      "repeating_routine",
+      "ordered_procedure",
+      "source_table_rows",
+      "compare_decide",
+      "resource_queue"
+    ],
+    "editoriallyUsableCases": 9,
+    "publicReadyCases": 0
+  },
+  "editProxy": {
+    "kind": "agent_editorial_repair_proxy",
+    "repairedCases": 3,
+    "generatedCaseRepairRate": 0.3333333333333333,
+    "operationCount": 8,
+    "weightedEditPoints": 48,
+    "actualHumanEdit": null
+  },
+  "costProxy": {
+    "method": "utf8_character_count_divided_by_four",
+    "commonBatchInputChars": 151651,
+    "commonBatchInputTokenProxy": 37913,
+    "lowerToHigherOutputTokenRatio": 2.7328940142778695,
+    "actualProviderCost": null,
+    "actualRequestIds": null,
+    "actualGenerationLatency": null,
+    "warning": "This is a session and file-size proxy, not provider billing telemetry."
+  },
+  "backendDecision": {
+    "minimumInternalAdapter": "conditional_go",
+    "productionUrlAiBackend": "hold",
+    "automaticPublication": "no_go",
+    "allowedNow": [
+      "frozen snapshot capture with explicit fallback state",
+      "cheap-first proposal lane",
+      "deterministic exact-evidence and reference validation",
+      "bounded escalation and human review queue",
+      "calendar/checklist/sheet/memo preview generation without account writes"
+    ],
+    "productionHoldReasons": [
+      "Actual provider price, request telemetry, retries, and generation latency were not measured.",
+      "No human pairwise review or human edit-distance measurement was performed.",
+      "Three creator/reference cases still require rights review or approval.",
+      "Five sensitive cases require locked human review before publication.",
+      "Three of nine generated selections needed an agent evidence-repair proxy."
+    ]
+  },
+  "nonClaims": [
+    "Model-proxy review is not human validation.",
+    "Agent repair points are not human edit distance or labor cost.",
+    "Session model labels are not evidence of API price tiers.",
+    "A selected candidate is not automatically publishable."
+  ]
+}

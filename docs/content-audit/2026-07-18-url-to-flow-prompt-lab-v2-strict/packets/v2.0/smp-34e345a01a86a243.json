@@ -1,0 +1,27 @@
+{
+  "requestRef": "req-ce3f389aba8d72a1",
+  "sampleRef": "smp-34e345a01a86a243",
+  "maxItems": 7,
+  "sourceOwnership": {
+    "primarySourceRef": "src-e787c48177424793",
+    "supportingSourceRefs": []
+  },
+  "sourceRows": [
+    {
+      "sourceRowRef": "row-dd607307afad0c2e",
+      "sourceRef": "src-e787c48177424793",
+      "rowType": "check",
+      "title": "검진 대상 및 예약 확인",
+      "detail": null,
+      "order": 0
+    },
+    {
+      "sourceRowRef": "row-32712fc7d347ea11",
+      "sourceRef": "src-e787c48177424793",
+      "rowType": "date",
+      "title": "검진기관 방문",
+      "detail": null,
+      "order": 1
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "requestRef": "req-f84a85135d3f4157",
+  "sampleRef": "smp-64c0dc556a3ed163",
+  "maxItems": 7,
+  "sourceOwnership": {
+    "primarySourceRef": "src-77a0ec2b2a4bc6b4",
+    "supportingSourceRefs": []
+  },
+  "sourceRows": [
+    {
+      "sourceRowRef": "row-895b0b7ea057dcee",
+      "sourceRef": "src-77a0ec2b2a4bc6b4",
+      "rowType": "check",
+      "title": "여권",
+      "detail": null,
+      "order": 0
+    },
+    {
+      "sourceRowRef": "row-ae9677e543e713c9",
+      "sourceRef": "src-77a0ec2b2a4bc6b4",
+      "rowType": "check",
+      "title": "데이터 유심",
+      "detail": null,
+      "order": 1
+    }
+  ]
+}

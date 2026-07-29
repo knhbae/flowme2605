@@ -1,0 +1,82 @@
+{
+  "sampleRef": "smp-c318a22e612c54a9",
+  "sourceOwnership": {
+    "primarySourceRef": "src-bc1c983bf0180a40",
+    "supportingSourceRefs": []
+  },
+  "sourceRows": [
+    {
+      "sourceRowRef": "row-c5cf3ad24f48c32f",
+      "sourceRef": "src-bc1c983bf0180a40",
+      "rowType": "resource",
+      "title": "Day 1 prompt",
+      "detail": null,
+      "order": 0
+    },
+    {
+      "sourceRowRef": "row-233b65ed0cd3c402",
+      "sourceRef": "src-bc1c983bf0180a40",
+      "rowType": "resource",
+      "title": "Day 2 prompt",
+      "detail": null,
+      "order": 1
+    }
+  ],
+  "compiledProposal": {
+    "schemaVersion": "flowme-semantic-proposal-v2",
+    "promptVersion": "row-license-compiler-v3.0",
+    "requestRef": "req-e20e3ab07b81525f",
+    "sampleRef": "smp-c318a22e612c54a9",
+    "result": {
+      "state": "proposal",
+      "reasonCode": null,
+      "disposition": "review",
+      "primaryArtifact": "checklist"
+    },
+    "items": [
+      {
+        "itemRef": "item-01",
+        "sourceRowRefs": [
+          "row-c5cf3ad24f48c32f"
+        ],
+        "title": "Day 1 prompt 열어보기",
+        "intent": "open_resource",
+        "completionMode": "check",
+        "memo": null,
+        "scheduleEvidence": null
+      },
+      {
+        "itemRef": "item-02",
+        "sourceRowRefs": [
+          "row-233b65ed0cd3c402"
+        ],
+        "title": "Day 2 prompt 열어보기",
+        "intent": "open_resource",
+        "completionMode": "check",
+        "memo": null,
+        "scheduleEvidence": null
+      }
+    ],
+    "omittedRows": [],
+    "projections": [
+      {
+        "target": "checklist",
+        "itemRefs": [
+          "item-01",
+          "item-02"
+        ]
+      }
+    ],
+    "review": {
+      "uncertaintyCodes": [
+        "resource_contents_unseen"
+      ],
+      "humanCheckRowRefs": [
+        "row-c5cf3ad24f48c32f",
+        "row-233b65ed0cd3c402"
+      ]
+    }
+  },
+  "proposalFingerprint": "ce96e8116fa1a0dc0d5da5b23461437859d6727519d25bd77257224ed4b75e2f",
+  "reviewInputSha256": "85135bf71d583a8a986aaf1c533341a1da088eb5eb5305e23e2f3a0b6f7a6e86"
+}

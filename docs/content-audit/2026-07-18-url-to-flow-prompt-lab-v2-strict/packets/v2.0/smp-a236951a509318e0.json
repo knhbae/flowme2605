@@ -1,0 +1,19 @@
+{
+  "requestRef": "req-bca2e4caa414b028",
+  "sampleRef": "smp-a236951a509318e0",
+  "maxItems": 7,
+  "sourceOwnership": {
+    "primarySourceRef": "src-1b67988b75fc5c95",
+    "supportingSourceRefs": []
+  },
+  "sourceRows": [
+    {
+      "sourceRowRef": "row-1689f73f35eda7e4",
+      "sourceRef": "src-1b67988b75fc5c95",
+      "rowType": "check",
+      "title": "예약과 문진표 준비",
+      "detail": null,
+      "order": 0
+    }
+  ]
+}

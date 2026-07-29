@@ -1,0 +1,114 @@
+{
+  "reviewInputVersion": "flowme-source-row-blind-review-input-v1",
+  "laneId": "url-to-flow-source-row-v1",
+  "round": "round-2",
+  "caseId": "case-07",
+  "positiveCase": true,
+  "sourcePacket": {
+    "requestId": "rq-4d1a8fb763e0",
+    "caseId": "case-07",
+    "maxItems": 7,
+    "sourceOwnership": {
+      "primarySourceId": "src-5d8a247fb1c6",
+      "supportingSourceIds": []
+    },
+    "sourceRows": [
+      {
+        "sourceRowId": "row-2a8c640f1e95",
+        "sourceId": "src-5d8a247fb1c6",
+        "rowType": "check",
+        "title": "차량 이력과 상태를 확인한 뒤 구매 판단",
+        "detail": null,
+        "order": 0
+      }
+    ]
+  },
+  "deterministicNegativeBoundary": null,
+  "proposal": {
+    "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+    "promptVersion": "url-to-flow-prompt-v1.1",
+    "requestId": "rq-4d1a8fb763e0",
+    "caseId": "case-07",
+    "status": {
+      "generationState": "proposal",
+      "outcome": "complete",
+      "readiness": null,
+      "errorCode": null
+    },
+    "sourceAssessment": {
+      "access": "readable",
+      "sourceShape": "compare_decide",
+      "primarySourceId": "src-5d8a247fb1c6",
+      "supportingSourceIds": [],
+      "receivedSourceRowIds": [
+        "row-2a8c640f1e95"
+      ],
+      "untrustedInstructionDetected": false
+    },
+    "conversionDecision": {
+      "userNeed": "차량 이력과 상태를 확인한 뒤 구매를 판단한다.",
+      "lifeArea": "money_admin_purchase",
+      "planningPattern": "compare_decide",
+      "primaryArtifact": "checklist",
+      "contentShape": "확인 뒤 구매 판단하는 항목 1개"
+    },
+    "proposal": {
+      "proposalTitle": "차량 이력과 상태를 확인한 뒤 구매 판단",
+      "items": [
+        {
+          "proposalId": "proposal-case-07-01",
+          "title": "차량 이력과 상태를 확인한 뒤 구매 판단",
+          "intent": "decide",
+          "sourceRowIds": [
+            "row-2a8c640f1e95"
+          ],
+          "completion": {
+            "mode": "decision",
+            "doneWhen": "차량 이력과 상태를 확인한 뒤 구매 여부를 판단했을 때"
+          },
+          "memoCandidate": null,
+          "groupingCandidate": null,
+          "scheduleCandidate": null
+        }
+      ],
+      "omittedRows": [],
+      "incompleteReason": null
+    },
+    "projectionPlan": [
+      {
+        "target": "checklist",
+        "applicability": "applicable",
+        "reason": "확인 뒤 판단하는 단일 항목을 점검 형태로 실행한다."
+      }
+    ],
+    "reviewHints": {
+      "recommendedDisposition": "review",
+      "uncertainties": [],
+      "hardFailCodes": [],
+      "humanReviewRequired": []
+    }
+  },
+  "proposalFingerprint": "951f243f2dd235947ffb80e492cc83462890ce05bce0ed7cab2ab589a678b98c",
+  "deterministicValidation": {
+    "passed": true,
+    "codes": [],
+    "sourceRowAccounting": true
+  },
+  "rubricPath": "docs/specs/2026-07-15-url-to-flow-prompt-lab-source-row-v1/review-rubric.md",
+  "evidenceBoundary": {
+    "allowed": [
+      "this sourcePacket",
+      "this proposal",
+      "this proposalFingerprint",
+      "this deterministicValidation",
+      "the linked blind rubric"
+    ],
+    "forbidden": [
+      "canonical expectation or opaque ID mapping",
+      "source title URL publisher or preflight metadata",
+      "legacy or prior-round output and review",
+      "provider model tier timing token or cost",
+      "other reviewer conclusions"
+    ]
+  }
+}

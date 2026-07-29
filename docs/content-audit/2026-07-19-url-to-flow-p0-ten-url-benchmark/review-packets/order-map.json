@@ -1,0 +1,122 @@
+[
+  {
+    "reviewerId": "reviewer-a",
+    "caseId": "case-01",
+    "optionA": "lower_cost",
+    "optionB": "higher_capability"
+  },
+  {
+    "reviewerId": "reviewer-b",
+    "caseId": "case-01",
+    "optionA": "higher_capability",
+    "optionB": "lower_cost"
+  },
+  {
+    "reviewerId": "reviewer-a",
+    "caseId": "case-02",
+    "optionA": "higher_capability",
+    "optionB": "lower_cost"
+  },
+  {
+    "reviewerId": "reviewer-b",
+    "caseId": "case-02",
+    "optionA": "lower_cost",
+    "optionB": "higher_capability"
+  },
+  {
+    "reviewerId": "reviewer-a",
+    "caseId": "case-03",
+    "optionA": "lower_cost",
+    "optionB": "higher_capability"
+  },
+  {
+    "reviewerId": "reviewer-b",
+    "caseId": "case-03",
+    "optionA": "higher_capability",
+    "optionB": "lower_cost"
+  },
+  {
+    "reviewerId": "reviewer-a",
+    "caseId": "case-04",
+    "optionA": "higher_capability",
+    "optionB": "lower_cost"
+  },
+  {
+    "reviewerId": "reviewer-b",
+    "caseId": "case-04",
+    "optionA": "lower_cost",
+    "optionB": "higher_capability"
+  },
+  {
+    "reviewerId": "reviewer-a",
+    "caseId": "case-05",
+    "optionA": "lower_cost",
+    "optionB": "higher_capability"
+  },
+  {
+    "reviewerId": "reviewer-b",
+    "caseId": "case-05",
+    "optionA": "higher_capability",
+    "optionB": "lower_cost"
+  },
+  {
+    "reviewerId": "reviewer-a",
+    "caseId": "case-06",
+    "optionA": "higher_capability",
+    "optionB": "lower_cost"
+  },
+  {
+    "reviewerId": "reviewer-b",
+    "caseId": "case-06",
+    "optionA": "lower_cost",
+    "optionB": "higher_capability"
+  },
+  {
+    "reviewerId": "reviewer-a",
+    "caseId": "case-07",
+    "optionA": "lower_cost",
+    "optionB": "higher_capability"
+  },
+  {
+    "reviewerId": "reviewer-b",
+    "caseId": "case-07",
+    "optionA": "higher_capability",
+    "optionB": "lower_cost"
+  },
+  {
+    "reviewerId": "reviewer-a",
+    "caseId": "case-08",
+    "optionA": "higher_capability",
+    "optionB": "lower_cost"
+  },
+  {
+    "reviewerId": "reviewer-b",
+    "caseId": "case-08",
+    "optionA": "lower_cost",
+    "optionB": "higher_capability"
+  },
+  {
+    "reviewerId": "reviewer-a",
+    "caseId": "case-09",
+    "optionA": "lower_cost",
+    "optionB": "higher_capability"
+  },
+  {
+    "reviewerId": "reviewer-b",
+    "caseId": "case-09",
+    "optionA": "higher_capability",
+    "optionB": "lower_cost"
+  },
+  {
+    "reviewerId": "reviewer-a",
+    "caseId": "case-10",
+    "optionA": "higher_capability",
+    "optionB": "lower_cost"
+  },
+  {
+    "reviewerId": "reviewer-b",
+    "caseId": "case-10",
+    "optionA": "lower_cost",
+    "optionB": "higher_capability"
+  }
+]

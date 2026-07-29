@@ -1,0 +1,199 @@
+{
+  "version": "flowme-v4-case-reassessment-v1",
+  "generatedAt": "2026-07-18",
+  "cases": [
+    {
+      "auditCaseId": "case-01",
+      "title": "국민건강보험 건강검진 안내",
+      "originalUserJob": "검진일 전에 필요한 확인을 끝내고 당일 방문을 놓치지 않는다.",
+      "disposition": "reextract_required",
+      "reasonCodes": [
+        "date_label_without_value_or_user_anchor",
+        "insufficient_action_context",
+        "source_scope_unverified"
+      ],
+      "neededEvidence": [
+        "원문 전체 또는 명시적으로 닫힌 소범위의 coverage 선언",
+        "행별 대상, 조건, 방법, 완료 또는 판단 단서",
+        "실제 날짜·기간·반복 또는 계산 가능한 사용자 anchor"
+      ],
+      "sourceRowCount": 2
+    },
+    {
+      "auditCaseId": "case-02",
+      "title": "스탠드, 먼지거름 필터 청소 방법이 궁금합니다.",
+      "originalUserJob": "공식 주기에 맞춰 에어컨 필터 청소를 반복하고 완료 여부를 남긴다.",
+      "disposition": "compile_candidate",
+      "reasonCodes": [],
+      "neededEvidence": [],
+      "sourceRowCount": 5,
+      "evidencePacket": "enriched-case-02-v4.json"
+    },
+    {
+      "auditCaseId": "case-03",
+      "title": "해외여행 준비물 체크리스트",
+      "originalUserJob": "해외여행 필수 준비물을 빠뜨리지 않고 챙긴다.",
+      "disposition": "reextract_required",
+      "reasonCodes": [
+        "insufficient_action_context",
+        "source_scope_unverified",
+        "rights_review_required"
+      ],
+      "neededEvidence": [
+        "원문 전체 또는 명시적으로 닫힌 소범위의 coverage 선언",
+        "행별 대상, 조건, 방법, 완료 또는 판단 단서",
+        "스냅샷 보관·요약·링크 사용 범위 검토"
+      ],
+      "sourceRowCount": 2
+    },
+    {
+      "auditCaseId": "case-04",
+      "title": "고용24 구직자 취업지원 서비스",
+      "originalUserJob": "고용24에서 구직 등록과 취업지원 시작 절차를 순서대로 끝낸다.",
+      "disposition": "reextract_required",
+      "reasonCodes": [
+        "insufficient_action_context",
+        "source_scope_unverified"
+      ],
+      "neededEvidence": [
+        "원문 전체 또는 명시적으로 닫힌 소범위의 coverage 선언",
+        "행별 대상, 조건, 방법, 완료 또는 판단 단서"
+      ],
+      "sourceRowCount": 2
+    },
+    {
+      "auditCaseId": "case-05",
+      "title": "K-MOOC 제자백가의 사상 강좌 운영 계획",
+      "originalUserJob": "공개 강좌의 source-defined 주차를 따라가며 현재 진도와 메모를 남긴다.",
+      "disposition": "reextract_required",
+      "reasonCodes": [
+        "table_row_without_payload",
+        "insufficient_action_context",
+        "source_scope_unverified"
+      ],
+      "neededEvidence": [
+        "원문 전체 또는 명시적으로 닫힌 소범위의 coverage 선언",
+        "행별 대상, 조건, 방법, 완료 또는 판단 단서",
+        "표 행의 실제 셀 값과 관리할 열"
+      ],
+      "sourceRowCount": 2
+    },
+    {
+      "auditCaseId": "case-06",
+      "title": "백종원의 요리비책 레시피 재생목록",
+      "originalUserJob": "저장한 레시피 영상을 열어 한 번 실행하고 필요한 맥락을 함께 보관한다.",
+      "disposition": "reextract_required",
+      "reasonCodes": [
+        "opaque_resource_without_locator",
+        "insufficient_action_context",
+        "source_scope_unverified",
+        "rights_review_required"
+      ],
+      "neededEvidence": [
+        "원문 전체 또는 명시적으로 닫힌 소범위의 coverage 선언",
+        "행별 대상, 조건, 방법, 완료 또는 판단 단서",
+        "실제 리소스 제목, URL, 리소스로 할 행동",
+        "스냅샷 보관·요약·링크 사용 범위 검토"
+      ],
+      "sourceRowCount": 1
+    },
+    {
+      "auditCaseId": "case-07",
+      "title": "자동차365 중고차 구매가이드",
+      "originalUserJob": "중고차 점검 기준으로 후보를 선택하거나 보류하고 그 이유를 남긴다.",
+      "disposition": "reextract_required",
+      "reasonCodes": [
+        "collapsed_decision_or_preparation",
+        "insufficient_action_context",
+        "source_scope_unverified"
+      ],
+      "neededEvidence": [
+        "원문 전체 또는 명시적으로 닫힌 소범위의 coverage 선언",
+        "행별 대상, 조건, 방법, 완료 또는 판단 단서",
+        "판단 기준, 선택 상태, 준비 완료 조건"
+      ],
+      "sourceRowCount": 1
+    },
+    {
+      "auditCaseId": "case-08",
+      "title": "국민건강보험 영유아 건강검진 안내",
+      "originalUserJob": "아이 검진 예약과 문진표 준비 상태를 확인하되 의료 판단은 공식 안내에 맡긴다.",
+      "disposition": "reextract_required",
+      "reasonCodes": [
+        "collapsed_decision_or_preparation",
+        "insufficient_action_context",
+        "source_scope_unverified"
+      ],
+      "neededEvidence": [
+        "원문 전체 또는 명시적으로 닫힌 소범위의 coverage 선언",
+        "행별 대상, 조건, 방법, 완료 또는 판단 단서",
+        "판단 기준, 선택 상태, 준비 완료 조건"
+      ],
+      "sourceRowCount": 1
+    },
+    {
+      "auditCaseId": "case-09",
+      "title": "Canon 30-Day Photo Challenge",
+      "originalUserJob": "source-defined 사진 prompt를 하루 하나씩 실행하고 완료 여부를 남긴다.",
+      "disposition": "reextract_required",
+      "reasonCodes": [
+        "opaque_resource_without_locator",
+        "insufficient_action_context",
+        "source_scope_unverified",
+        "rights_review_required"
+      ],
+      "neededEvidence": [
+        "원문 전체 또는 명시적으로 닫힌 소범위의 coverage 선언",
+        "행별 대상, 조건, 방법, 완료 또는 판단 단서",
+        "실제 리소스 제목, URL, 리소스로 할 행동",
+        "스냅샷 보관·요약·링크 사용 범위 검토"
+      ],
+      "sourceRowCount": 2
+    },
+    {
+      "auditCaseId": "case-10",
+      "title": "TS 자동차 정기검사",
+      "originalUserJob": "내 차량의 검사 유효기간 안에 정기검사를 받고 필요할 때 재검사 조건을 확인한다.",
+      "disposition": "reextract_required",
+      "reasonCodes": [
+        "date_label_without_value_or_user_anchor",
+        "supporting_reference_not_user_action",
+        "insufficient_action_context",
+        "source_scope_unverified"
+      ],
+      "neededEvidence": [
+        "원문 전체 또는 명시적으로 닫힌 소범위의 coverage 선언",
+        "행별 대상, 조건, 방법, 완료 또는 판단 단서",
+        "실제 날짜·기간·반복 또는 계산 가능한 사용자 anchor",
+        "보조 출처가 지지하는 사용자 행동 또는 명시적 memo/hold 매핑"
+      ],
+      "sourceRowCount": 2
+    },
+    {
+      "auditCaseId": "case-11",
+      "title": "컴퓨터 활용 학습 PDF 후보",
+      "originalUserJob": "원본 학습 파일의 행을 실행 가능한 진도표로 옮겨 상태와 메모를 관리한다.",
+      "disposition": "blocked",
+      "reasonCodes": [
+        "source_access_unavailable"
+      ],
+      "neededEvidence": [
+        "원본 파일 또는 읽을 수 있는 본문"
+      ],
+      "sourceRowCount": 0
+    },
+    {
+      "auditCaseId": "case-12",
+      "title": "StemCyte 출산 가방 55개",
+      "originalUserJob": "한국에서 출산을 준비하며 병원 입원 가방에 필요한 물품을 빠뜨리지 않고 챙긴다.",
+      "disposition": "blocked",
+      "reasonCodes": [
+        "sensitive_locale_unverified"
+      ],
+      "neededEvidence": [
+        "한국 적용성이 확인된 1차 출처와 민감 영역 검토"
+      ],
+      "sourceRowCount": 0
+    }
+  ]
+}

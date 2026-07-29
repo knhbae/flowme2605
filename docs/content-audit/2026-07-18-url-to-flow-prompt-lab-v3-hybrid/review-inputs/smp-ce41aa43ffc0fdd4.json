@@ -1,0 +1,57 @@
+{
+  "sampleRef": "smp-ce41aa43ffc0fdd4",
+  "sourceOwnership": {
+    "primarySourceRef": "src-392b424de3f13858",
+    "supportingSourceRefs": []
+  },
+  "sourceRows": [
+    {
+      "sourceRowRef": "row-f03bc1e31bd38a86",
+      "sourceRef": "src-392b424de3f13858",
+      "rowType": "check",
+      "title": "예약과 문진표 준비",
+      "detail": null,
+      "order": 0
+    }
+  ],
+  "compiledProposal": {
+    "schemaVersion": "flowme-semantic-proposal-v2",
+    "promptVersion": "row-license-compiler-v3.0",
+    "requestRef": "req-2205a875171c2493",
+    "sampleRef": "smp-ce41aa43ffc0fdd4",
+    "result": {
+      "state": "proposal",
+      "reasonCode": null,
+      "disposition": "review",
+      "primaryArtifact": "todo"
+    },
+    "items": [
+      {
+        "itemRef": "item-01",
+        "sourceRowRefs": [
+          "row-f03bc1e31bd38a86"
+        ],
+        "title": "예약과 문진표 준비",
+        "intent": "act",
+        "completionMode": "check",
+        "memo": null,
+        "scheduleEvidence": null
+      }
+    ],
+    "omittedRows": [],
+    "projections": [
+      {
+        "target": "todo",
+        "itemRefs": [
+          "item-01"
+        ]
+      }
+    ],
+    "review": {
+      "uncertaintyCodes": [],
+      "humanCheckRowRefs": []
+    }
+  },
+  "proposalFingerprint": "d5dacb914b7148813c0c0383199ca30be89cc5ad88289dde3ffdab3b2f7e1a97",
+  "reviewInputSha256": "f388dfed93ddf6e522c3c8cd954554caa875fd96d29c4ea509d47acb59ec9960"
+}

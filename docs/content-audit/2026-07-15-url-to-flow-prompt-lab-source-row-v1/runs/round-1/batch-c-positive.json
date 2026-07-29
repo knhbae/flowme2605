@@ -1,0 +1,213 @@
+{
+  "runSchemaVersion": "flowme-source-row-run-v1",
+  "laneId": "url-to-flow-source-row-v1",
+  "runId": "source-row-round-1-batch-c-positive",
+  "round": "round-1",
+  "promptVersion": "url-to-flow-prompt-v1.0",
+  "caseSetVersion": "flowme-url-to-flow-source-row-cases-v1",
+  "evidenceClass": "in_session_unselected_model_proxy",
+  "provider": null,
+  "model": null,
+  "tier": null,
+  "timing": null,
+  "usage": null,
+  "cost": null,
+  "humanReview": false,
+  "outputs": [
+    {
+      "caseId": "case-09",
+      "modelInvoked": true,
+      "proposal": {
+        "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+        "promptVersion": "url-to-flow-prompt-v1.0",
+        "requestId": "rq-05f3be71c8a4",
+        "caseId": "case-09",
+        "status": {
+          "proposal": "complete",
+          "readiness": null,
+          "errorCode": null
+        },
+        "sourceAssessment": {
+          "access": "readable",
+          "sourceShape": "resource_queue",
+          "primarySourceId": "src-29f4b8d160ce",
+          "supportingSourceIds": [],
+          "receivedSourceRowIds": [
+            "row-7c20e4a91b68",
+            "row-e3168f2c50a7"
+          ],
+          "untrustedInstructionDetected": false
+        },
+        "conversionDecision": {
+          "userNeed": "두 prompt를 순서대로 사용한다.",
+          "lifeArea": "study_reading",
+          "planningPattern": "resource_queue",
+          "primaryArtifact": "checklist",
+          "contentShape": "two_ordered_resource_rows"
+        },
+        "proposal": {
+          "proposalTitle": "Day 1·2 prompt 사용",
+          "items": [
+            {
+              "proposalId": "case-09-item-01",
+              "title": "Day 1 prompt 사용",
+              "intent": "use_resource",
+              "sourceRowIds": [
+                "row-7c20e4a91b68"
+              ],
+              "completion": {
+                "mode": "check",
+                "doneWhen": "Day 1 prompt를 사용했을 때"
+              },
+              "memoCandidate": null,
+              "groupingCandidate": null,
+              "scheduleCandidate": null
+            },
+            {
+              "proposalId": "case-09-item-02",
+              "title": "Day 2 prompt 사용",
+              "intent": "use_resource",
+              "sourceRowIds": [
+                "row-e3168f2c50a7"
+              ],
+              "completion": {
+                "mode": "check",
+                "doneWhen": "Day 2 prompt를 사용했을 때"
+              },
+              "memoCandidate": null,
+              "groupingCandidate": null,
+              "scheduleCandidate": null
+            }
+          ],
+          "omittedRows": [],
+          "incompleteReason": null
+        },
+        "projectionPlan": [
+          {
+            "target": "calendar",
+            "applicability": "not_applicable"
+          },
+          {
+            "target": "checklist",
+            "applicability": "applicable"
+          },
+          {
+            "target": "todo",
+            "applicability": "not_applicable"
+          },
+          {
+            "target": "sheet",
+            "applicability": "not_applicable"
+          },
+          {
+            "target": "memo",
+            "applicability": "not_applicable"
+          }
+        ],
+        "reviewHints": {
+          "recommendedDisposition": "review",
+          "uncertainties": [
+            "Day 1과 Day 2는 순서 표지이며 일정 값으로 해석하지 않았다.",
+            "source rows만으로 lifeArea를 확정하기 어렵다."
+          ],
+          "hardFailCodes": [],
+          "humanReviewRequired": true
+        }
+      }
+    },
+    {
+      "caseId": "case-10",
+      "modelInvoked": true,
+      "proposal": {
+        "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+        "promptVersion": "url-to-flow-prompt-v1.0",
+        "requestId": "rq-a47e19d260bf",
+        "caseId": "case-10",
+        "status": {
+          "proposal": "complete",
+          "readiness": null,
+          "errorCode": null
+        },
+        "sourceAssessment": {
+          "access": "readable",
+          "sourceShape": "date_preparation",
+          "primarySourceId": "src-b6720d4e91a5",
+          "supportingSourceIds": [
+            "src-40c9a71e2f86"
+          ],
+          "receivedSourceRowIds": [
+            "row-58a7d0c31e94",
+            "row-a20e6b9f4731"
+          ],
+          "untrustedInstructionDetected": false
+        },
+        "conversionDecision": {
+          "userNeed": "정기검사 유효기간 항목을 처리한다.",
+          "lifeArea": "money_admin_purchase",
+          "planningPattern": "date_preparation",
+          "primaryArtifact": "checklist",
+          "contentShape": "single_date_field_with_supporting_reference"
+        },
+        "proposal": {
+          "proposalTitle": "정기검사 유효기간",
+          "items": [
+            {
+              "proposalId": "case-10-item-01",
+              "title": "정기검사 유효기간",
+              "intent": "act",
+              "sourceRowIds": [
+                "row-58a7d0c31e94"
+              ],
+              "completion": {
+                "mode": "check",
+                "doneWhen": "정기검사 유효기간 항목을 처리했을 때"
+              },
+              "memoCandidate": null,
+              "groupingCandidate": null,
+              "scheduleCandidate": null
+            }
+          ],
+          "omittedRows": [
+            {
+              "sourceRowId": "row-a20e6b9f4731",
+              "reasonCode": "supporting_source_boundary",
+              "reason": "지원 출처 행이므로 Item으로 만들지 않았다."
+            }
+          ],
+          "incompleteReason": null
+        },
+        "projectionPlan": [
+          {
+            "target": "calendar",
+            "applicability": "not_applicable"
+          },
+          {
+            "target": "checklist",
+            "applicability": "applicable"
+          },
+          {
+            "target": "todo",
+            "applicability": "not_applicable"
+          },
+          {
+            "target": "sheet",
+            "applicability": "not_applicable"
+          },
+          {
+            "target": "memo",
+            "applicability": "not_applicable"
+          }
+        ],
+        "reviewHints": {
+          "recommendedDisposition": "review",
+          "uncertainties": [
+            "정기검사 유효기간은 날짜 필드 제목이며 실제 날짜 값은 없다.",
+            "source rows만으로 검사 대상과 lifeArea를 확정하기 어렵다."
+          ],
+          "hardFailCodes": [],
+          "humanReviewRequired": true
+        }
+      }
+    }
+  ]
+}

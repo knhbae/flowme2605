@@ -1,16 +1,20 @@
 {
-  "reviewInputSchemaVersion": "flowme-url-to-flow-blind-review-input-v1",
+  "reviewInputSchemaVersion": "flowme-url-to-flow-blind-review-input-v2",
   "round": "round-1",
   "caseId": "case-03",
-  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
-  "expectationSetVersion": "flowme-url-to-flow-prompt-lab-expected-v1",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1.1",
   "promptVersion": "url-to-flow-prompt-v0.1",
   "proposalSchemaVersion": "flowme-semantic-proposal-v1",
   "rubric": {
-    "version": "flowme-url-to-flow-prompt-lab-review-rubric-v1",
+    "version": "flowme-url-to-flow-prompt-lab-review-rubric-v2",
     "reference": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-rubric.md"
   },
   "reviewResultTemplate": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-result-template.json",
+  "rawRun": {
+    "runFile": "docs/content-audit/2026-07-14-url-to-flow-prompt-lab/runs/round-1/batch-a.json",
+    "runId": "round-1-neutral-batch-a"
+  },
+  "proposalFingerprint": "sha256:a731d789fd90222591bc3b0f7fa61e6d470ebf9206efe9e6d7639595c7827a7c",
   "sourcePacket": {
     "caseId": "case-03",
     "requestId": "prompt-lab-v1-case-03",
@@ -54,74 +58,8 @@
       }
     ],
     "inputEvidenceRefs": [
-      "golden-fixtures-v1.json#gf-pos-03-source-checklist:source-only"
+      "prompt-lab-source:case-03"
     ]
-  },
-  "hiddenExpectation": {
-    "caseId": "case-03",
-    "fixtureId": "gf-pos-03-source-checklist",
-    "fixtureKind": "positive",
-    "fixtureShape": "source_checklist",
-    "name": "해외여행 준비물 체크리스트",
-    "expectedStatus": {
-      "generationState": "proposal",
-      "outcome": "complete",
-      "readiness": null,
-      "errorCode": null,
-      "recommendedDisposition": "review"
-    },
-    "expectedConversion": {
-      "userNeed": "해외여행 필수 준비물을 빠뜨리지 않고 챙긴다.",
-      "planningPattern": "ordered_procedure",
-      "primaryArtifact": "checklist",
-      "riskLevel": "low"
-    },
-    "expectedItems": [
-      {
-        "referenceItemId": "item-pack-passport",
-        "title": "여권 챙기기",
-        "intent": "inspect",
-        "sourceRowIds": [
-          "row-pack-passport"
-        ],
-        "completionMode": "check",
-        "doneWhen": "유효한 여권을 바로 꺼낼 수 있는 가방에 넣었다.",
-        "hasSchedule": false,
-        "canonicalSchedule": null
-      },
-      {
-        "referenceItemId": "item-pack-connectivity",
-        "title": "여행지 데이터 수단 준비하기",
-        "intent": "act",
-        "sourceRowIds": [
-          "row-pack-connectivity"
-        ],
-        "completionMode": "check",
-        "doneWhen": "여행지에서 사용할 데이터 수단을 준비했다.",
-        "hasSchedule": false,
-        "canonicalSchedule": null
-      }
-    ],
-    "expectedOmittedRows": [],
-    "accountingSourceRowIds": [
-      "row-pack-passport",
-      "row-pack-connectivity"
-    ],
-    "expectedProjections": [
-      "checklist:markdown",
-      "checklist:plain_text",
-      "memo:markdown"
-    ],
-    "forbiddenProjections": [
-      "calendar:ics",
-      "sheet:xlsx"
-    ],
-    "referenceReview": {
-      "readiness": "ready_for_internal_canary",
-      "hardFails": [],
-      "rightsDecision": "원문 row 제목과 짧은 실행 요약만 사용하고 상품 CTA와 본문 복제는 제외한다.",
-      "riskDecision": "항공사·국가별 규정은 고정 사실로 만들지 않고 공식 확인 링크로 처리한다."
-    }
   },
   "proposal": {
     "proposalSchemaVersion": "flowme-semantic-proposal-v1",
@@ -136,7 +74,7 @@
     },
     "sourceAssessment": {
       "access": "readable",
-      "sourceShape": "source_checklist",
+      "sourceShape": "checklist",
       "primarySourceId": "source-kkday-overseas-packing",
       "supportingSourceIds": [],
       "receivedSourceRowIds": [
@@ -146,11 +84,11 @@
       "untrustedInstructionDetected": false
     },
     "conversionDecision": {
-      "userNeed": "해외여행을 준비하는 사용자가 제공된 필수 준비물 두 가지를 빠뜨리지 않고 챙긴다.",
+      "userNeed": "해외여행을 준비하는 사람으로서 여권과 데이터 유심을 빠뜨리지 않고 챙긴다.",
       "lifeArea": "travel",
-      "planningPattern": "source_checklist",
+      "planningPattern": "packing_checklist",
       "primaryArtifact": "checklist",
-      "contentShape": "해외여행 준비물 2개 체크리스트"
+      "contentShape": "해외여행 준비물 체크리스트"
     },
     "proposal": {
       "proposalTitle": "해외여행 필수 준비물 챙기기",
@@ -191,44 +129,27 @@
     },
     "projectionPlan": [
       {
-        "target": "calendar",
-        "applicability": "not_applicable",
-        "reason": "날짜, 기간, 반복 표현이 제공되지 않았다."
-      },
-      {
         "target": "checklist",
         "applicability": "applicable",
-        "reason": "각 준비물의 챙김 여부를 독립적으로 확인할 수 있다."
-      },
-      {
-        "target": "todo",
-        "applicability": "applicable",
-        "reason": "여권과 데이터 유심을 각각 할 일로 둘 수 있다."
-      },
-      {
-        "target": "sheet",
-        "applicability": "not_applicable",
-        "reason": "두 준비물 외에 표로 관리할 속성이 제공되지 않았다."
-      },
-      {
-        "target": "memo",
-        "applicability": "not_applicable",
-        "reason": "별도로 보존할 설명이나 방법이 제공되지 않았다."
+        "reason": "두 SourceRow가 각각 독립적으로 챙김 여부를 확인할 수 있는 준비물이다."
       }
     ],
     "reviewHints": {
       "recommendedDisposition": "review",
       "uncertainties": [
-        "제공된 두 행이 전체 필수 준비물 목록인지는 확인할 수 없다."
+        "원문 권리 상태가 needs_review로 표시되어 있다."
       ],
       "hardFailCodes": [],
       "humanReviewRequired": [
-        "source의 rightsStatus가 needs_review이므로 사용 범위를 검토해야 한다."
+        "creator 경험 출처의 사용 권리와 표현 범위를 검토해야 한다."
       ]
     }
   },
   "validator": {
-    "passed": null,
-    "hardFailCodes": []
+    "validatorVersion": "flowme-url-to-flow-prompt-lab-validator-v1",
+    "passed": false,
+    "codes": [
+      "json_schema"
+    ]
   }
 }

@@ -1,0 +1,61 @@
+{
+  "sampleRef": "smp-91182b6bbc8efd1d",
+  "sourceOwnership": {
+    "primarySourceRef": "src-3cdafb44b5c15749",
+    "supportingSourceRefs": []
+  },
+  "sourceRows": [
+    {
+      "sourceRowRef": "row-914e8ba490214d22",
+      "sourceRef": "src-3cdafb44b5c15749",
+      "rowType": "resource",
+      "title": "선택한 레시피 영상",
+      "detail": null,
+      "order": 0
+    }
+  ],
+  "compiledProposal": {
+    "schemaVersion": "flowme-semantic-proposal-v2",
+    "promptVersion": "row-license-compiler-v3.0",
+    "requestRef": "req-d39fede4fec4beea",
+    "sampleRef": "smp-91182b6bbc8efd1d",
+    "result": {
+      "state": "proposal",
+      "reasonCode": null,
+      "disposition": "review",
+      "primaryArtifact": "memo"
+    },
+    "items": [
+      {
+        "itemRef": "item-01",
+        "sourceRowRefs": [
+          "row-914e8ba490214d22"
+        ],
+        "title": "선택한 레시피 영상 열어보기",
+        "intent": "open_resource",
+        "completionMode": "check",
+        "memo": null,
+        "scheduleEvidence": null
+      }
+    ],
+    "omittedRows": [],
+    "projections": [
+      {
+        "target": "memo",
+        "itemRefs": [
+          "item-01"
+        ]
+      }
+    ],
+    "review": {
+      "uncertaintyCodes": [
+        "resource_contents_unseen"
+      ],
+      "humanCheckRowRefs": [
+        "row-914e8ba490214d22"
+      ]
+    }
+  },
+  "proposalFingerprint": "58c747d7b31ad0f6bfefb88ae06912fb0fc69ead68aa8ddce20a63639a4e0262",
+  "reviewInputSha256": "aba0d0398c698b938f976ef78540cfcc2a92a407a327c26549417b4b0f4065ca"
+}

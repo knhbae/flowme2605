@@ -1,0 +1,107 @@
+{
+  "manifestVersion": "flowme-url-to-flow-v3-hybrid-review-inputs",
+  "laneId": "url-to-flow-source-row-v3-hybrid-controller",
+  "freezeSha256": "9b66e8204c0b4485afacd1f45b7e3467e2c60645702b5251b8b2889d527b4a3d",
+  "stabilityComparisonSha256": "6d77011e97569673269ff040445c79fd4eb015f5b319c1cf212e7bad516874cd",
+  "compiledRunFile": "docs/content-audit/2026-07-18-url-to-flow-prompt-lab-v3-hybrid/runs/round-2/compiled-run.json",
+  "compiledRunSha256": "1399e55b13e74c76c7d2b98ae0055b33d85182c2b93ac9638428f3478d3712e8",
+  "automatedValidationFile": "docs/content-audit/2026-07-18-url-to-flow-prompt-lab-v3-hybrid/runs/round-2/validation.json",
+  "automatedValidationSha256": "7c25a4b17384a64038b755fab3ff477b8429464519b70896111f1244080bf014",
+  "rubricSha256": "bd11cc4c492be62afa3adb6ce40e8c4ea471d6135edbbc434a60ed50e8e71fc1",
+  "reviewSchemaSha256": "32f183cec76b9db030547efe37d8416af6cf87ef1b01f8c59a0f012db7abfb6f",
+  "inputs": {
+    "smp-3c82e2a17ad8d751": {
+      "batchRef": "batch-a",
+      "file": "docs/content-audit/2026-07-18-url-to-flow-prompt-lab-v3-hybrid/review-inputs/smp-3c82e2a17ad8d751.json",
+      "reviewInputSha256": "85817d43c73c90e74fd339ca7029ba2229fea02818cebc51427e4e37c30f7891",
+      "proposalFingerprint": "f72947ea04d28753bd744215dcec5d6eeaaa92f705fa55cc021ba4e1e69a3541"
+    },
+    "smp-6cd12e316c9ca24a": {
+      "batchRef": "batch-a",
+      "file": "docs/content-audit/2026-07-18-url-to-flow-prompt-lab-v3-hybrid/review-inputs/smp-6cd12e316c9ca24a.json",
+      "reviewInputSha256": "63b1d6b9d0271ec63f8d814e8d1bb9efa18777651921e839a2446f71d8b26a73",
+      "proposalFingerprint": "72c4eca9f4bbfc2b31d22bdc90a70755627247daae7573f112b78b453711fcae"
+    },
+    "smp-3ad3cc4ad286218d": {
+      "batchRef": "batch-a",
+      "file": "docs/content-audit/2026-07-18-url-to-flow-prompt-lab-v3-hybrid/review-inputs/smp-3ad3cc4ad286218d.json",
+      "reviewInputSha256": "7e535e8a1a8ed28e6ba7d6129436d7a66f56ea533212143b9271b5c8a2b92f26",
+      "proposalFingerprint": "e3d77b34acdada8e38c9d713b6dc6b6e387980803c17ecc4f647de1992c316e0"
+    },
+    "smp-14a5927ce96fdaa6": {
+      "batchRef": "batch-a",
+      "file": "docs/content-audit/2026-07-18-url-to-flow-prompt-lab-v3-hybrid/review-inputs/smp-14a5927ce96fdaa6.json",
+      "reviewInputSha256": "b7a337ae1583d94ca59618139cd70fa2d7e14aa23b101cef872b1e01e23be7d0",
+      "proposalFingerprint": "55660e1340c44b87cdcec573c034de59058f01eeecc3c6d2a3b485b2eaea88f9"
+    },
+    "smp-1543712589e440b7": {
+      "batchRef": "batch-b",
+      "file": "docs/content-audit/2026-07-18-url-to-flow-prompt-lab-v3-hybrid/review-inputs/smp-1543712589e440b7.json",
+      "reviewInputSha256": "d676b6437e0d7ee09d963fc0bb109ad6ffd5dfdf572c89f53a0d4752257e8d31",
+      "proposalFingerprint": "bef22e1aa659a8fc9904e6d746a28c8e37055574d30e29851b83c2e86fbe9302"
+    },
+    "smp-91182b6bbc8efd1d": {
+      "batchRef": "batch-b",
+      "file": "docs/content-audit/2026-07-18-url-to-flow-prompt-lab-v3-hybrid/review-inputs/smp-91182b6bbc8efd1d.json",
+      "reviewInputSha256": "aba0d0398c698b938f976ef78540cfcc2a92a407a327c26549417b4b0f4065ca",
+      "proposalFingerprint": "58c747d7b31ad0f6bfefb88ae06912fb0fc69ead68aa8ddce20a63639a4e0262"
+    },
+    "smp-a4bd87f2c84f5b82": {
+      "batchRef": "batch-b",
+      "file": "docs/content-audit/2026-07-18-url-to-flow-prompt-lab-v3-hybrid/review-inputs/smp-a4bd87f2c84f5b82.json",
+      "reviewInputSha256": "45becc87ce1733c9a516ee9d7ea51a5e224271a1ed71bcd4d218e5681a988b2e",
+      "proposalFingerprint": "bf19ccfe87f6f1cb5d440795ef9534f1988850d5d44e0518564eebec8c5b2f35"
+    },
+    "smp-ce41aa43ffc0fdd4": {
+      "batchRef": "batch-b",
+      "file": "docs/content-audit/2026-07-18-url-to-flow-prompt-lab-v3-hybrid/review-inputs/smp-ce41aa43ffc0fdd4.json",
+      "reviewInputSha256": "f388dfed93ddf6e522c3c8cd954554caa875fd96d29c4ea509d47acb59ec9960",
+      "proposalFingerprint": "d5dacb914b7148813c0c0383199ca30be89cc5ad88289dde3ffdab3b2f7e1a97"
+    },
+    "smp-c318a22e612c54a9": {
+      "batchRef": "batch-c",
+      "file": "docs/content-audit/2026-07-18-url-to-flow-prompt-lab-v3-hybrid/review-inputs/smp-c318a22e612c54a9.json",
+      "reviewInputSha256": "85135bf71d583a8a986aaf1c533341a1da088eb5eb5305e23e2f3a0b6f7a6e86",
+      "proposalFingerprint": "ce96e8116fa1a0dc0d5da5b23461437859d6727519d25bd77257224ed4b75e2f"
+    },
+    "smp-0b2e2f909ba047ad": {
+      "batchRef": "batch-c",
+      "file": "docs/content-audit/2026-07-18-url-to-flow-prompt-lab-v3-hybrid/review-inputs/smp-0b2e2f909ba047ad.json",
+      "reviewInputSha256": "6d6586d2bb9db3424bb58b009ea4e4615b1ae07e9f50e6ef89fb42786cfbcf4e",
+      "proposalFingerprint": "449cb3193054c6efd6df25bb9220f59ce260982662e334a7d3cac77609605dce"
+    }
+  },
+  "tasks": {
+    "batch-a": {
+      "file": "docs/content-audit/2026-07-18-url-to-flow-prompt-lab-v3-hybrid/review-task-payloads/batch-a.txt",
+      "sha256": "276de8fabb9a8eceee3d61da444826615b85815fdb220ced9afcebfb6257325d",
+      "inputCount": 4,
+      "sampleRefs": [
+        "smp-3c82e2a17ad8d751",
+        "smp-6cd12e316c9ca24a",
+        "smp-3ad3cc4ad286218d",
+        "smp-14a5927ce96fdaa6"
+      ]
+    },
+    "batch-b": {
+      "file": "docs/content-audit/2026-07-18-url-to-flow-prompt-lab-v3-hybrid/review-task-payloads/batch-b.txt",
+      "sha256": "04923f4d65ff626196511e3273ccc97d753260ea15b0ee442293f6451f1e7b99",
+      "inputCount": 4,
+      "sampleRefs": [
+        "smp-1543712589e440b7",
+        "smp-91182b6bbc8efd1d",
+        "smp-a4bd87f2c84f5b82",
+        "smp-ce41aa43ffc0fdd4"
+      ]
+    },
+    "batch-c": {
+      "file": "docs/content-audit/2026-07-18-url-to-flow-prompt-lab-v3-hybrid/review-task-payloads/batch-c.txt",
+      "sha256": "ba1bb94fbc0516a8e57b2c2b844280cd9f9699dab415c270b88570ef0731b97d",
+      "inputCount": 2,
+      "sampleRefs": [
+        "smp-c318a22e612c54a9",
+        "smp-0b2e2f909ba047ad"
+      ]
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "laneId": "url-to-flow-source-row-v1",
+  "caseSetVersion": "flowme-url-to-flow-source-row-cases-v1",
+  "promptVersion": "url-to-flow-prompt-v1.0",
+  "caseId": "case-07",
+  "requestId": "rq-4d1a8fb763e0",
+  "preflightInput": {
+    "targetLocale": "ko-KR",
+    "primary": {
+      "countryContext": "KR",
+      "riskClass": "sensitive",
+      "accessStatus": "fetched",
+      "rightsStatus": "allowed"
+    },
+    "sourceRowCount": 1
+  },
+  "preflightResult": {
+    "passed": true,
+    "modelInvoked": true,
+    "generationState": null,
+    "outcome": null,
+    "errorCode": null,
+    "recommendedDisposition": null,
+    "reasonCode": "preflight_passed"
+  },
+  "generatorInput": {
+    "requestId": "rq-4d1a8fb763e0",
+    "caseId": "case-07",
+    "maxItems": 7,
+    "sourceOwnership": {
+      "primarySourceId": "src-5d8a247fb1c6",
+      "supportingSourceIds": []
+    },
+    "sourceRows": [
+      {
+        "sourceRowId": "row-2a8c640f1e95",
+        "sourceId": "src-5d8a247fb1c6",
+        "rowType": "check",
+        "title": "차량 이력과 상태를 확인한 뒤 구매 판단",
+        "detail": null,
+        "order": 0
+      }
+    ]
+  },
+  "deterministicProposal": null,
+  "evidenceBoundary": "Only generatorInput is model-visible. preflightInput and hidden oracle are excluded."
+}

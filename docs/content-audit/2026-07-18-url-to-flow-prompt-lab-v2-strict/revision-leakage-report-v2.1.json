@@ -1,0 +1,11 @@
+{
+  "reportVersion": "flowme-strict-revision-leakage-report-v2.1",
+  "laneId": "url-to-flow-source-row-v2-strict",
+  "promptVersion": "url-to-flow-prompt-v2.1",
+  "exactTaskPayloadCount": 3,
+  "promptV2_0OccurrenceCount": 0,
+  "exactTaskV2_0OccurrenceCount": 0,
+  "forbiddenSemanticFieldCount": 0,
+  "passed": true,
+  "findings": []
+}

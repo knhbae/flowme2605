@@ -1,0 +1,327 @@
+{
+  "runSchemaVersion": "flowme-source-row-run-v1",
+  "laneId": "url-to-flow-source-row-v1",
+  "runId": "source-row-round-3-batch-b",
+  "round": "round-3",
+  "promptVersion": "url-to-flow-prompt-v1.1",
+  "caseSetVersion": "flowme-url-to-flow-source-row-cases-v1",
+  "evidenceClass": "in_session_unselected_model_proxy",
+  "provider": null,
+  "model": null,
+  "tier": null,
+  "timing": null,
+  "usage": null,
+  "cost": null,
+  "humanReview": false,
+  "outputs": [
+    {
+      "caseId": "case-05",
+      "modelInvoked": true,
+      "proposal": {
+        "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+        "promptVersion": "url-to-flow-prompt-v1.1",
+        "requestId": "rq-2e74c9a51f86",
+        "caseId": "case-05",
+        "status": {
+          "generationState": "proposal",
+          "outcome": "complete",
+          "readiness": null,
+          "errorCode": null
+        },
+        "sourceAssessment": {
+          "access": "readable",
+          "sourceShape": "source_table_rows",
+          "primarySourceId": "src-14b9e63a8f27",
+          "supportingSourceIds": [],
+          "receivedSourceRowIds": [
+            "row-0e7a31c9b452",
+            "row-c48f2d105a76"
+          ],
+          "untrustedInstructionDetected": false
+        },
+        "conversionDecision": {
+          "userNeed": "1주차와 2주차 강의와 퀴즈를 진행하기",
+          "lifeArea": "study_reading",
+          "planningPattern": "source_table_rows",
+          "primaryArtifact": "checklist",
+          "contentShape": "주차별 강의와 퀴즈 두 항목"
+        },
+        "proposal": {
+          "proposalTitle": "주차별 강의와 퀴즈",
+          "items": [
+            {
+              "proposalId": "p-01",
+              "title": "1주차 강의와 퀴즈 진행하기",
+              "intent": "act",
+              "sourceRowIds": [
+                "row-0e7a31c9b452"
+              ],
+              "completion": {
+                "mode": "check",
+                "doneWhen": "1주차 강의와 퀴즈를 마친 상태"
+              },
+              "memoCandidate": null,
+              "groupingCandidate": "주차별 강의와 퀴즈",
+              "scheduleCandidate": null
+            },
+            {
+              "proposalId": "p-02",
+              "title": "2주차 강의와 퀴즈 진행하기",
+              "intent": "act",
+              "sourceRowIds": [
+                "row-c48f2d105a76"
+              ],
+              "completion": {
+                "mode": "check",
+                "doneWhen": "2주차 강의와 퀴즈를 마친 상태"
+              },
+              "memoCandidate": null,
+              "groupingCandidate": "주차별 강의와 퀴즈",
+              "scheduleCandidate": null
+            }
+          ],
+          "omittedRows": [],
+          "incompleteReason": null
+        },
+        "projectionPlan": [
+          {
+            "target": "checklist",
+            "applicability": "applicable",
+            "reason": "두 주차의 강의와 퀴즈를 항목별로 옮길 수 있으며 실제 날짜는 포함하지 않는다."
+          }
+        ],
+        "reviewHints": {
+          "recommendedDisposition": "review",
+          "uncertainties": [
+            "1주차와 2주차에 해당하는 실제 날짜가 제공되지 않았다."
+          ],
+          "hardFailCodes": [],
+          "humanReviewRequired": []
+        }
+      }
+    },
+    {
+      "caseId": "case-06",
+      "modelInvoked": true,
+      "proposal": {
+        "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+        "promptVersion": "url-to-flow-prompt-v1.1",
+        "requestId": "rq-b90c37e4d125",
+        "caseId": "case-06",
+        "status": {
+          "generationState": "proposal",
+          "outcome": "complete",
+          "readiness": null,
+          "errorCode": null
+        },
+        "sourceAssessment": {
+          "access": "readable",
+          "sourceShape": "single_resource",
+          "primarySourceId": "src-c7305a19e4d2",
+          "supportingSourceIds": [],
+          "receivedSourceRowIds": [
+            "row-93b5e1a760cd"
+          ],
+          "untrustedInstructionDetected": false
+        },
+        "conversionDecision": {
+          "userNeed": "선택한 레시피 영상을 사용하기",
+          "lifeArea": "meals_grocery",
+          "planningPattern": "resource_queue",
+          "primaryArtifact": "memo",
+          "contentShape": "단일 레시피 영상 리소스"
+        },
+        "proposal": {
+          "proposalTitle": "선택한 레시피 영상",
+          "items": [
+            {
+              "proposalId": "p-01",
+              "title": "선택한 레시피 영상 사용하기",
+              "intent": "use_resource",
+              "sourceRowIds": [
+                "row-93b5e1a760cd"
+              ],
+              "completion": {
+                "mode": "check",
+                "doneWhen": "선택한 레시피 영상을 사용한 상태"
+              },
+              "memoCandidate": "선택한 레시피 영상",
+              "groupingCandidate": null,
+              "scheduleCandidate": null
+            }
+          ],
+          "omittedRows": [],
+          "incompleteReason": null
+        },
+        "projectionPlan": [
+          {
+            "target": "memo",
+            "applicability": "applicable",
+            "reason": "단일 레시피 영상과 선택한 리소스라는 맥락을 함께 보관할 수 있다."
+          }
+        ],
+        "reviewHints": {
+          "recommendedDisposition": "review",
+          "uncertainties": [
+            "영상 내부의 구체적인 내용은 SourceRow에 제공되지 않았다."
+          ],
+          "hardFailCodes": [],
+          "humanReviewRequired": []
+        }
+      }
+    },
+    {
+      "caseId": "case-07",
+      "modelInvoked": true,
+      "proposal": {
+        "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+        "promptVersion": "url-to-flow-prompt-v1.1",
+        "requestId": "rq-4d1a8fb763e0",
+        "caseId": "case-07",
+        "status": {
+          "generationState": "proposal",
+          "outcome": "complete",
+          "readiness": null,
+          "errorCode": null
+        },
+        "sourceAssessment": {
+          "access": "readable",
+          "sourceShape": "compare_decide",
+          "primarySourceId": "src-5d8a247fb1c6",
+          "supportingSourceIds": [],
+          "receivedSourceRowIds": [
+            "row-2a8c640f1e95"
+          ],
+          "untrustedInstructionDetected": false
+        },
+        "conversionDecision": {
+          "userNeed": "차량 이력과 상태를 확인하고 구매를 판단하기",
+          "lifeArea": "money_admin_purchase",
+          "planningPattern": "compare_decide",
+          "primaryArtifact": "checklist",
+          "contentShape": "차량 확인 후 구매를 판단하는 두 단계 흐름"
+        },
+        "proposal": {
+          "proposalTitle": "차량 확인 후 구매 판단",
+          "items": [
+            {
+              "proposalId": "p-01",
+              "title": "차량 이력과 상태 확인하기",
+              "intent": "inspect",
+              "sourceRowIds": [
+                "row-2a8c640f1e95"
+              ],
+              "completion": {
+                "mode": "check",
+                "doneWhen": "차량 이력과 상태를 확인한 상태"
+              },
+              "memoCandidate": null,
+              "groupingCandidate": "차량 구매 판단",
+              "scheduleCandidate": null
+            },
+            {
+              "proposalId": "p-02",
+              "title": "차량 구매 판단하기",
+              "intent": "decide",
+              "sourceRowIds": [
+                "row-2a8c640f1e95"
+              ],
+              "completion": {
+                "mode": "decision",
+                "doneWhen": "차량 구매를 판단한 상태"
+              },
+              "memoCandidate": null,
+              "groupingCandidate": "차량 구매 판단",
+              "scheduleCandidate": null
+            }
+          ],
+          "omittedRows": [],
+          "incompleteReason": null
+        },
+        "projectionPlan": [
+          {
+            "target": "checklist",
+            "applicability": "applicable",
+            "reason": "차량 이력과 상태를 확인한 뒤 구매를 판단하는 순서를 두 단계로 보존할 수 있다."
+          }
+        ],
+        "reviewHints": {
+          "recommendedDisposition": "review",
+          "uncertainties": [],
+          "hardFailCodes": [],
+          "humanReviewRequired": []
+        }
+      }
+    },
+    {
+      "caseId": "case-08",
+      "modelInvoked": true,
+      "proposal": {
+        "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+        "promptVersion": "url-to-flow-prompt-v1.1",
+        "requestId": "rq-e68c25a094b7",
+        "caseId": "case-08",
+        "status": {
+          "generationState": "proposal",
+          "outcome": "complete",
+          "readiness": null,
+          "errorCode": null
+        },
+        "sourceAssessment": {
+          "access": "readable",
+          "sourceShape": "date_preparation",
+          "primarySourceId": "src-e1096c3a75b4",
+          "supportingSourceIds": [],
+          "receivedSourceRowIds": [
+            "row-f51d309b7c24"
+          ],
+          "untrustedInstructionDetected": false
+        },
+        "conversionDecision": {
+          "userNeed": "예약과 문진표를 준비하기",
+          "lifeArea": "health_fitness",
+          "planningPattern": "date_preparation",
+          "primaryArtifact": "todo",
+          "contentShape": "예약과 문진표 준비를 묶은 단일 항목"
+        },
+        "proposal": {
+          "proposalTitle": "예약과 문진표 준비",
+          "items": [
+            {
+              "proposalId": "p-01",
+              "title": "예약과 문진표 준비하기",
+              "intent": "act",
+              "sourceRowIds": [
+                "row-f51d309b7c24"
+              ],
+              "completion": {
+                "mode": "check",
+                "doneWhen": "예약과 문진표 준비를 마친 상태"
+              },
+              "memoCandidate": null,
+              "groupingCandidate": null,
+              "scheduleCandidate": null
+            }
+          ],
+          "omittedRows": [],
+          "incompleteReason": null
+        },
+        "projectionPlan": [
+          {
+            "target": "todo",
+            "applicability": "applicable",
+            "reason": "예약과 문진표 준비를 하나의 독립 실행 항목으로 옮길 수 있다."
+          }
+        ],
+        "reviewHints": {
+          "recommendedDisposition": "review",
+          "uncertainties": [
+            "예약 날짜와 문진표 준비 기한이 제공되지 않았다."
+          ],
+          "hardFailCodes": [],
+          "humanReviewRequired": []
+        }
+      }
+    }
+  ]
+}

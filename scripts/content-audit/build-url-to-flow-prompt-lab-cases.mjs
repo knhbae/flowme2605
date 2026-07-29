@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -18,7 +19,9 @@ const outDir = path.join(
   '2026-07-14-url-to-flow-prompt-lab',
 );
 
-const fixtures = JSON.parse(fs.readFileSync(fixturePath, 'utf8'));
+const fixtureSource = fs.readFileSync(fixturePath, 'utf8');
+const fixtures = JSON.parse(fixtureSource);
+const sourceFixtureSha256 = createHash('sha256').update(fixtureSource).digest('hex');
 
 const negativeInputs = {
   'gf-neg-01-missing-source-rows': {
@@ -102,6 +105,7 @@ function cleanSource(source, accessStatus = 'fetched') {
 function positiveInput(fixture, index) {
   const { content } = fixture;
   const flow = content.flows[0];
+  const caseId = `case-${String(index + 1).padStart(2, '0')}`;
   const primary = content.sources.find(
     (source) => source.sourceId === flow.primarySourceId,
   );
@@ -110,14 +114,12 @@ function positiveInput(fixture, index) {
   );
 
   return {
-    caseId: `case-${String(index + 1).padStart(2, '0')}`,
+    caseId,
     requestId: `prompt-lab-v1-case-${String(index + 1).padStart(2, '0')}`,
     targetLocale: 'ko-KR',
     userJob: flow.userNeed,
     maxItems: 7,
-    claimedScope:
-      fixture.scopeNote ??
-      `제공된 ${content.sourceRows.length}개 SourceRow 범위만 변환한다.`,
+    claimedScope: `제공된 ${content.sourceRows.length}개 SourceRow 범위만 변환한다.`,
     source: {
       primary: cleanSource(primary),
       supporting: supporting.map((source) => cleanSource(source)),
@@ -130,9 +132,7 @@ function positiveInput(fixture, index) {
       detail: row.detail ?? null,
       order: row.order,
     })),
-    inputEvidenceRefs: [
-      `golden-fixtures-v1.json#${fixture.fixtureId}:source-only`,
-    ],
+    inputEvidenceRefs: [`prompt-lab-source:${caseId}`],
   };
 }
 
@@ -141,12 +141,14 @@ function negativeInput(fixture, index) {
   if (!override) {
     throw new Error(`Missing negative input override for ${fixture.fixtureId}`);
   }
+  const caseId = `case-${String(index + 1).padStart(2, '0')}`;
   return {
-    caseId: `case-${String(index + 1).padStart(2, '0')}`,
+    caseId,
     requestId: `prompt-lab-v1-case-${String(index + 1).padStart(2, '0')}`,
     targetLocale: 'ko-KR',
     maxItems: 7,
     ...override,
+    inputEvidenceRefs: [`prompt-lab-source:${caseId}`],
   };
 }
 
@@ -255,19 +257,21 @@ const expected = fixtures.fixtures.map((fixture, index) =>
 );
 
 const caseDocument = {
-  caseSetVersion: 'flowme-url-to-flow-prompt-lab-cases-v1',
+  caseSetVersion: 'flowme-url-to-flow-prompt-lab-cases-v1.1',
   fixtureSchemaVersion: fixtures.fixtureSchemaVersion,
   canonicalSchemaVersion: fixtures.canonicalSchemaVersion,
+  sourceFixtureSha256,
   generatedFrom: path.relative(root, fixturePath).replaceAll('\\', '/'),
   generator: 'scripts/content-audit/build-url-to-flow-prompt-lab-cases.mjs',
   generatorDisclosure:
-    'Positive inputs contain source metadata, SourceRows, and userJob only. Negative inputs add acquisition/locale evidence because canonical negative fixtures intentionally have content=null.',
+    'Inputs contain source metadata, SourceRows, userJob, and neutral case-local evidence references only. Canonical fixture IDs, shape labels, expected Items, dispositions, and projections are excluded. Negative inputs add acquisition/locale evidence because canonical negative fixtures intentionally have content=null.',
   cases,
 };
 
 const expectedDocument = {
-  expectationSetVersion: 'flowme-url-to-flow-prompt-lab-expected-v1',
+  expectationSetVersion: 'flowme-url-to-flow-prompt-lab-expected-v1.1',
   caseSetVersion: caseDocument.caseSetVersion,
+  sourceFixtureSha256,
   generatedFrom: path.relative(root, fixturePath).replaceAll('\\', '/'),
   hiddenFromGenerator: true,
   expectations: expected,

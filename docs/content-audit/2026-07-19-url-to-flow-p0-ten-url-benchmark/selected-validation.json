@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "flowme-url-to-flow-selected-validation-v1.0",
+  "generatedAt": "2026-07-29T04:21:50.154Z",
+  "passed": true,
+  "caseCount": 10,
+  "passedCaseCount": 10,
+  "errors": [],
+  "gates": {
+    "exactEvidenceAndReferences": true,
+    "unsupportedClaimsMaximum": 0,
+    "selectedPlanningPatternCount": 6,
+    "editoriallyUsableCaseCount": 9,
+    "sensitiveAutoPublicAllowed": false
+  }
+}

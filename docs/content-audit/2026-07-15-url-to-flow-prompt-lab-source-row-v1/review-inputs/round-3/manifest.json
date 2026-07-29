@@ -1,0 +1,96 @@
+{
+  "manifestVersion": "flowme-source-row-blind-review-manifest-v1",
+  "laneId": "url-to-flow-source-row-v1",
+  "round": "round-3",
+  "caseCount": 12,
+  "positiveCaseCount": 10,
+  "deterministicNegativeCount": 2,
+  "deterministicValidationPassed": false,
+  "forbiddenEvidenceIncluded": false,
+  "records": [
+    {
+      "caseId": "case-01",
+      "positiveCase": true,
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/review-inputs/round-3/case-01.json",
+      "sha256": "1744b2947afd974649b3764749be318f5eb08563ba91171d3efebb7dd38ff5b1",
+      "proposalFingerprint": "bc68acfa016cd9ffe0538fd30b80f04c8bb50049ff125327be32c2f6b2c81153"
+    },
+    {
+      "caseId": "case-02",
+      "positiveCase": true,
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/review-inputs/round-3/case-02.json",
+      "sha256": "0f391b8965257d666286de8befee527c69a8fe09f787664326a01bc2f9979d3e",
+      "proposalFingerprint": "c7252d2e51811aeefb556e5bda6de835dc9a98c98d533991e93abc620067530c"
+    },
+    {
+      "caseId": "case-03",
+      "positiveCase": true,
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/review-inputs/round-3/case-03.json",
+      "sha256": "eca4fad785fb2ae5cc3f8efc603a447514c5a3b6f8064a7de0fdf2e847a16033",
+      "proposalFingerprint": "f1698e85a56c1f50bc694a11909982b7f81033a4c41000ec6c10a34317ff6a87"
+    },
+    {
+      "caseId": "case-04",
+      "positiveCase": true,
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/review-inputs/round-3/case-04.json",
+      "sha256": "6d3544d3760cf7cc3ba6f2d9d2ab80f866f16c3bf2647f8e598b2a7684c4471f",
+      "proposalFingerprint": "e867302dcf11b7713576059da0d86378abdbc66aa42d80d92d4c6a96f6ab2531"
+    },
+    {
+      "caseId": "case-05",
+      "positiveCase": true,
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/review-inputs/round-3/case-05.json",
+      "sha256": "03e8197e664adbe771608c10a6b76ef2b2c25ad6a4a00543964052ec9ec1fc88",
+      "proposalFingerprint": "5e8413b933738a78bd00a32305a9e88c30a2ca0407f6ac33c2099a1d6fce4c42"
+    },
+    {
+      "caseId": "case-06",
+      "positiveCase": true,
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/review-inputs/round-3/case-06.json",
+      "sha256": "0caa8996691915139c44c3688ca3297739e79ceb314984af7235919bf7079660",
+      "proposalFingerprint": "0e68704072e450ef785bc4db6f198724f1cab42ad65e78f6982c45df1b0d3445"
+    },
+    {
+      "caseId": "case-07",
+      "positiveCase": true,
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/review-inputs/round-3/case-07.json",
+      "sha256": "398b15441ab78d909c2b2d93ced8df574ae50fcd8bcc468990ccebcdbcf3f794",
+      "proposalFingerprint": "07299735f55e65c7cd50fcbc41e26bc55a1d03e8f5ee7bea36345738c503065d"
+    },
+    {
+      "caseId": "case-08",
+      "positiveCase": true,
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/review-inputs/round-3/case-08.json",
+      "sha256": "2f8a8ed8dfd8d2c1d9985a5da2f9723ec8999b21f273221a9a44070c2ae0f001",
+      "proposalFingerprint": "1e7c98b2fb02ea600f72777fcab6c9016cb4df01af12d3b80d39a30445ab4ae9"
+    },
+    {
+      "caseId": "case-09",
+      "positiveCase": true,
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/review-inputs/round-3/case-09.json",
+      "sha256": "98782b0cd28a89fa88e89a8842d0d4bc2aaa175036302a5c0f2e8937073f9726",
+      "proposalFingerprint": "356a913796f0c1c78b14539a9931deac5aa1e64fb03bfc355e601e890e6f8f58"
+    },
+    {
+      "caseId": "case-10",
+      "positiveCase": true,
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/review-inputs/round-3/case-10.json",
+      "sha256": "c335cff690e470fcd920d91eda0884aa87ba0f2562be2169aad959fa09375075",
+      "proposalFingerprint": "32dff1ca62c39c2c609410adc92d15a6307fd40555a61912cc179381d30ff8a1"
+    },
+    {
+      "caseId": "case-11",
+      "positiveCase": false,
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/review-inputs/round-3/case-11.json",
+      "sha256": "316f98b42a39f35d04dada701205ab5465f1ea800074867d0ef99aec0f6e51a7",
+      "proposalFingerprint": "972fdd606415e273f1d227755256f0a13b804a9ccc60e6f66ae559afa55e5c94"
+    },
+    {
+      "caseId": "case-12",
+      "positiveCase": false,
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/review-inputs/round-3/case-12.json",
+      "sha256": "bbe39ece8b35d9ad731c25c56335ad430d2a319368461703abcc8618edb664c9",
+      "proposalFingerprint": "ef206b70ef5cefcfe07c15228c1879fa231d4a86ee0b15769dbd4aa0ded6679b"
+    }
+  ]
+}

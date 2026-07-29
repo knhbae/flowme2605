@@ -1,12 +1,12 @@
 {
   "runSchemaVersion": "flowme-url-to-flow-prompt-lab-run-v1",
-  "runId": "round-1-batch-c",
+  "runId": "round-1-neutral-batch-c",
   "promptVersion": "url-to-flow-prompt-v0.1",
-  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1.1",
   "proposalSchemaVersion": "flowme-semantic-proposal-v1",
   "modelEvidence": {
-    "provider": "codex-subagent-runtime",
-    "model": "codex-subagent-runtime",
+    "provider": "not_available",
+    "model": "not_available",
     "modelTier": "unclassified",
     "evidenceKind": "in_session_same_model"
   },
@@ -41,7 +41,7 @@
       },
       "sourceAssessment": {
         "access": "readable",
-        "sourceShape": "resource_queue",
+        "sourceShape": "daily_challenge",
         "primarySourceId": "source-canon-photo-30",
         "supportingSourceIds": [],
         "receivedSourceRowIds": [
@@ -51,14 +51,14 @@
         "untrustedInstructionDetected": false
       },
       "conversionDecision": {
-        "userNeed": "사진 연습 사용자로서 제공된 사진 prompt를 하루 하나씩 실행하고 완료 여부를 남긴다.",
+        "userNeed": "사진 챌린지 참여자로서 제공된 Day 1과 Day 2 프롬프트를 하루 하나씩 실행하고 완료 여부를 남겨 진행 상태를 확인한다.",
         "lifeArea": "hobby",
-        "planningPattern": "resource_queue",
+        "planningPattern": "daily_challenge",
         "primaryArtifact": "checklist",
-        "contentShape": "순서가 있는 2개 사진 prompt 실행 목록"
+        "contentShape": "2일 사진 프롬프트 실행 체크리스트"
       },
       "proposal": {
-        "proposalTitle": "사진 prompt Day 1-2 실행하기",
+        "proposalTitle": "사진 프롬프트 Day 1-2 실행하기",
         "items": [
           {
             "proposalId": "p-01",
@@ -68,12 +68,15 @@
               "row-photo-day-01"
             ],
             "completion": {
-              "mode": "record",
-              "doneWhen": "Day 1 prompt를 실행하고 완료 여부를 남겼다."
+              "mode": "check",
+              "doneWhen": "Day 1 prompt를 실행하고 완료 여부를 표시했다."
             },
             "memoCandidate": null,
             "groupingCandidate": null,
-            "scheduleCandidate": null
+            "scheduleCandidate": {
+              "sourceText": "Day 1",
+              "parsedByRule": false
+            }
           },
           {
             "proposalId": "p-02",
@@ -83,12 +86,15 @@
               "row-photo-day-02"
             ],
             "completion": {
-              "mode": "record",
-              "doneWhen": "Day 2 prompt를 실행하고 완료 여부를 남겼다."
+              "mode": "check",
+              "doneWhen": "Day 2 prompt를 실행하고 완료 여부를 표시했다."
             },
             "memoCandidate": null,
             "groupingCandidate": null,
-            "scheduleCandidate": null
+            "scheduleCandidate": {
+              "sourceText": "Day 2",
+              "parsedByRule": false
+            }
           }
         ],
         "omittedRows": [],
@@ -98,23 +104,27 @@
         {
           "target": "checklist",
           "applicability": "applicable",
-          "reason": "두 prompt 행을 순서대로 실행하고 완료 여부를 확인할 수 있다."
+          "reason": "두 SourceRow가 각각 완료 여부를 표시할 수 있는 실행 단위다."
+        },
+        {
+          "target": "todo",
+          "applicability": "applicable",
+          "reason": "각 Day prompt를 독립적인 할 일로 옮길 수 있다."
         },
         {
           "target": "calendar",
           "applicability": "blocked",
-          "reason": "Day 1과 Day 2는 순서 표기일 뿐 실제 시작 날짜나 일정 표현이 제공되지 않았다."
+          "reason": "Day 1과 Day 2라는 상대 순서만 있고 실제 시작 날짜가 없어 날짜를 확정할 수 없다."
         }
       ],
       "reviewHints": {
         "recommendedDisposition": "review",
         "uncertainties": [
-          "제공된 행에는 Day 1과 Day 2의 실제 사진 prompt 내용이 없다.",
-          "30일 전체가 아니라 제공된 2개 행만 변환했다."
+          "각 프롬프트의 구체적인 내용은 SourceRow detail로 제공되지 않았다."
         ],
         "hardFailCodes": [],
         "humanReviewRequired": [
-          "실제 prompt 내용과 원문 사용 권리를 확인한다."
+          "각 Day 프롬프트의 원문 내용과 이용 권리를 확인한다."
         ]
       }
     },
@@ -124,8 +134,8 @@
       "requestId": "prompt-lab-v1-case-10",
       "caseId": "case-10",
       "status": {
-        "generationState": "proposal",
-        "outcome": "complete",
+        "generationState": "partial",
+        "outcome": "partial",
         "readiness": null,
         "errorCode": null
       },
@@ -143,27 +153,27 @@
         "untrustedInstructionDetected": false
       },
       "conversionDecision": {
-        "userNeed": "차량 소유자로서 내 차량의 정기검사 유효기간 안에 검사를 받고 필요하면 재검사 조건을 확인한다.",
+        "userNeed": "차량 소유자로서 내 차량의 정기검사 유효기간을 확인해 기간 안에 검사를 받을 준비를 하고, 근거가 확보되면 재검사 조건도 확인한다.",
         "lifeArea": "vehicle",
-        "planningPattern": "deadline_window",
-        "primaryArtifact": "todo",
-        "contentShape": "유효기간에 맞춘 단일 정기검사 행동"
+        "planningPattern": "due_window",
+        "primaryArtifact": "checklist",
+        "contentShape": "자동차 정기검사 유효기간 확인 항목"
       },
       "proposal": {
-        "proposalTitle": "정기검사 유효기간 안에 검사받기",
+        "proposalTitle": "자동차 정기검사 유효기간 확인하기",
         "items": [
           {
             "proposalId": "p-01",
-            "title": "정기검사 유효기간 안에 검사받기",
-            "intent": "act",
+            "title": "정기검사 유효기간 확인하기",
+            "intent": "inspect",
             "sourceRowIds": [
               "row-inspection-window"
             ],
             "completion": {
-              "mode": "check",
-              "doneWhen": "내 차량이 정기검사 유효기간 안에 검사를 받았다."
+              "mode": "record",
+              "doneWhen": "내 차량에 적용되는 정기검사 유효기간을 확인해 기록했다."
             },
-            "memoCandidate": "재검사가 필요한 경우 조건을 확인한다.",
+            "memoCandidate": null,
             "groupingCandidate": null,
             "scheduleCandidate": null
           }
@@ -171,32 +181,37 @@
         "omittedRows": [
           {
             "sourceRowId": "row-inspection-agency-phases",
-            "reason": "지원 출처의 검사기관 내부 단계는 사용자가 독립적으로 실행하거나 완료할 행동이 아니며 Flow 구조를 통제할 수 없다."
+            "reason": "supporting source의 검사기관 내부 단계는 사용자가 독립적으로 실행할 행동이 아니며 primary source의 Flow 구조를 통제할 수 없어 제외했다."
           }
         ],
-        "incompleteReason": null
+        "incompleteReason": "제공된 SourceRow에는 유효기간의 구체적인 날짜와 재검사 조건이 없어 검사 일정 확정과 재검사 판단 항목까지 만들 수 없다."
       },
       "projectionPlan": [
         {
+          "target": "checklist",
+          "applicability": "applicable",
+          "reason": "유효기간 확인을 한 번 완료 여부로 관리할 수 있다."
+        },
+        {
           "target": "todo",
           "applicability": "applicable",
-          "reason": "정기검사 받기는 사용자가 완료 여부를 확인할 수 있는 단일 행동이다."
+          "reason": "유효기간 확인을 독립적인 할 일로 옮길 수 있다."
         },
         {
           "target": "calendar",
           "applicability": "blocked",
-          "reason": "유효기간의 구체적인 날짜 표현이 SourceRow에 없어 일정을 만들 수 없다."
+          "reason": "SourceRow에 실제 날짜나 기간 값이 없어 일정을 정할 수 없다."
         }
       ],
       "reviewHints": {
         "recommendedDisposition": "review",
         "uncertainties": [
-          "차량별 정기검사 유효기간의 구체적인 값이 제공되지 않았다.",
-          "재검사 조건을 설명하는 SourceRow가 제공되지 않았다."
+          "차량별 정기검사 유효기간 값이 제공되지 않았다.",
+          "재검사가 필요한 조건과 기한이 제공되지 않았다."
         ],
         "hardFailCodes": [],
         "humanReviewRequired": [
-          "공식 출처에서 해당 차량의 유효기간과 필요한 경우의 재검사 조건을 확인한다."
+          "공식 자료에서 내 차량에 적용되는 유효기간과 재검사 조건을 확인한다."
         ]
       }
     },
@@ -224,19 +239,19 @@
         "proposalTitle": null,
         "items": [],
         "omittedRows": [],
-        "incompleteReason": "원본 파일 본문과 학습 행이 제공되지 않아 실행 가능한 진도표 항목을 만들 수 없다."
+        "incompleteReason": "원본 학습 파일의 본문과 SourceRow를 읽을 수 없어 실행 가능한 진도표를 만들 수 없다."
       },
       "projectionPlan": [],
       "reviewHints": {
         "recommendedDisposition": "source_import_required",
         "uncertainties": [
-          "파일의 목차, 주차, 과제 행을 확인할 수 없다."
+          "학습 파일의 목차, 주차, 과제 행이 확보되지 않았다."
         ],
         "hardFailCodes": [
           "missing_source_rows"
         ],
         "humanReviewRequired": [
-          "원본 파일에 접근해 행 단위 학습 내용을 추출한다."
+          "원본 파일을 가져오고 학습 행을 추출한 뒤 다시 생성한다."
         ]
       }
     },
@@ -264,21 +279,20 @@
         "proposalTitle": null,
         "items": [],
         "omittedRows": [],
-        "incompleteReason": "미국 병원, 보험, 제대혈 판매 맥락이 섞인 의료 민감 콘텐츠여서 한국 사용자에게 적용할 수 있는지 확인되지 않았다."
+        "incompleteReason": "의료 민감 콘텐츠의 미국 병원·보험 맥락이 한국 사용자에게 적용되는지 확인되지 않아 출산 가방 제안을 만들 수 없다."
       },
       "projectionPlan": [],
       "reviewHints": {
         "recommendedDisposition": "hold",
         "uncertainties": [
-          "한국 병원의 제공품과 입원 절차에 맞는지 확인되지 않았다.",
-          "체크리스트의 개별 SourceRow가 제공되지 않았다."
+          "한국어 번역 여부만으로 미국 병원, 보험, 제대혈 판매 맥락의 한국 적용성을 확인할 수 없다.",
+          "55개 물품의 개별 SourceRow가 제공되지 않았다."
         ],
         "hardFailCodes": [
           "locale_applicability_unverified"
         ],
         "humanReviewRequired": [
-          "한국의 병원, 의료, 보험, 행정 맥락에 대한 적용성을 확인한다.",
-          "지역 적용성을 확인한 뒤 행 단위 체크리스트를 확보한다."
+          "한국의 병원 입원과 출산 준비 기준에 적용 가능한지 먼저 확인한다."
         ]
       }
     }

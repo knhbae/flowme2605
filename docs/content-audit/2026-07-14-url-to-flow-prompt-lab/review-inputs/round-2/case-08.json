@@ -1,16 +1,20 @@
 {
-  "reviewInputSchemaVersion": "flowme-url-to-flow-blind-review-input-v1",
+  "reviewInputSchemaVersion": "flowme-url-to-flow-blind-review-input-v2",
   "round": "round-2",
   "caseId": "case-08",
-  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
-  "expectationSetVersion": "flowme-url-to-flow-prompt-lab-expected-v1",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1.1",
   "promptVersion": "url-to-flow-prompt-v0.2",
   "proposalSchemaVersion": "flowme-semantic-proposal-v1",
   "rubric": {
-    "version": "flowme-url-to-flow-prompt-lab-review-rubric-v1",
+    "version": "flowme-url-to-flow-prompt-lab-review-rubric-v2",
     "reference": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-rubric.md"
   },
   "reviewResultTemplate": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-result-template.json",
+  "rawRun": {
+    "runFile": "docs/content-audit/2026-07-14-url-to-flow-prompt-lab/runs/round-2/batch-b.json",
+    "runId": "round-2-neutral-batch-b"
+  },
+  "proposalFingerprint": "sha256:cd136bfd8c719bfa2c90ff559f10104ebc445de0e78134c5e0f765b4f88e477a",
   "sourcePacket": {
     "caseId": "case-08",
     "requestId": "prompt-lab-v1-case-08",
@@ -46,61 +50,8 @@
       }
     ],
     "inputEvidenceRefs": [
-      "golden-fixtures-v1.json#gf-pos-08-evidence-caution:source-only"
+      "prompt-lab-source:case-08"
     ]
-  },
-  "hiddenExpectation": {
-    "caseId": "case-08",
-    "fixtureId": "gf-pos-08-evidence-caution",
-    "fixtureKind": "positive",
-    "fixtureShape": "evidence_caution",
-    "name": "영유아 건강검진 준비 증빙·주의",
-    "expectedStatus": {
-      "generationState": "proposal",
-      "outcome": "complete",
-      "readiness": null,
-      "errorCode": null,
-      "recommendedDisposition": "review"
-    },
-    "expectedConversion": {
-      "userNeed": "아이 검진 예약과 문진표 준비 상태를 확인하되 의료 판단은 공식 안내에 맡긴다.",
-      "planningPattern": "phase_lifecycle",
-      "primaryArtifact": "checklist",
-      "riskLevel": "medical_sensitive"
-    },
-    "expectedItems": [
-      {
-        "referenceItemId": "item-infant-checkup-confirm",
-        "title": "예약과 문진표 준비 확인하기",
-        "intent": "inspect",
-        "sourceRowIds": [
-          "row-infant-checkup-prep"
-        ],
-        "completionMode": "check",
-        "doneWhen": "예약과 문진표 준비 상태를 확인했다.",
-        "hasSchedule": false,
-        "canonicalSchedule": null
-      }
-    ],
-    "expectedOmittedRows": [],
-    "accountingSourceRowIds": [
-      "row-infant-checkup-prep"
-    ],
-    "expectedProjections": [
-      "checklist:markdown",
-      "sheet:csv",
-      "memo:markdown"
-    ],
-    "forbiddenProjections": [
-      "calendar:ics",
-      "todo:markdown"
-    ],
-    "referenceReview": {
-      "readiness": "ready_second_wave",
-      "hardFails": [],
-      "rightsDecision": "공식 준비 항목과 링크만 사용한다.",
-      "riskDecision": "민감 메모는 사용자 overlay에만 저장하고 공개 content/export 기본값에 포함하지 않는다."
-    }
   },
   "proposal": {
     "proposalSchemaVersion": "flowme-semantic-proposal-v1",
@@ -115,7 +66,7 @@
     },
     "sourceAssessment": {
       "access": "readable",
-      "sourceShape": "ordered_procedure",
+      "sourceShape": "date_preparation",
       "primarySourceId": "source-nhis-infant-checkup",
       "supportingSourceIds": [],
       "receivedSourceRowIds": [
@@ -124,14 +75,14 @@
       "untrustedInstructionDetected": false
     },
     "conversionDecision": {
-      "userNeed": "아이 검진의 예약과 문진표 준비 상태를 확인하고 의료 판단은 공식 안내에 맡긴다.",
+      "userNeed": "아이 검진 예약과 문진표 준비 상태를 확인하고 의료 판단은 공식 안내에 맡긴다.",
       "lifeArea": "family_parenting",
-      "planningPattern": "ordered_procedure",
+      "planningPattern": "date_preparation",
       "primaryArtifact": "checklist",
-      "contentShape": "검진 준비 상태 확인 항목"
+      "contentShape": "영유아 건강검진 사전 준비 확인"
     },
     "proposal": {
-      "proposalTitle": "영유아 건강검진 준비 상태 확인",
+      "proposalTitle": "영유아 건강검진 준비 확인",
       "items": [
         {
           "proposalId": "p-01",
@@ -142,7 +93,7 @@
           ],
           "completion": {
             "mode": "check",
-            "doneWhen": "예약과 문진표 준비 상태를 확인함"
+            "doneWhen": "예약과 문진표 준비 상태를 확인했다."
           },
           "memoCandidate": "의료 판단은 공식 안내에 맡긴다.",
           "groupingCandidate": null,
@@ -156,20 +107,23 @@
       {
         "target": "checklist",
         "applicability": "applicable",
-        "reason": "예약과 문진표의 준비 상태만 확인하고 의료 판단을 추가하지 않는다."
+        "reason": "예약과 문진표 준비 상태를 한 개의 확인 가능한 항목으로 유지할 수 있다."
       }
     ],
     "reviewHints": {
       "recommendedDisposition": "review",
-      "uncertainties": [],
+      "uncertainties": [
+        "검진 시기, 예약 방법, 문진표 제출 방식은 SourceRow에 없다."
+      ],
       "hardFailCodes": [],
       "humanReviewRequired": [
-        "의료 판단은 국민건강보험공단 공식 안내 확인이 필요함"
+        "의료 판단과 검진 적용 범위는 공식 안내로 확인한다."
       ]
     }
   },
   "validator": {
-    "passed": null,
-    "hardFailCodes": []
+    "validatorVersion": "flowme-url-to-flow-prompt-lab-validator-v1",
+    "passed": true,
+    "codes": []
   }
 }

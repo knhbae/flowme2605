@@ -1,14 +1,14 @@
 {
   "runSchemaVersion": "flowme-url-to-flow-prompt-lab-run-v1",
-  "runId": "round-3-batch-f",
+  "runId": "round-3-neutral-batch-f",
   "promptVersion": "url-to-flow-prompt-v0.2",
-  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1.1",
   "proposalSchemaVersion": "flowme-semantic-proposal-v1",
   "modelEvidence": {
-    "provider": "codex-subagent-runtime",
-    "model": "codex-subagent-runtime",
+    "provider": "not_available",
+    "model": "not_available",
     "modelTier": "unclassified",
-    "evidenceKind": "in_session_same_model"
+    "evidenceKind": "provider_neutral_independent_rerun"
   },
   "timing": {
     "startedAt": null,
@@ -34,14 +34,14 @@
       "requestId": "prompt-lab-v1-case-10",
       "caseId": "case-10",
       "status": {
-        "generationState": "proposal",
-        "outcome": "complete",
+        "generationState": "partial",
+        "outcome": "partial",
         "readiness": null,
         "errorCode": null
       },
       "sourceAssessment": {
         "access": "readable",
-        "sourceShape": "phase_lifecycle",
+        "sourceShape": "date_preparation",
         "primarySourceId": "source-kotsa-regular-inspection",
         "supportingSourceIds": [
           "source-kotsa-inspection-procedure"
@@ -53,60 +53,66 @@
         "untrustedInstructionDetected": false
       },
       "conversionDecision": {
-        "userNeed": "내 차량의 검사 유효기간 안에 정기검사를 받고 필요할 때 재검사 조건을 확인한다.",
+        "userNeed": "내 차량의 정기검사 유효기간을 확인한다.",
         "lifeArea": "money_admin_purchase",
-        "planningPattern": "phase_lifecycle",
+        "planningPattern": "date_preparation",
         "primaryArtifact": "checklist",
-        "contentShape": "정기검사 유효기간을 기준으로 한 단일 체크 항목"
+        "contentShape": "정기검사 유효기간 확인 행동"
       },
       "proposal": {
-        "proposalTitle": "자동차 정기검사 챙기기",
+        "proposalTitle": "내 차량 정기검사 유효기간 확인",
         "items": [
           {
             "proposalId": "p-01",
-            "title": "유효기간 안에 정기검사 받기",
-            "intent": "act",
+            "title": "정기검사 유효기간 확인하기",
+            "intent": "inspect",
             "sourceRowIds": [
               "row-inspection-window"
             ],
             "completion": {
               "mode": "check",
-              "doneWhen": "유효기간 안에 정기검사를 받았다"
+              "doneWhen": "내 차량의 정기검사 유효기간을 확인했다."
             },
-            "memoCandidate": "필요할 때 재검사 조건을 확인한다.",
+            "memoCandidate": null,
             "groupingCandidate": null,
-            "scheduleCandidate": null
+            "scheduleCandidate": {
+              "sourceRowIds": [
+                "row-inspection-window"
+              ],
+              "sourceText": "정기검사 유효기간",
+              "parsedByRule": false
+            }
           }
         ],
         "omittedRows": [
           {
             "sourceRowId": "row-inspection-agency-phases",
             "reasonCode": "supporting_source_boundary",
-            "reason": "supporting source의 검사기관 내부 단계는 사용자가 수행하는 독립 Item이 아니다."
+            "reason": "supporting source의 검사기관 내부 단계는 primary Flow 구조를 통제하지 않으며 사용자가 직접 완료할 행동이 아니다."
           }
         ],
-        "incompleteReason": null
+        "incompleteReason": "재검사 조건을 확인할 SourceRow가 없고, supporting source의 검사기관 내부 단계는 Flow Item 경계 밖이다."
       },
       "projectionPlan": [
         {
           "target": "checklist",
           "applicability": "applicable",
-          "reason": "primary source의 유효기간 행을 한 개의 사용자 행동으로 보존한다."
+          "reason": "유효기간 확인 행동은 체크리스트로 옮길 수 있다."
         },
         {
           "target": "calendar",
-          "applicability": "not_applicable",
-          "reason": "SourceRow에 실제 날짜가 없어 Calendar 일정은 만들 수 없다."
+          "applicability": "blocked",
+          "reason": "SourceRow에 실제 날짜 값이 없어 Calendar 일정으로 확정할 수 없다."
         }
       ],
       "reviewHints": {
         "recommendedDisposition": "review",
         "uncertainties": [
-          "구체적인 검사 유효기간 날짜와 재검사 조건은 SourceRow에 없다."
+          "정기검사 유효기간의 실제 날짜 값과 재검사 조건 SourceRow가 제공되지 않았다."
         ],
         "hardFailCodes": [],
         "humanReviewRequired": [
-          "차량에 적용되는 실제 유효기간과 재검사 조건을 공식 정보에서 확인해야 한다."
+          "실제 차량별 유효기간과 재검사 조건 근거를 확인해야 한다."
         ]
       }
     },
@@ -134,18 +140,20 @@
         "proposalTitle": null,
         "items": [],
         "omittedRows": [],
-        "incompleteReason": null
+        "incompleteReason": "원본 파일 본문과 SourceRow가 제공되지 않아 진도표 항목을 만들 수 없다."
       },
       "projectionPlan": [],
       "reviewHints": {
         "recommendedDisposition": "source_import_required",
         "uncertainties": [
-          "파일 본문과 진도표로 옮길 SourceRow를 확보하지 못했다."
+          "파일 본문, 목차, 주차, 과제 행을 확인할 수 없다."
         ],
         "hardFailCodes": [
           "missing_source_rows"
         ],
-        "humanReviewRequired": []
+        "humanReviewRequired": [
+          "원본 학습 파일을 가져와 SourceRow를 확보해야 한다."
+        ]
       }
     },
     {
@@ -161,7 +169,7 @@
       },
       "sourceAssessment": {
         "access": "partial",
-        "sourceShape": "unknown",
+        "sourceShape": "source_table_rows",
         "primarySourceId": "source-stemcyte-hospital-bag",
         "supportingSourceIds": [],
         "receivedSourceRowIds": [],
@@ -172,19 +180,19 @@
         "proposalTitle": null,
         "items": [],
         "omittedRows": [],
-        "incompleteReason": null
+        "incompleteReason": "미국 병원·보험·제대혈 판매 맥락이 한국 사용자에게 적용되는지 확인되지 않았다."
       },
       "projectionPlan": [],
       "reviewHints": {
         "recommendedDisposition": "hold",
         "uncertainties": [
-          "미국 병원·보험·서류 맥락이 한국 사용자에게 적용되는지 검증되지 않았다."
+          "미국 병원·보험·제대혈 판매 맥락이 한국 사용자에게 적용되는지 확인되지 않았다."
         ],
         "hardFailCodes": [
           "locale_applicability_unverified"
         ],
         "humanReviewRequired": [
-          "한국 병원 기준의 의료·보험·행정 적용성을 별도로 확인해야 한다."
+          "한국 의료·병원 환경에 대한 적용성을 확인해야 한다."
         ]
       }
     }

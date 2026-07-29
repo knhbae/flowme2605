@@ -1,0 +1,78 @@
+{
+  "sampleRef": "smp-0b2e2f909ba047ad",
+  "sourceOwnership": {
+    "primarySourceRef": "src-d61587085bbac426",
+    "supportingSourceRefs": [
+      "src-8676c1d597b4c9af"
+    ]
+  },
+  "sourceRows": [
+    {
+      "sourceRowRef": "row-0c7c0f25a776f529",
+      "sourceRef": "src-d61587085bbac426",
+      "rowType": "date",
+      "title": "정기검사 유효기간",
+      "detail": null,
+      "order": 0
+    },
+    {
+      "sourceRowRef": "row-eea93da3a8a24381",
+      "sourceRef": "src-8676c1d597b4c9af",
+      "rowType": "reference",
+      "title": "검사기관 내부 검사 단계",
+      "detail": null,
+      "order": 0
+    }
+  ],
+  "compiledProposal": {
+    "schemaVersion": "flowme-semantic-proposal-v2",
+    "promptVersion": "row-license-compiler-v3.0",
+    "requestRef": "req-2c02f40a2633c521",
+    "sampleRef": "smp-0b2e2f909ba047ad",
+    "result": {
+      "state": "proposal",
+      "reasonCode": null,
+      "disposition": "review",
+      "primaryArtifact": "todo"
+    },
+    "items": [
+      {
+        "itemRef": "item-01",
+        "sourceRowRefs": [
+          "row-0c7c0f25a776f529"
+        ],
+        "title": "정기검사 유효기간 확인하기",
+        "intent": "inspect",
+        "completionMode": "check",
+        "memo": null,
+        "scheduleEvidence": null
+      }
+    ],
+    "omittedRows": [
+      {
+        "sourceRowRef": "row-eea93da3a8a24381",
+        "reasonCode": "supporting_source_boundary"
+      }
+    ],
+    "projections": [
+      {
+        "target": "todo",
+        "itemRefs": [
+          "item-01"
+        ]
+      }
+    ],
+    "review": {
+      "uncertaintyCodes": [
+        "missing_date_value",
+        "supporting_source_not_structural"
+      ],
+      "humanCheckRowRefs": [
+        "row-0c7c0f25a776f529",
+        "row-eea93da3a8a24381"
+      ]
+    }
+  },
+  "proposalFingerprint": "449cb3193054c6efd6df25bb9220f59ce260982662e334a7d3cac77609605dce",
+  "reviewInputSha256": "6d6586d2bb9db3424bb58b009ea4e4615b1ae07e9f50e6ef89fb42786cfbcf4e"
+}

@@ -1,16 +1,20 @@
 {
-  "reviewInputSchemaVersion": "flowme-url-to-flow-blind-review-input-v1",
+  "reviewInputSchemaVersion": "flowme-url-to-flow-blind-review-input-v2",
   "round": "round-2",
   "caseId": "case-02",
-  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
-  "expectationSetVersion": "flowme-url-to-flow-prompt-lab-expected-v1",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1.1",
   "promptVersion": "url-to-flow-prompt-v0.2",
   "proposalSchemaVersion": "flowme-semantic-proposal-v1",
   "rubric": {
-    "version": "flowme-url-to-flow-prompt-lab-review-rubric-v1",
+    "version": "flowme-url-to-flow-prompt-lab-review-rubric-v2",
     "reference": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-rubric.md"
   },
   "reviewResultTemplate": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-result-template.json",
+  "rawRun": {
+    "runFile": "docs/content-audit/2026-07-14-url-to-flow-prompt-lab/runs/round-2/batch-a.json",
+    "runId": "round-2-neutral-batch-a"
+  },
+  "proposalFingerprint": "sha256:dbe207ff855defa97c9da1bfe57da6526b0ce7ded39ff5b21aa8f0ed213414c8",
   "sourcePacket": {
     "caseId": "case-02",
     "requestId": "prompt-lab-v1-case-02",
@@ -46,70 +50,8 @@
       }
     ],
     "inputEvidenceRefs": [
-      "golden-fixtures-v1.json#gf-pos-02-fixed-routine:source-only"
+      "prompt-lab-source:case-02"
     ]
-  },
-  "hiddenExpectation": {
-    "caseId": "case-02",
-    "fixtureId": "gf-pos-02-fixed-routine",
-    "fixtureKind": "positive",
-    "fixtureShape": "fixed_routine",
-    "name": "에어컨 필터 4주 청소",
-    "expectedStatus": {
-      "generationState": "proposal",
-      "outcome": "complete",
-      "readiness": null,
-      "errorCode": null,
-      "recommendedDisposition": "review"
-    },
-    "expectedConversion": {
-      "userNeed": "공식 주기에 맞춰 에어컨 필터 청소를 반복하고 완료 여부를 남긴다.",
-      "planningPattern": "repeating_routine",
-      "primaryArtifact": "calendar",
-      "riskLevel": "low"
-    },
-    "expectedItems": [
-      {
-        "referenceItemId": "item-aircon-filter-clean",
-        "title": "에어컨 극세 필터 청소하기",
-        "intent": "act",
-        "sourceRowIds": [
-          "row-aircon-filter-4week"
-        ],
-        "completionMode": "check",
-        "doneWhen": "필터를 청소하고 충분히 건조해 다시 장착했다.",
-        "hasSchedule": true,
-        "canonicalSchedule": {
-          "mode": "absolute",
-          "start": "2026-07-14",
-          "allDay": true,
-          "recurrence": {
-            "frequency": "weekly",
-            "interval": 4,
-            "sourceDefined": true
-          }
-        }
-      }
-    ],
-    "expectedOmittedRows": [],
-    "accountingSourceRowIds": [
-      "row-aircon-filter-4week"
-    ],
-    "expectedProjections": [
-      "calendar:ics",
-      "checklist:plain_text",
-      "memo:markdown"
-    ],
-    "forbiddenProjections": [
-      "sheet:csv",
-      "todo:markdown"
-    ],
-    "referenceReview": {
-      "readiness": "ready_for_internal_canary",
-      "hardFails": [],
-      "rightsDecision": "공식 주기와 짧은 방법 요약, 원문 링크만 사용한다.",
-      "riskDecision": "사용자 기기 모델이 다르면 공식 모델 안내를 다시 확인한다."
-    }
   },
   "proposal": {
     "proposalSchemaVersion": "flowme-semantic-proposal-v1",
@@ -133,14 +75,14 @@
       "untrustedInstructionDetected": false
     },
     "conversionDecision": {
-      "userNeed": "극세 필터를 4주에 한 번 청소하고 완료 여부를 남긴다.",
+      "userNeed": "4주에 한 번 극세 필터를 청소하고 완료를 확인한다.",
       "lifeArea": "home_living",
       "planningPattern": "repeating_routine",
       "primaryArtifact": "hybrid",
-      "contentShape": "반복 주기가 있는 청소 체크 항목"
+      "contentShape": "반복 주기가 있는 단일 청소 루틴"
     },
     "proposal": {
-      "proposalTitle": "에어컨 극세 필터 청소",
+      "proposalTitle": "극세 필터 4주 청소 루틴",
       "items": [
         {
           "proposalId": "p-01",
@@ -151,7 +93,7 @@
           ],
           "completion": {
             "mode": "check",
-            "doneWhen": "극세 필터 청소를 마친 상태"
+            "doneWhen": "극세 필터 청소를 마쳤다."
           },
           "memoCandidate": "먼지 제거, 물세척, 그늘 건조",
           "groupingCandidate": null,
@@ -171,27 +113,26 @@
       {
         "target": "calendar",
         "applicability": "applicable",
-        "reason": "SourceRow의 반복 표현을 파싱하지 않은 일정 후보로 유지한다."
+        "reason": "SourceRow의 반복 표현을 일정 후보로 보존한다."
       },
       {
         "target": "checklist",
         "applicability": "applicable",
-        "reason": "청소 완료 여부를 확인 가능한 한 항목으로 유지한다."
+        "reason": "필터 청소 완료 여부를 확인할 수 있다."
       }
     ],
     "reviewHints": {
       "recommendedDisposition": "review",
       "uncertainties": [
-        "반복 표현은 파싱되지 않은 원문 후보이다."
+        "반복 표현은 파싱되지 않은 원문 후보임"
       ],
       "hardFailCodes": [],
-      "humanReviewRequired": [
-        "반복 일정 적용 전 주기 해석을 검토해야 한다."
-      ]
+      "humanReviewRequired": []
     }
   },
   "validator": {
-    "passed": null,
-    "hardFailCodes": []
+    "validatorVersion": "flowme-url-to-flow-prompt-lab-validator-v1",
+    "passed": true,
+    "codes": []
   }
 }

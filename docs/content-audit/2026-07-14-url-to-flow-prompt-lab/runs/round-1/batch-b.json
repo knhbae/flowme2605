@@ -1,12 +1,12 @@
 {
   "runSchemaVersion": "flowme-url-to-flow-prompt-lab-run-v1",
-  "runId": "round-1-batch-b",
+  "runId": "round-1-neutral-batch-b",
   "promptVersion": "url-to-flow-prompt-v0.1",
-  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1.1",
   "proposalSchemaVersion": "flowme-semantic-proposal-v1",
   "modelEvidence": {
-    "provider": "codex-subagent-runtime",
-    "model": "codex-subagent-runtime",
+    "provider": "not_available",
+    "model": "not_available",
     "modelTier": "unclassified",
     "evidenceKind": "in_session_same_model"
   },
@@ -41,7 +41,7 @@
       },
       "sourceAssessment": {
         "access": "readable",
-        "sourceShape": "table",
+        "sourceShape": "ordered_course_weeks",
         "primarySourceId": "source-kmooc-hundred-schools",
         "supportingSourceIds": [],
         "receivedSourceRowIds": [
@@ -51,44 +51,50 @@
         "untrustedInstructionDetected": false
       },
       "conversionDecision": {
-        "userNeed": "공개 강좌의 제공된 주차를 따라가며 각 주차의 현재 진도와 메모를 남긴다.",
+        "userNeed": "공개 강좌를 따라가는 사용자는 제공된 1주차와 2주차의 진행 상태와 메모를 남겨 현재 진도를 확인한다.",
         "lifeArea": "learning",
-        "planningPattern": "progress_tracking",
-        "primaryArtifact": "sheet",
-        "contentShape": "주차별 학습 진도표"
+        "planningPattern": "ordered_progress_tracking",
+        "primaryArtifact": "hybrid",
+        "contentShape": "두 개 주차가 순서대로 있는 강좌 진행 목록"
       },
       "proposal": {
-        "proposalTitle": "제자백가의 사상 1~2주차 진도 기록",
+        "proposalTitle": "제자백가 강좌 1·2주차 진도 남기기",
         "items": [
           {
             "proposalId": "p-01",
-            "title": "1주차 강의와 퀴즈 진도 기록하기",
+            "title": "1주차 강의와 퀴즈 진행하고 메모 남기기",
             "intent": "record",
             "sourceRowIds": [
               "row-kmooc-week-01"
             ],
             "completion": {
               "mode": "record",
-              "doneWhen": "1주차 강의와 퀴즈의 현재 진도와 메모가 기록됨"
+              "doneWhen": "1주차 강의와 퀴즈의 진행 상태와 메모가 기록되어 있다."
             },
-            "memoCandidate": "1주차 학습 메모",
+            "memoCandidate": null,
             "groupingCandidate": null,
-            "scheduleCandidate": null
+            "scheduleCandidate": {
+              "sourceExpression": "1주차",
+              "parsedByRule": false
+            }
           },
           {
             "proposalId": "p-02",
-            "title": "2주차 강의와 퀴즈 진도 기록하기",
+            "title": "2주차 강의와 퀴즈 진행하고 메모 남기기",
             "intent": "record",
             "sourceRowIds": [
               "row-kmooc-week-02"
             ],
             "completion": {
               "mode": "record",
-              "doneWhen": "2주차 강의와 퀴즈의 현재 진도와 메모가 기록됨"
+              "doneWhen": "2주차 강의와 퀴즈의 진행 상태와 메모가 기록되어 있다."
             },
-            "memoCandidate": "2주차 학습 메모",
+            "memoCandidate": null,
             "groupingCandidate": null,
-            "scheduleCandidate": null
+            "scheduleCandidate": {
+              "sourceExpression": "2주차",
+              "parsedByRule": false
+            }
           }
         ],
         "omittedRows": [],
@@ -96,29 +102,29 @@
       },
       "projectionPlan": [
         {
-          "target": "sheet",
-          "applicability": "applicable",
-          "reason": "두 주차의 순서와 진도·메모 기록을 행 단위로 보존할 수 있음"
-        },
-        {
           "target": "checklist",
           "applicability": "applicable",
-          "reason": "각 주차의 진도 기록 여부를 독립적으로 확인할 수 있음"
+          "reason": "두 주차 행을 순서와 근거를 유지한 진도 확인 항목으로 옮길 수 있다."
+        },
+        {
+          "target": "memo",
+          "applicability": "applicable",
+          "reason": "각 주차 항목에 사용자가 남길 진행 메모를 함께 보관할 수 있다."
         },
         {
           "target": "calendar",
           "applicability": "blocked",
-          "reason": "주차 이름만 있고 실제 날짜나 기간이 제공되지 않음"
+          "reason": "1주차와 2주차는 원문 순서 표현이며 실제 날짜가 없어 일정으로 확정할 수 없다."
         }
       ],
       "reviewHints": {
         "recommendedDisposition": "review",
         "uncertainties": [
-          "SourceRow에 강의와 퀴즈의 세부 완료 기준이 제공되지 않음"
+          "1주차와 2주차의 실제 일정 날짜는 제공되지 않았다."
         ],
         "hardFailCodes": [],
         "humanReviewRequired": [
-          "주차별 진도 기록 기준과 메모 형식을 확인"
+          "주차 표현을 Calendar 일정으로 바꾸려면 실제 날짜를 확인해야 한다."
         ]
       }
     },
@@ -144,11 +150,11 @@
         "untrustedInstructionDetected": false
       },
       "conversionDecision": {
-        "userNeed": "저장한 레시피 영상을 열어 한 번 실행하고 필요한 맥락을 함께 보관한다.",
+        "userNeed": "저장한 레시피 영상을 활용하려는 사용자는 선택한 영상을 열어 한 번 실행하고 필요한 맥락을 함께 보관한다.",
         "lifeArea": "food",
-        "planningPattern": "resource_execution",
-        "primaryArtifact": "memo",
-        "contentShape": "레시피 영상 실행 메모"
+        "planningPattern": "single_use_with_context",
+        "primaryArtifact": "hybrid",
+        "contentShape": "선택한 레시피 영상 리소스 한 개"
       },
       "proposal": {
         "proposalTitle": "선택한 레시피 영상 한 번 실행하기",
@@ -162,9 +168,13 @@
             ],
             "completion": {
               "mode": "check",
-              "doneWhen": "선택한 영상을 열어 한 번 실행하고 필요한 맥락이 기록됨"
+              "doneWhen": "선택한 레시피 영상을 열어 한 번 실행한 사실이 확인되고 필요한 맥락이 함께 남아 있다."
             },
-            "memoCandidate": "선택한 영상 실행에 필요한 맥락",
+            "memoCandidate": {
+              "resourceLabel": "선택한 레시피 영상",
+              "sourceCollectionUrl": "https://www.youtube.com/playlist?list=PLOYo7Q0zXMLNmYqpJrt4pNeO-IlaDBVHW",
+              "publisher": "백종원의 요리비책"
+            },
             "groupingCandidate": null,
             "scheduleCandidate": null
           }
@@ -174,29 +184,29 @@
       },
       "projectionPlan": [
         {
-          "target": "memo",
-          "applicability": "applicable",
-          "reason": "영상 자원과 실행에 필요한 맥락을 한곳에 보관할 수 있음"
-        },
-        {
           "target": "todo",
           "applicability": "applicable",
-          "reason": "한 번 실행한다는 사용자 목적을 단일 할 일로 보존할 수 있음"
+          "reason": "한 번 실행할 영상 리소스가 하나의 완료 가능한 일로 제공되었다."
+        },
+        {
+          "target": "memo",
+          "applicability": "applicable",
+          "reason": "재생목록 링크와 제작자 정보는 실행 항목을 늘리지 않고 맥락으로 보관할 수 있다."
         },
         {
           "target": "calendar",
           "applicability": "not_applicable",
-          "reason": "날짜나 기간 표현이 제공되지 않음"
+          "reason": "SourceRow에 날짜나 시간 표현이 없다."
         }
       ],
       "reviewHints": {
         "recommendedDisposition": "review",
         "uncertainties": [
-          "선택한 영상의 구체적인 레시피와 보관할 맥락 항목이 제공되지 않음"
+          "선택한 개별 영상의 제목과 레시피 세부 내용은 SourceRow에 제공되지 않았다."
         ],
         "hardFailCodes": [],
         "humanReviewRequired": [
-          "원문 이용 범위와 needs_review 권리 상태를 확인"
+          "needs_review인 권리 상태에서 재생목록 링크와 제작자 맥락을 보관하는 범위를 확인해야 한다."
         ]
       }
     },
@@ -213,7 +223,7 @@
       },
       "sourceAssessment": {
         "access": "readable",
-        "sourceShape": "check",
+        "sourceShape": "decision_check",
         "primarySourceId": "source-car365-used-car-guide",
         "supportingSourceIds": [],
         "receivedSourceRowIds": [
@@ -222,27 +232,27 @@
         "untrustedInstructionDetected": false
       },
       "conversionDecision": {
-        "userNeed": "중고차의 차량 이력과 상태를 확인해 후보를 선택하거나 보류하고 그 이유를 남긴다.",
+        "userNeed": "중고차 후보를 검토하는 사용자는 차량 이력과 상태를 확인한 뒤 후보를 선택하거나 보류하고 그 이유를 남긴다.",
         "lifeArea": "mobility",
-        "planningPattern": "decision_gate",
-        "primaryArtifact": "hybrid",
-        "contentShape": "구매 후보 판단 기록"
+        "planningPattern": "check_then_decide",
+        "primaryArtifact": "checklist",
+        "contentShape": "확인 뒤 구매 판단을 남기는 점검 행 한 개"
       },
       "proposal": {
-        "proposalTitle": "중고차 후보 선택·보류 판단",
+        "proposalTitle": "중고차 후보 확인하고 판단 남기기",
         "items": [
           {
             "proposalId": "p-01",
-            "title": "차량 이력과 상태를 확인해 후보 판단하기",
+            "title": "차량 이력과 상태 확인해 선택 또는 보류하기",
             "intent": "decide",
             "sourceRowIds": [
               "row-used-car-decision"
             ],
             "completion": {
               "mode": "decision",
-              "doneWhen": "후보를 선택하거나 보류한 상태와 그 이유가 기록됨"
+              "doneWhen": "후보 차량을 선택하거나 보류한 결정과 그 이유가 기록되어 있다."
             },
-            "memoCandidate": "차량 이력과 상태 확인 결과 및 선택·보류 이유",
+            "memoCandidate": null,
             "groupingCandidate": null,
             "scheduleCandidate": null
           }
@@ -254,27 +264,27 @@
         {
           "target": "checklist",
           "applicability": "applicable",
-          "reason": "차량 이력과 상태 확인 후 판단한다는 순서를 보존할 수 있음"
+          "reason": "차량 이력과 상태 확인 뒤 구매 판단을 남기는 한 항목으로 옮길 수 있다."
         },
         {
           "target": "memo",
           "applicability": "applicable",
-          "reason": "선택 또는 보류 이유와 확인 결과를 기록할 수 있음"
+          "reason": "선택 또는 보류의 이유를 판단 기록으로 함께 보관할 수 있다."
         },
         {
           "target": "calendar",
           "applicability": "not_applicable",
-          "reason": "날짜나 기간 표현이 제공되지 않음"
+          "reason": "SourceRow에 날짜나 시간 표현이 없다."
         }
       ],
       "reviewHints": {
         "recommendedDisposition": "review",
         "uncertainties": [
-          "차량 이력과 상태의 구체 확인 기준은 SourceRow에 제공되지 않음"
+          "차량 이력과 상태의 세부 점검 기준 및 후보 차량 정보는 SourceRow에 제공되지 않았다."
         ],
         "hardFailCodes": [],
         "humanReviewRequired": [
-          "공식 가이드의 확인 기준과 최종 구매 판단을 사람이 검토"
+          "재무적으로 민감한 구매 판단이므로 공식 가이드의 세부 기준과 후보 차량 정보를 사람이 직접 확인해야 한다."
         ]
       }
     },
@@ -291,7 +301,7 @@
       },
       "sourceAssessment": {
         "access": "readable",
-        "sourceShape": "check",
+        "sourceShape": "preparation_check",
         "primarySourceId": "source-nhis-infant-checkup",
         "supportingSourceIds": [],
         "receivedSourceRowIds": [
@@ -300,14 +310,14 @@
         "untrustedInstructionDetected": false
       },
       "conversionDecision": {
-        "userNeed": "아이 검진의 예약과 문진표 준비 상태를 확인하되 의료 판단은 공식 안내에 맡긴다.",
+        "userNeed": "아이 검진을 준비하는 사용자는 예약과 문진표 준비 상태를 확인하고 의료 판단은 공식 안내에 맡긴다.",
         "lifeArea": "health",
-        "planningPattern": "preparation_check",
+        "planningPattern": "readiness_check",
         "primaryArtifact": "checklist",
-        "contentShape": "검진 준비 확인 항목"
+        "contentShape": "예약과 문진표 준비를 함께 확인하는 점검 행 한 개"
       },
       "proposal": {
-        "proposalTitle": "영유아 검진 예약·문진표 준비 확인",
+        "proposalTitle": "아이 검진 예약과 문진표 준비 확인하기",
         "items": [
           {
             "proposalId": "p-01",
@@ -318,9 +328,13 @@
             ],
             "completion": {
               "mode": "check",
-              "doneWhen": "예약과 문진표의 준비 상태가 확인됨"
+              "doneWhen": "아이 검진 예약과 문진표의 준비 여부가 각각 확인되어 있다."
             },
-            "memoCandidate": "의료 판단은 공식 안내에 맡김",
+            "memoCandidate": {
+              "sourceTitle": "국민건강보험 영유아 건강검진 안내",
+              "sourceUrl": "https://www.nhis.or.kr/nhis/healthin/wbhaca04800m01.do",
+              "boundary": "의료 판단은 공식 안내에 맡긴다."
+            },
             "groupingCandidate": null,
             "scheduleCandidate": null
           }
@@ -332,27 +346,27 @@
         {
           "target": "checklist",
           "applicability": "applicable",
-          "reason": "예약과 문진표 준비 상태를 한 항목에서 확인할 수 있음"
+          "reason": "예약과 문진표 준비 여부를 하나의 검토 가능한 확인 항목으로 옮길 수 있다."
         },
         {
           "target": "memo",
           "applicability": "applicable",
-          "reason": "공식 안내에 의료 판단을 맡긴다는 경계를 함께 보존할 수 있음"
+          "reason": "공식 안내 링크와 의료 판단 경계를 실행 항목을 늘리지 않고 맥락으로 보관할 수 있다."
         },
         {
           "target": "calendar",
           "applicability": "blocked",
-          "reason": "예약 준비만 제시되고 실제 검진 날짜는 제공되지 않음"
+          "reason": "예약 날짜와 시간이 SourceRow에 없어 일정 후보를 만들 수 없다."
         }
       ],
       "reviewHints": {
         "recommendedDisposition": "review",
         "uncertainties": [
-          "예약과 문진표의 구체 절차 및 실제 검진 일정이 SourceRow에 제공되지 않음"
+          "예약 날짜와 문진표의 세부 항목은 SourceRow에 제공되지 않았다."
         ],
         "hardFailCodes": [],
         "humanReviewRequired": [
-          "의료 판단과 검진 적합성은 공식 안내 또는 의료진에게 확인"
+          "의료적으로 민감한 내용은 준비 상태만 검토하고 판단과 안내는 공식 기관 정보로 확인해야 한다."
         ]
       }
     }

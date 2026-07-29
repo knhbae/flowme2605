@@ -1,0 +1,140 @@
+{
+  "reviewInputVersion": "flowme-source-row-blind-review-input-v1",
+  "laneId": "url-to-flow-source-row-v1",
+  "round": "round-3",
+  "caseId": "case-05",
+  "positiveCase": true,
+  "sourcePacket": {
+    "requestId": "rq-2e74c9a51f86",
+    "caseId": "case-05",
+    "maxItems": 7,
+    "sourceOwnership": {
+      "primarySourceId": "src-14b9e63a8f27",
+      "supportingSourceIds": []
+    },
+    "sourceRows": [
+      {
+        "sourceRowId": "row-0e7a31c9b452",
+        "sourceId": "src-14b9e63a8f27",
+        "rowType": "table_row",
+        "title": "1주차 강의와 퀴즈",
+        "detail": null,
+        "order": 0
+      },
+      {
+        "sourceRowId": "row-c48f2d105a76",
+        "sourceId": "src-14b9e63a8f27",
+        "rowType": "table_row",
+        "title": "2주차 강의와 퀴즈",
+        "detail": null,
+        "order": 1
+      }
+    ]
+  },
+  "deterministicNegativeBoundary": null,
+  "proposal": {
+    "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+    "promptVersion": "url-to-flow-prompt-v1.1",
+    "requestId": "rq-2e74c9a51f86",
+    "caseId": "case-05",
+    "status": {
+      "generationState": "proposal",
+      "outcome": "complete",
+      "readiness": null,
+      "errorCode": null
+    },
+    "sourceAssessment": {
+      "access": "readable",
+      "sourceShape": "source_table_rows",
+      "primarySourceId": "src-14b9e63a8f27",
+      "supportingSourceIds": [],
+      "receivedSourceRowIds": [
+        "row-0e7a31c9b452",
+        "row-c48f2d105a76"
+      ],
+      "untrustedInstructionDetected": false
+    },
+    "conversionDecision": {
+      "userNeed": "1주차와 2주차 강의와 퀴즈를 진행하기",
+      "lifeArea": "study_reading",
+      "planningPattern": "source_table_rows",
+      "primaryArtifact": "checklist",
+      "contentShape": "주차별 강의와 퀴즈 두 항목"
+    },
+    "proposal": {
+      "proposalTitle": "주차별 강의와 퀴즈",
+      "items": [
+        {
+          "proposalId": "p-01",
+          "title": "1주차 강의와 퀴즈 진행하기",
+          "intent": "act",
+          "sourceRowIds": [
+            "row-0e7a31c9b452"
+          ],
+          "completion": {
+            "mode": "check",
+            "doneWhen": "1주차 강의와 퀴즈를 마친 상태"
+          },
+          "memoCandidate": null,
+          "groupingCandidate": "주차별 강의와 퀴즈",
+          "scheduleCandidate": null
+        },
+        {
+          "proposalId": "p-02",
+          "title": "2주차 강의와 퀴즈 진행하기",
+          "intent": "act",
+          "sourceRowIds": [
+            "row-c48f2d105a76"
+          ],
+          "completion": {
+            "mode": "check",
+            "doneWhen": "2주차 강의와 퀴즈를 마친 상태"
+          },
+          "memoCandidate": null,
+          "groupingCandidate": "주차별 강의와 퀴즈",
+          "scheduleCandidate": null
+        }
+      ],
+      "omittedRows": [],
+      "incompleteReason": null
+    },
+    "projectionPlan": [
+      {
+        "target": "checklist",
+        "applicability": "applicable",
+        "reason": "두 주차의 강의와 퀴즈를 항목별로 옮길 수 있으며 실제 날짜는 포함하지 않는다."
+      }
+    ],
+    "reviewHints": {
+      "recommendedDisposition": "review",
+      "uncertainties": [
+        "1주차와 2주차에 해당하는 실제 날짜가 제공되지 않았다."
+      ],
+      "hardFailCodes": [],
+      "humanReviewRequired": []
+    }
+  },
+  "proposalFingerprint": "5e8413b933738a78bd00a32305a9e88c30a2ca0407f6ac33c2099a1d6fce4c42",
+  "deterministicValidation": {
+    "passed": true,
+    "codes": [],
+    "sourceRowAccounting": true
+  },
+  "rubricPath": "docs/specs/2026-07-15-url-to-flow-prompt-lab-source-row-v1/review-rubric.md",
+  "evidenceBoundary": {
+    "allowed": [
+      "this sourcePacket",
+      "this proposal",
+      "this proposalFingerprint",
+      "this deterministicValidation",
+      "the linked blind rubric"
+    ],
+    "forbidden": [
+      "canonical expectation or opaque ID mapping",
+      "source title URL publisher or preflight metadata",
+      "legacy or prior-round output and review",
+      "provider model tier timing token or cost",
+      "other reviewer conclusions"
+    ]
+  }
+}

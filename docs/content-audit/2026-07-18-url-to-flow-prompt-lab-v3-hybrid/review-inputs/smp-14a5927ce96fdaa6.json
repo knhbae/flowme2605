@@ -1,0 +1,77 @@
+{
+  "sampleRef": "smp-14a5927ce96fdaa6",
+  "sourceOwnership": {
+    "primarySourceRef": "src-27901a59a71685ae",
+    "supportingSourceRefs": []
+  },
+  "sourceRows": [
+    {
+      "sourceRowRef": "row-6f7c07509e80bf13",
+      "sourceRef": "src-27901a59a71685ae",
+      "rowType": "procedure",
+      "title": "구직 신청 등록",
+      "detail": null,
+      "order": 0
+    },
+    {
+      "sourceRowRef": "row-5589ea7def6f11b7",
+      "sourceRef": "src-27901a59a71685ae",
+      "rowType": "procedure",
+      "title": "취업지원 서비스 신청",
+      "detail": null,
+      "order": 1
+    }
+  ],
+  "compiledProposal": {
+    "schemaVersion": "flowme-semantic-proposal-v2",
+    "promptVersion": "row-license-compiler-v3.0",
+    "requestRef": "req-20c85adbb0ce8232",
+    "sampleRef": "smp-14a5927ce96fdaa6",
+    "result": {
+      "state": "proposal",
+      "reasonCode": null,
+      "disposition": "review",
+      "primaryArtifact": "checklist"
+    },
+    "items": [
+      {
+        "itemRef": "item-01",
+        "sourceRowRefs": [
+          "row-6f7c07509e80bf13"
+        ],
+        "title": "구직 신청 등록",
+        "intent": "act",
+        "completionMode": "check",
+        "memo": null,
+        "scheduleEvidence": null
+      },
+      {
+        "itemRef": "item-02",
+        "sourceRowRefs": [
+          "row-5589ea7def6f11b7"
+        ],
+        "title": "취업지원 서비스 신청",
+        "intent": "act",
+        "completionMode": "check",
+        "memo": null,
+        "scheduleEvidence": null
+      }
+    ],
+    "omittedRows": [],
+    "projections": [
+      {
+        "target": "checklist",
+        "itemRefs": [
+          "item-01",
+          "item-02"
+        ]
+      }
+    ],
+    "review": {
+      "uncertaintyCodes": [],
+      "humanCheckRowRefs": []
+    }
+  },
+  "proposalFingerprint": "55660e1340c44b87cdcec573c034de59058f01eeecc3c6d2a3b485b2eaea88f9",
+  "reviewInputSha256": "b7a337ae1583d94ca59618139cd70fa2d7e14aa23b101cef872b1e01e23be7d0"
+}

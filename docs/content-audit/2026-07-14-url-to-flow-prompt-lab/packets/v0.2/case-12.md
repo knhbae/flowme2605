@@ -41,8 +41,7 @@ CASE_INPUT_JSON
   },
   "sourceRows": [],
   "inputEvidenceRefs": [
-    "golden-fixtures-v1.json#gf-neg-02-nonlocal-sensitive-source",
-    "docs/content-audit/2026-07-11-content-portfolio-expansion-round2-v1.json#R2-SC-031"
+    "prompt-lab-source:case-12"
   ]
 }
 ```

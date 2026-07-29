@@ -1,88 +1,218 @@
 {
-  "reviewInputSetVersion": "flowme-url-to-flow-blind-review-inputs-v1",
+  "reviewInputSetVersion": "flowme-url-to-flow-blind-review-inputs-v2",
   "round": "round-1",
-  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
-  "expectationSetVersion": "flowme-url-to-flow-prompt-lab-expected-v1",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1.1",
   "rubric": {
-    "version": "flowme-url-to-flow-prompt-lab-review-rubric-v1",
+    "version": "flowme-url-to-flow-prompt-lab-review-rubric-v2",
     "reference": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-rubric.md"
   },
   "reviewResultTemplate": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-result-template.json",
+  "proposalFingerprintAlgorithm": "sha256:<64 lowercase hex> over UTF-8 JSON.stringify(proposal) with no whitespace",
   "generator": "scripts/content-audit/build-url-to-flow-blind-review-inputs.mjs",
-  "disclosure": "Each case file contains one source packet, its hidden review expectation, and one raw proposal. Run-level model, timing, usage, and cost evidence is excluded. Validator results are not embedded in run logs, so reviewer status starts as null.",
+  "disclosure": "Each case contains only the fixed source packet, one raw proposal, its raw runFile/runId, a proposal fingerprint, and deterministic validator pass/codes. Expected fixtures and all provider, model, timing, usage, and cost evidence are excluded.",
   "caseCount": 12,
   "cases": [
     {
       "caseId": "case-01",
       "file": "case-01.json",
       "promptVersion": "url-to-flow-prompt-v0.1",
-      "validatorPassed": null
+      "rawRun": {
+        "runFile": "docs/content-audit/2026-07-14-url-to-flow-prompt-lab/runs/round-1/batch-a.json",
+        "runId": "round-1-neutral-batch-a"
+      },
+      "proposalFingerprint": "sha256:8ed74b29319f5cfaa2c9a59f98718cf7316398a2b6de05308e380fb054ad1b24",
+      "validator": {
+        "validatorVersion": "flowme-url-to-flow-prompt-lab-validator-v1",
+        "passed": false,
+        "codes": [
+          "json_schema"
+        ]
+      }
     },
     {
       "caseId": "case-02",
       "file": "case-02.json",
       "promptVersion": "url-to-flow-prompt-v0.1",
-      "validatorPassed": null
+      "rawRun": {
+        "runFile": "docs/content-audit/2026-07-14-url-to-flow-prompt-lab/runs/round-1/batch-a.json",
+        "runId": "round-1-neutral-batch-a"
+      },
+      "proposalFingerprint": "sha256:30e5c79229e8083b86fc1e96fb9190d2738a782ff9c8b70606bf9b6421940d21",
+      "validator": {
+        "validatorVersion": "flowme-url-to-flow-prompt-lab-validator-v1",
+        "passed": false,
+        "codes": [
+          "json_schema"
+        ]
+      }
     },
     {
       "caseId": "case-03",
       "file": "case-03.json",
       "promptVersion": "url-to-flow-prompt-v0.1",
-      "validatorPassed": null
+      "rawRun": {
+        "runFile": "docs/content-audit/2026-07-14-url-to-flow-prompt-lab/runs/round-1/batch-a.json",
+        "runId": "round-1-neutral-batch-a"
+      },
+      "proposalFingerprint": "sha256:a731d789fd90222591bc3b0f7fa61e6d470ebf9206efe9e6d7639595c7827a7c",
+      "validator": {
+        "validatorVersion": "flowme-url-to-flow-prompt-lab-validator-v1",
+        "passed": false,
+        "codes": [
+          "json_schema"
+        ]
+      }
     },
     {
       "caseId": "case-04",
       "file": "case-04.json",
       "promptVersion": "url-to-flow-prompt-v0.1",
-      "validatorPassed": null
+      "rawRun": {
+        "runFile": "docs/content-audit/2026-07-14-url-to-flow-prompt-lab/runs/round-1/batch-a.json",
+        "runId": "round-1-neutral-batch-a"
+      },
+      "proposalFingerprint": "sha256:deb61e11aeb59087a24f231ede09fbea5f05191a5e4491edc4feb80d531a818c",
+      "validator": {
+        "validatorVersion": "flowme-url-to-flow-prompt-lab-validator-v1",
+        "passed": false,
+        "codes": [
+          "json_schema"
+        ]
+      }
     },
     {
       "caseId": "case-05",
       "file": "case-05.json",
       "promptVersion": "url-to-flow-prompt-v0.1",
-      "validatorPassed": null
+      "rawRun": {
+        "runFile": "docs/content-audit/2026-07-14-url-to-flow-prompt-lab/runs/round-1/batch-b.json",
+        "runId": "round-1-neutral-batch-b"
+      },
+      "proposalFingerprint": "sha256:28a9d99bbb1676eff92c2dea900d3dcb41e7c6b3317cb71e169af211020d1be8",
+      "validator": {
+        "validatorVersion": "flowme-url-to-flow-prompt-lab-validator-v1",
+        "passed": false,
+        "codes": [
+          "json_schema"
+        ]
+      }
     },
     {
       "caseId": "case-06",
       "file": "case-06.json",
       "promptVersion": "url-to-flow-prompt-v0.1",
-      "validatorPassed": null
+      "rawRun": {
+        "runFile": "docs/content-audit/2026-07-14-url-to-flow-prompt-lab/runs/round-1/batch-b.json",
+        "runId": "round-1-neutral-batch-b"
+      },
+      "proposalFingerprint": "sha256:f5a09a3eafaeba42b981ab686271752752f4bb901adc0125edbf94afc5966240",
+      "validator": {
+        "validatorVersion": "flowme-url-to-flow-prompt-lab-validator-v1",
+        "passed": false,
+        "codes": [
+          "json_schema"
+        ]
+      }
     },
     {
       "caseId": "case-07",
       "file": "case-07.json",
       "promptVersion": "url-to-flow-prompt-v0.1",
-      "validatorPassed": null
+      "rawRun": {
+        "runFile": "docs/content-audit/2026-07-14-url-to-flow-prompt-lab/runs/round-1/batch-b.json",
+        "runId": "round-1-neutral-batch-b"
+      },
+      "proposalFingerprint": "sha256:5815a40db70a4ef13fb00c16f029f5bf2d7916ebeb0d517108866e5940ab02f2",
+      "validator": {
+        "validatorVersion": "flowme-url-to-flow-prompt-lab-validator-v1",
+        "passed": false,
+        "codes": [
+          "json_schema"
+        ]
+      }
     },
     {
       "caseId": "case-08",
       "file": "case-08.json",
       "promptVersion": "url-to-flow-prompt-v0.1",
-      "validatorPassed": null
+      "rawRun": {
+        "runFile": "docs/content-audit/2026-07-14-url-to-flow-prompt-lab/runs/round-1/batch-b.json",
+        "runId": "round-1-neutral-batch-b"
+      },
+      "proposalFingerprint": "sha256:4ea72e84adbb376d2e240361fa8daf3369c8639e53210bc963e4efb01554c67f",
+      "validator": {
+        "validatorVersion": "flowme-url-to-flow-prompt-lab-validator-v1",
+        "passed": false,
+        "codes": [
+          "json_schema"
+        ]
+      }
     },
     {
       "caseId": "case-09",
       "file": "case-09.json",
       "promptVersion": "url-to-flow-prompt-v0.1",
-      "validatorPassed": null
+      "rawRun": {
+        "runFile": "docs/content-audit/2026-07-14-url-to-flow-prompt-lab/runs/round-1/batch-c.json",
+        "runId": "round-1-neutral-batch-c"
+      },
+      "proposalFingerprint": "sha256:7a540ca7974df0d8c43aca346ed7acaa907f2720759c9d33cf3b02a15d688c92",
+      "validator": {
+        "validatorVersion": "flowme-url-to-flow-prompt-lab-validator-v1",
+        "passed": false,
+        "codes": [
+          "json_schema"
+        ]
+      }
     },
     {
       "caseId": "case-10",
       "file": "case-10.json",
       "promptVersion": "url-to-flow-prompt-v0.1",
-      "validatorPassed": null
+      "rawRun": {
+        "runFile": "docs/content-audit/2026-07-14-url-to-flow-prompt-lab/runs/round-1/batch-c.json",
+        "runId": "round-1-neutral-batch-c"
+      },
+      "proposalFingerprint": "sha256:69735283ef4a4e2c2a3b1eb1f7de68eaaaa58ea3e3a2e8a01bd489313524fc8b",
+      "validator": {
+        "validatorVersion": "flowme-url-to-flow-prompt-lab-validator-v1",
+        "passed": false,
+        "codes": [
+          "json_schema"
+        ]
+      }
     },
     {
       "caseId": "case-11",
       "file": "case-11.json",
       "promptVersion": "url-to-flow-prompt-v0.1",
-      "validatorPassed": null
+      "rawRun": {
+        "runFile": "docs/content-audit/2026-07-14-url-to-flow-prompt-lab/runs/round-1/batch-c.json",
+        "runId": "round-1-neutral-batch-c"
+      },
+      "proposalFingerprint": "sha256:eddbb9c4cba397bec7b8b15266b8538196e5e5c2da86a4bba40f311c5b1b4346",
+      "validator": {
+        "validatorVersion": "flowme-url-to-flow-prompt-lab-validator-v1",
+        "passed": true,
+        "codes": []
+      }
     },
     {
       "caseId": "case-12",
       "file": "case-12.json",
       "promptVersion": "url-to-flow-prompt-v0.1",
-      "validatorPassed": null
+      "rawRun": {
+        "runFile": "docs/content-audit/2026-07-14-url-to-flow-prompt-lab/runs/round-1/batch-c.json",
+        "runId": "round-1-neutral-batch-c"
+      },
+      "proposalFingerprint": "sha256:6a2b7a2f58974fcc1f0f63249c6f220f15377a4456e80040e39145c1a738db0a",
+      "validator": {
+        "validatorVersion": "flowme-url-to-flow-prompt-lab-validator-v1",
+        "passed": false,
+        "codes": [
+          "json_schema"
+        ]
+      }
     }
   ]
 }

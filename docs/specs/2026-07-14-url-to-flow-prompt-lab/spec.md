@@ -1,13 +1,13 @@
 # URL-to-FLOW Prompt Lab v1
 
 **Date:** 2026-07-14<br>
-**Status:** Approved controlled experiment; not a production provider or backend<br>
+**Status:** Stopped after 3/3 rounds; Prompt Lab v1 incomplete (stability 3/7); Backend No-Go<br>
 **Owner:** FlowMe product/content/backend readiness<br>
 **Parent contracts:** [Canonical Flow Data Model v1](../2026-07-11-canonical-flow-data-model/spec.md), [URL-to-Flow Backend Readiness](../2026-07-12-url-to-flow-backend-readiness/spec.md)
 
 ## Goal
 
-외부 API 없이 기존 canonical golden fixture 12건을 동일한 source-only 입력 계약으로 다시 변환해, provider-neutral prompt가 원문 근거를 지키면서 쓸 만한 FLOW semantic proposal을 반복 생성하는지 검증한다.
+외부 API 없이 기존 canonical golden fixture 12건을 동일한 source-controlled packet(Source metadata + SourceRows + canonical userJob) 계약으로 다시 변환해, provider-neutral prompt가 원문 근거를 지키면서 쓸 만한 FLOW semantic proposal을 반복 생성하는지 검증한다.
 
 ```text
 golden fixture
@@ -82,23 +82,24 @@ Maximum three prompt rounds prevent fixture overfitting.
 
 ### Round 1 — Baseline
 
-- run all 12 cases once in isolated executions;
+- run 12 isolated case packets once and group the evidence into three four-case run logs;
 - label current sub-agent evidence `in_session_same_model/unclassified`;
-- validate and blind-review every output;
+- validate every output, preserve raw failures, and exclude Round 1 qualitative reviews from completion evidence;
 - group failures by schema, source accounting, Item boundary, schedule invention, disposition, copy, or risk.
 
 ### Round 2 — One Defect Class
 
 - create `prompt-v0.2.md` without rewriting the whole contract;
 - change only the highest-risk or most frequent defect class;
-- rerun every failed/revise case plus at least three Round 1 pass controls;
+- rerun all 12 cases, which covers every Round 1 failure and the sole available pass control;
 - reject the revision if a control regresses.
 
 ### Round 3 — Stability
 
 - only when Round 2 meets the quality gates;
 - rerun all negative cases and representative positive shapes;
-- confirm structural decision consistency and no regression;
+- compare the declared core-decision signature and document any semantic-candidate or copy variation;
+- do not claim full semantic no-regression without a separate blind review of the stability outputs;
 - otherwise document the residual blocker instead of adding fixture-specific answers to the prompt.
 
 ## Completion Gates
@@ -116,6 +117,7 @@ v1 completes only when current evidence proves all of the following.
 | Execution Clarity | >= 4 |
 | Content Fidelity/Coverage | >= 4 |
 | Source/Safety Separation | >= 4 |
+| Round 3 core-decision stability | >= 80% (at least 6/7) |
 
 The detailed scoring and evidence separation are in [review-rubric.md](./review-rubric.md).
 
@@ -134,13 +136,47 @@ The current Codex sub-session runs are useful for prompt contract and repeatabil
 ## Deliverables
 
 - prompt versions and proposal schema
-- source-only cases and hidden expectations
+- source-controlled cases and hidden expectations
 - deterministic builder and validator
 - raw run logs for every round
-- blind reviews and corrected user-facing previews
+- Round 2 direct blind reviews and corrected user-facing previews; Round 1 qualitative reviews excluded
 - comparison Markdown
 - Korean self-contained HTML report
 - QA evidence for scripts, docs links, HTML rendering, and responsive overflow
+
+## Results
+
+외부 URL fetch나 외부 LLM API 없이 세 번의 라운드 실행 자체는 끝냈다. 그러나 v1 completion gate는 실패했다. 3회 한도를 모두 사용했으며 v0.3이나 4회차는 실행하지 않았다.
+
+| Evidence | Result |
+| --- | ---: |
+| Round 1 strict validity | 1/12 |
+| Round 2 strict validity | 12/12 |
+| SourceRow accounting | 16/16 (100%) |
+| explicit unsupported action/date/repeat/fact signals | 0 |
+| negative dispositions | 2/2 |
+| Item keep rate | 100% |
+| seven-axis quality average | 4.6/5 |
+| Execution Clarity | 4.1/5 |
+| Content Fidelity/Coverage | 4.7/5 |
+| Source/Safety Separation | 4.7/5 |
+| positive case quality gates | 10/10 |
+| Round 3 core-decision stability | 3/7 (42.9%) — FAIL |
+
+Round 1은 exact enum과 nested shape가 충분히 고정되지 않은 계약 결함을 드러냈다. prompt-v0.2.md는 이 결함 계층만 보강했고, Round 2는 schema·SourceRow accounting·직접 블라인드 리뷰 품질 gate를 통과했다.
+
+Round 3에서 다시 생성한 7건 중 case-02·11·12만 핵심 결정이 일치했다. 불일치는 다음과 같다.
+
+- case-01: primary artifact와 projection applicability
+- case-05: Item intent·completion·candidate 존재 여부
+- case-06: projection applicability
+- case-10: Item candidate 존재 여부
+
+이 안정성 signature는 status, disposition, artifact/pattern, Item의 SourceRow 묶음·intent·completion mode·candidate 존재 여부, omitted row, projection applicability를 비교한다. 제목이나 완료 문구의 단순 copy 차이보다 더 엄격한 구조 결정 비교다.
+
+질적 평가는 Round 2의 fresh subagent direct blind review 12건만 사용한다. Round 1 리뷰 파일은 문자 손상과 독립성 문제 때문에 completion evidence에서 제외하고, Round 1 raw run과 deterministic validator 결과만 baseline 증거로 남긴다. reviewer는 사람이 아니며 provider/model identity, latency, token, cost, human review time, observed usability는 모두 미측정이다.
+
+따라서 prompt v0.2는 구조 계약 후보이지만 backend나 실제 provider 비교로 넘길 수 있는 안정성 후보는 아니다. 현재 결정은 Backend No-Go다. 추가 tie-break 규칙과 unseen/metamorphic 사례 검증은 사용자가 Prompt Lab v2를 승인한 뒤 별도 4회차로 수행한다.
 
 ## Scope Boundaries
 
@@ -174,11 +210,14 @@ Reopen the experiment design when:
 
 ## Acceptance Criteria
 
-- [ ] 12 source-only packets are reproducibly generated and separated from expectations.
-- [ ] prompt and schema are provider-neutral and enforce current canonical boundaries.
-- [ ] a single/batch validator covers every completion gate it claims.
-- [ ] all 12 cases have Round 1 raw outputs, reviews, and previews.
-- [ ] prompt defects are revised and selected cases are rerun, up to three rounds.
-- [ ] final metrics satisfy every completion gate.
-- [ ] comparison Markdown and Korean HTML report disclose evidence limits.
-- [ ] docs, scripts, and rendered HTML pass their verification lanes.
+- [x] 12개 source-controlled packet이 hidden expectation과 분리되어 재현 가능하게 생성된다.
+- [x] prompt와 schema가 provider-neutral이며 canonical 경계를 강제한다.
+- [x] deterministic validator가 schema, SourceRow accounting, negative disposition을 재계산한다.
+- [x] Round 1 raw output 12건과 38개 오류를 baseline 증거로 보존한다.
+- [x] Round 1 질적 리뷰를 completion evidence에서 제외한다.
+- [x] Round 2 direct blind review 12건이 문자 무결성과 fingerprint 검증을 통과한다.
+- [x] 세 번의 라운드 실행을 마쳤고 4회차는 실행하지 않았다.
+- [ ] Round 3 core-decision stability가 6/7 이상이다. 실제는 3/7이다.
+- [ ] 모든 v1 completion gate가 통과한다.
+- [x] 비교 Markdown과 15장 한국어 HTML 보고서가 증거 경계와 Backend No-Go를 공개한다.
+- [x] Prompt Lab 범위의 스크립트·링크·반응형 HTML 증거 무결성이 검증된다.

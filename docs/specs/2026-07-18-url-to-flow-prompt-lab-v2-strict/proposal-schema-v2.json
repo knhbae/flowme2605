@@ -1,0 +1,189 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "flowme-semantic-proposal-v2",
+  "title": "FLOW SourceRow-only Semantic Proposal v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "promptVersion",
+    "requestRef",
+    "sampleRef",
+    "result",
+    "items",
+    "omittedRows",
+    "projections",
+    "review"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "flowme-semantic-proposal-v2" },
+    "promptVersion": { "type": "string", "minLength": 1, "maxLength": 64 },
+    "requestRef": { "type": "string", "pattern": "^req-[0-9a-f]{16}$" },
+    "sampleRef": { "type": "string", "pattern": "^smp-[0-9a-f]{16}$" },
+    "result": { "$ref": "#/$defs/result" },
+    "items": {
+      "type": "array",
+      "maxItems": 12,
+      "items": { "$ref": "#/$defs/item" }
+    },
+    "omittedRows": {
+      "type": "array",
+      "maxItems": 24,
+      "items": { "$ref": "#/$defs/omittedRow" }
+    },
+    "projections": {
+      "type": "array",
+      "maxItems": 5,
+      "items": { "$ref": "#/$defs/projection" }
+    },
+    "review": { "$ref": "#/$defs/review" }
+  },
+  "$defs": {
+    "nullableShortText": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "reasonCode",
+        "disposition",
+        "primaryArtifact"
+      ],
+      "properties": {
+        "state": { "enum": ["proposal", "partial", "insufficient", "blocked"] },
+        "reasonCode": {
+          "type": ["string", "null"],
+          "enum": [
+            null,
+            "source_meaning_unclear",
+            "missing_required_value",
+            "no_executable_user_job",
+            "missing_source_rows",
+            "locale_applicability_unverified"
+          ]
+        },
+        "disposition": {
+          "enum": ["review", "source_import_required", "hold", "reject"]
+        },
+        "primaryArtifact": {
+          "type": ["string", "null"],
+          "enum": [null, "calendar", "checklist", "todo", "sheet", "memo", "hybrid"]
+        }
+      }
+    },
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "itemRef",
+        "sourceRowRefs",
+        "title",
+        "intent",
+        "completionMode",
+        "memo",
+        "scheduleEvidence"
+      ],
+      "properties": {
+        "itemRef": { "type": "string", "pattern": "^item-[0-9]{2}$" },
+        "sourceRowRefs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^row-[0-9a-f]{16}$" }
+        },
+        "title": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "intent": { "enum": ["act", "inspect", "decide", "record", "open_resource"] },
+        "completionMode": { "enum": ["check", "decision", "record"] },
+        "memo": { "$ref": "#/$defs/nullableShortText" },
+        "scheduleEvidence": {
+          "anyOf": [
+            { "type": "null" },
+            { "$ref": "#/$defs/scheduleEvidence" }
+          ]
+        }
+      }
+    },
+    "scheduleEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceRowRefs", "sourceText", "kind"],
+      "properties": {
+        "sourceRowRefs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^row-[0-9a-f]{16}$" }
+        },
+        "sourceText": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "kind": { "enum": ["date", "window", "offset", "recurrence"] }
+      }
+    },
+    "omittedRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceRowRef", "reasonCode"],
+      "properties": {
+        "sourceRowRef": { "type": "string", "pattern": "^row-[0-9a-f]{16}$" },
+        "reasonCode": {
+          "enum": [
+            "supporting_source_boundary",
+            "reference_only",
+            "missing_required_value",
+            "insufficient_action_evidence",
+            "duplicate",
+            "unsafe_or_unsupported"
+          ]
+        }
+      }
+    },
+    "projection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target", "itemRefs"],
+      "properties": {
+        "target": { "enum": ["calendar", "checklist", "todo", "sheet", "memo"] },
+        "itemRefs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 12,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^item-[0-9]{2}$" }
+        }
+      }
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["uncertaintyCodes", "humanCheckRowRefs"],
+      "properties": {
+        "uncertaintyCodes": {
+          "type": "array",
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "missing_date_value",
+              "ambiguous_life_area",
+              "ambiguous_planning_pattern",
+              "resource_contents_unseen",
+              "supporting_source_not_structural",
+              "action_evidence_insufficient"
+            ]
+          }
+        },
+        "humanCheckRowRefs": {
+          "type": "array",
+          "maxItems": 24,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^row-[0-9a-f]{16}$" }
+        }
+      }
+    }
+  }
+}

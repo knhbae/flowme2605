@@ -57,7 +57,7 @@ CASE_INPUT_JSON
     }
   ],
   "inputEvidenceRefs": [
-    "golden-fixtures-v1.json#gf-pos-05-table-progress:source-only"
+    "prompt-lab-source:case-05"
   ]
 }
 ```

@@ -1,0 +1,549 @@
+You are an isolated blind FLOW reviewer. Use only the inline rubric, schema, and inputs.
+Do not inspect files, tools, prior conversation, case IDs, compiler rules, or hidden expectations.
+Review every input independently. Return exactly one bare JSON array in the same order.
+Echo sampleRef, reviewInputSha256, and proposalFingerprint exactly.
+Create exactly one itemVerdict per compiledProposal Item. These batches contain only the ten positive proposals.
+Use verdict=keep with reasonCode=supported_as_written only when the Item is source-grounded and executable as written.
+Every unsupportedSignals quote must be a literal substring at its path in compiledProposal.
+Score all seven axes with integers 1-5 and add one concrete comment per axis.
+Do not use Markdown fences or commentary.
+
+<REVIEW_RUBRIC>
+# FLOW v3 compiled-proposal blind review rubric
+
+You receive only opaque SourceOwnership, opaque SourceRows, and a final compiled proposal. You do not evaluate the compiler implementation, model quality, URL page, hidden expected answer, case identity, or business readiness.
+
+## Item verdict
+
+Review every positive proposal Item exactly once.
+
+- `keep` / `supported_as_written`: source-grounded, executable as written, and correctly bounded.
+- `edit`: the Item spine is usable but wording, intent, or completion needs a bounded correction.
+- `remove`: the Item invents an action/fact/schedule/resource content or should have been omitted.
+
+The Item keep rate is `keep / all reviewed Items`. Internal compiler metadata is not shown and receives no quality credit.
+
+## Unsupported signals
+
+Record every unsupported signal with class `action`, `date`, `repeat`, or `fact`, a real JSON path inside `compiledProposal`, and a literal quote at that path. Licensed surface grammar (`확인하기`, `완료하기`, `열어보기`) is not an unsupported action by itself. A resource Item may only open the named resource; it may not claim unseen contents or outcomes.
+
+Any unsupported signal is a hard gate failure.
+
+## Seven axes
+
+Score each of the ten positive proposals from 1 to 5 and write a concrete comment for every axis.
+
+1. `userNeedFit`: the bounded Items form a coherent narrow job without invented context.
+2. `executionClarity`: actions and completion behavior are understandable.
+3. `contentFidelityCoverage`: every SourceRow is represented or explicitly omitted without distortion.
+4. `portability`: the proposed calendar/checklist/todo/sheet/memo target fits the Items and literal schedule evidence.
+5. `cognitiveLoad`: the proposal avoids padding, duplication, and unnecessary structure.
+6. `copySpecificity`: titles use concrete source words and minimal licensed grammar.
+7. `sourceSafetySeparation`: supporting/reference boundaries, unseen resources, missing dates, and uncertainty are explicit.
+
+Score anchors: 5 strong/no meaningful correction; 4 usable/minor wording improvement; 3 usable/material friction; 2 substantial correction; 1 unsafe or unusable.
+
+## Case verdict
+
+- `pass`: unsupported count is zero and every Item can be kept.
+- `revise`: bounded edits are needed but the proposal remains usable.
+- `fail`: unsupported or structurally wrong content makes the proposal unsafe or unusable.
+
+Allowed `topIssueCode`: `null`, `generic_copy`, `classification_overreach`, `projection_mismatch`, `missing_uncertainty`, `row_policy_mismatch`, `unsupported_content`, `accounting_problem`, `wrong_insufficient_boundary`.
+
+Return only the required review JSON array. Do not infer original URLs, hidden page content, provider/model quality, price, latency, or readiness.
+
+</REVIEW_RUBRIC>
+
+<REVIEW_RESULT_SCHEMA_JSON>
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "flowme-source-row-blind-review-result-v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sampleRef",
+    "reviewInputSha256",
+    "proposalFingerprint",
+    "caseVerdict",
+    "itemVerdicts",
+    "unsupportedSignals",
+    "scores",
+    "scoreComments",
+    "topIssueCode",
+    "note"
+  ],
+  "properties": {
+    "sampleRef": {
+      "type": "string",
+      "pattern": "^smp-[0-9a-f]{16}$"
+    },
+    "reviewInputSha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "proposalFingerprint": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "caseVerdict": {
+      "enum": [
+        "pass",
+        "revise",
+        "fail"
+      ]
+    },
+    "itemVerdicts": {
+      "type": "array",
+      "maxItems": 12,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "itemRef",
+          "verdict",
+          "reasonCode"
+        ],
+        "properties": {
+          "itemRef": {
+            "type": "string",
+            "pattern": "^item-[0-9]{2}$"
+          },
+          "verdict": {
+            "enum": [
+              "keep",
+              "edit",
+              "remove"
+            ]
+          },
+          "reasonCode": {
+            "enum": [
+              "supported_as_written",
+              "wording_only",
+              "intent_mismatch",
+              "completion_mismatch",
+              "unsupported_action",
+              "unsupported_schedule",
+              "unsupported_fact",
+              "resource_contents_invented",
+              "should_be_omitted"
+            ]
+          }
+        }
+      }
+    },
+    "unsupportedSignals": {
+      "type": "array",
+      "maxItems": 24,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "class",
+          "path",
+          "quote"
+        ],
+        "properties": {
+          "class": {
+            "enum": [
+              "action",
+              "date",
+              "repeat",
+              "fact"
+            ]
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "quote": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          }
+        }
+      }
+    },
+    "scores": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "userNeedFit",
+        "executionClarity",
+        "contentFidelityCoverage",
+        "portability",
+        "cognitiveLoad",
+        "copySpecificity",
+        "sourceSafetySeparation"
+      ],
+      "properties": {
+        "userNeedFit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "executionClarity": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "contentFidelityCoverage": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "portability": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "cognitiveLoad": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "copySpecificity": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "sourceSafetySeparation": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        }
+      }
+    },
+    "scoreComments": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "userNeedFit",
+        "executionClarity",
+        "contentFidelityCoverage",
+        "portability",
+        "cognitiveLoad",
+        "copySpecificity",
+        "sourceSafetySeparation"
+      ],
+      "properties": {
+        "userNeedFit": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 220
+        },
+        "executionClarity": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 220
+        },
+        "contentFidelityCoverage": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 220
+        },
+        "portability": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 220
+        },
+        "cognitiveLoad": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 220
+        },
+        "copySpecificity": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 220
+        },
+        "sourceSafetySeparation": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 220
+        }
+      }
+    },
+    "topIssueCode": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        null,
+        "generic_copy",
+        "classification_overreach",
+        "projection_mismatch",
+        "missing_uncertainty",
+        "row_policy_mismatch",
+        "unsupported_content",
+        "accounting_problem",
+        "wrong_insufficient_boundary"
+      ]
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 320
+    }
+  }
+}
+</REVIEW_RESULT_SCHEMA_JSON>
+
+<BLIND_REVIEW_INPUTS_JSON>
+[
+  {
+    "sampleRef": "smp-1543712589e440b7",
+    "sourceOwnership": {
+      "primarySourceRef": "src-cd0504955a1e86c9",
+      "supportingSourceRefs": []
+    },
+    "sourceRows": [
+      {
+        "sourceRowRef": "row-e66c610b7b8d5d53",
+        "sourceRef": "src-cd0504955a1e86c9",
+        "rowType": "table_row",
+        "title": "1주차 강의와 퀴즈",
+        "detail": null,
+        "order": 0
+      },
+      {
+        "sourceRowRef": "row-715581f821f973f1",
+        "sourceRef": "src-cd0504955a1e86c9",
+        "rowType": "table_row",
+        "title": "2주차 강의와 퀴즈",
+        "detail": null,
+        "order": 1
+      }
+    ],
+    "compiledProposal": {
+      "schemaVersion": "flowme-semantic-proposal-v2",
+      "promptVersion": "row-license-compiler-v3.0",
+      "requestRef": "req-346a2dd26f908db7",
+      "sampleRef": "smp-1543712589e440b7",
+      "result": {
+        "state": "proposal",
+        "reasonCode": null,
+        "disposition": "review",
+        "primaryArtifact": "sheet"
+      },
+      "items": [
+        {
+          "itemRef": "item-01",
+          "sourceRowRefs": [
+            "row-e66c610b7b8d5d53"
+          ],
+          "title": "1주차 강의와 퀴즈 완료하기",
+          "intent": "act",
+          "completionMode": "check",
+          "memo": null,
+          "scheduleEvidence": null
+        },
+        {
+          "itemRef": "item-02",
+          "sourceRowRefs": [
+            "row-715581f821f973f1"
+          ],
+          "title": "2주차 강의와 퀴즈 완료하기",
+          "intent": "act",
+          "completionMode": "check",
+          "memo": null,
+          "scheduleEvidence": null
+        }
+      ],
+      "omittedRows": [],
+      "projections": [
+        {
+          "target": "sheet",
+          "itemRefs": [
+            "item-01",
+            "item-02"
+          ]
+        }
+      ],
+      "review": {
+        "uncertaintyCodes": [],
+        "humanCheckRowRefs": []
+      }
+    },
+    "proposalFingerprint": "bef22e1aa659a8fc9904e6d746a28c8e37055574d30e29851b83c2e86fbe9302",
+    "reviewInputSha256": "d676b6437e0d7ee09d963fc0bb109ad6ffd5dfdf572c89f53a0d4752257e8d31"
+  },
+  {
+    "sampleRef": "smp-91182b6bbc8efd1d",
+    "sourceOwnership": {
+      "primarySourceRef": "src-3cdafb44b5c15749",
+      "supportingSourceRefs": []
+    },
+    "sourceRows": [
+      {
+        "sourceRowRef": "row-914e8ba490214d22",
+        "sourceRef": "src-3cdafb44b5c15749",
+        "rowType": "resource",
+        "title": "선택한 레시피 영상",
+        "detail": null,
+        "order": 0
+      }
+    ],
+    "compiledProposal": {
+      "schemaVersion": "flowme-semantic-proposal-v2",
+      "promptVersion": "row-license-compiler-v3.0",
+      "requestRef": "req-d39fede4fec4beea",
+      "sampleRef": "smp-91182b6bbc8efd1d",
+      "result": {
+        "state": "proposal",
+        "reasonCode": null,
+        "disposition": "review",
+        "primaryArtifact": "memo"
+      },
+      "items": [
+        {
+          "itemRef": "item-01",
+          "sourceRowRefs": [
+            "row-914e8ba490214d22"
+          ],
+          "title": "선택한 레시피 영상 열어보기",
+          "intent": "open_resource",
+          "completionMode": "check",
+          "memo": null,
+          "scheduleEvidence": null
+        }
+      ],
+      "omittedRows": [],
+      "projections": [
+        {
+          "target": "memo",
+          "itemRefs": [
+            "item-01"
+          ]
+        }
+      ],
+      "review": {
+        "uncertaintyCodes": [
+          "resource_contents_unseen"
+        ],
+        "humanCheckRowRefs": [
+          "row-914e8ba490214d22"
+        ]
+      }
+    },
+    "proposalFingerprint": "58c747d7b31ad0f6bfefb88ae06912fb0fc69ead68aa8ddce20a63639a4e0262",
+    "reviewInputSha256": "aba0d0398c698b938f976ef78540cfcc2a92a407a327c26549417b4b0f4065ca"
+  },
+  {
+    "sampleRef": "smp-a4bd87f2c84f5b82",
+    "sourceOwnership": {
+      "primarySourceRef": "src-da52f066cd245591",
+      "supportingSourceRefs": []
+    },
+    "sourceRows": [
+      {
+        "sourceRowRef": "row-d062b869afabc018",
+        "sourceRef": "src-da52f066cd245591",
+        "rowType": "check",
+        "title": "차량 이력과 상태를 확인한 뒤 구매 판단",
+        "detail": null,
+        "order": 0
+      }
+    ],
+    "compiledProposal": {
+      "schemaVersion": "flowme-semantic-proposal-v2",
+      "promptVersion": "row-license-compiler-v3.0",
+      "requestRef": "req-0e3298394f2dffb2",
+      "sampleRef": "smp-a4bd87f2c84f5b82",
+      "result": {
+        "state": "proposal",
+        "reasonCode": null,
+        "disposition": "review",
+        "primaryArtifact": "todo"
+      },
+      "items": [
+        {
+          "itemRef": "item-01",
+          "sourceRowRefs": [
+            "row-d062b869afabc018"
+          ],
+          "title": "차량 이력과 상태를 확인한 뒤 구매 판단",
+          "intent": "decide",
+          "completionMode": "decision",
+          "memo": null,
+          "scheduleEvidence": null
+        }
+      ],
+      "omittedRows": [],
+      "projections": [
+        {
+          "target": "todo",
+          "itemRefs": [
+            "item-01"
+          ]
+        }
+      ],
+      "review": {
+        "uncertaintyCodes": [],
+        "humanCheckRowRefs": []
+      }
+    },
+    "proposalFingerprint": "bf19ccfe87f6f1cb5d440795ef9534f1988850d5d44e0518564eebec8c5b2f35",
+    "reviewInputSha256": "45becc87ce1733c9a516ee9d7ea51a5e224271a1ed71bcd4d218e5681a988b2e"
+  },
+  {
+    "sampleRef": "smp-ce41aa43ffc0fdd4",
+    "sourceOwnership": {
+      "primarySourceRef": "src-392b424de3f13858",
+      "supportingSourceRefs": []
+    },
+    "sourceRows": [
+      {
+        "sourceRowRef": "row-f03bc1e31bd38a86",
+        "sourceRef": "src-392b424de3f13858",
+        "rowType": "check",
+        "title": "예약과 문진표 준비",
+        "detail": null,
+        "order": 0
+      }
+    ],
+    "compiledProposal": {
+      "schemaVersion": "flowme-semantic-proposal-v2",
+      "promptVersion": "row-license-compiler-v3.0",
+      "requestRef": "req-2205a875171c2493",
+      "sampleRef": "smp-ce41aa43ffc0fdd4",
+      "result": {
+        "state": "proposal",
+        "reasonCode": null,
+        "disposition": "review",
+        "primaryArtifact": "todo"
+      },
+      "items": [
+        {
+          "itemRef": "item-01",
+          "sourceRowRefs": [
+            "row-f03bc1e31bd38a86"
+          ],
+          "title": "예약과 문진표 준비",
+          "intent": "act",
+          "completionMode": "check",
+          "memo": null,
+          "scheduleEvidence": null
+        }
+      ],
+      "omittedRows": [],
+      "projections": [
+        {
+          "target": "todo",
+          "itemRefs": [
+            "item-01"
+          ]
+        }
+      ],
+      "review": {
+        "uncertaintyCodes": [],
+        "humanCheckRowRefs": []
+      }
+    },
+    "proposalFingerprint": "d5dacb914b7148813c0c0383199ca30be89cc5ad88289dde3ffdab3b2f7e1a97",
+    "reviewInputSha256": "f388dfed93ddf6e522c3c8cd954554caa875fd96d29c4ea509d47acb59ec9960"
+  }
+]
+</BLIND_REVIEW_INPUTS_JSON>

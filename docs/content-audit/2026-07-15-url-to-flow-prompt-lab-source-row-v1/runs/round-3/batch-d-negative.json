@@ -1,0 +1,106 @@
+{
+  "runSchemaVersion": "flowme-source-row-run-v1",
+  "laneId": "url-to-flow-source-row-v1",
+  "runId": "source-row-round-3-batch-d-negative",
+  "round": "round-3",
+  "promptVersion": "url-to-flow-prompt-v1.1",
+  "caseSetVersion": "flowme-url-to-flow-source-row-cases-v1",
+  "evidenceClass": "deterministic_preflight",
+  "provider": null,
+  "model": null,
+  "tier": null,
+  "timing": null,
+  "usage": null,
+  "cost": null,
+  "humanReview": false,
+  "outputs": [
+    {
+      "caseId": "case-11",
+      "modelInvoked": false,
+      "proposal": {
+        "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+        "promptVersion": "url-to-flow-prompt-v1.1",
+        "requestId": "rq-6bc2e805f139",
+        "caseId": "case-11",
+        "status": {
+          "generationState": "failed",
+          "outcome": "no_proposal",
+          "readiness": null,
+          "errorCode": "missing_source_rows"
+        },
+        "sourceAssessment": {
+          "access": "unavailable",
+          "sourceShape": "unknown",
+          "primarySourceId": "src-96e31b5c7a20",
+          "supportingSourceIds": [],
+          "receivedSourceRowIds": [],
+          "untrustedInstructionDetected": false
+        },
+        "conversionDecision": null,
+        "proposal": {
+          "proposalTitle": null,
+          "items": [],
+          "omittedRows": [],
+          "incompleteReason": "변환할 SourceRow가 없어 원문 행 확보가 필요하다."
+        },
+        "projectionPlan": [],
+        "reviewHints": {
+          "recommendedDisposition": "source_import_required",
+          "uncertainties": [
+            "원문 행을 확보하지 못했다."
+          ],
+          "hardFailCodes": [
+            "missing_source_rows"
+          ],
+          "humanReviewRequired": [
+            "source_row_import"
+          ]
+        }
+      }
+    },
+    {
+      "caseId": "case-12",
+      "modelInvoked": false,
+      "proposal": {
+        "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+        "promptVersion": "url-to-flow-prompt-v1.1",
+        "requestId": "rq-d3187af46c52",
+        "caseId": "case-12",
+        "status": {
+          "generationState": "failed",
+          "outcome": "no_proposal",
+          "readiness": null,
+          "errorCode": "locale_applicability_unverified"
+        },
+        "sourceAssessment": {
+          "access": "partial",
+          "sourceShape": "unknown",
+          "primarySourceId": "src-d5a8072c4e19",
+          "supportingSourceIds": [],
+          "receivedSourceRowIds": [],
+          "untrustedInstructionDetected": false
+        },
+        "conversionDecision": null,
+        "proposal": {
+          "proposalTitle": null,
+          "items": [],
+          "omittedRows": [],
+          "incompleteReason": "민감한 비현지 출처의 대상 지역 적용성을 확인하지 못했다."
+        },
+        "projectionPlan": [],
+        "reviewHints": {
+          "recommendedDisposition": "hold",
+          "uncertainties": [
+            "대상 지역 적용성이 확인되지 않았다."
+          ],
+          "hardFailCodes": [
+            "locale_applicability_unverified"
+          ],
+          "humanReviewRequired": [
+            "local_applicability_review"
+          ]
+        }
+      }
+    }
+  ]
+}

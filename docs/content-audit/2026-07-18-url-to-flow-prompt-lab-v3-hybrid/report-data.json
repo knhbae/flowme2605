@@ -1,0 +1,1582 @@
+{
+  "reportVersion": "flowme-url-to-flow-backend-decision-report-v1",
+  "generatedAt": "2026-07-18",
+  "evidence": {
+    "freezeSha256": "9b66e8204c0b4485afacd1f45b7e3467e2c60645702b5251b8b2889d527b4a3d",
+    "evidenceClass": "deterministic_controller_replay",
+    "automatic": {
+      "caseCount": 12,
+      "passed": 12,
+      "itemCount": 15,
+      "sourceRowCount": 16,
+      "negativeCount": 2,
+      "stabilityRate": 1
+    },
+    "blindModelProxy": {
+      "documentCount": 3,
+      "reviewCount": 10,
+      "itemVerdictCount": 15,
+      "keepCount": 15,
+      "itemKeepRate": 1,
+      "unsupportedSignalCount": 0,
+      "sevenAxisAverage": 4.985714285714286,
+      "axisAverages": {
+        "userNeedFit": 5,
+        "executionClarity": 4.9,
+        "contentFidelityCoverage": 5,
+        "portability": 5,
+        "cognitiveLoad": 5,
+        "copySpecificity": 5,
+        "sourceSafetySeparation": 5
+      }
+    },
+    "v2": {
+      "round1Passed": 11,
+      "round2Passed": 11,
+      "total": 12
+    }
+  },
+  "decisions": {
+    "provenanceUnit": "SourceRow",
+    "statefulExecutionUnit": "Item",
+    "compositionUnit": "Flow",
+    "exportUnit": "Projection",
+    "llmBoundary": "URL -> SourceRow",
+    "deterministicBoundary": "SourceRow -> Item/Projection/Review markers",
+    "humanBoundary": "Save/Publish"
+  },
+  "cases": [
+    {
+      "auditCaseId": "case-01",
+      "sampleRef": "smp-3c82e2a17ad8d751",
+      "modelInvoked": false,
+      "proposal": {
+        "schemaVersion": "flowme-semantic-proposal-v2",
+        "promptVersion": "row-license-compiler-v3.0",
+        "requestRef": "req-1381f511b9872666",
+        "sampleRef": "smp-3c82e2a17ad8d751",
+        "result": {
+          "state": "proposal",
+          "reasonCode": null,
+          "disposition": "review",
+          "primaryArtifact": "checklist"
+        },
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRefs": [
+              "row-4358a48eb06a66ff"
+            ],
+            "title": "검진 대상 및 예약 확인",
+            "intent": "inspect",
+            "completionMode": "check",
+            "memo": null,
+            "scheduleEvidence": null
+          },
+          {
+            "itemRef": "item-02",
+            "sourceRowRefs": [
+              "row-a2c9e4be915a4ceb"
+            ],
+            "title": "검진기관 방문",
+            "intent": "act",
+            "completionMode": "check",
+            "memo": null,
+            "scheduleEvidence": null
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "checklist",
+            "itemRefs": [
+              "item-01",
+              "item-02"
+            ]
+          }
+        ],
+        "review": {
+          "uncertaintyCodes": [
+            "missing_date_value"
+          ],
+          "humanCheckRowRefs": [
+            "row-a2c9e4be915a4ceb"
+          ]
+        }
+      },
+      "compileTrace": {
+        "compilerVersion": "row-license-compiler-v3.0",
+        "rulesVersion": "flowme-row-license-ko-v3.0",
+        "modelInvoked": false,
+        "artifactRuleId": "artifact.checklist",
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRef": "row-4358a48eb06a66ff",
+            "ruleId": "check.inspection",
+            "titleOp": "keep",
+            "intent": "inspect",
+            "completionMode": "check",
+            "sourceTitleSha256": "90401e499c9245eecbd55fc97fd2d4b20d495a8a369affd756fdd6e9b5ee5780",
+            "compiledItemSha256": "599e545753a1a539614174d91d146805d9c53a2c9d67d4c1f3d157714b15a12f"
+          },
+          {
+            "itemRef": "item-02",
+            "sourceRowRef": "row-a2c9e4be915a4ceb",
+            "ruleId": "date.explicit_action",
+            "titleOp": "keep",
+            "intent": "act",
+            "completionMode": "check",
+            "sourceTitleSha256": "da5987f9ae9c72732f96e1394b2e6c49f63dc7212a0c6dcf3668b2c2221fac33",
+            "compiledItemSha256": "04a697859d86faa6dba31e960437ae1503fb7f5d1972dd31c9abab1802fc1497"
+          }
+        ],
+        "omissions": [],
+        "proposalSha256": "f72947ea04d28753bd744215dcec5d6eeaaa92f705fa55cc021ba4e1e69a3541"
+      },
+      "label": "건강검진",
+      "pattern": "확인 + 방문",
+      "sourceRows": [
+        {
+          "sourceRowRef": "row-4358a48eb06a66ff",
+          "sourceRef": "src-218ac1806418270c",
+          "rowType": "check",
+          "title": "검진 대상 및 예약 확인",
+          "detail": null,
+          "order": 0
+        },
+        {
+          "sourceRowRef": "row-a2c9e4be915a4ceb",
+          "sourceRef": "src-218ac1806418270c",
+          "rowType": "date",
+          "title": "검진기관 방문",
+          "detail": null,
+          "order": 1
+        }
+      ],
+      "sourceOwnership": {
+        "primarySourceRef": "src-218ac1806418270c",
+        "supportingSourceRefs": []
+      },
+      "preflight": {
+        "passed": true,
+        "modelInvoked": false,
+        "generationState": null,
+        "outcome": null,
+        "errorCode": null,
+        "recommendedDisposition": null,
+        "reasonCode": "deterministic_compiler_selected"
+      },
+      "review": {
+        "sampleRef": "smp-3c82e2a17ad8d751",
+        "reviewInputSha256": "85817d43c73c90e74fd339ca7029ba2229fea02818cebc51427e4e37c30f7891",
+        "proposalFingerprint": "f72947ea04d28753bd744215dcec5d6eeaaa92f705fa55cc021ba4e1e69a3541",
+        "caseVerdict": "pass",
+        "itemVerdicts": [
+          {
+            "itemRef": "item-01",
+            "verdict": "keep",
+            "reasonCode": "supported_as_written"
+          },
+          {
+            "itemRef": "item-02",
+            "verdict": "keep",
+            "reasonCode": "supported_as_written"
+          }
+        ],
+        "unsupportedSignals": [],
+        "scores": {
+          "userNeedFit": 5,
+          "executionClarity": 5,
+          "contentFidelityCoverage": 5,
+          "portability": 5,
+          "cognitiveLoad": 5,
+          "copySpecificity": 5,
+          "sourceSafetySeparation": 5
+        },
+        "scoreComments": {
+          "userNeedFit": "검진 대상과 예약을 확인한 뒤 검진기관을 방문하는 좁고 일관된 작업을 구성한다.",
+          "executionClarity": "확인 항목과 방문 항목의 의도 및 체크 완료 방식이 각각 명확하다.",
+          "contentFidelityCoverage": "두 SourceRow가 원문 제목과 의미를 유지한 별도 Item으로 모두 반영되었다.",
+          "portability": "방문 날짜 값이 없으므로 달력 대신 체크리스트로 제안한 구성이 적절하다.",
+          "cognitiveLoad": "두 원문 행을 중복이나 보조 단계 없이 두 항목으로 간결하게 제시한다.",
+          "copySpecificity": "두 제목 모두 구체적인 원문 표현을 그대로 사용한다.",
+          "sourceSafetySeparation": "누락된 날짜 값을 추정하지 않고 missing_date_value와 해당 humanCheckRowRef를 명시했다."
+        },
+        "topIssueCode": null,
+        "note": "모든 행이 근거 범위 안에서 실행 가능한 체크리스트 항목으로 변환되었고, 없는 방문 날짜도 명시적으로 불확실 처리되었다."
+      }
+    },
+    {
+      "auditCaseId": "case-02",
+      "sampleRef": "smp-6cd12e316c9ca24a",
+      "modelInvoked": false,
+      "proposal": {
+        "schemaVersion": "flowme-semantic-proposal-v2",
+        "promptVersion": "row-license-compiler-v3.0",
+        "requestRef": "req-06a6030ad68a50b9",
+        "sampleRef": "smp-6cd12e316c9ca24a",
+        "result": {
+          "state": "proposal",
+          "reasonCode": null,
+          "disposition": "review",
+          "primaryArtifact": "calendar"
+        },
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRefs": [
+              "row-a8ce44ab3b4c5d12"
+            ],
+            "title": "극세 필터 4주에 한 번 청소",
+            "intent": "act",
+            "completionMode": "check",
+            "memo": "먼지 제거, 물세척, 그늘 건조",
+            "scheduleEvidence": {
+              "sourceRowRefs": [
+                "row-a8ce44ab3b4c5d12"
+              ],
+              "sourceText": "4주에 한 번",
+              "kind": "recurrence"
+            }
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "calendar",
+            "itemRefs": [
+              "item-01"
+            ]
+          }
+        ],
+        "review": {
+          "uncertaintyCodes": [],
+          "humanCheckRowRefs": []
+        }
+      },
+      "compileTrace": {
+        "compilerVersion": "row-license-compiler-v3.0",
+        "rulesVersion": "flowme-row-license-ko-v3.0",
+        "modelInvoked": false,
+        "artifactRuleId": "artifact.calendar",
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRef": "row-a8ce44ab3b4c5d12",
+            "ruleId": "procedure",
+            "titleOp": "keep",
+            "intent": "act",
+            "completionMode": "check",
+            "sourceTitleSha256": "e1f8d491f76d940a74c6e1e21e20dc7501038163eafc9675511e86d8cc73b8a9",
+            "compiledItemSha256": "e073f4c8b4f3a9fb00cd3122c6bdc8cb6b2265e1f7e932987509afcfc41ecb63"
+          }
+        ],
+        "omissions": [],
+        "proposalSha256": "72c4eca9f4bbfc2b31d22bdc90a70755627247daae7573f112b78b453711fcae"
+      },
+      "label": "필터 청소",
+      "pattern": "반복 일정",
+      "sourceRows": [
+        {
+          "sourceRowRef": "row-a8ce44ab3b4c5d12",
+          "sourceRef": "src-e2a69a8628777cee",
+          "rowType": "procedure",
+          "title": "극세 필터 4주에 한 번 청소",
+          "detail": "먼지 제거, 물세척, 그늘 건조",
+          "order": 0
+        }
+      ],
+      "sourceOwnership": {
+        "primarySourceRef": "src-e2a69a8628777cee",
+        "supportingSourceRefs": []
+      },
+      "preflight": {
+        "passed": true,
+        "modelInvoked": false,
+        "generationState": null,
+        "outcome": null,
+        "errorCode": null,
+        "recommendedDisposition": null,
+        "reasonCode": "deterministic_compiler_selected"
+      },
+      "review": {
+        "sampleRef": "smp-6cd12e316c9ca24a",
+        "reviewInputSha256": "63b1d6b9d0271ec63f8d814e8d1bb9efa18777651921e839a2446f71d8b26a73",
+        "proposalFingerprint": "72c4eca9f4bbfc2b31d22bdc90a70755627247daae7573f112b78b453711fcae",
+        "caseVerdict": "pass",
+        "itemVerdicts": [
+          {
+            "itemRef": "item-01",
+            "verdict": "keep",
+            "reasonCode": "supported_as_written"
+          }
+        ],
+        "unsupportedSignals": [],
+        "scores": {
+          "userNeedFit": 5,
+          "executionClarity": 5,
+          "contentFidelityCoverage": 5,
+          "portability": 5,
+          "cognitiveLoad": 5,
+          "copySpecificity": 5,
+          "sourceSafetySeparation": 5
+        },
+        "scoreComments": {
+          "userNeedFit": "극세 필터를 정해진 주기로 청소하는 하나의 좁고 완결된 관리 작업이다.",
+          "executionClarity": "청소 주기와 먼지 제거, 물세척, 그늘 건조 절차가 한 항목에서 분명히 전달된다.",
+          "contentFidelityCoverage": "SourceRow의 제목, 상세 절차, 반복 주기가 왜곡 없이 모두 반영되었다.",
+          "portability": "명시된 4주 반복 근거를 recurrence로 보존해 달력 대상으로 제안한 것이 적합하다.",
+          "cognitiveLoad": "하나의 청소 절차를 불필요하게 분할하거나 반복하지 않았다.",
+          "copySpecificity": "제목과 메모가 모두 극세 필터 및 구체적인 청소 표현을 그대로 사용한다.",
+          "sourceSafetySeparation": "반복 일정은 literal sourceText에 연결되어 있으며 추가 날짜나 결과를 추정하지 않았다."
+        },
+        "topIssueCode": null,
+        "note": "원문의 청소 행동, 세부 절차, 4주 반복 근거가 정확히 보존된 실행 가능한 달력 항목이다."
+      }
+    },
+    {
+      "auditCaseId": "case-03",
+      "sampleRef": "smp-3ad3cc4ad286218d",
+      "modelInvoked": false,
+      "proposal": {
+        "schemaVersion": "flowme-semantic-proposal-v2",
+        "promptVersion": "row-license-compiler-v3.0",
+        "requestRef": "req-8e6c61c01ed35d54",
+        "sampleRef": "smp-3ad3cc4ad286218d",
+        "result": {
+          "state": "proposal",
+          "reasonCode": null,
+          "disposition": "review",
+          "primaryArtifact": "checklist"
+        },
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRefs": [
+              "row-09d7f58605ec20e3"
+            ],
+            "title": "여권 확인하기",
+            "intent": "inspect",
+            "completionMode": "check",
+            "memo": null,
+            "scheduleEvidence": null
+          },
+          {
+            "itemRef": "item-02",
+            "sourceRowRefs": [
+              "row-58976a3aeab10cf5"
+            ],
+            "title": "데이터 유심 확인하기",
+            "intent": "inspect",
+            "completionMode": "check",
+            "memo": null,
+            "scheduleEvidence": null
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "checklist",
+            "itemRefs": [
+              "item-01",
+              "item-02"
+            ]
+          }
+        ],
+        "review": {
+          "uncertaintyCodes": [],
+          "humanCheckRowRefs": []
+        }
+      },
+      "compileTrace": {
+        "compilerVersion": "row-license-compiler-v3.0",
+        "rulesVersion": "flowme-row-license-ko-v3.0",
+        "modelInvoked": false,
+        "artifactRuleId": "artifact.checklist",
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRef": "row-09d7f58605ec20e3",
+            "ruleId": "check.noun_label",
+            "titleOp": "append_confirm",
+            "intent": "inspect",
+            "completionMode": "check",
+            "sourceTitleSha256": "03ed7a436dd264d1c2ca612986a3657dfaa1b9f5a6eb0275d61b7904ea321774",
+            "compiledItemSha256": "0e663a7be5e3a6f990a9cf0e30ba68b0c54f07d5efe58da10b854ef6a9565c93"
+          },
+          {
+            "itemRef": "item-02",
+            "sourceRowRef": "row-58976a3aeab10cf5",
+            "ruleId": "check.noun_label",
+            "titleOp": "append_confirm",
+            "intent": "inspect",
+            "completionMode": "check",
+            "sourceTitleSha256": "e9f83e61163aa2c7e06f88ad1925e69f78051059c40aedf4f1d8fa53ba25f870",
+            "compiledItemSha256": "5f38a90dc860f0d33496598340076e4396cf6096e4fb409c46039500836d5647"
+          }
+        ],
+        "omissions": [],
+        "proposalSha256": "e3d77b34acdada8e38c9d713b6dc6b6e387980803c17ecc4f647de1992c316e0"
+      },
+      "label": "여행 준비",
+      "pattern": "명사형 체크",
+      "sourceRows": [
+        {
+          "sourceRowRef": "row-09d7f58605ec20e3",
+          "sourceRef": "src-661040b7253fc79f",
+          "rowType": "check",
+          "title": "여권",
+          "detail": null,
+          "order": 0
+        },
+        {
+          "sourceRowRef": "row-58976a3aeab10cf5",
+          "sourceRef": "src-661040b7253fc79f",
+          "rowType": "check",
+          "title": "데이터 유심",
+          "detail": null,
+          "order": 1
+        }
+      ],
+      "sourceOwnership": {
+        "primarySourceRef": "src-661040b7253fc79f",
+        "supportingSourceRefs": []
+      },
+      "preflight": {
+        "passed": true,
+        "modelInvoked": false,
+        "generationState": null,
+        "outcome": null,
+        "errorCode": null,
+        "recommendedDisposition": null,
+        "reasonCode": "deterministic_compiler_selected"
+      },
+      "review": {
+        "sampleRef": "smp-3ad3cc4ad286218d",
+        "reviewInputSha256": "7e535e8a1a8ed28e6ba7d6129436d7a66f56ea533212143b9271b5c8a2b92f26",
+        "proposalFingerprint": "e3d77b34acdada8e38c9d713b6dc6b6e387980803c17ecc4f647de1992c316e0",
+        "caseVerdict": "pass",
+        "itemVerdicts": [
+          {
+            "itemRef": "item-01",
+            "verdict": "keep",
+            "reasonCode": "supported_as_written"
+          },
+          {
+            "itemRef": "item-02",
+            "verdict": "keep",
+            "reasonCode": "supported_as_written"
+          }
+        ],
+        "unsupportedSignals": [],
+        "scores": {
+          "userNeedFit": 5,
+          "executionClarity": 5,
+          "contentFidelityCoverage": 5,
+          "portability": 5,
+          "cognitiveLoad": 5,
+          "copySpecificity": 5,
+          "sourceSafetySeparation": 5
+        },
+        "scoreComments": {
+          "userNeedFit": "여권과 데이터 유심을 확인하는 두 항목이 일관된 준비 점검 작업을 이룬다.",
+          "executionClarity": "각 물품을 확인하고 체크로 완료한다는 행동이 간단하고 명확하다.",
+          "contentFidelityCoverage": "두 SourceRow가 빠짐없이 각각 하나의 Item으로 반영되었다.",
+          "portability": "날짜 근거가 없는 물품 확인 항목이므로 체크리스트 대상이 적절하다.",
+          "cognitiveLoad": "두 항목만 제시해 중복이나 불필요한 구조가 없다.",
+          "copySpecificity": "여권과 데이터 유심이라는 원문 명사를 유지하고 최소한의 확인하기 문법만 더했다.",
+          "sourceSafetySeparation": "일정, 소지 상태, 구매 필요성 같은 추가 사실을 추정하지 않았다."
+        },
+        "topIssueCode": null,
+        "note": "두 원문 점검 대상을 최소한의 허용 문법으로 실행 가능한 체크리스트 항목으로 만들었다."
+      }
+    },
+    {
+      "auditCaseId": "case-04",
+      "sampleRef": "smp-14a5927ce96fdaa6",
+      "modelInvoked": false,
+      "proposal": {
+        "schemaVersion": "flowme-semantic-proposal-v2",
+        "promptVersion": "row-license-compiler-v3.0",
+        "requestRef": "req-20c85adbb0ce8232",
+        "sampleRef": "smp-14a5927ce96fdaa6",
+        "result": {
+          "state": "proposal",
+          "reasonCode": null,
+          "disposition": "review",
+          "primaryArtifact": "checklist"
+        },
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRefs": [
+              "row-6f7c07509e80bf13"
+            ],
+            "title": "구직 신청 등록",
+            "intent": "act",
+            "completionMode": "check",
+            "memo": null,
+            "scheduleEvidence": null
+          },
+          {
+            "itemRef": "item-02",
+            "sourceRowRefs": [
+              "row-5589ea7def6f11b7"
+            ],
+            "title": "취업지원 서비스 신청",
+            "intent": "act",
+            "completionMode": "check",
+            "memo": null,
+            "scheduleEvidence": null
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "checklist",
+            "itemRefs": [
+              "item-01",
+              "item-02"
+            ]
+          }
+        ],
+        "review": {
+          "uncertaintyCodes": [],
+          "humanCheckRowRefs": []
+        }
+      },
+      "compileTrace": {
+        "compilerVersion": "row-license-compiler-v3.0",
+        "rulesVersion": "flowme-row-license-ko-v3.0",
+        "modelInvoked": false,
+        "artifactRuleId": "artifact.checklist",
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRef": "row-6f7c07509e80bf13",
+            "ruleId": "procedure",
+            "titleOp": "keep",
+            "intent": "act",
+            "completionMode": "check",
+            "sourceTitleSha256": "3250ce1e4985dd8065177f587947a6db7a2a4eb0c27fa4c721f4b4f14be4cf20",
+            "compiledItemSha256": "22c84fdfedb90189d7155c5bca5381d4b160e5d4778738cd4f881688aceddeee"
+          },
+          {
+            "itemRef": "item-02",
+            "sourceRowRef": "row-5589ea7def6f11b7",
+            "ruleId": "procedure",
+            "titleOp": "keep",
+            "intent": "act",
+            "completionMode": "check",
+            "sourceTitleSha256": "9d5fe3d895966769da3edb6c1733ec62e016770747b8c76e6778ef29a23999df",
+            "compiledItemSha256": "ecc25463a5979e1d5484a3495139c2353b64b0f85aaacf62e73522fe799d5a15"
+          }
+        ],
+        "omissions": [],
+        "proposalSha256": "55660e1340c44b87cdcec573c034de59058f01eeecc3c6d2a3b485b2eaea88f9"
+      },
+      "label": "구직 신청",
+      "pattern": "절차",
+      "sourceRows": [
+        {
+          "sourceRowRef": "row-6f7c07509e80bf13",
+          "sourceRef": "src-27901a59a71685ae",
+          "rowType": "procedure",
+          "title": "구직 신청 등록",
+          "detail": null,
+          "order": 0
+        },
+        {
+          "sourceRowRef": "row-5589ea7def6f11b7",
+          "sourceRef": "src-27901a59a71685ae",
+          "rowType": "procedure",
+          "title": "취업지원 서비스 신청",
+          "detail": null,
+          "order": 1
+        }
+      ],
+      "sourceOwnership": {
+        "primarySourceRef": "src-27901a59a71685ae",
+        "supportingSourceRefs": []
+      },
+      "preflight": {
+        "passed": true,
+        "modelInvoked": false,
+        "generationState": null,
+        "outcome": null,
+        "errorCode": null,
+        "recommendedDisposition": null,
+        "reasonCode": "deterministic_compiler_selected"
+      },
+      "review": {
+        "sampleRef": "smp-14a5927ce96fdaa6",
+        "reviewInputSha256": "b7a337ae1583d94ca59618139cd70fa2d7e14aa23b101cef872b1e01e23be7d0",
+        "proposalFingerprint": "55660e1340c44b87cdcec573c034de59058f01eeecc3c6d2a3b485b2eaea88f9",
+        "caseVerdict": "pass",
+        "itemVerdicts": [
+          {
+            "itemRef": "item-01",
+            "verdict": "keep",
+            "reasonCode": "supported_as_written"
+          },
+          {
+            "itemRef": "item-02",
+            "verdict": "keep",
+            "reasonCode": "supported_as_written"
+          }
+        ],
+        "unsupportedSignals": [],
+        "scores": {
+          "userNeedFit": 5,
+          "executionClarity": 5,
+          "contentFidelityCoverage": 5,
+          "portability": 5,
+          "cognitiveLoad": 5,
+          "copySpecificity": 5,
+          "sourceSafetySeparation": 5
+        },
+        "scoreComments": {
+          "userNeedFit": "구직 신청 등록과 취업지원 서비스 신청이 일관된 신청 작업 묶음을 구성한다.",
+          "executionClarity": "두 신청 행동과 체크 완료 방식이 각각 직접적으로 이해된다.",
+          "contentFidelityCoverage": "두 procedure SourceRow가 원문 의미와 순서를 유지한 Item으로 모두 반영되었다.",
+          "portability": "날짜 근거가 없는 두 신청 절차를 체크리스트로 제안한 것이 적절하다.",
+          "cognitiveLoad": "원문 두 절차를 추가 단계나 반복 없이 간결하게 유지했다.",
+          "copySpecificity": "두 제목 모두 구직 신청 등록과 취업지원 서비스 신청이라는 구체적인 원문을 그대로 쓴다.",
+          "sourceSafetySeparation": "신청 방법, 자격, 기관, 일정 같은 제공되지 않은 내용을 추가하지 않았다."
+        },
+        "topIssueCode": null,
+        "note": "두 절차가 추가 추정 없이 원문 그대로 실행 가능한 체크리스트 항목으로 보존되었다."
+      }
+    },
+    {
+      "auditCaseId": "case-05",
+      "sampleRef": "smp-1543712589e440b7",
+      "modelInvoked": false,
+      "proposal": {
+        "schemaVersion": "flowme-semantic-proposal-v2",
+        "promptVersion": "row-license-compiler-v3.0",
+        "requestRef": "req-346a2dd26f908db7",
+        "sampleRef": "smp-1543712589e440b7",
+        "result": {
+          "state": "proposal",
+          "reasonCode": null,
+          "disposition": "review",
+          "primaryArtifact": "sheet"
+        },
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRefs": [
+              "row-e66c610b7b8d5d53"
+            ],
+            "title": "1주차 강의와 퀴즈 완료하기",
+            "intent": "act",
+            "completionMode": "check",
+            "memo": null,
+            "scheduleEvidence": null
+          },
+          {
+            "itemRef": "item-02",
+            "sourceRowRefs": [
+              "row-715581f821f973f1"
+            ],
+            "title": "2주차 강의와 퀴즈 완료하기",
+            "intent": "act",
+            "completionMode": "check",
+            "memo": null,
+            "scheduleEvidence": null
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "sheet",
+            "itemRefs": [
+              "item-01",
+              "item-02"
+            ]
+          }
+        ],
+        "review": {
+          "uncertaintyCodes": [],
+          "humanCheckRowRefs": []
+        }
+      },
+      "compileTrace": {
+        "compilerVersion": "row-license-compiler-v3.0",
+        "rulesVersion": "flowme-row-license-ko-v3.0",
+        "modelInvoked": false,
+        "artifactRuleId": "artifact.sheet",
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRef": "row-e66c610b7b8d5d53",
+            "ruleId": "table_row",
+            "titleOp": "append_complete",
+            "intent": "act",
+            "completionMode": "check",
+            "sourceTitleSha256": "9fee9e06d106934a9216ceff6b8c60fcc421a94dcf901ca8608c92f8382b17f2",
+            "compiledItemSha256": "ae751a2e7dd756cf5f917f572a9ccca4a4e21c777fd50e7898f0fef481d89c68"
+          },
+          {
+            "itemRef": "item-02",
+            "sourceRowRef": "row-715581f821f973f1",
+            "ruleId": "table_row",
+            "titleOp": "append_complete",
+            "intent": "act",
+            "completionMode": "check",
+            "sourceTitleSha256": "ab9b5bb17e83cbcc0fa8de2680c5cd15c1efd275ee7b72c36d5f0484d7992280",
+            "compiledItemSha256": "758d8988e8b88fb1fc6b6405ad50bb64c7498c436feed5f2aafe1a1bd054a132"
+          }
+        ],
+        "omissions": [],
+        "proposalSha256": "bef22e1aa659a8fc9904e6d746a28c8e37055574d30e29851b83c2e86fbe9302"
+      },
+      "label": "주차별 학습",
+      "pattern": "표 행",
+      "sourceRows": [
+        {
+          "sourceRowRef": "row-e66c610b7b8d5d53",
+          "sourceRef": "src-cd0504955a1e86c9",
+          "rowType": "table_row",
+          "title": "1주차 강의와 퀴즈",
+          "detail": null,
+          "order": 0
+        },
+        {
+          "sourceRowRef": "row-715581f821f973f1",
+          "sourceRef": "src-cd0504955a1e86c9",
+          "rowType": "table_row",
+          "title": "2주차 강의와 퀴즈",
+          "detail": null,
+          "order": 1
+        }
+      ],
+      "sourceOwnership": {
+        "primarySourceRef": "src-cd0504955a1e86c9",
+        "supportingSourceRefs": []
+      },
+      "preflight": {
+        "passed": true,
+        "modelInvoked": false,
+        "generationState": null,
+        "outcome": null,
+        "errorCode": null,
+        "recommendedDisposition": null,
+        "reasonCode": "deterministic_compiler_selected"
+      },
+      "review": {
+        "sampleRef": "smp-1543712589e440b7",
+        "reviewInputSha256": "d676b6437e0d7ee09d963fc0bb109ad6ffd5dfdf572c89f53a0d4752257e8d31",
+        "proposalFingerprint": "bef22e1aa659a8fc9904e6d746a28c8e37055574d30e29851b83c2e86fbe9302",
+        "caseVerdict": "pass",
+        "itemVerdicts": [
+          {
+            "itemRef": "item-01",
+            "verdict": "keep",
+            "reasonCode": "supported_as_written"
+          },
+          {
+            "itemRef": "item-02",
+            "verdict": "keep",
+            "reasonCode": "supported_as_written"
+          }
+        ],
+        "unsupportedSignals": [],
+        "scores": {
+          "userNeedFit": 5,
+          "executionClarity": 5,
+          "contentFidelityCoverage": 5,
+          "portability": 5,
+          "cognitiveLoad": 5,
+          "copySpecificity": 5,
+          "sourceSafetySeparation": 5
+        },
+        "scoreComments": {
+          "userNeedFit": "두 주차의 강의와 퀴즈를 완료하는 좁고 일관된 학습 작업으로 구성되어 있다.",
+          "executionClarity": "각 주차별로 무엇을 완료하고 확인 표시해야 하는지 명확하다.",
+          "contentFidelityCoverage": "두 SourceRow가 각각 하나의 Item으로 빠짐없이 직접 대응된다.",
+          "portability": "주차별 완료 항목을 행으로 관리하는 sheet 대상이 내용 구조에 잘 맞는다.",
+          "cognitiveLoad": "두 행만 분리해 제시하여 중복이나 불필요한 단계가 없다.",
+          "copySpecificity": "각 제목이 원문의 주차와 강의·퀴즈 표현을 그대로 유지하면서 최소 문법만 더했다.",
+          "sourceSafetySeparation": "근거 없는 날짜나 반복 주기를 만들지 않았고 scheduleEvidence도 비워 두었다."
+        },
+        "topIssueCode": null,
+        "note": "모든 원천 행이 순서대로 실행 가능한 완료 항목으로 변환되었으며 추가된 비근거 신호가 없다."
+      }
+    },
+    {
+      "auditCaseId": "case-06",
+      "sampleRef": "smp-91182b6bbc8efd1d",
+      "modelInvoked": false,
+      "proposal": {
+        "schemaVersion": "flowme-semantic-proposal-v2",
+        "promptVersion": "row-license-compiler-v3.0",
+        "requestRef": "req-d39fede4fec4beea",
+        "sampleRef": "smp-91182b6bbc8efd1d",
+        "result": {
+          "state": "proposal",
+          "reasonCode": null,
+          "disposition": "review",
+          "primaryArtifact": "memo"
+        },
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRefs": [
+              "row-914e8ba490214d22"
+            ],
+            "title": "선택한 레시피 영상 열어보기",
+            "intent": "open_resource",
+            "completionMode": "check",
+            "memo": null,
+            "scheduleEvidence": null
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "memo",
+            "itemRefs": [
+              "item-01"
+            ]
+          }
+        ],
+        "review": {
+          "uncertaintyCodes": [
+            "resource_contents_unseen"
+          ],
+          "humanCheckRowRefs": [
+            "row-914e8ba490214d22"
+          ]
+        }
+      },
+      "compileTrace": {
+        "compilerVersion": "row-license-compiler-v3.0",
+        "rulesVersion": "flowme-row-license-ko-v3.0",
+        "modelInvoked": false,
+        "artifactRuleId": "artifact.memo",
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRef": "row-914e8ba490214d22",
+            "ruleId": "resource",
+            "titleOp": "append_open",
+            "intent": "open_resource",
+            "completionMode": "check",
+            "sourceTitleSha256": "9c176336ed5ead6fc4082c3f8798994136535e80553949aaaa98830b3f3e6ef2",
+            "compiledItemSha256": "88fbc516e7236e11feb67b1ed0efdd577ba2711c6490b623a127470ed6e86298"
+          }
+        ],
+        "omissions": [],
+        "proposalSha256": "58c747d7b31ad0f6bfefb88ae06912fb0fc69ead68aa8ddce20a63639a4e0262"
+      },
+      "label": "레시피 영상",
+      "pattern": "단일 리소스",
+      "sourceRows": [
+        {
+          "sourceRowRef": "row-914e8ba490214d22",
+          "sourceRef": "src-3cdafb44b5c15749",
+          "rowType": "resource",
+          "title": "선택한 레시피 영상",
+          "detail": null,
+          "order": 0
+        }
+      ],
+      "sourceOwnership": {
+        "primarySourceRef": "src-3cdafb44b5c15749",
+        "supportingSourceRefs": []
+      },
+      "preflight": {
+        "passed": true,
+        "modelInvoked": false,
+        "generationState": null,
+        "outcome": null,
+        "errorCode": null,
+        "recommendedDisposition": null,
+        "reasonCode": "deterministic_compiler_selected"
+      },
+      "review": {
+        "sampleRef": "smp-91182b6bbc8efd1d",
+        "reviewInputSha256": "aba0d0398c698b938f976ef78540cfcc2a92a407a327c26549417b4b0f4065ca",
+        "proposalFingerprint": "58c747d7b31ad0f6bfefb88ae06912fb0fc69ead68aa8ddce20a63639a4e0262",
+        "caseVerdict": "pass",
+        "itemVerdicts": [
+          {
+            "itemRef": "item-01",
+            "verdict": "keep",
+            "reasonCode": "supported_as_written"
+          }
+        ],
+        "unsupportedSignals": [],
+        "scores": {
+          "userNeedFit": 5,
+          "executionClarity": 5,
+          "contentFidelityCoverage": 5,
+          "portability": 5,
+          "cognitiveLoad": 5,
+          "copySpecificity": 5,
+          "sourceSafetySeparation": 5
+        },
+        "scoreComments": {
+          "userNeedFit": "선택한 레시피 영상을 여는 단일 작업으로 범위가 정확히 제한되어 있다.",
+          "executionClarity": "명명된 영상을 열어본 뒤 확인하는 행동과 완료 방식이 분명하다.",
+          "contentFidelityCoverage": "유일한 resource 행이 내용 추정 없이 하나의 Item으로 온전히 반영되었다.",
+          "portability": "참조할 영상 항목을 memo에 보관하는 투영이 단일 리소스의 성격과 양립한다.",
+          "cognitiveLoad": "리소스 열기 외의 단계나 설명을 추가하지 않아 부담이 최소화되어 있다.",
+          "copySpecificity": "원문의 구체적인 리소스명에 허용된 열기 문법만 덧붙였다.",
+          "sourceSafetySeparation": "보이지 않는 영상 내용을 주장하지 않고 불확실성과 사람 확인 대상도 명시했다."
+        },
+        "topIssueCode": null,
+        "note": "리소스의 이름만 근거로 열기 작업을 만들고 unseen contents 경계를 명시해 안전하게 제한했다."
+      }
+    },
+    {
+      "auditCaseId": "case-07",
+      "sampleRef": "smp-a4bd87f2c84f5b82",
+      "modelInvoked": false,
+      "proposal": {
+        "schemaVersion": "flowme-semantic-proposal-v2",
+        "promptVersion": "row-license-compiler-v3.0",
+        "requestRef": "req-0e3298394f2dffb2",
+        "sampleRef": "smp-a4bd87f2c84f5b82",
+        "result": {
+          "state": "proposal",
+          "reasonCode": null,
+          "disposition": "review",
+          "primaryArtifact": "todo"
+        },
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRefs": [
+              "row-d062b869afabc018"
+            ],
+            "title": "차량 이력과 상태를 확인한 뒤 구매 판단",
+            "intent": "decide",
+            "completionMode": "decision",
+            "memo": null,
+            "scheduleEvidence": null
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "todo",
+            "itemRefs": [
+              "item-01"
+            ]
+          }
+        ],
+        "review": {
+          "uncertaintyCodes": [],
+          "humanCheckRowRefs": []
+        }
+      },
+      "compileTrace": {
+        "compilerVersion": "row-license-compiler-v3.0",
+        "rulesVersion": "flowme-row-license-ko-v3.0",
+        "modelInvoked": false,
+        "artifactRuleId": "artifact.todo",
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRef": "row-d062b869afabc018",
+            "ruleId": "check.decision",
+            "titleOp": "keep",
+            "intent": "decide",
+            "completionMode": "decision",
+            "sourceTitleSha256": "2c588c7eff5b52cc6c3b5cfd8307022c2d3526cdb0b8a32f8693f0f07ce90f0a",
+            "compiledItemSha256": "d9c939038e0691f0a53f0c4dcd2cf330fe20bd4d52d05db5a7db2e86e0e05c2b"
+          }
+        ],
+        "omissions": [],
+        "proposalSha256": "bf19ccfe87f6f1cb5d440795ef9534f1988850d5d44e0518564eebec8c5b2f35"
+      },
+      "label": "중고차 구매",
+      "pattern": "판단",
+      "sourceRows": [
+        {
+          "sourceRowRef": "row-d062b869afabc018",
+          "sourceRef": "src-da52f066cd245591",
+          "rowType": "check",
+          "title": "차량 이력과 상태를 확인한 뒤 구매 판단",
+          "detail": null,
+          "order": 0
+        }
+      ],
+      "sourceOwnership": {
+        "primarySourceRef": "src-da52f066cd245591",
+        "supportingSourceRefs": []
+      },
+      "preflight": {
+        "passed": true,
+        "modelInvoked": false,
+        "generationState": null,
+        "outcome": null,
+        "errorCode": null,
+        "recommendedDisposition": null,
+        "reasonCode": "deterministic_compiler_selected"
+      },
+      "review": {
+        "sampleRef": "smp-a4bd87f2c84f5b82",
+        "reviewInputSha256": "45becc87ce1733c9a516ee9d7ea51a5e224271a1ed71bcd4d218e5681a988b2e",
+        "proposalFingerprint": "bf19ccfe87f6f1cb5d440795ef9534f1988850d5d44e0518564eebec8c5b2f35",
+        "caseVerdict": "pass",
+        "itemVerdicts": [
+          {
+            "itemRef": "item-01",
+            "verdict": "keep",
+            "reasonCode": "supported_as_written"
+          }
+        ],
+        "unsupportedSignals": [],
+        "scores": {
+          "userNeedFit": 5,
+          "executionClarity": 5,
+          "contentFidelityCoverage": 5,
+          "portability": 5,
+          "cognitiveLoad": 5,
+          "copySpecificity": 5,
+          "sourceSafetySeparation": 5
+        },
+        "scoreComments": {
+          "userNeedFit": "차량 이력과 상태 확인을 구매 판단으로 연결하는 하나의 일관된 의사결정 작업이다.",
+          "executionClarity": "확인해야 할 대상과 그 뒤 내려야 할 판단이 같은 제목에 순서대로 드러난다.",
+          "contentFidelityCoverage": "단일 SourceRow의 확인 대상과 구매 판단이 왜곡 없이 모두 반영되었다.",
+          "portability": "완료 시 결정 상태를 남길 수 있는 todo 투영이 이 판단 작업에 적합하다.",
+          "cognitiveLoad": "하나의 선후 관계를 불필요하게 쪼개거나 보조 단계를 추가하지 않았다.",
+          "copySpecificity": "차량 이력, 상태, 구매 판단이라는 구체적인 원문 표현을 그대로 사용했다.",
+          "sourceSafetySeparation": "차량 상태에 관한 사실이나 일정 정보를 새로 주장하지 않았다."
+        },
+        "topIssueCode": null,
+        "note": "원문에 명시된 확인 후 판단 구조를 그대로 보존한 실행 가능한 의사결정 Item이다."
+      }
+    },
+    {
+      "auditCaseId": "case-08",
+      "sampleRef": "smp-ce41aa43ffc0fdd4",
+      "modelInvoked": false,
+      "proposal": {
+        "schemaVersion": "flowme-semantic-proposal-v2",
+        "promptVersion": "row-license-compiler-v3.0",
+        "requestRef": "req-2205a875171c2493",
+        "sampleRef": "smp-ce41aa43ffc0fdd4",
+        "result": {
+          "state": "proposal",
+          "reasonCode": null,
+          "disposition": "review",
+          "primaryArtifact": "todo"
+        },
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRefs": [
+              "row-f03bc1e31bd38a86"
+            ],
+            "title": "예약과 문진표 준비",
+            "intent": "act",
+            "completionMode": "check",
+            "memo": null,
+            "scheduleEvidence": null
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "todo",
+            "itemRefs": [
+              "item-01"
+            ]
+          }
+        ],
+        "review": {
+          "uncertaintyCodes": [],
+          "humanCheckRowRefs": []
+        }
+      },
+      "compileTrace": {
+        "compilerVersion": "row-license-compiler-v3.0",
+        "rulesVersion": "flowme-row-license-ko-v3.0",
+        "modelInvoked": false,
+        "artifactRuleId": "artifact.todo",
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRef": "row-f03bc1e31bd38a86",
+            "ruleId": "check.explicit_action",
+            "titleOp": "keep",
+            "intent": "act",
+            "completionMode": "check",
+            "sourceTitleSha256": "b73c1676bd05d3ce48dcd501169e60fbf0ef1d3ae9be98bc787b78d3f2aa21e0",
+            "compiledItemSha256": "9da9af95d3ad5a32059f9bc36add05c7ac134cba313f48d5c121573fe97e7a2b"
+          }
+        ],
+        "omissions": [],
+        "proposalSha256": "d5dacb914b7148813c0c0383199ca30be89cc5ad88289dde3ffdab3b2f7e1a97"
+      },
+      "label": "예약·문진표",
+      "pattern": "명시 행동",
+      "sourceRows": [
+        {
+          "sourceRowRef": "row-f03bc1e31bd38a86",
+          "sourceRef": "src-392b424de3f13858",
+          "rowType": "check",
+          "title": "예약과 문진표 준비",
+          "detail": null,
+          "order": 0
+        }
+      ],
+      "sourceOwnership": {
+        "primarySourceRef": "src-392b424de3f13858",
+        "supportingSourceRefs": []
+      },
+      "preflight": {
+        "passed": true,
+        "modelInvoked": false,
+        "generationState": null,
+        "outcome": null,
+        "errorCode": null,
+        "recommendedDisposition": null,
+        "reasonCode": "deterministic_compiler_selected"
+      },
+      "review": {
+        "sampleRef": "smp-ce41aa43ffc0fdd4",
+        "reviewInputSha256": "f388dfed93ddf6e522c3c8cd954554caa875fd96d29c4ea509d47acb59ec9960",
+        "proposalFingerprint": "d5dacb914b7148813c0c0383199ca30be89cc5ad88289dde3ffdab3b2f7e1a97",
+        "caseVerdict": "pass",
+        "itemVerdicts": [
+          {
+            "itemRef": "item-01",
+            "verdict": "keep",
+            "reasonCode": "supported_as_written"
+          }
+        ],
+        "unsupportedSignals": [],
+        "scores": {
+          "userNeedFit": 5,
+          "executionClarity": 4,
+          "contentFidelityCoverage": 5,
+          "portability": 5,
+          "cognitiveLoad": 5,
+          "copySpecificity": 5,
+          "sourceSafetySeparation": 5
+        },
+        "scoreComments": {
+          "userNeedFit": "예약과 문진표 준비를 묶은 단일 사전 준비 작업으로 범위가 일관되어 있다.",
+          "executionClarity": "무엇을 준비할지는 분명하지만 두 요소를 모두 마쳐야 완료인지 제목에서 약간의 해석이 필요하다.",
+          "contentFidelityCoverage": "유일한 SourceRow를 삭제하거나 의미를 확장하지 않고 그대로 반영했다.",
+          "portability": "사전 준비 완료 여부를 확인하는 todo 투영이 항목의 성격에 적합하다.",
+          "cognitiveLoad": "원천의 짧은 묶음을 그대로 유지해 구조적 과잉이나 중복이 없다.",
+          "copySpecificity": "예약과 문진표라는 구체적인 원문 대상을 그대로 보존했다.",
+          "sourceSafetySeparation": "예약 날짜, 의료 정보, 준비 방법 등 원문에 없는 내용을 추가하지 않았다."
+        },
+        "topIssueCode": null,
+        "note": "두 준비 대상을 한 확인 항목으로 충실하게 유지했으며 근거 없는 일정이나 세부 행동을 만들지 않았다."
+      }
+    },
+    {
+      "auditCaseId": "case-09",
+      "sampleRef": "smp-c318a22e612c54a9",
+      "modelInvoked": false,
+      "proposal": {
+        "schemaVersion": "flowme-semantic-proposal-v2",
+        "promptVersion": "row-license-compiler-v3.0",
+        "requestRef": "req-e20e3ab07b81525f",
+        "sampleRef": "smp-c318a22e612c54a9",
+        "result": {
+          "state": "proposal",
+          "reasonCode": null,
+          "disposition": "review",
+          "primaryArtifact": "checklist"
+        },
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRefs": [
+              "row-c5cf3ad24f48c32f"
+            ],
+            "title": "Day 1 prompt 열어보기",
+            "intent": "open_resource",
+            "completionMode": "check",
+            "memo": null,
+            "scheduleEvidence": null
+          },
+          {
+            "itemRef": "item-02",
+            "sourceRowRefs": [
+              "row-233b65ed0cd3c402"
+            ],
+            "title": "Day 2 prompt 열어보기",
+            "intent": "open_resource",
+            "completionMode": "check",
+            "memo": null,
+            "scheduleEvidence": null
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "checklist",
+            "itemRefs": [
+              "item-01",
+              "item-02"
+            ]
+          }
+        ],
+        "review": {
+          "uncertaintyCodes": [
+            "resource_contents_unseen"
+          ],
+          "humanCheckRowRefs": [
+            "row-c5cf3ad24f48c32f",
+            "row-233b65ed0cd3c402"
+          ]
+        }
+      },
+      "compileTrace": {
+        "compilerVersion": "row-license-compiler-v3.0",
+        "rulesVersion": "flowme-row-license-ko-v3.0",
+        "modelInvoked": false,
+        "artifactRuleId": "artifact.checklist",
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRef": "row-c5cf3ad24f48c32f",
+            "ruleId": "resource",
+            "titleOp": "append_open",
+            "intent": "open_resource",
+            "completionMode": "check",
+            "sourceTitleSha256": "e37c7a66f12592651ff04753f5b6a9687737ca2902ece416719fd5ee698f9e97",
+            "compiledItemSha256": "3dd960928f2995b020830c2477ade347ecf082be00660d3284aa2571646689d3"
+          },
+          {
+            "itemRef": "item-02",
+            "sourceRowRef": "row-233b65ed0cd3c402",
+            "ruleId": "resource",
+            "titleOp": "append_open",
+            "intent": "open_resource",
+            "completionMode": "check",
+            "sourceTitleSha256": "d1babd5e7daa9cd9b6aea45424960981b87f9a57f9731f8a237e6d6f6414882b",
+            "compiledItemSha256": "77cb4129984b0c2d77907cce910f21c693df9054a0f05d528e0f3ed4e5cce4ff"
+          }
+        ],
+        "omissions": [],
+        "proposalSha256": "ce96e8116fa1a0dc0d5da5b23461437859d6727519d25bd77257224ed4b75e2f"
+      },
+      "label": "프롬프트 챌린지",
+      "pattern": "복수 리소스",
+      "sourceRows": [
+        {
+          "sourceRowRef": "row-c5cf3ad24f48c32f",
+          "sourceRef": "src-bc1c983bf0180a40",
+          "rowType": "resource",
+          "title": "Day 1 prompt",
+          "detail": null,
+          "order": 0
+        },
+        {
+          "sourceRowRef": "row-233b65ed0cd3c402",
+          "sourceRef": "src-bc1c983bf0180a40",
+          "rowType": "resource",
+          "title": "Day 2 prompt",
+          "detail": null,
+          "order": 1
+        }
+      ],
+      "sourceOwnership": {
+        "primarySourceRef": "src-bc1c983bf0180a40",
+        "supportingSourceRefs": []
+      },
+      "preflight": {
+        "passed": true,
+        "modelInvoked": false,
+        "generationState": null,
+        "outcome": null,
+        "errorCode": null,
+        "recommendedDisposition": null,
+        "reasonCode": "deterministic_compiler_selected"
+      },
+      "review": {
+        "sampleRef": "smp-c318a22e612c54a9",
+        "reviewInputSha256": "85135bf71d583a8a986aaf1c533341a1da088eb5eb5305e23e2f3a0b6f7a6e86",
+        "proposalFingerprint": "ce96e8116fa1a0dc0d5da5b23461437859d6727519d25bd77257224ed4b75e2f",
+        "caseVerdict": "pass",
+        "itemVerdicts": [
+          {
+            "itemRef": "item-01",
+            "verdict": "keep",
+            "reasonCode": "supported_as_written"
+          },
+          {
+            "itemRef": "item-02",
+            "verdict": "keep",
+            "reasonCode": "supported_as_written"
+          }
+        ],
+        "unsupportedSignals": [],
+        "scores": {
+          "userNeedFit": 5,
+          "executionClarity": 5,
+          "contentFidelityCoverage": 5,
+          "portability": 5,
+          "cognitiveLoad": 5,
+          "copySpecificity": 5,
+          "sourceSafetySeparation": 5
+        },
+        "scoreComments": {
+          "userNeedFit": "두 프롬프트를 각각 여는 좁고 일관된 작업으로 구성되어 있다.",
+          "executionClarity": "각 항목이 지정된 프롬프트를 열고 체크하는 행동을 명확히 전달한다.",
+          "contentFidelityCoverage": "두 리소스 행이 각각 하나의 항목으로 빠짐없이 대응된다.",
+          "portability": "두 개의 독립적인 열람 행동을 체크리스트로 옮긴 구성이 적절하다.",
+          "cognitiveLoad": "행별 한 항목만 두어 중복이나 불필요한 구조가 없다.",
+          "copySpecificity": "원문의 Day 1 prompt와 Day 2 prompt를 그대로 살리고 최소한의 열기 문법만 덧붙였다.",
+          "sourceSafetySeparation": "보이지 않는 리소스 내용을 주장하지 않고 resource_contents_unseen 불확실성도 명시했다."
+        },
+        "topIssueCode": null,
+        "note": "두 항목 모두 명명된 리소스를 여는 범위에 한정되며, 원문에 없는 내용이나 결과를 추가하지 않았다."
+      }
+    },
+    {
+      "auditCaseId": "case-10",
+      "sampleRef": "smp-0b2e2f909ba047ad",
+      "modelInvoked": false,
+      "proposal": {
+        "schemaVersion": "flowme-semantic-proposal-v2",
+        "promptVersion": "row-license-compiler-v3.0",
+        "requestRef": "req-2c02f40a2633c521",
+        "sampleRef": "smp-0b2e2f909ba047ad",
+        "result": {
+          "state": "proposal",
+          "reasonCode": null,
+          "disposition": "review",
+          "primaryArtifact": "todo"
+        },
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRefs": [
+              "row-0c7c0f25a776f529"
+            ],
+            "title": "정기검사 유효기간 확인하기",
+            "intent": "inspect",
+            "completionMode": "check",
+            "memo": null,
+            "scheduleEvidence": null
+          }
+        ],
+        "omittedRows": [
+          {
+            "sourceRowRef": "row-eea93da3a8a24381",
+            "reasonCode": "supporting_source_boundary"
+          }
+        ],
+        "projections": [
+          {
+            "target": "todo",
+            "itemRefs": [
+              "item-01"
+            ]
+          }
+        ],
+        "review": {
+          "uncertaintyCodes": [
+            "missing_date_value",
+            "supporting_source_not_structural"
+          ],
+          "humanCheckRowRefs": [
+            "row-0c7c0f25a776f529",
+            "row-eea93da3a8a24381"
+          ]
+        }
+      },
+      "compileTrace": {
+        "compilerVersion": "row-license-compiler-v3.0",
+        "rulesVersion": "flowme-row-license-ko-v3.0",
+        "modelInvoked": false,
+        "artifactRuleId": "artifact.todo",
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRef": "row-0c7c0f25a776f529",
+            "ruleId": "date.value_label",
+            "titleOp": "append_confirm",
+            "intent": "inspect",
+            "completionMode": "check",
+            "sourceTitleSha256": "61300166ce038e53a1eb99e3f30ea52ec72aedfa8cd4fb5099afd60aebd5a318",
+            "compiledItemSha256": "f27380186e90417404c5e71c137ba5dea0b1a7f6c18d2c4c2cfb86b26bbe2b13"
+          }
+        ],
+        "omissions": [
+          {
+            "sourceRowRef": "row-eea93da3a8a24381",
+            "ruleId": "ownership.supporting_source"
+          }
+        ],
+        "proposalSha256": "449cb3193054c6efd6df25bb9220f59ce260982662e334a7d3cac77609605dce"
+      },
+      "label": "정기검사",
+      "pattern": "날짜값 누락 + 보조 출처",
+      "sourceRows": [
+        {
+          "sourceRowRef": "row-0c7c0f25a776f529",
+          "sourceRef": "src-d61587085bbac426",
+          "rowType": "date",
+          "title": "정기검사 유효기간",
+          "detail": null,
+          "order": 0
+        },
+        {
+          "sourceRowRef": "row-eea93da3a8a24381",
+          "sourceRef": "src-8676c1d597b4c9af",
+          "rowType": "reference",
+          "title": "검사기관 내부 검사 단계",
+          "detail": null,
+          "order": 0
+        }
+      ],
+      "sourceOwnership": {
+        "primarySourceRef": "src-d61587085bbac426",
+        "supportingSourceRefs": [
+          "src-8676c1d597b4c9af"
+        ]
+      },
+      "preflight": {
+        "passed": true,
+        "modelInvoked": false,
+        "generationState": null,
+        "outcome": null,
+        "errorCode": null,
+        "recommendedDisposition": null,
+        "reasonCode": "deterministic_compiler_selected"
+      },
+      "review": {
+        "sampleRef": "smp-0b2e2f909ba047ad",
+        "reviewInputSha256": "6d6586d2bb9db3424bb58b009ea4e4615b1ae07e9f50e6ef89fb42786cfbcf4e",
+        "proposalFingerprint": "449cb3193054c6efd6df25bb9220f59ce260982662e334a7d3cac77609605dce",
+        "caseVerdict": "pass",
+        "itemVerdicts": [
+          {
+            "itemRef": "item-01",
+            "verdict": "keep",
+            "reasonCode": "supported_as_written"
+          }
+        ],
+        "unsupportedSignals": [],
+        "scores": {
+          "userNeedFit": 5,
+          "executionClarity": 5,
+          "contentFidelityCoverage": 5,
+          "portability": 5,
+          "cognitiveLoad": 5,
+          "copySpecificity": 5,
+          "sourceSafetySeparation": 5
+        },
+        "scoreComments": {
+          "userNeedFit": "정기검사 유효기간을 확인하는 단일한 사용자 작업으로 적절히 한정되어 있다.",
+          "executionClarity": "유효기간을 확인하고 체크하는 완료 행동이 이해하기 쉽다.",
+          "contentFidelityCoverage": "기본 출처의 날짜 행은 항목으로 반영되고 보조 출처 행은 경계 사유와 함께 명시적으로 제외되었다.",
+          "portability": "날짜값을 임의로 배정하지 않은 확인 작업이 todo 대상에 잘 맞는다.",
+          "cognitiveLoad": "하나의 필요한 확인 항목만 남겨 구조적 부담이나 중복이 없다.",
+          "copySpecificity": "원문의 정기검사 유효기간을 그대로 사용하고 최소 확인 문법만 추가했다.",
+          "sourceSafetySeparation": "날짜값 누락과 보조 출처의 비구조적 경계를 모두 불확실성 및 제외 정보로 명확히 표시했다."
+        },
+        "topIssueCode": null,
+        "note": "날짜값을 만들지 않고 유효기간 확인으로만 한정했으며, 보조 출처의 내부 단계도 구조화하지 않아 안전하다."
+      }
+    },
+    {
+      "auditCaseId": "case-11",
+      "sampleRef": "smp-ba23feddf0a716df",
+      "modelInvoked": false,
+      "proposal": {
+        "schemaVersion": "flowme-semantic-proposal-v2",
+        "promptVersion": "deterministic-preflight-v2",
+        "requestRef": "req-ac46ff5e9c6dc0a0",
+        "sampleRef": "smp-ba23feddf0a716df",
+        "result": {
+          "state": "blocked",
+          "reasonCode": "missing_source_rows",
+          "disposition": "source_import_required",
+          "primaryArtifact": null
+        },
+        "items": [],
+        "omittedRows": [],
+        "projections": [],
+        "review": {
+          "uncertaintyCodes": [],
+          "humanCheckRowRefs": []
+        }
+      },
+      "compileTrace": {
+        "compilerVersion": "row-license-compiler-v3.0",
+        "rulesVersion": "flowme-row-license-ko-v3.0",
+        "modelInvoked": false,
+        "dispositionRuleId": "preflight.missing_source_rows",
+        "items": [],
+        "omissions": []
+      },
+      "label": "SourceRow 없음",
+      "pattern": "자동 차단",
+      "sourceRows": [],
+      "sourceOwnership": null,
+      "preflight": {
+        "passed": false,
+        "modelInvoked": false,
+        "generationState": "failed",
+        "outcome": "no_proposal",
+        "errorCode": "missing_source_rows",
+        "recommendedDisposition": "source_import_required",
+        "reasonCode": "no_source_rows_available"
+      },
+      "review": null
+    },
+    {
+      "auditCaseId": "case-12",
+      "sampleRef": "smp-a04abcdf30d187c9",
+      "modelInvoked": false,
+      "proposal": {
+        "schemaVersion": "flowme-semantic-proposal-v2",
+        "promptVersion": "deterministic-preflight-v2",
+        "requestRef": "req-a4edbe804169c348",
+        "sampleRef": "smp-a04abcdf30d187c9",
+        "result": {
+          "state": "blocked",
+          "reasonCode": "locale_applicability_unverified",
+          "disposition": "hold",
+          "primaryArtifact": null
+        },
+        "items": [],
+        "omittedRows": [],
+        "projections": [],
+        "review": {
+          "uncertaintyCodes": [],
+          "humanCheckRowRefs": []
+        }
+      },
+      "compileTrace": {
+        "compilerVersion": "row-license-compiler-v3.0",
+        "rulesVersion": "flowme-row-license-ko-v3.0",
+        "modelInvoked": false,
+        "dispositionRuleId": "preflight.locale_applicability_unverified",
+        "items": [],
+        "omissions": []
+      },
+      "label": "지역 적용성 미확인",
+      "pattern": "자동 보류",
+      "sourceRows": [],
+      "sourceOwnership": null,
+      "preflight": {
+        "passed": false,
+        "modelInvoked": false,
+        "generationState": "failed",
+        "outcome": "no_proposal",
+        "errorCode": "locale_applicability_unverified",
+        "recommendedDisposition": "hold",
+        "reasonCode": "sensitive_locale_not_verified"
+      },
+      "review": null
+    }
+  ]
+}

@@ -1,0 +1,138 @@
+{
+  "reviewInputVersion": "flowme-source-row-blind-review-input-v1",
+  "laneId": "url-to-flow-source-row-v1",
+  "round": "round-3",
+  "caseId": "case-04",
+  "positiveCase": true,
+  "sourcePacket": {
+    "requestId": "rq-83bd1a6f40c9",
+    "caseId": "case-04",
+    "maxItems": 7,
+    "sourceOwnership": {
+      "primarySourceId": "src-8c51f2d709a6",
+      "supportingSourceIds": []
+    },
+    "sourceRows": [
+      {
+        "sourceRowId": "row-47c1e8a305bd",
+        "sourceId": "src-8c51f2d709a6",
+        "rowType": "procedure",
+        "title": "구직 신청 등록",
+        "detail": null,
+        "order": 0
+      },
+      {
+        "sourceRowId": "row-b6d2094f7a31",
+        "sourceId": "src-8c51f2d709a6",
+        "rowType": "procedure",
+        "title": "취업지원 서비스 신청",
+        "detail": null,
+        "order": 1
+      }
+    ]
+  },
+  "deterministicNegativeBoundary": null,
+  "proposal": {
+    "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+    "promptVersion": "url-to-flow-prompt-v1.1",
+    "requestId": "rq-83bd1a6f40c9",
+    "caseId": "case-04",
+    "status": {
+      "generationState": "proposal",
+      "outcome": "complete",
+      "readiness": null,
+      "errorCode": null
+    },
+    "sourceAssessment": {
+      "access": "readable",
+      "sourceShape": "ordered_procedure",
+      "primarySourceId": "src-8c51f2d709a6",
+      "supportingSourceIds": [],
+      "receivedSourceRowIds": [
+        "row-47c1e8a305bd",
+        "row-b6d2094f7a31"
+      ],
+      "untrustedInstructionDetected": false
+    },
+    "conversionDecision": {
+      "userNeed": "구직 신청을 등록하고 취업지원 서비스를 신청하기",
+      "lifeArea": "work_career",
+      "planningPattern": "ordered_procedure",
+      "primaryArtifact": "checklist",
+      "contentShape": "구직 신청 등록 후 취업지원 서비스 신청으로 이어지는 체크리스트"
+    },
+    "proposal": {
+      "proposalTitle": "구직 등록과 취업지원 신청",
+      "items": [
+        {
+          "proposalId": "p-01",
+          "title": "구직 신청 등록하기",
+          "intent": "act",
+          "sourceRowIds": [
+            "row-47c1e8a305bd"
+          ],
+          "completion": {
+            "mode": "check",
+            "doneWhen": "구직 신청 등록을 마친 상태"
+          },
+          "memoCandidate": null,
+          "groupingCandidate": null,
+          "scheduleCandidate": null
+        },
+        {
+          "proposalId": "p-02",
+          "title": "취업지원 서비스 신청하기",
+          "intent": "act",
+          "sourceRowIds": [
+            "row-b6d2094f7a31"
+          ],
+          "completion": {
+            "mode": "check",
+            "doneWhen": "취업지원 서비스 신청을 마친 상태"
+          },
+          "memoCandidate": null,
+          "groupingCandidate": null,
+          "scheduleCandidate": null
+        }
+      ],
+      "omittedRows": [],
+      "incompleteReason": null
+    },
+    "projectionPlan": [
+      {
+        "target": "checklist",
+        "applicability": "applicable",
+        "reason": "두 신청 절차의 순서를 체크리스트로 보존한다."
+      }
+    ],
+    "reviewHints": {
+      "recommendedDisposition": "review",
+      "uncertainties": [],
+      "hardFailCodes": [],
+      "humanReviewRequired": []
+    }
+  },
+  "proposalFingerprint": "e867302dcf11b7713576059da0d86378abdbc66aa42d80d92d4c6a96f6ab2531",
+  "deterministicValidation": {
+    "passed": true,
+    "codes": [],
+    "sourceRowAccounting": true
+  },
+  "rubricPath": "docs/specs/2026-07-15-url-to-flow-prompt-lab-source-row-v1/review-rubric.md",
+  "evidenceBoundary": {
+    "allowed": [
+      "this sourcePacket",
+      "this proposal",
+      "this proposalFingerprint",
+      "this deterministicValidation",
+      "the linked blind rubric"
+    ],
+    "forbidden": [
+      "canonical expectation or opaque ID mapping",
+      "source title URL publisher or preflight metadata",
+      "legacy or prior-round output and review",
+      "provider model tier timing token or cost",
+      "other reviewer conclusions"
+    ]
+  }
+}

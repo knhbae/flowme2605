@@ -1,0 +1,346 @@
+{
+  "runSchemaVersion": "flowme-source-row-run-v1",
+  "laneId": "url-to-flow-source-row-v1",
+  "runId": "source-row-round-3-batch-a",
+  "round": "round-3",
+  "promptVersion": "url-to-flow-prompt-v1.1",
+  "caseSetVersion": "flowme-url-to-flow-source-row-cases-v1",
+  "evidenceClass": "in_session_unselected_model_proxy",
+  "provider": null,
+  "model": null,
+  "tier": null,
+  "timing": null,
+  "usage": null,
+  "cost": null,
+  "humanReview": false,
+  "outputs": [
+    {
+      "caseId": "case-01",
+      "modelInvoked": true,
+      "proposal": {
+        "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+        "promptVersion": "url-to-flow-prompt-v1.1",
+        "requestId": "rq-7a31d8c4f205",
+        "caseId": "case-01",
+        "status": {
+          "generationState": "proposal",
+          "outcome": "complete",
+          "readiness": null,
+          "errorCode": null
+        },
+        "sourceAssessment": {
+          "access": "readable",
+          "sourceShape": "date_preparation",
+          "primarySourceId": "src-a61d7c3e902f",
+          "supportingSourceIds": [],
+          "receivedSourceRowIds": [
+            "row-1c7a52e9b304",
+            "row-a48e103d6f92"
+          ],
+          "untrustedInstructionDetected": false
+        },
+        "conversionDecision": {
+          "userNeed": "검진 대상 및 예약을 확인하고 검진기관을 방문하기",
+          "lifeArea": "health_fitness",
+          "planningPattern": "date_preparation",
+          "primaryArtifact": "checklist",
+          "contentShape": "검진 확인 후 기관 방문으로 이어지는 체크리스트"
+        },
+        "proposal": {
+          "proposalTitle": "검진 확인 후 기관 방문",
+          "items": [
+            {
+              "proposalId": "p-01",
+              "title": "검진 대상 및 예약 확인하기",
+              "intent": "inspect",
+              "sourceRowIds": [
+                "row-1c7a52e9b304"
+              ],
+              "completion": {
+                "mode": "check",
+                "doneWhen": "검진 대상 및 예약 확인을 마친 상태"
+              },
+              "memoCandidate": null,
+              "groupingCandidate": null,
+              "scheduleCandidate": null
+            },
+            {
+              "proposalId": "p-02",
+              "title": "검진기관 방문하기",
+              "intent": "act",
+              "sourceRowIds": [
+                "row-a48e103d6f92"
+              ],
+              "completion": {
+                "mode": "check",
+                "doneWhen": "검진기관 방문을 마친 상태"
+              },
+              "memoCandidate": null,
+              "groupingCandidate": null,
+              "scheduleCandidate": null
+            }
+          ],
+          "omittedRows": [],
+          "incompleteReason": null
+        },
+        "projectionPlan": [
+          {
+            "target": "checklist",
+            "applicability": "applicable",
+            "reason": "두 행의 확인과 방문 순서를 체크리스트로 보존한다."
+          }
+        ],
+        "reviewHints": {
+          "recommendedDisposition": "review",
+          "uncertainties": [
+            "검진기관 방문 일정 값이 SourceRow에 없다."
+          ],
+          "hardFailCodes": [],
+          "humanReviewRequired": []
+        }
+      }
+    },
+    {
+      "caseId": "case-02",
+      "modelInvoked": true,
+      "proposal": {
+        "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+        "promptVersion": "url-to-flow-prompt-v1.1",
+        "requestId": "rq-19e6b4a82d73",
+        "caseId": "case-02",
+        "status": {
+          "generationState": "proposal",
+          "outcome": "complete",
+          "readiness": null,
+          "errorCode": null
+        },
+        "sourceAssessment": {
+          "access": "readable",
+          "sourceShape": "repeating_routine",
+          "primarySourceId": "src-f2049b6a1d83",
+          "supportingSourceIds": [],
+          "receivedSourceRowIds": [
+            "row-62b9f4c107da"
+          ],
+          "untrustedInstructionDetected": false
+        },
+        "conversionDecision": {
+          "userNeed": "극세 필터를 4주에 한 번 청소하기",
+          "lifeArea": "home_living",
+          "planningPattern": "repeating_routine",
+          "primaryArtifact": "calendar",
+          "contentShape": "4주에 한 번 실행하는 극세 필터 청소 루틴"
+        },
+        "proposal": {
+          "proposalTitle": "극세 필터 4주 청소",
+          "items": [
+            {
+              "proposalId": "p-01",
+              "title": "극세 필터 청소하기",
+              "intent": "act",
+              "sourceRowIds": [
+                "row-62b9f4c107da"
+              ],
+              "completion": {
+                "mode": "check",
+                "doneWhen": "극세 필터 청소를 마친 상태"
+              },
+              "memoCandidate": "먼지 제거, 물세척, 그늘 건조",
+              "groupingCandidate": null,
+              "scheduleCandidate": {
+                "sourceRowIds": [
+                  "row-62b9f4c107da"
+                ],
+                "sourceText": "4주에 한 번",
+                "parsedByRule": false
+              }
+            }
+          ],
+          "omittedRows": [],
+          "incompleteReason": null
+        },
+        "projectionPlan": [
+          {
+            "target": "calendar",
+            "applicability": "applicable",
+            "reason": "‘4주에 한 번’ 주기와 극세 필터 청소 행동을 일정으로 옮길 수 있다."
+          }
+        ],
+        "reviewHints": {
+          "recommendedDisposition": "review",
+          "uncertainties": [],
+          "hardFailCodes": [],
+          "humanReviewRequired": []
+        }
+      }
+    },
+    {
+      "caseId": "case-03",
+      "modelInvoked": true,
+      "proposal": {
+        "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+        "promptVersion": "url-to-flow-prompt-v1.1",
+        "requestId": "rq-c52f09e17b64",
+        "caseId": "case-03",
+        "status": {
+          "generationState": "proposal",
+          "outcome": "complete",
+          "readiness": null,
+          "errorCode": null
+        },
+        "sourceAssessment": {
+          "access": "readable",
+          "sourceShape": "source_table_rows",
+          "primarySourceId": "src-3e7a10c5b942",
+          "supportingSourceIds": [],
+          "receivedSourceRowIds": [
+            "row-d3018c5e74a2",
+            "row-8f25a6b19c40"
+          ],
+          "untrustedInstructionDetected": false
+        },
+        "conversionDecision": {
+          "userNeed": "여권과 데이터 유심을 확인하기",
+          "lifeArea": "travel_outings",
+          "planningPattern": "source_table_rows",
+          "primaryArtifact": "checklist",
+          "contentShape": "여권과 데이터 유심을 각각 확인하는 체크리스트"
+        },
+        "proposal": {
+          "proposalTitle": "여권과 데이터 유심 확인",
+          "items": [
+            {
+              "proposalId": "p-01",
+              "title": "여권 확인하기",
+              "intent": "inspect",
+              "sourceRowIds": [
+                "row-d3018c5e74a2"
+              ],
+              "completion": {
+                "mode": "check",
+                "doneWhen": "여권을 확인한 상태"
+              },
+              "memoCandidate": null,
+              "groupingCandidate": null,
+              "scheduleCandidate": null
+            },
+            {
+              "proposalId": "p-02",
+              "title": "데이터 유심 확인하기",
+              "intent": "inspect",
+              "sourceRowIds": [
+                "row-8f25a6b19c40"
+              ],
+              "completion": {
+                "mode": "check",
+                "doneWhen": "데이터 유심을 확인한 상태"
+              },
+              "memoCandidate": null,
+              "groupingCandidate": null,
+              "scheduleCandidate": null
+            }
+          ],
+          "omittedRows": [],
+          "incompleteReason": null
+        },
+        "projectionPlan": [
+          {
+            "target": "checklist",
+            "applicability": "applicable",
+            "reason": "여권과 데이터 유심을 각각 확인하는 두 항목을 그대로 보존한다."
+          }
+        ],
+        "reviewHints": {
+          "recommendedDisposition": "review",
+          "uncertainties": [],
+          "hardFailCodes": [],
+          "humanReviewRequired": []
+        }
+      }
+    },
+    {
+      "caseId": "case-04",
+      "modelInvoked": true,
+      "proposal": {
+        "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+        "promptVersion": "url-to-flow-prompt-v1.1",
+        "requestId": "rq-83bd1a6f40c9",
+        "caseId": "case-04",
+        "status": {
+          "generationState": "proposal",
+          "outcome": "complete",
+          "readiness": null,
+          "errorCode": null
+        },
+        "sourceAssessment": {
+          "access": "readable",
+          "sourceShape": "ordered_procedure",
+          "primarySourceId": "src-8c51f2d709a6",
+          "supportingSourceIds": [],
+          "receivedSourceRowIds": [
+            "row-47c1e8a305bd",
+            "row-b6d2094f7a31"
+          ],
+          "untrustedInstructionDetected": false
+        },
+        "conversionDecision": {
+          "userNeed": "구직 신청을 등록하고 취업지원 서비스를 신청하기",
+          "lifeArea": "work_career",
+          "planningPattern": "ordered_procedure",
+          "primaryArtifact": "checklist",
+          "contentShape": "구직 신청 등록 후 취업지원 서비스 신청으로 이어지는 체크리스트"
+        },
+        "proposal": {
+          "proposalTitle": "구직 등록과 취업지원 신청",
+          "items": [
+            {
+              "proposalId": "p-01",
+              "title": "구직 신청 등록하기",
+              "intent": "act",
+              "sourceRowIds": [
+                "row-47c1e8a305bd"
+              ],
+              "completion": {
+                "mode": "check",
+                "doneWhen": "구직 신청 등록을 마친 상태"
+              },
+              "memoCandidate": null,
+              "groupingCandidate": null,
+              "scheduleCandidate": null
+            },
+            {
+              "proposalId": "p-02",
+              "title": "취업지원 서비스 신청하기",
+              "intent": "act",
+              "sourceRowIds": [
+                "row-b6d2094f7a31"
+              ],
+              "completion": {
+                "mode": "check",
+                "doneWhen": "취업지원 서비스 신청을 마친 상태"
+              },
+              "memoCandidate": null,
+              "groupingCandidate": null,
+              "scheduleCandidate": null
+            }
+          ],
+          "omittedRows": [],
+          "incompleteReason": null
+        },
+        "projectionPlan": [
+          {
+            "target": "checklist",
+            "applicability": "applicable",
+            "reason": "두 신청 절차의 순서를 체크리스트로 보존한다."
+          }
+        ],
+        "reviewHints": {
+          "recommendedDisposition": "review",
+          "uncertainties": [],
+          "hardFailCodes": [],
+          "humanReviewRequired": []
+        }
+      }
+    }
+  ]
+}

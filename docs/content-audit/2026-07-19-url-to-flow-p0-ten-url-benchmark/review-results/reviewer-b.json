@@ -1,0 +1,643 @@
+{
+  "reviewerProxy": {
+    "kind": "blind_model_proxy",
+    "model": "gpt-5.6-sol",
+    "reasoningEffort": "xhigh",
+    "actualProviderCost": null
+  },
+  "packetId": "flowme-ten-url-blind-review-v1.0-reviewer-b",
+  "reviewedAt": "2026-07-19T09:44:34+09:00",
+  "cases": [
+    {
+      "caseId": "case-01",
+      "judgments": [
+        {
+          "questionId": "source_fidelity",
+          "choice": "A",
+          "reason": "A는 공식 금식 조건, 신분증, 결과 통보를 실행 순서로 보존한다."
+        },
+        {
+          "questionId": "execution_clarity",
+          "choice": "A",
+          "reason": "검진일과 시간대를 받은 뒤 준비·검진·결과 확인까지 완료 기준이 분명하다."
+        },
+        {
+          "questionId": "artifact_fit",
+          "choice": "A",
+          "reason": "체크리스트·입력 대기형 달력·주의 메모의 역할 분리가 자연스럽다."
+        },
+        {
+          "questionId": "specificity",
+          "choice": "A",
+          "reason": "오전·오후 금식 기준과 결과 수령 같은 원문 고유 행동이 제목과 완료 조건에 드러난다."
+        },
+        {
+          "questionId": "safety_and_hold",
+          "choice": "tie",
+          "reason": "둘 다 개인별 판정과 결과 해석을 제외하고 의료 민감 공개를 잠근다."
+        },
+        {
+          "questionId": "reuse_value",
+          "choice": "A",
+          "reason": "사용자 날짜를 나중에 넣어 달력과 준비표를 재생성할 수 있다."
+        }
+      ],
+      "optionScores": {
+        "A": {
+          "userNeedFit": 5,
+          "executionClarity": 5,
+          "contentFidelity": 5,
+          "portability": 5,
+          "cognitiveLoad": 4,
+          "copySpecificity": 5,
+          "sourceSafety": 5,
+          "accessibilityOperability": 4
+        },
+        "B": {
+          "userNeedFit": 4,
+          "executionClarity": 3,
+          "contentFidelity": 4,
+          "portability": 4,
+          "cognitiveLoad": 5,
+          "copySpecificity": 4,
+          "sourceSafety": 5,
+          "accessibilityOperability": 4
+        }
+      },
+      "overallChoice": "A",
+      "criticalFindings": [
+        "B는 대상·기간 확인에는 안전하지만 검진 전 금식과 신분증이라는 핵심 실행 단서를 산출물에서 잃는다.",
+        "A는 약 복용·개인별 금식 예외가 snapshot에 없음을 주의 경계로 남겼다."
+      ],
+      "note": "A가 원문 근거를 더 자연스러운 날짜 준비 Flow로 전환했다."
+    },
+    {
+      "caseId": "case-02",
+      "judgments": [
+        {
+          "questionId": "source_fidelity",
+          "choice": "tie",
+          "reason": "둘 다 4주 주기, 먼지 양별 방법, 그늘 건조와 훼손 주의를 같은 근거로 보존한다."
+        },
+        {
+          "questionId": "execution_clarity",
+          "choice": "tie",
+          "reason": "방법 선택, 청소, 건조의 세 행동과 완료 상태가 사실상 동일하다."
+        },
+        {
+          "questionId": "artifact_fit",
+          "choice": "A",
+          "reason": "A의 달력 설명은 이벤트를 열었을 때 조건별 청소 순서를 바로 보여준다."
+        },
+        {
+          "questionId": "specificity",
+          "choice": "B",
+          "reason": "B는 건조 항목 제목에 세로 방향·비스듬히·그늘 조건을 직접 쓴다."
+        },
+        {
+          "questionId": "safety_and_hold",
+          "choice": "tie",
+          "reason": "둘 다 다른 필터 규칙을 섞지 않고 강한 햇빛과 무리한 물청소 주의를 분리한다."
+        },
+        {
+          "questionId": "reuse_value",
+          "choice": "tie",
+          "reason": "둘 다 첫 청소일 입력 뒤 4주 반복 달력과 체크리스트로 재사용할 수 있다."
+        }
+      ],
+      "optionScores": {
+        "A": {
+          "userNeedFit": 5,
+          "executionClarity": 5,
+          "contentFidelity": 4,
+          "portability": 5,
+          "cognitiveLoad": 4,
+          "copySpecificity": 4,
+          "sourceSafety": 5,
+          "accessibilityOperability": 4
+        },
+        "B": {
+          "userNeedFit": 5,
+          "executionClarity": 5,
+          "contentFidelity": 4,
+          "portability": 4,
+          "cognitiveLoad": 4,
+          "copySpecificity": 5,
+          "sourceSafety": 5,
+          "accessibilityOperability": 4
+        }
+      },
+      "overallChoice": "tie",
+      "criticalFindings": [
+        "두 옵션 모두 물세척 경로의 약 30분 담금 조건을 실행 항목의 완료 기준에 직접 넣지 않아 원문 단서가 약해진다.",
+        "B의 달력 payload는 요약만 있어 이벤트를 열었을 때 청소 조건을 추측할 가능성이 있다."
+      ],
+      "note": "A는 달력 실행성, B는 문구 구체성이 앞서 전체는 동률이다."
+    },
+    {
+      "caseId": "case-03",
+      "judgments": [
+        {
+          "questionId": "source_fidelity",
+          "choice": "A",
+          "reason": "A는 필수 8개와 숙소 확인 3개를 원문 그룹 그대로 모두 보존한다."
+        },
+        {
+          "questionId": "execution_clarity",
+          "choice": "A",
+          "reason": "각 물품을 넣거나 숙소 확인 후 결정하는 완료 상태가 개별 항목으로 분명하다."
+        },
+        {
+          "questionId": "artifact_fit",
+          "choice": "A",
+          "reason": "원문 자체가 그룹형 체크리스트라 11개 항목의 체크리스트 투영이 가장 자연스럽다."
+        },
+        {
+          "questionId": "specificity",
+          "choice": "A",
+          "reason": "여권, 이심, 현금, 바우처, 보조배터리 등 실제 준비물을 각각 명시한다."
+        },
+        {
+          "questionId": "safety_and_hold",
+          "choice": "tie",
+          "reason": "둘 다 creator source의 권리 검토를 요구하고 공식 입국 규칙으로 오해하지 않게 경계를 둔다."
+        },
+        {
+          "questionId": "reuse_value",
+          "choice": "A",
+          "reason": "여행마다 필수 짐과 숙소별 결정 항목을 그대로 다시 점검할 수 있다."
+        }
+      ],
+      "optionScores": {
+        "A": {
+          "userNeedFit": 5,
+          "executionClarity": 5,
+          "contentFidelity": 5,
+          "portability": 5,
+          "cognitiveLoad": 4,
+          "copySpecificity": 5,
+          "sourceSafety": 5,
+          "accessibilityOperability": 4
+        },
+        "B": {
+          "userNeedFit": 4,
+          "executionClarity": 3,
+          "contentFidelity": 2,
+          "portability": 3,
+          "cognitiveLoad": 5,
+          "copySpecificity": 4,
+          "sourceSafety": 5,
+          "accessibilityOperability": 4
+        }
+      },
+      "overallChoice": "A",
+      "criticalFindings": [
+        "B는 원문이 필수로 분류한 현금·바우처·보조배터리·우산·상비약·목베개를 실행표에서 대거 누락한다.",
+        "A는 선택형 준비물과 광고·팁을 필수 baseline에서 분리해 인지 부하를 통제한다."
+      ],
+      "note": "A의 완전한 그룹 보존이 B의 짧지만 불완전한 초안보다 낫다."
+    },
+    {
+      "caseId": "case-04",
+      "judgments": [
+        {
+          "questionId": "source_fidelity",
+          "choice": "B",
+          "reason": "B는 신청 경로, 본인 확인, 핵심 작성 항목, 최대 3개 직종, 동의·공개 결정을 폭넓게 보존한다."
+        },
+        {
+          "questionId": "execution_clarity",
+          "choice": "B",
+          "reason": "경로 선택부터 제출까지 여섯 단계와 관찰 가능한 완료 기준이 이어진다."
+        },
+        {
+          "questionId": "artifact_fit",
+          "choice": "B",
+          "reason": "민감한 값은 빼고 절차와 결정점만 체크리스트·메모로 내보내는 구성이 적합하다."
+        },
+        {
+          "questionId": "specificity",
+          "choice": "B",
+          "reason": "희망직종·경력·근로조건과 기관 제공·연락처 공개 범위를 구체적으로 이름 붙인다."
+        },
+        {
+          "questionId": "safety_and_hold",
+          "choice": "B",
+          "reason": "B는 실제 개인정보와 동의 선택값을 산출물에서 금지하고 선택권을 사용자에게 명시적으로 남긴다."
+        },
+        {
+          "questionId": "reuse_value",
+          "choice": "B",
+          "reason": "공식 신청 화면을 다시 사용할 때도 동일한 정확성·공개 범위 점검표로 쓸 수 있다."
+        }
+      ],
+      "optionScores": {
+        "A": {
+          "userNeedFit": 4,
+          "executionClarity": 4,
+          "contentFidelity": 3,
+          "portability": 4,
+          "cognitiveLoad": 5,
+          "copySpecificity": 4,
+          "sourceSafety": 4,
+          "accessibilityOperability": 4
+        },
+        "B": {
+          "userNeedFit": 5,
+          "executionClarity": 5,
+          "contentFidelity": 5,
+          "portability": 5,
+          "cognitiveLoad": 4,
+          "copySpecificity": 5,
+          "sourceSafety": 5,
+          "accessibilityOperability": 4
+        }
+      },
+      "overallChoice": "B",
+      "criticalFindings": [
+        "A는 오타·연락 가능 번호, 최대 3개 희망직종, 이력 조회와 연계기관 제공 동의 같은 핵심 점검을 누락한다.",
+        "B는 개인정보 값 자체를 저장하지 않도록 두 projection에 금지 처리를 반복해 둔다."
+      ],
+      "note": "B가 공식 신청 흐름과 개인정보 결정권을 함께 보존한다."
+    },
+    {
+      "caseId": "case-05",
+      "judgments": [
+        {
+          "questionId": "source_fidelity",
+          "choice": "A",
+          "reason": "A는 1~15주 주제와 중간·기말 범위를 전체 진도표로 옮긴다."
+        },
+        {
+          "questionId": "execution_clarity",
+          "choice": "A",
+          "reason": "매주 학습·퀴즈와 시험 응시 상태를 한 행씩 기록할 수 있다."
+        },
+        {
+          "questionId": "artifact_fit",
+          "choice": "A",
+          "reason": "15주 운영표를 CSV 진도표로 보존하는 방식이 원문 표 구조와 맞는다."
+        },
+        {
+          "questionId": "specificity",
+          "choice": "A",
+          "reason": "각 주차 철학 주제와 시험 구간을 구체적으로 드러낸다."
+        },
+        {
+          "questionId": "safety_and_hold",
+          "choice": "A",
+          "reason": "A는 과거 운영기간과 현재 수강 가능성 미확인을 명시해 오래된 계획의 현재성 오해를 막는다."
+        },
+        {
+          "questionId": "reuse_value",
+          "choice": "A",
+          "reason": "완전한 15주 시트라 자기 학습 진도 기록으로 바로 재사용할 수 있다."
+        }
+      ],
+      "optionScores": {
+        "A": {
+          "userNeedFit": 5,
+          "executionClarity": 5,
+          "contentFidelity": 5,
+          "portability": 5,
+          "cognitiveLoad": 4,
+          "copySpecificity": 4,
+          "sourceSafety": 5,
+          "accessibilityOperability": 4
+        },
+        "B": {
+          "userNeedFit": 3,
+          "executionClarity": 4,
+          "contentFidelity": 2,
+          "portability": 3,
+          "cognitiveLoad": 5,
+          "copySpecificity": 4,
+          "sourceSafety": 3,
+          "accessibilityOperability": 4
+        }
+      },
+      "overallChoice": "A",
+      "criticalFindings": [
+        "B의 시트는 2·3·4·8·15주만 남겨 15주 강의계획의 연속성과 대부분의 학습 주제를 잃는다.",
+        "B는 과거 운영 상태와 현재 개설 여부 미확인 경고가 없어 재사용 시 현재 강좌처럼 오해할 수 있다."
+      ],
+      "note": "A가 완전한 운영표를 유지하면서 현재성 한계까지 분리했다."
+    },
+    {
+      "caseId": "case-06",
+      "judgments": [
+        {
+          "questionId": "source_fidelity",
+          "choice": "B",
+          "reason": "둘 다 생성하지 않는 판단은 맞지만 B가 34개 제목과 구조화 항목 부재를 더 정확히 구분한다."
+        },
+        {
+          "questionId": "execution_clarity",
+          "choice": "B",
+          "reason": "B는 항목 URL 추출, 한 영상 선택, 재료·분량·순서 추출의 다음 작업을 순서대로 제시한다."
+        },
+        {
+          "questionId": "artifact_fit",
+          "choice": "tie",
+          "reason": "레시피 근거가 없어 둘 다 projection을 만들지 않은 것이 올바르다."
+        },
+        {
+          "questionId": "specificity",
+          "choice": "B",
+          "reason": "영상 제목은 탐색 목록일 뿐 조리 근거가 아니라는 실패 이유가 더 구체적이다."
+        },
+        {
+          "questionId": "safety_and_hold",
+          "choice": "tie",
+          "reason": "둘 다 개별 URL·레시피 절차·권리 범위 확보 전 생성을 보류한다."
+        },
+        {
+          "questionId": "reuse_value",
+          "choice": "B",
+          "reason": "재추출 계약이 명확해 다음 수집 단계의 체크리스트로 재사용하기 쉽다."
+        }
+      ],
+      "optionScores": {
+        "A": {
+          "userNeedFit": 4,
+          "executionClarity": 3,
+          "contentFidelity": 5,
+          "portability": 1,
+          "cognitiveLoad": 4,
+          "copySpecificity": 4,
+          "sourceSafety": 5,
+          "accessibilityOperability": 3
+        },
+        "B": {
+          "userNeedFit": 5,
+          "executionClarity": 4,
+          "contentFidelity": 5,
+          "portability": 1,
+          "cognitiveLoad": 5,
+          "copySpecificity": 5,
+          "sourceSafety": 5,
+          "accessibilityOperability": 3
+        }
+      },
+      "overallChoice": "B",
+      "criticalFindings": [
+        "개별 영상 URL, 재료, 분량, 조리 순서가 없으므로 레시피 Flow나 장보기표 생성은 근거 없는 확장이 된다.",
+        "두 옵션의 reextract_required는 올바른 보류이며 B가 필요한 재추출 단위를 더 잘 정의한다."
+      ],
+      "note": "정확한 abstention이 승자이며 B의 후속 추출 명세가 더 실행 가능하다."
+    },
+    {
+      "caseId": "case-07",
+      "judgments": [
+        {
+          "questionId": "source_fidelity",
+          "choice": "A",
+          "reason": "A는 온라인 기록, 실매물 참고, 현장 점검, 계약 기재, 영수증과 이전 확인을 모두 추적한다."
+        },
+        {
+          "questionId": "execution_clarity",
+          "choice": "A",
+          "reason": "후보 입력 뒤 온라인·현장·계약 순서와 진행·보류·추가확인 상태가 명확하다."
+        },
+        {
+          "questionId": "artifact_fit",
+          "choice": "A",
+          "reason": "후보별 시트와 단계별 체크리스트가 비교·결정 job에 잘 맞는다."
+        },
+        {
+          "questionId": "specificity",
+          "choice": "A",
+          "reason": "성능기록부, 보험처리, 등록원부, 명판·직인, 비용 별도기재를 구체적으로 명시한다."
+        },
+        {
+          "questionId": "safety_and_hold",
+          "choice": "A",
+          "reason": "제시 조회의 한계와 자동 구매판정 금지를 밝히고 최종 결정을 사용자에게 남긴다."
+        },
+        {
+          "questionId": "reuse_value",
+          "choice": "A",
+          "reason": "여러 후보를 같은 열로 비교하고 계약 전후 근거를 이어서 기록할 수 있다."
+        }
+      ],
+      "optionScores": {
+        "A": {
+          "userNeedFit": 5,
+          "executionClarity": 5,
+          "contentFidelity": 5,
+          "portability": 5,
+          "cognitiveLoad": 4,
+          "copySpecificity": 5,
+          "sourceSafety": 5,
+          "accessibilityOperability": 4
+        },
+        "B": {
+          "userNeedFit": 4,
+          "executionClarity": 4,
+          "contentFidelity": 3,
+          "portability": 4,
+          "cognitiveLoad": 5,
+          "copySpecificity": 4,
+          "sourceSafety": 4,
+          "accessibilityOperability": 4
+        }
+      },
+      "overallChoice": "A",
+      "criticalFindings": [
+        "B는 성능·상태점검기록부, 보험처리 이력, 등록원부, 계약금액 분리, 정식 영수증 등 고가 구매의 핵심 확인 근거를 누락한다.",
+        "A는 차량번호를 후보 입력으로 허용하므로 외부 공유용 시트에서는 개인 식별 가능 정보 노출 경고가 추가되면 더 안전하다."
+      ],
+      "note": "A가 공식 가이드의 구매 전후 확인을 실제 비교 도구로 보존한다."
+    },
+    {
+      "caseId": "case-08",
+      "judgments": [
+        {
+          "questionId": "source_fidelity",
+          "choice": "B",
+          "reason": "B는 건강검진 8개와 구강검진 4개의 모든 상대 연령 창을 보존한다."
+        },
+        {
+          "questionId": "execution_clarity",
+          "choice": "B",
+          "reason": "출생일 입력, 상대 창 계산, 완료 상태 기록, 공식 재확인의 흐름이 분명하다."
+        },
+        {
+          "questionId": "artifact_fit",
+          "choice": "B",
+          "reason": "12개 창을 시트·입력 대기형 달력·체크리스트로 투영해 추적 목적에 맞춘다."
+        },
+        {
+          "questionId": "specificity",
+          "choice": "B",
+          "reason": "각 차수와 일령·월령 시작 및 종료를 항목 제목에 직접 표시한다."
+        },
+        {
+          "questionId": "safety_and_hold",
+          "choice": "B",
+          "reason": "실제 날짜는 출생일 입력 뒤에만 만들고 대상 여부·검진일은 공단과 기관에서 재확인하게 한다."
+        },
+        {
+          "questionId": "reuse_value",
+          "choice": "B",
+          "reason": "출생일을 기준으로 장기간 검진 창을 달력과 완료표에서 반복 조회할 수 있다."
+        }
+      ],
+      "optionScores": {
+        "A": {
+          "userNeedFit": 3,
+          "executionClarity": 3,
+          "contentFidelity": 2,
+          "portability": 3,
+          "cognitiveLoad": 5,
+          "copySpecificity": 4,
+          "sourceSafety": 5,
+          "accessibilityOperability": 4
+        },
+        "B": {
+          "userNeedFit": 5,
+          "executionClarity": 5,
+          "contentFidelity": 5,
+          "portability": 5,
+          "cognitiveLoad": 4,
+          "copySpecificity": 5,
+          "sourceSafety": 4,
+          "accessibilityOperability": 4
+        }
+      },
+      "overallChoice": "B",
+      "criticalFindings": [
+        "A는 원문 12개 창 중 4개만 남겨 4~8차 건강검진과 뒤의 구강검진 창을 대부분 누락한다.",
+        "B의 파생 달력 날짜는 공식 대상 판정이 아니므로 공단·검진기관 재확인 경고가 일정 설명에도 유지되어야 한다."
+      ],
+      "note": "B가 전체 시기표를 보존하되 의료 민감 날짜의 공식 재확인을 요구한다."
+    },
+    {
+      "caseId": "case-09",
+      "judgments": [
+        {
+          "questionId": "source_fidelity",
+          "choice": "A",
+          "reason": "A는 fallback headings에 실제로 존재하는 1~30 주제를 순서대로 모두 옮긴다."
+        },
+        {
+          "questionId": "execution_clarity",
+          "choice": "A",
+          "reason": "시작일 입력 뒤 매일 한 주제를 촬영하고 결과와 완료를 남기는 구조가 완결된다."
+        },
+        {
+          "questionId": "artifact_fit",
+          "choice": "A",
+          "reason": "30개 체크리스트와 30일 offset 달력이 챌린지 구조에 정확히 맞는다."
+        },
+        {
+          "questionId": "specificity",
+          "choice": "A",
+          "reason": "자화상부터 자유 선택까지 각 날짜의 실제 촬영 주제를 이름 붙인다."
+        },
+        {
+          "questionId": "safety_and_hold",
+          "choice": "A",
+          "reason": "403 fallback 사용과 권리 미확인을 밝히고 세부 기법을 추가하지 않은 경계가 정확하다."
+        },
+        {
+          "questionId": "reuse_value",
+          "choice": "A",
+          "reason": "시작일만 바꾸면 완전한 30일 달력과 체크리스트를 다시 만들 수 있다."
+        }
+      ],
+      "optionScores": {
+        "A": {
+          "userNeedFit": 5,
+          "executionClarity": 5,
+          "contentFidelity": 5,
+          "portability": 5,
+          "cognitiveLoad": 4,
+          "copySpecificity": 4,
+          "sourceSafety": 5,
+          "accessibilityOperability": 4
+        },
+        "B": {
+          "userNeedFit": 3,
+          "executionClarity": 3,
+          "contentFidelity": 2,
+          "portability": 3,
+          "cognitiveLoad": 5,
+          "copySpecificity": 4,
+          "sourceSafety": 4,
+          "accessibilityOperability": 4
+        }
+      },
+      "overallChoice": "A",
+      "criticalFindings": [
+        "B는 headings에 Day 5~29가 있는데도 없다고 판단해 30일 챌린지를 4일 초안으로 잘못 축소한다.",
+        "A는 접근 제한과 권리 검토를 공개 조건으로 남기면서 제목 목록만 보수적으로 사용한다."
+      ],
+      "note": "A가 제한된 접근 상태에서도 확인 가능한 완전한 번호 목록을 정확히 활용했다."
+    },
+    {
+      "caseId": "case-10",
+      "judgments": [
+        {
+          "questionId": "source_fidelity",
+          "choice": "B",
+          "reason": "B는 21개 유효기간 조건 행과 두 예외를 표로 보존하고 실제 만료일은 만들지 않는다."
+        },
+        {
+          "questionId": "execution_clarity",
+          "choice": "B",
+          "reason": "차종·용도·규모·차령·신조차·예외를 기록해 일치 행 또는 미확인을 남기는 절차가 분명하다."
+        },
+        {
+          "questionId": "artifact_fit",
+          "choice": "B",
+          "reason": "복합 조건표는 체크리스트보다 조회용 sheet와 결과 메모에 더 잘 맞는다."
+        },
+        {
+          "questionId": "specificity",
+          "choice": "B",
+          "reason": "차량 분류 필드와 신조차·피견인·구형 승합 예외를 구체적으로 드러낸다."
+        },
+        {
+          "questionId": "safety_and_hold",
+          "choice": "B",
+          "reason": "유효기간 길이와 실제 만료일을 분리하고 불명확한 분류는 공식 조회로 돌린다."
+        },
+        {
+          "questionId": "reuse_value",
+          "choice": "B",
+          "reason": "차량 조건을 바꿔 전체 공식 표를 반복 조회하고 결과를 시트에 남길 수 있다."
+        }
+      ],
+      "optionScores": {
+        "A": {
+          "userNeedFit": 4,
+          "executionClarity": 3,
+          "contentFidelity": 3,
+          "portability": 3,
+          "cognitiveLoad": 4,
+          "copySpecificity": 4,
+          "sourceSafety": 3,
+          "accessibilityOperability": 4
+        },
+        "B": {
+          "userNeedFit": 5,
+          "executionClarity": 4,
+          "contentFidelity": 5,
+          "portability": 5,
+          "cognitiveLoad": 3,
+          "copySpecificity": 5,
+          "sourceSafety": 5,
+          "accessibilityOperability": 4
+        }
+      },
+      "overallChoice": "B",
+      "criticalFindings": [
+        "A는 일반 차종 조회를 요구하면서 근거와 projection에 비사업용 승용차 한 행만 실질적으로 보존해 다른 분류를 실행하기 어렵다.",
+        "A는 재검사 10일 규칙의 조건별 기준일과 제외일을 압축해 안전 민감 상황에서 오해를 만들 수 있다.",
+        "B는 재검사를 별도 job으로 제외하고 유효기간 표 조회에만 범위를 고정한 판단이 안전하다."
+      ],
+      "note": "B가 복합 조건표의 완전성과 실제 법정 기한 비산출 경계를 함께 지켰다."
+    }
+  ]
+}

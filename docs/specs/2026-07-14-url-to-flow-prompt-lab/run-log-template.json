@@ -2,7 +2,7 @@
   "runSchemaVersion": "flowme-url-to-flow-prompt-lab-run-v1",
   "runId": "round-1-batch-a",
   "promptVersion": "url-to-flow-prompt-v0.1",
-  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1.1",
   "proposalSchemaVersion": "flowme-semantic-proposal-v1",
   "modelEvidence": {
     "provider": "not_available",

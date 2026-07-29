@@ -1,0 +1,22 @@
+{
+  "reviewerId": "reviewer-b",
+  "reviewProxy": {
+    "model": "gpt-5.6-sol",
+    "reasoningEffort": "high",
+    "role": "higher-capability reviewer proxy",
+    "actualTokensLatencyCost": null
+  },
+  "judgments": [
+    {"questionId": "q1", "choice": "A", "reasonCode": "actionable_method_choice"},
+    {"questionId": "q2", "choice": "A", "reasonCode": "explicit_completion_and_hold_states"},
+    {"questionId": "q3", "choice": "A", "reasonCode": "multi_target_projection_detail"},
+    {"questionId": "q4", "choice": "A", "reasonCode": "complete_trace_and_caution_preservation"},
+    {"questionId": "q5", "choice": "A", "reasonCode": "recurrence_and_return_state"},
+    {"questionId": "q6", "choice": "A", "reasonCode": "condition_specific_action_copy"},
+    {"questionId": "q7", "choice": "A", "reasonCode": "stronger_executable_reusable_bundle"}
+  ],
+  "unsupportedOrUnsafeFindings": [],
+  "overallChoice": "A",
+  "note": "A is substantially more executable, observable, portable, traceable, and reusable from the packet alone."
+}
+

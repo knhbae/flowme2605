@@ -1,8 +1,8 @@
 {
-  "reviewSetSchemaVersion": "flowme-url-to-flow-review-set-v1",
+  "reviewSetSchemaVersion": "flowme-url-to-flow-review-set-v2",
   "round": "round-2",
   "blindRunLabel": "R2-C",
-  "rubricVersion": "flowme-url-to-flow-prompt-lab-review-rubric-v1",
+  "rubricVersion": "flowme-url-to-flow-prompt-lab-review-rubric-v2",
   "results": [
     {
       "caseId": "case-09",
@@ -10,32 +10,63 @@
       "reviewMethod": {
         "reviewerKind": "in_session_model_proxy",
         "modelIdentityBlinded": true,
-        "humanReviewer": false
+        "humanReviewer": false,
+        "contextIsolation": "fresh_subagent_no_expected_answers"
       },
       "validator": {
         "passed": true,
         "hardFailCodes": []
       },
+      "groundingAudit": {
+        "proposalFingerprint": "sha256:af2887d5f2546c837abf6362bcb93ea9c478653962870a56087edf16bafd4ddd",
+        "items": [
+          {
+            "proposalId": "p-01",
+            "sourceRowIds": [
+              "row-photo-day-01"
+            ],
+            "actionGrounded": true,
+            "completionGrounded": true,
+            "memoGrounded": true,
+            "scheduleGrounded": true,
+            "comment": "제목과 완료 기준은 row-photo-day-01의 Day 1 prompt를 실행하고 완료 여부를 남기는 범위이며, 메모의 Canon URL은 primary source metadata에 있고 scheduleCandidate의 sourceText도 해당 행 제목과 같다."
+          },
+          {
+            "proposalId": "p-02",
+            "sourceRowIds": [
+              "row-photo-day-02"
+            ],
+            "actionGrounded": true,
+            "completionGrounded": true,
+            "memoGrounded": true,
+            "scheduleGrounded": true,
+            "comment": "제목과 완료 기준은 row-photo-day-02의 Day 2 prompt를 실행하고 완료 여부를 남기는 범위이며, 메모의 Canon URL은 primary source metadata에 있고 scheduleCandidate의 sourceText도 해당 행 제목과 같다."
+          }
+        ],
+        "projectionGrounded": true,
+        "projectionComment": "두 행은 체크리스트 항목으로 자연스럽고, Day 1·Day 2는 순서 표기일 뿐 실제 날짜가 아니므로 calendar를 blocked로 둔 판단이 근거에 맞다.",
+        "unsupportedContentFindings": []
+      },
       "reviewHardFailCodes": [],
       "scores": {
         "userNeedFit": 4,
-        "executionClarity": 3,
-        "contentFidelityAndCoverage": 5,
-        "portabilityAndNaturalArtifact": 3,
+        "executionClarity": 4,
+        "contentFidelityAndCoverage": 4,
+        "portabilityAndNaturalArtifact": 5,
         "cognitiveLoad": 5,
-        "copySpecificity": 3,
-        "sourceAndSafetySeparation": 5
+        "copySpecificity": 4,
+        "sourceAndSafetySeparation": 4
       },
       "scoreComments": {
-        "userNeedFit": "하루 하나씩 source-defined prompt를 실행한다는 사용자 일은 보존했지만 checklist만으로는 일차별 사용 맥락이 약하다.",
-        "executionClarity": "두 행을 독립 항목으로 만들었으나 'prompt 실행하기'와 '완료 여부'만으로는 사진 촬영 행동과 완료 상태가 충분히 구체적이지 않다.",
-        "contentFidelityAndCoverage": "Day 1과 Day 2 행을 모두 일대일로 연결했고 제공되지 않은 prompt 본문을 만들지 않았다.",
-        "portabilityAndNaturalArtifact": "체크리스트 투영은 가능하지만 일차별 queue에 자연스러운 Calendar와 Sheet, Memo 경로가 제안되지 않았다.",
-        "cognitiveLoad": "SourceRow마다 최소 한 항목만 두어 불필요한 분할이나 설명 부담이 없다.",
-        "copySpecificity": "'실행하기'와 '완료 여부를 남겼다'는 원문 대상은 지키지만 사용자가 할 사진 촬영 행동을 더 직접적으로 써야 한다.",
-        "sourceAndSafetySeparation": "SourceRow 추적이 완전하고 prompt 본문 부재와 출처 권리 검토 필요성을 명시했다."
+        "userNeedFit": "사진 프롬프트 두 개를 차례로 실행하고 완료 여부를 남긴다는 사용자의 일이 분명하다.",
+        "executionClarity": "Day별 첫 행동과 완료 표시가 바로 이해되지만 프롬프트 본문은 SourceRow에 없어 원문 링크 확인이 필요하다.",
+        "contentFidelityAndCoverage": "두 SourceRow를 모두 한 항목씩 보존하고 세부 문구가 없다는 한계를 일반 지식으로 채우지 않았다.",
+        "portabilityAndNaturalArtifact": "체크리스트가 자연스럽고 실제 날짜가 없는 상태에서 calendar를 차단해 목적지 경계가 정확하다.",
+        "cognitiveLoad": "두 행을 두 항목으로 옮겨 원문보다 복잡한 단계나 불필요한 설명을 만들지 않았다.",
+        "copySpecificity": "Day 1과 Day 2의 실행 및 완료 기록이 구체적이지만 실제 프롬프트 내용은 링크에 의존한다.",
+        "sourceAndSafetySeparation": "Canon 원문 URL을 메모로 분리하고 구체 프롬프트 내용을 추정하지 않아 출처 경계가 선명하다."
       },
-      "qualityAverage": 4,
+      "qualityAverage": 4.29,
       "sourceRowAccounting": {
         "executableRows": 2,
         "mappedUniqueRows": 2,
@@ -51,49 +82,51 @@
         "deletedItems": 0,
         "mergedItems": 0,
         "splitItems": 0,
-        "titleRewrites": 2,
-        "completionRewrites": 2,
+        "titleRewrites": 0,
+        "completionRewrites": 0,
         "sourceRefFixes": 0,
         "omissionFixes": 0,
         "scheduleRemovals": 0,
-        "destinationChanges": 1,
+        "destinationChanges": 0,
         "riskBoundaryFixes": 0,
         "fullRegenerationRequired": false,
         "burden": null
       },
-      "contentQualityGatePassed": false,
+      "contentQualityGatePassed": true,
       "negativeGatePassed": null,
       "fullUsabilityVerified": false,
-      "decision": "revise",
+      "decision": "content_gate_pass",
       "topFixes": [
-        "각 Item을 'prompt로 사진 찍기'와 관찰 가능한 촬영 완료 기준으로 구체화한다.",
-        "실제 날짜를 만들지 않은 채 Day 표기와 사용자 시작일을 연결하는 Calendar 중심 투영을 검토하고 Checklist, Sheet, Memo 경로를 함께 둔다."
+        "각 프롬프트의 실제 문구가 SourceRow로 확보되면 링크 의존 없이 항목에 포함한다."
       ],
       "correctedPreview": {
-        "title": "Canon 사진 챌린지 Day 1-2",
+        "title": "Day 1·Day 2 사진 프롬프트",
         "items": [
           {
-            "title": "Day 1 prompt로 사진 찍기",
-            "doneWhen": "Day 1 prompt에 맞는 사진을 한 장 찍었다.",
+            "title": "Day 1 prompt 실행하기",
+            "doneWhen": "Day 1 prompt를 실행하고 완료 여부를 남겼다.",
             "sourceRowIds": [
               "row-photo-day-01"
+            ],
+            "sourceProposalIds": [
+              "p-01"
             ]
           },
           {
-            "title": "Day 2 prompt로 사진 찍기",
-            "doneWhen": "Day 2 prompt에 맞는 사진을 한 장 찍었다.",
+            "title": "Day 2 prompt 실행하기",
+            "doneWhen": "Day 2 prompt를 실행하고 완료 여부를 남겼다.",
             "sourceRowIds": [
               "row-photo-day-02"
+            ],
+            "sourceProposalIds": [
+              "p-02"
             ]
           }
         ],
         "destinations": [
-          "calendar",
-          "checklist",
-          "sheet",
-          "memo"
+          "checklist"
         ],
-        "reviewNote": "Day 1과 Day 2는 원문 문자열로 유지하고 실제 날짜는 사용자 시작일 입력 전에는 만들지 않는다. prompt 본문은 보완하지 않으며 원문 권리를 확인한다."
+        "reviewNote": "두 원본 Item을 그대로 유지한다. 실제 날짜 앵커가 없으므로 calendar 목적지는 포함하지 않는다."
       }
     },
     {
@@ -102,32 +135,52 @@
       "reviewMethod": {
         "reviewerKind": "in_session_model_proxy",
         "modelIdentityBlinded": true,
-        "humanReviewer": false
+        "humanReviewer": false,
+        "contextIsolation": "fresh_subagent_no_expected_answers"
       },
       "validator": {
         "passed": true,
         "hardFailCodes": []
+      },
+      "groundingAudit": {
+        "proposalFingerprint": "sha256:8a4ffd9719e28e867c066590842f556f0d9353cb3d4228e41952f2ff007600cd",
+        "items": [
+          {
+            "proposalId": "p-01",
+            "sourceRowIds": [
+              "row-inspection-window"
+            ],
+            "actionGrounded": true,
+            "completionGrounded": true,
+            "memoGrounded": true,
+            "scheduleGrounded": true,
+            "comment": "내 차량의 정기검사 유효기간을 확인하는 행동과 완료 기준은 row-inspection-window 및 userJob 범위에 있고, 메모 URL은 primary source metadata에 있으며 별도 일정은 발명하지 않았다."
+          }
+        ],
+        "projectionGrounded": true,
+        "projectionComment": "유효기간 확인은 체크리스트로 자연스럽고 SourceRow에 실제 날짜나 기간 값이 없으므로 calendar를 blocked로 둔 판단이 근거에 맞다.",
+        "unsupportedContentFindings": []
       },
       "reviewHardFailCodes": [],
       "scores": {
         "userNeedFit": 4,
         "executionClarity": 4,
         "contentFidelityAndCoverage": 5,
-        "portabilityAndNaturalArtifact": 4,
+        "portabilityAndNaturalArtifact": 5,
         "cognitiveLoad": 5,
         "copySpecificity": 4,
         "sourceAndSafetySeparation": 5
       },
       "scoreComments": {
-        "userNeedFit": "유효기간 안의 정기검사와 필요 시 재검사 조건 확인이라는 사용자 일을 한 방향으로 유지했다.",
-        "executionClarity": "유효기간 안에 검사를 받는 행동은 분명하지만 완료 기준에 검사 결과 확인이 빠져 한 번의 보완이 필요하다.",
-        "contentFidelityAndCoverage": "primary 행은 Item으로 연결하고 supporting source의 기관 내부 단계는 명시적 사유로 제외해 두 행을 모두 설명했다.",
-        "portabilityAndNaturalArtifact": "날짜를 발명하지 않고 체크리스트를 살린 점은 좋지만 사용자 입력 만료일을 전제로 한 Calendar 경로를 더 분명히 둘 수 있다.",
-        "cognitiveLoad": "사용자 행동 한 개만 Item으로 두고 기관 내부 단계를 늘리지 않아 원문 복잡도에 맞다.",
-        "copySpecificity": "제목은 구체적이지만 '정기검사'가 반복되고 완료 기준이 결과 확인까지 말하지 않아 소폭 윤문이 필요하다.",
-        "sourceAndSafetySeparation": "공식 primary와 supporting 경계를 지키고 실제 유효기간과 재검사 조건을 공식 정보로 확인하도록 안전 경계를 남겼다."
+        "userNeedFit": "차량 소유자가 먼저 유효기간을 확인해야 한다는 일이 분명하며, 재검사 조건은 근거 부족으로 확장하지 않았다.",
+        "executionClarity": "공식 안내 링크와 함께 내 차량의 유효기간을 확인한다는 첫 행동과 완료 기준을 바로 이해할 수 있다.",
+        "contentFidelityAndCoverage": "유효기간 행만 실행 항목으로 사용하고 검사기관 내부 단계는 사용자의 독립 행동이 아니라는 이유로 명시적으로 제외했다.",
+        "portabilityAndNaturalArtifact": "한 번 확인하는 체크리스트가 자연스럽고 실제 날짜가 없는 상태에서 calendar를 차단했다.",
+        "cognitiveLoad": "두 행 중 사용자 행동 한 개만 남겨 불필요한 기관 절차를 실행 단계로 늘리지 않았다.",
+        "copySpecificity": "제목과 완료 기준이 확인 대상을 내 차량의 정기검사 유효기간으로 구체화한다.",
+        "sourceAndSafetySeparation": "공식 TS URL을 메모로 분리하고 제공되지 않은 날짜·재검사 조건을 만들지 않아 안전 민감 정보 경계가 분명하다."
       },
-      "qualityAverage": 4.43,
+      "qualityAverage": 4.57,
       "sourceRowAccounting": {
         "executableRows": 2,
         "mappedUniqueRows": 1,
@@ -143,12 +196,12 @@
         "deletedItems": 0,
         "mergedItems": 0,
         "splitItems": 0,
-        "titleRewrites": 1,
-        "completionRewrites": 1,
+        "titleRewrites": 0,
+        "completionRewrites": 0,
         "sourceRefFixes": 0,
         "omissionFixes": 0,
         "scheduleRemovals": 0,
-        "destinationChanges": 1,
+        "destinationChanges": 0,
         "riskBoundaryFixes": 0,
         "fullRegenerationRequired": false,
         "burden": null
@@ -156,28 +209,28 @@
       "contentQualityGatePassed": true,
       "negativeGatePassed": null,
       "fullUsabilityVerified": false,
-      "decision": "revise",
+      "decision": "content_gate_pass",
       "topFixes": [
-        "제목의 반복 표현을 줄이고 완료 기준에 검사 결과 확인을 포함한다.",
-        "사용자가 공식 조회한 유효기간을 입력할 때만 Calendar에 옮기고 차종별 기간이나 재검사 조건은 자동 판정하지 않는다."
+        "차량별 실제 유효기간과 재검사 조건 SourceRow가 확보되면 별도 실행 항목으로 확장한다."
       ],
       "correctedPreview": {
-        "title": "자동차 정기검사",
+        "title": "자동차 정기검사 유효기간 확인",
         "items": [
           {
-            "title": "유효기간 안에 자동차 정기검사 받기",
-            "doneWhen": "공식 유효기간 안에 검사를 받고 결과를 확인한 상태",
+            "title": "내 차량 정기검사 유효기간 확인하기",
+            "doneWhen": "내 차량의 정기검사 유효기간을 확인했다.",
             "sourceRowIds": [
               "row-inspection-window"
+            ],
+            "sourceProposalIds": [
+              "p-01"
             ]
           }
         ],
         "destinations": [
-          "calendar",
-          "checklist",
-          "memo"
+          "checklist"
         ],
-        "reviewNote": "실제 유효기간은 사용자가 공식 조회값을 입력해야 하며 차종별 기한이나 재검사 조건을 자동 판정하지 않는다. 검사기관 내부 단계는 omittedRows에 유지한다."
+        "reviewNote": "원본 Item을 유지하고 검사기관 내부 단계의 omission도 유지한다. 실제 유효기간과 재검사 조건은 추가 근거가 있을 때만 확장한다."
       }
     },
     {
@@ -186,11 +239,19 @@
       "reviewMethod": {
         "reviewerKind": "in_session_model_proxy",
         "modelIdentityBlinded": true,
-        "humanReviewer": false
+        "humanReviewer": false,
+        "contextIsolation": "fresh_subagent_no_expected_answers"
       },
       "validator": {
         "passed": true,
         "hardFailCodes": []
+      },
+      "groundingAudit": {
+        "proposalFingerprint": "sha256:b174f36b55dae90a090aee6312a7ffdd3c2d6e165a847a18caec342214e07b27",
+        "items": [],
+        "projectionGrounded": true,
+        "projectionComment": "SourceRow가 0개이고 원본 파일도 unavailable이므로 projectionPlan을 비워 둔 판단이 근거에 맞다.",
+        "unsupportedContentFindings": []
       },
       "reviewHardFailCodes": [],
       "scores": {
@@ -203,13 +264,13 @@
         "sourceAndSafetySeparation": null
       },
       "scoreComments": {
-        "userNeedFit": "원문 행 부재를 차단하는 음성 게이트 사례라 사용자 적합성 점수는 N/A다.",
-        "executionClarity": "의도대로 Item이 생성되지 않아 실행 명확성 점수는 N/A다.",
-        "contentFidelityAndCoverage": "변환 콘텐츠 대신 missing_source_rows 게이트 일치만 확인하므로 N/A다.",
-        "portabilityAndNaturalArtifact": "투영을 의도적으로 생성하지 않은 음성 게이트라 N/A다.",
-        "cognitiveLoad": "제안 Item이 없어 인지 부하 점수는 N/A다.",
-        "copySpecificity": "평가할 제안 제목과 Item 문구가 없어 N/A다.",
-        "sourceAndSafetySeparation": "품질 점수 대신 source_import_required 경계의 정확성을 판정하므로 N/A다."
+        "userNeedFit": "N/A: 원본 학습 파일과 SourceRow가 없어 no_proposal인 valid negative proposal이므로 사용자 필요 적합도를 채점하지 않았다.",
+        "executionClarity": "N/A: 원본 학습 파일과 SourceRow가 없어 no_proposal인 valid negative proposal이므로 실행 명확성을 채점하지 않았다.",
+        "contentFidelityAndCoverage": "N/A: 원본 학습 파일과 SourceRow가 없어 no_proposal인 valid negative proposal이므로 원문 충실도와 범위를 채점하지 않았다.",
+        "portabilityAndNaturalArtifact": "N/A: 원본 학습 파일과 SourceRow가 없어 no_proposal인 valid negative proposal이므로 목적지 적합성을 채점하지 않았다.",
+        "cognitiveLoad": "N/A: 원본 학습 파일과 SourceRow가 없어 no_proposal인 valid negative proposal이므로 인지 부담을 채점하지 않았다.",
+        "copySpecificity": "N/A: 원본 학습 파일과 SourceRow가 없어 no_proposal인 valid negative proposal이므로 문구 구체성을 채점하지 않았다.",
+        "sourceAndSafetySeparation": "N/A: 원본 학습 파일과 SourceRow가 없어 no_proposal인 valid negative proposal이므로 출처 및 안전 경계를 채점하지 않았다."
       },
       "qualityAverage": null,
       "sourceRowAccounting": {
@@ -241,12 +302,14 @@
       "negativeGatePassed": true,
       "fullUsabilityVerified": false,
       "decision": "source_import_required",
-      "topFixes": [],
+      "topFixes": [
+        "원본 PDF 본문을 가져와 목차·주차·과제 행을 SourceRow로 추출한 뒤 다시 생성한다."
+      ],
       "correctedPreview": {
         "title": null,
         "items": [],
         "destinations": [],
-        "reviewNote": "missing_source_rows와 source_import_required가 기대 상태와 일치하고 제안·투영이 비어 있어 교정 미리보기가 필요 없다."
+        "reviewNote": "현재는 근거 행이 없어 Item이나 목적지를 만들지 않는 것이 맞다."
       }
     },
     {
@@ -255,11 +318,19 @@
       "reviewMethod": {
         "reviewerKind": "in_session_model_proxy",
         "modelIdentityBlinded": true,
-        "humanReviewer": false
+        "humanReviewer": false,
+        "contextIsolation": "fresh_subagent_no_expected_answers"
       },
       "validator": {
         "passed": true,
         "hardFailCodes": []
+      },
+      "groundingAudit": {
+        "proposalFingerprint": "sha256:2bde942d112280983257433593f626d463dab38f00542195c7d87aba9c1c2465",
+        "items": [],
+        "projectionGrounded": true,
+        "projectionComment": "SourceRow가 0개이고 미국 맥락의 의료 민감 콘텐츠를 한국용 artifact로 투영할 근거가 없으므로 projectionPlan을 비워 둔 판단이 근거에 맞다.",
+        "unsupportedContentFindings": []
       },
       "reviewHardFailCodes": [],
       "scores": {
@@ -272,13 +343,13 @@
         "sourceAndSafetySeparation": null
       },
       "scoreComments": {
-        "userNeedFit": "지역 적용성 미확인을 차단하는 음성 게이트라 사용자 적합성 점수는 N/A다.",
-        "executionClarity": "의도대로 Item이 생성되지 않아 실행 명확성 점수는 N/A다.",
-        "contentFidelityAndCoverage": "변환 콘텐츠 대신 locale_applicability_unverified 게이트 일치만 확인하므로 N/A다.",
-        "portabilityAndNaturalArtifact": "민감 콘텐츠의 투영을 차단한 사례라 목적지 품질 점수는 N/A다.",
-        "cognitiveLoad": "제안 Item이 없어 인지 부하 점수는 N/A다.",
-        "copySpecificity": "평가할 제안 제목과 Item 문구가 없어 N/A다.",
-        "sourceAndSafetySeparation": "품질 점수 대신 비현지 민감 출처의 hold 경계를 판정하므로 N/A다."
+        "userNeedFit": "N/A: 한국 적용성이 확인되지 않은 의료 민감 source라 no_proposal인 valid negative proposal이므로 사용자 필요 적합도를 채점하지 않았다.",
+        "executionClarity": "N/A: 한국 적용성이 확인되지 않은 의료 민감 source라 no_proposal인 valid negative proposal이므로 실행 명확성을 채점하지 않았다.",
+        "contentFidelityAndCoverage": "N/A: 한국 적용성이 확인되지 않은 의료 민감 source라 no_proposal인 valid negative proposal이므로 원문 충실도와 범위를 채점하지 않았다.",
+        "portabilityAndNaturalArtifact": "N/A: 한국 적용성이 확인되지 않은 의료 민감 source라 no_proposal인 valid negative proposal이므로 목적지 적합성을 채점하지 않았다.",
+        "cognitiveLoad": "N/A: 한국 적용성이 확인되지 않은 의료 민감 source라 no_proposal인 valid negative proposal이므로 인지 부담을 채점하지 않았다.",
+        "copySpecificity": "N/A: 한국 적용성이 확인되지 않은 의료 민감 source라 no_proposal인 valid negative proposal이므로 문구 구체성을 채점하지 않았다.",
+        "sourceAndSafetySeparation": "N/A: 한국 적용성이 확인되지 않은 의료 민감 source라 no_proposal인 valid negative proposal이므로 출처 및 안전 경계를 채점하지 않았다."
       },
       "qualityAverage": null,
       "sourceRowAccounting": {
@@ -310,12 +381,14 @@
       "negativeGatePassed": true,
       "fullUsabilityVerified": false,
       "decision": "hold",
-      "topFixes": [],
+      "topFixes": [
+        "한국 병원 입원 준비에 적용 가능한 현지 공식 근거와 항목별 SourceRow를 확보한 뒤 다시 검토한다."
+      ],
       "correctedPreview": {
         "title": null,
         "items": [],
         "destinations": [],
-        "reviewNote": "locale_applicability_unverified와 hold가 기대 상태와 일치하고 제안·투영이 비어 있어 교정 미리보기가 필요 없다."
+        "reviewNote": "국가 적용성과 항목별 근거가 확보되기 전에는 Item이나 목적지를 만들지 않는 것이 맞다."
       }
     }
   ]

@@ -1,0 +1,55 @@
+{
+  "laneId": "url-to-flow-source-row-v1",
+  "caseSetVersion": "flowme-url-to-flow-source-row-cases-v1",
+  "promptVersion": "url-to-flow-prompt-v1.1",
+  "caseId": "case-09",
+  "requestId": "rq-05f3be71c8a4",
+  "preflightInput": {
+    "targetLocale": "ko-KR",
+    "primary": {
+      "countryContext": null,
+      "riskClass": "low",
+      "accessStatus": "fetched",
+      "rightsStatus": "needs_review"
+    },
+    "sourceRowCount": 2
+  },
+  "preflightResult": {
+    "passed": true,
+    "modelInvoked": true,
+    "generationState": null,
+    "outcome": null,
+    "errorCode": null,
+    "recommendedDisposition": null,
+    "reasonCode": "preflight_passed"
+  },
+  "generatorInput": {
+    "requestId": "rq-05f3be71c8a4",
+    "caseId": "case-09",
+    "maxItems": 7,
+    "sourceOwnership": {
+      "primarySourceId": "src-29f4b8d160ce",
+      "supportingSourceIds": []
+    },
+    "sourceRows": [
+      {
+        "sourceRowId": "row-7c20e4a91b68",
+        "sourceId": "src-29f4b8d160ce",
+        "rowType": "resource",
+        "title": "Day 1 prompt",
+        "detail": null,
+        "order": 0
+      },
+      {
+        "sourceRowId": "row-e3168f2c50a7",
+        "sourceId": "src-29f4b8d160ce",
+        "rowType": "resource",
+        "title": "Day 2 prompt",
+        "detail": null,
+        "order": 1
+      }
+    ]
+  },
+  "deterministicProposal": null,
+  "evidenceBoundary": "Only generatorInput is model-visible. preflightInput and hidden oracle are excluded."
+}

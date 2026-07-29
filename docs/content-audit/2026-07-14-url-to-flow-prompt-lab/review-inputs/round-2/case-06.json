@@ -1,16 +1,20 @@
 {
-  "reviewInputSchemaVersion": "flowme-url-to-flow-blind-review-input-v1",
+  "reviewInputSchemaVersion": "flowme-url-to-flow-blind-review-input-v2",
   "round": "round-2",
   "caseId": "case-06",
-  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
-  "expectationSetVersion": "flowme-url-to-flow-prompt-lab-expected-v1",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1.1",
   "promptVersion": "url-to-flow-prompt-v0.2",
   "proposalSchemaVersion": "flowme-semantic-proposal-v1",
   "rubric": {
-    "version": "flowme-url-to-flow-prompt-lab-review-rubric-v1",
+    "version": "flowme-url-to-flow-prompt-lab-review-rubric-v2",
     "reference": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-rubric.md"
   },
   "reviewResultTemplate": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-result-template.json",
+  "rawRun": {
+    "runFile": "docs/content-audit/2026-07-14-url-to-flow-prompt-lab/runs/round-2/batch-b.json",
+    "runId": "round-2-neutral-batch-b"
+  },
+  "proposalFingerprint": "sha256:08d0777bc90cff8d0c0e70a26d1afb8b6a0a2f3b5ede9bda523464357298d881",
   "sourcePacket": {
     "caseId": "case-06",
     "requestId": "prompt-lab-v1-case-06",
@@ -46,61 +50,8 @@
       }
     ],
     "inputEvidenceRefs": [
-      "golden-fixtures-v1.json#gf-pos-06-memo-first:source-only"
+      "prompt-lab-source:case-06"
     ]
-  },
-  "hiddenExpectation": {
-    "caseId": "case-06",
-    "fixtureId": "gf-pos-06-memo-first",
-    "fixtureKind": "positive",
-    "fixtureShape": "memo_first",
-    "name": "레시피 영상 실행 메모",
-    "expectedStatus": {
-      "generationState": "proposal",
-      "outcome": "complete",
-      "readiness": null,
-      "errorCode": null,
-      "recommendedDisposition": "review"
-    },
-    "expectedConversion": {
-      "userNeed": "저장한 레시피 영상을 열어 한 번 실행하고 필요한 맥락을 함께 보관한다.",
-      "planningPattern": "ordered_procedure",
-      "primaryArtifact": "memo",
-      "riskLevel": "low"
-    },
-    "expectedItems": [
-      {
-        "referenceItemId": "item-recipe-video-follow",
-        "title": "선택한 레시피 영상 따라 만들기",
-        "intent": "use_resource",
-        "sourceRowIds": [
-          "row-recipe-video-resource"
-        ],
-        "completionMode": "check",
-        "doneWhen": "선택한 영상의 레시피를 한 번 따라 만들었다.",
-        "hasSchedule": false,
-        "canonicalSchedule": null
-      }
-    ],
-    "expectedOmittedRows": [],
-    "accountingSourceRowIds": [
-      "row-recipe-video-resource"
-    ],
-    "expectedProjections": [
-      "memo:markdown",
-      "memo:plain_text",
-      "checklist:plain_text"
-    ],
-    "forbiddenProjections": [
-      "calendar:ics",
-      "sheet:xlsx"
-    ],
-    "referenceReview": {
-      "readiness": "ready_second_wave",
-      "hardFails": [],
-      "rightsDecision": "영상 자체를 복제하지 않고 제목·링크·짧은 실행 메모만 사용한다.",
-      "riskDecision": "알레르기와 식품 안전 판단을 FlowMe가 대신하지 않는다."
-    }
   },
   "proposal": {
     "proposalSchemaVersion": "flowme-semantic-proposal-v1",
@@ -127,11 +78,11 @@
       "userNeed": "선택한 레시피 영상을 열어 한 번 실행하고 필요한 맥락을 함께 보관한다.",
       "lifeArea": "meals_grocery",
       "planningPattern": "resource_queue",
-      "primaryArtifact": "memo",
-      "contentShape": "실행 기록이 붙은 단일 영상 메모"
+      "primaryArtifact": "hybrid",
+      "contentShape": "단일 레시피 영상 실행과 맥락 보관"
     },
     "proposal": {
-      "proposalTitle": "선택한 레시피 영상 실행 기록",
+      "proposalTitle": "선택한 레시피 영상 실행",
       "items": [
         {
           "proposalId": "p-01",
@@ -142,7 +93,7 @@
           ],
           "completion": {
             "mode": "check",
-            "doneWhen": "선택한 레시피 영상을 열어 한 번 실행함"
+            "doneWhen": "선택한 레시피 영상을 열어 한 번 실행했다."
           },
           "memoCandidate": "실행에 필요한 맥락을 함께 보관한다.",
           "groupingCandidate": null,
@@ -154,29 +105,30 @@
     },
     "projectionPlan": [
       {
-        "target": "memo",
-        "applicability": "applicable",
-        "reason": "선택한 영상과 실행에 필요한 맥락을 하나의 기록으로 보관한다."
-      },
-      {
         "target": "checklist",
         "applicability": "applicable",
-        "reason": "영상 실행 여부만 확인하고 입력에 없는 조리 단계를 만들지 않는다."
+        "reason": "선택한 영상의 실행 여부를 한 개의 확인 가능한 항목으로 유지할 수 있다."
+      },
+      {
+        "target": "memo",
+        "applicability": "applicable",
+        "reason": "영상 실행에 필요한 맥락을 항목과 함께 보관할 수 있다."
       }
     ],
     "reviewHints": {
       "recommendedDisposition": "review",
       "uncertainties": [
-        "보관할 구체적인 맥락은 입력에 제시되지 않음"
+        "선택한 영상의 구체적인 레시피 내용과 보관할 맥락은 SourceRow에 없다."
       ],
       "hardFailCodes": [],
       "humanReviewRequired": [
-        "출처 권리 상태 needs_review 확인"
+        "needs_review인 source rightsStatus의 사용 범위를 확인한다."
       ]
     }
   },
   "validator": {
-    "passed": null,
-    "hardFailCodes": []
+    "validatorVersion": "flowme-url-to-flow-prompt-lab-validator-v1",
+    "passed": true,
+    "codes": []
   }
 }

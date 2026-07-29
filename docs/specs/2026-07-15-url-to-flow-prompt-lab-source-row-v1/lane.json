@@ -1,0 +1,18 @@
+{
+  "laneId": "url-to-flow-source-row-v1",
+  "authority": "corrected_experimental_evidence",
+  "legacyLane": {
+    "laneId": "url-to-flow-rich-packet-preflight-v1",
+    "acceptedForCorrectedCompletion": false,
+    "manifestPath": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/legacy-evidence-manifest.json"
+  },
+  "correctedLane": {
+    "caseSetVersion": "flowme-url-to-flow-source-row-cases-v1",
+      "promptVersions": [
+        "url-to-flow-prompt-v1.0",
+        "url-to-flow-prompt-v1.1"
+      ],
+    "maximumRounds": 3,
+    "productionBackendGo": false
+  }
+}

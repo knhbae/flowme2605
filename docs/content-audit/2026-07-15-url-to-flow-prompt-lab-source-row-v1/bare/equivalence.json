@@ -1,0 +1,13 @@
+{
+  "evidenceVersion": "flowme-bare-run-validator-equivalence-v1",
+  "laneId": "url-to-flow-source-row-v1",
+  "caseId": "case-01",
+  "bareProposalPath": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/bare/case-01.json",
+  "runEnvelopePath": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/runs/round-2/batch-a.json",
+  "barePassed": true,
+  "runPassed": true,
+  "bareProposalDiagnosticsSha256": "c56f86b7cc3a8ced920c440b018c2e64914a49b5ae4c46222088f2f9d491df79",
+  "runProposalDiagnosticsSha256": "c56f86b7cc3a8ced920c440b018c2e64914a49b5ae4c46222088f2f9d491df79",
+  "equivalent": true,
+  "providerOrModelEvidence": false
+}

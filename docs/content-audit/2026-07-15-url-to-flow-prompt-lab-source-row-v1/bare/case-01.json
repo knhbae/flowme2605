@@ -1,0 +1,80 @@
+{
+  "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+  "promptVersion": "url-to-flow-prompt-v1.1",
+  "requestId": "rq-7a31d8c4f205",
+  "caseId": "case-01",
+  "status": {
+    "generationState": "proposal",
+    "outcome": "complete",
+    "readiness": null,
+    "errorCode": null
+  },
+  "sourceAssessment": {
+    "access": "readable",
+    "sourceShape": "date_preparation",
+    "primarySourceId": "src-a61d7c3e902f",
+    "supportingSourceIds": [],
+    "receivedSourceRowIds": [
+      "row-1c7a52e9b304",
+      "row-a48e103d6f92"
+    ],
+    "untrustedInstructionDetected": false
+  },
+  "conversionDecision": {
+    "userNeed": "검진 대상과 예약을 확인한 뒤 검진기관을 방문하기",
+    "lifeArea": "health_fitness",
+    "planningPattern": "date_preparation",
+    "primaryArtifact": "checklist",
+    "contentShape": "확인 후 방문하는 2단계 목록"
+  },
+  "proposal": {
+    "proposalTitle": "검진 확인 및 방문",
+    "items": [
+      {
+        "proposalId": "proposal-case-01-01",
+        "title": "검진 대상 및 예약 확인",
+        "intent": "inspect",
+        "sourceRowIds": [
+          "row-1c7a52e9b304"
+        ],
+        "completion": {
+          "mode": "check",
+          "doneWhen": "검진 대상 및 예약 확인을 마침"
+        },
+        "memoCandidate": null,
+        "groupingCandidate": null,
+        "scheduleCandidate": null
+      },
+      {
+        "proposalId": "proposal-case-01-02",
+        "title": "검진기관 방문",
+        "intent": "act",
+        "sourceRowIds": [
+          "row-a48e103d6f92"
+        ],
+        "completion": {
+          "mode": "check",
+          "doneWhen": "검진기관 방문을 마침"
+        },
+        "memoCandidate": null,
+        "groupingCandidate": null,
+        "scheduleCandidate": null
+      }
+    ],
+    "omittedRows": [],
+    "incompleteReason": null
+  },
+  "projectionPlan": [
+    {
+      "target": "checklist",
+      "applicability": "applicable",
+      "reason": "확인과 방문을 순서대로 완료하는 2단계 목록입니다."
+    }
+  ],
+  "reviewHints": {
+    "recommendedDisposition": "review",
+    "uncertainties": [],
+    "hardFailCodes": [],
+    "humanReviewRequired": []
+  }
+}

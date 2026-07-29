@@ -1,0 +1,287 @@
+{
+  "mappingVersion": "flowme-url-to-flow-strict-hidden-map-v2",
+  "laneId": "url-to-flow-source-row-v2-strict",
+  "visibility": "controller_validator_only",
+  "forbiddenFor": [
+    "generator",
+    "blind_reviewer"
+  ],
+  "mappings": [
+    {
+      "auditCaseId": "case-01",
+      "priorRequestId": "rq-7a31d8c4f205",
+      "requestRef": "req-ce3f389aba8d72a1",
+      "sampleRef": "smp-34e345a01a86a243",
+      "sources": [
+        {
+          "priorOpaqueId": "src-a61d7c3e902f",
+          "canonicalId": "source-nhis-health-checkup",
+          "role": "primary",
+          "strictOpaqueRef": "src-e787c48177424793"
+        }
+      ],
+      "sourceRows": [
+        {
+          "priorOpaqueId": "row-1c7a52e9b304",
+          "canonicalId": "row-checkup-booking",
+          "strictOpaqueRef": "row-dd607307afad0c2e"
+        },
+        {
+          "priorOpaqueId": "row-a48e103d6f92",
+          "canonicalId": "row-checkup-visit",
+          "strictOpaqueRef": "row-32712fc7d347ea11"
+        }
+      ]
+    },
+    {
+      "auditCaseId": "case-02",
+      "priorRequestId": "rq-19e6b4a82d73",
+      "requestRef": "req-7880991b095b3d7d",
+      "sampleRef": "smp-f88067b21f8d8327",
+      "sources": [
+        {
+          "priorOpaqueId": "src-f2049b6a1d83",
+          "canonicalId": "source-samsung-aircon-filter",
+          "role": "primary",
+          "strictOpaqueRef": "src-134bde582d499610"
+        }
+      ],
+      "sourceRows": [
+        {
+          "priorOpaqueId": "row-62b9f4c107da",
+          "canonicalId": "row-aircon-filter-4week",
+          "strictOpaqueRef": "row-bb7995c52706bd51"
+        }
+      ]
+    },
+    {
+      "auditCaseId": "case-03",
+      "priorRequestId": "rq-c52f09e17b64",
+      "requestRef": "req-f84a85135d3f4157",
+      "sampleRef": "smp-64c0dc556a3ed163",
+      "sources": [
+        {
+          "priorOpaqueId": "src-3e7a10c5b942",
+          "canonicalId": "source-kkday-overseas-packing",
+          "role": "primary",
+          "strictOpaqueRef": "src-77a0ec2b2a4bc6b4"
+        }
+      ],
+      "sourceRows": [
+        {
+          "priorOpaqueId": "row-d3018c5e74a2",
+          "canonicalId": "row-pack-passport",
+          "strictOpaqueRef": "row-895b0b7ea057dcee"
+        },
+        {
+          "priorOpaqueId": "row-8f25a6b19c40",
+          "canonicalId": "row-pack-connectivity",
+          "strictOpaqueRef": "row-ae9677e543e713c9"
+        }
+      ]
+    },
+    {
+      "auditCaseId": "case-04",
+      "priorRequestId": "rq-83bd1a6f40c9",
+      "requestRef": "req-666d09c063252eb7",
+      "sampleRef": "smp-0b82f73ebd2cd478",
+      "sources": [
+        {
+          "priorOpaqueId": "src-8c51f2d709a6",
+          "canonicalId": "source-work24-jobseeker-support",
+          "role": "primary",
+          "strictOpaqueRef": "src-a7bf212a28dcb613"
+        }
+      ],
+      "sourceRows": [
+        {
+          "priorOpaqueId": "row-47c1e8a305bd",
+          "canonicalId": "row-work24-register",
+          "strictOpaqueRef": "row-ee4a91296e11ea28"
+        },
+        {
+          "priorOpaqueId": "row-b6d2094f7a31",
+          "canonicalId": "row-work24-apply",
+          "strictOpaqueRef": "row-2873fc5802dd3a6e"
+        }
+      ]
+    },
+    {
+      "auditCaseId": "case-05",
+      "priorRequestId": "rq-2e74c9a51f86",
+      "requestRef": "req-341ea1d211bb1dc4",
+      "sampleRef": "smp-14c0f7b074b9994e",
+      "sources": [
+        {
+          "priorOpaqueId": "src-14b9e63a8f27",
+          "canonicalId": "source-kmooc-hundred-schools",
+          "role": "primary",
+          "strictOpaqueRef": "src-7786d4fcb7385ede"
+        }
+      ],
+      "sourceRows": [
+        {
+          "priorOpaqueId": "row-0e7a31c9b452",
+          "canonicalId": "row-kmooc-week-01",
+          "strictOpaqueRef": "row-fbfd49031480d0d0"
+        },
+        {
+          "priorOpaqueId": "row-c48f2d105a76",
+          "canonicalId": "row-kmooc-week-02",
+          "strictOpaqueRef": "row-8ab6e32ddb0ddfff"
+        }
+      ]
+    },
+    {
+      "auditCaseId": "case-06",
+      "priorRequestId": "rq-b90c37e4d125",
+      "requestRef": "req-1b405341f48231e7",
+      "sampleRef": "smp-01f56183ee916318",
+      "sources": [
+        {
+          "priorOpaqueId": "src-c7305a19e4d2",
+          "canonicalId": "source-recipe-video-playlist",
+          "role": "primary",
+          "strictOpaqueRef": "src-7d3f54b759317045"
+        }
+      ],
+      "sourceRows": [
+        {
+          "priorOpaqueId": "row-93b5e1a760cd",
+          "canonicalId": "row-recipe-video-resource",
+          "strictOpaqueRef": "row-8de896c2a246d81d"
+        }
+      ]
+    },
+    {
+      "auditCaseId": "case-07",
+      "priorRequestId": "rq-4d1a8fb763e0",
+      "requestRef": "req-65cb1dbf4650c53a",
+      "sampleRef": "smp-af9bcc8d0a19f8f2",
+      "sources": [
+        {
+          "priorOpaqueId": "src-5d8a247fb1c6",
+          "canonicalId": "source-car365-used-car-guide",
+          "role": "primary",
+          "strictOpaqueRef": "src-b21855f7f9bc65b1"
+        }
+      ],
+      "sourceRows": [
+        {
+          "priorOpaqueId": "row-2a8c640f1e95",
+          "canonicalId": "row-used-car-decision",
+          "strictOpaqueRef": "row-6c0c537790117fe8"
+        }
+      ]
+    },
+    {
+      "auditCaseId": "case-08",
+      "priorRequestId": "rq-e68c25a094b7",
+      "requestRef": "req-bca2e4caa414b028",
+      "sampleRef": "smp-a236951a509318e0",
+      "sources": [
+        {
+          "priorOpaqueId": "src-e1096c3a75b4",
+          "canonicalId": "source-nhis-infant-checkup",
+          "role": "primary",
+          "strictOpaqueRef": "src-1b67988b75fc5c95"
+        }
+      ],
+      "sourceRows": [
+        {
+          "priorOpaqueId": "row-f51d309b7c24",
+          "canonicalId": "row-infant-checkup-prep",
+          "strictOpaqueRef": "row-1689f73f35eda7e4"
+        }
+      ]
+    },
+    {
+      "auditCaseId": "case-09",
+      "priorRequestId": "rq-05f3be71c8a4",
+      "requestRef": "req-73bbb3f0f9790d57",
+      "sampleRef": "smp-5f8cdade595023d8",
+      "sources": [
+        {
+          "priorOpaqueId": "src-29f4b8d160ce",
+          "canonicalId": "source-canon-photo-30",
+          "role": "primary",
+          "strictOpaqueRef": "src-28c5c82907f7063f"
+        }
+      ],
+      "sourceRows": [
+        {
+          "priorOpaqueId": "row-7c20e4a91b68",
+          "canonicalId": "row-photo-day-01",
+          "strictOpaqueRef": "row-35118ebced071604"
+        },
+        {
+          "priorOpaqueId": "row-e3168f2c50a7",
+          "canonicalId": "row-photo-day-02",
+          "strictOpaqueRef": "row-98d93b3c2b98b887"
+        }
+      ]
+    },
+    {
+      "auditCaseId": "case-10",
+      "priorRequestId": "rq-a47e19d260bf",
+      "requestRef": "req-f39c29affaac26db",
+      "sampleRef": "smp-cca0262a42e836c9",
+      "sources": [
+        {
+          "priorOpaqueId": "src-b6720d4e91a5",
+          "canonicalId": "source-kotsa-regular-inspection",
+          "role": "primary",
+          "strictOpaqueRef": "src-4db1438a4eb3210c"
+        },
+        {
+          "priorOpaqueId": "src-40c9a71e2f86",
+          "canonicalId": "source-kotsa-inspection-procedure",
+          "role": "supporting",
+          "strictOpaqueRef": "src-d3e7a12e35d47845"
+        }
+      ],
+      "sourceRows": [
+        {
+          "priorOpaqueId": "row-58a7d0c31e94",
+          "canonicalId": "row-inspection-window",
+          "strictOpaqueRef": "row-4132ffef2e290ce3"
+        },
+        {
+          "priorOpaqueId": "row-a20e6b9f4731",
+          "canonicalId": "row-inspection-agency-phases",
+          "strictOpaqueRef": "row-fc5caae6258cde3c"
+        }
+      ]
+    },
+    {
+      "auditCaseId": "case-11",
+      "priorRequestId": "rq-6bc2e805f139",
+      "requestRef": "req-935cdab44d068d22",
+      "sampleRef": "smp-be187768e7d35239",
+      "sources": [
+        {
+          "priorOpaqueId": "src-96e31b5c7a20",
+          "canonicalId": "source-computer-skills-pdf-unavailable",
+          "role": "primary",
+          "strictOpaqueRef": "src-5db52001c3c3e0fa"
+        }
+      ],
+      "sourceRows": []
+    },
+    {
+      "auditCaseId": "case-12",
+      "priorRequestId": "rq-d3187af46c52",
+      "requestRef": "req-3a6ff75d3d3cabf6",
+      "sampleRef": "smp-e7fca6ff311df9c8",
+      "sources": [
+        {
+          "priorOpaqueId": "src-d5a8072c4e19",
+          "canonicalId": "source-stemcyte-hospital-bag",
+          "role": "primary",
+          "strictOpaqueRef": "src-c9e065c6fc4623ed"
+        }
+      ],
+      "sourceRows": []
+    }
+  ]
+}

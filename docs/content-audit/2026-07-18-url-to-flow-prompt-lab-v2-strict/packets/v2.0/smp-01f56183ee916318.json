@@ -1,0 +1,19 @@
+{
+  "requestRef": "req-1b405341f48231e7",
+  "sampleRef": "smp-01f56183ee916318",
+  "maxItems": 7,
+  "sourceOwnership": {
+    "primarySourceRef": "src-7d3f54b759317045",
+    "supportingSourceRefs": []
+  },
+  "sourceRows": [
+    {
+      "sourceRowRef": "row-8de896c2a246d81d",
+      "sourceRef": "src-7d3f54b759317045",
+      "rowType": "resource",
+      "title": "선택한 레시피 영상",
+      "detail": null,
+      "order": 0
+    }
+  ]
+}

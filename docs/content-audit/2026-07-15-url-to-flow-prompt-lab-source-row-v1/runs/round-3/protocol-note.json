@@ -1,0 +1,20 @@
+{
+  "noteVersion": "flowme-source-row-round-3-protocol-note-v1",
+  "laneId": "url-to-flow-source-row-v1",
+  "round": "round-3",
+  "promptVersion": "url-to-flow-prompt-v1.1",
+  "packetVersion": "flowme-url-to-flow-source-row-cases-v1",
+  "reason": "Round 2 did not satisfy Item keep and unsupported-content gates. Round 3 proceeds only as an unchanged-prompt, unchanged-packet failure-replication and stability diagnostic required by the broader three-round objective.",
+  "completionAuthority": false,
+  "cannotRescueRound2Failure": true,
+  "allowedUse": [
+    "measure whether core decisions and the same defects recur",
+    "confirm both deterministic negatives remain stable",
+    "separate prompt variance from SourceRow/schema sufficiency"
+  ],
+  "forbiddenUse": [
+    "replace or erase Round 2 evidence",
+    "average away a failed completion gate",
+    "introduce prompt v1.2 or a fourth round"
+  ]
+}

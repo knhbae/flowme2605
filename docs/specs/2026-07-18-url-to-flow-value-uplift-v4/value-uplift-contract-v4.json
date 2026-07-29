@@ -1,0 +1,92 @@
+{
+  "schemaVersion": "flowme-value-uplift-contract-v4.0",
+  "evidenceClasses": [
+    "source_fact",
+    "source_transform",
+    "execution_scaffold",
+    "user_choice",
+    "safety_boundary"
+  ],
+  "units": {
+    "provenance": "SourceEvidence",
+    "statefulExecution": "Item",
+    "grouping": "Step",
+    "composition": "Flow",
+    "alternatives": "FlowMap",
+    "destination": "Projection"
+  },
+  "dispositions": [
+    "compile_candidate",
+    "draft_only",
+    "reextract_required",
+    "blocked"
+  ],
+  "safeValueLicenses": [
+    "group_supported_evidence",
+    "order_supported_evidence",
+    "choose_natural_artifact",
+    "add_user_anchor_or_choice",
+    "derive_observable_completion",
+    "add_execution_state",
+    "attach_source_and_caution",
+    "compose_result_promise",
+    "project_with_loss_ledger"
+  ],
+  "forbiddenValueClaims": [
+    "invent_date_or_interval",
+    "invent_duration_or_quantity",
+    "invent_requirement_or_warning",
+    "invent_hidden_resource_content",
+    "invent_sensitive_applicability",
+    "invent_items_to_hit_count"
+  ],
+  "liveBaselineCapabilities": [
+    "job_title",
+    "input_choice_or_no_input",
+    "named_result_bundle",
+    "first_action_preview",
+    "item_count_and_destination",
+    "observable_completion_or_decision",
+    "source_trace_and_conversion_note",
+    "return_reuse_or_export_state"
+  ],
+  "absoluteGate": {
+    "sourceEvidenceAccountingRate": 1,
+    "unsupportedClaimCount": 0,
+    "genericActionRate": 0,
+    "observableCompletionRate": 1,
+    "minimumCriticalAxisScore": 4,
+    "minimumTenAxisAverage": 4.2,
+    "requiredLiveBaselineCapabilityRate": 1
+  },
+  "pairwiseGate": {
+    "minimumCandidatePreferenceAmongNonTies": 0.7,
+    "minimumIndependentReviewerContexts": 2,
+    "maximumCriticalRegressions": 0,
+    "maximumUnsupportedOrUnsafeFindings": 0
+  },
+  "authority": {
+    "extractorOrLlm": [
+      "source_diagnosis_proposal",
+      "source_evidence_proposal",
+      "user_job_proposal",
+      "artifact_proposal",
+      "copy_proposal"
+    ],
+    "deterministicController": [
+      "claim_ownership",
+      "source_accounting",
+      "date_and_recurrence_validation",
+      "completion_validation",
+      "copy_lint",
+      "projection_loss_ledger",
+      "quality_gate"
+    ],
+    "human": [
+      "approve",
+      "save",
+      "publish"
+    ]
+  }
+}
+

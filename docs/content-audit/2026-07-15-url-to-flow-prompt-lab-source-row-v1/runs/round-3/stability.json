@@ -1,0 +1,1061 @@
+{
+  "comparisonVersion": "flowme-source-row-stability-v2",
+  "laneId": "url-to-flow-source-row-v1",
+  "promptVersion": "url-to-flow-prompt-v1.1",
+  "comparisonScope": "recorded_output_signature_only",
+  "packetArtifactsChangedBetweenRecordedRuns": null,
+  "schemaArtifactChangedBetweenRecordedRuns": null,
+  "runInputBindingProven": false,
+  "freshContextProven": false,
+  "completionGate": false,
+  "diagnosticOnly": true,
+  "metrics": {
+    "comparedCases": 12,
+    "exactMatches": 5,
+    "exactMatchRate": 0.4166666666666667,
+    "positiveComparedCases": 10,
+    "positiveExactMatches": 3,
+    "positiveExactMatchRate": 0.3,
+    "validInBothRounds": 11,
+    "negativesExact": 2,
+    "negativeCount": 2
+  },
+  "cases": [
+    {
+      "caseId": "case-01",
+      "round2Valid": true,
+      "round3Valid": true,
+      "exactSignatureMatch": true,
+      "mismatchDetails": [],
+      "round2Signature": {
+        "status": {
+          "generationState": "proposal",
+          "outcome": "complete",
+          "errorCode": null,
+          "disposition": "review"
+        },
+        "sourceShape": "date_preparation",
+        "conversionDecision": {
+          "lifeArea": "health_fitness",
+          "planningPattern": "date_preparation",
+          "primaryArtifact": "checklist"
+        },
+        "items": [
+          {
+            "sourceRowIds": [
+              "row-1c7a52e9b304"
+            ],
+            "intent": "inspect",
+            "completionMode": "check",
+            "memoPresent": false,
+            "groupingPresent": false,
+            "schedule": null
+          },
+          {
+            "sourceRowIds": [
+              "row-a48e103d6f92"
+            ],
+            "intent": "act",
+            "completionMode": "check",
+            "memoPresent": false,
+            "groupingPresent": false,
+            "schedule": null
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "checklist",
+            "applicability": "applicable"
+          }
+        ]
+      },
+      "round3Signature": {
+        "status": {
+          "generationState": "proposal",
+          "outcome": "complete",
+          "errorCode": null,
+          "disposition": "review"
+        },
+        "sourceShape": "date_preparation",
+        "conversionDecision": {
+          "lifeArea": "health_fitness",
+          "planningPattern": "date_preparation",
+          "primaryArtifact": "checklist"
+        },
+        "items": [
+          {
+            "sourceRowIds": [
+              "row-1c7a52e9b304"
+            ],
+            "intent": "inspect",
+            "completionMode": "check",
+            "memoPresent": false,
+            "groupingPresent": false,
+            "schedule": null
+          },
+          {
+            "sourceRowIds": [
+              "row-a48e103d6f92"
+            ],
+            "intent": "act",
+            "completionMode": "check",
+            "memoPresent": false,
+            "groupingPresent": false,
+            "schedule": null
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "checklist",
+            "applicability": "applicable"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "case-02",
+      "round2Valid": true,
+      "round3Valid": true,
+      "exactSignatureMatch": false,
+      "mismatchDetails": [
+        {
+          "path": "$.items[0].memoPresent",
+          "round2": false,
+          "round3": true
+        },
+        {
+          "path": "$.items[0].schedule.sourceText",
+          "round2": "극세 필터 4주에 한 번 청소",
+          "round3": "4주에 한 번"
+        }
+      ],
+      "round2Signature": {
+        "status": {
+          "generationState": "proposal",
+          "outcome": "complete",
+          "errorCode": null,
+          "disposition": "review"
+        },
+        "sourceShape": "repeating_routine",
+        "conversionDecision": {
+          "lifeArea": "home_living",
+          "planningPattern": "repeating_routine",
+          "primaryArtifact": "calendar"
+        },
+        "items": [
+          {
+            "sourceRowIds": [
+              "row-62b9f4c107da"
+            ],
+            "intent": "act",
+            "completionMode": "check",
+            "memoPresent": false,
+            "groupingPresent": false,
+            "schedule": {
+              "sourceRowIds": [
+                "row-62b9f4c107da"
+              ],
+              "sourceText": "극세 필터 4주에 한 번 청소"
+            }
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "calendar",
+            "applicability": "applicable"
+          }
+        ]
+      },
+      "round3Signature": {
+        "status": {
+          "generationState": "proposal",
+          "outcome": "complete",
+          "errorCode": null,
+          "disposition": "review"
+        },
+        "sourceShape": "repeating_routine",
+        "conversionDecision": {
+          "lifeArea": "home_living",
+          "planningPattern": "repeating_routine",
+          "primaryArtifact": "calendar"
+        },
+        "items": [
+          {
+            "sourceRowIds": [
+              "row-62b9f4c107da"
+            ],
+            "intent": "act",
+            "completionMode": "check",
+            "memoPresent": true,
+            "groupingPresent": false,
+            "schedule": {
+              "sourceRowIds": [
+                "row-62b9f4c107da"
+              ],
+              "sourceText": "4주에 한 번"
+            }
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "calendar",
+            "applicability": "applicable"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "case-03",
+      "round2Valid": true,
+      "round3Valid": true,
+      "exactSignatureMatch": false,
+      "mismatchDetails": [
+        {
+          "path": "$.conversionDecision.planningPattern",
+          "round2": "date_preparation",
+          "round3": "source_table_rows"
+        },
+        {
+          "path": "$.items[0].intent",
+          "round2": "act",
+          "round3": "inspect"
+        },
+        {
+          "path": "$.items[1].intent",
+          "round2": "act",
+          "round3": "inspect"
+        },
+        {
+          "path": "$.sourceShape",
+          "round2": "date_preparation",
+          "round3": "source_table_rows"
+        }
+      ],
+      "round2Signature": {
+        "status": {
+          "generationState": "proposal",
+          "outcome": "complete",
+          "errorCode": null,
+          "disposition": "review"
+        },
+        "sourceShape": "date_preparation",
+        "conversionDecision": {
+          "lifeArea": "travel_outings",
+          "planningPattern": "date_preparation",
+          "primaryArtifact": "checklist"
+        },
+        "items": [
+          {
+            "sourceRowIds": [
+              "row-8f25a6b19c40"
+            ],
+            "intent": "act",
+            "completionMode": "check",
+            "memoPresent": false,
+            "groupingPresent": false,
+            "schedule": null
+          },
+          {
+            "sourceRowIds": [
+              "row-d3018c5e74a2"
+            ],
+            "intent": "act",
+            "completionMode": "check",
+            "memoPresent": false,
+            "groupingPresent": false,
+            "schedule": null
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "checklist",
+            "applicability": "applicable"
+          }
+        ]
+      },
+      "round3Signature": {
+        "status": {
+          "generationState": "proposal",
+          "outcome": "complete",
+          "errorCode": null,
+          "disposition": "review"
+        },
+        "sourceShape": "source_table_rows",
+        "conversionDecision": {
+          "lifeArea": "travel_outings",
+          "planningPattern": "source_table_rows",
+          "primaryArtifact": "checklist"
+        },
+        "items": [
+          {
+            "sourceRowIds": [
+              "row-8f25a6b19c40"
+            ],
+            "intent": "inspect",
+            "completionMode": "check",
+            "memoPresent": false,
+            "groupingPresent": false,
+            "schedule": null
+          },
+          {
+            "sourceRowIds": [
+              "row-d3018c5e74a2"
+            ],
+            "intent": "inspect",
+            "completionMode": "check",
+            "memoPresent": false,
+            "groupingPresent": false,
+            "schedule": null
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "checklist",
+            "applicability": "applicable"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "case-04",
+      "round2Valid": true,
+      "round3Valid": true,
+      "exactSignatureMatch": true,
+      "mismatchDetails": [],
+      "round2Signature": {
+        "status": {
+          "generationState": "proposal",
+          "outcome": "complete",
+          "errorCode": null,
+          "disposition": "review"
+        },
+        "sourceShape": "ordered_procedure",
+        "conversionDecision": {
+          "lifeArea": "work_career",
+          "planningPattern": "ordered_procedure",
+          "primaryArtifact": "checklist"
+        },
+        "items": [
+          {
+            "sourceRowIds": [
+              "row-47c1e8a305bd"
+            ],
+            "intent": "act",
+            "completionMode": "check",
+            "memoPresent": false,
+            "groupingPresent": false,
+            "schedule": null
+          },
+          {
+            "sourceRowIds": [
+              "row-b6d2094f7a31"
+            ],
+            "intent": "act",
+            "completionMode": "check",
+            "memoPresent": false,
+            "groupingPresent": false,
+            "schedule": null
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "checklist",
+            "applicability": "applicable"
+          }
+        ]
+      },
+      "round3Signature": {
+        "status": {
+          "generationState": "proposal",
+          "outcome": "complete",
+          "errorCode": null,
+          "disposition": "review"
+        },
+        "sourceShape": "ordered_procedure",
+        "conversionDecision": {
+          "lifeArea": "work_career",
+          "planningPattern": "ordered_procedure",
+          "primaryArtifact": "checklist"
+        },
+        "items": [
+          {
+            "sourceRowIds": [
+              "row-47c1e8a305bd"
+            ],
+            "intent": "act",
+            "completionMode": "check",
+            "memoPresent": false,
+            "groupingPresent": false,
+            "schedule": null
+          },
+          {
+            "sourceRowIds": [
+              "row-b6d2094f7a31"
+            ],
+            "intent": "act",
+            "completionMode": "check",
+            "memoPresent": false,
+            "groupingPresent": false,
+            "schedule": null
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "checklist",
+            "applicability": "applicable"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "case-05",
+      "round2Valid": true,
+      "round3Valid": true,
+      "exactSignatureMatch": false,
+      "mismatchDetails": [
+        {
+          "path": "$.conversionDecision.primaryArtifact",
+          "round2": "sheet",
+          "round3": "checklist"
+        },
+        {
+          "path": "$.items[0].groupingPresent",
+          "round2": false,
+          "round3": true
+        },
+        {
+          "path": "$.items[1].groupingPresent",
+          "round2": false,
+          "round3": true
+        },
+        {
+          "path": "$.projections[0].target",
+          "round2": "sheet",
+          "round3": "checklist"
+        }
+      ],
+      "round2Signature": {
+        "status": {
+          "generationState": "proposal",
+          "outcome": "complete",
+          "errorCode": null,
+          "disposition": "review"
+        },
+        "sourceShape": "source_table_rows",
+        "conversionDecision": {
+          "lifeArea": "study_reading",
+          "planningPattern": "source_table_rows",
+          "primaryArtifact": "sheet"
+        },
+        "items": [
+          {
+            "sourceRowIds": [
+              "row-0e7a31c9b452"
+            ],
+            "intent": "act",
+            "completionMode": "check",
+            "memoPresent": false,
+            "groupingPresent": false,
+            "schedule": null
+          },
+          {
+            "sourceRowIds": [
+              "row-c48f2d105a76"
+            ],
+            "intent": "act",
+            "completionMode": "check",
+            "memoPresent": false,
+            "groupingPresent": false,
+            "schedule": null
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "sheet",
+            "applicability": "applicable"
+          }
+        ]
+      },
+      "round3Signature": {
+        "status": {
+          "generationState": "proposal",
+          "outcome": "complete",
+          "errorCode": null,
+          "disposition": "review"
+        },
+        "sourceShape": "source_table_rows",
+        "conversionDecision": {
+          "lifeArea": "study_reading",
+          "planningPattern": "source_table_rows",
+          "primaryArtifact": "checklist"
+        },
+        "items": [
+          {
+            "sourceRowIds": [
+              "row-0e7a31c9b452"
+            ],
+            "intent": "act",
+            "completionMode": "check",
+            "memoPresent": false,
+            "groupingPresent": true,
+            "schedule": null
+          },
+          {
+            "sourceRowIds": [
+              "row-c48f2d105a76"
+            ],
+            "intent": "act",
+            "completionMode": "check",
+            "memoPresent": false,
+            "groupingPresent": true,
+            "schedule": null
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "checklist",
+            "applicability": "applicable"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "case-06",
+      "round2Valid": true,
+      "round3Valid": true,
+      "exactSignatureMatch": false,
+      "mismatchDetails": [
+        {
+          "path": "$.items[0].memoPresent",
+          "round2": false,
+          "round3": true
+        }
+      ],
+      "round2Signature": {
+        "status": {
+          "generationState": "proposal",
+          "outcome": "complete",
+          "errorCode": null,
+          "disposition": "review"
+        },
+        "sourceShape": "single_resource",
+        "conversionDecision": {
+          "lifeArea": "meals_grocery",
+          "planningPattern": "resource_queue",
+          "primaryArtifact": "memo"
+        },
+        "items": [
+          {
+            "sourceRowIds": [
+              "row-93b5e1a760cd"
+            ],
+            "intent": "use_resource",
+            "completionMode": "check",
+            "memoPresent": false,
+            "groupingPresent": false,
+            "schedule": null
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "memo",
+            "applicability": "applicable"
+          }
+        ]
+      },
+      "round3Signature": {
+        "status": {
+          "generationState": "proposal",
+          "outcome": "complete",
+          "errorCode": null,
+          "disposition": "review"
+        },
+        "sourceShape": "single_resource",
+        "conversionDecision": {
+          "lifeArea": "meals_grocery",
+          "planningPattern": "resource_queue",
+          "primaryArtifact": "memo"
+        },
+        "items": [
+          {
+            "sourceRowIds": [
+              "row-93b5e1a760cd"
+            ],
+            "intent": "use_resource",
+            "completionMode": "check",
+            "memoPresent": true,
+            "groupingPresent": false,
+            "schedule": null
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "memo",
+            "applicability": "applicable"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "case-07",
+      "round2Valid": true,
+      "round3Valid": false,
+      "exactSignatureMatch": false,
+      "mismatchDetails": [
+        {
+          "path": "$.items.length",
+          "round2": 1,
+          "round3": 2
+        },
+        {
+          "path": "$.items[0].groupingPresent",
+          "round2": false,
+          "round3": true
+        },
+        {
+          "path": "$.items[1]",
+          "round3": {
+            "sourceRowIds": [
+              "row-2a8c640f1e95"
+            ],
+            "intent": "inspect",
+            "completionMode": "check",
+            "memoPresent": false,
+            "groupingPresent": true,
+            "schedule": null
+          }
+        }
+      ],
+      "round2Signature": {
+        "status": {
+          "generationState": "proposal",
+          "outcome": "complete",
+          "errorCode": null,
+          "disposition": "review"
+        },
+        "sourceShape": "compare_decide",
+        "conversionDecision": {
+          "lifeArea": "money_admin_purchase",
+          "planningPattern": "compare_decide",
+          "primaryArtifact": "checklist"
+        },
+        "items": [
+          {
+            "sourceRowIds": [
+              "row-2a8c640f1e95"
+            ],
+            "intent": "decide",
+            "completionMode": "decision",
+            "memoPresent": false,
+            "groupingPresent": false,
+            "schedule": null
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "checklist",
+            "applicability": "applicable"
+          }
+        ]
+      },
+      "round3Signature": {
+        "status": {
+          "generationState": "proposal",
+          "outcome": "complete",
+          "errorCode": null,
+          "disposition": "review"
+        },
+        "sourceShape": "compare_decide",
+        "conversionDecision": {
+          "lifeArea": "money_admin_purchase",
+          "planningPattern": "compare_decide",
+          "primaryArtifact": "checklist"
+        },
+        "items": [
+          {
+            "sourceRowIds": [
+              "row-2a8c640f1e95"
+            ],
+            "intent": "decide",
+            "completionMode": "decision",
+            "memoPresent": false,
+            "groupingPresent": true,
+            "schedule": null
+          },
+          {
+            "sourceRowIds": [
+              "row-2a8c640f1e95"
+            ],
+            "intent": "inspect",
+            "completionMode": "check",
+            "memoPresent": false,
+            "groupingPresent": true,
+            "schedule": null
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "checklist",
+            "applicability": "applicable"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "case-08",
+      "round2Valid": true,
+      "round3Valid": true,
+      "exactSignatureMatch": false,
+      "mismatchDetails": [
+        {
+          "path": "$.conversionDecision.primaryArtifact",
+          "round2": "checklist",
+          "round3": "todo"
+        },
+        {
+          "path": "$.projections[0].target",
+          "round2": "checklist",
+          "round3": "todo"
+        }
+      ],
+      "round2Signature": {
+        "status": {
+          "generationState": "proposal",
+          "outcome": "complete",
+          "errorCode": null,
+          "disposition": "review"
+        },
+        "sourceShape": "date_preparation",
+        "conversionDecision": {
+          "lifeArea": "health_fitness",
+          "planningPattern": "date_preparation",
+          "primaryArtifact": "checklist"
+        },
+        "items": [
+          {
+            "sourceRowIds": [
+              "row-f51d309b7c24"
+            ],
+            "intent": "act",
+            "completionMode": "check",
+            "memoPresent": false,
+            "groupingPresent": false,
+            "schedule": null
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "checklist",
+            "applicability": "applicable"
+          }
+        ]
+      },
+      "round3Signature": {
+        "status": {
+          "generationState": "proposal",
+          "outcome": "complete",
+          "errorCode": null,
+          "disposition": "review"
+        },
+        "sourceShape": "date_preparation",
+        "conversionDecision": {
+          "lifeArea": "health_fitness",
+          "planningPattern": "date_preparation",
+          "primaryArtifact": "todo"
+        },
+        "items": [
+          {
+            "sourceRowIds": [
+              "row-f51d309b7c24"
+            ],
+            "intent": "act",
+            "completionMode": "check",
+            "memoPresent": false,
+            "groupingPresent": false,
+            "schedule": null
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "todo",
+            "applicability": "applicable"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "case-09",
+      "round2Valid": true,
+      "round3Valid": true,
+      "exactSignatureMatch": true,
+      "mismatchDetails": [],
+      "round2Signature": {
+        "status": {
+          "generationState": "proposal",
+          "outcome": "complete",
+          "errorCode": null,
+          "disposition": "review"
+        },
+        "sourceShape": "resource_queue",
+        "conversionDecision": {
+          "lifeArea": "study_reading",
+          "planningPattern": "resource_queue",
+          "primaryArtifact": "checklist"
+        },
+        "items": [
+          {
+            "sourceRowIds": [
+              "row-7c20e4a91b68"
+            ],
+            "intent": "use_resource",
+            "completionMode": "check",
+            "memoPresent": false,
+            "groupingPresent": false,
+            "schedule": null
+          },
+          {
+            "sourceRowIds": [
+              "row-e3168f2c50a7"
+            ],
+            "intent": "use_resource",
+            "completionMode": "check",
+            "memoPresent": false,
+            "groupingPresent": false,
+            "schedule": null
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "checklist",
+            "applicability": "applicable"
+          }
+        ]
+      },
+      "round3Signature": {
+        "status": {
+          "generationState": "proposal",
+          "outcome": "complete",
+          "errorCode": null,
+          "disposition": "review"
+        },
+        "sourceShape": "resource_queue",
+        "conversionDecision": {
+          "lifeArea": "study_reading",
+          "planningPattern": "resource_queue",
+          "primaryArtifact": "checklist"
+        },
+        "items": [
+          {
+            "sourceRowIds": [
+              "row-7c20e4a91b68"
+            ],
+            "intent": "use_resource",
+            "completionMode": "check",
+            "memoPresent": false,
+            "groupingPresent": false,
+            "schedule": null
+          },
+          {
+            "sourceRowIds": [
+              "row-e3168f2c50a7"
+            ],
+            "intent": "use_resource",
+            "completionMode": "check",
+            "memoPresent": false,
+            "groupingPresent": false,
+            "schedule": null
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "checklist",
+            "applicability": "applicable"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "case-10",
+      "round2Valid": true,
+      "round3Valid": true,
+      "exactSignatureMatch": false,
+      "mismatchDetails": [
+        {
+          "path": "$.items[0].intent",
+          "round2": "act",
+          "round3": "inspect"
+        },
+        {
+          "path": "$.status.generationState",
+          "round2": "proposal",
+          "round3": "partial"
+        },
+        {
+          "path": "$.status.outcome",
+          "round2": "complete",
+          "round3": "partial"
+        }
+      ],
+      "round2Signature": {
+        "status": {
+          "generationState": "proposal",
+          "outcome": "complete",
+          "errorCode": null,
+          "disposition": "review"
+        },
+        "sourceShape": "date_preparation",
+        "conversionDecision": {
+          "lifeArea": "money_admin_purchase",
+          "planningPattern": "date_preparation",
+          "primaryArtifact": "todo"
+        },
+        "items": [
+          {
+            "sourceRowIds": [
+              "row-58a7d0c31e94"
+            ],
+            "intent": "act",
+            "completionMode": "check",
+            "memoPresent": false,
+            "groupingPresent": false,
+            "schedule": null
+          }
+        ],
+        "omittedRows": [
+          {
+            "sourceRowId": "row-a20e6b9f4731",
+            "reasonCode": "supporting_source_boundary"
+          }
+        ],
+        "projections": [
+          {
+            "target": "todo",
+            "applicability": "applicable"
+          }
+        ]
+      },
+      "round3Signature": {
+        "status": {
+          "generationState": "partial",
+          "outcome": "partial",
+          "errorCode": null,
+          "disposition": "review"
+        },
+        "sourceShape": "date_preparation",
+        "conversionDecision": {
+          "lifeArea": "money_admin_purchase",
+          "planningPattern": "date_preparation",
+          "primaryArtifact": "todo"
+        },
+        "items": [
+          {
+            "sourceRowIds": [
+              "row-58a7d0c31e94"
+            ],
+            "intent": "inspect",
+            "completionMode": "check",
+            "memoPresent": false,
+            "groupingPresent": false,
+            "schedule": null
+          }
+        ],
+        "omittedRows": [
+          {
+            "sourceRowId": "row-a20e6b9f4731",
+            "reasonCode": "supporting_source_boundary"
+          }
+        ],
+        "projections": [
+          {
+            "target": "todo",
+            "applicability": "applicable"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "case-11",
+      "round2Valid": true,
+      "round3Valid": true,
+      "exactSignatureMatch": true,
+      "mismatchDetails": [],
+      "round2Signature": {
+        "status": {
+          "generationState": "failed",
+          "outcome": "no_proposal",
+          "errorCode": "missing_source_rows",
+          "disposition": "source_import_required"
+        },
+        "sourceShape": "unknown",
+        "conversionDecision": null,
+        "items": [],
+        "omittedRows": [],
+        "projections": []
+      },
+      "round3Signature": {
+        "status": {
+          "generationState": "failed",
+          "outcome": "no_proposal",
+          "errorCode": "missing_source_rows",
+          "disposition": "source_import_required"
+        },
+        "sourceShape": "unknown",
+        "conversionDecision": null,
+        "items": [],
+        "omittedRows": [],
+        "projections": []
+      }
+    },
+    {
+      "caseId": "case-12",
+      "round2Valid": true,
+      "round3Valid": true,
+      "exactSignatureMatch": true,
+      "mismatchDetails": [],
+      "round2Signature": {
+        "status": {
+          "generationState": "failed",
+          "outcome": "no_proposal",
+          "errorCode": "locale_applicability_unverified",
+          "disposition": "hold"
+        },
+        "sourceShape": "unknown",
+        "conversionDecision": null,
+        "items": [],
+        "omittedRows": [],
+        "projections": []
+      },
+      "round3Signature": {
+        "status": {
+          "generationState": "failed",
+          "outcome": "no_proposal",
+          "errorCode": "locale_applicability_unverified",
+          "disposition": "hold"
+        },
+        "sourceShape": "unknown",
+        "conversionDecision": null,
+        "items": [],
+        "omittedRows": [],
+        "projections": []
+      }
+    }
+  ]
+}

@@ -1,23 +1,27 @@
 {
-  "reviewInputSchemaVersion": "flowme-url-to-flow-blind-review-input-v1",
+  "reviewInputSchemaVersion": "flowme-url-to-flow-blind-review-input-v2",
   "round": "round-1",
   "caseId": "case-09",
-  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
-  "expectationSetVersion": "flowme-url-to-flow-prompt-lab-expected-v1",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1.1",
   "promptVersion": "url-to-flow-prompt-v0.1",
   "proposalSchemaVersion": "flowme-semantic-proposal-v1",
   "rubric": {
-    "version": "flowme-url-to-flow-prompt-lab-review-rubric-v1",
+    "version": "flowme-url-to-flow-prompt-lab-review-rubric-v2",
     "reference": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-rubric.md"
   },
   "reviewResultTemplate": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-result-template.json",
+  "rawRun": {
+    "runFile": "docs/content-audit/2026-07-14-url-to-flow-prompt-lab/runs/round-1/batch-c.json",
+    "runId": "round-1-neutral-batch-c"
+  },
+  "proposalFingerprint": "sha256:7a540ca7974df0d8c43aca346ed7acaa907f2720759c9d33cf3b02a15d688c92",
   "sourcePacket": {
     "caseId": "case-09",
     "requestId": "prompt-lab-v1-case-09",
     "targetLocale": "ko-KR",
     "userJob": "source-defined 사진 prompt를 하루 하나씩 실행하고 완료 여부를 남긴다.",
     "maxItems": 7,
-    "claimedScope": "Canonical shape contract sample. Only the extracted Day 1-2 rows are in fixture scope; this does not claim that all 30 source rows were imported.",
+    "claimedScope": "제공된 2개 SourceRow 범위만 변환한다.",
     "source": {
       "primary": {
         "sourceId": "source-canon-photo-30",
@@ -54,85 +58,8 @@
       }
     ],
     "inputEvidenceRefs": [
-      "golden-fixtures-v1.json#gf-pos-09-resource-queue:source-only"
+      "prompt-lab-source:case-09"
     ]
-  },
-  "hiddenExpectation": {
-    "caseId": "case-09",
-    "fixtureId": "gf-pos-09-resource-queue",
-    "fixtureKind": "positive",
-    "fixtureShape": "resource_queue",
-    "name": "30일 사진 prompt queue · Day 1-2 contract sample",
-    "expectedStatus": {
-      "generationState": "proposal",
-      "outcome": "complete",
-      "readiness": null,
-      "errorCode": null,
-      "recommendedDisposition": "review"
-    },
-    "expectedConversion": {
-      "userNeed": "source-defined 사진 prompt를 하루 하나씩 실행하고 완료 여부를 남긴다.",
-      "planningPattern": "resource_queue",
-      "primaryArtifact": "calendar",
-      "riskLevel": "low"
-    },
-    "expectedItems": [
-      {
-        "referenceItemId": "item-photo-day-01",
-        "title": "Day 1 prompt로 사진 찍기",
-        "intent": "use_resource",
-        "sourceRowIds": [
-          "row-photo-day-01"
-        ],
-        "completionMode": "check",
-        "doneWhen": "Day 1 prompt에 맞는 사진을 한 장 찍었다.",
-        "hasSchedule": true,
-        "canonicalSchedule": {
-          "mode": "anchor_offset",
-          "anchorFieldId": "field-photo-start-date",
-          "dayOffset": 0,
-          "allDay": true
-        }
-      },
-      {
-        "referenceItemId": "item-photo-day-02",
-        "title": "Day 2 prompt로 사진 찍기",
-        "intent": "use_resource",
-        "sourceRowIds": [
-          "row-photo-day-02"
-        ],
-        "completionMode": "check",
-        "doneWhen": "Day 2 prompt에 맞는 사진을 한 장 찍었다.",
-        "hasSchedule": true,
-        "canonicalSchedule": {
-          "mode": "anchor_offset",
-          "anchorFieldId": "field-photo-start-date",
-          "dayOffset": 1,
-          "allDay": true
-        }
-      }
-    ],
-    "expectedOmittedRows": [],
-    "accountingSourceRowIds": [
-      "row-photo-day-01",
-      "row-photo-day-02"
-    ],
-    "expectedProjections": [
-      "calendar:ics",
-      "checklist:markdown",
-      "sheet:csv",
-      "memo:markdown"
-    ],
-    "forbiddenProjections": [
-      "todo:markdown",
-      "sheet:tsv"
-    ],
-    "referenceReview": {
-      "readiness": "ready_for_internal_canary",
-      "hardFails": [],
-      "rightsDecision": "prompt 제목과 원문 링크만 사용하며 해설 본문은 복제하지 않는다.",
-      "riskDecision": "위험이 낮고 사진 촬영 장소·대상은 사용자가 안전을 판단한다."
-    }
   },
   "proposal": {
     "proposalSchemaVersion": "flowme-semantic-proposal-v1",
@@ -147,7 +74,7 @@
     },
     "sourceAssessment": {
       "access": "readable",
-      "sourceShape": "resource_queue",
+      "sourceShape": "daily_challenge",
       "primarySourceId": "source-canon-photo-30",
       "supportingSourceIds": [],
       "receivedSourceRowIds": [
@@ -157,14 +84,14 @@
       "untrustedInstructionDetected": false
     },
     "conversionDecision": {
-      "userNeed": "사진 연습 사용자로서 제공된 사진 prompt를 하루 하나씩 실행하고 완료 여부를 남긴다.",
+      "userNeed": "사진 챌린지 참여자로서 제공된 Day 1과 Day 2 프롬프트를 하루 하나씩 실행하고 완료 여부를 남겨 진행 상태를 확인한다.",
       "lifeArea": "hobby",
-      "planningPattern": "resource_queue",
+      "planningPattern": "daily_challenge",
       "primaryArtifact": "checklist",
-      "contentShape": "순서가 있는 2개 사진 prompt 실행 목록"
+      "contentShape": "2일 사진 프롬프트 실행 체크리스트"
     },
     "proposal": {
-      "proposalTitle": "사진 prompt Day 1-2 실행하기",
+      "proposalTitle": "사진 프롬프트 Day 1-2 실행하기",
       "items": [
         {
           "proposalId": "p-01",
@@ -174,12 +101,15 @@
             "row-photo-day-01"
           ],
           "completion": {
-            "mode": "record",
-            "doneWhen": "Day 1 prompt를 실행하고 완료 여부를 남겼다."
+            "mode": "check",
+            "doneWhen": "Day 1 prompt를 실행하고 완료 여부를 표시했다."
           },
           "memoCandidate": null,
           "groupingCandidate": null,
-          "scheduleCandidate": null
+          "scheduleCandidate": {
+            "sourceText": "Day 1",
+            "parsedByRule": false
+          }
         },
         {
           "proposalId": "p-02",
@@ -189,12 +119,15 @@
             "row-photo-day-02"
           ],
           "completion": {
-            "mode": "record",
-            "doneWhen": "Day 2 prompt를 실행하고 완료 여부를 남겼다."
+            "mode": "check",
+            "doneWhen": "Day 2 prompt를 실행하고 완료 여부를 표시했다."
           },
           "memoCandidate": null,
           "groupingCandidate": null,
-          "scheduleCandidate": null
+          "scheduleCandidate": {
+            "sourceText": "Day 2",
+            "parsedByRule": false
+          }
         }
       ],
       "omittedRows": [],
@@ -204,28 +137,35 @@
       {
         "target": "checklist",
         "applicability": "applicable",
-        "reason": "두 prompt 행을 순서대로 실행하고 완료 여부를 확인할 수 있다."
+        "reason": "두 SourceRow가 각각 완료 여부를 표시할 수 있는 실행 단위다."
+      },
+      {
+        "target": "todo",
+        "applicability": "applicable",
+        "reason": "각 Day prompt를 독립적인 할 일로 옮길 수 있다."
       },
       {
         "target": "calendar",
         "applicability": "blocked",
-        "reason": "Day 1과 Day 2는 순서 표기일 뿐 실제 시작 날짜나 일정 표현이 제공되지 않았다."
+        "reason": "Day 1과 Day 2라는 상대 순서만 있고 실제 시작 날짜가 없어 날짜를 확정할 수 없다."
       }
     ],
     "reviewHints": {
       "recommendedDisposition": "review",
       "uncertainties": [
-        "제공된 행에는 Day 1과 Day 2의 실제 사진 prompt 내용이 없다.",
-        "30일 전체가 아니라 제공된 2개 행만 변환했다."
+        "각 프롬프트의 구체적인 내용은 SourceRow detail로 제공되지 않았다."
       ],
       "hardFailCodes": [],
       "humanReviewRequired": [
-        "실제 prompt 내용과 원문 사용 권리를 확인한다."
+        "각 Day 프롬프트의 원문 내용과 이용 권리를 확인한다."
       ]
     }
   },
   "validator": {
-    "passed": null,
-    "hardFailCodes": []
+    "validatorVersion": "flowme-url-to-flow-prompt-lab-validator-v1",
+    "passed": false,
+    "codes": [
+      "json_schema"
+    ]
   }
 }

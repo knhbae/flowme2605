@@ -1,0 +1,817 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"> <title>URL → Flow 10개 상세 갤러리</title><style>
+:root{--ink:#17212b;--muted:#62707d;--paper:#f4f1e9;--card:#fffdf8;--line:#d8d4c9;--navy:#123047;--teal:#087e72;--coral:#eb6a4a;--gold:#d29b35;--red:#b63d4a;--green:#2c7a59;--shadow:0 18px 60px rgba(27,40,48,.12);color-scheme:light}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font-family:Pretendard,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;line-height:1.55}a{color:var(--teal);text-underline-offset:3px}button,a{touch-action:manipulation}.skip{position:fixed;left:1rem;top:-5rem;z-index:100;background:#fff;padding:.75rem 1rem;border-radius:.5rem}.skip:focus{top:1rem}.eyebrow{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:var(--teal)}h1,h2,h3,p{margin-top:0}h1{font-size:clamp(2.35rem,6vw,5.6rem);line-height:1.02;letter-spacing:-.055em}h2{font-size:clamp(1.85rem,4.2vw,3.8rem);line-height:1.08;letter-spacing:-.045em}h3{font-size:1.05rem;letter-spacing:-.02em}.lede{font-size:clamp(1rem,1.6vw,1.35rem);color:var(--muted);max-width:70ch}.muted{color:var(--muted)}.tiny{font-size:.76rem}.badge{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;padding:.28rem .62rem;font-size:.72rem;font-weight:800;background:#fff}.badge.good{background:#e8f4ee;color:var(--green);border-color:#b9d9c8}.badge.warn{background:#fff4de;color:#895a00;border-color:#efd39d}.badge.bad{background:#fbe9eb;color:var(--red);border-color:#e8bbc1}.badge.dark{background:var(--navy);color:#fff;border-color:var(--navy)}.cluster{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.grid-4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.8rem}.card,.evidence-card,.artifact-card{background:var(--card);border:1px solid var(--line);border-radius:1rem;padding:1rem;box-shadow:0 6px 20px rgba(27,40,48,.05)}.card strong.metric{display:block;font-size:clamp(2rem,4vw,4rem);line-height:1;color:var(--navy)}blockquote{margin:.55rem 0 0;font-weight:650;letter-spacing:-.018em}pre{white-space:pre-wrap;overflow-wrap:anywhere;margin:.65rem 0 0;font:500 .82rem/1.6 ui-monospace,SFMono-Regular,Consolas,monospace}pre code{font:inherit}.item-list{list-style:none;padding:0;margin:0;display:grid;gap:.65rem}.item-row{display:grid;grid-template-columns:2.25rem 1fr;gap:.8rem;align-items:start;border:1px solid var(--line);background:var(--card);padding:.75rem;border-radius:.8rem}.item-number{display:grid;place-items:center;width:2.1rem;height:2.1rem;border-radius:.65rem;background:var(--navy);color:#fff;font-size:.72rem;font-weight:900}.item-row small{display:block;color:var(--muted);margin-top:.15rem}.artifact-card pre{font-family:inherit;font-size:.88rem}.kpi{border-top:4px solid var(--teal)}.kpi.coral{border-color:var(--coral)}.kpi.gold{border-color:var(--gold)}.kpi.red{border-color:var(--red)}table{width:100%;border-collapse:collapse;font-size:.82rem}th,td{text-align:left;padding:.55rem .45rem;border-bottom:1px solid var(--line);vertical-align:top}th{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}.table-wrap{overflow-x:auto}.callout{border-left:5px solid var(--teal);padding:.9rem 1rem;background:#e9f5f2;border-radius:0 .8rem .8rem 0}.callout.warn{border-color:var(--gold);background:#fff4df}.callout.bad{border-color:var(--red);background:#fbeaec}.decision{font-size:clamp(1.3rem,3vw,2.45rem);font-weight:900;letter-spacing:-.04em}.flowline{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:.55rem;counter-reset:pipeline}.flowline .node{position:relative;background:var(--card);border:1px solid var(--line);padding:.9rem;border-radius:.8rem;min-height:8rem}.flowline .node:before{counter-increment:pipeline;content:counter(pipeline);display:grid;place-items:center;width:1.6rem;height:1.6rem;border-radius:50%;background:var(--teal);color:#fff;font-size:.7rem;font-weight:900;margin-bottom:.55rem}.flowline .node:not(:last-child):after{content:"→";position:absolute;right:-.48rem;top:50%;z-index:2;color:var(--coral);font-weight:900}.source-link{display:inline-block;width:100%;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.asset-links{display:flex;gap:.7rem;flex-wrap:wrap}.asset-links a{font-size:.78rem}.dot{width:.55rem;height:.55rem;border-radius:50%;display:inline-block;background:currentColor;margin-right:.35rem}.json-box{max-height:18rem;overflow:auto;background:#101e29;color:#d9f3ec;border-radius:.9rem;padding:.8rem}.json-box pre{margin:0}.repair{border-left:3px solid var(--coral);padding-left:.8rem;margin:.7rem 0}.repair small{display:block;color:var(--muted)}
+.grid-2>*,.grid-3>*,.grid-4>*,.hero-strip>*,.case-head>*{min-width:0}
+@media(max-width:800px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}.flowline{grid-template-columns:1fr 1fr}.flowline .node:not(:last-child):after{display:none}h1{font-size:2.7rem}table{min-width:720px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+
+body{background:linear-gradient(180deg,#e7eceb 0,#f4f1e9 18rem)}.topbar{position:sticky;top:0;z-index:10;background:rgba(18,48,71,.96);color:#fff;padding:.8rem clamp(1rem,4vw,3rem);display:flex;justify-content:space-between;align-items:center;gap:1rem}.topbar a{color:#fff}.gallery{max-width:1280px;margin:auto;padding:clamp(2rem,5vw,5rem) clamp(1rem,3vw,2rem)}.gallery-hero{max-width:900px;margin-bottom:2rem}.case-index{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.5rem;margin:1.5rem 0}.case-index a{display:block;background:#fff;border:1px solid var(--line);padding:.65rem;border-radius:.7rem;text-decoration:none;font-weight:800}.case-card{background:rgba(255,253,248,.96);border:1px solid var(--line);border-radius:1.4rem;padding:clamp(1rem,3vw,2rem);box-shadow:var(--shadow);margin:0 0 2rem;scroll-margin-top:5rem}.case-head{display:grid;grid-template-columns:1fr auto;gap:1rem;border-bottom:1px solid var(--line);padding-bottom:1rem;margin-bottom:1rem}.case-head h2{font-size:clamp(1.6rem,3vw,2.7rem);margin:.25rem 0}.section-label{font-size:.72rem;font-weight:900;letter-spacing:.08em;color:var(--coral);text-transform:uppercase;margin:1.2rem 0 .5rem}.gate-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}.gate{border:1px solid var(--line);border-radius:.8rem;padding:.8rem}.gate.pass{border-color:#b9d9c8;background:#eff8f3}.gate.fail{border-color:#e8bbc1;background:#fff2f3}.review-vote{display:flex;justify-content:space-between;gap:1rem;border-bottom:1px solid var(--line);padding:.45rem 0}.projection{border:1px solid var(--line);border-radius:.8rem;padding:.8rem;margin:.6rem 0}.projection summary{cursor:pointer;font-weight:800}.publication{font-size:1rem;font-weight:900}.backtop{display:inline-block;margin-top:1rem}@media(max-width:800px){.case-index{grid-template-columns:repeat(2,1fr)}.case-head,.gate-grid{grid-template-columns:1fr}.topbar{align-items:flex-start;flex-direction:column}}
+.case-card,.case-head>*,.projection{min-width:0}.case-head{grid-template-columns:minmax(0,1fr) auto}.case-head h2,.projection summary{overflow-wrap:anywhere}@media(max-width:800px){.case-index{grid-template-columns:repeat(2,minmax(0,1fr))}.case-head,.gate-grid{grid-template-columns:minmax(0,1fr)}}
+@media print{.topbar,.case-index,.backtop{display:none}.gallery{padding:0}.case-card{box-shadow:none;break-before:page;margin:0;border:0}.case-card:first-of-type{break-before:auto}details{display:block}details>*{display:block!important}}
+</style></head><body id="top"><a class="skip" href="#case-01">첫 사례로 건너뛰기</a><nav class="topbar"><strong>FLOW · 10 URL CASE GALLERY</strong><div><a href="report.html">15장 보고서</a> · <a href="selected-flows.json">선택본 JSON</a></div></nav><main class="gallery"><header class="gallery-hero"><span class="eyebrow">SOURCE-GROUNDED REVIEW SURFACE</span><h1>원문 기준으로<br>무엇이 나왔나</h1><p class="lede">점수보다 먼저 10개 모두의 근거·Item·완료 기준·투영·raw gate·수정·공개 상태를 확인하는 상세판이다.</p><div class="asset-links"><a href="benchmark-summary.json">요약 ↗</a><a href="selected-flows.json">선택본 ↗</a><a href="selected-validation.json">선택 검증 ↗</a><a href="source-snapshots.json">원문 snapshot ↗</a><a href="model-runs/lower-cost.json">저비용 raw ↗</a><a href="model-runs/higher-capability.json">고성능 raw ↗</a><a href="review-results/reviewer-a.json">reviewer A ↗</a><a href="review-results/reviewer-b.json">reviewer B ↗</a><a href="editorial-repairs/lower-cost-repaired.json">repair 원본 ↗</a></div><nav class="case-index" aria-label="사례 바로가기"><a href="#case-01"><span class="eyebrow">case-01</span><br>국민건강보험 건강검진 안내</a><a href="#case-02"><span class="eyebrow">case-02</span><br>스탠드, 먼지거름 필터 청소 방법이 궁금합니다.</a><a href="#case-03"><span class="eyebrow">case-03</span><br>해외여행 준비물 체크리스트</a><a href="#case-04"><span class="eyebrow">case-04</span><br>고용24 구직자 취업지원 서비스</a><a href="#case-05"><span class="eyebrow">case-05</span><br>K-MOOC 제자백가의 사상 강좌 운영 계획</a><a href="#case-06"><span class="eyebrow">case-06</span><br>백종원의 요리비책 레시피 재생목록</a><a href="#case-07"><span class="eyebrow">case-07</span><br>자동차365 중고차 구매가이드</a><a href="#case-08"><span class="eyebrow">case-08</span><br>국민건강보험 영유아 건강검진 안내</a><a href="#case-09"><span class="eyebrow">case-09</span><br>Canon 30-Day Photo Challenge</a><a href="#case-10"><span class="eyebrow">case-10</span><br>TS 자동차 정기검사</a></nav><div class="callout warn"><strong>비교의 한계:</strong> reviewer 2명은 모델 proxy이고, 48 edit points는 에이전트 proxy다. 실제 provider 비용·latency·사람 편집량은 측정하지 않았다.</div></header><article class="case-card" id="case-01">
+    <header class="case-head"><div><span class="eyebrow">case-01 · 단계 생애주기</span><h2>국민건강보험 건강검진 안내</h2><a class="source-link" href="https://www.nhis.or.kr/nhis/healthin/wbhaca04500m01.do">https://www.nhis.or.kr/nhis/healthin/wbhaca04500m01.do</a></div><div class="cluster"><span class="badge good">3 Items</span><span class="badge dark">저비용 레인</span></div></header>
+    <div class="grid-2"><section><h3 class="section-label">선택 결과</h3><p><strong>compile_candidate</strong> — 공식 페이지가 대상·주기·기간·결과 통보를 명시한다. 민감 정보이므로 사람 검토 전 공개하지 않는다.</p><p>공식 안내에서 내 검진 대상과 검진기간을 확인하고, 검진 뒤 결과 통보를 확인한다.</p><div class="cluster"><span class="badge good">체크리스트</span><span class="badge bad">민감정보 잠금</span></div></section><section><h3 class="section-label">원시 레인 hard gate</h3><div class="gate-grid"><div class="gate pass"><strong>저비용 · PASS</strong><p class="tiny">hard error 0</p></div><div class="gate pass"><strong>고성능 · PASS</strong><p class="tiny">hard error 0</p></div></div><h3 class="section-label">블라인드 선택</h3><div class="review-vote"><span>reviewer-a · gpt-5.6-terra <small>(모델 proxy)</small></span><strong>저비용 레인</strong></div><div class="review-vote"><span>reviewer-b · gpt-5.6-sol <small>(모델 proxy)</small></span><strong>고성능 레인</strong></div></section></div>
+    <h3 class="section-label">SourceEvidence</h3><div class="grid-2">
+  <article class="evidence-card">
+    <span class="eyebrow">ev-01-eligibility · selectedLines:113</span>
+    <blockquote>“일반건강검진 대상자 : 지역세대주, 직장가입자, 20세이상 세대원과 피부양자, 20세~64세 의료급여수급권자”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">ev-02-cadence · selectedLines:114</span>
+    <blockquote>“※ 매 2년마다 1회, 비사무직은 매년 실시”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">ev-03-period · selectedLines:213</span>
+    <blockquote>“검진기간 : 매년 1.1. ~ 12.31. (확진검사는 다음연도 3.31.까지)”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">ev-04-result · selectedLines:165-166</span>
+    <blockquote>“검진기관은 건강검진을 완료한 후, 결과통보서를 작성하여 수검자에게 15일 이내에 우편, 이메일로 통보”</blockquote>
+  </article></div>
+    <h3 class="section-label">Flow Items + doneWhen</h3><ol class="item-list">
+  <li class="item-row">
+    <span class="item-number">01</span>
+    <div><strong>공식 대상자 기준과 내 대상 여부 확인</strong><small>완료: 공식 대상자 기준을 보고 내 검진 대상 여부는 공단 또는 검진기관에서 확인할 항목으로 표시했다.</small></div>
+  </li>
+  <li class="item-row">
+    <span class="item-number">02</span>
+    <div><strong>해당 연도 검진기간 확인</strong><small>완료: 해당 연도의 검진기간을 확인해 메모에 남겼다.</small></div>
+  </li>
+  <li class="item-row">
+    <span class="item-number">03</span>
+    <div><strong>결과 통보서 수령 여부 확인</strong><small>완료: 검진 완료 뒤 결과통보서를 우편 또는 이메일로 받았는지 확인했다.</small></div>
+  </li></ol>
+    <div class="grid-2"><section><h3 class="section-label">Projections</h3><details class="projection" open><summary>체크리스트 · source Items item-01, item-02, item-03</summary><pre><code>{
+  &quot;title&quot;: &quot;일반건강검진 대상·기간 확인표&quot;,
+  &quot;itemIds&quot;: [
+    &quot;item-01&quot;,
+    &quot;item-02&quot;,
+    &quot;item-03&quot;
+  ],
+  &quot;includeSourceUrl&quot;: true
+}</code></pre><p class="tiny"><strong>Loss ledger:</strong> 개인별 검진일은 원문과 사용자 입력 모두에 없으므로 달력 일정을 만들지 않는다.</p></details><details class="projection" open><summary>메모 · source Items item-01, item-02</summary><pre><code>{
+  &quot;title&quot;: &quot;검진기간·공식 출처&quot;,
+  &quot;sourceUrl&quot;: &quot;https://www.nhis.or.kr/nhis/healthin/wbhaca04500m01.do&quot;,
+  &quot;include&quot;: [
+    &quot;매 2년마다 1회, 비사무직은 매년 실시&quot;,
+    &quot;매년 1.1. ~ 12.31.&quot;
+  ]
+}</code></pre></details></section><section><h3 class="section-label">Rendered artifacts</h3><article class="artifact-card"><span class="eyebrow">체크리스트</span><pre>- [ ] 공식 대상자 기준과 내 대상 여부 확인
+- [ ] 해당 연도 검진기간 확인
+- [ ] 결과 통보서 수령 여부 확인</pre></article><article class="artifact-card"><span class="eyebrow">메모</span><pre>출처: 국민건강보험 건강검진 안내
+검진기간: 매년 1.1. ~ 12.31.
+주의: 개인별 대상 여부와 의료 판단은 공단 또는 검진기관에서 확인합니다.</pre></article></section></div>
+    <h3 class="section-label">Editorial repair log</h3><p class="muted">편집 proxy 연산 없음 — raw model output을 그대로 선택.</p>
+    <footer style="margin-top:1.2rem;padding-top:1rem;border-top:1px solid var(--line)"><span class="publication">공개 상태: 민감정보 잠금</span><span class="tiny muted"> · 선택본 strict validation PASS · unsupportedClaims 0</span><br><a class="backtop" href="#top">↑ 목차로</a></footer>
+  </article><article class="case-card" id="case-02">
+    <header class="case-head"><div><span class="eyebrow">case-02 · 반복 루틴</span><h2>스탠드, 먼지거름 필터 청소 방법이 궁금합니다.</h2><a class="source-link" href="https://www.samsungsvc.co.kr/solution/121273">https://www.samsungsvc.co.kr/solution/121273</a></div><div class="cluster"><span class="badge good">3 Items</span><span class="badge dark">저비용 레인</span></div></header>
+    <div class="grid-2"><section><h3 class="section-label">선택 결과</h3><p><strong>compile_candidate</strong> — 반복 주기·조건별 행동·완료 상태·주의가 모두 스냅샷에 있다.</p><p>극세 필터를 공식 주기에 맞춰 청소하고 건조 완료 상태를 남긴다.</p><div class="cluster"><span class="badge good">캘린더</span><span class="badge bad">사람 검토 필요</span></div></section><section><h3 class="section-label">원시 레인 hard gate</h3><div class="gate-grid"><div class="gate pass"><strong>저비용 · PASS</strong><p class="tiny">hard error 0</p></div><div class="gate pass"><strong>고성능 · PASS</strong><p class="tiny">hard error 0</p></div></div><h3 class="section-label">블라인드 선택</h3><div class="review-vote"><span>reviewer-a · gpt-5.6-terra <small>(모델 proxy)</small></span><strong>tie</strong></div><div class="review-vote"><span>reviewer-b · gpt-5.6-sol <small>(모델 proxy)</small></span><strong>tie</strong></div></section></div>
+    <h3 class="section-label">SourceEvidence</h3><div class="grid-2">
+  <article class="evidence-card">
+    <span class="eyebrow">ev-01-interval · selectedLines:34-35</span>
+    <blockquote>“극세 필터의 청소 주기는 4주에 1회입니다.”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">ev-02-light-dust · selectedLines:27-28</span>
+    <blockquote>“먼지가 적게 쌓여 있으면 진공청소기를 이용하여 먼지를 제거해 주시고”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">ev-03-heavy-dust · selectedLines:28</span>
+    <blockquote>“먼지가 많이 쌓여 있으면 미지근한 물에 중성세제를 풀어 먼지거름 필터를 담궈 놓았다가 약 30분 정도 후 세척해 주세요.”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">ev-04-dry · selectedLines:36</span>
+    <blockquote>“세로 방향으로 비스듬히 세워 그늘에서 충분히 건조해 주세요.”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">ev-05-caution · selectedLines:30</span>
+    <blockquote>“무리한 물청소를 하시거나 햇빛이 강한 곳에서 건조를 하시면 필터가 훼손되어 조립이 안되거나 소음이 발생하는 경우도 있으니 주의가 필요합니다.”</blockquote>
+  </article></div>
+    <h3 class="section-label">Flow Items + doneWhen</h3><ol class="item-list">
+  <li class="item-row">
+    <span class="item-number">01</span>
+    <div><strong>먼지 양에 맞는 청소 방법 선택</strong><small>완료: 진공청소기 또는 중성세제 물 세척 중 현재 먼지 양에 맞는 방법을 하나 선택했다.</small></div>
+  </li>
+  <li class="item-row">
+    <span class="item-number">02</span>
+    <div><strong>선택한 방법으로 극세 필터 청소</strong><small>완료: 선택한 방법으로 먼지 제거 또는 세척을 마쳤다.</small></div>
+  </li>
+  <li class="item-row">
+    <span class="item-number">03</span>
+    <div><strong>그늘에서 충분히 건조</strong><small>완료: 필터를 세로 방향으로 비스듬히 세워 그늘에서 충분히 건조했다.</small></div>
+  </li></ol>
+    <div class="grid-2"><section><h3 class="section-label">Projections</h3><details class="projection" open><summary>캘린더 · source Items item-01, item-02, item-03</summary><pre><code>{
+  &quot;title&quot;: &quot;극세 필터 청소&quot;,
+  &quot;startFromUserField&quot;: &quot;firstRunDate&quot;,
+  &quot;recurrence&quot;: {
+    &quot;interval&quot;: 4,
+    &quot;unit&quot;: &quot;week&quot;,
+    &quot;evidenceId&quot;: &quot;ev-01-interval&quot;
+  },
+  &quot;description&quot;: &quot;먼지 양에 맞는 방법 선택 → 청소 → 그늘 건조&quot;
+}</code></pre><p class="tiny"><strong>Loss ledger:</strong> 첫 실행일은 사용자가 입력한다.</p></details><details class="projection" open><summary>체크리스트 · source Items item-01, item-02, item-03</summary><pre><code>{
+  &quot;itemIds&quot;: [
+    &quot;item-01&quot;,
+    &quot;item-02&quot;,
+    &quot;item-03&quot;
+  ],
+  &quot;includeDoneWhen&quot;: true
+}</code></pre><p class="tiny"><strong>Loss ledger:</strong> 4주 반복 규칙은 체크리스트 단독으로 자동 생성되지 않는다.</p></details><details class="projection" open><summary>메모 · source Items item-02, item-03</summary><pre><code>{
+  &quot;title&quot;: &quot;극세 필터 청소 주의&quot;,
+  &quot;includeEvidenceIds&quot;: [
+    &quot;ev-05-caution&quot;
+  ],
+  &quot;sourceUrl&quot;: &quot;https://www.samsungsvc.co.kr/solution/121273&quot;
+}</code></pre></details></section><section><h3 class="section-label">Rendered artifacts</h3><article class="artifact-card"><span class="eyebrow">calendarTemplate</span><pre>제목: 극세 필터 청소
+시작일: {{firstRunDate}}
+반복: 4주마다
+설명: 먼지 양에 맞는 방법 선택 → 청소 → 그늘 건조</pre></article><article class="artifact-card"><span class="eyebrow">체크리스트</span><pre>- [ ] 먼지 양에 맞는 청소 방법 선택
+- [ ] 선택한 방법으로 극세 필터 청소
+- [ ] 그늘에서 충분히 건조</pre></article><article class="artifact-card"><span class="eyebrow">메모</span><pre>무리한 물청소와 강한 햇빛 건조는 필터 훼손·조립 불가·소음으로 이어질 수 있어 주의합니다.</pre></article></section></div>
+    <h3 class="section-label">Editorial repair log</h3><p class="muted">편집 proxy 연산 없음 — raw model output을 그대로 선택.</p>
+    <footer style="margin-top:1.2rem;padding-top:1rem;border-top:1px solid var(--line)"><span class="publication">공개 상태: 사람 검토 필요</span><span class="tiny muted"> · 선택본 strict validation PASS · unsupportedClaims 0</span><br><a class="backtop" href="#top">↑ 목차로</a></footer>
+  </article><article class="case-card" id="case-03">
+    <header class="case-head"><div><span class="eyebrow">case-03 · 순서 절차</span><h2>해외여행 준비물 체크리스트</h2><a class="source-link" href="https://www.kkday.com/ko/blog/35618/world-overseatravel-checklist">https://www.kkday.com/ko/blog/35618/world-overseatravel-checklist</a></div><div class="cluster"><span class="badge good">11 Items</span><span class="badge dark">고성능 레인</span></div></header>
+    <div class="grid-2"><section><h3 class="section-label">선택 결과</h3><p><strong>compile_candidate</strong> — </p><p>출발 전에 글의 필수 준비물 8개를 챙기고 숙소 구비 여부에 따라 3개 물품을 가져갈지 결정한다.</p><div class="cluster"><span class="badge good">체크리스트</span><span class="badge warn">권리 검토 필요</span></div></section><section><h3 class="section-label">원시 레인 hard gate</h3><div class="gate-grid"><div class="gate pass"><strong>저비용 · PASS</strong><p class="tiny">hard error 0</p></div><div class="gate pass"><strong>고성능 · PASS</strong><p class="tiny">hard error 0</p></div></div><h3 class="section-label">블라인드 선택</h3><div class="review-vote"><span>reviewer-a · gpt-5.6-terra <small>(모델 proxy)</small></span><strong>고성능 레인</strong></div><div class="review-vote"><span>reviewer-b · gpt-5.6-sol <small>(모델 proxy)</small></span><strong>고성능 레인</strong></div></section></div>
+    <h3 class="section-label">SourceEvidence</h3><div class="grid-2">
+  <article class="evidence-card">
+    <span class="eyebrow">case-03-ev-01 · selectedLines 20-21 &gt; 필수 준비물</span>
+    <blockquote>“1. 여권”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">case-03-ev-02 · selectedLines 20-22 &gt; 필수 준비물</span>
+    <blockquote>“2. 데이터 이심”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">case-03-ev-03 · selectedLines 20-23 &gt; 필수 준비물</span>
+    <blockquote>“3. 현금”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">case-03-ev-04 · bodyTextSample &gt; 필수 준비물 4</span>
+    <blockquote>“4. 항공권 및 각종 바우처 사본”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">case-03-ev-05 · bodyTextSample &gt; 필수 준비물 5</span>
+    <blockquote>“5. 보조배터리”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">case-03-ev-06 · selectedLines 26</span>
+    <blockquote>“6. 접이식 우산”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">case-03-ev-07 · selectedLines 27</span>
+    <blockquote>“7. 상비약”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">case-03-ev-08 · selectedLines 28</span>
+    <blockquote>“8. 목베개”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">case-03-ev-09 · selectedLines 36-37 &gt; 숙소에 체크하고 챙겨도 되는 준비물</span>
+    <blockquote>“1. 헤어 드라이기, 고데기”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">case-03-ev-10 · selectedLines 36-38 &gt; 숙소에 체크하고 챙겨도 되는 준비물</span>
+    <blockquote>“2. 목욕용품”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">case-03-ev-11 · selectedLines 36-39 &gt; 숙소에 체크하고 챙겨도 되는 준비물</span>
+    <blockquote>“3. 수건”</blockquote>
+  </article></div>
+    <h3 class="section-label">Flow Items + doneWhen</h3><ol class="item-list">
+  <li class="item-row">
+    <span class="item-number">01</span>
+    <div><strong>여권을 보조 가방에 넣기</strong><small>완료: 여권을 보조 가방에 넣었다.</small></div>
+  </li>
+  <li class="item-row">
+    <span class="item-number">02</span>
+    <div><strong>데이터 이심 준비</strong><small>완료: 여행에 사용할 데이터 이심을 준비했다.</small></div>
+  </li>
+  <li class="item-row">
+    <span class="item-number">03</span>
+    <div><strong>여행지에서 사용할 현금 준비</strong><small>완료: 가져갈 현금을 준비했다.</small></div>
+  </li>
+  <li class="item-row">
+    <span class="item-number">04</span>
+    <div><strong>항공권과 각종 바우처 사본 준비</strong><small>완료: 항공권과 필요한 바우처 사본을 준비했다.</small></div>
+  </li>
+  <li class="item-row">
+    <span class="item-number">05</span>
+    <div><strong>보조배터리 챙기기</strong><small>완료: 보조배터리를 짐에 넣었다.</small></div>
+  </li>
+  <li class="item-row">
+    <span class="item-number">06</span>
+    <div><strong>접이식 우산 챙기기</strong><small>완료: 접이식 우산을 짐에 넣었다.</small></div>
+  </li>
+  <li class="item-row">
+    <span class="item-number">07</span>
+    <div><strong>상비약 챙기기</strong><small>완료: 가져갈 상비약을 짐에 넣었다.</small></div>
+  </li>
+  <li class="item-row">
+    <span class="item-number">08</span>
+    <div><strong>목베개 챙기기</strong><small>완료: 목베개를 짐에 넣었다.</small></div>
+  </li>
+  <li class="item-row">
+    <span class="item-number">09</span>
+    <div><strong>숙소의 헤어 드라이기·고데기 구비 여부 확인</strong><small>완료: 숙소 구비 여부를 확인하고 가져갈지 결정했다.</small></div>
+  </li>
+  <li class="item-row">
+    <span class="item-number">10</span>
+    <div><strong>숙소의 목욕용품 구비 여부 확인</strong><small>완료: 숙소 구비 여부를 확인하고 가져갈지 결정했다.</small></div>
+  </li>
+  <li class="item-row">
+    <span class="item-number">11</span>
+    <div><strong>숙소의 수건 구비 여부 확인</strong><small>완료: 숙소 구비 여부를 확인하고 가져갈지 결정했다.</small></div>
+  </li></ol>
+    <div class="grid-2"><section><h3 class="section-label">Projections</h3><details class="projection" open><summary>체크리스트 · source Items case-03-item-01, case-03-item-02, case-03-item-03, case-03-item-04, case-03-item-05, case-03-item-06, case-03-item-07, case-03-item-08, case-03-item-09, case-03-item-10, case-03-item-11</summary><pre><code>{
+  &quot;format&quot;: &quot;markdown&quot;,
+  &quot;groupByStep&quot;: true,
+  &quot;includeDoneWhen&quot;: true,
+  &quot;includeSourceUrl&quot;: true
+}</code></pre></details><details class="projection" open><summary>메모 · source Items case-03-item-01, case-03-item-02, case-03-item-03, case-03-item-04, case-03-item-05, case-03-item-06, case-03-item-07, case-03-item-08, case-03-item-09, case-03-item-10, case-03-item-11</summary><pre><code>{
+  &quot;format&quot;: &quot;markdown&quot;,
+  &quot;includeSourceUrl&quot;: true,
+  &quot;includeRightsBoundary&quot;: true
+}</code></pre></details></section><section><h3 class="section-label">Rendered artifacts</h3><article class="artifact-card"><span class="eyebrow">checklistMarkdown</span><pre># 해외여행 필수 짐과 숙소 확인 체크
+## 필수 준비물
+- [ ] 여권을 보조 가방에 넣기
+- [ ] 데이터 이심 준비
+- [ ] 여행지에서 사용할 현금 준비
+- [ ] 항공권과 각종 바우처 사본 준비
+- [ ] 보조배터리 챙기기
+- [ ] 접이식 우산 챙기기
+- [ ] 상비약 챙기기
+- [ ] 목베개 챙기기
+## 숙소 확인 후 결정
+- [ ] 헤어 드라이기·고데기 구비 여부를 확인하고 가져갈지 결정
+- [ ] 목욕용품 구비 여부를 확인하고 가져갈지 결정
+- [ ] 수건 구비 여부를 확인하고 가져갈지 결정</pre></article><article class="artifact-card"><span class="eyebrow">memoMarkdown</span><pre>이 체크리스트는 KKday Korea 글에서 &#39;필수 준비물&#39;과 &#39;숙소에 체크하고 챙겨도 되는 준비물&#39;로 제시된 항목만 옮긴 제작자 경험 기반 결과물입니다. 국가별 입국·안전·항공 운송 규칙을 대신하지 않습니다.
+원본: https://www.kkday.com/ko/blog/35618/world-overseatravel-checklist</pre></article></section></div>
+    <h3 class="section-label">Editorial repair log</h3><p class="muted">편집 proxy 연산 없음 — raw model output을 그대로 선택.</p>
+    <footer style="margin-top:1.2rem;padding-top:1rem;border-top:1px solid var(--line)"><span class="publication">공개 상태: 권리 검토 필요</span><span class="tiny muted"> · 선택본 strict validation PASS · unsupportedClaims 0</span><br><a class="backtop" href="#top">↑ 목차로</a></footer>
+  </article><article class="case-card" id="case-04">
+    <header class="case-head"><div><span class="eyebrow">case-04 · 순서 절차</span><h2>고용24 구직자 취업지원 서비스</h2><a class="source-link" href="https://www.work24.go.kr/cm/c/f/1100/selecSystInfo.do?systClId=SC00000205&amp;systId=SI00000447">https://www.work24.go.kr/cm/c/f/1100/selecSystInfo.do?systClId=SC00000205&amp;systId=SI00000447</a></div><div class="cluster"><span class="badge good">3 Items</span><span class="badge dark">저비용 레인</span><span class="badge warn">2 repairs</span></div></header>
+    <div class="grid-2"><section><h3 class="section-label">선택 결과</h3><p><strong>compile_candidate</strong> — 공식 페이지가 순서와 공개 범위 결정을 명시한다. 개인정보 민감성 때문에 공개 전 사람 검토가 필요하다.</p><p>고용24에서 이력서와 구직신청을 마치고 개인정보 공개 범위를 확인한다.</p><div class="cluster"><span class="badge good">할 일</span><span class="badge bad">민감정보 잠금</span></div></section><section><h3 class="section-label">원시 레인 hard gate</h3><div class="gate-grid"><div class="gate fail"><strong>저비용 · FAIL</strong><p class="tiny">sourceEvidence.ev-01-entry:text_not_exact_snapshot_substring<br>sourceEvidence.ev-03-privacy:text_not_exact_snapshot_substring</p></div><div class="gate fail"><strong>고성능 · FAIL</strong><p class="tiny">sourceEvidence.case-04-ev-01:text_not_exact_snapshot_substring<br>sourceEvidence.case-04-ev-04:text_not_exact_snapshot_substring<br>sourceEvidence.case-04-ev-05:text_not_exact_snapshot_substring</p></div></div><h3 class="section-label">블라인드 선택</h3><div class="review-vote"><span>reviewer-a · gpt-5.6-terra <small>(모델 proxy)</small></span><strong>고성능 레인</strong></div><div class="review-vote"><span>reviewer-b · gpt-5.6-sol <small>(모델 proxy)</small></span><strong>고성능 레인</strong></div></section></div>
+    <h3 class="section-label">SourceEvidence</h3><div class="grid-2">
+  <article class="evidence-card">
+    <span class="eyebrow">ev-01-entry · selectedLines:52</span>
+    <blockquote>“구직자 취업지원 서비스는 고용센터 등 공공고용서비스기관을 방문하여 구직신청을 하거나, 고용24(www.work24.go.kr)에 개인회원으로 가입한 후 이력서를 입력하고 ‘구직신청하기‘를 하시면 이용할 수 있습니다.”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">ev-02-resume · selectedLines:62-64</span>
+    <blockquote>“워크넷 개인회원으로 가입한 후 ‘이력서 작성 → 구직 신청하기’를 통해 구직을 신청합니다.”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">ev-03-privacy · selectedLines:67</span>
+    <blockquote>“구신신청이 완료된 후 워크넷에 정보를 공개할 것인지, 연락처, 이메일 등 어느 범위까지 공개할 것이지를 꼼꼼하게 확인하고 있습니다.”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">ev-04-accuracy · selectedLines:69</span>
+    <blockquote>“구직신청서에 작성한 내용은 소개받은 구인기업에 기본 이력서로 제공되므로 정확하고 구체적으로 작성해야 합니다.”</blockquote>
+  </article></div>
+    <h3 class="section-label">Flow Items + doneWhen</h3><ol class="item-list">
+  <li class="item-row">
+    <span class="item-number">01</span>
+    <div><strong>개인회원 가입 후 이력서 작성</strong><small>완료: 개인회원 가입과 이력서 작성을 마쳤다.</small></div>
+  </li>
+  <li class="item-row">
+    <span class="item-number">02</span>
+    <div><strong>구직신청하기 선택</strong><small>완료: ‘구직신청하기’를 선택해 신청 절차를 제출했다.</small></div>
+  </li>
+  <li class="item-row">
+    <span class="item-number">03</span>
+    <div><strong>정보 공개 범위 확인</strong><small>완료: 연락처와 이메일 등의 공개 범위를 직접 확인하고 선택했다.</small></div>
+  </li></ol>
+    <div class="grid-2"><section><h3 class="section-label">Projections</h3><details class="projection" open><summary>할 일 · source Items item-01, item-02, item-03</summary><pre><code>{
+  &quot;title&quot;: &quot;고용24 구직신청 시작표&quot;,
+  &quot;itemIds&quot;: [
+    &quot;item-01&quot;,
+    &quot;item-02&quot;,
+    &quot;item-03&quot;
+  ],
+  &quot;includeSourceUrl&quot;: true
+}</code></pre><p class="tiny"><strong>Loss ledger:</strong> 계정·이력서·인증 정보는 외부로 내보내지 않는다.</p></details><details class="projection" open><summary>메모 · source Items item-03</summary><pre><code>{
+  &quot;title&quot;: &quot;개인정보 경계&quot;,
+  &quot;text&quot;: &quot;연락처와 이메일 등 어느 범위까지 공개할 것인지 직접 확인&quot;,
+  &quot;sourceUrl&quot;: &quot;https://www.work24.go.kr/cm/c/f/1100/selecSystInfo.do?systClId=SC00000205&amp;systId=SI00000447&quot;
+}</code></pre></details></section><section><h3 class="section-label">Rendered artifacts</h3><article class="artifact-card"><span class="eyebrow">할 일</span><pre>- [ ] 개인회원 가입 후 이력서 작성
+- [ ] 구직신청하기 선택
+- [ ] 정보 공개 범위 확인</pre></article><article class="artifact-card"><span class="eyebrow">메모</span><pre>개인정보 공개 범위: 연락처·이메일 등의 공개 여부는 직접 확인하고 선택합니다.</pre></article></section></div>
+    <h3 class="section-label">Editorial repair log</h3><div class="repair"><strong>case-04-op-01 · 6점 · sourceEvidence.ev-01-entry</strong><small>Replace a synthesized quotation with the exact frozen selected line and narrow the locator.</small><details><summary>before / after</summary><pre><code>{
+  &quot;before&quot;: {
+    &quot;text&quot;: &quot;고용24(www.work24.go.kr)에 개인회원으로 가입한 후 이력서를 입력하고 ‘구직신청하기‘를 하시면 이용할 수 있습니다.&quot;,
+    &quot;locator&quot;: &quot;selectedLines:51-52&quot;
+  },
+  &quot;after&quot;: {
+    &quot;text&quot;: &quot;구직자 취업지원 서비스는 고용센터 등 공공고용서비스기관을 방문하여 구직신청을 하거나, 고용24(www.work24.go.kr)에 개인회원으로 가입한 후 이력서를 입력하고 ‘구직신청하기‘를 하시면 이용할 수 있습니다.&quot;,
+    &quot;locator&quot;: &quot;selectedLines:52&quot;
+  }
+}</code></pre></details></div><div class="repair"><strong>case-04-op-02 · 6점 · sourceEvidence.ev-03-privacy</strong><small>Replace a synthesized quotation with the exact frozen selected line and narrow the locator.</small><details><summary>before / after</summary><pre><code>{
+  &quot;before&quot;: {
+    &quot;text&quot;: &quot;구신신청이 완료된 후 워크넷에 정보를 공개할 것인지, 연락처, 이메일 등 어느 범위까지 공개할 것인지를 꼼꼼하게 확인하고 있습니다.&quot;,
+    &quot;locator&quot;: &quot;selectedLines:67&quot;
+  },
+  &quot;after&quot;: {
+    &quot;text&quot;: &quot;구신신청이 완료된 후 워크넷에 정보를 공개할 것인지, 연락처, 이메일 등 어느 범위까지 공개할 것이지를 꼼꼼하게 확인하고 있습니다.&quot;,
+    &quot;locator&quot;: &quot;selectedLines:67&quot;
+  }
+}</code></pre></details></div>
+    <footer style="margin-top:1.2rem;padding-top:1rem;border-top:1px solid var(--line)"><span class="publication">공개 상태: 민감정보 잠금</span><span class="tiny muted"> · 선택본 strict validation PASS · unsupportedClaims 0</span><br><a class="backtop" href="#top">↑ 목차로</a></footer>
+  </article><article class="case-card" id="case-05">
+    <header class="case-head"><div><span class="eyebrow">case-05 · 원문 표 행</span><h2>K-MOOC 제자백가의 사상 강좌 운영 계획</h2><a class="source-link" href="https://www.kmooc.kr/view/course/detail/6661">https://www.kmooc.kr/view/course/detail/6661</a></div><div class="cluster"><span class="badge good">5 Items</span><span class="badge dark">저비용 레인</span><span class="badge warn">5 repairs</span></div></header>
+    <div class="grid-2"><section><h3 class="section-label">선택 결과</h3><p><strong>compile_candidate</strong> — 원문이 주차·주제·시험 범위를 표로 제공하므로 작은 진도표가 자연스럽다.</p><p>강좌 운영 계획에서 확인한 주차별 학습과 시험 범위를 기록한다.</p><div class="cluster"><span class="badge good">표</span><span class="badge bad">사람 검토 필요</span></div></section><section><h3 class="section-label">원시 레인 hard gate</h3><div class="gate-grid"><div class="gate fail"><strong>저비용 · FAIL</strong><p class="tiny">sourceEvidence.ev-01-week2:text_not_exact_snapshot_substring<br>sourceEvidence.ev-02-week3:text_not_exact_snapshot_substring<br>sourceEvidence.ev-03-week4:text_not_exact_snapshot_substring<br>sourceEvidence.ev-04-midterm:text_not_exact_snapshot_substring<br>sourceEvidence.ev-05-final:text_not_exact_snapshot_substring</p></div><div class="gate fail"><strong>고성능 · FAIL</strong><p class="tiny">sourceEvidence.case-05-ev-01:text_not_exact_snapshot_substring<br>sourceEvidence.case-05-ev-02:text_not_exact_snapshot_substring<br>sourceEvidence.case-05-ev-03:text_not_exact_snapshot_substring<br>sourceEvidence.case-05-ev-04:text_not_exact_snapshot_substring<br>sourceEvidence.case-05-ev-05:text_not_exact_snapshot_substring<br>sourceEvidence.case-05-ev-06:text_not_exact_snapshot_substring</p></div></div><h3 class="section-label">블라인드 선택</h3><div class="review-vote"><span>reviewer-a · gpt-5.6-terra <small>(모델 proxy)</small></span><strong>저비용 레인</strong></div><div class="review-vote"><span>reviewer-b · gpt-5.6-sol <small>(모델 proxy)</small></span><strong>고성능 레인</strong></div></section></div>
+    <h3 class="section-label">SourceEvidence</h3><div class="grid-2">
+  <article class="evidence-card">
+    <span class="eyebrow">ev-01-week2 · bodyTextSample:chars-792-808</span>
+    <blockquote>“2
+
+ 
+
+제자백가의 사상과 덕”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">ev-02-week3 · bodyTextSample:chars-958-972</span>
+    <blockquote>“3
+
+ 
+
+공자의 윤리적 덕”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">ev-03-week4 · bodyTextSample:chars-1148-1162</span>
+    <blockquote>“4
+
+ 
+
+묵자의 지성적 덕”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">ev-04-midterm · bodyTextSample:chars-1917-1947</span>
+    <blockquote>“8
+
+ 
+
+중간시험
+
+     
+
+1주차~7주차 학습내용”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">ev-05-final · bodyTextSample:chars-3026-3058</span>
+    <blockquote>“15
+
+ 
+
+기말고사
+
+     
+
+9주차~14주차 학습내용”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">ev-06-quiz · selectedLines:240-242</span>
+    <blockquote>“퀴즈: 1주차부터 매주(13회) 퀴즈가 제공됩니다.”</blockquote>
+  </article></div>
+    <h3 class="section-label">Flow Items + doneWhen</h3><ol class="item-list">
+  <li class="item-row">
+    <span class="item-number">01</span>
+    <div><strong>2주차 제자백가의 사상과 덕</strong><small>완료: 2주차 행의 학습 상태를 기록했다.</small></div>
+  </li>
+  <li class="item-row">
+    <span class="item-number">02</span>
+    <div><strong>3주차 공자의 윤리적 덕</strong><small>완료: 3주차 행의 학습 상태를 기록했다.</small></div>
+  </li>
+  <li class="item-row">
+    <span class="item-number">03</span>
+    <div><strong>4주차 묵자의 지성적 덕</strong><small>완료: 4주차 행의 학습 상태를 기록했다.</small></div>
+  </li>
+  <li class="item-row">
+    <span class="item-number">04</span>
+    <div><strong>8주차 중간시험 범위 확인</strong><small>완료: 중간시험의 1주차~7주차 학습 범위를 표에 표시했다.</small></div>
+  </li>
+  <li class="item-row">
+    <span class="item-number">05</span>
+    <div><strong>15주차 기말고사 범위 확인</strong><small>완료: 기말고사의 9주차~14주차 학습 범위를 표에 표시했다.</small></div>
+  </li></ol>
+    <div class="grid-2"><section><h3 class="section-label">Projections</h3><details class="projection" open><summary>표 · source Items item-01, item-02, item-03, item-04, item-05</summary><pre><code>{
+  &quot;columns&quot;: [
+    &quot;주차&quot;,
+    &quot;학습 주제&quot;,
+    &quot;상태&quot;,
+    &quot;메모&quot;
+  ],
+  &quot;rows&quot;: [
+    [
+      &quot;2&quot;,
+      &quot;제자백가의 사상과 덕&quot;,
+      &quot;미시작&quot;,
+      &quot;&quot;
+    ],
+    [
+      &quot;3&quot;,
+      &quot;공자의 윤리적 덕&quot;,
+      &quot;미시작&quot;,
+      &quot;&quot;
+    ],
+    [
+      &quot;4&quot;,
+      &quot;묵자의 지성적 덕&quot;,
+      &quot;미시작&quot;,
+      &quot;&quot;
+    ],
+    [
+      &quot;8&quot;,
+      &quot;중간시험: 1주차~7주차&quot;,
+      &quot;미시작&quot;,
+      &quot;&quot;
+    ],
+    [
+      &quot;15&quot;,
+      &quot;기말고사: 9주차~14주차&quot;,
+      &quot;미시작&quot;,
+      &quot;&quot;
+    ]
+  ]
+}</code></pre><p class="tiny"><strong>Loss ledger:</strong> 표에 없는 사용자 일정과 실제 수강 완료 여부는 사용자가 기록한다.</p></details><details class="projection" open><summary>메모 · source Items item-01, item-02, item-03</summary><pre><code>{
+  &quot;title&quot;: &quot;퀴즈 안내&quot;,
+  &quot;text&quot;: &quot;1주차부터 매주(13회) 퀴즈가 제공됩니다.&quot;,
+  &quot;sourceUrl&quot;: &quot;https://www.kmooc.kr/view/course/detail/6661&quot;
+}</code></pre></details></section><section><h3 class="section-label">Rendered artifacts</h3><article class="artifact-card"><span class="eyebrow">표</span><pre>주차 | 학습 주제 | 상태 | 메모
+2 | 제자백가의 사상과 덕 | 미시작 | 
+3 | 공자의 윤리적 덕 | 미시작 | 
+4 | 묵자의 지성적 덕 | 미시작 | 
+8 | 중간시험: 1주차~7주차 | 미시작 | 
+15 | 기말고사: 9주차~14주차 | 미시작 | </pre></article><article class="artifact-card"><span class="eyebrow">메모</span><pre>퀴즈: 1주차부터 매주(13회) 퀴즈가 제공됩니다.</pre></article></section></div>
+    <h3 class="section-label">Editorial repair log</h3><div class="repair"><strong>case-05-op-01 · 6점 · sourceEvidence.ev-01-week2</strong><small>Replace a space-joined table-row paraphrase with the exact contiguous frozen body-text span and truthful character locator.</small><details><summary>before / after</summary><pre><code>{
+  &quot;before&quot;: {
+    &quot;text&quot;: &quot;2 제자백가의 사상과 덕&quot;,
+    &quot;locator&quot;: &quot;selectedLines:81-82&quot;
+  },
+  &quot;after&quot;: {
+    &quot;text&quot;: &quot;2\n\n \n\n제자백가의 사상과 덕&quot;,
+    &quot;locator&quot;: &quot;bodyTextSample:chars-792-808&quot;
+  }
+}</code></pre></details></div><div class="repair"><strong>case-05-op-02 · 6점 · sourceEvidence.ev-02-week3</strong><small>Replace a space-joined table-row paraphrase with the exact contiguous frozen body-text span and truthful character locator.</small><details><summary>before / after</summary><pre><code>{
+  &quot;before&quot;: {
+    &quot;text&quot;: &quot;3 공자의 윤리적 덕&quot;,
+    &quot;locator&quot;: &quot;selectedLines:92-93&quot;
+  },
+  &quot;after&quot;: {
+    &quot;text&quot;: &quot;3\n\n \n\n공자의 윤리적 덕&quot;,
+    &quot;locator&quot;: &quot;bodyTextSample:chars-958-972&quot;
+  }
+}</code></pre></details></div><div class="repair"><strong>case-05-op-03 · 6점 · sourceEvidence.ev-03-week4</strong><small>Replace a space-joined table-row paraphrase with the exact contiguous frozen body-text span and truthful character locator.</small><details><summary>before / after</summary><pre><code>{
+  &quot;before&quot;: {
+    &quot;text&quot;: &quot;4 묵자의 지성적 덕&quot;,
+    &quot;locator&quot;: &quot;selectedLines:103-104&quot;
+  },
+  &quot;after&quot;: {
+    &quot;text&quot;: &quot;4\n\n \n\n묵자의 지성적 덕&quot;,
+    &quot;locator&quot;: &quot;bodyTextSample:chars-1148-1162&quot;
+  }
+}</code></pre></details></div><div class="repair"><strong>case-05-op-04 · 6점 · sourceEvidence.ev-04-midterm</strong><small>Replace a space-joined table-row paraphrase with the exact contiguous frozen body-text span and truthful character locator.</small><details><summary>before / after</summary><pre><code>{
+  &quot;before&quot;: {
+    &quot;text&quot;: &quot;8 중간시험 / 1주차~7주차 학습내용&quot;,
+    &quot;locator&quot;: &quot;selectedLines:147-148&quot;
+  },
+  &quot;after&quot;: {
+    &quot;text&quot;: &quot;8\n\n \n\n중간시험\n\n     \n\n1주차~7주차 학습내용&quot;,
+    &quot;locator&quot;: &quot;bodyTextSample:chars-1917-1947&quot;
+  }
+}</code></pre></details></div><div class="repair"><strong>case-05-op-05 · 6점 · sourceEvidence.ev-05-final</strong><small>Replace a space-joined table-row paraphrase with the exact contiguous frozen body-text span and truthful character locator.</small><details><summary>before / after</summary><pre><code>{
+  &quot;before&quot;: {
+    &quot;text&quot;: &quot;15 기말고사 / 9주차~14주차 학습내용&quot;,
+    &quot;locator&quot;: &quot;selectedLines:217-219&quot;
+  },
+  &quot;after&quot;: {
+    &quot;text&quot;: &quot;15\n\n \n\n기말고사\n\n     \n\n9주차~14주차 학습내용&quot;,
+    &quot;locator&quot;: &quot;bodyTextSample:chars-3026-3058&quot;
+  }
+}</code></pre></details></div>
+    <footer style="margin-top:1.2rem;padding-top:1rem;border-top:1px solid var(--line)"><span class="publication">공개 상태: 사람 검토 필요</span><span class="tiny muted"> · 선택본 strict validation PASS · unsupportedClaims 0</span><br><a class="backtop" href="#top">↑ 목차로</a></footer>
+  </article><article class="case-card" id="case-06">
+    <header class="case-head"><div><span class="eyebrow">case-06 · 재추출 필요</span><h2>백종원의 요리비책 레시피 재생목록</h2><a class="source-link" href="https://www.youtube.com/playlist?list=PLOYo7Q0zXMLNmYqpJrt4pNeO-IlaDBVHW">https://www.youtube.com/playlist?list=PLOYo7Q0zXMLNmYqpJrt4pNeO-IlaDBVHW</a></div><div class="cluster"><span class="badge warn">0 Items</span><span class="badge dark">저비용 레인</span></div></header>
+    <div class="grid-2"><section><h3 class="section-label">선택 결과</h3><p><strong>reextract_required</strong> — 스냅샷은 재생목록과 일부 제목만 보여 주며, 개별 동영상 URL·레시피 본문·완료 기준을 제공하지 않는다. creator source의 공개 권리도 확인되지 않았다.</p><div class="callout warn"><strong>재추출 항목</strong><ul><li>선택할 개별 동영상의 제목과 고유 URL</li><li>해당 동영상에서 실행할 수 있는 재료·방법·완료 단서</li><li>재사용·공개 권리 또는 승인 범위</li></ul></div></section><section><h3 class="section-label">원시 레인 hard gate</h3><div class="gate-grid"><div class="gate pass"><strong>저비용 · PASS</strong><p class="tiny">hard error 0</p></div><div class="gate fail"><strong>고성능 · FAIL</strong><p class="tiny">sourceEvidence.case-06-ev-01:text_not_exact_snapshot_substring<br>sourceEvidence.case-06-ev-02:text_not_exact_snapshot_substring<br>sourceEvidence.case-06-ev-03:text_not_exact_snapshot_substring</p></div></div><h3 class="section-label">블라인드 선택</h3><div class="review-vote"><span>reviewer-a · gpt-5.6-terra <small>(모델 proxy)</small></span><strong>tie</strong></div><div class="review-vote"><span>reviewer-b · gpt-5.6-sol <small>(모델 proxy)</small></span><strong>고성능 레인</strong></div></section></div>
+    <h3 class="section-label">SourceEvidence</h3><div class="grid-2">
+  <article class="evidence-card">
+    <span class="eyebrow">ev-01-playlist · selectedLines:25-30</span>
+    <blockquote>“백종원의 요리비책”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">ev-02-count · selectedLines:28-30</span>
+    <blockquote>“동영상 34개”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">ev-03-visible-title · headings</span>
+    <blockquote>“포실포실 고소한 참기름 달걀라면”</blockquote>
+  </article></div>
+    <h3 class="section-label">Flow Items + doneWhen</h3><div class="callout warn">원문으로 완료 기준을 만들 수 없어 Item을 생성하지 않았다.</div>
+    <div class="grid-2"><section><h3 class="section-label">Projections</h3><p class="muted">투영 없음</p></section><section><h3 class="section-label">Rendered artifacts</h3><p class="muted">렌더링 산출물 없음</p></section></div>
+    <h3 class="section-label">Editorial repair log</h3><p class="muted">편집 proxy 연산 없음 — raw model output을 그대로 선택.</p>
+    <footer style="margin-top:1.2rem;padding-top:1rem;border-top:1px solid var(--line)"><span class="publication">공개 상태: hold</span><span class="tiny muted"> · 선택본 strict validation PASS · unsupportedClaims 0</span><br><a class="backtop" href="#top">↑ 목차로</a></footer>
+  </article><article class="case-card" id="case-07">
+    <header class="case-head"><div><span class="eyebrow">case-07 · 비교·결정</span><h2>자동차365 중고차 구매가이드</h2><a class="source-link" href="https://www.car365.go.kr/ccpt/schdcar/trde/prchsGuide.do?_menuId=M630401000&amp;moblYn=Y">https://www.car365.go.kr/ccpt/schdcar/trde/prchsGuide.do?_menuId=M630401000&amp;moblYn=Y</a></div><div class="cluster"><span class="badge good">4 Items</span><span class="badge dark">저비용 레인</span><span class="badge warn">1 repairs</span></div></header>
+    <div class="grid-2"><section><h3 class="section-label">선택 결과</h3><p><strong>compile_candidate</strong> — 공식 가이드가 순서와 확인 행동을 명시한다. 민감한 구매 판단은 원문과 사용자 판단에 남긴다.</p><p>공식 구매가이드에 따라 후보를 찾고 차량·계약·이전 확인을 남긴다.</p><div class="cluster"><span class="badge good">체크리스트</span><span class="badge bad">민감정보 잠금</span></div></section><section><h3 class="section-label">원시 레인 hard gate</h3><div class="gate-grid"><div class="gate fail"><strong>저비용 · FAIL</strong><p class="tiny">sourceEvidence.ev-01-stages:text_not_exact_snapshot_substring</p></div><div class="gate fail"><strong>고성능 · FAIL</strong><p class="tiny">sourceEvidence.case-07-ev-01:text_not_exact_snapshot_substring<br>sourceEvidence.case-07-ev-02:text_not_exact_snapshot_substring<br>sourceEvidence.case-07-ev-03:text_not_exact_snapshot_substring<br>sourceEvidence.case-07-ev-04:text_not_exact_snapshot_substring<br>sourceEvidence.case-07-ev-05:text_not_exact_snapshot_substring<br>sourceEvidence.case-07-ev-06:text_not_exact_snapshot_substring</p></div></div><h3 class="section-label">블라인드 선택</h3><div class="review-vote"><span>reviewer-a · gpt-5.6-terra <small>(모델 proxy)</small></span><strong>저비용 레인</strong></div><div class="review-vote"><span>reviewer-b · gpt-5.6-sol <small>(모델 proxy)</small></span><strong>고성능 레인</strong></div></section></div>
+    <h3 class="section-label">SourceEvidence</h3><div class="grid-2">
+  <article class="evidence-card">
+    <span class="eyebrow">ev-01-stages · bodyTextSample:chars-2562-2605</span>
+    <blockquote>“구매계획수립
+
+KU 매물 검색
+
+매매단지 방문 /
+차량직접 확인
+
+계약 / 이전”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">ev-02-search · selectedLines:306-308</span>
+    <blockquote>“구매희망 모델을 선택하여 검색”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">ev-03-inspection · selectedLines:329-331</span>
+    <blockquote>“시운전을 반드시 해보세요.”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">ev-04-seller · selectedLines:332-334</span>
+    <blockquote>“판매자 본인 및 정식 중고차 딜러인지 확인”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">ev-05-transfer · selectedLines:339-343</span>
+    <blockquote>“이전 완료 여부를 확인하세요.”</blockquote>
+  </article></div>
+    <h3 class="section-label">Flow Items + doneWhen</h3><ol class="item-list">
+  <li class="item-row">
+    <span class="item-number">01</span>
+    <div><strong>구매희망 모델 검색</strong><small>완료: 구매희망 모델과 검색조건으로 차량을 검색했다.</small></div>
+  </li>
+  <li class="item-row">
+    <span class="item-number">02</span>
+    <div><strong>차량 시운전 확인</strong><small>완료: 후보 차량의 시운전 여부를 확인했다.</small></div>
+  </li>
+  <li class="item-row">
+    <span class="item-number">03</span>
+    <div><strong>판매자 또는 정식 딜러 확인</strong><small>완료: 판매자 본인 또는 정식 중고차 딜러 여부를 확인했다.</small></div>
+  </li>
+  <li class="item-row">
+    <span class="item-number">04</span>
+    <div><strong>이전 완료 여부 확인</strong><small>완료: 이전 완료 여부를 확인했다.</small></div>
+  </li></ol>
+    <div class="grid-2"><section><h3 class="section-label">Projections</h3><details class="projection" open><summary>체크리스트 · source Items item-01, item-02, item-03, item-04</summary><pre><code>{
+  &quot;title&quot;: &quot;중고차 구매 단계 확인표&quot;,
+  &quot;itemIds&quot;: [
+    &quot;item-01&quot;,
+    &quot;item-02&quot;,
+    &quot;item-03&quot;,
+    &quot;item-04&quot;
+  ],
+  &quot;includeSourceUrl&quot;: true
+}</code></pre><p class="tiny"><strong>Loss ledger:</strong> 차량별 가격·상태와 계약 세부 내용은 사용자 메모 또는 공식 원문에서 별도 확인한다.</p></details><details class="projection" open><summary>메모 · source Items item-01, item-03, item-04</summary><pre><code>{
+  &quot;title&quot;: &quot;후보·계약 메모&quot;,
+  &quot;fields&quot;: [
+    &quot;후보 모델&quot;,
+    &quot;검색조건&quot;,
+    &quot;판매자 확인&quot;,
+    &quot;이전 완료 여부&quot;
+  ]
+}</code></pre><p class="tiny"><strong>Loss ledger:</strong> 메모 값은 source fact가 아니라 사용자 기록이다.</p></details></section><section><h3 class="section-label">Rendered artifacts</h3><article class="artifact-card"><span class="eyebrow">체크리스트</span><pre>- [ ] 구매희망 모델 검색
+- [ ] 차량 시운전 확인
+- [ ] 판매자 또는 정식 딜러 확인
+- [ ] 이전 완료 여부 확인</pre></article><article class="artifact-card"><span class="eyebrow">메모</span><pre>후보 모델: 
+검색조건: 
+판매자 또는 정식 딜러 확인: 
+이전 완료 여부: </pre></article></section></div>
+    <h3 class="section-label">Editorial repair log</h3><div class="repair"><strong>case-07-op-01 · 6점 · sourceEvidence.ev-01-stages</strong><small>Replace the slash-joined stage paraphrase with the exact contiguous frozen body-text span and truthful character locator.</small><details><summary>before / after</summary><pre><code>{
+  &quot;before&quot;: {
+    &quot;text&quot;: &quot;구매계획수립 / KU 매물 검색 / 매매단지 방문 / 차량직접 확인 / 계약 / 이전&quot;,
+    &quot;locator&quot;: &quot;selectedLines:288-295&quot;
+  },
+  &quot;after&quot;: {
+    &quot;text&quot;: &quot;구매계획수립\n\nKU 매물 검색\n\n매매단지 방문 /\n차량직접 확인\n\n계약 / 이전&quot;,
+    &quot;locator&quot;: &quot;bodyTextSample:chars-2562-2605&quot;
+  }
+}</code></pre></details></div>
+    <footer style="margin-top:1.2rem;padding-top:1rem;border-top:1px solid var(--line)"><span class="publication">공개 상태: 민감정보 잠금</span><span class="tiny muted"> · 선택본 strict validation PASS · unsupportedClaims 0</span><br><a class="backtop" href="#top">↑ 목차로</a></footer>
+  </article><article class="case-card" id="case-08">
+    <header class="case-head"><div><span class="eyebrow">case-08 · 원문 표 행</span><h2>국민건강보험 영유아 건강검진 안내</h2><a class="source-link" href="https://www.nhis.or.kr/nhis/healthin/wbhaca04800m01.do">https://www.nhis.or.kr/nhis/healthin/wbhaca04800m01.do</a></div><div class="cluster"><span class="badge good">4 Items</span><span class="badge dark">저비용 레인</span></div></header>
+    <div class="grid-2"><section><h3 class="section-label">선택 결과</h3><p><strong>compile_candidate</strong> — 공식 페이지가 연령 구간별 검진시기를 표로 명시한다. 민감 영역으로 공개 전 사람 검토가 필요하다.</p><p>공식 안내에서 영유아 검진 시기를 확인하고 예약 준비 상태를 기록한다.</p><div class="cluster"><span class="badge good">표</span><span class="badge bad">민감정보 잠금</span></div></section><section><h3 class="section-label">원시 레인 hard gate</h3><div class="gate-grid"><div class="gate pass"><strong>저비용 · PASS</strong><p class="tiny">hard error 0</p></div><div class="gate fail"><strong>고성능 · FAIL</strong><p class="tiny">sourceEvidence.case-08-ev-01:text_not_exact_snapshot_substring<br>sourceEvidence.case-08-ev-02:text_not_exact_snapshot_substring<br>sourceEvidence.case-08-ev-03:text_not_exact_snapshot_substring<br>sourceEvidence.case-08-ev-04:text_not_exact_snapshot_substring<br>sourceEvidence.case-08-ev-05:text_not_exact_snapshot_substring</p></div></div><h3 class="section-label">블라인드 선택</h3><div class="review-vote"><span>reviewer-a · gpt-5.6-terra <small>(모델 proxy)</small></span><strong>고성능 레인</strong></div><div class="review-vote"><span>reviewer-b · gpt-5.6-sol <small>(모델 proxy)</small></span><strong>고성능 레인</strong></div></section></div>
+    <h3 class="section-label">SourceEvidence</h3><div class="grid-2">
+  <article class="evidence-card">
+    <span class="eyebrow">ev-01-window1 · selectedLines:118-123</span>
+    <blockquote>“1차 건강검진 생후 14~35일”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">ev-02-window2 · selectedLines:121-123</span>
+    <blockquote>“2차 건강검진 생후 4~6개월”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">ev-03-window3 · selectedLines:121-123</span>
+    <blockquote>“3차 건강검진 생후 9~12개월”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">ev-04-oral · selectedLines:143-146</span>
+    <blockquote>“구강검진 생후 18~29개월 구강문진 및 진찰, 구강보건교육”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">ev-05-institution · selectedLines:135</span>
+    <blockquote>“영유아 건강검진은 전국 영유아 검진기관에서 받으실 수 있습니다.”</blockquote>
+  </article></div>
+    <h3 class="section-label">Flow Items + doneWhen</h3><ol class="item-list">
+  <li class="item-row">
+    <span class="item-number">01</span>
+    <div><strong>1차 건강검진 시기 확인</strong><small>완료: 생후 14~35일 검진 시기를 표에서 확인했다.</small></div>
+  </li>
+  <li class="item-row">
+    <span class="item-number">02</span>
+    <div><strong>2차·3차 건강검진 시기 확인</strong><small>완료: 생후 4~6개월과 9~12개월 검진 시기를 표에서 확인했다.</small></div>
+  </li>
+  <li class="item-row">
+    <span class="item-number">03</span>
+    <div><strong>구강검진 시기 확인</strong><small>완료: 생후 18~29개월 구강검진 시기를 표에서 확인했다.</small></div>
+  </li>
+  <li class="item-row">
+    <span class="item-number">04</span>
+    <div><strong>검진기관 확인</strong><small>완료: 전국 영유아 검진기관에서 검진을 받을 수 있다는 공식 안내를 확인했다.</small></div>
+  </li></ol>
+    <div class="grid-2"><section><h3 class="section-label">Projections</h3><details class="projection" open><summary>표 · source Items item-01, item-02, item-03, item-04</summary><pre><code>{
+  &quot;columns&quot;: [
+    &quot;검진&quot;,
+    &quot;시기&quot;,
+    &quot;준비 상태&quot;,
+    &quot;메모&quot;
+  ],
+  &quot;rows&quot;: [
+    [
+      &quot;1차 건강검진&quot;,
+      &quot;생후 14~35일&quot;,
+      &quot;미확인&quot;,
+      &quot;&quot;
+    ],
+    [
+      &quot;2차 건강검진&quot;,
+      &quot;생후 4~6개월&quot;,
+      &quot;미확인&quot;,
+      &quot;&quot;
+    ],
+    [
+      &quot;3차 건강검진&quot;,
+      &quot;생후 9~12개월&quot;,
+      &quot;미확인&quot;,
+      &quot;&quot;
+    ],
+    [
+      &quot;구강검진&quot;,
+      &quot;생후 18~29개월&quot;,
+      &quot;미확인&quot;,
+      &quot;&quot;
+    ]
+  ]
+}</code></pre><p class="tiny"><strong>Loss ledger:</strong> 월령 입력은 사용자 참고용이며 Flow가 개인별 검진일을 판정하지 않는다.</p></details><details class="projection" open><summary>메모 · source Items item-04</summary><pre><code>{
+  &quot;title&quot;: &quot;공식 확인 경계&quot;,
+  &quot;text&quot;: &quot;영유아 건강검진은 전국 영유아 검진기관에서 받으실 수 있습니다.&quot;,
+  &quot;sourceUrl&quot;: &quot;https://www.nhis.or.kr/nhis/healthin/wbhaca04800m01.do&quot;
+}</code></pre></details></section><section><h3 class="section-label">Rendered artifacts</h3><article class="artifact-card"><span class="eyebrow">표</span><pre>검진 | 시기 | 준비 상태 | 메모
+1차 건강검진 | 생후 14~35일 | 미확인 | 
+2차 건강검진 | 생후 4~6개월 | 미확인 | 
+3차 건강검진 | 생후 9~12개월 | 미확인 | 
+구강검진 | 생후 18~29개월 | 미확인 | </pre></article><article class="artifact-card"><span class="eyebrow">메모</span><pre>개인별 예약일·건강·발달 판단은 공식 검진기관에서 확인합니다.</pre></article></section></div>
+    <h3 class="section-label">Editorial repair log</h3><p class="muted">편집 proxy 연산 없음 — raw model output을 그대로 선택.</p>
+    <footer style="margin-top:1.2rem;padding-top:1rem;border-top:1px solid var(--line)"><span class="publication">공개 상태: 민감정보 잠금</span><span class="tiny muted"> · 선택본 strict validation PASS · unsupportedClaims 0</span><br><a class="backtop" href="#top">↑ 목차로</a></footer>
+  </article><article class="case-card" id="case-09">
+    <header class="case-head"><div><span class="eyebrow">case-09 · 리소스 큐</span><h2>Canon 30-Day Photo Challenge</h2><a class="source-link" href="https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge">https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge</a></div><div class="cluster"><span class="badge good">4 Items</span><span class="badge dark">저비용 레인</span></div></header>
+    <div class="grid-2"><section><h3 class="section-label">선택 결과</h3><p><strong>draft_only</strong> — 30일 챌린지와 초기 주제는 스냅샷에서 확인되지만, 공개·재사용 권리와 Day 5~29의 정확한 제목 확인이 필요하다.</p><p>원문에 명시된 사진 주제를 하루 하나씩 실행하고 완료 상태를 남긴다.</p><div class="cluster"><span class="badge good">캘린더</span><span class="badge warn">권리 검토 필요</span></div></section><section><h3 class="section-label">원시 레인 hard gate</h3><div class="gate-grid"><div class="gate pass"><strong>저비용 · PASS</strong><p class="tiny">hard error 0</p></div><div class="gate fail"><strong>고성능 · FAIL</strong><p class="tiny">sourceEvidence.case-09-ev-01:text_not_exact_snapshot_substring<br>sourceEvidence.case-09-ev-02:text_not_exact_snapshot_substring<br>sourceEvidence.case-09-ev-03:text_not_exact_snapshot_substring<br>sourceEvidence.case-09-ev-04:text_not_exact_snapshot_substring<br>sourceEvidence.case-09-ev-05:text_not_exact_snapshot_substring<br>sourceEvidence.case-09-ev-06:text_not_exact_snapshot_substring<br>sourceEvidence.case-09-ev-07:text_not_exact_snapshot_substring</p></div></div><h3 class="section-label">블라인드 선택</h3><div class="review-vote"><span>reviewer-a · gpt-5.6-terra <small>(모델 proxy)</small></span><strong>고성능 레인</strong></div><div class="review-vote"><span>reviewer-b · gpt-5.6-sol <small>(모델 proxy)</small></span><strong>고성능 레인</strong></div></section></div>
+    <h3 class="section-label">SourceEvidence</h3><div class="grid-2">
+  <article class="evidence-card">
+    <span class="eyebrow">ev-01-30day · selectedLines:523-526</span>
+    <blockquote>“Try this 30-day photo challenge with yourself or with friends.”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">ev-02-day1 · selectedLines:527</span>
+    <blockquote>“1. Self-portrait”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">ev-03-day2 · selectedLines:532-533</span>
+    <blockquote>“2. Black and White”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">ev-04-day3 · selectedLines:534-535</span>
+    <blockquote>“3. Water”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">ev-05-day4 · selectedLines:536-537</span>
+    <blockquote>“4. Night scene”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">ev-06-day30 · headings</span>
+    <blockquote>“30. Your choice!”</blockquote>
+  </article></div>
+    <h3 class="section-label">Flow Items + doneWhen</h3><ol class="item-list">
+  <li class="item-row">
+    <span class="item-number">01</span>
+    <div><strong>Day 1 — Self-portrait</strong><small>완료: Self-portrait 주제로 사진 촬영을 시도하고 완료 상태를 표시했다.</small></div>
+  </li>
+  <li class="item-row">
+    <span class="item-number">02</span>
+    <div><strong>Day 2 — Black and White</strong><small>완료: Black and White 주제로 사진 촬영을 시도하고 완료 상태를 표시했다.</small></div>
+  </li>
+  <li class="item-row">
+    <span class="item-number">03</span>
+    <div><strong>Day 3 — Water</strong><small>완료: Water 주제로 사진 촬영을 시도하고 완료 상태를 표시했다.</small></div>
+  </li>
+  <li class="item-row">
+    <span class="item-number">04</span>
+    <div><strong>Day 4 — Night scene</strong><small>완료: Night scene 주제로 사진 촬영을 시도하고 완료 상태를 표시했다.</small></div>
+  </li></ol>
+    <div class="grid-2"><section><h3 class="section-label">Projections</h3><details class="projection" open><summary>캘린더 · source Items item-01, item-02, item-03, item-04</summary><pre><code>{
+  &quot;startFromUserField&quot;: &quot;startDate&quot;,
+  &quot;events&quot;: [
+    {
+      &quot;offsetDays&quot;: 0,
+      &quot;title&quot;: &quot;Day 1 — Self-portrait&quot;
+    },
+    {
+      &quot;offsetDays&quot;: 1,
+      &quot;title&quot;: &quot;Day 2 — Black and White&quot;
+    },
+    {
+      &quot;offsetDays&quot;: 2,
+      &quot;title&quot;: &quot;Day 3 — Water&quot;
+    },
+    {
+      &quot;offsetDays&quot;: 3,
+      &quot;title&quot;: &quot;Day 4 — Night scene&quot;
+    }
+  ]
+}</code></pre><p class="tiny"><strong>Loss ledger:</strong> Day 5~29는 스냅샷에 명시된 제목을 확보하지 않아 생성하지 않는다.</p></details><details class="projection" open><summary>체크리스트 · source Items item-01, item-02, item-03, item-04</summary><pre><code>{
+  &quot;itemIds&quot;: [
+    &quot;item-01&quot;,
+    &quot;item-02&quot;,
+    &quot;item-03&quot;,
+    &quot;item-04&quot;
+  ],
+  &quot;includeSourceUrl&quot;: true
+}</code></pre><p class="tiny"><strong>Loss ledger:</strong> 달력 날짜는 시작일 사용자 입력이 필요하다.</p></details></section><section><h3 class="section-label">Rendered artifacts</h3><article class="artifact-card"><span class="eyebrow">calendarTemplate</span><pre>{{startDate}} Day 1 — Self-portrait
+{{startDate}} + 1일 Day 2 — Black and White
+{{startDate}} + 2일 Day 3 — Water
+{{startDate}} + 3일 Day 4 — Night scene</pre></article><article class="artifact-card"><span class="eyebrow">체크리스트</span><pre>- [ ] Day 1 — Self-portrait
+- [ ] Day 2 — Black and White
+- [ ] Day 3 — Water
+- [ ] Day 4 — Night scene</pre></article></section></div>
+    <h3 class="section-label">Editorial repair log</h3><p class="muted">편집 proxy 연산 없음 — raw model output을 그대로 선택.</p>
+    <footer style="margin-top:1.2rem;padding-top:1rem;border-top:1px solid var(--line)"><span class="publication">공개 상태: 권리 검토 필요</span><span class="tiny muted"> · 선택본 strict validation PASS · unsupportedClaims 0</span><br><a class="backtop" href="#top">↑ 목차로</a></footer>
+  </article><article class="case-card" id="case-10">
+    <header class="case-head"><div><span class="eyebrow">case-10 · 단계 생애주기</span><h2>TS 자동차 정기검사</h2><a class="source-link" href="https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200">https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200</a></div><div class="cluster"><span class="badge good">3 Items</span><span class="badge dark">저비용 레인</span></div></header>
+    <div class="grid-2"><section><h3 class="section-label">선택 결과</h3><p><strong>compile_candidate</strong> — 공식 페이지가 대상·유효기간 표·재검사 기간을 명시한다. 실제 차량별 날짜 계산과 판정은 제외한다.</p><p>공식 표에서 내 차량의 검사 유효기간을 확인하고, 부적합 시 재검사 기간을 확인한다.</p><div class="cluster"><span class="badge good">체크리스트</span><span class="badge bad">민감정보 잠금</span></div></section><section><h3 class="section-label">원시 레인 hard gate</h3><div class="gate-grid"><div class="gate pass"><strong>저비용 · PASS</strong><p class="tiny">hard error 0</p></div><div class="gate fail"><strong>고성능 · FAIL</strong><p class="tiny">sourceEvidence.case-10-ev-01:text_not_exact_snapshot_substring<br>sourceEvidence.case-10-ev-02:text_not_exact_snapshot_substring<br>sourceEvidence.case-10-ev-03:text_not_exact_snapshot_substring<br>sourceEvidence.case-10-ev-04:text_not_exact_snapshot_substring<br>sourceEvidence.case-10-ev-05:text_not_exact_snapshot_substring<br>sourceEvidence.case-10-ev-06:text_not_exact_snapshot_substring</p></div></div><h3 class="section-label">블라인드 선택</h3><div class="review-vote"><span>reviewer-a · gpt-5.6-terra <small>(모델 proxy)</small></span><strong>저비용 레인</strong></div><div class="review-vote"><span>reviewer-b · gpt-5.6-sol <small>(모델 proxy)</small></span><strong>고성능 레인</strong></div></section></div>
+    <h3 class="section-label">SourceEvidence</h3><div class="grid-2">
+  <article class="evidence-card">
+    <span class="eyebrow">ev-01-definition · selectedLines:28-30</span>
+    <blockquote>“「자동차관리법」제43조에 따라 신규등록 후 일정 기간마다 정기적으로 실시하는 검사”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">ev-02-target · selectedLines:31-33</span>
+    <blockquote>“「자동차관리법」에 따라 등록되어 운행 중인 자동차”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">ev-03-passenger · selectedLines:63-68</span>
+    <blockquote>“승용자동차 비사업용 경형 · 소형 · 중형 · 대형 전체 2년[신조차(新造車)로서 법 제43조제5항에 따라 신규검사를 받은 것으로 보는 자동차의 최초 검사 유효기간은 5년]”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">ev-04-reinspection · selectedLines:54-56</span>
+    <blockquote>“검사기간 만료 후 10일 이내”</blockquote>
+  </article>
+  <article class="evidence-card">
+    <span class="eyebrow">ev-05-reinspection-condition · selectedLines:54-58</span>
+    <blockquote>“부적합 판정을 받은 날부터 10일 이내”</blockquote>
+  </article></div>
+    <h3 class="section-label">Flow Items + doneWhen</h3><ol class="item-list">
+  <li class="item-row">
+    <span class="item-number">01</span>
+    <div><strong>등록·운행 차량의 검사 대상 확인</strong><small>완료: 등록되어 운행 중인 자동차가 검사 대상이라는 공식 안내를 확인했다.</small></div>
+  </li>
+  <li class="item-row">
+    <span class="item-number">02</span>
+    <div><strong>차종·사업용 구분·차령으로 유효기간 표 확인</strong><small>완료: 내 차량의 차종·사업용 구분·차령에 해당하는 유효기간 행을 공식 표에서 확인했다.</small></div>
+  </li>
+  <li class="item-row">
+    <span class="item-number">03</span>
+    <div><strong>부적합 시 재검사 기간 확인</strong><small>완료: 부적합 판정 또는 검사기간 만료 상황의 10일 이내 재검사 안내를 확인했다.</small></div>
+  </li></ol>
+    <div class="grid-2"><section><h3 class="section-label">Projections</h3><details class="projection" open><summary>체크리스트 · source Items item-01, item-02, item-03</summary><pre><code>{
+  &quot;title&quot;: &quot;자동차 정기검사 확인표&quot;,
+  &quot;itemIds&quot;: [
+    &quot;item-01&quot;,
+    &quot;item-02&quot;,
+    &quot;item-03&quot;
+  ],
+  &quot;includeSourceUrl&quot;: true
+}</code></pre><p class="tiny"><strong>Loss ledger:</strong> 실제 검사일은 차량 정보와 공식 검사소 확인이 필요하므로 달력 이벤트를 만들지 않는다.</p></details><details class="projection" open><summary>메모 · source Items item-03</summary><pre><code>{
+  &quot;title&quot;: &quot;공식 재검사 기간&quot;,
+  &quot;text&quot;: &quot;검사기간 만료 후 10일 이내 / 부적합 판정을 받은 날부터 10일 이내&quot;,
+  &quot;sourceUrl&quot;: &quot;https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200&quot;
+}</code></pre></details></section><section><h3 class="section-label">Rendered artifacts</h3><article class="artifact-card"><span class="eyebrow">체크리스트</span><pre>- [ ] 등록·운행 차량의 검사 대상 확인
+- [ ] 차종·사업용 구분·차령으로 유효기간 표 확인
+- [ ] 부적합 시 재검사 기간 확인</pre></article><article class="artifact-card"><span class="eyebrow">메모</span><pre>재검사 기간: 검사기간 만료 후 10일 이내. 부적합 판정 후에도 10일 이내 안내를 공식 원문에서 확인합니다.</pre></article></section></div>
+    <h3 class="section-label">Editorial repair log</h3><p class="muted">편집 proxy 연산 없음 — raw model output을 그대로 선택.</p>
+    <footer style="margin-top:1.2rem;padding-top:1rem;border-top:1px solid var(--line)"><span class="publication">공개 상태: 민감정보 잠금</span><span class="tiny muted"> · 선택본 strict validation PASS · unsupportedClaims 0</span><br><a class="backtop" href="#top">↑ 목차로</a></footer>
+  </article></main></body></html>

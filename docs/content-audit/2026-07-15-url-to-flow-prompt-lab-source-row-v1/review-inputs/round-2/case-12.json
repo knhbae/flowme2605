@@ -1,0 +1,78 @@
+{
+  "reviewInputVersion": "flowme-source-row-blind-review-input-v1",
+  "laneId": "url-to-flow-source-row-v1",
+  "round": "round-2",
+  "caseId": "case-12",
+  "positiveCase": false,
+  "sourcePacket": null,
+  "deterministicNegativeBoundary": {
+    "modelInvoked": false,
+    "generationState": "failed",
+    "outcome": "no_proposal",
+    "errorCode": "locale_applicability_unverified",
+    "recommendedDisposition": "hold"
+  },
+  "proposal": {
+    "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+    "promptVersion": "url-to-flow-prompt-v1.1",
+    "requestId": "rq-d3187af46c52",
+    "caseId": "case-12",
+    "status": {
+      "generationState": "failed",
+      "outcome": "no_proposal",
+      "readiness": null,
+      "errorCode": "locale_applicability_unverified"
+    },
+    "sourceAssessment": {
+      "access": "partial",
+      "sourceShape": "unknown",
+      "primarySourceId": "src-d5a8072c4e19",
+      "supportingSourceIds": [],
+      "receivedSourceRowIds": [],
+      "untrustedInstructionDetected": false
+    },
+    "conversionDecision": null,
+    "proposal": {
+      "proposalTitle": null,
+      "items": [],
+      "omittedRows": [],
+      "incompleteReason": "민감한 비현지 출처의 대상 지역 적용성을 확인하지 못했다."
+    },
+    "projectionPlan": [],
+    "reviewHints": {
+      "recommendedDisposition": "hold",
+      "uncertainties": [
+        "대상 지역 적용성이 확인되지 않았다."
+      ],
+      "hardFailCodes": [
+        "locale_applicability_unverified"
+      ],
+      "humanReviewRequired": [
+        "local_applicability_review"
+      ]
+    }
+  },
+  "proposalFingerprint": "ef206b70ef5cefcfe07c15228c1879fa231d4a86ee0b15769dbd4aa0ded6679b",
+  "deterministicValidation": {
+    "passed": true,
+    "codes": [],
+    "sourceRowAccounting": true
+  },
+  "rubricPath": "docs/specs/2026-07-15-url-to-flow-prompt-lab-source-row-v1/review-rubric.md",
+  "evidenceBoundary": {
+    "allowed": [
+      "this sourcePacket",
+      "this proposal",
+      "this proposalFingerprint",
+      "this deterministicValidation",
+      "the linked blind rubric"
+    ],
+    "forbidden": [
+      "canonical expectation or opaque ID mapping",
+      "source title URL publisher or preflight metadata",
+      "legacy or prior-round output and review",
+      "provider model tier timing token or cost",
+      "other reviewer conclusions"
+    ]
+  }
+}

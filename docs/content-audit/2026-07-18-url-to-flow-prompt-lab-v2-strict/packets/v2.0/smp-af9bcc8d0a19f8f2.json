@@ -1,0 +1,19 @@
+{
+  "requestRef": "req-65cb1dbf4650c53a",
+  "sampleRef": "smp-af9bcc8d0a19f8f2",
+  "maxItems": 7,
+  "sourceOwnership": {
+    "primarySourceRef": "src-b21855f7f9bc65b1",
+    "supportingSourceRefs": []
+  },
+  "sourceRows": [
+    {
+      "sourceRowRef": "row-6c0c537790117fe8",
+      "sourceRef": "src-b21855f7f9bc65b1",
+      "rowType": "check",
+      "title": "차량 이력과 상태를 확인한 뒤 구매 판단",
+      "detail": null,
+      "order": 0
+    }
+  ]
+}

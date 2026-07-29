@@ -1,0 +1,124 @@
+{
+  "protocolVersion": "flowme-url-to-flow-strict-protocol-v2",
+  "laneId": "url-to-flow-source-row-v2-strict",
+  "statusBeforeCompletion": "authoritative_attempt",
+  "caseCount": 12,
+  "modelPositiveCount": 10,
+  "deterministicNegativeCount": 2,
+  "strictPositiveProfile": {
+    "itemEligiblePrimarySourceRows": 15,
+    "supportingOrReferenceOnlyRows": 1,
+    "oneEligibleSourceRowPerItem": true
+  },
+  "canonicalPriorBindings": {
+    "casesV1Sha256": "9223c9824a6a5471621bec35be4b92f987da669ce22902f94810949aa6e2279f",
+    "expectedV1Sha256": "62519e9de64af568cb3200e4a684b6acd6f195d91840ee8d688b2427c42ede60"
+  },
+  "strictArtifactPolicy": {
+    "literalSchedulePresent": "calendar",
+    "allTableRows": "sheet",
+    "oneResource": "memo",
+    "multipleResources": "checklist",
+    "oneOtherEligibleRow": "todo",
+    "multipleOtherEligibleRows": "checklist"
+  },
+  "roundLimit": 3,
+  "batchesPerRound": 3,
+  "pipelineCasesPerBatch": 4,
+  "batchAssignment": {
+    "batch-a": ["case-01", "case-02", "case-03", "case-04"],
+    "batch-b": ["case-05", "case-06", "case-07", "case-08"],
+    "batch-c": ["case-09", "case-10", "case-11", "case-12"]
+  },
+  "roundRules": {
+    "round1": "baseline",
+    "round2AfterFailure": "prompt_only_one_defect_class",
+    "round2AfterPass": "unchanged_confirmatory_replication",
+    "round3Prerequisite": "round2_all_completion_gates_pass",
+    "round3Contract": "byte_identical_round2_prompt_schema_cases_packets_task_payloads"
+  },
+  "promptRevision": {
+    "integrityFailureAction": "stop_lane_without_prompt_revision",
+    "classPriority": [
+      "output_contract_compliance",
+      "row_license_compliance",
+      "uncertainty_marker_compliance",
+      "artifact_projection_compliance",
+      "unsupported_content_compliance"
+    ],
+    "classTemplates": {
+      "output_contract_compliance": "Defect lock: construct the exact schema object first, fill every required key once, use only declared enums, and return the bare batch array required by the outer controller.",
+      "row_license_compliance": "Defect lock: use exactly one Item for every eligible primary row, no grouping or omission, and apply only the frozen rowType title, intent, and completion license.",
+      "uncertainty_marker_compliance": "Defect lock: before output, add the required uncertainty code and affected row reference for every resource row, missing-value date row, and supporting-source row.",
+      "artifact_projection_compliance": "Defect lock: choose exactly one artifact and projection from the frozen matrix: literal schedule calendar; all table rows sheet; one resource memo; multiple resources checklist; one other row todo; multiple other rows checklist.",
+      "unsupported_content_compliance": "Defect lock: remove every word not copied from SourceRow text or licensed as conversion grammar; do not add domain, actor, outcome, resource-content, date, repeat, or factual claims."
+    },
+    "classErrorPatterns": {
+      "output_contract_compliance": [
+        "^schema_",
+        "^(?:raw_response_not_bare_json_array|model_result_count_mismatch|raw_results_do_not_match_positive_outputs|assembly_issues_present|assembly_pass_required|prompt_version_mismatch|schema_version_mismatch|request_ref_mismatch|sample_ref_mismatch|frozen_positive_state_must_be_proposal|proposal_reason_must_be_null|proposal_disposition_must_be_review|duplicate_item_ref)$"
+      ],
+      "row_license_compliance": [
+        "^(?:strict_profile_one_row_per_item|unknown_item_source_row|supporting_source_controls_item|reference_row_controls_item|item_title_outside_row_license|row_type_intent_completion_mismatch|unknown_omitted_source_row|supporting_row_wrong_omission_reason|reference_row_wrong_omission_reason|source_row_accounting_not_exactly_once|eligible_source_row_not_itemized|reference_or_supporting_row_not_omitted|max_items_exceeded)$"
+      ],
+      "uncertainty_marker_compliance": [
+        "^(?:unknown_human_check_row|uncertainty_codes_not_exact_required_set|human_check_rows_not_exact_required_set)$"
+      ],
+      "artifact_projection_compliance": [
+        "^(?:hybrid_artifact_forbidden|primary_artifact_policy_mismatch|exactly_one_projection_required|duplicate_projection_target|unknown_projection_item|projection_item_refs_must_exactly_match_items|projection_target_policy_mismatch|calendar_without_schedule_evidence|scheduled_artifact_without_schedule_evidence)$"
+      ],
+      "unsupported_content_compliance": [
+        "^(?:memo_not_literal_source_text|schedule_row_not_owned_by_item|schedule_source_text_not_literal|schedule_value_not_supported|schedule_kind_unclassifiable|schedule_kind_mismatch)$"
+      ]
+    },
+    "gateClassMap": {
+      "sourceRowAccounting": "row_license_compliance",
+      "itemKeep": "row_license_compliance",
+      "executionClarity": "row_license_compliance",
+      "contentFidelityCoverage": "row_license_compliance",
+      "sourceSafetySeparation": "uncertainty_marker_compliance",
+      "unsupportedZero": "unsupported_content_compliance",
+      "sevenAxisAverage": "unsupported_content_compliance"
+    },
+    "reviewTopIssueClassMap": {
+      "row_policy_mismatch": "row_license_compliance",
+      "accounting_problem": "row_license_compliance",
+      "wrong_insufficient_boundary": "output_contract_compliance",
+      "missing_uncertainty": "uncertainty_marker_compliance",
+      "projection_mismatch": "artifact_projection_compliance",
+      "classification_overreach": "unsupported_content_compliance",
+      "unsupported_content": "unsupported_content_compliance",
+      "generic_copy": "unsupported_content_compliance"
+    }
+  },
+  "completionGates": {
+    "schemaValidRate": 1,
+    "sourceRowAccountingRate": 1,
+    "unsupportedTotal": 0,
+    "negativeExact": 2,
+    "itemKeepRateMinimum": 0.8,
+    "sevenAxisAverageMinimum": 3.5,
+    "executionClarityMinimum": 4,
+    "contentFidelityCoverageMinimum": 4,
+    "sourceSafetySeparationMinimum": 4
+  },
+  "evidenceClass": "current_session_model_proxy",
+  "unknownEvidenceFields": [
+    "provider",
+    "model",
+    "tier",
+    "sampling",
+    "inputTokens",
+    "outputTokens",
+    "latencyMs",
+    "cost",
+    "currency"
+  ],
+  "forbiddenClaims": [
+    "production_url_fetch_validated",
+    "real_provider_model_compared",
+    "cheap_vs_premium_cost_compared",
+    "automatic_save_or_publish_validated",
+    "observed_user_validation"
+  ]
+}

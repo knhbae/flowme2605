@@ -1,0 +1,27 @@
+{
+  "requestRef": "req-73bbb3f0f9790d57",
+  "sampleRef": "smp-5f8cdade595023d8",
+  "maxItems": 7,
+  "sourceOwnership": {
+    "primarySourceRef": "src-28c5c82907f7063f",
+    "supportingSourceRefs": []
+  },
+  "sourceRows": [
+    {
+      "sourceRowRef": "row-35118ebced071604",
+      "sourceRef": "src-28c5c82907f7063f",
+      "rowType": "resource",
+      "title": "Day 1 prompt",
+      "detail": null,
+      "order": 0
+    },
+    {
+      "sourceRowRef": "row-98d93b3c2b98b887",
+      "sourceRef": "src-28c5c82907f7063f",
+      "rowType": "resource",
+      "title": "Day 2 prompt",
+      "detail": null,
+      "order": 1
+    }
+  ]
+}

@@ -1,0 +1,261 @@
+{
+  "protocolVersion": "flowme-blind-pairwise-v4.0",
+  "reviewerId": "reviewer-b",
+  "source": {
+    "userSituation": "극세 필터를 공식 주기에 맞춰 청소하고, 선택한 방법과 건조 완료 상태를 남긴다.",
+    "sourceTitle": "스탠드, 먼지거름 필터 청소 방법이 궁금합니다.",
+    "sourceUrl": "https://www.samsungsvc.co.kr/solution/121273",
+    "boundedScope": "극세 필터의 반복 청소 주기, 오염 정도별 방법, 건조, 필터 손상 주의",
+    "sourceEvidence": [
+      {
+        "kind": "recurrence",
+        "text": "극세 필터 청소 주기는 4주에 1회"
+      },
+      {
+        "kind": "condition_action",
+        "text": "먼지가 적으면 진공청소기로 먼지 제거"
+      },
+      {
+        "kind": "condition_action",
+        "text": "먼지가 많으면 미지근한 중성세제 물에 약 30분 담근 뒤 세척"
+      },
+      {
+        "kind": "finish_action",
+        "text": "세로 방향으로 비스듬히 세워 그늘에서 충분히 건조"
+      },
+      {
+        "kind": "caution",
+        "text": "무리한 물청소나 강한 햇빛 건조는 필터 훼손 또는 소음으로 이어질 수 있음"
+      }
+    ]
+  },
+  "optionA": {
+    "title": "극세 필터 4주 청소 루틴",
+    "inputRule": {
+      "kind": "user_choice",
+      "field": "firstRunDate",
+      "label": "첫 청소일",
+      "required": true,
+      "sourceClaim": false
+    },
+    "resultBundle": [
+      "4주 반복 일정",
+      "오염 정도별 청소 체크",
+      "필터 손상 주의 메모"
+    ],
+    "firstAction": "먼지 양에 맞는 청소 방법 선택",
+    "items": [
+      {
+        "title": "먼지 양에 맞는 청소 방법 선택",
+        "memo": null,
+        "completion": {
+          "mode": "decision",
+          "criterion": "진공청소기 또는 물세척 중 현재 먼지 양에 맞는 방법 하나를 선택했다."
+        },
+        "sourceEvidenceRefs": [
+          "ev-02-light-dust",
+          "ev-03-heavy-dust"
+        ]
+      },
+      {
+        "title": "선택한 방법으로 극세 필터 청소",
+        "memo": "먼지가 적으면 진공청소기로 제거합니다. 많으면 미지근한 중성세제 물에 약 30분 담근 뒤 세척합니다.",
+        "completion": {
+          "mode": "check",
+          "criterion": "선택한 방법으로 먼지 제거 또는 물세척을 마쳤다."
+        },
+        "sourceEvidenceRefs": [
+          "ev-02-light-dust",
+          "ev-03-heavy-dust"
+        ]
+      },
+      {
+        "title": "세로로 세워 그늘에서 충분히 건조",
+        "memo": null,
+        "completion": {
+          "mode": "check",
+          "criterion": "세로 방향으로 세운 필터를 그늘에서 충분히 건조했다."
+        },
+        "sourceEvidenceRefs": [
+          "ev-04-dry"
+        ]
+      }
+    ],
+    "projections": [
+      {
+        "target": "calendar",
+        "payload": {
+          "title": "극세 필터 청소",
+          "startFromUserField": "firstRunDate",
+          "recurrence": {
+            "interval": 4,
+            "unit": "week",
+            "evidenceRef": "ev-01-recurrence"
+          },
+          "descriptionIncludes": [
+            "sourceUrl",
+            "completionSummary",
+            "cautionSummary"
+          ]
+        },
+        "lossLedger": []
+      },
+      {
+        "target": "checklist",
+        "payload": {
+          "itemRefs": [
+            "item-01",
+            "item-02",
+            "item-03"
+          ],
+          "includeCompletionCriteria": true
+        },
+        "lossLedger": []
+      },
+      {
+        "target": "memo",
+        "payload": {
+          "includeSourceUrl": true,
+          "includeCautions": true,
+          "includeSelectedMethod": true
+        },
+        "lossLedger": []
+      }
+    ],
+    "sourceTrace": {
+      "sourceUrl": "https://www.samsungsvc.co.kr/solution/121273",
+      "evidenceRefs": [
+        "ev-01-recurrence",
+        "ev-02-light-dust",
+        "ev-03-heavy-dust",
+        "ev-04-dry",
+        "ev-05-caution"
+      ],
+      "omissions": [
+        {
+          "scope": "PM 필터",
+          "reason": "different maintenance rule and separate user job"
+        },
+        {
+          "scope": "숯 탈취 필터",
+          "reason": "replacement job, not cleaning routine"
+        },
+        {
+          "scope": "전문 세척과 서비스 신청",
+          "reason": "outside the bounded self-cleaning Flow"
+        }
+      ]
+    },
+    "cautions": [
+      {
+        "cautionId": "caution-01",
+        "ownership": "safety_boundary",
+        "sourceEvidenceRefs": [
+          "ev-05-caution"
+        ],
+        "text": "무리한 물청소와 강한 햇빛 건조는 피합니다. 필터 훼손이나 소음으로 이어질 수 있습니다."
+      }
+    ],
+    "returnState": {
+      "statusValues": [
+        "not_started",
+        "in_progress",
+        "done",
+        "hold"
+      ],
+      "nextOccurrenceFrom": "firstRunDate",
+      "repeatRuleEvidenceRef": "ev-01-recurrence"
+    }
+  },
+  "optionB": {
+    "title": "극세 필터 청소",
+    "inputRule": null,
+    "resultBundle": [
+      "캘린더"
+    ],
+    "firstAction": "극세 필터 4주에 한 번 청소",
+    "items": [
+      {
+        "title": "극세 필터 4주에 한 번 청소",
+        "memo": "먼지 제거, 물세척, 그늘 건조",
+        "completion": "check",
+        "schedule": "4주에 한 번"
+      }
+    ],
+    "projections": [
+      {
+        "target": "calendar",
+        "itemRefs": [
+          "item-01"
+        ]
+      }
+    ],
+    "sourceTrace": [
+      "row-a8ce44ab3b4c5d12"
+    ],
+    "returnState": null
+  },
+  "questions": [
+    "Which option can be started faster without reopening the source?",
+    "Which option makes completion or hold more observable?",
+    "Which option creates the more useful calendar/checklist/todo/sheet/memo artifact?",
+    "Which option preserves source context and cautions more reliably?",
+    "Which option is more likely to be revisited or reused?",
+    "Which option uses less generic copy?",
+    "Overall, which option would you save?"
+  ],
+  "allowedChoice": [
+    "A",
+    "B",
+    "tie"
+  ],
+  "requiredOutput": {
+    "reviewerId": "string",
+    "judgments": [
+      {
+        "questionId": "q1",
+        "choice": "A|B|tie",
+        "reasonCode": "string"
+      },
+      {
+        "questionId": "q2",
+        "choice": "A|B|tie",
+        "reasonCode": "string"
+      },
+      {
+        "questionId": "q3",
+        "choice": "A|B|tie",
+        "reasonCode": "string"
+      },
+      {
+        "questionId": "q4",
+        "choice": "A|B|tie",
+        "reasonCode": "string"
+      },
+      {
+        "questionId": "q5",
+        "choice": "A|B|tie",
+        "reasonCode": "string"
+      },
+      {
+        "questionId": "q6",
+        "choice": "A|B|tie",
+        "reasonCode": "string"
+      },
+      {
+        "questionId": "q7",
+        "choice": "A|B|tie",
+        "reasonCode": "string"
+      }
+    ],
+    "unsupportedOrUnsafeFindings": [],
+    "overallChoice": "A|B|tie",
+    "note": "one concise sentence"
+  },
+  "prohibitedContext": [
+    "version labels",
+    "model labels",
+    "expected winner",
+    "previous scores"
+  ]
+}

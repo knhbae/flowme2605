@@ -1,0 +1,55 @@
+{
+  "laneId": "url-to-flow-source-row-v1",
+  "caseSetVersion": "flowme-url-to-flow-source-row-cases-v1",
+  "promptVersion": "url-to-flow-prompt-v1.1",
+  "caseId": "case-05",
+  "requestId": "rq-2e74c9a51f86",
+  "preflightInput": {
+    "targetLocale": "ko-KR",
+    "primary": {
+      "countryContext": "KR",
+      "riskClass": "low",
+      "accessStatus": "fetched",
+      "rightsStatus": "allowed"
+    },
+    "sourceRowCount": 2
+  },
+  "preflightResult": {
+    "passed": true,
+    "modelInvoked": true,
+    "generationState": null,
+    "outcome": null,
+    "errorCode": null,
+    "recommendedDisposition": null,
+    "reasonCode": "preflight_passed"
+  },
+  "generatorInput": {
+    "requestId": "rq-2e74c9a51f86",
+    "caseId": "case-05",
+    "maxItems": 7,
+    "sourceOwnership": {
+      "primarySourceId": "src-14b9e63a8f27",
+      "supportingSourceIds": []
+    },
+    "sourceRows": [
+      {
+        "sourceRowId": "row-0e7a31c9b452",
+        "sourceId": "src-14b9e63a8f27",
+        "rowType": "table_row",
+        "title": "1주차 강의와 퀴즈",
+        "detail": null,
+        "order": 0
+      },
+      {
+        "sourceRowId": "row-c48f2d105a76",
+        "sourceId": "src-14b9e63a8f27",
+        "rowType": "table_row",
+        "title": "2주차 강의와 퀴즈",
+        "detail": null,
+        "order": 1
+      }
+    ]
+  },
+  "deterministicProposal": null,
+  "evidenceBoundary": "Only generatorInput is model-visible. preflightInput and hidden oracle are excluded."
+}

@@ -1,0 +1,138 @@
+{
+  "reviewInputVersion": "flowme-source-row-blind-review-input-v1",
+  "laneId": "url-to-flow-source-row-v1",
+  "round": "round-2",
+  "caseId": "case-10",
+  "positiveCase": true,
+  "sourcePacket": {
+    "requestId": "rq-a47e19d260bf",
+    "caseId": "case-10",
+    "maxItems": 7,
+    "sourceOwnership": {
+      "primarySourceId": "src-b6720d4e91a5",
+      "supportingSourceIds": [
+        "src-40c9a71e2f86"
+      ]
+    },
+    "sourceRows": [
+      {
+        "sourceRowId": "row-58a7d0c31e94",
+        "sourceId": "src-b6720d4e91a5",
+        "rowType": "date",
+        "title": "정기검사 유효기간",
+        "detail": null,
+        "order": 0
+      },
+      {
+        "sourceRowId": "row-a20e6b9f4731",
+        "sourceId": "src-40c9a71e2f86",
+        "rowType": "reference",
+        "title": "검사기관 내부 검사 단계",
+        "detail": null,
+        "order": 0
+      }
+    ]
+  },
+  "deterministicNegativeBoundary": null,
+  "proposal": {
+    "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+    "promptVersion": "url-to-flow-prompt-v1.1",
+    "requestId": "rq-a47e19d260bf",
+    "caseId": "case-10",
+    "status": {
+      "generationState": "proposal",
+      "outcome": "complete",
+      "readiness": null,
+      "errorCode": null
+    },
+    "sourceAssessment": {
+      "access": "readable",
+      "sourceShape": "date_preparation",
+      "primarySourceId": "src-b6720d4e91a5",
+      "supportingSourceIds": [
+        "src-40c9a71e2f86"
+      ],
+      "receivedSourceRowIds": [
+        "row-58a7d0c31e94",
+        "row-a20e6b9f4731"
+      ],
+      "untrustedInstructionDetected": false
+    },
+    "conversionDecision": {
+      "userNeed": "정기검사 유효기간 챙기기",
+      "lifeArea": "money_admin_purchase",
+      "planningPattern": "date_preparation",
+      "primaryArtifact": "todo",
+      "contentShape": "실제 날짜 값이 없는 유효기간 항목 1개"
+    },
+    "proposal": {
+      "proposalTitle": "정기검사 유효기간 챙기기",
+      "items": [
+        {
+          "proposalId": "case-10-item-01",
+          "title": "정기검사 유효기간 챙기기",
+          "intent": "act",
+          "sourceRowIds": [
+            "row-58a7d0c31e94"
+          ],
+          "completion": {
+            "mode": "check",
+            "doneWhen": "정기검사 유효기간을 챙기면 완료"
+          },
+          "memoCandidate": null,
+          "groupingCandidate": null,
+          "scheduleCandidate": null
+        }
+      ],
+      "omittedRows": [
+        {
+          "sourceRowId": "row-a20e6b9f4731",
+          "reasonCode": "supporting_source_boundary",
+          "reason": "보조 출처의 검사 단계는 기본 항목을 제어할 수 없어 제외"
+        }
+      ],
+      "incompleteReason": null
+    },
+    "projectionPlan": [
+      {
+        "target": "todo",
+        "applicability": "applicable",
+        "reason": "유효기간 항목을 하나의 할 일로 관리할 수 있음"
+      }
+    ],
+    "reviewHints": {
+      "recommendedDisposition": "review",
+      "uncertainties": [
+        "실제 유효기간 날짜가 제공되지 않음",
+        "정기검사의 대상이 제공되지 않음"
+      ],
+      "hardFailCodes": [],
+      "humanReviewRequired": [
+        "실제 유효기간과 검사 대상 확인"
+      ]
+    }
+  },
+  "proposalFingerprint": "8fa4ef928e75e1c013155ff37798039920ccb52a0ac31b825af059fa28e323c0",
+  "deterministicValidation": {
+    "passed": true,
+    "codes": [],
+    "sourceRowAccounting": true
+  },
+  "rubricPath": "docs/specs/2026-07-15-url-to-flow-prompt-lab-source-row-v1/review-rubric.md",
+  "evidenceBoundary": {
+    "allowed": [
+      "this sourcePacket",
+      "this proposal",
+      "this proposalFingerprint",
+      "this deterministicValidation",
+      "the linked blind rubric"
+    ],
+    "forbidden": [
+      "canonical expectation or opaque ID mapping",
+      "source title URL publisher or preflight metadata",
+      "legacy or prior-round output and review",
+      "provider model tier timing token or cost",
+      "other reviewer conclusions"
+    ]
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "qaVersion": "flowme-source-row-command-qa-v1",
+  "scriptSyntax": [
+    {
+      "file": "scripts/content-audit/build-url-to-flow-source-row-lab.mjs",
+      "code": 0,
+      "stderr": ""
+    },
+    {
+      "file": "scripts/content-audit/build-url-to-flow-source-row-prompt-packets.mjs",
+      "code": 0,
+      "stderr": ""
+    },
+    {
+      "file": "scripts/content-audit/build-url-to-flow-source-row-report.mjs",
+      "code": 0,
+      "stderr": ""
+    },
+    {
+      "file": "scripts/content-audit/build-url-to-flow-source-row-review-inputs.mjs",
+      "code": 0,
+      "stderr": ""
+    },
+    {
+      "file": "scripts/content-audit/compare-url-to-flow-source-row-stability.mjs",
+      "code": 0,
+      "stderr": ""
+    },
+    {
+      "file": "scripts/content-audit/validate-url-to-flow-source-row-lab.mjs",
+      "code": 0,
+      "stderr": ""
+    },
+    {
+      "file": "scripts/content-audit/validate-url-to-flow-source-row-reviews.mjs",
+      "code": 0,
+      "stderr": ""
+    },
+    {
+      "file": "scripts/content-audit/verify-url-to-flow-source-row-lab.mjs",
+      "code": 0,
+      "stderr": ""
+    }
+  ],
+  "skillSync": {
+    "code": 0,
+    "stdout": "Skill sync check passed.",
+    "stderr": ""
+  },
+  "documentation": {
+    "code": 1,
+    "stderr": "Documentation check failed:\n- docs\\content-audit\\2026-07-12-flowme-public-flow-visual-system-evidence\\README.md: broken local link -> ../2026-07-12-flowme-user-creator-value-chain-ceo-ko.html\n- docs\\DECISIONS.md: broken local link -> ../my_tests/260616_check_01.md\n- docs\\IDEAS.md: broken local link -> ./content-audit/2026-07-12-flowme-user-creator-value-chain-ceo-ko.html",
+    "preExistingInHead": [
+      {
+        "file": "docs/DECISIONS.md",
+        "inHead": true
+      },
+      {
+        "file": "docs/IDEAS.md",
+        "inHead": true
+      },
+      {
+        "file": "docs/content-audit/2026-07-12-flowme-public-flow-visual-system-evidence/README.md",
+        "inHead": true
+      }
+    ]
+  },
+  "gitDiffCheck": {
+    "code": 0,
+    "stdout": "",
+    "lineEndingWarningCount": 85
+  }
+}

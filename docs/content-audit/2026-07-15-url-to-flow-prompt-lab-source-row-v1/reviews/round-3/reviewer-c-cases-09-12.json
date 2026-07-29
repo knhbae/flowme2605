@@ -1,0 +1,144 @@
+{
+  "reviewSchemaVersion": "flowme-source-row-blind-review-v1",
+  "laneId": "url-to-flow-source-row-v1",
+  "round": "round-3",
+  "reviewerEvidenceClass": "in_session_unselected_model_proxy",
+  "provider": null,
+  "model": null,
+  "humanReviewer": false,
+  "cases": [
+    {
+      "caseId": "case-09",
+      "proposalFingerprint": "356a913796f0c1c78b14539a9931deac5aa1e64fb03bfc355e601e890e6f8f58",
+      "validatorPassed": true,
+      "validatorCodes": [],
+      "positiveCase": true,
+      "itemReviews": [
+        {
+          "proposalId": "p-01",
+          "decision": "keep",
+          "comment": "resource 행의 Day 1 prompt를 사용하는 독립 항목으로서 행 제목과 경계가 일치하고 일정 값을 덧붙이지 않았다."
+        },
+        {
+          "proposalId": "p-02",
+          "decision": "keep",
+          "comment": "resource 행의 Day 2 prompt를 사용하는 독립 항목으로서 행 제목과 경계가 일치하고 일정 값을 덧붙이지 않았다."
+        }
+      ],
+      "unsupportedSignals": [
+        {
+          "class": "fact",
+          "field": "conversionDecision.lifeArea",
+          "quote": "study_reading",
+          "comment": "두 행은 prompt라는 리소스 이름만 제공하며 학습 또는 독서 용도는 말하지 않는다."
+        }
+      ],
+      "scores": {
+        "userNeedFit": 5,
+        "executionClarity": 5,
+        "contentFidelityCoverage": 4,
+        "portability": 5,
+        "cognitiveLoad": 5,
+        "copySpecificity": 5,
+        "sourceSafetySeparation": 4
+      },
+      "scoreComments": {
+        "userNeedFit": "두 resource 행을 각각 사용하는 가장 작은 유용한 작업이 명확하다.",
+        "executionClarity": "각 prompt를 사용하고 확인하는 경계가 한 항목씩 분리되어 있으며 실제 날짜나 주기를 만들지 않았다.",
+        "contentFidelityCoverage": "두 행을 정확히 한 번씩 매핑했지만 study_reading 생활 영역은 행에 없는 분류다.",
+        "portability": "실제 날짜가 없는 두 resource를 checklist로 제시해 자연스럽고 일정으로 과잉 확장하지 않았다.",
+        "cognitiveLoad": "두 행에 두 항목과 한 checklist 목적지만 두어 최소 구조를 유지했다.",
+        "copySpecificity": "항목 제목과 완료 문구가 Day 1 prompt와 Day 2 prompt만을 명시하며 추가 주제나 결과를 만들지 않았다.",
+        "sourceSafetySeparation": "날짜와 주제의 부재를 불확실성으로 남겼지만 study_reading 분류 한 건은 행 밖의 의미를 부여한다."
+      },
+      "topFix": "conversionDecision.lifeArea의 study_reading을 제거하거나 미분류 상태로 두어 prompt의 주제를 행 밖에서 추정하지 않는다.",
+      "verdict": "edit"
+    },
+    {
+      "caseId": "case-10",
+      "proposalFingerprint": "32dff1ca62c39c2c609410adc92d15a6307fd40555a61912cc179381d30ff8a1",
+      "validatorPassed": true,
+      "validatorCodes": [],
+      "positiveCase": true,
+      "itemReviews": [
+        {
+          "proposalId": "p-01",
+          "decision": "keep",
+          "comment": "date 행에 적힌 정기검사 유효기간을 확인하는 단일 항목이며 실제 날짜나 기간 값을 발명하지 않았다."
+        }
+      ],
+      "unsupportedSignals": [
+        {
+          "class": "fact",
+          "field": "conversionDecision.lifeArea",
+          "quote": "money_admin_purchase",
+          "comment": "정기검사의 대상이 없어 금전·행정·구매 영역이라는 분류를 행만으로 확정할 수 없다."
+        },
+        {
+          "class": "fact",
+          "field": "proposal.omittedRows[0].reasonCode",
+          "quote": "supporting_source_boundary",
+          "comment": "허용된 rowType, title, detail, order만으로는 출처 위계를 생략 근거로 삼을 수 없다."
+        },
+        {
+          "class": "fact",
+          "field": "proposal.omittedRows[0].reason",
+          "quote": "지원 출처의 검사기관 내부 검사 단계는 primary SourceRow가 아니며 사용자 행동으로 확장할 세부 근거가 없음",
+          "comment": "실제 단계 세부정보가 없다는 판단은 행에서 확인되지만 지원 출처 및 primary 여부를 의미 근거로 사용한 부분은 허용된 행 필드에 없다."
+        },
+        {
+          "class": "fact",
+          "field": "proposal.incompleteReason",
+          "quote": "지원 출처의 검사기관 내부 검사 단계는 Flow 구조를 통제하지 않아 사용자 Item에서 제외함",
+          "comment": "reference 행에 실제 단계가 없다는 이유로는 생략할 수 있으나 출처 위계가 Flow 구조를 통제하지 않는다는 규칙은 행에 제시되지 않았다."
+        }
+      ],
+      "scores": {
+        "userNeedFit": 4,
+        "executionClarity": 5,
+        "contentFidelityCoverage": 4,
+        "portability": 5,
+        "cognitiveLoad": 5,
+        "copySpecificity": 5,
+        "sourceSafetySeparation": 3
+      },
+      "scoreComments": {
+        "userNeedFit": "정기검사 유효기간 확인이라는 좁은 작업은 분명하지만 검사 대상과 생활 영역은 알 수 없다.",
+        "executionClarity": "실제 기간 값이 없는 상태에서 확인 행동과 완료 경계를 단일 todo로 명확히 제시했다.",
+        "contentFidelityCoverage": "date 행은 한 항목으로 매핑하고 세부 단계가 없는 reference 행은 한 번 생략했지만 생략 설명 일부와 생활 영역이 행 밖 근거에 의존한다.",
+        "portability": "날짜 값을 발명하지 않고 유효기간 확인을 todo로 둔 것이 가장 작은 자연스러운 표현이다.",
+        "cognitiveLoad": "행 두 개를 단일 실행 항목과 한 생략 기록으로 정리해 불필요한 단계나 목적지를 만들지 않았다.",
+        "copySpecificity": "실행 항목은 정기검사 유효기간이라는 행 제목에만 기대고 확인하기로 간결하게 표현했다.",
+        "sourceSafetySeparation": "실제 날짜와 검사 대상의 불확실성은 남겼지만 허용된 행 필드가 아닌 출처 위계를 생략 및 구조 근거로 사용했다."
+      },
+      "topFix": "lifeArea 추정을 제거하고 reference 행의 생략 이유를 실제 검사 단계 세부정보가 행에 없다는 사실만으로 다시 쓴다.",
+      "verdict": "edit"
+    },
+    {
+      "caseId": "case-11",
+      "proposalFingerprint": "972fdd606415e273f1d227755256f0a13b804a9ccc60e6f66ae559afa55e5c94",
+      "validatorPassed": true,
+      "validatorCodes": [],
+      "positiveCase": false,
+      "itemReviews": [],
+      "unsupportedSignals": [],
+      "scores": null,
+      "scoreComments": null,
+      "topFix": null,
+      "verdict": "keep"
+    },
+    {
+      "caseId": "case-12",
+      "proposalFingerprint": "ef206b70ef5cefcfe07c15228c1879fa231d4a86ee0b15769dbd4aa0ded6679b",
+      "validatorPassed": true,
+      "validatorCodes": [],
+      "positiveCase": false,
+      "itemReviews": [],
+      "unsupportedSignals": [],
+      "scores": null,
+      "scoreComments": null,
+      "topFix": null,
+      "verdict": "keep"
+    }
+  ]
+}

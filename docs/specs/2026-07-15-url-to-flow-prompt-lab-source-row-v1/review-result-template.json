@@ -1,0 +1,47 @@
+{
+  "reviewSchemaVersion": "flowme-source-row-blind-review-v1",
+  "laneId": "url-to-flow-source-row-v1",
+  "round": "round-2",
+  "reviewerEvidenceClass": "in_session_unselected_model_proxy",
+  "provider": null,
+  "model": null,
+  "humanReviewer": false,
+  "cases": [
+    {
+      "caseId": "case-01",
+      "proposalFingerprint": "replace-with-sha256",
+      "validatorPassed": true,
+      "validatorCodes": [],
+      "positiveCase": true,
+      "itemReviews": [
+        {
+          "proposalId": "p-01",
+          "decision": "keep",
+          "comment": "SourceRow에서 직접 지지되는 Item 경계와 완료 기준이다."
+        }
+      ],
+      "unsupportedSignals": [],
+      "scores": {
+        "userNeedFit": 4,
+        "executionClarity": 4,
+        "contentFidelityCoverage": 4,
+        "portability": 4,
+        "cognitiveLoad": 4,
+        "copySpecificity": 4,
+        "sourceSafetySeparation": 4
+      },
+      "scoreComments": {
+        "userNeedFit": "근거를 적는다.",
+        "executionClarity": "근거를 적는다.",
+        "contentFidelityCoverage": "근거를 적는다.",
+        "portability": "근거를 적는다.",
+        "cognitiveLoad": "근거를 적는다.",
+        "copySpecificity": "근거를 적는다.",
+        "sourceSafetySeparation": "근거를 적는다."
+      },
+      "topFix": null,
+      "verdict": "keep"
+    }
+  ]
+}
+

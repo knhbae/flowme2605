@@ -1,0 +1,1054 @@
+{
+  "verificationVersion": "flowme-source-row-completion-verification-v2",
+  "laneId": "url-to-flow-source-row-v1",
+  "evidenceFileIntegrityPassed": true,
+  "protocolConformancePassed": false,
+  "evidenceIntegrityPassed": false,
+  "completionGatesPassed": false,
+  "completionPassed": false,
+  "promptLabDecision": "v1_incomplete",
+  "productionBackendDecision": "no_go",
+  "failedFileIntegrityChecks": [],
+  "failedProtocolChecks": [
+    "generator_case_ids_are_opaque",
+    "round1_three_isolated_four_case_batches",
+    "round3_prerequisite_satisfied",
+    "round3_input_binding_proven"
+  ],
+  "failedIntegrityChecks": [
+    "generator_case_ids_are_opaque",
+    "round1_three_isolated_four_case_batches",
+    "round3_prerequisite_satisfied",
+    "round3_input_binding_proven"
+  ],
+  "evidenceLimitFlags": [
+    "resource_review_policy_consistency"
+  ],
+  "failedCompletionGates": [
+    "source_row_only_input_contract",
+    "round2_item_keep_rate",
+    "round2_unsupported_zero",
+    "round3_schema_valid",
+    "round3_source_row_accounting",
+    "round3_unsupported_zero"
+  ],
+  "evidenceBoundary": {
+    "currentSession": "in_session_unselected_model_proxy",
+    "provider": null,
+    "model": null,
+    "lowCostModelComparison": null,
+    "premiumModelComparison": null,
+    "tokens": null,
+    "cost": null,
+    "latency": null,
+    "humanReview": false
+  },
+  "observed": {
+    "round1": {
+      "documentCount": 4,
+      "outputCount": 12,
+      "passedOutputCount": 2,
+      "failedOutputCount": 10,
+      "errorCount": 112,
+      "warningCount": 0,
+      "receivedSourceRows": 16,
+      "exactlyOnceSourceRows": 16,
+      "sourceRowAccountingRate": 1
+    },
+    "round2": {
+      "deterministic": {
+        "documentCount": 4,
+        "outputCount": 12,
+        "passedOutputCount": 12,
+        "failedOutputCount": 0,
+        "errorCount": 0,
+        "warningCount": 0,
+        "receivedSourceRows": 16,
+        "exactlyOnceSourceRows": 16,
+        "sourceRowAccountingRate": 1
+      },
+      "blindReview": {
+        "reviewedCaseCount": 12,
+        "positiveCaseCount": 10,
+        "deterministicNegativeCount": 2,
+        "negativeExact": 2,
+        "decisionCounts": {
+          "keep": 11,
+          "edit": 4,
+          "delete": 0
+        },
+        "itemKeepRate": 0.7333333333333333,
+        "unsupportedSignalCount": 15,
+        "unsupportedCounts": {
+          "action": 9,
+          "date": 2,
+          "repeat": 0,
+          "fact": 4
+        },
+        "axisAverages": {
+          "userNeedFit": 4.4,
+          "executionClarity": 4.4,
+          "contentFidelityCoverage": 4.3,
+          "portability": 4.7,
+          "cognitiveLoad": 5,
+          "copySpecificity": 4.2,
+          "sourceSafetySeparation": 4.4
+        },
+        "sevenAxisAverage": 4.485714285714286
+      }
+    },
+    "round3": {
+      "deterministic": {
+        "documentCount": 4,
+        "outputCount": 12,
+        "passedOutputCount": 11,
+        "failedOutputCount": 1,
+        "errorCount": 1,
+        "warningCount": 0,
+        "receivedSourceRows": 16,
+        "exactlyOnceSourceRows": 15,
+        "sourceRowAccountingRate": 0.9375
+      },
+      "blindReview": {
+        "reviewedCaseCount": 12,
+        "positiveCaseCount": 10,
+        "deterministicNegativeCount": 2,
+        "negativeExact": 2,
+        "decisionCounts": {
+          "keep": 13,
+          "edit": 3,
+          "delete": 0
+        },
+        "itemKeepRate": 0.8125,
+        "unsupportedSignalCount": 7,
+        "unsupportedCounts": {
+          "action": 0,
+          "date": 0,
+          "repeat": 0,
+          "fact": 7
+        },
+        "axisAverages": {
+          "userNeedFit": 4.3,
+          "executionClarity": 4.4,
+          "contentFidelityCoverage": 4.2,
+          "portability": 4.6,
+          "cognitiveLoad": 4.6,
+          "copySpecificity": 4.3,
+          "sourceSafetySeparation": 4.1
+        },
+        "sevenAxisAverage": 4.357142857142857
+      },
+      "stability": {
+        "comparedCases": 12,
+        "exactMatches": 5,
+        "exactMatchRate": 0.4166666666666667,
+        "positiveComparedCases": 10,
+        "positiveExactMatches": 3,
+        "positiveExactMatchRate": 0.3,
+        "validInBothRounds": 11,
+        "negativesExact": 2,
+        "negativeCount": 2
+      }
+    },
+    "previewCount": 10
+  },
+  "checks": [
+    {
+      "id": "canonical_case_count",
+      "category": "integrity",
+      "passed": true,
+      "observed": 12,
+      "expected": 12
+    },
+    {
+      "id": "positive_case_count",
+      "category": "integrity",
+      "passed": true,
+      "observed": 10,
+      "expected": 10
+    },
+    {
+      "id": "negative_case_count",
+      "category": "integrity",
+      "passed": true,
+      "observed": 2,
+      "expected": 2
+    },
+    {
+      "id": "canonical_case_ids",
+      "category": "integrity",
+      "passed": true,
+      "observed": [
+        "case-01",
+        "case-02",
+        "case-03",
+        "case-04",
+        "case-05",
+        "case-06",
+        "case-07",
+        "case-08",
+        "case-09",
+        "case-10",
+        "case-11",
+        "case-12"
+      ],
+      "expected": "case-01 through case-12"
+    },
+    {
+      "id": "generator_case_ids_are_opaque",
+      "category": "protocol",
+      "passed": false,
+      "observed": [
+        "case-01",
+        "case-02",
+        "case-03",
+        "case-04",
+        "case-05",
+        "case-06",
+        "case-07",
+        "case-08",
+        "case-09",
+        "case-10"
+      ],
+      "expected": "no canonical case lineage IDs in generator input"
+    },
+    {
+      "id": "leakage_report_passed",
+      "category": "integrity",
+      "passed": true,
+      "observed": 0,
+      "expected": 0
+    },
+    {
+      "id": "generator_semantic_boundary",
+      "category": "integrity",
+      "passed": true,
+      "observed": {
+        "positive": 10,
+        "negative": 2,
+        "forbiddenHits": 0
+      },
+      "expected": {
+        "positive": 10,
+        "negative": 2,
+        "forbiddenHits": 0
+      }
+    },
+    {
+      "id": "compact_schema_budget",
+      "category": "integrity",
+      "passed": true,
+      "observed": {
+        "objectSchemas": {
+          "actual": 11,
+          "max": 12,
+          "passed": true
+        },
+        "declaredProperties": {
+          "actual": 52,
+          "max": 60,
+          "passed": true
+        },
+        "serializedBytes": {
+          "actual": 9061,
+          "max": 12288,
+          "passed": true
+        },
+        "strictObjects": {
+          "actualFailures": [],
+          "passed": true
+        },
+        "requiredUnlessNullable": {
+          "actualFailures": [],
+          "passed": true
+        }
+      },
+      "expected": "all limits pass"
+    },
+    {
+      "id": "lane_metadata_lists_both_prompts",
+      "category": "integrity",
+      "passed": true,
+      "observed": {
+        "authority": "corrected_experimental_evidence",
+        "promptVersions": [
+          "url-to-flow-prompt-v1.0",
+          "url-to-flow-prompt-v1.1"
+        ]
+      },
+      "expected": {
+        "authority": "corrected_experimental_evidence",
+        "promptVersions": [
+          "url-to-flow-prompt-v1.0",
+          "url-to-flow-prompt-v1.1"
+        ]
+      }
+    },
+    {
+      "id": "legacy_preflight_frozen",
+      "category": "integrity",
+      "passed": true,
+      "observed": {
+        "acceptedForCorrectedCompletion": false,
+        "fileCount": 87,
+        "mismatchCount": 0,
+        "mismatches": []
+      },
+      "expected": {
+        "acceptedForCorrectedCompletion": false,
+        "mismatchCount": 0
+      }
+    },
+    {
+      "id": "packet_counts_v1.0",
+      "category": "integrity",
+      "passed": true,
+      "observed": {
+        "pipeline": 12,
+        "generator": 10,
+        "negative": 2
+      },
+      "expected": {
+        "pipeline": 12,
+        "generator": 10,
+        "negative": 2
+      }
+    },
+    {
+      "id": "negative_preflight_v1.0",
+      "category": "integrity",
+      "passed": true,
+      "observed": [
+        {
+          "caseId": "case-01",
+          "modelInvoked": true
+        },
+        {
+          "caseId": "case-02",
+          "modelInvoked": true
+        },
+        {
+          "caseId": "case-03",
+          "modelInvoked": true
+        },
+        {
+          "caseId": "case-04",
+          "modelInvoked": true
+        },
+        {
+          "caseId": "case-05",
+          "modelInvoked": true
+        },
+        {
+          "caseId": "case-06",
+          "modelInvoked": true
+        },
+        {
+          "caseId": "case-07",
+          "modelInvoked": true
+        },
+        {
+          "caseId": "case-08",
+          "modelInvoked": true
+        },
+        {
+          "caseId": "case-09",
+          "modelInvoked": true
+        },
+        {
+          "caseId": "case-10",
+          "modelInvoked": true
+        },
+        {
+          "caseId": "case-11",
+          "modelInvoked": false
+        },
+        {
+          "caseId": "case-12",
+          "modelInvoked": false
+        }
+      ],
+      "expected": "10 true and 2 false"
+    },
+    {
+      "id": "packet_manifest_hashes_v1.0",
+      "category": "integrity",
+      "passed": true,
+      "observed": [],
+      "expected": "no missing or changed files"
+    },
+    {
+      "id": "packet_counts_v1.1",
+      "category": "integrity",
+      "passed": true,
+      "observed": {
+        "pipeline": 12,
+        "generator": 10,
+        "negative": 2
+      },
+      "expected": {
+        "pipeline": 12,
+        "generator": 10,
+        "negative": 2
+      }
+    },
+    {
+      "id": "negative_preflight_v1.1",
+      "category": "integrity",
+      "passed": true,
+      "observed": [
+        {
+          "caseId": "case-01",
+          "modelInvoked": true
+        },
+        {
+          "caseId": "case-02",
+          "modelInvoked": true
+        },
+        {
+          "caseId": "case-03",
+          "modelInvoked": true
+        },
+        {
+          "caseId": "case-04",
+          "modelInvoked": true
+        },
+        {
+          "caseId": "case-05",
+          "modelInvoked": true
+        },
+        {
+          "caseId": "case-06",
+          "modelInvoked": true
+        },
+        {
+          "caseId": "case-07",
+          "modelInvoked": true
+        },
+        {
+          "caseId": "case-08",
+          "modelInvoked": true
+        },
+        {
+          "caseId": "case-09",
+          "modelInvoked": true
+        },
+        {
+          "caseId": "case-10",
+          "modelInvoked": true
+        },
+        {
+          "caseId": "case-11",
+          "modelInvoked": false
+        },
+        {
+          "caseId": "case-12",
+          "modelInvoked": false
+        }
+      ],
+      "expected": "10 true and 2 false"
+    },
+    {
+      "id": "packet_manifest_hashes_v1.1",
+      "category": "integrity",
+      "passed": true,
+      "observed": [],
+      "expected": "no missing or changed files"
+    },
+    {
+      "id": "v1_0_v1_1_input_frozen",
+      "category": "integrity",
+      "passed": true,
+      "observed": [],
+      "expected": "all 10 semantic payload hashes identical"
+    },
+    {
+      "id": "schema_and_cases_frozen",
+      "category": "integrity",
+      "passed": true,
+      "observed": {
+        "schema10": "d001767b277f387a38ea52f88392c5eb9afe6d9b9af85bfd24e6f4ef37ef4536",
+        "schema11": "d001767b277f387a38ea52f88392c5eb9afe6d9b9af85bfd24e6f4ef37ef4536",
+        "cases10": "9223c9824a6a5471621bec35be4b92f987da669ce22902f94810949aa6e2279f",
+        "cases11": "9223c9824a6a5471621bec35be4b92f987da669ce22902f94810949aa6e2279f"
+      },
+      "expected": "same schema and case hashes"
+    },
+    {
+      "id": "one_defect_revision_only",
+      "category": "integrity",
+      "passed": true,
+      "observed": {
+        "selected": "required_output_contract_compliance",
+        "manifest": "required_output_contract_compliance",
+        "normalizedPromptEqualsV1_0": true
+      },
+      "expected": "only the version labels and required_output_contract_compliance lock differ"
+    },
+    {
+      "id": "three_round_limit",
+      "category": "integrity",
+      "passed": true,
+      "observed": {
+        "runDirectories": [
+          "round-1",
+          "round-2",
+          "round-3"
+        ],
+        "promptV1_2OrRound4Exists": false
+      },
+      "expected": {
+        "runDirectories": [
+          "round-1",
+          "round-2",
+          "round-3"
+        ],
+        "promptV1_2OrRound4Exists": false
+      }
+    },
+    {
+      "id": "round1_three_isolated_four_case_batches",
+      "category": "protocol",
+      "passed": false,
+      "observed": [
+        {
+          "file": "batch-a.json",
+          "outputs": 4
+        },
+        {
+          "file": "batch-b.json",
+          "outputs": 4
+        },
+        {
+          "file": "batch-c-positive.json",
+          "outputs": 2
+        },
+        {
+          "file": "batch-d-negative.json",
+          "outputs": 2
+        }
+      ],
+      "expected": [
+        {
+          "file": "batch-a.json",
+          "outputs": 4
+        },
+        {
+          "file": "batch-b.json",
+          "outputs": 4
+        },
+        {
+          "file": "batch-c.json",
+          "outputs": 4
+        }
+      ]
+    },
+    {
+      "id": "round3_prerequisite_satisfied",
+      "category": "protocol",
+      "passed": false,
+      "observed": {
+        "round2Passed": false,
+        "round3ProtocolNote": {
+          "noteVersion": "flowme-source-row-round-3-protocol-note-v1",
+          "laneId": "url-to-flow-source-row-v1",
+          "round": "round-3",
+          "promptVersion": "url-to-flow-prompt-v1.1",
+          "packetVersion": "flowme-url-to-flow-source-row-cases-v1",
+          "reason": "Round 2 did not satisfy Item keep and unsupported-content gates. Round 3 proceeds only as an unchanged-prompt, unchanged-packet failure-replication and stability diagnostic required by the broader three-round objective.",
+          "completionAuthority": false,
+          "cannotRescueRound2Failure": true,
+          "allowedUse": [
+            "measure whether core decisions and the same defects recur",
+            "confirm both deterministic negatives remain stable",
+            "separate prompt variance from SourceRow/schema sufficiency"
+          ],
+          "forbiddenUse": [
+            "replace or erase Round 2 evidence",
+            "average away a failed completion gate",
+            "introduce prompt v1.2 or a fourth round"
+          ]
+        }
+      },
+      "expected": "Round 2 passes every completion gate before Round 3"
+    },
+    {
+      "id": "round3_input_binding_proven",
+      "category": "protocol",
+      "passed": false,
+      "observed": {
+        "comparisonScope": "recorded_output_signature_only",
+        "runInputBindingProven": false,
+        "freshContextProven": false
+      },
+      "expected": {
+        "runInputBindingProven": true,
+        "freshContextProven": true
+      }
+    },
+    {
+      "id": "bare_run_equivalence",
+      "category": "integrity",
+      "passed": true,
+      "observed": {
+        "evidenceVersion": "flowme-bare-run-validator-equivalence-v1",
+        "laneId": "url-to-flow-source-row-v1",
+        "caseId": "case-01",
+        "bareProposalPath": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/bare/case-01.json",
+        "runEnvelopePath": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/runs/round-2/batch-a.json",
+        "barePassed": true,
+        "runPassed": true,
+        "bareProposalDiagnosticsSha256": "c56f86b7cc3a8ced920c440b018c2e64914a49b5ae4c46222088f2f9d491df79",
+        "runProposalDiagnosticsSha256": "c56f86b7cc3a8ced920c440b018c2e64914a49b5ae4c46222088f2f9d491df79",
+        "equivalent": true,
+        "providerOrModelEvidence": false
+      },
+      "expected": "both pass with identical diagnostic hashes"
+    },
+    {
+      "id": "round1_baseline_preserved",
+      "category": "integrity",
+      "passed": true,
+      "observed": {
+        "outputCount": 12,
+        "passed": 2,
+        "errors": 112,
+        "rows": "16/16",
+        "defectSchemaValid": 2
+      },
+      "expected": {
+        "outputCount": 12,
+        "passed": 2,
+        "errors": 112,
+        "rows": "16/16",
+        "defectSchemaValid": 2
+      }
+    },
+    {
+      "id": "model_cost_evidence_boundary",
+      "category": "integrity",
+      "passed": true,
+      "observed": {
+        "rawEvidenceViolations": [],
+        "reportBoundary": {
+          "currentSession": "in_session_unselected_model_proxy",
+          "provider": null,
+          "model": null,
+          "lowCostModelComparison": null,
+          "premiumModelComparison": null,
+          "tokens": null,
+          "cost": null,
+          "latency": null,
+          "humanReview": false
+        }
+      },
+      "expected": "unselected model proxy; provider/model/tier/timing/usage/cost null; human false"
+    },
+    {
+      "id": "round2_review_integrity",
+      "category": "integrity",
+      "passed": true,
+      "observed": {
+        "integrityPassed": true,
+        "errors": []
+      },
+      "expected": {
+        "integrityPassed": true,
+        "errors": []
+      }
+    },
+    {
+      "id": "resource_review_policy_consistency",
+      "category": "evidence_limit",
+      "passed": false,
+      "observed": {
+        "promptAllowsResourceIntent": false,
+        "reviews": [
+          {
+            "caseId": "case-06",
+            "decisions": [
+              "edit"
+            ],
+            "verdict": "edit",
+            "topFix": "Item 경계와 memo 투영은 유지하되 userNeed, intent, doneWhen에서 '사용' 행동을 제거하고 선택된 영상 리소스 자체를 유지하는 표현으로 고친다."
+          },
+          {
+            "caseId": "case-09",
+            "decisions": [
+              "keep",
+              "keep"
+            ],
+            "verdict": "edit",
+            "topFix": "conversionDecision.lifeArea의 study_reading 분류를 제거하거나 행에서 관찰 가능한 중립 분류로 바꾼다."
+          }
+        ]
+      },
+      "expected": "adjudicate generic resource rows under one explicit policy before treating keep-rate as robust"
+    },
+    {
+      "id": "round3_review_integrity",
+      "category": "integrity",
+      "passed": true,
+      "observed": {
+        "integrityPassed": true,
+        "errors": []
+      },
+      "expected": {
+        "integrityPassed": true,
+        "errors": []
+      }
+    },
+    {
+      "id": "stability_is_diagnostic",
+      "category": "integrity",
+      "passed": true,
+      "observed": {
+        "diagnosticOnly": true,
+        "completionGate": false,
+        "comparisonScope": "recorded_output_signature_only",
+        "runInputBindingProven": false,
+        "freshContextProven": false,
+        "metrics": {
+          "comparedCases": 12,
+          "exactMatches": 5,
+          "exactMatchRate": 0.4166666666666667,
+          "positiveComparedCases": 10,
+          "positiveExactMatches": 3,
+          "positiveExactMatchRate": 0.3,
+          "validInBothRounds": 11,
+          "negativesExact": 2,
+          "negativeCount": 2
+        }
+      },
+      "expected": "recorded-output diagnostic only; 10 positives with 3 exact and 2 deterministic negatives exact"
+    },
+    {
+      "id": "report_metrics_match_raw",
+      "category": "integrity",
+      "passed": true,
+      "observed": {
+        "round1": {
+          "documentCount": 4,
+          "outputCount": 12,
+          "passedOutputCount": 2,
+          "failedOutputCount": 10,
+          "errorCount": 112,
+          "warningCount": 0,
+          "receivedSourceRows": 16,
+          "exactlyOnceSourceRows": 16,
+          "sourceRowAccountingRate": 1
+        },
+        "round2": {
+          "deterministic": {
+            "documentCount": 4,
+            "outputCount": 12,
+            "passedOutputCount": 12,
+            "failedOutputCount": 0,
+            "errorCount": 0,
+            "warningCount": 0,
+            "receivedSourceRows": 16,
+            "exactlyOnceSourceRows": 16,
+            "sourceRowAccountingRate": 1
+          },
+          "blindReview": {
+            "reviewedCaseCount": 12,
+            "positiveCaseCount": 10,
+            "deterministicNegativeCount": 2,
+            "negativeExact": 2,
+            "decisionCounts": {
+              "keep": 11,
+              "edit": 4,
+              "delete": 0
+            },
+            "itemKeepRate": 0.7333333333333333,
+            "unsupportedSignalCount": 15,
+            "unsupportedCounts": {
+              "action": 9,
+              "date": 2,
+              "repeat": 0,
+              "fact": 4
+            },
+            "axisAverages": {
+              "userNeedFit": 4.4,
+              "executionClarity": 4.4,
+              "contentFidelityCoverage": 4.3,
+              "portability": 4.7,
+              "cognitiveLoad": 5,
+              "copySpecificity": 4.2,
+              "sourceSafetySeparation": 4.4
+            },
+            "sevenAxisAverage": 4.485714285714286
+          }
+        },
+        "round3": {
+          "deterministic": {
+            "documentCount": 4,
+            "outputCount": 12,
+            "passedOutputCount": 11,
+            "failedOutputCount": 1,
+            "errorCount": 1,
+            "warningCount": 0,
+            "receivedSourceRows": 16,
+            "exactlyOnceSourceRows": 15,
+            "sourceRowAccountingRate": 0.9375
+          },
+          "blindReview": {
+            "reviewedCaseCount": 12,
+            "positiveCaseCount": 10,
+            "deterministicNegativeCount": 2,
+            "negativeExact": 2,
+            "decisionCounts": {
+              "keep": 13,
+              "edit": 3,
+              "delete": 0
+            },
+            "itemKeepRate": 0.8125,
+            "unsupportedSignalCount": 7,
+            "unsupportedCounts": {
+              "action": 0,
+              "date": 0,
+              "repeat": 0,
+              "fact": 7
+            },
+            "axisAverages": {
+              "userNeedFit": 4.3,
+              "executionClarity": 4.4,
+              "contentFidelityCoverage": 4.2,
+              "portability": 4.6,
+              "cognitiveLoad": 4.6,
+              "copySpecificity": 4.3,
+              "sourceSafetySeparation": 4.1
+            },
+            "sevenAxisAverage": 4.357142857142857
+          },
+          "stability": {
+            "comparedCases": 12,
+            "exactMatches": 5,
+            "exactMatchRate": 0.4166666666666667,
+            "positiveComparedCases": 10,
+            "positiveExactMatches": 3,
+            "positiveExactMatchRate": 0.3,
+            "validInBothRounds": 11,
+            "negativesExact": 2,
+            "negativeCount": 2
+          },
+          "completionAuthority": false
+        }
+      },
+      "expected": "report summaries equal raw validation, review, and stability metrics"
+    },
+    {
+      "id": "deliverables_present",
+      "category": "integrity",
+      "passed": true,
+      "observed": {
+        "comparison": true,
+        "report": true,
+        "reportData": true,
+        "previewIndex": true,
+        "browserQa": true,
+        "previews": 10
+      },
+      "expected": {
+        "comparison": true,
+        "report": true,
+        "reportData": true,
+        "previewIndex": true,
+        "browserQa": true,
+        "previews": 10
+      }
+    },
+    {
+      "id": "source_row_only_input_contract",
+      "category": "completion_gate",
+      "passed": false,
+      "observed": {
+        "semanticLeakageReportPassed": true,
+        "canonicalGeneratorCaseIds": [
+          "case-01",
+          "case-02",
+          "case-03",
+          "case-04",
+          "case-05",
+          "case-06",
+          "case-07",
+          "case-08",
+          "case-09",
+          "case-10"
+        ]
+      },
+      "expected": {
+        "semanticLeakageReportPassed": true,
+        "canonicalGeneratorCaseIds": []
+      }
+    },
+    {
+      "id": "compact_schema_completion_gate",
+      "category": "completion_gate",
+      "passed": true,
+      "observed": true,
+      "expected": true
+    },
+    {
+      "id": "bare_validator_completion_gate",
+      "category": "completion_gate",
+      "passed": true,
+      "observed": {
+        "barePassed": true,
+        "runPassed": true,
+        "equivalent": true
+      },
+      "expected": {
+        "barePassed": true,
+        "runPassed": true,
+        "equivalent": true
+      }
+    },
+    {
+      "id": "round2_schema_valid",
+      "category": "completion_gate",
+      "passed": true,
+      "observed": "12/12",
+      "expected": "12/12"
+    },
+    {
+      "id": "round2_source_row_accounting",
+      "category": "completion_gate",
+      "passed": true,
+      "observed": "16/16",
+      "expected": "16/16"
+    },
+    {
+      "id": "round2_negative_exact",
+      "category": "completion_gate",
+      "passed": true,
+      "observed": 2,
+      "expected": 2
+    },
+    {
+      "id": "round2_item_keep_rate",
+      "category": "completion_gate",
+      "passed": false,
+      "observed": 0.7333333333333333,
+      "expected": ">= 0.8"
+    },
+    {
+      "id": "round2_unsupported_zero",
+      "category": "completion_gate",
+      "passed": false,
+      "observed": {
+        "total": 15,
+        "byClass": {
+          "action": 9,
+          "date": 2,
+          "repeat": 0,
+          "fact": 4
+        }
+      },
+      "expected": {
+        "total": 0
+      }
+    },
+    {
+      "id": "round2_seven_axis_average",
+      "category": "completion_gate",
+      "passed": true,
+      "observed": 4.485714285714286,
+      "expected": ">= 3.5"
+    },
+    {
+      "id": "round2_execution_clarity",
+      "category": "completion_gate",
+      "passed": true,
+      "observed": 4.4,
+      "expected": ">= 4"
+    },
+    {
+      "id": "round2_content_fidelity",
+      "category": "completion_gate",
+      "passed": true,
+      "observed": 4.3,
+      "expected": ">= 4"
+    },
+    {
+      "id": "round2_source_safety",
+      "category": "completion_gate",
+      "passed": true,
+      "observed": 4.4,
+      "expected": ">= 4"
+    },
+    {
+      "id": "round3_schema_valid",
+      "category": "completion_gate",
+      "passed": false,
+      "observed": "11/12",
+      "expected": "12/12"
+    },
+    {
+      "id": "round3_source_row_accounting",
+      "category": "completion_gate",
+      "passed": false,
+      "observed": "15/16",
+      "expected": "16/16"
+    },
+    {
+      "id": "round3_negative_exact",
+      "category": "completion_gate",
+      "passed": true,
+      "observed": 2,
+      "expected": 2
+    },
+    {
+      "id": "round3_item_keep_rate",
+      "category": "completion_gate",
+      "passed": true,
+      "observed": 0.8125,
+      "expected": ">= 0.8"
+    },
+    {
+      "id": "round3_unsupported_zero",
+      "category": "completion_gate",
+      "passed": false,
+      "observed": {
+        "total": 7,
+        "byClass": {
+          "action": 0,
+          "date": 0,
+          "repeat": 0,
+          "fact": 7
+        }
+      },
+      "expected": {
+        "total": 0
+      }
+    },
+    {
+      "id": "round3_seven_axis_average",
+      "category": "completion_gate",
+      "passed": true,
+      "observed": 4.357142857142857,
+      "expected": ">= 3.5"
+    },
+    {
+      "id": "round3_execution_clarity",
+      "category": "completion_gate",
+      "passed": true,
+      "observed": 4.4,
+      "expected": ">= 4"
+    },
+    {
+      "id": "round3_content_fidelity",
+      "category": "completion_gate",
+      "passed": true,
+      "observed": 4.2,
+      "expected": ">= 4"
+    },
+    {
+      "id": "round3_source_safety",
+      "category": "completion_gate",
+      "passed": true,
+      "observed": 4.1,
+      "expected": ">= 4"
+    }
+  ]
+}

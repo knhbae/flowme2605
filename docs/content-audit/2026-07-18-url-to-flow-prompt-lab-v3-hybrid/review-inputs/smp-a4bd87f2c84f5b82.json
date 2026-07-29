@@ -1,0 +1,57 @@
+{
+  "sampleRef": "smp-a4bd87f2c84f5b82",
+  "sourceOwnership": {
+    "primarySourceRef": "src-da52f066cd245591",
+    "supportingSourceRefs": []
+  },
+  "sourceRows": [
+    {
+      "sourceRowRef": "row-d062b869afabc018",
+      "sourceRef": "src-da52f066cd245591",
+      "rowType": "check",
+      "title": "차량 이력과 상태를 확인한 뒤 구매 판단",
+      "detail": null,
+      "order": 0
+    }
+  ],
+  "compiledProposal": {
+    "schemaVersion": "flowme-semantic-proposal-v2",
+    "promptVersion": "row-license-compiler-v3.0",
+    "requestRef": "req-0e3298394f2dffb2",
+    "sampleRef": "smp-a4bd87f2c84f5b82",
+    "result": {
+      "state": "proposal",
+      "reasonCode": null,
+      "disposition": "review",
+      "primaryArtifact": "todo"
+    },
+    "items": [
+      {
+        "itemRef": "item-01",
+        "sourceRowRefs": [
+          "row-d062b869afabc018"
+        ],
+        "title": "차량 이력과 상태를 확인한 뒤 구매 판단",
+        "intent": "decide",
+        "completionMode": "decision",
+        "memo": null,
+        "scheduleEvidence": null
+      }
+    ],
+    "omittedRows": [],
+    "projections": [
+      {
+        "target": "todo",
+        "itemRefs": [
+          "item-01"
+        ]
+      }
+    ],
+    "review": {
+      "uncertaintyCodes": [],
+      "humanCheckRowRefs": []
+    }
+  },
+  "proposalFingerprint": "bf19ccfe87f6f1cb5d440795ef9534f1988850d5d44e0518564eebec8c5b2f35",
+  "reviewInputSha256": "45becc87ce1733c9a516ee9d7ea51a5e224271a1ed71bcd4d218e5681a988b2e"
+}

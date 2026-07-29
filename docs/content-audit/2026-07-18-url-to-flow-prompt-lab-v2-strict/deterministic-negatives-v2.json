@@ -1,0 +1,56 @@
+{
+  "resultVersion": "flowme-strict-deterministic-negatives-v2",
+  "laneId": "url-to-flow-source-row-v2-strict",
+  "outputs": [
+    {
+      "auditCaseId": "case-11",
+      "sampleRef": "smp-be187768e7d35239",
+      "requestRef": "req-935cdab44d068d22",
+      "modelInvoked": false,
+      "proposal": {
+        "schemaVersion": "flowme-semantic-proposal-v2",
+        "promptVersion": "deterministic-preflight-v2",
+        "requestRef": "req-935cdab44d068d22",
+        "sampleRef": "smp-be187768e7d35239",
+        "result": {
+          "state": "blocked",
+          "reasonCode": "missing_source_rows",
+          "disposition": "source_import_required",
+          "primaryArtifact": null
+        },
+        "items": [],
+        "omittedRows": [],
+        "projections": [],
+        "review": {
+          "uncertaintyCodes": [],
+          "humanCheckRowRefs": []
+        }
+      }
+    },
+    {
+      "auditCaseId": "case-12",
+      "sampleRef": "smp-e7fca6ff311df9c8",
+      "requestRef": "req-3a6ff75d3d3cabf6",
+      "modelInvoked": false,
+      "proposal": {
+        "schemaVersion": "flowme-semantic-proposal-v2",
+        "promptVersion": "deterministic-preflight-v2",
+        "requestRef": "req-3a6ff75d3d3cabf6",
+        "sampleRef": "smp-e7fca6ff311df9c8",
+        "result": {
+          "state": "blocked",
+          "reasonCode": "locale_applicability_unverified",
+          "disposition": "hold",
+          "primaryArtifact": null
+        },
+        "items": [],
+        "omittedRows": [],
+        "projections": [],
+        "review": {
+          "uncertaintyCodes": [],
+          "humanCheckRowRefs": []
+        }
+      }
+    }
+  ]
+}

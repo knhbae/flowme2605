@@ -1,0 +1,112 @@
+{
+  "comparisonVersion": "flowme-url-to-flow-v3-hybrid-stability",
+  "laneId": "url-to-flow-source-row-v3-hybrid-controller",
+  "passed": true,
+  "round1ValidationSha256": "9ff491450ae502d0d4da7591454bb7741efe7371f1c508c8fd9375b49c032b51",
+  "round2ValidationSha256": "7c25a4b17384a64038b755fab3ff477b8429464519b70896111f1244080bf014",
+  "round1RunSha256": "882ae9f44593846df7ae7df5ac06b63299dc61a8e763ebd4050e876601cb215d",
+  "round2RunSha256": "1399e55b13e74c76c7d2b98ae0055b33d85182c2b93ac9638428f3478d3712e8",
+  "outputCount": 12,
+  "stableCount": 12,
+  "stabilityRate": 1,
+  "exactRoundBinding": true,
+  "freshProcessSeparation": true,
+  "comparisons": [
+    {
+      "auditCaseId": "case-01",
+      "sampleRef": "smp-3c82e2a17ad8d751",
+      "exactMembership": true,
+      "round1Fingerprint": "f72947ea04d28753bd744215dcec5d6eeaaa92f705fa55cc021ba4e1e69a3541",
+      "round2Fingerprint": "f72947ea04d28753bd744215dcec5d6eeaaa92f705fa55cc021ba4e1e69a3541",
+      "identical": true
+    },
+    {
+      "auditCaseId": "case-02",
+      "sampleRef": "smp-6cd12e316c9ca24a",
+      "exactMembership": true,
+      "round1Fingerprint": "72c4eca9f4bbfc2b31d22bdc90a70755627247daae7573f112b78b453711fcae",
+      "round2Fingerprint": "72c4eca9f4bbfc2b31d22bdc90a70755627247daae7573f112b78b453711fcae",
+      "identical": true
+    },
+    {
+      "auditCaseId": "case-03",
+      "sampleRef": "smp-3ad3cc4ad286218d",
+      "exactMembership": true,
+      "round1Fingerprint": "e3d77b34acdada8e38c9d713b6dc6b6e387980803c17ecc4f647de1992c316e0",
+      "round2Fingerprint": "e3d77b34acdada8e38c9d713b6dc6b6e387980803c17ecc4f647de1992c316e0",
+      "identical": true
+    },
+    {
+      "auditCaseId": "case-04",
+      "sampleRef": "smp-14a5927ce96fdaa6",
+      "exactMembership": true,
+      "round1Fingerprint": "55660e1340c44b87cdcec573c034de59058f01eeecc3c6d2a3b485b2eaea88f9",
+      "round2Fingerprint": "55660e1340c44b87cdcec573c034de59058f01eeecc3c6d2a3b485b2eaea88f9",
+      "identical": true
+    },
+    {
+      "auditCaseId": "case-05",
+      "sampleRef": "smp-1543712589e440b7",
+      "exactMembership": true,
+      "round1Fingerprint": "bef22e1aa659a8fc9904e6d746a28c8e37055574d30e29851b83c2e86fbe9302",
+      "round2Fingerprint": "bef22e1aa659a8fc9904e6d746a28c8e37055574d30e29851b83c2e86fbe9302",
+      "identical": true
+    },
+    {
+      "auditCaseId": "case-06",
+      "sampleRef": "smp-91182b6bbc8efd1d",
+      "exactMembership": true,
+      "round1Fingerprint": "58c747d7b31ad0f6bfefb88ae06912fb0fc69ead68aa8ddce20a63639a4e0262",
+      "round2Fingerprint": "58c747d7b31ad0f6bfefb88ae06912fb0fc69ead68aa8ddce20a63639a4e0262",
+      "identical": true
+    },
+    {
+      "auditCaseId": "case-07",
+      "sampleRef": "smp-a4bd87f2c84f5b82",
+      "exactMembership": true,
+      "round1Fingerprint": "bf19ccfe87f6f1cb5d440795ef9534f1988850d5d44e0518564eebec8c5b2f35",
+      "round2Fingerprint": "bf19ccfe87f6f1cb5d440795ef9534f1988850d5d44e0518564eebec8c5b2f35",
+      "identical": true
+    },
+    {
+      "auditCaseId": "case-08",
+      "sampleRef": "smp-ce41aa43ffc0fdd4",
+      "exactMembership": true,
+      "round1Fingerprint": "d5dacb914b7148813c0c0383199ca30be89cc5ad88289dde3ffdab3b2f7e1a97",
+      "round2Fingerprint": "d5dacb914b7148813c0c0383199ca30be89cc5ad88289dde3ffdab3b2f7e1a97",
+      "identical": true
+    },
+    {
+      "auditCaseId": "case-09",
+      "sampleRef": "smp-c318a22e612c54a9",
+      "exactMembership": true,
+      "round1Fingerprint": "ce96e8116fa1a0dc0d5da5b23461437859d6727519d25bd77257224ed4b75e2f",
+      "round2Fingerprint": "ce96e8116fa1a0dc0d5da5b23461437859d6727519d25bd77257224ed4b75e2f",
+      "identical": true
+    },
+    {
+      "auditCaseId": "case-10",
+      "sampleRef": "smp-0b2e2f909ba047ad",
+      "exactMembership": true,
+      "round1Fingerprint": "449cb3193054c6efd6df25bb9220f59ce260982662e334a7d3cac77609605dce",
+      "round2Fingerprint": "449cb3193054c6efd6df25bb9220f59ce260982662e334a7d3cac77609605dce",
+      "identical": true
+    },
+    {
+      "auditCaseId": "case-11",
+      "sampleRef": "smp-ba23feddf0a716df",
+      "exactMembership": true,
+      "round1Fingerprint": "76a04ed3def4a678dd9ba9d7853aa8b2ca340e8061ab53056057e99cbab788ea",
+      "round2Fingerprint": "76a04ed3def4a678dd9ba9d7853aa8b2ca340e8061ab53056057e99cbab788ea",
+      "identical": true
+    },
+    {
+      "auditCaseId": "case-12",
+      "sampleRef": "smp-a04abcdf30d187c9",
+      "exactMembership": true,
+      "round1Fingerprint": "cdf5103ffb931b59a63eeba8d69d95b29ef05b75801d6337b07fa60f02088b9e",
+      "round2Fingerprint": "cdf5103ffb931b59a63eeba8d69d95b29ef05b75801d6337b07fa60f02088b9e",
+      "identical": true
+    }
+  ]
+}

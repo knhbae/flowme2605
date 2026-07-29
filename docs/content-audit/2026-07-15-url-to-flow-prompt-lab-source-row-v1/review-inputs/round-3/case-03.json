@@ -1,0 +1,138 @@
+{
+  "reviewInputVersion": "flowme-source-row-blind-review-input-v1",
+  "laneId": "url-to-flow-source-row-v1",
+  "round": "round-3",
+  "caseId": "case-03",
+  "positiveCase": true,
+  "sourcePacket": {
+    "requestId": "rq-c52f09e17b64",
+    "caseId": "case-03",
+    "maxItems": 7,
+    "sourceOwnership": {
+      "primarySourceId": "src-3e7a10c5b942",
+      "supportingSourceIds": []
+    },
+    "sourceRows": [
+      {
+        "sourceRowId": "row-d3018c5e74a2",
+        "sourceId": "src-3e7a10c5b942",
+        "rowType": "check",
+        "title": "여권",
+        "detail": null,
+        "order": 0
+      },
+      {
+        "sourceRowId": "row-8f25a6b19c40",
+        "sourceId": "src-3e7a10c5b942",
+        "rowType": "check",
+        "title": "데이터 유심",
+        "detail": null,
+        "order": 1
+      }
+    ]
+  },
+  "deterministicNegativeBoundary": null,
+  "proposal": {
+    "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+    "promptVersion": "url-to-flow-prompt-v1.1",
+    "requestId": "rq-c52f09e17b64",
+    "caseId": "case-03",
+    "status": {
+      "generationState": "proposal",
+      "outcome": "complete",
+      "readiness": null,
+      "errorCode": null
+    },
+    "sourceAssessment": {
+      "access": "readable",
+      "sourceShape": "source_table_rows",
+      "primarySourceId": "src-3e7a10c5b942",
+      "supportingSourceIds": [],
+      "receivedSourceRowIds": [
+        "row-d3018c5e74a2",
+        "row-8f25a6b19c40"
+      ],
+      "untrustedInstructionDetected": false
+    },
+    "conversionDecision": {
+      "userNeed": "여권과 데이터 유심을 확인하기",
+      "lifeArea": "travel_outings",
+      "planningPattern": "source_table_rows",
+      "primaryArtifact": "checklist",
+      "contentShape": "여권과 데이터 유심을 각각 확인하는 체크리스트"
+    },
+    "proposal": {
+      "proposalTitle": "여권과 데이터 유심 확인",
+      "items": [
+        {
+          "proposalId": "p-01",
+          "title": "여권 확인하기",
+          "intent": "inspect",
+          "sourceRowIds": [
+            "row-d3018c5e74a2"
+          ],
+          "completion": {
+            "mode": "check",
+            "doneWhen": "여권을 확인한 상태"
+          },
+          "memoCandidate": null,
+          "groupingCandidate": null,
+          "scheduleCandidate": null
+        },
+        {
+          "proposalId": "p-02",
+          "title": "데이터 유심 확인하기",
+          "intent": "inspect",
+          "sourceRowIds": [
+            "row-8f25a6b19c40"
+          ],
+          "completion": {
+            "mode": "check",
+            "doneWhen": "데이터 유심을 확인한 상태"
+          },
+          "memoCandidate": null,
+          "groupingCandidate": null,
+          "scheduleCandidate": null
+        }
+      ],
+      "omittedRows": [],
+      "incompleteReason": null
+    },
+    "projectionPlan": [
+      {
+        "target": "checklist",
+        "applicability": "applicable",
+        "reason": "여권과 데이터 유심을 각각 확인하는 두 항목을 그대로 보존한다."
+      }
+    ],
+    "reviewHints": {
+      "recommendedDisposition": "review",
+      "uncertainties": [],
+      "hardFailCodes": [],
+      "humanReviewRequired": []
+    }
+  },
+  "proposalFingerprint": "f1698e85a56c1f50bc694a11909982b7f81033a4c41000ec6c10a34317ff6a87",
+  "deterministicValidation": {
+    "passed": true,
+    "codes": [],
+    "sourceRowAccounting": true
+  },
+  "rubricPath": "docs/specs/2026-07-15-url-to-flow-prompt-lab-source-row-v1/review-rubric.md",
+  "evidenceBoundary": {
+    "allowed": [
+      "this sourcePacket",
+      "this proposal",
+      "this proposalFingerprint",
+      "this deterministicValidation",
+      "the linked blind rubric"
+    ],
+    "forbidden": [
+      "canonical expectation or opaque ID mapping",
+      "source title URL publisher or preflight metadata",
+      "legacy or prior-round output and review",
+      "provider model tier timing token or cost",
+      "other reviewer conclusions"
+    ]
+  }
+}

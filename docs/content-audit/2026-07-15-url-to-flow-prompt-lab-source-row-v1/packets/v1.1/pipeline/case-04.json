@@ -1,0 +1,55 @@
+{
+  "laneId": "url-to-flow-source-row-v1",
+  "caseSetVersion": "flowme-url-to-flow-source-row-cases-v1",
+  "promptVersion": "url-to-flow-prompt-v1.1",
+  "caseId": "case-04",
+  "requestId": "rq-83bd1a6f40c9",
+  "preflightInput": {
+    "targetLocale": "ko-KR",
+    "primary": {
+      "countryContext": "KR",
+      "riskClass": "sensitive",
+      "accessStatus": "fetched",
+      "rightsStatus": "allowed"
+    },
+    "sourceRowCount": 2
+  },
+  "preflightResult": {
+    "passed": true,
+    "modelInvoked": true,
+    "generationState": null,
+    "outcome": null,
+    "errorCode": null,
+    "recommendedDisposition": null,
+    "reasonCode": "preflight_passed"
+  },
+  "generatorInput": {
+    "requestId": "rq-83bd1a6f40c9",
+    "caseId": "case-04",
+    "maxItems": 7,
+    "sourceOwnership": {
+      "primarySourceId": "src-8c51f2d709a6",
+      "supportingSourceIds": []
+    },
+    "sourceRows": [
+      {
+        "sourceRowId": "row-47c1e8a305bd",
+        "sourceId": "src-8c51f2d709a6",
+        "rowType": "procedure",
+        "title": "구직 신청 등록",
+        "detail": null,
+        "order": 0
+      },
+      {
+        "sourceRowId": "row-b6d2094f7a31",
+        "sourceId": "src-8c51f2d709a6",
+        "rowType": "procedure",
+        "title": "취업지원 서비스 신청",
+        "detail": null,
+        "order": 1
+      }
+    ]
+  },
+  "deterministicProposal": null,
+  "evidenceBoundary": "Only generatorInput is model-visible. preflightInput and hidden oracle are excluded."
+}

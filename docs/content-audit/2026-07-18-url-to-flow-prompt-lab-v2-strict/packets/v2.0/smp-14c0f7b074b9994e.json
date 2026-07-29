@@ -1,0 +1,27 @@
+{
+  "requestRef": "req-341ea1d211bb1dc4",
+  "sampleRef": "smp-14c0f7b074b9994e",
+  "maxItems": 7,
+  "sourceOwnership": {
+    "primarySourceRef": "src-7786d4fcb7385ede",
+    "supportingSourceRefs": []
+  },
+  "sourceRows": [
+    {
+      "sourceRowRef": "row-fbfd49031480d0d0",
+      "sourceRef": "src-7786d4fcb7385ede",
+      "rowType": "table_row",
+      "title": "1주차 강의와 퀴즈",
+      "detail": null,
+      "order": 0
+    },
+    {
+      "sourceRowRef": "row-8ab6e32ddb0ddfff",
+      "sourceRef": "src-7786d4fcb7385ede",
+      "rowType": "table_row",
+      "title": "2주차 강의와 퀴즈",
+      "detail": null,
+      "order": 1
+    }
+  ]
+}

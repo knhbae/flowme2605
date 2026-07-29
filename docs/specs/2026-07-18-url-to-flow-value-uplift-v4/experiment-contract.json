@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "flowme-url-to-flow-ten-url-experiment-v1.0",
+  "capturedAt": "2026-07-19",
+  "strategyBaseline": {
+    "status": "version_locked_untracked_strategy_input",
+    "ceoReport": {
+      "path": "D:/flowme2605/flow-mvp/docs/content-audit/2026-07-18-flowme-flow-content-model-category-playbook-ceo-ko.html",
+      "sha256": "DA2FF7AB3282A12F6804E7BF758CD6A49EB43416E4621150B6452E632CD852CD"
+    },
+    "contentContract": {
+      "path": "D:/flowme2605/flow-mvp/docs/content-audit/2026-07-18-flowme-flow-content-contract-v1.json",
+      "sha256": "EEBAB701014C723924E03259282A7E762E7638481ABCB628F7D26B0042BA3066"
+    },
+    "categoryLedger": {
+      "path": "D:/flowme2605/flow-mvp/docs/content-audit/2026-07-18-flowme-flow-content-category-examples.json",
+      "sha256": "930813E20BFC8D7F77A8386F8D3A884C0911BBF115170B4BF0DC33D2839D2C70"
+    }
+  },
+  "planningPatterns": [
+    "date_preparation",
+    "ordered_procedure",
+    "repeating_routine",
+    "source_table_rows",
+    "resource_queue",
+    "compare_decide",
+    "phase_lifecycle"
+  ],
+  "artifacts": ["calendar", "checklist", "todo", "sheet", "memo", "hybrid"],
+  "dispositions": ["compile_candidate", "draft_only", "reextract_required", "blocked"],
+  "publicationStates": ["internal_candidate", "human_review_required", "rights_review_required", "sensitive_locked", "blocked"],
+  "modelRun": {
+    "requiredTopLevel": ["runId", "lane", "modelProxy", "cases"],
+    "caseRequired": [
+      "caseId",
+      "sourceAssessment",
+      "sourceEvidence",
+      "flow",
+      "projections",
+      "renderedArtifacts",
+      "decision",
+      "unsupportedClaims"
+    ],
+    "sourceEvidenceRequired": ["evidenceId", "kind", "text", "locator"],
+    "flowRequired": [
+      "flowId",
+      "title",
+      "userJob",
+      "lifeArea",
+      "planningPattern",
+      "primaryArtifact",
+      "resultBundle",
+      "minimumInputs",
+      "steps",
+      "items",
+      "sourceTrace",
+      "risk",
+      "publicationState"
+    ],
+    "itemRequired": ["itemId", "stepId", "title", "intent", "doneWhen", "order", "sourceEvidenceRefs"],
+    "projectionRequired": ["target", "payload", "lossLedger", "sourceItemRefs"]
+  },
+  "absoluteGates": {
+    "snapshotOrExplicitFailureRate": 1,
+    "acceptedSourceReferenceValidity": 1,
+    "acceptedUnsupportedClaimMaximum": 0,
+    "acceptedObservableCompletionRate": 1,
+    "minimumRepresentedPlanningPatterns": 5,
+    "sensitiveAutoPublicAllowed": false
+  },
+  "backendGate": {
+    "minimumEditoriallyUsableCases": 6,
+    "minimumAcceptedPlanningPatterns": 4,
+    "actualProviderCostRequiredForProductionGo": true,
+    "creatorApprovalRequiredForCreatorPublication": true,
+    "humanReviewRequiredForPublication": true
+  }
+}
+

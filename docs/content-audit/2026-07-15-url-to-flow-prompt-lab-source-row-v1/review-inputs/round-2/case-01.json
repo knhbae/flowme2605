@@ -1,0 +1,138 @@
+{
+  "reviewInputVersion": "flowme-source-row-blind-review-input-v1",
+  "laneId": "url-to-flow-source-row-v1",
+  "round": "round-2",
+  "caseId": "case-01",
+  "positiveCase": true,
+  "sourcePacket": {
+    "requestId": "rq-7a31d8c4f205",
+    "caseId": "case-01",
+    "maxItems": 7,
+    "sourceOwnership": {
+      "primarySourceId": "src-a61d7c3e902f",
+      "supportingSourceIds": []
+    },
+    "sourceRows": [
+      {
+        "sourceRowId": "row-1c7a52e9b304",
+        "sourceId": "src-a61d7c3e902f",
+        "rowType": "check",
+        "title": "검진 대상 및 예약 확인",
+        "detail": null,
+        "order": 0
+      },
+      {
+        "sourceRowId": "row-a48e103d6f92",
+        "sourceId": "src-a61d7c3e902f",
+        "rowType": "date",
+        "title": "검진기관 방문",
+        "detail": null,
+        "order": 1
+      }
+    ]
+  },
+  "deterministicNegativeBoundary": null,
+  "proposal": {
+    "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+    "promptVersion": "url-to-flow-prompt-v1.1",
+    "requestId": "rq-7a31d8c4f205",
+    "caseId": "case-01",
+    "status": {
+      "generationState": "proposal",
+      "outcome": "complete",
+      "readiness": null,
+      "errorCode": null
+    },
+    "sourceAssessment": {
+      "access": "readable",
+      "sourceShape": "date_preparation",
+      "primarySourceId": "src-a61d7c3e902f",
+      "supportingSourceIds": [],
+      "receivedSourceRowIds": [
+        "row-1c7a52e9b304",
+        "row-a48e103d6f92"
+      ],
+      "untrustedInstructionDetected": false
+    },
+    "conversionDecision": {
+      "userNeed": "검진 대상과 예약을 확인한 뒤 검진기관을 방문하기",
+      "lifeArea": "health_fitness",
+      "planningPattern": "date_preparation",
+      "primaryArtifact": "checklist",
+      "contentShape": "확인 후 방문하는 2단계 목록"
+    },
+    "proposal": {
+      "proposalTitle": "검진 확인 및 방문",
+      "items": [
+        {
+          "proposalId": "proposal-case-01-01",
+          "title": "검진 대상 및 예약 확인",
+          "intent": "inspect",
+          "sourceRowIds": [
+            "row-1c7a52e9b304"
+          ],
+          "completion": {
+            "mode": "check",
+            "doneWhen": "검진 대상 및 예약 확인을 마침"
+          },
+          "memoCandidate": null,
+          "groupingCandidate": null,
+          "scheduleCandidate": null
+        },
+        {
+          "proposalId": "proposal-case-01-02",
+          "title": "검진기관 방문",
+          "intent": "act",
+          "sourceRowIds": [
+            "row-a48e103d6f92"
+          ],
+          "completion": {
+            "mode": "check",
+            "doneWhen": "검진기관 방문을 마침"
+          },
+          "memoCandidate": null,
+          "groupingCandidate": null,
+          "scheduleCandidate": null
+        }
+      ],
+      "omittedRows": [],
+      "incompleteReason": null
+    },
+    "projectionPlan": [
+      {
+        "target": "checklist",
+        "applicability": "applicable",
+        "reason": "확인과 방문을 순서대로 완료하는 2단계 목록입니다."
+      }
+    ],
+    "reviewHints": {
+      "recommendedDisposition": "review",
+      "uncertainties": [],
+      "hardFailCodes": [],
+      "humanReviewRequired": []
+    }
+  },
+  "proposalFingerprint": "3f1625501d30068b3a257847cbbf805fa78c5d9403f6dde1582204825dd4e4c4",
+  "deterministicValidation": {
+    "passed": true,
+    "codes": [],
+    "sourceRowAccounting": true
+  },
+  "rubricPath": "docs/specs/2026-07-15-url-to-flow-prompt-lab-source-row-v1/review-rubric.md",
+  "evidenceBoundary": {
+    "allowed": [
+      "this sourcePacket",
+      "this proposal",
+      "this proposalFingerprint",
+      "this deterministicValidation",
+      "the linked blind rubric"
+    ],
+    "forbidden": [
+      "canonical expectation or opaque ID mapping",
+      "source title URL publisher or preflight metadata",
+      "legacy or prior-round output and review",
+      "provider model tier timing token or cost",
+      "other reviewer conclusions"
+    ]
+  }
+}

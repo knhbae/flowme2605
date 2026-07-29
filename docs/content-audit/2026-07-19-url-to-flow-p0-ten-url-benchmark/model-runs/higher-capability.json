@@ -1,0 +1,2543 @@
+{
+  "runId": "p0-ten-url-higher-capability-2026-07-19",
+  "lane": "higher_capability",
+  "modelProxy": "gpt-5.6-sol",
+  "reasoningEffort": "xhigh",
+  "actualProviderCost": null,
+  "inputContractVersion": "flowme-url-to-flow-ten-url-experiment-v1.0",
+  "generationInputs": [
+    "docs/content-audit/2026-07-19-url-to-flow-p0-ten-url-benchmark/source-snapshots.json",
+    "docs/specs/2026-07-18-url-to-flow-value-uplift-v4/phase2-generation-prompt.md",
+    "docs/specs/2026-07-18-url-to-flow-value-uplift-v4/experiment-contract.json"
+  ],
+  "cases": [
+    {
+      "caseId": "case-01",
+      "sourceAssessment": {
+        "sourceTitle": "국민건강보험 건강검진 안내",
+        "sourceUrl": "https://www.nhis.or.kr/nhis/healthin/wbhaca04500m01.do",
+        "sourceType": "official",
+        "locale": "ko-KR",
+        "countryContext": "KR",
+        "httpStatus": 200,
+        "accessStatus": "readable",
+        "rightsStatus": "allowed",
+        "riskClass": "medical_sensitive",
+        "coverageStatus": "bounded_complete",
+        "boundedScope": "일반건강검진 대상 확인, 검진 전 금식, 신분증 준비, 검진 완료와 결과통보 확인",
+        "accessNote": "2026-07-19 browser text snapshot에서 검진 절차와 필수 확인사항을 확인했다. 검사 결과 해석과 개인별 확진검사 판단은 범위에서 제외한다."
+      },
+      "sourceEvidence": [
+        {
+          "evidenceId": "case-01-ev-01",
+          "kind": "identity_requirement",
+          "text": "대상자는 신분증(주민등록증, 운전면허증, 여권), 국민건강보험법 시행규칙 7조에 따라 본인여부를 확인할 수 있는 신분증명서를 통해 검진기관에서 검진대상자 여부 확인 후 검진을 받을 수 있습니다.",
+          "locator": "bodyTextSample > 검진표 발송 및 수령"
+        },
+        {
+          "evidenceId": "case-01-ev-02",
+          "kind": "preparation_rule",
+          "text": "검진 전날 저녁 9시 이후에는 금식하시기 바랍니다.",
+          "locator": "bodyTextSample > 필수 확인사항 > 건강검진 전 주의사항 1"
+        },
+        {
+          "evidenceId": "case-01-ev-03",
+          "kind": "preparation_rule",
+          "text": "검진 당일 아침 식사는 물론 물, 커피, 우유, 담배, 주스, 껌 등 일체의 음식을 삼가야 합니다.",
+          "locator": "bodyTextSample > 필수 확인사항 > 건강검진 전 주의사항 2"
+        },
+        {
+          "evidenceId": "case-01-ev-04",
+          "kind": "conditional_preparation_rule",
+          "text": "되도록 오전 중에 검진을 받되, 오후에 검진받으실 분은 검사 전 최소 8시간 이상의 공복상태를 유지해야 합니다.",
+          "locator": "bodyTextSample > 필수 확인사항 > 건강검진 전 주의사항 3"
+        },
+        {
+          "evidenceId": "case-01-ev-05",
+          "kind": "result_state",
+          "text": "검진기관은 건강검진을 완료한 후, 결과통보서를 작성하여 수검자에게 15일 이내에 우편, 이메일로 통보",
+          "locator": "selectedLines 165-166"
+        },
+        {
+          "evidenceId": "case-01-ev-06",
+          "kind": "date_window",
+          "text": "검진기간 : 매년 1.1. ~ 12.31. (확진검사는 다음연도 3.31.까지)",
+          "locator": "selectedLines 213"
+        }
+      ],
+      "flow": {
+        "flowId": "flow-case-01-general-health-screening-prep",
+        "title": "일반건강검진 전 준비와 결과 확인",
+        "userJob": "내 검진일에 맞춰 공식 금식 기준과 신분증을 준비하고 검진 후 결과통보까지 확인한다.",
+        "lifeArea": "health_fitness",
+        "planningPattern": "date_preparation",
+        "primaryArtifact": "hybrid",
+        "resultBundle": [
+          "검진 전 준비 체크리스트",
+          "사용자 검진일 기반 일정 템플릿",
+          "공식 주의사항 메모"
+        ],
+        "minimumInputs": [
+          {
+            "fieldId": "screeningDate",
+            "label": "검진일",
+            "valueSource": "user",
+            "required": true
+          },
+          {
+            "fieldId": "screeningTimeBand",
+            "label": "오전 또는 오후",
+            "valueSource": "user",
+            "required": true
+          }
+        ],
+        "steps": [
+          {
+            "stepId": "case-01-step-01",
+            "title": "검진 전 준비",
+            "order": 1,
+            "itemIds": [
+              "case-01-item-01",
+              "case-01-item-02",
+              "case-01-item-03"
+            ]
+          },
+          {
+            "stepId": "case-01-step-02",
+            "title": "검진과 결과 확인",
+            "order": 2,
+            "itemIds": [
+              "case-01-item-04",
+              "case-01-item-05"
+            ]
+          }
+        ],
+        "items": [
+          {
+            "itemId": "case-01-item-01",
+            "stepId": "case-01-step-01",
+            "title": "검진대상 여부를 확인하고 신분증 준비",
+            "intent": "inspect",
+            "doneWhen": "검진대상 여부를 확인했고 본인 확인에 사용할 신분증을 준비했다.",
+            "order": 1,
+            "sourceEvidenceRefs": [
+              "case-01-ev-01"
+            ]
+          },
+          {
+            "itemId": "case-01-item-02",
+            "stepId": "case-01-step-01",
+            "title": "검진 시간대에 맞는 금식 기준 선택",
+            "intent": "decide",
+            "doneWhen": "오전 검진 기준 또는 오후 검진의 최소 8시간 공복 기준 중 내 일정에 해당하는 기준을 선택했다.",
+            "order": 2,
+            "sourceEvidenceRefs": [
+              "case-01-ev-02",
+              "case-01-ev-03",
+              "case-01-ev-04"
+            ]
+          },
+          {
+            "itemId": "case-01-item-03",
+            "stepId": "case-01-step-01",
+            "title": "공식 기준에 따라 검진 전 금식 유지",
+            "intent": "act",
+            "doneWhen": "선택한 시간대의 금식 기준을 검진 전까지 지켰다.",
+            "order": 3,
+            "sourceEvidenceRefs": [
+              "case-01-ev-02",
+              "case-01-ev-03",
+              "case-01-ev-04"
+            ]
+          },
+          {
+            "itemId": "case-01-item-04",
+            "stepId": "case-01-step-02",
+            "title": "검진기관에서 일반건강검진 받기",
+            "intent": "act",
+            "doneWhen": "검진기관에서 일반건강검진을 마쳤다.",
+            "order": 4,
+            "sourceEvidenceRefs": [
+              "case-01-ev-01",
+              "case-01-ev-05"
+            ]
+          },
+          {
+            "itemId": "case-01-item-05",
+            "stepId": "case-01-step-02",
+            "title": "우편 또는 이메일 결과통보서 수령 확인",
+            "intent": "record",
+            "doneWhen": "검진 완료 후 우편 또는 이메일로 결과통보서를 수령했는지 기록했다.",
+            "order": 5,
+            "sourceEvidenceRefs": [
+              "case-01-ev-05"
+            ]
+          }
+        ],
+        "sourceTrace": {
+          "sourceUrl": "https://www.nhis.or.kr/nhis/healthin/wbhaca04500m01.do",
+          "evidenceRefs": [
+            "case-01-ev-01",
+            "case-01-ev-02",
+            "case-01-ev-03",
+            "case-01-ev-04",
+            "case-01-ev-05",
+            "case-01-ev-06"
+          ],
+          "omissions": [
+            {
+              "scope": "성·연령별 검사 항목과 확진검사",
+              "reason": "검사 결과 해석과 개인별 후속 진료 판단은 이 준비 Flow의 범위를 벗어나며 의료 검토가 필요하다."
+            },
+            {
+              "scope": "채용신체검사 대체와 운전면허 적성검사",
+              "reason": "별도의 사용자 job이다."
+            }
+          ]
+        },
+        "risk": {
+          "level": "medical_sensitive",
+          "boundary": "공식 검진 준비 절차만 전달하며 개인별 검사 필요성, 결과 해석 또는 진단을 제공하지 않는다.",
+          "cautions": [
+            "개인 건강상태에 따른 금식 예외나 약 복용 판단은 이 snapshot에 없다."
+          ]
+        },
+        "publicationState": "sensitive_locked"
+      },
+      "projections": [
+        {
+          "target": "checklist",
+          "payload": {
+            "format": "markdown",
+            "itemRefs": [
+              "case-01-item-01",
+              "case-01-item-02",
+              "case-01-item-03",
+              "case-01-item-04",
+              "case-01-item-05"
+            ],
+            "includeDoneWhen": true,
+            "includeSourceUrl": true
+          },
+          "lossLedger": [],
+          "sourceItemRefs": [
+            "case-01-item-01",
+            "case-01-item-02",
+            "case-01-item-03",
+            "case-01-item-04",
+            "case-01-item-05"
+          ]
+        },
+        {
+          "target": "calendar",
+          "payload": {
+            "format": "ics",
+            "status": "requires_user_input",
+            "requiredFields": [
+              "screeningDate",
+              "screeningTimeBand"
+            ],
+            "eventsAfterInput": [
+              "검진 전 금식",
+              "일반건강검진"
+            ]
+          },
+          "lossLedger": [
+            {
+              "canonicalPath": "items.case-01-item-03.schedule",
+              "handling": "not_applicable",
+              "reason": "실제 검진일과 오전·오후 선택이 입력되기 전에는 날짜가 있는 이벤트를 생성하지 않는다."
+            }
+          ],
+          "sourceItemRefs": [
+            "case-01-item-03",
+            "case-01-item-04"
+          ]
+        },
+        {
+          "target": "memo",
+          "payload": {
+            "format": "markdown",
+            "includeSourceUrl": true,
+            "includeRiskBoundary": true,
+            "includeResultWindow": true
+          },
+          "lossLedger": [],
+          "sourceItemRefs": [
+            "case-01-item-01",
+            "case-01-item-02",
+            "case-01-item-03",
+            "case-01-item-04",
+            "case-01-item-05"
+          ]
+        }
+      ],
+      "renderedArtifacts": {
+        "checklistMarkdown": "# 일반건강검진 전 준비와 결과 확인\n- [ ] 검진대상 여부를 확인하고 신분증 준비 — 검진대상 여부와 사용할 신분증을 확인했다.\n- [ ] 검진 시간대에 맞는 금식 기준 선택 — 오전 또는 오후 기준을 선택했다.\n- [ ] 공식 기준에 따라 검진 전 금식 유지 — 선택한 금식 기준을 지켰다.\n- [ ] 검진기관에서 일반건강검진 받기 — 검진을 마쳤다.\n- [ ] 우편 또는 이메일 결과통보서 수령 확인 — 수령 여부를 기록했다.",
+        "calendarTemplate": "검진일과 오전·오후 선택 전에는 날짜가 있는 캘린더 이벤트를 생성하지 않습니다. 입력 후 검진 전 금식과 일반건강검진 일정을 만듭니다.",
+        "memoMarkdown": "공식 출처: https://www.nhis.or.kr/nhis/healthin/wbhaca04500m01.do\n검진 전날 저녁 9시 이후 금식하고, 검진 당일에는 안내된 음식·음료 등을 삼갑니다. 오후 검진은 검사 전 최소 8시간 이상의 공복상태를 유지합니다. 이 메모는 개인별 의학적 예외나 검사 결과를 판단하지 않습니다."
+      },
+      "decision": {
+        "disposition": "compile_candidate",
+        "reasonCodes": [
+          "bounded_official_preparation_job",
+          "observable_completion_available",
+          "medical_publication_locked"
+        ],
+        "explanation": "공식 snapshot이 준비 행동과 완료·결과 상태를 제공하므로 내부 후보를 만들 수 있지만 의료 민감 범위이므로 공개는 잠근다.",
+        "nextExtraction": []
+      },
+      "unsupportedClaims": []
+    },
+    {
+      "caseId": "case-02",
+      "sourceAssessment": {
+        "sourceTitle": "스탠드, 먼지거름 필터 청소 방법이 궁금합니다.",
+        "sourceUrl": "https://www.samsungsvc.co.kr/solution/121273",
+        "sourceType": "official",
+        "locale": "ko-KR",
+        "countryContext": "KR",
+        "httpStatus": 200,
+        "accessStatus": "readable",
+        "rightsStatus": "allowed",
+        "riskClass": "low",
+        "coverageStatus": "bounded_complete",
+        "boundedScope": "극세 필터의 4주 청소 주기, 오염 정도별 방법, 그늘 건조와 필터 훼손 주의",
+        "accessNote": "PM 필터, 숯 탈취 필터, 전문 세척과 서비스 신청은 별도 job으로 제외한다."
+      },
+      "sourceEvidence": [
+        {
+          "evidenceId": "case-02-ev-01",
+          "kind": "recurrence",
+          "text": "극세 필터의 청소 주기는 4주에 1회입니다.",
+          "locator": "selectedLines 35"
+        },
+        {
+          "evidenceId": "case-02-ev-02",
+          "kind": "condition_action",
+          "text": "먼지가 적게 쌓여 있으면 진공청소기를 이용하여 먼지를 제거해 주시고",
+          "locator": "selectedLines 28"
+        },
+        {
+          "evidenceId": "case-02-ev-03",
+          "kind": "condition_action",
+          "text": "먼지가 많이 쌓여 있으면 미지근한 물에 중성세제를 풀어 먼지거름 필터를 담궈 놓았다가 약 30분 정도 후 세척해 주세요.",
+          "locator": "selectedLines 28"
+        },
+        {
+          "evidenceId": "case-02-ev-04",
+          "kind": "finish_action",
+          "text": "극세 필터는 진공청소기를 사용해 청소하거나 흐르는 물에 세척해 세로 방향으로 비스듬히 세워 그늘에서 충분히 건조해 주세요.",
+          "locator": "selectedLines 36"
+        },
+        {
+          "evidenceId": "case-02-ev-05",
+          "kind": "caution",
+          "text": "무리한 물청소를 하시거나 햇빛이 강한 곳에서 건조를 하시면 필터가 훼손되어 조립이 안되거나 소음이 발생하는 경우도 있으니 주의가 필요합니다.",
+          "locator": "selectedLines 30"
+        }
+      ],
+      "flow": {
+        "flowId": "flow-case-02-extreme-filter-cleaning",
+        "title": "극세 필터 4주 청소 루틴",
+        "userJob": "극세 필터를 4주 주기에 맞춰 오염 정도에 맞는 방법으로 청소하고 그늘 건조까지 완료한다.",
+        "lifeArea": "home_living",
+        "planningPattern": "repeating_routine",
+        "primaryArtifact": "hybrid",
+        "resultBundle": [
+          "4주 반복 일정 템플릿",
+          "오염 정도별 청소 체크리스트",
+          "필터 훼손 주의 메모"
+        ],
+        "minimumInputs": [
+          {
+            "fieldId": "firstCleaningDate",
+            "label": "첫 청소일",
+            "valueSource": "user",
+            "required": true
+          }
+        ],
+        "steps": [
+          {
+            "stepId": "case-02-step-01",
+            "title": "방법 선택과 청소",
+            "order": 1,
+            "itemIds": [
+              "case-02-item-01",
+              "case-02-item-02"
+            ]
+          },
+          {
+            "stepId": "case-02-step-02",
+            "title": "건조",
+            "order": 2,
+            "itemIds": [
+              "case-02-item-03"
+            ]
+          }
+        ],
+        "items": [
+          {
+            "itemId": "case-02-item-01",
+            "stepId": "case-02-step-01",
+            "title": "먼지 양에 맞는 청소 방법 선택",
+            "intent": "decide",
+            "doneWhen": "먼지가 적은 경우의 진공청소기 방법 또는 먼지가 많은 경우의 중성세제 물세척 방법 중 하나를 선택했다.",
+            "order": 1,
+            "sourceEvidenceRefs": [
+              "case-02-ev-02",
+              "case-02-ev-03"
+            ]
+          },
+          {
+            "itemId": "case-02-item-02",
+            "stepId": "case-02-step-01",
+            "title": "선택한 방법으로 극세 필터 청소",
+            "intent": "act",
+            "doneWhen": "선택한 방법으로 먼지 제거 또는 물세척을 마쳤다.",
+            "order": 2,
+            "sourceEvidenceRefs": [
+              "case-02-ev-02",
+              "case-02-ev-03"
+            ]
+          },
+          {
+            "itemId": "case-02-item-03",
+            "stepId": "case-02-step-02",
+            "title": "세로로 비스듬히 세워 그늘에서 충분히 건조",
+            "intent": "act",
+            "doneWhen": "세척한 극세 필터를 세로 방향으로 비스듬히 세워 그늘에서 충분히 건조했다.",
+            "order": 3,
+            "sourceEvidenceRefs": [
+              "case-02-ev-04",
+              "case-02-ev-05"
+            ]
+          }
+        ],
+        "sourceTrace": {
+          "sourceUrl": "https://www.samsungsvc.co.kr/solution/121273",
+          "evidenceRefs": [
+            "case-02-ev-01",
+            "case-02-ev-02",
+            "case-02-ev-03",
+            "case-02-ev-04",
+            "case-02-ev-05"
+          ],
+          "omissions": [
+            {
+              "scope": "PM 필터",
+              "reason": "3개월 주기와 12시간 이상 건조라는 별도 관리 규칙을 가진 다른 Flow다."
+            },
+            {
+              "scope": "숯 탈취 필터와 전문 세척",
+              "reason": "필터 교체와 서비스 신청은 극세 필터 자가 청소 job 밖이다."
+            }
+          ]
+        },
+        "risk": {
+          "level": "low",
+          "boundary": "snapshot에 나온 극세 필터 관리 방법만 사용한다.",
+          "cautions": [
+            "무리한 물청소와 강한 햇빛 건조는 피한다."
+          ]
+        },
+        "publicationState": "human_review_required"
+      },
+      "projections": [
+        {
+          "target": "calendar",
+          "payload": {
+            "format": "ics",
+            "status": "requires_user_input",
+            "startFromUserField": "firstCleaningDate",
+            "recurrence": {
+              "frequency": "weekly",
+              "interval": 4,
+              "sourceEvidenceRef": "case-02-ev-01"
+            },
+            "summary": "극세 필터 청소"
+          },
+          "lossLedger": [
+            {
+              "canonicalPath": "items.case-02-item-01.schedule",
+              "handling": "not_applicable",
+              "reason": "첫 청소일 입력 전에는 실제 날짜의 ICS 이벤트를 만들지 않는다."
+            }
+          ],
+          "sourceItemRefs": [
+            "case-02-item-01",
+            "case-02-item-02",
+            "case-02-item-03"
+          ]
+        },
+        {
+          "target": "checklist",
+          "payload": {
+            "format": "markdown",
+            "itemRefs": [
+              "case-02-item-01",
+              "case-02-item-02",
+              "case-02-item-03"
+            ],
+            "includeDoneWhen": true
+          },
+          "lossLedger": [],
+          "sourceItemRefs": [
+            "case-02-item-01",
+            "case-02-item-02",
+            "case-02-item-03"
+          ]
+        },
+        {
+          "target": "memo",
+          "payload": {
+            "format": "markdown",
+            "includeSourceUrl": true,
+            "includeCautions": true,
+            "includeConditionalMethods": true
+          },
+          "lossLedger": [],
+          "sourceItemRefs": [
+            "case-02-item-01",
+            "case-02-item-02",
+            "case-02-item-03"
+          ]
+        }
+      ],
+      "renderedArtifacts": {
+        "calendarTemplate": "첫 청소일: {사용자 입력}\n반복: 4주마다\n제목: 극세 필터 청소\n첫 청소일 입력 전에는 실제 ICS 이벤트를 생성하지 않습니다.",
+        "checklistMarkdown": "# 극세 필터 4주 청소 루틴\n- [ ] 먼지 양에 맞는 청소 방법 선택 — 진공청소기 또는 중성세제 물세척 중 하나를 선택했다.\n- [ ] 선택한 방법으로 극세 필터 청소 — 먼지 제거 또는 물세척을 마쳤다.\n- [ ] 세로로 비스듬히 세워 그늘에서 충분히 건조 — 그늘 건조를 마쳤다.",
+        "memoMarkdown": "먼지가 적게 쌓였으면 진공청소기로 먼지를 제거합니다. 먼지가 많이 쌓였으면 미지근한 물에 중성세제를 풀어 약 30분 정도 담근 후 세척합니다. 세척한 필터는 세로 방향으로 비스듬히 세워 그늘에서 충분히 건조합니다. 무리한 물청소와 강한 햇빛 건조는 피합니다.\n출처: https://www.samsungsvc.co.kr/solution/121273"
+      },
+      "decision": {
+        "disposition": "compile_candidate",
+        "reasonCodes": [
+          "bounded_complete_micro_job",
+          "source_defined_recurrence",
+          "observable_finish_action"
+        ],
+        "explanation": "4주 주기, 조건별 청소, 건조와 주의가 모두 snapshot에 있어 별도 사실을 추가하지 않고 실행 루틴을 만들 수 있다.",
+        "nextExtraction": []
+      },
+      "unsupportedClaims": []
+    },
+    {
+      "caseId": "case-03",
+      "sourceAssessment": {
+        "sourceTitle": "해외여행 준비물 체크리스트",
+        "sourceUrl": "https://www.kkday.com/ko/blog/35618/world-overseatravel-checklist",
+        "sourceType": "creator_experience",
+        "locale": "ko-KR",
+        "countryContext": "KR",
+        "httpStatus": 200,
+        "accessStatus": "readable",
+        "rightsStatus": "needs_review",
+        "riskClass": "low",
+        "coverageStatus": "bounded_complete",
+        "boundedScope": "글에서 '필수 준비물'로 분류한 8개와 '숙소에 체크하고 챙겨도 되는 준비물' 3개",
+        "accessNote": "있으면 유용한 준비물, 짐싸는 팁, 상품 광고는 이 기본 짐 체크 Flow에서 제외한다. 제작자 원본이므로 공개 전 권리·승인이 필요하다."
+      },
+      "sourceEvidence": [
+        {
+          "evidenceId": "case-03-ev-01",
+          "kind": "required_item",
+          "text": "1. 여권",
+          "locator": "selectedLines 20-21 > 필수 준비물"
+        },
+        {
+          "evidenceId": "case-03-ev-02",
+          "kind": "required_item",
+          "text": "2. 데이터 이심",
+          "locator": "selectedLines 20-22 > 필수 준비물"
+        },
+        {
+          "evidenceId": "case-03-ev-03",
+          "kind": "required_item",
+          "text": "3. 현금",
+          "locator": "selectedLines 20-23 > 필수 준비물"
+        },
+        {
+          "evidenceId": "case-03-ev-04",
+          "kind": "required_item",
+          "text": "4. 항공권 및 각종 바우처 사본",
+          "locator": "bodyTextSample > 필수 준비물 4"
+        },
+        {
+          "evidenceId": "case-03-ev-05",
+          "kind": "required_item",
+          "text": "5. 보조배터리",
+          "locator": "bodyTextSample > 필수 준비물 5"
+        },
+        {
+          "evidenceId": "case-03-ev-06",
+          "kind": "required_item",
+          "text": "6. 접이식 우산",
+          "locator": "selectedLines 26"
+        },
+        {
+          "evidenceId": "case-03-ev-07",
+          "kind": "required_item",
+          "text": "7. 상비약",
+          "locator": "selectedLines 27"
+        },
+        {
+          "evidenceId": "case-03-ev-08",
+          "kind": "required_item",
+          "text": "8. 목베개",
+          "locator": "selectedLines 28"
+        },
+        {
+          "evidenceId": "case-03-ev-09",
+          "kind": "conditional_item",
+          "text": "1. 헤어 드라이기, 고데기",
+          "locator": "selectedLines 36-37 > 숙소에 체크하고 챙겨도 되는 준비물"
+        },
+        {
+          "evidenceId": "case-03-ev-10",
+          "kind": "conditional_item",
+          "text": "2. 목욕용품",
+          "locator": "selectedLines 36-38 > 숙소에 체크하고 챙겨도 되는 준비물"
+        },
+        {
+          "evidenceId": "case-03-ev-11",
+          "kind": "conditional_item",
+          "text": "3. 수건",
+          "locator": "selectedLines 36-39 > 숙소에 체크하고 챙겨도 되는 준비물"
+        }
+      ],
+      "flow": {
+        "flowId": "flow-case-03-overseas-trip-packing",
+        "title": "해외여행 필수 짐과 숙소 확인 체크",
+        "userJob": "출발 전에 글의 필수 준비물 8개를 챙기고 숙소 구비 여부에 따라 3개 물품을 가져갈지 결정한다.",
+        "lifeArea": "travel_outings",
+        "planningPattern": "ordered_procedure",
+        "primaryArtifact": "checklist",
+        "resultBundle": [
+          "필수 준비물 체크리스트",
+          "숙소 확인 후 결정 목록",
+          "제작자 원본 링크 메모"
+        ],
+        "minimumInputs": [
+          {
+            "fieldId": "lodgingAmenities",
+            "label": "숙소 구비 물품 정보",
+            "valueSource": "user",
+            "required": false
+          }
+        ],
+        "steps": [
+          {
+            "stepId": "case-03-step-01",
+            "title": "필수 준비물",
+            "order": 1,
+            "itemIds": [
+              "case-03-item-01",
+              "case-03-item-02",
+              "case-03-item-03",
+              "case-03-item-04",
+              "case-03-item-05",
+              "case-03-item-06",
+              "case-03-item-07",
+              "case-03-item-08"
+            ]
+          },
+          {
+            "stepId": "case-03-step-02",
+            "title": "숙소 확인 후 결정",
+            "order": 2,
+            "itemIds": [
+              "case-03-item-09",
+              "case-03-item-10",
+              "case-03-item-11"
+            ]
+          }
+        ],
+        "items": [
+          {
+            "itemId": "case-03-item-01",
+            "stepId": "case-03-step-01",
+            "title": "여권을 보조 가방에 넣기",
+            "intent": "act",
+            "doneWhen": "여권을 보조 가방에 넣었다.",
+            "order": 1,
+            "sourceEvidenceRefs": ["case-03-ev-01"]
+          },
+          {
+            "itemId": "case-03-item-02",
+            "stepId": "case-03-step-01",
+            "title": "데이터 이심 준비",
+            "intent": "act",
+            "doneWhen": "여행에 사용할 데이터 이심을 준비했다.",
+            "order": 2,
+            "sourceEvidenceRefs": ["case-03-ev-02"]
+          },
+          {
+            "itemId": "case-03-item-03",
+            "stepId": "case-03-step-01",
+            "title": "여행지에서 사용할 현금 준비",
+            "intent": "act",
+            "doneWhen": "가져갈 현금을 준비했다.",
+            "order": 3,
+            "sourceEvidenceRefs": ["case-03-ev-03"]
+          },
+          {
+            "itemId": "case-03-item-04",
+            "stepId": "case-03-step-01",
+            "title": "항공권과 각종 바우처 사본 준비",
+            "intent": "act",
+            "doneWhen": "항공권과 필요한 바우처 사본을 준비했다.",
+            "order": 4,
+            "sourceEvidenceRefs": ["case-03-ev-04"]
+          },
+          {
+            "itemId": "case-03-item-05",
+            "stepId": "case-03-step-01",
+            "title": "보조배터리 챙기기",
+            "intent": "act",
+            "doneWhen": "보조배터리를 짐에 넣었다.",
+            "order": 5,
+            "sourceEvidenceRefs": ["case-03-ev-05"]
+          },
+          {
+            "itemId": "case-03-item-06",
+            "stepId": "case-03-step-01",
+            "title": "접이식 우산 챙기기",
+            "intent": "act",
+            "doneWhen": "접이식 우산을 짐에 넣었다.",
+            "order": 6,
+            "sourceEvidenceRefs": ["case-03-ev-06"]
+          },
+          {
+            "itemId": "case-03-item-07",
+            "stepId": "case-03-step-01",
+            "title": "상비약 챙기기",
+            "intent": "act",
+            "doneWhen": "가져갈 상비약을 짐에 넣었다.",
+            "order": 7,
+            "sourceEvidenceRefs": ["case-03-ev-07"]
+          },
+          {
+            "itemId": "case-03-item-08",
+            "stepId": "case-03-step-01",
+            "title": "목베개 챙기기",
+            "intent": "act",
+            "doneWhen": "목베개를 짐에 넣었다.",
+            "order": 8,
+            "sourceEvidenceRefs": ["case-03-ev-08"]
+          },
+          {
+            "itemId": "case-03-item-09",
+            "stepId": "case-03-step-02",
+            "title": "숙소의 헤어 드라이기·고데기 구비 여부 확인",
+            "intent": "decide",
+            "doneWhen": "숙소 구비 여부를 확인하고 가져갈지 결정했다.",
+            "order": 9,
+            "sourceEvidenceRefs": ["case-03-ev-09"]
+          },
+          {
+            "itemId": "case-03-item-10",
+            "stepId": "case-03-step-02",
+            "title": "숙소의 목욕용품 구비 여부 확인",
+            "intent": "decide",
+            "doneWhen": "숙소 구비 여부를 확인하고 가져갈지 결정했다.",
+            "order": 10,
+            "sourceEvidenceRefs": ["case-03-ev-10"]
+          },
+          {
+            "itemId": "case-03-item-11",
+            "stepId": "case-03-step-02",
+            "title": "숙소의 수건 구비 여부 확인",
+            "intent": "decide",
+            "doneWhen": "숙소 구비 여부를 확인하고 가져갈지 결정했다.",
+            "order": 11,
+            "sourceEvidenceRefs": ["case-03-ev-11"]
+          }
+        ],
+        "sourceTrace": {
+          "sourceUrl": "https://www.kkday.com/ko/blog/35618/world-overseatravel-checklist",
+          "evidenceRefs": [
+            "case-03-ev-01",
+            "case-03-ev-02",
+            "case-03-ev-03",
+            "case-03-ev-04",
+            "case-03-ev-05",
+            "case-03-ev-06",
+            "case-03-ev-07",
+            "case-03-ev-08",
+            "case-03-ev-09",
+            "case-03-ev-10",
+            "case-03-ev-11"
+          ],
+          "omissions": [
+            {
+              "scope": "있으면 유용한 준비물",
+              "reason": "개인 상황별 선택 폭이 넓어 필수 짐 baseline에서 분리한다."
+            },
+            {
+              "scope": "짐싸는 팁과 상품 링크",
+              "reason": "설명·프로모션이며 독립 완료 Item으로 만들지 않는다."
+            }
+          ]
+        },
+        "risk": {
+          "level": "low",
+          "boundary": "제작자의 여행 경험 목록이며 국가별 공식 입국·운송 규칙으로 취급하지 않는다.",
+          "cautions": []
+        },
+        "publicationState": "rights_review_required"
+      },
+      "projections": [
+        {
+          "target": "checklist",
+          "payload": {
+            "format": "markdown",
+            "groupByStep": true,
+            "includeDoneWhen": true,
+            "includeSourceUrl": true
+          },
+          "lossLedger": [],
+          "sourceItemRefs": [
+            "case-03-item-01",
+            "case-03-item-02",
+            "case-03-item-03",
+            "case-03-item-04",
+            "case-03-item-05",
+            "case-03-item-06",
+            "case-03-item-07",
+            "case-03-item-08",
+            "case-03-item-09",
+            "case-03-item-10",
+            "case-03-item-11"
+          ]
+        },
+        {
+          "target": "memo",
+          "payload": {
+            "format": "markdown",
+            "includeSourceUrl": true,
+            "includeRightsBoundary": true
+          },
+          "lossLedger": [],
+          "sourceItemRefs": [
+            "case-03-item-01",
+            "case-03-item-02",
+            "case-03-item-03",
+            "case-03-item-04",
+            "case-03-item-05",
+            "case-03-item-06",
+            "case-03-item-07",
+            "case-03-item-08",
+            "case-03-item-09",
+            "case-03-item-10",
+            "case-03-item-11"
+          ]
+        }
+      ],
+      "renderedArtifacts": {
+        "checklistMarkdown": "# 해외여행 필수 짐과 숙소 확인 체크\n## 필수 준비물\n- [ ] 여권을 보조 가방에 넣기\n- [ ] 데이터 이심 준비\n- [ ] 여행지에서 사용할 현금 준비\n- [ ] 항공권과 각종 바우처 사본 준비\n- [ ] 보조배터리 챙기기\n- [ ] 접이식 우산 챙기기\n- [ ] 상비약 챙기기\n- [ ] 목베개 챙기기\n## 숙소 확인 후 결정\n- [ ] 헤어 드라이기·고데기 구비 여부를 확인하고 가져갈지 결정\n- [ ] 목욕용품 구비 여부를 확인하고 가져갈지 결정\n- [ ] 수건 구비 여부를 확인하고 가져갈지 결정",
+        "memoMarkdown": "이 체크리스트는 KKday Korea 글에서 '필수 준비물'과 '숙소에 체크하고 챙겨도 되는 준비물'로 제시된 항목만 옮긴 제작자 경험 기반 결과물입니다. 국가별 입국·안전·항공 운송 규칙을 대신하지 않습니다.\n원본: https://www.kkday.com/ko/blog/35618/world-overseatravel-checklist"
+      },
+      "decision": {
+        "disposition": "compile_candidate",
+        "reasonCodes": [
+          "complete_grouped_checklist",
+          "natural_checklist_projection",
+          "creator_rights_review_required"
+        ],
+        "explanation": "snapshot에 그룹과 항목이 완전하게 있어 좁은 짐 체크 Flow를 만들 수 있지만 제작자 승인 없이 공개하지 않는다.",
+        "nextExtraction": []
+      },
+      "unsupportedClaims": []
+    },
+    {
+      "caseId": "case-04",
+      "sourceAssessment": {
+        "sourceTitle": "고용24 구직자 취업지원 서비스",
+        "sourceUrl": "https://www.work24.go.kr/cm/c/f/1100/selecSystInfo.do?systClId=SC00000205&systId=SI00000447",
+        "sourceType": "official",
+        "locale": "ko-KR",
+        "countryContext": "KR",
+        "httpStatus": 200,
+        "accessStatus": "readable",
+        "rightsStatus": "allowed",
+        "riskClass": "privacy_sensitive",
+        "coverageStatus": "bounded_complete",
+        "boundedScope": "고용24 또는 고용센터에서 구직신청서를 작성·제출하면서 필수 정보와 개인정보 공개 범위를 확인하는 과정",
+        "accessNote": "개인정보 값 자체, 기업 추천 결과, 면접·수당·다른 취업지원제도는 기록하거나 판단하지 않는다."
+      },
+      "sourceEvidence": [
+        {
+          "evidenceId": "case-04-ev-01",
+          "kind": "application_path",
+          "text": "고용센터 등 공공고용서비스기관을 방문하여 구직신청을 하거나, 고용24(www.work24.go.kr)에 개인회원으로 가입한 후 이력서를 입력하고 ‘구직신청하기‘를 하시면 이용할 수 있습니다.",
+          "locator": "selectedLines 52"
+        },
+        {
+          "evidenceId": "case-04-ev-02",
+          "kind": "identity_requirement",
+          "text": "구직신청은 본인여부를 확인한 후 서비스가 가능합니다.",
+          "locator": "selectedLines 64"
+        },
+        {
+          "evidenceId": "case-04-ev-03",
+          "kind": "privacy_decision",
+          "text": "고용보험 이력 등을 조회하는데 동의하는지, 워크넷과 연계된 자치단체나 여성새로일하기센터, 한국장애인공단 등에도 정보를 제공하는데 동의하는지 등을 확인합니다.",
+          "locator": "selectedLines 66"
+        },
+        {
+          "evidenceId": "case-04-ev-04",
+          "kind": "privacy_decision",
+          "text": "구신신청이 완료된 후 워크넷에 정보를 공개할 것인지, 연락처, 이메일 등 어느 범위까지 공개할 것인지를 꼼꼼하게 확인하고 있습니다.",
+          "locator": "selectedLines 67"
+        },
+        {
+          "evidenceId": "case-04-ev-05",
+          "kind": "accuracy_check",
+          "text": "필수항목 중 인적사항은 오타가 없는지 확인하고, 실제 거주지와 연락이 가능한 번호를 작성합니다.",
+          "locator": "selectedLines 70"
+        },
+        {
+          "evidenceId": "case-04-ev-06",
+          "kind": "required_content",
+          "text": "구직신청서 작성시 가장 중요한 내용은 희망직종과 경력사항, 근로조건입니다.",
+          "locator": "selectedLines 71"
+        },
+        {
+          "evidenceId": "case-04-ev-07",
+          "kind": "selection_limit",
+          "text": "희망직종은 3개 직종까지 선택할 수 있으며, 경력이 있는 경우 구체적인 직무 내용을 작성하시면 보다 적합한 일자리을 추천받을 수 있습니다.",
+          "locator": "selectedLines 74"
+        }
+      ],
+      "flow": {
+        "flowId": "flow-case-04-work24-job-registration",
+        "title": "고용24 구직신청서 작성과 공개 범위 확인",
+        "userJob": "구직신청서의 핵심 정보를 정확히 작성하고 조회·제공 동의와 공개 범위를 직접 확인한 뒤 제출한다.",
+        "lifeArea": "work_career",
+        "planningPattern": "ordered_procedure",
+        "primaryArtifact": "checklist",
+        "resultBundle": [
+          "구직신청 준비 체크리스트",
+          "개인정보 공개 범위 결정 메모",
+          "공식 신청 경로"
+        ],
+        "minimumInputs": [
+          {
+            "fieldId": "applicationChannel",
+            "label": "고용24 온라인 또는 고용센터 방문",
+            "valueSource": "user",
+            "required": true
+          }
+        ],
+        "steps": [
+          {
+            "stepId": "case-04-step-01",
+            "title": "신청 경로와 본인 확인",
+            "order": 1,
+            "itemIds": [
+              "case-04-item-01",
+              "case-04-item-02"
+            ]
+          },
+          {
+            "stepId": "case-04-step-02",
+            "title": "신청서 작성과 개인정보 결정",
+            "order": 2,
+            "itemIds": [
+              "case-04-item-03",
+              "case-04-item-04",
+              "case-04-item-05"
+            ]
+          },
+          {
+            "stepId": "case-04-step-03",
+            "title": "제출",
+            "order": 3,
+            "itemIds": [
+              "case-04-item-06"
+            ]
+          }
+        ],
+        "items": [
+          {
+            "itemId": "case-04-item-01",
+            "stepId": "case-04-step-01",
+            "title": "고용24 온라인 또는 고용센터 방문 경로 선택",
+            "intent": "decide",
+            "doneWhen": "온라인 또는 방문 중 신청 경로 하나를 선택했다.",
+            "order": 1,
+            "sourceEvidenceRefs": ["case-04-ev-01"]
+          },
+          {
+            "itemId": "case-04-item-02",
+            "stepId": "case-04-step-01",
+            "title": "선택한 경로에서 본인 확인 완료",
+            "intent": "act",
+            "doneWhen": "선택한 신청 경로에서 본인 확인 절차를 마쳤다.",
+            "order": 2,
+            "sourceEvidenceRefs": ["case-04-ev-02"]
+          },
+          {
+            "itemId": "case-04-item-03",
+            "stepId": "case-04-step-02",
+            "title": "인적사항 오타와 연락 가능한 번호 확인",
+            "intent": "inspect",
+            "doneWhen": "인적사항의 오타 여부와 실제 연락 가능한 번호를 확인했다.",
+            "order": 3,
+            "sourceEvidenceRefs": ["case-04-ev-05"]
+          },
+          {
+            "itemId": "case-04-item-04",
+            "stepId": "case-04-step-02",
+            "title": "희망직종·경력사항·근로조건 작성",
+            "intent": "act",
+            "doneWhen": "희망직종, 경력사항, 근로조건을 작성했고 희망직종은 최대 3개 범위에서 선택했다.",
+            "order": 4,
+            "sourceEvidenceRefs": [
+              "case-04-ev-06",
+              "case-04-ev-07"
+            ]
+          },
+          {
+            "itemId": "case-04-item-05",
+            "stepId": "case-04-step-02",
+            "title": "이력 조회·기관 제공 동의와 공개 범위 결정",
+            "intent": "decide",
+            "doneWhen": "고용보험 이력 조회, 연계기관 정보 제공, 워크넷 공개 여부와 연락처·이메일 공개 범위를 각각 확인해 선택했다.",
+            "order": 5,
+            "sourceEvidenceRefs": [
+              "case-04-ev-03",
+              "case-04-ev-04"
+            ]
+          },
+          {
+            "itemId": "case-04-item-06",
+            "stepId": "case-04-step-03",
+            "title": "구직신청하기 제출 완료",
+            "intent": "act",
+            "doneWhen": "이력서와 구직신청서 입력을 마치고 구직신청하기를 제출했다.",
+            "order": 6,
+            "sourceEvidenceRefs": ["case-04-ev-01"]
+          }
+        ],
+        "sourceTrace": {
+          "sourceUrl": "https://www.work24.go.kr/cm/c/f/1100/selecSystInfo.do?systClId=SC00000205&systId=SI00000447",
+          "evidenceRefs": [
+            "case-04-ev-01",
+            "case-04-ev-02",
+            "case-04-ev-03",
+            "case-04-ev-04",
+            "case-04-ev-05",
+            "case-04-ev-06",
+            "case-04-ev-07"
+          ],
+          "omissions": [
+            {
+              "scope": "일자리 추천·입사지원·고용센터 1:1 매칭",
+              "reason": "구직신청 완료 이후의 별도 실행 job이다."
+            },
+            {
+              "scope": "실제 개인정보 값",
+              "reason": "개인정보는 이 Flow나 내보내기 결과에 저장하지 않는다."
+            }
+          ]
+        },
+        "risk": {
+          "level": "privacy_sensitive",
+          "boundary": "개인정보 값은 결과물에 기록하지 않고, 사용자가 공식 신청 화면에서 직접 검토·입력한다.",
+          "cautions": [
+            "Flow는 동의나 공개 범위를 대신 선택하지 않는다."
+          ]
+        },
+        "publicationState": "sensitive_locked"
+      },
+      "projections": [
+        {
+          "target": "checklist",
+          "payload": {
+            "format": "markdown",
+            "groupByStep": true,
+            "includeDoneWhen": true,
+            "excludePrivateValues": true,
+            "includeSourceUrl": true
+          },
+          "lossLedger": [
+            {
+              "canonicalPath": "user.private_application_values",
+              "handling": "forbidden",
+              "reason": "인적사항, 연락처, 경력과 공개 선택값은 사용자 결과물에 복사하지 않는다."
+            }
+          ],
+          "sourceItemRefs": [
+            "case-04-item-01",
+            "case-04-item-02",
+            "case-04-item-03",
+            "case-04-item-04",
+            "case-04-item-05",
+            "case-04-item-06"
+          ]
+        },
+        {
+          "target": "memo",
+          "payload": {
+            "format": "markdown",
+            "includeSourceUrl": true,
+            "includePrivacyBoundary": true,
+            "excludePrivateValues": true
+          },
+          "lossLedger": [
+            {
+              "canonicalPath": "user.private_application_values",
+              "handling": "forbidden",
+              "reason": "실제 개인정보와 동의 선택값은 메모에 넣지 않는다."
+            }
+          ],
+          "sourceItemRefs": [
+            "case-04-item-01",
+            "case-04-item-02",
+            "case-04-item-03",
+            "case-04-item-04",
+            "case-04-item-05",
+            "case-04-item-06"
+          ]
+        }
+      ],
+      "renderedArtifacts": {
+        "checklistMarkdown": "# 고용24 구직신청서 작성과 공개 범위 확인\n- [ ] 고용24 온라인 또는 고용센터 방문 경로 선택\n- [ ] 선택한 경로에서 본인 확인 완료\n- [ ] 인적사항 오타와 연락 가능한 번호 확인\n- [ ] 희망직종·경력사항·근로조건 작성\n- [ ] 이력 조회·기관 제공 동의와 공개 범위 결정\n- [ ] 구직신청하기 제출 완료\n\n개인정보 값은 이 체크리스트에 적지 않습니다.",
+        "memoMarkdown": "고용보험 이력 조회 동의, 연계기관 정보 제공 동의, 워크넷 공개 여부, 연락처·이메일 공개 범위는 사용자가 고용24 공식 화면에서 직접 확인하고 선택합니다. Flow는 선택을 대신하지 않으며 실제 개인정보 값을 저장하지 않습니다.\n공식 출처: https://www.work24.go.kr/cm/c/f/1100/selecSystInfo.do?systClId=SC00000205&systId=SI00000447"
+      },
+      "decision": {
+        "disposition": "compile_candidate",
+        "reasonCodes": [
+          "official_application_sequence",
+          "privacy_choices_user_owned",
+          "sensitive_publication_locked"
+        ],
+        "explanation": "공식 신청 단계와 확인 기준은 충분하지만 개인정보 값과 동의 선택은 사용자 소유이므로 저장·공개를 잠근 내부 후보로만 만든다.",
+        "nextExtraction": []
+      },
+      "unsupportedClaims": []
+    },
+    {
+      "caseId": "case-05",
+      "sourceAssessment": {
+        "sourceTitle": "K-MOOC 제자백가의 사상 강좌 운영 계획",
+        "sourceUrl": "https://www.kmooc.kr/view/course/detail/6661",
+        "sourceType": "official",
+        "locale": "ko-KR",
+        "countryContext": "KR",
+        "httpStatus": 200,
+        "accessStatus": "readable",
+        "rightsStatus": "allowed",
+        "riskClass": "low",
+        "coverageStatus": "bounded_complete",
+        "boundedScope": "강의계획서의 1~15주 주제와 평가 구성, 페이지에 표시된 과거 운영 상태를 학습 진도표로 변환",
+        "accessNote": "2026-07-19 snapshot에서 15주 강의계획과 평가정보를 읽었다. 페이지의 강좌운영기간은 2021-08-31~2021-12-27이고 현재 이수증 표시는 '미발급'이므로 현재 수강 가능 또는 이수증 발급을 약속하지 않는다."
+      },
+      "sourceEvidence": [
+        {
+          "evidenceId": "case-05-ev-01",
+          "kind": "source_table",
+          "text": "강의계획서의 1~7주 주제는 철학과 동아시아 철학, 제자백가의 사상과 덕, 공자의 윤리적 덕, 묵자의 지성적 덕, 양주의 지성적 덕, 맹자의 윤리적 덕, 명가와 후기묵가의 지성적 덕이다.",
+          "locator": "selectedLines 60~146, 강좌 운영 계획 표"
+        },
+        {
+          "evidenceId": "case-05-ev-02",
+          "kind": "source_table",
+          "text": "강의계획서의 8주는 '중간시험'이며 범위는 1주차~7주차 학습내용이다. 이수/평가정보에서는 '중간고사'로 표기한다.",
+          "locator": "selectedLines 147~149, 240~243"
+        },
+        {
+          "evidenceId": "case-05-ev-03",
+          "kind": "source_table",
+          "text": "9~14주 주제는 노자의 심미적 덕, 장자의 심미적 덕, 음양가의 심미적 덕, 순자의 공공의 덕, 법가의 제도 운용의 덕, 제자백가의 평가와 덕의 한계이다.",
+          "locator": "bodyTextSample 강좌 운영 계획 9~14주 행 및 selectedLines 158~216"
+        },
+        {
+          "evidenceId": "case-05-ev-04",
+          "kind": "source_table",
+          "text": "15주는 기말고사이며 범위는 9주차~14주차 학습내용이다.",
+          "locator": "selectedLines 217~219"
+        },
+        {
+          "evidenceId": "case-05-ev-05",
+          "kind": "requirement",
+          "text": "평가 반영비율은 퀴즈 20%, 중간고사 40%, 기말고사 40%이다. 퀴즈는 1주차부터 13회 제공되고 중간고사는 1~7주차, 기말고사는 9~14주차 범위다.",
+          "locator": "selectedLines 237~244, 이수/평가정보"
+        },
+        {
+          "evidenceId": "case-05-ev-06",
+          "kind": "access_limit",
+          "text": "페이지 표시는 강좌운영기간 2021.08.31~2021.12.27, 이수증 미발급이다.",
+          "locator": "bodyTextSample 강좌 수강 정보"
+        }
+      ],
+      "flow": {
+        "flowId": "case-05-flow",
+        "title": "제자백가의 사상 15주 학습 진도표",
+        "userJob": "공식 강의계획의 주차 순서대로 학습과 평가 진행 상태를 기록한다.",
+        "lifeArea": "learning",
+        "planningPattern": "source_table_rows",
+        "primaryArtifact": "sheet",
+        "resultBundle": [
+          "15주 학습 진도표",
+          "평가 비중 메모",
+          "현재 운영상태 주의"
+        ],
+        "minimumInputs": [],
+        "steps": [
+          {
+            "stepId": "case-05-step-01",
+            "title": "1~7주 학습",
+            "order": 1,
+            "itemIds": [
+              "case-05-item-01",
+              "case-05-item-02",
+              "case-05-item-03",
+              "case-05-item-04",
+              "case-05-item-05",
+              "case-05-item-06",
+              "case-05-item-07"
+            ]
+          },
+          {
+            "stepId": "case-05-step-02",
+            "title": "중간고사",
+            "order": 2,
+            "itemIds": [
+              "case-05-item-08"
+            ]
+          },
+          {
+            "stepId": "case-05-step-03",
+            "title": "9~14주 학습",
+            "order": 3,
+            "itemIds": [
+              "case-05-item-09",
+              "case-05-item-10",
+              "case-05-item-11",
+              "case-05-item-12",
+              "case-05-item-13",
+              "case-05-item-14"
+            ]
+          },
+          {
+            "stepId": "case-05-step-04",
+            "title": "기말고사",
+            "order": 4,
+            "itemIds": [
+              "case-05-item-15"
+            ]
+          }
+        ],
+        "items": [
+          {
+            "itemId": "case-05-item-01",
+            "stepId": "case-05-step-01",
+            "title": "1주: 철학과 동아시아 철학",
+            "intent": "learn",
+            "doneWhen": "1주 강의 학습과 퀴즈 응답 여부를 진도표에 기록했다.",
+            "order": 1,
+            "sourceEvidenceRefs": ["case-05-ev-01", "case-05-ev-05"]
+          },
+          {
+            "itemId": "case-05-item-02",
+            "stepId": "case-05-step-01",
+            "title": "2주: 제자백가의 사상과 덕",
+            "intent": "learn",
+            "doneWhen": "2주 강의 학습과 퀴즈 응답 여부를 진도표에 기록했다.",
+            "order": 2,
+            "sourceEvidenceRefs": ["case-05-ev-01", "case-05-ev-05"]
+          },
+          {
+            "itemId": "case-05-item-03",
+            "stepId": "case-05-step-01",
+            "title": "3주: 공자의 윤리적 덕",
+            "intent": "learn",
+            "doneWhen": "3주 강의 학습과 퀴즈 응답 여부를 진도표에 기록했다.",
+            "order": 3,
+            "sourceEvidenceRefs": ["case-05-ev-01", "case-05-ev-05"]
+          },
+          {
+            "itemId": "case-05-item-04",
+            "stepId": "case-05-step-01",
+            "title": "4주: 묵자의 지성적 덕",
+            "intent": "learn",
+            "doneWhen": "4주 강의 학습과 퀴즈 응답 여부를 진도표에 기록했다.",
+            "order": 4,
+            "sourceEvidenceRefs": ["case-05-ev-01", "case-05-ev-05"]
+          },
+          {
+            "itemId": "case-05-item-05",
+            "stepId": "case-05-step-01",
+            "title": "5주: 양주의 지성적 덕",
+            "intent": "learn",
+            "doneWhen": "5주 강의 학습과 퀴즈 응답 여부를 진도표에 기록했다.",
+            "order": 5,
+            "sourceEvidenceRefs": ["case-05-ev-01", "case-05-ev-05"]
+          },
+          {
+            "itemId": "case-05-item-06",
+            "stepId": "case-05-step-01",
+            "title": "6주: 맹자의 윤리적 덕",
+            "intent": "learn",
+            "doneWhen": "6주 강의 학습과 퀴즈 응답 여부를 진도표에 기록했다.",
+            "order": 6,
+            "sourceEvidenceRefs": ["case-05-ev-01", "case-05-ev-05"]
+          },
+          {
+            "itemId": "case-05-item-07",
+            "stepId": "case-05-step-01",
+            "title": "7주: 명가와 후기묵가의 지성적 덕",
+            "intent": "learn",
+            "doneWhen": "7주 강의 학습과 퀴즈 응답 여부를 진도표에 기록했다.",
+            "order": 7,
+            "sourceEvidenceRefs": ["case-05-ev-01", "case-05-ev-05"]
+          },
+          {
+            "itemId": "case-05-item-08",
+            "stepId": "case-05-step-02",
+            "title": "8주: 중간시험",
+            "intent": "complete",
+            "doneWhen": "1~7주 범위 중간고사의 응시 상태를 진도표에 기록했다.",
+            "order": 8,
+            "sourceEvidenceRefs": ["case-05-ev-02", "case-05-ev-05"]
+          },
+          {
+            "itemId": "case-05-item-09",
+            "stepId": "case-05-step-03",
+            "title": "9주: 노자의 심미적 덕",
+            "intent": "learn",
+            "doneWhen": "9주 강의 학습과 퀴즈 응답 여부를 진도표에 기록했다.",
+            "order": 9,
+            "sourceEvidenceRefs": ["case-05-ev-03", "case-05-ev-05"]
+          },
+          {
+            "itemId": "case-05-item-10",
+            "stepId": "case-05-step-03",
+            "title": "10주: 장자의 심미적 덕",
+            "intent": "learn",
+            "doneWhen": "10주 강의 학습과 퀴즈 응답 여부를 진도표에 기록했다.",
+            "order": 10,
+            "sourceEvidenceRefs": ["case-05-ev-03", "case-05-ev-05"]
+          },
+          {
+            "itemId": "case-05-item-11",
+            "stepId": "case-05-step-03",
+            "title": "11주: 음양가의 심미적 덕",
+            "intent": "learn",
+            "doneWhen": "11주 강의 학습과 퀴즈 응답 여부를 진도표에 기록했다.",
+            "order": 11,
+            "sourceEvidenceRefs": ["case-05-ev-03", "case-05-ev-05"]
+          },
+          {
+            "itemId": "case-05-item-12",
+            "stepId": "case-05-step-03",
+            "title": "12주: 순자의 공공의 덕",
+            "intent": "learn",
+            "doneWhen": "12주 강의 학습과 퀴즈 응답 여부를 진도표에 기록했다.",
+            "order": 12,
+            "sourceEvidenceRefs": ["case-05-ev-03", "case-05-ev-05"]
+          },
+          {
+            "itemId": "case-05-item-13",
+            "stepId": "case-05-step-03",
+            "title": "13주: 법가의 제도 운용의 덕",
+            "intent": "learn",
+            "doneWhen": "13주 강의 학습과 퀴즈 응답 여부를 진도표에 기록했다.",
+            "order": 13,
+            "sourceEvidenceRefs": ["case-05-ev-03", "case-05-ev-05"]
+          },
+          {
+            "itemId": "case-05-item-14",
+            "stepId": "case-05-step-03",
+            "title": "14주: 제자백가의 평가와 덕의 한계",
+            "intent": "learn",
+            "doneWhen": "14주 강의 학습과 퀴즈 응답 여부를 진도표에 기록했다.",
+            "order": 14,
+            "sourceEvidenceRefs": ["case-05-ev-03", "case-05-ev-05"]
+          },
+          {
+            "itemId": "case-05-item-15",
+            "stepId": "case-05-step-04",
+            "title": "15주: 기말고사",
+            "intent": "complete",
+            "doneWhen": "9~14주 범위 기말고사의 응시 상태를 진도표에 기록했다.",
+            "order": 15,
+            "sourceEvidenceRefs": ["case-05-ev-04", "case-05-ev-05"]
+          }
+        ],
+        "sourceTrace": {
+          "sourceUrl": "https://www.kmooc.kr/view/course/detail/6661",
+          "evidenceRefs": [
+            "case-05-ev-01",
+            "case-05-ev-02",
+            "case-05-ev-03",
+            "case-05-ev-04",
+            "case-05-ev-05",
+            "case-05-ev-06"
+          ],
+          "omissions": [
+            {
+              "scope": "현재 수강과 이수증 발급 가능성",
+              "reason": "snapshot의 운영기간은 2021년이고 현재 이수증 표시는 미발급이다."
+            },
+            {
+              "scope": "토론장과 오프라인 특강",
+              "reason": "주차별 핵심 학습 진도와 별도의 공지 의존 활동이다."
+            }
+          ]
+        },
+        "risk": {
+          "level": "low",
+          "boundary": "공식 강의계획의 순서와 평가 구성만 기록하며 현재 개설 또는 이수 가능성을 보장하지 않는다.",
+          "cautions": [
+            "이 진도표는 과거 운영계획을 재사용한 학습 기록 도구다."
+          ]
+        },
+        "publicationState": "human_review_required"
+      },
+      "projections": [
+        {
+          "target": "sheet",
+          "payload": {
+            "format": "csv",
+            "columns": ["주차", "주제", "유형", "완료상태"],
+            "rows": [
+              [1, "철학과 동아시아 철학", "강의+퀴즈", ""],
+              [2, "제자백가의 사상과 덕", "강의+퀴즈", ""],
+              [3, "공자의 윤리적 덕", "강의+퀴즈", ""],
+              [4, "묵자의 지성적 덕", "강의+퀴즈", ""],
+              [5, "양주의 지성적 덕", "강의+퀴즈", ""],
+              [6, "맹자의 윤리적 덕", "강의+퀴즈", ""],
+              [7, "명가와 후기묵가의 지성적 덕", "강의+퀴즈", ""],
+              [8, "중간시험", "평가", ""],
+              [9, "노자의 심미적 덕", "강의+퀴즈", ""],
+              [10, "장자의 심미적 덕", "강의+퀴즈", ""],
+              [11, "음양가의 심미적 덕", "강의+퀴즈", ""],
+              [12, "순자의 공공의 덕", "강의+퀴즈", ""],
+              [13, "법가의 제도 운용의 덕", "강의+퀴즈", ""],
+              [14, "제자백가의 평가와 덕의 한계", "강의+퀴즈", ""],
+              [15, "기말고사", "평가", ""]
+            ]
+          },
+          "lossLedger": [],
+          "sourceItemRefs": [
+            "case-05-item-01", "case-05-item-02", "case-05-item-03", "case-05-item-04", "case-05-item-05",
+            "case-05-item-06", "case-05-item-07", "case-05-item-08", "case-05-item-09", "case-05-item-10",
+            "case-05-item-11", "case-05-item-12", "case-05-item-13", "case-05-item-14", "case-05-item-15"
+          ]
+        },
+        {
+          "target": "memo",
+          "payload": {
+            "format": "markdown",
+            "grading": {
+              "퀴즈": "20%",
+              "중간고사": "40%",
+              "기말고사": "40%"
+            },
+            "currentStatusWarning": "페이지 운영기간은 2021년이며 이수증 표시는 미발급"
+          },
+          "lossLedger": [
+            {
+              "canonicalPath": "course.current_availability",
+              "handling": "omitted",
+              "reason": "snapshot은 현재 수강 가능성을 확인하지 않는다."
+            }
+          ],
+          "sourceItemRefs": ["case-05-item-08", "case-05-item-15"]
+        }
+      ],
+      "renderedArtifacts": {
+        "sheetCsv": "주차,주제,유형,완료상태\n1,철학과 동아시아 철학,강의+퀴즈,\n2,제자백가의 사상과 덕,강의+퀴즈,\n3,공자의 윤리적 덕,강의+퀴즈,\n4,묵자의 지성적 덕,강의+퀴즈,\n5,양주의 지성적 덕,강의+퀴즈,\n6,맹자의 윤리적 덕,강의+퀴즈,\n7,명가와 후기묵가의 지성적 덕,강의+퀴즈,\n8,중간시험,평가,\n9,노자의 심미적 덕,강의+퀴즈,\n10,장자의 심미적 덕,강의+퀴즈,\n11,음양가의 심미적 덕,강의+퀴즈,\n12,순자의 공공의 덕,강의+퀴즈,\n13,법가의 제도 운용의 덕,강의+퀴즈,\n14,제자백가의 평가와 덕의 한계,강의+퀴즈,\n15,기말고사,평가,",
+        "memoMarkdown": "평가 비중: 퀴즈 20%, 중간고사 40%, 기말고사 40%. 중간고사 범위는 1~7주, 기말고사 범위는 9~14주입니다. 이 페이지의 강좌운영기간은 2021.08.31~2021.12.27이고 이수증 표시는 미발급이므로 현재 수강 또는 이수증 발급 가능성을 별도로 확인해야 합니다.\n공식 출처: https://www.kmooc.kr/view/course/detail/6661"
+      },
+      "decision": {
+        "disposition": "compile_candidate",
+        "reasonCodes": [
+          "complete_week_table_available",
+          "observable_progress_rows",
+          "current_availability_not_claimed"
+        ],
+        "explanation": "15주 운영표는 학습 진도 시트로 충실하게 변환할 수 있다. 과거 운영정보를 현재 강좌 약속으로 오해하지 않도록 사람 검토를 요구한다.",
+        "nextExtraction": []
+      },
+      "unsupportedClaims": []
+    },
+    {
+      "caseId": "case-06",
+      "sourceAssessment": {
+        "sourceTitle": "백종원의 요리비책 레시피 재생목록",
+        "sourceUrl": "https://www.youtube.com/playlist?list=PLOYo7Q0zXMLNmYqpJrt4pNeO-IlaDBVHW",
+        "sourceType": "creator_experience",
+        "locale": "ko-KR",
+        "countryContext": "KR",
+        "httpStatus": 200,
+        "accessStatus": "readable",
+        "rightsStatus": "needs_review",
+        "riskClass": "low",
+        "coverageStatus": "insufficient_for_action_compilation",
+        "boundedScope": "재생목록 화면에 노출된 영상 제목 확인",
+        "accessNote": "snapshot headings에는 영상 제목들이 보이지만 playlistItems는 비어 있고 개별 영상 URL, 재료, 분량, 조리 순서가 추출되지 않았다. 제목만으로 레시피 실행 Flow를 만들 수 없다."
+      },
+      "sourceEvidence": [
+        {
+          "evidenceId": "case-06-ev-01",
+          "kind": "source_list",
+          "text": "재생목록 snapshot headings에는 '포실포실 고소한 참기름 달걀라면', '해장 킹!!! 무파 라면!!', '뼛속까지 시원한 초간단 냉라면' 등 34개의 영상 제목이 노출된다.",
+          "locator": "headings, 재생목록 제목 다음의 영상 제목 34개"
+        },
+        {
+          "evidenceId": "case-06-ev-02",
+          "kind": "access_limit",
+          "text": "구조화된 playlistItems 배열은 비어 있다.",
+          "locator": "playlistItems: []"
+        },
+        {
+          "evidenceId": "case-06-ev-03",
+          "kind": "missing_evidence",
+          "text": "snapshot에는 각 영상의 고유 URL과 레시피별 재료·분량·조리 절차가 없다.",
+          "locator": "extractionNote와 bodyTextSample 전체"
+        }
+      ],
+      "flow": null,
+      "projections": [],
+      "renderedArtifacts": {},
+      "decision": {
+        "disposition": "reextract_required",
+        "reasonCodes": [
+          "titles_without_recipe_steps",
+          "individual_video_locators_missing",
+          "creator_rights_review_pending"
+        ],
+        "explanation": "영상 제목은 탐색 목록일 뿐 조리 행동의 근거가 아니다. 개별 영상 locator와 재료·분량·순서를 다시 추출하기 전에는 Flow, 체크리스트 또는 장보기표를 만들지 않는다.",
+        "nextExtraction": [
+          "각 재생목록 항목의 영상 제목과 고유 URL을 함께 추출",
+          "변환할 한 영상을 선택한 뒤 그 영상에서 재료·분량·조리 순서·주의를 직접 추출",
+          "창작자 콘텐츠의 파생 산출물 공개 범위를 권리 검토"
+        ]
+      },
+      "unsupportedClaims": []
+    },
+    {
+      "caseId": "case-07",
+      "sourceAssessment": {
+        "sourceTitle": "자동차365 중고차 구매가이드",
+        "sourceUrl": "https://www.car365.go.kr/ccpt/schdcar/trde/prchsGuide.do?_menuId=M630401000&moblYn=Y",
+        "sourceType": "official",
+        "locale": "ko-KR",
+        "countryContext": "KR",
+        "httpStatus": 200,
+        "accessStatus": "readable",
+        "rightsStatus": "allowed",
+        "riskClass": "financial_sensitive",
+        "coverageStatus": "bounded_complete",
+        "boundedScope": "중고차 후보의 기록·실매물·현장 상태·판매자·계약 기재·이전 완료를 계약 전후 확인",
+        "accessNote": "브라우저 finalUrl은 about:blank였지만 HTTP 200 HTML fallback에서 구매가이드 본문을 읽었다. 개인 예산 추천과 구매 결론은 만들지 않는다."
+      },
+      "sourceEvidence": [
+        {
+          "evidenceId": "case-07-ev-01",
+          "kind": "requirement",
+          "text": "매물정보의 성능·상태점검기록부와 보험처리 이력을 확인하고 자동차 등록원부에서 기본정보와 압류·저당 여부를 확인하도록 안내한다.",
+          "locator": "bodyTextSample, KU 매물 검색 > 차량 상태 확인"
+        },
+        {
+          "evidenceId": "case-07-ev-02",
+          "kind": "requirement",
+          "text": "조합사이트에서 차량번호로 판매용 '제시' 여부를 확인하되, 제시가 확인된 매물도 판매 완료 또는 전산 반영 지연일 수 있어 참고용으로 활용하라고 안내한다.",
+          "locator": "bodyTextSample, 실매물인지 반드시 확인"
+        },
+        {
+          "evidenceId": "case-07-ev-03",
+          "kind": "procedure",
+          "text": "현장에서는 성능·상태점검기록부와 보험처리 이력을 다시 확인하고, 모든 버튼, 수리비용이 큰 부분, 눈에 보이지 않는 곳, 시운전, 확신이 든 경우 차량 하부를 확인하도록 안내한다.",
+          "locator": "selectedLines 329~331 및 bodyTextSample, 매매단지 방문 / 차량 직접 확인"
+        },
+        {
+          "evidenceId": "case-07-ev-04",
+          "kind": "requirement",
+          "text": "판매자 본인과 정식 중고차 딜러인지 확인하고 상사 명판과 직인으로 날인하도록 안내한다.",
+          "locator": "selectedLines 332~334"
+        },
+        {
+          "evidenceId": "case-07-ev-05",
+          "kind": "requirement",
+          "text": "매매대금과 등록비용은 별도 기재하고 구두 약속은 특약사항에 기재해 달라고 요청하도록 안내한다.",
+          "locator": "selectedLine 335 및 bodyTextSample, 계약 / 이전"
+        },
+        {
+          "evidenceId": "case-07-ev-06",
+          "kind": "completion",
+          "text": "관할 기관의 정식 영수증과 상사·딜러의 이전비 내역서를 모두 확인하고 이전 완료 여부를 확인하도록 안내한다.",
+          "locator": "selectedLines 339~343"
+        }
+      ],
+      "flow": {
+        "flowId": "case-07-flow",
+        "title": "중고차 후보 계약 전후 확인 기록",
+        "userJob": "중고차 후보의 공식 확인 근거를 한 표에 모아 계약 진행 또는 보류를 스스로 결정한다.",
+        "lifeArea": "mobility",
+        "planningPattern": "compare_decide",
+        "primaryArtifact": "hybrid",
+        "resultBundle": [
+          "후보별 확인 시트",
+          "현장·계약 체크리스트",
+          "진행·보류 결정 메모"
+        ],
+        "minimumInputs": [
+          {
+            "fieldId": "candidateLabel",
+            "label": "비교할 차량 후보명 또는 차량번호",
+            "valueSource": "user",
+            "required": true
+          }
+        ],
+        "steps": [
+          {
+            "stepId": "case-07-step-01",
+            "title": "온라인 기록 확인",
+            "order": 1,
+            "itemIds": ["case-07-item-01", "case-07-item-02"]
+          },
+          {
+            "stepId": "case-07-step-02",
+            "title": "현장 확인",
+            "order": 2,
+            "itemIds": ["case-07-item-03"]
+          },
+          {
+            "stepId": "case-07-step-03",
+            "title": "계약과 이전 확인",
+            "order": 3,
+            "itemIds": ["case-07-item-04", "case-07-item-05", "case-07-item-06"]
+          }
+        ],
+        "items": [
+          {
+            "itemId": "case-07-item-01",
+            "stepId": "case-07-step-01",
+            "title": "성능·상태, 보험처리, 등록원부 기록 확인",
+            "intent": "inspect",
+            "doneWhen": "후보 차량의 성능·상태점검기록부, 보험처리 이력, 등록원부 기본정보와 압류·저당 확인 결과를 시트에 기록했다.",
+            "order": 1,
+            "sourceEvidenceRefs": ["case-07-ev-01"]
+          },
+          {
+            "itemId": "case-07-item-02",
+            "stepId": "case-07-step-01",
+            "title": "조합사이트의 판매용 제시 여부 확인",
+            "intent": "inspect",
+            "doneWhen": "차량번호로 제시 여부를 조회하고 조회 결과를 참고 상태로 기록했다.",
+            "order": 2,
+            "sourceEvidenceRefs": ["case-07-ev-02"]
+          },
+          {
+            "itemId": "case-07-item-03",
+            "stepId": "case-07-step-02",
+            "title": "현장에서 기록 재확인·작동·시운전 점검",
+            "intent": "inspect",
+            "doneWhen": "기록 재확인, 버튼 작동, 수리비용이 큰 부분, 보이지 않는 곳, 시운전과 해당되는 경우 하부 확인 결과를 기록했다.",
+            "order": 3,
+            "sourceEvidenceRefs": ["case-07-ev-03"]
+          },
+          {
+            "itemId": "case-07-item-04",
+            "stepId": "case-07-step-03",
+            "title": "판매자·정식 딜러와 명판·직인 확인",
+            "intent": "verify",
+            "doneWhen": "판매자 본인 여부, 정식 딜러 여부, 상사 명판과 직인 확인 결과를 기록했다.",
+            "order": 4,
+            "sourceEvidenceRefs": ["case-07-ev-04"]
+          },
+          {
+            "itemId": "case-07-item-05",
+            "stepId": "case-07-step-03",
+            "title": "대금·등록비용 분리와 구두 약속 특약 기재 확인",
+            "intent": "verify",
+            "doneWhen": "매매대금과 등록비용이 별도 기재됐고 구두 약속의 특약 기재 여부를 확인했다.",
+            "order": 5,
+            "sourceEvidenceRefs": ["case-07-ev-05"]
+          },
+          {
+            "itemId": "case-07-item-06",
+            "stepId": "case-07-step-03",
+            "title": "영수증·이전비 내역과 이전 완료 확인",
+            "intent": "complete",
+            "doneWhen": "정식 영수증과 이전비 내역서를 확인했고 이전 완료 여부를 기록했다.",
+            "order": 6,
+            "sourceEvidenceRefs": ["case-07-ev-06"]
+          }
+        ],
+        "sourceTrace": {
+          "sourceUrl": "https://www.car365.go.kr/ccpt/schdcar/trde/prchsGuide.do?_menuId=M630401000&moblYn=Y",
+          "evidenceRefs": [
+            "case-07-ev-01", "case-07-ev-02", "case-07-ev-03", "case-07-ev-04", "case-07-ev-05", "case-07-ev-06"
+          ],
+          "omissions": [
+            {
+              "scope": "가용 예산과 차종 추천",
+              "reason": "개인 재무상황을 모르는 상태에서 구매 금액이나 차종을 추천하지 않는다."
+            },
+            {
+              "scope": "계약 주체 유형별 서류 표",
+              "reason": "개인·사업자·법인·장애인·외국인별 서류는 별도의 신원·법률 민감 job이다."
+            }
+          ]
+        },
+        "risk": {
+          "level": "financial_sensitive",
+          "boundary": "공식 가이드의 확인 행동을 기록할 뿐 차량의 가치, 법적 안전 또는 구매 적합성을 판정하지 않는다.",
+          "cautions": [
+            "제시 여부 조회는 참고용이며 판매 완료나 전산 지연 가능성이 있다.",
+            "최종 진행 또는 보류 결정은 사용자가 한다."
+          ]
+        },
+        "publicationState": "sensitive_locked"
+      },
+      "projections": [
+        {
+          "target": "sheet",
+          "payload": {
+            "format": "csv",
+            "columns": [
+              "후보", "성능·상태기록", "보험처리이력", "등록원부", "제시여부", "현장확인", "판매자·딜러", "계약기재", "영수증·이전", "결정"
+            ],
+            "decisionValues": ["진행", "보류", "추가확인"]
+          },
+          "lossLedger": [
+            {
+              "canonicalPath": "candidate.private_financial_values",
+              "handling": "forbidden",
+              "reason": "개인 예산과 금융정보를 산출물에 요구하지 않는다."
+            }
+          ],
+          "sourceItemRefs": [
+            "case-07-item-01", "case-07-item-02", "case-07-item-03", "case-07-item-04", "case-07-item-05", "case-07-item-06"
+          ]
+        },
+        {
+          "target": "checklist",
+          "payload": {
+            "format": "markdown",
+            "sections": ["온라인 기록", "현장 확인", "계약·이전"]
+          },
+          "lossLedger": [],
+          "sourceItemRefs": [
+            "case-07-item-01", "case-07-item-02", "case-07-item-03", "case-07-item-04", "case-07-item-05", "case-07-item-06"
+          ]
+        },
+        {
+          "target": "memo",
+          "payload": {
+            "format": "markdown",
+            "prompt": "확인 근거를 본 뒤 진행·보류·추가확인 중 하나를 사용자가 기록",
+            "includeSourceUrl": true
+          },
+          "lossLedger": [
+            {
+              "canonicalPath": "decision.purchase_suitability",
+              "handling": "user_owned",
+              "reason": "Flow는 구매 적합성을 자동 판정하지 않는다."
+            }
+          ],
+          "sourceItemRefs": ["case-07-item-06"]
+        }
+      ],
+      "renderedArtifacts": {
+        "checklistMarkdown": "# 중고차 후보 계약 전후 확인\n## 온라인 기록\n- [ ] 성능·상태점검기록부와 보험처리 이력 확인\n- [ ] 등록원부 기본정보와 압류·저당 여부 확인\n- [ ] 조합사이트의 판매용 제시 여부를 참고 상태로 기록\n## 현장 확인\n- [ ] 성능·상태점검기록부와 보험처리 이력 재확인\n- [ ] 버튼 작동, 수리비용이 큰 부분, 보이지 않는 곳 확인\n- [ ] 시운전, 구매 확신이 있는 경우 차량 하부 확인\n## 계약·이전\n- [ ] 판매자 본인·정식 딜러, 상사 명판·직인 확인\n- [ ] 매매대금과 등록비용 별도 기재 확인\n- [ ] 구두 약속의 특약사항 기재 확인\n- [ ] 정식 영수증·이전비 내역서와 이전 완료 확인",
+        "sheetCsv": "후보,성능·상태기록,보험처리이력,등록원부,제시여부,현장확인,판매자·딜러,계약기재,영수증·이전,결정\n[사용자 입력],,,,,,,,,추가확인",
+        "memoMarkdown": "결정: 진행 / 보류 / 추가확인 중 사용자가 선택합니다. 제시 여부는 참고용이고 이 Flow는 차량 가치나 법적 안전을 보장하지 않습니다.\n공식 출처: https://www.car365.go.kr/ccpt/schdcar/trde/prchsGuide.do?_menuId=M630401000&moblYn=Y"
+      },
+      "decision": {
+        "disposition": "compile_candidate",
+        "reasonCodes": [
+          "official_contract_check_sequence",
+          "user_owned_purchase_decision",
+          "financial_publication_locked"
+        ],
+        "explanation": "공식 가이드가 계약 전후에 확인할 관찰 가능한 근거를 제공한다. 개인 예산 추천과 자동 구매 판정은 제외하고 민감 공개를 잠근다.",
+        "nextExtraction": []
+      },
+      "unsupportedClaims": []
+    },
+    {
+      "caseId": "case-08",
+      "sourceAssessment": {
+        "sourceTitle": "국민건강보험 영유아 건강검진 안내",
+        "sourceUrl": "https://www.nhis.or.kr/nhis/healthin/wbhaca04800m01.do",
+        "sourceType": "official",
+        "locale": "ko-KR",
+        "countryContext": "KR",
+        "httpStatus": 200,
+        "accessStatus": "readable",
+        "rightsStatus": "allowed",
+        "riskClass": "medical_sensitive",
+        "coverageStatus": "bounded_complete",
+        "boundedScope": "생후 14일부터 71개월까지 건강검진 8개 창과 구강검진 4개 창의 상대 시기 추적",
+        "accessNote": "공식 표의 상대 연령 창을 읽었다. 출생일 입력 전에는 실제 날짜나 예약을 만들지 않고, 검진 결과 해석은 범위에서 제외한다."
+      },
+      "sourceEvidence": [
+        {
+          "evidenceId": "case-08-ev-01",
+          "kind": "source_table",
+          "text": "1차 건강검진은 생후 14~35일, 2차는 생후 4~6개월, 3차는 생후 9~12개월이다.",
+          "locator": "selectedLines 117~123, 대상자 선정 표"
+        },
+        {
+          "evidenceId": "case-08-ev-02",
+          "kind": "source_table",
+          "text": "4차 건강검진은 생후 18~24개월, 5차는 30~36개월, 6차는 42~48개월, 7차는 54~60개월, 8차는 66~71개월이다.",
+          "locator": "selectedLines 143, 145, 147, 149, 151"
+        },
+        {
+          "evidenceId": "case-08-ev-03",
+          "kind": "source_table",
+          "text": "구강검진 창은 생후 18~29개월, 30~41개월, 42~53개월, 54~65개월이다.",
+          "locator": "selectedLines 144, 146, 148, 150"
+        },
+        {
+          "evidenceId": "case-08-ev-04",
+          "kind": "scope",
+          "text": "생후 14일부터 71개월까지의 영유아를 검진시기별 대상자로 선정하며 전국 영유아 검진기관에서 받을 수 있다고 안내한다.",
+          "locator": "selectedLines 118~120, 135"
+        },
+        {
+          "evidenceId": "case-08-ev-05",
+          "kind": "medical_boundary",
+          "text": "건강검진 항목에는 문진·진찰, 신체계측, 건강교육, 시기별 발달선별검사와 상담 등이 있고 구강검진은 구강문진·진찰과 구강보건교육으로 안내된다.",
+          "locator": "selectedLines 140~163"
+        }
+      ],
+      "flow": {
+        "flowId": "case-08-flow",
+        "title": "영유아 건강·구강검진 시기표",
+        "userJob": "아이 출생일을 기준으로 공식 검진 창 12개를 놓치지 않도록 상대 시기와 완료 상태를 기록한다.",
+        "lifeArea": "family_health",
+        "planningPattern": "phase_lifecycle",
+        "primaryArtifact": "hybrid",
+        "resultBundle": [
+          "검진 창 12행 시트",
+          "출생일 기반 달력 템플릿",
+          "완료상태 체크리스트"
+        ],
+        "minimumInputs": [
+          {
+            "fieldId": "birthDate",
+            "label": "아이 출생일",
+            "valueSource": "user",
+            "required": true
+          }
+        ],
+        "steps": [
+          {
+            "stepId": "case-08-step-01",
+            "title": "영아기",
+            "order": 1,
+            "itemIds": ["case-08-item-01", "case-08-item-02", "case-08-item-03"]
+          },
+          {
+            "stepId": "case-08-step-02",
+            "title": "18~41개월",
+            "order": 2,
+            "itemIds": ["case-08-item-04", "case-08-item-05", "case-08-item-06", "case-08-item-07"]
+          },
+          {
+            "stepId": "case-08-step-03",
+            "title": "42~65개월",
+            "order": 3,
+            "itemIds": ["case-08-item-08", "case-08-item-09", "case-08-item-10", "case-08-item-11"]
+          },
+          {
+            "stepId": "case-08-step-04",
+            "title": "66~71개월",
+            "order": 4,
+            "itemIds": ["case-08-item-12"]
+          }
+        ],
+        "items": [
+          {
+            "itemId": "case-08-item-01",
+            "stepId": "case-08-step-01",
+            "title": "1차 건강검진: 생후 14~35일",
+            "intent": "track",
+            "doneWhen": "생후 14~35일 검진 창과 완료 여부를 기록했다.",
+            "order": 1,
+            "sourceEvidenceRefs": ["case-08-ev-01"]
+          },
+          {
+            "itemId": "case-08-item-02",
+            "stepId": "case-08-step-01",
+            "title": "2차 건강검진: 생후 4~6개월",
+            "intent": "track",
+            "doneWhen": "생후 4~6개월 검진 창과 완료 여부를 기록했다.",
+            "order": 2,
+            "sourceEvidenceRefs": ["case-08-ev-01"]
+          },
+          {
+            "itemId": "case-08-item-03",
+            "stepId": "case-08-step-01",
+            "title": "3차 건강검진: 생후 9~12개월",
+            "intent": "track",
+            "doneWhen": "생후 9~12개월 검진 창과 완료 여부를 기록했다.",
+            "order": 3,
+            "sourceEvidenceRefs": ["case-08-ev-01"]
+          },
+          {
+            "itemId": "case-08-item-04",
+            "stepId": "case-08-step-02",
+            "title": "4차 건강검진: 생후 18~24개월",
+            "intent": "track",
+            "doneWhen": "생후 18~24개월 검진 창과 완료 여부를 기록했다.",
+            "order": 4,
+            "sourceEvidenceRefs": ["case-08-ev-02"]
+          },
+          {
+            "itemId": "case-08-item-05",
+            "stepId": "case-08-step-02",
+            "title": "1차 구강검진: 생후 18~29개월",
+            "intent": "track",
+            "doneWhen": "생후 18~29개월 구강검진 창과 완료 여부를 기록했다.",
+            "order": 5,
+            "sourceEvidenceRefs": ["case-08-ev-03"]
+          },
+          {
+            "itemId": "case-08-item-06",
+            "stepId": "case-08-step-02",
+            "title": "5차 건강검진: 생후 30~36개월",
+            "intent": "track",
+            "doneWhen": "생후 30~36개월 검진 창과 완료 여부를 기록했다.",
+            "order": 6,
+            "sourceEvidenceRefs": ["case-08-ev-02"]
+          },
+          {
+            "itemId": "case-08-item-07",
+            "stepId": "case-08-step-02",
+            "title": "2차 구강검진: 생후 30~41개월",
+            "intent": "track",
+            "doneWhen": "생후 30~41개월 구강검진 창과 완료 여부를 기록했다.",
+            "order": 7,
+            "sourceEvidenceRefs": ["case-08-ev-03"]
+          },
+          {
+            "itemId": "case-08-item-08",
+            "stepId": "case-08-step-03",
+            "title": "6차 건강검진: 생후 42~48개월",
+            "intent": "track",
+            "doneWhen": "생후 42~48개월 검진 창과 완료 여부를 기록했다.",
+            "order": 8,
+            "sourceEvidenceRefs": ["case-08-ev-02"]
+          },
+          {
+            "itemId": "case-08-item-09",
+            "stepId": "case-08-step-03",
+            "title": "3차 구강검진: 생후 42~53개월",
+            "intent": "track",
+            "doneWhen": "생후 42~53개월 구강검진 창과 완료 여부를 기록했다.",
+            "order": 9,
+            "sourceEvidenceRefs": ["case-08-ev-03"]
+          },
+          {
+            "itemId": "case-08-item-10",
+            "stepId": "case-08-step-03",
+            "title": "7차 건강검진: 생후 54~60개월",
+            "intent": "track",
+            "doneWhen": "생후 54~60개월 검진 창과 완료 여부를 기록했다.",
+            "order": 10,
+            "sourceEvidenceRefs": ["case-08-ev-02"]
+          },
+          {
+            "itemId": "case-08-item-11",
+            "stepId": "case-08-step-03",
+            "title": "4차 구강검진: 생후 54~65개월",
+            "intent": "track",
+            "doneWhen": "생후 54~65개월 구강검진 창과 완료 여부를 기록했다.",
+            "order": 11,
+            "sourceEvidenceRefs": ["case-08-ev-03"]
+          },
+          {
+            "itemId": "case-08-item-12",
+            "stepId": "case-08-step-04",
+            "title": "8차 건강검진: 생후 66~71개월",
+            "intent": "track",
+            "doneWhen": "생후 66~71개월 검진 창과 완료 여부를 기록했다.",
+            "order": 12,
+            "sourceEvidenceRefs": ["case-08-ev-02"]
+          }
+        ],
+        "sourceTrace": {
+          "sourceUrl": "https://www.nhis.or.kr/nhis/healthin/wbhaca04800m01.do",
+          "evidenceRefs": ["case-08-ev-01", "case-08-ev-02", "case-08-ev-03", "case-08-ev-04", "case-08-ev-05"],
+          "omissions": [
+            {
+              "scope": "개별 날짜와 예약",
+              "reason": "출생일과 기관 선택 전에는 실제 날짜를 만들 수 없다."
+            },
+            {
+              "scope": "검진 결과 해석과 발달 판단",
+              "reason": "개인별 의료 판단은 공식 시기표 변환 범위 밖이다."
+            }
+          ]
+        },
+        "risk": {
+          "level": "medical_sensitive",
+          "boundary": "공식 상대 연령 창과 완료 상태만 다루며 진단, 발달 평가 또는 개인별 검진 적합성을 제시하지 않는다.",
+          "cautions": [
+            "실제 대상 여부와 검진일자는 국민건강보험공단의 대상자 조회 및 검진기관에서 확인해야 한다."
+          ]
+        },
+        "publicationState": "sensitive_locked"
+      },
+      "projections": [
+        {
+          "target": "sheet",
+          "payload": {
+            "format": "csv",
+            "columns": ["순서", "검진", "상대 시작", "상대 종료", "완료상태"],
+            "rows": [
+              [1, "1차 건강검진", "생후 14일", "생후 35일", ""],
+              [2, "2차 건강검진", "생후 4개월", "생후 6개월", ""],
+              [3, "3차 건강검진", "생후 9개월", "생후 12개월", ""],
+              [4, "4차 건강검진", "생후 18개월", "생후 24개월", ""],
+              [5, "1차 구강검진", "생후 18개월", "생후 29개월", ""],
+              [6, "5차 건강검진", "생후 30개월", "생후 36개월", ""],
+              [7, "2차 구강검진", "생후 30개월", "생후 41개월", ""],
+              [8, "6차 건강검진", "생후 42개월", "생후 48개월", ""],
+              [9, "3차 구강검진", "생후 42개월", "생후 53개월", ""],
+              [10, "7차 건강검진", "생후 54개월", "생후 60개월", ""],
+              [11, "4차 구강검진", "생후 54개월", "생후 65개월", ""],
+              [12, "8차 건강검진", "생후 66개월", "생후 71개월", ""]
+            ]
+          },
+          "lossLedger": [],
+          "sourceItemRefs": [
+            "case-08-item-01", "case-08-item-02", "case-08-item-03", "case-08-item-04", "case-08-item-05", "case-08-item-06",
+            "case-08-item-07", "case-08-item-08", "case-08-item-09", "case-08-item-10", "case-08-item-11", "case-08-item-12"
+          ]
+        },
+        {
+          "target": "calendar",
+          "payload": {
+            "format": "ics_template",
+            "status": "requires_user_input",
+            "baseDateFromUserField": "birthDate",
+            "events": [
+              {"summary": "1차 건강검진 창", "relativeStart": "P14D", "relativeEnd": "P35D"},
+              {"summary": "2차 건강검진 창", "relativeStart": "P4M", "relativeEnd": "P6M"},
+              {"summary": "3차 건강검진 창", "relativeStart": "P9M", "relativeEnd": "P12M"},
+              {"summary": "4차 건강검진 창", "relativeStart": "P18M", "relativeEnd": "P24M"},
+              {"summary": "1차 구강검진 창", "relativeStart": "P18M", "relativeEnd": "P29M"},
+              {"summary": "5차 건강검진 창", "relativeStart": "P30M", "relativeEnd": "P36M"},
+              {"summary": "2차 구강검진 창", "relativeStart": "P30M", "relativeEnd": "P41M"},
+              {"summary": "6차 건강검진 창", "relativeStart": "P42M", "relativeEnd": "P48M"},
+              {"summary": "3차 구강검진 창", "relativeStart": "P42M", "relativeEnd": "P53M"},
+              {"summary": "7차 건강검진 창", "relativeStart": "P54M", "relativeEnd": "P60M"},
+              {"summary": "4차 구강검진 창", "relativeStart": "P54M", "relativeEnd": "P65M"},
+              {"summary": "8차 건강검진 창", "relativeStart": "P66M", "relativeEnd": "P71M"}
+            ]
+          },
+          "lossLedger": [
+            {
+              "canonicalPath": "events.absolute_dates",
+              "handling": "requires_user_input",
+              "reason": "birthDate 입력 전에는 실제 달력 날짜를 계산하지 않는다."
+            }
+          ],
+          "sourceItemRefs": [
+            "case-08-item-01", "case-08-item-02", "case-08-item-03", "case-08-item-04", "case-08-item-05", "case-08-item-06",
+            "case-08-item-07", "case-08-item-08", "case-08-item-09", "case-08-item-10", "case-08-item-11", "case-08-item-12"
+          ]
+        },
+        {
+          "target": "checklist",
+          "payload": {
+            "format": "markdown",
+            "groupBy": "relative_age",
+            "stateValues": ["예정", "완료", "공식 확인 필요"]
+          },
+          "lossLedger": [],
+          "sourceItemRefs": [
+            "case-08-item-01", "case-08-item-02", "case-08-item-03", "case-08-item-04", "case-08-item-05", "case-08-item-06",
+            "case-08-item-07", "case-08-item-08", "case-08-item-09", "case-08-item-10", "case-08-item-11", "case-08-item-12"
+          ]
+        }
+      ],
+      "renderedArtifacts": {
+        "sheetCsv": "순서,검진,상대 시작,상대 종료,완료상태\n1,1차 건강검진,생후 14일,생후 35일,\n2,2차 건강검진,생후 4개월,생후 6개월,\n3,3차 건강검진,생후 9개월,생후 12개월,\n4,4차 건강검진,생후 18개월,생후 24개월,\n5,1차 구강검진,생후 18개월,생후 29개월,\n6,5차 건강검진,생후 30개월,생후 36개월,\n7,2차 구강검진,생후 30개월,생후 41개월,\n8,6차 건강검진,생후 42개월,생후 48개월,\n9,3차 구강검진,생후 42개월,생후 53개월,\n10,7차 건강검진,생후 54개월,생후 60개월,\n11,4차 구강검진,생후 54개월,생후 65개월,\n12,8차 건강검진,생후 66개월,생후 71개월,",
+        "calendarTemplateJson": "{\"status\":\"requires_user_input\",\"baseDateField\":\"birthDate\",\"rule\":\"공식 상대 연령 창 12개를 출생일에 더하되 입력 전 실제 날짜를 생성하지 않음\"}",
+        "memoMarkdown": "이 시기표는 검진 결과를 해석하지 않습니다. 실제 대상 여부와 검진일자는 국민건강보험공단의 영유아 검진일자 조회와 검진기관에서 확인하세요.\n공식 출처: https://www.nhis.or.kr/nhis/healthin/wbhaca04800m01.do"
+      },
+      "decision": {
+        "disposition": "compile_candidate",
+        "reasonCodes": [
+          "complete_official_age_windows",
+          "birth_date_user_input_required",
+          "medical_publication_locked"
+        ],
+        "explanation": "공식 표가 12개 상대 연령 창을 완전하게 제공하므로 시기 추적 Flow를 만들 수 있다. 실제 날짜는 출생일 입력 뒤에만 계산하고 의료 판단과 공개는 잠근다.",
+        "nextExtraction": []
+      },
+      "unsupportedClaims": []
+    },
+    {
+      "caseId": "case-09",
+      "sourceAssessment": {
+        "sourceTitle": "Canon 30-Day Photo Challenge",
+        "sourceUrl": "https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge",
+        "sourceType": "reference",
+        "locale": "en-US",
+        "countryContext": null,
+        "httpStatus": 403,
+        "accessStatus": "readable",
+        "rightsStatus": "needs_review",
+        "riskClass": "low",
+        "coverageStatus": "bounded_partial_access",
+        "boundedScope": "HTML fallback headings에서 확인된 Day 1~30 촬영 주제 순서",
+        "accessNote": "직접 응답은 HTTP 403이고 pageTitle은 Access Denied였지만 HTML fallback headings에 1~30 주제가 모두 남아 있다. 세부 본문 설명은 변환하지 않고 주제 목록만 후보로 사용한다."
+      },
+      "sourceEvidence": [
+        {
+          "evidenceId": "case-09-ev-01",
+          "kind": "source_list",
+          "text": "1~5일 주제는 자화상(Self-portrait), 흑백(Black and White), 물(Water), 야경(Night scene), 기하학적 패턴(Geometric patterns)이다.",
+          "locator": "headings '1. Self-portrait'~'5. Geometric patterns'"
+        },
+        {
+          "evidenceId": "case-09-ev-02",
+          "kind": "source_list",
+          "text": "6~10일 주제는 손(Hands), 빨강(Red), 파랑(Blue), 원(Circles), 삼각형(Triangles)이다.",
+          "locator": "headings '6. Hands'~'10. Triangles'"
+        },
+        {
+          "evidenceId": "case-09-ev-03",
+          "kind": "source_list",
+          "text": "11~15일 주제는 구름(Clouds), 동물(Animals), 얼굴을 보여주지 않는 자화상(Self-portrait not showing your face), 눈 클로즈업(Close-up of eyes), 여름(Summer)이다.",
+          "locator": "headings '11. Clouds'~'15. Summer'"
+        },
+        {
+          "evidenceId": "case-09-ev-04",
+          "kind": "source_list",
+          "text": "16~20일 주제는 가을(Fall), 겨울(Winter), 봄(Spring), 헤드샷(Headshot), 풍경(Landscape)이다.",
+          "locator": "headings '16. Fall'~'20. Landscape'"
+        },
+        {
+          "evidenceId": "case-09-ev-05",
+          "kind": "source_list",
+          "text": "21~25일 주제는 반사(Reflection), 실루엣(Silhouette), 질감(Texture), 음식 클로즈업(Food close-up), 음식 장면(Food scene)이다.",
+          "locator": "headings '21. Reflection'~'25. Food scene'"
+        },
+        {
+          "evidenceId": "case-09-ev-06",
+          "kind": "source_list",
+          "text": "26~30일 주제는 라이트 페인팅(Light painting), 움직임 만들기(Create motion), 움직임 정지(Stop motion), 얕은 피사계 심도(Shallow depth of field), 자유 선택(Your choice)이다.",
+          "locator": "headings '26. Light painting'~'30. Your choice!'"
+        },
+        {
+          "evidenceId": "case-09-ev-07",
+          "kind": "access_limit",
+          "text": "직접 응답 상태는 HTTP 403이고 페이지 제목은 Access Denied이며, 주제 목록은 HTTP 200 HTML fallback에서 추출됐다.",
+          "locator": "httpStatus, pageTitle, htmlFallback"
+        }
+      ],
+      "flow": {
+        "flowId": "case-09-flow",
+        "title": "30일 사진 촬영 주제 챌린지",
+        "userJob": "원문 순서를 유지해 하루씩 촬영 주제를 실행하고 결과를 기록한다.",
+        "lifeArea": "creative_practice",
+        "planningPattern": "ordered_procedure",
+        "primaryArtifact": "hybrid",
+        "resultBundle": [
+          "30개 주제 체크리스트",
+          "시작일 기반 달력 템플릿",
+          "접근·권리 주의 메모"
+        ],
+        "minimumInputs": [
+          {
+            "fieldId": "startDate",
+            "label": "챌린지 시작일",
+            "valueSource": "user",
+            "required": true
+          }
+        ],
+        "steps": [
+          {
+            "stepId": "case-09-step-01",
+            "title": "1~10일",
+            "order": 1,
+            "itemIds": [
+              "case-09-item-01", "case-09-item-02", "case-09-item-03", "case-09-item-04", "case-09-item-05",
+              "case-09-item-06", "case-09-item-07", "case-09-item-08", "case-09-item-09", "case-09-item-10"
+            ]
+          },
+          {
+            "stepId": "case-09-step-02",
+            "title": "11~20일",
+            "order": 2,
+            "itemIds": [
+              "case-09-item-11", "case-09-item-12", "case-09-item-13", "case-09-item-14", "case-09-item-15",
+              "case-09-item-16", "case-09-item-17", "case-09-item-18", "case-09-item-19", "case-09-item-20"
+            ]
+          },
+          {
+            "stepId": "case-09-step-03",
+            "title": "21~30일",
+            "order": 3,
+            "itemIds": [
+              "case-09-item-21", "case-09-item-22", "case-09-item-23", "case-09-item-24", "case-09-item-25",
+              "case-09-item-26", "case-09-item-27", "case-09-item-28", "case-09-item-29", "case-09-item-30"
+            ]
+          }
+        ],
+        "items": [
+          {"itemId":"case-09-item-01","stepId":"case-09-step-01","title":"1일: 자화상","intent":"capture","doneWhen":"자화상 주제의 촬영 결과를 남기고 완료 표시했다.","order":1,"sourceEvidenceRefs":["case-09-ev-01"]},
+          {"itemId":"case-09-item-02","stepId":"case-09-step-01","title":"2일: 흑백","intent":"capture","doneWhen":"흑백 주제의 촬영 결과를 남기고 완료 표시했다.","order":2,"sourceEvidenceRefs":["case-09-ev-01"]},
+          {"itemId":"case-09-item-03","stepId":"case-09-step-01","title":"3일: 물","intent":"capture","doneWhen":"물 주제의 촬영 결과를 남기고 완료 표시했다.","order":3,"sourceEvidenceRefs":["case-09-ev-01"]},
+          {"itemId":"case-09-item-04","stepId":"case-09-step-01","title":"4일: 야경","intent":"capture","doneWhen":"야경 주제의 촬영 결과를 남기고 완료 표시했다.","order":4,"sourceEvidenceRefs":["case-09-ev-01"]},
+          {"itemId":"case-09-item-05","stepId":"case-09-step-01","title":"5일: 기하학적 패턴","intent":"capture","doneWhen":"기하학적 패턴 주제의 촬영 결과를 남기고 완료 표시했다.","order":5,"sourceEvidenceRefs":["case-09-ev-01"]},
+          {"itemId":"case-09-item-06","stepId":"case-09-step-01","title":"6일: 손","intent":"capture","doneWhen":"손 주제의 촬영 결과를 남기고 완료 표시했다.","order":6,"sourceEvidenceRefs":["case-09-ev-02"]},
+          {"itemId":"case-09-item-07","stepId":"case-09-step-01","title":"7일: 빨강","intent":"capture","doneWhen":"빨강 주제의 촬영 결과를 남기고 완료 표시했다.","order":7,"sourceEvidenceRefs":["case-09-ev-02"]},
+          {"itemId":"case-09-item-08","stepId":"case-09-step-01","title":"8일: 파랑","intent":"capture","doneWhen":"파랑 주제의 촬영 결과를 남기고 완료 표시했다.","order":8,"sourceEvidenceRefs":["case-09-ev-02"]},
+          {"itemId":"case-09-item-09","stepId":"case-09-step-01","title":"9일: 원","intent":"capture","doneWhen":"원 주제의 촬영 결과를 남기고 완료 표시했다.","order":9,"sourceEvidenceRefs":["case-09-ev-02"]},
+          {"itemId":"case-09-item-10","stepId":"case-09-step-01","title":"10일: 삼각형","intent":"capture","doneWhen":"삼각형 주제의 촬영 결과를 남기고 완료 표시했다.","order":10,"sourceEvidenceRefs":["case-09-ev-02"]},
+          {"itemId":"case-09-item-11","stepId":"case-09-step-02","title":"11일: 구름","intent":"capture","doneWhen":"구름 주제의 촬영 결과를 남기고 완료 표시했다.","order":11,"sourceEvidenceRefs":["case-09-ev-03"]},
+          {"itemId":"case-09-item-12","stepId":"case-09-step-02","title":"12일: 동물","intent":"capture","doneWhen":"동물 주제의 촬영 결과를 남기고 완료 표시했다.","order":12,"sourceEvidenceRefs":["case-09-ev-03"]},
+          {"itemId":"case-09-item-13","stepId":"case-09-step-02","title":"13일: 얼굴을 보여주지 않는 자화상","intent":"capture","doneWhen":"얼굴을 보여주지 않는 자화상 주제의 촬영 결과를 남기고 완료 표시했다.","order":13,"sourceEvidenceRefs":["case-09-ev-03"]},
+          {"itemId":"case-09-item-14","stepId":"case-09-step-02","title":"14일: 눈 클로즈업","intent":"capture","doneWhen":"눈 클로즈업 주제의 촬영 결과를 남기고 완료 표시했다.","order":14,"sourceEvidenceRefs":["case-09-ev-03"]},
+          {"itemId":"case-09-item-15","stepId":"case-09-step-02","title":"15일: 여름","intent":"capture","doneWhen":"여름 주제의 촬영 결과를 남기고 완료 표시했다.","order":15,"sourceEvidenceRefs":["case-09-ev-03"]},
+          {"itemId":"case-09-item-16","stepId":"case-09-step-02","title":"16일: 가을","intent":"capture","doneWhen":"가을 주제의 촬영 결과를 남기고 완료 표시했다.","order":16,"sourceEvidenceRefs":["case-09-ev-04"]},
+          {"itemId":"case-09-item-17","stepId":"case-09-step-02","title":"17일: 겨울","intent":"capture","doneWhen":"겨울 주제의 촬영 결과를 남기고 완료 표시했다.","order":17,"sourceEvidenceRefs":["case-09-ev-04"]},
+          {"itemId":"case-09-item-18","stepId":"case-09-step-02","title":"18일: 봄","intent":"capture","doneWhen":"봄 주제의 촬영 결과를 남기고 완료 표시했다.","order":18,"sourceEvidenceRefs":["case-09-ev-04"]},
+          {"itemId":"case-09-item-19","stepId":"case-09-step-02","title":"19일: 헤드샷","intent":"capture","doneWhen":"헤드샷 주제의 촬영 결과를 남기고 완료 표시했다.","order":19,"sourceEvidenceRefs":["case-09-ev-04"]},
+          {"itemId":"case-09-item-20","stepId":"case-09-step-02","title":"20일: 풍경","intent":"capture","doneWhen":"풍경 주제의 촬영 결과를 남기고 완료 표시했다.","order":20,"sourceEvidenceRefs":["case-09-ev-04"]},
+          {"itemId":"case-09-item-21","stepId":"case-09-step-03","title":"21일: 반사","intent":"capture","doneWhen":"반사 주제의 촬영 결과를 남기고 완료 표시했다.","order":21,"sourceEvidenceRefs":["case-09-ev-05"]},
+          {"itemId":"case-09-item-22","stepId":"case-09-step-03","title":"22일: 실루엣","intent":"capture","doneWhen":"실루엣 주제의 촬영 결과를 남기고 완료 표시했다.","order":22,"sourceEvidenceRefs":["case-09-ev-05"]},
+          {"itemId":"case-09-item-23","stepId":"case-09-step-03","title":"23일: 질감","intent":"capture","doneWhen":"질감 주제의 촬영 결과를 남기고 완료 표시했다.","order":23,"sourceEvidenceRefs":["case-09-ev-05"]},
+          {"itemId":"case-09-item-24","stepId":"case-09-step-03","title":"24일: 음식 클로즈업","intent":"capture","doneWhen":"음식 클로즈업 주제의 촬영 결과를 남기고 완료 표시했다.","order":24,"sourceEvidenceRefs":["case-09-ev-05"]},
+          {"itemId":"case-09-item-25","stepId":"case-09-step-03","title":"25일: 음식 장면","intent":"capture","doneWhen":"음식 장면 주제의 촬영 결과를 남기고 완료 표시했다.","order":25,"sourceEvidenceRefs":["case-09-ev-05"]},
+          {"itemId":"case-09-item-26","stepId":"case-09-step-03","title":"26일: 라이트 페인팅","intent":"capture","doneWhen":"라이트 페인팅 주제의 촬영 결과를 남기고 완료 표시했다.","order":26,"sourceEvidenceRefs":["case-09-ev-06"]},
+          {"itemId":"case-09-item-27","stepId":"case-09-step-03","title":"27일: 움직임 만들기","intent":"capture","doneWhen":"움직임 만들기 주제의 촬영 결과를 남기고 완료 표시했다.","order":27,"sourceEvidenceRefs":["case-09-ev-06"]},
+          {"itemId":"case-09-item-28","stepId":"case-09-step-03","title":"28일: 움직임 정지","intent":"capture","doneWhen":"움직임 정지 주제의 촬영 결과를 남기고 완료 표시했다.","order":28,"sourceEvidenceRefs":["case-09-ev-06"]},
+          {"itemId":"case-09-item-29","stepId":"case-09-step-03","title":"29일: 얕은 피사계 심도","intent":"capture","doneWhen":"얕은 피사계 심도 주제의 촬영 결과를 남기고 완료 표시했다.","order":29,"sourceEvidenceRefs":["case-09-ev-06"]},
+          {"itemId":"case-09-item-30","stepId":"case-09-step-03","title":"30일: 자유 선택","intent":"capture","doneWhen":"사용자가 선택한 주제의 촬영 결과를 남기고 완료 표시했다.","order":30,"sourceEvidenceRefs":["case-09-ev-06"]}
+        ],
+        "sourceTrace": {
+          "sourceUrl": "https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge",
+          "evidenceRefs": [
+            "case-09-ev-01", "case-09-ev-02", "case-09-ev-03", "case-09-ev-04", "case-09-ev-05", "case-09-ev-06", "case-09-ev-07"
+          ],
+          "omissions": [
+            {
+              "scope": "각 주제의 촬영 기법 설명",
+              "reason": "직접 응답이 HTTP 403이어서 이번 후보는 fallback headings의 제목 목록에만 한정한다."
+            },
+            {
+              "scope": "Canon 명의의 재게시",
+              "reason": "권리 검토와 출처 승인 전에는 외부 공개하지 않는다."
+            }
+          ]
+        },
+        "risk": {
+          "level": "low",
+          "boundary": "원문 heading의 30개 주제 순서만 번역하며 접근할 수 없었던 세부 기법이나 장비 조건을 추가하지 않는다.",
+          "cautions": [
+            "직접 페이지 응답은 HTTP 403이었다.",
+            "파생 체크리스트의 외부 공개 전 권리 검토가 필요하다."
+          ]
+        },
+        "publicationState": "rights_review_required"
+      },
+      "projections": [
+        {
+          "target": "checklist",
+          "payload": {
+            "format": "markdown",
+            "ordered": true,
+            "items": [
+              "1일 자화상", "2일 흑백", "3일 물", "4일 야경", "5일 기하학적 패턴", "6일 손", "7일 빨강", "8일 파랑", "9일 원", "10일 삼각형",
+              "11일 구름", "12일 동물", "13일 얼굴을 보여주지 않는 자화상", "14일 눈 클로즈업", "15일 여름", "16일 가을", "17일 겨울", "18일 봄", "19일 헤드샷", "20일 풍경",
+              "21일 반사", "22일 실루엣", "23일 질감", "24일 음식 클로즈업", "25일 음식 장면", "26일 라이트 페인팅", "27일 움직임 만들기", "28일 움직임 정지", "29일 얕은 피사계 심도", "30일 자유 선택"
+            ]
+          },
+          "lossLedger": [],
+          "sourceItemRefs": [
+            "case-09-item-01", "case-09-item-02", "case-09-item-03", "case-09-item-04", "case-09-item-05", "case-09-item-06", "case-09-item-07", "case-09-item-08", "case-09-item-09", "case-09-item-10",
+            "case-09-item-11", "case-09-item-12", "case-09-item-13", "case-09-item-14", "case-09-item-15", "case-09-item-16", "case-09-item-17", "case-09-item-18", "case-09-item-19", "case-09-item-20",
+            "case-09-item-21", "case-09-item-22", "case-09-item-23", "case-09-item-24", "case-09-item-25", "case-09-item-26", "case-09-item-27", "case-09-item-28", "case-09-item-29", "case-09-item-30"
+          ]
+        },
+        {
+          "target": "calendar",
+          "payload": {
+            "format": "ics_template",
+            "status": "requires_user_input",
+            "startDateFromUserField": "startDate",
+            "sequence": [
+              {"dayOffset":0,"summary":"1일 자화상"}, {"dayOffset":1,"summary":"2일 흑백"}, {"dayOffset":2,"summary":"3일 물"}, {"dayOffset":3,"summary":"4일 야경"}, {"dayOffset":4,"summary":"5일 기하학적 패턴"},
+              {"dayOffset":5,"summary":"6일 손"}, {"dayOffset":6,"summary":"7일 빨강"}, {"dayOffset":7,"summary":"8일 파랑"}, {"dayOffset":8,"summary":"9일 원"}, {"dayOffset":9,"summary":"10일 삼각형"},
+              {"dayOffset":10,"summary":"11일 구름"}, {"dayOffset":11,"summary":"12일 동물"}, {"dayOffset":12,"summary":"13일 얼굴을 보여주지 않는 자화상"}, {"dayOffset":13,"summary":"14일 눈 클로즈업"}, {"dayOffset":14,"summary":"15일 여름"},
+              {"dayOffset":15,"summary":"16일 가을"}, {"dayOffset":16,"summary":"17일 겨울"}, {"dayOffset":17,"summary":"18일 봄"}, {"dayOffset":18,"summary":"19일 헤드샷"}, {"dayOffset":19,"summary":"20일 풍경"},
+              {"dayOffset":20,"summary":"21일 반사"}, {"dayOffset":21,"summary":"22일 실루엣"}, {"dayOffset":22,"summary":"23일 질감"}, {"dayOffset":23,"summary":"24일 음식 클로즈업"}, {"dayOffset":24,"summary":"25일 음식 장면"},
+              {"dayOffset":25,"summary":"26일 라이트 페인팅"}, {"dayOffset":26,"summary":"27일 움직임 만들기"}, {"dayOffset":27,"summary":"28일 움직임 정지"}, {"dayOffset":28,"summary":"29일 얕은 피사계 심도"}, {"dayOffset":29,"summary":"30일 자유 선택"}
+            ]
+          },
+          "lossLedger": [
+            {
+              "canonicalPath": "sequence.absolute_dates",
+              "handling": "requires_user_input",
+              "reason": "startDate 입력 전에는 실제 달력 이벤트를 생성하지 않는다."
+            }
+          ],
+          "sourceItemRefs": [
+            "case-09-item-01", "case-09-item-02", "case-09-item-03", "case-09-item-04", "case-09-item-05", "case-09-item-06", "case-09-item-07", "case-09-item-08", "case-09-item-09", "case-09-item-10",
+            "case-09-item-11", "case-09-item-12", "case-09-item-13", "case-09-item-14", "case-09-item-15", "case-09-item-16", "case-09-item-17", "case-09-item-18", "case-09-item-19", "case-09-item-20",
+            "case-09-item-21", "case-09-item-22", "case-09-item-23", "case-09-item-24", "case-09-item-25", "case-09-item-26", "case-09-item-27", "case-09-item-28", "case-09-item-29", "case-09-item-30"
+          ]
+        }
+      ],
+      "renderedArtifacts": {
+        "checklistMarkdown": "# 30일 사진 촬영 주제 챌린지\n- [ ] 1일 자화상\n- [ ] 2일 흑백\n- [ ] 3일 물\n- [ ] 4일 야경\n- [ ] 5일 기하학적 패턴\n- [ ] 6일 손\n- [ ] 7일 빨강\n- [ ] 8일 파랑\n- [ ] 9일 원\n- [ ] 10일 삼각형\n- [ ] 11일 구름\n- [ ] 12일 동물\n- [ ] 13일 얼굴을 보여주지 않는 자화상\n- [ ] 14일 눈 클로즈업\n- [ ] 15일 여름\n- [ ] 16일 가을\n- [ ] 17일 겨울\n- [ ] 18일 봄\n- [ ] 19일 헤드샷\n- [ ] 20일 풍경\n- [ ] 21일 반사\n- [ ] 22일 실루엣\n- [ ] 23일 질감\n- [ ] 24일 음식 클로즈업\n- [ ] 25일 음식 장면\n- [ ] 26일 라이트 페인팅\n- [ ] 27일 움직임 만들기\n- [ ] 28일 움직임 정지\n- [ ] 29일 얕은 피사계 심도\n- [ ] 30일 자유 선택",
+        "calendarTemplateJson": "{\"status\":\"requires_user_input\",\"startDateField\":\"startDate\",\"sequence\":\"원문 Day 1~30 순서, 하루 간격\"}",
+        "memoMarkdown": "직접 페이지 응답은 HTTP 403이었고 이 후보는 HTML fallback headings에서 확인된 30개 주제만 사용합니다. 세부 촬영 기법은 포함하지 않았으며 외부 공개 전 권리 검토가 필요합니다.\n출처: https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge"
+      },
+      "decision": {
+        "disposition": "compile_candidate",
+        "reasonCodes": [
+          "complete_numbered_heading_sequence",
+          "partial_access_disclosed",
+          "rights_review_required"
+        ],
+        "explanation": "fallback headings에 1~30의 순서와 주제가 완전하게 있어 촬영 주제 체크리스트 후보를 만들 수 있다. 직접 응답 403과 권리 상태 때문에 세부 설명은 제외하고 공개 전 검토를 요구한다.",
+        "nextExtraction": []
+      },
+      "unsupportedClaims": []
+    },
+    {
+      "caseId": "case-10",
+      "sourceAssessment": {
+        "sourceTitle": "TS 자동차 정기검사",
+        "sourceUrl": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+        "sourceType": "official",
+        "locale": "ko-KR",
+        "countryContext": "KR",
+        "httpStatus": 200,
+        "accessStatus": "readable",
+        "rightsStatus": "allowed",
+        "riskClass": "safety_sensitive",
+        "coverageStatus": "bounded_complete",
+        "boundedScope": "차종·사업용 구분·규모·차령·신조차 조건에 맞는 정기검사 유효기간 표 행 찾기",
+        "accessNote": "공식 유효기간 표와 예외 비고를 읽었다. 차량의 실제 검사 만료일은 snapshot에 없으므로 달력 일정이나 법정 기한을 계산하지 않는다."
+      },
+      "sourceEvidence": [
+        {
+          "evidenceId": "case-10-ev-01",
+          "kind": "scope",
+          "text": "정기검사는 자동차관리법에 따라 신규등록 후 일정 기간마다 실시하며 자동차관리법에 따라 등록되어 운행 중인 자동차가 대상이다.",
+          "locator": "selectedLines 29~33"
+        },
+        {
+          "evidenceId": "case-10-ev-02",
+          "kind": "source_table",
+          "text": "승용자동차는 비사업용 전체 2년(신조차 최초 5년), 사업용 전체 1년(신조차 최초 2년)이다.",
+          "locator": "selectedLines 63~68, 정기검사 유효기간 표"
+        },
+        {
+          "evidenceId": "case-10-ev-03",
+          "kind": "source_table",
+          "text": "승합자동차는 비사업용·사업용 경형·소형 모두 차령 4년 이하 2년, 4년 초과 1년이다. 중형·대형은 비사업용·사업용 모두 8년 이하 1년, 8년 초과 6개월이며, 비사업용 중형·대형의 길이 5.5미터 미만 신조차 최초 유효기간은 2년이다.",
+          "locator": "bodyTextSample 정기검사 유효기간 표, 승합자동차 행"
+        },
+        {
+          "evidenceId": "case-10-ev-04",
+          "kind": "source_table",
+          "text": "비사업용 화물자동차는 경형·소형 차령 4년 이하 2년, 4년 초과 1년이고 중형·대형 차령 5년 이하 1년, 5년 초과 6개월이다. 사업용 화물자동차는 경형·소형 전체 1년(신조차 최초 2년), 중형 5년 이하 1년·초과 6개월, 대형 2년 이하 1년·초과 6개월이다.",
+          "locator": "bodyTextSample 정기검사 유효기간 표, 화물자동차 행"
+        },
+        {
+          "evidenceId": "case-10-ev-05",
+          "kind": "source_table",
+          "text": "특수자동차는 비사업용과 사업용 모두 차령 5년 이하 1년, 5년 초과 6개월이다.",
+          "locator": "bodyTextSample 정기검사 유효기간 표, 특수자동차 행"
+        },
+        {
+          "evidenceId": "case-10-ev-06",
+          "kind": "exception",
+          "text": "2000년 12월 31일 이전 등록된 10인 이하 운송용 승합자동차 중 표에 적힌 법정 제외 대상이 아닌 경우 승용자동차 유효기간을 적용하고, 피견인자동차에는 비사업용 승용자동차 유효기간을 적용한다.",
+          "locator": "selectedLines 89~91, 비고"
+        }
+      ],
+      "flow": {
+        "flowId": "case-10-flow",
+        "title": "자동차 정기검사 유효기간 표 행 찾기",
+        "userJob": "차량 분류 정보를 공식 표와 대조해 적용 가능한 검사 유효기간 행을 기록한다.",
+        "lifeArea": "mobility_safety",
+        "planningPattern": "source_table_rows",
+        "primaryArtifact": "sheet",
+        "resultBundle": [
+          "21행 유효기간 조회표",
+          "예외 적용 메모",
+          "실제 만료일 미계산 주의"
+        ],
+        "minimumInputs": [
+          {"fieldId":"vehicleType","label":"차종: 승용·승합·화물·특수","valueSource":"user","required":true},
+          {"fieldId":"businessUse","label":"사업용 여부","valueSource":"user","required":true},
+          {"fieldId":"sizeClass","label":"규모: 경형·소형·중형·대형","valueSource":"user","required":true},
+          {"fieldId":"vehicleAge","label":"차령","valueSource":"user","required":true},
+          {"fieldId":"firstNewVehicleInspection","label":"표의 신조차 최초검사 조건 해당 여부","valueSource":"user","required":true},
+          {"fieldId":"exceptionClassification","label":"피견인자동차 또는 2000-12-31 이전 등록 10인 이하 승합자동차 예외 해당 여부","valueSource":"user","required":true}
+        ],
+        "steps": [
+          {
+            "stepId": "case-10-step-01",
+            "title": "차량 분류 기록",
+            "order": 1,
+            "itemIds": ["case-10-item-01"]
+          },
+          {
+            "stepId": "case-10-step-02",
+            "title": "예외와 표 행 대조",
+            "order": 2,
+            "itemIds": ["case-10-item-02", "case-10-item-03"]
+          },
+          {
+            "stepId": "case-10-step-03",
+            "title": "적용 결과 기록",
+            "order": 3,
+            "itemIds": ["case-10-item-04"]
+          }
+        ],
+        "items": [
+          {
+            "itemId": "case-10-item-01",
+            "stepId": "case-10-step-01",
+            "title": "차종·사업용·규모·차령·신조차 조건 기록",
+            "intent": "record",
+            "doneWhen": "공식 차량 기록에서 확인한 조회 입력값을 모두 기록했다.",
+            "order": 1,
+            "sourceEvidenceRefs": ["case-10-ev-01", "case-10-ev-02", "case-10-ev-03", "case-10-ev-04", "case-10-ev-05"]
+          },
+          {
+            "itemId": "case-10-item-02",
+            "stepId": "case-10-step-02",
+            "title": "피견인·구형 10인 이하 승합 예외 확인",
+            "intent": "verify",
+            "doneWhen": "두 비고 예외 중 해당 여부와 확인 근거를 기록했다.",
+            "order": 2,
+            "sourceEvidenceRefs": ["case-10-ev-06"]
+          },
+          {
+            "itemId": "case-10-item-03",
+            "stepId": "case-10-step-02",
+            "title": "정기검사 유효기간 표의 일치 행 찾기",
+            "intent": "match",
+            "doneWhen": "입력값과 예외를 반영해 일치하는 공식 표 행을 하나 기록했거나 일치 행 미확인을 기록했다.",
+            "order": 3,
+            "sourceEvidenceRefs": ["case-10-ev-02", "case-10-ev-03", "case-10-ev-04", "case-10-ev-05", "case-10-ev-06"]
+          },
+          {
+            "itemId": "case-10-item-04",
+            "stepId": "case-10-step-03",
+            "title": "유효기간과 공식 재확인 상태 기록",
+            "intent": "complete",
+            "doneWhen": "일치 행의 유효기간과 예외·신조차 조건을 기록하고, 실제 검사 만료일은 별도 공식 조회가 필요하다고 표시했다.",
+            "order": 4,
+            "sourceEvidenceRefs": ["case-10-ev-02", "case-10-ev-03", "case-10-ev-04", "case-10-ev-05", "case-10-ev-06"]
+          }
+        ],
+        "sourceTrace": {
+          "sourceUrl": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+          "evidenceRefs": ["case-10-ev-01", "case-10-ev-02", "case-10-ev-03", "case-10-ev-04", "case-10-ev-05", "case-10-ev-06"],
+          "omissions": [
+            {
+              "scope": "실제 검사 만료일과 예약 일정",
+              "reason": "차량의 등록·검사 이력과 기준일이 snapshot에 없다."
+            },
+            {
+              "scope": "부적합 차량 재검사기간",
+              "reason": "부적합 판정 이후의 별도 사용자 job이다."
+            }
+          ]
+        },
+        "risk": {
+          "level": "safety_sensitive",
+          "boundary": "공식 표 행을 찾는 보조 도구이며 차량의 법정 기한이나 검사 적합성을 자동 확정하지 않는다.",
+          "cautions": [
+            "분류 또는 예외가 불명확하면 TS 공식 조회에서 다시 확인해야 한다.",
+            "유효기간 길이는 실제 검사 만료일과 같지 않다."
+          ]
+        },
+        "publicationState": "sensitive_locked"
+      },
+      "projections": [
+        {
+          "target": "sheet",
+          "payload": {
+            "format": "csv",
+            "columns": ["차종", "사업용", "규모", "차령", "유효기간", "신조차 최초검사 예외"],
+            "rows": [
+              ["승용", "아니오", "전체", "전체", "2년", "5년"],
+              ["승용", "예", "전체", "전체", "1년", "2년"],
+              ["승합", "아니오", "경형·소형", "4년 이하", "2년", ""],
+              ["승합", "아니오", "경형·소형", "4년 초과", "1년", ""],
+              ["승합", "아니오", "중형·대형", "8년 이하", "1년", "길이 5.5미터 미만 신조차 최초 2년"],
+              ["승합", "아니오", "중형·대형", "8년 초과", "6개월", ""],
+              ["승합", "예", "경형·소형", "4년 이하", "2년", ""],
+              ["승합", "예", "경형·소형", "4년 초과", "1년", ""],
+              ["승합", "예", "중형·대형", "8년 이하", "1년", ""],
+              ["승합", "예", "중형·대형", "8년 초과", "6개월", ""],
+              ["화물", "아니오", "경형·소형", "4년 이하", "2년", ""],
+              ["화물", "아니오", "경형·소형", "4년 초과", "1년", ""],
+              ["화물", "아니오", "중형·대형", "5년 이하", "1년", ""],
+              ["화물", "아니오", "중형·대형", "5년 초과", "6개월", ""],
+              ["화물", "예", "경형·소형", "전체", "1년", "2년"],
+              ["화물", "예", "중형", "5년 이하", "1년", ""],
+              ["화물", "예", "중형", "5년 초과", "6개월", ""],
+              ["화물", "예", "대형", "2년 이하", "1년", ""],
+              ["화물", "예", "대형", "2년 초과", "6개월", ""],
+              ["특수", "무관", "전체", "5년 이하", "1년", ""],
+              ["특수", "무관", "전체", "5년 초과", "6개월", ""]
+            ],
+            "exceptionNotes": [
+              "조건을 충족하는 2000-12-31 이전 등록 10인 이하 승합자동차는 승용자동차 기간 적용",
+              "피견인자동차는 비사업용 승용자동차 기간 적용"
+            ]
+          },
+          "lossLedger": [],
+          "sourceItemRefs": ["case-10-item-01", "case-10-item-02", "case-10-item-03", "case-10-item-04"]
+        },
+        {
+          "target": "memo",
+          "payload": {
+            "format": "markdown",
+            "fields": ["입력 분류", "적용 예외", "일치 표 행", "유효기간", "공식 재확인 상태"],
+            "calendarStatus": "not_generated"
+          },
+          "lossLedger": [
+            {
+              "canonicalPath": "inspection.absolute_due_date",
+              "handling": "omitted",
+              "reason": "차량별 기준일과 검사 이력이 없어 실제 만료일을 계산하지 않는다."
+            }
+          ],
+          "sourceItemRefs": ["case-10-item-03", "case-10-item-04"]
+        }
+      ],
+      "renderedArtifacts": {
+        "sheetCsv": "차종,사업용,규모,차령,유효기간,신조차 최초검사 예외\n승용,아니오,전체,전체,2년,5년\n승용,예,전체,전체,1년,2년\n승합,아니오,경형·소형,4년 이하,2년,\n승합,아니오,경형·소형,4년 초과,1년,\n승합,아니오,중형·대형,8년 이하,1년,길이 5.5미터 미만 신조차 최초 2년\n승합,아니오,중형·대형,8년 초과,6개월,\n승합,예,경형·소형,4년 이하,2년,\n승합,예,경형·소형,4년 초과,1년,\n승합,예,중형·대형,8년 이하,1년,\n승합,예,중형·대형,8년 초과,6개월,\n화물,아니오,경형·소형,4년 이하,2년,\n화물,아니오,경형·소형,4년 초과,1년,\n화물,아니오,중형·대형,5년 이하,1년,\n화물,아니오,중형·대형,5년 초과,6개월,\n화물,예,경형·소형,전체,1년,2년\n화물,예,중형,5년 이하,1년,\n화물,예,중형,5년 초과,6개월,\n화물,예,대형,2년 이하,1년,\n화물,예,대형,2년 초과,6개월,\n특수,무관,전체,5년 이하,1년,\n특수,무관,전체,5년 초과,6개월,",
+        "memoMarkdown": "예외 메모: 조건을 충족하는 2000년 12월 31일 이전 등록 10인 이하 승합자동차는 승용자동차 기간을 적용하고, 피견인자동차는 비사업용 승용자동차 기간을 적용합니다. 이 표는 유효기간 길이만 보여 주며 차량의 실제 검사 만료일이나 예약일을 계산하지 않습니다.\n공식 출처: https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200"
+      },
+      "decision": {
+        "disposition": "compile_candidate",
+        "reasonCodes": [
+          "complete_official_validity_table",
+          "classification_inputs_user_supplied",
+          "absolute_due_date_not_invented",
+          "safety_publication_locked"
+        ],
+        "explanation": "공식 표의 21개 조건 행과 두 예외를 손실 없이 조회 시트로 만들 수 있다. 실제 검사 만료일은 계산하지 않고 안전 민감 공개를 잠근다.",
+        "nextExtraction": []
+      },
+      "unsupportedClaims": []
+    }
+  ]
+}

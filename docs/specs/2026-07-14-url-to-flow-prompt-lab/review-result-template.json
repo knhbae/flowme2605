@@ -4,11 +4,19 @@
   "reviewMethod": {
     "reviewerKind": "in_session_model_proxy",
     "modelIdentityBlinded": true,
-    "humanReviewer": false
+    "humanReviewer": false,
+    "contextIsolation": "fresh_subagent_no_expected_answers"
   },
   "validator": {
     "passed": null,
     "hardFailCodes": []
+  },
+  "groundingAudit": {
+    "proposalFingerprint": null,
+    "items": null,
+    "projectionGrounded": null,
+    "projectionComment": null,
+    "unsupportedContentFindings": null
   },
   "reviewHardFailCodes": null,
   "scores": {
@@ -62,7 +70,14 @@
   "topFixes": [],
   "correctedPreview": {
     "title": null,
-    "items": [],
+    "items": [
+      {
+        "title": null,
+        "doneWhen": null,
+        "sourceRowIds": [],
+        "sourceProposalIds": []
+      }
+    ],
     "destinations": [],
     "reviewNote": null
   }

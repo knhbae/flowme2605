@@ -1,0 +1,126 @@
+{
+  "reviewSchemaVersion": "flowme-source-row-blind-review-v1",
+  "laneId": "url-to-flow-source-row-v1",
+  "round": "round-2",
+  "reviewerEvidenceClass": "in_session_unselected_model_proxy",
+  "provider": null,
+  "model": null,
+  "humanReviewer": false,
+  "cases": [
+    {
+      "caseId": "case-09",
+      "proposalFingerprint": "77f4e3c0336bc9f71b2ad34d8332d04a04b5417708d8875f146e27cec4ced405",
+      "validatorPassed": true,
+      "validatorCodes": [],
+      "positiveCase": true,
+      "itemReviews": [
+        {
+          "proposalId": "case-09-item-01",
+          "decision": "keep",
+          "comment": "resource 행의 제목을 그대로 유지한 독립적인 사용 항목이며 일정 값을 덧붙이지 않았다."
+        },
+        {
+          "proposalId": "case-09-item-02",
+          "decision": "keep",
+          "comment": "두 번째 resource 행의 제목과 순서를 보존한 사용 항목이며 완료 경계도 해당 리소스 사용으로 한정된다."
+        }
+      ],
+      "unsupportedSignals": [
+        {
+          "class": "fact",
+          "field": "conversionDecision.lifeArea",
+          "quote": "study_reading",
+          "comment": "두 행은 프롬프트 리소스라는 점만 말하며 학습이나 독서 영역이라는 정보는 제공하지 않는다."
+        }
+      ],
+      "scores": {
+        "userNeedFit": 5,
+        "executionClarity": 5,
+        "contentFidelityCoverage": 4,
+        "portability": 5,
+        "cognitiveLoad": 5,
+        "copySpecificity": 5,
+        "sourceSafetySeparation": 4
+      },
+      "scoreComments": {
+        "userNeedFit": "두 resource 행을 순서대로 사용하는 최소 작업이 명확하며 실제 날짜 일정으로 확대하지 않았다.",
+        "executionClarity": "각 프롬프트를 사용하는 개별 경계와 체크 완료 조건이 분명하다.",
+        "contentFidelityCoverage": "두 행이 각각 한 번씩 매핑되고 제목과 순서가 보존되지만 생활 영역 분류는 행 밖의 정보다.",
+        "portability": "두 리소스의 사용 여부를 표시하는 체크리스트가 자연스럽고 발명된 일정이 없다.",
+        "cognitiveLoad": "리소스당 한 항목만 두어 필요한 최소 구조를 유지한다.",
+        "copySpecificity": "행 제목을 그대로 사용한 짧은 행동형 문구로 대상이 구체적이다.",
+        "sourceSafetySeparation": "프롬프트 주제와 실제 일정이 없음을 명시해 경계를 지켰지만 근거 없는 생활 영역 분류가 남아 있다."
+      },
+      "topFix": "conversionDecision.lifeArea의 study_reading 분류를 제거하거나 행에서 관찰 가능한 중립 분류로 바꾼다.",
+      "verdict": "edit"
+    },
+    {
+      "caseId": "case-10",
+      "proposalFingerprint": "8fa4ef928e75e1c013155ff37798039920ccb52a0ac31b825af059fa28e323c0",
+      "validatorPassed": true,
+      "validatorCodes": [],
+      "positiveCase": true,
+      "itemReviews": [
+        {
+          "proposalId": "case-10-item-01",
+          "decision": "edit",
+          "comment": "유효기간을 다루는 항목 경계는 유용하지만 '유효기간을 챙기면 완료'는 순환적이어서 무엇을 하면 완료인지 관찰할 수 없다. 실제 날짜를 발명하지 않으면서 값의 확인이나 기록 여부로 완료 기준을 명확히 해야 한다."
+        }
+      ],
+      "unsupportedSignals": [
+        {
+          "class": "fact",
+          "field": "conversionDecision.lifeArea",
+          "quote": "money_admin_purchase",
+          "comment": "행에는 정기검사 유효기간과 검사기관 내부 단계만 있으며 금전이나 구매 영역이라는 정보는 없다."
+        }
+      ],
+      "scores": {
+        "userNeedFit": 4,
+        "executionClarity": 3,
+        "contentFidelityCoverage": 4,
+        "portability": 4,
+        "cognitiveLoad": 5,
+        "copySpecificity": 3,
+        "sourceSafetySeparation": 4
+      },
+      "scoreComments": {
+        "userNeedFit": "정기검사 유효기간을 다루는 좁은 작업은 보이지만 실제 값이 없어 작업의 끝이 모호하다.",
+        "executionClarity": "하나의 할 일은 이해되지만 완료 문구가 제목을 되풀이해 관찰 가능한 완료 상태를 제시하지 못한다.",
+        "contentFidelityCoverage": "두 행을 매핑 또는 생략으로 한 번씩 처리하고 날짜를 만들지 않았지만 생활 영역을 행 밖에서 확대했다.",
+        "portability": "기한 값을 발명하지 않은 단일 todo는 유용하나 완료 기준을 고쳐야 안정적으로 옮길 수 있다.",
+        "cognitiveLoad": "사용자용 항목 하나만 남기고 내부 검사 단계 reference를 별도 행동으로 늘리지 않아 간결하다.",
+        "copySpecificity": "정기검사 유효기간이라는 대상은 구체적이지만 '챙기기'와 동일 문구의 완료 조건은 모호하다.",
+        "sourceSafetySeparation": "실제 날짜와 검사 대상의 부재를 명시하고 내부 단계 reference를 사용자 행동으로 바꾸지 않았지만 생활 영역 분류에는 근거가 부족하다."
+      },
+      "topFix": "실제 날짜를 만들지 말고, 정기검사 유효기간 값이 확인되거나 기록되었는지를 나타내는 관찰 가능한 완료 기준으로 수정한다.",
+      "verdict": "edit"
+    },
+    {
+      "caseId": "case-11",
+      "proposalFingerprint": "972fdd606415e273f1d227755256f0a13b804a9ccc60e6f66ae559afa55e5c94",
+      "validatorPassed": true,
+      "validatorCodes": [],
+      "positiveCase": false,
+      "itemReviews": [],
+      "unsupportedSignals": [],
+      "scores": null,
+      "scoreComments": null,
+      "topFix": null,
+      "verdict": "keep"
+    },
+    {
+      "caseId": "case-12",
+      "proposalFingerprint": "ef206b70ef5cefcfe07c15228c1879fa231d4a86ee0b15769dbd4aa0ded6679b",
+      "validatorPassed": true,
+      "validatorCodes": [],
+      "positiveCase": false,
+      "itemReviews": [],
+      "unsupportedSignals": [],
+      "scores": null,
+      "scoreComments": null,
+      "topFix": null,
+      "verdict": "keep"
+    }
+  ]
+}

@@ -1,10 +1,11 @@
 {
-  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1.1",
   "fixtureSchemaVersion": "flowme-canonical-golden-fixtures-v1",
   "canonicalSchemaVersion": "flowme-canonical-flow-v1",
+  "sourceFixtureSha256": "ce69525a3710bfe5c22f84c7763f436ef07cbc06fc5ec171e6b76f6e02fc134d",
   "generatedFrom": "docs/specs/2026-07-11-canonical-flow-data-model/golden-fixtures-v1.json",
   "generator": "scripts/content-audit/build-url-to-flow-prompt-lab-cases.mjs",
-  "generatorDisclosure": "Positive inputs contain source metadata, SourceRows, and userJob only. Negative inputs add acquisition/locale evidence because canonical negative fixtures intentionally have content=null.",
+  "generatorDisclosure": "Inputs contain source metadata, SourceRows, userJob, and neutral case-local evidence references only. Canonical fixture IDs, shape labels, expected Items, dispositions, and projections are excluded. Negative inputs add acquisition/locale evidence because canonical negative fixtures intentionally have content=null.",
   "cases": [
     {
       "caseId": "case-01",
@@ -49,7 +50,7 @@
         }
       ],
       "inputEvidenceRefs": [
-        "golden-fixtures-v1.json#gf-pos-01-d-day-timeline:source-only"
+        "prompt-lab-source:case-01"
       ]
     },
     {
@@ -87,7 +88,7 @@
         }
       ],
       "inputEvidenceRefs": [
-        "golden-fixtures-v1.json#gf-pos-02-fixed-routine:source-only"
+        "prompt-lab-source:case-02"
       ]
     },
     {
@@ -133,7 +134,7 @@
         }
       ],
       "inputEvidenceRefs": [
-        "golden-fixtures-v1.json#gf-pos-03-source-checklist:source-only"
+        "prompt-lab-source:case-03"
       ]
     },
     {
@@ -179,7 +180,7 @@
         }
       ],
       "inputEvidenceRefs": [
-        "golden-fixtures-v1.json#gf-pos-04-ordered-phase-procedure:source-only"
+        "prompt-lab-source:case-04"
       ]
     },
     {
@@ -225,7 +226,7 @@
         }
       ],
       "inputEvidenceRefs": [
-        "golden-fixtures-v1.json#gf-pos-05-table-progress:source-only"
+        "prompt-lab-source:case-05"
       ]
     },
     {
@@ -263,7 +264,7 @@
         }
       ],
       "inputEvidenceRefs": [
-        "golden-fixtures-v1.json#gf-pos-06-memo-first:source-only"
+        "prompt-lab-source:case-06"
       ]
     },
     {
@@ -301,7 +302,7 @@
         }
       ],
       "inputEvidenceRefs": [
-        "golden-fixtures-v1.json#gf-pos-07-decision-hold:source-only"
+        "prompt-lab-source:case-07"
       ]
     },
     {
@@ -339,7 +340,7 @@
         }
       ],
       "inputEvidenceRefs": [
-        "golden-fixtures-v1.json#gf-pos-08-evidence-caution:source-only"
+        "prompt-lab-source:case-08"
       ]
     },
     {
@@ -348,7 +349,7 @@
       "targetLocale": "ko-KR",
       "userJob": "source-defined 사진 prompt를 하루 하나씩 실행하고 완료 여부를 남긴다.",
       "maxItems": 7,
-      "claimedScope": "Canonical shape contract sample. Only the extracted Day 1-2 rows are in fixture scope; this does not claim that all 30 source rows were imported.",
+      "claimedScope": "제공된 2개 SourceRow 범위만 변환한다.",
       "source": {
         "primary": {
           "sourceId": "source-canon-photo-30",
@@ -385,7 +386,7 @@
         }
       ],
       "inputEvidenceRefs": [
-        "golden-fixtures-v1.json#gf-pos-09-resource-queue:source-only"
+        "prompt-lab-source:case-09"
       ]
     },
     {
@@ -446,7 +447,7 @@
         }
       ],
       "inputEvidenceRefs": [
-        "golden-fixtures-v1.json#gf-pos-10-sparse-official-lifecycle:source-only"
+        "prompt-lab-source:case-10"
       ]
     },
     {
@@ -476,7 +477,7 @@
       },
       "sourceRows": [],
       "inputEvidenceRefs": [
-        "golden-fixtures-v1.json#gf-neg-01-missing-source-rows"
+        "prompt-lab-source:case-11"
       ]
     },
     {
@@ -506,8 +507,7 @@
       },
       "sourceRows": [],
       "inputEvidenceRefs": [
-        "golden-fixtures-v1.json#gf-neg-02-nonlocal-sensitive-source",
-        "docs/content-audit/2026-07-11-content-portfolio-expansion-round2-v1.json#R2-SC-031"
+        "prompt-lab-source:case-12"
       ]
     }
   ]

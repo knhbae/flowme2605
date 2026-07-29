@@ -1,0 +1,131 @@
+{
+  "reviewInputVersion": "flowme-source-row-blind-review-input-v1",
+  "laneId": "url-to-flow-source-row-v1",
+  "round": "round-3",
+  "caseId": "case-07",
+  "positiveCase": true,
+  "sourcePacket": {
+    "requestId": "rq-4d1a8fb763e0",
+    "caseId": "case-07",
+    "maxItems": 7,
+    "sourceOwnership": {
+      "primarySourceId": "src-5d8a247fb1c6",
+      "supportingSourceIds": []
+    },
+    "sourceRows": [
+      {
+        "sourceRowId": "row-2a8c640f1e95",
+        "sourceId": "src-5d8a247fb1c6",
+        "rowType": "check",
+        "title": "차량 이력과 상태를 확인한 뒤 구매 판단",
+        "detail": null,
+        "order": 0
+      }
+    ]
+  },
+  "deterministicNegativeBoundary": null,
+  "proposal": {
+    "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+    "promptVersion": "url-to-flow-prompt-v1.1",
+    "requestId": "rq-4d1a8fb763e0",
+    "caseId": "case-07",
+    "status": {
+      "generationState": "proposal",
+      "outcome": "complete",
+      "readiness": null,
+      "errorCode": null
+    },
+    "sourceAssessment": {
+      "access": "readable",
+      "sourceShape": "compare_decide",
+      "primarySourceId": "src-5d8a247fb1c6",
+      "supportingSourceIds": [],
+      "receivedSourceRowIds": [
+        "row-2a8c640f1e95"
+      ],
+      "untrustedInstructionDetected": false
+    },
+    "conversionDecision": {
+      "userNeed": "차량 이력과 상태를 확인하고 구매를 판단하기",
+      "lifeArea": "money_admin_purchase",
+      "planningPattern": "compare_decide",
+      "primaryArtifact": "checklist",
+      "contentShape": "차량 확인 후 구매를 판단하는 두 단계 흐름"
+    },
+    "proposal": {
+      "proposalTitle": "차량 확인 후 구매 판단",
+      "items": [
+        {
+          "proposalId": "p-01",
+          "title": "차량 이력과 상태 확인하기",
+          "intent": "inspect",
+          "sourceRowIds": [
+            "row-2a8c640f1e95"
+          ],
+          "completion": {
+            "mode": "check",
+            "doneWhen": "차량 이력과 상태를 확인한 상태"
+          },
+          "memoCandidate": null,
+          "groupingCandidate": "차량 구매 판단",
+          "scheduleCandidate": null
+        },
+        {
+          "proposalId": "p-02",
+          "title": "차량 구매 판단하기",
+          "intent": "decide",
+          "sourceRowIds": [
+            "row-2a8c640f1e95"
+          ],
+          "completion": {
+            "mode": "decision",
+            "doneWhen": "차량 구매를 판단한 상태"
+          },
+          "memoCandidate": null,
+          "groupingCandidate": "차량 구매 판단",
+          "scheduleCandidate": null
+        }
+      ],
+      "omittedRows": [],
+      "incompleteReason": null
+    },
+    "projectionPlan": [
+      {
+        "target": "checklist",
+        "applicability": "applicable",
+        "reason": "차량 이력과 상태를 확인한 뒤 구매를 판단하는 순서를 두 단계로 보존할 수 있다."
+      }
+    ],
+    "reviewHints": {
+      "recommendedDisposition": "review",
+      "uncertainties": [],
+      "hardFailCodes": [],
+      "humanReviewRequired": []
+    }
+  },
+  "proposalFingerprint": "07299735f55e65c7cd50fcbc41e26bc55a1d03e8f5ee7bea36345738c503065d",
+  "deterministicValidation": {
+    "passed": false,
+    "codes": [
+      "source_row_accounting_not_exactly_once"
+    ],
+    "sourceRowAccounting": false
+  },
+  "rubricPath": "docs/specs/2026-07-15-url-to-flow-prompt-lab-source-row-v1/review-rubric.md",
+  "evidenceBoundary": {
+    "allowed": [
+      "this sourcePacket",
+      "this proposal",
+      "this proposalFingerprint",
+      "this deterministicValidation",
+      "the linked blind rubric"
+    ],
+    "forbidden": [
+      "canonical expectation or opaque ID mapping",
+      "source title URL publisher or preflight metadata",
+      "legacy or prior-round output and review",
+      "provider model tier timing token or cost",
+      "other reviewer conclusions"
+    ]
+  }
+}

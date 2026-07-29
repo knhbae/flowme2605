@@ -1,0 +1,256 @@
+{
+  "validationVersion": "flowme-url-to-flow-v3-hybrid-validation",
+  "laneId": "url-to-flow-source-row-v3-hybrid-controller",
+  "round": "round-2",
+  "passed": true,
+  "envelopeErrors": [],
+  "gates": {
+    "exactCaseCoverage": true,
+    "schemaValid": true,
+    "sourceRowAccounting": true,
+    "compilerFieldOwnership": true,
+    "compilerTraceIntegrity": true,
+    "literalMemoSchedule": true,
+    "unsupportedZero": true,
+    "negativeExact": true,
+    "positiveItemCount": true,
+    "allCasesPassed": true
+  },
+  "summary": {
+    "outputCount": 12,
+    "passedOutputCount": 12,
+    "failedOutputCount": 0,
+    "receivedRows": 16,
+    "exactlyOnceRows": 16,
+    "eligibleRows": 15,
+    "eligibleRowsMappedToItems": 15,
+    "itemCount": 15,
+    "deterministicNegativeCount": 2,
+    "sourceRowAccountingRate": 1,
+    "eligibleRowItemizationRate": 1,
+    "unsupportedCount": 0
+  },
+  "results": [
+    {
+      "auditCaseId": "case-01",
+      "sampleRef": "smp-3c82e2a17ad8d751",
+      "expectedAuditCaseId": "case-01",
+      "expectedSampleRef": "smp-3c82e2a17ad8d751",
+      "schemaPassed": true,
+      "passed": true,
+      "errors": [],
+      "metrics": {
+        "receivedRows": 2,
+        "exactlyOnceRows": 2,
+        "eligibleRows": 2,
+        "eligibleRowsMappedToItems": 2,
+        "itemCount": 2,
+        "deterministicNegative": false
+      },
+      "proposalFingerprint": "f72947ea04d28753bd744215dcec5d6eeaaa92f705fa55cc021ba4e1e69a3541"
+    },
+    {
+      "auditCaseId": "case-02",
+      "sampleRef": "smp-6cd12e316c9ca24a",
+      "expectedAuditCaseId": "case-02",
+      "expectedSampleRef": "smp-6cd12e316c9ca24a",
+      "schemaPassed": true,
+      "passed": true,
+      "errors": [],
+      "metrics": {
+        "receivedRows": 1,
+        "exactlyOnceRows": 1,
+        "eligibleRows": 1,
+        "eligibleRowsMappedToItems": 1,
+        "itemCount": 1,
+        "deterministicNegative": false
+      },
+      "proposalFingerprint": "72c4eca9f4bbfc2b31d22bdc90a70755627247daae7573f112b78b453711fcae"
+    },
+    {
+      "auditCaseId": "case-03",
+      "sampleRef": "smp-3ad3cc4ad286218d",
+      "expectedAuditCaseId": "case-03",
+      "expectedSampleRef": "smp-3ad3cc4ad286218d",
+      "schemaPassed": true,
+      "passed": true,
+      "errors": [],
+      "metrics": {
+        "receivedRows": 2,
+        "exactlyOnceRows": 2,
+        "eligibleRows": 2,
+        "eligibleRowsMappedToItems": 2,
+        "itemCount": 2,
+        "deterministicNegative": false
+      },
+      "proposalFingerprint": "e3d77b34acdada8e38c9d713b6dc6b6e387980803c17ecc4f647de1992c316e0"
+    },
+    {
+      "auditCaseId": "case-04",
+      "sampleRef": "smp-14a5927ce96fdaa6",
+      "expectedAuditCaseId": "case-04",
+      "expectedSampleRef": "smp-14a5927ce96fdaa6",
+      "schemaPassed": true,
+      "passed": true,
+      "errors": [],
+      "metrics": {
+        "receivedRows": 2,
+        "exactlyOnceRows": 2,
+        "eligibleRows": 2,
+        "eligibleRowsMappedToItems": 2,
+        "itemCount": 2,
+        "deterministicNegative": false
+      },
+      "proposalFingerprint": "55660e1340c44b87cdcec573c034de59058f01eeecc3c6d2a3b485b2eaea88f9"
+    },
+    {
+      "auditCaseId": "case-05",
+      "sampleRef": "smp-1543712589e440b7",
+      "expectedAuditCaseId": "case-05",
+      "expectedSampleRef": "smp-1543712589e440b7",
+      "schemaPassed": true,
+      "passed": true,
+      "errors": [],
+      "metrics": {
+        "receivedRows": 2,
+        "exactlyOnceRows": 2,
+        "eligibleRows": 2,
+        "eligibleRowsMappedToItems": 2,
+        "itemCount": 2,
+        "deterministicNegative": false
+      },
+      "proposalFingerprint": "bef22e1aa659a8fc9904e6d746a28c8e37055574d30e29851b83c2e86fbe9302"
+    },
+    {
+      "auditCaseId": "case-06",
+      "sampleRef": "smp-91182b6bbc8efd1d",
+      "expectedAuditCaseId": "case-06",
+      "expectedSampleRef": "smp-91182b6bbc8efd1d",
+      "schemaPassed": true,
+      "passed": true,
+      "errors": [],
+      "metrics": {
+        "receivedRows": 1,
+        "exactlyOnceRows": 1,
+        "eligibleRows": 1,
+        "eligibleRowsMappedToItems": 1,
+        "itemCount": 1,
+        "deterministicNegative": false
+      },
+      "proposalFingerprint": "58c747d7b31ad0f6bfefb88ae06912fb0fc69ead68aa8ddce20a63639a4e0262"
+    },
+    {
+      "auditCaseId": "case-07",
+      "sampleRef": "smp-a4bd87f2c84f5b82",
+      "expectedAuditCaseId": "case-07",
+      "expectedSampleRef": "smp-a4bd87f2c84f5b82",
+      "schemaPassed": true,
+      "passed": true,
+      "errors": [],
+      "metrics": {
+        "receivedRows": 1,
+        "exactlyOnceRows": 1,
+        "eligibleRows": 1,
+        "eligibleRowsMappedToItems": 1,
+        "itemCount": 1,
+        "deterministicNegative": false
+      },
+      "proposalFingerprint": "bf19ccfe87f6f1cb5d440795ef9534f1988850d5d44e0518564eebec8c5b2f35"
+    },
+    {
+      "auditCaseId": "case-08",
+      "sampleRef": "smp-ce41aa43ffc0fdd4",
+      "expectedAuditCaseId": "case-08",
+      "expectedSampleRef": "smp-ce41aa43ffc0fdd4",
+      "schemaPassed": true,
+      "passed": true,
+      "errors": [],
+      "metrics": {
+        "receivedRows": 1,
+        "exactlyOnceRows": 1,
+        "eligibleRows": 1,
+        "eligibleRowsMappedToItems": 1,
+        "itemCount": 1,
+        "deterministicNegative": false
+      },
+      "proposalFingerprint": "d5dacb914b7148813c0c0383199ca30be89cc5ad88289dde3ffdab3b2f7e1a97"
+    },
+    {
+      "auditCaseId": "case-09",
+      "sampleRef": "smp-c318a22e612c54a9",
+      "expectedAuditCaseId": "case-09",
+      "expectedSampleRef": "smp-c318a22e612c54a9",
+      "schemaPassed": true,
+      "passed": true,
+      "errors": [],
+      "metrics": {
+        "receivedRows": 2,
+        "exactlyOnceRows": 2,
+        "eligibleRows": 2,
+        "eligibleRowsMappedToItems": 2,
+        "itemCount": 2,
+        "deterministicNegative": false
+      },
+      "proposalFingerprint": "ce96e8116fa1a0dc0d5da5b23461437859d6727519d25bd77257224ed4b75e2f"
+    },
+    {
+      "auditCaseId": "case-10",
+      "sampleRef": "smp-0b2e2f909ba047ad",
+      "expectedAuditCaseId": "case-10",
+      "expectedSampleRef": "smp-0b2e2f909ba047ad",
+      "schemaPassed": true,
+      "passed": true,
+      "errors": [],
+      "metrics": {
+        "receivedRows": 2,
+        "exactlyOnceRows": 2,
+        "eligibleRows": 1,
+        "eligibleRowsMappedToItems": 1,
+        "itemCount": 1,
+        "deterministicNegative": false
+      },
+      "proposalFingerprint": "449cb3193054c6efd6df25bb9220f59ce260982662e334a7d3cac77609605dce"
+    },
+    {
+      "auditCaseId": "case-11",
+      "sampleRef": "smp-ba23feddf0a716df",
+      "expectedAuditCaseId": "case-11",
+      "expectedSampleRef": "smp-ba23feddf0a716df",
+      "schemaPassed": true,
+      "passed": true,
+      "errors": [],
+      "metrics": {
+        "receivedRows": 0,
+        "exactlyOnceRows": 0,
+        "eligibleRows": 0,
+        "eligibleRowsMappedToItems": 0,
+        "itemCount": 0,
+        "deterministicNegative": true
+      },
+      "proposalFingerprint": "76a04ed3def4a678dd9ba9d7853aa8b2ca340e8061ab53056057e99cbab788ea"
+    },
+    {
+      "auditCaseId": "case-12",
+      "sampleRef": "smp-a04abcdf30d187c9",
+      "expectedAuditCaseId": "case-12",
+      "expectedSampleRef": "smp-a04abcdf30d187c9",
+      "schemaPassed": true,
+      "passed": true,
+      "errors": [],
+      "metrics": {
+        "receivedRows": 0,
+        "exactlyOnceRows": 0,
+        "eligibleRows": 0,
+        "eligibleRowsMappedToItems": 0,
+        "itemCount": 0,
+        "deterministicNegative": true
+      },
+      "proposalFingerprint": "cdf5103ffb931b59a63eeba8d69d95b29ef05b75801d6337b07fa60f02088b9e"
+    }
+  ],
+  "evidenceBindings": {
+    "compiledRunFile": "docs/content-audit/2026-07-18-url-to-flow-prompt-lab-v3-hybrid/runs/round-2/compiled-run.json",
+    "compiledRunSha256": "1399e55b13e74c76c7d2b98ae0055b33d85182c2b93ac9638428f3478d3712e8",
+    "compiledRunCanonicalSha256": "76e8b9c60285ce05047c5780b475d73f884c7d496653de565fcfa161b4e660ed"
+  }
+}

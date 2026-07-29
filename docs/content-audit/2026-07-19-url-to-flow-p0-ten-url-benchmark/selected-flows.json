@@ -1,0 +1,4343 @@
+{
+  "schemaVersion": "flowme-url-to-flow-selected-v1.0",
+  "createdAt": "2026-07-29T04:21:50.151Z",
+  "selectionPolicy": [
+    "Hard source and structure gates precede blind preference.",
+    "When both raw lanes pass, two non-tie blind votes may choose a lane; otherwise lower output proxy breaks the tie.",
+    "When neither raw lane passes, only a separately logged source-evidence repair may enter the selected set.",
+    "A correct zero-output hold is a valid selected result."
+  ],
+  "sourceRunIds": {
+    "lowerCost": "2026-07-19-p0-ten-url-lower-cost-01",
+    "higherCapability": "p0-ten-url-higher-capability-2026-07-19"
+  },
+  "cases": [
+    {
+      "caseId": "case-01",
+      "title": "국민건강보험 건강검진 안내",
+      "source": {
+        "title": "국민건강보험 건강검진 안내",
+        "url": "https://www.nhis.or.kr/nhis/healthin/wbhaca04500m01.do",
+        "publisher": "국민건강보험공단",
+        "sourceType": "official",
+        "locale": "ko-KR",
+        "countryContext": "KR",
+        "checkedAt": "2026-07-11",
+        "accessStatus": "fetched",
+        "rightsStatus": "allowed",
+        "riskClass": "medical_sensitive",
+        "evidenceMode": "legacy_sparse_source_rows",
+        "coverage": {
+          "status": "not_reverified_in_v4",
+          "scope": "제공된 2개 SourceRow 범위만 변환한다.",
+          "excluded": []
+        }
+      },
+      "requestedUrl": "https://www.nhis.or.kr/nhis/healthin/wbhaca04500m01.do",
+      "sourceSnapshot": {
+        "capturedAt": "2026-07-19T00:10:15.281Z",
+        "accessStatus": "readable",
+        "httpStatus": 200,
+        "elapsedMs": 3275,
+        "htmlFallback": null,
+        "bodyTextSha256": "664841b54a342ad68f38e92763c3a7e351fcf8308d3ba8a54fa97832ca282f51",
+        "selectedLineCount": 40
+      },
+      "rawGate": {
+        "lowerCost": {
+          "caseId": "case-01",
+          "passed": true,
+          "errors": [],
+          "itemCount": 3,
+          "pattern": "phase_lifecycle",
+          "disposition": "compile_candidate"
+        },
+        "higherCapability": {
+          "caseId": "case-01",
+          "passed": true,
+          "errors": [],
+          "itemCount": 5,
+          "pattern": "date_preparation",
+          "disposition": "compile_candidate"
+        }
+      },
+      "blindReviews": [
+        {
+          "reviewerId": "reviewer-a",
+          "reviewerProxy": {
+            "model": "gpt-5.6-terra",
+            "reasoningEffort": "high",
+            "role": "lower-cost blind reviewer proxy",
+            "actualProviderCost": null
+          },
+          "overallOption": "A",
+          "laneChoice": "lower_cost",
+          "scores": {
+            "lower_cost": {
+              "dimensions": {
+                "userNeedFit": 4,
+                "executionClarity": 4,
+                "contentFidelity": 5,
+                "portability": 4,
+                "cognitiveLoad": 5,
+                "copySpecificity": 4,
+                "sourceSafety": 5,
+                "accessibilityOperability": 4
+              },
+              "average": 4.375
+            },
+            "higher_capability": {
+              "dimensions": {
+                "userNeedFit": 5,
+                "executionClarity": 5,
+                "contentFidelity": 2,
+                "portability": 5,
+                "cognitiveLoad": 4,
+                "copySpecificity": 5,
+                "sourceSafety": 1,
+                "accessibilityOperability": 4
+              },
+              "average": 3.875
+            }
+          },
+          "judgments": [
+            {
+              "questionId": "source_fidelity",
+              "choice": "A",
+              "reason": "A는 제공된 selectedLines의 대상·주기·기간·결과 통보만 썼지만 B의 금식·신분증 근거는 패킷 source에 없다."
+            },
+            {
+              "questionId": "execution_clarity",
+              "choice": "B",
+              "reason": "B의 준비·금식·검진·결과 수령 순서는 다음 행동과 완료 상태가 더 구체적이다."
+            },
+            {
+              "questionId": "artifact_fit",
+              "choice": "B",
+              "reason": "검진일 입력 후 일정과 준비 체크를 결합하는 형태 자체는 이 일에 더 자연스럽다."
+            },
+            {
+              "questionId": "specificity",
+              "choice": "B",
+              "reason": "오전·오후 선택과 금식 행동까지 묶어 일반적인 확인 목록보다 구체적이다."
+            },
+            {
+              "questionId": "safety_and_hold",
+              "choice": "A",
+              "reason": "A는 확인 가능한 공식 범위만 쓰고 개인 판정을 보류하지만 B는 패킷에 없는 의료 준비 규칙을 공식 절차로 실행화한다."
+            },
+            {
+              "questionId": "reuse_value",
+              "choice": "A",
+              "reason": "B는 더 풍부해도 핵심 근거가 검증되지 않아 기준본으로 재사용하기 어렵고 A가 안전한 기준선이다."
+            }
+          ],
+          "criticalFindings": [
+            "B: 검진 전날 21시 이후 금식, 당일 음식·음료 금지, 오후 최소 8시간 공복, 신분증 요건은 제공된 source.selectedLines에 없으며 '필수 확인사항' heading만으로는 지지되지 않는다.",
+            "B: 위 미확인 내용을 공식 의료 준비 절차와 캘린더 후보로 사용해 출처 없는 의료 정보를 공식 정보처럼 제시한다."
+          ],
+          "note": "B의 실행 설계는 좋지만 의료 핵심 근거가 블라인드 패킷에서 확인되지 않아 A를 선택했다."
+        },
+        {
+          "reviewerId": "reviewer-b",
+          "reviewerProxy": {
+            "kind": "blind_model_proxy",
+            "model": "gpt-5.6-sol",
+            "reasoningEffort": "xhigh",
+            "actualProviderCost": null
+          },
+          "overallOption": "A",
+          "laneChoice": "higher_capability",
+          "scores": {
+            "higher_capability": {
+              "dimensions": {
+                "userNeedFit": 5,
+                "executionClarity": 5,
+                "contentFidelity": 5,
+                "portability": 5,
+                "cognitiveLoad": 4,
+                "copySpecificity": 5,
+                "sourceSafety": 5,
+                "accessibilityOperability": 4
+              },
+              "average": 4.75
+            },
+            "lower_cost": {
+              "dimensions": {
+                "userNeedFit": 4,
+                "executionClarity": 3,
+                "contentFidelity": 4,
+                "portability": 4,
+                "cognitiveLoad": 5,
+                "copySpecificity": 4,
+                "sourceSafety": 5,
+                "accessibilityOperability": 4
+              },
+              "average": 4.125
+            }
+          },
+          "judgments": [
+            {
+              "questionId": "source_fidelity",
+              "choice": "A",
+              "reason": "A는 공식 금식 조건, 신분증, 결과 통보를 실행 순서로 보존한다."
+            },
+            {
+              "questionId": "execution_clarity",
+              "choice": "A",
+              "reason": "검진일과 시간대를 받은 뒤 준비·검진·결과 확인까지 완료 기준이 분명하다."
+            },
+            {
+              "questionId": "artifact_fit",
+              "choice": "A",
+              "reason": "체크리스트·입력 대기형 달력·주의 메모의 역할 분리가 자연스럽다."
+            },
+            {
+              "questionId": "specificity",
+              "choice": "A",
+              "reason": "오전·오후 금식 기준과 결과 수령 같은 원문 고유 행동이 제목과 완료 조건에 드러난다."
+            },
+            {
+              "questionId": "safety_and_hold",
+              "choice": "tie",
+              "reason": "둘 다 개인별 판정과 결과 해석을 제외하고 의료 민감 공개를 잠근다."
+            },
+            {
+              "questionId": "reuse_value",
+              "choice": "A",
+              "reason": "사용자 날짜를 나중에 넣어 달력과 준비표를 재생성할 수 있다."
+            }
+          ],
+          "criticalFindings": [
+            "B는 대상·기간 확인에는 안전하지만 검진 전 금식과 신분증이라는 핵심 실행 단서를 산출물에서 잃는다.",
+            "A는 약 복용·개인별 금식 예외가 snapshot에 없음을 주의 경계로 남겼다."
+          ],
+          "note": "A가 원문 근거를 더 자연스러운 날짜 준비 Flow로 전환했다."
+        }
+      ],
+      "selection": {
+        "kind": "raw_model_output",
+        "lane": "lower_cost",
+        "reason": "both_raw_lanes_passed_without_consensus_lower_output_proxy_tiebreak"
+      },
+      "editProxy": {
+        "kind": "none",
+        "operations": [],
+        "weightedEditPoints": 0,
+        "actualHumanEdit": null
+      },
+      "generationTokenProxy": 758,
+      "selectedValidation": {
+        "passed": true,
+        "errors": [],
+        "itemCount": 3,
+        "pattern": "phase_lifecycle"
+      },
+      "candidate": {
+        "caseId": "case-01",
+        "sourceAssessment": {
+          "sourceUrl": "https://www.nhis.or.kr/nhis/healthin/wbhaca04500m01.do",
+          "accessStatus": "readable",
+          "scope": "일반건강검진 대상·주기·검진기간·결과 통보",
+          "sufficient": true,
+          "sensitivity": "medical_sensitive; 개인별 대상 여부와 의료 판단은 공식 기관에 맡긴다"
+        },
+        "sourceEvidence": [
+          {
+            "evidenceId": "ev-01-eligibility",
+            "kind": "source_fact",
+            "text": "일반건강검진 대상자 : 지역세대주, 직장가입자, 20세이상 세대원과 피부양자, 20세~64세 의료급여수급권자",
+            "locator": "selectedLines:113"
+          },
+          {
+            "evidenceId": "ev-02-cadence",
+            "kind": "recurrence",
+            "text": "※ 매 2년마다 1회, 비사무직은 매년 실시",
+            "locator": "selectedLines:114"
+          },
+          {
+            "evidenceId": "ev-03-period",
+            "kind": "date_window",
+            "text": "검진기간 : 매년 1.1. ~ 12.31. (확진검사는 다음연도 3.31.까지)",
+            "locator": "selectedLines:213"
+          },
+          {
+            "evidenceId": "ev-04-result",
+            "kind": "finish_action",
+            "text": "검진기관은 건강검진을 완료한 후, 결과통보서를 작성하여 수검자에게 15일 이내에 우편, 이메일로 통보",
+            "locator": "selectedLines:165-166"
+          }
+        ],
+        "flow": {
+          "flowId": "nhis-general-checkup-confirmation",
+          "title": "일반건강검진 대상·기간 확인표",
+          "userJob": "공식 안내에서 내 검진 대상과 검진기간을 확인하고, 검진 뒤 결과 통보를 확인한다.",
+          "lifeArea": "health",
+          "planningPattern": "phase_lifecycle",
+          "primaryArtifact": "checklist",
+          "resultBundle": [
+            "대상·주기 확인",
+            "검진기간 메모",
+            "결과 통보 확인"
+          ],
+          "minimumInputs": [],
+          "steps": [
+            {
+              "stepId": "step-01",
+              "title": "대상과 기간",
+              "order": 1
+            },
+            {
+              "stepId": "step-02",
+              "title": "검진 후",
+              "order": 2
+            }
+          ],
+          "items": [
+            {
+              "itemId": "item-01",
+              "stepId": "step-01",
+              "title": "공식 대상자 기준과 내 대상 여부 확인",
+              "intent": "inspect",
+              "doneWhen": "공식 대상자 기준을 보고 내 검진 대상 여부는 공단 또는 검진기관에서 확인할 항목으로 표시했다.",
+              "order": 1,
+              "sourceEvidenceRefs": [
+                "ev-01-eligibility",
+                "ev-02-cadence"
+              ]
+            },
+            {
+              "itemId": "item-02",
+              "stepId": "step-01",
+              "title": "해당 연도 검진기간 확인",
+              "intent": "inspect",
+              "doneWhen": "해당 연도의 검진기간을 확인해 메모에 남겼다.",
+              "order": 2,
+              "sourceEvidenceRefs": [
+                "ev-03-period"
+              ]
+            },
+            {
+              "itemId": "item-03",
+              "stepId": "step-02",
+              "title": "결과 통보서 수령 여부 확인",
+              "intent": "inspect",
+              "doneWhen": "검진 완료 뒤 결과통보서를 우편 또는 이메일로 받았는지 확인했다.",
+              "order": 3,
+              "sourceEvidenceRefs": [
+                "ev-04-result"
+              ]
+            }
+          ],
+          "sourceTrace": {
+            "sourceUrl": "https://www.nhis.or.kr/nhis/healthin/wbhaca04500m01.do",
+            "evidenceIds": [
+              "ev-01-eligibility",
+              "ev-02-cadence",
+              "ev-03-period",
+              "ev-04-result"
+            ],
+            "omissions": [
+              "검사항목별 의료 해석",
+              "개인별 대상 판정",
+              "확진검사 필요성"
+            ]
+          },
+          "risk": {
+            "class": "medical_sensitive",
+            "boundary": "이 Flow는 공식 안내 확인용이며 의료 조언이나 개인별 검진 대상 판정을 제공하지 않는다."
+          },
+          "publicationState": "sensitive_locked"
+        },
+        "projections": [
+          {
+            "target": "checklist",
+            "payload": {
+              "title": "일반건강검진 대상·기간 확인표",
+              "itemIds": [
+                "item-01",
+                "item-02",
+                "item-03"
+              ],
+              "includeSourceUrl": true
+            },
+            "lossLedger": [
+              "개인별 검진일은 원문과 사용자 입력 모두에 없으므로 달력 일정을 만들지 않는다."
+            ],
+            "sourceItemRefs": [
+              "item-01",
+              "item-02",
+              "item-03"
+            ]
+          },
+          {
+            "target": "memo",
+            "payload": {
+              "title": "검진기간·공식 출처",
+              "sourceUrl": "https://www.nhis.or.kr/nhis/healthin/wbhaca04500m01.do",
+              "include": [
+                "매 2년마다 1회, 비사무직은 매년 실시",
+                "매년 1.1. ~ 12.31."
+              ]
+            },
+            "lossLedger": [],
+            "sourceItemRefs": [
+              "item-01",
+              "item-02"
+            ]
+          }
+        ],
+        "renderedArtifacts": {
+          "checklist": "- [ ] 공식 대상자 기준과 내 대상 여부 확인\n- [ ] 해당 연도 검진기간 확인\n- [ ] 결과 통보서 수령 여부 확인",
+          "memo": "출처: 국민건강보험 건강검진 안내\n검진기간: 매년 1.1. ~ 12.31.\n주의: 개인별 대상 여부와 의료 판단은 공단 또는 검진기관에서 확인합니다."
+        },
+        "decision": {
+          "disposition": "compile_candidate",
+          "reason": "공식 페이지가 대상·주기·기간·결과 통보를 명시한다. 민감 정보이므로 사람 검토 전 공개하지 않는다.",
+          "requiredReExtraction": []
+        },
+        "unsupportedClaims": []
+      }
+    },
+    {
+      "caseId": "case-02",
+      "title": "스탠드, 먼지거름 필터 청소 방법이 궁금합니다.",
+      "source": {
+        "sourceId": "source-samsung-aircon-filter-current",
+        "title": "스탠드, 먼지거름 필터 청소 방법이 궁금합니다.",
+        "url": "https://www.samsungsvc.co.kr/solution/121273",
+        "publisher": "삼성전자서비스",
+        "sourceType": "official",
+        "locale": "ko-KR",
+        "countryContext": "KR",
+        "accessStatus": "fetched",
+        "rightsStatus": "allowed",
+        "riskClass": "low",
+        "snapshotRef": "samsungsvc-121273-reviewed-2026-07-18",
+        "checkedAt": "2026-07-18",
+        "evidenceMode": "current_source_reextracted",
+        "coverage": {
+          "status": "bounded_complete",
+          "scope": "극세 필터의 반복 청소 주기, 오염 정도별 방법, 건조, 필터 손상 주의",
+          "excluded": [
+            "PM 필터",
+            "숯 탈취 필터",
+            "전문 세척과 일반 세척 비교",
+            "서비스 신청 전화번호와 비용"
+          ],
+          "reason": "한 Flow가 한 종류의 필터 관리 job만 소유하도록 범위를 좁혔다."
+        }
+      },
+      "requestedUrl": "https://www.samsungsvc.co.kr/solution/121273",
+      "sourceSnapshot": {
+        "capturedAt": "2026-07-19T00:10:17.990Z",
+        "accessStatus": "readable",
+        "httpStatus": 200,
+        "elapsedMs": 2708,
+        "htmlFallback": null,
+        "bodyTextSha256": "94edba089148d3826d0cedf17b1afe33d70699834d136e2c816eb6ec83a76dc0",
+        "selectedLineCount": 24
+      },
+      "rawGate": {
+        "lowerCost": {
+          "caseId": "case-02",
+          "passed": true,
+          "errors": [],
+          "itemCount": 3,
+          "pattern": "repeating_routine",
+          "disposition": "compile_candidate"
+        },
+        "higherCapability": {
+          "caseId": "case-02",
+          "passed": true,
+          "errors": [],
+          "itemCount": 3,
+          "pattern": "repeating_routine",
+          "disposition": "compile_candidate"
+        }
+      },
+      "blindReviews": [
+        {
+          "reviewerId": "reviewer-a",
+          "reviewerProxy": {
+            "model": "gpt-5.6-terra",
+            "reasoningEffort": "high",
+            "role": "lower-cost blind reviewer proxy",
+            "actualProviderCost": null
+          },
+          "overallOption": "tie",
+          "laneChoice": "tie",
+          "scores": {
+            "higher_capability": {
+              "dimensions": {
+                "userNeedFit": 5,
+                "executionClarity": 5,
+                "contentFidelity": 5,
+                "portability": 5,
+                "cognitiveLoad": 4,
+                "copySpecificity": 5,
+                "sourceSafety": 5,
+                "accessibilityOperability": 4
+              },
+              "average": 4.75
+            },
+            "lower_cost": {
+              "dimensions": {
+                "userNeedFit": 5,
+                "executionClarity": 5,
+                "contentFidelity": 5,
+                "portability": 5,
+                "cognitiveLoad": 4,
+                "copySpecificity": 5,
+                "sourceSafety": 5,
+                "accessibilityOperability": 4
+              },
+              "average": 4.75
+            }
+          },
+          "judgments": [
+            {
+              "questionId": "source_fidelity",
+              "choice": "tie",
+              "reason": "두 옵션 모두 4주 주기, 먼지 양별 방법, 그늘 건조와 훼손 주의를 같은 원문 근거에 묶었다."
+            },
+            {
+              "questionId": "execution_clarity",
+              "choice": "tie",
+              "reason": "둘 다 방법 선택, 청소, 그늘 건조의 순서와 완료 기준이 분명하다."
+            },
+            {
+              "questionId": "artifact_fit",
+              "choice": "tie",
+              "reason": "첫 청소일 기반 4주 일정과 체크리스트·주의 메모 조합이 사실상 동일하다."
+            },
+            {
+              "questionId": "specificity",
+              "choice": "tie",
+              "reason": "진공청소기와 중성세제 물세척의 조건 분기가 두 옵션 모두 원문에 구체적으로 묶여 있다."
+            },
+            {
+              "questionId": "safety_and_hold",
+              "choice": "tie",
+              "reason": "둘 다 첫 날짜 입력 전 실제 일정을 만들지 않고 강한 햇빛·무리한 물청소 주의를 보존한다."
+            },
+            {
+              "questionId": "reuse_value",
+              "choice": "tie",
+              "reason": "반복 일정, 실행 체크, 출처 메모가 모두 있어 재사용 가치 차이가 실질적으로 없다."
+            }
+          ],
+          "criticalFindings": [],
+          "note": "필드 명명과 포장 차이만 있고 사용자 실행 품질은 동등하다."
+        },
+        {
+          "reviewerId": "reviewer-b",
+          "reviewerProxy": {
+            "kind": "blind_model_proxy",
+            "model": "gpt-5.6-sol",
+            "reasoningEffort": "xhigh",
+            "actualProviderCost": null
+          },
+          "overallOption": "tie",
+          "laneChoice": "tie",
+          "scores": {
+            "lower_cost": {
+              "dimensions": {
+                "userNeedFit": 5,
+                "executionClarity": 5,
+                "contentFidelity": 4,
+                "portability": 5,
+                "cognitiveLoad": 4,
+                "copySpecificity": 4,
+                "sourceSafety": 5,
+                "accessibilityOperability": 4
+              },
+              "average": 4.5
+            },
+            "higher_capability": {
+              "dimensions": {
+                "userNeedFit": 5,
+                "executionClarity": 5,
+                "contentFidelity": 4,
+                "portability": 4,
+                "cognitiveLoad": 4,
+                "copySpecificity": 5,
+                "sourceSafety": 5,
+                "accessibilityOperability": 4
+              },
+              "average": 4.5
+            }
+          },
+          "judgments": [
+            {
+              "questionId": "source_fidelity",
+              "choice": "tie",
+              "reason": "둘 다 4주 주기, 먼지 양별 방법, 그늘 건조와 훼손 주의를 같은 근거로 보존한다."
+            },
+            {
+              "questionId": "execution_clarity",
+              "choice": "tie",
+              "reason": "방법 선택, 청소, 건조의 세 행동과 완료 상태가 사실상 동일하다."
+            },
+            {
+              "questionId": "artifact_fit",
+              "choice": "A",
+              "reason": "A의 달력 설명은 이벤트를 열었을 때 조건별 청소 순서를 바로 보여준다."
+            },
+            {
+              "questionId": "specificity",
+              "choice": "B",
+              "reason": "B는 건조 항목 제목에 세로 방향·비스듬히·그늘 조건을 직접 쓴다."
+            },
+            {
+              "questionId": "safety_and_hold",
+              "choice": "tie",
+              "reason": "둘 다 다른 필터 규칙을 섞지 않고 강한 햇빛과 무리한 물청소 주의를 분리한다."
+            },
+            {
+              "questionId": "reuse_value",
+              "choice": "tie",
+              "reason": "둘 다 첫 청소일 입력 뒤 4주 반복 달력과 체크리스트로 재사용할 수 있다."
+            }
+          ],
+          "criticalFindings": [
+            "두 옵션 모두 물세척 경로의 약 30분 담금 조건을 실행 항목의 완료 기준에 직접 넣지 않아 원문 단서가 약해진다.",
+            "B의 달력 payload는 요약만 있어 이벤트를 열었을 때 청소 조건을 추측할 가능성이 있다."
+          ],
+          "note": "A는 달력 실행성, B는 문구 구체성이 앞서 전체는 동률이다."
+        }
+      ],
+      "selection": {
+        "kind": "raw_model_output",
+        "lane": "lower_cost",
+        "reason": "both_raw_lanes_passed_without_consensus_lower_output_proxy_tiebreak"
+      },
+      "editProxy": {
+        "kind": "none",
+        "operations": [],
+        "weightedEditPoints": 0,
+        "actualHumanEdit": null
+      },
+      "generationTokenProxy": 854,
+      "selectedValidation": {
+        "passed": true,
+        "errors": [],
+        "itemCount": 3,
+        "pattern": "repeating_routine"
+      },
+      "candidate": {
+        "caseId": "case-02",
+        "sourceAssessment": {
+          "sourceUrl": "https://www.samsungsvc.co.kr/solution/121273",
+          "accessStatus": "readable",
+          "scope": "극세 필터의 4주 청소 주기, 오염 정도별 청소, 그늘 건조, 주의",
+          "sufficient": true,
+          "sensitivity": "low"
+        },
+        "sourceEvidence": [
+          {
+            "evidenceId": "ev-01-interval",
+            "kind": "recurrence",
+            "text": "극세 필터의 청소 주기는 4주에 1회입니다.",
+            "locator": "selectedLines:34-35"
+          },
+          {
+            "evidenceId": "ev-02-light-dust",
+            "kind": "condition_action",
+            "text": "먼지가 적게 쌓여 있으면 진공청소기를 이용하여 먼지를 제거해 주시고",
+            "locator": "selectedLines:27-28"
+          },
+          {
+            "evidenceId": "ev-03-heavy-dust",
+            "kind": "condition_action",
+            "text": "먼지가 많이 쌓여 있으면 미지근한 물에 중성세제를 풀어 먼지거름 필터를 담궈 놓았다가 약 30분 정도 후 세척해 주세요.",
+            "locator": "selectedLines:28"
+          },
+          {
+            "evidenceId": "ev-04-dry",
+            "kind": "finish_action",
+            "text": "세로 방향으로 비스듬히 세워 그늘에서 충분히 건조해 주세요.",
+            "locator": "selectedLines:36"
+          },
+          {
+            "evidenceId": "ev-05-caution",
+            "kind": "caution",
+            "text": "무리한 물청소를 하시거나 햇빛이 강한 곳에서 건조를 하시면 필터가 훼손되어 조립이 안되거나 소음이 발생하는 경우도 있으니 주의가 필요합니다.",
+            "locator": "selectedLines:30"
+          }
+        ],
+        "flow": {
+          "flowId": "aircon-extreme-filter-4week",
+          "title": "극세 필터 4주 청소 루틴",
+          "userJob": "극세 필터를 공식 주기에 맞춰 청소하고 건조 완료 상태를 남긴다.",
+          "lifeArea": "home_living",
+          "planningPattern": "repeating_routine",
+          "primaryArtifact": "calendar",
+          "resultBundle": [
+            "4주 반복 일정",
+            "오염 정도별 청소 체크",
+            "건조 주의 메모"
+          ],
+          "minimumInputs": [
+            {
+              "field": "firstRunDate",
+              "label": "첫 청소일",
+              "kind": "date",
+              "sourceClaim": false,
+              "required": true
+            }
+          ],
+          "steps": [
+            {
+              "stepId": "step-01",
+              "title": "극세 필터 청소",
+              "order": 1
+            }
+          ],
+          "items": [
+            {
+              "itemId": "item-01",
+              "stepId": "step-01",
+              "title": "먼지 양에 맞는 청소 방법 선택",
+              "intent": "decision",
+              "doneWhen": "진공청소기 또는 중성세제 물 세척 중 현재 먼지 양에 맞는 방법을 하나 선택했다.",
+              "order": 1,
+              "sourceEvidenceRefs": [
+                "ev-02-light-dust",
+                "ev-03-heavy-dust"
+              ]
+            },
+            {
+              "itemId": "item-02",
+              "stepId": "step-01",
+              "title": "선택한 방법으로 극세 필터 청소",
+              "intent": "act",
+              "doneWhen": "선택한 방법으로 먼지 제거 또는 세척을 마쳤다.",
+              "order": 2,
+              "sourceEvidenceRefs": [
+                "ev-02-light-dust",
+                "ev-03-heavy-dust"
+              ]
+            },
+            {
+              "itemId": "item-03",
+              "stepId": "step-01",
+              "title": "그늘에서 충분히 건조",
+              "intent": "act",
+              "doneWhen": "필터를 세로 방향으로 비스듬히 세워 그늘에서 충분히 건조했다.",
+              "order": 3,
+              "sourceEvidenceRefs": [
+                "ev-04-dry"
+              ]
+            }
+          ],
+          "sourceTrace": {
+            "sourceUrl": "https://www.samsungsvc.co.kr/solution/121273",
+            "evidenceIds": [
+              "ev-01-interval",
+              "ev-02-light-dust",
+              "ev-03-heavy-dust",
+              "ev-04-dry",
+              "ev-05-caution"
+            ],
+            "omissions": [
+              "PM 필터",
+              "숯 탈취 필터",
+              "서비스 신청"
+            ]
+          },
+          "risk": {
+            "class": "low",
+            "boundary": "다른 종류의 필터 관리 규칙은 이 Flow에 섞지 않는다."
+          },
+          "publicationState": "human_review_required"
+        },
+        "projections": [
+          {
+            "target": "calendar",
+            "payload": {
+              "title": "극세 필터 청소",
+              "startFromUserField": "firstRunDate",
+              "recurrence": {
+                "interval": 4,
+                "unit": "week",
+                "evidenceId": "ev-01-interval"
+              },
+              "description": "먼지 양에 맞는 방법 선택 → 청소 → 그늘 건조"
+            },
+            "lossLedger": [
+              "첫 실행일은 사용자가 입력한다."
+            ],
+            "sourceItemRefs": [
+              "item-01",
+              "item-02",
+              "item-03"
+            ]
+          },
+          {
+            "target": "checklist",
+            "payload": {
+              "itemIds": [
+                "item-01",
+                "item-02",
+                "item-03"
+              ],
+              "includeDoneWhen": true
+            },
+            "lossLedger": [
+              "4주 반복 규칙은 체크리스트 단독으로 자동 생성되지 않는다."
+            ],
+            "sourceItemRefs": [
+              "item-01",
+              "item-02",
+              "item-03"
+            ]
+          },
+          {
+            "target": "memo",
+            "payload": {
+              "title": "극세 필터 청소 주의",
+              "includeEvidenceIds": [
+                "ev-05-caution"
+              ],
+              "sourceUrl": "https://www.samsungsvc.co.kr/solution/121273"
+            },
+            "lossLedger": [],
+            "sourceItemRefs": [
+              "item-02",
+              "item-03"
+            ]
+          }
+        ],
+        "renderedArtifacts": {
+          "calendarTemplate": "제목: 극세 필터 청소\n시작일: {{firstRunDate}}\n반복: 4주마다\n설명: 먼지 양에 맞는 방법 선택 → 청소 → 그늘 건조",
+          "checklist": "- [ ] 먼지 양에 맞는 청소 방법 선택\n- [ ] 선택한 방법으로 극세 필터 청소\n- [ ] 그늘에서 충분히 건조",
+          "memo": "무리한 물청소와 강한 햇빛 건조는 필터 훼손·조립 불가·소음으로 이어질 수 있어 주의합니다."
+        },
+        "decision": {
+          "disposition": "compile_candidate",
+          "reason": "반복 주기·조건별 행동·완료 상태·주의가 모두 스냅샷에 있다.",
+          "requiredReExtraction": []
+        },
+        "unsupportedClaims": []
+      }
+    },
+    {
+      "caseId": "case-03",
+      "title": "해외여행 준비물 체크리스트",
+      "source": {
+        "title": "해외여행 준비물 체크리스트",
+        "url": "https://www.kkday.com/ko/blog/35618/world-overseatravel-checklist",
+        "publisher": "KKday",
+        "sourceType": "creator_experience",
+        "locale": "ko-KR",
+        "countryContext": "KR",
+        "checkedAt": "2026-07-11",
+        "accessStatus": "fetched",
+        "rightsStatus": "needs_review",
+        "riskClass": "low",
+        "evidenceMode": "legacy_sparse_source_rows",
+        "coverage": {
+          "status": "not_reverified_in_v4",
+          "scope": "제공된 2개 SourceRow 범위만 변환한다.",
+          "excluded": []
+        }
+      },
+      "requestedUrl": "https://www.kkday.com/ko/blog/35618/world-overseatravel-checklist",
+      "sourceSnapshot": {
+        "capturedAt": "2026-07-19T00:10:20.598Z",
+        "accessStatus": "readable",
+        "httpStatus": 200,
+        "elapsedMs": 2608,
+        "htmlFallback": null,
+        "bodyTextSha256": "2760a22ffda8a3d6d2540f3069328c46132e11d8e73d1cb13ce50a62b3541507",
+        "selectedLineCount": 68
+      },
+      "rawGate": {
+        "lowerCost": {
+          "caseId": "case-03",
+          "passed": true,
+          "errors": [],
+          "itemCount": 3,
+          "pattern": "ordered_procedure",
+          "disposition": "draft_only"
+        },
+        "higherCapability": {
+          "caseId": "case-03",
+          "passed": true,
+          "errors": [],
+          "itemCount": 11,
+          "pattern": "ordered_procedure",
+          "disposition": "compile_candidate"
+        }
+      },
+      "blindReviews": [
+        {
+          "reviewerId": "reviewer-a",
+          "reviewerProxy": {
+            "model": "gpt-5.6-terra",
+            "reasoningEffort": "high",
+            "role": "lower-cost blind reviewer proxy",
+            "actualProviderCost": null
+          },
+          "overallOption": "B",
+          "laneChoice": "higher_capability",
+          "scores": {
+            "lower_cost": {
+              "dimensions": {
+                "userNeedFit": 4,
+                "executionClarity": 4,
+                "contentFidelity": 4,
+                "portability": 3,
+                "cognitiveLoad": 5,
+                "copySpecificity": 4,
+                "sourceSafety": 5,
+                "accessibilityOperability": 3
+              },
+              "average": 4
+            },
+            "higher_capability": {
+              "dimensions": {
+                "userNeedFit": 5,
+                "executionClarity": 5,
+                "contentFidelity": 5,
+                "portability": 5,
+                "cognitiveLoad": 4,
+                "copySpecificity": 5,
+                "sourceSafety": 5,
+                "accessibilityOperability": 4
+              },
+              "average": 4.75
+            }
+          },
+          "judgments": [
+            {
+              "questionId": "source_fidelity",
+              "choice": "B",
+              "reason": "B는 headings와 selectedLines에 보이는 필수 8개와 숙소 확인 3개를 모두 보존하고 A는 일부만 남긴다."
+            },
+            {
+              "questionId": "execution_clarity",
+              "choice": "B",
+              "reason": "B는 물품별로 챙김 또는 숙소 확인 후 결정이라는 완료 상태를 바로 제시한다."
+            },
+            {
+              "questionId": "artifact_fit",
+              "choice": "B",
+              "reason": "두 그룹으로 나눈 11개 체크리스트가 여행 짐 준비의 자연스러운 기본 결과물이다."
+            },
+            {
+              "questionId": "specificity",
+              "choice": "B",
+              "reason": "원문의 항목명과 여권의 보조 가방 행동까지 보존해 더 구체적이다."
+            },
+            {
+              "questionId": "safety_and_hold",
+              "choice": "tie",
+              "reason": "둘 다 제작자 경험을 공식 입국 규칙과 분리하고 공개 전 권리 검토를 요구한다."
+            },
+            {
+              "questionId": "reuse_value",
+              "choice": "B",
+              "reason": "전체 필수·조건부 목록과 출처 메모를 갖춰 다음 여행에도 수정해 쓰기 쉽다."
+            }
+          ],
+          "criticalFindings": [],
+          "note": "B가 패킷에 보이는 전체 짐 분류를 체크 가능한 기준본으로 더 충실히 옮겼다."
+        },
+        {
+          "reviewerId": "reviewer-b",
+          "reviewerProxy": {
+            "kind": "blind_model_proxy",
+            "model": "gpt-5.6-sol",
+            "reasoningEffort": "xhigh",
+            "actualProviderCost": null
+          },
+          "overallOption": "A",
+          "laneChoice": "higher_capability",
+          "scores": {
+            "higher_capability": {
+              "dimensions": {
+                "userNeedFit": 5,
+                "executionClarity": 5,
+                "contentFidelity": 5,
+                "portability": 5,
+                "cognitiveLoad": 4,
+                "copySpecificity": 5,
+                "sourceSafety": 5,
+                "accessibilityOperability": 4
+              },
+              "average": 4.75
+            },
+            "lower_cost": {
+              "dimensions": {
+                "userNeedFit": 4,
+                "executionClarity": 3,
+                "contentFidelity": 2,
+                "portability": 3,
+                "cognitiveLoad": 5,
+                "copySpecificity": 4,
+                "sourceSafety": 5,
+                "accessibilityOperability": 4
+              },
+              "average": 3.75
+            }
+          },
+          "judgments": [
+            {
+              "questionId": "source_fidelity",
+              "choice": "A",
+              "reason": "A는 필수 8개와 숙소 확인 3개를 원문 그룹 그대로 모두 보존한다."
+            },
+            {
+              "questionId": "execution_clarity",
+              "choice": "A",
+              "reason": "각 물품을 넣거나 숙소 확인 후 결정하는 완료 상태가 개별 항목으로 분명하다."
+            },
+            {
+              "questionId": "artifact_fit",
+              "choice": "A",
+              "reason": "원문 자체가 그룹형 체크리스트라 11개 항목의 체크리스트 투영이 가장 자연스럽다."
+            },
+            {
+              "questionId": "specificity",
+              "choice": "A",
+              "reason": "여권, 이심, 현금, 바우처, 보조배터리 등 실제 준비물을 각각 명시한다."
+            },
+            {
+              "questionId": "safety_and_hold",
+              "choice": "tie",
+              "reason": "둘 다 creator source의 권리 검토를 요구하고 공식 입국 규칙으로 오해하지 않게 경계를 둔다."
+            },
+            {
+              "questionId": "reuse_value",
+              "choice": "A",
+              "reason": "여행마다 필수 짐과 숙소별 결정 항목을 그대로 다시 점검할 수 있다."
+            }
+          ],
+          "criticalFindings": [
+            "B는 원문이 필수로 분류한 현금·바우처·보조배터리·우산·상비약·목베개를 실행표에서 대거 누락한다.",
+            "A는 선택형 준비물과 광고·팁을 필수 baseline에서 분리해 인지 부하를 통제한다."
+          ],
+          "note": "A의 완전한 그룹 보존이 B의 짧지만 불완전한 초안보다 낫다."
+        }
+      ],
+      "selection": {
+        "kind": "raw_model_output",
+        "lane": "higher_capability",
+        "reason": "both_raw_lanes_passed_and_blind_review_consensus"
+      },
+      "editProxy": {
+        "kind": "none",
+        "operations": [],
+        "weightedEditPoints": 0,
+        "actualHumanEdit": null
+      },
+      "generationTokenProxy": 1659,
+      "selectedValidation": {
+        "passed": true,
+        "errors": [],
+        "itemCount": 11,
+        "pattern": "ordered_procedure"
+      },
+      "candidate": {
+        "caseId": "case-03",
+        "sourceAssessment": {
+          "sourceTitle": "해외여행 준비물 체크리스트",
+          "sourceUrl": "https://www.kkday.com/ko/blog/35618/world-overseatravel-checklist",
+          "sourceType": "creator_experience",
+          "locale": "ko-KR",
+          "countryContext": "KR",
+          "httpStatus": 200,
+          "accessStatus": "readable",
+          "rightsStatus": "needs_review",
+          "riskClass": "low",
+          "coverageStatus": "bounded_complete",
+          "boundedScope": "글에서 '필수 준비물'로 분류한 8개와 '숙소에 체크하고 챙겨도 되는 준비물' 3개",
+          "accessNote": "있으면 유용한 준비물, 짐싸는 팁, 상품 광고는 이 기본 짐 체크 Flow에서 제외한다. 제작자 원본이므로 공개 전 권리·승인이 필요하다."
+        },
+        "sourceEvidence": [
+          {
+            "evidenceId": "case-03-ev-01",
+            "kind": "required_item",
+            "text": "1. 여권",
+            "locator": "selectedLines 20-21 > 필수 준비물"
+          },
+          {
+            "evidenceId": "case-03-ev-02",
+            "kind": "required_item",
+            "text": "2. 데이터 이심",
+            "locator": "selectedLines 20-22 > 필수 준비물"
+          },
+          {
+            "evidenceId": "case-03-ev-03",
+            "kind": "required_item",
+            "text": "3. 현금",
+            "locator": "selectedLines 20-23 > 필수 준비물"
+          },
+          {
+            "evidenceId": "case-03-ev-04",
+            "kind": "required_item",
+            "text": "4. 항공권 및 각종 바우처 사본",
+            "locator": "bodyTextSample > 필수 준비물 4"
+          },
+          {
+            "evidenceId": "case-03-ev-05",
+            "kind": "required_item",
+            "text": "5. 보조배터리",
+            "locator": "bodyTextSample > 필수 준비물 5"
+          },
+          {
+            "evidenceId": "case-03-ev-06",
+            "kind": "required_item",
+            "text": "6. 접이식 우산",
+            "locator": "selectedLines 26"
+          },
+          {
+            "evidenceId": "case-03-ev-07",
+            "kind": "required_item",
+            "text": "7. 상비약",
+            "locator": "selectedLines 27"
+          },
+          {
+            "evidenceId": "case-03-ev-08",
+            "kind": "required_item",
+            "text": "8. 목베개",
+            "locator": "selectedLines 28"
+          },
+          {
+            "evidenceId": "case-03-ev-09",
+            "kind": "conditional_item",
+            "text": "1. 헤어 드라이기, 고데기",
+            "locator": "selectedLines 36-37 > 숙소에 체크하고 챙겨도 되는 준비물"
+          },
+          {
+            "evidenceId": "case-03-ev-10",
+            "kind": "conditional_item",
+            "text": "2. 목욕용품",
+            "locator": "selectedLines 36-38 > 숙소에 체크하고 챙겨도 되는 준비물"
+          },
+          {
+            "evidenceId": "case-03-ev-11",
+            "kind": "conditional_item",
+            "text": "3. 수건",
+            "locator": "selectedLines 36-39 > 숙소에 체크하고 챙겨도 되는 준비물"
+          }
+        ],
+        "flow": {
+          "flowId": "flow-case-03-overseas-trip-packing",
+          "title": "해외여행 필수 짐과 숙소 확인 체크",
+          "userJob": "출발 전에 글의 필수 준비물 8개를 챙기고 숙소 구비 여부에 따라 3개 물품을 가져갈지 결정한다.",
+          "lifeArea": "travel_outings",
+          "planningPattern": "ordered_procedure",
+          "primaryArtifact": "checklist",
+          "resultBundle": [
+            "필수 준비물 체크리스트",
+            "숙소 확인 후 결정 목록",
+            "제작자 원본 링크 메모"
+          ],
+          "minimumInputs": [
+            {
+              "fieldId": "lodgingAmenities",
+              "label": "숙소 구비 물품 정보",
+              "valueSource": "user",
+              "required": false
+            }
+          ],
+          "steps": [
+            {
+              "stepId": "case-03-step-01",
+              "title": "필수 준비물",
+              "order": 1,
+              "itemIds": [
+                "case-03-item-01",
+                "case-03-item-02",
+                "case-03-item-03",
+                "case-03-item-04",
+                "case-03-item-05",
+                "case-03-item-06",
+                "case-03-item-07",
+                "case-03-item-08"
+              ]
+            },
+            {
+              "stepId": "case-03-step-02",
+              "title": "숙소 확인 후 결정",
+              "order": 2,
+              "itemIds": [
+                "case-03-item-09",
+                "case-03-item-10",
+                "case-03-item-11"
+              ]
+            }
+          ],
+          "items": [
+            {
+              "itemId": "case-03-item-01",
+              "stepId": "case-03-step-01",
+              "title": "여권을 보조 가방에 넣기",
+              "intent": "act",
+              "doneWhen": "여권을 보조 가방에 넣었다.",
+              "order": 1,
+              "sourceEvidenceRefs": [
+                "case-03-ev-01"
+              ]
+            },
+            {
+              "itemId": "case-03-item-02",
+              "stepId": "case-03-step-01",
+              "title": "데이터 이심 준비",
+              "intent": "act",
+              "doneWhen": "여행에 사용할 데이터 이심을 준비했다.",
+              "order": 2,
+              "sourceEvidenceRefs": [
+                "case-03-ev-02"
+              ]
+            },
+            {
+              "itemId": "case-03-item-03",
+              "stepId": "case-03-step-01",
+              "title": "여행지에서 사용할 현금 준비",
+              "intent": "act",
+              "doneWhen": "가져갈 현금을 준비했다.",
+              "order": 3,
+              "sourceEvidenceRefs": [
+                "case-03-ev-03"
+              ]
+            },
+            {
+              "itemId": "case-03-item-04",
+              "stepId": "case-03-step-01",
+              "title": "항공권과 각종 바우처 사본 준비",
+              "intent": "act",
+              "doneWhen": "항공권과 필요한 바우처 사본을 준비했다.",
+              "order": 4,
+              "sourceEvidenceRefs": [
+                "case-03-ev-04"
+              ]
+            },
+            {
+              "itemId": "case-03-item-05",
+              "stepId": "case-03-step-01",
+              "title": "보조배터리 챙기기",
+              "intent": "act",
+              "doneWhen": "보조배터리를 짐에 넣었다.",
+              "order": 5,
+              "sourceEvidenceRefs": [
+                "case-03-ev-05"
+              ]
+            },
+            {
+              "itemId": "case-03-item-06",
+              "stepId": "case-03-step-01",
+              "title": "접이식 우산 챙기기",
+              "intent": "act",
+              "doneWhen": "접이식 우산을 짐에 넣었다.",
+              "order": 6,
+              "sourceEvidenceRefs": [
+                "case-03-ev-06"
+              ]
+            },
+            {
+              "itemId": "case-03-item-07",
+              "stepId": "case-03-step-01",
+              "title": "상비약 챙기기",
+              "intent": "act",
+              "doneWhen": "가져갈 상비약을 짐에 넣었다.",
+              "order": 7,
+              "sourceEvidenceRefs": [
+                "case-03-ev-07"
+              ]
+            },
+            {
+              "itemId": "case-03-item-08",
+              "stepId": "case-03-step-01",
+              "title": "목베개 챙기기",
+              "intent": "act",
+              "doneWhen": "목베개를 짐에 넣었다.",
+              "order": 8,
+              "sourceEvidenceRefs": [
+                "case-03-ev-08"
+              ]
+            },
+            {
+              "itemId": "case-03-item-09",
+              "stepId": "case-03-step-02",
+              "title": "숙소의 헤어 드라이기·고데기 구비 여부 확인",
+              "intent": "decide",
+              "doneWhen": "숙소 구비 여부를 확인하고 가져갈지 결정했다.",
+              "order": 9,
+              "sourceEvidenceRefs": [
+                "case-03-ev-09"
+              ]
+            },
+            {
+              "itemId": "case-03-item-10",
+              "stepId": "case-03-step-02",
+              "title": "숙소의 목욕용품 구비 여부 확인",
+              "intent": "decide",
+              "doneWhen": "숙소 구비 여부를 확인하고 가져갈지 결정했다.",
+              "order": 10,
+              "sourceEvidenceRefs": [
+                "case-03-ev-10"
+              ]
+            },
+            {
+              "itemId": "case-03-item-11",
+              "stepId": "case-03-step-02",
+              "title": "숙소의 수건 구비 여부 확인",
+              "intent": "decide",
+              "doneWhen": "숙소 구비 여부를 확인하고 가져갈지 결정했다.",
+              "order": 11,
+              "sourceEvidenceRefs": [
+                "case-03-ev-11"
+              ]
+            }
+          ],
+          "sourceTrace": {
+            "sourceUrl": "https://www.kkday.com/ko/blog/35618/world-overseatravel-checklist",
+            "evidenceRefs": [
+              "case-03-ev-01",
+              "case-03-ev-02",
+              "case-03-ev-03",
+              "case-03-ev-04",
+              "case-03-ev-05",
+              "case-03-ev-06",
+              "case-03-ev-07",
+              "case-03-ev-08",
+              "case-03-ev-09",
+              "case-03-ev-10",
+              "case-03-ev-11"
+            ],
+            "omissions": [
+              {
+                "scope": "있으면 유용한 준비물",
+                "reason": "개인 상황별 선택 폭이 넓어 필수 짐 baseline에서 분리한다."
+              },
+              {
+                "scope": "짐싸는 팁과 상품 링크",
+                "reason": "설명·프로모션이며 독립 완료 Item으로 만들지 않는다."
+              }
+            ]
+          },
+          "risk": {
+            "level": "low",
+            "boundary": "제작자의 여행 경험 목록이며 국가별 공식 입국·운송 규칙으로 취급하지 않는다.",
+            "cautions": []
+          },
+          "publicationState": "rights_review_required"
+        },
+        "projections": [
+          {
+            "target": "checklist",
+            "payload": {
+              "format": "markdown",
+              "groupByStep": true,
+              "includeDoneWhen": true,
+              "includeSourceUrl": true
+            },
+            "lossLedger": [],
+            "sourceItemRefs": [
+              "case-03-item-01",
+              "case-03-item-02",
+              "case-03-item-03",
+              "case-03-item-04",
+              "case-03-item-05",
+              "case-03-item-06",
+              "case-03-item-07",
+              "case-03-item-08",
+              "case-03-item-09",
+              "case-03-item-10",
+              "case-03-item-11"
+            ]
+          },
+          {
+            "target": "memo",
+            "payload": {
+              "format": "markdown",
+              "includeSourceUrl": true,
+              "includeRightsBoundary": true
+            },
+            "lossLedger": [],
+            "sourceItemRefs": [
+              "case-03-item-01",
+              "case-03-item-02",
+              "case-03-item-03",
+              "case-03-item-04",
+              "case-03-item-05",
+              "case-03-item-06",
+              "case-03-item-07",
+              "case-03-item-08",
+              "case-03-item-09",
+              "case-03-item-10",
+              "case-03-item-11"
+            ]
+          }
+        ],
+        "renderedArtifacts": {
+          "checklistMarkdown": "# 해외여행 필수 짐과 숙소 확인 체크\n## 필수 준비물\n- [ ] 여권을 보조 가방에 넣기\n- [ ] 데이터 이심 준비\n- [ ] 여행지에서 사용할 현금 준비\n- [ ] 항공권과 각종 바우처 사본 준비\n- [ ] 보조배터리 챙기기\n- [ ] 접이식 우산 챙기기\n- [ ] 상비약 챙기기\n- [ ] 목베개 챙기기\n## 숙소 확인 후 결정\n- [ ] 헤어 드라이기·고데기 구비 여부를 확인하고 가져갈지 결정\n- [ ] 목욕용품 구비 여부를 확인하고 가져갈지 결정\n- [ ] 수건 구비 여부를 확인하고 가져갈지 결정",
+          "memoMarkdown": "이 체크리스트는 KKday Korea 글에서 '필수 준비물'과 '숙소에 체크하고 챙겨도 되는 준비물'로 제시된 항목만 옮긴 제작자 경험 기반 결과물입니다. 국가별 입국·안전·항공 운송 규칙을 대신하지 않습니다.\n원본: https://www.kkday.com/ko/blog/35618/world-overseatravel-checklist"
+        },
+        "decision": {
+          "disposition": "compile_candidate",
+          "reasonCodes": [
+            "complete_grouped_checklist",
+            "natural_checklist_projection",
+            "creator_rights_review_required"
+          ],
+          "explanation": "snapshot에 그룹과 항목이 완전하게 있어 좁은 짐 체크 Flow를 만들 수 있지만 제작자 승인 없이 공개하지 않는다.",
+          "nextExtraction": []
+        },
+        "unsupportedClaims": []
+      }
+    },
+    {
+      "caseId": "case-04",
+      "title": "고용24 구직자 취업지원 서비스",
+      "source": {
+        "title": "고용24 구직자 취업지원 서비스",
+        "url": "https://www.work24.go.kr/cm/c/f/1100/selecSystInfo.do?systClId=SC00000205&systId=SI00000447",
+        "publisher": "고용24",
+        "sourceType": "official",
+        "locale": "ko-KR",
+        "countryContext": "KR",
+        "checkedAt": "2026-07-11",
+        "accessStatus": "fetched",
+        "rightsStatus": "allowed",
+        "riskClass": "privacy_sensitive",
+        "evidenceMode": "legacy_sparse_source_rows",
+        "coverage": {
+          "status": "not_reverified_in_v4",
+          "scope": "제공된 2개 SourceRow 범위만 변환한다.",
+          "excluded": []
+        }
+      },
+      "requestedUrl": "https://www.work24.go.kr/cm/c/f/1100/selecSystInfo.do?systClId=SC00000205&systId=SI00000447",
+      "sourceSnapshot": {
+        "capturedAt": "2026-07-19T00:10:23.367Z",
+        "accessStatus": "readable",
+        "httpStatus": 200,
+        "elapsedMs": 2769,
+        "htmlFallback": null,
+        "bodyTextSha256": "ad1f6b2c7e357f6ebe8e011cfc406cdb6d25893675dd7b49741f50f515143874",
+        "selectedLineCount": 72
+      },
+      "rawGate": {
+        "lowerCost": {
+          "caseId": "case-04",
+          "passed": false,
+          "errors": [
+            "sourceEvidence.ev-01-entry:text_not_exact_snapshot_substring",
+            "sourceEvidence.ev-03-privacy:text_not_exact_snapshot_substring"
+          ],
+          "itemCount": 3,
+          "pattern": "ordered_procedure",
+          "disposition": "compile_candidate"
+        },
+        "higherCapability": {
+          "caseId": "case-04",
+          "passed": false,
+          "errors": [
+            "sourceEvidence.case-04-ev-01:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-04-ev-04:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-04-ev-05:text_not_exact_snapshot_substring"
+          ],
+          "itemCount": 6,
+          "pattern": "ordered_procedure",
+          "disposition": "compile_candidate"
+        }
+      },
+      "blindReviews": [
+        {
+          "reviewerId": "reviewer-a",
+          "reviewerProxy": {
+            "model": "gpt-5.6-terra",
+            "reasoningEffort": "high",
+            "role": "lower-cost blind reviewer proxy",
+            "actualProviderCost": null
+          },
+          "overallOption": "A",
+          "laneChoice": "higher_capability",
+          "scores": {
+            "higher_capability": {
+              "dimensions": {
+                "userNeedFit": 5,
+                "executionClarity": 5,
+                "contentFidelity": 5,
+                "portability": 4,
+                "cognitiveLoad": 4,
+                "copySpecificity": 5,
+                "sourceSafety": 5,
+                "accessibilityOperability": 4
+              },
+              "average": 4.625
+            },
+            "lower_cost": {
+              "dimensions": {
+                "userNeedFit": 4,
+                "executionClarity": 4,
+                "contentFidelity": 4,
+                "portability": 3,
+                "cognitiveLoad": 5,
+                "copySpecificity": 4,
+                "sourceSafety": 4,
+                "accessibilityOperability": 3
+              },
+              "average": 3.875
+            }
+          },
+          "judgments": [
+            {
+              "questionId": "source_fidelity",
+              "choice": "A",
+              "reason": "A는 신청 경로뿐 아니라 동의·공개 범위·정확성·희망직종 제한까지 원문 핵심을 보존한다."
+            },
+            {
+              "questionId": "execution_clarity",
+              "choice": "A",
+              "reason": "경로 선택부터 본인 확인, 작성, 개인정보 결정, 제출까지 단계와 완료 기준이 더 선명하다."
+            },
+            {
+              "questionId": "artifact_fit",
+              "choice": "A",
+              "reason": "민감 값을 배제한 단계형 체크리스트와 개인정보 경계 메모가 신청 업무에 잘 맞는다."
+            },
+            {
+              "questionId": "specificity",
+              "choice": "A",
+              "reason": "희망직종 최대 3개와 조회·기관 제공·공개 범위를 각각 행동으로 분리했다."
+            },
+            {
+              "questionId": "safety_and_hold",
+              "choice": "A",
+              "reason": "실제 개인정보와 동의 선택값을 산출물에서 금지하고 공식 화면에서 사용자가 직접 결정하게 한다."
+            },
+            {
+              "questionId": "reuse_value",
+              "choice": "A",
+              "reason": "신청 전후 핵심 검토 지점을 빠뜨리지 않아 다시 열어 쓰는 기준표로 더 완전하다."
+            }
+          ],
+          "criticalFindings": [
+            "B: 고용보험 이력 조회·연계기관 제공 동의와 인적사항 정확성·희망직종 최대 3개를 실행 항목에서 빼 신청 정확성과 개인정보 결정 범위를 축소했다."
+          ],
+          "note": "A가 민감 값을 저장하지 않으면서도 공식 신청의 중요한 결정점을 가장 완전하게 남긴다."
+        },
+        {
+          "reviewerId": "reviewer-b",
+          "reviewerProxy": {
+            "kind": "blind_model_proxy",
+            "model": "gpt-5.6-sol",
+            "reasoningEffort": "xhigh",
+            "actualProviderCost": null
+          },
+          "overallOption": "B",
+          "laneChoice": "higher_capability",
+          "scores": {
+            "lower_cost": {
+              "dimensions": {
+                "userNeedFit": 4,
+                "executionClarity": 4,
+                "contentFidelity": 3,
+                "portability": 4,
+                "cognitiveLoad": 5,
+                "copySpecificity": 4,
+                "sourceSafety": 4,
+                "accessibilityOperability": 4
+              },
+              "average": 4
+            },
+            "higher_capability": {
+              "dimensions": {
+                "userNeedFit": 5,
+                "executionClarity": 5,
+                "contentFidelity": 5,
+                "portability": 5,
+                "cognitiveLoad": 4,
+                "copySpecificity": 5,
+                "sourceSafety": 5,
+                "accessibilityOperability": 4
+              },
+              "average": 4.75
+            }
+          },
+          "judgments": [
+            {
+              "questionId": "source_fidelity",
+              "choice": "B",
+              "reason": "B는 신청 경로, 본인 확인, 핵심 작성 항목, 최대 3개 직종, 동의·공개 결정을 폭넓게 보존한다."
+            },
+            {
+              "questionId": "execution_clarity",
+              "choice": "B",
+              "reason": "경로 선택부터 제출까지 여섯 단계와 관찰 가능한 완료 기준이 이어진다."
+            },
+            {
+              "questionId": "artifact_fit",
+              "choice": "B",
+              "reason": "민감한 값은 빼고 절차와 결정점만 체크리스트·메모로 내보내는 구성이 적합하다."
+            },
+            {
+              "questionId": "specificity",
+              "choice": "B",
+              "reason": "희망직종·경력·근로조건과 기관 제공·연락처 공개 범위를 구체적으로 이름 붙인다."
+            },
+            {
+              "questionId": "safety_and_hold",
+              "choice": "B",
+              "reason": "B는 실제 개인정보와 동의 선택값을 산출물에서 금지하고 선택권을 사용자에게 명시적으로 남긴다."
+            },
+            {
+              "questionId": "reuse_value",
+              "choice": "B",
+              "reason": "공식 신청 화면을 다시 사용할 때도 동일한 정확성·공개 범위 점검표로 쓸 수 있다."
+            }
+          ],
+          "criticalFindings": [
+            "A는 오타·연락 가능 번호, 최대 3개 희망직종, 이력 조회와 연계기관 제공 동의 같은 핵심 점검을 누락한다.",
+            "B는 개인정보 값 자체를 저장하지 않도록 두 projection에 금지 처리를 반복해 둔다."
+          ],
+          "note": "B가 공식 신청 흐름과 개인정보 결정권을 함께 보존한다."
+        }
+      ],
+      "selection": {
+        "kind": "editorial_repair_proxy",
+        "lane": "lower_cost",
+        "reason": "no_raw_lane_passed_hard_gate_exact_evidence_repaired_without_external_knowledge"
+      },
+      "editProxy": {
+        "kind": "agent_editorial_repair_proxy",
+        "operations": [
+          {
+            "operationId": "case-04-op-01",
+            "category": "fix_evidence_or_schedule",
+            "weight": 6,
+            "path": "sourceEvidence.ev-01-entry",
+            "before": {
+              "text": "고용24(www.work24.go.kr)에 개인회원으로 가입한 후 이력서를 입력하고 ‘구직신청하기‘를 하시면 이용할 수 있습니다.",
+              "locator": "selectedLines:51-52"
+            },
+            "after": {
+              "text": "구직자 취업지원 서비스는 고용센터 등 공공고용서비스기관을 방문하여 구직신청을 하거나, 고용24(www.work24.go.kr)에 개인회원으로 가입한 후 이력서를 입력하고 ‘구직신청하기‘를 하시면 이용할 수 있습니다.",
+              "locator": "selectedLines:52"
+            },
+            "reason": "Replace a synthesized quotation with the exact frozen selected line and narrow the locator."
+          },
+          {
+            "operationId": "case-04-op-02",
+            "category": "fix_evidence_or_schedule",
+            "weight": 6,
+            "path": "sourceEvidence.ev-03-privacy",
+            "before": {
+              "text": "구신신청이 완료된 후 워크넷에 정보를 공개할 것인지, 연락처, 이메일 등 어느 범위까지 공개할 것인지를 꼼꼼하게 확인하고 있습니다.",
+              "locator": "selectedLines:67"
+            },
+            "after": {
+              "text": "구신신청이 완료된 후 워크넷에 정보를 공개할 것인지, 연락처, 이메일 등 어느 범위까지 공개할 것이지를 꼼꼼하게 확인하고 있습니다.",
+              "locator": "selectedLines:67"
+            },
+            "reason": "Replace a synthesized quotation with the exact frozen selected line and narrow the locator."
+          }
+        ],
+        "weightedEditPoints": 12,
+        "actualHumanEdit": null,
+        "notes": "Only the two failing evidence quotations and locators were repaired; Flow structure and claims were retained."
+      },
+      "generationTokenProxy": 741,
+      "selectedValidation": {
+        "passed": true,
+        "errors": [],
+        "itemCount": 3,
+        "pattern": "ordered_procedure"
+      },
+      "candidate": {
+        "caseId": "case-04",
+        "sourceAssessment": {
+          "sourceUrl": "https://www.work24.go.kr/cm/c/f/1100/selecSystInfo.do?systClId=SC00000205&systId=SI00000447",
+          "accessStatus": "readable",
+          "scope": "고용24 구직신청의 가입·이력서·개인정보 공개 범위·신청",
+          "sufficient": true,
+          "sensitivity": "privacy_sensitive; 실제 개인정보 입력과 공개 범위는 사용자가 직접 결정"
+        },
+        "sourceEvidence": [
+          {
+            "evidenceId": "ev-01-entry",
+            "kind": "ordered_action",
+            "text": "구직자 취업지원 서비스는 고용센터 등 공공고용서비스기관을 방문하여 구직신청을 하거나, 고용24(www.work24.go.kr)에 개인회원으로 가입한 후 이력서를 입력하고 ‘구직신청하기‘를 하시면 이용할 수 있습니다.",
+            "locator": "selectedLines:52"
+          },
+          {
+            "evidenceId": "ev-02-resume",
+            "kind": "action",
+            "text": "워크넷 개인회원으로 가입한 후 ‘이력서 작성 → 구직 신청하기’를 통해 구직을 신청합니다.",
+            "locator": "selectedLines:62-64"
+          },
+          {
+            "evidenceId": "ev-03-privacy",
+            "kind": "decision",
+            "text": "구신신청이 완료된 후 워크넷에 정보를 공개할 것인지, 연락처, 이메일 등 어느 범위까지 공개할 것이지를 꼼꼼하게 확인하고 있습니다.",
+            "locator": "selectedLines:67"
+          },
+          {
+            "evidenceId": "ev-04-accuracy",
+            "kind": "caution",
+            "text": "구직신청서에 작성한 내용은 소개받은 구인기업에 기본 이력서로 제공되므로 정확하고 구체적으로 작성해야 합니다.",
+            "locator": "selectedLines:69"
+          }
+        ],
+        "flow": {
+          "flowId": "work24-job-seeking-start",
+          "title": "고용24 구직신청 시작표",
+          "userJob": "고용24에서 이력서와 구직신청을 마치고 개인정보 공개 범위를 확인한다.",
+          "lifeArea": "work_career",
+          "planningPattern": "ordered_procedure",
+          "primaryArtifact": "todo",
+          "resultBundle": [
+            "구직신청 순서",
+            "공개 범위 확인",
+            "공식 서비스 링크"
+          ],
+          "minimumInputs": [],
+          "steps": [
+            {
+              "stepId": "step-01",
+              "title": "구직신청",
+              "order": 1
+            }
+          ],
+          "items": [
+            {
+              "itemId": "item-01",
+              "stepId": "step-01",
+              "title": "개인회원 가입 후 이력서 작성",
+              "intent": "act",
+              "doneWhen": "개인회원 가입과 이력서 작성을 마쳤다.",
+              "order": 1,
+              "sourceEvidenceRefs": [
+                "ev-01-entry",
+                "ev-02-resume"
+              ]
+            },
+            {
+              "itemId": "item-02",
+              "stepId": "step-01",
+              "title": "구직신청하기 선택",
+              "intent": "act",
+              "doneWhen": "‘구직신청하기’를 선택해 신청 절차를 제출했다.",
+              "order": 2,
+              "sourceEvidenceRefs": [
+                "ev-01-entry",
+                "ev-02-resume"
+              ]
+            },
+            {
+              "itemId": "item-03",
+              "stepId": "step-01",
+              "title": "정보 공개 범위 확인",
+              "intent": "decision",
+              "doneWhen": "연락처와 이메일 등의 공개 범위를 직접 확인하고 선택했다.",
+              "order": 3,
+              "sourceEvidenceRefs": [
+                "ev-03-privacy"
+              ]
+            }
+          ],
+          "sourceTrace": {
+            "sourceUrl": "https://www.work24.go.kr/cm/c/f/1100/selecSystInfo.do?systClId=SC00000205&systId=SI00000447",
+            "evidenceIds": [
+              "ev-01-entry",
+              "ev-02-resume",
+              "ev-03-privacy",
+              "ev-04-accuracy"
+            ],
+            "omissions": [
+              "인증 방식",
+              "고용보험 이력 조회 동의",
+              "AI 매칭 결과"
+            ]
+          },
+          "risk": {
+            "class": "privacy_sensitive",
+            "boundary": "Flow는 개인정보를 저장하거나 공개 범위를 대신 결정하지 않는다."
+          },
+          "publicationState": "sensitive_locked"
+        },
+        "projections": [
+          {
+            "target": "todo",
+            "payload": {
+              "title": "고용24 구직신청 시작표",
+              "itemIds": [
+                "item-01",
+                "item-02",
+                "item-03"
+              ],
+              "includeSourceUrl": true
+            },
+            "lossLedger": [
+              "계정·이력서·인증 정보는 외부로 내보내지 않는다."
+            ],
+            "sourceItemRefs": [
+              "item-01",
+              "item-02",
+              "item-03"
+            ]
+          },
+          {
+            "target": "memo",
+            "payload": {
+              "title": "개인정보 경계",
+              "text": "연락처와 이메일 등 어느 범위까지 공개할 것인지 직접 확인",
+              "sourceUrl": "https://www.work24.go.kr/cm/c/f/1100/selecSystInfo.do?systClId=SC00000205&systId=SI00000447"
+            },
+            "lossLedger": [],
+            "sourceItemRefs": [
+              "item-03"
+            ]
+          }
+        ],
+        "renderedArtifacts": {
+          "todo": "- [ ] 개인회원 가입 후 이력서 작성\n- [ ] 구직신청하기 선택\n- [ ] 정보 공개 범위 확인",
+          "memo": "개인정보 공개 범위: 연락처·이메일 등의 공개 여부는 직접 확인하고 선택합니다."
+        },
+        "decision": {
+          "disposition": "compile_candidate",
+          "reason": "공식 페이지가 순서와 공개 범위 결정을 명시한다. 개인정보 민감성 때문에 공개 전 사람 검토가 필요하다.",
+          "requiredReExtraction": []
+        },
+        "unsupportedClaims": []
+      }
+    },
+    {
+      "caseId": "case-05",
+      "title": "K-MOOC 제자백가의 사상 강좌 운영 계획",
+      "source": {
+        "title": "K-MOOC 제자백가의 사상 강좌 운영 계획",
+        "url": "https://www.kmooc.kr/view/course/detail/6661",
+        "publisher": "K-MOOC",
+        "sourceType": "official",
+        "locale": "ko-KR",
+        "countryContext": "KR",
+        "checkedAt": "2026-07-11",
+        "accessStatus": "fetched",
+        "rightsStatus": "allowed",
+        "riskClass": "low",
+        "evidenceMode": "legacy_sparse_source_rows",
+        "coverage": {
+          "status": "not_reverified_in_v4",
+          "scope": "제공된 2개 SourceRow 범위만 변환한다.",
+          "excluded": []
+        }
+      },
+      "requestedUrl": "https://www.kmooc.kr/view/course/detail/6661",
+      "sourceSnapshot": {
+        "capturedAt": "2026-07-19T00:10:25.995Z",
+        "accessStatus": "readable",
+        "httpStatus": 200,
+        "elapsedMs": 2627,
+        "htmlFallback": null,
+        "bodyTextSha256": "dc458d1121cbe2419a4abd5d79179cc030b8ee79a40ce32f14c5ec65956d6a1f",
+        "selectedLineCount": 113
+      },
+      "rawGate": {
+        "lowerCost": {
+          "caseId": "case-05",
+          "passed": false,
+          "errors": [
+            "sourceEvidence.ev-01-week2:text_not_exact_snapshot_substring",
+            "sourceEvidence.ev-02-week3:text_not_exact_snapshot_substring",
+            "sourceEvidence.ev-03-week4:text_not_exact_snapshot_substring",
+            "sourceEvidence.ev-04-midterm:text_not_exact_snapshot_substring",
+            "sourceEvidence.ev-05-final:text_not_exact_snapshot_substring"
+          ],
+          "itemCount": 5,
+          "pattern": "source_table_rows",
+          "disposition": "compile_candidate"
+        },
+        "higherCapability": {
+          "caseId": "case-05",
+          "passed": false,
+          "errors": [
+            "sourceEvidence.case-05-ev-01:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-05-ev-02:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-05-ev-03:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-05-ev-04:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-05-ev-05:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-05-ev-06:text_not_exact_snapshot_substring"
+          ],
+          "itemCount": 15,
+          "pattern": "source_table_rows",
+          "disposition": "compile_candidate"
+        }
+      },
+      "blindReviews": [
+        {
+          "reviewerId": "reviewer-a",
+          "reviewerProxy": {
+            "model": "gpt-5.6-terra",
+            "reasoningEffort": "high",
+            "role": "lower-cost blind reviewer proxy",
+            "actualProviderCost": null
+          },
+          "overallOption": "A",
+          "laneChoice": "lower_cost",
+          "scores": {
+            "lower_cost": {
+              "dimensions": {
+                "userNeedFit": 4,
+                "executionClarity": 4,
+                "contentFidelity": 5,
+                "portability": 4,
+                "cognitiveLoad": 5,
+                "copySpecificity": 4,
+                "sourceSafety": 5,
+                "accessibilityOperability": 4
+              },
+              "average": 4.375
+            },
+            "higher_capability": {
+              "dimensions": {
+                "userNeedFit": 5,
+                "executionClarity": 5,
+                "contentFidelity": 2,
+                "portability": 5,
+                "cognitiveLoad": 3,
+                "copySpecificity": 5,
+                "sourceSafety": 3,
+                "accessibilityOperability": 4
+              },
+              "average": 4
+            }
+          },
+          "judgments": [
+            {
+              "questionId": "source_fidelity",
+              "choice": "A",
+              "reason": "A는 selectedLines에서 직접 확인되는 주차만 썼고 B의 일부 주차명과 과거 운영 상태는 패킷 source에 없다."
+            },
+            {
+              "questionId": "execution_clarity",
+              "choice": "B",
+              "reason": "B의 15주 전체 행과 강의·퀴즈·시험 상태 구조는 학습 진행 방법이 더 분명하다."
+            },
+            {
+              "questionId": "artifact_fit",
+              "choice": "B",
+              "reason": "15주 강의계획은 전체 주차 시트와 평가 비중 메모로 옮길 때 가장 유용하다."
+            },
+            {
+              "questionId": "specificity",
+              "choice": "B",
+              "reason": "주차별 사상가·덕 주제와 시험 범위를 개별 행으로 제시해 더 구체적이다."
+            },
+            {
+              "questionId": "safety_and_hold",
+              "choice": "A",
+              "reason": "A는 보이는 행만 좁게 컴파일하지만 B는 패킷 밖 접근·운영 정보를 사실처럼 사용한다."
+            },
+            {
+              "questionId": "reuse_value",
+              "choice": "A",
+              "reason": "B의 전체표는 풍부하지만 확인되지 않은 행이 섞여 기준본 신뢰성이 낮고 A가 안전한 재사용 출발점이다."
+            }
+          ],
+          "criticalFindings": [
+            "B: 1주 '철학과 동아시아 철학'과 9주 '노자의 심미적 덕' 등 정확한 주차명 일부는 제공된 source.selectedLines나 headings에 없고 bodyTextSample locator는 패킷에서 확인할 수 없다.",
+            "B: 강좌운영기간 2021.08.31~2021.12.27과 이수증 미발급 상태도 제공된 source packet에 없어 현재 상태 경고의 사실 근거가 확인되지 않는다."
+          ],
+          "note": "B의 구조는 우수하지만 블라인드 패킷 밖 사실을 섞었으므로 좁고 검증 가능한 A를 선택했다."
+        },
+        {
+          "reviewerId": "reviewer-b",
+          "reviewerProxy": {
+            "kind": "blind_model_proxy",
+            "model": "gpt-5.6-sol",
+            "reasoningEffort": "xhigh",
+            "actualProviderCost": null
+          },
+          "overallOption": "A",
+          "laneChoice": "higher_capability",
+          "scores": {
+            "higher_capability": {
+              "dimensions": {
+                "userNeedFit": 5,
+                "executionClarity": 5,
+                "contentFidelity": 5,
+                "portability": 5,
+                "cognitiveLoad": 4,
+                "copySpecificity": 4,
+                "sourceSafety": 5,
+                "accessibilityOperability": 4
+              },
+              "average": 4.625
+            },
+            "lower_cost": {
+              "dimensions": {
+                "userNeedFit": 3,
+                "executionClarity": 4,
+                "contentFidelity": 2,
+                "portability": 3,
+                "cognitiveLoad": 5,
+                "copySpecificity": 4,
+                "sourceSafety": 3,
+                "accessibilityOperability": 4
+              },
+              "average": 3.5
+            }
+          },
+          "judgments": [
+            {
+              "questionId": "source_fidelity",
+              "choice": "A",
+              "reason": "A는 1~15주 주제와 중간·기말 범위를 전체 진도표로 옮긴다."
+            },
+            {
+              "questionId": "execution_clarity",
+              "choice": "A",
+              "reason": "매주 학습·퀴즈와 시험 응시 상태를 한 행씩 기록할 수 있다."
+            },
+            {
+              "questionId": "artifact_fit",
+              "choice": "A",
+              "reason": "15주 운영표를 CSV 진도표로 보존하는 방식이 원문 표 구조와 맞는다."
+            },
+            {
+              "questionId": "specificity",
+              "choice": "A",
+              "reason": "각 주차 철학 주제와 시험 구간을 구체적으로 드러낸다."
+            },
+            {
+              "questionId": "safety_and_hold",
+              "choice": "A",
+              "reason": "A는 과거 운영기간과 현재 수강 가능성 미확인을 명시해 오래된 계획의 현재성 오해를 막는다."
+            },
+            {
+              "questionId": "reuse_value",
+              "choice": "A",
+              "reason": "완전한 15주 시트라 자기 학습 진도 기록으로 바로 재사용할 수 있다."
+            }
+          ],
+          "criticalFindings": [
+            "B의 시트는 2·3·4·8·15주만 남겨 15주 강의계획의 연속성과 대부분의 학습 주제를 잃는다.",
+            "B는 과거 운영 상태와 현재 개설 여부 미확인 경고가 없어 재사용 시 현재 강좌처럼 오해할 수 있다."
+          ],
+          "note": "A가 완전한 운영표를 유지하면서 현재성 한계까지 분리했다."
+        }
+      ],
+      "selection": {
+        "kind": "editorial_repair_proxy",
+        "lane": "lower_cost",
+        "reason": "no_raw_lane_passed_hard_gate_exact_evidence_repaired_without_external_knowledge"
+      },
+      "editProxy": {
+        "kind": "agent_editorial_repair_proxy",
+        "operations": [
+          {
+            "operationId": "case-05-op-01",
+            "category": "fix_evidence_or_schedule",
+            "weight": 6,
+            "path": "sourceEvidence.ev-01-week2",
+            "before": {
+              "text": "2 제자백가의 사상과 덕",
+              "locator": "selectedLines:81-82"
+            },
+            "after": {
+              "text": "2\n\n \n\n제자백가의 사상과 덕",
+              "locator": "bodyTextSample:chars-792-808"
+            },
+            "reason": "Replace a space-joined table-row paraphrase with the exact contiguous frozen body-text span and truthful character locator."
+          },
+          {
+            "operationId": "case-05-op-02",
+            "category": "fix_evidence_or_schedule",
+            "weight": 6,
+            "path": "sourceEvidence.ev-02-week3",
+            "before": {
+              "text": "3 공자의 윤리적 덕",
+              "locator": "selectedLines:92-93"
+            },
+            "after": {
+              "text": "3\n\n \n\n공자의 윤리적 덕",
+              "locator": "bodyTextSample:chars-958-972"
+            },
+            "reason": "Replace a space-joined table-row paraphrase with the exact contiguous frozen body-text span and truthful character locator."
+          },
+          {
+            "operationId": "case-05-op-03",
+            "category": "fix_evidence_or_schedule",
+            "weight": 6,
+            "path": "sourceEvidence.ev-03-week4",
+            "before": {
+              "text": "4 묵자의 지성적 덕",
+              "locator": "selectedLines:103-104"
+            },
+            "after": {
+              "text": "4\n\n \n\n묵자의 지성적 덕",
+              "locator": "bodyTextSample:chars-1148-1162"
+            },
+            "reason": "Replace a space-joined table-row paraphrase with the exact contiguous frozen body-text span and truthful character locator."
+          },
+          {
+            "operationId": "case-05-op-04",
+            "category": "fix_evidence_or_schedule",
+            "weight": 6,
+            "path": "sourceEvidence.ev-04-midterm",
+            "before": {
+              "text": "8 중간시험 / 1주차~7주차 학습내용",
+              "locator": "selectedLines:147-148"
+            },
+            "after": {
+              "text": "8\n\n \n\n중간시험\n\n     \n\n1주차~7주차 학습내용",
+              "locator": "bodyTextSample:chars-1917-1947"
+            },
+            "reason": "Replace a space-joined table-row paraphrase with the exact contiguous frozen body-text span and truthful character locator."
+          },
+          {
+            "operationId": "case-05-op-05",
+            "category": "fix_evidence_or_schedule",
+            "weight": 6,
+            "path": "sourceEvidence.ev-05-final",
+            "before": {
+              "text": "15 기말고사 / 9주차~14주차 학습내용",
+              "locator": "selectedLines:217-219"
+            },
+            "after": {
+              "text": "15\n\n \n\n기말고사\n\n     \n\n9주차~14주차 학습내용",
+              "locator": "bodyTextSample:chars-3026-3058"
+            },
+            "reason": "Replace a space-joined table-row paraphrase with the exact contiguous frozen body-text span and truthful character locator."
+          }
+        ],
+        "weightedEditPoints": 30,
+        "actualHumanEdit": null,
+        "notes": "Only the five failing source-row quotations and locators were repaired; all Items and projections remain supported by the same frozen rows."
+      },
+      "generationTokenProxy": 851,
+      "selectedValidation": {
+        "passed": true,
+        "errors": [],
+        "itemCount": 5,
+        "pattern": "source_table_rows"
+      },
+      "candidate": {
+        "caseId": "case-05",
+        "sourceAssessment": {
+          "sourceUrl": "https://www.kmooc.kr/view/course/detail/6661",
+          "accessStatus": "readable",
+          "scope": "제자백가의 사상 강좌 운영 계획 중 확인 가능한 주차·퀴즈·시험 행",
+          "sufficient": true,
+          "sensitivity": "low"
+        },
+        "sourceEvidence": [
+          {
+            "evidenceId": "ev-01-week2",
+            "kind": "source_table_row",
+            "text": "2\n\n \n\n제자백가의 사상과 덕",
+            "locator": "bodyTextSample:chars-792-808"
+          },
+          {
+            "evidenceId": "ev-02-week3",
+            "kind": "source_table_row",
+            "text": "3\n\n \n\n공자의 윤리적 덕",
+            "locator": "bodyTextSample:chars-958-972"
+          },
+          {
+            "evidenceId": "ev-03-week4",
+            "kind": "source_table_row",
+            "text": "4\n\n \n\n묵자의 지성적 덕",
+            "locator": "bodyTextSample:chars-1148-1162"
+          },
+          {
+            "evidenceId": "ev-04-midterm",
+            "kind": "source_table_row",
+            "text": "8\n\n \n\n중간시험\n\n     \n\n1주차~7주차 학습내용",
+            "locator": "bodyTextSample:chars-1917-1947"
+          },
+          {
+            "evidenceId": "ev-05-final",
+            "kind": "source_table_row",
+            "text": "15\n\n \n\n기말고사\n\n     \n\n9주차~14주차 학습내용",
+            "locator": "bodyTextSample:chars-3026-3058"
+          },
+          {
+            "evidenceId": "ev-06-quiz",
+            "kind": "recurrence",
+            "text": "퀴즈: 1주차부터 매주(13회) 퀴즈가 제공됩니다.",
+            "locator": "selectedLines:240-242"
+          }
+        ],
+        "flow": {
+          "flowId": "kmooc-hundred-schools-progress-sheet",
+          "title": "제자백가의 사상 학습 진도표",
+          "userJob": "강좌 운영 계획에서 확인한 주차별 학습과 시험 범위를 기록한다.",
+          "lifeArea": "study_reading",
+          "planningPattern": "source_table_rows",
+          "primaryArtifact": "sheet",
+          "resultBundle": [
+            "주차별 진도표",
+            "퀴즈 상태",
+            "중간·기말 범위 메모"
+          ],
+          "minimumInputs": [],
+          "steps": [
+            {
+              "stepId": "step-01",
+              "title": "강좌 운영 계획",
+              "order": 1
+            }
+          ],
+          "items": [
+            {
+              "itemId": "item-01",
+              "stepId": "step-01",
+              "title": "2주차 제자백가의 사상과 덕",
+              "intent": "record",
+              "doneWhen": "2주차 행의 학습 상태를 기록했다.",
+              "order": 1,
+              "sourceEvidenceRefs": [
+                "ev-01-week2"
+              ]
+            },
+            {
+              "itemId": "item-02",
+              "stepId": "step-01",
+              "title": "3주차 공자의 윤리적 덕",
+              "intent": "record",
+              "doneWhen": "3주차 행의 학습 상태를 기록했다.",
+              "order": 2,
+              "sourceEvidenceRefs": [
+                "ev-02-week3"
+              ]
+            },
+            {
+              "itemId": "item-03",
+              "stepId": "step-01",
+              "title": "4주차 묵자의 지성적 덕",
+              "intent": "record",
+              "doneWhen": "4주차 행의 학습 상태를 기록했다.",
+              "order": 3,
+              "sourceEvidenceRefs": [
+                "ev-03-week4"
+              ]
+            },
+            {
+              "itemId": "item-04",
+              "stepId": "step-01",
+              "title": "8주차 중간시험 범위 확인",
+              "intent": "inspect",
+              "doneWhen": "중간시험의 1주차~7주차 학습 범위를 표에 표시했다.",
+              "order": 4,
+              "sourceEvidenceRefs": [
+                "ev-04-midterm"
+              ]
+            },
+            {
+              "itemId": "item-05",
+              "stepId": "step-01",
+              "title": "15주차 기말고사 범위 확인",
+              "intent": "inspect",
+              "doneWhen": "기말고사의 9주차~14주차 학습 범위를 표에 표시했다.",
+              "order": 5,
+              "sourceEvidenceRefs": [
+                "ev-05-final"
+              ]
+            }
+          ],
+          "sourceTrace": {
+            "sourceUrl": "https://www.kmooc.kr/view/course/detail/6661",
+            "evidenceIds": [
+              "ev-01-week2",
+              "ev-02-week3",
+              "ev-03-week4",
+              "ev-04-midterm",
+              "ev-05-final",
+              "ev-06-quiz"
+            ],
+            "omissions": [
+              "스냅샷에서 주차명 전체가 명시되지 않은 행",
+              "사용자별 수강 시작일",
+              "이수 점수 계산"
+            ]
+          },
+          "risk": {
+            "class": "low",
+            "boundary": "확인 가능한 운영 계획 행만 표로 옮긴다."
+          },
+          "publicationState": "human_review_required"
+        },
+        "projections": [
+          {
+            "target": "sheet",
+            "payload": {
+              "columns": [
+                "주차",
+                "학습 주제",
+                "상태",
+                "메모"
+              ],
+              "rows": [
+                [
+                  "2",
+                  "제자백가의 사상과 덕",
+                  "미시작",
+                  ""
+                ],
+                [
+                  "3",
+                  "공자의 윤리적 덕",
+                  "미시작",
+                  ""
+                ],
+                [
+                  "4",
+                  "묵자의 지성적 덕",
+                  "미시작",
+                  ""
+                ],
+                [
+                  "8",
+                  "중간시험: 1주차~7주차",
+                  "미시작",
+                  ""
+                ],
+                [
+                  "15",
+                  "기말고사: 9주차~14주차",
+                  "미시작",
+                  ""
+                ]
+              ]
+            },
+            "lossLedger": [
+              "표에 없는 사용자 일정과 실제 수강 완료 여부는 사용자가 기록한다."
+            ],
+            "sourceItemRefs": [
+              "item-01",
+              "item-02",
+              "item-03",
+              "item-04",
+              "item-05"
+            ]
+          },
+          {
+            "target": "memo",
+            "payload": {
+              "title": "퀴즈 안내",
+              "text": "1주차부터 매주(13회) 퀴즈가 제공됩니다.",
+              "sourceUrl": "https://www.kmooc.kr/view/course/detail/6661"
+            },
+            "lossLedger": [],
+            "sourceItemRefs": [
+              "item-01",
+              "item-02",
+              "item-03"
+            ]
+          }
+        ],
+        "renderedArtifacts": {
+          "sheet": "주차 | 학습 주제 | 상태 | 메모\n2 | 제자백가의 사상과 덕 | 미시작 | \n3 | 공자의 윤리적 덕 | 미시작 | \n4 | 묵자의 지성적 덕 | 미시작 | \n8 | 중간시험: 1주차~7주차 | 미시작 | \n15 | 기말고사: 9주차~14주차 | 미시작 | ",
+          "memo": "퀴즈: 1주차부터 매주(13회) 퀴즈가 제공됩니다."
+        },
+        "decision": {
+          "disposition": "compile_candidate",
+          "reason": "원문이 주차·주제·시험 범위를 표로 제공하므로 작은 진도표가 자연스럽다.",
+          "requiredReExtraction": []
+        },
+        "unsupportedClaims": []
+      }
+    },
+    {
+      "caseId": "case-06",
+      "title": "백종원의 요리비책 레시피 재생목록",
+      "source": {
+        "title": "백종원의 요리비책 레시피 재생목록",
+        "url": "https://www.youtube.com/playlist?list=PLOYo7Q0zXMLNmYqpJrt4pNeO-IlaDBVHW",
+        "publisher": "백종원의 요리비책",
+        "sourceType": "creator_experience",
+        "locale": "ko-KR",
+        "countryContext": "KR",
+        "checkedAt": "2026-07-11",
+        "accessStatus": "fetched",
+        "rightsStatus": "needs_review",
+        "riskClass": "low",
+        "evidenceMode": "legacy_sparse_source_rows",
+        "coverage": {
+          "status": "not_reverified_in_v4",
+          "scope": "제공된 1개 SourceRow 범위만 변환한다.",
+          "excluded": []
+        }
+      },
+      "requestedUrl": "https://www.youtube.com/playlist?list=PLOYo7Q0zXMLNmYqpJrt4pNeO-IlaDBVHW",
+      "sourceSnapshot": {
+        "capturedAt": "2026-07-19T00:10:28.922Z",
+        "accessStatus": "readable",
+        "httpStatus": 200,
+        "elapsedMs": 2927,
+        "htmlFallback": null,
+        "bodyTextSha256": "34db4f3ca80213037159b49471ae06f02111d9edc89746d780c6417dc1281e18",
+        "selectedLineCount": 18
+      },
+      "rawGate": {
+        "lowerCost": {
+          "caseId": "case-06",
+          "passed": true,
+          "errors": [],
+          "itemCount": 0,
+          "pattern": null,
+          "disposition": "reextract_required"
+        },
+        "higherCapability": {
+          "caseId": "case-06",
+          "passed": false,
+          "errors": [
+            "sourceEvidence.case-06-ev-01:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-06-ev-02:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-06-ev-03:text_not_exact_snapshot_substring"
+          ],
+          "itemCount": 0,
+          "pattern": null,
+          "disposition": "reextract_required"
+        }
+      },
+      "blindReviews": [
+        {
+          "reviewerId": "reviewer-a",
+          "reviewerProxy": {
+            "model": "gpt-5.6-terra",
+            "reasoningEffort": "high",
+            "role": "lower-cost blind reviewer proxy",
+            "actualProviderCost": null
+          },
+          "overallOption": "tie",
+          "laneChoice": "tie",
+          "scores": {
+            "higher_capability": {
+              "dimensions": {
+                "userNeedFit": 3,
+                "executionClarity": 4,
+                "contentFidelity": 5,
+                "portability": 1,
+                "cognitiveLoad": 5,
+                "copySpecificity": 4,
+                "sourceSafety": 5,
+                "accessibilityOperability": 3
+              },
+              "average": 3.75
+            },
+            "lower_cost": {
+              "dimensions": {
+                "userNeedFit": 3,
+                "executionClarity": 4,
+                "contentFidelity": 5,
+                "portability": 1,
+                "cognitiveLoad": 5,
+                "copySpecificity": 4,
+                "sourceSafety": 5,
+                "accessibilityOperability": 3
+              },
+              "average": 3.75
+            }
+          },
+          "judgments": [
+            {
+              "questionId": "source_fidelity",
+              "choice": "tie",
+              "reason": "둘 다 제목 목록만 있고 개별 URL·재료·분량·조리 순서가 없다는 패킷 상태를 정확히 읽었다."
+            },
+            {
+              "questionId": "execution_clarity",
+              "choice": "tie",
+              "reason": "둘 다 지금은 만들지 않고 개별 영상과 실행 근거를 다시 추출해야 한다는 다음 행동이 명확하다."
+            },
+            {
+              "questionId": "artifact_fit",
+              "choice": "tie",
+              "reason": "실행 근거 없이 체크리스트나 장보기표를 만들지 않은 것이 두 옵션 모두 올바른 결과물 판단이다."
+            },
+            {
+              "questionId": "specificity",
+              "choice": "tie",
+              "reason": "재생목록 제목·34개 수와 누락된 레시피 근거를 구체적으로 한정한다."
+            },
+            {
+              "questionId": "safety_and_hold",
+              "choice": "tie",
+              "reason": "둘 다 제작자 권리와 근거 부족 때문에 reextract_required로 정확히 보류한다."
+            },
+            {
+              "questionId": "reuse_value",
+              "choice": "tie",
+              "reason": "지금 재사용 산출물은 없지만 후속 추출 요구사항은 양쪽 모두 충분한 기준선이다."
+            }
+          ],
+          "criticalFindings": [],
+          "note": "실행 가능한 레시피 근거가 없을 때 생성하지 않는 올바른 동률이다."
+        },
+        {
+          "reviewerId": "reviewer-b",
+          "reviewerProxy": {
+            "kind": "blind_model_proxy",
+            "model": "gpt-5.6-sol",
+            "reasoningEffort": "xhigh",
+            "actualProviderCost": null
+          },
+          "overallOption": "B",
+          "laneChoice": "higher_capability",
+          "scores": {
+            "lower_cost": {
+              "dimensions": {
+                "userNeedFit": 4,
+                "executionClarity": 3,
+                "contentFidelity": 5,
+                "portability": 1,
+                "cognitiveLoad": 4,
+                "copySpecificity": 4,
+                "sourceSafety": 5,
+                "accessibilityOperability": 3
+              },
+              "average": 3.625
+            },
+            "higher_capability": {
+              "dimensions": {
+                "userNeedFit": 5,
+                "executionClarity": 4,
+                "contentFidelity": 5,
+                "portability": 1,
+                "cognitiveLoad": 5,
+                "copySpecificity": 5,
+                "sourceSafety": 5,
+                "accessibilityOperability": 3
+              },
+              "average": 4.125
+            }
+          },
+          "judgments": [
+            {
+              "questionId": "source_fidelity",
+              "choice": "B",
+              "reason": "둘 다 생성하지 않는 판단은 맞지만 B가 34개 제목과 구조화 항목 부재를 더 정확히 구분한다."
+            },
+            {
+              "questionId": "execution_clarity",
+              "choice": "B",
+              "reason": "B는 항목 URL 추출, 한 영상 선택, 재료·분량·순서 추출의 다음 작업을 순서대로 제시한다."
+            },
+            {
+              "questionId": "artifact_fit",
+              "choice": "tie",
+              "reason": "레시피 근거가 없어 둘 다 projection을 만들지 않은 것이 올바르다."
+            },
+            {
+              "questionId": "specificity",
+              "choice": "B",
+              "reason": "영상 제목은 탐색 목록일 뿐 조리 근거가 아니라는 실패 이유가 더 구체적이다."
+            },
+            {
+              "questionId": "safety_and_hold",
+              "choice": "tie",
+              "reason": "둘 다 개별 URL·레시피 절차·권리 범위 확보 전 생성을 보류한다."
+            },
+            {
+              "questionId": "reuse_value",
+              "choice": "B",
+              "reason": "재추출 계약이 명확해 다음 수집 단계의 체크리스트로 재사용하기 쉽다."
+            }
+          ],
+          "criticalFindings": [
+            "개별 영상 URL, 재료, 분량, 조리 순서가 없으므로 레시피 Flow나 장보기표 생성은 근거 없는 확장이 된다.",
+            "두 옵션의 reextract_required는 올바른 보류이며 B가 필요한 재추출 단위를 더 잘 정의한다."
+          ],
+          "note": "정확한 abstention이 승자이며 B의 후속 추출 명세가 더 실행 가능하다."
+        }
+      ],
+      "selection": {
+        "kind": "raw_model_output",
+        "lane": "lower_cost",
+        "reason": "only_raw_lane_passing_hard_gate"
+      },
+      "editProxy": {
+        "kind": "none",
+        "operations": [],
+        "weightedEditPoints": 0,
+        "actualHumanEdit": null
+      },
+      "generationTokenProxy": 232,
+      "selectedValidation": {
+        "passed": true,
+        "errors": [],
+        "itemCount": 0,
+        "pattern": null
+      },
+      "candidate": {
+        "caseId": "case-06",
+        "sourceAssessment": {
+          "sourceUrl": "https://www.youtube.com/playlist?list=PLOYo7Q0zXMLNmYqpJrt4pNeO-IlaDBVHW",
+          "accessStatus": "readable",
+          "scope": "재생목록 제목과 노출된 동영상 제목",
+          "sufficient": false,
+          "sensitivity": "creator source; 동영상별 URL·내용·권리 승인이 없다"
+        },
+        "sourceEvidence": [
+          {
+            "evidenceId": "ev-01-playlist",
+            "kind": "resource_collection",
+            "text": "백종원의 요리비책",
+            "locator": "selectedLines:25-30"
+          },
+          {
+            "evidenceId": "ev-02-count",
+            "kind": "source_fact",
+            "text": "동영상 34개",
+            "locator": "selectedLines:28-30"
+          },
+          {
+            "evidenceId": "ev-03-visible-title",
+            "kind": "resource_title",
+            "text": "포실포실 고소한 참기름 달걀라면",
+            "locator": "headings"
+          }
+        ],
+        "flow": null,
+        "projections": [],
+        "renderedArtifacts": {},
+        "decision": {
+          "disposition": "reextract_required",
+          "reason": "스냅샷은 재생목록과 일부 제목만 보여 주며, 개별 동영상 URL·레시피 본문·완료 기준을 제공하지 않는다. creator source의 공개 권리도 확인되지 않았다.",
+          "requiredReExtraction": [
+            "선택할 개별 동영상의 제목과 고유 URL",
+            "해당 동영상에서 실행할 수 있는 재료·방법·완료 단서",
+            "재사용·공개 권리 또는 승인 범위"
+          ]
+        },
+        "unsupportedClaims": []
+      }
+    },
+    {
+      "caseId": "case-07",
+      "title": "자동차365 중고차 구매가이드",
+      "source": {
+        "title": "자동차365 중고차 구매가이드",
+        "url": "https://www.car365.go.kr/ccpt/schdcar/trde/prchsGuide.do?_menuId=M630401000&moblYn=Y",
+        "publisher": "자동차365",
+        "sourceType": "official",
+        "locale": "ko-KR",
+        "countryContext": "KR",
+        "checkedAt": "2026-07-11",
+        "accessStatus": "fetched",
+        "rightsStatus": "allowed",
+        "riskClass": "financial_sensitive",
+        "evidenceMode": "legacy_sparse_source_rows",
+        "coverage": {
+          "status": "not_reverified_in_v4",
+          "scope": "제공된 1개 SourceRow 범위만 변환한다.",
+          "excluded": []
+        }
+      },
+      "requestedUrl": "https://www.car365.go.kr/ccpt/schdcar/trde/prchsGuide.do?_menuId=M630401000&moblYn=Y",
+      "sourceSnapshot": {
+        "capturedAt": "2026-07-19T00:10:31.607Z",
+        "accessStatus": "readable",
+        "httpStatus": 200,
+        "elapsedMs": 2686,
+        "htmlFallback": {
+          "httpStatus": 200,
+          "htmlLength": 216559
+        },
+        "bodyTextSha256": "d4420c1b32b997af19f46f4fef94fe68735e8fbd559e0def1665a2aaf71b9d1a",
+        "selectedLineCount": 32
+      },
+      "rawGate": {
+        "lowerCost": {
+          "caseId": "case-07",
+          "passed": false,
+          "errors": [
+            "sourceEvidence.ev-01-stages:text_not_exact_snapshot_substring"
+          ],
+          "itemCount": 4,
+          "pattern": "compare_decide",
+          "disposition": "compile_candidate"
+        },
+        "higherCapability": {
+          "caseId": "case-07",
+          "passed": false,
+          "errors": [
+            "sourceEvidence.case-07-ev-01:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-07-ev-02:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-07-ev-03:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-07-ev-04:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-07-ev-05:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-07-ev-06:text_not_exact_snapshot_substring"
+          ],
+          "itemCount": 6,
+          "pattern": "compare_decide",
+          "disposition": "compile_candidate"
+        }
+      },
+      "blindReviews": [
+        {
+          "reviewerId": "reviewer-a",
+          "reviewerProxy": {
+            "model": "gpt-5.6-terra",
+            "reasoningEffort": "high",
+            "role": "lower-cost blind reviewer proxy",
+            "actualProviderCost": null
+          },
+          "overallOption": "A",
+          "laneChoice": "lower_cost",
+          "scores": {
+            "lower_cost": {
+              "dimensions": {
+                "userNeedFit": 4,
+                "executionClarity": 4,
+                "contentFidelity": 5,
+                "portability": 4,
+                "cognitiveLoad": 5,
+                "copySpecificity": 4,
+                "sourceSafety": 5,
+                "accessibilityOperability": 4
+              },
+              "average": 4.375
+            },
+            "higher_capability": {
+              "dimensions": {
+                "userNeedFit": 5,
+                "executionClarity": 5,
+                "contentFidelity": 2,
+                "portability": 5,
+                "cognitiveLoad": 4,
+                "copySpecificity": 5,
+                "sourceSafety": 2,
+                "accessibilityOperability": 4
+              },
+              "average": 4
+            }
+          },
+          "judgments": [
+            {
+              "questionId": "source_fidelity",
+              "choice": "A",
+              "reason": "A는 selectedLines의 검색·시운전·판매자·이전 확인만 쓰지만 B는 패킷에 없는 상세 기록을 다수 추가한다."
+            },
+            {
+              "questionId": "execution_clarity",
+              "choice": "B",
+              "reason": "B의 온라인 기록, 현장, 계약·이전 단계와 완료 상태는 실제 구매 검토 흐름을 더 잘 보여 준다."
+            },
+            {
+              "questionId": "artifact_fit",
+              "choice": "B",
+              "reason": "후보별 시트와 현장·계약 체크리스트 조합은 비교 구매 업무에 더 자연스럽다."
+            },
+            {
+              "questionId": "specificity",
+              "choice": "B",
+              "reason": "등록원부·제시 여부·계약 기재 등 세부 확인점을 항목별로 제시한다."
+            },
+            {
+              "questionId": "safety_and_hold",
+              "choice": "A",
+              "reason": "A는 확인 가능한 공식 행동만 남기고 가격·법률 판단을 보류하지만 B는 패킷 밖 재무·계약 정보를 공식 가이드로 사용한다."
+            },
+            {
+              "questionId": "reuse_value",
+              "choice": "A",
+              "reason": "B의 형식은 좋지만 미확인 핵심 행이 섞여 기준표로 재사용하기 어렵고 A가 더 신뢰할 수 있다."
+            }
+          ],
+          "criticalFindings": [
+            "B: 성능·상태점검기록부, 보험처리 이력, 등록원부 압류·저당, 판매용 제시 여부, 버튼·고비용 부품 점검은 제공된 source.selectedLines에 없다.",
+            "B: 구두 약속의 특약 기재도 패킷 source에 없는데 이를 계약 완료 기준으로 사용해 금융·계약 민감 Flow의 공식 근거처럼 제시한다."
+          ],
+          "note": "B의 구매 기록 설계는 유용하지만 핵심 계약 근거가 패킷에서 검증되지 않아 A를 선택했다."
+        },
+        {
+          "reviewerId": "reviewer-b",
+          "reviewerProxy": {
+            "kind": "blind_model_proxy",
+            "model": "gpt-5.6-sol",
+            "reasoningEffort": "xhigh",
+            "actualProviderCost": null
+          },
+          "overallOption": "A",
+          "laneChoice": "higher_capability",
+          "scores": {
+            "higher_capability": {
+              "dimensions": {
+                "userNeedFit": 5,
+                "executionClarity": 5,
+                "contentFidelity": 5,
+                "portability": 5,
+                "cognitiveLoad": 4,
+                "copySpecificity": 5,
+                "sourceSafety": 5,
+                "accessibilityOperability": 4
+              },
+              "average": 4.75
+            },
+            "lower_cost": {
+              "dimensions": {
+                "userNeedFit": 4,
+                "executionClarity": 4,
+                "contentFidelity": 3,
+                "portability": 4,
+                "cognitiveLoad": 5,
+                "copySpecificity": 4,
+                "sourceSafety": 4,
+                "accessibilityOperability": 4
+              },
+              "average": 4
+            }
+          },
+          "judgments": [
+            {
+              "questionId": "source_fidelity",
+              "choice": "A",
+              "reason": "A는 온라인 기록, 실매물 참고, 현장 점검, 계약 기재, 영수증과 이전 확인을 모두 추적한다."
+            },
+            {
+              "questionId": "execution_clarity",
+              "choice": "A",
+              "reason": "후보 입력 뒤 온라인·현장·계약 순서와 진행·보류·추가확인 상태가 명확하다."
+            },
+            {
+              "questionId": "artifact_fit",
+              "choice": "A",
+              "reason": "후보별 시트와 단계별 체크리스트가 비교·결정 job에 잘 맞는다."
+            },
+            {
+              "questionId": "specificity",
+              "choice": "A",
+              "reason": "성능기록부, 보험처리, 등록원부, 명판·직인, 비용 별도기재를 구체적으로 명시한다."
+            },
+            {
+              "questionId": "safety_and_hold",
+              "choice": "A",
+              "reason": "제시 조회의 한계와 자동 구매판정 금지를 밝히고 최종 결정을 사용자에게 남긴다."
+            },
+            {
+              "questionId": "reuse_value",
+              "choice": "A",
+              "reason": "여러 후보를 같은 열로 비교하고 계약 전후 근거를 이어서 기록할 수 있다."
+            }
+          ],
+          "criticalFindings": [
+            "B는 성능·상태점검기록부, 보험처리 이력, 등록원부, 계약금액 분리, 정식 영수증 등 고가 구매의 핵심 확인 근거를 누락한다.",
+            "A는 차량번호를 후보 입력으로 허용하므로 외부 공유용 시트에서는 개인 식별 가능 정보 노출 경고가 추가되면 더 안전하다."
+          ],
+          "note": "A가 공식 가이드의 구매 전후 확인을 실제 비교 도구로 보존한다."
+        }
+      ],
+      "selection": {
+        "kind": "editorial_repair_proxy",
+        "lane": "lower_cost",
+        "reason": "no_raw_lane_passed_hard_gate_exact_evidence_repaired_without_external_knowledge"
+      },
+      "editProxy": {
+        "kind": "agent_editorial_repair_proxy",
+        "operations": [
+          {
+            "operationId": "case-07-op-01",
+            "category": "fix_evidence_or_schedule",
+            "weight": 6,
+            "path": "sourceEvidence.ev-01-stages",
+            "before": {
+              "text": "구매계획수립 / KU 매물 검색 / 매매단지 방문 / 차량직접 확인 / 계약 / 이전",
+              "locator": "selectedLines:288-295"
+            },
+            "after": {
+              "text": "구매계획수립\n\nKU 매물 검색\n\n매매단지 방문 /\n차량직접 확인\n\n계약 / 이전",
+              "locator": "bodyTextSample:chars-2562-2605"
+            },
+            "reason": "Replace the slash-joined stage paraphrase with the exact contiguous frozen body-text span and truthful character locator."
+          }
+        ],
+        "weightedEditPoints": 6,
+        "actualHumanEdit": null,
+        "notes": "Only the failing stage quotation and locator were repaired; Flow structure, Items, projections, and decision were retained."
+      },
+      "generationTokenProxy": 796,
+      "selectedValidation": {
+        "passed": true,
+        "errors": [],
+        "itemCount": 4,
+        "pattern": "compare_decide"
+      },
+      "candidate": {
+        "caseId": "case-07",
+        "sourceAssessment": {
+          "sourceUrl": "https://www.car365.go.kr/ccpt/schdcar/trde/prchsGuide.do?_menuId=M630401000&moblYn=Y",
+          "accessStatus": "readable",
+          "scope": "구매계획·매물 검색·차량 확인·계약 및 이전의 공식 구매가이드",
+          "sufficient": true,
+          "sensitivity": "financial_sensitive; 가격 적정성이나 구매 권고는 제공하지 않는다"
+        },
+        "sourceEvidence": [
+          {
+            "evidenceId": "ev-01-stages",
+            "kind": "ordered_action",
+            "text": "구매계획수립\n\nKU 매물 검색\n\n매매단지 방문 /\n차량직접 확인\n\n계약 / 이전",
+            "locator": "bodyTextSample:chars-2562-2605"
+          },
+          {
+            "evidenceId": "ev-02-search",
+            "kind": "action",
+            "text": "구매희망 모델을 선택하여 검색",
+            "locator": "selectedLines:306-308"
+          },
+          {
+            "evidenceId": "ev-03-inspection",
+            "kind": "action",
+            "text": "시운전을 반드시 해보세요.",
+            "locator": "selectedLines:329-331"
+          },
+          {
+            "evidenceId": "ev-04-seller",
+            "kind": "decision",
+            "text": "판매자 본인 및 정식 중고차 딜러인지 확인",
+            "locator": "selectedLines:332-334"
+          },
+          {
+            "evidenceId": "ev-05-transfer",
+            "kind": "finish_action",
+            "text": "이전 완료 여부를 확인하세요.",
+            "locator": "selectedLines:339-343"
+          }
+        ],
+        "flow": {
+          "flowId": "car365-used-car-purchase-check",
+          "title": "중고차 구매 단계 확인표",
+          "userJob": "공식 구매가이드에 따라 후보를 찾고 차량·계약·이전 확인을 남긴다.",
+          "lifeArea": "money_admin_purchase",
+          "planningPattern": "compare_decide",
+          "primaryArtifact": "checklist",
+          "resultBundle": [
+            "구매 단계 체크",
+            "후보 검색 메모",
+            "계약·이전 확인"
+          ],
+          "minimumInputs": [],
+          "steps": [
+            {
+              "stepId": "step-01",
+              "title": "후보 찾기",
+              "order": 1
+            },
+            {
+              "stepId": "step-02",
+              "title": "확인과 계약",
+              "order": 2
+            }
+          ],
+          "items": [
+            {
+              "itemId": "item-01",
+              "stepId": "step-01",
+              "title": "구매희망 모델 검색",
+              "intent": "act",
+              "doneWhen": "구매희망 모델과 검색조건으로 차량을 검색했다.",
+              "order": 1,
+              "sourceEvidenceRefs": [
+                "ev-01-stages",
+                "ev-02-search"
+              ]
+            },
+            {
+              "itemId": "item-02",
+              "stepId": "step-02",
+              "title": "차량 시운전 확인",
+              "intent": "inspect",
+              "doneWhen": "후보 차량의 시운전 여부를 확인했다.",
+              "order": 2,
+              "sourceEvidenceRefs": [
+                "ev-03-inspection"
+              ]
+            },
+            {
+              "itemId": "item-03",
+              "stepId": "step-02",
+              "title": "판매자 또는 정식 딜러 확인",
+              "intent": "inspect",
+              "doneWhen": "판매자 본인 또는 정식 중고차 딜러 여부를 확인했다.",
+              "order": 3,
+              "sourceEvidenceRefs": [
+                "ev-04-seller"
+              ]
+            },
+            {
+              "itemId": "item-04",
+              "stepId": "step-02",
+              "title": "이전 완료 여부 확인",
+              "intent": "inspect",
+              "doneWhen": "이전 완료 여부를 확인했다.",
+              "order": 4,
+              "sourceEvidenceRefs": [
+                "ev-05-transfer"
+              ]
+            }
+          ],
+          "sourceTrace": {
+            "sourceUrl": "https://www.car365.go.kr/ccpt/schdcar/trde/prchsGuide.do?_menuId=M630401000&moblYn=Y",
+            "evidenceIds": [
+              "ev-01-stages",
+              "ev-02-search",
+              "ev-03-inspection",
+              "ev-04-seller",
+              "ev-05-transfer"
+            ],
+            "omissions": [
+              "예산 80% 기준의 개인 적용",
+              "가격·성능 판단",
+              "계약 서류 세부 목록"
+            ]
+          },
+          "risk": {
+            "class": "financial_sensitive",
+            "boundary": "Flow는 구매 추천, 가격 판단, 법률·금융 조언을 제공하지 않는다."
+          },
+          "publicationState": "sensitive_locked"
+        },
+        "projections": [
+          {
+            "target": "checklist",
+            "payload": {
+              "title": "중고차 구매 단계 확인표",
+              "itemIds": [
+                "item-01",
+                "item-02",
+                "item-03",
+                "item-04"
+              ],
+              "includeSourceUrl": true
+            },
+            "lossLedger": [
+              "차량별 가격·상태와 계약 세부 내용은 사용자 메모 또는 공식 원문에서 별도 확인한다."
+            ],
+            "sourceItemRefs": [
+              "item-01",
+              "item-02",
+              "item-03",
+              "item-04"
+            ]
+          },
+          {
+            "target": "memo",
+            "payload": {
+              "title": "후보·계약 메모",
+              "fields": [
+                "후보 모델",
+                "검색조건",
+                "판매자 확인",
+                "이전 완료 여부"
+              ]
+            },
+            "lossLedger": [
+              "메모 값은 source fact가 아니라 사용자 기록이다."
+            ],
+            "sourceItemRefs": [
+              "item-01",
+              "item-03",
+              "item-04"
+            ]
+          }
+        ],
+        "renderedArtifacts": {
+          "checklist": "- [ ] 구매희망 모델 검색\n- [ ] 차량 시운전 확인\n- [ ] 판매자 또는 정식 딜러 확인\n- [ ] 이전 완료 여부 확인",
+          "memo": "후보 모델: \n검색조건: \n판매자 또는 정식 딜러 확인: \n이전 완료 여부: "
+        },
+        "decision": {
+          "disposition": "compile_candidate",
+          "reason": "공식 가이드가 순서와 확인 행동을 명시한다. 민감한 구매 판단은 원문과 사용자 판단에 남긴다.",
+          "requiredReExtraction": []
+        },
+        "unsupportedClaims": []
+      }
+    },
+    {
+      "caseId": "case-08",
+      "title": "국민건강보험 영유아 건강검진 안내",
+      "source": {
+        "title": "국민건강보험 영유아 건강검진 안내",
+        "url": "https://www.nhis.or.kr/nhis/healthin/wbhaca04800m01.do",
+        "publisher": "국민건강보험공단",
+        "sourceType": "official",
+        "locale": "ko-KR",
+        "countryContext": "KR",
+        "checkedAt": "2026-07-11",
+        "accessStatus": "fetched",
+        "rightsStatus": "allowed",
+        "riskClass": "medical_sensitive",
+        "evidenceMode": "legacy_sparse_source_rows",
+        "coverage": {
+          "status": "not_reverified_in_v4",
+          "scope": "제공된 1개 SourceRow 범위만 변환한다.",
+          "excluded": []
+        }
+      },
+      "requestedUrl": "https://www.nhis.or.kr/nhis/healthin/wbhaca04800m01.do",
+      "sourceSnapshot": {
+        "capturedAt": "2026-07-19T00:10:33.861Z",
+        "accessStatus": "readable",
+        "httpStatus": 200,
+        "elapsedMs": 2253,
+        "htmlFallback": null,
+        "bodyTextSha256": "287f94972680969f9e8c186c8f6d143d63d0b20145dac65e89a27b692ed77c4b",
+        "selectedLineCount": 47
+      },
+      "rawGate": {
+        "lowerCost": {
+          "caseId": "case-08",
+          "passed": true,
+          "errors": [],
+          "itemCount": 4,
+          "pattern": "source_table_rows",
+          "disposition": "compile_candidate"
+        },
+        "higherCapability": {
+          "caseId": "case-08",
+          "passed": false,
+          "errors": [
+            "sourceEvidence.case-08-ev-01:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-08-ev-02:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-08-ev-03:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-08-ev-04:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-08-ev-05:text_not_exact_snapshot_substring"
+          ],
+          "itemCount": 12,
+          "pattern": "phase_lifecycle",
+          "disposition": "compile_candidate"
+        }
+      },
+      "blindReviews": [
+        {
+          "reviewerId": "reviewer-a",
+          "reviewerProxy": {
+            "model": "gpt-5.6-terra",
+            "reasoningEffort": "high",
+            "role": "lower-cost blind reviewer proxy",
+            "actualProviderCost": null
+          },
+          "overallOption": "A",
+          "laneChoice": "higher_capability",
+          "scores": {
+            "higher_capability": {
+              "dimensions": {
+                "userNeedFit": 5,
+                "executionClarity": 5,
+                "contentFidelity": 5,
+                "portability": 5,
+                "cognitiveLoad": 4,
+                "copySpecificity": 5,
+                "sourceSafety": 5,
+                "accessibilityOperability": 4
+              },
+              "average": 4.75
+            },
+            "lower_cost": {
+              "dimensions": {
+                "userNeedFit": 4,
+                "executionClarity": 4,
+                "contentFidelity": 2,
+                "portability": 3,
+                "cognitiveLoad": 5,
+                "copySpecificity": 4,
+                "sourceSafety": 4,
+                "accessibilityOperability": 3
+              },
+              "average": 3.625
+            }
+          },
+          "judgments": [
+            {
+              "questionId": "source_fidelity",
+              "choice": "A",
+              "reason": "A는 공식 표의 건강검진 8개와 구강검진 4개 창을 모두 보존하고 B는 초기 4개만 남긴다."
+            },
+            {
+              "questionId": "execution_clarity",
+              "choice": "A",
+              "reason": "출생일 입력, 상대 시기표, 완료 상태와 공식 재확인 경계가 한 흐름으로 분명하다."
+            },
+            {
+              "questionId": "artifact_fit",
+              "choice": "A",
+              "reason": "12개 창 시트와 출생일 기반 달력 템플릿이 장기 검진 추적에 자연스럽다."
+            },
+            {
+              "questionId": "specificity",
+              "choice": "A",
+              "reason": "각 차수와 월령 창을 별도 행으로 정확히 옮겨 일반적인 육아 목록이 아니다."
+            },
+            {
+              "questionId": "safety_and_hold",
+              "choice": "A",
+              "reason": "실제 대상·검진일은 공식 조회에 맡기고 출생일 전 날짜 생성과 의료 해석을 모두 막는다."
+            },
+            {
+              "questionId": "reuse_value",
+              "choice": "A",
+              "reason": "영유아 기간 전체를 한 번 저장해 상태를 갱신할 수 있어 장기 기준본 가치가 높다."
+            }
+          ],
+          "criticalFindings": [
+            "B: source에 직접 제시된 4~8차 건강검진과 생후 30~65개월의 구강검진 3개 창을 누락해 장기 검진 시기표를 초기 4행으로 축소했다."
+          ],
+          "note": "A가 완전한 공식 상대 시기를 유지하면서 개인별 날짜·의료 판단 경계를 지켰다."
+        },
+        {
+          "reviewerId": "reviewer-b",
+          "reviewerProxy": {
+            "kind": "blind_model_proxy",
+            "model": "gpt-5.6-sol",
+            "reasoningEffort": "xhigh",
+            "actualProviderCost": null
+          },
+          "overallOption": "B",
+          "laneChoice": "higher_capability",
+          "scores": {
+            "lower_cost": {
+              "dimensions": {
+                "userNeedFit": 3,
+                "executionClarity": 3,
+                "contentFidelity": 2,
+                "portability": 3,
+                "cognitiveLoad": 5,
+                "copySpecificity": 4,
+                "sourceSafety": 5,
+                "accessibilityOperability": 4
+              },
+              "average": 3.625
+            },
+            "higher_capability": {
+              "dimensions": {
+                "userNeedFit": 5,
+                "executionClarity": 5,
+                "contentFidelity": 5,
+                "portability": 5,
+                "cognitiveLoad": 4,
+                "copySpecificity": 5,
+                "sourceSafety": 4,
+                "accessibilityOperability": 4
+              },
+              "average": 4.625
+            }
+          },
+          "judgments": [
+            {
+              "questionId": "source_fidelity",
+              "choice": "B",
+              "reason": "B는 건강검진 8개와 구강검진 4개의 모든 상대 연령 창을 보존한다."
+            },
+            {
+              "questionId": "execution_clarity",
+              "choice": "B",
+              "reason": "출생일 입력, 상대 창 계산, 완료 상태 기록, 공식 재확인의 흐름이 분명하다."
+            },
+            {
+              "questionId": "artifact_fit",
+              "choice": "B",
+              "reason": "12개 창을 시트·입력 대기형 달력·체크리스트로 투영해 추적 목적에 맞춘다."
+            },
+            {
+              "questionId": "specificity",
+              "choice": "B",
+              "reason": "각 차수와 일령·월령 시작 및 종료를 항목 제목에 직접 표시한다."
+            },
+            {
+              "questionId": "safety_and_hold",
+              "choice": "B",
+              "reason": "실제 날짜는 출생일 입력 뒤에만 만들고 대상 여부·검진일은 공단과 기관에서 재확인하게 한다."
+            },
+            {
+              "questionId": "reuse_value",
+              "choice": "B",
+              "reason": "출생일을 기준으로 장기간 검진 창을 달력과 완료표에서 반복 조회할 수 있다."
+            }
+          ],
+          "criticalFindings": [
+            "A는 원문 12개 창 중 4개만 남겨 4~8차 건강검진과 뒤의 구강검진 창을 대부분 누락한다.",
+            "B의 파생 달력 날짜는 공식 대상 판정이 아니므로 공단·검진기관 재확인 경고가 일정 설명에도 유지되어야 한다."
+          ],
+          "note": "B가 전체 시기표를 보존하되 의료 민감 날짜의 공식 재확인을 요구한다."
+        }
+      ],
+      "selection": {
+        "kind": "raw_model_output",
+        "lane": "lower_cost",
+        "reason": "only_raw_lane_passing_hard_gate"
+      },
+      "editProxy": {
+        "kind": "none",
+        "operations": [],
+        "weightedEditPoints": 0,
+        "actualHumanEdit": null
+      },
+      "generationTokenProxy": 833,
+      "selectedValidation": {
+        "passed": true,
+        "errors": [],
+        "itemCount": 4,
+        "pattern": "source_table_rows"
+      },
+      "candidate": {
+        "caseId": "case-08",
+        "sourceAssessment": {
+          "sourceUrl": "https://www.nhis.or.kr/nhis/healthin/wbhaca04800m01.do",
+          "accessStatus": "readable",
+          "scope": "영유아 검진시기와 검진항목",
+          "sufficient": true,
+          "sensitivity": "medical_sensitive; 개인별 검진과 발달 판단은 검진기관에 맡긴다"
+        },
+        "sourceEvidence": [
+          {
+            "evidenceId": "ev-01-window1",
+            "kind": "source_table_row",
+            "text": "1차 건강검진 생후 14~35일",
+            "locator": "selectedLines:118-123"
+          },
+          {
+            "evidenceId": "ev-02-window2",
+            "kind": "source_table_row",
+            "text": "2차 건강검진 생후 4~6개월",
+            "locator": "selectedLines:121-123"
+          },
+          {
+            "evidenceId": "ev-03-window3",
+            "kind": "source_table_row",
+            "text": "3차 건강검진 생후 9~12개월",
+            "locator": "selectedLines:121-123"
+          },
+          {
+            "evidenceId": "ev-04-oral",
+            "kind": "source_table_row",
+            "text": "구강검진 생후 18~29개월 구강문진 및 진찰, 구강보건교육",
+            "locator": "selectedLines:143-146"
+          },
+          {
+            "evidenceId": "ev-05-institution",
+            "kind": "source_fact",
+            "text": "영유아 건강검진은 전국 영유아 검진기관에서 받으실 수 있습니다.",
+            "locator": "selectedLines:135"
+          }
+        ],
+        "flow": {
+          "flowId": "nhis-infant-checkup-window-table",
+          "title": "영유아 건강검진 시기표",
+          "userJob": "공식 안내에서 영유아 검진 시기를 확인하고 예약 준비 상태를 기록한다.",
+          "lifeArea": "family_parenting",
+          "planningPattern": "source_table_rows",
+          "primaryArtifact": "sheet",
+          "resultBundle": [
+            "검진시기 표",
+            "예약 준비 상태",
+            "공식 기관 메모"
+          ],
+          "minimumInputs": [
+            {
+              "field": "childAge",
+              "label": "아이 현재 월령 또는 일령",
+              "kind": "text",
+              "sourceClaim": false,
+              "required": false
+            }
+          ],
+          "steps": [
+            {
+              "stepId": "step-01",
+              "title": "검진 시기 확인",
+              "order": 1
+            }
+          ],
+          "items": [
+            {
+              "itemId": "item-01",
+              "stepId": "step-01",
+              "title": "1차 건강검진 시기 확인",
+              "intent": "inspect",
+              "doneWhen": "생후 14~35일 검진 시기를 표에서 확인했다.",
+              "order": 1,
+              "sourceEvidenceRefs": [
+                "ev-01-window1"
+              ]
+            },
+            {
+              "itemId": "item-02",
+              "stepId": "step-01",
+              "title": "2차·3차 건강검진 시기 확인",
+              "intent": "inspect",
+              "doneWhen": "생후 4~6개월과 9~12개월 검진 시기를 표에서 확인했다.",
+              "order": 2,
+              "sourceEvidenceRefs": [
+                "ev-02-window2",
+                "ev-03-window3"
+              ]
+            },
+            {
+              "itemId": "item-03",
+              "stepId": "step-01",
+              "title": "구강검진 시기 확인",
+              "intent": "inspect",
+              "doneWhen": "생후 18~29개월 구강검진 시기를 표에서 확인했다.",
+              "order": 3,
+              "sourceEvidenceRefs": [
+                "ev-04-oral"
+              ]
+            },
+            {
+              "itemId": "item-04",
+              "stepId": "step-01",
+              "title": "검진기관 확인",
+              "intent": "inspect",
+              "doneWhen": "전국 영유아 검진기관에서 검진을 받을 수 있다는 공식 안내를 확인했다.",
+              "order": 4,
+              "sourceEvidenceRefs": [
+                "ev-05-institution"
+              ]
+            }
+          ],
+          "sourceTrace": {
+            "sourceUrl": "https://www.nhis.or.kr/nhis/healthin/wbhaca04800m01.do",
+            "evidenceIds": [
+              "ev-01-window1",
+              "ev-02-window2",
+              "ev-03-window3",
+              "ev-04-oral",
+              "ev-05-institution"
+            ],
+            "omissions": [
+              "개인별 예약일",
+              "건강·발달 평가",
+              "예방접종 판단"
+            ]
+          },
+          "risk": {
+            "class": "medical_sensitive",
+            "boundary": "이 표는 공식 시기 확인용이며 의료 판단이나 개인별 검진 권고를 하지 않는다."
+          },
+          "publicationState": "sensitive_locked"
+        },
+        "projections": [
+          {
+            "target": "sheet",
+            "payload": {
+              "columns": [
+                "검진",
+                "시기",
+                "준비 상태",
+                "메모"
+              ],
+              "rows": [
+                [
+                  "1차 건강검진",
+                  "생후 14~35일",
+                  "미확인",
+                  ""
+                ],
+                [
+                  "2차 건강검진",
+                  "생후 4~6개월",
+                  "미확인",
+                  ""
+                ],
+                [
+                  "3차 건강검진",
+                  "생후 9~12개월",
+                  "미확인",
+                  ""
+                ],
+                [
+                  "구강검진",
+                  "생후 18~29개월",
+                  "미확인",
+                  ""
+                ]
+              ]
+            },
+            "lossLedger": [
+              "월령 입력은 사용자 참고용이며 Flow가 개인별 검진일을 판정하지 않는다."
+            ],
+            "sourceItemRefs": [
+              "item-01",
+              "item-02",
+              "item-03",
+              "item-04"
+            ]
+          },
+          {
+            "target": "memo",
+            "payload": {
+              "title": "공식 확인 경계",
+              "text": "영유아 건강검진은 전국 영유아 검진기관에서 받으실 수 있습니다.",
+              "sourceUrl": "https://www.nhis.or.kr/nhis/healthin/wbhaca04800m01.do"
+            },
+            "lossLedger": [],
+            "sourceItemRefs": [
+              "item-04"
+            ]
+          }
+        ],
+        "renderedArtifacts": {
+          "sheet": "검진 | 시기 | 준비 상태 | 메모\n1차 건강검진 | 생후 14~35일 | 미확인 | \n2차 건강검진 | 생후 4~6개월 | 미확인 | \n3차 건강검진 | 생후 9~12개월 | 미확인 | \n구강검진 | 생후 18~29개월 | 미확인 | ",
+          "memo": "개인별 예약일·건강·발달 판단은 공식 검진기관에서 확인합니다."
+        },
+        "decision": {
+          "disposition": "compile_candidate",
+          "reason": "공식 페이지가 연령 구간별 검진시기를 표로 명시한다. 민감 영역으로 공개 전 사람 검토가 필요하다.",
+          "requiredReExtraction": []
+        },
+        "unsupportedClaims": []
+      }
+    },
+    {
+      "caseId": "case-09",
+      "title": "Canon 30-Day Photo Challenge",
+      "source": {
+        "title": "Canon 30-Day Photo Challenge",
+        "url": "https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge",
+        "publisher": "Canon USA",
+        "sourceType": "reference",
+        "locale": "en-US",
+        "countryContext": null,
+        "checkedAt": "2026-07-11",
+        "accessStatus": "fetched",
+        "rightsStatus": "needs_review",
+        "riskClass": "low",
+        "evidenceMode": "legacy_sparse_source_rows",
+        "coverage": {
+          "status": "not_reverified_in_v4",
+          "scope": "제공된 2개 SourceRow 범위만 변환한다.",
+          "excluded": []
+        }
+      },
+      "requestedUrl": "https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge",
+      "sourceSnapshot": {
+        "capturedAt": "2026-07-19T00:10:36.833Z",
+        "accessStatus": "readable",
+        "httpStatus": 403,
+        "elapsedMs": 2972,
+        "htmlFallback": {
+          "httpStatus": 200,
+          "htmlLength": 334118
+        },
+        "bodyTextSha256": "5edbd000bb5d315b8ec34ebda7519a2666e6ee53522f2b86e3b6a916611c6ec0",
+        "selectedLineCount": 44
+      },
+      "rawGate": {
+        "lowerCost": {
+          "caseId": "case-09",
+          "passed": true,
+          "errors": [],
+          "itemCount": 4,
+          "pattern": "resource_queue",
+          "disposition": "draft_only"
+        },
+        "higherCapability": {
+          "caseId": "case-09",
+          "passed": false,
+          "errors": [
+            "sourceEvidence.case-09-ev-01:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-09-ev-02:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-09-ev-03:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-09-ev-04:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-09-ev-05:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-09-ev-06:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-09-ev-07:text_not_exact_snapshot_substring"
+          ],
+          "itemCount": 30,
+          "pattern": "ordered_procedure",
+          "disposition": "compile_candidate"
+        }
+      },
+      "blindReviews": [
+        {
+          "reviewerId": "reviewer-a",
+          "reviewerProxy": {
+            "model": "gpt-5.6-terra",
+            "reasoningEffort": "high",
+            "role": "lower-cost blind reviewer proxy",
+            "actualProviderCost": null
+          },
+          "overallOption": "B",
+          "laneChoice": "higher_capability",
+          "scores": {
+            "lower_cost": {
+              "dimensions": {
+                "userNeedFit": 3,
+                "executionClarity": 4,
+                "contentFidelity": 2,
+                "portability": 3,
+                "cognitiveLoad": 5,
+                "copySpecificity": 4,
+                "sourceSafety": 4,
+                "accessibilityOperability": 3
+              },
+              "average": 3.5
+            },
+            "higher_capability": {
+              "dimensions": {
+                "userNeedFit": 5,
+                "executionClarity": 5,
+                "contentFidelity": 5,
+                "portability": 5,
+                "cognitiveLoad": 3,
+                "copySpecificity": 5,
+                "sourceSafety": 4,
+                "accessibilityOperability": 4
+              },
+              "average": 4.5
+            }
+          },
+          "judgments": [
+            {
+              "questionId": "source_fidelity",
+              "choice": "B",
+              "reason": "B는 source.headings에 직접 있는 Day 1~30 주제를 모두 옮기고 A는 존재하는 Day 5~29를 없다고 오판했다."
+            },
+            {
+              "questionId": "execution_clarity",
+              "choice": "B",
+              "reason": "30개 일별 촬영 항목과 완료 상태가 시작일부터 바로 실행 가능한 순서로 제시된다."
+            },
+            {
+              "questionId": "artifact_fit",
+              "choice": "B",
+              "reason": "30일 순서 체크리스트와 시작일 기반 달력 템플릿이 챌린지 목적에 정확히 맞는다."
+            },
+            {
+              "questionId": "specificity",
+              "choice": "B",
+              "reason": "원문의 30개 고유 촬영 주제를 순서와 함께 보존한다."
+            },
+            {
+              "questionId": "safety_and_hold",
+              "choice": "tie",
+              "reason": "둘 다 세부 기법을 확장하지 않고 외부 공개 전 권리 검토를 요구하지만 B의 403 접근 설명은 패킷에서 확인되지 않는다."
+            },
+            {
+              "questionId": "reuse_value",
+              "choice": "B",
+              "reason": "전체 30일 목록은 날짜를 바꿔 반복 사용하기 쉽고 A의 4일 단편보다 기준본 가치가 높다."
+            }
+          ],
+          "criticalFindings": [
+            "A: source.headings에 Day 5~29 제목이 모두 있는데도 '스냅샷에 없는' 것으로 잘못 기록해 30일 챌린지를 4일로 잘랐다.",
+            "B: HTTP 403, Access Denied, HTML fallback이라는 접근 이력은 제공된 source packet에 없고 source.accessStatus는 readable이다. 다만 30개 주제 자체는 headings로 직접 지지된다."
+          ],
+          "note": "B의 접근 이력 설명은 빼야 하지만 30개 주제 변환은 패킷 headings에 충실하다."
+        },
+        {
+          "reviewerId": "reviewer-b",
+          "reviewerProxy": {
+            "kind": "blind_model_proxy",
+            "model": "gpt-5.6-sol",
+            "reasoningEffort": "xhigh",
+            "actualProviderCost": null
+          },
+          "overallOption": "A",
+          "laneChoice": "higher_capability",
+          "scores": {
+            "higher_capability": {
+              "dimensions": {
+                "userNeedFit": 5,
+                "executionClarity": 5,
+                "contentFidelity": 5,
+                "portability": 5,
+                "cognitiveLoad": 4,
+                "copySpecificity": 4,
+                "sourceSafety": 5,
+                "accessibilityOperability": 4
+              },
+              "average": 4.625
+            },
+            "lower_cost": {
+              "dimensions": {
+                "userNeedFit": 3,
+                "executionClarity": 3,
+                "contentFidelity": 2,
+                "portability": 3,
+                "cognitiveLoad": 5,
+                "copySpecificity": 4,
+                "sourceSafety": 4,
+                "accessibilityOperability": 4
+              },
+              "average": 3.5
+            }
+          },
+          "judgments": [
+            {
+              "questionId": "source_fidelity",
+              "choice": "A",
+              "reason": "A는 fallback headings에 실제로 존재하는 1~30 주제를 순서대로 모두 옮긴다."
+            },
+            {
+              "questionId": "execution_clarity",
+              "choice": "A",
+              "reason": "시작일 입력 뒤 매일 한 주제를 촬영하고 결과와 완료를 남기는 구조가 완결된다."
+            },
+            {
+              "questionId": "artifact_fit",
+              "choice": "A",
+              "reason": "30개 체크리스트와 30일 offset 달력이 챌린지 구조에 정확히 맞는다."
+            },
+            {
+              "questionId": "specificity",
+              "choice": "A",
+              "reason": "자화상부터 자유 선택까지 각 날짜의 실제 촬영 주제를 이름 붙인다."
+            },
+            {
+              "questionId": "safety_and_hold",
+              "choice": "A",
+              "reason": "403 fallback 사용과 권리 미확인을 밝히고 세부 기법을 추가하지 않은 경계가 정확하다."
+            },
+            {
+              "questionId": "reuse_value",
+              "choice": "A",
+              "reason": "시작일만 바꾸면 완전한 30일 달력과 체크리스트를 다시 만들 수 있다."
+            }
+          ],
+          "criticalFindings": [
+            "B는 headings에 Day 5~29가 있는데도 없다고 판단해 30일 챌린지를 4일 초안으로 잘못 축소한다.",
+            "A는 접근 제한과 권리 검토를 공개 조건으로 남기면서 제목 목록만 보수적으로 사용한다."
+          ],
+          "note": "A가 제한된 접근 상태에서도 확인 가능한 완전한 번호 목록을 정확히 활용했다."
+        }
+      ],
+      "selection": {
+        "kind": "raw_model_output",
+        "lane": "lower_cost",
+        "reason": "only_raw_lane_passing_hard_gate"
+      },
+      "editProxy": {
+        "kind": "none",
+        "operations": [],
+        "weightedEditPoints": 0,
+        "actualHumanEdit": null
+      },
+      "generationTokenProxy": 946,
+      "selectedValidation": {
+        "passed": true,
+        "errors": [],
+        "itemCount": 4,
+        "pattern": "resource_queue"
+      },
+      "candidate": {
+        "caseId": "case-09",
+        "sourceAssessment": {
+          "sourceUrl": "https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge",
+          "accessStatus": "readable",
+          "scope": "30-day photo challenge의 명시된 일별 주제",
+          "sufficient": true,
+          "sensitivity": "reference source; 공개 전 권리 확인 필요"
+        },
+        "sourceEvidence": [
+          {
+            "evidenceId": "ev-01-30day",
+            "kind": "source_fact",
+            "text": "Try this 30-day photo challenge with yourself or with friends.",
+            "locator": "selectedLines:523-526"
+          },
+          {
+            "evidenceId": "ev-02-day1",
+            "kind": "source_table_row",
+            "text": "1. Self-portrait",
+            "locator": "selectedLines:527"
+          },
+          {
+            "evidenceId": "ev-03-day2",
+            "kind": "source_table_row",
+            "text": "2. Black and White",
+            "locator": "selectedLines:532-533"
+          },
+          {
+            "evidenceId": "ev-04-day3",
+            "kind": "source_table_row",
+            "text": "3. Water",
+            "locator": "selectedLines:534-535"
+          },
+          {
+            "evidenceId": "ev-05-day4",
+            "kind": "source_table_row",
+            "text": "4. Night scene",
+            "locator": "selectedLines:536-537"
+          },
+          {
+            "evidenceId": "ev-06-day30",
+            "kind": "source_table_row",
+            "text": "30. Your choice!",
+            "locator": "headings"
+          }
+        ],
+        "flow": {
+          "flowId": "canon-30-day-photo-challenge-start",
+          "title": "30일 사진 챌린지 시작표",
+          "userJob": "원문에 명시된 사진 주제를 하루 하나씩 실행하고 완료 상태를 남긴다.",
+          "lifeArea": "hobby",
+          "planningPattern": "resource_queue",
+          "primaryArtifact": "calendar",
+          "resultBundle": [
+            "시작일 기준 사진 일정",
+            "주제 체크",
+            "원문 링크"
+          ],
+          "minimumInputs": [
+            {
+              "field": "startDate",
+              "label": "Day 1 날짜",
+              "kind": "date",
+              "sourceClaim": false,
+              "required": true
+            }
+          ],
+          "steps": [
+            {
+              "stepId": "step-01",
+              "title": "초기 사진 주제",
+              "order": 1
+            }
+          ],
+          "items": [
+            {
+              "itemId": "item-01",
+              "stepId": "step-01",
+              "title": "Day 1 — Self-portrait",
+              "intent": "act",
+              "doneWhen": "Self-portrait 주제로 사진 촬영을 시도하고 완료 상태를 표시했다.",
+              "order": 1,
+              "sourceEvidenceRefs": [
+                "ev-01-30day",
+                "ev-02-day1"
+              ]
+            },
+            {
+              "itemId": "item-02",
+              "stepId": "step-01",
+              "title": "Day 2 — Black and White",
+              "intent": "act",
+              "doneWhen": "Black and White 주제로 사진 촬영을 시도하고 완료 상태를 표시했다.",
+              "order": 2,
+              "sourceEvidenceRefs": [
+                "ev-01-30day",
+                "ev-03-day2"
+              ]
+            },
+            {
+              "itemId": "item-03",
+              "stepId": "step-01",
+              "title": "Day 3 — Water",
+              "intent": "act",
+              "doneWhen": "Water 주제로 사진 촬영을 시도하고 완료 상태를 표시했다.",
+              "order": 3,
+              "sourceEvidenceRefs": [
+                "ev-01-30day",
+                "ev-04-day3"
+              ]
+            },
+            {
+              "itemId": "item-04",
+              "stepId": "step-01",
+              "title": "Day 4 — Night scene",
+              "intent": "act",
+              "doneWhen": "Night scene 주제로 사진 촬영을 시도하고 완료 상태를 표시했다.",
+              "order": 4,
+              "sourceEvidenceRefs": [
+                "ev-01-30day",
+                "ev-05-day4"
+              ]
+            }
+          ],
+          "sourceTrace": {
+            "sourceUrl": "https://www.usa.canon.com/learning/training-articles/training-articles-list/30-day-photo-challenge",
+            "evidenceIds": [
+              "ev-01-30day",
+              "ev-02-day1",
+              "ev-03-day2",
+              "ev-04-day3",
+              "ev-05-day4",
+              "ev-06-day30"
+            ],
+            "omissions": [
+              "스냅샷에 없는 Day 5~29 제목",
+              "카메라 설정·장비 권장",
+              "사용자 작품 평가"
+            ]
+          },
+          "risk": {
+            "class": "low",
+            "boundary": "원문 주제 외 기술 지침이나 촬영 수량을 추가하지 않는다."
+          },
+          "publicationState": "rights_review_required"
+        },
+        "projections": [
+          {
+            "target": "calendar",
+            "payload": {
+              "startFromUserField": "startDate",
+              "events": [
+                {
+                  "offsetDays": 0,
+                  "title": "Day 1 — Self-portrait"
+                },
+                {
+                  "offsetDays": 1,
+                  "title": "Day 2 — Black and White"
+                },
+                {
+                  "offsetDays": 2,
+                  "title": "Day 3 — Water"
+                },
+                {
+                  "offsetDays": 3,
+                  "title": "Day 4 — Night scene"
+                }
+              ]
+            },
+            "lossLedger": [
+              "Day 5~29는 스냅샷에 명시된 제목을 확보하지 않아 생성하지 않는다."
+            ],
+            "sourceItemRefs": [
+              "item-01",
+              "item-02",
+              "item-03",
+              "item-04"
+            ]
+          },
+          {
+            "target": "checklist",
+            "payload": {
+              "itemIds": [
+                "item-01",
+                "item-02",
+                "item-03",
+                "item-04"
+              ],
+              "includeSourceUrl": true
+            },
+            "lossLedger": [
+              "달력 날짜는 시작일 사용자 입력이 필요하다."
+            ],
+            "sourceItemRefs": [
+              "item-01",
+              "item-02",
+              "item-03",
+              "item-04"
+            ]
+          }
+        ],
+        "renderedArtifacts": {
+          "calendarTemplate": "{{startDate}} Day 1 — Self-portrait\n{{startDate}} + 1일 Day 2 — Black and White\n{{startDate}} + 2일 Day 3 — Water\n{{startDate}} + 3일 Day 4 — Night scene",
+          "checklist": "- [ ] Day 1 — Self-portrait\n- [ ] Day 2 — Black and White\n- [ ] Day 3 — Water\n- [ ] Day 4 — Night scene"
+        },
+        "decision": {
+          "disposition": "draft_only",
+          "reason": "30일 챌린지와 초기 주제는 스냅샷에서 확인되지만, 공개·재사용 권리와 Day 5~29의 정확한 제목 확인이 필요하다.",
+          "requiredReExtraction": [
+            "공개·재사용 권리 승인",
+            "Day 5~29의 명시적 원문 주제"
+          ]
+        },
+        "unsupportedClaims": []
+      }
+    },
+    {
+      "caseId": "case-10",
+      "title": "TS 자동차 정기검사",
+      "source": {
+        "title": "TS 자동차 정기검사",
+        "url": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+        "publisher": "한국교통안전공단",
+        "sourceType": "official",
+        "locale": "ko-KR",
+        "countryContext": "KR",
+        "checkedAt": "2026-07-11",
+        "accessStatus": "fetched",
+        "rightsStatus": "allowed",
+        "riskClass": "safety_sensitive",
+        "evidenceMode": "legacy_sparse_source_rows",
+        "coverage": {
+          "status": "not_reverified_in_v4",
+          "scope": "제공된 2개 SourceRow 범위만 변환한다.",
+          "excluded": []
+        }
+      },
+      "requestedUrl": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+      "sourceSnapshot": {
+        "capturedAt": "2026-07-19T00:10:39.701Z",
+        "accessStatus": "readable",
+        "httpStatus": 200,
+        "elapsedMs": 2868,
+        "htmlFallback": null,
+        "bodyTextSha256": "569f74197f93f820059a1fe8438f72842db970048b9461ad46b33bfb51d72d75",
+        "selectedLineCount": 61
+      },
+      "rawGate": {
+        "lowerCost": {
+          "caseId": "case-10",
+          "passed": true,
+          "errors": [],
+          "itemCount": 3,
+          "pattern": "phase_lifecycle",
+          "disposition": "compile_candidate"
+        },
+        "higherCapability": {
+          "caseId": "case-10",
+          "passed": false,
+          "errors": [
+            "sourceEvidence.case-10-ev-01:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-10-ev-02:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-10-ev-03:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-10-ev-04:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-10-ev-05:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-10-ev-06:text_not_exact_snapshot_substring"
+          ],
+          "itemCount": 4,
+          "pattern": "source_table_rows",
+          "disposition": "compile_candidate"
+        }
+      },
+      "blindReviews": [
+        {
+          "reviewerId": "reviewer-a",
+          "reviewerProxy": {
+            "model": "gpt-5.6-terra",
+            "reasoningEffort": "high",
+            "role": "lower-cost blind reviewer proxy",
+            "actualProviderCost": null
+          },
+          "overallOption": "B",
+          "laneChoice": "lower_cost",
+          "scores": {
+            "higher_capability": {
+              "dimensions": {
+                "userNeedFit": 5,
+                "executionClarity": 5,
+                "contentFidelity": 2,
+                "portability": 5,
+                "cognitiveLoad": 3,
+                "copySpecificity": 5,
+                "sourceSafety": 2,
+                "accessibilityOperability": 4
+              },
+              "average": 3.875
+            },
+            "lower_cost": {
+              "dimensions": {
+                "userNeedFit": 4,
+                "executionClarity": 4,
+                "contentFidelity": 4,
+                "portability": 3,
+                "cognitiveLoad": 5,
+                "copySpecificity": 4,
+                "sourceSafety": 3,
+                "accessibilityOperability": 3
+              },
+              "average": 3.75
+            }
+          },
+          "judgments": [
+            {
+              "questionId": "source_fidelity",
+              "choice": "B",
+              "reason": "B는 직접 보이는 대상·승용 행·재검사 문구만 쓰지만 A의 21행 표 상당수는 패킷에 없는 bodyTextSample에 의존한다."
+            },
+            {
+              "questionId": "execution_clarity",
+              "choice": "A",
+              "reason": "A는 차량 분류, 예외, 일치 행, 공식 재확인의 완료 상태를 더 선명하게 제시한다."
+            },
+            {
+              "questionId": "artifact_fit",
+              "choice": "A",
+              "reason": "차종별 유효기간은 조건 행 시트와 예외 메모로 조회하는 형식이 가장 자연스럽다."
+            },
+            {
+              "questionId": "specificity",
+              "choice": "A",
+              "reason": "차종·사업용·규모·차령·신조차·예외를 구분해 더 구체적이지만 일부 행의 근거가 확인되지 않는다."
+            },
+            {
+              "questionId": "safety_and_hold",
+              "choice": "B",
+              "reason": "B도 재검사 조건을 더 보존해야 하지만 A보다 패킷 밖 공식 표 값을 자동 조회 기준으로 쓰는 위험이 작다."
+            },
+            {
+              "questionId": "reuse_value",
+              "choice": "B",
+              "reason": "A의 표는 풍부해도 검증되지 않은 행이 있어 기준본으로 위험하며 B의 좁은 확인표가 상대적으로 안전하다."
+            }
+          ],
+          "criticalFindings": [
+            "A: 사업용 승합 중·대형, 화물·특수의 여러 행은 제공된 selectedLines에서 차종·사업용 문맥이 끊겨 있으며 bodyTextSample locator를 확인할 수 없는데 21행 공식 조회표로 확정했다.",
+            "B: 재검사 메모가 '10일 이내'를 넓게 요약하면서 source 56~62의 적용 조건과 토·일·공휴일·근로자의 날 제외 규칙을 보존하지 않아 안전 민감 기한을 오해할 수 있다."
+          ],
+          "note": "둘 다 수정이 필요하지만 패킷 밖 표 전체를 확정한 A보다 직접 근거에 좁게 묶인 B가 낫다."
+        },
+        {
+          "reviewerId": "reviewer-b",
+          "reviewerProxy": {
+            "kind": "blind_model_proxy",
+            "model": "gpt-5.6-sol",
+            "reasoningEffort": "xhigh",
+            "actualProviderCost": null
+          },
+          "overallOption": "B",
+          "laneChoice": "higher_capability",
+          "scores": {
+            "lower_cost": {
+              "dimensions": {
+                "userNeedFit": 4,
+                "executionClarity": 3,
+                "contentFidelity": 3,
+                "portability": 3,
+                "cognitiveLoad": 4,
+                "copySpecificity": 4,
+                "sourceSafety": 3,
+                "accessibilityOperability": 4
+              },
+              "average": 3.5
+            },
+            "higher_capability": {
+              "dimensions": {
+                "userNeedFit": 5,
+                "executionClarity": 4,
+                "contentFidelity": 5,
+                "portability": 5,
+                "cognitiveLoad": 3,
+                "copySpecificity": 5,
+                "sourceSafety": 5,
+                "accessibilityOperability": 4
+              },
+              "average": 4.5
+            }
+          },
+          "judgments": [
+            {
+              "questionId": "source_fidelity",
+              "choice": "B",
+              "reason": "B는 21개 유효기간 조건 행과 두 예외를 표로 보존하고 실제 만료일은 만들지 않는다."
+            },
+            {
+              "questionId": "execution_clarity",
+              "choice": "B",
+              "reason": "차종·용도·규모·차령·신조차·예외를 기록해 일치 행 또는 미확인을 남기는 절차가 분명하다."
+            },
+            {
+              "questionId": "artifact_fit",
+              "choice": "B",
+              "reason": "복합 조건표는 체크리스트보다 조회용 sheet와 결과 메모에 더 잘 맞는다."
+            },
+            {
+              "questionId": "specificity",
+              "choice": "B",
+              "reason": "차량 분류 필드와 신조차·피견인·구형 승합 예외를 구체적으로 드러낸다."
+            },
+            {
+              "questionId": "safety_and_hold",
+              "choice": "B",
+              "reason": "유효기간 길이와 실제 만료일을 분리하고 불명확한 분류는 공식 조회로 돌린다."
+            },
+            {
+              "questionId": "reuse_value",
+              "choice": "B",
+              "reason": "차량 조건을 바꿔 전체 공식 표를 반복 조회하고 결과를 시트에 남길 수 있다."
+            }
+          ],
+          "criticalFindings": [
+            "A는 일반 차종 조회를 요구하면서 근거와 projection에 비사업용 승용차 한 행만 실질적으로 보존해 다른 분류를 실행하기 어렵다.",
+            "A는 재검사 10일 규칙의 조건별 기준일과 제외일을 압축해 안전 민감 상황에서 오해를 만들 수 있다.",
+            "B는 재검사를 별도 job으로 제외하고 유효기간 표 조회에만 범위를 고정한 판단이 안전하다."
+          ],
+          "note": "B가 복합 조건표의 완전성과 실제 법정 기한 비산출 경계를 함께 지켰다."
+        }
+      ],
+      "selection": {
+        "kind": "raw_model_output",
+        "lane": "lower_cost",
+        "reason": "only_raw_lane_passing_hard_gate"
+      },
+      "editProxy": {
+        "kind": "none",
+        "operations": [],
+        "weightedEditPoints": 0,
+        "actualHumanEdit": null
+      },
+      "generationTokenProxy": 833,
+      "selectedValidation": {
+        "passed": true,
+        "errors": [],
+        "itemCount": 3,
+        "pattern": "phase_lifecycle"
+      },
+      "candidate": {
+        "caseId": "case-10",
+        "sourceAssessment": {
+          "sourceUrl": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+          "accessStatus": "readable",
+          "scope": "자동차 정기검사 대상·유효기간·부적합 재검사 기간",
+          "sufficient": true,
+          "sensitivity": "safety_sensitive; 차량별 적용 시기와 검사 판정은 공식 기관에 맡긴다"
+        },
+        "sourceEvidence": [
+          {
+            "evidenceId": "ev-01-definition",
+            "kind": "source_fact",
+            "text": "「자동차관리법」제43조에 따라 신규등록 후 일정 기간마다 정기적으로 실시하는 검사",
+            "locator": "selectedLines:28-30"
+          },
+          {
+            "evidenceId": "ev-02-target",
+            "kind": "source_fact",
+            "text": "「자동차관리법」에 따라 등록되어 운행 중인 자동차",
+            "locator": "selectedLines:31-33"
+          },
+          {
+            "evidenceId": "ev-03-passenger",
+            "kind": "source_table_row",
+            "text": "승용자동차 비사업용 경형 · 소형 · 중형 · 대형 전체 2년[신조차(新造車)로서 법 제43조제5항에 따라 신규검사를 받은 것으로 보는 자동차의 최초 검사 유효기간은 5년]",
+            "locator": "selectedLines:63-68"
+          },
+          {
+            "evidenceId": "ev-04-reinspection",
+            "kind": "date_window",
+            "text": "검사기간 만료 후 10일 이내",
+            "locator": "selectedLines:54-56"
+          },
+          {
+            "evidenceId": "ev-05-reinspection-condition",
+            "kind": "condition_action",
+            "text": "부적합 판정을 받은 날부터 10일 이내",
+            "locator": "selectedLines:54-58"
+          }
+        ],
+        "flow": {
+          "flowId": "ts-vehicle-inspection-confirmation",
+          "title": "자동차 정기검사 확인표",
+          "userJob": "공식 표에서 내 차량의 검사 유효기간을 확인하고, 부적합 시 재검사 기간을 확인한다.",
+          "lifeArea": "home_living",
+          "planningPattern": "phase_lifecycle",
+          "primaryArtifact": "checklist",
+          "resultBundle": [
+            "검사 대상 확인",
+            "유효기간 표 확인",
+            "재검사 기간 메모"
+          ],
+          "minimumInputs": [
+            {
+              "field": "vehicleCategory",
+              "label": "차종·사업용 구분·차령",
+              "kind": "text",
+              "sourceClaim": false,
+              "required": true
+            }
+          ],
+          "steps": [
+            {
+              "stepId": "step-01",
+              "title": "검사 시기 확인",
+              "order": 1
+            }
+          ],
+          "items": [
+            {
+              "itemId": "item-01",
+              "stepId": "step-01",
+              "title": "등록·운행 차량의 검사 대상 확인",
+              "intent": "inspect",
+              "doneWhen": "등록되어 운행 중인 자동차가 검사 대상이라는 공식 안내를 확인했다.",
+              "order": 1,
+              "sourceEvidenceRefs": [
+                "ev-01-definition",
+                "ev-02-target"
+              ]
+            },
+            {
+              "itemId": "item-02",
+              "stepId": "step-01",
+              "title": "차종·사업용 구분·차령으로 유효기간 표 확인",
+              "intent": "inspect",
+              "doneWhen": "내 차량의 차종·사업용 구분·차령에 해당하는 유효기간 행을 공식 표에서 확인했다.",
+              "order": 2,
+              "sourceEvidenceRefs": [
+                "ev-03-passenger"
+              ]
+            },
+            {
+              "itemId": "item-03",
+              "stepId": "step-01",
+              "title": "부적합 시 재검사 기간 확인",
+              "intent": "inspect",
+              "doneWhen": "부적합 판정 또는 검사기간 만료 상황의 10일 이내 재검사 안내를 확인했다.",
+              "order": 3,
+              "sourceEvidenceRefs": [
+                "ev-04-reinspection",
+                "ev-05-reinspection-condition"
+              ]
+            }
+          ],
+          "sourceTrace": {
+            "sourceUrl": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+            "evidenceIds": [
+              "ev-01-definition",
+              "ev-02-target",
+              "ev-03-passenger",
+              "ev-04-reinspection",
+              "ev-05-reinspection-condition"
+            ],
+            "omissions": [
+              "다른 차종 행의 개인 적용",
+              "실제 검사 만료일 계산",
+              "차량 안전 상태 또는 부적합 판정"
+            ]
+          },
+          "risk": {
+            "class": "safety_sensitive",
+            "boundary": "Flow는 차량별 검사일을 계산하거나 검사 적합 여부를 판정하지 않는다."
+          },
+          "publicationState": "sensitive_locked"
+        },
+        "projections": [
+          {
+            "target": "checklist",
+            "payload": {
+              "title": "자동차 정기검사 확인표",
+              "itemIds": [
+                "item-01",
+                "item-02",
+                "item-03"
+              ],
+              "includeSourceUrl": true
+            },
+            "lossLedger": [
+              "실제 검사일은 차량 정보와 공식 검사소 확인이 필요하므로 달력 이벤트를 만들지 않는다."
+            ],
+            "sourceItemRefs": [
+              "item-01",
+              "item-02",
+              "item-03"
+            ]
+          },
+          {
+            "target": "memo",
+            "payload": {
+              "title": "공식 재검사 기간",
+              "text": "검사기간 만료 후 10일 이내 / 부적합 판정을 받은 날부터 10일 이내",
+              "sourceUrl": "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200"
+            },
+            "lossLedger": [],
+            "sourceItemRefs": [
+              "item-03"
+            ]
+          }
+        ],
+        "renderedArtifacts": {
+          "checklist": "- [ ] 등록·운행 차량의 검사 대상 확인\n- [ ] 차종·사업용 구분·차령으로 유효기간 표 확인\n- [ ] 부적합 시 재검사 기간 확인",
+          "memo": "재검사 기간: 검사기간 만료 후 10일 이내. 부적합 판정 후에도 10일 이내 안내를 공식 원문에서 확인합니다."
+        },
+        "decision": {
+          "disposition": "compile_candidate",
+          "reason": "공식 페이지가 대상·유효기간 표·재검사 기간을 명시한다. 실제 차량별 날짜 계산과 판정은 제외한다.",
+          "requiredReExtraction": []
+        },
+        "unsupportedClaims": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "requestRef": "req-f39c29affaac26db",
+  "sampleRef": "smp-cca0262a42e836c9",
+  "maxItems": 7,
+  "sourceOwnership": {
+    "primarySourceRef": "src-4db1438a4eb3210c",
+    "supportingSourceRefs": [
+      "src-d3e7a12e35d47845"
+    ]
+  },
+  "sourceRows": [
+    {
+      "sourceRowRef": "row-4132ffef2e290ce3",
+      "sourceRef": "src-4db1438a4eb3210c",
+      "rowType": "date",
+      "title": "정기검사 유효기간",
+      "detail": null,
+      "order": 0
+    },
+    {
+      "sourceRowRef": "row-fc5caae6258cde3c",
+      "sourceRef": "src-d3e7a12e35d47845",
+      "rowType": "reference",
+      "title": "검사기관 내부 검사 단계",
+      "detail": null,
+      "order": 0
+    }
+  ]
+}

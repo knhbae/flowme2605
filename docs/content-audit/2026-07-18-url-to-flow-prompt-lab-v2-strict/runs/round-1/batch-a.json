@@ -1,0 +1,285 @@
+{
+  "runEnvelopeVersion": "flowme-url-to-flow-strict-run-v2",
+  "laneId": "url-to-flow-source-row-v2-strict",
+  "runId": "strict-v2-round-1-batch-a",
+  "round": "round-1",
+  "batchRef": "batch-a",
+  "promptVersion": "url-to-flow-prompt-v2.0",
+  "evidenceClass": "current_session_model_proxy",
+  "protocolState": {
+    "revisionClass": null,
+    "outputEditedByController": false,
+    "externalApiUsed": false,
+    "humanReview": false,
+    "assemblyPassed": true
+  },
+  "assemblyIssues": [],
+  "bindings": {
+    "baseFreezeSha256": "edf50cd86d642cc12c7221bcde518b7b627593524b72f37d239cc4588b6baa92",
+    "revisionFreezeSha256": null,
+    "protocolSha256": "5de1de52e326cec98cb6f4f948326b9fb23b103035a9c7f9ccf6325821ddc610",
+    "caseSetSha256": "3b02e4fbcaf8ee0d79d0fa5937b9e30204dabecdeff5f6c3a4bce67804cc0984",
+    "caseSetSemanticSha256": "f36b4f733e83be8d1f3a2aea029e17b0168f20f0d0cbb70b7318238d5528cfac",
+    "opaqueMapSha256": "751465ef81750a97e609b7fdbd669c261907b2a855a4b287a8af13a4bbbce5aa",
+    "promptTemplateSha256": "0cc3d79b55b693f3e33e136f538e5a050f324fe4d7655ef64a76e4f05a11b185",
+    "schemaSha256": "afbf04b27450c0beca79b1f402cc42dab451551f068cf50b46d27d12152fa957",
+    "rubricSha256": "9cfd2d94247ac176528d3d0fa9d9aeb0d0d885770e6e73f53b9454780677c83a",
+    "packetManifestSha256": "05fe774668056a0068c3e564e696ac4f3bf330a40c3dea9edc2e9d0d9861d870",
+    "taskPayloadManifestSha256": "13dcb53f705452941ad29b197a78552662b525967418b05aa86011f5ea1e20a5",
+    "exactTaskPayloadSha256": "5789ed6edd3a484928d2ab191e11dfc42b88b9d31c55ba410a1efd57ed926f30",
+    "defectSelectionSha256": null,
+    "round2ReviewValidationSha256": null
+  },
+  "executor": {
+    "agentTaskId": "/root/strict_r1_gen_a",
+    "taskName": "strict_r1_gen_a",
+    "forkTurns": "none",
+    "freshContextMethod": "spawn_agent_fork_none"
+  },
+  "measurement": {
+    "provider": null,
+    "model": null,
+    "tier": null,
+    "sampling": null,
+    "inputTokens": null,
+    "outputTokens": null,
+    "latencyMs": null,
+    "cost": null,
+    "currency": null
+  },
+  "counts": {
+    "pipelineCaseCount": 4,
+    "modelInputCaseCount": 4,
+    "modelResultCount": 4,
+    "deterministicCaseCount": 0,
+    "outputCount": 4
+  },
+  "rawResponseSource": "docs/content-audit/2026-07-18-url-to-flow-prompt-lab-v2-strict/raw/round-1/batch-a.txt",
+  "rawResponse": "[\n  {\n    \"schemaVersion\": \"flowme-semantic-proposal-v2\",\n    \"promptVersion\": \"url-to-flow-prompt-v2.0\",\n    \"requestRef\": \"req-ce3f389aba8d72a1\",\n    \"sampleRef\": \"smp-34e345a01a86a243\",\n    \"result\": {\n      \"state\": \"proposal\",\n      \"reasonCode\": null,\n      \"disposition\": \"review\",\n      \"primaryArtifact\": \"checklist\"\n    },\n    \"items\": [\n      {\n        \"itemRef\": \"item-01\",\n        \"sourceRowRefs\": [\n          \"row-dd607307afad0c2e\"\n        ],\n        \"title\": \"검진 대상 및 예약 확인\",\n        \"intent\": \"inspect\",\n        \"completionMode\": \"check\",\n        \"memo\": null,\n        \"scheduleEvidence\": null\n      },\n      {\n        \"itemRef\": \"item-02\",\n        \"sourceRowRefs\": [\n          \"row-32712fc7d347ea11\"\n        ],\n        \"title\": \"검진기관 방문하기\",\n        \"intent\": \"act\",\n        \"completionMode\": \"check\",\n        \"memo\": null,\n        \"scheduleEvidence\": null\n      }\n    ],\n    \"omittedRows\": [],\n    \"projections\": [\n      {\n        \"target\": \"checklist\",\n        \"itemRefs\": [\n          \"item-01\",\n          \"item-02\"\n        ]\n      }\n    ],\n    \"review\": {\n      \"uncertaintyCodes\": [\n        \"missing_date_value\"\n      ],\n      \"humanCheckRowRefs\": [\n        \"row-32712fc7d347ea11\"\n      ]\n    }\n  },\n  {\n    \"schemaVersion\": \"flowme-semantic-proposal-v2\",\n    \"promptVersion\": \"url-to-flow-prompt-v2.0\",\n    \"requestRef\": \"req-7880991b095b3d7d\",\n    \"sampleRef\": \"smp-f88067b21f8d8327\",\n    \"result\": {\n      \"state\": \"proposal\",\n      \"reasonCode\": null,\n      \"disposition\": \"review\",\n      \"primaryArtifact\": \"calendar\"\n    },\n    \"items\": [\n      {\n        \"itemRef\": \"item-01\",\n        \"sourceRowRefs\": [\n          \"row-bb7995c52706bd51\"\n        ],\n        \"title\": \"극세 필터 4주에 한 번 청소\",\n        \"intent\": \"act\",\n        \"completionMode\": \"check\",\n        \"memo\": \"먼지 제거, 물세척, 그늘 건조\",\n        \"scheduleEvidence\": {\n          \"sourceRowRefs\": [\n            \"row-bb7995c52706bd51\"\n          ],\n          \"sourceText\": \"4주에 한 번\",\n          \"kind\": \"recurrence\"\n        }\n      }\n    ],\n    \"omittedRows\": [],\n    \"projections\": [\n      {\n        \"target\": \"calendar\",\n        \"itemRefs\": [\n          \"item-01\"\n        ]\n      }\n    ],\n    \"review\": {\n      \"uncertaintyCodes\": [],\n      \"humanCheckRowRefs\": []\n    }\n  },\n  {\n    \"schemaVersion\": \"flowme-semantic-proposal-v2\",\n    \"promptVersion\": \"url-to-flow-prompt-v2.0\",\n    \"requestRef\": \"req-f84a85135d3f4157\",\n    \"sampleRef\": \"smp-64c0dc556a3ed163\",\n    \"result\": {\n      \"state\": \"proposal\",\n      \"reasonCode\": null,\n      \"disposition\": \"review\",\n      \"primaryArtifact\": \"checklist\"\n    },\n    \"items\": [\n      {\n        \"itemRef\": \"item-01\",\n        \"sourceRowRefs\": [\n          \"row-895b0b7ea057dcee\"\n        ],\n        \"title\": \"여권 확인하기\",\n        \"intent\": \"inspect\",\n        \"completionMode\": \"check\",\n        \"memo\": null,\n        \"scheduleEvidence\": null\n      },\n      {\n        \"itemRef\": \"item-02\",\n        \"sourceRowRefs\": [\n          \"row-ae9677e543e713c9\"\n        ],\n        \"title\": \"데이터 유심 확인하기\",\n        \"intent\": \"inspect\",\n        \"completionMode\": \"check\",\n        \"memo\": null,\n        \"scheduleEvidence\": null\n      }\n    ],\n    \"omittedRows\": [],\n    \"projections\": [\n      {\n        \"target\": \"checklist\",\n        \"itemRefs\": [\n          \"item-01\",\n          \"item-02\"\n        ]\n      }\n    ],\n    \"review\": {\n      \"uncertaintyCodes\": [],\n      \"humanCheckRowRefs\": []\n    }\n  },\n  {\n    \"schemaVersion\": \"flowme-semantic-proposal-v2\",\n    \"promptVersion\": \"url-to-flow-prompt-v2.0\",\n    \"requestRef\": \"req-666d09c063252eb7\",\n    \"sampleRef\": \"smp-0b82f73ebd2cd478\",\n    \"result\": {\n      \"state\": \"proposal\",\n      \"reasonCode\": null,\n      \"disposition\": \"review\",\n      \"primaryArtifact\": \"checklist\"\n    },\n    \"items\": [\n      {\n        \"itemRef\": \"item-01\",\n        \"sourceRowRefs\": [\n          \"row-ee4a91296e11ea28\"\n        ],\n        \"title\": \"구직 신청 등록\",\n        \"intent\": \"act\",\n        \"completionMode\": \"check\",\n        \"memo\": null,\n        \"scheduleEvidence\": null\n      },\n      {\n        \"itemRef\": \"item-02\",\n        \"sourceRowRefs\": [\n          \"row-2873fc5802dd3a6e\"\n        ],\n        \"title\": \"취업지원 서비스 신청\",\n        \"intent\": \"act\",\n        \"completionMode\": \"check\",\n        \"memo\": null,\n        \"scheduleEvidence\": null\n      }\n    ],\n    \"omittedRows\": [],\n    \"projections\": [\n      {\n        \"target\": \"checklist\",\n        \"itemRefs\": [\n          \"item-01\",\n          \"item-02\"\n        ]\n      }\n    ],\n    \"review\": {\n      \"uncertaintyCodes\": [],\n      \"humanCheckRowRefs\": []\n    }\n  }\n]\n",
+  "rawResponseSha256": "41612c5853a70fa460d83e1ddef90bf32d998afc0d31d46b5d53e824ad79aa3f",
+  "parsedModelResultsSha256": "2870f4f2f08f3420f4d8119a47be7b7069027635fdcc6923e848d4b98b5ef3bf",
+  "outputs": [
+    {
+      "auditCaseId": "case-01",
+      "sampleRef": "smp-34e345a01a86a243",
+      "modelInvoked": true,
+      "packetSha256": "46d8ae002ae9c25ec12e383c48e79942f2352ba7fc1da187013df881ce89993d",
+      "proposal": {
+        "schemaVersion": "flowme-semantic-proposal-v2",
+        "promptVersion": "url-to-flow-prompt-v2.0",
+        "requestRef": "req-ce3f389aba8d72a1",
+        "sampleRef": "smp-34e345a01a86a243",
+        "result": {
+          "state": "proposal",
+          "reasonCode": null,
+          "disposition": "review",
+          "primaryArtifact": "checklist"
+        },
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRefs": [
+              "row-dd607307afad0c2e"
+            ],
+            "title": "검진 대상 및 예약 확인",
+            "intent": "inspect",
+            "completionMode": "check",
+            "memo": null,
+            "scheduleEvidence": null
+          },
+          {
+            "itemRef": "item-02",
+            "sourceRowRefs": [
+              "row-32712fc7d347ea11"
+            ],
+            "title": "검진기관 방문하기",
+            "intent": "act",
+            "completionMode": "check",
+            "memo": null,
+            "scheduleEvidence": null
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "checklist",
+            "itemRefs": [
+              "item-01",
+              "item-02"
+            ]
+          }
+        ],
+        "review": {
+          "uncertaintyCodes": [
+            "missing_date_value"
+          ],
+          "humanCheckRowRefs": [
+            "row-32712fc7d347ea11"
+          ]
+        }
+      }
+    },
+    {
+      "auditCaseId": "case-02",
+      "sampleRef": "smp-f88067b21f8d8327",
+      "modelInvoked": true,
+      "packetSha256": "c414500d2681373cde56b5c06ecf69b108c405640fa3fd97eddf708409a7f765",
+      "proposal": {
+        "schemaVersion": "flowme-semantic-proposal-v2",
+        "promptVersion": "url-to-flow-prompt-v2.0",
+        "requestRef": "req-7880991b095b3d7d",
+        "sampleRef": "smp-f88067b21f8d8327",
+        "result": {
+          "state": "proposal",
+          "reasonCode": null,
+          "disposition": "review",
+          "primaryArtifact": "calendar"
+        },
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRefs": [
+              "row-bb7995c52706bd51"
+            ],
+            "title": "극세 필터 4주에 한 번 청소",
+            "intent": "act",
+            "completionMode": "check",
+            "memo": "먼지 제거, 물세척, 그늘 건조",
+            "scheduleEvidence": {
+              "sourceRowRefs": [
+                "row-bb7995c52706bd51"
+              ],
+              "sourceText": "4주에 한 번",
+              "kind": "recurrence"
+            }
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "calendar",
+            "itemRefs": [
+              "item-01"
+            ]
+          }
+        ],
+        "review": {
+          "uncertaintyCodes": [],
+          "humanCheckRowRefs": []
+        }
+      }
+    },
+    {
+      "auditCaseId": "case-03",
+      "sampleRef": "smp-64c0dc556a3ed163",
+      "modelInvoked": true,
+      "packetSha256": "7f9ab6d1b7d7a53e3e2ce0a7089424f4cb0cb5221fac2ebfb5d44b7e3f394b7b",
+      "proposal": {
+        "schemaVersion": "flowme-semantic-proposal-v2",
+        "promptVersion": "url-to-flow-prompt-v2.0",
+        "requestRef": "req-f84a85135d3f4157",
+        "sampleRef": "smp-64c0dc556a3ed163",
+        "result": {
+          "state": "proposal",
+          "reasonCode": null,
+          "disposition": "review",
+          "primaryArtifact": "checklist"
+        },
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRefs": [
+              "row-895b0b7ea057dcee"
+            ],
+            "title": "여권 확인하기",
+            "intent": "inspect",
+            "completionMode": "check",
+            "memo": null,
+            "scheduleEvidence": null
+          },
+          {
+            "itemRef": "item-02",
+            "sourceRowRefs": [
+              "row-ae9677e543e713c9"
+            ],
+            "title": "데이터 유심 확인하기",
+            "intent": "inspect",
+            "completionMode": "check",
+            "memo": null,
+            "scheduleEvidence": null
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "checklist",
+            "itemRefs": [
+              "item-01",
+              "item-02"
+            ]
+          }
+        ],
+        "review": {
+          "uncertaintyCodes": [],
+          "humanCheckRowRefs": []
+        }
+      }
+    },
+    {
+      "auditCaseId": "case-04",
+      "sampleRef": "smp-0b82f73ebd2cd478",
+      "modelInvoked": true,
+      "packetSha256": "c9899e2484eaa3b07dde1a3c76ca8006f6e5e4f8b9908658e4721b74a380238c",
+      "proposal": {
+        "schemaVersion": "flowme-semantic-proposal-v2",
+        "promptVersion": "url-to-flow-prompt-v2.0",
+        "requestRef": "req-666d09c063252eb7",
+        "sampleRef": "smp-0b82f73ebd2cd478",
+        "result": {
+          "state": "proposal",
+          "reasonCode": null,
+          "disposition": "review",
+          "primaryArtifact": "checklist"
+        },
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRefs": [
+              "row-ee4a91296e11ea28"
+            ],
+            "title": "구직 신청 등록",
+            "intent": "act",
+            "completionMode": "check",
+            "memo": null,
+            "scheduleEvidence": null
+          },
+          {
+            "itemRef": "item-02",
+            "sourceRowRefs": [
+              "row-2873fc5802dd3a6e"
+            ],
+            "title": "취업지원 서비스 신청",
+            "intent": "act",
+            "completionMode": "check",
+            "memo": null,
+            "scheduleEvidence": null
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "checklist",
+            "itemRefs": [
+              "item-01",
+              "item-02"
+            ]
+          }
+        ],
+        "review": {
+          "uncertaintyCodes": [],
+          "humanCheckRowRefs": []
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "selectionVersion": "flowme-url-to-flow-strict-defect-selection-v2",
+  "selectionMethod": "protocol_fixed_taxonomy_and_priority",
+  "round1ReviewValidationSha256": null,
+  "round1AutomatedValidationSha256": "fea029cd582f818a4516f25efe576ddeb3b7f2d5d7d65d4bf61d4d984b89640e",
+  "reviewNotRunReason": "run_validation_failed",
+  "round1PassedAllGates": false,
+  "action": "prompt_one_defect_revision",
+  "revisionClass": "row_license_compliance",
+  "revisionInstructionSha256": "88ba0da4013910fe764c759a001d30745b7c0c9826b3743ab255cef6cffc530f",
+  "promptVersionRound2": "url-to-flow-prompt-v2.1",
+  "classPriority": [
+    "output_contract_compliance",
+    "row_license_compliance",
+    "uncertainty_marker_compliance",
+    "artifact_projection_compliance",
+    "unsupported_content_compliance"
+  ],
+  "triggeredRevisionClasses": [
+    "row_license_compliance"
+  ],
+  "failedGateNames": [
+    "automatedValidation"
+  ],
+  "automatedErrorCodes": [
+    "item_title_outside_row_license",
+    "row_type_intent_completion_mismatch"
+  ],
+  "reviewTopIssueCodes": [],
+  "protocolIntegrityFailures": []
+}

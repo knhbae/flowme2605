@@ -1,0 +1,31 @@
+{
+  "schemaPath": "docs/specs/2026-07-14-url-to-flow-prompt-lab/proposal-schema-v1.json",
+  "schemaSha256": "d001767b277f387a38ea52f88392c5eb9afe6d9b9af85bfd24e6f4ef37ef4536",
+  "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+  "limits": {
+    "objectSchemas": {
+      "actual": 11,
+      "max": 12,
+      "passed": true
+    },
+    "declaredProperties": {
+      "actual": 52,
+      "max": 60,
+      "passed": true
+    },
+    "serializedBytes": {
+      "actual": 9061,
+      "max": 12288,
+      "passed": true
+    },
+    "strictObjects": {
+      "actualFailures": [],
+      "passed": true
+    },
+    "requiredUnlessNullable": {
+      "actualFailures": [],
+      "passed": true
+    }
+  },
+  "passed": true
+}

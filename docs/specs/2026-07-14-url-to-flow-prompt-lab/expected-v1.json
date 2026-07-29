@@ -1,6 +1,7 @@
 {
-  "expectationSetVersion": "flowme-url-to-flow-prompt-lab-expected-v1",
-  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
+  "expectationSetVersion": "flowme-url-to-flow-prompt-lab-expected-v1.1",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1.1",
+  "sourceFixtureSha256": "ce69525a3710bfe5c22f84c7763f436ef07cbc06fc5ec171e6b76f6e02fc134d",
   "generatedFrom": "docs/specs/2026-07-11-canonical-flow-data-model/golden-fixtures-v1.json",
   "hiddenFromGenerator": true,
   "expectations": [

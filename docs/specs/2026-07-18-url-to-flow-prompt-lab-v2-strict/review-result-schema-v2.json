@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "flowme-source-row-blind-review-result-v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sampleRef",
+    "reviewInputSha256",
+    "proposalFingerprint",
+    "caseVerdict",
+    "itemVerdicts",
+    "unsupportedSignals",
+    "scores",
+    "scoreComments",
+    "topIssueCode",
+    "note"
+  ],
+  "properties": {
+    "sampleRef": { "type": "string", "pattern": "^smp-[0-9a-f]{16}$" },
+    "reviewInputSha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "proposalFingerprint": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "caseVerdict": { "enum": ["pass", "revise", "fail"] },
+    "itemVerdicts": {
+      "type": "array",
+      "maxItems": 12,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["itemRef", "verdict", "reasonCode"],
+        "properties": {
+          "itemRef": { "type": "string", "pattern": "^item-[0-9]{2}$" },
+          "verdict": { "enum": ["keep", "edit", "remove"] },
+          "reasonCode": {
+            "enum": [
+              "supported_as_written",
+              "wording_only",
+              "intent_mismatch",
+              "completion_mismatch",
+              "unsupported_action",
+              "unsupported_schedule",
+              "unsupported_fact",
+              "resource_contents_invented",
+              "should_be_omitted"
+            ]
+          }
+        }
+      }
+    },
+    "unsupportedSignals": {
+      "type": "array",
+      "maxItems": 24,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["class", "path", "quote"],
+        "properties": {
+          "class": { "enum": ["action", "date", "repeat", "fact"] },
+          "path": { "type": "string", "minLength": 1, "maxLength": 160 },
+          "quote": { "type": "string", "minLength": 1, "maxLength": 160 }
+        }
+      }
+    },
+    "scores": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "userNeedFit",
+        "executionClarity",
+        "contentFidelityCoverage",
+        "portability",
+        "cognitiveLoad",
+        "copySpecificity",
+        "sourceSafetySeparation"
+      ],
+      "properties": {
+        "userNeedFit": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "executionClarity": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "contentFidelityCoverage": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "portability": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "cognitiveLoad": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "copySpecificity": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "sourceSafetySeparation": { "type": "integer", "minimum": 1, "maximum": 5 }
+      }
+    },
+    "scoreComments": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "userNeedFit",
+        "executionClarity",
+        "contentFidelityCoverage",
+        "portability",
+        "cognitiveLoad",
+        "copySpecificity",
+        "sourceSafetySeparation"
+      ],
+      "properties": {
+        "userNeedFit": { "type": "string", "minLength": 1, "maxLength": 220 },
+        "executionClarity": { "type": "string", "minLength": 1, "maxLength": 220 },
+        "contentFidelityCoverage": { "type": "string", "minLength": 1, "maxLength": 220 },
+        "portability": { "type": "string", "minLength": 1, "maxLength": 220 },
+        "cognitiveLoad": { "type": "string", "minLength": 1, "maxLength": 220 },
+        "copySpecificity": { "type": "string", "minLength": 1, "maxLength": 220 },
+        "sourceSafetySeparation": { "type": "string", "minLength": 1, "maxLength": 220 }
+      }
+    },
+    "topIssueCode": {
+      "type": ["string", "null"],
+      "enum": [
+        null,
+        "generic_copy",
+        "classification_overreach",
+        "projection_mismatch",
+        "missing_uncertainty",
+        "row_policy_mismatch",
+        "unsupported_content",
+        "accounting_problem",
+        "wrong_insufficient_boundary"
+      ]
+    },
+    "note": { "type": "string", "minLength": 1, "maxLength": 320 }
+  }
+}

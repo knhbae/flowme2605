@@ -1,0 +1,97 @@
+{
+  "captureVersion": "flowme-live-flow-finding-baseline-2026-07-18",
+  "capturedAt": "2026-07-18",
+  "capturedFrom": "https://flowme2605.vercel.app/flows",
+  "captureMethod": "Codex in-app browser DOM snapshot and bounded visible-DOM extraction",
+  "contentCount": 7,
+  "requiredCapabilities": [
+    "job_title",
+    "input_choice_or_no_input",
+    "named_result_bundle",
+    "first_action_preview",
+    "item_count_and_destination",
+    "observable_completion_or_decision",
+    "source_trace_and_conversion_note",
+    "return_reuse_or_export_state"
+  ],
+  "flows": [
+    {
+      "path": "/flow-maps/moving-d30",
+      "title": "원룸 이사 D-30 일정",
+      "inputRule": "이사일 1개",
+      "resultBundle": ["D-30 일정", "이사 전 체크", "연락처·예약번호 메모"],
+      "firstAction": "이사 방식과 견적 후보 정하기",
+      "firstCompletion": "이사 방식 1개를 정합니다.",
+      "itemCount": 5,
+      "destinations": ["calendar", "checklist", "memo"],
+      "sourceLinked": true
+    },
+    {
+      "path": "/flow-maps/middle-school-math-1",
+      "title": "중1 수학 목차 진도표",
+      "inputRule": "입력 없음",
+      "resultBundle": ["8개 단원 진도표", "하위 개념 체크", "원문 링크"],
+      "firstAction": "1. 소인수분해",
+      "firstCompletion": "거듭제곱",
+      "itemCount": 8,
+      "destinations": ["sheet"],
+      "sourceLinked": true
+    },
+    {
+      "path": "/flow-maps/curated-opic-mock-course",
+      "title": "오픽 모의고사 2주/1달 계획표",
+      "inputRule": "시작일 1개",
+      "resultBundle": ["2주 모의고사 캘린더", "1달 반복 계획표", "회차별 영상 링크 메모"],
+      "firstAction": "1일차: 1회차 연습",
+      "firstCompletion": "모의고사 재생목록에서 1회차 영상 열기",
+      "itemCount": 19,
+      "destinations": ["calendar", "checklist", "memo"],
+      "sourceLinked": true
+    },
+    {
+      "path": "/flow-maps/curated-reading-routine-log",
+      "title": "월 4권 독서 기록 루틴",
+      "inputRule": "입력 없음",
+      "resultBundle": ["4주 독서 캘린더", "책별 기록표", "월말 권수 합계"],
+      "firstAction": "1일차: 이번 달 책 4권 고르기",
+      "firstCompletion": "읽을 책 4권 제목 적기",
+      "itemCount": 8,
+      "destinations": ["calendar", "checklist", "sheet"],
+      "sourceLinked": true
+    },
+    {
+      "path": "/flow-maps/curated-new-car-purchase-guide",
+      "title": "신차 구매 7단계 체크리스트",
+      "inputRule": "입력 없음",
+      "resultBundle": ["구매 절차 체크리스트", "견적 비교 메모", "출고·등록 확인 메모"],
+      "firstAction": "예산과 차량 선택",
+      "firstCompletion": "예산 범위",
+      "itemCount": 7,
+      "destinations": ["checklist", "memo"],
+      "sourceLinked": true
+    },
+    {
+      "path": "/flow-maps/curated-wedding-checklist-family",
+      "title": "결혼 준비 참고표 2종",
+      "inputRule": "참고표 선택 후 결혼식 날짜와 준비 상태",
+      "resultBundle": ["결혼식 D-month 참고 일정", "핵심 4가지 시작표", "업체·보류 메모"],
+      "firstAction": "D-12개월: 예산과 웨딩홀 후보 정하기",
+      "firstCompletion": "예산 범위 적기",
+      "itemCount": 10,
+      "destinations": ["calendar", "checklist", "sheet", "memo"],
+      "sourceLinked": true
+    },
+    {
+      "path": "/flow-maps/curated-allblanc-workout-park",
+      "title": "Allblanc 영상별 홈트 루틴",
+      "inputRule": "영상 선택 후 시작일과 요일",
+      "resultBundle": ["영상별 반복 일정", "영상 URL과 운동 요약", "완료·중단 상태"],
+      "firstAction": "아침 5분 전신 운동 영상 열기",
+      "firstCompletion": "영상: 5 MIN HOME WORKOUT YOU CAN DO EVERY MORNING",
+      "itemCount": 2,
+      "destinations": ["calendar", "memo"],
+      "sourceLinked": true
+    }
+  ]
+}
+

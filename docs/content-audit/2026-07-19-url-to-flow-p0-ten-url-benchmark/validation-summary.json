@@ -1,0 +1,279 @@
+{
+  "schemaVersion": "flowme-url-to-flow-ten-url-validation-v1.0",
+  "generatedAt": "2026-07-19T00:50:36.545Z",
+  "snapshotGate": {
+    "expected": 10,
+    "actual": 10,
+    "explicitStatusCount": 10,
+    "passed": true
+  },
+  "runs": [
+    {
+      "runId": "2026-07-19-p0-ten-url-lower-cost-01",
+      "lane": "lower_cost",
+      "modelProxy": "gpt-5.6-terra",
+      "reasoningEffort": "high",
+      "actualProviderCost": null,
+      "rawOutputChars": 36420,
+      "estimatedOutputTokens": 9105,
+      "duplicateIds": [],
+      "missingIds": [],
+      "extraIds": [],
+      "passedCaseCount": 7,
+      "compileCandidateCount": 7,
+      "acceptedCandidateCount": 4,
+      "acceptedPatterns": [
+        "phase_lifecycle",
+        "repeating_routine",
+        "source_table_rows"
+      ],
+      "cases": [
+        {
+          "caseId": "case-01",
+          "passed": true,
+          "errors": [],
+          "itemCount": 3,
+          "pattern": "phase_lifecycle",
+          "disposition": "compile_candidate"
+        },
+        {
+          "caseId": "case-02",
+          "passed": true,
+          "errors": [],
+          "itemCount": 3,
+          "pattern": "repeating_routine",
+          "disposition": "compile_candidate"
+        },
+        {
+          "caseId": "case-03",
+          "passed": true,
+          "errors": [],
+          "itemCount": 3,
+          "pattern": "ordered_procedure",
+          "disposition": "draft_only"
+        },
+        {
+          "caseId": "case-04",
+          "passed": false,
+          "errors": [
+            "sourceEvidence.ev-01-entry:text_not_exact_snapshot_substring",
+            "sourceEvidence.ev-03-privacy:text_not_exact_snapshot_substring"
+          ],
+          "itemCount": 3,
+          "pattern": "ordered_procedure",
+          "disposition": "compile_candidate"
+        },
+        {
+          "caseId": "case-05",
+          "passed": false,
+          "errors": [
+            "sourceEvidence.ev-01-week2:text_not_exact_snapshot_substring",
+            "sourceEvidence.ev-02-week3:text_not_exact_snapshot_substring",
+            "sourceEvidence.ev-03-week4:text_not_exact_snapshot_substring",
+            "sourceEvidence.ev-04-midterm:text_not_exact_snapshot_substring",
+            "sourceEvidence.ev-05-final:text_not_exact_snapshot_substring"
+          ],
+          "itemCount": 5,
+          "pattern": "source_table_rows",
+          "disposition": "compile_candidate"
+        },
+        {
+          "caseId": "case-06",
+          "passed": true,
+          "errors": [],
+          "itemCount": 0,
+          "pattern": null,
+          "disposition": "reextract_required"
+        },
+        {
+          "caseId": "case-07",
+          "passed": false,
+          "errors": [
+            "sourceEvidence.ev-01-stages:text_not_exact_snapshot_substring"
+          ],
+          "itemCount": 4,
+          "pattern": "compare_decide",
+          "disposition": "compile_candidate"
+        },
+        {
+          "caseId": "case-08",
+          "passed": true,
+          "errors": [],
+          "itemCount": 4,
+          "pattern": "source_table_rows",
+          "disposition": "compile_candidate"
+        },
+        {
+          "caseId": "case-09",
+          "passed": true,
+          "errors": [],
+          "itemCount": 4,
+          "pattern": "resource_queue",
+          "disposition": "draft_only"
+        },
+        {
+          "caseId": "case-10",
+          "passed": true,
+          "errors": [],
+          "itemCount": 3,
+          "pattern": "phase_lifecycle",
+          "disposition": "compile_candidate"
+        }
+      ]
+    },
+    {
+      "runId": "p0-ten-url-higher-capability-2026-07-19",
+      "lane": "higher_capability",
+      "modelProxy": "gpt-5.6-sol",
+      "reasoningEffort": "xhigh",
+      "actualProviderCost": null,
+      "rawOutputChars": 99530,
+      "estimatedOutputTokens": 24883,
+      "duplicateIds": [],
+      "missingIds": [],
+      "extraIds": [],
+      "passedCaseCount": 3,
+      "compileCandidateCount": 9,
+      "acceptedCandidateCount": 3,
+      "acceptedPatterns": [
+        "date_preparation",
+        "repeating_routine",
+        "ordered_procedure"
+      ],
+      "cases": [
+        {
+          "caseId": "case-01",
+          "passed": true,
+          "errors": [],
+          "itemCount": 5,
+          "pattern": "date_preparation",
+          "disposition": "compile_candidate"
+        },
+        {
+          "caseId": "case-02",
+          "passed": true,
+          "errors": [],
+          "itemCount": 3,
+          "pattern": "repeating_routine",
+          "disposition": "compile_candidate"
+        },
+        {
+          "caseId": "case-03",
+          "passed": true,
+          "errors": [],
+          "itemCount": 11,
+          "pattern": "ordered_procedure",
+          "disposition": "compile_candidate"
+        },
+        {
+          "caseId": "case-04",
+          "passed": false,
+          "errors": [
+            "sourceEvidence.case-04-ev-01:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-04-ev-04:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-04-ev-05:text_not_exact_snapshot_substring"
+          ],
+          "itemCount": 6,
+          "pattern": "ordered_procedure",
+          "disposition": "compile_candidate"
+        },
+        {
+          "caseId": "case-05",
+          "passed": false,
+          "errors": [
+            "sourceEvidence.case-05-ev-01:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-05-ev-02:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-05-ev-03:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-05-ev-04:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-05-ev-05:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-05-ev-06:text_not_exact_snapshot_substring"
+          ],
+          "itemCount": 15,
+          "pattern": "source_table_rows",
+          "disposition": "compile_candidate"
+        },
+        {
+          "caseId": "case-06",
+          "passed": false,
+          "errors": [
+            "sourceEvidence.case-06-ev-01:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-06-ev-02:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-06-ev-03:text_not_exact_snapshot_substring"
+          ],
+          "itemCount": 0,
+          "pattern": null,
+          "disposition": "reextract_required"
+        },
+        {
+          "caseId": "case-07",
+          "passed": false,
+          "errors": [
+            "sourceEvidence.case-07-ev-01:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-07-ev-02:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-07-ev-03:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-07-ev-04:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-07-ev-05:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-07-ev-06:text_not_exact_snapshot_substring"
+          ],
+          "itemCount": 6,
+          "pattern": "compare_decide",
+          "disposition": "compile_candidate"
+        },
+        {
+          "caseId": "case-08",
+          "passed": false,
+          "errors": [
+            "sourceEvidence.case-08-ev-01:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-08-ev-02:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-08-ev-03:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-08-ev-04:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-08-ev-05:text_not_exact_snapshot_substring"
+          ],
+          "itemCount": 12,
+          "pattern": "phase_lifecycle",
+          "disposition": "compile_candidate"
+        },
+        {
+          "caseId": "case-09",
+          "passed": false,
+          "errors": [
+            "sourceEvidence.case-09-ev-01:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-09-ev-02:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-09-ev-03:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-09-ev-04:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-09-ev-05:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-09-ev-06:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-09-ev-07:text_not_exact_snapshot_substring"
+          ],
+          "itemCount": 30,
+          "pattern": "ordered_procedure",
+          "disposition": "compile_candidate"
+        },
+        {
+          "caseId": "case-10",
+          "passed": false,
+          "errors": [
+            "sourceEvidence.case-10-ev-01:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-10-ev-02:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-10-ev-03:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-10-ev-04:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-10-ev-05:text_not_exact_snapshot_substring",
+            "sourceEvidence.case-10-ev-06:text_not_exact_snapshot_substring"
+          ],
+          "itemCount": 4,
+          "pattern": "source_table_rows",
+          "disposition": "compile_candidate"
+        }
+      ]
+    }
+  ],
+  "reviewGate": {
+    "reviewerResultCount": 2,
+    "passed": true
+  },
+  "nonClaims": [
+    "Estimated tokens are a character-count proxy, not provider telemetry.",
+    "Actual provider price, request IDs, and API latency are unavailable in session model proxies.",
+    "Model-proxy review is not human validation or creator approval."
+  ]
+}

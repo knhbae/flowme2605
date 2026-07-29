@@ -1,0 +1,426 @@
+{
+  "expectedVersion": "flowme-url-to-flow-source-row-hidden-oracle-v1",
+  "laneId": "url-to-flow-source-row-v1",
+  "visibility": "validator_and_post_review_diagnostics_only",
+  "forbiddenFor": [
+    "generator",
+    "blind_reviewer"
+  ],
+  "cases": [
+    {
+      "caseId": "case-01",
+      "requestId": "rq-7a31d8c4f205",
+      "canonicalLineage": {
+        "legacyCaseId": "case-01",
+        "inputEvidenceRefs": [
+          "prompt-lab-source:case-01"
+        ],
+        "canonicalExpectedPath": "docs/specs/2026-07-14-url-to-flow-prompt-lab/expected-v1.json"
+      },
+      "expectedPipeline": {
+        "modelInvoked": true,
+        "generationState": null,
+        "outcome": null,
+        "errorCode": null,
+        "recommendedDisposition": null
+      },
+      "opaqueMapping": {
+        "sources": [
+          {
+            "opaqueId": "src-a61d7c3e902f",
+            "canonicalId": "source-nhis-health-checkup",
+            "role": "primary"
+          }
+        ],
+        "sourceRows": [
+          {
+            "opaqueId": "row-1c7a52e9b304",
+            "canonicalId": "row-checkup-booking"
+          },
+          {
+            "opaqueId": "row-a48e103d6f92",
+            "canonicalId": "row-checkup-visit"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "case-02",
+      "requestId": "rq-19e6b4a82d73",
+      "canonicalLineage": {
+        "legacyCaseId": "case-02",
+        "inputEvidenceRefs": [
+          "prompt-lab-source:case-02"
+        ],
+        "canonicalExpectedPath": "docs/specs/2026-07-14-url-to-flow-prompt-lab/expected-v1.json"
+      },
+      "expectedPipeline": {
+        "modelInvoked": true,
+        "generationState": null,
+        "outcome": null,
+        "errorCode": null,
+        "recommendedDisposition": null
+      },
+      "opaqueMapping": {
+        "sources": [
+          {
+            "opaqueId": "src-f2049b6a1d83",
+            "canonicalId": "source-samsung-aircon-filter",
+            "role": "primary"
+          }
+        ],
+        "sourceRows": [
+          {
+            "opaqueId": "row-62b9f4c107da",
+            "canonicalId": "row-aircon-filter-4week"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "case-03",
+      "requestId": "rq-c52f09e17b64",
+      "canonicalLineage": {
+        "legacyCaseId": "case-03",
+        "inputEvidenceRefs": [
+          "prompt-lab-source:case-03"
+        ],
+        "canonicalExpectedPath": "docs/specs/2026-07-14-url-to-flow-prompt-lab/expected-v1.json"
+      },
+      "expectedPipeline": {
+        "modelInvoked": true,
+        "generationState": null,
+        "outcome": null,
+        "errorCode": null,
+        "recommendedDisposition": null
+      },
+      "opaqueMapping": {
+        "sources": [
+          {
+            "opaqueId": "src-3e7a10c5b942",
+            "canonicalId": "source-kkday-overseas-packing",
+            "role": "primary"
+          }
+        ],
+        "sourceRows": [
+          {
+            "opaqueId": "row-d3018c5e74a2",
+            "canonicalId": "row-pack-passport"
+          },
+          {
+            "opaqueId": "row-8f25a6b19c40",
+            "canonicalId": "row-pack-connectivity"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "case-04",
+      "requestId": "rq-83bd1a6f40c9",
+      "canonicalLineage": {
+        "legacyCaseId": "case-04",
+        "inputEvidenceRefs": [
+          "prompt-lab-source:case-04"
+        ],
+        "canonicalExpectedPath": "docs/specs/2026-07-14-url-to-flow-prompt-lab/expected-v1.json"
+      },
+      "expectedPipeline": {
+        "modelInvoked": true,
+        "generationState": null,
+        "outcome": null,
+        "errorCode": null,
+        "recommendedDisposition": null
+      },
+      "opaqueMapping": {
+        "sources": [
+          {
+            "opaqueId": "src-8c51f2d709a6",
+            "canonicalId": "source-work24-jobseeker-support",
+            "role": "primary"
+          }
+        ],
+        "sourceRows": [
+          {
+            "opaqueId": "row-47c1e8a305bd",
+            "canonicalId": "row-work24-register"
+          },
+          {
+            "opaqueId": "row-b6d2094f7a31",
+            "canonicalId": "row-work24-apply"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "case-05",
+      "requestId": "rq-2e74c9a51f86",
+      "canonicalLineage": {
+        "legacyCaseId": "case-05",
+        "inputEvidenceRefs": [
+          "prompt-lab-source:case-05"
+        ],
+        "canonicalExpectedPath": "docs/specs/2026-07-14-url-to-flow-prompt-lab/expected-v1.json"
+      },
+      "expectedPipeline": {
+        "modelInvoked": true,
+        "generationState": null,
+        "outcome": null,
+        "errorCode": null,
+        "recommendedDisposition": null
+      },
+      "opaqueMapping": {
+        "sources": [
+          {
+            "opaqueId": "src-14b9e63a8f27",
+            "canonicalId": "source-kmooc-hundred-schools",
+            "role": "primary"
+          }
+        ],
+        "sourceRows": [
+          {
+            "opaqueId": "row-0e7a31c9b452",
+            "canonicalId": "row-kmooc-week-01"
+          },
+          {
+            "opaqueId": "row-c48f2d105a76",
+            "canonicalId": "row-kmooc-week-02"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "case-06",
+      "requestId": "rq-b90c37e4d125",
+      "canonicalLineage": {
+        "legacyCaseId": "case-06",
+        "inputEvidenceRefs": [
+          "prompt-lab-source:case-06"
+        ],
+        "canonicalExpectedPath": "docs/specs/2026-07-14-url-to-flow-prompt-lab/expected-v1.json"
+      },
+      "expectedPipeline": {
+        "modelInvoked": true,
+        "generationState": null,
+        "outcome": null,
+        "errorCode": null,
+        "recommendedDisposition": null
+      },
+      "opaqueMapping": {
+        "sources": [
+          {
+            "opaqueId": "src-c7305a19e4d2",
+            "canonicalId": "source-recipe-video-playlist",
+            "role": "primary"
+          }
+        ],
+        "sourceRows": [
+          {
+            "opaqueId": "row-93b5e1a760cd",
+            "canonicalId": "row-recipe-video-resource"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "case-07",
+      "requestId": "rq-4d1a8fb763e0",
+      "canonicalLineage": {
+        "legacyCaseId": "case-07",
+        "inputEvidenceRefs": [
+          "prompt-lab-source:case-07"
+        ],
+        "canonicalExpectedPath": "docs/specs/2026-07-14-url-to-flow-prompt-lab/expected-v1.json"
+      },
+      "expectedPipeline": {
+        "modelInvoked": true,
+        "generationState": null,
+        "outcome": null,
+        "errorCode": null,
+        "recommendedDisposition": null
+      },
+      "opaqueMapping": {
+        "sources": [
+          {
+            "opaqueId": "src-5d8a247fb1c6",
+            "canonicalId": "source-car365-used-car-guide",
+            "role": "primary"
+          }
+        ],
+        "sourceRows": [
+          {
+            "opaqueId": "row-2a8c640f1e95",
+            "canonicalId": "row-used-car-decision"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "case-08",
+      "requestId": "rq-e68c25a094b7",
+      "canonicalLineage": {
+        "legacyCaseId": "case-08",
+        "inputEvidenceRefs": [
+          "prompt-lab-source:case-08"
+        ],
+        "canonicalExpectedPath": "docs/specs/2026-07-14-url-to-flow-prompt-lab/expected-v1.json"
+      },
+      "expectedPipeline": {
+        "modelInvoked": true,
+        "generationState": null,
+        "outcome": null,
+        "errorCode": null,
+        "recommendedDisposition": null
+      },
+      "opaqueMapping": {
+        "sources": [
+          {
+            "opaqueId": "src-e1096c3a75b4",
+            "canonicalId": "source-nhis-infant-checkup",
+            "role": "primary"
+          }
+        ],
+        "sourceRows": [
+          {
+            "opaqueId": "row-f51d309b7c24",
+            "canonicalId": "row-infant-checkup-prep"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "case-09",
+      "requestId": "rq-05f3be71c8a4",
+      "canonicalLineage": {
+        "legacyCaseId": "case-09",
+        "inputEvidenceRefs": [
+          "prompt-lab-source:case-09"
+        ],
+        "canonicalExpectedPath": "docs/specs/2026-07-14-url-to-flow-prompt-lab/expected-v1.json"
+      },
+      "expectedPipeline": {
+        "modelInvoked": true,
+        "generationState": null,
+        "outcome": null,
+        "errorCode": null,
+        "recommendedDisposition": null
+      },
+      "opaqueMapping": {
+        "sources": [
+          {
+            "opaqueId": "src-29f4b8d160ce",
+            "canonicalId": "source-canon-photo-30",
+            "role": "primary"
+          }
+        ],
+        "sourceRows": [
+          {
+            "opaqueId": "row-7c20e4a91b68",
+            "canonicalId": "row-photo-day-01"
+          },
+          {
+            "opaqueId": "row-e3168f2c50a7",
+            "canonicalId": "row-photo-day-02"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "case-10",
+      "requestId": "rq-a47e19d260bf",
+      "canonicalLineage": {
+        "legacyCaseId": "case-10",
+        "inputEvidenceRefs": [
+          "prompt-lab-source:case-10"
+        ],
+        "canonicalExpectedPath": "docs/specs/2026-07-14-url-to-flow-prompt-lab/expected-v1.json"
+      },
+      "expectedPipeline": {
+        "modelInvoked": true,
+        "generationState": null,
+        "outcome": null,
+        "errorCode": null,
+        "recommendedDisposition": null
+      },
+      "opaqueMapping": {
+        "sources": [
+          {
+            "opaqueId": "src-b6720d4e91a5",
+            "canonicalId": "source-kotsa-regular-inspection",
+            "role": "primary"
+          },
+          {
+            "opaqueId": "src-40c9a71e2f86",
+            "canonicalId": "source-kotsa-inspection-procedure",
+            "role": "supporting"
+          }
+        ],
+        "sourceRows": [
+          {
+            "opaqueId": "row-58a7d0c31e94",
+            "canonicalId": "row-inspection-window"
+          },
+          {
+            "opaqueId": "row-a20e6b9f4731",
+            "canonicalId": "row-inspection-agency-phases"
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "case-11",
+      "requestId": "rq-6bc2e805f139",
+      "canonicalLineage": {
+        "legacyCaseId": "case-11",
+        "inputEvidenceRefs": [
+          "prompt-lab-source:case-11"
+        ],
+        "canonicalExpectedPath": "docs/specs/2026-07-14-url-to-flow-prompt-lab/expected-v1.json"
+      },
+      "expectedPipeline": {
+        "modelInvoked": false,
+        "generationState": "failed",
+        "outcome": "no_proposal",
+        "errorCode": "missing_source_rows",
+        "recommendedDisposition": "source_import_required"
+      },
+      "opaqueMapping": {
+        "sources": [
+          {
+            "opaqueId": "src-96e31b5c7a20",
+            "canonicalId": "source-computer-skills-pdf-unavailable",
+            "role": "primary"
+          }
+        ],
+        "sourceRows": []
+      }
+    },
+    {
+      "caseId": "case-12",
+      "requestId": "rq-d3187af46c52",
+      "canonicalLineage": {
+        "legacyCaseId": "case-12",
+        "inputEvidenceRefs": [
+          "prompt-lab-source:case-12"
+        ],
+        "canonicalExpectedPath": "docs/specs/2026-07-14-url-to-flow-prompt-lab/expected-v1.json"
+      },
+      "expectedPipeline": {
+        "modelInvoked": false,
+        "generationState": "failed",
+        "outcome": "no_proposal",
+        "errorCode": "locale_applicability_unverified",
+        "recommendedDisposition": "hold"
+      },
+      "opaqueMapping": {
+        "sources": [
+          {
+            "opaqueId": "src-d5a8072c4e19",
+            "canonicalId": "source-stemcyte-hospital-bag",
+            "role": "primary"
+          }
+        ],
+        "sourceRows": []
+      }
+    }
+  ]
+}

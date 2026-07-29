@@ -1,0 +1,153 @@
+[
+  {
+    "sampleRef": "smp-3c82e2a17ad8d751",
+    "reviewInputSha256": "85817d43c73c90e74fd339ca7029ba2229fea02818cebc51427e4e37c30f7891",
+    "proposalFingerprint": "f72947ea04d28753bd744215dcec5d6eeaaa92f705fa55cc021ba4e1e69a3541",
+    "caseVerdict": "pass",
+    "itemVerdicts": [
+      {
+        "itemRef": "item-01",
+        "verdict": "keep",
+        "reasonCode": "supported_as_written"
+      },
+      {
+        "itemRef": "item-02",
+        "verdict": "keep",
+        "reasonCode": "supported_as_written"
+      }
+    ],
+    "unsupportedSignals": [],
+    "scores": {
+      "userNeedFit": 5,
+      "executionClarity": 5,
+      "contentFidelityCoverage": 5,
+      "portability": 5,
+      "cognitiveLoad": 5,
+      "copySpecificity": 5,
+      "sourceSafetySeparation": 5
+    },
+    "scoreComments": {
+      "userNeedFit": "검진 대상과 예약을 확인한 뒤 검진기관을 방문하는 좁고 일관된 작업을 구성한다.",
+      "executionClarity": "확인 항목과 방문 항목의 의도 및 체크 완료 방식이 각각 명확하다.",
+      "contentFidelityCoverage": "두 SourceRow가 원문 제목과 의미를 유지한 별도 Item으로 모두 반영되었다.",
+      "portability": "방문 날짜 값이 없으므로 달력 대신 체크리스트로 제안한 구성이 적절하다.",
+      "cognitiveLoad": "두 원문 행을 중복이나 보조 단계 없이 두 항목으로 간결하게 제시한다.",
+      "copySpecificity": "두 제목 모두 구체적인 원문 표현을 그대로 사용한다.",
+      "sourceSafetySeparation": "누락된 날짜 값을 추정하지 않고 missing_date_value와 해당 humanCheckRowRef를 명시했다."
+    },
+    "topIssueCode": null,
+    "note": "모든 행이 근거 범위 안에서 실행 가능한 체크리스트 항목으로 변환되었고, 없는 방문 날짜도 명시적으로 불확실 처리되었다."
+  },
+  {
+    "sampleRef": "smp-6cd12e316c9ca24a",
+    "reviewInputSha256": "63b1d6b9d0271ec63f8d814e8d1bb9efa18777651921e839a2446f71d8b26a73",
+    "proposalFingerprint": "72c4eca9f4bbfc2b31d22bdc90a70755627247daae7573f112b78b453711fcae",
+    "caseVerdict": "pass",
+    "itemVerdicts": [
+      {
+        "itemRef": "item-01",
+        "verdict": "keep",
+        "reasonCode": "supported_as_written"
+      }
+    ],
+    "unsupportedSignals": [],
+    "scores": {
+      "userNeedFit": 5,
+      "executionClarity": 5,
+      "contentFidelityCoverage": 5,
+      "portability": 5,
+      "cognitiveLoad": 5,
+      "copySpecificity": 5,
+      "sourceSafetySeparation": 5
+    },
+    "scoreComments": {
+      "userNeedFit": "극세 필터를 정해진 주기로 청소하는 하나의 좁고 완결된 관리 작업이다.",
+      "executionClarity": "청소 주기와 먼지 제거, 물세척, 그늘 건조 절차가 한 항목에서 분명히 전달된다.",
+      "contentFidelityCoverage": "SourceRow의 제목, 상세 절차, 반복 주기가 왜곡 없이 모두 반영되었다.",
+      "portability": "명시된 4주 반복 근거를 recurrence로 보존해 달력 대상으로 제안한 것이 적합하다.",
+      "cognitiveLoad": "하나의 청소 절차를 불필요하게 분할하거나 반복하지 않았다.",
+      "copySpecificity": "제목과 메모가 모두 극세 필터 및 구체적인 청소 표현을 그대로 사용한다.",
+      "sourceSafetySeparation": "반복 일정은 literal sourceText에 연결되어 있으며 추가 날짜나 결과를 추정하지 않았다."
+    },
+    "topIssueCode": null,
+    "note": "원문의 청소 행동, 세부 절차, 4주 반복 근거가 정확히 보존된 실행 가능한 달력 항목이다."
+  },
+  {
+    "sampleRef": "smp-3ad3cc4ad286218d",
+    "reviewInputSha256": "7e535e8a1a8ed28e6ba7d6129436d7a66f56ea533212143b9271b5c8a2b92f26",
+    "proposalFingerprint": "e3d77b34acdada8e38c9d713b6dc6b6e387980803c17ecc4f647de1992c316e0",
+    "caseVerdict": "pass",
+    "itemVerdicts": [
+      {
+        "itemRef": "item-01",
+        "verdict": "keep",
+        "reasonCode": "supported_as_written"
+      },
+      {
+        "itemRef": "item-02",
+        "verdict": "keep",
+        "reasonCode": "supported_as_written"
+      }
+    ],
+    "unsupportedSignals": [],
+    "scores": {
+      "userNeedFit": 5,
+      "executionClarity": 5,
+      "contentFidelityCoverage": 5,
+      "portability": 5,
+      "cognitiveLoad": 5,
+      "copySpecificity": 5,
+      "sourceSafetySeparation": 5
+    },
+    "scoreComments": {
+      "userNeedFit": "여권과 데이터 유심을 확인하는 두 항목이 일관된 준비 점검 작업을 이룬다.",
+      "executionClarity": "각 물품을 확인하고 체크로 완료한다는 행동이 간단하고 명확하다.",
+      "contentFidelityCoverage": "두 SourceRow가 빠짐없이 각각 하나의 Item으로 반영되었다.",
+      "portability": "날짜 근거가 없는 물품 확인 항목이므로 체크리스트 대상이 적절하다.",
+      "cognitiveLoad": "두 항목만 제시해 중복이나 불필요한 구조가 없다.",
+      "copySpecificity": "여권과 데이터 유심이라는 원문 명사를 유지하고 최소한의 확인하기 문법만 더했다.",
+      "sourceSafetySeparation": "일정, 소지 상태, 구매 필요성 같은 추가 사실을 추정하지 않았다."
+    },
+    "topIssueCode": null,
+    "note": "두 원문 점검 대상을 최소한의 허용 문법으로 실행 가능한 체크리스트 항목으로 만들었다."
+  },
+  {
+    "sampleRef": "smp-14a5927ce96fdaa6",
+    "reviewInputSha256": "b7a337ae1583d94ca59618139cd70fa2d7e14aa23b101cef872b1e01e23be7d0",
+    "proposalFingerprint": "55660e1340c44b87cdcec573c034de59058f01eeecc3c6d2a3b485b2eaea88f9",
+    "caseVerdict": "pass",
+    "itemVerdicts": [
+      {
+        "itemRef": "item-01",
+        "verdict": "keep",
+        "reasonCode": "supported_as_written"
+      },
+      {
+        "itemRef": "item-02",
+        "verdict": "keep",
+        "reasonCode": "supported_as_written"
+      }
+    ],
+    "unsupportedSignals": [],
+    "scores": {
+      "userNeedFit": 5,
+      "executionClarity": 5,
+      "contentFidelityCoverage": 5,
+      "portability": 5,
+      "cognitiveLoad": 5,
+      "copySpecificity": 5,
+      "sourceSafetySeparation": 5
+    },
+    "scoreComments": {
+      "userNeedFit": "구직 신청 등록과 취업지원 서비스 신청이 일관된 신청 작업 묶음을 구성한다.",
+      "executionClarity": "두 신청 행동과 체크 완료 방식이 각각 직접적으로 이해된다.",
+      "contentFidelityCoverage": "두 procedure SourceRow가 원문 의미와 순서를 유지한 Item으로 모두 반영되었다.",
+      "portability": "날짜 근거가 없는 두 신청 절차를 체크리스트로 제안한 것이 적절하다.",
+      "cognitiveLoad": "원문 두 절차를 추가 단계나 반복 없이 간결하게 유지했다.",
+      "copySpecificity": "두 제목 모두 구직 신청 등록과 취업지원 서비스 신청이라는 구체적인 원문을 그대로 쓴다.",
+      "sourceSafetySeparation": "신청 방법, 자격, 기관, 일정 같은 제공되지 않은 내용을 추가하지 않았다."
+    },
+    "topIssueCode": null,
+    "note": "두 절차가 추가 추정 없이 원문 그대로 실행 가능한 체크리스트 항목으로 보존되었다."
+  }
+]

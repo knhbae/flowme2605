@@ -1,0 +1,9 @@
+{
+  "reportVersion": "flowme-strict-leakage-report-v2",
+  "laneId": "url-to-flow-source-row-v2-strict",
+  "positivePacketCount": 10,
+  "exactTaskPayloadCount": 3,
+  "forbiddenSemanticFieldCount": 0,
+  "passed": true,
+  "findings": []
+}

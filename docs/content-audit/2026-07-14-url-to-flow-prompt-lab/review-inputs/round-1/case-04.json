@@ -1,16 +1,20 @@
 {
-  "reviewInputSchemaVersion": "flowme-url-to-flow-blind-review-input-v1",
+  "reviewInputSchemaVersion": "flowme-url-to-flow-blind-review-input-v2",
   "round": "round-1",
   "caseId": "case-04",
-  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
-  "expectationSetVersion": "flowme-url-to-flow-prompt-lab-expected-v1",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1.1",
   "promptVersion": "url-to-flow-prompt-v0.1",
   "proposalSchemaVersion": "flowme-semantic-proposal-v1",
   "rubric": {
-    "version": "flowme-url-to-flow-prompt-lab-review-rubric-v1",
+    "version": "flowme-url-to-flow-prompt-lab-review-rubric-v2",
     "reference": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-rubric.md"
   },
   "reviewResultTemplate": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-result-template.json",
+  "rawRun": {
+    "runFile": "docs/content-audit/2026-07-14-url-to-flow-prompt-lab/runs/round-1/batch-a.json",
+    "runId": "round-1-neutral-batch-a"
+  },
+  "proposalFingerprint": "sha256:deb61e11aeb59087a24f231ede09fbea5f05191a5e4491edc4feb80d531a818c",
   "sourcePacket": {
     "caseId": "case-04",
     "requestId": "prompt-lab-v1-case-04",
@@ -54,74 +58,8 @@
       }
     ],
     "inputEvidenceRefs": [
-      "golden-fixtures-v1.json#gf-pos-04-ordered-phase-procedure:source-only"
+      "prompt-lab-source:case-04"
     ]
-  },
-  "hiddenExpectation": {
-    "caseId": "case-04",
-    "fixtureId": "gf-pos-04-ordered-phase-procedure",
-    "fixtureKind": "positive",
-    "fixtureShape": "ordered_phase_procedure",
-    "name": "고용24 취업지원 시작 절차",
-    "expectedStatus": {
-      "generationState": "proposal",
-      "outcome": "complete",
-      "readiness": null,
-      "errorCode": null,
-      "recommendedDisposition": "review"
-    },
-    "expectedConversion": {
-      "userNeed": "고용24에서 구직 등록과 취업지원 시작 절차를 순서대로 끝낸다.",
-      "planningPattern": "phase_lifecycle",
-      "primaryArtifact": "checklist",
-      "riskLevel": "privacy_sensitive"
-    },
-    "expectedItems": [
-      {
-        "referenceItemId": "item-work24-register",
-        "title": "고용24에서 구직 신청 등록하기",
-        "intent": "act",
-        "sourceRowIds": [
-          "row-work24-register"
-        ],
-        "completionMode": "check",
-        "doneWhen": "고용24 구직 신청 등록을 완료했다.",
-        "hasSchedule": false,
-        "canonicalSchedule": null
-      },
-      {
-        "referenceItemId": "item-work24-apply",
-        "title": "취업지원 서비스 선택해 신청하기",
-        "intent": "act",
-        "sourceRowIds": [
-          "row-work24-apply"
-        ],
-        "completionMode": "check",
-        "doneWhen": "본인에게 필요한 지원 서비스를 선택해 신청했다.",
-        "hasSchedule": false,
-        "canonicalSchedule": null
-      }
-    ],
-    "expectedOmittedRows": [],
-    "accountingSourceRowIds": [
-      "row-work24-register",
-      "row-work24-apply"
-    ],
-    "expectedProjections": [
-      "checklist:markdown",
-      "todo:markdown",
-      "memo:markdown"
-    ],
-    "forbiddenProjections": [
-      "calendar:ics",
-      "sheet:xlsx"
-    ],
-    "referenceReview": {
-      "readiness": "ready_for_internal_canary",
-      "hardFails": [],
-      "rightsDecision": "공식 절차명과 원문 링크만 사용한다.",
-      "riskDecision": "민감한 구직·이력서 값은 canonical content와 export에 저장하지 않는다."
-    }
   },
   "proposal": {
     "proposalSchemaVersion": "flowme-semantic-proposal-v1",
@@ -136,7 +74,7 @@
     },
     "sourceAssessment": {
       "access": "readable",
-      "sourceShape": "ordered_phase_procedure",
+      "sourceShape": "procedure",
       "primarySourceId": "source-work24-jobseeker-support",
       "supportingSourceIds": [],
       "receivedSourceRowIds": [
@@ -146,14 +84,14 @@
       "untrustedInstructionDetected": false
     },
     "conversionDecision": {
-      "userNeed": "취업지원을 시작하는 사용자가 고용24의 구직 신청 등록과 취업지원 서비스 신청을 순서대로 마친다.",
-      "lifeArea": "career",
-      "planningPattern": "ordered_phase_procedure",
+      "userNeed": "취업지원을 시작하는 구직자로서 구직 신청을 등록한 뒤 취업지원 서비스를 신청한다.",
+      "lifeArea": "work",
+      "planningPattern": "ordered_procedure",
       "primaryArtifact": "checklist",
-      "contentShape": "순서가 있는 2단계 신청 절차"
+      "contentShape": "순서가 있는 취업지원 시작 절차"
     },
     "proposal": {
-      "proposalTitle": "고용24 취업지원 시작 절차",
+      "proposalTitle": "고용24 취업지원 시작하기",
       "items": [
         {
           "proposalId": "p-01",
@@ -167,7 +105,7 @@
             "doneWhen": "구직 신청 등록을 마쳤다."
           },
           "memoCandidate": null,
-          "groupingCandidate": null,
+          "groupingCandidate": "취업지원 시작 절차",
           "scheduleCandidate": null
         },
         {
@@ -182,7 +120,7 @@
             "doneWhen": "취업지원 서비스 신청을 마쳤다."
           },
           "memoCandidate": null,
-          "groupingCandidate": null,
+          "groupingCandidate": "취업지원 시작 절차",
           "scheduleCandidate": null
         }
       ],
@@ -191,44 +129,27 @@
     },
     "projectionPlan": [
       {
-        "target": "calendar",
-        "applicability": "not_applicable",
-        "reason": "날짜, 기간, 반복 표현이 제공되지 않았다."
-      },
-      {
         "target": "checklist",
         "applicability": "applicable",
-        "reason": "두 신청 절차를 제공된 순서대로 확인할 수 있다."
-      },
-      {
-        "target": "todo",
-        "applicability": "applicable",
-        "reason": "각 신청을 독립적인 할 일로 둘 수 있다."
-      },
-      {
-        "target": "sheet",
-        "applicability": "not_applicable",
-        "reason": "신청 절차 외에 표로 관리할 속성이 제공되지 않았다."
-      },
-      {
-        "target": "memo",
-        "applicability": "not_applicable",
-        "reason": "별도로 보존할 설명이나 준비 정보가 제공되지 않았다."
+        "reason": "두 SourceRow의 순서를 유지하면서 각 절차의 완료 여부를 확인할 수 있다."
       }
     ],
     "reviewHints": {
       "recommendedDisposition": "review",
       "uncertainties": [
-        "각 신청의 세부 입력 항목과 완료 화면은 제공되지 않았다."
+        "각 절차의 상세 입력 요건은 SourceRow에 제공되지 않았다."
       ],
       "hardFailCodes": [],
       "humanReviewRequired": [
-        "개인정보를 제출하기 전에 사용자가 신청 내용을 확인해야 한다."
+        "개인정보가 관련될 수 있는 세부 입력 단계는 공식 원문 범위에서 확인해야 한다."
       ]
     }
   },
   "validator": {
-    "passed": null,
-    "hardFailCodes": []
+    "validatorVersion": "flowme-url-to-flow-prompt-lab-validator-v1",
+    "passed": false,
+    "codes": [
+      "json_schema"
+    ]
   }
 }

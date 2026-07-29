@@ -1,0 +1,189 @@
+{
+  "runSchemaVersion": "flowme-source-row-run-v1",
+  "laneId": "url-to-flow-source-row-v1",
+  "runId": "source-row-round-2-batch-c-positive",
+  "round": "round-2",
+  "promptVersion": "url-to-flow-prompt-v1.1",
+  "caseSetVersion": "flowme-url-to-flow-source-row-cases-v1",
+  "evidenceClass": "in_session_unselected_model_proxy",
+  "provider": null,
+  "model": null,
+  "tier": null,
+  "timing": null,
+  "usage": null,
+  "cost": null,
+  "humanReview": false,
+  "outputs": [
+    {
+      "caseId": "case-09",
+      "modelInvoked": true,
+      "proposal": {
+        "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+        "promptVersion": "url-to-flow-prompt-v1.1",
+        "requestId": "rq-05f3be71c8a4",
+        "caseId": "case-09",
+        "status": {
+          "generationState": "proposal",
+          "outcome": "complete",
+          "readiness": null,
+          "errorCode": null
+        },
+        "sourceAssessment": {
+          "access": "readable",
+          "sourceShape": "resource_queue",
+          "primarySourceId": "src-29f4b8d160ce",
+          "supportingSourceIds": [],
+          "receivedSourceRowIds": [
+            "row-7c20e4a91b68",
+            "row-e3168f2c50a7"
+          ],
+          "untrustedInstructionDetected": false
+        },
+        "conversionDecision": {
+          "userNeed": "Day 1 prompt와 Day 2 prompt를 순서대로 사용하기",
+          "lifeArea": "study_reading",
+          "planningPattern": "resource_queue",
+          "primaryArtifact": "checklist",
+          "contentShape": "순서 표기만 있는 프롬프트 리소스 2개"
+        },
+        "proposal": {
+          "proposalTitle": "Day 1·Day 2 prompt 사용하기",
+          "items": [
+            {
+              "proposalId": "case-09-item-01",
+              "title": "Day 1 prompt 사용하기",
+              "intent": "use_resource",
+              "sourceRowIds": [
+                "row-7c20e4a91b68"
+              ],
+              "completion": {
+                "mode": "check",
+                "doneWhen": "Day 1 prompt를 사용하면 완료"
+              },
+              "memoCandidate": null,
+              "groupingCandidate": null,
+              "scheduleCandidate": null
+            },
+            {
+              "proposalId": "case-09-item-02",
+              "title": "Day 2 prompt 사용하기",
+              "intent": "use_resource",
+              "sourceRowIds": [
+                "row-e3168f2c50a7"
+              ],
+              "completion": {
+                "mode": "check",
+                "doneWhen": "Day 2 prompt를 사용하면 완료"
+              },
+              "memoCandidate": null,
+              "groupingCandidate": null,
+              "scheduleCandidate": null
+            }
+          ],
+          "omittedRows": [],
+          "incompleteReason": null
+        },
+        "projectionPlan": [
+          {
+            "target": "checklist",
+            "applicability": "applicable",
+            "reason": "두 프롬프트 리소스의 사용 여부를 순서대로 표시할 수 있음"
+          }
+        ],
+        "reviewHints": {
+          "recommendedDisposition": "review",
+          "uncertainties": [
+            "프롬프트의 주제와 사용 목적이 제공되지 않음",
+            "Day 1과 Day 2는 순서 표기로만 해석하며 실제 일정 정보는 아님"
+          ],
+          "hardFailCodes": [],
+          "humanReviewRequired": [
+            "프롬프트 사용 목적과 생활 영역 확인"
+          ]
+        }
+      }
+    },
+    {
+      "caseId": "case-10",
+      "modelInvoked": true,
+      "proposal": {
+        "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+        "promptVersion": "url-to-flow-prompt-v1.1",
+        "requestId": "rq-a47e19d260bf",
+        "caseId": "case-10",
+        "status": {
+          "generationState": "proposal",
+          "outcome": "complete",
+          "readiness": null,
+          "errorCode": null
+        },
+        "sourceAssessment": {
+          "access": "readable",
+          "sourceShape": "date_preparation",
+          "primarySourceId": "src-b6720d4e91a5",
+          "supportingSourceIds": [
+            "src-40c9a71e2f86"
+          ],
+          "receivedSourceRowIds": [
+            "row-58a7d0c31e94",
+            "row-a20e6b9f4731"
+          ],
+          "untrustedInstructionDetected": false
+        },
+        "conversionDecision": {
+          "userNeed": "정기검사 유효기간 챙기기",
+          "lifeArea": "money_admin_purchase",
+          "planningPattern": "date_preparation",
+          "primaryArtifact": "todo",
+          "contentShape": "실제 날짜 값이 없는 유효기간 항목 1개"
+        },
+        "proposal": {
+          "proposalTitle": "정기검사 유효기간 챙기기",
+          "items": [
+            {
+              "proposalId": "case-10-item-01",
+              "title": "정기검사 유효기간 챙기기",
+              "intent": "act",
+              "sourceRowIds": [
+                "row-58a7d0c31e94"
+              ],
+              "completion": {
+                "mode": "check",
+                "doneWhen": "정기검사 유효기간을 챙기면 완료"
+              },
+              "memoCandidate": null,
+              "groupingCandidate": null,
+              "scheduleCandidate": null
+            }
+          ],
+          "omittedRows": [
+            {
+              "sourceRowId": "row-a20e6b9f4731",
+              "reasonCode": "supporting_source_boundary",
+              "reason": "보조 출처의 검사 단계는 기본 항목을 제어할 수 없어 제외"
+            }
+          ],
+          "incompleteReason": null
+        },
+        "projectionPlan": [
+          {
+            "target": "todo",
+            "applicability": "applicable",
+            "reason": "유효기간 항목을 하나의 할 일로 관리할 수 있음"
+          }
+        ],
+        "reviewHints": {
+          "recommendedDisposition": "review",
+          "uncertainties": [
+            "실제 유효기간 날짜가 제공되지 않음",
+            "정기검사의 대상이 제공되지 않음"
+          ],
+          "hardFailCodes": [],
+          "humanReviewRequired": [
+            "실제 유효기간과 검사 대상 확인"
+          ]
+        }
+      }
+    }
+  ]
+}

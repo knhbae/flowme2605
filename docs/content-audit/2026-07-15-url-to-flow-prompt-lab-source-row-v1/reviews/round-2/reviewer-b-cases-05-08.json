@@ -1,0 +1,175 @@
+{
+  "reviewSchemaVersion": "flowme-source-row-blind-review-v1",
+  "laneId": "url-to-flow-source-row-v1",
+  "round": "round-2",
+  "reviewerEvidenceClass": "in_session_unselected_model_proxy",
+  "provider": null,
+  "model": null,
+  "humanReviewer": false,
+  "cases": [
+    {
+      "caseId": "case-05",
+      "proposalFingerprint": "fbcd09bc4da0bd8609712b396878ea5205ccbacecc2a429e7e9895bdbe81dc24",
+      "validatorPassed": true,
+      "validatorCodes": [],
+      "positiveCase": true,
+      "itemReviews": [
+        {
+          "proposalId": "proposal-case-05-01",
+          "decision": "keep",
+          "comment": "첫 번째 표 행의 제목을 그대로 유지하고, 해당 주차의 강의와 퀴즈를 마치는 완료 경계만 붙여 독립 실행 항목으로 쓸 수 있다."
+        },
+        {
+          "proposalId": "proposal-case-05-02",
+          "decision": "keep",
+          "comment": "두 번째 표 행의 제목과 순서를 그대로 보존하며, 행에 적힌 강의와 퀴즈 외의 행동이나 일정을 추가하지 않았다."
+        }
+      ],
+      "unsupportedSignals": [],
+      "scores": {
+        "userNeedFit": 5,
+        "executionClarity": 5,
+        "contentFidelityCoverage": 5,
+        "portability": 5,
+        "cognitiveLoad": 5,
+        "copySpecificity": 5,
+        "sourceSafetySeparation": 5
+      },
+      "scoreComments": {
+        "userNeedFit": "두 행에 드러난 1주차와 2주차 강의·퀴즈를 각각 진행하는 최소 작업만 제시한다.",
+        "executionClarity": "각 Item이 한 행에 대응하고 해당 주차의 강의와 퀴즈를 마친 상태를 완료로 명시한다.",
+        "contentFidelityCoverage": "두 행을 각각 정확히 한 번 매핑했고 제목과 입력 순서를 보존했으며 누락이나 추가 내용이 없다.",
+        "portability": "sheet 대상은 두 표 행과 그 순서를 자연스럽게 보존하며 별도 날짜나 반복 일정을 만들지 않는다.",
+        "cognitiveLoad": "두 원본 행에 두 Item만 두어 분할과 설명이 최소 수준이다.",
+        "copySpecificity": "두 제목과 완료 문구가 각 주차의 강의와 퀴즈만 구체적으로 가리킨다.",
+        "sourceSafetySeparation": "입력 행 밖의 권위·적용 범위·안전 주장 없이 제공된 학습 항목만 다룬다."
+      },
+      "topFix": null,
+      "verdict": "keep"
+    },
+    {
+      "caseId": "case-06",
+      "proposalFingerprint": "907c461b62d066b57a1284a81b5d60a00fdfa0640605cd5b8cc3fc7493bdbac0",
+      "validatorPassed": true,
+      "validatorCodes": [],
+      "positiveCase": true,
+      "itemReviews": [
+        {
+          "proposalId": "proposal-case-06-01",
+          "decision": "edit",
+          "comment": "선택된 영상이라는 Item 경계와 memo 투영은 유용하지만, 행은 리소스만 식별할 뿐 영상을 사용하라고 하지 않으므로 intent와 완료 문구에서 사용 행동을 제거해야 한다."
+        }
+      ],
+      "unsupportedSignals": [
+        {
+          "class": "action",
+          "field": "proposal.conversionDecision.userNeed",
+          "quote": "선택한 레시피 영상을 사용한다.",
+          "comment": "원본 행은 선택된 영상 리소스를 이름 붙일 뿐, 그 영상을 사용하라는 행동을 말하지 않는다."
+        },
+        {
+          "class": "action",
+          "field": "proposal.proposal.items[0].intent",
+          "quote": "use_resource",
+          "comment": "리소스 사용 의도는 rowType이나 제목에 명시되지 않은 행동 해석이다."
+        },
+        {
+          "class": "action",
+          "field": "proposal.proposal.items[0].completion.doneWhen",
+          "quote": "선택한 레시피 영상을 사용했을 때",
+          "comment": "행에 없는 사용 행동을 완료 조건으로 추가했다."
+        }
+      ],
+      "scores": {
+        "userNeedFit": 2,
+        "executionClarity": 3,
+        "contentFidelityCoverage": 3,
+        "portability": 5,
+        "cognitiveLoad": 5,
+        "copySpecificity": 2,
+        "sourceSafetySeparation": 3
+      },
+      "scoreComments": {
+        "userNeedFit": "선택된 레시피 영상이라는 대상은 보이지만, 핵심 사용자 작업을 '사용'으로 정한 것은 행에서 관찰되지 않는다.",
+        "executionClarity": "단일 Item 경계는 분명하나 '영상을 사용한다'는 행동과 완료 상태가 모호하고 근거도 없어 수정이 필요하다.",
+        "contentFidelityCoverage": "한 행을 한 번 매핑했지만 userNeed, intent, doneWhen에서 동일한 미근거 사용 행동을 추가했다.",
+        "portability": "단일 리소스를 memo로 유지하는 투영은 입력 형태에 맞고 일정도 발명하지 않는다.",
+        "cognitiveLoad": "하나의 행을 하나의 Item과 하나의 목적지로만 제시해 구조적 부담은 없다.",
+        "copySpecificity": "리소스 이름은 정확하지만 '사용'은 무엇을 해야 하는지 구체적이지 않고 행에도 없는 동사다.",
+        "sourceSafetySeparation": "위험하거나 권위적인 주장은 없지만, 리소스의 의도된 쓰임을 알 수 없다는 불확실성을 무시하고 사용 과제로 확정했다."
+      },
+      "topFix": "Item 경계와 memo 투영은 유지하되 userNeed, intent, doneWhen에서 '사용' 행동을 제거하고 선택된 영상 리소스 자체를 유지하는 표현으로 고친다.",
+      "verdict": "edit"
+    },
+    {
+      "caseId": "case-07",
+      "proposalFingerprint": "951f243f2dd235947ffb80e492cc83462890ce05bce0ed7cab2ab589a678b98c",
+      "validatorPassed": true,
+      "validatorCodes": [],
+      "positiveCase": true,
+      "itemReviews": [
+        {
+          "proposalId": "proposal-case-07-01",
+          "decision": "keep",
+          "comment": "차량 이력과 상태를 먼저 확인하고 구매 여부를 판단한다는 원본의 순차적 결정 경계를 그대로 실행 가능한 한 Item으로 옮겼다."
+        }
+      ],
+      "unsupportedSignals": [],
+      "scores": {
+        "userNeedFit": 5,
+        "executionClarity": 5,
+        "contentFidelityCoverage": 5,
+        "portability": 5,
+        "cognitiveLoad": 5,
+        "copySpecificity": 5,
+        "sourceSafetySeparation": 5
+      },
+      "scoreComments": {
+        "userNeedFit": "확인 뒤 구매 판단이라는 행의 가장 작은 유용한 결정을 그대로 포착한다.",
+        "executionClarity": "확인 대상, 선후 관계, 구매 여부를 판단했다는 완료 상태가 모두 한 문장 안에서 분명하다.",
+        "contentFidelityCoverage": "유일한 행을 정확히 한 번 매핑하고 차량 이력·상태 확인과 구매 판단 외의 내용을 더하지 않았다.",
+        "portability": "확인 후 판단하는 단일 항목을 checklist로 옮기는 구성이 자연스럽고 일정 발명이 없다.",
+        "cognitiveLoad": "원본의 한 결정 경계를 하나의 Item과 하나의 투영으로 유지한다.",
+        "copySpecificity": "제목과 완료 문구가 확인할 대상과 내려야 할 결정을 원본 표현 안에서 구체적으로 명시한다.",
+        "sourceSafetySeparation": "구매 권고나 차량 상태에 대한 사실을 주장하지 않고, 입력에 적힌 확인·판단 절차만 유지한다."
+      },
+      "topFix": null,
+      "verdict": "keep"
+    },
+    {
+      "caseId": "case-08",
+      "proposalFingerprint": "5e2f8f61189a4f0350cdb5b400b918570df4a481e2962119c4e208dab5c9e4f0",
+      "validatorPassed": true,
+      "validatorCodes": [],
+      "positiveCase": true,
+      "itemReviews": [
+        {
+          "proposalId": "proposal-case-08-01",
+          "decision": "keep",
+          "comment": "예약과 문진표 준비라는 원본 항목을 그대로 유지하고 두 준비가 끝난 상태를 완료 경계로 삼아 체크 항목으로 사용할 수 있다."
+        }
+      ],
+      "unsupportedSignals": [],
+      "scores": {
+        "userNeedFit": 5,
+        "executionClarity": 5,
+        "contentFidelityCoverage": 5,
+        "portability": 5,
+        "cognitiveLoad": 5,
+        "copySpecificity": 5,
+        "sourceSafetySeparation": 5
+      },
+      "scoreComments": {
+        "userNeedFit": "원본에 적힌 예약과 문진표 준비라는 최소 작업을 그대로 제안한다.",
+        "executionClarity": "두 준비 대상을 명시하고 모두 준비를 마친 상태를 관찰 가능한 완료 경계로 둔다.",
+        "contentFidelityCoverage": "유일한 행을 정확히 한 번 매핑하고 누락이나 추가 사실 없이 원본 표현을 보존한다.",
+        "portability": "rowType과 내용에 맞는 단일 checklist 항목으로 투영하며 날짜·시간·반복을 추가하지 않는다.",
+        "cognitiveLoad": "하나의 원본 항목을 불필요하게 분할하거나 목적지를 늘리지 않는다.",
+        "copySpecificity": "예약과 문진표라는 구체 대상을 간결한 준비 행동과 완료 문구에 그대로 사용한다.",
+        "sourceSafetySeparation": "의학적 조언이나 일정·기관·적용 범위를 덧붙이지 않고 입력의 준비 항목에만 머문다."
+      },
+      "topFix": null,
+      "verdict": "keep"
+    }
+  ]
+}

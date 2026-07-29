@@ -1,88 +1,196 @@
 {
-  "reviewInputSetVersion": "flowme-url-to-flow-blind-review-inputs-v1",
+  "reviewInputSetVersion": "flowme-url-to-flow-blind-review-inputs-v2",
   "round": "round-2",
-  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
-  "expectationSetVersion": "flowme-url-to-flow-prompt-lab-expected-v1",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1.1",
   "rubric": {
-    "version": "flowme-url-to-flow-prompt-lab-review-rubric-v1",
+    "version": "flowme-url-to-flow-prompt-lab-review-rubric-v2",
     "reference": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-rubric.md"
   },
   "reviewResultTemplate": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-result-template.json",
+  "proposalFingerprintAlgorithm": "sha256:<64 lowercase hex> over UTF-8 JSON.stringify(proposal) with no whitespace",
   "generator": "scripts/content-audit/build-url-to-flow-blind-review-inputs.mjs",
-  "disclosure": "Each case file contains one source packet, its hidden review expectation, and one raw proposal. Run-level model, timing, usage, and cost evidence is excluded. Validator results are not embedded in run logs, so reviewer status starts as null.",
+  "disclosure": "Each case contains only the fixed source packet, one raw proposal, its raw runFile/runId, a proposal fingerprint, and deterministic validator pass/codes. Expected fixtures and all provider, model, timing, usage, and cost evidence are excluded.",
   "caseCount": 12,
   "cases": [
     {
       "caseId": "case-01",
       "file": "case-01.json",
       "promptVersion": "url-to-flow-prompt-v0.2",
-      "validatorPassed": null
+      "rawRun": {
+        "runFile": "docs/content-audit/2026-07-14-url-to-flow-prompt-lab/runs/round-2/batch-a.json",
+        "runId": "round-2-neutral-batch-a"
+      },
+      "proposalFingerprint": "sha256:d849c241cd7582606ac0ed231dba892b2e608504bbc91945208b0e296c62e8bc",
+      "validator": {
+        "validatorVersion": "flowme-url-to-flow-prompt-lab-validator-v1",
+        "passed": true,
+        "codes": []
+      }
     },
     {
       "caseId": "case-02",
       "file": "case-02.json",
       "promptVersion": "url-to-flow-prompt-v0.2",
-      "validatorPassed": null
+      "rawRun": {
+        "runFile": "docs/content-audit/2026-07-14-url-to-flow-prompt-lab/runs/round-2/batch-a.json",
+        "runId": "round-2-neutral-batch-a"
+      },
+      "proposalFingerprint": "sha256:dbe207ff855defa97c9da1bfe57da6526b0ce7ded39ff5b21aa8f0ed213414c8",
+      "validator": {
+        "validatorVersion": "flowme-url-to-flow-prompt-lab-validator-v1",
+        "passed": true,
+        "codes": []
+      }
     },
     {
       "caseId": "case-03",
       "file": "case-03.json",
       "promptVersion": "url-to-flow-prompt-v0.2",
-      "validatorPassed": null
+      "rawRun": {
+        "runFile": "docs/content-audit/2026-07-14-url-to-flow-prompt-lab/runs/round-2/batch-a.json",
+        "runId": "round-2-neutral-batch-a"
+      },
+      "proposalFingerprint": "sha256:0f9fbf17f94868edb8b0323fe2d02e551d55dec56861f64530f17f14940e5811",
+      "validator": {
+        "validatorVersion": "flowme-url-to-flow-prompt-lab-validator-v1",
+        "passed": true,
+        "codes": []
+      }
     },
     {
       "caseId": "case-04",
       "file": "case-04.json",
       "promptVersion": "url-to-flow-prompt-v0.2",
-      "validatorPassed": null
+      "rawRun": {
+        "runFile": "docs/content-audit/2026-07-14-url-to-flow-prompt-lab/runs/round-2/batch-a.json",
+        "runId": "round-2-neutral-batch-a"
+      },
+      "proposalFingerprint": "sha256:f716ae0572c0918d5d2db597a87fc024dad0a962e0e5ef3aea68e0e7546fd68c",
+      "validator": {
+        "validatorVersion": "flowme-url-to-flow-prompt-lab-validator-v1",
+        "passed": true,
+        "codes": []
+      }
     },
     {
       "caseId": "case-05",
       "file": "case-05.json",
       "promptVersion": "url-to-flow-prompt-v0.2",
-      "validatorPassed": null
+      "rawRun": {
+        "runFile": "docs/content-audit/2026-07-14-url-to-flow-prompt-lab/runs/round-2/batch-b.json",
+        "runId": "round-2-neutral-batch-b"
+      },
+      "proposalFingerprint": "sha256:a3784807e18a2b2d71b20c935d2acbdf5ffe2cac0c84726937bf578ac7fb150a",
+      "validator": {
+        "validatorVersion": "flowme-url-to-flow-prompt-lab-validator-v1",
+        "passed": true,
+        "codes": []
+      }
     },
     {
       "caseId": "case-06",
       "file": "case-06.json",
       "promptVersion": "url-to-flow-prompt-v0.2",
-      "validatorPassed": null
+      "rawRun": {
+        "runFile": "docs/content-audit/2026-07-14-url-to-flow-prompt-lab/runs/round-2/batch-b.json",
+        "runId": "round-2-neutral-batch-b"
+      },
+      "proposalFingerprint": "sha256:08d0777bc90cff8d0c0e70a26d1afb8b6a0a2f3b5ede9bda523464357298d881",
+      "validator": {
+        "validatorVersion": "flowme-url-to-flow-prompt-lab-validator-v1",
+        "passed": true,
+        "codes": []
+      }
     },
     {
       "caseId": "case-07",
       "file": "case-07.json",
       "promptVersion": "url-to-flow-prompt-v0.2",
-      "validatorPassed": null
+      "rawRun": {
+        "runFile": "docs/content-audit/2026-07-14-url-to-flow-prompt-lab/runs/round-2/batch-b.json",
+        "runId": "round-2-neutral-batch-b"
+      },
+      "proposalFingerprint": "sha256:c77a5f16b737bc8b83c7019eacdd6e563def9b4055faecfeab1343daba34d779",
+      "validator": {
+        "validatorVersion": "flowme-url-to-flow-prompt-lab-validator-v1",
+        "passed": true,
+        "codes": []
+      }
     },
     {
       "caseId": "case-08",
       "file": "case-08.json",
       "promptVersion": "url-to-flow-prompt-v0.2",
-      "validatorPassed": null
+      "rawRun": {
+        "runFile": "docs/content-audit/2026-07-14-url-to-flow-prompt-lab/runs/round-2/batch-b.json",
+        "runId": "round-2-neutral-batch-b"
+      },
+      "proposalFingerprint": "sha256:cd136bfd8c719bfa2c90ff559f10104ebc445de0e78134c5e0f765b4f88e477a",
+      "validator": {
+        "validatorVersion": "flowme-url-to-flow-prompt-lab-validator-v1",
+        "passed": true,
+        "codes": []
+      }
     },
     {
       "caseId": "case-09",
       "file": "case-09.json",
       "promptVersion": "url-to-flow-prompt-v0.2",
-      "validatorPassed": null
+      "rawRun": {
+        "runFile": "docs/content-audit/2026-07-14-url-to-flow-prompt-lab/runs/round-2/batch-c.json",
+        "runId": "round-2-neutral-batch-c"
+      },
+      "proposalFingerprint": "sha256:af2887d5f2546c837abf6362bcb93ea9c478653962870a56087edf16bafd4ddd",
+      "validator": {
+        "validatorVersion": "flowme-url-to-flow-prompt-lab-validator-v1",
+        "passed": true,
+        "codes": []
+      }
     },
     {
       "caseId": "case-10",
       "file": "case-10.json",
       "promptVersion": "url-to-flow-prompt-v0.2",
-      "validatorPassed": null
+      "rawRun": {
+        "runFile": "docs/content-audit/2026-07-14-url-to-flow-prompt-lab/runs/round-2/batch-c.json",
+        "runId": "round-2-neutral-batch-c"
+      },
+      "proposalFingerprint": "sha256:8a4ffd9719e28e867c066590842f556f0d9353cb3d4228e41952f2ff007600cd",
+      "validator": {
+        "validatorVersion": "flowme-url-to-flow-prompt-lab-validator-v1",
+        "passed": true,
+        "codes": []
+      }
     },
     {
       "caseId": "case-11",
       "file": "case-11.json",
       "promptVersion": "url-to-flow-prompt-v0.2",
-      "validatorPassed": null
+      "rawRun": {
+        "runFile": "docs/content-audit/2026-07-14-url-to-flow-prompt-lab/runs/round-2/batch-c.json",
+        "runId": "round-2-neutral-batch-c"
+      },
+      "proposalFingerprint": "sha256:b174f36b55dae90a090aee6312a7ffdd3c2d6e165a847a18caec342214e07b27",
+      "validator": {
+        "validatorVersion": "flowme-url-to-flow-prompt-lab-validator-v1",
+        "passed": true,
+        "codes": []
+      }
     },
     {
       "caseId": "case-12",
       "file": "case-12.json",
       "promptVersion": "url-to-flow-prompt-v0.2",
-      "validatorPassed": null
+      "rawRun": {
+        "runFile": "docs/content-audit/2026-07-14-url-to-flow-prompt-lab/runs/round-2/batch-c.json",
+        "runId": "round-2-neutral-batch-c"
+      },
+      "proposalFingerprint": "sha256:2bde942d112280983257433593f626d463dab38f00542195c7d87aba9c1c2465",
+      "validator": {
+        "validatorVersion": "flowme-url-to-flow-prompt-lab-validator-v1",
+        "passed": true,
+        "codes": []
+      }
     }
   ]
 }

@@ -1,0 +1,872 @@
+{
+  "runVersion": "flowme-url-to-flow-v3-hybrid-run",
+  "laneId": "url-to-flow-source-row-v3-hybrid-controller",
+  "round": "round-2",
+  "evidenceClass": "deterministic_controller_replay",
+  "executor": {
+    "type": "fresh_node_process",
+    "executorId": "v3-hybrid-round-2",
+    "compilerVersion": "row-license-compiler-v3.0",
+    "processId": 22020,
+    "processStartedAtMs": 1784364168261,
+    "processInstanceRef": "519d62dc440e6c70b80b1d31906a8da5303fa53ccb18e0bdda862c1cca7148ab"
+  },
+  "bindings": {
+    "freezeSha256": "9b66e8204c0b4485afacd1f45b7e3467e2c60645702b5251b8b2889d527b4a3d",
+    "caseSetSha256": "d0a409fddd9127e6fdb374e76b4e7219e25ea96b7a7537aac62a7e75d7be5148",
+    "rulesSha256": "e526b44fd4fdb643432964b0ad66723f72ea0bc434216739f733c6fe58308e54",
+    "protocolSha256": "85036e5765ebf34798dffa1aca8a16b682503472565fbd1c59942ebf2cbf816d",
+    "schemaSha256": "afbf04b27450c0beca79b1f402cc42dab451551f068cf50b46d27d12152fa957"
+  },
+  "measurement": {
+    "provider": null,
+    "model": null,
+    "tier": null,
+    "inputTokens": null,
+    "outputTokens": null,
+    "latencyMs": null,
+    "cost": null,
+    "currency": null
+  },
+  "outputs": [
+    {
+      "auditCaseId": "case-01",
+      "sampleRef": "smp-3c82e2a17ad8d751",
+      "modelInvoked": false,
+      "proposal": {
+        "schemaVersion": "flowme-semantic-proposal-v2",
+        "promptVersion": "row-license-compiler-v3.0",
+        "requestRef": "req-1381f511b9872666",
+        "sampleRef": "smp-3c82e2a17ad8d751",
+        "result": {
+          "state": "proposal",
+          "reasonCode": null,
+          "disposition": "review",
+          "primaryArtifact": "checklist"
+        },
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRefs": [
+              "row-4358a48eb06a66ff"
+            ],
+            "title": "검진 대상 및 예약 확인",
+            "intent": "inspect",
+            "completionMode": "check",
+            "memo": null,
+            "scheduleEvidence": null
+          },
+          {
+            "itemRef": "item-02",
+            "sourceRowRefs": [
+              "row-a2c9e4be915a4ceb"
+            ],
+            "title": "검진기관 방문",
+            "intent": "act",
+            "completionMode": "check",
+            "memo": null,
+            "scheduleEvidence": null
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "checklist",
+            "itemRefs": [
+              "item-01",
+              "item-02"
+            ]
+          }
+        ],
+        "review": {
+          "uncertaintyCodes": [
+            "missing_date_value"
+          ],
+          "humanCheckRowRefs": [
+            "row-a2c9e4be915a4ceb"
+          ]
+        }
+      },
+      "compileTrace": {
+        "compilerVersion": "row-license-compiler-v3.0",
+        "rulesVersion": "flowme-row-license-ko-v3.0",
+        "modelInvoked": false,
+        "artifactRuleId": "artifact.checklist",
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRef": "row-4358a48eb06a66ff",
+            "ruleId": "check.inspection",
+            "titleOp": "keep",
+            "intent": "inspect",
+            "completionMode": "check",
+            "sourceTitleSha256": "90401e499c9245eecbd55fc97fd2d4b20d495a8a369affd756fdd6e9b5ee5780",
+            "compiledItemSha256": "599e545753a1a539614174d91d146805d9c53a2c9d67d4c1f3d157714b15a12f"
+          },
+          {
+            "itemRef": "item-02",
+            "sourceRowRef": "row-a2c9e4be915a4ceb",
+            "ruleId": "date.explicit_action",
+            "titleOp": "keep",
+            "intent": "act",
+            "completionMode": "check",
+            "sourceTitleSha256": "da5987f9ae9c72732f96e1394b2e6c49f63dc7212a0c6dcf3668b2c2221fac33",
+            "compiledItemSha256": "04a697859d86faa6dba31e960437ae1503fb7f5d1972dd31c9abab1802fc1497"
+          }
+        ],
+        "omissions": [],
+        "proposalSha256": "f72947ea04d28753bd744215dcec5d6eeaaa92f705fa55cc021ba4e1e69a3541"
+      }
+    },
+    {
+      "auditCaseId": "case-02",
+      "sampleRef": "smp-6cd12e316c9ca24a",
+      "modelInvoked": false,
+      "proposal": {
+        "schemaVersion": "flowme-semantic-proposal-v2",
+        "promptVersion": "row-license-compiler-v3.0",
+        "requestRef": "req-06a6030ad68a50b9",
+        "sampleRef": "smp-6cd12e316c9ca24a",
+        "result": {
+          "state": "proposal",
+          "reasonCode": null,
+          "disposition": "review",
+          "primaryArtifact": "calendar"
+        },
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRefs": [
+              "row-a8ce44ab3b4c5d12"
+            ],
+            "title": "극세 필터 4주에 한 번 청소",
+            "intent": "act",
+            "completionMode": "check",
+            "memo": "먼지 제거, 물세척, 그늘 건조",
+            "scheduleEvidence": {
+              "sourceRowRefs": [
+                "row-a8ce44ab3b4c5d12"
+              ],
+              "sourceText": "4주에 한 번",
+              "kind": "recurrence"
+            }
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "calendar",
+            "itemRefs": [
+              "item-01"
+            ]
+          }
+        ],
+        "review": {
+          "uncertaintyCodes": [],
+          "humanCheckRowRefs": []
+        }
+      },
+      "compileTrace": {
+        "compilerVersion": "row-license-compiler-v3.0",
+        "rulesVersion": "flowme-row-license-ko-v3.0",
+        "modelInvoked": false,
+        "artifactRuleId": "artifact.calendar",
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRef": "row-a8ce44ab3b4c5d12",
+            "ruleId": "procedure",
+            "titleOp": "keep",
+            "intent": "act",
+            "completionMode": "check",
+            "sourceTitleSha256": "e1f8d491f76d940a74c6e1e21e20dc7501038163eafc9675511e86d8cc73b8a9",
+            "compiledItemSha256": "e073f4c8b4f3a9fb00cd3122c6bdc8cb6b2265e1f7e932987509afcfc41ecb63"
+          }
+        ],
+        "omissions": [],
+        "proposalSha256": "72c4eca9f4bbfc2b31d22bdc90a70755627247daae7573f112b78b453711fcae"
+      }
+    },
+    {
+      "auditCaseId": "case-03",
+      "sampleRef": "smp-3ad3cc4ad286218d",
+      "modelInvoked": false,
+      "proposal": {
+        "schemaVersion": "flowme-semantic-proposal-v2",
+        "promptVersion": "row-license-compiler-v3.0",
+        "requestRef": "req-8e6c61c01ed35d54",
+        "sampleRef": "smp-3ad3cc4ad286218d",
+        "result": {
+          "state": "proposal",
+          "reasonCode": null,
+          "disposition": "review",
+          "primaryArtifact": "checklist"
+        },
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRefs": [
+              "row-09d7f58605ec20e3"
+            ],
+            "title": "여권 확인하기",
+            "intent": "inspect",
+            "completionMode": "check",
+            "memo": null,
+            "scheduleEvidence": null
+          },
+          {
+            "itemRef": "item-02",
+            "sourceRowRefs": [
+              "row-58976a3aeab10cf5"
+            ],
+            "title": "데이터 유심 확인하기",
+            "intent": "inspect",
+            "completionMode": "check",
+            "memo": null,
+            "scheduleEvidence": null
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "checklist",
+            "itemRefs": [
+              "item-01",
+              "item-02"
+            ]
+          }
+        ],
+        "review": {
+          "uncertaintyCodes": [],
+          "humanCheckRowRefs": []
+        }
+      },
+      "compileTrace": {
+        "compilerVersion": "row-license-compiler-v3.0",
+        "rulesVersion": "flowme-row-license-ko-v3.0",
+        "modelInvoked": false,
+        "artifactRuleId": "artifact.checklist",
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRef": "row-09d7f58605ec20e3",
+            "ruleId": "check.noun_label",
+            "titleOp": "append_confirm",
+            "intent": "inspect",
+            "completionMode": "check",
+            "sourceTitleSha256": "03ed7a436dd264d1c2ca612986a3657dfaa1b9f5a6eb0275d61b7904ea321774",
+            "compiledItemSha256": "0e663a7be5e3a6f990a9cf0e30ba68b0c54f07d5efe58da10b854ef6a9565c93"
+          },
+          {
+            "itemRef": "item-02",
+            "sourceRowRef": "row-58976a3aeab10cf5",
+            "ruleId": "check.noun_label",
+            "titleOp": "append_confirm",
+            "intent": "inspect",
+            "completionMode": "check",
+            "sourceTitleSha256": "e9f83e61163aa2c7e06f88ad1925e69f78051059c40aedf4f1d8fa53ba25f870",
+            "compiledItemSha256": "5f38a90dc860f0d33496598340076e4396cf6096e4fb409c46039500836d5647"
+          }
+        ],
+        "omissions": [],
+        "proposalSha256": "e3d77b34acdada8e38c9d713b6dc6b6e387980803c17ecc4f647de1992c316e0"
+      }
+    },
+    {
+      "auditCaseId": "case-04",
+      "sampleRef": "smp-14a5927ce96fdaa6",
+      "modelInvoked": false,
+      "proposal": {
+        "schemaVersion": "flowme-semantic-proposal-v2",
+        "promptVersion": "row-license-compiler-v3.0",
+        "requestRef": "req-20c85adbb0ce8232",
+        "sampleRef": "smp-14a5927ce96fdaa6",
+        "result": {
+          "state": "proposal",
+          "reasonCode": null,
+          "disposition": "review",
+          "primaryArtifact": "checklist"
+        },
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRefs": [
+              "row-6f7c07509e80bf13"
+            ],
+            "title": "구직 신청 등록",
+            "intent": "act",
+            "completionMode": "check",
+            "memo": null,
+            "scheduleEvidence": null
+          },
+          {
+            "itemRef": "item-02",
+            "sourceRowRefs": [
+              "row-5589ea7def6f11b7"
+            ],
+            "title": "취업지원 서비스 신청",
+            "intent": "act",
+            "completionMode": "check",
+            "memo": null,
+            "scheduleEvidence": null
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "checklist",
+            "itemRefs": [
+              "item-01",
+              "item-02"
+            ]
+          }
+        ],
+        "review": {
+          "uncertaintyCodes": [],
+          "humanCheckRowRefs": []
+        }
+      },
+      "compileTrace": {
+        "compilerVersion": "row-license-compiler-v3.0",
+        "rulesVersion": "flowme-row-license-ko-v3.0",
+        "modelInvoked": false,
+        "artifactRuleId": "artifact.checklist",
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRef": "row-6f7c07509e80bf13",
+            "ruleId": "procedure",
+            "titleOp": "keep",
+            "intent": "act",
+            "completionMode": "check",
+            "sourceTitleSha256": "3250ce1e4985dd8065177f587947a6db7a2a4eb0c27fa4c721f4b4f14be4cf20",
+            "compiledItemSha256": "22c84fdfedb90189d7155c5bca5381d4b160e5d4778738cd4f881688aceddeee"
+          },
+          {
+            "itemRef": "item-02",
+            "sourceRowRef": "row-5589ea7def6f11b7",
+            "ruleId": "procedure",
+            "titleOp": "keep",
+            "intent": "act",
+            "completionMode": "check",
+            "sourceTitleSha256": "9d5fe3d895966769da3edb6c1733ec62e016770747b8c76e6778ef29a23999df",
+            "compiledItemSha256": "ecc25463a5979e1d5484a3495139c2353b64b0f85aaacf62e73522fe799d5a15"
+          }
+        ],
+        "omissions": [],
+        "proposalSha256": "55660e1340c44b87cdcec573c034de59058f01eeecc3c6d2a3b485b2eaea88f9"
+      }
+    },
+    {
+      "auditCaseId": "case-05",
+      "sampleRef": "smp-1543712589e440b7",
+      "modelInvoked": false,
+      "proposal": {
+        "schemaVersion": "flowme-semantic-proposal-v2",
+        "promptVersion": "row-license-compiler-v3.0",
+        "requestRef": "req-346a2dd26f908db7",
+        "sampleRef": "smp-1543712589e440b7",
+        "result": {
+          "state": "proposal",
+          "reasonCode": null,
+          "disposition": "review",
+          "primaryArtifact": "sheet"
+        },
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRefs": [
+              "row-e66c610b7b8d5d53"
+            ],
+            "title": "1주차 강의와 퀴즈 완료하기",
+            "intent": "act",
+            "completionMode": "check",
+            "memo": null,
+            "scheduleEvidence": null
+          },
+          {
+            "itemRef": "item-02",
+            "sourceRowRefs": [
+              "row-715581f821f973f1"
+            ],
+            "title": "2주차 강의와 퀴즈 완료하기",
+            "intent": "act",
+            "completionMode": "check",
+            "memo": null,
+            "scheduleEvidence": null
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "sheet",
+            "itemRefs": [
+              "item-01",
+              "item-02"
+            ]
+          }
+        ],
+        "review": {
+          "uncertaintyCodes": [],
+          "humanCheckRowRefs": []
+        }
+      },
+      "compileTrace": {
+        "compilerVersion": "row-license-compiler-v3.0",
+        "rulesVersion": "flowme-row-license-ko-v3.0",
+        "modelInvoked": false,
+        "artifactRuleId": "artifact.sheet",
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRef": "row-e66c610b7b8d5d53",
+            "ruleId": "table_row",
+            "titleOp": "append_complete",
+            "intent": "act",
+            "completionMode": "check",
+            "sourceTitleSha256": "9fee9e06d106934a9216ceff6b8c60fcc421a94dcf901ca8608c92f8382b17f2",
+            "compiledItemSha256": "ae751a2e7dd756cf5f917f572a9ccca4a4e21c777fd50e7898f0fef481d89c68"
+          },
+          {
+            "itemRef": "item-02",
+            "sourceRowRef": "row-715581f821f973f1",
+            "ruleId": "table_row",
+            "titleOp": "append_complete",
+            "intent": "act",
+            "completionMode": "check",
+            "sourceTitleSha256": "ab9b5bb17e83cbcc0fa8de2680c5cd15c1efd275ee7b72c36d5f0484d7992280",
+            "compiledItemSha256": "758d8988e8b88fb1fc6b6405ad50bb64c7498c436feed5f2aafe1a1bd054a132"
+          }
+        ],
+        "omissions": [],
+        "proposalSha256": "bef22e1aa659a8fc9904e6d746a28c8e37055574d30e29851b83c2e86fbe9302"
+      }
+    },
+    {
+      "auditCaseId": "case-06",
+      "sampleRef": "smp-91182b6bbc8efd1d",
+      "modelInvoked": false,
+      "proposal": {
+        "schemaVersion": "flowme-semantic-proposal-v2",
+        "promptVersion": "row-license-compiler-v3.0",
+        "requestRef": "req-d39fede4fec4beea",
+        "sampleRef": "smp-91182b6bbc8efd1d",
+        "result": {
+          "state": "proposal",
+          "reasonCode": null,
+          "disposition": "review",
+          "primaryArtifact": "memo"
+        },
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRefs": [
+              "row-914e8ba490214d22"
+            ],
+            "title": "선택한 레시피 영상 열어보기",
+            "intent": "open_resource",
+            "completionMode": "check",
+            "memo": null,
+            "scheduleEvidence": null
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "memo",
+            "itemRefs": [
+              "item-01"
+            ]
+          }
+        ],
+        "review": {
+          "uncertaintyCodes": [
+            "resource_contents_unseen"
+          ],
+          "humanCheckRowRefs": [
+            "row-914e8ba490214d22"
+          ]
+        }
+      },
+      "compileTrace": {
+        "compilerVersion": "row-license-compiler-v3.0",
+        "rulesVersion": "flowme-row-license-ko-v3.0",
+        "modelInvoked": false,
+        "artifactRuleId": "artifact.memo",
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRef": "row-914e8ba490214d22",
+            "ruleId": "resource",
+            "titleOp": "append_open",
+            "intent": "open_resource",
+            "completionMode": "check",
+            "sourceTitleSha256": "9c176336ed5ead6fc4082c3f8798994136535e80553949aaaa98830b3f3e6ef2",
+            "compiledItemSha256": "88fbc516e7236e11feb67b1ed0efdd577ba2711c6490b623a127470ed6e86298"
+          }
+        ],
+        "omissions": [],
+        "proposalSha256": "58c747d7b31ad0f6bfefb88ae06912fb0fc69ead68aa8ddce20a63639a4e0262"
+      }
+    },
+    {
+      "auditCaseId": "case-07",
+      "sampleRef": "smp-a4bd87f2c84f5b82",
+      "modelInvoked": false,
+      "proposal": {
+        "schemaVersion": "flowme-semantic-proposal-v2",
+        "promptVersion": "row-license-compiler-v3.0",
+        "requestRef": "req-0e3298394f2dffb2",
+        "sampleRef": "smp-a4bd87f2c84f5b82",
+        "result": {
+          "state": "proposal",
+          "reasonCode": null,
+          "disposition": "review",
+          "primaryArtifact": "todo"
+        },
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRefs": [
+              "row-d062b869afabc018"
+            ],
+            "title": "차량 이력과 상태를 확인한 뒤 구매 판단",
+            "intent": "decide",
+            "completionMode": "decision",
+            "memo": null,
+            "scheduleEvidence": null
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "todo",
+            "itemRefs": [
+              "item-01"
+            ]
+          }
+        ],
+        "review": {
+          "uncertaintyCodes": [],
+          "humanCheckRowRefs": []
+        }
+      },
+      "compileTrace": {
+        "compilerVersion": "row-license-compiler-v3.0",
+        "rulesVersion": "flowme-row-license-ko-v3.0",
+        "modelInvoked": false,
+        "artifactRuleId": "artifact.todo",
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRef": "row-d062b869afabc018",
+            "ruleId": "check.decision",
+            "titleOp": "keep",
+            "intent": "decide",
+            "completionMode": "decision",
+            "sourceTitleSha256": "2c588c7eff5b52cc6c3b5cfd8307022c2d3526cdb0b8a32f8693f0f07ce90f0a",
+            "compiledItemSha256": "d9c939038e0691f0a53f0c4dcd2cf330fe20bd4d52d05db5a7db2e86e0e05c2b"
+          }
+        ],
+        "omissions": [],
+        "proposalSha256": "bf19ccfe87f6f1cb5d440795ef9534f1988850d5d44e0518564eebec8c5b2f35"
+      }
+    },
+    {
+      "auditCaseId": "case-08",
+      "sampleRef": "smp-ce41aa43ffc0fdd4",
+      "modelInvoked": false,
+      "proposal": {
+        "schemaVersion": "flowme-semantic-proposal-v2",
+        "promptVersion": "row-license-compiler-v3.0",
+        "requestRef": "req-2205a875171c2493",
+        "sampleRef": "smp-ce41aa43ffc0fdd4",
+        "result": {
+          "state": "proposal",
+          "reasonCode": null,
+          "disposition": "review",
+          "primaryArtifact": "todo"
+        },
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRefs": [
+              "row-f03bc1e31bd38a86"
+            ],
+            "title": "예약과 문진표 준비",
+            "intent": "act",
+            "completionMode": "check",
+            "memo": null,
+            "scheduleEvidence": null
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "todo",
+            "itemRefs": [
+              "item-01"
+            ]
+          }
+        ],
+        "review": {
+          "uncertaintyCodes": [],
+          "humanCheckRowRefs": []
+        }
+      },
+      "compileTrace": {
+        "compilerVersion": "row-license-compiler-v3.0",
+        "rulesVersion": "flowme-row-license-ko-v3.0",
+        "modelInvoked": false,
+        "artifactRuleId": "artifact.todo",
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRef": "row-f03bc1e31bd38a86",
+            "ruleId": "check.explicit_action",
+            "titleOp": "keep",
+            "intent": "act",
+            "completionMode": "check",
+            "sourceTitleSha256": "b73c1676bd05d3ce48dcd501169e60fbf0ef1d3ae9be98bc787b78d3f2aa21e0",
+            "compiledItemSha256": "9da9af95d3ad5a32059f9bc36add05c7ac134cba313f48d5c121573fe97e7a2b"
+          }
+        ],
+        "omissions": [],
+        "proposalSha256": "d5dacb914b7148813c0c0383199ca30be89cc5ad88289dde3ffdab3b2f7e1a97"
+      }
+    },
+    {
+      "auditCaseId": "case-09",
+      "sampleRef": "smp-c318a22e612c54a9",
+      "modelInvoked": false,
+      "proposal": {
+        "schemaVersion": "flowme-semantic-proposal-v2",
+        "promptVersion": "row-license-compiler-v3.0",
+        "requestRef": "req-e20e3ab07b81525f",
+        "sampleRef": "smp-c318a22e612c54a9",
+        "result": {
+          "state": "proposal",
+          "reasonCode": null,
+          "disposition": "review",
+          "primaryArtifact": "checklist"
+        },
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRefs": [
+              "row-c5cf3ad24f48c32f"
+            ],
+            "title": "Day 1 prompt 열어보기",
+            "intent": "open_resource",
+            "completionMode": "check",
+            "memo": null,
+            "scheduleEvidence": null
+          },
+          {
+            "itemRef": "item-02",
+            "sourceRowRefs": [
+              "row-233b65ed0cd3c402"
+            ],
+            "title": "Day 2 prompt 열어보기",
+            "intent": "open_resource",
+            "completionMode": "check",
+            "memo": null,
+            "scheduleEvidence": null
+          }
+        ],
+        "omittedRows": [],
+        "projections": [
+          {
+            "target": "checklist",
+            "itemRefs": [
+              "item-01",
+              "item-02"
+            ]
+          }
+        ],
+        "review": {
+          "uncertaintyCodes": [
+            "resource_contents_unseen"
+          ],
+          "humanCheckRowRefs": [
+            "row-c5cf3ad24f48c32f",
+            "row-233b65ed0cd3c402"
+          ]
+        }
+      },
+      "compileTrace": {
+        "compilerVersion": "row-license-compiler-v3.0",
+        "rulesVersion": "flowme-row-license-ko-v3.0",
+        "modelInvoked": false,
+        "artifactRuleId": "artifact.checklist",
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRef": "row-c5cf3ad24f48c32f",
+            "ruleId": "resource",
+            "titleOp": "append_open",
+            "intent": "open_resource",
+            "completionMode": "check",
+            "sourceTitleSha256": "e37c7a66f12592651ff04753f5b6a9687737ca2902ece416719fd5ee698f9e97",
+            "compiledItemSha256": "3dd960928f2995b020830c2477ade347ecf082be00660d3284aa2571646689d3"
+          },
+          {
+            "itemRef": "item-02",
+            "sourceRowRef": "row-233b65ed0cd3c402",
+            "ruleId": "resource",
+            "titleOp": "append_open",
+            "intent": "open_resource",
+            "completionMode": "check",
+            "sourceTitleSha256": "d1babd5e7daa9cd9b6aea45424960981b87f9a57f9731f8a237e6d6f6414882b",
+            "compiledItemSha256": "77cb4129984b0c2d77907cce910f21c693df9054a0f05d528e0f3ed4e5cce4ff"
+          }
+        ],
+        "omissions": [],
+        "proposalSha256": "ce96e8116fa1a0dc0d5da5b23461437859d6727519d25bd77257224ed4b75e2f"
+      }
+    },
+    {
+      "auditCaseId": "case-10",
+      "sampleRef": "smp-0b2e2f909ba047ad",
+      "modelInvoked": false,
+      "proposal": {
+        "schemaVersion": "flowme-semantic-proposal-v2",
+        "promptVersion": "row-license-compiler-v3.0",
+        "requestRef": "req-2c02f40a2633c521",
+        "sampleRef": "smp-0b2e2f909ba047ad",
+        "result": {
+          "state": "proposal",
+          "reasonCode": null,
+          "disposition": "review",
+          "primaryArtifact": "todo"
+        },
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRefs": [
+              "row-0c7c0f25a776f529"
+            ],
+            "title": "정기검사 유효기간 확인하기",
+            "intent": "inspect",
+            "completionMode": "check",
+            "memo": null,
+            "scheduleEvidence": null
+          }
+        ],
+        "omittedRows": [
+          {
+            "sourceRowRef": "row-eea93da3a8a24381",
+            "reasonCode": "supporting_source_boundary"
+          }
+        ],
+        "projections": [
+          {
+            "target": "todo",
+            "itemRefs": [
+              "item-01"
+            ]
+          }
+        ],
+        "review": {
+          "uncertaintyCodes": [
+            "missing_date_value",
+            "supporting_source_not_structural"
+          ],
+          "humanCheckRowRefs": [
+            "row-0c7c0f25a776f529",
+            "row-eea93da3a8a24381"
+          ]
+        }
+      },
+      "compileTrace": {
+        "compilerVersion": "row-license-compiler-v3.0",
+        "rulesVersion": "flowme-row-license-ko-v3.0",
+        "modelInvoked": false,
+        "artifactRuleId": "artifact.todo",
+        "items": [
+          {
+            "itemRef": "item-01",
+            "sourceRowRef": "row-0c7c0f25a776f529",
+            "ruleId": "date.value_label",
+            "titleOp": "append_confirm",
+            "intent": "inspect",
+            "completionMode": "check",
+            "sourceTitleSha256": "61300166ce038e53a1eb99e3f30ea52ec72aedfa8cd4fb5099afd60aebd5a318",
+            "compiledItemSha256": "f27380186e90417404c5e71c137ba5dea0b1a7f6c18d2c4c2cfb86b26bbe2b13"
+          }
+        ],
+        "omissions": [
+          {
+            "sourceRowRef": "row-eea93da3a8a24381",
+            "ruleId": "ownership.supporting_source"
+          }
+        ],
+        "proposalSha256": "449cb3193054c6efd6df25bb9220f59ce260982662e334a7d3cac77609605dce"
+      }
+    },
+    {
+      "auditCaseId": "case-11",
+      "sampleRef": "smp-ba23feddf0a716df",
+      "modelInvoked": false,
+      "proposal": {
+        "schemaVersion": "flowme-semantic-proposal-v2",
+        "promptVersion": "deterministic-preflight-v2",
+        "requestRef": "req-ac46ff5e9c6dc0a0",
+        "sampleRef": "smp-ba23feddf0a716df",
+        "result": {
+          "state": "blocked",
+          "reasonCode": "missing_source_rows",
+          "disposition": "source_import_required",
+          "primaryArtifact": null
+        },
+        "items": [],
+        "omittedRows": [],
+        "projections": [],
+        "review": {
+          "uncertaintyCodes": [],
+          "humanCheckRowRefs": []
+        }
+      },
+      "compileTrace": {
+        "compilerVersion": "row-license-compiler-v3.0",
+        "rulesVersion": "flowme-row-license-ko-v3.0",
+        "modelInvoked": false,
+        "dispositionRuleId": "preflight.missing_source_rows",
+        "items": [],
+        "omissions": []
+      }
+    },
+    {
+      "auditCaseId": "case-12",
+      "sampleRef": "smp-a04abcdf30d187c9",
+      "modelInvoked": false,
+      "proposal": {
+        "schemaVersion": "flowme-semantic-proposal-v2",
+        "promptVersion": "deterministic-preflight-v2",
+        "requestRef": "req-a4edbe804169c348",
+        "sampleRef": "smp-a04abcdf30d187c9",
+        "result": {
+          "state": "blocked",
+          "reasonCode": "locale_applicability_unverified",
+          "disposition": "hold",
+          "primaryArtifact": null
+        },
+        "items": [],
+        "omittedRows": [],
+        "projections": [],
+        "review": {
+          "uncertaintyCodes": [],
+          "humanCheckRowRefs": []
+        }
+      },
+      "compileTrace": {
+        "compilerVersion": "row-license-compiler-v3.0",
+        "rulesVersion": "flowme-row-license-ko-v3.0",
+        "modelInvoked": false,
+        "dispositionRuleId": "preflight.locale_applicability_unverified",
+        "items": [],
+        "omissions": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "manifestVersion": "flowme-source-row-blind-review-manifest-v1",
+  "laneId": "url-to-flow-source-row-v1",
+  "round": "round-2",
+  "caseCount": 12,
+  "positiveCaseCount": 10,
+  "deterministicNegativeCount": 2,
+  "forbiddenEvidenceIncluded": false,
+  "records": [
+    {
+      "caseId": "case-01",
+      "positiveCase": true,
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/review-inputs/round-2/case-01.json",
+      "sha256": "59b17afa9d77ab85e027ba91eee80b84c2c68b2c5f7f90b0e039ae83be86e8fa",
+      "proposalFingerprint": "3f1625501d30068b3a257847cbbf805fa78c5d9403f6dde1582204825dd4e4c4"
+    },
+    {
+      "caseId": "case-02",
+      "positiveCase": true,
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/review-inputs/round-2/case-02.json",
+      "sha256": "aaa8be318e218a5277dede30131bf0254c60254e0fd4cb48dad0154cb1e72c43",
+      "proposalFingerprint": "8149304253f7534f3a02a300592ac231d7c481f44fc6f23d2c50b84e7f8afe7a"
+    },
+    {
+      "caseId": "case-03",
+      "positiveCase": true,
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/review-inputs/round-2/case-03.json",
+      "sha256": "e117c7c1a56d1e5d03340ff0086b8660db251a096c0c2752b61d10ba4173b4d8",
+      "proposalFingerprint": "671a0f5b680b8aa31ec29dcab7ed1df547d968386737f37fdbb5ec2261f17a2a"
+    },
+    {
+      "caseId": "case-04",
+      "positiveCase": true,
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/review-inputs/round-2/case-04.json",
+      "sha256": "d6fb70bec4378bee8d49d36e56affddbd91220f59ee2a224cc528a1d147ba54a",
+      "proposalFingerprint": "c4cc4c531c645718015777ba632c2c83cc6abe56e15b10c8d029f34bda58796e"
+    },
+    {
+      "caseId": "case-05",
+      "positiveCase": true,
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/review-inputs/round-2/case-05.json",
+      "sha256": "589f47c933376cdf88d8f6f35be939c9aa38cda33dd2e9982268db6d4d475150",
+      "proposalFingerprint": "fbcd09bc4da0bd8609712b396878ea5205ccbacecc2a429e7e9895bdbe81dc24"
+    },
+    {
+      "caseId": "case-06",
+      "positiveCase": true,
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/review-inputs/round-2/case-06.json",
+      "sha256": "90a21fd16e2f5cc4fb321ec34f4568b4238c21cb4a775a203a9f6246539c9259",
+      "proposalFingerprint": "907c461b62d066b57a1284a81b5d60a00fdfa0640605cd5b8cc3fc7493bdbac0"
+    },
+    {
+      "caseId": "case-07",
+      "positiveCase": true,
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/review-inputs/round-2/case-07.json",
+      "sha256": "801f839bc10ff1a15e15d0f3215cc1bcd404e0251b2f937e2cc7de2aaa8c8e27",
+      "proposalFingerprint": "951f243f2dd235947ffb80e492cc83462890ce05bce0ed7cab2ab589a678b98c"
+    },
+    {
+      "caseId": "case-08",
+      "positiveCase": true,
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/review-inputs/round-2/case-08.json",
+      "sha256": "c9afba5fd978d287f828eff97ba850b50c8eb5823dd5a5550f0f3a05c4ecb4f9",
+      "proposalFingerprint": "5e2f8f61189a4f0350cdb5b400b918570df4a481e2962119c4e208dab5c9e4f0"
+    },
+    {
+      "caseId": "case-09",
+      "positiveCase": true,
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/review-inputs/round-2/case-09.json",
+      "sha256": "374fc39e071b78a944284b38c52d63a08c7934748faf81a76d27c2fff8cb5d61",
+      "proposalFingerprint": "77f4e3c0336bc9f71b2ad34d8332d04a04b5417708d8875f146e27cec4ced405"
+    },
+    {
+      "caseId": "case-10",
+      "positiveCase": true,
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/review-inputs/round-2/case-10.json",
+      "sha256": "a9f2d752a429018ea9729c44caef9836968c480e1dd83cf04f926766830e620a",
+      "proposalFingerprint": "8fa4ef928e75e1c013155ff37798039920ccb52a0ac31b825af059fa28e323c0"
+    },
+    {
+      "caseId": "case-11",
+      "positiveCase": false,
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/review-inputs/round-2/case-11.json",
+      "sha256": "41a93fa786480c1f5d2eb3429d7dab7911095edc55f8ee21a15319ea8bb78ad7",
+      "proposalFingerprint": "972fdd606415e273f1d227755256f0a13b804a9ccc60e6f66ae559afa55e5c94"
+    },
+    {
+      "caseId": "case-12",
+      "positiveCase": false,
+      "path": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/review-inputs/round-2/case-12.json",
+      "sha256": "1fe1a35eedd859594e639a9469dee1c98c42cac381e60ef727544babe41dc752",
+      "proposalFingerprint": "ef206b70ef5cefcfe07c15228c1879fa231d4a86ee0b15769dbd4aa0ded6679b"
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "sampleRef": "smp-1543712589e440b7",
+  "sourceOwnership": {
+    "primarySourceRef": "src-cd0504955a1e86c9",
+    "supportingSourceRefs": []
+  },
+  "sourceRows": [
+    {
+      "sourceRowRef": "row-e66c610b7b8d5d53",
+      "sourceRef": "src-cd0504955a1e86c9",
+      "rowType": "table_row",
+      "title": "1주차 강의와 퀴즈",
+      "detail": null,
+      "order": 0
+    },
+    {
+      "sourceRowRef": "row-715581f821f973f1",
+      "sourceRef": "src-cd0504955a1e86c9",
+      "rowType": "table_row",
+      "title": "2주차 강의와 퀴즈",
+      "detail": null,
+      "order": 1
+    }
+  ],
+  "compiledProposal": {
+    "schemaVersion": "flowme-semantic-proposal-v2",
+    "promptVersion": "row-license-compiler-v3.0",
+    "requestRef": "req-346a2dd26f908db7",
+    "sampleRef": "smp-1543712589e440b7",
+    "result": {
+      "state": "proposal",
+      "reasonCode": null,
+      "disposition": "review",
+      "primaryArtifact": "sheet"
+    },
+    "items": [
+      {
+        "itemRef": "item-01",
+        "sourceRowRefs": [
+          "row-e66c610b7b8d5d53"
+        ],
+        "title": "1주차 강의와 퀴즈 완료하기",
+        "intent": "act",
+        "completionMode": "check",
+        "memo": null,
+        "scheduleEvidence": null
+      },
+      {
+        "itemRef": "item-02",
+        "sourceRowRefs": [
+          "row-715581f821f973f1"
+        ],
+        "title": "2주차 강의와 퀴즈 완료하기",
+        "intent": "act",
+        "completionMode": "check",
+        "memo": null,
+        "scheduleEvidence": null
+      }
+    ],
+    "omittedRows": [],
+    "projections": [
+      {
+        "target": "sheet",
+        "itemRefs": [
+          "item-01",
+          "item-02"
+        ]
+      }
+    ],
+    "review": {
+      "uncertaintyCodes": [],
+      "humanCheckRowRefs": []
+    }
+  },
+  "proposalFingerprint": "bef22e1aa659a8fc9904e6d746a28c8e37055574d30e29851b83c2e86fbe9302",
+  "reviewInputSha256": "d676b6437e0d7ee09d963fc0bb109ad6ffd5dfdf572c89f53a0d4752257e8d31"
+}

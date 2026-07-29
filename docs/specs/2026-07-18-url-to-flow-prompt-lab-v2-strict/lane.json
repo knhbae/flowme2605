@@ -1,0 +1,13 @@
+{
+  "laneVersion": "flowme-url-to-flow-strict-lane-v2",
+  "laneId": "url-to-flow-source-row-v2-strict",
+  "status": "authoritative_attempt",
+  "priorLaneStatus": "failed_experimental_evidence",
+  "promptVersions": [
+    "url-to-flow-prompt-v2.0"
+  ],
+  "proposalSchemaVersion": "flowme-semantic-proposal-v2",
+  "reviewPolicyVersion": "flowme-source-row-blind-review-v2",
+  "evidenceClass": "current_session_model_proxy",
+  "productionAuthority": false
+}

@@ -1,0 +1,68 @@
+{
+  "laneId": "url-to-flow-source-row-v1",
+  "caseSetVersion": "flowme-url-to-flow-source-row-cases-v1",
+  "promptVersion": "url-to-flow-prompt-v1.0",
+  "caseId": "case-12",
+  "requestId": "rq-d3187af46c52",
+  "preflightInput": {
+    "targetLocale": "ko-KR",
+    "primary": {
+      "countryContext": "US",
+      "riskClass": "sensitive",
+      "accessStatus": "partial",
+      "rightsStatus": "needs_review"
+    },
+    "sourceRowCount": 0
+  },
+  "preflightResult": {
+    "passed": false,
+    "modelInvoked": false,
+    "generationState": "failed",
+    "outcome": "no_proposal",
+    "errorCode": "locale_applicability_unverified",
+    "recommendedDisposition": "hold",
+    "reasonCode": "sensitive_locale_not_verified"
+  },
+  "generatorInput": null,
+  "deterministicProposal": {
+    "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+    "promptVersion": "url-to-flow-prompt-v1.0",
+    "requestId": "rq-d3187af46c52",
+    "caseId": "case-12",
+    "status": {
+      "generationState": "failed",
+      "outcome": "no_proposal",
+      "readiness": null,
+      "errorCode": "locale_applicability_unverified"
+    },
+    "sourceAssessment": {
+      "access": "partial",
+      "sourceShape": "unknown",
+      "primarySourceId": "src-d5a8072c4e19",
+      "supportingSourceIds": [],
+      "receivedSourceRowIds": [],
+      "untrustedInstructionDetected": false
+    },
+    "conversionDecision": null,
+    "proposal": {
+      "proposalTitle": null,
+      "items": [],
+      "omittedRows": [],
+      "incompleteReason": "민감한 비현지 출처의 대상 지역 적용성을 확인하지 못했다."
+    },
+    "projectionPlan": [],
+    "reviewHints": {
+      "recommendedDisposition": "hold",
+      "uncertainties": [
+        "sensitive_locale_not_verified"
+      ],
+      "hardFailCodes": [
+        "locale_applicability_unverified"
+      ],
+      "humanReviewRequired": [
+        "local_applicability_review"
+      ]
+    }
+  },
+  "evidenceBoundary": "Deterministic negative. No model prompt exists and modelInvoked=false."
+}

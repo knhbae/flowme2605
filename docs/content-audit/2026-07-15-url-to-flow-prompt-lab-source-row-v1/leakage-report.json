@@ -1,0 +1,29 @@
+{
+  "reportVersion": "flowme-source-row-leakage-report-v1",
+  "laneId": "url-to-flow-source-row-v1",
+  "caseCount": 12,
+  "positiveGeneratorPromptCount": 10,
+  "deterministicNegativeCount": 2,
+  "allowedGeneratorTopLevelKeys": [
+    "requestId",
+    "caseId",
+    "maxItems",
+    "sourceOwnership",
+    "sourceRows"
+  ],
+  "allowedSourceOwnershipKeys": [
+    "primarySourceId",
+    "supportingSourceIds"
+  ],
+  "allowedSourceRowKeys": [
+    "sourceRowId",
+    "sourceId",
+    "rowType",
+    "title",
+    "detail",
+    "order"
+  ],
+  "forbiddenHitCount": 0,
+  "failures": [],
+  "passed": true
+}

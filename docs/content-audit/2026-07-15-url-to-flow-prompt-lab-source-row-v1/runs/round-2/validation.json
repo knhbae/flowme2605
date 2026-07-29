@@ -1,0 +1,264 @@
+{
+  "validationSchemaVersion": "flowme-source-row-validation-v1",
+  "inputKind": "all_run_envelopes",
+  "laneId": "url-to-flow-source-row-v1",
+  "roundFilter": "round-2",
+  "passed": true,
+  "summary": {
+    "documentCount": 4,
+    "outputCount": 12,
+    "passedOutputCount": 12,
+    "failedOutputCount": 0,
+    "errorCount": 0,
+    "warningCount": 0,
+    "receivedSourceRows": 16,
+    "exactlyOnceSourceRows": 16,
+    "sourceRowAccountingRate": 1
+  },
+  "documents": [
+    {
+      "file": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/runs/round-2/batch-a.json",
+      "inputKind": "run_envelope",
+      "runId": "source-row-round-2-batch-a",
+      "round": "round-2",
+      "promptVersion": "url-to-flow-prompt-v1.1",
+      "passed": true,
+      "results": [
+        {
+          "caseId": "case-01",
+          "passed": true,
+          "errors": [],
+          "warnings": [],
+          "metrics": {
+            "receivedRows": 2,
+            "exactlyOnceRows": 2,
+            "itemCount": 2,
+            "omittedRowCount": 0,
+            "scheduleCandidateCount": 0,
+            "positiveProposal": true,
+            "deterministicNegative": false
+          },
+          "proposalFingerprint": "3f1625501d30068b3a257847cbbf805fa78c5d9403f6dde1582204825dd4e4c4",
+          "proposalDiagnosticsSha256": "c56f86b7cc3a8ced920c440b018c2e64914a49b5ae4c46222088f2f9d491df79"
+        },
+        {
+          "caseId": "case-02",
+          "passed": true,
+          "errors": [],
+          "warnings": [],
+          "metrics": {
+            "receivedRows": 1,
+            "exactlyOnceRows": 1,
+            "itemCount": 1,
+            "omittedRowCount": 0,
+            "scheduleCandidateCount": 1,
+            "positiveProposal": true,
+            "deterministicNegative": false
+          },
+          "proposalFingerprint": "8149304253f7534f3a02a300592ac231d7c481f44fc6f23d2c50b84e7f8afe7a",
+          "proposalDiagnosticsSha256": "5e5c214dab0430819f6b22883917ba7edb92bb133e575563273dfef5051f6480"
+        },
+        {
+          "caseId": "case-03",
+          "passed": true,
+          "errors": [],
+          "warnings": [],
+          "metrics": {
+            "receivedRows": 2,
+            "exactlyOnceRows": 2,
+            "itemCount": 2,
+            "omittedRowCount": 0,
+            "scheduleCandidateCount": 0,
+            "positiveProposal": true,
+            "deterministicNegative": false
+          },
+          "proposalFingerprint": "671a0f5b680b8aa31ec29dcab7ed1df547d968386737f37fdbb5ec2261f17a2a",
+          "proposalDiagnosticsSha256": "c56f86b7cc3a8ced920c440b018c2e64914a49b5ae4c46222088f2f9d491df79"
+        },
+        {
+          "caseId": "case-04",
+          "passed": true,
+          "errors": [],
+          "warnings": [],
+          "metrics": {
+            "receivedRows": 2,
+            "exactlyOnceRows": 2,
+            "itemCount": 2,
+            "omittedRowCount": 0,
+            "scheduleCandidateCount": 0,
+            "positiveProposal": true,
+            "deterministicNegative": false
+          },
+          "proposalFingerprint": "c4cc4c531c645718015777ba632c2c83cc6abe56e15b10c8d029f34bda58796e",
+          "proposalDiagnosticsSha256": "c56f86b7cc3a8ced920c440b018c2e64914a49b5ae4c46222088f2f9d491df79"
+        }
+      ]
+    },
+    {
+      "file": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/runs/round-2/batch-b.json",
+      "inputKind": "run_envelope",
+      "runId": "source-row-round-2-batch-b",
+      "round": "round-2",
+      "promptVersion": "url-to-flow-prompt-v1.1",
+      "passed": true,
+      "results": [
+        {
+          "caseId": "case-05",
+          "passed": true,
+          "errors": [],
+          "warnings": [],
+          "metrics": {
+            "receivedRows": 2,
+            "exactlyOnceRows": 2,
+            "itemCount": 2,
+            "omittedRowCount": 0,
+            "scheduleCandidateCount": 0,
+            "positiveProposal": true,
+            "deterministicNegative": false
+          },
+          "proposalFingerprint": "fbcd09bc4da0bd8609712b396878ea5205ccbacecc2a429e7e9895bdbe81dc24",
+          "proposalDiagnosticsSha256": "c56f86b7cc3a8ced920c440b018c2e64914a49b5ae4c46222088f2f9d491df79"
+        },
+        {
+          "caseId": "case-06",
+          "passed": true,
+          "errors": [],
+          "warnings": [],
+          "metrics": {
+            "receivedRows": 1,
+            "exactlyOnceRows": 1,
+            "itemCount": 1,
+            "omittedRowCount": 0,
+            "scheduleCandidateCount": 0,
+            "positiveProposal": true,
+            "deterministicNegative": false
+          },
+          "proposalFingerprint": "907c461b62d066b57a1284a81b5d60a00fdfa0640605cd5b8cc3fc7493bdbac0",
+          "proposalDiagnosticsSha256": "96bae642c2b31f4ff5bc7ee7e1c2de349bfc61920006e7d6a3de514f1942173d"
+        },
+        {
+          "caseId": "case-07",
+          "passed": true,
+          "errors": [],
+          "warnings": [],
+          "metrics": {
+            "receivedRows": 1,
+            "exactlyOnceRows": 1,
+            "itemCount": 1,
+            "omittedRowCount": 0,
+            "scheduleCandidateCount": 0,
+            "positiveProposal": true,
+            "deterministicNegative": false
+          },
+          "proposalFingerprint": "951f243f2dd235947ffb80e492cc83462890ce05bce0ed7cab2ab589a678b98c",
+          "proposalDiagnosticsSha256": "96bae642c2b31f4ff5bc7ee7e1c2de349bfc61920006e7d6a3de514f1942173d"
+        },
+        {
+          "caseId": "case-08",
+          "passed": true,
+          "errors": [],
+          "warnings": [],
+          "metrics": {
+            "receivedRows": 1,
+            "exactlyOnceRows": 1,
+            "itemCount": 1,
+            "omittedRowCount": 0,
+            "scheduleCandidateCount": 0,
+            "positiveProposal": true,
+            "deterministicNegative": false
+          },
+          "proposalFingerprint": "5e2f8f61189a4f0350cdb5b400b918570df4a481e2962119c4e208dab5c9e4f0",
+          "proposalDiagnosticsSha256": "96bae642c2b31f4ff5bc7ee7e1c2de349bfc61920006e7d6a3de514f1942173d"
+        }
+      ]
+    },
+    {
+      "file": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/runs/round-2/batch-c-positive.json",
+      "inputKind": "run_envelope",
+      "runId": "source-row-round-2-batch-c-positive",
+      "round": "round-2",
+      "promptVersion": "url-to-flow-prompt-v1.1",
+      "passed": true,
+      "results": [
+        {
+          "caseId": "case-09",
+          "passed": true,
+          "errors": [],
+          "warnings": [],
+          "metrics": {
+            "receivedRows": 2,
+            "exactlyOnceRows": 2,
+            "itemCount": 2,
+            "omittedRowCount": 0,
+            "scheduleCandidateCount": 0,
+            "positiveProposal": true,
+            "deterministicNegative": false
+          },
+          "proposalFingerprint": "77f4e3c0336bc9f71b2ad34d8332d04a04b5417708d8875f146e27cec4ced405",
+          "proposalDiagnosticsSha256": "c56f86b7cc3a8ced920c440b018c2e64914a49b5ae4c46222088f2f9d491df79"
+        },
+        {
+          "caseId": "case-10",
+          "passed": true,
+          "errors": [],
+          "warnings": [],
+          "metrics": {
+            "receivedRows": 2,
+            "exactlyOnceRows": 2,
+            "itemCount": 1,
+            "omittedRowCount": 1,
+            "scheduleCandidateCount": 0,
+            "positiveProposal": true,
+            "deterministicNegative": false
+          },
+          "proposalFingerprint": "8fa4ef928e75e1c013155ff37798039920ccb52a0ac31b825af059fa28e323c0",
+          "proposalDiagnosticsSha256": "4da69b5f4cdab7e9a1ef47d450645ad0f90e70b546326c142f054579b1b14dd2"
+        }
+      ]
+    },
+    {
+      "file": "docs/content-audit/2026-07-15-url-to-flow-prompt-lab-source-row-v1/runs/round-2/batch-d-negative.json",
+      "inputKind": "run_envelope",
+      "runId": "source-row-round-2-batch-d-negative",
+      "round": "round-2",
+      "promptVersion": "url-to-flow-prompt-v1.1",
+      "passed": true,
+      "results": [
+        {
+          "caseId": "case-11",
+          "passed": true,
+          "errors": [],
+          "warnings": [],
+          "metrics": {
+            "receivedRows": 0,
+            "exactlyOnceRows": 0,
+            "itemCount": 0,
+            "omittedRowCount": 0,
+            "scheduleCandidateCount": 0,
+            "positiveProposal": false,
+            "deterministicNegative": true
+          },
+          "proposalFingerprint": "972fdd606415e273f1d227755256f0a13b804a9ccc60e6f66ae559afa55e5c94",
+          "proposalDiagnosticsSha256": "610e08e0c76e6966d31c2025eda8bc4644d940269618f456172d15b8213335c5"
+        },
+        {
+          "caseId": "case-12",
+          "passed": true,
+          "errors": [],
+          "warnings": [],
+          "metrics": {
+            "receivedRows": 0,
+            "exactlyOnceRows": 0,
+            "itemCount": 0,
+            "omittedRowCount": 0,
+            "scheduleCandidateCount": 0,
+            "positiveProposal": false,
+            "deterministicNegative": true
+          },
+          "proposalFingerprint": "ef206b70ef5cefcfe07c15228c1879fa231d4a86ee0b15769dbd4aa0ded6679b",
+          "proposalDiagnosticsSha256": "610e08e0c76e6966d31c2025eda8bc4644d940269618f456172d15b8213335c5"
+        }
+      ]
+    }
+  ]
+}

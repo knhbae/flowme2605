@@ -38,6 +38,9 @@ const caseDoc = JSON.parse(
 const expectedDoc = JSON.parse(
   fs.readFileSync(path.join(specDir, 'expected-v1.json'), 'utf8'),
 );
+const proposalSchema = JSON.parse(
+  fs.readFileSync(path.join(specDir, 'proposal-schema-v1.json'), 'utf8'),
+);
 const cases = new Map(caseDoc.cases.map((entry) => [entry.caseId, entry]));
 const expectations = new Map(
   expectedDoc.expectations.map((entry) => [entry.caseId, entry]),
@@ -140,6 +143,192 @@ function pushWarning(result, code, message) {
   result.warnings.push({ code, message });
 }
 
+function jsonType(value) {
+  if (value === null) return 'null';
+  if (Array.isArray(value)) return 'array';
+  if (Number.isInteger(value)) return 'integer';
+  return typeof value;
+}
+
+function matchesJsonType(value, expectedType) {
+  switch (expectedType) {
+    case 'null':
+      return value === null;
+    case 'array':
+      return Array.isArray(value);
+    case 'object':
+      return isObject(value);
+    case 'string':
+      return typeof value === 'string';
+    case 'boolean':
+      return typeof value === 'boolean';
+    case 'number':
+      return typeof value === 'number' && Number.isFinite(value);
+    case 'integer':
+      return Number.isInteger(value);
+    default:
+      return false;
+  }
+}
+
+function sameJsonValue(left, right) {
+  if (Object.is(left, right)) return true;
+  if (Array.isArray(left) && Array.isArray(right)) {
+    return (
+      left.length === right.length &&
+      left.every((value, index) => sameJsonValue(value, right[index]))
+    );
+  }
+  if (isObject(left) && isObject(right)) {
+    const leftKeys = Object.keys(left).sort();
+    const rightKeys = Object.keys(right).sort();
+    return (
+      sameJsonValue(leftKeys, rightKeys) &&
+      leftKeys.every((key) => sameJsonValue(left[key], right[key]))
+    );
+  }
+  return false;
+}
+
+function resolveLocalRef(ref) {
+  if (typeof ref !== 'string' || !ref.startsWith('#/')) return null;
+  return ref
+    .slice(2)
+    .split('/')
+    .map((segment) => segment.replaceAll('~1', '/').replaceAll('~0', '~'))
+    .reduce(
+      (value, segment) =>
+        isObject(value) && Object.hasOwn(value, segment) ? value[segment] : null,
+      proposalSchema,
+    );
+}
+
+function childJsonPath(parent, key) {
+  return typeof key === 'number'
+    ? `${parent}[${key}]`
+    : `${parent}.${String(key).replaceAll('\\', '\\\\').replaceAll('.', '\\.')}`;
+}
+
+function validateJsonSchema(value, schema, instancePath = '$') {
+  const errors = [];
+  if (!isObject(schema)) {
+    return [{ path: instancePath, message: 'Schema node is not an object.' }];
+  }
+
+  if (schema.$ref !== undefined) {
+    const resolved = resolveLocalRef(schema.$ref);
+    if (!resolved) {
+      errors.push({ path: instancePath, message: `Unresolvable schema reference ${schema.$ref}.` });
+    } else {
+      errors.push(...validateJsonSchema(value, resolved, instancePath));
+    }
+  }
+
+  if (Array.isArray(schema.oneOf)) {
+    const branchErrors = schema.oneOf.map((branch) =>
+      validateJsonSchema(value, branch, instancePath),
+    );
+    const matches = branchErrors.filter((branch) => branch.length === 0).length;
+    if (matches !== 1) {
+      errors.push({
+        path: instancePath,
+        message: `Must match exactly one schema in oneOf; matched ${matches}.`,
+      });
+    }
+  }
+
+  if (schema.type !== undefined) {
+    const expectedTypes = Array.isArray(schema.type) ? schema.type : [schema.type];
+    if (!expectedTypes.some((expectedType) => matchesJsonType(value, expectedType))) {
+      errors.push({
+        path: instancePath,
+        message: `Expected type ${expectedTypes.join('|')}; received ${jsonType(value)}.`,
+      });
+      return errors;
+    }
+  }
+
+  if (schema.const !== undefined && !sameJsonValue(value, schema.const)) {
+    errors.push({ path: instancePath, message: `Value must equal const ${JSON.stringify(schema.const)}.` });
+  }
+  if (
+    Array.isArray(schema.enum) &&
+    !schema.enum.some((candidate) => sameJsonValue(value, candidate))
+  ) {
+    errors.push({ path: instancePath, message: `Value is not one of ${JSON.stringify(schema.enum)}.` });
+  }
+
+  if (typeof value === 'string') {
+    if (Number.isInteger(schema.minLength) && value.length < schema.minLength) {
+      errors.push({
+        path: instancePath,
+        message: `String length ${value.length} is below minLength ${schema.minLength}.`,
+      });
+    }
+    if (typeof schema.pattern === 'string' && !new RegExp(schema.pattern, 'u').test(value)) {
+      errors.push({ path: instancePath, message: `String does not match pattern ${schema.pattern}.` });
+    }
+  }
+
+  if (Array.isArray(value)) {
+    if (Number.isInteger(schema.minItems) && value.length < schema.minItems) {
+      errors.push({
+        path: instancePath,
+        message: `Array length ${value.length} is below minItems ${schema.minItems}.`,
+      });
+    }
+    if (Number.isInteger(schema.maxItems) && value.length > schema.maxItems) {
+      errors.push({
+        path: instancePath,
+        message: `Array length ${value.length} exceeds maxItems ${schema.maxItems}.`,
+      });
+    }
+    if (schema.uniqueItems === true) {
+      for (let index = 0; index < value.length; index += 1) {
+        if (value.slice(0, index).some((prior) => sameJsonValue(prior, value[index]))) {
+          errors.push({ path: childJsonPath(instancePath, index), message: 'Array items must be unique.' });
+        }
+      }
+    }
+    if (isObject(schema.items)) {
+      value.forEach((item, index) => {
+        errors.push(...validateJsonSchema(item, schema.items, childJsonPath(instancePath, index)));
+      });
+    }
+  }
+
+  if (isObject(value)) {
+    if (Array.isArray(schema.required)) {
+      for (const key of schema.required) {
+        if (!Object.hasOwn(value, key)) {
+          errors.push({ path: childJsonPath(instancePath, key), message: 'Required property is missing.' });
+        }
+      }
+    }
+    if (isObject(schema.properties)) {
+      for (const [key, childSchema] of Object.entries(schema.properties)) {
+        if (Object.hasOwn(value, key)) {
+          errors.push(
+            ...validateJsonSchema(value[key], childSchema, childJsonPath(instancePath, key)),
+          );
+        }
+      }
+      if (schema.additionalProperties === false) {
+        for (const key of Object.keys(value)) {
+          if (!Object.hasOwn(schema.properties, key)) {
+            errors.push({
+              path: childJsonPath(instancePath, key),
+              message: 'Additional property is not allowed.',
+            });
+          }
+        }
+      }
+    }
+  }
+
+  return errors;
+}
+
 function validateProposal(output, run) {
   const result = {
     caseId: output?.caseId ?? null,
@@ -158,6 +347,15 @@ function validateProposal(output, run) {
       expectedArtifactMatch: null,
     },
   };
+
+  const schemaErrors = validateJsonSchema(output, proposalSchema);
+  for (const schemaError of schemaErrors) {
+    pushError(result, 'json_schema', `${schemaError.path}: ${schemaError.message}`);
+  }
+  if (schemaErrors.length > 0) {
+    result.valid = false;
+    return result;
+  }
 
   if (!exactKeys(output, TOP_KEYS)) {
     pushError(result, 'schema_top_level', 'Top-level keys do not match proposal schema v1.');
@@ -374,6 +572,10 @@ function validateProposal(output, run) {
         !exactKeys(schedule, ['sourceRowIds', 'sourceText', 'parsedByRule']) ||
         !Array.isArray(schedule.sourceRowIds) ||
         schedule.sourceRowIds.length === 0 ||
+        !schedule.sourceRowIds.every(
+          (rowId) => typeof rowId === 'string' && rowId.length > 0,
+        ) ||
+        !unique(schedule.sourceRowIds) ||
         schedule.parsedByRule !== false ||
         typeof schedule.sourceText !== 'string' ||
         schedule.sourceText.length === 0
@@ -415,15 +617,20 @@ function validateProposal(output, run) {
   }
 
   const accounted = new Set([...mapped, ...omitted]);
+  const mappedAndOmitted = [...mapped].filter((rowId) => omitted.has(rowId));
+  if (mappedAndOmitted.length > 0) {
+    pushError(
+      result,
+      'source_row_mapped_and_omitted',
+      `Rows cannot be both mapped and omitted: ${mappedAndOmitted.join(', ')}.`,
+    );
+  }
   result.metrics.mappedSourceRowCount = mapped.size;
   result.metrics.omittedSourceRowCount = omitted.size;
   result.metrics.accountedSourceRowRate =
     inputRowIds.length === 0 ? 1 : accounted.size / inputRowIds.length;
   const unaccounted = inputRowIds.filter((rowId) => !accounted.has(rowId));
-  if (
-    unaccounted.length > 0 &&
-    !(status.generationState === 'partial' && proposal.incompleteReason)
-  ) {
+  if (unaccounted.length > 0) {
     pushError(result, 'silent_source_omission', `Unaccounted rows: ${unaccounted.join(', ')}.`);
   }
 

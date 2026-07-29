@@ -1,0 +1,200 @@
+[
+  {
+    "schemaVersion": "flowme-semantic-proposal-v2",
+    "promptVersion": "url-to-flow-prompt-v2.0",
+    "requestRef": "req-ce3f389aba8d72a1",
+    "sampleRef": "smp-34e345a01a86a243",
+    "result": {
+      "state": "proposal",
+      "reasonCode": null,
+      "disposition": "review",
+      "primaryArtifact": "checklist"
+    },
+    "items": [
+      {
+        "itemRef": "item-01",
+        "sourceRowRefs": [
+          "row-dd607307afad0c2e"
+        ],
+        "title": "검진 대상 및 예약 확인",
+        "intent": "inspect",
+        "completionMode": "check",
+        "memo": null,
+        "scheduleEvidence": null
+      },
+      {
+        "itemRef": "item-02",
+        "sourceRowRefs": [
+          "row-32712fc7d347ea11"
+        ],
+        "title": "검진기관 방문하기",
+        "intent": "act",
+        "completionMode": "check",
+        "memo": null,
+        "scheduleEvidence": null
+      }
+    ],
+    "omittedRows": [],
+    "projections": [
+      {
+        "target": "checklist",
+        "itemRefs": [
+          "item-01",
+          "item-02"
+        ]
+      }
+    ],
+    "review": {
+      "uncertaintyCodes": [
+        "missing_date_value"
+      ],
+      "humanCheckRowRefs": [
+        "row-32712fc7d347ea11"
+      ]
+    }
+  },
+  {
+    "schemaVersion": "flowme-semantic-proposal-v2",
+    "promptVersion": "url-to-flow-prompt-v2.0",
+    "requestRef": "req-7880991b095b3d7d",
+    "sampleRef": "smp-f88067b21f8d8327",
+    "result": {
+      "state": "proposal",
+      "reasonCode": null,
+      "disposition": "review",
+      "primaryArtifact": "calendar"
+    },
+    "items": [
+      {
+        "itemRef": "item-01",
+        "sourceRowRefs": [
+          "row-bb7995c52706bd51"
+        ],
+        "title": "극세 필터 4주에 한 번 청소",
+        "intent": "act",
+        "completionMode": "check",
+        "memo": "먼지 제거, 물세척, 그늘 건조",
+        "scheduleEvidence": {
+          "sourceRowRefs": [
+            "row-bb7995c52706bd51"
+          ],
+          "sourceText": "4주에 한 번",
+          "kind": "recurrence"
+        }
+      }
+    ],
+    "omittedRows": [],
+    "projections": [
+      {
+        "target": "calendar",
+        "itemRefs": [
+          "item-01"
+        ]
+      }
+    ],
+    "review": {
+      "uncertaintyCodes": [],
+      "humanCheckRowRefs": []
+    }
+  },
+  {
+    "schemaVersion": "flowme-semantic-proposal-v2",
+    "promptVersion": "url-to-flow-prompt-v2.0",
+    "requestRef": "req-f84a85135d3f4157",
+    "sampleRef": "smp-64c0dc556a3ed163",
+    "result": {
+      "state": "proposal",
+      "reasonCode": null,
+      "disposition": "review",
+      "primaryArtifact": "checklist"
+    },
+    "items": [
+      {
+        "itemRef": "item-01",
+        "sourceRowRefs": [
+          "row-895b0b7ea057dcee"
+        ],
+        "title": "여권 확인하기",
+        "intent": "inspect",
+        "completionMode": "check",
+        "memo": null,
+        "scheduleEvidence": null
+      },
+      {
+        "itemRef": "item-02",
+        "sourceRowRefs": [
+          "row-ae9677e543e713c9"
+        ],
+        "title": "데이터 유심 확인하기",
+        "intent": "inspect",
+        "completionMode": "check",
+        "memo": null,
+        "scheduleEvidence": null
+      }
+    ],
+    "omittedRows": [],
+    "projections": [
+      {
+        "target": "checklist",
+        "itemRefs": [
+          "item-01",
+          "item-02"
+        ]
+      }
+    ],
+    "review": {
+      "uncertaintyCodes": [],
+      "humanCheckRowRefs": []
+    }
+  },
+  {
+    "schemaVersion": "flowme-semantic-proposal-v2",
+    "promptVersion": "url-to-flow-prompt-v2.0",
+    "requestRef": "req-666d09c063252eb7",
+    "sampleRef": "smp-0b82f73ebd2cd478",
+    "result": {
+      "state": "proposal",
+      "reasonCode": null,
+      "disposition": "review",
+      "primaryArtifact": "checklist"
+    },
+    "items": [
+      {
+        "itemRef": "item-01",
+        "sourceRowRefs": [
+          "row-ee4a91296e11ea28"
+        ],
+        "title": "구직 신청 등록",
+        "intent": "act",
+        "completionMode": "check",
+        "memo": null,
+        "scheduleEvidence": null
+      },
+      {
+        "itemRef": "item-02",
+        "sourceRowRefs": [
+          "row-2873fc5802dd3a6e"
+        ],
+        "title": "취업지원 서비스 신청",
+        "intent": "act",
+        "completionMode": "check",
+        "memo": null,
+        "scheduleEvidence": null
+      }
+    ],
+    "omittedRows": [],
+    "projections": [
+      {
+        "target": "checklist",
+        "itemRefs": [
+          "item-01",
+          "item-02"
+        ]
+      }
+    ],
+    "review": {
+      "uncertaintyCodes": [],
+      "humanCheckRowRefs": []
+    }
+  }
+]

@@ -1,0 +1,38 @@
+{
+  "resultVersion": "flowme-source-row-round-2-gate-result-v1",
+  "laneId": "url-to-flow-source-row-v1",
+  "round": "round-2",
+  "promptVersion": "url-to-flow-prompt-v1.1",
+  "deterministicValidation": {
+    "schemaValid": "12/12",
+    "sourceRowAccounting": "16/16",
+    "negativeDisposition": "2/2",
+    "passed": true
+  },
+  "blindReview": {
+    "reviewIntegrity": true,
+    "itemKeep": 11,
+    "itemTotal": 15,
+    "itemKeepRate": 0.7333333333333333,
+    "unsupportedSignalCount": 15,
+    "sevenAxisAverage": 4.485714285714286,
+    "executionClarity": 4.4,
+    "contentFidelityCoverage": 4.3,
+    "sourceSafetySeparation": 4.4
+  },
+  "passedGates": [
+    "schema_valid",
+    "source_row_accounting",
+    "negative_disposition",
+    "seven_axis_average",
+    "execution_clarity",
+    "content_fidelity_coverage",
+    "source_safety_separation"
+  ],
+  "failedGates": [
+    "item_keep_rate",
+    "unsupported_content_zero"
+  ],
+  "completionPassed": false
+}
+

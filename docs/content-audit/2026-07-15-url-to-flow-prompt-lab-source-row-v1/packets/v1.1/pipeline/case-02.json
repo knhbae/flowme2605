@@ -1,0 +1,47 @@
+{
+  "laneId": "url-to-flow-source-row-v1",
+  "caseSetVersion": "flowme-url-to-flow-source-row-cases-v1",
+  "promptVersion": "url-to-flow-prompt-v1.1",
+  "caseId": "case-02",
+  "requestId": "rq-19e6b4a82d73",
+  "preflightInput": {
+    "targetLocale": "ko-KR",
+    "primary": {
+      "countryContext": "KR",
+      "riskClass": "low",
+      "accessStatus": "fetched",
+      "rightsStatus": "allowed"
+    },
+    "sourceRowCount": 1
+  },
+  "preflightResult": {
+    "passed": true,
+    "modelInvoked": true,
+    "generationState": null,
+    "outcome": null,
+    "errorCode": null,
+    "recommendedDisposition": null,
+    "reasonCode": "preflight_passed"
+  },
+  "generatorInput": {
+    "requestId": "rq-19e6b4a82d73",
+    "caseId": "case-02",
+    "maxItems": 7,
+    "sourceOwnership": {
+      "primarySourceId": "src-f2049b6a1d83",
+      "supportingSourceIds": []
+    },
+    "sourceRows": [
+      {
+        "sourceRowId": "row-62b9f4c107da",
+        "sourceId": "src-f2049b6a1d83",
+        "rowType": "procedure",
+        "title": "극세 필터 4주에 한 번 청소",
+        "detail": "먼지 제거, 물세척, 그늘 건조",
+        "order": 0
+      }
+    ]
+  },
+  "deterministicProposal": null,
+  "evidenceBoundary": "Only generatorInput is model-visible. preflightInput and hidden oracle are excluded."
+}

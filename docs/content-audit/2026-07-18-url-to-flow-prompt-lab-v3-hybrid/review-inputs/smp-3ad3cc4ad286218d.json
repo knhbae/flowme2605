@@ -1,0 +1,77 @@
+{
+  "sampleRef": "smp-3ad3cc4ad286218d",
+  "sourceOwnership": {
+    "primarySourceRef": "src-661040b7253fc79f",
+    "supportingSourceRefs": []
+  },
+  "sourceRows": [
+    {
+      "sourceRowRef": "row-09d7f58605ec20e3",
+      "sourceRef": "src-661040b7253fc79f",
+      "rowType": "check",
+      "title": "여권",
+      "detail": null,
+      "order": 0
+    },
+    {
+      "sourceRowRef": "row-58976a3aeab10cf5",
+      "sourceRef": "src-661040b7253fc79f",
+      "rowType": "check",
+      "title": "데이터 유심",
+      "detail": null,
+      "order": 1
+    }
+  ],
+  "compiledProposal": {
+    "schemaVersion": "flowme-semantic-proposal-v2",
+    "promptVersion": "row-license-compiler-v3.0",
+    "requestRef": "req-8e6c61c01ed35d54",
+    "sampleRef": "smp-3ad3cc4ad286218d",
+    "result": {
+      "state": "proposal",
+      "reasonCode": null,
+      "disposition": "review",
+      "primaryArtifact": "checklist"
+    },
+    "items": [
+      {
+        "itemRef": "item-01",
+        "sourceRowRefs": [
+          "row-09d7f58605ec20e3"
+        ],
+        "title": "여권 확인하기",
+        "intent": "inspect",
+        "completionMode": "check",
+        "memo": null,
+        "scheduleEvidence": null
+      },
+      {
+        "itemRef": "item-02",
+        "sourceRowRefs": [
+          "row-58976a3aeab10cf5"
+        ],
+        "title": "데이터 유심 확인하기",
+        "intent": "inspect",
+        "completionMode": "check",
+        "memo": null,
+        "scheduleEvidence": null
+      }
+    ],
+    "omittedRows": [],
+    "projections": [
+      {
+        "target": "checklist",
+        "itemRefs": [
+          "item-01",
+          "item-02"
+        ]
+      }
+    ],
+    "review": {
+      "uncertaintyCodes": [],
+      "humanCheckRowRefs": []
+    }
+  },
+  "proposalFingerprint": "e3d77b34acdada8e38c9d713b6dc6b6e387980803c17ecc4f647de1992c316e0",
+  "reviewInputSha256": "7e535e8a1a8ed28e6ba7d6129436d7a66f56ea533212143b9271b5c8a2b92f26"
+}

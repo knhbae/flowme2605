@@ -1,0 +1,68 @@
+{
+  "laneId": "url-to-flow-source-row-v1",
+  "caseSetVersion": "flowme-url-to-flow-source-row-cases-v1",
+  "promptVersion": "url-to-flow-prompt-v1.0",
+  "caseId": "case-11",
+  "requestId": "rq-6bc2e805f139",
+  "preflightInput": {
+    "targetLocale": "ko-KR",
+    "primary": {
+      "countryContext": "KR",
+      "riskClass": "low",
+      "accessStatus": "unavailable",
+      "rightsStatus": "needs_review"
+    },
+    "sourceRowCount": 0
+  },
+  "preflightResult": {
+    "passed": false,
+    "modelInvoked": false,
+    "generationState": "failed",
+    "outcome": "no_proposal",
+    "errorCode": "missing_source_rows",
+    "recommendedDisposition": "source_import_required",
+    "reasonCode": "no_source_rows_available"
+  },
+  "generatorInput": null,
+  "deterministicProposal": {
+    "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+    "promptVersion": "url-to-flow-prompt-v1.0",
+    "requestId": "rq-6bc2e805f139",
+    "caseId": "case-11",
+    "status": {
+      "generationState": "failed",
+      "outcome": "no_proposal",
+      "readiness": null,
+      "errorCode": "missing_source_rows"
+    },
+    "sourceAssessment": {
+      "access": "unavailable",
+      "sourceShape": "unknown",
+      "primarySourceId": "src-96e31b5c7a20",
+      "supportingSourceIds": [],
+      "receivedSourceRowIds": [],
+      "untrustedInstructionDetected": false
+    },
+    "conversionDecision": null,
+    "proposal": {
+      "proposalTitle": null,
+      "items": [],
+      "omittedRows": [],
+      "incompleteReason": "변환할 SourceRow가 없어 원문 행 확보가 필요하다."
+    },
+    "projectionPlan": [],
+    "reviewHints": {
+      "recommendedDisposition": "source_import_required",
+      "uncertainties": [
+        "no_source_rows_available"
+      ],
+      "hardFailCodes": [
+        "missing_source_rows"
+      ],
+      "humanReviewRequired": [
+        "source_row_import"
+      ]
+    }
+  },
+  "evidenceBoundary": "Deterministic negative. No model prompt exists and modelInvoked=false."
+}

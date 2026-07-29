@@ -1,16 +1,20 @@
 {
-  "reviewInputSchemaVersion": "flowme-url-to-flow-blind-review-input-v1",
+  "reviewInputSchemaVersion": "flowme-url-to-flow-blind-review-input-v2",
   "round": "round-2",
   "caseId": "case-12",
-  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1",
-  "expectationSetVersion": "flowme-url-to-flow-prompt-lab-expected-v1",
+  "caseSetVersion": "flowme-url-to-flow-prompt-lab-cases-v1.1",
   "promptVersion": "url-to-flow-prompt-v0.2",
   "proposalSchemaVersion": "flowme-semantic-proposal-v1",
   "rubric": {
-    "version": "flowme-url-to-flow-prompt-lab-review-rubric-v1",
+    "version": "flowme-url-to-flow-prompt-lab-review-rubric-v2",
     "reference": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-rubric.md"
   },
   "reviewResultTemplate": "docs/specs/2026-07-14-url-to-flow-prompt-lab/review-result-template.json",
+  "rawRun": {
+    "runFile": "docs/content-audit/2026-07-14-url-to-flow-prompt-lab/runs/round-2/batch-c.json",
+    "runId": "round-2-neutral-batch-c"
+  },
+  "proposalFingerprint": "sha256:2bde942d112280983257433593f626d463dab38f00542195c7d87aba9c1c2465",
   "sourcePacket": {
     "caseId": "case-12",
     "requestId": "prompt-lab-v1-case-12",
@@ -38,44 +42,8 @@
     },
     "sourceRows": [],
     "inputEvidenceRefs": [
-      "golden-fixtures-v1.json#gf-neg-02-nonlocal-sensitive-source",
-      "docs/content-audit/2026-07-11-content-portfolio-expansion-round2-v1.json#R2-SC-031"
+      "prompt-lab-source:case-12"
     ]
-  },
-  "hiddenExpectation": {
-    "caseId": "case-12",
-    "fixtureId": "gf-neg-02-nonlocal-sensitive-source",
-    "fixtureKind": "negative",
-    "fixtureShape": "nonlocal_sensitive_source",
-    "name": "한국 적용성이 확인되지 않은 민감 출산 준비",
-    "expectedStatus": {
-      "generationState": "failed",
-      "outcome": "no_proposal",
-      "readiness": null,
-      "errorCode": "locale_applicability_unverified",
-      "recommendedDisposition": "hold"
-    },
-    "expectedConversion": null,
-    "expectedItems": [],
-    "expectedOmittedRows": [],
-    "accountingSourceRowIds": [],
-    "expectedProjections": [],
-    "forbiddenProjections": [
-      "calendar:ics",
-      "checklist:markdown",
-      "todo:markdown",
-      "sheet:csv",
-      "memo:markdown"
-    ],
-    "referenceReview": {
-      "readiness": "hold",
-      "hardFails": [
-        "locale_applicability_unverified",
-        "sensitive_context_mismatch"
-      ],
-      "rightsDecision": "상업 출처의 공개 재사용 범위도 확인되지 않았다.",
-      "riskDecision": "한국 병원·조리원 기준의 현지 source가 확보될 때까지 hold한다."
-    }
   },
   "proposal": {
     "proposalSchemaVersion": "flowme-semantic-proposal-v1",
@@ -90,7 +58,7 @@
     },
     "sourceAssessment": {
       "access": "partial",
-      "sourceShape": "unknown",
+      "sourceShape": "date_preparation",
       "primarySourceId": "source-stemcyte-hospital-bag",
       "supportingSourceIds": [],
       "receivedSourceRowIds": [],
@@ -101,24 +69,25 @@
       "proposalTitle": null,
       "items": [],
       "omittedRows": [],
-      "incompleteReason": null
+      "incompleteReason": "의료 민감 출산 준비 정보의 국가 맥락이 미국으로, 한국 적용성이 확인되지 않았다."
     },
     "projectionPlan": [],
     "reviewHints": {
       "recommendedDisposition": "hold",
       "uncertainties": [
-        "미국 병원·보험·서류 맥락이 한국 출산 준비에 적용되는지 확인되지 않았다."
+        "미국 병원·보험·제대혈 판매 맥락이 한국 사용자에게 적용되는지 확인되지 않았다."
       ],
       "hardFailCodes": [
         "locale_applicability_unverified"
       ],
       "humanReviewRequired": [
-        "한국 병원 환경에 대한 의료·행정 적용성을 확인해야 한다."
+        "한국 병원 입원 준비에 적용 가능한 현지 공식 근거 확인"
       ]
     }
   },
   "validator": {
-    "passed": null,
-    "hardFailCodes": []
+    "validatorVersion": "flowme-url-to-flow-prompt-lab-validator-v1",
+    "passed": true,
+    "codes": []
   }
 }

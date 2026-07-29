@@ -1,0 +1,107 @@
+{
+  "reviewEnvelopeVersion": "flowme-url-to-flow-v3-hybrid-review-envelope",
+  "laneId": "url-to-flow-source-row-v3-hybrid-controller",
+  "batchRef": "batch-c",
+  "evidenceClass": "current_session_model_proxy_blind_review",
+  "assemblyStatus": "assembled",
+  "assemblyIssues": [],
+  "executor": {
+    "agentTaskId": "/root/strict_v3_review_c_exact2",
+    "taskName": "strict_v3_review_c_exact2",
+    "forkTurns": "none"
+  },
+  "measurement": {
+    "provider": null,
+    "model": null,
+    "tier": null,
+    "inputTokens": null,
+    "outputTokens": null,
+    "latencyMs": null,
+    "cost": null,
+    "currency": null
+  },
+  "bindings": {
+    "freezeSha256": "9b66e8204c0b4485afacd1f45b7e3467e2c60645702b5251b8b2889d527b4a3d",
+    "reviewManifestSha256": "a47ed4c2a8da3b43946d3fe8ab945f30e51a6092ef77a1749918b6515c5adc3d",
+    "exactTaskPayloadSha256": "ba1bb94fbc0516a8e57b2c2b844280cd9f9699dab415c270b88570ef0731b97d"
+  },
+  "rawResponseSource": "docs/content-audit/2026-07-18-url-to-flow-prompt-lab-v3-hybrid/review-raw/batch-c.txt",
+  "rawResponse": "[{\"sampleRef\":\"smp-c318a22e612c54a9\",\"reviewInputSha256\":\"85135bf71d583a8a986aaf1c533341a1da088eb5eb5305e23e2f3a0b6f7a6e86\",\"proposalFingerprint\":\"ce96e8116fa1a0dc0d5da5b23461437859d6727519d25bd77257224ed4b75e2f\",\"caseVerdict\":\"pass\",\"itemVerdicts\":[{\"itemRef\":\"item-01\",\"verdict\":\"keep\",\"reasonCode\":\"supported_as_written\"},{\"itemRef\":\"item-02\",\"verdict\":\"keep\",\"reasonCode\":\"supported_as_written\"}],\"unsupportedSignals\":[],\"scores\":{\"userNeedFit\":5,\"executionClarity\":5,\"contentFidelityCoverage\":5,\"portability\":5,\"cognitiveLoad\":5,\"copySpecificity\":5,\"sourceSafetySeparation\":5},\"scoreComments\":{\"userNeedFit\":\"두 프롬프트를 각각 여는 좁고 일관된 작업으로 구성되어 있다.\",\"executionClarity\":\"각 항목이 지정된 프롬프트를 열고 체크하는 행동을 명확히 전달한다.\",\"contentFidelityCoverage\":\"두 리소스 행이 각각 하나의 항목으로 빠짐없이 대응된다.\",\"portability\":\"두 개의 독립적인 열람 행동을 체크리스트로 옮긴 구성이 적절하다.\",\"cognitiveLoad\":\"행별 한 항목만 두어 중복이나 불필요한 구조가 없다.\",\"copySpecificity\":\"원문의 Day 1 prompt와 Day 2 prompt를 그대로 살리고 최소한의 열기 문법만 덧붙였다.\",\"sourceSafetySeparation\":\"보이지 않는 리소스 내용을 주장하지 않고 resource_contents_unseen 불확실성도 명시했다.\"},\"topIssueCode\":null,\"note\":\"두 항목 모두 명명된 리소스를 여는 범위에 한정되며, 원문에 없는 내용이나 결과를 추가하지 않았다.\"},{\"sampleRef\":\"smp-0b2e2f909ba047ad\",\"reviewInputSha256\":\"6d6586d2bb9db3424bb58b009ea4e4615b1ae07e9f50e6ef89fb42786cfbcf4e\",\"proposalFingerprint\":\"449cb3193054c6efd6df25bb9220f59ce260982662e334a7d3cac77609605dce\",\"caseVerdict\":\"pass\",\"itemVerdicts\":[{\"itemRef\":\"item-01\",\"verdict\":\"keep\",\"reasonCode\":\"supported_as_written\"}],\"unsupportedSignals\":[],\"scores\":{\"userNeedFit\":5,\"executionClarity\":5,\"contentFidelityCoverage\":5,\"portability\":5,\"cognitiveLoad\":5,\"copySpecificity\":5,\"sourceSafetySeparation\":5},\"scoreComments\":{\"userNeedFit\":\"정기검사 유효기간을 확인하는 단일한 사용자 작업으로 적절히 한정되어 있다.\",\"executionClarity\":\"유효기간을 확인하고 체크하는 완료 행동이 이해하기 쉽다.\",\"contentFidelityCoverage\":\"기본 출처의 날짜 행은 항목으로 반영되고 보조 출처 행은 경계 사유와 함께 명시적으로 제외되었다.\",\"portability\":\"날짜값을 임의로 배정하지 않은 확인 작업이 todo 대상에 잘 맞는다.\",\"cognitiveLoad\":\"하나의 필요한 확인 항목만 남겨 구조적 부담이나 중복이 없다.\",\"copySpecificity\":\"원문의 정기검사 유효기간을 그대로 사용하고 최소 확인 문법만 추가했다.\",\"sourceSafetySeparation\":\"날짜값 누락과 보조 출처의 비구조적 경계를 모두 불확실성 및 제외 정보로 명확히 표시했다.\"},\"topIssueCode\":null,\"note\":\"날짜값을 만들지 않고 유효기간 확인으로만 한정했으며, 보조 출처의 내부 단계도 구조화하지 않아 안전하다.\"}]\n",
+  "rawResponseSha256": "25c22aad2fe666eea5f3273f221fb256e273438e4a4dbd8bbabf3e76c3001317",
+  "parsedReviewsSha256": "981bc770608f6e8201df58592945583c02b6897a0167f7cf33c615f2bb6f1f58",
+  "reviews": [
+    {
+      "sampleRef": "smp-c318a22e612c54a9",
+      "reviewInputSha256": "85135bf71d583a8a986aaf1c533341a1da088eb5eb5305e23e2f3a0b6f7a6e86",
+      "proposalFingerprint": "ce96e8116fa1a0dc0d5da5b23461437859d6727519d25bd77257224ed4b75e2f",
+      "caseVerdict": "pass",
+      "itemVerdicts": [
+        {
+          "itemRef": "item-01",
+          "verdict": "keep",
+          "reasonCode": "supported_as_written"
+        },
+        {
+          "itemRef": "item-02",
+          "verdict": "keep",
+          "reasonCode": "supported_as_written"
+        }
+      ],
+      "unsupportedSignals": [],
+      "scores": {
+        "userNeedFit": 5,
+        "executionClarity": 5,
+        "contentFidelityCoverage": 5,
+        "portability": 5,
+        "cognitiveLoad": 5,
+        "copySpecificity": 5,
+        "sourceSafetySeparation": 5
+      },
+      "scoreComments": {
+        "userNeedFit": "두 프롬프트를 각각 여는 좁고 일관된 작업으로 구성되어 있다.",
+        "executionClarity": "각 항목이 지정된 프롬프트를 열고 체크하는 행동을 명확히 전달한다.",
+        "contentFidelityCoverage": "두 리소스 행이 각각 하나의 항목으로 빠짐없이 대응된다.",
+        "portability": "두 개의 독립적인 열람 행동을 체크리스트로 옮긴 구성이 적절하다.",
+        "cognitiveLoad": "행별 한 항목만 두어 중복이나 불필요한 구조가 없다.",
+        "copySpecificity": "원문의 Day 1 prompt와 Day 2 prompt를 그대로 살리고 최소한의 열기 문법만 덧붙였다.",
+        "sourceSafetySeparation": "보이지 않는 리소스 내용을 주장하지 않고 resource_contents_unseen 불확실성도 명시했다."
+      },
+      "topIssueCode": null,
+      "note": "두 항목 모두 명명된 리소스를 여는 범위에 한정되며, 원문에 없는 내용이나 결과를 추가하지 않았다."
+    },
+    {
+      "sampleRef": "smp-0b2e2f909ba047ad",
+      "reviewInputSha256": "6d6586d2bb9db3424bb58b009ea4e4615b1ae07e9f50e6ef89fb42786cfbcf4e",
+      "proposalFingerprint": "449cb3193054c6efd6df25bb9220f59ce260982662e334a7d3cac77609605dce",
+      "caseVerdict": "pass",
+      "itemVerdicts": [
+        {
+          "itemRef": "item-01",
+          "verdict": "keep",
+          "reasonCode": "supported_as_written"
+        }
+      ],
+      "unsupportedSignals": [],
+      "scores": {
+        "userNeedFit": 5,
+        "executionClarity": 5,
+        "contentFidelityCoverage": 5,
+        "portability": 5,
+        "cognitiveLoad": 5,
+        "copySpecificity": 5,
+        "sourceSafetySeparation": 5
+      },
+      "scoreComments": {
+        "userNeedFit": "정기검사 유효기간을 확인하는 단일한 사용자 작업으로 적절히 한정되어 있다.",
+        "executionClarity": "유효기간을 확인하고 체크하는 완료 행동이 이해하기 쉽다.",
+        "contentFidelityCoverage": "기본 출처의 날짜 행은 항목으로 반영되고 보조 출처 행은 경계 사유와 함께 명시적으로 제외되었다.",
+        "portability": "날짜값을 임의로 배정하지 않은 확인 작업이 todo 대상에 잘 맞는다.",
+        "cognitiveLoad": "하나의 필요한 확인 항목만 남겨 구조적 부담이나 중복이 없다.",
+        "copySpecificity": "원문의 정기검사 유효기간을 그대로 사용하고 최소 확인 문법만 추가했다.",
+        "sourceSafetySeparation": "날짜값 누락과 보조 출처의 비구조적 경계를 모두 불확실성 및 제외 정보로 명확히 표시했다."
+      },
+      "topIssueCode": null,
+      "note": "날짜값을 만들지 않고 유효기간 확인으로만 한정했으며, 보조 출처의 내부 단계도 구조화하지 않아 안전하다."
+    }
+  ]
+}

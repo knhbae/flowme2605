@@ -1,0 +1,81 @@
+{
+  "sampleRef": "smp-3c82e2a17ad8d751",
+  "sourceOwnership": {
+    "primarySourceRef": "src-218ac1806418270c",
+    "supportingSourceRefs": []
+  },
+  "sourceRows": [
+    {
+      "sourceRowRef": "row-4358a48eb06a66ff",
+      "sourceRef": "src-218ac1806418270c",
+      "rowType": "check",
+      "title": "검진 대상 및 예약 확인",
+      "detail": null,
+      "order": 0
+    },
+    {
+      "sourceRowRef": "row-a2c9e4be915a4ceb",
+      "sourceRef": "src-218ac1806418270c",
+      "rowType": "date",
+      "title": "검진기관 방문",
+      "detail": null,
+      "order": 1
+    }
+  ],
+  "compiledProposal": {
+    "schemaVersion": "flowme-semantic-proposal-v2",
+    "promptVersion": "row-license-compiler-v3.0",
+    "requestRef": "req-1381f511b9872666",
+    "sampleRef": "smp-3c82e2a17ad8d751",
+    "result": {
+      "state": "proposal",
+      "reasonCode": null,
+      "disposition": "review",
+      "primaryArtifact": "checklist"
+    },
+    "items": [
+      {
+        "itemRef": "item-01",
+        "sourceRowRefs": [
+          "row-4358a48eb06a66ff"
+        ],
+        "title": "검진 대상 및 예약 확인",
+        "intent": "inspect",
+        "completionMode": "check",
+        "memo": null,
+        "scheduleEvidence": null
+      },
+      {
+        "itemRef": "item-02",
+        "sourceRowRefs": [
+          "row-a2c9e4be915a4ceb"
+        ],
+        "title": "검진기관 방문",
+        "intent": "act",
+        "completionMode": "check",
+        "memo": null,
+        "scheduleEvidence": null
+      }
+    ],
+    "omittedRows": [],
+    "projections": [
+      {
+        "target": "checklist",
+        "itemRefs": [
+          "item-01",
+          "item-02"
+        ]
+      }
+    ],
+    "review": {
+      "uncertaintyCodes": [
+        "missing_date_value"
+      ],
+      "humanCheckRowRefs": [
+        "row-a2c9e4be915a4ceb"
+      ]
+    }
+  },
+  "proposalFingerprint": "f72947ea04d28753bd744215dcec5d6eeaaa92f705fa55cc021ba4e1e69a3541",
+  "reviewInputSha256": "85817d43c73c90e74fd339ca7029ba2229fea02818cebc51427e4e37c30f7891"
+}

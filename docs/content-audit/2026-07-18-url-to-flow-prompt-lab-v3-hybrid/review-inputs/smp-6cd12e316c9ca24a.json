@@ -1,0 +1,63 @@
+{
+  "sampleRef": "smp-6cd12e316c9ca24a",
+  "sourceOwnership": {
+    "primarySourceRef": "src-e2a69a8628777cee",
+    "supportingSourceRefs": []
+  },
+  "sourceRows": [
+    {
+      "sourceRowRef": "row-a8ce44ab3b4c5d12",
+      "sourceRef": "src-e2a69a8628777cee",
+      "rowType": "procedure",
+      "title": "극세 필터 4주에 한 번 청소",
+      "detail": "먼지 제거, 물세척, 그늘 건조",
+      "order": 0
+    }
+  ],
+  "compiledProposal": {
+    "schemaVersion": "flowme-semantic-proposal-v2",
+    "promptVersion": "row-license-compiler-v3.0",
+    "requestRef": "req-06a6030ad68a50b9",
+    "sampleRef": "smp-6cd12e316c9ca24a",
+    "result": {
+      "state": "proposal",
+      "reasonCode": null,
+      "disposition": "review",
+      "primaryArtifact": "calendar"
+    },
+    "items": [
+      {
+        "itemRef": "item-01",
+        "sourceRowRefs": [
+          "row-a8ce44ab3b4c5d12"
+        ],
+        "title": "극세 필터 4주에 한 번 청소",
+        "intent": "act",
+        "completionMode": "check",
+        "memo": "먼지 제거, 물세척, 그늘 건조",
+        "scheduleEvidence": {
+          "sourceRowRefs": [
+            "row-a8ce44ab3b4c5d12"
+          ],
+          "sourceText": "4주에 한 번",
+          "kind": "recurrence"
+        }
+      }
+    ],
+    "omittedRows": [],
+    "projections": [
+      {
+        "target": "calendar",
+        "itemRefs": [
+          "item-01"
+        ]
+      }
+    ],
+    "review": {
+      "uncertaintyCodes": [],
+      "humanCheckRowRefs": []
+    }
+  },
+  "proposalFingerprint": "72c4eca9f4bbfc2b31d22bdc90a70755627247daae7573f112b78b453711fcae",
+  "reviewInputSha256": "63b1d6b9d0271ec63f8d814e8d1bb9efa18777651921e839a2446f71d8b26a73"
+}

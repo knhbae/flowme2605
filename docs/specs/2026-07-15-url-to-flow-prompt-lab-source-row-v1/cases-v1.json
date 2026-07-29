@@ -1,0 +1,530 @@
+{
+  "caseSetVersion": "flowme-url-to-flow-source-row-cases-v1",
+  "laneId": "url-to-flow-source-row-v1",
+  "promptVersion": "url-to-flow-prompt-v1.0",
+  "proposalSchemaVersion": "flowme-semantic-proposal-v1",
+  "legacyCaseSetPath": "docs/specs/2026-07-14-url-to-flow-prompt-lab/cases-v1.json",
+  "legacyCaseSetSha256": "a3b26991687e69286c536b43a1a8f43b2ff3c1cdaa6e872c21676b2ccfa86b12",
+  "sourceFixtureSha256": "ce69525a3710bfe5c22f84c7763f436ef07cbc06fc5ec171e6b76f6e02fc134d",
+  "generatorVisibleContract": "Positive generatorInput contains only opaque request/case/provenance IDs, maxItems, and SourceRow rowType/title/detail/order. Negative cases stop in deterministic preflight.",
+  "cases": [
+    {
+      "caseId": "case-01",
+      "requestId": "rq-7a31d8c4f205",
+      "preflightInput": {
+        "targetLocale": "ko-KR",
+        "primary": {
+          "countryContext": "KR",
+          "riskClass": "sensitive",
+          "accessStatus": "fetched",
+          "rightsStatus": "allowed"
+        },
+        "sourceRowCount": 2
+      },
+      "preflightResult": {
+        "passed": true,
+        "modelInvoked": true,
+        "generationState": null,
+        "outcome": null,
+        "errorCode": null,
+        "recommendedDisposition": null,
+        "reasonCode": "preflight_passed"
+      },
+      "generatorInput": {
+        "requestId": "rq-7a31d8c4f205",
+        "caseId": "case-01",
+        "maxItems": 7,
+        "sourceOwnership": {
+          "primarySourceId": "src-a61d7c3e902f",
+          "supportingSourceIds": []
+        },
+        "sourceRows": [
+          {
+            "sourceRowId": "row-1c7a52e9b304",
+            "sourceId": "src-a61d7c3e902f",
+            "rowType": "check",
+            "title": "검진 대상 및 예약 확인",
+            "detail": null,
+            "order": 0
+          },
+          {
+            "sourceRowId": "row-a48e103d6f92",
+            "sourceId": "src-a61d7c3e902f",
+            "rowType": "date",
+            "title": "검진기관 방문",
+            "detail": null,
+            "order": 1
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "case-02",
+      "requestId": "rq-19e6b4a82d73",
+      "preflightInput": {
+        "targetLocale": "ko-KR",
+        "primary": {
+          "countryContext": "KR",
+          "riskClass": "low",
+          "accessStatus": "fetched",
+          "rightsStatus": "allowed"
+        },
+        "sourceRowCount": 1
+      },
+      "preflightResult": {
+        "passed": true,
+        "modelInvoked": true,
+        "generationState": null,
+        "outcome": null,
+        "errorCode": null,
+        "recommendedDisposition": null,
+        "reasonCode": "preflight_passed"
+      },
+      "generatorInput": {
+        "requestId": "rq-19e6b4a82d73",
+        "caseId": "case-02",
+        "maxItems": 7,
+        "sourceOwnership": {
+          "primarySourceId": "src-f2049b6a1d83",
+          "supportingSourceIds": []
+        },
+        "sourceRows": [
+          {
+            "sourceRowId": "row-62b9f4c107da",
+            "sourceId": "src-f2049b6a1d83",
+            "rowType": "procedure",
+            "title": "극세 필터 4주에 한 번 청소",
+            "detail": "먼지 제거, 물세척, 그늘 건조",
+            "order": 0
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "case-03",
+      "requestId": "rq-c52f09e17b64",
+      "preflightInput": {
+        "targetLocale": "ko-KR",
+        "primary": {
+          "countryContext": "KR",
+          "riskClass": "low",
+          "accessStatus": "fetched",
+          "rightsStatus": "needs_review"
+        },
+        "sourceRowCount": 2
+      },
+      "preflightResult": {
+        "passed": true,
+        "modelInvoked": true,
+        "generationState": null,
+        "outcome": null,
+        "errorCode": null,
+        "recommendedDisposition": null,
+        "reasonCode": "preflight_passed"
+      },
+      "generatorInput": {
+        "requestId": "rq-c52f09e17b64",
+        "caseId": "case-03",
+        "maxItems": 7,
+        "sourceOwnership": {
+          "primarySourceId": "src-3e7a10c5b942",
+          "supportingSourceIds": []
+        },
+        "sourceRows": [
+          {
+            "sourceRowId": "row-d3018c5e74a2",
+            "sourceId": "src-3e7a10c5b942",
+            "rowType": "check",
+            "title": "여권",
+            "detail": null,
+            "order": 0
+          },
+          {
+            "sourceRowId": "row-8f25a6b19c40",
+            "sourceId": "src-3e7a10c5b942",
+            "rowType": "check",
+            "title": "데이터 유심",
+            "detail": null,
+            "order": 1
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "case-04",
+      "requestId": "rq-83bd1a6f40c9",
+      "preflightInput": {
+        "targetLocale": "ko-KR",
+        "primary": {
+          "countryContext": "KR",
+          "riskClass": "sensitive",
+          "accessStatus": "fetched",
+          "rightsStatus": "allowed"
+        },
+        "sourceRowCount": 2
+      },
+      "preflightResult": {
+        "passed": true,
+        "modelInvoked": true,
+        "generationState": null,
+        "outcome": null,
+        "errorCode": null,
+        "recommendedDisposition": null,
+        "reasonCode": "preflight_passed"
+      },
+      "generatorInput": {
+        "requestId": "rq-83bd1a6f40c9",
+        "caseId": "case-04",
+        "maxItems": 7,
+        "sourceOwnership": {
+          "primarySourceId": "src-8c51f2d709a6",
+          "supportingSourceIds": []
+        },
+        "sourceRows": [
+          {
+            "sourceRowId": "row-47c1e8a305bd",
+            "sourceId": "src-8c51f2d709a6",
+            "rowType": "procedure",
+            "title": "구직 신청 등록",
+            "detail": null,
+            "order": 0
+          },
+          {
+            "sourceRowId": "row-b6d2094f7a31",
+            "sourceId": "src-8c51f2d709a6",
+            "rowType": "procedure",
+            "title": "취업지원 서비스 신청",
+            "detail": null,
+            "order": 1
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "case-05",
+      "requestId": "rq-2e74c9a51f86",
+      "preflightInput": {
+        "targetLocale": "ko-KR",
+        "primary": {
+          "countryContext": "KR",
+          "riskClass": "low",
+          "accessStatus": "fetched",
+          "rightsStatus": "allowed"
+        },
+        "sourceRowCount": 2
+      },
+      "preflightResult": {
+        "passed": true,
+        "modelInvoked": true,
+        "generationState": null,
+        "outcome": null,
+        "errorCode": null,
+        "recommendedDisposition": null,
+        "reasonCode": "preflight_passed"
+      },
+      "generatorInput": {
+        "requestId": "rq-2e74c9a51f86",
+        "caseId": "case-05",
+        "maxItems": 7,
+        "sourceOwnership": {
+          "primarySourceId": "src-14b9e63a8f27",
+          "supportingSourceIds": []
+        },
+        "sourceRows": [
+          {
+            "sourceRowId": "row-0e7a31c9b452",
+            "sourceId": "src-14b9e63a8f27",
+            "rowType": "table_row",
+            "title": "1주차 강의와 퀴즈",
+            "detail": null,
+            "order": 0
+          },
+          {
+            "sourceRowId": "row-c48f2d105a76",
+            "sourceId": "src-14b9e63a8f27",
+            "rowType": "table_row",
+            "title": "2주차 강의와 퀴즈",
+            "detail": null,
+            "order": 1
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "case-06",
+      "requestId": "rq-b90c37e4d125",
+      "preflightInput": {
+        "targetLocale": "ko-KR",
+        "primary": {
+          "countryContext": "KR",
+          "riskClass": "low",
+          "accessStatus": "fetched",
+          "rightsStatus": "needs_review"
+        },
+        "sourceRowCount": 1
+      },
+      "preflightResult": {
+        "passed": true,
+        "modelInvoked": true,
+        "generationState": null,
+        "outcome": null,
+        "errorCode": null,
+        "recommendedDisposition": null,
+        "reasonCode": "preflight_passed"
+      },
+      "generatorInput": {
+        "requestId": "rq-b90c37e4d125",
+        "caseId": "case-06",
+        "maxItems": 7,
+        "sourceOwnership": {
+          "primarySourceId": "src-c7305a19e4d2",
+          "supportingSourceIds": []
+        },
+        "sourceRows": [
+          {
+            "sourceRowId": "row-93b5e1a760cd",
+            "sourceId": "src-c7305a19e4d2",
+            "rowType": "resource",
+            "title": "선택한 레시피 영상",
+            "detail": null,
+            "order": 0
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "case-07",
+      "requestId": "rq-4d1a8fb763e0",
+      "preflightInput": {
+        "targetLocale": "ko-KR",
+        "primary": {
+          "countryContext": "KR",
+          "riskClass": "sensitive",
+          "accessStatus": "fetched",
+          "rightsStatus": "allowed"
+        },
+        "sourceRowCount": 1
+      },
+      "preflightResult": {
+        "passed": true,
+        "modelInvoked": true,
+        "generationState": null,
+        "outcome": null,
+        "errorCode": null,
+        "recommendedDisposition": null,
+        "reasonCode": "preflight_passed"
+      },
+      "generatorInput": {
+        "requestId": "rq-4d1a8fb763e0",
+        "caseId": "case-07",
+        "maxItems": 7,
+        "sourceOwnership": {
+          "primarySourceId": "src-5d8a247fb1c6",
+          "supportingSourceIds": []
+        },
+        "sourceRows": [
+          {
+            "sourceRowId": "row-2a8c640f1e95",
+            "sourceId": "src-5d8a247fb1c6",
+            "rowType": "check",
+            "title": "차량 이력과 상태를 확인한 뒤 구매 판단",
+            "detail": null,
+            "order": 0
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "case-08",
+      "requestId": "rq-e68c25a094b7",
+      "preflightInput": {
+        "targetLocale": "ko-KR",
+        "primary": {
+          "countryContext": "KR",
+          "riskClass": "sensitive",
+          "accessStatus": "fetched",
+          "rightsStatus": "allowed"
+        },
+        "sourceRowCount": 1
+      },
+      "preflightResult": {
+        "passed": true,
+        "modelInvoked": true,
+        "generationState": null,
+        "outcome": null,
+        "errorCode": null,
+        "recommendedDisposition": null,
+        "reasonCode": "preflight_passed"
+      },
+      "generatorInput": {
+        "requestId": "rq-e68c25a094b7",
+        "caseId": "case-08",
+        "maxItems": 7,
+        "sourceOwnership": {
+          "primarySourceId": "src-e1096c3a75b4",
+          "supportingSourceIds": []
+        },
+        "sourceRows": [
+          {
+            "sourceRowId": "row-f51d309b7c24",
+            "sourceId": "src-e1096c3a75b4",
+            "rowType": "check",
+            "title": "예약과 문진표 준비",
+            "detail": null,
+            "order": 0
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "case-09",
+      "requestId": "rq-05f3be71c8a4",
+      "preflightInput": {
+        "targetLocale": "ko-KR",
+        "primary": {
+          "countryContext": null,
+          "riskClass": "low",
+          "accessStatus": "fetched",
+          "rightsStatus": "needs_review"
+        },
+        "sourceRowCount": 2
+      },
+      "preflightResult": {
+        "passed": true,
+        "modelInvoked": true,
+        "generationState": null,
+        "outcome": null,
+        "errorCode": null,
+        "recommendedDisposition": null,
+        "reasonCode": "preflight_passed"
+      },
+      "generatorInput": {
+        "requestId": "rq-05f3be71c8a4",
+        "caseId": "case-09",
+        "maxItems": 7,
+        "sourceOwnership": {
+          "primarySourceId": "src-29f4b8d160ce",
+          "supportingSourceIds": []
+        },
+        "sourceRows": [
+          {
+            "sourceRowId": "row-7c20e4a91b68",
+            "sourceId": "src-29f4b8d160ce",
+            "rowType": "resource",
+            "title": "Day 1 prompt",
+            "detail": null,
+            "order": 0
+          },
+          {
+            "sourceRowId": "row-e3168f2c50a7",
+            "sourceId": "src-29f4b8d160ce",
+            "rowType": "resource",
+            "title": "Day 2 prompt",
+            "detail": null,
+            "order": 1
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "case-10",
+      "requestId": "rq-a47e19d260bf",
+      "preflightInput": {
+        "targetLocale": "ko-KR",
+        "primary": {
+          "countryContext": "KR",
+          "riskClass": "sensitive",
+          "accessStatus": "fetched",
+          "rightsStatus": "allowed"
+        },
+        "sourceRowCount": 2
+      },
+      "preflightResult": {
+        "passed": true,
+        "modelInvoked": true,
+        "generationState": null,
+        "outcome": null,
+        "errorCode": null,
+        "recommendedDisposition": null,
+        "reasonCode": "preflight_passed"
+      },
+      "generatorInput": {
+        "requestId": "rq-a47e19d260bf",
+        "caseId": "case-10",
+        "maxItems": 7,
+        "sourceOwnership": {
+          "primarySourceId": "src-b6720d4e91a5",
+          "supportingSourceIds": [
+            "src-40c9a71e2f86"
+          ]
+        },
+        "sourceRows": [
+          {
+            "sourceRowId": "row-58a7d0c31e94",
+            "sourceId": "src-b6720d4e91a5",
+            "rowType": "date",
+            "title": "정기검사 유효기간",
+            "detail": null,
+            "order": 0
+          },
+          {
+            "sourceRowId": "row-a20e6b9f4731",
+            "sourceId": "src-40c9a71e2f86",
+            "rowType": "reference",
+            "title": "검사기관 내부 검사 단계",
+            "detail": null,
+            "order": 0
+          }
+        ]
+      }
+    },
+    {
+      "caseId": "case-11",
+      "requestId": "rq-6bc2e805f139",
+      "preflightInput": {
+        "targetLocale": "ko-KR",
+        "primary": {
+          "countryContext": "KR",
+          "riskClass": "low",
+          "accessStatus": "unavailable",
+          "rightsStatus": "needs_review"
+        },
+        "sourceRowCount": 0
+      },
+      "preflightResult": {
+        "passed": false,
+        "modelInvoked": false,
+        "generationState": "failed",
+        "outcome": "no_proposal",
+        "errorCode": "missing_source_rows",
+        "recommendedDisposition": "source_import_required",
+        "reasonCode": "no_source_rows_available"
+      },
+      "generatorInput": null
+    },
+    {
+      "caseId": "case-12",
+      "requestId": "rq-d3187af46c52",
+      "preflightInput": {
+        "targetLocale": "ko-KR",
+        "primary": {
+          "countryContext": "US",
+          "riskClass": "sensitive",
+          "accessStatus": "partial",
+          "rightsStatus": "needs_review"
+        },
+        "sourceRowCount": 0
+      },
+      "preflightResult": {
+        "passed": false,
+        "modelInvoked": false,
+        "generationState": "failed",
+        "outcome": "no_proposal",
+        "errorCode": "locale_applicability_unverified",
+        "recommendedDisposition": "hold",
+        "reasonCode": "sensitive_locale_not_verified"
+      },
+      "generatorInput": null
+    }
+  ]
+}

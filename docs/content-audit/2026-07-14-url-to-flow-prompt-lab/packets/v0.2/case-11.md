@@ -41,7 +41,7 @@ CASE_INPUT_JSON
   },
   "sourceRows": [],
   "inputEvidenceRefs": [
-    "golden-fixtures-v1.json#gf-neg-01-missing-source-rows"
+    "prompt-lab-source:case-11"
   ]
 }
 ```

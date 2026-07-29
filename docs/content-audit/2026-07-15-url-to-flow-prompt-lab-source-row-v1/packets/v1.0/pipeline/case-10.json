@@ -1,0 +1,57 @@
+{
+  "laneId": "url-to-flow-source-row-v1",
+  "caseSetVersion": "flowme-url-to-flow-source-row-cases-v1",
+  "promptVersion": "url-to-flow-prompt-v1.0",
+  "caseId": "case-10",
+  "requestId": "rq-a47e19d260bf",
+  "preflightInput": {
+    "targetLocale": "ko-KR",
+    "primary": {
+      "countryContext": "KR",
+      "riskClass": "sensitive",
+      "accessStatus": "fetched",
+      "rightsStatus": "allowed"
+    },
+    "sourceRowCount": 2
+  },
+  "preflightResult": {
+    "passed": true,
+    "modelInvoked": true,
+    "generationState": null,
+    "outcome": null,
+    "errorCode": null,
+    "recommendedDisposition": null,
+    "reasonCode": "preflight_passed"
+  },
+  "generatorInput": {
+    "requestId": "rq-a47e19d260bf",
+    "caseId": "case-10",
+    "maxItems": 7,
+    "sourceOwnership": {
+      "primarySourceId": "src-b6720d4e91a5",
+      "supportingSourceIds": [
+        "src-40c9a71e2f86"
+      ]
+    },
+    "sourceRows": [
+      {
+        "sourceRowId": "row-58a7d0c31e94",
+        "sourceId": "src-b6720d4e91a5",
+        "rowType": "date",
+        "title": "정기검사 유효기간",
+        "detail": null,
+        "order": 0
+      },
+      {
+        "sourceRowId": "row-a20e6b9f4731",
+        "sourceId": "src-40c9a71e2f86",
+        "rowType": "reference",
+        "title": "검사기관 내부 검사 단계",
+        "detail": null,
+        "order": 0
+      }
+    ]
+  },
+  "deterministicProposal": null,
+  "evidenceBoundary": "Only generatorInput is model-visible. preflightInput and hidden oracle are excluded."
+}

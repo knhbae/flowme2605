@@ -1,0 +1,78 @@
+{
+  "manifestVersion": "flowme-strict-packet-manifest-v2",
+  "laneId": "url-to-flow-source-row-v2-strict",
+  "promptVersion": "url-to-flow-prompt-v2.0",
+  "packetCount": 10,
+  "packets": [
+    {
+      "auditCaseId": "case-01",
+      "sampleRef": "smp-34e345a01a86a243",
+      "file": "docs/content-audit/2026-07-18-url-to-flow-prompt-lab-v2-strict/packets/v2.0/smp-34e345a01a86a243.json",
+      "packetSha256": "46d8ae002ae9c25ec12e383c48e79942f2352ba7fc1da187013df881ce89993d",
+      "semanticPayloadSha256": "2a9b629fa2b49842ae73053381ae3ba6d48ce53baad6edaaaed738416f26ed5c"
+    },
+    {
+      "auditCaseId": "case-02",
+      "sampleRef": "smp-f88067b21f8d8327",
+      "file": "docs/content-audit/2026-07-18-url-to-flow-prompt-lab-v2-strict/packets/v2.0/smp-f88067b21f8d8327.json",
+      "packetSha256": "c414500d2681373cde56b5c06ecf69b108c405640fa3fd97eddf708409a7f765",
+      "semanticPayloadSha256": "dda7fc11745608808d53cda55a4e6907aace0ecd2763a7adbd536ec5604ef554"
+    },
+    {
+      "auditCaseId": "case-03",
+      "sampleRef": "smp-64c0dc556a3ed163",
+      "file": "docs/content-audit/2026-07-18-url-to-flow-prompt-lab-v2-strict/packets/v2.0/smp-64c0dc556a3ed163.json",
+      "packetSha256": "7f9ab6d1b7d7a53e3e2ce0a7089424f4cb0cb5221fac2ebfb5d44b7e3f394b7b",
+      "semanticPayloadSha256": "f20c6e240dd4f7f5e15abde719d4d5b92988cfe383e3112e95cb20e923fbfa3a"
+    },
+    {
+      "auditCaseId": "case-04",
+      "sampleRef": "smp-0b82f73ebd2cd478",
+      "file": "docs/content-audit/2026-07-18-url-to-flow-prompt-lab-v2-strict/packets/v2.0/smp-0b82f73ebd2cd478.json",
+      "packetSha256": "c9899e2484eaa3b07dde1a3c76ca8006f6e5e4f8b9908658e4721b74a380238c",
+      "semanticPayloadSha256": "85b0c70c7506bb05d4dffa3581e0d727e599f1d0dc7ffcf3feb5154e9087ca81"
+    },
+    {
+      "auditCaseId": "case-05",
+      "sampleRef": "smp-14c0f7b074b9994e",
+      "file": "docs/content-audit/2026-07-18-url-to-flow-prompt-lab-v2-strict/packets/v2.0/smp-14c0f7b074b9994e.json",
+      "packetSha256": "a801aabd47e3e567457775e763afc9b740ef2570e3d0db26e10630cba39fa914",
+      "semanticPayloadSha256": "24b7d2c52ddfc6214330577cf7ce6475208e5293163b51f610c4b5cd28981c71"
+    },
+    {
+      "auditCaseId": "case-06",
+      "sampleRef": "smp-01f56183ee916318",
+      "file": "docs/content-audit/2026-07-18-url-to-flow-prompt-lab-v2-strict/packets/v2.0/smp-01f56183ee916318.json",
+      "packetSha256": "811841f0183e0faa587008ddc88a68be9f7e0641c3a5a5cca48c97a20947f23c",
+      "semanticPayloadSha256": "895953c5e6b64468e3cef00036ace72982e3d25dce26b18eeda4e28cf8182e38"
+    },
+    {
+      "auditCaseId": "case-07",
+      "sampleRef": "smp-af9bcc8d0a19f8f2",
+      "file": "docs/content-audit/2026-07-18-url-to-flow-prompt-lab-v2-strict/packets/v2.0/smp-af9bcc8d0a19f8f2.json",
+      "packetSha256": "d309d37b7ca520fd229fdb0a9493a2254e7693c9a0cdf297ef336ade72019ad4",
+      "semanticPayloadSha256": "756274aa3bceb1c8c6c60a1d9d556eacebfc64665c2a6845df251cfa9db32157"
+    },
+    {
+      "auditCaseId": "case-08",
+      "sampleRef": "smp-a236951a509318e0",
+      "file": "docs/content-audit/2026-07-18-url-to-flow-prompt-lab-v2-strict/packets/v2.0/smp-a236951a509318e0.json",
+      "packetSha256": "1e12aa32ff9d3899f64ceafdcecc08540ae20768c5314ec487abe402dedabb05",
+      "semanticPayloadSha256": "99e9f7e6e9e388d75a3b9d4f7084f20ecd24ee18a4e5ef30f26408afe5efaaf9"
+    },
+    {
+      "auditCaseId": "case-09",
+      "sampleRef": "smp-5f8cdade595023d8",
+      "file": "docs/content-audit/2026-07-18-url-to-flow-prompt-lab-v2-strict/packets/v2.0/smp-5f8cdade595023d8.json",
+      "packetSha256": "290f4461f10dc2a0b7c75954d735123fb8e9853750d7bc0ae3133f8e2bec6428",
+      "semanticPayloadSha256": "af44891b9a2082dc70e21872d5ef389ce53b66e13c1c343d0c2953d31e9405c1"
+    },
+    {
+      "auditCaseId": "case-10",
+      "sampleRef": "smp-cca0262a42e836c9",
+      "file": "docs/content-audit/2026-07-18-url-to-flow-prompt-lab-v2-strict/packets/v2.0/smp-cca0262a42e836c9.json",
+      "packetSha256": "8a465a779bc7b15bb1ec0d5eae1eed6a189b0b657c5701a695d25ba3e0e6aa27",
+      "semanticPayloadSha256": "67fbc159771f3f80b64aceea0f5bc24445100980831ab46fc35ab069c1d3c6eb"
+    }
+  ]
+}
