@@ -1,0 +1,127 @@
+{
+  "schemaVersion": "flowme-qualified-corpus-input-lineage-v2",
+  "generatedAt": "2026-07-28T00:00:00.000Z",
+  "freezeMode": "exact_file_bytes_sha256",
+  "purpose": "Freeze the exact Qualified v2, v1 baseline, Vertical benchmark, and Taxonomy v1.1 inputs used by the architecture revalidation.",
+  "sourceArtifacts": [
+    {
+      "key": "qualifiedV2",
+      "path": "docs/content-audit/2026-07-27-creator-portfolio-qualified-v2.json",
+      "role": "sole_normal_corpus_source",
+      "bytes": 994499,
+      "sha256": "aa85b1da3b4403694895cc0647e462daefaec47930a7f43611a489c29db5a16f"
+    },
+    {
+      "key": "v1DiscoverySnapshot",
+      "path": "docs/specs/2026-07-27-flow-item-map-architecture-creator-portfolio-category-fit-lab-v1/creator-discovery-corpus-snapshot-v1.json",
+      "role": "v1_source_lineage_baseline",
+      "bytes": 439649,
+      "sha256": "0bcbd59a7b1412ee33cc5df715418a8a2a92e3ca67d10044ed5b8663af091e6a"
+    },
+    {
+      "key": "v1Gold",
+      "path": "docs/specs/2026-07-27-flow-item-map-architecture-creator-portfolio-category-fit-lab-v1/gold-semantic-contract-v1.json",
+      "role": "v1_corpus_and_semantic_baseline",
+      "bytes": 415067,
+      "sha256": "6028bb76847af627911890eb1a5f678f066166649fa45bd0aac8b4e0293d5b49"
+    },
+    {
+      "key": "v1CategoryFit",
+      "path": "docs/specs/2026-07-27-flow-item-map-architecture-creator-portfolio-category-fit-lab-v1/category-fit-matrix-v1.json",
+      "role": "v1_taxonomy_and_projection_baseline",
+      "bytes": 12364,
+      "sha256": "f50ba0fa68f03d7b3c82a6c7a8b67cd7edd0c1f1c11afe382af58d3b20794270"
+    },
+    {
+      "key": "v1Scorecard",
+      "path": "docs/specs/2026-07-27-flow-item-map-architecture-creator-portfolio-category-fit-lab-v1/architecture-scorecard-v1.json",
+      "role": "frozen_v1_architecture_score",
+      "bytes": 2855,
+      "sha256": "a78be1a3484a491af69a363a6e03ebe075d1fc3d08aabc4d38502cc3e89c8ced"
+    },
+    {
+      "key": "v1ProjectionLoss",
+      "path": "docs/specs/2026-07-27-flow-item-map-architecture-creator-portfolio-category-fit-lab-v1/projection-loss-manifest-v1.json",
+      "role": "frozen_v1_projection_loss",
+      "bytes": 205694,
+      "sha256": "350ac17253ec1108022c16e351e0342a1ba08c594cddc5fc2e49d00dd1505069"
+    },
+    {
+      "key": "v1RoundTrip",
+      "path": "docs/specs/2026-07-27-flow-item-map-architecture-creator-portfolio-category-fit-lab-v1/round-trip-results-v1.json",
+      "role": "frozen_v1_round_trip",
+      "bytes": 12138,
+      "sha256": "9d6a3d522c3a06a8ae1bea740b08b87ab60e3583fb4cded231498b8b88146dd6"
+    },
+    {
+      "key": "v1Adjudication",
+      "path": "docs/specs/2026-07-27-flow-item-map-architecture-creator-portfolio-category-fit-lab-v1/final-adjudication-v1.json",
+      "role": "frozen_v1_decision",
+      "bytes": 3601,
+      "sha256": "e51f8051c91f5b0a53576ab61c887eceaec1f2b7f9524ce1ec04aacd90f15ae7"
+    },
+    {
+      "key": "v1Validation",
+      "path": "docs/specs/2026-07-27-flow-item-map-architecture-creator-portfolio-category-fit-lab-v1/validation-results-v1.json",
+      "role": "frozen_v1_validator_result",
+      "bytes": 109475,
+      "sha256": "b211293467c4af4a8c43ed874e5d393f5318e7197aabe5117531b4d7fab37a76"
+    },
+    {
+      "key": "verticalBenchmark",
+      "path": "docs/content-audit/2026-07-28-vertical-execution-service-benchmark-v1.json",
+      "role": "planning_only_vertical_opportunity_source",
+      "bytes": 259492,
+      "sha256": "c8e5f1e75316d2324dcd592907ce0cd224600b1f26500394e04f25f9e6a61f22"
+    },
+    {
+      "key": "taxonomyV11",
+      "path": "docs/specs/2026-07-20-flowme-taxonomy-v1-1/taxonomy-v1.1.json",
+      "role": "canonical_enum_source",
+      "bytes": 73942,
+      "sha256": "5b910bab49d8c96cd160a52fb790af1585c4b2015d8e3fdd05df544ac8fb5d3c"
+    }
+  ],
+  "normalCorpusSelection": {
+    "policy": "Use only Qualified v2 logicHandoffSelections as the normal revalidation corpus.",
+    "creatorIds": [
+      "home-ajd",
+      "family-babyfood016",
+      "study-mansour",
+      "study-opentutorials",
+      "money-getcha",
+      "health-allblanc",
+      "meals-wtable",
+      "work-andstudio"
+    ],
+    "bundleIds": [
+      "bundle-moving-d30",
+      "bundle-baby-food-174",
+      "bundle-opic-plan",
+      "bundle-opentutorials-web1-progress",
+      "bundle-new-car-comparison",
+      "bundle-allblanc-7day-abs",
+      "bundle-wtable-summer-banchan-five",
+      "bundle-andstudio-job-prep-videos"
+    ]
+  },
+  "historicalBoundarySelection": {
+    "policy": "Keep Triple and Fitpet as historical boundary evidence; exclude them from all normal corpus totals.",
+    "creatorIds": [
+      "travel-triple",
+      "hobby-fitpet"
+    ]
+  },
+  "generatedArtifacts": [
+    "input-lineage-v2.json",
+    "baseline-delta-v2.json",
+    "qualified-corpus-fixture-v2.json",
+    "rights-and-readiness-matrix-v2.json",
+    "vertical-opportunity-appendix-v1.json"
+  ],
+  "evidenceBoundary": [
+    "The hashes freeze local source artifacts; they do not certify source rights or external-client interoperability.",
+    "The v1 score, projection loss, round-trip, and validator results remain historical evidence and are not v2 results.",
+    "The Vertical benchmark contributes planning opportunities only and contributes zero Item or SourceRow records."
+  ]
+}

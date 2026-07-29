@@ -1,0 +1,385 @@
+{
+  "schemaVersion": "flowme-planning-decision-register-v1",
+  "date": "2026-07-28",
+  "status": "planning_handoff",
+  "statusDefinitions": {
+    "settled": "Use as the default backend and UX contract unless new cross-corpus evidence reopens it.",
+    "configurable": "The semantic boundary is settled, but product/destination policy may choose among controlled options.",
+    "open": "Do not hard-code yet; evidence or implementation design is still required."
+  },
+  "summary": {
+    "decisionCount": 39,
+    "byStatus": {
+      "settled": 21,
+      "configurable": 8,
+      "open": 10
+    }
+  },
+  "decisions": [
+    {
+      "decisionId": "S01",
+      "area": "canonical_hierarchy",
+      "status": "settled",
+      "decision": "Use SourceRow → Item → Step → Flow → Bundle/Flow Map → Projection.",
+      "why": "It separates evidence, state, semantic grouping, discovery grouping, and destination format.",
+      "backendAction": "Preserve stable references at every level.",
+      "uxMeaning": "UX may hide hierarchy levels, but it must not merge their ownership."
+    },
+    {
+      "decisionId": "S02",
+      "area": "minimum_units",
+      "status": "settled",
+      "decision": "SourceRow is the minimum evidence unit; Item is the minimum independently stateful execution unit.",
+      "why": "One source fact and one user completion are related but not always 1:1.",
+      "backendAction": "Store both identities and their N:M relations.",
+      "uxMeaning": "Users check Items, not SourceRows."
+    },
+    {
+      "decisionId": "S03",
+      "area": "source_mapping",
+      "status": "settled",
+      "decision": "Support 1:1, many:1, 1:many, and many:many SourceRow↔Item mappings.",
+      "why": "Merge and split are valid only when source action boundaries support them.",
+      "backendAction": "Use SourceReferences plus an accounting sidecar.",
+      "uxMeaning": "A concise Item can still show all source evidence."
+    },
+    {
+      "decisionId": "S04",
+      "area": "row_accounting",
+      "status": "settled",
+      "decision": "Every captured SourceRow maps to Item, Field, Memo, or an omission with reason.",
+      "why": "This makes loss and over-generation auditable.",
+      "backendAction": "Reject complete fixtures with unaccounted rows.",
+      "uxMeaning": "Omitted source detail is deliberate, not silently lost."
+    },
+    {
+      "decisionId": "S05",
+      "area": "provenance",
+      "status": "settled",
+      "decision": "Keep entity-level SourceRefs and add property-level provenance in a conversion-audit sidecar.",
+      "why": "An Item can have source-backed title but an unsupported schedule or completion.",
+      "backendAction": "Trace title, completion, schedule, and every source-filled value separately.",
+      "uxMeaning": "Source explanation can be shown without exposing internal audit detail."
+    },
+    {
+      "decisionId": "S06",
+      "area": "item_boundary",
+      "status": "settled",
+      "decision": "Create an Item only for source-derived or explicit user-requested behavior worth independent state.",
+      "why": "Facts, cautions, and method details should not become fake checks.",
+      "backendAction": "Require intent, completion, order, and SourceRefs.",
+      "uxMeaning": "The execution list stays action-focused."
+    },
+    {
+      "decisionId": "S07",
+      "area": "field_memo_boundary",
+      "status": "settled",
+      "decision": "Field holds typed schedule/sort/filter/record/export/generation values; Memo holds context, method, links, experience, caution, and free text.",
+      "why": "Neither typed data nor explanatory text should be inflated into Items.",
+      "backendAction": "Store Field owner/purpose/valueSource and typed Memo kind.",
+      "uxMeaning": "Only necessary setup and run inputs become controls."
+    },
+    {
+      "decisionId": "S08",
+      "area": "intent_completion",
+      "status": "settled",
+      "decision": "Use five intents and three completion modes from Taxonomy v1.1; consume is use_resource plus check/record completion.",
+      "why": "Intent and proof of done are orthogonal.",
+      "backendAction": "Reject free-text intent/completion enums.",
+      "uxMeaning": "A lesson can be consumed while progress is checked or recorded."
+    },
+    {
+      "decisionId": "S09",
+      "area": "schedule",
+      "status": "settled",
+      "decision": "Item.schedule is authoritative; Step grouping and row order never invent dates.",
+      "why": "Semantic groups and actual dates change independently.",
+      "backendAction": "Support absolute, date_window, anchor_offset, and structured recurrence.",
+      "uxMeaning": "Undated progress remains usable without Calendar."
+    },
+    {
+      "decisionId": "S10",
+      "area": "calendar",
+      "status": "settled",
+      "decision": "An Item without an effective schedule produces no VEVENT.",
+      "why": "Calendar placement must come from source or user evidence.",
+      "backendAction": "Hard-reject undated VEVENT generation.",
+      "uxMeaning": "Offer Checklist, Todo, Sheet, or Memo instead of asking for a fake date."
+    },
+    {
+      "decisionId": "S11",
+      "area": "icalendar",
+      "status": "settled",
+      "decision": "VCALENDAR contains sibling VEVENT/VTODO components; Flow, Step, and Map are not nested iCalendar components.",
+      "why": "iCalendar components do not represent the canonical hierarchy or completion ownership.",
+      "backendAction": "Never nest VEVENT and VTODO; allow VALARM only as a component child.",
+      "uxMeaning": "Calendar is one view/export, not the data model."
+    },
+    {
+      "decisionId": "S12",
+      "area": "artifacts",
+      "status": "settled",
+      "decision": "New canonical data chooses one primary artifact from calendar/checklist/todo/sheet/memo and never persists hybrid.",
+      "why": "Hybrid hides which result actually carries the user job.",
+      "backendAction": "Store distinct secondary artifacts.",
+      "uxMeaning": "Show one recommended result and optional alternatives."
+    },
+    {
+      "decisionId": "S13",
+      "area": "input",
+      "status": "settled",
+      "decision": "Never ask the user for a source-owned value already captured.",
+      "why": "The product value is reducing re-entry.",
+      "backendAction": "Generate input contract from Field ownership and provenance.",
+      "uxMeaning": "Most first runs need zero to two setup values."
+    },
+    {
+      "decisionId": "S14",
+      "area": "step_flow_map",
+      "status": "settled",
+      "decision": "Step groups source/user semantics, Flow owns one user job and primary source, and Map groups independently usable Flows without owning execution state.",
+      "why": "This prevents discovery structure from mutating Item state.",
+      "backendAction": "Keep Item state references outside Step/Flow/Map.",
+      "uxMeaning": "The UI can present projects and variants without duplicating checks."
+    },
+    {
+      "decisionId": "S15",
+      "area": "layers",
+      "status": "settled",
+      "decision": "Separate source, creator/published version, conversion audit, user overlay, execution run, projection, and internal review.",
+      "why": "Updates must not rewrite source truth or past user execution.",
+      "backendAction": "Use versioned immutable content and separate overlay/run records.",
+      "uxMeaning": "Users can keep personal edits while seeing source updates."
+    },
+    {
+      "decisionId": "S16",
+      "area": "occurrence",
+      "status": "settled",
+      "decision": "Recurring execution state is owned by Item plus occurrenceKey; recurring Items are not cloned into canonical Items.",
+      "why": "One content definition can have many personal sessions.",
+      "backendAction": "Persist occurrence state in ExecutionRun.",
+      "uxMeaning": "Each session can be checked independently."
+    },
+    {
+      "decisionId": "S17",
+      "area": "source_policy",
+      "status": "settled",
+      "decision": "One primary source controls each Flow; supporting sources may add boundaries or utilities but not silent actions.",
+      "why": "Source provenance and creator meaning remain inspectable.",
+      "backendAction": "Require exactly one primarySourceId per Flow.",
+      "uxMeaning": "Users can understand whose experience or official guide they are following."
+    },
+    {
+      "decisionId": "S18",
+      "area": "structure_research",
+      "status": "settled",
+      "decision": "Structure completeness and public readiness are independent.",
+      "why": "Medical, parenting, legal, and rights-limited content can still test data shape when exact rows exist.",
+      "backendAction": "Keep minimal review sidecar with publicReadiness=not_assessed.",
+      "uxMeaning": "Research artifacts must not be shown as publicly approved content."
+    },
+    {
+      "decisionId": "S19",
+      "area": "vtodo",
+      "status": "settled",
+      "decision": "VTODO is disabled by default until destination capability is proven; non-Calendar fallbacks are mandatory.",
+      "why": "Client import/re-export and relation preservation were not tested.",
+      "backendAction": "Gate VTODO by destination capability.",
+      "uxMeaning": "Offer Checklist/Todo/Sheet/Memo that works even without VTODO."
+    },
+    {
+      "decisionId": "S20",
+      "area": "claim_boundary",
+      "status": "settled",
+      "decision": "Automated/schema/browser QA is not observed-user validation or external Calendar round-trip evidence.",
+      "why": "Internal consistency and real-world behavior are different claims.",
+      "backendAction": "Persist verification status explicitly.",
+      "uxMeaning": "Planning reports must label NOT_RUN tests."
+    },
+    {
+      "decisionId": "S21",
+      "area": "structure_only_template",
+      "status": "settled",
+      "decision": "Allow a source-backed Field/Memo template to contain zero Items without inventing an action, and mark it structure_only_no_items.",
+      "why": "A form definition can prove SourceRow→Field and Sheet projection structure but is not itself an independently executable Flow.",
+      "backendAction": "Require at least one Field or Memo, a usable non-Calendar projection, complete row accounting, and an explicit non-executable decision.",
+      "uxMeaning": "Show the template fields without a fake checkbox such as 'fill the form'."
+    },
+    {
+      "decisionId": "C01",
+      "area": "calendar_policy",
+      "status": "configurable",
+      "decision": "Choose per_item by default; allow step_bundle for one equal-schedule user moment with child IDs and declared completion loss.",
+      "why": "Compact display is useful in some destinations but cannot own child state.",
+      "backendAction": "Accept calendarPolicy none/per_item/step_bundle per projection request.",
+      "uxMeaning": "Users may choose compact calendar display without losing FlowMe checks."
+    },
+    {
+      "decisionId": "C02",
+      "area": "recurrence_export",
+      "status": "configurable",
+      "decision": "Choose RRULE master or bounded expanded instances by destination/request.",
+      "why": "Both serialize the same recurrence with different portability and state loss.",
+      "backendAction": "Never mix modes in one projection result.",
+      "uxMeaning": "Explain whether calendar shows one repeating event or separate instances."
+    },
+    {
+      "decisionId": "C03",
+      "area": "date_window_reminder",
+      "status": "configurable",
+      "decision": "Use source reminder when present; otherwise let product/user choose at most one reminder without changing the official window.",
+      "why": "The window is source truth, while reminder timing may be personal.",
+      "backendAction": "Separate window fields from reminder overlay.",
+      "uxMeaning": "Show the full official period and a clear personal reminder."
+    },
+    {
+      "decisionId": "C04",
+      "area": "step_grouping",
+      "status": "configurable",
+      "decision": "Choose source period, phase, week, procedure group, row group, or user moment as Step grouping.",
+      "why": "Several groupings can preserve the same Item semantics.",
+      "backendAction": "Store stable Step IDs and grouping rationale.",
+      "uxMeaning": "Presentation can use the grouping easiest for the user job."
+    },
+    {
+      "decisionId": "C05",
+      "area": "projection_detail",
+      "status": "configurable",
+      "decision": "Include source, caution, and user memo according to target and request, while never exporting internal review.",
+      "why": "A calendar event needs enough detail to execute, while a compact Todo may not.",
+      "backendAction": "Use explicit projection profile flags.",
+      "uxMeaning": "Advanced export options do not become required setup."
+    },
+    {
+      "decisionId": "C06",
+      "area": "sheet_columns",
+      "status": "configurable",
+      "decision": "Use Item/occurrence identity columns always and add typed Field columns required by the job.",
+      "why": "Different jobs need comparison, progress, or record columns.",
+      "backendAction": "Generate columns from Field definitions, not slugs.",
+      "uxMeaning": "Sheets stay small and task-specific."
+    },
+    {
+      "decisionId": "C07",
+      "area": "input_copy",
+      "status": "configurable",
+      "decision": "Labels, hints, optional advanced values, and defaults may vary by content while value ownership remains fixed.",
+      "why": "The same anchor semantic needs domain-specific language.",
+      "backendAction": "Keep stable field keys and localized labels.",
+      "uxMeaning": "Use familiar wording such as 이사일 or 시작일."
+    },
+    {
+      "decisionId": "C08",
+      "area": "memo_fallback",
+      "status": "configurable",
+      "decision": "Choose Flow-level or Step-level memo documents by source size and destination limits.",
+      "why": "Both preserve context without changing canonical Items.",
+      "backendAction": "Return included scopes and loss manifest.",
+      "uxMeaning": "Avoid one excessively long note when Step documents are clearer."
+    },
+    {
+      "decisionId": "O01",
+      "area": "shared_context",
+      "status": "open",
+      "decision": "Whether to persist a first-class cross-Flow SharedContext entity.",
+      "why": "Flow setup Fields cover current needs; adopt only after repeated independent cross-Flow cases.",
+      "evidenceNeeded": "At least three fixtures that cannot be modeled cleanly with Flow setup Fields and bindings.",
+      "temporaryRule": "Use experimental sharedContextBindings in the audit sidecar only."
+    },
+    {
+      "decisionId": "O02",
+      "area": "optional",
+      "status": "open",
+      "decision": "Whether source-explicit optionality becomes a canonical Item property.",
+      "why": "Canonical v1 has no field and optionality may affect inclusion rather than completion.",
+      "evidenceNeeded": "Repeated UX/backend need across independent fixtures.",
+      "temporaryRule": "Store a traced boolean in conversion-audit sidecar."
+    },
+    {
+      "decisionId": "O03",
+      "area": "conditions",
+      "status": "open",
+      "decision": "The canonical predicate language and supported condition operators.",
+      "why": "Free-form or domain-sensitive judgment must not become an unsafe automation rule.",
+      "evidenceNeeded": "A small common set of explicit, source-backed predicates.",
+      "temporaryRule": "Simple sidecar predicate or Memo; no automatic date/action invention."
+    },
+    {
+      "decisionId": "O04",
+      "area": "dependencies",
+      "status": "open",
+      "decision": "Whether dependency edges become canonical and which relation types are supported.",
+      "why": "Most sequence needs are already represented by order; dependencies should add real blocking semantics.",
+      "evidenceNeeded": "Independent cases requiring stateful blocking, not merely presentation order.",
+      "temporaryRule": "Sidecar finish-before-start edge, acyclic and source-explicit."
+    },
+    {
+      "decisionId": "O05",
+      "area": "conditional_schedule",
+      "status": "open",
+      "decision": "How a condition-triggered due date is represented and resolved.",
+      "why": "Canonical v1 schedules lack trigger expressions.",
+      "evidenceNeeded": "Common deterministic formulas with clear source/user operands.",
+      "temporaryRule": "Keep Item undated until the trigger resolves."
+    },
+    {
+      "decisionId": "O06",
+      "area": "user_added_items",
+      "status": "open",
+      "decision": "A complete user-owned add/edit/delete Item contract.",
+      "why": "UserFlowCopy can hide or edit published Items but does not fully model private added Items and their history.",
+      "evidenceNeeded": "UX rules for authorship, provenance, sync, and version review.",
+      "temporaryRule": "Use included=false for exclusion; do not mutate published canonical content."
+    },
+    {
+      "decisionId": "O07",
+      "area": "provenance_storage",
+      "status": "open",
+      "decision": "Whether property-level provenance is promoted from conversion-audit sidecar into canonical core.",
+      "why": "It is required for generation QA but may be too heavy for every read path.",
+      "evidenceNeeded": "Backend query, correction, and version-resolution requirements.",
+      "temporaryRule": "Persist sidecar linked to content ID/version."
+    },
+    {
+      "decisionId": "O08",
+      "area": "icalendar_interop",
+      "status": "open",
+      "decision": "Destination-specific VTODO, RELATED-TO, X-property, and recurrence round-trip support.",
+      "why": "Local syntax checks do not prove Google/Outlook/Apple behavior.",
+      "evidenceNeeded": "Real account import, edit, re-export, and identity tests.",
+      "temporaryRule": "Capability flags false/unknown; use fallbacks."
+    },
+    {
+      "decisionId": "O09",
+      "area": "occurrence_uid_migration",
+      "status": "open",
+      "decision": "Exact UID hashing/escaping and migration from legacy export UIDs.",
+      "why": "Semantic identity is settled, but changing UIDs can duplicate existing calendar events.",
+      "evidenceNeeded": "Backend ID design and external round-trip fixtures.",
+      "temporaryRule": "Use deterministic copyId+ItemId+occurrenceKey in research DTOs."
+    },
+    {
+      "decisionId": "O10",
+      "area": "observed_user_behavior",
+      "status": "open",
+      "decision": "Whether users prefer per-item versus compact Step bundles, default artifacts, and zero-to-two-input setup.",
+      "why": "Corpus and automated QA cannot establish usability or save intent.",
+      "evidenceNeeded": "Observed open, setup, export, check, return, and correction behavior.",
+      "temporaryRule": "Expose conservative defaults and record the choice as configurable."
+    }
+  ],
+  "implementationGate": {
+    "backendCanStartWith": [
+      "all settled decisions",
+      "controlled defaults for configurable decisions",
+      "sidecar-only treatment for open structure fields"
+    ],
+    "backendMustNotAssume": [
+      "public promotion clearance",
+      "VTODO or RELATED-TO round trip",
+      "first-class SharedContext",
+      "automatic domain-sensitive conditions",
+      "observed-user validation"
+    ]
+  }
+}

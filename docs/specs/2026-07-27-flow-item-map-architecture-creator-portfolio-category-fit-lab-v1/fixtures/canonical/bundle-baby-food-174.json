@@ -1,0 +1,2099 @@
+{
+  "schemaVersion": "flowme-current-canonical-v1",
+  "architecture": "current_canonical_v1",
+  "bundleId": "bundle-baby-food-174",
+  "title": "초기 이유식 D+174~209 식단",
+  "taxonomy": {
+    "primaryLifeArea": "family_parenting",
+    "secondaryLifeAreas": [],
+    "topicTags": [],
+    "sourceShape": "table_rows",
+    "primaryExecutionPattern": "progress_tracking",
+    "secondaryExecutionPatterns": [
+      "date_preparation"
+    ],
+    "primaryArtifact": "calendar",
+    "secondaryArtifacts": [
+      "checklist",
+      "sheet"
+    ]
+  },
+  "userJob": "원문 식단 행을 생후 일수 순서대로 보고 실제 제공 여부를 기록한다.",
+  "setupFields": [
+    {
+      "key": "sourceDay",
+      "label": "현재 D+n",
+      "type": "number",
+      "required": false
+    },
+    {
+      "key": "startDate",
+      "label": "D+174 시작일",
+      "type": "date",
+      "required": false
+    }
+  ],
+  "sampleUserOverlay": {
+    "startDate": "2026-08-01",
+    "sourceDay": 174
+  },
+  "map": {
+    "id": "bundle-baby-food-174-map",
+    "title": "초기 이유식 시작 식단",
+    "type": "ordered",
+    "ordering": "source_defined",
+    "childFlowIds": [
+      "bundle-baby-food-174-flow"
+    ],
+    "derivedProgressOnly": true
+  },
+  "sharedContexts": [],
+  "attribution": {
+    "creatorId": "family-babyfood016",
+    "providerId": "creator-blog",
+    "sourceOwnerId": "family-babyfood016",
+    "curatorId": null,
+    "trustAnchorRefs": [],
+    "decisionBand": "Go",
+    "creatorVerdict": "creator_flow_map_candidate",
+    "publicationApproval": "not_implied"
+  },
+  "rights": {
+    "mode": "link_and_minimal_execution_metadata",
+    "publicReleaseAllowed": false,
+    "personalTransformAllowed": true,
+    "rationale": "Existing research allows link plus minimal execution metadata; public release remains a separate review."
+  },
+  "review": {
+    "sourceRowStatus": "complete_for_representative_example",
+    "promotionState": "internal_review_only",
+    "safetyReview": "not_required"
+  },
+  "sourceRows": [
+    {
+      "sourceRowId": "bundle-baby-food-174-d174",
+      "bundleId": "bundle-baby-food-174",
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "sourceLocator": "첨부 PDF D+174 행",
+      "label": "D+174 식단",
+      "detail": "한 끼: 쌀미음",
+      "verifiedAt": "2026-07-22",
+      "sourceAsset": "gold-baby-food-plan-page1.png"
+    },
+    {
+      "sourceRowId": "bundle-baby-food-174-d175",
+      "bundleId": "bundle-baby-food-174",
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "sourceLocator": "첨부 PDF D+175 행",
+      "label": "D+175 식단",
+      "detail": "한 끼: 쌀미음",
+      "verifiedAt": "2026-07-22",
+      "sourceAsset": "gold-baby-food-plan-page1.png"
+    },
+    {
+      "sourceRowId": "bundle-baby-food-174-d176",
+      "bundleId": "bundle-baby-food-174",
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "sourceLocator": "첨부 PDF D+176 행",
+      "label": "D+176 식단",
+      "detail": "한 끼: 쌀미음",
+      "verifiedAt": "2026-07-22",
+      "sourceAsset": "gold-baby-food-plan-page1.png"
+    },
+    {
+      "sourceRowId": "bundle-baby-food-174-d177",
+      "bundleId": "bundle-baby-food-174",
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "sourceLocator": "첨부 PDF D+177 행",
+      "label": "D+177 식단",
+      "detail": "한 끼: 쌀·오트밀 미음",
+      "verifiedAt": "2026-07-22",
+      "sourceAsset": "gold-baby-food-plan-page1.png"
+    },
+    {
+      "sourceRowId": "bundle-baby-food-174-d178",
+      "bundleId": "bundle-baby-food-174",
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "sourceLocator": "첨부 PDF D+178 행",
+      "label": "D+178 식단",
+      "detail": "한 끼: 쌀·오트밀 미음",
+      "verifiedAt": "2026-07-22",
+      "sourceAsset": "gold-baby-food-plan-page1.png"
+    },
+    {
+      "sourceRowId": "bundle-baby-food-174-d179",
+      "bundleId": "bundle-baby-food-174",
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "sourceLocator": "첨부 PDF D+179 행",
+      "label": "D+179 식단",
+      "detail": "한 끼: 쌀·오트밀 미음",
+      "verifiedAt": "2026-07-22",
+      "sourceAsset": "gold-baby-food-plan-page1.png"
+    },
+    {
+      "sourceRowId": "bundle-baby-food-174-d180",
+      "bundleId": "bundle-baby-food-174",
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "sourceLocator": "첨부 PDF D+180 행",
+      "label": "D+180 식단",
+      "detail": "한 끼: 쌀·오트밀 미음 + 소고기",
+      "verifiedAt": "2026-07-22",
+      "sourceAsset": "gold-baby-food-plan-page1.png"
+    },
+    {
+      "sourceRowId": "bundle-baby-food-174-d181",
+      "bundleId": "bundle-baby-food-174",
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "sourceLocator": "첨부 PDF D+181 행",
+      "label": "D+181 식단",
+      "detail": "한 끼: 쌀·오트밀 미음 + 소고기",
+      "verifiedAt": "2026-07-22",
+      "sourceAsset": "gold-baby-food-plan-page1.png"
+    },
+    {
+      "sourceRowId": "bundle-baby-food-174-d182",
+      "bundleId": "bundle-baby-food-174",
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "sourceLocator": "첨부 PDF D+182 행",
+      "label": "D+182 식단",
+      "detail": "한 끼: 쌀·오트밀 미음 + 소고기",
+      "verifiedAt": "2026-07-22",
+      "sourceAsset": "gold-baby-food-plan-page1.png"
+    },
+    {
+      "sourceRowId": "bundle-baby-food-174-d183",
+      "bundleId": "bundle-baby-food-174",
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "sourceLocator": "첨부 PDF D+183 행",
+      "label": "D+183 식단",
+      "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 애호박",
+      "verifiedAt": "2026-07-22",
+      "sourceAsset": "gold-baby-food-plan-page1.png"
+    },
+    {
+      "sourceRowId": "bundle-baby-food-174-d184",
+      "bundleId": "bundle-baby-food-174",
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "sourceLocator": "첨부 PDF D+184 행",
+      "label": "D+184 식단",
+      "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 애호박",
+      "verifiedAt": "2026-07-22",
+      "sourceAsset": "gold-baby-food-plan-page1.png"
+    },
+    {
+      "sourceRowId": "bundle-baby-food-174-d185",
+      "bundleId": "bundle-baby-food-174",
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "sourceLocator": "첨부 PDF D+185 행",
+      "label": "D+185 식단",
+      "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 애호박",
+      "verifiedAt": "2026-07-22",
+      "sourceAsset": "gold-baby-food-plan-page1.png"
+    },
+    {
+      "sourceRowId": "bundle-baby-food-174-d186",
+      "bundleId": "bundle-baby-food-174",
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "sourceLocator": "첨부 PDF D+186 행",
+      "label": "D+186 식단",
+      "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 청경채",
+      "verifiedAt": "2026-07-22",
+      "sourceAsset": "gold-baby-food-plan-page1.png"
+    },
+    {
+      "sourceRowId": "bundle-baby-food-174-d187",
+      "bundleId": "bundle-baby-food-174",
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "sourceLocator": "첨부 PDF D+187 행",
+      "label": "D+187 식단",
+      "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 청경채",
+      "verifiedAt": "2026-07-22",
+      "sourceAsset": "gold-baby-food-plan-page1.png"
+    },
+    {
+      "sourceRowId": "bundle-baby-food-174-d188",
+      "bundleId": "bundle-baby-food-174",
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "sourceLocator": "첨부 PDF D+188 행",
+      "label": "D+188 식단",
+      "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 청경채",
+      "verifiedAt": "2026-07-22",
+      "sourceAsset": "gold-baby-food-plan-page1.png"
+    },
+    {
+      "sourceRowId": "bundle-baby-food-174-d189",
+      "bundleId": "bundle-baby-food-174",
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "sourceLocator": "첨부 PDF D+189 행",
+      "label": "D+189 식단",
+      "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 청경채 + 오이",
+      "verifiedAt": "2026-07-22",
+      "sourceAsset": "gold-baby-food-plan-page1.png"
+    },
+    {
+      "sourceRowId": "bundle-baby-food-174-d190",
+      "bundleId": "bundle-baby-food-174",
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "sourceLocator": "첨부 PDF D+190 행",
+      "label": "D+190 식단",
+      "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 청경채 + 오이",
+      "verifiedAt": "2026-07-22",
+      "sourceAsset": "gold-baby-food-plan-page1.png"
+    },
+    {
+      "sourceRowId": "bundle-baby-food-174-d191",
+      "bundleId": "bundle-baby-food-174",
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "sourceLocator": "첨부 PDF D+191 행",
+      "label": "D+191 식단",
+      "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 청경채 + 오이",
+      "verifiedAt": "2026-07-22",
+      "sourceAsset": "gold-baby-food-plan-page1.png"
+    },
+    {
+      "sourceRowId": "bundle-baby-food-174-d192",
+      "bundleId": "bundle-baby-food-174",
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "sourceLocator": "첨부 PDF D+192 행",
+      "label": "D+192 식단",
+      "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 브로콜리",
+      "verifiedAt": "2026-07-22",
+      "sourceAsset": "gold-baby-food-plan-page1.png"
+    },
+    {
+      "sourceRowId": "bundle-baby-food-174-d193",
+      "bundleId": "bundle-baby-food-174",
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "sourceLocator": "첨부 PDF D+193 행",
+      "label": "D+193 식단",
+      "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 브로콜리",
+      "verifiedAt": "2026-07-22",
+      "sourceAsset": "gold-baby-food-plan-page1.png"
+    },
+    {
+      "sourceRowId": "bundle-baby-food-174-d194",
+      "bundleId": "bundle-baby-food-174",
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "sourceLocator": "첨부 PDF D+194 행",
+      "label": "D+194 식단",
+      "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 브로콜리",
+      "verifiedAt": "2026-07-22",
+      "sourceAsset": "gold-baby-food-plan-page2.png"
+    },
+    {
+      "sourceRowId": "bundle-baby-food-174-d195",
+      "bundleId": "bundle-baby-food-174",
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "sourceLocator": "첨부 PDF D+195 행",
+      "label": "D+195 식단",
+      "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 양배추",
+      "verifiedAt": "2026-07-22",
+      "sourceAsset": "gold-baby-food-plan-page2.png"
+    },
+    {
+      "sourceRowId": "bundle-baby-food-174-d196",
+      "bundleId": "bundle-baby-food-174",
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "sourceLocator": "첨부 PDF D+196 행",
+      "label": "D+196 식단",
+      "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 양배추",
+      "verifiedAt": "2026-07-22",
+      "sourceAsset": "gold-baby-food-plan-page2.png"
+    },
+    {
+      "sourceRowId": "bundle-baby-food-174-d197",
+      "bundleId": "bundle-baby-food-174",
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "sourceLocator": "첨부 PDF D+197 행",
+      "label": "D+197 식단",
+      "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 양배추",
+      "verifiedAt": "2026-07-22",
+      "sourceAsset": "gold-baby-food-plan-page2.png"
+    },
+    {
+      "sourceRowId": "bundle-baby-food-174-d198",
+      "bundleId": "bundle-baby-food-174",
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "sourceLocator": "첨부 PDF D+198 행",
+      "label": "D+198 식단",
+      "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 청경채 + 당근",
+      "verifiedAt": "2026-07-22",
+      "sourceAsset": "gold-baby-food-plan-page2.png"
+    },
+    {
+      "sourceRowId": "bundle-baby-food-174-d199",
+      "bundleId": "bundle-baby-food-174",
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "sourceLocator": "첨부 PDF D+199 행",
+      "label": "D+199 식단",
+      "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 청경채 + 당근",
+      "verifiedAt": "2026-07-22",
+      "sourceAsset": "gold-baby-food-plan-page2.png"
+    },
+    {
+      "sourceRowId": "bundle-baby-food-174-d200",
+      "bundleId": "bundle-baby-food-174",
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "sourceLocator": "첨부 PDF D+200 행",
+      "label": "D+200 식단",
+      "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 청경채 + 당근",
+      "verifiedAt": "2026-07-22",
+      "sourceAsset": "gold-baby-food-plan-page2.png"
+    },
+    {
+      "sourceRowId": "bundle-baby-food-174-d201",
+      "bundleId": "bundle-baby-food-174",
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "sourceLocator": "첨부 PDF D+201 행",
+      "label": "D+201 식단",
+      "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 양배추 + 브로콜리 + 단호박",
+      "verifiedAt": "2026-07-22",
+      "sourceAsset": "gold-baby-food-plan-page2.png"
+    },
+    {
+      "sourceRowId": "bundle-baby-food-174-d202",
+      "bundleId": "bundle-baby-food-174",
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "sourceLocator": "첨부 PDF D+202 행",
+      "label": "D+202 식단",
+      "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 양배추 + 브로콜리 + 단호박",
+      "verifiedAt": "2026-07-22",
+      "sourceAsset": "gold-baby-food-plan-page2.png"
+    },
+    {
+      "sourceRowId": "bundle-baby-food-174-d203",
+      "bundleId": "bundle-baby-food-174",
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "sourceLocator": "첨부 PDF D+203 행",
+      "label": "D+203 식단",
+      "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 양배추 + 브로콜리 + 단호박 · 간식: 사과",
+      "verifiedAt": "2026-07-22",
+      "sourceAsset": "gold-baby-food-plan-page2.png"
+    },
+    {
+      "sourceRowId": "bundle-baby-food-174-d204",
+      "bundleId": "bundle-baby-food-174",
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "sourceLocator": "첨부 PDF D+204 행",
+      "label": "D+204 식단",
+      "detail": "아침: 쌀·오트밀 + 소고기 + 양배추 + 단호박 + 완두콩 · 점심: 쌀·오트밀 + 당근 + 사과 + 브로콜리 + 청경채",
+      "verifiedAt": "2026-07-22",
+      "sourceAsset": "gold-baby-food-plan-page2.png"
+    },
+    {
+      "sourceRowId": "bundle-baby-food-174-d205",
+      "bundleId": "bundle-baby-food-174",
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "sourceLocator": "첨부 PDF D+205 행",
+      "label": "D+205 식단",
+      "detail": "아침: 쌀·오트밀 + 소고기 + 양배추 + 단호박 + 완두콩 · 점심: 쌀·오트밀 + 당근 + 사과 + 브로콜리 + 청경채",
+      "verifiedAt": "2026-07-22",
+      "sourceAsset": "gold-baby-food-plan-page2.png"
+    },
+    {
+      "sourceRowId": "bundle-baby-food-174-d206",
+      "bundleId": "bundle-baby-food-174",
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "sourceLocator": "첨부 PDF D+206 행",
+      "label": "D+206 식단",
+      "detail": "아침: 쌀·오트밀 + 소고기 + 양배추 + 단호박 + 완두콩 · 점심: 쌀·오트밀 + 당근 + 사과 + 브로콜리 + 청경채 · 간식: 바나나",
+      "verifiedAt": "2026-07-22",
+      "sourceAsset": "gold-baby-food-plan-page2.png"
+    },
+    {
+      "sourceRowId": "bundle-baby-food-174-d207",
+      "bundleId": "bundle-baby-food-174",
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "sourceLocator": "첨부 PDF D+207 행",
+      "label": "D+207 식단",
+      "detail": "아침: 쌀·오트밀 + 달걀 + 당근 + 완두콩 + 브로콜리 · 점심: 쌀·오트밀 + 소고기 + 단호박 + 양배추 + 청경채",
+      "verifiedAt": "2026-07-22",
+      "sourceAsset": "gold-baby-food-plan-page2.png"
+    },
+    {
+      "sourceRowId": "bundle-baby-food-174-d208",
+      "bundleId": "bundle-baby-food-174",
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "sourceLocator": "첨부 PDF D+208 행",
+      "label": "D+208 식단",
+      "detail": "아침: 쌀·오트밀 + 달걀 + 당근 + 완두콩 + 브로콜리 · 점심: 쌀·오트밀 + 소고기 + 단호박 + 양배추 + 청경채",
+      "verifiedAt": "2026-07-22",
+      "sourceAsset": "gold-baby-food-plan-page2.png"
+    },
+    {
+      "sourceRowId": "bundle-baby-food-174-d209",
+      "bundleId": "bundle-baby-food-174",
+      "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "sourceLocator": "첨부 PDF D+209 행",
+      "label": "D+209 식단",
+      "detail": "아침: 쌀·오트밀 + 달걀 + 당근 + 완두콩 + 브로콜리 · 점심: 쌀·오트밀 + 소고기 + 단호박 + 양배추 + 청경채 · 간식: 바나나",
+      "verifiedAt": "2026-07-22",
+      "sourceAsset": "gold-baby-food-plan-page2.png"
+    }
+  ],
+  "flows": [
+    {
+      "id": "bundle-baby-food-174-flow",
+      "title": "D+174부터 36일 식단",
+      "primarySourceUrl": "https://blog.naver.com/01695258757/222768860919",
+      "steps": [
+        {
+          "id": "bundle-baby-food-174-d174-176",
+          "flowId": "bundle-baby-food-174-flow",
+          "title": "D+174~176",
+          "order": 1,
+          "sourceScheduleGroup": {
+            "type": "source_day_range",
+            "start": 174,
+            "end": 176
+          },
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-baby-food-174-d174",
+              "flowId": "bundle-baby-food-174-flow",
+              "stepId": "bundle-baby-food-174-d174-176",
+              "title": "D+174 식단 제공",
+              "detail": "한 끼: 쌀미음 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_day_index",
+                "dayIndex": 174
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "한 끼: 쌀미음 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-baby-food-174-d174",
+                  "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+                  "sourceLocator": "첨부 PDF D+174 행"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-baby-food-174-d175",
+              "flowId": "bundle-baby-food-174-flow",
+              "stepId": "bundle-baby-food-174-d174-176",
+              "title": "D+175 식단 제공",
+              "detail": "한 끼: 쌀미음 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_day_index",
+                "dayIndex": 175
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "한 끼: 쌀미음 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-baby-food-174-d175",
+                  "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+                  "sourceLocator": "첨부 PDF D+175 행"
+                }
+              ],
+              "order": 2,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-baby-food-174-d176",
+              "flowId": "bundle-baby-food-174-flow",
+              "stepId": "bundle-baby-food-174-d174-176",
+              "title": "D+176 식단 제공",
+              "detail": "한 끼: 쌀미음 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_day_index",
+                "dayIndex": 176
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "한 끼: 쌀미음 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-baby-food-174-d176",
+                  "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+                  "sourceLocator": "첨부 PDF D+176 행"
+                }
+              ],
+              "order": 3,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        },
+        {
+          "id": "bundle-baby-food-174-d177-179",
+          "flowId": "bundle-baby-food-174-flow",
+          "title": "D+177~179",
+          "order": 2,
+          "sourceScheduleGroup": {
+            "type": "source_day_range",
+            "start": 177,
+            "end": 179
+          },
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-baby-food-174-d177",
+              "flowId": "bundle-baby-food-174-flow",
+              "stepId": "bundle-baby-food-174-d177-179",
+              "title": "D+177 식단 제공",
+              "detail": "한 끼: 쌀·오트밀 미음 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_day_index",
+                "dayIndex": 177
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "한 끼: 쌀·오트밀 미음 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-baby-food-174-d177",
+                  "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+                  "sourceLocator": "첨부 PDF D+177 행"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-baby-food-174-d178",
+              "flowId": "bundle-baby-food-174-flow",
+              "stepId": "bundle-baby-food-174-d177-179",
+              "title": "D+178 식단 제공",
+              "detail": "한 끼: 쌀·오트밀 미음 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_day_index",
+                "dayIndex": 178
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "한 끼: 쌀·오트밀 미음 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-baby-food-174-d178",
+                  "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+                  "sourceLocator": "첨부 PDF D+178 행"
+                }
+              ],
+              "order": 2,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-baby-food-174-d179",
+              "flowId": "bundle-baby-food-174-flow",
+              "stepId": "bundle-baby-food-174-d177-179",
+              "title": "D+179 식단 제공",
+              "detail": "한 끼: 쌀·오트밀 미음 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_day_index",
+                "dayIndex": 179
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "한 끼: 쌀·오트밀 미음 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-baby-food-174-d179",
+                  "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+                  "sourceLocator": "첨부 PDF D+179 행"
+                }
+              ],
+              "order": 3,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        },
+        {
+          "id": "bundle-baby-food-174-d180-182",
+          "flowId": "bundle-baby-food-174-flow",
+          "title": "D+180~182",
+          "order": 3,
+          "sourceScheduleGroup": {
+            "type": "source_day_range",
+            "start": 180,
+            "end": 182
+          },
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-baby-food-174-d180",
+              "flowId": "bundle-baby-food-174-flow",
+              "stepId": "bundle-baby-food-174-d180-182",
+              "title": "D+180 식단 제공",
+              "detail": "한 끼: 쌀·오트밀 미음 + 소고기 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_day_index",
+                "dayIndex": 180
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "한 끼: 쌀·오트밀 미음 + 소고기 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-baby-food-174-d180",
+                  "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+                  "sourceLocator": "첨부 PDF D+180 행"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-baby-food-174-d181",
+              "flowId": "bundle-baby-food-174-flow",
+              "stepId": "bundle-baby-food-174-d180-182",
+              "title": "D+181 식단 제공",
+              "detail": "한 끼: 쌀·오트밀 미음 + 소고기 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_day_index",
+                "dayIndex": 181
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "한 끼: 쌀·오트밀 미음 + 소고기 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-baby-food-174-d181",
+                  "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+                  "sourceLocator": "첨부 PDF D+181 행"
+                }
+              ],
+              "order": 2,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-baby-food-174-d182",
+              "flowId": "bundle-baby-food-174-flow",
+              "stepId": "bundle-baby-food-174-d180-182",
+              "title": "D+182 식단 제공",
+              "detail": "한 끼: 쌀·오트밀 미음 + 소고기 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_day_index",
+                "dayIndex": 182
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "한 끼: 쌀·오트밀 미음 + 소고기 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-baby-food-174-d182",
+                  "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+                  "sourceLocator": "첨부 PDF D+182 행"
+                }
+              ],
+              "order": 3,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        },
+        {
+          "id": "bundle-baby-food-174-d183-185",
+          "flowId": "bundle-baby-food-174-flow",
+          "title": "D+183~185",
+          "order": 4,
+          "sourceScheduleGroup": {
+            "type": "source_day_range",
+            "start": 183,
+            "end": 185
+          },
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-baby-food-174-d183",
+              "flowId": "bundle-baby-food-174-flow",
+              "stepId": "bundle-baby-food-174-d183-185",
+              "title": "D+183 식단 제공",
+              "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_day_index",
+                "dayIndex": 183
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-baby-food-174-d183",
+                  "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+                  "sourceLocator": "첨부 PDF D+183 행"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-baby-food-174-d184",
+              "flowId": "bundle-baby-food-174-flow",
+              "stepId": "bundle-baby-food-174-d183-185",
+              "title": "D+184 식단 제공",
+              "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_day_index",
+                "dayIndex": 184
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-baby-food-174-d184",
+                  "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+                  "sourceLocator": "첨부 PDF D+184 행"
+                }
+              ],
+              "order": 2,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-baby-food-174-d185",
+              "flowId": "bundle-baby-food-174-flow",
+              "stepId": "bundle-baby-food-174-d183-185",
+              "title": "D+185 식단 제공",
+              "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_day_index",
+                "dayIndex": 185
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-baby-food-174-d185",
+                  "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+                  "sourceLocator": "첨부 PDF D+185 행"
+                }
+              ],
+              "order": 3,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        },
+        {
+          "id": "bundle-baby-food-174-d186-188",
+          "flowId": "bundle-baby-food-174-flow",
+          "title": "D+186~188",
+          "order": 5,
+          "sourceScheduleGroup": {
+            "type": "source_day_range",
+            "start": 186,
+            "end": 188
+          },
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-baby-food-174-d186",
+              "flowId": "bundle-baby-food-174-flow",
+              "stepId": "bundle-baby-food-174-d186-188",
+              "title": "D+186 식단 제공",
+              "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 청경채 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_day_index",
+                "dayIndex": 186
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 청경채 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-baby-food-174-d186",
+                  "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+                  "sourceLocator": "첨부 PDF D+186 행"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-baby-food-174-d187",
+              "flowId": "bundle-baby-food-174-flow",
+              "stepId": "bundle-baby-food-174-d186-188",
+              "title": "D+187 식단 제공",
+              "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 청경채 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_day_index",
+                "dayIndex": 187
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 청경채 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-baby-food-174-d187",
+                  "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+                  "sourceLocator": "첨부 PDF D+187 행"
+                }
+              ],
+              "order": 2,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-baby-food-174-d188",
+              "flowId": "bundle-baby-food-174-flow",
+              "stepId": "bundle-baby-food-174-d186-188",
+              "title": "D+188 식단 제공",
+              "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 청경채 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_day_index",
+                "dayIndex": 188
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 청경채 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-baby-food-174-d188",
+                  "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+                  "sourceLocator": "첨부 PDF D+188 행"
+                }
+              ],
+              "order": 3,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        },
+        {
+          "id": "bundle-baby-food-174-d189-191",
+          "flowId": "bundle-baby-food-174-flow",
+          "title": "D+189~191",
+          "order": 6,
+          "sourceScheduleGroup": {
+            "type": "source_day_range",
+            "start": 189,
+            "end": 191
+          },
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-baby-food-174-d189",
+              "flowId": "bundle-baby-food-174-flow",
+              "stepId": "bundle-baby-food-174-d189-191",
+              "title": "D+189 식단 제공",
+              "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 청경채 + 오이 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_day_index",
+                "dayIndex": 189
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "한 끼: 쌀·오트밀 미음 + 소고기 + 청경채 + 오이 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-baby-food-174-d189",
+                  "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+                  "sourceLocator": "첨부 PDF D+189 행"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-baby-food-174-d190",
+              "flowId": "bundle-baby-food-174-flow",
+              "stepId": "bundle-baby-food-174-d189-191",
+              "title": "D+190 식단 제공",
+              "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 청경채 + 오이 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_day_index",
+                "dayIndex": 190
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "한 끼: 쌀·오트밀 미음 + 소고기 + 청경채 + 오이 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-baby-food-174-d190",
+                  "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+                  "sourceLocator": "첨부 PDF D+190 행"
+                }
+              ],
+              "order": 2,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-baby-food-174-d191",
+              "flowId": "bundle-baby-food-174-flow",
+              "stepId": "bundle-baby-food-174-d189-191",
+              "title": "D+191 식단 제공",
+              "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 청경채 + 오이 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_day_index",
+                "dayIndex": 191
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "한 끼: 쌀·오트밀 미음 + 소고기 + 청경채 + 오이 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-baby-food-174-d191",
+                  "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+                  "sourceLocator": "첨부 PDF D+191 행"
+                }
+              ],
+              "order": 3,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        },
+        {
+          "id": "bundle-baby-food-174-d192-194",
+          "flowId": "bundle-baby-food-174-flow",
+          "title": "D+192~194",
+          "order": 7,
+          "sourceScheduleGroup": {
+            "type": "source_day_range",
+            "start": 192,
+            "end": 194
+          },
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-baby-food-174-d192",
+              "flowId": "bundle-baby-food-174-flow",
+              "stepId": "bundle-baby-food-174-d192-194",
+              "title": "D+192 식단 제공",
+              "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 브로콜리 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_day_index",
+                "dayIndex": 192
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 브로콜리 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-baby-food-174-d192",
+                  "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+                  "sourceLocator": "첨부 PDF D+192 행"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-baby-food-174-d193",
+              "flowId": "bundle-baby-food-174-flow",
+              "stepId": "bundle-baby-food-174-d192-194",
+              "title": "D+193 식단 제공",
+              "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 브로콜리 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_day_index",
+                "dayIndex": 193
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 브로콜리 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-baby-food-174-d193",
+                  "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+                  "sourceLocator": "첨부 PDF D+193 행"
+                }
+              ],
+              "order": 2,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-baby-food-174-d194",
+              "flowId": "bundle-baby-food-174-flow",
+              "stepId": "bundle-baby-food-174-d192-194",
+              "title": "D+194 식단 제공",
+              "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 브로콜리 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_day_index",
+                "dayIndex": 194
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "한 끼: 쌀·오트밀 미음 + 소고기 + 애호박 + 브로콜리 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-baby-food-174-d194",
+                  "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+                  "sourceLocator": "첨부 PDF D+194 행"
+                }
+              ],
+              "order": 3,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        },
+        {
+          "id": "bundle-baby-food-174-d195-197",
+          "flowId": "bundle-baby-food-174-flow",
+          "title": "D+195~197",
+          "order": 8,
+          "sourceScheduleGroup": {
+            "type": "source_day_range",
+            "start": 195,
+            "end": 197
+          },
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-baby-food-174-d195",
+              "flowId": "bundle-baby-food-174-flow",
+              "stepId": "bundle-baby-food-174-d195-197",
+              "title": "D+195 식단 제공",
+              "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 양배추 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_day_index",
+                "dayIndex": 195
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 양배추 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-baby-food-174-d195",
+                  "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+                  "sourceLocator": "첨부 PDF D+195 행"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-baby-food-174-d196",
+              "flowId": "bundle-baby-food-174-flow",
+              "stepId": "bundle-baby-food-174-d195-197",
+              "title": "D+196 식단 제공",
+              "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 양배추 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_day_index",
+                "dayIndex": 196
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 양배추 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-baby-food-174-d196",
+                  "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+                  "sourceLocator": "첨부 PDF D+196 행"
+                }
+              ],
+              "order": 2,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-baby-food-174-d197",
+              "flowId": "bundle-baby-food-174-flow",
+              "stepId": "bundle-baby-food-174-d195-197",
+              "title": "D+197 식단 제공",
+              "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 양배추 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_day_index",
+                "dayIndex": 197
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 양배추 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-baby-food-174-d197",
+                  "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+                  "sourceLocator": "첨부 PDF D+197 행"
+                }
+              ],
+              "order": 3,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        },
+        {
+          "id": "bundle-baby-food-174-d198-200",
+          "flowId": "bundle-baby-food-174-flow",
+          "title": "D+198~200",
+          "order": 9,
+          "sourceScheduleGroup": {
+            "type": "source_day_range",
+            "start": 198,
+            "end": 200
+          },
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-baby-food-174-d198",
+              "flowId": "bundle-baby-food-174-flow",
+              "stepId": "bundle-baby-food-174-d198-200",
+              "title": "D+198 식단 제공",
+              "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 청경채 + 당근 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_day_index",
+                "dayIndex": 198
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 청경채 + 당근 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-baby-food-174-d198",
+                  "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+                  "sourceLocator": "첨부 PDF D+198 행"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-baby-food-174-d199",
+              "flowId": "bundle-baby-food-174-flow",
+              "stepId": "bundle-baby-food-174-d198-200",
+              "title": "D+199 식단 제공",
+              "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 청경채 + 당근 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_day_index",
+                "dayIndex": 199
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 청경채 + 당근 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-baby-food-174-d199",
+                  "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+                  "sourceLocator": "첨부 PDF D+199 행"
+                }
+              ],
+              "order": 2,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-baby-food-174-d200",
+              "flowId": "bundle-baby-food-174-flow",
+              "stepId": "bundle-baby-food-174-d198-200",
+              "title": "D+200 식단 제공",
+              "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 청경채 + 당근 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_day_index",
+                "dayIndex": 200
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "한 끼: 쌀·오트밀 미음 + 소고기 + 브로콜리 + 청경채 + 당근 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-baby-food-174-d200",
+                  "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+                  "sourceLocator": "첨부 PDF D+200 행"
+                }
+              ],
+              "order": 3,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        },
+        {
+          "id": "bundle-baby-food-174-d201-203",
+          "flowId": "bundle-baby-food-174-flow",
+          "title": "D+201~203",
+          "order": 10,
+          "sourceScheduleGroup": {
+            "type": "source_day_range",
+            "start": 201,
+            "end": 203
+          },
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-baby-food-174-d201",
+              "flowId": "bundle-baby-food-174-flow",
+              "stepId": "bundle-baby-food-174-d201-203",
+              "title": "D+201 식단 제공",
+              "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 양배추 + 브로콜리 + 단호박 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_day_index",
+                "dayIndex": 201
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "한 끼: 쌀·오트밀 미음 + 소고기 + 양배추 + 브로콜리 + 단호박 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-baby-food-174-d201",
+                  "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+                  "sourceLocator": "첨부 PDF D+201 행"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-baby-food-174-d202",
+              "flowId": "bundle-baby-food-174-flow",
+              "stepId": "bundle-baby-food-174-d201-203",
+              "title": "D+202 식단 제공",
+              "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 양배추 + 브로콜리 + 단호박 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_day_index",
+                "dayIndex": 202
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "한 끼: 쌀·오트밀 미음 + 소고기 + 양배추 + 브로콜리 + 단호박 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-baby-food-174-d202",
+                  "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+                  "sourceLocator": "첨부 PDF D+202 행"
+                }
+              ],
+              "order": 2,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-baby-food-174-d203",
+              "flowId": "bundle-baby-food-174-flow",
+              "stepId": "bundle-baby-food-174-d201-203",
+              "title": "D+203 식단 제공",
+              "detail": "한 끼: 쌀·오트밀 미음 + 소고기 + 양배추 + 브로콜리 + 단호박 · 간식: 사과 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_day_index",
+                "dayIndex": 203
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "한 끼: 쌀·오트밀 미음 + 소고기 + 양배추 + 브로콜리 + 단호박 · 간식: 사과 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-baby-food-174-d203",
+                  "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+                  "sourceLocator": "첨부 PDF D+203 행"
+                }
+              ],
+              "order": 3,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        },
+        {
+          "id": "bundle-baby-food-174-d204-206",
+          "flowId": "bundle-baby-food-174-flow",
+          "title": "D+204~206",
+          "order": 11,
+          "sourceScheduleGroup": {
+            "type": "source_day_range",
+            "start": 204,
+            "end": 206
+          },
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-baby-food-174-d204",
+              "flowId": "bundle-baby-food-174-flow",
+              "stepId": "bundle-baby-food-174-d204-206",
+              "title": "D+204 식단 제공",
+              "detail": "아침: 쌀·오트밀 + 소고기 + 양배추 + 단호박 + 완두콩 · 점심: 쌀·오트밀 + 당근 + 사과 + 브로콜리 + 청경채 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_day_index",
+                "dayIndex": 204
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "아침: 쌀·오트밀 + 소고기 + 양배추 + 단호박 + 완두콩 · 점심: 쌀·오트밀 + 당근 + 사과 + 브로콜리 + 청경채 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-baby-food-174-d204",
+                  "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+                  "sourceLocator": "첨부 PDF D+204 행"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-baby-food-174-d205",
+              "flowId": "bundle-baby-food-174-flow",
+              "stepId": "bundle-baby-food-174-d204-206",
+              "title": "D+205 식단 제공",
+              "detail": "아침: 쌀·오트밀 + 소고기 + 양배추 + 단호박 + 완두콩 · 점심: 쌀·오트밀 + 당근 + 사과 + 브로콜리 + 청경채 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_day_index",
+                "dayIndex": 205
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "아침: 쌀·오트밀 + 소고기 + 양배추 + 단호박 + 완두콩 · 점심: 쌀·오트밀 + 당근 + 사과 + 브로콜리 + 청경채 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-baby-food-174-d205",
+                  "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+                  "sourceLocator": "첨부 PDF D+205 행"
+                }
+              ],
+              "order": 2,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-baby-food-174-d206",
+              "flowId": "bundle-baby-food-174-flow",
+              "stepId": "bundle-baby-food-174-d204-206",
+              "title": "D+206 식단 제공",
+              "detail": "아침: 쌀·오트밀 + 소고기 + 양배추 + 단호박 + 완두콩 · 점심: 쌀·오트밀 + 당근 + 사과 + 브로콜리 + 청경채 · 간식: 바나나 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_day_index",
+                "dayIndex": 206
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "아침: 쌀·오트밀 + 소고기 + 양배추 + 단호박 + 완두콩 · 점심: 쌀·오트밀 + 당근 + 사과 + 브로콜리 + 청경채 · 간식: 바나나 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-baby-food-174-d206",
+                  "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+                  "sourceLocator": "첨부 PDF D+206 행"
+                }
+              ],
+              "order": 3,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        },
+        {
+          "id": "bundle-baby-food-174-d207-209",
+          "flowId": "bundle-baby-food-174-flow",
+          "title": "D+207~209",
+          "order": 12,
+          "sourceScheduleGroup": {
+            "type": "source_day_range",
+            "start": 207,
+            "end": 209
+          },
+          "prerequisite": null,
+          "derivedProgressOnly": true,
+          "items": [
+            {
+              "id": "bundle-baby-food-174-d207",
+              "flowId": "bundle-baby-food-174-flow",
+              "stepId": "bundle-baby-food-174-d207-209",
+              "title": "D+207 식단 제공",
+              "detail": "아침: 쌀·오트밀 + 달걀 + 당근 + 완두콩 + 브로콜리 · 점심: 쌀·오트밀 + 소고기 + 단호박 + 양배추 + 청경채 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_day_index",
+                "dayIndex": 207
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "아침: 쌀·오트밀 + 달걀 + 당근 + 완두콩 + 브로콜리 · 점심: 쌀·오트밀 + 소고기 + 단호박 + 양배추 + 청경채 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-baby-food-174-d207",
+                  "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+                  "sourceLocator": "첨부 PDF D+207 행"
+                }
+              ],
+              "order": 1,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-baby-food-174-d208",
+              "flowId": "bundle-baby-food-174-flow",
+              "stepId": "bundle-baby-food-174-d207-209",
+              "title": "D+208 식단 제공",
+              "detail": "아침: 쌀·오트밀 + 달걀 + 당근 + 완두콩 + 브로콜리 · 점심: 쌀·오트밀 + 소고기 + 단호박 + 양배추 + 청경채 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_day_index",
+                "dayIndex": 208
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "아침: 쌀·오트밀 + 달걀 + 당근 + 완두콩 + 브로콜리 · 점심: 쌀·오트밀 + 소고기 + 단호박 + 양배추 + 청경채 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-baby-food-174-d208",
+                  "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+                  "sourceLocator": "첨부 PDF D+208 행"
+                }
+              ],
+              "order": 2,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            },
+            {
+              "id": "bundle-baby-food-174-d209",
+              "flowId": "bundle-baby-food-174-flow",
+              "stepId": "bundle-baby-food-174-d207-209",
+              "title": "D+209 식단 제공",
+              "detail": "아침: 쌀·오트밀 + 달걀 + 당근 + 완두콩 + 브로콜리 · 점심: 쌀·오트밀 + 소고기 + 단호박 + 양배추 + 청경채 · 간식: 바나나 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+              "intent": "act",
+              "completion": {
+                "mode": "manual_check",
+                "independentlyStateful": true
+              },
+              "optional": false,
+              "schedule": {
+                "type": "source_day_index",
+                "dayIndex": 209
+              },
+              "fields": [],
+              "memos": [
+                {
+                  "kind": "source_detail",
+                  "text": "아침: 쌀·오트밀 + 달걀 + 당근 + 완두콩 + 브로콜리 · 점심: 쌀·오트밀 + 소고기 + 단호박 + 양배추 + 청경채 · 간식: 바나나 · 먹은 양이나 반응을 남기려면 이 Item의 개인 메모를 사용한다.",
+                  "owner": "published_content"
+                }
+              ],
+              "conditions": [],
+              "sourceRefs": [
+                {
+                  "sourceRowId": "bundle-baby-food-174-d209",
+                  "sourceUrl": "https://blog.naver.com/01695258757/222768860919",
+                  "sourceLocator": "첨부 PDF D+209 행"
+                }
+              ],
+              "order": 3,
+              "projectionPolicy": {
+                "calendar": "per_item",
+                "checklist": "direct",
+                "todo": "direct",
+                "sheet": "direct",
+                "memo": "direct"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

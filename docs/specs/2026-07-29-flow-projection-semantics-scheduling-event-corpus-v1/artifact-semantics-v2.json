@@ -1,0 +1,120 @@
+{
+  "schemaVersion": "flowme-artifact-semantics-v2",
+  "generatedAt": "2026-07-29T12:00:00+09:00",
+  "canonicalRaw": {
+    "name": "JSON/DTO",
+    "definition": "Source provenance, hierarchy, state, schedule ownership, review state, and projection policy를 보존하는 machine-readable 원본.",
+    "canonical": true
+  },
+  "projections": {
+    "calendar": {
+      "oneLine": "실행·참석 시점을 시간축에 놓는 projection",
+      "naturalQuestion": "언제 가거나 실행해야 하지?",
+      "recordUnit": "scheduled Item occurrence or eligible session bundle",
+      "preserves": [
+        "start/end or all-day date",
+        "timezone",
+        "location",
+        "source/user/system schedule provenance"
+      ],
+      "loses": [
+        "independent completion when bundled",
+        "rich table fields",
+        "full source hierarchy unless IDs are embedded"
+      ],
+      "schemaKey": "events"
+    },
+    "checklist": {
+      "oneLine": "한 상황에서 빠짐없이 끝내는 유한 항목 묶음",
+      "naturalQuestion": "빠뜨린 것이 없나?",
+      "recordUnit": "Step group with ordered Item entries",
+      "preserves": [
+        "bounded membership",
+        "Step grouping",
+        "source order",
+        "required/optional distinction",
+        "Item completion"
+      ],
+      "loses": [
+        "open-queue semantics",
+        "rich schedule windows",
+        "typed comparison columns"
+      ],
+      "schemaKey": "groups"
+    },
+    "todo": {
+      "oneLine": "독립적으로 꺼내고 미루고 재정렬하는 다음 행동·자료 queue",
+      "naturalQuestion": "다음에 무엇을 처리하지?",
+      "recordUnit": "Item task, optionally Step parent plus Item subtasks",
+      "preserves": [
+        "independent completion",
+        "due date",
+        "queue order",
+        "defer/reorder capability",
+        "source Item ID"
+      ],
+      "loses": [
+        "closed-set completeness unless adapter retains it",
+        "calendar attendance duration",
+        "wide typed fields"
+      ],
+      "schemaKey": "tasks"
+    },
+    "sheet": {
+      "oneLine": "항목·회차·상태를 안정적인 행과 열로 관리하는 projection",
+      "naturalQuestion": "비교·필터·진도를 표로 보고 싶다",
+      "recordUnit": "Item or Occurrence row",
+      "preserves": [
+        "stable IDs",
+        "typed columns",
+        "status",
+        "schedule fields",
+        "provenance columns"
+      ],
+      "loses": [
+        "native reminders",
+        "rich nested hierarchy without denormalized IDs",
+        "natural prose flow"
+      ],
+      "schemaKey": "rows"
+    },
+    "memo": {
+      "oneLine": "사람이 읽고 복사하기 쉬운 TXT/Markdown 문서 projection",
+      "naturalQuestion": "이 내용을 한 번에 읽거나 공유하고 싶다",
+      "recordUnit": "Flow or Step document section",
+      "preserves": [
+        "titles",
+        "details",
+        "source links",
+        "human-readable grouping",
+        "cautions"
+      ],
+      "loses": [
+        "typed state",
+        "reliable round-trip IDs unless annotated",
+        "native completion/reminders",
+        "full canonical relationships"
+      ],
+      "schemaKey": "sections",
+      "canonicalRaw": false
+    }
+  },
+  "sharedAxes": {
+    "recommendation": [
+      "primary",
+      "secondary",
+      "optional",
+      "not_recommended"
+    ],
+    "availability": [
+      "available_now",
+      "available_after_user_overlay",
+      "unavailable"
+    ],
+    "fidelity": [
+      "lossless_or_low_loss",
+      "bounded_loss",
+      "misleading_or_prohibited"
+    ]
+  }
+}

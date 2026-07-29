@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "flowme-event-occurrence-contract-v1",
+  "generatedAt": "2026-07-29T12:00:00+09:00",
+  "selectedModel": "C_source_occurrence_then_user_item",
+  "comparedModels": [
+    {
+      "id": "A_source_row_is_item",
+      "verdict": "reject_as_default",
+      "risk": "관심도 표현하지 않은 행사 정보에 완료 상태를 부여하고 listing을 Todo로 오해한다."
+    },
+    {
+      "id": "B_occurrence_always_separate",
+      "verdict": "modify",
+      "risk": "source fact는 잘 보존하지만 user attendance/booking Item 생성 시점이 불명확하다."
+    },
+    {
+      "id": "C_source_occurrence_then_user_item",
+      "verdict": "adopt",
+      "reason": "Series/Edition/Occurrence를 source fact로 두고 사용자의 저장·예매·참석 선택 시 Item을 만든다."
+    }
+  ],
+  "hierarchy": [
+    "EventSeries",
+    "EventEdition",
+    "SourceOccurrence | AvailabilityWindow | Milestone",
+    "User attendance/booking/result intent",
+    "Item",
+    "Projection"
+  ],
+  "requiredFields": [
+    "occurrenceId",
+    "seriesId?",
+    "editionId?",
+    "title",
+    "temporalIntent",
+    "start/end or date window",
+    "timezone",
+    "timezoneEvidence",
+    "allDay",
+    "location",
+    "onlineUrl",
+    "status",
+    "rescheduledFromId/rescheduledToId",
+    "sourceRef",
+    "observedAt",
+    "freshnessStatus",
+    "conflictStatus"
+  ],
+  "recurrenceRules": {
+    "sourceFixedRecurrence": "RRULE allowed when range, frequency, and exceptions are source-backed.",
+    "changingAnnualFestival": "Use Series + yearly Edition; false FREQ=YEARLY is prohibited."
+  }
+}

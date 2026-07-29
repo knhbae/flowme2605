@@ -1,0 +1,2275 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flowme.local/schemas/qualified-revalidation-artifacts-v2.schema.json",
+  "title": "FlowMe qualified corpus architecture revalidation v2 artifacts",
+  "description": "Machine-readable contracts for the ten required v2 artifacts. Cross-file lineage, count, taxonomy, projection, rights, and boundary invariants are enforced by validate-v2.mjs.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/inputLineage"
+    },
+    {
+      "$ref": "#/$defs/baselineDelta"
+    },
+    {
+      "$ref": "#/$defs/qualifiedCorpusFixture"
+    },
+    {
+      "$ref": "#/$defs/architectureScorecard"
+    },
+    {
+      "$ref": "#/$defs/projectionMatrix"
+    },
+    {
+      "$ref": "#/$defs/projectionLossManifest"
+    },
+    {
+      "$ref": "#/$defs/roundTripResults"
+    },
+    {
+      "$ref": "#/$defs/rightsAndReadinessMatrix"
+    },
+    {
+      "$ref": "#/$defs/verticalOpportunityAppendix"
+    },
+    {
+      "$ref": "#/$defs/finalAdjudication"
+    }
+  ],
+  "x-fileSchemas": {
+    "input-lineage-v2.json": "inputLineage",
+    "baseline-delta-v2.json": "baselineDelta",
+    "qualified-corpus-fixture-v2.json": "qualifiedCorpusFixture",
+    "architecture-scorecard-v2.json": "architectureScorecard",
+    "projection-matrix-v2.json": "projectionMatrix",
+    "projection-loss-manifest-v2.json": "projectionLossManifest",
+    "round-trip-results-v2.json": "roundTripResults",
+    "rights-and-readiness-matrix-v2.json": "rightsAndReadinessMatrix",
+    "vertical-opportunity-appendix-v1.json": "verticalOpportunityAppendix",
+    "final-adjudication-v2.json": "finalAdjudication"
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "counts": {
+      "type": "object",
+      "required": [
+        "bundles",
+        "flows",
+        "steps",
+        "items",
+        "sourceRows",
+        "scheduledItems",
+        "undatedItems"
+      ],
+      "properties": {
+        "bundles": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "flows": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "steps": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "items": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sourceRows": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "scheduledItems": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "undatedItems": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "qualifiedCounts": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/counts"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "bundles": {
+              "const": 8
+            },
+            "flows": {
+              "const": 21
+            },
+            "steps": {
+              "const": 49
+            },
+            "items": {
+              "const": 160
+            },
+            "sourceRows": {
+              "const": 210
+            },
+            "scheduledItems": {
+              "const": 112
+            },
+            "undatedItems": {
+              "const": 48
+            }
+          }
+        }
+      ]
+    },
+    "publicReadinessCounts": {
+      "type": "object",
+      "required": [
+        "Go",
+        "Modify",
+        "Hold"
+      ],
+      "properties": {
+        "Go": {
+          "const": 1
+        },
+        "Modify": {
+          "const": 6
+        },
+        "Hold": {
+          "const": 1
+        }
+      }
+    },
+    "artifactPointer": {
+      "type": "object",
+      "required": [
+        "key",
+        "path",
+        "role",
+        "bytes",
+        "sha256"
+      ],
+      "properties": {
+        "key": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "path": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "role": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "selection": {
+      "type": "object",
+      "required": [
+        "policy",
+        "creatorIds"
+      ],
+      "properties": {
+        "policy": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "creatorIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "bundleIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        }
+      }
+    },
+    "inputLineage": {
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "generatedAt",
+        "freezeMode",
+        "purpose",
+        "sourceArtifacts",
+        "normalCorpusSelection",
+        "historicalBoundarySelection",
+        "generatedArtifacts",
+        "evidenceBoundary"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "flowme-qualified-corpus-input-lineage-v2"
+        },
+        "generatedAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "freezeMode": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "purpose": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "sourceArtifacts": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/artifactPointer"
+          }
+        },
+        "normalCorpusSelection": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/selection"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "creatorIds": {
+                  "type": "array",
+                  "minItems": 8,
+                  "maxItems": 8
+                },
+                "bundleIds": {
+                  "type": "array",
+                  "minItems": 8,
+                  "maxItems": 8
+                }
+              }
+            }
+          ]
+        },
+        "historicalBoundarySelection": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/selection"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "creatorIds": {
+                  "type": "array",
+                  "minItems": 2,
+                  "maxItems": 2
+                }
+              }
+            }
+          ]
+        },
+        "generatedArtifacts": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "evidenceBoundary": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "baselineDelta": {
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "generatedAt",
+        "baseline",
+        "currentCorpus",
+        "countDelta",
+        "corpusReplacement",
+        "interpretationRules",
+        "architectureScoreDelta"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "flowme-qualified-corpus-baseline-delta-v2"
+        },
+        "generatedAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "baseline": {
+          "type": "object",
+          "required": [
+            "counts",
+            "architectureScores",
+            "validator",
+            "decision",
+            "externalCalendarClientRoundTrip"
+          ],
+          "properties": {
+            "counts": {
+              "$ref": "#/$defs/counts"
+            },
+            "architectureScores": {
+              "type": "object"
+            },
+            "validator": {
+              "type": "object"
+            },
+            "decision": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "externalCalendarClientRoundTrip": {
+              "const": "not_run"
+            }
+          }
+        },
+        "currentCorpus": {
+          "type": "object",
+          "required": [
+            "counts",
+            "publicReadinessCounts",
+            "architectureScores",
+            "validator",
+            "externalCalendarClientRoundTrip"
+          ],
+          "properties": {
+            "counts": {
+              "$ref": "#/$defs/qualifiedCounts"
+            },
+            "publicReadinessCounts": {
+              "$ref": "#/$defs/publicReadinessCounts"
+            },
+            "architectureScores": {
+              "type": "object",
+              "required": [
+                "current_canonical_v1",
+                "literal_ics_first",
+                "item_first_shared_context"
+              ],
+              "properties": {
+                "current_canonical_v1": {
+                  "const": 95
+                },
+                "literal_ics_first": {
+                  "const": 46
+                },
+                "item_first_shared_context": {
+                  "const": 89
+                }
+              }
+            },
+            "validator": {
+              "const": "pending_v2_validation"
+            },
+            "externalCalendarClientRoundTrip": {
+              "const": "not_run"
+            }
+          }
+        },
+        "countDelta": {
+          "type": "object"
+        },
+        "corpusReplacement": {
+          "type": "object",
+          "required": [
+            "removedFromNormalCorpus",
+            "addedToNormalCorpus",
+            "decompositionChecks"
+          ],
+          "properties": {
+            "removedFromNormalCorpus": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 2,
+              "items": {
+                "type": "object",
+                "required": [
+                  "creatorId",
+                  "bundleId",
+                  "currentRole",
+                  "logicReadiness",
+                  "publicReadiness"
+                ]
+              }
+            },
+            "addedToNormalCorpus": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 1,
+              "items": {
+                "type": "object",
+                "required": [
+                  "creatorId",
+                  "bundleId",
+                  "currentRole",
+                  "logicReadiness",
+                  "publicReadiness"
+                ]
+              }
+            },
+            "decompositionChecks": {
+              "type": "object"
+            }
+          }
+        },
+        "interpretationRules": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "architectureScoreDelta": {
+          "type": "object",
+          "required": [
+            "current_canonical_v1",
+            "literal_ics_first",
+            "item_first_shared_context"
+          ],
+          "properties": {
+            "current_canonical_v1": {
+              "const": -1
+            },
+            "literal_ics_first": {
+              "const": -5
+            },
+            "item_first_shared_context": {
+              "const": -6
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "sourceTrace": {
+      "type": "object",
+      "required": [
+        "sourceRowId",
+        "sourceUrl",
+        "sourceLocator"
+      ],
+      "properties": {
+        "sourceRowId": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "sourceUrl": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "sourceLocator": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "item": {
+      "type": "object",
+      "required": [
+        "itemId",
+        "itemTitle",
+        "memo",
+        "completionMode",
+        "optional",
+        "schedule",
+        "sourceRowIds",
+        "sourceTrace"
+      ],
+      "properties": {
+        "itemId": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "itemTitle": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "memo": {
+          "type": "string"
+        },
+        "completionMode": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "optional": {
+          "type": "boolean"
+        },
+        "schedule": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "sourceRowIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "sourceTrace": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/sourceTrace"
+          }
+        }
+      }
+    },
+    "step": {
+      "type": "object",
+      "required": [
+        "stepId",
+        "title",
+        "schedule",
+        "prerequisite",
+        "items"
+      ],
+      "properties": {
+        "stepId": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "title": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "schedule": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "prerequisite": {
+          "type": [
+            "string",
+            "object",
+            "null"
+          ]
+        },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/item"
+          }
+        }
+      }
+    },
+    "flow": {
+      "type": "object",
+      "required": [
+        "flowId",
+        "title",
+        "expectedItemCount",
+        "steps"
+      ],
+      "properties": {
+        "flowId": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "title": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "expectedItemCount": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sourceVideoUrl": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/step"
+          }
+        }
+      }
+    },
+    "bundlePayload": {
+      "type": "object",
+      "required": [
+        "bundleId",
+        "title",
+        "category",
+        "status",
+        "sourceType",
+        "sourceUrls",
+        "userPromise",
+        "firstAction",
+        "setupFields",
+        "defaultArtifact",
+        "cautions",
+        "map"
+      ],
+      "properties": {
+        "bundleId": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "title": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "category": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "status": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "sourceType": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "sourceUrls": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "userPromise": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "firstAction": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "setupFields": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "defaultArtifact": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "cautions": {
+          "type": "array"
+        },
+        "map": {
+          "type": "object",
+          "required": [
+            "mapId",
+            "title",
+            "flows"
+          ],
+          "properties": {
+            "mapId": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "title": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "flows": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/$defs/flow"
+              }
+            }
+          }
+        }
+      }
+    },
+    "sourceRow": {
+      "type": "object",
+      "required": [
+        "sourceRowId",
+        "bundleId",
+        "sourceUrl",
+        "sourceLocator",
+        "label",
+        "detail",
+        "verifiedAt"
+      ],
+      "properties": {
+        "sourceRowId": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "bundleId": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "sourceUrl": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "sourceLocator": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "label": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "detail": {
+          "type": "string"
+        },
+        "verifiedAt": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "taxonomyMapping": {
+      "type": "object",
+      "required": [
+        "lifeArea",
+        "mapType",
+        "sourceShape",
+        "executionPattern",
+        "primaryArtifact",
+        "secondaryArtifacts",
+        "naturalCalendarPolicy",
+        "mappingStatus",
+        "mappingReason"
+      ],
+      "properties": {
+        "lifeArea": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "mapType": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "sourceShape": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "executionPattern": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "primaryArtifact": {
+          "enum": [
+            "calendar",
+            "checklist",
+            "todo",
+            "sheet",
+            "memo"
+          ]
+        },
+        "secondaryArtifacts": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "calendar",
+              "checklist",
+              "todo",
+              "sheet",
+              "memo"
+            ]
+          }
+        },
+        "naturalCalendarPolicy": {
+          "enum": [
+            "none",
+            "per_item",
+            "optional_per_item",
+            "step_bundle"
+          ]
+        },
+        "mappingStatus": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "mappingReason": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "fixtureReadiness": {
+      "type": "object",
+      "required": [
+        "architectureFit",
+        "logicReadiness",
+        "publicReadiness",
+        "rightsStatus",
+        "personalConversionAvailability",
+        "promotionState",
+        "reviews"
+      ],
+      "properties": {
+        "architectureFit": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "logicReadiness": {
+          "enum": [
+            "Go",
+            "Modify",
+            "Hold"
+          ]
+        },
+        "publicReadiness": {
+          "enum": [
+            "Go",
+            "Modify",
+            "Hold"
+          ]
+        },
+        "rightsStatus": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "personalConversionAvailability": {
+          "type": "object",
+          "required": [
+            "status",
+            "scope"
+          ]
+        },
+        "promotionState": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "reviews": {
+          "type": "object",
+          "required": [
+            "sourceCompleteness",
+            "localeReview",
+            "safetyReview",
+            "privacyReview"
+          ]
+        }
+      }
+    },
+    "fixtureBundle": {
+      "type": "object",
+      "required": [
+        "creatorId",
+        "creatorName",
+        "bundleId",
+        "title",
+        "taxonomy",
+        "userJob",
+        "naturalArtifactAsRecorded",
+        "dateRuleAsRecorded",
+        "readiness",
+        "metrics",
+        "integrity",
+        "bundle",
+        "sourceRows"
+      ],
+      "properties": {
+        "creatorId": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "creatorName": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "bundleId": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "title": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "taxonomy": {
+          "$ref": "#/$defs/taxonomyMapping"
+        },
+        "userJob": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "naturalArtifactAsRecorded": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "dateRuleAsRecorded": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "readiness": {
+          "$ref": "#/$defs/fixtureReadiness"
+        },
+        "metrics": {
+          "type": "object",
+          "required": [
+            "flows",
+            "steps",
+            "items",
+            "sourceRows",
+            "scheduledItems",
+            "undatedItems",
+            "sourceRowReferences"
+          ]
+        },
+        "integrity": {
+          "type": "object",
+          "required": [
+            "everyItemSourceRefResolves",
+            "everySourceRowIsReferenced",
+            "sourceRowsSha256",
+            "itemsSha256",
+            "sourceTraceSha256"
+          ]
+        },
+        "bundle": {
+          "$ref": "#/$defs/bundlePayload"
+        },
+        "sourceRows": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/sourceRow"
+          }
+        }
+      }
+    },
+    "qualifiedCorpusFixture": {
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "generatedAt",
+        "corpusStatus",
+        "canonicalHierarchy",
+        "projectionPrinciple",
+        "sourceArtifact",
+        "sourceSha256",
+        "taxonomySource",
+        "counts",
+        "publicReadinessCounts",
+        "corpusIntegrity",
+        "evidenceBoundary",
+        "bundles"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "flowme-qualified-corpus-fixture-v2"
+        },
+        "generatedAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "corpusStatus": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "canonicalHierarchy": {
+          "type": "array",
+          "minItems": 5,
+          "maxItems": 5,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "projectionPrinciple": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "sourceArtifact": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "sourceSha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "taxonomySource": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "counts": {
+          "$ref": "#/$defs/qualifiedCounts"
+        },
+        "publicReadinessCounts": {
+          "$ref": "#/$defs/publicReadinessCounts"
+        },
+        "corpusIntegrity": {
+          "type": "object"
+        },
+        "evidenceBoundary": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "bundles": {
+          "type": "array",
+          "minItems": 8,
+          "maxItems": 8,
+          "items": {
+            "$ref": "#/$defs/fixtureBundle"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "scoreDimension": {
+      "type": "object",
+      "required": [
+        "id",
+        "label",
+        "score",
+        "max",
+        "factor",
+        "formula",
+        "evidence"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "label": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "score": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "factor": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "formula": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "evidence": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "architectureScorecard": {
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "generatedAt",
+        "input",
+        "evidenceType",
+        "observedUserValidation",
+        "weights",
+        "formulaPolicy",
+        "corpusTotals",
+        "sharedContextAdoptionGate",
+        "roundTripSummary",
+        "architectures",
+        "comparisonConclusion"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "flowme-architecture-scorecard-v2"
+        },
+        "generatedAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "input": {
+          "type": "object"
+        },
+        "evidenceType": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "observedUserValidation": {
+          "const": "NOT_RUN"
+        },
+        "weights": {
+          "type": "object"
+        },
+        "formulaPolicy": {
+          "type": "object"
+        },
+        "corpusTotals": {
+          "type": "object",
+          "required": [
+            "bundles",
+            "flows",
+            "steps",
+            "items",
+            "sourceRows",
+            "scheduledItems",
+            "undatedItems"
+          ]
+        },
+        "sharedContextAdoptionGate": {
+          "type": "object"
+        },
+        "roundTripSummary": {
+          "$ref": "#/$defs/roundTripSummary"
+        },
+        "architectures": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "label",
+              "verdict",
+              "score",
+              "dimensions",
+              "hardGates"
+            ],
+            "properties": {
+              "id": {
+                "enum": [
+                  "current_canonical_v1",
+                  "literal_ics_first",
+                  "item_first_shared_context"
+                ]
+              },
+              "label": {
+                "$ref": "#/$defs/nonEmptyString"
+              },
+              "verdict": {
+                "enum": [
+                  "Go",
+                  "Modify",
+                  "Hold"
+                ]
+              },
+              "score": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "dimensions": {
+                "type": "array",
+                "minItems": 10,
+                "maxItems": 10,
+                "items": {
+                  "$ref": "#/$defs/scoreDimension"
+                }
+              },
+              "hardGates": {
+                "type": "array",
+                "minItems": 4,
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "status",
+                    "evidence"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "comparisonConclusion": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "records": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "object"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "projectionRecord": {
+      "type": "object",
+      "required": [
+        "bundleId",
+        "bundleTitle",
+        "creatorId",
+        "lifeArea",
+        "flowId",
+        "stepId",
+        "stepTitle",
+        "itemId",
+        "itemTitle",
+        "detail",
+        "completionMode",
+        "sourceRowIds",
+        "sourceRowCount",
+        "schedule",
+        "scheduled",
+        "hasSchedule",
+        "calendarComponent",
+        "vtodoFallback",
+        "testResolvedDate",
+        "testDateEvidence",
+        "scheduleGroupKey",
+        "scheduleGroupSize",
+        "calendarPolicy",
+        "naturalPrimaryProjection",
+        "projections",
+        "readiness"
+      ],
+      "properties": {
+        "bundleId": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "bundleTitle": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "creatorId": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "lifeArea": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "flowId": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "stepId": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "stepTitle": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "itemId": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "itemTitle": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "detail": {
+          "type": "string"
+        },
+        "completionMode": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "sourceRowIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "sourceRowCount": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "schedule": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "scheduled": {
+          "type": "boolean"
+        },
+        "hasSchedule": {
+          "type": "boolean"
+        },
+        "calendarComponent": {
+          "enum": [
+            "VEVENT",
+            "VTODO"
+          ]
+        },
+        "vtodoFallback": {
+          "type": "boolean"
+        },
+        "testResolvedDate": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "testDateEvidence": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "scheduleGroupKey": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "scheduleGroupSize": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "calendarPolicy": {
+          "enum": [
+            "none",
+            "per_item",
+            "step_bundle"
+          ]
+        },
+        "naturalPrimaryProjection": {
+          "enum": [
+            "calendar",
+            "checklist",
+            "todo",
+            "sheet",
+            "memo"
+          ]
+        },
+        "projections": {
+          "type": "object",
+          "required": [
+            "calendar",
+            "vtodo",
+            "checklist",
+            "todo",
+            "sheet",
+            "memo"
+          ],
+          "properties": {
+            "calendar": {
+              "type": "object",
+              "required": [
+                "eligible",
+                "component",
+                "policy",
+                "reason"
+              ]
+            },
+            "vtodo": {
+              "type": "object",
+              "required": [
+                "eligible",
+                "component",
+                "defaultEnabled",
+                "clientSupport",
+                "fallback"
+              ]
+            },
+            "checklist": {
+              "type": "object",
+              "required": [
+                "eligible",
+                "granularity"
+              ]
+            },
+            "todo": {
+              "type": "object",
+              "required": [
+                "eligible",
+                "granularity"
+              ]
+            },
+            "sheet": {
+              "type": "object",
+              "required": [
+                "eligible",
+                "granularity"
+              ]
+            },
+            "memo": {
+              "type": "object",
+              "required": [
+                "eligible",
+                "granularity"
+              ]
+            }
+          }
+        },
+        "readiness": {
+          "type": "object",
+          "required": [
+            "architectureFit",
+            "logicReadiness",
+            "publicReadiness",
+            "rightsStatus"
+          ]
+        }
+      }
+    },
+    "projectionMatrix": {
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "generatedAt",
+        "input",
+        "evidenceBoundary",
+        "totals",
+        "projectionSummary",
+        "bundleResults",
+        "stepBundleGroups",
+        "records"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "flowme-projection-matrix-v2"
+        },
+        "generatedAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "input": {
+          "type": "object"
+        },
+        "evidenceBoundary": {
+          "type": "object"
+        },
+        "totals": {
+          "type": "object"
+        },
+        "projectionSummary": {
+          "type": "object",
+          "required": [
+            "calendarEligibleItems",
+            "calendarIneligibleUndatedItems",
+            "perItemVeventCount",
+            "compactStepBundleVeventCount",
+            "stepBundleGroups",
+            "stepBundleGroupedItems",
+            "stepBundleEventReduction",
+            "stepBundleIndependentCompletionLossDeclaredForItems",
+            "vtodoEligibleUndatedItems",
+            "vtodoDefaultEnabledItems",
+            "vtodoFallbackItems",
+            "checklistEligibleItems",
+            "todoEligibleItems",
+            "sheetEligibleItems",
+            "memoEligibleItems",
+            "schedulelessVevents"
+          ]
+        },
+        "stepBundleGroups": {
+          "type": "array"
+        },
+        "bundleResults": {
+          "type": "array",
+          "minItems": 8,
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "required": [
+              "bundleId",
+              "architectureFit",
+              "reason"
+            ],
+            "properties": {
+              "bundleId": {
+                "$ref": "#/$defs/nonEmptyString"
+              },
+              "architectureFit": {
+                "const": "Go"
+              },
+              "reason": {
+                "$ref": "#/$defs/nonEmptyString"
+              }
+            }
+          }
+        },
+        "records": {
+          "type": "array",
+          "minItems": 160,
+          "maxItems": 160,
+          "items": {
+            "$ref": "#/$defs/projectionRecord"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "lossPath": {
+      "type": "object",
+      "required": [
+        "pathId",
+        "disposition",
+        "points"
+      ],
+      "properties": {
+        "pathId": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "disposition": {
+          "enum": [
+            "retained",
+            "grouped_declared",
+            "description_fallback",
+            "sidecar_authoritative",
+            "unproven_client",
+            "unsupported",
+            "forbidden_by_design",
+            "not_applicable"
+          ]
+        },
+        "points": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "projectionLossManifest": {
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "generatedAt",
+        "input",
+        "evidenceBoundary",
+        "controlledDispositions",
+        "architectureRetention",
+        "stepBundleLossRule",
+        "records"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "flowme-projection-loss-manifest-v2"
+        },
+        "generatedAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "input": {
+          "type": "object"
+        },
+        "evidenceBoundary": {
+          "type": "object"
+        },
+        "controlledDispositions": {
+          "type": "object",
+          "required": [
+            "retained",
+            "grouped_declared",
+            "description_fallback",
+            "sidecar_authoritative",
+            "unproven_client",
+            "unsupported",
+            "forbidden_by_design",
+            "not_applicable"
+          ],
+          "properties": {
+            "retained": {
+              "const": 1
+            },
+            "grouped_declared": {
+              "const": 0.8
+            },
+            "description_fallback": {
+              "const": 0.65
+            },
+            "sidecar_authoritative": {
+              "const": 0.75
+            },
+            "unproven_client": {
+              "const": 0.35
+            },
+            "unsupported": {
+              "const": 0
+            },
+            "forbidden_by_design": {
+              "const": 1
+            },
+            "not_applicable": {
+              "const": 1
+            }
+          }
+        },
+        "architectureRetention": {
+          "type": "object"
+        },
+        "stepBundleLossRule": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "records": {
+          "type": "array",
+          "minItems": 18,
+          "maxItems": 18,
+          "items": {
+            "type": "object",
+            "required": [
+              "architecture",
+              "target",
+              "paths",
+              "retentionRatio"
+            ],
+            "properties": {
+              "architecture": {
+                "enum": [
+                  "current_canonical_v1",
+                  "literal_ics_first",
+                  "item_first_shared_context"
+                ]
+              },
+              "target": {
+                "$ref": "#/$defs/nonEmptyString"
+              },
+              "paths": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "$ref": "#/$defs/lossPath"
+                }
+              },
+              "retentionRatio": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "roundTripSummary": {
+      "type": "object",
+      "required": [
+        "canonicalSemanticRoundTripsPassed",
+        "sharedContextSemanticRoundTripsPassed",
+        "literalSyntaxPasses",
+        "totalRecords",
+        "schedulelessVevents",
+        "nestedVeventOrVtodo",
+        "vevents",
+        "vtodos",
+        "sourceRowReferencesRecoveredByLabParser",
+        "uniqueSourceRowsRecoveredByLabParser",
+        "externalClientRoundTrip",
+        "observedUserValidation"
+      ],
+      "properties": {
+        "canonicalSemanticRoundTripsPassed": {
+          "const": 8
+        },
+        "sharedContextSemanticRoundTripsPassed": {
+          "const": 8
+        },
+        "literalSyntaxPasses": {
+          "const": 8
+        },
+        "totalRecords": {
+          "const": 8
+        },
+        "schedulelessVevents": {
+          "const": 0
+        },
+        "nestedVeventOrVtodo": {
+          "const": 0
+        },
+        "vevents": {
+          "const": 112
+        },
+        "vtodos": {
+          "const": 48
+        },
+        "sourceRowReferencesRecoveredByLabParser": {
+          "const": 250
+        },
+        "uniqueSourceRowsRecoveredByLabParser": {
+          "const": 210
+        },
+        "externalClientRoundTrip": {
+          "const": "NOT_RUN"
+        },
+        "observedUserValidation": {
+          "const": "NOT_RUN"
+        }
+      }
+    },
+    "roundTripResults": {
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "generatedAt",
+        "input",
+        "evidenceBoundary",
+        "testOverlay",
+        "summary",
+        "records"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "flowme-round-trip-results-v2"
+        },
+        "generatedAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "input": {
+          "type": "object"
+        },
+        "evidenceBoundary": {
+          "type": "object"
+        },
+        "testOverlay": {
+          "type": "object"
+        },
+        "summary": {
+          "$ref": "#/$defs/roundTripSummary"
+        },
+        "records": {
+          "type": "array",
+          "minItems": 8,
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "required": [
+              "bundleId",
+              "input",
+              "currentCanonical",
+              "itemFirstSharedContext",
+              "literalIcsFirst"
+            ],
+            "properties": {
+              "bundleId": {
+                "$ref": "#/$defs/nonEmptyString"
+              },
+              "input": {
+                "type": "object",
+                "required": [
+                  "items",
+                  "sourceRows",
+                  "scheduledItems",
+                  "undatedItems"
+                ]
+              },
+              "currentCanonical": {
+                "type": "object",
+                "required": [
+                  "semanticJsonRoundTrip",
+                  "stableItemIds",
+                  "sourceRowsStable"
+                ]
+              },
+              "itemFirstSharedContext": {
+                "type": "object",
+                "required": [
+                  "contextCount",
+                  "boundItemCount",
+                  "semanticRehydration",
+                  "independentCompletionOwner"
+                ]
+              },
+              "literalIcsFirst": {
+                "type": "object",
+                "required": [
+                  "parserErrors",
+                  "itemComponents",
+                  "veventCount",
+                  "vtodoCount",
+                  "schedulelessVevents",
+                  "nestedVeventOrVtodo",
+                  "sourceRowReferencesRecoveredByLabParser",
+                  "sourceRowIdsRecoveredByLabParser",
+                  "sourceRowReferencesExpected",
+                  "completionSemanticsNative",
+                  "externalClientRoundTrip",
+                  "vtodoSupport",
+                  "relatedToSupport",
+                  "xPropertySupport"
+                ],
+                "properties": {
+                  "parserErrors": {
+                    "type": "array",
+                    "maxItems": 0
+                  },
+                  "schedulelessVevents": {
+                    "const": 0
+                  },
+                  "nestedVeventOrVtodo": {
+                    "const": 0
+                  },
+                  "externalClientRoundTrip": {
+                    "const": "NOT_RUN"
+                  },
+                  "vtodoSupport": {
+                    "const": "NOT_PROVEN"
+                  },
+                  "relatedToSupport": {
+                    "const": "NOT_PROVEN"
+                  },
+                  "xPropertySupport": {
+                    "const": "NOT_PROVEN"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "rightsRecord": {
+      "type": "object",
+      "required": [
+        "creatorId",
+        "creatorName",
+        "bundleId",
+        "title",
+        "corpusRole",
+        "includedInNormalCorpusTotals",
+        "architectureFit",
+        "logicReadiness",
+        "publicReadiness",
+        "rightsStatus",
+        "personalConversionAvailability",
+        "sourceCompleteness",
+        "localeReview",
+        "safetyReview",
+        "privacyReview",
+        "promotionState",
+        "sourceRowCount",
+        "qualificationReason",
+        "publicReason",
+        "rightsEvidence"
+      ],
+      "properties": {
+        "creatorId": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "creatorName": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "bundleId": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "title": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "corpusRole": {
+          "enum": [
+            "normal_qualified",
+            "historical_boundary"
+          ]
+        },
+        "includedInNormalCorpusTotals": {
+          "type": "boolean"
+        },
+        "architectureFit": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "logicReadiness": {
+          "enum": [
+            "Go",
+            "Modify",
+            "Hold"
+          ]
+        },
+        "publicReadiness": {
+          "enum": [
+            "Go",
+            "Modify",
+            "Hold"
+          ]
+        },
+        "rightsStatus": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "personalConversionAvailability": {
+          "type": "object",
+          "required": [
+            "status",
+            "scope"
+          ]
+        },
+        "sourceCompleteness": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "localeReview": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "safetyReview": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "privacyReview": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "promotionState": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "sourceRowCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "qualificationReason": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "publicReason": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "rightsEvidence": {
+          "type": "object",
+          "required": [
+            "evidenceClass",
+            "evidenceUrl",
+            "evidenceLocator",
+            "reason",
+            "publicUseBoundary",
+            "attributionRequired",
+            "observedAt"
+          ]
+        }
+      }
+    },
+    "rightsAndReadinessMatrix": {
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "generatedAt",
+        "axisContract",
+        "normalCorpusSummary",
+        "historicalBoundarySummary",
+        "records"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "flowme-rights-and-readiness-matrix-v2"
+        },
+        "generatedAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "axisContract": {
+          "type": "object",
+          "required": [
+            "architectureFit",
+            "logicReadiness",
+            "publicReadiness",
+            "rightsStatus",
+            "personalConversionAvailability",
+            "sourceCompleteness",
+            "reviewAxes"
+          ]
+        },
+        "normalCorpusSummary": {
+          "type": "object",
+          "required": [
+            "records",
+            "architectureFit",
+            "logicReadiness",
+            "publicReadiness",
+            "rightsStatus"
+          ]
+        },
+        "historicalBoundarySummary": {
+          "type": "object",
+          "required": [
+            "records",
+            "excludedFromNormalCorpusTotals",
+            "creatorIds"
+          ]
+        },
+        "records": {
+          "type": "array",
+          "minItems": 10,
+          "maxItems": 10,
+          "items": {
+            "$ref": "#/$defs/rightsRecord"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "verticalOpportunityAppendix": {
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "generatedAt",
+        "sourceArtifact",
+        "sourceSha256",
+        "sourceSummary",
+        "contributionToQualifiedCorpus",
+        "categoryMappingContract",
+        "executionPatternContract",
+        "opportunities"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "flowme-vertical-opportunity-appendix-v1"
+        },
+        "generatedAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "sourceArtifact": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "sourceSha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "sourceSummary": {
+          "type": "object"
+        },
+        "contributionToQualifiedCorpus": {
+          "type": "object",
+          "required": [
+            "bundles",
+            "flows",
+            "steps",
+            "items",
+            "sourceRows",
+            "reason"
+          ],
+          "properties": {
+            "bundles": {
+              "const": 0
+            },
+            "flows": {
+              "const": 0
+            },
+            "steps": {
+              "const": 0
+            },
+            "items": {
+              "const": 0
+            },
+            "sourceRows": {
+              "const": 0
+            },
+            "reason": {
+              "$ref": "#/$defs/nonEmptyString"
+            }
+          }
+        },
+        "categoryMappingContract": {
+          "type": "object",
+          "required": [
+            "study_learning",
+            "travel_outings_events",
+            "allOtherValues"
+          ]
+        },
+        "executionPatternContract": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "opportunities": {
+          "type": "array",
+          "minItems": 8,
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "required": [
+              "opportunityId",
+              "rank",
+              "title",
+              "opportunityStatus",
+              "corpusRole",
+              "contributesToQualifiedCorpusCounts",
+              "sourceCategoryAsRecorded",
+              "canonicalCategoryMapping",
+              "userMoment",
+              "naturalArtifact",
+              "minimumAnchor",
+              "expectedContentInputs",
+              "requiredSourceRows",
+              "dateIntent",
+              "defaultDestination",
+              "executionPatternBoundary",
+              "doNotBuildBoundary",
+              "publicUseBoundary",
+              "sourceShapeAsDiscoveryBrief",
+              "evidenceSource"
+            ],
+            "properties": {
+              "opportunityId": {
+                "$ref": "#/$defs/nonEmptyString"
+              },
+              "rank": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "corpusRole": {
+                "const": "future_content_discovery_only"
+              },
+              "contributesToQualifiedCorpusCounts": {
+                "const": false
+              },
+              "canonicalCategoryMapping": {
+                "type": "object",
+                "required": [
+                  "canonicalLifeArea",
+                  "mappingType"
+                ]
+              },
+              "defaultDestination": {
+                "enum": [
+                  "calendar",
+                  "checklist",
+                  "todo",
+                  "sheet",
+                  "memo"
+                ]
+              },
+              "executionPatternBoundary": {
+                "type": "object",
+                "required": [
+                  "benchmarkServicePatternIds",
+                  "canonicalExecutionPatternCandidate",
+                  "mappingStatus"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "finalAdjudication": {
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "generatedAt",
+        "input",
+        "decision",
+        "verdict",
+        "rationale",
+        "adoptNow",
+        "hold",
+        "backendRules",
+        "verifiedMetrics",
+        "verificationStatus"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "flowme-final-architecture-adjudication-v2"
+        },
+        "generatedAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "input": {
+          "type": "object"
+        },
+        "decision": {
+          "const": "keep_current_canonical_v1_add_projection_time_grouping"
+        },
+        "verdict": {
+          "const": "Go"
+        },
+        "rationale": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "adoptNow": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "hold": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "proposal",
+              "reason"
+            ]
+          }
+        },
+        "backendRules": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "verifiedMetrics": {
+          "type": "object",
+          "required": [
+            "bundles",
+            "flows",
+            "steps",
+            "items",
+            "sourceRows",
+            "sourceRowReferences",
+            "uniqueSourceRowsReferenced",
+            "scheduledItems",
+            "undatedItems",
+            "perItemVevents",
+            "compactStepBundleVevents",
+            "stepBundleGroupedItems",
+            "stepBundleIndependentCompletionLossDeclaredForItems",
+            "schedulelessVevents",
+            "nestedVeventOrVtodo",
+            "inventedActions",
+            "inventedSourceDates",
+            "sourceValuesReasked",
+            "corpusCounts",
+            "externalClientRoundTrip",
+            "observedUserValidation"
+          ],
+          "properties": {
+            "bundles": {
+              "const": 8
+            },
+            "flows": {
+              "const": 21
+            },
+            "steps": {
+              "const": 49
+            },
+            "items": {
+              "const": 160
+            },
+            "sourceRows": {
+              "const": 210
+            },
+            "scheduledItems": {
+              "const": 112
+            },
+            "undatedItems": {
+              "const": 48
+            },
+            "perItemVevents": {
+              "const": 112
+            },
+            "schedulelessVevents": {
+              "const": 0
+            },
+            "nestedVeventOrVtodo": {
+              "const": 0
+            },
+            "inventedActions": {
+              "const": 0
+            },
+            "inventedSourceDates": {
+              "const": 0
+            },
+            "sourceValuesReasked": {
+              "const": 0
+            },
+            "corpusCounts": {
+              "$ref": "#/$defs/qualifiedCounts"
+            },
+            "externalClientRoundTrip": {
+              "const": "not_run"
+            },
+            "observedUserValidation": {
+              "const": "not_run"
+            }
+          }
+        },
+        "verificationStatus": {
+          "type": "object",
+          "required": [
+            "deterministicGenerator",
+            "schemaValidation",
+            "canonicalJsonRoundTrip",
+            "sharedContextSemanticRehydration",
+            "literalIcsLabParser",
+            "externalGoogleOutlookAppleRoundTrip",
+            "observedUserValidation",
+            "runtimeChanged",
+            "databaseChanged",
+            "productionApiChanged"
+          ],
+          "properties": {
+            "deterministicGenerator": {
+              "const": "RUN"
+            },
+            "schemaValidation": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "canonicalJsonRoundTrip": {
+              "const": "8/8 PASS"
+            },
+            "sharedContextSemanticRehydration": {
+              "const": "8/8 PASS"
+            },
+            "literalIcsLabParser": {
+              "const": "8/8 PASS"
+            },
+            "externalGoogleOutlookAppleRoundTrip": {
+              "const": "NOT_RUN"
+            },
+            "observedUserValidation": {
+              "const": "NOT_RUN"
+            },
+            "runtimeChanged": {
+              "const": false
+            },
+            "databaseChanged": {
+              "const": false
+            },
+            "productionApiChanged": {
+              "const": false
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,157 @@
+{
+  "schemaVersion": "flowme-projection-lab-input-lineage-v1",
+  "generatedAt": "2026-07-29T12:00:00+09:00",
+  "baseline": {
+    "path": "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/canonical-corpus-v1.json",
+    "hash": "sha256:63fc62cb2e26750f4c7834de6017864c197e791e9a0d55a7b99f72a1d856ac72",
+    "counts": {
+      "completeFixtures": 42,
+      "boundaryControls": 4,
+      "bundles": 42,
+      "maps": 42,
+      "sourceRows": 484,
+      "flows": 55,
+      "steps": 225,
+      "items": 406,
+      "fields": 246,
+      "memos": 19,
+      "scheduledItems": 144,
+      "undatedItems": 262
+    },
+    "frozen": true
+  },
+  "newSources": [
+    {
+      "fixtureId": "new-nps-ten-essentials",
+      "canonicalUrl": "https://www.nps.gov/articles/10essentials.htm?fs=e&s=cl",
+      "observedAt": "2026-07-29",
+      "evidenceMethod": "direct_page_inspection"
+    },
+    {
+      "fixtureId": "new-apple-quick-start",
+      "canonicalUrl": "https://support.apple.com/en-us/102659",
+      "observedAt": "2026-07-29",
+      "evidenceMethod": "direct_page_inspection"
+    },
+    {
+      "fixtureId": "new-github-account-onboarding",
+      "canonicalUrl": "https://docs.github.com/en/get-started/onboarding/getting-started-with-your-github-account",
+      "observedAt": "2026-07-29",
+      "evidenceMethod": "direct_page_inspection"
+    },
+    {
+      "fixtureId": "new-google-codelab-ai-agent",
+      "canonicalUrl": "https://codelabs.developers.google.com/sdlc/instructions?hl=en",
+      "observedAt": "2026-07-29",
+      "evidenceMethod": "direct_page_inspection"
+    },
+    {
+      "fixtureId": "new-mdn-core-scripting",
+      "canonicalUrl": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting",
+      "observedAt": "2026-07-29",
+      "evidenceMethod": "direct_page_inspection"
+    },
+    {
+      "fixtureId": "new-gutenberg-top-reading-queue",
+      "canonicalUrl": "https://www.gutenberg.org/browse/scores/top",
+      "observedAt": "2026-07-29",
+      "evidenceMethod": "direct_page_inspection"
+    },
+    {
+      "fixtureId": "event-kr-single-performance",
+      "canonicalUrl": "https://www.ntok.go.kr/ntok/pm/prfmng/performanceDetail.do?mi=21008&perfId=267132",
+      "observedAt": "2026-07-29",
+      "evidenceMethod": "direct_page_inspection"
+    },
+    {
+      "fixtureId": "event-kr-multi-show-choir",
+      "canonicalUrl": "https://www.ntok.go.kr/ntok/pm/prfmng/performanceDetail.do?mi=21008&perfId=267115",
+      "observedAt": "2026-07-29",
+      "evidenceMethod": "direct_page_inspection"
+    },
+    {
+      "fixtureId": "event-kr-sokcho-summer",
+      "canonicalUrl": "https://www.mcst.go.kr/site/s_culture/festival/festivalView.jsp?pRo=12&pSeq=13468",
+      "observedAt": "2026-07-29",
+      "evidenceMethod": "direct_page_inspection"
+    },
+    {
+      "fixtureId": "event-kr-sema-martin-parr",
+      "canonicalUrl": "https://sema.seoul.go.kr/kr/whatson/exhibition/detail?exNo=1553791",
+      "observedAt": "2026-07-29",
+      "evidenceMethod": "direct_page_inspection"
+    },
+    {
+      "fixtureId": "event-kr-ballet-ticket-show",
+      "canonicalUrl": "https://www.ntok.go.kr/ntok/pm/prfmng/performanceDetail.do?mi=21008&perfId=267137",
+      "observedAt": "2026-07-29",
+      "evidenceMethod": "direct_page_inspection"
+    },
+    {
+      "fixtureId": "event-kr-qnet-exam-lifecycle",
+      "canonicalUrl": "https://www.q-net.or.kr/crf005.do?gId=&gSite=Q&id=crf00503s02&jmCd=1625&jmInfoDivCcd=B0",
+      "observedAt": "2026-07-29",
+      "evidenceMethod": "direct_page_inspection"
+    },
+    {
+      "fixtureId": "event-kr-revised-musical",
+      "canonicalUrl": "https://www.ntok.go.kr/ntok/pm/prfmng/performanceDetail.do?mi=21008&perfId=267029",
+      "observedAt": "2026-07-29",
+      "evidenceMethod": "direct_page_inspection"
+    },
+    {
+      "fixtureId": "event-pattern-nps-all-day",
+      "canonicalUrl": "https://www.nps.gov/planyourvisit/event-details.htm?id=FDC0A246-DB39-330A-5FCA803024259C76",
+      "observedAt": "2026-07-29",
+      "evidenceMethod": "direct_page_inspection"
+    },
+    {
+      "fixtureId": "event-pattern-online-foia",
+      "canonicalUrl": "https://www.archives.gov/calendar/event/freedom-of-information-act-foia-advisory-committee-meeting-29",
+      "observedAt": "2026-07-29",
+      "evidenceMethod": "direct_page_inspection"
+    },
+    {
+      "fixtureId": "event-pattern-nps-weekly",
+      "canonicalUrl": "https://www.nps.gov/planyourvisit/event-details.htm?id=C39ACEE7-BC95-AF7C-D441B5DFEEDB6F3E",
+      "observedAt": "2026-07-29",
+      "evidenceMethod": "direct_page_inspection"
+    },
+    {
+      "fixtureId": "event-pattern-chimac-edition",
+      "canonicalUrl": "https://www.chimacfestival.com/page/program_summary.php",
+      "observedAt": "2026-07-29",
+      "evidenceMethod": "direct_page_inspection"
+    },
+    {
+      "fixtureId": "event-pattern-nps-rescheduled",
+      "canonicalUrl": "https://www.nps.gov/planyourvisit/event-details.htm?id=9ABE4CB1-A7D5-4FD0-92B4731D670CC5C6",
+      "observedAt": "2026-07-29",
+      "evidenceMethod": "direct_page_inspection"
+    },
+    {
+      "fixtureId": "event-pattern-fun-seoul-interest-list",
+      "canonicalUrl": "https://festival.seoul.go.kr/festival/main/festivalMain.do",
+      "observedAt": "2026-07-29",
+      "evidenceMethod": "direct_page_inspection"
+    },
+    {
+      "fixtureId": "event-pattern-boryeong-operations",
+      "canonicalUrl": "https://mudfestival.or.kr/en/festival/1_mud_festival/ticket_info.html",
+      "observedAt": "2026-07-29",
+      "evidenceMethod": "direct_page_inspection"
+    },
+    {
+      "fixtureId": "event-pattern-boryeong-programs",
+      "canonicalUrl": "https://mudfestival.or.kr/festival/schedule/view?level=2&menuNo=32",
+      "observedAt": "2026-07-29",
+      "evidenceMethod": "direct_page_inspection"
+    }
+  ],
+  "runtimeFilesReadOnly": [
+    "lib/flow/types.ts",
+    "lib/flow/export.ts",
+    "lib/flow/artifact-plan.ts",
+    "lib/flow/export-scope.ts"
+  ]
+}

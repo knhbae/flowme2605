@@ -1,0 +1,156 @@
+BEGIN:VCALENDAR
+PRODID:-//FlowMe//Literal ICS First Lab v1//KO
+VERSION:2.0
+CALSCALE:GREGORIAN
+BEGIN:VJOURNAL
+UID:bundle-wtable-summer-banchan-five-map@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:이번 주 여름 반찬 5가지
+X-FLOWME-KIND:MAP
+END:VJOURNAL
+BEGIN:VJOURNAL
+UID:wtable-summer-1-flow@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:오이지무침
+RELATED-TO;RELTYPE=PARENT:bundle-wtable-summer-banchan-five-map@flowme.loca
+ l
+X-FLOWME-KIND:FLOW
+END:VJOURNAL
+BEGIN:VJOURNAL
+UID:wtable-summer-1-step@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:레시피 실행
+RELATED-TO;RELTYPE=PARENT:wtable-summer-1-flow@flowme.local
+X-FLOWME-KIND:STEP
+END:VJOURNAL
+BEGIN:VTODO
+UID:wtable-summer-1-item@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:오이지무침 만들기
+DESCRIPTION:초급 · 15분 · 원문 레시피: https://wtable.co.kr/recip
+ es/otoQ5JpRjgNPpuDtsYUwpRxC\n원문 19·63·184행\; 큐레이션 https://
+ wtable.co.kr/curations/562 · https://wtable.co.kr/recipes/otoQ5JpRjgNPpuD
+ tsYUwpRxC
+STATUS:NEEDS-ACTION
+URL:https://wtable.co.kr/recipes/otoQ5JpRjgNPpuDtsYUwpRxC
+RELATED-TO;RELTYPE=PARENT:wtable-summer-1-step@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:wtable-summer-1
+END:VTODO
+BEGIN:VJOURNAL
+UID:wtable-summer-2-flow@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:한치 초무침
+RELATED-TO;RELTYPE=PARENT:bundle-wtable-summer-banchan-five-map@flowme.loca
+ l
+X-FLOWME-KIND:FLOW
+END:VJOURNAL
+BEGIN:VJOURNAL
+UID:wtable-summer-2-step@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:레시피 실행
+RELATED-TO;RELTYPE=PARENT:wtable-summer-2-flow@flowme.local
+X-FLOWME-KIND:STEP
+END:VJOURNAL
+BEGIN:VTODO
+UID:wtable-summer-2-item@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:한치 초무침 만들기
+DESCRIPTION:초급 · 30분 · 원문 레시피: https://wtable.co.kr/recip
+ es/ACxZbqBF1Vb3snHtZdTMwPDe\n원문 25·84·186행\; 큐레이션 https://
+ wtable.co.kr/curations/562 · https://wtable.co.kr/recipes/ACxZbqBF1Vb3snH
+ tZdTMwPDe
+STATUS:NEEDS-ACTION
+URL:https://wtable.co.kr/recipes/ACxZbqBF1Vb3snHtZdTMwPDe
+RELATED-TO;RELTYPE=PARENT:wtable-summer-2-step@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:wtable-summer-2
+END:VTODO
+BEGIN:VJOURNAL
+UID:wtable-summer-3-flow@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:브로콜리 참깨무침
+RELATED-TO;RELTYPE=PARENT:bundle-wtable-summer-banchan-five-map@flowme.loca
+ l
+X-FLOWME-KIND:FLOW
+END:VJOURNAL
+BEGIN:VJOURNAL
+UID:wtable-summer-3-step@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:레시피 실행
+RELATED-TO;RELTYPE=PARENT:wtable-summer-3-flow@flowme.local
+X-FLOWME-KIND:STEP
+END:VJOURNAL
+BEGIN:VTODO
+UID:wtable-summer-3-item@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:브로콜리 참깨무침 만들기
+DESCRIPTION:초급 · 20분 · 원문 레시피: https://wtable.co.kr/recip
+ es/Phq1srHvzgYtDueKGZFcBHS5\n원문 31·107·188행\; 큐레이션 https:/
+ /wtable.co.kr/curations/562 · https://wtable.co.kr/recipes/Phq1srHvzgYtDu
+ eKGZFcBHS5
+STATUS:NEEDS-ACTION
+URL:https://wtable.co.kr/recipes/Phq1srHvzgYtDueKGZFcBHS5
+RELATED-TO;RELTYPE=PARENT:wtable-summer-3-step@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:wtable-summer-3
+END:VTODO
+BEGIN:VJOURNAL
+UID:wtable-summer-4-flow@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:오이고추 된장 무침
+RELATED-TO;RELTYPE=PARENT:bundle-wtable-summer-banchan-five-map@flowme.loca
+ l
+X-FLOWME-KIND:FLOW
+END:VJOURNAL
+BEGIN:VJOURNAL
+UID:wtable-summer-4-step@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:레시피 실행
+RELATED-TO;RELTYPE=PARENT:wtable-summer-4-flow@flowme.local
+X-FLOWME-KIND:STEP
+END:VJOURNAL
+BEGIN:VTODO
+UID:wtable-summer-4-item@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:오이고추 된장 무침 만들기
+DESCRIPTION:초급 · 15분 · 원문 레시피: https://wtable.co.kr/recip
+ es/cZvq4myCFaK4Es7uJzaUyUBn\n원문 37·130·190행\; 큐레이션 https:/
+ /wtable.co.kr/curations/562 · https://wtable.co.kr/recipes/cZvq4myCFaK4Es
+ 7uJzaUyUBn
+STATUS:NEEDS-ACTION
+URL:https://wtable.co.kr/recipes/cZvq4myCFaK4Es7uJzaUyUBn
+RELATED-TO;RELTYPE=PARENT:wtable-summer-4-step@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:wtable-summer-4
+END:VTODO
+BEGIN:VJOURNAL
+UID:wtable-summer-5-flow@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:꽈리고추찜무침
+RELATED-TO;RELTYPE=PARENT:bundle-wtable-summer-banchan-five-map@flowme.loca
+ l
+X-FLOWME-KIND:FLOW
+END:VJOURNAL
+BEGIN:VJOURNAL
+UID:wtable-summer-5-step@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:레시피 실행
+RELATED-TO;RELTYPE=PARENT:wtable-summer-5-flow@flowme.local
+X-FLOWME-KIND:STEP
+END:VJOURNAL
+BEGIN:VTODO
+UID:wtable-summer-5-item@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:꽈리고추찜무침 만들기
+DESCRIPTION:초급 · 20분 · 원문 레시피: https://wtable.co.kr/recip
+ es/kPW41Sk1utYTteW8jzzzigvp\n원문 42·161·191행\; 큐레이션 https:/
+ /wtable.co.kr/curations/562 · https://wtable.co.kr/recipes/kPW41Sk1utYTte
+ W8jzzzigvp
+STATUS:NEEDS-ACTION
+URL:https://wtable.co.kr/recipes/kPW41Sk1utYTteW8jzzzigvp
+RELATED-TO;RELTYPE=PARENT:wtable-summer-5-step@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:wtable-summer-5
+END:VTODO
+END:VCALENDAR

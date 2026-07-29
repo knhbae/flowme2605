@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "flowme-browser-qa-v1",
+  "checkedAt": "2026-07-29T10:42:00+09:00",
+  "tool": "Playwright CLI real Chromium session",
+  "report": "docs/content-audit/2026-07-29-flow-projection-semantics-scheduling-event-review-ko.html",
+  "viewports": [
+    {
+      "width": 1440,
+      "height": 900,
+      "horizontalOverflowPx": 0,
+      "brokenImages": 0,
+      "consoleErrors": 0,
+      "consoleWarnings": 0,
+      "slideCount": 16,
+      "coverHeadingLines": 2,
+      "screenshot": "output/playwright/projection-lab-final-desktop-1440x900.png",
+      "pass": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "horizontalOverflowPx": 0,
+      "brokenImages": 0,
+      "consoleErrors": 0,
+      "consoleWarnings": 0,
+      "screenshotCover": "output/playwright/projection-lab-final-mobile-cover-390x844.png",
+      "screenshotCase": "output/playwright/projection-lab-final-mobile-case-390x844.png",
+      "pass": true
+    }
+  ],
+  "interaction": {
+    "test": "projection=calendar and availability=unavailable",
+    "visibleRows": 27,
+    "invalidVisibleRows": 0,
+    "pass": true
+  },
+  "claimBoundary": {
+    "observedUserValidation": "NOT_RUN",
+    "externalCalendarRoundTrip": "NOT_RUN",
+    "vtodoClientRoundTrip": "NOT_RUN"
+  },
+  "pass": true
+}

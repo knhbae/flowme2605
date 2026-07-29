@@ -1,0 +1,679 @@
+{
+  "schemaVersion": "flowme-architecture-scorecard-v2",
+  "generatedAt": "2026-07-28T00:00:00.000Z",
+  "input": {
+    "path": "docs/content-audit/2026-07-27-creator-portfolio-qualified-v2.json",
+    "sha256": "aa85b1da3b4403694895cc0647e462daefaec47930a7f43611a489c29db5a16f",
+    "schemaVersion": "flowme-creator-portfolio-qualified-v2",
+    "logicHandoffBundleIds": [
+      "bundle-moving-d30",
+      "bundle-baby-food-174",
+      "bundle-opic-plan",
+      "bundle-opentutorials-web1-progress",
+      "bundle-new-car-comparison",
+      "bundle-allblanc-7day-abs",
+      "bundle-wtable-summer-banchan-five",
+      "bundle-andstudio-job-prep-videos"
+    ]
+  },
+  "evidenceType": "deterministic_contract_score_plus_internal_expert_factors",
+  "observedUserValidation": "NOT_RUN",
+  "weights": {
+    "source_meaning_provenance": 20,
+    "independent_completion_state": 15,
+    "scheduled_undated_coverage": 10,
+    "minimum_input_edit_simplicity": 8,
+    "calendar_client_compatibility": 10,
+    "rights_review_private_overlay": 10,
+    "projection_loss": 10,
+    "runtime_migration": 7,
+    "backend_dto_complexity": 5,
+    "external_tool_portability": 5
+  },
+  "formulaPolicy": {
+    "total": "sum(round(dimension.max × dimension.factor))",
+    "projectionFactor": "mean of disposition points across six projection targets and seven semantic paths",
+    "note": "These are deterministic architecture comparison scores, not user preference or production reliability evidence."
+  },
+  "corpusTotals": {
+    "bundles": 8,
+    "flows": 21,
+    "steps": 49,
+    "items": 160,
+    "sourceRows": 210,
+    "sourceRowReferences": 250,
+    "uniqueSourceRowsReferenced": 210,
+    "scheduledItems": 112,
+    "undatedItems": 48
+  },
+  "sharedContextAdoptionGate": {
+    "requiredDistinctBundles": 3,
+    "observedDistinctBundles": 1,
+    "passed": false
+  },
+  "roundTripSummary": {
+    "canonicalSemanticRoundTripsPassed": 8,
+    "sharedContextSemanticRoundTripsPassed": 8,
+    "literalSyntaxPasses": 8,
+    "totalRecords": 8,
+    "schedulelessVevents": 0,
+    "nestedVeventOrVtodo": 0,
+    "vevents": 112,
+    "vtodos": 48,
+    "sourceRowReferencesRecoveredByLabParser": 250,
+    "uniqueSourceRowsRecoveredByLabParser": 210,
+    "externalClientRoundTrip": "NOT_RUN",
+    "observedUserValidation": "NOT_RUN"
+  },
+  "architectures": [
+    {
+      "id": "current_canonical_v1",
+      "label": "Current canonical",
+      "verdict": "Go",
+      "summary": "160 Item과 210 SourceRow를 first-class로 보존하면서 일정이 있는 112개만 VEVENT로 투영한다. It preserves the full canonical contract and keeps calendar output destination-specific.",
+      "score": 95,
+      "dimensions": [
+        {
+          "id": "source_meaning_provenance",
+          "label": "Source 의미·provenance",
+          "score": 20,
+          "max": 20,
+          "factor": 1,
+          "formula": "20 × source retention factor. X-property로만 복구되고 외부 client 보존이 미검증이면 0.5를 적용한다.",
+          "evidence": "Factor is fixed by the v2 architecture contract and verified corpus evidence."
+        },
+        {
+          "id": "independent_completion_state",
+          "label": "Item별 독립 완료 상태",
+          "score": 15,
+          "max": 15,
+          "factor": 1,
+          "formula": "15 × independently recoverable completion factor. VEVENT는 FlowMe manual completion을 소유하지 않는다.",
+          "evidence": "Factor is fixed by the v2 architecture contract and verified corpus evidence."
+        },
+        {
+          "id": "scheduled_undated_coverage",
+          "label": "일정·비일정 포괄성",
+          "score": 10,
+          "max": 10,
+          "factor": 1,
+          "formula": "10 × (scheduled natural coverage + undated natural coverage) / 160. 미검증 VTODO는 undated coverage에 0.5를 적용한다.",
+          "evidence": "112 scheduled + 48 undated Items; VTODO external support is NOT_PROVEN."
+        },
+        {
+          "id": "minimum_input_edit_simplicity",
+          "label": "최소 입력·수정 단순성",
+          "score": 8,
+          "max": 8,
+          "factor": 1,
+          "formula": "8 × setup/source-value reuse factor. source 값을 다시 묻지 않고 0~2개 setup input으로 시작하는지를 본다.",
+          "evidence": "Factor is fixed by the v2 architecture contract and verified corpus evidence."
+        },
+        {
+          "id": "calendar_client_compatibility",
+          "label": "Calendar client 호환 위험",
+          "score": 7,
+          "max": 10,
+          "factor": 0.7,
+          "formula": "10 × client-risk factor. 실제 Google/Outlook/Apple round-trip이 없으므로 단순 VEVENT도 최대 0.7, VTODO+RELATED-TO+X-property 의존은 0.2다.",
+          "evidence": "Factor is fixed by the v2 architecture contract and verified corpus evidence."
+        },
+        {
+          "id": "rights_review_private_overlay",
+          "label": "권리·검토·개인 overlay 보존",
+          "score": 10,
+          "max": 10,
+          "factor": 1,
+          "formula": "10 × canonical layer retention factor. user export에 내부 review를 넣지 않으면서 canonical sidecar 없이 보존 가능한지를 본다.",
+          "evidence": "Factor is fixed by the v2 architecture contract and verified corpus evidence."
+        },
+        {
+          "id": "projection_loss",
+          "label": "Projection 손실",
+          "score": 9,
+          "max": 10,
+          "factor": 0.8857,
+          "formula": "10 × projection-loss manifest 평균. retained=1, grouped=0.8, description=0.65, sidecar=0.75, unproven=0.35, unsupported=0.",
+          "evidence": "Manifest mean retention=0.8857 across 6 targets."
+        },
+        {
+          "id": "runtime_migration",
+          "label": "현재 runtime 이관 영향",
+          "score": 7,
+          "max": 7,
+          "factor": 1,
+          "formula": "7 × migration factor. 현재 Item adapter 유지=1, 새 canonical entity=0.57, ICS-first 교체=0.14.",
+          "evidence": "Factor is fixed by the v2 architecture contract and verified corpus evidence."
+        },
+        {
+          "id": "backend_dto_complexity",
+          "label": "Backend DTO 복잡도",
+          "score": 5,
+          "max": 5,
+          "factor": 1,
+          "formula": "5 × DTO simplicity factor. 기존 canonical 계약 재사용=1, context indirection=0.6, component/X-property/sidecar 동시 관리=0.2.",
+          "evidence": "Factor is fixed by the v2 architecture contract and verified corpus evidence."
+        },
+        {
+          "id": "external_tool_portability",
+          "label": "외부 도구 이식성",
+          "score": 4,
+          "max": 5,
+          "factor": 0.8,
+          "formula": "5 × destination-neutral portability factor. 외부 account round-trip 미실행으로 canonical projection도 최대 0.8이다.",
+          "evidence": "Factor is fixed by the v2 architecture contract and verified corpus evidence."
+        }
+      ],
+      "hardGates": [
+        {
+          "id": "source_provenance",
+          "status": "pass",
+          "evidence": "210/210 SourceRows retain first-class references."
+        },
+        {
+          "id": "independent_completion_for_all_items",
+          "status": "pass",
+          "evidence": "160/160 completion owners remain Item."
+        },
+        {
+          "id": "no_scheduleless_vevent",
+          "status": "pass",
+          "evidence": "0 scheduleless VEVENT."
+        },
+        {
+          "id": "no_nested_vevent_vtodo",
+          "status": "pass",
+          "evidence": "0 nested VEVENT/VTODO."
+        }
+      ]
+    },
+    {
+      "id": "literal_ics_first",
+      "label": "Literal ICS-first",
+      "verdict": "Hold",
+      "summary": "48개 날짜 없는 Item과 provenance를 VTODO·RELATED-TO·X-property 보존에 의존시켜 hard gate 두 개를 통과하지 못한다. Local syntax passes, but portable completion and provenance do not.",
+      "score": 46,
+      "dimensions": [
+        {
+          "id": "source_meaning_provenance",
+          "label": "Source 의미·provenance",
+          "score": 10,
+          "max": 20,
+          "factor": 0.5,
+          "formula": "20 × source retention factor. X-property로만 복구되고 외부 client 보존이 미검증이면 0.5를 적용한다.",
+          "evidence": "Factor is fixed by the v2 architecture contract and verified corpus evidence."
+        },
+        {
+          "id": "independent_completion_state",
+          "label": "Item별 독립 완료 상태",
+          "score": 4,
+          "max": 15,
+          "factor": 0.24,
+          "formula": "15 × independently recoverable completion factor. VEVENT는 FlowMe manual completion을 소유하지 않는다.",
+          "evidence": "Factor is fixed by the v2 architecture contract and verified corpus evidence."
+        },
+        {
+          "id": "scheduled_undated_coverage",
+          "label": "일정·비일정 포괄성",
+          "score": 9,
+          "max": 10,
+          "factor": 0.85,
+          "formula": "10 × (scheduled natural coverage + undated natural coverage) / 160. 미검증 VTODO는 undated coverage에 0.5를 적용한다.",
+          "evidence": "112 scheduled + 48 undated Items; VTODO external support is NOT_PROVEN."
+        },
+        {
+          "id": "minimum_input_edit_simplicity",
+          "label": "최소 입력·수정 단순성",
+          "score": 8,
+          "max": 8,
+          "factor": 1,
+          "formula": "8 × setup/source-value reuse factor. source 값을 다시 묻지 않고 0~2개 setup input으로 시작하는지를 본다.",
+          "evidence": "Factor is fixed by the v2 architecture contract and verified corpus evidence."
+        },
+        {
+          "id": "calendar_client_compatibility",
+          "label": "Calendar client 호환 위험",
+          "score": 2,
+          "max": 10,
+          "factor": 0.2,
+          "formula": "10 × client-risk factor. 실제 Google/Outlook/Apple round-trip이 없으므로 단순 VEVENT도 최대 0.7, VTODO+RELATED-TO+X-property 의존은 0.2다.",
+          "evidence": "Factor is fixed by the v2 architecture contract and verified corpus evidence."
+        },
+        {
+          "id": "rights_review_private_overlay",
+          "label": "권리·검토·개인 overlay 보존",
+          "score": 3,
+          "max": 10,
+          "factor": 0.3,
+          "formula": "10 × canonical layer retention factor. user export에 내부 review를 넣지 않으면서 canonical sidecar 없이 보존 가능한지를 본다.",
+          "evidence": "Factor is fixed by the v2 architecture contract and verified corpus evidence."
+        },
+        {
+          "id": "projection_loss",
+          "label": "Projection 손실",
+          "score": 6,
+          "max": 10,
+          "factor": 0.5786,
+          "formula": "10 × projection-loss manifest 평균. retained=1, grouped=0.8, description=0.65, sidecar=0.75, unproven=0.35, unsupported=0.",
+          "evidence": "Manifest mean retention=0.5786 across 6 targets."
+        },
+        {
+          "id": "runtime_migration",
+          "label": "현재 runtime 이관 영향",
+          "score": 1,
+          "max": 7,
+          "factor": 0.14,
+          "formula": "7 × migration factor. 현재 Item adapter 유지=1, 새 canonical entity=0.57, ICS-first 교체=0.14.",
+          "evidence": "Factor is fixed by the v2 architecture contract and verified corpus evidence."
+        },
+        {
+          "id": "backend_dto_complexity",
+          "label": "Backend DTO 복잡도",
+          "score": 1,
+          "max": 5,
+          "factor": 0.2,
+          "formula": "5 × DTO simplicity factor. 기존 canonical 계약 재사용=1, context indirection=0.6, component/X-property/sidecar 동시 관리=0.2.",
+          "evidence": "Factor is fixed by the v2 architecture contract and verified corpus evidence."
+        },
+        {
+          "id": "external_tool_portability",
+          "label": "외부 도구 이식성",
+          "score": 2,
+          "max": 5,
+          "factor": 0.4,
+          "formula": "5 × destination-neutral portability factor. 외부 account round-trip 미실행으로 canonical projection도 최대 0.8이다.",
+          "evidence": "Factor is fixed by the v2 architecture contract and verified corpus evidence."
+        }
+      ],
+      "hardGates": [
+        {
+          "id": "source_provenance_without_unproven_client_extension",
+          "status": "fail",
+          "evidence": "210 unique SourceRows (250 references) recover in the lab parser only through X-FLOWME-SOURCE-ROWS; external preservation is NOT_PROVEN."
+        },
+        {
+          "id": "independent_completion_for_all_items",
+          "status": "fail",
+          "evidence": "112 VEVENT Items have no native FlowMe manual completion semantics."
+        },
+        {
+          "id": "no_scheduleless_vevent",
+          "status": "pass",
+          "evidence": "0 scheduleless VEVENT."
+        },
+        {
+          "id": "no_nested_vevent_vtodo",
+          "status": "pass",
+          "evidence": "0 nested VEVENT/VTODO."
+        }
+      ]
+    },
+    {
+      "id": "item_first_shared_context",
+      "label": "Item-first shared context",
+      "verdict": "Modify",
+      "summary": "의미 보존은 통과하지만 공유 일정이 필요한 corpus가 이사 1개뿐이라 새 canonical entity 비용을 정당화하지 못한다. Keep the grouping benefit at projection time.",
+      "score": 89,
+      "dimensions": [
+        {
+          "id": "source_meaning_provenance",
+          "label": "Source 의미·provenance",
+          "score": 20,
+          "max": 20,
+          "factor": 1,
+          "formula": "20 × source retention factor. X-property로만 복구되고 외부 client 보존이 미검증이면 0.5를 적용한다.",
+          "evidence": "Factor is fixed by the v2 architecture contract and verified corpus evidence."
+        },
+        {
+          "id": "independent_completion_state",
+          "label": "Item별 독립 완료 상태",
+          "score": 15,
+          "max": 15,
+          "factor": 1,
+          "formula": "15 × independently recoverable completion factor. VEVENT는 FlowMe manual completion을 소유하지 않는다.",
+          "evidence": "Factor is fixed by the v2 architecture contract and verified corpus evidence."
+        },
+        {
+          "id": "scheduled_undated_coverage",
+          "label": "일정·비일정 포괄성",
+          "score": 10,
+          "max": 10,
+          "factor": 1,
+          "formula": "10 × (scheduled natural coverage + undated natural coverage) / 160. 미검증 VTODO는 undated coverage에 0.5를 적용한다.",
+          "evidence": "112 scheduled + 48 undated Items; VTODO external support is NOT_PROVEN."
+        },
+        {
+          "id": "minimum_input_edit_simplicity",
+          "label": "최소 입력·수정 단순성",
+          "score": 7,
+          "max": 8,
+          "factor": 0.875,
+          "formula": "8 × setup/source-value reuse factor. source 값을 다시 묻지 않고 0~2개 setup input으로 시작하는지를 본다.",
+          "evidence": "Factor is fixed by the v2 architecture contract and verified corpus evidence."
+        },
+        {
+          "id": "calendar_client_compatibility",
+          "label": "Calendar client 호환 위험",
+          "score": 7,
+          "max": 10,
+          "factor": 0.7,
+          "formula": "10 × client-risk factor. 실제 Google/Outlook/Apple round-trip이 없으므로 단순 VEVENT도 최대 0.7, VTODO+RELATED-TO+X-property 의존은 0.2다.",
+          "evidence": "Factor is fixed by the v2 architecture contract and verified corpus evidence."
+        },
+        {
+          "id": "rights_review_private_overlay",
+          "label": "권리·검토·개인 overlay 보존",
+          "score": 10,
+          "max": 10,
+          "factor": 1,
+          "formula": "10 × canonical layer retention factor. user export에 내부 review를 넣지 않으면서 canonical sidecar 없이 보존 가능한지를 본다.",
+          "evidence": "Factor is fixed by the v2 architecture contract and verified corpus evidence."
+        },
+        {
+          "id": "projection_loss",
+          "label": "Projection 손실",
+          "score": 9,
+          "max": 10,
+          "factor": 0.8857,
+          "formula": "10 × projection-loss manifest 평균. retained=1, grouped=0.8, description=0.65, sidecar=0.75, unproven=0.35, unsupported=0.",
+          "evidence": "Manifest mean retention=0.8857 across 6 targets."
+        },
+        {
+          "id": "runtime_migration",
+          "label": "현재 runtime 이관 영향",
+          "score": 4,
+          "max": 7,
+          "factor": 0.57,
+          "formula": "7 × migration factor. 현재 Item adapter 유지=1, 새 canonical entity=0.57, ICS-first 교체=0.14.",
+          "evidence": "Factor is fixed by the v2 architecture contract and verified corpus evidence."
+        },
+        {
+          "id": "backend_dto_complexity",
+          "label": "Backend DTO 복잡도",
+          "score": 3,
+          "max": 5,
+          "factor": 0.6,
+          "formula": "5 × DTO simplicity factor. 기존 canonical 계약 재사용=1, context indirection=0.6, component/X-property/sidecar 동시 관리=0.2.",
+          "evidence": "Factor is fixed by the v2 architecture contract and verified corpus evidence."
+        },
+        {
+          "id": "external_tool_portability",
+          "label": "외부 도구 이식성",
+          "score": 4,
+          "max": 5,
+          "factor": 0.8,
+          "formula": "5 × destination-neutral portability factor. 외부 account round-trip 미실행으로 canonical projection도 최대 0.8이다.",
+          "evidence": "Factor is fixed by the v2 architecture contract and verified corpus evidence."
+        }
+      ],
+      "hardGates": [
+        {
+          "id": "source_provenance",
+          "status": "pass",
+          "evidence": "210/210 SourceRows retain first-class references."
+        },
+        {
+          "id": "independent_completion_for_all_items",
+          "status": "pass",
+          "evidence": "160/160 completion owners remain Item."
+        },
+        {
+          "id": "no_scheduleless_vevent",
+          "status": "pass",
+          "evidence": "0 scheduleless VEVENT."
+        },
+        {
+          "id": "no_nested_vevent_vtodo",
+          "status": "pass",
+          "evidence": "0 nested VEVENT/VTODO."
+        }
+      ]
+    }
+  ],
+  "records": [
+    {
+      "architecture": "current_canonical_v1",
+      "label": "Current canonical",
+      "verdict": "Go",
+      "summary": "160 Item과 210 SourceRow를 first-class로 보존하면서 일정이 있는 112개만 VEVENT로 투영한다. It preserves the full canonical contract and keeps calendar output destination-specific.",
+      "total": 95,
+      "dimensions": {
+        "source_meaning_provenance": {
+          "score": 20,
+          "max": 20,
+          "factor": 1
+        },
+        "independent_completion_state": {
+          "score": 15,
+          "max": 15,
+          "factor": 1
+        },
+        "scheduled_undated_coverage": {
+          "score": 10,
+          "max": 10,
+          "factor": 1
+        },
+        "minimum_input_edit_simplicity": {
+          "score": 8,
+          "max": 8,
+          "factor": 1
+        },
+        "calendar_client_compatibility": {
+          "score": 7,
+          "max": 10,
+          "factor": 0.7
+        },
+        "rights_review_private_overlay": {
+          "score": 10,
+          "max": 10,
+          "factor": 1
+        },
+        "projection_loss": {
+          "score": 9,
+          "max": 10,
+          "factor": 0.8857
+        },
+        "runtime_migration": {
+          "score": 7,
+          "max": 7,
+          "factor": 1
+        },
+        "backend_dto_complexity": {
+          "score": 5,
+          "max": 5,
+          "factor": 1
+        },
+        "external_tool_portability": {
+          "score": 4,
+          "max": 5,
+          "factor": 0.8
+        }
+      },
+      "hardGates": [
+        {
+          "id": "source_provenance",
+          "status": "pass",
+          "evidence": "210/210 SourceRows retain first-class references."
+        },
+        {
+          "id": "independent_completion_for_all_items",
+          "status": "pass",
+          "evidence": "160/160 completion owners remain Item."
+        },
+        {
+          "id": "no_scheduleless_vevent",
+          "status": "pass",
+          "evidence": "0 scheduleless VEVENT."
+        },
+        {
+          "id": "no_nested_vevent_vtodo",
+          "status": "pass",
+          "evidence": "0 nested VEVENT/VTODO."
+        }
+      ]
+    },
+    {
+      "architecture": "literal_ics_first",
+      "label": "Literal ICS-first",
+      "verdict": "Hold",
+      "summary": "48개 날짜 없는 Item과 provenance를 VTODO·RELATED-TO·X-property 보존에 의존시켜 hard gate 두 개를 통과하지 못한다. Local syntax passes, but portable completion and provenance do not.",
+      "total": 46,
+      "dimensions": {
+        "source_meaning_provenance": {
+          "score": 10,
+          "max": 20,
+          "factor": 0.5
+        },
+        "independent_completion_state": {
+          "score": 4,
+          "max": 15,
+          "factor": 0.24
+        },
+        "scheduled_undated_coverage": {
+          "score": 9,
+          "max": 10,
+          "factor": 0.85
+        },
+        "minimum_input_edit_simplicity": {
+          "score": 8,
+          "max": 8,
+          "factor": 1
+        },
+        "calendar_client_compatibility": {
+          "score": 2,
+          "max": 10,
+          "factor": 0.2
+        },
+        "rights_review_private_overlay": {
+          "score": 3,
+          "max": 10,
+          "factor": 0.3
+        },
+        "projection_loss": {
+          "score": 6,
+          "max": 10,
+          "factor": 0.5786
+        },
+        "runtime_migration": {
+          "score": 1,
+          "max": 7,
+          "factor": 0.14
+        },
+        "backend_dto_complexity": {
+          "score": 1,
+          "max": 5,
+          "factor": 0.2
+        },
+        "external_tool_portability": {
+          "score": 2,
+          "max": 5,
+          "factor": 0.4
+        }
+      },
+      "hardGates": [
+        {
+          "id": "source_provenance_without_unproven_client_extension",
+          "status": "fail",
+          "evidence": "210 unique SourceRows (250 references) recover in the lab parser only through X-FLOWME-SOURCE-ROWS; external preservation is NOT_PROVEN."
+        },
+        {
+          "id": "independent_completion_for_all_items",
+          "status": "fail",
+          "evidence": "112 VEVENT Items have no native FlowMe manual completion semantics."
+        },
+        {
+          "id": "no_scheduleless_vevent",
+          "status": "pass",
+          "evidence": "0 scheduleless VEVENT."
+        },
+        {
+          "id": "no_nested_vevent_vtodo",
+          "status": "pass",
+          "evidence": "0 nested VEVENT/VTODO."
+        }
+      ]
+    },
+    {
+      "architecture": "item_first_shared_context",
+      "label": "Item-first shared context",
+      "verdict": "Modify",
+      "summary": "의미 보존은 통과하지만 공유 일정이 필요한 corpus가 이사 1개뿐이라 새 canonical entity 비용을 정당화하지 못한다. Keep the grouping benefit at projection time.",
+      "total": 89,
+      "dimensions": {
+        "source_meaning_provenance": {
+          "score": 20,
+          "max": 20,
+          "factor": 1
+        },
+        "independent_completion_state": {
+          "score": 15,
+          "max": 15,
+          "factor": 1
+        },
+        "scheduled_undated_coverage": {
+          "score": 10,
+          "max": 10,
+          "factor": 1
+        },
+        "minimum_input_edit_simplicity": {
+          "score": 7,
+          "max": 8,
+          "factor": 0.875
+        },
+        "calendar_client_compatibility": {
+          "score": 7,
+          "max": 10,
+          "factor": 0.7
+        },
+        "rights_review_private_overlay": {
+          "score": 10,
+          "max": 10,
+          "factor": 1
+        },
+        "projection_loss": {
+          "score": 9,
+          "max": 10,
+          "factor": 0.8857
+        },
+        "runtime_migration": {
+          "score": 4,
+          "max": 7,
+          "factor": 0.57
+        },
+        "backend_dto_complexity": {
+          "score": 3,
+          "max": 5,
+          "factor": 0.6
+        },
+        "external_tool_portability": {
+          "score": 4,
+          "max": 5,
+          "factor": 0.8
+        }
+      },
+      "hardGates": [
+        {
+          "id": "source_provenance",
+          "status": "pass",
+          "evidence": "210/210 SourceRows retain first-class references."
+        },
+        {
+          "id": "independent_completion_for_all_items",
+          "status": "pass",
+          "evidence": "160/160 completion owners remain Item."
+        },
+        {
+          "id": "no_scheduleless_vevent",
+          "status": "pass",
+          "evidence": "0 scheduleless VEVENT."
+        },
+        {
+          "id": "no_nested_vevent_vtodo",
+          "status": "pass",
+          "evidence": "0 nested VEVENT/VTODO."
+        }
+      ]
+    }
+  ],
+  "comparisonConclusion": "Current canonical remains preferred. The 48 undated Items strengthen the need for destination-specific projections and make literal ICS-first more dependent on unproven VTODO/RELATED-TO/X-property behavior. Persisted SharedContext still fails the three-bundle adoption gate; use projection-time grouping instead."
+}

@@ -1,0 +1,92 @@
+BEGIN:VCALENDAR
+PRODID:-//FlowMe//Literal ICS First Lab v1//KO
+VERSION:2.0
+CALSCALE:GREGORIAN
+BEGIN:VJOURNAL
+UID:bundle-andstudio-job-prep-videos-map@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:AND 취업 준비 영상 3편
+X-FLOWME-KIND:MAP
+END:VJOURNAL
+BEGIN:VJOURNAL
+UID:andstudio-job-1-flow@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:자소서 지원동기 6단계
+RELATED-TO;RELTYPE=PARENT:bundle-andstudio-job-prep-videos-map@flowme.local
+X-FLOWME-KIND:FLOW
+END:VJOURNAL
+BEGIN:VJOURNAL
+UID:andstudio-job-1-step@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:영상 1편
+RELATED-TO;RELTYPE=PARENT:andstudio-job-1-flow@flowme.local
+X-FLOWME-KIND:STEP
+END:VJOURNAL
+BEGIN:VTODO
+UID:andstudio-job-1-item@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:자소서 지원동기 6단계 영상으로 준비하기
+DESCRIPTION:조회 889\,279 · 좋아요 17\,011 · 댓글 201 · 영상: h
+ ttps://www.youtube.com/watch?v=OIliv2jpDyM\n영상 제목·공개 설명 
+ · https://www.youtube.com/watch?v=OIliv2jpDyM
+STATUS:NEEDS-ACTION
+URL:https://www.youtube.com/watch?v=OIliv2jpDyM
+RELATED-TO;RELTYPE=PARENT:andstudio-job-1-step@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:andstudio-job-1
+END:VTODO
+BEGIN:VJOURNAL
+UID:andstudio-job-2-flow@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:산업분석 방법
+RELATED-TO;RELTYPE=PARENT:bundle-andstudio-job-prep-videos-map@flowme.local
+X-FLOWME-KIND:FLOW
+END:VJOURNAL
+BEGIN:VJOURNAL
+UID:andstudio-job-2-step@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:영상 1편
+RELATED-TO;RELTYPE=PARENT:andstudio-job-2-flow@flowme.local
+X-FLOWME-KIND:STEP
+END:VJOURNAL
+BEGIN:VTODO
+UID:andstudio-job-2-item@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:산업분석 방법 영상으로 준비하기
+DESCRIPTION:조회 186\,826 · 댓글 139 · 영상: https://www.youtube.co
+ m/watch?v=qXRMV7TgsSg\n영상 제목·공개 설명 · https://www.youtube
+ .com/watch?v=qXRMV7TgsSg
+STATUS:NEEDS-ACTION
+URL:https://www.youtube.com/watch?v=qXRMV7TgsSg
+RELATED-TO;RELTYPE=PARENT:andstudio-job-2-step@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:andstudio-job-2
+END:VTODO
+BEGIN:VJOURNAL
+UID:andstudio-job-3-flow@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:면접 전 확인할 6가지
+RELATED-TO;RELTYPE=PARENT:bundle-andstudio-job-prep-videos-map@flowme.local
+X-FLOWME-KIND:FLOW
+END:VJOURNAL
+BEGIN:VJOURNAL
+UID:andstudio-job-3-step@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:영상 1편
+RELATED-TO;RELTYPE=PARENT:andstudio-job-3-flow@flowme.local
+X-FLOWME-KIND:STEP
+END:VJOURNAL
+BEGIN:VTODO
+UID:andstudio-job-3-item@flowme.local
+DTSTAMP:20260727T000000Z
+SUMMARY:면접 전 확인할 6가지 영상으로 준비하기
+DESCRIPTION:조회 103\,294 · 댓글 32 · 영상: https://www.youtube.com
+ /watch?v=Sd176kgo1Es\n영상 제목·공개 설명 · https://www.youtube.
+ com/watch?v=Sd176kgo1Es
+STATUS:NEEDS-ACTION
+URL:https://www.youtube.com/watch?v=Sd176kgo1Es
+RELATED-TO;RELTYPE=PARENT:andstudio-job-3-step@flowme.local
+X-FLOWME-KIND:ITEM
+X-FLOWME-SOURCE-ROWS:andstudio-job-3
+END:VTODO
+END:VCALENDAR

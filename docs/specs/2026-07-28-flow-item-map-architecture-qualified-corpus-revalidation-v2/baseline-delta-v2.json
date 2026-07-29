@@ -1,0 +1,155 @@
+{
+  "schemaVersion": "flowme-qualified-corpus-baseline-delta-v2",
+  "generatedAt": "2026-07-28T00:00:00.000Z",
+  "baseline": {
+    "corpusLabel": "2026-07-23 architecture lab v1 primary corpus",
+    "counts": {
+      "bundles": 9,
+      "flows": 22,
+      "steps": 57,
+      "items": 148,
+      "sourceRows": 198,
+      "scheduledItems": 118,
+      "undatedItems": 30
+    },
+    "architectureScores": {
+      "current_canonical_v1": 96,
+      "literal_ics_first": 51,
+      "item_first_shared_context": 95
+    },
+    "validator": {
+      "passed": true,
+      "checkCount": 752,
+      "passedCount": 752,
+      "failedCount": 0
+    },
+    "decision": "keep_current_canonical_v1_add_projection_time_grouping",
+    "externalCalendarClientRoundTrip": "not_run",
+    "frozenArtifactKeys": [
+      "v1DiscoverySnapshot",
+      "v1Gold",
+      "v1CategoryFit",
+      "v1Scorecard",
+      "v1ProjectionLoss",
+      "v1RoundTrip",
+      "v1Adjudication",
+      "v1Validation"
+    ]
+  },
+  "currentCorpus": {
+    "corpusLabel": "2026-07-27 Qualified v2 logic handoff corpus",
+    "counts": {
+      "bundles": 8,
+      "flows": 21,
+      "steps": 49,
+      "items": 160,
+      "sourceRows": 210,
+      "scheduledItems": 112,
+      "undatedItems": 48
+    },
+    "publicReadinessCounts": {
+      "Go": 1,
+      "Hold": 1,
+      "Modify": 6
+    },
+    "representedLifeAreas": [
+      "family_parenting",
+      "health_fitness",
+      "home_living",
+      "meals_grocery",
+      "money_admin_purchase",
+      "study_reading",
+      "work_career"
+    ],
+    "architectureScores": {
+      "current_canonical_v1": 95,
+      "literal_ics_first": 46,
+      "item_first_shared_context": 89
+    },
+    "validator": "pending_v2_validation",
+    "externalCalendarClientRoundTrip": "not_run",
+    "architectureDecision": "keep_current_canonical_v1_add_projection_time_grouping"
+  },
+  "countDelta": {
+    "bundles": -1,
+    "flows": -1,
+    "steps": -8,
+    "items": 12,
+    "sourceRows": 12,
+    "scheduledItems": -6,
+    "undatedItems": 18
+  },
+  "corpusReplacement": {
+    "removedFromNormalCorpus": [
+      {
+        "creatorId": "travel-triple",
+        "bundleId": "bundle-triple-cappadocia-departure",
+        "title": "카파도키아 출국 전 체크",
+        "priorContribution": {
+          "flows": 1,
+          "steps": 3,
+          "items": 8,
+          "sourceRows": 8,
+          "scheduledItems": 0,
+          "undatedItems": 8
+        },
+        "currentRole": "historical_boundary",
+        "logicReadiness": "Modify",
+        "publicReadiness": "Modify"
+      },
+      {
+        "creatorId": "hobby-fitpet",
+        "bundleId": "bundle-fitpet-puppy-vaccination",
+        "title": "강아지 생후 6~16주 예방접종 일정",
+        "priorContribution": {
+          "flows": 1,
+          "steps": 6,
+          "items": 6,
+          "sourceRows": 6,
+          "scheduledItems": 6,
+          "undatedItems": 0
+        },
+        "currentRole": "historical_boundary",
+        "logicReadiness": "Hold",
+        "publicReadiness": "Hold"
+      }
+    ],
+    "addedToNormalCorpus": [
+      {
+        "creatorId": "study-opentutorials",
+        "bundleId": "bundle-opentutorials-web1-progress",
+        "title": "생활코딩 WEB1 진도표",
+        "contribution": {
+          "flows": 1,
+          "steps": 1,
+          "items": 26,
+          "sourceRows": 26,
+          "scheduledItems": 0,
+          "undatedItems": 26
+        },
+        "currentRole": "qualified_logic_handoff",
+        "logicReadiness": "Go",
+        "publicReadiness": "Go"
+      }
+    ],
+    "decompositionChecks": {
+      "flows": "22 - 1 - 1 + 1 = 21",
+      "steps": "57 - 3 - 6 + 1 = 49",
+      "items": "148 - 8 - 6 + 26 = 160",
+      "sourceRows": "198 - 8 - 6 + 26 = 210",
+      "scheduledItems": "118 - 0 - 6 + 0 = 112",
+      "undatedItems": "30 - 8 - 0 + 26 = 48"
+    }
+  },
+  "interpretationRules": [
+    "Do not copy the v1 96/51/95 scores into v2.",
+    "Do not present the v1 752 validator checks as v2 checks.",
+    "Do not include Triple or Fitpet in v2 normal corpus totals.",
+    "Do not treat logic Go as public Go."
+  ],
+  "architectureScoreDelta": {
+    "current_canonical_v1": -1,
+    "literal_ics_first": -5,
+    "item_first_shared_context": -6
+  }
+}

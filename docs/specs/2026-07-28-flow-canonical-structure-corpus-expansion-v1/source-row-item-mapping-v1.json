@@ -1,0 +1,5390 @@
+{
+  "schemaVersion": "flowme-source-row-item-mapping-v1",
+  "generatedAt": "2026-07-28T23:59:00+09:00",
+  "fixtureCount": 42,
+  "sourceRowCount": 484,
+  "records": [
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s1-i1-r1",
+      "targets": [
+        "base-moving-d30-flow-1-step-1-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s1-i1-r2",
+      "targets": [
+        "base-moving-d30-flow-1-step-1-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s1-i1-r3",
+      "targets": [
+        "base-moving-d30-flow-1-step-1-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s1-i2-r1",
+      "targets": [
+        "base-moving-d30-flow-1-step-1-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s1-i2-r2",
+      "targets": [
+        "base-moving-d30-flow-1-step-1-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s1-i3-r1",
+      "targets": [
+        "base-moving-d30-flow-1-step-1-item-3"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s1-i4-r1",
+      "targets": [
+        "base-moving-d30-flow-1-step-1-item-4"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s1-i4-r2",
+      "targets": [
+        "base-moving-d30-flow-1-step-1-item-4"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s2-i1-r1",
+      "targets": [
+        "base-moving-d30-flow-1-step-2-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s2-i1-r2",
+      "targets": [
+        "base-moving-d30-flow-1-step-2-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s2-i1-r3",
+      "targets": [
+        "base-moving-d30-flow-1-step-2-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s2-i2-r1",
+      "targets": [
+        "base-moving-d30-flow-1-step-2-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s2-i2-r2",
+      "targets": [
+        "base-moving-d30-flow-1-step-2-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s2-i3-r1",
+      "targets": [
+        "base-moving-d30-flow-1-step-2-item-3"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s2-i3-r2",
+      "targets": [
+        "base-moving-d30-flow-1-step-2-item-3"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s2-i3-r3",
+      "targets": [
+        "base-moving-d30-flow-1-step-2-item-3"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s2-i4-r1",
+      "targets": [
+        "base-moving-d30-flow-1-step-2-item-4"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s2-i4-r2",
+      "targets": [
+        "base-moving-d30-flow-1-step-2-item-4"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s2-i4-r3",
+      "targets": [
+        "base-moving-d30-flow-1-step-2-item-4"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s2-i5-r1",
+      "targets": [
+        "base-moving-d30-flow-1-step-2-item-5"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s2-i5-r2",
+      "targets": [
+        "base-moving-d30-flow-1-step-2-item-5"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s3-i1-r1",
+      "targets": [
+        "base-moving-d30-flow-1-step-3-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s3-i1-r2",
+      "targets": [
+        "base-moving-d30-flow-1-step-3-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s3-i2-r1",
+      "targets": [
+        "base-moving-d30-flow-1-step-3-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s3-i3-r1",
+      "targets": [
+        "base-moving-d30-flow-1-step-3-item-3"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s3-i4-r1",
+      "targets": [
+        "base-moving-d30-flow-1-step-3-item-4"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s3-i5-r1",
+      "targets": [
+        "base-moving-d30-flow-1-step-3-item-5"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s4-i1-r1",
+      "targets": [
+        "base-moving-d30-flow-1-step-4-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s4-i1-r2",
+      "targets": [
+        "base-moving-d30-flow-1-step-4-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s4-i1-r3",
+      "targets": [
+        "base-moving-d30-flow-1-step-4-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s4-i2-r1",
+      "targets": [
+        "base-moving-d30-flow-1-step-4-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s4-i3-r1",
+      "targets": [
+        "base-moving-d30-flow-1-step-4-item-3"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s4-i4-r1",
+      "targets": [
+        "base-moving-d30-flow-1-step-4-item-4"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s4-i4-r2",
+      "targets": [
+        "base-moving-d30-flow-1-step-4-item-4"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s4-i5-r1",
+      "targets": [
+        "base-moving-d30-flow-1-step-4-item-5"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s4-i5-r2",
+      "targets": [
+        "base-moving-d30-flow-1-step-4-item-5"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s5-i1-r1",
+      "targets": [
+        "base-moving-d30-flow-1-step-5-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s5-i1-r2",
+      "targets": [
+        "base-moving-d30-flow-1-step-5-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s5-i2-r1",
+      "targets": [
+        "base-moving-d30-flow-1-step-5-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s5-i3-r1",
+      "targets": [
+        "base-moving-d30-flow-1-step-5-item-3"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s5-i3-r2",
+      "targets": [
+        "base-moving-d30-flow-1-step-5-item-3"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s6-i1-r1",
+      "targets": [
+        "base-moving-d30-flow-1-step-6-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s6-i1-r2",
+      "targets": [
+        "base-moving-d30-flow-1-step-6-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s6-i2-r1",
+      "targets": [
+        "base-moving-d30-flow-1-step-6-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s6-i2-r2",
+      "targets": [
+        "base-moving-d30-flow-1-step-6-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s6-i3-r1",
+      "targets": [
+        "base-moving-d30-flow-1-step-6-item-3"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s6-i3-r2",
+      "targets": [
+        "base-moving-d30-flow-1-step-6-item-3"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s6-i3-r3",
+      "targets": [
+        "base-moving-d30-flow-1-step-6-item-3"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s6-i4-r1",
+      "targets": [
+        "base-moving-d30-flow-1-step-6-item-4"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s6-i4-r2",
+      "targets": [
+        "base-moving-d30-flow-1-step-6-item-4"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s6-i5-r1",
+      "targets": [
+        "base-moving-d30-flow-1-step-6-item-5"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-moving-d30",
+      "sourceTitle": "이사 D-30 체크리스트",
+      "sourceRowId": "base-moving-d30--bundle-moving-d30-s6-i5-r2",
+      "targets": [
+        "base-moving-d30-flow-1-step-6-item-5"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-baby-food-174",
+      "sourceTitle": "초기 이유식 D+174~209 식단",
+      "sourceRowId": "base-baby-food-174--bundle-baby-food-174-d174",
+      "targets": [
+        "base-baby-food-174-flow-1-step-1-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-baby-food-174",
+      "sourceTitle": "초기 이유식 D+174~209 식단",
+      "sourceRowId": "base-baby-food-174--bundle-baby-food-174-d175",
+      "targets": [
+        "base-baby-food-174-flow-1-step-1-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-baby-food-174",
+      "sourceTitle": "초기 이유식 D+174~209 식단",
+      "sourceRowId": "base-baby-food-174--bundle-baby-food-174-d176",
+      "targets": [
+        "base-baby-food-174-flow-1-step-1-item-3"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-baby-food-174",
+      "sourceTitle": "초기 이유식 D+174~209 식단",
+      "sourceRowId": "base-baby-food-174--bundle-baby-food-174-d177",
+      "targets": [
+        "base-baby-food-174-flow-1-step-2-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-baby-food-174",
+      "sourceTitle": "초기 이유식 D+174~209 식단",
+      "sourceRowId": "base-baby-food-174--bundle-baby-food-174-d178",
+      "targets": [
+        "base-baby-food-174-flow-1-step-2-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-baby-food-174",
+      "sourceTitle": "초기 이유식 D+174~209 식단",
+      "sourceRowId": "base-baby-food-174--bundle-baby-food-174-d179",
+      "targets": [
+        "base-baby-food-174-flow-1-step-2-item-3"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-baby-food-174",
+      "sourceTitle": "초기 이유식 D+174~209 식단",
+      "sourceRowId": "base-baby-food-174--bundle-baby-food-174-d180",
+      "targets": [
+        "base-baby-food-174-flow-1-step-3-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-baby-food-174",
+      "sourceTitle": "초기 이유식 D+174~209 식단",
+      "sourceRowId": "base-baby-food-174--bundle-baby-food-174-d181",
+      "targets": [
+        "base-baby-food-174-flow-1-step-3-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-baby-food-174",
+      "sourceTitle": "초기 이유식 D+174~209 식단",
+      "sourceRowId": "base-baby-food-174--bundle-baby-food-174-d182",
+      "targets": [
+        "base-baby-food-174-flow-1-step-3-item-3"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-baby-food-174",
+      "sourceTitle": "초기 이유식 D+174~209 식단",
+      "sourceRowId": "base-baby-food-174--bundle-baby-food-174-d183",
+      "targets": [
+        "base-baby-food-174-flow-1-step-4-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-baby-food-174",
+      "sourceTitle": "초기 이유식 D+174~209 식단",
+      "sourceRowId": "base-baby-food-174--bundle-baby-food-174-d184",
+      "targets": [
+        "base-baby-food-174-flow-1-step-4-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-baby-food-174",
+      "sourceTitle": "초기 이유식 D+174~209 식단",
+      "sourceRowId": "base-baby-food-174--bundle-baby-food-174-d185",
+      "targets": [
+        "base-baby-food-174-flow-1-step-4-item-3"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-baby-food-174",
+      "sourceTitle": "초기 이유식 D+174~209 식단",
+      "sourceRowId": "base-baby-food-174--bundle-baby-food-174-d186",
+      "targets": [
+        "base-baby-food-174-flow-1-step-5-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-baby-food-174",
+      "sourceTitle": "초기 이유식 D+174~209 식단",
+      "sourceRowId": "base-baby-food-174--bundle-baby-food-174-d187",
+      "targets": [
+        "base-baby-food-174-flow-1-step-5-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-baby-food-174",
+      "sourceTitle": "초기 이유식 D+174~209 식단",
+      "sourceRowId": "base-baby-food-174--bundle-baby-food-174-d188",
+      "targets": [
+        "base-baby-food-174-flow-1-step-5-item-3"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-baby-food-174",
+      "sourceTitle": "초기 이유식 D+174~209 식단",
+      "sourceRowId": "base-baby-food-174--bundle-baby-food-174-d189",
+      "targets": [
+        "base-baby-food-174-flow-1-step-6-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-baby-food-174",
+      "sourceTitle": "초기 이유식 D+174~209 식단",
+      "sourceRowId": "base-baby-food-174--bundle-baby-food-174-d190",
+      "targets": [
+        "base-baby-food-174-flow-1-step-6-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-baby-food-174",
+      "sourceTitle": "초기 이유식 D+174~209 식단",
+      "sourceRowId": "base-baby-food-174--bundle-baby-food-174-d191",
+      "targets": [
+        "base-baby-food-174-flow-1-step-6-item-3"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-baby-food-174",
+      "sourceTitle": "초기 이유식 D+174~209 식단",
+      "sourceRowId": "base-baby-food-174--bundle-baby-food-174-d192",
+      "targets": [
+        "base-baby-food-174-flow-1-step-7-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-baby-food-174",
+      "sourceTitle": "초기 이유식 D+174~209 식단",
+      "sourceRowId": "base-baby-food-174--bundle-baby-food-174-d193",
+      "targets": [
+        "base-baby-food-174-flow-1-step-7-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-baby-food-174",
+      "sourceTitle": "초기 이유식 D+174~209 식단",
+      "sourceRowId": "base-baby-food-174--bundle-baby-food-174-d194",
+      "targets": [
+        "base-baby-food-174-flow-1-step-7-item-3"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-baby-food-174",
+      "sourceTitle": "초기 이유식 D+174~209 식단",
+      "sourceRowId": "base-baby-food-174--bundle-baby-food-174-d195",
+      "targets": [
+        "base-baby-food-174-flow-1-step-8-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-baby-food-174",
+      "sourceTitle": "초기 이유식 D+174~209 식단",
+      "sourceRowId": "base-baby-food-174--bundle-baby-food-174-d196",
+      "targets": [
+        "base-baby-food-174-flow-1-step-8-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-baby-food-174",
+      "sourceTitle": "초기 이유식 D+174~209 식단",
+      "sourceRowId": "base-baby-food-174--bundle-baby-food-174-d197",
+      "targets": [
+        "base-baby-food-174-flow-1-step-8-item-3"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-baby-food-174",
+      "sourceTitle": "초기 이유식 D+174~209 식단",
+      "sourceRowId": "base-baby-food-174--bundle-baby-food-174-d198",
+      "targets": [
+        "base-baby-food-174-flow-1-step-9-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-baby-food-174",
+      "sourceTitle": "초기 이유식 D+174~209 식단",
+      "sourceRowId": "base-baby-food-174--bundle-baby-food-174-d199",
+      "targets": [
+        "base-baby-food-174-flow-1-step-9-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-baby-food-174",
+      "sourceTitle": "초기 이유식 D+174~209 식단",
+      "sourceRowId": "base-baby-food-174--bundle-baby-food-174-d200",
+      "targets": [
+        "base-baby-food-174-flow-1-step-9-item-3"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-baby-food-174",
+      "sourceTitle": "초기 이유식 D+174~209 식단",
+      "sourceRowId": "base-baby-food-174--bundle-baby-food-174-d201",
+      "targets": [
+        "base-baby-food-174-flow-1-step-10-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-baby-food-174",
+      "sourceTitle": "초기 이유식 D+174~209 식단",
+      "sourceRowId": "base-baby-food-174--bundle-baby-food-174-d202",
+      "targets": [
+        "base-baby-food-174-flow-1-step-10-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-baby-food-174",
+      "sourceTitle": "초기 이유식 D+174~209 식단",
+      "sourceRowId": "base-baby-food-174--bundle-baby-food-174-d203",
+      "targets": [
+        "base-baby-food-174-flow-1-step-10-item-3"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-baby-food-174",
+      "sourceTitle": "초기 이유식 D+174~209 식단",
+      "sourceRowId": "base-baby-food-174--bundle-baby-food-174-d204",
+      "targets": [
+        "base-baby-food-174-flow-1-step-11-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-baby-food-174",
+      "sourceTitle": "초기 이유식 D+174~209 식단",
+      "sourceRowId": "base-baby-food-174--bundle-baby-food-174-d205",
+      "targets": [
+        "base-baby-food-174-flow-1-step-11-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-baby-food-174",
+      "sourceTitle": "초기 이유식 D+174~209 식단",
+      "sourceRowId": "base-baby-food-174--bundle-baby-food-174-d206",
+      "targets": [
+        "base-baby-food-174-flow-1-step-11-item-3"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-baby-food-174",
+      "sourceTitle": "초기 이유식 D+174~209 식단",
+      "sourceRowId": "base-baby-food-174--bundle-baby-food-174-d207",
+      "targets": [
+        "base-baby-food-174-flow-1-step-12-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-baby-food-174",
+      "sourceTitle": "초기 이유식 D+174~209 식단",
+      "sourceRowId": "base-baby-food-174--bundle-baby-food-174-d208",
+      "targets": [
+        "base-baby-food-174-flow-1-step-12-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-baby-food-174",
+      "sourceTitle": "초기 이유식 D+174~209 식단",
+      "sourceRowId": "base-baby-food-174--bundle-baby-food-174-d209",
+      "targets": [
+        "base-baby-food-174-flow-1-step-12-item-3"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-2w-w1",
+      "targets": [
+        "base-opic-plan-flow-1-step-1-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-video-1",
+      "targets": [
+        "base-opic-plan-flow-1-step-1-item-1",
+        "base-opic-plan-flow-1-step-1-item-6",
+        "base-opic-plan-flow-2-step-1-item-1",
+        "base-opic-plan-flow-2-step-1-item-2",
+        "base-opic-plan-flow-2-step-1-item-3"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_many",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-2w-w1-3",
+      "targets": [
+        "base-opic-plan-flow-1-step-1-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-video-2",
+      "targets": [
+        "base-opic-plan-flow-1-step-1-item-2",
+        "base-opic-plan-flow-1-step-1-item-6",
+        "base-opic-plan-flow-2-step-1-item-4",
+        "base-opic-plan-flow-2-step-1-item-5",
+        "base-opic-plan-flow-2-step-1-item-6"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_many",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-2w-w1-5",
+      "targets": [
+        "base-opic-plan-flow-1-step-1-item-3"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-video-3",
+      "targets": [
+        "base-opic-plan-flow-1-step-1-item-3",
+        "base-opic-plan-flow-1-step-1-item-6",
+        "base-opic-plan-flow-2-step-2-item-1",
+        "base-opic-plan-flow-2-step-2-item-2",
+        "base-opic-plan-flow-2-step-2-item-3"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_many",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-2w-w1-7",
+      "targets": [
+        "base-opic-plan-flow-1-step-1-item-4"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-video-4",
+      "targets": [
+        "base-opic-plan-flow-1-step-1-item-4",
+        "base-opic-plan-flow-1-step-1-item-6",
+        "base-opic-plan-flow-2-step-2-item-4",
+        "base-opic-plan-flow-2-step-2-item-5",
+        "base-opic-plan-flow-2-step-2-item-6"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_many",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-2w-w1-9",
+      "targets": [
+        "base-opic-plan-flow-1-step-1-item-5"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-video-5",
+      "targets": [
+        "base-opic-plan-flow-1-step-1-item-5",
+        "base-opic-plan-flow-1-step-1-item-6",
+        "base-opic-plan-flow-2-step-3-item-1",
+        "base-opic-plan-flow-2-step-3-item-2",
+        "base-opic-plan-flow-2-step-3-item-3"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_many",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-2w-w1-11",
+      "targets": [
+        "base-opic-plan-flow-1-step-1-item-6"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-2w-w2",
+      "targets": [
+        "base-opic-plan-flow-1-step-2-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-video-6",
+      "targets": [
+        "base-opic-plan-flow-1-step-2-item-1",
+        "base-opic-plan-flow-1-step-2-item-6",
+        "base-opic-plan-flow-2-step-3-item-4",
+        "base-opic-plan-flow-2-step-3-item-5",
+        "base-opic-plan-flow-2-step-3-item-6"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_many",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-2w-w2-14",
+      "targets": [
+        "base-opic-plan-flow-1-step-2-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-video-7",
+      "targets": [
+        "base-opic-plan-flow-1-step-2-item-2",
+        "base-opic-plan-flow-1-step-2-item-6",
+        "base-opic-plan-flow-2-step-4-item-1",
+        "base-opic-plan-flow-2-step-4-item-2",
+        "base-opic-plan-flow-2-step-4-item-3"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_many",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-2w-w2-16",
+      "targets": [
+        "base-opic-plan-flow-1-step-2-item-3"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-video-8",
+      "targets": [
+        "base-opic-plan-flow-1-step-2-item-3",
+        "base-opic-plan-flow-1-step-2-item-6",
+        "base-opic-plan-flow-2-step-4-item-4",
+        "base-opic-plan-flow-2-step-4-item-5",
+        "base-opic-plan-flow-2-step-4-item-6"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_many",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-2w-w2-18",
+      "targets": [
+        "base-opic-plan-flow-1-step-2-item-4"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-video-9",
+      "targets": [
+        "base-opic-plan-flow-1-step-2-item-4",
+        "base-opic-plan-flow-1-step-2-item-6",
+        "base-opic-plan-flow-2-step-5-item-1",
+        "base-opic-plan-flow-2-step-5-item-2",
+        "base-opic-plan-flow-2-step-5-item-3"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_many",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-2w-w2-20",
+      "targets": [
+        "base-opic-plan-flow-1-step-2-item-5"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-video-10",
+      "targets": [
+        "base-opic-plan-flow-1-step-2-item-5",
+        "base-opic-plan-flow-1-step-2-item-6",
+        "base-opic-plan-flow-2-step-5-item-4",
+        "base-opic-plan-flow-2-step-5-item-5",
+        "base-opic-plan-flow-2-step-5-item-6"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_many",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-2w-w2-22",
+      "targets": [
+        "base-opic-plan-flow-1-step-2-item-6"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-1m-w1",
+      "targets": [
+        "base-opic-plan-flow-2-step-1-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-1m-w1-24",
+      "targets": [
+        "base-opic-plan-flow-2-step-1-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-1m-w1-25",
+      "targets": [
+        "base-opic-plan-flow-2-step-1-item-3"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-1m-w1-26",
+      "targets": [
+        "base-opic-plan-flow-2-step-1-item-4"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-1m-w1-27",
+      "targets": [
+        "base-opic-plan-flow-2-step-1-item-5"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-1m-w1-28",
+      "targets": [
+        "base-opic-plan-flow-2-step-1-item-6"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-1m-w2",
+      "targets": [
+        "base-opic-plan-flow-2-step-2-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-1m-w2-30",
+      "targets": [
+        "base-opic-plan-flow-2-step-2-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-1m-w2-31",
+      "targets": [
+        "base-opic-plan-flow-2-step-2-item-3"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-1m-w2-32",
+      "targets": [
+        "base-opic-plan-flow-2-step-2-item-4"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-1m-w2-33",
+      "targets": [
+        "base-opic-plan-flow-2-step-2-item-5"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-1m-w2-34",
+      "targets": [
+        "base-opic-plan-flow-2-step-2-item-6"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-1m-w3",
+      "targets": [
+        "base-opic-plan-flow-2-step-3-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-1m-w3-36",
+      "targets": [
+        "base-opic-plan-flow-2-step-3-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-1m-w3-37",
+      "targets": [
+        "base-opic-plan-flow-2-step-3-item-3"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-1m-w3-38",
+      "targets": [
+        "base-opic-plan-flow-2-step-3-item-4"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-1m-w3-39",
+      "targets": [
+        "base-opic-plan-flow-2-step-3-item-5"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-1m-w3-40",
+      "targets": [
+        "base-opic-plan-flow-2-step-3-item-6"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-1m-w4",
+      "targets": [
+        "base-opic-plan-flow-2-step-4-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-1m-w4-42",
+      "targets": [
+        "base-opic-plan-flow-2-step-4-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-1m-w4-43",
+      "targets": [
+        "base-opic-plan-flow-2-step-4-item-3"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-1m-w4-44",
+      "targets": [
+        "base-opic-plan-flow-2-step-4-item-4"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-1m-w4-45",
+      "targets": [
+        "base-opic-plan-flow-2-step-4-item-5"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-1m-w4-46",
+      "targets": [
+        "base-opic-plan-flow-2-step-4-item-6"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-1m-w5",
+      "targets": [
+        "base-opic-plan-flow-2-step-5-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-1m-w5-48",
+      "targets": [
+        "base-opic-plan-flow-2-step-5-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-1m-w5-49",
+      "targets": [
+        "base-opic-plan-flow-2-step-5-item-3"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-1m-w5-50",
+      "targets": [
+        "base-opic-plan-flow-2-step-5-item-4"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-1m-w5-51",
+      "targets": [
+        "base-opic-plan-flow-2-step-5-item-5"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opic-plan",
+      "sourceTitle": "오픽 모의고사 계획표",
+      "sourceRowId": "base-opic-plan--bundle-opic-plan-1m-w5-52",
+      "targets": [
+        "base-opic-plan-flow-2-step-5-item-6"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opentutorials-web1-progress",
+      "sourceTitle": "생활코딩 WEB1 진도표",
+      "sourceRowId": "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i1-r1",
+      "targets": [
+        "base-opentutorials-web1-progress-flow-1-step-1-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opentutorials-web1-progress",
+      "sourceTitle": "생활코딩 WEB1 진도표",
+      "sourceRowId": "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i2-r1",
+      "targets": [
+        "base-opentutorials-web1-progress-flow-1-step-1-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opentutorials-web1-progress",
+      "sourceTitle": "생활코딩 WEB1 진도표",
+      "sourceRowId": "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i3-r1",
+      "targets": [
+        "base-opentutorials-web1-progress-flow-1-step-1-item-3"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opentutorials-web1-progress",
+      "sourceTitle": "생활코딩 WEB1 진도표",
+      "sourceRowId": "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i4-r1",
+      "targets": [
+        "base-opentutorials-web1-progress-flow-1-step-1-item-4"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opentutorials-web1-progress",
+      "sourceTitle": "생활코딩 WEB1 진도표",
+      "sourceRowId": "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i5-r1",
+      "targets": [
+        "base-opentutorials-web1-progress-flow-1-step-1-item-5"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opentutorials-web1-progress",
+      "sourceTitle": "생활코딩 WEB1 진도표",
+      "sourceRowId": "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i6-r1",
+      "targets": [
+        "base-opentutorials-web1-progress-flow-1-step-1-item-6"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opentutorials-web1-progress",
+      "sourceTitle": "생활코딩 WEB1 진도표",
+      "sourceRowId": "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i7-r1",
+      "targets": [
+        "base-opentutorials-web1-progress-flow-1-step-1-item-7"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opentutorials-web1-progress",
+      "sourceTitle": "생활코딩 WEB1 진도표",
+      "sourceRowId": "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i8-r1",
+      "targets": [
+        "base-opentutorials-web1-progress-flow-1-step-1-item-8"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opentutorials-web1-progress",
+      "sourceTitle": "생활코딩 WEB1 진도표",
+      "sourceRowId": "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i9-r1",
+      "targets": [
+        "base-opentutorials-web1-progress-flow-1-step-1-item-9"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opentutorials-web1-progress",
+      "sourceTitle": "생활코딩 WEB1 진도표",
+      "sourceRowId": "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i10-r1",
+      "targets": [
+        "base-opentutorials-web1-progress-flow-1-step-1-item-10"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opentutorials-web1-progress",
+      "sourceTitle": "생활코딩 WEB1 진도표",
+      "sourceRowId": "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i11-r1",
+      "targets": [
+        "base-opentutorials-web1-progress-flow-1-step-1-item-11"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opentutorials-web1-progress",
+      "sourceTitle": "생활코딩 WEB1 진도표",
+      "sourceRowId": "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i12-r1",
+      "targets": [
+        "base-opentutorials-web1-progress-flow-1-step-1-item-12"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opentutorials-web1-progress",
+      "sourceTitle": "생활코딩 WEB1 진도표",
+      "sourceRowId": "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i13-r1",
+      "targets": [
+        "base-opentutorials-web1-progress-flow-1-step-1-item-13"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opentutorials-web1-progress",
+      "sourceTitle": "생활코딩 WEB1 진도표",
+      "sourceRowId": "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i14-r1",
+      "targets": [
+        "base-opentutorials-web1-progress-flow-1-step-1-item-14"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opentutorials-web1-progress",
+      "sourceTitle": "생활코딩 WEB1 진도표",
+      "sourceRowId": "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i15-r1",
+      "targets": [
+        "base-opentutorials-web1-progress-flow-1-step-1-item-15"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opentutorials-web1-progress",
+      "sourceTitle": "생활코딩 WEB1 진도표",
+      "sourceRowId": "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i16-r1",
+      "targets": [
+        "base-opentutorials-web1-progress-flow-1-step-1-item-16"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opentutorials-web1-progress",
+      "sourceTitle": "생활코딩 WEB1 진도표",
+      "sourceRowId": "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i17-r1",
+      "targets": [
+        "base-opentutorials-web1-progress-flow-1-step-1-item-17"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opentutorials-web1-progress",
+      "sourceTitle": "생활코딩 WEB1 진도표",
+      "sourceRowId": "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i18-r1",
+      "targets": [
+        "base-opentutorials-web1-progress-flow-1-step-1-item-18"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opentutorials-web1-progress",
+      "sourceTitle": "생활코딩 WEB1 진도표",
+      "sourceRowId": "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i19-r1",
+      "targets": [
+        "base-opentutorials-web1-progress-flow-1-step-1-item-19"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opentutorials-web1-progress",
+      "sourceTitle": "생활코딩 WEB1 진도표",
+      "sourceRowId": "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i20-r1",
+      "targets": [
+        "base-opentutorials-web1-progress-flow-1-step-1-item-20"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opentutorials-web1-progress",
+      "sourceTitle": "생활코딩 WEB1 진도표",
+      "sourceRowId": "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i21-r1",
+      "targets": [
+        "base-opentutorials-web1-progress-flow-1-step-1-item-21"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opentutorials-web1-progress",
+      "sourceTitle": "생활코딩 WEB1 진도표",
+      "sourceRowId": "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i22-r1",
+      "targets": [
+        "base-opentutorials-web1-progress-flow-1-step-1-item-22"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opentutorials-web1-progress",
+      "sourceTitle": "생활코딩 WEB1 진도표",
+      "sourceRowId": "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i23-r1",
+      "targets": [
+        "base-opentutorials-web1-progress-flow-1-step-1-item-23"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opentutorials-web1-progress",
+      "sourceTitle": "생활코딩 WEB1 진도표",
+      "sourceRowId": "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i24-r1",
+      "targets": [
+        "base-opentutorials-web1-progress-flow-1-step-1-item-24"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opentutorials-web1-progress",
+      "sourceTitle": "생활코딩 WEB1 진도표",
+      "sourceRowId": "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i25-r1",
+      "targets": [
+        "base-opentutorials-web1-progress-flow-1-step-1-item-25"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-opentutorials-web1-progress",
+      "sourceTitle": "생활코딩 WEB1 진도표",
+      "sourceRowId": "base-opentutorials-web1-progress--bundle-opentutorials-web1-progress-s1-i26-r1",
+      "targets": [
+        "base-opentutorials-web1-progress-flow-1-step-1-item-26"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-new-car-comparison",
+      "sourceTitle": "신차 구매 8단계",
+      "sourceRowId": "base-new-car-comparison--bundle-new-car-comparison-s1-i1-r1",
+      "targets": [
+        "base-new-car-comparison-flow-1-step-1-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-new-car-comparison",
+      "sourceTitle": "신차 구매 8단계",
+      "sourceRowId": "base-new-car-comparison--bundle-new-car-comparison-s1-i1-r2",
+      "targets": [
+        "base-new-car-comparison-flow-1-step-1-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-new-car-comparison",
+      "sourceTitle": "신차 구매 8단계",
+      "sourceRowId": "base-new-car-comparison--bundle-new-car-comparison-s1-i2-r1",
+      "targets": [
+        "base-new-car-comparison-flow-1-step-1-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-new-car-comparison",
+      "sourceTitle": "신차 구매 8단계",
+      "sourceRowId": "base-new-car-comparison--bundle-new-car-comparison-s1-i2-r2",
+      "targets": [
+        "base-new-car-comparison-flow-1-step-1-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-new-car-comparison",
+      "sourceTitle": "신차 구매 8단계",
+      "sourceRowId": "base-new-car-comparison--bundle-new-car-comparison-s2-i1-r1",
+      "targets": [
+        "base-new-car-comparison-flow-1-step-2-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-new-car-comparison",
+      "sourceTitle": "신차 구매 8단계",
+      "sourceRowId": "base-new-car-comparison--bundle-new-car-comparison-s2-i1-r2",
+      "targets": [
+        "base-new-car-comparison-flow-1-step-2-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-new-car-comparison",
+      "sourceTitle": "신차 구매 8단계",
+      "sourceRowId": "base-new-car-comparison--bundle-new-car-comparison-s3-i1-r1",
+      "targets": [
+        "base-new-car-comparison-flow-1-step-3-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-new-car-comparison",
+      "sourceTitle": "신차 구매 8단계",
+      "sourceRowId": "base-new-car-comparison--bundle-new-car-comparison-s3-i1-r2",
+      "targets": [
+        "base-new-car-comparison-flow-1-step-3-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-new-car-comparison",
+      "sourceTitle": "신차 구매 8단계",
+      "sourceRowId": "base-new-car-comparison--bundle-new-car-comparison-s3-i2-r1",
+      "targets": [
+        "base-new-car-comparison-flow-1-step-3-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-new-car-comparison",
+      "sourceTitle": "신차 구매 8단계",
+      "sourceRowId": "base-new-car-comparison--bundle-new-car-comparison-s3-i2-r2",
+      "targets": [
+        "base-new-car-comparison-flow-1-step-3-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-new-car-comparison",
+      "sourceTitle": "신차 구매 8단계",
+      "sourceRowId": "base-new-car-comparison--bundle-new-car-comparison-s4-i1-r1",
+      "targets": [
+        "base-new-car-comparison-flow-1-step-4-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-new-car-comparison",
+      "sourceTitle": "신차 구매 8단계",
+      "sourceRowId": "base-new-car-comparison--bundle-new-car-comparison-s4-i1-r2",
+      "targets": [
+        "base-new-car-comparison-flow-1-step-4-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-new-car-comparison",
+      "sourceTitle": "신차 구매 8단계",
+      "sourceRowId": "base-new-car-comparison--bundle-new-car-comparison-s4-i1-r3",
+      "targets": [
+        "base-new-car-comparison-flow-1-step-4-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-new-car-comparison",
+      "sourceTitle": "신차 구매 8단계",
+      "sourceRowId": "base-new-car-comparison--bundle-new-car-comparison-s4-i2-r1",
+      "targets": [
+        "base-new-car-comparison-flow-1-step-4-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-new-car-comparison",
+      "sourceTitle": "신차 구매 8단계",
+      "sourceRowId": "base-new-car-comparison--bundle-new-car-comparison-s4-i2-r2",
+      "targets": [
+        "base-new-car-comparison-flow-1-step-4-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-new-car-comparison",
+      "sourceTitle": "신차 구매 8단계",
+      "sourceRowId": "base-new-car-comparison--bundle-new-car-comparison-s5-i1-r1",
+      "targets": [
+        "base-new-car-comparison-flow-1-step-5-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-new-car-comparison",
+      "sourceTitle": "신차 구매 8단계",
+      "sourceRowId": "base-new-car-comparison--bundle-new-car-comparison-s5-i2-r1",
+      "targets": [
+        "base-new-car-comparison-flow-1-step-5-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-new-car-comparison",
+      "sourceTitle": "신차 구매 8단계",
+      "sourceRowId": "base-new-car-comparison--bundle-new-car-comparison-s5-i2-r2",
+      "targets": [
+        "base-new-car-comparison-flow-1-step-5-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-new-car-comparison",
+      "sourceTitle": "신차 구매 8단계",
+      "sourceRowId": "base-new-car-comparison--bundle-new-car-comparison-s5-i2-r3",
+      "targets": [
+        "base-new-car-comparison-flow-1-step-5-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-new-car-comparison",
+      "sourceTitle": "신차 구매 8단계",
+      "sourceRowId": "base-new-car-comparison--bundle-new-car-comparison-s6-i1-r1",
+      "targets": [
+        "base-new-car-comparison-flow-1-step-6-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-new-car-comparison",
+      "sourceTitle": "신차 구매 8단계",
+      "sourceRowId": "base-new-car-comparison--bundle-new-car-comparison-s6-i1-r2",
+      "targets": [
+        "base-new-car-comparison-flow-1-step-6-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-new-car-comparison",
+      "sourceTitle": "신차 구매 8단계",
+      "sourceRowId": "base-new-car-comparison--bundle-new-car-comparison-s6-i2-r1",
+      "targets": [
+        "base-new-car-comparison-flow-1-step-6-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-new-car-comparison",
+      "sourceTitle": "신차 구매 8단계",
+      "sourceRowId": "base-new-car-comparison--bundle-new-car-comparison-s6-i2-r2",
+      "targets": [
+        "base-new-car-comparison-flow-1-step-6-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-new-car-comparison",
+      "sourceTitle": "신차 구매 8단계",
+      "sourceRowId": "base-new-car-comparison--bundle-new-car-comparison-s7-i1-r1",
+      "targets": [
+        "base-new-car-comparison-flow-1-step-7-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-new-car-comparison",
+      "sourceTitle": "신차 구매 8단계",
+      "sourceRowId": "base-new-car-comparison--bundle-new-car-comparison-s7-i1-r2",
+      "targets": [
+        "base-new-car-comparison-flow-1-step-7-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-new-car-comparison",
+      "sourceTitle": "신차 구매 8단계",
+      "sourceRowId": "base-new-car-comparison--bundle-new-car-comparison-s8-i1-r1",
+      "targets": [
+        "base-new-car-comparison-flow-1-step-8-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-new-car-comparison",
+      "sourceTitle": "신차 구매 8단계",
+      "sourceRowId": "base-new-car-comparison--bundle-new-car-comparison-s8-i1-r2",
+      "targets": [
+        "base-new-car-comparison-flow-1-step-8-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-new-car-comparison",
+      "sourceTitle": "신차 구매 8단계",
+      "sourceRowId": "base-new-car-comparison--bundle-new-car-comparison-s8-i2-r1",
+      "targets": [
+        "base-new-car-comparison-flow-1-step-8-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-new-car-comparison",
+      "sourceTitle": "신차 구매 8단계",
+      "sourceRowId": "base-new-car-comparison--bundle-new-car-comparison-s8-i2-r2",
+      "targets": [
+        "base-new-car-comparison-flow-1-step-8-item-2"
+      ],
+      "targetType": "item",
+      "relationType": "many_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-allblanc-7day-abs",
+      "sourceTitle": "Allblanc 7일 복근 챌린지",
+      "sourceRowId": "base-allblanc-7day-abs--bundle-allblanc-7day-abs-day-1",
+      "targets": [
+        "base-allblanc-7day-abs-flow-1-step-1-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-allblanc-7day-abs",
+      "sourceTitle": "Allblanc 7일 복근 챌린지",
+      "sourceRowId": "base-allblanc-7day-abs--bundle-allblanc-7day-abs-day-2",
+      "targets": [
+        "base-allblanc-7day-abs-flow-2-step-1-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-allblanc-7day-abs",
+      "sourceTitle": "Allblanc 7일 복근 챌린지",
+      "sourceRowId": "base-allblanc-7day-abs--bundle-allblanc-7day-abs-day-3",
+      "targets": [
+        "base-allblanc-7day-abs-flow-3-step-1-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-allblanc-7day-abs",
+      "sourceTitle": "Allblanc 7일 복근 챌린지",
+      "sourceRowId": "base-allblanc-7day-abs--bundle-allblanc-7day-abs-day-4",
+      "targets": [
+        "base-allblanc-7day-abs-flow-4-step-1-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-allblanc-7day-abs",
+      "sourceTitle": "Allblanc 7일 복근 챌린지",
+      "sourceRowId": "base-allblanc-7day-abs--bundle-allblanc-7day-abs-day-5",
+      "targets": [
+        "base-allblanc-7day-abs-flow-5-step-1-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-allblanc-7day-abs",
+      "sourceTitle": "Allblanc 7일 복근 챌린지",
+      "sourceRowId": "base-allblanc-7day-abs--bundle-allblanc-7day-abs-day-6",
+      "targets": [
+        "base-allblanc-7day-abs-flow-6-step-1-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-allblanc-7day-abs",
+      "sourceTitle": "Allblanc 7일 복근 챌린지",
+      "sourceRowId": "base-allblanc-7day-abs--bundle-allblanc-7day-abs-day-7",
+      "targets": [
+        "base-allblanc-7day-abs-flow-7-step-1-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-wtable-summer-banchan-five",
+      "sourceTitle": "이번 주 여름 반찬 5가지",
+      "sourceRowId": "base-wtable-summer-banchan-five--wtable-summer-1",
+      "targets": [
+        "base-wtable-summer-banchan-five-flow-1-step-1-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-wtable-summer-banchan-five",
+      "sourceTitle": "이번 주 여름 반찬 5가지",
+      "sourceRowId": "base-wtable-summer-banchan-five--wtable-summer-2",
+      "targets": [
+        "base-wtable-summer-banchan-five-flow-2-step-1-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-wtable-summer-banchan-five",
+      "sourceTitle": "이번 주 여름 반찬 5가지",
+      "sourceRowId": "base-wtable-summer-banchan-five--wtable-summer-3",
+      "targets": [
+        "base-wtable-summer-banchan-five-flow-3-step-1-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-wtable-summer-banchan-five",
+      "sourceTitle": "이번 주 여름 반찬 5가지",
+      "sourceRowId": "base-wtable-summer-banchan-five--wtable-summer-4",
+      "targets": [
+        "base-wtable-summer-banchan-five-flow-4-step-1-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-wtable-summer-banchan-five",
+      "sourceTitle": "이번 주 여름 반찬 5가지",
+      "sourceRowId": "base-wtable-summer-banchan-five--wtable-summer-5",
+      "targets": [
+        "base-wtable-summer-banchan-five-flow-5-step-1-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-andstudio-job-prep-videos",
+      "sourceTitle": "AND 취업 준비 영상 3편",
+      "sourceRowId": "base-andstudio-job-prep-videos--andstudio-job-1",
+      "targets": [
+        "base-andstudio-job-prep-videos-flow-1-step-1-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-andstudio-job-prep-videos",
+      "sourceTitle": "AND 취업 준비 영상 3편",
+      "sourceRowId": "base-andstudio-job-prep-videos--andstudio-job-2",
+      "targets": [
+        "base-andstudio-job-prep-videos-flow-2-step-1-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "base-andstudio-job-prep-videos",
+      "sourceTitle": "AND 취업 준비 영상 3편",
+      "sourceRowId": "base-andstudio-job-prep-videos--andstudio-job-3",
+      "targets": [
+        "base-andstudio-job-prep-videos-flow-3-step-1-item-1"
+      ],
+      "targetType": "item",
+      "relationType": "one_to_one",
+      "reason": "Qualified v2에서 검증한 Item 경계를 그대로 보존한다."
+    },
+    {
+      "fixtureId": "oq-oq-c01-moving",
+      "sourceTitle": "이사 준비 체크리스트",
+      "sourceRowId": "oq-oq-c01-moving--ds05-r01",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c01-moving-item-1",
+        "oq-oq-c01-moving-item-2",
+        "oq-oq-c01-moving-item-3",
+        "oq-oq-c01-moving-item-4"
+      ],
+      "relationType": "one_to_many",
+      "reason": "상대일 구간의 실행 행동을 Calendar Item으로 펼침"
+    },
+    {
+      "fixtureId": "oq-oq-c01-moving",
+      "sourceTitle": "이사 준비 체크리스트",
+      "sourceRowId": "oq-oq-c01-moving--ds05-r02",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c01-moving-item-5",
+        "oq-oq-c01-moving-item-6",
+        "oq-oq-c01-moving-item-7",
+        "oq-oq-c01-moving-item-8"
+      ],
+      "relationType": "one_to_many",
+      "reason": "상대일 구간의 실행 행동을 Calendar Item으로 펼침"
+    },
+    {
+      "fixtureId": "oq-oq-c01-moving",
+      "sourceTitle": "이사 준비 체크리스트",
+      "sourceRowId": "oq-oq-c01-moving--ds05-r03",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c01-moving-item-9",
+        "oq-oq-c01-moving-item-10",
+        "oq-oq-c01-moving-item-11",
+        "oq-oq-c01-moving-item-12",
+        "oq-oq-c01-moving-item-13"
+      ],
+      "relationType": "one_to_many",
+      "reason": "상대일 구간의 실행 행동을 Calendar Item으로 펼침"
+    },
+    {
+      "fixtureId": "oq-oq-c01-moving",
+      "sourceTitle": "이사 준비 체크리스트",
+      "sourceRowId": "oq-oq-c01-moving--ds05-r04",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c01-moving-item-14",
+        "oq-oq-c01-moving-item-15",
+        "oq-oq-c01-moving-item-16",
+        "oq-oq-c01-moving-item-17"
+      ],
+      "relationType": "one_to_many",
+      "reason": "상대일 구간의 실행 행동을 Calendar Item으로 펼침"
+    },
+    {
+      "fixtureId": "oq-oq-c01-moving",
+      "sourceTitle": "이사 준비 체크리스트",
+      "sourceRowId": "oq-oq-c01-moving--ds05-r05",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c01-moving-item-18",
+        "oq-oq-c01-moving-item-19",
+        "oq-oq-c01-moving-item-20"
+      ],
+      "relationType": "one_to_many",
+      "reason": "상대일 구간의 실행 행동을 Calendar Item으로 펼침"
+    },
+    {
+      "fixtureId": "oq-oq-c01-moving",
+      "sourceTitle": "이사 준비 체크리스트",
+      "sourceRowId": "oq-oq-c01-moving--ds05-r06",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c01-moving-item-21",
+        "oq-oq-c01-moving-item-22",
+        "oq-oq-c01-moving-item-23",
+        "oq-oq-c01-moving-item-24"
+      ],
+      "relationType": "one_to_many",
+      "reason": "상대일 구간의 실행 행동을 Calendar Item으로 펼침"
+    },
+    {
+      "fixtureId": "oq-oq-c02-kmooc-full",
+      "sourceTitle": "Introduction to Data Analysis",
+      "sourceRowId": "oq-oq-c02-kmooc-full--kmooc-m01",
+      "targetType": "field",
+      "targets": [
+        "oq-oq-c02-kmooc-full-field-kmooc-window"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 field 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c02-kmooc-full",
+      "sourceTitle": "Introduction to Data Analysis",
+      "sourceRowId": "oq-oq-c02-kmooc-full--kmooc-m02",
+      "targetType": "field",
+      "targets": [
+        "oq-oq-c02-kmooc-full-field-kmooc-progress"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 field 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c02-kmooc-full",
+      "sourceTitle": "Introduction to Data Analysis",
+      "sourceRowId": "oq-oq-c02-kmooc-full--kmooc-m03",
+      "targetType": "memo",
+      "targets": [
+        "oq-oq-c02-kmooc-full-memo-kmooc-level"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 reference 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c02-kmooc-full",
+      "sourceTitle": "Introduction to Data Analysis",
+      "sourceRowId": "oq-oq-c02-kmooc-full--kmooc-m04",
+      "targetType": "field",
+      "targets": [
+        "oq-oq-c02-kmooc-full-field-kmooc-certificate"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 field 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c02-kmooc-full",
+      "sourceTitle": "Introduction to Data Analysis",
+      "sourceRowId": "oq-oq-c02-kmooc-full--kmooc-m05",
+      "targetType": "memo",
+      "targets": [
+        "oq-oq-c02-kmooc-full-memo-kmooc-grade-window"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 memo 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c02-kmooc-full",
+      "sourceTitle": "Introduction to Data Analysis",
+      "sourceRowId": "oq-oq-c02-kmooc-full--kmooc-w01",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c02-kmooc-full-item-1"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c02-kmooc-full",
+      "sourceTitle": "Introduction to Data Analysis",
+      "sourceRowId": "oq-oq-c02-kmooc-full--kmooc-w02",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c02-kmooc-full-item-2"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c02-kmooc-full",
+      "sourceTitle": "Introduction to Data Analysis",
+      "sourceRowId": "oq-oq-c02-kmooc-full--kmooc-w03",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c02-kmooc-full-item-3"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c02-kmooc-full",
+      "sourceTitle": "Introduction to Data Analysis",
+      "sourceRowId": "oq-oq-c02-kmooc-full--kmooc-w04",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c02-kmooc-full-item-4"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c02-kmooc-full",
+      "sourceTitle": "Introduction to Data Analysis",
+      "sourceRowId": "oq-oq-c02-kmooc-full--kmooc-w05",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c02-kmooc-full-item-5"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c02-kmooc-full",
+      "sourceTitle": "Introduction to Data Analysis",
+      "sourceRowId": "oq-oq-c02-kmooc-full--kmooc-w06",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c02-kmooc-full-item-6"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c02-kmooc-full",
+      "sourceTitle": "Introduction to Data Analysis",
+      "sourceRowId": "oq-oq-c02-kmooc-full--kmooc-w07",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c02-kmooc-full-item-7"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c02-kmooc-full",
+      "sourceTitle": "Introduction to Data Analysis",
+      "sourceRowId": "oq-oq-c02-kmooc-full--kmooc-w08",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c02-kmooc-full-item-8"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c02-kmooc-full",
+      "sourceTitle": "Introduction to Data Analysis",
+      "sourceRowId": "oq-oq-c02-kmooc-full--kmooc-w09",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c02-kmooc-full-item-9"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c02-kmooc-full",
+      "sourceTitle": "Introduction to Data Analysis",
+      "sourceRowId": "oq-oq-c02-kmooc-full--kmooc-w10",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c02-kmooc-full-item-10"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c02-kmooc-full",
+      "sourceTitle": "Introduction to Data Analysis",
+      "sourceRowId": "oq-oq-c02-kmooc-full--kmooc-w11",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c02-kmooc-full-item-11"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c02-kmooc-full",
+      "sourceTitle": "Introduction to Data Analysis",
+      "sourceRowId": "oq-oq-c02-kmooc-full--kmooc-w12",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c02-kmooc-full-item-12"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c02-kmooc-full",
+      "sourceTitle": "Introduction to Data Analysis",
+      "sourceRowId": "oq-oq-c02-kmooc-full--kmooc-w13",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c02-kmooc-full-item-13"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c02-kmooc-full",
+      "sourceTitle": "Introduction to Data Analysis",
+      "sourceRowId": "oq-oq-c02-kmooc-full--kmooc-w14",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c02-kmooc-full-item-14"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c03-librivox",
+      "sourceTitle": "Anne of Green Gables, Version 5",
+      "sourceRowId": "oq-oq-c03-librivox--librivox-c01",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c03-librivox-item-1"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c03-librivox",
+      "sourceTitle": "Anne of Green Gables, Version 5",
+      "sourceRowId": "oq-oq-c03-librivox--librivox-c02",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c03-librivox-item-2"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c03-librivox",
+      "sourceTitle": "Anne of Green Gables, Version 5",
+      "sourceRowId": "oq-oq-c03-librivox--librivox-c03",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c03-librivox-item-3"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c03-librivox",
+      "sourceTitle": "Anne of Green Gables, Version 5",
+      "sourceRowId": "oq-oq-c03-librivox--librivox-c04",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c03-librivox-item-4"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c03-librivox",
+      "sourceTitle": "Anne of Green Gables, Version 5",
+      "sourceRowId": "oq-oq-c03-librivox--librivox-c05",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c03-librivox-item-5"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c03-librivox",
+      "sourceTitle": "Anne of Green Gables, Version 5",
+      "sourceRowId": "oq-oq-c03-librivox--librivox-c06",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c03-librivox-item-6"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c03-librivox",
+      "sourceTitle": "Anne of Green Gables, Version 5",
+      "sourceRowId": "oq-oq-c03-librivox--librivox-c07",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c03-librivox-item-7"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c03-librivox",
+      "sourceTitle": "Anne of Green Gables, Version 5",
+      "sourceRowId": "oq-oq-c03-librivox--librivox-c08",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c03-librivox-item-8"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c03-librivox",
+      "sourceTitle": "Anne of Green Gables, Version 5",
+      "sourceRowId": "oq-oq-c03-librivox--librivox-c09",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c03-librivox-item-9"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c03-librivox",
+      "sourceTitle": "Anne of Green Gables, Version 5",
+      "sourceRowId": "oq-oq-c03-librivox--librivox-c10",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c03-librivox-item-10"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c03-librivox",
+      "sourceTitle": "Anne of Green Gables, Version 5",
+      "sourceRowId": "oq-oq-c03-librivox--librivox-c11",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c03-librivox-item-11"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c03-librivox",
+      "sourceTitle": "Anne of Green Gables, Version 5",
+      "sourceRowId": "oq-oq-c03-librivox--librivox-c12",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c03-librivox-item-12"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c03-librivox",
+      "sourceTitle": "Anne of Green Gables, Version 5",
+      "sourceRowId": "oq-oq-c03-librivox--librivox-c13",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c03-librivox-item-13"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c03-librivox",
+      "sourceTitle": "Anne of Green Gables, Version 5",
+      "sourceRowId": "oq-oq-c03-librivox--librivox-c14",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c03-librivox-item-14"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c03-librivox",
+      "sourceTitle": "Anne of Green Gables, Version 5",
+      "sourceRowId": "oq-oq-c03-librivox--librivox-c15",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c03-librivox-item-15"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c03-librivox",
+      "sourceTitle": "Anne of Green Gables, Version 5",
+      "sourceRowId": "oq-oq-c03-librivox--librivox-c16",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c03-librivox-item-16"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c03-librivox",
+      "sourceTitle": "Anne of Green Gables, Version 5",
+      "sourceRowId": "oq-oq-c03-librivox--librivox-c17",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c03-librivox-item-17"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c03-librivox",
+      "sourceTitle": "Anne of Green Gables, Version 5",
+      "sourceRowId": "oq-oq-c03-librivox--librivox-c18",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c03-librivox-item-18"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c03-librivox",
+      "sourceTitle": "Anne of Green Gables, Version 5",
+      "sourceRowId": "oq-oq-c03-librivox--librivox-c19",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c03-librivox-item-19"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c03-librivox",
+      "sourceTitle": "Anne of Green Gables, Version 5",
+      "sourceRowId": "oq-oq-c03-librivox--librivox-c20",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c03-librivox-item-20"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c03-librivox",
+      "sourceTitle": "Anne of Green Gables, Version 5",
+      "sourceRowId": "oq-oq-c03-librivox--librivox-c21",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c03-librivox-item-21"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c03-librivox",
+      "sourceTitle": "Anne of Green Gables, Version 5",
+      "sourceRowId": "oq-oq-c03-librivox--librivox-c22",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c03-librivox-item-22"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c03-librivox",
+      "sourceTitle": "Anne of Green Gables, Version 5",
+      "sourceRowId": "oq-oq-c03-librivox--librivox-c23",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c03-librivox-item-23"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c03-librivox",
+      "sourceTitle": "Anne of Green Gables, Version 5",
+      "sourceRowId": "oq-oq-c03-librivox--librivox-c24",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c03-librivox-item-24"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c03-librivox",
+      "sourceTitle": "Anne of Green Gables, Version 5",
+      "sourceRowId": "oq-oq-c03-librivox--librivox-c25",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c03-librivox-item-25"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c03-librivox",
+      "sourceTitle": "Anne of Green Gables, Version 5",
+      "sourceRowId": "oq-oq-c03-librivox--librivox-c26",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c03-librivox-item-26"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c03-librivox",
+      "sourceTitle": "Anne of Green Gables, Version 5",
+      "sourceRowId": "oq-oq-c03-librivox--librivox-c27",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c03-librivox-item-27"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c03-librivox",
+      "sourceTitle": "Anne of Green Gables, Version 5",
+      "sourceRowId": "oq-oq-c03-librivox--librivox-c28",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c03-librivox-item-28"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c03-librivox",
+      "sourceTitle": "Anne of Green Gables, Version 5",
+      "sourceRowId": "oq-oq-c03-librivox--librivox-c29",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c03-librivox-item-29"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c03-librivox",
+      "sourceTitle": "Anne of Green Gables, Version 5",
+      "sourceRowId": "oq-oq-c03-librivox--librivox-c30",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c03-librivox-item-30"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c03-librivox",
+      "sourceTitle": "Anne of Green Gables, Version 5",
+      "sourceRowId": "oq-oq-c03-librivox--librivox-c31",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c03-librivox-item-31"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c03-librivox",
+      "sourceTitle": "Anne of Green Gables, Version 5",
+      "sourceRowId": "oq-oq-c03-librivox--librivox-c32",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c03-librivox-item-32"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c03-librivox",
+      "sourceTitle": "Anne of Green Gables, Version 5",
+      "sourceRowId": "oq-oq-c03-librivox--librivox-c33",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c03-librivox-item-33"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c03-librivox",
+      "sourceTitle": "Anne of Green Gables, Version 5",
+      "sourceRowId": "oq-oq-c03-librivox--librivox-c34",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c03-librivox-item-34"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c03-librivox",
+      "sourceTitle": "Anne of Green Gables, Version 5",
+      "sourceRowId": "oq-oq-c03-librivox--librivox-c35",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c03-librivox-item-35"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c03-librivox",
+      "sourceTitle": "Anne of Green Gables, Version 5",
+      "sourceRowId": "oq-oq-c03-librivox--librivox-c36",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c03-librivox-item-36"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c03-librivox",
+      "sourceTitle": "Anne of Green Gables, Version 5",
+      "sourceRowId": "oq-oq-c03-librivox--librivox-c37",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c03-librivox-item-37"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c03-librivox",
+      "sourceTitle": "Anne of Green Gables, Version 5",
+      "sourceRowId": "oq-oq-c03-librivox--librivox-c38",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c03-librivox-item-38"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c04-passport",
+      "sourceTitle": "유효기간 만료에 따른 재발급",
+      "sourceRowId": "oq-oq-c04-passport--passport-r01",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c04-passport-item-1"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c04-passport",
+      "sourceTitle": "유효기간 만료에 따른 재발급",
+      "sourceRowId": "oq-oq-c04-passport--passport-r02",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c04-passport-item-2"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c04-passport",
+      "sourceTitle": "유효기간 만료에 따른 재발급",
+      "sourceRowId": "oq-oq-c04-passport--passport-r03",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c04-passport-item-3"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c04-passport",
+      "sourceTitle": "유효기간 만료에 따른 재발급",
+      "sourceRowId": "oq-oq-c04-passport--passport-r04",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c04-passport-item-4"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c04-passport",
+      "sourceTitle": "유효기간 만료에 따른 재발급",
+      "sourceRowId": "oq-oq-c04-passport--passport-r05",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c04-passport-item-5"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c04-passport",
+      "sourceTitle": "유효기간 만료에 따른 재발급",
+      "sourceRowId": "oq-oq-c04-passport--passport-r06",
+      "targetType": "memo",
+      "targets": [
+        "oq-oq-c04-passport-memo-passport-fee"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 memo 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c04-passport",
+      "sourceTitle": "유효기간 만료에 따른 재발급",
+      "sourceRowId": "oq-oq-c04-passport--passport-r07",
+      "targetType": "memo",
+      "targets": [
+        "oq-oq-c04-passport-memo-passport-proxy"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 memo 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c05-washer",
+      "sourceTitle": "Washing Machine Maintenance: tips to keep your machine running smoothly",
+      "sourceRowId": "oq-oq-c05-washer--washer-r01",
+      "targetType": "field",
+      "targets": [
+        "oq-oq-c05-washer-field-washer-trigger"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 field 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c05-washer",
+      "sourceTitle": "Washing Machine Maintenance: tips to keep your machine running smoothly",
+      "sourceRowId": "oq-oq-c05-washer--washer-r02",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c05-washer-item-1"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c05-washer",
+      "sourceTitle": "Washing Machine Maintenance: tips to keep your machine running smoothly",
+      "sourceRowId": "oq-oq-c05-washer--washer-r03",
+      "targetType": "memo",
+      "targets": [
+        "oq-oq-c05-washer-memo-washer-no-cleaner"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 memo 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c05-washer",
+      "sourceTitle": "Washing Machine Maintenance: tips to keep your machine running smoothly",
+      "sourceRowId": "oq-oq-c05-washer--washer-r04",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c05-washer-item-2"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c05-washer",
+      "sourceTitle": "Washing Machine Maintenance: tips to keep your machine running smoothly",
+      "sourceRowId": "oq-oq-c05-washer--washer-r05",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c05-washer-item-3"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c05-washer",
+      "sourceTitle": "Washing Machine Maintenance: tips to keep your machine running smoothly",
+      "sourceRowId": "oq-oq-c05-washer--washer-r06",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c05-washer-item-4"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c05-washer",
+      "sourceTitle": "Washing Machine Maintenance: tips to keep your machine running smoothly",
+      "sourceRowId": "oq-oq-c05-washer--washer-r07",
+      "targetType": "memo",
+      "targets": [
+        "oq-oq-c05-washer-memo-washer-model"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 reference 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c06-nasa",
+      "sourceTitle": "Build, Launch, Recover: Build a Crane Activity",
+      "sourceRowId": "oq-oq-c06-nasa--ds12-r01",
+      "targetType": "field",
+      "targets": [
+        "oq-oq-c06-nasa-field-nasa-materials"
+      ],
+      "relationType": "one_to_one",
+      "reason": "재료는 완료 행동이 아니라 준비 목록 필드"
+    },
+    {
+      "fixtureId": "oq-oq-c06-nasa",
+      "sourceTitle": "Build, Launch, Recover: Build a Crane Activity",
+      "sourceRowId": "oq-oq-c06-nasa--ds12-r02",
+      "targetType": "memo",
+      "targets": [
+        "oq-oq-c06-nasa-memo-nasa-safety"
+      ],
+      "relationType": "one_to_one",
+      "reason": "가위 안전은 사전 완료 체크가 아니라 활동 내내 유지할 기준"
+    },
+    {
+      "fixtureId": "oq-oq-c06-nasa",
+      "sourceTitle": "Build, Launch, Recover: Build a Crane Activity",
+      "sourceRowId": "oq-oq-c06-nasa--ds12-r03",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c06-nasa-item-1"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c06-nasa",
+      "sourceTitle": "Build, Launch, Recover: Build a Crane Activity",
+      "sourceRowId": "oq-oq-c06-nasa--ds12-r04",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c06-nasa-item-2"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c06-nasa",
+      "sourceTitle": "Build, Launch, Recover: Build a Crane Activity",
+      "sourceRowId": "oq-oq-c06-nasa--ds12-r05",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c06-nasa-item-3"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c06-nasa",
+      "sourceTitle": "Build, Launch, Recover: Build a Crane Activity",
+      "sourceRowId": "oq-oq-c06-nasa--ds12-r06",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c06-nasa-item-4"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c06-nasa",
+      "sourceTitle": "Build, Launch, Recover: Build a Crane Activity",
+      "sourceRowId": "oq-oq-c06-nasa--ds12-r07",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c06-nasa-item-5"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c06-nasa",
+      "sourceTitle": "Build, Launch, Recover: Build a Crane Activity",
+      "sourceRowId": "oq-oq-c06-nasa--ds12-r08",
+      "targetType": "memo",
+      "targets": [
+        "oq-oq-c06-nasa-memo-nasa-reflection"
+      ],
+      "relationType": "one_to_one",
+      "reason": "도전 질문의 답은 완료 체크가 아니라 기록"
+    },
+    {
+      "fixtureId": "oq-oq-c07-fit100",
+      "sourceTitle": "국민체력인증 이용안내",
+      "sourceRowId": "oq-oq-c07-fit100--ds07-r01",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c07-fit100-item-1"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c07-fit100",
+      "sourceTitle": "국민체력인증 이용안내",
+      "sourceRowId": "oq-oq-c07-fit100--ds07-r02",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c07-fit100-item-2"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c07-fit100",
+      "sourceTitle": "국민체력인증 이용안내",
+      "sourceRowId": "oq-oq-c07-fit100--ds07-r03",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c07-fit100-item-3"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c07-fit100",
+      "sourceTitle": "국민체력인증 이용안내",
+      "sourceRowId": "oq-oq-c07-fit100--ds07-r04",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c07-fit100-item-4"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c07-fit100",
+      "sourceTitle": "국민체력인증 이용안내",
+      "sourceRowId": "oq-oq-c07-fit100--ds07-r05",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c07-fit100-item-5"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c07-fit100",
+      "sourceTitle": "국민체력인증 이용안내",
+      "sourceRowId": "oq-oq-c07-fit100--ds07-r06",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c07-fit100-item-6"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c07-fit100",
+      "sourceTitle": "국민체력인증 이용안내",
+      "sourceRowId": "oq-oq-c07-fit100--ds07-r07",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c07-fit100-item-7"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c07-fit100",
+      "sourceTitle": "국민체력인증 이용안내",
+      "sourceRowId": "oq-oq-c07-fit100--ds07-r08",
+      "targetType": "memo",
+      "targets": [
+        "oq-oq-c07-fit100-memo-fit-prescription"
+      ],
+      "relationType": "one_to_one",
+      "reason": "FlowMe가 처방을 생성하지 않고 기관 처방을 연결하는 경계"
+    },
+    {
+      "fixtureId": "oq-oq-c07-fit100",
+      "sourceTitle": "국민체력인증 이용안내",
+      "sourceRowId": "oq-oq-c07-fit100--ds07-r09",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-c07-fit100-item-8"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-c08-ac-decision",
+      "sourceTitle": "시스템 에어컨 세척 서비스 안내",
+      "sourceRowId": "oq-oq-c08-ac-decision--ac-r01",
+      "targetType": "field",
+      "targets": [
+        "oq-oq-c08-ac-decision-field-ac-pro"
+      ],
+      "relationType": "one_to_one",
+      "reason": "비교표의 전문세척 값"
+    },
+    {
+      "fixtureId": "oq-oq-c08-ac-decision",
+      "sourceTitle": "시스템 에어컨 세척 서비스 안내",
+      "sourceRowId": "oq-oq-c08-ac-decision--ac-r02",
+      "targetType": "field",
+      "targets": [
+        "oq-oq-c08-ac-decision-field-ac-general"
+      ],
+      "relationType": "one_to_one",
+      "reason": "비교표의 일반세척 값"
+    },
+    {
+      "fixtureId": "oq-oq-c08-ac-decision",
+      "sourceTitle": "시스템 에어컨 세척 서비스 안내",
+      "sourceRowId": "oq-oq-c08-ac-decision--ac-r03",
+      "targetType": "field",
+      "targets": [
+        "oq-oq-c08-ac-decision-field-ac-tradeoff"
+      ],
+      "relationType": "one_to_one",
+      "reason": "비교 판단 기준"
+    },
+    {
+      "fixtureId": "oq-oq-c08-ac-decision",
+      "sourceTitle": "시스템 에어컨 세척 서비스 안내",
+      "sourceRowId": "oq-oq-c08-ac-decision--ac-r04",
+      "targetType": "memo",
+      "targets": [
+        "oq-oq-c08-ac-decision-memo-ac-quote"
+      ],
+      "relationType": "one_to_one",
+      "reason": "정확한 비용은 신청 때 확인하는 메모"
+    },
+    {
+      "fixtureId": "oq-oq-c08-ac-decision",
+      "sourceTitle": "시스템 에어컨 세척 서비스 안내",
+      "sourceRowId": "oq-oq-c08-ac-decision--ac-r05",
+      "targetType": "memo",
+      "targets": [
+        "oq-oq-c08-ac-decision-memo-ac-contact"
+      ],
+      "relationType": "one_to_one",
+      "reason": "선택 후 사용할 신청 정보"
+    },
+    {
+      "fixtureId": "oq-oq-b01-heat",
+      "sourceTitle": "2026년 농업인 온열질환 예방가이드 및 체크리스트",
+      "sourceRowId": "oq-oq-b01-heat--ds01-r01",
+      "targetType": "memo",
+      "targets": [
+        "oq-oq-b01-heat-memo-heat-thresholds"
+      ],
+      "relationType": "one_to_one",
+      "reason": "온도 기준은 체크 완료가 아니라 판단 참고"
+    },
+    {
+      "fixtureId": "oq-oq-b01-heat",
+      "sourceTitle": "2026년 농업인 온열질환 예방가이드 및 체크리스트",
+      "sourceRowId": "oq-oq-b01-heat--ds01-r02",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-b01-heat-item-1"
+      ],
+      "relationType": "one_to_one",
+      "reason": "작업 전 실제 확인 행동"
+    },
+    {
+      "fixtureId": "oq-oq-b01-heat",
+      "sourceTitle": "2026년 농업인 온열질환 예방가이드 및 체크리스트",
+      "sourceRowId": "oq-oq-b01-heat--ds01-r03",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-b01-heat-item-2"
+      ],
+      "relationType": "one_to_one",
+      "reason": "작업 전 실제 계획 행동"
+    },
+    {
+      "fixtureId": "oq-oq-b01-heat",
+      "sourceTitle": "2026년 농업인 온열질환 예방가이드 및 체크리스트",
+      "sourceRowId": "oq-oq-b01-heat--ds01-r04",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-b01-heat-item-3"
+      ],
+      "relationType": "one_to_one",
+      "reason": "작업 전 실제 준비 행동"
+    },
+    {
+      "fixtureId": "oq-oq-b01-heat",
+      "sourceTitle": "2026년 농업인 온열질환 예방가이드 및 체크리스트",
+      "sourceRowId": "oq-oq-b01-heat--ds01-r05",
+      "targetType": "memo",
+      "targets": [
+        "oq-oq-b01-heat-memo-heat-hydration"
+      ],
+      "relationType": "one_to_one",
+      "reason": "작업 중일 때 적용되는 조건부 행동"
+    },
+    {
+      "fixtureId": "oq-oq-b01-heat",
+      "sourceTitle": "2026년 농업인 온열질환 예방가이드 및 체크리스트",
+      "sourceRowId": "oq-oq-b01-heat--ds01-r06",
+      "targetType": "memo",
+      "targets": [
+        "oq-oq-b01-heat-memo-heat-stop"
+      ],
+      "relationType": "many_to_one",
+      "reason": "위험 단계에만 적용되는 중지 조건"
+    },
+    {
+      "fixtureId": "oq-oq-b01-heat",
+      "sourceTitle": "2026년 농업인 온열질환 예방가이드 및 체크리스트",
+      "sourceRowId": "oq-oq-b01-heat--ds01-r07",
+      "targetType": "memo",
+      "targets": [
+        "oq-oq-b01-heat-memo-heat-stop"
+      ],
+      "relationType": "many_to_one",
+      "reason": "이상 증상 발생 시 대응 조건"
+    },
+    {
+      "fixtureId": "oq-oq-b01-heat",
+      "sourceTitle": "2026년 농업인 온열질환 예방가이드 및 체크리스트",
+      "sourceRowId": "oq-oq-b01-heat--ds01-r08",
+      "targetType": "memo",
+      "targets": [
+        "oq-oq-b01-heat-memo-heat-119"
+      ],
+      "relationType": "one_to_one",
+      "reason": "의식 없음에만 적용되는 응급 대응"
+    },
+    {
+      "fixtureId": "oq-oq-b01-heat",
+      "sourceTitle": "2026년 농업인 온열질환 예방가이드 및 체크리스트",
+      "sourceRowId": "oq-oq-b01-heat--ds01-r09",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-b01-heat-item-4"
+      ],
+      "relationType": "one_to_one",
+      "reason": "작업 후 실제 회복 행동"
+    },
+    {
+      "fixtureId": "oq-oq-b01-heat",
+      "sourceTitle": "2026년 농업인 온열질환 예방가이드 및 체크리스트",
+      "sourceRowId": "oq-oq-b01-heat--ds01-r10",
+      "targetType": "memo",
+      "targets": [
+        "oq-oq-b01-heat-memo-heat-owner"
+      ],
+      "relationType": "one_to_one",
+      "reason": "사업주 책임 참고 구간"
+    },
+    {
+      "fixtureId": "oq-oq-b03-remodel",
+      "sourceTitle": "리모델링 계약서 체크리스트 10",
+      "sourceRowId": "oq-oq-b03-remodel--ds02-r01",
+      "targetType": "field",
+      "targets": [
+        "oq-oq-b03-remodel-field-remodel-ds02-r01"
+      ],
+      "relationType": "one_to_one",
+      "reason": "계약 비교표의 독립 판정 열"
+    },
+    {
+      "fixtureId": "oq-oq-b03-remodel",
+      "sourceTitle": "리모델링 계약서 체크리스트 10",
+      "sourceRowId": "oq-oq-b03-remodel--ds02-r02",
+      "targetType": "field",
+      "targets": [
+        "oq-oq-b03-remodel-field-remodel-ds02-r02"
+      ],
+      "relationType": "one_to_one",
+      "reason": "계약 비교표의 독립 판정 열"
+    },
+    {
+      "fixtureId": "oq-oq-b03-remodel",
+      "sourceTitle": "리모델링 계약서 체크리스트 10",
+      "sourceRowId": "oq-oq-b03-remodel--ds02-r03",
+      "targetType": "field",
+      "targets": [
+        "oq-oq-b03-remodel-field-remodel-ds02-r03"
+      ],
+      "relationType": "one_to_one",
+      "reason": "계약 비교표의 독립 판정 열"
+    },
+    {
+      "fixtureId": "oq-oq-b03-remodel",
+      "sourceTitle": "리모델링 계약서 체크리스트 10",
+      "sourceRowId": "oq-oq-b03-remodel--ds02-r04",
+      "targetType": "field",
+      "targets": [
+        "oq-oq-b03-remodel-field-remodel-ds02-r04"
+      ],
+      "relationType": "one_to_one",
+      "reason": "계약 비교표의 독립 판정 열"
+    },
+    {
+      "fixtureId": "oq-oq-b03-remodel",
+      "sourceTitle": "리모델링 계약서 체크리스트 10",
+      "sourceRowId": "oq-oq-b03-remodel--ds02-r05",
+      "targetType": "field",
+      "targets": [
+        "oq-oq-b03-remodel-field-remodel-ds02-r05"
+      ],
+      "relationType": "one_to_one",
+      "reason": "계약 비교표의 독립 판정 열"
+    },
+    {
+      "fixtureId": "oq-oq-b03-remodel",
+      "sourceTitle": "리모델링 계약서 체크리스트 10",
+      "sourceRowId": "oq-oq-b03-remodel--ds02-r06",
+      "targetType": "field",
+      "targets": [
+        "oq-oq-b03-remodel-field-remodel-ds02-r06"
+      ],
+      "relationType": "one_to_one",
+      "reason": "계약 비교표의 독립 판정 열"
+    },
+    {
+      "fixtureId": "oq-oq-b03-remodel",
+      "sourceTitle": "리모델링 계약서 체크리스트 10",
+      "sourceRowId": "oq-oq-b03-remodel--ds02-r07",
+      "targetType": "field",
+      "targets": [
+        "oq-oq-b03-remodel-field-remodel-ds02-r07"
+      ],
+      "relationType": "one_to_one",
+      "reason": "계약 비교표의 독립 판정 열"
+    },
+    {
+      "fixtureId": "oq-oq-b03-remodel",
+      "sourceTitle": "리모델링 계약서 체크리스트 10",
+      "sourceRowId": "oq-oq-b03-remodel--ds02-r08",
+      "targetType": "field",
+      "targets": [
+        "oq-oq-b03-remodel-field-remodel-ds02-r08"
+      ],
+      "relationType": "one_to_one",
+      "reason": "계약 비교표의 독립 판정 열"
+    },
+    {
+      "fixtureId": "oq-oq-b03-remodel",
+      "sourceTitle": "리모델링 계약서 체크리스트 10",
+      "sourceRowId": "oq-oq-b03-remodel--ds02-r09",
+      "targetType": "field",
+      "targets": [
+        "oq-oq-b03-remodel-field-remodel-ds02-r09"
+      ],
+      "relationType": "one_to_one",
+      "reason": "계약 비교표의 독립 판정 열"
+    },
+    {
+      "fixtureId": "oq-oq-b03-remodel",
+      "sourceTitle": "리모델링 계약서 체크리스트 10",
+      "sourceRowId": "oq-oq-b03-remodel--ds02-r10",
+      "targetType": "field",
+      "targets": [
+        "oq-oq-b03-remodel-field-remodel-ds02-r10"
+      ],
+      "relationType": "one_to_one",
+      "reason": "계약 비교표의 독립 판정 열"
+    },
+    {
+      "fixtureId": "oq-oq-p01-ossu",
+      "sourceTitle": "OSSU Computer Science Curriculum",
+      "sourceRowId": "oq-oq-p01-ossu--ds10-r01",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-p01-ossu-item-1"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-p01-ossu",
+      "sourceTitle": "OSSU Computer Science Curriculum",
+      "sourceRowId": "oq-oq-p01-ossu--ds10-r02",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-p01-ossu-item-2"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-p01-ossu",
+      "sourceTitle": "OSSU Computer Science Curriculum",
+      "sourceRowId": "oq-oq-p01-ossu--ds10-r03",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-p01-ossu-item-3"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-p01-ossu",
+      "sourceTitle": "OSSU Computer Science Curriculum",
+      "sourceRowId": "oq-oq-p01-ossu--ds10-r04",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-p01-ossu-item-4"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-p01-ossu",
+      "sourceTitle": "OSSU Computer Science Curriculum",
+      "sourceRowId": "oq-oq-p01-ossu--ds10-r05",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-p01-ossu-item-5"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-p01-ossu",
+      "sourceTitle": "OSSU Computer Science Curriculum",
+      "sourceRowId": "oq-oq-p01-ossu--ds10-r06",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-p01-ossu-item-6"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-p02-packing",
+      "sourceTitle": "Packing list",
+      "sourceRowId": "oq-oq-p02-packing--ds11-r01",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-p02-packing-item-1"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-p02-packing",
+      "sourceTitle": "Packing list",
+      "sourceRowId": "oq-oq-p02-packing--ds11-r02",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-p02-packing-item-2"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-p02-packing",
+      "sourceTitle": "Packing list",
+      "sourceRowId": "oq-oq-p02-packing--ds11-r03",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-p02-packing-item-3"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-p02-packing",
+      "sourceTitle": "Packing list",
+      "sourceRowId": "oq-oq-p02-packing--ds11-r04",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-p02-packing-item-4"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-p02-packing",
+      "sourceTitle": "Packing list",
+      "sourceRowId": "oq-oq-p02-packing--ds11-r05",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-p02-packing-item-5"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-p02-packing",
+      "sourceTitle": "Packing list",
+      "sourceRowId": "oq-oq-p02-packing--ds11-r06",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-p02-packing-item-6"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-p02-packing",
+      "sourceTitle": "Packing list",
+      "sourceRowId": "oq-oq-p02-packing--ds11-r07",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-p02-packing-item-7"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-p03-vehicle",
+      "sourceTitle": "정기검사 대상·기준·유효기간 안내",
+      "sourceRowId": "oq-oq-p03-vehicle--vehicle-r01",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-p03-vehicle-item-1"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-p04-portfolio",
+      "sourceTitle": "포트폴리오 4주 만에 준비하기",
+      "sourceRowId": "oq-oq-p04-portfolio--portfolio-r01",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-p04-portfolio-item-1"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-p04-portfolio",
+      "sourceTitle": "포트폴리오 4주 만에 준비하기",
+      "sourceRowId": "oq-oq-p04-portfolio--portfolio-r02",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-p04-portfolio-item-2"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-p04-portfolio",
+      "sourceTitle": "포트폴리오 4주 만에 준비하기",
+      "sourceRowId": "oq-oq-p04-portfolio--portfolio-r03",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-p04-portfolio-item-3"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-p04-portfolio",
+      "sourceTitle": "포트폴리오 4주 만에 준비하기",
+      "sourceRowId": "oq-oq-p04-portfolio--portfolio-r04",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-p04-portfolio-item-4"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-p04-portfolio",
+      "sourceTitle": "포트폴리오 4주 만에 준비하기",
+      "sourceRowId": "oq-oq-p04-portfolio--portfolio-r05",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-p04-portfolio-item-5"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-p04-portfolio",
+      "sourceTitle": "포트폴리오 4주 만에 준비하기",
+      "sourceRowId": "oq-oq-p04-portfolio--portfolio-r06",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-p04-portfolio-item-6"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "oq-oq-p04-portfolio",
+      "sourceTitle": "포트폴리오 4주 만에 준비하기",
+      "sourceRowId": "oq-oq-p04-portfolio--portfolio-r07",
+      "targetType": "item",
+      "targets": [
+        "oq-oq-p04-portfolio-item-7"
+      ],
+      "relationType": "one_to_one",
+      "reason": "원문 행의 자연스러운 item 역할로 보존"
+    },
+    {
+      "fixtureId": "value-vq-01",
+      "sourceTitle": "어린이집 보육료 지원 신청",
+      "sourceRowId": "value-vq-01--vq01-r01",
+      "targetType": "item",
+      "targets": [
+        "value-vq-01-item-1"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-01",
+      "sourceTitle": "어린이집 보육료 지원 신청",
+      "sourceRowId": "value-vq-01--vq01-r02",
+      "targetType": "item",
+      "targets": [
+        "value-vq-01-item-2"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-01",
+      "sourceTitle": "어린이집 보육료 지원 신청",
+      "sourceRowId": "value-vq-01--vq01-r03",
+      "targetType": "item",
+      "targets": [
+        "value-vq-01-item-3"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-01",
+      "sourceTitle": "어린이집 보육료 지원 신청",
+      "sourceRowId": "value-vq-01--vq01-r04",
+      "targetType": "item",
+      "targets": [
+        "value-vq-01-item-4"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-03",
+      "sourceTitle": "평일 5일 저녁 식단",
+      "sourceRowId": "value-vq-03--vq03-r01",
+      "targetType": "item",
+      "targets": [
+        "value-vq-03-item-1"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-03",
+      "sourceTitle": "평일 5일 저녁 식단",
+      "sourceRowId": "value-vq-03--vq03-r02",
+      "targetType": "item",
+      "targets": [
+        "value-vq-03-item-2"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-03",
+      "sourceTitle": "평일 5일 저녁 식단",
+      "sourceRowId": "value-vq-03--vq03-r03",
+      "targetType": "item",
+      "targets": [
+        "value-vq-03-item-3"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-03",
+      "sourceTitle": "평일 5일 저녁 식단",
+      "sourceRowId": "value-vq-03--vq03-r04",
+      "targetType": "item",
+      "targets": [
+        "value-vq-03-item-4"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-03",
+      "sourceTitle": "평일 5일 저녁 식단",
+      "sourceRowId": "value-vq-03--vq03-r05",
+      "targetType": "item",
+      "targets": [
+        "value-vq-03-item-5"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-04",
+      "sourceTitle": "옷장 정리 1일",
+      "sourceRowId": "value-vq-04--vq04-r01",
+      "targetType": "item",
+      "targets": [
+        "value-vq-04-item-1"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-04",
+      "sourceTitle": "옷장 정리 1일",
+      "sourceRowId": "value-vq-04--vq04-r02",
+      "targetType": "item",
+      "targets": [
+        "value-vq-04-item-2"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-04",
+      "sourceTitle": "옷장 정리 1일",
+      "sourceRowId": "value-vq-04--vq04-r03",
+      "targetType": "item",
+      "targets": [
+        "value-vq-04-item-3"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-04",
+      "sourceTitle": "옷장 정리 1일",
+      "sourceRowId": "value-vq-04--vq04-r04",
+      "targetType": "item",
+      "targets": [
+        "value-vq-04-item-4"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-04",
+      "sourceTitle": "옷장 정리 1일",
+      "sourceRowId": "value-vq-04--vq04-r05",
+      "targetType": "item",
+      "targets": [
+        "value-vq-04-item-5"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-04",
+      "sourceTitle": "옷장 정리 1일",
+      "sourceRowId": "value-vq-04--vq04-r06",
+      "targetType": "item",
+      "targets": [
+        "value-vq-04-item-6"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-05",
+      "sourceTitle": "코드 없이 따라하는 빅데이터 분석",
+      "sourceRowId": "value-vq-05--vq05-r01",
+      "targetType": "item",
+      "targets": [
+        "value-vq-05-item-1"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-05",
+      "sourceTitle": "코드 없이 따라하는 빅데이터 분석",
+      "sourceRowId": "value-vq-05--vq05-r02",
+      "targetType": "item",
+      "targets": [
+        "value-vq-05-item-2"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-05",
+      "sourceTitle": "코드 없이 따라하는 빅데이터 분석",
+      "sourceRowId": "value-vq-05--vq05-r03",
+      "targetType": "item",
+      "targets": [
+        "value-vq-05-item-3"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-05",
+      "sourceTitle": "코드 없이 따라하는 빅데이터 분석",
+      "sourceRowId": "value-vq-05--vq05-r04",
+      "targetType": "item",
+      "targets": [
+        "value-vq-05-item-4"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-05",
+      "sourceTitle": "코드 없이 따라하는 빅데이터 분석",
+      "sourceRowId": "value-vq-05--vq05-r05",
+      "targetType": "item",
+      "targets": [
+        "value-vq-05-item-5"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-05",
+      "sourceTitle": "코드 없이 따라하는 빅데이터 분석",
+      "sourceRowId": "value-vq-05--vq05-r06",
+      "targetType": "item",
+      "targets": [
+        "value-vq-05-item-6"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-05",
+      "sourceTitle": "코드 없이 따라하는 빅데이터 분석",
+      "sourceRowId": "value-vq-05--vq05-r07",
+      "targetType": "item",
+      "targets": [
+        "value-vq-05-item-7"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-05",
+      "sourceTitle": "코드 없이 따라하는 빅데이터 분석",
+      "sourceRowId": "value-vq-05--vq05-r08",
+      "targetType": "item",
+      "targets": [
+        "value-vq-05-item-8"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-05",
+      "sourceTitle": "코드 없이 따라하는 빅데이터 분석",
+      "sourceRowId": "value-vq-05--vq05-r09",
+      "targetType": "item",
+      "targets": [
+        "value-vq-05-item-9"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-05",
+      "sourceTitle": "코드 없이 따라하는 빅데이터 분석",
+      "sourceRowId": "value-vq-05--vq05-r10",
+      "targetType": "item",
+      "targets": [
+        "value-vq-05-item-10"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-06",
+      "sourceTitle": "식물성 음료 품질비교",
+      "sourceRowId": "value-vq-06--vq06-r01",
+      "targetType": "item",
+      "targets": [
+        "value-vq-06-item-1"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-06",
+      "sourceTitle": "식물성 음료 품질비교",
+      "sourceRowId": "value-vq-06--vq06-r02",
+      "targetType": "item",
+      "targets": [
+        "value-vq-06-item-2"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-06",
+      "sourceTitle": "식물성 음료 품질비교",
+      "sourceRowId": "value-vq-06--vq06-r03",
+      "targetType": "item",
+      "targets": [
+        "value-vq-06-item-3"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-06",
+      "sourceTitle": "식물성 음료 품질비교",
+      "sourceRowId": "value-vq-06--vq06-r04",
+      "targetType": "item",
+      "targets": [
+        "value-vq-06-item-4"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-06",
+      "sourceTitle": "식물성 음료 품질비교",
+      "sourceRowId": "value-vq-06--vq06-r05",
+      "targetType": "item",
+      "targets": [
+        "value-vq-06-item-5"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-06",
+      "sourceTitle": "식물성 음료 품질비교",
+      "sourceRowId": "value-vq-06--vq06-r06",
+      "targetType": "item",
+      "targets": [
+        "value-vq-06-item-6"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-10",
+      "sourceTitle": "리모델링 공정별 하자 점검",
+      "sourceRowId": "value-vq-10--vq10-r01",
+      "targetType": "item",
+      "targets": [
+        "value-vq-10-item-1"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-10",
+      "sourceTitle": "리모델링 공정별 하자 점검",
+      "sourceRowId": "value-vq-10--vq10-r02",
+      "targetType": "item",
+      "targets": [
+        "value-vq-10-item-2"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-10",
+      "sourceTitle": "리모델링 공정별 하자 점검",
+      "sourceRowId": "value-vq-10--vq10-r03",
+      "targetType": "item",
+      "targets": [
+        "value-vq-10-item-3"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-10",
+      "sourceTitle": "리모델링 공정별 하자 점검",
+      "sourceRowId": "value-vq-10--vq10-r04",
+      "targetType": "item",
+      "targets": [
+        "value-vq-10-item-4"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-10",
+      "sourceTitle": "리모델링 공정별 하자 점검",
+      "sourceRowId": "value-vq-10--vq10-r05",
+      "targetType": "item",
+      "targets": [
+        "value-vq-10-item-5"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-10",
+      "sourceTitle": "리모델링 공정별 하자 점검",
+      "sourceRowId": "value-vq-10--vq10-r06",
+      "targetType": "item",
+      "targets": [
+        "value-vq-10-item-6"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-10",
+      "sourceTitle": "리모델링 공정별 하자 점검",
+      "sourceRowId": "value-vq-10--vq10-r07",
+      "targetType": "item",
+      "targets": [
+        "value-vq-10-item-7"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-10",
+      "sourceTitle": "리모델링 공정별 하자 점검",
+      "sourceRowId": "value-vq-10--vq10-r08",
+      "targetType": "item",
+      "targets": [
+        "value-vq-10-item-8"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-10",
+      "sourceTitle": "리모델링 공정별 하자 점검",
+      "sourceRowId": "value-vq-10--vq10-r09",
+      "targetType": "item",
+      "targets": [
+        "value-vq-10-item-9"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-10",
+      "sourceTitle": "리모델링 공정별 하자 점검",
+      "sourceRowId": "value-vq-10--vq10-r10",
+      "targetType": "item",
+      "targets": [
+        "value-vq-10-item-10"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-10",
+      "sourceTitle": "리모델링 공정별 하자 점검",
+      "sourceRowId": "value-vq-10--vq10-r11",
+      "targetType": "item",
+      "targets": [
+        "value-vq-10-item-11"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-10",
+      "sourceTitle": "리모델링 공정별 하자 점검",
+      "sourceRowId": "value-vq-10--vq10-r12",
+      "targetType": "item",
+      "targets": [
+        "value-vq-10-item-12"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-10",
+      "sourceTitle": "리모델링 공정별 하자 점검",
+      "sourceRowId": "value-vq-10--vq10-r13",
+      "targetType": "item",
+      "targets": [
+        "value-vq-10-item-13"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-11",
+      "sourceTitle": "2026년 2학기 국가근로장학금 신청",
+      "sourceRowId": "value-vq-11--vq11-r01",
+      "targetType": "item",
+      "targets": [
+        "value-vq-11-item-1"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-11",
+      "sourceTitle": "2026년 2학기 국가근로장학금 신청",
+      "sourceRowId": "value-vq-11--vq11-r02",
+      "targetType": "item",
+      "targets": [
+        "value-vq-11-item-2"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-11",
+      "sourceTitle": "2026년 2학기 국가근로장학금 신청",
+      "sourceRowId": "value-vq-11--vq11-r03",
+      "targetType": "item",
+      "targets": [
+        "value-vq-11-item-3"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-11",
+      "sourceTitle": "2026년 2학기 국가근로장학금 신청",
+      "sourceRowId": "value-vq-11--vq11-r04",
+      "targetType": "item",
+      "targets": [
+        "value-vq-11-item-4"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-11",
+      "sourceTitle": "2026년 2학기 국가근로장학금 신청",
+      "sourceRowId": "value-vq-11--vq11-r05",
+      "targetType": "item",
+      "targets": [
+        "value-vq-11-item-5"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-12",
+      "sourceTitle": "반려동물 가족 재난 대응 준비",
+      "sourceRowId": "value-vq-12--vq12-r01",
+      "targetType": "item",
+      "targets": [
+        "value-vq-12-item-1"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-12",
+      "sourceTitle": "반려동물 가족 재난 대응 준비",
+      "sourceRowId": "value-vq-12--vq12-r02",
+      "targetType": "item",
+      "targets": [
+        "value-vq-12-item-2"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-12",
+      "sourceTitle": "반려동물 가족 재난 대응 준비",
+      "sourceRowId": "value-vq-12--vq12-r03",
+      "targetType": "item",
+      "targets": [
+        "value-vq-12-item-3"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-12",
+      "sourceTitle": "반려동물 가족 재난 대응 준비",
+      "sourceRowId": "value-vq-12--vq12-r04",
+      "targetType": "item",
+      "targets": [
+        "value-vq-12-item-4"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-12",
+      "sourceTitle": "반려동물 가족 재난 대응 준비",
+      "sourceRowId": "value-vq-12--vq12-r05",
+      "targetType": "item",
+      "targets": [
+        "value-vq-12-item-5"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "value-vq-12",
+      "sourceTitle": "반려동물 가족 재난 대응 준비",
+      "sourceRowId": "value-vq-12--vq12-r06",
+      "targetType": "item",
+      "targets": [
+        "value-vq-12-item-6"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Gold contract의 SourceRef를 보존"
+    },
+    {
+      "fixtureId": "deep-ds06",
+      "sourceTitle": "25~36개월 행동·안전",
+      "sourceRowId": "deep-ds06--ds06-r01",
+      "targetType": "item",
+      "targets": [
+        "deep-ds06-item-1"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Deep-set canonical package의 SourceRow ref를 보존"
+    },
+    {
+      "fixtureId": "deep-ds06",
+      "sourceTitle": "25~36개월 행동·안전",
+      "sourceRowId": "deep-ds06--ds06-r02",
+      "targetType": "item",
+      "targets": [
+        "deep-ds06-item-2"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Deep-set canonical package의 SourceRow ref를 보존"
+    },
+    {
+      "fixtureId": "deep-ds06",
+      "sourceTitle": "25~36개월 행동·안전",
+      "sourceRowId": "deep-ds06--ds06-r03",
+      "targetType": "item",
+      "targets": [
+        "deep-ds06-item-3"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Deep-set canonical package의 SourceRow ref를 보존"
+    },
+    {
+      "fixtureId": "deep-ds06",
+      "sourceTitle": "25~36개월 행동·안전",
+      "sourceRowId": "deep-ds06--ds06-r04",
+      "targetType": "item",
+      "targets": [
+        "deep-ds06-item-4"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Deep-set canonical package의 SourceRow ref를 보존"
+    },
+    {
+      "fixtureId": "deep-ds08",
+      "sourceTitle": "공주 부모님과 당일치기 힐링 여행코스",
+      "sourceRowId": "deep-ds08--ds08-r01",
+      "targetType": "item",
+      "targets": [
+        "deep-ds08-item-1"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Deep-set canonical package의 SourceRow ref를 보존"
+    },
+    {
+      "fixtureId": "deep-ds08",
+      "sourceTitle": "공주 부모님과 당일치기 힐링 여행코스",
+      "sourceRowId": "deep-ds08--ds08-r02",
+      "targetType": "item",
+      "targets": [
+        "deep-ds08-item-2"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Deep-set canonical package의 SourceRow ref를 보존"
+    },
+    {
+      "fixtureId": "deep-ds08",
+      "sourceTitle": "공주 부모님과 당일치기 힐링 여행코스",
+      "sourceRowId": "deep-ds08--ds08-r03",
+      "targetType": "item",
+      "targets": [
+        "deep-ds08-item-3"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Deep-set canonical package의 SourceRow ref를 보존"
+    },
+    {
+      "fixtureId": "deep-ds08",
+      "sourceTitle": "공주 부모님과 당일치기 힐링 여행코스",
+      "sourceRowId": "deep-ds08--ds08-r04",
+      "targetType": "item",
+      "targets": [
+        "deep-ds08-item-4"
+      ],
+      "relationType": "one_to_one",
+      "reason": "Deep-set canonical package의 SourceRow ref를 보존"
+    },
+    {
+      "fixtureId": "live-c01",
+      "sourceTitle": "영유아 건강검진 일정",
+      "sourceRowId": "live-c01--c01-sr01",
+      "targetType": "item",
+      "targets": [
+        "live-c01-item-1"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-c01",
+      "sourceTitle": "영유아 건강검진 일정",
+      "sourceRowId": "live-c01--c01-sr02",
+      "targetType": "item",
+      "targets": [
+        "live-c01-item-2"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-c01",
+      "sourceTitle": "영유아 건강검진 일정",
+      "sourceRowId": "live-c01--c01-sr03",
+      "targetType": "item",
+      "targets": [
+        "live-c01-item-3"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-c01",
+      "sourceTitle": "영유아 건강검진 일정",
+      "sourceRowId": "live-c01--c01-sr04",
+      "targetType": "item",
+      "targets": [
+        "live-c01-item-4"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-c01",
+      "sourceTitle": "영유아 건강검진 일정",
+      "sourceRowId": "live-c01--c01-sr05",
+      "targetType": "item",
+      "targets": [
+        "live-c01-item-5"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-c01",
+      "sourceTitle": "영유아 건강검진 일정",
+      "sourceRowId": "live-c01--c01-sr06",
+      "targetType": "item",
+      "targets": [
+        "live-c01-item-6"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-c01",
+      "sourceTitle": "영유아 건강검진 일정",
+      "sourceRowId": "live-c01--c01-sr07",
+      "targetType": "item",
+      "targets": [
+        "live-c01-item-7"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-c01",
+      "sourceTitle": "영유아 건강검진 일정",
+      "sourceRowId": "live-c01--c01-sr08",
+      "targetType": "item",
+      "targets": [
+        "live-c01-item-8"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-c01",
+      "sourceTitle": "영유아 건강검진 일정",
+      "sourceRowId": "live-c01--c01-sr09",
+      "targetType": "item",
+      "targets": [
+        "live-c01-item-9"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-c01",
+      "sourceTitle": "영유아 건강검진 일정",
+      "sourceRowId": "live-c01--c01-sr10",
+      "targetType": "item",
+      "targets": [
+        "live-c01-item-10"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-c01",
+      "sourceTitle": "영유아 건강검진 일정",
+      "sourceRowId": "live-c01--c01-sr11",
+      "targetType": "item",
+      "targets": [
+        "live-c01-item-11"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-c01",
+      "sourceTitle": "영유아 건강검진 일정",
+      "sourceRowId": "live-c01--c01-sr12",
+      "targetType": "item",
+      "targets": [
+        "live-c01-item-12"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-c10",
+      "sourceTitle": "가족여행 짐 준비표",
+      "sourceRowId": "live-c10--c10-sr01",
+      "targetType": "item",
+      "targets": [
+        "live-c10-item-1"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-c10",
+      "sourceTitle": "가족여행 짐 준비표",
+      "sourceRowId": "live-c10--c10-sr02",
+      "targetType": "item",
+      "targets": [
+        "live-c10-item-2"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-c10",
+      "sourceTitle": "가족여행 짐 준비표",
+      "sourceRowId": "live-c10--c10-sr03",
+      "targetType": "item",
+      "targets": [
+        "live-c10-item-3"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-c10",
+      "sourceTitle": "가족여행 짐 준비표",
+      "sourceRowId": "live-c10--c10-sr04",
+      "targetType": "item",
+      "targets": [
+        "live-c10-item-4"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-c10",
+      "sourceTitle": "가족여행 짐 준비표",
+      "sourceRowId": "live-c10--c10-sr05",
+      "targetType": "item",
+      "targets": [
+        "live-c10-item-5"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-c10",
+      "sourceTitle": "가족여행 짐 준비표",
+      "sourceRowId": "live-c10--c10-sr06",
+      "targetType": "item",
+      "targets": [
+        "live-c10-item-6"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-c10",
+      "sourceTitle": "가족여행 짐 준비표",
+      "sourceRowId": "live-c10--c10-sr07",
+      "targetType": "item",
+      "targets": [
+        "live-c10-item-7"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-c13",
+      "sourceTitle": "노밀가루 바나나 땅콩버터 빵",
+      "sourceRowId": "live-c13--c13-sr01",
+      "targetType": "field",
+      "targets": [
+        "live-c13-field-1"
+      ],
+      "relationType": "one_to_one",
+      "reason": "행이 독립 행동이 아니라 정렬·필터·표시 값이다."
+    },
+    {
+      "fixtureId": "live-c13",
+      "sourceTitle": "노밀가루 바나나 땅콩버터 빵",
+      "sourceRowId": "live-c13--c13-sr02",
+      "targetType": "item",
+      "targets": [
+        "live-c13-item-1"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-c13",
+      "sourceTitle": "노밀가루 바나나 땅콩버터 빵",
+      "sourceRowId": "live-c13--c13-sr03",
+      "targetType": "item",
+      "targets": [
+        "live-c13-item-2"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-c13",
+      "sourceTitle": "노밀가루 바나나 땅콩버터 빵",
+      "sourceRowId": "live-c13--c13-sr04",
+      "targetType": "item",
+      "targets": [
+        "live-c13-item-3"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-c13",
+      "sourceTitle": "노밀가루 바나나 땅콩버터 빵",
+      "sourceRowId": "live-c13--c13-sr05",
+      "targetType": "item",
+      "targets": [
+        "live-c13-item-4"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-c16",
+      "sourceTitle": "블로그를 활용해 유튜브 쉽게 시작하는 법",
+      "sourceRowId": "live-c16--c16-sr01",
+      "targetType": "item",
+      "targets": [
+        "live-c16-item-1"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-c16",
+      "sourceTitle": "블로그를 활용해 유튜브 쉽게 시작하는 법",
+      "sourceRowId": "live-c16--c16-sr02",
+      "targetType": "item",
+      "targets": [
+        "live-c16-item-2"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-c16",
+      "sourceTitle": "블로그를 활용해 유튜브 쉽게 시작하는 법",
+      "sourceRowId": "live-c16--c16-sr03",
+      "targetType": "item",
+      "targets": [
+        "live-c16-item-3"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-r02",
+      "sourceTitle": "냉장고 파먹기 7일 식단 플랜",
+      "sourceRowId": "live-r02--r02-sr01",
+      "targetType": "item",
+      "targets": [
+        "live-r02-item-1"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-r02",
+      "sourceTitle": "냉장고 파먹기 7일 식단 플랜",
+      "sourceRowId": "live-r02--r02-sr02",
+      "targetType": "item",
+      "targets": [
+        "live-r02-item-2"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-r02",
+      "sourceTitle": "냉장고 파먹기 7일 식단 플랜",
+      "sourceRowId": "live-r02--r02-sr03",
+      "targetType": "item",
+      "targets": [
+        "live-r02-item-3"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-r02",
+      "sourceTitle": "냉장고 파먹기 7일 식단 플랜",
+      "sourceRowId": "live-r02--r02-sr04",
+      "targetType": "item",
+      "targets": [
+        "live-r02-item-4"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-r02",
+      "sourceTitle": "냉장고 파먹기 7일 식단 플랜",
+      "sourceRowId": "live-r02--r02-sr05",
+      "targetType": "item",
+      "targets": [
+        "live-r02-item-5"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-r02",
+      "sourceTitle": "냉장고 파먹기 7일 식단 플랜",
+      "sourceRowId": "live-r02--r02-sr06",
+      "targetType": "item",
+      "targets": [
+        "live-r02-item-6"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-r02",
+      "sourceTitle": "냉장고 파먹기 7일 식단 플랜",
+      "sourceRowId": "live-r02--r02-sr07",
+      "targetType": "item",
+      "targets": [
+        "live-r02-item-7"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-live-ifixit-washer-01",
+      "sourceTitle": "How To Maintain Your Washing Machine",
+      "sourceRowId": "live-live-ifixit-washer-01--live-ifixit-washer-01-sr01",
+      "targetType": "item",
+      "targets": [
+        "live-live-ifixit-washer-01-item-1"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-live-ifixit-washer-01",
+      "sourceTitle": "How To Maintain Your Washing Machine",
+      "sourceRowId": "live-live-ifixit-washer-01--live-ifixit-washer-01-sr02",
+      "targetType": "item",
+      "targets": [
+        "live-live-ifixit-washer-01-item-2"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-live-ifixit-washer-01",
+      "sourceTitle": "How To Maintain Your Washing Machine",
+      "sourceRowId": "live-live-ifixit-washer-01--live-ifixit-washer-01-sr03",
+      "targetType": "item",
+      "targets": [
+        "live-live-ifixit-washer-01-item-3"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-live-ifixit-washer-01",
+      "sourceTitle": "How To Maintain Your Washing Machine",
+      "sourceRowId": "live-live-ifixit-washer-01--live-ifixit-washer-01-sr04",
+      "targetType": "item",
+      "targets": [
+        "live-live-ifixit-washer-01-item-4"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-live-ifixit-washer-01",
+      "sourceTitle": "How To Maintain Your Washing Machine",
+      "sourceRowId": "live-live-ifixit-washer-01--live-ifixit-washer-01-sr05",
+      "targetType": "item",
+      "targets": [
+        "live-live-ifixit-washer-01-item-5"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-live-ifixit-washer-01",
+      "sourceTitle": "How To Maintain Your Washing Machine",
+      "sourceRowId": "live-live-ifixit-washer-01--live-ifixit-washer-01-sr06",
+      "targetType": "item",
+      "targets": [
+        "live-live-ifixit-washer-01-item-6"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-live-ifixit-washer-01",
+      "sourceTitle": "How To Maintain Your Washing Machine",
+      "sourceRowId": "live-live-ifixit-washer-01--live-ifixit-washer-01-sr07",
+      "targetType": "item",
+      "targets": [
+        "live-live-ifixit-washer-01-item-7"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-kr-stibee-01",
+      "sourceTitle": "인플루언서 콘텐츠 2차 활용 체크포인트",
+      "sourceRowId": "live-kr-stibee-01--kr-stibee-01-sr01",
+      "targetType": "item",
+      "targets": [
+        "live-kr-stibee-01-item-1"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-kr-stibee-01",
+      "sourceTitle": "인플루언서 콘텐츠 2차 활용 체크포인트",
+      "sourceRowId": "live-kr-stibee-01--kr-stibee-01-sr02",
+      "targetType": "item",
+      "targets": [
+        "live-kr-stibee-01-item-2"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-kr-stibee-01",
+      "sourceTitle": "인플루언서 콘텐츠 2차 활용 체크포인트",
+      "sourceRowId": "live-kr-stibee-01--kr-stibee-01-sr03",
+      "targetType": "item",
+      "targets": [
+        "live-kr-stibee-01-item-3"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-kr-stibee-01",
+      "sourceTitle": "인플루언서 콘텐츠 2차 활용 체크포인트",
+      "sourceRowId": "live-kr-stibee-01--kr-stibee-01-sr04",
+      "targetType": "item",
+      "targets": [
+        "live-kr-stibee-01-item-4"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-live-mdn-core-01",
+      "sourceTitle": "MDN Core learning modules",
+      "sourceRowId": "live-live-mdn-core-01--live-mdn-core-01-sr01",
+      "targetType": "item",
+      "targets": [
+        "live-live-mdn-core-01-item-1"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-live-mdn-core-01",
+      "sourceTitle": "MDN Core learning modules",
+      "sourceRowId": "live-live-mdn-core-01--live-mdn-core-01-sr02",
+      "targetType": "item",
+      "targets": [
+        "live-live-mdn-core-01-item-2"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-live-mdn-core-01",
+      "sourceTitle": "MDN Core learning modules",
+      "sourceRowId": "live-live-mdn-core-01--live-mdn-core-01-sr03",
+      "targetType": "item",
+      "targets": [
+        "live-live-mdn-core-01-item-3"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-live-mdn-core-01",
+      "sourceTitle": "MDN Core learning modules",
+      "sourceRowId": "live-live-mdn-core-01--live-mdn-core-01-sr04",
+      "targetType": "item",
+      "targets": [
+        "live-live-mdn-core-01-item-4"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-live-mdn-core-01",
+      "sourceTitle": "MDN Core learning modules",
+      "sourceRowId": "live-live-mdn-core-01--live-mdn-core-01-sr05",
+      "targetType": "item",
+      "targets": [
+        "live-live-mdn-core-01-item-5"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-live-mdn-core-01",
+      "sourceTitle": "MDN Core learning modules",
+      "sourceRowId": "live-live-mdn-core-01--live-mdn-core-01-sr06",
+      "targetType": "item",
+      "targets": [
+        "live-live-mdn-core-01-item-6"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-live-mdn-core-01",
+      "sourceTitle": "MDN Core learning modules",
+      "sourceRowId": "live-live-mdn-core-01--live-mdn-core-01-sr07",
+      "targetType": "item",
+      "targets": [
+        "live-live-mdn-core-01-item-7"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-live-mdn-core-01",
+      "sourceTitle": "MDN Core learning modules",
+      "sourceRowId": "live-live-mdn-core-01--live-mdn-core-01-sr08",
+      "targetType": "item",
+      "targets": [
+        "live-live-mdn-core-01-item-8"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-live-mdn-core-01",
+      "sourceTitle": "MDN Core learning modules",
+      "sourceRowId": "live-live-mdn-core-01--live-mdn-core-01-sr09",
+      "targetType": "item",
+      "targets": [
+        "live-live-mdn-core-01-item-9"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-live-dyson-filter-01",
+      "sourceTitle": "Dyson cordless vacuum filter care",
+      "sourceRowId": "live-live-dyson-filter-01--live-dyson-filter-01-sr01",
+      "targetType": "field",
+      "targets": [
+        "live-live-dyson-filter-01-field-1"
+      ],
+      "relationType": "one_to_one",
+      "reason": "행이 독립 행동이 아니라 정렬·필터·표시 값이다."
+    },
+    {
+      "fixtureId": "live-live-dyson-filter-01",
+      "sourceTitle": "Dyson cordless vacuum filter care",
+      "sourceRowId": "live-live-dyson-filter-01--live-dyson-filter-01-sr02",
+      "targetType": "item",
+      "targets": [
+        "live-live-dyson-filter-01-item-1"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-live-dyson-filter-01",
+      "sourceTitle": "Dyson cordless vacuum filter care",
+      "sourceRowId": "live-live-dyson-filter-01--live-dyson-filter-01-sr03",
+      "targetType": "item",
+      "targets": [
+        "live-live-dyson-filter-01-item-2"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-live-dyson-filter-01",
+      "sourceTitle": "Dyson cordless vacuum filter care",
+      "sourceRowId": "live-live-dyson-filter-01--live-dyson-filter-01-sr04",
+      "targetType": "item",
+      "targets": [
+        "live-live-dyson-filter-01-item-3"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-live-dyson-filter-01",
+      "sourceTitle": "Dyson cordless vacuum filter care",
+      "sourceRowId": "live-live-dyson-filter-01--live-dyson-filter-01-sr05",
+      "targetType": "item",
+      "targets": [
+        "live-live-dyson-filter-01-item-4"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-live-dyson-filter-01",
+      "sourceTitle": "Dyson cordless vacuum filter care",
+      "sourceRowId": "live-live-dyson-filter-01--live-dyson-filter-01-sr06",
+      "targetType": "item",
+      "targets": [
+        "live-live-dyson-filter-01-item-5"
+      ],
+      "relationType": "one_to_one",
+      "reason": "실웹 재검증 행 자체가 독립적으로 완료·기록할 수 있다."
+    },
+    {
+      "fixtureId": "live-live-jotform-event-intake-01",
+      "sourceTitle": "Event Registration Intake Form",
+      "sourceRowId": "live-live-jotform-event-intake-01--live-jotform-event-intake-01-sr01",
+      "targetType": "field",
+      "targets": [
+        "live-live-jotform-event-intake-01-field-1"
+      ],
+      "relationType": "one_to_one",
+      "reason": "행이 독립 행동이 아니라 정렬·필터·표시 값이다."
+    },
+    {
+      "fixtureId": "live-live-jotform-event-intake-01",
+      "sourceTitle": "Event Registration Intake Form",
+      "sourceRowId": "live-live-jotform-event-intake-01--live-jotform-event-intake-01-sr02",
+      "targetType": "field",
+      "targets": [
+        "live-live-jotform-event-intake-01-field-2"
+      ],
+      "relationType": "one_to_one",
+      "reason": "행이 독립 행동이 아니라 정렬·필터·표시 값이다."
+    },
+    {
+      "fixtureId": "live-live-jotform-event-intake-01",
+      "sourceTitle": "Event Registration Intake Form",
+      "sourceRowId": "live-live-jotform-event-intake-01--live-jotform-event-intake-01-sr03",
+      "targetType": "field",
+      "targets": [
+        "live-live-jotform-event-intake-01-field-3"
+      ],
+      "relationType": "one_to_one",
+      "reason": "행이 독립 행동이 아니라 정렬·필터·표시 값이다."
+    },
+    {
+      "fixtureId": "live-live-jotform-event-intake-01",
+      "sourceTitle": "Event Registration Intake Form",
+      "sourceRowId": "live-live-jotform-event-intake-01--live-jotform-event-intake-01-sr04",
+      "targetType": "field",
+      "targets": [
+        "live-live-jotform-event-intake-01-field-4"
+      ],
+      "relationType": "one_to_one",
+      "reason": "행이 독립 행동이 아니라 정렬·필터·표시 값이다."
+    },
+    {
+      "fixtureId": "live-live-jotform-event-intake-01",
+      "sourceTitle": "Event Registration Intake Form",
+      "sourceRowId": "live-live-jotform-event-intake-01--live-jotform-event-intake-01-sr05",
+      "targetType": "field",
+      "targets": [
+        "live-live-jotform-event-intake-01-field-5"
+      ],
+      "relationType": "one_to_one",
+      "reason": "행이 독립 행동이 아니라 정렬·필터·표시 값이다."
+    },
+    {
+      "fixtureId": "live-live-jotform-event-intake-01",
+      "sourceTitle": "Event Registration Intake Form",
+      "sourceRowId": "live-live-jotform-event-intake-01--live-jotform-event-intake-01-sr06",
+      "targetType": "field",
+      "targets": [
+        "live-live-jotform-event-intake-01-field-6"
+      ],
+      "relationType": "one_to_one",
+      "reason": "행이 독립 행동이 아니라 정렬·필터·표시 값이다."
+    },
+    {
+      "fixtureId": "live-live-jotform-event-intake-01",
+      "sourceTitle": "Event Registration Intake Form",
+      "sourceRowId": "live-live-jotform-event-intake-01--live-jotform-event-intake-01-sr07",
+      "targetType": "field",
+      "targets": [
+        "live-live-jotform-event-intake-01-field-7"
+      ],
+      "relationType": "one_to_one",
+      "reason": "행이 독립 행동이 아니라 정렬·필터·표시 값이다."
+    },
+    {
+      "fixtureId": "live-live-jotform-event-intake-01",
+      "sourceTitle": "Event Registration Intake Form",
+      "sourceRowId": "live-live-jotform-event-intake-01--live-jotform-event-intake-01-sr08",
+      "targetType": "field",
+      "targets": [
+        "live-live-jotform-event-intake-01-field-8"
+      ],
+      "relationType": "one_to_one",
+      "reason": "행이 독립 행동이 아니라 정렬·필터·표시 값이다."
+    },
+    {
+      "fixtureId": "live-live-jotform-event-intake-01",
+      "sourceTitle": "Event Registration Intake Form",
+      "sourceRowId": "live-live-jotform-event-intake-01--live-jotform-event-intake-01-sr09",
+      "targetType": "field",
+      "targets": [
+        "live-live-jotform-event-intake-01-field-9"
+      ],
+      "relationType": "one_to_one",
+      "reason": "행이 독립 행동이 아니라 정렬·필터·표시 값이다."
+    },
+    {
+      "fixtureId": "live-live-jotform-event-intake-01",
+      "sourceTitle": "Event Registration Intake Form",
+      "sourceRowId": "live-live-jotform-event-intake-01--live-jotform-event-intake-01-sr10",
+      "targetType": "field",
+      "targets": [
+        "live-live-jotform-event-intake-01-field-10"
+      ],
+      "relationType": "one_to_one",
+      "reason": "행이 독립 행동이 아니라 정렬·필터·표시 값이다."
+    },
+    {
+      "fixtureId": "live-live-jotform-event-intake-01",
+      "sourceTitle": "Event Registration Intake Form",
+      "sourceRowId": "live-live-jotform-event-intake-01--live-jotform-event-intake-01-sr11",
+      "targetType": "field",
+      "targets": [
+        "live-live-jotform-event-intake-01-field-11"
+      ],
+      "relationType": "one_to_one",
+      "reason": "행이 독립 행동이 아니라 정렬·필터·표시 값이다."
+    }
+  ]
+}

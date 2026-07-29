@@ -1,0 +1,182 @@
+{
+  "schemaVersion": "flowme-creator-representative-normalization-v1",
+  "records": [
+    {
+      "bundleId": "bundle-moving-d30",
+      "creatorId": "home-ajd",
+      "categoryId": "home_living",
+      "provenanceType": "reused_source_backed_bundle",
+      "counts": {
+        "flows": 1,
+        "steps": 6,
+        "items": 27,
+        "sourceRows": 52
+      },
+      "sourceRowsResolved": true,
+      "sourceTraceResolved": true,
+      "mapType": "ordered",
+      "currentCanonicalPath": "fixtures/canonical/bundle-moving-d30.json",
+      "literalIcsPath": "fixtures/ics/literal/bundle-moving-d30.ics",
+      "compactIcsPath": "fixtures/ics/canonical-compact/bundle-moving-d30.ics",
+      "granularIcsPath": "fixtures/ics/canonical-granular/bundle-moving-d30.ics"
+    },
+    {
+      "bundleId": "bundle-baby-food-174",
+      "creatorId": "family-babyfood016",
+      "categoryId": "family_parenting",
+      "provenanceType": "reused_source_backed_bundle",
+      "counts": {
+        "flows": 1,
+        "steps": 12,
+        "items": 36,
+        "sourceRows": 36
+      },
+      "sourceRowsResolved": true,
+      "sourceTraceResolved": true,
+      "mapType": "ordered",
+      "currentCanonicalPath": "fixtures/canonical/bundle-baby-food-174.json",
+      "literalIcsPath": "fixtures/ics/literal/bundle-baby-food-174.ics",
+      "compactIcsPath": "fixtures/ics/canonical-compact/bundle-baby-food-174.ics",
+      "granularIcsPath": "fixtures/ics/canonical-granular/bundle-baby-food-174.ics"
+    },
+    {
+      "bundleId": "bundle-opic-plan",
+      "creatorId": "study-mansour",
+      "categoryId": "study_reading",
+      "provenanceType": "reused_source_backed_bundle",
+      "counts": {
+        "flows": 2,
+        "steps": 7,
+        "items": 42,
+        "sourceRows": 52
+      },
+      "sourceRowsResolved": true,
+      "sourceTraceResolved": true,
+      "mapType": "ordered",
+      "currentCanonicalPath": "fixtures/canonical/bundle-opic-plan.json",
+      "literalIcsPath": "fixtures/ics/literal/bundle-opic-plan.ics",
+      "compactIcsPath": "fixtures/ics/canonical-compact/bundle-opic-plan.ics",
+      "granularIcsPath": "fixtures/ics/canonical-granular/bundle-opic-plan.ics"
+    },
+    {
+      "bundleId": "bundle-new-car-comparison",
+      "creatorId": "money-getcha",
+      "categoryId": "money_admin_purchase",
+      "provenanceType": "reused_source_backed_bundle",
+      "counts": {
+        "flows": 1,
+        "steps": 8,
+        "items": 14,
+        "sourceRows": 29
+      },
+      "sourceRowsResolved": true,
+      "sourceTraceResolved": true,
+      "mapType": "ordered",
+      "currentCanonicalPath": "fixtures/canonical/bundle-new-car-comparison.json",
+      "literalIcsPath": "fixtures/ics/literal/bundle-new-car-comparison.ics",
+      "compactIcsPath": "fixtures/ics/canonical-compact/bundle-new-car-comparison.ics",
+      "granularIcsPath": "fixtures/ics/canonical-granular/bundle-new-car-comparison.ics"
+    },
+    {
+      "bundleId": "bundle-allblanc-7day-abs",
+      "creatorId": "health-allblanc",
+      "categoryId": "health_fitness",
+      "provenanceType": "reused_source_backed_bundle",
+      "counts": {
+        "flows": 7,
+        "steps": 7,
+        "items": 7,
+        "sourceRows": 7
+      },
+      "sourceRowsResolved": true,
+      "sourceTraceResolved": true,
+      "mapType": "ordered",
+      "currentCanonicalPath": "fixtures/canonical/bundle-allblanc-7day-abs.json",
+      "literalIcsPath": "fixtures/ics/literal/bundle-allblanc-7day-abs.ics",
+      "compactIcsPath": "fixtures/ics/canonical-compact/bundle-allblanc-7day-abs.ics",
+      "granularIcsPath": "fixtures/ics/canonical-granular/bundle-allblanc-7day-abs.ics"
+    },
+    {
+      "bundleId": "bundle-triple-cappadocia-departure",
+      "creatorId": "travel-triple",
+      "categoryId": "travel_outings",
+      "provenanceType": "new_source_backed_example",
+      "counts": {
+        "flows": 1,
+        "steps": 3,
+        "items": 8,
+        "sourceRows": 8
+      },
+      "sourceRowsResolved": true,
+      "sourceTraceResolved": true,
+      "mapType": "single_flow",
+      "currentCanonicalPath": "fixtures/canonical/bundle-triple-cappadocia-departure.json",
+      "literalIcsPath": "fixtures/ics/literal/bundle-triple-cappadocia-departure.ics",
+      "compactIcsPath": "fixtures/ics/canonical-compact/bundle-triple-cappadocia-departure.ics",
+      "granularIcsPath": "fixtures/ics/canonical-granular/bundle-triple-cappadocia-departure.ics"
+    },
+    {
+      "bundleId": "bundle-wtable-summer-banchan-five",
+      "creatorId": "meals-wtable",
+      "categoryId": "meals_grocery",
+      "provenanceType": "new_source_backed_example",
+      "counts": {
+        "flows": 5,
+        "steps": 5,
+        "items": 5,
+        "sourceRows": 5
+      },
+      "sourceRowsResolved": true,
+      "sourceTraceResolved": true,
+      "mapType": "source_curation",
+      "currentCanonicalPath": "fixtures/canonical/bundle-wtable-summer-banchan-five.json",
+      "literalIcsPath": "fixtures/ics/literal/bundle-wtable-summer-banchan-five.ics",
+      "compactIcsPath": "fixtures/ics/canonical-compact/bundle-wtable-summer-banchan-five.ics",
+      "granularIcsPath": "fixtures/ics/canonical-granular/bundle-wtable-summer-banchan-five.ics"
+    },
+    {
+      "bundleId": "bundle-andstudio-job-prep-videos",
+      "creatorId": "work-andstudio",
+      "categoryId": "work_career",
+      "provenanceType": "new_source_backed_example",
+      "counts": {
+        "flows": 3,
+        "steps": 3,
+        "items": 3,
+        "sourceRows": 3
+      },
+      "sourceRowsResolved": true,
+      "sourceTraceResolved": true,
+      "mapType": "unordered_collection",
+      "currentCanonicalPath": "fixtures/canonical/bundle-andstudio-job-prep-videos.json",
+      "literalIcsPath": "fixtures/ics/literal/bundle-andstudio-job-prep-videos.ics",
+      "compactIcsPath": "fixtures/ics/canonical-compact/bundle-andstudio-job-prep-videos.ics",
+      "granularIcsPath": "fixtures/ics/canonical-granular/bundle-andstudio-job-prep-videos.ics"
+    },
+    {
+      "bundleId": "bundle-fitpet-puppy-vaccination",
+      "creatorId": "hobby-fitpet",
+      "categoryId": "hobby_pet",
+      "provenanceType": "new_source_backed_sensitive_example",
+      "counts": {
+        "flows": 1,
+        "steps": 6,
+        "items": 6,
+        "sourceRows": 6
+      },
+      "sourceRowsResolved": true,
+      "sourceTraceResolved": true,
+      "mapType": "single_sensitive_schedule",
+      "currentCanonicalPath": "fixtures/canonical/bundle-fitpet-puppy-vaccination.json",
+      "literalIcsPath": "fixtures/ics/literal/bundle-fitpet-puppy-vaccination.ics",
+      "compactIcsPath": "fixtures/ics/canonical-compact/bundle-fitpet-puppy-vaccination.ics",
+      "granularIcsPath": "fixtures/ics/canonical-granular/bundle-fitpet-puppy-vaccination.ics"
+    }
+  ],
+  "totals": {
+    "flows": 22,
+    "steps": 57,
+    "items": 148,
+    "sourceRows": 198
+  }
+}

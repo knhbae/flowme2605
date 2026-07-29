@@ -1,0 +1,1129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flowme.local/schemas/current-canonical-v1.schema.json",
+  "title": "FlowMe Current Canonical v1 Lab Record",
+  "description": "Strict schema for one record in runs/current-canonical/results-v1.json. It describes the evaluation artifact only and does not change the app runtime contract.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "architecture",
+    "bundleId",
+    "title",
+    "taxonomy",
+    "userJob",
+    "setupFields",
+    "sampleUserOverlay",
+    "map",
+    "sharedContexts",
+    "attribution",
+    "rights",
+    "review",
+    "sourceRows",
+    "flows"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "flowme-current-canonical-v1"
+    },
+    "architecture": {
+      "const": "current_canonical_v1"
+    },
+    "bundleId": {
+      "$ref": "#/$defs/id"
+    },
+    "title": {
+      "$ref": "#/$defs/nonEmptyString"
+    },
+    "taxonomy": {
+      "$ref": "#/$defs/taxonomy"
+    },
+    "userJob": {
+      "$ref": "#/$defs/nonEmptyString"
+    },
+    "setupFields": {
+      "type": "array",
+      "maxItems": 2,
+      "items": {
+        "$ref": "#/$defs/setupField"
+      }
+    },
+    "sampleUserOverlay": {
+      "$ref": "#/$defs/sampleUserOverlay"
+    },
+    "map": {
+      "$ref": "#/$defs/flowMap"
+    },
+    "sharedContexts": {
+      "type": "array",
+      "maxItems": 0,
+      "items": false,
+      "description": "The unextended current-canonical contender has no shared context layer."
+    },
+    "attribution": {
+      "$ref": "#/$defs/attribution"
+    },
+    "rights": {
+      "$ref": "#/$defs/rights"
+    },
+    "review": {
+      "$ref": "#/$defs/review"
+    },
+    "sourceRows": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/sourceRow"
+      }
+    },
+    "flows": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/flow"
+      }
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Opaque identifier. Unicode is allowed because source-derived row IDs may contain Korean weekday labels."
+    },
+    "stringList": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "lifeArea": {
+      "enum": [
+        "home_living",
+        "family_parenting",
+        "study_reading",
+        "money_admin_purchase",
+        "health_fitness",
+        "travel_outings",
+        "meals_grocery",
+        "work_career",
+        "hobby_pet"
+      ]
+    },
+    "sourceShape": {
+      "enum": [
+        "single_action",
+        "checklist_rows",
+        "date_offsets",
+        "date_window",
+        "recurrence_rule",
+        "procedure_rows",
+        "table_rows",
+        "lesson_rows",
+        "resource_collection",
+        "decision_criteria",
+        "narrative_guidance",
+        "template_fields"
+      ]
+    },
+    "executionPattern": {
+      "enum": [
+        "date_preparation",
+        "ordered_procedure",
+        "repeating_routine",
+        "progress_tracking",
+        "resource_queue",
+        "compare_decide",
+        "phase_lifecycle"
+      ]
+    },
+    "artifact": {
+      "enum": [
+        "calendar",
+        "checklist",
+        "todo",
+        "sheet",
+        "memo"
+      ],
+      "description": "hybrid is intentionally excluded from new canonical data."
+    },
+    "taxonomy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "primaryLifeArea",
+        "secondaryLifeAreas",
+        "topicTags",
+        "sourceShape",
+        "primaryExecutionPattern",
+        "secondaryExecutionPatterns",
+        "primaryArtifact",
+        "secondaryArtifacts"
+      ],
+      "properties": {
+        "primaryLifeArea": {
+          "$ref": "#/$defs/lifeArea"
+        },
+        "secondaryLifeAreas": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/lifeArea"
+          }
+        },
+        "topicTags": {
+          "$ref": "#/$defs/stringList"
+        },
+        "sourceShape": {
+          "$ref": "#/$defs/sourceShape"
+        },
+        "primaryExecutionPattern": {
+          "$ref": "#/$defs/executionPattern"
+        },
+        "secondaryExecutionPatterns": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/executionPattern"
+          }
+        },
+        "primaryArtifact": {
+          "$ref": "#/$defs/artifact"
+        },
+        "secondaryArtifacts": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/artifact"
+          }
+        }
+      }
+    },
+    "setupField": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "label",
+        "type",
+        "required"
+      ],
+      "properties": {
+        "key": {
+          "$ref": "#/$defs/id"
+        },
+        "label": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "type": {
+          "enum": [
+            "date",
+            "number",
+            "choice",
+            "text",
+            "weekday_multi"
+          ]
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "options": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "purpose": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "choice"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "options"
+            ],
+            "properties": {
+              "options": {
+                "type": "array",
+                "minItems": 2
+              }
+            }
+          }
+        }
+      ]
+    },
+    "overlayScalar": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sampleUserOverlay": {
+      "type": "object",
+      "additionalProperties": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/overlayScalar"
+          },
+          {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/overlayScalar"
+            }
+          }
+        ]
+      }
+    },
+    "mapType": {
+      "enum": [
+        "ordered",
+        "source_curation",
+        "unordered_collection",
+        "single_sensitive_schedule",
+        "single_flow"
+      ],
+      "description": "Lab aliases: ordered=ordered_life_event_map, unordered_collection=unordered, single_flow is an ordinary Flow without map semantics."
+    },
+    "mapOrdering": {
+      "enum": [
+        "source_defined",
+        "source_display_order_not_execution_dependency",
+        "none"
+      ]
+    },
+    "flowMap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title",
+        "type",
+        "ordering",
+        "childFlowIds",
+        "derivedProgressOnly"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "title": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "type": {
+          "$ref": "#/$defs/mapType"
+        },
+        "ordering": {
+          "$ref": "#/$defs/mapOrdering"
+        },
+        "childFlowIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/id"
+          }
+        },
+        "derivedProgressOnly": {
+          "const": true
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "ordered"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "ordering": {
+                "const": "source_defined"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "source_curation"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "ordering": {
+                "const": "source_display_order_not_execution_dependency"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "unordered_collection",
+                  "single_sensitive_schedule",
+                  "single_flow"
+                ]
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "ordering": {
+                "const": "none"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "trustAnchorRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "reason"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "required_before_promotion",
+            "verified",
+            "not_required"
+          ]
+        },
+        "reason": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "attribution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "creatorId",
+        "providerId",
+        "sourceOwnerId",
+        "curatorId",
+        "trustAnchorRefs",
+        "decisionBand",
+        "creatorVerdict",
+        "publicationApproval"
+      ],
+      "properties": {
+        "creatorId": {
+          "$ref": "#/$defs/id"
+        },
+        "providerId": {
+          "$ref": "#/$defs/id"
+        },
+        "sourceOwnerId": {
+          "$ref": "#/$defs/id"
+        },
+        "curatorId": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "trustAnchorRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/trustAnchorRef"
+          }
+        },
+        "decisionBand": {
+          "enum": [
+            "Go",
+            "Modify",
+            "Single"
+          ]
+        },
+        "creatorVerdict": {
+          "enum": [
+            "creator_flow_map_candidate",
+            "creator_content_partner_candidate",
+            "single_content_candidate"
+          ]
+        },
+        "publicationApproval": {
+          "const": "not_implied"
+        }
+      }
+    },
+    "rights": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "publicReleaseAllowed",
+        "personalTransformAllowed",
+        "rationale"
+      ],
+      "properties": {
+        "mode": {
+          "const": "link_and_minimal_execution_metadata"
+        },
+        "publicReleaseAllowed": {
+          "type": "boolean"
+        },
+        "personalTransformAllowed": {
+          "type": "boolean"
+        },
+        "rationale": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      },
+      "description": "Public release permission and personal transformation permission are intentionally independent."
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceRowStatus",
+        "promotionState",
+        "safetyReview"
+      ],
+      "properties": {
+        "sourceRowStatus": {
+          "const": "complete_for_representative_example"
+        },
+        "promotionState": {
+          "const": "internal_review_only"
+        },
+        "safetyReview": {
+          "enum": [
+            "not_required",
+            "needs_trust_anchor"
+          ]
+        }
+      }
+    },
+    "sourceRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceRowId",
+        "bundleId",
+        "sourceUrl",
+        "sourceLocator",
+        "label",
+        "detail",
+        "verifiedAt"
+      ],
+      "properties": {
+        "sourceRowId": {
+          "$ref": "#/$defs/id"
+        },
+        "bundleId": {
+          "$ref": "#/$defs/id"
+        },
+        "sourceUrl": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "sourceLocator": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "label": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "detail": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "verifiedAt": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "sourceAsset": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "sourceAgeWeeks": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "sourceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceRowId",
+        "sourceUrl",
+        "sourceLocator"
+      ],
+      "properties": {
+        "sourceRowId": {
+          "$ref": "#/$defs/id"
+        },
+        "sourceUrl": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "sourceLocator": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "relativeToTargetSchedule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "offsetDays"
+      ],
+      "properties": {
+        "type": {
+          "const": "relative_to_target"
+        },
+        "offsetDays": {
+          "type": "integer"
+        },
+        "segment": {
+          "enum": [
+            "origin",
+            "destination"
+          ]
+        }
+      }
+    },
+    "sourceDayRangeSchedule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "start",
+        "end"
+      ],
+      "properties": {
+        "type": {
+          "const": "source_day_range"
+        },
+        "start": {
+          "type": "integer"
+        },
+        "end": {
+          "type": "integer"
+        }
+      }
+    },
+    "sourceDayIndexSchedule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "dayIndex"
+      ],
+      "properties": {
+        "type": {
+          "const": "source_day_index"
+        },
+        "dayIndex": {
+          "type": "integer"
+        }
+      }
+    },
+    "relativeWeekSchedule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "week"
+      ],
+      "properties": {
+        "type": {
+          "const": "relative_week"
+        },
+        "week": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "relativeWeekdaySchedule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "week",
+        "weekday"
+      ],
+      "properties": {
+        "type": {
+          "const": "relative_weekday"
+        },
+        "week": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "weekday": {
+          "enum": [
+            "월",
+            "화",
+            "수",
+            "목",
+            "금",
+            "토",
+            "일"
+          ]
+        }
+      }
+    },
+    "sequenceDaySchedule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "day"
+      ],
+      "properties": {
+        "type": {
+          "const": "sequence_day"
+        },
+        "day": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "sourceAgeWeekSchedule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "week"
+      ],
+      "properties": {
+        "type": {
+          "const": "source_age_week"
+        },
+        "week": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "schedule": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/relativeToTargetSchedule"
+        },
+        {
+          "$ref": "#/$defs/sourceDayRangeSchedule"
+        },
+        {
+          "$ref": "#/$defs/sourceDayIndexSchedule"
+        },
+        {
+          "$ref": "#/$defs/relativeWeekSchedule"
+        },
+        {
+          "$ref": "#/$defs/relativeWeekdaySchedule"
+        },
+        {
+          "$ref": "#/$defs/sequenceDaySchedule"
+        },
+        {
+          "$ref": "#/$defs/sourceAgeWeekSchedule"
+        }
+      ]
+    },
+    "completion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "independentlyStateful"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "manual_check",
+            "decision",
+            "record"
+          ]
+        },
+        "independentlyStateful": {
+          "const": true
+        }
+      }
+    },
+    "field": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "label",
+        "valueType",
+        "required",
+        "valueSource"
+      ],
+      "properties": {
+        "key": {
+          "$ref": "#/$defs/id"
+        },
+        "label": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "valueType": {
+          "enum": [
+            "short_text",
+            "long_text",
+            "number",
+            "boolean",
+            "date",
+            "datetime",
+            "url",
+            "single_select",
+            "multi_select",
+            "file_ref"
+          ]
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "valueSource": {
+          "enum": [
+            "source",
+            "user",
+            "derived"
+          ]
+        },
+        "value": {},
+        "sourceRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/sourceRef"
+          }
+        }
+      }
+    },
+    "memo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "text",
+        "owner"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "instruction",
+            "source_detail",
+            "creator_experience",
+            "caution",
+            "hold_template",
+            "user_prompt"
+          ]
+        },
+        "text": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "owner": {
+          "enum": [
+            "published_content",
+            "internal_review",
+            "user_overlay"
+          ]
+        }
+      }
+    },
+    "condition": {
+      "type": "object",
+      "minProperties": 1,
+      "description": "Conditions remain typed objects; their expression contract is outside this architecture lab."
+    },
+    "projectionPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "calendar",
+        "checklist",
+        "todo",
+        "sheet",
+        "memo"
+      ],
+      "properties": {
+        "calendar": {
+          "enum": [
+            "none",
+            "per_item",
+            "step_bundle"
+          ]
+        },
+        "checklist": {
+          "const": "direct"
+        },
+        "todo": {
+          "const": "direct"
+        },
+        "sheet": {
+          "const": "direct"
+        },
+        "memo": {
+          "const": "direct"
+        }
+      }
+    },
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "flowId",
+        "stepId",
+        "title",
+        "detail",
+        "intent",
+        "completion",
+        "optional",
+        "schedule",
+        "fields",
+        "memos",
+        "conditions",
+        "sourceRefs",
+        "order",
+        "projectionPolicy"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "flowId": {
+          "$ref": "#/$defs/id"
+        },
+        "stepId": {
+          "$ref": "#/$defs/id"
+        },
+        "title": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "detail": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "intent": {
+          "enum": [
+            "act",
+            "inspect",
+            "decide",
+            "record",
+            "use_resource"
+          ]
+        },
+        "completion": {
+          "$ref": "#/$defs/completion"
+        },
+        "optional": {
+          "type": "boolean"
+        },
+        "schedule": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/schedule"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/field"
+          }
+        },
+        "memos": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/memo"
+          }
+        },
+        "conditions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/condition"
+          }
+        },
+        "sourceRefs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/sourceRef"
+          }
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "projectionPolicy": {
+          "$ref": "#/$defs/projectionPolicy"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "schedule": {
+                "type": "null"
+              }
+            },
+            "required": [
+              "schedule"
+            ]
+          },
+          "then": {
+            "properties": {
+              "projectionPolicy": {
+                "type": "object",
+                "properties": {
+                  "calendar": {
+                    "const": "none"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "step": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "flowId",
+        "title",
+        "order",
+        "sourceScheduleGroup",
+        "prerequisite",
+        "derivedProgressOnly",
+        "items"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "flowId": {
+          "$ref": "#/$defs/id"
+        },
+        "title": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sourceScheduleGroup": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/schedule"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "prerequisite": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "derivedProgressOnly": {
+          "const": true
+        },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/item"
+          }
+        }
+      }
+    },
+    "flow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title",
+        "primarySourceUrl",
+        "steps"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "title": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "primarySourceUrl": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/step"
+          }
+        }
+      }
+    }
+  }
+}

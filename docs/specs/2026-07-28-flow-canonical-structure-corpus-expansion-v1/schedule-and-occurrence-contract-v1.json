@@ -1,0 +1,368 @@
+{
+  "schemaVersion": "flowme-schedule-and-occurrence-contract-v1",
+  "date": "2026-07-28",
+  "status": "planning_backend_contract",
+  "canonicalBase": "flowme-canonical-flow-v1",
+  "taxonomyBase": "flowme-taxonomy-v1.1",
+  "decision": "Keep Item.schedule authoritative and keep occurrence execution state separate from schedule definition.",
+  "claimBoundary": {
+    "externalGoogleOutlookAppleRoundTrip": "NOT_RUN",
+    "vtodoRoundTrip": "NOT_RUN",
+    "observedUserValidation": "NOT_RUN",
+    "runtimeImplementation": "NOT_STARTED"
+  },
+  "ownership": {
+    "sourceSchedule": "Immutable versioned canonical content.",
+    "creatorChange": "A new canonical content version; it never mutates a user's past run.",
+    "userScheduleOverride": "UserFlowCopy.itemOverlays[].scheduleOverride.",
+    "occurrenceOverride": "ExecutionRun.itemStates[].scheduleOverride for one occurrence.",
+    "executionState": "ExecutionRun item state keyed by itemId and occurrenceKey.",
+    "stepGroupingHint": "Display/grouping context only; never authoritative schedule.",
+    "projectionResolvedDate": "Derived at projection time; not source evidence."
+  },
+  "effectiveSchedulePrecedence": [
+    "pinned immutable Item.schedule",
+    "reviewed version resolution",
+    "UserFlowCopy Item scheduleOverride, including explicit null",
+    "occurrence-specific scheduleOverride",
+    "unsaved UI buffer, not persisted until saved"
+  ],
+  "scheduleModes": [
+    {
+      "mode": "none",
+      "canonicalRepresentation": "Item.schedule is absent",
+      "allowedEvidence": [
+        "source contains no actionable date",
+        "user has not added a date"
+      ],
+      "calendarEligibility": false,
+      "notes": "Lesson order, Step title, source order, age index, or sequence number alone does not create a date."
+    },
+    {
+      "mode": "absolute",
+      "canonicalRepresentation": {
+        "mode": "absolute",
+        "required": [
+          "start",
+          "allDay"
+        ],
+        "optional": [
+          "end",
+          "timezone",
+          "recurrence"
+        ]
+      },
+      "allowedEvidence": [
+        "source-owned fixed date or datetime",
+        "user-owned selected date or datetime"
+      ],
+      "calendarEligibility": true,
+      "forbidden": [
+        "date inferred from Item order",
+        "test fixture date written back as source fact"
+      ]
+    },
+    {
+      "mode": "date_window",
+      "canonicalRepresentation": [
+        {
+          "basis": "absolute",
+          "required": [
+            "startDate",
+            "endDate"
+          ],
+          "optional": [
+            "reminderDate"
+          ]
+        },
+        {
+          "basis": "anchor_offset",
+          "required": [
+            "anchorFieldId",
+            "startDayOffset",
+            "endDayOffset",
+            "reminderDayOffset"
+          ]
+        }
+      ],
+      "allowedEvidence": [
+        "source-defined eligibility, application, renewal, or visit window"
+      ],
+      "calendarEligibility": true,
+      "projectionRule": "Retain the full window in description/data and generate at most one declared reminder occurrence; never one VEVENT per eligible day."
+    },
+    {
+      "mode": "anchor_offset",
+      "canonicalRepresentation": {
+        "mode": "anchor_offset",
+        "required": [
+          "anchorFieldId",
+          "dayOffset",
+          "allDay"
+        ],
+        "optional": [
+          "time",
+          "durationMinutes",
+          "timezone",
+          "recurrence"
+        ]
+      },
+      "allowedEvidence": [
+        "source-defined D-day offset plus named user or source anchor",
+        "source-defined relative age/date formula plus named anchor"
+      ],
+      "calendarEligibility": "true only after the required anchor value is available",
+      "forbidden": [
+        "inventing an offset from row order",
+        "asking the user for a source-owned anchor already captured"
+      ]
+    }
+  ],
+  "sourceOrderMappings": [
+    {
+      "sourceSignal": "sequence_day",
+      "defaultCanonicalTreatment": "Item order or Step grouping",
+      "becomesScheduleWhen": "The source explicitly binds the sequence to a start anchor, or the user deliberately adds a start anchor as an overlay.",
+      "otherwise": "No VEVENT."
+    },
+    {
+      "sourceSignal": "week_and_weekday",
+      "defaultCanonicalTreatment": "Step/week grouping plus row metadata",
+      "becomesScheduleWhen": "A source or user anchor resolves it to actual dates.",
+      "otherwise": "Progress Sheet, Checklist, or Todo."
+    },
+    {
+      "sourceSignal": "age_or_month_index",
+      "defaultCanonicalTreatment": "Source Field/grouping",
+      "becomesScheduleWhen": "A birth/event anchor and exact source formula exist.",
+      "otherwise": "No fabricated date."
+    },
+    {
+      "sourceSignal": "conditional_due_date",
+      "defaultCanonicalTreatment": "Undated Item plus source-explicit condition in conversion-audit sidecar.",
+      "becomesScheduleWhen": "The trigger occurred, all operands are known, and a deterministic supported formula resolves the due date.",
+      "otherwise": "No calendar projection.",
+      "canonicalCoreStatus": "open"
+    },
+    {
+      "sourceSignal": "user_adds_date_later",
+      "defaultCanonicalTreatment": "Canonical Item remains undated.",
+      "becomesScheduleWhen": "UserFlowCopy stores a scheduleOverride.",
+      "otherwise": "Use the natural non-Calendar projection."
+    }
+  ],
+  "recurrence": {
+    "canonicalShape": {
+      "frequency": [
+        "daily",
+        "weekly",
+        "monthly"
+      ],
+      "required": [
+        "frequency",
+        "interval",
+        "sourceDefined"
+      ],
+      "optional": [
+        "weekdays",
+        "count",
+        "until"
+      ]
+    },
+    "rules": [
+      "Recurrence requires an absolute or anchor-offset schedule.",
+      "A source-defined cadence sets sourceDefined=true.",
+      "A user-selected cadence is stored in the personal overlay and does not rewrite the source cadence.",
+      "Order, challenge length, or a phrase such as 'regularly' is not enough to invent recurrence.",
+      "count and until must not conflict; if a destination needs one, the projection policy chooses without changing canonical intent.",
+      "Changing future cadence preserves completed past occurrence state."
+    ],
+    "unsupportedSourceRules": "Preserve as source detail and require review; do not emit a guessed RRULE."
+  },
+  "occurrenceIdentity": {
+    "semanticKey": {
+      "nonRecurringItem": "once",
+      "dateWindowReminder": "window-reminder",
+      "recurringAllDay": "date:<local-YYYY-MM-DD>",
+      "recurringTimed": "local:<TZID>:<local-YYYY-MM-DDTHH:mm>",
+      "sameLocalStartCollisionSuffix": ":n<one-based-source-order>"
+    },
+    "executionIdentityTuple": [
+      "copyId",
+      "runId",
+      "itemId",
+      "occurrenceKey"
+    ],
+    "projectionIdentityTuple": [
+      "copyId",
+      "itemId",
+      "occurrenceKey"
+    ],
+    "icsUidRule": "Derive a stable opaque UID from the projection identity tuple and a FlowMe domain; never use title as identity.",
+    "invariants": [
+      "The same Item can have many occurrence states without cloning the canonical Item.",
+      "A date edit moves one occurrence through an occurrence override; it does not create a new source Item.",
+      "Past occurrence keys and states remain retained after recurrence edits.",
+      "A retry or second session at the same local time requires an explicit collision suffix.",
+      "Timezone or all-day semantics are part of the occurrence key input.",
+      "UID generation is deterministic for the same copy, Item, and occurrence."
+    ],
+    "serializationDecision": {
+      "status": "configurable",
+      "semanticRulesSettled": true,
+      "openDetail": "The exact escaping/hash encoding and migration behavior for pre-existing exported UIDs must be set during backend implementation."
+    }
+  },
+  "occurrenceExpansion": {
+    "authoritativeInputs": [
+      "effective Item.schedule",
+      "effective recurrence",
+      "projection range",
+      "timezone",
+      "retained occurrence overrides"
+    ],
+    "outputMinimum": [
+      "itemId",
+      "occurrenceKey",
+      "resolvedStart",
+      "resolvedEnd",
+      "timezone",
+      "scheduleSource",
+      "stateOwner"
+    ],
+    "rangeRule": "Expansion is bounded by the request range, recurrence count/until, or product safety limit; an infinite recurrence is never materialized without a range.",
+    "stateRule": "Expansion produces candidate occurrences; ExecutionRun remains the owner of completion, skip, hold, decision, and record state."
+  },
+  "sharedScheduleContext": {
+    "currentCanonicalMechanism": [
+      "Flow.anchorDefinition",
+      "Flow.setupFieldIds",
+      "Item.schedule.anchorFieldId",
+      "Step.groupingHint for display only"
+    ],
+    "projectionTimeGrouping": "Items may share one resolved schedule without sharing completion state.",
+    "persistentSharedContextEntity": {
+      "status": "open",
+      "adoptionRule": "Promote only when at least three independent fixtures require cross-Flow shared values that cannot be represented cleanly by Flow setup Fields and bindings.",
+      "corpusSidecar": "Experimental sharedContextBindings may document repeated values, but are not canonical v1 entities."
+    }
+  },
+  "propertyProvenanceRequirements": [
+    {
+      "targetPath": "items[*].schedule",
+      "requiredWhen": "schedule exists",
+      "allowedSupport": [
+        "direct SourceRow",
+        "explicit user_request",
+        "derived from fully traced source/user operands"
+      ]
+    },
+    {
+      "targetPath": "items[*].schedule.recurrence",
+      "requiredWhen": "recurrence exists",
+      "allowedSupport": [
+        "direct SourceRow",
+        "explicit user_request"
+      ]
+    },
+    {
+      "targetPath": "execution.itemStates[*].occurrenceKey",
+      "requiredWhen": "recurring occurrence state exists",
+      "allowedSupport": [
+        "deterministic occurrence expansion"
+      ]
+    }
+  ],
+  "calendarProjection": {
+    "componentRules": [
+      "VCALENDAR is a container.",
+      "Scheduled Items project to sibling VEVENT components.",
+      "VEVENT and VTODO are never nested.",
+      "VALARM may be nested in VEVENT or VTODO only when a reminder is explicitly requested.",
+      "Flow, Step, and Map are not iCalendar components."
+    ],
+    "perItem": {
+      "default": true,
+      "component": "VEVENT",
+      "identity": "stable Item plus occurrence key"
+    },
+    "stepBundle": {
+      "allowedWhen": [
+        "all children have the same effective schedule",
+        "children form one user moment",
+        "all child Item IDs are included",
+        "independent completion loss is declared",
+        "canonical Item states remain authoritative"
+      ],
+      "forbiddenWhen": [
+        "children have different dates or timezones",
+        "the bundle hides a decision or record requirement",
+        "the destination would be treated as completion owner"
+      ]
+    },
+    "undatedItem": {
+      "component": null,
+      "fallback": [
+        "checklist",
+        "todo",
+        "sheet",
+        "memo"
+      ]
+    },
+    "recurrenceExportModes": [
+      {
+        "mode": "rrule_master",
+        "status": "configurable",
+        "note": "Compact export; destination completion cannot represent FlowMe occurrence state."
+      },
+      {
+        "mode": "expanded_instances",
+        "status": "configurable",
+        "note": "Useful for bounded windows; each instance uses the occurrence identity tuple."
+      }
+    ]
+  },
+  "validationRules": [
+    "No Item without an effective schedule may produce VEVENT.",
+    "No recurrence may exist without direct source or explicit user provenance.",
+    "Every anchor_offset references a declared setup Field.",
+    "A source-filled anchor is not requested from the user.",
+    "Every date_window has start <= end and its reminder is inside or explicitly before the window.",
+    "Every recurring Item state has a non-empty occurrenceKey.",
+    "Occurrence identity is unique within one run.",
+    "Step bundle projection retains all child Item IDs.",
+    "Projection-time resolved dates are not written back as source facts.",
+    "VEVENT and VTODO nesting count is zero."
+  ],
+  "examples": [
+    {
+      "case": "이사 D-30",
+      "sourceShape": "date_offsets",
+      "canonical": "anchor_offset Items sharing an end_date anchor",
+      "userInput": "move date once",
+      "projection": "per_item or qualified step_bundle VEVENT",
+      "state": "completion stays per Item"
+    },
+    {
+      "case": "생활코딩 WEB1",
+      "sourceShape": "lesson_rows",
+      "canonical": "ordered undated Items",
+      "userInput": "zero required schedule inputs",
+      "projection": "Sheet or Checklist; no VEVENT"
+    },
+    {
+      "case": "공식 신청 날짜창",
+      "sourceShape": "date_window",
+      "canonical": "one date_window Item",
+      "userInput": "zero when dates are source-owned",
+      "projection": "one reminder plus full window text, not daily events"
+    },
+    {
+      "case": "7일 반복 챌린지",
+      "sourceShape": "recurrence_rule",
+      "canonical": "recurring schedule with occurrence state",
+      "userInput": "start anchor only when source does not own a start date",
+      "projection": "bounded recurring event or expanded instances"
+    }
+  ]
+}

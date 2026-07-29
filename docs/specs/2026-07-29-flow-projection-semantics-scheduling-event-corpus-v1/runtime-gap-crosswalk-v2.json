@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "flowme-runtime-gap-crosswalk-v2",
+  "generatedAt": "2026-07-29T12:00:00+09:00",
+  "scope": "read_only_audit",
+  "measuredCounts": {
+    "runtimeExportDestinations": 4,
+    "runtimeTodoDestinations": 0,
+    "runtimeFlowItemTypeValues": 2,
+    "runtimeVtodoBuilders": 0,
+    "frozenCorpusChecklistTodoSharedArrays": 1
+  },
+  "gaps": [
+    {
+      "contract": "Todo is a sibling projection with task/queue semantics.",
+      "runtimeEvidence": "lib/flow/export-scope.ts:1-6 defines four destinations and excludes todo.",
+      "currentRuntime": "calendar | checklist | sheet | memo",
+      "impact": "Todo adapter is planning-only in this lab.",
+      "runtimeChanged": false
+    },
+    {
+      "contract": "Execution meaning and destination are separate.",
+      "runtimeEvidence": "lib/flow/types.ts:100-106 defines FlowItem.type = 'todo' | 'calendar'.",
+      "currentRuntime": "type mixes meaning and destination.",
+      "impact": "Future DTO migration needs an intent field plus projection request.",
+      "runtimeChanged": false
+    },
+    {
+      "contract": "Checklist and Todo have distinct output schemas.",
+      "runtimeEvidence": "docs/specs/2026-07-28-flow-canonical-structure-corpus-expansion-v1/build-corpus-v1.mjs:803,856-857 routes both checklist and todo through checklistEntries.",
+      "currentRuntime": "No first-class Todo result schema.",
+      "impact": "New lab outputs groups[].orderedEntries[] vs tasks[].",
+      "runtimeChanged": false
+    },
+    {
+      "contract": "Timed/location-aware events and VTODO are explicit.",
+      "runtimeEvidence": "lib/flow/export.ts:700-820 builds VEVENT entries; repository search finds no VTODO builder.",
+      "currentRuntime": "No event status, series edition, or source occurrence contract.",
+      "impact": "Backend planning contract added; runtime remains untouched.",
+      "runtimeChanged": false
+    },
+    {
+      "contract": "Memo is a human-readable projection, not canonical raw JSON.",
+      "runtimeEvidence": "Memo exports are text artifacts.",
+      "currentRuntime": "Compatible in spirit; terminology needed clarification.",
+      "impact": "No runtime change.",
+      "runtimeChanged": false
+    }
+  ]
+}

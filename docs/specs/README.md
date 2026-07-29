@@ -44,6 +44,7 @@ Only **Active Gate** is the current execution backlog. Unchecked boxes inside ga
 
 ### Completed Or Closed
 
+- [2026-07-29 Flow Projection Semantics, Scheduling, and Event Corpus Lab v1](./2026-07-29-flow-projection-semantics-scheduling-event-corpus-v1/spec.md) - completed the 42×5 projection contract, user pacing model, and event Series/Edition/Occurrence planning corpus; runtime migration, external Calendar/VTODO round-trip, and observed-user validation remain gated.
 - [2026-07-19 Adaptive Lean Agent Harness](./2026-07-19-adaptive-lean-agent-harness/spec.md) - implemented process cleanup that routes context and verification by task risk while retaining domain rules and deterministic gates; behavioral comparison remains an evidence follow-up.
 - [2026-07-14 URL-to-FLOW Prompt Lab v1](./2026-07-14-url-to-flow-prompt-lab/spec.md) - completed controlled prompt-contract experiment; real provider, latency, cost, and observed usability remain unproven.
 - [2026-07-14 Repeated Collaboration Workflows](./2026-07-14-repeated-collaboration-workflows/spec.md) - completed operating baseline for session start, request interviewing, direction capture, and closeout.

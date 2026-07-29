@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "flowme-runtime-baseline-mapping-v1",
+  "inspectedFiles": [
+    "lib/flow/types.ts",
+    "lib/flow/ics.ts",
+    "lib/flow/export.ts"
+  ],
+  "baselineStatus": "compatibility_only",
+  "mappings": [
+    {
+      "runtime": "Flow",
+      "canonical": "Flow plus taxonomy, attribution, source/review boundaries",
+      "mode": "human_review_required",
+      "reason": "category is free text and primary_destination may be hybrid."
+    },
+    {
+      "runtime": "FlowSection",
+      "canonical": "Step",
+      "mode": "automatic",
+      "reason": "ID, title and order are direct grouping metadata."
+    },
+    {
+      "runtime": "FlowItem",
+      "canonical": "Item",
+      "mode": "conditional",
+      "reason": "ID/title/order map directly; intent, completion and provenance need enrichment."
+    },
+    {
+      "runtime": "FlowItem.day_offset/date_window/repeat_rule",
+      "canonical": "Item.schedule",
+      "mode": "conditional",
+      "reason": "Existing explicit values map; missing schedules remain unscheduled."
+    },
+    {
+      "runtime": "FlowItemDetail",
+      "canonical": "Memo, completion criterion and SourceRef",
+      "mode": "conditional",
+      "reason": "Text must be split by semantic owner rather than mechanically."
+    },
+    {
+      "runtime": "primary_destination=hybrid",
+      "canonical": "primaryArtifact plus secondaryArtifacts",
+      "mode": "human_review_required",
+      "reason": "A primary result must be adjudicated."
+    },
+    {
+      "runtime": "calendar export",
+      "canonical": "effective scheduled Item projection",
+      "mode": "conditional",
+      "reason": "Current VEVENT exporter has no Flow Map, VTODO or loss-manifest contract."
+    }
+  ],
+  "contractPathMetrics": {
+    "totalMappings": 7,
+    "automatic": 1,
+    "conditional": 4,
+    "humanReviewRequired": 2,
+    "note": "This is a field-contract mapping audit, not a record-level production migration estimate."
+  },
+  "representativePortfolioNormalization": {
+    "items": 148,
+    "automaticallyNormalizedFromSourceBackedBundle": 148,
+    "sourceRows": 198,
+    "note": "The creator portfolio already contains Item IDs and row provenance; this does not imply legacy runtime records have the same evidence."
+  }
+}

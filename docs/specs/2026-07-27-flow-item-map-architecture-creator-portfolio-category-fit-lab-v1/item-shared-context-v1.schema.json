@@ -1,0 +1,532 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://flowme.local/schemas/item-shared-context-v1.schema.json",
+  "title": "FlowMe Item-first Shared Context v1 Lab Record",
+  "description": "Strict schema for one record in runs/item-shared-context/results-v1.json. Shared context is an evaluated hypothesis, not a preselected runtime decision.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "architecture",
+    "bundleId",
+    "title",
+    "taxonomy",
+    "userJob",
+    "setupFields",
+    "sampleUserOverlay",
+    "map",
+    "sharedContexts",
+    "attribution",
+    "rights",
+    "review",
+    "sourceRows",
+    "flows"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "flowme-item-shared-context-v1"
+    },
+    "architecture": {
+      "const": "item_first_shared_context"
+    },
+    "bundleId": {
+      "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/id"
+    },
+    "title": {
+      "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/nonEmptyString"
+    },
+    "taxonomy": {
+      "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/taxonomy"
+    },
+    "userJob": {
+      "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/nonEmptyString"
+    },
+    "setupFields": {
+      "type": "array",
+      "maxItems": 2,
+      "items": {
+        "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/setupField"
+      }
+    },
+    "sampleUserOverlay": {
+      "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/sampleUserOverlay"
+    },
+    "map": {
+      "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/flowMap"
+    },
+    "sharedContexts": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/scheduleBasisContext"
+          },
+          {
+            "$ref": "#/$defs/sharedItemScheduleContext"
+          }
+        ]
+      }
+    },
+    "attribution": {
+      "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/attribution"
+    },
+    "rights": {
+      "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/rights"
+    },
+    "review": {
+      "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/review"
+    },
+    "sourceRows": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/sourceRow"
+      }
+    },
+    "flows": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/sharedFlow"
+      }
+    }
+  },
+  "$defs": {
+    "scheduleBasisContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "fieldKey",
+        "label",
+        "sampleValue",
+        "source"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/id"
+        },
+        "kind": {
+          "const": "schedule_basis"
+        },
+        "fieldKey": {
+          "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/id"
+        },
+        "label": {
+          "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/nonEmptyString"
+        },
+        "sampleValue": {
+          "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/overlayScalar"
+        },
+        "source": {
+          "const": "user_overlay"
+        }
+      },
+      "description": "A reusable user input or overlay value. It creates neither completion state nor a calendar component."
+    },
+    "sharedItemScheduleContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "stepId",
+        "scheduleTemplate",
+        "itemIds",
+        "source"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/id"
+        },
+        "kind": {
+          "const": "shared_item_schedule"
+        },
+        "stepId": {
+          "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/id"
+        },
+        "scheduleTemplate": {
+          "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/schedule"
+        },
+        "itemIds": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/id"
+          }
+        },
+        "source": {
+          "const": "derived_equal_source_schedule"
+        }
+      },
+      "description": "A deduplicated source schedule shared only by the named Items. It cannot own execution state."
+    },
+    "resolvedDate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "date"
+      ],
+      "properties": {
+        "kind": {
+          "const": "date"
+        },
+        "date": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        }
+      }
+    },
+    "unresolvedSourceSchedule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "sourceSchedule",
+        "missingInputs"
+      ],
+      "properties": {
+        "kind": {
+          "const": "unresolved_source_schedule"
+        },
+        "sourceSchedule": {
+          "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/schedule"
+        },
+        "missingInputs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/id"
+          }
+        }
+      }
+    },
+    "effectiveSchedule": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/resolvedDate"
+        },
+        {
+          "$ref": "#/$defs/unresolvedSourceSchedule"
+        }
+      ],
+      "description": "Deterministic resolution order is occurrence override, user Item override, published Item binding, then unscheduled."
+    },
+    "inputSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fieldKey",
+        "askedOnceAtBundle",
+        "originalSetupFieldCount"
+      ],
+      "properties": {
+        "fieldKey": {
+          "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/id"
+        },
+        "askedOnceAtBundle": {
+          "const": true
+        },
+        "originalSetupFieldCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2
+        }
+      }
+    },
+    "scheduleBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sharedContextRefs",
+        "scheduleTemplate",
+        "effectiveSchedule",
+        "override",
+        "inputSource"
+      ],
+      "properties": {
+        "sharedContextRefs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/id"
+          }
+        },
+        "scheduleTemplate": {
+          "oneOf": [
+            {
+              "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/schedule"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "effectiveSchedule": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/effectiveSchedule"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "override": {
+          "type": "null",
+          "description": "The lab fixture leaves occurrence and user Item overrides in their own ownership layers."
+        },
+        "inputSource": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/inputSource"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "sharedItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "flowId",
+        "stepId",
+        "title",
+        "detail",
+        "intent",
+        "completion",
+        "optional",
+        "schedule",
+        "fields",
+        "memos",
+        "conditions",
+        "sourceRefs",
+        "order",
+        "projectionPolicy",
+        "scheduleBinding"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/id"
+        },
+        "flowId": {
+          "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/id"
+        },
+        "stepId": {
+          "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/id"
+        },
+        "title": {
+          "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/nonEmptyString"
+        },
+        "detail": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "intent": {
+          "enum": [
+            "act",
+            "inspect",
+            "decide",
+            "record",
+            "use_resource"
+          ]
+        },
+        "completion": {
+          "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/completion"
+        },
+        "optional": {
+          "type": "boolean"
+        },
+        "schedule": {
+          "oneOf": [
+            {
+              "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/schedule"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/field"
+          }
+        },
+        "memos": {
+          "type": "array",
+          "items": {
+            "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/memo"
+          }
+        },
+        "conditions": {
+          "type": "array",
+          "items": {
+            "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/condition"
+          }
+        },
+        "sourceRefs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/sourceRef"
+          }
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "projectionPolicy": {
+          "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/projectionPolicy"
+        },
+        "scheduleBinding": {
+          "$ref": "#/$defs/scheduleBinding"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "schedule": {
+                "type": "null"
+              }
+            },
+            "required": [
+              "schedule"
+            ]
+          },
+          "then": {
+            "properties": {
+              "projectionPolicy": {
+                "type": "object",
+                "properties": {
+                  "calendar": {
+                    "const": "none"
+                  }
+                }
+              },
+              "scheduleBinding": {
+                "type": "object",
+                "properties": {
+                  "sharedContextRefs": {
+                    "type": "array",
+                    "maxItems": 0
+                  },
+                  "scheduleTemplate": {
+                    "type": "null"
+                  },
+                  "effectiveSchedule": {
+                    "type": "null"
+                  },
+                  "inputSource": {
+                    "type": "null"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "sharedStep": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "flowId",
+        "title",
+        "order",
+        "sourceScheduleGroup",
+        "prerequisite",
+        "derivedProgressOnly",
+        "items"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/id"
+        },
+        "flowId": {
+          "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/id"
+        },
+        "title": {
+          "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/nonEmptyString"
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sourceScheduleGroup": {
+          "oneOf": [
+            {
+              "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/schedule"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "prerequisite": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "derivedProgressOnly": {
+          "const": true
+        },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/sharedItem"
+          }
+        }
+      }
+    },
+    "sharedFlow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title",
+        "primarySourceUrl",
+        "steps"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/id"
+        },
+        "title": {
+          "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/nonEmptyString"
+        },
+        "primarySourceUrl": {
+          "$ref": "https://flowme.local/schemas/current-canonical-v1.schema.json#/$defs/nonEmptyString"
+        },
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/sharedStep"
+          }
+        }
+      }
+    }
+  }
+}

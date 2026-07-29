@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "flowme-final-architecture-adjudication-v2",
+  "generatedAt": "2026-07-28T00:00:00.000Z",
+  "input": {
+    "path": "docs/content-audit/2026-07-27-creator-portfolio-qualified-v2.json",
+    "sha256": "aa85b1da3b4403694895cc0647e462daefaec47930a7f43611a489c29db5a16f",
+    "schemaVersion": "flowme-creator-portfolio-qualified-v2",
+    "logicHandoffBundleIds": [
+      "bundle-moving-d30",
+      "bundle-baby-food-174",
+      "bundle-opic-plan",
+      "bundle-opentutorials-web1-progress",
+      "bundle-new-car-comparison",
+      "bundle-allblanc-7day-abs",
+      "bundle-wtable-summer-banchan-five",
+      "bundle-andstudio-job-prep-videos"
+    ]
+  },
+  "decision": "keep_current_canonical_v1_add_projection_time_grouping",
+  "verdict": "Go",
+  "rationale": [
+    "Current canonical scored 95/100 on the new 160-Item corpus and passed every hard gate.",
+    "48/160 Items are undated; forcing ICS-first makes their usable behavior depend on VTODO support that was not externally tested.",
+    "Only one distinct bundle needs equal-schedule multi-Item grouping, below the frozen three-bundle threshold for a persisted SharedContext entity.",
+    "Literal ICS-first can pass a local syntax parser but cannot portably own FlowMe completion, provenance, rights/review, and private overlay without X-properties or a sidecar."
+  ],
+  "adoptNow": [
+    "Keep SourceRow → Item → Step → Flow → Bundle/Flow Map canonical.",
+    "Keep completion, decision, record, hold, and occurrence state on Item.",
+    "Add projectionPolicy.calendar = none | per_item | step_bundle at export/request time.",
+    "Allow step_bundle only for source-equal schedules; include child Item IDs and declare independent completion loss.",
+    "Export scheduled Items as sibling VEVENT components only.",
+    "Offer VTODO only behind a destination capability check; default to Checklist/Todo/Sheet/Memo fallbacks."
+  ],
+  "hold": [
+    {
+      "proposal": "persist SharedContext as a canonical entity",
+      "reason": "1 distinct bundle qualifies; the frozen adoption threshold is 3, and existing setup fields already collect anchors once."
+    },
+    {
+      "proposal": "use literal ICS-first as canonical storage",
+      "reason": "Fails source-provenance and independent-completion hard gates; external VTODO/RELATED-TO/X-property round-trip is NOT_RUN."
+    },
+    {
+      "proposal": "claim external calendar compatibility",
+      "reason": "No Google, Outlook, or Apple account import/re-export test was run."
+    }
+  ],
+  "backendRules": [
+    "Reject VEVENT generation when effective Item.schedule is null.",
+    "Never nest VEVENT or VTODO; emit sibling components inside VCALENDAR.",
+    "Keep stable Item ID + occurrence key as projection identity.",
+    "For step_bundle, include all child Item IDs and set completionOwner=canonical_item_state.",
+    "Treat VTODO, RELATED-TO, VALARM, VJOURNAL, and X-property preservation as capability flags, not assumptions.",
+    "Keep rights/review/private overlay out of user exports while retaining them in canonical DTO storage.",
+    "Do not turn test-only anchor dates into source facts."
+  ],
+  "verifiedMetrics": {
+    "bundles": 8,
+    "flows": 21,
+    "steps": 49,
+    "items": 160,
+    "sourceRows": 210,
+    "sourceRowReferences": 250,
+    "uniqueSourceRowsReferenced": 210,
+    "scheduledItems": 112,
+    "undatedItems": 48,
+    "perItemVevents": 112,
+    "compactStepBundleVevents": 91,
+    "stepBundleGroupedItems": 27,
+    "stepBundleIndependentCompletionLossDeclaredForItems": 27,
+    "schedulelessVevents": 0,
+    "nestedVeventOrVtodo": 0,
+    "inventedActions": 0,
+    "inventedSourceDates": 0,
+    "sourceValuesReasked": 0,
+    "corpusCounts": {
+      "bundles": 8,
+      "flows": 21,
+      "steps": 49,
+      "items": 160,
+      "sourceRows": 210,
+      "scheduledItems": 112,
+      "undatedItems": 48
+    },
+    "externalClientRoundTrip": "not_run",
+    "observedUserValidation": "not_run"
+  },
+  "verificationStatus": {
+    "deterministicGenerator": "RUN",
+    "schemaValidation": "delegated_to_integrated_validator",
+    "canonicalJsonRoundTrip": "8/8 PASS",
+    "sharedContextSemanticRehydration": "8/8 PASS",
+    "literalIcsLabParser": "8/8 PASS",
+    "externalGoogleOutlookAppleRoundTrip": "NOT_RUN",
+    "observedUserValidation": "NOT_RUN",
+    "runtimeChanged": false,
+    "databaseChanged": false,
+    "productionApiChanged": false
+  }
+}

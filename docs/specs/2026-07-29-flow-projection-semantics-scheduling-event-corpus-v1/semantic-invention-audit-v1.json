@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "flowme-semantic-invention-audit-v1",
+  "generatedAt": "2026-07-29T01:42:34.693Z",
+  "counts": {
+    "actionWithoutSourceProvenance": 0,
+    "sourceDateWithoutDirectMatch": 0,
+    "falseSourceRecurrence": 0,
+    "completionCriteriaWithoutProvenance": 0
+  },
+  "details": {
+    "actionWithoutSourceProvenance": [],
+    "sourceDateWithoutDirectMatch": [],
+    "falseSourceRecurrence": [],
+    "completionCriteriaWithoutProvenance": []
+  },
+  "pass": true
+}

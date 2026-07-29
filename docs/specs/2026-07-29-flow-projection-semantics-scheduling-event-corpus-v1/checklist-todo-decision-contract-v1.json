@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "flowme-checklist-todo-decision-contract-v1",
+  "generatedAt": "2026-07-29T12:00:00+09:00",
+  "canonicalRelationship": "sibling_projections",
+  "definitions": {
+    "checklist": {
+      "definition": "한 상황·세션·목표에서 누락 없이 끝내야 하는 유한한 Item 묶음",
+      "bounded": true,
+      "order": "preserve_source_or_procedure_order",
+      "grouping": "Step_group_required",
+      "reorder": "normally_no",
+      "completion": "per_Item_plus_group_progress",
+      "parentSubtask": "not_required",
+      "fallback": "numbered grouped checklist"
+    },
+    "todo": {
+      "definition": "독립적으로 꺼내 실행하고 미루고 재정렬할 수 있는 다음 행동 또는 자료 queue",
+      "bounded": false,
+      "order": "queue_order_user_editable_unless_dependency",
+      "grouping": "optional_Step_parent",
+      "reorder": "yes_when_no_dependency",
+      "completion": "per_Item_task",
+      "parentSubtask": "adapter_when_supported",
+      "fallback": "flat tasks with Step prefix/tag"
+    }
+  },
+  "decisionOrder": [
+    "Is there an independently stateful Item?",
+    "Is the set finite and omission-sensitive in one context?",
+    "Does source order or procedure dependency need preserving?",
+    "Can each Item be deferred/reordered and remain meaningful?",
+    "Choose one primary projection; record the sibling as secondary when useful."
+  ],
+  "tieBreakers": [
+    {
+      "when": "ordered finite procedure",
+      "choose": "checklist",
+      "avoid": "todo"
+    },
+    {
+      "when": "multi-day lesson progress",
+      "choose": "todo for execution queue; sheet for overview",
+      "secondary": "checklist only for a bounded session"
+    },
+    {
+      "when": "resource collection selected for later",
+      "choose": "todo",
+      "avoid": "checklist unless completeness is the user job"
+    },
+    {
+      "when": "repeating maintenance session",
+      "choose": "checklist inside each occurrence",
+      "secondary": "calendar for the confirmed recurrence"
+    }
+  ],
+  "schemaDifference": {
+    "checklist": "groups[].orderedEntries[] with bounded, orderLocked, required, sourceOrder",
+    "todo": "tasks[] with parentTaskId, queuePosition, canReorder, canDefer, due, dependencyItemIds"
+  }
+}
