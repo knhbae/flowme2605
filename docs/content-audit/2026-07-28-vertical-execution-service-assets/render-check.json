@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "flowme-vertical-execution-service-render-check-v1",
+  "generatedAt": "2026-07-29T03:56:12.271Z",
+  "dataChecks": {
+    "discovered": 36,
+    "verified": 24,
+    "deepDive": 10,
+    "categories": 9,
+    "opportunities": 8,
+    "captures": {
+      "total": 20,
+      "filesPresent": 20,
+      "capturedPublicSurface": 20,
+      "accessLimited": 0
+    }
+  },
+  "renderResults": [
+    {
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "cardCount": 10,
+      "patternCardCount": 8,
+      "storyboardCount": 10,
+      "uiScreenCount": 40,
+      "opportunityCount": 8,
+      "imageCount": 20,
+      "brokenImages": [],
+      "documentHorizontalOverflow": 0,
+      "outsideViewport": [],
+      "externalSourceLinks": 30,
+      "filterChecks": {
+        "goVisible": 4,
+        "expectedGoVisible": 4,
+        "partnerVisible": 3,
+        "expectedPartnerVisible": 3,
+        "healthVisible": 1,
+        "expectedHealthVisible": 1
+      },
+      "scoreDetailsOpened": true,
+      "consoleErrors": [],
+      "pageErrors": []
+    },
+    {
+      "viewport": {
+        "name": "desktop",
+        "width": 1280,
+        "height": 900
+      },
+      "cardCount": 10,
+      "patternCardCount": 8,
+      "storyboardCount": 10,
+      "uiScreenCount": 40,
+      "opportunityCount": 8,
+      "imageCount": 20,
+      "brokenImages": [],
+      "documentHorizontalOverflow": 0,
+      "outsideViewport": [],
+      "externalSourceLinks": 30,
+      "filterChecks": {
+        "goVisible": 4,
+        "expectedGoVisible": 4,
+        "partnerVisible": 3,
+        "expectedPartnerVisible": 3,
+        "healthVisible": 1,
+        "expectedHealthVisible": 1
+      },
+      "scoreDetailsOpened": true,
+      "consoleErrors": [],
+      "pageErrors": []
+    }
+  ],
+  "failures": [],
+  "passed": true,
+  "note": "브라우저 자동 검증은 레이아웃·상호작용·이미지 상태를 확인한다. 실제 사용자 관찰 검증이 아니다."
+}

@@ -1,0 +1,4697 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vertical 실행 서비스 벤치마크</title>
+  <style>
+    :root {
+      --bg: #f3f5f4;
+      --paper: #ffffff;
+      --ink: #17201c;
+      --muted: #65706a;
+      --line: #d8dedb;
+      --green: #1c6b50;
+      --green-soft: #e7f2ed;
+      --blue: #355f9a;
+      --blue-soft: #eaf0f9;
+      --amber: #8a6510;
+      --amber-soft: #f7f0d9;
+      --coral: #a94f39;
+      --coral-soft: #faece7;
+      --shadow: 0 8px 24px rgba(23, 32, 28, .07);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", system-ui, sans-serif;
+      line-height: 1.55;
+      letter-spacing: 0;
+      overflow-wrap: anywhere;
+    }
+    a { color: var(--blue); }
+    button, select { font: inherit; letter-spacing: 0; }
+    .report-header {
+      background: var(--paper);
+      border-bottom: 1px solid var(--line);
+      padding: 32px 20px 24px;
+    }
+    .header-inner, main, .appendix-inner {
+      width: min(1160px, 100%);
+      margin: 0 auto;
+    }
+    .eyebrow { color: var(--green); font-size: 13px; font-weight: 800; margin-bottom: 6px; }
+    h1 { margin: 0; font-size: 32px; line-height: 1.2; }
+    .lede { max-width: 760px; margin: 10px 0 0; color: var(--muted); }
+    .headline-answer {
+      display: grid;
+      grid-template-columns: minmax(0, 1.6fr) minmax(280px, .8fr);
+      gap: 18px;
+      margin-top: 22px;
+      align-items: stretch;
+    }
+    .answer-copy {
+      border-left: 4px solid var(--green);
+      padding: 14px 16px;
+      background: var(--green-soft);
+    }
+    .answer-copy b { display: block; margin-bottom: 4px; }
+    .answer-copy p { margin: 0; }
+    .scope-note {
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      background: #fafbfa;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .stat {
+      border-top: 3px solid var(--line);
+      padding: 10px 12px;
+      background: #fafbfa;
+    }
+    .stat:nth-child(1) { border-color: var(--blue); }
+    .stat:nth-child(2) { border-color: var(--green); }
+    .stat:nth-child(3) { border-color: var(--amber); }
+    .stat:nth-child(4) { border-color: var(--coral); }
+    .stat:nth-child(5) { border-color: #6d5c95; }
+    .stat b { display: block; font-size: 25px; line-height: 1.1; }
+    .stat span { color: var(--muted); font-size: 12px; }
+    .filter-bar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, .96);
+      backdrop-filter: blur(10px);
+    }
+    .filter-inner {
+      width: min(1160px, 100%);
+      margin: 0 auto;
+      padding: 10px 20px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .filter-button {
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--line);
+      background: white;
+      color: var(--ink);
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 800;
+    }
+    .filter-button[data-filter="all"] { width: auto; padding: 0 12px; }
+    .filter-button.active { color: white; background: var(--ink); border-color: var(--ink); }
+    .filter-button .full-label { display: none; }
+    .filter-select {
+      min-width: 170px;
+      height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: white;
+      padding: 0 34px 0 10px;
+    }
+    .visible-count { margin-left: auto; color: var(--muted); font-size: 13px; }
+    main { padding: 26px 20px 54px; }
+    .section-heading { margin: 0 0 16px; }
+    .section-heading h2 { margin: 0; font-size: 24px; }
+    .section-heading p { margin: 5px 0 0; color: var(--muted); }
+    .pattern-overview {
+      margin-bottom: 36px;
+      padding-bottom: 36px;
+      border-bottom: 2px solid var(--ink);
+    }
+    .pattern-atlas {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .pattern-card {
+      --accent: var(--green);
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-top: 4px solid var(--accent);
+      border-radius: 8px;
+      background: var(--paper);
+    }
+    .pattern-card:nth-child(2) { --accent: var(--blue); }
+    .pattern-card:nth-child(3) { --accent: var(--amber); }
+    .pattern-card:nth-child(4) { --accent: var(--coral); }
+    .pattern-card:nth-child(5) { --accent: #6d5c95; }
+    .pattern-card:nth-child(6) { --accent: #4b747b; }
+    .pattern-card:nth-child(7) { --accent: #936237; }
+    .pattern-card:nth-child(8) { --accent: #3f6658; }
+    .pattern-card > header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 16px 10px;
+    }
+    .pattern-card > header > span {
+      flex: 0 0 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: white;
+      background: var(--accent);
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .pattern-card > header small { color: var(--muted); font-size: 11px; }
+    .pattern-card > header h3 { margin: 0; font-size: 17px; }
+    .pattern-flow {
+      display: grid;
+      grid-template-columns: minmax(0, .8fr) 18px minmax(0, 1.2fr) 18px minmax(0, 1fr);
+      align-items: stretch;
+      gap: 4px;
+      padding: 0 16px 14px;
+    }
+    .pattern-flow > div {
+      min-width: 0;
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      background: #fafbfa;
+    }
+    .pattern-flow small { display: block; color: var(--accent); font-size: 10px; font-weight: 900; }
+    .pattern-flow b { display: block; margin-top: 3px; font-size: 12px; line-height: 1.4; }
+    .pattern-flow > i {
+      position: relative;
+      align-self: center;
+      height: 1px;
+      background: #aeb8b3;
+    }
+    .pattern-flow > i::after {
+      content: "";
+      position: absolute;
+      top: -3px;
+      right: 0;
+      width: 6px;
+      height: 6px;
+      border-top: 1px solid #87928c;
+      border-right: 1px solid #87928c;
+      transform: rotate(45deg);
+    }
+    .pattern-card > footer {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      padding: 10px 16px;
+      border-top: 1px solid var(--line);
+      background: #f7f9f8;
+    }
+    .pattern-card > footer a {
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--ink);
+      background: white;
+      font-size: 11px;
+      font-weight: 800;
+      text-decoration: none;
+    }
+    .service-list { display: grid; gap: 20px; }
+    .service-card {
+      min-width: 0;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      scroll-margin-top: 74px;
+    }
+    .service-card.hidden { display: none; }
+    .service-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+      padding: 20px;
+      border-bottom: 1px solid var(--line);
+    }
+    .service-header h2 { margin: 0; font-size: 24px; }
+    .service-header p { margin: 6px 0 0; color: var(--muted); }
+    .verdict-stack { display: grid; justify-items: end; gap: 6px; flex: 0 0 auto; }
+    .decision, .relationship, .deep-mark {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      border-radius: 5px;
+      padding: 3px 8px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .decision.go { color: var(--green); background: var(--green-soft); }
+    .decision.partner { color: var(--blue); background: var(--blue-soft); }
+    .decision.benchmark { color: var(--amber); background: var(--amber-soft); }
+    .decision.hold { color: var(--coral); background: var(--coral-soft); }
+    .relationship { color: var(--muted); background: #f0f2f1; }
+    .evidence-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1px;
+      background: var(--line);
+    }
+    .evidence-shot { margin: 0; min-width: 0; background: var(--paper); }
+    .evidence-shot a { display: block; aspect-ratio: 16 / 9; overflow: hidden; background: #e8ecea; }
+    .evidence-shot img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top center; }
+    .evidence-shot figcaption { display: flex; justify-content: space-between; gap: 10px; padding: 9px 12px; font-size: 12px; }
+    .evidence-shot figcaption span { color: var(--muted); text-align: right; }
+    .service-section { padding: 18px 20px; border-top: 1px solid var(--line); }
+    .service-section > h3, .service-section > div > h3 { margin: 0 0 10px; font-size: 16px; }
+    .ui-demo-section { background: #f6f8f7; }
+    .storyboard-heading {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: flex-start;
+      margin-bottom: 14px;
+    }
+    .storyboard-heading h3 { margin: 0; font-size: 18px; }
+    .storyboard-heading p { max-width: 720px; margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+    .storyboard-heading > span {
+      flex: 0 0 auto;
+      padding: 4px 8px;
+      border: 1px solid #bfd4cb;
+      border-radius: 5px;
+      color: var(--green);
+      background: var(--green-soft);
+      font-size: 11px;
+      font-weight: 900;
+    }
+    .ui-storyboard {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .ui-screen {
+      position: relative;
+      min-width: 0;
+    }
+    .ui-screen:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      z-index: 2;
+      top: calc(50% + 12px);
+      right: -10px;
+      width: 7px;
+      height: 7px;
+      border-top: 2px solid #7d8983;
+      border-right: 2px solid #7d8983;
+      transform: rotate(45deg);
+      background: var(--bg);
+    }
+    .ui-step-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 30px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+    }
+    .ui-step-label span {
+      display: grid;
+      place-items: center;
+      width: 21px;
+      height: 21px;
+      border-radius: 50%;
+      color: white;
+      background: var(--ink);
+      font-size: 10px;
+    }
+    .ui-shell {
+      min-height: 410px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border: 1px solid #cdd6d1;
+      border-radius: 8px;
+      background: var(--paper);
+      box-shadow: 0 5px 14px rgba(23, 32, 28, .06);
+    }
+    .ui-topbar {
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 0 13px;
+      border-bottom: 1px solid var(--line);
+      background: #fbfcfb;
+    }
+    .ui-topbar b { font-size: 13px; }
+    .ui-topbar span { color: var(--muted); font-size: 10px; }
+    .ui-body {
+      min-width: 0;
+      flex: 1;
+      padding: 14px;
+    }
+    .ui-body > h4 {
+      margin: 10px 0 7px;
+      font-size: 17px;
+      line-height: 1.32;
+    }
+    .ui-body > p { margin: 0; color: var(--muted); font-size: 11px; }
+    .ui-source {
+      display: inline-flex;
+      padding: 3px 6px;
+      border-radius: 4px;
+      color: var(--blue);
+      background: var(--blue-soft);
+      font-size: 9px;
+      font-weight: 800;
+    }
+    .ui-outcome {
+      margin-top: 16px;
+      padding: 11px;
+      border-left: 3px solid var(--green);
+      background: var(--green-soft);
+    }
+    .ui-outcome small, .ui-artifact-title small, .goal-result small, .preview-focus small {
+      display: block;
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 800;
+    }
+    .ui-outcome b { display: block; margin-top: 3px; font-size: 12px; }
+    .ui-bottom {
+      min-height: 54px;
+      display: flex;
+      align-items: center;
+      padding: 9px 11px;
+      border-top: 1px solid var(--line);
+      background: #fbfcfb;
+    }
+    .ui-bottom button {
+      width: 100%;
+      min-height: 36px;
+      border: 1px solid var(--ink);
+      border-radius: 6px;
+      color: white;
+      background: var(--ink);
+      font-size: 11px;
+      font-weight: 900;
+      cursor: default;
+    }
+    .ui-bottom.split { gap: 7px; }
+    .ui-bottom.split button { min-width: 0; }
+    .ui-bottom button.secondary {
+      color: var(--ink);
+      background: white;
+      border-color: var(--line);
+    }
+    .ui-helper { margin-bottom: 12px !important; }
+    .mock-fields { display: grid; gap: 8px; }
+    .mock-field label {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      color: var(--ink);
+      font-size: 10px;
+      font-weight: 800;
+    }
+    .mock-field label span { color: var(--coral); font-size: 9px; }
+    .mock-field > div {
+      margin-top: 4px;
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      color: var(--muted);
+      background: white;
+      font-size: 10px;
+    }
+    .mock-later {
+      min-height: 30px;
+      padding: 5px 8px;
+      border: 1px dashed #a8b4ae;
+      border-radius: 5px;
+      color: var(--blue);
+      background: #f7f9fb;
+      font-size: 9px;
+      font-weight: 800;
+      text-align: left;
+      cursor: default;
+    }
+    .ui-info-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 9px;
+    }
+    .ui-info-row i {
+      flex: 0 0 12px;
+      height: 12px;
+      border: 2px solid var(--green);
+      border-radius: 50%;
+    }
+    .ui-artifact-title h4 { margin: 2px 0 11px; font-size: 14px; line-height: 1.35; }
+    .preview-body { padding: 12px; }
+    .preview-block, .goal-preview, .itinerary-preview, .dday-preview, .session-preview, .state-preview, .lesson-path {
+      min-width: 0;
+      padding: 10px;
+      border: 1px solid var(--line);
+      background: #fafbfa;
+    }
+    .preview-label { margin-bottom: 7px; color: var(--green); font-size: 9px; font-weight: 900; }
+    .preview-task {
+      display: grid;
+      grid-template-columns: 14px minmax(0, 1fr) auto;
+      gap: 6px;
+      align-items: start;
+      padding: 7px 0;
+      border-top: 1px dashed var(--line);
+    }
+    .preview-task i {
+      width: 12px;
+      height: 12px;
+      margin-top: 2px;
+      border: 1px solid #9aa69f;
+      border-radius: 3px;
+      background: white;
+    }
+    .preview-task.active i { border-color: var(--green); background: var(--green-soft); }
+    .preview-task b { font-size: 9px; }
+    .preview-task span { color: var(--muted); font-size: 8px; }
+    .preview-progress {
+      height: 5px;
+      margin-bottom: 10px;
+      overflow: hidden;
+      background: #e1e6e3;
+    }
+    .preview-progress span { display: block; height: 100%; background: var(--green); }
+    .preview-focus {
+      margin-top: 8px;
+      padding: 11px;
+      border: 1px solid #b8cec4;
+      background: white;
+    }
+    .preview-focus.compact { padding: 8px; }
+    .preview-focus b { display: block; margin-top: 4px; font-size: 10px; line-height: 1.4; }
+    .preview-foot { margin-top: 8px; color: var(--muted); font-size: 8px; }
+    .lesson-path { display: grid; gap: 5px; }
+    .lesson-node {
+      display: grid;
+      grid-template-columns: 20px minmax(0, 1fr);
+      gap: 8px;
+      align-items: center;
+      min-height: 38px;
+      color: var(--muted);
+      font-size: 9px;
+    }
+    .lesson-node i {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #bbc5c0;
+      border-radius: 50%;
+      background: white;
+    }
+    .lesson-node.done i { border-color: var(--green); background: var(--green-soft); }
+    .lesson-node.current { color: var(--ink); font-weight: 900; }
+    .lesson-node.current i { border: 6px solid var(--blue); }
+    .lesson-node.next i { border-style: dashed; }
+    .goal-result b { display: block; margin-top: 3px; font-size: 10px; }
+    .goal-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 20px;
+      margin-top: 10px;
+      border-top: 2px solid #bbc5c0;
+    }
+    .goal-line i {
+      width: 10px;
+      height: 10px;
+      margin-top: -12px;
+      border: 2px solid #9aa69f;
+      border-radius: 50%;
+      background: white;
+    }
+    .goal-line i.current { border-color: var(--green); background: var(--green); }
+    .goal-labels { display: flex; justify-content: space-between; color: var(--muted); font-size: 8px; }
+    .itinerary-preview { display: grid; gap: 6px; }
+    .itinerary-preview > div {
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr);
+      column-gap: 7px;
+      padding: 7px;
+      border-left: 2px solid #bcc6c1;
+      background: white;
+    }
+    .itinerary-preview > div.current { border-left-color: var(--green); background: var(--green-soft); }
+    .itinerary-preview time { grid-row: 1 / 3; color: var(--muted); font-size: 8px; }
+    .itinerary-preview b { font-size: 9px; }
+    .itinerary-preview span { color: var(--muted); font-size: 8px; }
+    .dday-anchor {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--ink);
+    }
+    .dday-anchor small { color: var(--muted); font-size: 8px; }
+    .dday-anchor b { font-size: 14px; }
+    .dday-row {
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr) auto;
+      gap: 6px;
+      padding: 7px 0;
+      border-bottom: 1px dashed var(--line);
+    }
+    .dday-row span, .dday-row i { color: var(--muted); font-size: 8px; font-style: normal; }
+    .dday-row b { font-size: 9px; }
+    .dday-row.active b { color: var(--green); }
+    .session-preview { display: grid; gap: 5px; }
+    .session-preview > div:not(.preview-focus) {
+      display: grid;
+      grid-template-columns: 20px minmax(0, 1fr);
+      gap: 7px;
+      align-items: center;
+      min-height: 28px;
+      color: var(--muted);
+      font-size: 9px;
+    }
+    .session-preview > div:not(.preview-focus) i {
+      display: grid;
+      place-items: center;
+      width: 19px;
+      height: 19px;
+      border-radius: 50%;
+      background: #e3e8e5;
+      font-size: 8px;
+      font-style: normal;
+    }
+    .session-preview > div.done i { color: white; background: var(--green); }
+    .session-preview > div.active { color: var(--ink); font-weight: 900; }
+    .state-tabs { display: flex; gap: 4px; overflow: hidden; }
+    .state-tabs span {
+      min-width: 0;
+      padding: 4px 6px;
+      border-radius: 4px;
+      color: var(--muted);
+      background: #e9edeb;
+      font-size: 7px;
+      white-space: nowrap;
+    }
+    .state-tabs span.active { color: var(--blue); background: var(--blue-soft); }
+    .state-date {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed var(--line);
+      font-size: 8px;
+    }
+    .state-date span { color: var(--muted); }
+    .ui-destination {
+      display: grid;
+      gap: 2px;
+      margin-top: 10px;
+      padding-top: 9px;
+      border-top: 1px dashed var(--line);
+    }
+    .ui-destination span { color: var(--muted); font-size: 8px; }
+    .ui-destination b { font-size: 9px; }
+    .today-body { display: flex; flex-direction: column; }
+    .today-focus {
+      padding: 14px 12px;
+      border-top: 3px solid var(--green);
+      background: var(--green-soft);
+    }
+    .today-focus h4 { margin: 8px 0 5px; font-size: 15px; line-height: 1.35; }
+    .today-focus p { margin: 0; color: var(--muted); font-size: 9px; }
+    .today-status {
+      color: var(--green);
+      font-size: 9px;
+      font-weight: 900;
+    }
+    .source-link-button {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 34px;
+      margin-top: 10px;
+      padding: 7px 9px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      color: var(--blue);
+      background: white;
+      font-size: 9px;
+      font-weight: 800;
+      text-align: left;
+      cursor: default;
+    }
+    .source-link-button i {
+      width: 12px;
+      height: 12px;
+      border: 2px solid var(--blue);
+      border-radius: 50%;
+    }
+    .today-meta {
+      display: grid;
+      gap: 5px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 8px;
+    }
+    .today-meta span::before { content: "· "; color: var(--green); }
+    .journey-details {
+      margin-top: 14px;
+      border: 1px solid var(--line);
+      background: white;
+    }
+    .journey-details > summary { padding: 10px 12px; color: var(--muted); font-size: 11px; }
+    .journey-details .journey { padding: 10px 12px; border-top: 1px solid var(--line); }
+    .journey {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 0;
+      padding: 0;
+      margin: 0;
+    }
+    .journey li {
+      min-width: 0;
+      position: relative;
+      display: flex;
+      gap: 8px;
+      padding: 8px 12px 8px 0;
+    }
+    .journey li:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      top: 18px;
+      right: 3px;
+      width: 7px;
+      height: 7px;
+      border-top: 2px solid #aab4af;
+      border-right: 2px solid #aab4af;
+      transform: rotate(45deg);
+    }
+    .journey-index {
+      flex: 0 0 24px;
+      height: 24px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: white;
+      background: var(--ink);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .journey b { font-size: 12px; color: var(--green); }
+    .journey p { margin: 3px 0 0; font-size: 13px; }
+    .compare-section, .boundary-section, .signal-section {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 26px;
+    }
+    .compare-section > div + div, .boundary-section > div + div, .signal-section > div + div { border-left: 1px solid var(--line); padding-left: 26px; }
+    .input-list { list-style: none; margin: 0; padding: 0; }
+    .input-list li { display: grid; grid-template-columns: 42px minmax(0, .7fr) minmax(0, 1fr); align-items: start; gap: 8px; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+    .input-list span { font-size: 11px; font-weight: 800; padding: 2px 5px; border-radius: 4px; text-align: center; }
+    .input-list .required { color: var(--coral); background: var(--coral-soft); }
+    .input-list .optional { color: var(--blue); background: var(--blue-soft); }
+    .input-list small { color: var(--muted); }
+    .artifact { margin: 0 0 10px; font-size: 17px; font-weight: 800; color: var(--green); }
+    .compare-section p { margin: 6px 0; }
+    .boundary-section ul { margin: 0; padding-left: 20px; }
+    .boundary-section li { margin: 5px 0; }
+    .signal-section p { margin: 8px 0 4px; }
+    .signal-section small { color: var(--muted); }
+    .signal-status {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--blue);
+      background: var(--blue-soft);
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .opportunity-strip {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      background: #f9faf9;
+    }
+    .opportunity-strip h3 { margin: 3px 0 4px !important; font-size: 18px !important; }
+    .opportunity-strip p { margin: 0; color: var(--muted); }
+    .opportunity-label { color: var(--blue); font-size: 12px; font-weight: 800; }
+    .opportunity-decision { font-size: 13px; font-weight: 900; color: var(--green); }
+    details { border-top: 1px solid var(--line); }
+    details summary { cursor: pointer; padding: 14px 20px; font-weight: 800; }
+    details summary span { float: right; color: var(--green); }
+    .analysis-details > summary { background: #fbfcfb; }
+    .analysis-body > .service-section:first-child { border-top: 1px solid var(--line); }
+    .score-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--line); }
+    .score-row { padding: 13px 20px; border-bottom: 1px solid var(--line); }
+    .score-row:nth-child(odd) { border-right: 1px solid var(--line); }
+    .score-head { display: flex; justify-content: space-between; gap: 12px; }
+    .score-head span { color: var(--green); font-weight: 900; }
+    .meter { height: 4px; margin: 7px 0; background: #e6eae8; }
+    .meter i { display: block; height: 100%; background: var(--green); }
+    .score-row p { margin: 0; color: var(--muted); font-size: 12px; }
+    .source-details { border-top: 0; }
+    .source-details[open] { border-top: 1px solid var(--line); }
+    .boundary-note { margin: 0; padding: 0 20px 12px; color: var(--coral); font-size: 13px; }
+    .source-list { margin: 0; padding: 0 36px 20px; }
+    .source-list li { margin: 8px 0; }
+    .source-list span { display: block; color: var(--muted); font-size: 12px; }
+    .opportunity-band { margin-top: 40px; padding-top: 34px; border-top: 2px solid var(--ink); }
+    .opportunity-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .opportunity-card { background: var(--paper); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+    .opportunity-card header { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 10px; align-items: start; padding: 16px; }
+    .opportunity-card header > span { display: grid; place-items: center; width: 30px; height: 30px; background: var(--ink); color: white; border-radius: 50%; font-weight: 900; }
+    .opportunity-card h3 { margin: 2px 0 0; font-size: 17px; }
+    .opportunity-card small { color: var(--muted); }
+    .opportunity-card dl { margin: 0; padding: 0 16px 16px; }
+    .opportunity-card dl div { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 10px; padding: 6px 0; border-top: 1px dashed var(--line); }
+    .opportunity-card dt { font-size: 12px; font-weight: 800; color: var(--green); }
+    .opportunity-card dd { margin: 0; font-size: 13px; }
+    .opportunity-card details p { margin: 0; padding: 0 16px 10px; font-size: 13px; }
+    .appendix {
+      background: #e9edeb;
+      border-top: 1px solid var(--line);
+      padding: 42px 20px;
+    }
+    .table-wrap { overflow-x: auto; background: white; border: 1px solid var(--line); }
+    table { width: 100%; border-collapse: collapse; min-width: 880px; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 12px; vertical-align: top; }
+    th { position: sticky; top: 0; background: #f6f8f7; color: var(--muted); }
+    .deep-mark { margin-left: 5px; color: var(--green); background: var(--green-soft); }
+    .longlist { columns: 3; margin: 16px 0 0; padding-left: 20px; }
+    .longlist li { break-inside: avoid; margin: 5px 0; font-size: 13px; }
+    .method-note { margin-top: 26px; padding: 16px; background: white; border-left: 4px solid var(--amber); color: var(--muted); font-size: 13px; }
+    footer { padding: 20px; color: var(--muted); text-align: center; font-size: 12px; }
+    @media (min-width: 760px) {
+      .filter-button { width: auto; padding: 0 12px; }
+      .filter-button .short-label { display: none; }
+      .filter-button .full-label { display: inline; }
+    }
+    @media (min-width: 760px) and (max-width: 1050px) {
+      .ui-storyboard { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .ui-screen:not(:last-child)::after { display: none; }
+    }
+    @media (max-width: 759px) {
+      .report-header { padding: 22px 14px 18px; }
+      h1 { font-size: 25px; }
+      .headline-answer { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .stat:last-child { grid-column: 1 / -1; }
+      .filter-inner { padding: 8px 12px; gap: 6px; }
+      .filter-select { order: 2; width: calc(100% - 74px); min-width: 0; }
+      .visible-count { order: 2; width: 68px; margin-left: 0; text-align: right; font-size: 11px; }
+      main { padding: 18px 10px 36px; }
+      .section-heading h2 { font-size: 20px; }
+      .pattern-overview { margin-bottom: 28px; padding-bottom: 28px; }
+      .pattern-atlas { grid-template-columns: 1fr; }
+      .pattern-flow { grid-template-columns: 1fr; gap: 5px; }
+      .pattern-flow > i { width: 1px; height: 10px; justify-self: center; }
+      .pattern-flow > i::after { top: auto; right: -3px; bottom: 0; transform: rotate(135deg); }
+      .service-list { gap: 14px; }
+      .service-header { padding: 16px; flex-direction: column; gap: 10px; }
+      .service-header h2 { font-size: 21px; }
+      .verdict-stack { justify-items: start; }
+      .evidence-grid { grid-template-columns: 1fr; }
+      .evidence-shot figcaption { flex-direction: column; gap: 2px; }
+      .evidence-shot figcaption span { text-align: left; }
+      .service-section { padding: 16px; }
+      .storyboard-heading { flex-direction: column; gap: 8px; }
+      .ui-storyboard { grid-template-columns: 1fr; gap: 20px; }
+      .ui-screen:not(:last-child)::after {
+        top: auto;
+        right: calc(50% - 4px);
+        bottom: -11px;
+        transform: rotate(135deg);
+        background: var(--bg);
+      }
+      .ui-shell { min-height: 350px; }
+      .ui-body { padding: 15px; }
+      .journey-details .journey { padding: 10px 14px; }
+      .journey { grid-template-columns: 1fr; }
+      .journey li { padding: 6px 0 10px; }
+      .journey li:not(:last-child)::after { top: auto; bottom: 0; left: 10px; right: auto; transform: rotate(135deg); }
+      .compare-section, .boundary-section, .signal-section { grid-template-columns: 1fr; gap: 16px; }
+      .compare-section > div + div, .boundary-section > div + div, .signal-section > div + div { border-left: 0; border-top: 1px solid var(--line); padding: 16px 0 0; }
+      .input-list li { grid-template-columns: 42px minmax(0, 1fr); }
+      .input-list small { grid-column: 2; }
+      .opportunity-strip { align-items: flex-start; }
+      .score-list { grid-template-columns: 1fr; }
+      .score-row:nth-child(odd) { border-right: 0; }
+      .opportunity-list { grid-template-columns: 1fr; }
+      .opportunity-card header { grid-template-columns: 34px minmax(0, 1fr); }
+      .opportunity-card header .decision { grid-column: 2; justify-self: start; }
+      .opportunity-card dl div { grid-template-columns: 1fr; gap: 2px; }
+      .appendix { padding: 32px 10px; }
+      .longlist { columns: 1; }
+    }
+  </style>
+</head>
+<body>
+  <header class="report-header">
+    <div class="header-inner">
+      <div class="eyebrow">2026-07-28 · 공개 실행 서비스 벤치마크</div>
+      <h1>좋은 Vertical 서비스는 콘텐츠를<br>“오늘 할 일”로 바꾼다</h1>
+      <p class="lede">앱 24개의 공개 화면과 공식 근거를 비교하고, 핵심 10개는 FlowMe에서 어떻게 보일지 4단계 개념 UI로 시각화했습니다.</p>
+      <div class="headline-answer">
+        <div class="answer-copy">
+          <b>핵심 결론</b>
+          <p>강한 구조는 입력을 0~2개로 줄이고, 전체 결과를 먼저 보여준 뒤, 오늘 한 행동만 꺼냅니다. FlowMe는 추천 엔진·진단·마켓플레이스를 만들기보다 공개 원문을 일정·체크·진도·외부 결과물로 연결하는 역할에 집중해야 합니다.</p>
+        </div>
+        <div class="scope-note">
+          <b>검증 경계</b><br>
+          공개 웹·공식 도움말·앱스토어만 확인했습니다. 아래 화면은 자동 캡처 증거이며 로그인 내부 기능이나 실제 사용자 행동을 검증한 것이 아닙니다.
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat"><b>36</b><span>발견 후보</span></div>
+        <div class="stat"><b>24</b><span>공식 근거 검증</span></div>
+        <div class="stat"><b>10</b><span>심층 서비스</span></div>
+        <div class="stat"><b>20</b><span>원문 캡처</span></div>
+        <div class="stat"><b>8</b><span>콘텐츠 기회</span></div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="filter-bar" aria-label="서비스 필터">
+    <div class="filter-inner">
+      <button class="filter-button active" type="button" data-filter="all" title="전체 보기">전체</button>
+      <button class="filter-button" type="button" data-filter="go" title="Go"><span class="short-label">G</span><span class="full-label">Go</span></button>
+      <button class="filter-button" type="button" data-filter="partner" title="Partner"><span class="short-label">P</span><span class="full-label">Partner</span></button>
+      <button class="filter-button" type="button" data-filter="benchmark" title="Benchmark"><span class="short-label">B</span><span class="full-label">Benchmark</span></button>
+      <button class="filter-button" type="button" data-filter="hold" title="Hold"><span class="short-label">H</span><span class="full-label">Hold</span></button>
+      <select class="filter-select" id="category-filter" aria-label="카테고리 선택">
+        <option value="all">모든 카테고리</option>
+        <option value="home_living">집·살림</option><option value="family_parenting">가족·육아</option><option value="study_learning">공부·독서·학습</option><option value="money_admin_purchase">돈·행정·구매</option><option value="health_fitness">건강·운동</option><option value="travel_outings_events">여행·외출·행사</option><option value="meals_grocery">식사·장보기</option><option value="work_career">일·커리어</option><option value="hobby_pet">취미·반려</option>
+      </select>
+      <span class="visible-count" id="visible-count">10개 표시</span>
+    </div>
+  </nav>
+
+  <main>
+    <section class="pattern-overview" id="pattern-overview">
+      <div class="section-heading">
+        <h2>8가지 실행 구조를 한눈에</h2>
+        <p>각 서비스가 무엇을 입력받아 어떤 결과를 만들고, 오늘 무엇을 꺼내 주는지 비교합니다.</p>
+      </div>
+      <div class="pattern-atlas">
+        
+      <article class="pattern-card" style="--pattern-index:0">
+        <header>
+          <span>1</span>
+          <div><small>실행 원형</small><h3>목표 → 계획</h3></div>
+        </header>
+        <div class="pattern-flow">
+          <div><small>입력</small><b>목표 금액 · 목표일</b></div>
+          <i></i>
+          <div><small>생성</small><b>주·월·연 단위 필요 저축액과 진도</b></div>
+          <i></i>
+          <div><small>오늘</small><b>이번 달 목표 카테고리에 필요한 금액 배정</b></div>
+        </div>
+        <footer><a href="#service-ynab">YNAB</a><a href="#service-runna">Runna</a></footer>
+      </article>
+      <article class="pattern-card" style="--pattern-index:1">
+        <header>
+          <span>2</span>
+          <div><small>실행 원형</small><h3>기준일 → 타임라인</h3></div>
+        </header>
+        <div class="pattern-flow">
+          <div><small>입력</small><b>결혼일</b></div>
+          <i></i>
+          <div><small>생성</small><b>결혼일 기준 개인화 준비 체크리스트와 업체·예산 보드</b></div>
+          <i></i>
+          <div><small>오늘</small><b>마감이 가까운 결혼 준비 항목 처리</b></div>
+        </div>
+        <footer><a href="#service-the-knot">The Knot</a></footer>
+      </article>
+      <article class="pattern-card" style="--pattern-index:2">
+        <header>
+          <span>3</span>
+          <div><small>실행 원형</small><h3>프로필 → 오늘 계획</h3></div>
+        </header>
+        <div class="pattern-flow">
+          <div><small>입력</small><b>생년월일/월령</b></div>
+          <i></i>
+          <div><small>생성</small><b>월령·발달 단계에 맞춘 일일 놀이 계획</b></div>
+          <i></i>
+          <div><small>오늘</small><b>오늘 추천 활동 한 개 실행</b></div>
+        </div>
+        <footer><a href="#service-kinedu">Kinedu</a></footer>
+      </article>
+      <article class="pattern-card" style="--pattern-index:3">
+        <header>
+          <span>4</span>
+          <div><small>실행 원형</small><h3>콘텐츠 → 안내 세션</h3></div>
+        </header>
+        <div class="pattern-flow">
+          <div><small>입력</small><b>식단 기간/식사 수</b></div>
+          <i></i>
+          <div><small>생성</small><b>개인화 식단, 통합 장보기 목록, 단계별 조리 세션</b></div>
+          <i></i>
+          <div><small>오늘</small><b>오늘 식사의 첫 조리 단계 시작</b></div>
+        </div>
+        <footer><a href="#service-sidechef">SideChef</a></footer>
+      </article>
+      <article class="pattern-card" style="--pattern-index:4">
+        <header>
+          <span>5</span>
+          <div><small>실행 원형</small><h3>환경 → 유지관리</h3></div>
+        </header>
+        <div class="pattern-flow">
+          <div><small>입력</small><b>공간/방 · 청소 빈도</b></div>
+          <i></i>
+          <div><small>생성</small><b>공간별 반복 청소 일정과 오늘 할 일</b></div>
+          <i></i>
+          <div><small>오늘</small><b>오늘 배정된 청소 항목 완료</b></div>
+        </div>
+        <footer><a href="#service-sweepy">Sweepy</a><a href="#service-planta">Planta</a></footer>
+      </article>
+      <article class="pattern-card" style="--pattern-index:5">
+        <header>
+          <span>6</span>
+          <div><small>실행 원형</small><h3>진도 → 다음 학습</h3></div>
+        </header>
+        <div class="pattern-flow">
+          <div><small>입력</small><b>학습 언어</b></div>
+          <i></i>
+          <div><small>생성</small><b>수준별 학습 경로와 다음 레슨</b></div>
+          <i></i>
+          <div><small>오늘</small><b>경로에 표시된 다음 레슨 시작</b></div>
+        </div>
+        <footer><a href="#service-duolingo">Duolingo</a></footer>
+      </article>
+      <article class="pattern-card" style="--pattern-index:6">
+        <header>
+          <span>7</span>
+          <div><small>실행 원형</small><h3>상태 → 후속 행동</h3></div>
+        </header>
+        <div class="pattern-flow">
+          <div><small>입력</small><b>채용 공고 URL</b></div>
+          <i></i>
+          <div><small>생성</small><b>지원 공고 보드, 단계, 후속 일정과 다음 행동</b></div>
+          <i></i>
+          <div><small>오늘</small><b>가장 가까운 후속 일정의 지원 행동 수행</b></div>
+        </div>
+        <footer><a href="#service-teal">Teal</a></footer>
+      </article>
+      <article class="pattern-card" style="--pattern-index:7">
+        <header>
+          <span>8</span>
+          <div><small>실행 원형</small><h3>모음 → 일정</h3></div>
+        </header>
+        <div class="pattern-flow">
+          <div><small>입력</small><b>여행지/여행 기간</b></div>
+          <i></i>
+          <div><small>생성</small><b>날짜별 여행 일정과 지도 동선</b></div>
+          <i></i>
+          <div><small>오늘</small><b>오늘 일정의 다음 장소 확인·이동</b></div>
+        </div>
+        <footer><a href="#service-wanderlog">Wanderlog</a></footer>
+      </article>
+      </div>
+    </section>
+
+    <div class="section-heading">
+      <h2>서비스별 FlowMe UI 미리보기</h2>
+      <p>원문 화면 2장과 발견 → 최소 입력 → 결과 미리보기 → 오늘 실행 4화면을 함께 봅니다.</p>
+    </div>
+    <section class="service-list" id="service-list">
+      
+    <article
+      class="service-card"
+      id="service-sweepy"
+      data-decision="go"
+      data-category="home_living"
+    >
+      <header class="service-header">
+        <div>
+          <div class="eyebrow">집·살림 · 환경 → 유지관리</div>
+          <h2>Sweepy</h2>
+          <p>집안일을 누구부터 무엇을 해야 할지 정하기 어려울 때</p>
+        </div>
+        <div class="verdict-stack">
+          <span class="decision go">Go</span>
+          <span class="relationship">UX·로직 벤치마크 전용</span>
+        </div>
+      </header>
+
+      <div class="evidence-grid">
+        
+    <figure class="evidence-shot">
+      <a href="https://sweepy.com/" target="_blank" rel="noreferrer">
+        <img src="2026-07-28-vertical-execution-service-assets/sweepy-01.png" alt="Sweepy 공식 서비스 화면" loading="lazy">
+      </a>
+      <figcaption>
+        <strong>공식 서비스 화면</strong>
+        <span>공개 화면 캡처 · 공개 웹 확인</span>
+      </figcaption>
+    </figure>
+    <figure class="evidence-shot">
+      <a href="https://apps.apple.com/us/app/sweepy-home-cleaning-schedule/id1498897320" target="_blank" rel="noreferrer">
+        <img src="2026-07-28-vertical-execution-service-assets/sweepy-02.png" alt="Sweepy 앱스토어 기능 화면" loading="lazy">
+      </a>
+      <figcaption>
+        <strong>앱스토어 기능 화면</strong>
+        <span>공개 화면 캡처 · 앱스토어 확인</span>
+      </figcaption>
+    </figure>
+      </div>
+
+      <section class="service-section ui-demo-section">
+        
+    <div class="storyboard-heading">
+      <div>
+        <h3>FlowMe로 보이면 이렇게</h3>
+        <p>벤치마크 구조를 FlowMe 사용 흐름에 대입한 개념 UI입니다. 실제 앱 화면이나 원문 콘텐츠 복제가 아닙니다.</p>
+      </div>
+      <span>환경 → 유지관리</span>
+    </div>
+    <div class="ui-storyboard" aria-label="Sweepy형 FlowMe 개념 UI">
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>1</span> 발견</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>Flows</b><span>구조 예시</span></header>
+          <div class="ui-body">
+            <div class="ui-source">집·살림 · 원문 링크 유지</div>
+            <h4>Sweepy형<br>환경 → 유지관리</h4>
+            <p>집안일을 누구부터 무엇을 해야 할지 정하기 어려울 때</p>
+            <div class="ui-outcome">
+              <small>저장하면 생기는 것</small>
+              <b>공간별 반복 청소 일정과 오늘 할 일</b>
+            </div>
+          </div>
+          <footer class="ui-bottom"><button type="button">저장 결과 먼저 보기</button></footer>
+        </div>
+      </section>
+
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>2</span> 최소 입력</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>시작 설정</b><span>필수 2개</span></header>
+          <div class="ui-body">
+            <p class="ui-helper">계획 생성에 필요한 값만 먼저 정합니다.</p>
+            
+    <div class="mock-fields">
+      
+        <div class="mock-field">
+          <label>공간/방 <span>필수</span></label>
+          <div>관리 대상 선택</div>
+        </div>
+        <div class="mock-field">
+          <label>청소 빈도 <span>필수</span></label>
+          <div>반복 주기 선택</div>
+        </div>
+      
+        <button class="mock-later" type="button">선택 정보 1개는 나중에 정하기</button>
+    </div>
+            <div class="ui-info-row"><i></i><span>원문에서 알 수 있는 값은 다시 묻지 않음</span></div>
+          </div>
+          <footer class="ui-bottom"><button type="button">전체 결과 미리보기</button></footer>
+        </div>
+      </section>
+
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>3</span> 생성 결과</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>미리보기</b><span>저장 전</span></header>
+          <div class="ui-body preview-body">
+            <div class="ui-artifact-title">
+              <small>생성될 결과</small>
+              <h4>공간별 반복 청소 일정과 오늘 할 일</h4>
+            </div>
+            
+      <div class="preview-block">
+        <div class="preview-label">오늘 관리</div>
+        <div class="preview-task active"><i></i><b>오늘 배정된 청소 항목 완료</b><span>오늘</span></div>
+        <div class="preview-task"><i></i><b>다음 반복 일정</b><span>원문 주기</span></div>
+      </div>
+            <div class="ui-destination"><span>내보내기</span><b>반복 체크리스트 + 캘린더</b></div>
+          </div>
+          <footer class="ui-bottom split"><button class="secondary" type="button">입력 수정</button><button type="button">이대로 저장</button></footer>
+        </div>
+      </section>
+
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>4</span> 오늘 실행</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>오늘</b><span>다음 행동</span></header>
+          <div class="ui-body today-body">
+            <div class="today-focus">
+              <span class="today-status">지금 할 일</span>
+              <h4>오늘 배정된 청소 항목 완료</h4>
+              <p>공간별 반복 청소 일정과 오늘 할 일에서 꺼낸 현재 행동</p>
+            </div>
+            <button class="source-link-button" type="button"><i></i>원문·제작자 링크 열기</button>
+            <div class="today-meta">
+              <span>세부 내용은 메모</span>
+              <span>일정은 나중에 수정</span>
+            </div>
+          </div>
+          <footer class="ui-bottom split"><button class="secondary" type="button">일정 바꾸기</button><button type="button">완료 표시</button></footer>
+        </div>
+      </section>
+    </div>
+    <details class="journey-details">
+      <summary>텍스트 구조도 함께 보기</summary>
+      <ol class="journey">
+    <li>
+      <span class="journey-index">1</span>
+      <div><b>상황</b><p>집안일을 누구부터 무엇을 해야 할지 정하기 어려울 때</p></div>
+    </li>
+    <li>
+      <span class="journey-index">2</span>
+      <div><b>최초 입력</b><p>공간/방 · 청소 빈도</p></div>
+    </li>
+    <li>
+      <span class="journey-index">3</span>
+      <div><b>생성 결과</b><p>공간별 반복 청소 일정과 오늘 할 일</p></div>
+    </li>
+    <li>
+      <span class="journey-index">4</span>
+      <div><b>오늘/다음</b><p>오늘 배정된 청소 항목 완료</p></div>
+    </li>
+    <li>
+      <span class="journey-index">5</span>
+      <div><b>완료·수정</b><p>빈도·가용량·가족 배정을 바꾸면 스마트 일정이 다시 조정된다.</p></div>
+    </li></ol>
+    </details>
+      </section>
+
+      <details class="analysis-details">
+        <summary>입력·결과·차용 경계 분석 보기</summary>
+        <div class="analysis-body">
+      <section class="service-section compare-section">
+        <div>
+          <h3>입력은 이만큼</h3>
+          <ul class="input-list">
+            
+              <li>
+                <span class="required">필수</span>
+                <b>공간/방</b>
+                <small>관리 대상</small>
+              </li>
+              <li>
+                <span class="required">필수</span>
+                <b>청소 빈도</b>
+                <small>반복 주기</small>
+              </li>
+              <li>
+                <span class="optional">선택</span>
+                <b>하루 가용량</b>
+                <small>일정 강도</small>
+              </li>
+          </ul>
+        </div>
+        <div>
+          <h3>결과는 이렇게</h3>
+          <p class="artifact">공간별 반복 청소 일정과 오늘 할 일</p>
+          <p><b>오늘:</b> 오늘 배정된 청소 항목 완료</p>
+          <p><b>수정:</b> 빈도·가용량·가족 배정을 바꾸면 스마트 일정이 다시 조정된다.</p>
+        </div>
+      </section>
+
+      <section class="service-section boundary-section">
+        <div>
+          <h3>FlowMe가 차용할 구조</h3>
+          <ul><li>공간 템플릿을 고른 뒤 최소 빈도로 일정 생성</li><li>오늘 목록을 첫 화면에 표시</li><li>완료 시 다음 반복일 계산</li></ul>
+        </div>
+        <div>
+          <h3>만들지 말아야 할 영역</h3>
+          <ul><li>가사량 최적화 점수 엔진</li><li>가족 간 경쟁·보상 시스템</li></ul>
+        </div>
+      </section>
+
+      <section class="service-section signal-section">
+        <div>
+          <h3>사용자 커뮤니케이션 증거</h3>
+          <span class="signal-status">review_surface_verified</span>
+          <p>App Store의 공개 평점·리뷰 표면과 공식 후기 영역이 존재한다.</p>
+          <small>개별 리뷰에 대한 제작자 응답은 이번 공개 근거에서 확인하지 않았다.</small>
+        </div>
+        <div>
+          <h3>확인된 비즈니스 연결</h3>
+          <p>공식 사이트는 Premium과 가구 공유 기능을 안내한다.</p>
+          <small>실제 제휴 의사·전환율·매출 기여는 확인하지 않았으며 사업 가설로 승격하지 않는다.</small>
+        </div>
+      </section>
+        </div>
+      </details>
+
+      <section class="service-section opportunity-strip">
+        <div>
+          <span class="opportunity-label">콘텐츠 발굴 기회</span>
+          <h3>공간·기간별 집 관리 루틴</h3>
+          <p>공개 청소표를 출처 링크와 함께 날짜 없는 Flow 또는 반복 일정으로 저장하고 외부 캘린더로 보낼 수 있다.</p>
+        </div>
+        <span class="opportunity-decision">Go</span>
+      </section>
+
+      <details class="score-details">
+    <summary>10개 점수와 감점 근거 보기 <span>8.2/10</span></summary>
+    <div class="score-list">
+      <div class="score-row">
+          <div class="score-head">
+            <b>따라 하기 쉬움</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>Sweepy은(는) &#039;공간·빈도 설정 → 스마트 일정 생성 → 오늘 할 일 → 완료·가족 공유&#039; 흐름으로 다음 행동을 이어 준다. 매일 무엇을 할지 계산해 주어 사용자의 재계획 부담이 낮다. (9/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>최소 입력</b>
+            <span>7/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:70%"></i></div>
+          <p>최초 입력은 공간/방, 청소 빈도, 하루 가용량이며 필수 2개다. 초기 설정은 조금 길지만 집 전체 계획을 만드는 데 직접 쓰인다. (7/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>생성 결과 명확성</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>입력 뒤 &#039;공간별 반복 청소 일정과 오늘 할 일&#039;가 생성된다. 결과물과 오늘 목록의 관계가 분명하다. (9/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>다음 행동</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>실행 화면의 다음 행동은 &#039;오늘 배정된 청소 항목 완료&#039;이다. 오늘 목록 중심이라 시작 지점이 선명하다. (9/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>수정·재일정</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>빈도·가용량·가족 배정을 바꾸면 스마트 일정이 다시 조정된다. 재배치가 자동화되어 유지관리형 벤치마크로 강하다. (9/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>콘텐츠 깊이</b>
+            <span>8/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:80%"></i></div>
+          <p>방·욕실·주방 등 공간별 작업과 계절 관리로 확장된다. 공개 제작자 콘텐츠를 공간·기간별 루틴으로 찾기 좋다. (8/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>제작자 비즈니스</b>
+            <span>6/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:60%"></i></div>
+          <p>공식 사이트는 Premium과 가구 공유 기능을 안내한다. 서비스 자체 데이터는 제휴 없이는 콘텐츠 원천으로 쓰기 어렵다. (6/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>외부 이식 기회</b>
+            <span>8/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:80%"></i></div>
+          <p>앱 안 실행은 선명하지만 캘린더·시트로의 공개 내보내기 근거는 약하다. FlowMe는 일정·체크리스트 이식성에서 차이를 만들 수 있다. 점수가 높을수록 외부 도구로 옮길 여지가 크다. (8/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>FlowMe 추가 가치</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>공개 청소표를 출처 링크와 함께 날짜 없는 Flow 또는 반복 일정으로 저장하고 외부 캘린더로 보낼 수 있다. 자동 최적화 엔진은 만들지 않고 공개 원문의 실행 레이어만 제공해야 한다. (9/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>근거 신뢰도</b>
+            <span>8/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:80%"></i></div>
+          <p>공식·지원·앱스토어 근거 2건을 2026-07-28 확인했다. 공식 기능 설명과 앱스토어 설명이 일치하지만 실제 자동 배치 결과는 미확인이다. (8/10)</p>
+        </div>
+    </div>
+  </details>
+
+      <details class="source-details">
+        <summary>근거·검증 경계 보기</summary>
+        <p class="boundary-note">공개 웹·공식 지원 문서·앱스토어 설명만 확인했다. 로그인 후 개인화 결과는 in_app_verified가 아니다.</p>
+        <ul class="source-list">
+          
+            <li>
+              <a href="https://sweepy.com/" target="_blank" rel="noreferrer">Sweepy 공식 사이트</a>
+              <span>Smart Schedule, 가구 공유, 작업 제안을 안내한다.</span>
+            </li>
+            <li>
+              <a href="https://apps.apple.com/us/app/sweepy-home-cleaning-schedule/id1498897320" target="_blank" rel="noreferrer">Sweepy App Store</a>
+              <span>방별 청결 상태와 자동 일정을 설명한다.</span>
+            </li>
+          <li>
+            <a href="https://apps.apple.com/us/app/sweepy-home-cleaning-schedule/id1498897320" target="_blank" rel="noreferrer">사용자 커뮤니케이션 확인 근거</a>
+            <span>App Store의 공개 평점·리뷰 표면과 공식 후기 영역이 존재한다.</span>
+          </li>
+        </ul>
+      </details>
+    </article>
+    <article
+      class="service-card"
+      id="service-kinedu"
+      data-decision="partner"
+      data-category="family_parenting"
+    >
+      <header class="service-header">
+        <div>
+          <div class="eyebrow">가족·육아 · 프로필 → 오늘 계획</div>
+          <h2>Kinedu</h2>
+          <p>아이 월령에 맞는 오늘 놀이를 바로 찾고 싶을 때</p>
+        </div>
+        <div class="verdict-stack">
+          <span class="decision partner">Partner</span>
+          <span class="relationship">제작자·서비스 파트너 후보</span>
+        </div>
+      </header>
+
+      <div class="evidence-grid">
+        
+    <figure class="evidence-shot">
+      <a href="https://www.kinedu.com/" target="_blank" rel="noreferrer">
+        <img src="2026-07-28-vertical-execution-service-assets/kinedu-01.png" alt="Kinedu 개인화 일일 활동 소개" loading="lazy">
+      </a>
+      <figcaption>
+        <strong>개인화 일일 활동 소개</strong>
+        <span>공개 화면 캡처 · 공개 웹 확인</span>
+      </figcaption>
+    </figure>
+    <figure class="evidence-shot">
+      <a href="https://learn.kinedu.com/" target="_blank" rel="noreferrer">
+        <img src="2026-07-28-vertical-execution-service-assets/kinedu-02.png" alt="Kinedu 전문가 수업 포트폴리오" loading="lazy">
+      </a>
+      <figcaption>
+        <strong>전문가 수업 포트폴리오</strong>
+        <span>공개 화면 캡처 · 공개 웹 확인</span>
+      </figcaption>
+    </figure>
+      </div>
+
+      <section class="service-section ui-demo-section">
+        
+    <div class="storyboard-heading">
+      <div>
+        <h3>FlowMe로 보이면 이렇게</h3>
+        <p>벤치마크 구조를 FlowMe 사용 흐름에 대입한 개념 UI입니다. 실제 앱 화면이나 원문 콘텐츠 복제가 아닙니다.</p>
+      </div>
+      <span>프로필 → 오늘 계획</span>
+    </div>
+    <div class="ui-storyboard" aria-label="Kinedu형 FlowMe 개념 UI">
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>1</span> 발견</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>Flows</b><span>구조 예시</span></header>
+          <div class="ui-body">
+            <div class="ui-source">가족·육아 · 원문 링크 유지</div>
+            <h4>Kinedu형<br>프로필 → 오늘 계획</h4>
+            <p>아이 월령에 맞는 오늘 놀이를 바로 찾고 싶을 때</p>
+            <div class="ui-outcome">
+              <small>저장하면 생기는 것</small>
+              <b>월령·발달 단계에 맞춘 일일 놀이 계획</b>
+            </div>
+          </div>
+          <footer class="ui-bottom"><button type="button">저장 결과 먼저 보기</button></footer>
+        </div>
+      </section>
+
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>2</span> 최소 입력</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>시작 설정</b><span>필수 1개</span></header>
+          <div class="ui-body">
+            <p class="ui-helper">계획 생성에 필요한 값만 먼저 정합니다.</p>
+            
+    <div class="mock-fields">
+      
+        <div class="mock-field">
+          <label>생년월일/월령 <span>필수</span></label>
+          <div>발달 단계 선택</div>
+        </div>
+      
+        <button class="mock-later" type="button">선택 정보 1개는 나중에 정하기</button>
+    </div>
+            <div class="ui-info-row"><i></i><span>원문에서 알 수 있는 값은 다시 묻지 않음</span></div>
+          </div>
+          <footer class="ui-bottom"><button type="button">전체 결과 미리보기</button></footer>
+        </div>
+      </section>
+
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>3</span> 생성 결과</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>미리보기</b><span>저장 전</span></header>
+          <div class="ui-body preview-body">
+            <div class="ui-artifact-title">
+              <small>생성될 결과</small>
+              <h4>월령·발달 단계에 맞춘 일일 놀이 계획</h4>
+            </div>
+            
+      <div class="preview-block">
+        <div class="preview-progress"><span style="width:42%"></span></div>
+        <div class="preview-label">프로필에 맞춘 오늘 계획</div>
+        <div class="preview-focus"><small>지금 할 활동</small><b>오늘 추천 활동 한 개 실행</b></div>
+        <div class="preview-foot">완료하면 다음 활동을 보여줌</div>
+      </div>
+            <div class="ui-destination"><span>내보내기</span><b>하루 한 활동 루틴 + 원문 링크</b></div>
+          </div>
+          <footer class="ui-bottom split"><button class="secondary" type="button">입력 수정</button><button type="button">이대로 저장</button></footer>
+        </div>
+      </section>
+
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>4</span> 오늘 실행</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>오늘</b><span>다음 행동</span></header>
+          <div class="ui-body today-body">
+            <div class="today-focus">
+              <span class="today-status">지금 할 일</span>
+              <h4>오늘 추천 활동 한 개 실행</h4>
+              <p>월령·발달 단계에 맞춘 일일 놀이 계획에서 꺼낸 현재 행동</p>
+            </div>
+            <button class="source-link-button" type="button"><i></i>원문·제작자 링크 열기</button>
+            <div class="today-meta">
+              <span>세부 내용은 메모</span>
+              <span>일정은 나중에 수정</span>
+            </div>
+          </div>
+          <footer class="ui-bottom split"><button class="secondary" type="button">일정 바꾸기</button><button type="button">완료 표시</button></footer>
+        </div>
+      </section>
+    </div>
+    <details class="journey-details">
+      <summary>텍스트 구조도 함께 보기</summary>
+      <ol class="journey">
+    <li>
+      <span class="journey-index">1</span>
+      <div><b>상황</b><p>아이 월령에 맞는 오늘 놀이를 바로 찾고 싶을 때</p></div>
+    </li>
+    <li>
+      <span class="journey-index">2</span>
+      <div><b>최초 입력</b><p>생년월일/월령</p></div>
+    </li>
+    <li>
+      <span class="journey-index">3</span>
+      <div><b>생성 결과</b><p>월령·발달 단계에 맞춘 일일 놀이 계획</p></div>
+    </li>
+    <li>
+      <span class="journey-index">4</span>
+      <div><b>오늘/다음</b><p>오늘 추천 활동 한 개 실행</p></div>
+    </li>
+    <li>
+      <span class="journey-index">5</span>
+      <div><b>완료·수정</b><p>활동 완료와 발달 관찰에 따라 추천이 이어진다.</p></div>
+    </li></ol>
+    </details>
+      </section>
+
+      <details class="analysis-details">
+        <summary>입력·결과·차용 경계 분석 보기</summary>
+        <div class="analysis-body">
+      <section class="service-section compare-section">
+        <div>
+          <h3>입력은 이만큼</h3>
+          <ul class="input-list">
+            
+              <li>
+                <span class="required">필수</span>
+                <b>생년월일/월령</b>
+                <small>발달 단계</small>
+              </li>
+              <li>
+                <span class="optional">선택</span>
+                <b>발달 관심 영역</b>
+                <small>추천 초점</small>
+              </li>
+          </ul>
+        </div>
+        <div>
+          <h3>결과는 이렇게</h3>
+          <p class="artifact">월령·발달 단계에 맞춘 일일 놀이 계획</p>
+          <p><b>오늘:</b> 오늘 추천 활동 한 개 실행</p>
+          <p><b>수정:</b> 활동 완료와 발달 관찰에 따라 추천이 이어진다.</p>
+        </div>
+      </section>
+
+      <section class="service-section boundary-section">
+        <div>
+          <h3>FlowMe가 차용할 구조</h3>
+          <ul><li>월령 하나로 오늘 활동 축소</li><li>활동 링크와 목표를 같은 카드에 표시</li><li>완료 후 다음 활동 제시</li></ul>
+        </div>
+        <div>
+          <h3>만들지 말아야 할 영역</h3>
+          <ul><li>발달 진단·평가 엔진</li><li>유료 활동 영상 복제</li></ul>
+        </div>
+      </section>
+
+      <section class="service-section signal-section">
+        <div>
+          <h3>사용자 커뮤니케이션 증거</h3>
+          <span class="signal-status">community_feature_verified</span>
+          <p>공식 수업 사이트가 포럼·채팅·라이브 세션과 가족 커뮤니티를 안내하고, 공식 사이트에 부모 후기가 노출된다.</p>
+          <small>전문가 라이브 세션은 확인되지만 개별 공개 답변 내역은 로그인 없이 확인하지 못했다.</small>
+        </div>
+        <div>
+          <h3>확인된 비즈니스 연결</h3>
+          <p>Premium 구독과 전문가 강의가 확인되며 공식 사이트는 1,100만 가족 이용을 주장한다.</p>
+          <small>실제 제휴 의사·전환율·매출 기여는 확인하지 않았으며 사업 가설로 승격하지 않는다.</small>
+        </div>
+      </section>
+        </div>
+      </details>
+
+      <section class="service-section opportunity-strip">
+        <div>
+          <span class="opportunity-label">콘텐츠 발굴 기회</span>
+          <h3>월령·목표별 2주 놀이 루틴</h3>
+          <p>공개 육아 활동 제작자의 월령·목표별 묶음을 2주 루틴으로 일정화하고 원문으로 돌려보낼 수 있다.</p>
+        </div>
+        <span class="opportunity-decision">Partner</span>
+      </section>
+
+      <details class="score-details">
+    <summary>10개 점수와 감점 근거 보기 <span>8.6/10</span></summary>
+    <div class="score-list">
+      <div class="score-row">
+          <div class="score-head">
+            <b>따라 하기 쉬움</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>Kinedu은(는) &#039;아이 프로필 → 일일 계획 → 활동 영상 → 발달 진도&#039; 흐름으로 다음 행동을 이어 준다. 오늘 한 활동에 집중하게 해 부모의 선택 부담을 줄인다. (9/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>최소 입력</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>최초 입력은 생년월일/월령, 발달 관심 영역이며 필수 1개다. 생년월일 하나가 추천 정확도에 직접 연결된다. (9/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>생성 결과 명확성</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>입력 뒤 &#039;월령·발달 단계에 맞춘 일일 놀이 계획&#039;가 생성된다. 일일 활동과 발달 목표의 관계가 명확하다. (9/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>다음 행동</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>실행 화면의 다음 행동은 &#039;오늘 추천 활동 한 개 실행&#039;이다. 영상 활동을 즉시 시작할 수 있다. (9/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>수정·재일정</b>
+            <span>8/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:80%"></i></div>
+          <p>활동 완료와 발달 관찰에 따라 추천이 이어진다. 진도 기반 적응은 강하지만 계산 규칙은 서비스 고유 영역이다. (8/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>콘텐츠 깊이</b>
+            <span>10/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:100%"></i></div>
+          <p>0~6세 활동, 발달 마일스톤, 강의, 전문가 콘텐츠가 연결된다. 활동 라이브러리와 전문가 콘텐츠가 매우 깊다. (10/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>제작자 비즈니스</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>Premium 구독과 전문가 강의가 확인되며 공식 사이트는 1,100만 가족 이용을 주장한다. 제작자·전문가 파트너 가능성은 있으나 공개 전환 권리는 별도 협의가 필요하다. (9/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>외부 이식 기회</b>
+            <span>7/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:70%"></i></div>
+          <p>활동 영상과 발달 추적은 앱에 묶여 있고 외부 실행표 이식은 제한적이다. FlowMe는 링크 중심 루틴·캘린더 이식에 기회가 있다. 점수가 높을수록 외부 도구로 옮길 여지가 크다. (7/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>FlowMe 추가 가치</b>
+            <span>8/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:80%"></i></div>
+          <p>공개 육아 활동 제작자의 월령·목표별 묶음을 2주 루틴으로 일정화하고 원문으로 돌려보낼 수 있다. 발달 평가나 진단 기능은 범위 밖이다. (8/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>근거 신뢰도</b>
+            <span>8/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:80%"></i></div>
+          <p>공식·지원·앱스토어 근거 2건을 2026-07-28 확인했다. 공식 서비스 기능과 공개 이용 규모를 확인했으나 개인화 결과는 직접 검증하지 않았다. (8/10)</p>
+        </div>
+    </div>
+  </details>
+
+      <details class="source-details">
+        <summary>근거·검증 경계 보기</summary>
+        <p class="boundary-note">공개 웹·공식 지원 문서·앱스토어 설명만 확인했다. 로그인 후 개인화 결과는 in_app_verified가 아니다.</p>
+        <ul class="source-list">
+          
+            <li>
+              <a href="https://www.kinedu.com/" target="_blank" rel="noreferrer">Kinedu 공식 사이트</a>
+              <span>월령별 개인화 일일 계획, 활동, 발달 진도, 전문가 안내를 설명한다.</span>
+            </li>
+            <li>
+              <a href="https://learn.kinedu.com/" target="_blank" rel="noreferrer">Kinedu Expert Classes</a>
+              <span>연령·주제별 전문가 수업과 가족 커뮤니티 포트폴리오를 공개한다.</span>
+            </li>
+          <li>
+            <a href="https://learn.kinedu.com/" target="_blank" rel="noreferrer">사용자 커뮤니케이션 확인 근거</a>
+            <span>공식 수업 사이트가 포럼·채팅·라이브 세션과 가족 커뮤니티를 안내하고, 공식 사이트에 부모 후기가 노출된다.</span>
+          </li>
+        </ul>
+      </details>
+    </article>
+    <article
+      class="service-card"
+      id="service-duolingo"
+      data-decision="benchmark"
+      data-category="study_learning"
+    >
+      <header class="service-header">
+        <div>
+          <div class="eyebrow">공부·독서·학습 · 진도 → 다음 학습</div>
+          <h2>Duolingo</h2>
+          <p>짧게라도 매일 언어 학습을 이어가고 싶을 때</p>
+        </div>
+        <div class="verdict-stack">
+          <span class="decision benchmark">Benchmark</span>
+          <span class="relationship">전문·직접 경쟁 경계</span>
+        </div>
+      </header>
+
+      <div class="evidence-grid">
+        
+    <figure class="evidence-shot">
+      <a href="https://www.duolingo.com/learn" target="_blank" rel="noreferrer">
+        <img src="2026-07-28-vertical-execution-service-assets/duolingo-01.png" alt="Duolingo 학습 시작 화면" loading="lazy">
+      </a>
+      <figcaption>
+        <strong>학습 시작 화면</strong>
+        <span>공개 화면 캡처 · 공개 웹 확인</span>
+      </figcaption>
+    </figure>
+    <figure class="evidence-shot">
+      <a href="https://blog.duolingo.com/duolingo-teaching-method/" target="_blank" rel="noreferrer">
+        <img src="2026-07-28-vertical-execution-service-assets/duolingo-02.png" alt="Duolingo 학습 방법론 근거" loading="lazy">
+      </a>
+      <figcaption>
+        <strong>학습 방법론 근거</strong>
+        <span>공개 화면 캡처 · 공개 웹 확인</span>
+      </figcaption>
+    </figure>
+      </div>
+
+      <section class="service-section ui-demo-section">
+        
+    <div class="storyboard-heading">
+      <div>
+        <h3>FlowMe로 보이면 이렇게</h3>
+        <p>벤치마크 구조를 FlowMe 사용 흐름에 대입한 개념 UI입니다. 실제 앱 화면이나 원문 콘텐츠 복제가 아닙니다.</p>
+      </div>
+      <span>진도 → 다음 학습</span>
+    </div>
+    <div class="ui-storyboard" aria-label="Duolingo형 FlowMe 개념 UI">
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>1</span> 발견</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>Flows</b><span>구조 예시</span></header>
+          <div class="ui-body">
+            <div class="ui-source">공부·독서·학습 · 원문 링크 유지</div>
+            <h4>Duolingo형<br>진도 → 다음 학습</h4>
+            <p>짧게라도 매일 언어 학습을 이어가고 싶을 때</p>
+            <div class="ui-outcome">
+              <small>저장하면 생기는 것</small>
+              <b>수준별 학습 경로와 다음 레슨</b>
+            </div>
+          </div>
+          <footer class="ui-bottom"><button type="button">저장 결과 먼저 보기</button></footer>
+        </div>
+      </section>
+
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>2</span> 최소 입력</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>시작 설정</b><span>필수 1개</span></header>
+          <div class="ui-body">
+            <p class="ui-helper">계획 생성에 필요한 값만 먼저 정합니다.</p>
+            
+    <div class="mock-fields">
+      
+        <div class="mock-field">
+          <label>학습 언어 <span>필수</span></label>
+          <div>커리큘럼 선택 선택</div>
+        </div>
+      
+        <button class="mock-later" type="button">선택 정보 2개는 나중에 정하기</button>
+    </div>
+            <div class="ui-info-row"><i></i><span>원문에서 알 수 있는 값은 다시 묻지 않음</span></div>
+          </div>
+          <footer class="ui-bottom"><button type="button">전체 결과 미리보기</button></footer>
+        </div>
+      </section>
+
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>3</span> 생성 결과</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>미리보기</b><span>저장 전</span></header>
+          <div class="ui-body preview-body">
+            <div class="ui-artifact-title">
+              <small>생성될 결과</small>
+              <h4>수준별 학습 경로와 다음 레슨</h4>
+            </div>
+            
+      <div class="lesson-path" aria-label="진도 경로 구조">
+        <div class="lesson-node done"><i></i><span>완료한 회차</span></div>
+        <div class="lesson-node current"><i></i><span>경로에 표시된 다음 레슨 시작</span></div>
+        <div class="lesson-node next"><i></i><span>다음 회차</span></div>
+      </div>
+            <div class="ui-destination"><span>내보내기</span><b>회차 큐 + 오늘의 다음 학습</b></div>
+          </div>
+          <footer class="ui-bottom split"><button class="secondary" type="button">입력 수정</button><button type="button">이대로 저장</button></footer>
+        </div>
+      </section>
+
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>4</span> 오늘 실행</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>오늘</b><span>다음 행동</span></header>
+          <div class="ui-body today-body">
+            <div class="today-focus">
+              <span class="today-status">지금 할 일</span>
+              <h4>경로에 표시된 다음 레슨 시작</h4>
+              <p>수준별 학습 경로와 다음 레슨에서 꺼낸 현재 행동</p>
+            </div>
+            <button class="source-link-button" type="button"><i></i>원문·제작자 링크 열기</button>
+            <div class="today-meta">
+              <span>세부 내용은 메모</span>
+              <span>일정은 나중에 수정</span>
+            </div>
+          </div>
+          <footer class="ui-bottom split"><button class="secondary" type="button">일정 바꾸기</button><button type="button">완료 표시</button></footer>
+        </div>
+      </section>
+    </div>
+    <details class="journey-details">
+      <summary>텍스트 구조도 함께 보기</summary>
+      <ol class="journey">
+    <li>
+      <span class="journey-index">1</span>
+      <div><b>상황</b><p>짧게라도 매일 언어 학습을 이어가고 싶을 때</p></div>
+    </li>
+    <li>
+      <span class="journey-index">2</span>
+      <div><b>최초 입력</b><p>학습 언어</p></div>
+    </li>
+    <li>
+      <span class="journey-index">3</span>
+      <div><b>생성 결과</b><p>수준별 학습 경로와 다음 레슨</p></div>
+    </li>
+    <li>
+      <span class="journey-index">4</span>
+      <div><b>오늘/다음</b><p>경로에 표시된 다음 레슨 시작</p></div>
+    </li>
+    <li>
+      <span class="journey-index">5</span>
+      <div><b>완료·수정</b><p>진도와 정답 결과에 따라 다음 문제와 복습이 조정된다.</p></div>
+    </li></ol>
+    </details>
+      </section>
+
+      <details class="analysis-details">
+        <summary>입력·결과·차용 경계 분석 보기</summary>
+        <div class="analysis-body">
+      <section class="service-section compare-section">
+        <div>
+          <h3>입력은 이만큼</h3>
+          <ul class="input-list">
+            
+              <li>
+                <span class="required">필수</span>
+                <b>학습 언어</b>
+                <small>커리큘럼 선택</small>
+              </li>
+              <li>
+                <span class="optional">선택</span>
+                <b>현재 수준</b>
+                <small>시작 지점</small>
+              </li>
+              <li>
+                <span class="optional">선택</span>
+                <b>일일 목표</b>
+                <small>학습량</small>
+              </li>
+          </ul>
+        </div>
+        <div>
+          <h3>결과는 이렇게</h3>
+          <p class="artifact">수준별 학습 경로와 다음 레슨</p>
+          <p><b>오늘:</b> 경로에 표시된 다음 레슨 시작</p>
+          <p><b>수정:</b> 진도와 정답 결과에 따라 다음 문제와 복습이 조정된다.</p>
+        </div>
+      </section>
+
+      <section class="service-section boundary-section">
+        <div>
+          <h3>FlowMe가 차용할 구조</h3>
+          <ul><li>한 번에 다음 레슨 하나만 제시</li><li>진도 위치와 다음 행동 결합</li><li>짧은 회차 단위</li></ul>
+        </div>
+        <div>
+          <h3>만들지 말아야 할 영역</h3>
+          <ul><li>적응형 문제 출제 엔진</li><li>스트릭·게임 경제 복제</li></ul>
+        </div>
+      </section>
+
+      <section class="service-section signal-section">
+        <div>
+          <h3>사용자 커뮤니케이션 증거</h3>
+          <span class="signal-status">research_feedback_loop_verified</span>
+          <p>공식 블로그가 설문·인터뷰·실험을 통해 학습자 피드백을 기능에 반영한다고 설명한다.</p>
+          <small>개별 제작자 답변보다 제품 연구·실험 루프에 가까운 구조다.</small>
+        </div>
+        <div>
+          <h3>확인된 비즈니스 연결</h3>
+          <p>광고·구독·인증 시험 등 명확한 제품 수익 구조가 있다.</p>
+          <small>실제 제휴 의사·전환율·매출 기여는 확인하지 않았으며 사업 가설로 승격하지 않는다.</small>
+        </div>
+      </section>
+        </div>
+      </details>
+
+      <section class="service-section opportunity-strip">
+        <div>
+          <span class="opportunity-label">콘텐츠 발굴 기회</span>
+          <h3>제작자 강의·연습 시리즈 진도 Flow</h3>
+          <p>개별 강의·공개 학습 시리즈를 회차 큐와 오늘 학습으로 바꾸는 구조는 차용할 수 있다.</p>
+        </div>
+        <span class="opportunity-decision">Go</span>
+      </section>
+
+      <details class="score-details">
+    <summary>10개 점수와 감점 근거 보기 <span>8.2/10</span></summary>
+    <div class="score-list">
+      <div class="score-row">
+          <div class="score-head">
+            <b>따라 하기 쉬움</b>
+            <span>10/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:100%"></i></div>
+          <p>Duolingo은(는) &#039;목표 언어 선택 → 학습 경로 → 짧은 레슨 → 진도·다음 레슨&#039; 흐름으로 다음 행동을 이어 준다. 경로가 다음 레슨을 강하게 제한해 선택 부담이 매우 낮다. (10/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>최소 입력</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>최초 입력은 학습 언어, 현재 수준, 일일 목표이며 필수 1개다. 언어 하나로 시작할 수 있다. (9/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>생성 결과 명확성</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>입력 뒤 &#039;수준별 학습 경로와 다음 레슨&#039;가 생성된다. 경로와 현재 위치가 명확하다. (9/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>다음 행동</b>
+            <span>10/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:100%"></i></div>
+          <p>실행 화면의 다음 행동은 &#039;경로에 표시된 다음 레슨 시작&#039;이다. 단일 레슨 CTA가 선명하다. (10/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>수정·재일정</b>
+            <span>8/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:80%"></i></div>
+          <p>진도와 정답 결과에 따라 다음 문제와 복습이 조정된다. 적응형 문항은 고유 학습 엔진이므로 FlowMe 범위가 아니다. (8/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>콘텐츠 깊이</b>
+            <span>10/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:100%"></i></div>
+          <p>언어별 방대한 레슨·스토리·연습 콘텐츠가 있다. 서비스 자체 콘텐츠는 깊지만 외부 제작자 콘텐츠 공급망과는 다르다. (10/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>제작자 비즈니스</b>
+            <span>8/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:80%"></i></div>
+          <p>광고·구독·인증 시험 등 명확한 제품 수익 구조가 있다. 직접 경쟁 학습 제품이므로 파트너보다 로직 벤치마크에 가깝다. (8/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>외부 이식 기회</b>
+            <span>4/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:40%"></i></div>
+          <p>진도·문항·연속 학습은 폐쇄형이며 외부 내보내기 가치가 낮다. 이식성 간극은 있으나 원문 강의 큐에만 적용 가능하다. 점수가 높을수록 외부 도구로 옮길 여지가 크다. (4/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>FlowMe 추가 가치</b>
+            <span>6/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:60%"></i></div>
+          <p>개별 강의·공개 학습 시리즈를 회차 큐와 오늘 학습으로 바꾸는 구조는 차용할 수 있다. 학습 엔진을 복제하지 않고 공개 커리큘럼의 실행 껍질만 제공한다. (6/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>근거 신뢰도</b>
+            <span>8/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:80%"></i></div>
+          <p>공식·지원·앱스토어 근거 2건을 2026-07-28 확인했다. 공식 학습 페이지와 방법론 문서를 확인했다. 개인 레슨 적응 결과는 미확인이다. (8/10)</p>
+        </div>
+    </div>
+  </details>
+
+      <details class="source-details">
+        <summary>근거·검증 경계 보기</summary>
+        <p class="boundary-note">공개 웹·공식 지원 문서·앱스토어 설명만 확인했다. 로그인 후 개인화 결과는 in_app_verified가 아니다.</p>
+        <ul class="source-list">
+          
+            <li>
+              <a href="https://www.duolingo.com/learn" target="_blank" rel="noreferrer">Duolingo Learn</a>
+              <span>언어 선택과 학습 경로 진입점을 제공한다.</span>
+            </li>
+            <li>
+              <a href="https://duolingo-papers.s3.amazonaws.com/reports/duolingo-method-whitepaper.pdf" target="_blank" rel="noreferrer">Duolingo Method Whitepaper</a>
+              <span>개인화된 짧은 레슨과 학습 경로 원칙을 설명한다.</span>
+            </li>
+          <li>
+            <a href="https://blog.duolingo.com/how-duolingo-works-with-learners/" target="_blank" rel="noreferrer">사용자 커뮤니케이션 확인 근거</a>
+            <span>공식 블로그가 설문·인터뷰·실험을 통해 학습자 피드백을 기능에 반영한다고 설명한다.</span>
+          </li>
+        </ul>
+      </details>
+    </article>
+    <article
+      class="service-card"
+      id="service-ynab"
+      data-decision="benchmark"
+      data-category="money_admin_purchase"
+    >
+      <header class="service-header">
+        <div>
+          <div class="eyebrow">돈·행정·구매 · 목표 → 계획</div>
+          <h2>YNAB</h2>
+          <p>목표 금액을 언제까지 모을지 월별 실행액으로 바꾸고 싶을 때</p>
+        </div>
+        <div class="verdict-stack">
+          <span class="decision benchmark">Benchmark</span>
+          <span class="relationship">UX·로직 벤치마크 전용</span>
+        </div>
+      </header>
+
+      <div class="evidence-grid">
+        
+    <figure class="evidence-shot">
+      <a href="https://www.ynab.com/features/goal-tracking" target="_blank" rel="noreferrer">
+        <img src="2026-07-28-vertical-execution-service-assets/ynab-01.png" alt="YNAB 목표 추적 소개" loading="lazy">
+      </a>
+      <figcaption>
+        <strong>목표 추적 소개</strong>
+        <span>공개 화면 캡처 · 공개 웹 확인</span>
+      </figcaption>
+    </figure>
+    <figure class="evidence-shot">
+      <a href="https://support.ynab.com/how-to-use-targets-rk5kkI9ks" target="_blank" rel="noreferrer">
+        <img src="2026-07-28-vertical-execution-service-assets/ynab-02.png" alt="YNAB 목표 설정 도움말" loading="lazy">
+      </a>
+      <figcaption>
+        <strong>목표 설정 도움말</strong>
+        <span>공개 화면 캡처 · 지원 문서 확인</span>
+      </figcaption>
+    </figure>
+      </div>
+
+      <section class="service-section ui-demo-section">
+        
+    <div class="storyboard-heading">
+      <div>
+        <h3>FlowMe로 보이면 이렇게</h3>
+        <p>벤치마크 구조를 FlowMe 사용 흐름에 대입한 개념 UI입니다. 실제 앱 화면이나 원문 콘텐츠 복제가 아닙니다.</p>
+      </div>
+      <span>목표 → 계획</span>
+    </div>
+    <div class="ui-storyboard" aria-label="YNAB형 FlowMe 개념 UI">
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>1</span> 발견</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>Flows</b><span>구조 예시</span></header>
+          <div class="ui-body">
+            <div class="ui-source">돈·행정·구매 · 원문 링크 유지</div>
+            <h4>YNAB형<br>목표 → 계획</h4>
+            <p>목표 금액을 언제까지 모을지 월별 실행액으로 바꾸고 싶을 때</p>
+            <div class="ui-outcome">
+              <small>저장하면 생기는 것</small>
+              <b>주·월·연 단위 필요 저축액과 진도</b>
+            </div>
+          </div>
+          <footer class="ui-bottom"><button type="button">저장 결과 먼저 보기</button></footer>
+        </div>
+      </section>
+
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>2</span> 최소 입력</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>시작 설정</b><span>필수 2개</span></header>
+          <div class="ui-body">
+            <p class="ui-helper">계획 생성에 필요한 값만 먼저 정합니다.</p>
+            
+    <div class="mock-fields">
+      
+        <div class="mock-field">
+          <label>목표 금액 <span>필수</span></label>
+          <div>목표 크기 선택</div>
+        </div>
+        <div class="mock-field">
+          <label>목표일 <span>필수</span></label>
+          <div>필요액 계산 선택</div>
+        </div>
+      
+    </div>
+            <div class="ui-info-row"><i></i><span>원문에서 알 수 있는 값은 다시 묻지 않음</span></div>
+          </div>
+          <footer class="ui-bottom"><button type="button">전체 결과 미리보기</button></footer>
+        </div>
+      </section>
+
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>3</span> 생성 결과</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>미리보기</b><span>저장 전</span></header>
+          <div class="ui-body preview-body">
+            <div class="ui-artifact-title">
+              <small>생성될 결과</small>
+              <h4>주·월·연 단위 필요 저축액과 진도</h4>
+            </div>
+            
+      <div class="goal-preview">
+        <div class="goal-result"><small>생성된 계획</small><b>주·월·연 단위 필요 저축액과 진도</b></div>
+        <div class="goal-line"><i></i><i class="current"></i><i></i></div>
+        <div class="goal-labels"><span>시작</span><span>오늘</span><span>목표</span></div>
+        <div class="preview-focus compact"><small>다음 행동</small><b>이번 달 목표 카테고리에 필요한 금액 배정</b></div>
+      </div>
+            <div class="ui-destination"><span>내보내기</span><b>캘린더 · 체크리스트 · 메모</b></div>
+          </div>
+          <footer class="ui-bottom split"><button class="secondary" type="button">입력 수정</button><button type="button">이대로 저장</button></footer>
+        </div>
+      </section>
+
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>4</span> 오늘 실행</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>오늘</b><span>다음 행동</span></header>
+          <div class="ui-body today-body">
+            <div class="today-focus">
+              <span class="today-status">지금 할 일</span>
+              <h4>이번 달 목표 카테고리에 필요한 금액 배정</h4>
+              <p>주·월·연 단위 필요 저축액과 진도에서 꺼낸 현재 행동</p>
+            </div>
+            <button class="source-link-button" type="button"><i></i>원문·제작자 링크 열기</button>
+            <div class="today-meta">
+              <span>세부 내용은 메모</span>
+              <span>일정은 나중에 수정</span>
+            </div>
+          </div>
+          <footer class="ui-bottom split"><button class="secondary" type="button">일정 바꾸기</button><button type="button">완료 표시</button></footer>
+        </div>
+      </section>
+    </div>
+    <details class="journey-details">
+      <summary>텍스트 구조도 함께 보기</summary>
+      <ol class="journey">
+    <li>
+      <span class="journey-index">1</span>
+      <div><b>상황</b><p>목표 금액을 언제까지 모을지 월별 실행액으로 바꾸고 싶을 때</p></div>
+    </li>
+    <li>
+      <span class="journey-index">2</span>
+      <div><b>최초 입력</b><p>목표 금액 · 목표일</p></div>
+    </li>
+    <li>
+      <span class="journey-index">3</span>
+      <div><b>생성 결과</b><p>주·월·연 단위 필요 저축액과 진도</p></div>
+    </li>
+    <li>
+      <span class="journey-index">4</span>
+      <div><b>오늘/다음</b><p>이번 달 목표 카테고리에 필요한 금액 배정</p></div>
+    </li>
+    <li>
+      <span class="journey-index">5</span>
+      <div><b>완료·수정</b><p>목표일·금액을 바꾸거나 목표를 잠시 미룰 수 있다.</p></div>
+    </li></ol>
+    </details>
+      </section>
+
+      <details class="analysis-details">
+        <summary>입력·결과·차용 경계 분석 보기</summary>
+        <div class="analysis-body">
+      <section class="service-section compare-section">
+        <div>
+          <h3>입력은 이만큼</h3>
+          <ul class="input-list">
+            
+              <li>
+                <span class="required">필수</span>
+                <b>목표 금액</b>
+                <small>목표 크기</small>
+              </li>
+              <li>
+                <span class="required">필수</span>
+                <b>목표일</b>
+                <small>필요액 계산</small>
+              </li>
+          </ul>
+        </div>
+        <div>
+          <h3>결과는 이렇게</h3>
+          <p class="artifact">주·월·연 단위 필요 저축액과 진도</p>
+          <p><b>오늘:</b> 이번 달 목표 카테고리에 필요한 금액 배정</p>
+          <p><b>수정:</b> 목표일·금액을 바꾸거나 목표를 잠시 미룰 수 있다.</p>
+        </div>
+      </section>
+
+      <section class="service-section boundary-section">
+        <div>
+          <h3>FlowMe가 차용할 구조</h3>
+          <ul><li>목표일 하나로 주기별 필요액 미리보기</li><li>보류해도 목표 자체는 유지</li></ul>
+        </div>
+        <div>
+          <h3>만들지 말아야 할 영역</h3>
+          <ul><li>은행 계좌 연동</li><li>전체 예산 원장</li></ul>
+        </div>
+      </section>
+
+      <section class="service-section signal-section">
+        <div>
+          <h3>사용자 커뮤니케이션 증거</h3>
+          <span class="signal-status">support_content_verified</span>
+          <p>공식 지원 문서와 교육 콘텐츠가 깊지만 이번 근거에서는 공개 사용자 대화가 직접 연결되지 않았다.</p>
+          <small>지원·교육 응답은 존재하나 공개 댓글 기반 상호작용은 unknown이다.</small>
+        </div>
+        <div>
+          <h3>확인된 비즈니스 연결</h3>
+          <p>구독형 예산 제품과 교육 콘텐츠가 강하게 연결된다.</p>
+          <small>실제 제휴 의사·전환율·매출 기여는 확인하지 않았으며 사업 가설로 승격하지 않는다.</small>
+        </div>
+      </section>
+        </div>
+      </details>
+
+      <section class="service-section opportunity-strip">
+        <div>
+          <span class="opportunity-label">콘텐츠 발굴 기회</span>
+          <h3>보조 벤치마크</h3>
+          <p>재무 계정 연동 없이도 공개 저축 챌린지·구매 준비표를 목표일과 체크 일정으로 바꿀 수 있다.</p>
+        </div>
+        <span class="opportunity-decision">Benchmark</span>
+      </section>
+
+      <details class="score-details">
+    <summary>10개 점수와 감점 근거 보기 <span>8.3/10</span></summary>
+    <div class="score-list">
+      <div class="score-row">
+          <div class="score-head">
+            <b>따라 하기 쉬움</b>
+            <span>8/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:80%"></i></div>
+          <p>YNAB은(는) &#039;목표 금액·기한 → 주기별 필요액 → 이번 달 배정 → 진도·다음 배정&#039; 흐름으로 다음 행동을 이어 준다. 목표를 이번 달 배정 행동으로 연결한다. (8/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>최소 입력</b>
+            <span>8/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:80%"></i></div>
+          <p>최초 입력은 목표 금액, 목표일이며 필수 2개다. 금액과 날짜 두 값이 결과 계산에 직접 필요하다. (8/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>생성 결과 명확성</b>
+            <span>10/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:100%"></i></div>
+          <p>입력 뒤 &#039;주·월·연 단위 필요 저축액과 진도&#039;가 생성된다. 필요액이 즉시 계산되어 결과가 명확하다. (10/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>다음 행동</b>
+            <span>8/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:80%"></i></div>
+          <p>실행 화면의 다음 행동은 &#039;이번 달 목표 카테고리에 필요한 금액 배정&#039;이다. 다음 배정 행동이 구체적이다. (8/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>수정·재일정</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>목표일·금액을 바꾸거나 목표를 잠시 미룰 수 있다. 목표 변경과 보류가 자연스럽다. (9/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>콘텐츠 깊이</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>예산, 지출, 목표, 리포트, 교육 콘텐츠가 연결된다. 재무 교육과 목표 유형이 깊다. (9/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>제작자 비즈니스</b>
+            <span>8/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:80%"></i></div>
+          <p>구독형 예산 제품과 교육 콘텐츠가 강하게 연결된다. 계좌·예산 제품은 직접 경쟁 경계이며 공개 교육 콘텐츠만 참고 가능하다. (8/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>외부 이식 기회</b>
+            <span>7/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:70%"></i></div>
+          <p>금융 계좌·예산 데이터는 앱에 묶이지만 목표 계획은 시트·캘린더로 옮길 여지가 있다. 목표 일정의 외부 이식성은 높다. 점수가 높을수록 외부 도구로 옮길 여지가 크다. (7/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>FlowMe 추가 가치</b>
+            <span>7/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:70%"></i></div>
+          <p>재무 계정 연동 없이도 공개 저축 챌린지·구매 준비표를 목표일과 체크 일정으로 바꿀 수 있다. 계좌 연결·예산 원장은 만들지 않는다. (7/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>근거 신뢰도</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>공식·지원·앱스토어 근거 2건을 2026-07-28 확인했다. 공식 기능과 지원 문서를 확인했으며 계좌 연동은 직접 시험하지 않았다. (9/10)</p>
+        </div>
+    </div>
+  </details>
+
+      <details class="source-details">
+        <summary>근거·검증 경계 보기</summary>
+        <p class="boundary-note">공개 웹·공식 지원 문서·앱스토어 설명만 확인했다. 로그인 후 개인화 결과는 in_app_verified가 아니다.</p>
+        <ul class="source-list">
+          
+            <li>
+              <a href="https://www.ynab.com/features/goal-tracking" target="_blank" rel="noreferrer">YNAB Goal Tracking</a>
+              <span>목표 금액·날짜로 주·월·연 필요액을 계산한다고 설명한다.</span>
+            </li>
+            <li>
+              <a href="https://support.ynab.com/how-to-use-targets-rk5kkI9ks" target="_blank" rel="noreferrer">YNAB Targets Help</a>
+              <span>목표 유형, 진행, snooze 동작을 설명한다.</span>
+            </li>
+          <li>
+            <a href="https://support.ynab.com/how-to-use-targets-rk5kkI9ks" target="_blank" rel="noreferrer">사용자 커뮤니케이션 확인 근거</a>
+            <span>공식 지원 문서와 교육 콘텐츠가 깊지만 이번 근거에서는 공개 사용자 대화가 직접 연결되지 않았다.</span>
+          </li>
+        </ul>
+      </details>
+    </article>
+    <article
+      class="service-card"
+      id="service-runna"
+      data-decision="go"
+      data-category="health_fitness"
+    >
+      <header class="service-header">
+        <div>
+          <div class="eyebrow">건강·운동 · 목표 → 계획</div>
+          <h2>Runna</h2>
+          <p>레이스·거리 목표에 맞춘 주간 러닝 계획이 필요할 때</p>
+        </div>
+        <div class="verdict-stack">
+          <span class="decision go">Go</span>
+          <span class="relationship">UX·로직 벤치마크 전용</span>
+        </div>
+      </header>
+
+      <div class="evidence-grid">
+        
+    <figure class="evidence-shot">
+      <a href="https://www.runna.com/training/training-plans" target="_blank" rel="noreferrer">
+        <img src="2026-07-28-vertical-execution-service-assets/runna-01.png" alt="Runna 훈련 계획 포트폴리오" loading="lazy">
+      </a>
+      <figcaption>
+        <strong>훈련 계획 포트폴리오</strong>
+        <span>공개 화면 캡처 · 공개 웹 확인</span>
+      </figcaption>
+    </figure>
+    <figure class="evidence-shot">
+      <a href="https://support.runna.com/en/articles/15443877-how-to-create-a-training-plan-in-runna" target="_blank" rel="noreferrer">
+        <img src="2026-07-28-vertical-execution-service-assets/runna-02.png" alt="Runna 계획 생성 도움말" loading="lazy">
+      </a>
+      <figcaption>
+        <strong>계획 생성 도움말</strong>
+        <span>공개 화면 캡처 · 지원 문서 확인</span>
+      </figcaption>
+    </figure>
+      </div>
+
+      <section class="service-section ui-demo-section">
+        
+    <div class="storyboard-heading">
+      <div>
+        <h3>FlowMe로 보이면 이렇게</h3>
+        <p>벤치마크 구조를 FlowMe 사용 흐름에 대입한 개념 UI입니다. 실제 앱 화면이나 원문 콘텐츠 복제가 아닙니다.</p>
+      </div>
+      <span>목표 → 계획</span>
+    </div>
+    <div class="ui-storyboard" aria-label="Runna형 FlowMe 개념 UI">
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>1</span> 발견</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>Flows</b><span>구조 예시</span></header>
+          <div class="ui-body">
+            <div class="ui-source">건강·운동 · 원문 링크 유지</div>
+            <h4>Runna형<br>목표 → 계획</h4>
+            <p>레이스·거리 목표에 맞춘 주간 러닝 계획이 필요할 때</p>
+            <div class="ui-outcome">
+              <small>저장하면 생기는 것</small>
+              <b>목표일에 맞춘 주차별 러닝·근력 훈련 계획</b>
+            </div>
+          </div>
+          <footer class="ui-bottom"><button type="button">저장 결과 먼저 보기</button></footer>
+        </div>
+      </section>
+
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>2</span> 최소 입력</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>시작 설정</b><span>필수 3개</span></header>
+          <div class="ui-body">
+            <p class="ui-helper">계획 생성에 필요한 값만 먼저 정합니다.</p>
+            
+    <div class="mock-fields">
+      
+        <div class="mock-field">
+          <label>목표 유형/레이스 <span>필수</span></label>
+          <div>계획 유형 선택</div>
+        </div>
+        <div class="mock-field">
+          <label>현재 능력·주간 거리 <span>필수</span></label>
+          <div>강도 선택</div>
+        </div>
+        <div class="mock-field">
+          <label>주당 러닝 횟수 <span>필수</span></label>
+          <div>일정 선택</div>
+        </div>
+      
+    </div>
+            <div class="ui-info-row"><i></i><span>원문에서 알 수 있는 값은 다시 묻지 않음</span></div>
+          </div>
+          <footer class="ui-bottom"><button type="button">전체 결과 미리보기</button></footer>
+        </div>
+      </section>
+
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>3</span> 생성 결과</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>미리보기</b><span>저장 전</span></header>
+          <div class="ui-body preview-body">
+            <div class="ui-artifact-title">
+              <small>생성될 결과</small>
+              <h4>목표일에 맞춘 주차별 러닝·근력 훈련 계획</h4>
+            </div>
+            
+      <div class="goal-preview">
+        <div class="goal-result"><small>생성된 계획</small><b>목표일에 맞춘 주차별 러닝·근력 훈련 계획</b></div>
+        <div class="goal-line"><i></i><i class="current"></i><i></i></div>
+        <div class="goal-labels"><span>시작</span><span>오늘</span><span>목표</span></div>
+        <div class="preview-focus compact"><small>다음 행동</small><b>오늘 배정된 러닝 세션 시작</b></div>
+      </div>
+            <div class="ui-destination"><span>내보내기</span><b>주차별 일정 + 오늘 세션</b></div>
+          </div>
+          <footer class="ui-bottom split"><button class="secondary" type="button">입력 수정</button><button type="button">이대로 저장</button></footer>
+        </div>
+      </section>
+
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>4</span> 오늘 실행</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>오늘</b><span>다음 행동</span></header>
+          <div class="ui-body today-body">
+            <div class="today-focus">
+              <span class="today-status">지금 할 일</span>
+              <h4>오늘 배정된 러닝 세션 시작</h4>
+              <p>목표일에 맞춘 주차별 러닝·근력 훈련 계획에서 꺼낸 현재 행동</p>
+            </div>
+            <button class="source-link-button" type="button"><i></i>원문·제작자 링크 열기</button>
+            <div class="today-meta">
+              <span>세부 내용은 메모</span>
+              <span>일정은 나중에 수정</span>
+            </div>
+          </div>
+          <footer class="ui-bottom split"><button class="secondary" type="button">일정 바꾸기</button><button type="button">완료 표시</button></footer>
+        </div>
+      </section>
+    </div>
+    <details class="journey-details">
+      <summary>텍스트 구조도 함께 보기</summary>
+      <ol class="journey">
+    <li>
+      <span class="journey-index">1</span>
+      <div><b>상황</b><p>레이스·거리 목표에 맞춘 주간 러닝 계획이 필요할 때</p></div>
+    </li>
+    <li>
+      <span class="journey-index">2</span>
+      <div><b>최초 입력</b><p>목표 유형/레이스 · 현재 능력·주간 거리 · 주당 러닝 횟수</p></div>
+    </li>
+    <li>
+      <span class="journey-index">3</span>
+      <div><b>생성 결과</b><p>목표일에 맞춘 주차별 러닝·근력 훈련 계획</p></div>
+    </li>
+    <li>
+      <span class="journey-index">4</span>
+      <div><b>오늘/다음</b><p>오늘 배정된 러닝 세션 시작</p></div>
+    </li>
+    <li>
+      <span class="journey-index">5</span>
+      <div><b>완료·수정</b><p>일정·목표·운동 요일을 관리 화면에서 바꾸고 계획을 조정한다.</p></div>
+    </li></ol>
+    </details>
+      </section>
+
+      <details class="analysis-details">
+        <summary>입력·결과·차용 경계 분석 보기</summary>
+        <div class="analysis-body">
+      <section class="service-section compare-section">
+        <div>
+          <h3>입력은 이만큼</h3>
+          <ul class="input-list">
+            
+              <li>
+                <span class="required">필수</span>
+                <b>목표 유형/레이스</b>
+                <small>계획 유형</small>
+              </li>
+              <li>
+                <span class="required">필수</span>
+                <b>현재 능력·주간 거리</b>
+                <small>강도</small>
+              </li>
+              <li>
+                <span class="required">필수</span>
+                <b>주당 러닝 횟수</b>
+                <small>일정</small>
+              </li>
+          </ul>
+        </div>
+        <div>
+          <h3>결과는 이렇게</h3>
+          <p class="artifact">목표일에 맞춘 주차별 러닝·근력 훈련 계획</p>
+          <p><b>오늘:</b> 오늘 배정된 러닝 세션 시작</p>
+          <p><b>수정:</b> 일정·목표·운동 요일을 관리 화면에서 바꾸고 계획을 조정한다.</p>
+        </div>
+      </section>
+
+      <section class="service-section boundary-section">
+        <div>
+          <h3>FlowMe가 차용할 구조</h3>
+          <ul><li>기준 목표일 후 계획 미리보기</li><li>주차별 세션과 오늘 운동 연결</li><li>일정 변경 후 회차 유지</li></ul>
+        </div>
+        <div>
+          <h3>만들지 말아야 할 영역</h3>
+          <ul><li>훈련 부하·부상 위험 계산</li><li>GPS·웨어러블 코칭 엔진</li></ul>
+        </div>
+      </section>
+
+      <section class="service-section signal-section">
+        <div>
+          <h3>사용자 커뮤니케이션 증거</h3>
+          <span class="signal-status">support_content_verified</span>
+          <p>공식 도움말과 코칭 콘텐츠는 확인했지만 사용자 질문·코치 답변의 공개 표면은 확인하지 못했다.</p>
+          <small>앱 안 코칭 또는 지원 여부는 in-app 미검증이다.</small>
+        </div>
+        <div>
+          <h3>확인된 비즈니스 연결</h3>
+          <p>구독 코칭과 웨어러블 연동이 핵심 제품 가치다.</p>
+          <small>실제 제휴 의사·전환율·매출 기여는 확인하지 않았으며 사업 가설로 승격하지 않는다.</small>
+        </div>
+      </section>
+        </div>
+      </details>
+
+      <section class="service-section opportunity-strip">
+        <div>
+          <span class="opportunity-label">콘텐츠 발굴 기회</span>
+          <h3>기간형 운동 프로그램 실행표</h3>
+          <p>공개 코치의 기간형 프로그램을 목표일·요일만 받아 회차 일정과 원문 링크로 배치할 수 있다.</p>
+        </div>
+        <span class="opportunity-decision">Go</span>
+      </section>
+
+      <details class="score-details">
+    <summary>10개 점수와 감점 근거 보기 <span>8.9/10</span></summary>
+    <div class="score-list">
+      <div class="score-row">
+          <div class="score-head">
+            <b>따라 하기 쉬움</b>
+            <span>10/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:100%"></i></div>
+          <p>Runna은(는) &#039;목표·수준·일정 → 훈련 계획 미리보기 → 오늘 운동 → 기록·계획 조정&#039; 흐름으로 다음 행동을 이어 준다. 계획 미리보기와 오늘 운동이 자연스럽게 이어진다. (10/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>최소 입력</b>
+            <span>7/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:70%"></i></div>
+          <p>최초 입력은 목표 유형/레이스, 현재 능력·주간 거리, 주당 러닝 횟수이며 필수 3개다. 입력은 3개 이상이지만 안전한 훈련 계획에 직접 필요하다. (7/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>생성 결과 명확성</b>
+            <span>10/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:100%"></i></div>
+          <p>입력 뒤 &#039;목표일에 맞춘 주차별 러닝·근력 훈련 계획&#039;가 생성된다. 주차·세션·목표일 관계가 매우 선명하다. (10/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>다음 행동</b>
+            <span>10/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:100%"></i></div>
+          <p>실행 화면의 다음 행동은 &#039;오늘 배정된 러닝 세션 시작&#039;이다. 오늘 세션 시작이 명확하다. (10/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>수정·재일정</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>일정·목표·운동 요일을 관리 화면에서 바꾸고 계획을 조정한다. 일정 변경과 재계획 UX가 강하다. (9/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>콘텐츠 깊이</b>
+            <span>10/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:100%"></i></div>
+          <p>5K부터 울트라, 재활 복귀, 근력 등 계획 유형이 깊다. 거리·수준·목표별 프로그램 변형이 매우 깊다. (10/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>제작자 비즈니스</b>
+            <span>8/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:80%"></i></div>
+          <p>구독 코칭과 웨어러블 연동이 핵심 제품 가치다. 전문 코칭·웨어러블 기능은 복제하지 않고 공개 코치 콘텐츠와 제휴 기회를 본다. (8/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>외부 이식 기회</b>
+            <span>7/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:70%"></i></div>
+          <p>운동 세션은 캘린더·웨어러블과 연결되지만 코칭 계산은 앱에 묶인다. 캘린더·체크리스트 이식성이 높아 FlowMe 차별점과 맞는다. 점수가 높을수록 외부 도구로 옮길 여지가 크다. (7/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>FlowMe 추가 가치</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>공개 코치의 기간형 프로그램을 목표일·요일만 받아 회차 일정과 원문 링크로 배치할 수 있다. 훈련 강도 계산·건강 판단은 원문 제작자에게 남긴다. (9/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>근거 신뢰도</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>공식·지원·앱스토어 근거 2건을 2026-07-28 확인했다. 공식 계획 목록과 계획 생성 지원 문서를 확인했다. (9/10)</p>
+        </div>
+    </div>
+  </details>
+
+      <details class="source-details">
+        <summary>근거·검증 경계 보기</summary>
+        <p class="boundary-note">공개 웹·공식 지원 문서·앱스토어 설명만 확인했다. 로그인 후 개인화 결과는 in_app_verified가 아니다.</p>
+        <ul class="source-list">
+          
+            <li>
+              <a href="https://www.runna.com/training/training-plans" target="_blank" rel="noreferrer">Runna Training Plans</a>
+              <span>거리·레이스·근력 등 다양한 계획을 소개한다.</span>
+            </li>
+            <li>
+              <a href="https://support.runna.com/en/articles/15443877-how-to-create-a-training-plan-in-runna" target="_blank" rel="noreferrer">Runna Plan Creation Help</a>
+              <span>능력·거리·횟수·레이스 목표 입력과 미리보기·시작 절차를 설명한다.</span>
+            </li>
+          <li>
+            <a href="https://support.runna.com/en/articles/15443877-how-to-create-a-training-plan-in-runna" target="_blank" rel="noreferrer">사용자 커뮤니케이션 확인 근거</a>
+            <span>공식 도움말과 코칭 콘텐츠는 확인했지만 사용자 질문·코치 답변의 공개 표면은 확인하지 못했다.</span>
+          </li>
+        </ul>
+      </details>
+    </article>
+    <article
+      class="service-card"
+      id="service-wanderlog"
+      data-decision="benchmark"
+      data-category="travel_outings_events"
+    >
+      <header class="service-header">
+        <div>
+          <div class="eyebrow">여행·외출·행사 · 모음 → 일정</div>
+          <h2>Wanderlog</h2>
+          <p>저장한 장소와 예약을 한 일정으로 정리하고 싶을 때</p>
+        </div>
+        <div class="verdict-stack">
+          <span class="decision benchmark">Benchmark</span>
+          <span class="relationship">외부 실행 목적지</span>
+        </div>
+      </header>
+
+      <div class="evidence-grid">
+        
+    <figure class="evidence-shot">
+      <a href="https://wanderlog.com/pages/help-center" target="_blank" rel="noreferrer">
+        <img src="2026-07-28-vertical-execution-service-assets/wanderlog-01.png" alt="Wanderlog 여행 일정·지도 소개" loading="lazy">
+      </a>
+      <figcaption>
+        <strong>여행 일정·지도 소개</strong>
+        <span>공개 화면 캡처 · 공개 웹 확인</span>
+      </figcaption>
+    </figure>
+    <figure class="evidence-shot">
+      <a href="https://help.wanderlog.com/hc/en-us" target="_blank" rel="noreferrer">
+        <img src="2026-07-28-vertical-execution-service-assets/wanderlog-02.png" alt="Wanderlog 일정 편집 도움말" loading="lazy">
+      </a>
+      <figcaption>
+        <strong>일정 편집 도움말</strong>
+        <span>공개 화면 캡처 · 지원 문서 확인</span>
+      </figcaption>
+    </figure>
+      </div>
+
+      <section class="service-section ui-demo-section">
+        
+    <div class="storyboard-heading">
+      <div>
+        <h3>FlowMe로 보이면 이렇게</h3>
+        <p>벤치마크 구조를 FlowMe 사용 흐름에 대입한 개념 UI입니다. 실제 앱 화면이나 원문 콘텐츠 복제가 아닙니다.</p>
+      </div>
+      <span>모음 → 일정</span>
+    </div>
+    <div class="ui-storyboard" aria-label="Wanderlog형 FlowMe 개념 UI">
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>1</span> 발견</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>Flows</b><span>구조 예시</span></header>
+          <div class="ui-body">
+            <div class="ui-source">여행·외출·행사 · 원문 링크 유지</div>
+            <h4>Wanderlog형<br>모음 → 일정</h4>
+            <p>저장한 장소와 예약을 한 일정으로 정리하고 싶을 때</p>
+            <div class="ui-outcome">
+              <small>저장하면 생기는 것</small>
+              <b>날짜별 여행 일정과 지도 동선</b>
+            </div>
+          </div>
+          <footer class="ui-bottom"><button type="button">저장 결과 먼저 보기</button></footer>
+        </div>
+      </section>
+
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>2</span> 최소 입력</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>시작 설정</b><span>필수 1개</span></header>
+          <div class="ui-body">
+            <p class="ui-helper">계획 생성에 필요한 값만 먼저 정합니다.</p>
+            
+    <div class="mock-fields">
+      
+        <div class="mock-field">
+          <label>여행지/여행 기간 <span>필수</span></label>
+          <div>일정 틀 선택</div>
+        </div>
+      
+        <button class="mock-later" type="button">선택 정보 1개는 나중에 정하기</button>
+    </div>
+            <div class="ui-info-row"><i></i><span>원문에서 알 수 있는 값은 다시 묻지 않음</span></div>
+          </div>
+          <footer class="ui-bottom"><button type="button">전체 결과 미리보기</button></footer>
+        </div>
+      </section>
+
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>3</span> 생성 결과</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>미리보기</b><span>저장 전</span></header>
+          <div class="ui-body preview-body">
+            <div class="ui-artifact-title">
+              <small>생성될 결과</small>
+              <h4>날짜별 여행 일정과 지도 동선</h4>
+            </div>
+            
+      <div class="itinerary-preview">
+        <div><time>날짜별</time><b>일정·지도 생성</b><span>저장한 자료 배치</span></div>
+        <div class="current"><time>오늘</time><b>오늘 일정의 다음 장소 확인·이동</b><span>링크·장소 함께 표시</span></div>
+        <div><time>다음</time><b>현지 다음 장소</b><span>순서 변경 가능</span></div>
+      </div>
+            <div class="ui-destination"><span>내보내기</span><b>캘린더 · 체크리스트 · 메모</b></div>
+          </div>
+          <footer class="ui-bottom split"><button class="secondary" type="button">입력 수정</button><button type="button">이대로 저장</button></footer>
+        </div>
+      </section>
+
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>4</span> 오늘 실행</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>오늘</b><span>다음 행동</span></header>
+          <div class="ui-body today-body">
+            <div class="today-focus">
+              <span class="today-status">지금 할 일</span>
+              <h4>오늘 일정의 다음 장소 확인·이동</h4>
+              <p>날짜별 여행 일정과 지도 동선에서 꺼낸 현재 행동</p>
+            </div>
+            <button class="source-link-button" type="button"><i></i>원문·제작자 링크 열기</button>
+            <div class="today-meta">
+              <span>세부 내용은 메모</span>
+              <span>일정은 나중에 수정</span>
+            </div>
+          </div>
+          <footer class="ui-bottom split"><button class="secondary" type="button">일정 바꾸기</button><button type="button">완료 표시</button></footer>
+        </div>
+      </section>
+    </div>
+    <details class="journey-details">
+      <summary>텍스트 구조도 함께 보기</summary>
+      <ol class="journey">
+    <li>
+      <span class="journey-index">1</span>
+      <div><b>상황</b><p>저장한 장소와 예약을 한 일정으로 정리하고 싶을 때</p></div>
+    </li>
+    <li>
+      <span class="journey-index">2</span>
+      <div><b>최초 입력</b><p>여행지/여행 기간</p></div>
+    </li>
+    <li>
+      <span class="journey-index">3</span>
+      <div><b>생성 결과</b><p>날짜별 여행 일정과 지도 동선</p></div>
+    </li>
+    <li>
+      <span class="journey-index">4</span>
+      <div><b>오늘/다음</b><p>오늘 일정의 다음 장소 확인·이동</p></div>
+    </li>
+    <li>
+      <span class="journey-index">5</span>
+      <div><b>완료·수정</b><p>장소를 드래그해 날짜·순서를 바꾸고 동선을 다시 본다.</p></div>
+    </li></ol>
+    </details>
+      </section>
+
+      <details class="analysis-details">
+        <summary>입력·결과·차용 경계 분석 보기</summary>
+        <div class="analysis-body">
+      <section class="service-section compare-section">
+        <div>
+          <h3>입력은 이만큼</h3>
+          <ul class="input-list">
+            
+              <li>
+                <span class="required">필수</span>
+                <b>여행지/여행 기간</b>
+                <small>일정 틀</small>
+              </li>
+              <li>
+                <span class="optional">선택</span>
+                <b>가고 싶은 장소</b>
+                <small>일정 항목</small>
+              </li>
+          </ul>
+        </div>
+        <div>
+          <h3>결과는 이렇게</h3>
+          <p class="artifact">날짜별 여행 일정과 지도 동선</p>
+          <p><b>오늘:</b> 오늘 일정의 다음 장소 확인·이동</p>
+          <p><b>수정:</b> 장소를 드래그해 날짜·순서를 바꾸고 동선을 다시 본다.</p>
+        </div>
+      </section>
+
+      <section class="service-section boundary-section">
+        <div>
+          <h3>FlowMe가 차용할 구조</h3>
+          <ul><li>장소 모음과 날짜별 일정 분리</li><li>드래그 순서 변경</li><li>오늘의 다음 장소 표시</li></ul>
+        </div>
+        <div>
+          <h3>만들지 말아야 할 영역</h3>
+          <ul><li>지도 경로 최적화</li><li>숙박·항공 예약 엔진</li></ul>
+        </div>
+      </section>
+
+      <section class="service-section signal-section">
+        <div>
+          <h3>사용자 커뮤니케이션 증거</h3>
+          <span class="signal-status">collaboration_feature_verified</span>
+          <p>공동 편집과 여행 계획 공유 기능이 공식 도움말에 존재한다.</p>
+          <small>여행 제작자와 사용자의 공개 질문·답변 구조는 확인하지 못했다.</small>
+        </div>
+        <div>
+          <h3>확인된 비즈니스 연결</h3>
+          <p>Pro 구독과 여행 예약·추천 연결이 확인된다.</p>
+          <small>실제 제휴 의사·전환율·매출 기여는 확인하지 않았으며 사업 가설로 승격하지 않는다.</small>
+        </div>
+      </section>
+        </div>
+      </details>
+
+      <section class="service-section opportunity-strip">
+        <div>
+          <span class="opportunity-label">콘텐츠 발굴 기회</span>
+          <h3>보조 벤치마크</h3>
+          <p>공개 여행 코스·블로그 장소 목록을 기준일과 날짜별 실행 일정으로 바꾸고 원문 링크를 보존할 수 있다.</p>
+        </div>
+        <span class="opportunity-decision">Benchmark</span>
+      </section>
+
+      <details class="score-details">
+    <summary>10개 점수와 감점 근거 보기 <span>8.4/10</span></summary>
+    <div class="score-list">
+      <div class="score-row">
+          <div class="score-head">
+            <b>따라 하기 쉬움</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>Wanderlog은(는) &#039;장소·예약 모으기 → 일정·지도 생성 → 날짜별 계획 → 현지 다음 장소&#039; 흐름으로 다음 행동을 이어 준다. 여행 중 다음 장소가 자연스럽게 드러난다. (9/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>최소 입력</b>
+            <span>8/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:80%"></i></div>
+          <p>최초 입력은 여행지/여행 기간, 가고 싶은 장소이며 필수 1개다. 여행지와 기간은 일정 생성에 직접 필요하다. (8/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>생성 결과 명확성</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>입력 뒤 &#039;날짜별 여행 일정과 지도 동선&#039;가 생성된다. 일정과 지도라는 결과물이 선명하다. (9/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>다음 행동</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>실행 화면의 다음 행동은 &#039;오늘 일정의 다음 장소 확인·이동&#039;이다. 다음 장소·예약 행동이 구체적이다. (9/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>수정·재일정</b>
+            <span>10/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:100%"></i></div>
+          <p>장소를 드래그해 날짜·순서를 바꾸고 동선을 다시 본다. 순서·날짜 수정이 직관적이다. (10/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>콘텐츠 깊이</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>여행지 가이드·추천 장소·협업 일정·예약 정보로 확장된다. 장소 콘텐츠는 깊지만 실제 코스 품질은 원문에 좌우된다. (9/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>제작자 비즈니스</b>
+            <span>8/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:80%"></i></div>
+          <p>Pro 구독과 여행 예약·추천 연결이 확인된다. 예약 연결은 전문 플랫폼 영역이며 공개 creator 코스는 링크 기반 기회가 있다. (8/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>외부 이식 기회</b>
+            <span>6/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:60%"></i></div>
+          <p>지도·협업은 앱 강점이지만 일정은 캘린더·시트로 이식 가능하다. 캘린더·시트 내보내기 가치가 높다. 점수가 높을수록 외부 도구로 옮길 여지가 크다. (6/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>FlowMe 추가 가치</b>
+            <span>8/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:80%"></i></div>
+          <p>공개 여행 코스·블로그 장소 목록을 기준일과 날짜별 실행 일정으로 바꾸고 원문 링크를 보존할 수 있다. 지도 최적화·예약 엔진은 만들지 않는다. (8/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>근거 신뢰도</b>
+            <span>8/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:80%"></i></div>
+          <p>공식·지원·앱스토어 근거 2건을 2026-07-28 확인했다. 공식 제품과 도움말을 확인했으나 실제 협업·AI 일정 품질은 미확인이다. (8/10)</p>
+        </div>
+    </div>
+  </details>
+
+      <details class="source-details">
+        <summary>근거·검증 경계 보기</summary>
+        <p class="boundary-note">공개 웹·공식 지원 문서·앱스토어 설명만 확인했다. 로그인 후 개인화 결과는 in_app_verified가 아니다.</p>
+        <ul class="source-list">
+          
+            <li>
+              <a href="https://wanderlog.com/pages/help-center" target="_blank" rel="noreferrer">Wanderlog Help Center</a>
+              <span>일정·지도·맞춤 여행 계획 기능을 설명한다.</span>
+            </li>
+            <li>
+              <a href="https://help.wanderlog.com/hc/en-us" target="_blank" rel="noreferrer">Wanderlog Support</a>
+              <span>여행 생성·일정 편집 도움말을 제공한다.</span>
+            </li>
+          <li>
+            <a href="https://help.wanderlog.com/hc/en-us" target="_blank" rel="noreferrer">사용자 커뮤니케이션 확인 근거</a>
+            <span>공동 편집과 여행 계획 공유 기능이 공식 도움말에 존재한다.</span>
+          </li>
+        </ul>
+      </details>
+    </article>
+    <article
+      class="service-card"
+      id="service-the-knot"
+      data-decision="partner"
+      data-category="travel_outings_events"
+    >
+      <header class="service-header">
+        <div>
+          <div class="eyebrow">여행·외출·행사 · 기준일 → 타임라인</div>
+          <h2>The Knot</h2>
+          <p>결혼일까지 해야 할 준비를 빠짐없이 일정화하고 싶을 때</p>
+        </div>
+        <div class="verdict-stack">
+          <span class="decision partner">Partner</span>
+          <span class="relationship">제작자·서비스 파트너 후보</span>
+        </div>
+      </header>
+
+      <div class="evidence-grid">
+        
+    <figure class="evidence-shot">
+      <a href="https://www.theknot.com/wedding-planning" target="_blank" rel="noreferrer">
+        <img src="2026-07-28-vertical-execution-service-assets/the-knot-01.png" alt="The Knot 웨딩 플래너 소개" loading="lazy">
+      </a>
+      <figcaption>
+        <strong>웨딩 플래너 소개</strong>
+        <span>공개 화면 캡처 · 공개 웹 확인</span>
+      </figcaption>
+    </figure>
+    <figure class="evidence-shot">
+      <a href="https://helpcenter.theknot.com/hc/en-us/articles/20629464134036-What-is-the-timeframe-of-my-Checklist" target="_blank" rel="noreferrer">
+        <img src="2026-07-28-vertical-execution-service-assets/the-knot-02.png" alt="The Knot 체크리스트 자동 일정 도움말" loading="lazy">
+      </a>
+      <figcaption>
+        <strong>체크리스트 자동 일정 도움말</strong>
+        <span>공개 화면 캡처 · 지원 문서 확인</span>
+      </figcaption>
+    </figure>
+      </div>
+
+      <section class="service-section ui-demo-section">
+        
+    <div class="storyboard-heading">
+      <div>
+        <h3>FlowMe로 보이면 이렇게</h3>
+        <p>벤치마크 구조를 FlowMe 사용 흐름에 대입한 개념 UI입니다. 실제 앱 화면이나 원문 콘텐츠 복제가 아닙니다.</p>
+      </div>
+      <span>기준일 → 타임라인</span>
+    </div>
+    <div class="ui-storyboard" aria-label="The Knot형 FlowMe 개념 UI">
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>1</span> 발견</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>Flows</b><span>구조 예시</span></header>
+          <div class="ui-body">
+            <div class="ui-source">여행·외출·행사 · 원문 링크 유지</div>
+            <h4>The Knot형<br>기준일 → 타임라인</h4>
+            <p>결혼일까지 해야 할 준비를 빠짐없이 일정화하고 싶을 때</p>
+            <div class="ui-outcome">
+              <small>저장하면 생기는 것</small>
+              <b>결혼일 기준 개인화 준비 체크리스트와 업체·예산 보드</b>
+            </div>
+          </div>
+          <footer class="ui-bottom"><button type="button">저장 결과 먼저 보기</button></footer>
+        </div>
+      </section>
+
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>2</span> 최소 입력</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>시작 설정</b><span>필수 1개</span></header>
+          <div class="ui-body">
+            <p class="ui-helper">계획 생성에 필요한 값만 먼저 정합니다.</p>
+            
+    <div class="mock-fields">
+      
+        <div class="mock-field">
+          <label>결혼일 <span>필수</span></label>
+          <div>D-day 역산 선택</div>
+        </div>
+      
+        <button class="mock-later" type="button">선택 정보 2개는 나중에 정하기</button>
+    </div>
+            <div class="ui-info-row"><i></i><span>원문에서 알 수 있는 값은 다시 묻지 않음</span></div>
+          </div>
+          <footer class="ui-bottom"><button type="button">전체 결과 미리보기</button></footer>
+        </div>
+      </section>
+
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>3</span> 생성 결과</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>미리보기</b><span>저장 전</span></header>
+          <div class="ui-body preview-body">
+            <div class="ui-artifact-title">
+              <small>생성될 결과</small>
+              <h4>결혼일 기준 개인화 준비 체크리스트와 업체·예산 보드</h4>
+            </div>
+            
+      <div class="dday-preview">
+        <div class="dday-anchor"><small>입력한 기준일</small><b>D-day</b></div>
+        <div class="dday-row"><span>먼저</span><b>원문의 앞 구간</b><i>예정</i></div>
+        <div class="dday-row active"><span>오늘</span><b>마감이 가까운 결혼 준비 항목 처리</b><i>할 일</i></div>
+        <div class="dday-row"><span>다음</span><b>원문의 다음 구간</b><i>예정</i></div>
+      </div>
+            <div class="ui-destination"><span>내보내기</span><b>역산 캘린더 + 체크리스트</b></div>
+          </div>
+          <footer class="ui-bottom split"><button class="secondary" type="button">입력 수정</button><button type="button">이대로 저장</button></footer>
+        </div>
+      </section>
+
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>4</span> 오늘 실행</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>오늘</b><span>다음 행동</span></header>
+          <div class="ui-body today-body">
+            <div class="today-focus">
+              <span class="today-status">지금 할 일</span>
+              <h4>마감이 가까운 결혼 준비 항목 처리</h4>
+              <p>결혼일 기준 개인화 준비 체크리스트와 업체·예산 보드에서 꺼낸 현재 행동</p>
+            </div>
+            <button class="source-link-button" type="button"><i></i>원문·제작자 링크 열기</button>
+            <div class="today-meta">
+              <span>세부 내용은 메모</span>
+              <span>일정은 나중에 수정</span>
+            </div>
+          </div>
+          <footer class="ui-bottom split"><button class="secondary" type="button">일정 바꾸기</button><button type="button">완료 표시</button></footer>
+        </div>
+      </section>
+    </div>
+    <details class="journey-details">
+      <summary>텍스트 구조도 함께 보기</summary>
+      <ol class="journey">
+    <li>
+      <span class="journey-index">1</span>
+      <div><b>상황</b><p>결혼일까지 해야 할 준비를 빠짐없이 일정화하고 싶을 때</p></div>
+    </li>
+    <li>
+      <span class="journey-index">2</span>
+      <div><b>최초 입력</b><p>결혼일</p></div>
+    </li>
+    <li>
+      <span class="journey-index">3</span>
+      <div><b>생성 결과</b><p>결혼일 기준 개인화 준비 체크리스트와 업체·예산 보드</p></div>
+    </li>
+    <li>
+      <span class="journey-index">4</span>
+      <div><b>오늘/다음</b><p>마감이 가까운 결혼 준비 항목 처리</p></div>
+    </li>
+    <li>
+      <span class="journey-index">5</span>
+      <div><b>완료·수정</b><p>결혼일이 바뀌면 체크리스트 기한이 자동 조정되고 항목을 추가·삭제할 수 있다.</p></div>
+    </li></ol>
+    </details>
+      </section>
+
+      <details class="analysis-details">
+        <summary>입력·결과·차용 경계 분석 보기</summary>
+        <div class="analysis-body">
+      <section class="service-section compare-section">
+        <div>
+          <h3>입력은 이만큼</h3>
+          <ul class="input-list">
+            
+              <li>
+                <span class="required">필수</span>
+                <b>결혼일</b>
+                <small>D-day 역산</small>
+              </li>
+              <li>
+                <span class="optional">선택</span>
+                <b>지역</b>
+                <small>업체 추천</small>
+              </li>
+              <li>
+                <span class="optional">선택</span>
+                <b>예산/하객 수</b>
+                <small>준비 범위</small>
+              </li>
+          </ul>
+        </div>
+        <div>
+          <h3>결과는 이렇게</h3>
+          <p class="artifact">결혼일 기준 개인화 준비 체크리스트와 업체·예산 보드</p>
+          <p><b>오늘:</b> 마감이 가까운 결혼 준비 항목 처리</p>
+          <p><b>수정:</b> 결혼일이 바뀌면 체크리스트 기한이 자동 조정되고 항목을 추가·삭제할 수 있다.</p>
+        </div>
+      </section>
+
+      <section class="service-section boundary-section">
+        <div>
+          <h3>FlowMe가 차용할 구조</h3>
+          <ul><li>기준일 하나로 전체 일정 미리보기</li><li>임박 항목 우선</li><li>업체·원문 링크를 상세에 유지</li></ul>
+        </div>
+        <div>
+          <h3>만들지 말아야 할 영역</h3>
+          <ul><li>웨딩 업체 마켓플레이스</li><li>레지스트리·결제 인프라</li></ul>
+        </div>
+      </section>
+
+      <section class="service-section signal-section">
+        <div>
+          <h3>사용자 커뮤니케이션 증거</h3>
+          <span class="signal-status">testimonial_and_vendor_communication_verified</span>
+          <p>공식 앱 페이지에 커플 후기가 있고 앱이 업체 검색·메시지를 제공한다고 설명한다.</p>
+          <small>업체 메시지 경로는 확인되지만 실제 응답 품질과 공개성은 로그인 없이 검증하지 않았다.</small>
+        </div>
+        <div>
+          <h3>확인된 비즈니스 연결</h3>
+          <p>업체 추천·광고·레지스트리·브랜드 제휴가 실행 체크리스트와 직접 연결된다.</p>
+          <small>실제 제휴 의사·전환율·매출 기여는 확인하지 않았으며 사업 가설로 승격하지 않는다.</small>
+        </div>
+      </section>
+        </div>
+      </details>
+
+      <section class="service-section opportunity-strip">
+        <div>
+          <span class="opportunity-label">콘텐츠 발굴 기회</span>
+          <h3>제작자·브랜드 D-day 준비 타임라인</h3>
+          <p>제작자 결혼 체크리스트를 기준일 하나로 일정화하고 원문·업체 링크를 보존하는 강한 콘텐츠 기회가 있다.</p>
+        </div>
+        <span class="opportunity-decision">Partner</span>
+      </section>
+
+      <details class="score-details">
+    <summary>10개 점수와 감점 근거 보기 <span>9.4/10</span></summary>
+    <div class="score-list">
+      <div class="score-row">
+          <div class="score-head">
+            <b>따라 하기 쉬움</b>
+            <span>10/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:100%"></i></div>
+          <p>The Knot은(는) &#039;결혼일·지역·예산 → 개인화 체크리스트 → 이번 주 할 일 → 완료·업체 연결&#039; 흐름으로 다음 행동을 이어 준다. D-day와 임박 항목으로 선택 부담을 줄인다. (10/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>최소 입력</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>최초 입력은 결혼일, 지역, 예산/하객 수이며 필수 1개다. 결혼일 하나로 핵심 결과를 만들 수 있다. (9/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>생성 결과 명확성</b>
+            <span>10/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:100%"></i></div>
+          <p>입력 뒤 &#039;결혼일 기준 개인화 준비 체크리스트와 업체·예산 보드&#039;가 생성된다. 타임라인과 준비 항목이 명확하다. (10/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>다음 행동</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>실행 화면의 다음 행동은 &#039;마감이 가까운 결혼 준비 항목 처리&#039;이다. 가까운 마감 항목이 첫 행동이 된다. (9/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>수정·재일정</b>
+            <span>10/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:100%"></i></div>
+          <p>결혼일이 바뀌면 체크리스트 기한이 자동 조정되고 항목을 추가·삭제할 수 있다. 기준일 변경 시 일괄 재계산이 강하다. (10/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>콘텐츠 깊이</b>
+            <span>10/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:100%"></i></div>
+          <p>체크리스트, 업체, 예산, 하객, 청첩장, 레지스트리가 연결된다. 준비 전 과정과 업체 콘텐츠가 매우 깊다. (10/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>제작자 비즈니스</b>
+            <span>10/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:100%"></i></div>
+          <p>업체 추천·광고·레지스트리·브랜드 제휴가 실행 체크리스트와 직접 연결된다. 제작자·업체·플랫폼의 수익 연결이 가장 명확한 사례다. (10/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>외부 이식 기회</b>
+            <span>7/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:70%"></i></div>
+          <p>일정과 체크는 이식 가능하지만 업체 데이터·마켓플레이스는 플랫폼 안에 남는다. 캘린더·체크리스트 이식성에서 FlowMe 가치가 크다. 점수가 높을수록 외부 도구로 옮길 여지가 크다. (7/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>FlowMe 추가 가치</b>
+            <span>10/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:100%"></i></div>
+          <p>제작자 결혼 체크리스트를 기준일 하나로 일정화하고 원문·업체 링크를 보존하는 강한 콘텐츠 기회가 있다. 업체 마켓플레이스는 만들지 않고 출처 유입을 보존한다. (10/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>근거 신뢰도</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>공식·지원·앱스토어 근거 2건을 2026-07-28 확인했다. 공식 앱 페이지와 체크리스트 도움말을 확인했다. (9/10)</p>
+        </div>
+    </div>
+  </details>
+
+      <details class="source-details">
+        <summary>근거·검증 경계 보기</summary>
+        <p class="boundary-note">공개 웹·공식 지원 문서·앱스토어 설명만 확인했다. 로그인 후 개인화 결과는 in_app_verified가 아니다.</p>
+        <ul class="source-list">
+          
+            <li>
+              <a href="https://www.theknot.com/wedding-planning-app?vers=0" target="_blank" rel="noreferrer">The Knot Wedding Planning App</a>
+              <span>결혼일·지역·예산·하객 수 기반 개인화 체크리스트와 업체·예산 기능을 설명한다.</span>
+            </li>
+            <li>
+              <a href="https://helpcenter.theknot.com/hc/en-us/articles/20629464134036-What-is-the-timeframe-of-my-Checklist" target="_blank" rel="noreferrer">The Knot Checklist Timeframe</a>
+              <span>결혼일 변경에 따라 체크리스트가 자동 갱신된다고 설명한다.</span>
+            </li>
+          <li>
+            <a href="https://www.theknot.com/wedding-planning-app?vers=0" target="_blank" rel="noreferrer">사용자 커뮤니케이션 확인 근거</a>
+            <span>공식 앱 페이지에 커플 후기가 있고 앱이 업체 검색·메시지를 제공한다고 설명한다.</span>
+          </li>
+        </ul>
+      </details>
+    </article>
+    <article
+      class="service-card"
+      id="service-sidechef"
+      data-decision="partner"
+      data-category="meals_grocery"
+    >
+      <header class="service-header">
+        <div>
+          <div class="eyebrow">식사·장보기 · 콘텐츠 → 안내 세션</div>
+          <h2>SideChef</h2>
+          <p>무엇을 먹을지 정하고 장보기부터 조리까지 한 번에 이어가고 싶을 때</p>
+        </div>
+        <div class="verdict-stack">
+          <span class="decision partner">Partner</span>
+          <span class="relationship">제작자·서비스 파트너 후보</span>
+        </div>
+      </header>
+
+      <div class="evidence-grid">
+        
+    <figure class="evidence-shot">
+      <a href="https://www.sidechef.com/" target="_blank" rel="noreferrer">
+        <img src="2026-07-28-vertical-execution-service-assets/sidechef-01.png" alt="SideChef 레시피에서 조리까지" loading="lazy">
+      </a>
+      <figcaption>
+        <strong>레시피에서 조리까지</strong>
+        <span>공개 화면 캡처 · 공개 웹 확인</span>
+      </figcaption>
+    </figure>
+    <figure class="evidence-shot">
+      <a href="https://www.sidechef.com/meal-planner/" target="_blank" rel="noreferrer">
+        <img src="2026-07-28-vertical-execution-service-assets/sidechef-02.png" alt="SideChef 식단 플래너" loading="lazy">
+      </a>
+      <figcaption>
+        <strong>식단 플래너</strong>
+        <span>공개 화면 캡처 · 공개 웹 확인</span>
+      </figcaption>
+    </figure>
+      </div>
+
+      <section class="service-section ui-demo-section">
+        
+    <div class="storyboard-heading">
+      <div>
+        <h3>FlowMe로 보이면 이렇게</h3>
+        <p>벤치마크 구조를 FlowMe 사용 흐름에 대입한 개념 UI입니다. 실제 앱 화면이나 원문 콘텐츠 복제가 아닙니다.</p>
+      </div>
+      <span>콘텐츠 → 안내 세션</span>
+    </div>
+    <div class="ui-storyboard" aria-label="SideChef형 FlowMe 개념 UI">
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>1</span> 발견</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>Flows</b><span>구조 예시</span></header>
+          <div class="ui-body">
+            <div class="ui-source">식사·장보기 · 원문 링크 유지</div>
+            <h4>SideChef형<br>콘텐츠 → 안내 세션</h4>
+            <p>무엇을 먹을지 정하고 장보기부터 조리까지 한 번에 이어가고 싶을 때</p>
+            <div class="ui-outcome">
+              <small>저장하면 생기는 것</small>
+              <b>개인화 식단, 통합 장보기 목록, 단계별 조리 세션</b>
+            </div>
+          </div>
+          <footer class="ui-bottom"><button type="button">저장 결과 먼저 보기</button></footer>
+        </div>
+      </section>
+
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>2</span> 최소 입력</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>시작 설정</b><span>필수 1개</span></header>
+          <div class="ui-body">
+            <p class="ui-helper">계획 생성에 필요한 값만 먼저 정합니다.</p>
+            
+    <div class="mock-fields">
+      
+        <div class="mock-field">
+          <label>식단 기간/식사 수 <span>필수</span></label>
+          <div>계획 범위 선택</div>
+        </div>
+      
+        <button class="mock-later" type="button">선택 정보 1개는 나중에 정하기</button>
+    </div>
+            <div class="ui-info-row"><i></i><span>원문에서 알 수 있는 값은 다시 묻지 않음</span></div>
+          </div>
+          <footer class="ui-bottom"><button type="button">전체 결과 미리보기</button></footer>
+        </div>
+      </section>
+
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>3</span> 생성 결과</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>미리보기</b><span>저장 전</span></header>
+          <div class="ui-body preview-body">
+            <div class="ui-artifact-title">
+              <small>생성될 결과</small>
+              <h4>개인화 식단, 통합 장보기 목록, 단계별 조리 세션</h4>
+            </div>
+            
+      <div class="session-preview">
+        
+          <div class="done">
+            <i>1</i><span>레시피 선택</span>
+          </div>
+          <div class="done">
+            <i>2</i><span>주간 식단</span>
+          </div>
+          <div class="done">
+            <i>3</i><span>장보기 목록</span>
+          </div>
+          <div class="active">
+            <i>4</i><span>단계별 조리</span>
+          </div>
+        <div class="preview-focus compact"><small>지금</small><b>오늘 식사의 첫 조리 단계 시작</b></div>
+      </div>
+            <div class="ui-destination"><span>내보내기</span><b>식단 캘린더 + 통합 장보기 + 조리 링크</b></div>
+          </div>
+          <footer class="ui-bottom split"><button class="secondary" type="button">입력 수정</button><button type="button">이대로 저장</button></footer>
+        </div>
+      </section>
+
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>4</span> 오늘 실행</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>오늘</b><span>다음 행동</span></header>
+          <div class="ui-body today-body">
+            <div class="today-focus">
+              <span class="today-status">지금 할 일</span>
+              <h4>오늘 식사의 첫 조리 단계 시작</h4>
+              <p>개인화 식단, 통합 장보기 목록, 단계별 조리 세션에서 꺼낸 현재 행동</p>
+            </div>
+            <button class="source-link-button" type="button"><i></i>원문·제작자 링크 열기</button>
+            <div class="today-meta">
+              <span>세부 내용은 메모</span>
+              <span>일정은 나중에 수정</span>
+            </div>
+          </div>
+          <footer class="ui-bottom split"><button class="secondary" type="button">일정 바꾸기</button><button type="button">완료 표시</button></footer>
+        </div>
+      </section>
+    </div>
+    <details class="journey-details">
+      <summary>텍스트 구조도 함께 보기</summary>
+      <ol class="journey">
+    <li>
+      <span class="journey-index">1</span>
+      <div><b>상황</b><p>무엇을 먹을지 정하고 장보기부터 조리까지 한 번에 이어가고 싶을 때</p></div>
+    </li>
+    <li>
+      <span class="journey-index">2</span>
+      <div><b>최초 입력</b><p>식단 기간/식사 수</p></div>
+    </li>
+    <li>
+      <span class="journey-index">3</span>
+      <div><b>생성 결과</b><p>개인화 식단, 통합 장보기 목록, 단계별 조리 세션</p></div>
+    </li>
+    <li>
+      <span class="journey-index">4</span>
+      <div><b>오늘/다음</b><p>오늘 식사의 첫 조리 단계 시작</p></div>
+    </li>
+    <li>
+      <span class="journey-index">5</span>
+      <div><b>완료·수정</b><p>식단에서 레시피를 교체하면 장보기 목록이 갱신된다.</p></div>
+    </li></ol>
+    </details>
+      </section>
+
+      <details class="analysis-details">
+        <summary>입력·결과·차용 경계 분석 보기</summary>
+        <div class="analysis-body">
+      <section class="service-section compare-section">
+        <div>
+          <h3>입력은 이만큼</h3>
+          <ul class="input-list">
+            
+              <li>
+                <span class="required">필수</span>
+                <b>식단 기간/식사 수</b>
+                <small>계획 범위</small>
+              </li>
+              <li>
+                <span class="optional">선택</span>
+                <b>선호·제한</b>
+                <small>레시피 필터</small>
+              </li>
+          </ul>
+        </div>
+        <div>
+          <h3>결과는 이렇게</h3>
+          <p class="artifact">개인화 식단, 통합 장보기 목록, 단계별 조리 세션</p>
+          <p><b>오늘:</b> 오늘 식사의 첫 조리 단계 시작</p>
+          <p><b>수정:</b> 식단에서 레시피를 교체하면 장보기 목록이 갱신된다.</p>
+        </div>
+      </section>
+
+      <section class="service-section boundary-section">
+        <div>
+          <h3>FlowMe가 차용할 구조</h3>
+          <ul><li>레시피 선택이 장보기와 오늘 조리로 이어짐</li><li>레시피 교체 시 파생 목록 갱신</li></ul>
+        </div>
+        <div>
+          <h3>만들지 말아야 할 영역</h3>
+          <ul><li>식료품 주문·재고 연동</li><li>유료 레시피·강의 복제</li></ul>
+        </div>
+      </section>
+
+      <section class="service-section signal-section">
+        <div>
+          <h3>사용자 커뮤니케이션 증거</h3>
+          <span class="signal-status">creator_brand_surface_verified</span>
+          <p>레시피·수업·브랜드 콘텐츠와 비즈니스 파트너 진입점이 공개돼 있다.</p>
+          <small>레시피별 질문·답변 또는 제작자 응답 내역은 이번 공개 화면에서 검증하지 않았다.</small>
+        </div>
+        <div>
+          <h3>확인된 비즈니스 연결</h3>
+          <p>Premium 수업, 장보기 주문, 스마트 주방·브랜드 파트너 연결이 확인된다.</p>
+          <small>실제 제휴 의사·전환율·매출 기여는 확인하지 않았으며 사업 가설로 승격하지 않는다.</small>
+        </div>
+      </section>
+        </div>
+      </details>
+
+      <section class="service-section opportunity-strip">
+        <div>
+          <span class="opportunity-label">콘텐츠 발굴 기회</span>
+          <h3>레시피 묶음에서 식단·장보기·오늘 조리로</h3>
+          <p>제작자 레시피 묶음을 식단→장보기→오늘 조리로 연결하면서 원문 방문을 늘릴 수 있다.</p>
+        </div>
+        <span class="opportunity-decision">Partner</span>
+      </section>
+
+      <details class="score-details">
+    <summary>10개 점수와 감점 근거 보기 <span>9.4/10</span></summary>
+    <div class="score-list">
+      <div class="score-row">
+          <div class="score-head">
+            <b>따라 하기 쉬움</b>
+            <span>10/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:100%"></i></div>
+          <p>SideChef은(는) &#039;레시피 선택 → 주간 식단 → 장보기 목록 → 단계별 조리&#039; 흐름으로 다음 행동을 이어 준다. 계획부터 조리까지 끊김이 적다. (10/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>최소 입력</b>
+            <span>8/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:80%"></i></div>
+          <p>최초 입력은 식단 기간/식사 수, 선호·제한이며 필수 1개다. 기간 하나로 시작하고 선호는 후속으로 받을 수 있다. (8/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>생성 결과 명확성</b>
+            <span>10/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:100%"></i></div>
+          <p>입력 뒤 &#039;개인화 식단, 통합 장보기 목록, 단계별 조리 세션&#039;가 생성된다. 식단·장보기·조리 결과물이 서로 연결된다. (10/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>다음 행동</b>
+            <span>10/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:100%"></i></div>
+          <p>실행 화면의 다음 행동은 &#039;오늘 식사의 첫 조리 단계 시작&#039;이다. 오늘 레시피의 첫 단계가 분명하다. (10/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>수정·재일정</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>식단에서 레시피를 교체하면 장보기 목록이 갱신된다. 레시피 교체와 장보기 갱신이 자연스럽다. (9/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>콘텐츠 깊이</b>
+            <span>10/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:100%"></i></div>
+          <p>공식 사이트는 11,000개 이상 무료 레시피와 수업·기기 연동을 안내한다. 레시피·수업·브랜드 콘텐츠가 매우 깊다. (10/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>제작자 비즈니스</b>
+            <span>10/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:100%"></i></div>
+          <p>Premium 수업, 장보기 주문, 스마트 주방·브랜드 파트너 연결이 확인된다. 제작자와 식재료·기기 브랜드가 Flow를 홍보할 이유가 있다. (10/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>외부 이식 기회</b>
+            <span>8/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:80%"></i></div>
+          <p>레시피 링크·식단·장보기는 이식 가능하지만 조리 모드와 주문은 서비스 안에 남는다. 캘린더·체크리스트·시트로 옮길 가치가 높다. 점수가 높을수록 외부 도구로 옮길 여지가 크다. (8/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>FlowMe 추가 가치</b>
+            <span>10/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:100%"></i></div>
+          <p>제작자 레시피 묶음을 식단→장보기→오늘 조리로 연결하면서 원문 방문을 늘릴 수 있다. 레시피 전문을 복제하지 않고 실행 제목·링크·최소 재료 메타만 사용한다. (10/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>근거 신뢰도</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>공식·지원·앱스토어 근거 2건을 2026-07-28 확인했다. 공식 서비스와 식단 플래너 페이지를 확인했다. (9/10)</p>
+        </div>
+    </div>
+  </details>
+
+      <details class="source-details">
+        <summary>근거·검증 경계 보기</summary>
+        <p class="boundary-note">공개 웹·공식 지원 문서·앱스토어 설명만 확인했다. 로그인 후 개인화 결과는 in_app_verified가 아니다.</p>
+        <ul class="source-list">
+          
+            <li>
+              <a href="https://www.sidechef.com/" target="_blank" rel="noreferrer">SideChef 공식 사이트</a>
+              <span>레시피·개인화 식단·장보기 주문·단계별 조리를 연결한다.</span>
+            </li>
+            <li>
+              <a href="https://www.sidechef.com/meal-planner/" target="_blank" rel="noreferrer">SideChef Meal Planner</a>
+              <span>식단 계획과 장보기 목록 흐름을 소개한다.</span>
+            </li>
+          <li>
+            <a href="https://www.sidechef.com/" target="_blank" rel="noreferrer">사용자 커뮤니케이션 확인 근거</a>
+            <span>레시피·수업·브랜드 콘텐츠와 비즈니스 파트너 진입점이 공개돼 있다.</span>
+          </li>
+        </ul>
+      </details>
+    </article>
+    <article
+      class="service-card"
+      id="service-teal"
+      data-decision="go"
+      data-category="work_career"
+    >
+      <header class="service-header">
+        <div>
+          <div class="eyebrow">일·커리어 · 상태 → 후속 행동</div>
+          <h2>Teal</h2>
+          <p>여러 채용 공고의 지원 상태와 다음 행동을 놓치지 않고 싶을 때</p>
+        </div>
+        <div class="verdict-stack">
+          <span class="decision go">Go</span>
+          <span class="relationship">UX·로직 벤치마크 전용</span>
+        </div>
+      </header>
+
+      <div class="evidence-grid">
+        
+    <figure class="evidence-shot">
+      <a href="https://help.tealhq.com/en/articles/14435727-how-to-track-your-job-applications" target="_blank" rel="noreferrer">
+        <img src="2026-07-28-vertical-execution-service-assets/teal-01.png" alt="Teal 지원 추적 도움말" loading="lazy">
+      </a>
+      <figcaption>
+        <strong>지원 추적 도움말</strong>
+        <span>공개 화면 캡처 · 지원 문서 확인</span>
+      </figcaption>
+    </figure>
+    <figure class="evidence-shot">
+      <a href="https://www.tealhq.com/how-it-works" target="_blank" rel="noreferrer">
+        <img src="2026-07-28-vertical-execution-service-assets/teal-02.png" alt="Teal 지원 보드 소개" loading="lazy">
+      </a>
+      <figcaption>
+        <strong>지원 보드 소개</strong>
+        <span>공개 화면 캡처 · 공개 웹 확인</span>
+      </figcaption>
+    </figure>
+      </div>
+
+      <section class="service-section ui-demo-section">
+        
+    <div class="storyboard-heading">
+      <div>
+        <h3>FlowMe로 보이면 이렇게</h3>
+        <p>벤치마크 구조를 FlowMe 사용 흐름에 대입한 개념 UI입니다. 실제 앱 화면이나 원문 콘텐츠 복제가 아닙니다.</p>
+      </div>
+      <span>상태 → 후속 행동</span>
+    </div>
+    <div class="ui-storyboard" aria-label="Teal형 FlowMe 개념 UI">
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>1</span> 발견</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>Flows</b><span>구조 예시</span></header>
+          <div class="ui-body">
+            <div class="ui-source">일·커리어 · 원문 링크 유지</div>
+            <h4>Teal형<br>상태 → 후속 행동</h4>
+            <p>여러 채용 공고의 지원 상태와 다음 행동을 놓치지 않고 싶을 때</p>
+            <div class="ui-outcome">
+              <small>저장하면 생기는 것</small>
+              <b>지원 공고 보드, 단계, 후속 일정과 다음 행동</b>
+            </div>
+          </div>
+          <footer class="ui-bottom"><button type="button">저장 결과 먼저 보기</button></footer>
+        </div>
+      </section>
+
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>2</span> 최소 입력</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>시작 설정</b><span>필수 1개</span></header>
+          <div class="ui-body">
+            <p class="ui-helper">계획 생성에 필요한 값만 먼저 정합니다.</p>
+            
+    <div class="mock-fields">
+      
+        <div class="mock-field">
+          <label>채용 공고 URL <span>필수</span></label>
+          <div>지원 대상 선택</div>
+        </div>
+      
+        <button class="mock-later" type="button">선택 정보 1개는 나중에 정하기</button>
+    </div>
+            <div class="ui-info-row"><i></i><span>원문에서 알 수 있는 값은 다시 묻지 않음</span></div>
+          </div>
+          <footer class="ui-bottom"><button type="button">전체 결과 미리보기</button></footer>
+        </div>
+      </section>
+
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>3</span> 생성 결과</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>미리보기</b><span>저장 전</span></header>
+          <div class="ui-body preview-body">
+            <div class="ui-artifact-title">
+              <small>생성될 결과</small>
+              <h4>지원 공고 보드, 단계, 후속 일정과 다음 행동</h4>
+            </div>
+            
+      <div class="state-preview">
+        <div class="state-tabs"><span class="">공고 저장</span><span class="active">지원 단계</span><span class="">후속 날짜·메모</span></div>
+        <div class="preview-focus"><small>현재 상태의 다음 행동</small><b>가장 가까운 후속 일정의 지원 행동 수행</b></div>
+        <div class="state-date"><span>후속 일정</span><b>필요할 때만 지정</b></div>
+      </div>
+            <div class="ui-destination"><span>내보내기</span><b>상태형 체크리스트 + 후속 캘린더</b></div>
+          </div>
+          <footer class="ui-bottom split"><button class="secondary" type="button">입력 수정</button><button type="button">이대로 저장</button></footer>
+        </div>
+      </section>
+
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>4</span> 오늘 실행</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>오늘</b><span>다음 행동</span></header>
+          <div class="ui-body today-body">
+            <div class="today-focus">
+              <span class="today-status">지금 할 일</span>
+              <h4>가장 가까운 후속 일정의 지원 행동 수행</h4>
+              <p>지원 공고 보드, 단계, 후속 일정과 다음 행동에서 꺼낸 현재 행동</p>
+            </div>
+            <button class="source-link-button" type="button"><i></i>원문·제작자 링크 열기</button>
+            <div class="today-meta">
+              <span>세부 내용은 메모</span>
+              <span>일정은 나중에 수정</span>
+            </div>
+          </div>
+          <footer class="ui-bottom split"><button class="secondary" type="button">일정 바꾸기</button><button type="button">완료 표시</button></footer>
+        </div>
+      </section>
+    </div>
+    <details class="journey-details">
+      <summary>텍스트 구조도 함께 보기</summary>
+      <ol class="journey">
+    <li>
+      <span class="journey-index">1</span>
+      <div><b>상황</b><p>여러 채용 공고의 지원 상태와 다음 행동을 놓치지 않고 싶을 때</p></div>
+    </li>
+    <li>
+      <span class="journey-index">2</span>
+      <div><b>최초 입력</b><p>채용 공고 URL</p></div>
+    </li>
+    <li>
+      <span class="journey-index">3</span>
+      <div><b>생성 결과</b><p>지원 공고 보드, 단계, 후속 일정과 다음 행동</p></div>
+    </li>
+    <li>
+      <span class="journey-index">4</span>
+      <div><b>오늘/다음</b><p>가장 가까운 후속 일정의 지원 행동 수행</p></div>
+    </li>
+    <li>
+      <span class="journey-index">5</span>
+      <div><b>완료·수정</b><p>상태를 이동하고 후속 날짜·메모를 수정한다.</p></div>
+    </li></ol>
+    </details>
+      </section>
+
+      <details class="analysis-details">
+        <summary>입력·결과·차용 경계 분석 보기</summary>
+        <div class="analysis-body">
+      <section class="service-section compare-section">
+        <div>
+          <h3>입력은 이만큼</h3>
+          <ul class="input-list">
+            
+              <li>
+                <span class="required">필수</span>
+                <b>채용 공고 URL</b>
+                <small>지원 대상</small>
+              </li>
+              <li>
+                <span class="optional">선택</span>
+                <b>현재 지원 단계</b>
+                <small>다음 행동</small>
+              </li>
+          </ul>
+        </div>
+        <div>
+          <h3>결과는 이렇게</h3>
+          <p class="artifact">지원 공고 보드, 단계, 후속 일정과 다음 행동</p>
+          <p><b>오늘:</b> 가장 가까운 후속 일정의 지원 행동 수행</p>
+          <p><b>수정:</b> 상태를 이동하고 후속 날짜·메모를 수정한다.</p>
+        </div>
+      </section>
+
+      <section class="service-section boundary-section">
+        <div>
+          <h3>FlowMe가 차용할 구조</h3>
+          <ul><li>URL 하나로 카드 생성</li><li>상태가 바뀌면 다음 행동 전환</li><li>후속 날짜를 선택 입력으로</li></ul>
+        </div>
+        <div>
+          <h3>만들지 말아야 할 영역</h3>
+          <ul><li>이력서 ATS 점수 엔진</li><li>채용공고 데이터베이스 복제</li></ul>
+        </div>
+      </section>
+
+      <section class="service-section signal-section">
+        <div>
+          <h3>사용자 커뮤니케이션 증거</h3>
+          <span class="signal-status">testimonial_surface_verified</span>
+          <p>공식 How it works 페이지에 사용자 후기가 노출되고 지원 지식베이스가 최신 사용법을 제공한다.</p>
+          <small>개별 커리어 제작자와 사용자의 공개 답변 구조는 확인하지 못했다.</small>
+        </div>
+        <div>
+          <h3>확인된 비즈니스 연결</h3>
+          <p>Teal+ 구독과 커리어 도구·교육 콘텐츠가 확인된다.</p>
+          <small>실제 제휴 의사·전환율·매출 기여는 확인하지 않았으며 사업 가설로 승격하지 않는다.</small>
+        </div>
+      </section>
+        </div>
+      </details>
+
+      <section class="service-section opportunity-strip">
+        <div>
+          <span class="opportunity-label">콘텐츠 발굴 기회</span>
+          <h3>직무별 지원 준비·후속 Flow</h3>
+          <p>공개 직무별 지원 체크리스트를 공고 URL·목표일만 받아 상태형 Flow로 실행할 수 있다.</p>
+        </div>
+        <span class="opportunity-decision">Go</span>
+      </section>
+
+      <details class="score-details">
+    <summary>10개 점수와 감점 근거 보기 <span>9.1/10</span></summary>
+    <div class="score-list">
+      <div class="score-row">
+          <div class="score-head">
+            <b>따라 하기 쉬움</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>Teal은(는) &#039;공고 저장 → 지원 단계 → 후속 날짜·메모 → 오늘 다음 행동&#039; 흐름으로 다음 행동을 이어 준다. 지원 단계와 후속 날짜가 다음 행동을 만든다. (9/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>최소 입력</b>
+            <span>10/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:100%"></i></div>
+          <p>최초 입력은 채용 공고 URL, 현재 지원 단계이며 필수 1개다. 공고 URL 하나로 시작한 뒤 상태를 보완할 수 있다. (10/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>생성 결과 명확성</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>입력 뒤 &#039;지원 공고 보드, 단계, 후속 일정과 다음 행동&#039;가 생성된다. 지원 보드와 후속 일정이 명확하다. (9/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>다음 행동</b>
+            <span>10/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:100%"></i></div>
+          <p>실행 화면의 다음 행동은 &#039;가장 가까운 후속 일정의 지원 행동 수행&#039;이다. 기한이 있는 후속 행동이 선명하다. (10/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>수정·재일정</b>
+            <span>10/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:100%"></i></div>
+          <p>상태를 이동하고 후속 날짜·메모를 수정한다. 상태 이동과 보류가 자연스럽다. (10/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>콘텐츠 깊이</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>공고 추적, 이력서, 키워드 매칭, 연락처, 커리어 교육이 연결된다. 지원 전 과정 콘텐츠와 도구가 깊다. (9/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>제작자 비즈니스</b>
+            <span>8/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:80%"></i></div>
+          <p>Teal+ 구독과 커리어 도구·교육 콘텐츠가 확인된다. 커리어 제작자·코치의 체크리스트와 제휴 가능성이 있으나 확인된 계약은 없다. (8/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>외부 이식 기회</b>
+            <span>8/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:80%"></i></div>
+          <p>보드·일정은 이식 가능하지만 공고 분석·이력서 최적화는 전문 기능이다. 체크리스트·시트·캘린더 이식성이 높다. 점수가 높을수록 외부 도구로 옮길 여지가 크다. (8/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>FlowMe 추가 가치</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>공개 직무별 지원 체크리스트를 공고 URL·목표일만 받아 상태형 Flow로 실행할 수 있다. 이력서 AI 분석을 만들지 않고 실행 순서와 출처를 제공한다. (9/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>근거 신뢰도</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>공식·지원·앱스토어 근거 2건을 2026-07-28 확인했다. 공식 지원 문서와 제품 페이지를 확인했다. (9/10)</p>
+        </div>
+    </div>
+  </details>
+
+      <details class="source-details">
+        <summary>근거·검증 경계 보기</summary>
+        <p class="boundary-note">공개 웹·공식 지원 문서·앱스토어 설명만 확인했다. 로그인 후 개인화 결과는 in_app_verified가 아니다.</p>
+        <ul class="source-list">
+          
+            <li>
+              <a href="https://help.tealhq.com/en/articles/14435727-how-to-track-your-job-applications" target="_blank" rel="noreferrer">Teal Job Tracker Help</a>
+              <span>공고 저장, 지원 단계, 후속 날짜, 메모와 다음 행동을 설명한다.</span>
+            </li>
+            <li>
+              <a href="https://www.tealhq.com/tools/job-application-tracker" target="_blank" rel="noreferrer">Teal Job Application Tracker</a>
+              <span>지원 보드와 상태 추적 기능을 소개한다.</span>
+            </li>
+          <li>
+            <a href="https://www.tealhq.com/how-it-works" target="_blank" rel="noreferrer">사용자 커뮤니케이션 확인 근거</a>
+            <span>공식 How it works 페이지에 사용자 후기가 노출되고 지원 지식베이스가 최신 사용법을 제공한다.</span>
+          </li>
+        </ul>
+      </details>
+    </article>
+    <article
+      class="service-card"
+      id="service-planta"
+      data-decision="go"
+      data-category="hobby_pet"
+    >
+      <header class="service-header">
+        <div>
+          <div class="eyebrow">취미·반려 · 환경 → 유지관리</div>
+          <h2>Planta</h2>
+          <p>식물마다 다른 물주기·비료·분갈이 시점을 놓치지 않고 싶을 때</p>
+        </div>
+        <div class="verdict-stack">
+          <span class="decision go">Go</span>
+          <span class="relationship">제작자·서비스 파트너 후보</span>
+        </div>
+      </header>
+
+      <div class="evidence-grid">
+        
+    <figure class="evidence-shot">
+      <a href="https://getplanta.com/?language=en" target="_blank" rel="noreferrer">
+        <img src="2026-07-28-vertical-execution-service-assets/planta-01.png" alt="Planta 식물별 관리 일정 소개" loading="lazy">
+      </a>
+      <figcaption>
+        <strong>식물별 관리 일정 소개</strong>
+        <span>공개 화면 캡처 · 공개 웹 확인</span>
+      </figcaption>
+    </figure>
+    <figure class="evidence-shot">
+      <a href="https://support.getplanta.com/how-do-i-create-a-custom-care-schedule-for-a-plant/" target="_blank" rel="noreferrer">
+        <img src="2026-07-28-vertical-execution-service-assets/planta-02.png" alt="Planta 맞춤 일정 도움말" loading="lazy">
+      </a>
+      <figcaption>
+        <strong>맞춤 일정 도움말</strong>
+        <span>공개 화면 캡처 · 지원 문서 확인</span>
+      </figcaption>
+    </figure>
+      </div>
+
+      <section class="service-section ui-demo-section">
+        
+    <div class="storyboard-heading">
+      <div>
+        <h3>FlowMe로 보이면 이렇게</h3>
+        <p>벤치마크 구조를 FlowMe 사용 흐름에 대입한 개념 UI입니다. 실제 앱 화면이나 원문 콘텐츠 복제가 아닙니다.</p>
+      </div>
+      <span>환경 → 유지관리</span>
+    </div>
+    <div class="ui-storyboard" aria-label="Planta형 FlowMe 개념 UI">
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>1</span> 발견</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>Flows</b><span>구조 예시</span></header>
+          <div class="ui-body">
+            <div class="ui-source">취미·반려 · 원문 링크 유지</div>
+            <h4>Planta형<br>환경 → 유지관리</h4>
+            <p>식물마다 다른 물주기·비료·분갈이 시점을 놓치지 않고 싶을 때</p>
+            <div class="ui-outcome">
+              <small>저장하면 생기는 것</small>
+              <b>식물별 물주기·비료·분무·분갈이 관리 일정</b>
+            </div>
+          </div>
+          <footer class="ui-bottom"><button type="button">저장 결과 먼저 보기</button></footer>
+        </div>
+      </section>
+
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>2</span> 최소 입력</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>시작 설정</b><span>필수 2개</span></header>
+          <div class="ui-body">
+            <p class="ui-helper">계획 생성에 필요한 값만 먼저 정합니다.</p>
+            
+    <div class="mock-fields">
+      
+        <div class="mock-field">
+          <label>식물 종류 <span>필수</span></label>
+          <div>관리 기준 선택</div>
+        </div>
+        <div class="mock-field">
+          <label>위치·빛·화분 환경 <span>필수</span></label>
+          <div>주기 조정 선택</div>
+        </div>
+      
+    </div>
+            <div class="ui-info-row"><i></i><span>원문에서 알 수 있는 값은 다시 묻지 않음</span></div>
+          </div>
+          <footer class="ui-bottom"><button type="button">전체 결과 미리보기</button></footer>
+        </div>
+      </section>
+
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>3</span> 생성 결과</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>미리보기</b><span>저장 전</span></header>
+          <div class="ui-body preview-body">
+            <div class="ui-artifact-title">
+              <small>생성될 결과</small>
+              <h4>식물별 물주기·비료·분무·분갈이 관리 일정</h4>
+            </div>
+            
+      <div class="preview-block">
+        <div class="preview-label">오늘 관리</div>
+        <div class="preview-task active"><i></i><b>오늘 기한이 된 식물 관리 작업 완료</b><span>오늘</span></div>
+        <div class="preview-task"><i></i><b>다음 반복 일정</b><span>원문 주기</span></div>
+      </div>
+            <div class="ui-destination"><span>내보내기</span><b>반복 관리 캘린더 또는 일일 훈련 루틴</b></div>
+          </div>
+          <footer class="ui-bottom split"><button class="secondary" type="button">입력 수정</button><button type="button">이대로 저장</button></footer>
+        </div>
+      </section>
+
+      <section class="ui-screen">
+        <div class="ui-step-label"><span>4</span> 오늘 실행</div>
+        <div class="ui-shell">
+          <header class="ui-topbar"><b>오늘</b><span>다음 행동</span></header>
+          <div class="ui-body today-body">
+            <div class="today-focus">
+              <span class="today-status">지금 할 일</span>
+              <h4>오늘 기한이 된 식물 관리 작업 완료</h4>
+              <p>식물별 물주기·비료·분무·분갈이 관리 일정에서 꺼낸 현재 행동</p>
+            </div>
+            <button class="source-link-button" type="button"><i></i>원문·제작자 링크 열기</button>
+            <div class="today-meta">
+              <span>세부 내용은 메모</span>
+              <span>일정은 나중에 수정</span>
+            </div>
+          </div>
+          <footer class="ui-bottom split"><button class="secondary" type="button">일정 바꾸기</button><button type="button">완료 표시</button></footer>
+        </div>
+      </section>
+    </div>
+    <details class="journey-details">
+      <summary>텍스트 구조도 함께 보기</summary>
+      <ol class="journey">
+    <li>
+      <span class="journey-index">1</span>
+      <div><b>상황</b><p>식물마다 다른 물주기·비료·분갈이 시점을 놓치지 않고 싶을 때</p></div>
+    </li>
+    <li>
+      <span class="journey-index">2</span>
+      <div><b>최초 입력</b><p>식물 종류 · 위치·빛·화분 환경</p></div>
+    </li>
+    <li>
+      <span class="journey-index">3</span>
+      <div><b>생성 결과</b><p>식물별 물주기·비료·분무·분갈이 관리 일정</p></div>
+    </li>
+    <li>
+      <span class="journey-index">4</span>
+      <div><b>오늘/다음</b><p>오늘 기한이 된 식물 관리 작업 완료</p></div>
+    </li>
+    <li>
+      <span class="journey-index">5</span>
+      <div><b>완료·수정</b><p>사용자 맞춤 일정을 만들거나 환경·작업 주기를 바꾼다.</p></div>
+    </li></ol>
+    </details>
+      </section>
+
+      <details class="analysis-details">
+        <summary>입력·결과·차용 경계 분석 보기</summary>
+        <div class="analysis-body">
+      <section class="service-section compare-section">
+        <div>
+          <h3>입력은 이만큼</h3>
+          <ul class="input-list">
+            
+              <li>
+                <span class="required">필수</span>
+                <b>식물 종류</b>
+                <small>관리 기준</small>
+              </li>
+              <li>
+                <span class="required">필수</span>
+                <b>위치·빛·화분 환경</b>
+                <small>주기 조정</small>
+              </li>
+          </ul>
+        </div>
+        <div>
+          <h3>결과는 이렇게</h3>
+          <p class="artifact">식물별 물주기·비료·분무·분갈이 관리 일정</p>
+          <p><b>오늘:</b> 오늘 기한이 된 식물 관리 작업 완료</p>
+          <p><b>수정:</b> 사용자 맞춤 일정을 만들거나 환경·작업 주기를 바꾼다.</p>
+        </div>
+      </section>
+
+      <section class="service-section boundary-section">
+        <div>
+          <h3>FlowMe가 차용할 구조</h3>
+          <ul><li>대상 하나 등록 후 반복 일정 생성</li><li>오늘 관리와 다음 날짜 동시 표시</li><li>판매 후 관리 링크</li></ul>
+        </div>
+        <div>
+          <h3>만들지 말아야 할 영역</h3>
+          <ul><li>사진 기반 질병 진단</li><li>날씨·토양 계산 엔진</li></ul>
+        </div>
+      </section>
+
+      <section class="service-section signal-section">
+        <div>
+          <h3>사용자 커뮤니케이션 증거</h3>
+          <span class="signal-status">community_feature_verified</span>
+          <p>공식 사이트가 Community와 Care Share 기능을 안내한다.</p>
+          <small>전문가·판매자 응답 구조와 공개 대화 품질은 확인하지 못했다.</small>
+        </div>
+        <div>
+          <h3>확인된 비즈니스 연결</h3>
+          <p>Premium 구독과 식물 관리 콘텐츠가 확인되며 공식 사이트는 700만 사용자를 주장한다.</p>
+          <small>실제 제휴 의사·전환율·매출 기여는 확인하지 않았으며 사업 가설로 승격하지 않는다.</small>
+        </div>
+      </section>
+        </div>
+      </details>
+
+      <section class="service-section opportunity-strip">
+        <div>
+          <span class="opportunity-label">콘텐츠 발굴 기회</span>
+          <h3>대상별 반복 관리 루틴</h3>
+          <p>전문가·식물 판매자의 공개 관리표를 식물 종류와 시작일만 받아 반복 Flow로 제공할 수 있다.</p>
+        </div>
+        <span class="opportunity-decision">Go</span>
+      </section>
+
+      <details class="score-details">
+    <summary>10개 점수와 감점 근거 보기 <span>8.8/10</span></summary>
+    <div class="score-list">
+      <div class="score-row">
+          <div class="score-head">
+            <b>따라 하기 쉬움</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>Planta은(는) &#039;식물 등록·환경 → 개별 관리 일정 → 오늘 관리 → 완료·다음 일정&#039; 흐름으로 다음 행동을 이어 준다. 오늘 관리 작업이 식물별로 명확하다. (9/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>최소 입력</b>
+            <span>7/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:70%"></i></div>
+          <p>최초 입력은 식물 종류, 위치·빛·화분 환경이며 필수 2개다. 식물과 환경 입력은 주기 정확도에 필요하다. (7/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>생성 결과 명확성</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>입력 뒤 &#039;식물별 물주기·비료·분무·분갈이 관리 일정&#039;가 생성된다. 작업 종류와 다음 날짜가 선명하다. (9/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>다음 행동</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>실행 화면의 다음 행동은 &#039;오늘 기한이 된 식물 관리 작업 완료&#039;이다. 오늘 물주기 등 한 행동이 보인다. (9/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>수정·재일정</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>사용자 맞춤 일정을 만들거나 환경·작업 주기를 바꾼다. 맞춤 일정과 환경 수정이 가능하다. (9/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>콘텐츠 깊이</b>
+            <span>10/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:100%"></i></div>
+          <p>식물 데이터베이스, 진단, 관리 일정, 커뮤니티·Care Share가 연결된다. 식물별 콘텐츠와 관리 작업이 매우 깊다. (10/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>제작자 비즈니스</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>Premium 구독과 식물 관리 콘텐츠가 확인되며 공식 사이트는 700만 사용자를 주장한다. 판매자·전문가가 구매 후 관리 Flow를 공유할 이유가 있다. (9/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>외부 이식 기회</b>
+            <span>8/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:80%"></i></div>
+          <p>식물 일정은 캘린더로 옮길 수 있지만 진단·날씨 계산은 앱 고유다. 반복 캘린더·체크리스트 이식성이 높다. 점수가 높을수록 외부 도구로 옮길 여지가 크다. (8/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>FlowMe 추가 가치</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>전문가·식물 판매자의 공개 관리표를 식물 종류와 시작일만 받아 반복 Flow로 제공할 수 있다. 식물 진단·날씨 계산은 만들지 않는다. (9/10)</p>
+        </div><div class="score-row">
+          <div class="score-head">
+            <b>근거 신뢰도</b>
+            <span>9/10</span>
+          </div>
+          <div class="meter" aria-hidden="true"><i style="width:90%"></i></div>
+          <p>공식·지원·앱스토어 근거 2건을 2026-07-28 확인했다. 공식 사이트와 맞춤 일정 도움말을 확인했다. (9/10)</p>
+        </div>
+    </div>
+  </details>
+
+      <details class="source-details">
+        <summary>근거·검증 경계 보기</summary>
+        <p class="boundary-note">공개 웹·공식 지원 문서·앱스토어 설명만 확인했다. 로그인 후 개인화 결과는 in_app_verified가 아니다.</p>
+        <ul class="source-list">
+          
+            <li>
+              <a href="https://getplanta.com/?language=en" target="_blank" rel="noreferrer">Planta 공식 사이트</a>
+              <span>식물별 관리 일정, 30개 이상 변수, 관리 작업, 커뮤니티를 소개한다.</span>
+            </li>
+            <li>
+              <a href="https://support.getplanta.com/how-do-i-create-a-custom-care-schedule-for-a-plant/" target="_blank" rel="noreferrer">Planta Custom Schedule Help</a>
+              <span>맞춤 관리 일정 생성 방법을 설명한다.</span>
+            </li>
+          <li>
+            <a href="https://getplanta.com/?language=en" target="_blank" rel="noreferrer">사용자 커뮤니케이션 확인 근거</a>
+            <span>공식 사이트가 Community와 Care Share 기능을 안내한다.</span>
+          </li>
+        </ul>
+      </details>
+    </article>
+    </section>
+
+    <section class="opportunity-band" id="opportunities">
+      <div class="section-heading">
+        <h2>다음 콘텐츠 발굴 기회 8개</h2>
+        <p>서비스 콘텐츠를 복제하지 않고, 같은 실행 패턴을 가진 공개 제작자·브랜드 원문을 찾는 방향입니다.</p>
+      </div>
+      <div class="opportunity-list">
+        
+    <article class="opportunity-card">
+      <header>
+        <span>1</span>
+        <div>
+          <small>집·살림</small>
+          <h3>공간·기간별 집 관리 루틴</h3>
+        </div>
+        <b class="decision go">Go</b>
+      </header>
+      <dl>
+        <div><dt>찾을 원문</dt><dd>제작자 블로그·브랜드의 공간별 체크리스트, 주기표, 계절 관리표</dd></div>
+        <div><dt>필수 source row</dt><dd>공간 · 작업 제목 · 권장 주기 또는 원문 순서 · 원문 링크</dd></div>
+        <div><dt>최소 입력</dt><dd>시작일 또는 반복 요일 0~1개</dd></div>
+        <div><dt>생성 결과</dt><dd>반복 체크리스트 + 캘린더</dd></div>
+      </dl>
+      <details>
+        <summary>검색어·권리 경계 보기</summary>
+        <p><b>검색어:</b> 주방 2주 청소 루틴 체크리스트 / 욕실 주간 청소표 / 계절별 집 관리 체크리스트</p>
+        <p><b>제작자:</b> 살림 제작자 / 청소 서비스 브랜드 / 정리 전문가</p>
+        <p><b>경계:</b> 작업 제목·최소 주기·출처 링크만 사용하며 유료 표 전문과 자동 최적화 규칙은 복제하지 않는다.</p>
+      </details>
+    </article>
+    <article class="opportunity-card">
+      <header>
+        <span>2</span>
+        <div>
+          <small>가족·육아</small>
+          <h3>월령·목표별 2주 놀이 루틴</h3>
+        </div>
+        <b class="decision partner">Partner</b>
+      </header>
+      <dl>
+        <div><dt>찾을 원문</dt><dd>공개 육아 활동 글·영상 시리즈와 월령·준비물·활동 목표</dd></div>
+        <div><dt>필수 source row</dt><dd>활동 제목 · 대상 월령 · 원문 URL · 원문에 적힌 준비물/주의</dd></div>
+        <div><dt>최소 입력</dt><dd>아이 월령 또는 시작일 1개</dd></div>
+        <div><dt>생성 결과</dt><dd>하루 한 활동 루틴 + 원문 링크</dd></div>
+      </dl>
+      <details>
+        <summary>검색어·권리 경계 보기</summary>
+        <p><b>검색어:</b> 12개월 아기 놀이 2주 / 유아 소근육 놀이 영상 시리즈 / 집콕 놀이 월령별</p>
+        <p><b>제작자:</b> 육아 활동 제작자 / 놀이 전문가 / 교구 브랜드</p>
+        <p><b>경계:</b> 발달 진단을 하지 않고 공개 활동 메타데이터와 링크만 사용한다. 유료 영상은 제휴가 필요하다.</p>
+      </details>
+    </article>
+    <article class="opportunity-card">
+      <header>
+        <span>3</span>
+        <div>
+          <small>공부·독서·학습</small>
+          <h3>제작자 강의·연습 시리즈 진도 Flow</h3>
+        </div>
+        <b class="decision go">Go</b>
+      </header>
+      <dl>
+        <div><dt>찾을 원문</dt><dd>공개 강의 재생목록, 회차형 튜토리얼, 악기·언어 연습 시리즈</dd></div>
+        <div><dt>필수 source row</dt><dd>회차 제목 · 순서 · 영상/글 URL · 원문 학습 목표</dd></div>
+        <div><dt>최소 입력</dt><dd>완료 목표일 또는 반복 요일 0~1개</dd></div>
+        <div><dt>생성 결과</dt><dd>회차 큐 + 오늘의 다음 학습</dd></div>
+      </dl>
+      <details>
+        <summary>검색어·권리 경계 보기</summary>
+        <p><b>검색어:</b> 14일 영어 말하기 재생목록 / 기타 초보 10강 커리큘럼 / 무료 강의 주차별 계획</p>
+        <p><b>제작자:</b> 교육 유튜버 / 강사 / 악기·언어 교육 브랜드</p>
+        <p><b>경계:</b> 문항·자막·유료 강의 내용을 복제하지 않고 회차 제목·링크·진도만 제공한다.</p>
+      </details>
+    </article>
+    <article class="opportunity-card">
+      <header>
+        <span>4</span>
+        <div>
+          <small>건강·운동</small>
+          <h3>기간형 운동 프로그램 실행표</h3>
+        </div>
+        <b class="decision go">Go</b>
+      </header>
+      <dl>
+        <div><dt>찾을 원문</dt><dd>공개 코치 프로그램, 영상 재생목록, 주차·회차별 운동표</dd></div>
+        <div><dt>필수 source row</dt><dd>주차/회차 · 운동 제목 · 원문 URL · 원문에 명시된 휴식·범위</dd></div>
+        <div><dt>최소 입력</dt><dd>시작일 또는 목표일 1개</dd></div>
+        <div><dt>생성 결과</dt><dd>주차별 일정 + 오늘 세션</dd></div>
+      </dl>
+      <details>
+        <summary>검색어·권리 경계 보기</summary>
+        <p><b>검색어:</b> 5K 8주 훈련표 공식 / 홈트 4주 재생목록 / 초보 근력 2주 프로그램</p>
+        <p><b>제작자:</b> 트레이너 / 러닝 코치 / 운동 채널·브랜드</p>
+        <p><b>경계:</b> 강도·부상 위험을 새로 계산하지 않고 원문 계획과 안전 안내를 그대로 추적한다.</p>
+      </details>
+    </article>
+    <article class="opportunity-card">
+      <header>
+        <span>5</span>
+        <div>
+          <small>여행·외출·행사</small>
+          <h3>제작자·브랜드 D-day 준비 타임라인</h3>
+        </div>
+        <b class="decision partner">Partner</b>
+      </header>
+      <dl>
+        <div><dt>찾을 원문</dt><dd>결혼·돌잔치·집들이·여행 준비 체크리스트와 원문 D-day 구간</dd></div>
+        <div><dt>필수 source row</dt><dd>D-day 구간 · 체크 행동 · 업체/자료 링크 · 원문 조건</dd></div>
+        <div><dt>최소 입력</dt><dd>행사일 1개</dd></div>
+        <div><dt>생성 결과</dt><dd>역산 캘린더 + 체크리스트</dd></div>
+      </dl>
+      <details>
+        <summary>검색어·권리 경계 보기</summary>
+        <p><b>검색어:</b> 결혼 준비 체크리스트 D-180 / 돌잔치 준비 일정표 / 집들이 한달 전 체크리스트</p>
+        <p><b>제작자:</b> 행사 제작자 / 웨딩·여행 브랜드 / 지역 전문가</p>
+        <p><b>경계:</b> 업체 마켓플레이스를 만들지 않고 제작자·업체 원문 유입을 보존한다.</p>
+      </details>
+    </article>
+    <article class="opportunity-card">
+      <header>
+        <span>6</span>
+        <div>
+          <small>식사·장보기</small>
+          <h3>레시피 묶음에서 식단·장보기·오늘 조리로</h3>
+        </div>
+        <b class="decision partner">Partner</b>
+      </header>
+      <dl>
+        <div><dt>찾을 원문</dt><dd>제작자의 공개 레시피 시리즈, 식단표, 장보기표</dd></div>
+        <div><dt>필수 source row</dt><dd>식사/날짜 · 레시피 제목 · 원문 URL · 원문 재료 묶음</dd></div>
+        <div><dt>최소 입력</dt><dd>시작일 또는 식사 수 0~1개</dd></div>
+        <div><dt>생성 결과</dt><dd>식단 캘린더 + 통합 장보기 + 조리 링크</dd></div>
+      </dl>
+      <details>
+        <summary>검색어·권리 경계 보기</summary>
+        <p><b>검색어:</b> 일주일 식단표 장보기 리스트 / 이유식 2주 식단 재료표 / 한끼 레시피 재생목록</p>
+        <p><b>제작자:</b> 요리 제작자 / 식품 브랜드 / 영양 전문가</p>
+        <p><b>경계:</b> 레시피 전문을 복제하지 않고 제목·링크·최소 재료 메타만 사용한다.</p>
+      </details>
+    </article>
+    <article class="opportunity-card">
+      <header>
+        <span>7</span>
+        <div>
+          <small>일·커리어</small>
+          <h3>직무별 지원 준비·후속 Flow</h3>
+        </div>
+        <b class="decision go">Go</b>
+      </header>
+      <dl>
+        <div><dt>찾을 원문</dt><dd>커리어 코치의 지원 체크리스트, 면접 준비표, 직무별 포트폴리오 가이드</dd></div>
+        <div><dt>필수 source row</dt><dd>지원 단계 · 체크 행동 · 후속 시점 또는 순서 · 원문 링크</dd></div>
+        <div><dt>최소 입력</dt><dd>공고 URL 또는 면접일 0~1개</dd></div>
+        <div><dt>생성 결과</dt><dd>상태형 체크리스트 + 후속 캘린더</dd></div>
+      </dl>
+      <details>
+        <summary>검색어·권리 경계 보기</summary>
+        <p><b>검색어:</b> 개발자 지원 체크리스트 / 면접 준비 7일 계획 / 신입 포트폴리오 제출 체크리스트</p>
+        <p><b>제작자:</b> 커리어 코치 / 채용 전문가 / 교육 브랜드</p>
+        <p><b>경계:</b> 공고 데이터베이스·이력서 점수 엔진을 만들지 않고 실행 항목과 출처를 제공한다.</p>
+      </details>
+    </article>
+    <article class="opportunity-card">
+      <header>
+        <span>8</span>
+        <div>
+          <small>취미·반려</small>
+          <h3>대상별 반복 관리 루틴</h3>
+        </div>
+        <b class="decision go">Go</b>
+      </header>
+      <dl>
+        <div><dt>찾을 원문</dt><dd>전문가·판매자의 식물 관리표 또는 반려 훈련 시리즈</dd></div>
+        <div><dt>필수 source row</dt><dd>대상 · 관리/훈련 행동 · 원문 주기·순서 · 원문 링크</dd></div>
+        <div><dt>최소 입력</dt><dd>대상 이름과 시작일 1~2개</dd></div>
+        <div><dt>생성 결과</dt><dd>반복 관리 캘린더 또는 일일 훈련 루틴</dd></div>
+      </dl>
+      <details>
+        <summary>검색어·권리 경계 보기</summary>
+        <p><b>검색어:</b> 몬스테라 월별 관리표 / 강아지 14일 기본 훈련 / 식물 구매 후 관리 체크리스트</p>
+        <p><b>제작자:</b> 식물 판매자·전문가 / 반려 훈련사 / 취미 브랜드</p>
+        <p><b>경계:</b> 진단·교정 판단을 하지 않고 공개 관리 주기·훈련 순서와 전문가 링크를 보존한다.</p>
+      </details>
+    </article>
+      </div>
+    </section>
+  </main>
+
+  <section class="appendix">
+    <div class="appendix-inner">
+      <div class="section-heading">
+        <h2>검증한 24개 전체</h2>
+        <p>심층 10개 외 서비스도 공식 근거와 동일한 점수 구조로 JSON 원장에 포함했습니다.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>서비스</th><th>카테고리</th><th>실행 패턴</th><th>필수 입력</th><th>생성 결과</th><th>판정</th></tr></thead>
+          <tbody>
+    <tr>
+      <td><a href="#service-sweepy">Sweepy</a><span class="deep-mark">심층</span></td>
+      <td>집·살림</td>
+      <td>환경 → 유지관리</td>
+      <td>2개</td>
+      <td>공간별 반복 청소 일정과 오늘 할 일</td>
+      <td><span class="decision go">Go</span></td>
+    </tr>
+    <tr>
+      <td><span>Tody</span></td>
+      <td>집·살림</td>
+      <td>환경 → 유지관리</td>
+      <td>1개</td>
+      <td>공간별 청소 계획과 현재 청결 상태</td>
+      <td><span class="decision benchmark">Benchmark</span></td>
+    </tr>
+    <tr>
+      <td><a href="#service-kinedu">Kinedu</a><span class="deep-mark">심층</span></td>
+      <td>가족·육아</td>
+      <td>프로필 → 오늘 계획</td>
+      <td>1개</td>
+      <td>월령·발달 단계에 맞춘 일일 놀이 계획</td>
+      <td><span class="decision partner">Partner</span></td>
+    </tr>
+    <tr>
+      <td><span>BabySparks</span></td>
+      <td>가족·육아</td>
+      <td>프로필 → 오늘 계획</td>
+      <td>1개</td>
+      <td>연령별 20분 일일 발달 활동 계획</td>
+      <td><span class="decision benchmark">Benchmark</span></td>
+    </tr>
+    <tr>
+      <td><a href="#service-duolingo">Duolingo</a><span class="deep-mark">심층</span></td>
+      <td>공부·독서·학습</td>
+      <td>진도 → 다음 학습</td>
+      <td>1개</td>
+      <td>수준별 학습 경로와 다음 레슨</td>
+      <td><span class="decision benchmark">Benchmark</span></td>
+    </tr>
+    <tr>
+      <td><span>Brilliant</span></td>
+      <td>공부·독서·학습</td>
+      <td>진도 → 다음 학습</td>
+      <td>1개</td>
+      <td>관심·수준 기반 학습 경로</td>
+      <td><span class="decision benchmark">Benchmark</span></td>
+    </tr>
+    <tr>
+      <td><span>Yousician</span></td>
+      <td>공부·독서·학습</td>
+      <td>진도 → 다음 학습</td>
+      <td>2개</td>
+      <td>수준별 악기 학습 경로와 연습 과제</td>
+      <td><span class="decision benchmark">Benchmark</span></td>
+    </tr>
+    <tr>
+      <td><a href="#service-ynab">YNAB</a><span class="deep-mark">심층</span></td>
+      <td>돈·행정·구매</td>
+      <td>목표 → 계획</td>
+      <td>2개</td>
+      <td>주·월·연 단위 필요 저축액과 진도</td>
+      <td><span class="decision benchmark">Benchmark</span></td>
+    </tr>
+    <tr>
+      <td><span>TurboTax</span></td>
+      <td>돈·행정·구매</td>
+      <td>상태 → 후속 행동</td>
+      <td>2개</td>
+      <td>개인 상황에 맞는 세금 신고 절차와 신고서</td>
+      <td><span class="decision hold">Hold</span></td>
+    </tr>
+    <tr>
+      <td><a href="#service-runna">Runna</a><span class="deep-mark">심층</span></td>
+      <td>건강·운동</td>
+      <td>목표 → 계획</td>
+      <td>3개</td>
+      <td>목표일에 맞춘 주차별 러닝·근력 훈련 계획</td>
+      <td><span class="decision go">Go</span></td>
+    </tr>
+    <tr>
+      <td><span>Freeletics</span></td>
+      <td>건강·운동</td>
+      <td>프로필 → 오늘 계획</td>
+      <td>2개</td>
+      <td>개인화 Training Journey와 오늘 운동</td>
+      <td><span class="decision benchmark">Benchmark</span></td>
+    </tr>
+    <tr>
+      <td><span>Nike Training Club</span></td>
+      <td>건강·운동</td>
+      <td>콘텐츠 → 안내 세션</td>
+      <td>1개</td>
+      <td>목표별 운동 프로그램과 다음 세션</td>
+      <td><span class="decision partner">Partner</span></td>
+    </tr>
+    <tr>
+      <td><a href="#service-wanderlog">Wanderlog</a><span class="deep-mark">심층</span></td>
+      <td>여행·외출·행사</td>
+      <td>모음 → 일정</td>
+      <td>1개</td>
+      <td>날짜별 여행 일정과 지도 동선</td>
+      <td><span class="decision benchmark">Benchmark</span></td>
+    </tr>
+    <tr>
+      <td><span>TripIt</span></td>
+      <td>여행·외출·행사</td>
+      <td>모음 → 일정</td>
+      <td>1개</td>
+      <td>항공·숙박·교통 예약이 합쳐진 여행 일정</td>
+      <td><span class="decision benchmark">Benchmark</span></td>
+    </tr>
+    <tr>
+      <td><a href="#service-the-knot">The Knot</a><span class="deep-mark">심층</span></td>
+      <td>여행·외출·행사</td>
+      <td>기준일 → 타임라인</td>
+      <td>1개</td>
+      <td>결혼일 기준 개인화 준비 체크리스트와 업체·예산 보드</td>
+      <td><span class="decision partner">Partner</span></td>
+    </tr>
+    <tr>
+      <td><a href="#service-sidechef">SideChef</a><span class="deep-mark">심층</span></td>
+      <td>식사·장보기</td>
+      <td>콘텐츠 → 안내 세션</td>
+      <td>1개</td>
+      <td>개인화 식단, 통합 장보기 목록, 단계별 조리 세션</td>
+      <td><span class="decision partner">Partner</span></td>
+    </tr>
+    <tr>
+      <td><span>Samsung Food</span></td>
+      <td>식사·장보기</td>
+      <td>모음 → 일정</td>
+      <td>1개</td>
+      <td>저장 레시피 모음, 주간 식단, 통합 장보기 목록</td>
+      <td><span class="decision benchmark">Benchmark</span></td>
+    </tr>
+    <tr>
+      <td><span>Mealime</span></td>
+      <td>식사·장보기</td>
+      <td>콘텐츠 → 안내 세션</td>
+      <td>2개</td>
+      <td>주간 식단, 분류된 장보기 목록, 조리 안내</td>
+      <td><span class="decision benchmark">Benchmark</span></td>
+    </tr>
+    <tr>
+      <td><a href="#service-teal">Teal</a><span class="deep-mark">심층</span></td>
+      <td>일·커리어</td>
+      <td>상태 → 후속 행동</td>
+      <td>1개</td>
+      <td>지원 공고 보드, 단계, 후속 일정과 다음 행동</td>
+      <td><span class="decision go">Go</span></td>
+    </tr>
+    <tr>
+      <td><span>Huntr</span></td>
+      <td>일·커리어</td>
+      <td>상태 → 후속 행동</td>
+      <td>1개</td>
+      <td>지원 보드, 활동, 연락처, 문서와 진행 지표</td>
+      <td><span class="decision benchmark">Benchmark</span></td>
+    </tr>
+    <tr>
+      <td><a href="#service-planta">Planta</a><span class="deep-mark">심층</span></td>
+      <td>취미·반려</td>
+      <td>환경 → 유지관리</td>
+      <td>2개</td>
+      <td>식물별 물주기·비료·분무·분갈이 관리 일정</td>
+      <td><span class="decision go">Go</span></td>
+    </tr>
+    <tr>
+      <td><span>Dogo</span></td>
+      <td>취미·반려</td>
+      <td>프로필 → 오늘 계획</td>
+      <td>2개</td>
+      <td>맞춤 훈련 프로그램과 일일 세션</td>
+      <td><span class="decision partner">Partner</span></td>
+    </tr>
+    <tr>
+      <td><span>Hundeo</span></td>
+      <td>취미·반려</td>
+      <td>프로필 → 오늘 계획</td>
+      <td>2개</td>
+      <td>10~15분 일일 반려견 훈련 계획</td>
+      <td><span class="decision benchmark">Benchmark</span></td>
+    </tr>
+    <tr>
+      <td><span>Cricut Design Space</span></td>
+      <td>취미·반려</td>
+      <td>콘텐츠 → 안내 세션</td>
+      <td>1개</td>
+      <td>프로젝트 미리보기, 재료 정보, 기기별 제작 단계</td>
+      <td><span class="decision partner">Partner</span></td>
+    </tr></tbody>
+        </table>
+      </div>
+
+      <div class="section-heading" style="margin-top:32px">
+        <h2>발견 후보 36개</h2>
+        <p>수량을 맞추기 위해 중복·약한 후보를 승격하지 않았습니다.</p>
+      </div>
+      <ul class="longlist">
+        <li><b>Sweepy</b> · 검증 · 집·살림</li><li><b>Tody</b> · 검증 · 집·살림</li><li><b>Kinedu</b> · 검증 · 가족·육아</li><li><b>BabySparks</b> · 검증 · 가족·육아</li><li><b>Duolingo</b> · 검증 · 공부·독서·학습</li><li><b>Brilliant</b> · 검증 · 공부·독서·학습</li><li><b>Yousician</b> · 검증 · 공부·독서·학습</li><li><b>YNAB</b> · 검증 · 돈·행정·구매</li><li><b>TurboTax</b> · 검증 · 돈·행정·구매</li><li><b>Runna</b> · 검증 · 건강·운동</li><li><b>Freeletics</b> · 검증 · 건강·운동</li><li><b>Nike Training Club</b> · 검증 · 건강·운동</li><li><b>Wanderlog</b> · 검증 · 여행·외출·행사</li><li><b>TripIt</b> · 검증 · 여행·외출·행사</li><li><b>The Knot</b> · 검증 · 여행·외출·행사</li><li><b>SideChef</b> · 검증 · 식사·장보기</li><li><b>Samsung Food</b> · 검증 · 식사·장보기</li><li><b>Mealime</b> · 검증 · 식사·장보기</li><li><b>Teal</b> · 검증 · 일·커리어</li><li><b>Huntr</b> · 검증 · 일·커리어</li><li><b>Planta</b> · 검증 · 취미·반려</li><li><b>Dogo</b> · 검증 · 취미·반려</li><li><b>Hundeo</b> · 검증 · 취미·반려</li><li><b>Cricut Design Space</b> · 검증 · 취미·반려</li><li><b>FlyLady</b> · 보조 후보 · 집·살림</li><li><b>베이비빌리</b> · 보조 후보 · 가족·육아</li><li><b>Fabulous</b> · 보조 후보 · 건강·운동</li><li><b>Nike Run Club</b> · 보조 후보 · 건강·운동</li><li><b>PackPoint</b> · 보조 후보 · 여행·외출·행사</li><li><b>Zola</b> · 보조 후보 · 여행·외출·행사</li><li><b>Rocket Money</b> · 보조 후보 · 돈·행정·구매</li><li><b>Notion Templates</b> · 보조 후보 · 일·커리어</li><li><b>AllTrails</b> · 보조 후보 · 여행·외출·행사</li><li><b>FitOn</b> · 보조 후보 · 건강·운동</li><li><b>Paprika Recipe Manager</b> · 보조 후보 · 식사·장보기</li><li><b>Bring!</b> · 보조 후보 · 식사·장보기</li>
+      </ul>
+      <div class="method-note">
+        <b>판정 해석:</b> Go는 해당 서비스의 데이터를 가져오라는 뜻이 아니라 같은 원형의 공개 콘텐츠 발굴을 진행할 가치가 있다는 뜻입니다. Partner는 권리·제휴가 확인될 때만 공개 전환할 수 있고, Benchmark는 실행 구조만 참고합니다. Hold는 전문·규제·민감 데이터 경계가 우선입니다.
+      </div>
+    </div>
+  </section>
+
+  <footer>FlowMe content audit · 2026-07-28 · app/seed/canonical 변경 없음</footer>
+
+  <script>
+    (() => {
+      const buttons = [...document.querySelectorAll('[data-filter]')];
+      const categorySelect = document.getElementById('category-filter');
+      const cards = [...document.querySelectorAll('.service-card')];
+      const count = document.getElementById('visible-count');
+      let decision = 'all';
+
+      function applyFilters() {
+        let visible = 0;
+        for (const card of cards) {
+          const matchesDecision = decision === 'all' || card.dataset.decision === decision;
+          const matchesCategory = categorySelect.value === 'all' || card.dataset.category === categorySelect.value;
+          card.classList.toggle('hidden', !(matchesDecision && matchesCategory));
+          if (matchesDecision && matchesCategory) visible += 1;
+        }
+        count.textContent = visible + '개 표시';
+      }
+
+      for (const button of buttons) {
+        button.addEventListener('click', () => {
+          decision = button.dataset.filter;
+          buttons.forEach((item) => item.classList.toggle('active', item === button));
+          applyFilters();
+        });
+      }
+      categorySelect.addEventListener('change', applyFilters);
+    })();
+  </script>
+</body>
+</html>
