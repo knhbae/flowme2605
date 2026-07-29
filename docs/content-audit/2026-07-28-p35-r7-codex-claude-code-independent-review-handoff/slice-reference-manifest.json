@@ -1,0 +1,269 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-27T23:48:11.255Z",
+  "observedUserCount": 0,
+  "evidenceKind": "prior_p35_slice_screenshot",
+  "screenshotCount": 37,
+  "warning": "These images document earlier P35 slice acceptance states. Use the R7 and current-journey captures as the current UI truth.",
+  "entries": [
+    {
+      "package": "2026-07-26-p35-01-entry-router-evidence",
+      "packageLabel": "P35-01 전역 진입과 3탭",
+      "file": "slice-reference-screenshots/2026-07-26-p35-01-entry-router-evidence/p35-01-entry-empty-390.png",
+      "originalEvidencePath": "../../../2026-07-26-p35-01-entry-router-evidence/screenshots/p35-01-entry-empty-390.png",
+      "evidenceKind": "prior_p35_slice_screenshot"
+    },
+    {
+      "package": "2026-07-26-p35-01-entry-router-evidence",
+      "packageLabel": "P35-01 전역 진입과 3탭",
+      "file": "slice-reference-screenshots/2026-07-26-p35-01-entry-router-evidence/p35-01-entry-saved-390.png",
+      "originalEvidencePath": "../../../2026-07-26-p35-01-entry-router-evidence/screenshots/p35-01-entry-saved-390.png",
+      "evidenceKind": "prior_p35_slice_screenshot"
+    },
+    {
+      "package": "2026-07-26-p35-01-entry-router-evidence",
+      "packageLabel": "P35-01 전역 진입과 3탭",
+      "file": "slice-reference-screenshots/2026-07-26-p35-01-entry-router-evidence/p35-01-nav-1024.png",
+      "originalEvidencePath": "../../../2026-07-26-p35-01-entry-router-evidence/screenshots/p35-01-nav-1024.png",
+      "evidenceKind": "prior_p35_slice_screenshot"
+    },
+    {
+      "package": "2026-07-26-p35-01-entry-router-evidence",
+      "packageLabel": "P35-01 전역 진입과 3탭",
+      "file": "slice-reference-screenshots/2026-07-26-p35-01-entry-router-evidence/p35-01-nav-1440.png",
+      "originalEvidencePath": "../../../2026-07-26-p35-01-entry-router-evidence/screenshots/p35-01-nav-1440.png",
+      "evidenceKind": "prior_p35_slice_screenshot"
+    },
+    {
+      "package": "2026-07-26-p35-02-public-result-first-evidence",
+      "packageLabel": "P35-02 저장 전 결과 우선",
+      "file": "slice-reference-screenshots/2026-07-26-p35-02-public-result-first-evidence/p35-02-learning-save-before-1440.png",
+      "originalEvidencePath": "../../../2026-07-26-p35-02-public-result-first-evidence/screenshots/p35-02-learning-save-before-1440.png",
+      "evidenceKind": "prior_p35_slice_screenshot"
+    },
+    {
+      "package": "2026-07-26-p35-02-public-result-first-evidence",
+      "packageLabel": "P35-02 저장 전 결과 우선",
+      "file": "slice-reference-screenshots/2026-07-26-p35-02-public-result-first-evidence/p35-02-moving-receipt-390.png",
+      "originalEvidencePath": "../../../2026-07-26-p35-02-public-result-first-evidence/screenshots/p35-02-moving-receipt-390.png",
+      "evidenceKind": "prior_p35_slice_screenshot"
+    },
+    {
+      "package": "2026-07-26-p35-02-public-result-first-evidence",
+      "packageLabel": "P35-02 저장 전 결과 우선",
+      "file": "slice-reference-screenshots/2026-07-26-p35-02-public-result-first-evidence/p35-02-moving-save-before-390.png",
+      "originalEvidencePath": "../../../2026-07-26-p35-02-public-result-first-evidence/screenshots/p35-02-moving-save-before-390.png",
+      "evidenceKind": "prior_p35_slice_screenshot"
+    },
+    {
+      "package": "2026-07-26-p35-02-public-result-first-evidence",
+      "packageLabel": "P35-02 저장 전 결과 우선",
+      "file": "slice-reference-screenshots/2026-07-26-p35-02-public-result-first-evidence/p35-02-routine-save-before-1024.png",
+      "originalEvidencePath": "../../../2026-07-26-p35-02-public-result-first-evidence/screenshots/p35-02-routine-save-before-1024.png",
+      "evidenceKind": "prior_p35_slice_screenshot"
+    },
+    {
+      "package": "2026-07-26-p35-02-public-result-first-evidence",
+      "packageLabel": "P35-02 저장 전 결과 우선",
+      "file": "slice-reference-screenshots/2026-07-26-p35-02-public-result-first-evidence/p35-02-undated-save-before-390.png",
+      "originalEvidencePath": "../../../2026-07-26-p35-02-public-result-first-evidence/screenshots/p35-02-undated-save-before-390.png",
+      "evidenceKind": "prior_p35_slice_screenshot"
+    },
+    {
+      "package": "2026-07-26-p35-03-adjust-one-kind-evidence",
+      "packageLabel": "P35-03 한 번에 한 종류 조정",
+      "file": "slice-reference-screenshots/2026-07-26-p35-03-adjust-one-kind-evidence/p35-03-adjust-anchor-390.png",
+      "originalEvidencePath": "../../../2026-07-26-p35-03-adjust-one-kind-evidence/screenshots/p35-03-adjust-anchor-390.png",
+      "evidenceKind": "prior_p35_slice_screenshot"
+    },
+    {
+      "package": "2026-07-26-p35-03-adjust-one-kind-evidence",
+      "packageLabel": "P35-03 한 번에 한 종류 조정",
+      "file": "slice-reference-screenshots/2026-07-26-p35-03-adjust-one-kind-evidence/p35-03-adjust-items-1024.png",
+      "originalEvidencePath": "../../../2026-07-26-p35-03-adjust-one-kind-evidence/screenshots/p35-03-adjust-items-1024.png",
+      "evidenceKind": "prior_p35_slice_screenshot"
+    },
+    {
+      "package": "2026-07-26-p35-03-adjust-one-kind-evidence",
+      "packageLabel": "P35-03 한 번에 한 종류 조정",
+      "file": "slice-reference-screenshots/2026-07-26-p35-03-adjust-one-kind-evidence/p35-03-adjust-name-390.png",
+      "originalEvidencePath": "../../../2026-07-26-p35-03-adjust-one-kind-evidence/screenshots/p35-03-adjust-name-390.png",
+      "evidenceKind": "prior_p35_slice_screenshot"
+    },
+    {
+      "package": "2026-07-26-p35-03-adjust-one-kind-evidence",
+      "packageLabel": "P35-03 한 번에 한 종류 조정",
+      "file": "slice-reference-screenshots/2026-07-26-p35-03-adjust-one-kind-evidence/p35-03-adjust-routine-1440.png",
+      "originalEvidencePath": "../../../2026-07-26-p35-03-adjust-one-kind-evidence/screenshots/p35-03-adjust-routine-1440.png",
+      "evidenceKind": "prior_p35_slice_screenshot"
+    },
+    {
+      "package": "2026-07-26-p35-04-my-flow-safe-split-evidence",
+      "packageLabel": "P35-04 My Flow와 Calendar 역할 분리",
+      "file": "slice-reference-screenshots/2026-07-26-p35-04-my-flow-safe-split-evidence/p35-04-calendar-1024.png",
+      "originalEvidencePath": "../../../2026-07-26-p35-04-my-flow-safe-split-evidence/screenshots/p35-04-calendar-1024.png",
+      "evidenceKind": "prior_p35_slice_screenshot"
+    },
+    {
+      "package": "2026-07-26-p35-04-my-flow-safe-split-evidence",
+      "packageLabel": "P35-04 My Flow와 Calendar 역할 분리",
+      "file": "slice-reference-screenshots/2026-07-26-p35-04-my-flow-safe-split-evidence/p35-04-my-390.png",
+      "originalEvidencePath": "../../../2026-07-26-p35-04-my-flow-safe-split-evidence/screenshots/p35-04-my-390.png",
+      "evidenceKind": "prior_p35_slice_screenshot"
+    },
+    {
+      "package": "2026-07-26-p35-05-my-flow-library-workspace-evidence",
+      "packageLabel": "P35-05 My Flow 목록과 집중 workspace",
+      "file": "slice-reference-screenshots/2026-07-26-p35-05-my-flow-library-workspace-evidence/p35-05-my-library-1-390.png",
+      "originalEvidencePath": "../../../2026-07-26-p35-05-my-flow-library-workspace-evidence/screenshots/p35-05-my-library-1-390.png",
+      "evidenceKind": "prior_p35_slice_screenshot"
+    },
+    {
+      "package": "2026-07-26-p35-05-my-flow-library-workspace-evidence",
+      "packageLabel": "P35-05 My Flow 목록과 집중 workspace",
+      "file": "slice-reference-screenshots/2026-07-26-p35-05-my-flow-library-workspace-evidence/p35-05-my-library-20-390.png",
+      "originalEvidencePath": "../../../2026-07-26-p35-05-my-flow-library-workspace-evidence/screenshots/p35-05-my-library-20-390.png",
+      "evidenceKind": "prior_p35_slice_screenshot"
+    },
+    {
+      "package": "2026-07-26-p35-05-my-flow-library-workspace-evidence",
+      "packageLabel": "P35-05 My Flow 목록과 집중 workspace",
+      "file": "slice-reference-screenshots/2026-07-26-p35-05-my-flow-library-workspace-evidence/p35-05-my-library-60-1440.png",
+      "originalEvidencePath": "../../../2026-07-26-p35-05-my-flow-library-workspace-evidence/screenshots/p35-05-my-library-60-1440.png",
+      "evidenceKind": "prior_p35_slice_screenshot"
+    },
+    {
+      "package": "2026-07-26-p35-05-my-flow-library-workspace-evidence",
+      "packageLabel": "P35-05 My Flow 목록과 집중 workspace",
+      "file": "slice-reference-screenshots/2026-07-26-p35-05-my-flow-library-workspace-evidence/p35-05-my-library-workspace-1024.png",
+      "originalEvidencePath": "../../../2026-07-26-p35-05-my-flow-library-workspace-evidence/screenshots/p35-05-my-library-workspace-1024.png",
+      "evidenceKind": "prior_p35_slice_screenshot"
+    },
+    {
+      "package": "2026-07-26-p35-05-my-flow-library-workspace-evidence",
+      "packageLabel": "P35-05 My Flow 목록과 집중 workspace",
+      "file": "slice-reference-screenshots/2026-07-26-p35-05-my-flow-library-workspace-evidence/p35-05-personal-flow-390.png",
+      "originalEvidencePath": "../../../2026-07-26-p35-05-my-flow-library-workspace-evidence/screenshots/p35-05-personal-flow-390.png",
+      "evidenceKind": "prior_p35_slice_screenshot"
+    },
+    {
+      "package": "2026-07-26-p35-06-calendar-lens-evidence",
+      "packageLabel": "P35-06 날짜 lens Calendar",
+      "file": "slice-reference-screenshots/2026-07-26-p35-06-calendar-lens-evidence/p35-06-calendar-60-flow-1440.png",
+      "originalEvidencePath": "../../../2026-07-26-p35-06-calendar-lens-evidence/screenshots/p35-06-calendar-60-flow-1440.png",
+      "evidenceKind": "prior_p35_slice_screenshot"
+    },
+    {
+      "package": "2026-07-26-p35-06-calendar-lens-evidence",
+      "packageLabel": "P35-06 날짜 lens Calendar",
+      "file": "slice-reference-screenshots/2026-07-26-p35-06-calendar-lens-evidence/p35-06-calendar-agenda-390.png",
+      "originalEvidencePath": "../../../2026-07-26-p35-06-calendar-lens-evidence/screenshots/p35-06-calendar-agenda-390.png",
+      "evidenceKind": "prior_p35_slice_screenshot"
+    },
+    {
+      "package": "2026-07-26-p35-06-calendar-lens-evidence",
+      "packageLabel": "P35-06 날짜 lens Calendar",
+      "file": "slice-reference-screenshots/2026-07-26-p35-06-calendar-lens-evidence/p35-06-calendar-month-390.png",
+      "originalEvidencePath": "../../../2026-07-26-p35-06-calendar-lens-evidence/screenshots/p35-06-calendar-month-390.png",
+      "evidenceKind": "prior_p35_slice_screenshot"
+    },
+    {
+      "package": "2026-07-26-p35-06-calendar-lens-evidence",
+      "packageLabel": "P35-06 날짜 lens Calendar",
+      "file": "slice-reference-screenshots/2026-07-26-p35-06-calendar-lens-evidence/p35-06-calendar-multi-flow-1024.png",
+      "originalEvidencePath": "../../../2026-07-26-p35-06-calendar-lens-evidence/screenshots/p35-06-calendar-multi-flow-1024.png",
+      "evidenceKind": "prior_p35_slice_screenshot"
+    },
+    {
+      "package": "2026-07-26-p35-07-export-scope-first-evidence",
+      "packageLabel": "P35-07 범위 우선 가져가기",
+      "file": "slice-reference-screenshots/2026-07-26-p35-07-export-scope-first-evidence/p35-07-export-current-1024.png",
+      "originalEvidencePath": "../../../2026-07-26-p35-07-export-scope-first-evidence/screenshots/p35-07-export-current-1024.png",
+      "evidenceKind": "prior_p35_slice_screenshot"
+    },
+    {
+      "package": "2026-07-26-p35-07-export-scope-first-evidence",
+      "packageLabel": "P35-07 범위 우선 가져가기",
+      "file": "slice-reference-screenshots/2026-07-26-p35-07-export-scope-first-evidence/p35-07-export-receipt-1440.png",
+      "originalEvidencePath": "../../../2026-07-26-p35-07-export-scope-first-evidence/screenshots/p35-07-export-receipt-1440.png",
+      "evidenceKind": "prior_p35_slice_screenshot"
+    },
+    {
+      "package": "2026-07-26-p35-07-export-scope-first-evidence",
+      "packageLabel": "P35-07 범위 우선 가져가기",
+      "file": "slice-reference-screenshots/2026-07-26-p35-07-export-scope-first-evidence/p35-07-export-selected-390.png",
+      "originalEvidencePath": "../../../2026-07-26-p35-07-export-scope-first-evidence/screenshots/p35-07-export-selected-390.png",
+      "evidenceKind": "prior_p35_slice_screenshot"
+    },
+    {
+      "package": "2026-07-26-p35-07-export-scope-first-evidence",
+      "packageLabel": "P35-07 범위 우선 가져가기",
+      "file": "slice-reference-screenshots/2026-07-26-p35-07-export-scope-first-evidence/p35-07-export-whole-390.png",
+      "originalEvidencePath": "../../../2026-07-26-p35-07-export-scope-first-evidence/screenshots/p35-07-export-whole-390.png",
+      "evidenceKind": "prior_p35_slice_screenshot"
+    },
+    {
+      "package": "2026-07-26-p35-08-final-mece-gate",
+      "packageLabel": "P35-08 최종 화면 gate",
+      "file": "slice-reference-screenshots/2026-07-26-p35-08-final-mece-gate/p35-08-calendar-selected-day-1024.png",
+      "originalEvidencePath": "../../../2026-07-26-p35-08-final-mece-gate/screenshots/p35-08-calendar-selected-day-1024.png",
+      "evidenceKind": "prior_p35_slice_screenshot"
+    },
+    {
+      "package": "2026-07-26-p35-08-final-mece-gate",
+      "packageLabel": "P35-08 최종 화면 gate",
+      "file": "slice-reference-screenshots/2026-07-26-p35-08-final-mece-gate/p35-08-memo-result-390.png",
+      "originalEvidencePath": "../../../2026-07-26-p35-08-final-mece-gate/screenshots/p35-08-memo-result-390.png",
+      "evidenceKind": "prior_p35_slice_screenshot"
+    },
+    {
+      "package": "2026-07-26-p35-08-final-mece-gate",
+      "packageLabel": "P35-08 최종 화면 gate",
+      "file": "slice-reference-screenshots/2026-07-26-p35-08-final-mece-gate/p35-08-moving-result-390.png",
+      "originalEvidencePath": "../../../2026-07-26-p35-08-final-mece-gate/screenshots/p35-08-moving-result-390.png",
+      "evidenceKind": "prior_p35_slice_screenshot"
+    },
+    {
+      "package": "2026-07-26-p35-08-final-mece-gate",
+      "packageLabel": "P35-08 최종 화면 gate",
+      "file": "slice-reference-screenshots/2026-07-26-p35-08-final-mece-gate/p35-08-my-flow-focused-390.png",
+      "originalEvidencePath": "../../../2026-07-26-p35-08-final-mece-gate/screenshots/p35-08-my-flow-focused-390.png",
+      "evidenceKind": "prior_p35_slice_screenshot"
+    },
+    {
+      "package": "2026-07-26-p35-08-final-mece-gate",
+      "packageLabel": "P35-08 최종 화면 gate",
+      "file": "slice-reference-screenshots/2026-07-26-p35-08-final-mece-gate/p35-08-my-flow-library-20-390.png",
+      "originalEvidencePath": "../../../2026-07-26-p35-08-final-mece-gate/screenshots/p35-08-my-flow-library-20-390.png",
+      "evidenceKind": "prior_p35_slice_screenshot"
+    },
+    {
+      "package": "2026-07-26-p35-08-final-mece-gate",
+      "packageLabel": "P35-08 최종 화면 gate",
+      "file": "slice-reference-screenshots/2026-07-26-p35-08-final-mece-gate/p35-08-my-flow-library-60-1440.png",
+      "originalEvidencePath": "../../../2026-07-26-p35-08-final-mece-gate/screenshots/p35-08-my-flow-library-60-1440.png",
+      "evidenceKind": "prior_p35_slice_screenshot"
+    },
+    {
+      "package": "2026-07-26-p35-08-final-mece-gate",
+      "packageLabel": "P35-08 최종 화면 gate",
+      "file": "slice-reference-screenshots/2026-07-26-p35-08-final-mece-gate/p35-08-study-result-390.png",
+      "originalEvidencePath": "../../../2026-07-26-p35-08-final-mece-gate/screenshots/p35-08-study-result-390.png",
+      "evidenceKind": "prior_p35_slice_screenshot"
+    },
+    {
+      "package": "2026-07-26-p35-08-final-mece-gate",
+      "packageLabel": "P35-08 최종 화면 gate",
+      "file": "slice-reference-screenshots/2026-07-26-p35-08-final-mece-gate/p35-08-vehicle-result-390.png",
+      "originalEvidencePath": "../../../2026-07-26-p35-08-final-mece-gate/screenshots/p35-08-vehicle-result-390.png",
+      "evidenceKind": "prior_p35_slice_screenshot"
+    },
+    {
+      "package": "2026-07-26-p35-08-final-mece-gate",
+      "packageLabel": "P35-08 최종 화면 gate",
+      "file": "slice-reference-screenshots/2026-07-26-p35-08-final-mece-gate/p35-08-workout-result-390.png",
+      "originalEvidencePath": "../../../2026-07-26-p35-08-final-mece-gate/screenshots/p35-08-workout-result-390.png",
+      "evidenceKind": "prior_p35_slice_screenshot"
+    }
+  ]
+}

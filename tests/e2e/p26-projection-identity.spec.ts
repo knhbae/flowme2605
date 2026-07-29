@@ -51,7 +51,7 @@ test('legacy personal draft values migrate to one stable identity across My Flow
   await lookup.getByRole('button', { name: 'Flow 찾기' }).click();
   const editor = page.getByTestId('flow-memo-draft-editor');
   await editor.getByLabel('메모 초안 제목').fill('여행 준비 identity 확인');
-  await editor.getByRole('button', { name: '내 Flow에 초안 저장' }).click();
+  await editor.getByTestId('flow-memo-draft-save').click();
   await expect(page).toHaveURL(/\/my\?savedFlow=url-draft-/);
 
   const legacy = await page.evaluate(() => {
@@ -123,9 +123,10 @@ test('legacy personal draft values migrate to one stable identity across My Flow
   await expect(item).toHaveAttribute('data-item-id', legacy.itemId);
   await expect(item).toContainText('8월 3일');
   const complete = item.getByRole('checkbox', { name: '여권 유효기간 다시 확인하기 완료 체크' });
-  await complete.check();
+  await complete.click();
   const reopen = item.getByRole('checkbox', { name: '여권 유효기간 다시 확인하기 다시 열기' });
-  await reopen.uncheck();
+  await expect(reopen).toBeChecked();
+  await reopen.click();
   await expect(complete).not.toBeChecked();
   await capture(page, flowShell, '01-migrated-personal-draft-mobile.png');
 

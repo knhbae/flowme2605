@@ -1,0 +1,180 @@
+import fs from 'node:fs';
+import path from 'node:path';
+
+import { expect, test, type Locator, type Page } from '@playwright/test';
+
+import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
+
+const evidenceRoot = process.env.FLOWME_P35_R9_EVIDENCE_DIR;
+
+type RowScenario = {
+  id: 'calendar' | 'checklist' | 'routine' | 'sheet' | 'memo';
+  slug: string;
+  publicShape: 'calendar' | 'checklist' | 'flow_execution' | 'sheet' | 'memo';
+  savedMode: 'calendar' | 'checklist' | 'sheet' | 'memo';
+  executable: boolean;
+  anchor?: string;
+};
+
+const scenarios: RowScenario[] = [
+  {
+    id: 'calendar',
+    slug: 'moving-d30-basic',
+    publicShape: 'calendar',
+    savedMode: 'calendar',
+    executable: true,
+    anchor: '2030-09-01',
+  },
+  {
+    id: 'checklist',
+    slug: 'vehicle-inspection-prep',
+    publicShape: 'checklist',
+    savedMode: 'checklist',
+    executable: true,
+  },
+  {
+    id: 'routine',
+    slug: 'curated-allblanc-morning-workout',
+    publicShape: 'flow_execution',
+    savedMode: 'calendar',
+    executable: true,
+  },
+  {
+    id: 'sheet',
+    slug: 'source-backed-middle-school-math-1',
+    publicShape: 'sheet',
+    savedMode: 'sheet',
+    executable: true,
+  },
+  {
+    id: 'memo',
+    slug: 'pet-health-observation',
+    publicShape: 'memo',
+    savedMode: 'memo',
+    executable: false,
+  },
+];
+
+function formatLocalDate(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+async function seedSavedFlow(page: Page, scenario: RowScenario) {
+  await page.goto('/flows');
+  await page.evaluate((input) => {
+    const anchor = input.id === 'routine' ? input.today : input.anchor;
+    window.localStorage.clear();
+    window.localStorage.setItem(`flow:saved:${input.slug}`, JSON.stringify({
+      slug: input.slug,
+      savedAt: '2030-08-01T00:00:00.000Z',
+      selectedArtifactMode: input.savedMode,
+      ...(anchor ? { anchor, dateIntent: 'custom' } : {}),
+      ...(input.id === 'routine' ? {
+        weekdays: ['월', '수', '금'],
+        routineDefinition: {
+          schemaVersion: 1,
+          time: '07:30',
+          durationMinutes: 45,
+          end: { mode: 'count', count: 8 },
+        },
+      } : {}),
+    }));
+    if (anchor) {
+      window.localStorage.setItem(
+        `flow:${input.slug}:anchorDate`,
+        JSON.stringify({ mode: 'custom', anchor }),
+      );
+    }
+  }, { ...scenario, today: formatLocalDate(new Date()) });
+}
+
+async function capture(page: Page, filename: string, focus?: Locator) {
+  if (!evidenceRoot) return;
+  fs.mkdirSync(evidenceRoot, { recursive: true });
+  if (focus) await focus.scrollIntoViewIfNeeded();
+  await page.screenshot({ path: path.join(evidenceRoot, filename), fullPage: false });
+}
+
+test.describe('P35-R9 shared execution row grammar', () => {
+  for (const scenario of scenarios) {
+    test(`${scenario.id} uses preview-neutral and saved-row contracts`, async ({ page }) => {
+      await page.setViewportSize({ width: 390, height: 844 });
+      await page.goto(`/f/${scenario.slug}`);
+      await page.evaluate(() => window.localStorage.clear());
+      await page.reload();
+
+      const preview = page.getByTestId('public-flow-artifact-preview');
+      await expect(preview).toHaveAttribute('data-selected-shape', scenario.publicShape);
+      const publicRows = preview.getByTestId('public-flow-artifact-preview-row');
+      expect(await publicRows.count()).toBeGreaterThan(0);
+      const firstPublicRow = publicRows.first();
+      await expect(firstPublicRow).toHaveAttribute(
+        'data-p35-r9-marker',
+        'P35-R9-SHARED-EXECUTION-ROW',
+      );
+      await expect(firstPublicRow).toHaveAttribute(
+        'data-p35-r9-preview-marker',
+        'P35-R9-PREVIEW-NOT-COMPLETION',
+      );
+      await expect(firstPublicRow).toHaveAttribute('data-completion-control', 'false');
+      await expect(firstPublicRow.getByRole('checkbox')).toHaveCount(0);
+      expect(await firstPublicRow.locator('button, a[href], input, select, textarea').count())
+        .toBeLessThanOrEqual(2);
+
+      await seedSavedFlow(page, scenario);
+      await page.goto(`/my?view=flows&flow=${scenario.slug}`);
+      const workspace = await openMyFlowLibraryFlow(page, scenario.slug);
+      const execution = workspace.getByTestId('my-flow-shape-aware-execution');
+
+      if (!scenario.executable) {
+        await expect(execution).toHaveCount(0);
+        return;
+      }
+
+      const savedRows = execution.locator('[data-flow-ui="execution-row"]');
+      expect(await savedRows.count()).toBeGreaterThan(0);
+      const firstSavedRow = savedRows.first();
+      await expect(firstSavedRow).toHaveAttribute(
+        'data-p35-r9-marker',
+        'P35-R9-SHARED-EXECUTION-ROW',
+      );
+      await expect(firstSavedRow).toHaveAttribute('data-completion-position', 'trailing');
+      await expect(firstSavedRow.locator('[data-flow-row-slot="open"]')).toHaveCount(1);
+      await expect(firstSavedRow.locator('[data-flow-row-slot="completion"]')).toHaveCount(1);
+      const completionIsLast = await firstSavedRow.evaluate((row) => (
+        row.lastElementChild?.getAttribute('data-flow-row-slot') === 'completion'
+      ));
+      expect(completionIsLast).toBe(true);
+      await expect(firstSavedRow.getByTestId('my-flow-task-complete-control')).toHaveCount(1);
+
+      if (scenario.id === 'calendar') {
+        const open = firstSavedRow.locator('[data-flow-row-slot="open"]');
+        await open.focus();
+        await page.keyboard.press('Enter');
+        const detail = page.getByTestId('my-flow-item-detail-sheet');
+        await expect(detail).toHaveAttribute('data-p35-marker', 'P35-R9-DETAIL-SINGLE-CLOSE');
+        await expect(detail.getByRole('button', { name: /닫기/u })).toHaveCount(1);
+        await capture(page, 'p35-r9-shared-row-detail-390.png', detail);
+        await page.keyboard.press('Escape');
+        await expect(open).toBeFocused();
+      }
+    });
+  }
+
+  test('wide saved rows keep the same trailing completion grammar', async ({ page }) => {
+    const scenario = scenarios[0];
+    await page.setViewportSize({ width: 1024, height: 768 });
+    await seedSavedFlow(page, scenario);
+    await page.goto(`/my?view=flows&flow=${scenario.slug}`);
+    const workspace = await openMyFlowLibraryFlow(page, scenario.slug);
+    const row = workspace
+      .getByTestId('my-flow-shape-aware-execution')
+      .locator('[data-flow-ui="execution-row"]')
+      .first();
+    await expect(row).toHaveAttribute('data-completion-position', 'trailing');
+    await capture(page, 'p35-r9-shared-row-1024.png', workspace);
+  });
+});

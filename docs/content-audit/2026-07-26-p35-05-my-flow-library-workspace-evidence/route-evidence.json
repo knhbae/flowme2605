@@ -1,0 +1,88 @@
+{
+  "generatedAt": "2026-07-26",
+  "baselineSha": "2c951633d13adb0aab3ddd9d3cdddf506d9e97cd",
+  "branch": "codex/p35-mece-ux-reset",
+  "verdict": "pass",
+  "observedUserCount": 0,
+  "markers": {
+    "P35-MY-LIBRARY-ONLY": true,
+    "P35-PERSONAL-SINGLE-FOCUS": true
+  },
+  "routes": [
+    {
+      "route": "/my?demo=ux1&view=flows",
+      "viewport": "390x844",
+      "savedFlowCount": 1,
+      "visibleLibraryRowCount": 1,
+      "visibleCommandsPerRow": 1,
+      "searchVisible": false,
+      "statusFilterVisible": false,
+      "topLevelTodayViewCount": 0,
+      "topLevelCompletedViewCount": 0,
+      "horizontalOverflowCount": 0,
+      "unnamedInteractiveCount": 0,
+      "consolePageErrorCount": 0,
+      "screenshot": "screenshots/p35-05-my-library-1-390.png"
+    },
+    {
+      "route": "/my?demo=ux20&view=flows",
+      "viewport": "390x844",
+      "savedFlowCount": 20,
+      "initialVisibleLibraryRowCount": 8,
+      "progressiveRemainderCount": 12,
+      "searchVisible": true,
+      "statusFilterVisible": true,
+      "focusedWorkspaceVisible": true,
+      "quickTitleDateMemoEditReachable": true,
+      "completionReversible": true,
+      "horizontalOverflowCount": 0,
+      "unnamedInteractiveCount": 0,
+      "consolePageErrorCount": 0,
+      "screenshots": [
+        "screenshots/p35-05-my-library-20-390.png",
+        "screenshots/p35-05-personal-flow-390.png"
+      ]
+    },
+    {
+      "route": "/my?demo=ux20&view=flows",
+      "viewport": "1024x768",
+      "savedFlowCount": 20,
+      "initialSelectedFlowCount": 0,
+      "selectedFlowCountAfterExplicitOpen": 1,
+      "libraryDetailOverlapCount": 0,
+      "horizontalOverflowCount": 0,
+      "unnamedInteractiveCount": 0,
+      "consolePageErrorCount": 0,
+      "screenshot": "screenshots/p35-05-my-library-workspace-1024.png"
+    },
+    {
+      "route": "/my?demo=ux60&view=flows",
+      "viewport": "1440x900",
+      "savedFlowCount": 60,
+      "visibleLibraryRowCount": 60,
+      "searchVisible": true,
+      "firstRowVisibleCommandCount": 1,
+      "lastRowVisibleCommandCount": 1,
+      "horizontalOverflowCount": 0,
+      "unnamedInteractiveCount": 0,
+      "consolePageErrorCount": 0,
+      "screenshot": "screenshots/p35-05-my-library-60-1440.png"
+    }
+  ],
+  "dataContract": {
+    "sourceMutationCount": 0,
+    "localStorageKeyChangeCount": 0,
+    "schemaChangeCount": 0,
+    "migrationCount": 0,
+    "completionIdentityChangeCount": 0
+  },
+  "verification": {
+    "p35TargetedE2e": "5/5 pass",
+    "p24CompletionRegression": "1/1 pass",
+    "p25WholeFlowWorkspace": "3/3 pass",
+    "p26MyFlowLocalIa": "4/4 pass",
+    "p34LifecycleRegression": "5/5 pass",
+    "p35SafeSplitRegression": "2/2 pass",
+    "productionBuild": "pass"
+  }
+}

@@ -1,0 +1,330 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-27T06:13:35.123Z",
+  "baseUrl": "http://127.0.0.1:3104",
+  "observedUserCount": 0,
+  "evidenceKind": "current_local_browser_capture",
+  "captures": [
+    {
+      "file": "screenshots/01-moving-result-390.png",
+      "snapshot": "state-snapshots/01-moving-result-390.json",
+      "route": "/f/moving-d30-basic",
+      "state": "public_result_ready",
+      "label": "이사 Flow 저장 전 전체 결과",
+      "viewport": "390x844",
+      "reviewQuestions": [
+        "전체 결과가 먼저 읽히는가",
+        "저장과 외부 가져가기의 차이가 보이는가"
+      ],
+      "quality": {
+        "horizontalOverflow": 0,
+        "unnamedInteractiveCount": 0,
+        "brokenImageCount": 0
+      },
+      "consoleAndPageErrorCount": 0
+    },
+    {
+      "file": "screenshots/02-moving-adjust-items-390.png",
+      "snapshot": "state-snapshots/02-moving-adjust-items-390.json",
+      "route": "/f/moving-d30-basic",
+      "state": "public_adjust_items",
+      "label": "포함 항목 조정",
+      "viewport": "390x844",
+      "reviewQuestions": [
+        "항목 제목·상세·날짜 편집이 필요한가",
+        "한 종류 조정 원칙이 유지되는가"
+      ],
+      "quality": {
+        "horizontalOverflow": 0,
+        "unnamedInteractiveCount": 0,
+        "brokenImageCount": 0
+      },
+      "consoleAndPageErrorCount": 0
+    },
+    {
+      "file": "screenshots/03-moving-public-export-390.png",
+      "snapshot": "state-snapshots/03-moving-public-export-390.json",
+      "route": "/f/moving-d30-basic",
+      "state": "public_secondary_export",
+      "label": "저장 전 보조 가져가기",
+      "viewport": "390x844",
+      "reviewQuestions": [
+        "가져가기가 public preview에 있어야 하는가",
+        "형식보다 destination이 먼저인가"
+      ],
+      "quality": {
+        "horizontalOverflow": 0,
+        "unnamedInteractiveCount": 0,
+        "brokenImageCount": 0
+      },
+      "consoleAndPageErrorCount": 0
+    },
+    {
+      "file": "screenshots/04-moving-saved-receipt-390.png",
+      "snapshot": "state-snapshots/04-moving-saved-receipt-390.json",
+      "route": "/f/moving-d30-basic",
+      "state": "saved_receipt",
+      "label": "저장 완료",
+      "viewport": "390x844",
+      "reviewQuestions": [
+        "오늘 할 일보다 전체 저장 검증이 먼저인가",
+        "다음 primary action이 자연스러운가"
+      ],
+      "quality": {
+        "horizontalOverflow": 0,
+        "unnamedInteractiveCount": 0,
+        "brokenImageCount": 0
+      },
+      "consoleAndPageErrorCount": 0
+    },
+    {
+      "file": "screenshots/05-vehicle-result-390.png",
+      "snapshot": "state-snapshots/05-vehicle-result-390.json",
+      "route": "/f/vehicle-inspection-prep",
+      "state": "undated_checklist_result",
+      "label": "날짜 없는 차량 점검 결과",
+      "viewport": "390x844",
+      "reviewQuestions": [
+        "날짜 없는 Flow를 어떻게 실행하는가",
+        "Checklist와 Todo 추천이 명확한가"
+      ],
+      "quality": {
+        "horizontalOverflow": 0,
+        "unnamedInteractiveCount": 0,
+        "brokenImageCount": 0
+      },
+      "consoleAndPageErrorCount": 0
+    },
+    {
+      "file": "screenshots/06-vehicle-adjust-items-390.png",
+      "snapshot": "state-snapshots/06-vehicle-adjust-items-390.json",
+      "route": "/f/vehicle-inspection-prep",
+      "state": "undated_checklist_adjustment",
+      "label": "날짜 없는 Checklist 포함 항목 조정",
+      "viewport": "390x844",
+      "reviewQuestions": [
+        "개별 날짜·상세 편집이 어디에 있어야 하는가"
+      ],
+      "quality": {
+        "horizontalOverflow": 0,
+        "unnamedInteractiveCount": 0,
+        "brokenImageCount": 0
+      },
+      "consoleAndPageErrorCount": 0
+    },
+    {
+      "file": "screenshots/07-workout-result-390.png",
+      "snapshot": "state-snapshots/07-workout-result-390.json",
+      "route": "/f/curated-allblanc-morning-workout",
+      "state": "routine_result",
+      "label": "홈트 반복 Flow 결과",
+      "viewport": "390x844",
+      "reviewQuestions": [
+        "series와 occurrence가 구분되는가",
+        "resource가 실행 Item과 구분되는가"
+      ],
+      "quality": {
+        "horizontalOverflow": 0,
+        "unnamedInteractiveCount": 0,
+        "brokenImageCount": 0
+      },
+      "consoleAndPageErrorCount": 0
+    },
+    {
+      "file": "screenshots/08-workout-routine-adjust-390.png",
+      "snapshot": "state-snapshots/08-workout-routine-adjust-390.json",
+      "route": "/f/curated-allblanc-morning-workout",
+      "state": "routine_adjustment",
+      "label": "홈트 반복 설정",
+      "viewport": "390x844",
+      "reviewQuestions": [
+        "초기 설정이 과밀한가",
+        "compact summary와 progressive disclosure가 필요한가"
+      ],
+      "quality": {
+        "horizontalOverflow": 0,
+        "unnamedInteractiveCount": 0,
+        "brokenImageCount": 0
+      },
+      "consoleAndPageErrorCount": 0
+    },
+    {
+      "file": "screenshots/09-my-flow-next-action-390.png",
+      "snapshot": "state-snapshots/09-my-flow-next-action-390.json",
+      "route": "/my?view=flows",
+      "state": "my_flow_next_action",
+      "label": "내 Flow 다음 행동",
+      "viewport": "390x844",
+      "reviewQuestions": [
+        "다음 행동 탭의 정체성이 명확한가",
+        "같은 날짜 묶음이 필요한가"
+      ],
+      "quality": {
+        "horizontalOverflow": 0,
+        "unnamedInteractiveCount": 0,
+        "brokenImageCount": 0
+      },
+      "consoleAndPageErrorCount": 0
+    },
+    {
+      "file": "screenshots/10-my-flow-item-detail-390.png",
+      "snapshot": "state-snapshots/10-my-flow-item-detail-390.json",
+      "route": "/my?view=flows",
+      "state": "my_flow_item_detail",
+      "label": "항목 상세",
+      "viewport": "390x844",
+      "reviewQuestions": [
+        "상세와 완료가 같은 문맥에 있는가",
+        "저장 전 편집과 연결 가능한 구조인가"
+      ],
+      "quality": {
+        "horizontalOverflow": 0,
+        "unnamedInteractiveCount": 0,
+        "brokenImageCount": 0
+      },
+      "consoleAndPageErrorCount": 0
+    },
+    {
+      "file": "screenshots/11-my-flow-item-edit-390.png",
+      "snapshot": "state-snapshots/11-my-flow-item-edit-390.json",
+      "route": "/my?view=flows",
+      "state": "my_flow_item_edit",
+      "label": "항목 제목·날짜·메모 편집",
+      "viewport": "390x844",
+      "reviewQuestions": [
+        "현재 기능을 저장 전 contextual edit에 재사용할 수 있는가"
+      ],
+      "quality": {
+        "horizontalOverflow": 0,
+        "unnamedInteractiveCount": 0,
+        "brokenImageCount": 0
+      },
+      "consoleAndPageErrorCount": 0
+    },
+    {
+      "file": "screenshots/12-my-flow-full-plan-390.png",
+      "snapshot": "state-snapshots/12-my-flow-full-plan-390.json",
+      "route": "/my?view=flows",
+      "state": "my_flow_full_plan",
+      "label": "내 Flow 전체 계획",
+      "viewport": "390x844",
+      "reviewQuestions": [
+        "전체 저장 결과를 확인하기 쉬운가",
+        "다음 행동과 전체 계획이 과도하게 분리되는가"
+      ],
+      "quality": {
+        "horizontalOverflow": 0,
+        "unnamedInteractiveCount": 0,
+        "brokenImageCount": 0
+      },
+      "consoleAndPageErrorCount": 0
+    },
+    {
+      "file": "screenshots/13-my-flow-record-390.png",
+      "snapshot": "state-snapshots/13-my-flow-record-390.json",
+      "route": "/my?view=flows",
+      "state": "my_flow_record",
+      "label": "내 Flow 기록",
+      "viewport": "390x844",
+      "reviewQuestions": [
+        "기록 탭의 정체성이 명확한가",
+        "history·회고·재사용이 섞이는가"
+      ],
+      "quality": {
+        "horizontalOverflow": 0,
+        "unnamedInteractiveCount": 0,
+        "brokenImageCount": 0
+      },
+      "consoleAndPageErrorCount": 0
+    },
+    {
+      "file": "screenshots/14-my-flow-completion-undo-390.png",
+      "snapshot": "state-snapshots/14-my-flow-completion-undo-390.json",
+      "route": "/my?view=flows",
+      "state": "my_flow_completion_undo",
+      "label": "완료 후 즉시 되돌리기",
+      "viewport": "390x844",
+      "reviewQuestions": [
+        "행이 사라질 때만 undo가 필요한가",
+        "직접 다시 열기와 snackbar가 중복되는가"
+      ],
+      "quality": {
+        "horizontalOverflow": 0,
+        "unnamedInteractiveCount": 0,
+        "brokenImageCount": 0
+      },
+      "consoleAndPageErrorCount": 0
+    },
+    {
+      "file": "screenshots/15-my-flow-workspace-1024.png",
+      "snapshot": "state-snapshots/15-my-flow-workspace-1024.json",
+      "route": "/my?demo=ux20&view=flows",
+      "state": "my_flow_wide_workspace",
+      "label": "내 Flow wide library와 workspace",
+      "viewport": "1024x768",
+      "reviewQuestions": [
+        "rail과 canvas 역할이 명확한가",
+        "모바일 탭과 wide hierarchy가 일치하는가"
+      ],
+      "quality": {
+        "horizontalOverflow": 0,
+        "unnamedInteractiveCount": 0,
+        "brokenImageCount": 0
+      },
+      "consoleAndPageErrorCount": 0
+    },
+    {
+      "file": "screenshots/16-calendar-month-390.png",
+      "snapshot": "state-snapshots/16-calendar-month-390.json",
+      "route": "/calendar?demo=ux20",
+      "state": "calendar_month",
+      "label": "캘린더 월간 화면",
+      "viewport": "390x844",
+      "reviewQuestions": [
+        "Calendar가 date lens로 읽히는가"
+      ],
+      "quality": {
+        "horizontalOverflow": 0,
+        "unnamedInteractiveCount": 0,
+        "brokenImageCount": 0
+      },
+      "consoleAndPageErrorCount": 0
+    },
+    {
+      "file": "screenshots/17-calendar-selected-day-390.png",
+      "snapshot": "state-snapshots/17-calendar-selected-day-390.json",
+      "route": "/calendar?demo=ux20",
+      "state": "calendar_selected_day",
+      "label": "모바일 선택일 agenda",
+      "viewport": "390x844",
+      "reviewQuestions": [
+        "같은 날짜 항목과 Flow 구분이 충분한가",
+        "detail을 sheet로 열어야 하는가"
+      ],
+      "quality": {
+        "horizontalOverflow": 0,
+        "unnamedInteractiveCount": 0,
+        "brokenImageCount": 0
+      },
+      "consoleAndPageErrorCount": 0
+    },
+    {
+      "file": "screenshots/18-calendar-selected-day-1024.png",
+      "snapshot": "state-snapshots/18-calendar-selected-day-1024.json",
+      "route": "/calendar?demo=ux20",
+      "state": "calendar_selected_day_wide",
+      "label": "와이드 선택일 agenda",
+      "viewport": "1024x768",
+      "reviewQuestions": [
+        "날짜 묶음이 My Flow와 같은 실행 단위를 쓰는가"
+      ],
+      "quality": {
+        "horizontalOverflow": 0,
+        "unnamedInteractiveCount": 0,
+        "brokenImageCount": 0
+      },
+      "consoleAndPageErrorCount": 0
+    }
+  ],
+  "failures": []
+}

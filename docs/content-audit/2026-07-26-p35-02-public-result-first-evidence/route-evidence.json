@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-07-26",
+  "baselineSha": "2c951633d13adb0aab3ddd9d3cdddf506d9e97cd",
+  "branch": "codex/p35-mece-ux-reset",
+  "acceptanceMarker": "P35-PUBLIC-RESULT-FIRST",
+  "verdict": "pass",
+  "observedUserCount": 0,
+  "routes": [
+    {
+      "route": "/f/moving-d30-basic",
+      "viewport": "390x844",
+      "primaryShape": "calendar",
+      "effectiveItemCount": 24,
+      "initialVisibleRowCount": 3,
+      "setupInputCount": 1,
+      "resultFirst": true,
+      "duplicateWholeFlowHeadingCount": 0,
+      "visiblePrimaryActionCount": 1,
+      "evidenceKind": "current_browser"
+    },
+    {
+      "route": "/f/vehicle-inspection-prep",
+      "viewport": "390x844",
+      "primaryShape": "checklist",
+      "effectiveItemCount": 10,
+      "initialVisibleRowCount": 3,
+      "setupInputCount": 0,
+      "scheduleSummary": "undated",
+      "resultFirst": true,
+      "duplicateWholeFlowHeadingCount": 0,
+      "visiblePrimaryActionCount": 1,
+      "evidenceKind": "current_browser"
+    },
+    {
+      "route": "/f/curated-allblanc-morning-workout",
+      "viewport": "1024x768",
+      "primaryShape": "flow_execution",
+      "effectiveItemCount": 1,
+      "initialVisibleRowCount": 1,
+      "setupInputCount": 1,
+      "scheduleSummary": "recurring",
+      "resultFirst": true,
+      "duplicateWholeFlowHeadingCount": 0,
+      "visiblePrimaryActionCount": 1,
+      "evidenceKind": "current_browser"
+    },
+    {
+      "route": "/f/source-backed-middle-school-math-1",
+      "viewport": "1440x900",
+      "primaryShape": "sheet",
+      "effectiveItemCount": 8,
+      "initialVisibleRowCount": 3,
+      "setupInputCount": 0,
+      "scheduleSummary": "undated",
+      "resultFirst": true,
+      "duplicateWholeFlowHeadingCount": 0,
+      "visiblePrimaryActionCount": 1,
+      "evidenceKind": "current_browser"
+    },
+    {
+      "route": "/f/moving-d30-basic",
+      "viewport": "390x844",
+      "state": "saved_receipt",
+      "savedReceiptDistinct": true,
+      "saveBeforeControlCount": 0,
+      "visiblePrimaryActionCount": 1,
+      "evidenceKind": "current_browser"
+    },
+    {
+      "route": "/flow-maps/curated-funmom-learning-park",
+      "viewport": "390x844",
+      "state": "review_hold",
+      "publicSaveFrameCount": 0,
+      "saveActionCount": 0,
+      "liveAiImplied": false,
+      "evidenceKind": "current_browser"
+    }
+  ],
+  "markers": {
+    "publicResultFirstConnected": true,
+    "summaryChipCount": 0,
+    "resultShapeChoiceCount": 0,
+    "duplicateWholeFlowHeadingCount": 0,
+    "duplicateLegacyExecutionRendererCount": 0,
+    "visiblePrimaryActionMaximum": 1,
+    "publicPreSaveCompletionControlCount": 0,
+    "sourceLinkCountPerFrame": 1,
+    "saveBeforeAndReceiptDistinct": true,
+    "horizontalOverflowCount": 0,
+    "fixedCommandOverlapCount": 0,
+    "consoleErrorCount": 0,
+    "pageErrorCount": 0,
+    "storageSchemaChanged": false,
+    "canonicalIdentityChanged": false,
+    "migrationCount": 0
+  },
+  "screenshots": [
+    "screenshots/p35-02-moving-save-before-390.png",
+    "screenshots/p35-02-undated-save-before-390.png",
+    "screenshots/p35-02-routine-save-before-1024.png",
+    "screenshots/p35-02-learning-save-before-1440.png",
+    "screenshots/p35-02-moving-receipt-390.png"
+  ],
+  "verification": {
+    "p35TargetedE2e": {
+      "passed": 6,
+      "failed": 0
+    },
+    "relatedRegressionE2e": {
+      "passed": 119,
+      "failed": 0
+    },
+    "rootCatalogRoutineTargetedE2e": {
+      "passed": 4,
+      "failed": 0
+    },
+    "pretest": {
+      "passed": 73,
+      "failed": 0
+    },
+    "unit": {
+      "passed": 590,
+      "failed": 0
+    },
+    "docsCheck": {
+      "status": "pass",
+      "requiredFileCount": 14,
+      "localLinkCount": 3183
+    },
+    "build": "pass",
+    "buildIdPresent": true,
+    "diffCheck": "pass_with_line_ending_warnings"
+  },
+  "publishState": {
+    "committed": false,
+    "pushed": false,
+    "pullRequest": false,
+    "merged": false,
+    "deployed": false
+  }
+}

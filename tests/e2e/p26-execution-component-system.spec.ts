@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { expect, test, type Page } from '@playwright/test';
+import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
 
 const evidenceRoot = process.env.FLOWME_P26_17_EVIDENCE_DIR;
 
@@ -50,24 +51,27 @@ test('mobile save journey uses one summary, receipt, outline, and export grammar
   await page.reload();
 
   const hero = page.getByTestId('public-flow-hero');
+  const preview = page.getByTestId('public-flow-artifact-preview');
+  await expect(hero).toHaveAttribute('data-p35-marker', 'P35-PUBLIC-RESULT-FIRST');
   await expect(hero.locator('[data-flow-ui="artifact-summary"]')).toHaveCount(1);
-  await expect(hero.locator('[data-flow-ui="schedule-intent"]')).toHaveCount(1);
-  await expect(hero.locator('[data-flow-ui="schedule-intent"]')).toContainText('저장 결과');
-  await expect(hero.locator('[data-flow-ui="schedule-intent"]')).toContainText('할 일 10개');
+  await expect(hero.locator('[data-flow-ui="schedule-intent"]')).toHaveCount(0);
+  await expect(preview).toHaveAttribute('data-selected-shape', 'checklist');
+  await expect(preview.getByRole('heading', { level: 2 })).toHaveText('체크리스트 · 10개');
   await expect(page.locator('[data-action-priority="primary"]:visible')).toHaveCount(1);
   await capture(page, '01-public-save-before-mobile.png');
 
   await page.getByTestId('public-flow-save-primary-mobile').click();
   await page.getByTestId('public-flow-saved-receipt-primary').click();
 
-  const hub = page.getByTestId('my-flow-post-save-panel');
-  await expect(hub.locator('[data-flow-ui="receipt"]')).toHaveCount(1);
-  expect(await hub.locator('[data-flow-ui="outline-row"]').count()).toBeGreaterThan(0);
-  await expect(hub.locator('[data-action-priority="primary"]:visible')).toHaveCount(1);
+  const workspace = await openMyFlowLibraryFlow(page, 'vehicle-inspection-prep');
+  await expect(page.getByTestId('my-flow-post-save-panel')).toHaveCount(0);
+  expect(
+    await workspace.getByTestId('my-flow-whole-flow-outline').locator('[data-flow-ui="outline-row"]').count(),
+  ).toBeGreaterThan(0);
   await capture(page, '02-post-save-receipt-outline-mobile.png');
 
-  await hub.getByTestId('my-flow-post-save-open-export').click();
-  const exportPlan = hub.locator('[data-flow-ui="export-plan"]');
+  await workspace.getByTestId('my-flow-export-entry').click();
+  const exportPlan = workspace.getByTestId('my-flow-export-panel');
   await expect(exportPlan).toBeVisible();
   await exportPlan.getByTestId('my-flow-export-checklist').click();
   await expect(exportPlan.locator('[data-flow-ui="receipt"]')).toBeVisible();
@@ -81,7 +85,7 @@ test('wide whole Flow and editor reuse open rows and a stable editor shell', asy
   await seedMovingFlow(page);
   await page.goto('/my?view=flows');
 
-  const flow = page.getByTestId('my-flow-overview-card').first();
+  const flow = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'plan');
   const outline = flow.getByTestId('my-flow-whole-flow-outline');
   expect(await outline.locator('[data-flow-ui="outline-row"]').count()).toBeGreaterThan(0);
   expect(await outline.locator('[data-flow-ui="execution-row"]').count()).toBeGreaterThan(0);

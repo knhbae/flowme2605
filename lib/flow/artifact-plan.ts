@@ -49,6 +49,7 @@ const decisionToHandling = {
 
 const decisionTableOverrideSlugs = new Set(['driver-license-renewal-check']);
 const checklistOverrideSlugs = new Set(['new-car-delivery-check', 'used-car-buying-check', 'passport-renewal-docs']);
+const undatedChecklistTimelineSlugs = new Set(['vehicle-inspection-prep']);
 const compactTimelineSlugs = new Set(['moving-d30-basic', 'vehicle-inspection-prep', 'real-mofa-overseas-travel-prep']);
 const timelinePrimaryOverrideSlugs = new Set(['wedding-d180-basic']);
 const checkOnlyRoutineSlugs = new Set(['diet-habit-2week', 'real-thankyou-bubu-home-workout-starter', 'real-fitvely-diet-record-routine']);
@@ -70,6 +71,7 @@ const memoCardOverrideSlugs = new Set([
   'vaccination-certificate-issue',
 ]);
 const spreadsheetOverrideSlugs = new Set(['diet-meal-exercise-log', 'diet-reset-2week', 'water-purifier-filter-cycle', 'fridge-cleanout-weekly-plan']);
+const checklistWithMemoSlugs = new Set(['overseas-safety-register']);
 
 // 2026-06-01 크리에이터·블로그 배치: 카테고리별로 알맞은 아티팩트 표면을 새로 배정한다.
 // 순차 단계(요리 준비→조리→평가, 정리 비우기→분류→정리, 창작 콘셉트→세팅→발행 등)는
@@ -106,6 +108,7 @@ function getPrimarySurface(bundle: FlowBundle, model = normalizeExecutionModel(b
   const audit = getNaturalArtifactAudit(bundle.flow.slug);
   if (bundle.flow.content_type === 'meal_plan') return 'meal_reaction_log';
   if (timelinePrimaryOverrideSlugs.has(bundle.flow.slug)) return 'timeline_calendar';
+  if (undatedChecklistTimelineSlugs.has(bundle.flow.slug)) return 'checklist';
   if (checklistOverrideSlugs.has(bundle.flow.slug)) return 'checklist';
   if (checkOnlyRoutineSlugs.has(bundle.flow.slug)) return 'routine_calendar';
   if (decisionTableOverrideSlugs.has(bundle.flow.slug)) return 'decision_table';
@@ -130,6 +133,12 @@ function surface(kind: ArtifactSurfaceKind, title: string, description: string):
 }
 
 function getSurfaces(bundle: FlowBundle, primary: PrimaryArtifactSurface): ArtifactSurface[] {
+  if (checklistWithMemoSlugs.has(bundle.flow.slug)) {
+    return [
+      surface('execution_list', '출국 전 체크리스트', '위험 정보와 비상 대비를 하나씩 확인합니다.'),
+      surface('memo_card', '안전 정보 메모', '연락처, 주의사항, 원문 링크를 함께 보관합니다.'),
+    ];
+  }
   if (maintenanceRoutineSlugs.has(bundle.flow.slug)) {
     return [
       surface('routine_month', '관리 캘린더', '시작일 기준 다음 관리일을 만들고 날짜 안 체크리스트로 실행합니다.'),

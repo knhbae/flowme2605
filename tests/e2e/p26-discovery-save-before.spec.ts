@@ -49,18 +49,20 @@ async function assertDiscoveryCard(card: Locator) {
   await expect(card).not.toContainText(/명 검증|인기순|별점|이사일만 넣으면/u);
 }
 
-test('home usage examples and catalog cards have distinct roles', async ({ page }) => {
+test('entry router removes the duplicate Home surface and opens the catalog', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
 
-  await expect(page.getByRole('heading', { name: '필요한 Flow를 시작하세요' })).toBeVisible();
-  await expect(page.getByText('저장한 Flow를 이어가거나, URL과 메모에서 새 실행 계획을 찾습니다.')).toBeVisible();
+  await expect(page).toHaveURL('/flows');
+  await expect(page.getByRole('heading', { name: 'URL·메모로 Flow 찾기' })).toBeVisible();
   await expect(page.locator('[data-home-recommendation-card="true"]')).toHaveCount(0);
-  await expect(page.getByTestId('home-usage-example')).toHaveCount(3);
-  await expect(page.locator('[data-p31-marker="P31-HOME-FIND-ROLE-SEPARATION"]')).toHaveCount(1);
-  await capture(page, '01-home-unified-flow-card-mobile.png');
+  await expect(page.getByTestId('home-usage-example')).toHaveCount(0);
+  await expect(page.getByTestId('platform-mobile-tabs')).toHaveAttribute(
+    'data-p35-marker',
+    'P35-ENTRY-ROUTER-3TAB',
+  );
+  await capture(page, '01-entry-router-catalog-mobile.png');
 
-  await page.goto('/flows');
   const catalogCards = page.getByTestId('flow-map-catalog-card');
   await expect(catalogCards).toHaveCount(8);
   await assertDiscoveryCard(catalogCards.first());
@@ -92,21 +94,22 @@ test('public save-before shows the whole Flow before one start decision', async 
 
   const hero = page.getByTestId('public-flow-hero');
   const preview = hero.getByTestId('public-flow-artifact-preview');
-  const setup = hero.getByTestId('public-flow-primary-setup');
   await expect(hero).toHaveAttribute('data-visual-structure', 'artifact-first');
+  await expect(hero).toHaveAttribute('data-experience-architecture', 'p35-result-first');
   await expect(hero.getByText('원문', { exact: true })).toBeVisible();
   await expect(preview.getByTestId('public-flow-artifact-preview-row')).toHaveCount(10);
   await expect(preview).not.toHaveAttribute('open', '');
-  await expect(setup).toBeVisible();
+  await expect(hero.getByTestId('public-flow-primary-setup')).toHaveCount(0);
 
   const primaryResult = page.getByTestId('flow-save-before-primary-result');
+  const decision = page.getByTestId('flow-save-before-decision');
   await expect(primaryResult).toBeVisible();
-  expect(await primaryResult.evaluate((result, decision) => (
-    Boolean(result.compareDocumentPosition(decision as Node) & Node.DOCUMENT_POSITION_FOLLOWING)
-  ), await setup.elementHandle())).toBe(true);
+  expect(await primaryResult.evaluate((result, decisionNode) => (
+    Boolean(result.compareDocumentPosition(decisionNode as Node) & Node.DOCUMENT_POSITION_FOLLOWING)
+  ), await decision.elementHandle())).toBe(true);
 
   await expect(page.getByTestId('public-flow-save-primary-mobile')).toHaveText(
-    '캘린더 10개로 시작',
+    '체크리스트 10개로 시작',
   );
   await expect(page.getByTestId('public-flow-adjust-entry-mobile')).toHaveAccessibleName('Flow 조정');
   await expect(hero).not.toContainText(/이사일 1개를 기준으로|원문 체크리스트의 실행 단서/u);
@@ -137,21 +140,19 @@ test('source-backed map and public Flow use the same artifact-first decision gra
   await capture(page, '05-wedding-independent-choice-fallback-mobile.png');
 });
 
-test('wide save-before keeps artifact and setup parallel, then reveals detail below', async ({ page }) => {
+test('wide save-before keeps the result and decision parallel without a duplicate outline', async ({ page }) => {
   await page.setViewportSize({ width: 1024, height: 768 });
   await page.goto('/f/vehicle-inspection-prep');
 
   const preview = page.getByTestId('flow-save-before-primary-result');
   const decision = page.getByTestId('flow-save-before-decision');
-  const outline = page.getByTestId('public-flow-artifact-preview');
   const previewBox = await preview.boundingBox();
   const decisionBox = await decision.boundingBox();
-  const outlineBox = await outline.boundingBox();
   expect(previewBox).not.toBeNull();
   expect(decisionBox).not.toBeNull();
-  expect(outlineBox).not.toBeNull();
   expect(Math.abs(previewBox!.y - decisionBox!.y)).toBeLessThan(48);
-  expect(outlineBox!.y).toBeGreaterThan(previewBox!.y + previewBox!.height);
+  await expect(preview.getByTestId('public-flow-artifact-preview')).toHaveCount(1);
+  await expect(page.getByRole('heading', { name: '전체 흐름', exact: true })).toHaveCount(0);
   await expect(page.getByRole('region', { name: 'Flow artifact workbench' })).toHaveCount(0);
   await capture(page, '06-public-save-before-wide.png');
 });

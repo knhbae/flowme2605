@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "measuredAt": "2026-07-26",
+  "baselineSha": "2c951633d13adb0aab3ddd9d3cdddf506d9e97cd",
+  "measurement": {
+    "source": "components/flow/AppClient.tsx",
+    "baselineRange": "export function MyFlows through before export function CreatorProfile",
+    "currentRuntimeRange": "function MyFlowRuntime through before export function CreatorProfile",
+    "buttonPattern": "<button\\b",
+    "conditionalPatterns": [
+      "\\?\\s*\\(",
+      "&&\\s*\\("
+    ],
+    "koreanTokenPattern": "[가-힣]{2,}",
+    "notes": [
+      "Current public MyFlows/MyFlowCalendar wrappers are reported separately.",
+      "Runtime plus extracted surface is reported to avoid treating moved Calendar code as deleted."
+    ]
+  },
+  "before": {
+    "functionLines": 12554,
+    "buttonCount": 151,
+    "conditionalRenderCount": 341,
+    "uniqueKoreanTokenCount": 624,
+    "deadAssertionLines": 10
+  },
+  "afterRuntime": {
+    "functionLines": 12277,
+    "buttonCount": 142,
+    "conditionalRenderCount": 334,
+    "uniqueKoreanTokenCount": 608,
+    "deadAssertionLines": 0
+  },
+  "afterPublicWrappers": {
+    "functionLines": 9,
+    "buttonCount": 0,
+    "conditionalRenderCount": 0,
+    "uniqueKoreanTokenCount": 0
+  },
+  "afterRuntimePlusExtractedCalendarSurface": {
+    "functionLines": 12434,
+    "buttonCount": 146,
+    "conditionalRenderCount": 335,
+    "uniqueKoreanTokenCount": 610
+  },
+  "deltaRuntime": {
+    "functionLines": -277,
+    "buttonCount": -9,
+    "conditionalRenderCount": -7,
+    "uniqueKoreanTokenCount": -16,
+    "deadAssertionLines": -10
+  },
+  "deltaCombinedOwnership": {
+    "functionLines": -120,
+    "buttonCount": -5,
+    "conditionalRenderCount": -6,
+    "uniqueKoreanTokenCount": -14
+  },
+  "newUserFacingLabelCount": 0,
+  "deadViewSourceReferenceCount": 0,
+  "markers": [
+    "P35-MYFLOW-SAFE-SPLIT",
+    "P35-DEAD-VIEW-REMOVAL"
+  ]
+}

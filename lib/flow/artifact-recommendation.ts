@@ -53,6 +53,18 @@ export type ArtifactExportRecommendationVM = {
   unavailable: FlowExportDestination[];
 };
 
+export type ArtifactPreflightScheduleState = 'not_applicable' | 'provisional' | 'committed';
+
+export type ArtifactPreflightVM = {
+  primary?: ArtifactShapeRecommendation;
+  secondary: ArtifactShapeRecommendation[];
+  destinations: FlowExportDestination[];
+  preferredDestination?: FlowExportDestination;
+  scheduleState: ArtifactPreflightScheduleState;
+  scheduledEventCount: number;
+  summary: string;
+};
+
 const SHAPE_REASON: Record<FlowExperienceShape, string> = {
   flow_execution: '회차와 다음 행동을 이어서 실행하기 좋아요.',
   calendar: '날짜에 맞춰 실행할 Flow예요.',
@@ -87,6 +99,15 @@ function shapeLossSummary(shape: FlowExperienceShape, lossCount: number): string
   return `${lossCount}개는 FlowMe에 남음`;
 }
 
+export function getArtifactShapeExportDestination(
+  shape: FlowExperienceShape,
+): FlowExportDestination {
+  if (shape === 'calendar') return 'calendar';
+  if (shape === 'sheet') return 'sheet';
+  if (shape === 'memo') return 'memo';
+  return 'checklist';
+}
+
 export function buildArtifactRecommendationVM(
   projection: FlowExperienceProjection,
 ): ArtifactRecommendationVM {
@@ -117,6 +138,42 @@ export function buildArtifactRecommendationVM(
     secondary: visible.slice(1),
     visible,
     unsupportedShapeCount: Object.values(projection.shapes).filter((shape) => shape.count === 0).length,
+  };
+}
+
+export function buildArtifactPreflightVM(options: {
+  projection: FlowExperienceProjection;
+  preferredDestination?: FlowExportDestination;
+  scheduleState?: ArtifactPreflightScheduleState;
+  scheduledEventCount?: number;
+}): ArtifactPreflightVM {
+  const recommendation = buildArtifactRecommendationVM(options.projection);
+  const destinations = recommendation.visible
+    .map((candidate) => getArtifactShapeExportDestination(candidate.shape))
+    .filter((destination, index, values) => values.indexOf(destination) === index);
+  const scheduleState = options.scheduleState ?? 'not_applicable';
+  const scheduledEventCount = Math.max(0, options.scheduledEventCount ?? 0);
+  const primarySummary = recommendation.primary
+    ? `${recommendation.primary.label} · ${recommendation.primary.countLabel}`
+    : '가져갈 결과 없음';
+  const summary = scheduleState === 'provisional' && destinations.includes('calendar')
+    ? `${primarySummary} · 날짜를 정하면 캘린더 ${scheduledEventCount}개`
+    : scheduleState === 'committed' && destinations.includes('calendar')
+      ? `${primarySummary} · 캘린더 ${scheduledEventCount}개`
+      : primarySummary;
+  const preferredDestination = options.preferredDestination
+    && destinations.includes(options.preferredDestination)
+    ? options.preferredDestination
+    : destinations[0];
+
+  return {
+    primary: recommendation.primary,
+    secondary: recommendation.secondary,
+    destinations,
+    ...(preferredDestination ? { preferredDestination } : {}),
+    scheduleState,
+    scheduledEventCount,
+    summary,
   };
 }
 

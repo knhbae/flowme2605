@@ -2,7 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { getArtifactPlan } from '@/lib/flow/artifact-plan';
-import { getPreferredArtifactExportDestination } from '@/lib/flow/artifact-recommendation';
+import {
+  getPreferredArtifactExportDestination,
+  type ArtifactPreflightScheduleState,
+} from '@/lib/flow/artifact-recommendation';
 import {
   getComparisonConfig,
   getComparisonRows,
@@ -56,6 +59,11 @@ type ArtifactExportActions = {
   copyState: string;
   downloadState: string;
   calendarState: string;
+  destinations?: FlowExportDestination[];
+  preferredDestination?: FlowExportDestination;
+  preflightSummary?: string;
+  scheduleState?: ArtifactPreflightScheduleState;
+  scheduledEventCount?: number;
   onCopyText: () => void;
   onDownloadExcel: () => void;
   onDownloadCalendar: () => void;
@@ -290,6 +298,10 @@ function FlowLevelExportPanel({
   return (
     <details
       data-testid="public-flow-export-secondary-entry"
+      data-p35-marker="P35-R1-PUBLIC-ARTIFACT-PREFLIGHT"
+      data-preflight-schedule-state={actions.scheduleState ?? 'not_applicable'}
+      data-scheduled-event-count={actions.scheduledEventCount ?? 0}
+      data-primary-destination={actions.preferredDestination ?? getPreferredArtifactExportDestination(bundle)}
       open={open}
       className="group mt-6 border-t border-[#DDE4E0] pt-4"
       onToggle={(event) => {
@@ -304,7 +316,12 @@ function FlowLevelExportPanel({
       >
         <div className="min-w-0">
           <p className="text-sm font-semibold text-[#1B1A17]">이 Flow 통째로 가져가기</p>
-          <p className="mt-0.5 text-xs leading-5 text-[#737B77]">캘린더·시트·메모 중 필요한 형식을 고릅니다.</p>
+          <p
+            data-testid="public-flow-artifact-preflight-summary"
+            className="mt-0.5 text-xs leading-5 text-[#737B77]"
+          >
+            {actions.preflightSummary ?? '이 Flow에 맞는 결과 형식과 개수를 먼저 확인합니다.'}
+          </p>
         </div>
         <span className="shrink-0 text-xs font-semibold text-[#3654FF] group-open:hidden">형식 보기</span>
         <span className="hidden shrink-0 text-xs font-semibold text-[#737B77] group-open:inline">접기</span>
@@ -319,11 +336,12 @@ function FlowLevelExportPanel({
           fixedScope
           showEntry={false}
           showClose={false}
-          destinations={['calendar', 'sheet', 'memo']}
-          preferredDestination={getPreferredArtifactExportDestination(bundle)}
+          destinations={actions.destinations ?? ['calendar', 'checklist', 'sheet', 'memo']}
+          preferredDestination={actions.preferredDestination ?? getPreferredArtifactExportDestination(bundle)}
           sourceLabel={bundle.flow.source_title ? toUserFacingSourceTitle(bundle.flow.source_title) : undefined}
           destinationCopyOverride={{
             calendar: { label: FLOW_EXPORT_LABELS.calendarFile, result: '날짜 있는 항목' },
+            checklist: { label: FLOW_EXPORT_LABELS.checklistCopy, result: 'Flow 전체' },
             sheet: { label: FLOW_EXPORT_LABELS.sheetFile, result: 'Flow 전체' },
             memo: { label: FLOW_EXPORT_LABELS.memoCopy, result: 'Flow 전체' },
           }}

@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>P35-H1 C안 제안 전용 목업</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #171915;
+      --muted: #64675f;
+      --line: #dfe2da;
+      --paper: #ffffff;
+      --soft: #f5f7f2;
+      --blue: #3157d5;
+      --green: #18704d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      background: #eef1eb;
+      color: var(--ink);
+      font-family: Pretendard, "Noto Sans KR", system-ui, sans-serif;
+      letter-spacing: 0;
+    }
+    button, input { font: inherit; }
+    .shell {
+      width: min(1180px, 100%);
+      min-height: 100vh;
+      margin: 0 auto;
+      background: var(--paper);
+    }
+    header {
+      display: flex;
+      min-height: 62px;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--line);
+      padding: 0 24px;
+    }
+    .brand { font-size: 18px; font-weight: 800; }
+    .proposal {
+      border: 1px solid #e7c880;
+      background: #fff8e6;
+      color: #76510c;
+      padding: 5px 8px;
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 240px minmax(0, 1fr) 300px;
+      min-height: calc(100vh - 62px);
+    }
+    nav {
+      border-right: 1px solid var(--line);
+      padding: 18px 14px;
+    }
+    nav button {
+      display: flex;
+      width: 100%;
+      min-height: 44px;
+      align-items: center;
+      gap: 9px;
+      border: 0;
+      background: transparent;
+      padding: 0 12px;
+      color: var(--muted);
+      text-align: left;
+      font-weight: 750;
+    }
+    nav button[aria-current="page"] {
+      background: #edf2ff;
+      color: var(--blue);
+    }
+    .library-link {
+      margin-top: 18px;
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
+    }
+    main { min-width: 0; padding: 28px 28px 80px; }
+    h1 { margin: 0; font-size: 26px; line-height: 1.25; }
+    .sub { margin: 7px 0 22px; color: var(--muted); font-size: 14px; }
+    .summary {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+    .summary span {
+      border: 1px solid var(--line);
+      padding: 7px 9px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+    }
+    .group { margin-top: 24px; }
+    .group h2 {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin: 0 0 8px;
+      font-size: 14px;
+    }
+    .group h2 span { color: var(--muted); font-size: 11px; }
+    .row {
+      display: grid;
+      grid-template-columns: 26px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 10px;
+      min-height: 60px;
+      border-top: 1px solid var(--line);
+    }
+    .row:last-child { border-bottom: 1px solid var(--line); }
+    .check {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #8b9086;
+      border-radius: 4px;
+      background: white;
+    }
+    .title { display: block; font-size: 14px; font-weight: 780; }
+    .meta { display: block; margin-top: 3px; color: var(--muted); font-size: 11px; }
+    .time { color: var(--blue); font-size: 12px; font-weight: 800; }
+    aside {
+      border-left: 1px solid var(--line);
+      background: var(--soft);
+      padding: 26px 20px;
+    }
+    aside h2 { margin: 0 0 14px; font-size: 16px; }
+    .flow-context {
+      border: 1px solid var(--line);
+      background: white;
+      padding: 14px;
+    }
+    .flow-context strong { display: block; font-size: 14px; }
+    .flow-context p { margin: 7px 0 0; color: var(--muted); font-size: 12px; line-height: 1.55; }
+    .open-flow {
+      width: 100%;
+      min-height: 42px;
+      margin-top: 12px;
+      border: 1px solid #b9c6ef;
+      background: #f4f6ff;
+      color: var(--blue);
+      font-weight: 800;
+    }
+    .mobile-tabs { display: none; }
+    @media (max-width: 700px) {
+      .shell { min-height: 100dvh; }
+      header { min-height: 54px; padding: 0 16px; }
+      .layout { display: block; min-height: auto; }
+      nav, aside { display: none; }
+      main { padding: 22px 16px 96px; }
+      h1 { font-size: 22px; }
+      .sub { margin-bottom: 16px; }
+      .summary { gap: 6px; }
+      .row { min-height: 64px; }
+      .mobile-tabs {
+        position: fixed;
+        inset: auto 0 0;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        border-top: 1px solid var(--line);
+        background: rgba(255,255,255,.98);
+        padding: 6px 8px max(6px, env(safe-area-inset-bottom));
+      }
+      .mobile-tabs button {
+        min-height: 48px;
+        border: 0;
+        background: transparent;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 800;
+      }
+      .mobile-tabs button[aria-current="page"] { color: var(--blue); }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="brand">FlowMe</div>
+      <div class="proposal">C안 · 제안 전용 목업</div>
+    </header>
+    <div class="layout">
+      <nav aria-label="전역 탐색 제안">
+        <button type="button">⌕ <span>Flow 찾기</span></button>
+        <button type="button" aria-current="page">✓ <span>할 일</span></button>
+        <button type="button">□ <span>Calendar</span></button>
+        <div class="library-link">
+          <button type="button">≡ <span>Flow 보관함</span></button>
+        </div>
+      </nav>
+      <main>
+        <h1>할 일</h1>
+        <p class="sub">여러 Flow의 실행 항목만 날짜 상태로 모은 전역 화면</p>
+        <div class="summary" aria-label="할 일 요약">
+          <span>오늘 3</span>
+          <span>다가오는 일 5</span>
+          <span>날짜 없음 4</span>
+        </div>
+        <section class="group">
+          <h2>오늘 <span>7월 28일</span></h2>
+          <div class="row">
+            <span class="check" aria-hidden="true"></span>
+            <span><span class="title">포장이사 업체 최종 확인</span><span class="meta">이사 준비 · D-1</span></span>
+            <span class="time">09:00</span>
+          </div>
+          <div class="row">
+            <span class="check" aria-hidden="true"></span>
+            <span><span class="title">아침 홈트 3세트</span><span class="meta">아침 홈트 · 이번 회차</span></span>
+            <span class="time">07:30</span>
+          </div>
+          <div class="row">
+            <span class="check" aria-hidden="true"></span>
+            <span><span class="title">차량 타이어 공기압 확인</span><span class="meta">차량 점검</span></span>
+            <span class="time">종일</span>
+          </div>
+        </section>
+        <section class="group">
+          <h2>날짜 없음 <span>4개</span></h2>
+          <div class="row">
+            <span class="check" aria-hidden="true"></span>
+            <span><span class="title">비상 연락처 휴대폰에 저장</span><span class="meta">해외여행 안전</span></span>
+            <span class="time">날짜 정하기</span>
+          </div>
+          <div class="row">
+            <span class="check" aria-hidden="true"></span>
+            <span><span class="title">세탁조 청소 준비물 확인</span><span class="meta">세탁조 청소</span></span>
+            <span class="time">날짜 정하기</span>
+          </div>
+        </section>
+      </main>
+      <aside>
+        <h2>선택한 할 일</h2>
+        <div class="flow-context">
+          <strong>포장이사 업체 최종 확인</strong>
+          <p>이사 준비 Flow의 24개 항목 중 현재 실행할 일입니다. 전체 순서와 원문은 Flow에서 확인합니다.</p>
+          <button class="open-flow" type="button">이사 준비 Flow 열기</button>
+        </div>
+      </aside>
+    </div>
+    <div class="mobile-tabs" aria-label="모바일 전역 탐색 제안">
+      <button type="button">Flow 찾기</button>
+      <button type="button" aria-current="page">할 일</button>
+      <button type="button">Calendar</button>
+    </div>
+  </div>
+</body>
+</html>

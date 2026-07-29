@@ -1,0 +1,201 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-26",
+  "baselineSha": "2c951633d13adb0aab3ddd9d3cdddf506d9e97cd",
+  "branch": "codex/p35-mece-ux-reset",
+  "verdict": "pass_local_gate",
+  "observedUserCount": 0,
+  "acceptanceMarkers": {
+    "P35-ENTRY-ROUTER-3TAB": true,
+    "P35-PUBLIC-RESULT-FIRST": true,
+    "P35-ADJUST-ONE-KIND": true,
+    "P35-MYFLOW-SAFE-SPLIT": true,
+    "P35-DEAD-VIEW-REMOVAL": true,
+    "P35-MY-LIBRARY-ONLY": true,
+    "P35-PERSONAL-SINGLE-FOCUS": true,
+    "P35-CALENDAR-LENS-ONE-TOGGLE": true,
+    "P35-EXPORT-SCOPE-FIRST": true,
+    "P35-EXPORT-COUNT-PARITY": true,
+    "P35-FINAL-MECE-GATE": true
+  },
+  "routes": [
+    {
+      "route": "/",
+      "fixture": "empty_storage",
+      "viewport": "390x844",
+      "destination": "/flows",
+      "homeSurfaceVisibleCount": 0,
+      "storageWriteCount": 0,
+      "result": "pass"
+    },
+    {
+      "route": "/",
+      "fixture": "saved_flow",
+      "viewport": "390x844",
+      "destination": "/my",
+      "savedRecordMutated": false,
+      "result": "pass"
+    },
+    {
+      "route": "/f/moving-d30-basic",
+      "viewport": "390x844",
+      "primaryShape": "calendar",
+      "effectiveItemCount": 24,
+      "shapeChoiceCount": 0,
+      "visiblePrimaryActionCount": 1,
+      "result": "pass"
+    },
+    {
+      "route": "/f/vehicle-inspection-prep",
+      "viewport": "390x844",
+      "primaryShape": "checklist",
+      "effectiveItemCount": 10,
+      "shapeChoiceCount": 0,
+      "visiblePrimaryActionCount": 1,
+      "result": "pass"
+    },
+    {
+      "route": "/f/curated-allblanc-morning-workout",
+      "viewport": "390x844",
+      "primaryShape": "flow_execution",
+      "effectiveItemCount": 1,
+      "shapeChoiceCount": 0,
+      "visiblePrimaryActionCount": 1,
+      "result": "pass"
+    },
+    {
+      "route": "/f/source-backed-middle-school-math-1",
+      "viewport": "390x844",
+      "primaryShape": "sheet",
+      "effectiveItemCount": 8,
+      "shapeChoiceCount": 0,
+      "visiblePrimaryActionCount": 1,
+      "result": "pass"
+    },
+    {
+      "route": "/f/overseas-safety-register",
+      "viewport": "390x844",
+      "primaryShape": "memo",
+      "effectiveItemCount": 4,
+      "shapeChoiceCount": 0,
+      "visiblePrimaryActionCount": 1,
+      "result": "pass"
+    },
+    {
+      "route": "/my?demo=ux20&view=flows",
+      "viewport": "390x844",
+      "savedFlowCount": 20,
+      "initialVisibleLibraryRowCount": 8,
+      "visibleCommandPerRowMaximum": 1,
+      "todayViewCount": 0,
+      "completedViewCount": 0,
+      "focusedWorkspaceReachable": true,
+      "result": "pass"
+    },
+    {
+      "route": "/calendar?demo=ux20",
+      "viewport": "1024x768",
+      "undatedTrayCount": 0,
+      "dateMoveEntryCount": 0,
+      "inlineNoteEntryCount": 0,
+      "selectedDayGroupedByFlow": true,
+      "completionReversible": true,
+      "result": "pass"
+    },
+    {
+      "route": "/my?demo=ux60&view=flows",
+      "viewport": "1440x900",
+      "savedFlowCount": 60,
+      "searchVisible": true,
+      "visibleCommandPerRowMaximum": 1,
+      "focusedWorkspaceCountAfterOpen": 1,
+      "result": "pass"
+    },
+    {
+      "route": "/calendar?demo=ux60",
+      "viewport": "1440x900",
+      "closedScopeCommandCount": 1,
+      "scopePickerSearchVisible": true,
+      "escapeClosesPicker": true,
+      "focusReturnsToTrigger": true,
+      "result": "pass"
+    }
+  ],
+  "markers": {
+    "primaryNavigationItemCount": 3,
+    "homeNavigationItemCount": 0,
+    "publicShapeChoiceCount": 0,
+    "publicVisiblePrimaryActionMaximum": 1,
+    "maximumSimultaneousAdjustmentPanelCount": 1,
+    "myFlowTopLevelTodayViewCount": 0,
+    "myFlowTopLevelCompletedViewCount": 0,
+    "mobileLibraryVisibleCommandPerRowMaximum": 1,
+    "calendarUnscheduledTrayCount": 0,
+    "calendarDateMoveEntryCount": 0,
+    "calendarInlineNoteEntryCount": 0,
+    "exportPreviewOutputReceiptMismatchCount": 0,
+    "horizontalOverflowCount": 0,
+    "fixedOverlapCount": 0,
+    "unnamedVisibleInteractiveCount": 0,
+    "consoleErrorCount": 0,
+    "pageErrorCount": 0,
+    "sourceMutationCount": 0,
+    "newStorageKeyCount": 0,
+    "schemaChangeCount": 0,
+    "migrationCount": 0,
+    "stableIdentityChangeCount": 0
+  },
+  "screenshots": [
+    "screenshots/p35-08-moving-result-390.png",
+    "screenshots/p35-08-vehicle-result-390.png",
+    "screenshots/p35-08-workout-result-390.png",
+    "screenshots/p35-08-study-result-390.png",
+    "screenshots/p35-08-memo-result-390.png",
+    "screenshots/p35-08-my-flow-library-20-390.png",
+    "screenshots/p35-08-my-flow-focused-390.png",
+    "screenshots/p35-08-calendar-selected-day-1024.png",
+    "screenshots/p35-08-my-flow-library-60-1440.png"
+  ],
+  "verification": {
+    "docsCheck": {
+      "status": "pass",
+      "requiredFileCount": 14,
+      "localLinkCount": 3219
+    },
+    "pretest": {
+      "passed": 74,
+      "failed": 0
+    },
+    "unit": {
+      "passed": 590,
+      "failed": 0
+    },
+    "p35E2e": {
+      "passed": 30,
+      "failed": 0
+    },
+    "fullE2e": {
+      "passed": 356,
+      "failed": 0,
+      "durationMinutes": 19.6
+    },
+    "build": {
+      "status": "pass",
+      "buildIdPresent": true,
+      "buildId": "NCue6pu-O1YQ-_b4kI4-j"
+    },
+    "visualInspection": "pass"
+  },
+  "publishState": {
+    "localEdit": true,
+    "committed": false,
+    "pushed": false,
+    "pullRequest": false,
+    "merged": false,
+    "previewDeployed": true,
+    "previewReadyState": "READY",
+    "previewUrl": "https://flowme2605-n5o0dw81h-flowme.vercel.app",
+    "previewDeploymentId": "dpl_5LnB4w6kAzTkBuwR48y3qCupVGQS",
+    "productionDeployed": false
+  }
+}

@@ -192,10 +192,10 @@ test.describe('P30-02 mobile workspace focus order', () => {
   test('My Flow reaches workspace controls before persistent navigation', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/my?demo=ux20&view=flows');
-    await expect(page.getByTestId('my-flow-view-flow')).toBeVisible();
+    await expect(page.getByTestId('my-flow-mobile-structure-open').first()).toBeVisible();
 
     const trace = await traceMobileFocusOrder(page);
-    expectWorkspaceBeforePersistentTabs(trace, 'my-flow-view-flow');
+    expectWorkspaceBeforePersistentTabs(trace, 'my-flow-mobile-structure-open');
     await expect(page.getByTestId('platform-mobile-tabs')).toHaveAttribute(
       'data-p30-marker',
       'P30-MOBILE-WORKSPACE-FOCUS-ORDER',
@@ -223,7 +223,7 @@ test.describe('P30-02 mobile workspace focus order', () => {
 });
 
 test.describe('P30-03 save-before decision and contextual adjustment', () => {
-  test('long Flow keeps the full selection list behind an explicit disclosure', async ({ page }) => {
+  test('long Flow keeps the full selection list inside one bounded adjustment panel', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/f/moving-d30-basic');
     await clearLocalState(page);
@@ -236,18 +236,15 @@ test.describe('P30-03 save-before decision and contextual adjustment', () => {
 
     await page.getByTestId('public-flow-adjust-entry-mobile').click();
     const adjustment = page.getByTestId('public-flow-personal-adjustment');
-    await expect(adjustment).toHaveAttribute('data-p30-marker', 'P30-LONG-FLOW-CONTEXTUAL-ADJUST');
-    await expect(adjustment).toHaveAttribute('data-adjustment-mode', 'include');
-    await expect(adjustment.getByTestId('public-flow-adjustment-item-disclosure')).not.toHaveAttribute('open', '');
-    await expect(adjustment.locator('[data-testid="public-flow-adjustment-row"]:visible')).toHaveCount(0);
+    await expect(adjustment).toHaveAttribute('data-p35-marker', 'P35-ADJUST-ONE-KIND');
+    await expect(adjustment).toHaveAttribute('data-adjustment-kind', 'name');
+    await expect(adjustment.getByTestId('public-flow-adjustment-item-list')).toHaveCount(0);
+    await expect(adjustment.locator('[data-testid="public-flow-adjustment-title"]')).toHaveCount(0);
+    await expect(adjustment.locator('[data-testid="public-flow-adjustment-date"]')).toHaveCount(0);
 
-    await adjustment.getByTestId('public-flow-adjustment-mode-content').click();
-    await expect(adjustment.getByTestId('public-flow-adjustment-item-picker')).toBeVisible();
-    await expect(adjustment.locator('[data-testid="public-flow-adjustment-row"]:visible')).toHaveCount(1);
-
-    await adjustment.getByTestId('public-flow-adjustment-mode-include').click();
-    await adjustment.getByTestId('public-flow-adjustment-item-disclosure').locator('summary').click();
-    await expect(adjustment.locator('[data-testid="public-flow-adjustment-row"]:visible')).toHaveCount(24);
+    await adjustment.getByTestId('public-flow-adjustment-kind-items').click();
+    await expect(adjustment.getByTestId('public-flow-adjustment-item-list')).toBeVisible();
+    await expect(adjustment.getByTestId('public-flow-adjustment-item-row')).toHaveCount(24);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     expect(overflow).toBeLessThanOrEqual(0);
     await capture(page, 'p30-03-moving-item-selection-390.png', {
@@ -278,10 +275,11 @@ test.describe('P30-04 My Flow command hierarchy', () => {
       card
         .getByTestId('my-flow-workspace-execute')
         .getByTestId('my-flow-execution-row-shell'),
-    ).toHaveCount(1);
+    ).toHaveCount(0);
     const executeWorkspace = card.getByTestId('my-flow-workspace-execute');
     await expect(executeWorkspace.getByTestId('my-flow-inline-note-open')).toHaveCount(0);
-    await expect(executeWorkspace.getByRole('button', { name: '전체 계획 보기' })).toHaveCount(1);
+    await expect(card.getByTestId('my-flow-workspace-plan')).toBeVisible();
+    await expect(executeWorkspace.getByRole('button', { name: '전체 계획 보기' })).toHaveCount(0);
 
     const menu = card.getByTestId('my-flow-workspace-management-menu');
     const trigger = menu.locator('summary');
@@ -310,65 +308,23 @@ test.describe('P30-04 My Flow command hierarchy', () => {
 });
 
 test.describe('P30-05 Calendar evidence, scale, and compact identity', () => {
-  test('deterministic undated placement moves two stable items and restores them on undo', async ({ page }) => {
+  test('Calendar delegates undated placement while preserving one compact execution lens', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await seedP30CalendarFlows(page);
     await page.goto('/calendar');
 
-    const tray = page.getByTestId('my-flow-calendar-unscheduled-tray');
-    await expect(tray).toHaveAttribute('data-p30-marker', 'P30-CALENDAR-UNDATED-EVIDENCE');
-    await expect(tray.getByTestId('my-flow-calendar-unscheduled-count')).toHaveText('10');
-    const trigger = tray.getByTestId('my-flow-calendar-unscheduled-toggle');
-    const pageScrollBefore = await page.evaluate(() => window.scrollY);
-    await trigger.click();
-    const sheet = tray.getByTestId('my-flow-calendar-unscheduled-sheet');
-    await expect(sheet).toBeVisible();
-    expect(await page.evaluate(() => window.scrollY)).toBe(pageScrollBefore);
-    await page.keyboard.press('Escape');
-    await expect(sheet).not.toBeVisible();
-    await expect(trigger).toBeFocused();
-    expect(await page.evaluate(() => window.scrollY)).toBe(pageScrollBefore);
-    await trigger.click();
-    await expect(sheet).toBeVisible();
-
-    const items = tray.getByTestId('my-flow-calendar-unscheduled-item');
-    const originalKeys = await items.evaluateAll((elements) => elements.map((element) => element.getAttribute('data-item-key')));
-    const selectedKeys = originalKeys.slice(0, 2);
-    const selectedTitles = await items.locator('[data-testid="my-flow-calendar-unscheduled-item-title"]').evaluateAll(
-      (elements) => elements.slice(0, 2).map((element) => element.textContent?.trim() ?? ''),
+    await expect(page.getByTestId('my-flow-calendar-unscheduled-tray')).toHaveCount(0);
+    await expect(page.getByTestId('my-flow-calendar-date-move-entry')).toHaveCount(0);
+    await expect(page.getByTestId('my-flow-calendar-workspace')).toHaveAttribute(
+      'data-p35-calendar-marker',
+      'P35-CALENDAR-LENS-ONE-TOGGLE',
     );
-    const internalScroll = await tray.getByTestId('my-flow-calendar-unscheduled-item-scroll').evaluate((element) => ({
-      clientHeight: element.clientHeight,
-      scrollHeight: element.scrollHeight,
-    }));
-    expect(internalScroll.scrollHeight).toBeGreaterThan(internalScroll.clientHeight);
-
-    await items.nth(0).getByRole('checkbox').check();
-    await items.nth(1).getByRole('checkbox').check();
-    await tray.getByTestId('my-flow-calendar-unscheduled-date').fill('2026-07-29');
-    await tray.getByTestId('my-flow-calendar-unscheduled-apply').click();
-    await expect(tray.getByTestId('my-flow-calendar-unscheduled-count')).toHaveText('8');
-    const selectedDay = page.getByTestId('my-flow-calendar-selected-day');
-    for (const title of selectedTitles) await expect(selectedDay.getByText(title, { exact: true })).toHaveCount(1);
-
-    await tray.getByTestId('my-flow-calendar-unscheduled-undo-action').click();
-    await expect(tray.getByTestId('my-flow-calendar-unscheduled-count')).toHaveText('10');
-    await trigger.click();
-    const restoredKeys = await tray.getByTestId('my-flow-calendar-unscheduled-item').evaluateAll(
-      (elements) => elements.map((element) => element.getAttribute('data-item-key')),
-    );
-    expect(restoredKeys).toEqual(originalKeys);
-    await capture(page, 'p30-05-calendar-undated-undo-390.png', {
+    await capture(page, 'p30-05-calendar-undated-delegation-390.png', {
       route: '/calendar',
       viewport: { width: 390, height: 844 },
-      beforeCount: 10,
-      placedCount: 2,
-      afterCount: 8,
-      undoCount: 10,
-      selectedKeys,
-      stableIdsRestored: true,
-      pageScrollChanged: false,
-      internalScroll,
+      undatedPlacementSurfaceCount: 0,
+      dateMoveCommandCount: 0,
+      owner: 'my_flow',
     });
   });
 
@@ -551,7 +507,7 @@ test.describe('P30-07 legacy composition consumer gate', () => {
     await page.goto('/f/moving-d30-basic');
     await clearLocalState(page);
     const publicFrame = page.getByTestId('public-flow-hero');
-    await expect(publicFrame).toHaveAttribute('data-experience-architecture', 'p29-artifact-first');
+    await expect(publicFrame).toHaveAttribute('data-experience-architecture', 'p35-result-first');
     await expect(publicFrame).toHaveAttribute('data-p30-marker', 'P30-SAVE-BEFORE-SINGLE-DECISION');
     expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
     await capture(page, 'p30-07-public-artifact-first-390.png', {
@@ -565,7 +521,7 @@ test.describe('P30-07 legacy composition consumer gate', () => {
     await page.goto('/flow-maps/moving-d30');
     await expect(page).toHaveURL('/f/moving-d30-basic');
     const canonicalAliasFrame = page.getByTestId('public-flow-hero');
-    await expect(canonicalAliasFrame).toHaveAttribute('data-experience-architecture', 'p29-artifact-first');
+    await expect(canonicalAliasFrame).toHaveAttribute('data-experience-architecture', 'p35-result-first');
     await expect(page.getByTestId('flow-map-hero')).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
     await capture(page, 'p30-07-source-backed-active-legacy-1024.png', {

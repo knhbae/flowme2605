@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-27",
+  "target": "review.html",
+  "browser": "Google Chrome via Playwright",
+  "viewports": [
+    {
+      "viewport": "390x844",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "horizontalOverflow": false,
+      "brokenImageCount": 0,
+      "pageErrorCount": 0
+    },
+    {
+      "viewport": "1024x768",
+      "scrollWidth": 1024,
+      "clientWidth": 1024,
+      "horizontalOverflow": false,
+      "brokenImageCount": 0,
+      "pageErrorCount": 0
+    },
+    {
+      "viewport": "1440x900",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "horizontalOverflow": false,
+      "brokenImageCount": 0,
+      "pageErrorCount": 0
+    }
+  ],
+  "renderScreenshots": [
+    "output/playwright/p35-owner-review-390.png",
+    "output/playwright/p35-owner-review-1440.png"
+  ],
+  "observedUserEvidence": false
+}

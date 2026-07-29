@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { expect, test, type Page } from '@playwright/test';
+import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
 import { openSavedPublicFlow, savePublicFlow } from './helpers/public-flow-save';
 
 const evidenceDir = process.env.FLOW_EVIDENCE_DIR;
@@ -73,13 +74,16 @@ test('public save lands on a reload-safe whole-Flow receipt on mobile', async ({
     page,
     page.getByTestId('public-flow-save-primary-mobile'),
   );
-  await openSavedPublicFlow(page, savedReceipt);
-
-  const handoff = /\/my\?savedFlow=vehicle-inspection-prep$/;
-  const receipt = await assertCanonicalReceipt(page, handoff);
-  expect(receipt.undated).toBe(receipt.total);
+  await expect(savedReceipt.locator('[data-action-priority="primary"]')).toHaveCount(1);
+  await expect(savedReceipt.getByTestId('public-flow-saved-receipt-status')).toContainText('10');
   await capture(page, '01-public-post-save-receipt-mobile.png');
-  await assertReceiptSurvivesReload(page, handoff, receipt);
+  await page.reload();
+  const reloadedReceipt = page.getByTestId('public-flow-saved-receipt');
+  await expect(reloadedReceipt).toBeVisible();
+  await openSavedPublicFlow(page, reloadedReceipt);
+  await expect(page).toHaveURL('/my?view=flows&flow=vehicle-inspection-prep');
+  const workspace = await openMyFlowLibraryFlow(page, 'vehicle-inspection-prep', 'plan');
+  await expect(workspace.getByTestId('my-flow-whole-flow-outline')).toHaveAttribute('data-effective-row-count', '10');
 });
 
 test('canonical moving alias and URL-first hit keep their receipt contracts', async ({ page }) => {
@@ -89,14 +93,16 @@ test('canonical moving alias and URL-first hit keep their receipt contracts', as
   await page.reload();
   await expect(page).toHaveURL('/f/moving-d30-basic');
   await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
-  await page.getByTestId('public-flow-save-primary').click();
-  await page.getByTestId('public-flow-saved-receipt-primary').click();
-
-  const mapHandoff = /\/my\?savedFlow=moving-d30-basic$/;
-  const mapReceipt = await assertCanonicalReceipt(page, mapHandoff);
-  expect(mapReceipt.dated).toBe(mapReceipt.total);
+  const mapReceipt = await savePublicFlow(page, page.getByTestId('public-flow-save-primary'));
+  await expect(mapReceipt.getByTestId('public-flow-saved-receipt-status')).toContainText('24');
   await capture(page, '02-flow-map-post-save-receipt-wide.png');
-  await assertReceiptSurvivesReload(page, mapHandoff, mapReceipt);
+  await page.reload();
+  const reloadedMapReceipt = page.getByTestId('public-flow-saved-receipt');
+  await expect(reloadedMapReceipt).toBeVisible();
+  await openSavedPublicFlow(page, reloadedMapReceipt);
+  await expect(page).toHaveURL('/my?view=flows&flow=moving-d30-basic');
+  const movingWorkspace = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'plan');
+  await expect(movingWorkspace.getByTestId('my-flow-whole-flow-outline')).toHaveAttribute('data-effective-row-count', '24');
 
   await page.goto('/flows');
   const lookup = page.getByTestId('flow-url-lookup-entry');
@@ -128,7 +134,7 @@ test('memo draft receipt counts every accepted effective item and survives reloa
   await expect(editor.getByTestId('flow-memo-draft-item')).toHaveCount(3);
   await editor.getByLabel('메모 초안 제목').fill('여행 출발 준비');
   await editor.getByLabel('메모 초안 첫 할 일 날짜').fill('2030-10-03');
-  await editor.getByRole('button', { name: '내 Flow에 초안 저장' }).click();
+  await editor.getByTestId('flow-memo-draft-save').click();
 
   const handoff = /\/my\?savedFlow=url-draft-[^&]+$/;
   const receipt = await assertCanonicalReceipt(page, handoff);

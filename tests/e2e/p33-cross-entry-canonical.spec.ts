@@ -3,6 +3,7 @@ import path from 'node:path';
 
 import { expect, test, type Page } from '@playwright/test';
 import { AJD_MOVING_CANONICAL_FLOW_ID } from '../../lib/flow/canonical-flow-registry';
+import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
 
 const evidenceRoot = process.env.FLOWME_P33_EVIDENCE_DIR;
 const runtimeErrorsByPage = new WeakMap<Page, string[]>();
@@ -78,31 +79,29 @@ test.describe('P33 cross-entry canonical alignment', () => {
     await expectNoHorizontalOverflow(page);
   });
 
-  test('moving and vehicle artifact choices change the preview and persisted result', async ({ page }) => {
+  test('moving and vehicle persist their one natural public result', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
 
     for (const candidate of [
-      { slug: 'moving-d30-basic', expectedCount: 24 },
-      { slug: 'vehicle-inspection-prep', expectedCount: 10 },
+      { slug: 'moving-d30-basic', expectedCount: 24, shape: 'calendar', label: '캘린더' },
+      { slug: 'vehicle-inspection-prep', expectedCount: 10, shape: 'checklist', label: '체크리스트' },
     ]) {
       await page.goto(`/f/${candidate.slug}`);
       await clearLocalState(page);
-      const preview = page.getByTestId('flow-artifact-data-preview');
-      const checklistChoice = preview.locator(
-        '[data-testid="flow-artifact-shape-choice"][data-artifact-shape="checklist"]',
-      );
-      await expect(checklistChoice).toBeVisible();
-      await checklistChoice.click();
-      await expect(preview).toHaveAttribute('data-selected-shape', 'checklist');
-      await expect(preview.getByTestId('flow-artifact-checklist-preview').first()).toBeVisible();
+      const preview = page.getByTestId('public-flow-artifact-preview');
+      await expect(preview.getByTestId('flow-artifact-shape-choice')).toHaveCount(0);
+      await expect(preview).toHaveAttribute('data-selected-shape', candidate.shape);
+      if (candidate.slug === 'moving-d30-basic') {
+        await page.getByTestId('public-flow-anchor-input').fill('2030-08-15');
+      }
 
       await page.getByTestId('public-flow-save-primary-mobile').click();
       const savedRecord = await page.evaluate((slug) => JSON.parse(
         window.localStorage.getItem(`flow:saved:${slug}`) || 'null',
       ), candidate.slug);
-      expect(savedRecord.selectedArtifactMode).toBe('checklist');
+      expect(savedRecord.selectedArtifactMode).toBe(candidate.shape);
       await expect(page.getByTestId('public-flow-saved-receipt')).toContainText(
-        `체크리스트`,
+        candidate.label,
       );
       await expect(page.getByTestId('public-flow-saved-receipt')).toContainText(
         String(candidate.expectedCount),
@@ -229,15 +228,8 @@ test.describe('P33 cross-entry canonical alignment', () => {
     await expect(receipt).toContainText('24');
     await receipt.getByTestId('public-flow-saved-receipt-primary').click();
 
-    const postSave = page.getByTestId('my-flow-post-save-panel');
-    await expect(postSave).toBeVisible();
-    await expect(postSave).toHaveAttribute('data-receipt-total-count', '24');
-    await expect(postSave.getByTestId('my-flow-post-save-step')).toHaveCount(4);
-    await postSave.getByTestId('my-flow-post-save-view-flow').click();
-
-    const canonicalFlow = page.locator(
-      '[data-testid="my-flow-overview-card"][data-flow-slug="moving-d30-basic"]',
-    );
+    await expect(page).toHaveURL('/my?view=flows&flow=moving-d30-basic');
+    const canonicalFlow = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'plan');
     await expect(canonicalFlow).toBeVisible();
     await expect(canonicalFlow.getByTestId('my-flow-workspace-progress-summary')).toContainText(
       '전체 0/24 완료',

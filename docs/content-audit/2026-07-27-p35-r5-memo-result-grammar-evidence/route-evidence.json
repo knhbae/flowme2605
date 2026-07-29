@@ -1,0 +1,47 @@
+{
+  "generatedAt": "2026-07-27",
+  "route": "/flows",
+  "evidenceKind": [
+    "current_source",
+    "current_browser_automation",
+    "current_package_screenshot"
+  ],
+  "observedUserCount": 0,
+  "markers": {
+    "memoProposalResultFirst": true,
+    "memoProposalRequiredInputBeforeUsefulPreview": 1,
+    "memoProposalVisibleTextDateInputCount": 2,
+    "memoProposalParsedItemCount": 5,
+    "memoProposalChecklistCount": 5,
+    "memoProposalMemoCount": 5,
+    "memoProposalSheetCount": 5,
+    "memoProposalCalendarCountBeforeDates": 0,
+    "memoProposalCalendarCountAfterDates": 2,
+    "memoProposalContextualEditorCount": 1,
+    "memoProposalSaveWorkspaceConnected": true,
+    "memoParserChanged": false,
+    "sourceMutationCount": 0,
+    "localStorageSchemaChanged": false,
+    "liveAiConnected": false,
+    "crawlerConnected": false,
+    "horizontalOverflowCountByViewport": {
+      "390x844": 0,
+      "1024x768": 0
+    },
+    "unnamedFocusableCount": 0,
+    "consolePageErrorCount": 0
+  },
+  "screenshots": [
+    "screenshots/p35-r5-memo-proposal-390.png"
+  ],
+  "tests": {
+    "unit": {
+      "passed": 3,
+      "failed": 0
+    },
+    "targetedE2e": {
+      "passed": 2,
+      "failed": 0
+    }
+  }
+}

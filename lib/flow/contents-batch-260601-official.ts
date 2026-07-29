@@ -594,7 +594,7 @@ const specs: BatchSpec[] = [
       anchor_type: 'none',
       status: 'published',
       risk_level: 'medium',
-      primary_destination: 'memo',
+      primary_destination: 'internal_check',
       source_title: '외교부 해외안전여행(0404) – 여행경보·동행등록·영사콜센터',
       source_url: 'https://0404.go.kr/app/main/mainPage',
       source_status: 'real',

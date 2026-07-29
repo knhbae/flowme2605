@@ -1,0 +1,80 @@
+{
+  "generatedAt": "2026-07-28T23:45:00+09:00",
+  "items": [
+    {
+      "path": "screenshots/current/p35-h1-review-390.png",
+      "viewport": "390x844-full-page",
+      "alternative": "review-package",
+      "evidenceKind": "current_package_screenshot"
+    },
+    {
+      "path": "screenshots/current/p35-h1-review-1024.png",
+      "viewport": "1024x768-full-page",
+      "alternative": "review-package",
+      "evidenceKind": "current_package_screenshot"
+    },
+    {
+      "path": "screenshots/current/p35-h1-current-my-flow-390.png",
+      "viewport": "390x844",
+      "alternative": "current",
+      "evidenceKind": "current_package_screenshot"
+    },
+    {
+      "path": "screenshots/current/p35-h1-current-my-flow-1024.png",
+      "viewport": "1024x768",
+      "alternative": "current",
+      "evidenceKind": "current_package_screenshot"
+    },
+    {
+      "path": "screenshots/proposed-a/p35-h1-option-a-my-flow-390.png",
+      "viewport": "390x844",
+      "alternative": "A",
+      "evidenceKind": "current_package_screenshot",
+      "note": "A안은 현재 구조 유지이므로 current screenshot과 동일하다."
+    },
+    {
+      "path": "screenshots/proposed-a/p35-h1-option-a-my-flow-1024.png",
+      "viewport": "1024x768",
+      "alternative": "A",
+      "evidenceKind": "current_package_screenshot"
+    },
+    {
+      "path": "screenshots/proposed-b/p35-h1-option-b-todo-390.png",
+      "viewport": "390x844",
+      "alternative": "B",
+      "evidenceKind": "current_package_screenshot"
+    },
+    {
+      "path": "screenshots/proposed-b/p35-h1-option-b-todo-1024.png",
+      "viewport": "1024x768",
+      "alternative": "B",
+      "evidenceKind": "current_package_screenshot"
+    },
+    {
+      "path": "screenshots/proposed-b/p35-h1-option-b-todo-1440.png",
+      "viewport": "1440x900",
+      "alternative": "B",
+      "evidenceKind": "current_package_screenshot"
+    },
+    {
+      "path": "screenshots/proposed-b/p35-h1-option-b-date-roundtrip-390.png",
+      "viewport": "390x844",
+      "alternative": "B",
+      "evidenceKind": "current_package_screenshot",
+      "note": "날짜 제거 후 같은 stable Item이 날짜 없음으로 돌아온 상태"
+    },
+    {
+      "path": "screenshots/proposed-c/p35-h1-option-c-global-todo-390.png",
+      "viewport": "390x844",
+      "alternative": "C",
+      "evidenceKind": "static_proposal",
+      "note": "앱에 구현하지 않은 전역 navigation 제안"
+    },
+    {
+      "path": "screenshots/proposed-c/p35-h1-option-c-global-todo-1024.png",
+      "viewport": "1024x768",
+      "alternative": "C",
+      "evidenceKind": "static_proposal"
+    }
+  ]
+}

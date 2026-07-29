@@ -35,6 +35,18 @@ Do not use this for:
 
 ## Decisions
 
+### 2026-07-29 - My Flow adopts a date-grouped Todo view while preserving the Flow library
+
+**Decision:** Adopt P35 alternative B inside My Flow. A plain `/my` entry opens a cross-Flow `할 일` view, while the existing Flow library and focused Flow workspace remain available through the adjacent `Flow` view. Present active work in exact-date rail groups borrowed from alternative A. Each default row exposes only the row-open target and one trailing completion checkbox; notes, editing, export, and lifecycle commands stay contextual. After a public save receipt, open that Flow's whole plan automatically only on the first entry. On reload or later library entry, start with the whole plan collapsed and let the user expand it explicitly.
+
+**Reason:** B preserves the object-level Flow workspace and management model, while A's date-owned rows reduce repeated labels and make daily execution easier to scan. Keeping commands out of every row lowers visual noise. A one-time expanded plan confirms what was saved without making every return visit a long document.
+
+**Applies to:** Plain `/my`, the internal `할 일 / Flow` switch, exact-date and undated groups, shared execution rows, completion/reopen, public saved receipt handoff, mobile focused workspace whole-plan disclosure, 390/1024/1440 R13 evidence, and the `experiment=off` rollback.
+
+**Reopen when:** Representative R13 regression finds identity, completion, recurrence, export, reload, or backup loss; the Flow library becomes unreachable; or observed users repeatedly fail to find the whole plan or source context. Automated QA and agent simulation alone do not prove observed usability.
+
+**Related docs:** [P35 R8-R13 adoption plan](./specs/2026-07-26-flowme-mece-ux-reset/p35-r8-claude-design-adoption-plan-ko.md), [P35 R13 goal](./specs/2026-07-26-flowme-mece-ux-reset/p35-r13-final-internal-gate-goal-ko.md)
+
 ### 2026-07-24 - Cross-entry Flow identity uses source, user job, and editorial variant
 
 **Decision:** Resolve Home, Flow finding, URL lookup, legacy Flow Map routes, and public aliases through a canonical registry keyed by `canonicalSourceId + userJobId + editorialVariantId`. For the AJD D-day preparation job, use `moving-d30-basic` and its 24-item comprehensive calendar snapshot as the canonical public variant. Keep legacy 5-item saved copies readable. When canonical and legacy copies coexist, require an explicit active-copy choice, archive the inactive copy recoverably, and never merge personal values, completion, runs, occurrences, or export identity by title, order, or latest timestamp.

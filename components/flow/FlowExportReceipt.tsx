@@ -20,10 +20,12 @@ export function FlowExportReceipt({
   receipt,
   flowTitle,
   sourceLabel,
+  stableIdentity,
 }: {
   receipt: FlowExportResultReceipt;
   flowTitle?: string;
   sourceLabel?: string;
+  stableIdentity?: string;
 }) {
   const successful = receipt.status === 'success';
 
@@ -34,7 +36,9 @@ export function FlowExportReceipt({
       data-export-destination={receipt.destination}
       data-export-output-count={receipt.outputCount}
       data-export-omitted-count={receipt.omittedCount}
+      data-export-stable-identity={stableIdentity}
       data-p29-marker="P29-EXPORT-RECEIPT-IDENTITY"
+      data-p35-marker="P35-EXPORT-COUNT-PARITY"
       data-flow-anatomy="export-receipt"
       role="status"
       aria-live="polite"
@@ -61,6 +65,11 @@ export function FlowExportReceipt({
       ) : (
         <p className="mt-1 text-xs font-medium">클립보드에 담았습니다.</p>
       )}
+      {successful ? (
+        <p data-testid="flow-export-result-next-action" className="mt-1 text-xs font-medium">
+          저장한 Flow에서 계속 실행할 수 있어요.
+        </p>
+      ) : null}
     </FlowReceipt>
   );
 }

@@ -6,6 +6,7 @@ import {
   getOpenMyFlowItemDetail,
   openMyFlowLibraryFlow,
 } from './helpers/my-flow-library';
+import { openSavedPublicFlow, savePublicFlow } from './helpers/public-flow-save';
 
 const evidenceRoot = process.env.FLOWME_P26_10_EVIDENCE_DIR;
 
@@ -47,10 +48,9 @@ async function saveMovingPersonalCopy(page: Page) {
   await page.reload();
   await expect(page).toHaveURL('/f/moving-d30-basic');
   await page.getByLabel('이사일').fill('2026-08-15');
-  await page.getByTestId('public-flow-save-primary-mobile').click();
-  await page.getByTestId('public-flow-saved-receipt-primary').click();
-  await expect(page).toHaveURL('/my?savedFlow=moving-d30-basic');
-  await page.getByTestId('my-flow-post-save-panel').getByTestId('my-flow-post-save-view-flow').click();
+  const receipt = await savePublicFlow(page, page.getByTestId('public-flow-save-primary-mobile'));
+  await openSavedPublicFlow(page, receipt);
+  await expect(page).toHaveURL('/my?view=flows&flow=moving-d30-basic');
 }
 
 async function enterEditMode(detail: Locator) {
@@ -70,16 +70,7 @@ async function enterEditMode(detail: Locator) {
 }
 
 async function openMobileFirstRow(page: Page) {
-  let flow = page.locator('[data-testid="my-flow-mobile-workspace"]:visible').first();
-  if (await flow.isVisible().catch(() => false)) {
-    await flow.getByTestId('my-flow-workspace-tab-plan').click();
-  } else {
-    const compactRow = page.getByTestId('my-flow-mobile-structure-row').first();
-    await expect(compactRow).toBeVisible();
-    const flowSlug = await compactRow.getAttribute('data-flow-slug');
-    expect(flowSlug).toBeTruthy();
-    flow = await openMyFlowLibraryFlow(page, flowSlug!, 'plan');
-  }
+  const flow = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'plan');
   const outline = flow.getByTestId('my-flow-whole-flow-outline');
   const firstRow = outline.getByTestId('my-flow-execution-row-shell').first();
   await expect(firstRow).toBeVisible();
@@ -179,7 +170,7 @@ test.describe('P26-10 quick and advanced editor separation', () => {
     await seedMovingFlow(page);
     await page.goto('/my?view=flows');
 
-    const flow = page.getByTestId('my-flow-overview-card').first();
+    const flow = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'plan');
     const outline = flow.getByTestId('my-flow-whole-flow-outline');
     const firstRow = outline.getByTestId('my-flow-execution-row-shell').first();
     await firstRow.locator('button').first().click();
@@ -203,14 +194,22 @@ test.describe('P26-10 quick and advanced editor separation', () => {
     expect(browserErrors).toEqual([]);
   });
 
-  test('Calendar agenda reuses the contained quick editor', async ({ page }) => {
+  test('Calendar agenda delegates to the contained My Flow quick editor', async ({ page }) => {
     const browserErrors = collectBrowserErrors(page);
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/calendar?demo=ux12');
     await page.getByTestId('my-flow-month-picker').fill('2026-05');
-    const event = page.locator('.fc-event[aria-label*="상세 열기"]').first();
-    await expect(event).toBeVisible();
-    await event.click();
+    await page.locator('.fc-daygrid-day[data-date="2026-05-28"]')
+      .getByTestId('my-flow-calendar-date-button')
+      .click();
+    const selectedDay = page.getByTestId('my-flow-calendar-selected-day');
+    await expect(page.getByTestId('my-flow-item-detail-sheet')).toHaveCount(0);
+    const task = selectedDay.locator(
+      '[data-testid="my-flow-execution-row-shell"][data-calendar-item-kind="task"]',
+    ).first();
+    await expect(task).toBeVisible();
+    await task.getByRole('button', { name: /Flow에서 열기/ }).click();
+    await expect(page).toHaveURL(/\/my\?view=flows&flow=/);
 
     const detail = getOpenMyFlowItemDetail(page);
     await enterEditMode(detail);

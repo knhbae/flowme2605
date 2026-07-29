@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { expect, test, type Page } from '@playwright/test';
+import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
 import { openPublicDetailWorkspaceForDeepInspection } from './helpers/open-public-detail-workspace';
 import { openSavedPublicFlow, savePublicFlow } from './helpers/public-flow-save';
 
@@ -32,15 +33,16 @@ async function capture(page: Page, filename: string) {
   await page.screenshot({ path: path.join(screenshots, filename), fullPage: true });
 }
 
-test('example date stays preview-only and saves an undated public Flow on mobile', async ({ page }) => {
+test('a natural undated checklist saves without a competing date mode', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/f/vehicle-inspection-prep');
 
-  const intent = page.getByTestId('public-flow-date-intent');
-  await expect(intent.getByTestId('public-flow-date-intent-custom')).toBeVisible();
-  await expect(intent.getByTestId('public-flow-date-intent-undated')).toBeVisible();
-  await expect(intent.getByTestId('public-flow-date-intent-example')).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.getByText(/예시 날짜로 미리보기/)).toBeVisible();
+  await expect(page.getByTestId('public-flow-date-intent')).toHaveCount(0);
+  await expect(page.getByTestId('public-flow-primary-setup')).toHaveCount(0);
+  await expect(page.getByTestId('public-flow-artifact-preview')).toHaveAttribute(
+    'data-selected-shape',
+    'checklist',
+  );
 
   const exportEntry = page.getByTestId('public-flow-export-secondary-entry');
   await exportEntry.getByTestId('public-flow-export-secondary-toggle').click();
@@ -49,8 +51,8 @@ test('example date stays preview-only and saves an undated public Flow on mobile
   await exportEntry.getByTestId('public-flow-export-secondary-toggle').click();
 
   const mobileSave = page.getByTestId('public-flow-save-primary-mobile');
-  await expect(mobileSave).toHaveText('캘린더 10개로 시작');
-  await capture(page, '01-example-preview-mobile.png');
+  await expect(mobileSave).toHaveText('체크리스트 10개로 시작');
+  await capture(page, '01-natural-undated-mobile.png');
   const receipt = await savePublicFlow(page, mobileSave);
 
   const state = await page.evaluate(() => ({
@@ -61,23 +63,23 @@ test('example date stays preview-only and saves an undated public Flow on mobile
   expect(state.saved.anchor).toBeUndefined();
   expect(state.anchor).toEqual({ mode: 'undated', anchor: '' });
   await openSavedPublicFlow(page, receipt);
-  await expect(page.getByTestId('my-flow-post-save-artifact')).toBeVisible();
+  const focusedWorkspace = page.getByTestId('my-flow-mobile-workspace');
+  await expect(focusedWorkspace).toBeVisible();
+  await expect(focusedWorkspace).toContainText('자동차검사 준비');
   await page.goto('/calendar');
-  await expect(page.getByRole('button', { name: /자동차검사 기간과 예약 가능일 확인하기 상세 열기/ })).toHaveCount(0);
-  await expect(page.getByTestId('my-flow-calendar-unscheduled-tray')).toContainText('날짜 없는 할 일');
-  await expect(page.getByTestId('my-flow-calendar-unscheduled-tray')).toContainText(
-    '아직 일정에 놓지 않은 실행 항목',
-  );
+  await expect(page.locator('.fc-event')).toHaveCount(0);
+  await expect(page.getByTestId('my-flow-calendar-unscheduled-tray')).toHaveCount(0);
+  await expect(page.getByTestId('my-flow-calendar-date-move-entry')).toHaveCount(0);
 });
 
-test('custom public date is the only path that persists an anchor and enables ICS', async ({ page }) => {
+test('a date-anchored public Flow persists its one required date and enables ICS', async ({ page }) => {
   await page.setViewportSize({ width: 1024, height: 768 });
-  await page.goto('/f/vehicle-inspection-prep');
+  await page.goto('/f/moving-d30-basic');
 
   await page.getByTestId('public-flow-anchor-input').fill('2026-07-28');
-  await expect(page.getByTestId('public-flow-date-intent-custom')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByTestId('public-flow-date-intent')).toHaveCount(0);
   const desktopSave = page.getByTestId('public-flow-save-primary');
-  await expect(desktopSave).toHaveText('캘린더 10개로 시작');
+  await expect(desktopSave).toHaveText('캘린더 24개로 시작');
 
   const exportEntry = page.getByTestId('public-flow-export-secondary-entry');
   await exportEntry.getByTestId('public-flow-export-secondary-toggle').click();
@@ -86,24 +88,39 @@ test('custom public date is the only path that persists an anchor and enables IC
   await desktopSave.click();
 
   const state = await page.evaluate(() => ({
-    saved: JSON.parse(window.localStorage.getItem('flow:saved:vehicle-inspection-prep') || 'null'),
-    anchor: JSON.parse(window.localStorage.getItem('flow:vehicle-inspection-prep:anchorDate') || 'null'),
+    saved: JSON.parse(window.localStorage.getItem('flow:saved:moving-d30-basic') || 'null'),
+    anchor: JSON.parse(window.localStorage.getItem('flow:moving-d30-basic:anchorDate') || 'null'),
   }));
   expect(state.saved.dateIntent).toBe('custom');
   expect(state.saved.anchor).toBe('2026-07-28');
   expect(state.anchor).toEqual({ mode: 'custom', anchor: '2026-07-28' });
   await page.goto('/calendar');
-  await expect(page.getByRole('button', { name: /자동차검사 기간과 예약 가능일 확인하기 상세 열기/ })).toBeVisible();
+  await page.getByTestId('my-flow-month-picker').fill('2026-07');
+  await expect(
+    page.locator('.fc-daygrid-day[data-date="2026-06-28"] .fc-event'),
+  ).not.toHaveCount(0);
+  await page.locator('.fc-daygrid-day[data-date="2026-06-28"]')
+    .getByTestId('my-flow-calendar-date-button')
+    .click();
+  await expect(
+    page.getByTestId('my-flow-calendar-selected-day').getByRole('button', {
+      name: /Flow에서 열기/,
+    }).first(),
+  ).toBeVisible();
+  await expect(page.getByTestId('my-flow-item-detail-sheet')).toHaveCount(0);
 });
 
-test('explicit undated intent survives reload without promoting the example date', async ({ page }) => {
+test('a natural undated result survives reload without exposing date-mode controls', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/f/vehicle-inspection-prep');
 
-  await page.getByTestId('public-flow-date-intent-undated').click();
-  await expect(page.getByTestId('public-flow-date-intent-undated')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByTestId('public-flow-date-intent')).toHaveCount(0);
   await page.reload();
-  await expect(page.getByTestId('public-flow-date-intent-undated')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByTestId('public-flow-date-intent')).toHaveCount(0);
+  await expect(page.getByTestId('public-flow-artifact-preview')).toHaveAttribute(
+    'data-selected-shape',
+    'checklist',
+  );
   await expect(page.getByTestId('public-flow-save-primary-mobile')).toHaveText(
     '체크리스트 10개로 시작',
   );

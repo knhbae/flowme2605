@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import {
   getPersonalDraftEffectiveItems,
+  openMyFlowLibraryFlow,
   openPersonalDraftListExport,
 } from './helpers/my-flow-library';
 
@@ -12,12 +13,28 @@ async function openFlowView(page: Page) {
   }
   const flowView = page.getByTestId('my-flow-view-flow');
   if (await flowView.isVisible().catch(() => false)) await flowView.click();
+  const currentFlowView = page.getByTestId('my-flow-todo-experiment-view-flows');
+  if (
+    await currentFlowView.isVisible().catch(() => false) &&
+    (await currentFlowView.getAttribute('aria-selected')) !== 'true'
+  ) {
+    await currentFlowView.click();
+  }
 }
 
-function getDraftFlow(page: Page) {
-  return page.locator(
+async function getDraftFlow(page: Page) {
+  const visibleDraft = page.locator(
     '[data-testid="my-flow-mobile-structure-row"][data-flow-slug^="url-draft-"]:visible, [data-testid="my-flow-mobile-workspace"][data-flow-slug^="url-draft-"]:visible, [data-testid="my-flow-overview-card"][data-flow-slug^="url-draft-"]:visible',
   ).first();
+  if (await visibleDraft.isVisible().catch(() => false)) return visibleDraft;
+
+  const libraryRow = page.locator(
+    '[data-testid="my-flow-library-row"][data-flow-slug^="url-draft-"]',
+  ).first();
+  await expect(libraryRow).toBeVisible();
+  const slug = await libraryRow.getAttribute('data-flow-slug');
+  if (!slug) throw new Error('Personal draft Flow slug is missing');
+  return openMyFlowLibraryFlow(page, slug);
 }
 
 async function openDraftFlow(flow: Locator) {
@@ -27,6 +44,13 @@ async function openDraftFlow(flow: Locator) {
   }
   const plan = flow.getByTestId('my-flow-workspace-tab-plan');
   if (await plan.isVisible().catch(() => false)) await plan.click();
+  const planToggle = flow.getByTestId('my-flow-workspace-plan-toggle');
+  if (
+    await planToggle.isVisible().catch(() => false) &&
+    (await planToggle.getAttribute('aria-expanded')) === 'false'
+  ) {
+    await planToggle.click();
+  }
 }
 
 async function setStructureMode(flow: Locator, open: boolean) {
@@ -61,11 +85,11 @@ test('personal draft structure mode separates execution from add, reorder, remov
   const editor = page.getByTestId('flow-memo-draft-editor');
   await expect(editor.getByTestId('flow-memo-draft-item')).toHaveCount(3);
   await editor.getByLabel('메모 초안 제목').fill('여행 준비 구성');
-  await editor.getByRole('button', { name: '내 Flow에 초안 저장' }).click();
+  await editor.getByTestId('flow-memo-draft-save').click();
 
   await expect(page).toHaveURL(/\/my/);
   await openFlowView(page);
-  let flow = getDraftFlow(page);
+  let flow = await getDraftFlow(page);
   await openDraftFlow(flow);
 
   await expect(flow.getByTestId('personal-draft-structural-controls')).toHaveCount(0);
@@ -140,7 +164,7 @@ test('personal draft structure mode separates execution from add, reorder, remov
 
   await page.reload();
   await openFlowView(page);
-  flow = getDraftFlow(page);
+  flow = await getDraftFlow(page);
   await openDraftFlow(flow);
   await expect(flow.getByTestId('personal-draft-persistent-recovery')).toHaveCount(0);
   await setStructureMode(flow, true);
@@ -161,7 +185,6 @@ test('personal draft structure mode separates execution from add, reorder, remov
   const checklist = await page.evaluate(() => navigator.clipboard.readText());
   const addedIndex = checklist.indexOf('충전기 위치 확인');
   expect(addedIndex).toBeGreaterThanOrEqual(0);
-  await flow.getByTestId('my-flow-workspace-tab-plan').click();
   const effectiveItems = getPersonalDraftEffectiveItems(flow);
   const itemOrder = await effectiveItems.evaluateAll(
     (nodes) => nodes.map((node) => node.getAttribute('data-item-id')),
@@ -181,7 +204,7 @@ test('personal draft structure mode separates execution from add, reorder, remov
   await page.setViewportSize({ width: 1024, height: 768 });
   await page.reload();
   await openFlowView(page);
-  flow = getDraftFlow(page);
+  flow = await getDraftFlow(page);
   await setStructureMode(flow, true);
   const wideOutline = flow.getByTestId('my-flow-whole-flow-outline');
   await expect(wideOutline.getByTestId('my-flow-batch-toolbar')).toHaveAttribute('data-toolbar-layout', 'inline');
@@ -193,8 +216,7 @@ test('personal draft structure mode separates execution from add, reorder, remov
   }
 
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/my?demo=source-backed');
-  await page.getByTestId('my-flow-view-flow').click();
+  await page.goto('/my?demo=source-backed&view=flows');
   await expect(page.locator('[data-structure-edit-toggle="true"]')).toHaveCount(0);
   await expect(page.getByTestId('personal-draft-structural-controls')).toHaveCount(0);
   await expect(page.getByTestId('personal-draft-reorder-controls')).toHaveCount(0);

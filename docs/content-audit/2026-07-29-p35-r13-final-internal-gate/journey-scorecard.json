@@ -1,0 +1,30 @@
+{
+  "generatedAt": "2026-07-29T11:00:00+09:00",
+  "observedUserCount": 0,
+  "journeys": [
+    {
+      "id": "returning-executor",
+      "persona": "여러 Flow에서 오늘과 예정 할 일을 실행하는 사용자",
+      "steps": ["My Flow 진입", "정확한 날짜 그룹 확인", "항목 열기", "완료", "다시 열기"],
+      "viewport": "390x844",
+      "result": "supported",
+      "evidenceKind": "current_browser_automation"
+    },
+    {
+      "id": "first-post-save-reviewer",
+      "persona": "public Flow를 저장한 직후 전체 결과를 확인하는 사용자",
+      "steps": ["public Flow 저장", "저장 영수증", "My Flow 열기", "펼쳐진 전체 계획 확인"],
+      "viewport": "390x844",
+      "result": "supported",
+      "evidenceKind": "current_browser_automation"
+    },
+    {
+      "id": "returning-flow-manager",
+      "persona": "저장한 Flow를 다시 찾아 계획과 설정을 관리하는 사용자",
+      "steps": ["My Flow 재진입", "Flow 보기 선택", "Flow 열기", "접힌 전체 계획 필요 시 펼치기"],
+      "viewports": ["390x844", "1024x768", "1440x900"],
+      "result": "supported",
+      "evidenceKind": "current_browser_automation"
+    }
+  ]
+}

@@ -5,10 +5,28 @@ export async function openMyFlowLibraryFlow(
   flowSlug: string,
   mobileSection: 'execute' | 'plan' | 'record' = 'plan',
 ): Promise<Locator> {
+  const flowView = page.getByTestId('my-flow-todo-experiment-view-flows');
+  if (
+    await flowView.isVisible().catch(() => false) &&
+    (await flowView.getAttribute('aria-selected')) !== 'true'
+  ) {
+    await flowView.click();
+  }
   const library = page.getByTestId('my-flow-library-workspace');
   const wideViewport = (page.viewportSize()?.width ?? 0) >= 900;
   if (wideViewport) {
     await expect(library).toBeVisible();
+  } else {
+    await expect(
+      page.locator(
+        [
+          `[data-testid="my-flow-overview-card"][data-flow-slug="${flowSlug}"]:visible`,
+          `[data-testid="my-flow-mobile-workspace"][data-flow-slug="${flowSlug}"]:visible`,
+          `[data-testid="my-flow-mobile-structure-row"][data-flow-slug="${flowSlug}"]:visible`,
+          '[data-testid="my-flow-library-workspace"]:visible',
+        ].join(', '),
+      ).first(),
+    ).toBeVisible({ timeout: 10_000 });
   }
   if (wideViewport || await library.isVisible().catch(() => false)) {
     await library.locator(`[data-testid="my-flow-library-row"][data-flow-slug="${flowSlug}"]`).click();
@@ -31,6 +49,15 @@ export async function openMyFlowLibraryFlow(
       `my-flow-workspace-tab-${mobileSection}`,
     );
     if (await sectionTab.isVisible().catch(() => false)) await sectionTab.click();
+    if (mobileSection === 'plan') {
+      const planToggle = existingMobileWorkspace.getByTestId('my-flow-workspace-plan-toggle');
+      if (
+        await planToggle.isVisible().catch(() => false) &&
+        (await planToggle.getAttribute('aria-expanded')) === 'false'
+      ) {
+        await planToggle.click();
+      }
+    }
     return existingMobileWorkspace;
   }
 
@@ -43,19 +70,84 @@ export async function openMyFlowLibraryFlow(
     `[data-testid="my-flow-mobile-workspace"][data-flow-slug="${flowSlug}"]:visible`,
   );
   await expect(workspace).toBeVisible();
-  await workspace.getByTestId(`my-flow-workspace-tab-${mobileSection}`).click();
+  const sectionTab = workspace.getByTestId(`my-flow-workspace-tab-${mobileSection}`);
+  if (await sectionTab.isVisible().catch(() => false)) await sectionTab.click();
+  if (mobileSection === 'plan') {
+    const planToggle = workspace.getByTestId('my-flow-workspace-plan-toggle');
+    if (
+      await planToggle.isVisible().catch(() => false) &&
+      (await planToggle.getAttribute('aria-expanded')) === 'false'
+    ) {
+      await planToggle.click();
+    }
+  }
   return workspace;
 }
 
 export function getOpenMyFlowItemDetail(page: Page): Locator {
-  return page
-    .getByTestId('my-flow-item-detail-sheet')
-    .getByTestId('my-flow-item-detail');
+  return page.locator(
+    '[data-testid="my-flow-item-detail-sheet"] [data-testid="my-flow-item-detail"]:visible, '
+      + '[data-testid="my-flow-workspace-detail-pane"] [data-testid="my-flow-item-detail"]:visible',
+  ).last();
+}
+
+export async function openMyFlowCalendarSelectedDay(
+  page: Page,
+  date?: string,
+): Promise<Locator> {
+  const mobileViewport = (page.viewportSize()?.width ?? 0) < 768;
+  if (mobileViewport) {
+    const openSheet = page.getByTestId('my-flow-calendar-day-sheet');
+    if (await openSheet.isVisible().catch(() => false)) {
+      if (!date) return openSheet.getByTestId('my-flow-calendar-selected-day');
+      await page.getByTestId('my-flow-calendar-day-sheet-close').click();
+    }
+    const dateCell = date
+      ? page.locator(`.fc-daygrid-day[data-date="${date}"]`)
+      : page.locator('.fc-daygrid-day.my-flow-calendar-selected-date');
+    const dateButton = dateCell.getByTestId('my-flow-calendar-date-button');
+    await expect(dateButton).toBeVisible();
+    await dateButton.click();
+    const sheet = page.getByTestId('my-flow-calendar-day-sheet');
+    await expect(sheet).toBeVisible();
+    return sheet.getByTestId('my-flow-calendar-selected-day');
+  }
+
+  if (date) {
+    const dateButton = page
+      .locator(`.fc-daygrid-day[data-date="${date}"]`)
+      .getByTestId('my-flow-calendar-date-button');
+    await expect(dateButton).toBeVisible();
+    await dateButton.click();
+  }
+  const selectedDay = page.getByTestId('my-flow-calendar-selected-day');
+  await expect(selectedDay).toBeVisible();
+  return selectedDay;
 }
 
 export async function closeOpenMyFlowItemDetail(page: Page): Promise<void> {
   const close = page.getByTestId('my-flow-item-detail-sheet-close');
   if (await close.isVisible().catch(() => false)) await close.click();
+}
+
+export async function expandMyFlowWholePlan(flow: Locator): Promise<Locator> {
+  const outline = flow.getByTestId('my-flow-whole-flow-outline');
+  await expect(outline).toBeVisible();
+
+  const toggles = outline.getByTestId('my-flow-whole-flow-section-toggle');
+  const toggleCount = await toggles.count();
+  for (let index = 0; index < toggleCount; index += 1) {
+    const toggle = toggles.nth(index);
+    if ((await toggle.getAttribute('aria-expanded')) === 'false') {
+      await toggle.click();
+    }
+  }
+
+  return outline;
+}
+
+export function getMyFlowVisibleExecutionRows(flow: Locator): Locator {
+  return flow.getByTestId('my-flow-execution-row-shell');
 }
 
 export async function openPersonalDraftListExport(flow: Locator): Promise<Locator> {
@@ -101,5 +193,7 @@ export function getPersonalDraftEffectiveItems(
   ownership?: 'source' | 'user_created',
 ): Locator {
   const ownershipSelector = ownership ? `[data-structural-ownership="${ownership}"]` : '';
-  return flow.locator(`[data-testid="personal-draft-effective-item"]${ownershipSelector}`);
+  return flow.locator(
+    `[data-testid="personal-draft-effective-item"]${ownershipSelector}`,
+  );
 }

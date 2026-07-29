@@ -1,0 +1,63 @@
+{
+  "generatedAt": "2026-07-28T23:45:00+09:00",
+  "observedUserCount": 0,
+  "evidenceKinds": [
+    "current_source",
+    "current_command",
+    "current_browser_automation",
+    "current_package_screenshot",
+    "heuristic_simulation",
+    "static_proposal"
+  ],
+  "journeys": [
+    {
+      "id": "dated-timeline",
+      "persona": "기준일 역산형",
+      "flow": "moving-d30-basic",
+      "publicToSavedContinuity": "supported",
+      "executionReopen": "supported",
+      "calendarProjection": "supported",
+      "exportProjection": "supported"
+    },
+    {
+      "id": "undated-checklist",
+      "persona": "날짜 없는 체크리스트형",
+      "flow": "vehicle-inspection-prep",
+      "todoUndated": "supported",
+      "dateSetToCalendar": "supported",
+      "dateRemoveToTodo": "supported"
+    },
+    {
+      "id": "routine",
+      "persona": "반복 Routine형",
+      "flow": "curated-allblanc-morning-workout",
+      "seriesOccurrenceSeparation": "supported",
+      "nextOccurrenceAfterCompletion": "supported",
+      "stableIdentity": "supported"
+    },
+    {
+      "id": "sheet",
+      "persona": "순서 중심 Sheet형",
+      "flow": "source-backed-middle-school-math-1",
+      "currentNextRows": "supported",
+      "wholeTable": "supported",
+      "crossFlowTodoScope": "current_row_only"
+    },
+    {
+      "id": "memo",
+      "persona": "기록 중심 Memo형",
+      "flow": "personal memo draft",
+      "recordGrammar": "supported",
+      "syntheticCompletionCount": 0,
+      "crossFlowTodo": "not_applicable"
+    },
+    {
+      "id": "large-library",
+      "persona": "20~60개 Flow 사용자",
+      "flow": "ux20/ux60 fixtures",
+      "libraryScan": "supported",
+      "focusedWorkspace": "supported",
+      "crossFlowTodo": "supported_in_opt_in_experiment"
+    }
+  ]
+}

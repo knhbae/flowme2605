@@ -1,0 +1,148 @@
+{
+  "url": "http://127.0.0.1:3104/my?view=flows",
+  "title": "My Flow",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "quality": {
+    "horizontalOverflow": 0,
+    "unnamedInteractiveCount": 0,
+    "brokenImageCount": 0
+  },
+  "headings": [
+    {
+      "level": 1,
+      "text": "이사 D-30 준비"
+    },
+    {
+      "level": 2,
+      "text": "이사 D-30 준비"
+    }
+  ],
+  "actions": [
+    {
+      "tag": "a",
+      "name": "FLOW",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "summary",
+      "name": "보조 메뉴 열기 메뉴≡",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "a",
+      "name": "Flow 만들기내 콘텐츠를 실행형 Flow로 정리",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "저장한 Flow 목록으로 돌아가기 ‹",
+      "testId": "my-flow-mobile-library-back",
+      "disabled": false
+    },
+    {
+      "tag": "summary",
+      "name": "이사 D-30 준비 Flow 관리 Flow 관리",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "Flow 조정",
+      "testId": "my-flow-management-adjust",
+      "disabled": false
+    },
+    {
+      "tag": "a",
+      "name": "원문 보기",
+      "testId": "my-flow-management-source",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "보관보관함에서 복구하거나 영구 삭제할 수 있어요.",
+      "testId": "my-flow-archive-toggle",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "다음 행동",
+      "testId": "my-flow-workspace-tab-execute",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "전체 계획",
+      "testId": "my-flow-workspace-tab-plan",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "기록",
+      "testId": "my-flow-workspace-tab-record",
+      "disabled": false
+    },
+    {
+      "tag": "input",
+      "name": "이사 방식 정하기 완료 체크 on",
+      "testId": "my-flow-task-complete-control",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "이사 방식 정하기 열기 · 이사 D-30 준비 · 7월 25일 이사 방식 정하기열기7월 25일기준 D-30",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "전체 계획 보기",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "이사 D-30 준비 이사일 바꾸기 이사일 바꾸기",
+      "testId": "my-flow-direct-anchor-settings-open",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "이사 D-30 준비 전체 24개 가져가기 전체 24개 가져가기",
+      "testId": "my-flow-export-entry",
+      "disabled": false
+    },
+    {
+      "tag": "a",
+      "name": "Flow 찾기",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "a",
+      "name": "캘린더",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "a",
+      "name": "내 Flow",
+      "testId": null,
+      "disabled": false
+    }
+  ],
+  "visibleText": "FLOW\n≡\n이사 D-30 준비\n‹\n이사 D-30 준비\n\n전체 0/24 완료\n\nFlow 관리\n다음 행동\n전체 계획\n기록\n\n지난 할 일\n\n이사 방식 정하기\n열기\n7월 25일\n기준 D-30\n전체 진행\n전체 0/24 완료\n전체 계획 보기\n이사일 바꾸기\n전체 24개 가져가기\nFlow 찾기\n캘린더\n내 Flow",
+  "consoleAndPageErrors": [],
+  "label": "내 Flow 다음 행동",
+  "state": "my_flow_next_action",
+  "route": "/my?view=flows",
+  "reviewQuestions": [
+    "다음 행동 탭의 정체성이 명확한가",
+    "같은 날짜 묶음이 필요한가"
+  ]
+}

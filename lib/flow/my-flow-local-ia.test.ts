@@ -2,21 +2,62 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
+  consumeMyFlowFirstEntryPlan,
   getMyFlowLibraryControlVisibility,
+  getMyFlowWorkspaceHref,
   getMyFlowViewHref,
+  markMyFlowFirstEntryPlan,
+  parseMyFlowWorkspaceTarget,
   parseMyFlowViewQuery,
   summarizeMyFlowLocalIa,
 } from './my-flow-local-ia';
 
-test('My Flow local views round-trip through a stable URL query', () => {
-  assert.equal(parseMyFlowViewQuery('?view=now'), 'today');
+function createSessionStorageFixture() {
+  const values = new Map<string, string>();
+  return {
+    getItem: (key: string) => values.get(key) ?? null,
+    setItem: (key: string, value: string) => values.set(key, value),
+    removeItem: (key: string) => values.delete(key),
+  };
+}
+
+test('legacy My Flow views resolve to the library without deleting saved state', () => {
+  assert.equal(parseMyFlowViewQuery('?view=now'), 'flow');
   assert.equal(parseMyFlowViewQuery('?savedMap=moving-d30&view=flows'), 'flow');
-  assert.equal(parseMyFlowViewQuery('?view=completed'), 'completed');
+  assert.equal(parseMyFlowViewQuery('?view=completed'), 'flow');
   assert.equal(parseMyFlowViewQuery('?view=calendar'), null);
   assert.equal(
     getMyFlowViewHref('/my?savedMap=moving-d30#workspace', 'flow'),
     '/my?savedMap=moving-d30&view=flows#workspace',
   );
+});
+
+test('Calendar deep links preserve the Flow and optional stable item identity', () => {
+  assert.equal(
+    getMyFlowWorkspaceHref({ flowSlug: 'moving-d30-basic' }),
+    '/my?view=flows&flow=moving-d30-basic',
+  );
+  assert.equal(
+    getMyFlowWorkspaceHref({
+      flowSlug: 'moving-d30-basic',
+      itemKey: 'moving-d30-basic::step-1',
+    }),
+    '/my?view=flows&flow=moving-d30-basic&item=moving-d30-basic%3A%3Astep-1',
+  );
+  assert.deepEqual(
+    parseMyFlowWorkspaceTarget('?view=flows&flow=moving-d30-basic&item=item%3A1'),
+    { flowSlug: 'moving-d30-basic', itemKey: 'item:1' },
+  );
+  assert.equal(parseMyFlowWorkspaceTarget('?view=flows'), null);
+});
+
+test('saved receipt expands the whole plan once without creating persistent product state', () => {
+  const storage = createSessionStorageFixture();
+  markMyFlowFirstEntryPlan(storage, 'moving-d30-basic');
+
+  assert.equal(consumeMyFlowFirstEntryPlan(storage, 'vehicle-inspection-prep'), false);
+  assert.equal(consumeMyFlowFirstEntryPlan(storage, 'moving-d30-basic'), true);
+  assert.equal(consumeMyFlowFirstEntryPlan(storage, 'moving-d30-basic'), false);
 });
 
 test('My Flow local summary supports empty, one, three, and twenty Flow states', () => {

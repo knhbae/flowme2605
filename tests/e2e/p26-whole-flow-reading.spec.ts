@@ -3,6 +3,7 @@ import path from 'node:path';
 
 import { expect, test, type Page } from '@playwright/test';
 import {
+  getMyFlowVisibleExecutionRows,
   getOpenMyFlowItemDetail,
   openMyFlowLibraryFlow,
 } from './helpers/my-flow-library';
@@ -78,7 +79,8 @@ test.describe('P26-09 adaptive whole Flow reading', () => {
     const outline = flow.getByTestId('my-flow-whole-flow-outline');
     await expect(outline.getByTestId('my-flow-whole-flow-reading-summary')).toContainText('10');
     await expect(outline.getByTestId('my-flow-whole-flow-toggle-all-groups')).toHaveCount(0);
-    await expect(outline.getByTestId('my-flow-execution-row-shell')).toHaveCount(10);
+    await expect(outline).toHaveAttribute('data-effective-row-count', '10');
+    await expect(getMyFlowVisibleExecutionRows(flow)).toHaveCount(10);
 
     await capture(page, '02-mobile-ten-item-checklist.png');
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
@@ -124,9 +126,10 @@ test.describe('P26-09 adaptive whole Flow reading', () => {
 
     await outline.getByTestId('my-flow-whole-flow-toggle-all-groups').click();
     await expect(outline.getByTestId('my-flow-whole-flow-section-content')).toHaveCount(6);
-    await expect(outline.getByTestId('my-flow-execution-row-shell')).toHaveCount(24);
+    await expect(outline).toHaveAttribute('data-effective-row-count', '24');
+    expect(await outline.getByTestId('my-flow-execution-row-shell').count()).toBeGreaterThan(0);
 
-    const firstRow = outline.getByTestId('my-flow-execution-row-shell').first();
+    const firstRow = getMyFlowVisibleExecutionRows(flow).first();
     await firstRow.getByRole('button', { name: /열기/ }).click();
     const detail = getOpenMyFlowItemDetail(page);
     await expect(detail.getByTestId('my-flow-detail-execution-note')).toBeVisible();
@@ -143,12 +146,21 @@ test.describe('P26-09 adaptive whole Flow reading', () => {
     await seedSavedFlow(page, 'moving-d30-basic', '2026-08-15');
     await page.goto('/my?view=flows');
 
-    const workspace = page.getByTestId('my-flow-whole-flow-workspace');
+    const workspace = await openMyFlowLibraryFlow(page, 'moving-d30-basic', 'plan');
     const outline = workspace.getByTestId('my-flow-whole-flow-outline');
-    await expect(workspace).toHaveAttribute('data-workspace-layout', 'wide-outline-detail');
+    await expect(workspace).toHaveAttribute(
+      'data-p35-marker',
+      'P35-PERSONAL-SINGLE-FOCUS',
+    );
     await expect(outline.getByTestId('my-flow-whole-flow-section')).toHaveCount(6);
     await expect(outline.getByTestId('my-flow-whole-flow-section-content')).toHaveCount(1);
     await expect(workspace.getByTestId('my-flow-workspace-detail-pane')).toBeVisible();
+    await outline.getByTestId('my-flow-execution-row-shell').first()
+      .getByRole('button', { name: /열기/ })
+      .click();
+    await expect(
+      workspace.getByTestId('my-flow-workspace-detail-pane').getByTestId('my-flow-item-detail'),
+    ).toBeVisible();
 
     await capture(page, '04-wide-twenty-four-item-timeline.png');
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);

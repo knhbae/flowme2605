@@ -1,0 +1,418 @@
+{
+  "url": "http://127.0.0.1:3104/calendar?demo=ux20",
+  "title": "캘린더",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "quality": {
+    "horizontalOverflow": 0,
+    "unnamedInteractiveCount": 0,
+    "brokenImageCount": 0
+  },
+  "headings": [
+    {
+      "level": 1,
+      "text": "캘린더"
+    },
+    {
+      "level": 3,
+      "text": "5월 28일 (목)"
+    }
+  ],
+  "actions": [
+    {
+      "tag": "a",
+      "name": "FLOW",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "summary",
+      "name": "보조 메뉴 열기 메뉴≡",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "a",
+      "name": "Flow 만들기내 콘텐츠를 실행형 Flow로 정리",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "전체 Flow선택",
+      "testId": "calendar-flow-scope-picker-trigger",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "이전 달 이전",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "input",
+      "name": "월 선택 월 선택 2026-05",
+      "testId": "my-flow-month-picker",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "다음 달 다음",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "4월 26일 (일) 선택 26일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "4월 27일 (월) 선택 27일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "4월 28일 (화) 선택 28일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "4월 29일 (수) 선택 29일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "4월 30일 (목) 선택 30일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "5월 1일 (금) 선택 1일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "5월 2일 (토) 선택 2일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "5월 3일 (일) 선택 3일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "5월 4일 (월) 선택 4일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "5월 5일 (화) 선택 5일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "5월 6일 (수) 선택 6일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "5월 7일 (목) 선택 7일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "5월 8일 (금) 선택 8일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "5월 9일 (토) 선택 9일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "5월 10일 (일) 선택 10일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "5월 11일 (월) 선택 11일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "5월 12일 (화) 선택 12일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "5월 13일 (수) 선택 13일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "5월 14일 (목) 선택 14일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "5월 15일 (금) 선택 15일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "5월 16일 (토) 선택 16일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "5월 17일 (일) 선택 17일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "5월 18일 (월) 선택 18일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "5월 19일 (화) 선택 19일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "5월 20일 (수) 선택 20일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "5월 21일 (목) 선택 21일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "5월 22일 (금) 선택 22일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "5월 23일 (토) 선택 23일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "5월 24일 (일) 선택 24일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "5월 25일 (월) 선택 25일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "5월 26일 (화) 선택 26일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "5월 27일 (수) 선택 27일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "세탁기 통세척 월간 관리: 통세척 코스 돌리고 문 열어 건조하기 세탁기 통세척 월간 관리: 통세척 코스 돌리고 문 열어 건조하기",
+      "testId": "my-flow-routine-icon",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "5월 28일 (목) 선택 28일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "5월 29일 (금) 선택 29일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "5월 30일 (토) 선택 30일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "5월 31일 (일) 선택 31일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "6월 1일 (월) 선택 1일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "평일 5일 저녁 식단: 원문 식단표에서 이번 주에 만들 메뉴 확인하기 평일 5일 저녁 식단: 원문 식단표에서 이번 주에 만들 메뉴 확인하기",
+      "testId": "my-flow-routine-icon",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "2026-06-01 루틴 1개 더 보기 +1",
+      "testId": "my-flow-routine-overflow",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "6월 2일 (화) 선택 2일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "직장인 영어공부 30일 루틴: 짧은 영상 또는 오디오 10분 듣기 직장인 영어공부 30일 루틴: 짧은 영상 또는 오디오 10분 듣기",
+      "testId": "my-flow-routine-icon",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "2026-06-02 루틴 1개 더 보기 +1",
+      "testId": "my-flow-routine-overflow",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "6월 3일 (수) 선택 3일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "Allblanc 영상별 홈트 루틴: 아침 5분 전신 운동 영상 열기 Allblanc 영상별 홈트 루틴: 아침 5분 전신 운동 영상 열기",
+      "testId": "my-flow-routine-icon",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "2026-06-03 루틴 4개 더 보기 +4",
+      "testId": "my-flow-routine-overflow",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "6월 4일 (목) 선택 4일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "6월 5일 (금) 선택 5일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "6월 6일 (토) 선택 6일",
+      "testId": "my-flow-calendar-date-button",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "컴퓨터활용능력 1급 학습 My Flow에서 열기 Flow 열기",
+      "testId": "my-flow-calendar-open-flow",
+      "disabled": false
+    },
+    {
+      "tag": "input",
+      "name": "필기와 실기 시험 범위 나누기 다시 열기 on",
+      "testId": "my-flow-task-complete-control",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "필기와 실기 시험 범위 나누기 Flow에서 열기 · 컴퓨터활용능력 1급 학습 · 5월 28일 필기와 실기 시험 범위 나누기Flow에서 열기",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "input",
+      "name": "매일 공부 가능한 시간 블록 정하기 다시 열기 on",
+      "testId": "my-flow-task-complete-control",
+      "disabled": false
+    },
+    {
+      "tag": "button",
+      "name": "매일 공부 가능한 시간 블록 정하기 Flow에서 열기 · 컴퓨터활용능력 1급 학습 · 5월 28일 매일 공부 가능한 시간 블록 정하기Flow에서 열기",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "a",
+      "name": "Flow 찾기",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "a",
+      "name": "캘린더",
+      "testId": null,
+      "disabled": false
+    },
+    {
+      "tag": "a",
+      "name": "내 Flow",
+      "testId": null,
+      "disabled": false
+    }
+  ],
+  "visibleText": "FLOW\n≡\n\n날짜별 실행\n\n캘린더\n\n보기 범위\n\n모든 Flow\n\n전체 Flow\n선택\n이전\n2026년 5월\n월 선택\n다음\n일\n\t\n월\n\t\n화\n\t\n수\n\t\n목\n\t\n금\n\t\n토\n\n26일\n\t\n27일\n\t\n28일\n\t\n29일\n\t\n30일\n\t\n1일\n\t\n2일\n\n3일\n\t\n4일\n\t\n5일\n\t\n6일\n\t\n7일\n\t\n8일\n\t\n9일\n\n10일\n\t\n11일\n\t\n12일\n\t\n13일\n\t\n14일\n\t\n15일\n\t\n16일\n\n17일\n\t\n18일\n\t\n19일\n\t\n20일\n\t\n21일\n\t\n22일\n\t\n23일\n\n24일\n\t\n25일\n\t\n26일\n\t\n27일\n+2\n이\n이사 D-30...\n+1 개\n\t\n28일\n컴\n컴퓨터활용능력...\n컴\n컴퓨터활용능력...\n\t\n29일\n\t\n30일\n컴\n컴퓨터활용능력...\n\n31일\n\t\n1일\n+1\n\t\n2일\n+1\n\t\n3일\n+1\n+4\n개\n개발 프로젝트...\n+1 개\n\t\n4일\n\t\n5일\n\t\n6일\n개\n개발 프로젝트...\n컴\n컴퓨터활용능력...\n5월 28일 (목)\n\n모든 Flow · 2개 항목 · 0개 남음\n\n컴\n컴퓨터활용능력 1급 학습\n2개 · 0개 남음\nFlow 열기\n기준 D-30\n범위 쪼개기\n필기와 실기 시험 범위 나누기\nFlow에서 열기\n매일 공부 가능한 시간 블록 정하기\nFlow에서 열기\nFlow 찾기\n캘린더\n내 Flow",
+  "consoleAndPageErrors": [],
+  "label": "모바일 선택일 agenda",
+  "state": "calendar_selected_day",
+  "route": "/calendar?demo=ux20",
+  "reviewQuestions": [
+    "같은 날짜 항목과 Flow 구분이 충분한가",
+    "detail을 sheet로 열어야 하는가"
+  ]
+}

@@ -1,0 +1,160 @@
+import fs from 'node:fs';
+import path from 'node:path';
+
+import { expect, test, type Locator, type Page } from '@playwright/test';
+
+import { openMyFlowLibraryFlow } from './helpers/my-flow-library';
+
+const evidenceRoot = process.env.FLOWME_P35_R8_EVIDENCE_DIR;
+
+function collectBrowserErrors(page: Page) {
+  const errors: string[] = [];
+  page.on('console', (message) => {
+    if (message.type() === 'error') errors.push(message.text());
+  });
+  page.on('pageerror', (error) => errors.push(error.message));
+  return errors;
+}
+
+async function capture(page: Page, filename: string, focus?: Locator) {
+  if (!evidenceRoot) return;
+  const screenshotDir = path.join(evidenceRoot, 'screenshots');
+  fs.mkdirSync(screenshotDir, { recursive: true });
+  if (focus) await focus.scrollIntoViewIfNeeded();
+  await page.screenshot({
+    path: path.join(screenshotDir, filename),
+    fullPage: false,
+  });
+}
+
+async function expectNoOverflow(page: Page) {
+  const result = await page.evaluate(() => ({
+    horizontal: Math.max(
+      document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      document.body.scrollWidth - document.body.clientWidth,
+    ),
+    fixedOverlap: [...document.querySelectorAll<HTMLElement>('[data-layer-priority]')]
+      .filter((element) => {
+        const rect = element.getBoundingClientRect();
+        return rect.width > window.innerWidth + 1 || rect.left < -1 || rect.right > window.innerWidth + 1;
+      })
+      .length,
+  }));
+  expect(result).toEqual({ horizontal: 0, fixedOverlap: 0 });
+}
+
+async function seedSavedFlow(page: Page, slug: string, anchor: string) {
+  await page.goto('/flows');
+  await page.evaluate(({ flowSlug, flowAnchor }) => {
+    window.localStorage.clear();
+    window.localStorage.setItem(`flow:saved:${flowSlug}`, JSON.stringify({
+      slug: flowSlug,
+      savedAt: '2030-08-01T00:00:00.000Z',
+      selectedArtifactMode: 'calendar',
+      anchor: flowAnchor,
+      dateIntent: 'custom',
+    }));
+    window.localStorage.setItem(
+      `flow:${flowSlug}:anchorDate`,
+      JSON.stringify({ mode: 'custom', anchor: flowAnchor }),
+    );
+  }, { flowSlug: slug, flowAnchor: anchor });
+}
+
+test.describe('P35-R8 semantic and execution continuity', () => {
+  test('overseas safety stays checklist-primary from public preview through saved execution', async ({ page }) => {
+    const errors = collectBrowserErrors(page);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/f/overseas-safety-register');
+    await page.evaluate(() => window.localStorage.clear());
+    await page.reload();
+
+    const publicRoot = page.locator('main[data-p35-r8-marker="P35-R8B-ARTIFACT-SEMANTIC-CONTINUITY"]');
+    await expect(publicRoot).toHaveAttribute(
+      'data-p35-r8-resource-marker',
+      'P35-R8B-RESOURCE-NOT-EXECUTION',
+    );
+    const preview = page.getByTestId('public-flow-artifact-preview');
+    await expect(preview).toHaveAttribute('data-selected-shape', 'checklist');
+    await expect(preview.getByTestId('public-flow-artifact-preview-row')).toHaveCount(4);
+    await expect(preview.getByRole('checkbox')).toHaveCount(0);
+
+    const detailWorkspace = page.getByTestId('public-flow-detail-workspace');
+    await detailWorkspace.locator(':scope > summary').click();
+    const exportEntry = detailWorkspace.getByTestId('public-flow-export-secondary-entry');
+    await exportEntry.getByTestId('public-flow-export-secondary-toggle').click();
+    await expect(exportEntry).toHaveAttribute('data-primary-destination', 'checklist');
+    const primary = exportEntry.locator(
+      '[data-testid="public-flow-export-format-option"][data-export-destination="checklist"]',
+    );
+    await expect(primary).toHaveAttribute('data-recommendation-role', 'primary');
+    const memo = exportEntry.locator(
+      '[data-testid="public-flow-export-format-option"][data-export-destination="memo"]',
+    );
+    await expect(memo).toHaveAttribute('data-recommendation-role', 'secondary');
+    await capture(page, 'p35-r8b-safety-public-checklist-390.png', preview);
+
+    await exportEntry.getByTestId('public-flow-export-secondary-toggle').click();
+    await detailWorkspace.locator(':scope > summary').click();
+    await page.getByTestId('public-flow-save-primary-mobile').click();
+    const receipt = page.getByTestId('public-flow-saved-receipt');
+    await expect(receipt).toContainText('체크리스트');
+    await receipt.getByTestId('public-flow-saved-receipt-primary').click();
+
+    const workspace = await openMyFlowLibraryFlow(page, 'overseas-safety-register');
+    const execution = workspace.getByTestId('my-flow-shape-aware-execution');
+    await expect(execution).toHaveAttribute(
+      'data-p35-r8-marker',
+      'P35-R8B-ARTIFACT-SEMANTIC-CONTINUITY',
+    );
+    await expect(execution).toHaveAttribute('data-execution-kind', 'next_items');
+    await expect(execution.getByTestId('my-flow-task-complete-control')).toHaveCount(3);
+    await capture(page, 'p35-r8b-safety-saved-checklist-390.png', execution);
+    await expectNoOverflow(page);
+
+    await page.setViewportSize({ width: 1024, height: 768 });
+    const wideWorkspace = await openMyFlowLibraryFlow(page, 'overseas-safety-register');
+    await capture(page, 'p35-r8b-safety-saved-checklist-1024.png', wideWorkspace);
+    await expectNoOverflow(page);
+    expect(errors).toEqual([]);
+  });
+
+  test('focused execution owns completion while the whole plan keeps one current-position summary', async ({ page }) => {
+    const errors = collectBrowserErrors(page);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await seedSavedFlow(page, 'moving-d30-basic', '2030-09-01');
+    await page.goto('/my?view=flows&flow=moving-d30-basic');
+
+    const workspace = await openMyFlowLibraryFlow(page, 'moving-d30-basic');
+    const execution = workspace.getByTestId('my-flow-shape-aware-execution');
+    const outline = workspace.getByTestId('my-flow-whole-flow-outline');
+    const currentPosition = outline.getByTestId('my-flow-whole-flow-current-position');
+    await expect(currentPosition).toHaveAttribute(
+      'data-p35-r8-marker',
+      'P35-R8C-SINGLE-COMPLETION-OWNER',
+    );
+    await expect(currentPosition).toHaveAttribute('data-current-position-count', '4');
+    await expect(currentPosition.getByRole('checkbox')).toHaveCount(0);
+    await expect(execution.getByTestId('my-flow-task-complete-control')).toHaveCount(4);
+    await expect(workspace.getByTestId('my-flow-task-complete-control')).toHaveCount(4);
+
+    await execution.getByTestId('my-flow-task-complete-control').first().click();
+    await expect(execution.getByTestId('my-flow-task-complete-control')).toHaveCount(3);
+    await expect(page.getByTestId('my-flow-completion-undo')).toHaveCount(0);
+    const completedContextControl = outline.locator(
+      '[data-testid="my-flow-task-complete-control"]:checked',
+    );
+    await expect(completedContextControl).toHaveCount(1);
+    await completedContextControl.click();
+    await expect(execution.getByTestId('my-flow-task-complete-control')).toHaveCount(4);
+    await expect(page.getByTestId('my-flow-completion-undo')).toHaveCount(0);
+    await capture(page, 'p35-r8c-single-completion-owner-390.png', workspace);
+    await expectNoOverflow(page);
+
+    await page.setViewportSize({ width: 1024, height: 768 });
+    const wideWorkspace = await openMyFlowLibraryFlow(page, 'moving-d30-basic');
+    await capture(page, 'p35-r8c-single-completion-owner-1024.png', wideWorkspace);
+    await expectNoOverflow(page);
+    expect(errors).toEqual([]);
+  });
+});
