@@ -1,0 +1,1466 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlowMe 콘텐츠 공급 잠재력 | CEO 전략 보고</title>
+  <style>
+    :root {
+      --ink: #17211d;
+      --muted: #607068;
+      --paper: #f3f5f1;
+      --surface: #ffffff;
+      --line: #d5ddd7;
+      --green: #166a50;
+      --green-soft: #dcece5;
+      --blue: #285f8f;
+      --blue-soft: #e1edf6;
+      --coral: #b55442;
+      --coral-soft: #f5e4df;
+      --amber: #a6711f;
+      --amber-soft: #f4ead6;
+      --shadow: 0 18px 42px rgba(28, 42, 34, 0.10);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #e5e9e5;
+      font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", sans-serif;
+      line-height: 1.5;
+      letter-spacing: 0;
+      word-break: keep-all;
+      overflow-wrap: break-word;
+    }
+    a { color: var(--blue); text-underline-offset: 3px; }
+    button, select { font: inherit; }
+
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: grid;
+      grid-template-columns: auto minmax(220px, 440px) auto;
+      align-items: center;
+      gap: 12px;
+      min-height: 58px;
+      padding: 8px 18px;
+      color: #f5f7f5;
+      background: rgba(23, 33, 29, 0.96);
+      backdrop-filter: blur(10px);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      white-space: nowrap;
+      font-weight: 800;
+    }
+    .brand-mark {
+      display: inline-grid;
+      width: 28px;
+      height: 28px;
+      place-items: center;
+      color: #fff;
+      background: var(--green);
+      border-radius: 6px;
+    }
+    .slide-select {
+      width: 100%;
+      height: 38px;
+      padding: 0 36px 0 12px;
+      color: #f5f7f5;
+      border: 1px solid #53615a;
+      border-radius: 6px;
+      background: #24312b;
+    }
+    .nav-actions { display: flex; align-items: center; gap: 8px; }
+    .nav-button {
+      display: inline-grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      color: #fff;
+      border: 1px solid #53615a;
+      border-radius: 6px;
+      background: #24312b;
+      cursor: pointer;
+    }
+    .nav-button:hover { background: #34443c; }
+    .progress-label { min-width: 56px; text-align: center; font-variant-numeric: tabular-nums; }
+    .progress-track {
+      grid-column: 1 / -1;
+      height: 3px;
+      overflow: hidden;
+      background: #415149;
+    }
+    .progress-bar { width: 0; height: 100%; background: #70c89f; transition: width 160ms ease; }
+
+    main { padding: 20px 0 56px; }
+    .slide {
+      position: relative;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 28px;
+      width: min(1440px, calc(100% - 32px));
+      min-height: 810px;
+      margin: 0 auto 24px;
+      padding: 54px 64px 34px;
+      overflow: hidden;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      scroll-margin-top: 78px;
+    }
+    .slide::before {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 6px;
+      content: "";
+      background: var(--accent, var(--green));
+    }
+    .slide[data-tone="blue"] { --accent: var(--blue); }
+    .slide[data-tone="coral"] { --accent: var(--coral); }
+    .slide[data-tone="amber"] { --accent: var(--amber); }
+    .slide[data-tone="dark"] {
+      --accent: #79d1a9;
+      color: #f5f8f6;
+      background: var(--ink);
+    }
+
+    .slide-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: start;
+      gap: 24px;
+    }
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--accent, var(--green));
+      font-size: 14px;
+      font-weight: 850;
+      text-transform: uppercase;
+    }
+    .slide[data-tone="dark"] .eyebrow { color: #8fe0bb; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 {
+      max-width: 1040px;
+      margin-bottom: 18px;
+      font-size: clamp(40px, 5vw, 72px);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+    h2 {
+      max-width: 1050px;
+      margin-bottom: 0;
+      font-size: clamp(30px, 3.2vw, 48px);
+      line-height: 1.18;
+      letter-spacing: 0;
+    }
+    h3 {
+      margin-bottom: 8px;
+      font-size: 20px;
+      line-height: 1.3;
+    }
+    .lead {
+      max-width: 940px;
+      color: var(--muted);
+      font-size: 20px;
+      line-height: 1.6;
+    }
+    .slide[data-tone="dark"] .lead { color: #c5d0ca; }
+    .slide-no {
+      color: #829087;
+      font-size: 15px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .slide[data-tone="dark"] .slide-no { color: #aab8b0; }
+
+    .content { min-width: 0; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+    .split-wide { display: grid; grid-template-columns: 1.35fr 0.65fr; gap: 28px; }
+    .split-visual { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 28px; }
+    .grid-2 > *, .grid-3 > *, .grid-4 > *,
+    .split-wide > *, .split-visual > * { min-width: 0; }
+
+    .stat {
+      min-height: 146px;
+      padding: 22px 20px;
+      border-top: 4px solid var(--stat-color, var(--green));
+      background: #f7f9f7;
+    }
+    .slide[data-tone="dark"] .stat { background: #22302a; }
+    .stat-value {
+      margin-bottom: 8px;
+      color: var(--stat-color, var(--green));
+      font-size: clamp(34px, 4vw, 54px);
+      font-weight: 900;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+    .stat-value.long-value { font-size: 37px; white-space: nowrap; }
+    .slide[data-tone="dark"] .stat-value { color: #8fe0bb; }
+    .stat-label { font-size: 17px; font-weight: 750; }
+    .stat-note { margin: 7px 0 0; color: var(--muted); font-size: 13px; }
+    .slide[data-tone="dark"] .stat-note { color: #b8c5be; }
+
+    .statement {
+      padding: 22px 26px;
+      border-left: 5px solid var(--accent, var(--green));
+      background: var(--paper);
+      font-size: 24px;
+      font-weight: 800;
+      line-height: 1.45;
+    }
+    .slide[data-tone="dark"] .statement { background: #22302a; }
+
+    .panel {
+      padding: 22px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+    .slide[data-tone="dark"] .panel { border-color: #3d4b44; background: #22302a; }
+    .panel p:last-child { margin-bottom: 0; }
+
+    .tag {
+      display: inline-block;
+      margin: 0 5px 5px 0;
+      padding: 4px 8px;
+      border-radius: 4px;
+      color: var(--green);
+      background: var(--green-soft);
+      font-size: 12px;
+      font-weight: 850;
+    }
+    .tag.blue { color: var(--blue); background: var(--blue-soft); }
+    .tag.coral { color: var(--coral); background: var(--coral-soft); }
+    .tag.amber { color: #7b5113; background: var(--amber-soft); }
+    .tag.gray { color: #506058; background: #e8ece9; }
+
+    .flow-line {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      align-items: stretch;
+      gap: 12px;
+    }
+    .flow-node {
+      position: relative;
+      min-height: 140px;
+      padding: 18px 16px;
+      border: 1px solid var(--line);
+      background: #f8faf8;
+    }
+    .flow-node:not(:last-child)::after {
+      position: absolute;
+      top: 50%;
+      right: -13px;
+      z-index: 2;
+      width: 13px;
+      color: var(--muted);
+      content: "→";
+      transform: translateY(-50%);
+      text-align: center;
+      font-weight: 900;
+    }
+    .flow-node strong { display: block; margin-bottom: 8px; font-size: 17px; }
+    .flow-node small { color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .flow-node.keep { border-top: 5px solid var(--green); }
+    .flow-node.count { border-top: 5px solid var(--blue); }
+    .flow-node.exclude { border-top: 5px solid var(--coral); opacity: 0.82; }
+
+    .evidence-key { display: flex; flex-wrap: wrap; gap: 8px; }
+    .evidence-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 750;
+    }
+    .evidence-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--dot, var(--green)); }
+
+    .funnel { display: grid; gap: 10px; max-width: 880px; }
+    .funnel-row { display: grid; grid-template-columns: 180px minmax(0, 1fr) 64px; align-items: center; gap: 14px; }
+    .funnel-label { font-weight: 750; }
+    .funnel-track { height: 38px; background: #edf0ed; overflow: hidden; }
+    .funnel-fill {
+      display: flex;
+      align-items: center;
+      min-width: 40px;
+      height: 100%;
+      padding: 0 12px;
+      color: #fff;
+      background: var(--bar, var(--green));
+      font-size: 13px;
+      font-weight: 850;
+    }
+    .funnel-value { text-align: right; font-size: 20px; font-weight: 900; font-variant-numeric: tabular-nums; }
+
+    .image-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+    .evidence-image {
+      margin: 0;
+      border: 1px solid var(--line);
+      background: #fff;
+      overflow: hidden;
+    }
+    .evidence-image img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      object-position: top;
+      background: #edf0ed;
+    }
+    .evidence-image figcaption { min-height: 72px; padding: 10px 12px; font-size: 12px; line-height: 1.45; }
+    .evidence-image strong { display: block; margin-bottom: 3px; font-size: 14px; }
+
+    .bar-table { display: grid; gap: 9px; }
+    .bar-row {
+      display: grid;
+      grid-template-columns: 160px minmax(130px, 1fr) 112px 100px;
+      align-items: center;
+      gap: 12px;
+      min-height: 38px;
+    }
+    .bar-label { font-weight: 760; }
+    .range-track { position: relative; height: 18px; background: #edf0ed; }
+    .range-low, .range-high { position: absolute; left: 0; top: 0; height: 100%; }
+    .range-high { background: #bcd5c8; }
+    .range-low { z-index: 1; background: var(--green); }
+    .bar-value { text-align: right; font-weight: 850; font-variant-numeric: tabular-nums; }
+    .priority { text-align: right; color: var(--muted); font-size: 12px; font-weight: 800; }
+
+    .matrix {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .matrix th, .matrix td {
+      padding: 11px 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    .matrix th { color: var(--muted); background: #f3f6f3; font-size: 12px; }
+    .matrix td strong { display: block; margin-bottom: 3px; }
+    .matrix .num { text-align: right; font-variant-numeric: tabular-nums; }
+
+    .chart-scroll { max-width: 100%; overflow-x: auto; }
+    .scenario-svg {
+      display: block;
+      width: 100%;
+      min-width: 760px;
+      height: 330px;
+      color: var(--muted);
+      background: #f8faf8;
+    }
+    .scenario-svg .grid-line { stroke: #d9e0db; stroke-width: 1; }
+    .scenario-svg .axis-label { fill: #607068; font-size: 13px; font-weight: 700; }
+    .scenario-svg .point-label { fill: #17211d; font-size: 14px; font-weight: 850; }
+    .scenario-svg .series-label { font-size: 14px; font-weight: 850; }
+
+    .timeline { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+    .phase {
+      min-height: 280px;
+      padding: 22px;
+      border-top: 6px solid var(--phase, var(--green));
+      background: #f6f8f6;
+    }
+    .phase-index { color: var(--phase, var(--green)); font-size: 14px; font-weight: 900; }
+    .phase h3 { margin-top: 12px; font-size: 24px; }
+    .clean-list { margin: 14px 0 0; padding: 0; list-style: none; }
+    .clean-list li { position: relative; margin: 8px 0; padding-left: 18px; }
+    .clean-list li::before { position: absolute; left: 0; content: "•"; color: var(--accent, var(--green)); font-weight: 900; }
+
+    .decision {
+      display: grid;
+      grid-template-columns: 52px minmax(0, 1fr);
+      gap: 18px;
+      min-height: 156px;
+      padding: 22px;
+      border: 1px solid #3e4c45;
+      background: #22302a;
+    }
+    .decision-no {
+      display: grid;
+      width: 46px;
+      height: 46px;
+      place-items: center;
+      color: var(--ink);
+      background: #8fe0bb;
+      border-radius: 50%;
+      font-size: 19px;
+      font-weight: 900;
+    }
+    .decision h3 { color: #fff; font-size: 21px; }
+    .decision p { margin-bottom: 0; color: #c7d2cc; }
+
+    .callout {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 14px;
+      align-items: start;
+      padding: 16px 18px;
+      background: var(--amber-soft);
+    }
+    .callout strong { color: #754c0e; }
+
+    .slide-foot {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: end;
+      gap: 18px;
+      min-height: 38px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .slide[data-tone="dark"] .slide-foot { border-color: #3a4841; color: #adbbb3; }
+    .source-links { display: flex; flex-wrap: wrap; gap: 6px 12px; }
+    .source-links a { color: inherit; }
+    .confidence { white-space: nowrap; font-weight: 800; }
+
+    .compact { font-size: 14px; }
+    .muted { color: var(--muted); }
+    .green { color: var(--green); }
+    .blue { color: var(--blue); }
+    .coral { color: var(--coral); }
+    .amber { color: var(--amber); }
+    .strong { font-weight: 850; }
+    .number { font-variant-numeric: tabular-nums; }
+    .nowrap { white-space: nowrap; }
+    .mt-16 { margin-top: 16px; }
+    .mb-0 { margin-bottom: 0; }
+    .matrix-wrap { max-width: 100%; }
+    #slide-8 { gap: 18px; padding-top: 40px; padding-bottom: 26px; }
+    #slide-8 .bar-table { gap: 5px; }
+    #slide-8 .bar-row { min-height: 30px; }
+    #slide-8 .statement { margin-top: 10px; padding: 14px 20px; font-size: 20px; }
+    #slide-13 { gap: 18px; padding-top: 40px; padding-bottom: 26px; }
+    #slide-13 .grid-3 { gap: 14px; }
+    #slide-13 .panel { padding: 16px 18px; }
+    #slide-13 .panel h3 { font-size: 18px; }
+
+    @media (max-width: 980px) {
+      .toolbar { grid-template-columns: 1fr auto; }
+      .slide-select { grid-row: 2; grid-column: 1 / -1; }
+      .slide { min-height: auto; padding: 38px 34px 28px; }
+      .grid-4, .image-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid-3, .timeline { grid-template-columns: 1fr; }
+      .split-wide, .split-visual { grid-template-columns: 1fr; }
+      .flow-line { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .flow-node:nth-child(3)::after { display: none; }
+      .bar-row { grid-template-columns: 140px minmax(160px, 1fr) 112px; }
+      .priority { display: none; }
+      .scenario-svg { height: 310px; }
+    }
+
+    @media (max-width: 600px) {
+      main { padding-top: 8px; }
+      .toolbar { padding: 8px 10px; }
+      .brand span:last-child { display: none; }
+      .slide {
+        width: calc(100% - 12px);
+        margin-bottom: 10px;
+        padding: 28px 20px 24px;
+        box-shadow: none;
+      }
+      .slide-head { grid-template-columns: 1fr; gap: 8px; }
+      .slide-no { grid-row: 1; }
+      h1 { font-size: 38px; }
+      h2 { font-size: 29px; }
+      .lead { font-size: 17px; }
+      .grid-2, .grid-4, .image-grid { grid-template-columns: 1fr; }
+      .stat { min-height: 118px; }
+      .statement { font-size: 20px; }
+      .flow-line { grid-template-columns: 1fr; }
+      .flow-node { min-height: 104px; }
+      .flow-node:not(:last-child)::after {
+        top: auto;
+        right: auto;
+        bottom: -18px;
+        left: 50%;
+        width: auto;
+        content: "↓";
+        transform: translateX(-50%);
+      }
+      .flow-node:nth-child(3)::after { display: block; }
+      .bar-table { gap: 14px; }
+      .bar-row {
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 6px 12px;
+      }
+      .range-track { grid-row: 2; grid-column: 1 / -1; }
+      .bar-value { grid-column: 2; }
+      .matrix-wrap { overflow-x: auto; }
+      .matrix { min-width: 700px; }
+      .scenario-svg { width: 760px; height: 300px; }
+      .decision { grid-template-columns: 42px 1fr; padding: 18px 14px; }
+      .decision-no { width: 38px; height: 38px; }
+      .slide-foot { grid-template-columns: 1fr; }
+      .confidence { white-space: normal; }
+      .slide { scroll-margin-top: 122px; }
+      #slide-1 { gap: 18px; padding-top: 22px; }
+      #slide-1 h1 { font-size: 34px; }
+      #slide-1 .lead { font-size: 15px; }
+      #slide-1 .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+      #slide-1 .stat { min-height: 132px; padding: 14px 12px; }
+      #slide-1 .stat-value { font-size: 28px; }
+      #slide-1 .stat-value.long-value { font-size: 19px; white-space: nowrap; }
+      #slide-1 .stat-label { font-size: 14px; }
+      #slide-1 .stat-note { font-size: 11px; }
+      #slide-1 .statement { padding: 14px 16px; font-size: 16px; }
+    }
+
+    @media print {
+      body { background: #fff; }
+      .toolbar { display: none; }
+      main { padding: 0; }
+      .slide {
+        width: 100%;
+        min-height: 100vh;
+        margin: 0;
+        box-shadow: none;
+        break-after: page;
+        page-break-after: always;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="toolbar" aria-label="보고서 장표 이동">
+    <div class="brand"><span class="brand-mark">F</span><span>FlowMe 콘텐츠 공급 전략</span></div>
+    <select class="slide-select" id="slideSelect" aria-label="장표 선택"></select>
+    <div class="nav-actions">
+      <button class="nav-button" id="prevSlide" type="button" aria-label="이전 장표" title="이전 장표">←</button>
+      <span class="progress-label" id="progressLabel">1 / 18</span>
+      <button class="nav-button" id="nextSlide" type="button" aria-label="다음 장표" title="다음 장표">→</button>
+    </div>
+    <div class="progress-track" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
+  </nav>
+
+  <main>
+    <section class="slide" id="slide-1" data-title="결론부터: 얼마나 생길 수 있나">
+      <header class="slide-head">
+        <div>
+          <p class="eyebrow">CEO 전략 보고 · 2026.07.27</p>
+          <h1>Flow 콘텐츠는<br>얼마나 생길 수 있는가</h1>
+          <p class="lead">공개 원본의 양이 아니라, 중복을 없애고 품질과 최신성을 유지할 수 있는 <strong>공개 기준 Flow</strong>의 수를 계산했다.</p>
+        </div>
+        <span class="slide-no">01 / 18</span>
+      </header>
+      <div class="content">
+        <div class="grid-4">
+          <div class="stat" style="--stat-color: var(--coral)">
+            <div class="stat-value">44개</div>
+            <div class="stat-label">현재 공개 후보</div>
+            <p class="stat-note">현재 등록된 153개 중 공개 기준 통과</p>
+          </div>
+          <div class="stat" style="--stat-color: var(--green)">
+            <div class="stat-value">60~90개</div>
+            <div class="stat-label">P0 활성 목표</div>
+            <p class="stat-note">3개 생활 영역, 24~36개 핵심 상황</p>
+          </div>
+          <div class="stat" style="--stat-color: var(--blue)">
+            <div class="stat-value">약 713개</div>
+            <div class="stat-label">36개월 기준 시나리오</div>
+            <p class="stat-note">내부 편집 2명 + 제작 지원</p>
+          </div>
+          <div class="stat" style="--stat-color: var(--amber)">
+            <div class="stat-value long-value">1,500~7,200개</div>
+            <div class="stat-label">장기 잠재 범위</div>
+            <p class="stat-note">9개 영역의 유의미한 실행 상황 가설</p>
+          </div>
+        </div>
+        <div class="statement mt-16">원본은 넘친다. FlowMe의 실제 병목은 <span class="green">좋은 기준본을 고르고, 중복을 합치고, 최신 상태로 유지하는 운영 능력</span>이다.</div>
+      </div>
+      <footer class="slide-foot">
+        <div class="source-links">
+          <a href="2026-07-27-flowme-content-supply-estimation-model.json">산정 모델 JSON</a>
+          <a href="2026-07-27-flowme-content-supply-evidence-ledger.json">근거 원장 JSON</a>
+        </div>
+        <div class="confidence">44개: A · 60~90/713/1,500~7,200: C 가설</div>
+      </footer>
+    </section>
+
+    <section class="slide" id="slide-2" data-title="한 문장 답변">
+      <header class="slide-head">
+        <div>
+          <p class="eyebrow">핵심 결론</p>
+          <h2>처음에는 60~90개면 충분하고,<br>플랫폼이 작동하면 수천 개까지 확장할 수 있다</h2>
+        </div>
+        <span class="slide-no">02 / 18</span>
+      </header>
+      <div class="content split-wide">
+        <div>
+          <div class="statement">FlowMe가 세어야 할 것은 ‘콘텐츠 원문 수’가 아니라 <strong>한 사람이 실제로 수행할 수 있는 서로 다른 기준 Flow</strong>다.</div>
+          <div class="grid-3 mt-16">
+            <div class="panel">
+              <span class="tag">초기</span>
+              <h3>선택지가 충분해 보이는 재고</h3>
+              <p>육아·가족, 여행·외출, 집·생활관리에서 핵심 상황을 1~2개 좋은 기준본으로 채운다.</p>
+            </div>
+            <div class="panel">
+              <span class="tag blue">성장</span>
+              <h3>반복해서 갱신되는 재고</h3>
+              <p>제작자 지원과 업데이트 운영이 붙으면 3년 안에 약 700개 활성 재고가 가능하다.</p>
+            </div>
+            <div class="panel">
+              <span class="tag amber">장기</span>
+              <h3>생활 경험의 실행 라이브러리</h3>
+              <p>9개 영역에서 의미 있는 상황과 변형만 남겨도 약 1,500~7,200개가 가능하다.</p>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>이 숫자가 의미하지 않는 것</h3>
+          <ul class="clean-list">
+            <li>날짜만 다른 개인 계획 수가 아니다.</li>
+            <li>웹에 있는 글과 영상의 총량이 아니다.</li>
+            <li>AI가 만들 수 있는 조합의 수가 아니다.</li>
+            <li>확인된 사용자 수요나 매출 전망이 아니다.</li>
+          </ul>
+          <div class="callout mt-16"><strong>현재 상태</strong><span>실제 사용자·제작자 성과는 미측정이다. 수치는 전략적 공급 가설이다.</span></div>
+        </div>
+      </div>
+      <footer class="slide-foot">
+        <div>읽는 법: A는 저장소·공식 자료 확인, B는 목적형 표본, C는 전략 가설·미측정</div>
+        <div class="confidence">전략 결론: C</div>
+      </footer>
+    </section>
+
+    <section class="slide" id="slide-3" data-title="무엇을 1개로 셀 것인가" data-tone="blue">
+      <header class="slide-head">
+        <div>
+          <p class="eyebrow">계산 기준</p>
+          <h2>기준 Flow와 행동이 달라지는 파생본만 센다</h2>
+        </div>
+        <span class="slide-no">03 / 18</span>
+      </header>
+      <div class="content">
+        <div class="flow-line">
+          <div class="flow-node exclude">
+            <strong>원본 콘텐츠</strong>
+            <small>글·영상·강의·공식 안내. 공급원이지 Flow 재고는 아니다.</small>
+          </div>
+          <div class="flow-node count">
+            <strong>기준 Flow</strong>
+            <small>하나의 상황을 실제로 수행할 수 있는 공개 기준본.</small>
+          </div>
+          <div class="flow-node count">
+            <strong>의미 있는 파생본</strong>
+            <small>대상·지역·역할이 달라 행동과 주의사항도 달라지는 경우.</small>
+          </div>
+          <div class="flow-node exclude">
+            <strong>개인 실행본</strong>
+            <small>날짜·담당자·완료 상태가 적용된 비공개 사용본.</small>
+          </div>
+          <div class="flow-node exclude">
+            <strong>버전</strong>
+            <small>출처나 내용을 최신 상태로 고친 동일 Flow의 이력.</small>
+          </div>
+          <div class="flow-node exclude">
+            <strong>경험 지도</strong>
+            <small>여러 Flow를 연결한 탐색 구조. 포함된 Flow를 다시 세지 않는다.</small>
+          </div>
+        </div>
+        <div class="grid-2 mt-16">
+          <div class="panel">
+            <h3 class="green">새 Flow로 인정</h3>
+            <p>해결 상황, 핵심 행동, 결과물, 준비·주의사항 중 하나 이상이 실제로 달라 사용자 선택에 의미가 있을 때.</p>
+          </div>
+          <div class="panel">
+            <h3 class="coral">같은 Flow로 유지</h3>
+            <p>날짜, 이름, 담당자, 문구, 최신 버전, 묶음 위치만 달라지고 행동 구조는 같을 때.</p>
+          </div>
+        </div>
+      </div>
+      <footer class="slide-foot">
+        <div>권고: 공개 콘텐츠 KPI는 ‘중복 제거된 활성 기준 Flow’로 통일</div>
+        <div class="confidence">정의: 전략 규칙</div>
+      </footer>
+    </section>
+
+    <section class="slide" id="slide-4" data-title="이번 추정의 근거 범위">
+      <header class="slide-head">
+        <div>
+          <p class="eyebrow">근거 범위</p>
+          <h2>확인한 자료는 충분히 넓지만, 무작위 시장 표본은 아니다</h2>
+        </div>
+        <span class="slide-no">04 / 18</span>
+      </header>
+      <div class="content grid-2">
+        <div class="grid-2">
+          <div class="stat" style="--stat-color: var(--blue)">
+            <div class="stat-value">314개</div>
+            <div class="stat-label">실제로 연 고유 URL</div>
+            <p class="stat-note">기존 수요·제작자·버티컬 조사 합집합</p>
+          </div>
+          <div class="stat" style="--stat-color: var(--green)">
+            <div class="stat-value">27개</div>
+            <div class="stat-label">상세 서비스</div>
+            <p class="stat-note">9개 카테고리, 실제 사례 54개</p>
+          </div>
+          <div class="stat" style="--stat-color: var(--amber)">
+            <div class="stat-value">153개</div>
+            <div class="stat-label">현재 등록 콘텐츠</div>
+            <p class="stat-note">847개 행동 항목, 341개 구획</p>
+          </div>
+          <div class="stat" style="--stat-color: var(--coral)">
+            <div class="stat-value">0 / 15</div>
+            <div class="stat-label">관찰 사용자 세션</div>
+            <p class="stat-note">자동 검사는 사용자 검증이 아님</p>
+          </div>
+        </div>
+        <div>
+          <div class="panel">
+            <h3>표본에서 관찰한 실행 구조</h3>
+            <div class="bar-table mt-16">
+              <div class="bar-row">
+                <span class="bar-label">넓은 원본 탐색</span>
+                <div class="range-track"><span class="range-high" style="width:45.9%"></span><span class="range-low" style="width:45.9%"></span></div>
+                <span class="bar-value">94 / 205</span>
+                <span class="priority">45.9%</span>
+              </div>
+              <div class="bar-row">
+                <span class="bar-label">제작자 콘텐츠</span>
+                <div class="range-track"><span class="range-high" style="width:48.2%"></span><span class="range-low" style="width:48.2%"></span></div>
+                <span class="bar-value">53 / 110</span>
+                <span class="priority">48.2%</span>
+              </div>
+              <div class="bar-row">
+                <span class="bar-label">버티컬 P0 후보</span>
+                <div class="range-track"><span class="range-high" style="width:29.6%"></span><span class="range-low" style="width:29.6%"></span></div>
+                <span class="bar-value">16 / 54</span>
+                <span class="priority">29.6%</span>
+              </div>
+            </div>
+          </div>
+          <div class="callout mt-16"><strong>해석 제한</strong><span>좋아 보이는 후보를 찾기 위한 목적형 표본이다. 위 비율을 웹 전체의 전환율로 일반화하지 않았다.</span></div>
+        </div>
+      </div>
+      <footer class="slide-foot">
+        <div class="source-links">
+          <a href="2026-07-22-flowme-vertical-service-content-coverage-atlas-ceo-ko.html">버티컬 서비스 도감</a>
+          <a href="2026-07-23-creator-flow-portfolio-review-ko.html">제작자 포트폴리오 검토</a>
+          <a href="../STATUS.md">현재 단계</a>
+        </div>
+        <div class="confidence">재고: A · 조사 비율: B</div>
+      </footer>
+    </section>
+
+    <section class="slide" id="slide-5" data-title="원본은 이미 매우 많다" data-tone="amber">
+      <header class="slide-head">
+        <div>
+          <p class="eyebrow">원본 공급</p>
+          <h2>원본 부족이 Flow 확장의 병목은 아니다</h2>
+        </div>
+        <span class="slide-no">05 / 18</span>
+      </header>
+      <div class="content">
+        <div class="image-grid">
+          <figure class="evidence-image">
+            <img src="assets/2026-07-22-flowme-vertical-service-content-coverage-atlas/ifixit-01.png" alt="iFixit 수리 안내서 화면">
+            <figcaption><strong>iFixit · 171,327개 안내서</strong>제작자·수정일·시간·도구를 한 기준본에 모은다.</figcaption>
+          </figure>
+          <figure class="evidence-image">
+            <img src="assets/2026-07-22-flowme-vertical-service-content-coverage-atlas/udemy-01.png" alt="Udemy 강좌 화면">
+            <figcaption><strong>Udemy · 29만+ 강좌</strong>강사·결과·업데이트가 선택과 품질 관리의 핵심이다.</figcaption>
+          </figure>
+          <figure class="evidence-image">
+            <img src="assets/2026-07-22-flowme-vertical-service-content-coverage-atlas/10000recipe-01.png" alt="만개의레시피 레시피 화면">
+            <figcaption><strong>만개의레시피 · 약 18만 레시피</strong>원본은 깊지만, 모두 별도 Flow가 될 필요는 없다.</figcaption>
+          </figure>
+          <figure class="evidence-image">
+            <img src="assets/2026-07-21-flowme-platform-service-dossiers/wikipedia.jpg" alt="한국어 Wikipedia 화면">
+            <figcaption><strong>Wikipedia · 약 6,500만 문서</strong>큰 재고보다 중복·버전·기여 운영이 더 어려운 문제다.</figcaption>
+          </figure>
+        </div>
+        <div class="grid-3 mt-16">
+          <div class="panel"><h3>공급</h3><p class="mb-0">YouTube는 하루 평균 2천만 개 이상의 신규 영상을 공개한다.</p></div>
+          <div class="panel"><h3>구조화</h3><p class="mb-0">AllTrails는 45만 개 이상의 트레일을 목적지 중심으로 관리한다.</p></div>
+          <div class="panel"><h3>편집 원칙</h3><p class="mb-0">iFixit은 같은 수리에 최신 안내서 하나를 유지한다.</p></div>
+        </div>
+      </div>
+      <footer class="slide-foot">
+        <div class="source-links">
+          <a href="https://www.ifixit.com/">iFixit 공식</a>
+          <a href="https://about.ifixit.com/Wiki/Community_Guidelines">iFixit 편집 원칙</a>
+          <a href="https://investors.udemy.com/static-files/68867703-a746-4b03-9bce-668e759d77ca">Udemy 2025 10-K</a>
+          <a href="https://www.10000recipe.com/company/intro.html">만개의레시피 회사 소개</a>
+          <a href="https://wikimediafoundation.org/news/2026/01/15/wikipedia-celebrates-25years/">Wikimedia 공식</a>
+          <a href="https://blog.youtube/news-and-events/happy-birthday-youtube-20/">YouTube 공식</a>
+        </div>
+        <div class="confidence">공식 자료: A · 만개의레시피 수치: 2021 기준</div>
+      </footer>
+    </section>
+
+    <section class="slide" id="slide-6" data-title="원본 100개가 Flow 10개가 되는 과정" data-tone="coral">
+      <header class="slide-head">
+        <div>
+          <p class="eyebrow">공급 전환</p>
+          <h2>기준 시나리오에서는 원본 후보 100개가 활성 Flow 약 10개가 된다</h2>
+        </div>
+        <span class="slide-no">06 / 18</span>
+      </header>
+      <div class="content split-wide">
+        <div class="funnel">
+          <div class="funnel-row">
+            <span class="funnel-label">원본 후보</span>
+            <div class="funnel-track"><div class="funnel-fill" style="width:100%; --bar: var(--blue)">탐색</div></div>
+            <span class="funnel-value">100</span>
+          </div>
+          <div class="funnel-row">
+            <span class="funnel-label">실행 구조 발견</span>
+            <div class="funnel-track"><div class="funnel-fill" style="width:47%; --bar: #397aa4">행동·순서·준비</div></div>
+            <span class="funnel-value">47</span>
+          </div>
+          <div class="funnel-row">
+            <span class="funnel-label">권리·안전 통과</span>
+            <div class="funnel-track"><div class="funnel-fill" style="width:32%; --bar: var(--amber)">사용 경계 확인</div></div>
+            <span class="funnel-value">32</span>
+          </div>
+          <div class="funnel-row">
+            <span class="funnel-label">중복 제거</span>
+            <div class="funnel-track"><div class="funnel-fill" style="width:24%; --bar: #799347">같은 상황 통합</div></div>
+            <span class="funnel-value">24</span>
+          </div>
+          <div class="funnel-row">
+            <span class="funnel-label">품질 통과</span>
+            <div class="funnel-track"><div class="funnel-fill" style="width:15%; --bar: var(--green)">즉시 실행 가능</div></div>
+            <span class="funnel-value">15</span>
+          </div>
+          <div class="funnel-row">
+            <span class="funnel-label">활성 유지</span>
+            <div class="funnel-track"><div class="funnel-fill" style="width:10%; --bar: #104d3b">최신 상태</div></div>
+            <span class="funnel-value">10</span>
+          </div>
+        </div>
+        <div>
+          <div class="panel">
+            <h3>범위로 읽어야 한다</h3>
+            <div class="grid-3 mt-16">
+              <div><div class="stat-value" style="font-size:38px;color:var(--coral)">5개</div><strong>보수적</strong></div>
+              <div><div class="stat-value" style="font-size:38px;color:var(--green)">10개</div><strong>기준</strong></div>
+              <div><div class="stat-value" style="font-size:38px;color:var(--blue)">15개</div><strong>확장</strong></div>
+            </div>
+          </div>
+          <div class="callout mt-16"><strong>중요</strong><span>표본은 무작위가 아니다. 이 퍼널은 채용·예산·파일럿 설계를 위한 가설이며, 실제 제작 시간을 기록하면서 다시 보정해야 한다.</span></div>
+        </div>
+      </div>
+      <footer class="slide-foot">
+        <div>기본 산식: 후보 원본 × 실행 적합 × 권리·안전 × 중복 제거 × 품질 × 최신성</div>
+        <div class="confidence">전환율: B에서 추론한 C</div>
+      </footer>
+    </section>
+
+    <section class="slide" id="slide-7" data-title="현재 153개를 그대로 셀 수 없는 이유">
+      <header class="slide-head">
+        <div>
+          <p class="eyebrow">현재 재고</p>
+          <h2>현재 등록된 153개를 모두 공개 재고로 셀 수는 없다</h2>
+        </div>
+        <span class="slide-no">07 / 18</span>
+      </header>
+      <div class="content grid-2">
+        <div>
+          <div class="funnel">
+            <div class="funnel-row">
+              <span class="funnel-label">현재 등록</span>
+              <div class="funnel-track"><div class="funnel-fill" style="width:100%; --bar: var(--blue)">seed</div></div>
+              <span class="funnel-value">153</span>
+            </div>
+            <div class="funnel-row">
+              <span class="funnel-label">공개 기준 통과</span>
+              <div class="funnel-track"><div class="funnel-fill" style="width:28.8%; --bar: var(--green)">공개</div></div>
+              <span class="funnel-value">44</span>
+            </div>
+            <div class="funnel-row">
+              <span class="funnel-label">보강 필요</span>
+              <div class="funnel-track"><div class="funnel-fill" style="width:68.6%; --bar: var(--amber)">보강</div></div>
+              <span class="funnel-value">105</span>
+            </div>
+            <div class="funnel-row">
+              <span class="funnel-label">미리보기·숨김</span>
+              <div class="funnel-track"><div class="funnel-fill" style="width:2.6%; --bar: var(--coral)">보류</div></div>
+              <span class="funnel-value">4</span>
+            </div>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="stat" style="--stat-color: var(--coral)">
+            <div class="stat-value">90개</div>
+            <div class="stat-label">서로 다른 카테고리 문자열</div>
+            <p class="stat-note">9개 전략 분류로 정규화 필요</p>
+          </div>
+          <div class="stat" style="--stat-color: var(--amber)">
+            <div class="stat-value">24개</div>
+            <div class="stat-label">기본 도착점 없음</div>
+            <p class="stat-note">일정·체크·메모 중 무엇인지 불명확</p>
+          </div>
+          <div class="stat" style="--stat-color: var(--blue)">
+            <div class="stat-value">36개</div>
+            <div class="stat-label">출처 검토 필요</div>
+            <p class="stat-note">현재 source status 집계</p>
+          </div>
+          <div class="stat" style="--stat-color: var(--green)">
+            <div class="stat-value">16~46개</div>
+            <div class="stat-label">P0 추가 완성분</div>
+            <p class="stat-note">44개에서 60~90개로 가는 차이</p>
+          </div>
+        </div>
+      </div>
+      <footer class="slide-foot">
+        <div class="source-links">
+          <a href="../../lib/flow/seed-flows.ts">현재 seed 코드</a>
+          <a href="2026-07-27-flowme-content-supply-evidence-ledger.json">재집계 근거</a>
+        </div>
+        <div class="confidence">저장소 재집계: A</div>
+      </footer>
+    </section>
+
+    <section class="slide" id="slide-8" data-title="카테고리별 장기 잠재 범위" data-tone="blue">
+      <header class="slide-head">
+        <div>
+          <p class="eyebrow">카테고리 잠재력</p>
+          <h2>장기 잠재량은 여행이 가장 크고, 공식 절차는 작지만 관리 부담이 크다</h2>
+        </div>
+        <span class="slide-no">08 / 18</span>
+      </header>
+      <div class="content">
+        <div class="bar-table">
+          <div class="bar-row"><span class="bar-label">여행·외출</span><div class="range-track"><span class="range-high" style="width:100%"></span><span class="range-low" style="width:18.75%"></span></div><span class="bar-value">300~1,600</span><span class="priority">P0 · 갱신 높음</span></div>
+          <div class="bar-row"><span class="bar-label">요리·식사</span><div class="range-track"><span class="range-high" style="width:56.25%"></span><span class="range-low" style="width:11.25%"></span></div><span class="bar-value">180~900</span><span class="priority">P1 · 원본 풍부</span></div>
+          <div class="bar-row"><span class="bar-label">학습·커리어</span><div class="range-track"><span class="range-high" style="width:56.25%"></span><span class="range-low" style="width:11.25%"></span></div><span class="bar-value">180~900</span><span class="priority">P1 · 갱신 높음</span></div>
+          <div class="bar-row"><span class="bar-label">운동·취미</span><div class="range-track"><span class="range-high" style="width:50%"></span><span class="range-low" style="width:9.38%"></span></div><span class="bar-value">150~800</span><span class="priority">P1 · 안전 검토</span></div>
+          <div class="bar-row"><span class="bar-label">육아·가족</span><div class="range-track"><span class="range-high" style="width:43.75%"></span><span class="range-low" style="width:11.25%"></span></div><span class="bar-value">180~700</span><span class="priority">P0 · 가족 상황</span></div>
+          <div class="bar-row"><span class="bar-label">집·생활관리</span><div class="range-track"><span class="range-high" style="width:43.75%"></span><span class="range-low" style="width:9.38%"></span></div><span class="bar-value">150~700</span><span class="priority">P0 · 저위험</span></div>
+          <div class="bar-row"><span class="bar-label">창작·프로젝트</span><div class="range-track"><span class="range-high" style="width:37.5%"></span><span class="range-low" style="width:6.25%"></span></div><span class="bar-value">100~600</span><span class="priority">P2 · 제작 도구</span></div>
+          <div class="bar-row"><span class="bar-label">행정·공식 절차</span><div class="range-track"><span class="range-high" style="width:31.25%"></span><span class="range-low" style="width:7.5%"></span></div><span class="bar-value">120~500</span><span class="priority">P1 · 갱신 매우 높음</span></div>
+          <div class="bar-row"><span class="bar-label">결혼·이사·행사</span><div class="range-track"><span class="range-high" style="width:31.25%"></span><span class="range-low" style="width:6.25%"></span></div><span class="bar-value">100~500</span><span class="priority">P1 · 협업형</span></div>
+        </div>
+        <div class="statement mt-16">합계 <span class="green">1,460~7,200개</span>. 이 범위는 전수조사 결과가 아니라, 행동이 달라지는 사용자 상황과 변형을 카테고리별로 추정한 전략 가설이다.</div>
+      </div>
+      <footer class="slide-foot">
+        <div>상한이 큰 카테고리일수록 실시간 정보·권리·중복 관리 부담도 함께 커진다.</div>
+        <div class="confidence">카테고리 범위: C</div>
+      </footer>
+    </section>
+
+    <section class="slide" id="slide-9" data-title="P0는 세 영역에 집중">
+      <header class="slide-head">
+        <div>
+          <p class="eyebrow">P0 집중</p>
+          <h2>처음에는 육아·가족, 여행·외출, 집·생활관리만 깊게 채운다</h2>
+        </div>
+        <span class="slide-no">09 / 18</span>
+      </header>
+      <div class="content">
+        <div class="grid-3">
+          <div class="phase" style="--phase: var(--green)">
+            <span class="phase-index">01 · 육아·가족</span>
+            <h3>생활 상황을 연결하는 입구</h3>
+            <ul class="clean-list">
+              <li>가족 외출·준비·역할 분담</li>
+              <li>일정·체크·메모가 함께 필요</li>
+              <li>건강·발달 판단은 직접 다루지 않음</li>
+            </ul>
+            <p class="mt-16"><strong>초기 목표:</strong> 20~30개</p>
+          </div>
+          <div class="phase" style="--phase: var(--blue)">
+            <span class="phase-index">02 · 여행·외출</span>
+            <h3>저장부터 일정까지 확장</h3>
+            <ul class="clean-list">
+              <li>가고 싶은 곳을 먼저 저장</li>
+              <li>날짜가 생기면 예약·짐·동선 추가</li>
+              <li>지도·가격·예약은 원서비스에 남김</li>
+            </ul>
+            <p class="mt-16"><strong>초기 목표:</strong> 20~30개</p>
+          </div>
+          <div class="phase" style="--phase: var(--amber)">
+            <span class="phase-index">03 · 집·생활관리</span>
+            <h3>저위험 행동을 빠르게 검증</h3>
+            <ul class="clean-list">
+              <li>정리·청소·준비의 작은 실행</li>
+              <li>즉시 실행과 나중 실행 모두 가능</li>
+              <li>단순한 Flow는 한 항목 + 원문 링크</li>
+            </ul>
+            <p class="mt-16"><strong>초기 목표:</strong> 20~30개</p>
+          </div>
+        </div>
+        <div class="callout mt-16"><strong>집중 이유</strong><span>세 영역은 가족 생활 안에서 자연스럽게 연결되고, 일정·체크·메모의 도착 형식을 함께 검증하면서도 의료·결제·전문 판단을 피할 수 있다.</span></div>
+      </div>
+      <footer class="slide-foot">
+        <div>P0 재고 60~90개는 카테고리 수가 아니라 핵심 사용자 상황의 빈틈을 채우는 목표다.</div>
+        <div class="confidence">우선순위: C</div>
+      </footer>
+    </section>
+
+    <section class="slide" id="slide-10" data-title="원본 수를 그대로 Flow 수로 볼 수 없는 이유" data-tone="amber">
+      <header class="slide-head">
+        <div>
+          <p class="eyebrow">일대일 환산의 오류</p>
+          <h2>레시피 18만 개, 강좌 29만 개가 Flow 18만·29만 개를 뜻하지 않는다</h2>
+        </div>
+        <span class="slide-no">10 / 18</span>
+      </header>
+      <div class="content">
+        <div class="matrix-wrap">
+          <table class="matrix">
+            <thead>
+              <tr><th>원본 분야</th><th>원본이 많은 이유</th><th>FlowMe가 가져올 단위</th><th>합쳐야 하는 것</th><th>외부에 남길 것</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>레시피</strong>재료·취향 변형</td><td>같은 요리도 표현과 조합이 많음</td><td>한 번 조리, 주간 식사 준비, 손님 초대</td><td>행동 차이 없는 유사 레시피</td><td>원문 사진·영상·후기</td></tr>
+              <tr><td><strong>강좌</strong>강사·난이도·주제</td><td>콘텐츠 자체가 판매 상품</td><td>과정 선택, 학습 일정, 과제 수행</td><td>같은 결과와 같은 학습 순서</td><td>강의 재생·평가·수료</td></tr>
+              <tr><td><strong>트레일</strong>경로·지역</td><td>지리적으로 구분되는 장소 데이터</td><td>가고 싶은 곳 저장, 날짜별 준비</td><td>같은 목적지의 표현 차이</td><td>실시간 지도·경로·날씨</td></tr>
+              <tr><td><strong>공식 절차</strong>기관·제도</td><td>종류는 제한적이나 지역과 시점이 중요</td><td>기한 확인, 서류 준비, 공식 신청 이동</td><td>동일 절차의 최신 버전</td><td>자격 판단·최종 신청</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="statement mt-16">FlowMe의 가치는 원본을 많이 복제하는 데 있지 않고, <strong>사용자가 지금 무엇을 해야 하는지 판단할 수 있는 최소 실행 단위</strong>로 줄이는 데 있다.</div>
+      </div>
+      <footer class="slide-foot">
+        <div class="source-links">
+          <a href="https://www.10000recipe.com/company/intro.html">만개의레시피 공식 수치</a>
+          <a href="https://investors.udemy.com/static-files/68867703-a746-4b03-9bce-668e759d77ca">Udemy 공식 수치</a>
+          <a href="https://www.alltrails.com/en-gb/press?section=press-page-leadership">AllTrails 공식 수치</a>
+        </div>
+        <div class="confidence">공식 규모: A · Flow 단위 판정: C</div>
+      </footer>
+    </section>
+
+    <section class="slide" id="slide-11" data-title="제작자가 많아도 생산량은 자동으로 늘지 않는다" data-tone="coral">
+      <header class="slide-head">
+        <div>
+          <p class="eyebrow">제작 능력</p>
+          <h2>제작자 수보다 꾸준한 발행·갱신이 중요하다</h2>
+        </div>
+        <span class="slide-no">11 / 18</span>
+      </header>
+      <div class="content split-visual">
+        <div>
+          <div class="grid-2">
+            <div class="stat" style="--stat-color: var(--blue)">
+              <div class="stat-value">9만+</div>
+              <div class="stat-label">Udemy 강사</div>
+              <p class="stat-note">2025년 말 공식 수치</p>
+            </div>
+            <div class="stat" style="--stat-color: var(--green)">
+              <div class="stat-value">6,300+</div>
+              <div class="stat-label">월 신규 강좌</div>
+              <p class="stat-note">2025년 월평균</p>
+            </div>
+            <div class="stat" style="--stat-color: var(--amber)">
+              <div class="stat-value">약 0.84개</div>
+              <div class="stat-label">강사당 연간 신규 강좌</div>
+              <p class="stat-note">단순 나눗셈, 참여 편중 참고치</p>
+            </div>
+            <div class="stat" style="--stat-color: var(--coral)">
+              <div class="stat-value">연 5회</div>
+              <div class="stat-label">상위 강좌 평균 갱신</div>
+              <p class="stat-note">신규 제작 뒤에도 유지 비용 발생</p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="panel">
+            <h3>FlowMe 공급 가설</h3>
+            <div class="bar-table mt-16">
+              <div class="bar-row"><span class="bar-label">편집 담당 1명</span><div class="range-track"><span class="range-high" style="width:83%"></span><span class="range-low" style="width:50%"></span></div><span class="bar-value">연 60~100</span><span class="priority">C</span></div>
+              <div class="bar-row"><span class="bar-label">활성 제작자 1명</span><div class="range-track"><span class="range-high" style="width:50%"></span><span class="range-low" style="width:17%"></span></div><span class="bar-value">연 2~6</span><span class="priority">C</span></div>
+              <div class="bar-row"><span class="bar-label">저위험 Flow</span><div class="range-track"><span class="range-high" style="width:33%"></span><span class="range-low" style="width:17%"></span></div><span class="bar-value">4~8시간</span><span class="priority">C</span></div>
+              <div class="bar-row"><span class="bar-label">고갱신·안전 Flow</span><div class="range-track"><span class="range-high" style="width:100%"></span><span class="range-low" style="width:50%"></span></div><span class="bar-value">12~24시간</span><span class="priority">C</span></div>
+            </div>
+          </div>
+          <div class="callout mt-16"><strong>운영 원칙</strong><span>제작자 가입자 수를 공급 능력으로 잡지 말고, 최근 90일 내 발행·갱신한 활성 제작자와 승인 통과량을 본다.</span></div>
+        </div>
+      </div>
+      <footer class="slide-foot">
+        <div class="source-links"><a href="https://investors.udemy.com/static-files/68867703-a746-4b03-9bce-668e759d77ca">Udemy 2025 10-K</a></div>
+        <div class="confidence">Udemy: A · FlowMe 생산성: C 미측정</div>
+      </footer>
+    </section>
+
+    <section class="slide" id="slide-12" data-title="늘수록 업데이트 부담도 커진다">
+      <header class="slide-head">
+        <div>
+          <p class="eyebrow">유지 비용</p>
+          <h2>활성 재고는 ‘새로 만든 수’에서 만료·통합·보류를 뺀 값이다</h2>
+        </div>
+        <span class="slide-no">12 / 18</span>
+      </header>
+      <div class="content grid-2">
+        <div class="statement">전년도 활성 Flow × (1 - 연간 정리율) + 신규 승인 Flow = 올해 활성 Flow</div>
+        <div class="panel">
+          <h3>같은 100개라도 관리 난이도는 다르다</h3>
+          <div class="matrix-wrap mt-16">
+            <table class="matrix">
+              <thead><tr><th>공급 유형</th><th>신규성</th><th>갱신 부담</th><th>FlowMe 전략</th></tr></thead>
+              <tbody>
+                <tr><td><strong>공식 절차형</strong>여권·검사·지원</td><td>낮음</td><td><span class="tag coral">매우 높음</span></td><td>소수만 유지, 공식 링크 우선</td></tr>
+                <tr><td><strong>상시 경험형</strong>놀이·정리·요리</td><td>높음</td><td><span class="tag">중간</span></td><td>제작자 기준본과 변형</td></tr>
+                <tr><td><strong>계절·지역형</strong>여행·행사</td><td>높음</td><td><span class="tag amber">높음</span></td><td>기간 종료와 지역 상태 관리</td></tr>
+                <tr><td><strong>프로그램형</strong>학습·운동</td><td>중간</td><td><span class="tag amber">높음</span></td><td>진도·중단 조건 보강 후 확대</td></tr>
+                <tr><td><strong>실시간 의존형</strong>가격·예약·날씨</td><td>매우 높음</td><td><span class="tag coral">직접 보유 금지</span></td><td>외부 서비스로 연결</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <footer class="slide-foot">
+        <div>3개 시나리오의 연간 정리율 가정: 보수 10% · 기준 12% · 확장 15%</div>
+        <div class="confidence">정리율: C 미측정</div>
+      </footer>
+    </section>
+
+    <section class="slide" id="slide-13" data-title="12·24·36개월 공급 시나리오" data-tone="blue">
+      <header class="slide-head">
+        <div>
+          <p class="eyebrow">36개월 시나리오</p>
+          <h2>운영 방식을 바꾸지 않으면 3년 뒤에도 약 200개에 머문다</h2>
+        </div>
+        <span class="slide-no">13 / 18</span>
+      </header>
+      <div class="content">
+        <div class="chart-scroll" aria-label="시나리오별 활성 Flow 재고">
+          <svg class="scenario-svg" viewBox="0 0 1120 330" role="img" aria-labelledby="scenarioTitle scenarioDesc">
+            <title id="scenarioTitle">12개월, 24개월, 36개월 활성 Flow 공급 시나리오</title>
+            <desc id="scenarioDesc">현재 44개에서 시작해 36개월 뒤 보수 시나리오는 197개, 기준은 713개, 확장은 2,098개가 된다.</desc>
+            <line class="grid-line" x1="86" y1="278" x2="1080" y2="278"/>
+            <line class="grid-line" x1="86" y1="202" x2="1080" y2="202"/>
+            <line class="grid-line" x1="86" y1="126" x2="1080" y2="126"/>
+            <line class="grid-line" x1="86" y1="50" x2="1080" y2="50"/>
+            <text class="axis-label" x="72" y="282" text-anchor="end">0</text>
+            <text class="axis-label" x="72" y="206" text-anchor="end">700</text>
+            <text class="axis-label" x="72" y="130" text-anchor="end">1,400</text>
+            <text class="axis-label" x="72" y="54" text-anchor="end">2,100</text>
+            <text class="axis-label" x="150" y="316" text-anchor="middle">현재</text>
+            <text class="axis-label" x="450" y="316" text-anchor="middle">12개월</text>
+            <text class="axis-label" x="750" y="316" text-anchor="middle">24개월</text>
+            <text class="axis-label" x="1050" y="316" text-anchor="middle">36개월</text>
+
+            <polyline points="150,273 450,268 750,263 1050,257" fill="none" stroke="#b55442" stroke-width="4"/>
+            <polyline points="150,273 450,258 750,234 1050,201" fill="none" stroke="#166a50" stroke-width="5"/>
+            <polyline points="150,273 450,235 750,163 1050,50" fill="none" stroke="#285f8f" stroke-width="5"/>
+
+            <g fill="#b55442">
+              <circle cx="150" cy="273" r="6"/><circle cx="450" cy="268" r="6"/><circle cx="750" cy="263" r="6"/><circle cx="1050" cy="257" r="6"/>
+            </g>
+            <g fill="#166a50">
+              <circle cx="150" cy="273" r="7"/><circle cx="450" cy="258" r="7"/><circle cx="750" cy="234" r="7"/><circle cx="1050" cy="201" r="7"/>
+            </g>
+            <g fill="#285f8f">
+              <circle cx="150" cy="273" r="7"/><circle cx="450" cy="235" r="7"/><circle cx="750" cy="163" r="7"/><circle cx="1050" cy="50" r="7"/>
+            </g>
+
+            <text class="point-label" x="150" y="296" text-anchor="middle">44</text>
+            <text class="point-label" x="450" y="288" text-anchor="middle">88</text>
+            <text class="point-label" x="750" y="285" text-anchor="middle">139</text>
+            <text class="point-label" x="1050" y="280" text-anchor="middle">197</text>
+            <text class="point-label" x="450" y="249" text-anchor="middle">183</text>
+            <text class="point-label" x="750" y="225" text-anchor="middle">401</text>
+            <text class="point-label" x="1050" y="192" text-anchor="middle">713</text>
+            <text class="point-label" x="450" y="225" text-anchor="middle">397</text>
+            <text class="point-label" x="750" y="153" text-anchor="middle">1,057</text>
+            <text class="point-label" x="1050" y="40" text-anchor="middle">2,098</text>
+
+            <text class="series-label" x="1032" y="246" text-anchor="end" fill="#b55442">보수</text>
+            <text class="series-label" x="1032" y="189" text-anchor="end" fill="#166a50">기준</text>
+            <text class="series-label" x="1032" y="72" text-anchor="end" fill="#285f8f">확장</text>
+          </svg>
+        </div>
+        <div class="grid-3">
+          <div class="panel"><h3>보수 · 약 197개</h3><p class="mb-0">편집 1명 중심. P0는 넘지만 P1 확대가 느리다.</p></div>
+          <div class="panel"><h3>기준 · 약 713개</h3><p class="mb-0">편집 2명과 제작 지원. 3년 동안 운영 체계를 검증한다.</p></div>
+          <div class="panel"><h3>확장 · 약 2,098개</h3><p class="mb-0">직접 발행과 검토 운영이 이미 작동해야 가능한 수준이다.</p></div>
+        </div>
+      </div>
+      <footer class="slide-foot">
+        <div>모든 시나리오는 현재 공개 후보 44개에서 시작하며 실제 제작 시간·연간 정리율은 아직 미측정이다.</div>
+        <div class="confidence">공급 시나리오: C</div>
+      </footer>
+    </section>
+
+    <section class="slide" id="slide-14" data-title="P0·P1·P2의 재고 목표">
+      <header class="slide-head">
+        <div>
+          <p class="eyebrow">단계별 기준</p>
+          <h2>콘텐츠 수가 아니라 운영 능력이 다음 단계 진입 조건이다</h2>
+        </div>
+        <span class="slide-no">14 / 18</span>
+      </header>
+      <div class="content">
+        <div class="timeline">
+          <div class="phase" style="--phase: var(--green)">
+            <span class="phase-index">P0 · 60~90개</span>
+            <h3>선택 가능한 시작 재고</h3>
+            <ul class="clean-list">
+              <li>3개 카테고리</li>
+              <li>24~36개 핵심 상황</li>
+              <li>출처·제작자·결과물이 명확</li>
+            </ul>
+            <p><strong>진입 조건:</strong> 실제 사용자가 이어서 읽고 실행할 수 있음</p>
+          </div>
+          <div class="phase" style="--phase: var(--blue)">
+            <span class="phase-index">P1 · 250~500개</span>
+            <h3>반복 공급이 되는 재고</h3>
+            <ul class="clean-list">
+              <li>5개 카테고리</li>
+              <li>100~180개 반복 상황</li>
+              <li>제작 지원과 업데이트 큐</li>
+            </ul>
+            <p><strong>진입 조건:</strong> 신규 발행과 수정이 월 단위로 반복</p>
+          </div>
+          <div class="phase" style="--phase: var(--amber)">
+            <span class="phase-index">P2 · 1,000~2,000개</span>
+            <h3>플랫폼 운영이 필요한 재고</h3>
+            <ul class="clean-list">
+              <li>9개 카테고리</li>
+              <li>300~600개 사용자 상황</li>
+              <li>중복·권리·안전 검토 자동화</li>
+            </ul>
+            <p><strong>진입 조건:</strong> 제작자 직접 발행과 관리 권한이 작동</p>
+          </div>
+        </div>
+      </div>
+      <footer class="slide-foot">
+        <div>현재 44개에서 먼저 확인할 것은 ‘몇 개 더 만들까’가 아니라 ‘어떤 상황이 비었나’다.</div>
+        <div class="confidence">단계 목표: C</div>
+      </footer>
+    </section>
+
+    <section class="slide" id="slide-15" data-title="공급 모델의 확장 순서" data-tone="amber">
+      <header class="slide-head">
+        <div>
+          <p class="eyebrow">공급 운영</p>
+          <h2>내부 편집 → 제작 지원 → 직접 발행 순으로 권한을 연다</h2>
+        </div>
+        <span class="slide-no">15 / 18</span>
+      </header>
+      <div class="content">
+        <div class="flow-line" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+          <div class="flow-node keep">
+            <strong>1. 내부 편집</strong>
+            <small>Flow 단위, 품질 기준, 출처와 도착 형식을 직접 확정한다.</small>
+            <p class="mt-16"><span class="tag">지금</span> P0 60~90개</p>
+          </div>
+          <div class="flow-node count">
+            <strong>2. 제작 지원</strong>
+            <small>제작자 원본을 FlowMe가 변환하고 제작자가 검토·승인한다.</small>
+            <p class="mt-16"><span class="tag blue">다음</span> P1 250~500개</p>
+          </div>
+          <div class="flow-node" style="border-top:5px solid var(--amber)">
+            <strong>3. 제작자 직접 발행</strong>
+            <small>중복 제안, 권리 확인, 업데이트 알림, 검토 권한이 준비된 뒤 연다.</small>
+            <p class="mt-16"><span class="tag amber">조건부</span> P2 1,000+</p>
+          </div>
+        </div>
+        <div class="grid-3 mt-16">
+          <div class="panel"><h3>내부 편집이 먼저인 이유</h3><p class="mb-0">어떤 콘텐츠를 하나로 셀지 합의되지 않으면 직접 발행이 중복을 폭발시킨다.</p></div>
+          <div class="panel"><h3>제작 지원이 중간인 이유</h3><p class="mb-0">복잡한 편집기를 강요하지 않고 제작자 가치와 검토 비용을 먼저 확인할 수 있다.</p></div>
+          <div class="panel"><h3>직접 발행의 선행 조건</h3><p class="mb-0">소유권, 버전, 중복 통합, 신고, 만료, 관리자 역할이 실제 운영돼야 한다.</p></div>
+        </div>
+      </div>
+      <footer class="slide-foot">
+        <div class="source-links"><a href="2026-07-20-flowme-contributor-platform-growth-strategy-ceo-ko.html">참여형 플랫폼 성장 전략</a></div>
+        <div class="confidence">확장 순서: 전략 권고</div>
+      </footer>
+    </section>
+
+    <section class="slide" id="slide-16" data-title="앞으로 세어야 할 숫자" data-tone="blue">
+      <header class="slide-head">
+        <div>
+          <p class="eyebrow">핵심 지표</p>
+          <h2>총 콘텐츠 수 하나로는 공급의 건강도를 알 수 없다</h2>
+        </div>
+        <span class="slide-no">16 / 18</span>
+      </header>
+      <div class="content grid-3">
+        <div class="panel">
+          <span class="tag">재고</span>
+          <h3>활성 기준 Flow</h3>
+          <p>중복을 없애고 지금 바로 공개할 수 있는 기준본과 의미 있는 파생본.</p>
+          <p class="mb-0"><strong>함께 볼 숫자:</strong> 30·90일 내 출처 확인률, 만료 대기 수</p>
+        </div>
+        <div class="panel">
+          <span class="tag blue">커버리지</span>
+          <h3>고유 사용자 상황</h3>
+          <p>재고가 실제로 해결하는 서로 다른 목적과 순간. 카테고리 태그 수가 아니다.</p>
+          <p class="mb-0"><strong>함께 볼 숫자:</strong> 상황별 좋은 기준본 수, 빈 상황 수</p>
+        </div>
+        <div class="panel">
+          <span class="tag amber">운영</span>
+          <h3>승인·수정 처리량</h3>
+          <p>월 신규 승인, 반려, 통합, 만료, 수정에 걸린 실제 시간.</p>
+          <p class="mb-0"><strong>함께 볼 숫자:</strong> Flow당 비용, 검토 대기일</p>
+        </div>
+        <div class="panel">
+          <span class="tag coral">제작자</span>
+          <h3>활성 제작자</h3>
+          <p>가입자가 아니라 최근 90일 내 발행하거나 기준본을 갱신한 제작자.</p>
+          <p class="mb-0"><strong>함께 볼 숫자:</strong> 상위 10명 공급 비중</p>
+        </div>
+        <div class="panel">
+          <span class="tag gray">사용</span>
+          <h3>개인 실행본</h3>
+          <p>사용자가 날짜·담당자·상태를 적용한 비공개 실행본. 재고와 분리한다.</p>
+          <p class="mb-0"><strong>함께 볼 숫자:</strong> 적용률, 시작률, 완료·중단률</p>
+        </div>
+        <div class="panel">
+          <span class="tag gray">품질</span>
+          <h3>실행 결과</h3>
+          <p>원본 열람이 아니라 도착 형식 생성, 첫 행동 시작, 재사용으로 판단한다.</p>
+          <p class="mb-0"><strong>현재:</strong> 사용자 관찰 결과 미측정</p>
+        </div>
+      </div>
+      <footer class="slide-foot">
+        <div>핵심 KPI: 활성 기준 Flow × 고유 상황 커버리지 × 최신성. 개인 실행본은 사용 지표로 별도 관리.</div>
+        <div class="confidence">측정 체계: 전략 제안</div>
+      </footer>
+    </section>
+
+    <section class="slide" id="slide-17" data-title="지금 할 일과 하지 않을 일">
+      <header class="slide-head">
+        <div>
+          <p class="eyebrow">다음 90일</p>
+          <h2>새로 100개를 더 만들기 전에 44개를 믿을 수 있는 기준점으로 만든다</h2>
+        </div>
+        <span class="slide-no">17 / 18</span>
+      </header>
+      <div class="content grid-2">
+        <div class="panel" style="border-top:6px solid var(--green)">
+          <h3 class="green">지금 할 일</h3>
+          <ul class="clean-list">
+            <li><strong>90개 분류 문자열을 9개 전략 분류로 정리</strong></li>
+            <li><strong>24개 기존 P0 후보를 새 계산 기준으로 재심사</strong></li>
+            <li>육아·여행·집에서 빈 핵심 상황 16~46개 보강</li>
+            <li>저위험·중위험·고갱신 Flow의 실제 제작 시간을 기록</li>
+            <li>신규 승인뿐 아니라 통합·만료·수정 건수도 함께 기록</li>
+            <li>사용자가 실행본을 만드는 과정은 관찰 세션으로 별도 검증</li>
+          </ul>
+        </div>
+        <div class="panel" style="border-top:6px solid var(--coral)">
+          <h3 class="coral">지금 하지 않을 일</h3>
+          <ul class="clean-list">
+            <li>개인화 조합을 공개 콘텐츠 수로 부풀리기</li>
+            <li>출처가 불명확한 원본을 대량 자동 수집하기</li>
+            <li>예약·결제·가격·지도 데이터를 직접 보유하기</li>
+            <li>낮은 품질의 유사 Flow로 선택지만 늘리기</li>
+            <li>운영 규칙 없이 제작자 직접 발행을 열기</li>
+            <li>자동 렌더링 검사를 사용자 검증으로 표현하기</li>
+          </ul>
+        </div>
+      </div>
+      <footer class="slide-foot">
+        <div class="source-links">
+          <a href="2026-07-18-flowme-flow-content-model-category-playbook-ceo-ko.html">Flow 콘텐츠 표준</a>
+          <a href="2026-07-20-flowme-four-modes-p0-24-gallery-ko.html">기존 P0 24개 보기</a>
+        </div>
+        <div class="confidence">실행 우선순위: 전략 권고</div>
+      </footer>
+    </section>
+
+    <section class="slide" id="slide-18" data-title="CEO 결정 3가지" data-tone="dark">
+      <header class="slide-head">
+        <div>
+          <p class="eyebrow">CEO 결정</p>
+          <h2>오늘 확정해야 할 것은 숫자보다 계산법과 공급 순서다</h2>
+        </div>
+        <span class="slide-no">18 / 18</span>
+      </header>
+      <div class="content">
+        <div class="grid-3">
+          <div class="decision">
+            <div class="decision-no">1</div>
+            <div>
+              <h3>무엇을 1개로 셀 것인가</h3>
+              <p><strong>추천:</strong> 중복을 제거한 기준 Flow와 행동이 달라지는 파생본만 공개 재고로 계산한다.</p>
+            </div>
+          </div>
+          <div class="decision">
+            <div class="decision-no">2</div>
+            <div>
+              <h3>P0를 어디에 집중할 것인가</h3>
+              <p><strong>추천:</strong> 육아·가족, 여행·외출, 집·생활관리에서 활성 60~90개를 먼저 완성한다.</p>
+            </div>
+          </div>
+          <div class="decision">
+            <div class="decision-no">3</div>
+            <div>
+              <h3>누가 어떻게 공급할 것인가</h3>
+              <p><strong>추천:</strong> 내부 편집과 제작 지원으로 시작하고, 운영 체계가 검증된 뒤 직접 발행을 연다.</p>
+            </div>
+          </div>
+        </div>
+        <div class="statement mt-16">승인 시 다음 행동: <strong>현재 44개 정리 → 기존 P0 24개 재심사 → 빈 핵심 상황 16~46개 보강 → 90일 제작·검토 비용 측정</strong></div>
+      </div>
+      <footer class="slide-foot">
+        <div class="source-links">
+          <a href="2026-07-27-flowme-content-supply-estimation-model.json">산정 모델</a>
+          <a href="2026-07-27-flowme-content-supply-evidence-ledger.json">근거 원장</a>
+          <a href="2026-07-22-flowme-vertical-service-content-coverage-atlas-ceo-ko.html">서비스·콘텐츠 도감</a>
+          <a href="2026-07-23-creator-flow-portfolio-review-ko.html">제작자 사례</a>
+        </div>
+        <div class="confidence">결론: 근거 기반 전략 가설 · 사용자 검증 전</div>
+      </footer>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const slides = [...document.querySelectorAll(".slide")];
+      const select = document.getElementById("slideSelect");
+      const label = document.getElementById("progressLabel");
+      const bar = document.getElementById("progressBar");
+      let currentIndex = 0;
+
+      slides.forEach((slide, index) => {
+        const option = document.createElement("option");
+        option.value = slide.id;
+        option.textContent = `${String(index + 1).padStart(2, "0")}. ${slide.dataset.title}`;
+        select.append(option);
+      });
+
+      const goTo = (index) => {
+        currentIndex = Math.max(0, Math.min(slides.length - 1, index));
+        slides[currentIndex].scrollIntoView({ behavior: "smooth", block: "start" });
+      };
+
+      const update = (index) => {
+        currentIndex = index;
+        select.value = slides[index].id;
+        label.textContent = `${index + 1} / ${slides.length}`;
+        bar.style.width = `${((index + 1) / slides.length) * 100}%`;
+      };
+
+      select.addEventListener("change", () => {
+        const index = slides.findIndex((slide) => slide.id === select.value);
+        if (index >= 0) goTo(index);
+      });
+      document.getElementById("prevSlide").addEventListener("click", () => goTo(currentIndex - 1));
+      document.getElementById("nextSlide").addEventListener("click", () => goTo(currentIndex + 1));
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowLeft" || event.key === "PageUp") goTo(currentIndex - 1);
+        if (event.key === "ArrowRight" || event.key === "PageDown") goTo(currentIndex + 1);
+      });
+
+      const observer = new IntersectionObserver((entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (!visible) return;
+        const index = slides.indexOf(visible.target);
+        if (index >= 0) update(index);
+      }, { rootMargin: "-20% 0px -55% 0px", threshold: [0, 0.25, 0.5, 0.75] });
+
+      slides.forEach((slide) => observer.observe(slide));
+      update(0);
+    })();
+  </script>
+</body>
+</html>
