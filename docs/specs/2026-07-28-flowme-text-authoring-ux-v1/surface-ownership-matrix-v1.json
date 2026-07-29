@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "flowme-surface-ownership-matrix-v1",
+  "surfaces": [
+    {
+      "id": "input",
+      "userQuestion": "무엇을 Flow로 만들까?",
+      "primaryAction": "구조 확인",
+      "owns": ["raw_text", "input_source", "recovery_status"],
+      "doesNotOwn": ["canonical_publish", "execution_completion", "all_properties"]
+    },
+    {
+      "id": "structure_review",
+      "userQuestion": "FlowMe가 내용을 어떻게 나눴나?",
+      "primaryAction": "결과 보기",
+      "owns": ["block_mapping", "role_correction", "order", "unresolved"],
+      "doesNotOwn": ["artifact_execution", "completion", "publish"]
+    },
+    {
+      "id": "result_preview",
+      "userQuestion": "실제로 무엇이 만들어지나?",
+      "primaryAction": "범위와 개수가 있는 저장 또는 export",
+      "owns": ["artifact_projection", "count", "loss", "minimal_personalization"],
+      "doesNotOwn": ["source_edit", "execution_history"]
+    },
+    {
+      "id": "item_editor",
+      "userQuestion": "이 항목에서 무엇을 고칠까?",
+      "primaryAction": "변경 적용",
+      "owns": ["title", "detail", "completion_criterion", "optional_properties"],
+      "doesNotOwn": ["other_items", "run_completion"]
+    },
+    {
+      "id": "ownership_review",
+      "userQuestion": "이 내용은 누구 것이고 어디에 저장되나?",
+      "primaryAction": "개인 초안 저장 또는 검토 요청",
+      "owns": ["source_user_comparison", "ownership_lane", "rights_safety_gate"],
+      "doesNotOwn": ["direct_canonical_overwrite"]
+    },
+    {
+      "id": "receipt",
+      "userQuestion": "무엇이 저장되거나 이동됐나?",
+      "primaryAction": "저장 결과 열기",
+      "owns": ["title", "scope", "count", "artifact", "source_preservation"],
+      "doesNotOwn": ["new_authoring_settings", "execution_editor"]
+    }
+  ],
+  "responsiveModes": {
+    "390": "single_surface_input_structure_result",
+    "1024": "two_pane_with_inspector_drawer",
+    "1440": "source_outline_artifact_with_focus_mode"
+  }
+}

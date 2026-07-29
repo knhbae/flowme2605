@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "flowme-text-authoring-contract-v1",
+  "decision": "adopt_hybrid_text_preview",
+  "observedUserCount": 0,
+  "claimBoundary": "Deterministic fixtures, screenshots, and agent reviews are not observed-user validation.",
+  "document": {
+    "requiredFields": [
+      "documentId",
+      "ownership",
+      "rawText",
+      "inputKinds",
+      "parseResult",
+      "revision"
+    ],
+    "ownershipValues": [
+      "personal",
+      "creator",
+      "suggestion"
+    ],
+    "inputKinds": [
+      "plain_text",
+      "markdown",
+      "table",
+      "url",
+      "mixed"
+    ]
+  },
+  "canonicalHierarchy": [
+    "source_row",
+    "item",
+    "step",
+    "flow",
+    "bundle"
+  ],
+  "mappingTargets": [
+    "flow",
+    "step",
+    "item",
+    "detail",
+    "completion",
+    "field",
+    "resource",
+    "guide",
+    "caution",
+    "source",
+    "unresolved"
+  ],
+  "correctionOperations": [
+    "merge",
+    "split",
+    "indent",
+    "outdent",
+    "reorder",
+    "rename",
+    "change_role",
+    "include",
+    "exclude",
+    "restore",
+    "set_property",
+    "undo"
+  ],
+  "readableLabels": {
+    "detail": ["자세히", "설명"],
+    "completion": ["완료 기준"],
+    "date": ["날짜"],
+    "time": ["시간"],
+    "place": ["장소"],
+    "recurrence": ["반복"],
+    "condition": ["조건"],
+    "duration": ["예상 시간"],
+    "resource": ["자료", "영상"],
+    "source": ["출처"],
+    "memo": ["메모"]
+  },
+  "unsupportedPolicy": {
+    "silentDrop": false,
+    "retainRawText": true,
+    "createIssue": true,
+    "allowedResolutions": [
+      "keep_as_text",
+      "convert_to_item",
+      "convert_to_detail",
+      "convert_to_resource",
+      "exclude_from_draft"
+    ]
+  },
+  "artifactPolicy": {
+    "primaryCount": 1,
+    "secondaryMax": 2,
+    "hideIneligible": true,
+    "requireCountAndLossPreflight": true,
+    "undatedCalendarEvents": false
+  },
+  "ownershipRules": {
+    "sourceMutable": false,
+    "creatorDraftCanonicalImpact": "none_until_approved",
+    "personalCanonicalImpact": "none",
+    "completionOwnedBy": "execution_run",
+    "occurrenceOwnedBy": "recurrence_occurrence",
+    "publicCorrectionPath": "correction_suggestion"
+  },
+  "recovery": {
+    "persistRawText": true,
+    "persistLatestMapping": true,
+    "persistRevisionHistory": true,
+    "restoreFocusTarget": true
+  },
+  "migration": {
+    "canonicalSchemaChangeRequiredForFirstSlice": false,
+    "newNamespacedDraftStorage": true,
+    "existingStorageKeysChanged": false
+  }
+}

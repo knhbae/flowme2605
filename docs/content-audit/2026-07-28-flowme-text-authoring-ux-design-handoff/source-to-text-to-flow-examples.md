@@ -37,7 +37,15 @@ Expected interpretation:
 - relative dates require one user anchor date;
 - source stays attached to the Flow and relevant Items.
 
-## 2. Recurring Flow With Resources
+Version boundary:
+
+- this qualified corpus example is AJD with 27 Items;
+- current runtime AJD has 24 Items;
+- the earlier Input Composer example is EasyLaw with 24 Items.
+
+The authoring UI must show the exact fixture and must not combine them.
+
+## 2. Ordered Flow With Resources
 
 Evidence:
 
@@ -62,10 +70,45 @@ Expected interpretation:
 
 - the video is a resource, not a second completed Item;
 - the seven days preserve order;
-- a user schedule may project the seven Items to Calendar;
-- completion belongs to an execution occurrence, not the resource URL.
+- a user start date may project the seven sequence Items to Calendar;
+- completion belongs to each sequence Item, not the resource URL;
+- this seven-video fixture is not the same as the one-video
+  `curated-allblanc-morning-workout` weekly routine.
 
-## 3. Long Progress Table
+## 3. Relative Timeline With Optional Undated Use
+
+Evidence:
+
+- `lib/flow/real-content-pilot-flows.ts`
+
+Frozen author text:
+
+```markdown
+## D-14 검사 기간 확인
+- 자동차검사 기간과 예약 가능일 확인하기 D-14
+- 차량번호와 예약 정보 확인하기 D-14
+- 가까운 검사소와 수수료 확인하기 D-10
+
+## D-3 차량 상태 점검
+- 번호판과 차대번호 식별 상태 확인하기 D-3
+- 등화장치와 경음기 작동 확인하기 D-3
+- 타이어 마모와 공기압 확인하기 D-3
+- 오일 누유와 경고등 여부 기록하기 D-3
+
+## D-Day 검사 당일
+- 예약 시간보다 여유 있게 검사소 도착하기 D-Day
+- 접수와 수수료 결제 진행하기 D-Day
+- 검사 결과와 재검사 필요 항목 기록하기 D-Day
+```
+
+Expected interpretation:
+
+- canonical source keeps D-14, D-10, D-3, and D-Day;
+- before a user supplies an inspection date, Todo may remain undated;
+- adding an inspection date calculates Calendar dates without changing source offsets;
+- removing the personal date returns to the undated projection, not a source rewrite.
+
+## 4. Long Progress Table
 
 Evidence:
 
@@ -92,7 +135,7 @@ Expected interpretation:
 The same rule applies to the LibriVox 38-chapter queue: preserve all chapters and current playback
 position; do not invent listening dates.
 
-## 4. Decision And Record Flow
+## 5. Decision And Record Flow
 
 Evidence:
 
@@ -120,7 +163,7 @@ Expected interpretation:
 - explanatory purchase context remains detail or Memo;
 - the UI must not reduce every decision to a binary checkbox.
 
-## 5. Personal Free-Text Memo
+## 6. Personal Free-Text Memo
 
 Current deterministic fixture:
 
@@ -145,7 +188,7 @@ The authoring UX must preserve the original fragment, show the five interpreted 
 merge, split, reorder, rename, include/exclude, and personal date edits. It must not claim that a
 live AI generated the structure when the prototype uses deterministic parsing.
 
-## 6. Guide And Safety Content
+## 7. Guide And Safety Content
 
 Evidence:
 

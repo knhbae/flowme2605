@@ -37,9 +37,21 @@ Full data:
 
 ## Version Warning
 
-The runtime `moving-d30-basic` and the qualified-corpus `bundle-moving-d30` can have different
-Item counts. A design must display `fixtureId`, `sourceVersion`, and `itemCount`; it must not merge
-the 24-Item and 27-Item variants silently.
+The moving benchmark has three distinct evidence versions:
+
+- current runtime `moving-d30-basic`: AJD, 24 Items;
+- qualified corpus `bundle-moving-d30`: AJD, 27 Items;
+- Input Composer `IC-C01-MOVING`: EasyLaw, 24 Items.
+
+A design must display `fixtureId`, source URL/version, and `itemCount`; it must not merge these
+versions silently.
+
+The Allblanc evidence also has two intentional variants:
+
+- `bundle-allblanc-7day-abs`: seven videos in a Day 1-7 sequence;
+- `curated-allblanc-morning-workout`: one video with user-owned weekly recurrence.
+
+Do not model the seven-day sequence as an infinite recurrence.
 
 ## Fixture Directories
 

@@ -1,0 +1,699 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>FlowMe Text Authoring A/B/C Wireflows</title>
+  <style>
+    :root {
+      --bg: #eef1ee;
+      --paper: #fff;
+      --ink: #1d2520;
+      --muted: #667069;
+      --line: #d7ddd8;
+      --green: #176b4b;
+      --green-soft: #e8f3ed;
+      --blue: #285f88;
+      --blue-soft: #e9f1f7;
+      --coral: #a84b39;
+      --coral-soft: #f9ece8;
+      --yellow: #756018;
+      --yellow-soft: #fff5cf;
+      --radius: 8px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--bg);
+      font-family: Inter, Pretendard, "Noto Sans KR", system-ui, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      letter-spacing: 0;
+    }
+    button, select { font: inherit; letter-spacing: 0; }
+    button, select {
+      min-height: 40px;
+      border: 1px solid #b9c4bc;
+      border-radius: 6px;
+      background: #fff;
+      color: var(--ink);
+    }
+    button { cursor: pointer; }
+    button:focus-visible, select:focus-visible, [tabindex]:focus-visible {
+      outline: 3px solid rgba(40, 95, 136, 0.3);
+      outline-offset: 2px;
+    }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 3px; font-size: 22px; }
+    h2 { font-size: 21px; }
+    h3 { font-size: 14px; }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 10px 18px;
+      background: rgba(255,255,255,0.97);
+      border-bottom: 1px solid var(--line);
+    }
+    .topbar p { margin: 0; color: var(--muted); font-size: 12px; }
+    .controls { display: flex; align-items: end; flex-wrap: wrap; gap: 8px; }
+    .control label { display: block; margin-bottom: 3px; color: var(--muted); font-size: 10px; font-weight: 800; }
+    .control select { min-width: 132px; padding: 0 30px 0 9px; }
+    .layout {
+      display: grid;
+      grid-template-columns: 238px minmax(0, 1fr);
+      min-height: calc(100vh - 64px);
+    }
+    .rail {
+      padding: 14px 10px 60px;
+      background: #f8faf8;
+      border-right: 1px solid var(--line);
+    }
+    .rail h2 { padding: 0 8px; font-size: 13px; }
+    .state-list { display: flex; flex-direction: column; gap: 3px; }
+    .state-button {
+      width: 100%;
+      min-height: 42px;
+      display: grid;
+      grid-template-columns: 26px minmax(0, 1fr);
+      align-items: center;
+      gap: 7px;
+      padding: 6px 8px;
+      border-color: transparent;
+      background: transparent;
+      text-align: left;
+    }
+    .state-button[aria-current="step"] {
+      border-color: var(--green);
+      background: var(--green-soft);
+      color: var(--green);
+      font-weight: 800;
+    }
+    .state-num {
+      width: 24px;
+      height: 24px;
+      display: grid;
+      place-items: center;
+      border-radius: 4px;
+      background: #e5e9e6;
+      font-size: 10px;
+      font-weight: 900;
+    }
+    .canvas {
+      min-width: 0;
+      padding: 24px 24px 80px;
+    }
+    .canvas-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(300px, 0.7fr);
+      gap: 20px;
+      margin-bottom: 18px;
+    }
+    .verdict {
+      padding: 13px 15px;
+      border-left: 4px solid var(--green);
+      background: var(--paper);
+    }
+    .verdict strong { display: block; margin-bottom: 3px; color: var(--green); }
+    .evidence {
+      display: inline-flex;
+      min-height: 24px;
+      align-items: center;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: var(--yellow-soft);
+      color: var(--yellow);
+      font-size: 10px;
+      font-weight: 800;
+    }
+    .compare-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      align-items: start;
+    }
+    .side h2 {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+      font-size: 15px;
+    }
+    .side-note { color: var(--muted); font-size: 11px; font-weight: 500; }
+    .device-shell {
+      width: 100%;
+      margin: 0 auto;
+      border: 1px solid #aeb9b1;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 14px 34px rgba(25, 43, 32, 0.08);
+      overflow: hidden;
+    }
+    .device-shell[data-viewport="390"] { max-width: 390px; }
+    .device-shell[data-viewport="1024"] { max-width: 1024px; }
+    .device-shell[data-viewport="1440"] { max-width: 1440px; }
+    .device-bar {
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 9px;
+      border-bottom: 1px solid var(--line);
+      background: #f5f7f5;
+      color: var(--muted);
+      font-size: 9px;
+    }
+    .wire {
+      min-height: 610px;
+      background: #fff;
+    }
+    .wire-nav {
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      border-bottom: 1px solid var(--line);
+    }
+    .wire-logo { font-weight: 900; }
+    .wire-tabs { display: flex; gap: 4px; }
+    .wire-pill {
+      min-height: 25px;
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 7px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      color: var(--muted);
+      font-size: 9px;
+    }
+    .wire-pill.active { border-color: var(--green); color: var(--green); background: var(--green-soft); }
+    .wire-body { padding: 12px; }
+    .wire-columns {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+    .device-shell[data-viewport="1024"] .wire-columns,
+    .device-shell[data-viewport="1440"] .wire-columns { grid-template-columns: repeat(var(--wire-cols, 2), minmax(0, 1fr)); }
+    .wire-panel {
+      min-width: 0;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+    .wire-panel-head {
+      padding: 8px 9px;
+      border-bottom: 1px solid var(--line);
+      background: #f7f9f7;
+    }
+    .wire-panel-head strong, .wire-panel-head span { display: block; }
+    .wire-panel-head strong { font-size: 10px; }
+    .wire-panel-head span { color: var(--muted); font-size: 8px; }
+    .wire-panel-body { padding: 9px; }
+    .line {
+      min-height: 12px;
+      margin: 6px 0;
+      border-radius: 2px;
+      background: #e6eae7;
+    }
+    .line.short { width: 54%; }
+    .line.med { width: 76%; }
+    .line.blue { background: #d8e8f3; }
+    .line.coral { background: #f2dcd6; }
+    .line.green { background: #d7ebdf; }
+    .text-line {
+      margin: 6px 0;
+      color: #3f4943;
+      font-size: 9px;
+      overflow-wrap: anywhere;
+    }
+    .mini-row {
+      min-height: 38px;
+      display: grid;
+      grid-template-columns: 20px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 2px;
+      border-bottom: 1px solid #edf0ed;
+      font-size: 9px;
+    }
+    .mini-icon {
+      width: 19px;
+      height: 19px;
+      display: grid;
+      place-items: center;
+      border-radius: 3px;
+      background: #e6eae7;
+      color: var(--muted);
+      font-size: 7px;
+      font-weight: 900;
+    }
+    .mini-row.selected { box-shadow: inset 2px 0 0 var(--green); background: #f7fbf9; }
+    .mini-row.issue { box-shadow: inset 2px 0 0 #b28c10; background: #fffbeb; }
+    .mini-actions { display: flex; gap: 4px; margin-top: 9px; }
+    .mini-button {
+      min-height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3px 8px;
+      border: 1px solid #bcc6be;
+      border-radius: 4px;
+      font-size: 8px;
+      font-weight: 800;
+    }
+    .mini-button.primary { flex: 1; border-color: var(--green); background: var(--green); color: #fff; }
+    .mini-button.secondary { background: #fff; }
+    .mini-banner {
+      margin: 7px 0;
+      padding: 7px 8px;
+      border-left: 3px solid var(--blue);
+      background: var(--blue-soft);
+      color: #28506d;
+      font-size: 8px;
+    }
+    .mini-banner.warn { border-color: #9b7f16; background: var(--yellow-soft); color: #665613; }
+    .mini-banner.user { border-color: var(--coral); background: var(--coral-soft); color: #76382d; }
+    .wire-footer {
+      position: relative;
+      display: flex;
+      gap: 5px;
+      padding: 8px 12px;
+      border-top: 1px solid var(--line);
+      background: #fff;
+    }
+    .wire-footer .mini-button.primary { min-height: 34px; }
+    .notes {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .note {
+      padding: 10px;
+      border-top: 3px solid var(--line);
+      background: #fff;
+    }
+    .note strong, .note span { display: block; }
+    .note strong { margin-bottom: 3px; font-size: 10px; text-transform: uppercase; }
+    .note span { color: var(--muted); font-size: 11px; }
+    .note.primary { border-color: var(--green); }
+    .note.remove { border-color: var(--coral); }
+    .note.data { border-color: var(--blue); }
+    .journey {
+      margin-top: 40px;
+      padding: 20px;
+      background: #fff;
+      border: 1px solid var(--line);
+    }
+    .journey-track {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(100px, 1fr));
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+    }
+    .journey-step {
+      min-height: 84px;
+      padding: 9px;
+      border: 1px solid var(--line);
+      border-top: 4px solid var(--line);
+      background: #fafbfa;
+      cursor: pointer;
+    }
+    .journey-step.active { border-top-color: var(--green); background: var(--green-soft); }
+    .journey-step strong, .journey-step span { display: block; }
+    .journey-step span { margin-top: 5px; color: var(--muted); font-size: 10px; }
+    .matrix {
+      margin-top: 40px;
+      overflow-x: auto;
+    }
+    table { width: 100%; min-width: 820px; border-collapse: collapse; background: #fff; }
+    th, td { padding: 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: #f7f9f7; color: var(--muted); font-size: 10px; }
+    td { font-size: 11px; }
+    .mobile-state-picker { display: none; }
+
+    @media (max-width: 900px) {
+      .topbar { align-items: flex-start; }
+      .layout { grid-template-columns: 1fr; }
+      .rail { display: none; }
+      .mobile-state-picker { display: block; margin-bottom: 12px; }
+      .mobile-state-picker select { width: 100%; }
+      .canvas { padding: 18px 14px 60px; }
+      .canvas-head { grid-template-columns: 1fr; gap: 10px; }
+      .compare-grid { grid-template-columns: 1fr; }
+      .notes { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 580px) {
+      .topbar { display: block; padding: 9px 12px; }
+      .topbar h1 { font-size: 17px; }
+      .controls { margin-top: 8px; display: grid; grid-template-columns: 1fr 1fr; }
+      .control select { width: 100%; min-width: 0; }
+      .canvas { padding: 14px 10px 50px; }
+      .notes { grid-template-columns: 1fr; }
+      .device-shell[data-viewport="1024"], .device-shell[data-viewport="1440"] { max-width: 100%; }
+      .device-shell[data-viewport="1024"] .wire-columns,
+      .device-shell[data-viewport="1440"] .wire-columns { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>Text Authoring A/B/C Wireflows</h1>
+      <p>같은 상태·같은 콘텐츠로 현재안과 대안을 비교합니다. observed-user count 0.</p>
+    </div>
+    <div class="controls">
+      <div class="control">
+        <label for="alternative">대안</label>
+        <select id="alternative">
+          <option value="C">C · Hybrid 권장</option>
+          <option value="A">A · Markdown-first</option>
+          <option value="B">B · Block/outline</option>
+        </select>
+      </div>
+      <div class="control">
+        <label for="viewport">Viewport</label>
+        <select id="viewport">
+          <option value="390">390 × 844</option>
+          <option value="1024">1024 × 768</option>
+          <option value="1440">1440 × 900</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="rail">
+      <h2>18개 필수 상태</h2>
+      <nav class="state-list" id="stateList" aria-label="Wireflow 상태"></nav>
+    </aside>
+
+    <main class="canvas">
+      <div class="mobile-state-picker control">
+        <label for="mobileState">상태</label>
+        <select id="mobileState"></select>
+      </div>
+
+      <div class="canvas-head">
+        <div>
+          <span class="evidence">design proposal · deterministic fixtures</span>
+          <h2 id="screenTitle" style="margin-top:8px">빈 composer</h2>
+          <p id="screenQuestion">사용자 질문: 무엇을 Flow로 만들까?</p>
+        </div>
+        <div class="verdict">
+          <strong id="screenDecision">C의 결정</strong>
+          <span id="screenDecisionBody">입력 경로를 고르게 하지 않고 composer 하나만 보여 줍니다.</span>
+        </div>
+      </div>
+
+      <div class="compare-grid">
+        <section class="side">
+          <h2><span>Current Input Composer</span><span class="side-note">prior prototype</span></h2>
+          <div id="currentFrame"></div>
+        </section>
+        <section class="side">
+          <h2><span id="proposedLabel">Proposed C</span><span class="side-note">design proposal</span></h2>
+          <div id="proposedFrame"></div>
+        </section>
+      </div>
+
+      <div class="notes">
+        <div class="note primary"><strong>Primary</strong><span id="notePrimary"></span></div>
+        <div class="note"><strong>접힘 정보</strong><span id="noteCollapsed"></span></div>
+        <div class="note remove"><strong>제거</strong><span id="noteRemove"></span></div>
+        <div class="note data"><strong>계약</strong><span id="noteData"></span></div>
+      </div>
+
+      <section class="journey">
+        <h2>Continuity map</h2>
+        <div class="journey-track" id="journeyTrack"></div>
+      </section>
+
+      <section class="matrix">
+        <h2>Responsive contract</h2>
+        <table>
+          <thead><tr><th>Viewport</th><th>Input</th><th>Structure</th><th>Result</th><th>Inspector</th><th>금지</th></tr></thead>
+          <tbody>
+            <tr><td>390</td><td>한 화면 첫 단계</td><td>둘째 단계</td><td>셋째 단계</td><td>bottom sheet/전체 화면</td><td>세 열 축소판</td></tr>
+            <tr><td>1024</td><td>원문+outline</td><td>outline+artifact로 전환</td><td>항상 한 pane</td><td>drawer</td><td>190+360+390 고정 3열</td></tr>
+            <tr><td>1440</td><td>source/text</td><td>interpreted outline</td><td>artifact</td><td>artifact pane 대체</td><td>네 번째 pane 추가</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const states = [
+      { id:"empty", label:"빈 composer", phase:"input", q:"무엇을 Flow로 만들까?", decision:"입력 경로를 고르게 하지 않고 composer 하나만 보여 줍니다.", primary:"예시 사용 또는 입력 시작", collapsed:"source 상세, 고급 속성", remove:"한 줄/여러 줄/URL/표 네 경로 버튼", data:"저장 없음" },
+      { id:"typing", label:"일반 메모 입력", phase:"input", q:"내 메모가 어떻게 나뉠까?", decision:"원문 한 문장과 해석될 5개 Item을 동시에 잃지 않습니다.", primary:"구조 확인", collapsed:"감지 전 taxonomy", remove:"문법 안내 hero", data:"raw text local draft" },
+      { id:"markdown", label:"Markdown 붙여넣기", phase:"input", q:"기존 Markdown을 그대로 쓸 수 있나?", decision:"heading/checklist는 힌트이며 FlowMe 전용 문법이 아닙니다.", primary:"구조 확인", collapsed:"지원 syntax 목록", remove:"기본 slash toolbar", data:"raw Markdown + source ranges" },
+      { id:"table", label:"표 14/38행", phase:"input", q:"행과 열이 전부 들어왔나?", decision:"row count와 header mapping을 먼저 보여 주고 축약하지 않습니다.", primary:"14개 행으로 확인", collapsed:"개별 row 속성", remove:"모두 펼치기만 있는 긴 목록", data:"table cells + row lineage" },
+      { id:"source", label:"URL 포함 입력", phase:"input", q:"링크에서 무엇을 확보했나?", decision:"URL과 확보한 원문 범위를 분리합니다.", primary:"원문 범위 확인", collapsed:"full URL과 provider 진단", remove:"가져온 척하는 가짜 결과", data:"URL only until import" },
+      { id:"detecting", label:"구조 감지 중", phase:"input", q:"내 입력이 사라지지 않았나?", decision:"layout을 유지하고 작은 진행 상태만 표시합니다.", primary:"없음", collapsed:"parser 내부 단계", remove:"AI thinking 연출", data:"raw snapshot retained" },
+      { id:"mapping", label:"원문-Item 연결", phase:"structure", q:"FlowMe가 어떻게 나눴나?", decision:"원문 line과 Step/Item을 같은 시선축에 둡니다.", primary:"전체 결과 보기", collapsed:"문제 없는 property", remove:"전체 editor", data:"block-to-canonical mapping" },
+      { id:"correction", label:"합치기·나누기", phase:"structure", q:"잘못 나뉜 부분만 어떻게 고치나?", decision:"선택한 row에만 bounded structure command를 엽니다.", primary:"변경 적용", collapsed:"다른 row command", remove:"모든 row의 button strip", data:"revision operation + undo" },
+      { id:"role", label:"Item/resource/guide", phase:"structure", q:"이 문장은 행동인가 자료인가?", decision:"역할이 불명확한 줄만 contextual role picker를 엽니다.", primary:"역할 적용", collapsed:"sourceTrace 상세", remove:"URL을 완료 Item으로 생성", data:"mapping role override" },
+      { id:"editor", label:"Contextual Item editor", phase:"structure", q:"이 항목에서 무엇을 고칠까?", decision:"제목·상세·완료 기준을 먼저, 날짜·반복은 펼침으로 둡니다.", primary:"변경 적용", collapsed:"일정과 근거", remove:"한 화면 전체 Item 편집", data:"draft field override" },
+      { id:"conflict", label:"원문과 내 값 충돌", phase:"structure", q:"어느 값이 결과에 쓰이나?", decision:"두 값을 보존하고 개인 projection에서 내 값을 우선합니다.", primary:"내 값 사용", collapsed:"revision diff", remove:"source overwrite", data:"SourceValue + UserOverride" },
+      { id:"primary", label:"Primary artifact", phase:"result", q:"실제로 무엇이 만들어지나?", decision:"자연스러운 결과 하나와 count를 먼저 보여 줍니다.", primary:"개인 Flow N개로 저장", collapsed:"secondary artifact", remove:"고정 5개 tab", data:"eligibility + count" },
+      { id:"secondary", label:"Secondary artifact", phase:"result", q:"다른 도구로 바꾸면 무엇이 빠지나?", decision:"실제 가치가 있는 최대 2개만 loss와 함께 보여 줍니다.", primary:"결과 전환", collapsed:"지원 불가 artifact", remove:"빈 artifact tab", data:"projection loss manifest" },
+      { id:"personal", label:"개인 초안 저장", phase:"handoff", q:"내 수정은 어디에 남나?", decision:"개인 구조와 값만 저장하고 원본을 바꾸지 않습니다.", primary:"개인 Flow N개로 저장", collapsed:"creator review gate", remove:"모호한 저장", data:"personal draft/overlay" },
+      { id:"creator", label:"제작자 초안·검토", phase:"handoff", q:"공개 전에 무엇을 확인하나?", decision:"sourceTrace·권리·안전·unresolved만 creator lane에 둡니다.", primary:"검토 요청", collapsed:"개인 실행 값", remove:"즉시 공개", data:"creator draft, no canonical impact" },
+      { id:"roundtrip", label:"Markdown round-trip", phase:"handoff", q:"텍스트로 다시 가져가면 무엇이 남나?", decision:"읽을 수 있는 label과 loss receipt를 함께 제공합니다.", primary:"Markdown 확인", collapsed:"occurrence identity", remove:"완전 무손실 주장", data:"RoundTripReceipt" },
+      { id:"error", label:"부분 해석·원문 필요", phase:"recovery", q:"무엇을 못 읽었고 어떻게 계속하나?", decision:"읽은 범위, 못 읽은 범위, 보존 내용, 다음 행동만 보여 줍니다.", primary:"텍스트로 계속", collapsed:"provider code", remove:"막다른 error", data:"raw + issue retained" },
+      { id:"recovery", label:"작성 중 초안 복구", phase:"recovery", q:"새로고침 전 작업이 남았나?", decision:"복구한 revision과 시각을 알리고 선택 위치까지 복원합니다.", primary:"계속 작성", collapsed:"storage key", remove:"조용한 복구", data:"namespaced local draft" }
+    ];
+
+    const journey = [
+      {phase:"input", label:"입력", note:"원문·메모·표"},
+      {phase:"structure", label:"해석", note:"lineage·issue"},
+      {phase:"result", label:"결과", note:"primary artifact"},
+      {phase:"handoff", label:"소유권", note:"personal/creator"},
+      {phase:"handoff", label:"저장·반출", note:"scope·count"},
+      {phase:"recovery", label:"복구", note:"revision·round-trip"}
+    ];
+
+    let activeState = states[0];
+    let alternative = "C";
+    let viewport = "390";
+
+    const $ = (selector) => document.querySelector(selector);
+    const $$ = (selector) => [...document.querySelectorAll(selector)];
+
+    function init() {
+      $("#stateList").innerHTML = states.map((state, index) =>
+        `<button class="state-button" type="button" data-state="${state.id}" aria-current="${state.id === activeState.id ? "step" : "false"}">
+          <span class="state-num">${String(index + 1).padStart(2,"0")}</span><span>${state.label}</span>
+        </button>`).join("");
+      $("#mobileState").innerHTML = states.map((state) => `<option value="${state.id}">${state.label}</option>`).join("");
+      $$(".state-button").forEach((button) => button.addEventListener("click", () => selectState(button.dataset.state)));
+      $("#mobileState").addEventListener("change", (event) => selectState(event.target.value));
+      $("#alternative").addEventListener("change", (event) => { alternative = event.target.value; render(); });
+      $("#viewport").addEventListener("change", (event) => { viewport = event.target.value; render(); });
+      render();
+    }
+
+    function selectState(id) {
+      activeState = states.find((state) => state.id === id);
+      $("#mobileState").value = id;
+      $$(".state-button").forEach((button) => button.setAttribute("aria-current", button.dataset.state === id ? "step" : "false"));
+      render();
+      window.scrollTo({top: 0, behavior: "smooth"});
+    }
+
+    function render() {
+      $("#screenTitle").textContent = activeState.label;
+      $("#screenQuestion").textContent = `사용자 질문: ${activeState.q}`;
+      $("#screenDecision").textContent = `${alternative}의 결정`;
+      $("#screenDecisionBody").textContent = decisionForAlternative(activeState);
+      $("#proposedLabel").textContent = `Proposed ${alternative}`;
+      $("#notePrimary").textContent = activeState.primary;
+      $("#noteCollapsed").textContent = activeState.collapsed;
+      $("#noteRemove").textContent = activeState.remove;
+      $("#noteData").textContent = activeState.data;
+      $("#currentFrame").innerHTML = frame("current");
+      $("#proposedFrame").innerHTML = frame("proposed");
+      $("#journeyTrack").innerHTML = journey.map((step, index) =>
+        `<button type="button" class="journey-step ${step.phase === activeState.phase ? "active" : ""}" data-phase="${step.phase}">
+          <strong>${index + 1}. ${step.label}</strong><span>${step.note}</span>
+        </button>`).join("");
+      $$(".journey-step").forEach((button) => button.addEventListener("click", () => {
+        const target = states.find((state) => state.phase === button.dataset.phase);
+        if (target) selectState(target.id);
+      }));
+    }
+
+    function decisionForAlternative(state) {
+      if (alternative === "A") {
+        if (state.phase === "input") return "원문 Markdown과 preview를 split view로 유지합니다.";
+        if (state.phase === "structure") return "Markdown line을 직접 수정하고 결과 diff를 확인합니다.";
+        return "Markdown 결과와 projection을 나란히 비교합니다.";
+      }
+      if (alternative === "B") {
+        if (state.phase === "input") return "입력을 block으로 만들고 outline에서 직접 구조화합니다.";
+        if (state.phase === "structure") return "drag, indent, property popover로 모든 구조를 조정합니다.";
+        return "block property를 artifact와 연결합니다.";
+      }
+      return state.decision;
+    }
+
+    function frame(side) {
+      const proposed = side === "proposed";
+      const title = proposed ? `대안 ${alternative}` : "현재";
+      const cols = proposed
+        ? alternative === "C" && viewport === "1440" ? 3 : viewport === "390" ? 1 : 2
+        : viewport === "390" ? 1 : 3;
+      return `<div class="device-shell" data-viewport="${viewport}">
+        <div class="device-bar"><span>${viewport}px</span><span>${title} · ${activeState.id}</span></div>
+        <div class="wire">
+          ${wireNav(proposed)}
+          <div class="wire-body">
+            <div class="wire-columns" style="--wire-cols:${cols}">
+              ${wirePanels(proposed)}
+            </div>
+          </div>
+          <div class="wire-footer">
+            ${proposed ? `<span class="mini-button secondary">${secondaryLabel()}</span><span class="mini-button primary">${activeState.primary}</span>`
+              : `<span class="mini-button secondary">자세히</span><span class="mini-button secondary">설정</span><span class="mini-button primary">${currentPrimary()}</span>`}
+          </div>
+        </div>
+      </div>`;
+    }
+
+    function wireNav(proposed) {
+      if (!proposed) return `<div class="wire-nav"><span class="wire-logo">FlowMe</span><div class="wire-tabs"><span class="wire-pill active">콘텐츠 만들기</span><span class="wire-pill">내 것으로 쓰기</span></div></div>`;
+      if (viewport === "390") return `<div class="wire-nav"><span class="wire-logo">FlowMe</span><div class="wire-tabs"><span class="wire-pill ${activeState.phase === "input" ? "active":""}">입력</span><span class="wire-pill ${activeState.phase === "structure" ? "active":""}">구조</span><span class="wire-pill ${["result","handoff","recovery"].includes(activeState.phase) ? "active":""}">결과</span></div></div>`;
+      return `<div class="wire-nav"><span class="wire-logo">FlowMe</span><div class="wire-tabs"><span class="wire-pill active">fixture simulation</span><span class="wire-pill">source 보존</span></div></div>`;
+    }
+
+    function wirePanels(proposed) {
+      if (!proposed) return currentPanels();
+      if (alternative === "A") return markdownPanels();
+      if (alternative === "B") return blockPanels();
+      return hybridPanels();
+    }
+
+    function currentPanels() {
+      const route = `<section class="wire-panel"><div class="wire-panel-head"><strong>입력 경로</strong><span>먼저 방식을 선택</span></div><div class="wire-panel-body">
+        <span class="wire-pill active">한 줄 빠른 추가</span> <span class="wire-pill">여러 줄</span> <span class="wire-pill">URL</span> <span class="wire-pill">표</span>
+        <div class="line"></div><div class="line"></div><div class="line med"></div>
+        <div class="mini-banner">source 범위와 긴 안내</div>
+      </div></section>`;
+      const values = `<section class="wire-panel"><div class="wire-panel-head"><strong>정할 값</strong><span>source와 개인 값 혼합</span></div><div class="wire-panel-body">
+        ${miniRows(["콘텐츠 범위","제목","기준일","장소","현재 상태"], false)}
+        <div class="mini-actions"><span class="mini-button secondary">자세히</span><span class="mini-button secondary">더 보기</span></div>
+      </div></section>`;
+      const result = `<section class="wire-panel"><div class="wire-panel-head"><strong>5개 artifact</strong><span>항상 같은 tab</span></div><div class="wire-panel-body">
+        <span class="wire-pill active">Calendar</span> <span class="wire-pill">Checklist</span> <span class="wire-pill">Sheet</span> <span class="wire-pill">Memo</span>
+        ${miniRows(["결과 미리보기","항목 1","항목 2","항목 3"], false)}
+      </div></section>`;
+      return `${route}${values}${result}`;
+    }
+
+    function markdownPanels() {
+      return `<section class="wire-panel"><div class="wire-panel-head"><strong>Markdown 원문</strong><span>사용자가 직접 구조 작성</span></div><div class="wire-panel-body">
+        <div class="text-line"># 8월 제주 여행 준비</div><div class="text-line">## 예약</div><div class="text-line">- [ ] 항공권 확인</div><div class="text-line">날짜: 2026-08-03</div>
+        <div class="mini-banner ${activeState.phase === "recovery" ? "warn":""}">${stateBanner()}</div>
+      </div></section>
+      <section class="wire-panel"><div class="wire-panel-head"><strong>해석 결과</strong><span>Markdown과 동시 비교</span></div><div class="wire-panel-body">${stateRows("A")}</div></section>`;
+    }
+
+    function blockPanels() {
+      return `<section class="wire-panel"><div class="wire-panel-head"><strong>Block outline</strong><span>drag · indent · property</span></div><div class="wire-panel-body">
+        ${miniRows(["Flow · 제주 여행","Step · 예약","Item · 항공권 확인","Item · 숙소 예약번호","Item · 렌터카 예약"], activeState.phase === "structure")}
+        <div class="mini-actions"><span class="mini-button secondary">+ Block</span><span class="mini-button secondary">속성</span></div>
+      </div></section>
+      <section class="wire-panel"><div class="wire-panel-head"><strong>Property / result</strong><span>선택 block 중심</span></div><div class="wire-panel-body">${stateRows("B")}</div></section>`;
+    }
+
+    function hybridPanels() {
+      if (viewport === "390") {
+        const label = activeState.phase === "input" ? "원문 입력" : activeState.phase === "structure" ? "해석 구조" : "실제 결과";
+        return `<section class="wire-panel"><div class="wire-panel-head"><strong>${label}</strong><span>${activeState.q}</span></div><div class="wire-panel-body">${stateRows("C")}</div></section>`;
+      }
+      if (activeState.phase === "input") {
+        return `<section class="wire-panel"><div class="wire-panel-head"><strong>원문 / 메모</strong><span>사용자가 소유</span></div><div class="wire-panel-body">${inputLines()}</div></section>
+          <section class="wire-panel"><div class="wire-panel-head"><strong>감지 요약</strong><span>결과 전 최소 확인</span></div><div class="wire-panel-body">${stateRows("C")}</div></section>`;
+      }
+      if (viewport === "1440") {
+        return `<section class="wire-panel"><div class="wire-panel-head"><strong>원문</strong><span>lineage</span></div><div class="wire-panel-body">${inputLines()}</div></section>
+          <section class="wire-panel"><div class="wire-panel-head"><strong>Outline</strong><span>불명확한 row만 보정</span></div><div class="wire-panel-body">${miniRows(["예약","항공권 확인","숙소 예약번호","렌터카 예약","출발 전날 체크인"], true)}</div></section>
+          <section class="wire-panel"><div class="wire-panel-head"><strong>Artifact</strong><span>Todo 5개</span></div><div class="wire-panel-body">${stateRows("C")}</div></section>`;
+      }
+      return `<section class="wire-panel"><div class="wire-panel-head"><strong>Outline</strong><span>원문 연결 유지</span></div><div class="wire-panel-body">${miniRows(["항공권 확인","숙소 예약번호","렌터카 예약","준비물","온라인 체크인"], true)}</div></section>
+        <section class="wire-panel"><div class="wire-panel-head"><strong>Artifact / inspector</strong><span>현재 작업에 따라 전환</span></div><div class="wire-panel-body">${stateRows("C")}</div></section>`;
+    }
+
+    function stateRows(mode) {
+      const id = activeState.id;
+      if (id === "empty") return `<div class="line blue"></div><div class="line"></div><div class="line med"></div><div class="mini-banner">메모, Markdown, URL을 같은 칸에 입력</div>`;
+      if (["typing","markdown","table","source","detecting"].includes(id)) return `${inputLines()}<div class="mini-banner ${id === "source" ? "warn":""}">${stateBanner()}</div>`;
+      if (["mapping","correction","role"].includes(id)) return `${miniRows(["항공권 확인","숙소 예약번호 정리","렌터카 예약","준비물 체크","온라인 체크인"], true)}<div class="mini-banner">${stateBanner()}</div>`;
+      if (id === "editor") return `<div class="text-line">제목 · 항공권 확인</div><div class="line"></div><div class="text-line">상세 설명</div><div class="line med"></div><div class="text-line">완료 기준</div><div class="line"></div><div class="wire-pill">일정과 속성 펼치기</div>`;
+      if (id === "conflict") return `<div class="mini-banner">원문 값 · D-1</div><div class="mini-banner user">내 값 · 2026-08-02</div><div class="text-line">두 값을 보존하고 내 결과에는 개인 값을 사용</div>`;
+      if (["primary","secondary"].includes(id)) return `<span class="wire-pill active">Todo · 5개</span> <span class="wire-pill">Calendar · 1개</span>${miniRows(["항공권 확인","숙소 예약번호 정리","렌터카 예약","준비물 체크","온라인 체크인"], false)}<div class="mini-banner warn">${activeState.id === "secondary" ? "Calendar에는 날짜가 있는 1개만 포함" : "Todo가 가장 자연스러운 결과"}</div>`;
+      if (["personal","creator","roundtrip"].includes(id)) return `<div class="mini-banner ${id === "creator" ? "warn" : "user"}">${stateBanner()}</div><div class="line green"></div><div class="line med"></div><div class="text-line">제목 · 5개 · Todo · source 보존</div>`;
+      return `<div class="mini-banner warn">${stateBanner()}</div>${miniRows(["원문 보존","읽은 결과 보존","다음 행동 제공"], false)}`;
+    }
+
+    function inputLines() {
+      if (activeState.id === "table") return `<div class="text-line">주차　주제　활동</div><div class="text-line">1주　데이터 리터러시　퀴즈</div><div class="text-line">… 14주 전체</div>`;
+      if (activeState.id === "markdown") return `<div class="text-line"># 8월 제주 여행 준비</div><div class="text-line">## 예약</div><div class="text-line">- [ ] 항공권 확인</div>`;
+      if (activeState.id === "source") return `<div class="text-line">https://example.com/source</div><div class="text-line">이 내용으로 계획 만들기</div>`;
+      return `<div class="text-line">8월 제주 여행 준비.</div><div class="text-line">항공권 확인, 숙소 예약번호 정리,</div><div class="text-line">렌터카 예약, 준비물 체크…</div>`;
+    }
+
+    function miniRows(labels, selected) {
+      return labels.map((label, index) => `<div class="mini-row ${selected && index === 1 ? "selected" : ""} ${activeState.id === "role" && index === 2 ? "issue" : ""}">
+        <span class="mini-icon">${index === 0 ? "S" : "I"}</span><span>${label}</span><span>${index + 1}</span></div>`).join("");
+    }
+
+    function stateBanner() {
+      const map = {
+        empty:"전용 문법 없이 시작",
+        typing:"일반 메모 · 5개 행동 후보",
+        markdown:"Markdown heading + checklist 감지",
+        table:"14행 전체 · header 3개",
+        source:"URL만 감지 · 원문 import 필요",
+        detecting:"원문을 유지한 채 구조 확인 중",
+        mapping:"5개 Item · 검토 필요 1개",
+        correction:"변경 후 바로 되돌릴 수 있음",
+        role:"자료를 완료 Item으로 만들지 않음",
+        personal:"개인 초안 · source 변경 없음",
+        creator:"sourceTrace·권리·안전 검토 필요",
+        roundtrip:"matched 5 · changed 0 · loss 2",
+        error:"읽은 5줄 보존 · URL 본문은 없음",
+        recovery:"12분 전 revision을 복구"
+      };
+      return map[activeState.id] || activeState.decision;
+    }
+
+    function secondaryLabel() {
+      if (activeState.phase === "input") return "표 가져오기";
+      if (activeState.phase === "structure") return "원래 해석";
+      if (activeState.phase === "result") return "필요한 항목만 조정";
+      if (activeState.id === "roundtrip") return "돌아가기";
+      return "취소";
+    }
+
+    function currentPrimary() {
+      if (activeState.phase === "result") return "결과 미리보기";
+      if (activeState.phase === "handoff") return "저장";
+      return "다음";
+    }
+
+    init();
+  </script>
+</body>
+</html>

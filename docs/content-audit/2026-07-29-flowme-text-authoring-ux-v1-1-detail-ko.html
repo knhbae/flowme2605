@@ -1,0 +1,2989 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <link rel="icon" href="data:,">
+  <title>FlowMe Text Authoring UX v1.1 Detail Simulation</title>
+  <style>
+    :root {
+      --bg: #f4f6f4;
+      --surface: #ffffff;
+      --surface-2: #f8faf8;
+      --ink: #18201c;
+      --muted: #5d6962;
+      --line: #d9dfda;
+      --line-strong: #b9c5bc;
+      --green: #176b4b;
+      --green-soft: #e5f2eb;
+      --coral: #b74f3b;
+      --coral-soft: #faebe7;
+      --blue: #25618c;
+      --blue-soft: #e8f1f7;
+      --yellow: #735f11;
+      --yellow-soft: #fff5ce;
+      --danger: #a72d35;
+      --shadow: 0 12px 32px rgba(26, 45, 34, 0.08);
+      --radius: 8px;
+      --header-h: 58px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, Pretendard, "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 15px;
+      line-height: 1.5;
+      letter-spacing: 0;
+    }
+    button, input, textarea, select { font: inherit; letter-spacing: 0; }
+    input[type="radio"], input[type="checkbox"] { accent-color: var(--green); }
+    button, select, input { min-height: 40px; }
+    button {
+      border: 1px solid var(--line-strong);
+      background: var(--surface);
+      color: var(--ink);
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover { border-color: var(--green); }
+    button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible, [tabindex]:focus-visible {
+      outline: 3px solid rgba(37, 97, 140, 0.28);
+      outline-offset: 2px;
+    }
+    button:disabled { cursor: not-allowed; opacity: 0.5; }
+    .primary {
+      border-color: var(--green);
+      background: var(--green);
+      color: #fff;
+      font-weight: 700;
+      padding: 0 16px;
+    }
+    .secondary { padding: 0 14px; }
+    .ghost { border-color: transparent; background: transparent; padding: 0 10px; }
+    .danger { color: var(--danger); border-color: #e4bdc0; }
+    .icon-button {
+      width: 40px;
+      min-width: 40px;
+      padding: 0;
+      font-size: 18px;
+      font-weight: 700;
+    }
+    a { color: var(--blue); }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { font-size: 20px; line-height: 1.25; margin-bottom: 2px; }
+    h2 { font-size: 24px; line-height: 1.3; }
+    h3 { font-size: 16px; line-height: 1.35; }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .app-header {
+      height: var(--header-h);
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 0 20px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.97);
+    }
+    .brand { min-width: 0; }
+    .brand p { margin: 0; color: var(--muted); font-size: 12px; }
+    .header-actions { display: flex; align-items: center; gap: 8px; }
+    .simulation-mark {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 0 9px;
+      border: 1px solid #d9ca83;
+      border-radius: 4px;
+      background: var(--yellow-soft);
+      color: var(--yellow);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .case-bar {
+      display: flex;
+      align-items: end;
+      gap: 12px;
+      padding: 12px 20px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+    }
+    .case-field { flex: 1; min-width: 0; }
+    .case-field label, .field-label {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .case-field select { width: 100%; padding: 0 34px 0 11px; border: 1px solid var(--line-strong); border-radius: 6px; background: #fff; }
+    .case-meta {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(96px, auto));
+      gap: 6px;
+    }
+    .metric {
+      min-height: 40px;
+      padding: 7px 10px;
+      border-left: 3px solid var(--line-strong);
+      background: var(--surface-2);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .metric strong { display: block; color: var(--ink); font-size: 13px; }
+    .metric span { color: var(--muted); }
+
+    .mobile-stage {
+      display: none;
+      position: sticky;
+      top: var(--header-h);
+      z-index: 24;
+      grid-template-columns: repeat(3, 1fr);
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--line);
+      background: var(--surface);
+    }
+    .mobile-stage button {
+      border-radius: 0;
+      border-color: var(--line);
+      font-weight: 700;
+    }
+    .mobile-stage button:first-child { border-radius: 6px 0 0 6px; }
+    .mobile-stage button:last-child { border-radius: 0 6px 6px 0; }
+    .mobile-stage button[aria-pressed="true"] {
+      border-color: var(--green);
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .workbench {
+      display: grid;
+      grid-template-columns: minmax(300px, 0.96fr) minmax(310px, 0.9fr) minmax(340px, 1fr);
+      min-height: calc(100vh - var(--header-h) - 74px);
+      border-bottom: 1px solid var(--line);
+      background: var(--surface);
+    }
+    .pane {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--line);
+      background: var(--surface);
+    }
+    .pane:last-child { border-right: 0; }
+    .pane-head {
+      min-height: 74px;
+      padding: 13px 16px 11px;
+      border-bottom: 1px solid var(--line);
+      background: var(--surface-2);
+    }
+    .pane-kicker {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .pane-head h2 { margin: 0; font-size: 17px; }
+    .pane-head p { margin: 3px 0 0; color: var(--muted); font-size: 12px; }
+    .pane-body {
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+      padding: 14px 16px 18px;
+      scrollbar-gutter: stable;
+    }
+    .pane-foot {
+      min-height: 62px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 10px 16px;
+      border-top: 1px solid var(--line);
+      background: var(--surface);
+    }
+    .pane-foot .primary { flex: 1; }
+
+    .source-summary {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface-2);
+    }
+    .source-summary strong, .source-summary small { display: block; overflow-wrap: anywhere; }
+    .source-summary small { margin-top: 3px; color: var(--muted); }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .badge.source { color: var(--blue); background: var(--blue-soft); }
+    .badge.user { color: var(--coral); background: var(--coral-soft); }
+    .badge.issue { color: var(--yellow); background: var(--yellow-soft); }
+    .badge.ok { color: var(--green); background: var(--green-soft); }
+
+    textarea {
+      width: 100%;
+      min-height: 360px;
+      resize: vertical;
+      padding: 13px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: #fbfcfb;
+      color: var(--ink);
+      line-height: 1.65;
+      tab-size: 2;
+    }
+    .input-tools, .toolbar, .artifact-tabs, .owner-switch {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+    .input-tools { justify-content: space-between; margin-top: 9px; }
+    .input-tools small { color: var(--muted); }
+    .status-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      min-height: 34px;
+      margin-top: 9px;
+      padding: 6px 8px;
+      border-left: 3px solid var(--blue);
+      background: var(--blue-soft);
+      color: #234b68;
+      font-size: 12px;
+    }
+    .status-row.error { border-color: var(--danger); background: #fbeaec; color: #76232a; }
+    .state-panel {
+      margin-top: 10px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-left: 3px solid var(--accent);
+      background: var(--surface-subtle);
+    }
+    .state-panel[hidden] { display: none; }
+    .state-panel strong { display: block; margin-bottom: 4px; }
+    .state-panel p { margin: 3px 0; color: var(--muted); font-size: 12px; line-height: 1.45; }
+    .state-panel .state-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-top: 10px; }
+
+    .outline-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .outline-summary p { margin: 0; color: var(--muted); font-size: 12px; }
+    .toolbar {
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--line);
+    }
+    .toolbar .icon-button { min-height: 34px; width: 34px; min-width: 34px; }
+    .toolbar select { min-height: 34px; max-width: 124px; padding: 0 8px; border: 1px solid var(--line-strong); border-radius: 6px; background: #fff; }
+    .outline-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .step-label {
+      position: sticky;
+      top: -14px;
+      z-index: 2;
+      padding: 9px 7px 5px;
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .outline-row {
+      width: 100%;
+      min-height: 58px;
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 8px;
+      text-align: left;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--surface);
+    }
+    .outline-row:hover { border-color: var(--line-strong); }
+    .outline-row[aria-selected="true"] {
+      border-color: var(--green);
+      box-shadow: inset 3px 0 0 var(--green);
+      background: #f8fcfa;
+    }
+    .outline-row.excluded { opacity: 0.5; }
+    .role-mark {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      border-radius: 4px;
+      background: var(--surface-2);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+    }
+    .outline-copy { min-width: 0; }
+    .outline-copy strong, .outline-copy small { display: block; overflow-wrap: anywhere; }
+    .outline-copy strong { font-size: 13px; }
+    .outline-copy small { margin-top: 2px; color: var(--muted); font-size: 11px; }
+    .lineage {
+      min-width: 42px;
+      color: var(--blue);
+      font-size: 10px;
+      font-weight: 800;
+      text-align: right;
+    }
+    .empty-selection {
+      padding: 28px 16px;
+      border: 1px dashed var(--line-strong);
+      border-radius: var(--radius);
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .result-title {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .result-title h3 { margin-bottom: 3px; }
+    .result-title p { margin: 0; color: var(--muted); font-size: 12px; }
+    .artifact-tabs button {
+      min-height: 34px;
+      padding: 0 10px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .artifact-tabs button[aria-pressed="true"] {
+      border-color: var(--green);
+      background: var(--green-soft);
+      color: var(--green);
+    }
+    .personal-fields {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin: 12px 0;
+      padding: 11px;
+      border: 1px solid #e7c8c0;
+      border-radius: var(--radius);
+      background: #fffafa;
+    }
+    .personal-fields .full { grid-column: 1 / -1; }
+    .personal-fields input, .personal-fields select {
+      width: 100%;
+      padding: 0 9px;
+      border: 1px solid var(--line-strong);
+      border-radius: 5px;
+      background: #fff;
+    }
+    .artifact-canvas {
+      min-height: 300px;
+      margin-top: 11px;
+      border-top: 1px solid var(--line);
+    }
+    .artifact-row {
+      display: grid;
+      grid-template-columns: 20px minmax(0, 1fr) auto;
+      gap: 9px;
+      align-items: start;
+      padding: 10px 2px;
+      border-bottom: 1px solid var(--line);
+    }
+    .artifact-row input[type="checkbox"] { width: 17px; height: 17px; min-height: 0; margin: 2px 0 0; }
+    .artifact-row strong, .artifact-row small { display: block; overflow-wrap: anywhere; }
+    .artifact-row strong { font-size: 13px; }
+    .artifact-row small { margin-top: 3px; color: var(--muted); font-size: 11px; }
+    .artifact-date { color: var(--blue); font-size: 11px; font-weight: 800; white-space: nowrap; }
+    .sheet-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    .sheet-table th, .sheet-table td {
+      padding: 8px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    .sheet-table th { position: sticky; top: 0; background: var(--surface-2); color: var(--muted); }
+    .memo-block { padding: 12px 0; border-bottom: 1px solid var(--line); }
+    .memo-block h3 { margin-bottom: 4px; }
+    .memo-block p { margin: 0; color: var(--muted); }
+    .loss-note {
+      margin: 10px 0 0;
+      padding: 9px 10px;
+      border-left: 3px solid var(--yellow);
+      background: var(--yellow-soft);
+      color: #5f5116;
+      font-size: 12px;
+    }
+    .owner-switch { margin-top: 8px; }
+    .owner-switch label {
+      min-height: 34px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 10px;
+      border: 1px solid var(--line-strong);
+      border-radius: 5px;
+      background: #fff;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .owner-switch input { min-height: 0; }
+
+    dialog {
+      width: min(620px, calc(100vw - 28px));
+      max-height: calc(100vh - 30px);
+      padding: 0;
+      border: 0;
+      border-radius: 8px;
+      box-shadow: 0 24px 70px rgba(10, 27, 18, 0.28);
+      overflow: hidden;
+    }
+    dialog::backdrop { background: rgba(20, 30, 24, 0.48); }
+    .dialog-head {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 16px 18px 13px;
+      border-bottom: 1px solid var(--line);
+    }
+    .dialog-head h2 { margin: 0; font-size: 18px; }
+    .dialog-head p { margin: 3px 0 0; color: var(--muted); font-size: 12px; }
+    .dialog-body { max-height: 62vh; overflow: auto; padding: 16px 18px; }
+    .dialog-foot {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      padding: 11px 18px;
+      border-top: 1px solid var(--line);
+      background: var(--surface-2);
+    }
+    .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .form-grid .full { grid-column: 1 / -1; }
+    .form-grid input, .form-grid textarea, .form-grid select {
+      width: 100%;
+      padding: 9px;
+      border: 1px solid var(--line-strong);
+      border-radius: 5px;
+      background: #fff;
+    }
+    .form-grid textarea { min-height: 82px; resize: vertical; }
+    details {
+      margin-top: 12px;
+      border-top: 1px solid var(--line);
+      padding-top: 10px;
+    }
+    summary { cursor: pointer; color: var(--green); font-weight: 700; }
+    .receipt-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin: 12px 0;
+    }
+    .receipt-grid div { padding: 10px; background: var(--surface-2); border-left: 3px solid var(--green); }
+    .receipt-grid strong, .receipt-grid span { display: block; }
+    .receipt-grid span { color: var(--muted); font-size: 12px; }
+    .journey-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1px;
+      padding: 0 20px;
+      background: var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+    .journey-step {
+      min-width: 0;
+      padding: 9px 12px;
+      background: #fff;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .journey-step strong {
+      display: block;
+      color: var(--ink);
+      font-size: 13px;
+      margin-bottom: 2px;
+    }
+    .journey-step.active {
+      background: var(--green-soft);
+      box-shadow: inset 0 -3px var(--green);
+    }
+    .source-detail {
+      display: grid;
+      gap: 8px;
+      margin: -4px 0 14px;
+      padding: 11px 12px;
+      border: 1px solid var(--line);
+      border-top: 0;
+      background: #fbfcfb;
+      font-size: 12px;
+    }
+    .source-detail-row {
+      display: grid;
+      grid-template-columns: 72px minmax(0, 1fr);
+      gap: 8px;
+      align-items: start;
+    }
+    .source-detail-row > span:first-child { color: var(--muted); }
+    .source-detail a { color: var(--green-dark); overflow-wrap: anywhere; }
+    .selected-detail {
+      margin: 12px 0;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-left: 3px solid var(--green);
+      background: #fff;
+    }
+    .selected-detail[hidden] { display: none; }
+    .selected-detail-head,
+    .artifact-summary-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .selected-detail h3,
+    .artifact-summary h3 {
+      margin: 0;
+      font-size: 14px;
+    }
+    .selected-detail p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+    .source-fragment {
+      margin-top: 10px;
+      padding: 10px 12px;
+      background: #f4f7f5;
+      border: 1px solid #dce4df;
+      font: 12px/1.55 ui-monospace, SFMono-Regular, Consolas, monospace;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+    .mapping-ledger {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .mapping-ledger > div {
+      min-width: 0;
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+    .mapping-ledger span {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .mapping-ledger strong {
+      display: block;
+      font-size: 12px;
+      overflow-wrap: anywhere;
+    }
+    .artifact-summary {
+      display: grid;
+      gap: 10px;
+      margin: 12px 0;
+      padding: 12px;
+      border: 1px solid var(--line);
+      background: #fbfcfb;
+    }
+    .artifact-metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 6px;
+    }
+    .artifact-metrics > div {
+      min-width: 0;
+      padding: 8px;
+      background: #fff;
+      border: 1px solid var(--line);
+    }
+    .artifact-metrics strong { display: block; font-size: 13px; }
+    .artifact-metrics span { display: block; color: var(--muted); font-size: 10px; margin-top: 2px; }
+    .calendar-preview { display: grid; gap: 12px; }
+    .calendar-day-group {
+      display: grid;
+      grid-template-columns: 84px minmax(0, 1fr);
+      gap: 12px;
+      padding: 12px 0;
+      border-top: 1px solid var(--line);
+    }
+    .calendar-day-group:first-child { border-top: 0; }
+    .calendar-day {
+      position: sticky;
+      top: 0;
+      align-self: start;
+      color: var(--green-dark);
+      font-size: 12px;
+    }
+    .calendar-day strong { display: block; font-size: 18px; color: var(--ink); }
+    .calendar-events { display: grid; gap: 7px; }
+    .calendar-event {
+      padding: 10px 12px;
+      border-left: 3px solid var(--green);
+      background: #f5faf7;
+    }
+    .calendar-event strong { display: block; font-size: 13px; }
+    .calendar-event small { display: block; color: var(--muted); margin-top: 3px; line-height: 1.45; }
+    .todo-section { padding: 11px 0; border-top: 1px solid var(--line); }
+    .todo-section:first-child { border-top: 0; }
+    .todo-section h4 { margin: 0 0 8px; font-size: 12px; color: var(--green-dark); }
+    .artifact-row.detail-rich {
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: start;
+    }
+    .artifact-row.detail-rich small { line-height: 1.45; }
+    .artifact-subline { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 5px; }
+    .micro-tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 20px;
+      padding: 2px 6px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--muted);
+      font-size: 10px;
+    }
+    .sheet-table.detail-sheet th { position: sticky; top: 0; background: #f5f7f5; z-index: 1; }
+    .sheet-table.detail-sheet td { vertical-align: top; line-height: 1.45; }
+    .sheet-table.detail-sheet .row-title { min-width: 180px; }
+    .memo-block .memo-meta { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+    .edit-source-card {
+      padding: 12px;
+      border: 1px solid var(--line);
+      background: #f5f7f5;
+      margin-bottom: 14px;
+    }
+    .edit-source-card strong { display: block; font-size: 12px; margin-bottom: 6px; }
+    .edit-source-card p { margin: 0; font: 12px/1.55 ui-monospace, SFMono-Regular, Consolas, monospace; }
+    .edit-diff {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .edit-diff > div {
+      min-width: 0;
+      padding: 10px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+    .edit-diff .after { border-color: #a7cfb5; background: #f2faf5; }
+    .edit-diff span { display: block; color: var(--muted); font-size: 10px; margin-bottom: 4px; }
+    .edit-diff strong { display: block; font-size: 12px; overflow-wrap: anywhere; }
+    .preflight-layout { display: grid; gap: 14px; }
+    .scope-options,
+    .format-options {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .scope-options label,
+    .format-options label {
+      display: grid;
+      gap: 3px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      background: #fff;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .scope-options label:has(input:checked),
+    .format-options label:has(input:checked) {
+      border-color: var(--green);
+      background: var(--green-soft);
+    }
+    .scope-options small,
+    .format-options small { color: var(--muted); }
+    .export-sample,
+    .receipt-preview {
+      max-height: 230px;
+      overflow: auto;
+      padding: 12px;
+      border: 1px solid var(--line);
+      background: #f6f8f6;
+      font: 11px/1.55 ui-monospace, SFMono-Regular, Consolas, monospace;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+    .receipt-next { display: grid; gap: 7px; margin-top: 12px; }
+    .receipt-next > div {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      background: #fff;
+      font-size: 12px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 80;
+      max-width: min(360px, calc(100vw - 28px));
+      padding: 11px 14px;
+      border-radius: 6px;
+      background: #18201c;
+      color: #fff;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      transition: opacity 160ms ease, transform 160ms ease;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    .report {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 72px 24px 96px;
+    }
+    .report-intro {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 24px;
+      align-items: start;
+      padding-bottom: 36px;
+      border-bottom: 1px solid var(--line);
+    }
+    .decision-box {
+      padding: 18px;
+      border-top: 4px solid var(--green);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .decision-box strong { display: block; margin-bottom: 6px; color: var(--green); }
+    .section { padding: 46px 0; border-bottom: 1px solid var(--line); }
+    .comparison-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .comparison {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+    }
+    .comparison.recommended { border: 2px solid var(--green); }
+    .comparison h3 { margin-bottom: 5px; }
+    .comparison ul { margin: 10px 0 0; padding-left: 20px; }
+    .comparison li { margin: 5px 0; }
+    .matrix-wrap { overflow-x: auto; }
+    .report table { width: 100%; min-width: 760px; border-collapse: collapse; background: var(--surface); }
+    .report th, .report td { padding: 11px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    .report th { background: var(--surface-2); color: var(--muted); font-size: 12px; }
+    .slice-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .slice { padding: 15px; border-left: 4px solid var(--blue); background: var(--surface); }
+    .slice strong { display: block; margin-bottom: 4px; }
+    .evidence-note { color: var(--muted); font-size: 12px; }
+
+    @media (max-width: 1180px) {
+      .workbench { grid-template-columns: minmax(300px, 0.92fr) minmax(430px, 1.2fr); }
+      .pane[data-pane="structure"] { display: none; }
+      .workbench[data-wide-stage="structure"] .pane[data-pane="input"] { display: none; }
+      .workbench[data-wide-stage="structure"] .pane[data-pane="structure"] { display: flex; }
+      .workbench[data-wide-stage="structure"] .pane[data-pane="result"] { display: flex; }
+      .wide-structure-toggle { display: inline-flex !important; }
+    }
+    @media (min-width: 1181px) {
+      .wide-structure-toggle { display: none !important; }
+    }
+    @media (max-width: 760px) {
+      :root { --header-h: 56px; }
+      .app-header { padding: 0 12px; }
+      .brand p { display: none; }
+      .simulation-mark { max-width: 116px; overflow: hidden; text-overflow: ellipsis; }
+      .header-actions .ghost { display: none; }
+      .case-bar { display: block; padding: 10px 12px; }
+      .journey-strip { display: none; }
+      .case-meta { grid-template-columns: repeat(3, 1fr); margin-top: 8px; }
+      .metric { min-width: 0; padding: 6px; }
+      .metric strong, .metric span { overflow: hidden; text-overflow: ellipsis; }
+      .mobile-stage { display: grid; top: var(--header-h); }
+      .workbench {
+        display: block;
+        min-height: calc(100vh - var(--header-h) - 190px);
+      }
+      .pane { display: none !important; min-height: calc(100vh - var(--header-h) - 190px); border-right: 0; }
+      .workbench[data-mobile-stage="input"] .pane[data-pane="input"],
+      .workbench[data-mobile-stage="structure"] .pane[data-pane="structure"],
+      .workbench[data-mobile-stage="result"] .pane[data-pane="result"] { display: flex !important; }
+      .pane-head { min-height: 64px; padding: 10px 12px; }
+      .pane-body { overflow: visible; padding: 12px; }
+      .pane-foot {
+        position: sticky;
+        bottom: 0;
+        z-index: 12;
+        min-height: 66px;
+        padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+        box-shadow: 0 -8px 20px rgba(28, 43, 34, 0.08);
+      }
+      textarea { min-height: 280px; }
+      .personal-fields { grid-template-columns: 1fr; }
+      .personal-fields .full { grid-column: auto; }
+      .result-title { display: block; }
+      .artifact-tabs { margin-top: 8px; }
+      dialog {
+        width: 100vw;
+        max-width: none;
+        max-height: 92vh;
+        margin: auto 0 0;
+        border-radius: 8px 8px 0 0;
+      }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-grid .full { grid-column: auto; }
+      .dialog-body { max-height: 67vh; }
+      .receipt-grid { grid-template-columns: 1fr; }
+      .mapping-ledger,
+      .artifact-metrics,
+      .edit-diff,
+      .scope-options,
+      .format-options { grid-template-columns: 1fr; }
+      .calendar-day-group { grid-template-columns: 64px minmax(0, 1fr); gap: 8px; }
+      .report { padding: 52px 16px 72px; }
+      .report-intro, .comparison-grid, .slice-list { grid-template-columns: 1fr; }
+      .section { padding: 36px 0; }
+    }
+    @media (max-width: 420px) {
+      .case-meta { gap: 4px; }
+      .metric { border-left-width: 2px; }
+      .metric span { display: none; }
+      .mobile-stage button { padding: 0 5px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      * { scroll-behavior: auto !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <h1>FlowMe Authoring</h1>
+      <p>원문 한 줄이 어떤 항목과 결과로 바뀌는지 끝까지 확인합니다.</p>
+    </div>
+    <div class="header-actions">
+      <span class="simulation-mark">v1.1 detail fixture · 사용자 관찰 0</span>
+      <button class="ghost" id="roundTripTop" type="button">Markdown 비교</button>
+      <button class="icon-button" id="resetDraft" type="button" title="작성 중 초안 초기화" aria-label="작성 중 초안 초기화">↺</button>
+    </div>
+  </header>
+
+  <section class="case-bar" aria-label="검토할 실제 콘텐츠">
+    <div class="case-field">
+      <label for="caseSelect">실제 콘텐츠 사례</label>
+      <select id="caseSelect"></select>
+    </div>
+    <div class="case-meta" aria-live="polite">
+      <div class="metric"><strong id="metricInput">Markdown</strong><span>입력 형태</span></div>
+      <div class="metric"><strong id="metricCount">24개</strong><span>해석 결과</span></div>
+      <div class="metric"><strong id="metricArtifact">Calendar</strong><span>기본 결과</span></div>
+    </div>
+  </section>
+
+  <section class="journey-strip" aria-label="상세 시뮬레이션 흐름">
+    <div class="journey-step active" data-journey="input"><strong>1. 원문</strong>실제 입력과 확보 범위</div>
+    <div class="journey-step" data-journey="structure"><strong>2. 해석</strong>원문 줄과 Step·Item 연결</div>
+    <div class="journey-step" data-journey="result"><strong>3. 결과</strong>목적지별 실제 artifact</div>
+    <div class="journey-step" data-journey="handoff"><strong>4. 저장·이동</strong>수량·손실·receipt 확인</div>
+  </section>
+
+  <nav class="mobile-stage" aria-label="작성 단계">
+    <button type="button" data-stage-button="input" aria-pressed="true">1. 입력</button>
+    <button type="button" data-stage-button="structure" aria-pressed="false">2. 구조</button>
+    <button type="button" data-stage-button="result" aria-pressed="false">3. 결과</button>
+  </nav>
+
+  <main class="workbench" id="workbench" data-mobile-stage="input" data-wide-stage="input">
+    <section class="pane" data-pane="input" aria-labelledby="inputTitle">
+      <header class="pane-head">
+        <span class="pane-kicker">Input</span>
+        <h2 id="inputTitle">무엇을 Flow로 만들까요?</h2>
+        <p>전용 문법 없이 적거나 붙여 넣으세요.</p>
+      </header>
+      <div class="pane-body">
+        <div class="source-summary">
+          <div>
+            <strong id="sourceTitle">출처</strong>
+            <a id="sourceUrl" href="#" target="_blank" rel="noreferrer">source URL</a>
+          </div>
+          <span class="badge source" id="sourceBadge">원문</span>
+        </div>
+        <div class="source-detail" id="sourceDetail">
+          <div class="source-detail-row"><span>확보 범위</span><strong id="sourceScope">전체 fixture</strong></div>
+          <div class="source-detail-row"><span>버전</span><strong id="sourceVersion">source version</strong></div>
+          <div class="source-detail-row"><span>보존 정책</span><strong id="sourcePolicy">원문은 수정하지 않고 해석과 개인 값만 별도 저장</strong></div>
+        </div>
+        <label class="field-label" for="composer">원문 또는 메모</label>
+        <textarea id="composer" spellcheck="false" aria-describedby="inputStatus"></textarea>
+        <div class="input-tools">
+          <small id="charCount">0자 · 0줄</small>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+            <select id="stateMode" aria-label="fixture 상태 재현">
+              <option value="normal">기본 상태</option>
+              <option value="partial_parse">일부 해석</option>
+              <option value="unsupported_syntax">지원하지 않는 문법</option>
+              <option value="source_import_required">원문 가져오기 필요</option>
+              <option value="rights_review_required">권리 검토 필요</option>
+              <option value="safety_review_required">안전 검토 필요</option>
+              <option value="conflict_source_vs_user">원문과 내 값 충돌</option>
+              <option value="retryable_error">다시 시도 가능 오류</option>
+              <option value="provider_error">가져오기 서비스 오류</option>
+              <option value="recovered_unsaved_draft">작성 중 초안 복구</option>
+            </select>
+            <button class="secondary" id="tableImport" type="button">표 붙여넣기</button>
+          </div>
+        </div>
+        <div class="status-row" id="inputStatus" role="status" aria-live="polite">
+          사례 원문을 불러왔습니다. 구조 확인 전에는 원문을 바꾸지 않습니다.
+        </div>
+        <section class="state-panel" id="statePanel" aria-live="polite" hidden>
+          <strong id="stateTitle"></strong>
+          <p id="stateMessage"></p>
+          <p id="statePreserved"></p>
+          <div class="state-actions">
+            <button class="secondary" id="stateBack" type="button">텍스트로 돌아가기</button>
+            <button class="primary" id="statePrimary" type="button"></button>
+          </div>
+        </section>
+      </div>
+      <footer class="pane-foot">
+        <button class="secondary wide-structure-toggle" id="wideToStructure" type="button" style="display:none">구조와 결과 보기</button>
+        <button class="primary" id="parseButton" type="button">구조 확인</button>
+      </footer>
+    </section>
+
+    <section class="pane" data-pane="structure" aria-labelledby="structureTitle">
+      <header class="pane-head">
+        <span class="pane-kicker">Structure</span>
+        <h2 id="structureTitle">이렇게 나눴어요</h2>
+        <p>원문 줄과 Step·Item 연결을 확인하세요.</p>
+      </header>
+      <div class="pane-body">
+        <div class="outline-summary">
+          <p id="structureSummary">구조 확인을 시작하세요.</p>
+          <span class="badge issue" id="issueBadge">대기</span>
+        </div>
+        <div class="toolbar" aria-label="선택 항목 구조 편집">
+          <button class="icon-button" id="moveUp" type="button" title="위로 이동" aria-label="선택 항목 위로 이동">↑</button>
+          <button class="icon-button" id="moveDown" type="button" title="아래로 이동" aria-label="선택 항목 아래로 이동">↓</button>
+          <button class="icon-button" id="indent" type="button" title="들여쓰기" aria-label="선택 항목 들여쓰기">→</button>
+          <button class="icon-button" id="outdent" type="button" title="내어쓰기" aria-label="선택 항목 내어쓰기">←</button>
+          <button class="secondary" id="merge" type="button">다음과 합치기</button>
+          <button class="secondary" id="split" type="button">나누기</button>
+          <select id="roleSelect" aria-label="선택 항목 역할">
+            <option value="item">할 일</option>
+            <option value="record">기록</option>
+            <option value="decision">결정</option>
+            <option value="resource">자료</option>
+            <option value="guide">안내</option>
+            <option value="caution">주의</option>
+          </select>
+          <button class="secondary" id="includeToggle" type="button" disabled>선택 제외</button>
+          <button class="icon-button" id="undo" type="button" title="마지막 구조 변경 되돌리기" aria-label="마지막 구조 변경 되돌리기" disabled>↩</button>
+        </div>
+        <aside class="selected-detail" id="selectedDetail" aria-live="polite" hidden>
+          <div class="selected-detail-head">
+            <div>
+              <span class="pane-kicker">Selected mapping</span>
+              <h3 id="selectedDetailTitle">항목을 선택하세요</h3>
+            </div>
+            <span class="badge source" id="selectedConfidence">확인 전</span>
+          </div>
+          <div class="source-fragment" id="selectedSourceFragment"></div>
+          <div class="mapping-ledger" id="selectedLedger"></div>
+          <p id="selectedDetailNote"></p>
+        </aside>
+        <div class="outline-list" id="outlineList" role="listbox" aria-label="감지한 Flow 구조"></div>
+      </div>
+      <footer class="pane-foot">
+        <button class="secondary" id="editSelected" type="button" disabled>선택 항목 수정</button>
+        <button class="primary" id="toResult" type="button">전체 결과 보기</button>
+      </footer>
+    </section>
+
+    <section class="pane" data-pane="result" aria-labelledby="resultTitle">
+      <header class="pane-head">
+        <span class="pane-kicker">Result</span>
+        <h2 id="resultTitle">실제로 만들어질 결과</h2>
+        <p id="resultSubtitle">구조를 확인하면 실제 projection을 보여 줍니다.</p>
+      </header>
+      <div class="pane-body">
+        <div class="result-title">
+          <div>
+            <h3 id="artifactHeading">추천 결과</h3>
+            <p id="artifactReason">콘텐츠의 자연스러운 사용 방식에 따라 선택합니다.</p>
+          </div>
+          <span class="badge ok" id="resultCount">0개</span>
+        </div>
+        <div class="artifact-tabs" id="artifactTabs" aria-label="사용 가능한 결과 형태"></div>
+        <div class="personal-fields" id="personalFields"></div>
+        <section class="artifact-summary" id="artifactSummary" aria-label="생성 결과 요약"></section>
+        <div class="artifact-canvas" id="artifactCanvas" tabindex="-1"></div>
+        <p class="loss-note" id="lossNote"></p>
+        <fieldset style="border:0;padding:0;margin:14px 0 0">
+          <legend class="field-label">저장 소유권</legend>
+          <div class="owner-switch">
+            <label><input type="radio" name="owner" value="personal" checked> 개인 초안</label>
+            <label><input type="radio" name="owner" value="creator"> 제작자 초안</label>
+            <label><input type="radio" name="owner" value="suggestion"> 원본 수정 제안</label>
+          </div>
+        </fieldset>
+      </div>
+      <footer class="pane-foot">
+        <button class="secondary" id="exportButton" type="button">가져가기 확인</button>
+        <button class="primary" id="saveButton" type="button">개인 Flow로 저장</button>
+      </footer>
+    </section>
+  </main>
+
+  <section class="report" aria-labelledby="decisionTitle">
+    <div class="report-intro">
+      <div>
+        <span class="pane-kicker">Executive decision</span>
+        <h2 id="decisionTitle">텍스트를 먼저 쓰고, 구조는 결과 옆에서 고친다</h2>
+        <p>Markdown-first를 강제하지 않고 block editor를 제품 전체로 확장하지 않는다.
+          기존 3열 workbench의 관계는 보존하되 1024에서는 2열, 390에서는 단계형으로 줄인다.</p>
+        <p class="evidence-note">판정: heuristic simulation + current source + frozen fixtures. 실제 관찰 사용자 수 0.</p>
+      </div>
+      <aside class="decision-box">
+        <strong>adopt_hybrid_text_preview</strong>
+        일반 텍스트와 Markdown은 입력·반출 형식, outline은 잘못 묶인 부분의 보정 도구,
+        inspector는 날짜·반복 같은 복잡한 값에만 사용한다.
+      </aside>
+    </div>
+
+    <section class="section">
+      <h2>A/B/C 비교</h2>
+      <div class="comparison-grid">
+        <article class="comparison">
+          <span class="badge source">A</span>
+          <h3>Markdown-first</h3>
+          <p>원문 소유감과 round-trip은 강하다. metadata 문법이 늘면 FlowMe 전용 언어가 된다.</p>
+          <ul><li>보조 원문 보기</li><li>Markdown export</li><li>기본 UI로는 미채택</li></ul>
+        </article>
+        <article class="comparison">
+          <span class="badge issue">B</span>
+          <h3>Block / outline</h3>
+          <p>합치기·나누기·재정렬에는 가장 정확하다. 전체 편집기로 쓰면 mobile과 범위가 무거워진다.</p>
+          <ul><li>구조 오류 보정</li><li>선택 Item만 편집</li><li>범용 workspace 금지</li></ul>
+        </article>
+        <article class="comparison recommended">
+          <span class="badge ok">C · 권장</span>
+          <h3>Text + preview</h3>
+          <p>문법 없이 첫 결과를 보고, 불명확한 줄과 필요한 개인 값만 보정한다.</p>
+          <ul><li>첫 preview 0~2 입력</li><li>source lineage 유지</li><li>모바일 단계형</li></ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>여덟 사례에서 보존할 의미</h2>
+      <div class="matrix-wrap">
+        <table>
+          <thead><tr><th>사례</th><th>기본 결과</th><th>사용자 값</th><th>절대 잃지 않을 것</th></tr></thead>
+          <tbody>
+            <tr><td>이사 D-30</td><td>Calendar</td><td>이사일</td><td>EasyLaw 24, AJD 24/27 source/version 차이</td></tr>
+            <tr><td>차량 점검</td><td>Todo/Calendar</td><td>선택한 검사일</td><td>canonical 상대일과 개인 undated projection 분리</td></tr>
+            <tr><td>Allblanc 7일</td><td>Calendar</td><td>시작일</td><td>Day 1~7 resource sequence, weekly variant와 분리</td></tr>
+            <tr><td>K-MOOC</td><td>Sheet</td><td>현재 주차</td><td>14행 전체와 순서</td></tr>
+            <tr><td>LibriVox</td><td>Queue</td><td>현재 장·재생 위치</td><td>38장 전체, 가짜 날짜 금지</td></tr>
+            <tr><td>신차 구매</td><td>Checklist</td><td>후보·비교 기록</td><td>결정·확인·기록 역할</td></tr>
+            <tr><td>해외 안전정보</td><td>Memo/Guide</td><td>개인 여행 메모</td><td>guide/caution/action과 공식 출처</td></tr>
+            <tr><td>제주 여행 메모</td><td>Todo</td><td>선택적 날짜·장소</td><td>원문 fragment와 5 Item 연결</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>개발 slice</h2>
+      <div class="slice-list">
+        <div class="slice"><strong>TA-01 · Authoring contract</strong>제주 메모와 이사 Markdown deterministic mapping, stable ID, undo.</div>
+        <div class="slice"><strong>TA-02 · Responsive shell</strong>390 단계형, 1024 2열, 1440 3열 focus mode.</div>
+        <div class="slice"><strong>TA-03 · Contextual correction</strong>merge/split/reorder/role와 selected Item inspector.</div>
+        <div class="slice"><strong>TA-04 · Artifact preflight</strong>primary 1개, secondary 최대 2개, count와 loss.</div>
+        <div class="slice"><strong>TA-05 · Ownership and recovery</strong>personal/creator/suggestion, receipt, round-trip, reload recovery.</div>
+        <div class="slice"><strong>TA-06 · Final gate</strong>8 fixture, keyboard, overflow, projection regression.</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>증거 경계</h2>
+      <p>이 HTML은 deterministic fixture와 설계 제안으로 작동한다. 실제 LLM, crawler,
+        account, cloud persistence가 연결된 것처럼 표현하지 않는다. 자동 QA와 agent review는
+        관찰 사용자 검증이 아니다.</p>
+      <p>
+        <a href="../specs/2026-07-28-flowme-text-authoring-ux-v1/spec.md">Spec</a> ·
+        <a href="../specs/2026-07-28-flowme-text-authoring-ux-v1/interaction-spec.md">Interaction</a> ·
+        <a href="./2026-07-28-flowme-text-authoring-wireframes-ko.html">A/B/C Wireframes</a> ·
+        <a href="./2026-07-28-flowme-text-authoring-ux-design-handoff/README.md">Design handoff</a>
+      </p>
+    </section>
+  </section>
+
+  <dialog id="itemDialog" aria-labelledby="itemDialogTitle">
+    <form method="dialog" id="itemForm">
+      <header class="dialog-head">
+        <div>
+          <h2 id="itemDialogTitle">선택 항목 수정</h2>
+          <p>원문은 유지하고 선택한 초안 값만 바꿉니다.</p>
+        </div>
+        <button class="icon-button" value="cancel" type="submit" aria-label="항목 수정 닫기">×</button>
+      </header>
+      <div class="dialog-body">
+        <div class="edit-source-card">
+          <strong>원문에서 가져온 부분</strong>
+          <p id="editSourceFragment"></p>
+        </div>
+        <div class="form-grid">
+          <label class="full"><span class="field-label">제목</span><input id="editTitle" required></label>
+          <label class="full"><span class="field-label">상세 설명</span><textarea id="editDetail"></textarea></label>
+          <label class="full"><span class="field-label">완료 기준</span><textarea id="editCompletion"></textarea></label>
+        </div>
+        <details>
+          <summary>일정과 속성</summary>
+          <div class="form-grid" style="margin-top:12px">
+            <label><span class="field-label">날짜 또는 상대 날짜</span><input id="editDate" placeholder="2026-08-03 또는 D-1"></label>
+            <label><span class="field-label">시간</span><input id="editTime" type="time"></label>
+            <label class="full"><span class="field-label">장소</span><input id="editPlace"></label>
+            <label><span class="field-label">반복</span><input id="editRepeat" placeholder="매주 월·수·금"></label>
+            <label><span class="field-label">예상 시간</span><input id="editDuration" placeholder="45분"></label>
+          </div>
+        </details>
+        <details>
+          <summary>원문과 소유권</summary>
+          <div id="ownershipDetail" style="margin-top:10px"></div>
+        </details>
+        <div class="edit-diff" id="editDiff" aria-live="polite"></div>
+      </div>
+      <footer class="dialog-foot">
+        <button class="secondary" value="cancel" type="submit">취소</button>
+        <button class="primary" id="applyEdit" value="default" type="submit">변경 적용</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <dialog id="receiptDialog" aria-labelledby="receiptTitle">
+    <div>
+      <header class="dialog-head">
+        <div>
+          <h2 id="receiptTitle">저장 결과</h2>
+          <p id="receiptSubtitle">fixture simulation 결과입니다.</p>
+        </div>
+        <button class="icon-button" id="closeReceipt" type="button" aria-label="결과 닫기">×</button>
+      </header>
+      <div class="dialog-body">
+        <span class="badge ok" id="receiptKind">개인 초안</span>
+        <h2 id="receiptFlowTitle" style="margin-top:10px">Flow title</h2>
+        <div class="receipt-grid">
+          <div><strong id="receiptCount">0개</strong><span>포함 항목</span></div>
+          <div><strong id="receiptArtifact">Todo</strong><span>기본 결과</span></div>
+          <div><strong id="receiptScope">전체</strong><span>범위</span></div>
+          <div><strong id="receiptSource">보존</strong><span>원문 연결</span></div>
+        </div>
+        <p id="receiptMessage"></p>
+        <div class="loss-note" id="receiptLoss"></div>
+        <div class="receipt-next" id="receiptNext"></div>
+        <pre class="receipt-preview" id="receiptPreview"></pre>
+      </div>
+      <footer class="dialog-foot">
+        <button class="secondary" id="receiptMarkdown" type="button">Markdown 비교</button>
+        <button class="primary" id="receiptDone" type="button">결과 확인 완료</button>
+      </footer>
+    </div>
+  </dialog>
+
+  <dialog id="exportDialog" aria-labelledby="exportTitle">
+    <div>
+      <header class="dialog-head">
+        <div>
+          <h2 id="exportTitle">가져가기 전에 확인</h2>
+          <p>범위, 형식, 실제 수량과 빠지는 정보를 먼저 확인합니다.</p>
+        </div>
+        <button class="icon-button" id="closeExport" type="button" aria-label="가져가기 확인 닫기">×</button>
+      </header>
+      <div class="dialog-body preflight-layout">
+        <section>
+          <span class="field-label">범위</span>
+          <div class="scope-options" id="exportScopes">
+            <label><input type="radio" name="exportScope" value="whole" checked><strong>전체 Flow</strong><small id="scopeWholeCount">0개</small></label>
+            <label><input type="radio" name="exportScope" value="selected"><strong>선택 항목</strong><small id="scopeSelectedCount">선택 필요</small></label>
+            <label><input type="radio" name="exportScope" value="current"><strong>현재 항목</strong><small>1개</small></label>
+          </div>
+        </section>
+        <section>
+          <span class="field-label">형식</span>
+          <div class="format-options" id="exportFormats"></div>
+        </section>
+        <div class="artifact-summary" id="exportSummary"></div>
+        <pre class="export-sample" id="exportSample"></pre>
+      </div>
+      <footer class="dialog-foot">
+        <button class="secondary" id="cancelExport" type="button">취소</button>
+        <button class="primary" id="confirmExport" type="button">이 결과로 가져가기</button>
+      </footer>
+    </div>
+  </dialog>
+
+  <dialog id="roundTripDialog" aria-labelledby="roundTripTitle">
+    <div>
+      <header class="dialog-head">
+        <div>
+          <h2 id="roundTripTitle">Markdown round-trip</h2>
+          <p>읽을 수 있는 형식과 구조화 데이터의 손실 경계를 비교합니다.</p>
+        </div>
+        <button class="icon-button" id="closeRoundTrip" type="button" aria-label="Markdown 비교 닫기">×</button>
+      </header>
+      <div class="dialog-body">
+        <pre id="markdownPreview" style="white-space:pre-wrap;overflow-wrap:anywhere;background:#f6f8f6;padding:14px;border:1px solid var(--line);border-radius:6px"></pre>
+        <div class="loss-note">Markdown은 순서, 제목, 설명, 완료 기준, 읽을 수 있는 속성을 보존합니다.
+          occurrence identity와 실행 이력은 별도 receipt에 남습니다.</div>
+      </div>
+      <footer class="dialog-foot">
+        <button class="primary" id="roundTripDone" type="button">확인</button>
+      </footer>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const kmoocItems = [
+      ["1주차 · 데이터 리터러시", "주차 활동: 퀴즈"],
+      ["2주차 · 생성형 AI 활용 데이터 분석", "주차 활동: 과제"],
+      ["3주차 · 데이터 분석", "주차 활동: 토론"],
+      ["4주차 · 데이터 수집", "주차 활동: 퀴즈"],
+      ["5주차 · 파일 다루기", "주차 활동: 퀴즈"],
+      ["6주차 · 탐색적 데이터 분석", "주차 활동: 토론"],
+      ["7주차 · 수치 데이터 분석을 위한 NumPy", "주차 활동: 과제"],
+      ["8주차 · Pandas 활용 데이터 분석", "주차 활동: 퀴즈"],
+      ["9주차 · 데이터 시각화", "주차 활동: 토론"],
+      ["10주차 · 통계분석", "주차 활동: 토론"],
+      ["11주차 · 데이터 기반 문제 해결 전략", "주차 활동: 토론"],
+      ["12주차 · 텍스트 데이터 분석", "주차 활동: 토론"],
+      ["13주차 · 감성 분석", "주차 활동: 토론"],
+      ["14주차 · 데이터 분석 보고서 작성법", "주차 활동: 없음"]
+    ];
+
+    const librivoxItems = [
+      ["1. Mrs. Rachel Lynde Is Surprised","00:14:35"],["2. Matthew Cuthbert Is Surprised","00:26:09"],
+      ["3. Marilla Cuthbert Is Surprised","00:12:47"],["4. Morning at Green Gables","00:12:03"],
+      ["5. Anne's History","00:11:23"],["6. Marilla Makes Up Her Mind","00:10:18"],
+      ["7. Anne Says Her Prayers","00:06:54"],["8. Anne's Bringing-Up Is Begun","00:23:23"],
+      ["9. Mrs. Rachel Lynde Is Properly Horrified","00:13:01"],["10. Anne's Apology","00:19:34"],
+      ["11. Anne's Impressions of Sunday School","00:09:16"],["12. A Solemn Vow and Promise","00:11:08"],
+      ["13. The Delights of Anticipation","00:08:57"],["14. Anne's Confession","00:16:07"],
+      ["15. A Tempest in the School Teapot","00:26:34"],["16. Diana Is Invited to Tea with Tragic Results","00:21:11"],
+      ["17. A New Interest in Life","00:10:39"],["18. Anne to the Rescue","00:16:59"],
+      ["19. A Concert a Catastrophe and a Confession","00:19:47"],["20. A Good Imagination Gone Wrong","00:11:50"],
+      ["21. A New Departure in Flavorings","00:18:14"],["22. Anne Is Invited Out to Tea","00:07:55"],
+      ["23. Anne Comes to Grief in an Affair of Honor","00:11:46"],["24. Miss Stacy and Her Pupils Get Up a Concert","00:10:34"],
+      ["25. Matthew Insists on Puffed Sleeves","00:23:29"],["26. The Story Club Is Formed","00:18:47"],
+      ["27. Vanity and Vexation of Spirit","00:17:46"],["28. An Unfortunate Lily Maid","00:15:19"],
+      ["29. An Epoch in Anne's Life","00:15:38"],["30. The Queens Class Is Organized","00:21:04"],
+      ["31. Where the Brook and River Meet","00:11:24"],["32. The Pass List Is Out","00:16:08"],
+      ["33. The Hotel Concert","00:18:13"],["34. A Queen's Girl","00:13:36"],
+      ["35. The Winter at Queen's","00:10:14"],["36. The Glory and the Dream","00:11:29"],
+      ["37. The Reaper Whose Name Is Death","00:12:23"],["38. The Bend in the Road","00:15:02"]
+    ];
+
+    const cases = {
+      moving: {
+        label: "이사 D-30 · 상대 날짜",
+        inputKind: "Markdown + source rows",
+        version: "IC-C01-MOVING · EasyLaw 24개 (AJD runtime 24 / corpus 27과 별도)",
+        sourceTitle: "EasyLaw 이사 준비 체크리스트",
+        sourceUrl: "https://www.easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=3&cciNo=1&cnpClsNo=1&csmSeq=666&popMenu=ov",
+        primary: "calendar",
+        secondary: ["todo"],
+        reason: "24개 상대 날짜 Item은 Calendar에서 전체 범위를 가장 잘 확인할 수 있습니다.",
+        loss: "Checklist로 바꾸면 날짜 구간은 보이지만 시간축과 기준일 이동 관계가 약해집니다.",
+        anchorLabel: "이사일",
+        anchorValue: "2026-08-04",
+        raw: `# 이사 D-30 체크리스트
+
+기준일: 이사일
+출처: EasyLaw 이사 준비 체크리스트
+
+## D-14 · 검사와 예약
+- [ ] 허가 이사업체 선택·예약
+- [ ] 이사 방법과 표준계약서
+- [ ] 창고 정리
+- [ ] 불필요 물품 처분
+
+## D-10 · 주소와 서비스
+- [ ] 엘리베이터·곤돌라 예약
+- [ ] 주소·우편·전화 이전
+- [ ] 공과금·관리비
+- [ ] 배달 중지
+
+## D-3 · 집과 짐 확인
+- [ ] 콘센트·방·창문 점검
+- [ ] 가구 배치
+- [ ] 구조물 철거
+- [ ] 수족관 처리
+- [ ] 전입신고 유의사항
+
+## D-1 · 포장 마무리
+- [ ] 포장 마무리
+- [ ] 세탁기·냉장고·에어컨 배관 정리
+- [ ] 귀중품 보관
+- [ ] 가스 정리
+
+## D-Day · 이사 당일
+- [ ] 짐·청소·개인물품 확인
+- [ ] 이사비 정산
+- [ ] 공과금 확인
+
+## 이사 후
+- [ ] 짐 정리
+- [ ] 공과금·가전 연결
+- [ ] 자녀 전학
+- [ ] 확정일자`,
+        issue: "EasyLaw 24, AJD runtime 24, AJD corpus 27을 source/version key로 분리합니다."
+      },
+      vehicle: {
+        label: "차량 점검 · 상대일 + 선택적 날짜 없음",
+        inputKind: "Relative timeline",
+        version: "official source-backed runtime · 10개",
+        sourceTitle: "TS한국교통안전공단 정기검사 안내",
+        sourceUrl: "https://main.kotsa.or.kr/portal/contents.do?menuCode=01010200",
+        primary: "todo",
+        secondary: ["calendar"],
+        reason: "원문의 D-14·D-10·D-3·D-Day를 보존하고, 검사일 전에는 Todo로 사용할 수 있습니다.",
+        loss: "날짜 없이 저장해도 source offset은 남습니다. Calendar는 검사일을 정한 뒤 계산합니다.",
+        anchorLabel: "검사일 · 선택",
+        anchorValue: "",
+        raw: `# 자동차검사 준비
+
+## D-14 · 검사 기간 확인
+- [ ] 자동차검사 기간과 예약 가능일 확인하기 D-14
+- [ ] 차량번호와 예약 정보 확인하기 D-14
+- [ ] 가까운 검사소와 수수료 확인하기 D-10
+
+## D-3 · 차량 상태 점검
+- [ ] 번호판과 차대번호 식별 상태 확인하기 D-3
+- [ ] 등화장치와 경음기 작동 확인하기 D-3
+- [ ] 타이어 마모와 공기압 확인하기 D-3
+- [ ] 오일 누유와 경고등 여부 기록하기 D-3
+
+## D-Day · 검사 당일
+- [ ] 예약 시간보다 여유 있게 검사소 도착하기 D-Day
+- [ ] 접수와 수수료 결제 진행하기 D-Day
+- [ ] 검사 결과와 재검사 필요 항목 기록하기 D-Day`,
+        issue: "source offset 10개를 유지했습니다. 검사일이 없으면 personal Todo만 undated입니다."
+      },
+      workout: {
+        label: "Allblanc · 7일 순서형 + 영상 자료",
+        inputKind: "Sequence + resource URLs",
+        version: "bundle-allblanc-7day-abs · 7개 순서형",
+        sourceTitle: "Allblanc 7일 복근 챌린지",
+        sourceUrl: "frozen Todo/Sheet fixture",
+        primary: "calendar",
+        secondary: ["todo"],
+        reason: "Day 1~7 순서와 각 영상을 Calendar sequence로 확인합니다.",
+        loss: "영상은 resource로 남습니다. 이 7일형을 1개 영상 weekly routine으로 바꾸지 않습니다.",
+        anchorLabel: "시작일",
+        anchorValue: "2026-08-03",
+        raw: `# Allblanc 7일 복근 챌린지
+
+## Day 1
+- [ ] 코어 + 복근 한방에! 20분 복근 운동
+  영상: source video
+## Day 2
+- [ ] 허리 통증 없이 20분 복근 운동
+  영상: source video
+## Day 3
+- [ ] 아랫 뱃살 집중 타격 20분 운동
+  영상: source video
+## Day 4
+- [ ] 서서하는 20분 복근 운동
+  영상: source video
+## Day 5
+- [ ] 집에서 옆구리살 빼기 20분 운동
+  영상: source video
+## Day 6
+- [ ] 허리 군살 제거 20분 복근 홈트
+  영상: source video
+## Day 7
+- [ ] 헤어질 결심: 복부지방 20분 운동
+  영상: source video`,
+        issue: "영상 7개를 resource로 분리했습니다."
+      },
+      kmooc: {
+        label: "K-MOOC · 14주 Sheet",
+        inputKind: "TSV / course table",
+        version: "Input Composer frozen case · 14행",
+        sourceTitle: "K-MOOC Introduction to Data Analysis",
+        sourceUrl: "https://www.kmooc.kr/view/course/detail/20097",
+        primary: "sheet",
+        secondary: ["todo"],
+        reason: "주차, 주제, 활동과 현재 위치를 함께 보는 Sheet가 자연스럽습니다.",
+        loss: "Todo로 바꾸면 주차별 활동 열과 전체 진도 비교가 약해집니다.",
+        anchorLabel: "현재 완료 주차 · 선택",
+        anchorValue: "4",
+        raw: "주차\t주제\t활동\n" + kmoocItems.map((item, i) => `${i + 1}주\t${item[0].replace(/^\d+주차 · /, "")}\t${item[1].replace("주차 활동: ", "")}`).join("\n"),
+        issue: "14개 행을 모두 보존했습니다."
+      },
+      librivox: {
+        label: "LibriVox · 38장 resource queue",
+        inputKind: "Chapter table",
+        version: "Input Composer frozen case · 38행",
+        sourceTitle: "Anne of Green Gables, Version 5",
+        sourceUrl: "https://librivox.org/anne-of-green-gables-version-5-by-lucy-maud-montgomery/",
+        primary: "sheet",
+        secondary: ["memo"],
+        reason: "38장 순서, 재생시간, 현재 장을 유지하는 queue가 필요합니다.",
+        loss: "Calendar와 반복 routine은 source에 없는 날짜와 빈도를 만들므로 제공하지 않습니다.",
+        anchorLabel: "현재 장 · 선택",
+        anchorValue: "7",
+        raw: "장\t제목\t재생시간\n" + librivoxItems.map((item, i) => `${i + 1}\t${item[0].replace(/^\d+\. /, "")}\t${item[1]}`).join("\n"),
+        issue: "38개 장을 축약하지 않았습니다."
+      },
+      newcar: {
+        label: "신차 구매 · 결정/확인/기록",
+        inputKind: "Markdown checklist",
+        version: "qualified corpus v2 · 8 Step / 14 Item",
+        sourceTitle: "신차 구매 8단계",
+        sourceUrl: "frozen Todo/Sheet fixture",
+        primary: "todo",
+        secondary: ["sheet", "memo"],
+        reason: "행동 누락을 막는 Checklist를 먼저 보고 비교 값은 Sheet에 남깁니다.",
+        loss: "모든 항목을 단순 완료로 바꾸면 후보 비교와 결정 이유가 사라집니다.",
+        anchorLabel: "후보 이름 · 선택",
+        anchorValue: "",
+        raw: `# 신차 구매 8단계
+
+## 예산과 후보
+- [ ] 총예산과 월 납입 가능액 정하기
+- [ ] 차종·트림·옵션 후보 좁히기
+## 구매 방식
+- [ ] 현금·할부·리스·장기렌트 비교하기
+## 견적
+- [ ] 여러 판매처 견적 비교하기
+- [ ] 할인과 서비스 조건 확정하기
+## 계약
+- [ ] 계약서 차량 사양과 금액 확인하기
+- [ ] 계약금 납부하고 서류 보관하기
+## 출고
+- [ ] 차대번호와 출고 정보 확인하기
+- [ ] 외관·내장·기능 검수하기
+## 등록
+- [ ] 등록 서류와 비용 확인하기
+- [ ] 차량 등록과 번호판 발급 마치기
+## 보험
+- [ ] 자동차보험 조건 비교하고 가입하기
+## 보관과 초기 점검
+- [ ] 차량 문서와 보증 조건 보관하기
+- [ ] 초기 점검과 소모품 일정 확인하기`,
+        issue: "비교·기록 성격 4개를 확인 표시했습니다."
+      },
+      safety: {
+        label: "해외 안전정보 · Guide + Action",
+        inputKind: "Official guide + links",
+        version: "official source-backed runtime · 2 Step",
+        sourceTitle: "외교부 해외안전여행 여행경보·동행등록·영사콜센터",
+        sourceUrl: "https://0404.go.kr/app/main/mainPage",
+        primary: "memo",
+        secondary: ["todo"],
+        reason: "변경될 수 있는 경보와 연락처는 Guide로 읽고 제한된 행동만 Todo로 보냅니다.",
+        loss: "Checklist에는 설명, 경보 맥락, 영사조력 한계가 축약됩니다.",
+        anchorLabel: "방문국 · 개인 메모",
+        anchorValue: "",
+        raw: `# 해외여행 안전정보·영사조력 준비
+
+## 위험 정보
+- 방문국 여행경보 단계 확인하기
+  설명: 외교부 해외안전여행에서 국가별 여행경보와 안전공지를 확인합니다.
+  완료 기준: 방문국 경보 단계와 주의사항을 메모함
+
+## 비상 대비
+- 현지 대사관·영사관 연락처와 영사콜센터 저장하기
+- 동행등록 신청 검토하기
+- 여권 사본·비상연락·보험증서 따로 보관하기
+
+주의: 여행경보 단계와 입국 요건은 수시로 바뀝니다.`,
+        issue: "공식 경고 1개를 caution으로, 실행 4개를 action으로 분리했습니다."
+      },
+      jeju: {
+        label: "제주 여행 · 개인 메모",
+        inputKind: "Plain text",
+        version: "P26 deterministic fixture · 5개",
+        sourceTitle: "내 메모",
+        sourceUrl: "personal draft · 외부 source 없음",
+        primary: "todo",
+        secondary: ["calendar", "memo"],
+        reason: "다섯 행동을 먼저 Todo로 보고 날짜가 있는 항목만 Calendar에 보냅니다.",
+        loss: "원문 문장은 삭제하지 않고 각 Item의 lineage로 유지합니다.",
+        anchorLabel: "출발일 · 선택",
+        anchorValue: "2026-08-03",
+        raw: "8월 제주 여행 준비. 항공권 확인, 숙소 예약번호 정리, 렌터카 예약, 준비물 체크, 출발 전날 온라인 체크인",
+        issue: "한 문장을 5개 Item으로 해석했습니다. live AI가 아닌 deterministic fixture입니다."
+      }
+    };
+
+    const $ = (selector) => document.querySelector(selector);
+    const $$ = (selector) => [...document.querySelectorAll(selector)];
+    const clone = (value) => JSON.parse(JSON.stringify(value));
+    const roleLabel = { item: "할 일", record: "기록", decision: "결정", resource: "자료", guide: "안내", caution: "주의" };
+    const roleMark = { item: "DO", record: "REC", decision: "DEC", resource: "URL", guide: "INFO", caution: "!" };
+    const artifactLabel = { calendar: "Calendar", todo: "Todo", sheet: "Sheet", memo: "Memo" };
+    const storageKey = "flowme:text-authoring-ux-v1-1-detail:draft";
+    const prototypeStates = {
+      partial_parse: {
+        title: "일부만 구조화했습니다",
+        message: "읽은 줄은 구조에 연결했고, 확실하지 않은 줄은 원문에 그대로 남겼습니다.",
+        preserved: "보존: 원문 전체, 확인된 Step·Item, source 연결. 다음: 불명확한 줄만 확인.",
+        action: "inspect",
+        primary: "불명확한 줄 확인",
+        blocking: true
+      },
+      unsupported_syntax: {
+        title: "지원하지 않는 문법을 원문에 남겼습니다",
+        message: "heading과 목록은 읽었지만 query, embed, plugin 전용 표현은 구조로 바꾸지 않았습니다.",
+        preserved: "보존: 지원 문법으로 만든 구조와 미지원 원문. 다음: 원문 줄을 확인하거나 일반 텍스트로 고치기.",
+        action: "inspect",
+        primary: "미지원 줄 확인",
+        blocking: true
+      },
+      source_import_required: {
+        title: "권한 있는 원문이 필요합니다",
+        message: "URL과 설명은 읽었지만 실제 task 원문은 확보하지 못했습니다. 가짜 Flow는 만들지 않습니다.",
+        preserved: "보존: 입력 URL, 사용자 메모, 현재 텍스트. 다음: 권한 있는 원문을 붙여넣기.",
+        action: "focus",
+        primary: "원문 붙여넣기",
+        blocking: true
+      },
+      rights_review_required: {
+        title: "공개 전 권리 검토가 필요합니다",
+        message: "개인용 초안으로는 계속할 수 있지만 제작자 기준본으로 공개할 수는 없습니다.",
+        preserved: "보존: source 범위, 구조, 개인 수정. 다음: 개인용으로 계속하거나 검토 대기.",
+        action: "personal",
+        primary: "개인용으로 계속",
+        blocking: true
+      },
+      safety_review_required: {
+        title: "안전 관련 문장을 확인해야 합니다",
+        message: "위험 조건과 중단 기준은 일반 할 일로 단순화하지 않고 주의 정보로 보존했습니다.",
+        preserved: "보존: 공식 source, caution, 실행 Item. 다음: 안내를 확인한 뒤 결과 검토.",
+        action: "acknowledge",
+        primary: "안전 안내 확인",
+        blocking: true
+      },
+      conflict_source_vs_user: {
+        title: "원문 값과 내 값이 다릅니다",
+        message: "원문 값은 근거로 보존하고, 개인 결과에는 확인한 내 값을 우선 적용합니다.",
+        preserved: "보존: source 원값, user override, 변경 시각. 다음: 두 값을 비교하고 개인 결과 확인.",
+        action: "compare",
+        primary: "두 값 비교",
+        blocking: true
+      },
+      retryable_error: {
+        title: "구조 확인을 다시 시도할 수 있습니다",
+        message: "현재 입력은 그대로 남아 있습니다. parser 응답만 완료되지 않았습니다.",
+        preserved: "보존: 원문, 사용자 입력, 직전 구조. 다음: 같은 입력으로 다시 시도.",
+        action: "retry",
+        primary: "다시 시도",
+        blocking: true
+      },
+      provider_error: {
+        title: "가져오기 서비스에 연결할 수 없습니다",
+        message: "외부 원문을 가져오지 못했지만 직접 붙여넣은 텍스트는 계속 편집할 수 있습니다.",
+        preserved: "보존: URL, 메모, 직접 입력한 텍스트. 다음: 텍스트로 계속하거나 나중에 재시도.",
+        action: "focus",
+        primary: "텍스트로 계속",
+        blocking: true
+      },
+      recovered_unsaved_draft: {
+        title: "작성 중이던 초안을 복구했습니다",
+        message: "마지막 저장 이전의 텍스트, 구조 수정, 개인 값을 이 브라우저에서 복원했습니다.",
+        preserved: "보존: 입력, Item 순서와 역할, 개인 날짜·이름. 실행 완료 상태는 이 저작 초안에 포함하지 않음.",
+        action: "recovered",
+        primary: "복구 내용 확인",
+        blocking: false
+      }
+    };
+
+    let activeCaseId = "jeju";
+    let currentCase = cases[activeCaseId];
+    let items = [];
+    let selectedIndex = -1;
+    let history = [];
+    let activeArtifact = currentCase.primary;
+    let parsed = false;
+    let toastTimer = 0;
+    let exportScope = "whole";
+    let exportFormat = "markdown";
+
+    function setJourneyStage(stage) {
+      const normalized = stage === "input" ? "input" : stage === "structure" ? "structure" : stage === "result" ? "result" : "handoff";
+      $$(".journey-step").forEach((item) => item.classList.toggle("active", item.dataset.journey === normalized));
+    }
+
+    function sourceScopeForCase(id) {
+      if (id === "jeju") return "사용자가 입력한 메모 전체";
+      if (id === "kmooc") return "14주 강의계획 frozen table 전체";
+      if (id === "librivox") return "Version 5의 38개 chapter row 전체";
+      if (id === "workout") return "7일 순서형 fixture와 각 영상 resource";
+      if (id === "safety") return "공식 안내 중 경보·비상대비·주의 문장";
+      return "현재 fixture에 고정된 source row 전체";
+    }
+
+    function seedCaseSelect() {
+      $("#caseSelect").innerHTML = Object.entries(cases)
+        .map(([id, value]) => `<option value="${id}">${value.label}</option>`)
+        .join("");
+      $("#caseSelect").value = activeCaseId;
+    }
+
+    function applyPrototypeState(stateId) {
+      const panel = $("#statePanel");
+      const state = prototypeStates[stateId];
+      $("#stateMode").value = state ? stateId : "normal";
+      if (!state) {
+        panel.hidden = true;
+        $("#saveButton").disabled = false;
+        $("#exportButton").disabled = false;
+        $("#parseButton").disabled = false;
+        return;
+      }
+      panel.hidden = false;
+      $("#stateTitle").textContent = state.title;
+      $("#stateMessage").textContent = state.message;
+      $("#statePreserved").textContent = state.preserved;
+      $("#statePrimary").textContent = state.primary;
+      $("#statePrimary").dataset.action = state.action;
+      $("#saveButton").disabled = state.blocking;
+      $("#exportButton").disabled = state.blocking;
+      $("#parseButton").disabled = state.blocking;
+      $("#inputStatus").className = "status-row error";
+      $("#inputStatus").textContent = `${state.title}. fixture 상태 재현이며 실제 provider 응답이 아닙니다.`;
+    }
+
+    function detectKind(text) {
+      const kinds = [];
+      if (/https?:\/\//.test(text)) kinds.push("URL");
+      if (/^#{1,3}\s/m.test(text) || /- \[[ x]\]/.test(text)) kinds.push("Markdown");
+      if (/\t/.test(text) && text.split("\n").length > 2) kinds.push("표");
+      if (!kinds.length) kinds.push("일반 메모");
+      return kinds.join(" + ");
+    }
+
+    const detailCatalog = [
+      ["항공권 확인", {
+        detail: "출발·도착 공항과 시간을 비교하고 결제 전 수하물 조건을 확인합니다.",
+        completion: "예약번호와 출발 시간을 개인 메모에 남겼습니다.",
+        duration: "20분"
+      }],
+      ["숙소 예약번호 정리", {
+        detail: "예약번호, 체크인 시간, 주소와 연락처를 한곳에 정리합니다.",
+        completion: "예약번호와 체크인 주소를 바로 열 수 있게 저장했습니다.",
+        duration: "10분"
+      }],
+      ["렌터카 예약", {
+        detail: "인수·반납 시간, 장소, 운전자 조건과 보험 범위를 확인합니다.",
+        completion: "예약번호와 인수 장소를 저장했습니다.",
+        duration: "20분"
+      }],
+      ["준비물 체크", {
+        detail: "신분증, 충전기, 복용약, 날씨에 맞는 옷을 출발 전 목록으로 확인합니다.",
+        completion: "빠진 준비물이 없도록 가방별 체크를 마쳤습니다.",
+        duration: "15분"
+      }],
+      ["출발 전날 온라인 체크인", {
+        detail: "항공사 앱에서 탑승객 정보와 좌석을 확인하고 모바일 탑승권을 저장합니다.",
+        completion: "체크인을 완료하고 탑승권을 휴대폰에서 열 수 있습니다.",
+        duration: "10분"
+      }],
+      ["허가 이사업체 선택·예약", {
+        detail: "허가 여부를 확인하고 같은 조건의 견적을 비교한 뒤 이사일을 예약합니다.",
+        completion: "선택 업체, 견적 금액, 예약 시간을 기록했습니다.",
+        duration: "60분"
+      }],
+      ["이사 방법과 표준계약서", {
+        detail: "포장·반포장·일반이사 범위를 비교하고 계약서의 작업 범위를 확인합니다.",
+        completion: "계약서에 작업 범위와 추가 비용 조건이 적혀 있습니다.",
+        duration: "30분"
+      }],
+      ["주소·우편·전화 이전", {
+        detail: "우편물, 통신, 정기배송과 주요 계정의 주소 변경 대상을 정리합니다.",
+        completion: "변경 대상 목록을 만들고 처리 상태를 기록했습니다.",
+        duration: "30분"
+      }],
+      ["공과금·관리비", {
+        detail: "전기·수도·가스·관리비 정산일과 명의 변경 방법을 확인합니다.",
+        completion: "정산일과 연락처를 메모했습니다.",
+        duration: "20분"
+      }],
+      ["짐·청소·개인물품 확인", {
+        detail: "퇴실 전 남은 짐, 청소 상태, 계량기와 개인 물품을 방별로 확인합니다.",
+        completion: "방별 확인을 마치고 필요한 사진을 남겼습니다.",
+        duration: "30분"
+      }],
+      ["자동차검사 기간과 예약 가능일 확인하기", {
+        detail: "검사 유효기간과 예약 가능한 날짜를 공식 안내에서 확인합니다.",
+        completion: "검사 기간과 예약 후보 날짜를 기록했습니다.",
+        duration: "10분"
+      }],
+      ["번호판과 차대번호 식별 상태 확인하기", {
+        detail: "번호판과 차대번호가 가려지거나 훼손되지 않았는지 눈으로 확인합니다.",
+        completion: "식별 상태를 확인하고 이상이 있으면 사진을 남겼습니다.",
+        duration: "5분"
+      }],
+      ["타이어 마모와 공기압 확인하기", {
+        detail: "타이어 마모와 공기압 상태를 확인하고 이상 여부를 기록합니다.",
+        completion: "네 바퀴 상태와 필요한 조치를 기록했습니다.",
+        duration: "10분"
+      }],
+      ["검사 결과와 재검사 필요 항목 기록하기", {
+        detail: "검사 결과표를 보관하고 재검사 항목과 기한을 따로 적습니다.",
+        completion: "결과표와 후속 조치 기한을 저장했습니다.",
+        duration: "10분"
+      }],
+      ["방문국 여행경보 단계 확인하기", {
+        detail: "외교부 해외안전여행에서 국가별 여행경보와 최신 안전공지를 확인합니다.",
+        completion: "방문국 경보 단계와 출발 전 다시 볼 공지를 메모했습니다.",
+        duration: "10분"
+      }],
+      ["현지 대사관·영사관 연락처와 영사콜센터 저장하기", {
+        detail: "현지 공관과 영사콜센터 연락처를 인터넷 없이도 열 수 있는 곳에 저장합니다.",
+        completion: "휴대폰 연락처와 여행 메모에서 번호를 확인할 수 있습니다.",
+        duration: "10분"
+      }],
+      ["동행등록 신청 검토하기", {
+        detail: "여행 일정과 연락처를 기준으로 동행등록이 필요한지 확인합니다.",
+        completion: "신청 여부를 결정하고 필요한 경우 등록을 마쳤습니다.",
+        duration: "10분"
+      }],
+      ["여권 사본·비상연락·보험증서 따로 보관하기", {
+        detail: "원본 분실에 대비해 사본과 비상연락처, 보험증서를 분리 보관합니다.",
+        completion: "휴대용 사본과 별도 보관본을 각각 준비했습니다.",
+        duration: "15분"
+      }]
+    ];
+
+    function detailForItem(title, role, step) {
+      const found = detailCatalog.find(([key]) => title.includes(key));
+      if (found) return found[1];
+      if (activeCaseId === "workout") {
+        return {
+          detail: `${step} 순서에 맞춰 source 영상을 보고 20분 운동을 진행합니다.`,
+          completion: "영상을 끝까지 따라 하고 불편감 여부를 개인 메모에 남겼습니다.",
+          duration: "20분",
+          resource: `${currentCase.sourceTitle} · ${step} 영상`
+        };
+      }
+      if (activeCaseId === "newcar") {
+        return {
+          detail: role === "decision"
+            ? "후보와 조건을 같은 기준으로 비교하고 선택 이유를 기록합니다."
+            : role === "record"
+              ? "계약·보증·등록 정보를 나중에 다시 찾을 수 있게 보관합니다."
+              : "누락 여부를 확인하고 관련 문서나 결과를 남깁니다.",
+          completion: role === "decision" ? "선택 결과와 이유를 기록했습니다." : "확인 결과와 관련 자료를 저장했습니다.",
+          duration: "20분"
+        };
+      }
+      return {
+        detail: role === "resource" ? "원문에서 연결된 자료입니다." : `${step}에서 이 항목의 조건과 결과를 확인합니다.`,
+        completion: ["resource", "guide", "caution"].includes(role) ? "" : "확인 결과를 기록했습니다."
+      };
+    }
+
+    function sourceFragmentForItem(item) {
+      if (item.sourceFragment) return item.sourceFragment;
+      const line = $("#composer")?.value?.split(/\r?\n/)[Math.max(0, item.line - 1)];
+      return line?.trim() || item.title;
+    }
+
+    function finalizeItem(item, sourceFragment = "") {
+      const detail = detailForItem(item.title, item.role, item.step);
+      if (!item.detail) item.detail = detail.detail || "";
+      if (!item.completion && !["resource", "guide", "caution"].includes(item.role)) item.completion = detail.completion || "";
+      if (!item.duration) item.duration = detail.duration || "";
+      if (!item.resource) item.resource = detail.resource || "";
+      item.sourceFragment = sourceFragment || item.sourceFragment || item.title;
+      item.confidence = item.confidence || (item.role === "caution" || item.role === "resource" ? "역할 확인" : "높음");
+      item.original = item.original || {
+        title: item.title,
+        detail: item.detail,
+        completion: item.completion,
+        date: item.date,
+        time: item.time,
+        place: item.place,
+        repeat: item.repeat,
+        duration: item.duration,
+        role: item.role
+      };
+      return item;
+    }
+
+    function normalizeDetailedItems(list) {
+      return list.map((item) => finalizeItem(item, item.sourceFragment || item.title));
+    }
+
+    function sourceItemsForCase(id) {
+      if (id === "kmooc") return kmoocItems.map((entry, i) => {
+        const item = makeItem(entry[0], "14주 진도", i + 2, "record", entry[1]);
+        item.completion = `${entry[0]} 강의와 ${entry[1].replace("주차 활동: ", "")}를 마쳤습니다.`;
+        item.progress = i < Number(cases.kmooc.anchorValue) ? "완료" : i === Number(cases.kmooc.anchorValue) ? "현재" : "예정";
+        return finalizeItem(item, `${i + 1}주\t${entry[0].replace(/^\d+주차 · /, "")}\t${entry[1].replace("주차 활동: ", "")}`);
+      });
+      if (id === "librivox") return librivoxItems.map((entry, i) => {
+        const item = makeItem(entry[0], "38장 듣기", i + 2, "record", `재생시간 ${entry[1]}`);
+        item.resource = `${currentCase.sourceTitle} · Chapter ${i + 1}`;
+        item.completion = `${i + 1}장을 끝까지 듣고 다음에 이어 들을 장을 기록했습니다.`;
+        item.progress = i + 1 < Number(cases.librivox.anchorValue) ? "들음" : i + 1 === Number(cases.librivox.anchorValue) ? "현재" : "대기";
+        return finalizeItem(item, `${i + 1}\t${entry[0].replace(/^\d+\. /, "")}\t${entry[1]}`);
+      });
+      return parseRaw(cases[id].raw);
+    }
+
+    function makeItem(title, step, line, role = "item", detail = "") {
+      return {
+        id: `block-${activeCaseId}-${line}-${stableToken(title)}`,
+        title: title.trim(),
+        step: step || "항목",
+        line,
+        role,
+        detail,
+        completion: "",
+        date: "",
+        time: "",
+        place: "",
+        repeat: "",
+        duration: "",
+        resource: "",
+        included: true,
+        depth: 0,
+        sourceDerived: activeCaseId !== "jeju",
+        userEdited: false,
+        sourceFragment: title.trim(),
+        confidence: "높음"
+      };
+    }
+
+    function parseRaw(text) {
+      const lines = text.split(/\r?\n/);
+      const result = [];
+      let step = "기본 항목";
+      const hasList = lines.some((line) => /^\s*-\s*(\[[ x]\]\s*)?/.test(line));
+      if (!hasList) {
+        const cleaned = text.replace(/^#[^\n]*\n?/, "").trim();
+        const fragments = cleaned.split(/[,.。]\s*/).map((part) => part.trim()).filter(Boolean);
+        const actionFragments = fragments[0]?.includes("준비") ? fragments.slice(1) : fragments;
+        return actionFragments.map((title, index) => {
+          const item = makeItem(title, "제주 여행 준비", index + 1, "item");
+          item.sourceDerived = false;
+          if (/전날/.test(title)) item.date = "D-1";
+          return finalizeItem(item, title);
+        });
+      }
+      lines.forEach((rawLine, index) => {
+        const line = rawLine.trim();
+        if (/^##\s+/.test(line)) {
+          step = line.replace(/^##\s+/, "");
+          return;
+        }
+        const match = line.match(/^-\s*(?:\[[ x]\]\s*)?(.+)/);
+        if (!match) return;
+        const title = match[1].replace(/\sD-(\d+)$|\sD-Day$/i, "").trim();
+        let role = "item";
+        if (/^주의:/.test(title)) role = "caution";
+        if (/^영상:|^자료:/.test(title)) role = "resource";
+        const item = makeItem(title, step, index + 1, role);
+        const dateMatch = match[1].match(/D-(\d+)|D-Day/i);
+        if (dateMatch) item.date = dateMatch[0];
+        if (/확정|비교|정하기/.test(title) && activeCaseId === "newcar") item.role = "decision";
+        if (/기록|보관/.test(title) && activeCaseId === "newcar") item.role = "record";
+        result.push(finalizeItem(item, rawLine.trim()));
+      });
+      if (activeCaseId === "safety") {
+        const caution = makeItem("여행경보 단계와 입국 요건은 수시로 바뀝니다.", "위험 정보", lines.length, "caution", "출발 직전 공식 공지를 다시 확인합니다.");
+        result.push(finalizeItem(caution, "주의: 여행경보 단계와 입국 요건은 수시로 바뀝니다."));
+      }
+      return normalizeDetailedItems(result);
+    }
+
+    function loadCase(id, preserveDraft = false) {
+      activeCaseId = id;
+      currentCase = cases[id];
+      activeArtifact = currentCase.primary;
+      parsed = false;
+      selectedIndex = -1;
+      history = [];
+      $("#composer").value = currentCase.raw;
+      items = normalizeDetailedItems(sourceItemsForCase(id));
+      $("#sourceTitle").textContent = currentCase.sourceTitle;
+      $("#sourceUrl").textContent = currentCase.sourceUrl;
+      $("#sourceUrl").href = /^https?:\/\//.test(currentCase.sourceUrl) ? currentCase.sourceUrl : "#";
+      $("#sourceUrl").removeAttribute("aria-disabled");
+      if (!/^https?:\/\//.test(currentCase.sourceUrl)) {
+        $("#sourceUrl").setAttribute("aria-disabled", "true");
+        $("#sourceUrl").removeAttribute("target");
+      } else {
+        $("#sourceUrl").setAttribute("target", "_blank");
+      }
+      $("#sourceScope").textContent = sourceScopeForCase(id);
+      $("#sourceVersion").textContent = currentCase.version;
+      $("#sourcePolicy").textContent = id === "jeju"
+        ? "내 원문과 구조 수정은 개인 초안에 함께 보존"
+        : "source 원문은 유지하고 해석·개인 값·수정 제안만 별도 저장";
+      $("#sourceBadge").textContent = id === "jeju" ? "내 입력" : "원문";
+      $("#sourceBadge").className = `badge ${id === "jeju" ? "user" : "source"}`;
+      $("#metricInput").textContent = currentCase.inputKind;
+      $("#metricCount").textContent = `${items.length}개`;
+      $("#metricArtifact").textContent = artifactLabel[currentCase.primary];
+      $("#inputStatus").className = "status-row";
+      $("#inputStatus").textContent = `${currentCase.version}. 원문을 유지한 채 구조를 확인합니다.`;
+      $("#structureSummary").textContent = "구조 확인을 시작하세요.";
+      $("#issueBadge").textContent = "대기";
+      $("#issueBadge").className = "badge issue";
+      $("#parseButton").disabled = false;
+      $("#parseButton").textContent = "구조 확인";
+      updateCounts();
+      renderOutline();
+      renderResult();
+      updateButtons();
+      renderSelectedDetail();
+      if (!preserveDraft) applyPrototypeState("normal");
+      if (!preserveDraft) setMobileStage("input");
+    }
+
+    function updateCounts() {
+      const value = $("#composer").value;
+      const lines = value ? value.split(/\r?\n/).length : 0;
+      $("#charCount").textContent = `${value.length.toLocaleString()}자 · ${lines.toLocaleString()}줄`;
+      $("#metricInput").textContent = detectKind(value);
+    }
+
+    function parseCurrent() {
+      $("#parseButton").disabled = true;
+      $("#parseButton").textContent = "구조 확인 중";
+      $("#inputStatus").className = "status-row";
+      $("#inputStatus").textContent = "deterministic fixture parser가 원문 줄과 역할을 확인하고 있습니다.";
+      window.setTimeout(() => {
+        const text = $("#composer").value.trim();
+        items = activeCaseId === "kmooc" || activeCaseId === "librivox" ? sourceItemsForCase(activeCaseId) : parseRaw(text);
+        parsed = true;
+        selectedIndex = items.length ? 0 : -1;
+        $("#parseButton").disabled = false;
+        $("#parseButton").textContent = "구조 다시 확인";
+        $("#inputStatus").textContent = `${detectKind(text)} 감지 · 원문 ${text.split(/\r?\n/).length}줄 · ${items.length}개 구조 후보`;
+        $("#structureSummary").textContent = `${new Set(items.map((item) => item.step)).size} Step · ${items.length} Item · 원문 연결 유지`;
+        $("#issueBadge").textContent = currentCase.issue.includes("0개") ? "확인 필요" : "1개 확인";
+        $("#issueBadge").className = "badge issue";
+        renderOutline();
+        renderResult();
+        updateButtons();
+        saveRecovery();
+        setMobileStage("structure");
+        showToast("구조를 확인했습니다. 원문은 변경하지 않았습니다.");
+      }, 520);
+    }
+
+    function renderOutline() {
+      const list = $("#outlineList");
+      if (!items.length) {
+        list.innerHTML = `<div class="empty-selection">입력 내용을 구조로 읽지 못했습니다.<br>원문은 그대로 보존됩니다.</div>`;
+        return;
+      }
+      let lastStep = "";
+      list.innerHTML = items.map((item, index) => {
+        const step = item.step !== lastStep ? `<div class="step-label">${escapeHtml(item.step)}</div>` : "";
+        lastStep = item.step;
+        const changedFields = item.original
+          ? ["title", "detail", "completion", "date", "time", "place", "repeat", "duration", "role"].filter((key) => String(item[key] || "") !== String(item.original[key] || ""))
+          : [];
+        return `${step}
+          <button type="button" class="outline-row ${item.included ? "" : "excluded"}" role="option"
+            aria-selected="${selectedIndex === index}" data-index="${index}" style="padding-left:${8 + item.depth * 14}px">
+            <span class="role-mark">${roleMark[item.role] || "DO"}</span>
+            <span class="outline-copy">
+              <strong>${escapeHtml(item.title)}</strong>
+              <small>${roleLabel[item.role]}${changedFields.length ? ` · 개인 수정 ${changedFields.length}` : ""}${item.date ? ` · ${escapeHtml(item.date)}` : ""}</small>
+              <small>${escapeHtml(item.detail || item.completion || "상세 정보 없음")}</small>
+            </span>
+            <span class="lineage">${item.sourceDerived ? `L${item.line}` : "내 입력"}</span>
+          </button>`;
+      }).join("");
+      $$(".outline-row").forEach((row) => {
+        row.addEventListener("click", () => {
+          selectedIndex = Number(row.dataset.index);
+          renderOutline();
+          updateButtons();
+          renderSelectedDetail();
+        });
+        row.addEventListener("dblclick", openItemDialog);
+      });
+      renderSelectedDetail();
+    }
+
+    function renderSelectedDetail() {
+      const panel = $("#selectedDetail");
+      if (!panel || selectedIndex < 0 || selectedIndex >= items.length) {
+        if (panel) panel.hidden = true;
+        return;
+      }
+      const item = items[selectedIndex];
+      const effectiveDate = dateForItem(item, selectedIndex);
+      const changed = item.original
+        ? ["title", "detail", "completion", "date", "time", "place", "repeat", "duration", "role"]
+          .filter((key) => String(item[key] || "") !== String(item.original[key] || ""))
+        : [];
+      panel.hidden = false;
+      $("#selectedDetailTitle").textContent = item.title;
+      $("#selectedConfidence").textContent = item.confidence || "확인 필요";
+      $("#selectedConfidence").className = `badge ${item.confidence === "높음" ? "ok" : "issue"}`;
+      $("#selectedSourceFragment").textContent = sourceFragmentForItem(item);
+      $("#selectedLedger").innerHTML = `
+        <div><span>해석한 역할</span><strong>${escapeHtml(roleLabel[item.role])} · ${escapeHtml(item.step)}</strong></div>
+        <div><span>일정</span><strong>${escapeHtml(item.date || "원문 날짜 없음")} → ${escapeHtml(effectiveDate)}</strong></div>
+        <div><span>상세 설명</span><strong>${escapeHtml(item.detail || "없음")}</strong></div>
+        <div><span>완료 기준</span><strong>${escapeHtml(item.completion || "실행 항목 아님")}</strong></div>
+        <div><span>자료·장소</span><strong>${escapeHtml(item.resource || item.place || "없음")}</strong></div>
+        <div><span>개인 변경</span><strong>${changed.length ? escapeHtml(changed.join(", ")) : "없음"}</strong></div>`;
+      $("#selectedDetailNote").textContent = item.sourceDerived
+        ? `원문 line ${item.line}을 지우지 않고 ${item.id}에 연결했습니다. 수정은 ${getOwner() === "creator" ? "제작자 초안" : getOwner() === "suggestion" ? "수정 제안" : "개인 초안"}에만 기록됩니다.`
+        : `개인 메모 fragment를 ${item.id}에 연결했습니다. 원문과 Item 순서를 함께 보존합니다.`;
+    }
+
+    function includedItems() {
+      return items.filter((item) => item.included);
+    }
+
+    function projectionItems(artifact = activeArtifact) {
+      const included = includedItems();
+      if (artifact === "sheet" || artifact === "memo") return included;
+      return included.filter((item) => !["resource", "guide", "caution"].includes(item.role));
+    }
+
+    function dateForItem(item, index) {
+      if (/^\d{4}-\d{2}-\d{2}$/.test(item.date)) return item.date;
+      const anchor = getAnchorValue();
+      if (!anchor) return "날짜 없음";
+      const date = new Date(`${anchor}T12:00:00`);
+      if (Number.isNaN(date.getTime())) return "날짜 없음";
+      let offset = 0;
+      const relativeMatch = item.date.match(/^D-(\d+)$/i);
+      const stepMatch = item.step.match(/D-(\d+)/);
+      if (relativeMatch) offset = -Number(relativeMatch[1]);
+      else if (/^D-Day$/i.test(item.date)) offset = 0;
+      else if (stepMatch) offset = -Number(stepMatch[1]);
+      else if (/이사 후/.test(item.step)) offset = 1 + Math.floor(index / 2);
+      else if (activeCaseId === "workout") offset = index;
+      else if (activeCaseId === "jeju" && /전날/.test(item.title)) offset = -1;
+      date.setDate(date.getDate() + offset);
+      return date.toISOString().slice(0, 10);
+    }
+
+    function renderResult() {
+      const eligible = projectionItems();
+      $("#artifactHeading").textContent = `${artifactLabel[activeArtifact]} · ${currentCase.label.split(" · ")[0]}`;
+      $("#artifactReason").textContent = currentCase.reason;
+      $("#resultCount").textContent = `${eligible.length}개`;
+      $("#resultSubtitle").textContent = parsed ? `${currentCase.version}` : "사례의 frozen 구조를 먼저 보여 줍니다.";
+      const artifactIds = [currentCase.primary, ...currentCase.secondary].filter((value, index, arr) => arr.indexOf(value) === index);
+      $("#artifactTabs").innerHTML = artifactIds.map((artifact) =>
+        `<button type="button" data-artifact="${artifact}" aria-pressed="${artifact === activeArtifact}">${artifactLabel[artifact]}</button>`
+      ).join("");
+      $$("#artifactTabs button").forEach((button) => button.addEventListener("click", () => {
+        activeArtifact = button.dataset.artifact;
+        renderResult();
+        $("#artifactCanvas").focus();
+      }));
+      renderPersonalFields();
+      renderArtifactCanvas();
+      renderArtifactSummary();
+      $("#lossNote").textContent = currentCase.loss;
+      updateSaveLabel();
+    }
+
+    function renderPersonalFields() {
+      const label = currentCase.anchorLabel;
+      const sameCase = $("#personalFields").dataset.caseId === activeCaseId;
+      const previousAnchor = sameCase ? $("#anchorValue")?.value : "";
+      const previousTitle = sameCase ? $("#personalTitle")?.value : "";
+      const value = previousAnchor || currentCase.anchorValue || "";
+      let control = `<input id="anchorValue" type="text" value="${escapeAttr(value)}" placeholder="선택 사항">`;
+      if (["moving", "vehicle", "workout", "jeju"].includes(activeCaseId)) {
+        control = `<input id="anchorValue" type="date" value="${/^\d{4}-\d{2}-\d{2}$/.test(value) ? value : ""}">`;
+      }
+      if (activeCaseId === "kmooc") {
+        control = `<select id="anchorValue">${Array.from({length: 15}, (_, i) => `<option value="${i}" ${String(i) === value ? "selected" : ""}>${i === 0 ? "미시작" : `${i}주차 완료`}</option>`).join("")}</select>`;
+      }
+      if (activeCaseId === "librivox") {
+        control = `<select id="anchorValue">${Array.from({length: 38}, (_, i) => `<option value="${i + 1}" ${String(i + 1) === value ? "selected" : ""}>${i + 1}장</option>`).join("")}</select>`;
+      }
+      let extra = "";
+      if (activeCaseId === "workout") {
+        extra = `
+          <label><span class="field-label">시작 시간 · 선택</span><input id="contextTime" type="time" value="07:30"></label>
+          <label><span class="field-label">7일 이후</span><select id="contextEnd"><option>이번 7일만</option><option>같은 순서로 다시 시작</option></select></label>`;
+      } else if (activeCaseId === "librivox") {
+        extra = `<label class="full"><span class="field-label">현재 재생 위치 · 선택</span><input id="contextPlayback" value="12:30" placeholder="예: 12:30"></label>`;
+      } else if (activeCaseId === "newcar") {
+        extra = `<label class="full"><span class="field-label">비교 기준 메모 · 선택</span><input id="contextCompare" value="총비용 · 출고일 · 보증 · 서비스"></label>`;
+      } else if (activeCaseId === "safety") {
+        extra = `<label class="full"><span class="field-label">출발 전 다시 확인할 날짜 · 선택</span><input id="contextReviewDate" type="date" value="2026-08-02"></label>`;
+      }
+      $("#personalFields").innerHTML = `
+        <label><span class="field-label">${escapeHtml(label)}</span>${control}</label>
+        <label><span class="field-label">개인 저장 이름</span><input id="personalTitle" value="${escapeAttr(previousTitle || currentCase.label.split(" · ")[0])}"></label>
+        ${extra}
+        <div class="full"><span class="badge source">원문 값</span> <span class="badge user">내 값</span>
+          <span style="font-size:12px;color:var(--muted);margin-left:6px">내 값은 원문을 덮어쓰지 않습니다.</span></div>`;
+      $("#personalFields").dataset.caseId = activeCaseId;
+      $("#anchorValue").addEventListener("change", (event) => {
+        currentCase.anchorValue = event.target.value;
+        renderArtifactCanvas();
+        renderArtifactSummary();
+        renderSelectedDetail();
+        saveRecovery();
+      });
+      $("#personalTitle").addEventListener("input", saveRecovery);
+      $$("#personalFields input, #personalFields select").forEach((controlElement) => {
+        if (controlElement.id === "anchorValue" || controlElement.id === "personalTitle") return;
+        controlElement.addEventListener("change", () => {
+          renderArtifactCanvas();
+          renderArtifactSummary();
+          saveRecovery();
+        });
+      });
+    }
+
+    function getAnchorValue() {
+      return $("#anchorValue")?.value || currentCase.anchorValue || "";
+    }
+
+    function contextValue(id, fallback = "") {
+      return document.getElementById(id)?.value || fallback;
+    }
+
+    function effectiveTimeForItem(item) {
+      return item.time || (activeCaseId === "workout" ? contextValue("contextTime", "07:30") : "");
+    }
+
+    function contextSummaryForCase() {
+      if (activeCaseId === "workout") {
+        return `시작 ${getAnchorValue() || "미정"} · ${contextValue("contextTime", "07:30")} · ${contextValue("contextEnd", "이번 7일만")}`;
+      }
+      if (activeCaseId === "kmooc") return `현재 진도 ${getAnchorValue() || "미시작"}`;
+      if (activeCaseId === "librivox") return `현재 ${getAnchorValue() || "1"}장 · 재생 위치 ${contextValue("contextPlayback", "미입력")}`;
+      if (activeCaseId === "newcar") return `비교 기준 ${contextValue("contextCompare", "미입력")}`;
+      if (activeCaseId === "safety") return `공식 정보 재확인 ${contextValue("contextReviewDate", "미정")}`;
+      if (getAnchorValue()) return `${currentCase.anchorLabel.replace(" · 선택", "")} ${getAnchorValue()}`;
+      return "";
+    }
+
+    function formatDateLabel(iso) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso;
+      const date = new Date(`${iso}T12:00:00`);
+      return new Intl.DateTimeFormat("ko-KR", { month: "short", day: "numeric", weekday: "short" }).format(date);
+    }
+
+    function projectionRows(artifact = activeArtifact) {
+      const eligible = projectionItems(artifact);
+      if (artifact !== "calendar") return eligible;
+      return eligible.filter((item) => dateForItem(item, items.indexOf(item)) !== "날짜 없음");
+    }
+
+    function renderArtifactSummary() {
+      const included = includedItems();
+      const rows = projectionRows();
+      const dated = included.filter((item) => dateForItem(item, items.indexOf(item)) !== "날짜 없음");
+      const undated = included.filter((item) => !["resource", "guide", "caution"].includes(item.role)).length - dated.length;
+      const dates = dated.map((item) => dateForItem(item, items.indexOf(item))).filter((date) => /^\d{4}-/.test(date)).sort();
+      const range = dates.length ? `${dates[0]} ~ ${dates[dates.length - 1]}` : "확정 날짜 없음";
+      $("#artifactSummary").innerHTML = `
+        <div class="artifact-summary-head">
+          <div><span class="pane-kicker">Preflight</span><h3>${escapeHtml(artifactLabel[activeArtifact])}에 실제로 들어갈 내용</h3></div>
+          <span class="badge ${rows.length ? "ok" : "issue"}">${rows.length}개 생성</span>
+        </div>
+        <div class="artifact-metrics">
+          <div><strong>${items.length}</strong><span>해석한 전체</span></div>
+          <div><strong>${included.length}</strong><span>포함</span></div>
+          <div><strong>${Math.max(0, items.length - included.length)}</strong><span>제외</span></div>
+          <div><strong>${activeArtifact === "calendar" ? dated.length : Math.max(0, undated)}</strong><span>${activeArtifact === "calendar" ? "날짜 있음" : "날짜 없음"}</span></div>
+        </div>
+        <div class="source-detail-row"><span>날짜 범위</span><strong>${escapeHtml(range)}</strong></div>
+        ${contextSummaryForCase() ? `<div class="source-detail-row"><span>개인화 결과</span><strong>${escapeHtml(contextSummaryForCase())}</strong></div>` : ""}
+        <div class="source-detail-row"><span>보존/손실</span><strong>${escapeHtml(currentCase.loss)}</strong></div>`;
+    }
+
+    function bindArtifactInteractions() {
+      $$("[data-open-item]").forEach((element) => {
+        const open = () => {
+          selectedIndex = Number(element.dataset.openItem);
+          renderOutline();
+          renderSelectedDetail();
+          updateButtons();
+          openItemDialog();
+        };
+        element.addEventListener("click", open);
+        element.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            open();
+          }
+        });
+      });
+    }
+
+    function renderArtifactCanvas() {
+      const canvas = $("#artifactCanvas");
+      const eligible = projectionItems();
+      if (activeArtifact === "sheet") {
+        canvas.innerHTML = `<table class="sheet-table detail-sheet"><thead><tr><th>순서</th><th>구간</th><th>항목</th><th>실행·기록 정보</th><th>상태</th></tr></thead><tbody>${
+          eligible.map((item, index) => `<tr data-open-item="${items.indexOf(item)}" tabindex="0" aria-label="${escapeAttr(item.title)} 상세 열기">
+            <td>${index + 1}</td>
+            <td>${escapeHtml(item.step)}</td>
+            <td class="row-title"><strong>${escapeHtml(item.title)}</strong><div class="artifact-subline"><span class="micro-tag">${escapeHtml(roleLabel[item.role])}</span>${item.resource ? `<span class="micro-tag">자료 연결</span>` : ""}</div></td>
+            <td>${escapeHtml(item.detail || item.completion || "정보 없음")}${item.completion ? `<br><small>완료: ${escapeHtml(item.completion)}</small>` : ""}</td>
+            <td>${escapeHtml(item.progress || (item.included ? "포함" : "제외"))}</td>
+          </tr>`).join("")
+        }</tbody></table>`;
+        $("#resultCount").textContent = `${eligible.length}개`;
+        bindArtifactInteractions();
+        return;
+      }
+      if (activeArtifact === "memo") {
+        const all = includedItems();
+        canvas.innerHTML = all.map((item) => `<article class="memo-block" data-open-item="${items.indexOf(item)}" tabindex="0" aria-label="${escapeAttr(item.title)} 상세 열기">
+          <span class="badge ${item.role === "caution" ? "issue" : item.sourceDerived ? "source" : "user"}">${roleLabel[item.role]}</span>
+          <h3>${escapeHtml(item.title)}</h3>
+          <p>${escapeHtml(item.detail || item.completion || item.step)}</p>
+          ${item.completion ? `<p><strong>완료 기준</strong><br>${escapeHtml(item.completion)}</p>` : ""}
+          <div class="memo-meta"><span class="micro-tag">${escapeHtml(item.step)}</span>${item.resource ? `<span class="micro-tag">자료 연결</span>` : ""}<span class="micro-tag">${item.sourceDerived ? "원문 근거" : "내 입력"}</span></div>
+        </article>`).join("");
+        $("#resultCount").textContent = `${all.length}개`;
+        bindArtifactInteractions();
+        return;
+      }
+      const rows = projectionRows();
+      if (!rows.length) {
+        canvas.innerHTML = `<div class="empty-selection" style="margin-top:12px">날짜가 있는 항목이 없습니다.<br>Todo 결과에서는 ${eligible.length}개 항목을 그대로 사용할 수 있습니다.</div>`;
+        $("#resultCount").textContent = "0개";
+        return;
+      }
+      $("#resultCount").textContent = `${rows.length}개`;
+      if (activeArtifact === "calendar") {
+        const groups = new Map();
+        rows.forEach((item) => {
+          const date = dateForItem(item, items.indexOf(item));
+          if (!groups.has(date)) groups.set(date, []);
+          groups.get(date).push(item);
+        });
+        canvas.innerHTML = `<div class="calendar-preview">${[...groups.entries()].map(([date, dayItems]) => `
+          <section class="calendar-day-group">
+            <div class="calendar-day"><strong>${escapeHtml(date.slice(8, 10))}</strong>${escapeHtml(formatDateLabel(date))}<br><small>${dayItems.length}개</small></div>
+            <div class="calendar-events">${dayItems.map((item) => `<article class="calendar-event" data-open-item="${items.indexOf(item)}" tabindex="0" aria-label="${escapeAttr(item.title)} 상세 열기">
+              <strong>${escapeHtml(item.title)}</strong>
+              <small>${escapeHtml(item.step)} · ${escapeHtml(effectiveTimeForItem(item) || "종일")} · ${escapeHtml(item.duration || "예상 시간 없음")}</small>
+              <small>${escapeHtml(item.completion || item.detail)}</small>
+            </article>`).join("")}</div>
+          </section>`).join("")}</div>`;
+        bindArtifactInteractions();
+        return;
+      }
+      const groups = new Map();
+      rows.forEach((item) => {
+        if (!groups.has(item.step)) groups.set(item.step, []);
+        groups.get(item.step).push(item);
+      });
+      canvas.innerHTML = [...groups.entries()].map(([step, groupItems]) => `<section class="todo-section">
+        <h4>${escapeHtml(step)} · ${groupItems.length}개</h4>
+        ${groupItems.map((item) => `<div class="artifact-row detail-rich" data-open-item="${items.indexOf(item)}" tabindex="0" aria-label="${escapeAttr(item.title)} 상세 열기">
+          <input type="checkbox" aria-label="${escapeAttr(item.title)} 완료 예시" disabled>
+          <div><strong>${escapeHtml(item.title)}</strong><small>${escapeHtml(item.detail || item.completion || item.step)}</small>
+            <div class="artifact-subline">${item.completion ? `<span class="micro-tag">완료: ${escapeHtml(item.completion)}</span>` : ""}${item.duration ? `<span class="micro-tag">${escapeHtml(item.duration)}</span>` : ""}${item.resource ? `<span class="micro-tag">자료 연결</span>` : ""}</div>
+          </div>
+          <span class="artifact-date">${escapeHtml(dateForItem(item, items.indexOf(item)))}</span>
+        </div>`).join("")}
+      </section>`).join("");
+      bindArtifactInteractions();
+    }
+
+    function updateButtons() {
+      const hasSelection = selectedIndex >= 0 && selectedIndex < items.length;
+      ["moveUp", "moveDown", "indent", "outdent", "merge", "split", "roleSelect", "includeToggle", "editSelected"].forEach((id) => {
+        $("#" + id).disabled = !hasSelection;
+      });
+      $("#undo").disabled = !history.length;
+      if (hasSelection) {
+        $("#roleSelect").value = items[selectedIndex].role;
+        $("#includeToggle").textContent = items[selectedIndex].included ? "선택 제외" : "다시 포함";
+        $("#includeToggle").setAttribute("aria-label", items[selectedIndex].included ? "선택 항목 제외" : "선택 항목 다시 포함");
+      }
+    }
+
+    function snapshot() {
+      history.push(clone(items));
+      if (history.length > 30) history.shift();
+      $("#undo").disabled = false;
+    }
+
+    function moveSelected(delta) {
+      if (selectedIndex < 0) return;
+      const next = selectedIndex + delta;
+      if (next < 0 || next >= items.length) return;
+      snapshot();
+      [items[selectedIndex], items[next]] = [items[next], items[selectedIndex]];
+      selectedIndex = next;
+      renderOutline();
+      renderResult();
+      updateButtons();
+      showToast("항목 순서를 바꿨습니다.");
+    }
+
+    function mergeSelected() {
+      if (selectedIndex < 0 || selectedIndex >= items.length - 1) {
+        showToast("다음 항목이 없어 합칠 수 없습니다.");
+        return;
+      }
+      snapshot();
+      const current = items[selectedIndex];
+      const next = items[selectedIndex + 1];
+      current.title = `${current.title} / ${next.title}`;
+      current.detail = [current.detail, next.detail].filter(Boolean).join(" ");
+      current.userEdited = true;
+      items.splice(selectedIndex + 1, 1);
+      renderOutline();
+      renderResult();
+      updateButtons();
+      showToast("두 원문 연결을 한 Item으로 합쳤습니다.");
+    }
+
+    function splitSelected() {
+      if (selectedIndex < 0) return;
+      const item = items[selectedIndex];
+      const parts = item.title.split(/\s+[·/]\s+|\s+와\s+|,\s*/).filter((part) => part.trim());
+      if (parts.length < 2) {
+        showToast("자동으로 나눌 구분자를 찾지 못했습니다. 항목 수정에서 제목을 먼저 정리하세요.");
+        return;
+      }
+      snapshot();
+      const replacements = parts.map((part, offset) => ({ ...clone(item), id: `${item.id}-split-${offset + 1}`, title: part.trim(), userEdited: true }));
+      items.splice(selectedIndex, 1, ...replacements);
+      renderOutline();
+      renderResult();
+      updateButtons();
+      showToast(`${parts.length}개 Item으로 나눴습니다.`);
+    }
+
+    function openItemDialog() {
+      if (selectedIndex < 0) return;
+      const item = items[selectedIndex];
+      $("#editTitle").value = item.title;
+      $("#editDetail").value = item.detail;
+      $("#editCompletion").value = item.completion;
+      $("#editDate").value = item.date;
+      $("#editTime").value = item.time;
+      $("#editPlace").value = item.place;
+      $("#editRepeat").value = item.repeat;
+      $("#editDuration").value = item.duration;
+      $("#editSourceFragment").textContent = sourceFragmentForItem(item);
+      $("#ownershipDetail").innerHTML = `
+        <p><span class="badge ${item.sourceDerived ? "source" : "user"}">${item.sourceDerived ? "원문에서 감지" : "사용자 입력"}</span></p>
+        <p style="color:var(--muted);font-size:12px">원문 위치: ${item.sourceDerived ? `line ${item.line}` : "개인 메모 fragment"}<br>
+        stable ID: ${escapeHtml(item.id)}<br>
+        변경 내용은 ${getOwner() === "creator" ? "제작자 초안" : getOwner() === "suggestion" ? "수정 제안" : "개인 초안"}에만 기록됩니다.</p>`;
+      updateEditDiff();
+      $("#itemDialog").showModal();
+      window.setTimeout(() => $("#editTitle").focus(), 0);
+    }
+
+    function updateEditDiff() {
+      if (selectedIndex < 0 || selectedIndex >= items.length) return;
+      const item = items[selectedIndex];
+      const original = item.original || item;
+      const before = [
+        original.title,
+        original.detail,
+        original.completion,
+        original.date ? `날짜 ${original.date}` : "",
+        original.time ? `시간 ${original.time}` : "",
+        original.place ? `장소 ${original.place}` : ""
+      ].filter(Boolean).join(" · ");
+      const after = [
+        $("#editTitle")?.value,
+        $("#editDetail")?.value,
+        $("#editCompletion")?.value,
+        $("#editDate")?.value ? `날짜 ${$("#editDate").value}` : "",
+        $("#editTime")?.value ? `시간 ${$("#editTime").value}` : "",
+        $("#editPlace")?.value ? `장소 ${$("#editPlace").value}` : ""
+      ].filter(Boolean).join(" · ");
+      $("#editDiff").innerHTML = `
+        <div><span>원문 해석값</span><strong>${escapeHtml(before || "값 없음")}</strong></div>
+        <div class="after"><span>개인 결과에 적용될 값</span><strong>${escapeHtml(after || "값 없음")}</strong></div>`;
+    }
+
+    function applyItemEdit(event) {
+      if (event.submitter?.value !== "default" || selectedIndex < 0) return;
+      event.preventDefault();
+      snapshot();
+      const item = items[selectedIndex];
+      item.title = $("#editTitle").value.trim();
+      item.detail = $("#editDetail").value.trim();
+      item.completion = $("#editCompletion").value.trim();
+      item.date = $("#editDate").value.trim();
+      item.time = $("#editTime").value;
+      item.place = $("#editPlace").value.trim();
+      item.repeat = $("#editRepeat").value.trim();
+      item.duration = $("#editDuration").value.trim();
+      item.userEdited = true;
+      $("#itemDialog").close();
+      renderOutline();
+      renderResult();
+      renderSelectedDetail();
+      renderArtifactSummary();
+      updateButtons();
+      saveRecovery();
+      showToast("선택 항목의 개인 초안 값을 적용했습니다.");
+    }
+
+    function getOwner() {
+      return document.querySelector('input[name="owner"]:checked')?.value || "personal";
+    }
+
+    function updateSaveLabel() {
+      const owner = getOwner();
+      const count = includedItems().length;
+      const button = $("#saveButton");
+      if (owner === "creator") button.textContent = `제작자 초안 ${count}개로 저장`;
+      else if (owner === "suggestion") button.textContent = "원본 수정 제안 준비";
+      else button.textContent = `개인 Flow ${count}개로 저장`;
+    }
+
+    function scopeLabel(scope) {
+      if (scope === "selected") return "선택 항목";
+      if (scope === "current") return "현재 항목";
+      return "전체 Flow";
+    }
+
+    function exportFormatsForArtifact() {
+      if (activeArtifact === "calendar") return [
+        { id: "ics", label: "ICS 일정", note: "날짜가 있는 항목을 캘린더 이벤트로 만듭니다." },
+        { id: "markdown", label: "Markdown", note: "일정과 설명을 읽을 수 있는 문서로 만듭니다." }
+      ];
+      if (activeArtifact === "sheet") return [
+        { id: "tsv", label: "TSV 표", note: "열 구조를 유지해 Sheet나 Excel에 붙여넣습니다." },
+        { id: "markdown", label: "Markdown", note: "주차·순서와 상세를 문서 구조로 만듭니다." }
+      ];
+      if (activeArtifact === "memo") return [
+        { id: "markdown", label: "Markdown", note: "제목, 안내, 출처 구조를 보존합니다." },
+        { id: "text", label: "일반 텍스트", note: "서식 없이 메모 앱에 바로 붙여넣습니다." }
+      ];
+      return [
+        { id: "checklist", label: "체크리스트", note: "실행 항목만 - [ ] 형식으로 만듭니다." },
+        { id: "markdown", label: "Markdown", note: "상세 설명과 완료 기준도 함께 보존합니다." }
+      ];
+    }
+
+    function exportItemsForScope(scope = exportScope) {
+      const eligible = projectionRows(activeArtifact);
+      if (scope === "whole") return eligible;
+      const selected = items[selectedIndex];
+      return selected && eligible.includes(selected) ? [selected] : [];
+    }
+
+    function exportDateRange(rows) {
+      const dates = rows
+        .map((item) => dateForItem(item, items.indexOf(item)))
+        .filter((value) => /^\d{4}-\d{2}-\d{2}$/.test(value))
+        .sort();
+      return dates.length ? `${dates[0]} ~ ${dates[dates.length - 1]}` : "확정 날짜 없음";
+    }
+
+    function markdownForItems(rowItems) {
+      const groups = new Map();
+      rowItems.forEach((item) => {
+        if (!groups.has(item.step)) groups.set(item.step, []);
+        groups.get(item.step).push(item);
+      });
+      let output = `# ${$("#personalTitle")?.value || currentCase.label.split(" · ")[0]}\n\n`;
+      groups.forEach((groupItems, step) => {
+        output += `## ${step}\n`;
+        groupItems.forEach((item) => {
+          const prefix = ["guide", "caution", "resource"].includes(item.role) ? "- " : "- [ ] ";
+          output += `${prefix}${item.title}\n`;
+          if (item.detail) output += `  자세히: ${item.detail}\n`;
+          if (item.completion) output += `  완료 기준: ${item.completion}\n`;
+          const effectiveDate = dateForItem(item, items.indexOf(item));
+          if (effectiveDate !== "날짜 없음") output += `  날짜: ${effectiveDate}\n`;
+          if (effectiveTimeForItem(item)) output += `  시간: ${effectiveTimeForItem(item)}\n`;
+          if (item.place) output += `  장소: ${item.place}\n`;
+          if (item.repeat) output += `  반복: ${item.repeat}\n`;
+          if (item.resource) output += `  자료: ${item.resource}\n`;
+        });
+        output += "\n";
+      });
+      output += `출처: ${currentCase.sourceTitle}\n`;
+      return output;
+    }
+
+    function exportSampleFor(rowItems, format) {
+      const flowTitle = $("#personalTitle")?.value || currentCase.label.split(" · ")[0];
+      if (!rowItems.length) return "선택한 범위에서 이 형식으로 만들 수 있는 항목이 없습니다.";
+      if (format === "ics") {
+        const events = rowItems.slice(0, 2).map((item) => {
+          const date = dateForItem(item, items.indexOf(item)).replaceAll("-", "");
+          const effectiveTime = effectiveTimeForItem(item);
+          const description = [item.detail, item.completion ? `완료 기준: ${item.completion}` : "", item.place ? `장소: ${item.place}` : ""]
+            .filter(Boolean).join("\\n");
+          return [
+            "BEGIN:VEVENT",
+            `UID:${item.id}@flowme.local`,
+            effectiveTime ? `DTSTART:${date}T${effectiveTime.replace(":", "")}00` : `DTSTART;VALUE=DATE:${date}`,
+            `SUMMARY:${item.title}`,
+            `DESCRIPTION:${description}`,
+            "END:VEVENT"
+          ].join("\n");
+        }).join("\n");
+        return `BEGIN:VCALENDAR\nVERSION:2.0\nX-WR-CALNAME:${flowTitle}\n${events}\n${rowItems.length > 2 ? `… ${rowItems.length - 2}개 이벤트 더 있음\n` : ""}END:VCALENDAR`;
+      }
+      if (format === "tsv") {
+        const rows = rowItems.slice(0, 3).map((item) => [
+          flowTitle,
+          item.step,
+          item.title,
+          dateForItem(item, items.indexOf(item)) === "날짜 없음" ? "" : dateForItem(item, items.indexOf(item)),
+          item.detail,
+          item.completion
+        ].join("\t"));
+        return `Flow\t구간\t항목\t날짜\t상세\t완료 기준\n${rows.join("\n")}${rowItems.length > 3 ? `\n… ${rowItems.length - 3}행 더 있음` : ""}`;
+      }
+      if (format === "checklist") {
+        return rowItems.slice(0, 6).map((item) => {
+          const date = dateForItem(item, items.indexOf(item));
+          return `- [ ] ${item.title}${date === "날짜 없음" ? "" : ` · ${date}`}`;
+        }).join("\n") + (rowItems.length > 6 ? `\n… ${rowItems.length - 6}개 더 있음` : "");
+      }
+      if (format === "text") {
+        return `${flowTitle}\n\n${rowItems.slice(0, 4).map((item) => `${item.title}\n${item.detail || item.completion || item.step}`).join("\n\n")}${rowItems.length > 4 ? `\n\n… ${rowItems.length - 4}개 더 있음` : ""}`;
+      }
+      return markdownForItems(rowItems);
+    }
+
+    function renderExportPreflight() {
+      const formats = exportFormatsForArtifact();
+      if (!formats.some((format) => format.id === exportFormat)) exportFormat = formats[0].id;
+      const whole = projectionRows(activeArtifact);
+      const selected = items[selectedIndex];
+      const selectedEligible = Boolean(selected && whole.includes(selected));
+      $("#scopeWholeCount").textContent = `${whole.length}개`;
+      $("#scopeSelectedCount").textContent = selectedEligible ? `${selected.title} · 1개` : "결과에 포함된 항목을 먼저 선택";
+      const selectedRadio = document.querySelector('input[name="exportScope"][value="selected"]');
+      const currentRadio = document.querySelector('input[name="exportScope"][value="current"]');
+      selectedRadio.disabled = !selectedEligible;
+      currentRadio.disabled = !selectedEligible;
+      if (!selectedEligible && exportScope !== "whole") exportScope = "whole";
+      const checkedScope = document.querySelector(`input[name="exportScope"][value="${exportScope}"]`);
+      if (checkedScope) checkedScope.checked = true;
+      $("#exportFormats").innerHTML = formats.map((format) => `
+        <label>
+          <input type="radio" name="exportFormat" value="${format.id}" ${format.id === exportFormat ? "checked" : ""}>
+          <strong>${format.label}</strong>
+          <small>${format.note}</small>
+        </label>`).join("");
+      const rows = exportItemsForScope();
+      const format = formats.find((entry) => entry.id === exportFormat) || formats[0];
+      $("#exportSummary").innerHTML = `
+        <div class="artifact-summary-head">
+          <div><span class="pane-kicker">Export preflight</span><h3>${scopeLabel(exportScope)} · ${format.label}</h3></div>
+          <span class="badge ${rows.length ? "ok" : "issue"}">${rows.length}개</span>
+        </div>
+        <div class="artifact-metrics">
+          <div><strong>${whole.length}</strong><span>전체 결과</span></div>
+          <div><strong>${rows.length}</strong><span>이번 범위</span></div>
+          <div><strong>${exportDateRange(rows)}</strong><span>날짜 범위</span></div>
+          <div><strong>${artifactLabel[activeArtifact]}</strong><span>원래 결과</span></div>
+        </div>
+        <div class="source-detail-row"><span>빠지는 정보</span><strong>${escapeHtml(currentCase.loss)}</strong></div>`;
+      $("#exportSample").textContent = exportSampleFor(rows, exportFormat);
+      $("#confirmExport").disabled = !rows.length;
+      document.querySelectorAll('input[name="exportFormat"]').forEach((input) => {
+        input.addEventListener("change", (event) => {
+          exportFormat = event.target.value;
+          renderExportPreflight();
+        });
+      });
+    }
+
+    function openExportPreflight() {
+      exportScope = "whole";
+      exportFormat = exportFormatsForArtifact()[0].id;
+      setJourneyStage("handoff");
+      renderExportPreflight();
+      $("#exportDialog").showModal();
+      window.setTimeout(() => document.querySelector('input[name="exportScope"]:checked')?.focus(), 0);
+    }
+
+    function openReceipt(kind, payload = {}) {
+      const owner = getOwner();
+      const isExport = kind === "export";
+      const eligible = isExport ? (payload.rows || exportItemsForScope(payload.scope)) : includedItems();
+      const scope = isExport ? (payload.scope || exportScope) : "whole";
+      const chosenFormat = isExport ? (payload.format || exportFormat) : activeArtifact;
+      const format = exportFormatsForArtifact().find((entry) => entry.id === chosenFormat);
+      const ownerName = owner === "creator" ? "제작자 초안" : owner === "suggestion" ? "수정 제안" : "개인 초안";
+      $("#receiptTitle").textContent = isExport ? "가져가기 결과" : owner === "suggestion" ? "검토 요청 준비" : "저장 결과";
+      $("#receiptSubtitle").textContent = isExport
+        ? "범위와 형식 계약을 재현한 deterministic fixture 결과입니다."
+        : "브라우저 저장 경계를 재현한 deterministic fixture 결과입니다.";
+      $("#receiptKind").textContent = isExport ? `${format?.label || chosenFormat} simulation` : ownerName;
+      $("#receiptFlowTitle").textContent = $("#personalTitle")?.value || currentCase.label.split(" · ")[0];
+      $("#receiptCount").textContent = `${eligible.length}개`;
+      $("#receiptArtifact").textContent = isExport ? `${artifactLabel[activeArtifact]} · ${format?.label || chosenFormat}` : artifactLabel[activeArtifact];
+      $("#receiptScope").textContent = scopeLabel(scope);
+      $("#receiptSource").textContent = currentCase.sourceTitle === "내 메모" ? "개인 원문" : "source 연결 보존";
+      $("#receiptMessage").textContent = isExport
+        ? `${scopeLabel(scope)} ${eligible.length}개를 ${format?.label || chosenFormat} 결과로 확정했습니다. 이 prototype은 실제 파일을 생성하지 않습니다.`
+        : owner === "creator"
+          ? "공개 전 sourceTrace, 권리, 안전, unresolved 검토가 필요합니다."
+          : owner === "suggestion"
+            ? "개인 수정과 분리된 correction suggestion입니다. canonical Flow를 즉시 바꾸지 않습니다."
+            : "개인 초안으로 저장했습니다. source 원문과 실행 완료 상태는 변경하지 않았습니다.";
+      $("#receiptLoss").textContent = currentCase.loss;
+      $("#receiptNext").innerHTML = eligible.length
+        ? `<strong>${isExport ? "결과에 포함된 첫 항목" : "저장 후 처음 확인할 항목"}</strong>${eligible.slice(0, 3).map((item) => {
+            const date = dateForItem(item, items.indexOf(item));
+            return `<div><span>${escapeHtml(date)}</span><b>${escapeHtml(item.title)}</b></div>`;
+          }).join("")}${eligible.length > 3 ? `<small>외 ${eligible.length - 3}개</small>` : ""}`
+        : "<strong>포함된 항목 없음</strong>";
+      $("#receiptPreview").textContent = isExport
+        ? (payload.sample || exportSampleFor(eligible, chosenFormat))
+        : markdownForItems(eligible.slice(0, Math.min(3, eligible.length)));
+      setJourneyStage("handoff");
+      $("#receiptDialog").showModal();
+      saveRecovery(true);
+    }
+
+    function markdownForCurrent() {
+      return markdownForItems(items.filter((item) => item.included));
+    }
+
+    function openRoundTrip() {
+      $("#markdownPreview").textContent = markdownForCurrent();
+      $("#roundTripDialog").showModal();
+    }
+
+    function saveRecovery(markSaved = false) {
+      try {
+        const payload = {
+          caseId: activeCaseId,
+          rawText: $("#composer").value,
+          items,
+          selectedIndex,
+          activeArtifact,
+          anchor: $("#anchorValue")?.value || "",
+          personalTitle: $("#personalTitle")?.value || "",
+          contextValues: Object.fromEntries(
+            $$("#personalFields input, #personalFields select")
+              .filter((control) => !["anchorValue", "personalTitle"].includes(control.id))
+              .map((control) => [control.id, control.value])
+          ),
+          saved: markSaved,
+          updatedAt: new Date().toISOString()
+        };
+        localStorage.setItem(storageKey, JSON.stringify(payload));
+      } catch (error) {
+        showToast("이 브라우저에서는 작성 중 복구를 저장할 수 없습니다.");
+      }
+    }
+
+    function restoreRecovery() {
+      try {
+        const raw = localStorage.getItem(storageKey);
+        if (!raw) return false;
+        const payload = JSON.parse(raw);
+        if (!cases[payload.caseId] || !Array.isArray(payload.items)) return false;
+        activeCaseId = payload.caseId;
+        currentCase = cases[activeCaseId];
+        currentCase.anchorValue = payload.anchor || currentCase.anchorValue;
+        $("#caseSelect").value = activeCaseId;
+        loadCase(activeCaseId, true);
+        $("#composer").value = payload.rawText || currentCase.raw;
+        items = normalizeDetailedItems(payload.items);
+        selectedIndex = Number.isInteger(payload.selectedIndex) ? payload.selectedIndex : -1;
+        activeArtifact = payload.activeArtifact || currentCase.primary;
+        parsed = true;
+        renderOutline();
+        renderResult();
+        Object.entries(payload.contextValues || {}).forEach(([id, value]) => {
+          const control = document.getElementById(id);
+          if (control) control.value = value;
+        });
+        if (payload.personalTitle && $("#personalTitle")) $("#personalTitle").value = payload.personalTitle;
+        renderArtifactCanvas();
+        renderArtifactSummary();
+        renderSelectedDetail();
+        $("#inputStatus").textContent = `작성 중 초안을 복구했습니다 · ${new Date(payload.updatedAt).toLocaleString("ko-KR")}`;
+        $("#structureSummary").textContent = `${new Set(items.map((item) => item.step)).size} Step · ${items.length} Item · 복구한 revision`;
+        $("#issueBadge").textContent = "복구됨";
+        $("#issueBadge").className = "badge ok";
+        updateButtons();
+        applyPrototypeState("recovered_unsaved_draft");
+        showToast("작성 중 내용을 복구했습니다.");
+        return true;
+      } catch (error) {
+        localStorage.removeItem(storageKey);
+        return false;
+      }
+    }
+
+    function resetRecovery() {
+      localStorage.removeItem(storageKey);
+      loadCase(activeCaseId);
+      showToast("작성 중 초안을 초기화했습니다.");
+    }
+
+    function setMobileStage(stage) {
+      $("#workbench").dataset.mobileStage = stage;
+      if (stage === "structure") $("#workbench").dataset.wideStage = "structure";
+      if (stage === "input") $("#workbench").dataset.wideStage = "input";
+      setJourneyStage(stage);
+      $$("[data-stage-button]").forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.stageButton === stage)));
+      const pane = document.querySelector(`[data-pane="${stage}"]`);
+      const heading = pane?.querySelector("h2");
+      if (window.innerWidth <= 760 && heading) heading.focus?.();
+    }
+
+    function showToast(message) {
+      const toast = $("#toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      window.clearTimeout(toastTimer);
+      toastTimer = window.setTimeout(() => toast.classList.remove("show"), 2600);
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
+    }
+    function escapeAttr(value) { return escapeHtml(value).replace(/`/g, "&#96;"); }
+    function stableToken(value) {
+      let hash = 2166136261;
+      for (const char of String(value)) {
+        hash ^= char.codePointAt(0);
+        hash = Math.imul(hash, 16777619);
+      }
+      return (hash >>> 0).toString(36);
+    }
+
+    seedCaseSelect();
+    loadCase(activeCaseId);
+    restoreRecovery();
+
+    $("#caseSelect").addEventListener("change", (event) => {
+      loadCase(event.target.value);
+      saveRecovery();
+    });
+    $("#sourceUrl").addEventListener("click", (event) => {
+      if ($("#sourceUrl").getAttribute("aria-disabled") === "true") event.preventDefault();
+    });
+    $("#composer").addEventListener("input", () => {
+      parsed = false;
+      updateCounts();
+      $("#inputStatus").textContent = "입력이 바뀌었습니다. 기존 구조는 stale 상태이며 원문은 자동 저장됩니다.";
+      saveRecovery();
+    });
+    $("#stateMode").addEventListener("change", (event) => applyPrototypeState(event.target.value));
+    $("#stateBack").addEventListener("click", () => {
+      applyPrototypeState("normal");
+      $("#inputStatus").className = "status-row";
+      $("#inputStatus").textContent = "현재 원문은 그대로 보존되어 있습니다. 텍스트를 수정하거나 구조를 다시 확인하세요.";
+      setMobileStage("input");
+      $("#composer").focus();
+    });
+    $("#statePrimary").addEventListener("click", () => {
+      const action = $("#statePrimary").dataset.action;
+      applyPrototypeState("normal");
+      $("#inputStatus").className = "status-row";
+      if (action === "retry") {
+        parseCurrent();
+        return;
+      }
+      if (action === "personal") {
+        document.querySelector('input[name="owner"][value="personal"]').checked = true;
+        updateSaveLabel();
+        $("#inputStatus").textContent = "권리 검토가 끝나기 전에는 개인 초안으로만 계속합니다.";
+        setMobileStage("result");
+        return;
+      }
+      if (action === "inspect" || action === "recovered") {
+        $("#inputStatus").textContent = action === "recovered" ? "복구한 구조와 개인 값을 확인하세요." : "불명확한 줄을 원문과 함께 확인하세요.";
+        setMobileStage("structure");
+        document.querySelector(".outline-row")?.focus();
+        return;
+      }
+      if (action === "acknowledge") {
+        $("#inputStatus").textContent = "안전 안내를 확인했습니다. caution은 실행 Item과 분리되어 유지됩니다.";
+        setMobileStage("result");
+        return;
+      }
+      if (action === "compare") {
+        $("#inputStatus").textContent = "원문 값과 개인 override를 함께 보존한 결과를 확인하세요.";
+        setMobileStage("result");
+        $("#personalFields").scrollIntoView({ block: "nearest" });
+        return;
+      }
+      $("#inputStatus").textContent = "직접 붙여넣은 텍스트로 계속할 수 있습니다.";
+      setMobileStage("input");
+      $("#composer").focus();
+    });
+    $("#parseButton").addEventListener("click", parseCurrent);
+    $("#wideToStructure").addEventListener("click", () => setMobileStage("structure"));
+    $("#toResult").addEventListener("click", () => {
+      renderResult();
+      setMobileStage("result");
+      $("#artifactCanvas").focus();
+    });
+    $$("[data-stage-button]").forEach((button) => button.addEventListener("click", () => setMobileStage(button.dataset.stageButton)));
+    $("#moveUp").addEventListener("click", () => moveSelected(-1));
+    $("#moveDown").addEventListener("click", () => moveSelected(1));
+    $("#indent").addEventListener("click", () => {
+      if (selectedIndex < 0) return;
+      snapshot();
+      items[selectedIndex].depth = Math.min(2, items[selectedIndex].depth + 1);
+      items[selectedIndex].userEdited = true;
+      renderOutline(); updateButtons(); showToast("선택 항목을 들여썼습니다.");
+    });
+    $("#outdent").addEventListener("click", () => {
+      if (selectedIndex < 0) return;
+      snapshot();
+      items[selectedIndex].depth = Math.max(0, items[selectedIndex].depth - 1);
+      items[selectedIndex].userEdited = true;
+      renderOutline(); updateButtons(); showToast("선택 항목을 내어썼습니다.");
+    });
+    $("#merge").addEventListener("click", mergeSelected);
+    $("#split").addEventListener("click", splitSelected);
+    $("#roleSelect").addEventListener("change", (event) => {
+      if (selectedIndex < 0) return;
+      snapshot();
+      items[selectedIndex].role = event.target.value;
+      items[selectedIndex].userEdited = true;
+      renderOutline(); renderResult(); updateButtons();
+      showToast(`역할을 ${roleLabel[event.target.value]}(으)로 바꿨습니다.`);
+    });
+    $("#includeToggle").addEventListener("click", () => {
+      if (selectedIndex < 0) return;
+      snapshot();
+      items[selectedIndex].included = !items[selectedIndex].included;
+      items[selectedIndex].userEdited = true;
+      renderOutline(); renderResult(); updateButtons(); saveRecovery();
+      showToast(items[selectedIndex].included ? "선택 항목을 다시 포함했습니다." : "선택 항목을 개인 결과에서 제외했습니다.");
+    });
+    $("#undo").addEventListener("click", () => {
+      if (!history.length) return;
+      items = history.pop();
+      selectedIndex = Math.min(selectedIndex, items.length - 1);
+      renderOutline(); renderResult(); updateButtons();
+      showToast("마지막 구조 변경을 되돌렸습니다.");
+    });
+    $("#editSelected").addEventListener("click", openItemDialog);
+    $("#itemForm").addEventListener("submit", applyItemEdit);
+    $$("#itemForm input, #itemForm textarea").forEach((control) => control.addEventListener("input", updateEditDiff));
+    document.querySelectorAll('input[name="owner"]').forEach((input) => input.addEventListener("change", updateSaveLabel));
+    $("#saveButton").addEventListener("click", () => openReceipt("save"));
+    $("#exportButton").addEventListener("click", openExportPreflight);
+    document.querySelectorAll('input[name="exportScope"]').forEach((input) => {
+      input.addEventListener("change", (event) => {
+        exportScope = event.target.value;
+        renderExportPreflight();
+      });
+    });
+    $("#closeExport").addEventListener("click", () => {
+      $("#exportDialog").close();
+      setJourneyStage("result");
+    });
+    $("#cancelExport").addEventListener("click", () => {
+      $("#exportDialog").close();
+      setJourneyStage("result");
+    });
+    $("#confirmExport").addEventListener("click", () => {
+      const rows = exportItemsForScope();
+      const sample = exportSampleFor(rows, exportFormat);
+      $("#exportDialog").close();
+      openReceipt("export", { scope: exportScope, format: exportFormat, rows, sample });
+    });
+    $("#closeReceipt").addEventListener("click", () => {
+      $("#receiptDialog").close();
+      setJourneyStage("result");
+    });
+    $("#receiptDone").addEventListener("click", () => {
+      $("#receiptDialog").close();
+      setJourneyStage("result");
+    });
+    $("#receiptMarkdown").addEventListener("click", () => { $("#receiptDialog").close(); openRoundTrip(); });
+    $("#roundTripTop").addEventListener("click", openRoundTrip);
+    $("#closeRoundTrip").addEventListener("click", () => $("#roundTripDialog").close());
+    $("#roundTripDone").addEventListener("click", () => $("#roundTripDialog").close());
+    $("#resetDraft").addEventListener("click", resetRecovery);
+    $("#tableImport").addEventListener("click", () => {
+      $("#caseSelect").value = "kmooc";
+      loadCase("kmooc");
+      showToast("표 fixture 14행을 불러왔습니다. 실제 파일 업로드는 제안 범위입니다.");
+    });
+    document.addEventListener("keydown", (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+        event.preventDefault();
+        const stage = $("#workbench").dataset.mobileStage;
+        if (stage === "input") parseCurrent();
+        else if (stage === "structure") $("#toResult").click();
+        else $("#saveButton").click();
+      }
+      if (event.altKey && event.key === "ArrowUp") { event.preventDefault(); moveSelected(-1); }
+      if (event.altKey && event.key === "ArrowDown") { event.preventDefault(); moveSelected(1); }
+    });
+  </script>
+</body>
+</html>
