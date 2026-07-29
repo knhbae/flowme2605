@@ -40,13 +40,23 @@ Only **Active Gate** is the current execution backlog. Unchecked boxes inside ga
 
 ### Active Gate
 
-- [2026-07-24 P33 Cross-entry Canonical Alignment](./2026-07-24-p33-cross-entry-canonical-alignment/spec.md) is locally complete and awaiting publish approval. Home, Flow finding, URL lookup, legacy aliases, receipt, My Flow, Calendar, and export now resolve the AJD moving job through one canonical 24-item identity. Legacy 5-item copies remain readable and require explicit active-copy choice; no automatic personal-state merge or destructive migration occurs. Local evidence is pretest `55 / 55`, unit `587 / 587`, full Playwright `320 / 320`, build `18 / 18`, screenshots `6`, and observed-user sessions `0`. No P34 feature is active before P33 publish verification and independent review.
+- [2026-07-26 P35 MECE UX Reset](./2026-07-26-flowme-mece-ux-reset/p35-r13-final-internal-gate-goal-ko.md) is the only active product gate. The approved candidate keeps the four-tab IA and stable data contracts while making cross-Flow `할 일` the normal My Flow entry, grouping work by exact date, reducing default row commands, and opening the whole plan only on the first post-save entry. Internal evidence is focused unit `13 / 13`, all unit `694 / 694`, P35 Playwright `79 / 79`, full Playwright `405 / 405`, build/docs/diff checks green, and observed-user sessions `0`. The current verdict is `publish_ready_for_internal_review`, not production release or observed-user validation. See the [R13 evidence](../content-audit/2026-07-29-p35-r13-final-internal-gate/README.md).
+
+### Design And Research Shelf
+
+These packages inform the active decision but are not parallel product implementation queues.
+
+- [2026-07-28 FlowMe Text Authoring UX v1](./2026-07-28-flowme-text-authoring-ux-v1/spec.md) - hybrid text plus structured preview is selected and the design/prototype handoff is complete; `TA-01` through `TA-06` remain unimplemented until explicitly promoted after the P35 release decision.
+- [2026-07-29 Flow Content UI Full-Corpus Validation Lab v1](./2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/spec.md) - a standalone source-backed review harness and planning snapshot; production app/runtime/DB/API are unchanged, and external Calendar/VTODO round-trip plus observed-user validation remain `NOT_RUN`.
+- [2026-07-29 Flow Projection Semantics, Scheduling, and Event Corpus Lab v1](./2026-07-29-flow-projection-semantics-scheduling-event-corpus-v1/spec.md) - completed the 42x5 projection contract, user pacing model, and event Series/Edition/Occurrence planning corpus; runtime migration, external Calendar/VTODO round-trip, and observed-user validation remain gated.
 
 ### Completed Or Closed
 
-- [2026-07-29 Flow Projection Semantics, Scheduling, and Event Corpus Lab v1](./2026-07-29-flow-projection-semantics-scheduling-event-corpus-v1/spec.md) - completed the 42x5 projection contract, user pacing model, and event Series/Edition/Occurrence planning corpus; runtime migration, external Calendar/VTODO round-trip, and observed-user validation remain gated.
+- [2026-07-25 P34 Execution CRUD UX](./2026-07-25-p34-execution-crud-ux/spec.md) - released through PR #157 and merge `98ede0f`; GitHub CI, Vercel Production, production smoke, full Playwright `326 / 326`, and dependency audit `0` are green, while observed-user sessions remain `0`.
 
-- [2026-07-24 P32 My Flow Focused Workspace](./2026-07-24-p32-my-flow-focused-workspace/README.md) - B1 focused workspace is implemented with direct quick edit, direct anchor adjustment, consolidated export/lifecycle commands, a six-shape shared shell, no persistence migration, full Playwright `314 / 314`, and observed-user sessions `0`; publish verification remains the closeout action.
+- [2026-07-24 P33 Cross-entry Canonical Alignment](./2026-07-24-p33-cross-entry-canonical-alignment/spec.md) - released through PR #156 and merge `7948bc4`; the AJD moving job resolves through one canonical 24-item identity while legacy 5-item copies stay readable, explicitly selectable, and never auto-merged.
+
+- [2026-07-24 P32 My Flow Focused Workspace](./2026-07-24-p32-my-flow-focused-workspace/README.md) - released through PR #154 and merge `30281a7`; B1 focused workspace, direct quick edit, anchor adjustment, consolidated export/lifecycle commands, and the six-shape shell shipped without a persistence migration, while observed-user sessions remain `0`.
 
 - [2026-07-23 P31 Mobile Journey Reconstruction](./2026-07-23-p31-mobile-journey-reconstruction/README.md) - released through PR #150 and merge `0227cd2`; current production smoke is green, while independent Claude/Codex review promoted the selected-Flow command hierarchy into P32 without reopening the global IA or persistence model.
 
