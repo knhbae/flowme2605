@@ -35,6 +35,18 @@ Do not use this for:
 
 ## Decisions
 
+### 2026-07-29 - P35 uses a state-based root router and three primary destinations
+
+**Decision:** Remove Home from the persistent primary navigation. Keep `Flow 찾기`, `캘린더`, and `내 Flow` as the three primary destinations on mobile and wide layouts. Treat `/` as a state-based entry router: an empty local workspace continues to `/flows`, while a workspace with a saved Flow continues to `/my`. Keep Flow creation in the secondary menu and keep public `/f/[slug]` pages as share-entry surfaces.
+
+**Reason:** The standalone Home surface duplicated discovery and continuation jobs already owned by `/flows` and `/my`. A three-destination frame makes each top-level job explicit without changing source, personal overlay, run, occurrence, export, or localStorage ownership.
+
+**Applies to:** `/`, `EntryRouter`, `PlatformNav`, `PlatformMobileTabs`, direct `/flows`, `/calendar`, and `/my` routes, public share-entry routing, and P35 navigation regression evidence.
+
+**Reopen when:** Observed users repeatedly need a separate overview destination, state-based entry sends them to the wrong job, or a concrete accessibility or recovery failure cannot be solved inside the three destinations. Agent simulation and screenshots alone do not justify reopening it.
+
+**Related docs:** [P35 design package](./specs/2026-07-26-flowme-mece-ux-reset/design-package.md), [P35 bounded revision handoff](./specs/2026-07-26-flowme-mece-ux-reset/p35-bounded-revision-developer-handoff-ko.md), [P35-01 evidence](./content-audit/2026-07-26-p35-01-entry-router-evidence/README.md)
+
 ### 2026-07-29 - My Flow adopts a date-grouped Todo view while preserving the Flow library
 
 **Decision:** Adopt P35 alternative B inside My Flow. A plain `/my` entry opens a cross-Flow `할 일` view, while the existing Flow library and focused Flow workspace remain available through the adjacent `Flow` view. Present active work in exact-date rail groups borrowed from alternative A. Each default row exposes only the row-open target and one trailing completion checkbox; notes, editing, export, and lifecycle commands stay contextual. After a public save receipt, open that Flow's whole plan automatically only on the first entry. On reload or later library entry, start with the whole plan collapsed and let the user expand it explicitly.

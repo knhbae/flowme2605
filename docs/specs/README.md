@@ -40,17 +40,19 @@ Only **Active Gate** is the current execution backlog. Unchecked boxes inside ga
 
 ### Active Gate
 
-- [2026-07-26 P35 MECE UX Reset](./2026-07-26-flowme-mece-ux-reset/p35-r13-final-internal-gate-goal-ko.md) is the only active product gate. The approved candidate keeps the four-tab IA and stable data contracts while making cross-Flow `할 일` the normal My Flow entry, grouping work by exact date, reducing default row commands, and opening the whole plan only on the first post-save entry. Internal evidence is focused unit `13 / 13`, all unit `694 / 694`, P35 Playwright `79 / 79`, full Playwright `405 / 405`, build/docs/diff checks green, and observed-user sessions `0`. The current verdict is `publish_ready_for_internal_review`, not production release or observed-user validation. See the [R13 evidence](../content-audit/2026-07-29-p35-r13-final-internal-gate/README.md).
+- No new implementation spec is active. P35 is released; the current gate is the owner's production review and keep, bounded-fix, or block decision. Do not promote `TA-01`, another P35 revision, or a separate research package until that decision names exactly one scope.
 
 ### Design And Research Shelf
 
 These packages inform the active decision but are not parallel product implementation queues.
 
-- [2026-07-28 FlowMe Text Authoring UX v1](./2026-07-28-flowme-text-authoring-ux-v1/spec.md) - hybrid text plus structured preview is selected and the design/prototype handoff is complete; `TA-01` through `TA-06` remain unimplemented until explicitly promoted after the P35 release decision.
-- [2026-07-29 Flow Content UI Full-Corpus Validation Lab v1](./2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/spec.md) - a standalone source-backed review harness and planning snapshot; production app/runtime/DB/API are unchanged, and external Calendar/VTODO round-trip plus observed-user validation remain `NOT_RUN`.
+- [2026-07-28 FlowMe Text Authoring UX v1](./2026-07-28-flowme-text-authoring-ux-v1/spec.md) - hybrid text plus structured preview is selected and the design/prototype handoff is complete; `TA-01` through `TA-06` remain unimplemented until the owner explicitly promotes one slice.
+- [2026-07-29 Flow Content UI Full-Corpus Validation Lab v1](./2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/spec.md) - a standalone source-backed review harness and planning snapshot; production app/runtime/DB/API are unchanged. Its extended semantic review and final desktop/tablet/mobile browser-QA package are preserved separately on `archive/research-planning-consolidation-20260729` through commit `a8d977b`, with validator `61 / 61`, targeted tests `14 / 14`, and browser QA `PASS`. The decision remains `DRAFT_PENDING_USER_REVIEW`; user review, external Calendar/VTODO round-trip, and observed-user validation remain `NOT_RUN`, so this is not an active product queue.
 - [2026-07-29 Flow Projection Semantics, Scheduling, and Event Corpus Lab v1](./2026-07-29-flow-projection-semantics-scheduling-event-corpus-v1/spec.md) - completed the 42x5 projection contract, user pacing model, and event Series/Edition/Occurrence planning corpus; runtime migration, external Calendar/VTODO round-trip, and observed-user validation remain gated.
 
 ### Completed Or Closed
+
+- [2026-07-26 P35 MECE UX Reset](./2026-07-26-flowme-mece-ux-reset/p35-r13-final-internal-gate-goal-ko.md) - released through [PR #161](https://github.com/knhbae/flowme2605/pull/161) and merge `4a51b08`; the state-based root router, three primary destinations, result-first public Flow, cross-Flow date-grouped `할 일`, Flow workspace continuity, Calendar date lens, and scope-first export are live. GitHub CI, Vercel production, a bounded six-scenario production smoke, all unit `694 / 694`, P35 Playwright `79 / 79`, and full Playwright `405 / 405` are green; observed-user sessions remain `0`.
 
 - [2026-07-25 P34 Execution CRUD UX](./2026-07-25-p34-execution-crud-ux/spec.md) - released through PR #157 and merge `98ede0f`; GitHub CI, Vercel Production, production smoke, full Playwright `326 / 326`, and dependency audit `0` are green, while observed-user sessions remain `0`.
 

@@ -225,11 +225,11 @@
       <div class="wrap hero-grid">
         <div>
           <h1>FlowMe 현재 단계와 다음 결정</h1>
-          <p class="hero-copy">공개된 제품, 내부 검토 후보, 설계만 끝난 작업, 연구 근거를 분리했습니다. 지금 사용자가 볼 것과 AI가 마무리할 일을 같은 우선순위로 섞지 않습니다.</p>
+          <p class="hero-copy">공개된 제품, 사용자가 판단할 화면, 설계만 끝난 작업, 연구 근거를 분리했습니다. 지금 볼 것과 다음 구현 후보를 같은 우선순위로 섞지 않습니다.</p>
         </div>
         <div class="stage-box">
           <span>현재 제품 단계</span>
-          <strong>P34 공개 기준선<br>P35 내부 검토 후보</strong>
+          <strong>P35 공개 기준선<br>다음 구현 미선정</strong>
           <small>관찰 사용자 0명</small>
         </div>
       </div>
@@ -237,8 +237,8 @@
 
     <div class="metric-band" aria-label="현재 핵심 지표">
       <div class="wrap metrics">
-        <div class="metric"><strong>P34</strong><span>현재 production 기준선</span></div>
-        <div class="metric"><strong>P35</strong><span>단일 내부 제품 후보</span></div>
+        <div class="metric"><strong>P35</strong><span>현재 production 기준선</span></div>
+        <div class="metric"><strong>6 / 6</strong><span>production smoke</span></div>
         <div class="metric"><strong>405 / 405</strong><span>P35 전체 E2E 근거</span></div>
         <div class="metric"><strong>0</strong><span>관찰 사용자</span></div>
       </div>
@@ -248,7 +248,7 @@
       <div class="wrap">
         <div class="section-head">
           <h2>사용자가 지금 확인할 것</h2>
-          <p>첫 번째 결정만 현재 제품 게이트입니다. 나머지는 P35가 정리된 뒤 하나만 승격합니다.</p>
+          <p>P35는 배포됐습니다. 먼저 실제 운영 화면을 판단한 뒤 후속 작업을 하나만 승격합니다.</p>
         </div>
 
         <div class="progress-shell">
@@ -267,10 +267,10 @@
           <div class="action-row">
             <div class="rank">P0 · 지금</div>
             <div class="action-main">
-              <h3>P35 화면 결정을 검토</h3>
+              <h3>P35 운영 화면을 검토</h3>
               <p>My Flow의 `할 일 / Flow` 분리, 날짜별 묶음, 낮은 행 명령 밀도, 저장 직후 첫 진입만 전체 계획 펼침이 맞는지 봅니다.</p>
             </div>
-            <div class="action-evidence"><a href="./2026-07-29-p35-r13-final-internal-gate/README.md">판정과 근거</a><br><a href="./2026-07-29-p35-r13-final-internal-gate/audit.md">상세 audit</a></div>
+            <div class="action-evidence"><a href="https://flowme2605.vercel.app">production 열기</a><br><a href="./2026-07-29-p35-r13-final-internal-gate/README.md">판정과 근거</a></div>
             <span class="status human">검토 필요</span>
           </div>
           <div class="action-row">
@@ -280,15 +280,15 @@
               <p>메모·Markdown·표를 원문 그대로 두고 구조와 결과를 미리 보는 C안을 검토합니다. 현재는 설계와 프로토타입만 완료됐습니다.</p>
             </div>
             <div class="action-evidence"><a href="./2026-07-29-flowme-text-authoring-ux-v1-1-detail-ko.html">상세 프로토타입</a><br><a href="../specs/2026-07-28-flowme-text-authoring-ux-v1/spec.md">결정 문서</a></div>
-            <span class="status ready">P35 뒤</span>
+            <span class="status ready">검토 뒤</span>
           </div>
           <div class="action-row">
             <div class="rank">P2 · 참고</div>
             <div class="action-main">
               <h3>연구 결과는 결정 요약부터 확인</h3>
-              <p>전체 corpus와 스크린샷을 모두 읽기보다 적용·검증·보류·비적용으로 나눈 제품 결정표를 먼저 봅니다.</p>
+              <p>전체 corpus와 스크린샷을 모두 읽기보다 적용·검증·보류·비적용으로 나눈 제품 결정표를 먼저 봅니다. 최종 브라우저 QA는 통과했지만 사용자 검토와 관찰 테스트는 아직 하지 않았습니다.</p>
             </div>
-            <div class="action-evidence"><a href="./2026-07-28-flowme-research-to-product-application-playbook-ceo-ko.html">제품 적용 플레이북</a><br><a href="./2026-07-28-flowme-research-to-product-decision-matrix.json">결정 matrix</a></div>
+            <div class="action-evidence"><a href="./2026-07-29-flowme-work-items-review-matrix-ko.html">전체 작업 재검토표</a><br><a href="./2026-07-28-flowme-research-to-product-application-playbook-ceo-ko.html">제품 적용 플레이북</a><br><a href="./2026-07-28-flowme-research-to-product-decision-matrix.json">결정 matrix</a></div>
             <span class="status reference">비차단</span>
           </div>
         </div>
@@ -304,9 +304,9 @@
         <div class="lane-grid">
           <article class="lane now">
             <span class="lane-kicker">Now</span>
-            <h3>P35<br>내부 리뷰·출시 정리</h3>
-            <p>후보 화면을 검토하고 통합, 전체 검증, PR, merge, 배포 상태를 사실대로 닫습니다.</p>
-            <small>완료 조건: keep/fix/block 결정과 publish truth</small>
+            <h3>P35<br>운영 화면 판단</h3>
+            <p>배포된 화면을 보고 keep, 한정 수정, block 중 하나를 결정합니다.</p>
+            <small>완료 조건: route와 기대·실제 차이가 있는 owner 판단</small>
           </article>
           <article class="lane next">
             <span class="lane-kicker">Next</span>
@@ -322,8 +322,8 @@
           </article>
           <article class="lane done">
             <span class="lane-kicker">Production</span>
-            <h3>P33 + P34<br>공개 기준선</h3>
-            <p>canonical identity, lifecycle, 편집, Calendar keyboard, recurrence, export 계약은 배포 근거와 함께 유지합니다.</p>
+            <h3>P35<br>공개 기준선</h3>
+            <p>3개 primary destination, canonical identity, lifecycle, Calendar, recurrence, export 계약이 배포됐습니다.</p>
             <small>다시 열 조건: 재현 가능한 결함 또는 사용자 증거</small>
           </article>
         </div>
@@ -340,8 +340,8 @@
           <article class="owner-panel">
             <header><h3>사용자</h3><p>실제 환경과 가치 판단의 소유자</p></header>
             <ol>
-              <li>P35 후보를 keep, bounded fix, block 중 하나로 판단<span>필요하면 route, viewport, 기대/실제 차이로 코멘트</span></li>
-              <li>P35 뒤 승격할 작업을 하나만 선택<span>텍스트 저작, 근거 기반 수정, 또는 보류</span></li>
+              <li>P35 운영 화면을 keep, bounded fix, block 중 하나로 판단<span>필요하면 route, viewport, 기대/실제 차이로 코멘트</span></li>
+              <li>검토 뒤 승격할 작업을 하나만 선택<span>텍스트 저작, 근거 기반 수정, 또는 보류</span></li>
               <li>실사용·Calendar 왕복·기기 간 복원이 필요할 때 직접 확인<span>자동화 근거와 섞지 않음</span></li>
             </ol>
           </article>
@@ -361,7 +361,7 @@
       <div class="wrap">
         <div class="decision-band">
           <strong>같은 완료가 아님</strong>
-          <p>P35의 `405 / 405` E2E는 구현 회귀 근거입니다. 텍스트 저작 프로토타입은 설계 근거이고, corpus lab은 연구 근거입니다. 어느 것도 관찰 사용자, 실제 Calendar/VTODO 왕복, production 배포를 대신하지 않습니다.</p>
+          <p>P35의 `405 / 405` E2E와 production 성공은 구현·배포 근거입니다. 텍스트 저작 프로토타입은 설계 근거이고, corpus lab은 연구 근거입니다. 어느 것도 관찰 사용자나 실제 Calendar/VTODO 왕복을 대신하지 않습니다.</p>
         </div>
       </div>
     </section>
@@ -376,11 +376,11 @@
           <table>
             <thead><tr><th>분류</th><th>범위</th><th>현재 의미</th></tr></thead>
             <tbody>
-              <tr><td><span class="status human">활성 게이트</span></td><td><a href="../specs/2026-07-26-flowme-mece-ux-reset/p35-r13-final-internal-gate-goal-ko.md">P35 MECE UX Reset</a></td><td>내부 검토와 publish closeout</td></tr>
-              <tr><td><span class="status done">공개 기준선</span></td><td><a href="../specs/2026-07-25-p34-execution-crud-ux/spec.md">P34 Execution CRUD UX</a> + P33 canonical alignment</td><td>production 검증 완료, 관찰 사용자 0</td></tr>
+              <tr><td><span class="status human">판단 게이트</span></td><td><a href="../specs/2026-07-26-flowme-mece-ux-reset/p35-r13-final-internal-gate-goal-ko.md">P35 production review</a></td><td>keep / bounded fix / block</td></tr>
+              <tr><td><span class="status done">공개 기준선</span></td><td><a href="../specs/2026-07-26-flowme-mece-ux-reset/p35-r13-final-internal-gate-goal-ko.md">P35 MECE UX Reset</a></td><td>PR #161, CI·production·smoke 완료, 관찰 사용자 0</td></tr>
               <tr><td><span class="status ready">설계 완료</span></td><td><a href="../specs/2026-07-28-flowme-text-authoring-ux-v1/spec.md">Text Authoring UX v1</a></td><td>`TA-01`~`TA-06` 구현 미착수</td></tr>
               <tr><td><span class="status reference">연구 근거</span></td><td><a href="../specs/2026-07-29-flow-projection-semantics-scheduling-event-corpus-v1/spec.md">Projection/Event lab</a>, <a href="../specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/spec.md">Full-corpus UI lab</a></td><td>runtime 변경 없음, 외부 왕복·관찰 미실행</td></tr>
-              <tr><td><span class="status blocked">승인·대기</span></td><td>Canonical DB migration, real AI/crawler, Creator publish, direct integrations</td><td>P35 뒤에도 한 축만 승격</td></tr>
+              <tr><td><span class="status blocked">승인·대기</span></td><td>Canonical DB migration, real AI/crawler, Creator publish, direct integrations</td><td>owner 검토 뒤에도 한 축만 승격</td></tr>
             </tbody>
           </table>
         </div>
@@ -455,11 +455,11 @@
         </div>
         <div class="cleanup-list">
           <div><strong>분산 작업 원격 보존</strong><p>P35, 텍스트 저작, P30/P31/P33/P34 리뷰, prompt 연구, 통합 연구를 전용 branch에 보존했습니다.</p></div>
-          <div><strong>활성 게이트 1개</strong><p>P35만 현재 제품 게이트로 두고 설계·연구 패키지는 별도 선반으로 내렸습니다.</p></div>
-          <div><strong>오래된 상태 문구 교체</strong><p>P33 배포 대기와 P30 다음 결정처럼 이미 끝난 문구를 현재 P35 상태로 바꿨습니다.</p></div>
+          <div><strong>새 구현 게이트 0개</strong><p>P35 운영 판단 전에는 설계·연구 패키지를 구현 queue로 올리지 않습니다.</p></div>
+          <div><strong>오래된 상태 문구 교체</strong><p>P34 기준선·P35 후보 문구를 PR #161과 현재 production 상태로 바꿨습니다.</p></div>
           <div><strong>실행과 근거 분리</strong><p>코드 구현, prototype, corpus validator, 외부 앱 검증, 관찰 사용자를 서로 다른 완료 상태로 표시합니다.</p></div>
-          <div><strong>워크트리 축소</strong><p>merge·upstream·byte identity·remote archive를 확인한 비활성 worktree만 제거했습니다.</p></div>
-          <div><strong>다음 일 하나만 승격</strong><p>P35가 닫힌 뒤 `TA-01`, 한정 수정, 보류 중 하나를 선택합니다.</p></div>
+          <div><strong>워크트리 축소</strong><p>24개 중 23개를 merge·upstream·byte identity·remote archive 확인 뒤 제거했습니다.</p></div>
+          <div><strong>다음 일 하나만 승격</strong><p>운영 검토 뒤 `TA-01`, 한정 수정, 보류 중 하나를 선택합니다.</p></div>
         </div>
       </div>
     </section>

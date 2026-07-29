@@ -2,6 +2,27 @@
 
 No tagged releases yet.
 
+## 2026-07-29 - P35 MECE UX Reset
+
+- Released a state-based `/` entry router with three primary destinations, result-first public Flows, one-kind-at-a-time adjustment, cross-Flow date-grouped `할 일`, an adjacent Flow library and focused workspace, a Calendar date lens, and scope-first export without migrating P34 identities or local storage.
+- Merged [PR #161](https://github.com/knhbae/flowme2605/pull/161) as `4a51b08ce9c5410f4ddf492562a5e885b0fda09c`; GitHub Docs/Unit/Build and Playwright E2E succeeded, and Vercel production reached <https://flowme2605.vercel.app>.
+- Verified focused unit `13 / 13`, all unit `694 / 694`, P35 Playwright `79 / 79`, full Playwright `405 / 405`, production build `18 / 18`, and a bounded six-scenario production smoke at 390px and 1024px with overflow, console, and page-error counts `0`.
+- Published the [P35 R13 evidence](./content-audit/2026-07-29-p35-r13-final-internal-gate/README.md). No semantic version tag was created; observed-user sessions remain `0`, and external Calendar/VTODO round-trip remains unrun.
+
+## 2026-07-25 - P34 Execution CRUD UX
+
+- Released one Flow lifecycle surface with archive, undo, restore, backup, and archived-only permanent deletion; clarified source, personal Item, execution, occurrence, schedule, routine, and export-scope commands.
+- Merged [PR #157](https://github.com/knhbae/flowme2605/pull/157) as `98ede0f848f8cd854c6a79e3a92f847012844704`; GitHub CI and Vercel production succeeded at <https://flowme2605.vercel.app>.
+- Verified pretest `73 / 73`, unit `588 / 588`, P34 Playwright `6 / 6`, affected regressions `58 / 58`, full Playwright `326 / 326`, production build `18 / 18`, dependency audit `0`, and production smoke with overflow/browser errors `0`.
+- Published the [P34 final review package](./content-audit/2026-07-25-p34-final-review-package/README.md). No semantic version tag was created, and observed-user sessions remain `0`.
+
+## 2026-07-25 - P33 Cross-entry Canonical Alignment
+
+- Released one canonical 24-item AJD moving Flow across Home-era links, Flow finding, URL lookup, Flow Map aliases, receipt, My Flow, Calendar, and export while preserving legacy 5-item personal copies without automatic merge.
+- Merged [PR #156](https://github.com/knhbae/flowme2605/pull/156) as `7948bc42424cfaba5370c47323badb7b485bbe48`; GitHub CI and Vercel production succeeded at <https://flowme2605.vercel.app>.
+- Verified pretest `64 / 64`, unit `588 / 588`, memo reload repeat `30 / 30`, full Playwright `320 / 320` twice, production build `18 / 18`, dependency audit `0`, and canonical production smoke at 390px and 1024px.
+- Published the [P33 stabilization evidence](./content-audit/2026-07-25-p33-publish-stabilization-evidence/README.md). No semantic version tag was created, and observed-user sessions remain `0`.
+
 ## 2026-07-24 - P32 My Flow Focused Workspace
 
 - Released a library-to-focused My Flow workspace that keeps the cross-Flow `지금 / Flow 목록 / 완료` views while giving one opened Flow a dedicated `다음 행동 / 전체 계획 / 기록` object workspace.
