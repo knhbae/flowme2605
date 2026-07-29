@@ -20,7 +20,7 @@ P35-R13은 다음 owner 결정을 정본으로 사용한다.
 
 ## 2. 유지하는 계약
 
-- 4탭 전역 IA
+- 상태 기반 `/` entry router와 `Flow 찾기 / 캘린더 / 내 Flow` 3탭 전역 navigation
 - public `/f` shell
 - canonical Flow와 stable Item identity
 - source / personal overlay / execution run / occurrence / export ownership

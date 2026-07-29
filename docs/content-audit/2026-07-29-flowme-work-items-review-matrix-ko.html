@@ -1,0 +1,699 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>FlowMe 작업 사항 재검토표 · 2026-07-29</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17231f;
+      --muted: #5f6d67;
+      --line: #d9e1dd;
+      --paper: #fbfcfb;
+      --card: #ffffff;
+      --green: #176f4d;
+      --green-bg: #e9f6ef;
+      --blue: #245d9c;
+      --blue-bg: #eaf2fb;
+      --violet: #6750a4;
+      --violet-bg: #f1edfb;
+      --amber: #805b00;
+      --amber-bg: #fff4cf;
+      --red: #a0352b;
+      --red-bg: #fff0ed;
+      --gray: #59635f;
+      --gray-bg: #eef1ef;
+      --teal: #0b6a6a;
+      --teal-bg: #e7f5f4;
+      --shadow: 0 10px 32px rgba(28, 48, 40, .08);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 0%, rgba(48, 144, 105, .11), transparent 31rem),
+        linear-gradient(180deg, #f5faf7 0, var(--paper) 30rem);
+      font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+      line-height: 1.58;
+    }
+
+    a { color: #175d43; text-underline-offset: 3px; }
+
+    .page {
+      width: min(1540px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 72px;
+    }
+
+    .hero {
+      padding: clamp(24px, 4vw, 48px);
+      color: #f8fffb;
+      background: linear-gradient(125deg, #173e31, #1f634a 58%, #287b5c);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: #afe3cb;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3 { line-height: 1.25; }
+
+    h1 {
+      max-width: 900px;
+      margin: 0;
+      font-size: clamp(30px, 5vw, 58px);
+      letter-spacing: -.04em;
+    }
+
+    .hero p {
+      max-width: 1020px;
+      margin: 18px 0 0;
+      color: #d8eee4;
+      font-size: clamp(15px, 2vw, 19px);
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 24px;
+    }
+
+    .hero-meta span {
+      padding: 7px 11px;
+      color: #eafff5;
+      background: rgba(255,255,255,.11);
+      border: 1px solid rgba(255,255,255,.19);
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin: 18px 0 0;
+    }
+
+    .summary-card {
+      min-height: 144px;
+      padding: 20px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: 0 7px 24px rgba(28, 48, 40, .05);
+    }
+
+    .summary-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .summary-card strong {
+      display: block;
+      margin: 8px 0 7px;
+      font-size: 23px;
+      letter-spacing: -.03em;
+    }
+
+    .summary-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .toc {
+      position: sticky;
+      top: 8px;
+      z-index: 10;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin: 18px 0;
+      padding: 10px;
+      background: rgba(251, 252, 251, .9);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      backdrop-filter: blur(10px);
+    }
+
+    .toc a {
+      padding: 8px 11px;
+      color: #26443a;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 750;
+      text-decoration: none;
+    }
+
+    section {
+      scroll-margin-top: 86px;
+      margin-top: 22px;
+      padding: clamp(18px, 3vw, 30px);
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: 0 7px 24px rgba(28, 48, 40, .04);
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 16px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: clamp(23px, 3vw, 34px);
+      letter-spacing: -.035em;
+    }
+
+    .section-head p {
+      max-width: 740px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: right;
+    }
+
+    .callout {
+      margin: 14px 0;
+      padding: 14px 16px;
+      color: #394943;
+      background: #f4f8f6;
+      border-left: 4px solid #2d8060;
+      border-radius: 10px;
+      font-size: 13px;
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+    }
+
+    table {
+      width: 100%;
+      min-width: 1020px;
+      border-collapse: collapse;
+      background: #fff;
+      font-size: 13px;
+    }
+
+    th, td {
+      padding: 12px 13px;
+      border-bottom: 1px solid #e7ece9;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      color: #374a42;
+      background: #f2f6f4;
+      font-size: 11px;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    tbody tr:last-child td { border-bottom: 0; }
+    tbody tr:hover { background: #fbfdfc; }
+
+    td:first-child {
+      color: #233f34;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .released { color: var(--green); background: var(--green-bg); }
+    .done { color: var(--blue); background: var(--blue-bg); }
+    .design { color: var(--violet); background: var(--violet-bg); }
+    .research { color: var(--teal); background: var(--teal-bg); }
+    .pending { color: var(--amber); background: var(--amber-bg); }
+    .blocked { color: var(--red); background: var(--red-bg); }
+    .wip { color: #8c4f11; background: #fff0df; }
+    .none { color: var(--gray); background: var(--gray-bg); }
+
+    .lane-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .lane {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fcfdfc;
+    }
+
+    .lane h3 { margin: 0 0 10px; font-size: 18px; }
+    .lane ul { margin: 0; padding-left: 19px; }
+    .lane li { margin: 7px 0; color: #43534d; font-size: 13px; }
+
+    .evidence-list {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .evidence-list article {
+      padding: 17px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fcfdfc;
+    }
+
+    .evidence-list h3 { margin: 0 0 8px; font-size: 16px; }
+    .evidence-list p { margin: 0; color: var(--muted); font-size: 13px; }
+
+    footer {
+      padding: 26px 4px 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    code {
+      padding: 1px 5px;
+      color: #2d473d;
+      background: #f0f4f2;
+      border-radius: 5px;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: .92em;
+    }
+
+    @media (max-width: 980px) {
+      .summary-grid, .lane-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .evidence-list { grid-template-columns: 1fr; }
+      .section-head { display: block; }
+      .section-head p { margin-top: 8px; text-align: left; }
+    }
+
+    @media (max-width: 620px) {
+      .page { width: min(100% - 18px, 1540px); padding-top: 10px; }
+      .hero { border-radius: 20px; }
+      .summary-grid, .lane-grid { grid-template-columns: 1fr; }
+      .summary-card { min-height: 0; }
+      .toc { position: static; }
+      section { scroll-margin-top: 10px; padding: 15px; border-radius: 18px; }
+      .table-wrap { border: 0; overflow: visible; }
+      table, thead, tbody, tr, th, td { display: block; min-width: 0; }
+      thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+      tbody { display: grid; gap: 10px; }
+      tr {
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: #fff;
+      }
+      td {
+        display: grid;
+        grid-template-columns: 94px minmax(0, 1fr);
+        gap: 9px;
+        padding: 7px 0;
+        border-bottom: 1px dashed #e2e8e4;
+        white-space: normal !important;
+      }
+      td:last-child { border-bottom: 0; }
+      td::before {
+        content: attr(data-label);
+        color: #6b7772;
+        font-size: 10px;
+        font-weight: 850;
+        letter-spacing: .03em;
+        text-transform: uppercase;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <p class="eyebrow">FlowMe · Current Work Register</p>
+      <h1>UXR부터 P35 출시, 이후 설계·연구·백로그까지</h1>
+      <p>
+        같은 “완료”라는 말 안에 섞여 있던 설계, 구현, 자동 QA, main 병합,
+        Production, 실제 사용자 관찰을 분리한 재검토표다.
+      </p>
+      <div class="hero-meta">
+        <span>정리 기준 2026-07-29 closeout</span>
+        <span>P35 baseline 4a51b08</span>
+        <span>PR #161 merged</span>
+        <span>Research archive a8d977b</span>
+        <span>Production P35 확인</span>
+        <span>Observed users 0</span>
+      </div>
+    </header>
+
+    <div class="summary-grid" aria-label="현재 상태 요약">
+      <article class="summary-card">
+        <span>제품 런타임</span>
+        <strong>P35 Production Green</strong>
+        <p>3개 목적지, 상태 기반 루트, cross-Flow 할 일과 Flow 보관함이 운영에 반영됐다.</p>
+      </article>
+      <article class="summary-card">
+        <span>현재 제품 게이트</span>
+        <strong>오너 운영 검토</strong>
+        <p>유지, 정확한 한정 수정, 차단 중 하나를 선택하기 전 새 프로그램을 열지 않는다.</p>
+      </article>
+      <article class="summary-card">
+        <span>후속 구현 후보</span>
+        <strong>TA-01 · 아직 미승격</strong>
+        <p>Text Authoring은 설계 완료지만 TA-01~06 앱 구현은 모두 시작하지 않았다.</p>
+      </article>
+      <article class="summary-card">
+        <span>사람에게서 얻은 증거</span>
+        <strong>Observed 0</strong>
+        <p>UXR 명칭, 자동 E2E, screenshot, agent simulation은 실제 사용자 관찰이 아니다.</p>
+      </article>
+    </div>
+
+    <nav class="toc" aria-label="문서 내 이동">
+      <a href="#uxr">UXR-00~09</a>
+      <a href="#p35-initial">P35-01~08</a>
+      <a href="#p35-revision">R0~R13</a>
+      <a href="#post-p35">P35 이후</a>
+      <a href="#backlog">현재 백로그</a>
+      <a href="#workspace">작업공간 상태</a>
+      <a href="#evidence">증거 경계</a>
+    </nav>
+
+    <section id="uxr">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">01 · Design reset</p>
+          <h2>UXR-00~09 전면 UX 재설계</h2>
+        </div>
+        <p>명칭은 UXR이지만 실제 참여자 연구가 아니라 production/source 분석, wireflow, heuristic simulation이었다.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>ID</th><th>목표·산출물</th><th>현재 상태</th><th>증거 성격</th><th>현재 반영</th><th>남은 검증</th></tr>
+          </thead>
+          <tbody>
+            <tr><td data-label="ID">UXR-00</td><td data-label="목표">P24~P34 계약을 retain / reopen / cut / defer로 재분류</td><td data-label="상태"><span class="status done">완료</span></td><td data-label="증거">문서·소스 정합성 검토</td><td data-label="반영">문서 main, 결과 P35</td><td data-label="남은 검증">실제 사용자 모형 확인</td></tr>
+            <tr><td data-label="ID">UXR-01</td><td data-label="목표">5개 canonical 사용자 여정 확정</td><td data-label="상태"><span class="status done">완료</span></td><td data-label="증거">Journey map</td><td data-label="반영">문서 main, 결과 P35</td><td data-label="남은 검증">실제 여정 관찰</td></tr>
+            <tr><td data-label="ID">UXR-02</td><td data-label="목표">화면별 핵심 메시지 1~2개 계약</td><td data-label="상태"><span class="status done">완료</span></td><td data-label="증거">Message contract</td><td data-label="반영">P35 화면</td><td data-label="남은 검증">이해도·첫 행동 관찰</td></tr>
+            <tr><td data-label="ID">UXR-03</td><td data-label="목표">기능별 단일 소유 surface 확정</td><td data-label="상태"><span class="status done">완료</span></td><td data-label="증거">Ownership matrix</td><td data-label="반영">P35 화면</td><td data-label="남은 검증">탐색 실패 관찰</td></tr>
+            <tr><td data-label="ID">UXR-04</td><td data-label="목표">Route와 canonical IA tree 확정</td><td data-label="상태"><span class="status done">완료</span></td><td data-label="증거">Route/UI tree</td><td data-label="반영">3개 목적지 + 상태 router</td><td data-label="남은 검증">실제 IA 이해도</td></tr>
+            <tr><td data-label="ID">UXR-05</td><td data-label="목표">상태 전환·데이터 보존 규칙 확정</td><td data-label="상태"><span class="status done">완료</span></td><td data-label="증거">State transition contract</td><td data-label="반영">P35, P34 데이터 계약 유지</td><td data-label="남은 검증">장기·교차기기</td></tr>
+            <tr><td data-label="ID">UXR-06</td><td data-label="목표">390px·1024px current/proposed wireflow</td><td data-label="상태"><span class="status design">설계 완료</span></td><td data-label="증거">5개 콘텐츠·8단계 wireflow</td><td data-label="반영">설계 산출물 main</td><td data-label="남은 검증">실제 사용자가 조작한 증거 아님</td></tr>
+            <tr><td data-label="ID">UXR-07</td><td data-label="목표">대표 콘텐츠 multi-session simulation</td><td data-label="상태"><span class="status design">시뮬레이션 완료</span></td><td data-label="증거">15 cells·80 화면 상태 heuristic</td><td data-label="반영">설계 판단</td><td data-label="남은 검증">실제 UXR 필요</td></tr>
+            <tr><td data-label="ID">UXR-08</td><td data-label="목표">화면별 KEEP/CUT와 A′ 승인</td><td data-label="상태"><span class="status done">승인 완료</span></td><td data-label="증거">오너 결정</td><td data-label="반영">P35 Production</td><td data-label="남은 검증">정확한 불일치가 있을 때만 제한 수정</td></tr>
+            <tr><td data-label="ID">UXR-09</td><td data-label="목표">P35-01~08 순서와 rollback 경계</td><td data-label="상태"><span class="status done">완료</span></td><td data-label="증거">개발 handoff</td><td data-label="반영">P35 구현 완료</td><td data-label="남은 검증">별도 없음</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="callout">
+        근거: <a href="../specs/2026-07-26-flowme-mece-ux-reset/plan.md">P35 실행 계획</a>,
+        <a href="./2026-07-26-flowme-mece-ux-reset/README.md">UXR 설계 묶음</a>.
+        UXR-07의 15 cells는 15명의 사용자가 아니다.
+      </p>
+    </section>
+
+    <section id="p35-initial">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">02 · First implementation</p>
+          <h2>P35-01~08 1차 구현</h2>
+        </div>
+        <p>초기 구조 구현은 모두 main과 Production에 포함됐다. 당시 검증 수치는 prior artifact이며 현재 전체 release 증거는 R13과 PR #161이 덮어쓴다.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>ID</th><th>구현 결과</th><th>당시 자동 검증</th><th>현재 상태</th><th>남은 사람·외부 검증</th></tr>
+          </thead>
+          <tbody>
+            <tr><td data-label="ID">P35-01</td><td data-label="구현">Home 제거, 저장 상태 기반 <code>/</code>, 3탭 navigation</td><td data-label="자동 검증">unit 589/589 · 전용 4/4 · 회귀 45/45</td><td data-label="상태"><span class="status released">Production</span></td><td data-label="남은 검증">진입 위치 기대와 일치하는지</td></tr>
+            <tr><td data-label="ID">P35-02</td><td data-label="구현">Public Flow 실제 결과 우선</td><td data-label="자동 검증">unit 590/590 · 전용 6/6 · 관련 119/119</td><td data-label="상태"><span class="status released">Production</span></td><td data-label="남은 검증">결과 신뢰·다음 행동 이해</td></tr>
+            <tr><td data-label="ID">P35-03</td><td data-label="구현">이름·기준일·포함 항목·반복 중 한 종류만 조정</td><td data-label="자동 검증">전용 5/5 · 회귀 10/10</td><td data-label="상태"><span class="status released">Production</span></td><td data-label="남은 검증">조정 발견성</td></tr>
+            <tr><td data-label="ID">P35-04</td><td data-label="구현">Calendar surface 분리, dead view 제거</td><td data-label="자동 검증">전용 2/2 · 관련 11/11 · parity 8/8</td><td data-label="상태"><span class="status released">Production</span></td><td data-label="남은 검증">실제 사용 경계</td></tr>
+            <tr><td data-label="ID">P35-05</td><td data-label="구현">My Flow library와 focused workspace 분리</td><td data-label="자동 검증">전용 5/5 · 1/5/20/60 Flow fixture</td><td data-label="상태"><span class="status released">Production</span></td><td data-label="남은 검증">20~60개 실제 장기 사용</td></tr>
+            <tr><td data-label="ID">P35-06</td><td data-label="구현">Calendar를 날짜 lens와 완료/다시 열기로 제한</td><td data-label="자동 검증">전용 3/3 · overflow/error 0</td><td data-label="상태"><span class="status released">Production</span></td><td data-label="남은 검증">Calendar와 My Flow 역할 이해</td></tr>
+            <tr><td data-label="ID">P35-07</td><td data-label="구현">범위 → 수량 → 형식 → receipt의 scope-first export</td><td data-label="자동 검증">전용 2/2 · export unit 13/13</td><td data-label="상태"><span class="status released">Production</span></td><td data-label="남은 검증">외부 앱 실제 왕복</td></tr>
+            <tr><td data-label="ID">P35-08</td><td data-label="구현">P35-01~07 통합 MECE gate</td><td data-label="자동 검증">unit 590/590 · P35 30/30 · full 356/356</td><td data-label="상태"><span class="status released">Production</span></td><td data-label="남은 검증">R0~R13으로 내부 보완 완료</td></tr>
+            <tr><td data-label="ID">독립 검토</td><td data-label="구현">artifact parity, receipt 중복, shape 무관 workspace, 저장 전 편집, Memo, Routine 연결 문제 6개 확인</td><td data-label="자동 검증">판정 <code>revise / bounded_composition_revision</code></td><td data-label="상태"><span class="status done">후속 반영 완료</span></td><td data-label="남은 검증">전면 재설계가 아니라 실제 불일치 관찰</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="callout">
+        근거: <a href="./2026-07-26-p35-08-final-mece-gate/README.md">P35-08 gate</a>,
+        <a href="./2026-07-27-p35-owner-feedback-independent-review-codex/README.md">독립 검토</a>.
+      </p>
+    </section>
+
+    <section id="p35-revision">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">03 · Bounded revision and release</p>
+          <h2>P35-R0~R13 보완·결정·출시</h2>
+        </div>
+        <p>R0~R12가 연결성과 의미를 보완했고, H1 오너 결정이 R13의 최종 화면 계약으로 마감됐다.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>ID</th><th>결과</th><th>당시 검증</th><th>현재 상태</th><th>남은 검증</th></tr>
+          </thead>
+          <tbody>
+            <tr><td data-label="ID">R0</td><td data-label="결과">오늘/가까운 미래의 같은 날짜 미완료 Item 묶음</td><td data-label="검증">adapter 7/7 · 전용 3/3 · full 359/359</td><td data-label="상태"><span class="status released">Production</span></td><td data-label="남은 검증">날짜 rail 이해도</td></tr>
+            <tr><td data-label="ID">R1</td><td data-label="결과">Public primary artifact와 export 이름·수량·projection 일치</td><td data-label="검증">unit 590/590 · 전용 3/3</td><td data-label="상태"><span class="status released">Production</span></td><td data-label="남은 검증">실제 외부 결과</td></tr>
+            <tr><td data-label="ID">R2</td><td data-label="결과">저장 전 Item 제목·상세·개별 날짜 contextual 편집</td><td data-label="검증">전용 2/2 · 회귀 5/5</td><td data-label="상태"><span class="status released">Production</span></td><td data-label="남은 검증">편집 발견성</td></tr>
+            <tr><td data-label="ID">R3</td><td data-label="결과">receipt에서 중복 hub 없이 같은 Flow workspace로 연결</td><td data-label="검증">전용 3/3 · build pass</td><td data-label="상태"><span class="status released">Production</span></td><td data-label="남은 검증">저장 후 기대 행동</td></tr>
+            <tr><td data-label="ID">R4</td><td data-label="결과">Calendar·Checklist·Routine·Sheet·Memo별 실행 단위</td><td data-label="검증">unit 4/4 · 전용 4/4</td><td data-label="상태"><span class="status released">Production</span></td><td data-label="남은 검증">shape별 사용자 인식</td></tr>
+            <tr><td data-label="ID">R5</td><td data-label="결과">Memo 긴 입력 폼을 결과 우선 artifact 문법으로 축소</td><td data-label="검증">unit 3/3 · 전용 2/2</td><td data-label="상태"><span class="status released">Production</span></td><td data-label="남은 검증">Memo를 읽기·기록·완료 중 무엇으로 보는지</td></tr>
+            <tr><td data-label="ID">R6</td><td data-label="결과">모바일 Calendar 선택일 bottom sheet</td><td data-label="검증">전용 2/2 · 관련 7/7</td><td data-label="상태"><span class="status released">Production</span></td><td data-label="남은 검증">focus·sheet 실사용</td></tr>
+            <tr><td data-label="ID">R7</td><td data-label="결과">5 shape × 3 session 내부 통합 gate</td><td data-label="검증">R7 6/6 · unit 590/590 · full 381/381</td><td data-label="상태"><span class="status done">자동 gate 완료</span></td><td data-label="남은 검증">실제 참여자 session 아님</td></tr>
+            <tr><td data-label="ID">R8A</td><td data-label="결과">다음 실제 Routine occurrence와 series/occurrence count 정합</td><td data-label="검증">E2E 2/2 · R8 cluster unit 64/64</td><td data-label="상태"><span class="status released">Production</span></td><td data-label="남은 검증">장기 반복 실사용</td></tr>
+            <tr><td data-label="ID">R8B</td><td data-label="결과">해외 안전 Flow를 Checklist primary, Memo secondary로 통일</td><td data-label="검증">E2E 1/1 · cluster pass</td><td data-label="상태"><span class="status released">Production</span></td><td data-label="남은 검증">안전 콘텐츠 의미 이해</td></tr>
+            <tr><td data-label="ID">R8C</td><td data-label="결과">stable Item당 visible completion owner 한 곳</td><td data-label="검증">E2E 1/1 · build pass</td><td data-label="상태"><span class="status released">Production</span></td><td data-label="남은 검증">완료·undo 이해도</td></tr>
+            <tr><td data-label="ID">R9</td><td data-label="결과">5 shape 공통 실행 행 anatomy</td><td data-label="검증">전용 6/6</td><td data-label="상태"><span class="status released">Production</span></td><td data-label="남은 검증">행 affordance 인지</td></tr>
+            <tr><td data-label="ID">R10</td><td data-label="결과">Memo·Routine·Sheet 의미 정직성, export summary 단일 owner</td><td data-label="검증">전용 5/5 · lifecycle 5/5</td><td data-label="상태"><span class="status released">Production</span></td><td data-label="남은 검증">shape honesty</td></tr>
+            <tr><td data-label="ID">R11</td><td data-label="결과">wide library / execution / inspector 분리</td><td data-label="검증">전용 3/3 · 390/1024/1440 error 0</td><td data-label="상태"><span class="status released">Production</span></td><td data-label="남은 검증">wide 실사용</td></tr>
+            <tr><td data-label="ID">R12</td><td data-label="결과">cross-Flow Todo 실험과 Todo↔Calendar 날짜 이동</td><td data-label="검증">unit 5/5 · 전용 3/3</td><td data-label="상태"><span class="status released">R13 기본값으로 승격</span></td><td data-label="남은 검증">실제 왕복·Flow 발견성</td></tr>
+            <tr><td data-label="ID">H1</td><td data-label="결과">A/B/C 비교 후 B 추천</td><td data-label="검증">P35 76/76 · unit 692/692 · full 402/402</td><td data-label="상태"><span class="status done">R13 결정으로 종료</span></td><td data-label="남은 검증">미결정 없음</td></tr>
+            <tr><td data-label="ID">R13</td><td data-label="결과">B + 날짜 묶음 + 낮은 행 명령 밀도 + 첫 진입만 전체 계획 펼침</td><td data-label="검증">unit 694/694 · P35 79/79 · full 405/405</td><td data-label="상태"><span class="status released">PR #161 · Production</span></td><td data-label="남은 검증">오너 운영 판정·실제 UXR</td></tr>
+            <tr><td data-label="ID">Release</td><td data-label="결과">13 commits·1,062 files를 통합한 PR #161 merge <code>4a51b08</code></td><td data-label="검증">GitHub checks green · Vercel success · 운영 390px 직접 확인</td><td data-label="상태"><span class="status released">현재 제품 기준선</span></td><td data-label="남은 검증">실제 사용자 관찰 0</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="callout">
+        근거: <a href="./2026-07-27-p35-r7-bounded-revision-final-gate/README.md">R7 gate</a>,
+        <a href="./2026-07-28-p35-r8-r12-continuous-execution/README.md">R8~R12 evidence</a>,
+        <a href="./2026-07-29-p35-r13-final-internal-gate/README.md">R13 gate</a>,
+        <a href="https://github.com/knhbae/flowme2605/pull/161">PR #161</a>.
+      </p>
+    </section>
+
+    <section id="post-p35">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">04 · Design and research shelf</p>
+          <h2>P35 이후·병행 작업</h2>
+        </div>
+        <p>main에 문서가 포함됐다는 사실과 제품 기능이 운영에 출시됐다는 사실을 구분한다.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>트랙</th><th>완료 범위</th><th>정확한 상태</th><th>Runtime 영향</th><th>검증·수치</th><th>다음 행동</th></tr>
+          </thead>
+          <tbody>
+            <tr><td data-label="트랙">Text Authoring v1/v1.1</td><td data-label="완료 범위">일반 텍스트 + 구조화 preview, 8개 사례, wireflow, prototype, state·ownership·data handoff</td><td data-label="상태"><span class="status design">설계·프로토타입 완료</span></td><td data-label="Runtime">변경 없음</td><td data-label="검증">390/1024/1440 browser·heuristic QA, observed 0</td><td data-label="다음 행동">오너가 한 slice만 승격</td></tr>
+            <tr><td data-label="트랙">TA-01</td><td data-label="완료 범위">Deterministic document/block/mapping/issue/revision 계약 설계</td><td data-label="상태"><span class="status pending">미구현</span></td><td data-label="Runtime">없음</td><td data-label="검증">구현 검증 없음</td><td data-label="다음 행동">승격 시 parser·stable ID·undo 구현</td></tr>
+            <tr><td data-label="트랙">TA-02</td><td data-label="완료 범위">390 stage, 1024 2-pane, 1440 3-pane shell 설계</td><td data-label="상태"><span class="status pending">미구현</span></td><td data-label="Runtime">없음</td><td data-label="검증">standalone prototype만</td><td data-label="다음 행동">TA-01 이후 구현</td></tr>
+            <tr><td data-label="트랙">TA-03</td><td data-label="완료 범위">Mapping correction·contextual inspector 설계</td><td data-label="상태"><span class="status pending">미구현</span></td><td data-label="Runtime">없음</td><td data-label="검증">없음</td><td data-label="다음 행동">TA-01 stable identity 이후</td></tr>
+            <tr><td data-label="트랙">TA-04</td><td data-label="완료 범위">Artifact eligibility·loss preflight 설계</td><td data-label="상태"><span class="status pending">미구현</span></td><td data-label="Runtime">없음</td><td data-label="검증">Corpus fixture·prototype만</td><td data-label="다음 행동">TA-01 뒤 준비 가능</td></tr>
+            <tr><td data-label="트랙">TA-05</td><td data-label="완료 범위">Ownership, save/export receipt, recovery 설계</td><td data-label="상태"><span class="status pending">미구현</span></td><td data-label="Runtime">없음</td><td data-label="검증">없음</td><td data-label="다음 행동">TA-03·04 이후</td></tr>
+            <tr><td data-label="트랙">TA-06</td><td data-label="완료 범위">8-case regression·observed-user-ready gate 설계</td><td data-label="상태"><span class="status none">미착수</span></td><td data-label="Runtime">없음</td><td data-label="검증">현재 prototype QA와 별개</td><td data-label="다음 행동">TA-01~05 이후</td></tr>
+            <tr><td data-label="트랙">Creator portfolio Qualified v2</td><td data-label="완료 범위">27 creator 조사·8 bundle dry-run</td><td data-label="상태"><span class="status research">연구 완료</span></td><td data-label="Runtime">seed 변경 없음</td><td data-label="검증">Go 1 / Modify 6 / Hold 1</td><td data-label="다음 행동">권리·source 범위 보완 후만 채택</td></tr>
+            <tr><td data-label="트랙">Canonical structure corpus v1</td><td data-label="완료 범위">42 source-backed fixture·decision tree·backend DTO</td><td data-label="상태"><span class="status research">연구 handoff 완료</span></td><td data-label="Runtime">없음</td><td data-label="검증">validator 1308/1308</td><td data-label="다음 행동">runtime migration은 별도 승인</td></tr>
+            <tr><td data-label="트랙">Qualified architecture v2</td><td data-label="완료 범위">Canonical vs literal ICS vs grouping 비교</td><td data-label="상태"><span class="status research">Go 연구 판정</span></td><td data-label="Runtime">없음</td><td data-label="검증">202/202 · tests 10/10</td><td data-label="다음 행동">외부 Calendar 검증 전 runtime 전환 금지</td></tr>
+            <tr><td data-label="트랙">Projection/Event lab</td><td data-label="완료 범위">42×5 projection, pacing, Series/Edition/Occurrence</td><td data-label="상태"><span class="status research">연구 완료</span></td><td data-label="Runtime">없음</td><td data-label="검증">32/32</td><td data-label="다음 행동">Calendar/VTODO 실제 왕복</td></tr>
+            <tr><td data-label="트랙">Vertical benchmark</td><td data-label="완료 범위">24개 전문 실행 서비스·10 deep-dive</td><td data-label="상태"><span class="status research">Benchmark 완료</span></td><td data-label="Runtime">없음</td><td data-label="검증">Go 4 / Partner 6 / Benchmark 13 / Hold 1</td><td data-label="다음 행동">앱 내 실제 사용 검증은 0</td></tr>
+            <tr><td data-label="트랙">Supply/adoption evidence</td><td data-label="완료 범위">153 bundles·44 representative·현재 browse 7</td><td data-label="상태"><span class="status research">전략 연구 완료</span></td><td data-label="Runtime">없음</td><td data-label="검증">P0 24: direct 1 / adjacent 19 / none 4</td><td data-label="다음 행동">FlowMe 사용 증거로 승격 금지</td></tr>
+            <tr><td data-label="트랙">Research→product playbook</td><td data-label="완료 범위">12 proposals·대표 6~8 Flow·2개 구현 slice 제안</td><td data-label="상태"><span class="status design">전략 recommendation</span></td><td data-label="Runtime">없음</td><td data-label="검증">Repo fact·proxy·inference 분리</td><td data-label="다음 행동">오너가 하나만 승격</td></tr>
+            <tr><td data-label="트랙">Full-corpus baseline</td><td data-label="완료 범위">Gallery 156·normal 110·24 new URLs·550 projection cells</td><td data-label="상태"><span class="status research">main에 snapshot 보존</span></td><td data-label="Runtime">없음</td><td data-label="검증">baseline 문서 간 완료 표기가 엇갈림</td><td data-label="다음 행동">Archive 후속과 분리해 판단</td></tr>
+            <tr><td data-label="트랙">Extended semantic review</td><td data-label="완료 범위">141 trace fields·17 modify keys·536 provenance gaps 추적</td><td data-label="상태"><span class="status research">Archive closeout</span></td><td data-label="Runtime">없음</td><td data-label="검증">validator 61/61 · targeted 14/14 · desktop/tablet/mobile browser PASS</td><td data-label="다음 행동">사용자 검토·외부 Calendar/VTODO 검증 전 제품 승격 금지</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="callout">
+        근거: <a href="../specs/2026-07-28-flowme-text-authoring-ux-v1/spec.md">Text Authoring spec</a>,
+        <a href="../specs/2026-07-28-flowme-text-authoring-ux-v1/tasks.md">TA backlog</a>,
+        <a href="../specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/spec.md">Full-corpus lab</a>,
+        <a href="./2026-07-28-flowme-research-to-product-application-playbook-ceo-ko.html">Research→product playbook</a>,
+        <a href="https://github.com/knhbae/flowme2605/commit/a8d977b1a968e102d7aa8bfc64598845c2302ccc">final research archive</a>.
+      </p>
+    </section>
+
+    <section id="backlog">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">05 · Operating queue</p>
+          <h2>현재 백로그</h2>
+        </div>
+        <p>새 구현 프로그램은 열려 있지 않다. 현재 첫 결정은 P35 운영판을 유지할지다.</p>
+      </div>
+      <div class="lane-grid">
+        <article class="lane">
+          <h3><span class="status pending">NOW · 결정</span></h3>
+          <ul>
+            <li>운영 P35를 직접 보고 <b>유지 / 정확한 제한 수정 / 차단</b> 중 선택</li>
+            <li>문제가 있다면 route·viewport·expected/actual을 한정</li>
+            <li>새 broad reset이나 P36을 자동으로 열지 않기</li>
+          </ul>
+        </article>
+        <article class="lane">
+          <h3><span class="status design">NEXT · 승격 시</span></h3>
+          <ul>
+            <li><code>TA-01</code>, 한 가지 evidence-backed 수정, 또는 아무것도 안 함 중 하나</li>
+            <li>승격 전 spec·acceptance·rollback·검증 명시</li>
+            <li>연구 shelf를 병렬 구현 queue로 만들지 않기</li>
+          </ul>
+        </article>
+        <article class="lane">
+          <h3><span class="status blocked">BLOCKED · 사람/외부</span></h3>
+          <ul>
+            <li>Observed-user session: 0/15</li>
+            <li>Google/Outlook/Apple Calendar 또는 VTODO 실제 왕복</li>
+            <li>다른 브라우저·기기 backup/restore</li>
+            <li>실제 screen reader session</li>
+          </ul>
+        </article>
+        <article class="lane">
+          <h3><span class="status none">LATER · 조건부</span></h3>
+          <ul>
+            <li>Account·DB·cloud sync·Auth/RLS</li>
+            <li>실제 URL fetch·crawler·LLM provider</li>
+            <li>Creator/update pilot·publishing</li>
+            <li>OAuth direct Calendar/Notion/Todo/Sheets integration</li>
+          </ul>
+        </article>
+      </div>
+      <div class="table-wrap" style="margin-top:14px">
+        <table>
+          <thead>
+            <tr><th>검증 질문</th><th>현재 증거</th><th>상태</th><th>완료 조건</th></tr>
+          </thead>
+          <tbody>
+            <tr><td data-label="질문">저장 후 사용자는 전체 Flow와 첫 실행 중 무엇을 기대하는가?</td><td data-label="현재 증거">R13 자동화·오너 방향</td><td data-label="상태"><span class="status blocked">실제 UXR 없음</span></td><td data-label="완료 조건">대표 사용자가 기대와 이유를 설명</td></tr>
+            <tr><td data-label="질문">정확한 날짜별 묶음이 실제로 유용한가?</td><td data-label="현재 증거">E2E·fixture</td><td data-label="상태"><span class="status blocked">실제 UXR 없음</span></td><td data-label="완료 조건">예정·지연·undated 탐색 관찰</td></tr>
+            <tr><td data-label="질문">Memo를 읽기, 기록, 완료 중 무엇으로 이해하는가?</td><td data-label="현재 증거">Shape-aware heuristic</td><td data-label="상태"><span class="status blocked">실제 UXR 없음</span></td><td data-label="완료 조건">사용자 언어와 행동으로 분류</td></tr>
+            <tr><td data-label="질문">Routine에서 다음 회차·주간 횟수·누적 기록 중 무엇이 우선인가?</td><td data-label="현재 증거">R8A correctness</td><td data-label="상태"><span class="status blocked">실제 UXR 없음</span></td><td data-label="완료 조건">반복 사용에서 우선정보 관찰</td></tr>
+            <tr><td data-label="질문">20~60개 Flow에서 Flow 보기와 필터를 찾을 수 있는가?</td><td data-label="현재 증거">Fixture·browser QA</td><td data-label="상태"><span class="status blocked">장기 사용 없음</span></td><td data-label="완료 조건">실제 다량 저장·복귀·완료 누적</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="callout">
+        정식 운영 queue: <a href="../ROADMAP.md">ROADMAP</a>,
+        현재 판단: <a href="../STATUS.md">STATUS</a>,
+        active gate: <a href="../specs/README.md">Spec index</a>.
+      </p>
+    </section>
+
+    <section id="workspace">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">06 · Git and workspace truth</p>
+          <h2>현재 작업공간 상태</h2>
+        </div>
+        <p>커밋·병합·배포와 로컬 dirty 문서는 각각 독립 상태다.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>대상</th><th>현재 상태</th><th>판정</th><th>취급</th></tr>
+          </thead>
+          <tbody>
+            <tr><td data-label="대상">P35 product baseline</td><td data-label="현재 상태"><code>4a51b08</code><br>PR #161 merge</td><td data-label="판정"><span class="status released">P35 포함</span></td><td data-label="취급">현재 제품 코드 기준선</td></tr>
+            <tr><td data-label="대상">PR #161</td><td data-label="현재 상태">merged · 13 commits · 1,062 changed files</td><td data-label="판정"><span class="status released">완료</span></td><td data-label="취급">P35와 planning evidence 통합</td></tr>
+            <tr><td data-label="대상">Production</td><td data-label="현재 상태"><code>https://flowme2605.vercel.app</code><br>Vercel success</td><td data-label="판정"><span class="status released">P35 동작 확인</span></td><td data-label="취급">자동/browser QA, observed UXR 아님</td></tr>
+            <tr><td data-label="대상">Closeout package</td><td data-label="현재 상태">canonical 상태 문서와 이 상세 재검토표</td><td data-label="판정"><span class="status done">문서 정합화</span></td><td data-label="취급">제품 runtime 변경 없이 별도 PR로 버전 관리</td></tr>
+            <tr><td data-label="대상">flow-mvp</td><td data-label="현재 상태">clean <code>main</code> · P35 baseline에서 <code>origin/main</code>과 일치</td><td data-label="판정"><span class="status done">진입점 복구</span></td><td data-label="취급">기본 코드·테스트 작업 디렉터리</td></tr>
+            <tr><td data-label="대상">Research archive</td><td data-label="현재 상태"><code>archive/research-planning-consolidation-20260729</code> @ <code>a8d977b</code></td><td data-label="판정"><span class="status research">원격 보존</span></td><td data-label="취급">final browser QA 포함, main/runtime과 분리</td></tr>
+            <tr><td data-label="대상">P35 격리 브랜치</td><td data-label="현재 상태"><code>c880fbd</code>; 통합 commit <code>a8c4c19</code>과 tree 동일</td><td data-label="판정"><span class="status done">보존</span></td><td data-label="취급">과거 격리 리뷰 근거</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="callout">
+        한눈에 보는 현재 판단은 <a href="./2026-07-29-flowme-current-stage-control-board-ko.html">Current stage board</a>,
+        Git·보존·정리 근거는 <a href="./2026-07-29-flowme-workspace-consolidation-handoff-ko.md">Workspace consolidation handoff</a>가 담당한다.
+      </p>
+    </section>
+
+    <section id="evidence">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">07 · Evidence labels</p>
+          <h2>이 표에서 사용한 증거 경계</h2>
+        </div>
+        <p>높은 자동화 수치가 실제 사용자 증거를 대신하지 않는다.</p>
+      </div>
+      <div class="evidence-list">
+        <article>
+          <h3><span class="status released">현재 외부 상태</span></h3>
+          <p>GitHub PR #161 merged, main SHA 4a51b08, Vercel status success, 운영 390px에서 <code>/ → /my</code>, 3탭, cross-Flow 할 일, overflow 0, console warning/error 0을 현재 세션에서 확인했다.</p>
+        </article>
+        <article>
+          <h3><span class="status done">Prior artifact</span></h3>
+          <p>unit 694/694, P35 79/79, full E2E 405/405, production smoke 6/6 등은 해당 evidence와 closeout 기록의 수치다. 이번 표 작성 중 전체 suite를 다시 실행한 것은 아니다.</p>
+        </article>
+        <article>
+          <h3><span class="status research">Archive research</span></h3>
+          <p>최종 full-corpus 연구는 <code>a8d977b</code>에 별도 보존됐고 validator 61/61, targeted 14/14, browser QA PASS다. 결정은 여전히 <code>DRAFT_PENDING_USER_REVIEW</code>이며 runtime 변경은 없다.</p>
+        </article>
+        <article>
+          <h3><span class="status blocked">미실행</span></h3>
+          <p>Observed-user study, 외부 Calendar/VTODO 왕복, cross-device recovery, 실제 screen reader, account persistence·creator pilot은 자동화로 닫을 수 없다.</p>
+        </article>
+      </div>
+    </section>
+
+    <footer>
+      <p>
+        이 문서는 작업 상태를 검토하기 위한 읽기용 표다. 제품 방향·출시 사실의 정본은
+        <a href="../STATUS.md">STATUS</a>, <a href="../ROADMAP.md">ROADMAP</a>,
+        <a href="../DECISIONS.md">DECISIONS</a>, <a href="../HISTORY.md">HISTORY</a>다.
+        이 closeout 묶음은 상태·백로그·보존 근거만 정리하며 제품 runtime은 바꾸지 않는다.
+      </p>
+    </footer>
+  </main>
+</body>
+</html>

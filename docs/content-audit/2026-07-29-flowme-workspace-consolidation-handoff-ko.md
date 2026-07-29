@@ -3,7 +3,8 @@
 - 기준일: 2026-07-29
 - 통합 branch: `codex/workspace-consolidation-20260729`
 - 통합 기준: `origin/main` `2c95163`
-- 상태: 통합·상태 동기화·검증 진행 중
+- 통합 결과: [PR #161](https://github.com/knhbae/flowme2605/pull/161) / merge `4a51b08ce9c5410f4ddf492562a5e885b0fda09c`
+- 상태: P35 통합·CI·production 배포 완료, `flow-mvp`를 최신 clean `main`으로 복구 완료
 - observed-user evidence: `0`
 
 ## 목적
@@ -18,7 +19,7 @@
 | --- | --- | --- | --- |
 | P35 MECE UX reset 구현 | `codex/p35-mece-ux-reset` | `c880fbd` | 제품 후보로 통합 |
 | Text authoring UX handoff | `codex/text-authoring-ux-design-handoff-20260728` | `4c8aeea`, `dc8d1c2` | 설계·prototype 근거로 통합 |
-| Research/planning consolidation | `archive/research-planning-consolidation-20260729` | `deccdd3` | 확정된 연구 package만 선별 통합 |
+| Research/planning consolidation | `archive/research-planning-consolidation-20260729` | `deccdd3`, `70820e5`, `a8d977b` | 확정된 package만 선별 통합; 최종 semantic review·browser QA는 원격 archive 전용으로 유지 |
 | P30 planning handoff | `archive/p30-planning-handoff-20260723` | `fbfb5c7` | 원격 archive 유지 |
 | P30 independent review | `archive/p30-independent-review-20260723` | `387c87c` | 원격 archive 유지 |
 | P31 independent review | `archive/p31-independent-review-20260724` | `c600ee2` | 원격 archive 유지 |
@@ -53,24 +54,37 @@
 
 ## 현재 제품 상태
 
-- production 기준선: P34
-- 단일 제품 후보: P35
-- P35 내부 판정: `publish_ready_for_internal_review`
+- production 기준선: P35 / merge `4a51b08`
+- 전역 진입: 상태 기반 `/` router와 `Flow 찾기 / 캘린더 / 내 Flow` 3개 primary destination
+- 다음 구현 gate: 없음; owner의 production keep / bounded fix / block 결정 대기
 - P35 자동 근거: focused unit `13 / 13`, all unit `694 / 694`,
   P35 Playwright `79 / 79`, full Playwright `405 / 405`, build/docs/diff green
+- GitHub CI: Docs/Unit/Build 성공, Playwright E2E 성공
+- Vercel production: 성공, <https://flowme2605.vercel.app>
+- production smoke: 390px/1024px 6개 시나리오 통과, overflow/console/page error `0`
 - Text authoring: design complete, implementation not started
 - Projection/full-corpus/benchmark/playbook: research evidence, runtime delivery 아님
+- Full-corpus archive QA: validator `61 / 61`, targeted tests `14 / 14`, desktop/tablet/mobile browser QA `PASS`; decision은 `DRAFT_PENDING_USER_REVIEW`
 - observed-user evidence: `0`
 - external Calendar/VTODO round-trip: 미실행
 
-## 남은 closeout
+## 정리 결과
 
-- [ ] 통합 branch docs, unit, build, targeted browser 검증
-- [ ] concurrent research work를 별도 commit으로 원격 보존
-- [ ] PR 생성, CI 확인, merge
-- [ ] 실제 deployment 상태 확인
-- [ ] `flow-mvp`를 최신 clean `main`으로 복구
-- [ ] 최종 worktree와 root cache/source 분류 확인
-- [ ] `STATUS.md`, `ROADMAP.md`, spec index, HTML 보드를 최종 publish truth로 갱신
+- 초기 worktree `24`개 중 비활성 `23`개를 merge, upstream,
+  byte identity, 또는 remote archive 확인 후 제거했다.
+- `.tmp/npm-cache-clean`, `.tmp/npm-tmp`, `.tmp/ms-playwright`,
+  `.tmp/flowme-p24-next`에서 약 `501.7 MiB`의 명확한 cache/build output을 제거했다.
+- 원시 Claude review, quarantine, smoke evidence, 현재 연구 import 데이터는 보존했다.
+- `flow-ux-subtract`는 archive에는 남겼지만 canonical skill로 승격하지 않았다.
+
+## Closeout
+
+- [x] 통합 branch docs, unit, build, targeted browser 검증
+- [x] concurrent research WIP와 최종 browser-QA evidence를 `a8d977b`까지 원격 보존
+- [x] PR 생성, CI 확인, merge
+- [x] 실제 deployment 상태 확인
+- [x] `flow-mvp`를 최신 clean `main`으로 복구
+- [x] root cache/source 분류 확인
+- [x] `STATUS.md`, `ROADMAP.md`, `SERVICE_STRUCTURE.md`, `HISTORY.md`, spec index, HTML 보드를 publish truth로 갱신
 
 자동화, screenshot, preview, deployment 성공은 관찰 사용자 검증으로 기록하지 않는다.
