@@ -40,7 +40,7 @@ Only **Active Gate** is the current execution backlog. Unchecked boxes inside ga
 
 ### Active Gate
 
-- No new implementation spec is active. P35 is released; the current gate is the owner's production review and keep, bounded-fix, or block decision. Do not promote `TA-01`, another P35 revision, or a separate research package until that decision names exactly one scope.
+- No new implementation spec is active. P35 is released; the current product gate is the owner's production review and keep, bounded-fix, or block decision. Separately, the completed [P35 literal-route release-evidence follow-up](../content-audit/2026-07-29-p35-release-hardening/README.md) adds two non-fixture cases: literal `/my` opens the saved-Flow cross-Flow `할 일` view with the adjacent `Flow` view, and in a fresh one-Flow public-save representative state literal `/my?experiment=off` opens the legacy Flow hub without changing any `flow:*` localStorage key/value bytes. Pre-existing workspace normalization is outside this evidence. The follow-up changes no runtime, storage, or schema behavior and does not itself promote or block another product slice. Do not promote `TA-01`, another P35 revision, or a separate research package until the owner decision names exactly one scope.
 
 ### Design And Research Shelf
 
@@ -52,7 +52,7 @@ These packages inform the active decision but are not parallel product implement
 
 ### Completed Or Closed
 
-- [2026-07-26 P35 MECE UX Reset](./2026-07-26-flowme-mece-ux-reset/p35-r13-final-internal-gate-goal-ko.md) - released through [PR #161](https://github.com/knhbae/flowme2605/pull/161) and merge `4a51b08`; the state-based root router, three primary destinations, result-first public Flow, cross-Flow date-grouped `할 일`, Flow workspace continuity, Calendar date lens, and scope-first export are live. GitHub CI, Vercel production, a bounded six-scenario production smoke, all unit `694 / 694`, P35 Playwright `79 / 79`, and full Playwright `405 / 405` are green; observed-user sessions remain `0`.
+- [2026-07-26 P35 MECE UX Reset](./2026-07-26-flowme-mece-ux-reset/p35-r13-final-internal-gate-goal-ko.md) - released through [PR #161](https://github.com/knhbae/flowme2605/pull/161) and merge `4a51b08`; the state-based root router, three primary destinations, result-first public Flow, cross-Flow date-grouped `할 일`, Flow workspace continuity, Calendar date lens, and scope-first export are live. GitHub CI, Vercel production, all unit `694 / 694`, P35 Playwright `79 / 79`, and full Playwright `405 / 405` are green. PR #162 records a bounded six-scenario production smoke without linking its raw artifact. The separate [literal-route evidence follow-up](../content-audit/2026-07-29-p35-release-hardening/README.md) adds `2 / 2` non-fixture regressions without runtime, storage, or schema changes and did not rerun that smoke. Observed-user sessions remain `0`.
 
 - [2026-07-25 P34 Execution CRUD UX](./2026-07-25-p34-execution-crud-ux/spec.md) - released through PR #157 and merge `98ede0f`; GitHub CI, Vercel Production, production smoke, full Playwright `326 / 326`, and dependency audit `0` are green, while observed-user sessions remain `0`.
 

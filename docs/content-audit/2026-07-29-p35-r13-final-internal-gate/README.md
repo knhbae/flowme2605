@@ -1,5 +1,9 @@
 # FlowMe P35-R13 최종 내부 게이트
 
+> 이 문서는 P35 publish 전 R13 내부 게이트의 역사적 snapshot이다. 이후 release
+> 상태와 literal `/my`·`/my?experiment=off` 비-fixture 보강은
+> [P35 release hardening](../2026-07-29-p35-release-hardening/README.md)을 따른다.
+
 - 실행일: 2026-07-29
 - 작업 branch: `codex/p35-mece-ux-reset`
 - 기준 HEAD / `origin/main`: `2c951633d13adb0aab3ddd9d3cdddf506d9e97cd`
@@ -41,6 +45,8 @@ production 배포 완료를 뜻하지 않는다.
 - `p35-r13-b-date-groups-*`: `demo=ux12` fixture 기반 브라우저 검증
 - `p35-r13-first-entry-plan-open-390.png`: 실제 public Flow 저장 경로 기반 자동 브라우저 검증
 - `p35-r13-return-plan-collapsed-390.png`: 같은 저장본의 reload/목록 재진입 자동 브라우저 검증
+- R13 rollback 자동화도 `demo=ux12&experiment=off`를 사용했다. literal rollback
+  경로는 후속 release hardening에서 실제 저장본으로 별도 검증한다.
 - screenshot, Playwright, unit test는 실제 사용자 관찰이 아니다.
 
 ## 최종 검증
@@ -56,9 +62,13 @@ production 배포 완료를 뜻하지 않는다.
 - docs check: pass
 - `git diff --check`: pass
 
-## Publish 경계
+## R13 실행 당시 Publish 경계
 
 - 현재 변경은 intentionally dirty worktree에 남아 있다.
 - commit, push, PR, merge, preview/production deploy는 수행하지 않았다.
 - `experiment=off` rollback 경계는 publish 전까지 유지한다.
 - observed-user count는 `0`이며 내부 자동 검증을 실제 사용자 검증으로 표현하지 않는다.
+
+이 항목은 R13 실행 당시 상태다. 이후 PR, merge, CI, Production 상태는
+[P35 release hardening](../2026-07-29-p35-release-hardening/README.md)에 현재 사실로
+분리해 기록한다.

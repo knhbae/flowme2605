@@ -382,7 +382,7 @@
     <div class="summary-grid" aria-label="현재 상태 요약">
       <article class="summary-card">
         <span>제품 런타임</span>
-        <strong>P35 Production Green</strong>
+        <strong>P35 Production Deployed</strong>
         <p>3개 목적지, 상태 기반 루트, cross-Flow 할 일과 Flow 보관함이 운영에 반영됐다.</p>
       </article>
       <article class="summary-card">
@@ -509,7 +509,8 @@
             <tr><td data-label="ID">R12</td><td data-label="결과">cross-Flow Todo 실험과 Todo↔Calendar 날짜 이동</td><td data-label="검증">unit 5/5 · 전용 3/3</td><td data-label="상태"><span class="status released">R13 기본값으로 승격</span></td><td data-label="남은 검증">실제 왕복·Flow 발견성</td></tr>
             <tr><td data-label="ID">H1</td><td data-label="결과">A/B/C 비교 후 B 추천</td><td data-label="검증">P35 76/76 · unit 692/692 · full 402/402</td><td data-label="상태"><span class="status done">R13 결정으로 종료</span></td><td data-label="남은 검증">미결정 없음</td></tr>
             <tr><td data-label="ID">R13</td><td data-label="결과">B + 날짜 묶음 + 낮은 행 명령 밀도 + 첫 진입만 전체 계획 펼침</td><td data-label="검증">unit 694/694 · P35 79/79 · full 405/405</td><td data-label="상태"><span class="status released">PR #161 · Production</span></td><td data-label="남은 검증">오너 운영 판정·실제 UXR</td></tr>
-            <tr><td data-label="ID">Release</td><td data-label="결과">13 commits·1,062 files를 통합한 PR #161 merge <code>4a51b08</code></td><td data-label="검증">GitHub checks green · Vercel success · 운영 390px 직접 확인</td><td data-label="상태"><span class="status released">현재 제품 기준선</span></td><td data-label="남은 검증">실제 사용자 관찰 0</td></tr>
+            <tr><td data-label="ID">Hardening</td><td data-label="결과">실제 public Flow 저장 뒤 literal <code>/my</code>·rollback 경로 고정</td><td data-label="검증">비-fixture 전용 2/2</td><td data-label="상태"><span class="status done">회귀 근거 보강</span></td><td data-label="남은 검증">큰 기존 workspace 정규화·실제 UXR</td></tr>
+            <tr><td data-label="ID">Release</td><td data-label="결과">13 commits·1,062 files를 통합한 PR #161 merge <code>4a51b08</code></td><td data-label="검증">GitHub checks green · Vercel success · 운영 확인은 PR #162 closeout 기록이며 원시 artifact 링크 없음</td><td data-label="상태"><span class="status released">현재 제품 기준선</span></td><td data-label="남은 검증">실제 사용자 관찰 0</td></tr>
           </tbody>
         </table>
       </div>
@@ -669,11 +670,11 @@
       <div class="evidence-list">
         <article>
           <h3><span class="status released">현재 외부 상태</span></h3>
-          <p>GitHub PR #161 merged, main SHA 4a51b08, Vercel status success, 운영 390px에서 <code>/ → /my</code>, 3탭, cross-Flow 할 일, overflow 0, console warning/error 0을 현재 세션에서 확인했다.</p>
+          <p>GitHub PR #161 merged, main SHA 4a51b08, Vercel status success는 확인됐다. 운영 390px의 <code>/ → /my</code>, 3탭, cross-Flow 할 일, overflow 0, console warning/error 0은 PR #162 closeout의 현재 세션 기록이며 원시 artifact 링크는 연결되지 않았다.</p>
         </article>
         <article>
           <h3><span class="status done">Prior artifact</span></h3>
-          <p>unit 694/694, P35 79/79, full E2E 405/405, production smoke 6/6 등은 해당 evidence와 closeout 기록의 수치다. 이번 표 작성 중 전체 suite를 다시 실행한 것은 아니다.</p>
+          <p>unit 694/694, P35 79/79, full E2E 405/405, production smoke 6/6 등은 해당 evidence와 closeout 기록의 수치다. 이번 표 작성 중 전체 suite나 production smoke를 다시 실행하지 않았고 smoke 원시 artifact 링크도 첨부하지 않았다.</p>
         </article>
         <article>
           <h3><span class="status research">Archive research</span></h3>

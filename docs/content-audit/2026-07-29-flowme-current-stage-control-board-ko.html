@@ -238,7 +238,7 @@
     <div class="metric-band" aria-label="현재 핵심 지표">
       <div class="wrap metrics">
         <div class="metric"><strong>P35</strong><span>현재 production 기준선</span></div>
-        <div class="metric"><strong>6 / 6</strong><span>production smoke</span></div>
+        <div class="metric"><strong>6 / 6</strong><span>PR #162 기록 · 원시 근거 미연결</span></div>
         <div class="metric"><strong>405 / 405</strong><span>P35 전체 E2E 근거</span></div>
         <div class="metric"><strong>0</strong><span>관찰 사용자</span></div>
       </div>
@@ -377,7 +377,8 @@
             <thead><tr><th>분류</th><th>범위</th><th>현재 의미</th></tr></thead>
             <tbody>
               <tr><td><span class="status human">판단 게이트</span></td><td><a href="../specs/2026-07-26-flowme-mece-ux-reset/p35-r13-final-internal-gate-goal-ko.md">P35 production review</a></td><td>keep / bounded fix / block</td></tr>
-              <tr><td><span class="status done">공개 기준선</span></td><td><a href="../specs/2026-07-26-flowme-mece-ux-reset/p35-r13-final-internal-gate-goal-ko.md">P35 MECE UX Reset</a></td><td>PR #161, CI·production·smoke 완료, 관찰 사용자 0</td></tr>
+              <tr><td><span class="status done">공개 기준선</span></td><td><a href="../specs/2026-07-26-flowme-mece-ux-reset/p35-r13-final-internal-gate-goal-ko.md">P35 MECE UX Reset</a></td><td>PR #161, CI·production 완료; smoke 6/6은 PR #162 기록이며 원시 artifact 링크 없음; 관찰 사용자 0</td></tr>
+              <tr><td><span class="status done">회귀 근거</span></td><td><a href="./2026-07-29-p35-release-hardening/README.md">literal `/my`·rollback</a></td><td>비-fixture 2/2; runtime·storage·schema 변경 없음</td></tr>
               <tr><td><span class="status ready">설계 완료</span></td><td><a href="../specs/2026-07-28-flowme-text-authoring-ux-v1/spec.md">Text Authoring UX v1</a></td><td>`TA-01`~`TA-06` 구현 미착수</td></tr>
               <tr><td><span class="status reference">연구 근거</span></td><td><a href="../specs/2026-07-29-flow-projection-semantics-scheduling-event-corpus-v1/spec.md">Projection/Event lab</a>, <a href="../specs/2026-07-29-flow-content-ui-full-corpus-validation-handoff-v1/spec.md">Full-corpus UI lab</a></td><td>runtime 변경 없음, 외부 왕복·관찰 미실행</td></tr>
               <tr><td><span class="status blocked">승인·대기</span></td><td>Canonical DB migration, real AI/crawler, Creator publish, direct integrations</td><td>owner 검토 뒤에도 한 축만 승격</td></tr>
